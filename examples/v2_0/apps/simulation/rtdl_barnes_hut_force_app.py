@@ -370,24 +370,29 @@ def _node_coverage_from_count_rows(
     }
 
 
-def _run_optix_node_coverage(
+def _run_prepared_node_coverage(
     bodies: tuple[Body, ...],
     nodes: tuple[QuadNode, ...],
     *,
+    backend: str,
     radius: float,
 ) -> dict[str, object]:
-    result = rt.run_generic_prepared_fixed_radius_threshold_reached_count_2d(
-        search_points=_node_points(nodes),
-        query_points=_body_points(bodies),
-        radius=radius,
-        threshold=1,
-        backend="optix",
-        max_radius=radius,
-        prepare_scene=rt.prepare_optix_fixed_radius_count_threshold_2d,
-    )
+    if backend not in {"embree", "optix"}:
+        raise ValueError("prepared node coverage currently supports backend='embree' or backend='optix'")
+    kwargs: dict[str, object] = {
+        "search_points": _node_points(nodes),
+        "query_points": _body_points(bodies),
+        "radius": radius,
+        "threshold": 1,
+        "backend": backend,
+    }
+    if backend == "optix":
+        kwargs["max_radius"] = radius
+    result = rt.run_generic_prepared_fixed_radius_threshold_reached_count_2d(**kwargs)
     covered_count = int(result["threshold_reached_count"])
     return {
         "radius": radius,
+        "backend": backend,
         "body_count": len(bodies),
         "covered_body_count": covered_count,
         "all_bodies_have_node_candidate": covered_count == len(bodies),
@@ -397,6 +402,7 @@ def _run_optix_node_coverage(
         "summary_mode": "scalar_threshold_count",
         "generic_primitive": result["primitive"],
         "summary_primitive": result["summary_primitive"],
+        "run_phases": result["run_phases"],
     }
 
 
@@ -507,8 +513,8 @@ def run_app(
                 ]
                 payload["error_rows"] = error_rows
         return payload
-    if backend == "optix" and optix_summary_mode == "node_coverage_prepared":
-        coverage = _run_optix_node_coverage(bodies, nodes, radius=node_radius)
+    if backend in {"embree", "optix"} and optix_summary_mode == "node_coverage_prepared":
+        coverage = _run_prepared_node_coverage(bodies, nodes, backend=backend, radius=node_radius)
         oracle = node_coverage_oracle(bodies, nodes, radius=node_radius)
         oracle_decision_matches = (
             coverage["all_bodies_have_node_candidate"] == oracle["all_bodies_have_node_candidate"]
@@ -537,12 +543,12 @@ def run_app(
             "oracle_decision_matches": oracle_decision_matches,
             "oracle_identity_matches": oracle_identity_matches,
             "rtdl_role": (
-                "RTDL/OptiX uses prepared fixed-radius threshold traversal to answer "
+                f"RTDL/{backend} uses prepared fixed-radius threshold traversal to answer "
                 "the bounded Barnes-Hut node-coverage decision: every body has at "
                 "least one quadtree node candidate within the discovery radius."
             ),
             "optix_performance": _optix_performance(),
-            "rt_core_accelerated": True,
+            "rt_core_accelerated": backend == "optix",
             "boundary": (
                 "Node-coverage decision only; this is not Barnes-Hut opening-rule "
                 "evaluation, not force-vector reduction, and not a fully native "
@@ -619,7 +625,7 @@ def main(argv: list[str] | None = None) -> int:
         "--optix-summary-mode",
         choices=("rows", "node_coverage_prepared"),
         default="rows",
-        help="OptiX-only: use prepared fixed-radius threshold traversal for node-coverage decisions",
+        help="Embree/OptiX: use prepared fixed-radius threshold traversal for node-coverage decisions",
     )
     parser.add_argument(
         "--node-radius",

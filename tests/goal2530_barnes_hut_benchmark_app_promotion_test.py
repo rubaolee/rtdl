@@ -3,6 +3,7 @@ import json
 import subprocess
 import sys
 import unittest
+from unittest import mock
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -35,6 +36,14 @@ class Goal2530BarnesHutBenchmarkPromotionTest(unittest.TestCase):
         self.assertFalse(metadata["public_speedup_claim_authorized"])
         self.assertFalse(metadata["native_engine_app_specific"])
         self.assertIn("hierarchical spatial aggregate descriptors", payload["runtime_pressure"])
+        self.assertIn(
+            "prepared_fixed_radius_node_coverage_threshold_decision_embree",
+            payload["current_supported_contracts"],
+        )
+        self.assertIn(
+            "prepared_fixed_radius_node_coverage_threshold_decision_optix",
+            payload["current_supported_contracts"],
+        )
         self.assertIn("full RT-BarnesHut paper reproduction", payload["current_non_goals"])
 
     def test_cpu_reference_mode_preserves_existing_bounded_app_behavior(self) -> None:
@@ -54,6 +63,27 @@ class Goal2530BarnesHutBenchmarkPromotionTest(unittest.TestCase):
         self.assertEqual(payload["body_count"], 16)
         self.assertEqual(payload["benchmark_metadata"]["contract"], "fixed_radius_node_coverage_cpu_oracle")
         self.assertIn("all_bodies_have_node_candidate", payload["node_coverage"])
+
+    def test_embree_node_coverage_prepared_mode_uses_same_generic_contract(self) -> None:
+        fake_payload = {
+            "app": "barnes_hut_force_app",
+            "backend": "embree",
+            "node_coverage": {
+                "run_phases": {"query_fixed_radius_threshold_reached_count_sec": 0.01},
+            },
+            "boundary": "fake",
+        }
+        with mock.patch.object(bench.app, "run_app", return_value=fake_payload) as run_app:
+            payload = bench.run_benchmark("embree_node_coverage_prepared", body_count=16)
+
+        run_app.assert_called_once()
+        self.assertEqual(run_app.call_args.args[0], "embree")
+        self.assertEqual(run_app.call_args.kwargs["optix_summary_mode"], "node_coverage_prepared")
+        self.assertEqual(
+            payload["benchmark_metadata"]["contract"],
+            "prepared_fixed_radius_node_coverage_threshold_decision_embree",
+        )
+        self.assertFalse(payload["benchmark_metadata"]["rt_core_accelerated"])
 
     def test_cli_scope_mode_outputs_json(self) -> None:
         completed = subprocess.run(

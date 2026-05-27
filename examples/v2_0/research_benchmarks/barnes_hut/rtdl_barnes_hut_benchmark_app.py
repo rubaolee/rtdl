@@ -54,6 +54,7 @@ MODES = (
     "streamed_force_sum_bucketized_cpu",
     "materialization_pressure_bucketized_cpu",
     "fused_frontier_force_sum_bucketized_cpu",
+    "embree_node_coverage_prepared",
     "optix_node_coverage_prepared",
     "partner_exact_force",
 )
@@ -108,7 +109,8 @@ def scope_payload() -> dict[str, Any]:
         ),
         "current_supported_contracts": (
             "one_level_body_to_quadtree_node_candidate_rows",
-            "prepared_fixed_radius_node_coverage_threshold_decision",
+            "prepared_fixed_radius_node_coverage_threshold_decision_embree",
+            "prepared_fixed_radius_node_coverage_threshold_decision_optix",
             "generic_aggregate_opening_rows_2d_v1",
             "generic_bucketized_aggregate_tree_2d_v1",
             "generic_aggregate_tree_opening_frontier_2d_v1",
@@ -770,6 +772,20 @@ def run_benchmark(
                 f"{rt.AGGREGATE_FRONTIER_WEIGHTED_VECTOR_SUM_2D_CONTRACT}+"
                 "python_force_interpretation"
             ),
+            rt_core_accelerated=False,
+        )
+    if mode == "embree_node_coverage_prepared":
+        return _annotate(
+            app.run_app(
+                "embree",
+                theta=theta,
+                body_count=body_count,
+                output_mode="candidate_summary",
+                optix_summary_mode="node_coverage_prepared",
+                node_radius=node_radius,
+            ),
+            mode=mode,
+            contract="prepared_fixed_radius_node_coverage_threshold_decision_embree",
             rt_core_accelerated=False,
         )
     if mode == "optix_node_coverage_prepared":

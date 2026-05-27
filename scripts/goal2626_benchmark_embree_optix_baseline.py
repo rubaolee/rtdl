@@ -325,22 +325,27 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
                 case_id="barnes_hut_embree_node_coverage",
                 app_id="barnes_hut",
                 app_name="Barnes-Hut / RT-BarnesHut-style",
-                comparison_group="node_coverage_candidate_summary",
+                comparison_group="node_coverage_prepared_threshold_decision",
                 backend="embree",
                 command=_py(
                     f"{app}/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
                     "--mode",
-                    "embree_rows",
+                    "embree_node_coverage_prepared",
                     "--body-count",
                     barnes_bodies,
                     "--skip-validation",
+                ),
+                primary_metric_path=("node_coverage", "run_phases", "query_fixed_radius_threshold_reached_count_sec"),
+                notes=(
+                    "Same generic prepared fixed-radius threshold decision as OptiX, using Embree as the CPU RT backend. "
+                    "This replaces the old candidate-row summary row that was not the same contract as OptiX."
                 ),
             ),
             BenchmarkCase(
                 case_id="barnes_hut_optix_node_coverage",
                 app_id="barnes_hut",
                 app_name="Barnes-Hut / RT-BarnesHut-style",
-                comparison_group="node_coverage_candidate_summary",
+                comparison_group="node_coverage_prepared_threshold_decision",
                 backend="optix",
                 command=_py(
                     f"{app}/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
@@ -350,6 +355,11 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
                     barnes_bodies,
                     "--skip-validation",
                     "--require-rt-core",
+                ),
+                primary_metric_path=("node_coverage", "run_phases", "query_fixed_radius_threshold_reached_count_sec"),
+                notes=(
+                    "Same generic prepared fixed-radius threshold decision as Embree, using the OptiX RT-core backend. "
+                    "This is node coverage only, not full hierarchical aggregate-frontier force accumulation."
                 ),
             ),
             BenchmarkCase(

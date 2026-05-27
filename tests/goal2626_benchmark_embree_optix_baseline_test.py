@@ -106,6 +106,30 @@ class Goal2626BenchmarkEmbreeOptixBaselineTest(unittest.TestCase):
         self.assertEqual(("prepared_query_total_sec",), optix.primary_metric_path)
         self.assertIn("shape-pair", optix.notes)
 
+    def test_barnes_hut_uses_same_contract_prepared_node_coverage(self) -> None:
+        sys.path.insert(0, str(ROOT))
+        from scripts import goal2626_benchmark_embree_optix_baseline as runner
+
+        cases = {
+            case.case_id: case
+            for case in runner.build_cases("quick", ROOT / "scratch" / "goal2626_test")
+        }
+        embree = cases["barnes_hut_embree_node_coverage"]
+        optix = cases["barnes_hut_optix_node_coverage"]
+        assert embree.command is not None
+        assert optix.command is not None
+        self.assertEqual("node_coverage_prepared_threshold_decision", embree.comparison_group)
+        self.assertEqual("node_coverage_prepared_threshold_decision", optix.comparison_group)
+        self.assertIn("embree_node_coverage_prepared", embree.command)
+        self.assertIn("optix_node_coverage_prepared", optix.command)
+        self.assertEqual(
+            ("node_coverage", "run_phases", "query_fixed_radius_threshold_reached_count_sec"),
+            embree.primary_metric_path,
+        )
+        self.assertEqual(embree.primary_metric_path, optix.primary_metric_path)
+        self.assertIn("not the same contract", embree.notes)
+        self.assertIn("not full hierarchical aggregate-frontier", optix.notes)
+
     def test_ratios_only_for_same_app_and_comparison_group(self) -> None:
         sys.path.insert(0, str(ROOT))
         from scripts import goal2626_benchmark_embree_optix_baseline as runner
