@@ -269,7 +269,7 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
                     notes="Scaled synthetic RayDB-style grouped aggregate; primary metric is the generic grouped-reduction query phase.",
                 ),
                 BenchmarkCase(
-                    case_id=f"raydb_optix_{mode}",
+                    case_id=f"raydb_optix_partner_resident_{mode}",
                     app_id="raydb_style",
                     app_name="RayDB-style grouped aggregate",
                     comparison_group=f"raydb_grouped_{mode}",
@@ -279,12 +279,20 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
                         "--mode",
                         mode,
                         "--backend",
-                        "optix",
+                        "optix_partner_resident_experimental",
                         "--copies",
                         raydb_copies,
+                        "--warmup",
+                        "2",
+                        "--repeat",
+                        "12",
                     ),
-                    primary_metric_path=("metadata", "timings", "query_sec"),
-                    notes="Scaled synthetic RayDB-style grouped aggregate; primary metric is the generic grouped-reduction query phase.",
+                    primary_metric_path=("metadata", "timings", "query_median_sec"),
+                    notes=(
+                        "Scaled synthetic RayDB-style grouped aggregate using the generic OptiX "
+                        "partner-resident grouped-i64 dispatcher. This is a warm prepared-device "
+                        "query timing; it avoids host table copy/materialization but is not an RT-core claim."
+                    ),
                 ),
             ]
         )

@@ -76,6 +76,8 @@ class Goal2517PartnerResidentFusedSumCountI64Test(unittest.TestCase):
         runtime = OPTIX_RUNTIME.read_text(encoding="utf-8")
         self.assertIn("run_optix_partner_resident_columnar_grouped_i64_reduction", source)
         self.assertIn("dispatch_metadata", source)
+        self.assertIn("query_median_sec", source)
+        self.assertIn("torch.cuda.synchronize()", source)
         self.assertIn("fused_native_reduction", runtime)
         self.assertIn("generic_sum_count_abi_used", runtime)
         self.assertIn('reduction = "sum_count"', source)

@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import sys
 import time
+import statistics
 from typing import Any
 
 ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "src" / "rtdsl").exists())
@@ -78,7 +79,13 @@ def run_result_mode(
     *,
     backend: str = "cpu_python_reference",
     copies: int = 1,
+    repeat: int = 1,
+    warmup: int = 0,
 ) -> dict[str, Any]:
+    if repeat <= 0:
+        raise ValueError("repeat must be positive")
+    if warmup < 0:
+        raise ValueError("warmup must be non-negative")
     fixture = make_fixture(copies=copies)
     plan = make_plan(mode)
     if backend == "embree":
@@ -111,6 +118,8 @@ def run_result_mode(
             plan=plan,
             mode=mode,
             copies=copies,
+            repeat=repeat,
+            warmup=warmup,
         )
     if backend != "cpu_python_reference":
         raise ValueError(f"unsupported backend: {backend}")
@@ -162,6 +171,8 @@ def _run_optix_partner_resident_experimental_result_mode(
     plan: dict[str, Any],
     mode: str,
     copies: int = 1,
+    repeat: int = 1,
+    warmup: int = 0,
 ) -> dict[str, Any]:
     if mode not in OPTIX_PARTNER_RESIDENT_RESULT_MODES:
         raise ValueError(
@@ -189,16 +200,28 @@ def _run_optix_partner_resident_experimental_result_mode(
         composite_lowering = tuple(item.aggregate for item in decomposed_plans)
         dispatch_query = rt.columnar_plan_to_grouped_query(decomposed_plans[0])
         reduction = "sum_count"
-    query_started = time.perf_counter()
-    dispatch_result = rt.run_optix_partner_resident_columnar_grouped_i64_reduction(
-        descriptor,
-        dispatch_query,
-        reduction=reduction,
-        allow_experimental_native=True,
-        group_capacity=group_capacity,
-        semantic_aggregate=mode,
-    )
-    query_sec = time.perf_counter() - query_started
+    query_times: list[float] = []
+    dispatch_result: dict[str, Any] | None = None
+    for iteration in range(warmup + repeat):
+        if torch.cuda.is_available():
+            torch.cuda.synchronize()
+        query_started = time.perf_counter()
+        dispatch_result = rt.run_optix_partner_resident_columnar_grouped_i64_reduction(
+            descriptor,
+            dispatch_query,
+            reduction=reduction,
+            allow_experimental_native=True,
+            group_capacity=group_capacity,
+            semantic_aggregate=mode,
+        )
+        if torch.cuda.is_available():
+            torch.cuda.synchronize()
+        query_sec = time.perf_counter() - query_started
+        if iteration >= warmup:
+            query_times.append(query_sec)
+    assert dispatch_result is not None
+    query_sec = query_times[-1]
+    query_median_sec = float(statistics.median(query_times))
     result_rows = tuple(dispatch_result["rows"])
     dispatch_metadata = dict(dispatch_result["metadata"])
     cpu_rows = rt.evaluate_columnar_grouped_aggregate(fixture, plan).rows
@@ -218,7 +241,12 @@ def _run_optix_partner_resident_experimental_result_mode(
             "timings": {
                 "prepare_sec": prepare_sec,
                 "query_sec": query_sec,
-                "elapsed_sec": prepare_sec + query_sec,
+                "query_median_sec": query_median_sec,
+                "query_min_sec": float(min(query_times)),
+                "query_max_sec": float(max(query_times)),
+                "query_repeat": int(repeat),
+                "query_warmup": int(warmup),
+                "elapsed_sec": prepare_sec + query_median_sec,
             },
             "fixture": "tiny_denormalized_columnar",
             "lowering_plan": rt.plan_columnar_aggregate_lowering(
@@ -323,7 +351,13 @@ def _run_native_result_mode(
     }
 
 
-def run_suite(*, backend: str = "cpu_python_reference", copies: int = 1) -> dict[str, Any]:
+def run_suite(
+    *,
+    backend: str = "cpu_python_reference",
+    copies: int = 1,
+    repeat: int = 1,
+    warmup: int = 0,
+) -> dict[str, Any]:
     if backend == "cpu_python_reference":
         modes = CPU_RESULT_MODES
     elif backend == "embree":
@@ -335,13 +369,21 @@ def run_suite(*, backend: str = "cpu_python_reference", copies: int = 1) -> dict
     else:
         raise ValueError(f"unsupported backend: {backend}")
     results = {
-        mode: run_result_mode(mode, backend=backend, copies=copies)
+        mode: run_result_mode(
+            mode,
+            backend=backend,
+            copies=copies,
+            repeat=repeat,
+            warmup=warmup,
+        )
         for mode in modes
     }
     return {
         "app": "raydb_style_columnar_aggregate",
         "backend": backend,
         "copies": int(copies),
+        "repeat": int(repeat),
+        "warmup": int(warmup),
         "row_count": len(make_fixture(copies=copies)["row_ids"]),
         "modes": results,
         "all_match_cpu_reference": all(payload.get("matches_cpu_reference", True) for payload in results.values()),
@@ -366,11 +408,24 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--mode", choices=("all", *RESULT_MODES), default="all")
     parser.add_argument("--backend", choices=BACKENDS, default="cpu_python_reference")
     parser.add_argument("--copies", type=int, default=1)
+    parser.add_argument("--repeat", type=int, default=1)
+    parser.add_argument("--warmup", type=int, default=0)
     args = parser.parse_args(argv)
     payload = (
-        run_suite(backend=args.backend, copies=args.copies)
+        run_suite(
+            backend=args.backend,
+            copies=args.copies,
+            repeat=args.repeat,
+            warmup=args.warmup,
+        )
         if args.mode == "all"
-        else run_result_mode(args.mode, backend=args.backend, copies=args.copies)
+        else run_result_mode(
+            args.mode,
+            backend=args.backend,
+            copies=args.copies,
+            repeat=args.repeat,
+            warmup=args.warmup,
+        )
     )
     print(json.dumps(payload, indent=2, sort_keys=True))
     return 0

@@ -42,6 +42,23 @@ class Goal2626BenchmarkEmbreeOptixBaselineTest(unittest.TestCase):
             self.assertIsNotNone(cases[case_id].command)
             self.assertIsNone(cases[case_id].unsupported_reason)
 
+    def test_raydb_optix_row_uses_partner_resident_warm_query_path(self) -> None:
+        sys.path.insert(0, str(ROOT))
+        from scripts import goal2626_benchmark_embree_optix_baseline as runner
+
+        cases = {
+            case.case_id: case
+            for case in runner.build_cases("quick", ROOT / "scratch" / "goal2626_test")
+        }
+        case = cases["raydb_optix_partner_resident_count"]
+        assert case.command is not None
+        self.assertEqual(case.backend, "optix")
+        self.assertIn("optix_partner_resident_experimental", case.command)
+        self.assertIn("--warmup", case.command)
+        self.assertIn("--repeat", case.command)
+        self.assertEqual(("metadata", "timings", "query_median_sec"), case.primary_metric_path)
+        self.assertIn("partner-resident grouped-i64 dispatcher", case.notes)
+
     def test_ratios_only_for_same_app_and_comparison_group(self) -> None:
         sys.path.insert(0, str(ROOT))
         from scripts import goal2626_benchmark_embree_optix_baseline as runner
