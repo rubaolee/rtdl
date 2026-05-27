@@ -22,25 +22,36 @@ Each app below has two boundaries:
 Do not turn an app row into a broad speedup claim unless the exact backend,
 partner, hardware, command shape, output contract, and artifact are cited.
 
-## v2.3 Portfolio Snapshot
+## Current v2.x Portfolio Snapshot
 
 ### Promoted Benchmark Apps
 
 These are the current benchmark apps. They are reconstruction instruments for
 RTDL language/runtime design, not broad paper-reproduction claims.
+Performance values below come from the latest internal standard matrix:
+`docs/reports/goal2634_full_standard_prepared_contact_pod/summary.md`.
 
-| Benchmark app | Directory | Benchmark contract | Current v2.3 status |
-| --- | --- | --- | --- |
-| Hausdorff / X-HD-style | `examples/v2_0/research_benchmarks/hausdorff_xhd/` | Exact Hausdorff distance with grouped threshold/witness and partner continuation paths | Promoted benchmark with bounded evidence; no claim that every Hausdorff input beats every CUDA implementation |
-| Spatial RayJoin-style | `examples/v2_0/research_benchmarks/spatial_rayjoin/` | PIP, LSI, and overlay-seed rows over generic prepared spatial primitives | Promoted benchmark for scoped spatial join contracts; not full RayJoin paper reproduction |
-| RT-DBSCAN-style | `examples/v2_0/research_benchmarks/rt_dbscan/` | 3-D fixed-radius neighbor search, core thresholding, and component continuation | Promoted benchmark for generic fixed-radius/component contracts; no DBSCAN-native ABI |
-| Robot collision | `examples/v2_0/research_benchmarks/robot_collision/` | Static scene plus batched transformed query geometry to compact any-hit flags/counts | Promoted benchmark for prepared static-scene screening; not a planner or exact swept collision solver |
-| RayDB-style grouped aggregate | `examples/v2_0/research_benchmarks/raydb_style/` | Predicate-filtered grouped count/sum/min/max/stats over partner-resident columns | Promoted benchmark for columnar grouped reductions; not SQL, SSB, or a DBMS |
-| Barnes-Hut / RT-BarnesHut-style | `examples/v2_0/research_benchmarks/barnes_hut/` | Aggregate tree rows, opening frontier, and partner-resident force diagnostics | Promoted benchmark for hierarchical aggregate-frontier pressure; no app-specific force ABI |
-| LibRTS-style spatial index | `examples/v2_0/research_benchmarks/librts_spatial_index/` | Generic 2-D AABB point/range contains/intersects count-only paths | Promoted internal benchmark slice; not full mutable LibRTS reproduction |
-| RTNN neighbor search | `examples/v2_0/research_benchmarks/rtnn/` | Prepared 3-D fixed-radius bounded ranked-summary rows and ANN candidate-quality helpers | Promoted benchmark front door with strict same-contract boundary; not a full RTNN paper reproduction |
-| Triangle counting | `examples/v2_0/research_benchmarks/triangle_counting/` | RT-Graph-style triangle witness rows or compact triangle summary | Promoted graph benchmark slice; larger paper datasets require future segmented/streamed lowering |
-| Bounded contact witness / contact-manifold | `examples/v2_0/research_benchmarks/contact_manifold/` | Generic `AABB_INDEX_QUERY_2D` broadphase rows plus `COLLECT_K_BOUNDED` witness rows `(query_group_id, query_triangle_id, scene_triangle_id)` with exact fail-closed overflow | Promoted benchmark for generic bounded witness collection; Goal2622 removed full Python all-pairs discovery, Goal2623 adds generic OptiX AABB row output; no native contact/collision ABI and no speedup claim |
+The matrix was collected on an NVIDIA RTX A5000 pod from commit
+`56e1f9b230cdef6d803191c8804f192133b4d020`. It is exact-subpath evidence only,
+not public whole-app speedup wording.
+
+| Benchmark app | Entry point | Benchmark contract | Key RTDL primitive/path | Embree sec | OptiX sec | Speedup | Boundary |
+| --- | --- | --- | --- | ---: | ---: | ---: | --- |
+| Hausdorff / X-HD-style | `examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py` | Hausdorff threshold decision | Prepared fixed-radius threshold | 0.102451 | 0.0311073 | 3.29x | No claim that every Hausdorff input beats every CUDA implementation. |
+| Spatial RayJoin-style | `examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py` | Scoped all-backend query summary | Prepared spatial relation / shape-pair route | 0.0203149 | 0.000529638 | 38.4x | Scoped spatial join contracts, not full RayJoin paper reproduction. |
+| RT-DBSCAN-style | `examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py` | Cluster signature | Fixed-radius rows plus grouped continuation | 20.6102 | 1.62144 | 12.7x | Generic fixed-radius/component contracts; no DBSCAN-native ABI. |
+| Robot collision | `examples/v2_0/research_benchmarks/robot_collision/rtdl_robot_collision_benchmark_app.py` | Prepared collision flags | Prepared 3-D segment/scene any-hit flags | 0.00853798 | 0.00161413 | 5.29x | Static-scene screening, not a planner or exact swept collision solver. |
+| RayDB-style grouped aggregate | `examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py` | Grouped count | Partner-resident typed grouped reduction | 0.222185 | 0.000793088 | 280x | Columnar grouped reduction, not SQL, SSB, or a DBMS. |
+| RayDB-style grouped aggregate | `examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py` | Grouped sum | Partner-resident typed grouped reduction | 0.243746 | 0.000977349 | 249x | Columnar grouped reduction, not SQL, SSB, or a DBMS. |
+| Barnes-Hut / RT-BarnesHut-style | `examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py` | Node-coverage threshold decision | Same-contract prepared node coverage | 0.0388851 | 0.00855045 | 4.55x | No app-specific force ABI; full hierarchical aggregate-frontier remains future generic primitive work. |
+| LibRTS-style spatial index | `examples/v2_0/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py` | AABB index count-only | `AABB_INDEX_QUERY_2D` | 20.707 | 0.691477 | 29.9x | Internal benchmark slice, not full mutable LibRTS reproduction. |
+| RTNN neighbor search | `scripts/goal2348_rtnn_v2_2_external_runner.py` | Prepared 3-D ranked summary | Fixed-radius neighbor rows plus ranked summary | 0.2638 | 0.00153247 | 172x | Strict same-contract boundary; not a full RTNN paper reproduction. |
+| Triangle counting | `examples/v2_0/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py` | RT-Graph-style RT-2A1 summary | Generic prepared 3-D ray/triangle path | 0.039049 | 0.000364401 | 107x | Graph benchmark slice; larger paper datasets require future segmented/streamed lowering. |
+| Bounded contact witness / contact-manifold | `examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py` | Generic AABB broadphase plus bounded witness rows | Prepared `AABB_INDEX_QUERY_2D` plus `COLLECT_K_BOUNDED` | 0.485812 | 0.0184764 | 26.3x | No native contact/collision ABI; exact contact interpretation remains Python app logic. |
+
+There are 10 promoted benchmark apps. RayDB-style grouped aggregate has two
+standard matrix rows because grouped count and grouped sum are distinct
+reduction contracts.
 
 ### Learner And Example Apps
 
