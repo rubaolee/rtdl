@@ -1,0 +1,361 @@
+{
+  "case_repeat": 1,
+  "generated_at": "2026-05-27T04:42:50+0000",
+  "ratios": [
+    {
+      "app_id": "barnes_hut",
+      "comparison_group": "node_coverage_prepared_threshold_decision",
+      "embree_sec": 0.038885060930624604,
+      "embree_speedup_vs_optix": 0.21989038205571623,
+      "metric_sources": {
+        "embree": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec",
+        "optix": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec"
+      },
+      "optix_sec": 0.008550450904294848,
+      "optix_speedup_vs_embree": 4.547720508060322
+    },
+    {
+      "app_id": "contact_manifold",
+      "comparison_group": "generic_aabb_broadphase_collect_k",
+      "embree_sec": 0.4858116749674082,
+      "embree_speedup_vs_optix": 0.03803204688314702,
+      "metric_sources": {
+        "embree": "run_phases.emit_aabb_intersection_pair_rows_2d_median_sec",
+        "optix": "run_phases.emit_aabb_intersection_pair_rows_2d_median_sec"
+      },
+      "optix_sec": 0.01847641239874065,
+      "optix_speedup_vs_embree": 26.293615041874745
+    },
+    {
+      "app_id": "hausdorff_xhd",
+      "comparison_group": "hausdorff_threshold_decision",
+      "embree_sec": 0.10245066322386265,
+      "embree_speedup_vs_optix": 0.30363196317291663,
+      "metric_sources": {
+        "embree": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+        "optix": "run_phases.query_fixed_radius_threshold_reached_count_sec"
+      },
+      "optix_sec": 0.03110729600302875,
+      "optix_speedup_vs_embree": 3.2934609042807055
+    },
+    {
+      "app_id": "librts_spatial_index",
+      "comparison_group": "aabb_index_all_count_only",
+      "embree_sec": 20.707039213972166,
+      "embree_speedup_vs_optix": 0.03339335342934556,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "elapsed_sec"
+      },
+      "optix_sec": 0.6914774789474905,
+      "optix_speedup_vs_embree": 29.946079003889903
+    },
+    {
+      "app_id": "raydb_style",
+      "comparison_group": "raydb_grouped_count",
+      "embree_sec": 0.2221853791270405,
+      "embree_speedup_vs_optix": 0.0035694877754595144,
+      "metric_sources": {
+        "embree": "metadata.timings.query_sec",
+        "optix": "metadata.timings.query_median_sec"
+      },
+      "optix_sec": 0.0007930879946798086,
+      "optix_speedup_vs_embree": 280.15224113528893
+    },
+    {
+      "app_id": "raydb_style",
+      "comparison_group": "raydb_grouped_sum",
+      "embree_sec": 0.24374589696526527,
+      "embree_speedup_vs_optix": 0.004009702993308532,
+      "metric_sources": {
+        "embree": "metadata.timings.query_sec",
+        "optix": "metadata.timings.query_median_sec"
+      },
+      "optix_sec": 0.0009773486526682973,
+      "optix_speedup_vs_embree": 249.39503042215813
+    },
+    {
+      "app_id": "robot_collision",
+      "comparison_group": "prepared_collision_flags",
+      "embree_sec": 0.008537982474081218,
+      "embree_speedup_vs_optix": 0.1890523804711956,
+      "metric_sources": {
+        "embree": "tail_medians.total_run_seconds",
+        "optix": "tail_medians.total_run_seconds"
+      },
+      "optix_sec": 0.0016141259111464024,
+      "optix_speedup_vs_embree": 5.289539319777896
+    },
+    {
+      "app_id": "rt_dbscan",
+      "comparison_group": "dbscan_cluster_signature",
+      "embree_sec": 20.610222081188112,
+      "embree_speedup_vs_optix": 0.07867184737971225,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "elapsed_sec"
+      },
+      "optix_sec": 1.6214442460332066,
+      "optix_speedup_vs_embree": 12.71102730273343
+    },
+    {
+      "app_id": "rtnn",
+      "comparison_group": "prepared_3d_ranked_summary",
+      "embree_sec": 0.2638003008905798,
+      "embree_speedup_vs_optix": 0.005809223845504106,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "elapsed_sec"
+      },
+      "optix_sec": 0.0015324749983847141,
+      "optix_speedup_vs_embree": 172.1400356734271
+    },
+    {
+      "app_id": "spatial_rayjoin",
+      "comparison_group": "rayjoin_all_backend_query_summary",
+      "embree_sec": 0.020314915804192424,
+      "embree_speedup_vs_optix": 0.026071363787738305,
+      "metric_sources": {
+        "embree": "workloads.total_elapsed_sec",
+        "optix": "prepared_query_total_sec"
+      },
+      "optix_sec": 0.0005296375602483749,
+      "optix_speedup_vs_embree": 38.3562596932621
+    },
+    {
+      "app_id": "triangle_counting",
+      "comparison_group": "triangle_count_rt_graph_2a1_summary",
+      "embree_sec": 0.03904896252788603,
+      "embree_speedup_vs_optix": 0.00933191231118148,
+      "metric_sources": {
+        "embree": "timing_ms.query_median_ms converted-ms-to-sec",
+        "optix": "timing_ms.query_median_ms converted-ms-to-sec"
+      },
+      "optix_sec": 0.00036440149415284395,
+      "optix_speedup_vs_embree": 107.15917238118514
+    }
+  ],
+  "rows": [
+    {
+      "app_id": "hausdorff_xhd",
+      "backend": "embree",
+      "case_id": "hausdorff_embree_threshold",
+      "comparison_group": "hausdorff_threshold_decision",
+      "notes": "Same threshold-decision contract as OptiX; despite option name, the prepared threshold path supports Embree.",
+      "primary_metric_sec": 0.10245066322386265,
+      "primary_metric_source": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+      "status": "ok"
+    },
+    {
+      "app_id": "hausdorff_xhd",
+      "backend": "optix",
+      "case_id": "hausdorff_optix_threshold",
+      "comparison_group": "hausdorff_threshold_decision",
+      "notes": "",
+      "primary_metric_sec": 0.03110729600302875,
+      "primary_metric_source": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+      "status": "ok"
+    },
+    {
+      "app_id": "spatial_rayjoin",
+      "backend": "embree",
+      "case_id": "spatial_rayjoin_embree_generic",
+      "comparison_group": "rayjoin_all_backend_query_summary",
+      "notes": "Embree same-front-door route over PIP, LSI, and overlay-seed. Primary metric is the summed backend workload elapsed time.",
+      "primary_metric_sec": 0.020314915804192424,
+      "primary_metric_source": "workloads.total_elapsed_sec",
+      "status": "ok"
+    },
+    {
+      "app_id": "spatial_rayjoin",
+      "backend": "optix",
+      "case_id": "spatial_rayjoin_optix_prepared_full_route",
+      "comparison_group": "rayjoin_all_backend_query_summary",
+      "notes": "Prepared OptiX route over PIP, LSI, and overlay-seed pair-dependency flags. The native engine sees generic point/closed-shape, segment-pair, and shape-pair prepared contracts; full polygon overlay materialization is outside this benchmark.",
+      "primary_metric_sec": 0.0005296375602483749,
+      "primary_metric_source": "prepared_query_total_sec",
+      "status": "ok"
+    },
+    {
+      "app_id": "rt_dbscan",
+      "backend": "embree",
+      "case_id": "rt_dbscan_embree_fixed_radius_rows",
+      "comparison_group": "dbscan_cluster_signature",
+      "notes": "Same DBSCAN cluster-signature contract through generic Embree 3-D fixed-radius neighbor rows; not the optimized OptiX grouped-stream continuation.",
+      "primary_metric_sec": 20.610222081188112,
+      "primary_metric_source": "elapsed_sec",
+      "status": "ok"
+    },
+    {
+      "app_id": "rt_dbscan",
+      "backend": "optix",
+      "case_id": "rt_dbscan_optix_grouped_stream",
+      "comparison_group": "dbscan_cluster_signature",
+      "notes": "",
+      "primary_metric_sec": 1.6214442460332066,
+      "primary_metric_source": "elapsed_sec",
+      "status": "ok"
+    },
+    {
+      "app_id": "robot_collision",
+      "backend": "embree",
+      "case_id": "robot_collision_embree_prepared_buffers",
+      "comparison_group": "prepared_collision_flags",
+      "notes": "",
+      "primary_metric_sec": 0.008537982474081218,
+      "primary_metric_source": "tail_medians.total_run_seconds",
+      "status": "ok"
+    },
+    {
+      "app_id": "robot_collision",
+      "backend": "optix",
+      "case_id": "robot_collision_optix_prepared_device_buffers",
+      "comparison_group": "prepared_collision_flags",
+      "notes": "",
+      "primary_metric_sec": 0.0016141259111464024,
+      "primary_metric_source": "tail_medians.total_run_seconds",
+      "status": "ok"
+    },
+    {
+      "app_id": "raydb_style",
+      "backend": "embree",
+      "case_id": "raydb_embree_count",
+      "comparison_group": "raydb_grouped_count",
+      "notes": "Scaled synthetic RayDB-style grouped aggregate; primary metric is the generic grouped-reduction query phase.",
+      "primary_metric_sec": 0.2221853791270405,
+      "primary_metric_source": "metadata.timings.query_sec",
+      "status": "ok"
+    },
+    {
+      "app_id": "raydb_style",
+      "backend": "optix",
+      "case_id": "raydb_optix_partner_resident_count",
+      "comparison_group": "raydb_grouped_count",
+      "notes": "Scaled synthetic RayDB-style grouped aggregate using the generic OptiX partner-resident grouped-i64 dispatcher. This is a warm prepared-device query timing; it avoids host table copy/materialization but is not an RT-core claim.",
+      "primary_metric_sec": 0.0007930879946798086,
+      "primary_metric_source": "metadata.timings.query_median_sec",
+      "status": "ok"
+    },
+    {
+      "app_id": "raydb_style",
+      "backend": "embree",
+      "case_id": "raydb_embree_sum",
+      "comparison_group": "raydb_grouped_sum",
+      "notes": "Scaled synthetic RayDB-style grouped aggregate; primary metric is the generic grouped-reduction query phase.",
+      "primary_metric_sec": 0.24374589696526527,
+      "primary_metric_source": "metadata.timings.query_sec",
+      "status": "ok"
+    },
+    {
+      "app_id": "raydb_style",
+      "backend": "optix",
+      "case_id": "raydb_optix_partner_resident_sum",
+      "comparison_group": "raydb_grouped_sum",
+      "notes": "Scaled synthetic RayDB-style grouped aggregate using the generic OptiX partner-resident grouped-i64 dispatcher. This is a warm prepared-device query timing; it avoids host table copy/materialization but is not an RT-core claim.",
+      "primary_metric_sec": 0.0009773486526682973,
+      "primary_metric_source": "metadata.timings.query_median_sec",
+      "status": "ok"
+    },
+    {
+      "app_id": "barnes_hut",
+      "backend": "embree",
+      "case_id": "barnes_hut_embree_node_coverage",
+      "comparison_group": "node_coverage_prepared_threshold_decision",
+      "notes": "Same generic prepared fixed-radius threshold decision as OptiX, using Embree as the CPU RT backend. This replaces the old candidate-row summary row that was not the same contract as OptiX.",
+      "primary_metric_sec": 0.038885060930624604,
+      "primary_metric_source": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec",
+      "status": "ok"
+    },
+    {
+      "app_id": "barnes_hut",
+      "backend": "optix",
+      "case_id": "barnes_hut_optix_node_coverage",
+      "comparison_group": "node_coverage_prepared_threshold_decision",
+      "notes": "Same generic prepared fixed-radius threshold decision as Embree, using the OptiX RT-core backend. This is node coverage only, not full hierarchical aggregate-frontier force accumulation.",
+      "primary_metric_sec": 0.008550450904294848,
+      "primary_metric_source": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec",
+      "status": "ok"
+    },
+    {
+      "app_id": "librts_spatial_index",
+      "backend": "embree",
+      "case_id": "librts_embree_aabb_index",
+      "comparison_group": "aabb_index_all_count_only",
+      "notes": "Embree path uses the generic columnar conjunctive-scan primitive for AABB predicates.",
+      "primary_metric_sec": 20.707039213972166,
+      "primary_metric_source": "elapsed_sec",
+      "status": "ok"
+    },
+    {
+      "app_id": "librts_spatial_index",
+      "backend": "optix",
+      "case_id": "librts_optix_aabb_index",
+      "comparison_group": "aabb_index_all_count_only",
+      "notes": "",
+      "primary_metric_sec": 0.6914774789474905,
+      "primary_metric_source": "elapsed_sec",
+      "status": "ok"
+    },
+    {
+      "app_id": "rtnn",
+      "backend": "embree",
+      "case_id": "rtnn_embree_prepared_3d_ranked_summary",
+      "comparison_group": "prepared_3d_ranked_summary",
+      "notes": "Same ranked-summary row schema, produced by generic Embree fixed-radius rows plus app-level summary folding.",
+      "primary_metric_sec": 0.2638003008905798,
+      "primary_metric_source": "elapsed_sec",
+      "status": "ok"
+    },
+    {
+      "app_id": "rtnn",
+      "backend": "optix",
+      "case_id": "rtnn_optix_prepared_3d_ranked_summary",
+      "comparison_group": "prepared_3d_ranked_summary",
+      "notes": "",
+      "primary_metric_sec": 0.0015324749983847141,
+      "primary_metric_source": "elapsed_sec",
+      "status": "ok"
+    },
+    {
+      "app_id": "triangle_counting",
+      "backend": "embree",
+      "case_id": "triangle_counting_embree_rt_graph_2a1",
+      "comparison_group": "triangle_count_rt_graph_2a1_summary",
+      "notes": "RT-Graph-style RT-2A1 mapping through generic 3-D ray/triangle any-hit rows. Graph preprocessing and geometry lowering are outside the primary backend metric.",
+      "primary_metric_sec": 0.03904896252788603,
+      "primary_metric_source": "timing_ms.query_median_ms converted-ms-to-sec",
+      "status": "ok"
+    },
+    {
+      "app_id": "triangle_counting",
+      "backend": "optix",
+      "case_id": "triangle_counting_optix_rt_graph_2a1_partner",
+      "comparison_group": "triangle_count_rt_graph_2a1_summary",
+      "notes": "RT-Graph-style RT-2A1 mapping through generic prepared 3-D ray/triangle weighted any-hit summary with CuPy-owned graph preprocessing/device columns. This replaces the older graph-kernel host-indexed fallback row.",
+      "primary_metric_sec": 0.00036440149415284395,
+      "primary_metric_source": "timing_ms.query_median_ms converted-ms-to-sec",
+      "status": "ok"
+    },
+    {
+      "app_id": "contact_manifold",
+      "backend": "embree",
+      "case_id": "contact_manifold_embree_aabb_broadphase_collect_k",
+      "comparison_group": "generic_aabb_broadphase_collect_k",
+      "notes": "Measures generic AABB_INDEX_QUERY_2D witness discovery plus generic COLLECT_K_BOUNDED app path. Primary metric is the prepared generic broadphase row-output median; exact contact refinement remains Python-owned.",
+      "primary_metric_sec": 0.4858116749674082,
+      "primary_metric_source": "run_phases.emit_aabb_intersection_pair_rows_2d_median_sec",
+      "status": "ok"
+    },
+    {
+      "app_id": "contact_manifold",
+      "backend": "optix",
+      "case_id": "contact_manifold_optix_aabb_broadphase_collect_k",
+      "comparison_group": "generic_aabb_broadphase_collect_k",
+      "notes": "Measures generic OptiX AABB_INDEX_QUERY_2D witness discovery plus generic COLLECT_K_BOUNDED app path. Primary metric is the prepared RT broadphase row-output median; exact contact refinement remains Python-owned.",
+      "primary_metric_sec": 0.01847641239874065,
+      "primary_metric_source": "run_phases.emit_aabb_intersection_pair_rows_2d_median_sec",
+      "status": "ok"
+    }
+  ],
+  "scale": "standard"
+}
