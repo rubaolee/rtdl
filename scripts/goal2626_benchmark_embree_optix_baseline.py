@@ -577,12 +577,16 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
                     "embree",
                     "--discovery-backend",
                     "embree",
+                    "--discovery-warmup",
+                    "2",
+                    "--discovery-repeat",
+                    "12",
                 ),
-                primary_metric_path=("run_phases", "generic_aabb_broadphase_sec"),
+                primary_metric_path=("run_phases", "emit_aabb_intersection_pair_rows_2d_median_sec"),
                 notes=(
                     "Measures generic AABB_INDEX_QUERY_2D witness discovery plus generic "
-                    "COLLECT_K_BOUNDED app path. Primary metric is the generic broadphase "
-                    "discovery subpath; exact contact refinement remains Python-owned."
+                    "COLLECT_K_BOUNDED app path. Primary metric is the prepared generic "
+                    "broadphase row-output median; exact contact refinement remains Python-owned."
                 ),
             ),
             BenchmarkCase(
@@ -607,12 +611,16 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
                     "optix",
                     "--discovery-row-capacity",
                     max(1, 2 * contact_grid),
+                    "--discovery-warmup",
+                    "2",
+                    "--discovery-repeat",
+                    "12",
                 ),
-                primary_metric_path=("run_phases", "generic_aabb_broadphase_sec"),
+                primary_metric_path=("run_phases", "emit_aabb_intersection_pair_rows_2d_median_sec"),
                 notes=(
                     "Measures generic OptiX AABB_INDEX_QUERY_2D witness discovery plus generic "
-                    "COLLECT_K_BOUNDED app path. Primary metric is the RT broadphase row-output "
-                    "subpath; exact contact refinement remains Python-owned."
+                    "COLLECT_K_BOUNDED app path. Primary metric is the prepared RT broadphase "
+                    "row-output median; exact contact refinement remains Python-owned."
                 ),
             ),
         ]

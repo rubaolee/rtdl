@@ -150,7 +150,14 @@ class Goal2626BenchmarkEmbreeOptixBaselineTest(unittest.TestCase):
         self.assertIn("embree", embree.command)
         self.assertIn("--discovery-backend", optix.command)
         self.assertIn("optix", optix.command)
-        self.assertEqual(("run_phases", "generic_aabb_broadphase_sec"), embree.primary_metric_path)
+        self.assertIn("--discovery-warmup", embree.command)
+        self.assertIn("--discovery-repeat", embree.command)
+        self.assertIn("--discovery-warmup", optix.command)
+        self.assertIn("--discovery-repeat", optix.command)
+        self.assertEqual(
+            ("run_phases", "emit_aabb_intersection_pair_rows_2d_median_sec"),
+            embree.primary_metric_path,
+        )
         self.assertEqual(embree.primary_metric_path, optix.primary_metric_path)
         self.assertIn("AABB_INDEX_QUERY_2D", embree.notes)
         self.assertIn("exact contact refinement remains Python-owned", optix.notes)

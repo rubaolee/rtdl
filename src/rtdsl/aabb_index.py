@@ -168,6 +168,7 @@ class OptixAabbIndex2D:
 
     boxes: tuple[Aabb2D, ...]
     prepared: Any
+    row_ids: tuple[int, ...]
     backend: str = "optix"
 
     def count(
@@ -218,6 +219,42 @@ class OptixAabbIndex2D:
                 "aabb_intersection_pair_rows_2d. Not LibRTS-specific."
             ),
         }
+
+    def intersection_rows(
+        self,
+        query_boxes: Iterable[Any],
+        query_ids: tuple[int, ...],
+        *,
+        row_capacity: int | None = None,
+    ) -> tuple[tuple[int, int], ...]:
+        if row_capacity is None:
+            raise ValueError("OptiX prepared AABB row output requires explicit row_capacity")
+        normalized_query_boxes = tuple(_normalize_aabb2d(box) for box in query_boxes)
+        if len(query_ids) != len(normalized_query_boxes):
+            raise ValueError("query_ids length must match query_boxes length")
+        _validate_u32_ids(query_ids, label="query_ids")
+        query_records = tuple(
+            _IdentifiedAabb2D(
+                int(query_ids[index]),
+                box.min_x,
+                box.min_y,
+                box.max_x,
+                box.max_y,
+            )
+            for index, box in enumerate(normalized_query_boxes)
+        )
+        native = self.prepared.collect_range_intersection_rows(
+            query_records,
+            row_capacity=int(row_capacity),
+        )
+        return tuple(
+            sorted((int(query_id), int(indexed_id)) for query_id, indexed_id in native["candidate_id_rows"])
+        )
+
+    def close(self) -> None:
+        close = getattr(self.prepared, "close", None)
+        if callable(close):
+            close()
 
 
 @dataclass(frozen=True)
@@ -287,11 +324,14 @@ class EmbreeAabbIndex2D:
 
     def intersection_rows(
         self,
-        query_boxes: tuple[Aabb2D, ...],
+        query_boxes: Iterable[Any],
         query_ids: tuple[int, ...],
     ) -> tuple[tuple[int, int], ...]:
+        normalized_query_boxes = tuple(_normalize_aabb2d(box) for box in query_boxes)
+        if len(query_ids) != len(normalized_query_boxes):
+            raise ValueError("query_ids length must match query_boxes length")
         rows: set[tuple[int, int]] = set()
-        for query_index, query_box in enumerate(query_boxes):
+        for query_index, query_box in enumerate(normalized_query_boxes):
             query_id = int(query_ids[query_index])
             matches = self.prepared.conjunctive_scan(_range_intersects_clauses(query_box))
             rows.update((query_id, int(row["row_id"])) for row in matches)
@@ -308,6 +348,7 @@ def prepare_aabb_index_2d(
     *,
     point_queries: Iterable[Any] = (),
     box_queries: Iterable[Any] = (),
+    indexed_ids: Iterable[int] | None = None,
     resolution: int = 32,
     backend: str = "cpu",
 ) -> AabbIndex2D | OptixAabbIndex2D | EmbreeAabbIndex2D:
@@ -321,19 +362,38 @@ def prepare_aabb_index_2d(
         raise ValueError("resolution must be positive")
     if not box_tuple:
         raise ValueError("AABB index requires at least one indexed box")
+    indexed_id_tuple = (
+        tuple(int(value) for value in indexed_ids)
+        if indexed_ids is not None
+        else tuple(range(len(box_tuple)))
+    )
+    if len(indexed_id_tuple) != len(box_tuple):
+        raise ValueError("indexed_ids length must match indexed_boxes length")
 
     if normalized_backend == "optix":
         from .optix_runtime import prepare_optix_aabb_index_2d
 
+        _validate_u32_ids(indexed_id_tuple, label="indexed_ids")
+        identified_records = tuple(
+            _IdentifiedAabb2D(
+                int(indexed_id_tuple[index]),
+                box.min_x,
+                box.min_y,
+                box.max_x,
+                box.max_y,
+            )
+            for index, box in enumerate(box_tuple)
+        )
         return OptixAabbIndex2D(
             boxes=box_tuple,
-            prepared=prepare_optix_aabb_index_2d(box_tuple),
+            prepared=prepare_optix_aabb_index_2d(identified_records),
+            row_ids=indexed_id_tuple,
         )
 
     if normalized_backend == "embree":
         return _prepare_embree_aabb_index_2d(
             box_tuple,
-            row_ids=tuple(range(len(box_tuple))),
+            row_ids=indexed_id_tuple,
         )
 
     bounds = _compute_bounds(box_tuple, point_tuple, query_box_tuple)
@@ -379,7 +439,7 @@ def query_aabb_index_2d(
     try:
         return prepared.count(point_queries=point_queries, box_queries=box_queries, operation=operation)
     finally:
-        if isinstance(prepared, EmbreeAabbIndex2D):
+        if isinstance(prepared, (EmbreeAabbIndex2D, OptixAabbIndex2D)):
             prepared.close()
 
 

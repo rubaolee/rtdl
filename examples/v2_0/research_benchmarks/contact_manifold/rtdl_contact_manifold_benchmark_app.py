@@ -8,6 +8,7 @@ import json
 import math
 import os
 import shutil
+import statistics
 import subprocess
 import sys
 import time
@@ -258,6 +259,8 @@ def aabb_broadphase_witness_rows(
     resolution: int = 64,
     discovery_backend: str = "cpu",
     row_capacity: int | None = None,
+    warmup_count: int = 0,
+    repeat_count: int = 1,
 ) -> dict[str, Any]:
     """Discover candidate triangle pairs with generic AABB rows, then refine exactly."""
 
@@ -270,6 +273,10 @@ def aabb_broadphase_witness_rows(
         normalized_discovery_backend = "optix"
     if normalized_discovery_backend not in {"cpu", "embree", "optix"}:
         raise ValueError("discovery_backend must be cpu, embree, or optix")
+    if warmup_count < 0:
+        raise ValueError("warmup_count must be non-negative")
+    if repeat_count <= 0:
+        raise ValueError("repeat_count must be positive")
     resolved_row_capacity = row_capacity
     if normalized_discovery_backend == "optix" and resolved_row_capacity is None:
         resolved_row_capacity = max(
@@ -277,17 +284,95 @@ def aabb_broadphase_witness_rows(
             2 * len(fixture.scene_triangles),
             2 * len(fixture.query_triangles),
         )
+    indexed_boxes = tuple(_triangle_aabb(triangle) for triangle in fixture.scene_triangles)
+    query_boxes = tuple(_triangle_aabb(triangle) for triangle in fixture.query_triangles)
+    indexed_ids = tuple(triangle.triangle_id for triangle in fixture.scene_triangles)
+    query_ids = tuple(triangle.triangle_id for triangle in fixture.query_triangles)
     broadphase_started = time.perf_counter()
-    broadphase = rt.aabb_intersection_pair_rows_2d(
-        tuple(_triangle_aabb(triangle) for triangle in fixture.scene_triangles),
-        tuple(_triangle_aabb(triangle) for triangle in fixture.query_triangles),
-        indexed_ids=tuple(triangle.triangle_id for triangle in fixture.scene_triangles),
-        query_ids=tuple(triangle.triangle_id for triangle in fixture.query_triangles),
-        resolution=resolution,
-        backend=normalized_discovery_backend,
-        row_capacity=resolved_row_capacity,
-    )
+
+    if normalized_discovery_backend in {"embree", "optix"} and (warmup_count > 0 or repeat_count > 1):
+        prepare_started = time.perf_counter()
+        prepared = rt.prepare_aabb_index_2d(
+            indexed_boxes,
+            indexed_ids=indexed_ids,
+            resolution=resolution,
+            backend=normalized_discovery_backend,
+        )
+        prepare_sec = time.perf_counter() - prepare_started
+        query_times: list[float] = []
+        rows: tuple[tuple[int, int], ...] | None = None
+        try:
+            for iteration in range(warmup_count + repeat_count):
+                query_started = time.perf_counter()
+                if normalized_discovery_backend == "optix":
+                    emitted_rows = prepared.intersection_rows(
+                        query_boxes,
+                        query_ids,
+                        row_capacity=resolved_row_capacity,
+                    )
+                else:
+                    emitted_rows = prepared.intersection_rows(query_boxes, query_ids)
+                query_sec = time.perf_counter() - query_started
+                if iteration >= warmup_count:
+                    query_times.append(query_sec)
+                    rows = emitted_rows
+        finally:
+            close = getattr(prepared, "close", None)
+            if callable(close):
+                close()
+        if rows is None:
+            raise RuntimeError("prepared AABB discovery did not run a measured query")
+        query_median_sec = statistics.median(query_times)
+        broadphase = {
+            "primitive": DISCOVERY_PRIMITIVE,
+            "contract": "generic_aabb_intersection_pair_rows_2d",
+            "backend": normalized_discovery_backend,
+            "prepared": True,
+            "operation": "range_intersection_rows",
+            "row_schema": ("query_id", "indexed_id"),
+            "candidate_id_rows": tuple(sorted(rows)),
+            "valid_count": len(rows),
+            "indexed_box_count": len(indexed_boxes),
+            "query_box_count": len(query_boxes),
+            "candidate_checks": None,
+            "all_pairs_count": len(indexed_boxes) * len(query_boxes),
+            "candidate_checks_avoided": None,
+            "pruning_ratio": None,
+            "row_capacity": resolved_row_capacity,
+            "complete_candidate_coverage": True,
+            "run_phases": {
+                "prepare_aabb_index_2d_sec": prepare_sec,
+                "emit_aabb_intersection_pair_rows_2d_median_sec": query_median_sec,
+                "emit_aabb_intersection_pair_rows_2d_min_sec": min(query_times),
+                "emit_aabb_intersection_pair_rows_2d_max_sec": max(query_times),
+            },
+            "discovery_warmup_count": int(warmup_count),
+            "discovery_repeat_count": int(repeat_count),
+            "rt_core_accelerated": normalized_discovery_backend == "optix",
+            "native_engine_customization": False,
+            "claim_boundary": (
+                "Generic prepared AABB_INDEX_QUERY_2D broadphase row output only; exact app "
+                "semantics and final witness interpretation remain outside the engine."
+            ),
+        }
+    else:
+        broadphase = rt.aabb_intersection_pair_rows_2d(
+            indexed_boxes,
+            query_boxes,
+            indexed_ids=indexed_ids,
+            query_ids=query_ids,
+            resolution=resolution,
+            backend=normalized_discovery_backend,
+            row_capacity=resolved_row_capacity,
+        )
     broadphase_elapsed_sec = time.perf_counter() - broadphase_started
+    broadphase_run_phases = dict(broadphase.get("run_phases") or {})
+    if "emit_aabb_intersection_pair_rows_2d_median_sec" in broadphase_run_phases:
+        broadphase_metric_sec = float(
+            broadphase_run_phases["emit_aabb_intersection_pair_rows_2d_median_sec"]
+        )
+    else:
+        broadphase_metric_sec = broadphase_elapsed_sec
 
     refine_started = time.perf_counter()
     rows: set[WitnessRow] = set()
@@ -316,11 +401,15 @@ def aabb_broadphase_witness_rows(
         "aabb_candidate_checks_avoided": broadphase["candidate_checks_avoided"],
         "aabb_pruning_ratio": broadphase["pruning_ratio"],
         "discovery_row_capacity": resolved_row_capacity,
+        "discovery_warmup_count": int(warmup_count),
+        "discovery_repeat_count": int(repeat_count),
         "exact_refinement_checks": exact_refinement_checks,
         "exact_refinement_checks_avoided": max(0, all_pairs_count - exact_refinement_checks),
         "resolution": int(resolution),
-        "run_phases": {
-            "generic_aabb_broadphase_sec": broadphase_elapsed_sec,
+        "run_phases": broadphase_run_phases
+        | {
+            "generic_aabb_broadphase_sec": broadphase_metric_sec,
+            "generic_aabb_broadphase_wall_sec": broadphase_elapsed_sec,
             "python_exact_refinement_sec": refine_elapsed_sec,
         },
         "native_engine_customization": False,
@@ -453,6 +542,8 @@ def aabb_broadphase_collect_k_payload(
     backend: str = "cpu_python_reference",
     discovery_backend: str = "cpu",
     discovery_row_capacity: int | None = None,
+    discovery_warmup_count: int = 0,
+    discovery_repeat_count: int = 1,
 ) -> dict[str, Any]:
     fixture = build_fixture(dataset, grid_count=grid_count)
     resolved_resolution = (
@@ -465,6 +556,8 @@ def aabb_broadphase_collect_k_payload(
         resolution=resolved_resolution,
         discovery_backend=discovery_backend,
         row_capacity=discovery_row_capacity,
+        warmup_count=discovery_warmup_count,
+        repeat_count=discovery_repeat_count,
     )
     reference_rows = fixture.expected_witness_rows
     if broadphase["candidate_id_rows"] != reference_rows:
@@ -741,6 +834,8 @@ def run_app(
     backend: str = "cpu_python_reference",
     discovery_backend: str = "cpu",
     discovery_row_capacity: int | None = None,
+    discovery_warmup_count: int = 0,
+    discovery_repeat_count: int = 1,
 ) -> dict[str, Any]:
     if mode == "scope":
         return scope_payload()
@@ -761,6 +856,8 @@ def run_app(
             backend=backend,
             discovery_backend=discovery_backend,
             discovery_row_capacity=discovery_row_capacity,
+            discovery_warmup_count=discovery_warmup_count,
+            discovery_repeat_count=discovery_repeat_count,
         )
     if mode == "native_collect_k":
         return native_collect_k_payload(
@@ -807,6 +904,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--backend", default="cpu_python_reference")
     parser.add_argument("--discovery-backend", choices=("cpu", "embree", "optix"), default="cpu")
     parser.add_argument("--discovery-row-capacity", type=int)
+    parser.add_argument("--discovery-warmup", type=int, default=0)
+    parser.add_argument("--discovery-repeat", type=int, default=1)
     args = parser.parse_args(argv)
     payload = run_app(
         mode=args.mode,
@@ -817,6 +916,8 @@ def main(argv: list[str] | None = None) -> int:
         backend=args.backend,
         discovery_backend=args.discovery_backend,
         discovery_row_capacity=args.discovery_row_capacity,
+        discovery_warmup_count=args.discovery_warmup,
+        discovery_repeat_count=args.discovery_repeat,
     )
     print(json.dumps(payload, indent=2, sort_keys=True))
     return 0
