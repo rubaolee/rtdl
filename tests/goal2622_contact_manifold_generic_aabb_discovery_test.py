@@ -3,6 +3,7 @@ from __future__ import annotations
 import inspect
 from pathlib import Path
 import unittest
+from unittest import mock
 
 import rtdsl as rt
 from examples.v2_0.research_benchmarks.contact_manifold import (
@@ -71,6 +72,30 @@ class Goal2622ContactManifoldGenericAabbDiscoveryTest(unittest.TestCase):
         self.assertLess(payload["resolution"], 512)
         self.assertTrue(payload["matches_cpu_reference"])
         self.assertEqual(payload["exact_refinement_checks"], 512)
+
+    def test_contact_app_accepts_embree_aabb_discovery_backend(self) -> None:
+        with mock.patch.object(
+            app.rt,
+            "aabb_intersection_pair_rows_2d",
+            return_value={
+                "backend": "embree",
+                "candidate_id_rows": ((10, 0), (11, 1), (30, 2)),
+                "valid_count": 3,
+                "candidate_checks": None,
+                "candidate_checks_avoided": None,
+                "pruning_ratio": None,
+            },
+        ) as mocked:
+            payload = app.aabb_broadphase_collect_k_payload(
+                dataset="tiny",
+                witness_capacity=3,
+                discovery_backend="embree",
+            )
+
+        self.assertTrue(payload["matches_cpu_reference"])
+        self.assertEqual(payload["candidate_discovery_backend"], "embree")
+        self.assertFalse(payload["engine_boundary"]["native_collision_logic_allowed"])
+        mocked.assert_called_once()
 
     def test_aabb_broadphase_overflow_still_fails_closed(self) -> None:
         with self.assertRaisesRegex(RuntimeError, "partial_result_returned=False"):

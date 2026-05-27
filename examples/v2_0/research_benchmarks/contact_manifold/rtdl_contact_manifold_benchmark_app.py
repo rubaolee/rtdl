@@ -268,8 +268,8 @@ def aabb_broadphase_witness_rows(
         normalized_discovery_backend = "cpu"
     if normalized_discovery_backend in {"nvidia_rt", "cuda_optix"}:
         normalized_discovery_backend = "optix"
-    if normalized_discovery_backend not in {"cpu", "optix"}:
-        raise ValueError("discovery_backend must be cpu or optix")
+    if normalized_discovery_backend not in {"cpu", "embree", "optix"}:
+        raise ValueError("discovery_backend must be cpu, embree, or optix")
     resolved_row_capacity = row_capacity
     if normalized_discovery_backend == "optix" and resolved_row_capacity is None:
         resolved_row_capacity = max(
@@ -805,7 +805,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--grid-count", type=int, default=64)
     parser.add_argument("--repeat-count", type=int, default=5)
     parser.add_argument("--backend", default="cpu_python_reference")
-    parser.add_argument("--discovery-backend", choices=("cpu", "optix"), default="cpu")
+    parser.add_argument("--discovery-backend", choices=("cpu", "embree", "optix"), default="cpu")
     parser.add_argument("--discovery-row-capacity", type=int)
     args = parser.parse_args(argv)
     payload = run_app(

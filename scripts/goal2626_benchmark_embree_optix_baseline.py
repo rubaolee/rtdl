@@ -558,15 +558,15 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
                 ),
             ),
             BenchmarkCase(
-                case_id="contact_manifold_embree_native_collect_k",
+                case_id="contact_manifold_embree_aabb_broadphase_collect_k",
                 app_id="contact_manifold",
                 app_name="Bounded contact witness / contact-manifold",
-                comparison_group="native_collect_k_i64",
+                comparison_group="generic_aabb_broadphase_collect_k",
                 backend="embree",
                 command=_py(
                     f"{app}/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
                     "--mode",
-                    "native_collect_k",
+                    "aabb_broadphase_collect_k",
                     "--dataset",
                     "grid",
                     "--grid-count",
@@ -575,20 +575,26 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
                     contact_grid,
                     "--backend",
                     "embree",
+                    "--discovery-backend",
+                    "embree",
                 ),
-                primary_metric_path=("native_collect_elapsed_sec",),
-                notes="Measures the generic native COLLECT_K_BOUNDED i64 collector over Python oracle rows, not collision-specific engine logic.",
+                primary_metric_path=("run_phases", "generic_aabb_broadphase_sec"),
+                notes=(
+                    "Measures generic AABB_INDEX_QUERY_2D witness discovery plus generic "
+                    "COLLECT_K_BOUNDED app path. Primary metric is the generic broadphase "
+                    "discovery subpath; exact contact refinement remains Python-owned."
+                ),
             ),
             BenchmarkCase(
-                case_id="contact_manifold_optix_native_collect_k",
+                case_id="contact_manifold_optix_aabb_broadphase_collect_k",
                 app_id="contact_manifold",
                 app_name="Bounded contact witness / contact-manifold",
-                comparison_group="native_collect_k_i64",
+                comparison_group="generic_aabb_broadphase_collect_k",
                 backend="optix",
                 command=_py(
                     f"{app}/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
                     "--mode",
-                    "native_collect_k",
+                    "aabb_broadphase_collect_k",
                     "--dataset",
                     "grid",
                     "--grid-count",
@@ -597,9 +603,17 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
                     contact_grid,
                     "--backend",
                     "optix",
+                    "--discovery-backend",
+                    "optix",
+                    "--discovery-row-capacity",
+                    max(1, 2 * contact_grid),
                 ),
-                primary_metric_path=("native_collect_elapsed_sec",),
-                notes="Measures the generic native COLLECT_K_BOUNDED i64 collector over Python oracle rows, not collision-specific engine logic.",
+                primary_metric_path=("run_phases", "generic_aabb_broadphase_sec"),
+                notes=(
+                    "Measures generic OptiX AABB_INDEX_QUERY_2D witness discovery plus generic "
+                    "COLLECT_K_BOUNDED app path. Primary metric is the RT broadphase row-output "
+                    "subpath; exact contact refinement remains Python-owned."
+                ),
             ),
         ]
     )

@@ -130,6 +130,31 @@ class Goal2626BenchmarkEmbreeOptixBaselineTest(unittest.TestCase):
         self.assertIn("not the same contract", embree.notes)
         self.assertIn("not full hierarchical aggregate-frontier", optix.notes)
 
+    def test_contact_manifold_uses_generic_aabb_witness_discovery(self) -> None:
+        sys.path.insert(0, str(ROOT))
+        from scripts import goal2626_benchmark_embree_optix_baseline as runner
+
+        cases = {
+            case.case_id: case
+            for case in runner.build_cases("quick", ROOT / "scratch" / "goal2626_test")
+        }
+        embree = cases["contact_manifold_embree_aabb_broadphase_collect_k"]
+        optix = cases["contact_manifold_optix_aabb_broadphase_collect_k"]
+        assert embree.command is not None
+        assert optix.command is not None
+        self.assertEqual("generic_aabb_broadphase_collect_k", embree.comparison_group)
+        self.assertEqual("generic_aabb_broadphase_collect_k", optix.comparison_group)
+        self.assertIn("aabb_broadphase_collect_k", embree.command)
+        self.assertIn("aabb_broadphase_collect_k", optix.command)
+        self.assertIn("--discovery-backend", embree.command)
+        self.assertIn("embree", embree.command)
+        self.assertIn("--discovery-backend", optix.command)
+        self.assertIn("optix", optix.command)
+        self.assertEqual(("run_phases", "generic_aabb_broadphase_sec"), embree.primary_metric_path)
+        self.assertEqual(embree.primary_metric_path, optix.primary_metric_path)
+        self.assertIn("AABB_INDEX_QUERY_2D", embree.notes)
+        self.assertIn("exact contact refinement remains Python-owned", optix.notes)
+
     def test_ratios_only_for_same_app_and_comparison_group(self) -> None:
         sys.path.insert(0, str(ROOT))
         from scripts import goal2626_benchmark_embree_optix_baseline as runner
