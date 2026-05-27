@@ -42,6 +42,13 @@ class _FakePrepared:
 
 
 def _case(workload: str) -> DatasetCase:
+    if workload == "overlay_seed":
+        return DatasetCase(
+            workload="overlay",
+            dataset="fake",
+            inputs={"left": ("left-shape",), "right": ("right-shape",)},
+            note="fake overlay",
+        )
     if workload == "lsi":
         return DatasetCase(
             workload="lsi",
@@ -95,9 +102,44 @@ class Goal2327RayJoinPreparedRouteContractTest(unittest.TestCase):
         self.assertNotIn("rows", payload)
         self.assertIn("static_shape_pack_sec", payload["phases_sec"])
 
-    def test_prepared_optix_route_rejects_overlay_until_continuation_exists(self) -> None:
-        with self.assertRaisesRegex(ValueError, "supports only"):
-            app.run_rayjoin_prepared_optix_workload("overlay_seed")
+    def test_overlay_prepared_optix_route_uses_generic_shape_pair_relation(self) -> None:
+        with (
+            mock.patch.object(app, "_load_rayjoin_case", return_value=_case("overlay_seed")),
+            mock.patch("rtdsl.optix_runtime.pack_polygons", side_effect=("packed-left", "packed-right")),
+            mock.patch("rtdsl.optix_runtime.prepare_shape_pair_relation_flags_optix", return_value=_FakePrepared(11)),
+        ):
+            payload = app.run_rayjoin_prepared_optix_workload(
+                "overlay_seed",
+                result_mode="count",
+                include_rows=False,
+            )
+
+        self.assertEqual(payload["execution_route"], "prepared_optix")
+        self.assertEqual(payload["row_count"], 11)
+        self.assertEqual(payload["summary"]["output_contract"], "overlay_pair_dependency_count")
+        self.assertIn("query_pack_sec", payload["phases_sec"])
+        self.assertIn("static_shape_pack_sec", payload["phases_sec"])
+        self.assertIn("prepare_static_scene_sec", payload["phases_sec"])
+        self.assertIn("prepared_query_sec", payload["phases_sec"])
+        self.assertEqual(
+            payload["device_resident_continuation_status"],
+            "overlay_seed_prepared_pair_dependency_flags_complete",
+        )
+        self.assertIn("shape-pair", payload["native_engine_boundary"])
+
+    def test_prepared_optix_suite_no_longer_marks_overlay_unsupported(self) -> None:
+        def fake_run(workload: str, **_kwargs):
+            return {
+                "workload": workload,
+                "phases_sec": {"prepared_query_sec": 0.25},
+            }
+
+        with mock.patch.object(app, "run_rayjoin_prepared_optix_workload", side_effect=fake_run):
+            payload = app.run_rayjoin_suite(execution_route="prepared_optix", result_mode="count")
+
+        self.assertEqual(set(payload["workloads"]), {"pip", "lsi", "overlay_seed"})
+        self.assertNotIn("status", payload["workloads"]["overlay_seed"])
+        self.assertEqual(payload["prepared_query_total_sec"], 0.75)
 
 
 if __name__ == "__main__":

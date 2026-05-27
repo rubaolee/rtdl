@@ -23,7 +23,7 @@ from rtdsl.datasets import load_cdb
 
 
 _WORKLOADS = ("pip", "lsi", "overlay_seed")
-_PREPARED_OPTIX_WORKLOADS = ("pip", "lsi")
+_PREPARED_OPTIX_WORKLOADS = ("pip", "lsi", "overlay_seed")
 
 _DEFAULT_DATASETS = {
     "pip": "tests/fixtures/rayjoin/br_county_subset.cdb",
@@ -216,13 +216,14 @@ def run_rayjoin_prepared_optix_workload(
 ) -> dict[str, object]:
     """Run the RayJoin-style prepared OptiX route with phase boundaries.
 
-    This is the serious v2.x benchmark route for RayJoin-style PIP and LSI.
+    This is the serious v2.x benchmark route for RayJoin-style PIP, LSI,
+    and overlay-seed pair-dependency flags.
     It keeps RayJoin policy in Python while using generic prepared RTDL
     primitives underneath.
     """
 
     if workload not in _PREPARED_OPTIX_WORKLOADS:
-        raise ValueError("prepared_optix route currently supports only: pip, lsi")
+        raise ValueError("prepared_optix route currently supports only: pip, lsi, overlay_seed")
     if result_mode not in {"count", "rows"}:
         raise ValueError("result_mode must be 'count' or 'rows'")
 
@@ -232,7 +233,48 @@ def run_rayjoin_prepared_optix_workload(
     rows: tuple[dict[str, object], ...] = ()
     native_phase_timings: dict[str, object] | None = None
 
-    if workload == "lsi":
+    if workload == "overlay_seed":
+        from rtdsl.optix_runtime import pack_polygons
+        from rtdsl.optix_runtime import prepare_shape_pair_relation_flags_optix
+
+        packed_left = _phase_time(
+            phases,
+            "query_pack_sec",
+            lambda: pack_polygons(records=case.inputs["left"]),
+        )
+        packed_right = _phase_time(
+            phases,
+            "static_shape_pack_sec",
+            lambda: pack_polygons(records=case.inputs["right"]),
+        )
+        prepared = _phase_time(
+            phases,
+            "prepare_static_scene_sec",
+            lambda: prepare_shape_pair_relation_flags_optix(packed_right),
+        )
+        try:
+            view = _phase_time(phases, "prepared_query_sec", lambda: prepared.run_raw(packed_left))
+            try:
+                row_count = int(view.row_count)
+                if include_rows and result_mode == "rows":
+                    rows = tuple(view.to_dict_rows())
+            finally:
+                view.close()
+            native_phase_timings = {
+                "native_row_count": row_count,
+                "prepared_shape_pair_relation": True,
+            }
+        finally:
+            prepared.close()
+        summary = {
+            "pair_dependency_row_count": row_count,
+            "output_contract": (
+                "overlay_pair_dependency_count"
+                if result_mode == "count"
+                else "overlay_pair_dependency_rows_with_lsi_pip_flags"
+            ),
+        }
+    elif workload == "lsi":
         from rtdsl.optix_runtime import pack_segments
         from rtdsl.optix_runtime import prepare_segment_pair_intersection_optix
 
@@ -329,11 +371,15 @@ def run_rayjoin_prepared_optix_workload(
         "phases_sec": phases,
         "native_phase_timings": native_phase_timings or {},
         "device_resident_continuation_status": (
-            "not_complete: prepared query can avoid Python row materialization for counts, "
-            "but generic downstream row-stream continuation still needs pod/native work"
+            "overlay_seed_prepared_pair_dependency_flags_complete"
+            if workload == "overlay_seed"
+            else (
+                "not_complete: prepared query can avoid Python row materialization for counts, "
+                "but generic downstream row-stream continuation still needs pod/native work"
+            )
         ),
         "native_engine_boundary": (
-            "The engine sees generic prepared point/closed-shape or segment-pair contracts. "
+            "The engine sees generic prepared point/closed-shape, segment-pair, or shape-pair contracts. "
             "RayJoin application policy and paper-specific interpretation stay in Python."
         ),
         "claim_boundary": {
@@ -420,24 +466,34 @@ def run_rayjoin_suite(
             )
             for workload in _PREPARED_OPTIX_WORKLOADS
         }
-        workloads["overlay_seed"] = {
-            "app": "rayjoin_v2_spatial_join",
-            "workload": "overlay_seed",
-            "execution_route": "prepared_optix",
-            "status": "not_supported_by_this_route",
-            "reason": "overlay needs the generic dependency-row route or a future generic device-resident continuation",
-        }
+        prepared_query_total_sec = sum(
+            float(result.get("phases_sec", {}).get("prepared_query_sec", 0.0))
+            for result in workloads.values()
+        )
+        prepared_pack_total_sec = sum(
+            float(result.get("phases_sec", {}).get("query_pack_sec", 0.0))
+            + float(result.get("phases_sec", {}).get("static_shape_pack_sec", 0.0))
+            for result in workloads.values()
+        )
+        prepared_scene_total_sec = sum(
+            float(result.get("phases_sec", {}).get("prepare_static_scene_sec", 0.0))
+            for result in workloads.values()
+        )
         return {
             "app": "rayjoin_v2_spatial_join",
             "paper": "RayJoin: Fast and Precise Spatial Join, ICS 2024",
             "backend": "optix",
             "execution_route": execution_route,
             "workloads": workloads,
+            "prepared_query_total_sec": prepared_query_total_sec,
+            "prepared_pack_total_sec": prepared_pack_total_sec,
+            "prepared_scene_total_sec": prepared_scene_total_sec,
             "all_match_cpu_python_reference": None,
             "implementation_stage": "prepared_v2_benchmark_route",
             "next_stage": (
                 "Run this route on an RTX pod against RayJoin-exported streams and compare "
-                "phase boundaries to RayJoin query_exec."
+                "phase boundaries to RayJoin query_exec. Full polygon materialization remains "
+                "outside the overlay-seed benchmark contract."
             ),
         }
     workloads = {

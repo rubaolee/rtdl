@@ -137,7 +137,7 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
             case_id="spatial_rayjoin_embree_generic",
             app_id="spatial_rayjoin",
             app_name="Spatial RayJoin-style",
-            comparison_group="rayjoin_all_generic_summary",
+            comparison_group="rayjoin_all_backend_query_summary",
             backend="embree",
             command=_py(
                 f"{app}/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
@@ -147,20 +147,32 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
                 "embree",
                 "--no-rows",
             ),
+            notes=(
+                "Embree same-front-door route over PIP, LSI, and overlay-seed. Primary metric "
+                "is the summed backend workload elapsed time."
+            ),
         ),
         BenchmarkCase(
-            case_id="spatial_rayjoin_optix_generic",
+            case_id="spatial_rayjoin_optix_prepared_full_route",
             app_id="spatial_rayjoin",
             app_name="Spatial RayJoin-style",
-            comparison_group="rayjoin_all_generic_summary",
+            comparison_group="rayjoin_all_backend_query_summary",
             backend="optix",
             command=_py(
                 f"{app}/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
                 "--workload",
                 "all",
-                "--backend",
-                "optix",
+                "--execution-route",
+                "prepared_optix",
+                "--result-mode",
+                "count",
                 "--no-rows",
+            ),
+            primary_metric_path=("prepared_query_total_sec",),
+            notes=(
+                "Prepared OptiX route over PIP, LSI, and overlay-seed pair-dependency flags. "
+                "The native engine sees generic point/closed-shape, segment-pair, and shape-pair "
+                "prepared contracts; full polygon overlay materialization is outside this benchmark."
             ),
         ),
         BenchmarkCase(

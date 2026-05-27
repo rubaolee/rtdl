@@ -9,7 +9,14 @@ import unittest
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-APP = ROOT / "examples" / "rtdl_rayjoin_v2_spatial_join_app.py"
+APP = (
+    ROOT
+    / "examples"
+    / "v2_0"
+    / "research_benchmarks"
+    / "spatial_rayjoin"
+    / "rtdl_rayjoin_v2_spatial_join_app.py"
+)
 
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))

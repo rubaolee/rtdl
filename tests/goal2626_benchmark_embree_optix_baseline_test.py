@@ -85,6 +85,27 @@ class Goal2626BenchmarkEmbreeOptixBaselineTest(unittest.TestCase):
         self.assertEqual(("timing_ms", "query_median_ms"), optix.primary_metric_path)
         self.assertIn("host-indexed fallback", optix.notes)
 
+    def test_spatial_rayjoin_uses_prepared_optix_full_route(self) -> None:
+        sys.path.insert(0, str(ROOT))
+        from scripts import goal2626_benchmark_embree_optix_baseline as runner
+
+        cases = {
+            case.case_id: case
+            for case in runner.build_cases("quick", ROOT / "scratch" / "goal2626_test")
+        }
+        optix = cases["spatial_rayjoin_optix_prepared_full_route"]
+        embree = cases["spatial_rayjoin_embree_generic"]
+        assert optix.command is not None
+        assert embree.command is not None
+        self.assertEqual("rayjoin_all_backend_query_summary", optix.comparison_group)
+        self.assertEqual("rayjoin_all_backend_query_summary", embree.comparison_group)
+        self.assertIn("--execution-route", optix.command)
+        self.assertIn("prepared_optix", optix.command)
+        self.assertIn("--result-mode", optix.command)
+        self.assertIn("count", optix.command)
+        self.assertEqual(("prepared_query_total_sec",), optix.primary_metric_path)
+        self.assertIn("shape-pair", optix.notes)
+
     def test_ratios_only_for_same_app_and_comparison_group(self) -> None:
         sys.path.insert(0, str(ROOT))
         from scripts import goal2626_benchmark_embree_optix_baseline as runner
