@@ -65,7 +65,8 @@ Engine absolutely app-agnostic throughout.
 ```
 
 Triton owns generic post-traversal continuations such as segmented reductions,
-mask compaction, and grouped argmin.
+mask compaction, grouped argmin, bounded finalize, and the generic adapter
+front doors that route those operations from benchmark apps.
 Torch CUDA tensors may be used as a launch carrier for Triton kernels, but that
 does not make PyTorch the v2.5 partner. RTDL owns only the supported RTDL
 primitive call and its documented result contract.

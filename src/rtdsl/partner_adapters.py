@@ -11,6 +11,7 @@ from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE
+from .triton_partner_continuation import run_triton_partner_continuation
 
 _UINT32_MAX = 2**32 - 1
 _CUPY_COLUMNAR_PREDICATE_BATCH_KERNELS = {}
@@ -43,6 +44,27 @@ def _require_uint32_id(value: int, label: str) -> int:
 
 
 def _partner_module(partner: str):
+    if partner == "triton":
+        import torch
+
+        if not torch.cuda.is_available():
+            raise RuntimeError("Triton partner adapter requires torch CUDA tensors as the launch carrier")
+
+        return {
+            "name": "triton",
+            "module": torch,
+            "device": torch.device("cuda:0"),
+            "uint32": torch.uint32,
+            "int64": torch.int64,
+            "float64": torch.float64,
+            "float32": torch.float32,
+            "tensor": lambda values, dtype, device: torch.tensor(values, dtype=dtype, device=device),
+            "zeros": lambda shape, dtype, device: torch.zeros(shape, dtype=dtype, device=device),
+            "sync": torch.cuda.synchronize,
+            "to_host": lambda value: [int(item) for item in value.detach().cpu().tolist()],
+            "to_host_float": lambda value: [float(item) for item in value.detach().cpu().tolist()],
+            "slice": lambda value, count: value[: int(count)],
+        }
     if partner == "torch":
         import torch
 
@@ -135,7 +157,36 @@ def _partner_module(partner: str):
                 threshold,
             ),
         }
-    raise ValueError("partner must be 'torch' or 'cupy'")
+    raise ValueError("partner must be 'triton', 'torch', or 'cupy'")
+
+
+def _require_triton_float64(values, *, name: str):
+    dtype_name = str(getattr(values, "dtype", ""))
+    if "float64" not in dtype_name and "Double" not in dtype_name:
+        raise ValueError(f"{name} must be float64 for the v2.5 Triton f64 continuation")
+
+
+def _runtime_uses_torch_tensor_carrier(runtime: dict[str, object]) -> bool:
+    return runtime["name"] in ("triton", "torch")
+
+
+def _as_partner_column(runtime: dict[str, object], values):
+    module = runtime["module"]
+    if _runtime_uses_torch_tensor_carrier(runtime):
+        return module.as_tensor(values, device=runtime["device"])
+    return module.asarray(values)
+
+
+def _mask_to_partner_f64(mask, runtime: dict[str, object]):
+    if runtime["name"] == "cupy":
+        return mask.astype(runtime["module"].float64, copy=False)
+    return mask.to(runtime["module"].float64)
+
+
+def _triton_count_mask(mask, *, partner: str):
+    selected = partner_mask_indices(mask, partner=partner)
+    group_ids = selected.new_zeros((int(selected.numel()),))
+    return partner_group_count_by_key(group_ids, 1, partner=partner)[0]
 
 
 def partner_group_count_by_key(keys, group_count: int, *, partner: str = "torch"):
@@ -144,6 +195,12 @@ def partner_group_count_by_key(keys, group_count: int, *, partner: str = "torch"
     if group_count < 0:
         raise ValueError("group_count must be non-negative")
     runtime = _partner_module(partner)
+    if runtime["name"] == "triton":
+        result = run_triton_partner_continuation(
+            "segmented_count_i64",
+            {"group_ids": keys.to(runtime["int64"]), "group_count": group_count},
+        )
+        return result["outputs"]["counts"].to(runtime["uint32"])
     if runtime["name"] == "torch":
         torch = runtime["module"]
         if int(keys.numel()) == 0:
@@ -154,7 +211,7 @@ def partner_group_count_by_key(keys, group_count: int, *, partner: str = "torch"
         if int(keys.size) == 0:
             return cupy.zeros((group_count,), dtype=cupy.uint32)
         return cupy.bincount(keys.astype(cupy.int64, copy=False), minlength=group_count).astype(cupy.uint32, copy=False)
-    raise ValueError("partner must be 'torch' or 'cupy'")
+    raise ValueError("partner must be 'triton', 'torch', or 'cupy'")
 
 
 def partner_group_sum_by_key(keys, values, group_count: int, *, partner: str = "torch"):
@@ -163,6 +220,13 @@ def partner_group_sum_by_key(keys, values, group_count: int, *, partner: str = "
     if group_count < 0:
         raise ValueError("group_count must be non-negative")
     runtime = _partner_module(partner)
+    if runtime["name"] == "triton":
+        _require_triton_float64(values, name="values")
+        result = run_triton_partner_continuation(
+            "segmented_sum_f64",
+            {"group_ids": keys.to(runtime["int64"]), "values": values, "group_count": group_count},
+        )
+        return result["outputs"]["sums"]
     if runtime["name"] == "torch":
         torch = runtime["module"]
         out = torch.zeros((group_count,), dtype=values.dtype, device=values.device)
@@ -177,7 +241,7 @@ def partner_group_sum_by_key(keys, values, group_count: int, *, partner: str = "
             return out
         cupy.add.at(out, keys.astype(cupy.int64, copy=False), values)
         return out
-    raise ValueError("partner must be 'torch' or 'cupy'")
+    raise ValueError("partner must be 'triton', 'torch', or 'cupy'")
 
 
 def partner_group_max_by_key(keys, values, group_count: int, *, partner: str = "torch", initial=0):
@@ -186,6 +250,16 @@ def partner_group_max_by_key(keys, values, group_count: int, *, partner: str = "
     if group_count < 0:
         raise ValueError("group_count must be non-negative")
     runtime = _partner_module(partner)
+    if runtime["name"] == "triton":
+        _require_triton_float64(values, name="values")
+        result = run_triton_partner_continuation(
+            "segmented_max_f64",
+            {"group_ids": keys.to(runtime["int64"]), "values": values, "group_count": group_count},
+        )
+        dense = result["outputs"]["dense_maxes"]
+        counts = result["outputs"]["present_counts"]
+        fill = runtime["module"].full_like(dense, float(initial))
+        return runtime["module"].where(counts > 0, dense, fill)
     if runtime["name"] == "torch":
         torch = runtime["module"]
         out = torch.full((group_count,), initial, dtype=values.dtype, device=values.device)
@@ -199,7 +273,7 @@ def partner_group_max_by_key(keys, values, group_count: int, *, partner: str = "
             return out
         cupy.maximum.at(out, keys.astype(cupy.int64, copy=False), values)
         return out
-    raise ValueError("partner must be 'torch' or 'cupy'")
+    raise ValueError("partner must be 'triton', 'torch', or 'cupy'")
 
 
 def partner_group_min_by_key(keys, values, group_count: int, *, partner: str = "torch", initial=0):
@@ -208,6 +282,16 @@ def partner_group_min_by_key(keys, values, group_count: int, *, partner: str = "
     if group_count < 0:
         raise ValueError("group_count must be non-negative")
     runtime = _partner_module(partner)
+    if runtime["name"] == "triton":
+        _require_triton_float64(values, name="values")
+        result = run_triton_partner_continuation(
+            "segmented_min_f64",
+            {"group_ids": keys.to(runtime["int64"]), "values": values, "group_count": group_count},
+        )
+        dense = result["outputs"]["dense_mins"]
+        counts = result["outputs"]["present_counts"]
+        fill = runtime["module"].full_like(dense, float(initial))
+        return runtime["module"].where(counts > 0, dense, fill)
     if runtime["name"] == "torch":
         torch = runtime["module"]
         out = torch.full((group_count,), initial, dtype=values.dtype, device=values.device)
@@ -221,7 +305,7 @@ def partner_group_min_by_key(keys, values, group_count: int, *, partner: str = "
             return out
         cupy.minimum.at(out, keys.astype(cupy.int64, copy=False), values)
         return out
-    raise ValueError("partner must be 'torch' or 'cupy'")
+    raise ValueError("partner must be 'triton', 'torch', or 'cupy'")
 
 
 def partner_metric_table_reduce_by_key(
@@ -235,7 +319,7 @@ def partner_metric_table_reduce_by_key(
 ):
     """Reduce generic metric/value rows into requested output metric keys."""
     runtime = _partner_module(partner)
-    if runtime["name"] == "torch":
+    if runtime["name"] in ("triton", "torch"):
         torch = runtime["module"]
         if int(metric_keys.numel()) != int(values.numel()):
             raise ValueError("metric_keys and values must have the same length")
@@ -284,7 +368,7 @@ def partner_metric_table_reduce_by_key(
         if reduce == "min":
             return partner_group_min_by_key(group_positions, values, group_count, partner=partner, initial=initial)
         raise ValueError("reduce must be 'sum', 'max', or 'min'")
-    raise ValueError("partner must be 'torch' or 'cupy'")
+    raise ValueError("partner must be 'triton', 'torch', or 'cupy'")
 
 
 def partner_metric_table_reduce_repeated_pattern(
@@ -315,7 +399,7 @@ def partner_metric_table_reduce_repeated_pattern(
             return module.full_like(output_metric_keys, initial, dtype=values.dtype)
         if runtime["name"] == "cupy" and not isinstance(values, module.ndarray):
             return module.asarray(values * repeat_count if reduce == "sum" else values)
-        if runtime["name"] == "torch" and not hasattr(values, "device"):
+        if runtime["name"] in ("triton", "torch") and not hasattr(values, "device"):
             base = values * repeat_count if reduce == "sum" else values
             return module.as_tensor(base, device=runtime["device"])
         if reduce == "sum":
@@ -323,10 +407,10 @@ def partner_metric_table_reduce_repeated_pattern(
         return values
     if repeat_count == 0:
         if reduce == "sum":
-            if runtime["name"] == "torch":
+            if runtime["name"] in ("triton", "torch"):
                 return module.zeros_like(output_metric_keys, dtype=values.dtype)
             return module.zeros_like(output_metric_keys, dtype=values.dtype)
-        if runtime["name"] == "torch":
+        if runtime["name"] in ("triton", "torch"):
             return module.full_like(output_metric_keys, initial, dtype=values.dtype)
         return module.full_like(output_metric_keys, initial, dtype=values.dtype)
     reduced = partner_metric_table_reduce_by_key(
@@ -358,7 +442,7 @@ def metric_table_payload_to_partner_columns(
     metric_len = len(source["metric_keys"])
     if len(source["values"]) != metric_len:
         raise ValueError("metric_keys and values must have the same length")
-    if runtime["name"] == "torch":
+    if _runtime_uses_torch_tensor_carrier(runtime):
         columns = {
             "metric_keys": module.as_tensor(source["metric_keys"], device=runtime["device"]),
             "values": module.as_tensor(source["values"], device=runtime["device"]),
@@ -416,6 +500,11 @@ def partner_metric_table_reduce_batch(metric_tables, *, partner: str = "torch") 
 def aabb_pair_payload_to_partner_columns(payload, *, partner: str = "torch") -> dict[str, object]:
     """Convert caller-supplied 2D AABB pair payload arrays into partner columns."""
     runtime = _partner_module(partner)
+    if runtime["name"] == "triton":
+        raise ValueError(
+            "aabb pair payload columns are not a v2.5 Triton generic front door; "
+            "decompose through reviewed generic continuation operations first"
+        )
     module = runtime["module"]
     source = dict(payload)
     row_count = None
@@ -708,6 +797,14 @@ def _cupy_aabb_pair_overlap_summary_2d(cupy, pair_columns: dict[str, object]) ->
 def partner_mask_indices(mask, *, partner: str = "torch"):
     """Return partner-owned indices where mask is true/non-zero."""
     runtime = _partner_module(partner)
+    if runtime["name"] == "triton":
+        torch = runtime["module"]
+        values = torch.arange(int(mask.numel()), dtype=torch.int64, device=mask.device)
+        result = run_triton_partner_continuation(
+            "compact_mask_i64",
+            {"values": values, "mask": mask.to(torch.bool)},
+        )
+        return result["outputs"]["original_indices"]
     if runtime["name"] == "torch":
         torch = runtime["module"]
         return torch.nonzero(mask.to(torch.bool), as_tuple=False).reshape(-1).to(torch.int64)
@@ -720,9 +817,9 @@ def partner_mask_indices(mask, *, partner: str = "torch"):
 def partner_take_columns_by_indices(columns: dict[str, object], indices, *, partner: str = "torch"):
     """Take the same partner-owned row indices from each column."""
     runtime = _partner_module(partner)
-    if runtime["name"] in ("torch", "cupy"):
+    if runtime["name"] in ("triton", "torch", "cupy"):
         return {name: column[indices] for name, column in columns.items()}
-    raise ValueError("partner must be 'torch' or 'cupy'")
+    raise ValueError("partner must be 'triton', 'torch', or 'cupy'")
 
 
 def partner_compact_columns_by_mask(columns: dict[str, object], mask, *, partner: str = "torch"):
@@ -734,8 +831,8 @@ def partner_compact_columns_by_mask(columns: dict[str, object], mask, *, partner
 def partner_page_columns(columns: dict[str, object], *, offset: int = 0, limit: int | None = None, partner: str = "torch"):
     """Return a bounded page of partner-owned columns without Python row materialization."""
     runtime = _partner_module(partner)
-    if runtime["name"] not in ("torch", "cupy"):
-        raise ValueError("partner must be 'torch' or 'cupy'")
+    if runtime["name"] not in ("triton", "torch", "cupy"):
+        raise ValueError("partner must be 'triton', 'torch', or 'cupy'")
     offset = int(offset)
     if offset < 0:
         raise ValueError("offset must be non-negative")
@@ -826,10 +923,7 @@ def columnar_payload_to_partner_columns(
             row_count = int(length)
         elif int(length) != row_count:
             raise ValueError("all columnar payload columns must have the same length")
-        if runtime["name"] == "torch":
-            columns[name] = module.as_tensor(values, device=runtime["device"])
-        else:
-            columns[name] = module.asarray(values)
+        columns[name] = _as_partner_column(runtime, values)
     columns["_metadata"] = {
         "adapter": "columnar_payload_to_partner_columns",
         "partner": runtime["name"],
@@ -851,7 +945,7 @@ def partner_columnar_predicate_mask(columns: dict[str, object], predicates, *, p
     runtime = _partner_module(partner)
     row_count = _column_length(columns, next(name for name in columns if not name.startswith("_")))
     module = runtime["module"]
-    if runtime["name"] == "torch":
+    if _runtime_uses_torch_tensor_carrier(runtime):
         mask = module.ones((row_count,), dtype=module.bool, device=runtime["device"])
     else:
         mask = module.ones((row_count,), dtype=module.bool_)
@@ -891,6 +985,8 @@ def partner_columnar_predicate_reduce(
     mask = partner_columnar_predicate_mask(columns, predicates, partner=partner)
     if group_field is None:
         if reduce == "count":
+            if runtime["name"] == "triton":
+                return _triton_count_mask(mask, partner=partner)
             return partner_group_sum_by_key(
                 runtime["zeros"]((int(_column_length({"mask": mask}, "mask")),), runtime["uint32"], runtime["device"]),
                 mask.astype(runtime["uint32"], copy=False) if runtime["name"] == "cupy" else mask.to(runtime["uint32"]),
@@ -908,11 +1004,17 @@ def partner_columnar_predicate_reduce(
             group_count = int(runtime["to_host"](columns[group_field].max().reshape(1))[0]) + 1
     keys = columns[group_field]
     if reduce == "count":
+        if runtime["name"] == "triton":
+            selected = partner_mask_indices(mask, partner=partner)
+            return partner_group_count_by_key(keys[selected].to(runtime["int64"]), int(group_count), partner=partner)
         values = mask.astype(runtime["uint32"], copy=False) if runtime["name"] == "cupy" else mask.to(runtime["uint32"])
         return partner_group_sum_by_key(keys, values, int(group_count), partner=partner)
     if reduce == "sum":
         if value_field is None:
             raise ValueError("sum reduce requires value_field")
+        if runtime["name"] == "triton":
+            values = columns[value_field].to(runtime["float64"]) * _mask_to_partner_f64(mask, runtime)
+            return partner_group_sum_by_key(keys, values, int(group_count), partner=partner)
         values = columns[value_field] * (
             mask.astype(columns[value_field].dtype, copy=False)
             if runtime["name"] == "cupy"
@@ -969,6 +1071,9 @@ def partner_columnar_predicate_reduce_batch(
         mask = mask_for(predicates)
         if group_field is None:
             if reduce == "count":
+                if runtime["name"] == "triton":
+                    results[name] = _triton_count_mask(mask, partner=partner)
+                    continue
                 one_key = runtime["zeros"]((int(_column_length({"mask": mask}, "mask")),), runtime["uint32"], runtime["device"])
                 values = mask.astype(runtime["uint32"], copy=False) if runtime["name"] == "cupy" else mask.to(runtime["uint32"])
                 results[name] = partner_group_sum_by_key(one_key, values, 1, partner=partner)[0]
@@ -982,6 +1087,10 @@ def partner_columnar_predicate_reduce_batch(
         group_count = group_count_for(str(group_field), summary.get("group_count"))
         keys = columns[str(group_field)]
         if reduce == "count":
+            if runtime["name"] == "triton":
+                selected = partner_mask_indices(mask, partner=partner)
+                results[name] = partner_group_count_by_key(keys[selected].to(runtime["int64"]), group_count, partner=partner)
+                continue
             values = mask.astype(runtime["uint32"], copy=False) if runtime["name"] == "cupy" else mask.to(runtime["uint32"])
             results[name] = partner_group_sum_by_key(keys, values, group_count, partner=partner)
             continue
@@ -989,6 +1098,10 @@ def partner_columnar_predicate_reduce_batch(
             if value_field is None:
                 raise ValueError("sum reduce requires value_field")
             value_column = columns[str(value_field)]
+            if runtime["name"] == "triton":
+                values = value_column.to(runtime["float64"]) * _mask_to_partner_f64(mask, runtime)
+                results[name] = partner_group_sum_by_key(keys, values, group_count, partner=partner)
+                continue
             values = value_column * (
                 mask.astype(value_column.dtype, copy=False)
                 if runtime["name"] == "cupy"
@@ -1214,6 +1327,10 @@ def _cupy_columnar_predicate_reduce_batch_fused(cupy, columns: dict[str, object]
 def partner_group_any_by_key(keys, flags, group_count: int, *, partner: str = "torch"):
     """Reduce binary/int flags to one any-hit flag per integer key."""
     runtime = _partner_module(partner)
+    if runtime["name"] == "triton":
+        selected = partner_mask_indices(flags != 0, partner=partner)
+        counts = partner_group_count_by_key(keys[selected].to(runtime["int64"]), group_count, partner=partner)
+        return (counts > 0).to(runtime["uint32"])
     if runtime["name"] == "torch":
         torch = runtime["module"]
         out = torch.zeros((int(group_count),), dtype=torch.int64, device=flags.device)
@@ -1225,7 +1342,7 @@ def partner_group_any_by_key(keys, flags, group_count: int, *, partner: str = "t
         cupy = runtime["module"]
         sums = partner_group_sum_by_key(keys, flags, group_count, partner=partner)
         return (sums > 0).astype(cupy.uint32, copy=False)
-    raise ValueError("partner must be 'torch' or 'cupy'")
+    raise ValueError("partner must be 'triton', 'torch', or 'cupy'")
 
 
 def partner_unique_pair_keys(left_keys, right_keys, *, partner: str = "torch"):
@@ -1826,7 +1943,7 @@ def radius_graph_components_2d_partner_columns(
 
 
 def _partner_float_column_to_host(column, *, partner: str) -> list[float]:
-    if partner == "torch":
+    if partner in ("triton", "torch"):
         return [float(item) for item in column.detach().cpu().tolist()]
     if partner == "cupy":
         import cupy

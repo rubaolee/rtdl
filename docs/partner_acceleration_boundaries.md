@@ -231,3 +231,11 @@ preview; see
 At this point all v2.5 generic continuation operations have local Triton
 preview implementations, but CUDA pod evidence and app wiring are still
 required before completion or performance claims.
+
+Goal2681 adds the first generic adapter front door for `partner="triton"`; see
+`docs/reports/goal2681_v2_5_triton_partner_adapter_front_door_2026-05-27.md`.
+Generic grouped reductions, mask compaction, metric-table reductions, and
+columnar predicate reductions can now route through the Triton continuation
+dispatcher instead of requiring apps to call low-level Triton helpers directly.
+This does not convert old app-math adapters into Triton partners; they must be
+decomposed into reviewed generic operations before joining the v2.5 path.
