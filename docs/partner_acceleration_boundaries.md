@@ -142,3 +142,7 @@ The short boundary is:
 - A friendlier partner path is not a promoted performance path if it
   significantly regresses the current same-contract OptiX-vs-Embree benchmark
   evidence.
+
+The first implemented v2.4 slice is the RTDL-specific handoff protocol in
+`src/rtdsl/partner_protocol.py`; see
+`docs/reports/goal2658_v2_4_partner_protocol_foundation_2026-05-27.md`.

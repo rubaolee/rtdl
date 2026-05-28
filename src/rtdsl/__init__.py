@@ -27,6 +27,27 @@ from .partner import prepare_direct_device_pointer_handoff
 from .partner import run_ray_triangle_any_hit_2d as run_partner_ray_triangle_any_hit_2d
 from .partner import validate_v2_0_partner_protocol_contract
 from .partner import v2_0_partner_protocol_contract
+from .partner_protocol import RtdlBenchmarkBasisRow
+from .partner_protocol import RtdlBufferDescriptor
+from .partner_protocol import RtdlPreparedSessionDescriptor
+from .partner_protocol import RtdlV24PartnerProtocolContract
+from .partner_protocol import V2_4_BENCHMARK_PERFORMANCE_BASIS
+from .partner_protocol import V2_4_DEFAULT_PARTNER_DIRECTION
+from .partner_protocol import V2_4_FORBIDDEN_NATIVE_APP_TOKENS
+from .partner_protocol import V2_4_MEMORY_MANAGER_BOUNDARY
+from .partner_protocol import V2_4_NATIVE_ENGINE_BOUNDARY
+from .partner_protocol import V2_4_PARTNER_PROTOCOL_VERSION
+from .partner_protocol import V2_4_PERFORMANCE_BASIS_HARDWARE
+from .partner_protocol import V2_4_PHASES
+from .partner_protocol import V2_4_PRIMARY_BENCHMARK_APP_COUNT
+from .partner_protocol import V2_4_PRIMARY_COMPARISON_ROW_COUNT
+from .partner_protocol import V2_4_PROTOCOL_SCOPE
+from .partner_protocol import V2_4_STREAM_POLICY
+from .partner_protocol import buffer_descriptor_from_tensor_descriptor
+from .partner_protocol import low_margin_benchmark_rows
+from .partner_protocol import validate_phase_timing_record
+from .partner_protocol import validate_v2_4_partner_protocol_contract
+from .partner_protocol import v2_4_partner_protocol_contract
 from .api import polygon_pair_overlap_area_rows
 from .api import polygon_set_jaccard
 from .api import ray_triangle_any_hit
@@ -1341,6 +1362,27 @@ __all__ = [
     "run_partner_ray_triangle_any_hit_2d",
     "validate_v2_0_partner_protocol_contract",
     "v2_0_partner_protocol_contract",
+    "RtdlBenchmarkBasisRow",
+    "RtdlBufferDescriptor",
+    "RtdlPreparedSessionDescriptor",
+    "RtdlV24PartnerProtocolContract",
+    "V2_4_BENCHMARK_PERFORMANCE_BASIS",
+    "V2_4_DEFAULT_PARTNER_DIRECTION",
+    "V2_4_FORBIDDEN_NATIVE_APP_TOKENS",
+    "V2_4_MEMORY_MANAGER_BOUNDARY",
+    "V2_4_NATIVE_ENGINE_BOUNDARY",
+    "V2_4_PARTNER_PROTOCOL_VERSION",
+    "V2_4_PERFORMANCE_BASIS_HARDWARE",
+    "V2_4_PHASES",
+    "V2_4_PRIMARY_BENCHMARK_APP_COUNT",
+    "V2_4_PRIMARY_COMPARISON_ROW_COUNT",
+    "V2_4_PROTOCOL_SCOPE",
+    "V2_4_STREAM_POLICY",
+    "buffer_descriptor_from_tensor_descriptor",
+    "low_margin_benchmark_rows",
+    "validate_phase_timing_record",
+    "validate_v2_4_partner_protocol_contract",
+    "v2_4_partner_protocol_contract",
     "overlay_compose",
     "overlay_compose_hiprt",
     "oracle_version",

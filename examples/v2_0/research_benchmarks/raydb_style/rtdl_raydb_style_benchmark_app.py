@@ -30,6 +30,9 @@ RAYDB_REFERENCE_COMMIT = "a610c00d7334d8907435cc0a124f9ca8392ee456"
 GENERIC_RAY_TRIANGLE_GROUPED_REDUCTION_3D_SYMBOL = (
     "generic_ray_triangle_primitive_grouped_i64_reduction_3d"
 )
+GENERIC_RAY_TRIANGLE_GROUPED_REDUCTION_3D_PREPARED_PRIMITIVE = (
+    "ray_triangle_grouped_i64_reduction_3d"
+)
 BACKENDS = (
     "cpu_python_reference",
     "embree",
@@ -812,6 +815,119 @@ def _make_paper_rt_partner_ray_columns(
     raise ValueError("paper RT partner ray columns currently support partner='cupy' or partner='torch'")
 
 
+def describe_paper_rt_v2_4_prepared_session(
+    workload: dict[str, Any],
+    *,
+    backend: str,
+    mode: str,
+) -> dict[str, Any]:
+    """Describe the RayDB-shaped prepared path with generic v2.4 descriptors.
+
+    The descriptor is intentionally protocol-only. It records the generic
+    ray/triangle grouped-reduction buffers that RTDL sees, while RayDB predicate
+    encoding and result interpretation stay app-owned.
+    """
+
+    normalized_backend = str(backend).strip().lower()
+    if normalized_backend not in {"embree", "optix"}:
+        raise ValueError("v2.4 RayDB prepared-session descriptor supports embree or optix")
+    native_symbol = (
+        "rtdl_embree_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction"
+        if normalized_backend == "embree"
+        else "rtdl_optix_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction"
+    )
+    session = rt.RtdlPreparedSessionDescriptor(
+        session_id=f"generic_ray_triangle_grouped_i64_reduction_3d_{normalized_backend}_{mode}",
+        backend=normalized_backend,
+        primitive=GENERIC_RAY_TRIANGLE_GROUPED_REDUCTION_3D_PREPARED_PRIMITIVE,
+        input_buffers=(
+            _v2_4_packed_buffer_descriptor("rays", workload["rays"]),
+            _v2_4_packed_buffer_descriptor("triangles", workload["triangles"]),
+            _v2_4_array_buffer_descriptor("primitive_group_ids", workload["primitive_group_ids"], fallback_dtype="uint32"),
+            _v2_4_array_buffer_descriptor("primitive_values", workload["primitive_values"], fallback_dtype="uint64"),
+        ),
+        reusable_scene=True,
+        reusable_query_buffers=True,
+        reusable_output_buffers=False,
+        phase_contract="prepared_query",
+        native_symbols=(native_symbol,),
+    )
+    return {
+        **session.to_metadata(),
+        "v2_4_protocol_version": rt.V2_4_PARTNER_PROTOCOL_VERSION,
+        "performance_basis_hardware": rt.V2_4_PERFORMANCE_BASIS_HARDWARE,
+        "same_phase_contract_as_basis_required": True,
+        "protocol_overhead_audit_required": False,
+        "descriptor_only": True,
+        "app_owned_lowering": (
+            "RayDB predicate/group encoding remains Python app code. RTDL sees only "
+            "generic rays, triangles, primitive group ids, primitive values, and a reduction."
+        ),
+    }
+
+
+def _v2_4_packed_buffer_descriptor(name: str, packed: Any) -> rt.RtdlBufferDescriptor:
+    owner = getattr(packed, "owner", None)
+    count = _packed_or_sequence_count(packed)
+    dimension = int(getattr(packed, "dimension", 3))
+    dtype = f"rtdl_packed_{name.rstrip('s')}_{dimension}d"
+    return rt.RtdlBufferDescriptor(
+        name=name,
+        dtype=dtype,
+        shape=(count,),
+        device_type="cpu",
+        data_ptr=_array_like_data_ptr(owner),
+        strides_bytes=_array_like_strides(owner),
+        access_mode="read",
+        source_protocol="rtdl_packed_host_buffer",
+        lifetime="session_retained",
+        capacity_elements=count,
+        owner=owner,
+    )
+
+
+def _v2_4_array_buffer_descriptor(
+    name: str,
+    values: Any,
+    *,
+    fallback_dtype: str,
+) -> rt.RtdlBufferDescriptor:
+    shape = getattr(values, "shape", None)
+    if shape is None:
+        shape = (len(values),)
+    normalized_shape = tuple(int(dim) for dim in shape)
+    dtype = str(getattr(values, "dtype", fallback_dtype))
+    return rt.RtdlBufferDescriptor(
+        name=name,
+        dtype=dtype,
+        shape=normalized_shape,
+        device_type="cpu",
+        data_ptr=_array_like_data_ptr(values),
+        strides_bytes=_array_like_strides(values),
+        access_mode="read",
+        source_protocol="numpy_or_python_host",
+        lifetime="session_retained",
+        capacity_elements=int(math.prod(normalized_shape)) if normalized_shape else 1,
+        owner=values,
+    )
+
+
+def _array_like_data_ptr(values: Any) -> int | None:
+    interface = getattr(values, "__array_interface__", None)
+    if isinstance(interface, dict):
+        data = interface.get("data")
+        if isinstance(data, tuple) and data:
+            return int(data[0])
+    return None
+
+
+def _array_like_strides(values: Any) -> tuple[int, ...] | None:
+    strides = getattr(values, "strides", None)
+    if strides is None:
+        return None
+    return tuple(int(stride) for stride in strides)
+
+
 def _paper_rows_from_generic_grouped_rows(
     generic_rows: tuple[dict[str, int], ...],
     *,
@@ -994,6 +1110,11 @@ def _run_paper_rt_native_result_mode(
             "raydb_reference_branch": RAYDB_REFERENCE_BRANCH,
             "raydb_reference_commit": RAYDB_REFERENCE_COMMIT,
             "primitive_contract_required_for_native": GENERIC_RAY_TRIANGLE_GROUPED_REDUCTION_3D_SYMBOL,
+            "v2_4_prepared_session": describe_paper_rt_v2_4_prepared_session(
+                workload,
+                backend=backend,
+                mode=mode,
+            ),
             "native_symbol": primitive_result.get("native_symbol"),
             "native_rt_core_lowering_ready": True,
             "rt_core_accelerated": bool(primitive_result.get("rt_core_accelerated", False)),

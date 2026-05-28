@@ -1,0 +1,408 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from dataclasses import field
+from math import prod
+from typing import Any
+
+from .partner import ACCESS_MODES
+from .partner import DEVICE_TYPES
+from .partner import RtdlTensorDescriptor
+
+
+V2_4_PARTNER_PROTOCOL_VERSION = "rtdl.partner.v2.4"
+V2_4_PROTOCOL_SCOPE = "rtdl_primitive_handoff_only"
+V2_4_STREAM_POLICY = "stream_handle_field_present_but_reserved_zero"
+V2_4_DEFAULT_PARTNER_DIRECTION = "triton_first_with_numba_fallback"
+V2_4_NATIVE_ENGINE_BOUNDARY = "app_agnostic_native_engine"
+V2_4_MEMORY_MANAGER_BOUNDARY = "not_a_general_purpose_memory_manager"
+V2_4_PERFORMANCE_BASIS_HARDWARE = "NVIDIA RTX A5000 pod evidence"
+V2_4_PRIMARY_BENCHMARK_APP_COUNT = 10
+V2_4_PRIMARY_COMPARISON_ROW_COUNT = 11
+V2_4_PROMOTED_PATH_TOLERANCE_RATIO = 0.10
+V2_4_OPT_IN_TOLERANCE_RATIO = 0.20
+V2_4_STATUS_PROTOCOL_ONLY = "protocol_descriptor_only"
+
+V2_4_PHASES = (
+    "setup",
+    "scene_build",
+    "transfer",
+    "query_preparation",
+    "rt_traversal",
+    "partner_continuation",
+    "materialization",
+    "download",
+)
+
+V2_4_FORBIDDEN_NATIVE_APP_TOKENS = (
+    "barnes",
+    "dbscan",
+    "raydb",
+    "contact",
+    "collision",
+    "robot",
+    "librts",
+    "rtnn",
+    "hausdorff",
+    "triangle_counting",
+)
+
+
+@dataclass(frozen=True)
+class RtdlBenchmarkBasisRow:
+    app: str
+    contract: str
+    optix_vs_embree_speedup: float
+    hardware: str = V2_4_PERFORMANCE_BASIS_HARDWARE
+    phase_contract: str = "accepted_exact_subpath"
+
+    @property
+    def requires_protocol_overhead_audit(self) -> bool:
+        return self.optix_vs_embree_speedup < 6.0
+
+    def to_metadata(self) -> dict[str, object]:
+        return {
+            "app": self.app,
+            "contract": self.contract,
+            "optix_vs_embree_speedup": float(self.optix_vs_embree_speedup),
+            "hardware": self.hardware,
+            "phase_contract": self.phase_contract,
+            "requires_protocol_overhead_audit": self.requires_protocol_overhead_audit,
+        }
+
+
+V2_4_BENCHMARK_PERFORMANCE_BASIS: tuple[RtdlBenchmarkBasisRow, ...] = (
+    RtdlBenchmarkBasisRow("Hausdorff / X-HD-style", "prepared fixed-radius threshold", 3.29),
+    RtdlBenchmarkBasisRow("Spatial RayJoin-style", "prepared spatial relation summary", 38.36),
+    RtdlBenchmarkBasisRow("RT-DBSCAN-style", "fixed-radius rows plus continuation", 12.71),
+    RtdlBenchmarkBasisRow("Robot collision", "prepared collision flags", 5.29),
+    RtdlBenchmarkBasisRow("RayDB-style grouped aggregate", "prepared grouped count", 27.67),
+    RtdlBenchmarkBasisRow("RayDB-style grouped aggregate", "prepared grouped sum", 104.00),
+    RtdlBenchmarkBasisRow("Barnes-Hut / RT-BarnesHut-style", "node coverage threshold", 4.55),
+    RtdlBenchmarkBasisRow("LibRTS-style spatial index", "AABB index count-only", 29.95),
+    RtdlBenchmarkBasisRow("RTNN neighbor search", "prepared 3-D ranked summary", 172.14),
+    RtdlBenchmarkBasisRow("Triangle counting", "RT-Graph-style RT-2A1 summary", 107.16),
+    RtdlBenchmarkBasisRow("Bounded contact witness / contact-manifold", "bounded witness rows", 26.29),
+)
+
+
+@dataclass(frozen=True)
+class RtdlBufferDescriptor:
+    """RTDL primitive handoff descriptor.
+
+    This descriptor is deliberately narrower than a memory manager. It records
+    enough typed buffer metadata for RTDL primitive preparation and phase
+    accounting, while keeping ownership, allocation policy, and arbitrary
+    partner program execution outside RTDL.
+    """
+
+    name: str
+    dtype: str
+    shape: tuple[int, ...]
+    device_type: str
+    device_id: int = 0
+    data_ptr: int | None = None
+    strides_bytes: tuple[int, ...] | None = None
+    byte_offset: int = 0
+    access_mode: str = "read"
+    source_protocol: str = "python"
+    lifetime: str = "caller_retained"
+    mutability: str = "immutable"
+    stream_handle: int = 0
+    alignment_bytes: int = 1
+    capacity_elements: int | None = None
+    owner: Any = field(default=None, repr=False, compare=False)
+
+    def __post_init__(self) -> None:
+        if not str(self.name):
+            raise ValueError("buffer descriptor requires a non-empty name")
+        if not str(self.dtype):
+            raise ValueError("buffer descriptor requires a dtype")
+        _validate_device(self.device_type, self.device_id)
+        _validate_access_mode(self.access_mode)
+        shape = tuple(int(dim) for dim in self.shape)
+        if any(dim < 0 for dim in shape):
+            raise ValueError("buffer descriptor shape dimensions must be non-negative")
+        if self.strides_bytes is not None and len(self.strides_bytes) != len(shape):
+            raise ValueError("buffer descriptor strides must match shape rank")
+        if int(self.byte_offset) < 0:
+            raise ValueError("buffer descriptor byte_offset must be non-negative")
+        if int(self.stream_handle) != 0:
+            raise ValueError("v2.4 stream handles are recorded but reserved; expected 0")
+        if int(self.alignment_bytes) <= 0:
+            raise ValueError("buffer descriptor alignment must be positive")
+        if self.capacity_elements is not None and int(self.capacity_elements) < _element_count(shape):
+            raise ValueError("buffer descriptor capacity_elements cannot be smaller than shape element count")
+        if self.mutability not in {"immutable", "mutable"}:
+            raise ValueError("buffer descriptor mutability must be immutable or mutable")
+        if self.lifetime not in {"caller_retained", "session_retained", "borrowed"}:
+            raise ValueError("buffer descriptor lifetime must be caller_retained, session_retained, or borrowed")
+        object.__setattr__(self, "shape", shape)
+        if self.strides_bytes is not None:
+            object.__setattr__(self, "strides_bytes", tuple(int(stride) for stride in self.strides_bytes))
+        if self.capacity_elements is not None:
+            object.__setattr__(self, "capacity_elements", int(self.capacity_elements))
+
+    @property
+    def element_count(self) -> int:
+        return _element_count(self.shape)
+
+    @property
+    def effective_capacity_elements(self) -> int:
+        return self.element_count if self.capacity_elements is None else int(self.capacity_elements)
+
+    @property
+    def is_cuda(self) -> bool:
+        return self.device_type == "cuda"
+
+    def to_metadata(self) -> dict[str, object]:
+        return {
+            "name": self.name,
+            "dtype": self.dtype,
+            "shape": self.shape,
+            "device": f"{self.device_type}:{self.device_id}",
+            "data_ptr_observed": self.data_ptr is not None and int(self.data_ptr) > 0,
+            "strides_bytes": self.strides_bytes,
+            "byte_offset": int(self.byte_offset),
+            "access_mode": self.access_mode,
+            "source_protocol": self.source_protocol,
+            "lifetime": self.lifetime,
+            "mutability": self.mutability,
+            "stream_handle": int(self.stream_handle),
+            "alignment_bytes": int(self.alignment_bytes),
+            "element_count": self.element_count,
+            "capacity_elements": self.effective_capacity_elements,
+            "scope": V2_4_PROTOCOL_SCOPE,
+            "memory_manager_boundary": V2_4_MEMORY_MANAGER_BOUNDARY,
+        }
+
+
+@dataclass(frozen=True)
+class RtdlPreparedSessionDescriptor:
+    session_id: str
+    backend: str
+    primitive: str
+    input_buffers: tuple[RtdlBufferDescriptor, ...]
+    output_buffers: tuple[RtdlBufferDescriptor, ...] = ()
+    reusable_scene: bool = False
+    reusable_query_buffers: bool = False
+    reusable_output_buffers: bool = False
+    phase_contract: str = "prepared_query"
+    native_symbols: tuple[str, ...] = ()
+    status: str = V2_4_STATUS_PROTOCOL_ONLY
+
+    def __post_init__(self) -> None:
+        if not str(self.session_id):
+            raise ValueError("prepared session requires a non-empty session_id")
+        normalized_backend = str(self.backend).strip().lower()
+        if normalized_backend not in {"cpu", "embree", "optix"}:
+            raise ValueError("prepared session backend must be cpu, embree, or optix")
+        _validate_no_app_native_vocab(self.primitive, label="primitive")
+        for symbol in self.native_symbols:
+            _validate_no_app_native_vocab(symbol, label="native symbol")
+        _validate_unique_buffer_names(self.input_buffers, self.output_buffers)
+        if self.status != V2_4_STATUS_PROTOCOL_ONLY:
+            raise ValueError("v2.4 prepared session descriptors are protocol-only until implementation evidence exists")
+        object.__setattr__(self, "backend", normalized_backend)
+        object.__setattr__(self, "native_symbols", tuple(str(symbol) for symbol in self.native_symbols))
+
+    def to_metadata(self) -> dict[str, object]:
+        return {
+            "session_id": self.session_id,
+            "backend": self.backend,
+            "primitive": self.primitive,
+            "input_buffers": tuple(buffer.to_metadata() for buffer in self.input_buffers),
+            "output_buffers": tuple(buffer.to_metadata() for buffer in self.output_buffers),
+            "reusable_scene": bool(self.reusable_scene),
+            "reusable_query_buffers": bool(self.reusable_query_buffers),
+            "reusable_output_buffers": bool(self.reusable_output_buffers),
+            "phase_contract": self.phase_contract,
+            "native_symbols": self.native_symbols,
+            "status": self.status,
+            "requires_phase_timing": True,
+            "native_engine_boundary": V2_4_NATIVE_ENGINE_BOUNDARY,
+            "app_specific_native_vocab_allowed": False,
+        }
+
+
+@dataclass(frozen=True)
+class RtdlV24PartnerProtocolContract:
+    version: str = V2_4_PARTNER_PROTOCOL_VERSION
+    scope: str = V2_4_PROTOCOL_SCOPE
+    native_engine_boundary: str = V2_4_NATIVE_ENGINE_BOUNDARY
+    memory_manager_boundary: str = V2_4_MEMORY_MANAGER_BOUNDARY
+    stream_policy: str = V2_4_STREAM_POLICY
+    default_partner_direction: str = V2_4_DEFAULT_PARTNER_DIRECTION
+    benchmark_app_count: int = V2_4_PRIMARY_BENCHMARK_APP_COUNT
+    primary_comparison_row_count: int = V2_4_PRIMARY_COMPARISON_ROW_COUNT
+    promoted_path_tolerance_ratio: float = V2_4_PROMOTED_PATH_TOLERANCE_RATIO
+    opt_in_tolerance_ratio: float = V2_4_OPT_IN_TOLERANCE_RATIO
+    phases: tuple[str, ...] = V2_4_PHASES
+    benchmark_basis: tuple[RtdlBenchmarkBasisRow, ...] = V2_4_BENCHMARK_PERFORMANCE_BASIS
+
+    def to_metadata(self) -> dict[str, object]:
+        return {
+            "version": self.version,
+            "scope": self.scope,
+            "native_engine_boundary": self.native_engine_boundary,
+            "memory_manager_boundary": self.memory_manager_boundary,
+            "stream_policy": self.stream_policy,
+            "default_partner_direction": self.default_partner_direction,
+            "benchmark_app_count": int(self.benchmark_app_count),
+            "primary_comparison_row_count": int(self.primary_comparison_row_count),
+            "promoted_path_tolerance_ratio": float(self.promoted_path_tolerance_ratio),
+            "opt_in_tolerance_ratio": float(self.opt_in_tolerance_ratio),
+            "phases": self.phases,
+            "benchmark_basis": tuple(row.to_metadata() for row in self.benchmark_basis),
+        }
+
+
+def v2_4_partner_protocol_contract() -> RtdlV24PartnerProtocolContract:
+    return RtdlV24PartnerProtocolContract()
+
+
+def validate_v2_4_partner_protocol_contract(
+    contract: RtdlV24PartnerProtocolContract | None = None,
+) -> dict[str, object]:
+    contract = v2_4_partner_protocol_contract() if contract is None else contract
+    errors: list[str] = []
+    if contract.version != V2_4_PARTNER_PROTOCOL_VERSION:
+        errors.append("unexpected v2.4 partner protocol version")
+    if contract.scope != V2_4_PROTOCOL_SCOPE:
+        errors.append("v2.4 partner protocol must stay scoped to RTDL primitive handoff")
+    if contract.native_engine_boundary != V2_4_NATIVE_ENGINE_BOUNDARY:
+        errors.append("native engine boundary must remain app-agnostic")
+    if contract.memory_manager_boundary != V2_4_MEMORY_MANAGER_BOUNDARY:
+        errors.append("v2.4 descriptor work must not become a general-purpose memory manager")
+    if contract.stream_policy != V2_4_STREAM_POLICY:
+        errors.append("stream handles must remain reserved-zero until evidence exists")
+    if contract.default_partner_direction != V2_4_DEFAULT_PARTNER_DIRECTION:
+        errors.append("v2.4/v2.5 roadmap requires Triton-first with Numba fallback")
+    if int(contract.benchmark_app_count) != V2_4_PRIMARY_BENCHMARK_APP_COUNT:
+        errors.append("benchmark app count must remain 10 for the current v2.3 basis")
+    if int(contract.primary_comparison_row_count) != V2_4_PRIMARY_COMPARISON_ROW_COUNT:
+        errors.append("primary comparison row count must remain 11 because RayDB has count and sum")
+    if tuple(contract.phases) != V2_4_PHASES:
+        errors.append("phase timing contract must preserve the accepted split")
+    if not any(row.requires_protocol_overhead_audit for row in contract.benchmark_basis):
+        errors.append("low-margin benchmark rows must require protocol-overhead audit")
+    return {
+        "status": "accept" if not errors else "reject",
+        "version": contract.version,
+        "scope": contract.scope,
+        "native_engine_boundary": contract.native_engine_boundary,
+        "memory_manager_boundary": contract.memory_manager_boundary,
+        "benchmark_app_count": int(contract.benchmark_app_count),
+        "primary_comparison_row_count": int(contract.primary_comparison_row_count),
+        "low_margin_rows": tuple(
+            row.app for row in contract.benchmark_basis if row.requires_protocol_overhead_audit
+        ),
+        "errors": tuple(errors),
+    }
+
+
+def buffer_descriptor_from_tensor_descriptor(
+    name: str,
+    descriptor: RtdlTensorDescriptor,
+    *,
+    access_mode: str | None = None,
+    lifetime: str = "caller_retained",
+    mutability: str | None = None,
+    capacity_elements: int | None = None,
+) -> RtdlBufferDescriptor:
+    access = descriptor.access_mode if access_mode is None else access_mode
+    inferred_mutability = "immutable" if access == "read" else "mutable"
+    return RtdlBufferDescriptor(
+        name=name,
+        dtype=descriptor.dtype,
+        shape=descriptor.shape,
+        device_type=descriptor.device_type,
+        device_id=descriptor.device_id,
+        data_ptr=descriptor.data_ptr,
+        strides_bytes=descriptor.strides,
+        byte_offset=descriptor.byte_offset,
+        access_mode=access,
+        source_protocol=descriptor.source_protocol,
+        lifetime=lifetime,
+        mutability=inferred_mutability if mutability is None else mutability,
+        stream_handle=descriptor.stream_handle,
+        capacity_elements=capacity_elements,
+        owner=descriptor.owner,
+    )
+
+
+def low_margin_benchmark_rows(
+    basis: tuple[RtdlBenchmarkBasisRow, ...] = V2_4_BENCHMARK_PERFORMANCE_BASIS,
+) -> tuple[RtdlBenchmarkBasisRow, ...]:
+    return tuple(row for row in basis if row.requires_protocol_overhead_audit)
+
+
+def validate_phase_timing_record(record: dict[str, Any]) -> dict[str, object]:
+    """Validate v2.4 machine-readable phase timing metadata.
+
+    Missing phases are acceptable because not every primitive has every phase,
+    but RT traversal and partner continuation must not be collapsed into a
+    single ambiguous timing field.
+    """
+
+    errors: list[str] = []
+    if not isinstance(record, dict):
+        return {"status": "reject", "errors": ("phase timing record must be a dict",)}
+    phases = record.get("phases_sec")
+    if not isinstance(phases, dict):
+        errors.append("phase timing record requires a phases_sec mapping")
+        phases = {}
+    unknown = tuple(sorted(set(phases) - set(V2_4_PHASES)))
+    if unknown:
+        errors.append(f"unknown phase names: {', '.join(unknown)}")
+    for name, value in phases.items():
+        try:
+            numeric = float(value)
+        except (TypeError, ValueError):
+            errors.append(f"phase {name} must be numeric seconds")
+            continue
+        if numeric < 0.0:
+            errors.append(f"phase {name} must be non-negative")
+    if "rt_and_partner_combined" in phases:
+        errors.append("RT traversal and partner continuation must be reported as separate phases")
+    if record.get("promoted_performance_path") and record.get("same_phase_contract_as_basis") is not True:
+        errors.append("promoted performance paths must compare the same phase contract as the basis row")
+    return {
+        "status": "accept" if not errors else "reject",
+        "known_phases": tuple(name for name in V2_4_PHASES if name in phases),
+        "errors": tuple(errors),
+    }
+
+
+def _validate_device(device_type: str, device_id: int) -> None:
+    if device_type not in DEVICE_TYPES:
+        raise ValueError(f"device_type must be one of {DEVICE_TYPES}")
+    if int(device_id) < 0:
+        raise ValueError("device_id must be non-negative")
+
+
+def _validate_access_mode(access_mode: str) -> None:
+    if access_mode not in ACCESS_MODES:
+        raise ValueError(f"access_mode must be one of {ACCESS_MODES}")
+
+
+def _validate_no_app_native_vocab(value: str, *, label: str) -> None:
+    normalized = str(value).strip().lower()
+    if not normalized:
+        raise ValueError(f"{label} must be non-empty")
+    for token in V2_4_FORBIDDEN_NATIVE_APP_TOKENS:
+        if token in normalized:
+            raise ValueError(f"{label} contains app-specific token `{token}`")
+
+
+def _validate_unique_buffer_names(
+    input_buffers: tuple[RtdlBufferDescriptor, ...],
+    output_buffers: tuple[RtdlBufferDescriptor, ...],
+) -> None:
+    names = [buffer.name for buffer in (*input_buffers, *output_buffers)]
+    if len(names) != len(set(names)):
+        raise ValueError("prepared session buffer names must be unique")
+
+
+def _element_count(shape: tuple[int, ...]) -> int:
+    return int(prod(shape)) if shape else 1
