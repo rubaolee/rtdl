@@ -33,6 +33,8 @@ GENERIC_RAY_TRIANGLE_GROUPED_REDUCTION_3D_SYMBOL = (
 GENERIC_RAY_TRIANGLE_GROUPED_REDUCTION_3D_PREPARED_PRIMITIVE = (
     "ray_triangle_grouped_i64_reduction_3d"
 )
+RAYDB_V2_5_CONTINUATION_STATUS_DESCRIPTOR_ONLY = "descriptor_only_pending_cuda_integration"
+RAYDB_V2_5_CONTINUATION_STATUS_BLOCKED = "blocked_missing_v2_5_partner_operation"
 BACKENDS = (
     "cpu_python_reference",
     "embree",
@@ -866,6 +868,69 @@ def describe_paper_rt_v2_4_prepared_session(
     }
 
 
+def describe_raydb_v2_5_partner_continuation(mode: str) -> dict[str, Any]:
+    """Describe RayDB's post-RT v2.5 continuation without claiming promotion.
+
+    RayDB-specific predicate encoding remains app code. The continuation plan
+    records only generic grouped operations that can run after RT traversal has
+    produced group ids and payload values.
+    """
+
+    if mode not in PAPER_RT_RESULT_MODES:
+        raise ValueError(f"unsupported paper RT result mode: {mode}")
+
+    if mode == "count":
+        operations = ("segmented_count_i64",)
+    elif mode == "sum":
+        operations = ("segmented_sum_f64",)
+    elif mode == "avg_as_sum_count":
+        operations = ("segmented_sum_f64", "segmented_count_i64")
+    else:
+        operations = ()
+
+    status = (
+        RAYDB_V2_5_CONTINUATION_STATUS_DESCRIPTOR_ONLY
+        if operations
+        else RAYDB_V2_5_CONTINUATION_STATUS_BLOCKED
+    )
+    triton_descriptors = []
+    numba_descriptors = []
+    for operation in operations:
+        if operation == "segmented_count_i64":
+            triton_descriptors.append(rt.describe_triton_segmented_count_i64())
+            numba_descriptors.append(rt.describe_numba_segmented_count_i64())
+        elif operation == "segmented_sum_f64":
+            triton_descriptors.append(rt.describe_triton_segmented_sum_f64())
+            numba_descriptors.append(rt.describe_numba_segmented_sum_f64())
+
+    return {
+        "contract_version": rt.V2_5_PARTNER_CONTINUATION_VERSION,
+        "status": status,
+        "mode": mode,
+        "operations": operations,
+        "preferred_partner": "triton",
+        "fallback_partner": "numba",
+        "continuation_phase": "partner_continuation",
+        "post_rt_continuation_only": True,
+        "replaces_rt_traversal": False,
+        "promoted_performance_path": False,
+        "rt_core_speedup_claim_authorized": False,
+        "raw_kernel_required": False,
+        "descriptor_only": True,
+        "triton_descriptors": tuple(triton_descriptors),
+        "numba_descriptors": tuple(numba_descriptors),
+        "blocked_reason": (
+            "v2.5 currently has only segmented count/sum continuations"
+            if not operations
+            else None
+        ),
+        "app_owned_lowering": (
+            "RayDB predicate encoding and result interpretation remain app code. "
+            "The v2.5 partner continuation sees only group ids and numeric values."
+        ),
+    }
+
+
 def _v2_4_packed_buffer_descriptor(name: str, packed: Any) -> rt.RtdlBufferDescriptor:
     owner = getattr(packed, "owner", None)
     count = _packed_or_sequence_count(packed)
@@ -1127,6 +1192,7 @@ def _run_paper_rt_native_result_mode(
                 backend=backend,
                 mode=mode,
             ),
+            "v2_5_partner_continuation": describe_raydb_v2_5_partner_continuation(mode),
             "v2_4_phase_timing": rt.v2_4_phase_timing_metadata(
                 {
                     "query_preparation": query_preparation_sec,

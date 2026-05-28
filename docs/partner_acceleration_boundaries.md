@@ -194,3 +194,7 @@ correctness, timing, and benchmark-integration evidence exist.
 Goal2668 changes Numba group-id validation from a full host copy to a
 device-resident error-flag kernel; see
 `docs/reports/goal2668_v2_5_numba_device_validation_2026-05-27.md`.
+The first benchmark integration plan is RayDB descriptor-only mapping for
+count/sum/avg-as-sum-count; see
+`docs/reports/goal2669_v2_5_raydb_continuation_plan_2026-05-27.md`. It does not
+execute Triton/Numba or change benchmark claims yet.
