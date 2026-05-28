@@ -180,3 +180,9 @@ The matching `segmented_count_i64` Triton preview is documented in
 Together, count and sum form the initial RayDB-style grouped continuation pair,
 but both remain unpromoted until CUDA pod validation and same-contract benchmark
 phase evidence exist.
+
+The pod validation runner for this pair is
+`scripts/goal2665_v2_5_triton_grouped_continuation_pod_runner.py`; see
+`docs/reports/goal2665_v2_5_triton_grouped_pod_runner_2026-05-27.md`.
+It compares the RTDL Triton continuations with Torch device baselines and emits
+JSON evidence, but still measures only partner continuation, not RT traversal.
