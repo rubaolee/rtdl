@@ -64,8 +64,8 @@ PYTHONPATH=src:. python3 -m unittest -v \
   tests.goal2669_v2_5_raydb_continuation_plan_test
 ```
 
-The test checks that count/sum/avg map to generic v2.5 operations, that min/max
-are honestly blocked, and that no promoted performance wording is introduced.
+The test checks that count/sum/min/max/avg map to generic v2.5 operations and
+that no promoted performance wording is introduced.
 
 ## Next Pod Work
 
