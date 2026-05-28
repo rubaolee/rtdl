@@ -83,6 +83,7 @@ from .partner_continuation_protocol import plan_v2_5_partner_continuation
 from .partner_continuation_protocol import validate_v2_5_partner_continuation_contract
 from .partner_continuation_protocol import v2_5_partner_continuation_contract
 from .numba_partner_continuation import NUMBA_PARTNER_CONTINUATION_STATUS
+from .numba_partner_continuation import NUMBA_GROUP_ID_VALIDATION_MODE
 from .numba_partner_continuation import NUMBA_SEGMENTED_COUNT_I64_OPERATION
 from .numba_partner_continuation import NUMBA_SEGMENTED_SUM_F64_OPERATION
 from .numba_partner_continuation import describe_numba_segmented_count_i64
@@ -1458,6 +1459,7 @@ __all__ = [
     "validate_v2_5_partner_continuation_contract",
     "v2_5_partner_continuation_contract",
     "NUMBA_PARTNER_CONTINUATION_STATUS",
+    "NUMBA_GROUP_ID_VALIDATION_MODE",
     "NUMBA_SEGMENTED_COUNT_I64_OPERATION",
     "NUMBA_SEGMENTED_SUM_F64_OPERATION",
     "describe_numba_segmented_count_i64",

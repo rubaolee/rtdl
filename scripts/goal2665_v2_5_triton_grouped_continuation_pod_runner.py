@@ -180,13 +180,13 @@ def run_numba_scale(
     rt.run_numba_segmented_count_i64(
         numba_group_ids,
         group_count=group_count,
-        validate_group_ids=False,
+        validate_group_ids=True,
     )
     rt.run_numba_segmented_sum_f64(
         numba_group_ids,
         numba_values,
         group_count=group_count,
-        validate_group_ids=False,
+        validate_group_ids=True,
     )
 
     numba_count_result, numba_count_timings = time_cuda_operation(
@@ -194,7 +194,7 @@ def run_numba_scale(
         lambda: rt.run_numba_segmented_count_i64(
             numba_group_ids,
             group_count=group_count,
-            validate_group_ids=False,
+            validate_group_ids=True,
         )["outputs"]["counts"].copy_to_host(),
         repeats=repeats,
     )
@@ -204,7 +204,7 @@ def run_numba_scale(
             numba_group_ids,
             numba_values,
             group_count=group_count,
-            validate_group_ids=False,
+            validate_group_ids=True,
         )["outputs"]["sums"].copy_to_host(),
         repeats=repeats,
     )
@@ -218,9 +218,9 @@ def run_numba_scale(
         "status": "accept",
         "trusted_valid_group_ids": True,
         "validation_note": (
-            "Input ids are generated in-range by the runner; Numba per-call host "
-            "validation is disabled for timing and must be replaced with a "
-            "device-resident check before promotion."
+            "Input ids are generated in-range by the runner. Numba validation "
+            "uses the preview device-resident error-flag kernel instead of a "
+            "full group-id host copy."
         ),
         "correctness": {
             "segmented_count_i64_vs_torch_bincount": bool((numba_count_result == torch_count_host).all()),

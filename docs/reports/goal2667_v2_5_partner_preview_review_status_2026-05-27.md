@@ -40,8 +40,8 @@ Verdict: accept.
 
 Gemini found no blockers. Non-blocking notes:
 
-- Numba validation currently copies `group_ids` to host; acceptable for preview,
-  but this must become device-resident before promotion.
+- Numba validation originally copied `group_ids` to host; Goal2668 replaces
+  that with a device-resident error-flag validation kernel before promotion.
 - Triton `tl.atomic_add` for float64 sum has normal GPU floating-point
   non-determinism from reduction order; tests and docs should keep tolerance
   wording for sum paths.
@@ -75,7 +75,8 @@ It is not enough for:
 2. Run `scripts/goal2665_v2_5_triton_grouped_continuation_pod_runner.py` at
    scale and save JSON artifacts.
 3. Run the existing `--include-numba` path to compare Numba, Triton, and Torch
-   device baselines when Numba is installed on the pod.
+   device baselines when Numba is installed on the pod, including the Goal2668
+   device validation kernel.
 4. Integrate the Triton path into at least one real benchmark row, initially
    RayDB-style grouped count/sum.
 5. Prove the end-to-end OptiX-vs-Embree basis is preserved or improved.

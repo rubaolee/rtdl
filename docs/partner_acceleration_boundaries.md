@@ -191,3 +191,6 @@ The first Numba fallback preview mirrors the same segmented count/sum contract;
 see `docs/reports/goal2666_v2_5_numba_segmented_preview_2026-05-27.md`.
 It is secondary to Triton and remains `preview_not_promoted` until CUDA pod
 correctness, timing, and benchmark-integration evidence exist.
+Goal2668 changes Numba group-id validation from a full host copy to a
+device-resident error-flag kernel; see
+`docs/reports/goal2668_v2_5_numba_device_validation_2026-05-27.md`.

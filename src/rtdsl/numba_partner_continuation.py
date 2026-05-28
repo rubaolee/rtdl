@@ -12,6 +12,7 @@ from .partner_protocol import v2_4_phase_timing_metadata
 NUMBA_SEGMENTED_COUNT_I64_OPERATION = "segmented_count_i64"
 NUMBA_SEGMENTED_SUM_F64_OPERATION = "segmented_sum_f64"
 NUMBA_PARTNER_CONTINUATION_STATUS = V2_5_STATUS_PREVIEW_NOT_PROMOTED
+NUMBA_GROUP_ID_VALIDATION_MODE = "device_resident_error_flag"
 
 
 def numba_partner_available() -> bool:
@@ -45,6 +46,7 @@ def _base_numba_descriptor(operation: str) -> dict[str, object]:
         "phase": "partner_continuation",
         "requires_cuda": True,
         "requires_numba_cuda_device_arrays": True,
+        "group_id_validation_mode": NUMBA_GROUP_ID_VALIDATION_MODE,
         "raw_kernel_required": False,
         "replaces_rt_traversal": False,
         "promoted_performance_path": False,
@@ -72,6 +74,8 @@ def run_numba_segmented_count_i64(
         group_count=group_count,
         block_size=block_size,
         validate_group_ids=validate_group_ids,
+        cuda=cuda,
+        np=np,
     )
 
     cuda.synchronize()
@@ -112,6 +116,8 @@ def run_numba_segmented_sum_f64(
         group_count=group_count,
         block_size=block_size,
         validate_group_ids=validate_group_ids,
+        cuda=cuda,
+        np=np,
     )
 
     cuda.synchronize()
@@ -182,6 +188,18 @@ def _numba_segmented_sum_f64_kernel(cuda: Any):
     return kernel
 
 
+def _numba_group_id_validation_kernel(cuda: Any):
+    @cuda.jit
+    def kernel(group_ids, error_flag, row_count, group_count):
+        index = cuda.grid(1)
+        if index < row_count:
+            group = group_ids[index]
+            if group < 0 or group >= group_count:
+                cuda.atomic.max(error_flag, 0, 1)
+
+    return kernel
+
+
 def _import_numba_stack() -> tuple[Any, Any]:
     try:
         import numpy as np
@@ -202,6 +220,8 @@ def _validate_group_run_shape(
     group_count: int,
     block_size: int,
     validate_group_ids: bool,
+    cuda: Any,
+    np: Any,
 ) -> tuple[int, int, int]:
     group_count = int(group_count)
     if group_count < 0:
@@ -211,8 +231,16 @@ def _validate_group_run_shape(
         raise ValueError("block_size must be positive")
     row_count = int(group_ids.shape[0])
     if validate_group_ids and row_count:
-        host_groups = group_ids.copy_to_host()
-        if bool(((host_groups < 0) | (host_groups >= group_count)).any()):
+        error_flag = cuda.to_device(np.zeros((1,), dtype=np.int32))
+        grid = ((row_count + block_size - 1) // block_size,)
+        _numba_group_id_validation_kernel(cuda)[grid, block_size](
+            group_ids,
+            error_flag,
+            row_count,
+            group_count,
+        )
+        cuda.synchronize()
+        if int(error_flag.copy_to_host()[0]) != 0:
             raise ValueError("group_ids must be in [0, group_count)")
     return group_count, block_size, row_count
 

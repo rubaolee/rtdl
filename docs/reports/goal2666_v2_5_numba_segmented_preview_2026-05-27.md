@@ -51,11 +51,12 @@ It returns Numba CUDA device arrays:
 - `counts:int64`
 - `sums:float64`
 
-The wrapper defaults to fail-fast validation of group ids by copying them to
-host and rejecting ids outside `[0, group_count)`. That validation is not a
-performance claim; it preserves the Goal2662 reference semantics while the path
-is still preview-only. A future promoted path may move validation into a
-device-resident check if needed.
+The wrapper defaults to fail-fast validation of group ids with a device
+validation kernel. The kernel scans `group_ids` on device, writes a single
+device error flag, and the wrapper copies back only that one flag before
+rejecting ids outside `[0, group_count)`. That validation is not a performance
+claim; it preserves the Goal2662 reference semantics while avoiding the earlier
+full `group_ids` host copy.
 
 ## Boundary
 
