@@ -69,8 +69,11 @@ from .partner_continuation_protocol import V2_5_FALLBACK_PARTNER
 from .partner_continuation_protocol import V2_5_PARTNER_CONTINUATION_OPERATIONS
 from .partner_continuation_protocol import V2_5_PARTNER_CONTINUATION_OPERATION_NAMES
 from .partner_continuation_protocol import V2_5_PARTNER_CONTINUATION_VERSION
+from .partner_continuation_protocol import V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS
+from .partner_continuation_protocol import V2_5_PARTNER_REFERENCE_ONLY_OPERATIONS
 from .partner_continuation_protocol import V2_5_PARTNER_ROLES
 from .partner_continuation_protocol import V2_5_PERFORMANCE_PATH_AUTHORIZED
+from .partner_continuation_protocol import V2_5_PREVIEW_GATE_STATUS
 from .partner_continuation_protocol import V2_5_PRIMARY_PARTNER
 from .partner_continuation_protocol import V2_5_RAWKERNEL_REQUIRED_ALLOWED
 from .partner_continuation_protocol import V2_5_REFERENCE_PARTNER
@@ -81,7 +84,9 @@ from .partner_continuation_protocol import V2_5_STATUS_REFERENCE_CONTRACT
 from .partner_continuation_protocol import execute_v2_5_partner_continuation_reference
 from .partner_continuation_protocol import plan_v2_5_partner_continuation
 from .partner_continuation_protocol import validate_v2_5_partner_continuation_contract
+from .partner_continuation_protocol import validate_v2_5_partner_preview_gate
 from .partner_continuation_protocol import v2_5_partner_continuation_contract
+from .partner_continuation_protocol import v2_5_partner_preview_gate
 from .numba_partner_continuation import NUMBA_PARTNER_CONTINUATION_STATUS
 from .numba_partner_continuation import NUMBA_GROUP_ID_VALIDATION_MODE
 from .numba_partner_continuation import NUMBA_SEGMENTED_COUNT_I64_OPERATION
@@ -1445,8 +1450,11 @@ __all__ = [
     "V2_5_PARTNER_CONTINUATION_OPERATIONS",
     "V2_5_PARTNER_CONTINUATION_OPERATION_NAMES",
     "V2_5_PARTNER_CONTINUATION_VERSION",
+    "V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS",
+    "V2_5_PARTNER_REFERENCE_ONLY_OPERATIONS",
     "V2_5_PARTNER_ROLES",
     "V2_5_PERFORMANCE_PATH_AUTHORIZED",
+    "V2_5_PREVIEW_GATE_STATUS",
     "V2_5_PRIMARY_PARTNER",
     "V2_5_RAWKERNEL_REQUIRED_ALLOWED",
     "V2_5_REFERENCE_PARTNER",
@@ -1457,7 +1465,9 @@ __all__ = [
     "execute_v2_5_partner_continuation_reference",
     "plan_v2_5_partner_continuation",
     "validate_v2_5_partner_continuation_contract",
+    "validate_v2_5_partner_preview_gate",
     "v2_5_partner_continuation_contract",
+    "v2_5_partner_preview_gate",
     "NUMBA_PARTNER_CONTINUATION_STATUS",
     "NUMBA_GROUP_ID_VALIDATION_MODE",
     "NUMBA_SEGMENTED_COUNT_I64_OPERATION",

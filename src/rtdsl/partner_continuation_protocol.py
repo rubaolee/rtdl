@@ -39,6 +39,10 @@ V2_5_ALLOWED_STATUSES = (
 V2_5_PERFORMANCE_PATH_AUTHORIZED = False
 V2_5_RT_TRAVERSAL_REPLACEMENT_ALLOWED = False
 V2_5_RAWKERNEL_REQUIRED_ALLOWED = False
+V2_5_PREVIEW_GATE_STATUS = "internal_v2_5_preview_pod_validation_required"
+V2_5_PREVIEW_RELEASE_TAG_AUTHORIZED = False
+V2_5_PREVIEW_PUBLIC_SPEEDUP_CLAIM_AUTHORIZED = False
+V2_5_PREVIEW_CUDA_EXECUTION_VALIDATED = False
 
 
 class PartnerContinuationOverflowError(RuntimeError):
@@ -121,6 +125,15 @@ V2_5_PARTNER_CONTINUATION_OPERATIONS: tuple[RtdlPartnerContinuationOperation, ..
 
 V2_5_PARTNER_CONTINUATION_OPERATION_NAMES = tuple(
     operation.name for operation in V2_5_PARTNER_CONTINUATION_OPERATIONS
+)
+V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS = (
+    "segmented_count_i64",
+    "segmented_sum_f64",
+)
+V2_5_PARTNER_REFERENCE_ONLY_OPERATIONS = tuple(
+    operation
+    for operation in V2_5_PARTNER_CONTINUATION_OPERATION_NAMES
+    if operation not in V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS
 )
 
 
@@ -246,6 +259,86 @@ def validate_v2_5_partner_continuation_contract(
         "primary_partner": contract.get("primary_partner"),
         "fallback_partner": contract.get("fallback_partner"),
         "operation_names": operation_names,
+        "errors": tuple(errors),
+    }
+
+
+def v2_5_partner_preview_gate() -> dict[str, object]:
+    """Return the current v2.5 local-preview gate.
+
+    This gate intentionally does not close v2.5. It records what is ready for
+    CUDA pod validation and what remains reference/descriptor-only.
+    """
+
+    validation = validate_v2_5_partner_continuation_contract()
+    return {
+        "status": V2_5_PREVIEW_GATE_STATUS,
+        "contract_version": V2_5_PARTNER_CONTINUATION_VERSION,
+        "contract_validation_status": validation["status"],
+        "primary_partner": V2_5_PRIMARY_PARTNER,
+        "fallback_partner": V2_5_FALLBACK_PARTNER,
+        "operation_names": V2_5_PARTNER_CONTINUATION_OPERATION_NAMES,
+        "preview_kernel_operations": V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS,
+        "reference_only_operations": V2_5_PARTNER_REFERENCE_ONLY_OPERATIONS,
+        "first_benchmark_pilot": "raydb_style_grouped_count_sum",
+        "pod_validation_required": True,
+        "cuda_execution_validated": V2_5_PREVIEW_CUDA_EXECUTION_VALIDATED,
+        "benchmark_integration_validated": False,
+        "external_3ai_consensus_complete": False,
+        "public_release_tag_authorized": V2_5_PREVIEW_RELEASE_TAG_AUTHORIZED,
+        "public_speedup_claim_authorized": V2_5_PREVIEW_PUBLIC_SPEEDUP_CLAIM_AUTHORIZED,
+        "rt_traversal_replacement_allowed": V2_5_RT_TRAVERSAL_REPLACEMENT_ALLOWED,
+        "rawkernel_required_allowed": V2_5_RAWKERNEL_REQUIRED_ALLOWED,
+    }
+
+
+def validate_v2_5_partner_preview_gate(
+    gate: Mapping[str, object] | None = None,
+) -> dict[str, object]:
+    gate = v2_5_partner_preview_gate() if gate is None else gate
+    errors: list[str] = []
+
+    if gate.get("status") != V2_5_PREVIEW_GATE_STATUS:
+        errors.append("unexpected v2.5 preview gate status")
+    if gate.get("contract_version") != V2_5_PARTNER_CONTINUATION_VERSION:
+        errors.append("unexpected v2.5 contract version")
+    if gate.get("contract_validation_status") != "accept":
+        errors.append("v2.5 continuation contract must validate before preview gate")
+    if tuple(gate.get("operation_names", ())) != V2_5_PARTNER_CONTINUATION_OPERATION_NAMES:
+        errors.append("preview gate operation set changed unexpectedly")
+    preview_kernel_operations = tuple(gate.get("preview_kernel_operations", ()))
+    reference_only_operations = tuple(gate.get("reference_only_operations", ()))
+    if preview_kernel_operations != V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS:
+        errors.append("preview kernel operation set changed unexpectedly")
+    if reference_only_operations != V2_5_PARTNER_REFERENCE_ONLY_OPERATIONS:
+        errors.append("reference-only operation set changed unexpectedly")
+    if set(preview_kernel_operations).intersection(reference_only_operations):
+        errors.append("preview and reference-only operation sets must not overlap")
+    if set(preview_kernel_operations).union(reference_only_operations) != set(V2_5_PARTNER_CONTINUATION_OPERATION_NAMES):
+        errors.append("preview/reference operation partition must cover all operations")
+    if gate.get("pod_validation_required") is not True:
+        errors.append("v2.5 preview must require CUDA pod validation")
+    if gate.get("cuda_execution_validated") is not False:
+        errors.append("local preview must not claim CUDA execution validation")
+    if gate.get("benchmark_integration_validated") is not False:
+        errors.append("local preview must not claim benchmark integration validation")
+    if gate.get("external_3ai_consensus_complete") is not False:
+        errors.append("local preview must not claim 3-AI consensus")
+    if gate.get("public_release_tag_authorized") is not False:
+        errors.append("v2.5 preview does not authorize a public release tag")
+    if gate.get("public_speedup_claim_authorized") is not False:
+        errors.append("v2.5 preview does not authorize public speedup claims")
+    if gate.get("rt_traversal_replacement_allowed") is not False:
+        errors.append("v2.5 partners must not replace RT traversal")
+    if gate.get("rawkernel_required_allowed") is not False:
+        errors.append("v2.5 path must not require CuPy RawKernel")
+
+    return {
+        "status": "accept" if not errors else "reject",
+        "preview_status": gate.get("status"),
+        "preview_kernel_operations": preview_kernel_operations,
+        "reference_only_operations": reference_only_operations,
+        "pod_validation_required": gate.get("pod_validation_required"),
         "errors": tuple(errors),
     }
 

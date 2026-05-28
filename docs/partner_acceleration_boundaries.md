@@ -201,3 +201,6 @@ execute Triton/Numba or change benchmark claims yet.
 Goal2670 extends the reference contract with segmented min/max so RayDB
 min/max have generic semantics, but no Triton/Numba min/max kernel or speedup
 claim exists yet.
+Goal2671 adds the v2.5 preview gate:
+`internal_v2_5_preview_pod_validation_required`. It is not a completion or
+release gate; it only records what is ready for CUDA pod validation.
