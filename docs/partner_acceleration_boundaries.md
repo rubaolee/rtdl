@@ -166,3 +166,11 @@ It defines Triton-first / Numba-fallback continuation operations such as
 segmented count/sum, compaction, bounded finalization, and grouped argmin. The
 slice is descriptor/reference only: it does not authorize Triton performance
 claims, public speedup wording, or replacing RTDL/OptiX traversal.
+
+The first Triton-targeted implementation preview is
+`segmented_sum_f64`; see
+`docs/reports/goal2663_v2_5_triton_segmented_sum_preview_2026-05-27.md`.
+It is lazy-imported and skip-safe on non-CUDA machines, but executable
+correctness and performance validation require a Linux NVIDIA pod. It remains
+`preview_not_promoted` and only covers generic post-RT continuation, not RT
+traversal replacement.

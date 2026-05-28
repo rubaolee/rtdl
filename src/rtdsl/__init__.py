@@ -82,6 +82,11 @@ from .partner_continuation_protocol import execute_v2_5_partner_continuation_ref
 from .partner_continuation_protocol import plan_v2_5_partner_continuation
 from .partner_continuation_protocol import validate_v2_5_partner_continuation_contract
 from .partner_continuation_protocol import v2_5_partner_continuation_contract
+from .triton_partner_continuation import TRITON_PARTNER_CONTINUATION_STATUS
+from .triton_partner_continuation import TRITON_SEGMENTED_SUM_F64_OPERATION
+from .triton_partner_continuation import describe_triton_segmented_sum_f64
+from .triton_partner_continuation import run_triton_segmented_sum_f64
+from .triton_partner_continuation import triton_partner_available
 from .api import polygon_pair_overlap_area_rows
 from .api import polygon_set_jaccard
 from .api import ray_triangle_any_hit
@@ -1441,6 +1446,11 @@ __all__ = [
     "plan_v2_5_partner_continuation",
     "validate_v2_5_partner_continuation_contract",
     "v2_5_partner_continuation_contract",
+    "TRITON_PARTNER_CONTINUATION_STATUS",
+    "TRITON_SEGMENTED_SUM_F64_OPERATION",
+    "describe_triton_segmented_sum_f64",
+    "run_triton_segmented_sum_f64",
+    "triton_partner_available",
     "overlay_compose",
     "overlay_compose_hiprt",
     "oracle_version",
