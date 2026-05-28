@@ -242,3 +242,8 @@ decomposed into reviewed generic operations before joining the v2.5 path.
 `v2_5_triton_front_door_coverage()` records this split so apps that still need
 dispatcher-only `grouped_argmin_f64` or `bounded_collect_finalize_i64` wiring
 are not mislabeled as fully ported.
+
+Goal2682 adds a CUDA pod runner for the public Triton adapter front door; see
+`docs/reports/goal2682_v2_5_triton_adapter_front_door_runner_2026-05-27.md`.
+It is separate from the low-level Goal2665 runner and must pass before we treat
+the adapter API as pod-validated.
