@@ -27,6 +27,7 @@ import rtdsl as rt
 BENCHMARK_APP = "bounded_collision_witness_contact_manifold"
 PRIMITIVE = "COLLECT_K_BOUNDED"
 DISCOVERY_PRIMITIVE = "AABB_INDEX_QUERY_2D"
+V2_4_BOUNDED_WITNESS_PRIMITIVE = "aabb_index_2d_bounded_i64_rows"
 ROW_WIDTH = 3
 ROW_SCHEMA = ("query_group_id", "query_triangle_id", "scene_triangle_id")
 EPSILON = 1.0e-9
@@ -509,6 +510,11 @@ def collect_k_reference_payload(
         backend=backend,
     )
     collect_elapsed_sec = time.perf_counter() - started
+    v2_4_session = describe_v2_4_bounded_witness_session(
+        backend="cpu",
+        candidate_row_count=len(reference["candidate_id_rows"]),
+        witness_capacity=int(witness_capacity),
+    )
     return {
         "app": BENCHMARK_APP,
         "mode": "collect_k_reference",
@@ -525,6 +531,7 @@ def collect_k_reference_payload(
         "matches_cpu_reference": validated["candidate_id_rows"] == reference["candidate_id_rows"],
         "cpu_reference_elapsed_sec": reference["elapsed_sec"],
         "collect_elapsed_sec": collect_elapsed_sec,
+        "v2_4_prepared_session": v2_4_session,
         "engine_boundary": scope_payload()["engine_boundary"],
         "claim_boundary": (
             "This mode exercises only generic COLLECT_K_BOUNDED row collection. Collision/contact "
@@ -581,6 +588,11 @@ def aabb_broadphase_collect_k_payload(
         backend=backend,
     )
     collect_elapsed_sec = time.perf_counter() - started
+    v2_4_session = describe_v2_4_bounded_witness_session(
+        backend=normalized_discovery_backend,
+        candidate_row_count=len(broadphase["candidate_id_rows"]),
+        witness_capacity=int(witness_capacity),
+    )
     return {
         "app": BENCHMARK_APP,
         "mode": "aabb_broadphase_collect_k",
@@ -611,8 +623,90 @@ def aabb_broadphase_collect_k_payload(
         "exact_refinement_checks_avoided": broadphase["exact_refinement_checks_avoided"],
         "run_phases": broadphase["run_phases"]
         | {"collect_k_bounded_rows_sec": collect_elapsed_sec},
+        "v2_4_prepared_session": v2_4_session,
         "engine_boundary": scope_payload()["engine_boundary"],
         "claim_boundary": broadphase["claim_boundary"],
+    }
+
+
+def describe_v2_4_bounded_witness_session(
+    *,
+    backend: str,
+    candidate_row_count: int,
+    witness_capacity: int,
+    row_width: int = ROW_WIDTH,
+) -> dict[str, Any]:
+    """Describe bounded witness collection with generic v2.4 buffers.
+
+    The app may interpret rows as contact witnesses, but the protocol surface is
+    only generic int64 candidate rows plus a bounded int64 output buffer.
+    """
+
+    normalized_backend = backend.strip().lower().replace("-", "_")
+    if normalized_backend in {"python", "cpu_python_reference"}:
+        normalized_backend = "cpu"
+    if normalized_backend not in {"cpu", "embree", "optix"}:
+        raise ValueError("v2.4 bounded witness descriptor supports cpu, embree, or optix")
+    native_symbols = ()
+    if normalized_backend in {"embree", "optix"}:
+        native_symbols = (f"rtdl_{normalized_backend}_collect_k_bounded_i64",)
+    session = rt.RtdlPreparedSessionDescriptor(
+        session_id=(
+            f"generic_bounded_i64_rows_{normalized_backend}_"
+            f"{int(candidate_row_count)}x{int(witness_capacity)}"
+        ),
+        backend=normalized_backend,
+        primitive=V2_4_BOUNDED_WITNESS_PRIMITIVE,
+        input_buffers=(
+            rt.RtdlBufferDescriptor(
+                name="candidate_id_rows",
+                dtype="int64",
+                shape=(int(candidate_row_count), int(row_width)),
+                device_type="cpu",
+                access_mode="read",
+                source_protocol="rtdl_generic_i64_rows",
+                lifetime="session_retained",
+            ),
+        ),
+        output_buffers=(
+            rt.RtdlBufferDescriptor(
+                name="bounded_witness_rows",
+                dtype="int64",
+                shape=(int(witness_capacity), int(row_width)),
+                device_type="cpu",
+                access_mode="write",
+                source_protocol="rtdl_generic_i64_rows",
+                lifetime="session_retained",
+                mutability="mutable",
+            ),
+            rt.RtdlBufferDescriptor(
+                name="valid_count",
+                dtype="uint64",
+                shape=(1,),
+                device_type="cpu",
+                access_mode="write",
+                source_protocol="rtdl_scalar_status",
+                lifetime="session_retained",
+                mutability="mutable",
+            ),
+        ),
+        reusable_scene=True,
+        reusable_query_buffers=True,
+        reusable_output_buffers=True,
+        phase_contract="bounded_witness_collection",
+        native_symbols=native_symbols,
+    )
+    return {
+        **session.to_metadata(),
+        "v2_4_protocol_version": rt.V2_4_PARTNER_PROTOCOL_VERSION,
+        "row_schema": ROW_SCHEMA,
+        "overflow_policy": "fail_closed_no_partial_rows",
+        "app_owned_interpretation": (
+            "Rows may represent contact witnesses in this benchmark, but RTDL sees only "
+            "bounded int64 rows and valid_count."
+        ),
+        "same_phase_contract_as_basis_required": True,
+        "descriptor_only": True,
     }
 
 
@@ -662,6 +756,11 @@ def native_collect_k_payload(
         candidate_source_symbol="python_exact_triangle_intersection_oracle",
     )
     native_elapsed_sec = time.perf_counter() - started
+    v2_4_session = describe_v2_4_bounded_witness_session(
+        backend=normalized_backend,
+        candidate_row_count=len(reference["candidate_id_rows"]),
+        witness_capacity=int(witness_capacity),
+    )
     return {
         "app": BENCHMARK_APP,
         "mode": "native_collect_k",
@@ -680,6 +779,7 @@ def native_collect_k_payload(
         "cpu_reference_valid_count": reference["valid_count"],
         "cpu_reference_elapsed_sec": reference["elapsed_sec"],
         "native_collect_elapsed_sec": native_elapsed_sec,
+        "v2_4_prepared_session": v2_4_session,
         "engine_boundary": scope_payload()["engine_boundary"],
         "claim_boundary": (
             "Native mode validates only the generic app-name-free COLLECT_K_BOUNDED i64 "

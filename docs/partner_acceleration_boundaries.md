@@ -146,3 +146,6 @@ The short boundary is:
 The first implemented v2.4 slice is the RTDL-specific handoff protocol in
 `src/rtdsl/partner_protocol.py`; see
 `docs/reports/goal2658_v2_4_partner_protocol_foundation_2026-05-27.md`.
+The next metadata-only integration slice applies that protocol to RayDB,
+bounded witness collection, and RT-Graph-style triangle counting; see
+`docs/reports/goal2659_v2_4_benchmark_protocol_integration_2026-05-27.md`.

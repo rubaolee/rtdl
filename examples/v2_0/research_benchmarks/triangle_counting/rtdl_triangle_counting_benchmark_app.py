@@ -27,6 +27,8 @@ import rtdsl as rt
 
 
 BENCHMARK_NAME = "triangle_counting"
+V2_4_RT_GRAPH_2A1_PRIMITIVE = "ray_triangle_weighted_any_hit_sum_3d"
+V2_4_RT_GRAPH_1A2_PRIMITIVE = "ray_triangle_hit_count_sum_3d"
 
 
 @rt.kernel(backend="rtdl", precision="float_approx")
@@ -218,6 +220,119 @@ def command_plan_payload() -> dict[str, Any]:
     }
 
 
+def describe_rt_graph_v2_4_prepared_session(
+    *,
+    backend: str,
+    paper_method: str,
+    primitive_count: int,
+    ray_count: int,
+    device_column_summary: bool,
+    partner: str,
+) -> dict[str, Any]:
+    """Describe the RT-Graph lowering with generic v2.4 buffer metadata."""
+
+    normalized_backend = backend.strip().lower().replace("-", "_")
+    if normalized_backend in {"cpu_python_reference", "python"}:
+        normalized_backend = "cpu"
+    if normalized_backend not in {"cpu", "embree", "optix"}:
+        raise ValueError("v2.4 RT-Graph descriptor supports cpu, embree, or optix")
+    method = paper_method.strip().upper()
+    if method not in {"RT-2A1", "RT-1A2"}:
+        raise ValueError("paper_method must be RT-2A1 or RT-1A2")
+
+    is_2a1 = method == "RT-2A1"
+    primitive = V2_4_RT_GRAPH_2A1_PRIMITIVE if is_2a1 else V2_4_RT_GRAPH_1A2_PRIMITIVE
+    source_protocol = "cupy_device_columns" if device_column_summary else "rtdl_packed_host_buffer"
+    geometry_device = "cuda" if device_column_summary else "cpu"
+    native_symbols: tuple[str, ...] = ()
+    if normalized_backend == "optix" and is_2a1:
+        native_symbols = (
+            "rtdl_optix_static_triangle_scene_3d_ray_any_hit_weighted_sum_device_rays"
+            if device_column_summary
+            else "rtdl_optix_static_triangle_scene_3d_ray_any_hit_weighted_sum",
+        )
+    elif normalized_backend == "optix":
+        native_symbols = (
+            "rtdl_optix_static_triangle_scene_3d_ray_hit_count_sum_device_rays"
+            if device_column_summary
+            else "rtdl_optix_static_triangle_scene_3d_ray_hit_count_sum",
+        )
+
+    input_buffers = [
+        rt.RtdlBufferDescriptor(
+            name="triangles",
+            dtype="rtdl_packed_triangle3d",
+            shape=(int(primitive_count),),
+            device_type=geometry_device,
+            source_protocol=source_protocol,
+            lifetime="session_retained",
+            access_mode="read",
+        ),
+        rt.RtdlBufferDescriptor(
+            name="rays",
+            dtype="rtdl_packed_ray3d",
+            shape=(int(ray_count),),
+            device_type=geometry_device,
+            source_protocol=source_protocol,
+            lifetime="session_retained",
+            access_mode="read",
+        ),
+    ]
+    if is_2a1:
+        input_buffers.append(
+            rt.RtdlBufferDescriptor(
+                name="ray_weights",
+                dtype="uint64",
+                shape=(int(ray_count),),
+                device_type=geometry_device,
+                source_protocol=source_protocol,
+                lifetime="session_retained",
+                access_mode="read",
+            )
+        )
+    output_name = "weighted_hit_sum" if is_2a1 else "hit_count_sum"
+    session = rt.RtdlPreparedSessionDescriptor(
+        session_id=(
+            f"generic_ray_triangle_summary_{method.lower().replace('-', '')}_"
+            f"{normalized_backend}_{int(primitive_count)}x{int(ray_count)}"
+        ),
+        backend=normalized_backend,
+        primitive=primitive,
+        input_buffers=tuple(input_buffers),
+        output_buffers=(
+            rt.RtdlBufferDescriptor(
+                name=output_name,
+                dtype="uint64",
+                shape=(1,),
+                device_type="cpu",
+                source_protocol="rtdl_scalar_summary",
+                lifetime="session_retained",
+                access_mode="write",
+                mutability="mutable",
+            ),
+        ),
+        reusable_scene=True,
+        reusable_query_buffers=True,
+        reusable_output_buffers=True,
+        phase_contract="prepared_ray_triangle_summary",
+        native_symbols=native_symbols,
+    )
+    return {
+        **session.to_metadata(),
+        "v2_4_protocol_version": rt.V2_4_PARTNER_PROTOCOL_VERSION,
+        "paper_method": method,
+        "partner": partner,
+        "device_column_lowering": bool(device_column_summary),
+        "app_owned_preprocessing": (
+            "Graph orientation, two-hop relation construction, and RT-Graph interpretation "
+            "remain benchmark/app code. RTDL sees generic rays, triangles, optional weights, "
+            "and a scalar summary."
+        ),
+        "same_phase_contract_as_basis_required": True,
+        "descriptor_only": True,
+    }
+
+
 def rt_graph_contract_payload(
     *,
     fixture: str,
@@ -399,6 +514,16 @@ def rt_graph_2a1_generic_rt_payload(
     reduced = time.perf_counter()
     ray_tracing_accelerated = normalized_backend in {"embree", "optix"}
     rt_core_accelerated = normalized_backend == "optix"
+    primitive_count = _record_count(triangles)
+    ray_count = _record_count(rays)
+    v2_4_session = describe_rt_graph_v2_4_prepared_session(
+        backend=backend,
+        paper_method="RT-2A1",
+        primitive_count=primitive_count,
+        ray_count=ray_count,
+        device_column_summary=device_column_summary,
+        partner=partner,
+    )
     return {
         "app": BENCHMARK_NAME,
         "mode": "rt_graph_2a1_generic_rt",
@@ -426,8 +551,8 @@ def rt_graph_2a1_generic_rt_payload(
             "ray_tmax": 0.2,
             "device_column_lowering": device_column_summary,
         },
-        "primitive_count": _record_count(triangles),
-        "ray_count": _record_count(rays),
+        "primitive_count": primitive_count,
+        "ray_count": ray_count,
         "oracle_triangle_count": contract.triangle_count,
         "generic_rt_weighted_triangle_count": int(hit_weight_sum),
         "triangle_count_matches_oracle": int(hit_weight_sum) == contract.triangle_count,
@@ -456,6 +581,7 @@ def rt_graph_2a1_generic_rt_payload(
         ),
         "ray_weights": _ray_weight_payload(ray_weights, detail=detail),
         "generic_rt_summary": summary_result,
+        "v2_4_prepared_session": v2_4_session,
         "rt_graph_contract": _contract_payload(contract, detail=detail),
         "claim_boundary": CLAIM_BOUNDARY,
     }
@@ -548,6 +674,16 @@ def rt_graph_1a2_generic_rt_payload(
     max_adj_len = _max_out_degree(contract)
     ray_tracing_accelerated = normalized_backend in {"embree", "optix"}
     rt_core_accelerated = normalized_backend == "optix"
+    primitive_count = _record_count(triangles)
+    ray_count = _record_count(rays)
+    v2_4_session = describe_rt_graph_v2_4_prepared_session(
+        backend=backend,
+        paper_method="RT-1A2",
+        primitive_count=primitive_count,
+        ray_count=ray_count,
+        device_column_summary=device_column_summary,
+        partner=partner,
+    )
     return {
         "app": BENCHMARK_NAME,
         "mode": "rt_graph_1a2_generic_rt",
@@ -574,8 +710,8 @@ def rt_graph_1a2_generic_rt_payload(
             "triangle_eps": 0.2,
             "device_column_lowering": device_column_summary,
         },
-        "primitive_count": _record_count(triangles),
-        "ray_count": _record_count(rays),
+        "primitive_count": primitive_count,
+        "ray_count": ray_count,
         "oracle_triangle_count": contract.triangle_count,
         "generic_rt_triangle_count": int(hit_count_sum),
         "triangle_count_matches_oracle": int(hit_count_sum) == contract.triangle_count,
@@ -603,6 +739,7 @@ def rt_graph_1a2_generic_rt_payload(
             }
         ),
         "generic_rt_summary": summary_result,
+        "v2_4_prepared_session": v2_4_session,
         "rt_graph_contract": _contract_payload(contract, detail=detail),
         "claim_boundary": CLAIM_BOUNDARY,
     }
