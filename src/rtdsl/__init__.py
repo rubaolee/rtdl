@@ -83,8 +83,11 @@ from .partner_continuation_protocol import plan_v2_5_partner_continuation
 from .partner_continuation_protocol import validate_v2_5_partner_continuation_contract
 from .partner_continuation_protocol import v2_5_partner_continuation_contract
 from .triton_partner_continuation import TRITON_PARTNER_CONTINUATION_STATUS
+from .triton_partner_continuation import TRITON_SEGMENTED_COUNT_I64_OPERATION
 from .triton_partner_continuation import TRITON_SEGMENTED_SUM_F64_OPERATION
+from .triton_partner_continuation import describe_triton_segmented_count_i64
 from .triton_partner_continuation import describe_triton_segmented_sum_f64
+from .triton_partner_continuation import run_triton_segmented_count_i64
 from .triton_partner_continuation import run_triton_segmented_sum_f64
 from .triton_partner_continuation import triton_partner_available
 from .api import polygon_pair_overlap_area_rows
@@ -1447,8 +1450,11 @@ __all__ = [
     "validate_v2_5_partner_continuation_contract",
     "v2_5_partner_continuation_contract",
     "TRITON_PARTNER_CONTINUATION_STATUS",
+    "TRITON_SEGMENTED_COUNT_I64_OPERATION",
     "TRITON_SEGMENTED_SUM_F64_OPERATION",
+    "describe_triton_segmented_count_i64",
     "describe_triton_segmented_sum_f64",
+    "run_triton_segmented_count_i64",
     "run_triton_segmented_sum_f64",
     "triton_partner_available",
     "overlay_compose",

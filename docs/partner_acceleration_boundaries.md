@@ -174,3 +174,9 @@ It is lazy-imported and skip-safe on non-CUDA machines, but executable
 correctness and performance validation require a Linux NVIDIA pod. It remains
 `preview_not_promoted` and only covers generic post-RT continuation, not RT
 traversal replacement.
+
+The matching `segmented_count_i64` Triton preview is documented in
+`docs/reports/goal2664_v2_5_triton_segmented_count_preview_2026-05-27.md`.
+Together, count and sum form the initial RayDB-style grouped continuation pair,
+but both remain unpromoted until CUDA pod validation and same-contract benchmark
+phase evidence exist.
