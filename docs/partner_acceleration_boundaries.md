@@ -198,3 +198,6 @@ The first benchmark integration plan is RayDB descriptor-only mapping for
 count/sum/avg-as-sum-count; see
 `docs/reports/goal2669_v2_5_raydb_continuation_plan_2026-05-27.md`. It does not
 execute Triton/Numba or change benchmark claims yet.
+Goal2670 extends the reference contract with segmented min/max so RayDB
+min/max have generic semantics, but no Triton/Numba min/max kernel or speedup
+claim exists yet.

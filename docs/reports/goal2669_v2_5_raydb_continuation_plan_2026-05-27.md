@@ -35,11 +35,12 @@ New test:
 | `count` | `segmented_count_i64` |
 | `sum` | `segmented_sum_f64` |
 | `avg_as_sum_count` | `segmented_sum_f64` + `segmented_count_i64` |
-| `min` | blocked: no v2.5 grouped min continuation yet |
-| `max` | blocked: no v2.5 grouped max continuation yet |
+| `min` | `segmented_min_f64` reference/descriptor contract |
+| `max` | `segmented_max_f64` reference/descriptor contract |
 
 The plan records Triton as preferred and Numba as fallback, matching the
-Goal2662 contract.
+Goal2662 contract. Count/sum have preview partner kernels. Min/max are
+reference/descriptor-only until partner kernels exist.
 
 ## Boundary
 

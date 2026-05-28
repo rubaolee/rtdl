@@ -883,6 +883,10 @@ def describe_raydb_v2_5_partner_continuation(mode: str) -> dict[str, Any]:
         operations = ("segmented_count_i64",)
     elif mode == "sum":
         operations = ("segmented_sum_f64",)
+    elif mode == "min":
+        operations = ("segmented_min_f64",)
+    elif mode == "max":
+        operations = ("segmented_max_f64",)
     elif mode == "avg_as_sum_count":
         operations = ("segmented_sum_f64", "segmented_count_i64")
     else:
@@ -902,6 +906,21 @@ def describe_raydb_v2_5_partner_continuation(mode: str) -> dict[str, Any]:
         elif operation == "segmented_sum_f64":
             triton_descriptors.append(rt.describe_triton_segmented_sum_f64())
             numba_descriptors.append(rt.describe_numba_segmented_sum_f64())
+        else:
+            triton_descriptors.append(
+                rt.RtdlPartnerContinuationSpec(
+                    operation=operation,
+                    partner="triton",
+                    status=rt.V2_5_STATUS_PARTNER_DESCRIPTOR_ONLY,
+                ).to_metadata()
+            )
+            numba_descriptors.append(
+                rt.RtdlPartnerContinuationSpec(
+                    operation=operation,
+                    partner="numba",
+                    status=rt.V2_5_STATUS_PARTNER_DESCRIPTOR_ONLY,
+                ).to_metadata()
+            )
 
     return {
         "contract_version": rt.V2_5_PARTNER_CONTINUATION_VERSION,
@@ -920,7 +939,7 @@ def describe_raydb_v2_5_partner_continuation(mode: str) -> dict[str, Any]:
         "triton_descriptors": tuple(triton_descriptors),
         "numba_descriptors": tuple(numba_descriptors),
         "blocked_reason": (
-            "v2.5 currently has only segmented count/sum continuations"
+            "unsupported RayDB mode"
             if not operations
             else None
         ),

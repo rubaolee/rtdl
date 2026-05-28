@@ -28,17 +28,20 @@ class Goal2669V25RaydbContinuationPlanTest(unittest.TestCase):
             self.assertEqual(plan["triton_descriptors"][0]["status"], "preview_not_promoted")
             self.assertEqual(plan["numba_descriptors"][0]["status"], "preview_not_promoted")
 
-    def test_avg_is_composite_sum_count_and_min_max_are_blocked(self):
+    def test_all_raydb_modes_have_generic_v2_5_continuation_semantics(self):
         avg_plan = app.describe_raydb_v2_5_partner_continuation("avg_as_sum_count")
         min_plan = app.describe_raydb_v2_5_partner_continuation("min")
         max_plan = app.describe_raydb_v2_5_partner_continuation("max")
 
         self.assertEqual(avg_plan["operations"], ("segmented_sum_f64", "segmented_count_i64"))
         self.assertEqual(avg_plan["status"], app.RAYDB_V2_5_CONTINUATION_STATUS_DESCRIPTOR_ONLY)
+        self.assertEqual(min_plan["operations"], ("segmented_min_f64",))
+        self.assertEqual(max_plan["operations"], ("segmented_max_f64",))
         for plan in (min_plan, max_plan):
-            self.assertEqual(plan["operations"], ())
-            self.assertEqual(plan["status"], app.RAYDB_V2_5_CONTINUATION_STATUS_BLOCKED)
-            self.assertIn("count/sum", plan["blocked_reason"])
+            self.assertEqual(plan["status"], app.RAYDB_V2_5_CONTINUATION_STATUS_DESCRIPTOR_ONLY)
+            self.assertEqual(plan["blocked_reason"], None)
+            self.assertEqual(plan["triton_descriptors"][0]["status"], "partner_descriptor_only")
+            self.assertEqual(plan["numba_descriptors"][0]["status"], "partner_descriptor_only")
             self.assertFalse(plan["promoted_performance_path"])
 
     def test_native_metadata_carries_v2_5_plan_when_backend_is_available(self):

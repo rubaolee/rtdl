@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 from typing import Any, Iterable, Mapping, Sequence
 
 from .partner_protocol import RtdlBufferDescriptor
@@ -80,6 +81,20 @@ V2_5_PARTNER_CONTINUATION_OPERATIONS: tuple[RtdlPartnerContinuationOperation, ..
         input_names=("group_ids", "values", "group_count"),
         output_names=("sums",),
         behavior="sum float64 values per integer group id",
+    ),
+    RtdlPartnerContinuationOperation(
+        name="segmented_min_f64",
+        category="segmented_reduction",
+        input_names=("group_ids", "values", "group_count"),
+        output_names=("group_ids", "mins", "missing_group_ids"),
+        behavior="minimum float64 value per integer group id with explicit missing groups",
+    ),
+    RtdlPartnerContinuationOperation(
+        name="segmented_max_f64",
+        category="segmented_reduction",
+        input_names=("group_ids", "values", "group_count"),
+        output_names=("group_ids", "maxes", "missing_group_ids"),
+        behavior="maximum float64 value per integer group id with explicit missing groups",
     ),
     RtdlPartnerContinuationOperation(
         name="compact_mask_i64",
@@ -289,6 +304,20 @@ def execute_v2_5_partner_continuation_reference(
         if len(group_ids) != len(values):
             raise ValueError("group_ids and values must have the same length")
         outputs = {"sums": _segmented_sum(group_ids, values, group_count)}
+    elif operation == "segmented_min_f64":
+        group_count = _required_int(inputs, "group_count")
+        group_ids = _required_i64_sequence(inputs, "group_ids")
+        values = _required_f64_sequence(inputs, "values")
+        if len(group_ids) != len(values):
+            raise ValueError("group_ids and values must have the same length")
+        outputs = _segmented_minmax(group_ids, values, group_count, reduce="min")
+    elif operation == "segmented_max_f64":
+        group_count = _required_int(inputs, "group_count")
+        group_ids = _required_i64_sequence(inputs, "group_ids")
+        values = _required_f64_sequence(inputs, "values")
+        if len(group_ids) != len(values):
+            raise ValueError("group_ids and values must have the same length")
+        outputs = _segmented_minmax(group_ids, values, group_count, reduce="max")
     elif operation == "compact_mask_i64":
         values = _required_i64_sequence(inputs, "values")
         mask = _required_bool_sequence(inputs, "mask")
@@ -416,6 +445,46 @@ def _segmented_sum(group_ids: Sequence[int], values: Sequence[float], group_coun
         _validate_group_id(group, group_count)
         sums[group] += float(value)
     return sums
+
+
+def _segmented_minmax(
+    group_ids: Sequence[int],
+    values: Sequence[float],
+    group_count: int,
+    *,
+    reduce: str,
+) -> dict[str, list[int] | list[float]]:
+    if reduce not in {"min", "max"}:
+        raise ValueError("reduce must be min or max")
+    best: list[float | None] = [None] * group_count
+    for group, value in zip(group_ids, values):
+        _validate_group_id(group, group_count)
+        value = float(value)
+        if math.isnan(value):
+            raise ValueError("segmented min/max reject NaN values")
+        current = best[group]
+        if current is None:
+            best[group] = value
+        elif reduce == "min" and value < current:
+            best[group] = value
+        elif reduce == "max" and value > current:
+            best[group] = value
+
+    out_groups: list[int] = []
+    out_values: list[float] = []
+    missing: list[int] = []
+    for group, value in enumerate(best):
+        if value is None:
+            missing.append(group)
+            continue
+        out_groups.append(group)
+        out_values.append(value)
+    value_key = "mins" if reduce == "min" else "maxes"
+    return {
+        "group_ids": out_groups,
+        value_key: out_values,
+        "missing_group_ids": missing,
+    }
 
 
 def _required_i64_sequence(inputs: Mapping[str, object], name: str) -> list[int]:

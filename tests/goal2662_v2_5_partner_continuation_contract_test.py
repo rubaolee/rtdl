@@ -31,6 +31,8 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
             {
                 "segmented_count_i64",
                 "segmented_sum_f64",
+                "segmented_min_f64",
+                "segmented_max_f64",
                 "compact_mask_i64",
                 "bounded_collect_finalize_i64",
                 "grouped_argmin_f64",
@@ -116,6 +118,29 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
             {"group_ids": [0, 2, 2, 1, 0], "values": [1.0, 2.5, 3.5, 4.0, 6.0], "group_count": 4},
         )
         self.assertEqual(sum_result["outputs"]["sums"], [7.0, 4.0, 6.0, 0.0])
+
+    def test_reference_segmented_min_and_max(self):
+        min_result = rt.execute_v2_5_partner_continuation_reference(
+            "segmented_min_f64",
+            {"group_ids": [0, 2, 2, 1, 0], "values": [1.0, 2.5, 3.5, 4.0, 6.0], "group_count": 4},
+        )
+        self.assertEqual(min_result["outputs"]["group_ids"], [0, 1, 2])
+        self.assertEqual(min_result["outputs"]["mins"], [1.0, 4.0, 2.5])
+        self.assertEqual(min_result["outputs"]["missing_group_ids"], [3])
+
+        max_result = rt.execute_v2_5_partner_continuation_reference(
+            "segmented_max_f64",
+            {"group_ids": [0, 2, 2, 1, 0], "values": [1.0, 2.5, 3.5, 4.0, 6.0], "group_count": 4},
+        )
+        self.assertEqual(max_result["outputs"]["group_ids"], [0, 1, 2])
+        self.assertEqual(max_result["outputs"]["maxes"], [6.0, 4.0, 3.5])
+        self.assertEqual(max_result["outputs"]["missing_group_ids"], [3])
+
+        with self.assertRaisesRegex(ValueError, "reject NaN"):
+            rt.execute_v2_5_partner_continuation_reference(
+                "segmented_min_f64",
+                {"group_ids": [0], "values": [float("nan")], "group_count": 1},
+            )
 
     def test_reference_compact_mask_and_grouped_argmin(self):
         compact = rt.execute_v2_5_partner_continuation_reference(
