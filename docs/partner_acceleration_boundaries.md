@@ -239,3 +239,6 @@ columnar predicate reductions can now route through the Triton continuation
 dispatcher instead of requiring apps to call low-level Triton helpers directly.
 This does not convert old app-math adapters into Triton partners; they must be
 decomposed into reviewed generic operations before joining the v2.5 path.
+`v2_5_triton_front_door_coverage()` records this split so apps that still need
+dispatcher-only `grouped_argmin_f64` or `bounded_collect_finalize_i64` wiring
+are not mislabeled as fully ported.

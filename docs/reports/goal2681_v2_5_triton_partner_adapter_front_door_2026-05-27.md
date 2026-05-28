@@ -54,6 +54,22 @@ front doors above. The implementation routes:
 `float64` is required for Triton f64 reductions. Integer counting uses
 `segmented_count_i64`, not a fake integer sum through the f64 path.
 
+`src/rtdsl/v2_5_triton_app_migration.py` now also exposes
+`v2_5_triton_front_door_coverage()`. It separates operations with a generic
+adapter front door from operations that currently have only a low-level Triton
+dispatcher preview:
+
+- adapter-front-door operations: `segmented_count_i64`, `segmented_sum_f64`,
+  `segmented_min_f64`, `segmented_max_f64`, `compact_mask_i64`;
+- dispatcher-only preview operations: `grouped_argmin_f64`,
+  `bounded_collect_finalize_i64`.
+
+This means RayDB, Spatial RayJoin, LibRTS-style AABB queries, and triangle
+counting have all currently required continuation operations covered by the
+generic adapter front door. Hausdorff/X-HD, RT-DBSCAN, RTNN, Barnes-Hut, robot
+collision, and contact-manifold still need app wiring around dispatcher-only
+operations before they can honestly claim a full `partner="triton"` app path.
+
 ## Validation
 
 Run:
@@ -66,7 +82,7 @@ PYTHONPATH=src:. python3 -m unittest -v \
 Expected locally on this Mac:
 
 ```text
-Ran 7 tests
+Ran 8 tests
 OK (skipped=3)
 ```
 

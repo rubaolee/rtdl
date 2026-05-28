@@ -8,6 +8,13 @@ from .partner_continuation_protocol import V2_5_PRIMARY_PARTNER
 
 
 V2_5_TRITON_APP_MIGRATION_VERSION = "rtdl.v2_5.triton_app_migration.v1"
+V2_5_TRITON_PARTNER_ADAPTER_FRONT_DOOR_OPERATIONS = (
+    "segmented_count_i64",
+    "segmented_sum_f64",
+    "segmented_min_f64",
+    "segmented_max_f64",
+    "compact_mask_i64",
+)
 
 
 @dataclass(frozen=True)
@@ -180,4 +187,57 @@ def validate_v2_5_triton_benchmark_app_migration_plan() -> dict[str, object]:
         "benchmark_app_count": plan["benchmark_app_count"],
         "primary_partner": plan["primary_partner"],
         "errors": tuple(errors),
+    }
+
+
+def v2_5_triton_front_door_coverage() -> dict[str, object]:
+    """Report which benchmark-app continuations have adapter-level Triton access.
+
+    All required operations may have low-level Triton dispatcher previews, while
+    only a subset has public generic partner-adapter front doors. Keeping this
+    split explicit avoids claiming that every benchmark app has already been
+    rewired to `partner="triton"`.
+    """
+
+    adapter_ops = set(V2_5_TRITON_PARTNER_ADAPTER_FRONT_DOOR_OPERATIONS)
+    dispatcher_ops = set(V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS)
+    rows = []
+    fully_front_door_ready = 0
+    for app in V2_5_TRITON_BENCHMARK_APP_PLANS:
+        required = set(app.v2_5_required_operations)
+        adapter_ready = tuple(operation for operation in app.v2_5_required_operations if operation in adapter_ops)
+        dispatcher_only = tuple(
+            operation
+            for operation in app.v2_5_required_operations
+            if operation in dispatcher_ops and operation not in adapter_ops
+        )
+        missing = tuple(operation for operation in app.v2_5_required_operations if operation not in dispatcher_ops)
+        status = "adapter_front_door_ready" if required.issubset(adapter_ops) else "dispatcher_ready_app_wiring_required"
+        if missing:
+            status = "missing_triton_preview_operation"
+        if status == "adapter_front_door_ready":
+            fully_front_door_ready += 1
+        rows.append(
+            {
+                "app_id": app.app_id,
+                "benchmark_name": app.benchmark_name,
+                "required_operations": app.v2_5_required_operations,
+                "adapter_front_door_operations": adapter_ready,
+                "dispatcher_only_operations": dispatcher_only,
+                "missing_operations": missing,
+                "front_door_status": status,
+            }
+        )
+    return {
+        "migration_version": V2_5_TRITON_APP_MIGRATION_VERSION,
+        "primary_partner": V2_5_PRIMARY_PARTNER,
+        "adapter_front_door_operations": V2_5_TRITON_PARTNER_ADAPTER_FRONT_DOOR_OPERATIONS,
+        "dispatcher_preview_operations": V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS,
+        "benchmark_app_count": len(rows),
+        "fully_front_door_ready_count": fully_front_door_ready,
+        "apps": tuple(rows),
+        "claim_boundary": (
+            "Adapter front-door readiness is local API coverage only. It is not "
+            "CUDA pod evidence, benchmark completion, or public performance wording."
+        ),
     }
