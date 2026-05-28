@@ -22,6 +22,11 @@ V2_4_PRIMARY_COMPARISON_ROW_COUNT = 11
 V2_4_PROMOTED_PATH_TOLERANCE_RATIO = 0.10
 V2_4_OPT_IN_TOLERANCE_RATIO = 0.20
 V2_4_STATUS_PROTOCOL_ONLY = "protocol_descriptor_only"
+V2_4_COMPLETION_STATUS = "internal_v2_4_complete_no_public_release_tag"
+V2_4_NEXT_PARTNER_MILESTONE = "v2_5_triton_first_with_numba_fallback"
+V2_4_RELEASE_TAG_AUTHORIZED = False
+V2_4_PACKAGE_INSTALL_CLAIM_AUTHORIZED = False
+V2_4_PUBLIC_SPEEDUP_CLAIM_AUTHORIZED = False
 
 V2_4_PHASES = (
     "setup",
@@ -45,6 +50,39 @@ V2_4_FORBIDDEN_NATIVE_APP_TOKENS = (
     "rtnn",
     "hausdorff",
     "triangle_counting",
+)
+
+V2_4_REQUIRED_COMPLETION_DELIVERABLES = (
+    "roadmap_3ai_consensus",
+    "typed_buffer_protocol",
+    "prepared_session_protocol",
+    "segmented_chunked_row_streaming_protocol",
+    "benchmark_protocol_integration",
+    "machine_readable_phase_timing",
+    "benchmark_performance_basis_gate",
+    "native_vocabulary_boundary_gate",
+    "partner_direction_gate",
+    "documentation_boundary_sync",
+)
+
+V2_4_COMPLETION_EVIDENCE_REPORTS = (
+    "docs/reports/goal2657_v2_4_v2_5_partner_roadmap_3ai_consensus_2026-05-27.md",
+    "docs/reports/goal2658_v2_4_partner_protocol_foundation_2026-05-27.md",
+    "docs/reports/goal2659_v2_4_benchmark_protocol_integration_2026-05-27.md",
+    "docs/reports/goal2660_v2_4_phase_timing_metadata_2026-05-27.md",
+    "docs/reports/goal2661_v2_4_completion_gate_2026-05-27.md",
+    "docs/reports/goal2661_v2_4_completion_claude_review_2026-05-27.md",
+    "docs/reports/goal2661_v2_4_completion_gemini_review_2026-05-27.md",
+    "docs/reports/goal2661_v2_4_completion_3ai_consensus_2026-05-27.md",
+)
+
+V2_4_V2_5_PRECONDITIONS = (
+    "keep OptiX RT traversal inside generic RTDL primitives",
+    "keep Triton/Numba in preparation, continuation, reduction, compaction, and finalization roles",
+    "preserve same-phase benchmark comparisons against the v2.3/v2.4 basis",
+    "reject app-domain vocabulary in native primitive symbols",
+    "label slower convenience paths as optional, compatibility, learner/preview, or rejected",
+    "explicitly classify every non-piloted v2.5 benchmark app",
 )
 
 
@@ -282,6 +320,15 @@ def validate_v2_4_partner_protocol_contract(
         errors.append("benchmark app count must remain 10 for the current v2.3 basis")
     if int(contract.primary_comparison_row_count) != V2_4_PRIMARY_COMPARISON_ROW_COUNT:
         errors.append("primary comparison row count must remain 11 because RayDB has count and sum")
+    distinct_apps = {row.app for row in contract.benchmark_basis}
+    if len(distinct_apps) != int(contract.benchmark_app_count):
+        errors.append("distinct benchmark app count must match the declared benchmark_app_count")
+    if len(contract.benchmark_basis) != int(contract.primary_comparison_row_count):
+        errors.append("benchmark basis row count must match the declared primary_comparison_row_count")
+    if float(contract.promoted_path_tolerance_ratio) != V2_4_PROMOTED_PATH_TOLERANCE_RATIO:
+        errors.append("promoted path tolerance ratio must remain 10 percent")
+    if float(contract.opt_in_tolerance_ratio) != V2_4_OPT_IN_TOLERANCE_RATIO:
+        errors.append("opt-in tolerance ratio must remain 20 percent")
     if tuple(contract.phases) != V2_4_PHASES:
         errors.append("phase timing contract must preserve the accepted split")
     if not any(row.requires_protocol_overhead_audit for row in contract.benchmark_basis):
@@ -297,6 +344,87 @@ def validate_v2_4_partner_protocol_contract(
         "low_margin_rows": tuple(
             row.app for row in contract.benchmark_basis if row.requires_protocol_overhead_audit
         ),
+        "errors": tuple(errors),
+    }
+
+
+def v2_4_completion_gate() -> dict[str, object]:
+    """Return the internal v2.4 completion gate.
+
+    This is deliberately not a public release gate. It closes the v2.4
+    protocol-cleanup milestone and records what v2.5 may build on.
+    """
+
+    contract_validation = validate_v2_4_partner_protocol_contract()
+    return {
+        "status": V2_4_COMPLETION_STATUS,
+        "protocol_version": V2_4_PARTNER_PROTOCOL_VERSION,
+        "internal_milestone_complete": True,
+        "public_release_tag_authorized": V2_4_RELEASE_TAG_AUTHORIZED,
+        "package_install_claim_authorized": V2_4_PACKAGE_INSTALL_CLAIM_AUTHORIZED,
+        "public_speedup_claim_authorized": V2_4_PUBLIC_SPEEDUP_CLAIM_AUTHORIZED,
+        "required_deliverables": V2_4_REQUIRED_COMPLETION_DELIVERABLES,
+        "evidence_reports": V2_4_COMPLETION_EVIDENCE_REPORTS,
+        "benchmark_app_count": V2_4_PRIMARY_BENCHMARK_APP_COUNT,
+        "primary_comparison_row_count": V2_4_PRIMARY_COMPARISON_ROW_COUNT,
+        "benchmark_basis_hardware": V2_4_PERFORMANCE_BASIS_HARDWARE,
+        "same_contract_benchmark_basis_retained": contract_validation["status"] == "accept",
+        "low_margin_rows": contract_validation["low_margin_rows"],
+        "native_engine_boundary": V2_4_NATIVE_ENGINE_BOUNDARY,
+        "app_specific_native_vocab_allowed": False,
+        "memory_manager_boundary": V2_4_MEMORY_MANAGER_BOUNDARY,
+        "default_partner_direction": V2_4_DEFAULT_PARTNER_DIRECTION,
+        "next_partner_milestone": V2_4_NEXT_PARTNER_MILESTONE,
+        "v2_5_preconditions": V2_4_V2_5_PRECONDITIONS,
+    }
+
+
+def validate_v2_4_completion_gate(gate: dict[str, Any] | None = None) -> dict[str, object]:
+    gate = v2_4_completion_gate() if gate is None else gate
+    errors: list[str] = []
+
+    if gate.get("status") != V2_4_COMPLETION_STATUS:
+        errors.append("unexpected v2.4 completion status")
+    if gate.get("protocol_version") != V2_4_PARTNER_PROTOCOL_VERSION:
+        errors.append("unexpected v2.4 protocol version")
+    if gate.get("internal_milestone_complete") is not True:
+        errors.append("v2.4 internal milestone must be explicitly complete")
+    if gate.get("public_release_tag_authorized") is not False:
+        errors.append("v2.4 completion does not authorize a public release tag")
+    if gate.get("package_install_claim_authorized") is not False:
+        errors.append("v2.4 completion does not authorize package-install claims")
+    if gate.get("public_speedup_claim_authorized") is not False:
+        errors.append("v2.4 completion does not authorize new public speedup claims")
+    if tuple(gate.get("required_deliverables", ())) != V2_4_REQUIRED_COMPLETION_DELIVERABLES:
+        errors.append("v2.4 required deliverables changed unexpectedly")
+    if tuple(gate.get("evidence_reports", ())) != V2_4_COMPLETION_EVIDENCE_REPORTS:
+        errors.append("v2.4 evidence report list changed unexpectedly")
+    if gate.get("same_contract_benchmark_basis_retained") is not True:
+        errors.append("same-contract benchmark basis must be retained")
+    if gate.get("benchmark_app_count") != V2_4_PRIMARY_BENCHMARK_APP_COUNT:
+        errors.append("benchmark app count must remain 10")
+    if gate.get("primary_comparison_row_count") != V2_4_PRIMARY_COMPARISON_ROW_COUNT:
+        errors.append("primary comparison row count must remain 11")
+    if gate.get("native_engine_boundary") != V2_4_NATIVE_ENGINE_BOUNDARY:
+        errors.append("native engine boundary must remain app-agnostic")
+    if gate.get("app_specific_native_vocab_allowed") is not False:
+        errors.append("app-specific native vocabulary must remain rejected")
+    if gate.get("default_partner_direction") != V2_4_DEFAULT_PARTNER_DIRECTION:
+        errors.append("next partner direction must remain Triton-first with Numba fallback")
+    if gate.get("next_partner_milestone") != V2_4_NEXT_PARTNER_MILESTONE:
+        errors.append("unexpected next partner milestone")
+    if tuple(gate.get("v2_5_preconditions", ())) != V2_4_V2_5_PRECONDITIONS:
+        errors.append("v2.5 preconditions must preserve the Goal2657 consensus gates")
+
+    return {
+        "status": "accept" if not errors else "reject",
+        "completion_status": gate.get("status"),
+        "protocol_version": gate.get("protocol_version"),
+        "internal_milestone_complete": gate.get("internal_milestone_complete"),
+        "public_release_tag_authorized": gate.get("public_release_tag_authorized"),
+        "package_install_claim_authorized": gate.get("package_install_claim_authorized"),
+        "public_speedup_claim_authorized": gate.get("public_speedup_claim_authorized"),
+        "next_partner_milestone": gate.get("next_partner_milestone"),
         "errors": tuple(errors),
     }
 

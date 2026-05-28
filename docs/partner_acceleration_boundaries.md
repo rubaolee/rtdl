@@ -152,3 +152,10 @@ bounded witness collection, and RT-Graph-style triangle counting; see
 The follow-up phase-timing slice adds machine-readable v2.4 timing validation
 for the same prepared paths; see
 `docs/reports/goal2660_v2_4_phase_timing_metadata_2026-05-27.md`.
+
+v2.4 is now internally complete as a protocol-cleanup milestone; see
+`docs/reports/goal2661_v2_4_completion_gate_2026-05-27.md`. This does not
+authorize a public release tag, package-install wording, or new public speedup
+claims. It authorizes v2.5 work to begin from the tested typed-buffer,
+prepared-session, segmented-row-stream, benchmark-metadata, and phase-timing
+contracts.
