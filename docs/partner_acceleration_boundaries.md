@@ -163,9 +163,10 @@ contracts.
 The first v2.5 slice is the generic partner-continuation contract; see
 `docs/reports/goal2662_v2_5_partner_continuation_contract_2026-05-27.md`.
 It defines Triton-first / Numba-fallback continuation operations such as
-segmented count/sum, compaction, bounded finalization, and grouped argmin. The
-slice is descriptor/reference only: it does not authorize Triton performance
-claims, public speedup wording, or replacing RTDL/OptiX traversal.
+segmented count/sum, compaction, bounded finalization, and grouped argmin.
+Count/sum/min/max, compact mask, grouped argmin, and bounded collect/finalize
+now have executable Triton preview kernels. None of this authorizes Triton
+performance claims, public speedup wording, or replacing RTDL/OptiX traversal.
 
 The first Triton-targeted implementation preview is
 `segmented_sum_f64`; see
@@ -204,3 +205,29 @@ claim exists yet.
 Goal2671 adds the v2.5 preview gate:
 `internal_v2_5_preview_pod_validation_required`. It is not a completion or
 release gate; it only records what is ready for CUDA pod validation.
+
+Goal2676 starts the implementation pivot from legacy CuPy/PyTorch partner paths
+to Triton-first v2.5 continuations; see
+`docs/reports/goal2676_v2_5_triton_partner_pivot_2026-05-27.md`. Count/sum now
+plan as executable Triton previews, every generic continuation operation has a
+Triton descriptor, and RayDB records Triton as the preferred app-facing
+continuation partner. Later local slices add min/max, compaction, and grouped
+argmin previews. Torch may still appear as a CUDA tensor carrier for Triton
+launch, but it is not the v2.5 partner.
+
+Goal2677 extends the executable Triton preview set to segmented min/max; see
+`docs/reports/goal2677_v2_5_triton_segmented_minmax_preview_2026-05-27.md`.
+This moves RayDB count/sum/min/max onto generic Triton preview operations, while
+compaction, grouped argmin, and bounded finalize remain future generic kernels
+at Goal2677.
+
+Goal2678 adds `compact_mask_i64` as a Triton executable preview; see
+`docs/reports/goal2678_v2_5_triton_compact_mask_preview_2026-05-27.md`.
+Goal2679 adds `grouped_argmin_f64` as a Triton executable preview; see
+`docs/reports/goal2679_v2_5_triton_grouped_argmin_preview_2026-05-27.md`.
+Goal2680 adds `bounded_collect_finalize_i64` as a fail-closed Triton executable
+preview; see
+`docs/reports/goal2680_v2_5_triton_bounded_collect_preview_2026-05-27.md`.
+At this point all v2.5 generic continuation operations have local Triton
+preview implementations, but CUDA pod evidence and app wiring are still
+required before completion or performance claims.

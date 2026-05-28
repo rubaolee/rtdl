@@ -720,12 +720,13 @@ def _make_paper_rt_encoded_packed_workload(
 def _make_paper_rt_partner_ray_columns(
     workload: dict[str, Any],
     *,
-    partner: str = "cupy",
+    partner: str = "triton",
 ) -> dict[str, Any]:
     """Build RayDB paper query rays as partner-owned device columns.
 
     The app still owns RayDB predicate-to-ray-grid semantics. The runtime only
-    receives generic 3-D ray columns.
+    receives generic 3-D ray columns. In v2.5, `partner="triton"` uses CUDA
+    Torch tensors only as the launch carrier; Torch is not the app partner.
     """
     x_count = int(workload.get("x_count", 0))
     y_count = int(workload.get("y_count", 0))
@@ -770,13 +771,13 @@ def _make_paper_rt_partner_ray_columns(
             "dz": cp.ones(ray_count, dtype=cp.float64),
             "tmax": cp.full(ray_count, 2.0 * float(workload["z_bias"]), dtype=cp.float64),
         }
-    if partner == "torch":
+    if partner in {"triton", "torch"}:
         try:
             import torch
         except ImportError as exc:  # pragma: no cover - pod-only optional dependency
-            raise RuntimeError("Torch is required for partner-owned paper RT query ray columns") from exc
+            raise RuntimeError("Triton RayDB paper RT query columns require a CUDA tensor carrier") from exc
         if not torch.cuda.is_available():
-            raise RuntimeError("Torch CUDA is required for partner-owned paper RT query ray columns")
+            raise RuntimeError("Triton RayDB paper RT query columns require CUDA")
         device = torch.device("cuda:0")
         if not scan_values or x_count <= 0 or y_count <= 0:
             empty_f64 = torch.empty((0,), dtype=torch.float64, device=device)
@@ -814,7 +815,7 @@ def _make_paper_rt_partner_ray_columns(
             "dz": torch.ones(ray_count, dtype=torch.float64, device=device),
             "tmax": torch.full((ray_count,), 2.0 * float(workload["z_bias"]), dtype=torch.float64, device=device),
         }
-    raise ValueError("paper RT partner ray columns currently support partner='cupy' or partner='torch'")
+    raise ValueError("paper RT partner ray columns currently support partner='triton', 'cupy', or 'torch'")
 
 
 def describe_paper_rt_v2_4_prepared_session(
@@ -900,20 +901,12 @@ def describe_raydb_v2_5_partner_continuation(mode: str) -> dict[str, Any]:
     triton_descriptors = []
     numba_descriptors = []
     for operation in operations:
+        triton_descriptors.append(rt.describe_triton_partner_continuation(operation))
         if operation == "segmented_count_i64":
-            triton_descriptors.append(rt.describe_triton_segmented_count_i64())
             numba_descriptors.append(rt.describe_numba_segmented_count_i64())
         elif operation == "segmented_sum_f64":
-            triton_descriptors.append(rt.describe_triton_segmented_sum_f64())
             numba_descriptors.append(rt.describe_numba_segmented_sum_f64())
         else:
-            triton_descriptors.append(
-                rt.RtdlPartnerContinuationSpec(
-                    operation=operation,
-                    partner="triton",
-                    status=rt.V2_5_STATUS_PARTNER_DESCRIPTOR_ONLY,
-                ).to_metadata()
-            )
             numba_descriptors.append(
                 rt.RtdlPartnerContinuationSpec(
                     operation=operation,
@@ -935,6 +928,15 @@ def describe_raydb_v2_5_partner_continuation(mode: str) -> dict[str, Any]:
         "promoted_performance_path": False,
         "rt_core_speedup_claim_authorized": False,
         "raw_kernel_required": False,
+        "uses_cupy_partner": False,
+        "uses_pytorch_partner": False,
+        "tensor_carrier": rt.TRITON_TENSOR_CARRIER,
+        "tensor_carrier_is_partner": False,
+        "triton_executable_preview_available": bool(operations) and all(
+            operation in rt.V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS
+            for operation in operations
+        ),
+        "benchmark_path_integrated": False,
         "descriptor_only": True,
         "triton_descriptors": tuple(triton_descriptors),
         "numba_descriptors": tuple(numba_descriptors),
@@ -947,6 +949,64 @@ def describe_raydb_v2_5_partner_continuation(mode: str) -> dict[str, Any]:
             "RayDB predicate encoding and result interpretation remain app code. "
             "The v2.5 partner continuation sees only group ids and numeric values."
         ),
+    }
+
+
+def run_raydb_v2_5_partner_continuation_preview(
+    mode: str,
+    inputs: dict[str, Any],
+    *,
+    partner: str = "triton",
+    block_size: int = 256,
+    allow_reference_fallback: bool = False,
+) -> dict[str, Any]:
+    """Run RayDB's generic v2.5 post-RT continuation preview.
+
+    This function expects app-lowered generic inputs after RT traversal:
+    `group_ids`, optional `values`, and `group_count`. It does not encode SQL
+    predicates or replace RT traversal.
+    """
+
+    if partner != "triton":
+        raise ValueError("RayDB v2.5 continuation preview is Triton-first; use partner='triton'")
+    plan = describe_raydb_v2_5_partner_continuation(mode)
+    operations = tuple(plan["operations"])
+    if not operations:
+        raise ValueError(f"unsupported RayDB v2.5 continuation mode: {mode}")
+
+    results = []
+    for operation in operations:
+        results.append(
+            rt.run_triton_partner_continuation(
+                operation,
+                inputs,
+                block_size=block_size,
+                allow_reference_fallback=allow_reference_fallback,
+            )
+        )
+
+    outputs: dict[str, Any] = {}
+    for result in results:
+        outputs.update(result["outputs"])
+    return {
+        "app": "raydb_style_columnar_aggregate",
+        "mode": mode,
+        "partner": "triton",
+        "status": "preview_not_promoted",
+        "operations": operations,
+        "outputs": outputs,
+        "continuation_results": tuple(results),
+        "metadata": {
+            "v2_5_partner_continuation": plan,
+            "post_rt_continuation_only": True,
+            "replaces_rt_traversal": False,
+            "promoted_performance_path": False,
+            "rt_core_speedup_claim_authorized": False,
+            "uses_cupy_partner": False,
+            "uses_pytorch_partner": False,
+            "tensor_carrier": rt.TRITON_TENSOR_CARRIER,
+            "tensor_carrier_is_partner": False,
+        },
     }
 
 

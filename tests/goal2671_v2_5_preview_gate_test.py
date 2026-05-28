@@ -29,18 +29,17 @@ class Goal2671V25PreviewGateTest(unittest.TestCase):
 
         self.assertEqual(
             gate["preview_kernel_operations"],
-            ("segmented_count_i64", "segmented_sum_f64"),
-        )
-        self.assertEqual(
-            set(gate["reference_only_operations"]),
-            {
+            (
+                "segmented_count_i64",
+                "segmented_sum_f64",
                 "segmented_min_f64",
                 "segmented_max_f64",
                 "compact_mask_i64",
-                "bounded_collect_finalize_i64",
                 "grouped_argmin_f64",
-            },
+                "bounded_collect_finalize_i64",
+            ),
         )
+        self.assertEqual(gate["reference_only_operations"], ())
         self.assertEqual(
             set(gate["preview_kernel_operations"]).union(gate["reference_only_operations"]),
             set(rt.V2_5_PARTNER_CONTINUATION_OPERATION_NAMES),

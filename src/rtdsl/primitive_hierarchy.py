@@ -466,10 +466,13 @@ PRIMITIVE_HIERARCHY = (
             ),
             PrimitiveHierarchyNode(
                 id="continuation.partner_resident",
-                title="Partner-Resident Continuation",
+                title="Triton-first Partner Continuation",
                 layer="continuation",
                 status="internal_substrate",
-                summary="Continuation in NumPy/CuPy/PyTorch-style partner arrays after RTDL traversal.",
+                summary=(
+                    "Triton-first post-traversal continuation over RTDL buffer descriptors, "
+                    "with Numba fallback and legacy array adapters treated as compatibility surfaces."
+                ),
                 outputs=("partner_owned_result",),
                 depends_on=("execution.partner_resident_handoff",),
             ),

@@ -7,8 +7,9 @@ Date: 2026-05-27
 ## Purpose
 
 Goal2663 and Goal2664 added preview Triton kernels for generic segmented sum
-and segmented count. This goal adds the runner needed to validate them on a
-Linux NVIDIA pod from a committed Git revision.
+and segmented count. Goal2677 extends the same runner to segmented min/max.
+This goal adds the runner needed to validate them on a Linux NVIDIA pod from a
+committed Git revision.
 
 The runner exists so v2.5 does not drift into undocumented local experiments.
 It records correctness, timings, environment, and commit identity in one JSON
@@ -56,8 +57,13 @@ For each scale, the runner generates partner-owned CUDA Torch tensors:
 
 It validates:
 
-- `run_triton_segmented_count_i64()` against `torch.bincount()`;
-- `run_triton_segmented_sum_f64()` against Torch `scatter_add_()`.
+- `run_triton_partner_continuation("segmented_count_i64", ...)` against `torch.bincount()`;
+- `run_triton_partner_continuation("segmented_sum_f64", ...)` against Torch `scatter_add_()`;
+- `run_triton_partner_continuation("segmented_min_f64", ...)` against Torch `scatter_reduce_(amin)`;
+- `run_triton_partner_continuation("segmented_max_f64", ...)` against Torch `scatter_reduce_(amax)`;
+- `run_triton_partner_continuation("compact_mask_i64", ...)` against Torch mask indexing;
+- `run_triton_partner_continuation("grouped_argmin_f64", ...)` against Torch `scatter_reduce_(amin)` with lowest-item tie-break;
+- `run_triton_partner_continuation("bounded_collect_finalize_i64", ...)` against Torch group-sort plus equivalent per-group row sets.
 - optionally, with `--include-numba`, `run_numba_segmented_count_i64()` and
   `run_numba_segmented_sum_f64()` against the same Torch outputs.
 

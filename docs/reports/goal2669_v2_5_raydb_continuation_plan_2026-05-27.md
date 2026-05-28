@@ -39,7 +39,8 @@ New test:
 | `max` | `segmented_max_f64` reference/descriptor contract |
 
 The plan records Triton as preferred and Numba as fallback, matching the
-Goal2662 contract. Count/sum have preview partner kernels. Min/max are
+Goal2662 contract. Count/sum have preview partner kernels in Goal2663/2664.
+Goal2677 adds Triton preview kernels for min/max; Numba min/max remain
 reference/descriptor-only until partner kernels exist.
 
 ## Boundary

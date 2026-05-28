@@ -40,7 +40,7 @@ class Goal2669V25RaydbContinuationPlanTest(unittest.TestCase):
         for plan in (min_plan, max_plan):
             self.assertEqual(plan["status"], app.RAYDB_V2_5_CONTINUATION_STATUS_DESCRIPTOR_ONLY)
             self.assertEqual(plan["blocked_reason"], None)
-            self.assertEqual(plan["triton_descriptors"][0]["status"], "partner_descriptor_only")
+            self.assertEqual(plan["triton_descriptors"][0]["status"], "preview_not_promoted")
             self.assertEqual(plan["numba_descriptors"][0]["status"], "partner_descriptor_only")
             self.assertFalse(plan["promoted_performance_path"])
 

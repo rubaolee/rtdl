@@ -9,11 +9,11 @@ Date: 2026-05-27
 v2.5 now has several local pieces:
 
 - generic partner-continuation contract;
-- Triton preview kernels for segmented count and sum;
+- Triton preview kernels for segmented count, sum, min, max, compact mask, grouped argmin, and bounded collect/finalize;
 - Numba fallback preview for segmented count and sum;
 - Numba device-resident group-id validation;
 - RayDB descriptor-only continuation plan;
-- segmented min/max reference semantics.
+- segmented min/max reference semantics, with Triton preview added by Goal2677.
 
 This goal adds a machine-readable preview gate so this state is not confused
 with a completed v2.5 release or a promoted benchmark result.
@@ -34,14 +34,15 @@ Preview kernel operations:
 
 - `segmented_count_i64`
 - `segmented_sum_f64`
-
-Reference/descriptor-only operations:
-
 - `segmented_min_f64`
 - `segmented_max_f64`
 - `compact_mask_i64`
-- `bounded_collect_finalize_i64`
 - `grouped_argmin_f64`
+- `bounded_collect_finalize_i64`
+
+Reference/descriptor-only operations:
+
+- none
 
 The preview/reference partition must cover all v2.5 operations and must not
 overlap.
@@ -79,8 +80,8 @@ OK
 The next real milestone requires a live CUDA pod:
 
 1. run the Goal2665 grouped continuation runner;
-2. validate Triton count/sum correctness and timing;
+2. validate Triton count/sum/min/max/compact/argmin/bounded-finalize correctness and timing;
 3. optionally validate Numba fallback with `--include-numba`;
-4. integrate the Triton path into RayDB count/sum;
+4. integrate the Triton path into RayDB count/sum/min/max;
 5. compare against the existing OptiX-vs-Embree benchmark basis;
 6. retry Claude review before any promotion or v2.5 completion claim.

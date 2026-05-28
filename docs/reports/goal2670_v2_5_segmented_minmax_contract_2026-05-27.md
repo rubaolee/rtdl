@@ -1,6 +1,6 @@
 # Goal2670: v2.5 Segmented Min/Max Reference Contract
 
-Status: reference/descriptor contract only, no partner kernel yet.
+Status: reference contract; Triton executable preview added later by Goal2677.
 
 Date: 2026-05-27
 
@@ -15,8 +15,8 @@ This goal adds reference semantics for:
 - `segmented_min_f64`
 - `segmented_max_f64`
 
-It does not add Triton or Numba kernels. Partner implementations remain a
-future CUDA-pod task.
+It did not originally add Triton or Numba kernels. Goal2677 adds Triton
+executable-preview kernels for the same contract; Numba remains descriptor-only.
 
 ## Contract
 
@@ -47,7 +47,8 @@ not inherit backend-specific NaN ordering behavior.
 | `max` | `segmented_max_f64` |
 | `avg_as_sum_count` | `segmented_sum_f64` + `segmented_count_i64` |
 
-Count/sum use the existing Triton/Numba preview descriptors. Min/max use
+Count/sum use the existing Triton/Numba preview descriptors. Goal2677 adds
+Triton executable-preview descriptors for min/max; Numba min/max still use
 generic partner descriptor-only specs until kernels exist.
 
 ## Boundary
@@ -58,7 +59,7 @@ This does not authorize:
 - benchmark promotion;
 - RT traversal replacement;
 - app-specific native engine logic;
-- claiming Triton/Numba min/max execution before kernels and pod evidence.
+- claiming promoted Triton/Numba min/max performance before pod evidence.
 
 ## Validation
 
@@ -72,5 +73,6 @@ PYTHONPATH=src:. python3 -m unittest -v \
 
 ## Next Work
 
-The next local work can define Triton/Numba min/max design constraints, but
-actual implementation quality and performance require CUDA pod validation.
+The next work after Goal2677 is CUDA pod validation for Triton min/max
+correctness and timing, followed by Numba fallback consideration if still
+needed.

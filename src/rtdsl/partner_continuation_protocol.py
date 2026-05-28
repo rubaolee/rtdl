@@ -129,6 +129,11 @@ V2_5_PARTNER_CONTINUATION_OPERATION_NAMES = tuple(
 V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS = (
     "segmented_count_i64",
     "segmented_sum_f64",
+    "segmented_min_f64",
+    "segmented_max_f64",
+    "compact_mask_i64",
+    "grouped_argmin_f64",
+    "bounded_collect_finalize_i64",
 )
 V2_5_PARTNER_REFERENCE_ONLY_OPERATIONS = tuple(
     operation
@@ -350,7 +355,12 @@ def plan_v2_5_partner_continuation(
     preferred_partner: str = V2_5_PRIMARY_PARTNER,
     fallback_partner: str = V2_5_FALLBACK_PARTNER,
 ) -> RtdlPartnerContinuationSpec:
-    """Select the v2.5 partner shape without claiming executable GPU evidence."""
+    """Select the v2.5 partner shape without claiming promotion.
+
+    Implemented Triton preview operations report `preview_not_promoted`. Future
+    generic operations should remain descriptor-only until partner kernels and
+    app integrations have CUDA evidence.
+    """
 
     _validate_operation_name(operation)
     preferred = _normalize_partner(preferred_partner)
@@ -366,11 +376,12 @@ def plan_v2_5_partner_continuation(
         partner = V2_5_CONFORMANCE_PARTNER
     else:
         partner = V2_5_REFERENCE_PARTNER
-    status = (
-        V2_5_STATUS_REFERENCE_CONTRACT
-        if partner == V2_5_REFERENCE_PARTNER
-        else V2_5_STATUS_PARTNER_DESCRIPTOR_ONLY
-    )
+    if partner == V2_5_REFERENCE_PARTNER:
+        status = V2_5_STATUS_REFERENCE_CONTRACT
+    elif operation in V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS:
+        status = V2_5_STATUS_PREVIEW_NOT_PROMOTED
+    else:
+        status = V2_5_STATUS_PARTNER_DESCRIPTOR_ONLY
     return RtdlPartnerContinuationSpec(
         operation=operation,
         partner=partner,

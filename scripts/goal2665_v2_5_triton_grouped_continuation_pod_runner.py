@@ -76,10 +76,42 @@ def run_scale(
     torch.manual_seed(seed + row_count)
     group_ids = torch.randint(0, group_count, (row_count,), dtype=torch.int64, device="cuda")
     values = torch.rand((row_count,), dtype=torch.float64, device="cuda")
+    item_ids = torch.arange(row_count, dtype=torch.int64, device="cuda")
+    compact_values_input = torch.arange(row_count, dtype=torch.int64, device="cuda")
+    compact_mask = (group_ids % 3) == 0
+    bounded_group_ids = torch.arange(row_count, dtype=torch.int64, device="cuda") % group_count
+    bounded_item_ids = torch.arange(row_count, dtype=torch.int64, device="cuda")
+    bounded_k = (row_count + group_count - 1) // group_count
 
     # Warm up JIT and allocator before measured repeats.
-    rt.run_triton_segmented_count_i64(group_ids, group_count=group_count)
-    rt.run_triton_segmented_sum_f64(group_ids, values, group_count=group_count)
+    rt.run_triton_partner_continuation(
+        "segmented_count_i64",
+        {"group_ids": group_ids, "group_count": group_count},
+    )
+    rt.run_triton_partner_continuation(
+        "segmented_sum_f64",
+        {"group_ids": group_ids, "values": values, "group_count": group_count},
+    )
+    rt.run_triton_partner_continuation(
+        "segmented_min_f64",
+        {"group_ids": group_ids, "values": values, "group_count": group_count},
+    )
+    rt.run_triton_partner_continuation(
+        "segmented_max_f64",
+        {"group_ids": group_ids, "values": values, "group_count": group_count},
+    )
+    rt.run_triton_partner_continuation(
+        "compact_mask_i64",
+        {"values": compact_values_input, "mask": compact_mask},
+    )
+    rt.run_triton_partner_continuation(
+        "grouped_argmin_f64",
+        {"group_ids": group_ids, "item_ids": item_ids, "scores": values, "group_count": group_count},
+    )
+    rt.run_triton_partner_continuation(
+        "bounded_collect_finalize_i64",
+        {"group_ids": bounded_group_ids, "item_ids": bounded_item_ids, "group_count": group_count, "k": bounded_k},
+    )
 
     torch_count_output, torch_count_timings = time_cuda_operation(
         torch,
@@ -88,7 +120,10 @@ def run_scale(
     )
     triton_count_result, triton_count_timings = time_cuda_operation(
         torch,
-        lambda: rt.run_triton_segmented_count_i64(group_ids, group_count=group_count)["outputs"]["counts"],
+        lambda: rt.run_triton_partner_continuation(
+            "segmented_count_i64",
+            {"group_ids": group_ids, "group_count": group_count},
+        )["outputs"]["counts"],
         repeats=repeats,
     )
 
@@ -100,17 +135,148 @@ def run_scale(
     torch_sum_output, torch_sum_timings = time_cuda_operation(torch, torch_sum, repeats=repeats)
     triton_sum_result, triton_sum_timings = time_cuda_operation(
         torch,
-        lambda: rt.run_triton_segmented_sum_f64(group_ids, values, group_count=group_count)["outputs"]["sums"],
+        lambda: rt.run_triton_partner_continuation(
+            "segmented_sum_f64",
+            {"group_ids": group_ids, "values": values, "group_count": group_count},
+        )["outputs"]["sums"],
+        repeats=repeats,
+    )
+
+    def torch_min() -> Any:
+        output = torch.full((group_count,), float("inf"), dtype=torch.float64, device="cuda")
+        output.scatter_reduce_(0, group_ids, values, reduce="amin", include_self=True)
+        return output
+
+    def torch_max() -> Any:
+        output = torch.full((group_count,), float("-inf"), dtype=torch.float64, device="cuda")
+        output.scatter_reduce_(0, group_ids, values, reduce="amax", include_self=True)
+        return output
+
+    torch_min_output, torch_min_timings = time_cuda_operation(torch, torch_min, repeats=repeats)
+    triton_min_result, triton_min_timings = time_cuda_operation(
+        torch,
+        lambda: rt.run_triton_partner_continuation(
+            "segmented_min_f64",
+            {"group_ids": group_ids, "values": values, "group_count": group_count},
+        )["outputs"]["dense_mins"],
+        repeats=repeats,
+    )
+    torch_max_output, torch_max_timings = time_cuda_operation(torch, torch_max, repeats=repeats)
+    triton_max_result, triton_max_timings = time_cuda_operation(
+        torch,
+        lambda: rt.run_triton_partner_continuation(
+            "segmented_max_f64",
+            {"group_ids": group_ids, "values": values, "group_count": group_count},
+        )["outputs"]["dense_maxes"],
+        repeats=repeats,
+    )
+
+    torch_compact_output, torch_compact_timings = time_cuda_operation(
+        torch,
+        lambda: (compact_values_input[compact_mask], torch.nonzero(compact_mask, as_tuple=False).reshape(-1)),
+        repeats=repeats,
+    )
+    triton_compact_result, triton_compact_timings = time_cuda_operation(
+        torch,
+        lambda: rt.run_triton_partner_continuation(
+            "compact_mask_i64",
+            {"values": compact_values_input, "mask": compact_mask},
+        )["outputs"],
+        repeats=repeats,
+    )
+
+    def torch_argmin() -> dict[str, Any]:
+        dense_scores = torch.full((group_count,), float("inf"), dtype=torch.float64, device="cuda")
+        dense_scores.scatter_reduce_(0, group_ids, values, reduce="amin", include_self=True)
+        max_item_id = torch.iinfo(torch.int64).max
+        candidate_items = torch.where(values == dense_scores[group_ids], item_ids, max_item_id)
+        dense_item_ids = torch.full((group_count,), max_item_id, dtype=torch.int64, device="cuda")
+        dense_item_ids.scatter_reduce_(0, group_ids, candidate_items, reduce="amin", include_self=True)
+        present_mask = dense_item_ids != max_item_id
+        return {
+            "group_ids": torch.nonzero(present_mask, as_tuple=False).reshape(-1).to(torch.int64),
+            "item_ids": dense_item_ids[present_mask],
+            "scores": dense_scores[present_mask],
+            "missing_group_ids": torch.nonzero(~present_mask, as_tuple=False).reshape(-1).to(torch.int64),
+            "dense_item_ids": dense_item_ids,
+            "dense_scores": dense_scores,
+        }
+
+    torch_argmin_output, torch_argmin_timings = time_cuda_operation(torch, torch_argmin, repeats=repeats)
+    triton_argmin_result, triton_argmin_timings = time_cuda_operation(
+        torch,
+        lambda: rt.run_triton_partner_continuation(
+            "grouped_argmin_f64",
+            {"group_ids": group_ids, "item_ids": item_ids, "scores": values, "group_count": group_count},
+        )["outputs"],
+        repeats=repeats,
+    )
+
+    def torch_bounded_collect() -> dict[str, Any]:
+        counts = torch.bincount(bounded_group_ids, minlength=group_count)
+        row_offsets = torch.empty((group_count + 1,), dtype=torch.int64, device="cuda")
+        row_offsets[0] = 0
+        row_offsets[1:] = torch.cumsum(counts, dim=0)
+        order = torch.argsort(bounded_group_ids, stable=True)
+        return {
+            "group_ids": bounded_group_ids[order],
+            "item_ids": bounded_item_ids[order],
+            "row_offsets": row_offsets,
+            "counts": counts,
+        }
+
+    torch_bounded_output, torch_bounded_timings = time_cuda_operation(torch, torch_bounded_collect, repeats=repeats)
+    triton_bounded_result, triton_bounded_timings = time_cuda_operation(
+        torch,
+        lambda: rt.run_triton_partner_continuation(
+            "bounded_collect_finalize_i64",
+            {"group_ids": bounded_group_ids, "item_ids": bounded_item_ids, "group_count": group_count, "k": bounded_k},
+        )["outputs"],
         repeats=repeats,
     )
 
     count_correct = bool(torch.equal(triton_count_result, torch_count_output))
     sum_correct = bool(torch.allclose(triton_sum_result, torch_sum_output, rtol=1e-10, atol=1e-8))
+    min_correct = bool(torch.allclose(triton_min_result, torch_min_output, rtol=1e-10, atol=1e-8))
+    max_correct = bool(torch.allclose(triton_max_result, torch_max_output, rtol=1e-10, atol=1e-8))
+    compact_correct = bool(
+        torch.equal(triton_compact_result["values"], torch_compact_output[0])
+        and torch.equal(triton_compact_result["original_indices"], torch_compact_output[1])
+    )
+    argmin_correct = bool(
+        torch.equal(triton_argmin_result["group_ids"], torch_argmin_output["group_ids"])
+        and torch.equal(triton_argmin_result["item_ids"], torch_argmin_output["item_ids"])
+        and torch.allclose(triton_argmin_result["scores"], torch_argmin_output["scores"], rtol=1e-10, atol=1e-8)
+        and torch.equal(triton_argmin_result["missing_group_ids"], torch_argmin_output["missing_group_ids"])
+    )
+    bounded_sorted = torch.argsort(
+        triton_bounded_result["group_ids"] * (row_count + 1) + triton_bounded_result["item_ids"],
+        stable=True,
+    )
+    torch_bounded_sorted = torch.argsort(
+        torch_bounded_output["group_ids"] * (row_count + 1) + torch_bounded_output["item_ids"],
+        stable=True,
+    )
+    bounded_correct = bool(
+        torch.equal(triton_bounded_result["row_offsets"], torch_bounded_output["row_offsets"])
+        and torch.equal(triton_bounded_result["group_ids"][bounded_sorted], torch_bounded_output["group_ids"][torch_bounded_sorted])
+        and torch.equal(triton_bounded_result["item_ids"][bounded_sorted], torch_bounded_output["item_ids"][torch_bounded_sorted])
+    )
 
     triton_count_median = median(triton_count_timings)
     triton_sum_median = median(triton_sum_timings)
+    triton_min_median = median(triton_min_timings)
+    triton_max_median = median(triton_max_timings)
+    triton_compact_median = median(triton_compact_timings)
+    triton_argmin_median = median(triton_argmin_timings)
+    triton_bounded_median = median(triton_bounded_timings)
     torch_count_median = median(torch_count_timings)
     torch_sum_median = median(torch_sum_timings)
+    torch_min_median = median(torch_min_timings)
+    torch_max_median = median(torch_max_timings)
+    torch_compact_median = median(torch_compact_timings)
+    torch_argmin_median = median(torch_argmin_timings)
+    torch_bounded_median = median(torch_bounded_timings)
 
     scale: dict[str, object] = {
         "row_count": row_count,
@@ -120,22 +286,52 @@ def run_scale(
         "correctness": {
             "segmented_count_i64_vs_torch_bincount": count_correct,
             "segmented_sum_f64_vs_torch_scatter_add": sum_correct,
+            "segmented_min_f64_vs_torch_scatter_reduce_amin": min_correct,
+            "segmented_max_f64_vs_torch_scatter_reduce_amax": max_correct,
+            "compact_mask_i64_vs_torch_mask_index": compact_correct,
+            "grouped_argmin_f64_vs_torch_scatter_reduce_amin": argmin_correct,
+            "bounded_collect_finalize_i64_vs_torch_group_sort": bounded_correct,
         },
         "timings_seconds": {
             "rtdl_triton_segmented_count_i64": triton_count_timings,
             "torch_bincount": torch_count_timings,
             "rtdl_triton_segmented_sum_f64": triton_sum_timings,
             "torch_scatter_add_sum": torch_sum_timings,
+            "rtdl_triton_segmented_min_f64": triton_min_timings,
+            "torch_scatter_reduce_min": torch_min_timings,
+            "rtdl_triton_segmented_max_f64": triton_max_timings,
+            "torch_scatter_reduce_max": torch_max_timings,
+            "rtdl_triton_compact_mask_i64": triton_compact_timings,
+            "torch_mask_index_compact": torch_compact_timings,
+            "rtdl_triton_grouped_argmin_f64": triton_argmin_timings,
+            "torch_scatter_reduce_argmin": torch_argmin_timings,
+            "rtdl_triton_bounded_collect_finalize_i64": triton_bounded_timings,
+            "torch_group_sort_bounded_collect": torch_bounded_timings,
         },
         "median_seconds": {
             "rtdl_triton_segmented_count_i64": triton_count_median,
             "torch_bincount": torch_count_median,
             "rtdl_triton_segmented_sum_f64": triton_sum_median,
             "torch_scatter_add_sum": torch_sum_median,
+            "rtdl_triton_segmented_min_f64": triton_min_median,
+            "torch_scatter_reduce_min": torch_min_median,
+            "rtdl_triton_segmented_max_f64": triton_max_median,
+            "torch_scatter_reduce_max": torch_max_median,
+            "rtdl_triton_compact_mask_i64": triton_compact_median,
+            "torch_mask_index_compact": torch_compact_median,
+            "rtdl_triton_grouped_argmin_f64": triton_argmin_median,
+            "torch_scatter_reduce_argmin": torch_argmin_median,
+            "rtdl_triton_bounded_collect_finalize_i64": triton_bounded_median,
+            "torch_group_sort_bounded_collect": torch_bounded_median,
         },
         "speedups_vs_torch": {
             "count": torch_count_median / triton_count_median if triton_count_median > 0 else None,
             "sum": torch_sum_median / triton_sum_median if triton_sum_median > 0 else None,
+            "min": torch_min_median / triton_min_median if triton_min_median > 0 else None,
+            "max": torch_max_median / triton_max_median if triton_max_median > 0 else None,
+            "compact": torch_compact_median / triton_compact_median if triton_compact_median > 0 else None,
+            "argmin": torch_argmin_median / triton_argmin_median if triton_argmin_median > 0 else None,
+            "bounded_collect": torch_bounded_median / triton_bounded_median if triton_bounded_median > 0 else None,
         },
     }
     if include_numba:
@@ -288,6 +484,11 @@ def run(args: argparse.Namespace, repo_root: Path) -> dict[str, object]:
     accepted = all(
         scale["correctness"]["segmented_count_i64_vs_torch_bincount"]
         and scale["correctness"]["segmented_sum_f64_vs_torch_scatter_add"]
+        and scale["correctness"]["segmented_min_f64_vs_torch_scatter_reduce_amin"]
+        and scale["correctness"]["segmented_max_f64_vs_torch_scatter_reduce_amax"]
+        and scale["correctness"]["compact_mask_i64_vs_torch_mask_index"]
+        and scale["correctness"]["grouped_argmin_f64_vs_torch_scatter_reduce_amin"]
+        and scale["correctness"]["bounded_collect_finalize_i64_vs_torch_group_sort"]
         and (
             not args.include_numba
             or scale["numba"]["status"] == "skip"
@@ -302,6 +503,8 @@ def run(args: argparse.Namespace, repo_root: Path) -> dict[str, object]:
         "goal": "Goal2665 v2.5 Triton grouped continuation pod runner",
         "status": "accept" if accepted else "reject",
         "claim_boundary": {
+            "primary_partner": "triton",
+            "torch_is_tensor_carrier_not_partner": True,
             "preview_not_promoted": True,
             "no_public_speedup_claim": True,
             "not_rt_traversal_replacement": True,

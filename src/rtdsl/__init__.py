@@ -97,13 +97,36 @@ from .numba_partner_continuation import numba_partner_available
 from .numba_partner_continuation import run_numba_segmented_count_i64
 from .numba_partner_continuation import run_numba_segmented_sum_f64
 from .triton_partner_continuation import TRITON_PARTNER_CONTINUATION_STATUS
+from .triton_partner_continuation import TRITON_BOUNDED_COLLECT_FINALIZE_I64_OPERATION
+from .triton_partner_continuation import TRITON_COMPACT_MASK_I64_OPERATION
+from .triton_partner_continuation import TRITON_GROUPED_ARGMIN_F64_OPERATION
 from .triton_partner_continuation import TRITON_SEGMENTED_COUNT_I64_OPERATION
+from .triton_partner_continuation import TRITON_SEGMENTED_MAX_F64_OPERATION
+from .triton_partner_continuation import TRITON_SEGMENTED_MIN_F64_OPERATION
 from .triton_partner_continuation import TRITON_SEGMENTED_SUM_F64_OPERATION
+from .triton_partner_continuation import TRITON_TENSOR_CARRIER
+from .triton_partner_continuation import describe_triton_bounded_collect_finalize_i64
+from .triton_partner_continuation import describe_triton_compact_mask_i64
+from .triton_partner_continuation import describe_triton_grouped_argmin_f64
+from .triton_partner_continuation import describe_triton_partner_continuation
 from .triton_partner_continuation import describe_triton_segmented_count_i64
+from .triton_partner_continuation import describe_triton_segmented_max_f64
+from .triton_partner_continuation import describe_triton_segmented_min_f64
 from .triton_partner_continuation import describe_triton_segmented_sum_f64
+from .triton_partner_continuation import run_triton_bounded_collect_finalize_i64
+from .triton_partner_continuation import run_triton_compact_mask_i64
+from .triton_partner_continuation import run_triton_grouped_argmin_f64
+from .triton_partner_continuation import run_triton_partner_continuation
 from .triton_partner_continuation import run_triton_segmented_count_i64
+from .triton_partner_continuation import run_triton_segmented_max_f64
+from .triton_partner_continuation import run_triton_segmented_min_f64
 from .triton_partner_continuation import run_triton_segmented_sum_f64
 from .triton_partner_continuation import triton_partner_available
+from .v2_5_triton_app_migration import V2_5_TRITON_APP_MIGRATION_VERSION
+from .v2_5_triton_app_migration import V2_5_TRITON_BENCHMARK_APP_PLANS
+from .v2_5_triton_app_migration import V25TritonBenchmarkAppPlan
+from .v2_5_triton_app_migration import validate_v2_5_triton_benchmark_app_migration_plan
+from .v2_5_triton_app_migration import v2_5_triton_benchmark_app_migration_plan
 from .api import polygon_pair_overlap_area_rows
 from .api import polygon_set_jaccard
 from .api import ray_triangle_any_hit
@@ -1478,13 +1501,36 @@ __all__ = [
     "run_numba_segmented_count_i64",
     "run_numba_segmented_sum_f64",
     "TRITON_PARTNER_CONTINUATION_STATUS",
+    "TRITON_BOUNDED_COLLECT_FINALIZE_I64_OPERATION",
+    "TRITON_COMPACT_MASK_I64_OPERATION",
+    "TRITON_GROUPED_ARGMIN_F64_OPERATION",
     "TRITON_SEGMENTED_COUNT_I64_OPERATION",
+    "TRITON_SEGMENTED_MAX_F64_OPERATION",
+    "TRITON_SEGMENTED_MIN_F64_OPERATION",
     "TRITON_SEGMENTED_SUM_F64_OPERATION",
+    "TRITON_TENSOR_CARRIER",
+    "describe_triton_bounded_collect_finalize_i64",
+    "describe_triton_compact_mask_i64",
+    "describe_triton_grouped_argmin_f64",
+    "describe_triton_partner_continuation",
     "describe_triton_segmented_count_i64",
+    "describe_triton_segmented_max_f64",
+    "describe_triton_segmented_min_f64",
     "describe_triton_segmented_sum_f64",
+    "run_triton_bounded_collect_finalize_i64",
+    "run_triton_compact_mask_i64",
+    "run_triton_grouped_argmin_f64",
+    "run_triton_partner_continuation",
     "run_triton_segmented_count_i64",
+    "run_triton_segmented_max_f64",
+    "run_triton_segmented_min_f64",
     "run_triton_segmented_sum_f64",
     "triton_partner_available",
+    "V2_5_TRITON_APP_MIGRATION_VERSION",
+    "V2_5_TRITON_BENCHMARK_APP_PLANS",
+    "V25TritonBenchmarkAppPlan",
+    "validate_v2_5_triton_benchmark_app_migration_plan",
+    "v2_5_triton_benchmark_app_migration_plan",
     "overlay_compose",
     "overlay_compose_hiprt",
     "oracle_version",

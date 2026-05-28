@@ -129,7 +129,7 @@ Reduction
 
 Continuation
   fixed-radius graph continuation
-  partner-resident continuation
+  Triton-first partner continuation
   segmented / chunked row continuation (`SEGMENTED_ROW_STREAM` /
     `CHUNKED_ROW_CONTINUATION`)
   candidate-quality / ranked-summary continuation

@@ -48,14 +48,21 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
             available_partners=("numba", "triton"),
         )
         self.assertEqual(triton.partner, "triton")
-        self.assertEqual(triton.status, "partner_descriptor_only")
+        self.assertEqual(triton.status, "preview_not_promoted")
 
         numba = rt.plan_v2_5_partner_continuation(
             "segmented_sum_f64",
             available_partners=("numba",),
         )
         self.assertEqual(numba.partner, "numba")
-        self.assertEqual(numba.status, "partner_descriptor_only")
+        self.assertEqual(numba.status, "preview_not_promoted")
+
+        compact_preview = rt.plan_v2_5_partner_continuation(
+            "compact_mask_i64",
+            available_partners=("triton",),
+        )
+        self.assertEqual(compact_preview.partner, "triton")
+        self.assertEqual(compact_preview.status, "preview_not_promoted")
 
         reference = rt.plan_v2_5_partner_continuation(
             "segmented_sum_f64",
