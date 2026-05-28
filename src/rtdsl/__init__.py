@@ -59,6 +59,29 @@ from .partner_protocol import validate_v2_4_partner_protocol_contract
 from .partner_protocol import v2_4_completion_gate
 from .partner_protocol import v2_4_phase_timing_metadata
 from .partner_protocol import v2_4_partner_protocol_contract
+from .partner_continuation_protocol import PartnerContinuationOverflowError
+from .partner_continuation_protocol import RtdlPartnerContinuationOperation
+from .partner_continuation_protocol import RtdlPartnerContinuationSpec
+from .partner_continuation_protocol import V2_5_ALLOWED_PARTNERS
+from .partner_continuation_protocol import V2_5_ALLOWED_STATUSES
+from .partner_continuation_protocol import V2_5_CONFORMANCE_PARTNER
+from .partner_continuation_protocol import V2_5_FALLBACK_PARTNER
+from .partner_continuation_protocol import V2_5_PARTNER_CONTINUATION_OPERATIONS
+from .partner_continuation_protocol import V2_5_PARTNER_CONTINUATION_OPERATION_NAMES
+from .partner_continuation_protocol import V2_5_PARTNER_CONTINUATION_VERSION
+from .partner_continuation_protocol import V2_5_PARTNER_ROLES
+from .partner_continuation_protocol import V2_5_PERFORMANCE_PATH_AUTHORIZED
+from .partner_continuation_protocol import V2_5_PRIMARY_PARTNER
+from .partner_continuation_protocol import V2_5_RAWKERNEL_REQUIRED_ALLOWED
+from .partner_continuation_protocol import V2_5_REFERENCE_PARTNER
+from .partner_continuation_protocol import V2_5_RT_TRAVERSAL_REPLACEMENT_ALLOWED
+from .partner_continuation_protocol import V2_5_STATUS_PARTNER_DESCRIPTOR_ONLY
+from .partner_continuation_protocol import V2_5_STATUS_PREVIEW_NOT_PROMOTED
+from .partner_continuation_protocol import V2_5_STATUS_REFERENCE_CONTRACT
+from .partner_continuation_protocol import execute_v2_5_partner_continuation_reference
+from .partner_continuation_protocol import plan_v2_5_partner_continuation
+from .partner_continuation_protocol import validate_v2_5_partner_continuation_contract
+from .partner_continuation_protocol import v2_5_partner_continuation_contract
 from .api import polygon_pair_overlap_area_rows
 from .api import polygon_set_jaccard
 from .api import ray_triangle_any_hit
@@ -1395,6 +1418,29 @@ __all__ = [
     "validate_v2_4_partner_protocol_contract",
     "v2_4_phase_timing_metadata",
     "v2_4_partner_protocol_contract",
+    "PartnerContinuationOverflowError",
+    "RtdlPartnerContinuationOperation",
+    "RtdlPartnerContinuationSpec",
+    "V2_5_ALLOWED_PARTNERS",
+    "V2_5_ALLOWED_STATUSES",
+    "V2_5_CONFORMANCE_PARTNER",
+    "V2_5_FALLBACK_PARTNER",
+    "V2_5_PARTNER_CONTINUATION_OPERATIONS",
+    "V2_5_PARTNER_CONTINUATION_OPERATION_NAMES",
+    "V2_5_PARTNER_CONTINUATION_VERSION",
+    "V2_5_PARTNER_ROLES",
+    "V2_5_PERFORMANCE_PATH_AUTHORIZED",
+    "V2_5_PRIMARY_PARTNER",
+    "V2_5_RAWKERNEL_REQUIRED_ALLOWED",
+    "V2_5_REFERENCE_PARTNER",
+    "V2_5_RT_TRAVERSAL_REPLACEMENT_ALLOWED",
+    "V2_5_STATUS_PARTNER_DESCRIPTOR_ONLY",
+    "V2_5_STATUS_PREVIEW_NOT_PROMOTED",
+    "V2_5_STATUS_REFERENCE_CONTRACT",
+    "execute_v2_5_partner_continuation_reference",
+    "plan_v2_5_partner_continuation",
+    "validate_v2_5_partner_continuation_contract",
+    "v2_5_partner_continuation_contract",
     "overlay_compose",
     "overlay_compose_hiprt",
     "oracle_version",

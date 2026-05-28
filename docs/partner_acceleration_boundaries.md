@@ -159,3 +159,10 @@ authorize a public release tag, package-install wording, or new public speedup
 claims. It authorizes v2.5 work to begin from the tested typed-buffer,
 prepared-session, segmented-row-stream, benchmark-metadata, and phase-timing
 contracts.
+
+The first v2.5 slice is the generic partner-continuation contract; see
+`docs/reports/goal2662_v2_5_partner_continuation_contract_2026-05-27.md`.
+It defines Triton-first / Numba-fallback continuation operations such as
+segmented count/sum, compaction, bounded finalization, and grouped argmin. The
+slice is descriptor/reference only: it does not authorize Triton performance
+claims, public speedup wording, or replacing RTDL/OptiX traversal.
