@@ -131,6 +131,22 @@ class Goal2658V24PartnerProtocolTest(unittest.TestCase):
         self.assertTrue(any("separate phases" in error for error in rejected["errors"]))
         self.assertTrue(any("same phase contract" in error for error in rejected["errors"]))
 
+    def test_phase_timing_metadata_embeds_validation_result(self):
+        metadata = rt.v2_4_phase_timing_metadata(
+            {
+                "query_preparation": 0.001,
+                "rt_traversal": 0.010,
+                "partner_continuation": 0.002,
+            },
+            promoted_performance_path=True,
+            same_phase_contract_as_basis=True,
+            source="unit_test",
+        )
+
+        self.assertEqual(metadata["phase_contract_version"], rt.V2_4_PARTNER_PROTOCOL_VERSION)
+        self.assertEqual(metadata["validation"]["status"], "accept")
+        self.assertIn("rt_traversal", metadata["validation"]["known_phases"])
+
     def test_raydb_prepared_path_exposes_generic_v2_4_session_descriptor(self):
         fixture = raydb.make_benchmark_fixture(fixture_kind="repeated", copies=1)
         plan = raydb.make_plan("count")

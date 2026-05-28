@@ -4,6 +4,9 @@ import rtdsl as rt
 from examples.v2_0.research_benchmarks.contact_manifold import (
     rtdl_contact_manifold_benchmark_app as contact,
 )
+from examples.v2_0.research_benchmarks.raydb_style import (
+    rtdl_raydb_style_benchmark_app as raydb,
+)
 from examples.v2_0.research_benchmarks.triangle_counting import (
     rtdl_triangle_counting_benchmark_app as triangle,
 )
@@ -24,6 +27,7 @@ class Goal2659V24BenchmarkProtocolIntegrationTest(unittest.TestCase):
         self.assertEqual(session["output_buffers"][1]["name"], "valid_count")
         self.assertFalse(session["app_specific_native_vocab_allowed"])
         self.assertEqual(session["native_symbols"], ())
+        self.assertEqual(payload["v2_4_phase_timing"]["validation"]["status"], "accept")
 
     def test_contact_native_descriptor_names_stay_app_agnostic(self):
         session = contact.describe_v2_4_bounded_witness_session(
@@ -59,6 +63,7 @@ class Goal2659V24BenchmarkProtocolIntegrationTest(unittest.TestCase):
         self.assertEqual(session["output_buffers"][0]["name"], "weighted_hit_sum")
         self.assertFalse(session["app_specific_native_vocab_allowed"])
         self.assertTrue(payload["triangle_count_matches_oracle"])
+        self.assertEqual(payload["v2_4_phase_timing"]["validation"]["status"], "accept")
 
     def test_triangle_1a2_optix_descriptor_uses_generic_native_symbol(self):
         session = triangle.describe_rt_graph_v2_4_prepared_session(
@@ -79,6 +84,20 @@ class Goal2659V24BenchmarkProtocolIntegrationTest(unittest.TestCase):
         self.assertNotIn("triangle_counting", native_vocab)
         self.assertNotIn("rt_graph", native_vocab)
         self.assertEqual(session["input_buffers"][0]["device"], "cuda:0")
+
+    def test_raydb_native_payload_exposes_validated_phase_timing(self):
+        payload = raydb.run_result_mode(
+            "count",
+            backend=raydb.PAPER_RT_EMBREE_BACKEND,
+            fixture_kind="repeated",
+            copies=1,
+        )
+        timing = payload["metadata"]["v2_4_phase_timing"]
+
+        self.assertEqual(timing["validation"]["status"], "accept")
+        self.assertIn("rt_traversal", timing["validation"]["known_phases"])
+        self.assertTrue(timing["promoted_performance_path"])
+        self.assertTrue(timing["same_phase_contract_as_basis"])
 
 
 if __name__ == "__main__":

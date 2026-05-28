@@ -524,6 +524,17 @@ def rt_graph_2a1_generic_rt_payload(
         device_column_summary=device_column_summary,
         partner=partner,
     )
+    v2_4_phase_timing = rt.v2_4_phase_timing_metadata(
+        {
+            "query_preparation": lowered - built,
+            "scene_build": 0.0 if prepare_scene_ms is None else prepare_scene_ms / 1000.0,
+            "rt_traversal": _median(query_timings_ms) / 1000.0,
+            "materialization": reduced - ran,
+        },
+        promoted_performance_path=normalized_backend in {"embree", "optix"},
+        same_phase_contract_as_basis=True,
+        source="triangle_counting.rt_graph_2a1_generic_rt",
+    )
     return {
         "app": BENCHMARK_NAME,
         "mode": "rt_graph_2a1_generic_rt",
@@ -582,6 +593,7 @@ def rt_graph_2a1_generic_rt_payload(
         "ray_weights": _ray_weight_payload(ray_weights, detail=detail),
         "generic_rt_summary": summary_result,
         "v2_4_prepared_session": v2_4_session,
+        "v2_4_phase_timing": v2_4_phase_timing,
         "rt_graph_contract": _contract_payload(contract, detail=detail),
         "claim_boundary": CLAIM_BOUNDARY,
     }
@@ -684,6 +696,17 @@ def rt_graph_1a2_generic_rt_payload(
         device_column_summary=device_column_summary,
         partner=partner,
     )
+    v2_4_phase_timing = rt.v2_4_phase_timing_metadata(
+        {
+            "query_preparation": lowered - built,
+            "scene_build": 0.0 if prepare_scene_ms is None else prepare_scene_ms / 1000.0,
+            "rt_traversal": _median(query_timings_ms) / 1000.0,
+            "materialization": reduced - ran,
+        },
+        promoted_performance_path=normalized_backend in {"embree", "optix"},
+        same_phase_contract_as_basis=True,
+        source="triangle_counting.rt_graph_1a2_generic_rt",
+    )
     return {
         "app": BENCHMARK_NAME,
         "mode": "rt_graph_1a2_generic_rt",
@@ -740,6 +763,7 @@ def rt_graph_1a2_generic_rt_payload(
         ),
         "generic_rt_summary": summary_result,
         "v2_4_prepared_session": v2_4_session,
+        "v2_4_phase_timing": v2_4_phase_timing,
         "rt_graph_contract": _contract_payload(contract, detail=detail),
         "claim_boundary": CLAIM_BOUNDARY,
     }

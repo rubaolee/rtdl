@@ -515,6 +515,12 @@ def collect_k_reference_payload(
         candidate_row_count=len(reference["candidate_id_rows"]),
         witness_capacity=int(witness_capacity),
     )
+    v2_4_phase_timing = rt.v2_4_phase_timing_metadata(
+        {"materialization": collect_elapsed_sec},
+        promoted_performance_path=False,
+        same_phase_contract_as_basis=True,
+        source="contact_manifold.collect_k_reference",
+    )
     return {
         "app": BENCHMARK_APP,
         "mode": "collect_k_reference",
@@ -532,6 +538,7 @@ def collect_k_reference_payload(
         "cpu_reference_elapsed_sec": reference["elapsed_sec"],
         "collect_elapsed_sec": collect_elapsed_sec,
         "v2_4_prepared_session": v2_4_session,
+        "v2_4_phase_timing": v2_4_phase_timing,
         "engine_boundary": scope_payload()["engine_boundary"],
         "claim_boundary": (
             "This mode exercises only generic COLLECT_K_BOUNDED row collection. Collision/contact "
@@ -589,9 +596,26 @@ def aabb_broadphase_collect_k_payload(
     )
     collect_elapsed_sec = time.perf_counter() - started
     v2_4_session = describe_v2_4_bounded_witness_session(
-        backend=normalized_discovery_backend,
+        backend=broadphase["candidate_discovery_backend"],
         candidate_row_count=len(broadphase["candidate_id_rows"]),
         witness_capacity=int(witness_capacity),
+    )
+    broadphase_run_phases = broadphase["run_phases"]
+    v2_4_phase_timing = rt.v2_4_phase_timing_metadata(
+        {
+            "scene_build": float(broadphase_run_phases.get("prepare_aabb_index_2d_sec", 0.0)),
+            "rt_traversal": float(
+                broadphase_run_phases.get(
+                    "emit_aabb_intersection_pair_rows_2d_median_sec",
+                    broadphase_run_phases.get("emit_aabb_intersection_pair_rows_2d_sec", 0.0),
+                )
+            ),
+            "partner_continuation": float(broadphase_run_phases.get("python_exact_refinement_sec", 0.0)),
+            "materialization": collect_elapsed_sec,
+        },
+        promoted_performance_path=broadphase["candidate_discovery_backend"] in {"embree", "optix"},
+        same_phase_contract_as_basis=True,
+        source="contact_manifold.aabb_broadphase_collect_k",
     )
     return {
         "app": BENCHMARK_APP,
@@ -624,6 +648,7 @@ def aabb_broadphase_collect_k_payload(
         "run_phases": broadphase["run_phases"]
         | {"collect_k_bounded_rows_sec": collect_elapsed_sec},
         "v2_4_prepared_session": v2_4_session,
+        "v2_4_phase_timing": v2_4_phase_timing,
         "engine_boundary": scope_payload()["engine_boundary"],
         "claim_boundary": broadphase["claim_boundary"],
     }
@@ -761,6 +786,12 @@ def native_collect_k_payload(
         candidate_row_count=len(reference["candidate_id_rows"]),
         witness_capacity=int(witness_capacity),
     )
+    v2_4_phase_timing = rt.v2_4_phase_timing_metadata(
+        {"materialization": native_elapsed_sec},
+        promoted_performance_path=False,
+        same_phase_contract_as_basis=True,
+        source="contact_manifold.native_collect_k",
+    )
     return {
         "app": BENCHMARK_APP,
         "mode": "native_collect_k",
@@ -780,6 +811,7 @@ def native_collect_k_payload(
         "cpu_reference_elapsed_sec": reference["elapsed_sec"],
         "native_collect_elapsed_sec": native_elapsed_sec,
         "v2_4_prepared_session": v2_4_session,
+        "v2_4_phase_timing": v2_4_phase_timing,
         "engine_boundary": scope_payload()["engine_boundary"],
         "claim_boundary": (
             "Native mode validates only the generic app-name-free COLLECT_K_BOUNDED i64 "

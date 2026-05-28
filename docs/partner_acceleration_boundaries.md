@@ -149,3 +149,6 @@ The first implemented v2.4 slice is the RTDL-specific handoff protocol in
 The next metadata-only integration slice applies that protocol to RayDB,
 bounded witness collection, and RT-Graph-style triangle counting; see
 `docs/reports/goal2659_v2_4_benchmark_protocol_integration_2026-05-27.md`.
+The follow-up phase-timing slice adds machine-readable v2.4 timing validation
+for the same prepared paths; see
+`docs/reports/goal2660_v2_4_phase_timing_metadata_2026-05-27.md`.

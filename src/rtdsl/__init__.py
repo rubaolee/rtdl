@@ -47,6 +47,7 @@ from .partner_protocol import buffer_descriptor_from_tensor_descriptor
 from .partner_protocol import low_margin_benchmark_rows
 from .partner_protocol import validate_phase_timing_record
 from .partner_protocol import validate_v2_4_partner_protocol_contract
+from .partner_protocol import v2_4_phase_timing_metadata
 from .partner_protocol import v2_4_partner_protocol_contract
 from .api import polygon_pair_overlap_area_rows
 from .api import polygon_set_jaccard
@@ -1382,6 +1383,7 @@ __all__ = [
     "low_margin_benchmark_rows",
     "validate_phase_timing_record",
     "validate_v2_4_partner_protocol_contract",
+    "v2_4_phase_timing_metadata",
     "v2_4_partner_protocol_contract",
     "overlay_compose",
     "overlay_compose_hiprt",

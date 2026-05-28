@@ -1070,6 +1070,7 @@ def _run_paper_rt_native_result_mode(
         raise ValueError("paper RT native backend must be embree or optix")
     started = time.perf_counter()
     workload = _make_paper_rt_encoded_packed_workload(fixture, plan, mode)
+    workload_built = time.perf_counter()
     primitive_result = rt.run_generic_ray_triangle_primitive_grouped_i64_reduction_3d(
         workload["rays"],
         workload["triangles"],
@@ -1079,13 +1080,24 @@ def _run_paper_rt_native_result_mode(
         deduplicate_primitives=True,
         backend=backend,
     )
+    primitive_done = time.perf_counter()
     rows = _paper_rows_from_generic_grouped_rows(
         primitive_result["rows"],
         group_keys=workload["group_keys"],
         group_tuples=workload["group_tuples"],
     )
-    elapsed_sec = time.perf_counter() - started
+    rows_done = time.perf_counter()
+    elapsed_sec = rows_done - started
     cpu_rows = rt.evaluate_columnar_grouped_aggregate(fixture, plan).rows
+    raw_phase_timing = primitive_result.get("phase_timing_seconds", {})
+    scene_build_sec = float(raw_phase_timing.get("prepare_build", 0.0))
+    query_pack_sec = float(raw_phase_timing.get("query_pack", 0.0))
+    rt_traversal_sec = float(raw_phase_timing.get("traversal", primitive_done - workload_built))
+    query_preparation_sec = (workload_built - started) + query_pack_sec
+    materialization_sec = max(
+        0.0,
+        elapsed_sec - query_preparation_sec - scene_build_sec - rt_traversal_sec,
+    )
     return {
         "app": "raydb_style_columnar_aggregate",
         "backend": backend_label,
@@ -1101,7 +1113,7 @@ def _run_paper_rt_native_result_mode(
             "row_count": len(fixture["row_ids"]),
             "timings": {
                 "elapsed_sec": elapsed_sec,
-                **primitive_result.get("phase_timing_seconds", {}),
+                **raw_phase_timing,
             },
             **_fixture_metadata(fixture),
             "paper_reproduction": f"paper_shaped_rt_contract_{backend}_lowering",
@@ -1114,6 +1126,17 @@ def _run_paper_rt_native_result_mode(
                 workload,
                 backend=backend,
                 mode=mode,
+            ),
+            "v2_4_phase_timing": rt.v2_4_phase_timing_metadata(
+                {
+                    "query_preparation": query_preparation_sec,
+                    "scene_build": scene_build_sec,
+                    "rt_traversal": rt_traversal_sec,
+                    "materialization": materialization_sec,
+                },
+                promoted_performance_path=True,
+                same_phase_contract_as_basis=True,
+                source=f"raydb_style.paper_rt_native_result_mode.{backend}.{mode}",
             ),
             "native_symbol": primitive_result.get("native_symbol"),
             "native_rt_core_lowering_ready": True,

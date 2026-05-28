@@ -337,6 +337,26 @@ def low_margin_benchmark_rows(
     return tuple(row for row in basis if row.requires_protocol_overhead_audit)
 
 
+def v2_4_phase_timing_metadata(
+    phases_sec: dict[str, float],
+    *,
+    promoted_performance_path: bool,
+    same_phase_contract_as_basis: bool,
+    source: str,
+) -> dict[str, object]:
+    record = {
+        "source": str(source),
+        "phases_sec": {str(name): float(value) for name, value in phases_sec.items()},
+        "promoted_performance_path": bool(promoted_performance_path),
+        "same_phase_contract_as_basis": bool(same_phase_contract_as_basis),
+        "phase_contract_version": V2_4_PARTNER_PROTOCOL_VERSION,
+    }
+    return {
+        **record,
+        "validation": validate_phase_timing_record(record),
+    }
+
+
 def validate_phase_timing_record(record: dict[str, Any]) -> dict[str, object]:
     """Validate v2.4 machine-readable phase timing metadata.
 
