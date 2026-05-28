@@ -83,6 +83,7 @@ optimizes arbitrary PyTorch or CuPy programs.
 - [v2.3 benchmark-app performance appendix](benchmark_app_performance.md)
 - [v2.3 benchmark-app performance 3-AI consensus](benchmark_app_performance_3ai_consensus.md)
 - [v2.4/v2.5 partner roadmap proposal](../../reports/goal2657_v2_4_v2_5_partner_roadmap_2026-05-27.md)
+- [v2.4/v2.5 partner roadmap 3-AI consensus](../../reports/goal2657_v2_4_v2_5_partner_roadmap_3ai_consensus_2026-05-27.md)
 - [Goal2583 Continuous Frechet benchmark promotion decision](../../reports/goal2583_continuous_frechet_benchmark_promotion_2026-05-24.md)
 - [Goal2584 Continuous Frechet baseline results](../../reports/goal2584_continuous_frechet_gpu_cpu_baseline_results_2026-05-24.md)
 - [Goal2587 benchmark-app milestone report](../../reports/goal2587_benchmark_apps_milestone_report_2026-05-24.md)

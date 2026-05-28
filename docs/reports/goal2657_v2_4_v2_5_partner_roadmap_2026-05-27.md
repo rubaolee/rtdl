@@ -1,6 +1,7 @@
 # Goal2657: v2.4/v2.5 Partner Roadmap With Benchmark Performance Gates
 
-Status: proposal for review.
+Status: accepted roadmap after 3-AI consensus; see
+`docs/reports/goal2657_v2_4_v2_5_partner_roadmap_3ai_consensus_2026-05-27.md`.
 
 Date: 2026-05-27
 
@@ -33,7 +34,8 @@ The current v2.3-family basis is the 10 promoted benchmark apps documented in:
 - `docs/reports/goal2655_benchmark_rt_core_speedup_summary_2026-05-27.md`
 
 The primary rows are exact-subpath internal evidence, not public whole-app
-claims.
+claims. All current basis rows below are NVIDIA RTX A5000 pod evidence unless
+their source report states otherwise.
 
 | Benchmark app | Current primary OptiX-vs-Embree basis |
 | --- | ---: |
@@ -61,23 +63,30 @@ or becomes eligible for performance wording.
    comparison and record the backend, hardware, commit, command, workload, and
    phase timing.
 2. A promoted partner path should preserve the current best supported path
-   within roughly 10 percent for the measured exact subpath, or improve it. A
-   larger loss can be kept as learner, compatibility, or preview functionality,
-   but not as the promoted performance path.
-3. If a new path is 10 to 20 percent slower but materially easier to use, it
+   within roughly 10 percent for the same phase contract used by the accepted
+   benchmark row, or improve it. If the accepted row measured prepared query,
+   the new row must compare prepared query. If it measured traversal plus
+   continuation, the new row must compare traversal plus continuation.
+3. Low-margin rows need stricter handling than high-margin rows. Hausdorff,
+   Barnes-Hut, and Robot collision currently have the smallest RT-vs-Embree
+   margins. For these rows, v2.4/v2.5 must report protocol overhead explicitly
+   and must not accept a promoted path that erases the practical RT advantage,
+   even if the relative regression appears small.
+4. If a new path is 10 to 20 percent slower but materially easier to use, it
    may be accepted only as an opt-in path with explicit performance wording
    that points to the faster path. It must not replace the benchmark row.
-4. If a new path is more than 20 percent slower, it is not a performance path
+5. If a new path is more than 20 percent slower, it is not a performance path
    unless there is a specific and reviewed reason, such as debugability,
    portability, or missing hardware support.
-5. Triton or Numba must not replace OptiX RT traversal for RT-core claims.
+6. Triton or Numba must not replace OptiX RT traversal for RT-core claims.
    Native OptiX/librtdl remains responsible for GAS-backed `optixTrace`
    traversal. Partners own preparation, typed buffers, continuation,
    reductions, compaction, and finalization around RTDL primitives.
-6. All performance reports must split setup, scene build, transfer, query
+7. All performance reports must split setup, scene build, transfer, query
    preparation, RT traversal, continuation/reduction, materialization, and
-   download whenever those phases exist.
-7. No app-specific semantics may enter the native engine to recover
+   download whenever those phases exist. Triton-accelerated continuation must
+   be reported as a separate timing phase from RTDL/OptiX traversal.
+8. No app-specific semantics may enter the native engine to recover
    performance. If performance requires specialization, first express it as a
    generic primitive or partner continuation contract.
 
@@ -89,11 +98,13 @@ or slower than the current benchmark basis.
 
 ### Goals
 
-1. Stabilize typed host/device buffer descriptors.
+1. Stabilize RTDL-specific typed host/device handoff descriptors.
    The descriptor needs dtype, shape, stride, ownership, lifetime, device id,
    stream, mutability, alignment, and output-capacity semantics. It should
    support DLPack and CUDA array interface style handoff where available, but
-   must not require a specific partner library.
+   must not require a specific partner library. RTDL must not become a
+   general-purpose memory manager; descriptors are strictly for passing
+   supported columns to and from RTDL primitives.
 
 2. Stabilize prepared sessions.
    A prepared session should separate reusable scene/table descriptors,
@@ -116,6 +127,8 @@ or slower than the current benchmark basis.
    Every benchmark row should clearly identify whether the number is traversal
    only, prepared query, continuation included, or whole app. This prevents a
    friendlier path from hiding slow Python work behind a fast RT traversal.
+   Timing output should use a machine-readable JSON shape so the regression
+   runner can compare speedup and overhead across versions.
 
 6. Audit native-engine vocabulary.
    Native engines should expose generic primitive names and generic descriptors.
@@ -126,7 +139,9 @@ or slower than the current benchmark basis.
    primary ease-of-use story.
    CuPy is useful today, especially for RawKernel-friendly experiments, but
    RawKernel strings are too close to asking users to write CUDA kernels by
-   hand. The v2.4 contracts should make CuPy optional, not central.
+   hand. The v2.4 contracts should make CuPy optional, not central. Existing
+   CuPy paths remain reference/conformance baselines until a Triton or Numba
+   path passes the same benchmark contract and performance gate.
 
 ### Deliverables
 
@@ -136,7 +151,11 @@ or slower than the current benchmark basis.
 - A segmented/chunked row streaming protocol with fail-closed overflow tests.
 - A partner continuation protocol with no partner-specific naming.
 - A benchmark regression runner that can compare current best paths against
-  new partner-ready paths.
+  new partner-ready paths, integrated into the automated test/CI path at least
+  for lightweight conformance rows and capable of producing heavier pod
+  evidence rows on demand.
+- A protocol-overhead audit for the lowest-margin benchmark rows, especially
+  Hausdorff, Barnes-Hut, and Robot collision.
 - Updated partner documentation explaining `Python + RTDL` and
   `Python + partner + RTDL` without implying arbitrary partner-program
   acceleration.
@@ -152,18 +171,27 @@ of:
 - learner/preview path;
 - rejected for performance or boundary reasons.
 
+The v2.4 native-engine vocabulary audit is also a required input to v2.5 pilot
+acceptance. v2.5 pilots may not use the pressure of benchmark performance to
+add app-domain vocabulary or app-domain ABI to native engines.
+
 ## v2.5: Triton-First Partner, Numba Secondary
 
 v2.5 should introduce the first new high-level partner path. The recommended
-first target is Triton. Numba should be secondary or exploratory.
+first target is Triton, pending early implementation findings on the actual
+RTDL continuation shapes. Numba should be secondary or exploratory, but the
+roadmap should allow Numba to become the better fit for a specific primitive
+pattern if evidence shows Triton is unsuitable.
 
 ### Why Triton First
 
-Triton is the better first v2.5 target because it is designed for GPU tensor
-kernels, integrates well with PyTorch-owned data, avoids requiring users to
-write CUDA C++ or CuPy RawKernel strings, and can express the reductions,
-compaction, tiling, and row-finalization work that currently causes partner
-friction.
+Triton is the preferred first v2.5 target because it is designed for explicit
+GPU kernels, integrates well with PyTorch-owned data, avoids requiring users to
+write CUDA C++ or CuPy RawKernel strings, and is a plausible fit for the
+reductions, compaction, tiling, and row-finalization work that currently causes
+partner friction. This is a starting hypothesis, not a performance claim; early
+v2.5 work must measure Triton against the current path and, where useful,
+Numba.
 
 Triton should not be treated as a replacement for OptiX. The intended pipeline
 is:
@@ -183,6 +211,10 @@ for some users to approach. It should be explored after the buffer and
 continuation protocol is stable, because its performance and deployment profile
 are less predictable for the high-throughput segmented GPU continuation work
 that currently matters most.
+
+If Triton proves unsuitable for a specific continuation pattern during v2.5
+implementation, that pattern may be piloted with Numba under the same
+performance gate. Triton-first does not mean Triton-only.
 
 ### Initial Triton Partner Scope
 
@@ -216,6 +248,9 @@ v2.5 should not claim success just because a Triton or Numba adapter exists.
 The exit gate should require:
 
 - at least three promoted benchmark apps with a Triton partner path;
+- the remaining promoted benchmark apps classified as not attempted,
+  learner/preview path only, explicitly deferred, or not suitable for Triton
+  after review;
 - each promoted Triton path either improves the current best path or stays
   within the accepted performance tolerance;
 - no accepted v2.3 benchmark row regresses without an explicit replacement row;
