@@ -58,7 +58,14 @@ def time_cuda_operation(torch: Any, operation: Callable[[], Any], *, repeats: in
     return last_output, timings
 
 
-def run_scale(row_count: int, *, group_count: int, repeats: int, seed: int) -> dict[str, object]:
+def run_scale(
+    row_count: int,
+    *,
+    group_count: int,
+    repeats: int,
+    seed: int,
+    include_numba: bool,
+) -> dict[str, object]:
     import torch
 
     import rtdsl as rt
@@ -105,10 +112,11 @@ def run_scale(row_count: int, *, group_count: int, repeats: int, seed: int) -> d
     torch_count_median = median(torch_count_timings)
     torch_sum_median = median(torch_sum_timings)
 
-    return {
+    scale: dict[str, object] = {
         "row_count": row_count,
         "group_count": group_count,
         "repeats": repeats,
+        "include_numba": include_numba,
         "correctness": {
             "segmented_count_i64_vs_torch_bincount": count_correct,
             "segmented_sum_f64_vs_torch_scatter_add": sum_correct,
@@ -128,6 +136,105 @@ def run_scale(row_count: int, *, group_count: int, repeats: int, seed: int) -> d
         "speedups_vs_torch": {
             "count": torch_count_median / triton_count_median if triton_count_median > 0 else None,
             "sum": torch_sum_median / triton_sum_median if triton_sum_median > 0 else None,
+        },
+    }
+    if include_numba:
+        scale["numba"] = run_numba_scale(
+            rt,
+            torch,
+            group_ids,
+            values,
+            torch_count_output,
+            torch_sum_output,
+            group_count=group_count,
+            repeats=repeats,
+        )
+    return scale
+
+
+def run_numba_scale(
+    rt: Any,
+    torch: Any,
+    group_ids: Any,
+    values: Any,
+    torch_count_output: Any,
+    torch_sum_output: Any,
+    *,
+    group_count: int,
+    repeats: int,
+) -> dict[str, object]:
+    if not rt.numba_partner_available():
+        return {
+            "status": "skip",
+            "reason": "numba CUDA unavailable",
+            "trusted_valid_group_ids": True,
+        }
+
+    from numba import cuda
+
+    host_group_ids = group_ids.detach().cpu().numpy()
+    host_values = values.detach().cpu().numpy()
+    numba_group_ids = cuda.to_device(host_group_ids)
+    numba_values = cuda.to_device(host_values)
+
+    rt.run_numba_segmented_count_i64(
+        numba_group_ids,
+        group_count=group_count,
+        validate_group_ids=False,
+    )
+    rt.run_numba_segmented_sum_f64(
+        numba_group_ids,
+        numba_values,
+        group_count=group_count,
+        validate_group_ids=False,
+    )
+
+    numba_count_result, numba_count_timings = time_cuda_operation(
+        cuda,
+        lambda: rt.run_numba_segmented_count_i64(
+            numba_group_ids,
+            group_count=group_count,
+            validate_group_ids=False,
+        )["outputs"]["counts"].copy_to_host(),
+        repeats=repeats,
+    )
+    numba_sum_result, numba_sum_timings = time_cuda_operation(
+        cuda,
+        lambda: rt.run_numba_segmented_sum_f64(
+            numba_group_ids,
+            numba_values,
+            group_count=group_count,
+            validate_group_ids=False,
+        )["outputs"]["sums"].copy_to_host(),
+        repeats=repeats,
+    )
+
+    torch_count_host = torch_count_output.detach().cpu().numpy()
+    torch_sum_host = torch_sum_output.detach().cpu().numpy()
+    numba_count_median = median(numba_count_timings)
+    numba_sum_median = median(numba_sum_timings)
+
+    return {
+        "status": "accept",
+        "trusted_valid_group_ids": True,
+        "validation_note": (
+            "Input ids are generated in-range by the runner; Numba per-call host "
+            "validation is disabled for timing and must be replaced with a "
+            "device-resident check before promotion."
+        ),
+        "correctness": {
+            "segmented_count_i64_vs_torch_bincount": bool((numba_count_result == torch_count_host).all()),
+            "segmented_sum_f64_vs_torch_scatter_add": bool(
+                abs(numba_sum_result - torch_sum_host).max() <= 1e-8
+            ),
+        },
+        "timings_seconds": {
+            "rtdl_numba_segmented_count_i64": numba_count_timings,
+            "rtdl_numba_segmented_sum_f64": numba_sum_timings,
+        },
+        "median_seconds": {
+            "rtdl_numba_segmented_count_i64": numba_count_median,
+            "rtdl_numba_segmented_sum_f64": numba_sum_median,
         },
     }
 
@@ -158,6 +265,7 @@ def build_dry_run_report(args: argparse.Namespace, repo_root: Path) -> dict[str,
         "row_counts": args.row_counts,
         "group_count": args.group_count,
         "repeats": args.repeats,
+        "include_numba": args.include_numba,
         "no_public_speedup_claim": True,
         "pod_validation_required": True,
     }
@@ -168,12 +276,26 @@ def run(args: argparse.Namespace, repo_root: Path) -> dict[str, object]:
         return build_dry_run_report(args, repo_root)
 
     scales = [
-        run_scale(row_count, group_count=args.group_count, repeats=args.repeats, seed=args.seed)
+        run_scale(
+            row_count,
+            group_count=args.group_count,
+            repeats=args.repeats,
+            seed=args.seed,
+            include_numba=args.include_numba,
+        )
         for row_count in args.row_counts
     ]
     accepted = all(
         scale["correctness"]["segmented_count_i64_vs_torch_bincount"]
         and scale["correctness"]["segmented_sum_f64_vs_torch_scatter_add"]
+        and (
+            not args.include_numba
+            or scale["numba"]["status"] == "skip"
+            or (
+                scale["numba"]["correctness"]["segmented_count_i64_vs_torch_bincount"]
+                and scale["numba"]["correctness"]["segmented_sum_f64_vs_torch_scatter_add"]
+            )
+        )
         for scale in scales
     )
     return {
@@ -189,6 +311,7 @@ def run(args: argparse.Namespace, repo_root: Path) -> dict[str, object]:
         "row_counts": args.row_counts,
         "group_count": args.group_count,
         "repeats": args.repeats,
+        "include_numba": args.include_numba,
         "scales": scales,
     }
 
@@ -202,6 +325,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--repeats", type=int, default=5)
     parser.add_argument("--seed", type=int, default=2665)
     parser.add_argument("--output", type=Path, default=None)
+    parser.add_argument("--include-numba", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args(argv)
 

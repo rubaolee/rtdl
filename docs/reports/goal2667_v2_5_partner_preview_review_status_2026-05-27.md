@@ -74,8 +74,8 @@ It is not enough for:
 1. Run the Goal2663/2664 CUDA execution tests from `origin/main`.
 2. Run `scripts/goal2665_v2_5_triton_grouped_continuation_pod_runner.py` at
    scale and save JSON artifacts.
-3. Add a Numba pod runner or extend the existing runner to compare Numba,
-   Triton, and Torch device baselines.
+3. Run the existing `--include-numba` path to compare Numba, Triton, and Torch
+   device baselines when Numba is installed on the pod.
 4. Integrate the Triton path into at least one real benchmark row, initially
    RayDB-style grouped count/sum.
 5. Prove the end-to-end OptiX-vs-Embree basis is preserved or improved.

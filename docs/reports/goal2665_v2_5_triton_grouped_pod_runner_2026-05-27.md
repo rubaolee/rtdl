@@ -58,6 +58,8 @@ It validates:
 
 - `run_triton_segmented_count_i64()` against `torch.bincount()`;
 - `run_triton_segmented_sum_f64()` against Torch `scatter_add_()`.
+- optionally, with `--include-numba`, `run_numba_segmented_count_i64()` and
+  `run_numba_segmented_sum_f64()` against the same Torch outputs.
 
 It records:
 
@@ -66,6 +68,11 @@ It records:
 - speedups versus the Torch device baselines;
 - correctness status;
 - Python, Torch, Triton, CUDA, GPU, and Git commit identity.
+
+The Numba path is optional because Numba may not be installed on every pod. If
+enabled, the runner uses the same generated in-range data and disables Numba's
+per-call host validation for timing. This is acceptable only for runner
+evidence; promotion still requires a device-resident validation design.
 
 ## Boundary
 

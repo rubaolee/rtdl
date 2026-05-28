@@ -22,6 +22,7 @@ class Goal2665V25TritonGroupedRunnerTest(unittest.TestCase):
                 "4",
                 "--repeats",
                 "1",
+                "--include-numba",
             ],
             cwd=ROOT,
             check=True,
@@ -34,6 +35,7 @@ class Goal2665V25TritonGroupedRunnerTest(unittest.TestCase):
         self.assertEqual(payload["status"], "dry_run")
         self.assertEqual(payload["row_counts"], [8, 16])
         self.assertEqual(payload["group_count"], 4)
+        self.assertTrue(payload["include_numba"])
         self.assertTrue(payload["no_public_speedup_claim"])
         self.assertTrue(payload["pod_validation_required"])
 
@@ -42,6 +44,9 @@ class Goal2665V25TritonGroupedRunnerTest(unittest.TestCase):
 
         self.assertIn("run_triton_segmented_count_i64", source)
         self.assertIn("run_triton_segmented_sum_f64", source)
+        self.assertIn("run_numba_segmented_count_i64", source)
+        self.assertIn("run_numba_segmented_sum_f64", source)
+        self.assertIn("--include-numba", source)
         self.assertIn("torch.bincount", source)
         self.assertIn("scatter_add_", source)
         self.assertIn("partner_continuation_only", source)
