@@ -186,3 +186,8 @@ The pod validation runner for this pair is
 `docs/reports/goal2665_v2_5_triton_grouped_pod_runner_2026-05-27.md`.
 It compares the RTDL Triton continuations with Torch device baselines and emits
 JSON evidence, but still measures only partner continuation, not RT traversal.
+
+The first Numba fallback preview mirrors the same segmented count/sum contract;
+see `docs/reports/goal2666_v2_5_numba_segmented_preview_2026-05-27.md`.
+It is secondary to Triton and remains `preview_not_promoted` until CUDA pod
+correctness, timing, and benchmark-integration evidence exist.

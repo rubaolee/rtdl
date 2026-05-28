@@ -82,6 +82,14 @@ from .partner_continuation_protocol import execute_v2_5_partner_continuation_ref
 from .partner_continuation_protocol import plan_v2_5_partner_continuation
 from .partner_continuation_protocol import validate_v2_5_partner_continuation_contract
 from .partner_continuation_protocol import v2_5_partner_continuation_contract
+from .numba_partner_continuation import NUMBA_PARTNER_CONTINUATION_STATUS
+from .numba_partner_continuation import NUMBA_SEGMENTED_COUNT_I64_OPERATION
+from .numba_partner_continuation import NUMBA_SEGMENTED_SUM_F64_OPERATION
+from .numba_partner_continuation import describe_numba_segmented_count_i64
+from .numba_partner_continuation import describe_numba_segmented_sum_f64
+from .numba_partner_continuation import numba_partner_available
+from .numba_partner_continuation import run_numba_segmented_count_i64
+from .numba_partner_continuation import run_numba_segmented_sum_f64
 from .triton_partner_continuation import TRITON_PARTNER_CONTINUATION_STATUS
 from .triton_partner_continuation import TRITON_SEGMENTED_COUNT_I64_OPERATION
 from .triton_partner_continuation import TRITON_SEGMENTED_SUM_F64_OPERATION
@@ -1449,6 +1457,14 @@ __all__ = [
     "plan_v2_5_partner_continuation",
     "validate_v2_5_partner_continuation_contract",
     "v2_5_partner_continuation_contract",
+    "NUMBA_PARTNER_CONTINUATION_STATUS",
+    "NUMBA_SEGMENTED_COUNT_I64_OPERATION",
+    "NUMBA_SEGMENTED_SUM_F64_OPERATION",
+    "describe_numba_segmented_count_i64",
+    "describe_numba_segmented_sum_f64",
+    "numba_partner_available",
+    "run_numba_segmented_count_i64",
+    "run_numba_segmented_sum_f64",
     "TRITON_PARTNER_CONTINUATION_STATUS",
     "TRITON_SEGMENTED_COUNT_I64_OPERATION",
     "TRITON_SEGMENTED_SUM_F64_OPERATION",

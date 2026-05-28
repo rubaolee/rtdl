@@ -77,14 +77,15 @@ def run_triton_segmented_count_i64(
     torch.cuda.synchronize(group_ids.device)
     started = perf_counter()
     output = torch.zeros((group_count,), dtype=torch.int64, device=group_ids.device)
-    grid = (triton.cdiv(row_count, block_size),)
-    _triton_segmented_count_i64_kernel(tl)[grid](
-        group_ids,
-        output,
-        row_count,
-        group_count,
-        BLOCK_SIZE=block_size,
-    )
+    if row_count:
+        grid = (triton.cdiv(row_count, block_size),)
+        _triton_segmented_count_i64_kernel(tl)[grid](
+            group_ids,
+            output,
+            row_count,
+            group_count,
+            BLOCK_SIZE=block_size,
+        )
     torch.cuda.synchronize(group_ids.device)
     elapsed = perf_counter() - started
 
@@ -129,15 +130,16 @@ def run_triton_segmented_sum_f64(
     torch.cuda.synchronize(group_ids.device)
     started = perf_counter()
     output = torch.zeros((group_count,), dtype=torch.float64, device=values.device)
-    grid = (triton.cdiv(row_count, block_size),)
-    _triton_segmented_sum_f64_kernel(tl)[grid](
-        group_ids,
-        values,
-        output,
-        row_count,
-        group_count,
-        BLOCK_SIZE=block_size,
-    )
+    if row_count:
+        grid = (triton.cdiv(row_count, block_size),)
+        _triton_segmented_sum_f64_kernel(tl)[grid](
+            group_ids,
+            values,
+            output,
+            row_count,
+            group_count,
+            BLOCK_SIZE=block_size,
+        )
     torch.cuda.synchronize(group_ids.device)
     elapsed = perf_counter() - started
 
