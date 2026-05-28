@@ -1,0 +1,6405 @@
+{
+  "all_compared_rows_match_postgresql": true,
+  "arguments": {
+    "backends": [
+      "paper_rt_embree",
+      "paper_rt_optix"
+    ],
+    "copies": 1000,
+    "dsn_provided": true,
+    "fixture_kind": "generated",
+    "generated_groups": 128,
+    "generated_revenue_mod": 64,
+    "generated_rows": 100000,
+    "modes": [
+      "count",
+      "sum"
+    ]
+  },
+  "claim_boundary": "PostgreSQL is used here only as an external SQL correctness oracle for the RayDB-style fixture. It is not a performance baseline in this report.",
+  "comparisons": [
+    {
+      "backend": "paper_rt_embree",
+      "contract": "raydb_paper_triangle_scan_grouped_aggregate_embree",
+      "copies": 1000,
+      "matches_cpu_reference": true,
+      "matches_postgresql": true,
+      "mode": "count",
+      "native_symbol": "rtdl_embree_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction",
+      "postgres_rows": [
+        {
+          "count": 1,
+          "region_id": 3
+        },
+        {
+          "count": 1,
+          "region_id": 4
+        },
+        {
+          "count": 1,
+          "region_id": 5
+        },
+        {
+          "count": 1,
+          "region_id": 6
+        },
+        {
+          "count": 1,
+          "region_id": 9
+        },
+        {
+          "count": 1,
+          "region_id": 13
+        },
+        {
+          "count": 1,
+          "region_id": 14
+        },
+        {
+          "count": 1,
+          "region_id": 15
+        },
+        {
+          "count": 1,
+          "region_id": 22
+        },
+        {
+          "count": 1,
+          "region_id": 23
+        },
+        {
+          "count": 1,
+          "region_id": 25
+        },
+        {
+          "count": 1,
+          "region_id": 26
+        },
+        {
+          "count": 1,
+          "region_id": 33
+        },
+        {
+          "count": 1,
+          "region_id": 36
+        },
+        {
+          "count": 1,
+          "region_id": 40
+        },
+        {
+          "count": 1,
+          "region_id": 43
+        },
+        {
+          "count": 1,
+          "region_id": 44
+        },
+        {
+          "count": 1,
+          "region_id": 46
+        },
+        {
+          "count": 1,
+          "region_id": 47
+        },
+        {
+          "count": 1,
+          "region_id": 52
+        },
+        {
+          "count": 1,
+          "region_id": 54
+        },
+        {
+          "count": 1,
+          "region_id": 56
+        },
+        {
+          "count": 1,
+          "region_id": 57
+        },
+        {
+          "count": 1,
+          "region_id": 62
+        },
+        {
+          "count": 1,
+          "region_id": 63
+        },
+        {
+          "count": 1,
+          "region_id": 64
+        },
+        {
+          "count": 1,
+          "region_id": 65
+        },
+        {
+          "count": 1,
+          "region_id": 66
+        },
+        {
+          "count": 1,
+          "region_id": 69
+        },
+        {
+          "count": 1,
+          "region_id": 73
+        },
+        {
+          "count": 1,
+          "region_id": 84
+        },
+        {
+          "count": 1,
+          "region_id": 86
+        },
+        {
+          "count": 1,
+          "region_id": 91
+        },
+        {
+          "count": 1,
+          "region_id": 94
+        },
+        {
+          "count": 1,
+          "region_id": 102
+        },
+        {
+          "count": 1,
+          "region_id": 103
+        },
+        {
+          "count": 1,
+          "region_id": 105
+        },
+        {
+          "count": 1,
+          "region_id": 112
+        },
+        {
+          "count": 1,
+          "region_id": 114
+        },
+        {
+          "count": 1,
+          "region_id": 116
+        },
+        {
+          "count": 1,
+          "region_id": 121
+        },
+        {
+          "count": 1,
+          "region_id": 122
+        },
+        {
+          "count": 1,
+          "region_id": 123
+        },
+        {
+          "count": 1,
+          "region_id": 125
+        },
+        {
+          "count": 2,
+          "region_id": 0
+        },
+        {
+          "count": 2,
+          "region_id": 7
+        },
+        {
+          "count": 2,
+          "region_id": 8
+        },
+        {
+          "count": 2,
+          "region_id": 12
+        },
+        {
+          "count": 2,
+          "region_id": 17
+        },
+        {
+          "count": 2,
+          "region_id": 18
+        },
+        {
+          "count": 2,
+          "region_id": 19
+        },
+        {
+          "count": 2,
+          "region_id": 21
+        },
+        {
+          "count": 2,
+          "region_id": 28
+        },
+        {
+          "count": 2,
+          "region_id": 30
+        },
+        {
+          "count": 2,
+          "region_id": 31
+        },
+        {
+          "count": 2,
+          "region_id": 32
+        },
+        {
+          "count": 2,
+          "region_id": 38
+        },
+        {
+          "count": 2,
+          "region_id": 48
+        },
+        {
+          "count": 2,
+          "region_id": 51
+        },
+        {
+          "count": 2,
+          "region_id": 53
+        },
+        {
+          "count": 2,
+          "region_id": 58
+        },
+        {
+          "count": 2,
+          "region_id": 59
+        },
+        {
+          "count": 2,
+          "region_id": 67
+        },
+        {
+          "count": 2,
+          "region_id": 68
+        },
+        {
+          "count": 2,
+          "region_id": 75
+        },
+        {
+          "count": 2,
+          "region_id": 76
+        },
+        {
+          "count": 2,
+          "region_id": 77
+        },
+        {
+          "count": 2,
+          "region_id": 78
+        },
+        {
+          "count": 2,
+          "region_id": 82
+        },
+        {
+          "count": 2,
+          "region_id": 83
+        },
+        {
+          "count": 2,
+          "region_id": 87
+        },
+        {
+          "count": 2,
+          "region_id": 95
+        },
+        {
+          "count": 2,
+          "region_id": 101
+        },
+        {
+          "count": 2,
+          "region_id": 106
+        },
+        {
+          "count": 2,
+          "region_id": 111
+        },
+        {
+          "count": 2,
+          "region_id": 113
+        },
+        {
+          "count": 2,
+          "region_id": 124
+        },
+        {
+          "count": 2,
+          "region_id": 126
+        },
+        {
+          "count": 2,
+          "region_id": 127
+        },
+        {
+          "count": 3,
+          "region_id": 1
+        },
+        {
+          "count": 3,
+          "region_id": 2
+        },
+        {
+          "count": 3,
+          "region_id": 10
+        },
+        {
+          "count": 3,
+          "region_id": 11
+        },
+        {
+          "count": 3,
+          "region_id": 27
+        },
+        {
+          "count": 3,
+          "region_id": 29
+        },
+        {
+          "count": 3,
+          "region_id": 37
+        },
+        {
+          "count": 3,
+          "region_id": 41
+        },
+        {
+          "count": 3,
+          "region_id": 42
+        },
+        {
+          "count": 3,
+          "region_id": 49
+        },
+        {
+          "count": 3,
+          "region_id": 50
+        },
+        {
+          "count": 3,
+          "region_id": 61
+        },
+        {
+          "count": 3,
+          "region_id": 71
+        },
+        {
+          "count": 3,
+          "region_id": 72
+        },
+        {
+          "count": 3,
+          "region_id": 79
+        },
+        {
+          "count": 3,
+          "region_id": 80
+        },
+        {
+          "count": 3,
+          "region_id": 81
+        },
+        {
+          "count": 3,
+          "region_id": 88
+        },
+        {
+          "count": 3,
+          "region_id": 89
+        },
+        {
+          "count": 3,
+          "region_id": 90
+        },
+        {
+          "count": 3,
+          "region_id": 92
+        },
+        {
+          "count": 3,
+          "region_id": 96
+        },
+        {
+          "count": 3,
+          "region_id": 97
+        },
+        {
+          "count": 3,
+          "region_id": 99
+        },
+        {
+          "count": 3,
+          "region_id": 100
+        },
+        {
+          "count": 3,
+          "region_id": 107
+        },
+        {
+          "count": 3,
+          "region_id": 108
+        },
+        {
+          "count": 3,
+          "region_id": 109
+        },
+        {
+          "count": 3,
+          "region_id": 117
+        },
+        {
+          "count": 3,
+          "region_id": 118
+        },
+        {
+          "count": 3,
+          "region_id": 119
+        },
+        {
+          "count": 4,
+          "region_id": 20
+        },
+        {
+          "count": 4,
+          "region_id": 60
+        },
+        {
+          "count": 4,
+          "region_id": 70
+        },
+        {
+          "count": 4,
+          "region_id": 98
+        },
+        {
+          "count": 4,
+          "region_id": 110
+        },
+        {
+          "count": 4,
+          "region_id": 120
+        },
+        {
+          "count": 5,
+          "region_id": 39
+        }
+      ],
+      "row_count": 100000,
+      "rows": [
+        {
+          "count": 1,
+          "region_id": 3
+        },
+        {
+          "count": 1,
+          "region_id": 4
+        },
+        {
+          "count": 1,
+          "region_id": 5
+        },
+        {
+          "count": 1,
+          "region_id": 6
+        },
+        {
+          "count": 1,
+          "region_id": 9
+        },
+        {
+          "count": 1,
+          "region_id": 13
+        },
+        {
+          "count": 1,
+          "region_id": 14
+        },
+        {
+          "count": 1,
+          "region_id": 15
+        },
+        {
+          "count": 1,
+          "region_id": 22
+        },
+        {
+          "count": 1,
+          "region_id": 23
+        },
+        {
+          "count": 1,
+          "region_id": 25
+        },
+        {
+          "count": 1,
+          "region_id": 26
+        },
+        {
+          "count": 1,
+          "region_id": 33
+        },
+        {
+          "count": 1,
+          "region_id": 36
+        },
+        {
+          "count": 1,
+          "region_id": 40
+        },
+        {
+          "count": 1,
+          "region_id": 43
+        },
+        {
+          "count": 1,
+          "region_id": 44
+        },
+        {
+          "count": 1,
+          "region_id": 46
+        },
+        {
+          "count": 1,
+          "region_id": 47
+        },
+        {
+          "count": 1,
+          "region_id": 52
+        },
+        {
+          "count": 1,
+          "region_id": 54
+        },
+        {
+          "count": 1,
+          "region_id": 56
+        },
+        {
+          "count": 1,
+          "region_id": 57
+        },
+        {
+          "count": 1,
+          "region_id": 62
+        },
+        {
+          "count": 1,
+          "region_id": 63
+        },
+        {
+          "count": 1,
+          "region_id": 64
+        },
+        {
+          "count": 1,
+          "region_id": 65
+        },
+        {
+          "count": 1,
+          "region_id": 66
+        },
+        {
+          "count": 1,
+          "region_id": 69
+        },
+        {
+          "count": 1,
+          "region_id": 73
+        },
+        {
+          "count": 1,
+          "region_id": 84
+        },
+        {
+          "count": 1,
+          "region_id": 86
+        },
+        {
+          "count": 1,
+          "region_id": 91
+        },
+        {
+          "count": 1,
+          "region_id": 94
+        },
+        {
+          "count": 1,
+          "region_id": 102
+        },
+        {
+          "count": 1,
+          "region_id": 103
+        },
+        {
+          "count": 1,
+          "region_id": 105
+        },
+        {
+          "count": 1,
+          "region_id": 112
+        },
+        {
+          "count": 1,
+          "region_id": 114
+        },
+        {
+          "count": 1,
+          "region_id": 116
+        },
+        {
+          "count": 1,
+          "region_id": 121
+        },
+        {
+          "count": 1,
+          "region_id": 122
+        },
+        {
+          "count": 1,
+          "region_id": 123
+        },
+        {
+          "count": 1,
+          "region_id": 125
+        },
+        {
+          "count": 2,
+          "region_id": 0
+        },
+        {
+          "count": 2,
+          "region_id": 7
+        },
+        {
+          "count": 2,
+          "region_id": 8
+        },
+        {
+          "count": 2,
+          "region_id": 12
+        },
+        {
+          "count": 2,
+          "region_id": 17
+        },
+        {
+          "count": 2,
+          "region_id": 18
+        },
+        {
+          "count": 2,
+          "region_id": 19
+        },
+        {
+          "count": 2,
+          "region_id": 21
+        },
+        {
+          "count": 2,
+          "region_id": 28
+        },
+        {
+          "count": 2,
+          "region_id": 30
+        },
+        {
+          "count": 2,
+          "region_id": 31
+        },
+        {
+          "count": 2,
+          "region_id": 32
+        },
+        {
+          "count": 2,
+          "region_id": 38
+        },
+        {
+          "count": 2,
+          "region_id": 48
+        },
+        {
+          "count": 2,
+          "region_id": 51
+        },
+        {
+          "count": 2,
+          "region_id": 53
+        },
+        {
+          "count": 2,
+          "region_id": 58
+        },
+        {
+          "count": 2,
+          "region_id": 59
+        },
+        {
+          "count": 2,
+          "region_id": 67
+        },
+        {
+          "count": 2,
+          "region_id": 68
+        },
+        {
+          "count": 2,
+          "region_id": 75
+        },
+        {
+          "count": 2,
+          "region_id": 76
+        },
+        {
+          "count": 2,
+          "region_id": 77
+        },
+        {
+          "count": 2,
+          "region_id": 78
+        },
+        {
+          "count": 2,
+          "region_id": 82
+        },
+        {
+          "count": 2,
+          "region_id": 83
+        },
+        {
+          "count": 2,
+          "region_id": 87
+        },
+        {
+          "count": 2,
+          "region_id": 95
+        },
+        {
+          "count": 2,
+          "region_id": 101
+        },
+        {
+          "count": 2,
+          "region_id": 106
+        },
+        {
+          "count": 2,
+          "region_id": 111
+        },
+        {
+          "count": 2,
+          "region_id": 113
+        },
+        {
+          "count": 2,
+          "region_id": 124
+        },
+        {
+          "count": 2,
+          "region_id": 126
+        },
+        {
+          "count": 2,
+          "region_id": 127
+        },
+        {
+          "count": 3,
+          "region_id": 1
+        },
+        {
+          "count": 3,
+          "region_id": 2
+        },
+        {
+          "count": 3,
+          "region_id": 10
+        },
+        {
+          "count": 3,
+          "region_id": 11
+        },
+        {
+          "count": 3,
+          "region_id": 27
+        },
+        {
+          "count": 3,
+          "region_id": 29
+        },
+        {
+          "count": 3,
+          "region_id": 37
+        },
+        {
+          "count": 3,
+          "region_id": 41
+        },
+        {
+          "count": 3,
+          "region_id": 42
+        },
+        {
+          "count": 3,
+          "region_id": 49
+        },
+        {
+          "count": 3,
+          "region_id": 50
+        },
+        {
+          "count": 3,
+          "region_id": 61
+        },
+        {
+          "count": 3,
+          "region_id": 71
+        },
+        {
+          "count": 3,
+          "region_id": 72
+        },
+        {
+          "count": 3,
+          "region_id": 79
+        },
+        {
+          "count": 3,
+          "region_id": 80
+        },
+        {
+          "count": 3,
+          "region_id": 81
+        },
+        {
+          "count": 3,
+          "region_id": 88
+        },
+        {
+          "count": 3,
+          "region_id": 89
+        },
+        {
+          "count": 3,
+          "region_id": 90
+        },
+        {
+          "count": 3,
+          "region_id": 92
+        },
+        {
+          "count": 3,
+          "region_id": 96
+        },
+        {
+          "count": 3,
+          "region_id": 97
+        },
+        {
+          "count": 3,
+          "region_id": 99
+        },
+        {
+          "count": 3,
+          "region_id": 100
+        },
+        {
+          "count": 3,
+          "region_id": 107
+        },
+        {
+          "count": 3,
+          "region_id": 108
+        },
+        {
+          "count": 3,
+          "region_id": 109
+        },
+        {
+          "count": 3,
+          "region_id": 117
+        },
+        {
+          "count": 3,
+          "region_id": 118
+        },
+        {
+          "count": 3,
+          "region_id": 119
+        },
+        {
+          "count": 4,
+          "region_id": 20
+        },
+        {
+          "count": 4,
+          "region_id": 60
+        },
+        {
+          "count": 4,
+          "region_id": 70
+        },
+        {
+          "count": 4,
+          "region_id": 98
+        },
+        {
+          "count": 4,
+          "region_id": 110
+        },
+        {
+          "count": 4,
+          "region_id": 120
+        },
+        {
+          "count": 5,
+          "region_id": 39
+        }
+      ],
+      "rt_core_accelerated": false
+    },
+    {
+      "backend": "paper_rt_embree",
+      "contract": "raydb_paper_triangle_scan_grouped_aggregate_embree",
+      "copies": 1000,
+      "matches_cpu_reference": true,
+      "matches_postgresql": true,
+      "mode": "sum",
+      "native_symbol": "rtdl_embree_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction",
+      "postgres_rows": [
+        {
+          "region_id": 0,
+          "sum": 23
+        },
+        {
+          "region_id": 1,
+          "sum": 34
+        },
+        {
+          "region_id": 2,
+          "sum": 132
+        },
+        {
+          "region_id": 3,
+          "sum": 18
+        },
+        {
+          "region_id": 4,
+          "sum": 63
+        },
+        {
+          "region_id": 5,
+          "sum": 18
+        },
+        {
+          "region_id": 6,
+          "sum": 62
+        },
+        {
+          "region_id": 7,
+          "sum": 77
+        },
+        {
+          "region_id": 8,
+          "sum": 19
+        },
+        {
+          "region_id": 9,
+          "sum": 59
+        },
+        {
+          "region_id": 10,
+          "sum": 29
+        },
+        {
+          "region_id": 11,
+          "sum": 46
+        },
+        {
+          "region_id": 12,
+          "sum": 58
+        },
+        {
+          "region_id": 13,
+          "sum": 10
+        },
+        {
+          "region_id": 14,
+          "sum": 27
+        },
+        {
+          "region_id": 15,
+          "sum": 9
+        },
+        {
+          "region_id": 17,
+          "sum": 60
+        },
+        {
+          "region_id": 18,
+          "sum": 12
+        },
+        {
+          "region_id": 19,
+          "sum": 37
+        },
+        {
+          "region_id": 20,
+          "sum": 79
+        },
+        {
+          "region_id": 21,
+          "sum": 25
+        },
+        {
+          "region_id": 22,
+          "sum": 21
+        },
+        {
+          "region_id": 23,
+          "sum": 1
+        },
+        {
+          "region_id": 25,
+          "sum": 17
+        },
+        {
+          "region_id": 26,
+          "sum": 8
+        },
+        {
+          "region_id": 27,
+          "sum": 87
+        },
+        {
+          "region_id": 28,
+          "sum": 123
+        },
+        {
+          "region_id": 29,
+          "sum": 43
+        },
+        {
+          "region_id": 30,
+          "sum": 63
+        },
+        {
+          "region_id": 31,
+          "sum": 72
+        },
+        {
+          "region_id": 32,
+          "sum": 14
+        },
+        {
+          "region_id": 33,
+          "sum": 30
+        },
+        {
+          "region_id": 36,
+          "sum": 10
+        },
+        {
+          "region_id": 37,
+          "sum": 79
+        },
+        {
+          "region_id": 38,
+          "sum": 42
+        },
+        {
+          "region_id": 39,
+          "sum": 167
+        },
+        {
+          "region_id": 40,
+          "sum": 5
+        },
+        {
+          "region_id": 41,
+          "sum": 86
+        },
+        {
+          "region_id": 42,
+          "sum": 72
+        },
+        {
+          "region_id": 43,
+          "sum": 21
+        },
+        {
+          "region_id": 44,
+          "sum": 20
+        },
+        {
+          "region_id": 46,
+          "sum": 19
+        },
+        {
+          "region_id": 47,
+          "sum": 64
+        },
+        {
+          "region_id": 48,
+          "sum": 25
+        },
+        {
+          "region_id": 49,
+          "sum": 93
+        },
+        {
+          "region_id": 50,
+          "sum": 101
+        },
+        {
+          "region_id": 51,
+          "sum": 18
+        },
+        {
+          "region_id": 52,
+          "sum": 22
+        },
+        {
+          "region_id": 53,
+          "sum": 16
+        },
+        {
+          "region_id": 54,
+          "sum": 11
+        },
+        {
+          "region_id": 56,
+          "sum": 10
+        },
+        {
+          "region_id": 57,
+          "sum": 18
+        },
+        {
+          "region_id": 58,
+          "sum": 45
+        },
+        {
+          "region_id": 59,
+          "sum": 78
+        },
+        {
+          "region_id": 60,
+          "sum": 100
+        },
+        {
+          "region_id": 61,
+          "sum": 79
+        },
+        {
+          "region_id": 62,
+          "sum": 14
+        },
+        {
+          "region_id": 63,
+          "sum": 12
+        },
+        {
+          "region_id": 64,
+          "sum": 3
+        },
+        {
+          "region_id": 65,
+          "sum": 58
+        },
+        {
+          "region_id": 66,
+          "sum": 56
+        },
+        {
+          "region_id": 67,
+          "sum": 27
+        },
+        {
+          "region_id": 68,
+          "sum": 36
+        },
+        {
+          "region_id": 69,
+          "sum": 26
+        },
+        {
+          "region_id": 70,
+          "sum": 93
+        },
+        {
+          "region_id": 71,
+          "sum": 80
+        },
+        {
+          "region_id": 72,
+          "sum": 43
+        },
+        {
+          "region_id": 73,
+          "sum": 3
+        },
+        {
+          "region_id": 75,
+          "sum": 5
+        },
+        {
+          "region_id": 76,
+          "sum": 69
+        },
+        {
+          "region_id": 77,
+          "sum": 10
+        },
+        {
+          "region_id": 78,
+          "sum": 83
+        },
+        {
+          "region_id": 79,
+          "sum": 42
+        },
+        {
+          "region_id": 80,
+          "sum": 105
+        },
+        {
+          "region_id": 81,
+          "sum": 92
+        },
+        {
+          "region_id": 82,
+          "sum": 21
+        },
+        {
+          "region_id": 83,
+          "sum": 64
+        },
+        {
+          "region_id": 84,
+          "sum": 13
+        },
+        {
+          "region_id": 86,
+          "sum": 12
+        },
+        {
+          "region_id": 87,
+          "sum": 77
+        },
+        {
+          "region_id": 88,
+          "sum": 84
+        },
+        {
+          "region_id": 89,
+          "sum": 81
+        },
+        {
+          "region_id": 90,
+          "sum": 104
+        },
+        {
+          "region_id": 91,
+          "sum": 7
+        },
+        {
+          "region_id": 92,
+          "sum": 93
+        },
+        {
+          "region_id": 94,
+          "sum": 4
+        },
+        {
+          "region_id": 95,
+          "sum": 36
+        },
+        {
+          "region_id": 96,
+          "sum": 46
+        },
+        {
+          "region_id": 97,
+          "sum": 53
+        },
+        {
+          "region_id": 98,
+          "sum": 79
+        },
+        {
+          "region_id": 99,
+          "sum": 73
+        },
+        {
+          "region_id": 100,
+          "sum": 89
+        },
+        {
+          "region_id": 101,
+          "sum": 23
+        },
+        {
+          "region_id": 102,
+          "sum": 61
+        },
+        {
+          "region_id": 103,
+          "sum": 15
+        },
+        {
+          "region_id": 105,
+          "sum": 15
+        },
+        {
+          "region_id": 106,
+          "sum": 25
+        },
+        {
+          "region_id": 107,
+          "sum": 92
+        },
+        {
+          "region_id": 108,
+          "sum": 24
+        },
+        {
+          "region_id": 109,
+          "sum": 94
+        },
+        {
+          "region_id": 110,
+          "sum": 145
+        },
+        {
+          "region_id": 111,
+          "sum": 70
+        },
+        {
+          "region_id": 112,
+          "sum": 53
+        },
+        {
+          "region_id": 113,
+          "sum": 67
+        },
+        {
+          "region_id": 114,
+          "sum": 15
+        },
+        {
+          "region_id": 116,
+          "sum": 14
+        },
+        {
+          "region_id": 117,
+          "sum": 39
+        },
+        {
+          "region_id": 118,
+          "sum": 63
+        },
+        {
+          "region_id": 119,
+          "sum": 42
+        },
+        {
+          "region_id": 120,
+          "sum": 84
+        },
+        {
+          "region_id": 121,
+          "sum": 64
+        },
+        {
+          "region_id": 122,
+          "sum": 7
+        },
+        {
+          "region_id": 123,
+          "sum": 52
+        },
+        {
+          "region_id": 124,
+          "sum": 21
+        },
+        {
+          "region_id": 125,
+          "sum": 25
+        },
+        {
+          "region_id": 126,
+          "sum": 18
+        },
+        {
+          "region_id": 127,
+          "sum": 18
+        }
+      ],
+      "row_count": 100000,
+      "rows": [
+        {
+          "region_id": 0,
+          "sum": 23
+        },
+        {
+          "region_id": 1,
+          "sum": 34
+        },
+        {
+          "region_id": 2,
+          "sum": 132
+        },
+        {
+          "region_id": 3,
+          "sum": 18
+        },
+        {
+          "region_id": 4,
+          "sum": 63
+        },
+        {
+          "region_id": 5,
+          "sum": 18
+        },
+        {
+          "region_id": 6,
+          "sum": 62
+        },
+        {
+          "region_id": 7,
+          "sum": 77
+        },
+        {
+          "region_id": 8,
+          "sum": 19
+        },
+        {
+          "region_id": 9,
+          "sum": 59
+        },
+        {
+          "region_id": 10,
+          "sum": 29
+        },
+        {
+          "region_id": 11,
+          "sum": 46
+        },
+        {
+          "region_id": 12,
+          "sum": 58
+        },
+        {
+          "region_id": 13,
+          "sum": 10
+        },
+        {
+          "region_id": 14,
+          "sum": 27
+        },
+        {
+          "region_id": 15,
+          "sum": 9
+        },
+        {
+          "region_id": 17,
+          "sum": 60
+        },
+        {
+          "region_id": 18,
+          "sum": 12
+        },
+        {
+          "region_id": 19,
+          "sum": 37
+        },
+        {
+          "region_id": 20,
+          "sum": 79
+        },
+        {
+          "region_id": 21,
+          "sum": 25
+        },
+        {
+          "region_id": 22,
+          "sum": 21
+        },
+        {
+          "region_id": 23,
+          "sum": 1
+        },
+        {
+          "region_id": 25,
+          "sum": 17
+        },
+        {
+          "region_id": 26,
+          "sum": 8
+        },
+        {
+          "region_id": 27,
+          "sum": 87
+        },
+        {
+          "region_id": 28,
+          "sum": 123
+        },
+        {
+          "region_id": 29,
+          "sum": 43
+        },
+        {
+          "region_id": 30,
+          "sum": 63
+        },
+        {
+          "region_id": 31,
+          "sum": 72
+        },
+        {
+          "region_id": 32,
+          "sum": 14
+        },
+        {
+          "region_id": 33,
+          "sum": 30
+        },
+        {
+          "region_id": 36,
+          "sum": 10
+        },
+        {
+          "region_id": 37,
+          "sum": 79
+        },
+        {
+          "region_id": 38,
+          "sum": 42
+        },
+        {
+          "region_id": 39,
+          "sum": 167
+        },
+        {
+          "region_id": 40,
+          "sum": 5
+        },
+        {
+          "region_id": 41,
+          "sum": 86
+        },
+        {
+          "region_id": 42,
+          "sum": 72
+        },
+        {
+          "region_id": 43,
+          "sum": 21
+        },
+        {
+          "region_id": 44,
+          "sum": 20
+        },
+        {
+          "region_id": 46,
+          "sum": 19
+        },
+        {
+          "region_id": 47,
+          "sum": 64
+        },
+        {
+          "region_id": 48,
+          "sum": 25
+        },
+        {
+          "region_id": 49,
+          "sum": 93
+        },
+        {
+          "region_id": 50,
+          "sum": 101
+        },
+        {
+          "region_id": 51,
+          "sum": 18
+        },
+        {
+          "region_id": 52,
+          "sum": 22
+        },
+        {
+          "region_id": 53,
+          "sum": 16
+        },
+        {
+          "region_id": 54,
+          "sum": 11
+        },
+        {
+          "region_id": 56,
+          "sum": 10
+        },
+        {
+          "region_id": 57,
+          "sum": 18
+        },
+        {
+          "region_id": 58,
+          "sum": 45
+        },
+        {
+          "region_id": 59,
+          "sum": 78
+        },
+        {
+          "region_id": 60,
+          "sum": 100
+        },
+        {
+          "region_id": 61,
+          "sum": 79
+        },
+        {
+          "region_id": 62,
+          "sum": 14
+        },
+        {
+          "region_id": 63,
+          "sum": 12
+        },
+        {
+          "region_id": 64,
+          "sum": 3
+        },
+        {
+          "region_id": 65,
+          "sum": 58
+        },
+        {
+          "region_id": 66,
+          "sum": 56
+        },
+        {
+          "region_id": 67,
+          "sum": 27
+        },
+        {
+          "region_id": 68,
+          "sum": 36
+        },
+        {
+          "region_id": 69,
+          "sum": 26
+        },
+        {
+          "region_id": 70,
+          "sum": 93
+        },
+        {
+          "region_id": 71,
+          "sum": 80
+        },
+        {
+          "region_id": 72,
+          "sum": 43
+        },
+        {
+          "region_id": 73,
+          "sum": 3
+        },
+        {
+          "region_id": 75,
+          "sum": 5
+        },
+        {
+          "region_id": 76,
+          "sum": 69
+        },
+        {
+          "region_id": 77,
+          "sum": 10
+        },
+        {
+          "region_id": 78,
+          "sum": 83
+        },
+        {
+          "region_id": 79,
+          "sum": 42
+        },
+        {
+          "region_id": 80,
+          "sum": 105
+        },
+        {
+          "region_id": 81,
+          "sum": 92
+        },
+        {
+          "region_id": 82,
+          "sum": 21
+        },
+        {
+          "region_id": 83,
+          "sum": 64
+        },
+        {
+          "region_id": 84,
+          "sum": 13
+        },
+        {
+          "region_id": 86,
+          "sum": 12
+        },
+        {
+          "region_id": 87,
+          "sum": 77
+        },
+        {
+          "region_id": 88,
+          "sum": 84
+        },
+        {
+          "region_id": 89,
+          "sum": 81
+        },
+        {
+          "region_id": 90,
+          "sum": 104
+        },
+        {
+          "region_id": 91,
+          "sum": 7
+        },
+        {
+          "region_id": 92,
+          "sum": 93
+        },
+        {
+          "region_id": 94,
+          "sum": 4
+        },
+        {
+          "region_id": 95,
+          "sum": 36
+        },
+        {
+          "region_id": 96,
+          "sum": 46
+        },
+        {
+          "region_id": 97,
+          "sum": 53
+        },
+        {
+          "region_id": 98,
+          "sum": 79
+        },
+        {
+          "region_id": 99,
+          "sum": 73
+        },
+        {
+          "region_id": 100,
+          "sum": 89
+        },
+        {
+          "region_id": 101,
+          "sum": 23
+        },
+        {
+          "region_id": 102,
+          "sum": 61
+        },
+        {
+          "region_id": 103,
+          "sum": 15
+        },
+        {
+          "region_id": 105,
+          "sum": 15
+        },
+        {
+          "region_id": 106,
+          "sum": 25
+        },
+        {
+          "region_id": 107,
+          "sum": 92
+        },
+        {
+          "region_id": 108,
+          "sum": 24
+        },
+        {
+          "region_id": 109,
+          "sum": 94
+        },
+        {
+          "region_id": 110,
+          "sum": 145
+        },
+        {
+          "region_id": 111,
+          "sum": 70
+        },
+        {
+          "region_id": 112,
+          "sum": 53
+        },
+        {
+          "region_id": 113,
+          "sum": 67
+        },
+        {
+          "region_id": 114,
+          "sum": 15
+        },
+        {
+          "region_id": 116,
+          "sum": 14
+        },
+        {
+          "region_id": 117,
+          "sum": 39
+        },
+        {
+          "region_id": 118,
+          "sum": 63
+        },
+        {
+          "region_id": 119,
+          "sum": 42
+        },
+        {
+          "region_id": 120,
+          "sum": 84
+        },
+        {
+          "region_id": 121,
+          "sum": 64
+        },
+        {
+          "region_id": 122,
+          "sum": 7
+        },
+        {
+          "region_id": 123,
+          "sum": 52
+        },
+        {
+          "region_id": 124,
+          "sum": 21
+        },
+        {
+          "region_id": 125,
+          "sum": 25
+        },
+        {
+          "region_id": 126,
+          "sum": 18
+        },
+        {
+          "region_id": 127,
+          "sum": 18
+        }
+      ],
+      "rt_core_accelerated": false
+    },
+    {
+      "backend": "paper_rt_optix",
+      "contract": "raydb_paper_triangle_scan_grouped_aggregate_optix",
+      "copies": 1000,
+      "matches_cpu_reference": true,
+      "matches_postgresql": true,
+      "mode": "count",
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction",
+      "postgres_rows": [
+        {
+          "count": 1,
+          "region_id": 3
+        },
+        {
+          "count": 1,
+          "region_id": 4
+        },
+        {
+          "count": 1,
+          "region_id": 5
+        },
+        {
+          "count": 1,
+          "region_id": 6
+        },
+        {
+          "count": 1,
+          "region_id": 9
+        },
+        {
+          "count": 1,
+          "region_id": 13
+        },
+        {
+          "count": 1,
+          "region_id": 14
+        },
+        {
+          "count": 1,
+          "region_id": 15
+        },
+        {
+          "count": 1,
+          "region_id": 22
+        },
+        {
+          "count": 1,
+          "region_id": 23
+        },
+        {
+          "count": 1,
+          "region_id": 25
+        },
+        {
+          "count": 1,
+          "region_id": 26
+        },
+        {
+          "count": 1,
+          "region_id": 33
+        },
+        {
+          "count": 1,
+          "region_id": 36
+        },
+        {
+          "count": 1,
+          "region_id": 40
+        },
+        {
+          "count": 1,
+          "region_id": 43
+        },
+        {
+          "count": 1,
+          "region_id": 44
+        },
+        {
+          "count": 1,
+          "region_id": 46
+        },
+        {
+          "count": 1,
+          "region_id": 47
+        },
+        {
+          "count": 1,
+          "region_id": 52
+        },
+        {
+          "count": 1,
+          "region_id": 54
+        },
+        {
+          "count": 1,
+          "region_id": 56
+        },
+        {
+          "count": 1,
+          "region_id": 57
+        },
+        {
+          "count": 1,
+          "region_id": 62
+        },
+        {
+          "count": 1,
+          "region_id": 63
+        },
+        {
+          "count": 1,
+          "region_id": 64
+        },
+        {
+          "count": 1,
+          "region_id": 65
+        },
+        {
+          "count": 1,
+          "region_id": 66
+        },
+        {
+          "count": 1,
+          "region_id": 69
+        },
+        {
+          "count": 1,
+          "region_id": 73
+        },
+        {
+          "count": 1,
+          "region_id": 84
+        },
+        {
+          "count": 1,
+          "region_id": 86
+        },
+        {
+          "count": 1,
+          "region_id": 91
+        },
+        {
+          "count": 1,
+          "region_id": 94
+        },
+        {
+          "count": 1,
+          "region_id": 102
+        },
+        {
+          "count": 1,
+          "region_id": 103
+        },
+        {
+          "count": 1,
+          "region_id": 105
+        },
+        {
+          "count": 1,
+          "region_id": 112
+        },
+        {
+          "count": 1,
+          "region_id": 114
+        },
+        {
+          "count": 1,
+          "region_id": 116
+        },
+        {
+          "count": 1,
+          "region_id": 121
+        },
+        {
+          "count": 1,
+          "region_id": 122
+        },
+        {
+          "count": 1,
+          "region_id": 123
+        },
+        {
+          "count": 1,
+          "region_id": 125
+        },
+        {
+          "count": 2,
+          "region_id": 0
+        },
+        {
+          "count": 2,
+          "region_id": 7
+        },
+        {
+          "count": 2,
+          "region_id": 8
+        },
+        {
+          "count": 2,
+          "region_id": 12
+        },
+        {
+          "count": 2,
+          "region_id": 17
+        },
+        {
+          "count": 2,
+          "region_id": 18
+        },
+        {
+          "count": 2,
+          "region_id": 19
+        },
+        {
+          "count": 2,
+          "region_id": 21
+        },
+        {
+          "count": 2,
+          "region_id": 28
+        },
+        {
+          "count": 2,
+          "region_id": 30
+        },
+        {
+          "count": 2,
+          "region_id": 31
+        },
+        {
+          "count": 2,
+          "region_id": 32
+        },
+        {
+          "count": 2,
+          "region_id": 38
+        },
+        {
+          "count": 2,
+          "region_id": 48
+        },
+        {
+          "count": 2,
+          "region_id": 51
+        },
+        {
+          "count": 2,
+          "region_id": 53
+        },
+        {
+          "count": 2,
+          "region_id": 58
+        },
+        {
+          "count": 2,
+          "region_id": 59
+        },
+        {
+          "count": 2,
+          "region_id": 67
+        },
+        {
+          "count": 2,
+          "region_id": 68
+        },
+        {
+          "count": 2,
+          "region_id": 75
+        },
+        {
+          "count": 2,
+          "region_id": 76
+        },
+        {
+          "count": 2,
+          "region_id": 77
+        },
+        {
+          "count": 2,
+          "region_id": 78
+        },
+        {
+          "count": 2,
+          "region_id": 82
+        },
+        {
+          "count": 2,
+          "region_id": 83
+        },
+        {
+          "count": 2,
+          "region_id": 87
+        },
+        {
+          "count": 2,
+          "region_id": 95
+        },
+        {
+          "count": 2,
+          "region_id": 101
+        },
+        {
+          "count": 2,
+          "region_id": 106
+        },
+        {
+          "count": 2,
+          "region_id": 111
+        },
+        {
+          "count": 2,
+          "region_id": 113
+        },
+        {
+          "count": 2,
+          "region_id": 124
+        },
+        {
+          "count": 2,
+          "region_id": 126
+        },
+        {
+          "count": 2,
+          "region_id": 127
+        },
+        {
+          "count": 3,
+          "region_id": 1
+        },
+        {
+          "count": 3,
+          "region_id": 2
+        },
+        {
+          "count": 3,
+          "region_id": 10
+        },
+        {
+          "count": 3,
+          "region_id": 11
+        },
+        {
+          "count": 3,
+          "region_id": 27
+        },
+        {
+          "count": 3,
+          "region_id": 29
+        },
+        {
+          "count": 3,
+          "region_id": 37
+        },
+        {
+          "count": 3,
+          "region_id": 41
+        },
+        {
+          "count": 3,
+          "region_id": 42
+        },
+        {
+          "count": 3,
+          "region_id": 49
+        },
+        {
+          "count": 3,
+          "region_id": 50
+        },
+        {
+          "count": 3,
+          "region_id": 61
+        },
+        {
+          "count": 3,
+          "region_id": 71
+        },
+        {
+          "count": 3,
+          "region_id": 72
+        },
+        {
+          "count": 3,
+          "region_id": 79
+        },
+        {
+          "count": 3,
+          "region_id": 80
+        },
+        {
+          "count": 3,
+          "region_id": 81
+        },
+        {
+          "count": 3,
+          "region_id": 88
+        },
+        {
+          "count": 3,
+          "region_id": 89
+        },
+        {
+          "count": 3,
+          "region_id": 90
+        },
+        {
+          "count": 3,
+          "region_id": 92
+        },
+        {
+          "count": 3,
+          "region_id": 96
+        },
+        {
+          "count": 3,
+          "region_id": 97
+        },
+        {
+          "count": 3,
+          "region_id": 99
+        },
+        {
+          "count": 3,
+          "region_id": 100
+        },
+        {
+          "count": 3,
+          "region_id": 107
+        },
+        {
+          "count": 3,
+          "region_id": 108
+        },
+        {
+          "count": 3,
+          "region_id": 109
+        },
+        {
+          "count": 3,
+          "region_id": 117
+        },
+        {
+          "count": 3,
+          "region_id": 118
+        },
+        {
+          "count": 3,
+          "region_id": 119
+        },
+        {
+          "count": 4,
+          "region_id": 20
+        },
+        {
+          "count": 4,
+          "region_id": 60
+        },
+        {
+          "count": 4,
+          "region_id": 70
+        },
+        {
+          "count": 4,
+          "region_id": 98
+        },
+        {
+          "count": 4,
+          "region_id": 110
+        },
+        {
+          "count": 4,
+          "region_id": 120
+        },
+        {
+          "count": 5,
+          "region_id": 39
+        }
+      ],
+      "row_count": 100000,
+      "rows": [
+        {
+          "count": 1,
+          "region_id": 3
+        },
+        {
+          "count": 1,
+          "region_id": 4
+        },
+        {
+          "count": 1,
+          "region_id": 5
+        },
+        {
+          "count": 1,
+          "region_id": 6
+        },
+        {
+          "count": 1,
+          "region_id": 9
+        },
+        {
+          "count": 1,
+          "region_id": 13
+        },
+        {
+          "count": 1,
+          "region_id": 14
+        },
+        {
+          "count": 1,
+          "region_id": 15
+        },
+        {
+          "count": 1,
+          "region_id": 22
+        },
+        {
+          "count": 1,
+          "region_id": 23
+        },
+        {
+          "count": 1,
+          "region_id": 25
+        },
+        {
+          "count": 1,
+          "region_id": 26
+        },
+        {
+          "count": 1,
+          "region_id": 33
+        },
+        {
+          "count": 1,
+          "region_id": 36
+        },
+        {
+          "count": 1,
+          "region_id": 40
+        },
+        {
+          "count": 1,
+          "region_id": 43
+        },
+        {
+          "count": 1,
+          "region_id": 44
+        },
+        {
+          "count": 1,
+          "region_id": 46
+        },
+        {
+          "count": 1,
+          "region_id": 47
+        },
+        {
+          "count": 1,
+          "region_id": 52
+        },
+        {
+          "count": 1,
+          "region_id": 54
+        },
+        {
+          "count": 1,
+          "region_id": 56
+        },
+        {
+          "count": 1,
+          "region_id": 57
+        },
+        {
+          "count": 1,
+          "region_id": 62
+        },
+        {
+          "count": 1,
+          "region_id": 63
+        },
+        {
+          "count": 1,
+          "region_id": 64
+        },
+        {
+          "count": 1,
+          "region_id": 65
+        },
+        {
+          "count": 1,
+          "region_id": 66
+        },
+        {
+          "count": 1,
+          "region_id": 69
+        },
+        {
+          "count": 1,
+          "region_id": 73
+        },
+        {
+          "count": 1,
+          "region_id": 84
+        },
+        {
+          "count": 1,
+          "region_id": 86
+        },
+        {
+          "count": 1,
+          "region_id": 91
+        },
+        {
+          "count": 1,
+          "region_id": 94
+        },
+        {
+          "count": 1,
+          "region_id": 102
+        },
+        {
+          "count": 1,
+          "region_id": 103
+        },
+        {
+          "count": 1,
+          "region_id": 105
+        },
+        {
+          "count": 1,
+          "region_id": 112
+        },
+        {
+          "count": 1,
+          "region_id": 114
+        },
+        {
+          "count": 1,
+          "region_id": 116
+        },
+        {
+          "count": 1,
+          "region_id": 121
+        },
+        {
+          "count": 1,
+          "region_id": 122
+        },
+        {
+          "count": 1,
+          "region_id": 123
+        },
+        {
+          "count": 1,
+          "region_id": 125
+        },
+        {
+          "count": 2,
+          "region_id": 0
+        },
+        {
+          "count": 2,
+          "region_id": 7
+        },
+        {
+          "count": 2,
+          "region_id": 8
+        },
+        {
+          "count": 2,
+          "region_id": 12
+        },
+        {
+          "count": 2,
+          "region_id": 17
+        },
+        {
+          "count": 2,
+          "region_id": 18
+        },
+        {
+          "count": 2,
+          "region_id": 19
+        },
+        {
+          "count": 2,
+          "region_id": 21
+        },
+        {
+          "count": 2,
+          "region_id": 28
+        },
+        {
+          "count": 2,
+          "region_id": 30
+        },
+        {
+          "count": 2,
+          "region_id": 31
+        },
+        {
+          "count": 2,
+          "region_id": 32
+        },
+        {
+          "count": 2,
+          "region_id": 38
+        },
+        {
+          "count": 2,
+          "region_id": 48
+        },
+        {
+          "count": 2,
+          "region_id": 51
+        },
+        {
+          "count": 2,
+          "region_id": 53
+        },
+        {
+          "count": 2,
+          "region_id": 58
+        },
+        {
+          "count": 2,
+          "region_id": 59
+        },
+        {
+          "count": 2,
+          "region_id": 67
+        },
+        {
+          "count": 2,
+          "region_id": 68
+        },
+        {
+          "count": 2,
+          "region_id": 75
+        },
+        {
+          "count": 2,
+          "region_id": 76
+        },
+        {
+          "count": 2,
+          "region_id": 77
+        },
+        {
+          "count": 2,
+          "region_id": 78
+        },
+        {
+          "count": 2,
+          "region_id": 82
+        },
+        {
+          "count": 2,
+          "region_id": 83
+        },
+        {
+          "count": 2,
+          "region_id": 87
+        },
+        {
+          "count": 2,
+          "region_id": 95
+        },
+        {
+          "count": 2,
+          "region_id": 101
+        },
+        {
+          "count": 2,
+          "region_id": 106
+        },
+        {
+          "count": 2,
+          "region_id": 111
+        },
+        {
+          "count": 2,
+          "region_id": 113
+        },
+        {
+          "count": 2,
+          "region_id": 124
+        },
+        {
+          "count": 2,
+          "region_id": 126
+        },
+        {
+          "count": 2,
+          "region_id": 127
+        },
+        {
+          "count": 3,
+          "region_id": 1
+        },
+        {
+          "count": 3,
+          "region_id": 2
+        },
+        {
+          "count": 3,
+          "region_id": 10
+        },
+        {
+          "count": 3,
+          "region_id": 11
+        },
+        {
+          "count": 3,
+          "region_id": 27
+        },
+        {
+          "count": 3,
+          "region_id": 29
+        },
+        {
+          "count": 3,
+          "region_id": 37
+        },
+        {
+          "count": 3,
+          "region_id": 41
+        },
+        {
+          "count": 3,
+          "region_id": 42
+        },
+        {
+          "count": 3,
+          "region_id": 49
+        },
+        {
+          "count": 3,
+          "region_id": 50
+        },
+        {
+          "count": 3,
+          "region_id": 61
+        },
+        {
+          "count": 3,
+          "region_id": 71
+        },
+        {
+          "count": 3,
+          "region_id": 72
+        },
+        {
+          "count": 3,
+          "region_id": 79
+        },
+        {
+          "count": 3,
+          "region_id": 80
+        },
+        {
+          "count": 3,
+          "region_id": 81
+        },
+        {
+          "count": 3,
+          "region_id": 88
+        },
+        {
+          "count": 3,
+          "region_id": 89
+        },
+        {
+          "count": 3,
+          "region_id": 90
+        },
+        {
+          "count": 3,
+          "region_id": 92
+        },
+        {
+          "count": 3,
+          "region_id": 96
+        },
+        {
+          "count": 3,
+          "region_id": 97
+        },
+        {
+          "count": 3,
+          "region_id": 99
+        },
+        {
+          "count": 3,
+          "region_id": 100
+        },
+        {
+          "count": 3,
+          "region_id": 107
+        },
+        {
+          "count": 3,
+          "region_id": 108
+        },
+        {
+          "count": 3,
+          "region_id": 109
+        },
+        {
+          "count": 3,
+          "region_id": 117
+        },
+        {
+          "count": 3,
+          "region_id": 118
+        },
+        {
+          "count": 3,
+          "region_id": 119
+        },
+        {
+          "count": 4,
+          "region_id": 20
+        },
+        {
+          "count": 4,
+          "region_id": 60
+        },
+        {
+          "count": 4,
+          "region_id": 70
+        },
+        {
+          "count": 4,
+          "region_id": 98
+        },
+        {
+          "count": 4,
+          "region_id": 110
+        },
+        {
+          "count": 4,
+          "region_id": 120
+        },
+        {
+          "count": 5,
+          "region_id": 39
+        }
+      ],
+      "rt_core_accelerated": true
+    },
+    {
+      "backend": "paper_rt_optix",
+      "contract": "raydb_paper_triangle_scan_grouped_aggregate_optix",
+      "copies": 1000,
+      "matches_cpu_reference": true,
+      "matches_postgresql": true,
+      "mode": "sum",
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction",
+      "postgres_rows": [
+        {
+          "region_id": 0,
+          "sum": 23
+        },
+        {
+          "region_id": 1,
+          "sum": 34
+        },
+        {
+          "region_id": 2,
+          "sum": 132
+        },
+        {
+          "region_id": 3,
+          "sum": 18
+        },
+        {
+          "region_id": 4,
+          "sum": 63
+        },
+        {
+          "region_id": 5,
+          "sum": 18
+        },
+        {
+          "region_id": 6,
+          "sum": 62
+        },
+        {
+          "region_id": 7,
+          "sum": 77
+        },
+        {
+          "region_id": 8,
+          "sum": 19
+        },
+        {
+          "region_id": 9,
+          "sum": 59
+        },
+        {
+          "region_id": 10,
+          "sum": 29
+        },
+        {
+          "region_id": 11,
+          "sum": 46
+        },
+        {
+          "region_id": 12,
+          "sum": 58
+        },
+        {
+          "region_id": 13,
+          "sum": 10
+        },
+        {
+          "region_id": 14,
+          "sum": 27
+        },
+        {
+          "region_id": 15,
+          "sum": 9
+        },
+        {
+          "region_id": 17,
+          "sum": 60
+        },
+        {
+          "region_id": 18,
+          "sum": 12
+        },
+        {
+          "region_id": 19,
+          "sum": 37
+        },
+        {
+          "region_id": 20,
+          "sum": 79
+        },
+        {
+          "region_id": 21,
+          "sum": 25
+        },
+        {
+          "region_id": 22,
+          "sum": 21
+        },
+        {
+          "region_id": 23,
+          "sum": 1
+        },
+        {
+          "region_id": 25,
+          "sum": 17
+        },
+        {
+          "region_id": 26,
+          "sum": 8
+        },
+        {
+          "region_id": 27,
+          "sum": 87
+        },
+        {
+          "region_id": 28,
+          "sum": 123
+        },
+        {
+          "region_id": 29,
+          "sum": 43
+        },
+        {
+          "region_id": 30,
+          "sum": 63
+        },
+        {
+          "region_id": 31,
+          "sum": 72
+        },
+        {
+          "region_id": 32,
+          "sum": 14
+        },
+        {
+          "region_id": 33,
+          "sum": 30
+        },
+        {
+          "region_id": 36,
+          "sum": 10
+        },
+        {
+          "region_id": 37,
+          "sum": 79
+        },
+        {
+          "region_id": 38,
+          "sum": 42
+        },
+        {
+          "region_id": 39,
+          "sum": 167
+        },
+        {
+          "region_id": 40,
+          "sum": 5
+        },
+        {
+          "region_id": 41,
+          "sum": 86
+        },
+        {
+          "region_id": 42,
+          "sum": 72
+        },
+        {
+          "region_id": 43,
+          "sum": 21
+        },
+        {
+          "region_id": 44,
+          "sum": 20
+        },
+        {
+          "region_id": 46,
+          "sum": 19
+        },
+        {
+          "region_id": 47,
+          "sum": 64
+        },
+        {
+          "region_id": 48,
+          "sum": 25
+        },
+        {
+          "region_id": 49,
+          "sum": 93
+        },
+        {
+          "region_id": 50,
+          "sum": 101
+        },
+        {
+          "region_id": 51,
+          "sum": 18
+        },
+        {
+          "region_id": 52,
+          "sum": 22
+        },
+        {
+          "region_id": 53,
+          "sum": 16
+        },
+        {
+          "region_id": 54,
+          "sum": 11
+        },
+        {
+          "region_id": 56,
+          "sum": 10
+        },
+        {
+          "region_id": 57,
+          "sum": 18
+        },
+        {
+          "region_id": 58,
+          "sum": 45
+        },
+        {
+          "region_id": 59,
+          "sum": 78
+        },
+        {
+          "region_id": 60,
+          "sum": 100
+        },
+        {
+          "region_id": 61,
+          "sum": 79
+        },
+        {
+          "region_id": 62,
+          "sum": 14
+        },
+        {
+          "region_id": 63,
+          "sum": 12
+        },
+        {
+          "region_id": 64,
+          "sum": 3
+        },
+        {
+          "region_id": 65,
+          "sum": 58
+        },
+        {
+          "region_id": 66,
+          "sum": 56
+        },
+        {
+          "region_id": 67,
+          "sum": 27
+        },
+        {
+          "region_id": 68,
+          "sum": 36
+        },
+        {
+          "region_id": 69,
+          "sum": 26
+        },
+        {
+          "region_id": 70,
+          "sum": 93
+        },
+        {
+          "region_id": 71,
+          "sum": 80
+        },
+        {
+          "region_id": 72,
+          "sum": 43
+        },
+        {
+          "region_id": 73,
+          "sum": 3
+        },
+        {
+          "region_id": 75,
+          "sum": 5
+        },
+        {
+          "region_id": 76,
+          "sum": 69
+        },
+        {
+          "region_id": 77,
+          "sum": 10
+        },
+        {
+          "region_id": 78,
+          "sum": 83
+        },
+        {
+          "region_id": 79,
+          "sum": 42
+        },
+        {
+          "region_id": 80,
+          "sum": 105
+        },
+        {
+          "region_id": 81,
+          "sum": 92
+        },
+        {
+          "region_id": 82,
+          "sum": 21
+        },
+        {
+          "region_id": 83,
+          "sum": 64
+        },
+        {
+          "region_id": 84,
+          "sum": 13
+        },
+        {
+          "region_id": 86,
+          "sum": 12
+        },
+        {
+          "region_id": 87,
+          "sum": 77
+        },
+        {
+          "region_id": 88,
+          "sum": 84
+        },
+        {
+          "region_id": 89,
+          "sum": 81
+        },
+        {
+          "region_id": 90,
+          "sum": 104
+        },
+        {
+          "region_id": 91,
+          "sum": 7
+        },
+        {
+          "region_id": 92,
+          "sum": 93
+        },
+        {
+          "region_id": 94,
+          "sum": 4
+        },
+        {
+          "region_id": 95,
+          "sum": 36
+        },
+        {
+          "region_id": 96,
+          "sum": 46
+        },
+        {
+          "region_id": 97,
+          "sum": 53
+        },
+        {
+          "region_id": 98,
+          "sum": 79
+        },
+        {
+          "region_id": 99,
+          "sum": 73
+        },
+        {
+          "region_id": 100,
+          "sum": 89
+        },
+        {
+          "region_id": 101,
+          "sum": 23
+        },
+        {
+          "region_id": 102,
+          "sum": 61
+        },
+        {
+          "region_id": 103,
+          "sum": 15
+        },
+        {
+          "region_id": 105,
+          "sum": 15
+        },
+        {
+          "region_id": 106,
+          "sum": 25
+        },
+        {
+          "region_id": 107,
+          "sum": 92
+        },
+        {
+          "region_id": 108,
+          "sum": 24
+        },
+        {
+          "region_id": 109,
+          "sum": 94
+        },
+        {
+          "region_id": 110,
+          "sum": 145
+        },
+        {
+          "region_id": 111,
+          "sum": 70
+        },
+        {
+          "region_id": 112,
+          "sum": 53
+        },
+        {
+          "region_id": 113,
+          "sum": 67
+        },
+        {
+          "region_id": 114,
+          "sum": 15
+        },
+        {
+          "region_id": 116,
+          "sum": 14
+        },
+        {
+          "region_id": 117,
+          "sum": 39
+        },
+        {
+          "region_id": 118,
+          "sum": 63
+        },
+        {
+          "region_id": 119,
+          "sum": 42
+        },
+        {
+          "region_id": 120,
+          "sum": 84
+        },
+        {
+          "region_id": 121,
+          "sum": 64
+        },
+        {
+          "region_id": 122,
+          "sum": 7
+        },
+        {
+          "region_id": 123,
+          "sum": 52
+        },
+        {
+          "region_id": 124,
+          "sum": 21
+        },
+        {
+          "region_id": 125,
+          "sum": 25
+        },
+        {
+          "region_id": 126,
+          "sum": 18
+        },
+        {
+          "region_id": 127,
+          "sum": 18
+        }
+      ],
+      "row_count": 100000,
+      "rows": [
+        {
+          "region_id": 0,
+          "sum": 23
+        },
+        {
+          "region_id": 1,
+          "sum": 34
+        },
+        {
+          "region_id": 2,
+          "sum": 132
+        },
+        {
+          "region_id": 3,
+          "sum": 18
+        },
+        {
+          "region_id": 4,
+          "sum": 63
+        },
+        {
+          "region_id": 5,
+          "sum": 18
+        },
+        {
+          "region_id": 6,
+          "sum": 62
+        },
+        {
+          "region_id": 7,
+          "sum": 77
+        },
+        {
+          "region_id": 8,
+          "sum": 19
+        },
+        {
+          "region_id": 9,
+          "sum": 59
+        },
+        {
+          "region_id": 10,
+          "sum": 29
+        },
+        {
+          "region_id": 11,
+          "sum": 46
+        },
+        {
+          "region_id": 12,
+          "sum": 58
+        },
+        {
+          "region_id": 13,
+          "sum": 10
+        },
+        {
+          "region_id": 14,
+          "sum": 27
+        },
+        {
+          "region_id": 15,
+          "sum": 9
+        },
+        {
+          "region_id": 17,
+          "sum": 60
+        },
+        {
+          "region_id": 18,
+          "sum": 12
+        },
+        {
+          "region_id": 19,
+          "sum": 37
+        },
+        {
+          "region_id": 20,
+          "sum": 79
+        },
+        {
+          "region_id": 21,
+          "sum": 25
+        },
+        {
+          "region_id": 22,
+          "sum": 21
+        },
+        {
+          "region_id": 23,
+          "sum": 1
+        },
+        {
+          "region_id": 25,
+          "sum": 17
+        },
+        {
+          "region_id": 26,
+          "sum": 8
+        },
+        {
+          "region_id": 27,
+          "sum": 87
+        },
+        {
+          "region_id": 28,
+          "sum": 123
+        },
+        {
+          "region_id": 29,
+          "sum": 43
+        },
+        {
+          "region_id": 30,
+          "sum": 63
+        },
+        {
+          "region_id": 31,
+          "sum": 72
+        },
+        {
+          "region_id": 32,
+          "sum": 14
+        },
+        {
+          "region_id": 33,
+          "sum": 30
+        },
+        {
+          "region_id": 36,
+          "sum": 10
+        },
+        {
+          "region_id": 37,
+          "sum": 79
+        },
+        {
+          "region_id": 38,
+          "sum": 42
+        },
+        {
+          "region_id": 39,
+          "sum": 167
+        },
+        {
+          "region_id": 40,
+          "sum": 5
+        },
+        {
+          "region_id": 41,
+          "sum": 86
+        },
+        {
+          "region_id": 42,
+          "sum": 72
+        },
+        {
+          "region_id": 43,
+          "sum": 21
+        },
+        {
+          "region_id": 44,
+          "sum": 20
+        },
+        {
+          "region_id": 46,
+          "sum": 19
+        },
+        {
+          "region_id": 47,
+          "sum": 64
+        },
+        {
+          "region_id": 48,
+          "sum": 25
+        },
+        {
+          "region_id": 49,
+          "sum": 93
+        },
+        {
+          "region_id": 50,
+          "sum": 101
+        },
+        {
+          "region_id": 51,
+          "sum": 18
+        },
+        {
+          "region_id": 52,
+          "sum": 22
+        },
+        {
+          "region_id": 53,
+          "sum": 16
+        },
+        {
+          "region_id": 54,
+          "sum": 11
+        },
+        {
+          "region_id": 56,
+          "sum": 10
+        },
+        {
+          "region_id": 57,
+          "sum": 18
+        },
+        {
+          "region_id": 58,
+          "sum": 45
+        },
+        {
+          "region_id": 59,
+          "sum": 78
+        },
+        {
+          "region_id": 60,
+          "sum": 100
+        },
+        {
+          "region_id": 61,
+          "sum": 79
+        },
+        {
+          "region_id": 62,
+          "sum": 14
+        },
+        {
+          "region_id": 63,
+          "sum": 12
+        },
+        {
+          "region_id": 64,
+          "sum": 3
+        },
+        {
+          "region_id": 65,
+          "sum": 58
+        },
+        {
+          "region_id": 66,
+          "sum": 56
+        },
+        {
+          "region_id": 67,
+          "sum": 27
+        },
+        {
+          "region_id": 68,
+          "sum": 36
+        },
+        {
+          "region_id": 69,
+          "sum": 26
+        },
+        {
+          "region_id": 70,
+          "sum": 93
+        },
+        {
+          "region_id": 71,
+          "sum": 80
+        },
+        {
+          "region_id": 72,
+          "sum": 43
+        },
+        {
+          "region_id": 73,
+          "sum": 3
+        },
+        {
+          "region_id": 75,
+          "sum": 5
+        },
+        {
+          "region_id": 76,
+          "sum": 69
+        },
+        {
+          "region_id": 77,
+          "sum": 10
+        },
+        {
+          "region_id": 78,
+          "sum": 83
+        },
+        {
+          "region_id": 79,
+          "sum": 42
+        },
+        {
+          "region_id": 80,
+          "sum": 105
+        },
+        {
+          "region_id": 81,
+          "sum": 92
+        },
+        {
+          "region_id": 82,
+          "sum": 21
+        },
+        {
+          "region_id": 83,
+          "sum": 64
+        },
+        {
+          "region_id": 84,
+          "sum": 13
+        },
+        {
+          "region_id": 86,
+          "sum": 12
+        },
+        {
+          "region_id": 87,
+          "sum": 77
+        },
+        {
+          "region_id": 88,
+          "sum": 84
+        },
+        {
+          "region_id": 89,
+          "sum": 81
+        },
+        {
+          "region_id": 90,
+          "sum": 104
+        },
+        {
+          "region_id": 91,
+          "sum": 7
+        },
+        {
+          "region_id": 92,
+          "sum": 93
+        },
+        {
+          "region_id": 94,
+          "sum": 4
+        },
+        {
+          "region_id": 95,
+          "sum": 36
+        },
+        {
+          "region_id": 96,
+          "sum": 46
+        },
+        {
+          "region_id": 97,
+          "sum": 53
+        },
+        {
+          "region_id": 98,
+          "sum": 79
+        },
+        {
+          "region_id": 99,
+          "sum": 73
+        },
+        {
+          "region_id": 100,
+          "sum": 89
+        },
+        {
+          "region_id": 101,
+          "sum": 23
+        },
+        {
+          "region_id": 102,
+          "sum": 61
+        },
+        {
+          "region_id": 103,
+          "sum": 15
+        },
+        {
+          "region_id": 105,
+          "sum": 15
+        },
+        {
+          "region_id": 106,
+          "sum": 25
+        },
+        {
+          "region_id": 107,
+          "sum": 92
+        },
+        {
+          "region_id": 108,
+          "sum": 24
+        },
+        {
+          "region_id": 109,
+          "sum": 94
+        },
+        {
+          "region_id": 110,
+          "sum": 145
+        },
+        {
+          "region_id": 111,
+          "sum": 70
+        },
+        {
+          "region_id": 112,
+          "sum": 53
+        },
+        {
+          "region_id": 113,
+          "sum": 67
+        },
+        {
+          "region_id": 114,
+          "sum": 15
+        },
+        {
+          "region_id": 116,
+          "sum": 14
+        },
+        {
+          "region_id": 117,
+          "sum": 39
+        },
+        {
+          "region_id": 118,
+          "sum": 63
+        },
+        {
+          "region_id": 119,
+          "sum": 42
+        },
+        {
+          "region_id": 120,
+          "sum": 84
+        },
+        {
+          "region_id": 121,
+          "sum": 64
+        },
+        {
+          "region_id": 122,
+          "sum": 7
+        },
+        {
+          "region_id": 123,
+          "sum": 52
+        },
+        {
+          "region_id": 124,
+          "sum": 21
+        },
+        {
+          "region_id": 125,
+          "sum": 25
+        },
+        {
+          "region_id": 126,
+          "sum": 18
+        },
+        {
+          "region_id": 127,
+          "sum": 18
+        }
+      ],
+      "rt_core_accelerated": true
+    }
+  ],
+  "environment": {
+    "cwd": "/workspace/rtdl_goal2645",
+    "git_commit": "43419882d805e9d71a798c901cb97f05d8b6c8c8",
+    "git_status_short": [
+      " M docs/application_catalog.md",
+      " M docs/rtdl_primitive_catalog.md",
+      " M examples/v2_0/research_benchmarks/barnes_hut/README.md",
+      " M examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+      " M examples/v2_0/research_benchmarks/raydb_style/README.md",
+      " M examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+      " M src/native/embree/rtdl_embree_api.cpp",
+      " M src/native/embree/rtdl_embree_prelude.h",
+      " M src/native/optix/rtdl_optix_api.cpp",
+      " M src/native/optix/rtdl_optix_core.cpp",
+      " M src/native/optix/rtdl_optix_prelude.h",
+      " M src/native/optix/rtdl_optix_workloads.cpp",
+      " M src/rtdsl/__init__.py",
+      " M src/rtdsl/aabb_index.py",
+      " M src/rtdsl/aggregate_tree_reference.py",
+      " M src/rtdsl/baseline_runner.py",
+      " M src/rtdsl/embree_runtime.py",
+      " M src/rtdsl/generic_primitives.py",
+      " M src/rtdsl/optix_runtime.py",
+      " M src/rtdsl/partner_adapters.py",
+      " M src/rtdsl/primitive_hierarchy.py",
+      " M src/rtdsl/runtime.py",
+      " M tests/goal2498_raydb_style_optix_count_sum_parity_test.py",
+      " M tests/goal2580_optix_aabb_index_native_symbol_test.py",
+      "?? docs/reports/goal2635_benchmark_app_optimization_validity_audit_2026-05-27.md",
+      "?? docs/reports/goal2636_current_benchmark_performance_report_2026-05-27.md",
+      "?? docs/reports/goal2636_strengthened_benchmark_rows_plan_2026-05-27.md",
+      "?? docs/reports/goal2636_strengthened_rows_pod_fixed/",
+      "?? docs/reports/goal2636_strengthened_rows_stress_pod_fixed/",
+      "?? docs/reports/goal2637_all_benchmark_perf_diffs_2026-05-27.json",
+      "?? docs/reports/goal2637_all_benchmark_perf_diffs_2026-05-27.md",
+      "?? docs/reports/goal2638_3ai_consensus_2026-05-27.md",
+      "?? docs/reports/goal2638_aggregate_frontier_collect_2026-05-27.md",
+      "?? docs/reports/goal2638_claude_critical_review_2026-05-27.md",
+      "?? docs/reports/goal2638_external_review_response_2026-05-27.md",
+      "?? docs/reports/goal2639_aggregate_frontier_embree_optix_perf_pod_2026-05-27.json",
+      "?? docs/reports/goal2639_aggregate_frontier_native_abi_contract_2026-05-27.md",
+      "?? docs/reports/goal2639_aggregate_frontier_native_timing_2026-05-27.json",
+      "?? docs/reports/goal2640_claude_call_for_design_rt_core_generic_frontier_2026-05-27.md",
+      "?? docs/reports/goal2640_codex_design_rt_core_generic_frontier_2026-05-27.md",
+      "?? docs/reports/goal2640_expanded_aabb_point_membership_impl_2026-05-27.md",
+      "?? docs/reports/goal2640_perf_1m_prepared.json",
+      "?? docs/reports/goal2640_perf_262k.json",
+      "?? docs/reports/goal2640_perf_smoke.json",
+      "?? docs/reports/goal2641_barnes_hut_expanded_membership_lowering_2026-05-27.md",
+      "?? docs/reports/goal2641_optix_lowering_smoke.json",
+      "?? docs/reports/goal2642_barnes_hut_embree_vs_optix_8192.json",
+      "?? docs/reports/goal2642_barnes_hut_embree_vs_optix_app_perf_2026-05-27.md",
+      "?? docs/reports/goal2642_barnes_hut_embree_vs_optix_scale.json",
+      "?? docs/reports/goal2642_barnes_hut_embree_vs_optix_smoke.json",
+      "?? docs/reports/goal2643_all_benchmark_apps_detailed_report_2026-05-27.md",
+      "?? docs/reports/goal2644_raydb_paper_rt_core_rewrite_2026-05-27.md",
+      "?? docs/reports/goal2645_raydb_rt_core_perf_plan_2026-05-27.md",
+      "?? scripts/goal2636_strengthen_benchmark_rows.py",
+      "?? scripts/goal2637_build_perf_diff_table.py",
+      "?? scripts/goal2639_aggregate_frontier_perf.py",
+      "?? scripts/goal2640_expanded_aabb_point_membership_perf.py",
+      "?? scripts/goal2642_barnes_hut_embree_vs_optix_lowering_perf.py",
+      "?? scripts/goal2645_raydb_rt_perf_pod.py",
+      "?? src/rtdsl/app_reference/",
+      "?? tests/goal2636_strengthen_benchmark_rows_test.py",
+      "?? tests/goal2637_all_benchmark_perf_diffs_test.py",
+      "?? tests/goal2638_aggregate_frontier_collect_test.py",
+      "?? tests/goal2639_aggregate_frontier_native_abi_contract_test.py",
+      "?? tests/goal2640_expanded_aabb_point_membership_test.py",
+      "?? tests/goal2641_barnes_hut_expanded_membership_lowering_test.py",
+      "?? tests/goal2644_raydb_paper_rt_contract_test.py",
+      "?? tests/goal2645_raydb_rt_perf_runner_test.py"
+    ],
+    "hostname": "4b7c6ab4b262",
+    "make_build_embree_target": "make build-embree",
+    "make_build_optix_target": "make build-optix",
+    "nvcc_version": {
+      "command": [
+        "nvcc",
+        "--version"
+      ],
+      "elapsed_sec": 0.000848717987537384,
+      "returncode": 127,
+      "stderr": "[Errno 2] No such file or directory: 'nvcc'",
+      "stdout": ""
+    },
+    "nvidia_smi": {
+      "command": [
+        "nvidia-smi"
+      ],
+      "elapsed_sec": 0.2019743099808693,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "Thu May 28 00:30:19 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 565.57.01              Driver Version: 565.57.01      CUDA Version: 12.7     |\n|-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A5000               On  |   00000000:D6:00.0 Off |                  Off |\n| 30%   38C    P0             85W /  230W |     228MiB /  24564MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n                                                                                         \n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n+-----------------------------------------------------------------------------------------+\n"
+    },
+    "platform": "Linux-6.8.0-49-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]",
+    "rtdl_source_tree": "/workspace/rtdl_goal2645",
+    "timestamp_utc": "2026-05-28T00:30:19Z"
+  },
+  "errors": [],
+  "goal": "Goal2648 RayDB PostgreSQL correctness for paper RT backends",
+  "output_json": "docs/reports/goal2649_raydb_generated_postgres_correctness_100k_2026-05-27.json",
+  "output_markdown": "docs/reports/goal2649_raydb_generated_postgres_correctness_100k_2026-05-27.md",
+  "performance_claim_authorized": false,
+  "postgres": {
+    "postgres_rows": {
+      "avg_as_sum_count": [
+        {
+          "count": 1,
+          "region_id": 3,
+          "sum": 18
+        },
+        {
+          "count": 1,
+          "region_id": 4,
+          "sum": 63
+        },
+        {
+          "count": 1,
+          "region_id": 5,
+          "sum": 18
+        },
+        {
+          "count": 1,
+          "region_id": 6,
+          "sum": 62
+        },
+        {
+          "count": 1,
+          "region_id": 9,
+          "sum": 59
+        },
+        {
+          "count": 1,
+          "region_id": 13,
+          "sum": 10
+        },
+        {
+          "count": 1,
+          "region_id": 14,
+          "sum": 27
+        },
+        {
+          "count": 1,
+          "region_id": 15,
+          "sum": 9
+        },
+        {
+          "count": 1,
+          "region_id": 22,
+          "sum": 21
+        },
+        {
+          "count": 1,
+          "region_id": 23,
+          "sum": 1
+        },
+        {
+          "count": 1,
+          "region_id": 25,
+          "sum": 17
+        },
+        {
+          "count": 1,
+          "region_id": 26,
+          "sum": 8
+        },
+        {
+          "count": 1,
+          "region_id": 33,
+          "sum": 30
+        },
+        {
+          "count": 1,
+          "region_id": 36,
+          "sum": 10
+        },
+        {
+          "count": 1,
+          "region_id": 40,
+          "sum": 5
+        },
+        {
+          "count": 1,
+          "region_id": 43,
+          "sum": 21
+        },
+        {
+          "count": 1,
+          "region_id": 44,
+          "sum": 20
+        },
+        {
+          "count": 1,
+          "region_id": 46,
+          "sum": 19
+        },
+        {
+          "count": 1,
+          "region_id": 47,
+          "sum": 64
+        },
+        {
+          "count": 1,
+          "region_id": 52,
+          "sum": 22
+        },
+        {
+          "count": 1,
+          "region_id": 54,
+          "sum": 11
+        },
+        {
+          "count": 1,
+          "region_id": 56,
+          "sum": 10
+        },
+        {
+          "count": 1,
+          "region_id": 57,
+          "sum": 18
+        },
+        {
+          "count": 1,
+          "region_id": 62,
+          "sum": 14
+        },
+        {
+          "count": 1,
+          "region_id": 63,
+          "sum": 12
+        },
+        {
+          "count": 1,
+          "region_id": 64,
+          "sum": 3
+        },
+        {
+          "count": 1,
+          "region_id": 65,
+          "sum": 58
+        },
+        {
+          "count": 1,
+          "region_id": 66,
+          "sum": 56
+        },
+        {
+          "count": 1,
+          "region_id": 69,
+          "sum": 26
+        },
+        {
+          "count": 1,
+          "region_id": 73,
+          "sum": 3
+        },
+        {
+          "count": 1,
+          "region_id": 84,
+          "sum": 13
+        },
+        {
+          "count": 1,
+          "region_id": 86,
+          "sum": 12
+        },
+        {
+          "count": 1,
+          "region_id": 91,
+          "sum": 7
+        },
+        {
+          "count": 1,
+          "region_id": 94,
+          "sum": 4
+        },
+        {
+          "count": 1,
+          "region_id": 102,
+          "sum": 61
+        },
+        {
+          "count": 1,
+          "region_id": 103,
+          "sum": 15
+        },
+        {
+          "count": 1,
+          "region_id": 105,
+          "sum": 15
+        },
+        {
+          "count": 1,
+          "region_id": 112,
+          "sum": 53
+        },
+        {
+          "count": 1,
+          "region_id": 114,
+          "sum": 15
+        },
+        {
+          "count": 1,
+          "region_id": 116,
+          "sum": 14
+        },
+        {
+          "count": 1,
+          "region_id": 121,
+          "sum": 64
+        },
+        {
+          "count": 1,
+          "region_id": 122,
+          "sum": 7
+        },
+        {
+          "count": 1,
+          "region_id": 123,
+          "sum": 52
+        },
+        {
+          "count": 1,
+          "region_id": 125,
+          "sum": 25
+        },
+        {
+          "count": 2,
+          "region_id": 0,
+          "sum": 23
+        },
+        {
+          "count": 2,
+          "region_id": 7,
+          "sum": 77
+        },
+        {
+          "count": 2,
+          "region_id": 8,
+          "sum": 19
+        },
+        {
+          "count": 2,
+          "region_id": 12,
+          "sum": 58
+        },
+        {
+          "count": 2,
+          "region_id": 17,
+          "sum": 60
+        },
+        {
+          "count": 2,
+          "region_id": 18,
+          "sum": 12
+        },
+        {
+          "count": 2,
+          "region_id": 19,
+          "sum": 37
+        },
+        {
+          "count": 2,
+          "region_id": 21,
+          "sum": 25
+        },
+        {
+          "count": 2,
+          "region_id": 28,
+          "sum": 123
+        },
+        {
+          "count": 2,
+          "region_id": 30,
+          "sum": 63
+        },
+        {
+          "count": 2,
+          "region_id": 31,
+          "sum": 72
+        },
+        {
+          "count": 2,
+          "region_id": 32,
+          "sum": 14
+        },
+        {
+          "count": 2,
+          "region_id": 38,
+          "sum": 42
+        },
+        {
+          "count": 2,
+          "region_id": 48,
+          "sum": 25
+        },
+        {
+          "count": 2,
+          "region_id": 51,
+          "sum": 18
+        },
+        {
+          "count": 2,
+          "region_id": 53,
+          "sum": 16
+        },
+        {
+          "count": 2,
+          "region_id": 58,
+          "sum": 45
+        },
+        {
+          "count": 2,
+          "region_id": 59,
+          "sum": 78
+        },
+        {
+          "count": 2,
+          "region_id": 67,
+          "sum": 27
+        },
+        {
+          "count": 2,
+          "region_id": 68,
+          "sum": 36
+        },
+        {
+          "count": 2,
+          "region_id": 75,
+          "sum": 5
+        },
+        {
+          "count": 2,
+          "region_id": 76,
+          "sum": 69
+        },
+        {
+          "count": 2,
+          "region_id": 77,
+          "sum": 10
+        },
+        {
+          "count": 2,
+          "region_id": 78,
+          "sum": 83
+        },
+        {
+          "count": 2,
+          "region_id": 82,
+          "sum": 21
+        },
+        {
+          "count": 2,
+          "region_id": 83,
+          "sum": 64
+        },
+        {
+          "count": 2,
+          "region_id": 87,
+          "sum": 77
+        },
+        {
+          "count": 2,
+          "region_id": 95,
+          "sum": 36
+        },
+        {
+          "count": 2,
+          "region_id": 101,
+          "sum": 23
+        },
+        {
+          "count": 2,
+          "region_id": 106,
+          "sum": 25
+        },
+        {
+          "count": 2,
+          "region_id": 111,
+          "sum": 70
+        },
+        {
+          "count": 2,
+          "region_id": 113,
+          "sum": 67
+        },
+        {
+          "count": 2,
+          "region_id": 124,
+          "sum": 21
+        },
+        {
+          "count": 2,
+          "region_id": 126,
+          "sum": 18
+        },
+        {
+          "count": 2,
+          "region_id": 127,
+          "sum": 18
+        },
+        {
+          "count": 3,
+          "region_id": 1,
+          "sum": 34
+        },
+        {
+          "count": 3,
+          "region_id": 2,
+          "sum": 132
+        },
+        {
+          "count": 3,
+          "region_id": 10,
+          "sum": 29
+        },
+        {
+          "count": 3,
+          "region_id": 11,
+          "sum": 46
+        },
+        {
+          "count": 3,
+          "region_id": 27,
+          "sum": 87
+        },
+        {
+          "count": 3,
+          "region_id": 29,
+          "sum": 43
+        },
+        {
+          "count": 3,
+          "region_id": 37,
+          "sum": 79
+        },
+        {
+          "count": 3,
+          "region_id": 41,
+          "sum": 86
+        },
+        {
+          "count": 3,
+          "region_id": 42,
+          "sum": 72
+        },
+        {
+          "count": 3,
+          "region_id": 49,
+          "sum": 93
+        },
+        {
+          "count": 3,
+          "region_id": 50,
+          "sum": 101
+        },
+        {
+          "count": 3,
+          "region_id": 61,
+          "sum": 79
+        },
+        {
+          "count": 3,
+          "region_id": 71,
+          "sum": 80
+        },
+        {
+          "count": 3,
+          "region_id": 72,
+          "sum": 43
+        },
+        {
+          "count": 3,
+          "region_id": 79,
+          "sum": 42
+        },
+        {
+          "count": 3,
+          "region_id": 80,
+          "sum": 105
+        },
+        {
+          "count": 3,
+          "region_id": 81,
+          "sum": 92
+        },
+        {
+          "count": 3,
+          "region_id": 88,
+          "sum": 84
+        },
+        {
+          "count": 3,
+          "region_id": 89,
+          "sum": 81
+        },
+        {
+          "count": 3,
+          "region_id": 90,
+          "sum": 104
+        },
+        {
+          "count": 3,
+          "region_id": 92,
+          "sum": 93
+        },
+        {
+          "count": 3,
+          "region_id": 96,
+          "sum": 46
+        },
+        {
+          "count": 3,
+          "region_id": 97,
+          "sum": 53
+        },
+        {
+          "count": 3,
+          "region_id": 99,
+          "sum": 73
+        },
+        {
+          "count": 3,
+          "region_id": 100,
+          "sum": 89
+        },
+        {
+          "count": 3,
+          "region_id": 107,
+          "sum": 92
+        },
+        {
+          "count": 3,
+          "region_id": 108,
+          "sum": 24
+        },
+        {
+          "count": 3,
+          "region_id": 109,
+          "sum": 94
+        },
+        {
+          "count": 3,
+          "region_id": 117,
+          "sum": 39
+        },
+        {
+          "count": 3,
+          "region_id": 118,
+          "sum": 63
+        },
+        {
+          "count": 3,
+          "region_id": 119,
+          "sum": 42
+        },
+        {
+          "count": 4,
+          "region_id": 20,
+          "sum": 79
+        },
+        {
+          "count": 4,
+          "region_id": 60,
+          "sum": 100
+        },
+        {
+          "count": 4,
+          "region_id": 70,
+          "sum": 93
+        },
+        {
+          "count": 4,
+          "region_id": 98,
+          "sum": 79
+        },
+        {
+          "count": 4,
+          "region_id": 110,
+          "sum": 145
+        },
+        {
+          "count": 4,
+          "region_id": 120,
+          "sum": 84
+        },
+        {
+          "count": 5,
+          "region_id": 39,
+          "sum": 167
+        }
+      ],
+      "count": [
+        {
+          "count": 1,
+          "region_id": 3
+        },
+        {
+          "count": 1,
+          "region_id": 4
+        },
+        {
+          "count": 1,
+          "region_id": 5
+        },
+        {
+          "count": 1,
+          "region_id": 6
+        },
+        {
+          "count": 1,
+          "region_id": 9
+        },
+        {
+          "count": 1,
+          "region_id": 13
+        },
+        {
+          "count": 1,
+          "region_id": 14
+        },
+        {
+          "count": 1,
+          "region_id": 15
+        },
+        {
+          "count": 1,
+          "region_id": 22
+        },
+        {
+          "count": 1,
+          "region_id": 23
+        },
+        {
+          "count": 1,
+          "region_id": 25
+        },
+        {
+          "count": 1,
+          "region_id": 26
+        },
+        {
+          "count": 1,
+          "region_id": 33
+        },
+        {
+          "count": 1,
+          "region_id": 36
+        },
+        {
+          "count": 1,
+          "region_id": 40
+        },
+        {
+          "count": 1,
+          "region_id": 43
+        },
+        {
+          "count": 1,
+          "region_id": 44
+        },
+        {
+          "count": 1,
+          "region_id": 46
+        },
+        {
+          "count": 1,
+          "region_id": 47
+        },
+        {
+          "count": 1,
+          "region_id": 52
+        },
+        {
+          "count": 1,
+          "region_id": 54
+        },
+        {
+          "count": 1,
+          "region_id": 56
+        },
+        {
+          "count": 1,
+          "region_id": 57
+        },
+        {
+          "count": 1,
+          "region_id": 62
+        },
+        {
+          "count": 1,
+          "region_id": 63
+        },
+        {
+          "count": 1,
+          "region_id": 64
+        },
+        {
+          "count": 1,
+          "region_id": 65
+        },
+        {
+          "count": 1,
+          "region_id": 66
+        },
+        {
+          "count": 1,
+          "region_id": 69
+        },
+        {
+          "count": 1,
+          "region_id": 73
+        },
+        {
+          "count": 1,
+          "region_id": 84
+        },
+        {
+          "count": 1,
+          "region_id": 86
+        },
+        {
+          "count": 1,
+          "region_id": 91
+        },
+        {
+          "count": 1,
+          "region_id": 94
+        },
+        {
+          "count": 1,
+          "region_id": 102
+        },
+        {
+          "count": 1,
+          "region_id": 103
+        },
+        {
+          "count": 1,
+          "region_id": 105
+        },
+        {
+          "count": 1,
+          "region_id": 112
+        },
+        {
+          "count": 1,
+          "region_id": 114
+        },
+        {
+          "count": 1,
+          "region_id": 116
+        },
+        {
+          "count": 1,
+          "region_id": 121
+        },
+        {
+          "count": 1,
+          "region_id": 122
+        },
+        {
+          "count": 1,
+          "region_id": 123
+        },
+        {
+          "count": 1,
+          "region_id": 125
+        },
+        {
+          "count": 2,
+          "region_id": 0
+        },
+        {
+          "count": 2,
+          "region_id": 7
+        },
+        {
+          "count": 2,
+          "region_id": 8
+        },
+        {
+          "count": 2,
+          "region_id": 12
+        },
+        {
+          "count": 2,
+          "region_id": 17
+        },
+        {
+          "count": 2,
+          "region_id": 18
+        },
+        {
+          "count": 2,
+          "region_id": 19
+        },
+        {
+          "count": 2,
+          "region_id": 21
+        },
+        {
+          "count": 2,
+          "region_id": 28
+        },
+        {
+          "count": 2,
+          "region_id": 30
+        },
+        {
+          "count": 2,
+          "region_id": 31
+        },
+        {
+          "count": 2,
+          "region_id": 32
+        },
+        {
+          "count": 2,
+          "region_id": 38
+        },
+        {
+          "count": 2,
+          "region_id": 48
+        },
+        {
+          "count": 2,
+          "region_id": 51
+        },
+        {
+          "count": 2,
+          "region_id": 53
+        },
+        {
+          "count": 2,
+          "region_id": 58
+        },
+        {
+          "count": 2,
+          "region_id": 59
+        },
+        {
+          "count": 2,
+          "region_id": 67
+        },
+        {
+          "count": 2,
+          "region_id": 68
+        },
+        {
+          "count": 2,
+          "region_id": 75
+        },
+        {
+          "count": 2,
+          "region_id": 76
+        },
+        {
+          "count": 2,
+          "region_id": 77
+        },
+        {
+          "count": 2,
+          "region_id": 78
+        },
+        {
+          "count": 2,
+          "region_id": 82
+        },
+        {
+          "count": 2,
+          "region_id": 83
+        },
+        {
+          "count": 2,
+          "region_id": 87
+        },
+        {
+          "count": 2,
+          "region_id": 95
+        },
+        {
+          "count": 2,
+          "region_id": 101
+        },
+        {
+          "count": 2,
+          "region_id": 106
+        },
+        {
+          "count": 2,
+          "region_id": 111
+        },
+        {
+          "count": 2,
+          "region_id": 113
+        },
+        {
+          "count": 2,
+          "region_id": 124
+        },
+        {
+          "count": 2,
+          "region_id": 126
+        },
+        {
+          "count": 2,
+          "region_id": 127
+        },
+        {
+          "count": 3,
+          "region_id": 1
+        },
+        {
+          "count": 3,
+          "region_id": 2
+        },
+        {
+          "count": 3,
+          "region_id": 10
+        },
+        {
+          "count": 3,
+          "region_id": 11
+        },
+        {
+          "count": 3,
+          "region_id": 27
+        },
+        {
+          "count": 3,
+          "region_id": 29
+        },
+        {
+          "count": 3,
+          "region_id": 37
+        },
+        {
+          "count": 3,
+          "region_id": 41
+        },
+        {
+          "count": 3,
+          "region_id": 42
+        },
+        {
+          "count": 3,
+          "region_id": 49
+        },
+        {
+          "count": 3,
+          "region_id": 50
+        },
+        {
+          "count": 3,
+          "region_id": 61
+        },
+        {
+          "count": 3,
+          "region_id": 71
+        },
+        {
+          "count": 3,
+          "region_id": 72
+        },
+        {
+          "count": 3,
+          "region_id": 79
+        },
+        {
+          "count": 3,
+          "region_id": 80
+        },
+        {
+          "count": 3,
+          "region_id": 81
+        },
+        {
+          "count": 3,
+          "region_id": 88
+        },
+        {
+          "count": 3,
+          "region_id": 89
+        },
+        {
+          "count": 3,
+          "region_id": 90
+        },
+        {
+          "count": 3,
+          "region_id": 92
+        },
+        {
+          "count": 3,
+          "region_id": 96
+        },
+        {
+          "count": 3,
+          "region_id": 97
+        },
+        {
+          "count": 3,
+          "region_id": 99
+        },
+        {
+          "count": 3,
+          "region_id": 100
+        },
+        {
+          "count": 3,
+          "region_id": 107
+        },
+        {
+          "count": 3,
+          "region_id": 108
+        },
+        {
+          "count": 3,
+          "region_id": 109
+        },
+        {
+          "count": 3,
+          "region_id": 117
+        },
+        {
+          "count": 3,
+          "region_id": 118
+        },
+        {
+          "count": 3,
+          "region_id": 119
+        },
+        {
+          "count": 4,
+          "region_id": 20
+        },
+        {
+          "count": 4,
+          "region_id": 60
+        },
+        {
+          "count": 4,
+          "region_id": 70
+        },
+        {
+          "count": 4,
+          "region_id": 98
+        },
+        {
+          "count": 4,
+          "region_id": 110
+        },
+        {
+          "count": 4,
+          "region_id": 120
+        },
+        {
+          "count": 5,
+          "region_id": 39
+        }
+      ],
+      "max": [
+        {
+          "max": 1,
+          "region_id": 23
+        },
+        {
+          "max": 3,
+          "region_id": 64
+        },
+        {
+          "max": 3,
+          "region_id": 73
+        },
+        {
+          "max": 3,
+          "region_id": 75
+        },
+        {
+          "max": 4,
+          "region_id": 94
+        },
+        {
+          "max": 5,
+          "region_id": 40
+        },
+        {
+          "max": 6,
+          "region_id": 18
+        },
+        {
+          "max": 7,
+          "region_id": 91
+        },
+        {
+          "max": 7,
+          "region_id": 122
+        },
+        {
+          "max": 8,
+          "region_id": 26
+        },
+        {
+          "max": 9,
+          "region_id": 15
+        },
+        {
+          "max": 9,
+          "region_id": 77
+        },
+        {
+          "max": 10,
+          "region_id": 13
+        },
+        {
+          "max": 10,
+          "region_id": 36
+        },
+        {
+          "max": 10,
+          "region_id": 56
+        },
+        {
+          "max": 11,
+          "region_id": 54
+        },
+        {
+          "max": 12,
+          "region_id": 32
+        },
+        {
+          "max": 12,
+          "region_id": 63
+        },
+        {
+          "max": 12,
+          "region_id": 86
+        },
+        {
+          "max": 12,
+          "region_id": 108
+        },
+        {
+          "max": 13,
+          "region_id": 10
+        },
+        {
+          "max": 13,
+          "region_id": 53
+        },
+        {
+          "max": 13,
+          "region_id": 84
+        },
+        {
+          "max": 13,
+          "region_id": 126
+        },
+        {
+          "max": 14,
+          "region_id": 51
+        },
+        {
+          "max": 14,
+          "region_id": 62
+        },
+        {
+          "max": 14,
+          "region_id": 82
+        },
+        {
+          "max": 14,
+          "region_id": 116
+        },
+        {
+          "max": 14,
+          "region_id": 124
+        },
+        {
+          "max": 14,
+          "region_id": 127
+        },
+        {
+          "max": 15,
+          "region_id": 8
+        },
+        {
+          "max": 15,
+          "region_id": 103
+        },
+        {
+          "max": 15,
+          "region_id": 105
+        },
+        {
+          "max": 15,
+          "region_id": 114
+        },
+        {
+          "max": 17,
+          "region_id": 25
+        },
+        {
+          "max": 17,
+          "region_id": 67
+        },
+        {
+          "max": 17,
+          "region_id": 101
+        },
+        {
+          "max": 18,
+          "region_id": 3
+        },
+        {
+          "max": 18,
+          "region_id": 5
+        },
+        {
+          "max": 18,
+          "region_id": 48
+        },
+        {
+          "max": 18,
+          "region_id": 57
+        },
+        {
+          "max": 18,
+          "region_id": 79
+        },
+        {
+          "max": 19,
+          "region_id": 46
+        },
+        {
+          "max": 20,
+          "region_id": 1
+        },
+        {
+          "max": 20,
+          "region_id": 44
+        },
+        {
+          "max": 21,
+          "region_id": 0
+        },
+        {
+          "max": 21,
+          "region_id": 22
+        },
+        {
+          "max": 21,
+          "region_id": 43
+        },
+        {
+          "max": 21,
+          "region_id": 119
+        },
+        {
+          "max": 22,
+          "region_id": 21
+        },
+        {
+          "max": 22,
+          "region_id": 52
+        },
+        {
+          "max": 22,
+          "region_id": 106
+        },
+        {
+          "max": 22,
+          "region_id": 117
+        },
+        {
+          "max": 23,
+          "region_id": 29
+        },
+        {
+          "max": 23,
+          "region_id": 72
+        },
+        {
+          "max": 23,
+          "region_id": 95
+        },
+        {
+          "max": 24,
+          "region_id": 19
+        },
+        {
+          "max": 25,
+          "region_id": 125
+        },
+        {
+          "max": 26,
+          "region_id": 38
+        },
+        {
+          "max": 26,
+          "region_id": 69
+        },
+        {
+          "max": 27,
+          "region_id": 14
+        },
+        {
+          "max": 28,
+          "region_id": 68
+        },
+        {
+          "max": 29,
+          "region_id": 97
+        },
+        {
+          "max": 30,
+          "region_id": 33
+        },
+        {
+          "max": 31,
+          "region_id": 11
+        },
+        {
+          "max": 31,
+          "region_id": 96
+        },
+        {
+          "max": 36,
+          "region_id": 58
+        },
+        {
+          "max": 46,
+          "region_id": 120
+        },
+        {
+          "max": 47,
+          "region_id": 98
+        },
+        {
+          "max": 48,
+          "region_id": 76
+        },
+        {
+          "max": 50,
+          "region_id": 41
+        },
+        {
+          "max": 51,
+          "region_id": 71
+        },
+        {
+          "max": 52,
+          "region_id": 17
+        },
+        {
+          "max": 52,
+          "region_id": 60
+        },
+        {
+          "max": 52,
+          "region_id": 123
+        },
+        {
+          "max": 53,
+          "region_id": 112
+        },
+        {
+          "max": 55,
+          "region_id": 88
+        },
+        {
+          "max": 56,
+          "region_id": 12
+        },
+        {
+          "max": 56,
+          "region_id": 66
+        },
+        {
+          "max": 56,
+          "region_id": 109
+        },
+        {
+          "max": 57,
+          "region_id": 42
+        },
+        {
+          "max": 57,
+          "region_id": 87
+        },
+        {
+          "max": 57,
+          "region_id": 118
+        },
+        {
+          "max": 58,
+          "region_id": 20
+        },
+        {
+          "max": 58,
+          "region_id": 31
+        },
+        {
+          "max": 58,
+          "region_id": 65
+        },
+        {
+          "max": 58,
+          "region_id": 107
+        },
+        {
+          "max": 59,
+          "region_id": 9
+        },
+        {
+          "max": 59,
+          "region_id": 83
+        },
+        {
+          "max": 60,
+          "region_id": 30
+        },
+        {
+          "max": 60,
+          "region_id": 61
+        },
+        {
+          "max": 60,
+          "region_id": 81
+        },
+        {
+          "max": 60,
+          "region_id": 113
+        },
+        {
+          "max": 61,
+          "region_id": 7
+        },
+        {
+          "max": 61,
+          "region_id": 39
+        },
+        {
+          "max": 61,
+          "region_id": 50
+        },
+        {
+          "max": 61,
+          "region_id": 59
+        },
+        {
+          "max": 61,
+          "region_id": 90
+        },
+        {
+          "max": 61,
+          "region_id": 102
+        },
+        {
+          "max": 62,
+          "region_id": 6
+        },
+        {
+          "max": 62,
+          "region_id": 28
+        },
+        {
+          "max": 62,
+          "region_id": 37
+        },
+        {
+          "max": 62,
+          "region_id": 49
+        },
+        {
+          "max": 62,
+          "region_id": 80
+        },
+        {
+          "max": 62,
+          "region_id": 92
+        },
+        {
+          "max": 62,
+          "region_id": 111
+        },
+        {
+          "max": 63,
+          "region_id": 4
+        },
+        {
+          "max": 63,
+          "region_id": 27
+        },
+        {
+          "max": 63,
+          "region_id": 70
+        },
+        {
+          "max": 63,
+          "region_id": 89
+        },
+        {
+          "max": 63,
+          "region_id": 100
+        },
+        {
+          "max": 64,
+          "region_id": 2
+        },
+        {
+          "max": 64,
+          "region_id": 47
+        },
+        {
+          "max": 64,
+          "region_id": 78
+        },
+        {
+          "max": 64,
+          "region_id": 99
+        },
+        {
+          "max": 64,
+          "region_id": 110
+        },
+        {
+          "max": 64,
+          "region_id": 121
+        }
+      ],
+      "min": [
+        {
+          "min": 1,
+          "region_id": 23
+        },
+        {
+          "min": 1,
+          "region_id": 77
+        },
+        {
+          "min": 1,
+          "region_id": 99
+        },
+        {
+          "min": 1,
+          "region_id": 108
+        },
+        {
+          "min": 1,
+          "region_id": 120
+        },
+        {
+          "min": 2,
+          "region_id": 0
+        },
+        {
+          "min": 2,
+          "region_id": 1
+        },
+        {
+          "min": 2,
+          "region_id": 12
+        },
+        {
+          "min": 2,
+          "region_id": 32
+        },
+        {
+          "min": 2,
+          "region_id": 75
+        },
+        {
+          "min": 2,
+          "region_id": 97
+        },
+        {
+          "min": 2,
+          "region_id": 98
+        },
+        {
+          "min": 3,
+          "region_id": 10
+        },
+        {
+          "min": 3,
+          "region_id": 21
+        },
+        {
+          "min": 3,
+          "region_id": 30
+        },
+        {
+          "min": 3,
+          "region_id": 53
+        },
+        {
+          "min": 3,
+          "region_id": 64
+        },
+        {
+          "min": 3,
+          "region_id": 73
+        },
+        {
+          "min": 3,
+          "region_id": 106
+        },
+        {
+          "min": 3,
+          "region_id": 118
+        },
+        {
+          "min": 4,
+          "region_id": 8
+        },
+        {
+          "min": 4,
+          "region_id": 11
+        },
+        {
+          "min": 4,
+          "region_id": 20
+        },
+        {
+          "min": 4,
+          "region_id": 42
+        },
+        {
+          "min": 4,
+          "region_id": 51
+        },
+        {
+          "min": 4,
+          "region_id": 94
+        },
+        {
+          "min": 4,
+          "region_id": 96
+        },
+        {
+          "min": 4,
+          "region_id": 127
+        },
+        {
+          "min": 5,
+          "region_id": 29
+        },
+        {
+          "min": 5,
+          "region_id": 40
+        },
+        {
+          "min": 5,
+          "region_id": 71
+        },
+        {
+          "min": 5,
+          "region_id": 72
+        },
+        {
+          "min": 5,
+          "region_id": 83
+        },
+        {
+          "min": 5,
+          "region_id": 117
+        },
+        {
+          "min": 5,
+          "region_id": 126
+        },
+        {
+          "min": 6,
+          "region_id": 18
+        },
+        {
+          "min": 6,
+          "region_id": 49
+        },
+        {
+          "min": 6,
+          "region_id": 61
+        },
+        {
+          "min": 6,
+          "region_id": 70
+        },
+        {
+          "min": 6,
+          "region_id": 92
+        },
+        {
+          "min": 6,
+          "region_id": 101
+        },
+        {
+          "min": 7,
+          "region_id": 27
+        },
+        {
+          "min": 7,
+          "region_id": 39
+        },
+        {
+          "min": 7,
+          "region_id": 48
+        },
+        {
+          "min": 7,
+          "region_id": 79
+        },
+        {
+          "min": 7,
+          "region_id": 82
+        },
+        {
+          "min": 7,
+          "region_id": 91
+        },
+        {
+          "min": 7,
+          "region_id": 113
+        },
+        {
+          "min": 7,
+          "region_id": 122
+        },
+        {
+          "min": 7,
+          "region_id": 124
+        },
+        {
+          "min": 8,
+          "region_id": 17
+        },
+        {
+          "min": 8,
+          "region_id": 26
+        },
+        {
+          "min": 8,
+          "region_id": 37
+        },
+        {
+          "min": 8,
+          "region_id": 60
+        },
+        {
+          "min": 8,
+          "region_id": 68
+        },
+        {
+          "min": 8,
+          "region_id": 80
+        },
+        {
+          "min": 8,
+          "region_id": 100
+        },
+        {
+          "min": 8,
+          "region_id": 111
+        },
+        {
+          "min": 9,
+          "region_id": 15
+        },
+        {
+          "min": 9,
+          "region_id": 58
+        },
+        {
+          "min": 9,
+          "region_id": 89
+        },
+        {
+          "min": 10,
+          "region_id": 13
+        },
+        {
+          "min": 10,
+          "region_id": 36
+        },
+        {
+          "min": 10,
+          "region_id": 56
+        },
+        {
+          "min": 10,
+          "region_id": 67
+        },
+        {
+          "min": 10,
+          "region_id": 110
+        },
+        {
+          "min": 10,
+          "region_id": 119
+        },
+        {
+          "min": 11,
+          "region_id": 2
+        },
+        {
+          "min": 11,
+          "region_id": 54
+        },
+        {
+          "min": 11,
+          "region_id": 88
+        },
+        {
+          "min": 12,
+          "region_id": 63
+        },
+        {
+          "min": 12,
+          "region_id": 86
+        },
+        {
+          "min": 13,
+          "region_id": 19
+        },
+        {
+          "min": 13,
+          "region_id": 41
+        },
+        {
+          "min": 13,
+          "region_id": 84
+        },
+        {
+          "min": 13,
+          "region_id": 95
+        },
+        {
+          "min": 13,
+          "region_id": 107
+        },
+        {
+          "min": 14,
+          "region_id": 31
+        },
+        {
+          "min": 14,
+          "region_id": 62
+        },
+        {
+          "min": 14,
+          "region_id": 116
+        },
+        {
+          "min": 15,
+          "region_id": 103
+        },
+        {
+          "min": 15,
+          "region_id": 105
+        },
+        {
+          "min": 15,
+          "region_id": 114
+        },
+        {
+          "min": 16,
+          "region_id": 7
+        },
+        {
+          "min": 16,
+          "region_id": 38
+        },
+        {
+          "min": 16,
+          "region_id": 50
+        },
+        {
+          "min": 16,
+          "region_id": 81
+        },
+        {
+          "min": 16,
+          "region_id": 90
+        },
+        {
+          "min": 17,
+          "region_id": 25
+        },
+        {
+          "min": 17,
+          "region_id": 59
+        },
+        {
+          "min": 18,
+          "region_id": 3
+        },
+        {
+          "min": 18,
+          "region_id": 5
+        },
+        {
+          "min": 18,
+          "region_id": 57
+        },
+        {
+          "min": 19,
+          "region_id": 46
+        },
+        {
+          "min": 19,
+          "region_id": 78
+        },
+        {
+          "min": 19,
+          "region_id": 109
+        },
+        {
+          "min": 20,
+          "region_id": 44
+        },
+        {
+          "min": 20,
+          "region_id": 87
+        },
+        {
+          "min": 21,
+          "region_id": 22
+        },
+        {
+          "min": 21,
+          "region_id": 43
+        },
+        {
+          "min": 21,
+          "region_id": 76
+        },
+        {
+          "min": 22,
+          "region_id": 52
+        },
+        {
+          "min": 25,
+          "region_id": 125
+        },
+        {
+          "min": 26,
+          "region_id": 69
+        },
+        {
+          "min": 27,
+          "region_id": 14
+        },
+        {
+          "min": 30,
+          "region_id": 33
+        },
+        {
+          "min": 52,
+          "region_id": 123
+        },
+        {
+          "min": 53,
+          "region_id": 112
+        },
+        {
+          "min": 56,
+          "region_id": 66
+        },
+        {
+          "min": 58,
+          "region_id": 65
+        },
+        {
+          "min": 59,
+          "region_id": 9
+        },
+        {
+          "min": 61,
+          "region_id": 28
+        },
+        {
+          "min": 61,
+          "region_id": 102
+        },
+        {
+          "min": 62,
+          "region_id": 6
+        },
+        {
+          "min": 63,
+          "region_id": 4
+        },
+        {
+          "min": 64,
+          "region_id": 47
+        },
+        {
+          "min": 64,
+          "region_id": 121
+        }
+      ],
+      "sum": [
+        {
+          "region_id": 0,
+          "sum": 23
+        },
+        {
+          "region_id": 1,
+          "sum": 34
+        },
+        {
+          "region_id": 2,
+          "sum": 132
+        },
+        {
+          "region_id": 3,
+          "sum": 18
+        },
+        {
+          "region_id": 4,
+          "sum": 63
+        },
+        {
+          "region_id": 5,
+          "sum": 18
+        },
+        {
+          "region_id": 6,
+          "sum": 62
+        },
+        {
+          "region_id": 7,
+          "sum": 77
+        },
+        {
+          "region_id": 8,
+          "sum": 19
+        },
+        {
+          "region_id": 9,
+          "sum": 59
+        },
+        {
+          "region_id": 10,
+          "sum": 29
+        },
+        {
+          "region_id": 11,
+          "sum": 46
+        },
+        {
+          "region_id": 12,
+          "sum": 58
+        },
+        {
+          "region_id": 13,
+          "sum": 10
+        },
+        {
+          "region_id": 14,
+          "sum": 27
+        },
+        {
+          "region_id": 15,
+          "sum": 9
+        },
+        {
+          "region_id": 17,
+          "sum": 60
+        },
+        {
+          "region_id": 18,
+          "sum": 12
+        },
+        {
+          "region_id": 19,
+          "sum": 37
+        },
+        {
+          "region_id": 20,
+          "sum": 79
+        },
+        {
+          "region_id": 21,
+          "sum": 25
+        },
+        {
+          "region_id": 22,
+          "sum": 21
+        },
+        {
+          "region_id": 23,
+          "sum": 1
+        },
+        {
+          "region_id": 25,
+          "sum": 17
+        },
+        {
+          "region_id": 26,
+          "sum": 8
+        },
+        {
+          "region_id": 27,
+          "sum": 87
+        },
+        {
+          "region_id": 28,
+          "sum": 123
+        },
+        {
+          "region_id": 29,
+          "sum": 43
+        },
+        {
+          "region_id": 30,
+          "sum": 63
+        },
+        {
+          "region_id": 31,
+          "sum": 72
+        },
+        {
+          "region_id": 32,
+          "sum": 14
+        },
+        {
+          "region_id": 33,
+          "sum": 30
+        },
+        {
+          "region_id": 36,
+          "sum": 10
+        },
+        {
+          "region_id": 37,
+          "sum": 79
+        },
+        {
+          "region_id": 38,
+          "sum": 42
+        },
+        {
+          "region_id": 39,
+          "sum": 167
+        },
+        {
+          "region_id": 40,
+          "sum": 5
+        },
+        {
+          "region_id": 41,
+          "sum": 86
+        },
+        {
+          "region_id": 42,
+          "sum": 72
+        },
+        {
+          "region_id": 43,
+          "sum": 21
+        },
+        {
+          "region_id": 44,
+          "sum": 20
+        },
+        {
+          "region_id": 46,
+          "sum": 19
+        },
+        {
+          "region_id": 47,
+          "sum": 64
+        },
+        {
+          "region_id": 48,
+          "sum": 25
+        },
+        {
+          "region_id": 49,
+          "sum": 93
+        },
+        {
+          "region_id": 50,
+          "sum": 101
+        },
+        {
+          "region_id": 51,
+          "sum": 18
+        },
+        {
+          "region_id": 52,
+          "sum": 22
+        },
+        {
+          "region_id": 53,
+          "sum": 16
+        },
+        {
+          "region_id": 54,
+          "sum": 11
+        },
+        {
+          "region_id": 56,
+          "sum": 10
+        },
+        {
+          "region_id": 57,
+          "sum": 18
+        },
+        {
+          "region_id": 58,
+          "sum": 45
+        },
+        {
+          "region_id": 59,
+          "sum": 78
+        },
+        {
+          "region_id": 60,
+          "sum": 100
+        },
+        {
+          "region_id": 61,
+          "sum": 79
+        },
+        {
+          "region_id": 62,
+          "sum": 14
+        },
+        {
+          "region_id": 63,
+          "sum": 12
+        },
+        {
+          "region_id": 64,
+          "sum": 3
+        },
+        {
+          "region_id": 65,
+          "sum": 58
+        },
+        {
+          "region_id": 66,
+          "sum": 56
+        },
+        {
+          "region_id": 67,
+          "sum": 27
+        },
+        {
+          "region_id": 68,
+          "sum": 36
+        },
+        {
+          "region_id": 69,
+          "sum": 26
+        },
+        {
+          "region_id": 70,
+          "sum": 93
+        },
+        {
+          "region_id": 71,
+          "sum": 80
+        },
+        {
+          "region_id": 72,
+          "sum": 43
+        },
+        {
+          "region_id": 73,
+          "sum": 3
+        },
+        {
+          "region_id": 75,
+          "sum": 5
+        },
+        {
+          "region_id": 76,
+          "sum": 69
+        },
+        {
+          "region_id": 77,
+          "sum": 10
+        },
+        {
+          "region_id": 78,
+          "sum": 83
+        },
+        {
+          "region_id": 79,
+          "sum": 42
+        },
+        {
+          "region_id": 80,
+          "sum": 105
+        },
+        {
+          "region_id": 81,
+          "sum": 92
+        },
+        {
+          "region_id": 82,
+          "sum": 21
+        },
+        {
+          "region_id": 83,
+          "sum": 64
+        },
+        {
+          "region_id": 84,
+          "sum": 13
+        },
+        {
+          "region_id": 86,
+          "sum": 12
+        },
+        {
+          "region_id": 87,
+          "sum": 77
+        },
+        {
+          "region_id": 88,
+          "sum": 84
+        },
+        {
+          "region_id": 89,
+          "sum": 81
+        },
+        {
+          "region_id": 90,
+          "sum": 104
+        },
+        {
+          "region_id": 91,
+          "sum": 7
+        },
+        {
+          "region_id": 92,
+          "sum": 93
+        },
+        {
+          "region_id": 94,
+          "sum": 4
+        },
+        {
+          "region_id": 95,
+          "sum": 36
+        },
+        {
+          "region_id": 96,
+          "sum": 46
+        },
+        {
+          "region_id": 97,
+          "sum": 53
+        },
+        {
+          "region_id": 98,
+          "sum": 79
+        },
+        {
+          "region_id": 99,
+          "sum": 73
+        },
+        {
+          "region_id": 100,
+          "sum": 89
+        },
+        {
+          "region_id": 101,
+          "sum": 23
+        },
+        {
+          "region_id": 102,
+          "sum": 61
+        },
+        {
+          "region_id": 103,
+          "sum": 15
+        },
+        {
+          "region_id": 105,
+          "sum": 15
+        },
+        {
+          "region_id": 106,
+          "sum": 25
+        },
+        {
+          "region_id": 107,
+          "sum": 92
+        },
+        {
+          "region_id": 108,
+          "sum": 24
+        },
+        {
+          "region_id": 109,
+          "sum": 94
+        },
+        {
+          "region_id": 110,
+          "sum": 145
+        },
+        {
+          "region_id": 111,
+          "sum": 70
+        },
+        {
+          "region_id": 112,
+          "sum": 53
+        },
+        {
+          "region_id": 113,
+          "sum": 67
+        },
+        {
+          "region_id": 114,
+          "sum": 15
+        },
+        {
+          "region_id": 116,
+          "sum": 14
+        },
+        {
+          "region_id": 117,
+          "sum": 39
+        },
+        {
+          "region_id": 118,
+          "sum": 63
+        },
+        {
+          "region_id": 119,
+          "sum": 42
+        },
+        {
+          "region_id": 120,
+          "sum": 84
+        },
+        {
+          "region_id": 121,
+          "sum": 64
+        },
+        {
+          "region_id": 122,
+          "sum": 7
+        },
+        {
+          "region_id": 123,
+          "sum": 52
+        },
+        {
+          "region_id": 124,
+          "sum": 21
+        },
+        {
+          "region_id": 125,
+          "sum": 25
+        },
+        {
+          "region_id": 126,
+          "sum": 18
+        },
+        {
+          "region_id": 127,
+          "sum": 18
+        }
+      ]
+    },
+    "psql_path": "/usr/bin/psql",
+    "status": "ok"
+  },
+  "script": "/workspace/rtdl_goal2645/scripts/goal2648_raydb_postgres_rt_correctness.py"
+}

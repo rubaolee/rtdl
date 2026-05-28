@@ -6674,37 +6674,18 @@ static void pack_ray3d_device_columns_to_buffer(
     if (ray_count > std::numeric_limits<uint32_t>::max())
         throw std::runtime_error("partner device 3-D ray column count exceeds uint32_t launch limit");
 
-    ensure_pack_ray3d_device_columns_kernel();
-
-    CUdeviceptr d_ray_ids = reinterpret_cast<CUdeviceptr>(ray_ids);
-    CUdeviceptr d_ray_ox = reinterpret_cast<CUdeviceptr>(ray_ox);
-    CUdeviceptr d_ray_oy = reinterpret_cast<CUdeviceptr>(ray_oy);
-    CUdeviceptr d_ray_oz = reinterpret_cast<CUdeviceptr>(ray_oz);
-    CUdeviceptr d_ray_dx = reinterpret_cast<CUdeviceptr>(ray_dx);
-    CUdeviceptr d_ray_dy = reinterpret_cast<CUdeviceptr>(ray_dy);
-    CUdeviceptr d_ray_dz = reinterpret_cast<CUdeviceptr>(ray_dz);
-    CUdeviceptr d_ray_tmax = reinterpret_cast<CUdeviceptr>(ray_tmax);
     uint32_t rc = static_cast<uint32_t>(ray_count);
-    void* args[] = {
-        &d_ray_ids,
-        &d_ray_ox,
-        &d_ray_oy,
-        &d_ray_oz,
-        &d_ray_dx,
-        &d_ray_dy,
-        &d_ray_dz,
-        &d_ray_tmax,
-        &d_rays,
-        &rc,
-    };
-    const unsigned block = 256;
-    const unsigned grid = (rc + block - 1u) / block;
-    CU_CHECK(cuLaunchKernel(
-        g_partner_ray3d_pack.fn,
-        grid, 1, 1,
-        block, 1, 1,
-        0, nullptr, args, nullptr));
-    CU_CHECK(cuStreamSynchronize(nullptr));
+    rtdl_cuda_pack_ray3d_device_columns_precompiled(
+        ray_ids,
+        ray_ox,
+        ray_oy,
+        ray_oz,
+        ray_dx,
+        ray_dy,
+        ray_dz,
+        ray_tmax,
+        reinterpret_cast<void*>(d_rays),
+        rc);
 }
 
 struct PreparedStaticTriangleScene3D {
@@ -6821,6 +6802,48 @@ struct PreparedStaticTriangleScene3D {
     }
 };
 
+struct PreparedPrimitiveGroupedI64Payload3D {
+    size_t primitive_count = 0;
+    size_t group_count = 0;
+    DevPtr d_groups;
+    DevPtr d_values;
+
+    PreparedPrimitiveGroupedI64Payload3D(
+            const uint32_t* primitive_group_ids,
+            size_t primitive_group_id_count,
+            const uint64_t* primitive_values,
+            size_t primitive_value_count,
+            size_t group_count_in)
+        : primitive_count(primitive_group_id_count),
+          group_count(group_count_in),
+          d_groups(sizeof(uint32_t) * primitive_group_id_count),
+          d_values(sizeof(unsigned long long) * primitive_value_count)
+    {
+        if (primitive_group_id_count != primitive_value_count)
+            throw std::runtime_error("primitive group/value payload lengths must match");
+        if (!primitive_group_ids && primitive_group_id_count != 0)
+            throw std::runtime_error("primitive_group_ids pointer must not be null when count is nonzero");
+        if (!primitive_values && primitive_value_count != 0)
+            throw std::runtime_error("primitive_values pointer must not be null when count is nonzero");
+        if (primitive_group_id_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+            throw std::runtime_error("primitive payload count exceeds uint32 limit");
+        if (group_count_in > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+            throw std::runtime_error("group_count exceeds uint32 limit");
+        for (size_t primitive_index = 0; primitive_index < primitive_group_id_count; ++primitive_index) {
+            if (primitive_group_ids[primitive_index] >= group_count_in)
+                throw std::runtime_error("primitive_group_ids entries must be smaller than group_count");
+        }
+        if (primitive_group_id_count == 0)
+            return;
+
+        std::vector<unsigned long long> values(primitive_value_count);
+        for (size_t primitive_index = 0; primitive_index < primitive_value_count; ++primitive_index)
+            values[primitive_index] = static_cast<unsigned long long>(primitive_values[primitive_index]);
+        upload(d_groups.ptr, primitive_group_ids, primitive_group_id_count);
+        upload(d_values.ptr, values.data(), values.size());
+    }
+};
+
 static GpuRay3DHost pack_ray_3d_as_raw_gpu_ray(const RtdlRay3D& ray);
 
 struct PreparedRayBatch3D {
@@ -6848,6 +6871,43 @@ struct PreparedRayBatch3D {
             gpu_rays[i] = pack_ray_3d_as_raw_gpu_ray(rays[i]);
         }
         upload(d_rays.ptr, gpu_rays.data(), gpu_rays.size());
+    }
+
+    PreparedRayBatch3D(
+            const uint32_t* ray_ids_in,
+            const double* ray_ox,
+            const double* ray_oy,
+            const double* ray_oz,
+            const double* ray_dx,
+            const double* ray_dy,
+            const double* ray_dz,
+            const double* ray_tmax,
+            size_t count)
+        : ray_count(count),
+          ray_ids(count),
+          d_rays(sizeof(GpuRay3DHost) * count),
+          d_closest_hit_output(sizeof(GpuRayClosestHitRecord) * count)
+    {
+        if (count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+            throw std::runtime_error("ray_count exceeds uint32 launch limit");
+        if (count == 0)
+            return;
+        if (!ray_ids_in || !ray_ox || !ray_oy || !ray_oz || !ray_dx || !ray_dy || !ray_dz || !ray_tmax)
+            throw std::runtime_error("device ray column pointers must not be null when ray_count is nonzero");
+        std::vector<uint32_t> host_ray_ids(count);
+        download(host_ray_ids.data(), reinterpret_cast<CUdeviceptr>(ray_ids_in), count);
+        ray_ids = std::move(host_ray_ids);
+        pack_ray3d_device_columns_to_buffer(
+            ray_ids_in,
+            ray_ox,
+            ray_oy,
+            ray_oz,
+            ray_dx,
+            ray_dy,
+            ray_dz,
+            ray_tmax,
+            count,
+            d_rays.ptr);
     }
 };
 
@@ -7403,16 +7463,22 @@ extern "C" __global__ void __intersection__aabb_index_exact() {
 
 extern "C" __global__ void __anyhit__aabb_index_count() {
     const unsigned long long row_index = atomicAdd(params.hit_count, 1ULL);
-    if (params.collect_rows != 0u && params.operation == 3u && row_index < params.row_capacity) {
+    if (params.collect_rows != 0u && row_index < params.row_capacity) {
         const uint32_t prim = optixGetPrimitiveIndex();
         const uint32_t qidx = optixGetPayload_0();
         RtdlAabbPairRow row;
-        if (params.intersect_pass == 0u) {
+        if (params.operation == 1u) {
+            row.query_id = params.point_queries[qidx].id;
+            row.indexed_id = params.indexed_boxes[prim].id;
+        } else if (params.operation == 3u && params.intersect_pass == 0u) {
             row.query_id = params.box_queries[qidx].id;
             row.indexed_id = params.indexed_boxes[prim].id;
-        } else {
+        } else if (params.operation == 3u) {
             row.query_id = params.box_queries[prim].id;
             row.indexed_id = params.indexed_boxes[qidx].id;
+        } else {
+            optixIgnoreIntersection();
+            return;
         }
         params.rows_out[row_index] = row;
     }
@@ -7871,6 +7937,88 @@ static void collect_prepared_aabb_index_2d_range_intersection_rows_optix(
     download(&raw_count, d_hit_count.ptr, 1);
     if (raw_count > static_cast<unsigned long long>(std::numeric_limits<size_t>::max()))
         throw std::runtime_error("AABB row output count exceeds size_t range");
+    const size_t emitted = static_cast<size_t>(raw_count);
+    *emitted_count_out = emitted;
+    if (emitted > row_capacity) {
+        *overflowed_out = 1;
+        return;
+    }
+
+    std::vector<RtdlAabbPairRow> rows(emitted);
+    if (emitted != 0)
+        download(rows.data(), d_rows.ptr, emitted);
+    std::sort(rows.begin(), rows.end(), [](const RtdlAabbPairRow& a, const RtdlAabbPairRow& b) {
+        if (a.query_id != b.query_id)
+            return a.query_id < b.query_id;
+        return a.indexed_id < b.indexed_id;
+    });
+    rows.erase(std::unique(rows.begin(), rows.end(), [](const RtdlAabbPairRow& a, const RtdlAabbPairRow& b) {
+        return a.query_id == b.query_id && a.indexed_id == b.indexed_id;
+    }), rows.end());
+    *emitted_count_out = rows.size();
+    if (!rows.empty())
+        std::memcpy(rows_out, rows.data(), sizeof(RtdlAabbPairRow) * rows.size());
+}
+
+static void collect_prepared_aabb_index_2d_point_contains_rows_optix(
+        PreparedAabbIndex2DOptix* prepared,
+        const RtdlPoint* point_queries,
+        size_t point_query_count,
+        RtdlAabbPairRow* rows_out,
+        size_t row_capacity,
+        size_t* emitted_count_out,
+        uint32_t* overflowed_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX AABB index handle must not be null");
+    if (!emitted_count_out) throw std::runtime_error("emitted_count_out must not be null");
+    if (!overflowed_out) throw std::runtime_error("overflowed_out must not be null");
+    if (!rows_out && row_capacity != 0)
+        throw std::runtime_error("rows_out pointer must not be null when row_capacity is nonzero");
+    if (!point_queries && point_query_count != 0)
+        throw std::runtime_error("point_queries pointer must not be null when point_query_count is nonzero");
+    if (prepared->box_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("indexed box count exceeds uint32 launch limit");
+    if (point_query_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("point query count exceeds uint32 launch limit");
+    if (row_capacity > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("AABB row output capacity exceeds uint32 launch limit");
+
+    *emitted_count_out = 0;
+    *overflowed_out = 0;
+    if (prepared->box_count == 0 || point_query_count == 0)
+        return;
+
+    std::vector<GpuPoint> gpu_points(point_query_count);
+    for (size_t i = 0; i < point_query_count; ++i)
+        gpu_points[i] = pack_aabb_index_point_query_for_gpu(point_queries[i]);
+    DevPtr d_points(sizeof(GpuPoint) * point_query_count);
+    upload(d_points.ptr, gpu_points.data(), gpu_points.size());
+
+    DevPtr d_hit_count(sizeof(unsigned long long));
+    unsigned long long zero = 0ULL;
+    upload(d_hit_count.ptr, &zero, 1);
+    DevPtr d_rows(sizeof(RtdlAabbPairRow) * row_capacity);
+
+    launch_aabb_index_count_pass_optix(
+        prepared->accel.handle,
+        d_points.ptr,
+        point_query_count,
+        0,
+        0,
+        prepared->d_boxes.ptr,
+        prepared->box_count,
+        kAabbIndexOpPointContains,
+        0u,
+        point_query_count,
+        d_hit_count.ptr,
+        d_rows.ptr,
+        row_capacity,
+        true);
+
+    unsigned long long raw_count = 0ULL;
+    download(&raw_count, d_hit_count.ptr, 1);
+    if (raw_count > static_cast<unsigned long long>(std::numeric_limits<size_t>::max()))
+        throw std::runtime_error("AABB point row output count exceeds size_t range");
     const size_t emitted = static_cast<size_t>(raw_count);
     *emitted_count_out = emitted;
     if (emitted > row_capacity) {
@@ -8622,6 +8770,24 @@ struct RayAnyHitWeightedSum3DLaunchParams {
     uint32_t                  ray_count;
 };
 
+struct RayPrimitiveGroupedI64Reduction3DLaunchParams {
+    OptixTraversableHandle    traversable;
+    const GpuRay3DHost*       rays;
+    const GpuTriangle3DHost*  triangles;
+    const uint32_t*           primitive_group_ids;
+    const unsigned long long* primitive_values;
+    uint32_t*                 primitive_flags;
+    unsigned long long*       group_counts;
+    unsigned long long*       group_sums;
+    unsigned long long*       group_mins;
+    unsigned long long*       group_maxs;
+    unsigned long long*       hit_event_count;
+    uint32_t                  ray_count;
+    uint32_t                  triangle_count;
+    uint32_t                  group_count;
+    uint32_t                  reduction;
+};
+
 struct RayAnyHitGroupFlags3DLaunchParams {
     OptixTraversableHandle   traversable;
     const GpuRay3DHost*      rays;
@@ -9069,6 +9235,109 @@ static void ensure_ray_anyhit_weighted_sum_3d_pipeline()
     });
 }
 
+static std::string ray_primitive_grouped_i64_reduction_kernel_source_3d()
+{
+    std::string src(kRayHitCount3DKernelSrc);
+    const std::string old_output_field =
+        "    RayHitCount3DRecord*     output;\n"
+        "    uint32_t                 ray_count;\n";
+    const std::string new_output_field =
+        "    const uint32_t*           primitive_group_ids;\n"
+        "    const unsigned long long* primitive_values;\n"
+        "    uint32_t*                 primitive_flags;\n"
+        "    unsigned long long*       group_counts;\n"
+        "    unsigned long long*       group_sums;\n"
+        "    unsigned long long*       group_mins;\n"
+        "    unsigned long long*       group_maxs;\n"
+        "    unsigned long long*       hit_event_count;\n"
+        "    uint32_t                  ray_count;\n"
+        "    uint32_t                  triangle_count;\n"
+        "    uint32_t                  group_count;\n"
+        "    uint32_t                  reduction;\n";
+    size_t pos = src.find(old_output_field);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 3-D primitive grouped reduction params");
+    src.replace(pos, old_output_field.size(), new_output_field);
+
+    const std::string old_zero_write =
+        "        params.output[idx] = {r.id, 0u};\n"
+        "        return;\n";
+    const std::string new_zero_write =
+        "        return;\n";
+    pos = src.find(old_zero_write);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 3-D primitive grouped reduction zero-ray path");
+    src.replace(pos, old_zero_write.size(), new_zero_write);
+
+    const std::string old_final_write =
+        "    params.output[idx] = {r.id, p1};\n";
+    const std::string new_final_write =
+        "    (void)p1;\n";
+    pos = src.find(old_final_write);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 3-D primitive grouped reduction output path");
+    src.replace(pos, old_final_write.size(), new_final_write);
+
+    const std::string old_anyhit =
+        "extern \"C\" __global__ void __anyhit__rayhit3d_anyhit() {\n"
+        "    // Count this hit and keep traversing all triangles.\n"
+        "    uint32_t count = optixGetPayload_1();\n"
+        "    optixSetPayload_1(count + 1u);\n"
+        "    optixIgnoreIntersection();\n"
+        "}\n";
+    const std::string new_anyhit =
+        "extern \"C\" __global__ void __anyhit__rayhit3d_anyhit() {\n"
+        "    const uint32_t prim = optixGetPrimitiveIndex();\n"
+        "    if (prim >= params.triangle_count) {\n"
+        "        optixIgnoreIntersection();\n"
+        "        return;\n"
+        "    }\n"
+        "    atomicAdd(params.hit_event_count, 1ull);\n"
+        "    const uint32_t word = prim >> 5;\n"
+        "    const uint32_t mask = 1u << (prim & 31u);\n"
+        "    const uint32_t old = atomicOr(&params.primitive_flags[word], mask);\n"
+        "    if ((old & mask) == 0u) {\n"
+        "        const uint32_t group = params.primitive_group_ids[prim];\n"
+        "        if (group < params.group_count) {\n"
+        "            const unsigned long long value = params.primitive_values[prim];\n"
+        "            if (params.reduction == 1u) {\n"
+        "                atomicAdd(&params.group_counts[group], 1ull);\n"
+        "            } else if (params.reduction == 2u) {\n"
+        "                atomicAdd(&params.group_sums[group], value);\n"
+        "            } else if (params.reduction == 3u) {\n"
+        "                atomicMin(&params.group_mins[group], value);\n"
+        "            } else if (params.reduction == 4u) {\n"
+        "                atomicMax(&params.group_maxs[group], value);\n"
+        "            } else if (params.reduction == 5u) {\n"
+        "                atomicAdd(&params.group_counts[group], 1ull);\n"
+        "                atomicAdd(&params.group_sums[group], value);\n"
+        "            }\n"
+        "        }\n"
+        "    }\n"
+        "    optixIgnoreIntersection();\n"
+        "}\n";
+    pos = src.find(old_anyhit);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 3-D primitive grouped reduction any-hit path");
+    src.replace(pos, old_anyhit.size(), new_anyhit);
+    return src;
+}
+
+static void ensure_ray_primitive_grouped_i64_reduction_3d_pipeline()
+{
+    std::call_once(g_rayprimitive_grouped_i64_reduction3d.init, [&]() {
+        std::string src = ray_primitive_grouped_i64_reduction_kernel_source_3d();
+        std::string ptx = compile_to_ptx(src.c_str(), "rayprimitive_grouped_i64_reduction3d_kernel.cu");
+        g_rayprimitive_grouped_i64_reduction3d.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__rayhit3d_probe",
+            "__miss__rayhit3d_miss",
+            "__intersection__rayhit3d_isect",
+            "__anyhit__rayhit3d_anyhit",
+            nullptr, 2).release();
+    });
+}
+
 static std::string ray_anyhit_group_flags_kernel_source_3d()
 {
     std::string src = ray_anyhit_kernel_source_3d();
@@ -9160,11 +9429,49 @@ static PreparedStaticTriangleScene3D* prepare_static_triangle_scene_3d_device_tr
         triangle_count);
 }
 
+static PreparedPrimitiveGroupedI64Payload3D* prepare_primitive_grouped_i64_payload_3d_optix(
+        const uint32_t* primitive_group_ids,
+        size_t primitive_group_id_count,
+        const uint64_t* primitive_values,
+        size_t primitive_value_count,
+        size_t group_count)
+{
+    return new PreparedPrimitiveGroupedI64Payload3D(
+        primitive_group_ids,
+        primitive_group_id_count,
+        primitive_values,
+        primitive_value_count,
+        group_count);
+}
+
 static PreparedRayBatch3D* prepare_ray_batch_3d_optix(
         const RtdlRay3D* rays,
         size_t ray_count)
 {
     return new PreparedRayBatch3D(rays, ray_count);
+}
+
+static PreparedRayBatch3D* prepare_ray_batch_3d_device_rays_optix(
+        const uint32_t* ray_ids,
+        const double* ray_ox,
+        const double* ray_oy,
+        const double* ray_oz,
+        const double* ray_dx,
+        const double* ray_dy,
+        const double* ray_dz,
+        const double* ray_tmax,
+        size_t ray_count)
+{
+    return new PreparedRayBatch3D(
+        ray_ids,
+        ray_ox,
+        ray_oy,
+        ray_oz,
+        ray_dx,
+        ray_dy,
+        ray_dz,
+        ray_tmax,
+        ray_count);
 }
 
 static PreparedClosestHitGroupedArgmin3D* prepare_closest_hit_grouped_argmin_3d_optix(
@@ -9506,6 +9813,400 @@ static void run_prepared_static_triangle_scene_3d_ray_any_hit_weighted_sum_optix
     unsigned long long sum = 0ull;
     download(&sum, d_sum.ptr, 1);
     *weighted_hit_sum_out = static_cast<uint64_t>(sum);
+    const auto traversal_end = std::chrono::steady_clock::now();
+    if (traversal_seconds_out)
+        *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
+}
+
+static void run_prepared_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        const RtdlRay3D* rays,
+        size_t ray_count,
+        const uint32_t* primitive_group_ids,
+        size_t primitive_group_id_count,
+        const uint64_t* primitive_values,
+        size_t primitive_value_count,
+        size_t group_count,
+        uint32_t reduction,
+        uint64_t* group_counts_out,
+        uint64_t* group_sums_out,
+        uint64_t* group_mins_out,
+        uint64_t* group_maxs_out,
+        uint64_t* hit_event_count_out,
+        double* traversal_seconds_out)
+{
+    if (!prepared)
+        throw std::runtime_error("prepared scene handle must not be null");
+    if (!rays && ray_count != 0)
+        throw std::runtime_error("ray pointer must not be null when ray_count is nonzero");
+    if (!primitive_group_ids && primitive_group_id_count != 0)
+        throw std::runtime_error("primitive_group_ids pointer must not be null when primitive count is nonzero");
+    if (!primitive_values && primitive_value_count != 0)
+        throw std::runtime_error("primitive_values pointer must not be null when primitive count is nonzero");
+    if (primitive_group_id_count != prepared->triangle_count)
+        throw std::runtime_error("primitive_group_ids length must match prepared triangle count");
+    if (primitive_value_count != prepared->triangle_count)
+        throw std::runtime_error("primitive_values length must match prepared triangle count");
+    if (!group_counts_out || !group_sums_out || !group_mins_out || !group_maxs_out)
+        throw std::runtime_error("group output arrays must not be null");
+    if (!hit_event_count_out)
+        throw std::runtime_error("hit_event_count_out must not be null");
+    if (ray_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("ray_count exceeds uint32 launch limit");
+    if (prepared->triangle_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("triangle_count exceeds uint32 primitive limit");
+    if (group_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("group_count exceeds uint32 limit");
+    if (reduction != kDeviceColumnGroupedOpCount &&
+            reduction != kDeviceColumnGroupedOpSum &&
+            reduction != kDeviceColumnGroupedOpMin &&
+            reduction != kDeviceColumnGroupedOpMax &&
+            reduction != kDeviceColumnGroupedOpSumCount) {
+        throw std::runtime_error("unsupported primitive grouped i64 reduction operation");
+    }
+
+    for (size_t group_index = 0; group_index < group_count; ++group_index) {
+        group_counts_out[group_index] = 0u;
+        group_sums_out[group_index] = 0u;
+        group_mins_out[group_index] = std::numeric_limits<uint64_t>::max();
+        group_maxs_out[group_index] = 0u;
+    }
+    *hit_event_count_out = 0u;
+    if (traversal_seconds_out)
+        *traversal_seconds_out = 0.0;
+    if (ray_count == 0 || prepared->triangle_count == 0 || group_count == 0)
+        return;
+    for (size_t primitive_index = 0; primitive_index < prepared->triangle_count; ++primitive_index) {
+        if (primitive_group_ids[primitive_index] >= group_count)
+            throw std::runtime_error("primitive_group_ids entries must be smaller than group_count");
+    }
+
+    std::vector<GpuRay3DHost> gpu_rays(ray_count);
+    for (size_t i = 0; i < ray_count; ++i)
+        gpu_rays[i] = pack_ray_3d_as_gpu_ray(rays[i]);
+
+    std::vector<uint32_t> groups(prepared->triangle_count);
+    std::vector<unsigned long long> values(prepared->triangle_count);
+    for (size_t primitive_index = 0; primitive_index < prepared->triangle_count; ++primitive_index) {
+        groups[primitive_index] = primitive_group_ids[primitive_index];
+        values[primitive_index] = static_cast<unsigned long long>(primitive_values[primitive_index]);
+    }
+
+    ensure_ray_primitive_grouped_i64_reduction_3d_pipeline();
+
+    const size_t flag_word_count = (prepared->triangle_count + 31u) / 32u;
+    DevPtr d_rays(sizeof(GpuRay3DHost) * ray_count);
+    DevPtr d_groups(sizeof(uint32_t) * prepared->triangle_count);
+    DevPtr d_values(sizeof(unsigned long long) * prepared->triangle_count);
+    DevPtr d_flags(sizeof(uint32_t) * flag_word_count);
+    DevPtr d_counts(sizeof(unsigned long long) * group_count);
+    DevPtr d_sums(sizeof(unsigned long long) * group_count);
+    DevPtr d_mins(sizeof(unsigned long long) * group_count);
+    DevPtr d_maxs(sizeof(unsigned long long) * group_count);
+    DevPtr d_hit_events(sizeof(unsigned long long));
+
+    upload(d_rays.ptr, gpu_rays.data(), gpu_rays.size());
+    upload(d_groups.ptr, groups.data(), groups.size());
+    upload(d_values.ptr, values.data(), values.size());
+    CU_CHECK(cuMemsetD32(d_flags.ptr, 0u, flag_word_count));
+    CU_CHECK(cuMemsetD32(d_counts.ptr, 0u, group_count * 2u));
+    CU_CHECK(cuMemsetD32(d_sums.ptr, 0u, group_count * 2u));
+    CU_CHECK(cuMemsetD32(d_maxs.ptr, 0u, group_count * 2u));
+    unsigned long long zero = 0ull;
+    upload(d_hit_events.ptr, &zero, 1);
+    std::vector<unsigned long long> min_init(group_count, std::numeric_limits<unsigned long long>::max());
+    upload(d_mins.ptr, min_init.data(), min_init.size());
+
+    RayPrimitiveGroupedI64Reduction3DLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.rays = reinterpret_cast<const GpuRay3DHost*>(d_rays.ptr);
+    lp.triangles = reinterpret_cast<const GpuTriangle3DHost*>(prepared->d_triangles.ptr);
+    lp.primitive_group_ids = reinterpret_cast<const uint32_t*>(d_groups.ptr);
+    lp.primitive_values = reinterpret_cast<const unsigned long long*>(d_values.ptr);
+    lp.primitive_flags = reinterpret_cast<uint32_t*>(d_flags.ptr);
+    lp.group_counts = reinterpret_cast<unsigned long long*>(d_counts.ptr);
+    lp.group_sums = reinterpret_cast<unsigned long long*>(d_sums.ptr);
+    lp.group_mins = reinterpret_cast<unsigned long long*>(d_mins.ptr);
+    lp.group_maxs = reinterpret_cast<unsigned long long*>(d_maxs.ptr);
+    lp.hit_event_count = reinterpret_cast<unsigned long long*>(d_hit_events.ptr);
+    lp.ray_count = static_cast<uint32_t>(ray_count);
+    lp.triangle_count = static_cast<uint32_t>(prepared->triangle_count);
+    lp.group_count = static_cast<uint32_t>(group_count);
+    lp.reduction = reduction;
+
+    DevPtr d_params(sizeof(RayPrimitiveGroupedI64Reduction3DLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    const auto traversal_start = std::chrono::steady_clock::now();
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_rayprimitive_grouped_i64_reduction3d.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(RayPrimitiveGroupedI64Reduction3DLaunchParams),
+                             &g_rayprimitive_grouped_i64_reduction3d.pipe->sbt,
+                             static_cast<unsigned>(ray_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+
+    std::vector<unsigned long long> counts(group_count, 0ull);
+    std::vector<unsigned long long> sums(group_count, 0ull);
+    std::vector<unsigned long long> mins(group_count, std::numeric_limits<unsigned long long>::max());
+    std::vector<unsigned long long> maxs(group_count, 0ull);
+    unsigned long long hit_events = 0ull;
+    download(counts.data(), d_counts.ptr, group_count);
+    download(sums.data(), d_sums.ptr, group_count);
+    download(mins.data(), d_mins.ptr, group_count);
+    download(maxs.data(), d_maxs.ptr, group_count);
+    download(&hit_events, d_hit_events.ptr, 1);
+    for (size_t group_index = 0; group_index < group_count; ++group_index) {
+        group_counts_out[group_index] = static_cast<uint64_t>(counts[group_index]);
+        group_sums_out[group_index] = static_cast<uint64_t>(sums[group_index]);
+        group_mins_out[group_index] = static_cast<uint64_t>(mins[group_index]);
+        group_maxs_out[group_index] = static_cast<uint64_t>(maxs[group_index]);
+    }
+    *hit_event_count_out = static_cast<uint64_t>(hit_events);
+    const auto traversal_end = std::chrono::steady_clock::now();
+    if (traversal_seconds_out)
+        *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
+}
+
+static void run_prepared_static_triangle_scene_3d_ray_prepared_primitive_grouped_i64_reduction_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        PreparedPrimitiveGroupedI64Payload3D* payload,
+        const RtdlRay3D* rays,
+        size_t ray_count,
+        uint32_t reduction,
+        uint64_t* group_counts_out,
+        uint64_t* group_sums_out,
+        uint64_t* group_mins_out,
+        uint64_t* group_maxs_out,
+        uint64_t* hit_event_count_out,
+        double* traversal_seconds_out)
+{
+    if (!prepared)
+        throw std::runtime_error("prepared scene handle must not be null");
+    if (!payload)
+        throw std::runtime_error("prepared primitive grouped payload handle must not be null");
+    if (!rays && ray_count != 0)
+        throw std::runtime_error("ray pointer must not be null when ray_count is nonzero");
+    if (payload->primitive_count != prepared->triangle_count)
+        throw std::runtime_error("prepared primitive payload length must match prepared triangle count");
+    if (!group_counts_out || !group_sums_out || !group_mins_out || !group_maxs_out)
+        throw std::runtime_error("group output arrays must not be null");
+    if (!hit_event_count_out)
+        throw std::runtime_error("hit_event_count_out must not be null");
+    if (ray_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("ray_count exceeds uint32 launch limit");
+    if (prepared->triangle_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("triangle_count exceeds uint32 primitive limit");
+    if (payload->group_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("group_count exceeds uint32 limit");
+    if (reduction != kDeviceColumnGroupedOpCount &&
+            reduction != kDeviceColumnGroupedOpSum &&
+            reduction != kDeviceColumnGroupedOpMin &&
+            reduction != kDeviceColumnGroupedOpMax &&
+            reduction != kDeviceColumnGroupedOpSumCount) {
+        throw std::runtime_error("unsupported primitive grouped i64 reduction operation");
+    }
+
+    for (size_t group_index = 0; group_index < payload->group_count; ++group_index) {
+        group_counts_out[group_index] = 0u;
+        group_sums_out[group_index] = 0u;
+        group_mins_out[group_index] = std::numeric_limits<uint64_t>::max();
+        group_maxs_out[group_index] = 0u;
+    }
+    *hit_event_count_out = 0u;
+    if (traversal_seconds_out)
+        *traversal_seconds_out = 0.0;
+    if (ray_count == 0 || prepared->triangle_count == 0 || payload->group_count == 0)
+        return;
+
+    std::vector<GpuRay3DHost> gpu_rays(ray_count);
+    for (size_t i = 0; i < ray_count; ++i)
+        gpu_rays[i] = pack_ray_3d_as_gpu_ray(rays[i]);
+
+    ensure_ray_primitive_grouped_i64_reduction_3d_pipeline();
+
+    const size_t flag_word_count = (prepared->triangle_count + 31u) / 32u;
+    DevPtr d_rays(sizeof(GpuRay3DHost) * ray_count);
+    DevPtr d_flags(sizeof(uint32_t) * flag_word_count);
+    DevPtr d_counts(sizeof(unsigned long long) * payload->group_count);
+    DevPtr d_sums(sizeof(unsigned long long) * payload->group_count);
+    DevPtr d_mins(sizeof(unsigned long long) * payload->group_count);
+    DevPtr d_maxs(sizeof(unsigned long long) * payload->group_count);
+    DevPtr d_hit_events(sizeof(unsigned long long));
+
+    upload(d_rays.ptr, gpu_rays.data(), gpu_rays.size());
+    CU_CHECK(cuMemsetD32(d_flags.ptr, 0u, flag_word_count));
+    CU_CHECK(cuMemsetD32(d_counts.ptr, 0u, payload->group_count * 2u));
+    CU_CHECK(cuMemsetD32(d_sums.ptr, 0u, payload->group_count * 2u));
+    CU_CHECK(cuMemsetD32(d_maxs.ptr, 0u, payload->group_count * 2u));
+    unsigned long long zero = 0ull;
+    upload(d_hit_events.ptr, &zero, 1);
+    std::vector<unsigned long long> min_init(payload->group_count, std::numeric_limits<unsigned long long>::max());
+    upload(d_mins.ptr, min_init.data(), min_init.size());
+
+    RayPrimitiveGroupedI64Reduction3DLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.rays = reinterpret_cast<const GpuRay3DHost*>(d_rays.ptr);
+    lp.triangles = reinterpret_cast<const GpuTriangle3DHost*>(prepared->d_triangles.ptr);
+    lp.primitive_group_ids = reinterpret_cast<const uint32_t*>(payload->d_groups.ptr);
+    lp.primitive_values = reinterpret_cast<const unsigned long long*>(payload->d_values.ptr);
+    lp.primitive_flags = reinterpret_cast<uint32_t*>(d_flags.ptr);
+    lp.group_counts = reinterpret_cast<unsigned long long*>(d_counts.ptr);
+    lp.group_sums = reinterpret_cast<unsigned long long*>(d_sums.ptr);
+    lp.group_mins = reinterpret_cast<unsigned long long*>(d_mins.ptr);
+    lp.group_maxs = reinterpret_cast<unsigned long long*>(d_maxs.ptr);
+    lp.hit_event_count = reinterpret_cast<unsigned long long*>(d_hit_events.ptr);
+    lp.ray_count = static_cast<uint32_t>(ray_count);
+    lp.triangle_count = static_cast<uint32_t>(prepared->triangle_count);
+    lp.group_count = static_cast<uint32_t>(payload->group_count);
+    lp.reduction = reduction;
+
+    DevPtr d_params(sizeof(RayPrimitiveGroupedI64Reduction3DLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    const auto traversal_start = std::chrono::steady_clock::now();
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_rayprimitive_grouped_i64_reduction3d.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(RayPrimitiveGroupedI64Reduction3DLaunchParams),
+                             &g_rayprimitive_grouped_i64_reduction3d.pipe->sbt,
+                             static_cast<unsigned>(ray_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+
+    std::vector<unsigned long long> counts(payload->group_count, 0ull);
+    std::vector<unsigned long long> sums(payload->group_count, 0ull);
+    std::vector<unsigned long long> mins(payload->group_count, std::numeric_limits<unsigned long long>::max());
+    std::vector<unsigned long long> maxs(payload->group_count, 0ull);
+    unsigned long long hit_events = 0ull;
+    download(counts.data(), d_counts.ptr, payload->group_count);
+    download(sums.data(), d_sums.ptr, payload->group_count);
+    download(mins.data(), d_mins.ptr, payload->group_count);
+    download(maxs.data(), d_maxs.ptr, payload->group_count);
+    download(&hit_events, d_hit_events.ptr, 1);
+    for (size_t group_index = 0; group_index < payload->group_count; ++group_index) {
+        group_counts_out[group_index] = static_cast<uint64_t>(counts[group_index]);
+        group_sums_out[group_index] = static_cast<uint64_t>(sums[group_index]);
+        group_mins_out[group_index] = static_cast<uint64_t>(mins[group_index]);
+        group_maxs_out[group_index] = static_cast<uint64_t>(maxs[group_index]);
+    }
+    *hit_event_count_out = static_cast<uint64_t>(hit_events);
+    const auto traversal_end = std::chrono::steady_clock::now();
+    if (traversal_seconds_out)
+        *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
+}
+
+static void run_prepared_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        PreparedPrimitiveGroupedI64Payload3D* payload,
+        PreparedRayBatch3D* ray_batch,
+        uint32_t reduction,
+        uint64_t* group_counts_out,
+        uint64_t* group_sums_out,
+        uint64_t* group_mins_out,
+        uint64_t* group_maxs_out,
+        uint64_t* hit_event_count_out,
+        double* traversal_seconds_out)
+{
+    if (!prepared)
+        throw std::runtime_error("prepared scene handle must not be null");
+    if (!payload)
+        throw std::runtime_error("prepared primitive grouped payload handle must not be null");
+    if (!ray_batch)
+        throw std::runtime_error("prepared ray batch handle must not be null");
+    if (payload->primitive_count != prepared->triangle_count)
+        throw std::runtime_error("prepared primitive payload length must match prepared triangle count");
+    if (!group_counts_out || !group_sums_out || !group_mins_out || !group_maxs_out)
+        throw std::runtime_error("group output arrays must not be null");
+    if (!hit_event_count_out)
+        throw std::runtime_error("hit_event_count_out must not be null");
+    if (ray_batch->ray_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("ray_count exceeds uint32 launch limit");
+    if (prepared->triangle_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("triangle_count exceeds uint32 primitive limit");
+    if (payload->group_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("group_count exceeds uint32 limit");
+    if (reduction != kDeviceColumnGroupedOpCount &&
+            reduction != kDeviceColumnGroupedOpSum &&
+            reduction != kDeviceColumnGroupedOpMin &&
+            reduction != kDeviceColumnGroupedOpMax &&
+            reduction != kDeviceColumnGroupedOpSumCount) {
+        throw std::runtime_error("unsupported primitive grouped i64 reduction operation");
+    }
+
+    for (size_t group_index = 0; group_index < payload->group_count; ++group_index) {
+        group_counts_out[group_index] = 0u;
+        group_sums_out[group_index] = 0u;
+        group_mins_out[group_index] = std::numeric_limits<uint64_t>::max();
+        group_maxs_out[group_index] = 0u;
+    }
+    *hit_event_count_out = 0u;
+    if (traversal_seconds_out)
+        *traversal_seconds_out = 0.0;
+    if (ray_batch->ray_count == 0 || prepared->triangle_count == 0 || payload->group_count == 0)
+        return;
+
+    ensure_ray_primitive_grouped_i64_reduction_3d_pipeline();
+
+    const size_t flag_word_count = (prepared->triangle_count + 31u) / 32u;
+    DevPtr d_flags(sizeof(uint32_t) * flag_word_count);
+    DevPtr d_counts(sizeof(unsigned long long) * payload->group_count);
+    DevPtr d_sums(sizeof(unsigned long long) * payload->group_count);
+    DevPtr d_mins(sizeof(unsigned long long) * payload->group_count);
+    DevPtr d_maxs(sizeof(unsigned long long) * payload->group_count);
+    DevPtr d_hit_events(sizeof(unsigned long long));
+
+    CU_CHECK(cuMemsetD32(d_flags.ptr, 0u, flag_word_count));
+    CU_CHECK(cuMemsetD32(d_counts.ptr, 0u, payload->group_count * 2u));
+    CU_CHECK(cuMemsetD32(d_sums.ptr, 0u, payload->group_count * 2u));
+    CU_CHECK(cuMemsetD32(d_maxs.ptr, 0u, payload->group_count * 2u));
+    unsigned long long zero = 0ull;
+    upload(d_hit_events.ptr, &zero, 1);
+    std::vector<unsigned long long> min_init(payload->group_count, std::numeric_limits<unsigned long long>::max());
+    upload(d_mins.ptr, min_init.data(), min_init.size());
+
+    RayPrimitiveGroupedI64Reduction3DLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.rays = reinterpret_cast<const GpuRay3DHost*>(ray_batch->d_rays.ptr);
+    lp.triangles = reinterpret_cast<const GpuTriangle3DHost*>(prepared->d_triangles.ptr);
+    lp.primitive_group_ids = reinterpret_cast<const uint32_t*>(payload->d_groups.ptr);
+    lp.primitive_values = reinterpret_cast<const unsigned long long*>(payload->d_values.ptr);
+    lp.primitive_flags = reinterpret_cast<uint32_t*>(d_flags.ptr);
+    lp.group_counts = reinterpret_cast<unsigned long long*>(d_counts.ptr);
+    lp.group_sums = reinterpret_cast<unsigned long long*>(d_sums.ptr);
+    lp.group_mins = reinterpret_cast<unsigned long long*>(d_mins.ptr);
+    lp.group_maxs = reinterpret_cast<unsigned long long*>(d_maxs.ptr);
+    lp.hit_event_count = reinterpret_cast<unsigned long long*>(d_hit_events.ptr);
+    lp.ray_count = static_cast<uint32_t>(ray_batch->ray_count);
+    lp.triangle_count = static_cast<uint32_t>(prepared->triangle_count);
+    lp.group_count = static_cast<uint32_t>(payload->group_count);
+    lp.reduction = reduction;
+
+    DevPtr d_params(sizeof(RayPrimitiveGroupedI64Reduction3DLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    const auto traversal_start = std::chrono::steady_clock::now();
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_rayprimitive_grouped_i64_reduction3d.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(RayPrimitiveGroupedI64Reduction3DLaunchParams),
+                             &g_rayprimitive_grouped_i64_reduction3d.pipe->sbt,
+                             static_cast<unsigned>(ray_batch->ray_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+
+    std::vector<unsigned long long> counts(payload->group_count, 0ull);
+    std::vector<unsigned long long> sums(payload->group_count, 0ull);
+    std::vector<unsigned long long> mins(payload->group_count, std::numeric_limits<unsigned long long>::max());
+    std::vector<unsigned long long> maxs(payload->group_count, 0ull);
+    unsigned long long hit_events = 0ull;
+    download(counts.data(), d_counts.ptr, payload->group_count);
+    download(sums.data(), d_sums.ptr, payload->group_count);
+    download(mins.data(), d_mins.ptr, payload->group_count);
+    download(maxs.data(), d_maxs.ptr, payload->group_count);
+    download(&hit_events, d_hit_events.ptr, 1);
+    for (size_t group_index = 0; group_index < payload->group_count; ++group_index) {
+        group_counts_out[group_index] = static_cast<uint64_t>(counts[group_index]);
+        group_sums_out[group_index] = static_cast<uint64_t>(sums[group_index]);
+        group_mins_out[group_index] = static_cast<uint64_t>(mins[group_index]);
+        group_maxs_out[group_index] = static_cast<uint64_t>(maxs[group_index]);
+    }
+    *hit_event_count_out = static_cast<uint64_t>(hit_events);
     const auto traversal_end = std::chrono::steady_clock::now();
     if (traversal_seconds_out)
         *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();

@@ -44,6 +44,7 @@ enum class QueryKind {
   kRayHitCount,
   kRayAnyHit,
   kRayClosestHit,
+  kRayPrimitiveGroupedI64Reduction3D,
   kSegmentPolygonHitCount,
   kGraphBfsExpand,
   kGraphTriangleProbe,
@@ -153,6 +154,12 @@ struct RayClosestHitState3D {
   double* best_t;
   bool* has_hit;
   std::unordered_set<uint32_t>* seen_triangle_ids;
+};
+
+struct RayPrimitiveGroupedI64ReductionState3D {
+  const RayQuery3D* ray;
+  std::unordered_set<uint32_t>* seen_primitive_indices;
+  uint64_t* hit_event_count;
 };
 
 struct SegmentPolygonHitCountState {
@@ -957,6 +964,14 @@ void triangle_intersect_3d(const RTCIntersectFunctionNArguments* args) {
     if (finite_ray_hits_triangle_3d(*state->ray, triangle)) {
       state->seen_triangle_ids->insert(triangle.id);
       *state->hit_count += 1;
+    }
+    return;
+  }
+  if (g_query_kind == QueryKind::kRayPrimitiveGroupedI64Reduction3D) {
+    auto* state = static_cast<RayPrimitiveGroupedI64ReductionState3D*>(g_query_state);
+    if (finite_ray_hits_triangle_3d(*state->ray, triangle)) {
+      *state->hit_event_count += 1;
+      state->seen_primitive_indices->insert(static_cast<uint32_t>(args->primID));
     }
     return;
   }

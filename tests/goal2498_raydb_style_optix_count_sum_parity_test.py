@@ -60,7 +60,7 @@ class Goal2498RaydbStyleOptixCountSumParityTest(unittest.TestCase):
         self.assertTrue(total["matches_cpu_reference"])
         self.assertEqual(count["rows"], app.run_result_mode("count")["rows"])
         self.assertEqual(total["rows"], app.run_result_mode("sum")["rows"])
-        self.assertTrue(count["metadata"]["rt_core_accelerated"])
+        self.assertFalse(count["metadata"]["rt_core_accelerated"])
         self.assertFalse(count["metadata"]["native_abi_added"])
 
     def test_optix_cli_suite_runs_when_available(self) -> None:

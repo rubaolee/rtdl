@@ -48,6 +48,15 @@ from .db_reference import PredicateClause
 from .db_reference import normalize_denorm_table
 from .db_reference import normalize_grouped_query
 from .db_reference import normalize_predicate_bundle
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_NATIVE_ABI_CONTRACT
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_OVERFLOW_POLICY
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE
+from .aggregate_tree_reference import AggregateFrontierOverflowError
+from .aggregate_tree_reference import _tree_node_rows
+from .aggregate_tree_reference import normalize_weighted_point_rows
 from .v1_5_1_collect_k_bounded import collect_native_i64_rows_with_backend_symbol
 from .v1_5_1_collect_k_bounded import collect_k_bounded_rows
 from .v1_5_1_collect_k_bounded import validate_collect_k_bounded_result
@@ -67,6 +76,7 @@ _DB_MAX_ROWS_PER_JOB = 1_000_000
 _PARTNER_RAY_2D_COLUMNS = ("ids", "ox", "oy", "dx", "dy", "tmax")
 _PARTNER_TRIANGLE_2D_COLUMNS = ("ids", "x0", "y0", "x1", "y1", "x2", "y2")
 _EMBREE_THREAD_OVERRIDE: str | int | None = None
+_UINT64_MAX = (1 << 64) - 1
 EMBREE_REQUIRED_SYMBOLS = (
     "rtdl_embree_get_version",
     "rtdl_embree_configure_threads",
@@ -87,6 +97,7 @@ EMBREE_REQUIRED_SYMBOLS = (
     "rtdl_embree_run_grouped_sum",
     "rtdl_embree_static_triangle_scene_3d_create",
     "rtdl_embree_static_triangle_scene_3d_grouped_segment_any_hit_flags",
+    "rtdl_embree_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction",
     "rtdl_embree_static_triangle_scene_3d_destroy",
     "rtdl_embree_columnar_payload_create",
     "rtdl_embree_columnar_payload_create_from_columns",
@@ -239,6 +250,27 @@ class _RtdlPoint(ctypes.Structure):
         ("id", ctypes.c_uint32),
         ("x", ctypes.c_double),
         ("y", ctypes.c_double),
+    ]
+
+
+class _RtdlAggregateFrontierSource2D(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_int64),
+        ("x", ctypes.c_double),
+        ("y", ctypes.c_double),
+    ]
+
+
+class _RtdlAggregateFrontierNode2D(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_int64),
+        ("cx", ctypes.c_double),
+        ("cy", ctypes.c_double),
+        ("half_size", ctypes.c_double),
+        ("depth", ctypes.c_int32),
+        ("dfs_index", ctypes.c_int64),
+        ("resume_index", ctypes.c_int64),
+        ("is_leaf", ctypes.c_uint8),
     ]
 
 
@@ -1160,6 +1192,202 @@ def collect_polygon_pair_candidates_bounded_embree(
     return validate_collect_k_bounded_result(result, row_width=2, backend="embree")
 
 
+def _aggregate_frontier_capacity_upper_bound(source_count: int, node_count: int) -> int:
+    if source_count <= 0:
+        return 0
+    return source_count * max(1, source_count + node_count)
+
+
+def collect_aggregate_frontier_2d_embree(
+    source_points: Iterable[object],
+    tree_nodes: Iterable[object],
+    *,
+    theta: float,
+    max_rows_per_source: int | None = None,
+    max_total_rows: int | None = None,
+    deduplicate_fallback_targets: bool = True,
+) -> dict[str, object]:
+    """Collect aggregate-frontier rows through the app-name-free Embree ABI."""
+
+    if max_rows_per_source is not None and int(max_rows_per_source) < 0:
+        raise ValueError("max_rows_per_source must be non-negative when provided")
+    if max_total_rows is not None and int(max_total_rows) < 0:
+        raise ValueError("max_total_rows must be non-negative when provided")
+    theta_value = float(theta)
+    if theta_value <= 0.0:
+        raise ValueError("theta must be positive")
+
+    sources = normalize_weighted_point_rows(source_points)
+    nodes = _tree_node_rows(tree_nodes)
+    row_width = len(AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA)
+    row_capacity = (
+        _aggregate_frontier_capacity_upper_bound(len(sources), len(nodes))
+        if max_total_rows is None
+        else int(max_total_rows)
+    )
+    per_source_capacity = _UINT64_MAX if max_rows_per_source is None else int(max_rows_per_source)
+
+    source_array = (_RtdlAggregateFrontierSource2D * len(sources))(
+        *(_RtdlAggregateFrontierSource2D(int(source.id), float(source.x), float(source.y)) for source in sources)
+    )
+    node_array = (_RtdlAggregateFrontierNode2D * len(nodes))(
+        *(
+            _RtdlAggregateFrontierNode2D(
+                int(node.id),
+                float(node.cx),
+                float(node.cy),
+                float(node.half_size),
+                int(node.depth),
+                int(node.dfs_index),
+                -1 if node.resume_index is None else int(node.resume_index),
+                1 if node.is_leaf else 0,
+            )
+            for node in nodes
+        )
+    )
+    child_offsets = [0]
+    child_ids: list[int] = []
+    member_offsets = [0]
+    member_ids: list[int] = []
+    for node in nodes:
+        child_ids.extend(int(child_id) for child_id in node.child_ids)
+        child_offsets.append(len(child_ids))
+        member_ids.extend(int(member_id) for member_id in node.member_ids)
+        member_offsets.append(len(member_ids))
+
+    child_offsets_array = (ctypes.c_uint64 * len(child_offsets))(*child_offsets)
+    child_ids_array = (ctypes.c_int64 * len(child_ids))(*child_ids) if child_ids else None
+    member_offsets_array = (ctypes.c_uint64 * len(member_offsets))(*member_offsets)
+    member_ids_array = (ctypes.c_int64 * len(member_ids))(*member_ids) if member_ids else None
+    row_offsets_array = (ctypes.c_uint64 * (len(sources) + 1))()
+    frontier_array = (
+        (ctypes.c_int64 * (int(row_capacity) * row_width))()
+        if int(row_capacity) > 0
+        else None
+    )
+    emitted_count = ctypes.c_uint64()
+    attempted_count = ctypes.c_uint64()
+    overflowed = ctypes.c_uint32()
+    error = ctypes.create_string_buffer(4096)
+
+    library = _load_embree_library()
+    symbol = _require_optional_embree_symbol(library, "rtdl_embree_collect_aggregate_frontier_2d")
+    if symbol is None:
+        raise ValueError(
+            "loaded Embree backend does not export "
+            "rtdl_embree_collect_aggregate_frontier_2d; "
+            "rebuild the Embree backend from current main"
+        )
+    status = symbol(
+        source_array,
+        len(sources),
+        node_array,
+        len(nodes),
+        child_offsets_array,
+        child_ids_array,
+        member_offsets_array,
+        member_ids_array,
+        ctypes.c_double(theta_value),
+        ctypes.c_uint64(per_source_capacity),
+        ctypes.c_uint64(row_capacity),
+        ctypes.c_uint32(1 if deduplicate_fallback_targets else 0),
+        frontier_array,
+        row_offsets_array,
+        ctypes.byref(emitted_count),
+        ctypes.byref(attempted_count),
+        ctypes.byref(overflowed),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    if int(overflowed.value) != 0:
+        raise AggregateFrontierOverflowError(
+            "AGGREGATE_FRONTIER_COLLECT_2D Embree native overflowed capacity; "
+            f"attempted {int(attempted_count.value)}; "
+            "failure_mode=fail_closed_overflow; partial_result_returned=False"
+        )
+
+    emitted = int(emitted_count.value)
+    if emitted > row_capacity:
+        raise RuntimeError("Embree aggregate-frontier emitted_count exceeded row capacity")
+    flat_rows = [int(frontier_array[index]) for index in range(emitted * row_width)] if emitted else []
+    frontier_i64_rows = tuple(
+        tuple(flat_rows[index:index + row_width])
+        for index in range(0, len(flat_rows), row_width)
+    )
+    row_offsets = tuple(int(row_offsets_array[index]) for index in range(len(sources) + 1))
+    frontier_rows = []
+    aggregate_count = 0
+    exact_count = 0
+    for row in frontier_i64_rows:
+        source_id, kind_code, item_id, owner_aggregate_id, dfs_index, resume_index, metadata_flags = row
+        if kind_code == 1:
+            aggregate_count += 1
+            frontier_kind = "aggregate"
+            aggregate_id = item_id
+            target_id = None
+        elif kind_code == 2:
+            exact_count += 1
+            frontier_kind = "exact"
+            aggregate_id = owner_aggregate_id
+            target_id = item_id
+        else:
+            raise RuntimeError(f"Embree aggregate-frontier returned unknown kind code {kind_code}")
+        frontier_rows.append(
+            {
+                "source_id": source_id,
+                "frontier_kind": frontier_kind,
+                "frontier_kind_code": kind_code,
+                "item_id": item_id,
+                "aggregate_id": aggregate_id,
+                "target_id": target_id,
+                "owner_aggregate_id": owner_aggregate_id,
+                "dfs_index": dfs_index,
+                "resume_index": None if resume_index < 0 else resume_index,
+                "metadata_flags": metadata_flags,
+            }
+        )
+    return {
+        "frontier_rows": tuple(frontier_rows),
+        "frontier_i64_rows": frontier_i64_rows,
+        "source_ids": tuple(int(source.id) for source in sources),
+        "row_offsets": row_offsets,
+        "row_schema": AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA,
+        "summary": {
+            "source_count": len(sources),
+            "tree_node_count": len(nodes),
+            "frontier_row_count": emitted,
+            "accepted_aggregate_row_count": aggregate_count,
+            "fallback_exact_row_count": exact_count,
+            "max_rows_per_source": None if max_rows_per_source is None else int(max_rows_per_source),
+            "max_total_rows": None if max_total_rows is None else int(max_total_rows),
+            "overflowed": False,
+            "partial_result_returned": False,
+            "app_math_embedded": False,
+        },
+        "metadata": {
+            "primitive": AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE,
+            "contract": AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT,
+            "native_abi_contract": AGGREGATE_FRONTIER_COLLECT_2D_NATIVE_ABI_CONTRACT,
+            "backend": "embree",
+            "native_symbol": "rtdl_embree_collect_aggregate_frontier_2d",
+            "native_execution": True,
+            "native_engine_app_specific": False,
+            "app_math_embedded": False,
+            "force_law_embedded": False,
+            "row_schema": AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA,
+            "metadata_flags_semantics": {
+                AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE: "no flags set",
+            },
+            "overflow_policy": AGGREGATE_FRONTIER_COLLECT_OVERFLOW_POLICY,
+            "claim_boundary": (
+                "Embree native aggregate-frontier row collection only. This is "
+                "not OptiX execution, not an RT-core timing claim, and not app math."
+            ),
+        },
+    }
+
+
 def pack_triangles(
     records=None,
     *,
@@ -1589,6 +1817,68 @@ def _pack_group_offsets_u32(segment_group_offsets, segment_count: int) -> tuple[
     return array, len(offsets) - 1
 
 
+def _pack_uint32_values(values, expected_count: int, *, label: str):
+    try:
+        import numpy as _np
+    except ImportError:  # pragma: no cover
+        _np = None
+
+    if _np is not None:
+        raw = _np.asarray(values)
+        if raw.ndim != 1:
+            raise ValueError(f"{label} must be one-dimensional")
+        if len(raw) != expected_count:
+            raise ValueError(f"{label} length must match expected count")
+        if raw.dtype.kind == "i" and raw.size and bool((raw < 0).any()):
+            raise ValueError(f"{label} entries must fit uint32")
+        if raw.dtype.kind in {"b", "i", "u"}:
+            try:
+                array = _np.ascontiguousarray(raw, dtype=_np.uint32)
+            except OverflowError as exc:
+                raise ValueError(f"{label} entries must fit uint32") from exc
+            return array.ctypes.data_as(ctypes.POINTER(ctypes.c_uint32)), array
+
+    normalized = tuple(int(value) for value in values)
+    if len(normalized) != expected_count:
+        raise ValueError(f"{label} length must match expected count")
+    if any(value < 0 or value > 0xFFFFFFFF for value in normalized):
+        raise ValueError(f"{label} entries must fit uint32")
+    ValueArray = ctypes.c_uint32 * len(normalized)
+    array = ValueArray(*normalized)
+    return array, array
+
+
+def _pack_uint64_values(values, expected_count: int, *, label: str):
+    try:
+        import numpy as _np
+    except ImportError:  # pragma: no cover
+        _np = None
+
+    if _np is not None:
+        raw = _np.asarray(values)
+        if raw.ndim != 1:
+            raise ValueError(f"{label} must be one-dimensional")
+        if len(raw) != expected_count:
+            raise ValueError(f"{label} length must match expected count")
+        if raw.dtype.kind == "i" and raw.size and bool((raw < 0).any()):
+            raise ValueError(f"{label} entries must fit uint64")
+        if raw.dtype.kind in {"b", "i", "u"}:
+            try:
+                array = _np.ascontiguousarray(raw, dtype=_np.uint64)
+            except OverflowError as exc:
+                raise ValueError(f"{label} entries must fit uint64") from exc
+            return array.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)), array
+
+    normalized = tuple(int(value) for value in values)
+    if len(normalized) != expected_count:
+        raise ValueError(f"{label} length must match expected count")
+    if any(value < 0 or value > _UINT64_MAX for value in normalized):
+        raise ValueError(f"{label} entries must fit uint64")
+    ValueArray = ctypes.c_uint64 * len(normalized)
+    array = ValueArray(*normalized)
+    return array, array
+
+
 class PreparedGroupedSegmentQuery3D:
     """Reusable host-side buffers for grouped finite 3D segment queries."""
 
@@ -1643,6 +1933,78 @@ def prepare_grouped_segment_query_3d(
 ) -> PreparedGroupedSegmentQuery3D:
     """Prepare reusable host buffers for a grouped finite 3D segment query."""
     return PreparedGroupedSegmentQuery3D(segment_start_xyz, segment_end_xyz, segment_group_offsets)
+
+
+class PreparedEmbreePrimitiveGroupedI64Payload3D:
+    """Reusable host-side primitive group/value payload for generic reductions."""
+
+    contract = "PREPARED_EMBREE_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_V1"
+
+    def __init__(self, primitive_group_ids, primitive_values, *, primitive_count: int, group_count: int) -> None:
+        if primitive_count < 0:
+            raise ValueError("primitive_count must be non-negative")
+        if group_count < 0:
+            raise ValueError("group_count must be non-negative")
+        prepare_start = time.perf_counter()
+        self.primitive_count = int(primitive_count)
+        self.group_count = int(group_count)
+        self.group_ids, self._group_owner = _pack_uint32_values(
+            primitive_group_ids,
+            self.primitive_count,
+            label="primitive_group_ids",
+        )
+        self.values, self._value_owner = _pack_uint64_values(
+            primitive_values,
+            self.primitive_count,
+            label="primitive_values",
+        )
+        self.prepare_seconds = time.perf_counter() - prepare_start
+
+    def descriptor(self) -> dict[str, object]:
+        return {
+            "contract": self.contract,
+            "primitive_count": self.primitive_count,
+            "group_count": self.group_count,
+            "payload_buffer_kind": "host_uint32_group_ids_and_uint64_values",
+            "payload_reused": True,
+            "device": "host",
+            "true_zero_copy_authorized": False,
+            "public_speedup_claim_authorized": False,
+        }
+
+
+class PreparedEmbreeRayBatch3D:
+    """Reusable host-side packed Ray3D batch."""
+
+    contract = "PREPARED_EMBREE_RAY_BATCH_3D_V1"
+
+    def __init__(self, rays) -> None:
+        prepare_start = time.perf_counter()
+        self.rays = rays if isinstance(rays, PackedRays) else pack_rays(rays, dimension=3)
+        if self.rays.dimension != 3:
+            raise ValueError("PreparedEmbreeRayBatch3D requires 3-D rays")
+        self.ray_count = int(self.rays.count)
+        self.prepare_seconds = time.perf_counter() - prepare_start
+        self._reuse_count = 0
+
+    def _mark_reused(self) -> int:
+        self._reuse_count += 1
+        return self._reuse_count
+
+    def close(self) -> None:
+        """Match device-backed prepared ray batch lifecycle; host buffers need no explicit free."""
+        return None
+
+    def descriptor(self) -> dict[str, object]:
+        return {
+            "contract": self.contract,
+            "ray_count": self.ray_count,
+            "ray_buffer_kind": "host_packed_ray3d_array",
+            "ray_batch_reused": True,
+            "device": "host",
+            "true_zero_copy_authorized": False,
+            "public_speedup_claim_authorized": False,
+        }
 
 
 class PreparedEmbreeStaticTriangleScene3D:
@@ -1834,10 +2196,338 @@ class PreparedEmbreeStaticTriangleScene3D:
             },
         }
 
+    def ray_triangle_primitive_grouped_i64_reduction(
+        self,
+        rays,
+        *,
+        primitive_group_ids,
+        primitive_values,
+        group_count: int,
+        reduction: str,
+    ) -> dict[str, object]:
+        """Run generic all-hit primitive-id dedup plus grouped i64 reduction on Embree."""
+        if self._closed:
+            raise RuntimeError("prepared Embree static triangle scene handle is closed")
+        if reduction not in {"count", "sum", "min", "max", "sum_count"}:
+            raise ValueError("reduction must be one of: count, sum, min, max, sum_count")
+        if group_count < 0:
+            raise ValueError("group_count must be non-negative")
+        run_symbol = _require_optional_embree_symbol(
+            self._library,
+            "rtdl_embree_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction",
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "loaded Embree backend library does not export "
+                "rtdl_embree_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction; "
+                "rebuild the Embree backend from current main"
+            )
+
+        pack_start = time.perf_counter()
+        packed_rays = rays if isinstance(rays, PackedRays) else pack_rays(rays, dimension=3)
+        if packed_rays.dimension != 3:
+            raise ValueError("ray_triangle_primitive_grouped_i64_reduction requires 3-D rays")
+        group_array, _group_owner = _pack_uint32_values(
+            primitive_group_ids,
+            self.triangle_count,
+            label="primitive_group_ids",
+        )
+        value_array, _value_owner = _pack_uint64_values(
+            primitive_values,
+            self.triangle_count,
+            label="primitive_values",
+        )
+        output_count = int(group_count)
+        CountsArray = ctypes.c_uint64 * output_count
+        counts = CountsArray()
+        sums = CountsArray()
+        mins = CountsArray()
+        maxs = CountsArray()
+        query_pack_seconds = time.perf_counter() - pack_start
+
+        hit_event_count = ctypes.c_uint64()
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        operation = {
+            "count": 1,
+            "sum": 2,
+            "min": 3,
+            "max": 4,
+            "sum_count": 5,
+        }[reduction]
+        status = run_symbol(
+            self._handle,
+            packed_rays.records,
+            packed_rays.count,
+            group_array,
+            self.triangle_count,
+            value_array,
+            self.triangle_count,
+            output_count,
+            ctypes.c_uint32(operation),
+            counts,
+            sums,
+            mins,
+            maxs,
+            ctypes.byref(hit_event_count),
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+        rows: list[dict[str, int]] = []
+        for group_id in range(output_count):
+            if reduction == "count":
+                value = int(counts[group_id])
+                if value:
+                    rows.append({"group_id": group_id, "count": value})
+            elif reduction == "sum":
+                value = int(sums[group_id])
+                if value:
+                    rows.append({"group_id": group_id, "sum": value})
+            elif reduction == "min":
+                value = int(mins[group_id])
+                if value != _UINT64_MAX:
+                    rows.append({"group_id": group_id, "min": value})
+            elif reduction == "max":
+                value = int(maxs[group_id])
+                if value:
+                    rows.append({"group_id": group_id, "max": value})
+            else:
+                count_value = int(counts[group_id])
+                if count_value:
+                    rows.append({"group_id": group_id, "sum": int(sums[group_id]), "count": count_value})
+
+        self._run_count += 1
+        return {
+            "backend": "embree",
+            "primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+            "native_symbol": "rtdl_embree_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction",
+            "reduction": reduction,
+            "rows": tuple(rows),
+            "ray_count": int(packed_rays.count),
+            "triangle_count": self.triangle_count,
+            "group_count": output_count,
+            "hit_event_count_before_dedup": int(hit_event_count.value),
+            "rt_core_accelerated": False,
+            "native_lowering_ready": True,
+            "prepared_reused": True,
+            "prepared_scene_used": True,
+            "prepared_run_index": self._run_count,
+            "phase_timing_seconds": {
+                "prepare_build": float(self.prepare_seconds),
+                "query_pack": float(query_pack_seconds),
+                "traversal": float(traversal_seconds.value),
+            },
+            "transfer_metadata": {
+                "static_scene_prepared_on_host": True,
+                "query_rays_passed_each_run": True,
+                "primitive_group_ids_passed_each_run": True,
+                "primitive_values_passed_each_run": True,
+                "per_ray_records_downloaded_to_host": False,
+                "group_rows_materialized_on_host": True,
+                "true_zero_copy_authorized": False,
+            },
+            "claim_boundary": {
+                "native_app_api": False,
+                "row_witnesses": False,
+                "public_speedup_claim": False,
+                "true_zero_copy": False,
+                "rt_core_acceleration": False,
+            },
+        }
+
+    def prepare_primitive_grouped_i64_payload(
+        self,
+        primitive_group_ids,
+        primitive_values,
+        *,
+        group_count: int,
+    ) -> PreparedEmbreePrimitiveGroupedI64Payload3D:
+        return PreparedEmbreePrimitiveGroupedI64Payload3D(
+            primitive_group_ids,
+            primitive_values,
+            primitive_count=self.triangle_count,
+            group_count=group_count,
+        )
+
+    def prepare_ray_batch(self, rays) -> PreparedEmbreeRayBatch3D:
+        return PreparedEmbreeRayBatch3D(rays)
+
+    def ray_triangle_prepared_primitive_grouped_i64_reduction(
+        self,
+        rays,
+        prepared_payload: PreparedEmbreePrimitiveGroupedI64Payload3D,
+        *,
+        reduction: str,
+    ) -> dict[str, object]:
+        prepared_rays = self.prepare_ray_batch(rays)
+        return self.ray_batch_prepared_primitive_grouped_i64_reduction(
+            prepared_rays,
+            prepared_payload,
+            reduction=reduction,
+        )
+
+    def ray_batch_prepared_primitive_grouped_i64_reduction(
+        self,
+        prepared_rays: PreparedEmbreeRayBatch3D,
+        prepared_payload: PreparedEmbreePrimitiveGroupedI64Payload3D,
+        *,
+        reduction: str,
+    ) -> dict[str, object]:
+        """Run grouped i64 reduction with reusable host-side ray and payload buffers."""
+        if self._closed:
+            raise RuntimeError("prepared Embree static triangle scene handle is closed")
+        if reduction not in {"count", "sum", "min", "max", "sum_count"}:
+            raise ValueError("reduction must be one of: count, sum, min, max, sum_count")
+        if int(prepared_payload.primitive_count) != self.triangle_count:
+            raise ValueError("prepared payload primitive_count must match prepared scene triangle_count")
+        run_symbol = _require_optional_embree_symbol(
+            self._library,
+            "rtdl_embree_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction",
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "loaded Embree backend library does not export "
+                "rtdl_embree_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction; "
+                "rebuild the Embree backend from current main"
+            )
+
+        output_count = int(prepared_payload.group_count)
+        CountsArray = ctypes.c_uint64 * output_count
+        counts = CountsArray()
+        sums = CountsArray()
+        mins = CountsArray()
+        maxs = CountsArray()
+
+        hit_event_count = ctypes.c_uint64()
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        operation = {
+            "count": 1,
+            "sum": 2,
+            "min": 3,
+            "max": 4,
+            "sum_count": 5,
+        }[reduction]
+        status = run_symbol(
+            self._handle,
+            prepared_rays.rays.records,
+            prepared_rays.ray_count,
+            prepared_payload.group_ids,
+            prepared_payload.primitive_count,
+            prepared_payload.values,
+            prepared_payload.primitive_count,
+            output_count,
+            ctypes.c_uint32(operation),
+            counts,
+            sums,
+            mins,
+            maxs,
+            ctypes.byref(hit_event_count),
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+        rows: list[dict[str, int]] = []
+        for group_id in range(output_count):
+            if reduction == "count":
+                value = int(counts[group_id])
+                if value:
+                    rows.append({"group_id": group_id, "count": value})
+            elif reduction == "sum":
+                value = int(sums[group_id])
+                if value:
+                    rows.append({"group_id": group_id, "sum": value})
+            elif reduction == "min":
+                value = int(mins[group_id])
+                if value != _UINT64_MAX:
+                    rows.append({"group_id": group_id, "min": value})
+            elif reduction == "max":
+                value = int(maxs[group_id])
+                if value:
+                    rows.append({"group_id": group_id, "max": value})
+            else:
+                count_value = int(counts[group_id])
+                if count_value:
+                    rows.append({"group_id": group_id, "sum": int(sums[group_id]), "count": count_value})
+
+        self._run_count += 1
+        prepared_ray_run_index = prepared_rays._mark_reused()
+        return {
+            "backend": "embree",
+            "primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+            "native_symbol": "rtdl_embree_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction",
+            "reduction": reduction,
+            "rows": tuple(rows),
+            "ray_count": prepared_rays.ray_count,
+            "triangle_count": self.triangle_count,
+            "group_count": output_count,
+            "hit_event_count_before_dedup": int(hit_event_count.value),
+            "rt_core_accelerated": False,
+            "native_lowering_ready": True,
+            "prepared_reused": True,
+            "prepared_scene_used": True,
+            "prepared_generic_payload_used": True,
+            "prepared_generic_ray_batch_used": True,
+            "prepared_run_index": self._run_count,
+            "prepared_ray_batch_run_index": prepared_ray_run_index,
+            "phase_timing_seconds": {
+                "prepare_build": float(self.prepare_seconds),
+                "query_pack": 0.0,
+                "prepared_ray_batch_prepare": float(prepared_rays.prepare_seconds),
+                "primitive_payload_prepare": float(prepared_payload.prepare_seconds),
+                "traversal": float(traversal_seconds.value),
+            },
+            "transfer_metadata": {
+                "static_scene_prepared_on_host": True,
+                "prepared_primitive_payload_on_host": True,
+                "prepared_rays_resident_on_host": True,
+                "query_rays_uploaded_each_run": False,
+                "primitive_group_ids_uploaded_each_run": False,
+                "primitive_values_uploaded_each_run": False,
+                "per_ray_records_downloaded_to_host": False,
+                "group_rows_materialized_on_host": True,
+                "payload_descriptor": prepared_payload.descriptor(),
+                "ray_batch_descriptor": prepared_rays.descriptor(),
+                "true_zero_copy_authorized": False,
+            },
+            "claim_boundary": {
+                "native_app_api": False,
+                "row_witnesses": False,
+                "public_speedup_claim": False,
+                "true_zero_copy": False,
+                "rt_core_acceleration": False,
+            },
+        }
+
 
 def prepare_embree_static_triangle_scene_3d(triangles) -> PreparedEmbreeStaticTriangleScene3D:
     """Prepare a reusable Embree static 3D triangle scene."""
     return PreparedEmbreeStaticTriangleScene3D(triangles)
+
+
+def ray_triangle_primitive_grouped_i64_reduction_3d_embree(
+    rays,
+    triangles,
+    *,
+    primitive_group_ids,
+    primitive_values,
+    group_count: int,
+    reduction: str,
+) -> dict[str, object]:
+    """Run the generic 3-D ray/triangle primitive grouped i64 reduction on Embree."""
+    with prepare_embree_static_triangle_scene_3d(triangles) as prepared:
+        return prepared.ray_triangle_primitive_grouped_i64_reduction(
+            rays,
+            primitive_group_ids=primitive_group_ids,
+            primitive_values=primitive_values,
+            group_count=group_count,
+            reduction=reduction,
+        )
 
 
 def run_embree_grouped_segment_any_hit_flags_3d(
@@ -4377,6 +5067,27 @@ def _load_embree_library():
     ]
     library.rtdl_embree_static_triangle_scene_3d_grouped_segment_any_hit_flags.restype = ctypes.c_int
 
+    library.rtdl_embree_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction.argtypes = [
+        ctypes.c_void_p,
+        ctypes.POINTER(_RtdlRay3D),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.c_size_t,
+        ctypes.c_size_t,
+        ctypes.c_uint32,
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_embree_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction.restype = ctypes.c_int
+
     library.rtdl_embree_static_triangle_scene_3d_destroy.argtypes = [ctypes.c_void_p]
     library.rtdl_embree_static_triangle_scene_3d_destroy.restype = None
 
@@ -4431,6 +5142,34 @@ def _load_embree_library():
             ctypes.c_size_t,
         ]
         optional_polygon_pair_candidates_bounded.restype = ctypes.c_int
+
+    optional_aggregate_frontier_collect = _require_optional_embree_symbol(
+        library,
+        "rtdl_embree_collect_aggregate_frontier_2d",
+    )
+    if optional_aggregate_frontier_collect is not None:
+        optional_aggregate_frontier_collect.argtypes = [
+            ctypes.POINTER(_RtdlAggregateFrontierSource2D),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlAggregateFrontierNode2D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_double,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_aggregate_frontier_collect.restype = ctypes.c_int
 
     library.rtdl_embree_run_point_nearest_segment.argtypes = [
         ctypes.POINTER(_RtdlPoint),

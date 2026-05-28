@@ -39,7 +39,7 @@ import time
 from collections import OrderedDict
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Mapping
+from typing import Iterable, Mapping
 
 from .embree_runtime import _RtdlSegment
 from .embree_runtime import _RtdlPoint
@@ -55,6 +55,10 @@ from .embree_runtime import _RtdlBfsExpandRow
 from .embree_runtime import _RtdlEdgeSeed
 from .embree_runtime import _RtdlTriangleRow
 from .embree_runtime import _RtdlPayloadField
+from .embree_runtime import _RtdlAggregateFrontierSource2D
+from .embree_runtime import _RtdlAggregateFrontierNode2D
+from .embree_runtime import _UINT64_MAX
+from .embree_runtime import _aggregate_frontier_capacity_upper_bound
 from .embree_runtime import _encode_db_table_columnar
 from .embree_runtime import _encode_db_column_mapping_columnar_with_metadata
 from .embree_runtime import _encode_all_db_text_column_mapping
@@ -122,6 +126,15 @@ from .columnar_partner import plan_partner_resident_columnar_native_execution
 from .columnar_partner import prepare_partner_resident_columnar_record_set
 from .grouped_reduction import GroupedReductionCapacityStatus
 from .grouped_reduction import GroupedReductionSpec
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_NATIVE_ABI_CONTRACT
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_OVERFLOW_POLICY
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE
+from .aggregate_tree_reference import AggregateFrontierOverflowError
+from .aggregate_tree_reference import _tree_node_rows
+from .aggregate_tree_reference import normalize_weighted_point_rows
 
 
 _PREPARED_CACHE_MAX_ENTRIES = 8
@@ -147,6 +160,19 @@ OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_COUNT_I64_WITH_CAPACITY_SYMBOL = (
 )
 OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_STATS_I64_WITH_CAPACITY_SYMBOL = (
     "rtdl_optix_columnar_device_payload_grouped_stats_i64_with_capacity"
+)
+OPTIX_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL = (
+    "rtdl_optix_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction"
+)
+OPTIX_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_CREATE_SYMBOL = (
+    "rtdl_optix_primitive_grouped_i64_payload_3d_create"
+)
+OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL = (
+    "rtdl_optix_static_triangle_scene_3d_ray_prepared_primitive_grouped_i64_reduction"
+)
+OPTIX_RAY_BATCH_3D_CREATE_DEVICE_RAYS_SYMBOL = "rtdl_optix_ray_batch_3d_create_device_rays"
+OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL = (
+    "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction"
 )
 OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_I64_REDUCTIONS = (
     "count",
@@ -271,6 +297,196 @@ def collect_k_bounded_i64_device_optix(
             "stable_public_primitive_authorized": False,
             "partner_tensor_handoff_authorized": False,
             "release_action_authorized": False,
+        },
+    }
+
+
+def collect_aggregate_frontier_2d_optix(
+    source_points: Iterable[object],
+    tree_nodes: Iterable[object],
+    *,
+    theta: float,
+    max_rows_per_source: int | None = None,
+    max_total_rows: int | None = None,
+    deduplicate_fallback_targets: bool = True,
+) -> dict[str, object]:
+    """Collect aggregate-frontier rows through the app-name-free OptiX ABI."""
+
+    if max_rows_per_source is not None and int(max_rows_per_source) < 0:
+        raise ValueError("max_rows_per_source must be non-negative when provided")
+    if max_total_rows is not None and int(max_total_rows) < 0:
+        raise ValueError("max_total_rows must be non-negative when provided")
+    theta_value = float(theta)
+    if theta_value <= 0.0:
+        raise ValueError("theta must be positive")
+
+    sources = normalize_weighted_point_rows(source_points)
+    nodes = _tree_node_rows(tree_nodes)
+    row_width = len(AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA)
+    row_capacity = (
+        _aggregate_frontier_capacity_upper_bound(len(sources), len(nodes))
+        if max_total_rows is None
+        else int(max_total_rows)
+    )
+    per_source_capacity = _UINT64_MAX if max_rows_per_source is None else int(max_rows_per_source)
+
+    source_array = (_RtdlAggregateFrontierSource2D * len(sources))(
+        *(_RtdlAggregateFrontierSource2D(int(source.id), float(source.x), float(source.y)) for source in sources)
+    )
+    node_array = (_RtdlAggregateFrontierNode2D * len(nodes))(
+        *(
+            _RtdlAggregateFrontierNode2D(
+                int(node.id),
+                float(node.cx),
+                float(node.cy),
+                float(node.half_size),
+                int(node.depth),
+                int(node.dfs_index),
+                -1 if node.resume_index is None else int(node.resume_index),
+                1 if node.is_leaf else 0,
+            )
+            for node in nodes
+        )
+    )
+    child_offsets = [0]
+    child_ids: list[int] = []
+    member_offsets = [0]
+    member_ids: list[int] = []
+    for node in nodes:
+        child_ids.extend(int(child_id) for child_id in node.child_ids)
+        child_offsets.append(len(child_ids))
+        member_ids.extend(int(member_id) for member_id in node.member_ids)
+        member_offsets.append(len(member_ids))
+
+    child_offsets_array = (ctypes.c_uint64 * len(child_offsets))(*child_offsets)
+    child_ids_array = (ctypes.c_int64 * len(child_ids))(*child_ids) if child_ids else None
+    member_offsets_array = (ctypes.c_uint64 * len(member_offsets))(*member_offsets)
+    member_ids_array = (ctypes.c_int64 * len(member_ids))(*member_ids) if member_ids else None
+    row_offsets_array = (ctypes.c_uint64 * (len(sources) + 1))()
+    frontier_array = (
+        (ctypes.c_int64 * (int(row_capacity) * row_width))()
+        if int(row_capacity) > 0
+        else None
+    )
+    emitted_count = ctypes.c_uint64()
+    attempted_count = ctypes.c_uint64()
+    overflowed = ctypes.c_uint32()
+    error = ctypes.create_string_buffer(4096)
+
+    library = _load_optix_library()
+    symbol = _find_optional_backend_symbol(library, "rtdl_optix_collect_aggregate_frontier_2d")
+    if symbol is None:
+        raise ValueError(
+            "loaded OptiX backend does not export "
+            "rtdl_optix_collect_aggregate_frontier_2d; "
+            "rebuild the OptiX backend from current main"
+        )
+    status = symbol(
+        source_array,
+        len(sources),
+        node_array,
+        len(nodes),
+        child_offsets_array,
+        child_ids_array,
+        member_offsets_array,
+        member_ids_array,
+        ctypes.c_double(theta_value),
+        ctypes.c_uint64(per_source_capacity),
+        ctypes.c_uint64(row_capacity),
+        ctypes.c_uint32(1 if deduplicate_fallback_targets else 0),
+        frontier_array,
+        row_offsets_array,
+        ctypes.byref(emitted_count),
+        ctypes.byref(attempted_count),
+        ctypes.byref(overflowed),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    if int(overflowed.value) != 0:
+        raise AggregateFrontierOverflowError(
+            "AGGREGATE_FRONTIER_COLLECT_2D OptiX native overflowed capacity; "
+            f"attempted {int(attempted_count.value)}; "
+            "failure_mode=fail_closed_overflow; partial_result_returned=False"
+        )
+
+    emitted = int(emitted_count.value)
+    if emitted > row_capacity:
+        raise RuntimeError("OptiX aggregate-frontier emitted_count exceeded row capacity")
+    flat_rows = [int(frontier_array[index]) for index in range(emitted * row_width)] if emitted else []
+    frontier_i64_rows = tuple(
+        tuple(flat_rows[index:index + row_width])
+        for index in range(0, len(flat_rows), row_width)
+    )
+    row_offsets = tuple(int(row_offsets_array[index]) for index in range(len(sources) + 1))
+    frontier_rows = []
+    aggregate_count = 0
+    exact_count = 0
+    for row in frontier_i64_rows:
+        source_id, kind_code, item_id, owner_aggregate_id, dfs_index, resume_index, metadata_flags = row
+        if kind_code == 1:
+            aggregate_count += 1
+            frontier_kind = "aggregate"
+            aggregate_id = item_id
+            target_id = None
+        elif kind_code == 2:
+            exact_count += 1
+            frontier_kind = "exact"
+            aggregate_id = owner_aggregate_id
+            target_id = item_id
+        else:
+            raise RuntimeError(f"OptiX aggregate-frontier returned unknown kind code {kind_code}")
+        frontier_rows.append(
+            {
+                "source_id": source_id,
+                "frontier_kind": frontier_kind,
+                "frontier_kind_code": kind_code,
+                "item_id": item_id,
+                "aggregate_id": aggregate_id,
+                "target_id": target_id,
+                "owner_aggregate_id": owner_aggregate_id,
+                "dfs_index": dfs_index,
+                "resume_index": None if resume_index < 0 else resume_index,
+                "metadata_flags": metadata_flags,
+            }
+        )
+    return {
+        "frontier_rows": tuple(frontier_rows),
+        "frontier_i64_rows": frontier_i64_rows,
+        "source_ids": tuple(int(source.id) for source in sources),
+        "row_offsets": row_offsets,
+        "row_schema": AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA,
+        "summary": {
+            "source_count": len(sources),
+            "tree_node_count": len(nodes),
+            "frontier_row_count": emitted,
+            "accepted_aggregate_row_count": aggregate_count,
+            "fallback_exact_row_count": exact_count,
+            "max_rows_per_source": None if max_rows_per_source is None else int(max_rows_per_source),
+            "max_total_rows": None if max_total_rows is None else int(max_total_rows),
+            "overflowed": False,
+            "partial_result_returned": False,
+            "app_math_embedded": False,
+        },
+        "metadata": {
+            "primitive": AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE,
+            "contract": AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT,
+            "native_abi_contract": AGGREGATE_FRONTIER_COLLECT_2D_NATIVE_ABI_CONTRACT,
+            "backend": "optix",
+            "native_symbol": "rtdl_optix_collect_aggregate_frontier_2d",
+            "native_execution": True,
+            "native_engine_app_specific": False,
+            "app_math_embedded": False,
+            "force_law_embedded": False,
+            "row_schema": AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA,
+            "metadata_flags_semantics": {
+                AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE: "no flags set",
+            },
+            "overflow_policy": AGGREGATE_FRONTIER_COLLECT_OVERFLOW_POLICY,
+            "claim_boundary": (
+                "OptiX native aggregate-frontier row collection only. This is "
+                "not an RT-core timing claim and not app math."
+            ),
         },
     }
 
@@ -8118,6 +8334,85 @@ class PreparedOptixAabbIndex2D:
             ),
         }
 
+    def collect_point_contains_rows(self, point_queries, *, row_capacity: int) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX AABB index handle is closed")
+        if row_capacity < 0:
+            raise ValueError("row_capacity must be non-negative")
+        packed_points = point_queries if isinstance(point_queries, PackedPoints) else pack_points(records=point_queries, dimension=2)
+        if packed_points.dimension != 2:
+            raise ValueError("OptiX AABB_INDEX_QUERY_2D point row output requires 2-D point queries")
+        row_array = (
+            (_RtdlAabbPairRow * int(row_capacity))()
+            if int(row_capacity) != 0
+            else None
+        )
+        emitted_count = ctypes.c_size_t()
+        overflowed = ctypes.c_uint32()
+        lib = _load_optix_library()
+        collect_symbol = _find_optional_backend_symbol(
+            lib,
+            "rtdl_optix_collect_prepared_aabb_index_2d_point_contains_rows",
+        )
+        if collect_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_collect_prepared_aabb_index_2d_point_contains_rows. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = collect_symbol(
+            self._handle,
+            packed_points.records,
+            packed_points.count,
+            row_array,
+            int(row_capacity),
+            ctypes.byref(emitted_count),
+            ctypes.byref(overflowed),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        emitted = int(emitted_count.value)
+        if int(overflowed.value) != 0:
+            raise RuntimeError(
+                "OptiX AABB_INDEX_QUERY_2D point_contains_rows overflowed "
+                f"capacity {int(row_capacity)}; emitted at least {emitted}; "
+                "failure_mode=fail_closed_overflow"
+            )
+        if emitted > int(row_capacity):
+            raise RuntimeError(
+                "OptiX AABB_INDEX_QUERY_2D point_contains_rows reported "
+                f"emitted_count {emitted} beyond capacity {int(row_capacity)}; "
+                "failure_mode=fail_closed_overflow"
+            )
+        rows = tuple(
+            (int(row_array[index].query_id), int(row_array[index].indexed_id))
+            for index in range(emitted)
+        )
+        return {
+            "primitive": "AABB_INDEX_QUERY_2D",
+            "contract": "generic_aabb_point_membership_pair_rows_2d",
+            "backend": "optix",
+            "operation": "point_contains_rows",
+            "row_schema": ("query_id", "indexed_id"),
+            "candidate_id_rows": rows,
+            "valid_count": len(rows),
+            "row_capacity": int(row_capacity),
+            "overflowed": False,
+            "complete_candidate_coverage": True,
+            "rt_core_accelerated": True,
+            "native_engine_customization": False,
+            "native_generic_symbol": (
+                "rtdl_optix_collect_prepared_aabb_index_2d_point_contains_rows"
+            ),
+            "claim_boundary": (
+                "Generic OptiX AABB_INDEX_QUERY_2D point_contains_rows output; "
+                "returns app-name-free point/indexed-box id pairs only. Exact app "
+                "semantics remain outside the engine."
+            ),
+        }
+
     def close(self) -> None:
         if self._closed:
             return
@@ -8156,6 +8451,19 @@ def collect_aabb_intersection_pair_rows_2d_optix(
     with PreparedOptixAabbIndex2D(indexed_boxes) as prepared:
         return prepared.collect_range_intersection_rows(
             query_boxes,
+            row_capacity=row_capacity,
+        )
+
+
+def collect_aabb_point_membership_pair_rows_2d_optix(
+    indexed_boxes,
+    point_queries,
+    *,
+    row_capacity: int,
+) -> dict[str, object]:
+    with PreparedOptixAabbIndex2D(indexed_boxes) as prepared:
+        return prepared.collect_point_contains_rows(
+            point_queries,
             row_capacity=row_capacity,
         )
 
@@ -8833,6 +9141,37 @@ def _pack_uint64_weights(weights, expected_count: int):
     return array, array
 
 
+def _pack_uint32_values(values, expected_count: int, *, label: str):
+    try:
+        import numpy as _np
+    except ImportError:  # pragma: no cover
+        _np = None
+
+    if _np is not None:
+        raw = _np.asarray(values)
+        if raw.ndim != 1:
+            raise ValueError(f"{label} must be one-dimensional")
+        if len(raw) != expected_count:
+            raise ValueError(f"{label} length must match expected count")
+        if raw.dtype.kind == "i" and raw.size and bool((raw < 0).any()):
+            raise ValueError(f"{label} entries must fit uint32")
+        if raw.dtype.kind in {"b", "i", "u"}:
+            try:
+                array = _np.ascontiguousarray(raw, dtype=_np.uint32)
+            except OverflowError as exc:
+                raise ValueError(f"{label} entries must fit uint32") from exc
+            return array.ctypes.data_as(ctypes.POINTER(ctypes.c_uint32)), array
+
+    normalized = tuple(int(value) for value in values)
+    if len(normalized) != expected_count:
+        raise ValueError(f"{label} length must match expected count")
+    if any(value < 0 or value > 0xFFFFFFFF for value in normalized):
+        raise ValueError(f"{label} entries must fit uint32")
+    ValueArray = ctypes.c_uint32 * len(normalized)
+    array = ValueArray(*normalized)
+    return array, array
+
+
 class PreparedOptixRayBatch3D:
     """Reusable device-resident 3-D ray batch for prepared OptiX scenes."""
 
@@ -8862,6 +9201,58 @@ class PreparedOptixRayBatch3D:
         )
         self.prepare_seconds = time.perf_counter() - prepare_start
         _check_status(status, error)
+        self.transfer_metadata = {
+            "query_rays_uploaded_each_run": False,
+            "prepared_rays_resident_on_device": True,
+            "ray_batch_created_from": "host_packed_rays",
+            "ray_columns_partner_owned": False,
+        }
+
+    @classmethod
+    def from_device_ray_columns(cls, lib, ray_columns: dict) -> "PreparedOptixRayBatch3D":
+        self = cls.__new__(cls)
+        self._lib = lib
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        packet = pack_optix_static_triangle_scene_3d_device_ray_inputs(ray_columns)
+        rays = packet["rays"]
+        self.ray_count = int(packet["metadata"]["ray_count"])
+        self._packed_rays_owner = packet
+        create_symbol = _find_optional_backend_symbol(self._lib, OPTIX_RAY_BATCH_3D_CREATE_DEVICE_RAYS_SYMBOL)
+        if create_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_RAY_BATCH_3D_CREATE_DEVICE_RAYS_SYMBOL}. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        error = ctypes.create_string_buffer(4096)
+        prepare_start = time.perf_counter()
+        status = create_symbol(
+            ctypes.c_void_p(rays["ids"].data_ptr),
+            ctypes.c_void_p(rays["ox"].data_ptr),
+            ctypes.c_void_p(rays["oy"].data_ptr),
+            ctypes.c_void_p(rays["oz"].data_ptr),
+            ctypes.c_void_p(rays["dx"].data_ptr),
+            ctypes.c_void_p(rays["dy"].data_ptr),
+            ctypes.c_void_p(rays["dz"].data_ptr),
+            ctypes.c_void_p(rays["tmax"].data_ptr),
+            self.ray_count,
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        self.prepare_seconds = time.perf_counter() - prepare_start
+        _check_status(status, error)
+        self.transfer_metadata = {
+            **packet["metadata"],
+            "query_rays_uploaded_each_run": False,
+            "query_rays_packed_on_device_once": True,
+            "prepared_rays_resident_on_device": True,
+            "ray_batch_created_from": "partner_device_columns",
+            "ray_columns_partner_owned": True,
+            "true_zero_copy_authorized": False,
+        }
+        return self
 
     def close(self) -> None:
         if self._closed:
@@ -9287,6 +9678,100 @@ def prepare_optix_grouped_candidate_argmin(
     )
 
 
+class PreparedOptixPrimitiveGroupedI64Payload3D:
+    """Reusable device-resident primitive group/value payload for generic 3-D reductions."""
+
+    contract = "PREPARED_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_V1"
+
+    def __init__(
+        self,
+        primitive_group_ids,
+        primitive_values,
+        *,
+        primitive_count: int,
+        group_count: int,
+    ) -> None:
+        self._lib = _load_optix_library()
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        self.primitive_count = int(primitive_count)
+        self.group_count = int(group_count)
+        group_array, self._group_owner = _pack_uint32_values(
+            primitive_group_ids,
+            self.primitive_count,
+            label="primitive_group_ids",
+        )
+        value_array, self._value_owner = _pack_uint64_weights(
+            primitive_values,
+            self.primitive_count,
+        )
+        create_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_CREATE_SYMBOL,
+        )
+        if create_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_CREATE_SYMBOL}. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        error = ctypes.create_string_buffer(4096)
+        prepare_start = time.perf_counter()
+        status = create_symbol(
+            group_array,
+            self.primitive_count,
+            value_array,
+            self.primitive_count,
+            self.group_count,
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        self.prepare_seconds = time.perf_counter() - prepare_start
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        handle = self._handle
+        self._handle = ctypes.c_void_p()
+        self._closed = True
+        if handle.value:
+            destroy_symbol = _find_optional_backend_symbol(
+                self._lib,
+                "rtdl_optix_primitive_grouped_i64_payload_3d_destroy",
+            )
+            if destroy_symbol is not None:
+                destroy_symbol(handle)
+
+    def __enter__(self) -> "PreparedOptixPrimitiveGroupedI64Payload3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_optix_primitive_grouped_i64_payload_3d(
+    primitive_group_ids,
+    primitive_values,
+    *,
+    primitive_count: int,
+    group_count: int,
+) -> PreparedOptixPrimitiveGroupedI64Payload3D:
+    return PreparedOptixPrimitiveGroupedI64Payload3D(
+        primitive_group_ids,
+        primitive_values,
+        primitive_count=primitive_count,
+        group_count=group_count,
+    )
+
+
 class PreparedOptixStaticTriangleScene3D:
     """Reusable OptiX handle for grouped finite 3D segment any-hit flags."""
 
@@ -9351,6 +9836,11 @@ class PreparedOptixStaticTriangleScene3D:
         if self._closed:
             raise RuntimeError("prepared OptiX static triangle scene handle is closed")
         return PreparedOptixRayBatch3D(self._lib, rays)
+
+    def prepare_ray_batch_device_columns(self, ray_columns: dict) -> PreparedOptixRayBatch3D:
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        return PreparedOptixRayBatch3D.from_device_ray_columns(self._lib, ray_columns)
 
     def prepare_closest_hit_grouped_argmin_inputs(
         self,
@@ -10053,6 +10543,415 @@ class PreparedOptixStaticTriangleScene3D:
                 "ray_weights_uploaded_each_run": True,
                 "per_ray_records_downloaded_to_host": False,
                 "scalar_sum_returned_to_python": True,
+                "true_zero_copy_authorized": False,
+            },
+            "claim_boundary": {
+                "native_app_api": False,
+                "row_witnesses": False,
+                "public_speedup_claim": False,
+                "true_zero_copy": False,
+            },
+        }
+
+    def ray_triangle_primitive_grouped_i64_reduction(
+        self,
+        rays,
+        *,
+        primitive_group_ids,
+        primitive_values,
+        group_count: int,
+        reduction: str,
+    ) -> dict[str, object]:
+        """Run generic all-hit primitive-id dedup plus grouped i64 reduction."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        if reduction not in {"count", "sum", "min", "max", "sum_count"}:
+            raise ValueError("reduction must be one of: count, sum, min, max, sum_count")
+        if group_count < 0:
+            raise ValueError("group_count must be non-negative")
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL}. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+
+        pack_start = time.perf_counter()
+        packed_rays = rays if isinstance(rays, PackedRays) else pack_rays(rays, dimension=3)
+        if packed_rays.dimension != 3:
+            raise ValueError("ray_triangle_primitive_grouped_i64_reduction requires 3-D rays")
+        group_array, _group_owner = _pack_uint32_values(
+            primitive_group_ids,
+            self.triangle_count,
+            label="primitive_group_ids",
+        )
+        value_array, _value_owner = _pack_uint64_weights(primitive_values, self.triangle_count)
+        output_count = int(group_count)
+        CountsArray = ctypes.c_uint64 * output_count
+        counts = CountsArray()
+        sums = CountsArray()
+        mins = CountsArray()
+        maxs = CountsArray()
+        query_pack_seconds = time.perf_counter() - pack_start
+
+        hit_event_count = ctypes.c_uint64()
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        operation = {
+            "count": 1,
+            "sum": 2,
+            "min": 3,
+            "max": 4,
+            "sum_count": 5,
+        }[reduction]
+        status = run_symbol(
+            self._handle,
+            packed_rays.records,
+            packed_rays.count,
+            group_array,
+            self.triangle_count,
+            value_array,
+            self.triangle_count,
+            output_count,
+            ctypes.c_uint32(operation),
+            counts,
+            sums,
+            mins,
+            maxs,
+            ctypes.byref(hit_event_count),
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+        rows: list[dict[str, int]] = []
+        for group_id in range(output_count):
+            if reduction == "count":
+                value = int(counts[group_id])
+                if value == 0:
+                    continue
+                rows.append({"group_id": group_id, "count": value})
+            elif reduction == "sum":
+                value = int(sums[group_id])
+                if value == 0:
+                    continue
+                rows.append({"group_id": group_id, "sum": value})
+            elif reduction == "min":
+                value = int(mins[group_id])
+                if value == 0xFFFFFFFFFFFFFFFF:
+                    continue
+                rows.append({"group_id": group_id, "min": value})
+            elif reduction == "max":
+                value = int(maxs[group_id])
+                if value == 0:
+                    continue
+                rows.append({"group_id": group_id, "max": value})
+            else:
+                count_value = int(counts[group_id])
+                if count_value == 0:
+                    continue
+                rows.append({"group_id": group_id, "sum": int(sums[group_id]), "count": count_value})
+
+        self._run_count += 1
+        return {
+            "backend": "optix",
+            "primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+            "native_symbol": OPTIX_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL,
+            "reduction": reduction,
+            "rows": tuple(rows),
+            "ray_count": int(packed_rays.count),
+            "triangle_count": self.triangle_count,
+            "group_count": output_count,
+            "hit_event_count_before_dedup": int(hit_event_count.value),
+            "rt_core_accelerated": True,
+            "prepared_reused": True,
+            "prepared_scene_used": True,
+            "prepared_run_index": self._run_count,
+            "phase_timing_seconds": {
+                "prepare_build": float(self.prepare_seconds),
+                "query_pack": float(query_pack_seconds),
+                "traversal": float(traversal_seconds.value),
+            },
+            "transfer_metadata": {
+                "static_scene_prepared_on_device": True,
+                "query_rays_uploaded_each_run": True,
+                "primitive_group_ids_uploaded_each_run": True,
+                "primitive_values_uploaded_each_run": True,
+                "per_ray_records_downloaded_to_host": False,
+                "group_rows_downloaded_to_host": True,
+                "true_zero_copy_authorized": False,
+            },
+            "claim_boundary": {
+                "native_app_api": False,
+                "row_witnesses": False,
+                "public_speedup_claim": False,
+                "true_zero_copy": False,
+            },
+        }
+
+    def ray_triangle_prepared_primitive_grouped_i64_reduction(
+        self,
+        rays,
+        payload: PreparedOptixPrimitiveGroupedI64Payload3D,
+        *,
+        reduction: str,
+    ) -> dict[str, object]:
+        """Run grouped i64 reduction with device-resident primitive group/value payload."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        if payload._closed:
+            raise RuntimeError("prepared OptiX primitive grouped payload handle is closed")
+        if payload.primitive_count != self.triangle_count:
+            raise ValueError("prepared primitive payload count must match prepared triangle count")
+        if reduction not in {"count", "sum", "min", "max", "sum_count"}:
+            raise ValueError("reduction must be one of: count, sum, min, max, sum_count")
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL}. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+
+        pack_start = time.perf_counter()
+        packed_rays = rays if isinstance(rays, PackedRays) else pack_rays(rays, dimension=3)
+        if packed_rays.dimension != 3:
+            raise ValueError("ray_triangle_prepared_primitive_grouped_i64_reduction requires 3-D rays")
+        output_count = int(payload.group_count)
+        CountsArray = ctypes.c_uint64 * output_count
+        counts = CountsArray()
+        sums = CountsArray()
+        mins = CountsArray()
+        maxs = CountsArray()
+        query_pack_seconds = time.perf_counter() - pack_start
+
+        hit_event_count = ctypes.c_uint64()
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        operation = {
+            "count": 1,
+            "sum": 2,
+            "min": 3,
+            "max": 4,
+            "sum_count": 5,
+        }[reduction]
+        status = run_symbol(
+            self._handle,
+            payload._handle,
+            packed_rays.records,
+            packed_rays.count,
+            ctypes.c_uint32(operation),
+            counts,
+            sums,
+            mins,
+            maxs,
+            ctypes.byref(hit_event_count),
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+        rows: list[dict[str, int]] = []
+        for group_id in range(output_count):
+            if reduction == "count":
+                value = int(counts[group_id])
+                if value == 0:
+                    continue
+                rows.append({"group_id": group_id, "count": value})
+            elif reduction == "sum":
+                value = int(sums[group_id])
+                if value == 0:
+                    continue
+                rows.append({"group_id": group_id, "sum": value})
+            elif reduction == "min":
+                value = int(mins[group_id])
+                if value == 0xFFFFFFFFFFFFFFFF:
+                    continue
+                rows.append({"group_id": group_id, "min": value})
+            elif reduction == "max":
+                value = int(maxs[group_id])
+                if value == 0:
+                    continue
+                rows.append({"group_id": group_id, "max": value})
+            else:
+                count_value = int(counts[group_id])
+                if count_value == 0:
+                    continue
+                rows.append({"group_id": group_id, "sum": int(sums[group_id]), "count": count_value})
+
+        self._run_count += 1
+        return {
+            "backend": "optix",
+            "primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+            "native_symbol": OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL,
+            "reduction": reduction,
+            "rows": tuple(rows),
+            "ray_count": int(packed_rays.count),
+            "triangle_count": self.triangle_count,
+            "group_count": output_count,
+            "hit_event_count_before_dedup": int(hit_event_count.value),
+            "rt_core_accelerated": True,
+            "prepared_reused": True,
+            "prepared_scene_used": True,
+            "prepared_primitive_payload_used": True,
+            "prepared_run_index": self._run_count,
+            "phase_timing_seconds": {
+                "prepare_build": float(self.prepare_seconds),
+                "primitive_payload_prepare": float(payload.prepare_seconds),
+                "query_pack": float(query_pack_seconds),
+                "traversal": float(traversal_seconds.value),
+            },
+            "transfer_metadata": {
+                "static_scene_prepared_on_device": True,
+                "query_rays_uploaded_each_run": True,
+                "primitive_group_ids_uploaded_each_run": False,
+                "primitive_values_uploaded_each_run": False,
+                "prepared_primitive_payload_on_device": True,
+                "per_ray_records_downloaded_to_host": False,
+                "group_rows_downloaded_to_host": True,
+                "true_zero_copy_authorized": False,
+            },
+            "claim_boundary": {
+                "native_app_api": False,
+                "row_witnesses": False,
+                "public_speedup_claim": False,
+                "true_zero_copy": False,
+            },
+        }
+
+    def ray_batch_prepared_primitive_grouped_i64_reduction(
+        self,
+        rays: PreparedOptixRayBatch3D,
+        payload: PreparedOptixPrimitiveGroupedI64Payload3D,
+        *,
+        reduction: str,
+    ) -> dict[str, object]:
+        """Run grouped i64 reduction with prepared rays and prepared primitive payload."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        if not isinstance(rays, PreparedOptixRayBatch3D):
+            raise TypeError("ray_batch_prepared_primitive_grouped_i64_reduction requires PreparedOptixRayBatch3D")
+        if rays._closed:
+            raise RuntimeError("prepared OptiX ray batch handle is closed")
+        if payload._closed:
+            raise RuntimeError("prepared OptiX primitive grouped payload handle is closed")
+        if payload.primitive_count != self.triangle_count:
+            raise ValueError("prepared primitive payload count must match prepared triangle count")
+        if reduction not in {"count", "sum", "min", "max", "sum_count"}:
+            raise ValueError("reduction must be one of: count, sum, min, max, sum_count")
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL}. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+
+        output_count = int(payload.group_count)
+        CountsArray = ctypes.c_uint64 * output_count
+        counts = CountsArray()
+        sums = CountsArray()
+        mins = CountsArray()
+        maxs = CountsArray()
+
+        hit_event_count = ctypes.c_uint64()
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        operation = {
+            "count": 1,
+            "sum": 2,
+            "min": 3,
+            "max": 4,
+            "sum_count": 5,
+        }[reduction]
+        status = run_symbol(
+            self._handle,
+            payload._handle,
+            rays._handle,
+            ctypes.c_uint32(operation),
+            counts,
+            sums,
+            mins,
+            maxs,
+            ctypes.byref(hit_event_count),
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+        rows: list[dict[str, int]] = []
+        for group_id in range(output_count):
+            if reduction == "count":
+                value = int(counts[group_id])
+                if value == 0:
+                    continue
+                rows.append({"group_id": group_id, "count": value})
+            elif reduction == "sum":
+                value = int(sums[group_id])
+                if value == 0:
+                    continue
+                rows.append({"group_id": group_id, "sum": value})
+            elif reduction == "min":
+                value = int(mins[group_id])
+                if value == 0xFFFFFFFFFFFFFFFF:
+                    continue
+                rows.append({"group_id": group_id, "min": value})
+            elif reduction == "max":
+                value = int(maxs[group_id])
+                if value == 0:
+                    continue
+                rows.append({"group_id": group_id, "max": value})
+            else:
+                count_value = int(counts[group_id])
+                if count_value == 0:
+                    continue
+                rows.append({"group_id": group_id, "sum": int(sums[group_id]), "count": count_value})
+
+        self._run_count += 1
+        return {
+            "backend": "optix",
+            "primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+            "native_symbol": OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL,
+            "reduction": reduction,
+            "rows": tuple(rows),
+            "ray_count": int(rays.ray_count),
+            "triangle_count": self.triangle_count,
+            "group_count": output_count,
+            "hit_event_count_before_dedup": int(hit_event_count.value),
+            "rt_core_accelerated": True,
+            "prepared_reused": True,
+            "prepared_scene_used": True,
+            "prepared_ray_batch_used": True,
+            "prepared_primitive_payload_used": True,
+            "prepared_run_index": self._run_count,
+            "phase_timing_seconds": {
+                "prepare_build": float(self.prepare_seconds),
+                "prepared_ray_batch_prepare": float(rays.prepare_seconds),
+                "primitive_payload_prepare": float(payload.prepare_seconds),
+                "query_pack": 0.0,
+                "traversal": float(traversal_seconds.value),
+            },
+            "transfer_metadata": {
+                "static_scene_prepared_on_device": True,
+                **getattr(rays, "transfer_metadata", {}),
+                "primitive_group_ids_uploaded_each_run": False,
+                "primitive_values_uploaded_each_run": False,
+                "prepared_primitive_payload_on_device": True,
+                "per_ray_records_downloaded_to_host": False,
+                "group_rows_downloaded_to_host": True,
                 "true_zero_copy_authorized": False,
             },
             "claim_boundary": {
@@ -12020,6 +12919,95 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_static_scene_3d_device_weighted_sum.restype = ctypes.c_int
+    optional_static_scene_3d_primitive_grouped = _find_optional_backend_symbol(
+        lib,
+        OPTIX_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL,
+    )
+    if optional_static_scene_3d_primitive_grouped is not None:
+        optional_static_scene_3d_primitive_grouped.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlRay3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_primitive_grouped.restype = ctypes.c_int
+    optional_primitive_grouped_payload_3d_create = _find_optional_backend_symbol(
+        lib,
+        OPTIX_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_CREATE_SYMBOL,
+    )
+    if optional_primitive_grouped_payload_3d_create is not None:
+        optional_primitive_grouped_payload_3d_create.argtypes = [
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_primitive_grouped_payload_3d_create.restype = ctypes.c_int
+    optional_prepared_static_scene_3d_primitive_grouped = _find_optional_backend_symbol(
+        lib,
+        OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL,
+    )
+    if optional_prepared_static_scene_3d_primitive_grouped is not None:
+        optional_prepared_static_scene_3d_primitive_grouped.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlRay3D),
+            ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_prepared_static_scene_3d_primitive_grouped.restype = ctypes.c_int
+    optional_ray_batch_prepared_primitive_grouped = _find_optional_backend_symbol(
+        lib,
+        OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL,
+    )
+    if optional_ray_batch_prepared_primitive_grouped is not None:
+        optional_ray_batch_prepared_primitive_grouped.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_ray_batch_prepared_primitive_grouped.restype = ctypes.c_int
+    optional_primitive_grouped_payload_3d_destroy = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_primitive_grouped_i64_payload_3d_destroy",
+    )
+    if optional_primitive_grouped_payload_3d_destroy is not None:
+        optional_primitive_grouped_payload_3d_destroy.argtypes = [ctypes.c_void_p]
+        optional_primitive_grouped_payload_3d_destroy.restype = None
     optional_static_scene_3d_hit_count_sum = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_static_triangle_scene_3d_ray_hit_count_sum",
@@ -12064,6 +13052,26 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_ray_batch_3d_create.restype = ctypes.c_int
+    optional_ray_batch_3d_create_device = _find_optional_backend_symbol(
+        lib,
+        OPTIX_RAY_BATCH_3D_CREATE_DEVICE_RAYS_SYMBOL,
+    )
+    if optional_ray_batch_3d_create_device is not None:
+        optional_ray_batch_3d_create_device.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_ray_batch_3d_create_device.restype = ctypes.c_int
     optional_grouped_argmin_inputs_3d_create = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_closest_hit_grouped_argmin_inputs_3d_create",
@@ -12552,6 +13560,23 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_collect_aabb_index2d_rows.restype = ctypes.c_int
+    optional_collect_aabb_index2d_point_rows = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_collect_prepared_aabb_index_2d_point_contains_rows",
+    )
+    if optional_collect_aabb_index2d_point_rows is not None:
+        optional_collect_aabb_index2d_point_rows.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlAabbPairRow),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_collect_aabb_index2d_point_rows.restype = ctypes.c_int
     optional_destroy_aabb_queries2d = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_destroy_prepared_aabb_queries_2d",
@@ -12763,6 +13788,34 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_polygon_pair_candidates_bounded.restype = ctypes.c_int
+
+    optional_aggregate_frontier_collect = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_collect_aggregate_frontier_2d",
+    )
+    if optional_aggregate_frontier_collect is not None:
+        optional_aggregate_frontier_collect.argtypes = [
+            ctypes.POINTER(_RtdlAggregateFrontierSource2D),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlAggregateFrontierNode2D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_double,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_aggregate_frontier_collect.restype = ctypes.c_int
 
     optional_prepare_segment_polygon_anyhit_rows = _find_optional_backend_symbol(
         lib,

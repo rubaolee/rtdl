@@ -24,6 +24,7 @@
 #include <cstring>
 #include <exception>
 #include <limits>
+#include <mutex>
 #include <new>
 #include <stdexcept>
 #include <string>
@@ -87,6 +88,23 @@ struct RtdlPoint {
   uint32_t id;
   double x;
   double y;
+};
+
+struct RtdlAggregateFrontierSource2D {
+  int64_t id;
+  double x;
+  double y;
+};
+
+struct RtdlAggregateFrontierNode2D {
+  int64_t id;
+  double cx;
+  double cy;
+  double half_size;
+  int32_t depth;
+  int64_t dfs_index;
+  int64_t resume_index;
+  uint8_t is_leaf;
 };
 
 struct RtdlPoint3D {
@@ -413,6 +431,24 @@ int rtdl_embree_static_triangle_scene_3d_grouped_segment_any_hit_flags(
     double* traversal_seconds_out,
     char* error_out,
     size_t error_size);
+int rtdl_embree_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction(
+    void* handle,
+    const RtdlRay3D* rays,
+    size_t ray_count,
+    const uint32_t* primitive_group_ids,
+    size_t primitive_group_id_count,
+    const uint64_t* primitive_values,
+    size_t primitive_value_count,
+    size_t group_count,
+    uint32_t reduction,
+    uint64_t* group_counts_out,
+    uint64_t* group_sums_out,
+    uint64_t* group_mins_out,
+    uint64_t* group_maxs_out,
+    uint64_t* hit_event_count_out,
+    double* traversal_seconds_out,
+    char* error_out,
+    size_t error_size);
 void rtdl_embree_static_triangle_scene_3d_destroy(void* handle);
 int rtdl_embree_run_segment_shape_hitcount(
     const RtdlSegment* segments,
@@ -443,6 +479,26 @@ int rtdl_embree_collect_k_bounded_i64(
     int64_t* rows_out,
     size_t row_capacity,
     size_t* emitted_count_out,
+    uint32_t* overflowed_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_collect_aggregate_frontier_2d(
+    const RtdlAggregateFrontierSource2D* sources,
+    size_t source_count,
+    const RtdlAggregateFrontierNode2D* nodes,
+    size_t node_count,
+    const uint64_t* child_offsets,
+    const int64_t* child_ids,
+    const uint64_t* member_offsets,
+    const int64_t* member_ids,
+    double theta,
+    uint64_t max_rows_per_source,
+    uint64_t row_capacity,
+    uint32_t deduplicate_fallback_targets,
+    int64_t* frontier_rows_out,
+    uint64_t* row_offsets_out,
+    uint64_t* emitted_count_out,
+    uint64_t* attempted_count_out,
     uint32_t* overflowed_out,
     char* error_out,
     size_t error_size);

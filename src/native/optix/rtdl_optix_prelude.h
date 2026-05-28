@@ -66,6 +66,18 @@
 #include <unistd.h>
 #include <vector>
 
+void rtdl_cuda_pack_ray3d_device_columns_precompiled(
+        const uint32_t* ray_ids,
+        const double* ray_ox,
+        const double* ray_oy,
+        const double* ray_oz,
+        const double* ray_dx,
+        const double* ray_dy,
+        const double* ray_dz,
+        const double* ray_tmax,
+        void* rays_out,
+        uint32_t ray_count);
+
 #if defined(__has_include)
 #  if __has_include(<geos_c.h>)
 #    include <geos_c.h>
@@ -105,6 +117,23 @@ struct RtdlAabbPairRow {
 static_assert(offsetof(RtdlAabbPairRow, query_id) == 0, "RtdlAabbPairRow query offset mismatch");
 static_assert(offsetof(RtdlAabbPairRow, indexed_id) == 4, "RtdlAabbPairRow indexed offset mismatch");
 static_assert(sizeof(RtdlAabbPairRow) == 8, "RtdlAabbPairRow size mismatch");
+
+struct RtdlAggregateFrontierSource2D {
+    int64_t id;
+    double x;
+    double y;
+};
+
+struct RtdlAggregateFrontierNode2D {
+    int64_t id;
+    double cx;
+    double cy;
+    double half_size;
+    int32_t depth;
+    int64_t dfs_index;
+    int64_t resume_index;
+    uint8_t is_leaf;
+};
 
 struct RtdlPoint3D {
     uint32_t id;
@@ -600,6 +629,50 @@ int rtdl_optix_static_triangle_scene_3d_ray_any_hit_weighted_sum_device_rays(
          uint64_t* weighted_hit_sum_out,
          double* traversal_seconds_out,
          char* error_out, size_t error_size);
+int rtdl_optix_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction(
+         void* scene_handle,
+         const RtdlRay3D* rays, size_t ray_count,
+         const uint32_t* primitive_group_ids, size_t primitive_group_id_count,
+         const uint64_t* primitive_values, size_t primitive_value_count,
+         size_t group_count,
+         uint32_t reduction,
+         uint64_t* group_counts_out,
+         uint64_t* group_sums_out,
+         uint64_t* group_mins_out,
+         uint64_t* group_maxs_out,
+         uint64_t* hit_event_count_out,
+         double* traversal_seconds_out,
+         char* error_out, size_t error_size);
+int rtdl_optix_primitive_grouped_i64_payload_3d_create(
+         const uint32_t* primitive_group_ids, size_t primitive_group_id_count,
+         const uint64_t* primitive_values, size_t primitive_value_count,
+         size_t group_count,
+         void** payload_handle_out,
+         char* error_out, size_t error_size);
+int rtdl_optix_static_triangle_scene_3d_ray_prepared_primitive_grouped_i64_reduction(
+         void* scene_handle,
+         void* payload_handle,
+         const RtdlRay3D* rays, size_t ray_count,
+         uint32_t reduction,
+         uint64_t* group_counts_out,
+         uint64_t* group_sums_out,
+         uint64_t* group_mins_out,
+         uint64_t* group_maxs_out,
+         uint64_t* hit_event_count_out,
+         double* traversal_seconds_out,
+         char* error_out, size_t error_size);
+int rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction(
+         void* scene_handle,
+         void* payload_handle,
+         void* ray_batch_handle,
+         uint32_t reduction,
+         uint64_t* group_counts_out,
+         uint64_t* group_sums_out,
+         uint64_t* group_mins_out,
+         uint64_t* group_maxs_out,
+         uint64_t* hit_event_count_out,
+         double* traversal_seconds_out,
+         char* error_out, size_t error_size);
 int rtdl_optix_static_triangle_scene_3d_ray_hit_count_sum(
          void* scene_handle,
          const RtdlRay3D* rays, size_t ray_count,
@@ -614,6 +687,18 @@ int rtdl_optix_static_triangle_scene_3d_ray_closest_hit_rows(
          char* error_out, size_t error_size);
 int rtdl_optix_ray_batch_3d_create(
          const RtdlRay3D* rays, size_t ray_count,
+         void** ray_batch_handle_out,
+         char* error_out, size_t error_size);
+int rtdl_optix_ray_batch_3d_create_device_rays(
+         const uint32_t* ray_ids,
+         const double* ray_ox,
+         const double* ray_oy,
+         const double* ray_oz,
+         const double* ray_dx,
+         const double* ray_dy,
+         const double* ray_dz,
+         const double* ray_tmax,
+         size_t ray_count,
          void** ray_batch_handle_out,
          char* error_out, size_t error_size);
 int rtdl_optix_closest_hit_grouped_argmin_inputs_3d_create(
@@ -702,6 +787,8 @@ int rtdl_optix_static_triangle_scene_3d_ray_hit_count_sum_device_rays(
          char* error_out, size_t error_size);
 void rtdl_optix_static_triangle_scene_3d_grouped_segment_query_destroy(
          void* query_handle);
+void rtdl_optix_primitive_grouped_i64_payload_3d_destroy(
+         void* payload_handle);
 void rtdl_optix_ray_batch_3d_destroy(void* ray_batch_handle);
 void rtdl_optix_closest_hit_grouped_argmin_inputs_3d_destroy(void* grouped_inputs_handle);
 void rtdl_optix_grouped_candidate_argmin_inputs_destroy(void* grouped_inputs_handle);
@@ -789,6 +876,13 @@ int  rtdl_optix_count_prepared_aabb_index_2d_packed_queries(
 int  rtdl_optix_collect_prepared_aabb_index_2d_range_intersection_rows(
          void* prepared,
          const RtdlAabb2D* box_queries, size_t box_query_count,
+         RtdlAabbPairRow* rows_out, size_t row_capacity,
+         size_t* emitted_count_out,
+         uint32_t* overflowed_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_collect_prepared_aabb_index_2d_point_contains_rows(
+         void* prepared,
+         const RtdlPoint* point_queries, size_t point_query_count,
          RtdlAabbPairRow* rows_out, size_t row_capacity,
          size_t* emitted_count_out,
          uint32_t* overflowed_out,
@@ -930,6 +1024,17 @@ int  rtdl_optix_collect_k_bounded_i64(
          const int64_t* candidate_rows, size_t candidate_count,
          size_t row_width, int64_t* rows_out, size_t row_capacity,
          size_t* emitted_count_out, uint32_t* overflowed_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_collect_aggregate_frontier_2d(
+         const RtdlAggregateFrontierSource2D* sources, size_t source_count,
+         const RtdlAggregateFrontierNode2D* nodes, size_t node_count,
+         const uint64_t* child_offsets, const int64_t* child_ids,
+         const uint64_t* member_offsets, const int64_t* member_ids,
+         double theta, uint64_t max_rows_per_source, uint64_t row_capacity,
+         uint32_t deduplicate_fallback_targets,
+         int64_t* frontier_rows_out, uint64_t* row_offsets_out,
+         uint64_t* emitted_count_out, uint64_t* attempted_count_out,
+         uint32_t* overflowed_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_collect_k_bounded_i64_device(
          uint64_t candidate_rows_device_ptr, size_t candidate_count,

@@ -1,0 +1,61 @@
+{
+  "backend": "optix",
+  "batch_count": 1,
+  "batch_phase_timings": [
+    {
+      "candidate_count_pass": 0.091472079,
+      "candidate_write_pass": 0.0,
+      "count_download_and_prefix": 0.0,
+      "emitted_count": 65536,
+      "exact_refine": 0.0,
+      "mode": "prepared_uniform_cell_ranked_summary_rows",
+      "prepare": 0.0,
+      "raw_candidate_count": 2901110,
+      "row_download": 0.00024639,
+      "row_offset_upload": 0.0,
+      "upload": 0.000437251
+    }
+  ],
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "device_ranked_summary_rows": true,
+    "embree_ranked_summary_rows": false,
+    "materializes_neighbor_rows": false,
+    "paper_equivalent_rtnn_row": false,
+    "partitioned_or_batched_like_rtnn": true,
+    "rt_core_neighbor_search_claim_authorized": false,
+    "rtdl_speedup_claim_authorized": false
+  },
+  "contract": {
+    "approximate": false,
+    "batched_queries": true,
+    "bounded_k": 50,
+    "exact": true,
+    "family": "fixed_radius_neighbors_3d",
+    "mode": "ranked-summary-raw",
+    "prepared_search_structure": true
+  },
+  "elapsed_runs_sec": [
+    0.09793246095068753,
+    0.09832685207948089,
+    0.09263439103960991
+  ],
+  "elapsed_sec": 0.09263439103960991,
+  "error": "",
+  "execution_prepare_sec": 1.1227356458548456,
+  "external": "RTDL current",
+  "input_load_sec": 0.07838251488283277,
+  "input_pack_sec": 0.025819858070462942,
+  "k_max": 50,
+  "mode": "current_3d_fixed_radius_neighbors_optix_batched",
+  "ok": true,
+  "query_batch_size": 65536,
+  "query_count": 65536,
+  "radius": 0.02,
+  "repeat": 3,
+  "result_mode": "ranked-summary-raw",
+  "row": "rtdl_batched_3d_neighbors",
+  "row_count": 65536,
+  "runner": "goal2348_rtnn_v2_2_external_runner",
+  "search_count": 65536
+}

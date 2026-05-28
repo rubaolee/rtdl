@@ -120,3 +120,25 @@ of performance wording.
 
 Copilot supplemental review may be useful engineering signal, but it does not
 replace Claude or Gemini under the strict 3-AI consensus rule.
+
+## v2.4/v2.5 Partner Direction
+
+The next partner direction is performance-preserving ease of use. The goal is
+to make RT-core programming substantially easier without replacing the current
+10 promoted benchmark apps with slower convenience paths.
+
+For the detailed roadmap, see
+`docs/reports/goal2657_v2_4_v2_5_partner_roadmap_2026-05-27.md`.
+
+The short boundary is:
+
+- v2.4 should stabilize typed buffers, prepared sessions, segmented/chunked row
+  streaming, and generic partner continuation contracts.
+- v2.5 should add a Triton-first partner path, with Numba treated as secondary
+  or exploratory.
+- Triton or Numba should own preparation, continuation, reduction, compaction,
+  and finalization around RTDL primitives; they must not replace OptiX RT-core
+  traversal for RT-core claims.
+- A friendlier partner path is not a promoted performance path if it
+  significantly regresses the current same-contract OptiX-vs-Embree benchmark
+  evidence.

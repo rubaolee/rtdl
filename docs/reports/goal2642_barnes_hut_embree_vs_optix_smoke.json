@@ -1,0 +1,61 @@
+{
+  "benchmark": "goal2642_barnes_hut_embree_vs_optix_expanded_membership_lowering",
+  "cases": [
+    {
+      "backends": {
+        "embree": {
+          "backend": "embree",
+          "body_count": 128,
+          "exact_opening_test_count": 902,
+          "external_sec_median": 0.0956636518239975,
+          "force_interpretation_sec_median": 0.028787046670913696,
+          "force_row_count": 128,
+          "frontier_lowering_sec_median": 0.052591562271118164,
+          "frontier_row_count": 4543,
+          "membership_wrapper_sec_median": 0.040497779846191406,
+          "native_generic_symbol": "rtdl_embree_columnar_payload_multi_predicate_scan",
+          "near_zone_candidate_row_count": 1340,
+          "rows_match_reference": true,
+          "rt_core_accelerated": false,
+          "safe_far_accept_count": 1436,
+          "total_sec_median": 0.09471271932125092,
+          "tree_build_sec_median": 0.0018880590796470642,
+          "tree_node_count": 45,
+          "validation_skipped": false
+        },
+        "optix": {
+          "backend": "optix",
+          "body_count": 128,
+          "exact_opening_test_count": 902,
+          "external_sec_median": 0.7076473087072372,
+          "force_interpretation_sec_median": 0.028402313590049744,
+          "force_row_count": 128,
+          "frontier_lowering_sec_median": 0.6650014296174049,
+          "frontier_row_count": 4543,
+          "membership_wrapper_sec_median": 0.6542663648724556,
+          "native_generic_symbol": "rtdl_optix_collect_prepared_aabb_index_2d_point_contains_rows",
+          "near_zone_candidate_row_count": 1340,
+          "rows_match_reference": true,
+          "rt_core_accelerated": true,
+          "safe_far_accept_count": 1436,
+          "total_sec_median": 0.7066067308187485,
+          "tree_build_sec_median": 0.0017212703824043274,
+          "tree_node_count": 45,
+          "validation_skipped": false
+        }
+      },
+      "body_count": 128,
+      "bucket_size": 8,
+      "repeats": 1,
+      "rows_match_between_backends": true,
+      "speedups_optix_vs_embree": {
+        "force_interpretation": 1.0135458359631215,
+        "frontier_lowering": 0.07908488603005809,
+        "membership_wrapper": 0.061898000601156,
+        "total": 0.1340388014865169
+      },
+      "theta": 0.75,
+      "validate": true
+    }
+  ]
+}

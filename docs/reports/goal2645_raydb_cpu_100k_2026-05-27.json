@@ -1,0 +1,323 @@
+{
+  "arguments": {
+    "backends": [
+      "cpu_python_reference"
+    ],
+    "copies_ladder": [
+      100000
+    ],
+    "dry_run": false,
+    "modes": [
+      "count",
+      "sum",
+      "min",
+      "max",
+      "avg_as_sum_count"
+    ],
+    "paper_cpu_max_copies": 100,
+    "repeat": 3,
+    "skip_build_optix": true,
+    "warmup": 1
+  },
+  "build": {
+    "reason": "skip_build_optix",
+    "skipped": true
+  },
+  "environment": {
+    "cwd": "/workspace/rtdl_goal2645",
+    "git_commit": "43419882d805e9d71a798c901cb97f05d8b6c8c8",
+    "git_status_short": [
+      " M docs/application_catalog.md",
+      " M docs/rtdl_primitive_catalog.md",
+      " M examples/v2_0/research_benchmarks/barnes_hut/README.md",
+      " M examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+      " M examples/v2_0/research_benchmarks/raydb_style/README.md",
+      " M examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+      " M src/native/embree/rtdl_embree_api.cpp",
+      " M src/native/embree/rtdl_embree_prelude.h",
+      " M src/native/optix/rtdl_optix_api.cpp",
+      " M src/native/optix/rtdl_optix_core.cpp",
+      " M src/native/optix/rtdl_optix_prelude.h",
+      " M src/native/optix/rtdl_optix_workloads.cpp",
+      " M src/rtdsl/__init__.py",
+      " M src/rtdsl/aabb_index.py",
+      " M src/rtdsl/aggregate_tree_reference.py",
+      " M src/rtdsl/baseline_runner.py",
+      " M src/rtdsl/embree_runtime.py",
+      " M src/rtdsl/generic_primitives.py",
+      " M src/rtdsl/optix_runtime.py",
+      " M src/rtdsl/partner_adapters.py",
+      " M src/rtdsl/primitive_hierarchy.py",
+      " M src/rtdsl/runtime.py",
+      " M tests/goal2498_raydb_style_optix_count_sum_parity_test.py",
+      " M tests/goal2580_optix_aabb_index_native_symbol_test.py",
+      "?? docs/reports/goal2635_benchmark_app_optimization_validity_audit_2026-05-27.md",
+      "?? docs/reports/goal2636_current_benchmark_performance_report_2026-05-27.md",
+      "?? docs/reports/goal2636_strengthened_benchmark_rows_plan_2026-05-27.md",
+      "?? docs/reports/goal2636_strengthened_rows_pod_fixed/",
+      "?? docs/reports/goal2636_strengthened_rows_stress_pod_fixed/",
+      "?? docs/reports/goal2637_all_benchmark_perf_diffs_2026-05-27.json",
+      "?? docs/reports/goal2637_all_benchmark_perf_diffs_2026-05-27.md",
+      "?? docs/reports/goal2638_3ai_consensus_2026-05-27.md",
+      "?? docs/reports/goal2638_aggregate_frontier_collect_2026-05-27.md",
+      "?? docs/reports/goal2638_claude_critical_review_2026-05-27.md",
+      "?? docs/reports/goal2638_external_review_response_2026-05-27.md",
+      "?? docs/reports/goal2639_aggregate_frontier_embree_optix_perf_pod_2026-05-27.json",
+      "?? docs/reports/goal2639_aggregate_frontier_native_abi_contract_2026-05-27.md",
+      "?? docs/reports/goal2639_aggregate_frontier_native_timing_2026-05-27.json",
+      "?? docs/reports/goal2640_claude_call_for_design_rt_core_generic_frontier_2026-05-27.md",
+      "?? docs/reports/goal2640_codex_design_rt_core_generic_frontier_2026-05-27.md",
+      "?? docs/reports/goal2640_expanded_aabb_point_membership_impl_2026-05-27.md",
+      "?? docs/reports/goal2640_perf_1m_prepared.json",
+      "?? docs/reports/goal2640_perf_262k.json",
+      "?? docs/reports/goal2640_perf_smoke.json",
+      "?? docs/reports/goal2641_barnes_hut_expanded_membership_lowering_2026-05-27.md",
+      "?? docs/reports/goal2641_optix_lowering_smoke.json",
+      "?? docs/reports/goal2642_barnes_hut_embree_vs_optix_8192.json",
+      "?? docs/reports/goal2642_barnes_hut_embree_vs_optix_app_perf_2026-05-27.md",
+      "?? docs/reports/goal2642_barnes_hut_embree_vs_optix_scale.json",
+      "?? docs/reports/goal2642_barnes_hut_embree_vs_optix_smoke.json",
+      "?? docs/reports/goal2643_all_benchmark_apps_detailed_report_2026-05-27.md",
+      "?? docs/reports/goal2644_raydb_paper_rt_core_rewrite_2026-05-27.md",
+      "?? docs/reports/goal2645_raydb_rt_core_perf_plan_2026-05-27.md",
+      "?? scripts/goal2636_strengthen_benchmark_rows.py",
+      "?? scripts/goal2637_build_perf_diff_table.py",
+      "?? scripts/goal2639_aggregate_frontier_perf.py",
+      "?? scripts/goal2640_expanded_aabb_point_membership_perf.py",
+      "?? scripts/goal2642_barnes_hut_embree_vs_optix_lowering_perf.py",
+      "?? scripts/goal2645_raydb_rt_perf_pod.py",
+      "?? src/rtdsl/app_reference/",
+      "?? tests/goal2636_strengthen_benchmark_rows_test.py",
+      "?? tests/goal2637_all_benchmark_perf_diffs_test.py",
+      "?? tests/goal2638_aggregate_frontier_collect_test.py",
+      "?? tests/goal2639_aggregate_frontier_native_abi_contract_test.py",
+      "?? tests/goal2640_expanded_aabb_point_membership_test.py",
+      "?? tests/goal2641_barnes_hut_expanded_membership_lowering_test.py",
+      "?? tests/goal2644_raydb_paper_rt_contract_test.py",
+      "?? tests/goal2645_raydb_rt_perf_runner_test.py"
+    ],
+    "hostname": "4b7c6ab4b262",
+    "make_build_optix_target": "make build-optix",
+    "nvcc_version": {
+      "command": [
+        "nvcc",
+        "--version"
+      ],
+      "elapsed_sec": 0.0012167468667030334,
+      "returncode": 127,
+      "stderr": "[Errno 2] No such file or directory: 'nvcc'",
+      "stdout": ""
+    },
+    "nvidia_smi": {
+      "command": [
+        "nvidia-smi"
+      ],
+      "elapsed_sec": 0.3053155541419983,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "Wed May 27 20:14:41 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 565.57.01              Driver Version: 565.57.01      CUDA Version: 12.7     |\n|-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A5000               On  |   00000000:D6:00.0 Off |                  Off |\n| 30%   40C    P8             24W /  230W |       2MiB /  24564MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n                                                                                         \n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+\n"
+    },
+    "platform": "Linux-6.8.0-49-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]",
+    "rtdl_source_tree": "/workspace/rtdl_goal2645",
+    "timestamp_utc": "2026-05-27T20:14:41Z"
+  },
+  "goal": "Goal2645 RayDB paper-shaped RT-core perf evidence",
+  "output_contract": {
+    "paper_rt_optix": "Rows are grouped aggregate rows over the same RayDB-style fixture. Correctness is judged by exact equality with the CPU columnar oracle.",
+    "rt_core_evidence_required": "paper_rt_optix rows must report rt_core_accelerated=true and native_symbol=rtdl_optix_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction."
+  },
+  "output_json": "docs/reports/goal2645_raydb_cpu_100k_2026-05-27.json",
+  "output_markdown": "docs/reports/goal2645_raydb_cpu_100k_2026-05-27.md",
+  "performance_claim_authorized": false,
+  "results": {
+    "errors": [],
+    "matrix": [
+      {
+        "all_match_cpu_reference": true,
+        "backend": "cpu_python_reference",
+        "claim_boundary": "RayDB-style CPU reference fixture only. This validates a generic columnar grouped aggregate contract; it does not reproduce RayDB, time authors code, or authorize performance wording.",
+        "contract": "columnar_grouped_aggregate_cpu_reference",
+        "copies": 100000,
+        "elapsed_sec_max": 1.5123849287629128,
+        "elapsed_sec_median": 1.4871507212519646,
+        "elapsed_sec_min": 1.3003838136792183,
+        "hit_event_count_before_dedup": null,
+        "mode": "count",
+        "native_symbol": null,
+        "ray_count": null,
+        "row_count": 800000,
+        "rows_first_sample": [
+          {
+            "count": 200000,
+            "region_id": 0
+          },
+          {
+            "count": 100000,
+            "region_id": 1
+          },
+          {
+            "count": 100000,
+            "region_id": 2
+          }
+        ],
+        "rt_core_accelerated": false,
+        "sample_count": 3,
+        "timings_first_sample": {
+          "cpu_reference_sec": 1.4871507212519646
+        },
+        "triangle_count": null,
+        "wall_sec_median": 2.2186738699674606
+      },
+      {
+        "all_match_cpu_reference": true,
+        "backend": "cpu_python_reference",
+        "claim_boundary": "RayDB-style CPU reference fixture only. This validates a generic columnar grouped aggregate contract; it does not reproduce RayDB, time authors code, or authorize performance wording.",
+        "contract": "columnar_grouped_aggregate_cpu_reference",
+        "copies": 100000,
+        "elapsed_sec_max": 1.460975855588913,
+        "elapsed_sec_median": 1.2459537088871002,
+        "elapsed_sec_min": 1.185635268688202,
+        "hit_event_count_before_dedup": null,
+        "mode": "sum",
+        "native_symbol": null,
+        "ray_count": null,
+        "row_count": 800000,
+        "rows_first_sample": [
+          {
+            "region_id": 0,
+            "sum": 19000000
+          },
+          {
+            "region_id": 1,
+            "sum": 20000000
+          },
+          {
+            "region_id": 2,
+            "sum": 8000000
+          }
+        ],
+        "rt_core_accelerated": false,
+        "sample_count": 3,
+        "timings_first_sample": {
+          "cpu_reference_sec": 1.460975855588913
+        },
+        "triangle_count": null,
+        "wall_sec_median": 1.9765081405639648
+      },
+      {
+        "all_match_cpu_reference": true,
+        "backend": "cpu_python_reference",
+        "claim_boundary": "RayDB-style CPU reference fixture only. This validates a generic columnar grouped aggregate contract; it does not reproduce RayDB, time authors code, or authorize performance wording.",
+        "contract": "columnar_grouped_aggregate_cpu_reference",
+        "copies": 100000,
+        "elapsed_sec_max": 1.5663317665457726,
+        "elapsed_sec_median": 1.2737482264637947,
+        "elapsed_sec_min": 1.2173487842082977,
+        "hit_event_count_before_dedup": null,
+        "mode": "min",
+        "native_symbol": null,
+        "ray_count": null,
+        "row_count": 800000,
+        "rows_first_sample": [
+          {
+            "min": 90,
+            "region_id": 0
+          },
+          {
+            "min": 200,
+            "region_id": 1
+          },
+          {
+            "min": 80,
+            "region_id": 2
+          }
+        ],
+        "rt_core_accelerated": false,
+        "sample_count": 3,
+        "timings_first_sample": {
+          "cpu_reference_sec": 1.5663317665457726
+        },
+        "triangle_count": null,
+        "wall_sec_median": 1.8983455300331116
+      },
+      {
+        "all_match_cpu_reference": true,
+        "backend": "cpu_python_reference",
+        "claim_boundary": "RayDB-style CPU reference fixture only. This validates a generic columnar grouped aggregate contract; it does not reproduce RayDB, time authors code, or authorize performance wording.",
+        "contract": "columnar_grouped_aggregate_cpu_reference",
+        "copies": 100000,
+        "elapsed_sec_max": 1.3822716176509857,
+        "elapsed_sec_median": 1.3589087128639221,
+        "elapsed_sec_min": 1.3308759778738022,
+        "hit_event_count_before_dedup": null,
+        "mode": "max",
+        "native_symbol": null,
+        "ray_count": null,
+        "row_count": 800000,
+        "rows_first_sample": [
+          {
+            "max": 100,
+            "region_id": 0
+          },
+          {
+            "max": 200,
+            "region_id": 1
+          },
+          {
+            "max": 80,
+            "region_id": 2
+          }
+        ],
+        "rt_core_accelerated": false,
+        "sample_count": 3,
+        "timings_first_sample": {
+          "cpu_reference_sec": 1.3589087128639221
+        },
+        "triangle_count": null,
+        "wall_sec_median": 1.9825836047530174
+      },
+      {
+        "all_match_cpu_reference": true,
+        "backend": "cpu_python_reference",
+        "claim_boundary": "RayDB-style CPU reference fixture only. This validates a generic columnar grouped aggregate contract; it does not reproduce RayDB, time authors code, or authorize performance wording.",
+        "contract": "columnar_grouped_aggregate_cpu_reference",
+        "copies": 100000,
+        "elapsed_sec_max": 1.484843485057354,
+        "elapsed_sec_median": 1.4723591357469559,
+        "elapsed_sec_min": 1.470606453716755,
+        "hit_event_count_before_dedup": null,
+        "mode": "avg_as_sum_count",
+        "native_symbol": null,
+        "ray_count": null,
+        "row_count": 800000,
+        "rows_first_sample": [
+          {
+            "count": 200000,
+            "region_id": 0,
+            "sum": 19000000
+          },
+          {
+            "count": 100000,
+            "region_id": 1,
+            "sum": 20000000
+          },
+          {
+            "count": 100000,
+            "region_id": 2,
+            "sum": 8000000
+          }
+        ],
+        "rt_core_accelerated": false,
+        "sample_count": 3,
+        "timings_first_sample": {
+          "cpu_reference_sec": 1.470606453716755
+        },
+        "triangle_count": null,
+        "wall_sec_median": 2.2058405056595802
+      }
+    ]
+  },
+  "script": "/workspace/rtdl_goal2645/scripts/goal2645_raydb_rt_perf_pod.py",
+  "speedup_diagnostics": []
+}

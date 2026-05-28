@@ -258,6 +258,31 @@ def _load_lsi_case(dataset: str) -> DatasetCase:
             inputs={"left": derived[: len(derived) // 2], "right": derived[len(derived) // 2 :]},
             note="Derived county subset segments tiled eight times with deterministic offsets.",
         )
+    authored_lsi_copies = {
+        "derived/authored_lsi_crossing_tiled_x64": 64,
+        "derived/authored_lsi_crossing_tiled_x512": 512,
+        "derived/authored_lsi_crossing_tiled_x2048": 2048,
+    }
+    if dataset in authored_lsi_copies:
+        copies = authored_lsi_copies[dataset]
+        left = tile_segments(
+            (Segment(id=1, x0=0.0, y0=0.0, x1=2.0, y1=2.0),),
+            copies=copies,
+            step_x=10.0,
+            step_y=10.0,
+        )
+        right = tile_segments(
+            (Segment(id=10, x0=0.0, y0=2.0, x1=2.0, y1=0.0),),
+            copies=copies,
+            step_x=10.0,
+            step_y=10.0,
+        )
+        return DatasetCase(
+            workload="lsi",
+            dataset=dataset,
+            inputs={"left": left, "right": right},
+            note=f"Authored crossing-segment fixture tiled {copies} times; one positive intersection per tile.",
+        )
     raise ValueError(f"unsupported lsi dataset `{dataset}`")
 
 
@@ -302,6 +327,34 @@ def _load_pip_case(dataset: str) -> DatasetCase:
             },
             note="Derived county subset points and polygons tiled eight times with deterministic offsets.",
         )
+    authored_pip_copies = {
+        "derived/authored_pip_square_tiled_x64": 64,
+        "derived/authored_pip_square_tiled_x512": 512,
+        "derived/authored_pip_square_tiled_x2048": 2048,
+    }
+    if dataset in authored_pip_copies:
+        copies = authored_pip_copies[dataset]
+        points = tile_points(
+            (
+                Point(id=100, x=0.5, y=0.5),
+                Point(id=101, x=3.0, y=3.0),
+            ),
+            copies=copies,
+            step_x=10.0,
+            step_y=10.0,
+        )
+        polygons = tile_polygons(
+            (Polygon(id=200, vertices=((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0))),),
+            copies=copies,
+            step_x=10.0,
+            step_y=10.0,
+        )
+        return DatasetCase(
+            workload="pip",
+            dataset=dataset,
+            inputs={"points": points, "polygons": polygons},
+            note=f"Authored point-in-square fixture tiled {copies} times; one positive assignment per tile.",
+        )
     raise ValueError(f"unsupported pip dataset `{dataset}`")
 
 
@@ -343,6 +396,31 @@ def _load_overlay_case(dataset: str) -> DatasetCase:
                 "right": tile_polygons(_chains_to_polygons(soil, limit_chains=2), copies=8, step_x=30.0, step_y=20.0),
             },
             note="Derived county/soil chain-derived polygons tiled eight times with deterministic offsets.",
+        )
+    authored_overlay_copies = {
+        "derived/authored_overlay_squares_tiled_x64": 64,
+        "derived/authored_overlay_squares_tiled_x512": 512,
+        "derived/authored_overlay_squares_tiled_x2048": 2048,
+    }
+    if dataset in authored_overlay_copies:
+        copies = authored_overlay_copies[dataset]
+        left = tile_polygons(
+            (Polygon(id=300, vertices=((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0))),),
+            copies=copies,
+            step_x=10.0,
+            step_y=10.0,
+        )
+        right = tile_polygons(
+            (Polygon(id=301, vertices=((1.0, -1.0), (3.0, -1.0), (3.0, 1.0), (1.0, 1.0))),),
+            copies=copies,
+            step_x=10.0,
+            step_y=10.0,
+        )
+        return DatasetCase(
+            workload="overlay",
+            dataset=dataset,
+            inputs={"left": left, "right": right},
+            note=f"Authored overlapping-square overlay fixture tiled {copies} times; one active dependency per tile.",
         )
     raise ValueError(f"unsupported overlay dataset `{dataset}`")
 

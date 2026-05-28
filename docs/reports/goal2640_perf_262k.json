@@ -1,0 +1,29 @@
+{
+  "benchmark": "goal2640_expanded_aabb_point_membership",
+  "cases": [
+    {
+      "box_count": 4096,
+      "expected_rows": 262144,
+      "oneshot_public_wrapper": {
+        "embree_ms_median": 19362.985379993916,
+        "embree_rows": 262144,
+        "optix_ms_median": 2592.7747786045074,
+        "optix_rows": 262144,
+        "rows_match": true,
+        "speedup_optix_vs_embree": 7.46805528184578
+      },
+      "prepared": {
+        "embree_prepare_ms": 35.19456088542938,
+        "embree_query_ms_median": 18861.32901906967,
+        "embree_rows": 262144,
+        "optix_prepare_ms": 390.560083091259,
+        "optix_query_ms_median": 236.32484674453735,
+        "optix_rows": 262144,
+        "rows_match": true,
+        "speedup_optix_vs_embree": 79.81102824731082
+      },
+      "query_count": 262144
+    }
+  ],
+  "repeats": 3
+}

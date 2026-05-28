@@ -102,8 +102,10 @@ Traversal
 Row Emission
   generic candidate / witness rows
   AABB range_intersection_rows
+  EXPANDED_AABB_POINT_MEMBERSHIP_2D rows
   segment / polygon rows
   fixed-radius neighbor rows
+  aggregate-frontier collect rows
   graph / triangle witness rows
 
 Bounded Materialization
@@ -122,6 +124,7 @@ Reduction
     group_sum
     group_min / group_max
     group_sum_count / group_stats
+    RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D
   columnar compact summary
 
 Continuation
@@ -225,6 +228,7 @@ These behaviors reduce rows by group key. They are recorded in
 | `group_max_i64` | Internal substrate | Per-group signed integer maximum. |
 | `group_sum_count_i64` | Internal substrate | Fused per-group sum and count. |
 | `group_stats_i64` | Internal substrate | Fused per-group count, sum, min, and max. |
+| `RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D` | Candidate behavior with native OptiX evidence | All-hit 3-D ray/triangle primitive-id deduplication followed by grouped integer reduction over caller-provided group ids and payload values. Goal2645 adds the app-agnostic native symbol; Goal2646 adds typed packed host-buffer use in the RayDB paper-shaped benchmark path plus a prepared device-resident primitive-payload ABI. Query encoding and group/value semantics remain app code. |
 
 Grouped-reduction operations are reusable behavior, but backend support and
 external stability are separate decisions. Do not call them stable external
@@ -250,6 +254,8 @@ compact summaries.
 | Primitive or operation | Status | Behavior | Boundary |
 | --- | --- | --- | --- |
 | `AABB_INDEX_QUERY_2D` range intersection rows | Internal generic row path | Emit `(query_id, indexed_id)` candidate rows for 2-D AABB intersections from a prepared generic index | Goal2622 added the CPU reference row path; Goal2623 added the generic OptiX native row emitter with explicit fail-closed capacity overflow; Goal2634 added prepared Embree/OptiX row-output reuse for benchmark timing. Exact app refinement remains outside the engine. |
+| `EXPANDED_AABB_POINT_MEMBERSHIP_2D` | Candidate behavior | Emit source-offset plus row-major `(source_id, box_id, metadata_flags)` rows for points inside caller-expanded 2-D AABBs | Goal2640 adds the CPU/Embree reference row contract and an app-name-free OptiX native point-contains row symbol scaffold over the existing generic AABB RT traversal. It is intended as a reusable RT-core subroutine for aggregate-frontier-style near/exclusion discovery. The engine sees only points, expanded boxes, ids, row offsets, and fail-closed capacity; box expansion policy and app interpretation remain outside native code. |
+| `AGGREGATE_FRONTIER_COLLECT_2D` | Candidate behavior | Emit source-offset plus row-major i64 frontier IDs and reserved `metadata_flags` from a prepared aggregate tree using an app-independent opening predicate | CPU reference, columnar payload adapter, Torch/CuPy partner-column adapter, native ABI contract `generic_aggregate_frontier_collect_2d_native_abi_v1`, local Embree native row collection, and app-name-free OptiX native row collection exist. Goal2639 pod evidence validates same-contract Embree/OptiX parity, fail-closed overflow, and a host-side timing baseline, but this remains row-collection evidence, not RT-core speedup evidence. Current `metadata_flags=0` means no flags set; partners must ignore unknown future non-zero flags until a later contract revision defines them. Default rows are ID-only; optional distance/opening-ratio diagnostics stay outside primitive output. Force laws, scoring, and app reductions remain outside the engine. |
 | `COLLECT_K_BOUNDED` | Stable primitive | Bounded row collection with exact fail-closed overflow policy | Promoted by Goal2621 contact-manifold evidence: local Mac Embree parity, RTX A5000 OptiX parity, standalone C++ CPU baseline, and 3-AI promotion consensus. Linux Embree parity has not been separately recorded. |
 | bounded witness-row collection | Stable behavior | App-facing witness rows over an app-owned row schema, routed through `COLLECT_K_BOUNDED` when bounded materialization is required | The app may call rows collision/contact witnesses, but the primitive only owns generic candidate-id row collection. |
 | witness/candidate row paths | App or partner code unless promoted | App-facing row materialization for a specific workflow | Must not silently truncate exact outputs. |
@@ -285,7 +291,7 @@ the accepted generic contract is not finished.
 
 | Primitive or operation | Status | Behavior | Boundary |
 | --- | --- | --- | --- |
-| aggregate-frontier traversal | Candidate behavior | Select aggregate/tree nodes according to an app-independent opening predicate and emit a bounded frontier or summary input | Needs a generic contract before native promotion. |
+| aggregate-frontier traversal | Candidate behavior | Native/partner lowering target for the `AGGREGATE_FRONTIER_COLLECT_2D` row contract | The generic CPU contract, app-name-free native ABI specification, Embree native row collector, and OptiX native row collector exist. Goal2639 records pod parity and host-side timing evidence; RT-core speedup evidence remains future work. |
 | Barnes-Hut inverse-square force accumulation | App or partner code | Workload math over selected points/nodes | Not an RTDL engine primitive. |
 
 Rejected candidate:
@@ -347,7 +353,7 @@ substrates.
 | RT-DBSCAN | Fixed-radius graph continuation, grouped union, adjacency and continuation memory pressure | Generic fixed-radius and grouped-continuation pressure; DBSCAN cluster expansion stayed app code. |
 | Robot collision | Prepared static scene reuse, grouped finite segment probes, group-any pose flags, count-only result | Generic prepared any-hit/group-any and buffer-reuse pressure; robot pose/link semantics stayed app code. |
 | Bounded contact witness / contact-manifold | Exact bounded witness rows, fail-closed overflow, app-owned contact summaries, and prepared AABB broadphase candidate discovery | Promoted `COLLECT_K_BOUNDED` as a stable generic bounded row primitive with row schema `(query_group_id, query_triangle_id, scene_triangle_id)`; Goal2622 added generic `AABB_INDEX_QUERY_2D` broadphase candidate rows, and Goal2634 moved the benchmark row to prepared Embree/OptiX AABB row-output median timing; collision/contact semantics stay in Python app code. |
-| RayDB-style | Columnar grouped count/sum/min/max/stats, device column handoff, group capacity | `DeviceColumnDescriptor` and `rtdl.grouped_reduction.v1`; SQL/DBMS semantics stayed app code. |
+| RayDB-style | Columnar grouped count/sum/min/max/stats, device column handoff, group capacity; paper-shaped row-as-triangle any-hit grouped reduction | `DeviceColumnDescriptor`, `rtdl.grouped_reduction.v1`, and candidate `RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D`; SQL/DBMS/RayDB semantics stayed app code. |
 | Barnes-Hut | Aggregate frontier traversal and fused force accumulation pressure | Aggregate-frontier primitive remains future work; app-specific inverse-square native primitive was rejected. |
 
 ## Primitive Promotion Pipeline

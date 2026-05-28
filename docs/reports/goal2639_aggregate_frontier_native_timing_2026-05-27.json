@@ -1,0 +1,109 @@
+{
+  "claim_boundary": "Row-collection timing only; no RT-core speedup or Barnes-Hut whole-app claim.",
+  "goal": "Goal2639 aggregate-frontier native row collection timing",
+  "pod": "root@66.92.198.226:11132 using ~/.ssh/id_ed25519_rtdl_codex",
+  "environment": {
+    "gpu": "NVIDIA L4",
+    "driver": "570.195.03",
+    "cuda": "12.8",
+    "optix_prefix": "/root/optix-sdk-8.1",
+    "embree_package": "libembree-dev 4.3.0+dfsg-2"
+  },
+  "rows": [
+    {
+      "backend": "cpu_reference",
+      "body_count": 512,
+      "frontier_row_count": 28988,
+      "loops": 1,
+      "median_seconds": 0.06819995120167732,
+      "min_seconds": 0.06819995120167732,
+      "tree_build_seconds": 0.006354764103889465,
+      "tree_node_count": 85
+    },
+    {
+      "backend": "embree_native",
+      "body_count": 512,
+      "frontier_row_count": 28988,
+      "loops": 5,
+      "median_seconds": 0.06535711884498596,
+      "min_seconds": 0.06050831079483032,
+      "tree_build_seconds": 0.006354764103889465,
+      "tree_node_count": 85
+    },
+    {
+      "backend": "optix_native",
+      "body_count": 512,
+      "frontier_row_count": 28988,
+      "loops": 5,
+      "median_seconds": 0.0624484159052372,
+      "min_seconds": 0.059097472578287125,
+      "tree_build_seconds": 0.006354764103889465,
+      "tree_node_count": 85
+    },
+    {
+      "backend": "cpu_reference",
+      "body_count": 2048,
+      "frontier_row_count": 153976,
+      "loops": 1,
+      "median_seconds": 0.4081055745482445,
+      "min_seconds": 0.4081055745482445,
+      "tree_build_seconds": 0.0247354693710804,
+      "tree_node_count": 341
+    },
+    {
+      "backend": "embree_native",
+      "body_count": 2048,
+      "frontier_row_count": 153976,
+      "loops": 5,
+      "median_seconds": 0.3722598925232887,
+      "min_seconds": 0.34837954491376877,
+      "tree_build_seconds": 0.0247354693710804,
+      "tree_node_count": 341
+    },
+    {
+      "backend": "optix_native",
+      "body_count": 2048,
+      "frontier_row_count": 153976,
+      "loops": 5,
+      "median_seconds": 0.350186288356781,
+      "min_seconds": 0.34034187719225883,
+      "tree_build_seconds": 0.0247354693710804,
+      "tree_node_count": 341
+    },
+    {
+      "backend": "cpu_reference",
+      "body_count": 8192,
+      "frontier_row_count": 750173,
+      "loops": 1,
+      "median_seconds": 1.877703819423914,
+      "min_seconds": 1.877703819423914,
+      "tree_build_seconds": 0.1255529373884201,
+      "tree_node_count": 1365
+    },
+    {
+      "backend": "embree_native",
+      "body_count": 8192,
+      "frontier_row_count": 750173,
+      "loops": 5,
+      "median_seconds": 1.9935380555689335,
+      "min_seconds": 1.9475373923778534,
+      "tree_build_seconds": 0.1255529373884201,
+      "tree_node_count": 1365
+    },
+    {
+      "backend": "optix_native",
+      "body_count": 8192,
+      "frontier_row_count": 750173,
+      "loops": 5,
+      "median_seconds": 1.9128093048930168,
+      "min_seconds": 1.8764431774616241,
+      "tree_build_seconds": 0.1255529373884201,
+      "tree_node_count": 1365
+    }
+  ],
+  "interpretation": {
+    "same_contract": true,
+    "rt_core_speedup_claim_authorized": false,
+    "summary": "The OptiX-library row collector is same-contract and slightly faster than Embree on the 512 and 2048 body rows in this run, but comparable/slightly slower than CPU reference at 8192 bodies. This is expected for a host-side native row collector and is not RT-core acceleration evidence."
+  }
+}

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from numbers import Integral
 from typing import Any, Mapping, Sequence
 
 from .db_reference import PredicateClause
@@ -415,7 +416,7 @@ def _stable_number(value: float) -> int | float:
 
 
 def _coerce_row_id(value: Any, index: int) -> int:
-    if not isinstance(value, int) or isinstance(value, bool):
+    if not isinstance(value, Integral) or isinstance(value, bool):
         raise ValueError(f"row_id at index {index} must be an integer")
     if value < 0 or value > UINT32_MAX:
         raise ValueError(f"row_id at index {index} must be in uint32 range")

@@ -28,12 +28,36 @@ partner, hardware, command shape, output contract, and artifact are cited.
 
 These are the current benchmark apps. They are reconstruction instruments for
 RTDL language/runtime design, not broad paper-reproduction claims.
-Performance values below come from the latest internal standard matrix:
+Most performance values below come from the latest internal standard matrix:
 `docs/reports/goal2634_full_standard_prepared_contact_pod/summary.md`.
+Rows with later app-specific closeout evidence cite that evidence in the
+boundary column.
 
 The matrix was collected on an NVIDIA RTX A5000 pod from commit
 `56e1f9b230cdef6d803191c8804f192133b4d020`. It is exact-subpath evidence only,
 not public whole-app speedup wording.
+
+For a per-app audit of whether each row uses the current optimized path and
+where scale/scope evidence is still weak, see
+`docs/reports/goal2635_benchmark_app_optimization_validity_audit_2026-05-27.md`.
+For the current measured performance report and its overclaiming boundaries,
+see
+`docs/reports/goal2636_current_benchmark_performance_report_2026-05-27.md`.
+For the completed all-benchmark performance diffs including the strengthened
+Goal2636 rows, see
+`docs/reports/goal2637_all_benchmark_perf_diffs_2026-05-27.md`.
+For the current detailed per-app portfolio report including design pressure,
+primitive boundaries, non-benchmark demotions, and the latest Barnes-Hut
+Goal2642 follow-up, see
+`docs/reports/goal2643_all_benchmark_apps_detailed_report_2026-05-27.md`.
+For the refreshed current all-benchmark performance comparison after the RayDB
+Goal2653 closeout, see
+`docs/reports/goal2654_all_benchmark_app_perf_comparison_refresh_2026-05-27.md`.
+For the compact combined-app RT-core speedup summary, see
+`docs/reports/goal2655_benchmark_rt_core_speedup_summary_2026-05-27.md`.
+For the follow-up runner that strengthens the weaker Hausdorff, Spatial
+RayJoin, RTNN, Barnes-Hut, and triangle-counting rows, see
+`docs/reports/goal2636_strengthened_benchmark_rows_plan_2026-05-27.md`.
 
 | Benchmark app | Entry point | Benchmark contract | Key RTDL primitive/path | Embree sec | OptiX sec | Speedup | Boundary |
 | --- | --- | --- | --- | ---: | ---: | ---: | --- |
@@ -41,8 +65,8 @@ not public whole-app speedup wording.
 | Spatial RayJoin-style | `examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py` | Scoped all-backend query summary | Prepared spatial relation / shape-pair route | 0.0203149 | 0.000529638 | 38.4x | Scoped spatial join contracts, not full RayJoin paper reproduction. |
 | RT-DBSCAN-style | `examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py` | Cluster signature | Fixed-radius rows plus grouped continuation | 20.6102 | 1.62144 | 12.7x | Generic fixed-radius/component contracts; no DBSCAN-native ABI. |
 | Robot collision | `examples/v2_0/research_benchmarks/robot_collision/rtdl_robot_collision_benchmark_app.py` | Prepared collision flags | Prepared 3-D segment/scene any-hit flags | 0.00853798 | 0.00161413 | 5.29x | Static-scene screening, not a planner or exact swept collision solver. |
-| RayDB-style grouped aggregate | `examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py` | Grouped count | Partner-resident typed grouped reduction | 0.222185 | 0.000793088 | 280x | Columnar grouped reduction, not SQL, SSB, or a DBMS. |
-| RayDB-style grouped aggregate | `examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py` | Grouped sum | Partner-resident typed grouped reduction | 0.243746 | 0.000977349 | 249x | Columnar grouped reduction, not SQL, SSB, or a DBMS. |
+| RayDB-style grouped aggregate | `examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py` | Generated 2M grouped count, steady-state prepared query | Paper-shaped generic ray/triangle grouped i64 reduction | 0.0047154 | 0.0001704 | 27.7x | Goal2652 internal prepared-query evidence on RTX A5000 only; no whole-app, SQL/DBMS, authors-code, or public speedup claim. |
+| RayDB-style grouped aggregate | `examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py` | Generated 2M grouped sum, steady-state prepared query | Paper-shaped generic ray/triangle grouped i64 reduction | 0.0985329 | 0.0009476 | 104.0x | Goal2652 internal prepared-query evidence on RTX A5000 only; setup, table descriptor, scene build, payload prep, and ray prep are excluded. |
 | Barnes-Hut / RT-BarnesHut-style | `examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py` | Node-coverage threshold decision | Same-contract prepared node coverage | 0.0388851 | 0.00855045 | 4.55x | No app-specific force ABI; full hierarchical aggregate-frontier remains future generic primitive work. |
 | LibRTS-style spatial index | `examples/v2_0/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py` | AABB index count-only | `AABB_INDEX_QUERY_2D` | 20.707 | 0.691477 | 29.9x | Internal benchmark slice, not full mutable LibRTS reproduction. |
 | RTNN neighbor search | `scripts/goal2348_rtnn_v2_2_external_runner.py` | Prepared 3-D ranked summary | Fixed-radius neighbor rows plus ranked summary | 0.2638 | 0.00153247 | 172x | Strict same-contract boundary; not a full RTNN paper reproduction. |

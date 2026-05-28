@@ -7,6 +7,10 @@ from .reference import Triangle as _CanonicalTriangle
 from .reference import _finite_ray_hits_triangle
 from .runtime import _normalize_records
 from . import optix_runtime as _optix
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE
 
 _UINT32_MAX = 2**32 - 1
 _CUPY_COLUMNAR_PREDICATE_BATCH_KERNELS = {}
@@ -58,6 +62,7 @@ def _partner_module(partner: str):
             "module": torch,
             "device": torch.device("cuda:0"),
             "uint32": torch.uint32,
+            "int64": torch.int64,
             "float64": torch.float64,
             "float32": torch.float32,
             "tensor": lambda values, dtype, device: torch.tensor(values, dtype=dtype, device=device),
@@ -103,6 +108,7 @@ def _partner_module(partner: str):
             "module": cupy,
             "device": None,
             "uint32": cupy.uint32,
+            "int64": cupy.int64,
             "float64": cupy.float64,
             "float32": cupy.float32,
             "tensor": lambda values, dtype, device: cupy.asarray(values, dtype=dtype),
@@ -1446,6 +1452,83 @@ def weighted_point_rows_to_partner_columns(points, *, partner: str = "torch") ->
         "y": runtime["tensor"]([float(point.y) for point in rows], runtime["float64"], device),
         "weight": runtime["tensor"]([float(point.mass) for point in rows], runtime["float64"], device),
     }
+
+
+def aggregate_frontier_collect_to_partner_columns(
+    collection: dict[str, object],
+    *,
+    partner: str = "torch",
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Convert generic aggregate-frontier rows into partner-owned ID columns."""
+
+    if not isinstance(collection, dict):
+        raise ValueError("aggregate frontier collection must be a mapping")
+    metadata = collection.get("metadata")
+    if not isinstance(metadata, dict) or metadata.get("contract") != AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT:
+        raise ValueError("aggregate frontier collection uses an unsupported contract")
+    row_schema = tuple(str(item) for item in collection.get("row_schema", ()))
+    if row_schema != AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA:
+        raise ValueError("aggregate frontier collection row schema mismatch")
+
+    runtime = _partner_module(partner)
+    device = runtime["device"]
+    rows = tuple(tuple(int(value) for value in row) for row in collection.get("frontier_i64_rows", ()))
+    for row in rows:
+        if len(row) != len(row_schema):
+            raise ValueError("aggregate frontier i64 row width mismatch")
+
+    column_values = {
+        name: [row[index] for row in rows]
+        for index, name in enumerate(row_schema)
+    }
+    columns = {
+        name: runtime["tensor"](values, runtime["int64"], device)
+        for name, values in column_values.items()
+    }
+    columns["source_ids"] = runtime["tensor"](
+        [int(value) for value in collection.get("source_ids", ())],
+        runtime["int64"],
+        device,
+    )
+    columns["row_offsets"] = runtime["tensor"](
+        [int(value) for value in collection.get("row_offsets", ())],
+        runtime["int64"],
+        device,
+    )
+    if return_metadata:
+        return {
+            "columns": columns,
+            "metadata": {
+                "primitive": AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE,
+                "contract": AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT,
+                "adapter": "aggregate_frontier_collect_to_partner_columns",
+                "partner": runtime["name"],
+                "row_schema": row_schema,
+                "frontier_row_count": len(rows),
+                "source_count": len(collection.get("source_ids", ())),
+                "row_offset_count": len(collection.get("row_offsets", ())),
+                "column_layout": "partner_owned_i64_columns_with_source_offsets",
+                "metadata_flags_semantics": {
+                    AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE: (
+                        "no flags set; partners must ignore unknown future non-zero flags "
+                        "unless a later contract revision documents them"
+                    ),
+                },
+                "native_engine_app_specific": False,
+                "app_math_embedded": False,
+                "force_law_embedded": False,
+                "native_rt_execution": False,
+                "zero_copy_claim_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "claim_boundary": (
+                    "Partner-owned generic frontier ID columns only. The adapter does not "
+                    "execute native RT traversal, does not compute force/scoring math, "
+                    "and does not authorize zero-copy, speedup, or whole-app claims."
+                ),
+            },
+        }
+    return columns
 
 
 def directed_hausdorff_2d_partner_columns(

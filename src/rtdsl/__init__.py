@@ -146,25 +146,38 @@ from .grouped_reduction import normalize_grouped_reduction_spec
 from .aggregate_tree_reference import AGGREGATE_OPENING_ROWS_2D_CONTRACT
 from .aggregate_tree_reference import AGGREGATE_BUCKETIZED_TREE_2D_CONTRACT
 from .aggregate_tree_reference import AGGREGATE_TREE_OPENING_FRONTIER_2D_CONTRACT
-from .aggregate_tree_reference import GROUPED_VECTOR_SUM_ROWS_2D_CONTRACT
-from .aggregate_tree_reference import WEIGHTED_INVERSE_SQUARE_CONTRIBUTION_ROWS_2D_CONTRACT
-from .aggregate_tree_reference import WEIGHTED_INVERSE_SQUARE_VECTOR_SUM_2D_CONTRACT
-from .aggregate_tree_reference import VECTOR_SUM_MATERIALIZATION_PRESSURE_2D_CONTRACT
-from .aggregate_tree_reference import AGGREGATE_FRONTIER_WEIGHTED_VECTOR_SUM_2D_CONTRACT
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_NATIVE_ABI_CONTRACT
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_OVERFLOW_POLICY
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_NATIVE_REQUIRED_SYMBOLS
+from .aggregate_tree_reference import AggregateFrontierOverflowError
 from .aggregate_tree_reference import AggregateNodeRow
 from .aggregate_tree_reference import AggregateTreeNodeRow
 from .aggregate_tree_reference import WeightedPointRow
 from .aggregate_tree_reference import build_bucketized_aggregate_tree_2d
-from .aggregate_tree_reference import evaluate_weighted_inverse_square_contribution_rows_2d
+from .aggregate_tree_reference import aggregate_frontier_collect_to_columnar_record_set
+from .aggregate_tree_reference import aggregate_frontier_collect_native_abi_contract
+from .aggregate_tree_reference import collect_aggregate_frontier_2d
 from .aggregate_tree_reference import evaluate_aggregate_tree_opening_frontier_2d
 from .aggregate_tree_reference import evaluate_aggregate_opening_rows_2d
-from .aggregate_tree_reference import estimate_vector_sum_materialization_pressure_2d
 from .aggregate_tree_reference import morton_code_2d
 from .aggregate_tree_reference import normalize_aggregate_node_rows
 from .aggregate_tree_reference import normalize_weighted_point_rows
-from .aggregate_tree_reference import sum_weighted_inverse_square_contributions_2d
-from .aggregate_tree_reference import sum_aggregate_frontier_weighted_vectors_2d
-from .aggregate_tree_reference import sum_vector_contribution_rows_2d
+from .aggregate_tree_reference import plan_aggregate_frontier_collect_lowering
+from .aggregate_tree_reference import validate_aggregate_frontier_collect_native_abi_contract
+from .app_reference import AGGREGATE_FRONTIER_WEIGHTED_VECTOR_SUM_2D_CONTRACT
+from .app_reference import GROUPED_VECTOR_SUM_ROWS_2D_CONTRACT
+from .app_reference import VECTOR_SUM_MATERIALIZATION_PRESSURE_2D_CONTRACT
+from .app_reference import WEIGHTED_INVERSE_SQUARE_CONTRIBUTION_ROWS_2D_CONTRACT
+from .app_reference import WEIGHTED_INVERSE_SQUARE_VECTOR_SUM_2D_CONTRACT
+from .app_reference import estimate_vector_sum_materialization_pressure_2d
+from .app_reference import evaluate_weighted_inverse_square_contribution_rows_2d
+from .app_reference import sum_aggregate_frontier_weighted_vectors_2d
+from .app_reference import sum_vector_contribution_rows_2d
+from .app_reference import sum_weighted_inverse_square_contributions_2d
 from .datasets import arcgis_pages_to_cdb
 from .datasets import build_arcgis_geojson_query_url
 from .datasets import build_arcgis_query_url
@@ -195,6 +208,7 @@ from .datasets import rayjoin_public_assets
 from .datasets import slice_cdb_dataset
 from .datasets import write_cdb
 from .embree_runtime import configure_embree
+from .embree_runtime import collect_aggregate_frontier_2d_embree
 from .embree_runtime import collect_polygon_pair_candidates_bounded_embree
 from .embree_runtime import embree_thread_config
 from .embree_runtime import embree_version
@@ -441,6 +455,7 @@ from .external_baselines import run_scipy_fixed_radius_count_threshold
 from .external_baselines import run_scipy_knn_rows
 from .external_baselines import scipy_available
 from .optix_runtime import optix_version
+from .optix_runtime import collect_aggregate_frontier_2d_optix
 from .optix_runtime import fixed_radius_count_threshold_2d_optix
 from .optix_runtime import get_last_db_phase_timings
 from .optix_runtime import get_last_fixed_radius_neighbors_3d_phase_timings
@@ -475,6 +490,11 @@ from .optix_runtime import OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_MAX_I64_WITH_
 from .optix_runtime import OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_COUNT_I64_WITH_CAPACITY_SYMBOL
 from .optix_runtime import OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_STATS_I64_WITH_CAPACITY_SYMBOL
 from .optix_runtime import OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_I64_REDUCTIONS
+from .optix_runtime import OPTIX_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL
+from .optix_runtime import OPTIX_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_CREATE_SYMBOL
+from .optix_runtime import OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL
+from .optix_runtime import OPTIX_RAY_BATCH_3D_CREATE_DEVICE_RAYS_SYMBOL
+from .optix_runtime import OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL
 from .optix_runtime import prepare_optix
 from .optix_runtime import prepare_optix_columnar_payload
 from .optix_runtime import prepare_optix_columnar_record_set
@@ -487,6 +507,7 @@ from .optix_runtime import prepare_optix_fixed_radius_count_threshold_2d_device_
 from .optix_runtime import prepare_optix_segment_polygon_anyhit_rows_2d
 from .optix_runtime import prepare_optix_segment_polygon_hitcount_2d
 from .optix_runtime import collect_aabb_intersection_pair_rows_2d_optix
+from .optix_runtime import collect_aabb_point_membership_pair_rows_2d_optix
 from .optix_runtime import prepare_optix_aabb_index_2d
 from .optix_runtime import prepare_optix_aabb_point_queries_2d
 from .optix_runtime import prepare_optix_aabb_box_queries_2d
@@ -495,6 +516,7 @@ from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d_device_triangle
 from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene
 from .optix_runtime import prepare_optix_static_triangle_scene_3d
 from .optix_runtime import prepare_optix_static_triangle_scene_3d_device_triangles
+from .optix_runtime import prepare_optix_primitive_grouped_i64_payload_3d
 from .optix_runtime import prepare_optix_grouped_segment_query_3d
 from .optix_runtime import prepare_optix_grouped_candidate_argmin
 from .optix_runtime import grouped_candidate_argmin_host_reference
@@ -514,6 +536,7 @@ from .optix_runtime import PreparedOptixAabbIndex2D
 from .optix_runtime import PreparedOptixAabbQueries2D
 from .optix_runtime import PreparedOptixRayTriangleAnyHit2D
 from .optix_runtime import PreparedOptixStaticTriangleScene3D
+from .optix_runtime import PreparedOptixPrimitiveGroupedI64Payload3D
 from .optix_runtime import PreparedOptixGroupedSegmentQuery3D
 from .optix_runtime import PreparedOptixGroupedCandidateArgmin
 from .optix_runtime import PreparedOptixSegmentPolygonAnyHitRows2D
@@ -575,6 +598,7 @@ from .partner_adapters import partner_page_columns
 from .partner_adapters import partner_unique_pair_keys
 from .partner_adapters import point_rows_to_partner_columns
 from .partner_adapters import weighted_point_rows_to_partner_columns
+from .partner_adapters import aggregate_frontier_collect_to_partner_columns
 from .app_adapters import pairwise_inverse_square_force_2d_partner_columns
 from .partner_adapters import directed_hausdorff_2d_partner_columns
 from .partner_adapters import top_k_nearest_points_2d_partner_columns
@@ -893,16 +917,24 @@ from .aabb_index import AABB_INDEX_2D_OPERATIONS
 from .aabb_index import Aabb2D
 from .aabb_index import AabbIndex2D
 from .aabb_index import EmbreeAabbIndex2D
+from .aabb_index import EXPANDED_AABB_POINT_MEMBERSHIP_2D_CONTRACT
+from .aabb_index import EXPANDED_AABB_POINT_MEMBERSHIP_2D_PRIMITIVE
+from .aabb_index import EXPANDED_AABB_POINT_MEMBERSHIP_2D_ROW_SCHEMA
+from .aabb_index import EXPANDED_AABB_POINT_MEMBERSHIP_METADATA_FLAGS_NONE
+from .aabb_index import ExpandedAabbPointMembershipOverflowError
 from .aabb_index import OptixAabbIndex2D
 from .aabb_index import aabb_intersection_pair_rows_2d
+from .aabb_index import expanded_aabb_point_membership_rows_2d
 from .aabb_index import prepare_aabb_index_2d
 from .aabb_index import query_aabb_index_2d
 from .generic_primitives import ACTIVE_V1_5_GENERIC_PRIMITIVE_BACKENDS
 from .generic_primitives import FROZEN_BEFORE_V2_1_GENERIC_BACKENDS
 from .generic_primitives import GenericPreparedFixedRadiusCountThreshold2D
 from .generic_primitives import GenericPreparedRayTriangleAnyHitScene
+from .generic_primitives import GenericPreparedRayTrianglePrimitiveGroupedI64Reduction3D
 from .generic_primitives import prepare_generic_fixed_radius_count_threshold_2d
 from .generic_primitives import prepare_generic_ray_triangle_any_hit_scene
+from .generic_primitives import prepare_generic_ray_triangle_primitive_grouped_i64_reduction_3d
 from .generic_primitives import run_generic_fixed_radius_count_threshold_2d
 from .generic_primitives import run_generic_prepared_fixed_radius_threshold_reached_count_2d
 from .generic_primitives import run_generic_prepared_ray_triangle_any_hit_grouped_count_threshold_bool
@@ -910,6 +942,7 @@ from .generic_primitives import run_generic_prepared_ray_triangle_any_hit_count
 from .generic_primitives import run_generic_ray_triangle_any_hit
 from .generic_primitives import run_generic_ray_triangle_any_hit_count
 from .generic_primitives import run_generic_ray_triangle_closest_hit
+from .generic_primitives import run_generic_ray_triangle_primitive_grouped_i64_reduction_3d
 from .generic_db_primitives import ACTIVE_V1_5_GENERIC_DB_BACKENDS
 from .generic_db_primitives import FROZEN_BEFORE_V2_1_DB_BACKENDS
 from .generic_db_primitives import run_generic_db_compact_summary_batch
@@ -1158,14 +1191,24 @@ __all__ = [
     "CandidateSet",
     "CompiledKernel",
     "AGGREGATE_BUCKETIZED_TREE_2D_CONTRACT",
+    "AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT",
+    "AGGREGATE_FRONTIER_COLLECT_2D_NATIVE_ABI_CONTRACT",
+    "AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE",
+    "AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA",
+    "AGGREGATE_FRONTIER_COLLECT_OVERFLOW_POLICY",
+    "AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE",
+    "AGGREGATE_FRONTIER_COLLECT_NATIVE_REQUIRED_SYMBOLS",
     "AGGREGATE_OPENING_ROWS_2D_CONTRACT",
     "AGGREGATE_TREE_OPENING_FRONTIER_2D_CONTRACT",
     "GROUPED_VECTOR_SUM_ROWS_2D_CONTRACT",
     "WEIGHTED_INVERSE_SQUARE_CONTRIBUTION_ROWS_2D_CONTRACT",
     "WEIGHTED_INVERSE_SQUARE_VECTOR_SUM_2D_CONTRACT",
     "VECTOR_SUM_MATERIALIZATION_PRESSURE_2D_CONTRACT",
+    "AggregateFrontierOverflowError",
     "AggregateNodeRow",
     "AggregateTreeNodeRow",
+    "aggregate_frontier_collect_to_columnar_record_set",
+    "aggregate_frontier_collect_native_abi_contract",
     "ColumnarAggregateLoweringPlan",
     "ColumnarAggregatePlan",
     "ColumnarAggregateResult",
@@ -1221,6 +1264,9 @@ __all__ = [
     "GenerateOnlyRequest",
     "COMPOSITE_COLUMNAR_AGGREGATE_LOWERINGS",
     "decompose_columnar_aggregate_plan",
+    "collect_aggregate_frontier_2d",
+    "collect_aggregate_frontier_2d_embree",
+    "collect_aggregate_frontier_2d_optix",
     "evaluate_aggregate_opening_rows_2d",
     "evaluate_aggregate_tree_opening_frontier_2d",
     "evaluate_weighted_inverse_square_contribution_rows_2d",
@@ -1237,6 +1283,8 @@ __all__ = [
     "morton_code_2d",
     "normalize_aggregate_node_rows",
     "normalize_weighted_point_rows",
+    "plan_aggregate_frontier_collect_lowering",
+    "validate_aggregate_frontier_collect_native_abi_contract",
     "sum_weighted_inverse_square_contributions_2d",
     "sum_vector_contribution_rows_2d",
     "grouped_count",
@@ -1359,16 +1407,24 @@ __all__ = [
     "Aabb2D",
     "AabbIndex2D",
     "EmbreeAabbIndex2D",
+    "EXPANDED_AABB_POINT_MEMBERSHIP_2D_CONTRACT",
+    "EXPANDED_AABB_POINT_MEMBERSHIP_2D_PRIMITIVE",
+    "EXPANDED_AABB_POINT_MEMBERSHIP_2D_ROW_SCHEMA",
+    "EXPANDED_AABB_POINT_MEMBERSHIP_METADATA_FLAGS_NONE",
+    "ExpandedAabbPointMembershipOverflowError",
     "OptixAabbIndex2D",
     "aabb_intersection_pair_rows_2d",
+    "expanded_aabb_point_membership_rows_2d",
     "prepare_aabb_index_2d",
     "query_aabb_index_2d",
     "ACTIVE_V1_5_GENERIC_PRIMITIVE_BACKENDS",
     "FROZEN_BEFORE_V2_1_GENERIC_BACKENDS",
     "GenericPreparedFixedRadiusCountThreshold2D",
     "GenericPreparedRayTriangleAnyHitScene",
+    "GenericPreparedRayTrianglePrimitiveGroupedI64Reduction3D",
     "prepare_generic_fixed_radius_count_threshold_2d",
     "prepare_generic_ray_triangle_any_hit_scene",
+    "prepare_generic_ray_triangle_primitive_grouped_i64_reduction_3d",
     "run_generic_fixed_radius_count_threshold_2d",
     "run_generic_prepared_fixed_radius_threshold_reached_count_2d",
     "run_generic_prepared_ray_triangle_any_hit_grouped_count_threshold_bool",
@@ -1376,6 +1432,7 @@ __all__ = [
     "run_generic_ray_triangle_any_hit",
     "run_generic_ray_triangle_any_hit_count",
     "run_generic_ray_triangle_closest_hit",
+    "run_generic_ray_triangle_primitive_grouped_i64_reduction_3d",
     "run_generic_scalar_reduction",
     "V1_5_GENERIC_SCALAR_REDUCTION_PRIMITIVES",
     "ACTIVE_V1_5_GENERIC_DB_BACKENDS",
@@ -1609,6 +1666,11 @@ __all__ = [
     "OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_COUNT_I64_WITH_CAPACITY_SYMBOL",
     "OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_STATS_I64_WITH_CAPACITY_SYMBOL",
     "OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_I64_REDUCTIONS",
+    "OPTIX_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL",
+    "OPTIX_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_CREATE_SYMBOL",
+    "OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL",
+    "OPTIX_RAY_BATCH_3D_CREATE_DEVICE_RAYS_SYMBOL",
+    "OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL",
     "prepare_optix",
     "prepare_optix_columnar_payload",
     "prepare_optix_columnar_record_set",
@@ -1621,6 +1683,7 @@ __all__ = [
     "prepare_optix_segment_polygon_anyhit_rows_2d",
     "prepare_optix_segment_polygon_hitcount_2d",
     "collect_aabb_intersection_pair_rows_2d_optix",
+    "collect_aabb_point_membership_pair_rows_2d_optix",
     "prepare_optix_aabb_index_2d",
     "prepare_optix_aabb_point_queries_2d",
     "prepare_optix_aabb_box_queries_2d",
@@ -1629,6 +1692,7 @@ __all__ = [
     "prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene",
     "prepare_optix_static_triangle_scene_3d",
     "prepare_optix_static_triangle_scene_3d_device_triangles",
+    "prepare_optix_primitive_grouped_i64_payload_3d",
     "prepare_optix_grouped_segment_query_3d",
     "prepare_optix_grouped_candidate_argmin",
     "grouped_candidate_argmin_host_reference",
@@ -1656,6 +1720,7 @@ __all__ = [
     "PreparedOptixAabbQueries2D",
     "PreparedOptixRayTriangleAnyHit2D",
     "PreparedOptixStaticTriangleScene3D",
+    "PreparedOptixPrimitiveGroupedI64Payload3D",
     "PreparedOptixGroupedSegmentQuery3D",
     "PreparedOptixGroupedCandidateArgmin",
     "PreparedOptixSegmentPolygonAnyHitRows2D",
@@ -1698,6 +1763,7 @@ __all__ = [
     "metric_table_payload_to_partner_columns",
     "partner_metric_table_reduce_batch",
     "aabb_pair_payload_to_partner_columns",
+    "aggregate_frontier_collect_to_partner_columns",
     "aabb_pair_overlap_summary_2d_partner_columns",
     "aabb_tiled_candidate_pair_payload_2d_partner_columns",
     "partner_group_min_by_key",
@@ -2180,6 +2246,7 @@ _CONTRACT_FIRST_DIR_EXPORTS = (
     "any_hit",
     "bounded_nearest",
     "closest_hit",
+    "collect_aggregate_frontier_2d",
     "compile_kernel",
     "emit",
     "emit_segmented_row_stream",

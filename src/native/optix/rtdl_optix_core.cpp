@@ -6399,6 +6399,7 @@ static RayAnyHitPipeline    g_rayhit3d_sum;
 static RayAnyHitPipeline    g_rayanyhit;
 static RayAnyHitPipeline    g_rayanyhit3d;
 static RayAnyHitPipeline    g_rayanyhit_weighted_sum3d;
+static RayAnyHitPipeline    g_rayprimitive_grouped_i64_reduction3d;
 static RayAnyHitPipeline    g_rayanyhit_count;
 static RayAnyHitPipeline    g_aabb_index_count;
 static RayAnyHitPipeline    g_rayanyhit_count_device_ray_columns;

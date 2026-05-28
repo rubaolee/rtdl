@@ -221,6 +221,16 @@ PRIMITIVE_HIERARCHY = (
                 boundary="Exact app refinement remains outside this primitive.",
             ),
             PrimitiveHierarchyNode(
+                id="rows.expanded_aabb_point_membership_rows",
+                title="EXPANDED_AABB_POINT_MEMBERSHIP_2D",
+                layer="row_emission",
+                status="candidate_behavior",
+                summary="Emit generic bounded rows for points contained by caller-expanded 2-D AABBs.",
+                outputs=("source_id", "box_id", "metadata_flags", "row_offsets"),
+                depends_on=("traversal.aabb_point_contains", "execution.capacity_overflow_contract"),
+                boundary="Box expansion and row interpretation are caller-owned; native code emits app-free IDs only.",
+            ),
+            PrimitiveHierarchyNode(
                 id="rows.segment_polygon_rows",
                 title="Segment / Polygon Rows",
                 layer="row_emission",
@@ -237,6 +247,28 @@ PRIMITIVE_HIERARCHY = (
                 summary="Neighbor candidate rows emitted by fixed-radius search paths.",
                 outputs=("query_id", "neighbor_id", "distance"),
                 depends_on=("traversal.fixed_radius_count_threshold",),
+            ),
+            PrimitiveHierarchyNode(
+                id="rows.aggregate_frontier_collect",
+                title="Aggregate-Frontier Collect Rows",
+                layer="row_emission",
+                status="candidate_behavior",
+                summary=(
+                    "Emit app-independent aggregate-frontier IDs, kind codes, "
+                    "and source offsets from prepared aggregate-tree traversal."
+                ),
+                outputs=(
+                    "source_id",
+                    "frontier_kind_code",
+                    "item_id",
+                    "owner_aggregate_id",
+                    "dfs_index",
+                    "resume_index",
+                    "metadata_flags",
+                    "row_offsets",
+                ),
+                depends_on=("rows.generic_candidate_rows", "execution.capacity_overflow_contract"),
+                boundary="Force laws, scores, and app-owned reductions remain app or partner code.",
             ),
             PrimitiveHierarchyNode(
                 id="rows.graph_triangle_witness_rows",
@@ -387,6 +419,19 @@ PRIMITIVE_HIERARCHY = (
                         outputs=("group_id", "count", "sum", "min", "max"),
                         depends_on=("reduction.grouped",),
                     ),
+                    PrimitiveHierarchyNode(
+                        id="reduction.ray_triangle_primitive_grouped_i64",
+                        title="RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+                        layer="reduction",
+                        status="candidate_behavior",
+                        summary=(
+                            "All-hit 3-D ray/triangle primitive-id deduplication followed by "
+                            "grouped integer reduction over app-provided group ids and payloads."
+                        ),
+                        outputs=("group_id", "count", "sum", "min", "max"),
+                        depends_on=("traversal.any_hit", "reduction.grouped"),
+                        boundary="Query encoding and group/value semantics remain app code.",
+                    ),
                 ),
             ),
             PrimitiveHierarchyNode(
@@ -464,9 +509,12 @@ PRIMITIVE_HIERARCHY = (
                 title="Aggregate-Frontier Traversal",
                 layer="candidate_experimental",
                 status="candidate_behavior",
-                summary="Select aggregate/tree nodes with app-independent opening predicates.",
+                summary=(
+                    "Future native/partner lowering of aggregate-tree traversal "
+                    "behind the generic aggregate-frontier row contract."
+                ),
                 outputs=("frontier_rows", "summary_inputs"),
-                depends_on=("layer.traversal", "rows.generic_candidate_rows"),
+                depends_on=("rows.aggregate_frontier_collect", "continuation.partner_resident"),
                 boundary="Force law and scoring math remain app or partner code.",
             ),
             PrimitiveHierarchyNode(

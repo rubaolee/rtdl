@@ -22,6 +22,7 @@ class OptixAabbIndexNativeSymbolTest(unittest.TestCase):
             "rtdl_optix_prepare_aabb_index_2d",
             "rtdl_optix_count_prepared_aabb_index_2d",
             "rtdl_optix_collect_prepared_aabb_index_2d_range_intersection_rows",
+            "rtdl_optix_collect_prepared_aabb_index_2d_point_contains_rows",
             "rtdl_optix_prepare_aabb_point_queries_2d",
             "rtdl_optix_prepare_aabb_box_queries_2d",
             "rtdl_optix_count_prepared_aabb_index_2d_packed_queries",
@@ -48,9 +49,10 @@ class OptixAabbIndexNativeSymbolTest(unittest.TestCase):
     def test_contract_documents_optix_row_output_boundary(self) -> None:
         self.assertEqual(
             rt.AABB_INDEX_2D_CONTRACT["backend_status"]["optix"],
-            "native_count_point_contains_range_contains_range_intersects_and_range_intersection_rows",
+            "native_count_point_contains_range_contains_range_intersects_point_contains_rows_and_range_intersection_rows",
         )
         self.assertIn("collect_aabb_intersection_pair_rows_2d_optix", rt.__all__)
+        self.assertIn("collect_aabb_point_membership_pair_rows_2d_optix", rt.__all__)
         self.assertIn("prepare_optix_aabb_index_2d", rt.__all__)
         self.assertIn("prepare_optix_aabb_point_queries_2d", rt.__all__)
         self.assertIn("prepare_optix_aabb_box_queries_2d", rt.__all__)

@@ -440,7 +440,7 @@ def _extract_record_fields(
             raise ValueError(message)
         return {name: record[name] for name in field_names}
 
-    if is_dataclass(record) or all(hasattr(record, name) for name in field_names):
+    if all(hasattr(record, name) for name in field_names):
         return {name: getattr(record, name) for name in field_names}
 
     message = f"simulator input `{input_name}` record must be a mapping or dataclass-like object"
@@ -452,7 +452,7 @@ def _extract_record_fields(
 def _record_has_fields(record, field_names: tuple[str, ...]) -> bool:
     if isinstance(record, Mapping):
         return all(name in record for name in field_names)
-    if is_dataclass(record) or all(hasattr(record, name) for name in field_names):
+    if all(hasattr(record, name) for name in field_names):
         return True
     return False
 

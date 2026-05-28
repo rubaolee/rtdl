@@ -1,0 +1,573 @@
+{
+  "arguments": {
+    "backends": [
+      "cpu_python_reference",
+      "paper_rt_optix"
+    ],
+    "copies_ladder": [
+      250000
+    ],
+    "dry_run": false,
+    "modes": [
+      "count",
+      "sum",
+      "min",
+      "max",
+      "avg_as_sum_count"
+    ],
+    "paper_cpu_max_copies": 1,
+    "repeat": 2,
+    "skip_build_optix": true,
+    "warmup": 1
+  },
+  "build": {
+    "reason": "skip_build_optix",
+    "skipped": true
+  },
+  "environment": {
+    "cwd": "/workspace/rtdl_goal2645",
+    "git_commit": "43419882d805e9d71a798c901cb97f05d8b6c8c8",
+    "git_status_short": [
+      " M docs/application_catalog.md",
+      " M docs/rtdl_primitive_catalog.md",
+      " M examples/v2_0/research_benchmarks/barnes_hut/README.md",
+      " M examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+      " M examples/v2_0/research_benchmarks/raydb_style/README.md",
+      " M examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+      " M src/native/embree/rtdl_embree_api.cpp",
+      " M src/native/embree/rtdl_embree_prelude.h",
+      " M src/native/optix/rtdl_optix_api.cpp",
+      " M src/native/optix/rtdl_optix_core.cpp",
+      " M src/native/optix/rtdl_optix_prelude.h",
+      " M src/native/optix/rtdl_optix_workloads.cpp",
+      " M src/rtdsl/__init__.py",
+      " M src/rtdsl/aabb_index.py",
+      " M src/rtdsl/aggregate_tree_reference.py",
+      " M src/rtdsl/baseline_runner.py",
+      " M src/rtdsl/embree_runtime.py",
+      " M src/rtdsl/generic_primitives.py",
+      " M src/rtdsl/optix_runtime.py",
+      " M src/rtdsl/partner_adapters.py",
+      " M src/rtdsl/primitive_hierarchy.py",
+      " M src/rtdsl/runtime.py",
+      " M tests/goal2498_raydb_style_optix_count_sum_parity_test.py",
+      " M tests/goal2580_optix_aabb_index_native_symbol_test.py",
+      "?? docs/reports/goal2635_benchmark_app_optimization_validity_audit_2026-05-27.md",
+      "?? docs/reports/goal2636_current_benchmark_performance_report_2026-05-27.md",
+      "?? docs/reports/goal2636_strengthened_benchmark_rows_plan_2026-05-27.md",
+      "?? docs/reports/goal2636_strengthened_rows_pod_fixed/",
+      "?? docs/reports/goal2636_strengthened_rows_stress_pod_fixed/",
+      "?? docs/reports/goal2637_all_benchmark_perf_diffs_2026-05-27.json",
+      "?? docs/reports/goal2637_all_benchmark_perf_diffs_2026-05-27.md",
+      "?? docs/reports/goal2638_3ai_consensus_2026-05-27.md",
+      "?? docs/reports/goal2638_aggregate_frontier_collect_2026-05-27.md",
+      "?? docs/reports/goal2638_claude_critical_review_2026-05-27.md",
+      "?? docs/reports/goal2638_external_review_response_2026-05-27.md",
+      "?? docs/reports/goal2639_aggregate_frontier_embree_optix_perf_pod_2026-05-27.json",
+      "?? docs/reports/goal2639_aggregate_frontier_native_abi_contract_2026-05-27.md",
+      "?? docs/reports/goal2639_aggregate_frontier_native_timing_2026-05-27.json",
+      "?? docs/reports/goal2640_claude_call_for_design_rt_core_generic_frontier_2026-05-27.md",
+      "?? docs/reports/goal2640_codex_design_rt_core_generic_frontier_2026-05-27.md",
+      "?? docs/reports/goal2640_expanded_aabb_point_membership_impl_2026-05-27.md",
+      "?? docs/reports/goal2640_perf_1m_prepared.json",
+      "?? docs/reports/goal2640_perf_262k.json",
+      "?? docs/reports/goal2640_perf_smoke.json",
+      "?? docs/reports/goal2641_barnes_hut_expanded_membership_lowering_2026-05-27.md",
+      "?? docs/reports/goal2641_optix_lowering_smoke.json",
+      "?? docs/reports/goal2642_barnes_hut_embree_vs_optix_8192.json",
+      "?? docs/reports/goal2642_barnes_hut_embree_vs_optix_app_perf_2026-05-27.md",
+      "?? docs/reports/goal2642_barnes_hut_embree_vs_optix_scale.json",
+      "?? docs/reports/goal2642_barnes_hut_embree_vs_optix_smoke.json",
+      "?? docs/reports/goal2643_all_benchmark_apps_detailed_report_2026-05-27.md",
+      "?? docs/reports/goal2644_raydb_paper_rt_core_rewrite_2026-05-27.md",
+      "?? docs/reports/goal2645_raydb_rt_core_perf_plan_2026-05-27.md",
+      "?? scripts/goal2636_strengthen_benchmark_rows.py",
+      "?? scripts/goal2637_build_perf_diff_table.py",
+      "?? scripts/goal2639_aggregate_frontier_perf.py",
+      "?? scripts/goal2640_expanded_aabb_point_membership_perf.py",
+      "?? scripts/goal2642_barnes_hut_embree_vs_optix_lowering_perf.py",
+      "?? scripts/goal2645_raydb_rt_perf_pod.py",
+      "?? src/rtdsl/app_reference/",
+      "?? tests/goal2636_strengthen_benchmark_rows_test.py",
+      "?? tests/goal2637_all_benchmark_perf_diffs_test.py",
+      "?? tests/goal2638_aggregate_frontier_collect_test.py",
+      "?? tests/goal2639_aggregate_frontier_native_abi_contract_test.py",
+      "?? tests/goal2640_expanded_aabb_point_membership_test.py",
+      "?? tests/goal2641_barnes_hut_expanded_membership_lowering_test.py",
+      "?? tests/goal2644_raydb_paper_rt_contract_test.py",
+      "?? tests/goal2645_raydb_rt_perf_runner_test.py"
+    ],
+    "hostname": "4b7c6ab4b262",
+    "make_build_optix_target": "make build-optix",
+    "nvcc_version": {
+      "command": [
+        "nvcc",
+        "--version"
+      ],
+      "elapsed_sec": 0.0012353584170341492,
+      "returncode": 127,
+      "stderr": "[Errno 2] No such file or directory: 'nvcc'",
+      "stdout": ""
+    },
+    "nvidia_smi": {
+      "command": [
+        "nvidia-smi"
+      ],
+      "elapsed_sec": 0.3093058094382286,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "Wed May 27 20:40:24 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 565.57.01              Driver Version: 565.57.01      CUDA Version: 12.7     |\n|-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A5000               On  |   00000000:D6:00.0 Off |                  Off |\n| 30%   36C    P8             23W /  230W |       2MiB /  24564MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n                                                                                         \n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+\n"
+    },
+    "platform": "Linux-6.8.0-49-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]",
+    "rtdl_source_tree": "/workspace/rtdl_goal2645",
+    "timestamp_utc": "2026-05-27T20:40:24Z"
+  },
+  "goal": "Goal2645 RayDB paper-shaped RT-core perf evidence",
+  "output_contract": {
+    "paper_rt_optix": "Rows are grouped aggregate rows over the same RayDB-style fixture. Correctness is judged by exact equality with the CPU columnar oracle.",
+    "rt_core_evidence_required": "paper_rt_optix rows must report rt_core_accelerated=true and native_symbol=rtdl_optix_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction."
+  },
+  "output_json": "docs/reports/goal2646_raydb_vectorized_cpu_vs_optix_250k_2026-05-27.json",
+  "output_markdown": "docs/reports/goal2646_raydb_vectorized_cpu_vs_optix_250k_2026-05-27.md",
+  "performance_claim_authorized": false,
+  "results": {
+    "errors": [],
+    "matrix": [
+      {
+        "all_match_cpu_reference": true,
+        "backend": "cpu_python_reference",
+        "claim_boundary": "RayDB-style CPU reference fixture only. This validates a generic columnar grouped aggregate contract; it does not reproduce RayDB, time authors code, or authorize performance wording.",
+        "contract": "columnar_grouped_aggregate_cpu_reference",
+        "copies": 250000,
+        "elapsed_sec_max": 3.199041448533535,
+        "elapsed_sec_median": 3.085381869226694,
+        "elapsed_sec_min": 2.971722289919853,
+        "hit_event_count_before_dedup": null,
+        "mode": "count",
+        "native_symbol": null,
+        "ray_count": null,
+        "row_count": 2000000,
+        "rows_first_sample": [
+          {
+            "count": 500000,
+            "region_id": 0
+          },
+          {
+            "count": 250000,
+            "region_id": 1
+          },
+          {
+            "count": 250000,
+            "region_id": 2
+          }
+        ],
+        "rt_core_accelerated": false,
+        "sample_count": 2,
+        "timings_first_sample": {
+          "cpu_reference_sec": 3.199041448533535
+        },
+        "triangle_count": null,
+        "wall_sec_median": 4.626580450683832
+      },
+      {
+        "all_match_cpu_reference": true,
+        "backend": "cpu_python_reference",
+        "claim_boundary": "RayDB-style CPU reference fixture only. This validates a generic columnar grouped aggregate contract; it does not reproduce RayDB, time authors code, or authorize performance wording.",
+        "contract": "columnar_grouped_aggregate_cpu_reference",
+        "copies": 250000,
+        "elapsed_sec_max": 3.011635348200798,
+        "elapsed_sec_median": 2.9971756897866726,
+        "elapsed_sec_min": 2.982716031372547,
+        "hit_event_count_before_dedup": null,
+        "mode": "sum",
+        "native_symbol": null,
+        "ray_count": null,
+        "row_count": 2000000,
+        "rows_first_sample": [
+          {
+            "region_id": 0,
+            "sum": 47500000
+          },
+          {
+            "region_id": 1,
+            "sum": 50000000
+          },
+          {
+            "region_id": 2,
+            "sum": 20000000
+          }
+        ],
+        "rt_core_accelerated": false,
+        "sample_count": 2,
+        "timings_first_sample": {
+          "cpu_reference_sec": 2.982716031372547
+        },
+        "triangle_count": null,
+        "wall_sec_median": 4.4309712164103985
+      },
+      {
+        "all_match_cpu_reference": true,
+        "backend": "cpu_python_reference",
+        "claim_boundary": "RayDB-style CPU reference fixture only. This validates a generic columnar grouped aggregate contract; it does not reproduce RayDB, time authors code, or authorize performance wording.",
+        "contract": "columnar_grouped_aggregate_cpu_reference",
+        "copies": 250000,
+        "elapsed_sec_max": 3.2551818564534187,
+        "elapsed_sec_median": 3.2233007922768593,
+        "elapsed_sec_min": 3.1914197281003,
+        "hit_event_count_before_dedup": null,
+        "mode": "min",
+        "native_symbol": null,
+        "ray_count": null,
+        "row_count": 2000000,
+        "rows_first_sample": [
+          {
+            "min": 90,
+            "region_id": 0
+          },
+          {
+            "min": 200,
+            "region_id": 1
+          },
+          {
+            "min": 80,
+            "region_id": 2
+          }
+        ],
+        "rt_core_accelerated": false,
+        "sample_count": 2,
+        "timings_first_sample": {
+          "cpu_reference_sec": 3.1914197281003
+        },
+        "triangle_count": null,
+        "wall_sec_median": 4.673638112843037
+      },
+      {
+        "all_match_cpu_reference": true,
+        "backend": "cpu_python_reference",
+        "claim_boundary": "RayDB-style CPU reference fixture only. This validates a generic columnar grouped aggregate contract; it does not reproduce RayDB, time authors code, or authorize performance wording.",
+        "contract": "columnar_grouped_aggregate_cpu_reference",
+        "copies": 250000,
+        "elapsed_sec_max": 3.1771190315485,
+        "elapsed_sec_median": 3.177053190767765,
+        "elapsed_sec_min": 3.17698734998703,
+        "hit_event_count_before_dedup": null,
+        "mode": "max",
+        "native_symbol": null,
+        "ray_count": null,
+        "row_count": 2000000,
+        "rows_first_sample": [
+          {
+            "max": 100,
+            "region_id": 0
+          },
+          {
+            "max": 200,
+            "region_id": 1
+          },
+          {
+            "max": 80,
+            "region_id": 2
+          }
+        ],
+        "rt_core_accelerated": false,
+        "sample_count": 2,
+        "timings_first_sample": {
+          "cpu_reference_sec": 3.17698734998703
+        },
+        "triangle_count": null,
+        "wall_sec_median": 4.619755644351244
+      },
+      {
+        "all_match_cpu_reference": true,
+        "backend": "cpu_python_reference",
+        "claim_boundary": "RayDB-style CPU reference fixture only. This validates a generic columnar grouped aggregate contract; it does not reproduce RayDB, time authors code, or authorize performance wording.",
+        "contract": "columnar_grouped_aggregate_cpu_reference",
+        "copies": 250000,
+        "elapsed_sec_max": 3.089577332139015,
+        "elapsed_sec_median": 3.0839271135628223,
+        "elapsed_sec_min": 3.0782768949866295,
+        "hit_event_count_before_dedup": null,
+        "mode": "avg_as_sum_count",
+        "native_symbol": null,
+        "ray_count": null,
+        "row_count": 2000000,
+        "rows_first_sample": [
+          {
+            "count": 500000,
+            "region_id": 0,
+            "sum": 47500000
+          },
+          {
+            "count": 250000,
+            "region_id": 1,
+            "sum": 50000000
+          },
+          {
+            "count": 250000,
+            "region_id": 2,
+            "sum": 20000000
+          }
+        ],
+        "rt_core_accelerated": false,
+        "sample_count": 2,
+        "timings_first_sample": {
+          "cpu_reference_sec": 3.089577332139015
+        },
+        "triangle_count": null,
+        "wall_sec_median": 4.510673746466637
+      },
+      {
+        "all_match_cpu_reference": true,
+        "backend": "paper_rt_optix",
+        "claim_boundary": "This is the paper-shaped RayDB RT lowering through a generic OptiX primitive. Correctness/performance claims require pod validation and review.",
+        "contract": "raydb_paper_triangle_scan_grouped_aggregate_optix",
+        "copies": 250000,
+        "elapsed_sec_max": 1.8870698288083076,
+        "elapsed_sec_median": 1.8741284720599651,
+        "elapsed_sec_min": 1.8611871153116226,
+        "hit_event_count_before_dedup": 4500000,
+        "mode": "count",
+        "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction",
+        "ray_count": 72,
+        "row_count": 2000000,
+        "rows_first_sample": [
+          {
+            "count": 500000,
+            "region_id": 0
+          },
+          {
+            "count": 250000,
+            "region_id": 1
+          },
+          {
+            "count": 250000,
+            "region_id": 2
+          }
+        ],
+        "rt_core_accelerated": true,
+        "sample_count": 2,
+        "timings_first_sample": {
+          "elapsed_sec": 1.8611871153116226,
+          "prepare_build": 0.12258545309305191,
+          "query_pack": 0.00019910186529159546,
+          "traversal": 0.491060228
+        },
+        "triangle_count": 2000000,
+        "wall_sec_median": 6.3635799288749695
+      },
+      {
+        "all_match_cpu_reference": true,
+        "backend": "paper_rt_optix",
+        "claim_boundary": "This is the paper-shaped RayDB RT lowering through a generic OptiX primitive. Correctness/performance claims require pod validation and review.",
+        "contract": "raydb_paper_triangle_scan_grouped_aggregate_optix",
+        "copies": 250000,
+        "elapsed_sec_max": 1.796646498143673,
+        "elapsed_sec_median": 1.780184093862772,
+        "elapsed_sec_min": 1.763721689581871,
+        "hit_event_count_before_dedup": 4500000,
+        "mode": "sum",
+        "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction",
+        "ray_count": 12072,
+        "row_count": 2000000,
+        "rows_first_sample": [
+          {
+            "region_id": 0,
+            "sum": 47500000
+          },
+          {
+            "region_id": 1,
+            "sum": 50000000
+          },
+          {
+            "region_id": 2,
+            "sum": 20000000
+          }
+        ],
+        "rt_core_accelerated": true,
+        "sample_count": 2,
+        "timings_first_sample": {
+          "elapsed_sec": 1.796646498143673,
+          "prepare_build": 0.11837191879749298,
+          "query_pack": 0.00010169297456741333,
+          "traversal": 0.376981609
+        },
+        "triangle_count": 2000000,
+        "wall_sec_median": 6.309996530413628
+      },
+      {
+        "all_match_cpu_reference": true,
+        "backend": "paper_rt_optix",
+        "claim_boundary": "This is the paper-shaped RayDB RT lowering through a generic OptiX primitive. Correctness/performance claims require pod validation and review.",
+        "contract": "raydb_paper_triangle_scan_grouped_aggregate_optix",
+        "copies": 250000,
+        "elapsed_sec_max": 1.7504927292466164,
+        "elapsed_sec_median": 1.7459805347025394,
+        "elapsed_sec_min": 1.7414683401584625,
+        "hit_event_count_before_dedup": 4500000,
+        "mode": "min",
+        "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction",
+        "ray_count": 12072,
+        "row_count": 2000000,
+        "rows_first_sample": [
+          {
+            "min": 90,
+            "region_id": 0
+          },
+          {
+            "min": 200,
+            "region_id": 1
+          },
+          {
+            "min": 80,
+            "region_id": 2
+          }
+        ],
+        "rt_core_accelerated": true,
+        "sample_count": 2,
+        "timings_first_sample": {
+          "elapsed_sec": 1.7504927292466164,
+          "prepare_build": 0.10160250216722488,
+          "query_pack": 7.627159357070923e-05,
+          "traversal": 0.375274762
+        },
+        "triangle_count": 2000000,
+        "wall_sec_median": 6.164196517318487
+      },
+      {
+        "all_match_cpu_reference": true,
+        "backend": "paper_rt_optix",
+        "claim_boundary": "This is the paper-shaped RayDB RT lowering through a generic OptiX primitive. Correctness/performance claims require pod validation and review.",
+        "contract": "raydb_paper_triangle_scan_grouped_aggregate_optix",
+        "copies": 250000,
+        "elapsed_sec_max": 1.7689707800745964,
+        "elapsed_sec_median": 1.7658425942063332,
+        "elapsed_sec_min": 1.76271440833807,
+        "hit_event_count_before_dedup": 4500000,
+        "mode": "max",
+        "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction",
+        "ray_count": 12072,
+        "row_count": 2000000,
+        "rows_first_sample": [
+          {
+            "max": 100,
+            "region_id": 0
+          },
+          {
+            "max": 200,
+            "region_id": 1
+          },
+          {
+            "max": 80,
+            "region_id": 2
+          }
+        ],
+        "rt_core_accelerated": true,
+        "sample_count": 2,
+        "timings_first_sample": {
+          "elapsed_sec": 1.76271440833807,
+          "prepare_build": 0.10066217184066772,
+          "query_pack": 7.557123899459839e-05,
+          "traversal": 0.381655022
+        },
+        "triangle_count": 2000000,
+        "wall_sec_median": 6.238591097295284
+      },
+      {
+        "all_match_cpu_reference": true,
+        "backend": "paper_rt_optix",
+        "claim_boundary": "This is the paper-shaped RayDB RT lowering through a generic OptiX primitive. Correctness/performance claims require pod validation and review.",
+        "contract": "raydb_paper_triangle_scan_grouped_aggregate_optix",
+        "copies": 250000,
+        "elapsed_sec_max": 1.8099360764026642,
+        "elapsed_sec_median": 1.793880045413971,
+        "elapsed_sec_min": 1.7778240144252777,
+        "hit_event_count_before_dedup": 4500000,
+        "mode": "avg_as_sum_count",
+        "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction",
+        "ray_count": 12072,
+        "row_count": 2000000,
+        "rows_first_sample": [
+          {
+            "count": 500000,
+            "region_id": 0,
+            "sum": 47500000
+          },
+          {
+            "count": 250000,
+            "region_id": 1,
+            "sum": 50000000
+          },
+          {
+            "count": 250000,
+            "region_id": 2,
+            "sum": 20000000
+          }
+        ],
+        "rt_core_accelerated": true,
+        "sample_count": 2,
+        "timings_first_sample": {
+          "elapsed_sec": 1.8099360764026642,
+          "prepare_build": 0.1041460633277893,
+          "query_pack": 7.256865501403809e-05,
+          "traversal": 0.385389801
+        },
+        "triangle_count": 2000000,
+        "wall_sec_median": 6.177454601973295
+      }
+    ]
+  },
+  "script": "/workspace/rtdl_goal2645/scripts/goal2645_raydb_rt_perf_pod.py",
+  "speedup_diagnostics": [
+    {
+      "baseline_backend": "cpu_python_reference",
+      "baseline_elapsed_sec_median": 3.085381869226694,
+      "copies": 250000,
+      "mode": "count",
+      "paper_rt_optix_elapsed_sec_median": 1.8741284720599651,
+      "rt_core_accelerated": true,
+      "same_output": true,
+      "speedup_baseline_over_paper_rt_optix": 1.6463022227261555
+    },
+    {
+      "baseline_backend": "cpu_python_reference",
+      "baseline_elapsed_sec_median": 2.9971756897866726,
+      "copies": 250000,
+      "mode": "sum",
+      "paper_rt_optix_elapsed_sec_median": 1.780184093862772,
+      "rt_core_accelerated": true,
+      "same_output": true,
+      "speedup_baseline_over_paper_rt_optix": 1.6836324401052165
+    },
+    {
+      "baseline_backend": "cpu_python_reference",
+      "baseline_elapsed_sec_median": 3.2233007922768593,
+      "copies": 250000,
+      "mode": "min",
+      "paper_rt_optix_elapsed_sec_median": 1.7459805347025394,
+      "rt_core_accelerated": true,
+      "same_output": true,
+      "speedup_baseline_over_paper_rt_optix": 1.8461264190588522
+    },
+    {
+      "baseline_backend": "cpu_python_reference",
+      "baseline_elapsed_sec_median": 3.177053190767765,
+      "copies": 250000,
+      "mode": "max",
+      "paper_rt_optix_elapsed_sec_median": 1.7658425942063332,
+      "rt_core_accelerated": true,
+      "same_output": true,
+      "speedup_baseline_over_paper_rt_optix": 1.799171229186318
+    },
+    {
+      "baseline_backend": "cpu_python_reference",
+      "baseline_elapsed_sec_median": 3.0839271135628223,
+      "copies": 250000,
+      "mode": "avg_as_sum_count",
+      "paper_rt_optix_elapsed_sec_median": 1.793880045413971,
+      "rt_core_accelerated": true,
+      "same_output": true,
+      "speedup_baseline_over_paper_rt_optix": 1.7191378662396288
+    }
+  ]
+}

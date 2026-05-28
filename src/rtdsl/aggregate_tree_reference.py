@@ -8,21 +8,32 @@ from typing import Iterable, Mapping, Sequence
 AGGREGATE_OPENING_ROWS_2D_CONTRACT = "generic_aggregate_opening_rows_2d_v1"
 AGGREGATE_BUCKETIZED_TREE_2D_CONTRACT = "generic_bucketized_aggregate_tree_2d_v1"
 AGGREGATE_TREE_OPENING_FRONTIER_2D_CONTRACT = "generic_aggregate_tree_opening_frontier_2d_v1"
-WEIGHTED_INVERSE_SQUARE_CONTRIBUTION_ROWS_2D_CONTRACT = (
-    "generic_weighted_inverse_square_contribution_rows_2d_v1"
+AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE = "AGGREGATE_FRONTIER_COLLECT_2D"
+AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT = "generic_aggregate_frontier_collect_2d_v1"
+AGGREGATE_FRONTIER_COLLECT_2D_NATIVE_ABI_CONTRACT = (
+    "generic_aggregate_frontier_collect_2d_native_abi_v1"
 )
-GROUPED_VECTOR_SUM_ROWS_2D_CONTRACT = "generic_grouped_vector_sum_rows_2d_v1"
-WEIGHTED_INVERSE_SQUARE_VECTOR_SUM_2D_CONTRACT = (
-    "generic_weighted_inverse_square_vector_sum_2d_v1"
+AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA = (
+    "source_id",
+    "frontier_kind_code",
+    "item_id",
+    "owner_aggregate_id",
+    "dfs_index",
+    "resume_index",
+    "metadata_flags",
 )
-VECTOR_SUM_MATERIALIZATION_PRESSURE_2D_CONTRACT = (
-    "generic_vector_sum_materialization_pressure_2d_v1"
+AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE = 0
+AGGREGATE_FRONTIER_KIND_AGGREGATE = "aggregate"
+AGGREGATE_FRONTIER_KIND_EXACT = "exact"
+AGGREGATE_FRONTIER_KIND_CODES = {
+    AGGREGATE_FRONTIER_KIND_AGGREGATE: 1,
+    AGGREGATE_FRONTIER_KIND_EXACT: 2,
+}
+AGGREGATE_FRONTIER_COLLECT_OVERFLOW_POLICY = "fail_closed_before_result_materialization"
+AGGREGATE_FRONTIER_COLLECT_NATIVE_REQUIRED_SYMBOLS = (
+    "rtdl_embree_collect_aggregate_frontier_2d",
+    "rtdl_optix_collect_aggregate_frontier_2d",
 )
-AGGREGATE_FRONTIER_WEIGHTED_VECTOR_SUM_2D_CONTRACT = (
-    "generic_aggregate_frontier_weighted_vector_sum_2d_v1"
-)
-
-
 @dataclass(frozen=True)
 class WeightedPointRow:
     id: int
@@ -56,6 +67,10 @@ class AggregateTreeNodeRow:
     cell_cx: float
     cell_cy: float
     is_leaf: bool
+
+
+class AggregateFrontierOverflowError(RuntimeError):
+    """Raised when aggregate-frontier collection exceeds an exact capacity."""
 
 
 def _get_value(row, names: Sequence[str], label: str):
@@ -187,6 +202,46 @@ def _tree_node_rows(rows: Iterable[object]) -> tuple[AggregateTreeNodeRow, ...]:
             if child_id not in ids:
                 raise ValueError(f"aggregate tree node child id {child_id} is not present")
     return tuple(sorted(normalized, key=lambda node: node.dfs_index))
+
+
+def _tree_roots(nodes: Sequence[AggregateTreeNodeRow]) -> tuple[int, ...]:
+    child_ids = {child_id for node in nodes for child_id in node.child_ids}
+    root_ids = tuple(node.id for node in nodes if node.id not in child_ids)
+    if not root_ids:
+        raise ValueError("aggregate tree must contain at least one root")
+    return root_ids
+
+
+def _tree_subtree_end_by_id(nodes: Sequence[AggregateTreeNodeRow]) -> dict[int, int]:
+    return {node.id: (node.resume_index if node.resume_index is not None else len(nodes)) for node in nodes}
+
+
+def _source_leaf_dfs_by_id(nodes: Sequence[AggregateTreeNodeRow]) -> dict[int, int]:
+    source_leaf: dict[int, int] = {}
+    for node in nodes:
+        if not node.is_leaf:
+            continue
+        for member_id in node.member_ids:
+            source_leaf.setdefault(member_id, node.dfs_index)
+    return source_leaf
+
+
+def _node_contains_source(
+    node: AggregateTreeNodeRow,
+    source_id: int,
+    *,
+    source_leaf_dfs_by_id: Mapping[int, int],
+    subtree_end_by_id: Mapping[int, int],
+    node_member_sets: Mapping[int, set[int]] | None = None,
+) -> bool:
+    """Return whether a DFS-ordered aggregate subtree contains a source id."""
+
+    source_leaf_dfs = source_leaf_dfs_by_id.get(source_id)
+    if source_leaf_dfs is not None:
+        return node.dfs_index <= source_leaf_dfs < subtree_end_by_id[node.id]
+    if node_member_sets is None:
+        return source_id in node.member_ids
+    return source_id in node_member_sets[node.id]
 
 
 def build_bucketized_aggregate_tree_2d(
@@ -385,10 +440,10 @@ def evaluate_aggregate_tree_opening_frontier_2d(
     sources = normalize_weighted_point_rows(source_points)
     nodes = _tree_node_rows(tree_nodes)
     node_by_id = {node.id: node for node in nodes}
-    child_ids = {child_id for node in nodes for child_id in node.child_ids}
-    root_ids = tuple(node.id for node in nodes if node.id not in child_ids)
-    if not root_ids:
-        raise ValueError("aggregate tree must contain at least one root")
+    root_ids = _tree_roots(nodes)
+    subtree_end_by_id = _tree_subtree_end_by_id(nodes)
+    source_leaf_dfs_by_id = _source_leaf_dfs_by_id(nodes)
+    node_member_sets = {node.id: set(node.member_ids) for node in nodes}
 
     accepted_rows: list[dict[str, object]] = []
     fallback_rows: list[dict[str, object]] = []
@@ -408,7 +463,13 @@ def evaluate_aggregate_tree_opening_frontier_2d(
         dy = node.cy - source.y
         distance = math.hypot(dx, dy)
         opening_ratio = math.inf if distance == 0.0 else (2.0 * node.half_size) / distance
-        contains_source = source.id in node.member_ids
+        contains_source = _node_contains_source(
+            node,
+            source.id,
+            source_leaf_dfs_by_id=source_leaf_dfs_by_id,
+            subtree_end_by_id=subtree_end_by_id,
+            node_member_sets=node_member_sets,
+        )
         if not contains_source and opening_ratio < theta:
             accepted_rows.append(
                 {
@@ -486,493 +547,125 @@ def evaluate_aggregate_tree_opening_frontier_2d(
     }
 
 
-def _optional_value(row, names: Sequence[str]):
-    try:
-        return _get_value(row, names, "row")
-    except ValueError:
-        return None
-
-
-def _aggregate_node_lookup(
-    rows: Iterable[object] | None,
-) -> dict[int, AggregateNodeRow | AggregateTreeNodeRow]:
-    if rows is None:
-        return {}
-    lookup: dict[int, AggregateNodeRow | AggregateTreeNodeRow] = {}
-    for row in rows:
-        node_id = int(_get_value(row, ("id", "node_id", "aggregate_id"), "aggregate node"))
-        if node_id in lookup:
-            raise ValueError(f"duplicate aggregate node id: {node_id}")
-        member_ids = _get_value(row, ("member_ids", "members", "point_ids", "body_ids"), "aggregate node")
-        child_ids = _optional_value(row, ("child_ids", "children"))
-        if child_ids is None:
-            lookup[node_id] = AggregateNodeRow(
-                id=node_id,
-                cx=float(_get_value(row, ("cx", "x"), "aggregate node")),
-                cy=float(_get_value(row, ("cy", "y"), "aggregate node")),
-                half_size=float(_get_value(row, ("half_size", "radius", "extent"), "aggregate node")),
-                mass=float(_get_value(row, ("mass", "weight"), "aggregate node")),
-                member_ids=tuple(int(item) for item in member_ids),
-            )
-        else:
-            resume_index = _get_value(row, ("resume_index", "next_dfs_index", "autorope_index"), "aggregate node")
-            lookup[node_id] = AggregateTreeNodeRow(
-                id=node_id,
-                cx=float(_get_value(row, ("cx", "x"), "aggregate node")),
-                cy=float(_get_value(row, ("cy", "y"), "aggregate node")),
-                half_size=float(_get_value(row, ("half_size", "radius", "extent"), "aggregate node")),
-                mass=float(_get_value(row, ("mass", "weight"), "aggregate node")),
-                member_ids=tuple(int(item) for item in member_ids),
-                child_ids=tuple(int(item) for item in child_ids),
-                depth=int(_get_value(row, ("depth",), "aggregate node")),
-                dfs_index=int(_get_value(row, ("dfs_index",), "aggregate node")),
-                resume_index=None if resume_index is None else int(resume_index),
-                cell_cx=float(_get_value(row, ("cell_cx", "spatial_cx"), "aggregate node")),
-                cell_cy=float(_get_value(row, ("cell_cy", "spatial_cy"), "aggregate node")),
-                is_leaf=bool(_get_value(row, ("is_leaf",), "aggregate node")),
-            )
-    return lookup
-
-
-def _contribution_vector(
-    source: WeightedPointRow,
-    *,
-    target_x: float,
-    target_y: float,
-    target_mass: float,
-    softening: float,
-) -> tuple[float, float, float]:
-    dx = target_x - source.x
-    dy = target_y - source.y
-    dist_sq = dx * dx + dy * dy + softening * softening
-    if dist_sq == 0.0:
-        return 0.0, 0.0, dist_sq
-    inv_dist = 1.0 / math.sqrt(dist_sq)
-    scale = source.mass * target_mass * inv_dist * inv_dist * inv_dist
-    return dx * scale, dy * scale, dist_sq
-
-
-def evaluate_weighted_inverse_square_contribution_rows_2d(
+def collect_aggregate_frontier_2d(
     source_points: Iterable[object],
-    target_points: Iterable[object],
-    *,
-    accepted_aggregate_rows: Iterable[object] = (),
-    fallback_exact_rows: Iterable[object] = (),
-    aggregate_nodes: Iterable[object] | None = None,
-    softening: float = 0.0,
-) -> dict[str, object]:
-    """Convert opening-frontier rows into generic weighted vector contributions."""
-
-    softening = float(softening)
-    if softening < 0.0:
-        raise ValueError("softening must be non-negative")
-    sources = normalize_weighted_point_rows(source_points)
-    targets = normalize_weighted_point_rows(target_points)
-    source_by_id = {source.id: source for source in sources}
-    target_by_id = {target.id: target for target in targets}
-    aggregate_by_id = _aggregate_node_lookup(aggregate_nodes)
-
-    rows: list[dict[str, object]] = []
-    per_source: dict[int, dict[str, int]] = {
-        source.id: {
-            "aggregate_contribution_count": 0,
-            "exact_contribution_count": 0,
-        }
-        for source in sources
-    }
-
-    for row in accepted_aggregate_rows:
-        source_id = int(_get_value(row, ("source_id", "query_id", "point_id"), "accepted aggregate"))
-        aggregate_id = int(_get_value(row, ("aggregate_id", "node_id", "neighbor_id"), "accepted aggregate"))
-        if source_id not in source_by_id:
-            raise ValueError(f"accepted aggregate source_id {source_id} is not present")
-        aggregate_mass = _optional_value(row, ("aggregate_mass", "mass", "weight"))
-        aggregate_cx = _optional_value(row, ("aggregate_cx", "cx", "x"))
-        aggregate_cy = _optional_value(row, ("aggregate_cy", "cy", "y"))
-        if aggregate_mass is None or aggregate_cx is None or aggregate_cy is None:
-            if aggregate_id not in aggregate_by_id:
-                raise ValueError(
-                    f"accepted aggregate row {aggregate_id} lacks aggregate fields and no aggregate node was provided"
-                )
-            aggregate = aggregate_by_id[aggregate_id]
-            aggregate_mass = aggregate.mass
-            aggregate_cx = aggregate.cx
-            aggregate_cy = aggregate.cy
-        vector_x, vector_y, dist_sq = _contribution_vector(
-            source_by_id[source_id],
-            target_x=float(aggregate_cx),
-            target_y=float(aggregate_cy),
-            target_mass=float(aggregate_mass),
-            softening=softening,
-        )
-        rows.append(
-            {
-                "source_id": source_id,
-                "contribution_kind": "aggregate",
-                "aggregate_id": aggregate_id,
-                "target_id": None,
-                "vector_x": vector_x,
-                "vector_y": vector_y,
-                "distance_sq": dist_sq,
-            }
-        )
-        per_source[source_id]["aggregate_contribution_count"] += 1
-
-    for row in fallback_exact_rows:
-        source_id = int(_get_value(row, ("source_id", "query_id", "point_id"), "fallback exact"))
-        target_id = int(_get_value(row, ("target_id", "neighbor_id", "body_id"), "fallback exact"))
-        if source_id not in source_by_id:
-            raise ValueError(f"fallback source_id {source_id} is not present")
-        if target_id not in target_by_id:
-            raise ValueError(f"fallback target_id {target_id} is not present")
-        target = target_by_id[target_id]
-        vector_x, vector_y, dist_sq = _contribution_vector(
-            source_by_id[source_id],
-            target_x=target.x,
-            target_y=target.y,
-            target_mass=target.mass,
-            softening=softening,
-        )
-        rows.append(
-            {
-                "source_id": source_id,
-                "contribution_kind": "exact",
-                "aggregate_id": _optional_value(row, ("aggregate_id", "node_id")),
-                "target_id": target_id,
-                "vector_x": vector_x,
-                "vector_y": vector_y,
-                "distance_sq": dist_sq,
-            }
-        )
-        per_source[source_id]["exact_contribution_count"] += 1
-
-    summary = {
-        "source_count": len(sources),
-        "target_count": len(targets),
-        "contribution_row_count": len(rows),
-        "aggregate_contribution_row_count": sum(
-            row["aggregate_contribution_count"] for row in per_source.values()
-        ),
-        "exact_contribution_row_count": sum(row["exact_contribution_count"] for row in per_source.values()),
-        "sources_with_contributions": sum(
-            1
-            for row in per_source.values()
-            if row["aggregate_contribution_count"] or row["exact_contribution_count"]
-        ),
-    }
-    return {
-        "contribution_rows": tuple(rows),
-        "per_source_summary": per_source,
-        "summary": summary,
-        "metadata": {
-            "contract": WEIGHTED_INVERSE_SQUARE_CONTRIBUTION_ROWS_2D_CONTRACT,
-            "softening": softening,
-            "aggregate_rows_supported": True,
-            "exact_rows_supported": True,
-            "native_engine_app_specific": False,
-            "paper_reproduction": False,
-            "authors_code_comparison": False,
-            "public_speedup_claim_authorized": False,
-        },
-    }
-
-
-def sum_vector_contribution_rows_2d(
-    contribution_rows: Iterable[object],
-    *,
-    source_ids: Iterable[int] | None = None,
-) -> dict[str, object]:
-    """Group generic vector contribution rows by source and sum x/y components."""
-
-    sums: dict[int, list[float]] = {}
-    counts: dict[int, int] = {}
-    if source_ids is not None:
-        for source_id in source_ids:
-            normalized_source_id = int(source_id)
-            sums[normalized_source_id] = [0.0, 0.0]
-            counts[normalized_source_id] = 0
-    for row in contribution_rows:
-        source_id = int(_get_value(row, ("source_id", "query_id", "point_id"), "vector contribution"))
-        vector_x = float(_get_value(row, ("vector_x", "x", "force_x"), "vector contribution"))
-        vector_y = float(_get_value(row, ("vector_y", "y", "force_y"), "vector contribution"))
-        if source_id not in sums:
-            sums[source_id] = [0.0, 0.0]
-            counts[source_id] = 0
-        sums[source_id][0] += vector_x
-        sums[source_id][1] += vector_y
-        counts[source_id] += 1
-
-    rows = tuple(
-        {
-            "source_id": source_id,
-            "vector_x": vector[0],
-            "vector_y": vector[1],
-            "contribution_count": counts[source_id],
-        }
-        for source_id, vector in sorted(sums.items())
-    )
-    return {
-        "vector_sum_rows": rows,
-        "summary": {
-            "source_count": len(rows),
-            "contribution_row_count": sum(counts.values()),
-            "sources_with_contributions": sum(1 for count in counts.values() if count),
-        },
-        "metadata": {
-            "contract": GROUPED_VECTOR_SUM_ROWS_2D_CONTRACT,
-            "group_by": "source_id",
-            "native_engine_app_specific": False,
-            "paper_reproduction": False,
-            "authors_code_comparison": False,
-            "public_speedup_claim_authorized": False,
-        },
-    }
-
-
-def sum_weighted_inverse_square_contributions_2d(
-    source_points: Iterable[object],
-    target_points: Iterable[object],
-    *,
-    accepted_aggregate_rows: Iterable[object] = (),
-    fallback_exact_rows: Iterable[object] = (),
-    aggregate_nodes: Iterable[object] | None = None,
-    softening: float = 0.0,
-) -> dict[str, object]:
-    """Stream weighted inverse-square contributions directly into vector sums."""
-
-    softening = float(softening)
-    if softening < 0.0:
-        raise ValueError("softening must be non-negative")
-    sources = normalize_weighted_point_rows(source_points)
-    targets = normalize_weighted_point_rows(target_points)
-    source_by_id = {source.id: source for source in sources}
-    target_by_id = {target.id: target for target in targets}
-    aggregate_by_id = _aggregate_node_lookup(aggregate_nodes)
-    sums: dict[int, list[float]] = {source.id: [0.0, 0.0] for source in sources}
-    aggregate_count_by_source: dict[int, int] = {source.id: 0 for source in sources}
-    exact_count_by_source: dict[int, int] = {source.id: 0 for source in sources}
-
-    for row in accepted_aggregate_rows:
-        source_id = int(_get_value(row, ("source_id", "query_id", "point_id"), "accepted aggregate"))
-        aggregate_id = int(_get_value(row, ("aggregate_id", "node_id", "neighbor_id"), "accepted aggregate"))
-        if source_id not in source_by_id:
-            raise ValueError(f"accepted aggregate source_id {source_id} is not present")
-        aggregate_mass = _optional_value(row, ("aggregate_mass", "mass", "weight"))
-        aggregate_cx = _optional_value(row, ("aggregate_cx", "cx", "x"))
-        aggregate_cy = _optional_value(row, ("aggregate_cy", "cy", "y"))
-        if aggregate_mass is None or aggregate_cx is None or aggregate_cy is None:
-            if aggregate_id not in aggregate_by_id:
-                raise ValueError(
-                    f"accepted aggregate row {aggregate_id} lacks aggregate fields and no aggregate node was provided"
-                )
-            aggregate = aggregate_by_id[aggregate_id]
-            aggregate_mass = aggregate.mass
-            aggregate_cx = aggregate.cx
-            aggregate_cy = aggregate.cy
-        vector_x, vector_y, _ = _contribution_vector(
-            source_by_id[source_id],
-            target_x=float(aggregate_cx),
-            target_y=float(aggregate_cy),
-            target_mass=float(aggregate_mass),
-            softening=softening,
-        )
-        sums[source_id][0] += vector_x
-        sums[source_id][1] += vector_y
-        aggregate_count_by_source[source_id] += 1
-
-    for row in fallback_exact_rows:
-        source_id = int(_get_value(row, ("source_id", "query_id", "point_id"), "fallback exact"))
-        target_id = int(_get_value(row, ("target_id", "neighbor_id", "body_id"), "fallback exact"))
-        if source_id not in source_by_id:
-            raise ValueError(f"fallback source_id {source_id} is not present")
-        if target_id not in target_by_id:
-            raise ValueError(f"fallback target_id {target_id} is not present")
-        target = target_by_id[target_id]
-        vector_x, vector_y, _ = _contribution_vector(
-            source_by_id[source_id],
-            target_x=target.x,
-            target_y=target.y,
-            target_mass=target.mass,
-            softening=softening,
-        )
-        sums[source_id][0] += vector_x
-        sums[source_id][1] += vector_y
-        exact_count_by_source[source_id] += 1
-
-    rows = tuple(
-        {
-            "source_id": source.id,
-            "vector_x": sums[source.id][0],
-            "vector_y": sums[source.id][1],
-            "aggregate_contribution_count": aggregate_count_by_source[source.id],
-            "exact_contribution_count": exact_count_by_source[source.id],
-            "contribution_count": aggregate_count_by_source[source.id] + exact_count_by_source[source.id],
-        }
-        for source in sources
-    )
-    contribution_count = sum(row["contribution_count"] for row in rows)
-    return {
-        "vector_sum_rows": rows,
-        "summary": {
-            "source_count": len(sources),
-            "target_count": len(targets),
-            "contribution_row_count": contribution_count,
-            "aggregate_contribution_row_count": sum(aggregate_count_by_source.values()),
-            "exact_contribution_row_count": sum(exact_count_by_source.values()),
-            "sources_with_contributions": sum(1 for row in rows if row["contribution_count"]),
-            "materialized_contribution_rows": False,
-        },
-        "metadata": {
-            "contract": WEIGHTED_INVERSE_SQUARE_VECTOR_SUM_2D_CONTRACT,
-            "softening": softening,
-            "intermediate_contribution_rows_materialized": False,
-            "native_engine_app_specific": False,
-            "paper_reproduction": False,
-            "authors_code_comparison": False,
-            "public_speedup_claim_authorized": False,
-        },
-    }
-
-
-def estimate_vector_sum_materialization_pressure_2d(
-    *,
-    accepted_aggregate_row_count: int,
-    fallback_exact_row_count: int,
-    source_count: int,
-    native_contribution_row_bytes: int = 64,
-    python_contribution_row_bytes: int = 320,
-    python_warning_bytes: int = 256 * 1024 * 1024,
-) -> dict[str, object]:
-    """Estimate intermediate-row materialization pressure for vector sums."""
-
-    accepted_aggregate_row_count = int(accepted_aggregate_row_count)
-    fallback_exact_row_count = int(fallback_exact_row_count)
-    source_count = int(source_count)
-    if accepted_aggregate_row_count < 0:
-        raise ValueError("accepted_aggregate_row_count must be non-negative")
-    if fallback_exact_row_count < 0:
-        raise ValueError("fallback_exact_row_count must be non-negative")
-    if source_count < 0:
-        raise ValueError("source_count must be non-negative")
-    if native_contribution_row_bytes < 1:
-        raise ValueError("native_contribution_row_bytes must be positive")
-    if python_contribution_row_bytes < 1:
-        raise ValueError("python_contribution_row_bytes must be positive")
-    if python_warning_bytes < 1:
-        raise ValueError("python_warning_bytes must be positive")
-    contribution_row_count = accepted_aggregate_row_count + fallback_exact_row_count
-    native_bytes = contribution_row_count * native_contribution_row_bytes
-    python_bytes = contribution_row_count * python_contribution_row_bytes
-    rows_per_source = contribution_row_count / source_count if source_count else 0.0
-    return {
-        "summary": {
-            "source_count": source_count,
-            "accepted_aggregate_row_count": accepted_aggregate_row_count,
-            "fallback_exact_row_count": fallback_exact_row_count,
-            "contribution_row_count": contribution_row_count,
-            "rows_per_source": rows_per_source,
-            "native_contribution_row_bytes": native_contribution_row_bytes,
-            "python_contribution_row_bytes": python_contribution_row_bytes,
-            "estimated_native_intermediate_bytes": native_bytes,
-            "estimated_python_intermediate_bytes": python_bytes,
-            "python_warning_bytes": python_warning_bytes,
-            "python_materialization_warning": python_bytes >= python_warning_bytes,
-            "recommended_execution": (
-                "streamed_or_native_fused"
-                if python_bytes >= python_warning_bytes
-                else "materialized_reference_allowed"
-            ),
-        },
-        "metadata": {
-            "contract": VECTOR_SUM_MATERIALIZATION_PRESSURE_2D_CONTRACT,
-            "native_engine_app_specific": False,
-            "paper_reproduction": False,
-            "authors_code_comparison": False,
-            "public_speedup_claim_authorized": False,
-        },
-    }
-
-
-def sum_aggregate_frontier_weighted_vectors_2d(
-    source_points: Iterable[object],
-    target_points: Iterable[object],
     tree_nodes: Iterable[object],
     *,
     theta: float,
-    softening: float = 0.0,
+    max_rows_per_source: int | None = None,
+    max_total_rows: int | None = None,
     deduplicate_fallback_targets: bool = True,
+    include_debug_diagnostics: bool = False,
 ) -> dict[str, object]:
-    """Fuse aggregate-tree opening traversal with weighted vector accumulation.
+    """Collect aggregate-frontier IDs without applying app/workload math.
 
-    This is the app-agnostic reference for the native/partner lowering target.
-    It deliberately does not materialize opening-frontier rows or contribution
-    rows, and it does not encode Barnes-Hut app names or timestep semantics.
+    This is the app-agnostic frontier row-emission contract for future
+    native/partner lowerings. It walks prepared aggregate tree rows and emits
+    only generic IDs, kind codes, offsets, and reserved metadata flags by
+    default. Optional debug diagnostics are returned as a separate side channel.
+    Force laws, scoring, and reductions remain app or partner code.
     """
 
     theta = float(theta)
-    softening = float(softening)
     if theta <= 0.0:
         raise ValueError("theta must be positive")
-    if softening < 0.0:
-        raise ValueError("softening must be non-negative")
+    if max_rows_per_source is not None and int(max_rows_per_source) < 0:
+        raise ValueError("max_rows_per_source must be non-negative when provided")
+    if max_total_rows is not None and int(max_total_rows) < 0:
+        raise ValueError("max_total_rows must be non-negative when provided")
+    per_source_capacity = None if max_rows_per_source is None else int(max_rows_per_source)
+    total_capacity = None if max_total_rows is None else int(max_total_rows)
 
     sources = normalize_weighted_point_rows(source_points)
-    targets = normalize_weighted_point_rows(target_points)
     nodes = _tree_node_rows(tree_nodes)
-    target_by_id = {target.id: target for target in targets}
     node_by_id = {node.id: node for node in nodes}
     node_member_sets = {node.id: set(node.member_ids) for node in nodes}
-    child_ids = {child_id for node in nodes for child_id in node.child_ids}
-    root_ids = tuple(node.id for node in nodes if node.id not in child_ids)
-    if not root_ids:
-        raise ValueError("aggregate tree must contain at least one root")
+    root_ids = _tree_roots(nodes)
+    subtree_end_by_id = _tree_subtree_end_by_id(nodes)
+    source_leaf_dfs_by_id = _source_leaf_dfs_by_id(nodes)
 
-    rows: list[dict[str, object]] = []
+    frontier_rows: list[dict[str, object]] = []
+    debug_diagnostics: list[dict[str, object]] = []
+    row_offsets = [0]
+    per_source: dict[int, dict[str, int]] = {}
     total_visited = 0
-    total_accepted = 0
+    total_aggregate = 0
     total_exact = 0
 
-    def add_contribution(
-        source: WeightedPointRow,
-        *,
-        target_x: float,
-        target_y: float,
-        target_mass: float,
-    ) -> tuple[float, float]:
-        vector_x, vector_y, _ = _contribution_vector(
-            source,
-            target_x=target_x,
-            target_y=target_y,
-            target_mass=target_mass,
-            softening=softening,
-        )
-        return vector_x, vector_y
+    def check_capacity(*, source_id: int, source_count: int, total_count: int) -> None:
+        if per_source_capacity is not None and source_count > per_source_capacity:
+            raise AggregateFrontierOverflowError(
+                "AGGREGATE_FRONTIER_COLLECT_2D overflowed per-source capacity "
+                f"{per_source_capacity} for source {source_id}; attempted {source_count}; "
+                "failure_mode=fail_closed_overflow; partial_result_returned=False"
+            )
+        if total_capacity is not None and total_count > total_capacity:
+            raise AggregateFrontierOverflowError(
+                "AGGREGATE_FRONTIER_COLLECT_2D overflowed total capacity "
+                f"{total_capacity}; attempted {total_count}; "
+                "failure_mode=fail_closed_overflow; partial_result_returned=False"
+            )
 
     for source in sources:
-        sums = [0.0, 0.0]
+        source_rows: list[dict[str, object]] = []
+        source_debug_diagnostics: list[dict[str, object]] = []
         visited_count = 0
-        accepted_count = 0
+        aggregate_count = 0
         exact_count = 0
         fallback_seen: set[int] = set()
 
+        def append_row(row: dict[str, object], diagnostic: dict[str, object]) -> None:
+            source_rows.append(row)
+            if include_debug_diagnostics:
+                source_debug_diagnostics.append(diagnostic)
+            check_capacity(
+                source_id=source.id,
+                source_count=len(source_rows),
+                total_count=len(frontier_rows) + len(source_rows),
+            )
+
         def visit(node: AggregateTreeNodeRow) -> None:
-            nonlocal visited_count, accepted_count, exact_count
+            nonlocal visited_count, aggregate_count, exact_count
             visited_count += 1
             dx = node.cx - source.x
             dy = node.cy - source.y
             distance = math.hypot(dx, dy)
             opening_ratio = math.inf if distance == 0.0 else (2.0 * node.half_size) / distance
-            contains_source = source.id in node_member_sets[node.id]
+            contains_source = _node_contains_source(
+                node,
+                source.id,
+                source_leaf_dfs_by_id=source_leaf_dfs_by_id,
+                subtree_end_by_id=subtree_end_by_id,
+                node_member_sets=node_member_sets,
+            )
             if not contains_source and opening_ratio < theta:
-                vector_x, vector_y = add_contribution(
-                    source,
-                    target_x=node.cx,
-                    target_y=node.cy,
-                    target_mass=node.mass,
+                append_row(
+                    {
+                        "source_id": source.id,
+                        "frontier_kind": AGGREGATE_FRONTIER_KIND_AGGREGATE,
+                        "frontier_kind_code": AGGREGATE_FRONTIER_KIND_CODES[
+                            AGGREGATE_FRONTIER_KIND_AGGREGATE
+                        ],
+                        "item_id": node.id,
+                        "aggregate_id": node.id,
+                        "target_id": None,
+                        "owner_aggregate_id": node.id,
+                        "dfs_index": node.dfs_index,
+                        "resume_index": node.resume_index,
+                        "metadata_flags": AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE,
+                    },
+                    {
+                        "source_id": source.id,
+                        "frontier_kind_code": AGGREGATE_FRONTIER_KIND_CODES[
+                            AGGREGATE_FRONTIER_KIND_AGGREGATE
+                        ],
+                        "item_id": node.id,
+                        "owner_aggregate_id": node.id,
+                        "distance": distance,
+                        "opening_ratio": opening_ratio,
+                    }
                 )
-                sums[0] += vector_x
-                sums[1] += vector_y
-                accepted_count += 1
+                aggregate_count += 1
                 return
             if node.child_ids:
                 for child_id in node.child_ids:
@@ -984,66 +677,403 @@ def sum_aggregate_frontier_weighted_vectors_2d(
                 if deduplicate_fallback_targets and target_id in fallback_seen:
                     continue
                 fallback_seen.add(target_id)
-                if target_id not in target_by_id:
-                    raise ValueError(f"fallback target_id {target_id} is not present")
-                target = target_by_id[target_id]
-                vector_x, vector_y = add_contribution(
-                    source,
-                    target_x=target.x,
-                    target_y=target.y,
-                    target_mass=target.mass,
+                append_row(
+                    {
+                        "source_id": source.id,
+                        "frontier_kind": AGGREGATE_FRONTIER_KIND_EXACT,
+                        "frontier_kind_code": AGGREGATE_FRONTIER_KIND_CODES[
+                            AGGREGATE_FRONTIER_KIND_EXACT
+                        ],
+                        "item_id": target_id,
+                        "aggregate_id": node.id,
+                        "target_id": target_id,
+                        "owner_aggregate_id": node.id,
+                        "dfs_index": node.dfs_index,
+                        "resume_index": node.resume_index,
+                        "metadata_flags": AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE,
+                    },
+                    {
+                        "source_id": source.id,
+                        "frontier_kind_code": AGGREGATE_FRONTIER_KIND_CODES[
+                            AGGREGATE_FRONTIER_KIND_EXACT
+                        ],
+                        "item_id": target_id,
+                        "owner_aggregate_id": node.id,
+                        "distance": distance,
+                        "opening_ratio": opening_ratio,
+                    }
                 )
-                sums[0] += vector_x
-                sums[1] += vector_y
                 exact_count += 1
 
         for root_id in root_ids:
             visit(node_by_id[root_id])
 
+        frontier_rows.extend(source_rows)
+        if include_debug_diagnostics:
+            debug_diagnostics.extend(source_debug_diagnostics)
+        row_offsets.append(len(frontier_rows))
+        per_source[source.id] = {
+            "frontier_offset": row_offsets[-2],
+            "frontier_count": len(source_rows),
+            "visited_node_count": visited_count,
+            "accepted_aggregate_count": aggregate_count,
+            "fallback_exact_count": exact_count,
+        }
         total_visited += visited_count
-        total_accepted += accepted_count
+        total_aggregate += aggregate_count
         total_exact += exact_count
-        rows.append(
-            {
-                "source_id": source.id,
-                "vector_x": sums[0],
-                "vector_y": sums[1],
-                "aggregate_contribution_count": accepted_count,
-                "exact_contribution_count": exact_count,
-                "contribution_count": accepted_count + exact_count,
-                "visited_node_count": visited_count,
-            }
-        )
 
-    return {
-        "vector_sum_rows": tuple(rows),
+    i64_rows = tuple(
+        (
+            int(row["source_id"]),
+            int(row["frontier_kind_code"]),
+            int(row["item_id"]),
+            int(row["owner_aggregate_id"]),
+            int(row["dfs_index"]),
+            -1 if row["resume_index"] is None else int(row["resume_index"]),
+            int(row["metadata_flags"]),
+        )
+        for row in frontier_rows
+    )
+    result = {
+        "frontier_rows": tuple(frontier_rows),
+        "frontier_i64_rows": i64_rows,
+        "source_ids": tuple(source.id for source in sources),
+        "row_offsets": tuple(row_offsets),
+        "row_schema": AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA,
+        "per_source_summary": per_source,
         "summary": {
             "source_count": len(sources),
-            "target_count": len(targets),
             "tree_node_count": len(nodes),
             "root_count": len(root_ids),
             "leaf_node_count": sum(1 for node in nodes if node.is_leaf),
+            "frontier_row_count": len(frontier_rows),
+            "accepted_aggregate_row_count": total_aggregate,
+            "fallback_exact_row_count": total_exact,
             "visited_node_total": total_visited,
-            "contribution_row_count": total_accepted + total_exact,
-            "aggregate_contribution_row_count": total_accepted,
-            "exact_contribution_row_count": total_exact,
-            "sources_with_contributions": sum(1 for row in rows if row["contribution_count"]),
-            "materialized_frontier_rows": False,
-            "materialized_contribution_rows": False,
+            "sources_with_any_output": sum(1 for row in per_source.values() if row["frontier_count"]),
+            "max_rows_per_source": per_source_capacity,
+            "max_total_rows": total_capacity,
+            "overflowed": False,
+            "partial_result_returned": False,
+            "app_math_embedded": False,
         },
         "metadata": {
-            "contract": AGGREGATE_FRONTIER_WEIGHTED_VECTOR_SUM_2D_CONTRACT,
+            "primitive": AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE,
+            "contract": AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT,
             "theta": theta,
-            "softening": softening,
+            "row_schema": AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA,
+            "kind_codes": dict(AGGREGATE_FRONTIER_KIND_CODES),
+            "metadata_flags_semantics": {
+                AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE: (
+                    "no flags set; partners must ignore unknown future non-zero flags "
+                    "unless a later contract revision documents them"
+                ),
+            },
+            "output_layout": "source_offsets_plus_row_major_i64_frontier_ids",
+            "overflow_policy": AGGREGATE_FRONTIER_COLLECT_OVERFLOW_POLICY,
+            "failure_mode": "fail_closed_overflow",
             "deduplicate_fallback_targets": deduplicate_fallback_targets,
-            "intermediate_frontier_rows_materialized": False,
-            "intermediate_contribution_rows_materialized": False,
+            "uses_dfs_subtree_membership": True,
+            "frontier_ids_only": True,
+            "frontier_row_extra_fields_reference_only": (
+                "frontier_kind",
+                "aggregate_id",
+                "target_id",
+            ),
+            "debug_diagnostics_included": include_debug_diagnostics,
+            "app_math_embedded": False,
+            "force_law_embedded": False,
             "native_engine_app_specific": False,
+            "native_lowering_status": "cpu_reference_contract_native_backend_separate_lowering",
+            "partner_lowering_status": "row_major_i64_frontier_ids_partner_ready",
             "paper_reproduction": False,
             "authors_code_comparison": False,
             "public_speedup_claim_authorized": False,
         },
     }
+    if include_debug_diagnostics:
+        result["debug_diagnostics"] = tuple(debug_diagnostics)
+    return result
+
+
+def aggregate_frontier_collect_to_columnar_record_set(
+    collection: Mapping[str, object],
+) -> dict[str, object]:
+    """Adapt a frontier collection result into generic columnar row payloads."""
+
+    if not isinstance(collection, Mapping):
+        raise ValueError("aggregate frontier collection must be a mapping")
+    metadata = collection.get("metadata")
+    if not isinstance(metadata, Mapping) or metadata.get("contract") != AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT:
+        raise ValueError("aggregate frontier collection uses an unsupported contract")
+    row_schema = tuple(str(item) for item in collection.get("row_schema", ()))
+    if row_schema != AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA:
+        raise ValueError("aggregate frontier collection row schema mismatch")
+    rows = tuple(tuple(int(value) for value in row) for row in collection.get("frontier_i64_rows", ()))
+    for row in rows:
+        if len(row) != len(row_schema):
+            raise ValueError("aggregate frontier i64 row width mismatch")
+    columns = {
+        name: tuple(row[index] for row in rows)
+        for index, name in enumerate(row_schema)
+    }
+    return {
+        "row_ids": tuple(range(len(rows))),
+        "columns": columns,
+        "source_ids": tuple(int(value) for value in collection.get("source_ids", ())),
+        "row_offsets": tuple(int(value) for value in collection.get("row_offsets", ())),
+        "metadata": {
+            "primitive": AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE,
+            "contract": AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT,
+            "record_count": len(rows),
+            "row_schema": row_schema,
+            "source_offset_layout": "source_ids_plus_row_offsets",
+            "partner_i64_row_layout_ready": True,
+            "metadata_flags_semantics": {
+                AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE: (
+                    "no flags set; partners must ignore unknown future non-zero flags "
+                    "unless a later contract revision documents them"
+                ),
+            },
+            "native_engine_app_specific": False,
+            "app_math_embedded": False,
+            "force_law_embedded": False,
+            "claim_boundary": (
+                "Columnar adapter for generic aggregate-frontier IDs only. "
+                "App math, force laws, device-resident execution, native backend "
+                "execution, speedup claims, and paper reproduction claims are not "
+                "authorized."
+            ),
+        },
+    }
+
+
+def aggregate_frontier_collect_native_abi_contract() -> dict[str, object]:
+    """Return the app-independent native ABI target for future backend work."""
+
+    prototype = (
+        "int {symbol}(const RtdlAggregateFrontierSource2D* sources, size_t source_count, "
+        "const RtdlAggregateFrontierNode2D* nodes, size_t node_count, "
+        "const uint64_t* child_offsets, const int64_t* child_ids, "
+        "const uint64_t* member_offsets, const int64_t* member_ids, "
+        "double theta, uint64_t max_rows_per_source, uint64_t row_capacity, "
+        "uint32_t deduplicate_fallback_targets, int64_t* frontier_rows_out, "
+        "uint64_t* row_offsets_out, uint64_t* emitted_count_out, "
+        "uint64_t* attempted_count_out, uint32_t* overflowed_out, "
+        "char* error_out, size_t error_size)"
+    )
+    return {
+        "primitive": AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE,
+        "contract": AGGREGATE_FRONTIER_COLLECT_2D_NATIVE_ABI_CONTRACT,
+        "python_reference_contract": AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT,
+        "status": "specified_native_implementation_pending",
+        "executable": False,
+        "app_generic": True,
+        "required_native_symbols": AGGREGATE_FRONTIER_COLLECT_NATIVE_REQUIRED_SYMBOLS,
+        "symbol_prototype_template": prototype,
+        "source_point_struct": (
+            "id:int64",
+            "x:float64",
+            "y:float64",
+        ),
+        "tree_node_struct": (
+            "id:int64",
+            "cx:float64",
+            "cy:float64",
+            "half_size:float64",
+            "depth:int32",
+            "dfs_index:int64",
+            "resume_index:int64_sentinel_minus_one",
+            "is_leaf:uint8",
+        ),
+        "tree_csr_inputs": (
+            "child_offsets:uint64[node_count+1]",
+            "child_ids:int64[child_count]",
+            "member_offsets:uint64[node_count+1]",
+            "member_ids:int64[member_count]",
+        ),
+        "parameters": (
+            "theta:float64_positive",
+            "max_rows_per_source:uint64_or_UINT64_MAX_for_unbounded",
+            "row_capacity:uint64_total_frontier_row_capacity",
+            "deduplicate_fallback_targets:uint32_bool",
+        ),
+        "output_row_schema": AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA,
+        "output_row_width": len(AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA),
+        "outputs": (
+            "frontier_rows_out:int64[row_capacity][output_row_width]",
+            "row_offsets_out:uint64[source_count+1]",
+            "emitted_count_out:uint64",
+            "attempted_count_out:uint64",
+            "overflowed_out:uint32_bool",
+        ),
+        "row_schema_semantics": {
+            "source_id": "input source id",
+            "frontier_kind_code": "1=aggregate, 2=exact",
+            "item_id": "aggregate id for aggregate rows, target id for exact rows",
+            "owner_aggregate_id": "aggregate tree node owning this emitted row",
+            "dfs_index": "DFS index of the owner aggregate node",
+            "resume_index": "DFS resume index or -1 sentinel",
+            "metadata_flags": "0 means no flags set; unknown non-zero values are reserved",
+        },
+        "overflow_policy": AGGREGATE_FRONTIER_COLLECT_OVERFLOW_POLICY,
+        "overflow_semantics": (
+            "If overflowed_out is 1, emitted_count_out must be 0 and the caller must "
+            "treat frontier_rows_out and row_offsets_out as invalid partial workspace. "
+            "attempted_count_out is diagnostic only. No partial result may be surfaced."
+        ),
+        "engine_exclusions": (
+            "force_law",
+            "scoring",
+            "app_reduction",
+            "time_integration",
+            "benchmark_specific_logic",
+            "paper_specific_shortcuts",
+        ),
+        "claim_boundary": (
+            "Native ABI contract only. It specifies generic aggregate-frontier row "
+            "collection for future Embree/OptiX implementations; it does not provide "
+            "native execution, RT-core timing, speedup wording, or app math."
+        ),
+    }
+
+
+def validate_aggregate_frontier_collect_native_abi_contract() -> dict[str, object]:
+    """Validate and return the future native ABI contract."""
+
+    contract = aggregate_frontier_collect_native_abi_contract()
+    required = (
+        "primitive",
+        "contract",
+        "python_reference_contract",
+        "status",
+        "executable",
+        "app_generic",
+        "required_native_symbols",
+        "symbol_prototype_template",
+        "source_point_struct",
+        "tree_node_struct",
+        "tree_csr_inputs",
+        "parameters",
+        "output_row_schema",
+        "output_row_width",
+        "outputs",
+        "row_schema_semantics",
+        "overflow_policy",
+        "overflow_semantics",
+        "engine_exclusions",
+        "claim_boundary",
+    )
+    for field in required:
+        if field not in contract:
+            raise ValueError(f"missing aggregate-frontier native ABI field: {field}")
+    if contract["primitive"] != AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE:
+        raise ValueError("aggregate-frontier native ABI primitive mismatch")
+    if contract["contract"] != AGGREGATE_FRONTIER_COLLECT_2D_NATIVE_ABI_CONTRACT:
+        raise ValueError("aggregate-frontier native ABI contract mismatch")
+    if contract["python_reference_contract"] != AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT:
+        raise ValueError("aggregate-frontier native ABI must point to the CPU reference contract")
+    if contract["executable"] is not False:
+        raise ValueError("aggregate-frontier native ABI is not executable until backend symbols exist")
+    if contract["app_generic"] is not True:
+        raise ValueError("aggregate-frontier native ABI must remain app-generic")
+    if tuple(contract["required_native_symbols"]) != AGGREGATE_FRONTIER_COLLECT_NATIVE_REQUIRED_SYMBOLS:
+        raise ValueError("aggregate-frontier native ABI symbol list mismatch")
+    if tuple(contract["output_row_schema"]) != AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA:
+        raise ValueError("aggregate-frontier native ABI output row schema mismatch")
+    if int(contract["output_row_width"]) != len(AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA):
+        raise ValueError("aggregate-frontier native ABI output row width mismatch")
+    boundary_text = " ".join(str(value) for value in contract.values()).lower()
+    for forbidden in ("barnes", "force law", "inverse-square", "collision"):
+        if forbidden in boundary_text:
+            raise ValueError(f"aggregate-frontier native ABI leaked app vocabulary: {forbidden}")
+    for phrase in ("invalid partial workspace", "no partial result", "native abi contract only"):
+        if phrase not in boundary_text:
+            raise ValueError("aggregate-frontier native ABI claim boundary is incomplete")
+    return contract
+
+
+def plan_aggregate_frontier_collect_lowering(target: str) -> dict[str, object]:
+    """Return the current lowering status for aggregate-frontier collection."""
+
+    normalized = str(target).strip().lower()
+    if normalized in {"cpu", "cpu_python_reference", "python"}:
+        return {
+            "primitive": AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE,
+            "contract": AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT,
+            "target": normalized,
+            "status": "implemented_cpu_reference",
+            "executable": True,
+            "native_engine_app_specific": False,
+            "outputs": ("frontier_rows", "frontier_i64_rows", "source_ids", "row_offsets"),
+            "claim_boundary": "CPU reference only; no native RT performance claim.",
+        }
+    if normalized in {"partner", "partner_columns", "torch", "cupy"}:
+        return {
+            "primitive": AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE,
+            "contract": AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT,
+            "target": normalized,
+            "status": "implemented_partner_column_adapter",
+            "executable": normalized in {"torch", "cupy"},
+            "native_engine_app_specific": False,
+            "outputs": ("row_major_i64_columns", "source_ids", "row_offsets"),
+            "claim_boundary": (
+                "Partner-column adapter only. It moves generic frontier IDs into "
+                "partner-owned tensors; it does not implement native RT traversal, "
+                "force math, speedup claims, or zero-copy claims."
+            ),
+        }
+    if normalized in {"embree", "optix", "native_embree", "native_optix"}:
+        backend = "embree" if "embree" in normalized else "optix"
+        symbol = next(item for item in AGGREGATE_FRONTIER_COLLECT_NATIVE_REQUIRED_SYMBOLS if backend in item)
+        if backend == "embree":
+            return {
+                "primitive": AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE,
+                "contract": AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT,
+                "target": normalized,
+                "status": "implemented_embree_native_symbol_optix_parity_validated_timing_baseline_recorded",
+                "executable": True,
+                "native_engine_app_specific": False,
+                "native_abi_contract": AGGREGATE_FRONTIER_COLLECT_2D_NATIVE_ABI_CONTRACT,
+                "native_abi_status": "implemented_for_embree",
+                "native_output_row_width": len(AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA),
+                "required_native_symbol": symbol,
+                "required_next_steps": (
+                    "design true RT-core aggregate-frontier traversal before any RT-core speedup wording",
+                    "request external review before promotion",
+                ),
+                "claim_boundary": (
+                    "Embree native row collection is implemented for the generic ABI, "
+                    "and Goal2639 records OptiX parity evidence. Do not claim RT-core "
+                    "acceleration, speedup, or paper reproduction from this row-collection "
+                    "milestone."
+                ),
+            }
+        return {
+            "primitive": AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE,
+            "contract": AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT,
+            "target": normalized,
+            "status": "implemented_optix_native_symbol_pod_parity_validated_timing_baseline_recorded",
+            "executable": True,
+            "native_engine_app_specific": False,
+            "native_abi_contract": AGGREGATE_FRONTIER_COLLECT_2D_NATIVE_ABI_CONTRACT,
+            "native_abi_status": "implemented_for_optix",
+            "native_output_row_width": len(AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA),
+            "required_native_symbol": symbol,
+            "required_next_steps": (
+                "validate same-contract parity against CPU reference",
+                "design true RT-core aggregate-frontier traversal before any RT-core speedup wording",
+                "request external review before promotion",
+            ),
+            "claim_boundary": (
+                "OptiX native row collection is implemented for the generic ABI, "
+                "and Goal2639 records pod parity plus host-side timing evidence. "
+                "This does not authorize RT-core acceleration, speedup, or paper "
+                "reproduction wording."
+            ),
+        }
+    raise ValueError("aggregate-frontier lowering target must be cpu, partner, torch, cupy, embree, or optix")
 
 
 def _candidate_node_ids_by_source(

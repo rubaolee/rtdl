@@ -1,0 +1,204 @@
+{
+  "claim_boundary": "Embree native vs OptiX-library native row collection only; current OptiX symbol is host-side generic traversal, not RT-core traversal or Barnes-Hut whole-app acceleration.",
+  "goal": "Goal2639 aggregate-frontier Embree vs OptiX row-collector perf",
+  "pairs": [
+    {
+      "body_count": 2048,
+      "embree_median_seconds": 0.3625035583972931,
+      "frontier_row_count": 153976,
+      "optix_median_seconds": 0.3580564856529236,
+      "optix_over_embree_speedup": 1.0124200312592024,
+      "winner": "optix_native"
+    },
+    {
+      "body_count": 8192,
+      "embree_median_seconds": 1.9484010078012943,
+      "frontier_row_count": 750173,
+      "optix_median_seconds": 1.8765940442681313,
+      "optix_over_embree_speedup": 1.0382645163734214,
+      "winner": "optix_native"
+    },
+    {
+      "body_count": 16384,
+      "embree_median_seconds": 5.700987592339516,
+      "frontier_row_count": 2182950,
+      "optix_median_seconds": 5.674096504226327,
+      "optix_over_embree_speedup": 1.0047392722512138,
+      "winner": "optix_native"
+    },
+    {
+      "body_count": 32768,
+      "embree_median_seconds": 9.919998351484537,
+      "frontier_row_count": 3577098,
+      "optix_median_seconds": 9.80985926091671,
+      "optix_over_embree_speedup": 1.011227387431197,
+      "winner": "optix_native"
+    }
+  ],
+  "rows": [
+    {
+      "backend": "embree_native",
+      "body_count": 2048,
+      "bucket_size": 16,
+      "frontier_row_count": 153976,
+      "loops": 7,
+      "mean_seconds": 0.37284622873578754,
+      "median_seconds": 0.3625035583972931,
+      "min_seconds": 0.34904465824365616,
+      "samples_seconds": [
+        0.36635052412748337,
+        0.3625035583972931,
+        0.4337671846151352,
+        0.36047954857349396,
+        0.34904465824365616,
+        0.3573484644293785,
+        0.3804296627640724
+      ],
+      "tree_build_seconds": 0.024698488414287567,
+      "tree_node_count": 341,
+      "warmups": 1
+    },
+    {
+      "backend": "optix_native",
+      "body_count": 2048,
+      "bucket_size": 16,
+      "frontier_row_count": 153976,
+      "loops": 7,
+      "mean_seconds": 0.36080180214984076,
+      "median_seconds": 0.3580564856529236,
+      "min_seconds": 0.34726131707429886,
+      "samples_seconds": [
+        0.35842215269804,
+        0.38582954183220863,
+        0.3580564856529236,
+        0.3563952334225178,
+        0.34726131707429886,
+        0.3546464368700981,
+        0.36500144749879837
+      ],
+      "tree_build_seconds": 0.024698488414287567,
+      "tree_node_count": 341,
+      "warmups": 1
+    },
+    {
+      "backend": "embree_native",
+      "body_count": 8192,
+      "bucket_size": 16,
+      "frontier_row_count": 750173,
+      "loops": 5,
+      "mean_seconds": 1.9329321540892124,
+      "median_seconds": 1.9484010078012943,
+      "min_seconds": 1.852080788463354,
+      "samples_seconds": [
+        1.9550165198743343,
+        1.9850683957338333,
+        1.924094058573246,
+        1.9484010078012943,
+        1.852080788463354
+      ],
+      "tree_build_seconds": 0.12238491699099541,
+      "tree_node_count": 1365,
+      "warmups": 1
+    },
+    {
+      "backend": "optix_native",
+      "body_count": 8192,
+      "bucket_size": 16,
+      "frontier_row_count": 750173,
+      "loops": 5,
+      "mean_seconds": 1.8679518766701222,
+      "median_seconds": 1.8765940442681313,
+      "min_seconds": 1.8257379084825516,
+      "samples_seconds": [
+        1.8257379084825516,
+        1.8765940442681313,
+        1.8736435510218143,
+        1.8832617737352848,
+        1.8805221058428288
+      ],
+      "tree_build_seconds": 0.12238491699099541,
+      "tree_node_count": 1365,
+      "warmups": 1
+    },
+    {
+      "backend": "embree_native",
+      "body_count": 16384,
+      "bucket_size": 16,
+      "frontier_row_count": 2182950,
+      "loops": 4,
+      "mean_seconds": 5.700787804089487,
+      "median_seconds": 5.700987592339516,
+      "min_seconds": 5.635661017149687,
+      "samples_seconds": [
+        5.765515014529228,
+        5.68099008128047,
+        5.7209851033985615,
+        5.635661017149687
+      ],
+      "tree_build_seconds": 0.22843947261571884,
+      "tree_node_count": 1365,
+      "warmups": 1
+    },
+    {
+      "backend": "optix_native",
+      "body_count": 16384,
+      "bucket_size": 16,
+      "frontier_row_count": 2182950,
+      "loops": 4,
+      "mean_seconds": 5.6972022615373135,
+      "median_seconds": 5.674096504226327,
+      "min_seconds": 5.587892476469278,
+      "samples_seconds": [
+        5.852723561227322,
+        5.587892476469278,
+        5.683875001966953,
+        5.664318006485701
+      ],
+      "tree_build_seconds": 0.22843947261571884,
+      "tree_node_count": 1365,
+      "warmups": 1
+    },
+    {
+      "backend": "embree_native",
+      "body_count": 32768,
+      "bucket_size": 16,
+      "frontier_row_count": 3577098,
+      "loops": 3,
+      "mean_seconds": 9.883203599601984,
+      "median_seconds": 9.919998351484537,
+      "min_seconds": 9.806094020605087,
+      "samples_seconds": [
+        9.923518426716328,
+        9.806094020605087,
+        9.919998351484537
+      ],
+      "tree_build_seconds": 0.5015505962073803,
+      "tree_node_count": 5461,
+      "warmups": 1
+    },
+    {
+      "backend": "optix_native",
+      "body_count": 32768,
+      "bucket_size": 16,
+      "frontier_row_count": 3577098,
+      "loops": 3,
+      "mean_seconds": 9.849598708252111,
+      "median_seconds": 9.80985926091671,
+      "min_seconds": 9.764746107161045,
+      "samples_seconds": [
+        9.764746107161045,
+        9.80985926091671,
+        9.974190756678581
+      ],
+      "tree_build_seconds": 0.5015505962073803,
+      "tree_node_count": 5461,
+      "warmups": 1
+    }
+  ],
+  "sizes": [
+    2048,
+    8192,
+    16384,
+    32768
+  ]
+}

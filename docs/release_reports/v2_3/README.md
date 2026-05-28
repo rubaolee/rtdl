@@ -22,7 +22,7 @@ optimizes arbitrary PyTorch or CuPy programs.
 
 - A cleaned current app catalog with separate benchmark and learner/example
   tables.
-- Nine promoted benchmark apps used as RTDL language/runtime reconstruction
+- Ten promoted benchmark apps used as RTDL language/runtime reconstruction
   instruments.
 - Explicit demotion of Continuous Frechet and GPU-RMQ to learner/design-pressure
   status after performance evidence did not support benchmark promotion.
@@ -39,11 +39,12 @@ optimizes arbitrary PyTorch or CuPy programs.
 | Spatial RayJoin-style | `examples/v2_0/research_benchmarks/spatial_rayjoin/` | PIP, LSI, and overlay-seed rows over generic prepared spatial primitives | Scoped spatial join contracts; not full RayJoin paper reproduction |
 | RT-DBSCAN-style | `examples/v2_0/research_benchmarks/rt_dbscan/` | 3-D fixed-radius neighbor search, core thresholding, and component continuation | Generic fixed-radius/component benchmark; no DBSCAN-native ABI |
 | Robot collision | `examples/v2_0/research_benchmarks/robot_collision/` | Static scene plus batched transformed query geometry to compact any-hit flags/counts | Prepared static-scene screening; not a planner or exact swept collision solver |
-| RayDB-style grouped aggregate | `examples/v2_0/research_benchmarks/raydb_style/` | Predicate-filtered grouped count/sum/min/max/stats over partner-resident columns | Columnar grouped reductions; not SQL, SSB, or a DBMS |
+| RayDB-style grouped aggregate | `examples/v2_0/research_benchmarks/raydb_style/` | Paper-shaped generated grouped count/sum prepared-query paths plus historical grouped columnar paths | Current RT-core evidence is prepared-query only; not SQL, SSB, DBMS, authors-code, or whole-app speedup |
 | Barnes-Hut / RT-BarnesHut-style | `examples/v2_0/research_benchmarks/barnes_hut/` | Aggregate tree rows, opening frontier, and partner-resident force diagnostics | Hierarchical aggregate-frontier pressure; no app-specific force ABI |
 | LibRTS-style spatial index | `examples/v2_0/research_benchmarks/librts_spatial_index/` | Generic 2-D AABB point/range contains/intersects count-only paths | Internal benchmark slice; not full mutable LibRTS reproduction |
 | RTNN neighbor search | `examples/v2_0/research_benchmarks/rtnn/` | Prepared 3-D fixed-radius bounded ranked-summary rows and ANN candidate-quality helpers | Same-contract benchmark front door; not full RTNN paper reproduction |
 | Triangle counting | `examples/v2_0/research_benchmarks/triangle_counting/` | RT-Graph-style triangle witness rows or compact triangle summary | Graph benchmark slice; large paper datasets need segmented/streamed lowering |
+| Bounded contact witness / contact-manifold | `examples/v2_0/research_benchmarks/contact_manifold/` | Generic AABB broadphase plus bounded witness collection | Validates `COLLECT_K_BOUNDED`; no contact/collision native ABI |
 
 ## Learner And Example Apps
 
@@ -79,6 +80,9 @@ optimizes arbitrary PyTorch or CuPy programs.
 ## Evidence
 
 - [Application Catalog](../../application_catalog.md)
+- [v2.3 benchmark-app performance appendix](benchmark_app_performance.md)
+- [v2.3 benchmark-app performance 3-AI consensus](benchmark_app_performance_3ai_consensus.md)
+- [v2.4/v2.5 partner roadmap proposal](../../reports/goal2657_v2_4_v2_5_partner_roadmap_2026-05-27.md)
 - [Goal2583 Continuous Frechet benchmark promotion decision](../../reports/goal2583_continuous_frechet_benchmark_promotion_2026-05-24.md)
 - [Goal2584 Continuous Frechet baseline results](../../reports/goal2584_continuous_frechet_gpu_cpu_baseline_results_2026-05-24.md)
 - [Goal2587 benchmark-app milestone report](../../reports/goal2587_benchmark_apps_milestone_report_2026-05-24.md)

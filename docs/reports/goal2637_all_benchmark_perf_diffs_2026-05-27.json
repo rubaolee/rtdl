@@ -1,0 +1,646 @@
+{
+  "benchmark_app_count": 10,
+  "benchmark_apps": [
+    "barnes_hut",
+    "contact_manifold",
+    "hausdorff_xhd",
+    "librts_spatial_index",
+    "raydb_style",
+    "robot_collision",
+    "rt_dbscan",
+    "rtnn",
+    "spatial_rayjoin",
+    "triangle_counting"
+  ],
+  "claim_boundary": {
+    "exact_subpath_boundaries_required": true,
+    "internal_baseline_only": true,
+    "public_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": "Goal2637",
+  "optix_only_rows": [
+    {
+      "app_id": "hausdorff_xhd",
+      "artifact": "docs/reports/goal2636_strengthened_rows_pod_fixed/summary.json",
+      "backend": "optix",
+      "case_id": "hausdorff_optix_exact_grouped_seeded_pruned_points_8192",
+      "metric_source": "primary.elapsed_sec",
+      "optix_sec": 0.9919194439426064,
+      "source_matrix": "optix_only",
+      "why_not_ratioed": "No same exact-witness Embree route in the current harness."
+    },
+    {
+      "app_id": "hausdorff_xhd",
+      "artifact": "docs/reports/goal2636_strengthened_rows_pod_fixed/summary.json",
+      "backend": "optix",
+      "case_id": "hausdorff_optix_exact_grouped_seeded_pruned_points_32768",
+      "metric_source": "primary.elapsed_sec",
+      "optix_sec": 1.4529994868207723,
+      "source_matrix": "optix_only",
+      "why_not_ratioed": "No same exact-witness Embree route in the current harness."
+    }
+  ],
+  "source_artifacts": {
+    "standard": "docs/reports/goal2634_full_standard_prepared_contact_pod/summary_slim.json",
+    "strengthened": "docs/reports/goal2636_strengthened_rows_pod_fixed/summary.json",
+    "strengthened_stress": "docs/reports/goal2636_strengthened_rows_stress_pod_fixed/summary.json",
+    "supporting_stress": [
+      "docs/reports/goal2626_robot_collision_stress_pod_32768x512/compact_summary.json",
+      "docs/reports/goal2626_contact_aabb_collect_stress_pod_65536/summary.json",
+      "docs/reports/goal2628_rtnn_large_envfixed_pod/summary.json"
+    ]
+  },
+  "standard_rows": [
+    {
+      "app_id": "barnes_hut",
+      "artifact": "docs/reports/goal2634_full_standard_prepared_contact_pod/summary_slim.json",
+      "comparison_group": "node_coverage_prepared_threshold_decision",
+      "embree_sec": 0.038885060930624604,
+      "metric_sources": {
+        "embree": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec",
+        "optix": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec"
+      },
+      "optix_sec": 0.008550450904294848,
+      "optix_speedup_vs_embree": 4.547720508060322,
+      "source_matrix": "goal2634_standard"
+    },
+    {
+      "app_id": "contact_manifold",
+      "artifact": "docs/reports/goal2634_full_standard_prepared_contact_pod/summary_slim.json",
+      "comparison_group": "generic_aabb_broadphase_collect_k",
+      "embree_sec": 0.4858116749674082,
+      "metric_sources": {
+        "embree": "run_phases.emit_aabb_intersection_pair_rows_2d_median_sec",
+        "optix": "run_phases.emit_aabb_intersection_pair_rows_2d_median_sec"
+      },
+      "optix_sec": 0.01847641239874065,
+      "optix_speedup_vs_embree": 26.293615041874745,
+      "source_matrix": "goal2634_standard"
+    },
+    {
+      "app_id": "hausdorff_xhd",
+      "artifact": "docs/reports/goal2634_full_standard_prepared_contact_pod/summary_slim.json",
+      "comparison_group": "hausdorff_threshold_decision",
+      "embree_sec": 0.10245066322386265,
+      "metric_sources": {
+        "embree": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+        "optix": "run_phases.query_fixed_radius_threshold_reached_count_sec"
+      },
+      "optix_sec": 0.03110729600302875,
+      "optix_speedup_vs_embree": 3.2934609042807055,
+      "source_matrix": "goal2634_standard"
+    },
+    {
+      "app_id": "librts_spatial_index",
+      "artifact": "docs/reports/goal2634_full_standard_prepared_contact_pod/summary_slim.json",
+      "comparison_group": "aabb_index_all_count_only",
+      "embree_sec": 20.707039213972166,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "elapsed_sec"
+      },
+      "optix_sec": 0.6914774789474905,
+      "optix_speedup_vs_embree": 29.946079003889903,
+      "source_matrix": "goal2634_standard"
+    },
+    {
+      "app_id": "raydb_style",
+      "artifact": "docs/reports/goal2634_full_standard_prepared_contact_pod/summary_slim.json",
+      "comparison_group": "raydb_grouped_count",
+      "embree_sec": 0.2221853791270405,
+      "metric_sources": {
+        "embree": "metadata.timings.query_sec",
+        "optix": "metadata.timings.query_median_sec"
+      },
+      "optix_sec": 0.0007930879946798086,
+      "optix_speedup_vs_embree": 280.15224113528893,
+      "source_matrix": "goal2634_standard"
+    },
+    {
+      "app_id": "raydb_style",
+      "artifact": "docs/reports/goal2634_full_standard_prepared_contact_pod/summary_slim.json",
+      "comparison_group": "raydb_grouped_sum",
+      "embree_sec": 0.24374589696526527,
+      "metric_sources": {
+        "embree": "metadata.timings.query_sec",
+        "optix": "metadata.timings.query_median_sec"
+      },
+      "optix_sec": 0.0009773486526682973,
+      "optix_speedup_vs_embree": 249.39503042215813,
+      "source_matrix": "goal2634_standard"
+    },
+    {
+      "app_id": "robot_collision",
+      "artifact": "docs/reports/goal2634_full_standard_prepared_contact_pod/summary_slim.json",
+      "comparison_group": "prepared_collision_flags",
+      "embree_sec": 0.008537982474081218,
+      "metric_sources": {
+        "embree": "tail_medians.total_run_seconds",
+        "optix": "tail_medians.total_run_seconds"
+      },
+      "optix_sec": 0.0016141259111464024,
+      "optix_speedup_vs_embree": 5.289539319777896,
+      "source_matrix": "goal2634_standard"
+    },
+    {
+      "app_id": "rt_dbscan",
+      "artifact": "docs/reports/goal2634_full_standard_prepared_contact_pod/summary_slim.json",
+      "comparison_group": "dbscan_cluster_signature",
+      "embree_sec": 20.610222081188112,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "elapsed_sec"
+      },
+      "optix_sec": 1.6214442460332066,
+      "optix_speedup_vs_embree": 12.71102730273343,
+      "source_matrix": "goal2634_standard"
+    },
+    {
+      "app_id": "rtnn",
+      "artifact": "docs/reports/goal2634_full_standard_prepared_contact_pod/summary_slim.json",
+      "comparison_group": "prepared_3d_ranked_summary",
+      "embree_sec": 0.2638003008905798,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "elapsed_sec"
+      },
+      "optix_sec": 0.0015324749983847141,
+      "optix_speedup_vs_embree": 172.1400356734271,
+      "source_matrix": "goal2634_standard"
+    },
+    {
+      "app_id": "spatial_rayjoin",
+      "artifact": "docs/reports/goal2634_full_standard_prepared_contact_pod/summary_slim.json",
+      "comparison_group": "rayjoin_all_backend_query_summary",
+      "embree_sec": 0.020314915804192424,
+      "metric_sources": {
+        "embree": "workloads.total_elapsed_sec",
+        "optix": "prepared_query_total_sec"
+      },
+      "optix_sec": 0.0005296375602483749,
+      "optix_speedup_vs_embree": 38.3562596932621,
+      "source_matrix": "goal2634_standard"
+    },
+    {
+      "app_id": "triangle_counting",
+      "artifact": "docs/reports/goal2634_full_standard_prepared_contact_pod/summary_slim.json",
+      "comparison_group": "triangle_count_rt_graph_2a1_summary",
+      "embree_sec": 0.03904896252788603,
+      "metric_sources": {
+        "embree": "timing_ms.query_median_ms converted-ms-to-sec",
+        "optix": "timing_ms.query_median_ms converted-ms-to-sec"
+      },
+      "optix_sec": 0.00036440149415284395,
+      "optix_speedup_vs_embree": 107.15917238118514,
+      "source_matrix": "goal2634_standard"
+    }
+  ],
+  "standard_summary": {
+    "geomean_speedup": 32.246203079851085,
+    "max_speedup": 280.15224113528893,
+    "median_speedup": 29.946079003889903,
+    "min_speedup": 3.2934609042807055,
+    "optix_win_count": 11,
+    "row_count": 11
+  },
+  "status": "internal measured performance diffs; not public speedup wording",
+  "strengthened_rows": [
+    {
+      "app_id": "barnes_hut",
+      "artifact": "docs/reports/goal2636_strengthened_rows_pod_fixed/summary.json",
+      "comparison_group": "barnes_hut_node_coverage_bodies_32768",
+      "embree_sec": 0.1130086190532893,
+      "metric_sources": {
+        "embree": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec",
+        "optix": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec"
+      },
+      "optix_sec": 0.03740789880976081,
+      "optix_speedup_vs_embree": 3.0209828044071285,
+      "source_matrix": "goal2636_strengthened"
+    },
+    {
+      "app_id": "barnes_hut",
+      "artifact": "docs/reports/goal2636_strengthened_rows_pod_fixed/summary.json",
+      "comparison_group": "barnes_hut_node_coverage_bodies_8192",
+      "embree_sec": 0.03935456299223006,
+      "metric_sources": {
+        "embree": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec",
+        "optix": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec"
+      },
+      "optix_sec": 0.008628435898572206,
+      "optix_speedup_vs_embree": 4.561030927835051,
+      "source_matrix": "goal2636_strengthened"
+    },
+    {
+      "app_id": "hausdorff_xhd",
+      "artifact": "docs/reports/goal2636_strengthened_rows_pod_fixed/summary.json",
+      "comparison_group": "hausdorff_threshold_copies_16384",
+      "embree_sec": 0.3806069730781019,
+      "metric_sources": {
+        "embree": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+        "optix": "run_phases.query_fixed_radius_threshold_reached_count_sec"
+      },
+      "optix_sec": 0.18147801514714956,
+      "optix_speedup_vs_embree": 2.097262154699514,
+      "source_matrix": "goal2636_strengthened"
+    },
+    {
+      "app_id": "hausdorff_xhd",
+      "artifact": "docs/reports/goal2636_strengthened_rows_pod_fixed/summary.json",
+      "comparison_group": "hausdorff_threshold_copies_4096",
+      "embree_sec": 0.10071862698532641,
+      "metric_sources": {
+        "embree": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+        "optix": "run_phases.query_fixed_radius_threshold_reached_count_sec"
+      },
+      "optix_sec": 0.034476013854146004,
+      "optix_speedup_vs_embree": 2.9214116055129216,
+      "source_matrix": "goal2636_strengthened"
+    },
+    {
+      "app_id": "hausdorff_xhd",
+      "artifact": "docs/reports/goal2636_strengthened_rows_pod_fixed/summary.json",
+      "comparison_group": "hausdorff_threshold_copies_65536",
+      "embree_sec": 1.708257698919624,
+      "metric_sources": {
+        "embree": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+        "optix": "run_phases.query_fixed_radius_threshold_reached_count_sec"
+      },
+      "optix_sec": 0.9461195298936218,
+      "optix_speedup_vs_embree": 1.8055411023083883,
+      "source_matrix": "goal2636_strengthened"
+    },
+    {
+      "app_id": "rtnn",
+      "artifact": "docs/reports/goal2636_strengthened_rows_pod_fixed/summary.json",
+      "comparison_group": "rtnn_clustered_65536_ranked_summary",
+      "embree_sec": 2.1653888639993966,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "elapsed_sec"
+      },
+      "optix_sec": 0.09263439103960991,
+      "optix_speedup_vs_embree": 23.375647420983093,
+      "source_matrix": "goal2636_strengthened"
+    },
+    {
+      "app_id": "rtnn",
+      "artifact": "docs/reports/goal2636_strengthened_rows_pod_fixed/summary.json",
+      "comparison_group": "rtnn_shell_65536_ranked_summary",
+      "embree_sec": 0.9347702190279961,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "elapsed_sec"
+      },
+      "optix_sec": 0.0054784000385552645,
+      "optix_speedup_vs_embree": 170.62832441029786,
+      "source_matrix": "goal2636_strengthened"
+    },
+    {
+      "app_id": "rtnn",
+      "artifact": "docs/reports/goal2636_strengthened_rows_pod_fixed/summary.json",
+      "comparison_group": "rtnn_uniform_65536_ranked_summary",
+      "embree_sec": 0.2584636681713164,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "elapsed_sec"
+      },
+      "optix_sec": 0.01064002001658082,
+      "optix_speedup_vs_embree": 24.29165243754625,
+      "source_matrix": "goal2636_strengthened"
+    },
+    {
+      "app_id": "spatial_rayjoin",
+      "artifact": "docs/reports/goal2636_strengthened_rows_pod_fixed/summary.json",
+      "comparison_group": "rayjoin_lsi_authored_tiled_x512",
+      "embree_sec": 0.02987794508226216,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "phases_sec.prepared_query_sec"
+      },
+      "optix_sec": 0.00030385004356503487,
+      "optix_speedup_vs_embree": 98.3312186883633,
+      "source_matrix": "goal2636_strengthened"
+    },
+    {
+      "app_id": "spatial_rayjoin",
+      "artifact": "docs/reports/goal2636_strengthened_rows_pod_fixed/summary.json",
+      "comparison_group": "rayjoin_overlay_seed_authored_tiled_x512",
+      "embree_sec": 0.266496503027156,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "phases_sec.prepared_query_sec"
+      },
+      "optix_sec": 0.055880554020404816,
+      "optix_speedup_vs_embree": 4.769038312144232,
+      "source_matrix": "goal2636_strengthened"
+    },
+    {
+      "app_id": "spatial_rayjoin",
+      "artifact": "docs/reports/goal2636_strengthened_rows_pod_fixed/summary.json",
+      "comparison_group": "rayjoin_pip_authored_tiled_x512",
+      "embree_sec": 0.023349663009867072,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "phases_sec.prepared_query_sec"
+      },
+      "optix_sec": 0.0003157199826091528,
+      "optix_speedup_vs_embree": 73.95687411643155,
+      "source_matrix": "goal2636_strengthened"
+    },
+    {
+      "app_id": "triangle_counting",
+      "artifact": "docs/reports/goal2636_strengthened_rows_pod_fixed/summary.json",
+      "comparison_group": "triangle_count_rt_graph_2a1_cliques_20000",
+      "embree_sec": 0.10295252548530698,
+      "metric_sources": {
+        "embree": "timing_ms.query_median_ms converted-ms-to-sec",
+        "optix": "timing_ms.query_median_ms converted-ms-to-sec"
+      },
+      "optix_sec": 0.0007554258918389678,
+      "optix_speedup_vs_embree": 136.2840837169149,
+      "source_matrix": "goal2636_strengthened"
+    },
+    {
+      "app_id": "triangle_counting",
+      "artifact": "docs/reports/goal2636_strengthened_rows_pod_fixed/summary.json",
+      "comparison_group": "triangle_count_rt_graph_2a1_cliques_5000",
+      "embree_sec": 0.049064056016504765,
+      "metric_sources": {
+        "embree": "timing_ms.query_median_ms converted-ms-to-sec",
+        "optix": "timing_ms.query_median_ms converted-ms-to-sec"
+      },
+      "optix_sec": 0.0003724560374394059,
+      "optix_speedup_vs_embree": 131.73113356898367,
+      "source_matrix": "goal2636_strengthened"
+    }
+  ],
+  "strengthened_stress_rows": [
+    {
+      "app_id": "barnes_hut",
+      "artifact": "docs/reports/goal2636_strengthened_rows_stress_pod_fixed/summary.json",
+      "comparison_group": "barnes_hut_node_coverage_bodies_131072",
+      "embree_sec": 0.38565541501156986,
+      "metric_sources": {
+        "embree": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec",
+        "optix": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec"
+      },
+      "optix_sec": 0.30490353191271424,
+      "optix_speedup_vs_embree": 1.2648440396616092,
+      "source_matrix": "goal2636_stress"
+    },
+    {
+      "app_id": "barnes_hut",
+      "artifact": "docs/reports/goal2636_strengthened_rows_stress_pod_fixed/summary.json",
+      "comparison_group": "barnes_hut_node_coverage_bodies_32768",
+      "embree_sec": 0.11023146007210016,
+      "metric_sources": {
+        "embree": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec",
+        "optix": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec"
+      },
+      "optix_sec": 0.03743879194371402,
+      "optix_speedup_vs_embree": 2.9443113505858736,
+      "source_matrix": "goal2636_stress"
+    },
+    {
+      "app_id": "hausdorff_xhd",
+      "artifact": "docs/reports/goal2636_strengthened_rows_stress_pod_fixed/summary.json",
+      "comparison_group": "hausdorff_threshold_copies_16384",
+      "embree_sec": 0.3696786258369684,
+      "metric_sources": {
+        "embree": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+        "optix": "run_phases.query_fixed_radius_threshold_reached_count_sec"
+      },
+      "optix_sec": 0.16462655295617878,
+      "optix_speedup_vs_embree": 2.2455589283666257,
+      "source_matrix": "goal2636_stress"
+    },
+    {
+      "app_id": "hausdorff_xhd",
+      "artifact": "docs/reports/goal2636_strengthened_rows_stress_pod_fixed/summary.json",
+      "comparison_group": "hausdorff_threshold_copies_262144",
+      "embree_sec": 7.3172487849369645,
+      "metric_sources": {
+        "embree": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+        "optix": "run_phases.query_fixed_radius_threshold_reached_count_sec"
+      },
+      "optix_sec": 4.639506378909573,
+      "optix_speedup_vs_embree": 1.5771610570900312,
+      "source_matrix": "goal2636_stress"
+    },
+    {
+      "app_id": "hausdorff_xhd",
+      "artifact": "docs/reports/goal2636_strengthened_rows_stress_pod_fixed/summary.json",
+      "comparison_group": "hausdorff_threshold_copies_65536",
+      "embree_sec": 1.6979632030706853,
+      "metric_sources": {
+        "embree": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+        "optix": "run_phases.query_fixed_radius_threshold_reached_count_sec"
+      },
+      "optix_sec": 1.0177657869644463,
+      "optix_speedup_vs_embree": 1.6683241123038461,
+      "source_matrix": "goal2636_stress"
+    },
+    {
+      "app_id": "rtnn",
+      "artifact": "docs/reports/goal2636_strengthened_rows_stress_pod_fixed/summary.json",
+      "comparison_group": "rtnn_clustered_262144_ranked_summary",
+      "embree_sec": 14.994441976072267,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "elapsed_sec"
+      },
+      "optix_sec": 1.3745220550335944,
+      "optix_speedup_vs_embree": 10.908840582922323,
+      "source_matrix": "goal2636_stress"
+    },
+    {
+      "app_id": "rtnn",
+      "artifact": "docs/reports/goal2636_strengthened_rows_stress_pod_fixed/summary.json",
+      "comparison_group": "rtnn_clustered_65536_ranked_summary",
+      "embree_sec": 2.1163808561395854,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "elapsed_sec"
+      },
+      "optix_sec": 0.09333828999660909,
+      "optix_speedup_vs_embree": 22.674305006192764,
+      "source_matrix": "goal2636_stress"
+    },
+    {
+      "app_id": "rtnn",
+      "artifact": "docs/reports/goal2636_strengthened_rows_stress_pod_fixed/summary.json",
+      "comparison_group": "rtnn_shell_262144_ranked_summary",
+      "embree_sec": 9.353801340796053,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "elapsed_sec"
+      },
+      "optix_sec": 0.1869235490448773,
+      "optix_speedup_vs_embree": 50.040786132037105,
+      "source_matrix": "goal2636_stress"
+    },
+    {
+      "app_id": "rtnn",
+      "artifact": "docs/reports/goal2636_strengthened_rows_stress_pod_fixed/summary.json",
+      "comparison_group": "rtnn_shell_65536_ranked_summary",
+      "embree_sec": 0.8667919251602143,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "elapsed_sec"
+      },
+      "optix_sec": 0.005526866996660829,
+      "optix_speedup_vs_embree": 156.8324198291554,
+      "source_matrix": "goal2636_stress"
+    },
+    {
+      "app_id": "rtnn",
+      "artifact": "docs/reports/goal2636_strengthened_rows_stress_pod_fixed/summary.json",
+      "comparison_group": "rtnn_uniform_262144_ranked_summary",
+      "embree_sec": 3.1581582641229033,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "elapsed_sec"
+      },
+      "optix_sec": 0.009904569014906883,
+      "optix_speedup_vs_embree": 318.85872665127715,
+      "source_matrix": "goal2636_stress"
+    },
+    {
+      "app_id": "rtnn",
+      "artifact": "docs/reports/goal2636_strengthened_rows_stress_pod_fixed/summary.json",
+      "comparison_group": "rtnn_uniform_65536_ranked_summary",
+      "embree_sec": 0.26275721611455083,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "elapsed_sec"
+      },
+      "optix_sec": 0.0022659371607005596,
+      "optix_speedup_vs_embree": 115.9596217722623,
+      "source_matrix": "goal2636_stress"
+    },
+    {
+      "app_id": "spatial_rayjoin",
+      "artifact": "docs/reports/goal2636_strengthened_rows_stress_pod_fixed/summary.json",
+      "comparison_group": "rayjoin_lsi_authored_tiled_x2048",
+      "embree_sec": 0.035675776191055775,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "phases_sec.prepared_query_sec"
+      },
+      "optix_sec": 0.0004559808876365423,
+      "optix_speedup_vs_embree": 78.23963055989437,
+      "source_matrix": "goal2636_stress"
+    },
+    {
+      "app_id": "spatial_rayjoin",
+      "artifact": "docs/reports/goal2636_strengthened_rows_stress_pod_fixed/summary.json",
+      "comparison_group": "rayjoin_overlay_seed_authored_tiled_x2048",
+      "embree_sec": 3.782873093849048,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "phases_sec.prepared_query_sec"
+      },
+      "optix_sec": 0.8974681959953159,
+      "optix_speedup_vs_embree": 4.215049748535926,
+      "source_matrix": "goal2636_stress"
+    },
+    {
+      "app_id": "spatial_rayjoin",
+      "artifact": "docs/reports/goal2636_strengthened_rows_stress_pod_fixed/summary.json",
+      "comparison_group": "rayjoin_pip_authored_tiled_x2048",
+      "embree_sec": 0.034948524786159396,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "phases_sec.prepared_query_sec"
+      },
+      "optix_sec": 0.0005106020253151655,
+      "optix_speedup_vs_embree": 68.44572299647199,
+      "source_matrix": "goal2636_stress"
+    },
+    {
+      "app_id": "triangle_counting",
+      "artifact": "docs/reports/goal2636_strengthened_rows_stress_pod_fixed/summary.json",
+      "comparison_group": "triangle_count_rt_graph_2a1_cliques_20000",
+      "embree_sec": 0.10185276495758444,
+      "metric_sources": {
+        "embree": "timing_ms.query_median_ms converted-ms-to-sec",
+        "optix": "timing_ms.query_median_ms converted-ms-to-sec"
+      },
+      "optix_sec": 0.0007032766006886959,
+      "optix_speedup_vs_embree": 144.82603979407725,
+      "source_matrix": "goal2636_stress"
+    },
+    {
+      "app_id": "triangle_counting",
+      "artifact": "docs/reports/goal2636_strengthened_rows_stress_pod_fixed/summary.json",
+      "comparison_group": "triangle_count_rt_graph_2a1_cliques_80000",
+      "embree_sec": 0.403863268555142,
+      "metric_sources": {
+        "embree": "timing_ms.query_median_ms converted-ms-to-sec",
+        "optix": "timing_ms.query_median_ms converted-ms-to-sec"
+      },
+      "optix_sec": 0.0008676875149831176,
+      "optix_speedup_vs_embree": 465.4478272203788,
+      "source_matrix": "goal2636_stress"
+    }
+  ],
+  "strengthened_stress_summary": {
+    "geomean_speedup": 21.69193514830184,
+    "max_speedup": 465.4478272203788,
+    "median_speedup": 36.35754556911493,
+    "min_speedup": 1.2648440396616092,
+    "optix_win_count": 16,
+    "row_count": 16
+  },
+  "strengthened_summary": {
+    "geomean_speedup": 16.903122783678416,
+    "max_speedup": 170.62832441029786,
+    "median_speedup": 23.375647420983093,
+    "min_speedup": 1.8055411023083883,
+    "optix_win_count": 13,
+    "row_count": 13
+  },
+  "supporting_stress_rows": [
+    {
+      "app_id": "robot_collision",
+      "artifact": "docs/reports/goal2626_robot_collision_stress_pod_32768x512/compact_summary.json",
+      "comparison_group": "prepared_collision_flags_32768x512_stress",
+      "embree_sec": 0.056897287955507636,
+      "metric_sources": {
+        "embree": "embree_sec",
+        "optix": "optix_sec"
+      },
+      "optix_sec": 0.006432774127461016,
+      "optix_speedup_vs_embree": 8.844906851713867,
+      "source_matrix": "supporting_stress"
+    },
+    {
+      "app_id": "contact_manifold",
+      "artifact": "docs/reports/goal2626_contact_aabb_collect_stress_pod_65536/summary.json",
+      "comparison_group": "contact_aabb_collect_grid_65536",
+      "embree_sec": 36.42723128129728,
+      "metric_sources": {
+        "embree": "cpu_total_sec",
+        "optix": "optix_total_sec"
+      },
+      "optix_sec": 2.157037981087342,
+      "optix_speedup_vs_embree": 16.88761700103893,
+      "source_matrix": "supporting_stress"
+    },
+    {
+      "app_id": "rtnn",
+      "artifact": "docs/reports/goal2628_rtnn_large_envfixed_pod/summary.json",
+      "comparison_group": "prepared_3d_ranked_summary",
+      "embree_sec": 3.0573296500369906,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "elapsed_sec"
+      },
+      "optix_sec": 0.009747330099344254,
+      "optix_speedup_vs_embree": 313.6581626842278,
+      "source_matrix": "supporting_stress"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "primary": {
+    "backend": "optix",
+    "direction": "a_to_b",
+    "distance": 0.12003618286664636,
+    "elapsed_sec": 0.9919194439426064,
+    "exact_value": true,
+    "method": "rtdl_rt_grouped_seeded_pruned_nearest_witness",
+    "radius_strategy": "xhd_sample_seed_threshold_prune",
+    "rt_core_accelerated": true,
+    "source_index": 8034,
+    "target_index": 3950,
+    "threshold_iterations": 0,
+    "witness_radius": 3.5219852211130083
+  }
+}

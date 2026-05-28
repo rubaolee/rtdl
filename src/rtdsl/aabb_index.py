@@ -7,11 +7,16 @@ from typing import Any, Iterable
 
 
 AABB_INDEX_2D_OPERATIONS = ("point_contains", "range_contains", "range_intersects")
+EXPANDED_AABB_POINT_MEMBERSHIP_2D_PRIMITIVE = "EXPANDED_AABB_POINT_MEMBERSHIP_2D"
+EXPANDED_AABB_POINT_MEMBERSHIP_2D_CONTRACT = "generic_expanded_aabb_point_membership_rows_2d_v1"
+EXPANDED_AABB_POINT_MEMBERSHIP_2D_ROW_SCHEMA = ("source_id", "box_id", "metadata_flags")
+EXPANDED_AABB_POINT_MEMBERSHIP_METADATA_FLAGS_NONE = 0
 AABB_INDEX_2D_CONTRACT = {
     "primitive": "AABB_INDEX_QUERY_2D",
     "behavior": "prepared 2-D axis-aligned bounding-box index with exact predicate refinement",
     "operations": {
         "point_contains": "indexed_box_contains_query_point",
+        "point_contains_rows": "emit_query_point_indexed_box_membership_pairs",
         "range_contains": "indexed_box_contains_query_box",
         "range_intersects": "indexed_box_intersects_query_box",
         "range_intersection_rows": "emit_query_box_indexed_box_intersection_pairs",
@@ -21,7 +26,7 @@ AABB_INDEX_2D_CONTRACT = {
         "embree": (
             "generic_columnar_payload_conjunctive_scan_counts_and_range_intersection_pair_rows"
         ),
-        "optix": "native_count_point_contains_range_contains_range_intersects_and_range_intersection_rows",
+        "optix": "native_count_point_contains_range_contains_range_intersects_point_contains_rows_and_range_intersection_rows",
     },
     "app_boundary": "app-name-free primitive; LibRTS, spatial joins, and collision broadphases may lower to it",
 }
@@ -74,6 +79,17 @@ class _IdentifiedAabb2D:
 
 
 @dataclass(frozen=True)
+class _IdentifiedPoint2D:
+    id: int
+    x: float
+    y: float
+
+
+class ExpandedAabbPointMembershipOverflowError(RuntimeError):
+    """Raised when bounded point/AABB membership row output would overflow."""
+
+
+@dataclass(frozen=True)
 class AabbIndex2D:
     """Prepared CPU reference index for app-name-free 2-D AABB queries."""
 
@@ -94,6 +110,24 @@ class AabbIndex2D:
         for cell in _cells_for_box(normalized, self.bounds, self.resolution):
             candidates.update(self.cells.get(cell, ()))
         return tuple(sorted(candidates))
+
+    def point_membership_rows(
+        self,
+        point_queries: Iterable[Any],
+        query_ids: tuple[int, ...],
+        *,
+        indexed_ids: tuple[int, ...],
+    ) -> tuple[tuple[int, int], ...]:
+        points = tuple(_normalize_point2d(point) for point in point_queries)
+        if len(query_ids) != len(points):
+            raise ValueError("query_ids length must match point_queries length")
+        rows: set[tuple[int, int]] = set()
+        for query_index, point in enumerate(points):
+            query_id = int(query_ids[query_index])
+            for indexed_index in self.point_candidates(point):
+                if self.boxes[indexed_index].contains_point(point):
+                    rows.add((query_id, int(indexed_ids[indexed_index])))
+        return tuple(sorted(rows))
 
     def count(
         self,
@@ -251,6 +285,33 @@ class OptixAabbIndex2D:
             sorted((int(query_id), int(indexed_id)) for query_id, indexed_id in native["candidate_id_rows"])
         )
 
+    def point_membership_rows(
+        self,
+        point_queries: Iterable[Any],
+        query_ids: tuple[int, ...],
+        *,
+        row_capacity: int,
+    ) -> tuple[tuple[int, int], ...]:
+        points = tuple(_normalize_point2d(point) for point in point_queries)
+        if len(query_ids) != len(points):
+            raise ValueError("query_ids length must match point_queries length")
+        _validate_u32_ids(query_ids, label="query_ids")
+        point_records = tuple(
+            _IdentifiedPoint2D(
+                int(query_ids[index]),
+                point.x,
+                point.y,
+            )
+            for index, point in enumerate(points)
+        )
+        native = self.prepared.collect_point_contains_rows(
+            point_records,
+            row_capacity=int(row_capacity),
+        )
+        return tuple(
+            sorted((int(query_id), int(indexed_id)) for query_id, indexed_id in native["candidate_id_rows"])
+        )
+
     def close(self) -> None:
         close = getattr(self.prepared, "close", None)
         if callable(close):
@@ -334,6 +395,21 @@ class EmbreeAabbIndex2D:
         for query_index, query_box in enumerate(normalized_query_boxes):
             query_id = int(query_ids[query_index])
             matches = self.prepared.conjunctive_scan(_range_intersects_clauses(query_box))
+            rows.update((query_id, int(row["row_id"])) for row in matches)
+        return tuple(sorted(rows))
+
+    def point_membership_rows(
+        self,
+        point_queries: Iterable[Any],
+        query_ids: tuple[int, ...],
+    ) -> tuple[tuple[int, int], ...]:
+        points = tuple(_normalize_point2d(point) for point in point_queries)
+        if len(query_ids) != len(points):
+            raise ValueError("query_ids length must match point_queries length")
+        rows: set[tuple[int, int]] = set()
+        for query_index, point in enumerate(points):
+            query_id = int(query_ids[query_index])
+            matches = self.prepared.conjunctive_scan(_point_contains_clauses(point))
             rows.update((query_id, int(row["row_id"])) for row in matches)
         return tuple(sorted(rows))
 
@@ -673,11 +749,235 @@ def aabb_intersection_pair_rows_2d(
     }
 
 
+def expanded_aabb_point_membership_rows_2d(
+    indexed_boxes: Iterable[Any],
+    source_points: Iterable[Any],
+    *,
+    expansions: float | Iterable[float] = 0.0,
+    indexed_ids: Iterable[int] | None = None,
+    source_ids: Iterable[int] | None = None,
+    max_rows_per_source: int | None = None,
+    row_capacity: int | None = None,
+    resolution: int = 32,
+    backend: str = "cpu",
+) -> dict[str, Any]:
+    """Emit generic bounded rows for points inside expanded 2-D AABBs.
+
+    The primitive is intentionally app-agnostic: indexed boxes may represent
+    tree nodes, spatial cells, broadphase bins, or any other caller-owned box
+    table. The engine only emits ``(source_id, box_id, metadata_flags)`` rows.
+    """
+
+    normalized_backend = _validate_backend(backend)
+    box_tuple = tuple(_normalize_aabb2d(box) for box in indexed_boxes)
+    point_tuple = tuple(_normalize_point2d(point) for point in source_points)
+    if not box_tuple:
+        raise ValueError("EXPANDED_AABB_POINT_MEMBERSHIP_2D requires at least one indexed box")
+    indexed_id_tuple = (
+        tuple(int(value) for value in indexed_ids)
+        if indexed_ids is not None
+        else tuple(range(len(box_tuple)))
+    )
+    source_id_tuple = (
+        tuple(int(value) for value in source_ids)
+        if source_ids is not None
+        else tuple(range(len(point_tuple)))
+    )
+    if len(indexed_id_tuple) != len(box_tuple):
+        raise ValueError("indexed_ids length must match indexed_boxes length")
+    if len(source_id_tuple) != len(point_tuple):
+        raise ValueError("source_ids length must match source_points length")
+    _validate_unique_ids(indexed_id_tuple, label="indexed_ids")
+    _validate_unique_ids(source_id_tuple, label="source_ids")
+    expansion_tuple = _normalize_expansions(expansions, len(box_tuple))
+    expanded_boxes = tuple(
+        _expand_aabb2d(box, expansion_tuple[index])
+        for index, box in enumerate(box_tuple)
+    )
+    resolved_row_capacity = (
+        len(box_tuple) * len(point_tuple)
+        if row_capacity is None
+        else int(row_capacity)
+    )
+    if resolved_row_capacity < 0:
+        raise ValueError("row_capacity must be non-negative")
+    if max_rows_per_source is not None and int(max_rows_per_source) < 0:
+        raise ValueError("max_rows_per_source must be non-negative when provided")
+    resolved_max_rows_per_source = (
+        None if max_rows_per_source is None else int(max_rows_per_source)
+    )
+
+    query_start = time.perf_counter()
+    if normalized_backend == "optix":
+        _validate_u32_ids(indexed_id_tuple, label="indexed_ids")
+        _validate_u32_ids(source_id_tuple, label="source_ids")
+        indexed_records = tuple(
+            _IdentifiedAabb2D(
+                int(indexed_id_tuple[index]),
+                box.min_x,
+                box.min_y,
+                box.max_x,
+                box.max_y,
+            )
+            for index, box in enumerate(expanded_boxes)
+        )
+        point_records = tuple(
+            _IdentifiedPoint2D(
+                int(source_id_tuple[index]),
+                point.x,
+                point.y,
+            )
+            for index, point in enumerate(point_tuple)
+        )
+        from .optix_runtime import collect_aabb_point_membership_pair_rows_2d_optix
+
+        try:
+            native = collect_aabb_point_membership_pair_rows_2d_optix(
+                indexed_records,
+                point_records,
+                row_capacity=resolved_row_capacity,
+            )
+        except RuntimeError as exc:
+            if "failure_mode=fail_closed_overflow" in str(exc):
+                raise ExpandedAabbPointMembershipOverflowError(
+                    "EXPANDED_AABB_POINT_MEMBERSHIP_2D OptiX row output overflowed; "
+                    "failure_mode=fail_closed_overflow; partial_result_returned=False"
+                ) from exc
+            raise
+        pair_rows = tuple(
+            sorted((int(source_id), int(box_id)) for source_id, box_id in native["candidate_id_rows"])
+        )
+        native_symbol = native["native_generic_symbol"]
+        rt_core_accelerated = True
+        native_index = "optix_custom_aabb_gas"
+    elif normalized_backend == "embree":
+        _validate_u32_ids(indexed_id_tuple, label="indexed_ids")
+        _validate_u32_ids(source_id_tuple, label="source_ids")
+        prepared_embree = _prepare_embree_aabb_index_2d(
+            expanded_boxes,
+            row_ids=indexed_id_tuple,
+        )
+        try:
+            pair_rows = prepared_embree.point_membership_rows(point_tuple, source_id_tuple)
+        finally:
+            prepared_embree.close()
+        native_symbol = "rtdl_embree_columnar_payload_multi_predicate_scan"
+        rt_core_accelerated = False
+        native_index = "embree_generic_columnar_payload"
+    else:
+        prepared_cpu = prepare_aabb_index_2d(
+            expanded_boxes,
+            point_queries=point_tuple,
+            indexed_ids=indexed_id_tuple,
+            resolution=resolution,
+            backend="cpu",
+        )
+        if not isinstance(prepared_cpu, AabbIndex2D):
+            raise TypeError("CPU point membership row output expected AabbIndex2D")
+        pair_rows = prepared_cpu.point_membership_rows(
+            point_tuple,
+            source_id_tuple,
+            indexed_ids=indexed_id_tuple,
+        )
+        native_symbol = None
+        rt_core_accelerated = False
+        native_index = "cpu_uniform_grid_reference"
+    query_sec = time.perf_counter() - query_start
+
+    grouped: dict[int, list[tuple[int, int, int]]] = {source_id: [] for source_id in source_id_tuple}
+    for source_id, box_id in pair_rows:
+        grouped.setdefault(source_id, []).append(
+            (source_id, box_id, EXPANDED_AABB_POINT_MEMBERSHIP_METADATA_FLAGS_NONE)
+        )
+    frontier_rows: list[tuple[int, int, int]] = []
+    row_offsets = [0]
+    for source_id in source_id_tuple:
+        rows_for_source = sorted(grouped.get(source_id, ()))
+        if (
+            resolved_max_rows_per_source is not None
+            and len(rows_for_source) > resolved_max_rows_per_source
+        ):
+            raise ExpandedAabbPointMembershipOverflowError(
+                "EXPANDED_AABB_POINT_MEMBERSHIP_2D per-source capacity overflowed; "
+                f"source_id={source_id}; attempted {len(rows_for_source)}; "
+                "failure_mode=fail_closed_overflow; partial_result_returned=False"
+            )
+        frontier_rows.extend(rows_for_source)
+        row_offsets.append(len(frontier_rows))
+    if len(frontier_rows) > resolved_row_capacity:
+        raise ExpandedAabbPointMembershipOverflowError(
+            "EXPANDED_AABB_POINT_MEMBERSHIP_2D total row capacity overflowed; "
+            f"attempted {len(frontier_rows)}; capacity {resolved_row_capacity}; "
+            "failure_mode=fail_closed_overflow; partial_result_returned=False"
+        )
+
+    return {
+        "primitive": EXPANDED_AABB_POINT_MEMBERSHIP_2D_PRIMITIVE,
+        "contract": EXPANDED_AABB_POINT_MEMBERSHIP_2D_CONTRACT,
+        "backend": normalized_backend,
+        "operation": "point_contains_rows",
+        "row_schema": EXPANDED_AABB_POINT_MEMBERSHIP_2D_ROW_SCHEMA,
+        "candidate_id_rows": tuple(frontier_rows),
+        "source_ids": source_id_tuple,
+        "row_offsets": tuple(row_offsets),
+        "valid_count": len(frontier_rows),
+        "indexed_box_count": len(box_tuple),
+        "source_count": len(point_tuple),
+        "row_capacity": resolved_row_capacity,
+        "max_rows_per_source": resolved_max_rows_per_source,
+        "overflowed": False,
+        "complete_candidate_coverage": True,
+        "expansion_policy": "per_box_symmetric_axis_expansion",
+        "run_phases": {
+            "emit_expanded_aabb_point_membership_rows_2d_sec": query_sec,
+        },
+        "rt_core_accelerated": rt_core_accelerated,
+        "native_engine_customization": False,
+        "native_generic_symbol": native_symbol,
+        "index": {
+            "indexed_boxes": len(box_tuple),
+            "native_index": native_index,
+        },
+        "claim_boundary": (
+            "Generic expanded-AABB point-membership row output only. The engine "
+            "sees points, expanded boxes, ids, row offsets, and fail-closed "
+            "capacity; app interpretation remains outside the engine."
+        ),
+    }
+
+
 def _validate_u32_ids(ids: tuple[int, ...], *, label: str) -> None:
     max_u32 = (1 << 32) - 1
     for value in ids:
         if value < 0 or value > max_u32:
             raise ValueError(f"{label} values must fit uint32 for OptiX AABB row output")
+
+
+def _validate_unique_ids(ids: tuple[int, ...], *, label: str) -> None:
+    if len(set(ids)) != len(ids):
+        raise ValueError(f"{label} values must be unique for row-offset output")
+
+
+def _normalize_expansions(expansions: float | Iterable[float], count: int) -> tuple[float, ...]:
+    if isinstance(expansions, (int, float)):
+        values = (float(expansions),) * count
+    else:
+        values = tuple(float(value) for value in expansions)
+        if len(values) != count:
+            raise ValueError("expansions length must match indexed_boxes length")
+    for value in values:
+        if value < 0.0 or not math.isfinite(value):
+            raise ValueError("expansions must be finite non-negative values")
+    return values
+
+
+def _expand_aabb2d(box: Aabb2D, expansion: float) -> Aabb2D:
+    return Aabb2D(
+        box.min_x - expansion,
+        box.min_y - expansion,
+        box.max_x + expansion,
+        box.max_y + expansion,
+    )
 
 
 def _validate_backend(backend: str) -> str:

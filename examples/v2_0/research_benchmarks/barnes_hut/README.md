@@ -48,6 +48,10 @@ PYTHONPATH=src:. .venv-rtdl-scipy/bin/python examples/v2_0/research_benchmarks/b
 | `opening_rows_cpu` | Generic aggregate opening rows: accepted aggregate-node rows plus fallback exact-body rows | First benchmark-specific reconstruction primitive, still app-name-free |
 | `bucketized_tree_cpu` | Bucketized Morton-ordered aggregate tree rows with DFS order and resume-index metadata | Portable subset of the paper artifact's tree layout optimizations |
 | `opening_frontier_bucketized_cpu` | Hierarchical opening frontier over the bucketized aggregate tree | App-agnostic continuation pressure point before native RT lowering |
+| `aggregate_frontier_collect_bucketized_cpu` | `AGGREGATE_FRONTIER_COLLECT_2D`: generic aggregate-frontier ID collection with source offsets, metadata flags, and row-major i64 rows | App-agnostic CPU-reference row-emission contract for future native/partner lowering; no force law |
+| `aggregate_frontier_expanded_membership_cpu` | App-owned Barnes-Hut lowering through `EXPANDED_AABB_POINT_MEMBERSHIP_2D` near-zone candidate rows, then Python opening and force interpretation | Same-contract CPU reference for the RT-assisted lowering |
+| `aggregate_frontier_expanded_membership_embree` | Same lowering with Embree-backed generic near-zone candidate rows | CPU RT backend parity for the lowering |
+| `aggregate_frontier_expanded_membership_optix` | Same lowering with OptiX-backed generic near-zone candidate rows | RT-core candidate-discovery subpath; force math remains app or partner code |
 | `force_contributions_bucketized_cpu` | Generic weighted inverse-square vector contribution rows from accepted aggregate and fallback exact rows | App-agnostic force contribution pressure point |
 | `bucketized_force_cpu` | Python Barnes-Hut force interpretation over generic bucketized tree/frontier/contribution/vector-sum rows | Full local app behavior without claiming native acceleration |
 | `streamed_force_sum_bucketized_cpu` | Generic weighted inverse-square vector sums without materializing contribution rows | Local precursor to native/partner fused frontier-to-vector-sum lowering |
@@ -87,6 +91,9 @@ Bucketized tree and hierarchical frontier:
 ```bash
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py --mode bucketized_tree_cpu --body-count 2048 --bucket-size 32
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py --mode opening_frontier_bucketized_cpu --body-count 2048 --bucket-size 32
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py --mode aggregate_frontier_collect_bucketized_cpu --body-count 2048 --bucket-size 32
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py --mode aggregate_frontier_expanded_membership_embree --body-count 2048 --bucket-size 32
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py --mode aggregate_frontier_expanded_membership_optix --body-count 2048 --bucket-size 32 --require-rt-core
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py --mode force_contributions_bucketized_cpu --body-count 2048 --bucket-size 32
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py --mode bucketized_force_cpu --body-count 2048 --bucket-size 32
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py --mode streamed_force_sum_bucketized_cpu --body-count 2048 --bucket-size 32
@@ -141,6 +148,12 @@ The current promoted benchmark starts from three existing RTDL surfaces:
 - generic bucketized aggregate-tree rows using Morton/Z-order sorting,
   bucket-size policy, DFS layout, and resume-index metadata;
 - generic hierarchical opening-frontier rows over that tree;
+- generic aggregate-frontier ID collection with fail-closed capacity semantics
+  and source-offset plus row-major i64 layout for partner/native consumers;
+- generic expanded AABB / point membership rows used as an RT-assisted
+  near-zone candidate filter for aggregate-frontier lowering;
+- generic aggregate-frontier partner-column adapter for Torch/CuPy downstream
+  code, still without native RT traversal or force-law ownership;
 - generic weighted inverse-square vector contribution rows;
 - generic grouped vector-sum rows;
 - generic streamed weighted inverse-square vector sums that avoid
@@ -179,6 +192,20 @@ RT-BarnesHut reconstruction. The runtime pressure points are:
   traversal, not Barnes-Hut opening-rule acceleration.
 - Current partner force evidence is exact all-pairs force-vector reference, not
   hierarchical Barnes-Hut acceleration and not an RT-core claim.
+- Current aggregate-frontier collection evidence includes CPU reference,
+  partner-ready row layout, app-name-free Embree native row collection, and an
+  app-name-free OptiX native row collector with pod parity and host-side timing
+  evidence. This is still row collection evidence, not RT-core speedup evidence.
+  Default frontier rows are ID-only; distance/opening-ratio diagnostics are an
+  explicit debug side channel, not primitive output.
+- Current expanded-membership lowering evidence routes Barnes-Hut
+  aggregate-frontier discovery through `EXPANDED_AABB_POINT_MEMBERSHIP_2D`
+  near-zone candidate rows. The engine still only sees points, boxes, IDs, and
+  rows; Python applies theta/opening logic and force interpretation. This is an
+  RT-assisted subpath, not a whole Barnes-Hut speedup claim.
+- The aggregate-frontier row schema includes reserved `metadata_flags`, which
+  is currently always `0`; partners must ignore unknown future non-zero flags
+  unless a later contract revision defines them.
 - Current 3-D scalar evidence shares the authors' dimensionality, scalar
   inverse-square force shape, and generated input files, but it is not a
   same-tree-contract authors-code comparison.
@@ -194,6 +221,20 @@ RT-BarnesHut reconstruction. The runtime pressure points are:
 The strongest current NVIDIA evidence is from an RTX A5000 pod using the
 Torch/CUDA partner prototypes. These timings are internal engineering evidence,
 not public speedup claims.
+
+Goal2642 adds RTDL-native Embree-vs-OptiX evidence for the Goal2641
+expanded-membership aggregate-frontier lowering:
+
+| Bodies | Frontier rows | Embree total | OptiX total | OptiX total speedup | OptiX membership speedup |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 128 | 4,543 | `0.095 s` | `0.707 s` | `0.13x` | `0.06x` |
+| 512 | 28,988 | `0.395 s` | `0.282 s` | `1.40x` | `9.09x` |
+| 2,048 | 258,495 | `3.556 s` | `1.844 s` | `1.93x` | `30.74x` |
+| 8,192 | 1,188,963 | `74.924 s` | `11.191 s` | `6.70x` | `74.68x` |
+
+Interpretation: OptiX loses only at tiny scale where setup dominates. At useful
+scales, RT wins the generic membership subpath strongly, while total app
+speedup is capped by Python continuation and force interpretation.
 
 | Stage | 32K resident min | Meaning |
 | --- | ---: | --- |
@@ -236,10 +277,17 @@ reference that eliminates both frontier-row and contribution-row
 materialization. Goal2539 adds a same-contract multithreaded C++ CPU baseline
 for that fused path, because the authors' OWL/OptiX artifact requires an OptiX
 SDK environment before timing can proceed. Goal2541 adds the first Torch/CUDA
-partner-resident fused vector-sum prototype for the same generic contract. The
-remaining hard work is to stabilize that partner path, measure resident-state
+partner-resident fused vector-sum prototype for the same generic contract.
+Goal2638 adds `AGGREGATE_FRONTIER_COLLECT_2D`, an app-independent frontier-ID
+collection contract that keeps force math out of the engine while giving
+future native/partner lowering a clean row layout. The remaining hard work is
+to stabilize that partner path, measure resident-state
 reuse across timesteps, and later retry NVIDIA/OptiX paper-code comparison
-when an OptiX SDK environment is available. Goal2542 replaces the prototype's
+when an OptiX SDK environment is available. Goal2641 lowers Barnes-Hut
+aggregate-frontier discovery onto `EXPANDED_AABB_POINT_MEMBERSHIP_2D` by using
+generic near-zone candidate rows and app-owned Python opening/force
+interpretation; this is the first RT-assisted aggregate-frontier subpath that
+does not add Barnes-Hut-specific native engine logic. Goal2542 replaces the prototype's
 explicit per-thread stack with DFS `resume_index` rope traversal; this is
 correct and slightly faster, but not the main remaining bottleneck. Goal2544
 replaces the per-node `contains_source` member scan with generic DFS subtree
