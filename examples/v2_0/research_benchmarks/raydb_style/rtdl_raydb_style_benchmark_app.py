@@ -1819,7 +1819,8 @@ def _run_paper_rt_device_hit_stream_triton_result_mode(
                 source=f"raydb_style.paper_rt_device_hit_stream_triton.{backend}.{mode}",
             ),
             "native_symbol": hit_stream.get("native_symbol"),
-            "native_rt_core_lowering_ready": True,
+            "native_rt_core_lowering_path_present": True,
+            "native_rt_core_lowering_ready": False,
             "native_device_hit_stream_columns_ready": bool(
                 handoff_metadata["native_device_hit_stream_columns_ready"]
             ),

@@ -11,8 +11,19 @@ from .partner_protocol import V2_4_PHASES
 
 
 GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION = "rtdl.rt_hit_stream_handoff.v2.5"
+GENERIC_HIT_STREAM_HANDOFF_API_MATURITY = "experimental_host_bridge_contract"
 GENERIC_DEVICE_RESIDENT_HIT_STREAM_COLUMNS = ("ray_ids:int64", "primitive_ids:int64")
 GENERIC_TYPED_PRIMITIVE_PAYLOAD_COLUMNS = ("primitive_group_ids:int64", "primitive_values:float64")
+GENERIC_HIT_STREAM_HANDOFF_SOURCE_MODES = (
+    "native_device_columns",
+    "host_rows_to_columns_bridge",
+    "reference_columns",
+)
+GENERIC_TYPED_PAYLOAD_GROUP_ID_VALIDATION_MODES = (
+    "host_scan",
+    "caller_asserted",
+    "deferred_device_check",
+)
 GENERIC_HIT_STREAM_HANDOFF_PHASES = (
     "rt_traversal",
     "hit_stream_column_handoff",
@@ -49,7 +60,7 @@ class RtdlHitStreamColumnHandoff:
             raise ValueError("primitive_ids length must match row_count")
         if self.overflow and row_count != 0:
             raise ValueError("overflowed hit-stream handoffs must be fail-closed with row_count=0")
-        if self.source_mode not in {"native_device_columns", "host_rows_to_columns_bridge", "reference_columns"}:
+        if self.source_mode not in GENERIC_HIT_STREAM_HANDOFF_SOURCE_MODES:
             raise ValueError("unsupported hit-stream column source mode")
         _validate_int64_column(self.ray_ids, "ray_ids")
         _validate_int64_column(self.primitive_ids, "primitive_ids")
@@ -70,9 +81,18 @@ class RtdlHitStreamColumnHandoff:
     def device_resident(self) -> bool:
         return self.device_type == "cuda" and not self.materializes_host_rows_for_bridge
 
+    @property
+    def removes_host_materialization_bottleneck(self) -> bool:
+        return (
+            self.source_mode == "native_device_columns"
+            and self.device_resident
+            and not self.materializes_host_rows_for_bridge
+        )
+
     def to_metadata(self) -> dict[str, object]:
         return {
             "contract_version": GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION,
+            "api_maturity": GENERIC_HIT_STREAM_HANDOFF_API_MATURITY,
             "columns": GENERIC_DEVICE_RESIDENT_HIT_STREAM_COLUMNS,
             "backend": self.backend,
             "row_count": int(self.row_count),
@@ -85,6 +105,14 @@ class RtdlHitStreamColumnHandoff:
             "native_symbol": self.native_symbol,
             "device_resident": self.device_resident,
             "materializes_host_rows_for_bridge": bool(self.materializes_host_rows_for_bridge),
+            "host_hit_rows_materialized_before_handoff": bool(self.materializes_host_rows_for_bridge),
+            "removes_host_materialization_bottleneck": self.removes_host_materialization_bottleneck,
+            "native_device_column_output_proven_on_hardware": False,
+            "ownership_lifetime_model": (
+                "native_owner_state_machine_required_before_promotion"
+                if self.source_mode == "native_device_columns"
+                else "caller_retained_python_reference"
+            ),
             "true_zero_copy_authorized": False,
             "public_speedup_claim_authorized": False,
             "column_descriptors": (
@@ -102,6 +130,8 @@ class RtdlTypedPrimitivePayloadColumns:
     primitive_count: int
     group_count: int
     source_mode: str
+    group_id_bounds_validation: str = "host_scan"
+    default_primitive_values_used: bool = False
     owner: Any = None
 
     def __post_init__(self) -> None:
@@ -115,11 +145,14 @@ class RtdlTypedPrimitivePayloadColumns:
             raise ValueError("primitive_group_ids length must match primitive_count")
         if _column_length(self.primitive_values) != primitive_count:
             raise ValueError("primitive_values length must match primitive_count")
+        if self.group_id_bounds_validation not in GENERIC_TYPED_PAYLOAD_GROUP_ID_VALIDATION_MODES:
+            raise ValueError("unsupported primitive group-id validation mode")
         _validate_int64_column(self.primitive_group_ids, "primitive_group_ids")
         _validate_float64_column(self.primitive_values, "primitive_values")
-        group_ids = _column_to_host_ints(self.primitive_group_ids)
-        if any(group_id < 0 or group_id >= group_count for group_id in group_ids):
-            raise ValueError("primitive group ids must be in [0, group_count)")
+        if self.group_id_bounds_validation == "host_scan":
+            group_ids = _column_to_host_ints(self.primitive_group_ids)
+            if any(group_id < 0 or group_id >= group_count for group_id in group_ids):
+                raise ValueError("primitive group ids must be in [0, group_count)")
 
     @property
     def device_type(self) -> str:
@@ -136,10 +169,16 @@ class RtdlTypedPrimitivePayloadColumns:
     def to_metadata(self) -> dict[str, object]:
         return {
             "contract_version": GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION,
+            "api_maturity": GENERIC_HIT_STREAM_HANDOFF_API_MATURITY,
             "columns": GENERIC_TYPED_PRIMITIVE_PAYLOAD_COLUMNS,
             "primitive_count": int(self.primitive_count),
             "group_count": int(self.group_count),
             "source_mode": self.source_mode,
+            "group_id_bounds_validation": self.group_id_bounds_validation,
+            "group_id_bounds_validated": self.group_id_bounds_validation in {"host_scan", "caller_asserted"},
+            "host_scan_for_group_id_validation": self.group_id_bounds_validation == "host_scan",
+            "device_group_id_validation_pending": self.group_id_bounds_validation == "deferred_device_check",
+            "default_primitive_values_used": bool(self.default_primitive_values_used),
             "device": f"{self.device_type}:{self.device_id}",
             "source_protocol": self.source_protocol,
             "app_specific_semantics_allowed": False,
@@ -153,23 +192,29 @@ class RtdlTypedPrimitivePayloadColumns:
 def describe_generic_device_resident_hit_stream_handoff_3d() -> dict[str, object]:
     return {
         "contract_version": GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION,
+        "api_maturity": GENERIC_HIT_STREAM_HANDOFF_API_MATURITY,
         "hit_stream_primitive": GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_PRIMITIVE,
         "hit_stream_columns": GENERIC_DEVICE_RESIDENT_HIT_STREAM_COLUMNS,
         "typed_primitive_payload_columns": GENERIC_TYPED_PRIMITIVE_PAYLOAD_COLUMNS,
         "row_count_metadata": ("row_count:uint64", "capacity:uint64"),
         "overflow_policy": "fail_closed_bounded_columns",
         "ownership": "producer_retains_until_partner_continuation_finishes",
-        "allowed_source_modes": ("native_device_columns", "host_rows_to_columns_bridge", "reference_columns"),
+        "allowed_source_modes": GENERIC_HIT_STREAM_HANDOFF_SOURCE_MODES,
+        "typed_payload_group_id_validation_modes": GENERIC_TYPED_PAYLOAD_GROUP_ID_VALIDATION_MODES,
         "phase_timing_required": GENERIC_HIT_STREAM_HANDOFF_PHASES,
         "v2_4_phase_timing_basis": V2_4_PHASES,
         "native_engine_app_specific_vocab_allowed": False,
         "triton_replaces_rt_traversal": False,
+        "goal2685_host_bridge_only": True,
+        "native_device_column_output_proven_on_hardware": False,
+        "removes_host_materialization_bottleneck": False,
         "true_zero_copy_claim_authorized": False,
         "public_speedup_claim_authorized": False,
         "claim_boundary": (
-            "Goal2685 defines typed column handoff for RT-produced ray/primitive hit streams. "
-            "Host-row bridge paths are compatibility evidence only; native device-column output "
-            "and pod timings are required before any zero-copy or speedup claim."
+            "Goal2685 defines an experimental typed-column handoff contract for RT-produced "
+            "ray/primitive hit streams. The current implementation is a host-row bridge only; "
+            "native device-column output, a lifetime/ownership state machine, and pod timings "
+            "are required before any zero-copy, removed-bottleneck, or speedup claim."
         ),
     }
 
@@ -253,12 +298,20 @@ def prepare_generic_typed_primitive_payload_columns(
     prefer_torch_cuda: bool = False,
     require_torch_cuda: bool = False,
     device_like: Any = None,
+    group_id_bounds_validation: str | None = None,
 ) -> RtdlTypedPrimitivePayloadColumns:
+    if group_id_bounds_validation is None:
+        group_id_bounds_validation = "host_scan"
+    if group_id_bounds_validation not in GENERIC_TYPED_PAYLOAD_GROUP_ID_VALIDATION_MODES:
+        raise ValueError("unsupported primitive group-id validation mode")
     if primitive_count is None:
         primitive_count = _column_length(primitive_group_ids)
+    default_primitive_values_used = primitive_values is None
     if primitive_values is None:
         primitive_values = tuple(1.0 for _ in range(int(primitive_count)))
     if group_count is None:
+        if group_id_bounds_validation != "host_scan":
+            raise ValueError("group_count must be provided when primitive group ids are not host-scanned")
         group_count = max(_column_to_host_ints(primitive_group_ids), default=-1) + 1
     use_cuda = prefer_torch_cuda or _device_info(device_like)[0] == "cuda"
     group_ids = _maybe_torch_column(
@@ -281,6 +334,8 @@ def prepare_generic_typed_primitive_payload_columns(
         primitive_count=int(primitive_count),
         group_count=int(group_count),
         source_mode="typed_payload_columns",
+        group_id_bounds_validation=group_id_bounds_validation,
+        default_primitive_values_used=default_primitive_values_used,
         owner=(primitive_group_ids, primitive_values),
     )
 
@@ -292,6 +347,10 @@ def gather_typed_payload_columns_for_hit_stream(
     if hit_stream_columns.overflow:
         raise ValueError("cannot gather continuation inputs from an overflowed hit stream")
     started = perf_counter()
+    _validate_primitive_ids_in_payload_range(
+        hit_stream_columns.primitive_ids,
+        payload_columns.primitive_count,
+    )
     if _is_torch_tensor(hit_stream_columns.primitive_ids) or _is_torch_tensor(payload_columns.primitive_group_ids):
         import torch
 
@@ -323,13 +382,34 @@ def gather_typed_payload_columns_for_hit_stream(
         "row_count": int(hit_stream_columns.row_count),
         "group_count": int(payload_columns.group_count),
         "typed_payload_gather_sec": elapsed,
+        "primitive_id_bounds_checked": True,
         "python_rebuilt_primitive_row_table": False,
         "materializes_host_rows_for_bridge": bool(hit_stream_columns.materializes_host_rows_for_bridge),
+        "host_hit_rows_materialized_before_handoff": bool(hit_stream_columns.materializes_host_rows_for_bridge),
         "native_device_hit_stream_columns_ready": hit_stream_columns.source_mode == "native_device_columns",
+        "removes_host_materialization_bottleneck": hit_stream_columns.removes_host_materialization_bottleneck,
         "true_zero_copy_authorized": False,
         "public_speedup_claim_authorized": False,
     }
     return continuation_inputs, metadata
+
+
+def _validate_primitive_ids_in_payload_range(primitive_ids: Any, primitive_count: int) -> None:
+    primitive_count = int(primitive_count)
+    if primitive_count < 0:
+        raise ValueError("primitive_count must be non-negative")
+    if _column_length(primitive_ids) == 0:
+        return
+    if _is_torch_tensor(primitive_ids):
+        import torch
+
+        ids = primitive_ids.to(dtype=torch.int64)
+        if bool(((ids < 0) | (ids >= primitive_count)).any().detach().cpu().item()):
+            raise ValueError("primitive ids must be in [0, primitive_count)")
+        return
+    ids = _column_to_host_ints(primitive_ids)
+    if any(primitive_id < 0 or primitive_id >= primitive_count for primitive_id in ids):
+        raise ValueError("primitive ids must be in [0, primitive_count)")
 
 
 def _column_length(column: Any) -> int:

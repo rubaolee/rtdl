@@ -128,6 +128,7 @@ from .triton_partner_continuation import triton_partner_available
 from .hit_stream_handoff import GENERIC_DEVICE_RESIDENT_HIT_STREAM_COLUMNS
 from .hit_stream_handoff import GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION
 from .hit_stream_handoff import GENERIC_HIT_STREAM_HANDOFF_PHASES
+from .hit_stream_handoff import GENERIC_HIT_STREAM_HANDOFF_API_MATURITY
 from .hit_stream_handoff import GENERIC_TYPED_PRIMITIVE_PAYLOAD_COLUMNS
 from .hit_stream_handoff import RtdlHitStreamColumnHandoff
 from .hit_stream_handoff import RtdlTypedPrimitivePayloadColumns
@@ -1549,17 +1550,6 @@ __all__ = [
     "run_triton_segmented_min_f64",
     "run_triton_segmented_sum_f64",
     "triton_partner_available",
-    "GENERIC_DEVICE_RESIDENT_HIT_STREAM_COLUMNS",
-    "GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION",
-    "GENERIC_HIT_STREAM_HANDOFF_PHASES",
-    "GENERIC_TYPED_PRIMITIVE_PAYLOAD_COLUMNS",
-    "RtdlHitStreamColumnHandoff",
-    "RtdlTypedPrimitivePayloadColumns",
-    "describe_generic_device_resident_hit_stream_handoff_3d",
-    "gather_typed_payload_columns_for_hit_stream",
-    "prepare_generic_device_resident_hit_stream_columns",
-    "prepare_generic_hit_stream_columns_from_rows",
-    "prepare_generic_typed_primitive_payload_columns",
     "V2_5_TRITON_APP_MIGRATION_VERSION",
     "V2_5_TRITON_BENCHMARK_APP_PLANS",
     "V2_5_TRITON_PARTNER_ADAPTER_FRONT_DOOR_OPERATIONS",
