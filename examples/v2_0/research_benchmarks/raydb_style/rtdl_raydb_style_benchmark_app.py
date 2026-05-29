@@ -969,12 +969,11 @@ def _run_raydb_v2_5_reference_fallback(
     operations: tuple[str, ...],
     block_size: int,
 ) -> tuple[dict[str, Any], tuple[dict[str, Any], ...]]:
+    _ = block_size
     results = tuple(
-        rt.run_triton_partner_continuation(
+        rt.execute_v2_5_partner_continuation_reference(
             operation,
             inputs,
-            block_size=block_size,
-            allow_reference_fallback=True,
         )
         for operation in operations
     )
