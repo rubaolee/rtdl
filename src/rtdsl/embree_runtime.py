@@ -2415,6 +2415,7 @@ class PreparedEmbreeStaticTriangleScene3D:
         return {
             "backend": "embree",
             "primitive": "RAY_TRIANGLE_HIT_STREAM_3D",
+            "row_schema": ("ray_id", "primitive_id"),
             "native_symbol": "rtdl_embree_static_triangle_scene_3d_ray_triangle_hit_stream",
             "rows": rows,
             "ray_count": int(packed_rays.count),

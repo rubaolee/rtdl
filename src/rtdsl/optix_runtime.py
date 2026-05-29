@@ -10763,6 +10763,7 @@ class PreparedOptixStaticTriangleScene3D:
         return {
             "backend": "optix",
             "primitive": "RAY_TRIANGLE_HIT_STREAM_3D",
+            "row_schema": ("ray_id", "primitive_id"),
             "native_symbol": OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_SYMBOL,
             "rows": rows,
             "ray_count": int(packed_rays.count),

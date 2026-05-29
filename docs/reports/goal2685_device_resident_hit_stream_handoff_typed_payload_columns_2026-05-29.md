@@ -43,6 +43,8 @@ Added focused test:
 
 - `tests/goal2685_device_resident_hit_stream_handoff_test.py`
 
+Linux validation on `192.168.1.20` found that native Embree hit-stream results exposed the canonical schema only inside `claim_boundary`, not as a top-level `row_schema`. The Embree and OptiX Python runtime wrappers were updated to publish top-level `row_schema = ("ray_id", "primitive_id")`, and the Goal2685 test now exercises the Embree wrapper when native Embree is available.
+
 ## Boundary
 
 This goal does not claim true zero-copy yet.
@@ -93,6 +95,23 @@ Result: pass, with default comparison backends:
 
 - `paper_rt_optix_hit_stream_triton`
 - `paper_rt_optix_device_hit_stream_triton`
+
+Linux CPU/dev validation:
+
+```text
+ssh 192.168.1.20
+cd ~/work/rtdl_goal2685_linux_check
+PYTHONPATH=src:. python3 -m unittest tests.goal2685_device_resident_hit_stream_handoff_test tests.goal2684_generic_rt_hit_stream_handoff_test tests.goal2662_v2_5_partner_continuation_contract_test tests.goal2679_v2_5_triton_grouped_argmin_preview_test
+```
+
+Result:
+
+```text
+Ran 26 tests in 0.245s
+OK (skipped=1)
+```
+
+The same Linux run confirmed Embree 4.3.0 and a real native Embree `RAY_TRIANGLE_HIT_STREAM_3D` result can feed the Goal2685 typed-column wrapper.
 
 ## External Review Status
 
