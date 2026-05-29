@@ -99,3 +99,50 @@ Docs:
 Goal2688 does not deliver true zero-copy, device-resident native output, or a new
 speedup claim. It makes the current contract honest, stricter, and harder to
 misuse before the native device-column implementation starts.
+
+## Validation
+
+Windows focused suite:
+
+```text
+PYTHONPATH=src;. py -3 -m unittest ^
+  tests.goal2685_device_resident_hit_stream_handoff_test ^
+  tests.goal2684_generic_rt_hit_stream_handoff_test ^
+  tests.goal2662_v2_5_partner_continuation_contract_test ^
+  tests.goal2679_v2_5_triton_grouped_argmin_preview_test ^
+  tests.goal2681_v2_5_triton_partner_adapter_front_door_test
+```
+
+Result:
+
+```text
+Ran 41 tests in 0.586s
+OK (skipped=5)
+```
+
+Compile check:
+
+```text
+py -3 -m py_compile src\rtdsl\hit_stream_handoff.py src\rtdsl\__init__.py examples\v2_0\research_benchmarks\raydb_style\rtdl_raydb_style_benchmark_app.py tests\goal2685_device_resident_hit_stream_handoff_test.py
+```
+
+Result: pass.
+
+Local Linux `192.168.1.20` sync check after push:
+
+```text
+git reset --hard origin/main
+RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so PYTHONPATH=src:. python3 -m unittest \
+  tests.goal2685_device_resident_hit_stream_handoff_test \
+  tests.goal2684_generic_rt_hit_stream_handoff_test \
+  tests.goal2662_v2_5_partner_continuation_contract_test \
+  tests.goal2679_v2_5_triton_grouped_argmin_preview_test \
+  tests.goal2681_v2_5_triton_partner_adapter_front_door_test
+```
+
+Result:
+
+```text
+Ran 41 tests in 0.541s
+OK (skipped=5)
+```
