@@ -90,7 +90,7 @@ class Goal2684GenericRtHitStreamHandoffTest(unittest.TestCase):
             ROOT / "src/native/optix/rtdl_optix_api.cpp",
             ROOT / "src/native/optix/rtdl_optix_workloads.cpp",
         )
-        text = "\n".join(path.read_text() for path in files)
+        text = "\n".join(path.read_text(encoding="utf-8") for path in files)
         self.assertIn("RtdlRayTriangleHitStreamRow", text)
         self.assertIn("rtdl_embree_static_triangle_scene_3d_ray_triangle_hit_stream", text)
         self.assertIn("rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream", text)
