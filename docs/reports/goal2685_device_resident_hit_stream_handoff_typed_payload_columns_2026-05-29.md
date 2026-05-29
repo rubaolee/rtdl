@@ -73,7 +73,7 @@ py -3 -m unittest ^
 Result:
 
 ```text
-Ran 25 tests in 0.603s
+Ran 26 tests in 0.532s
 OK (skipped=1)
 ```
 
@@ -139,6 +139,15 @@ native_lowering_ready=True
 ```
 
 The typed-column wrapper accepted the OptiX hit-stream result and produced continuation inputs without rebuilding an app-shaped primitive row table. The compatibility bridge still records `materializes_host_rows_for_bridge=True`, so true device-column output remains the next native slice.
+
+Local Linux partner probe:
+
+- Torch/Triton installed into isolated target directory `.pydeps_v25_triton_probe` with `python3 -m pip install --target .pydeps_v25_triton_probe --index-url https://download.pytorch.org/whl/cu121 torch`.
+- Probe result: `torch 2.5.1+cu121`, `triton 3.1.0`, CUDA visible, device `NVIDIA GeForce GTX 1070`, compute capability `(6, 1)`.
+- `rt.triton_partner_available()` returned `True`.
+- A small Triton segmented-sum kernel failed during PTX assembly because Triton emitted `.relaxed` instructions that require `sm_70+`.
+
+Therefore `192.168.1.20` is useful for Linux Embree, OptiX SDK, and native wrapper smoke, but it is not accepted v2.5 Triton continuation performance evidence. The next performance run still needs a modern NVIDIA pod.
 
 ## External Review Status
 
