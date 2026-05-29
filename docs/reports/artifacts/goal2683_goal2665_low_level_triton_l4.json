@@ -1,0 +1,468 @@
+{
+  "claim_boundary": {
+    "no_public_speedup_claim": true,
+    "not_rt_traversal_replacement": true,
+    "partner_continuation_only": true,
+    "preview_not_promoted": true,
+    "primary_partner": "triton",
+    "torch_is_tensor_carrier_not_partner": true
+  },
+  "environment": {
+    "cuda_available": true,
+    "cuda_version": "12.8",
+    "git_head": "74d7ecc36fa5008b8e7336988cd2fc9242a59093",
+    "gpu_name": "NVIDIA L4",
+    "machine": "x86_64",
+    "platform": "Linux-6.14.0-33-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]",
+    "torch_version": "2.8.0+cu128",
+    "triton_version": "3.4.0"
+  },
+  "goal": "Goal2665 v2.5 Triton grouped continuation pod runner",
+  "group_count": 4096,
+  "include_numba": true,
+  "repeats": 5,
+  "row_counts": [
+    1024,
+    65536,
+    1048576
+  ],
+  "scales": [
+    {
+      "correctness": {
+        "bounded_collect_finalize_i64_vs_torch_group_sort": true,
+        "compact_mask_i64_vs_torch_mask_index": true,
+        "grouped_argmin_f64_vs_torch_scatter_reduce_amin": true,
+        "segmented_count_i64_vs_torch_bincount": true,
+        "segmented_max_f64_vs_torch_scatter_reduce_amax": true,
+        "segmented_min_f64_vs_torch_scatter_reduce_amin": true,
+        "segmented_sum_f64_vs_torch_scatter_add": true
+      },
+      "group_count": 4096,
+      "include_numba": true,
+      "median_seconds": {
+        "rtdl_triton_bounded_collect_finalize_i64": 0.00635523721575737,
+        "rtdl_triton_compact_mask_i64": 0.005899302661418915,
+        "rtdl_triton_grouped_argmin_f64": 0.0069159530103206635,
+        "rtdl_triton_segmented_count_i64": 0.002939194440841675,
+        "rtdl_triton_segmented_max_f64": 0.003147851675748825,
+        "rtdl_triton_segmented_min_f64": 0.0031056255102157593,
+        "rtdl_triton_segmented_sum_f64": 0.002774342894554138,
+        "torch_bincount": 9.024888277053833e-05,
+        "torch_group_sort_bounded_collect": 0.0002604648470878601,
+        "torch_mask_index_compact": 0.00010792911052703857,
+        "torch_scatter_add_sum": 3.558024764060974e-05,
+        "torch_scatter_reduce_argmin": 0.00034972280263900757,
+        "torch_scatter_reduce_max": 3.496930003166199e-05,
+        "torch_scatter_reduce_min": 3.538280725479126e-05
+      },
+      "numba": {
+        "reason": "numba CUDA unavailable",
+        "status": "skip",
+        "trusted_valid_group_ids": true
+      },
+      "repeats": 5,
+      "row_count": 1024,
+      "speedups_vs_torch": {
+        "argmin": 0.050567550432618166,
+        "bounded_collect": 0.04098428402358539,
+        "compact": 0.01829523194883498,
+        "count": 0.03070531214828184,
+        "max": 0.011108941473026468,
+        "min": 0.011393133891514527,
+        "sum": 0.012824747694472642
+      },
+      "timings_seconds": {
+        "rtdl_triton_bounded_collect_finalize_i64": [
+          0.00802231952548027,
+          0.00635523721575737,
+          0.005804378539323807,
+          0.007635384798049927,
+          0.006337389349937439
+        ],
+        "rtdl_triton_compact_mask_i64": [
+          0.005372967571020126,
+          0.005858954042196274,
+          0.012552935630083084,
+          0.007317479699850082,
+          0.005899302661418915
+        ],
+        "rtdl_triton_grouped_argmin_f64": [
+          0.007341284304857254,
+          0.010749351233243942,
+          0.006233833730220795,
+          0.006096303462982178,
+          0.0069159530103206635
+        ],
+        "rtdl_triton_segmented_count_i64": [
+          0.004818536341190338,
+          0.002939194440841675,
+          0.003327593207359314,
+          0.0025584809482097626,
+          0.002592049539089203
+        ],
+        "rtdl_triton_segmented_max_f64": [
+          0.0030944235622882843,
+          0.003009788691997528,
+          0.003147851675748825,
+          0.004854205995798111,
+          0.0032833032310009003
+        ],
+        "rtdl_triton_segmented_min_f64": [
+          0.003752082586288452,
+          0.002930976450443268,
+          0.0029745250940322876,
+          0.0033058375120162964,
+          0.0031056255102157593
+        ],
+        "rtdl_triton_segmented_sum_f64": [
+          0.004321884363889694,
+          0.002826441079378128,
+          0.002516619861125946,
+          0.0025878697633743286,
+          0.002774342894554138
+        ],
+        "torch_bincount": [
+          0.026580840349197388,
+          0.00022410601377487183,
+          9.024888277053833e-05,
+          8.76300036907196e-05,
+          8.787959814071655e-05
+        ],
+        "torch_group_sort_bounded_collect": [
+          0.02588200941681862,
+          0.0005269646644592285,
+          0.0002604648470878601,
+          0.00024355947971343994,
+          0.00024284794926643372
+        ],
+        "torch_mask_index_compact": [
+          0.00011156126856803894,
+          0.00011840090155601501,
+          0.00010792911052703857,
+          0.00010336190462112427,
+          0.00010406598448753357
+        ],
+        "torch_scatter_add_sum": [
+          0.015058282762765884,
+          0.00018782168626785278,
+          3.558024764060974e-05,
+          3.343820571899414e-05,
+          3.257766366004944e-05
+        ],
+        "torch_scatter_reduce_argmin": [
+          0.01909451186656952,
+          0.00043902546167373657,
+          0.00034972280263900757,
+          0.00033605843782424927,
+          0.0003350749611854553
+        ],
+        "torch_scatter_reduce_max": [
+          9.52593982219696e-05,
+          3.932788968086243e-05,
+          3.496930003166199e-05,
+          3.379210829734802e-05,
+          3.48798930644989e-05
+        ],
+        "torch_scatter_reduce_min": [
+          0.0002554208040237427,
+          4.5321881771087646e-05,
+          3.538280725479126e-05,
+          3.532320261001587e-05,
+          3.428012132644653e-05
+        ]
+      }
+    },
+    {
+      "correctness": {
+        "bounded_collect_finalize_i64_vs_torch_group_sort": true,
+        "compact_mask_i64_vs_torch_mask_index": true,
+        "grouped_argmin_f64_vs_torch_scatter_reduce_amin": true,
+        "segmented_count_i64_vs_torch_bincount": true,
+        "segmented_max_f64_vs_torch_scatter_reduce_amax": true,
+        "segmented_min_f64_vs_torch_scatter_reduce_amin": true,
+        "segmented_sum_f64_vs_torch_scatter_add": true
+      },
+      "group_count": 4096,
+      "include_numba": true,
+      "median_seconds": {
+        "rtdl_triton_bounded_collect_finalize_i64": 0.005950670689344406,
+        "rtdl_triton_compact_mask_i64": 0.005130201578140259,
+        "rtdl_triton_grouped_argmin_f64": 0.006578356027603149,
+        "rtdl_triton_segmented_count_i64": 0.002739381045103073,
+        "rtdl_triton_segmented_max_f64": 0.0030966363847255707,
+        "rtdl_triton_segmented_min_f64": 0.0033330246806144714,
+        "rtdl_triton_segmented_sum_f64": 0.002771180123090744,
+        "torch_bincount": 9.85860824584961e-05,
+        "torch_group_sort_bounded_collect": 0.00033606961369514465,
+        "torch_mask_index_compact": 0.00011884048581123352,
+        "torch_scatter_add_sum": 3.5915523767471313e-05,
+        "torch_scatter_reduce_argmin": 0.00038856640458106995,
+        "torch_scatter_reduce_max": 5.6996941566467285e-05,
+        "torch_scatter_reduce_min": 5.770102143287659e-05
+      },
+      "numba": {
+        "reason": "numba CUDA unavailable",
+        "status": "skip",
+        "trusted_valid_group_ids": true
+      },
+      "repeats": 5,
+      "row_count": 65536,
+      "speedups_vs_torch": {
+        "argmin": 0.059067402699188615,
+        "bounded_collect": 0.056475921999335155,
+        "compact": 0.023164876467546953,
+        "count": 0.035988451710552975,
+        "max": 0.01840608146555717,
+        "min": 0.017311909440238204,
+        "sum": 0.012960371456263955
+      },
+      "timings_seconds": {
+        "rtdl_triton_bounded_collect_finalize_i64": [
+          0.007597275078296661,
+          0.005932200700044632,
+          0.006238248199224472,
+          0.005950670689344406,
+          0.005751810967922211
+        ],
+        "rtdl_triton_compact_mask_i64": [
+          0.005241505801677704,
+          0.0053352490067481995,
+          0.005006581544876099,
+          0.005067601799964905,
+          0.005130201578140259
+        ],
+        "rtdl_triton_grouped_argmin_f64": [
+          0.007001861929893494,
+          0.006720822304487228,
+          0.006578356027603149,
+          0.0064969174563884735,
+          0.006103638559579849
+        ],
+        "rtdl_triton_segmented_count_i64": [
+          0.002739381045103073,
+          0.002833619713783264,
+          0.0026615001261234283,
+          0.002656109631061554,
+          0.0028218403458595276
+        ],
+        "rtdl_triton_segmented_max_f64": [
+          0.0030748210847377777,
+          0.00299675390124321,
+          0.0032704658806324005,
+          0.0035506896674633026,
+          0.0030966363847255707
+        ],
+        "rtdl_triton_segmented_min_f64": [
+          0.003279212862253189,
+          0.0032724328339099884,
+          0.0034702271223068237,
+          0.0033330246806144714,
+          0.0034543126821517944
+        ],
+        "rtdl_triton_segmented_sum_f64": [
+          0.0029229968786239624,
+          0.0031681321561336517,
+          0.002601407468318939,
+          0.002771180123090744,
+          0.002602759748697281
+        ],
+        "torch_bincount": [
+          0.0001670941710472107,
+          9.321048855781555e-05,
+          9.257718920707703e-05,
+          9.85860824584961e-05,
+          9.896978735923767e-05
+        ],
+        "torch_group_sort_bounded_collect": [
+          0.020475346595048904,
+          0.0005384311079978943,
+          0.00033606961369514465,
+          0.0003180466592311859,
+          0.00031259655952453613
+        ],
+        "torch_mask_index_compact": [
+          0.00017930194735527039,
+          0.00012001022696495056,
+          0.00011862069368362427,
+          0.00011786818504333496,
+          0.00011884048581123352
+        ],
+        "torch_scatter_add_sum": [
+          7.983669638633728e-05,
+          3.7960708141326904e-05,
+          3.5915523767471313e-05,
+          3.528222441673279e-05,
+          3.53008508682251e-05
+        ],
+        "torch_scatter_reduce_argmin": [
+          0.00045495107769966125,
+          0.00038856640458106995,
+          0.00036728009581565857,
+          0.0005684643983840942,
+          0.0003696419298648834
+        ],
+        "torch_scatter_reduce_max": [
+          7.856637239456177e-05,
+          6.16312026977539e-05,
+          5.556643009185791e-05,
+          5.6862831115722656e-05,
+          5.6996941566467285e-05
+        ],
+        "torch_scatter_reduce_min": [
+          9.426474571228027e-05,
+          5.770102143287659e-05,
+          5.556270480155945e-05,
+          5.798041820526123e-05,
+          5.657225847244263e-05
+        ]
+      }
+    },
+    {
+      "correctness": {
+        "bounded_collect_finalize_i64_vs_torch_group_sort": true,
+        "compact_mask_i64_vs_torch_mask_index": true,
+        "grouped_argmin_f64_vs_torch_scatter_reduce_amin": true,
+        "segmented_count_i64_vs_torch_bincount": true,
+        "segmented_max_f64_vs_torch_scatter_reduce_amax": true,
+        "segmented_min_f64_vs_torch_scatter_reduce_amin": true,
+        "segmented_sum_f64_vs_torch_scatter_add": true
+      },
+      "group_count": 4096,
+      "include_numba": true,
+      "median_seconds": {
+        "rtdl_triton_bounded_collect_finalize_i64": 0.0060503073036670685,
+        "rtdl_triton_compact_mask_i64": 0.00832226499915123,
+        "rtdl_triton_grouped_argmin_f64": 0.006085634231567383,
+        "rtdl_triton_segmented_count_i64": 0.0026378296315670013,
+        "rtdl_triton_segmented_max_f64": 0.0031512752175331116,
+        "rtdl_triton_segmented_min_f64": 0.003193255513906479,
+        "rtdl_triton_segmented_sum_f64": 0.0028047598898410797,
+        "torch_bincount": 0.00012127310037612915,
+        "torch_group_sort_bounded_collect": 0.0006586462259292603,
+        "torch_mask_index_compact": 0.00012416765093803406,
+        "torch_scatter_add_sum": 7.102638483047485e-05,
+        "torch_scatter_reduce_argmin": 0.0006083734333515167,
+        "torch_scatter_reduce_max": 0.00017368048429489136,
+        "torch_scatter_reduce_min": 0.00017260760068893433
+      },
+      "numba": {
+        "reason": "numba CUDA unavailable",
+        "status": "skip",
+        "trusted_valid_group_ids": true
+      },
+      "repeats": 5,
+      "row_count": 1048576,
+      "speedups_vs_torch": {
+        "argmin": 0.0999687806072478,
+        "bounded_collect": 0.10886161526540268,
+        "compact": 0.014919934771447154,
+        "count": 0.04597457657039319,
+        "max": 0.05511434968566545,
+        "min": 0.05405380181361506,
+        "sum": 0.02532351702822564
+      },
+      "timings_seconds": {
+        "rtdl_triton_bounded_collect_finalize_i64": [
+          0.0059486813843250275,
+          0.0060503073036670685,
+          0.006066747009754181,
+          0.006026264280080795,
+          0.006233736872673035
+        ],
+        "rtdl_triton_compact_mask_i64": [
+          0.00832226499915123,
+          0.009244054555892944,
+          0.005309656262397766,
+          0.010378018021583557,
+          0.005391247570514679
+        ],
+        "rtdl_triton_grouped_argmin_f64": [
+          0.006616581231355667,
+          0.005877625197172165,
+          0.006085634231567383,
+          0.0058679841458797455,
+          0.006644636392593384
+        ],
+        "rtdl_triton_segmented_count_i64": [
+          0.0026378296315670013,
+          0.0031493231654167175,
+          0.002593372017145157,
+          0.0024888403713703156,
+          0.0028297416865825653
+        ],
+        "rtdl_triton_segmented_max_f64": [
+          0.00311366468667984,
+          0.0030619949102401733,
+          0.003320392221212387,
+          0.0031936243176460266,
+          0.0031512752175331116
+        ],
+        "rtdl_triton_segmented_min_f64": [
+          0.003903895616531372,
+          0.003193255513906479,
+          0.0031790845096111298,
+          0.0030428506433963776,
+          0.003363892436027527
+        ],
+        "rtdl_triton_segmented_sum_f64": [
+          0.0027381256222724915,
+          0.0028047598898410797,
+          0.0026008300483226776,
+          0.0028978176414966583,
+          0.0028250552713871002
+        ],
+        "torch_bincount": [
+          0.0001812949776649475,
+          0.00011834129691123962,
+          0.0001278221607208252,
+          0.00012127310037612915,
+          0.00011612102389335632
+        ],
+        "torch_group_sort_bounded_collect": [
+          0.0014239847660064697,
+          0.0008631199598312378,
+          0.0006586462259292603,
+          0.0006417669355869293,
+          0.0006488300859928131
+        ],
+        "torch_mask_index_compact": [
+          0.00016961991786956787,
+          0.00012934207916259766,
+          0.00012416765093803406,
+          0.00012274086475372314,
+          0.0001216791570186615
+        ],
+        "torch_scatter_add_sum": [
+          0.00011739879846572876,
+          7.39172101020813e-05,
+          7.102638483047485e-05,
+          7.089227437973022e-05,
+          7.092952728271484e-05
+        ],
+        "torch_scatter_reduce_argmin": [
+          0.0007028654217720032,
+          0.000615142285823822,
+          0.0006083734333515167,
+          0.0005347169935703278,
+          0.0005356520414352417
+        ],
+        "torch_scatter_reduce_max": [
+          0.0001842007040977478,
+          0.00017368048429489136,
+          0.00017143413424491882,
+          0.00017100200057029724,
+          0.00017574802041053772
+        ],
+        "torch_scatter_reduce_min": [
+          0.00020817667245864868,
+          0.00017022714018821716,
+          0.00017260760068893433,
+          0.0001798570156097412,
+          0.000172395259141922
+        ]
+      }
+    }
+  ],
+  "status": "accept"
+}

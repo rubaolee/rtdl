@@ -1,0 +1,104 @@
+{
+  "all_correct": true,
+  "cases": [
+    {
+      "correct": {
+        "compact": true,
+        "count": true,
+        "max": true,
+        "min": true,
+        "predicate_count": true,
+        "predicate_sum": true,
+        "sum": true
+      },
+      "group_count": 4096,
+      "median_sec": {
+        "torch_compact": 5.821883678436279e-05,
+        "torch_count": 9.96217131614685e-05,
+        "torch_max": 4.133954644203186e-05,
+        "torch_min": 4.1231513023376465e-05,
+        "torch_sum": 4.0300190448760986e-05,
+        "triton_adapter_compact": 0.0062953755259513855,
+        "triton_adapter_count": 0.0037428997457027435,
+        "triton_adapter_max": 0.0037097521126270294,
+        "triton_adapter_min": 0.003516007214784622,
+        "triton_adapter_predicate_count": 0.00873659923672676,
+        "triton_adapter_predicate_sum": 0.002895709127187729,
+        "triton_adapter_sum": 0.0028456076979637146
+      },
+      "repeats": 5,
+      "row_count": 1024
+    },
+    {
+      "correct": {
+        "compact": true,
+        "count": true,
+        "max": true,
+        "min": true,
+        "predicate_count": true,
+        "predicate_sum": true,
+        "sum": true
+      },
+      "group_count": 4096,
+      "median_sec": {
+        "torch_compact": 5.969777703285217e-05,
+        "torch_count": 0.00012125447392463684,
+        "torch_max": 4.8629939556121826e-05,
+        "torch_min": 4.728883504867554e-05,
+        "torch_sum": 3.9730221033096313e-05,
+        "triton_adapter_compact": 0.005740568041801453,
+        "triton_adapter_count": 0.003061145544052124,
+        "triton_adapter_max": 0.0031792670488357544,
+        "triton_adapter_min": 0.003695007413625717,
+        "triton_adapter_predicate_count": 0.008096575736999512,
+        "triton_adapter_predicate_sum": 0.002785567194223404,
+        "triton_adapter_sum": 0.0033718980848789215
+      },
+      "repeats": 5,
+      "row_count": 65536
+    },
+    {
+      "correct": {
+        "compact": true,
+        "count": true,
+        "max": true,
+        "min": true,
+        "predicate_count": true,
+        "predicate_sum": true,
+        "sum": true
+      },
+      "group_count": 4096,
+      "median_sec": {
+        "torch_compact": 6.21303915977478e-05,
+        "torch_count": 0.00011932104825973511,
+        "torch_max": 0.00017862766981124878,
+        "torch_min": 0.00015332922339439392,
+        "torch_sum": 7.441267371177673e-05,
+        "triton_adapter_compact": 0.005390245467424393,
+        "triton_adapter_count": 0.0027365796267986298,
+        "triton_adapter_max": 0.0033797211945056915,
+        "triton_adapter_min": 0.0036540068686008453,
+        "triton_adapter_predicate_count": 0.010981418192386627,
+        "triton_adapter_predicate_sum": 0.003759201616048813,
+        "triton_adapter_sum": 0.002904638648033142
+      },
+      "repeats": 5,
+      "row_count": 1048576
+    }
+  ],
+  "device": "NVIDIA L4",
+  "git_head": "74d7ecc36fa5008b8e7336988cd2fc9242a59093",
+  "goal": "Goal2682 v2.5 Triton adapter front-door pod runner",
+  "group_count": 4096,
+  "no_public_speedup_claim": true,
+  "pod_validation_required": true,
+  "repeats": 5,
+  "repo_root": "/workspace/rtdl_python_only",
+  "row_counts": [
+    1024,
+    65536,
+    1048576
+  ],
+  "status": "ok",
+  "torch_version": "2.8.0+cu128"
+}

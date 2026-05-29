@@ -247,3 +247,16 @@ Goal2682 adds a CUDA pod runner for the public Triton adapter front door; see
 `docs/reports/goal2682_v2_5_triton_adapter_front_door_runner_2026-05-27.md`.
 It is separate from the low-level Goal2665 runner and must pass before we treat
 the adapter API as pod-validated.
+
+Goal2683 provides the first CUDA pod validation for the v2.5 Triton partner
+path; see
+`docs/reports/goal2683_v2_5_triton_partner_gpu_validation_2026-05-28.md`.
+It validates both low-level Triton continuation kernels and public
+`partner="triton"` adapter front doors on an NVIDIA L4. It also wires RayDB's
+post-RT grouped continuation through the public Triton front door for
+`count`, `sum`, `min`, `max`, and `avg_as_sum_count`. The result is correctness
+evidence only: current Triton preview kernels are slower than Torch CUDA
+baselines on the tested synthetic continuations, and no public performance
+claim is authorized. A full RT+Triton RayDB total-path comparison remains
+blocked until the RT path exposes a generic raw hit stream for partner
+continuation without embedding app semantics.

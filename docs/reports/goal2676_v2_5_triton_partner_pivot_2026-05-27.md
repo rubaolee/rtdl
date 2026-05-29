@@ -4,6 +4,12 @@ Status: local implementation slice, test-backed, not a release gate.
 
 Date: 2026-05-27
 
+Update 2026-05-28: Goal2683 supersedes the RayDB-specific wording in this
+report. RayDB's v2.5 continuation is now wired through the public
+`partner="triton"` adapter front door for count/sum/min/max/avg-as-sum-count,
+but remains preview-not-promoted; see
+`docs/reports/goal2683_v2_5_triton_partner_gpu_validation_2026-05-28.md`.
+
 ## Purpose
 
 Triton is the primary v2.5 partner. CuPy and PyTorch are not benchmark-path
