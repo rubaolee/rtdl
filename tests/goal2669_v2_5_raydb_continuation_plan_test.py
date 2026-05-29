@@ -12,7 +12,7 @@ class Goal2669V25RaydbContinuationPlanTest(unittest.TestCase):
         sum_plan = app.describe_raydb_v2_5_partner_continuation("sum")
 
         self.assertEqual(count_plan["contract_version"], rt.V2_5_PARTNER_CONTINUATION_VERSION)
-        self.assertEqual(count_plan["status"], app.RAYDB_V2_5_CONTINUATION_STATUS_DESCRIPTOR_ONLY)
+        self.assertEqual(count_plan["status"], app.RAYDB_V2_5_CONTINUATION_STATUS_ADAPTER_FRONT_DOOR_PREVIEW)
         self.assertEqual(count_plan["operations"], ("segmented_count_i64",))
         self.assertEqual(sum_plan["operations"], ("segmented_sum_f64",))
         for plan in (count_plan, sum_plan):
@@ -23,7 +23,9 @@ class Goal2669V25RaydbContinuationPlanTest(unittest.TestCase):
             self.assertFalse(plan["promoted_performance_path"])
             self.assertFalse(plan["rt_core_speedup_claim_authorized"])
             self.assertFalse(plan["raw_kernel_required"])
-            self.assertTrue(plan["descriptor_only"])
+            self.assertFalse(plan["descriptor_only"])
+            self.assertTrue(plan["adapter_front_door_integrated"])
+            self.assertTrue(plan["benchmark_path_integrated"])
             self.assertEqual(plan["blocked_reason"], None)
             self.assertEqual(plan["triton_descriptors"][0]["status"], "preview_not_promoted")
             self.assertEqual(plan["numba_descriptors"][0]["status"], "preview_not_promoted")
@@ -34,11 +36,11 @@ class Goal2669V25RaydbContinuationPlanTest(unittest.TestCase):
         max_plan = app.describe_raydb_v2_5_partner_continuation("max")
 
         self.assertEqual(avg_plan["operations"], ("segmented_sum_f64", "segmented_count_i64"))
-        self.assertEqual(avg_plan["status"], app.RAYDB_V2_5_CONTINUATION_STATUS_DESCRIPTOR_ONLY)
+        self.assertEqual(avg_plan["status"], app.RAYDB_V2_5_CONTINUATION_STATUS_ADAPTER_FRONT_DOOR_PREVIEW)
         self.assertEqual(min_plan["operations"], ("segmented_min_f64",))
         self.assertEqual(max_plan["operations"], ("segmented_max_f64",))
         for plan in (min_plan, max_plan):
-            self.assertEqual(plan["status"], app.RAYDB_V2_5_CONTINUATION_STATUS_DESCRIPTOR_ONLY)
+            self.assertEqual(plan["status"], app.RAYDB_V2_5_CONTINUATION_STATUS_ADAPTER_FRONT_DOOR_PREVIEW)
             self.assertEqual(plan["blocked_reason"], None)
             self.assertEqual(plan["triton_descriptors"][0]["status"], "preview_not_promoted")
             self.assertEqual(plan["numba_descriptors"][0]["status"], "partner_descriptor_only")

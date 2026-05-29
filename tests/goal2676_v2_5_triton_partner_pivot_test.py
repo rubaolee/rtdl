@@ -56,6 +56,9 @@ class Goal2676V25TritonPartnerPivotTest(unittest.TestCase):
         self.assertEqual(plan["preferred_partner"], "triton")
         self.assertEqual(plan["fallback_partner"], "numba")
         self.assertTrue(plan["triton_executable_preview_available"])
+        self.assertTrue(plan["adapter_front_door_integrated"])
+        self.assertTrue(plan["benchmark_path_integrated"])
+        self.assertFalse(plan["descriptor_only"])
         self.assertFalse(plan["uses_cupy_partner"])
         self.assertFalse(plan["uses_pytorch_partner"])
         self.assertEqual(
@@ -63,7 +66,7 @@ class Goal2676V25TritonPartnerPivotTest(unittest.TestCase):
             "triton",
         )
 
-    def test_raydb_v2_5_preview_runner_uses_generic_triton_dispatch(self):
+    def test_raydb_v2_5_preview_runner_keeps_reference_fallback_for_local_tests(self):
         result = raydb_app.run_raydb_v2_5_partner_continuation_preview(
             "count",
             {"group_ids": [0, 2, 2, 0], "group_count": 3},
@@ -76,6 +79,16 @@ class Goal2676V25TritonPartnerPivotTest(unittest.TestCase):
         self.assertFalse(result["metadata"]["uses_cupy_partner"])
         self.assertFalse(result["metadata"]["uses_pytorch_partner"])
         self.assertFalse(result["metadata"]["replaces_rt_traversal"])
+
+    def test_raydb_v2_5_preview_runner_uses_public_triton_front_door(self):
+        source = (ROOT / "examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py").read_text()
+
+        self.assertIn("partner_group_count_by_key(group_ids, group_count, partner=\"triton\")", source)
+        self.assertIn("partner_group_sum_by_key(group_ids, values, group_count, partner=\"triton\")", source)
+        self.assertIn("partner_group_min_by_key(", source)
+        self.assertIn("partner_group_max_by_key(", source)
+        self.assertIn('"path": "partner_adapter_front_door"', source)
+        self.assertIn('"adapter_front_door_integrated": True', source)
 
     def test_primitive_hierarchy_records_triton_first_continuation(self):
         node = rt.find_primitive_hierarchy_node("continuation.partner_resident")
@@ -112,7 +125,7 @@ class Goal2676V25TritonPartnerPivotTest(unittest.TestCase):
         for app in plan["apps"]:
             self.assertTrue(set(app["v2_5_required_operations"]).issubset(preview_ops))
         raydb = next(app for app in plan["apps"] if app["app_id"] == "raydb_style")
-        self.assertEqual(raydb["v2_5_status"], "first_executable_preview_for_count_sum_min_max")
+        self.assertEqual(raydb["v2_5_status"], "first_adapter_front_door_preview_for_count_sum_min_max")
         self.assertIn("segmented_count_i64", raydb["v2_5_required_operations"])
         self.assertIn("V2_5_TRITON_BENCHMARK_APP_PLANS", rt.__all__)
 

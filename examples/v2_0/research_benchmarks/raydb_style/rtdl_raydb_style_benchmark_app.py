@@ -34,6 +34,9 @@ GENERIC_RAY_TRIANGLE_GROUPED_REDUCTION_3D_PREPARED_PRIMITIVE = (
     "ray_triangle_grouped_i64_reduction_3d"
 )
 RAYDB_V2_5_CONTINUATION_STATUS_DESCRIPTOR_ONLY = "descriptor_only_pending_cuda_integration"
+RAYDB_V2_5_CONTINUATION_STATUS_ADAPTER_FRONT_DOOR_PREVIEW = (
+    "adapter_front_door_preview_not_promoted"
+)
 RAYDB_V2_5_CONTINUATION_STATUS_BLOCKED = "blocked_missing_v2_5_partner_operation"
 BACKENDS = (
     "cpu_python_reference",
@@ -894,7 +897,7 @@ def describe_raydb_v2_5_partner_continuation(mode: str) -> dict[str, Any]:
         operations = ()
 
     status = (
-        RAYDB_V2_5_CONTINUATION_STATUS_DESCRIPTOR_ONLY
+        RAYDB_V2_5_CONTINUATION_STATUS_ADAPTER_FRONT_DOOR_PREVIEW
         if operations
         else RAYDB_V2_5_CONTINUATION_STATUS_BLOCKED
     )
@@ -936,8 +939,15 @@ def describe_raydb_v2_5_partner_continuation(mode: str) -> dict[str, Any]:
             operation in rt.V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS
             for operation in operations
         ),
-        "benchmark_path_integrated": False,
-        "descriptor_only": True,
+        "adapter_front_door_integrated": bool(operations),
+        "benchmark_path_integrated": bool(operations),
+        "descriptor_only": False,
+        "front_door_api": (
+            "partner_group_count_by_key",
+            "partner_group_sum_by_key",
+            "partner_group_min_by_key",
+            "partner_group_max_by_key",
+        ),
         "triton_descriptors": tuple(triton_descriptors),
         "numba_descriptors": tuple(numba_descriptors),
         "blocked_reason": (
@@ -950,6 +960,133 @@ def describe_raydb_v2_5_partner_continuation(mode: str) -> dict[str, Any]:
             "The v2.5 partner continuation sees only group ids and numeric values."
         ),
     }
+
+
+def _run_raydb_v2_5_reference_fallback(
+    mode: str,
+    inputs: dict[str, Any],
+    *,
+    operations: tuple[str, ...],
+    block_size: int,
+) -> tuple[dict[str, Any], tuple[dict[str, Any], ...]]:
+    results = tuple(
+        rt.run_triton_partner_continuation(
+            operation,
+            inputs,
+            block_size=block_size,
+            allow_reference_fallback=True,
+        )
+        for operation in operations
+    )
+    outputs: dict[str, Any] = {}
+    for result in results:
+        outputs.update(result["outputs"])
+    return outputs, results
+
+
+def _raydb_v2_5_present_group_outputs(keys, group_count: int):
+    import torch
+
+    counts = rt.partner_group_count_by_key(keys, group_count, partner="triton")
+    present_mask = counts.to(torch.int64) > 0
+    return {
+        "present_counts": counts,
+        "group_ids": torch.nonzero(present_mask, as_tuple=False).reshape(-1).to(torch.int64),
+        "missing_group_ids": torch.nonzero(~present_mask, as_tuple=False).reshape(-1).to(torch.int64),
+        "present_mask": present_mask,
+    }
+
+
+def _run_raydb_v2_5_triton_front_door(
+    mode: str,
+    inputs: dict[str, Any],
+) -> tuple[dict[str, Any], tuple[dict[str, Any], ...]]:
+    group_ids = inputs["group_ids"]
+    group_count = int(inputs["group_count"])
+    values = inputs.get("values")
+    outputs: dict[str, Any]
+    continuation_results: list[dict[str, Any]] = []
+
+    if mode == "count":
+        counts = rt.partner_group_count_by_key(group_ids, group_count, partner="triton")
+        outputs = {"counts": counts}
+        continuation_results.append(
+            {"operation": "segmented_count_i64", "path": "partner_adapter_front_door", "outputs": outputs}
+        )
+    elif mode == "sum":
+        if values is None:
+            raise ValueError("RayDB v2.5 sum continuation requires values")
+        sums = rt.partner_group_sum_by_key(group_ids, values, group_count, partner="triton")
+        outputs = {"sums": sums}
+        continuation_results.append(
+            {"operation": "segmented_sum_f64", "path": "partner_adapter_front_door", "outputs": outputs}
+        )
+    elif mode == "min":
+        if values is None:
+            raise ValueError("RayDB v2.5 min continuation requires values")
+        present = _raydb_v2_5_present_group_outputs(group_ids, group_count)
+        dense_mins = rt.partner_group_min_by_key(
+            group_ids,
+            values,
+            group_count,
+            partner="triton",
+            initial=math.inf,
+        )
+        outputs = {
+            "group_ids": present["group_ids"],
+            "mins": dense_mins[present["present_mask"]],
+            "missing_group_ids": present["missing_group_ids"],
+            "dense_mins": dense_mins,
+            "present_counts": present["present_counts"],
+        }
+        continuation_results.append(
+            {"operation": "segmented_min_f64", "path": "partner_adapter_front_door", "outputs": outputs}
+        )
+    elif mode == "max":
+        if values is None:
+            raise ValueError("RayDB v2.5 max continuation requires values")
+        present = _raydb_v2_5_present_group_outputs(group_ids, group_count)
+        dense_maxes = rt.partner_group_max_by_key(
+            group_ids,
+            values,
+            group_count,
+            partner="triton",
+            initial=-math.inf,
+        )
+        outputs = {
+            "group_ids": present["group_ids"],
+            "maxes": dense_maxes[present["present_mask"]],
+            "missing_group_ids": present["missing_group_ids"],
+            "dense_maxes": dense_maxes,
+            "present_counts": present["present_counts"],
+        }
+        continuation_results.append(
+            {"operation": "segmented_max_f64", "path": "partner_adapter_front_door", "outputs": outputs}
+        )
+    elif mode == "avg_as_sum_count":
+        if values is None:
+            raise ValueError("RayDB v2.5 avg_as_sum_count continuation requires values")
+        sums = rt.partner_group_sum_by_key(group_ids, values, group_count, partner="triton")
+        counts = rt.partner_group_count_by_key(group_ids, group_count, partner="triton")
+        outputs = {"sums": sums, "counts": counts}
+        continuation_results.extend(
+            (
+                {
+                    "operation": "segmented_sum_f64",
+                    "path": "partner_adapter_front_door",
+                    "outputs": {"sums": sums},
+                },
+                {
+                    "operation": "segmented_count_i64",
+                    "path": "partner_adapter_front_door",
+                    "outputs": {"counts": counts},
+                },
+            )
+        )
+    else:
+        raise ValueError(f"unsupported RayDB v2.5 continuation mode: {mode}")
+
+    return outputs, tuple(continuation_results)
 
 
 def run_raydb_v2_5_partner_continuation_preview(
@@ -974,20 +1111,17 @@ def run_raydb_v2_5_partner_continuation_preview(
     if not operations:
         raise ValueError(f"unsupported RayDB v2.5 continuation mode: {mode}")
 
-    results = []
-    for operation in operations:
-        results.append(
-            rt.run_triton_partner_continuation(
-                operation,
-                inputs,
-                block_size=block_size,
-                allow_reference_fallback=allow_reference_fallback,
-            )
+    if allow_reference_fallback:
+        outputs, results = _run_raydb_v2_5_reference_fallback(
+            mode,
+            inputs,
+            operations=operations,
+            block_size=block_size,
         )
-
-    outputs: dict[str, Any] = {}
-    for result in results:
-        outputs.update(result["outputs"])
+        execution_path = "reference_fallback"
+    else:
+        outputs, results = _run_raydb_v2_5_triton_front_door(mode, inputs)
+        execution_path = "partner_adapter_front_door"
     return {
         "app": "raydb_style_columnar_aggregate",
         "mode": mode,
@@ -998,6 +1132,8 @@ def run_raydb_v2_5_partner_continuation_preview(
         "continuation_results": tuple(results),
         "metadata": {
             "v2_5_partner_continuation": plan,
+            "execution_path": execution_path,
+            "adapter_front_door_integrated": True,
             "post_rt_continuation_only": True,
             "replaces_rt_traversal": False,
             "promoted_performance_path": False,
