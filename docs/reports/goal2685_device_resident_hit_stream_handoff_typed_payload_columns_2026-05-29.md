@@ -113,6 +113,33 @@ OK (skipped=1)
 
 The same Linux run confirmed Embree 4.3.0 and a real native Embree `RAY_TRIANGLE_HIT_STREAM_3D` result can feed the Goal2685 typed-column wrapper.
 
+Local Linux OptiX SDK discovery:
+
+- Host: `192.168.1.20`
+- Existing SDK: `/home/lestat/vendor/optix-dev/include/optix.h`
+- Build command: `make build-optix OPTIX_PREFIX=$HOME/vendor/optix-dev`
+- Result: `build/librtdl_optix.so` built successfully with CUDA 12.0 / GTX 1070
+
+OptiX smoke:
+
+```text
+RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so PYTHONPATH=src:. python3 ...
+```
+
+Result:
+
+```text
+optix_version (9, 0, 0)
+backend=optix
+primitive=RAY_TRIANGLE_HIT_STREAM_3D
+row_schema=('ray_id', 'primitive_id')
+row_count=2
+rt_core_accelerated=True
+native_lowering_ready=True
+```
+
+The typed-column wrapper accepted the OptiX hit-stream result and produced continuation inputs without rebuilding an app-shaped primitive row table. The compatibility bridge still records `materializes_host_rows_for_bridge=True`, so true device-column output remains the next native slice.
+
 ## External Review Status
 
 Review handoff prepared:

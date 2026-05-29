@@ -76,20 +76,30 @@ class Goal2685DeviceResidentHitStreamHandoffTest(unittest.TestCase):
         self.assertEqual(reduced["outputs"]["sums"][9], 5.0)
 
     def test_native_hit_stream_wrappers_publish_top_level_row_schema_when_available(self) -> None:
-        try:
-            hit_stream = rt.run_generic_ray_triangle_hit_stream_3d(
-                _rays(),
-                _triangles(),
-                backend="embree",
-                deduplicate_primitives=True,
-            )
-        except Exception as exc:
-            self.skipTest(f"Embree native hit-stream runtime unavailable: {exc}")
-
-        self.assertEqual(tuple(hit_stream["row_schema"]), rt.GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_ROW_SCHEMA)
-        hit_columns = rt.prepare_generic_hit_stream_columns_from_rows(hit_stream)
-        self.assertEqual(hit_columns.row_count, int(hit_stream["row_count"]))
-        self.assertEqual(tuple(hit_columns.primitive_ids), (0, 1))
+        checked_backends: list[str] = []
+        skip_reasons: dict[str, str] = {}
+        for backend in ("embree", "optix"):
+            try:
+                hit_stream = rt.run_generic_ray_triangle_hit_stream_3d(
+                    _rays(),
+                    _triangles(),
+                    backend=backend,
+                    deduplicate_primitives=True,
+                )
+            except Exception as exc:
+                skip_reasons[backend] = str(exc)
+                continue
+            with self.subTest(backend=backend):
+                self.assertEqual(
+                    tuple(hit_stream["row_schema"]),
+                    rt.GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_ROW_SCHEMA,
+                )
+                hit_columns = rt.prepare_generic_hit_stream_columns_from_rows(hit_stream)
+                self.assertEqual(hit_columns.row_count, int(hit_stream["row_count"]))
+                self.assertEqual(tuple(hit_columns.primitive_ids), (0, 1))
+                checked_backends.append(backend)
+        if not checked_backends:
+            self.skipTest(f"No native hit-stream runtime available: {skip_reasons}")
 
     def test_overflow_is_fail_closed_before_column_handoff(self) -> None:
         overflow = rt.run_generic_ray_triangle_hit_stream_3d(
