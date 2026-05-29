@@ -48,6 +48,13 @@ Paper-shaped RayDB RT OptiX path, after rebuilding `librtdl_optix` on a CUDA pod
 PYTHONPATH=src:. RTDL_OPTIX_LIB=build/librtdl_optix.so python examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py --backend paper_rt_optix --mode all
 ```
 
+Goal2684 full RT hit-stream plus Triton continuation path, after rebuilding
+the native libraries and installing a CUDA-capable Triton/PyTorch stack:
+
+```bash
+PYTHONPATH=src:. RTDL_OPTIX_LIB=build/librtdl_optix.so python examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py --backend paper_rt_optix_hit_stream_triton --mode all
+```
+
 This path follows the authors' `RayDB-i0` execution shape at the contract level:
 one row becomes one `Triangle3D`, scan predicates are encoded on `Z`, group ids
 are encoded on `Y`, aggregate payloads are encoded on `X`, and query regions are
@@ -62,6 +69,14 @@ is native and RT-core accelerated, but there is no RayDB-specific native code:
 it only knows rays, triangles, primitive ids, group ids, payload values,
 deduplication, and grouped integer reductions. Python owns RayDB query encoding
 and output interpretation.
+
+The Goal2684 hit-stream backend separates traversal from continuation: Embree
+or OptiX emits only generic `(ray_id, primitive_id)` hit rows through
+`RAY_TRIANGLE_HIT_STREAM_3D`; Python maps primitive ids to app-owned group/value
+columns; Triton performs generic grouped `count`, `sum`, `min`, `max`, or fused
+`sum_count` continuation. This is the intended v2.5 boundary: RT traversal stays
+in RTDL/Embree/OptiX, continuation moves to Triton, and RayDB/SQL/table
+semantics stay in the app.
 
 ## Current Scope
 
@@ -83,6 +98,9 @@ and output interpretation.
 - paper-shaped RayDB RT OptiX path for `count`, `sum`, `min`, `max`, and
   `avg_as_sum_count` through the generic native
   `generic_ray_triangle_primitive_grouped_i64_reduction_3d` primitive;
+- paper-shaped RayDB RT hit-stream path for `count`, `sum`, `min`, `max`, and
+  `avg_as_sum_count` through generic `(ray_id, primitive_id)` rows plus Triton
+  grouped continuation;
 - typed packed host buffers for the paper-shaped OptiX path, avoiding Python
   `Triangle3D`/`Ray3D` object construction on the measured path;
 - prepared primitive payloads and prepared ray batches for repeated-query
@@ -112,6 +130,9 @@ table descriptor so dense scan/group encoding can be shared across query modes
 without adding RayDB semantics to the engine.
 Goal2652 adds 10s-level prepared-query timing for Embree host rays, OptiX host
 rays, and OptiX Torch partner-owned query-ray columns.
+Goal2684 adds the generic RT hit-stream handoff for the v2.5 Triton partner
+direction. It is a boundary and implementation milestone, not a public
+performance claim until pod artifacts and external review are recorded.
 
 The main seconds-scale internal evidence is:
 

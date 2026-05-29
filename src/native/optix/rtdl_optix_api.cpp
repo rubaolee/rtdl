@@ -694,6 +694,33 @@ extern "C" int rtdl_optix_static_triangle_scene_3d_ray_primitive_grouped_i64_red
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream(
+        void* scene_handle,
+        const RtdlRay3D* rays, size_t ray_count,
+        uint32_t deduplicate_primitives,
+        RtdlRayTriangleHitStreamRow* rows_out,
+        size_t max_rows,
+        size_t* row_count_out,
+        uint64_t* hit_event_count_out,
+        uint32_t* overflow_out,
+        double* traversal_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
+            rays,
+            ray_count,
+            deduplicate_primitives,
+            rows_out,
+            max_rows,
+            row_count_out,
+            hit_event_count_out,
+            overflow_out,
+            traversal_seconds_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_primitive_grouped_i64_payload_3d_create(
         const uint32_t* primitive_group_ids, size_t primitive_group_id_count,
         const uint64_t* primitive_values, size_t primitive_value_count,

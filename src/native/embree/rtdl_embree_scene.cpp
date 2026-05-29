@@ -45,6 +45,7 @@ enum class QueryKind {
   kRayAnyHit,
   kRayClosestHit,
   kRayPrimitiveGroupedI64Reduction3D,
+  kRayTriangleHitStream3D,
   kSegmentPolygonHitCount,
   kGraphBfsExpand,
   kGraphTriangleProbe,
@@ -160,6 +161,14 @@ struct RayPrimitiveGroupedI64ReductionState3D {
   const RayQuery3D* ray;
   std::unordered_set<uint32_t>* seen_primitive_indices;
   uint64_t* hit_event_count;
+};
+
+struct RayTriangleHitStreamState3D {
+  const RayQuery3D* ray;
+  std::vector<RtdlRayTriangleHitStreamRow>* rows;
+  std::unordered_set<uint32_t>* local_seen_primitive_indices;
+  uint64_t* hit_event_count;
+  bool deduplicate_primitives;
 };
 
 struct SegmentPolygonHitCountState {
@@ -972,6 +981,21 @@ void triangle_intersect_3d(const RTCIntersectFunctionNArguments* args) {
     if (finite_ray_hits_triangle_3d(*state->ray, triangle)) {
       *state->hit_event_count += 1;
       state->seen_primitive_indices->insert(static_cast<uint32_t>(args->primID));
+    }
+    return;
+  }
+  if (g_query_kind == QueryKind::kRayTriangleHitStream3D) {
+    auto* state = static_cast<RayTriangleHitStreamState3D*>(g_query_state);
+    if (finite_ray_hits_triangle_3d(*state->ray, triangle)) {
+      *state->hit_event_count += 1;
+      const auto primitive_id = static_cast<uint32_t>(args->primID);
+      if (state->deduplicate_primitives) {
+        const auto inserted = state->local_seen_primitive_indices->insert(primitive_id).second;
+        if (!inserted) {
+          return;
+        }
+      }
+      state->rows->push_back({state->ray->id, primitive_id});
     }
     return;
   }

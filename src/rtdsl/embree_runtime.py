@@ -98,6 +98,7 @@ EMBREE_REQUIRED_SYMBOLS = (
     "rtdl_embree_static_triangle_scene_3d_create",
     "rtdl_embree_static_triangle_scene_3d_grouped_segment_any_hit_flags",
     "rtdl_embree_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction",
+    "rtdl_embree_static_triangle_scene_3d_ray_triangle_hit_stream",
     "rtdl_embree_static_triangle_scene_3d_destroy",
     "rtdl_embree_columnar_payload_create",
     "rtdl_embree_columnar_payload_create_from_columns",
@@ -421,6 +422,13 @@ class _RtdlRayClosestHitRow(ctypes.Structure):
         ("ray_id", ctypes.c_uint32),
         ("triangle_id", ctypes.c_uint32),
         ("t", ctypes.c_double),
+    ]
+
+
+class _RtdlRayTriangleHitStreamRow(ctypes.Structure):
+    _fields_ = [
+        ("ray_id", ctypes.c_uint32),
+        ("primitive_id", ctypes.c_uint32),
     ]
 
 
@@ -2338,6 +2346,112 @@ class PreparedEmbreeStaticTriangleScene3D:
             },
         }
 
+    def ray_triangle_hit_stream(
+        self,
+        rays,
+        *,
+        max_rows: int | None = None,
+        deduplicate_primitives: bool = True,
+    ) -> dict[str, object]:
+        """Emit generic bounded 3-D ray/triangle hit rows from Embree."""
+        if self._closed:
+            raise RuntimeError("prepared Embree static triangle scene handle is closed")
+        run_symbol = _require_optional_embree_symbol(
+            self._library,
+            "rtdl_embree_static_triangle_scene_3d_ray_triangle_hit_stream",
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "loaded Embree backend library does not export "
+                "rtdl_embree_static_triangle_scene_3d_ray_triangle_hit_stream; "
+                "rebuild the Embree backend from current main"
+            )
+        pack_start = time.perf_counter()
+        packed_rays = rays if isinstance(rays, PackedRays) else pack_rays(rays, dimension=3)
+        if packed_rays.dimension != 3:
+            raise ValueError("ray_triangle_hit_stream requires 3-D rays")
+        capacity = self.triangle_count if max_rows is None and deduplicate_primitives else int(max_rows if max_rows is not None else max(1, packed_rays.count * self.triangle_count))
+        if capacity < 0:
+            raise ValueError("max_rows must be non-negative")
+        RowArray = _RtdlRayTriangleHitStreamRow * capacity
+        rows_array = RowArray()
+        query_pack_seconds = time.perf_counter() - pack_start
+
+        row_count = ctypes.c_size_t()
+        hit_event_count = ctypes.c_uint64()
+        overflow = ctypes.c_uint32()
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        native_start = time.perf_counter()
+        status = run_symbol(
+            self._handle,
+            packed_rays.records,
+            packed_rays.count,
+            ctypes.c_uint32(1 if deduplicate_primitives else 0),
+            rows_array,
+            capacity,
+            ctypes.byref(row_count),
+            ctypes.byref(hit_event_count),
+            ctypes.byref(overflow),
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        native_call_seconds = time.perf_counter() - native_start
+        _check_status(status, error)
+
+        if overflow.value:
+            rows: tuple[dict[str, int], ...] = ()
+        else:
+            rows = tuple(
+                {
+                    "ray_id": int(rows_array[index].ray_id),
+                    "primitive_id": int(rows_array[index].primitive_id),
+                }
+                for index in range(int(row_count.value))
+            )
+
+        self._run_count += 1
+        return {
+            "backend": "embree",
+            "primitive": "RAY_TRIANGLE_HIT_STREAM_3D",
+            "native_symbol": "rtdl_embree_static_triangle_scene_3d_ray_triangle_hit_stream",
+            "rows": rows,
+            "ray_count": int(packed_rays.count),
+            "triangle_count": self.triangle_count,
+            "max_rows": int(capacity),
+            "row_count": int(row_count.value),
+            "overflow": bool(overflow.value),
+            "deduplicate_primitives": bool(deduplicate_primitives),
+            "hit_event_count_before_dedup": int(hit_event_count.value),
+            "rt_core_accelerated": False,
+            "native_lowering_ready": True,
+            "prepared_reused": True,
+            "prepared_scene_used": True,
+            "prepared_run_index": self._run_count,
+            "phase_timing_seconds": {
+                "prepare_build": float(self.prepare_seconds),
+                "query_pack": float(query_pack_seconds),
+                "traversal": float(traversal_seconds.value),
+                "hit_stream_materialization": max(0.0, float(native_call_seconds) - float(traversal_seconds.value)),
+                "native_call": float(native_call_seconds),
+            },
+            "transfer_metadata": {
+                "static_scene_prepared_on_host": True,
+                "query_rays_passed_each_run": True,
+                "hit_stream_rows_materialized_on_host": True,
+                "true_zero_copy_authorized": False,
+            },
+            "claim_boundary": {
+                "native_app_api": False,
+                "raydb_semantics_embedded": False,
+                "row_schema": ("ray_id", "primitive_id"),
+                "fail_closed_overflow": True,
+                "public_speedup_claim": False,
+                "rt_core_acceleration": False,
+            },
+        }
+
     def prepare_primitive_grouped_i64_payload(
         self,
         primitive_group_ids,
@@ -2527,6 +2641,22 @@ def ray_triangle_primitive_grouped_i64_reduction_3d_embree(
             primitive_values=primitive_values,
             group_count=group_count,
             reduction=reduction,
+        )
+
+
+def ray_triangle_hit_stream_3d_embree(
+    rays,
+    triangles,
+    *,
+    max_rows: int | None = None,
+    deduplicate_primitives: bool = True,
+) -> dict[str, object]:
+    """Emit generic 3-D ray/triangle hit rows on Embree."""
+    with prepare_embree_static_triangle_scene_3d(triangles) as prepared:
+        return prepared.ray_triangle_hit_stream(
+            rays,
+            max_rows=max_rows,
+            deduplicate_primitives=deduplicate_primitives,
         )
 
 
@@ -5087,6 +5217,22 @@ def _load_embree_library():
         ctypes.c_size_t,
     ]
     library.rtdl_embree_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction.restype = ctypes.c_int
+
+    library.rtdl_embree_static_triangle_scene_3d_ray_triangle_hit_stream.argtypes = [
+        ctypes.c_void_p,
+        ctypes.POINTER(_RtdlRay3D),
+        ctypes.c_size_t,
+        ctypes.c_uint32,
+        ctypes.POINTER(_RtdlRayTriangleHitStreamRow),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_embree_static_triangle_scene_3d_ray_triangle_hit_stream.restype = ctypes.c_int
 
     library.rtdl_embree_static_triangle_scene_3d_destroy.argtypes = [ctypes.c_void_p]
     library.rtdl_embree_static_triangle_scene_3d_destroy.restype = None

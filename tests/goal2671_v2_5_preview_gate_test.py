@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 import unittest
 
@@ -16,8 +17,10 @@ class Goal2671V25PreviewGateTest(unittest.TestCase):
         self.assertEqual(gate["status"], "internal_v2_5_preview_pod_validation_required")
         self.assertEqual(gate["contract_validation_status"], "accept")
         self.assertTrue(gate["pod_validation_required"])
-        self.assertFalse(gate["cuda_execution_validated"])
+        self.assertTrue(gate["cuda_execution_validated"])
+        self.assertEqual(gate["cuda_validation_goal"], "Goal2683")
         self.assertFalse(gate["benchmark_integration_validated"])
+        self.assertIn("RT hit-stream handoff", gate["remaining_validation_scope"])
         self.assertFalse(gate["external_3ai_consensus_complete"])
         self.assertFalse(gate["public_release_tag_authorized"])
         self.assertFalse(gate["public_speedup_claim_authorized"])
@@ -44,6 +47,15 @@ class Goal2671V25PreviewGateTest(unittest.TestCase):
             set(gate["preview_kernel_operations"]).union(gate["reference_only_operations"]),
             set(rt.V2_5_PARTNER_CONTINUATION_OPERATION_NAMES),
         )
+
+    def test_goal2683_cuda_validation_artifact_is_importable(self):
+        artifact = ROOT / "docs/reports/artifacts/goal2683_goal2665_low_level_triton_l4.json"
+        payload = json.loads(artifact.read_text())
+
+        self.assertTrue(payload["environment"]["cuda_available"])
+        self.assertEqual(payload["environment"]["gpu_name"], "NVIDIA L4")
+        for scale in payload["scales"]:
+            self.assertTrue(all(scale["correctness"].values()))
 
     def test_docs_record_goal2671_preview_gate(self):
         report = (ROOT / "docs/reports/goal2671_v2_5_preview_gate_2026-05-27.md").read_text()

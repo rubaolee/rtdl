@@ -211,6 +211,19 @@ PRIMITIVE_HIERARCHY = (
                 depends_on=("layer.traversal",),
             ),
             PrimitiveHierarchyNode(
+                id="rows.ray_triangle_hit_stream_3d",
+                title="RAY_TRIANGLE_HIT_STREAM_3D",
+                layer="row_emission",
+                status="candidate_behavior",
+                summary="Emit bounded app-free 3-D ray/triangle hit rows for partner continuation.",
+                outputs=("ray_id", "primitive_id"),
+                depends_on=("traversal.any_hit", "execution.capacity_overflow_contract"),
+                boundary=(
+                    "The engine emits only ray and primitive ids. Mapping primitive ids "
+                    "to group keys, payload values, predicates, or app rows is app or partner code."
+                ),
+            ),
+            PrimitiveHierarchyNode(
                 id="rows.aabb_range_intersection_rows",
                 title="AABB range_intersection_rows",
                 layer="row_emission",

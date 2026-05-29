@@ -8788,6 +8788,21 @@ struct RayPrimitiveGroupedI64Reduction3DLaunchParams {
     uint32_t                  reduction;
 };
 
+struct RayTriangleHitStream3DLaunchParams {
+    OptixTraversableHandle       traversable;
+    const GpuRay3DHost*          rays;
+    const GpuTriangle3DHost*     triangles;
+    RtdlRayTriangleHitStreamRow* rows;
+    unsigned long long*          row_count;
+    unsigned long long*          hit_event_count;
+    uint32_t*                    overflow;
+    uint32_t*                    primitive_flags;
+    uint32_t                     ray_count;
+    uint32_t                     triangle_count;
+    uint32_t                     max_rows;
+    uint32_t                     deduplicate_primitives;
+};
+
 struct RayAnyHitGroupFlags3DLaunchParams {
     OptixTraversableHandle   traversable;
     const GpuRay3DHost*      rays;
@@ -9329,6 +9344,102 @@ static void ensure_ray_primitive_grouped_i64_reduction_3d_pipeline()
         std::string src = ray_primitive_grouped_i64_reduction_kernel_source_3d();
         std::string ptx = compile_to_ptx(src.c_str(), "rayprimitive_grouped_i64_reduction3d_kernel.cu");
         g_rayprimitive_grouped_i64_reduction3d.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__rayhit3d_probe",
+            "__miss__rayhit3d_miss",
+            "__intersection__rayhit3d_isect",
+            "__anyhit__rayhit3d_anyhit",
+            nullptr, 2).release();
+    });
+}
+
+static std::string ray_triangle_hit_stream_kernel_source_3d()
+{
+    std::string src(kRayHitCount3DKernelSrc);
+    const std::string old_output_field =
+        "    RayHitCount3DRecord*     output;\n"
+        "    uint32_t                 ray_count;\n";
+    const std::string new_output_field =
+        "    struct HitStreamRow { uint32_t ray_id; uint32_t primitive_id; };\n"
+        "    HitStreamRow*            rows;\n"
+        "    unsigned long long*      row_count;\n"
+        "    unsigned long long*      hit_event_count;\n"
+        "    uint32_t*                overflow;\n"
+        "    uint32_t*                primitive_flags;\n"
+        "    uint32_t                 ray_count;\n"
+        "    uint32_t                 triangle_count;\n"
+        "    uint32_t                 max_rows;\n"
+        "    uint32_t                 deduplicate_primitives;\n";
+    size_t pos = src.find(old_output_field);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 3-D hit-stream params");
+    src.replace(pos, old_output_field.size(), new_output_field);
+
+    const std::string old_zero_write =
+        "        params.output[idx] = {r.id, 0u};\n"
+        "        return;\n";
+    const std::string new_zero_write =
+        "        return;\n";
+    pos = src.find(old_zero_write);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 3-D hit-stream zero-ray path");
+    src.replace(pos, old_zero_write.size(), new_zero_write);
+
+    const std::string old_final_write =
+        "    params.output[idx] = {r.id, p1};\n";
+    const std::string new_final_write =
+        "    (void)p1;\n";
+    pos = src.find(old_final_write);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 3-D hit-stream final write path");
+    src.replace(pos, old_final_write.size(), new_final_write);
+
+    const std::string old_anyhit =
+        "extern \"C\" __global__ void __anyhit__rayhit3d_anyhit() {\n"
+        "    // Count this hit and keep traversing all triangles.\n"
+        "    uint32_t count = optixGetPayload_1();\n"
+        "    optixSetPayload_1(count + 1u);\n"
+        "    optixIgnoreIntersection();\n"
+        "}\n";
+    const std::string new_anyhit =
+        "extern \"C\" __global__ void __anyhit__rayhit3d_anyhit() {\n"
+        "    const uint32_t prim = optixGetPrimitiveIndex();\n"
+        "    const uint32_t ridx = optixGetPayload_0();\n"
+        "    if (prim >= params.triangle_count || ridx >= params.ray_count) {\n"
+        "        optixIgnoreIntersection();\n"
+        "        return;\n"
+        "    }\n"
+        "    atomicAdd(params.hit_event_count, 1ull);\n"
+        "    bool should_emit = true;\n"
+        "    if (params.deduplicate_primitives != 0u) {\n"
+        "        const uint32_t word = prim >> 5;\n"
+        "        const uint32_t mask = 1u << (prim & 31u);\n"
+        "        const uint32_t old = atomicOr(&params.primitive_flags[word], mask);\n"
+        "        should_emit = ((old & mask) == 0u);\n"
+        "    }\n"
+        "    if (should_emit) {\n"
+        "        const unsigned long long slot = atomicAdd(params.row_count, 1ull);\n"
+        "        if (slot < static_cast<unsigned long long>(params.max_rows)) {\n"
+        "            params.rows[slot] = {params.rays[ridx].id, prim};\n"
+        "        } else {\n"
+        "            atomicExch(params.overflow, 1u);\n"
+        "        }\n"
+        "    }\n"
+        "    optixIgnoreIntersection();\n"
+        "}\n";
+    pos = src.find(old_anyhit);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 3-D hit-stream any-hit path");
+    src.replace(pos, old_anyhit.size(), new_anyhit);
+    return src;
+}
+
+static void ensure_ray_triangle_hit_stream_3d_pipeline()
+{
+    std::call_once(g_raytriangle_hitstream3d.init, [&]() {
+        std::string src = ray_triangle_hit_stream_kernel_source_3d();
+        std::string ptx = compile_to_ptx(src.c_str(), "raytriangle_hitstream3d_kernel.cu");
+        g_raytriangle_hitstream3d.pipe = build_pipeline(
             get_optix_context(), ptx,
             "__raygen__rayhit3d_probe",
             "__miss__rayhit3d_miss",
@@ -9963,6 +10074,118 @@ static void run_prepared_static_triangle_scene_3d_ray_primitive_grouped_i64_redu
     }
     *hit_event_count_out = static_cast<uint64_t>(hit_events);
     const auto traversal_end = std::chrono::steady_clock::now();
+    if (traversal_seconds_out)
+        *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
+}
+
+static void run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        const RtdlRay3D* rays,
+        size_t ray_count,
+        uint32_t deduplicate_primitives,
+        RtdlRayTriangleHitStreamRow* rows_out,
+        size_t max_rows,
+        size_t* row_count_out,
+        uint64_t* hit_event_count_out,
+        uint32_t* overflow_out,
+        double* traversal_seconds_out)
+{
+    if (!prepared)
+        throw std::runtime_error("prepared scene handle must not be null");
+    if (!rays && ray_count != 0)
+        throw std::runtime_error("ray pointer must not be null when ray_count is nonzero");
+    if (!rows_out && max_rows != 0)
+        throw std::runtime_error("hit stream rows_out pointer must not be null when max_rows is nonzero");
+    if (!row_count_out || !hit_event_count_out || !overflow_out)
+        throw std::runtime_error("hit stream output counters must not be null");
+    if (ray_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("ray_count exceeds uint32 launch limit");
+    if (prepared->triangle_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("triangle_count exceeds uint32 primitive limit");
+    if (max_rows > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("max_rows exceeds uint32 hit-stream capacity");
+
+    *row_count_out = 0;
+    *hit_event_count_out = 0u;
+    *overflow_out = 0u;
+    if (traversal_seconds_out)
+        *traversal_seconds_out = 0.0;
+    if (ray_count == 0 || prepared->triangle_count == 0)
+        return;
+
+    std::vector<GpuRay3DHost> gpu_rays(ray_count);
+    for (size_t i = 0; i < ray_count; ++i)
+        gpu_rays[i] = pack_ray_3d_as_gpu_ray(rays[i]);
+
+    ensure_ray_triangle_hit_stream_3d_pipeline();
+
+    const size_t flag_word_count = std::max<size_t>(1, (prepared->triangle_count + 31u) / 32u);
+    DevPtr d_rays(sizeof(GpuRay3DHost) * ray_count);
+    DevPtr d_rows(sizeof(RtdlRayTriangleHitStreamRow) * max_rows);
+    DevPtr d_row_count(sizeof(unsigned long long));
+    DevPtr d_hit_events(sizeof(unsigned long long));
+    DevPtr d_overflow(sizeof(uint32_t));
+    DevPtr d_flags(sizeof(uint32_t) * flag_word_count);
+
+    upload(d_rays.ptr, gpu_rays.data(), gpu_rays.size());
+    unsigned long long zero64 = 0ull;
+    uint32_t zero32 = 0u;
+    upload(d_row_count.ptr, &zero64, 1);
+    upload(d_hit_events.ptr, &zero64, 1);
+    upload(d_overflow.ptr, &zero32, 1);
+    CU_CHECK(cuMemsetD32(d_flags.ptr, 0u, flag_word_count));
+
+    RayTriangleHitStream3DLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.rays = reinterpret_cast<const GpuRay3DHost*>(d_rays.ptr);
+    lp.triangles = reinterpret_cast<const GpuTriangle3DHost*>(prepared->d_triangles.ptr);
+    lp.rows = reinterpret_cast<RtdlRayTriangleHitStreamRow*>(d_rows.ptr);
+    lp.row_count = reinterpret_cast<unsigned long long*>(d_row_count.ptr);
+    lp.hit_event_count = reinterpret_cast<unsigned long long*>(d_hit_events.ptr);
+    lp.overflow = reinterpret_cast<uint32_t*>(d_overflow.ptr);
+    lp.primitive_flags = reinterpret_cast<uint32_t*>(d_flags.ptr);
+    lp.ray_count = static_cast<uint32_t>(ray_count);
+    lp.triangle_count = static_cast<uint32_t>(prepared->triangle_count);
+    lp.max_rows = static_cast<uint32_t>(max_rows);
+    lp.deduplicate_primitives = deduplicate_primitives != 0u ? 1u : 0u;
+
+    DevPtr d_params(sizeof(RayTriangleHitStream3DLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    const auto traversal_start = std::chrono::steady_clock::now();
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_raytriangle_hitstream3d.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(RayTriangleHitStream3DLaunchParams),
+                             &g_raytriangle_hitstream3d.pipe->sbt,
+                             static_cast<unsigned>(ray_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    const auto traversal_end = std::chrono::steady_clock::now();
+
+    unsigned long long attempted_rows = 0ull;
+    unsigned long long hit_events = 0ull;
+    uint32_t overflow = 0u;
+    download(&attempted_rows, d_row_count.ptr, 1);
+    download(&hit_events, d_hit_events.ptr, 1);
+    download(&overflow, d_overflow.ptr, 1);
+    if (overflow != 0u || attempted_rows > static_cast<unsigned long long>(max_rows)) {
+        *row_count_out = 0;
+        *overflow_out = 1u;
+    } else {
+        const size_t emitted = static_cast<size_t>(attempted_rows);
+        if (emitted != 0)
+            download(rows_out, d_rows.ptr, emitted);
+        if (emitted > 1) {
+            std::sort(rows_out, rows_out + emitted, [](const auto& left, const auto& right) {
+                if (left.primitive_id != right.primitive_id) {
+                    return left.primitive_id < right.primitive_id;
+                }
+                return left.ray_id < right.ray_id;
+            });
+        }
+        *row_count_out = emitted;
+        *overflow_out = 0u;
+    }
+    *hit_event_count_out = static_cast<uint64_t>(hit_events);
     if (traversal_seconds_out)
         *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
 }

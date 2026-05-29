@@ -603,6 +603,9 @@ def run_triton_grouped_argmin_f64(
             group_count,
             BLOCK_SIZE=block_size,
         )
+        # The second pass implements the documented lowest-item-id tie-break
+        # after the best score is fixed. Keep the equal-score CUDA test in
+        # goal2679 before promoting this beyond preview status.
         _triton_grouped_argmin_item_i64_kernel(tl)[grid](
             group_ids,
             item_ids,
@@ -925,6 +928,8 @@ def _import_triton_stack():
         ) from exc
     if not torch.cuda.is_available():
         raise RuntimeError("run_triton_segmented_sum_f64 requires CUDA; use an NVIDIA pod")
+    globals()["triton"] = triton
+    globals()["tl"] = tl
     return triton, torch, tl
 
 

@@ -216,6 +216,11 @@ struct RtdlRayClosestHitRow {
   double t;
 };
 
+struct RtdlRayTriangleHitStreamRow {
+  uint32_t ray_id;
+  uint32_t primitive_id;
+};
+
 struct RtdlSegmentPolygonHitCountRow {
   uint32_t segment_id;
   uint32_t hit_count;
@@ -446,6 +451,19 @@ int rtdl_embree_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction(
     uint64_t* group_mins_out,
     uint64_t* group_maxs_out,
     uint64_t* hit_event_count_out,
+    double* traversal_seconds_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_static_triangle_scene_3d_ray_triangle_hit_stream(
+    void* handle,
+    const RtdlRay3D* rays,
+    size_t ray_count,
+    uint32_t deduplicate_primitives,
+    RtdlRayTriangleHitStreamRow* rows_out,
+    size_t max_rows,
+    size_t* row_count_out,
+    uint64_t* hit_event_count_out,
+    uint32_t* overflow_out,
     double* traversal_seconds_out,
     char* error_out,
     size_t error_size);

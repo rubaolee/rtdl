@@ -1515,6 +1515,123 @@ RTDL_EMBREE_EXPORT int rtdl_embree_static_triangle_scene_3d_ray_primitive_groupe
   }, error_out, error_size);
 }
 
+RTDL_EMBREE_EXPORT int rtdl_embree_static_triangle_scene_3d_ray_triangle_hit_stream(
+    void* handle,
+    const RtdlRay3D* rays,
+    size_t ray_count,
+    uint32_t deduplicate_primitives,
+    RtdlRayTriangleHitStreamRow* rows_out,
+    size_t max_rows,
+    size_t* row_count_out,
+    uint64_t* hit_event_count_out,
+    uint32_t* overflow_out,
+    double* traversal_seconds_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (handle == nullptr) {
+      throw std::runtime_error("prepared scene handle must not be null");
+    }
+    if (ray_count != 0 && rays == nullptr) {
+      throw std::runtime_error("ray pointer must not be null when ray_count is nonzero");
+    }
+    if (max_rows != 0 && rows_out == nullptr) {
+      throw std::runtime_error("hit stream rows_out pointer must not be null when max_rows is nonzero");
+    }
+    if (row_count_out == nullptr || hit_event_count_out == nullptr || overflow_out == nullptr) {
+      throw std::runtime_error("hit stream output counters must not be null");
+    }
+    auto* prepared = reinterpret_cast<PreparedTriangleScene3DImpl*>(handle);
+    *row_count_out = 0;
+    *hit_event_count_out = 0;
+    *overflow_out = 0u;
+    if (traversal_seconds_out != nullptr) {
+      *traversal_seconds_out = 0.0;
+    }
+    if (ray_count == 0 || prepared->triangle_values.empty()) {
+      return;
+    }
+
+    std::vector<RtdlRayTriangleHitStreamRow> rows;
+    rows.reserve(std::min(max_rows, prepared->triangle_values.size()));
+    uint64_t hit_event_count = 0u;
+    std::mutex merge_mutex;
+    const bool dedupe = deduplicate_primitives != 0u;
+    const auto traversal_start = std::chrono::steady_clock::now();
+    run_query_index_ranges(ray_count, [&](size_t begin, size_t end) {
+      std::vector<RtdlRayTriangleHitStreamRow> local_rows;
+      std::unordered_set<uint32_t> local_seen_primitive_indices;
+      uint64_t local_hit_event_count = 0u;
+      for (size_t ray_index = begin; ray_index < end; ++ray_index) {
+        const RtdlRay3D& packed_ray = rays[ray_index];
+        const RayQuery3D ray {
+            packed_ray.id,
+            {packed_ray.ox, packed_ray.oy, packed_ray.oz},
+            {packed_ray.dx, packed_ray.dy, packed_ray.dz},
+            packed_ray.tmax};
+        RayTriangleHitStreamState3D state {
+            &ray,
+            &local_rows,
+            &local_seen_primitive_indices,
+            &local_hit_event_count,
+            dedupe,
+        };
+        g_query_kind = QueryKind::kRayTriangleHitStream3D;
+        g_query_state = &state;
+        RTCRayHit rayhit;
+        set_ray_3d(&rayhit, ray.o, ray.d, ray.tmax);
+        RTCIntersectArguments args;
+        rtcInitIntersectArguments(&args);
+        rtdlRtcIntersect1(prepared->holder.scene, &rayhit, &args);
+        g_query_kind = QueryKind::kNone;
+        g_query_state = nullptr;
+      }
+      std::lock_guard<std::mutex> lock(merge_mutex);
+      hit_event_count += local_hit_event_count;
+      rows.insert(rows.end(), local_rows.begin(), local_rows.end());
+    });
+    g_query_kind = QueryKind::kNone;
+    g_query_state = nullptr;
+
+    const auto traversal_end = std::chrono::steady_clock::now();
+    std::sort(rows.begin(), rows.end(), [](const auto& left, const auto& right) {
+      if (left.primitive_id != right.primitive_id) {
+        return left.primitive_id < right.primitive_id;
+      }
+      return left.ray_id < right.ray_id;
+    });
+    if (dedupe) {
+      std::vector<RtdlRayTriangleHitStreamRow> deduped;
+      deduped.reserve(rows.size());
+      uint32_t last_primitive = 0u;
+      bool has_last = false;
+      for (const auto& row : rows) {
+        if (!has_last || row.primitive_id != last_primitive) {
+          deduped.push_back(row);
+          last_primitive = row.primitive_id;
+          has_last = true;
+        }
+      }
+      rows.swap(deduped);
+    }
+    if (rows.size() > max_rows) {
+      *row_count_out = 0;
+      *hit_event_count_out = hit_event_count;
+      *overflow_out = 1u;
+    } else {
+      for (size_t index = 0; index < rows.size(); ++index) {
+        rows_out[index] = rows[index];
+      }
+      *row_count_out = rows.size();
+      *hit_event_count_out = hit_event_count;
+      *overflow_out = 0u;
+    }
+    if (traversal_seconds_out != nullptr) {
+      *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
+    }
+  }, error_out, error_size);
+}
+
 RTDL_EMBREE_EXPORT void rtdl_embree_static_triangle_scene_3d_destroy(void* handle) {
   auto* prepared = reinterpret_cast<PreparedTriangleScene3DImpl*>(handle);
   delete prepared;

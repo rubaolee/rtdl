@@ -34,6 +34,12 @@ Validated Git revision on the pod:
 74d7ecc36fa5008b8e7336988cd2fc9242a59093
 ```
 
+Review note: the later documentation/review target commit
+`121431432d414ece1dd4e7b95f5e9faa6f80eab5` differs from the pod artifact
+commit only by documentation/report updates. The recorded Goal2683 JSON
+artifacts therefore remain valid for the reviewed source code, but they should
+continue to cite the exact pod commit shown above.
+
 Environment:
 
 | Field | Value |

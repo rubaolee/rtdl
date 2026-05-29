@@ -26,6 +26,19 @@ from .reduction_runtime import run_generic_scalar_reduction
 
 ACTIVE_V1_5_GENERIC_PRIMITIVE_BACKENDS = ("cpu", "embree", "optix")
 FROZEN_BEFORE_V2_1_GENERIC_BACKENDS = ("vulkan", "hiprt", "apple_rt")
+GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_PRIMITIVE = "RAY_TRIANGLE_HIT_STREAM_3D"
+GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_ROW_SCHEMA = ("ray_id", "primitive_id")
+GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_CONTRACT = {
+    "primitive": GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_PRIMITIVE,
+    "row_schema": GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_ROW_SCHEMA,
+    "semantics": (
+        "Emit app-free 3-D ray/triangle hit rows. A row records only the query "
+        "ray id and hit primitive index. App-owned adapters may map primitive "
+        "indices to group ids or payload values after RT traversal."
+    ),
+    "overflow_policy": "fail_closed_bounded_rows",
+    "native_engine_app_semantics": False,
+}
 
 
 @rt.kernel(backend="rtdl", precision="float_approx")
@@ -73,6 +86,53 @@ def _normalize_backend(backend: str) -> str:
         "metal": "apple_rt",
     }
     return aliases.get(normalized, normalized)
+
+
+def _packed_runtime_types() -> tuple[type | None, type | None]:
+    try:
+        from .embree_runtime import PackedRays
+        from .embree_runtime import PackedTriangles
+    except Exception:
+        return None, None
+    return PackedRays, PackedTriangles
+
+
+def _unpack_packed_rays_3d(packed: Any) -> tuple[Ray3D, ...]:
+    if int(packed.dimension) != 3:
+        raise TypeError("generic ray/triangle hit stream 3D requires 3-D rays")
+    return tuple(
+        Ray3D(
+            id=int(record.id),
+            ox=float(record.ox),
+            oy=float(record.oy),
+            oz=float(record.oz),
+            dx=float(record.dx),
+            dy=float(record.dy),
+            dz=float(record.dz),
+            tmax=float(record.tmax),
+        )
+        for record in packed.records[: int(packed.count)]
+    )
+
+
+def _unpack_packed_triangles_3d(packed: Any) -> tuple[Triangle3D, ...]:
+    if int(packed.dimension) != 3:
+        raise TypeError("generic ray/triangle hit stream 3D requires 3-D triangles")
+    return tuple(
+        Triangle3D(
+            id=int(record.id),
+            x0=float(record.x0),
+            y0=float(record.y0),
+            z0=float(record.z0),
+            x1=float(record.x1),
+            y1=float(record.y1),
+            z1=float(record.z1),
+            x2=float(record.x2),
+            y2=float(record.y2),
+            z2=float(record.z2),
+        )
+        for record in packed.records[: int(packed.count)]
+    )
 
 
 def _ray_dimension(rays: tuple[Ray2D | Ray3D, ...]) -> int | None:
@@ -300,6 +360,118 @@ def run_generic_ray_triangle_closest_hit(
         }
         for row in rows
     )
+
+
+def run_generic_ray_triangle_hit_stream_3d(
+    rays: tuple[Ray3D, ...],
+    triangles: tuple[Triangle3D, ...],
+    *,
+    max_rows: int | None = None,
+    deduplicate_primitives: bool = True,
+    backend: str = "cpu",
+) -> dict[str, Any]:
+    """Emit a generic bounded 3-D ray/triangle hit stream.
+
+    The native/app boundary is intentionally narrow: RTDL emits ray ids and
+    primitive ids only. Mapping primitive ids to group keys, SQL predicates, or
+    aggregate payloads is app-owned continuation work.
+    """
+    normalized_backend = _normalize_backend(backend)
+    if normalized_backend not in {"cpu", "embree", "optix"}:
+        raise ValueError("generic ray/triangle hit stream backend must be one of: cpu, embree, optix")
+    if max_rows is not None and int(max_rows) < 0:
+        raise ValueError("max_rows must be non-negative")
+    packed_rays_type, packed_triangles_type = _packed_runtime_types()
+    rays_are_packed = packed_rays_type is not None and isinstance(rays, packed_rays_type)
+    triangles_are_packed = packed_triangles_type is not None and isinstance(triangles, packed_triangles_type)
+    triangle_count = int(triangles.count) if packed_triangles_type is not None and isinstance(triangles, packed_triangles_type) else len(triangles)
+    ray_count = int(rays.count) if packed_rays_type is not None and isinstance(rays, packed_rays_type) else len(rays)
+    if rays_are_packed:
+        if rays.dimension != 3:
+            raise TypeError("generic ray/triangle hit stream 3D requires 3-D rays")
+    elif any(not isinstance(ray, Ray3D) for ray in rays):
+        raise TypeError("generic ray/triangle hit stream 3D requires Ray3D inputs")
+    if triangles_are_packed:
+        if triangles.dimension != 3:
+            raise TypeError("generic ray/triangle hit stream 3D requires 3-D triangles")
+    elif any(not isinstance(triangle, Triangle3D) for triangle in triangles):
+        raise TypeError("generic ray/triangle hit stream 3D requires Triangle3D inputs")
+
+    if normalized_backend == "embree":
+        from .embree_runtime import ray_triangle_hit_stream_3d_embree
+
+        return ray_triangle_hit_stream_3d_embree(
+            rays,
+            triangles,
+            max_rows=max_rows,
+            deduplicate_primitives=deduplicate_primitives,
+        )
+    if normalized_backend == "optix":
+        from .optix_runtime import ray_triangle_hit_stream_3d_optix
+
+        return ray_triangle_hit_stream_3d_optix(
+            rays,
+            triangles,
+            max_rows=max_rows,
+            deduplicate_primitives=deduplicate_primitives,
+        )
+
+    if rays_are_packed:
+        rays = _unpack_packed_rays_3d(rays)
+    if triangles_are_packed:
+        triangles = _unpack_packed_triangles_3d(triangles)
+
+    started = time.perf_counter()
+    hit_event_count = 0
+    candidate_rows: list[dict[str, int]] = []
+    seen_indices: set[int] = set()
+    for ray in rays:
+        for primitive_index, triangle in enumerate(triangles):
+            if not _finite_ray_hits_triangle(ray, triangle):
+                continue
+            hit_event_count += 1
+            if deduplicate_primitives:
+                if primitive_index in seen_indices:
+                    continue
+                seen_indices.add(primitive_index)
+            candidate_rows.append({"ray_id": int(ray.id), "primitive_id": int(primitive_index)})
+    candidate_rows.sort(key=lambda row: (row["primitive_id"], row["ray_id"]))
+    capacity = (
+        triangle_count
+        if max_rows is None and deduplicate_primitives
+        else int(max_rows if max_rows is not None else max(1, ray_count * triangle_count))
+    )
+    overflow = len(candidate_rows) > capacity
+    rows = () if overflow else tuple(candidate_rows)
+    elapsed = time.perf_counter() - started
+    return {
+        "primitive": GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_PRIMITIVE,
+        "backend": normalized_backend,
+        "row_schema": GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_ROW_SCHEMA,
+        "rows": rows,
+        "ray_count": ray_count,
+        "triangle_count": triangle_count,
+        "max_rows": capacity,
+        "row_count": 0 if overflow else len(rows),
+        "attempted_row_count": len(candidate_rows),
+        "overflow": overflow,
+        "deduplicate_primitives": bool(deduplicate_primitives),
+        "hit_event_count_before_dedup": hit_event_count,
+        "rt_core_accelerated": False,
+        "native_lowering_ready": False,
+        "phase_timing_seconds": {
+            "traversal": elapsed,
+            "hit_stream_materialization": 0.0,
+            "native_call": elapsed,
+        },
+        "claim_boundary": {
+            "native_app_api": False,
+            "raydb_semantics_embedded": False,
+            "row_schema": GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_ROW_SCHEMA,
+            "fail_closed_overflow": True,
+            "public_speedup_claim": False,
+        },
+    }
 
 
 def run_generic_ray_triangle_primitive_grouped_i64_reduction_3d(

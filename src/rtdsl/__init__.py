@@ -66,6 +66,9 @@ from .partner_continuation_protocol import V2_5_ALLOWED_PARTNERS
 from .partner_continuation_protocol import V2_5_ALLOWED_STATUSES
 from .partner_continuation_protocol import V2_5_CONFORMANCE_PARTNER
 from .partner_continuation_protocol import V2_5_FALLBACK_PARTNER
+from .partner_continuation_protocol import V2_5_BENCHMARK_INTEGRATION_VALIDATED
+from .partner_continuation_protocol import V2_5_GOAL2683_CUDA_EXECUTION_VALIDATED
+from .partner_continuation_protocol import V2_5_GROUP_ID_VALIDATION_CONTRACT
 from .partner_continuation_protocol import V2_5_PARTNER_CONTINUATION_OPERATIONS
 from .partner_continuation_protocol import V2_5_PARTNER_CONTINUATION_OPERATION_NAMES
 from .partner_continuation_protocol import V2_5_PARTNER_CONTINUATION_VERSION
@@ -1031,6 +1034,9 @@ from .aabb_index import prepare_aabb_index_2d
 from .aabb_index import query_aabb_index_2d
 from .generic_primitives import ACTIVE_V1_5_GENERIC_PRIMITIVE_BACKENDS
 from .generic_primitives import FROZEN_BEFORE_V2_1_GENERIC_BACKENDS
+from .generic_primitives import GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_CONTRACT
+from .generic_primitives import GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_PRIMITIVE
+from .generic_primitives import GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_ROW_SCHEMA
 from .generic_primitives import GenericPreparedFixedRadiusCountThreshold2D
 from .generic_primitives import GenericPreparedRayTriangleAnyHitScene
 from .generic_primitives import GenericPreparedRayTrianglePrimitiveGroupedI64Reduction3D
@@ -1044,6 +1050,7 @@ from .generic_primitives import run_generic_prepared_ray_triangle_any_hit_count
 from .generic_primitives import run_generic_ray_triangle_any_hit
 from .generic_primitives import run_generic_ray_triangle_any_hit_count
 from .generic_primitives import run_generic_ray_triangle_closest_hit
+from .generic_primitives import run_generic_ray_triangle_hit_stream_3d
 from .generic_primitives import run_generic_ray_triangle_primitive_grouped_i64_reduction_3d
 from .generic_db_primitives import ACTIVE_V1_5_GENERIC_DB_BACKENDS
 from .generic_db_primitives import FROZEN_BEFORE_V2_1_DB_BACKENDS
@@ -1472,6 +1479,9 @@ __all__ = [
     "V2_5_ALLOWED_STATUSES",
     "V2_5_CONFORMANCE_PARTNER",
     "V2_5_FALLBACK_PARTNER",
+    "V2_5_BENCHMARK_INTEGRATION_VALIDATED",
+    "V2_5_GOAL2683_CUDA_EXECUTION_VALIDATED",
+    "V2_5_GROUP_ID_VALIDATION_CONTRACT",
     "V2_5_PARTNER_CONTINUATION_OPERATIONS",
     "V2_5_PARTNER_CONTINUATION_OPERATION_NAMES",
     "V2_5_PARTNER_CONTINUATION_VERSION",
@@ -1613,6 +1623,9 @@ __all__ = [
     "query_aabb_index_2d",
     "ACTIVE_V1_5_GENERIC_PRIMITIVE_BACKENDS",
     "FROZEN_BEFORE_V2_1_GENERIC_BACKENDS",
+    "GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_CONTRACT",
+    "GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_PRIMITIVE",
+    "GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_ROW_SCHEMA",
     "GenericPreparedFixedRadiusCountThreshold2D",
     "GenericPreparedRayTriangleAnyHitScene",
     "GenericPreparedRayTrianglePrimitiveGroupedI64Reduction3D",
@@ -1626,6 +1639,7 @@ __all__ = [
     "run_generic_ray_triangle_any_hit",
     "run_generic_ray_triangle_any_hit_count",
     "run_generic_ray_triangle_closest_hit",
+    "run_generic_ray_triangle_hit_stream_3d",
     "run_generic_ray_triangle_primitive_grouped_i64_reduction_3d",
     "run_generic_scalar_reduction",
     "V1_5_GENERIC_SCALAR_REDUCTION_PRIMITIVES",

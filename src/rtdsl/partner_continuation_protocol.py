@@ -42,7 +42,12 @@ V2_5_RAWKERNEL_REQUIRED_ALLOWED = False
 V2_5_PREVIEW_GATE_STATUS = "internal_v2_5_preview_pod_validation_required"
 V2_5_PREVIEW_RELEASE_TAG_AUTHORIZED = False
 V2_5_PREVIEW_PUBLIC_SPEEDUP_CLAIM_AUTHORIZED = False
-V2_5_PREVIEW_CUDA_EXECUTION_VALIDATED = False
+V2_5_GOAL2683_CUDA_EXECUTION_VALIDATED = True
+V2_5_BENCHMARK_INTEGRATION_VALIDATED = False
+V2_5_GROUP_ID_VALIDATION_CONTRACT = (
+    "group ids must be in [0, group_count); reference and executable partners "
+    "reject invalid group ids before continuation"
+)
 
 
 class PartnerContinuationOverflowError(RuntimeError):
@@ -77,28 +82,40 @@ V2_5_PARTNER_CONTINUATION_OPERATIONS: tuple[RtdlPartnerContinuationOperation, ..
         category="segmented_reduction",
         input_names=("group_ids", "group_count"),
         output_names=("counts",),
-        behavior="count int64 rows per integer group id",
+        behavior=(
+            "count int64 rows per integer group id; "
+            + V2_5_GROUP_ID_VALIDATION_CONTRACT
+        ),
     ),
     RtdlPartnerContinuationOperation(
         name="segmented_sum_f64",
         category="segmented_reduction",
         input_names=("group_ids", "values", "group_count"),
         output_names=("sums",),
-        behavior="sum float64 values per integer group id",
+        behavior=(
+            "sum float64 values per integer group id; "
+            + V2_5_GROUP_ID_VALIDATION_CONTRACT
+        ),
     ),
     RtdlPartnerContinuationOperation(
         name="segmented_min_f64",
         category="segmented_reduction",
         input_names=("group_ids", "values", "group_count"),
         output_names=("group_ids", "mins", "missing_group_ids"),
-        behavior="minimum float64 value per integer group id with explicit missing groups",
+        behavior=(
+            "minimum float64 value per integer group id with explicit missing groups; "
+            + V2_5_GROUP_ID_VALIDATION_CONTRACT
+        ),
     ),
     RtdlPartnerContinuationOperation(
         name="segmented_max_f64",
         category="segmented_reduction",
         input_names=("group_ids", "values", "group_count"),
         output_names=("group_ids", "maxes", "missing_group_ids"),
-        behavior="maximum float64 value per integer group id with explicit missing groups",
+        behavior=(
+            "maximum float64 value per integer group id with explicit missing groups; "
+            + V2_5_GROUP_ID_VALIDATION_CONTRACT
+        ),
     ),
     RtdlPartnerContinuationOperation(
         name="compact_mask_i64",
@@ -112,14 +129,20 @@ V2_5_PARTNER_CONTINUATION_OPERATIONS: tuple[RtdlPartnerContinuationOperation, ..
         category="bounded_finalization",
         input_names=("group_ids", "item_ids", "group_count", "k"),
         output_names=("group_ids", "item_ids", "row_offsets"),
-        behavior="finalize bounded int64 rows per group with fail-closed overflow",
+        behavior=(
+            "finalize bounded int64 rows per group with fail-closed overflow; "
+            + V2_5_GROUP_ID_VALIDATION_CONTRACT
+        ),
     ),
     RtdlPartnerContinuationOperation(
         name="grouped_argmin_f64",
         category="ranked_summary",
         input_names=("group_ids", "item_ids", "scores", "group_count"),
         output_names=("group_ids", "item_ids", "scores", "missing_group_ids"),
-        behavior="select the lowest-score item per group with deterministic item-id tie-break",
+        behavior=(
+            "select the lowest-score item per group with deterministic item-id tie-break; "
+            + V2_5_GROUP_ID_VALIDATION_CONTRACT
+        ),
     ),
 )
 
@@ -271,8 +294,10 @@ def validate_v2_5_partner_continuation_contract(
 def v2_5_partner_preview_gate() -> dict[str, object]:
     """Return the current v2.5 local-preview gate.
 
-    This gate intentionally does not close v2.5. It records what is ready for
-    CUDA pod validation and what remains reference/descriptor-only.
+    This gate intentionally does not close v2.5. Goal2683 validated CUDA
+    execution correctness for the generic continuation kernels; full benchmark
+    integration, RT hit-stream handoff, external consensus, and public claims
+    remain gated.
     """
 
     validation = validate_v2_5_partner_continuation_contract()
@@ -287,8 +312,13 @@ def v2_5_partner_preview_gate() -> dict[str, object]:
         "reference_only_operations": V2_5_PARTNER_REFERENCE_ONLY_OPERATIONS,
         "first_benchmark_pilot": "raydb_style_grouped_count_sum",
         "pod_validation_required": True,
-        "cuda_execution_validated": V2_5_PREVIEW_CUDA_EXECUTION_VALIDATED,
-        "benchmark_integration_validated": False,
+        "cuda_execution_validated": V2_5_GOAL2683_CUDA_EXECUTION_VALIDATED,
+        "benchmark_integration_validated": V2_5_BENCHMARK_INTEGRATION_VALIDATED,
+        "cuda_validation_goal": "Goal2683",
+        "remaining_validation_scope": (
+            "full RT hit-stream handoff, benchmark integration, optimized "
+            "performance path, and external 3-AI consensus"
+        ),
         "external_3ai_consensus_complete": False,
         "public_release_tag_authorized": V2_5_PREVIEW_RELEASE_TAG_AUTHORIZED,
         "public_speedup_claim_authorized": V2_5_PREVIEW_PUBLIC_SPEEDUP_CLAIM_AUTHORIZED,
@@ -323,8 +353,8 @@ def validate_v2_5_partner_preview_gate(
         errors.append("preview/reference operation partition must cover all operations")
     if gate.get("pod_validation_required") is not True:
         errors.append("v2.5 preview must require CUDA pod validation")
-    if gate.get("cuda_execution_validated") is not False:
-        errors.append("local preview must not claim CUDA execution validation")
+    if gate.get("cuda_execution_validated") is not True:
+        errors.append("Goal2683 CUDA continuation correctness validation must remain recorded")
     if gate.get("benchmark_integration_validated") is not False:
         errors.append("local preview must not claim benchmark integration validation")
     if gate.get("external_3ai_consensus_complete") is not False:

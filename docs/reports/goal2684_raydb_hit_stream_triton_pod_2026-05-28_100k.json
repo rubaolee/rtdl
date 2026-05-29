@@ -1,0 +1,455 @@
+{
+  "all_correct": true,
+  "backends": [
+    "paper_rt_embree",
+    "paper_rt_optix",
+    "paper_rt_embree_hit_stream_triton",
+    "paper_rt_optix_hit_stream_triton"
+  ],
+  "cases": [
+    {
+      "all_wall_sec": [
+        0.7987130219698884,
+        0.6850205130176619
+      ],
+      "backend": "paper_rt_embree",
+      "claim_boundary": "This is the paper-shaped RayDB RT lowering through a generic Embree primitive. Correctness/performance claims require same-contract evidence and review.",
+      "continuation_execution_path": null,
+      "group_count": 1024,
+      "hit_stream_overflow": null,
+      "hit_stream_row_count": null,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 0.7418667674937751,
+      "metadata_timings": {
+        "elapsed_sec": 0.5821495709824376,
+        "prepare_build": 0.23084874101914465,
+        "query_pack": 0.000113181013148278,
+        "traversal": 0.290237866
+      },
+      "mode": "count",
+      "native_symbol": "rtdl_embree_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction",
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.016397500985574354,
+          "query_preparation": 0.04466546297771856,
+          "rt_traversal": 0.290237866,
+          "scene_build": 0.23084874101914465
+        },
+        "promoted_performance_path": true,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_native_result_mode.embree.count",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 2,
+      "result_row_count": 193,
+      "row_count": 100000,
+      "rt_core_accelerated": false,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        0.16956645395839587,
+        0.16353719698963687
+      ],
+      "backend": "paper_rt_optix",
+      "claim_boundary": "This is the paper-shaped RayDB RT lowering through a generic Optix primitive. Correctness/performance claims require same-contract evidence and review.",
+      "continuation_execution_path": null,
+      "group_count": 1024,
+      "hit_stream_overflow": null,
+      "hit_stream_row_count": null,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 0.16655182547401637,
+      "metadata_timings": {
+        "elapsed_sec": 0.0680463639437221,
+        "prepare_build": 0.003179082996211946,
+        "query_pack": 6.938498700037599e-05,
+        "traversal": 0.000230077
+      },
+      "mode": "count",
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction",
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.02540824301760602,
+          "query_preparation": 0.03922896092990413,
+          "rt_traversal": 0.000230077,
+          "scene_build": 0.003179082996211946
+        },
+        "promoted_performance_path": true,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_native_result_mode.optix.count",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 2,
+      "result_row_count": 193,
+      "row_count": 100000,
+      "rt_core_accelerated": true,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        0.7967741230386309,
+        0.8020280899945647
+      ],
+      "backend": "paper_rt_embree_hit_stream_triton",
+      "claim_boundary": "This is Goal2684 full RT hit-stream plus Triton continuation evidence. It is not a public speedup claim until pod artifacts and external review exist.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 1024,
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 236,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 0.7994011065165978,
+      "metadata_timings": {
+        "elapsed_sec": 0.6211538129718974,
+        "hit_stream_hit_stream_materialization": 4.6540993031307654e-05,
+        "hit_stream_native_call": 0.3626645079930313,
+        "hit_stream_prepare_build": 0.21089744102209806,
+        "hit_stream_query_pack": 6.1393016949296e-05,
+        "hit_stream_to_partner_input": 0.0005969920312054455,
+        "hit_stream_traversal": 0.362617967,
+        "row_presentation": 0.00019515497842803597,
+        "rt_hit_stream_total": 0.5739561039954424,
+        "triton_continuation": 0.006704809027723968,
+        "workload_build": 0.03967895999085158
+      },
+      "mode": "count",
+      "native_symbol": "rtdl_embree_static_triangle_scene_3d_ray_triangle_hit_stream",
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 4.6540993031307654e-05,
+          "partner_continuation": 0.006704809027723968,
+          "query_preparation": 0.03967895999085158,
+          "rt_traversal": 0.362617967,
+          "scene_build": 0.21089744102209806
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_hit_stream_triton.embree.count",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 2,
+      "result_row_count": 193,
+      "row_count": 100000,
+      "rt_core_accelerated": false,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        0.17584499897202477,
+        0.14999803400132805
+      ],
+      "backend": "paper_rt_optix_hit_stream_triton",
+      "claim_boundary": "This is Goal2684 full RT hit-stream plus Triton continuation evidence. It is not a public speedup claim until pod artifacts and external review exist.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 1024,
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 236,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 0.1629215164866764,
+      "metadata_timings": {
+        "elapsed_sec": 0.060153120022732764,
+        "hit_stream_hit_stream_materialization": 0.009877822978945613,
+        "hit_stream_native_call": 0.010044323978945613,
+        "hit_stream_prepare_build": 0.003190079005435109,
+        "hit_stream_query_pack": 5.67450188100338e-05,
+        "hit_stream_to_partner_input": 0.0006202170043252409,
+        "hit_stream_traversal": 0.000166501,
+        "row_presentation": 0.00016784400213509798,
+        "rt_hit_stream_total": 0.014256987953558564,
+        "triton_continuation": 0.007876068004406989,
+        "workload_build": 0.037195910001173615
+      },
+      "mode": "count",
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream",
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.009877822978945613,
+          "partner_continuation": 0.007876068004406989,
+          "query_preparation": 0.037195910001173615,
+          "rt_traversal": 0.000166501,
+          "scene_build": 0.003190079005435109
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_hit_stream_triton.optix.count",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 2,
+      "result_row_count": 193,
+      "row_count": 100000,
+      "rt_core_accelerated": true,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        23.258427600027062,
+        19.042176948976703
+      ],
+      "backend": "paper_rt_embree",
+      "claim_boundary": "This is the paper-shaped RayDB RT lowering through a generic Embree primitive. Correctness/performance claims require same-contract evidence and review.",
+      "continuation_execution_path": null,
+      "group_count": 1024,
+      "hit_stream_overflow": null,
+      "hit_stream_row_count": null,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 21.150302274501882,
+      "metadata_timings": {
+        "elapsed_sec": 18.940268330974504,
+        "prepare_build": 0.24101325601805001,
+        "query_pack": 9.701598901301622e-05,
+        "traversal": 17.890200761
+      },
+      "mode": "sum",
+      "native_symbol": "rtdl_embree_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction",
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.016187423987009453,
+          "query_preparation": 0.7928668899694458,
+          "rt_traversal": 17.890200761,
+          "scene_build": 0.24101325601805001
+        },
+        "promoted_performance_path": true,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_native_result_mode.embree.sum",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 2,
+      "result_row_count": 193,
+      "row_count": 100000,
+      "rt_core_accelerated": false,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        1.7783271319931373,
+        1.7451878300053068
+      ],
+      "backend": "paper_rt_optix",
+      "claim_boundary": "This is the paper-shaped RayDB RT lowering through a generic Optix primitive. Correctness/performance claims require same-contract evidence and review.",
+      "continuation_execution_path": null,
+      "group_count": 1024,
+      "hit_stream_overflow": null,
+      "hit_stream_row_count": null,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 1.761757480999222,
+      "metadata_timings": {
+        "elapsed_sec": 1.6508659329847433,
+        "prepare_build": 0.002946151013020426,
+        "query_pack": 5.949998740106821e-05,
+        "traversal": 0.004880813
+      },
+      "mode": "sum",
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction",
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.8634322899829383,
+          "query_preparation": 0.7796066789887846,
+          "rt_traversal": 0.004880813,
+          "scene_build": 0.002946151013020426
+        },
+        "promoted_performance_path": true,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_native_result_mode.optix.sum",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 2,
+      "result_row_count": 193,
+      "row_count": 100000,
+      "rt_core_accelerated": true,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        21.253233393013943,
+        22.811958764039446
+      ],
+      "backend": "paper_rt_embree_hit_stream_triton",
+      "claim_boundary": "This is Goal2684 full RT hit-stream plus Triton continuation evidence. It is not a public speedup claim until pod artifacts and external review exist.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 1024,
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 236,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 22.032596078526694,
+      "metadata_timings": {
+        "elapsed_sec": 22.6807334490004,
+        "hit_stream_hit_stream_materialization": 4.624998028290861e-05,
+        "hit_stream_native_call": 21.724208668980282,
+        "hit_stream_prepare_build": 0.16745906200958416,
+        "hit_stream_query_pack": 7.118802750483155e-05,
+        "hit_stream_to_partner_input": 0.0006063560140319169,
+        "hit_stream_traversal": 21.724162419,
+        "row_presentation": 0.0004941869992762804,
+        "rt_hit_stream_total": 21.892098231008276,
+        "triton_continuation": 0.02754577196901664,
+        "workload_build": 0.7599663400324062
+      },
+      "mode": "sum",
+      "native_symbol": "rtdl_embree_static_triangle_scene_3d_ray_triangle_hit_stream",
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 4.624998028290861e-05,
+          "partner_continuation": 0.02754577196901664,
+          "query_preparation": 0.7599663400324062,
+          "rt_traversal": 21.724162419,
+          "scene_build": 0.16745906200958416
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_hit_stream_triton.embree.sum",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 2,
+      "result_row_count": 193,
+      "row_count": 100000,
+      "rt_core_accelerated": false,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        1.702762710978277,
+        1.6965337610454299
+      ],
+      "backend": "paper_rt_optix_hit_stream_triton",
+      "claim_boundary": "This is Goal2684 full RT hit-stream plus Triton continuation evidence. It is not a public speedup claim until pod artifacts and external review exist.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 1024,
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 236,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 1.6996482360118534,
+      "metadata_timings": {
+        "elapsed_sec": 1.6032889009802602,
+        "hit_stream_hit_stream_materialization": 0.8103829899784742,
+        "hit_stream_native_call": 0.8152141189784743,
+        "hit_stream_prepare_build": 0.0030322010279633105,
+        "hit_stream_query_pack": 4.3646025005728006e-05,
+        "hit_stream_to_partner_input": 0.0006552599952556193,
+        "hit_stream_traversal": 0.004831129,
+        "row_presentation": 0.00025429396191611886,
+        "rt_hit_stream_total": 0.8192775679635815,
+        "triton_continuation": 0.015351039997767657,
+        "workload_build": 0.7677226769737899
+      },
+      "mode": "sum",
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream",
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.8103829899784742,
+          "partner_continuation": 0.015351039997767657,
+          "query_preparation": 0.7677226769737899,
+          "rt_traversal": 0.004831129,
+          "scene_build": 0.0030322010279633105
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_hit_stream_triton.optix.sum",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 2,
+      "result_row_count": 193,
+      "row_count": 100000,
+      "rt_core_accelerated": true,
+      "warmup": 1
+    }
+  ],
+  "git_head": "6cb363c7865db3ea46b6ba372ac99293b166ed3d",
+  "goal": "Goal2684 Generic RT Hit-Stream Handoff For Full RT+Triton Path",
+  "group_count": 1024,
+  "modes": [
+    "count",
+    "sum"
+  ],
+  "no_public_speedup_claim": true,
+  "nvidia_smi": "NVIDIA L4, 580.159.04, 23034 MiB",
+  "repeats": 2,
+  "repo_root": "/workspace/rtdl_python_only",
+  "row_counts": [
+    100000
+  ],
+  "status": "ok",
+  "warmup": 1
+}

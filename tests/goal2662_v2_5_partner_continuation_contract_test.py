@@ -42,6 +42,20 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
         for forbidden in rt.V2_4_FORBIDDEN_NATIVE_APP_TOKENS:
             self.assertNotIn(forbidden, serialized)
 
+        operations = {
+            operation["name"]: operation
+            for operation in rt.v2_5_partner_continuation_contract()["operations"]
+        }
+        for operation_name in (
+            "segmented_count_i64",
+            "segmented_sum_f64",
+            "segmented_min_f64",
+            "segmented_max_f64",
+            "bounded_collect_finalize_i64",
+            "grouped_argmin_f64",
+        ):
+            self.assertIn(rt.V2_5_GROUP_ID_VALIDATION_CONTRACT, operations[operation_name]["behavior"])
+
     def test_planner_prefers_triton_then_numba_then_reference(self):
         triton = rt.plan_v2_5_partner_continuation(
             "segmented_sum_f64",
@@ -199,6 +213,81 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
                     "k": 2,
                 },
             )
+
+    def test_group_id_bounds_are_rejected_by_reference_and_triton_precheck(self):
+        reference_cases = (
+            ("segmented_count_i64", {"group_ids": [-1, 0], "group_count": 2}),
+            ("segmented_sum_f64", {"group_ids": [0, 2], "values": [1.0, 2.0], "group_count": 2}),
+            ("segmented_min_f64", {"group_ids": [0, 2], "values": [1.0, 2.0], "group_count": 2}),
+            ("segmented_max_f64", {"group_ids": [0, 2], "values": [1.0, 2.0], "group_count": 2}),
+            (
+                "bounded_collect_finalize_i64",
+                {"group_ids": [0, 2], "item_ids": [10, 20], "group_count": 2, "k": 2},
+            ),
+            (
+                "grouped_argmin_f64",
+                {"group_ids": [0, 2], "item_ids": [10, 20], "scores": [1.0, 2.0], "group_count": 2},
+            ),
+        )
+        for operation, inputs in reference_cases:
+            with self.subTest(operation=operation, backend="reference"):
+                with self.assertRaisesRegex(ValueError, r"group ids must be in \[0, group_count\)"):
+                    rt.execute_v2_5_partner_continuation_reference(operation, inputs)
+
+        if not rt.triton_partner_available():
+            return
+
+        import torch
+
+        triton_cases = (
+            ("segmented_count_i64", {"group_ids": torch.tensor([-1, 0], dtype=torch.int64, device="cuda"), "group_count": 2}),
+            (
+                "segmented_sum_f64",
+                {
+                    "group_ids": torch.tensor([0, 2], dtype=torch.int64, device="cuda"),
+                    "values": torch.tensor([1.0, 2.0], dtype=torch.float64, device="cuda"),
+                    "group_count": 2,
+                },
+            ),
+            (
+                "segmented_min_f64",
+                {
+                    "group_ids": torch.tensor([0, 2], dtype=torch.int64, device="cuda"),
+                    "values": torch.tensor([1.0, 2.0], dtype=torch.float64, device="cuda"),
+                    "group_count": 2,
+                },
+            ),
+            (
+                "segmented_max_f64",
+                {
+                    "group_ids": torch.tensor([0, 2], dtype=torch.int64, device="cuda"),
+                    "values": torch.tensor([1.0, 2.0], dtype=torch.float64, device="cuda"),
+                    "group_count": 2,
+                },
+            ),
+            (
+                "bounded_collect_finalize_i64",
+                {
+                    "group_ids": torch.tensor([0, 2], dtype=torch.int64, device="cuda"),
+                    "item_ids": torch.tensor([10, 20], dtype=torch.int64, device="cuda"),
+                    "group_count": 2,
+                    "k": 2,
+                },
+            ),
+            (
+                "grouped_argmin_f64",
+                {
+                    "group_ids": torch.tensor([0, 2], dtype=torch.int64, device="cuda"),
+                    "item_ids": torch.tensor([10, 20], dtype=torch.int64, device="cuda"),
+                    "scores": torch.tensor([1.0, 2.0], dtype=torch.float64, device="cuda"),
+                    "group_count": 2,
+                },
+            ),
+        )
+        for operation, inputs in triton_cases:
+            with self.subTest(operation=operation, backend="triton"):
+                with self.assertRaisesRegex(ValueError, r"group_ids must be in \[0, group_count\)"):
+                    rt.run_triton_partner_continuation(operation, inputs)
 
     def test_docs_record_goal2662_boundary(self):
         report = (ROOT / "docs/reports/goal2662_v2_5_partner_continuation_contract_2026-05-27.md").read_text()

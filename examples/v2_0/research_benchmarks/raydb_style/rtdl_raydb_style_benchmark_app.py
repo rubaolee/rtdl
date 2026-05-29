@@ -23,6 +23,8 @@ OPTIX_PARTNER_RESIDENT_RESULT_MODES = ("count", "sum", "min", "max", "avg_as_sum
 PAPER_RT_CPU_REFERENCE_BACKEND = "paper_rt_cpu_reference"
 PAPER_RT_EMBREE_BACKEND = "paper_rt_embree"
 PAPER_RT_OPTIX_BACKEND = "paper_rt_optix"
+PAPER_RT_EMBREE_HIT_STREAM_TRITON_BACKEND = "paper_rt_embree_hit_stream_triton"
+PAPER_RT_OPTIX_HIT_STREAM_TRITON_BACKEND = "paper_rt_optix_hit_stream_triton"
 PAPER_RT_RESULT_MODES = CPU_RESULT_MODES
 RAYDB_REFERENCE_REPO = "https://github.com/rubaolee/RayDB-i0"
 RAYDB_REFERENCE_BRANCH = "fin"
@@ -46,6 +48,8 @@ BACKENDS = (
     PAPER_RT_CPU_REFERENCE_BACKEND,
     PAPER_RT_EMBREE_BACKEND,
     PAPER_RT_OPTIX_BACKEND,
+    PAPER_RT_EMBREE_HIT_STREAM_TRITON_BACKEND,
+    PAPER_RT_OPTIX_HIT_STREAM_TRITON_BACKEND,
 )
 RESULT_MODES = CPU_RESULT_MODES
 DEFAULT_GENERATED_ROW_COUNT = 100_000
@@ -246,6 +250,24 @@ def run_result_mode(
             copies=copies,
             backend="optix",
             backend_label=PAPER_RT_OPTIX_BACKEND,
+        )
+    if backend == PAPER_RT_EMBREE_HIT_STREAM_TRITON_BACKEND:
+        return _run_paper_rt_hit_stream_triton_result_mode(
+            fixture=fixture,
+            plan=plan,
+            mode=mode,
+            copies=copies,
+            backend="embree",
+            backend_label=PAPER_RT_EMBREE_HIT_STREAM_TRITON_BACKEND,
+        )
+    if backend == PAPER_RT_OPTIX_HIT_STREAM_TRITON_BACKEND:
+        return _run_paper_rt_hit_stream_triton_result_mode(
+            fixture=fixture,
+            plan=plan,
+            mode=mode,
+            copies=copies,
+            backend="optix",
+            backend_label=PAPER_RT_OPTIX_HIT_STREAM_TRITON_BACKEND,
         )
     if backend == "embree":
         return _run_native_result_mode(
@@ -1445,6 +1467,231 @@ def _run_paper_rt_native_result_mode(
     }
 
 
+def _sequence_from_partner_output(values: Any) -> list[Any]:
+    if hasattr(values, "detach"):
+        return values.detach().cpu().tolist()
+    if hasattr(values, "cpu") and hasattr(values.cpu(), "tolist"):
+        return values.cpu().tolist()
+    if hasattr(values, "tolist"):
+        result = values.tolist()
+        return result if isinstance(result, list) else [result]
+    return list(values)
+
+
+def _paper_rows_from_v2_5_outputs(
+    mode: str,
+    outputs: dict[str, Any],
+    *,
+    group_keys: tuple[str, ...],
+    group_tuples: tuple[tuple[int, ...], ...],
+) -> list[dict[str, int]]:
+    rows: list[dict[str, int]] = []
+    if mode == "count":
+        counts = _sequence_from_partner_output(outputs["counts"])
+        for group_id, count in enumerate(counts):
+            count_value = int(count)
+            if count_value:
+                group_tuple = group_tuples[group_id]
+                row = {group_keys[index]: int(group_tuple[index]) for index in range(len(group_keys))}
+                row["count"] = count_value
+                rows.append(row)
+        return rows
+    if mode == "sum":
+        sums = _sequence_from_partner_output(outputs["sums"])
+        for group_id, sum_value_raw in enumerate(sums):
+            sum_value = int(round(float(sum_value_raw)))
+            if sum_value:
+                group_tuple = group_tuples[group_id]
+                row = {group_keys[index]: int(group_tuple[index]) for index in range(len(group_keys))}
+                row["sum"] = sum_value
+                rows.append(row)
+        return rows
+    if mode == "avg_as_sum_count":
+        sums = _sequence_from_partner_output(outputs["sums"])
+        counts = _sequence_from_partner_output(outputs["counts"])
+        for group_id, count in enumerate(counts):
+            count_value = int(count)
+            if count_value:
+                group_tuple = group_tuples[group_id]
+                row = {group_keys[index]: int(group_tuple[index]) for index in range(len(group_keys))}
+                row["sum"] = int(round(float(sums[group_id])))
+                row["count"] = count_value
+                rows.append(row)
+        return rows
+    value_key = "mins" if mode == "min" else "maxes"
+    output_key = "min" if mode == "min" else "max"
+    group_ids = _sequence_from_partner_output(outputs["group_ids"])
+    values = _sequence_from_partner_output(outputs[value_key])
+    for group_id_raw, value_raw in zip(group_ids, values):
+        group_id = int(group_id_raw)
+        group_tuple = group_tuples[group_id]
+        row = {group_keys[index]: int(group_tuple[index]) for index in range(len(group_keys))}
+        row[output_key] = int(round(float(value_raw)))
+        rows.append(row)
+    return rows
+
+
+def _run_raydb_v2_5_triton_or_reference(
+    mode: str,
+    inputs: dict[str, Any],
+    *,
+    allow_reference_fallback: bool,
+) -> tuple[dict[str, Any], tuple[dict[str, Any], ...], str]:
+    if allow_reference_fallback:
+        plan = describe_raydb_v2_5_partner_continuation(mode)
+        outputs, results = _run_raydb_v2_5_reference_fallback(
+            mode,
+            inputs,
+            operations=tuple(plan["operations"]),
+            block_size=256,
+        )
+        return outputs, results, "reference_fallback"
+    outputs, results = _run_raydb_v2_5_triton_front_door(mode, inputs)
+    return outputs, results, "partner_adapter_front_door"
+
+
+def _run_paper_rt_hit_stream_triton_result_mode(
+    *,
+    fixture: dict[str, Any],
+    plan: dict[str, Any],
+    mode: str,
+    copies: int,
+    backend: str,
+    backend_label: str,
+    allow_reference_fallback: bool = False,
+) -> dict[str, Any]:
+    if mode not in PAPER_RT_RESULT_MODES:
+        raise ValueError(f"unsupported paper RT result mode: {mode}")
+    if backend not in {"cpu", "embree", "optix"}:
+        raise ValueError("paper RT hit-stream backend must be cpu, embree, or optix")
+    started = time.perf_counter()
+    workload = _make_paper_rt_encoded_packed_workload(fixture, plan, mode)
+    workload_built = time.perf_counter()
+    max_rows = _packed_or_sequence_count(workload["triangles"])
+    hit_stream_started = time.perf_counter()
+    hit_stream = rt.run_generic_ray_triangle_hit_stream_3d(
+        workload["rays"],
+        workload["triangles"],
+        max_rows=max_rows,
+        deduplicate_primitives=True,
+        backend=backend,
+    )
+    hit_stream_done = time.perf_counter()
+    if hit_stream.get("overflow"):
+        raise RuntimeError("RayDB hit-stream overflowed despite primitive-count capacity")
+
+    primitive_ids = [int(row["primitive_id"]) for row in hit_stream["rows"]]
+    group_count = len(workload["group_tuples"])
+    map_started = time.perf_counter()
+    if allow_reference_fallback:
+        continuation_inputs = {
+            "group_ids": tuple(int(workload["primitive_group_ids"][index]) for index in primitive_ids),
+            "values": tuple(float(workload["primitive_values"][index]) for index in primitive_ids),
+            "group_count": group_count,
+        }
+    else:
+        import torch
+
+        if not rt.triton_partner_available():
+            raise RuntimeError("Triton/Torch CUDA is unavailable; rerun on a GPU pod or allow reference fallback")
+        device = torch.device("cuda:0")
+        primitive_index_tensor = torch.tensor(primitive_ids, dtype=torch.int64, device=device)
+        all_group_ids = torch.as_tensor(workload["primitive_group_ids"], dtype=torch.int64, device=device)
+        all_values = torch.as_tensor(workload["primitive_values"], dtype=torch.float64, device=device)
+        continuation_inputs = {
+            "group_ids": all_group_ids[primitive_index_tensor],
+            "values": all_values[primitive_index_tensor],
+            "group_count": group_count,
+        }
+    map_done = time.perf_counter()
+    continuation_started = time.perf_counter()
+    outputs, continuation_results, execution_path = _run_raydb_v2_5_triton_or_reference(
+        mode,
+        continuation_inputs,
+        allow_reference_fallback=allow_reference_fallback,
+    )
+    continuation_done = time.perf_counter()
+    rows = _paper_rows_from_v2_5_outputs(
+        mode,
+        outputs,
+        group_keys=workload["group_keys"],
+        group_tuples=workload["group_tuples"],
+    )
+    rows_done = time.perf_counter()
+    cpu_rows = rt.evaluate_columnar_grouped_aggregate(fixture, plan).rows
+    hit_phase_timing = hit_stream.get("phase_timing_seconds", {})
+    elapsed_sec = rows_done - started
+    return {
+        "app": "raydb_style_columnar_aggregate",
+        "backend": backend_label,
+        "mode": mode,
+        "copies": int(copies),
+        "row_count": len(fixture["row_ids"]),
+        "elapsed_sec": elapsed_sec,
+        "rows": rows,
+        "matches_cpu_reference": tuple(rows) == tuple(cpu_rows),
+        "metadata": {
+            "contract": f"raydb_paper_triangle_scan_hit_stream_triton_{backend}",
+            "copies": int(copies),
+            "row_count": len(fixture["row_ids"]),
+            "timings": {
+                "elapsed_sec": elapsed_sec,
+                "workload_build": workload_built - started,
+                "rt_hit_stream_total": hit_stream_done - hit_stream_started,
+                "hit_stream_to_partner_input": map_done - map_started,
+                "triton_continuation": continuation_done - continuation_started,
+                "row_presentation": rows_done - continuation_done,
+                **{f"hit_stream_{key}": value for key, value in hit_phase_timing.items()},
+            },
+            **_fixture_metadata(fixture),
+            "paper_reproduction": f"paper_shaped_rt_hit_stream_triton_{backend}",
+            "authors_code_comparison": False,
+            "raydb_reference_repo": RAYDB_REFERENCE_REPO,
+            "raydb_reference_branch": RAYDB_REFERENCE_BRANCH,
+            "raydb_reference_commit": RAYDB_REFERENCE_COMMIT,
+            "primitive_contract_required_for_native": rt.GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_PRIMITIVE,
+            "v2_5_partner_continuation": describe_raydb_v2_5_partner_continuation(mode),
+            "v2_4_phase_timing": rt.v2_4_phase_timing_metadata(
+                {
+                    "query_preparation": workload_built - started,
+                    "scene_build": float(hit_phase_timing.get("prepare_build", 0.0)),
+                    "rt_traversal": float(hit_phase_timing.get("traversal", 0.0)),
+                    "materialization": float(hit_phase_timing.get("hit_stream_materialization", 0.0)),
+                    "partner_continuation": continuation_done - continuation_started,
+                },
+                promoted_performance_path=False,
+                same_phase_contract_as_basis=True,
+                source=f"raydb_style.paper_rt_hit_stream_triton.{backend}.{mode}",
+            ),
+            "native_symbol": hit_stream.get("native_symbol"),
+            "native_rt_core_lowering_ready": True,
+            "rt_core_accelerated": bool(hit_stream.get("rt_core_accelerated", False)),
+            "embree_same_contract_baseline": backend == "embree",
+            "rt_core_claim_authorized": False,
+            "scan_fields": list(workload["scan_fields"]),
+            "group_keys": list(workload["group_keys"]),
+            "triangle_count": _packed_or_sequence_count(workload["triangles"]),
+            "ray_count": _packed_or_sequence_count(workload["rays"]),
+            "hit_stream_row_schema": list(rt.GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_ROW_SCHEMA),
+            "hit_stream_row_count": int(hit_stream.get("row_count", 0)),
+            "hit_stream_overflow": bool(hit_stream.get("overflow", False)),
+            "hit_event_count_before_dedup": hit_stream.get("hit_event_count_before_dedup"),
+            "continuation_execution_path": execution_path,
+            "generic_primitive_used": hit_stream.get("primitive"),
+            "engine_boundary": (
+                "Native execution emits only generic ray_id/primitive_id hit rows. Python app code "
+                "maps primitive ids to RayDB group/value columns, then Triton performs generic "
+                "grouped count/sum/min/max continuation. No RayDB, SQL, table, or database "
+                "semantics are embedded in the native engine."
+            ),
+            "claim_boundary": (
+                "This is Goal2684 full RT hit-stream plus Triton continuation evidence. "
+                "It is not a public speedup claim until pod artifacts and external review exist."
+            ),
+        },
+    }
+
+
 def require_optix_partner_resident_experimental_backend() -> Any:
     try:
         import torch
@@ -1661,7 +1908,13 @@ def run_suite(
         modes = OPTIX_RESULT_MODES
     elif backend == OPTIX_PARTNER_RESIDENT_EXPERIMENTAL_BACKEND:
         modes = OPTIX_PARTNER_RESIDENT_RESULT_MODES
-    elif backend in (PAPER_RT_CPU_REFERENCE_BACKEND, PAPER_RT_EMBREE_BACKEND, PAPER_RT_OPTIX_BACKEND):
+    elif backend in (
+        PAPER_RT_CPU_REFERENCE_BACKEND,
+        PAPER_RT_EMBREE_BACKEND,
+        PAPER_RT_OPTIX_BACKEND,
+        PAPER_RT_EMBREE_HIT_STREAM_TRITON_BACKEND,
+        PAPER_RT_OPTIX_HIT_STREAM_TRITON_BACKEND,
+    ):
         modes = PAPER_RT_RESULT_MODES
     else:
         raise ValueError(f"unsupported backend: {backend}")
@@ -1712,12 +1965,23 @@ def run_suite(
                     "Same-contract Embree-vs-OptiX evidence is required before performance wording."
                     if backend in (PAPER_RT_EMBREE_BACKEND, PAPER_RT_OPTIX_BACKEND)
                     else (
-                "Experimental OptiX partner-resident count/sum/min/max plus composite avg_as_sum_count "
-                "parity for the synthetic RayDB-style contract. "
-                "No authors-code, SQL engine, DBMS, true zero-copy, or speedup claim."
-                if backend == OPTIX_PARTNER_RESIDENT_EXPERIMENTAL_BACKEND
-                else f"{'OptiX' if backend == 'optix' else backend.title()} count/sum parity for the synthetic RayDB-style contract. "
-                "No authors-code, SQL engine, DBMS, or speedup claim."
+                        "Paper-shaped RayDB RT hit-stream handoff through generic "
+                        f"{rt.GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_PRIMITIVE} rows "
+                        "plus Triton grouped continuation. Same-contract artifacts "
+                        "and review are required before performance wording."
+                        if backend
+                        in (
+                            PAPER_RT_EMBREE_HIT_STREAM_TRITON_BACKEND,
+                            PAPER_RT_OPTIX_HIT_STREAM_TRITON_BACKEND,
+                        )
+                        else (
+                            "Experimental OptiX partner-resident count/sum/min/max plus composite avg_as_sum_count "
+                            "parity for the synthetic RayDB-style contract. "
+                            "No authors-code, SQL engine, DBMS, true zero-copy, or speedup claim."
+                            if backend == OPTIX_PARTNER_RESIDENT_EXPERIMENTAL_BACKEND
+                            else f"{'OptiX' if backend == 'optix' else backend.title()} count/sum parity for the synthetic RayDB-style contract. "
+                            "No authors-code, SQL engine, DBMS, or speedup claim."
+                        )
                     )
                 )
             )

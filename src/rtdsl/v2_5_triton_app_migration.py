@@ -46,7 +46,7 @@ V2_5_TRITON_BENCHMARK_APP_PLANS: tuple[V25TritonBenchmarkAppPlan, ...] = (
         app_id="raydb_style",
         benchmark_name="RayDB-style grouped aggregates",
         promoted_benchmark=True,
-        current_hot_path_partner="triton_adapter_front_door_for_count_sum_min_max",
+        current_hot_path_partner="preview_adapter_front_door_for_count_sum_min_max",
         v2_5_required_operations=("segmented_count_i64", "segmented_sum_f64", "segmented_min_f64", "segmented_max_f64"),
         v2_5_status="first_adapter_front_door_preview_for_count_sum_min_max",
         first_port_action="Use public partner='triton' grouped reduction adapters for RT hit-stream group/value output.",
