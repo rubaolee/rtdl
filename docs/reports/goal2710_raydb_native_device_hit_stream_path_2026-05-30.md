@@ -79,6 +79,19 @@ Ran 105 tests in 8.850s
 OK (skipped=5)
 ```
 
+Local Linux validation on `192.168.1.20`:
+
+```text
+cd /home/lestat/work/rtdl_goal2692_linux_check
+git reset --hard origin/main
+make build-optix OPTIX_PREFIX=/home/lestat/vendor/optix-dev
+PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so python3 -m unittest ...
+
+HEAD: c208b414f73b8656002332318e179259906fcc3a
+Ran 105 tests in 2.961s
+OK (skipped=5)
+```
+
 ## Next Work
 
 Run this path on an RTX pod with Torch, CuPy, Triton, CUDA, and OptiX available.
