@@ -39,6 +39,20 @@ Ran 14 tests in 0.006s
 OK
 ```
 
+Local Linux smoke on `192.168.1.20`:
+
+```text
+HEAD: c63ad5d4a6aeef1a98da40dcd1fc66a223035420
+{'row_count': 2, 'capacity': 2, 'overflow': False,
+ 'source_mode': 'native_device_columns', 'device': 'cuda:0',
+ 'materializes_host_rows': False,
+ 'native_symbol': 'rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns',
+ 'proven': False}
+[linux] closed owner through handoff.owner.close()
+Ran 14 tests in 0.003s
+OK
+```
+
 ## Boundary
 
 This is a lifecycle ergonomics fix. Pod validation is still required to prove
