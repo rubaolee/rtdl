@@ -1802,9 +1802,21 @@ def _run_paper_rt_device_hit_stream_triton_result_mode(
         require_torch_cuda=require_device,
         device_like=hit_stream_columns.primitive_ids,
     )
+    continuation_plan = describe_raydb_v2_5_partner_continuation(mode)
+    requested_gather_partner = "python_reference" if allow_reference_fallback else "triton"
+    hit_stream_partner_plans = tuple(
+        rt.plan_v2_5_hit_stream_partner_continuation(
+            hit_stream_columns,
+            payload_columns,
+            operation=operation,
+            partner=requested_gather_partner,
+        )
+        for operation in continuation_plan["operations"]
+    )
     continuation_inputs, handoff_metadata = rt.gather_typed_payload_columns_for_hit_stream(
         hit_stream_columns,
         payload_columns,
+        partner=requested_gather_partner,
     )
     handoff_done = time.perf_counter()
     continuation_started = time.perf_counter()
@@ -1857,7 +1869,9 @@ def _run_paper_rt_device_hit_stream_triton_result_mode(
             "primitive_contract_required_for_native": rt.GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_PRIMITIVE,
             "hit_stream_handoff_contract": rt.GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION,
             "hit_stream_handoff": handoff_metadata,
-            "v2_5_partner_continuation": describe_raydb_v2_5_partner_continuation(mode),
+            "v2_5_partner_continuation": continuation_plan,
+            "v2_5_hit_stream_partner_plans": hit_stream_partner_plans,
+            "requested_gather_partner": requested_gather_partner,
             "v2_4_phase_timing": rt.v2_4_phase_timing_metadata(
                 {
                     "query_preparation": workload_built - started,
