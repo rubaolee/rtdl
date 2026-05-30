@@ -1856,6 +1856,12 @@ def _run_paper_rt_device_hit_stream_triton_result_mode(
     rows_done = time.perf_counter()
     cpu_rows = rt.evaluate_columnar_grouped_aggregate(fixture, plan).rows
     hit_phase_timing = hit_stream.get("phase_timing_seconds", {})
+    hit_stream_rt_traversal_sec = float(
+        hit_phase_timing.get(
+            "traversal",
+            hit_phase_timing.get("rt_traversal", 0.0),
+        )
+    )
     elapsed_sec = rows_done - started
     return {
         "app": "raydb_style_columnar_aggregate",
@@ -1897,7 +1903,7 @@ def _run_paper_rt_device_hit_stream_triton_result_mode(
                 {
                     "query_preparation": workload_built - started,
                     "scene_build": float(hit_phase_timing.get("prepare_build", 0.0)),
-                    "rt_traversal": float(hit_phase_timing.get("traversal", 0.0)),
+                    "rt_traversal": hit_stream_rt_traversal_sec,
                     "transfer": handoff_done - handoff_started,
                     "partner_continuation": continuation_done - continuation_started,
                     "materialization": rows_done - continuation_done,

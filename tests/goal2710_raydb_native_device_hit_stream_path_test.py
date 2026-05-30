@@ -47,6 +47,8 @@ class Goal2710RaydbNativeDeviceHitStreamPathTest(unittest.TestCase):
         self.assertIn("rt.run_generic_ray_triangle_hit_stream_device_columns_3d", source)
         self.assertIn("host_row_bridge_bypassed", source)
         self.assertIn("native_device_column_path_used", source)
+        self.assertIn("hit_stream_rt_traversal_sec", source)
+        self.assertIn("hit_phase_timing.get(\"rt_traversal\"", source)
         self.assertIn("same-pointer/no-host-stage pod evidence", source)
 
 

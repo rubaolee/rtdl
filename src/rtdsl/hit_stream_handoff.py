@@ -717,6 +717,7 @@ def gather_typed_payload_columns_for_hit_stream(
         payload_columns,
     )
     if gather_partner == "python_reference":
+        torch_carrier_execution: dict[str, object] | None = None
         _validate_primitive_ids_in_payload_range(
             hit_stream_columns.primitive_ids,
             payload_columns.primitive_count,
@@ -740,12 +741,18 @@ def gather_typed_payload_columns_for_hit_stream(
             prefer_torch_carrier=True,
             allow_explicit_copy=allow_explicit_copy,
         )
-        continuation_inputs, gather_mode, selected_partner = _gather_payload_torch_carrier(
+        (
+            continuation_inputs,
+            gather_mode,
+            selected_partner,
+            torch_carrier_execution,
+        ) = _gather_payload_torch_carrier(
             hit_stream_columns,
             payload_columns,
             allow_explicit_copy=allow_explicit_copy,
         )
     elif gather_partner in {"cupy_conformance", "numba"}:
+        torch_carrier_execution = None
         _validate_primitive_ids_in_payload_range(
             hit_stream_columns.primitive_ids,
             payload_columns.primitive_count,
@@ -761,12 +768,18 @@ def gather_typed_payload_columns_for_hit_stream(
             prefer_torch_carrier=True,
             allow_explicit_copy=allow_explicit_copy,
         )
-        continuation_inputs, gather_mode, selected_partner = _gather_payload_torch_carrier(
+        (
+            continuation_inputs,
+            gather_mode,
+            selected_partner,
+            torch_carrier_execution,
+        ) = _gather_payload_torch_carrier(
             hit_stream_columns,
             payload_columns,
             allow_explicit_copy=allow_explicit_copy,
         )
     else:
+        torch_carrier_execution = None
         _validate_primitive_ids_in_payload_range(
             hit_stream_columns.primitive_ids,
             payload_columns.primitive_count,
@@ -800,6 +813,7 @@ def gather_typed_payload_columns_for_hit_stream(
             payload_columns,
         ),
         "torch_carrier_adapter": torch_carrier_adapter,
+        "torch_carrier_execution": torch_carrier_execution,
         "true_zero_copy_authorized": False,
         "public_speedup_claim_authorized": False,
     }
@@ -811,7 +825,7 @@ def _gather_payload_torch_carrier(
     payload_columns: RtdlTypedPrimitivePayloadColumns,
     *,
     allow_explicit_copy: bool = False,
-) -> tuple[dict[str, Any], str, str]:
+) -> tuple[dict[str, Any], str, str, dict[str, object]]:
     adapter = describe_v2_5_hit_stream_torch_carrier_adapter(hit_stream_columns, payload_columns)
     if not bool(adapter["all_columns_adaptable_to_torch_carrier"]):
         raise ValueError("torch carrier gather requested but at least one column is not adaptable")
@@ -844,6 +858,50 @@ def _gather_payload_torch_carrier(
         device_like=primitive_ids,
         allow_explicit_copy=allow_explicit_copy,
     )[primitive_ids]
+    primitive_ids_input_ptr = _data_ptr(hit_stream_columns.primitive_ids)
+    primitive_ids_carrier_ptr = _data_ptr(primitive_ids)
+    group_ids_input_ptr = _data_ptr(payload_columns.primitive_group_ids)
+    group_ids_carrier_source = _torch_as(
+        payload_columns.primitive_group_ids,
+        dtype=torch.int64,
+        device_like=primitive_ids,
+        allow_explicit_copy=allow_explicit_copy,
+    )
+    group_ids_carrier_ptr = _data_ptr(group_ids_carrier_source)
+    values_input_ptr = _data_ptr(payload_columns.primitive_values)
+    values_carrier_source = _torch_as(
+        payload_columns.primitive_values,
+        dtype=torch.float64,
+        device_like=primitive_ids,
+        allow_explicit_copy=allow_explicit_copy,
+    )
+    values_carrier_ptr = _data_ptr(values_carrier_source)
+    primitive_ids_same_pointer = primitive_ids_input_ptr is not None and primitive_ids_input_ptr == primitive_ids_carrier_ptr
+    group_ids_same_pointer = group_ids_input_ptr is not None and group_ids_input_ptr == group_ids_carrier_ptr
+    values_same_pointer = values_input_ptr is not None and values_input_ptr == values_carrier_ptr
+    execution_metadata = {
+        "executed": True,
+        "adapter_execution_proven_on_hardware": False,
+        "primitive_ids_input_data_ptr": primitive_ids_input_ptr,
+        "primitive_ids_carrier_data_ptr": primitive_ids_carrier_ptr,
+        "primitive_ids_same_pointer_as_input": primitive_ids_same_pointer,
+        "primitive_group_ids_input_data_ptr": group_ids_input_ptr,
+        "primitive_group_ids_carrier_data_ptr": group_ids_carrier_ptr,
+        "primitive_group_ids_same_pointer_as_input": group_ids_same_pointer,
+        "primitive_values_input_data_ptr": values_input_ptr,
+        "primitive_values_carrier_data_ptr": values_carrier_ptr,
+        "primitive_values_same_pointer_as_input": values_same_pointer,
+        "any_host_copy_required": bool(adapter["host_copy_required"]),
+        "raw_cuda_adapter_required": bool(adapter["raw_cuda_adapter_required"]),
+        "same_pointer_evidence_observed": (
+            primitive_ids_same_pointer and group_ids_same_pointer and values_same_pointer
+        ),
+        "true_zero_copy_authorized": False,
+        "claim_boundary": (
+            "Pointer equality is runtime evidence for the adapter only. It does not "
+            "authorize true zero-copy or speedup claims without accepted pod review."
+        ),
+    }
     gather_mode = (
         "torch_index_select_cuda_array_interface_adapter"
         if bool(adapter["raw_cuda_adapter_required"])
@@ -853,7 +911,7 @@ def _gather_payload_torch_carrier(
         "group_ids": group_ids,
         "values": values,
         "group_count": int(payload_columns.group_count),
-    }, gather_mode, "triton_torch_tensor_carrier"
+    }, gather_mode, "triton_torch_tensor_carrier", execution_metadata
 
 
 def _gather_payload_python_reference(
