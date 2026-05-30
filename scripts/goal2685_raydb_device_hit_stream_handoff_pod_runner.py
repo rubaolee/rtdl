@@ -64,6 +64,11 @@ def _run_case(
     timings: list[float] = []
     last = None
     for iteration in range(warmup + repeats):
+        print(
+            f"[goal2685] starting backend={backend} mode={mode} rows={row_count} "
+            f"iter={iteration + 1}/{warmup + repeats}",
+            flush=True,
+        )
         started = perf_counter()
         result = raydb.run_result_mode(
             mode,
@@ -100,12 +105,18 @@ def _run_case(
         "native_symbol": metadata.get("native_symbol"),
         "rt_core_accelerated": metadata.get("rt_core_accelerated"),
         "native_device_hit_stream_columns_ready": metadata.get("native_device_hit_stream_columns_ready"),
+        "native_device_column_path_used": metadata.get("native_device_column_path_used"),
+        "host_row_bridge_bypassed": metadata.get("host_row_bridge_bypassed"),
         "true_zero_copy_authorized": metadata.get("true_zero_copy_authorized"),
         "hit_stream_row_count": metadata.get("hit_stream_row_count"),
         "hit_stream_overflow": metadata.get("hit_stream_overflow"),
         "continuation_execution_path": metadata.get("continuation_execution_path"),
         "handoff_gather_mode": handoff.get("gather_mode"),
+        "handoff_requested_gather_partner": handoff.get("requested_gather_partner"),
+        "handoff_selected_gather_partner": handoff.get("selected_gather_partner"),
         "handoff_materializes_host_rows_for_bridge": handoff.get("materializes_host_rows_for_bridge"),
+        "torch_carrier_adapter": handoff.get("torch_carrier_adapter"),
+        "neutral_buffer_handoff_summary": handoff.get("neutral_buffer_handoff_summary"),
         "claim_boundary": metadata.get("claim_boundary"),
     }
 
