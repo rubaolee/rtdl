@@ -126,6 +126,27 @@ Result: pass.
 
 `git diff --check`: pass.
 
+Local Linux `192.168.1.20` sync check after push:
+
+```text
+git reset --hard origin/main
+RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so PYTHONPATH=src:. python3 -m unittest \
+  tests.goal2690_post_goal2689_contract_honesty_test \
+  tests.goal2685_device_resident_hit_stream_handoff_test \
+  tests.goal2644_raydb_paper_rt_contract_test \
+  tests.goal2684_generic_rt_hit_stream_handoff_test \
+  tests.goal2662_v2_5_partner_continuation_contract_test \
+  tests.goal2679_v2_5_triton_grouped_argmin_preview_test \
+  tests.goal2681_v2_5_triton_partner_adapter_front_door_test
+```
+
+Result:
+
+```text
+Ran 57 tests in 2.917s
+OK (skipped=5)
+```
+
 ## Claim Boundary
 
 Goal2690 is not a device-resident implementation goal and makes no speedup,
