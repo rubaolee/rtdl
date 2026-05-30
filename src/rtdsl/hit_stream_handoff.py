@@ -408,40 +408,56 @@ def prepare_generic_typed_primitive_payload_columns(
 def gather_typed_payload_columns_for_hit_stream(
     hit_stream_columns: RtdlHitStreamColumnHandoff,
     payload_columns: RtdlTypedPrimitivePayloadColumns,
+    *,
+    partner: str = "auto",
+    allow_explicit_copy: bool = False,
 ) -> tuple[dict[str, Any], dict[str, object]]:
     if hit_stream_columns.overflow:
         raise ValueError("cannot gather continuation inputs from an overflowed hit stream")
+    gather_partner = _normalize_gather_partner(partner)
     started = perf_counter()
     _validate_primitive_ids_in_payload_range(
         hit_stream_columns.primitive_ids,
         payload_columns.primitive_count,
     )
-    if _is_torch_tensor(hit_stream_columns.primitive_ids) or _is_torch_tensor(payload_columns.primitive_group_ids):
-        import torch
-
-        primitive_ids = _torch_as(hit_stream_columns.primitive_ids, dtype=torch.int64, device_like=payload_columns.primitive_group_ids)
-        group_ids = _torch_as(payload_columns.primitive_group_ids, dtype=torch.int64, device_like=primitive_ids)[primitive_ids]
-        values = _torch_as(payload_columns.primitive_values, dtype=torch.float64, device_like=primitive_ids)[primitive_ids]
-        gather_mode = "torch_index_select"
-        continuation_inputs = {
-            "group_ids": group_ids,
-            "values": values,
-            "group_count": int(payload_columns.group_count),
-        }
+    if gather_partner == "python_reference":
+        continuation_inputs, gather_mode, selected_partner = _gather_payload_python_reference(
+            hit_stream_columns,
+            payload_columns,
+        )
+    elif gather_partner == "triton":
+        if not _all_torch_gather_columns(hit_stream_columns, payload_columns) and not allow_explicit_copy:
+            raise ValueError(
+                "triton gather requires existing torch tensor carrier columns; "
+                "pass allow_explicit_copy=True only when the host/device copy is explicit"
+            )
+        continuation_inputs, gather_mode, selected_partner = _gather_payload_torch_carrier(
+            hit_stream_columns,
+            payload_columns,
+        )
+    elif gather_partner in {"cupy_conformance", "numba"}:
+        raise ValueError(
+            f"{gather_partner} hit-stream gather is descriptor/planning-only in this slice; "
+            "use plan_v2_5_hit_stream_partner_continuation before execution"
+        )
+    elif _is_torch_tensor(hit_stream_columns.primitive_ids) or _is_torch_tensor(payload_columns.primitive_group_ids):
+        continuation_inputs, gather_mode, selected_partner = _gather_payload_torch_carrier(
+            hit_stream_columns,
+            payload_columns,
+        )
     else:
-        primitive_ids = _column_to_host_ints(hit_stream_columns.primitive_ids)
-        group_source = tuple(int(value) for value in payload_columns.primitive_group_ids)
-        value_source = tuple(float(value) for value in payload_columns.primitive_values)
-        continuation_inputs = {
-            "group_ids": tuple(group_source[index] for index in primitive_ids),
-            "values": tuple(value_source[index] for index in primitive_ids),
-            "group_count": int(payload_columns.group_count),
-        }
-        gather_mode = "python_reference_columns"
+        continuation_inputs, gather_mode, selected_partner = _gather_payload_python_reference(
+            hit_stream_columns,
+            payload_columns,
+        )
     elapsed = perf_counter() - started
     metadata = {
         "contract_version": GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION,
         "gather_mode": gather_mode,
+        "requested_gather_partner": gather_partner,
+        "selected_gather_partner": selected_partner,
+        "explicit_partner_choice": gather_partner != "auto",
+        "allow_explicit_copy": bool(allow_explicit_copy),
         "hit_stream_columns": hit_stream_columns.to_metadata(),
         "typed_primitive_payload_columns": payload_columns.to_metadata(),
         "row_count": int(hit_stream_columns.row_count),
@@ -462,6 +478,38 @@ def gather_typed_payload_columns_for_hit_stream(
         "public_speedup_claim_authorized": False,
     }
     return continuation_inputs, metadata
+
+
+def _gather_payload_torch_carrier(
+    hit_stream_columns: RtdlHitStreamColumnHandoff,
+    payload_columns: RtdlTypedPrimitivePayloadColumns,
+) -> tuple[dict[str, Any], str, str]:
+    if _is_torch_tensor(hit_stream_columns.primitive_ids) or _is_torch_tensor(payload_columns.primitive_group_ids):
+        import torch
+
+        primitive_ids = _torch_as(hit_stream_columns.primitive_ids, dtype=torch.int64, device_like=payload_columns.primitive_group_ids)
+        group_ids = _torch_as(payload_columns.primitive_group_ids, dtype=torch.int64, device_like=primitive_ids)[primitive_ids]
+        values = _torch_as(payload_columns.primitive_values, dtype=torch.float64, device_like=primitive_ids)[primitive_ids]
+        return {
+            "group_ids": group_ids,
+            "values": values,
+            "group_count": int(payload_columns.group_count),
+        }, "torch_index_select", "triton_torch_tensor_carrier"
+    raise ValueError("torch carrier gather requested but no torch tensor carrier columns were present")
+
+
+def _gather_payload_python_reference(
+    hit_stream_columns: RtdlHitStreamColumnHandoff,
+    payload_columns: RtdlTypedPrimitivePayloadColumns,
+) -> tuple[dict[str, Any], str, str]:
+    primitive_ids = _column_to_host_ints(hit_stream_columns.primitive_ids)
+    group_source = tuple(int(value) for value in payload_columns.primitive_group_ids)
+    value_source = tuple(float(value) for value in payload_columns.primitive_values)
+    return {
+        "group_ids": tuple(group_source[index] for index in primitive_ids),
+        "values": tuple(value_source[index] for index in primitive_ids),
+        "group_count": int(payload_columns.group_count),
+    }, "python_reference_columns", "python_reference"
 
 
 def plan_v2_5_hit_stream_partner_continuation(
@@ -728,6 +776,32 @@ def _partner_plan_runtime_action(
     if bool(support["requires_sm70_plus"]):
         return "requires_sm70_pod_validation_before_performance_claim"
     return "plan_available"
+
+
+def _normalize_gather_partner(partner: str) -> str:
+    normalized = str(partner).strip().lower().replace("-", "_")
+    aliases = {
+        "reference": "python_reference",
+        "python": "python_reference",
+        "torch": "triton",
+        "cupy": "cupy_conformance",
+        "cupy_descriptor": "cupy_conformance",
+    }
+    normalized = aliases.get(normalized, normalized)
+    if normalized not in {"auto", "python_reference", "triton", "cupy_conformance", "numba"}:
+        raise ValueError("unsupported hit-stream gather partner")
+    return normalized
+
+
+def _all_torch_gather_columns(
+    hit_stream_columns: RtdlHitStreamColumnHandoff,
+    payload_columns: RtdlTypedPrimitivePayloadColumns,
+) -> bool:
+    return (
+        _is_torch_tensor(hit_stream_columns.primitive_ids)
+        and _is_torch_tensor(payload_columns.primitive_group_ids)
+        and _is_torch_tensor(payload_columns.primitive_values)
+    )
 
 
 def _is_torch_tensor(value: Any) -> bool:
