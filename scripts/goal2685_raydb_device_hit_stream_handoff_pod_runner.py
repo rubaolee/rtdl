@@ -116,6 +116,10 @@ def _run_case(
         "handoff_selected_gather_partner": handoff.get("selected_gather_partner"),
         "handoff_materializes_host_rows_for_bridge": handoff.get("materializes_host_rows_for_bridge"),
         "torch_carrier_adapter": handoff.get("torch_carrier_adapter"),
+        "torch_carrier_execution": handoff.get("torch_carrier_execution"),
+        "torch_carrier_same_pointer_evidence_observed": (
+            (handoff.get("torch_carrier_execution") or {}).get("same_pointer_evidence_observed")
+        ),
         "neutral_buffer_handoff_summary": handoff.get("neutral_buffer_handoff_summary"),
         "claim_boundary": metadata.get("claim_boundary"),
     }
