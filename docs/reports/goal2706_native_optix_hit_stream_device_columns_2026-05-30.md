@@ -101,6 +101,33 @@ Ran 10 tests in 0.030s
 OK
 ```
 
+After pushing commit `220f954e951b6f22b6e43d7cdf16e74a7e92916d`,
+the Linux checkout was reset to `origin/main` and the expanded focused suite
+was rerun:
+
+```text
+PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so \
+  python3 -m unittest \
+  tests.goal2706_native_optix_hit_stream_device_columns_test \
+  tests.goal2704_native_hit_stream_output_abi_contract_test \
+  tests.goal2703_neutral_buffer_lease_state_machine_test \
+  tests.goal2702_raydb_explicit_partner_planner_integration_test \
+  tests.goal2700_explicit_hit_stream_gather_partner_test \
+  tests.goal2698_hit_stream_partner_continuation_plan_test \
+  tests.goal2696_v2_5_partner_support_matrix_test \
+  tests.goal2694_hit_stream_neutral_seam_metadata_test \
+  tests.goal2692_neutral_buffer_seam_lifetime_contract_test \
+  tests.goal2690_post_goal2689_contract_honesty_test \
+  tests.goal2685_device_resident_hit_stream_handoff_test \
+  tests.goal2644_raydb_paper_rt_contract_test \
+  tests.goal2684_generic_rt_hit_stream_handoff_test \
+  tests.goal2662_v2_5_partner_continuation_contract_test \
+  tests.goal2679_v2_5_triton_grouped_argmin_preview_test \
+  tests.goal2681_v2_5_triton_partner_adapter_front_door_test
+Ran 98 tests in 2.961s
+OK (skipped=5)
+```
+
 Local Linux functional smoke:
 
 ```text
