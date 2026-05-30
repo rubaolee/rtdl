@@ -6,6 +6,8 @@ from typing import Any, Mapping, Sequence
 
 from .generic_primitives import GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_PRIMITIVE
 from .generic_primitives import GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_ROW_SCHEMA
+from .neutral_buffer_seam import V2_5_NEUTRAL_BUFFER_SEAM_VERSION
+from .neutral_buffer_seam import neutral_buffer_descriptor_from_rtdl_buffer
 from .partner_protocol import RtdlBufferDescriptor
 from .partner_protocol import V2_4_PHASES
 
@@ -131,6 +133,29 @@ class RtdlHitStreamColumnHandoff:
             ),
             "true_zero_copy_authorized": False,
             "public_speedup_claim_authorized": False,
+            "neutral_buffer_seam_contract_version": V2_5_NEUTRAL_BUFFER_SEAM_VERSION,
+            "neutral_buffer_seams": (
+                _neutral_buffer_seam_metadata(
+                    "ray_ids",
+                    self.ray_ids,
+                    "int64",
+                    producer=self.source_mode,
+                    consumer="typed_payload_gather",
+                    access_mode="read",
+                    native_producer=self.source_mode == "native_device_columns",
+                    host_materialized_before_handoff=bool(self.materializes_host_rows_for_bridge),
+                ),
+                _neutral_buffer_seam_metadata(
+                    "primitive_ids",
+                    self.primitive_ids,
+                    "int64",
+                    producer=self.source_mode,
+                    consumer="typed_payload_gather",
+                    access_mode="read",
+                    native_producer=self.source_mode == "native_device_columns",
+                    host_materialized_before_handoff=bool(self.materializes_host_rows_for_bridge),
+                ),
+            ),
             "column_descriptors": (
                 _buffer_descriptor("ray_ids", self.ray_ids, "int64", access_mode="read").to_metadata(),
                 _buffer_descriptor("primitive_ids", self.primitive_ids, "int64", access_mode="read").to_metadata(),
@@ -200,6 +225,25 @@ class RtdlTypedPrimitivePayloadColumns:
             "device": f"{self.device_type}:{self.device_id}",
             "source_protocol": self.source_protocol,
             "app_specific_semantics_allowed": False,
+            "neutral_buffer_seam_contract_version": V2_5_NEUTRAL_BUFFER_SEAM_VERSION,
+            "neutral_buffer_seams": (
+                _neutral_buffer_seam_metadata(
+                    "primitive_group_ids",
+                    self.primitive_group_ids,
+                    "int64",
+                    producer=self.source_mode,
+                    consumer="typed_payload_gather",
+                    access_mode="read",
+                ),
+                _neutral_buffer_seam_metadata(
+                    "primitive_values",
+                    self.primitive_values,
+                    "float64",
+                    producer=self.source_mode,
+                    consumer="typed_payload_gather",
+                    access_mode="read",
+                ),
+            ),
             "column_descriptors": (
                 _buffer_descriptor("primitive_group_ids", self.primitive_group_ids, "int64", access_mode="read").to_metadata(),
                 _buffer_descriptor("primitive_values", self.primitive_values, "float64", access_mode="read").to_metadata(),
@@ -408,6 +452,11 @@ def gather_typed_payload_columns_for_hit_stream(
         "host_hit_rows_materialized_before_handoff": bool(hit_stream_columns.materializes_host_rows_for_bridge),
         "native_device_hit_stream_columns_ready": hit_stream_columns.source_mode == "native_device_columns",
         "removes_host_materialization_bottleneck": hit_stream_columns.removes_host_materialization_bottleneck,
+        "neutral_buffer_seam_contract_version": V2_5_NEUTRAL_BUFFER_SEAM_VERSION,
+        "neutral_buffer_handoff_summary": _neutral_buffer_handoff_summary(
+            hit_stream_columns,
+            payload_columns,
+        ),
         "true_zero_copy_authorized": False,
         "public_speedup_claim_authorized": False,
     }
@@ -537,6 +586,69 @@ def _buffer_descriptor(name: str, column: Any, dtype: str, *, access_mode: str) 
         capacity_elements=_column_length(column),
         owner=column,
     )
+
+
+def _neutral_buffer_seam_metadata(
+    name: str,
+    column: Any,
+    dtype: str,
+    *,
+    producer: str,
+    consumer: str,
+    access_mode: str,
+    native_producer: bool = False,
+    host_materialized_before_handoff: bool = False,
+) -> dict[str, Any]:
+    lifetime_state = "native_owned_pending_state_machine" if native_producer else "caller_retained"
+    transfer_status = "host_stage" if host_materialized_before_handoff else None
+    descriptor = neutral_buffer_descriptor_from_rtdl_buffer(
+        _buffer_descriptor(name, column, dtype, access_mode=access_mode),
+        producer=producer,
+        consumer=consumer,
+        lifetime_state=lifetime_state,
+        native_producer=native_producer,
+        transfer_status=transfer_status,
+        host_materialized_before_handoff=host_materialized_before_handoff,
+    )
+    return descriptor.to_metadata()
+
+
+def _neutral_buffer_handoff_summary(
+    hit_stream_columns: RtdlHitStreamColumnHandoff,
+    payload_columns: RtdlTypedPrimitivePayloadColumns,
+) -> dict[str, object]:
+    hit_metadata = hit_stream_columns.to_metadata()
+    payload_metadata = payload_columns.to_metadata()
+    hit_statuses = tuple(
+        seam["transfer_status"] for seam in hit_metadata["neutral_buffer_seams"]
+    )
+    payload_statuses = tuple(
+        seam["transfer_status"] for seam in payload_metadata["neutral_buffer_seams"]
+    )
+    return {
+        "contract_version": V2_5_NEUTRAL_BUFFER_SEAM_VERSION,
+        "hit_stream_transfer_statuses": hit_statuses,
+        "payload_transfer_statuses": payload_statuses,
+        "any_zero_copy_claim_authorized": any(
+            seam["zero_copy_claim_authorized"]
+            for seam in (
+                *hit_metadata["neutral_buffer_seams"],
+                *payload_metadata["neutral_buffer_seams"],
+            )
+        ),
+        "any_host_stage": any(
+            seam["host_materialized_before_handoff"]
+            or seam["transfer_status"] == "host_stage"
+            for seam in (
+                *hit_metadata["neutral_buffer_seams"],
+                *payload_metadata["neutral_buffer_seams"],
+            )
+        ),
+        "claim_boundary": (
+            "Current hit-stream continuation metadata is neutral-buffer-aware, "
+            "but native OptiX device-column output and zero-copy evidence remain unproven."
+        ),
+    }
 
 
 def _is_torch_tensor(value: Any) -> bool:
