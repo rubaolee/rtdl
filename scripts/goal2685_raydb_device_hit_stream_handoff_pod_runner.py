@@ -121,6 +121,7 @@ def _run_case(
 ) -> dict[str, object]:
     prepared_backends = {
         raydb.PAPER_RT_OPTIX_PREPARED_GROUPED_REDUCTION_BACKEND,
+        raydb.PAPER_RT_OPTIX_V2_5_PRIMITIVE_FIRST_BACKEND,
         raydb.PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_PREPARED_BACKEND,
     }
     if backend in prepared_backends:

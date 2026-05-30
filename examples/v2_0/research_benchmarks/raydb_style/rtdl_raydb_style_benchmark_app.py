@@ -24,6 +24,7 @@ PAPER_RT_CPU_REFERENCE_BACKEND = "paper_rt_cpu_reference"
 PAPER_RT_EMBREE_BACKEND = "paper_rt_embree"
 PAPER_RT_OPTIX_BACKEND = "paper_rt_optix"
 PAPER_RT_OPTIX_PREPARED_GROUPED_REDUCTION_BACKEND = "paper_rt_optix_prepared_grouped_reduction"
+PAPER_RT_OPTIX_V2_5_PRIMITIVE_FIRST_BACKEND = "paper_rt_optix_v2_5_primitive_first"
 PAPER_RT_EMBREE_HIT_STREAM_TRITON_BACKEND = "paper_rt_embree_hit_stream_triton"
 PAPER_RT_OPTIX_HIT_STREAM_TRITON_BACKEND = "paper_rt_optix_hit_stream_triton"
 PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_BACKEND = "paper_rt_optix_device_hit_stream_triton"
@@ -56,6 +57,7 @@ BACKENDS = (
     PAPER_RT_EMBREE_BACKEND,
     PAPER_RT_OPTIX_BACKEND,
     PAPER_RT_OPTIX_PREPARED_GROUPED_REDUCTION_BACKEND,
+    PAPER_RT_OPTIX_V2_5_PRIMITIVE_FIRST_BACKEND,
     PAPER_RT_EMBREE_HIT_STREAM_TRITON_BACKEND,
     PAPER_RT_OPTIX_HIT_STREAM_TRITON_BACKEND,
     PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_BACKEND,
@@ -263,6 +265,15 @@ def run_result_mode(
         )
     if backend == PAPER_RT_OPTIX_PREPARED_GROUPED_REDUCTION_BACKEND:
         return _run_paper_rt_prepared_grouped_reduction_result_mode(
+            fixture=fixture,
+            plan=plan,
+            mode=mode,
+            copies=copies,
+            repeat=repeat,
+            warmup=warmup,
+        )
+    if backend == PAPER_RT_OPTIX_V2_5_PRIMITIVE_FIRST_BACKEND:
+        return _run_paper_rt_v2_5_primitive_first_result_mode(
             fixture=fixture,
             plan=plan,
             mode=mode,
@@ -1021,6 +1032,35 @@ def describe_raydb_v2_5_partner_continuation(mode: str) -> dict[str, Any]:
     }
 
 
+def describe_raydb_v2_5_primitive_first_plan(mode: str) -> dict[str, Any]:
+    if mode not in PAPER_RT_RESULT_MODES:
+        raise ValueError(f"unsupported paper RT result mode: {mode}")
+    partner_plan = describe_raydb_v2_5_partner_continuation(mode)
+    fused_reduction = "sum_count" if mode == "avg_as_sum_count" else mode
+    return {
+        "contract_version": "rtdl.raydb.v2_5.primitive_first_plan.v1",
+        "mode": mode,
+        "selected_backend": PAPER_RT_OPTIX_PREPARED_GROUPED_REDUCTION_BACKEND,
+        "selected_path": "prepared_fused_generic_grouped_reduction",
+        "selected_generic_primitive": GENERIC_RAY_TRIANGLE_GROUPED_REDUCTION_3D_SYMBOL,
+        "selected_reduction": fused_reduction,
+        "selection_reason": "continuation_matches_existing_fused_app_agnostic_rtdl_primitive",
+        "alternative_backend": PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_PREPARED_BACKEND,
+        "alternative_path": "prepared_typed_hit_stream_plus_partner_continuation",
+        "alternative_reserved_for": "continuations_not_expressible_as_fused_generic_rtdl_reductions",
+        "typed_hit_stream_forced": False,
+        "partner_continuation_required": False,
+        "partner_continuation_available": bool(partner_plan["operations"]),
+        "partner_operations": partner_plan["operations"],
+        "true_zero_copy_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "explain": (
+            "v2.5 plans are primitive-first: use the cheapest matching app-agnostic "
+            "RTDL primitive before exposing an intermediate hit stream to a partner."
+        ),
+    }
+
+
 def _run_raydb_v2_5_reference_fallback(
     mode: str,
     inputs: dict[str, Any],
@@ -1716,6 +1756,59 @@ def _run_paper_rt_prepared_grouped_reduction_result_mode(
                 "handoff and does not authorize public speedup or true-zero-copy wording."
             ),
         },
+    }
+
+
+def _run_paper_rt_v2_5_primitive_first_result_mode(
+    *,
+    fixture: dict[str, Any],
+    plan: dict[str, Any],
+    mode: str,
+    copies: int,
+    repeat: int,
+    warmup: int,
+) -> dict[str, Any]:
+    primitive_plan = describe_raydb_v2_5_primitive_first_plan(mode)
+    result = _run_paper_rt_prepared_grouped_reduction_result_mode(
+        fixture=fixture,
+        plan=plan,
+        mode=mode,
+        copies=copies,
+        repeat=repeat,
+        warmup=warmup,
+    )
+    metadata = dict(result["metadata"])
+    metadata.update(
+        {
+            "contract": "raydb_v2_5_primitive_first_optix",
+            "v2_5_primitive_first_plan": primitive_plan,
+            "v2_5_selected_backend": primitive_plan["selected_backend"],
+            "v2_5_selected_path": primitive_plan["selected_path"],
+            "v2_5_selected_generic_primitive": primitive_plan["selected_generic_primitive"],
+            "v2_5_selected_reduction": primitive_plan["selected_reduction"],
+            "v2_5_alternative_backend": primitive_plan["alternative_backend"],
+            "v2_5_alternative_reserved_for": primitive_plan["alternative_reserved_for"],
+            "typed_hit_stream_forced": False,
+            "partner_continuation_required": False,
+            "rt_core_claim_authorized": False,
+            "true_zero_copy_authorized": False,
+            "engine_boundary": (
+                "The v2.5 primitive-first planner selects the cheapest matching "
+                "app-agnostic RTDL primitive. For RayDB grouped count/sum/min/max, "
+                "that is the prepared fused grouped-reduction primitive, not the "
+                "typed hit-stream handoff path."
+            ),
+            "claim_boundary": (
+                "This is a v2.5 planner policy result, not a public speedup claim. "
+                "The typed hit-stream handoff remains available for continuations that "
+                "cannot be expressed by existing fused generic RTDL primitives."
+            ),
+        }
+    )
+    return {
+        **result,
+        "backend": PAPER_RT_OPTIX_V2_5_PRIMITIVE_FIRST_BACKEND,
+        "metadata": metadata,
     }
 
 

@@ -125,7 +125,10 @@ class Goal2676V25TritonPartnerPivotTest(unittest.TestCase):
         for app in plan["apps"]:
             self.assertTrue(set(app["v2_5_required_operations"]).issubset(preview_ops))
         raydb = next(app for app in plan["apps"] if app["app_id"] == "raydb_style")
-        self.assertEqual(raydb["v2_5_status"], "first_adapter_front_door_preview_for_count_sum_min_max")
+        self.assertEqual(
+            raydb["v2_5_status"],
+            "primitive_first_after_goal2727_hit_stream_reserved_for_unfused_continuations",
+        )
         self.assertIn("segmented_count_i64", raydb["v2_5_required_operations"])
         self.assertIn("V2_5_TRITON_BENCHMARK_APP_PLANS", rt.__all__)
 

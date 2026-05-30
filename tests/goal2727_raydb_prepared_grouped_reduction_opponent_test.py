@@ -25,6 +25,11 @@ class Goal2727RaydbPreparedGroupedReductionOpponentTest(unittest.TestCase):
             "paper_rt_optix_prepared_grouped_reduction",
         )
         self.assertIn(raydb.PAPER_RT_OPTIX_PREPARED_GROUPED_REDUCTION_BACKEND, raydb.BACKENDS)
+        self.assertEqual(
+            raydb.PAPER_RT_OPTIX_V2_5_PRIMITIVE_FIRST_BACKEND,
+            "paper_rt_optix_v2_5_primitive_first",
+        )
+        self.assertIn(raydb.PAPER_RT_OPTIX_V2_5_PRIMITIVE_FIRST_BACKEND, raydb.BACKENDS)
 
     def test_backend_reuses_prepared_scene_payload_and_ray_batch(self) -> None:
         source = inspect.getsource(raydb._run_paper_rt_prepared_grouped_reduction_result_mode)
@@ -45,6 +50,8 @@ class Goal2727RaydbPreparedGroupedReductionOpponentTest(unittest.TestCase):
 
         self.assertIn("PAPER_RT_OPTIX_PREPARED_GROUPED_REDUCTION_BACKEND", source)
         self.assertIn("_run_paper_rt_prepared_grouped_reduction_result_mode", source)
+        self.assertIn("PAPER_RT_OPTIX_V2_5_PRIMITIVE_FIRST_BACKEND", source)
+        self.assertIn("_run_paper_rt_v2_5_primitive_first_result_mode", source)
         self.assertIn("repeat=repeat", source)
         self.assertIn("warmup=warmup", source)
 
@@ -53,8 +60,23 @@ class Goal2727RaydbPreparedGroupedReductionOpponentTest(unittest.TestCase):
 
         self.assertIn("prepared_backends", source)
         self.assertIn("PAPER_RT_OPTIX_PREPARED_GROUPED_REDUCTION_BACKEND", source)
+        self.assertIn("PAPER_RT_OPTIX_V2_5_PRIMITIVE_FIRST_BACKEND", source)
         self.assertIn("PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_PREPARED_BACKEND", source)
         self.assertIn("prepared_iteration_wall_sec", source)
+
+    def test_v25_primitive_first_plan_reserves_hit_stream_for_unfused_continuations(self) -> None:
+        plan = raydb.describe_raydb_v2_5_primitive_first_plan("sum")
+
+        self.assertEqual(plan["selected_backend"], raydb.PAPER_RT_OPTIX_PREPARED_GROUPED_REDUCTION_BACKEND)
+        self.assertEqual(plan["selected_path"], "prepared_fused_generic_grouped_reduction")
+        self.assertEqual(plan["alternative_backend"], raydb.PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_PREPARED_BACKEND)
+        self.assertEqual(
+            plan["alternative_reserved_for"],
+            "continuations_not_expressible_as_fused_generic_rtdl_reductions",
+        )
+        self.assertFalse(plan["typed_hit_stream_forced"])
+        self.assertFalse(plan["partner_continuation_required"])
+        self.assertFalse(plan["true_zero_copy_authorized"])
 
     def test_large_pod_artifact_records_negative_hit_stream_result(self) -> None:
         payload = json.loads(ARTIFACT.read_text(encoding="utf-8"))

@@ -45,9 +45,12 @@ class Goal2723V25TieredBenchmarkManifestTest(unittest.TestCase):
         raydb = rows["raydb_style"]
 
         self.assertEqual(raydb["tier"], "A")
-        self.assertEqual(raydb["canonical_harness_status"], "ready_with_goal2720_goal2722_prepared_pod_evidence")
-        self.assertIn("prepared OptiX/Triton", raydb["pod_evidence_status"])
-        self.assertIn("v2.4 same-contract opponent", raydb["next_action"])
+        self.assertEqual(
+            raydb["canonical_harness_status"],
+            "ready_with_goal2720_goal2722_goal2727_prepared_pod_evidence",
+        )
+        self.assertIn("Goal2727 prepared fused-opponent", raydb["pod_evidence_status"])
+        self.assertIn("primitive-first explain output", raydb["next_action"])
         self.assertIn("segmented_count_i64", raydb["required_partner_operations"])
         self.assertIn("segmented_max_f64", raydb["required_partner_operations"])
 
