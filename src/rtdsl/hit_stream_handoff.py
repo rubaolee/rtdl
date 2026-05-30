@@ -806,6 +806,9 @@ def gather_typed_payload_columns_for_hit_stream(
         "materializes_host_rows_for_bridge": bool(hit_stream_columns.materializes_host_rows_for_bridge),
         "host_hit_rows_materialized_before_handoff": bool(hit_stream_columns.materializes_host_rows_for_bridge),
         "native_device_hit_stream_columns_ready": hit_stream_columns.source_mode == "native_device_columns",
+        "native_device_column_output_proven_on_hardware": bool(
+            hit_stream_columns.native_device_column_output_proven_on_hardware
+        ),
         "removes_host_materialization_bottleneck": hit_stream_columns.removes_host_materialization_bottleneck,
         "neutral_buffer_seam_contract_version": V2_5_NEUTRAL_BUFFER_SEAM_VERSION,
         "neutral_buffer_handoff_summary": _neutral_buffer_handoff_summary(
