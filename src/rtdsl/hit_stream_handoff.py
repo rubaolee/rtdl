@@ -153,6 +153,9 @@ class RtdlHitStreamColumnHandoff:
                 if self.source_mode == "native_device_columns"
                 else "caller_retained_python_reference"
             ),
+            "owner_lifetime_state": _owner_lifetime_state(self.owner),
+            "owner_close_supported": callable(getattr(self.owner, "close", None)),
+            "handoff_after_owner_close_allowed": False if self.source_mode == "native_device_columns" else None,
             "true_zero_copy_authorized": False,
             "public_speedup_claim_authorized": False,
             "neutral_buffer_seam_contract_version": V2_5_NEUTRAL_BUFFER_SEAM_VERSION,
@@ -213,6 +216,8 @@ class RtdlRawCudaColumn:
 
     @property
     def __cuda_array_interface__(self) -> dict[str, object]:
+        if _owner_lifetime_state(self.owner) == "closed":
+            raise RuntimeError("raw CUDA column owner is closed")
         return {
             "shape": self.shape,
             "strides": None,
@@ -238,6 +243,7 @@ class RtdlNativeDeviceHitStreamOutput:
     owner: Any = None
     traversal_seconds: float | None = None
     native_device_column_output_proven_on_hardware: bool = False
+    closed: bool = False
 
     def __post_init__(self) -> None:
         backend = str(self.backend).strip().lower()
@@ -279,6 +285,9 @@ class RtdlNativeDeviceHitStreamOutput:
             "hit_event_count": int(self.hit_event_count),
             "device": f"cuda:{int(self.device_id)}",
             "owner_handle_observed": self.owner_handle is not None and int(self.owner_handle) != 0,
+            "owner_lifetime_state": "closed" if bool(self.closed) else "open",
+            "native_release_enforced_by_python_owner": callable(getattr(self.owner, "close", None)),
+            "handoff_after_close_allowed": False,
             "traversal_seconds": self.traversal_seconds,
             "native_device_column_output_proven_on_hardware": bool(
                 self.native_device_column_output_proven_on_hardware
@@ -293,9 +302,12 @@ class RtdlNativeDeviceHitStreamOutput:
         }
 
     def close(self) -> None:
+        if bool(self.closed):
+            return
         close = getattr(self.owner, "close", None)
         if callable(close):
             close()
+        object.__setattr__(self, "closed", True)
 
     def __enter__(self) -> "RtdlNativeDeviceHitStreamOutput":
         return self
@@ -304,6 +316,8 @@ class RtdlNativeDeviceHitStreamOutput:
         self.close()
 
     def to_handoff(self) -> RtdlHitStreamColumnHandoff:
+        if bool(self.closed):
+            raise RuntimeError("native hit-stream output is closed")
         ray_ids = RtdlRawCudaColumn(
             "ray_ids",
             "int64",
@@ -1062,6 +1076,23 @@ def _column_to_host_ints(column: Any) -> tuple[int, ...]:
     if callable(tolist):
         return tuple(int(value) for value in tolist())
     return tuple(int(value) for value in column)
+
+
+def _owner_lifetime_state(owner: Any) -> str:
+    current = owner
+    seen: set[int] = set()
+    while current is not None:
+        identity = id(current)
+        if identity in seen:
+            return "unknown_cycle"
+        seen.add(identity)
+        closed = getattr(current, "closed", None)
+        if closed is True:
+            return "closed"
+        if closed is False:
+            return "open"
+        current = getattr(current, "owner", None)
+    return "unowned"
 
 
 def _validate_int64_column(column: Any, name: str) -> None:
