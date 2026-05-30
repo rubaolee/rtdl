@@ -88,6 +88,30 @@ py -3 -m py_compile src\rtdsl\v2_5_partner_support_matrix.py \
 OK
 ```
 
+Local Linux validation on `192.168.1.20`, checkout
+`/home/lestat/work/rtdl_goal2692_linux_check`, commit
+`a3e244648903dc594cd2182a163cd10122afc2f2`:
+
+```text
+PYTHONPATH=src:. python3 -m unittest \
+  tests.goal2696_v2_5_partner_support_matrix_test \
+  tests.goal2694_hit_stream_neutral_seam_metadata_test \
+  tests.goal2692_neutral_buffer_seam_lifetime_contract_test \
+  tests.goal2690_post_goal2689_contract_honesty_test \
+  tests.goal2685_device_resident_hit_stream_handoff_test \
+  tests.goal2644_raydb_paper_rt_contract_test \
+  tests.goal2684_generic_rt_hit_stream_handoff_test \
+  tests.goal2662_v2_5_partner_continuation_contract_test \
+  tests.goal2679_v2_5_triton_grouped_argmin_preview_test \
+  tests.goal2681_v2_5_triton_partner_adapter_front_door_test
+Ran 72 tests in 2.514s
+OK (skipped=5)
+
+python3 -m py_compile src/rtdsl/v2_5_partner_support_matrix.py \
+  src/rtdsl/__init__.py tests/goal2696_v2_5_partner_support_matrix_test.py
+OK
+```
+
 The test covers:
 
 - full `(allowed partner x continuation operation)` coverage;
