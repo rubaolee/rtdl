@@ -39,7 +39,7 @@ py -3 scripts\goal2685_raydb_device_hit_stream_handoff_pod_runner.py \
   --output build\goal2712_dry_run.json
 
 status: dry_run
-git_head: f333f6bd7d44abec643fcb7bd5344930469d46a1
+git_head: 2c4ad1b6c1dc9801c450bdb27369c56cc43b79df
 ```
 
 ## Pod Command
