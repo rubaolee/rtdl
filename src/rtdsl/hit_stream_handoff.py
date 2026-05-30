@@ -292,6 +292,17 @@ class RtdlNativeDeviceHitStreamOutput:
             ),
         }
 
+    def close(self) -> None:
+        close = getattr(self.owner, "close", None)
+        if callable(close):
+            close()
+
+    def __enter__(self) -> "RtdlNativeDeviceHitStreamOutput":
+        return self
+
+    def __exit__(self, exc_type: object, exc: object, traceback: object) -> None:
+        self.close()
+
     def to_handoff(self) -> RtdlHitStreamColumnHandoff:
         ray_ids = RtdlRawCudaColumn(
             "ray_ids",

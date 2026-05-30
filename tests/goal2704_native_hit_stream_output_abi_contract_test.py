@@ -114,6 +114,30 @@ class Goal2704NativeHitStreamOutputAbiContractTest(unittest.TestCase):
         self.assertEqual(hit_columns.row_count, 0)
         self.assertEqual(hit_columns.capacity, 8)
 
+    def test_native_output_owner_close_delegates_to_runtime_owner(self) -> None:
+        class _Owner:
+            def __init__(self) -> None:
+                self.closed = False
+
+            def close(self) -> None:
+                self.closed = True
+
+        owner = _Owner()
+        native_output = rt.RtdlNativeDeviceHitStreamOutput(
+            ray_ids_device_ptr=0x5000,
+            primitive_ids_device_ptr=0x6000,
+            row_count=1,
+            capacity=1,
+            overflow=False,
+            hit_event_count=1,
+            owner=owner,
+        )
+        handoff = native_output.to_handoff()
+
+        self.assertIs(handoff.owner, native_output)
+        handoff.owner.close()
+        self.assertTrue(owner.closed)
+
     def test_optix_runtime_names_the_future_symbol_but_does_not_bind_it_yet(self) -> None:
         self.assertEqual(
             optix_runtime.OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_DEVICE_COLUMNS_SYMBOL,
