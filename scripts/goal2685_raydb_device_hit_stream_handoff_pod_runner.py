@@ -115,6 +115,12 @@ def _run_case(
         "handoff_requested_gather_partner": handoff.get("requested_gather_partner"),
         "handoff_selected_gather_partner": handoff.get("selected_gather_partner"),
         "handoff_materializes_host_rows_for_bridge": handoff.get("materializes_host_rows_for_bridge"),
+        "handoff_native_device_column_output_proven_on_hardware": (
+            handoff.get("native_device_column_output_proven_on_hardware")
+        ),
+        "handoff_removes_host_materialization_bottleneck": (
+            handoff.get("removes_host_materialization_bottleneck")
+        ),
         "torch_carrier_adapter": handoff.get("torch_carrier_adapter"),
         "torch_carrier_execution": handoff.get("torch_carrier_execution"),
         "torch_carrier_same_pointer_evidence_observed": (

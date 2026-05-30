@@ -1226,9 +1226,16 @@ def _neutral_buffer_handoff_summary(
                 *payload_metadata["neutral_buffer_seams"],
             )
         ),
+        "native_device_column_output_proven_on_hardware": bool(
+            hit_metadata["native_device_column_output_proven_on_hardware"]
+        ),
+        "removes_host_materialization_bottleneck": bool(
+            hit_metadata["removes_host_materialization_bottleneck"]
+        ),
         "claim_boundary": (
-            "Current hit-stream continuation metadata is neutral-buffer-aware, "
-            "but native OptiX device-column output and zero-copy evidence remain unproven."
+            "Current hit-stream continuation metadata is neutral-buffer-aware. "
+            "Native device-column output may be hardware-proven independently, but "
+            "true zero-copy and public speedup claims remain unauthorized."
         ),
     }
 

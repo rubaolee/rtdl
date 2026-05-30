@@ -396,6 +396,8 @@ class Goal2685DeviceResidentHitStreamHandoffTest(unittest.TestCase):
         self.assertIn("no_public_speedup_claim", source)
         self.assertIn('"torch_carrier_execution"', source)
         self.assertIn('"torch_carrier_same_pointer_evidence_observed"', source)
+        self.assertIn('"handoff_native_device_column_output_proven_on_hardware"', source)
+        self.assertIn('"handoff_removes_host_materialization_bottleneck"', source)
 
 
 if __name__ == "__main__":

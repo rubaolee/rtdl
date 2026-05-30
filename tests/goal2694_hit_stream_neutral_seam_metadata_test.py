@@ -147,6 +147,8 @@ class Goal2694HitStreamNeutralSeamMetadataTest(unittest.TestCase):
         self.assertEqual(summary["contract_version"], rt.V2_5_NEUTRAL_BUFFER_SEAM_VERSION)
         self.assertEqual(summary["hit_stream_transfer_statuses"], ("borrowed_device_pointer_unmeasured",) * 2)
         self.assertEqual(summary["payload_transfer_statuses"], ("borrowed_device_pointer_unmeasured",) * 2)
+        self.assertFalse(summary["native_device_column_output_proven_on_hardware"])
+        self.assertFalse(summary["removes_host_materialization_bottleneck"])
         self.assertFalse(summary["any_zero_copy_claim_authorized"])
         self.assertFalse(metadata["true_zero_copy_authorized"])
 
