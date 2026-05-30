@@ -29,11 +29,16 @@ class Goal2725TriangleCountingV25PlanModeTest(unittest.TestCase):
         self.assertEqual(payload["mode"], "v2_5_plan")
         self.assertEqual(payload["tier"], "A")
         self.assertEqual(payload["preferred_partner"], "triton")
-        self.assertEqual(payload["status"], "tier_a_same_contract_plan_not_yet_integrated")
+        self.assertEqual(payload["status"], "primitive_first_plan_recorded_native_summary_not_relabelled_as_triton")
+        self.assertEqual(
+            payload["v2_5_primitive_first_plan"]["selected_path"],
+            "prepared_fused_generic_rt_summary",
+        )
+        self.assertFalse(payload["v2_5_primitive_first_plan"]["partner_continuation_required"])
         self.assertIn("segmented_count_i64", payload["v2_5_required_operations"])
         self.assertIn("segmented_sum_f64", payload["v2_5_required_operations"])
         self.assertIn("compact_mask_i64", payload["v2_5_required_operations"])
-        self.assertIn("CuPy", payload["same_contract_opponent"])
+        self.assertIn("fused RTDL summary", payload["same_contract_opponent"])
         self.assertIn("Do not relabel", payload["integration_decision"])
         self.assertFalse(payload["claim_boundary"]["v2_5_triton_benchmark_integrated"])
         self.assertFalse(payload["claim_boundary"]["triton_speedup_claim_authorized"])

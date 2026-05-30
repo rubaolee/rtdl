@@ -223,13 +223,32 @@ def command_plan_payload() -> dict[str, Any]:
 def v2_5_plan_payload() -> dict[str, Any]:
     manifest = rt.v2_5_tiered_benchmark_manifest()
     row = next(app for app in manifest["apps"] if app["app_id"] == BENCHMARK_NAME)
+    primitive_first_plan = {
+        "contract_version": "rtdl.triangle_counting.v2_5.primitive_first_plan.v1",
+        "selected_path": "prepared_fused_generic_rt_summary",
+        "selected_primitives": (V2_4_RT_GRAPH_2A1_PRIMITIVE, V2_4_RT_GRAPH_1A2_PRIMITIVE),
+        "selection_reason": (
+            "triangle counting's benchmark result is a scalar summary already covered "
+            "by app-agnostic fused RTDL ray/triangle summary primitives"
+        ),
+        "alternative_path": "row_stream_or_compact_mask_plus_triton_continuation",
+        "alternative_reserved_for": (
+            "triangle witness rows, filtered row streams, or post-summary tensor work "
+            "that cannot be expressed as a fused scalar summary"
+        ),
+        "typed_hit_stream_forced": False,
+        "partner_continuation_required": False,
+        "public_speedup_claim_authorized": False,
+        "true_zero_copy_authorized": False,
+    }
     return {
         "app": BENCHMARK_NAME,
         "mode": "v2_5_plan",
         "tier": row["tier"],
         "benchmark_track": row["benchmark_track"],
         "preferred_partner": "triton",
-        "status": "tier_a_same_contract_plan_not_yet_integrated",
+        "status": "primitive_first_plan_recorded_native_summary_not_relabelled_as_triton",
+        "v2_5_primitive_first_plan": primitive_first_plan,
         "current_fast_paths": {
             "rt_graph_2a1": (
                 "generic OptiX/Embree ray-triangle weighted any-hit summary; "
@@ -247,9 +266,10 @@ def v2_5_plan_payload() -> dict[str, Any]:
         "next_action": row["next_action"],
         "integration_decision": (
             "Do not relabel the existing native scalar summary as Triton. The v2.5 "
-            "port must expose a same-contract row or summary boundary that feeds "
-            "generic Triton segmented count/sum or compact-mask continuation, then "
-            "compare against the existing CuPy/native same-contract path."
+            "planner should select the fused generic RTDL summary when the user asks "
+            "for a scalar triangle count, and reserve Triton compact-mask/segmented "
+            "continuations for row streams or tensor post-processing that the fused "
+            "summary cannot express."
         ),
         "claim_boundary": {
             **CLAIM_BOUNDARY,
