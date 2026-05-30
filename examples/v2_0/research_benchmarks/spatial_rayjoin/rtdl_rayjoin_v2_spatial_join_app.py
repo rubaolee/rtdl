@@ -522,6 +522,40 @@ def run_rayjoin_suite(
     }
 
 
+def v2_5_plan_payload() -> dict[str, object]:
+    return {
+        "app": "rayjoin_v2_spatial_join",
+        "paper": "RayJoin: Fast and Precise Spatial Join, ICS 2024",
+        "v2_5_primitive_first_plan": {
+            "selected_path": "prepared_generic_rtdl_count_or_parity",
+            "selected_primitives": (
+                "prepared_point_closed_shape_positive_hit_count",
+                "prepared_segment_pair_intersection_count",
+                "prepared_shape_pair_overlap_seed_count",
+            ),
+            "typed_hit_stream_forced": False,
+            "partner_continuation_required": False,
+            "partner_continuation_reserved_for": (
+                "optional compact-mask or grouped-count post-processing only when "
+                "that continuation enters benchmark timing"
+            ),
+            "alternative_path": "compact_mask_i64_or_segmented_count_i64_triton_continuation",
+        },
+        "native_engine_boundary": (
+            "The native engine sees generic prepared point/closed-shape, segment-pair, "
+            "and shape-pair contracts. RayJoin paper semantics and row interpretation "
+            "stay in the app layer."
+        ),
+        "claim_boundary": {
+            "public_speedup_claim_authorized": False,
+            "true_zero_copy_authorized": False,
+            "paper_reproduction_claim_authorized": False,
+            "triton_speedup_claim_authorized": False,
+            "primitive_first_plan_only": True,
+        },
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Run RTDL v2 RayJoin-style PIP, LSI, and overlay-seed workloads."

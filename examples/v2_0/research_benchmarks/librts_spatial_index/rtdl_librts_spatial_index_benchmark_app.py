@@ -560,6 +560,36 @@ def run_scope() -> dict[str, object]:
     }
 
 
+def v2_5_plan_payload() -> dict[str, object]:
+    return {
+        "app": "librts_spatial_index",
+        "paper": PAPER,
+        "v2_5_primitive_first_plan": {
+            "selected_path": "prepared_generic_aabb_index_query_2d",
+            "selected_primitives": ("AABB_INDEX_QUERY_2D",),
+            "supported_operations": OPERATIONS,
+            "typed_hit_stream_forced": False,
+            "partner_continuation_required": False,
+            "partner_continuation_reserved_for": (
+                "optional grouped summaries outside the prepared AABB query path"
+            ),
+            "alternative_path": "segmented_count_i64_triton_summary_if_needed",
+        },
+        "native_engine_boundary": (
+            "The native engine sees generic AABB index query contracts. LibRTS "
+            "paper metadata, mutable-index experiment framing, and result "
+            "interpretation stay in the benchmark app."
+        ),
+        "claim_boundary": {
+            "public_speedup_claim_authorized": False,
+            "true_zero_copy_authorized": False,
+            "paper_reproduction_claim_authorized": False,
+            "triton_speedup_claim_authorized": False,
+            "primitive_first_plan_only": True,
+        },
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="LibRTS-style RTDL spatial-index benchmark harness.")
     parser.add_argument(
