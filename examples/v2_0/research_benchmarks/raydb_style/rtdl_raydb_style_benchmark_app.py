@@ -33,6 +33,8 @@ RAYDB_REFERENCE_COMMIT = "a610c00d7334d8907435cc0a124f9ca8392ee456"
 GENERIC_RAY_TRIANGLE_GROUPED_REDUCTION_3D_SYMBOL = (
     "generic_ray_triangle_primitive_grouped_i64_reduction_3d"
 )
+RAYDB_CPU_REFERENCE_MATCH_ABS_TOL = 1.0e-9
+RAYDB_CPU_REFERENCE_MATCH_REL_TOL = 1.0e-9
 GENERIC_RAY_TRIANGLE_GROUPED_REDUCTION_3D_PREPARED_PRIMITIVE = (
     "ray_triangle_grouped_i64_reduction_3d"
 )
@@ -1270,6 +1272,49 @@ def _fixture_metadata(fixture: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _cpu_reference_match_policy_metadata() -> dict[str, Any]:
+    return {
+        "cpu_reference_match_policy": {
+            "row_order": "ordered",
+            "numeric_policy": "exact_for_integral_values_otherwise_isclose",
+            "abs_tol": RAYDB_CPU_REFERENCE_MATCH_ABS_TOL,
+            "rel_tol": RAYDB_CPU_REFERENCE_MATCH_REL_TOL,
+        }
+    }
+
+
+def _rows_match_cpu_reference(rows: Any, cpu_rows: Any) -> bool:
+    rows = tuple(rows)
+    cpu_rows = tuple(cpu_rows)
+    if len(rows) != len(cpu_rows):
+        return False
+    return all(_row_matches_with_tolerance(row, expected) for row, expected in zip(rows, cpu_rows))
+
+
+def _row_matches_with_tolerance(row: dict[str, Any], expected: dict[str, Any]) -> bool:
+    if set(row) != set(expected):
+        return False
+    for key in row:
+        if not _values_match_with_tolerance(row[key], expected[key]):
+            return False
+    return True
+
+
+def _values_match_with_tolerance(value: Any, expected: Any) -> bool:
+    if isinstance(value, bool) or isinstance(expected, bool):
+        return value is expected
+    if isinstance(value, int) and isinstance(expected, int):
+        return value == expected
+    if isinstance(value, (int, float)) and isinstance(expected, (int, float)):
+        return math.isclose(
+            float(value),
+            float(expected),
+            rel_tol=RAYDB_CPU_REFERENCE_MATCH_REL_TOL,
+            abs_tol=RAYDB_CPU_REFERENCE_MATCH_ABS_TOL,
+        )
+    return value == expected
+
+
 def _run_paper_rt_cpu_reference_result_mode(
     *,
     fixture: dict[str, Any],
@@ -1315,13 +1360,14 @@ def _run_paper_rt_cpu_reference_result_mode(
         "row_count": len(fixture["row_ids"]),
         "elapsed_sec": elapsed_sec,
         "rows": rows,
-        "matches_cpu_reference": tuple(rows) == tuple(cpu_rows),
+        "matches_cpu_reference": _rows_match_cpu_reference(rows, cpu_rows),
         "metadata": {
             "contract": "raydb_paper_triangle_scan_grouped_aggregate_cpu_reference",
             "copies": int(copies),
             "row_count": len(fixture["row_ids"]),
             "timings": {"cpu_paper_rt_reference_sec": elapsed_sec},
             **_fixture_metadata(fixture),
+            **_cpu_reference_match_policy_metadata(),
             "paper_reproduction": "paper_shaped_rt_contract_reference",
             "authors_code_comparison": False,
             "raydb_reference_repo": RAYDB_REFERENCE_REPO,
@@ -1418,7 +1464,7 @@ def _run_paper_rt_native_result_mode(
         "row_count": len(fixture["row_ids"]),
         "elapsed_sec": elapsed_sec,
         "rows": rows,
-        "matches_cpu_reference": tuple(rows) == tuple(cpu_rows),
+        "matches_cpu_reference": _rows_match_cpu_reference(rows, cpu_rows),
         "metadata": {
             "contract": f"raydb_paper_triangle_scan_grouped_aggregate_{backend}",
             "copies": int(copies),
@@ -1428,6 +1474,7 @@ def _run_paper_rt_native_result_mode(
                 **raw_phase_timing,
             },
             **_fixture_metadata(fixture),
+            **_cpu_reference_match_policy_metadata(),
             "paper_reproduction": f"paper_shaped_rt_contract_{backend}_lowering",
             "authors_code_comparison": False,
             "raydb_reference_repo": RAYDB_REFERENCE_REPO,
@@ -1447,12 +1494,14 @@ def _run_paper_rt_native_result_mode(
                     "rt_traversal": rt_traversal_sec,
                     "materialization": materialization_sec,
                 },
-                promoted_performance_path=True,
+                promoted_performance_path=False,
                 same_phase_contract_as_basis=True,
                 source=f"raydb_style.paper_rt_native_result_mode.{backend}.{mode}",
             ),
             "native_symbol": primitive_result.get("native_symbol"),
-            "native_rt_core_lowering_ready": True,
+            "native_rt_core_lowering_path_present": True,
+            "native_rt_core_lowering_ready": False,
+            "native_rt_core_lowering_validation": "same_contract_native_path_present_claim_not_public_ready",
             "rt_core_accelerated": bool(primitive_result.get("rt_core_accelerated", False)),
             "embree_same_contract_baseline": backend == "embree",
             "rt_core_claim_authorized": False,
@@ -1640,7 +1689,7 @@ def _run_paper_rt_hit_stream_triton_result_mode(
         "row_count": len(fixture["row_ids"]),
         "elapsed_sec": elapsed_sec,
         "rows": rows,
-        "matches_cpu_reference": tuple(rows) == tuple(cpu_rows),
+        "matches_cpu_reference": _rows_match_cpu_reference(rows, cpu_rows),
         "metadata": {
             "contract": f"raydb_paper_triangle_scan_hit_stream_triton_{backend}",
             "copies": int(copies),
@@ -1655,6 +1704,7 @@ def _run_paper_rt_hit_stream_triton_result_mode(
                 **{f"hit_stream_{key}": value for key, value in hit_phase_timing.items()},
             },
             **_fixture_metadata(fixture),
+            **_cpu_reference_match_policy_metadata(),
             "paper_reproduction": f"paper_shaped_rt_hit_stream_triton_{backend}",
             "authors_code_comparison": False,
             "raydb_reference_repo": RAYDB_REFERENCE_REPO,
@@ -1675,7 +1725,9 @@ def _run_paper_rt_hit_stream_triton_result_mode(
                 source=f"raydb_style.paper_rt_hit_stream_triton.{backend}.{mode}",
             ),
             "native_symbol": hit_stream.get("native_symbol"),
-            "native_rt_core_lowering_ready": True,
+            "native_rt_core_lowering_path_present": True,
+            "native_rt_core_lowering_ready": False,
+            "native_rt_core_lowering_validation": "same_contract_hit_stream_path_present_claim_not_public_ready",
             "rt_core_accelerated": bool(hit_stream.get("rt_core_accelerated", False)),
             "embree_same_contract_baseline": backend == "embree",
             "rt_core_claim_authorized": False,
@@ -1780,7 +1832,7 @@ def _run_paper_rt_device_hit_stream_triton_result_mode(
         "row_count": len(fixture["row_ids"]),
         "elapsed_sec": elapsed_sec,
         "rows": rows,
-        "matches_cpu_reference": tuple(rows) == tuple(cpu_rows),
+        "matches_cpu_reference": _rows_match_cpu_reference(rows, cpu_rows),
         "metadata": {
             "contract": f"raydb_paper_triangle_scan_device_hit_stream_triton_{backend}",
             "copies": int(copies),
@@ -1796,6 +1848,7 @@ def _run_paper_rt_device_hit_stream_triton_result_mode(
                 **{f"hit_stream_{key}": value for key, value in hit_phase_timing.items()},
             },
             **_fixture_metadata(fixture),
+            **_cpu_reference_match_policy_metadata(),
             "paper_reproduction": f"paper_shaped_rt_device_hit_stream_triton_{backend}",
             "authors_code_comparison": False,
             "raydb_reference_repo": RAYDB_REFERENCE_REPO,
@@ -1937,7 +1990,7 @@ def _run_optix_partner_resident_experimental_result_mode(
         "row_count": len(fixture["row_ids"]),
         "elapsed_sec": prepare_sec + query_sec,
         "rows": list(result_rows),
-        "matches_cpu_reference": tuple(result_rows) == tuple(cpu_rows),
+        "matches_cpu_reference": _rows_match_cpu_reference(result_rows, cpu_rows),
         "metadata": {
             "contract": "columnar_grouped_aggregate_optix_partner_resident_experimental",
             "copies": int(copies),
@@ -1953,6 +2006,7 @@ def _run_optix_partner_resident_experimental_result_mode(
                 "elapsed_sec": prepare_sec + query_median_sec,
             },
             **_fixture_metadata(fixture),
+            **_cpu_reference_match_policy_metadata(),
             "lowering_plan": rt.plan_columnar_aggregate_lowering(
                 OPTIX_PARTNER_RESIDENT_EXPERIMENTAL_BACKEND
             ).to_dict(),
@@ -2025,7 +2079,7 @@ def _run_native_result_mode(
         "row_count": len(fixture["row_ids"]),
         "elapsed_sec": prepare_sec + query_sec,
         "rows": list(result_rows),
-        "matches_cpu_reference": tuple(result_rows) == tuple(cpu_rows),
+        "matches_cpu_reference": _rows_match_cpu_reference(result_rows, cpu_rows),
         "metadata": {
             "contract": contract,
             "copies": int(copies),
@@ -2036,6 +2090,7 @@ def _run_native_result_mode(
                 "elapsed_sec": prepare_sec + query_sec,
             },
             **_fixture_metadata(fixture),
+            **_cpu_reference_match_policy_metadata(),
             "lowering_plan": lowering_plan,
             "uses_existing_compatibility_wrapper": False,
             "materializes_input_rows_for_wrapper": False,

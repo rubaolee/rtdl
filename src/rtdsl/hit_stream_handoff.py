@@ -45,6 +45,7 @@ class RtdlHitStreamColumnHandoff:
     phase_timing_seconds: Mapping[str, float]
     native_symbol: str | None = None
     materializes_host_rows_for_bridge: bool = False
+    native_device_column_output_proven_on_hardware: bool = False
     owner: Any = None
 
     def __post_init__(self) -> None:
@@ -64,6 +65,13 @@ class RtdlHitStreamColumnHandoff:
             raise ValueError("unsupported hit-stream column source mode")
         _validate_int64_column(self.ray_ids, "ray_ids")
         _validate_int64_column(self.primitive_ids, "primitive_ids")
+        if self.native_device_column_output_proven_on_hardware:
+            if self.source_mode != "native_device_columns":
+                raise ValueError("hardware-proven native device columns require source_mode=native_device_columns")
+            if self.materializes_host_rows_for_bridge:
+                raise ValueError("hardware-proven native device columns must not materialize host rows first")
+            if self.device_type != "cuda":
+                raise ValueError("hardware-proven native device columns currently require CUDA-resident columns")
 
     @property
     def device_type(self) -> str:
@@ -87,6 +95,7 @@ class RtdlHitStreamColumnHandoff:
             self.source_mode == "native_device_columns"
             and self.device_resident
             and not self.materializes_host_rows_for_bridge
+            and bool(self.native_device_column_output_proven_on_hardware)
         )
 
     def to_metadata(self) -> dict[str, object]:
@@ -107,7 +116,14 @@ class RtdlHitStreamColumnHandoff:
             "materializes_host_rows_for_bridge": bool(self.materializes_host_rows_for_bridge),
             "host_hit_rows_materialized_before_handoff": bool(self.materializes_host_rows_for_bridge),
             "removes_host_materialization_bottleneck": self.removes_host_materialization_bottleneck,
-            "native_device_column_output_proven_on_hardware": False,
+            "native_device_column_output_proven_on_hardware": bool(
+                self.native_device_column_output_proven_on_hardware
+            ),
+            "device_resident_but_unproven_native_output": (
+                self.source_mode == "native_device_columns"
+                and self.device_resident
+                and not bool(self.native_device_column_output_proven_on_hardware)
+            ),
             "ownership_lifetime_model": (
                 "native_owner_state_machine_required_before_promotion"
                 if self.source_mode == "native_device_columns"
@@ -175,7 +191,9 @@ class RtdlTypedPrimitivePayloadColumns:
             "group_count": int(self.group_count),
             "source_mode": self.source_mode,
             "group_id_bounds_validation": self.group_id_bounds_validation,
-            "group_id_bounds_validated": self.group_id_bounds_validation in {"host_scan", "caller_asserted"},
+            "group_id_bounds_validated": self.group_id_bounds_validation == "host_scan",
+            "group_id_bounds_caller_asserted": self.group_id_bounds_validation == "caller_asserted",
+            "group_id_bounds_asserted_not_verified": self.group_id_bounds_validation == "caller_asserted",
             "host_scan_for_group_id_validation": self.group_id_bounds_validation == "host_scan",
             "device_group_id_validation_pending": self.group_id_bounds_validation == "deferred_device_check",
             "default_primitive_values_used": bool(self.default_primitive_values_used),
@@ -271,6 +289,7 @@ def prepare_generic_device_resident_hit_stream_columns(
     backend: str = "optix",
     phase_timing_seconds: Mapping[str, float] | None = None,
     native_symbol: str | None = None,
+    native_device_column_output_proven_on_hardware: bool = False,
     owner: Any = None,
 ) -> RtdlHitStreamColumnHandoff:
     resolved_count = _column_length(primitive_ids) if row_count is None else int(row_count)
@@ -285,6 +304,7 @@ def prepare_generic_device_resident_hit_stream_columns(
         phase_timing_seconds={} if phase_timing_seconds is None else dict(phase_timing_seconds),
         native_symbol=native_symbol,
         materializes_host_rows_for_bridge=False,
+        native_device_column_output_proven_on_hardware=bool(native_device_column_output_proven_on_hardware),
         owner=owner,
     )
 

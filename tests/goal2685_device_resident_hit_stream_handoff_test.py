@@ -11,6 +11,25 @@ from examples.v2_0.research_benchmarks.raydb_style import rtdl_raydb_style_bench
 ROOT = Path(__file__).resolve().parents[1]
 
 
+class _FakeCudaDevice:
+    type = "cuda"
+    index = 0
+
+
+class _FakeCudaColumn:
+    def __init__(self, values, dtype: str) -> None:
+        self._values = tuple(values)
+        self.dtype = dtype
+        self.shape = (len(self._values),)
+        self.device = _FakeCudaDevice()
+
+    def tolist(self):
+        return list(self._values)
+
+    def __iter__(self):
+        return iter(self._values)
+
+
 def _rays() -> tuple[Ray3D, ...]:
     return (
         Ray3D(10, 0.25, 0.25, -1.0, 0.0, 0.0, 1.0, 2.0),
@@ -138,8 +157,46 @@ class Goal2685DeviceResidentHitStreamHandoffTest(unittest.TestCase):
         self.assertFalse(hit_columns.device_resident)
         self.assertFalse(metadata["removes_host_materialization_bottleneck"])
         self.assertFalse(metadata["native_device_column_output_proven_on_hardware"])
+        self.assertFalse(metadata["device_resident_but_unproven_native_output"])
         self.assertEqual(metadata["ownership_lifetime_model"], "native_owner_state_machine_required_before_promotion")
         self.assertFalse(metadata["true_zero_copy_authorized"])
+
+    def test_cuda_shaped_native_columns_do_not_claim_removed_bottleneck_without_proof(self) -> None:
+        hit_columns = rt.prepare_generic_device_resident_hit_stream_columns(
+            ray_ids=_FakeCudaColumn((0, 1), "int64"),
+            primitive_ids=_FakeCudaColumn((0, 1), "int64"),
+            row_count=2,
+            capacity=2,
+            backend="optix",
+        )
+        payload_columns = rt.prepare_generic_typed_primitive_payload_columns(
+            _FakeCudaColumn((3, 4), "int64"),
+            _FakeCudaColumn((10.0, 20.0), "float64"),
+            group_count=5,
+            group_id_bounds_validation="caller_asserted",
+        )
+        continuation_inputs, metadata = rt.gather_typed_payload_columns_for_hit_stream(
+            hit_columns,
+            payload_columns,
+        )
+
+        self.assertEqual(continuation_inputs["group_ids"], (3, 4))
+        self.assertTrue(metadata["hit_stream_columns"]["device_resident"])
+        self.assertTrue(metadata["hit_stream_columns"]["device_resident_but_unproven_native_output"])
+        self.assertFalse(metadata["hit_stream_columns"]["native_device_column_output_proven_on_hardware"])
+        self.assertFalse(metadata["removes_host_materialization_bottleneck"])
+        self.assertFalse(metadata["true_zero_copy_authorized"])
+
+    def test_hardware_proof_flag_requires_cuda_native_columns(self) -> None:
+        with self.assertRaisesRegex(ValueError, "currently require CUDA-resident columns"):
+            rt.prepare_generic_device_resident_hit_stream_columns(
+                ray_ids=(0, 1),
+                primitive_ids=(0, 1),
+                row_count=2,
+                capacity=2,
+                backend="optix",
+                native_device_column_output_proven_on_hardware=True,
+            )
 
     def test_native_device_columns_overflow_must_be_fail_closed(self) -> None:
         with self.assertRaisesRegex(ValueError, "overflowed hit-stream handoffs"):
@@ -183,8 +240,24 @@ class Goal2685DeviceResidentHitStreamHandoffTest(unittest.TestCase):
         )
         metadata = payload_columns.to_metadata()
         self.assertEqual(metadata["group_id_bounds_validation"], "caller_asserted")
-        self.assertTrue(metadata["group_id_bounds_validated"])
+        self.assertFalse(metadata["group_id_bounds_validated"])
+        self.assertTrue(metadata["group_id_bounds_caller_asserted"])
+        self.assertTrue(metadata["group_id_bounds_asserted_not_verified"])
         self.assertFalse(metadata["host_scan_for_group_id_validation"])
+
+    def test_deferred_device_check_metadata_is_pending_not_validated(self) -> None:
+        payload_columns = rt.prepare_generic_typed_primitive_payload_columns(
+            (0, 1),
+            (1.0, 1.0),
+            group_count=2,
+            group_id_bounds_validation="deferred_device_check",
+        )
+        metadata = payload_columns.to_metadata()
+
+        self.assertEqual(metadata["group_id_bounds_validation"], "deferred_device_check")
+        self.assertFalse(metadata["group_id_bounds_validated"])
+        self.assertFalse(metadata["group_id_bounds_caller_asserted"])
+        self.assertTrue(metadata["device_group_id_validation_pending"])
 
     def test_default_payload_values_are_explicit_in_metadata(self) -> None:
         payload_columns = rt.prepare_generic_typed_primitive_payload_columns(
