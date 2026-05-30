@@ -33,6 +33,9 @@ class Goal2710RaydbNativeDeviceHitStreamPathTest(unittest.TestCase):
         self.assertIn("currently has only an OptiX implementation", source)
         self.assertIn("device-column ray/triangle hit streams currently require backend='optix'", source)
 
+        optix_source = (ROOT / "src" / "rtdsl" / "optix_runtime.py").read_text()
+        self.assertIn("native_device_column_output_proven_on_hardware=True", optix_source)
+
     def test_raydb_optix_device_mode_uses_native_columns_before_triton_gather(self) -> None:
         source = (
             ROOT
