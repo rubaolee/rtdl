@@ -1773,14 +1773,34 @@ def _run_paper_rt_device_hit_stream_triton_result_mode(
     workload = _make_paper_rt_encoded_packed_workload(fixture, plan, mode)
     workload_built = time.perf_counter()
     max_rows = _packed_or_sequence_count(workload["triangles"])
+    native_device_column_path_used = backend == "optix" and not allow_reference_fallback
     hit_stream_started = time.perf_counter()
-    hit_stream = rt.run_generic_ray_triangle_hit_stream_3d(
-        workload["rays"],
-        workload["triangles"],
-        max_rows=max_rows,
-        deduplicate_primitives=True,
-        backend=backend,
-    )
+    if native_device_column_path_used:
+        hit_stream_columns = rt.run_generic_ray_triangle_hit_stream_device_columns_3d(
+            workload["rays"],
+            workload["triangles"],
+            max_rows=max_rows,
+            deduplicate_primitives=True,
+            backend="optix",
+        )
+        hit_stream = {
+            "primitive": rt.GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_PRIMITIVE,
+            "native_symbol": hit_stream_columns.native_symbol,
+            "row_count": int(hit_stream_columns.row_count),
+            "max_rows": int(hit_stream_columns.capacity),
+            "overflow": bool(hit_stream_columns.overflow),
+            "hit_event_count_before_dedup": None,
+            "rt_core_accelerated": True,
+            "phase_timing_seconds": dict(hit_stream_columns.phase_timing_seconds),
+        }
+    else:
+        hit_stream = rt.run_generic_ray_triangle_hit_stream_3d(
+            workload["rays"],
+            workload["triangles"],
+            max_rows=max_rows,
+            deduplicate_primitives=True,
+            backend=backend,
+        )
     hit_stream_done = time.perf_counter()
     if hit_stream.get("overflow"):
         raise RuntimeError("RayDB hit-stream overflowed despite primitive-count capacity")
@@ -1788,11 +1808,12 @@ def _run_paper_rt_device_hit_stream_triton_result_mode(
     group_count = len(workload["group_tuples"])
     handoff_started = time.perf_counter()
     require_device = not allow_reference_fallback
-    hit_stream_columns = rt.prepare_generic_hit_stream_columns_from_rows(
-        hit_stream,
-        prefer_torch_cuda=require_device,
-        require_torch_cuda=require_device,
-    )
+    if not native_device_column_path_used:
+        hit_stream_columns = rt.prepare_generic_hit_stream_columns_from_rows(
+            hit_stream,
+            prefer_torch_cuda=require_device,
+            require_torch_cuda=require_device,
+        )
     payload_columns = rt.prepare_generic_typed_primitive_payload_columns(
         workload["primitive_group_ids"],
         workload["primitive_values"],
@@ -1891,6 +1912,8 @@ def _run_paper_rt_device_hit_stream_triton_result_mode(
             "native_device_hit_stream_columns_ready": bool(
                 handoff_metadata["native_device_hit_stream_columns_ready"]
             ),
+            "native_device_column_path_used": bool(native_device_column_path_used),
+            "host_row_bridge_bypassed": bool(native_device_column_path_used),
             "rt_core_accelerated": bool(hit_stream.get("rt_core_accelerated", False)),
             "embree_same_contract_baseline": backend == "embree",
             "rt_core_claim_authorized": False,
@@ -1917,9 +1940,9 @@ def _run_paper_rt_device_hit_stream_triton_result_mode(
                 "database semantics."
             ),
             "claim_boundary": (
-                "This is Goal2685 typed-column handoff evidence. Current local/legacy bridge "
-                "may still materialize host hit rows before constructing columns; native "
-                "device-column output and pod review are required before zero-copy or speedup wording."
+                "This is a v2.5 typed-column handoff path. The OptiX device-column mode "
+                "bypasses host hit-row construction, but zero-copy and speedup wording still "
+                "require same-pointer/no-host-stage pod evidence and external review."
             ),
         },
     }

@@ -474,6 +474,49 @@ def run_generic_ray_triangle_hit_stream_3d(
     }
 
 
+def run_generic_ray_triangle_hit_stream_device_columns_3d(
+    rays: tuple[Ray3D, ...],
+    triangles: tuple[Triangle3D, ...],
+    *,
+    max_rows: int | None = None,
+    deduplicate_primitives: bool = True,
+    backend: str = "optix",
+):
+    """Emit a generic 3-D ray/triangle hit stream as device columns.
+
+    This is the experimental v2.5 native-device-column front door. It keeps the
+    primitive generic and currently has only an OptiX implementation.
+    """
+
+    normalized_backend = _normalize_backend(backend)
+    if normalized_backend != "optix":
+        raise ValueError("device-column ray/triangle hit streams currently require backend='optix'")
+    if max_rows is not None and int(max_rows) < 0:
+        raise ValueError("max_rows must be non-negative")
+    packed_rays_type, packed_triangles_type = _packed_runtime_types()
+    rays_are_packed = packed_rays_type is not None and isinstance(rays, packed_rays_type)
+    triangles_are_packed = packed_triangles_type is not None and isinstance(triangles, packed_triangles_type)
+    if rays_are_packed:
+        if rays.dimension != 3:
+            raise TypeError("generic ray/triangle device-column hit stream requires 3-D rays")
+    elif any(not isinstance(ray, Ray3D) for ray in rays):
+        raise TypeError("generic ray/triangle device-column hit stream requires Ray3D inputs")
+    if triangles_are_packed:
+        if triangles.dimension != 3:
+            raise TypeError("generic ray/triangle device-column hit stream requires 3-D triangles")
+    elif any(not isinstance(triangle, Triangle3D) for triangle in triangles):
+        raise TypeError("generic ray/triangle device-column hit stream requires Triangle3D inputs")
+
+    from .optix_runtime import ray_triangle_hit_stream_device_columns_3d_optix
+
+    return ray_triangle_hit_stream_device_columns_3d_optix(
+        rays,
+        triangles,
+        max_rows=max_rows,
+        deduplicate_primitives=deduplicate_primitives,
+    )
+
+
 def run_generic_ray_triangle_primitive_grouped_i64_reduction_3d(
     rays: tuple[Ray3D, ...],
     triangles: tuple[Triangle3D, ...],
