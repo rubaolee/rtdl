@@ -116,6 +116,44 @@ Ran 7 tests in 0.003s
 OK
 ```
 
+Windows focused v2.5 contract suite:
+
+```text
+$env:PYTHONPATH='src;.'; py -3 -m unittest \
+  tests.goal2692_neutral_buffer_seam_lifetime_contract_test \
+  tests.goal2690_post_goal2689_contract_honesty_test \
+  tests.goal2685_device_resident_hit_stream_handoff_test \
+  tests.goal2644_raydb_paper_rt_contract_test \
+  tests.goal2684_generic_rt_hit_stream_handoff_test \
+  tests.goal2662_v2_5_partner_continuation_contract_test \
+  tests.goal2679_v2_5_triton_grouped_argmin_preview_test \
+  tests.goal2681_v2_5_triton_partner_adapter_front_door_test
+Ran 64 tests in 7.896s
+OK (skipped=5)
+```
+
+Local Linux validation on `192.168.1.20`, fresh checkout
+`/home/lestat/work/rtdl_goal2692_linux_check`, commit
+`b6653721fdf440258ec19a4a357d6af5b51c3c08`:
+
+```text
+PYTHONPATH=src:. python3 -m unittest \
+  tests.goal2692_neutral_buffer_seam_lifetime_contract_test \
+  tests.goal2690_post_goal2689_contract_honesty_test \
+  tests.goal2685_device_resident_hit_stream_handoff_test \
+  tests.goal2644_raydb_paper_rt_contract_test \
+  tests.goal2684_generic_rt_hit_stream_handoff_test \
+  tests.goal2662_v2_5_partner_continuation_contract_test \
+  tests.goal2679_v2_5_triton_grouped_argmin_preview_test \
+  tests.goal2681_v2_5_triton_partner_adapter_front_door_test
+Ran 64 tests in 11.747s
+OK (skipped=5)
+
+python3 -m py_compile src/rtdsl/neutral_buffer_seam.py src/rtdsl/__init__.py \
+  tests/goal2692_neutral_buffer_seam_lifetime_contract_test.py
+OK
+```
+
 The test covers:
 
 - contract shape and claim boundaries;
