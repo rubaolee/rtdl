@@ -55,6 +55,12 @@ GENERIC_TORCH_CARRIER_ADAPTER_MODES = (
     "host_column_requires_explicit_copy",
     "unsupported",
 )
+GENERIC_HIT_STREAM_STREAM_ORDERING_STATES = (
+    "not_proven",
+    "same_stream",
+    "producer_event_waited_by_consumer",
+    "host_synchronized_before_consumer",
+)
 
 
 @dataclass(frozen=True)
@@ -71,6 +77,7 @@ class RtdlHitStreamColumnHandoff:
     materializes_host_rows_for_bridge: bool = False
     native_device_column_output_proven_on_hardware: bool = False
     owner: Any = None
+    producer_consumer_stream_ordering: str = "not_proven"
 
     def __post_init__(self) -> None:
         row_count = int(self.row_count)
@@ -87,6 +94,8 @@ class RtdlHitStreamColumnHandoff:
             raise ValueError("overflowed hit-stream handoffs must be fail-closed with row_count=0")
         if self.source_mode not in GENERIC_HIT_STREAM_HANDOFF_SOURCE_MODES:
             raise ValueError("unsupported hit-stream column source mode")
+        if self.producer_consumer_stream_ordering not in GENERIC_HIT_STREAM_STREAM_ORDERING_STATES:
+            raise ValueError("unsupported hit-stream stream ordering state")
         _validate_int64_column(self.ray_ids, "ray_ids")
         _validate_int64_column(self.primitive_ids, "primitive_ids")
         if self.native_device_column_output_proven_on_hardware:
@@ -156,6 +165,9 @@ class RtdlHitStreamColumnHandoff:
             "owner_lifetime_state": _owner_lifetime_state(self.owner),
             "owner_close_supported": callable(getattr(self.owner, "close", None)),
             "handoff_after_owner_close_allowed": False if self.source_mode == "native_device_columns" else None,
+            "producer_consumer_stream_ordering": self.producer_consumer_stream_ordering,
+            "stream_synchronization_proven": self.producer_consumer_stream_ordering != "not_proven",
+            "true_zero_copy_requires_stream_synchronization": True,
             "true_zero_copy_authorized": False,
             "public_speedup_claim_authorized": False,
             "neutral_buffer_seam_contract_version": V2_5_NEUTRAL_BUFFER_SEAM_VERSION,
@@ -244,6 +256,7 @@ class RtdlNativeDeviceHitStreamOutput:
     traversal_seconds: float | None = None
     native_device_column_output_proven_on_hardware: bool = False
     closed: bool = False
+    producer_consumer_stream_ordering: str = "not_proven"
 
     def __post_init__(self) -> None:
         backend = str(self.backend).strip().lower()
@@ -268,6 +281,8 @@ class RtdlNativeDeviceHitStreamOutput:
             raise ValueError("native hit-stream hit_event_count must be non-negative")
         if int(self.device_id) < 0:
             raise ValueError("native hit-stream device_id must be non-negative")
+        if self.producer_consumer_stream_ordering not in GENERIC_HIT_STREAM_STREAM_ORDERING_STATES:
+            raise ValueError("unsupported native hit-stream stream ordering state")
         resolved_symbol = self.native_symbol or GENERIC_NATIVE_DEVICE_HIT_STREAM_OUTPUT_ABI_SYMBOLS[backend]
         object.__setattr__(self, "backend", backend)
         object.__setattr__(self, "native_symbol", resolved_symbol)
@@ -288,6 +303,9 @@ class RtdlNativeDeviceHitStreamOutput:
             "owner_lifetime_state": "closed" if bool(self.closed) else "open",
             "native_release_enforced_by_python_owner": callable(getattr(self.owner, "close", None)),
             "handoff_after_close_allowed": False,
+            "producer_consumer_stream_ordering": self.producer_consumer_stream_ordering,
+            "stream_synchronization_proven": self.producer_consumer_stream_ordering != "not_proven",
+            "true_zero_copy_requires_stream_synchronization": True,
             "traversal_seconds": self.traversal_seconds,
             "native_device_column_output_proven_on_hardware": bool(
                 self.native_device_column_output_proven_on_hardware
@@ -351,6 +369,7 @@ class RtdlNativeDeviceHitStreamOutput:
                 self.native_device_column_output_proven_on_hardware
             ),
             owner=self,
+            producer_consumer_stream_ordering=self.producer_consumer_stream_ordering,
         )
 
 
@@ -515,6 +534,7 @@ def prepare_native_device_hit_stream_columns_from_abi(
     owner: Any = None,
     traversal_seconds: float | None = None,
     native_device_column_output_proven_on_hardware: bool = False,
+    producer_consumer_stream_ordering: str = "not_proven",
 ) -> RtdlHitStreamColumnHandoff:
     native_output = RtdlNativeDeviceHitStreamOutput(
         ray_ids_device_ptr=ray_ids_device_ptr,
@@ -530,6 +550,7 @@ def prepare_native_device_hit_stream_columns_from_abi(
         owner=owner,
         traversal_seconds=traversal_seconds,
         native_device_column_output_proven_on_hardware=native_device_column_output_proven_on_hardware,
+        producer_consumer_stream_ordering=producer_consumer_stream_ordering,
     )
     return native_output.to_handoff()
 
@@ -588,6 +609,7 @@ def prepare_generic_device_resident_hit_stream_columns(
     native_symbol: str | None = None,
     native_device_column_output_proven_on_hardware: bool = False,
     owner: Any = None,
+    producer_consumer_stream_ordering: str = "not_proven",
 ) -> RtdlHitStreamColumnHandoff:
     resolved_count = _column_length(primitive_ids) if row_count is None else int(row_count)
     return RtdlHitStreamColumnHandoff(
@@ -603,6 +625,7 @@ def prepare_generic_device_resident_hit_stream_columns(
         materializes_host_rows_for_bridge=False,
         native_device_column_output_proven_on_hardware=bool(native_device_column_output_proven_on_hardware),
         owner=owner,
+        producer_consumer_stream_ordering=producer_consumer_stream_ordering,
     )
 
 
