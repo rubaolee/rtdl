@@ -23,6 +23,7 @@ OPTIX_PARTNER_RESIDENT_RESULT_MODES = ("count", "sum", "min", "max", "avg_as_sum
 PAPER_RT_CPU_REFERENCE_BACKEND = "paper_rt_cpu_reference"
 PAPER_RT_EMBREE_BACKEND = "paper_rt_embree"
 PAPER_RT_OPTIX_BACKEND = "paper_rt_optix"
+PAPER_RT_OPTIX_PREPARED_GROUPED_REDUCTION_BACKEND = "paper_rt_optix_prepared_grouped_reduction"
 PAPER_RT_EMBREE_HIT_STREAM_TRITON_BACKEND = "paper_rt_embree_hit_stream_triton"
 PAPER_RT_OPTIX_HIT_STREAM_TRITON_BACKEND = "paper_rt_optix_hit_stream_triton"
 PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_BACKEND = "paper_rt_optix_device_hit_stream_triton"
@@ -54,6 +55,7 @@ BACKENDS = (
     PAPER_RT_CPU_REFERENCE_BACKEND,
     PAPER_RT_EMBREE_BACKEND,
     PAPER_RT_OPTIX_BACKEND,
+    PAPER_RT_OPTIX_PREPARED_GROUPED_REDUCTION_BACKEND,
     PAPER_RT_EMBREE_HIT_STREAM_TRITON_BACKEND,
     PAPER_RT_OPTIX_HIT_STREAM_TRITON_BACKEND,
     PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_BACKEND,
@@ -258,6 +260,15 @@ def run_result_mode(
             copies=copies,
             backend="optix",
             backend_label=PAPER_RT_OPTIX_BACKEND,
+        )
+    if backend == PAPER_RT_OPTIX_PREPARED_GROUPED_REDUCTION_BACKEND:
+        return _run_paper_rt_prepared_grouped_reduction_result_mode(
+            fixture=fixture,
+            plan=plan,
+            mode=mode,
+            copies=copies,
+            repeat=repeat,
+            warmup=warmup,
         )
     if backend == PAPER_RT_EMBREE_HIT_STREAM_TRITON_BACKEND:
         return _run_paper_rt_hit_stream_triton_result_mode(
@@ -1535,6 +1546,174 @@ def _run_paper_rt_native_result_mode(
             "claim_boundary": (
                 f"This is the paper-shaped RayDB RT lowering through a generic {backend.title()} "
                 "primitive. Correctness/performance claims require same-contract evidence and review."
+            ),
+        },
+    }
+
+
+def _run_paper_rt_prepared_grouped_reduction_result_mode(
+    *,
+    fixture: dict[str, Any],
+    plan: dict[str, Any],
+    mode: str,
+    copies: int,
+    repeat: int,
+    warmup: int,
+) -> dict[str, Any]:
+    if mode not in PAPER_RT_RESULT_MODES:
+        raise ValueError(f"unsupported paper RT result mode: {mode}")
+    if repeat <= 0:
+        raise ValueError("repeat must be positive")
+    if warmup < 0:
+        raise ValueError("warmup must be non-negative")
+
+    prepare_started = time.perf_counter()
+    table_descriptor = prepare_paper_rt_encoded_table_descriptor(fixture, plan)
+    workload = _make_paper_rt_encoded_packed_workload(
+        fixture,
+        plan,
+        mode,
+        table_descriptor=table_descriptor,
+    )
+    workload_built = time.perf_counter()
+    group_count = len(workload["group_tuples"])
+    prepared_started = time.perf_counter()
+    prepared = rt.prepare_generic_ray_triangle_primitive_grouped_i64_reduction_3d(
+        workload["triangles"],
+        primitive_group_ids=workload["primitive_group_ids"],
+        primitive_values=workload["primitive_values"],
+        group_count=group_count,
+        backend="optix",
+    )
+    prepared_ready = time.perf_counter()
+    ray_batch_started = time.perf_counter()
+    prepared_rays = prepared.prepare_ray_batch(workload["rays"])
+    ray_batch_ready = time.perf_counter()
+    cpu_rows = rt.evaluate_columnar_grouped_aggregate(fixture, plan).rows
+
+    measured_wall: list[float] = []
+    measured_phase_timings: list[dict[str, float]] = []
+    rows: list[dict[str, Any]] = []
+    primitive_result: dict[str, Any] = {}
+    try:
+        for iteration in range(warmup + repeat):
+            iteration_started = time.perf_counter()
+            primitive_result = prepared.run_prepared_rays(
+                prepared_rays,
+                reduction="sum_count" if mode == "avg_as_sum_count" else mode,
+            )
+            primitive_done = time.perf_counter()
+            rows = _paper_rows_from_generic_grouped_rows(
+                primitive_result["rows"],
+                group_keys=workload["group_keys"],
+                group_tuples=workload["group_tuples"],
+            )
+            rows_done = time.perf_counter()
+            if iteration >= warmup:
+                measured_wall.append(rows_done - iteration_started)
+                phase_timing = dict(primitive_result.get("phase_timing_seconds", {}))
+                phase_timing["native_call_wall"] = primitive_done - iteration_started
+                phase_timing["row_presentation"] = rows_done - primitive_done
+                measured_phase_timings.append(phase_timing)
+    finally:
+        close_rays = getattr(prepared_rays, "close", None)
+        if callable(close_rays):
+            close_rays()
+        prepared.close()
+
+    elapsed_sec = _median_float(measured_wall)
+    timing_medians = {
+        "elapsed_sec": elapsed_sec,
+        "workload_build": workload_built - prepare_started,
+        "prepared_native_total": prepared_ready - prepared_started,
+        "prepared_ray_batch": ray_batch_ready - ray_batch_started,
+        "cold_prepare_total": ray_batch_ready - prepare_started,
+    }
+    phase_keys = sorted({key for timing in measured_phase_timings for key in timing})
+    for key in phase_keys:
+        timing_medians[key] = _median_float(
+            [float(timing[key]) for timing in measured_phase_timings if key in timing]
+        )
+
+    rt_traversal_sec = float(timing_medians.get("traversal", 0.0))
+    materialization_sec = max(0.0, elapsed_sec - rt_traversal_sec)
+    return {
+        "app": "raydb_style_columnar_aggregate",
+        "backend": PAPER_RT_OPTIX_PREPARED_GROUPED_REDUCTION_BACKEND,
+        "mode": mode,
+        "copies": int(copies),
+        "row_count": len(fixture["row_ids"]),
+        "elapsed_sec": elapsed_sec,
+        "rows": rows,
+        "matches_cpu_reference": _rows_match_cpu_reference(rows, cpu_rows),
+        "metadata": {
+            "contract": "raydb_paper_triangle_scan_prepared_grouped_reduction_optix",
+            "copies": int(copies),
+            "row_count": len(fixture["row_ids"]),
+            "timings": timing_medians,
+            **_fixture_metadata(fixture),
+            **_cpu_reference_match_policy_metadata(),
+            "paper_reproduction": "paper_shaped_rt_prepared_grouped_reduction_optix",
+            "authors_code_comparison": False,
+            "raydb_reference_repo": RAYDB_REFERENCE_REPO,
+            "raydb_reference_branch": RAYDB_REFERENCE_BRANCH,
+            "raydb_reference_commit": RAYDB_REFERENCE_COMMIT,
+            "primitive_contract_required_for_native": GENERIC_RAY_TRIANGLE_GROUPED_REDUCTION_3D_SYMBOL,
+            "v2_4_prepared_session": describe_paper_rt_v2_4_prepared_session(
+                workload,
+                backend="optix",
+                mode=mode,
+            ),
+            "v2_5_partner_continuation": describe_raydb_v2_5_partner_continuation(mode),
+            "prepared_steady_state": True,
+            "prepared_internal_repeat": int(repeat),
+            "prepared_internal_warmup": int(warmup),
+            "prepared_iteration_wall_sec": measured_wall,
+            "prepared_table_descriptor_used": bool(workload.get("prepared_table_descriptor_used", False)),
+            "prepared_payload_columns_reused": False,
+            "prepared_primitive_payload_reused": True,
+            "prepared_optix_scene_reused": True,
+            "prepared_ray_batch_reused": True,
+            "v2_4_phase_timing": rt.v2_4_phase_timing_metadata(
+                {
+                    "query_preparation": 0.0,
+                    "scene_build": 0.0,
+                    "rt_traversal": rt_traversal_sec,
+                    "materialization": materialization_sec,
+                },
+                promoted_performance_path=False,
+                same_phase_contract_as_basis=True,
+                source=f"raydb_style.paper_rt_prepared_grouped_reduction.optix.{mode}",
+            ),
+            "native_symbol": primitive_result.get("native_symbol"),
+            "native_rt_core_lowering_path_present": True,
+            "native_rt_core_lowering_ready": False,
+            "native_device_hit_stream_columns_ready": False,
+            "native_device_column_path_used": False,
+            "host_row_bridge_bypassed": False,
+            "rt_core_accelerated": bool(primitive_result.get("rt_core_accelerated", False)),
+            "rt_core_claim_authorized": False,
+            "true_zero_copy_authorized": False,
+            "scan_fields": list(workload["scan_fields"]),
+            "group_keys": list(workload["group_keys"]),
+            "triangle_count": _packed_or_sequence_count(workload["triangles"]),
+            "ray_count": _packed_or_sequence_count(workload["rays"]),
+            "packed_host_buffers": bool(workload.get("packed_host_buffers", False)),
+            "query_scan_value_count": len(workload["query_scan_values"]),
+            "hit_event_count_before_dedup": primitive_result.get("hit_event_count_before_dedup"),
+            "generic_primitive_used": primitive_result.get("primitive"),
+            "generic_primitive_reduction": primitive_result.get("reduction"),
+            "transfer_metadata": primitive_result.get("transfer_metadata"),
+            "engine_boundary": (
+                "This prepared v2.4-style opponent reuses the generic OptiX scene, ray batch, "
+                "and primitive grouped payload. It still returns compact grouped rows through "
+                "the native grouped-reduction contract rather than exposing a typed device "
+                "hit stream to a partner continuation."
+            ),
+            "claim_boundary": (
+                "This is a prepared v2.4-style diagnostic opponent for fairness analysis. "
+                "It is RT-core accelerated, but it does not use the v2.5 typed hit-stream "
+                "handoff and does not authorize public speedup or true-zero-copy wording."
             ),
         },
     }

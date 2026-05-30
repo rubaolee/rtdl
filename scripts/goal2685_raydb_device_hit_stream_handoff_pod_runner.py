@@ -119,7 +119,11 @@ def _run_case(
     repeats: int,
     warmup: int,
 ) -> dict[str, object]:
-    if backend == raydb.PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_PREPARED_BACKEND:
+    prepared_backends = {
+        raydb.PAPER_RT_OPTIX_PREPARED_GROUPED_REDUCTION_BACKEND,
+        raydb.PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_PREPARED_BACKEND,
+    }
+    if backend in prepared_backends:
         print(
             f"[goal2685] starting prepared backend={backend} mode={mode} rows={row_count} "
             f"warmup={warmup} repeats={repeats}",
