@@ -166,6 +166,9 @@ OPTIX_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL = (
     "rtdl_optix_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction"
 )
 OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_SYMBOL = "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream"
+OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_DEVICE_COLUMNS_SYMBOL = (
+    "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns"
+)
 OPTIX_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_CREATE_SYMBOL = (
     "rtdl_optix_primitive_grouped_i64_payload_3d_create"
 )

@@ -17,6 +17,20 @@ GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION = "rtdl.rt_hit_stream_handoff
 GENERIC_HIT_STREAM_HANDOFF_API_MATURITY = "experimental_host_bridge_contract"
 GENERIC_DEVICE_RESIDENT_HIT_STREAM_COLUMNS = ("ray_ids:int64", "primitive_ids:int64")
 GENERIC_TYPED_PRIMITIVE_PAYLOAD_COLUMNS = ("primitive_group_ids:int64", "primitive_values:float64")
+GENERIC_NATIVE_DEVICE_HIT_STREAM_OUTPUT_ABI_SYMBOLS = {
+    "optix": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns",
+}
+GENERIC_NATIVE_DEVICE_HIT_STREAM_OUTPUT_ABI_FIELDS = (
+    "ray_ids_device_ptr:uint64",
+    "primitive_ids_device_ptr:uint64",
+    "row_count:uint64",
+    "capacity:uint64",
+    "hit_event_count:uint64",
+    "overflow:uint32",
+    "device_ordinal:int32",
+    "owner_handle:uint64",
+    "traversal_seconds:float64",
+)
 GENERIC_HIT_STREAM_HANDOFF_SOURCE_MODES = (
     "native_device_columns",
     "host_rows_to_columns_bridge",
@@ -166,6 +180,148 @@ class RtdlHitStreamColumnHandoff:
 
 
 @dataclass(frozen=True)
+class RtdlRawCudaColumn:
+    name: str
+    dtype: str
+    data_ptr: int
+    length: int
+    device_id: int = 0
+    owner: Any = None
+
+    def __post_init__(self) -> None:
+        if not str(self.name):
+            raise ValueError("raw CUDA column requires a non-empty name")
+        if self.dtype not in {"int64", "float64"}:
+            raise ValueError("raw CUDA column dtype must be int64 or float64")
+        if int(self.length) < 0:
+            raise ValueError("raw CUDA column length must be non-negative")
+        if int(self.length) > 0 and int(self.data_ptr) <= 0:
+            raise ValueError("raw CUDA column requires a non-zero data_ptr when length is non-zero")
+        if int(self.device_id) < 0:
+            raise ValueError("raw CUDA column device_id must be non-negative")
+
+    @property
+    def shape(self) -> tuple[int, ...]:
+        return (int(self.length),)
+
+    @property
+    def __cuda_array_interface__(self) -> dict[str, object]:
+        return {
+            "shape": self.shape,
+            "strides": None,
+            "typestr": "<i8" if self.dtype == "int64" else "<f8",
+            "data": (int(self.data_ptr), False),
+            "version": 3,
+            "device": int(self.device_id),
+        }
+
+
+@dataclass(frozen=True)
+class RtdlNativeDeviceHitStreamOutput:
+    ray_ids_device_ptr: int
+    primitive_ids_device_ptr: int
+    row_count: int
+    capacity: int
+    overflow: bool
+    hit_event_count: int
+    device_id: int = 0
+    backend: str = "optix"
+    native_symbol: str | None = None
+    owner_handle: int | None = None
+    traversal_seconds: float | None = None
+    native_device_column_output_proven_on_hardware: bool = False
+
+    def __post_init__(self) -> None:
+        backend = str(self.backend).strip().lower()
+        if backend not in GENERIC_NATIVE_DEVICE_HIT_STREAM_OUTPUT_ABI_SYMBOLS:
+            raise ValueError("unsupported native hit-stream output backend")
+        row_count = int(self.row_count)
+        capacity = int(self.capacity)
+        if row_count < 0:
+            raise ValueError("native hit-stream row_count must be non-negative")
+        if capacity < 0:
+            raise ValueError("native hit-stream capacity must be non-negative")
+        if row_count > capacity:
+            raise ValueError("native hit-stream row_count cannot exceed capacity")
+        if bool(self.overflow) and row_count != 0:
+            raise ValueError("overflowed native hit-stream output must fail closed with row_count=0")
+        if row_count > 0:
+            if int(self.ray_ids_device_ptr) <= 0:
+                raise ValueError("native hit-stream ray_ids_device_ptr must be non-zero")
+            if int(self.primitive_ids_device_ptr) <= 0:
+                raise ValueError("native hit-stream primitive_ids_device_ptr must be non-zero")
+        if int(self.hit_event_count) < 0:
+            raise ValueError("native hit-stream hit_event_count must be non-negative")
+        if int(self.device_id) < 0:
+            raise ValueError("native hit-stream device_id must be non-negative")
+        resolved_symbol = self.native_symbol or GENERIC_NATIVE_DEVICE_HIT_STREAM_OUTPUT_ABI_SYMBOLS[backend]
+        object.__setattr__(self, "backend", backend)
+        object.__setattr__(self, "native_symbol", resolved_symbol)
+
+    def to_metadata(self) -> dict[str, object]:
+        return {
+            "contract_version": GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION,
+            "native_output_abi_symbol": self.native_symbol,
+            "native_output_abi_fields": GENERIC_NATIVE_DEVICE_HIT_STREAM_OUTPUT_ABI_FIELDS,
+            "backend": self.backend,
+            "row_count": int(self.row_count),
+            "capacity": int(self.capacity),
+            "overflow": bool(self.overflow),
+            "fail_closed_overflow": True,
+            "hit_event_count": int(self.hit_event_count),
+            "device": f"cuda:{int(self.device_id)}",
+            "owner_handle_observed": self.owner_handle is not None and int(self.owner_handle) != 0,
+            "traversal_seconds": self.traversal_seconds,
+            "native_device_column_output_proven_on_hardware": bool(
+                self.native_device_column_output_proven_on_hardware
+            ),
+            "true_zero_copy_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "claim_boundary": (
+                "This metadata describes native CUDA hit-stream column output. "
+                "It does not authorize true zero-copy or performance claims without "
+                "pod evidence proving same-pointer/no-host-stage behavior and lifetime cleanup."
+            ),
+        }
+
+    def to_handoff(self) -> RtdlHitStreamColumnHandoff:
+        ray_ids = RtdlRawCudaColumn(
+            "ray_ids",
+            "int64",
+            int(self.ray_ids_device_ptr),
+            int(self.row_count),
+            device_id=int(self.device_id),
+            owner=self,
+        )
+        primitive_ids = RtdlRawCudaColumn(
+            "primitive_ids",
+            "int64",
+            int(self.primitive_ids_device_ptr),
+            int(self.row_count),
+            device_id=int(self.device_id),
+            owner=self,
+        )
+        return prepare_generic_device_resident_hit_stream_columns(
+            ray_ids=ray_ids,
+            primitive_ids=primitive_ids,
+            row_count=int(self.row_count),
+            capacity=int(self.capacity),
+            overflow=bool(self.overflow),
+            backend=self.backend,
+            phase_timing_seconds=(
+                {}
+                if self.traversal_seconds is None
+                else {"rt_traversal": float(self.traversal_seconds)}
+            ),
+            native_symbol=self.native_symbol,
+            native_device_column_output_proven_on_hardware=bool(
+                self.native_device_column_output_proven_on_hardware
+            ),
+            owner=self,
+        )
+
+
+@dataclass(frozen=True)
 class RtdlTypedPrimitivePayloadColumns:
     primitive_group_ids: Any
     primitive_values: Any
@@ -280,6 +436,67 @@ def describe_generic_device_resident_hit_stream_handoff_3d() -> dict[str, object
             "are required before any zero-copy, removed-bottleneck, or speedup claim."
         ),
     }
+
+
+def describe_v2_5_native_hit_stream_output_abi(backend: str = "optix") -> dict[str, object]:
+    normalized_backend = str(backend).strip().lower()
+    if normalized_backend not in GENERIC_NATIVE_DEVICE_HIT_STREAM_OUTPUT_ABI_SYMBOLS:
+        raise ValueError("unsupported native hit-stream output backend")
+    return {
+        "contract_version": GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION,
+        "api_maturity": "experimental_native_abi_contract_no_promotion",
+        "backend": normalized_backend,
+        "native_output_abi_symbol": GENERIC_NATIVE_DEVICE_HIT_STREAM_OUTPUT_ABI_SYMBOLS[normalized_backend],
+        "native_output_abi_fields": GENERIC_NATIVE_DEVICE_HIT_STREAM_OUTPUT_ABI_FIELDS,
+        "hit_stream_columns": GENERIC_DEVICE_RESIDENT_HIT_STREAM_COLUMNS,
+        "row_count_metadata": ("row_count:uint64", "capacity:uint64"),
+        "overflow_policy": "fail_closed_bounded_columns",
+        "ownership": "native_owner_state_machine_required_until_partner_continuation_finishes",
+        "requires_native_release_entrypoint": True,
+        "requires_same_pointer_no_host_stage_measurement": True,
+        "requires_sm70_pod_validation_for_triton": True,
+        "native_engine_app_specific_vocab_allowed": False,
+        "host_row_materialization_allowed_for_promotion": False,
+        "true_zero_copy_claim_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "claim_boundary": (
+            "This describes the native output ABI target for v2.5 hit streams. "
+            "The current Python contract can wrap raw CUDA pointers, but native OptiX "
+            "must still implement and validate this ABI on a pod before promotion."
+        ),
+    }
+
+
+def prepare_native_device_hit_stream_columns_from_abi(
+    *,
+    ray_ids_device_ptr: int,
+    primitive_ids_device_ptr: int,
+    row_count: int,
+    capacity: int,
+    overflow: bool,
+    hit_event_count: int = 0,
+    device_id: int = 0,
+    backend: str = "optix",
+    native_symbol: str | None = None,
+    owner_handle: int | None = None,
+    traversal_seconds: float | None = None,
+    native_device_column_output_proven_on_hardware: bool = False,
+) -> RtdlHitStreamColumnHandoff:
+    native_output = RtdlNativeDeviceHitStreamOutput(
+        ray_ids_device_ptr=ray_ids_device_ptr,
+        primitive_ids_device_ptr=primitive_ids_device_ptr,
+        row_count=row_count,
+        capacity=capacity,
+        overflow=overflow,
+        hit_event_count=hit_event_count,
+        device_id=device_id,
+        backend=backend,
+        native_symbol=native_symbol,
+        owner_handle=owner_handle,
+        traversal_seconds=traversal_seconds,
+        native_device_column_output_proven_on_hardware=native_device_column_output_proven_on_hardware,
+    )
+    return native_output.to_handoff()
 
 
 def prepare_generic_hit_stream_columns_from_rows(
