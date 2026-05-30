@@ -77,6 +77,29 @@ py -3 -m py_compile src\rtdsl\hit_stream_handoff.py \
 OK
 ```
 
+Local Linux validation on `192.168.1.20`, checkout
+`/home/lestat/work/rtdl_goal2692_linux_check`, commit
+`de6ea9129de626d1fb71389cc9156497ef484c16`:
+
+```text
+PYTHONPATH=src:. python3 -m unittest \
+  tests.goal2694_hit_stream_neutral_seam_metadata_test \
+  tests.goal2692_neutral_buffer_seam_lifetime_contract_test \
+  tests.goal2690_post_goal2689_contract_honesty_test \
+  tests.goal2685_device_resident_hit_stream_handoff_test \
+  tests.goal2644_raydb_paper_rt_contract_test \
+  tests.goal2684_generic_rt_hit_stream_handoff_test \
+  tests.goal2662_v2_5_partner_continuation_contract_test \
+  tests.goal2679_v2_5_triton_grouped_argmin_preview_test \
+  tests.goal2681_v2_5_triton_partner_adapter_front_door_test
+Ran 67 tests in 2.516s
+OK (skipped=5)
+
+python3 -m py_compile src/rtdsl/hit_stream_handoff.py \
+  tests/goal2694_hit_stream_neutral_seam_metadata_test.py
+OK
+```
+
 ## Boundary
 
 Goal2694 does not:
