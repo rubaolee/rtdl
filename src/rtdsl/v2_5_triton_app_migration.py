@@ -15,6 +15,7 @@ V2_5_TRITON_PARTNER_ADAPTER_FRONT_DOOR_OPERATIONS = (
     "segmented_max_f64",
     "compact_mask_i64",
 )
+V2_5_TIERED_BENCHMARK_MANIFEST_VERSION = "rtdl.v2_5.tiered_benchmark_manifest.v1"
 
 
 @dataclass(frozen=True)
@@ -38,6 +39,32 @@ class V25TritonBenchmarkAppPlan:
             "v2_5_status": self.v2_5_status,
             "first_port_action": self.first_port_action,
             "notes": self.notes,
+        }
+
+
+@dataclass(frozen=True)
+class V25TieredBenchmarkManifestRow:
+    app_id: str
+    tier: str
+    benchmark_track: str
+    parity_target: str
+    canonical_harness_status: str
+    same_contract_opponent: str
+    required_partner_operations: tuple[str, ...]
+    pod_evidence_status: str
+    next_action: str
+
+    def to_metadata(self) -> dict[str, object]:
+        return {
+            "app_id": self.app_id,
+            "tier": self.tier,
+            "benchmark_track": self.benchmark_track,
+            "parity_target": self.parity_target,
+            "canonical_harness_status": self.canonical_harness_status,
+            "same_contract_opponent": self.same_contract_opponent,
+            "required_partner_operations": self.required_partner_operations,
+            "pod_evidence_status": self.pod_evidence_status,
+            "next_action": self.next_action,
         }
 
 
@@ -145,6 +172,120 @@ V2_5_TRITON_BENCHMARK_APP_PLANS: tuple[V25TritonBenchmarkAppPlan, ...] = (
 )
 
 
+V2_5_TIERED_BENCHMARK_MANIFEST_ROWS: tuple[V25TieredBenchmarkManifestRow, ...] = (
+    V25TieredBenchmarkManifestRow(
+        app_id="raydb_style",
+        tier="A",
+        benchmark_track="partner_continuation",
+        parity_target="same-contract prepared steady-state parity first; whole-app timing remains separately bounded",
+        canonical_harness_status="ready_with_goal2720_goal2722_prepared_pod_evidence",
+        same_contract_opponent="unprepared v2.5 device hit-stream Triton path plus later v2.4 same-contract baseline",
+        required_partner_operations=("segmented_count_i64", "segmented_sum_f64", "segmented_min_f64", "segmented_max_f64"),
+        pod_evidence_status="prepared OptiX/Triton smoke and large-scale pod evidence recorded",
+        next_action="keep as template; add v2.4 same-contract opponent before any public parity wording",
+    ),
+    V25TieredBenchmarkManifestRow(
+        app_id="triangle_counting",
+        tier="A",
+        benchmark_track="partner_continuation",
+        parity_target="segmented count/sum parity once streaming large-data harness is canonical",
+        canonical_harness_status="needs_single_rerunnable_harness",
+        same_contract_opponent="existing CuPy summary-continuation path and RT-Graph authors-code rows",
+        required_partner_operations=("segmented_count_i64", "segmented_sum_f64", "compact_mask_i64"),
+        pod_evidence_status="historical pod evidence exists; v2.5 Triton same-contract run missing",
+        next_action="wire Triton count/sum continuation and close streaming/OOM gap before paper-size rows",
+    ),
+    V25TieredBenchmarkManifestRow(
+        app_id="spatial_rayjoin",
+        tier="A",
+        benchmark_track="rt_core_count_or_parity",
+        parity_target="count/parity same-contract comparison; row-heavy modes stay RT-core track",
+        canonical_harness_status="needs_partner_row_if_count_path_enters_v2_5_gate",
+        same_contract_opponent="prepared OptiX count/parity path and RayJoin-exported same-query streams",
+        required_partner_operations=("segmented_count_i64", "compact_mask_i64"),
+        pod_evidence_status="historical RayJoin-style pod evidence exists; v2.5 Triton count/parity row missing",
+        next_action="only add Triton if the benchmark times grouped count/parity continuation",
+    ),
+    V25TieredBenchmarkManifestRow(
+        app_id="librts_spatial_index",
+        tier="A",
+        benchmark_track="rt_core_count_or_parity",
+        parity_target="count-only no-regression plus optional Triton grouped summary",
+        canonical_harness_status="needs_warm_median_harness",
+        same_contract_opponent="prepared RTDL AABB count path and authors-code RTSpatial baseline",
+        required_partner_operations=("segmented_count_i64",),
+        pod_evidence_status="authors-code baseline evidence exists; v2.5 Triton row missing",
+        next_action="add warm/median command before quoting v2.5 count timings",
+    ),
+    V25TieredBenchmarkManifestRow(
+        app_id="rt_dbscan",
+        tier="B",
+        benchmark_track="partner_continuation_high_risk",
+        parity_target="per-app parity or documented accepted miss with fallback-backed components op",
+        canonical_harness_status="needs_live_harness_instead_of_goal_script_archaeology",
+        same_contract_opponent="existing CuPy grouped-stream/microcell component-continuation path",
+        required_partner_operations=("compact_mask_i64", "bounded_collect_finalize_i64", "grouped_components_or_fallback"),
+        pod_evidence_status="strong v2.4 CuPy evidence exists; pure Triton components parity missing",
+        next_action="time-box Triton-native components; permit reviewed CuPy fallback for union-find if needed",
+    ),
+    V25TieredBenchmarkManifestRow(
+        app_id="rtnn",
+        tier="B",
+        benchmark_track="partner_continuation",
+        parity_target="bounded top-k/ranked-summary parity against same-contract CuPy opponent",
+        canonical_harness_status="needs_live_harness_not_frozen_evidence_wrapper",
+        same_contract_opponent="existing CuPy ranked-summary / top-k continuation path",
+        required_partner_operations=("grouped_argmin_f64", "bounded_collect_finalize_i64", "bounded_topk_or_ranked_summary"),
+        pod_evidence_status="historical RTNN evidence exists; live v2.5 Triton run missing",
+        next_action="build live same-fixture harness and map top-k to reviewed generic continuation ops",
+    ),
+    V25TieredBenchmarkManifestRow(
+        app_id="barnes_hut",
+        tier="B",
+        benchmark_track="partner_continuation",
+        parity_target="grouped weighted vector-sum parity or accepted fallback",
+        canonical_harness_status="needs_consolidated_harness",
+        same_contract_opponent="existing fused CuPy/Torch frontier-vector-sum path",
+        required_partner_operations=("bounded_collect_finalize_i64", "segmented_sum_f64", "grouped_vector_sum"),
+        pod_evidence_status="historical pod evidence exists; v2.5 Triton vector-sum row missing",
+        next_action="promote vector-valued reduction as generic continuation or keep accepted fallback",
+    ),
+    V25TieredBenchmarkManifestRow(
+        app_id="hausdorff_xhd",
+        tier="B",
+        benchmark_track="partner_continuation",
+        parity_target="grouped max-plus-witness parity against optimized CUDA/CuPy same-contract opponent",
+        canonical_harness_status="needs_one_canonical_entrypoint",
+        same_contract_opponent="optimized X-HD-guided CuPy/CUDA witness-reduction path",
+        required_partner_operations=("grouped_argmin_f64", "segmented_max_f64", "grouped_argmax_witness"),
+        pod_evidence_status="strong benchmark evidence exists; v2.5 Triton witness path missing",
+        next_action="consolidate entrypoint and add witness-preserving generic Triton continuation",
+    ),
+    V25TieredBenchmarkManifestRow(
+        app_id="contact_manifold",
+        tier="C",
+        benchmark_track="rt_core_collection_no_partner_parity",
+        parity_target="RT path no-regression only",
+        canonical_harness_status="ready_as_rt_collection_baseline",
+        same_contract_opponent="prepared OptiX bounded witness collection path",
+        required_partner_operations=("bounded_collect_finalize_i64",),
+        pod_evidence_status="historical RT/collection evidence exists",
+        next_action="measure no-regression only unless exact refinement is intentionally partnerized",
+    ),
+    V25TieredBenchmarkManifestRow(
+        app_id="robot_collision",
+        tier="C",
+        benchmark_track="rt_core_anyhit_no_partner_parity",
+        parity_target="prepared RT any-hit no-regression only",
+        canonical_harness_status="ready_as_prepared_rt_baseline",
+        same_contract_opponent="prepared Embree/OptiX pose flag path",
+        required_partner_operations=("compact_mask_i64",),
+        pod_evidence_status="historical prepared RT evidence exists",
+        next_action="keep in RT-core no-regression track and avoid partner benchmark category error",
+    ),
+)
+
+
 def v2_5_triton_benchmark_app_migration_plan() -> dict[str, object]:
     return {
         "contract_version": V2_5_PARTNER_CONTINUATION_VERSION,
@@ -158,6 +299,70 @@ def v2_5_triton_benchmark_app_migration_plan() -> dict[str, object]:
             "gate, not a public speedup claim, and not authorization to replace "
             "RTDL/OptiX traversal with partner code."
         ),
+    }
+
+
+def v2_5_tiered_benchmark_manifest() -> dict[str, object]:
+    rows = tuple(row.to_metadata() for row in V2_5_TIERED_BENCHMARK_MANIFEST_ROWS)
+    tier_counts: dict[str, int] = {}
+    for row in rows:
+        tier = str(row["tier"])
+        tier_counts[tier] = tier_counts.get(tier, 0) + 1
+    return {
+        "manifest_version": V2_5_TIERED_BENCHMARK_MANIFEST_VERSION,
+        "contract_version": V2_5_PARTNER_CONTINUATION_VERSION,
+        "primary_partner": V2_5_PRIMARY_PARTNER,
+        "benchmark_app_count": len(rows),
+        "tier_counts": tier_counts,
+        "apps": rows,
+        "same_contract_required": True,
+        "phase_separated_timing_required": True,
+        "sm70_plus_pod_required_for_triton_perf": True,
+        "public_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "claim_boundary": (
+            "This manifest scopes v2.5 benchmark parity work. It is not a "
+            "release gate, not public performance wording, and not permission "
+            "to treat RT-core-only apps as partner-continuation benchmarks."
+        ),
+    }
+
+
+def validate_v2_5_tiered_benchmark_manifest() -> dict[str, object]:
+    manifest = v2_5_tiered_benchmark_manifest()
+    errors: list[str] = []
+    rows = tuple(manifest["apps"])  # type: ignore[arg-type]
+    app_ids = [str(row["app_id"]) for row in rows]  # type: ignore[index]
+    if len(app_ids) != len(set(app_ids)):
+        errors.append("duplicate app id in v2.5 tiered benchmark manifest")
+    if len(rows) != 10:
+        errors.append("v2.5 tiered benchmark manifest must cover exactly 10 apps")
+    if manifest["primary_partner"] != V2_5_PRIMARY_PARTNER:
+        errors.append("manifest primary partner must match v2.5 primary partner")
+    if manifest["public_speedup_claim_authorized"] is not False:
+        errors.append("manifest must not authorize public speedup claims")
+    if manifest["true_zero_copy_claim_authorized"] is not False:
+        errors.append("manifest must not authorize true zero-copy claims")
+    expected_tiers = {"A": 4, "B": 4, "C": 2}
+    if manifest["tier_counts"] != expected_tiers:
+        errors.append("unexpected v2.5 benchmark tier partition")
+    for row in rows:
+        tier = row["tier"]  # type: ignore[index]
+        app_id = row["app_id"]  # type: ignore[index]
+        if tier == "C" and "partner" in str(row["parity_target"]).lower():
+            errors.append(f"{app_id} tier C row must not require partner parity")
+        if tier in {"A", "B"} and not row["same_contract_opponent"]:  # type: ignore[index]
+            errors.append(f"{app_id} must name a same-contract opponent")
+        if "raydb" in str(app_id):
+            status = str(row["pod_evidence_status"])  # type: ignore[index]
+            if "prepared" not in status or "pod evidence" not in status:
+                errors.append("RayDB row must record prepared pod evidence")
+    return {
+        "status": "accept" if not errors else "reject",
+        "manifest_version": manifest["manifest_version"],
+        "benchmark_app_count": manifest["benchmark_app_count"],
+        "tier_counts": manifest["tier_counts"],
+        "errors": tuple(errors),
     }
 
 

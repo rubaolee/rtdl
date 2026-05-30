@@ -164,8 +164,13 @@ from .neutral_buffer_seam import validate_neutral_buffer_lifetime_transition
 from .v2_5_triton_app_migration import V2_5_TRITON_APP_MIGRATION_VERSION
 from .v2_5_triton_app_migration import V2_5_TRITON_BENCHMARK_APP_PLANS
 from .v2_5_triton_app_migration import V2_5_TRITON_PARTNER_ADAPTER_FRONT_DOOR_OPERATIONS
+from .v2_5_triton_app_migration import V2_5_TIERED_BENCHMARK_MANIFEST_ROWS
+from .v2_5_triton_app_migration import V2_5_TIERED_BENCHMARK_MANIFEST_VERSION
+from .v2_5_triton_app_migration import V25TieredBenchmarkManifestRow
 from .v2_5_triton_app_migration import V25TritonBenchmarkAppPlan
+from .v2_5_triton_app_migration import validate_v2_5_tiered_benchmark_manifest
 from .v2_5_triton_app_migration import validate_v2_5_triton_benchmark_app_migration_plan
+from .v2_5_triton_app_migration import v2_5_tiered_benchmark_manifest
 from .v2_5_triton_app_migration import v2_5_triton_front_door_coverage
 from .v2_5_triton_app_migration import v2_5_triton_benchmark_app_migration_plan
 from .v2_5_partner_support_matrix import V25PartnerSupportCell
@@ -1588,8 +1593,13 @@ __all__ = [
     "V2_5_TRITON_APP_MIGRATION_VERSION",
     "V2_5_TRITON_BENCHMARK_APP_PLANS",
     "V2_5_TRITON_PARTNER_ADAPTER_FRONT_DOOR_OPERATIONS",
+    "V2_5_TIERED_BENCHMARK_MANIFEST_ROWS",
+    "V2_5_TIERED_BENCHMARK_MANIFEST_VERSION",
+    "V25TieredBenchmarkManifestRow",
     "V25TritonBenchmarkAppPlan",
+    "validate_v2_5_tiered_benchmark_manifest",
     "validate_v2_5_triton_benchmark_app_migration_plan",
+    "v2_5_tiered_benchmark_manifest",
     "v2_5_triton_front_door_coverage",
     "v2_5_triton_benchmark_app_migration_plan",
     "overlay_compose",
