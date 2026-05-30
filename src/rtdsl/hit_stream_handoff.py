@@ -10,6 +10,7 @@ from .neutral_buffer_seam import V2_5_NEUTRAL_BUFFER_SEAM_VERSION
 from .neutral_buffer_seam import neutral_buffer_descriptor_from_rtdl_buffer
 from .partner_protocol import RtdlBufferDescriptor
 from .partner_protocol import V2_4_PHASES
+from .v2_5_partner_support_matrix import plan_v2_5_partner_support
 
 
 GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION = "rtdl.rt_hit_stream_handoff.v2.5"
@@ -463,6 +464,67 @@ def gather_typed_payload_columns_for_hit_stream(
     return continuation_inputs, metadata
 
 
+def plan_v2_5_hit_stream_partner_continuation(
+    hit_stream_columns: RtdlHitStreamColumnHandoff,
+    payload_columns: RtdlTypedPrimitivePayloadColumns,
+    *,
+    operation: str,
+    partner: str,
+) -> dict[str, object]:
+    """Plan a v2.5 continuation over hit-stream/payload columns.
+
+    This is a planning surface only. It combines the neutral buffer handoff
+    metadata with the declared partner support matrix so apps can fail closed
+    before they run an unsupported partner or silently pay for a copy.
+    """
+
+    support = plan_v2_5_partner_support(operation, partner)
+    summary = _neutral_buffer_handoff_summary(hit_stream_columns, payload_columns)
+    hit_metadata = hit_stream_columns.to_metadata()
+    payload_metadata = payload_columns.to_metadata()
+    seams = (
+        *hit_metadata["neutral_buffer_seams"],
+        *payload_metadata["neutral_buffer_seams"],
+    )
+    current_inputs_device_ready = all(
+        seam["device_resident"] and seam["transfer_status"] != "host_stage"
+        for seam in seams
+    )
+    requires_cuda = bool(support["requires_cuda"])
+    requirements_satisfied = bool(support["supported"]) and (
+        current_inputs_device_ready if requires_cuda else True
+    )
+    fail_closed = not bool(support["supported"])
+    return {
+        "contract_version": GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION,
+        "neutral_buffer_seam_contract_version": V2_5_NEUTRAL_BUFFER_SEAM_VERSION,
+        "operation": str(operation),
+        "requested_partner": str(partner),
+        "selected_partner": support["partner"],
+        "support_cell": support,
+        "neutral_buffer_handoff_summary": summary,
+        "current_inputs_device_ready": current_inputs_device_ready,
+        "current_inputs_satisfy_device_requirements": requirements_satisfied,
+        "copy_or_host_stage_required": bool(summary["any_host_stage"]) or (
+            requires_cuda and not current_inputs_device_ready
+        ),
+        "fail_closed": fail_closed,
+        "execution_allowed_without_copy": requirements_satisfied and not summary["any_host_stage"],
+        "pod_validation_required": bool(support["requires_sm70_plus"]),
+        "true_zero_copy_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "runtime_action": _partner_plan_runtime_action(
+            support,
+            current_inputs_device_ready=current_inputs_device_ready,
+            any_host_stage=bool(summary["any_host_stage"]),
+        ),
+        "claim_boundary": (
+            "This is a plan/explain record only. It does not execute the "
+            "partner continuation, prove zero-copy, or authorize speedup claims."
+        ),
+    }
+
+
 def _validate_primitive_ids_in_payload_range(primitive_ids: Any, primitive_count: int) -> None:
     primitive_count = int(primitive_count)
     if primitive_count < 0:
@@ -649,6 +711,23 @@ def _neutral_buffer_handoff_summary(
             "but native OptiX device-column output and zero-copy evidence remain unproven."
         ),
     }
+
+
+def _partner_plan_runtime_action(
+    support: dict[str, Any],
+    *,
+    current_inputs_device_ready: bool,
+    any_host_stage: bool,
+) -> str:
+    if not bool(support["supported"]):
+        return "fail_closed_unsupported_partner_operation"
+    if any_host_stage:
+        return "host_stage_or_copy_must_be_explicit"
+    if bool(support["requires_cuda"]) and not current_inputs_device_ready:
+        return "requires_device_resident_columns_or_explicit_copy"
+    if bool(support["requires_sm70_plus"]):
+        return "requires_sm70_pod_validation_before_performance_claim"
+    return "plan_available"
 
 
 def _is_torch_tensor(value: Any) -> bool:
