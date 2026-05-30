@@ -204,6 +204,110 @@ class RtdlNeutralBufferLifetimePlan:
         }
 
 
+@dataclass(frozen=True)
+class RtdlNeutralBufferLease:
+    descriptor: RtdlNeutralBufferSeamDescriptor
+    owner_state: str
+    state: str
+    retain_until: str = "continuation_complete"
+    event_log: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        if self.owner_state not in V2_5_NEUTRAL_BUFFER_OWNERSHIP_STATES:
+            raise ValueError("unsupported neutral buffer lease owner state")
+        if self.owner_state in {"partner_borrowed", "released"}:
+            raise ValueError("neutral buffer lease owner state must be a retaining owner")
+        if self.state not in V2_5_NEUTRAL_BUFFER_OWNERSHIP_STATES:
+            raise ValueError("unsupported neutral buffer lease state")
+        if self.state == "native_owned_pending_state_machine" and self.retain_until != "state_machine_defined":
+            raise ValueError("pending native ownership requires retain_until=state_machine_defined")
+        if self.descriptor.native_producer and self.owner_state not in {
+            "producer_retained",
+            "native_owned_pending_state_machine",
+        }:
+            raise ValueError("native producer leases require a producer/native owner state")
+
+    @property
+    def is_borrowed(self) -> bool:
+        return self.state == "partner_borrowed"
+
+    @property
+    def is_released(self) -> bool:
+        return self.state == "released"
+
+    @property
+    def native_state_machine_required(self) -> bool:
+        return self.owner_state == "native_owned_pending_state_machine"
+
+    def begin_partner_borrow(self) -> "RtdlNeutralBufferLease":
+        validate_neutral_buffer_lifetime_transition(
+            self.state,
+            "partner_borrowed",
+            event="handoff_begin",
+        )
+        return self._replace_state("partner_borrowed", "handoff_begin")
+
+    def complete_partner_borrow(self) -> "RtdlNeutralBufferLease":
+        validate_neutral_buffer_lifetime_transition(
+            self.state,
+            self.owner_state,
+            event="continuation_complete",
+        )
+        return self._replace_state(self.owner_state, "continuation_complete")
+
+    def release(self) -> "RtdlNeutralBufferLease":
+        validate_neutral_buffer_lifetime_transition(
+            self.state,
+            "released",
+            event="release",
+        )
+        return self._replace_state("released", "release", retain_until="none")
+
+    def failure_cleanup(self) -> "RtdlNeutralBufferLease":
+        validate_neutral_buffer_lifetime_transition(
+            self.state,
+            "released",
+            event="failure_cleanup",
+        )
+        return self._replace_state("released", "failure_cleanup", retain_until="none")
+
+    def to_metadata(self) -> dict[str, Any]:
+        return {
+            "contract_version": V2_5_NEUTRAL_BUFFER_SEAM_VERSION,
+            "buffer_name": self.descriptor.buffer.name,
+            "producer": self.descriptor.producer,
+            "consumer": self.descriptor.consumer,
+            "owner_state": self.owner_state,
+            "state": self.state,
+            "retain_until": self.retain_until,
+            "is_borrowed": self.is_borrowed,
+            "is_released": self.is_released,
+            "native_state_machine_required": self.native_state_machine_required,
+            "event_log": self.event_log,
+            "true_zero_copy_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "claim_boundary": (
+                "Neutral buffer leases enforce ownership transitions but do not "
+                "allocate CUDA memory, free native buffers, or authorize zero-copy."
+            ),
+        }
+
+    def _replace_state(
+        self,
+        state: str,
+        event: str,
+        *,
+        retain_until: str | None = None,
+    ) -> "RtdlNeutralBufferLease":
+        return RtdlNeutralBufferLease(
+            descriptor=self.descriptor,
+            owner_state=self.owner_state,
+            state=state,
+            retain_until=self.retain_until if retain_until is None else retain_until,
+            event_log=(*self.event_log, event),
+        )
+
+
 def describe_v2_5_neutral_buffer_seam_contract() -> dict[str, Any]:
     return {
         "contract_version": V2_5_NEUTRAL_BUFFER_SEAM_VERSION,
@@ -212,6 +316,7 @@ def describe_v2_5_neutral_buffer_seam_contract() -> dict[str, Any]:
         "transfer_statuses": V2_5_NEUTRAL_BUFFER_TRANSFER_STATUSES,
         "ownership_states": V2_5_NEUTRAL_BUFFER_OWNERSHIP_STATES,
         "lifetime_events": V2_5_NEUTRAL_BUFFER_LIFETIME_EVENTS,
+        "lease_state_machine": "RtdlNeutralBufferLease",
         "supported_consumers": V2_5_NEUTRAL_BUFFER_SUPPORTED_CONSUMERS,
         "engine_boundary": "app_agnostic_native_engine",
         "partner_selection_policy": "explicit_per_boundary_app_choice",
@@ -353,6 +458,32 @@ def neutral_buffer_lifetime_plan(
     )
 
 
+def create_neutral_buffer_lease(
+    descriptor: RtdlNeutralBufferSeamDescriptor,
+    *,
+    owner_state: str | None = None,
+    retain_until: str | None = None,
+) -> RtdlNeutralBufferLease:
+    resolved_owner_state = descriptor.lifetime_state if owner_state is None else str(owner_state)
+    if resolved_owner_state == "partner_borrowed":
+        raise ValueError("neutral buffer lease cannot start in partner_borrowed state")
+    if resolved_owner_state == "released":
+        raise ValueError("neutral buffer lease cannot start released")
+    resolved_retain_until = (
+        "state_machine_defined"
+        if resolved_owner_state == "native_owned_pending_state_machine"
+        else "continuation_complete"
+    )
+    if retain_until is not None:
+        resolved_retain_until = str(retain_until)
+    return RtdlNeutralBufferLease(
+        descriptor=descriptor,
+        owner_state=resolved_owner_state,
+        state=resolved_owner_state,
+        retain_until=resolved_retain_until,
+    )
+
+
 def validate_neutral_buffer_lifetime_transition(
     current_state: str,
     next_state: str,
@@ -385,6 +516,7 @@ _ALLOWED_LIFETIME_TRANSITIONS = {
     ("native_owned_pending_state_machine", "partner_borrowed", "handoff_begin"),
     ("partner_borrowed", "producer_retained", "continuation_complete"),
     ("partner_borrowed", "caller_retained", "continuation_complete"),
+    ("partner_borrowed", "native_owned_pending_state_machine", "continuation_complete"),
     ("caller_retained", "released", "release"),
     ("producer_retained", "released", "release"),
     ("partner_borrowed", "released", "failure_cleanup"),

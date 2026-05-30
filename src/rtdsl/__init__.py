@@ -139,6 +139,7 @@ from .hit_stream_handoff import prepare_generic_device_resident_hit_stream_colum
 from .hit_stream_handoff import prepare_generic_hit_stream_columns_from_rows
 from .hit_stream_handoff import prepare_generic_typed_primitive_payload_columns
 from .neutral_buffer_seam import RtdlNeutralBufferLifetimePlan
+from .neutral_buffer_seam import RtdlNeutralBufferLease
 from .neutral_buffer_seam import RtdlNeutralBufferSeamDescriptor
 from .neutral_buffer_seam import V2_5_NEUTRAL_BUFFER_API_MATURITY
 from .neutral_buffer_seam import V2_5_NEUTRAL_BUFFER_LIFETIME_EVENTS
@@ -147,6 +148,7 @@ from .neutral_buffer_seam import V2_5_NEUTRAL_BUFFER_PROTOCOL_PRIORITY
 from .neutral_buffer_seam import V2_5_NEUTRAL_BUFFER_SEAM_VERSION
 from .neutral_buffer_seam import V2_5_NEUTRAL_BUFFER_TRANSFER_STATUSES
 from .neutral_buffer_seam import classify_neutral_buffer_protocol
+from .neutral_buffer_seam import create_neutral_buffer_lease
 from .neutral_buffer_seam import describe_v2_5_neutral_buffer_seam_contract
 from .neutral_buffer_seam import neutral_buffer_descriptor_from_object
 from .neutral_buffer_seam import neutral_buffer_descriptor_from_rtdl_buffer
