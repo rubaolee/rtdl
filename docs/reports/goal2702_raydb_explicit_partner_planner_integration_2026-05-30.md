@@ -73,6 +73,33 @@ py -3 -m py_compile examples\v2_0\research_benchmarks\raydb_style\rtdl_raydb_sty
 OK
 ```
 
+Local Linux validation on `192.168.1.20`, checkout
+`/home/lestat/work/rtdl_goal2692_linux_check`, commit
+`591d6fb273fed1e00e6b6cc6d7b063b998086fce`:
+
+```text
+PYTHONPATH=src:. python3 -m unittest \
+  tests.goal2702_raydb_explicit_partner_planner_integration_test \
+  tests.goal2700_explicit_hit_stream_gather_partner_test \
+  tests.goal2698_hit_stream_partner_continuation_plan_test \
+  tests.goal2696_v2_5_partner_support_matrix_test \
+  tests.goal2694_hit_stream_neutral_seam_metadata_test \
+  tests.goal2692_neutral_buffer_seam_lifetime_contract_test \
+  tests.goal2690_post_goal2689_contract_honesty_test \
+  tests.goal2685_device_resident_hit_stream_handoff_test \
+  tests.goal2644_raydb_paper_rt_contract_test \
+  tests.goal2684_generic_rt_hit_stream_handoff_test \
+  tests.goal2662_v2_5_partner_continuation_contract_test \
+  tests.goal2679_v2_5_triton_grouped_argmin_preview_test \
+  tests.goal2681_v2_5_triton_partner_adapter_front_door_test
+Ran 83 tests in 2.601s
+OK (skipped=5)
+
+python3 -m py_compile examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py \
+  tests/goal2702_raydb_explicit_partner_planner_integration_test.py
+OK
+```
+
 The new integration test checks the CPU/reference fallback path because that
 path is no-pod. It verifies:
 
