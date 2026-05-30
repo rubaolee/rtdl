@@ -103,6 +103,8 @@ class Goal2708HitStreamCudaArrayTorchCarrierAdapterTest(unittest.TestCase):
         self.assertIn("cupy.asarray", source)
         self.assertIn("cuda_array_interface_to_torch_via_dlpack", source)
         self.assertIn("primitive_ids_same_pointer_as_input", source)
+        self.assertIn("same_pointer_evidence_observed", source)
+        self.assertIn('adapter_execution_proven_on_hardware = bool(', source)
         self.assertIn("torch_carrier_execution", source)
         self.assertTrue(hasattr(rt, "describe_v2_5_hit_stream_torch_carrier_adapter"))
         self.assertNotIn("describe_v2_5_hit_stream_torch_carrier_adapter", rt.__all__)

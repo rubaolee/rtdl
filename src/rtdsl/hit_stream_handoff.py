@@ -879,9 +879,19 @@ def _gather_payload_torch_carrier(
     primitive_ids_same_pointer = primitive_ids_input_ptr is not None and primitive_ids_input_ptr == primitive_ids_carrier_ptr
     group_ids_same_pointer = group_ids_input_ptr is not None and group_ids_input_ptr == group_ids_carrier_ptr
     values_same_pointer = values_input_ptr is not None and values_input_ptr == values_carrier_ptr
+    same_pointer_evidence_observed = (
+        primitive_ids_same_pointer and group_ids_same_pointer and values_same_pointer
+    )
+    adapter_execution_proven_on_hardware = bool(
+        same_pointer_evidence_observed
+        and _device_info(primitive_ids)[0] == "cuda"
+        and _device_info(group_ids_carrier_source)[0] == "cuda"
+        and _device_info(values_carrier_source)[0] == "cuda"
+        and not bool(adapter["host_copy_required"])
+    )
     execution_metadata = {
         "executed": True,
-        "adapter_execution_proven_on_hardware": False,
+        "adapter_execution_proven_on_hardware": adapter_execution_proven_on_hardware,
         "primitive_ids_input_data_ptr": primitive_ids_input_ptr,
         "primitive_ids_carrier_data_ptr": primitive_ids_carrier_ptr,
         "primitive_ids_same_pointer_as_input": primitive_ids_same_pointer,
@@ -893,9 +903,7 @@ def _gather_payload_torch_carrier(
         "primitive_values_same_pointer_as_input": values_same_pointer,
         "any_host_copy_required": bool(adapter["host_copy_required"]),
         "raw_cuda_adapter_required": bool(adapter["raw_cuda_adapter_required"]),
-        "same_pointer_evidence_observed": (
-            primitive_ids_same_pointer and group_ids_same_pointer and values_same_pointer
-        ),
+        "same_pointer_evidence_observed": same_pointer_evidence_observed,
         "true_zero_copy_authorized": False,
         "claim_boundary": (
             "Pointer equality is runtime evidence for the adapter only. It does not "
