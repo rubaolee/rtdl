@@ -42,6 +42,14 @@ status: dry_run
 git_head: 2c4ad1b6c1dc9801c450bdb27369c56cc43b79df
 ```
 
+Local Linux dry run on `192.168.1.20`:
+
+```text
+HEAD: 02f86c6e972d580ff5ad489a26e5cc3f5617acaa
+status: dry_run
+nvidia_smi: NVIDIA GeForce GTX 1070, 580.126.09, 8192 MiB
+```
+
 ## Pod Command
 
 From a fresh pod checkout at current `origin/main`:
