@@ -77,6 +77,19 @@ Ran 101 tests in 7.393s
 OK (skipped=5)
 ```
 
+Local Linux validation on `192.168.1.20`:
+
+```text
+cd /home/lestat/work/rtdl_goal2692_linux_check
+git reset --hard origin/main
+make build-optix OPTIX_PREFIX=/home/lestat/vendor/optix-dev
+PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so python3 -m unittest ...
+
+HEAD: 0258e7e72a7a51bd91524746fb3fee0ea0537240
+Ran 101 tests in 2.955s
+OK (skipped=5)
+```
+
 ## Next Work
 
 The next useful no-pod check is local Linux source/build validation. The next
