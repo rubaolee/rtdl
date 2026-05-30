@@ -39,9 +39,13 @@ This means the v2.5 path has evidence that the Torch carrier can preserve device
 
 Some artifacts contain `zero_copy_candidate = true` inside adapter planning metadata. That is acceptable only as a candidate label. It is not authorization. The guard test ensures candidate labels do not coincide with `true_zero_copy_authorized = true` in the v2.5 hit-stream evidence set.
 
+After Claude's Goal2735 review, the guard was tightened so each case containing adapter-column `zero_copy_candidate = true` must also keep the enclosing adapter, case, and execution authorization fields false when those fields are present.
+
 ## Public Documentation Boundary
 
 Learner-facing docs may explain that v2.5 has internal same-pointer evidence and device-resident column experiments. They must not say that true zero-copy is authorized unless a future release gate explicitly approves that exact public claim.
+
+The public-doc scan also asserts that it scanned at least one learner-facing Markdown file, so the guard cannot silently pass as an empty scan.
 
 ## Verdict
 

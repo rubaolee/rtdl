@@ -107,9 +107,24 @@ class Goal2734V25SamePointerZeroCopyBoundaryAuditTest(unittest.TestCase):
 
     def test_zero_copy_candidate_labels_are_not_authorization(self) -> None:
         candidate_count = 0
+        candidate_case_count = 0
 
         for artifact in SAME_POINTER_ARTIFACTS:
             payload = _load_artifact(artifact)
+            for case in payload.get("cases", []):
+                adapter = case.get("torch_carrier_adapter")
+                if not isinstance(adapter, dict):
+                    continue
+                columns = adapter.get("columns", [])
+                if not isinstance(columns, list):
+                    continue
+                if any(isinstance(column, dict) and column.get("zero_copy_candidate") is True for column in columns):
+                    candidate_case_count += 1
+                    self.assertFalse(adapter.get("true_zero_copy_authorized"), artifact)
+                    self.assertFalse(case.get("true_zero_copy_authorized"), artifact)
+                    execution = case.get("torch_carrier_execution")
+                    if isinstance(execution, dict) and "true_zero_copy_authorized" in execution:
+                        self.assertFalse(execution["true_zero_copy_authorized"], artifact)
             for node in _walk(payload):
                 if node.get("zero_copy_candidate") is True:
                     candidate_count += 1
@@ -117,11 +132,14 @@ class Goal2734V25SamePointerZeroCopyBoundaryAuditTest(unittest.TestCase):
                     self.assertFalse(node["true_zero_copy_authorized"], artifact)
 
         self.assertGreater(candidate_count, 0)
+        self.assertGreater(candidate_case_count, 0)
 
     def test_public_docs_do_not_authorize_true_zero_copy(self) -> None:
         offenders: list[str] = []
+        public_docs = _public_markdown_files()
+        self.assertGreater(len(public_docs), 0)
 
-        for path in _public_markdown_files():
+        for path in public_docs:
             text = path.read_text(encoding="utf-8", errors="ignore").lower()
             for fragment in FORBIDDEN_PUBLIC_ZERO_COPY_CLAIM_FRAGMENTS:
                 if fragment in text:
