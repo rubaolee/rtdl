@@ -1,0 +1,3601 @@
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=count rows=10000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=count rows=10000 iter=2/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=count rows=10000 iter=1/3 elapsed=0.027361s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=count rows=10000 iter=3/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=count rows=10000 iter=2/3 elapsed=0.024325s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=count rows=10000 iter=4/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=count rows=10000 iter=3/3 elapsed=0.034056s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=count rows=10000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=count rows=10000 iter=2/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=count rows=10000 iter=1/3 elapsed=0.027595s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=count rows=10000 iter=3/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=count rows=10000 iter=2/3 elapsed=0.026493s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=count rows=10000 iter=4/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=count rows=10000 iter=3/3 elapsed=0.025884s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=sum rows=10000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=sum rows=10000 iter=2/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=sum rows=10000 iter=1/3 elapsed=0.109803s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=sum rows=10000 iter=3/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=sum rows=10000 iter=2/3 elapsed=0.094127s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=sum rows=10000 iter=4/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=sum rows=10000 iter=3/3 elapsed=0.085203s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=sum rows=10000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=sum rows=10000 iter=2/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=sum rows=10000 iter=1/3 elapsed=0.087736s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=sum rows=10000 iter=3/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=sum rows=10000 iter=2/3 elapsed=0.090433s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=sum rows=10000 iter=4/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=sum rows=10000 iter=3/3 elapsed=0.090201s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=min rows=10000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=min rows=10000 iter=2/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=min rows=10000 iter=1/3 elapsed=0.098840s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=min rows=10000 iter=3/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=min rows=10000 iter=2/3 elapsed=0.093055s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=min rows=10000 iter=4/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=min rows=10000 iter=3/3 elapsed=0.092163s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=min rows=10000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=min rows=10000 iter=2/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=min rows=10000 iter=1/3 elapsed=0.094718s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=min rows=10000 iter=3/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=min rows=10000 iter=2/3 elapsed=0.098505s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=min rows=10000 iter=4/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=min rows=10000 iter=3/3 elapsed=0.093469s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=max rows=10000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=max rows=10000 iter=2/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=max rows=10000 iter=1/3 elapsed=0.091295s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=max rows=10000 iter=3/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=max rows=10000 iter=2/3 elapsed=0.090629s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=max rows=10000 iter=4/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=max rows=10000 iter=3/3 elapsed=0.099879s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=max rows=10000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=max rows=10000 iter=2/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=max rows=10000 iter=1/3 elapsed=0.184413s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=max rows=10000 iter=3/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=max rows=10000 iter=2/3 elapsed=0.203214s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=max rows=10000 iter=4/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=max rows=10000 iter=3/3 elapsed=0.093882s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=avg_as_sum_count rows=10000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=avg_as_sum_count rows=10000 iter=2/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=avg_as_sum_count rows=10000 iter=1/3 elapsed=0.089540s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=avg_as_sum_count rows=10000 iter=3/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=avg_as_sum_count rows=10000 iter=2/3 elapsed=0.092968s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=avg_as_sum_count rows=10000 iter=4/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=avg_as_sum_count rows=10000 iter=3/3 elapsed=0.093358s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=avg_as_sum_count rows=10000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=avg_as_sum_count rows=10000 iter=2/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=avg_as_sum_count rows=10000 iter=1/3 elapsed=0.095407s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=avg_as_sum_count rows=10000 iter=3/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=avg_as_sum_count rows=10000 iter=2/3 elapsed=0.096542s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=avg_as_sum_count rows=10000 iter=4/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=avg_as_sum_count rows=10000 iter=3/3 elapsed=0.101292s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=count rows=100000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=count rows=100000 iter=2/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=count rows=100000 iter=1/3 elapsed=0.217189s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=count rows=100000 iter=3/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=count rows=100000 iter=2/3 elapsed=0.220351s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=count rows=100000 iter=4/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=count rows=100000 iter=3/3 elapsed=0.223529s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=count rows=100000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=count rows=100000 iter=2/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=count rows=100000 iter=1/3 elapsed=0.226024s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=count rows=100000 iter=3/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=count rows=100000 iter=2/3 elapsed=0.251580s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=count rows=100000 iter=4/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=count rows=100000 iter=3/3 elapsed=0.227156s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=sum rows=100000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=sum rows=100000 iter=2/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=sum rows=100000 iter=1/3 elapsed=0.639155s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=sum rows=100000 iter=3/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=sum rows=100000 iter=2/3 elapsed=0.709558s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=sum rows=100000 iter=4/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=sum rows=100000 iter=3/3 elapsed=0.677729s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=sum rows=100000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=sum rows=100000 iter=2/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=sum rows=100000 iter=1/3 elapsed=0.719913s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=sum rows=100000 iter=3/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=sum rows=100000 iter=2/3 elapsed=0.682709s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=sum rows=100000 iter=4/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=sum rows=100000 iter=3/3 elapsed=0.690914s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=min rows=100000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=min rows=100000 iter=2/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=min rows=100000 iter=1/3 elapsed=0.894768s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=min rows=100000 iter=3/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=min rows=100000 iter=2/3 elapsed=0.790382s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=min rows=100000 iter=4/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=min rows=100000 iter=3/3 elapsed=0.729770s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=min rows=100000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=min rows=100000 iter=2/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=min rows=100000 iter=1/3 elapsed=0.724386s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=min rows=100000 iter=3/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=min rows=100000 iter=2/3 elapsed=0.696644s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=min rows=100000 iter=4/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=min rows=100000 iter=3/3 elapsed=0.704805s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=max rows=100000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=max rows=100000 iter=2/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=max rows=100000 iter=1/3 elapsed=0.601023s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=max rows=100000 iter=3/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=max rows=100000 iter=2/3 elapsed=0.696483s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=max rows=100000 iter=4/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=max rows=100000 iter=3/3 elapsed=0.725909s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=max rows=100000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=max rows=100000 iter=2/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=max rows=100000 iter=1/3 elapsed=0.890537s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=max rows=100000 iter=3/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=max rows=100000 iter=2/3 elapsed=0.887735s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=max rows=100000 iter=4/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=max rows=100000 iter=3/3 elapsed=0.797985s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=avg_as_sum_count rows=100000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=avg_as_sum_count rows=100000 iter=2/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=avg_as_sum_count rows=100000 iter=1/3 elapsed=0.692465s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=avg_as_sum_count rows=100000 iter=3/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=avg_as_sum_count rows=100000 iter=2/3 elapsed=0.671929s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=avg_as_sum_count rows=100000 iter=4/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=avg_as_sum_count rows=100000 iter=3/3 elapsed=0.631828s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=avg_as_sum_count rows=100000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=avg_as_sum_count rows=100000 iter=2/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=avg_as_sum_count rows=100000 iter=1/3 elapsed=0.564774s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=avg_as_sum_count rows=100000 iter=3/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=avg_as_sum_count rows=100000 iter=2/3 elapsed=0.598447s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=avg_as_sum_count rows=100000 iter=4/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=avg_as_sum_count rows=100000 iter=3/3 elapsed=0.578954s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=count rows=1000000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=count rows=1000000 iter=2/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=count rows=1000000 iter=1/3 elapsed=1.799929s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=count rows=1000000 iter=3/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=count rows=1000000 iter=2/3 elapsed=1.786592s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=count rows=1000000 iter=4/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=count rows=1000000 iter=3/3 elapsed=1.793550s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=count rows=1000000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=count rows=1000000 iter=2/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=count rows=1000000 iter=1/3 elapsed=1.959707s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=count rows=1000000 iter=3/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=count rows=1000000 iter=2/3 elapsed=1.881648s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=count rows=1000000 iter=4/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=count rows=1000000 iter=3/3 elapsed=1.884029s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=sum rows=1000000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=sum rows=1000000 iter=2/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=sum rows=1000000 iter=1/3 elapsed=2.182438s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=sum rows=1000000 iter=3/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=sum rows=1000000 iter=2/3 elapsed=2.217291s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=sum rows=1000000 iter=4/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=sum rows=1000000 iter=3/3 elapsed=2.252733s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=sum rows=1000000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=sum rows=1000000 iter=2/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=sum rows=1000000 iter=1/3 elapsed=2.185081s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=sum rows=1000000 iter=3/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=sum rows=1000000 iter=2/3 elapsed=2.220117s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=sum rows=1000000 iter=4/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=sum rows=1000000 iter=3/3 elapsed=2.306807s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=min rows=1000000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=min rows=1000000 iter=2/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=min rows=1000000 iter=1/3 elapsed=2.251573s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=min rows=1000000 iter=3/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=min rows=1000000 iter=2/3 elapsed=2.660070s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=min rows=1000000 iter=4/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=min rows=1000000 iter=3/3 elapsed=2.907275s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=min rows=1000000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=min rows=1000000 iter=2/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=min rows=1000000 iter=1/3 elapsed=2.342042s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=min rows=1000000 iter=3/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=min rows=1000000 iter=2/3 elapsed=2.236179s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=min rows=1000000 iter=4/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=min rows=1000000 iter=3/3 elapsed=2.275859s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=max rows=1000000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=max rows=1000000 iter=2/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=max rows=1000000 iter=1/3 elapsed=2.208814s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=max rows=1000000 iter=3/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=max rows=1000000 iter=2/3 elapsed=2.149606s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=max rows=1000000 iter=4/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=max rows=1000000 iter=3/3 elapsed=2.310629s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=max rows=1000000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=max rows=1000000 iter=2/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=max rows=1000000 iter=1/3 elapsed=2.144810s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=max rows=1000000 iter=3/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=max rows=1000000 iter=2/3 elapsed=2.239246s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=max rows=1000000 iter=4/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=max rows=1000000 iter=3/3 elapsed=2.282165s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=avg_as_sum_count rows=1000000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=avg_as_sum_count rows=1000000 iter=2/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=avg_as_sum_count rows=1000000 iter=1/3 elapsed=2.174047s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=avg_as_sum_count rows=1000000 iter=3/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=avg_as_sum_count rows=1000000 iter=2/3 elapsed=2.125207s
+[goal2685] starting backend=paper_rt_optix_hit_stream_triton mode=avg_as_sum_count rows=1000000 iter=4/4
+[goal2685] backend=paper_rt_optix_hit_stream_triton mode=avg_as_sum_count rows=1000000 iter=3/3 elapsed=2.171307s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=avg_as_sum_count rows=1000000 iter=1/4
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=avg_as_sum_count rows=1000000 iter=2/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=avg_as_sum_count rows=1000000 iter=1/3 elapsed=2.260627s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=avg_as_sum_count rows=1000000 iter=3/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=avg_as_sum_count rows=1000000 iter=2/3 elapsed=2.717194s
+[goal2685] starting backend=paper_rt_optix_device_hit_stream_triton mode=avg_as_sum_count rows=1000000 iter=4/4
+[goal2685] backend=paper_rt_optix_device_hit_stream_triton mode=avg_as_sum_count rows=1000000 iter=3/3 elapsed=2.664585s
+{
+  "all_correct": true,
+  "backends": [
+    "paper_rt_optix_hit_stream_triton",
+    "paper_rt_optix_device_hit_stream_triton"
+  ],
+  "cases": [
+    {
+      "all_wall_sec": [
+        0.02736093383282423,
+        0.02432527905330062,
+        0.03405586094595492
+      ],
+      "backend": "paper_rt_optix_hit_stream_triton",
+      "claim_boundary": "This is Goal2684 full RT hit-stream plus Triton continuation evidence. It is not a public speedup claim until pod artifacts and external review exist.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": null,
+      "handoff_materializes_host_rows_for_bridge": null,
+      "handoff_requested_gather_partner": null,
+      "handoff_selected_gather_partner": null,
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 27,
+      "host_row_bridge_bypassed": null,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 0.02736093383282423,
+      "metadata_timings": {
+        "elapsed_sec": 0.012627464951947331,
+        "hit_stream_hit_stream_materialization": 0.0019321350983153582,
+        "hit_stream_native_call": 0.001997837098315358,
+        "hit_stream_prepare_build": 0.0007175779901444912,
+        "hit_stream_query_pack": 4.0294136852025986e-05,
+        "hit_stream_to_partner_input": 0.0005520640406757593,
+        "hit_stream_traversal": 6.5702e-05,
+        "row_presentation": 0.00012128008529543877,
+        "rt_hit_stream_total": 0.0033368978183716536,
+        "triton_continuation": 0.006119725061580539,
+        "workload_build": 0.002478227950632572
+      },
+      "mode": "count",
+      "native_device_column_path_used": null,
+      "native_device_hit_stream_columns_ready": null,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream",
+      "neutral_buffer_handoff_summary": null,
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.0019321350983153582,
+          "partner_continuation": 0.006119725061580539,
+          "query_preparation": 0.002478227950632572,
+          "rt_traversal": 6.5702e-05,
+          "scene_build": 0.0007175779901444912
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_hit_stream_triton.optix.count",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 26,
+      "row_count": 10000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": null,
+      "torch_carrier_execution": null,
+      "torch_carrier_same_pointer_evidence_observed": null,
+      "true_zero_copy_authorized": null,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        0.02759504597634077,
+        0.02649325388483703,
+        0.02588427416048944
+      ],
+      "backend": "paper_rt_optix_device_hit_stream_triton",
+      "claim_boundary": "This is a v2.5 typed-column handoff path. The OptiX device-column mode bypasses host hit-row construction, but zero-copy and speedup wording still require same-pointer/no-host-stage pod evidence and external review.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": "torch_index_select_cuda_array_interface_adapter",
+      "handoff_materializes_host_rows_for_bridge": false,
+      "handoff_requested_gather_partner": "triton",
+      "handoff_selected_gather_partner": "triton_torch_tensor_carrier",
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 27,
+      "host_row_bridge_bypassed": true,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 0.02649325388483703,
+      "metadata_timings": {
+        "elapsed_sec": 0.009906308026984334,
+        "hit_stream_column_handoff": 0.0028269700706005096,
+        "hit_stream_native_call": 0.0006074421107769012,
+        "hit_stream_query_pack": 2.245185896754265e-06,
+        "hit_stream_rt_traversal": 6.1978e-05,
+        "row_presentation": 7.191882468760014e-05,
+        "rt_hit_stream_total": 0.0014850159641355276,
+        "triton_continuation": 0.0030031721107661724,
+        "typed_payload_gather": 0.0005566549953073263,
+        "workload_build": 0.0025157760828733444
+      },
+      "mode": "count",
+      "native_device_column_path_used": true,
+      "native_device_hit_stream_columns_ready": true,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns",
+      "neutral_buffer_handoff_summary": {
+        "any_host_stage": false,
+        "any_zero_copy_claim_authorized": false,
+        "claim_boundary": "Current hit-stream continuation metadata is neutral-buffer-aware, but native OptiX device-column output and zero-copy evidence remain unproven.",
+        "contract_version": "rtdl.neutral_buffer_seam.v2.5",
+        "hit_stream_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ],
+        "payload_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ]
+      },
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 7.191882468760014e-05,
+          "partner_continuation": 0.0030031721107661724,
+          "query_preparation": 0.0025157760828733444,
+          "rt_traversal": 6.1978e-05,
+          "scene_build": 0.0,
+          "transfer": 0.0028269700706005096
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_device_hit_stream_triton.optix.count",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "transfer",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 26,
+      "row_count": 10000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": {
+        "adapter_execution_proven_on_hardware": false,
+        "adapter_modes": [
+          "torch_tensor",
+          "cuda_array_interface_to_torch_via_dlpack",
+          "host_column_requires_explicit_copy",
+          "unsupported"
+        ],
+        "all_columns_adaptable_to_torch_carrier": true,
+        "all_columns_no_copy_torch_carrier_candidates": true,
+        "claim_boundary": "This explains the torch/Triton carrier bridge for hit-stream continuation. Raw CUDA-array columns are only no-copy candidates until pod evidence proves same-pointer DLPack/CUDA-array-interface adaptation without a host stage.",
+        "columns": [
+          {
+            "adapter_mode": "cuda_array_interface_to_torch_via_dlpack",
+            "data_ptr": 139483214821888,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_ids",
+            "required_dtype": "int64",
+            "source_protocol": "cuda_array_interface",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482628096000,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_group_ids",
+            "required_dtype": "int64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482628176384,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_values",
+            "required_dtype": "float64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          }
+        ],
+        "contract_version": "rtdl.rt_hit_stream_handoff.v2.5",
+        "explicit_copy_required": false,
+        "host_copy_required": false,
+        "public_speedup_claim_authorized": false,
+        "raw_cuda_adapter_required": true,
+        "requires_cupy_for_cuda_array_interface_without_dlpack": true,
+        "requires_torch_runtime": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_execution": {
+        "adapter_execution_proven_on_hardware": false,
+        "any_host_copy_required": false,
+        "claim_boundary": "Pointer equality is runtime evidence for the adapter only. It does not authorize true zero-copy or speedup claims without accepted pod review.",
+        "executed": true,
+        "primitive_group_ids_carrier_data_ptr": 139482628096000,
+        "primitive_group_ids_input_data_ptr": 139482628096000,
+        "primitive_group_ids_same_pointer_as_input": true,
+        "primitive_ids_carrier_data_ptr": 139483214821888,
+        "primitive_ids_input_data_ptr": 139483214821888,
+        "primitive_ids_same_pointer_as_input": true,
+        "primitive_values_carrier_data_ptr": 139482628176384,
+        "primitive_values_input_data_ptr": 139482628176384,
+        "primitive_values_same_pointer_as_input": true,
+        "raw_cuda_adapter_required": true,
+        "same_pointer_evidence_observed": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_same_pointer_evidence_observed": true,
+      "true_zero_copy_authorized": false,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        0.10980287403799593,
+        0.0941271239425987,
+        0.08520253910683095
+      ],
+      "backend": "paper_rt_optix_hit_stream_triton",
+      "claim_boundary": "This is Goal2684 full RT hit-stream plus Triton continuation evidence. It is not a public speedup claim until pod artifacts and external review exist.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": null,
+      "handoff_materializes_host_rows_for_bridge": null,
+      "handoff_requested_gather_partner": null,
+      "handoff_selected_gather_partner": null,
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 27,
+      "host_row_bridge_bypassed": null,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 0.0941271239425987,
+      "metadata_timings": {
+        "elapsed_sec": 0.06891785701736808,
+        "hit_stream_hit_stream_materialization": 0.016541777177631976,
+        "hit_stream_native_call": 0.016736880177631974,
+        "hit_stream_prepare_build": 0.0007924279198050499,
+        "hit_stream_query_pack": 7.302965968847275e-06,
+        "hit_stream_to_partner_input": 0.0007414740975946188,
+        "hit_stream_traversal": 0.000195103,
+        "row_presentation": 0.00012259301729500294,
+        "rt_hit_stream_total": 0.01769313495606184,
+        "triton_continuation": 0.0032544368878006935,
+        "workload_build": 0.0470962671097368
+      },
+      "mode": "sum",
+      "native_device_column_path_used": null,
+      "native_device_hit_stream_columns_ready": null,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream",
+      "neutral_buffer_handoff_summary": null,
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.016541777177631976,
+          "partner_continuation": 0.0032544368878006935,
+          "query_preparation": 0.0470962671097368,
+          "rt_traversal": 0.000195103,
+          "scene_build": 0.0007924279198050499
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_hit_stream_triton.optix.sum",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 26,
+      "row_count": 10000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": null,
+      "torch_carrier_execution": null,
+      "torch_carrier_same_pointer_evidence_observed": null,
+      "true_zero_copy_authorized": null,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        0.08773586014285684,
+        0.09043312608264387,
+        0.09020128706470132
+      ],
+      "backend": "paper_rt_optix_device_hit_stream_triton",
+      "claim_boundary": "This is a v2.5 typed-column handoff path. The OptiX device-column mode bypasses host hit-row construction, but zero-copy and speedup wording still require same-pointer/no-host-stage pod evidence and external review.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": "torch_index_select_cuda_array_interface_adapter",
+      "handoff_materializes_host_rows_for_bridge": false,
+      "handoff_requested_gather_partner": "triton",
+      "handoff_selected_gather_partner": "triton_torch_tensor_carrier",
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 27,
+      "host_row_bridge_bypassed": true,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 0.09020128706470132,
+      "metadata_timings": {
+        "elapsed_sec": 0.07382569089531898,
+        "hit_stream_column_handoff": 0.003317794995382428,
+        "hit_stream_native_call": 0.016915430082008243,
+        "hit_stream_query_pack": 1.9008293747901917e-06,
+        "hit_stream_rt_traversal": 0.000188387,
+        "row_presentation": 0.00010593398474156857,
+        "rt_hit_stream_total": 0.017860001884400845,
+        "triton_continuation": 0.003318612929433584,
+        "typed_payload_gather": 0.0006046900525689125,
+        "workload_build": 0.04921803390607238
+      },
+      "mode": "sum",
+      "native_device_column_path_used": true,
+      "native_device_hit_stream_columns_ready": true,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns",
+      "neutral_buffer_handoff_summary": {
+        "any_host_stage": false,
+        "any_zero_copy_claim_authorized": false,
+        "claim_boundary": "Current hit-stream continuation metadata is neutral-buffer-aware, but native OptiX device-column output and zero-copy evidence remain unproven.",
+        "contract_version": "rtdl.neutral_buffer_seam.v2.5",
+        "hit_stream_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ],
+        "payload_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ]
+      },
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.00010593398474156857,
+          "partner_continuation": 0.003318612929433584,
+          "query_preparation": 0.04921803390607238,
+          "rt_traversal": 0.000188387,
+          "scene_build": 0.0,
+          "transfer": 0.003317794995382428
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_device_hit_stream_triton.optix.sum",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "transfer",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 26,
+      "row_count": 10000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": {
+        "adapter_execution_proven_on_hardware": false,
+        "adapter_modes": [
+          "torch_tensor",
+          "cuda_array_interface_to_torch_via_dlpack",
+          "host_column_requires_explicit_copy",
+          "unsupported"
+        ],
+        "all_columns_adaptable_to_torch_carrier": true,
+        "all_columns_no_copy_torch_carrier_candidates": true,
+        "claim_boundary": "This explains the torch/Triton carrier bridge for hit-stream continuation. Raw CUDA-array columns are only no-copy candidates until pod evidence proves same-pointer DLPack/CUDA-array-interface adaptation without a host stage.",
+        "columns": [
+          {
+            "adapter_mode": "cuda_array_interface_to_torch_via_dlpack",
+            "data_ptr": 139483214821888,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_ids",
+            "required_dtype": "int64",
+            "source_protocol": "cuda_array_interface",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482628096000,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_group_ids",
+            "required_dtype": "int64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482628176384,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_values",
+            "required_dtype": "float64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          }
+        ],
+        "contract_version": "rtdl.rt_hit_stream_handoff.v2.5",
+        "explicit_copy_required": false,
+        "host_copy_required": false,
+        "public_speedup_claim_authorized": false,
+        "raw_cuda_adapter_required": true,
+        "requires_cupy_for_cuda_array_interface_without_dlpack": true,
+        "requires_torch_runtime": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_execution": {
+        "adapter_execution_proven_on_hardware": false,
+        "any_host_copy_required": false,
+        "claim_boundary": "Pointer equality is runtime evidence for the adapter only. It does not authorize true zero-copy or speedup claims without accepted pod review.",
+        "executed": true,
+        "primitive_group_ids_carrier_data_ptr": 139482628096000,
+        "primitive_group_ids_input_data_ptr": 139482628096000,
+        "primitive_group_ids_same_pointer_as_input": true,
+        "primitive_ids_carrier_data_ptr": 139483214821888,
+        "primitive_ids_input_data_ptr": 139483214821888,
+        "primitive_ids_same_pointer_as_input": true,
+        "primitive_values_carrier_data_ptr": 139482628176384,
+        "primitive_values_input_data_ptr": 139482628176384,
+        "primitive_values_same_pointer_as_input": true,
+        "raw_cuda_adapter_required": true,
+        "same_pointer_evidence_observed": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_same_pointer_evidence_observed": true,
+      "true_zero_copy_authorized": false,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        0.09884023619815707,
+        0.09305520099587739,
+        0.09216285310685635
+      ],
+      "backend": "paper_rt_optix_hit_stream_triton",
+      "claim_boundary": "This is Goal2684 full RT hit-stream plus Triton continuation evidence. It is not a public speedup claim until pod artifacts and external review exist.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": null,
+      "handoff_materializes_host_rows_for_bridge": null,
+      "handoff_requested_gather_partner": null,
+      "handoff_selected_gather_partner": null,
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 27,
+      "host_row_bridge_bypassed": null,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 0.09305520099587739,
+      "metadata_timings": {
+        "elapsed_sec": 0.07330690999515355,
+        "hit_stream_hit_stream_materialization": 0.01660450204724312,
+        "hit_stream_native_call": 0.01679818704724312,
+        "hit_stream_prepare_build": 0.000783069059252739,
+        "hit_stream_query_pack": 1.547788269817829e-05,
+        "hit_stream_to_partner_input": 0.0007116158958524466,
+        "hit_stream_traversal": 0.000193685,
+        "row_presentation": 9.826803579926491e-05,
+        "rt_hit_stream_total": 0.01784430886618793,
+        "triton_continuation": 0.007602851139381528,
+        "workload_build": 0.04703890485689044
+      },
+      "mode": "min",
+      "native_device_column_path_used": null,
+      "native_device_hit_stream_columns_ready": null,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream",
+      "neutral_buffer_handoff_summary": null,
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.01660450204724312,
+          "partner_continuation": 0.007602851139381528,
+          "query_preparation": 0.04703890485689044,
+          "rt_traversal": 0.000193685,
+          "scene_build": 0.000783069059252739
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_hit_stream_triton.optix.min",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 26,
+      "row_count": 10000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": null,
+      "torch_carrier_execution": null,
+      "torch_carrier_same_pointer_evidence_observed": null,
+      "true_zero_copy_authorized": null,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        0.09471801505424082,
+        0.09850486484356225,
+        0.09346900996752083
+      ],
+      "backend": "paper_rt_optix_device_hit_stream_triton",
+      "claim_boundary": "This is a v2.5 typed-column handoff path. The OptiX device-column mode bypasses host hit-row construction, but zero-copy and speedup wording still require same-pointer/no-host-stage pod evidence and external review.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": "torch_index_select_cuda_array_interface_adapter",
+      "handoff_materializes_host_rows_for_bridge": false,
+      "handoff_requested_gather_partner": "triton",
+      "handoff_selected_gather_partner": "triton_torch_tensor_carrier",
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 27,
+      "host_row_bridge_bypassed": true,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 0.09471801505424082,
+      "metadata_timings": {
+        "elapsed_sec": 0.07704663695767522,
+        "hit_stream_column_handoff": 0.003320411778986454,
+        "hit_stream_native_call": 0.017588760005310178,
+        "hit_stream_query_pack": 2.112938091158867e-06,
+        "hit_stream_rt_traversal": 0.000190517,
+        "row_presentation": 8.274801075458527e-05,
+        "rt_hit_stream_total": 0.01855467911809683,
+        "triton_continuation": 0.0067846509627997875,
+        "typed_payload_gather": 0.0006004129536449909,
+        "workload_build": 0.04829963599331677
+      },
+      "mode": "min",
+      "native_device_column_path_used": true,
+      "native_device_hit_stream_columns_ready": true,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns",
+      "neutral_buffer_handoff_summary": {
+        "any_host_stage": false,
+        "any_zero_copy_claim_authorized": false,
+        "claim_boundary": "Current hit-stream continuation metadata is neutral-buffer-aware, but native OptiX device-column output and zero-copy evidence remain unproven.",
+        "contract_version": "rtdl.neutral_buffer_seam.v2.5",
+        "hit_stream_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ],
+        "payload_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ]
+      },
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 8.274801075458527e-05,
+          "partner_continuation": 0.0067846509627997875,
+          "query_preparation": 0.04829963599331677,
+          "rt_traversal": 0.000190517,
+          "scene_build": 0.0,
+          "transfer": 0.003320411778986454
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_device_hit_stream_triton.optix.min",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "transfer",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 26,
+      "row_count": 10000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": {
+        "adapter_execution_proven_on_hardware": false,
+        "adapter_modes": [
+          "torch_tensor",
+          "cuda_array_interface_to_torch_via_dlpack",
+          "host_column_requires_explicit_copy",
+          "unsupported"
+        ],
+        "all_columns_adaptable_to_torch_carrier": true,
+        "all_columns_no_copy_torch_carrier_candidates": true,
+        "claim_boundary": "This explains the torch/Triton carrier bridge for hit-stream continuation. Raw CUDA-array columns are only no-copy candidates until pod evidence proves same-pointer DLPack/CUDA-array-interface adaptation without a host stage.",
+        "columns": [
+          {
+            "adapter_mode": "cuda_array_interface_to_torch_via_dlpack",
+            "data_ptr": 139483214821888,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_ids",
+            "required_dtype": "int64",
+            "source_protocol": "cuda_array_interface",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482628096000,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_group_ids",
+            "required_dtype": "int64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482628176384,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_values",
+            "required_dtype": "float64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          }
+        ],
+        "contract_version": "rtdl.rt_hit_stream_handoff.v2.5",
+        "explicit_copy_required": false,
+        "host_copy_required": false,
+        "public_speedup_claim_authorized": false,
+        "raw_cuda_adapter_required": true,
+        "requires_cupy_for_cuda_array_interface_without_dlpack": true,
+        "requires_torch_runtime": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_execution": {
+        "adapter_execution_proven_on_hardware": false,
+        "any_host_copy_required": false,
+        "claim_boundary": "Pointer equality is runtime evidence for the adapter only. It does not authorize true zero-copy or speedup claims without accepted pod review.",
+        "executed": true,
+        "primitive_group_ids_carrier_data_ptr": 139482628096000,
+        "primitive_group_ids_input_data_ptr": 139482628096000,
+        "primitive_group_ids_same_pointer_as_input": true,
+        "primitive_ids_carrier_data_ptr": 139483214821888,
+        "primitive_ids_input_data_ptr": 139483214821888,
+        "primitive_ids_same_pointer_as_input": true,
+        "primitive_values_carrier_data_ptr": 139482628176384,
+        "primitive_values_input_data_ptr": 139482628176384,
+        "primitive_values_same_pointer_as_input": true,
+        "raw_cuda_adapter_required": true,
+        "same_pointer_evidence_observed": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_same_pointer_evidence_observed": true,
+      "true_zero_copy_authorized": false,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        0.09129474102519453,
+        0.09062934503890574,
+        0.09987915586680174
+      ],
+      "backend": "paper_rt_optix_hit_stream_triton",
+      "claim_boundary": "This is Goal2684 full RT hit-stream plus Triton continuation evidence. It is not a public speedup claim until pod artifacts and external review exist.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": null,
+      "handoff_materializes_host_rows_for_bridge": null,
+      "handoff_requested_gather_partner": null,
+      "handoff_selected_gather_partner": null,
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 27,
+      "host_row_bridge_bypassed": null,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 0.09129474102519453,
+      "metadata_timings": {
+        "elapsed_sec": 0.07455545291304588,
+        "hit_stream_hit_stream_materialization": 0.01653376102030921,
+        "hit_stream_native_call": 0.01672569802030921,
+        "hit_stream_prepare_build": 0.0007435230072587729,
+        "hit_stream_query_pack": 1.3131881132721901e-05,
+        "hit_stream_to_partner_input": 0.0007359199225902557,
+        "hit_stream_traversal": 0.000191937,
+        "row_presentation": 8.569890633225441e-05,
+        "rt_hit_stream_total": 0.017637853045016527,
+        "triton_continuation": 0.007589569082483649,
+        "workload_build": 0.04849537112750113
+      },
+      "mode": "max",
+      "native_device_column_path_used": null,
+      "native_device_hit_stream_columns_ready": null,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream",
+      "neutral_buffer_handoff_summary": null,
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.01653376102030921,
+          "partner_continuation": 0.007589569082483649,
+          "query_preparation": 0.04849537112750113,
+          "rt_traversal": 0.000191937,
+          "scene_build": 0.0007435230072587729
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_hit_stream_triton.optix.max",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 26,
+      "row_count": 10000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": null,
+      "torch_carrier_execution": null,
+      "torch_carrier_same_pointer_evidence_observed": null,
+      "true_zero_copy_authorized": null,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        0.1844131639227271,
+        0.20321351801976562,
+        0.09388246410526335
+      ],
+      "backend": "paper_rt_optix_device_hit_stream_triton",
+      "claim_boundary": "This is a v2.5 typed-column handoff path. The OptiX device-column mode bypasses host hit-row construction, but zero-copy and speedup wording still require same-pointer/no-host-stage pod evidence and external review.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": "torch_index_select_cuda_array_interface_adapter",
+      "handoff_materializes_host_rows_for_bridge": false,
+      "handoff_requested_gather_partner": "triton",
+      "handoff_selected_gather_partner": "triton_torch_tensor_carrier",
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 27,
+      "host_row_bridge_bypassed": true,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 0.1844131639227271,
+      "metadata_timings": {
+        "elapsed_sec": 0.07740509207360446,
+        "hit_stream_column_handoff": 0.0033070701174438,
+        "hit_stream_native_call": 0.016786490101367235,
+        "hit_stream_query_pack": 2.011191099882126e-06,
+        "hit_stream_rt_traversal": 0.000191855,
+        "row_presentation": 7.314910180866718e-05,
+        "rt_hit_stream_total": 0.017714531160891056,
+        "triton_continuation": 0.00675211101770401,
+        "typed_payload_gather": 0.0005949269980192184,
+        "workload_build": 0.04955221898853779
+      },
+      "mode": "max",
+      "native_device_column_path_used": true,
+      "native_device_hit_stream_columns_ready": true,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns",
+      "neutral_buffer_handoff_summary": {
+        "any_host_stage": false,
+        "any_zero_copy_claim_authorized": false,
+        "claim_boundary": "Current hit-stream continuation metadata is neutral-buffer-aware, but native OptiX device-column output and zero-copy evidence remain unproven.",
+        "contract_version": "rtdl.neutral_buffer_seam.v2.5",
+        "hit_stream_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ],
+        "payload_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ]
+      },
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 7.314910180866718e-05,
+          "partner_continuation": 0.00675211101770401,
+          "query_preparation": 0.04955221898853779,
+          "rt_traversal": 0.000191855,
+          "scene_build": 0.0,
+          "transfer": 0.0033070701174438
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_device_hit_stream_triton.optix.max",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "transfer",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 26,
+      "row_count": 10000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": {
+        "adapter_execution_proven_on_hardware": false,
+        "adapter_modes": [
+          "torch_tensor",
+          "cuda_array_interface_to_torch_via_dlpack",
+          "host_column_requires_explicit_copy",
+          "unsupported"
+        ],
+        "all_columns_adaptable_to_torch_carrier": true,
+        "all_columns_no_copy_torch_carrier_candidates": true,
+        "claim_boundary": "This explains the torch/Triton carrier bridge for hit-stream continuation. Raw CUDA-array columns are only no-copy candidates until pod evidence proves same-pointer DLPack/CUDA-array-interface adaptation without a host stage.",
+        "columns": [
+          {
+            "adapter_mode": "cuda_array_interface_to_torch_via_dlpack",
+            "data_ptr": 139483214821888,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_ids",
+            "required_dtype": "int64",
+            "source_protocol": "cuda_array_interface",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482628096000,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_group_ids",
+            "required_dtype": "int64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482628176384,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_values",
+            "required_dtype": "float64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          }
+        ],
+        "contract_version": "rtdl.rt_hit_stream_handoff.v2.5",
+        "explicit_copy_required": false,
+        "host_copy_required": false,
+        "public_speedup_claim_authorized": false,
+        "raw_cuda_adapter_required": true,
+        "requires_cupy_for_cuda_array_interface_without_dlpack": true,
+        "requires_torch_runtime": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_execution": {
+        "adapter_execution_proven_on_hardware": false,
+        "any_host_copy_required": false,
+        "claim_boundary": "Pointer equality is runtime evidence for the adapter only. It does not authorize true zero-copy or speedup claims without accepted pod review.",
+        "executed": true,
+        "primitive_group_ids_carrier_data_ptr": 139482628096000,
+        "primitive_group_ids_input_data_ptr": 139482628096000,
+        "primitive_group_ids_same_pointer_as_input": true,
+        "primitive_ids_carrier_data_ptr": 139483214821888,
+        "primitive_ids_input_data_ptr": 139483214821888,
+        "primitive_ids_same_pointer_as_input": true,
+        "primitive_values_carrier_data_ptr": 139482628176384,
+        "primitive_values_input_data_ptr": 139482628176384,
+        "primitive_values_same_pointer_as_input": true,
+        "raw_cuda_adapter_required": true,
+        "same_pointer_evidence_observed": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_same_pointer_evidence_observed": true,
+      "true_zero_copy_authorized": false,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        0.08954041497781873,
+        0.09296762105077505,
+        0.0933582209981978
+      ],
+      "backend": "paper_rt_optix_hit_stream_triton",
+      "claim_boundary": "This is Goal2684 full RT hit-stream plus Triton continuation evidence. It is not a public speedup claim until pod artifacts and external review exist.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": null,
+      "handoff_materializes_host_rows_for_bridge": null,
+      "handoff_requested_gather_partner": null,
+      "handoff_selected_gather_partner": null,
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 27,
+      "host_row_bridge_bypassed": null,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 0.09296762105077505,
+      "metadata_timings": {
+        "elapsed_sec": 0.07568924408406019,
+        "hit_stream_hit_stream_materialization": 0.0168521320485847,
+        "hit_stream_native_call": 0.0170518490485847,
+        "hit_stream_prepare_build": 0.0007587489672005177,
+        "hit_stream_query_pack": 1.3468088582158089e-05,
+        "hit_stream_to_partner_input": 0.0008114769589155912,
+        "hit_stream_traversal": 0.000199717,
+        "row_presentation": 0.0001346459612250328,
+        "rt_hit_stream_total": 0.017978561110794544,
+        "triton_continuation": 0.006715116091072559,
+        "workload_build": 0.05003845598548651
+      },
+      "mode": "avg_as_sum_count",
+      "native_device_column_path_used": null,
+      "native_device_hit_stream_columns_ready": null,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream",
+      "neutral_buffer_handoff_summary": null,
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.0168521320485847,
+          "partner_continuation": 0.006715116091072559,
+          "query_preparation": 0.05003845598548651,
+          "rt_traversal": 0.000199717,
+          "scene_build": 0.0007587489672005177
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_hit_stream_triton.optix.avg_as_sum_count",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 26,
+      "row_count": 10000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": null,
+      "torch_carrier_execution": null,
+      "torch_carrier_same_pointer_evidence_observed": null,
+      "true_zero_copy_authorized": null,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        0.09540732810273767,
+        0.09654206014238298,
+        0.10129190515726805
+      ],
+      "backend": "paper_rt_optix_device_hit_stream_triton",
+      "claim_boundary": "This is a v2.5 typed-column handoff path. The OptiX device-column mode bypasses host hit-row construction, but zero-copy and speedup wording still require same-pointer/no-host-stage pod evidence and external review.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": "torch_index_select_cuda_array_interface_adapter",
+      "handoff_materializes_host_rows_for_bridge": false,
+      "handoff_requested_gather_partner": "triton",
+      "handoff_selected_gather_partner": "triton_torch_tensor_carrier",
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 27,
+      "host_row_bridge_bypassed": true,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 0.09654206014238298,
+      "metadata_timings": {
+        "elapsed_sec": 0.08365534991025925,
+        "hit_stream_column_handoff": 0.003714788006618619,
+        "hit_stream_native_call": 0.021971326088532805,
+        "hit_stream_query_pack": 2.600019797682762e-06,
+        "hit_stream_rt_traversal": 0.000205676,
+        "row_presentation": 9.340397082269192e-05,
+        "rt_hit_stream_total": 0.02301464811898768,
+        "triton_continuation": 0.007276006042957306,
+        "typed_payload_gather": 0.0005916748195886612,
+        "workload_build": 0.04955170094035566
+      },
+      "mode": "avg_as_sum_count",
+      "native_device_column_path_used": true,
+      "native_device_hit_stream_columns_ready": true,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns",
+      "neutral_buffer_handoff_summary": {
+        "any_host_stage": false,
+        "any_zero_copy_claim_authorized": false,
+        "claim_boundary": "Current hit-stream continuation metadata is neutral-buffer-aware, but native OptiX device-column output and zero-copy evidence remain unproven.",
+        "contract_version": "rtdl.neutral_buffer_seam.v2.5",
+        "hit_stream_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ],
+        "payload_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ]
+      },
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 9.340397082269192e-05,
+          "partner_continuation": 0.007276006042957306,
+          "query_preparation": 0.04955170094035566,
+          "rt_traversal": 0.000205676,
+          "scene_build": 0.0,
+          "transfer": 0.003714788006618619
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_device_hit_stream_triton.optix.avg_as_sum_count",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "transfer",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 26,
+      "row_count": 10000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": {
+        "adapter_execution_proven_on_hardware": false,
+        "adapter_modes": [
+          "torch_tensor",
+          "cuda_array_interface_to_torch_via_dlpack",
+          "host_column_requires_explicit_copy",
+          "unsupported"
+        ],
+        "all_columns_adaptable_to_torch_carrier": true,
+        "all_columns_no_copy_torch_carrier_candidates": true,
+        "claim_boundary": "This explains the torch/Triton carrier bridge for hit-stream continuation. Raw CUDA-array columns are only no-copy candidates until pod evidence proves same-pointer DLPack/CUDA-array-interface adaptation without a host stage.",
+        "columns": [
+          {
+            "adapter_mode": "cuda_array_interface_to_torch_via_dlpack",
+            "data_ptr": 139483214821888,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_ids",
+            "required_dtype": "int64",
+            "source_protocol": "cuda_array_interface",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482628096000,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_group_ids",
+            "required_dtype": "int64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482628176384,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_values",
+            "required_dtype": "float64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          }
+        ],
+        "contract_version": "rtdl.rt_hit_stream_handoff.v2.5",
+        "explicit_copy_required": false,
+        "host_copy_required": false,
+        "public_speedup_claim_authorized": false,
+        "raw_cuda_adapter_required": true,
+        "requires_cupy_for_cuda_array_interface_without_dlpack": true,
+        "requires_torch_runtime": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_execution": {
+        "adapter_execution_proven_on_hardware": false,
+        "any_host_copy_required": false,
+        "claim_boundary": "Pointer equality is runtime evidence for the adapter only. It does not authorize true zero-copy or speedup claims without accepted pod review.",
+        "executed": true,
+        "primitive_group_ids_carrier_data_ptr": 139482628096000,
+        "primitive_group_ids_input_data_ptr": 139482628096000,
+        "primitive_group_ids_same_pointer_as_input": true,
+        "primitive_ids_carrier_data_ptr": 139483214821888,
+        "primitive_ids_input_data_ptr": 139483214821888,
+        "primitive_ids_same_pointer_as_input": true,
+        "primitive_values_carrier_data_ptr": 139482628176384,
+        "primitive_values_input_data_ptr": 139482628176384,
+        "primitive_values_same_pointer_as_input": true,
+        "raw_cuda_adapter_required": true,
+        "same_pointer_evidence_observed": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_same_pointer_evidence_observed": true,
+      "true_zero_copy_authorized": false,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        0.21718944306485355,
+        0.22035116190090775,
+        0.22352876607328653
+      ],
+      "backend": "paper_rt_optix_hit_stream_triton",
+      "claim_boundary": "This is Goal2684 full RT hit-stream plus Triton continuation evidence. It is not a public speedup claim until pod artifacts and external review exist.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": null,
+      "handoff_materializes_host_rows_for_bridge": null,
+      "handoff_requested_gather_partner": null,
+      "handoff_selected_gather_partner": null,
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 236,
+      "host_row_bridge_bypassed": null,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 0.22035116190090775,
+      "metadata_timings": {
+        "elapsed_sec": 0.03593543008901179,
+        "hit_stream_hit_stream_materialization": 0.0020097609568072556,
+        "hit_stream_native_call": 0.0021111939568072557,
+        "hit_stream_prepare_build": 0.004437228897586465,
+        "hit_stream_query_pack": 0.0001090650912374258,
+        "hit_stream_to_partner_input": 0.0013018129393458366,
+        "hit_stream_traversal": 0.000101433,
+        "row_presentation": 0.0001537310890853405,
+        "rt_hit_stream_total": 0.007477466017007828,
+        "triton_continuation": 0.005528508918359876,
+        "workload_build": 0.021432782988995314
+      },
+      "mode": "count",
+      "native_device_column_path_used": null,
+      "native_device_hit_stream_columns_ready": null,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream",
+      "neutral_buffer_handoff_summary": null,
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.0020097609568072556,
+          "partner_continuation": 0.005528508918359876,
+          "query_preparation": 0.021432782988995314,
+          "rt_traversal": 0.000101433,
+          "scene_build": 0.004437228897586465
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_hit_stream_triton.optix.count",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 117,
+      "row_count": 100000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": null,
+      "torch_carrier_execution": null,
+      "torch_carrier_same_pointer_evidence_observed": null,
+      "true_zero_copy_authorized": null,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        0.22602378693409264,
+        0.2515801179688424,
+        0.22715570987202227
+      ],
+      "backend": "paper_rt_optix_device_hit_stream_triton",
+      "claim_boundary": "This is a v2.5 typed-column handoff path. The OptiX device-column mode bypasses host hit-row construction, but zero-copy and speedup wording still require same-pointer/no-host-stage pod evidence and external review.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": "torch_index_select_cuda_array_interface_adapter",
+      "handoff_materializes_host_rows_for_bridge": false,
+      "handoff_requested_gather_partner": "triton",
+      "handoff_selected_gather_partner": "triton_torch_tensor_carrier",
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 236,
+      "host_row_bridge_bypassed": true,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 0.22715570987202227,
+      "metadata_timings": {
+        "elapsed_sec": 0.05019272118806839,
+        "hit_stream_column_handoff": 0.018407185096293688,
+        "hit_stream_native_call": 0.002205893862992525,
+        "hit_stream_query_pack": 3.8209836930036545e-06,
+        "hit_stream_rt_traversal": 0.000102635,
+        "row_presentation": 0.00011221412569284439,
+        "rt_hit_stream_total": 0.007253871997818351,
+        "triton_continuation": 0.0045846630819141865,
+        "typed_payload_gather": 0.0009794130455702543,
+        "workload_build": 0.019830612000077963
+      },
+      "mode": "count",
+      "native_device_column_path_used": true,
+      "native_device_hit_stream_columns_ready": true,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns",
+      "neutral_buffer_handoff_summary": {
+        "any_host_stage": false,
+        "any_zero_copy_claim_authorized": false,
+        "claim_boundary": "Current hit-stream continuation metadata is neutral-buffer-aware, but native OptiX device-column output and zero-copy evidence remain unproven.",
+        "contract_version": "rtdl.neutral_buffer_seam.v2.5",
+        "hit_stream_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ],
+        "payload_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ]
+      },
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.00011221412569284439,
+          "partner_continuation": 0.0045846630819141865,
+          "query_preparation": 0.019830612000077963,
+          "rt_traversal": 0.000102635,
+          "scene_build": 0.0,
+          "transfer": 0.018407185096293688
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_device_hit_stream_triton.optix.count",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "transfer",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 117,
+      "row_count": 100000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": {
+        "adapter_execution_proven_on_hardware": false,
+        "adapter_modes": [
+          "torch_tensor",
+          "cuda_array_interface_to_torch_via_dlpack",
+          "host_column_requires_explicit_copy",
+          "unsupported"
+        ],
+        "all_columns_adaptable_to_torch_carrier": true,
+        "all_columns_no_copy_torch_carrier_candidates": true,
+        "claim_boundary": "This explains the torch/Triton carrier bridge for hit-stream continuation. Raw CUDA-array columns are only no-copy candidates until pod evidence proves same-pointer DLPack/CUDA-array-interface adaptation without a host stage.",
+        "columns": [
+          {
+            "adapter_mode": "cuda_array_interface_to_torch_via_dlpack",
+            "data_ptr": 139483214001664,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_ids",
+            "required_dtype": "int64",
+            "source_protocol": "cuda_array_interface",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482628096000,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_group_ids",
+            "required_dtype": "int64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482628896256,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_values",
+            "required_dtype": "float64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          }
+        ],
+        "contract_version": "rtdl.rt_hit_stream_handoff.v2.5",
+        "explicit_copy_required": false,
+        "host_copy_required": false,
+        "public_speedup_claim_authorized": false,
+        "raw_cuda_adapter_required": true,
+        "requires_cupy_for_cuda_array_interface_without_dlpack": true,
+        "requires_torch_runtime": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_execution": {
+        "adapter_execution_proven_on_hardware": false,
+        "any_host_copy_required": false,
+        "claim_boundary": "Pointer equality is runtime evidence for the adapter only. It does not authorize true zero-copy or speedup claims without accepted pod review.",
+        "executed": true,
+        "primitive_group_ids_carrier_data_ptr": 139482628096000,
+        "primitive_group_ids_input_data_ptr": 139482628096000,
+        "primitive_group_ids_same_pointer_as_input": true,
+        "primitive_ids_carrier_data_ptr": 139483214001664,
+        "primitive_ids_input_data_ptr": 139483214001664,
+        "primitive_ids_same_pointer_as_input": true,
+        "primitive_values_carrier_data_ptr": 139482628896256,
+        "primitive_values_input_data_ptr": 139482628896256,
+        "primitive_values_same_pointer_as_input": true,
+        "raw_cuda_adapter_required": true,
+        "same_pointer_evidence_observed": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_same_pointer_evidence_observed": true,
+      "true_zero_copy_authorized": false,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        0.6391548160463572,
+        0.7095579630695283,
+        0.6777286429423839
+      ],
+      "backend": "paper_rt_optix_hit_stream_triton",
+      "claim_boundary": "This is Goal2684 full RT hit-stream plus Triton continuation evidence. It is not a public speedup claim until pod artifacts and external review exist.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": null,
+      "handoff_materializes_host_rows_for_bridge": null,
+      "handoff_requested_gather_partner": null,
+      "handoff_selected_gather_partner": null,
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 236,
+      "host_row_bridge_bypassed": null,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 0.6777286429423839,
+      "metadata_timings": {
+        "elapsed_sec": 0.4313570389058441,
+        "hit_stream_hit_stream_materialization": 0.13433766092388522,
+        "hit_stream_native_call": 0.13500880892388523,
+        "hit_stream_prepare_build": 0.004575605969876051,
+        "hit_stream_query_pack": 0.0001157980877906084,
+        "hit_stream_to_partner_input": 0.001288154162466526,
+        "hit_stream_traversal": 0.000671148,
+        "row_presentation": 0.00018003489822149277,
+        "rt_hit_stream_total": 0.14067779993638396,
+        "triton_continuation": 0.004040364176034927,
+        "workload_build": 0.2851169288624078
+      },
+      "mode": "sum",
+      "native_device_column_path_used": null,
+      "native_device_hit_stream_columns_ready": null,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream",
+      "neutral_buffer_handoff_summary": null,
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.13433766092388522,
+          "partner_continuation": 0.004040364176034927,
+          "query_preparation": 0.2851169288624078,
+          "rt_traversal": 0.000671148,
+          "scene_build": 0.004575605969876051
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_hit_stream_triton.optix.sum",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 117,
+      "row_count": 100000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": null,
+      "torch_carrier_execution": null,
+      "torch_carrier_same_pointer_evidence_observed": null,
+      "true_zero_copy_authorized": null,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        0.719912830973044,
+        0.6827090578153729,
+        0.6909136888571084
+      ],
+      "backend": "paper_rt_optix_device_hit_stream_triton",
+      "claim_boundary": "This is a v2.5 typed-column handoff path. The OptiX device-column mode bypasses host hit-row construction, but zero-copy and speedup wording still require same-pointer/no-host-stage pod evidence and external review.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": "torch_index_select_cuda_array_interface_adapter",
+      "handoff_materializes_host_rows_for_bridge": false,
+      "handoff_requested_gather_partner": "triton",
+      "handoff_selected_gather_partner": "triton_torch_tensor_carrier",
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 236,
+      "host_row_bridge_bypassed": true,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 0.6909136888571084,
+      "metadata_timings": {
+        "elapsed_sec": 0.4840677920728922,
+        "hit_stream_column_handoff": 0.014370084973052144,
+        "hit_stream_native_call": 0.13686237181536853,
+        "hit_stream_query_pack": 2.5939662009477615e-06,
+        "hit_stream_rt_traversal": 0.000699308,
+        "row_presentation": 0.00016249087639153004,
+        "rt_hit_stream_total": 0.14200171292759478,
+        "triton_continuation": 0.003911657026037574,
+        "typed_payload_gather": 0.0007821889594197273,
+        "workload_build": 0.3236149870790541
+      },
+      "mode": "sum",
+      "native_device_column_path_used": true,
+      "native_device_hit_stream_columns_ready": true,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns",
+      "neutral_buffer_handoff_summary": {
+        "any_host_stage": false,
+        "any_zero_copy_claim_authorized": false,
+        "claim_boundary": "Current hit-stream continuation metadata is neutral-buffer-aware, but native OptiX device-column output and zero-copy evidence remain unproven.",
+        "contract_version": "rtdl.neutral_buffer_seam.v2.5",
+        "hit_stream_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ],
+        "payload_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ]
+      },
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.00016249087639153004,
+          "partner_continuation": 0.003911657026037574,
+          "query_preparation": 0.3236149870790541,
+          "rt_traversal": 0.000699308,
+          "scene_build": 0.0,
+          "transfer": 0.014370084973052144
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_device_hit_stream_triton.optix.sum",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "transfer",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 117,
+      "row_count": 100000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": {
+        "adapter_execution_proven_on_hardware": false,
+        "adapter_modes": [
+          "torch_tensor",
+          "cuda_array_interface_to_torch_via_dlpack",
+          "host_column_requires_explicit_copy",
+          "unsupported"
+        ],
+        "all_columns_adaptable_to_torch_carrier": true,
+        "all_columns_no_copy_torch_carrier_candidates": true,
+        "claim_boundary": "This explains the torch/Triton carrier bridge for hit-stream continuation. Raw CUDA-array columns are only no-copy candidates until pod evidence proves same-pointer DLPack/CUDA-array-interface adaptation without a host stage.",
+        "columns": [
+          {
+            "adapter_mode": "cuda_array_interface_to_torch_via_dlpack",
+            "data_ptr": 139483214001664,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_ids",
+            "required_dtype": "int64",
+            "source_protocol": "cuda_array_interface",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482628096000,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_group_ids",
+            "required_dtype": "int64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482628896256,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_values",
+            "required_dtype": "float64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          }
+        ],
+        "contract_version": "rtdl.rt_hit_stream_handoff.v2.5",
+        "explicit_copy_required": false,
+        "host_copy_required": false,
+        "public_speedup_claim_authorized": false,
+        "raw_cuda_adapter_required": true,
+        "requires_cupy_for_cuda_array_interface_without_dlpack": true,
+        "requires_torch_runtime": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_execution": {
+        "adapter_execution_proven_on_hardware": false,
+        "any_host_copy_required": false,
+        "claim_boundary": "Pointer equality is runtime evidence for the adapter only. It does not authorize true zero-copy or speedup claims without accepted pod review.",
+        "executed": true,
+        "primitive_group_ids_carrier_data_ptr": 139482628096000,
+        "primitive_group_ids_input_data_ptr": 139482628096000,
+        "primitive_group_ids_same_pointer_as_input": true,
+        "primitive_ids_carrier_data_ptr": 139483214001664,
+        "primitive_ids_input_data_ptr": 139483214001664,
+        "primitive_ids_same_pointer_as_input": true,
+        "primitive_values_carrier_data_ptr": 139482628896256,
+        "primitive_values_input_data_ptr": 139482628896256,
+        "primitive_values_same_pointer_as_input": true,
+        "raw_cuda_adapter_required": true,
+        "same_pointer_evidence_observed": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_same_pointer_evidence_observed": true,
+      "true_zero_copy_authorized": false,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        0.8947684660088271,
+        0.7903822080697864,
+        0.7297701449133456
+      ],
+      "backend": "paper_rt_optix_hit_stream_triton",
+      "claim_boundary": "This is Goal2684 full RT hit-stream plus Triton continuation evidence. It is not a public speedup claim until pod artifacts and external review exist.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": null,
+      "handoff_materializes_host_rows_for_bridge": null,
+      "handoff_requested_gather_partner": null,
+      "handoff_selected_gather_partner": null,
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 236,
+      "host_row_bridge_bypassed": null,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 0.7903822080697864,
+      "metadata_timings": {
+        "elapsed_sec": 0.5591071189846843,
+        "hit_stream_hit_stream_materialization": 0.13564557496014726,
+        "hit_stream_native_call": 0.13632854796014726,
+        "hit_stream_prepare_build": 0.02880769711919129,
+        "hit_stream_query_pack": 0.0001806500367820263,
+        "hit_stream_to_partner_input": 0.011647840030491352,
+        "hit_stream_traversal": 0.000682973,
+        "row_presentation": 0.00017111795023083687,
+        "rt_hit_stream_total": 0.1663182768970728,
+        "triton_continuation": 0.054396518971771,
+        "workload_build": 0.32651326688937843
+      },
+      "mode": "min",
+      "native_device_column_path_used": null,
+      "native_device_hit_stream_columns_ready": null,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream",
+      "neutral_buffer_handoff_summary": null,
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.13564557496014726,
+          "partner_continuation": 0.054396518971771,
+          "query_preparation": 0.32651326688937843,
+          "rt_traversal": 0.000682973,
+          "scene_build": 0.02880769711919129
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_hit_stream_triton.optix.min",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 117,
+      "row_count": 100000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": null,
+      "torch_carrier_execution": null,
+      "torch_carrier_same_pointer_evidence_observed": null,
+      "true_zero_copy_authorized": null,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        0.7243855639826506,
+        0.696644180919975,
+        0.7048045620322227
+      ],
+      "backend": "paper_rt_optix_device_hit_stream_triton",
+      "claim_boundary": "This is a v2.5 typed-column handoff path. The OptiX device-column mode bypasses host hit-row construction, but zero-copy and speedup wording still require same-pointer/no-host-stage pod evidence and external review.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": "torch_index_select_cuda_array_interface_adapter",
+      "handoff_materializes_host_rows_for_bridge": false,
+      "handoff_requested_gather_partner": "triton",
+      "handoff_selected_gather_partner": "triton_torch_tensor_carrier",
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 236,
+      "host_row_bridge_bypassed": true,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 0.7048045620322227,
+      "metadata_timings": {
+        "elapsed_sec": 0.5277093991171569,
+        "hit_stream_column_handoff": 0.017798342974856496,
+        "hit_stream_native_call": 0.13672986393794417,
+        "hit_stream_query_pack": 4.0780287235975266e-06,
+        "hit_stream_rt_traversal": 0.000676114,
+        "row_presentation": 0.0004970000591129065,
+        "rt_hit_stream_total": 0.1421673761215061,
+        "triton_continuation": 0.07232727203518152,
+        "typed_payload_gather": 0.0007465030066668987,
+        "workload_build": 0.2949120760895312
+      },
+      "mode": "min",
+      "native_device_column_path_used": true,
+      "native_device_hit_stream_columns_ready": true,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns",
+      "neutral_buffer_handoff_summary": {
+        "any_host_stage": false,
+        "any_zero_copy_claim_authorized": false,
+        "claim_boundary": "Current hit-stream continuation metadata is neutral-buffer-aware, but native OptiX device-column output and zero-copy evidence remain unproven.",
+        "contract_version": "rtdl.neutral_buffer_seam.v2.5",
+        "hit_stream_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ],
+        "payload_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ]
+      },
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.0004970000591129065,
+          "partner_continuation": 0.07232727203518152,
+          "query_preparation": 0.2949120760895312,
+          "rt_traversal": 0.000676114,
+          "scene_build": 0.0,
+          "transfer": 0.017798342974856496
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_device_hit_stream_triton.optix.min",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "transfer",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 117,
+      "row_count": 100000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": {
+        "adapter_execution_proven_on_hardware": false,
+        "adapter_modes": [
+          "torch_tensor",
+          "cuda_array_interface_to_torch_via_dlpack",
+          "host_column_requires_explicit_copy",
+          "unsupported"
+        ],
+        "all_columns_adaptable_to_torch_carrier": true,
+        "all_columns_no_copy_torch_carrier_candidates": true,
+        "claim_boundary": "This explains the torch/Triton carrier bridge for hit-stream continuation. Raw CUDA-array columns are only no-copy candidates until pod evidence proves same-pointer DLPack/CUDA-array-interface adaptation without a host stage.",
+        "columns": [
+          {
+            "adapter_mode": "cuda_array_interface_to_torch_via_dlpack",
+            "data_ptr": 139483214001664,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_ids",
+            "required_dtype": "int64",
+            "source_protocol": "cuda_array_interface",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482628096000,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_group_ids",
+            "required_dtype": "int64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482628896256,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_values",
+            "required_dtype": "float64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          }
+        ],
+        "contract_version": "rtdl.rt_hit_stream_handoff.v2.5",
+        "explicit_copy_required": false,
+        "host_copy_required": false,
+        "public_speedup_claim_authorized": false,
+        "raw_cuda_adapter_required": true,
+        "requires_cupy_for_cuda_array_interface_without_dlpack": true,
+        "requires_torch_runtime": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_execution": {
+        "adapter_execution_proven_on_hardware": false,
+        "any_host_copy_required": false,
+        "claim_boundary": "Pointer equality is runtime evidence for the adapter only. It does not authorize true zero-copy or speedup claims without accepted pod review.",
+        "executed": true,
+        "primitive_group_ids_carrier_data_ptr": 139482628096000,
+        "primitive_group_ids_input_data_ptr": 139482628096000,
+        "primitive_group_ids_same_pointer_as_input": true,
+        "primitive_ids_carrier_data_ptr": 139483214001664,
+        "primitive_ids_input_data_ptr": 139483214001664,
+        "primitive_ids_same_pointer_as_input": true,
+        "primitive_values_carrier_data_ptr": 139482628896256,
+        "primitive_values_input_data_ptr": 139482628896256,
+        "primitive_values_same_pointer_as_input": true,
+        "raw_cuda_adapter_required": true,
+        "same_pointer_evidence_observed": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_same_pointer_evidence_observed": true,
+      "true_zero_copy_authorized": false,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        0.6010225359350443,
+        0.6964826448820531,
+        0.7259085909463465
+      ],
+      "backend": "paper_rt_optix_hit_stream_triton",
+      "claim_boundary": "This is Goal2684 full RT hit-stream plus Triton continuation evidence. It is not a public speedup claim until pod artifacts and external review exist.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": null,
+      "handoff_materializes_host_rows_for_bridge": null,
+      "handoff_requested_gather_partner": null,
+      "handoff_selected_gather_partner": null,
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 236,
+      "host_row_bridge_bypassed": null,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 0.6964826448820531,
+      "metadata_timings": {
+        "elapsed_sec": 0.472213126020506,
+        "hit_stream_hit_stream_materialization": 0.1338723479272976,
+        "hit_stream_native_call": 0.1345353089272976,
+        "hit_stream_prepare_build": 0.011463015107437968,
+        "hit_stream_query_pack": 0.0001109810546040535,
+        "hit_stream_to_partner_input": 0.007826116867363453,
+        "hit_stream_traversal": 0.000662961,
+        "row_presentation": 0.00015162513591349125,
+        "rt_hit_stream_total": 0.14699958194978535,
+        "triton_continuation": 0.008988521993160248,
+        "workload_build": 0.30819697701372206
+      },
+      "mode": "max",
+      "native_device_column_path_used": null,
+      "native_device_hit_stream_columns_ready": null,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream",
+      "neutral_buffer_handoff_summary": null,
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.1338723479272976,
+          "partner_continuation": 0.008988521993160248,
+          "query_preparation": 0.30819697701372206,
+          "rt_traversal": 0.000662961,
+          "scene_build": 0.011463015107437968
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_hit_stream_triton.optix.max",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 117,
+      "row_count": 100000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": null,
+      "torch_carrier_execution": null,
+      "torch_carrier_same_pointer_evidence_observed": null,
+      "true_zero_copy_authorized": null,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        0.8905370829161257,
+        0.8877351221162826,
+        0.7979850887786597
+      ],
+      "backend": "paper_rt_optix_device_hit_stream_triton",
+      "claim_boundary": "This is a v2.5 typed-column handoff path. The OptiX device-column mode bypasses host hit-row construction, but zero-copy and speedup wording still require same-pointer/no-host-stage pod evidence and external review.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": "torch_index_select_cuda_array_interface_adapter",
+      "handoff_materializes_host_rows_for_bridge": false,
+      "handoff_requested_gather_partner": "triton",
+      "handoff_selected_gather_partner": "triton_torch_tensor_carrier",
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 236,
+      "host_row_bridge_bypassed": true,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 0.8877351221162826,
+      "metadata_timings": {
+        "elapsed_sec": 0.579148082062602,
+        "hit_stream_column_handoff": 0.014608188066631556,
+        "hit_stream_native_call": 0.15426938189193606,
+        "hit_stream_query_pack": 2.3460015654563904e-06,
+        "hit_stream_rt_traversal": 0.000720668,
+        "row_presentation": 0.00019527203403413296,
+        "rt_hit_stream_total": 0.15975597011856735,
+        "triton_continuation": 0.008127023000270128,
+        "typed_payload_gather": 0.00083171296864748,
+        "workload_build": 0.3964531410019845
+      },
+      "mode": "max",
+      "native_device_column_path_used": true,
+      "native_device_hit_stream_columns_ready": true,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns",
+      "neutral_buffer_handoff_summary": {
+        "any_host_stage": false,
+        "any_zero_copy_claim_authorized": false,
+        "claim_boundary": "Current hit-stream continuation metadata is neutral-buffer-aware, but native OptiX device-column output and zero-copy evidence remain unproven.",
+        "contract_version": "rtdl.neutral_buffer_seam.v2.5",
+        "hit_stream_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ],
+        "payload_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ]
+      },
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.00019527203403413296,
+          "partner_continuation": 0.008127023000270128,
+          "query_preparation": 0.3964531410019845,
+          "rt_traversal": 0.000720668,
+          "scene_build": 0.0,
+          "transfer": 0.014608188066631556
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_device_hit_stream_triton.optix.max",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "transfer",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 117,
+      "row_count": 100000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": {
+        "adapter_execution_proven_on_hardware": false,
+        "adapter_modes": [
+          "torch_tensor",
+          "cuda_array_interface_to_torch_via_dlpack",
+          "host_column_requires_explicit_copy",
+          "unsupported"
+        ],
+        "all_columns_adaptable_to_torch_carrier": true,
+        "all_columns_no_copy_torch_carrier_candidates": true,
+        "claim_boundary": "This explains the torch/Triton carrier bridge for hit-stream continuation. Raw CUDA-array columns are only no-copy candidates until pod evidence proves same-pointer DLPack/CUDA-array-interface adaptation without a host stage.",
+        "columns": [
+          {
+            "adapter_mode": "cuda_array_interface_to_torch_via_dlpack",
+            "data_ptr": 139483214001664,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_ids",
+            "required_dtype": "int64",
+            "source_protocol": "cuda_array_interface",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482628096000,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_group_ids",
+            "required_dtype": "int64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482628896256,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_values",
+            "required_dtype": "float64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          }
+        ],
+        "contract_version": "rtdl.rt_hit_stream_handoff.v2.5",
+        "explicit_copy_required": false,
+        "host_copy_required": false,
+        "public_speedup_claim_authorized": false,
+        "raw_cuda_adapter_required": true,
+        "requires_cupy_for_cuda_array_interface_without_dlpack": true,
+        "requires_torch_runtime": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_execution": {
+        "adapter_execution_proven_on_hardware": false,
+        "any_host_copy_required": false,
+        "claim_boundary": "Pointer equality is runtime evidence for the adapter only. It does not authorize true zero-copy or speedup claims without accepted pod review.",
+        "executed": true,
+        "primitive_group_ids_carrier_data_ptr": 139482628096000,
+        "primitive_group_ids_input_data_ptr": 139482628096000,
+        "primitive_group_ids_same_pointer_as_input": true,
+        "primitive_ids_carrier_data_ptr": 139483214001664,
+        "primitive_ids_input_data_ptr": 139483214001664,
+        "primitive_ids_same_pointer_as_input": true,
+        "primitive_values_carrier_data_ptr": 139482628896256,
+        "primitive_values_input_data_ptr": 139482628896256,
+        "primitive_values_same_pointer_as_input": true,
+        "raw_cuda_adapter_required": true,
+        "same_pointer_evidence_observed": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_same_pointer_evidence_observed": true,
+      "true_zero_copy_authorized": false,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        0.6924647218547761,
+        0.6719294821377844,
+        0.631827584002167
+      ],
+      "backend": "paper_rt_optix_hit_stream_triton",
+      "claim_boundary": "This is Goal2684 full RT hit-stream plus Triton continuation evidence. It is not a public speedup claim until pod artifacts and external review exist.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": null,
+      "handoff_materializes_host_rows_for_bridge": null,
+      "handoff_requested_gather_partner": null,
+      "handoff_selected_gather_partner": null,
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 236,
+      "host_row_bridge_bypassed": null,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 0.6719294821377844,
+      "metadata_timings": {
+        "elapsed_sec": 0.4614811949431896,
+        "hit_stream_hit_stream_materialization": 0.13350180108038748,
+        "hit_stream_native_call": 0.13416891708038747,
+        "hit_stream_prepare_build": 0.017125984886661172,
+        "hit_stream_query_pack": 0.00010764808394014835,
+        "hit_stream_to_partner_input": 0.0011207449715584517,
+        "hit_stream_traversal": 0.000667116,
+        "row_presentation": 0.00020626094192266464,
+        "rt_hit_stream_total": 0.15224689594469965,
+        "triton_continuation": 0.006683119107037783,
+        "workload_build": 0.3011759929358959
+      },
+      "mode": "avg_as_sum_count",
+      "native_device_column_path_used": null,
+      "native_device_hit_stream_columns_ready": null,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream",
+      "neutral_buffer_handoff_summary": null,
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.13350180108038748,
+          "partner_continuation": 0.006683119107037783,
+          "query_preparation": 0.3011759929358959,
+          "rt_traversal": 0.000667116,
+          "scene_build": 0.017125984886661172
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_hit_stream_triton.optix.avg_as_sum_count",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 117,
+      "row_count": 100000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": null,
+      "torch_carrier_execution": null,
+      "torch_carrier_same_pointer_evidence_observed": null,
+      "true_zero_copy_authorized": null,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        0.5647741388529539,
+        0.598446971969679,
+        0.5789542999118567
+      ],
+      "backend": "paper_rt_optix_device_hit_stream_triton",
+      "claim_boundary": "This is a v2.5 typed-column handoff path. The OptiX device-column mode bypasses host hit-row construction, but zero-copy and speedup wording still require same-pointer/no-host-stage pod evidence and external review.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": "torch_index_select_cuda_array_interface_adapter",
+      "handoff_materializes_host_rows_for_bridge": false,
+      "handoff_requested_gather_partner": "triton",
+      "handoff_selected_gather_partner": "triton_torch_tensor_carrier",
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 236,
+      "host_row_bridge_bypassed": true,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 0.5789542999118567,
+      "metadata_timings": {
+        "elapsed_sec": 0.3986268548760563,
+        "hit_stream_column_handoff": 0.011967041064053774,
+        "hit_stream_native_call": 0.11538036190904677,
+        "hit_stream_query_pack": 1.8940772861242294e-06,
+        "hit_stream_rt_traversal": 0.000654322,
+        "row_presentation": 0.000142756849527359,
+        "rt_hit_stream_total": 0.11997996107675135,
+        "triton_continuation": 0.0048206590581685305,
+        "typed_payload_gather": 0.0005210600793361664,
+        "workload_build": 0.26171090989373624
+      },
+      "mode": "avg_as_sum_count",
+      "native_device_column_path_used": true,
+      "native_device_hit_stream_columns_ready": true,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns",
+      "neutral_buffer_handoff_summary": {
+        "any_host_stage": false,
+        "any_zero_copy_claim_authorized": false,
+        "claim_boundary": "Current hit-stream continuation metadata is neutral-buffer-aware, but native OptiX device-column output and zero-copy evidence remain unproven.",
+        "contract_version": "rtdl.neutral_buffer_seam.v2.5",
+        "hit_stream_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ],
+        "payload_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ]
+      },
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.000142756849527359,
+          "partner_continuation": 0.0048206590581685305,
+          "query_preparation": 0.26171090989373624,
+          "rt_traversal": 0.000654322,
+          "scene_build": 0.0,
+          "transfer": 0.011967041064053774
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_device_hit_stream_triton.optix.avg_as_sum_count",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "transfer",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 117,
+      "row_count": 100000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": {
+        "adapter_execution_proven_on_hardware": false,
+        "adapter_modes": [
+          "torch_tensor",
+          "cuda_array_interface_to_torch_via_dlpack",
+          "host_column_requires_explicit_copy",
+          "unsupported"
+        ],
+        "all_columns_adaptable_to_torch_carrier": true,
+        "all_columns_no_copy_torch_carrier_candidates": true,
+        "claim_boundary": "This explains the torch/Triton carrier bridge for hit-stream continuation. Raw CUDA-array columns are only no-copy candidates until pod evidence proves same-pointer DLPack/CUDA-array-interface adaptation without a host stage.",
+        "columns": [
+          {
+            "adapter_mode": "cuda_array_interface_to_torch_via_dlpack",
+            "data_ptr": 139483214001664,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_ids",
+            "required_dtype": "int64",
+            "source_protocol": "cuda_array_interface",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482628096000,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_group_ids",
+            "required_dtype": "int64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482628896256,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_values",
+            "required_dtype": "float64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          }
+        ],
+        "contract_version": "rtdl.rt_hit_stream_handoff.v2.5",
+        "explicit_copy_required": false,
+        "host_copy_required": false,
+        "public_speedup_claim_authorized": false,
+        "raw_cuda_adapter_required": true,
+        "requires_cupy_for_cuda_array_interface_without_dlpack": true,
+        "requires_torch_runtime": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_execution": {
+        "adapter_execution_proven_on_hardware": false,
+        "any_host_copy_required": false,
+        "claim_boundary": "Pointer equality is runtime evidence for the adapter only. It does not authorize true zero-copy or speedup claims without accepted pod review.",
+        "executed": true,
+        "primitive_group_ids_carrier_data_ptr": 139482628096000,
+        "primitive_group_ids_input_data_ptr": 139482628096000,
+        "primitive_group_ids_same_pointer_as_input": true,
+        "primitive_ids_carrier_data_ptr": 139483214001664,
+        "primitive_ids_input_data_ptr": 139483214001664,
+        "primitive_ids_same_pointer_as_input": true,
+        "primitive_values_carrier_data_ptr": 139482628896256,
+        "primitive_values_input_data_ptr": 139482628896256,
+        "primitive_values_same_pointer_as_input": true,
+        "raw_cuda_adapter_required": true,
+        "same_pointer_evidence_observed": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_same_pointer_evidence_observed": true,
+      "true_zero_copy_authorized": false,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        1.799929158994928,
+        1.7865923901554197,
+        1.7935501048341393
+      ],
+      "backend": "paper_rt_optix_hit_stream_triton",
+      "claim_boundary": "This is Goal2684 full RT hit-stream plus Triton continuation evidence. It is not a public speedup claim until pod artifacts and external review exist.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": null,
+      "handoff_materializes_host_rows_for_bridge": null,
+      "handoff_requested_gather_partner": null,
+      "handoff_selected_gather_partner": null,
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 2342,
+      "host_row_bridge_bypassed": null,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 1.7935501048341393,
+      "metadata_timings": {
+        "elapsed_sec": 0.26309314486570656,
+        "hit_stream_hit_stream_materialization": 0.0035301811098686457,
+        "hit_stream_native_call": 0.0036363101098686457,
+        "hit_stream_prepare_build": 0.044938941951841116,
+        "hit_stream_query_pack": 0.0005726588424295187,
+        "hit_stream_to_partner_input": 0.006011068122461438,
+        "hit_stream_traversal": 0.000106129,
+        "row_presentation": 0.00011924304999411106,
+        "rt_hit_stream_total": 0.05285453097894788,
+        "triton_continuation": 0.0033409118186682463,
+        "workload_build": 0.20055895089171827
+      },
+      "mode": "count",
+      "native_device_column_path_used": null,
+      "native_device_hit_stream_columns_ready": null,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream",
+      "neutral_buffer_handoff_summary": null,
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.0035301811098686457,
+          "partner_continuation": 0.0033409118186682463,
+          "query_preparation": 0.20055895089171827,
+          "rt_traversal": 0.000106129,
+          "scene_build": 0.044938941951841116
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_hit_stream_triton.optix.count",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 128,
+      "row_count": 1000000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": null,
+      "torch_carrier_execution": null,
+      "torch_carrier_same_pointer_evidence_observed": null,
+      "true_zero_copy_authorized": null,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        1.9597065018024296,
+        1.8816479181405157,
+        1.884028835920617
+      ],
+      "backend": "paper_rt_optix_device_hit_stream_triton",
+      "claim_boundary": "This is a v2.5 typed-column handoff path. The OptiX device-column mode bypasses host hit-row construction, but zero-copy and speedup wording still require same-pointer/no-host-stage pod evidence and external review.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": "torch_index_select_cuda_array_interface_adapter",
+      "handoff_materializes_host_rows_for_bridge": false,
+      "handoff_requested_gather_partner": "triton",
+      "handoff_selected_gather_partner": "triton_torch_tensor_carrier",
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 2342,
+      "host_row_bridge_bypassed": true,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 1.884028835920617,
+      "metadata_timings": {
+        "elapsed_sec": 0.38224632712081075,
+        "hit_stream_column_handoff": 0.13027681200765073,
+        "hit_stream_native_call": 0.002784077078104019,
+        "hit_stream_query_pack": 2.7078203856945038e-06,
+        "hit_stream_rt_traversal": 0.000109337,
+        "row_presentation": 0.000102281104773283,
+        "rt_hit_stream_total": 0.05079372203908861,
+        "triton_continuation": 0.002643716987222433,
+        "typed_payload_gather": 0.0006137990858405828,
+        "workload_build": 0.19842612510547042
+      },
+      "mode": "count",
+      "native_device_column_path_used": true,
+      "native_device_hit_stream_columns_ready": true,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns",
+      "neutral_buffer_handoff_summary": {
+        "any_host_stage": false,
+        "any_zero_copy_claim_authorized": false,
+        "claim_boundary": "Current hit-stream continuation metadata is neutral-buffer-aware, but native OptiX device-column output and zero-copy evidence remain unproven.",
+        "contract_version": "rtdl.neutral_buffer_seam.v2.5",
+        "hit_stream_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ],
+        "payload_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ]
+      },
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.000102281104773283,
+          "partner_continuation": 0.002643716987222433,
+          "query_preparation": 0.19842612510547042,
+          "rt_traversal": 0.000109337,
+          "scene_build": 0.0,
+          "transfer": 0.13027681200765073
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_device_hit_stream_triton.optix.count",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "transfer",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 128,
+      "row_count": 1000000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": {
+        "adapter_execution_proven_on_hardware": false,
+        "adapter_modes": [
+          "torch_tensor",
+          "cuda_array_interface_to_torch_via_dlpack",
+          "host_column_requires_explicit_copy",
+          "unsupported"
+        ],
+        "all_columns_adaptable_to_torch_carrier": true,
+        "all_columns_no_copy_torch_carrier_candidates": true,
+        "claim_boundary": "This explains the torch/Triton carrier bridge for hit-stream continuation. Raw CUDA-array columns are only no-copy candidates until pod evidence proves same-pointer DLPack/CUDA-array-interface adaptation without a host stage.",
+        "columns": [
+          {
+            "adapter_mode": "cuda_array_interface_to_torch_via_dlpack",
+            "data_ptr": 139474679889920,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_ids",
+            "required_dtype": "int64",
+            "source_protocol": "cuda_array_interface",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482630193152,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_group_ids",
+            "required_dtype": "int64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482638193152,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_values",
+            "required_dtype": "float64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          }
+        ],
+        "contract_version": "rtdl.rt_hit_stream_handoff.v2.5",
+        "explicit_copy_required": false,
+        "host_copy_required": false,
+        "public_speedup_claim_authorized": false,
+        "raw_cuda_adapter_required": true,
+        "requires_cupy_for_cuda_array_interface_without_dlpack": true,
+        "requires_torch_runtime": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_execution": {
+        "adapter_execution_proven_on_hardware": false,
+        "any_host_copy_required": false,
+        "claim_boundary": "Pointer equality is runtime evidence for the adapter only. It does not authorize true zero-copy or speedup claims without accepted pod review.",
+        "executed": true,
+        "primitive_group_ids_carrier_data_ptr": 139482630193152,
+        "primitive_group_ids_input_data_ptr": 139482630193152,
+        "primitive_group_ids_same_pointer_as_input": true,
+        "primitive_ids_carrier_data_ptr": 139474679889920,
+        "primitive_ids_input_data_ptr": 139474679889920,
+        "primitive_ids_same_pointer_as_input": true,
+        "primitive_values_carrier_data_ptr": 139482638193152,
+        "primitive_values_input_data_ptr": 139482638193152,
+        "primitive_values_same_pointer_as_input": true,
+        "raw_cuda_adapter_required": true,
+        "same_pointer_evidence_observed": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_same_pointer_evidence_observed": true,
+      "true_zero_copy_authorized": false,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        2.1824375048745424,
+        2.2172914419788867,
+        2.2527332028839737
+      ],
+      "backend": "paper_rt_optix_hit_stream_triton",
+      "claim_boundary": "This is Goal2684 full RT hit-stream plus Triton continuation evidence. It is not a public speedup claim until pod artifacts and external review exist.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": null,
+      "handoff_materializes_host_rows_for_bridge": null,
+      "handoff_requested_gather_partner": null,
+      "handoff_selected_gather_partner": null,
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 2342,
+      "host_row_bridge_bypassed": null,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 2.2172914419788867,
+      "metadata_timings": {
+        "elapsed_sec": 0.6620257429312915,
+        "hit_stream_hit_stream_materialization": 0.13710802419222234,
+        "hit_stream_native_call": 0.13833110919222236,
+        "hit_stream_prepare_build": 0.03325181920081377,
+        "hit_stream_query_pack": 0.0005708399694412947,
+        "hit_stream_to_partner_input": 0.0036244429647922516,
+        "hit_stream_traversal": 0.001223085,
+        "row_presentation": 0.00016975984908640385,
+        "rt_hit_stream_total": 0.17532784305512905,
+        "triton_continuation": 0.0033857561647892,
+        "workload_build": 0.479307915084064
+      },
+      "mode": "sum",
+      "native_device_column_path_used": null,
+      "native_device_hit_stream_columns_ready": null,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream",
+      "neutral_buffer_handoff_summary": null,
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.13710802419222234,
+          "partner_continuation": 0.0033857561647892,
+          "query_preparation": 0.479307915084064,
+          "rt_traversal": 0.001223085,
+          "scene_build": 0.03325181920081377
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_hit_stream_triton.optix.sum",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 128,
+      "row_count": 1000000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": null,
+      "torch_carrier_execution": null,
+      "torch_carrier_same_pointer_evidence_observed": null,
+      "true_zero_copy_authorized": null,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        2.185081211850047,
+        2.2201168900355697,
+        2.3068074570037425
+      ],
+      "backend": "paper_rt_optix_device_hit_stream_triton",
+      "claim_boundary": "This is a v2.5 typed-column handoff path. The OptiX device-column mode bypasses host hit-row construction, but zero-copy and speedup wording still require same-pointer/no-host-stage pod evidence and external review.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": "torch_index_select_cuda_array_interface_adapter",
+      "handoff_materializes_host_rows_for_bridge": false,
+      "handoff_requested_gather_partner": "triton",
+      "handoff_selected_gather_partner": "triton_torch_tensor_carrier",
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 2342,
+      "host_row_bridge_bypassed": true,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 2.2201168900355697,
+      "metadata_timings": {
+        "elapsed_sec": 0.823486153036356,
+        "hit_stream_column_handoff": 0.17503355001099408,
+        "hit_stream_native_call": 0.12972533400170505,
+        "hit_stream_query_pack": 2.6489142328500748e-06,
+        "hit_stream_rt_traversal": 0.001214247,
+        "row_presentation": 0.00013845087960362434,
+        "rt_hit_stream_total": 0.1648993929848075,
+        "triton_continuation": 0.00272405706346035,
+        "typed_payload_gather": 0.000657917931675911,
+        "workload_build": 0.4806849940214306
+      },
+      "mode": "sum",
+      "native_device_column_path_used": true,
+      "native_device_hit_stream_columns_ready": true,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns",
+      "neutral_buffer_handoff_summary": {
+        "any_host_stage": false,
+        "any_zero_copy_claim_authorized": false,
+        "claim_boundary": "Current hit-stream continuation metadata is neutral-buffer-aware, but native OptiX device-column output and zero-copy evidence remain unproven.",
+        "contract_version": "rtdl.neutral_buffer_seam.v2.5",
+        "hit_stream_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ],
+        "payload_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ]
+      },
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.00013845087960362434,
+          "partner_continuation": 0.00272405706346035,
+          "query_preparation": 0.4806849940214306,
+          "rt_traversal": 0.001214247,
+          "scene_build": 0.0,
+          "transfer": 0.17503355001099408
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_device_hit_stream_triton.optix.sum",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "transfer",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 128,
+      "row_count": 1000000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": {
+        "adapter_execution_proven_on_hardware": false,
+        "adapter_modes": [
+          "torch_tensor",
+          "cuda_array_interface_to_torch_via_dlpack",
+          "host_column_requires_explicit_copy",
+          "unsupported"
+        ],
+        "all_columns_adaptable_to_torch_carrier": true,
+        "all_columns_no_copy_torch_carrier_candidates": true,
+        "claim_boundary": "This explains the torch/Triton carrier bridge for hit-stream continuation. Raw CUDA-array columns are only no-copy candidates until pod evidence proves same-pointer DLPack/CUDA-array-interface adaptation without a host stage.",
+        "columns": [
+          {
+            "adapter_mode": "cuda_array_interface_to_torch_via_dlpack",
+            "data_ptr": 139474377900032,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_ids",
+            "required_dtype": "int64",
+            "source_protocol": "cuda_array_interface",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482630193152,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_group_ids",
+            "required_dtype": "int64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482638193152,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_values",
+            "required_dtype": "float64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          }
+        ],
+        "contract_version": "rtdl.rt_hit_stream_handoff.v2.5",
+        "explicit_copy_required": false,
+        "host_copy_required": false,
+        "public_speedup_claim_authorized": false,
+        "raw_cuda_adapter_required": true,
+        "requires_cupy_for_cuda_array_interface_without_dlpack": true,
+        "requires_torch_runtime": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_execution": {
+        "adapter_execution_proven_on_hardware": false,
+        "any_host_copy_required": false,
+        "claim_boundary": "Pointer equality is runtime evidence for the adapter only. It does not authorize true zero-copy or speedup claims without accepted pod review.",
+        "executed": true,
+        "primitive_group_ids_carrier_data_ptr": 139482630193152,
+        "primitive_group_ids_input_data_ptr": 139482630193152,
+        "primitive_group_ids_same_pointer_as_input": true,
+        "primitive_ids_carrier_data_ptr": 139474377900032,
+        "primitive_ids_input_data_ptr": 139474377900032,
+        "primitive_ids_same_pointer_as_input": true,
+        "primitive_values_carrier_data_ptr": 139482638193152,
+        "primitive_values_input_data_ptr": 139482638193152,
+        "primitive_values_same_pointer_as_input": true,
+        "raw_cuda_adapter_required": true,
+        "same_pointer_evidence_observed": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_same_pointer_evidence_observed": true,
+      "true_zero_copy_authorized": false,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        2.251572576118633,
+        2.6600702318828553,
+        2.9072750192135572
+      ],
+      "backend": "paper_rt_optix_hit_stream_triton",
+      "claim_boundary": "This is Goal2684 full RT hit-stream plus Triton continuation evidence. It is not a public speedup claim until pod artifacts and external review exist.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": null,
+      "handoff_materializes_host_rows_for_bridge": null,
+      "handoff_requested_gather_partner": null,
+      "handoff_selected_gather_partner": null,
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 2342,
+      "host_row_bridge_bypassed": null,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 2.6600702318828553,
+      "metadata_timings": {
+        "elapsed_sec": 1.0153102609328926,
+        "hit_stream_hit_stream_materialization": 0.2012243719604988,
+        "hit_stream_native_call": 0.2024899199604988,
+        "hit_stream_prepare_build": 0.06063324701972306,
+        "hit_stream_query_pack": 0.0009270610753446817,
+        "hit_stream_to_partner_input": 0.0055559121537953615,
+        "hit_stream_traversal": 0.001265548,
+        "row_presentation": 0.00022103404626250267,
+        "rt_hit_stream_total": 0.27826681500300765,
+        "triton_continuation": 0.011392988031730056,
+        "workload_build": 0.7194688830059022
+      },
+      "mode": "min",
+      "native_device_column_path_used": null,
+      "native_device_hit_stream_columns_ready": null,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream",
+      "neutral_buffer_handoff_summary": null,
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.2012243719604988,
+          "partner_continuation": 0.011392988031730056,
+          "query_preparation": 0.7194688830059022,
+          "rt_traversal": 0.001265548,
+          "scene_build": 0.06063324701972306
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_hit_stream_triton.optix.min",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 128,
+      "row_count": 1000000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": null,
+      "torch_carrier_execution": null,
+      "torch_carrier_same_pointer_evidence_observed": null,
+      "true_zero_copy_authorized": null,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        2.3420419900212437,
+        2.2361788069829345,
+        2.275859134970233
+      ],
+      "backend": "paper_rt_optix_device_hit_stream_triton",
+      "claim_boundary": "This is a v2.5 typed-column handoff path. The OptiX device-column mode bypasses host hit-row construction, but zero-copy and speedup wording still require same-pointer/no-host-stage pod evidence and external review.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": "torch_index_select_cuda_array_interface_adapter",
+      "handoff_materializes_host_rows_for_bridge": false,
+      "handoff_requested_gather_partner": "triton",
+      "handoff_selected_gather_partner": "triton_torch_tensor_carrier",
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 2342,
+      "host_row_bridge_bypassed": true,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 2.275859134970233,
+      "metadata_timings": {
+        "elapsed_sec": 0.8212485851254314,
+        "hit_stream_column_handoff": 0.17620126716792583,
+        "hit_stream_native_call": 0.13029149104841053,
+        "hit_stream_query_pack": 2.953922376036644e-06,
+        "hit_stream_rt_traversal": 0.001217826,
+        "row_presentation": 0.00013961619697511196,
+        "rt_hit_stream_total": 0.16513642692007124,
+        "triton_continuation": 0.005523454863578081,
+        "typed_payload_gather": 0.0006551861297339201,
+        "workload_build": 0.47423705109395087
+      },
+      "mode": "min",
+      "native_device_column_path_used": true,
+      "native_device_hit_stream_columns_ready": true,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns",
+      "neutral_buffer_handoff_summary": {
+        "any_host_stage": false,
+        "any_zero_copy_claim_authorized": false,
+        "claim_boundary": "Current hit-stream continuation metadata is neutral-buffer-aware, but native OptiX device-column output and zero-copy evidence remain unproven.",
+        "contract_version": "rtdl.neutral_buffer_seam.v2.5",
+        "hit_stream_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ],
+        "payload_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ]
+      },
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.00013961619697511196,
+          "partner_continuation": 0.005523454863578081,
+          "query_preparation": 0.47423705109395087,
+          "rt_traversal": 0.001217826,
+          "scene_build": 0.0,
+          "transfer": 0.17620126716792583
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_device_hit_stream_triton.optix.min",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "transfer",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 128,
+      "row_count": 1000000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": {
+        "adapter_execution_proven_on_hardware": false,
+        "adapter_modes": [
+          "torch_tensor",
+          "cuda_array_interface_to_torch_via_dlpack",
+          "host_column_requires_explicit_copy",
+          "unsupported"
+        ],
+        "all_columns_adaptable_to_torch_carrier": true,
+        "all_columns_no_copy_torch_carrier_candidates": true,
+        "claim_boundary": "This explains the torch/Triton carrier bridge for hit-stream continuation. Raw CUDA-array columns are only no-copy candidates until pod evidence proves same-pointer DLPack/CUDA-array-interface adaptation without a host stage.",
+        "columns": [
+          {
+            "adapter_mode": "cuda_array_interface_to_torch_via_dlpack",
+            "data_ptr": 139474377900032,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_ids",
+            "required_dtype": "int64",
+            "source_protocol": "cuda_array_interface",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482630193152,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_group_ids",
+            "required_dtype": "int64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482638193152,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_values",
+            "required_dtype": "float64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          }
+        ],
+        "contract_version": "rtdl.rt_hit_stream_handoff.v2.5",
+        "explicit_copy_required": false,
+        "host_copy_required": false,
+        "public_speedup_claim_authorized": false,
+        "raw_cuda_adapter_required": true,
+        "requires_cupy_for_cuda_array_interface_without_dlpack": true,
+        "requires_torch_runtime": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_execution": {
+        "adapter_execution_proven_on_hardware": false,
+        "any_host_copy_required": false,
+        "claim_boundary": "Pointer equality is runtime evidence for the adapter only. It does not authorize true zero-copy or speedup claims without accepted pod review.",
+        "executed": true,
+        "primitive_group_ids_carrier_data_ptr": 139482630193152,
+        "primitive_group_ids_input_data_ptr": 139482630193152,
+        "primitive_group_ids_same_pointer_as_input": true,
+        "primitive_ids_carrier_data_ptr": 139474377900032,
+        "primitive_ids_input_data_ptr": 139474377900032,
+        "primitive_ids_same_pointer_as_input": true,
+        "primitive_values_carrier_data_ptr": 139482638193152,
+        "primitive_values_input_data_ptr": 139482638193152,
+        "primitive_values_same_pointer_as_input": true,
+        "raw_cuda_adapter_required": true,
+        "same_pointer_evidence_observed": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_same_pointer_evidence_observed": true,
+      "true_zero_copy_authorized": false,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        2.2088135469239205,
+        2.149605792015791,
+        2.310628719162196
+      ],
+      "backend": "paper_rt_optix_hit_stream_triton",
+      "claim_boundary": "This is Goal2684 full RT hit-stream plus Triton continuation evidence. It is not a public speedup claim until pod artifacts and external review exist.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": null,
+      "handoff_materializes_host_rows_for_bridge": null,
+      "handoff_requested_gather_partner": null,
+      "handoff_selected_gather_partner": null,
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 2342,
+      "host_row_bridge_bypassed": null,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 2.2088135469239205,
+      "metadata_timings": {
+        "elapsed_sec": 0.8047406771220267,
+        "hit_stream_hit_stream_materialization": 0.28144322796474147,
+        "hit_stream_native_call": 0.28267256496474147,
+        "hit_stream_prepare_build": 0.032868742011487484,
+        "hit_stream_query_pack": 0.0005417070351541042,
+        "hit_stream_to_partner_input": 0.003732561133801937,
+        "hit_stream_traversal": 0.001229337,
+        "row_presentation": 0.0001819259487092495,
+        "rt_hit_stream_total": 0.319970479933545,
+        "triton_continuation": 0.00797105417586863,
+        "workload_build": 0.47257999517023563
+      },
+      "mode": "max",
+      "native_device_column_path_used": null,
+      "native_device_hit_stream_columns_ready": null,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream",
+      "neutral_buffer_handoff_summary": null,
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.28144322796474147,
+          "partner_continuation": 0.00797105417586863,
+          "query_preparation": 0.47257999517023563,
+          "rt_traversal": 0.001229337,
+          "scene_build": 0.032868742011487484
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_hit_stream_triton.optix.max",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 128,
+      "row_count": 1000000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": null,
+      "torch_carrier_execution": null,
+      "torch_carrier_same_pointer_evidence_observed": null,
+      "true_zero_copy_authorized": null,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        2.1448102111462504,
+        2.2392461989074945,
+        2.2821647331584245
+      ],
+      "backend": "paper_rt_optix_device_hit_stream_triton",
+      "claim_boundary": "This is a v2.5 typed-column handoff path. The OptiX device-column mode bypasses host hit-row construction, but zero-copy and speedup wording still require same-pointer/no-host-stage pod evidence and external review.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": "torch_index_select_cuda_array_interface_adapter",
+      "handoff_materializes_host_rows_for_bridge": false,
+      "handoff_requested_gather_partner": "triton",
+      "handoff_selected_gather_partner": "triton_torch_tensor_carrier",
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 2342,
+      "host_row_bridge_bypassed": true,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 2.2392461989074945,
+      "metadata_timings": {
+        "elapsed_sec": 0.8171568252146244,
+        "hit_stream_column_handoff": 0.18459773901849985,
+        "hit_stream_native_call": 0.12723212712444365,
+        "hit_stream_query_pack": 2.7169007807970047e-06,
+        "hit_stream_rt_traversal": 0.001221396,
+        "row_presentation": 0.00013100006617605686,
+        "rt_hit_stream_total": 0.1615410940721631,
+        "triton_continuation": 0.0055865461472421885,
+        "typed_payload_gather": 0.0005574340466409922,
+        "workload_build": 0.4652939750812948
+      },
+      "mode": "max",
+      "native_device_column_path_used": true,
+      "native_device_hit_stream_columns_ready": true,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns",
+      "neutral_buffer_handoff_summary": {
+        "any_host_stage": false,
+        "any_zero_copy_claim_authorized": false,
+        "claim_boundary": "Current hit-stream continuation metadata is neutral-buffer-aware, but native OptiX device-column output and zero-copy evidence remain unproven.",
+        "contract_version": "rtdl.neutral_buffer_seam.v2.5",
+        "hit_stream_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ],
+        "payload_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ]
+      },
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.00013100006617605686,
+          "partner_continuation": 0.0055865461472421885,
+          "query_preparation": 0.4652939750812948,
+          "rt_traversal": 0.001221396,
+          "scene_build": 0.0,
+          "transfer": 0.18459773901849985
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_device_hit_stream_triton.optix.max",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "transfer",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 128,
+      "row_count": 1000000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": {
+        "adapter_execution_proven_on_hardware": false,
+        "adapter_modes": [
+          "torch_tensor",
+          "cuda_array_interface_to_torch_via_dlpack",
+          "host_column_requires_explicit_copy",
+          "unsupported"
+        ],
+        "all_columns_adaptable_to_torch_carrier": true,
+        "all_columns_no_copy_torch_carrier_candidates": true,
+        "claim_boundary": "This explains the torch/Triton carrier bridge for hit-stream continuation. Raw CUDA-array columns are only no-copy candidates until pod evidence proves same-pointer DLPack/CUDA-array-interface adaptation without a host stage.",
+        "columns": [
+          {
+            "adapter_mode": "cuda_array_interface_to_torch_via_dlpack",
+            "data_ptr": 139474377900032,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_ids",
+            "required_dtype": "int64",
+            "source_protocol": "cuda_array_interface",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482630193152,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_group_ids",
+            "required_dtype": "int64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482638193152,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_values",
+            "required_dtype": "float64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          }
+        ],
+        "contract_version": "rtdl.rt_hit_stream_handoff.v2.5",
+        "explicit_copy_required": false,
+        "host_copy_required": false,
+        "public_speedup_claim_authorized": false,
+        "raw_cuda_adapter_required": true,
+        "requires_cupy_for_cuda_array_interface_without_dlpack": true,
+        "requires_torch_runtime": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_execution": {
+        "adapter_execution_proven_on_hardware": false,
+        "any_host_copy_required": false,
+        "claim_boundary": "Pointer equality is runtime evidence for the adapter only. It does not authorize true zero-copy or speedup claims without accepted pod review.",
+        "executed": true,
+        "primitive_group_ids_carrier_data_ptr": 139482630193152,
+        "primitive_group_ids_input_data_ptr": 139482630193152,
+        "primitive_group_ids_same_pointer_as_input": true,
+        "primitive_ids_carrier_data_ptr": 139474377900032,
+        "primitive_ids_input_data_ptr": 139474377900032,
+        "primitive_ids_same_pointer_as_input": true,
+        "primitive_values_carrier_data_ptr": 139482638193152,
+        "primitive_values_input_data_ptr": 139482638193152,
+        "primitive_values_same_pointer_as_input": true,
+        "raw_cuda_adapter_required": true,
+        "same_pointer_evidence_observed": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_same_pointer_evidence_observed": true,
+      "true_zero_copy_authorized": false,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        2.174046813044697,
+        2.125206575030461,
+        2.171306808013469
+      ],
+      "backend": "paper_rt_optix_hit_stream_triton",
+      "claim_boundary": "This is Goal2684 full RT hit-stream plus Triton continuation evidence. It is not a public speedup claim until pod artifacts and external review exist.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": null,
+      "handoff_materializes_host_rows_for_bridge": null,
+      "handoff_requested_gather_partner": null,
+      "handoff_selected_gather_partner": null,
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 2342,
+      "host_row_bridge_bypassed": null,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 2.171306808013469,
+      "metadata_timings": {
+        "elapsed_sec": 0.6493693389929831,
+        "hit_stream_hit_stream_materialization": 0.12740081601769138,
+        "hit_stream_native_call": 0.12862756801769137,
+        "hit_stream_prepare_build": 0.033508643973618746,
+        "hit_stream_query_pack": 0.0005739468615502119,
+        "hit_stream_to_partner_input": 0.003699893830344081,
+        "hit_stream_traversal": 0.001226752,
+        "row_presentation": 0.00014319317415356636,
+        "rt_hit_stream_total": 0.16590686491690576,
+        "triton_continuation": 0.005553755909204483,
+        "workload_build": 0.47385299601592124
+      },
+      "mode": "avg_as_sum_count",
+      "native_device_column_path_used": null,
+      "native_device_hit_stream_columns_ready": null,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream",
+      "neutral_buffer_handoff_summary": null,
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.12740081601769138,
+          "partner_continuation": 0.005553755909204483,
+          "query_preparation": 0.47385299601592124,
+          "rt_traversal": 0.001226752,
+          "scene_build": 0.033508643973618746
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_hit_stream_triton.optix.avg_as_sum_count",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 128,
+      "row_count": 1000000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": null,
+      "torch_carrier_execution": null,
+      "torch_carrier_same_pointer_evidence_observed": null,
+      "true_zero_copy_authorized": null,
+      "warmup": 1
+    },
+    {
+      "all_wall_sec": [
+        2.260626962175593,
+        2.7171938219107687,
+        2.664585313992575
+      ],
+      "backend": "paper_rt_optix_device_hit_stream_triton",
+      "claim_boundary": "This is a v2.5 typed-column handoff path. The OptiX device-column mode bypasses host hit-row construction, but zero-copy and speedup wording still require same-pointer/no-host-stage pod evidence and external review.",
+      "continuation_execution_path": "partner_adapter_front_door",
+      "group_count": 128,
+      "handoff_gather_mode": "torch_index_select_cuda_array_interface_adapter",
+      "handoff_materializes_host_rows_for_bridge": false,
+      "handoff_requested_gather_partner": "triton",
+      "handoff_selected_gather_partner": "triton_torch_tensor_carrier",
+      "hit_stream_overflow": false,
+      "hit_stream_row_count": 2342,
+      "host_row_bridge_bypassed": true,
+      "matches_cpu_reference": true,
+      "median_wall_sec": 2.664585313992575,
+      "metadata_timings": {
+        "elapsed_sec": 0.8647954219486564,
+        "hit_stream_column_handoff": 0.12720921402797103,
+        "hit_stream_native_call": 0.15471050492487848,
+        "hit_stream_query_pack": 4.418892785906792e-06,
+        "hit_stream_rt_traversal": 0.001231824,
+        "row_presentation": 0.00016564596444368362,
+        "rt_hit_stream_total": 0.19411139702424407,
+        "triton_continuation": 0.00623679906129837,
+        "typed_payload_gather": 0.0007803770713508129,
+        "workload_build": 0.5370637017767876
+      },
+      "mode": "avg_as_sum_count",
+      "native_device_column_path_used": true,
+      "native_device_hit_stream_columns_ready": true,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns",
+      "neutral_buffer_handoff_summary": {
+        "any_host_stage": false,
+        "any_zero_copy_claim_authorized": false,
+        "claim_boundary": "Current hit-stream continuation metadata is neutral-buffer-aware, but native OptiX device-column output and zero-copy evidence remain unproven.",
+        "contract_version": "rtdl.neutral_buffer_seam.v2.5",
+        "hit_stream_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ],
+        "payload_transfer_statuses": [
+          "borrowed_device_pointer_unmeasured",
+          "borrowed_device_pointer_unmeasured"
+        ]
+      },
+      "phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.00016564596444368362,
+          "partner_continuation": 0.00623679906129837,
+          "query_preparation": 0.5370637017767876,
+          "rt_traversal": 0.001231824,
+          "scene_build": 0.0,
+          "transfer": 0.12720921402797103
+        },
+        "promoted_performance_path": false,
+        "same_phase_contract_as_basis": true,
+        "source": "raydb_style.paper_rt_device_hit_stream_triton.optix.avg_as_sum_count",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "transfer",
+            "query_preparation",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "repeats": 3,
+      "result_row_count": 128,
+      "row_count": 1000000,
+      "rt_core_accelerated": true,
+      "torch_carrier_adapter": {
+        "adapter_execution_proven_on_hardware": false,
+        "adapter_modes": [
+          "torch_tensor",
+          "cuda_array_interface_to_torch_via_dlpack",
+          "host_column_requires_explicit_copy",
+          "unsupported"
+        ],
+        "all_columns_adaptable_to_torch_carrier": true,
+        "all_columns_no_copy_torch_carrier_candidates": true,
+        "claim_boundary": "This explains the torch/Triton carrier bridge for hit-stream continuation. Raw CUDA-array columns are only no-copy candidates until pod evidence proves same-pointer DLPack/CUDA-array-interface adaptation without a host stage.",
+        "columns": [
+          {
+            "adapter_mode": "cuda_array_interface_to_torch_via_dlpack",
+            "data_ptr": 139474377900032,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_ids",
+            "required_dtype": "int64",
+            "source_protocol": "cuda_array_interface",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482630193152,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_group_ids",
+            "required_dtype": "int64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          },
+          {
+            "adapter_mode": "torch_tensor",
+            "data_ptr": 139482638193152,
+            "device": "cuda:0",
+            "host_copy_required": false,
+            "name": "primitive_values",
+            "required_dtype": "float64",
+            "source_protocol": "torch",
+            "zero_copy_candidate": true
+          }
+        ],
+        "contract_version": "rtdl.rt_hit_stream_handoff.v2.5",
+        "explicit_copy_required": false,
+        "host_copy_required": false,
+        "public_speedup_claim_authorized": false,
+        "raw_cuda_adapter_required": true,
+        "requires_cupy_for_cuda_array_interface_without_dlpack": true,
+        "requires_torch_runtime": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_execution": {
+        "adapter_execution_proven_on_hardware": false,
+        "any_host_copy_required": false,
+        "claim_boundary": "Pointer equality is runtime evidence for the adapter only. It does not authorize true zero-copy or speedup claims without accepted pod review.",
+        "executed": true,
+        "primitive_group_ids_carrier_data_ptr": 139482630193152,
+        "primitive_group_ids_input_data_ptr": 139482630193152,
+        "primitive_group_ids_same_pointer_as_input": true,
+        "primitive_ids_carrier_data_ptr": 139474377900032,
+        "primitive_ids_input_data_ptr": 139474377900032,
+        "primitive_ids_same_pointer_as_input": true,
+        "primitive_values_carrier_data_ptr": 139482638193152,
+        "primitive_values_input_data_ptr": 139482638193152,
+        "primitive_values_same_pointer_as_input": true,
+        "raw_cuda_adapter_required": true,
+        "same_pointer_evidence_observed": true,
+        "true_zero_copy_authorized": false
+      },
+      "torch_carrier_same_pointer_evidence_observed": true,
+      "true_zero_copy_authorized": false,
+      "warmup": 1
+    }
+  ],
+  "git_head": "53016a58ea5c8d16e33c34ecac0faa3400aae079",
+  "goal": "Goal2685 Device-Resident Hit-Stream Handoff And Typed Payload Columns",
+  "group_count": 128,
+  "modes": [
+    "count",
+    "sum",
+    "min",
+    "max",
+    "avg_as_sum_count"
+  ],
+  "no_public_speedup_claim": true,
+  "nvidia_smi": "NVIDIA RTX A5000, 570.211.01, 24564 MiB",
+  "repeats": 3,
+  "repo_root": "/root/rtdl",
+  "row_counts": [
+    10000,
+    100000,
+    1000000
+  ],
+  "status": "ok",
+  "warmup": 1
+}
+[pod-bg] exit=0
