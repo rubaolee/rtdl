@@ -224,6 +224,18 @@ struct RtdlRayTriangleHitStreamRow {
     uint32_t ray_id, primitive_id;
 };
 
+struct RtdlNativeDeviceHitStreamColumns {
+    uint64_t ray_ids_device_ptr;
+    uint64_t primitive_ids_device_ptr;
+    uint64_t row_count;
+    uint64_t capacity;
+    uint64_t hit_event_count;
+    uint32_t overflow;
+    int32_t device_ordinal;
+    void* owner_handle;
+    double traversal_seconds;
+};
+
 struct RtdlRaySegmentGroupCountRow {
     uint32_t ray_id, group_id, hit_count, parity;
 };
@@ -657,6 +669,16 @@ int rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream(
          uint64_t* hit_event_count_out,
          uint32_t* overflow_out,
          double* traversal_seconds_out,
+         char* error_out, size_t error_size);
+int rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns(
+         void* scene_handle,
+         const RtdlRay3D* rays, size_t ray_count,
+         uint32_t deduplicate_primitives,
+         size_t max_rows,
+         RtdlNativeDeviceHitStreamColumns* columns_out,
+         char* error_out, size_t error_size);
+int rtdl_optix_release_ray_triangle_hit_stream_device_columns(
+         void* owner_handle,
          char* error_out, size_t error_size);
 int rtdl_optix_primitive_grouped_i64_payload_3d_create(
          const uint32_t* primitive_group_ids, size_t primitive_group_id_count,

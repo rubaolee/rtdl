@@ -8803,6 +8803,32 @@ struct RayTriangleHitStream3DLaunchParams {
     uint32_t                     deduplicate_primitives;
 };
 
+struct RayTriangleHitStreamDeviceColumns3DLaunchParams {
+    OptixTraversableHandle   traversable;
+    const GpuRay3DHost*      rays;
+    const GpuTriangle3DHost* triangles;
+    unsigned long long*      ray_ids;
+    unsigned long long*      primitive_ids;
+    unsigned long long*      row_count;
+    unsigned long long*      hit_event_count;
+    uint32_t*                overflow;
+    uint32_t*                primitive_flags;
+    uint32_t                 ray_count;
+    uint32_t                 triangle_count;
+    uint32_t                 max_rows;
+    uint32_t                 deduplicate_primitives;
+};
+
+struct NativeRayTriangleHitStreamDeviceColumnsOwner {
+    CUdeviceptr ray_ids = 0;
+    CUdeviceptr primitive_ids = 0;
+
+    ~NativeRayTriangleHitStreamDeviceColumnsOwner() {
+        if (ray_ids) cuMemFree(ray_ids);
+        if (primitive_ids) cuMemFree(primitive_ids);
+    }
+};
+
 struct RayAnyHitGroupFlags3DLaunchParams {
     OptixTraversableHandle   traversable;
     const GpuRay3DHost*      rays;
@@ -9440,6 +9466,103 @@ static void ensure_ray_triangle_hit_stream_3d_pipeline()
         std::string src = ray_triangle_hit_stream_kernel_source_3d();
         std::string ptx = compile_to_ptx(src.c_str(), "raytriangle_hitstream3d_kernel.cu");
         g_raytriangle_hitstream3d.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__rayhit3d_probe",
+            "__miss__rayhit3d_miss",
+            "__intersection__rayhit3d_isect",
+            "__anyhit__rayhit3d_anyhit",
+            nullptr, 2).release();
+    });
+}
+
+static std::string ray_triangle_hit_stream_device_columns_kernel_source_3d()
+{
+    std::string src(kRayHitCount3DKernelSrc);
+    const std::string old_output_field =
+        "    RayHitCount3DRecord*     output;\n"
+        "    uint32_t                 ray_count;\n";
+    const std::string new_output_field =
+        "    unsigned long long*      ray_ids;\n"
+        "    unsigned long long*      primitive_ids;\n"
+        "    unsigned long long*      row_count;\n"
+        "    unsigned long long*      hit_event_count;\n"
+        "    uint32_t*                overflow;\n"
+        "    uint32_t*                primitive_flags;\n"
+        "    uint32_t                 ray_count;\n"
+        "    uint32_t                 triangle_count;\n"
+        "    uint32_t                 max_rows;\n"
+        "    uint32_t                 deduplicate_primitives;\n";
+    size_t pos = src.find(old_output_field);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 3-D device-column hit-stream params");
+    src.replace(pos, old_output_field.size(), new_output_field);
+
+    const std::string old_zero_write =
+        "        params.output[idx] = {r.id, 0u};\n"
+        "        return;\n";
+    const std::string new_zero_write =
+        "        return;\n";
+    pos = src.find(old_zero_write);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 3-D device-column zero-ray path");
+    src.replace(pos, old_zero_write.size(), new_zero_write);
+
+    const std::string old_final_write =
+        "    params.output[idx] = {r.id, p1};\n";
+    const std::string new_final_write =
+        "    (void)p1;\n";
+    pos = src.find(old_final_write);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 3-D device-column final write path");
+    src.replace(pos, old_final_write.size(), new_final_write);
+
+    const std::string old_anyhit =
+        "extern \"C\" __global__ void __anyhit__rayhit3d_anyhit() {\n"
+        "    // Count this hit and keep traversing all triangles.\n"
+        "    uint32_t count = optixGetPayload_1();\n"
+        "    optixSetPayload_1(count + 1u);\n"
+        "    optixIgnoreIntersection();\n"
+        "}\n";
+    const std::string new_anyhit =
+        "extern \"C\" __global__ void __anyhit__rayhit3d_anyhit() {\n"
+        "    const uint32_t prim = optixGetPrimitiveIndex();\n"
+        "    const uint32_t ridx = optixGetPayload_0();\n"
+        "    if (prim >= params.triangle_count || ridx >= params.ray_count) {\n"
+        "        optixIgnoreIntersection();\n"
+        "        return;\n"
+        "    }\n"
+        "    atomicAdd(params.hit_event_count, 1ull);\n"
+        "    bool should_emit = true;\n"
+        "    if (params.deduplicate_primitives != 0u) {\n"
+        "        const uint32_t word = prim >> 5;\n"
+        "        const uint32_t mask = 1u << (prim & 31u);\n"
+        "        const uint32_t old = atomicOr(&params.primitive_flags[word], mask);\n"
+        "        should_emit = ((old & mask) == 0u);\n"
+        "    }\n"
+        "    if (should_emit) {\n"
+        "        const unsigned long long slot = atomicAdd(params.row_count, 1ull);\n"
+        "        if (slot < static_cast<unsigned long long>(params.max_rows)) {\n"
+        "            params.ray_ids[slot] = static_cast<unsigned long long>(params.rays[ridx].id);\n"
+        "            params.primitive_ids[slot] = static_cast<unsigned long long>(prim);\n"
+        "        } else {\n"
+        "            atomicExch(params.overflow, 1u);\n"
+        "        }\n"
+        "    }\n"
+        "    optixIgnoreIntersection();\n"
+        "}\n";
+    pos = src.find(old_anyhit);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 3-D device-column hit-stream any-hit path");
+    src.replace(pos, old_anyhit.size(), new_anyhit);
+    return src;
+}
+
+static void ensure_ray_triangle_hit_stream_device_columns_3d_pipeline()
+{
+    std::call_once(g_raytriangle_hitstream_device_columns3d.init, [&]() {
+        std::string src = ray_triangle_hit_stream_device_columns_kernel_source_3d();
+        std::string ptx = compile_to_ptx(src.c_str(), "raytriangle_hitstream_device_columns3d_kernel.cu");
+        g_raytriangle_hitstream_device_columns3d.pipe = build_pipeline(
             get_optix_context(), ptx,
             "__raygen__rayhit3d_probe",
             "__miss__rayhit3d_miss",
@@ -10188,6 +10311,117 @@ static void run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_optix(
     *hit_event_count_out = static_cast<uint64_t>(hit_events);
     if (traversal_seconds_out)
         *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
+}
+
+static void run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        const RtdlRay3D* rays,
+        size_t ray_count,
+        uint32_t deduplicate_primitives,
+        size_t max_rows,
+        RtdlNativeDeviceHitStreamColumns* columns_out)
+{
+    if (!prepared)
+        throw std::runtime_error("prepared scene handle must not be null");
+    if (!rays && ray_count != 0)
+        throw std::runtime_error("ray pointer must not be null when ray_count is nonzero");
+    if (!columns_out)
+        throw std::runtime_error("device hit-stream columns_out pointer must not be null");
+    if (ray_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("ray_count exceeds uint32 launch limit");
+    if (prepared->triangle_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("triangle_count exceeds uint32 primitive limit");
+    if (max_rows > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("max_rows exceeds uint32 hit-stream capacity");
+
+    *columns_out = {};
+    columns_out->capacity = static_cast<uint64_t>(max_rows);
+    if (ray_count == 0 || prepared->triangle_count == 0)
+        return;
+
+    std::vector<GpuRay3DHost> gpu_rays(ray_count);
+    for (size_t i = 0; i < ray_count; ++i)
+        gpu_rays[i] = pack_ray_3d_as_gpu_ray(rays[i]);
+
+    ensure_ray_triangle_hit_stream_device_columns_3d_pipeline();
+
+    auto owner = std::make_unique<NativeRayTriangleHitStreamDeviceColumnsOwner>();
+    if (max_rows != 0) {
+        CU_CHECK(cuMemAlloc(&owner->ray_ids, sizeof(unsigned long long) * max_rows));
+        CU_CHECK(cuMemAlloc(&owner->primitive_ids, sizeof(unsigned long long) * max_rows));
+    }
+
+    const size_t flag_word_count = std::max<size_t>(1, (prepared->triangle_count + 31u) / 32u);
+    DevPtr d_rays(sizeof(GpuRay3DHost) * ray_count);
+    DevPtr d_row_count(sizeof(unsigned long long));
+    DevPtr d_hit_events(sizeof(unsigned long long));
+    DevPtr d_overflow(sizeof(uint32_t));
+    DevPtr d_flags(sizeof(uint32_t) * flag_word_count);
+
+    upload(d_rays.ptr, gpu_rays.data(), gpu_rays.size());
+    unsigned long long zero64 = 0ull;
+    uint32_t zero32 = 0u;
+    upload(d_row_count.ptr, &zero64, 1);
+    upload(d_hit_events.ptr, &zero64, 1);
+    upload(d_overflow.ptr, &zero32, 1);
+    CU_CHECK(cuMemsetD32(d_flags.ptr, 0u, flag_word_count));
+
+    RayTriangleHitStreamDeviceColumns3DLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.rays = reinterpret_cast<const GpuRay3DHost*>(d_rays.ptr);
+    lp.triangles = reinterpret_cast<const GpuTriangle3DHost*>(prepared->d_triangles.ptr);
+    lp.ray_ids = reinterpret_cast<unsigned long long*>(owner->ray_ids);
+    lp.primitive_ids = reinterpret_cast<unsigned long long*>(owner->primitive_ids);
+    lp.row_count = reinterpret_cast<unsigned long long*>(d_row_count.ptr);
+    lp.hit_event_count = reinterpret_cast<unsigned long long*>(d_hit_events.ptr);
+    lp.overflow = reinterpret_cast<uint32_t*>(d_overflow.ptr);
+    lp.primitive_flags = reinterpret_cast<uint32_t*>(d_flags.ptr);
+    lp.ray_count = static_cast<uint32_t>(ray_count);
+    lp.triangle_count = static_cast<uint32_t>(prepared->triangle_count);
+    lp.max_rows = static_cast<uint32_t>(max_rows);
+    lp.deduplicate_primitives = deduplicate_primitives != 0u ? 1u : 0u;
+
+    DevPtr d_params(sizeof(RayTriangleHitStreamDeviceColumns3DLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    const auto traversal_start = std::chrono::steady_clock::now();
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_raytriangle_hitstream_device_columns3d.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(RayTriangleHitStreamDeviceColumns3DLaunchParams),
+                             &g_raytriangle_hitstream_device_columns3d.pipe->sbt,
+                             static_cast<unsigned>(ray_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    const auto traversal_end = std::chrono::steady_clock::now();
+
+    unsigned long long attempted_rows = 0ull;
+    unsigned long long hit_events = 0ull;
+    uint32_t overflow = 0u;
+    download(&attempted_rows, d_row_count.ptr, 1);
+    download(&hit_events, d_hit_events.ptr, 1);
+    download(&overflow, d_overflow.ptr, 1);
+
+    columns_out->hit_event_count = static_cast<uint64_t>(hit_events);
+    columns_out->traversal_seconds = std::chrono::duration<double>(traversal_end - traversal_start).count();
+    CUdevice current_device = 0;
+    CU_CHECK(cuCtxGetDevice(&current_device));
+    columns_out->device_ordinal = static_cast<int32_t>(current_device);
+
+    if (overflow != 0u || attempted_rows > static_cast<unsigned long long>(max_rows)) {
+        columns_out->row_count = 0u;
+        columns_out->overflow = 1u;
+        return;
+    }
+
+    columns_out->ray_ids_device_ptr = static_cast<uint64_t>(owner->ray_ids);
+    columns_out->primitive_ids_device_ptr = static_cast<uint64_t>(owner->primitive_ids);
+    columns_out->row_count = static_cast<uint64_t>(attempted_rows);
+    columns_out->overflow = 0u;
+    columns_out->owner_handle = owner.release();
+}
+
+static void release_ray_triangle_hit_stream_device_columns_optix(void* owner_handle)
+{
+    delete reinterpret_cast<NativeRayTriangleHitStreamDeviceColumnsOwner*>(owner_handle);
 }
 
 static void run_prepared_static_triangle_scene_3d_ray_prepared_primitive_grouped_i64_reduction_optix(

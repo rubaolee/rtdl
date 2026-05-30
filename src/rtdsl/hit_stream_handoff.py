@@ -228,6 +228,7 @@ class RtdlNativeDeviceHitStreamOutput:
     backend: str = "optix"
     native_symbol: str | None = None
     owner_handle: int | None = None
+    owner: Any = None
     traversal_seconds: float | None = None
     native_device_column_output_proven_on_hardware: bool = False
 
@@ -479,6 +480,7 @@ def prepare_native_device_hit_stream_columns_from_abi(
     backend: str = "optix",
     native_symbol: str | None = None,
     owner_handle: int | None = None,
+    owner: Any = None,
     traversal_seconds: float | None = None,
     native_device_column_output_proven_on_hardware: bool = False,
 ) -> RtdlHitStreamColumnHandoff:
@@ -493,6 +495,7 @@ def prepare_native_device_hit_stream_columns_from_abi(
         backend=backend,
         native_symbol=native_symbol,
         owner_handle=owner_handle,
+        owner=owner,
         traversal_seconds=traversal_seconds,
         native_device_column_output_proven_on_hardware=native_device_column_output_proven_on_hardware,
     )
