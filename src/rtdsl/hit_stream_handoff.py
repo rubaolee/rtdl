@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Sequence as SequenceABC
 from dataclasses import dataclass
 from time import perf_counter
 from typing import Any, Mapping, Sequence
@@ -47,6 +48,12 @@ GENERIC_HIT_STREAM_HANDOFF_PHASES = (
     "typed_payload_gather",
     "partner_continuation",
     "host_materialization",
+)
+GENERIC_TORCH_CARRIER_ADAPTER_MODES = (
+    "torch_tensor",
+    "cuda_array_interface_to_torch_via_dlpack",
+    "host_column_requires_explicit_copy",
+    "unsupported",
 )
 
 
@@ -625,6 +632,64 @@ def prepare_generic_typed_primitive_payload_columns(
     )
 
 
+def describe_v2_5_hit_stream_torch_carrier_adapter(
+    hit_stream_columns: RtdlHitStreamColumnHandoff,
+    payload_columns: RtdlTypedPrimitivePayloadColumns,
+) -> dict[str, object]:
+    """Explain whether hit-stream continuation columns can feed Triton.
+
+    This is an explain surface, not a proof of zero-copy. Runtime execution still
+    requires the actual torch/CuPy/DLPack libraries and accepted hardware.
+    """
+
+    column_specs = (
+        ("primitive_ids", hit_stream_columns.primitive_ids, "int64"),
+        ("primitive_group_ids", payload_columns.primitive_group_ids, "int64"),
+        ("primitive_values", payload_columns.primitive_values, "float64"),
+    )
+    descriptors: list[dict[str, object]] = []
+    for name, column, dtype in column_specs:
+        mode = _torch_carrier_adapter_mode(column)
+        descriptor = _buffer_descriptor(name, column, dtype, access_mode="read").to_metadata()
+        descriptors.append(
+            {
+                "name": name,
+                "required_dtype": dtype,
+                "adapter_mode": mode,
+                "device": descriptor["device"],
+                "source_protocol": descriptor["source_protocol"],
+                "data_ptr": _data_ptr(column),
+                "host_copy_required": mode == "host_column_requires_explicit_copy",
+                "zero_copy_candidate": mode in {"torch_tensor", "cuda_array_interface_to_torch_via_dlpack"},
+            }
+        )
+    adapter_modes = tuple(str(descriptor["adapter_mode"]) for descriptor in descriptors)
+    unsupported = any(mode == "unsupported" for mode in adapter_modes)
+    host_copy_required = any(mode == "host_column_requires_explicit_copy" for mode in adapter_modes)
+    raw_cuda_adapter_required = any(mode == "cuda_array_interface_to_torch_via_dlpack" for mode in adapter_modes)
+    no_copy_candidate = not unsupported and not host_copy_required
+    return {
+        "contract_version": GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION,
+        "adapter_modes": GENERIC_TORCH_CARRIER_ADAPTER_MODES,
+        "columns": tuple(descriptors),
+        "all_columns_adaptable_to_torch_carrier": not unsupported,
+        "all_columns_no_copy_torch_carrier_candidates": no_copy_candidate,
+        "raw_cuda_adapter_required": raw_cuda_adapter_required,
+        "requires_torch_runtime": True,
+        "requires_cupy_for_cuda_array_interface_without_dlpack": raw_cuda_adapter_required,
+        "host_copy_required": host_copy_required,
+        "explicit_copy_required": host_copy_required,
+        "adapter_execution_proven_on_hardware": False,
+        "true_zero_copy_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "claim_boundary": (
+            "This explains the torch/Triton carrier bridge for hit-stream continuation. "
+            "Raw CUDA-array columns are only no-copy candidates until pod evidence proves "
+            "same-pointer DLPack/CUDA-array-interface adaptation without a host stage."
+        ),
+    }
+
+
 def gather_typed_payload_columns_for_hit_stream(
     hit_stream_columns: RtdlHitStreamColumnHandoff,
     payload_columns: RtdlTypedPrimitivePayloadColumns,
@@ -636,36 +701,65 @@ def gather_typed_payload_columns_for_hit_stream(
         raise ValueError("cannot gather continuation inputs from an overflowed hit stream")
     gather_partner = _normalize_gather_partner(partner)
     started = perf_counter()
-    _validate_primitive_ids_in_payload_range(
-        hit_stream_columns.primitive_ids,
-        payload_columns.primitive_count,
+    torch_carrier_adapter = describe_v2_5_hit_stream_torch_carrier_adapter(
+        hit_stream_columns,
+        payload_columns,
     )
     if gather_partner == "python_reference":
+        _validate_primitive_ids_in_payload_range(
+            hit_stream_columns.primitive_ids,
+            payload_columns.primitive_count,
+        )
         continuation_inputs, gather_mode, selected_partner = _gather_payload_python_reference(
             hit_stream_columns,
             payload_columns,
         )
     elif gather_partner == "triton":
-        if not _all_torch_gather_columns(hit_stream_columns, payload_columns) and not allow_explicit_copy:
+        if (
+            not bool(torch_carrier_adapter["all_columns_no_copy_torch_carrier_candidates"])
+            and not allow_explicit_copy
+        ):
             raise ValueError(
-                "triton gather requires existing torch tensor carrier columns; "
+                "triton gather requires torch tensor carrier columns or CUDA-array-interface columns; "
                 "pass allow_explicit_copy=True only when the host/device copy is explicit"
             )
+        _validate_primitive_ids_in_payload_range(
+            hit_stream_columns.primitive_ids,
+            payload_columns.primitive_count,
+            prefer_torch_carrier=True,
+            allow_explicit_copy=allow_explicit_copy,
+        )
         continuation_inputs, gather_mode, selected_partner = _gather_payload_torch_carrier(
             hit_stream_columns,
             payload_columns,
+            allow_explicit_copy=allow_explicit_copy,
         )
     elif gather_partner in {"cupy_conformance", "numba"}:
+        _validate_primitive_ids_in_payload_range(
+            hit_stream_columns.primitive_ids,
+            payload_columns.primitive_count,
+        )
         raise ValueError(
             f"{gather_partner} hit-stream gather is descriptor/planning-only in this slice; "
             "use plan_v2_5_hit_stream_partner_continuation before execution"
         )
     elif _is_torch_tensor(hit_stream_columns.primitive_ids) or _is_torch_tensor(payload_columns.primitive_group_ids):
+        _validate_primitive_ids_in_payload_range(
+            hit_stream_columns.primitive_ids,
+            payload_columns.primitive_count,
+            prefer_torch_carrier=True,
+            allow_explicit_copy=allow_explicit_copy,
+        )
         continuation_inputs, gather_mode, selected_partner = _gather_payload_torch_carrier(
             hit_stream_columns,
             payload_columns,
+            allow_explicit_copy=allow_explicit_copy,
         )
     else:
+        _validate_primitive_ids_in_payload_range(
+            hit_stream_columns.primitive_ids,
+            payload_columns.primitive_count,
+        )
         continuation_inputs, gather_mode, selected_partner = _gather_payload_python_reference(
             hit_stream_columns,
             payload_columns,
@@ -694,6 +788,7 @@ def gather_typed_payload_columns_for_hit_stream(
             hit_stream_columns,
             payload_columns,
         ),
+        "torch_carrier_adapter": torch_carrier_adapter,
         "true_zero_copy_authorized": False,
         "public_speedup_claim_authorized": False,
     }
@@ -703,19 +798,51 @@ def gather_typed_payload_columns_for_hit_stream(
 def _gather_payload_torch_carrier(
     hit_stream_columns: RtdlHitStreamColumnHandoff,
     payload_columns: RtdlTypedPrimitivePayloadColumns,
+    *,
+    allow_explicit_copy: bool = False,
 ) -> tuple[dict[str, Any], str, str]:
-    if _is_torch_tensor(hit_stream_columns.primitive_ids) or _is_torch_tensor(payload_columns.primitive_group_ids):
-        import torch
+    adapter = describe_v2_5_hit_stream_torch_carrier_adapter(hit_stream_columns, payload_columns)
+    if not bool(adapter["all_columns_adaptable_to_torch_carrier"]):
+        raise ValueError("torch carrier gather requested but at least one column is not adaptable")
+    if bool(adapter["host_copy_required"]) and not allow_explicit_copy:
+        raise ValueError("torch carrier gather would require a host/device copy; pass allow_explicit_copy=True")
 
-        primitive_ids = _torch_as(hit_stream_columns.primitive_ids, dtype=torch.int64, device_like=payload_columns.primitive_group_ids)
-        group_ids = _torch_as(payload_columns.primitive_group_ids, dtype=torch.int64, device_like=primitive_ids)[primitive_ids]
-        values = _torch_as(payload_columns.primitive_values, dtype=torch.float64, device_like=primitive_ids)[primitive_ids]
-        return {
-            "group_ids": group_ids,
-            "values": values,
-            "group_count": int(payload_columns.group_count),
-        }, "torch_index_select", "triton_torch_tensor_carrier"
-    raise ValueError("torch carrier gather requested but no torch tensor carrier columns were present")
+    try:
+        import torch
+    except Exception as exc:
+        raise ValueError(
+            "torch carrier gather requires existing torch tensor carrier columns or a working "
+            "CUDA-array-interface adapter with torch runtime"
+        ) from exc
+
+    primitive_ids = _torch_as(
+        hit_stream_columns.primitive_ids,
+        dtype=torch.int64,
+        device_like=payload_columns.primitive_group_ids,
+        allow_explicit_copy=allow_explicit_copy,
+    )
+    group_ids = _torch_as(
+        payload_columns.primitive_group_ids,
+        dtype=torch.int64,
+        device_like=primitive_ids,
+        allow_explicit_copy=allow_explicit_copy,
+    )[primitive_ids]
+    values = _torch_as(
+        payload_columns.primitive_values,
+        dtype=torch.float64,
+        device_like=primitive_ids,
+        allow_explicit_copy=allow_explicit_copy,
+    )[primitive_ids]
+    gather_mode = (
+        "torch_index_select_cuda_array_interface_adapter"
+        if bool(adapter["raw_cuda_adapter_required"])
+        else "torch_index_select"
+    )
+    return {
+        "group_ids": group_ids,
+        "values": values,
+        "group_count": int(payload_columns.group_count),
+    }, gather_mode, "triton_torch_tensor_carrier"
 
 
 def _gather_payload_python_reference(
@@ -793,11 +920,35 @@ def plan_v2_5_hit_stream_partner_continuation(
     }
 
 
-def _validate_primitive_ids_in_payload_range(primitive_ids: Any, primitive_count: int) -> None:
+def _validate_primitive_ids_in_payload_range(
+    primitive_ids: Any,
+    primitive_count: int,
+    *,
+    prefer_torch_carrier: bool = False,
+    allow_explicit_copy: bool = False,
+) -> None:
     primitive_count = int(primitive_count)
     if primitive_count < 0:
         raise ValueError("primitive_count must be non-negative")
     if _column_length(primitive_ids) == 0:
+        return
+    if prefer_torch_carrier and (_is_torch_tensor(primitive_ids) or _has_cuda_array_interface(primitive_ids)):
+        try:
+            import torch
+        except Exception as exc:
+            raise ValueError(
+                "triton gather requires existing torch tensor carrier columns or a working "
+                "CUDA-array-interface adapter with torch runtime"
+            ) from exc
+
+        ids = _torch_as(
+            primitive_ids,
+            dtype=torch.int64,
+            device_like=primitive_ids,
+            allow_explicit_copy=allow_explicit_copy,
+        )
+        if bool(((ids < 0) | (ids >= primitive_count)).any().detach().cpu().item()):
+            raise ValueError("primitive ids must be in [0, primitive_count)")
         return
     if _is_torch_tensor(primitive_ids):
         import torch
@@ -883,6 +1034,30 @@ def _source_protocol(column: Any) -> str:
     if hasattr(column, "__cuda_array_interface__"):
         return "cuda_array_interface"
     return "python"
+
+
+def _has_cuda_array_interface(column: Any) -> bool:
+    return isinstance(getattr(column, "__cuda_array_interface__", None), Mapping)
+
+
+def _torch_carrier_adapter_mode(column: Any) -> str:
+    if _is_torch_tensor(column):
+        return "torch_tensor"
+    if _has_cuda_array_interface(column):
+        return "cuda_array_interface_to_torch_via_dlpack"
+    if _host_column_can_be_materialized(column):
+        return "host_column_requires_explicit_copy"
+    return "unsupported"
+
+
+def _host_column_can_be_materialized(column: Any) -> bool:
+    if column is None:
+        return True
+    if callable(getattr(column, "tolist", None)):
+        return True
+    if isinstance(column, SequenceABC) and not isinstance(column, (str, bytes, bytearray)):
+        return True
+    return callable(getattr(column, "__iter__", None))
 
 
 def _data_ptr(column: Any) -> int | None:
@@ -1024,6 +1199,18 @@ def _all_torch_gather_columns(
     )
 
 
+def _torch_carrier_device(device_like: Any) -> Any:
+    import torch
+
+    device = getattr(device_like, "device", None)
+    if device is not None:
+        return device
+    device_type, device_id = _device_info(device_like)
+    if device_type == "cuda":
+        return torch.device(f"cuda:{device_id}")
+    return None
+
+
 def _is_torch_tensor(value: Any) -> bool:
     return type(value).__module__.split(".", 1)[0] == "torch"
 
@@ -1048,7 +1235,7 @@ def _maybe_torch_column(
         if require_cuda and not torch.cuda.is_available():
             raise RuntimeError("Torch CUDA is required for native device hit-stream handoff validation")
         if torch.cuda.is_available():
-            device = getattr(device_like, "device", torch.device("cuda:0"))
+            device = _torch_carrier_device(device_like) or torch.device("cuda:0")
             target_dtype = torch.int64 if dtype == "int64" else torch.float64
             return torch.as_tensor(values, dtype=target_dtype, device=device)
     if dtype == "int64":
@@ -1056,10 +1243,55 @@ def _maybe_torch_column(
     return tuple(float(value) for value in values)
 
 
-def _torch_as(value: Any, *, dtype: Any, device_like: Any) -> Any:
+def _torch_as(value: Any, *, dtype: Any, device_like: Any, allow_explicit_copy: bool = False) -> Any:
     import torch
 
-    device = getattr(device_like, "device", None)
+    device = _torch_carrier_device(device_like)
     if _is_torch_tensor(value):
         return value.to(dtype=dtype, device=device)
+    if _has_cuda_array_interface(value):
+        return _torch_from_cuda_array_interface(value, dtype=dtype, device=device)
+    if not allow_explicit_copy:
+        raise ValueError(
+            "torch carrier gather requires torch tensors or CUDA-array-interface columns; "
+            "host columns require allow_explicit_copy=True"
+        )
     return torch.as_tensor(value, dtype=dtype, device=device)
+
+
+def _torch_from_cuda_array_interface(value: Any, *, dtype: Any, device: Any) -> Any:
+    import torch
+
+    tensor = None
+    dlpack_error: Exception | None = None
+    if callable(getattr(value, "__dlpack__", None)):
+        try:
+            tensor = torch.from_dlpack(value)
+        except Exception as exc:  # pragma: no cover - depends on optional runtimes.
+            dlpack_error = exc
+    if tensor is None:
+        try:
+            import cupy
+
+            cupy_array = cupy.asarray(value)
+            if callable(getattr(torch, "from_dlpack", None)):
+                tensor = torch.from_dlpack(cupy_array)
+            else:  # pragma: no cover - legacy torch fallback.
+                from torch.utils import dlpack
+
+                tensor = dlpack.from_dlpack(cupy_array.toDlpack())
+        except Exception as exc:
+            if dlpack_error is not None:
+                raise RuntimeError(
+                    "CUDA-array-interface to torch carrier adapter requires a working "
+                    "DLPack or CuPy bridge"
+                ) from dlpack_error
+            raise RuntimeError(
+                "CUDA-array-interface to torch carrier adapter requires CuPy when "
+                "the source object does not expose usable DLPack"
+            ) from exc
+    if tensor.dtype != dtype:
+        raise ValueError("CUDA-array-interface adapter dtype mismatch would require a copy")
+    if device is not None and tensor.device != torch.device(device):
+        raise ValueError("CUDA-array-interface adapter device mismatch would require a copy")
+    return tensor
