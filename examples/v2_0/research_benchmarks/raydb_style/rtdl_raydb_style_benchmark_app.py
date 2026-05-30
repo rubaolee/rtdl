@@ -26,6 +26,9 @@ PAPER_RT_OPTIX_BACKEND = "paper_rt_optix"
 PAPER_RT_EMBREE_HIT_STREAM_TRITON_BACKEND = "paper_rt_embree_hit_stream_triton"
 PAPER_RT_OPTIX_HIT_STREAM_TRITON_BACKEND = "paper_rt_optix_hit_stream_triton"
 PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_BACKEND = "paper_rt_optix_device_hit_stream_triton"
+PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_PREPARED_BACKEND = (
+    "paper_rt_optix_device_hit_stream_triton_prepared"
+)
 PAPER_RT_RESULT_MODES = CPU_RESULT_MODES
 RAYDB_REFERENCE_REPO = "https://github.com/rubaolee/RayDB-i0"
 RAYDB_REFERENCE_BRANCH = "fin"
@@ -54,6 +57,7 @@ BACKENDS = (
     PAPER_RT_EMBREE_HIT_STREAM_TRITON_BACKEND,
     PAPER_RT_OPTIX_HIT_STREAM_TRITON_BACKEND,
     PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_BACKEND,
+    PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_PREPARED_BACKEND,
 )
 RESULT_MODES = CPU_RESULT_MODES
 DEFAULT_GENERATED_ROW_COUNT = 100_000
@@ -281,6 +285,15 @@ def run_result_mode(
             copies=copies,
             backend="optix",
             backend_label=PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_BACKEND,
+        )
+    if backend == PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_PREPARED_BACKEND:
+        return _run_paper_rt_prepared_device_hit_stream_triton_result_mode(
+            fixture=fixture,
+            plan=plan,
+            mode=mode,
+            copies=copies,
+            repeat=repeat,
+            warmup=warmup,
         )
     if backend == "embree":
         return _run_native_result_mode(
@@ -1954,6 +1967,258 @@ def _run_paper_rt_device_hit_stream_triton_result_mode(
     }
 
 
+def _median_float(values: list[float]) -> float:
+    return float(statistics.median(values)) if values else 0.0
+
+
+def _run_paper_rt_prepared_device_hit_stream_triton_result_mode(
+    *,
+    fixture: dict[str, Any],
+    plan: dict[str, Any],
+    mode: str,
+    copies: int,
+    repeat: int,
+    warmup: int,
+) -> dict[str, Any]:
+    if mode not in PAPER_RT_RESULT_MODES:
+        raise ValueError(f"unsupported paper RT result mode: {mode}")
+    if repeat <= 0:
+        raise ValueError("repeat must be positive")
+    if warmup < 0:
+        raise ValueError("warmup must be non-negative")
+    if not rt.triton_partner_available():
+        raise RuntimeError("Triton/Torch CUDA is unavailable; rerun on a GPU pod")
+
+    prepare_started = time.perf_counter()
+    table_descriptor = prepare_paper_rt_encoded_table_descriptor(fixture, plan)
+    workload = _make_paper_rt_encoded_packed_workload(
+        fixture,
+        plan,
+        mode,
+        table_descriptor=table_descriptor,
+    )
+    workload_built = time.perf_counter()
+    max_rows = _packed_or_sequence_count(workload["triangles"])
+    group_count = len(workload["group_tuples"])
+    payload_started = time.perf_counter()
+    payload_columns = rt.prepare_generic_typed_primitive_payload_columns(
+        workload["primitive_group_ids"],
+        workload["primitive_values"],
+        primitive_count=_packed_or_sequence_count(workload["triangles"]),
+        group_count=group_count,
+        prefer_torch_cuda=True,
+        require_torch_cuda=True,
+        group_id_bounds_validation="caller_asserted",
+    )
+    payload_prepared = time.perf_counter()
+    scene_started = time.perf_counter()
+    prepared_scene = rt.prepare_optix_static_triangle_scene_3d(workload["triangles"])
+    scene_prepared = time.perf_counter()
+    continuation_plan = describe_raydb_v2_5_partner_continuation(mode)
+    cpu_rows = rt.evaluate_columnar_grouped_aggregate(fixture, plan).rows
+
+    measured_wall: list[float] = []
+    measured_phase_timings: list[dict[str, float]] = []
+    measured_hit_phase_timings: list[dict[str, float]] = []
+    rows: list[dict[str, Any]] = []
+    handoff_metadata: dict[str, object] = {}
+    hit_stream_partner_plans: tuple[dict[str, object], ...] = ()
+    hit_stream: dict[str, Any] = {}
+    execution_path = "not_run"
+    try:
+        for iteration in range(warmup + repeat):
+            iteration_started = time.perf_counter()
+            hit_stream_started = time.perf_counter()
+            hit_stream_columns = prepared_scene.ray_triangle_hit_stream_device_columns(
+                workload["rays"],
+                max_rows=max_rows,
+                deduplicate_primitives=True,
+            )
+            hit_phase_timing = dict(hit_stream_columns.phase_timing_seconds)
+            hit_stream = {
+                "primitive": rt.GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_PRIMITIVE,
+                "native_symbol": hit_stream_columns.native_symbol,
+                "row_count": int(hit_stream_columns.row_count),
+                "max_rows": int(hit_stream_columns.capacity),
+                "overflow": bool(hit_stream_columns.overflow),
+                "hit_event_count_before_dedup": None,
+                "rt_core_accelerated": True,
+                "phase_timing_seconds": hit_phase_timing,
+            }
+            hit_stream_done = time.perf_counter()
+            try:
+                if hit_stream.get("overflow"):
+                    raise RuntimeError("RayDB hit-stream overflowed despite primitive-count capacity")
+                handoff_started = time.perf_counter()
+                hit_stream_partner_plans = tuple(
+                    rt.plan_v2_5_hit_stream_partner_continuation(
+                        hit_stream_columns,
+                        payload_columns,
+                        operation=operation,
+                        partner="triton",
+                    )
+                    for operation in continuation_plan["operations"]
+                )
+                continuation_inputs, handoff_metadata = rt.gather_typed_payload_columns_for_hit_stream(
+                    hit_stream_columns,
+                    payload_columns,
+                    partner="triton",
+                )
+                handoff_done = time.perf_counter()
+                continuation_started = time.perf_counter()
+                outputs, continuation_results, execution_path = _run_raydb_v2_5_triton_or_reference(
+                    mode,
+                    continuation_inputs,
+                    allow_reference_fallback=False,
+                )
+                continuation_done = time.perf_counter()
+                rows = _paper_rows_from_v2_5_outputs(
+                    mode,
+                    outputs,
+                    group_keys=workload["group_keys"],
+                    group_tuples=workload["group_tuples"],
+                )
+                rows_done = time.perf_counter()
+            finally:
+                close = getattr(hit_stream_columns.owner, "close", None)
+                if callable(close):
+                    close()
+            if iteration >= warmup:
+                measured_wall.append(rows_done - iteration_started)
+                measured_phase_timings.append(
+                    {
+                        "rt_hit_stream_total": hit_stream_done - hit_stream_started,
+                        "hit_stream_column_handoff": handoff_done - handoff_started,
+                        "typed_payload_gather": float(handoff_metadata["typed_payload_gather_sec"]),
+                        "triton_continuation": continuation_done - continuation_started,
+                        "row_presentation": rows_done - continuation_done,
+                    }
+                )
+                measured_hit_phase_timings.append(hit_phase_timing)
+    finally:
+        prepared_scene.close()
+
+    elapsed_sec = _median_float(measured_wall)
+    timing_medians = {
+        "elapsed_sec": elapsed_sec,
+        "workload_build": workload_built - prepare_started,
+        "payload_prepare": payload_prepared - payload_started,
+        "scene_prepare": scene_prepared - scene_started,
+        "cold_prepare_total": scene_prepared - prepare_started,
+    }
+    for key in (
+        "rt_hit_stream_total",
+        "hit_stream_column_handoff",
+        "typed_payload_gather",
+        "triton_continuation",
+        "row_presentation",
+    ):
+        timing_medians[key] = _median_float([timing[key] for timing in measured_phase_timings])
+    hit_phase_keys = sorted({key for timing in measured_hit_phase_timings for key in timing})
+    for key in hit_phase_keys:
+        timing_medians[f"hit_stream_{key}"] = _median_float(
+            [float(timing[key]) for timing in measured_hit_phase_timings if key in timing]
+        )
+
+    hit_phase_timing = {
+        key: timing_medians[f"hit_stream_{key}"]
+        for key in hit_phase_keys
+        if f"hit_stream_{key}" in timing_medians
+    }
+    hit_stream_rt_traversal_sec = float(
+        hit_phase_timing.get(
+            "traversal",
+            hit_phase_timing.get("rt_traversal", 0.0),
+        )
+    )
+    return {
+        "app": "raydb_style_columnar_aggregate",
+        "backend": PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_PREPARED_BACKEND,
+        "mode": mode,
+        "copies": int(copies),
+        "row_count": len(fixture["row_ids"]),
+        "elapsed_sec": elapsed_sec,
+        "rows": rows,
+        "matches_cpu_reference": _rows_match_cpu_reference(rows, cpu_rows),
+        "metadata": {
+            "contract": "raydb_paper_triangle_scan_prepared_device_hit_stream_triton_optix",
+            "copies": int(copies),
+            "row_count": len(fixture["row_ids"]),
+            "timings": timing_medians,
+            **_fixture_metadata(fixture),
+            **_cpu_reference_match_policy_metadata(),
+            "paper_reproduction": "paper_shaped_rt_prepared_device_hit_stream_triton_optix",
+            "authors_code_comparison": False,
+            "raydb_reference_repo": RAYDB_REFERENCE_REPO,
+            "raydb_reference_branch": RAYDB_REFERENCE_BRANCH,
+            "raydb_reference_commit": RAYDB_REFERENCE_COMMIT,
+            "primitive_contract_required_for_native": rt.GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_PRIMITIVE,
+            "hit_stream_handoff_contract": rt.GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION,
+            "hit_stream_handoff": handoff_metadata,
+            "v2_5_partner_continuation": continuation_plan,
+            "v2_5_hit_stream_partner_plans": hit_stream_partner_plans,
+            "requested_gather_partner": "triton",
+            "prepared_steady_state": True,
+            "prepared_internal_repeat": int(repeat),
+            "prepared_internal_warmup": int(warmup),
+            "prepared_iteration_wall_sec": measured_wall,
+            "prepared_table_descriptor_used": bool(workload.get("prepared_table_descriptor_used", False)),
+            "prepared_payload_columns_reused": True,
+            "prepared_optix_scene_reused": True,
+            "payload_group_id_bounds_validation": "caller_asserted",
+            "v2_4_phase_timing": rt.v2_4_phase_timing_metadata(
+                {
+                    "query_preparation": 0.0,
+                    "scene_build": 0.0,
+                    "rt_traversal": hit_stream_rt_traversal_sec,
+                    "transfer": timing_medians["hit_stream_column_handoff"],
+                    "partner_continuation": timing_medians["triton_continuation"],
+                    "materialization": timing_medians["row_presentation"],
+                },
+                promoted_performance_path=False,
+                same_phase_contract_as_basis=True,
+                source=f"raydb_style.paper_rt_prepared_device_hit_stream_triton.optix.{mode}",
+            ),
+            "native_symbol": hit_stream.get("native_symbol"),
+            "native_rt_core_lowering_path_present": True,
+            "native_rt_core_lowering_ready": False,
+            "native_device_hit_stream_columns_ready": bool(
+                handoff_metadata["native_device_hit_stream_columns_ready"]
+            ),
+            "native_device_column_path_used": True,
+            "host_row_bridge_bypassed": True,
+            "rt_core_accelerated": bool(hit_stream.get("rt_core_accelerated", False)),
+            "rt_core_claim_authorized": False,
+            "true_zero_copy_authorized": False,
+            "scan_fields": list(workload["scan_fields"]),
+            "group_keys": list(workload["group_keys"]),
+            "triangle_count": _packed_or_sequence_count(workload["triangles"]),
+            "ray_count": _packed_or_sequence_count(workload["rays"]),
+            "hit_stream_column_schema": list(rt.GENERIC_DEVICE_RESIDENT_HIT_STREAM_COLUMNS),
+            "typed_primitive_payload_column_schema": list(rt.GENERIC_TYPED_PRIMITIVE_PAYLOAD_COLUMNS),
+            "hit_stream_row_count": int(hit_stream.get("row_count", 0)),
+            "hit_stream_overflow": bool(hit_stream.get("overflow", False)),
+            "hit_event_count_before_dedup": hit_stream.get("hit_event_count_before_dedup"),
+            "continuation_execution_path": execution_path,
+            "generic_primitive_used": hit_stream.get("primitive"),
+            "python_rebuilt_primitive_row_table": False,
+            "materializes_host_rows_for_legacy_bridge": bool(
+                handoff_metadata["materializes_host_rows_for_bridge"]
+            ),
+            "engine_boundary": (
+                "Prepared table encoding, payload columns, and OptiX scene reuse are app/runtime "
+                "orchestration. Native execution still owns only generic RT traversal and hit "
+                "columns, while Triton performs generic grouped continuation."
+            ),
+            "claim_boundary": (
+                "This prepared v2.5 path measures steady-state query/handoff/continuation after "
+                "app-owned workload, payload, and scene preparation. It does not authorize true "
+                "zero-copy, whole-app speedup, or RayDB reproduction claims."
+            ),
+        },
+    }
+
+
 def require_optix_partner_resident_experimental_backend() -> Any:
     try:
         import torch
@@ -2179,6 +2444,7 @@ def run_suite(
         PAPER_RT_EMBREE_HIT_STREAM_TRITON_BACKEND,
         PAPER_RT_OPTIX_HIT_STREAM_TRITON_BACKEND,
         PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_BACKEND,
+        PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_PREPARED_BACKEND,
     ):
         modes = PAPER_RT_RESULT_MODES
     else:
@@ -2239,6 +2505,7 @@ def run_suite(
                             PAPER_RT_EMBREE_HIT_STREAM_TRITON_BACKEND,
                             PAPER_RT_OPTIX_HIT_STREAM_TRITON_BACKEND,
                             PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_BACKEND,
+                            PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_PREPARED_BACKEND,
                         )
                         else (
                             "Experimental OptiX partner-resident count/sum/min/max plus composite avg_as_sum_count "

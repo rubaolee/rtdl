@@ -52,6 +52,64 @@ def _median(values: list[float]) -> float:
     return float(statistics.median(values)) if values else 0.0
 
 
+def _summarize_result(
+    *,
+    backend: str,
+    mode: str,
+    row_count: int,
+    group_count: int,
+    repeats: int,
+    warmup: int,
+    timings: list[float],
+    result: dict[str, object],
+) -> dict[str, object]:
+    metadata = result.get("metadata", {})
+    handoff = metadata.get("hit_stream_handoff", {})
+    return {
+        "backend": backend,
+        "mode": mode,
+        "row_count": row_count,
+        "group_count": group_count,
+        "repeats": repeats,
+        "warmup": warmup,
+        "median_wall_sec": _median(timings),
+        "all_wall_sec": timings,
+        "matches_cpu_reference": bool(result.get("matches_cpu_reference")),
+        "result_row_count": len(result.get("rows", ())),
+        "metadata_timings": metadata.get("timings", {}),
+        "phase_timing": metadata.get("v2_4_phase_timing", {}),
+        "native_symbol": metadata.get("native_symbol"),
+        "rt_core_accelerated": metadata.get("rt_core_accelerated"),
+        "native_device_hit_stream_columns_ready": metadata.get("native_device_hit_stream_columns_ready"),
+        "native_device_column_path_used": metadata.get("native_device_column_path_used"),
+        "host_row_bridge_bypassed": metadata.get("host_row_bridge_bypassed"),
+        "true_zero_copy_authorized": metadata.get("true_zero_copy_authorized"),
+        "hit_stream_row_count": metadata.get("hit_stream_row_count"),
+        "hit_stream_overflow": metadata.get("hit_stream_overflow"),
+        "continuation_execution_path": metadata.get("continuation_execution_path"),
+        "prepared_steady_state": metadata.get("prepared_steady_state"),
+        "prepared_payload_columns_reused": metadata.get("prepared_payload_columns_reused"),
+        "prepared_optix_scene_reused": metadata.get("prepared_optix_scene_reused"),
+        "handoff_gather_mode": handoff.get("gather_mode"),
+        "handoff_requested_gather_partner": handoff.get("requested_gather_partner"),
+        "handoff_selected_gather_partner": handoff.get("selected_gather_partner"),
+        "handoff_materializes_host_rows_for_bridge": handoff.get("materializes_host_rows_for_bridge"),
+        "handoff_native_device_column_output_proven_on_hardware": (
+            handoff.get("native_device_column_output_proven_on_hardware")
+        ),
+        "handoff_removes_host_materialization_bottleneck": (
+            handoff.get("removes_host_materialization_bottleneck")
+        ),
+        "torch_carrier_adapter": handoff.get("torch_carrier_adapter"),
+        "torch_carrier_execution": handoff.get("torch_carrier_execution"),
+        "torch_carrier_same_pointer_evidence_observed": (
+            (handoff.get("torch_carrier_execution") or {}).get("same_pointer_evidence_observed")
+        ),
+        "neutral_buffer_handoff_summary": handoff.get("neutral_buffer_handoff_summary"),
+        "claim_boundary": metadata.get("claim_boundary"),
+    }
+
+
 def _run_case(
     *,
     backend: str,
@@ -61,6 +119,39 @@ def _run_case(
     repeats: int,
     warmup: int,
 ) -> dict[str, object]:
+    if backend == raydb.PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_PREPARED_BACKEND:
+        print(
+            f"[goal2685] starting prepared backend={backend} mode={mode} rows={row_count} "
+            f"warmup={warmup} repeats={repeats}",
+            flush=True,
+        )
+        result = raydb.run_result_mode(
+            mode,
+            backend=backend,
+            fixture_kind="generated",
+            generated_rows=row_count,
+            generated_groups=group_count,
+            repeat=repeats,
+            warmup=warmup,
+        )
+        metadata = result.get("metadata", {})
+        timings = [float(value) for value in metadata.get("prepared_iteration_wall_sec", ())]
+        print(
+            f"[goal2685] prepared backend={backend} mode={mode} rows={row_count} "
+            f"median={_median(timings):.6f}s",
+            flush=True,
+        )
+        return _summarize_result(
+            backend=backend,
+            mode=mode,
+            row_count=row_count,
+            group_count=group_count,
+            repeats=repeats,
+            warmup=warmup,
+            timings=timings,
+            result=result,
+        )
+
     timings: list[float] = []
     last = None
     for iteration in range(warmup + repeats):
@@ -87,48 +178,16 @@ def _run_case(
                 flush=True,
             )
     assert last is not None
-    metadata = last.get("metadata", {})
-    handoff = metadata.get("hit_stream_handoff", {})
-    return {
-        "backend": backend,
-        "mode": mode,
-        "row_count": row_count,
-        "group_count": group_count,
-        "repeats": repeats,
-        "warmup": warmup,
-        "median_wall_sec": _median(timings),
-        "all_wall_sec": timings,
-        "matches_cpu_reference": bool(last.get("matches_cpu_reference")),
-        "result_row_count": len(last.get("rows", ())),
-        "metadata_timings": metadata.get("timings", {}),
-        "phase_timing": metadata.get("v2_4_phase_timing", {}),
-        "native_symbol": metadata.get("native_symbol"),
-        "rt_core_accelerated": metadata.get("rt_core_accelerated"),
-        "native_device_hit_stream_columns_ready": metadata.get("native_device_hit_stream_columns_ready"),
-        "native_device_column_path_used": metadata.get("native_device_column_path_used"),
-        "host_row_bridge_bypassed": metadata.get("host_row_bridge_bypassed"),
-        "true_zero_copy_authorized": metadata.get("true_zero_copy_authorized"),
-        "hit_stream_row_count": metadata.get("hit_stream_row_count"),
-        "hit_stream_overflow": metadata.get("hit_stream_overflow"),
-        "continuation_execution_path": metadata.get("continuation_execution_path"),
-        "handoff_gather_mode": handoff.get("gather_mode"),
-        "handoff_requested_gather_partner": handoff.get("requested_gather_partner"),
-        "handoff_selected_gather_partner": handoff.get("selected_gather_partner"),
-        "handoff_materializes_host_rows_for_bridge": handoff.get("materializes_host_rows_for_bridge"),
-        "handoff_native_device_column_output_proven_on_hardware": (
-            handoff.get("native_device_column_output_proven_on_hardware")
-        ),
-        "handoff_removes_host_materialization_bottleneck": (
-            handoff.get("removes_host_materialization_bottleneck")
-        ),
-        "torch_carrier_adapter": handoff.get("torch_carrier_adapter"),
-        "torch_carrier_execution": handoff.get("torch_carrier_execution"),
-        "torch_carrier_same_pointer_evidence_observed": (
-            (handoff.get("torch_carrier_execution") or {}).get("same_pointer_evidence_observed")
-        ),
-        "neutral_buffer_handoff_summary": handoff.get("neutral_buffer_handoff_summary"),
-        "claim_boundary": metadata.get("claim_boundary"),
-    }
+    return _summarize_result(
+        backend=backend,
+        mode=mode,
+        row_count=row_count,
+        group_count=group_count,
+        repeats=repeats,
+        warmup=warmup,
+        timings=timings,
+        result=last,
+    )
 
 
 def run(args: argparse.Namespace) -> dict[str, object]:
