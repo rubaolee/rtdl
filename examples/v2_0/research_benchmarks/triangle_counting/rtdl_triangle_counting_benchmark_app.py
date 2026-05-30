@@ -220,6 +220,46 @@ def command_plan_payload() -> dict[str, Any]:
     }
 
 
+def v2_5_plan_payload() -> dict[str, Any]:
+    manifest = rt.v2_5_tiered_benchmark_manifest()
+    row = next(app for app in manifest["apps"] if app["app_id"] == BENCHMARK_NAME)
+    return {
+        "app": BENCHMARK_NAME,
+        "mode": "v2_5_plan",
+        "tier": row["tier"],
+        "benchmark_track": row["benchmark_track"],
+        "preferred_partner": "triton",
+        "status": "tier_a_same_contract_plan_not_yet_integrated",
+        "current_fast_paths": {
+            "rt_graph_2a1": (
+                "generic OptiX/Embree ray-triangle weighted any-hit summary; "
+                "optional CuPy path builds device geometry but is not a v2.5 Triton continuation"
+            ),
+            "rt_graph_1a2": (
+                "generic OptiX/Embree ray-triangle hit-count summary; "
+                "optional CuPy path builds device geometry but is not a v2.5 Triton continuation"
+            ),
+        },
+        "v2_5_required_operations": row["required_partner_operations"],
+        "same_contract_opponent": row["same_contract_opponent"],
+        "canonical_harness_status": row["canonical_harness_status"],
+        "pod_evidence_status": row["pod_evidence_status"],
+        "next_action": row["next_action"],
+        "integration_decision": (
+            "Do not relabel the existing native scalar summary as Triton. The v2.5 "
+            "port must expose a same-contract row or summary boundary that feeds "
+            "generic Triton segmented count/sum or compact-mask continuation, then "
+            "compare against the existing CuPy/native same-contract path."
+        ),
+        "claim_boundary": {
+            **CLAIM_BOUNDARY,
+            "v2_5_triton_benchmark_integrated": False,
+            "triton_speedup_claim_authorized": False,
+            "same_contract_parity_claim_authorized": False,
+        },
+    }
+
+
 def describe_rt_graph_v2_4_prepared_session(
     *,
     backend: str,
@@ -1353,6 +1393,8 @@ def run_app(
         )
     if mode == "command_plan":
         return command_plan_payload()
+    if mode == "v2_5_plan":
+        return v2_5_plan_payload()
     if mode == "rt_graph_contract":
         return rt_graph_contract_payload(
             fixture=fixture,
@@ -1403,6 +1445,7 @@ def main(argv: list[str] | None = None) -> int:
             "scope",
             "run",
             "command_plan",
+            "v2_5_plan",
             "rt_graph_contract",
             "rt_graph_rtdl_adapter",
             "rt_graph_2a1_generic_rt",
