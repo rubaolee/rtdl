@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from time import perf_counter
-from typing import Any, Mapping
+from typing import Any, Mapping, Sequence
 
 from .partner_continuation_protocol import RtdlPartnerContinuationSpec
 from .partner_continuation_protocol import PartnerContinuationOverflowError
@@ -257,6 +257,7 @@ def run_triton_partner_continuation(
     block_size: int = 256,
     group_id_bounds_validation_mode: str = TRITON_GROUP_ID_BOUNDS_VALIDATION_MODE,
     allow_reference_fallback: bool = False,
+    primitive_payload_descriptors: Sequence[Mapping[str, Any]] = (),
 ) -> dict[str, object]:
     """Run a Triton v2.5 continuation when a preview kernel exists.
 
@@ -267,126 +268,141 @@ def run_triton_partner_continuation(
 
     if operation not in V2_5_PARTNER_CONTINUATION_OPERATION_NAMES:
         raise ValueError(f"unsupported v2.5 partner continuation operation: {operation}")
+
+    def with_payload_plan(result: dict[str, object], execution_status: str = "completed") -> dict[str, object]:
+        if not primitive_payload_descriptors:
+            return result
+        from .hit_stream_handoff import attach_primitive_payload_partner_continuation_metadata
+
+        return attach_primitive_payload_partner_continuation_metadata(
+            result,
+            operation=operation,
+            partner="triton",
+            descriptors=primitive_payload_descriptors,
+            entrypoint="run_triton_partner_continuation",
+            execution_status=execution_status,
+        )
+
     if operation == TRITON_SEGMENTED_COUNT_I64_OPERATION:
         try:
-            return run_triton_segmented_count_i64(
+            return with_payload_plan(run_triton_segmented_count_i64(
                 inputs["group_ids"],
                 group_count=int(inputs["group_count"]),
                 block_size=block_size,
                 group_id_bounds_validation_mode=group_id_bounds_validation_mode,
-            )
+            ))
         except (ModuleNotFoundError, RuntimeError) as exc:
             if allow_reference_fallback and _is_triton_environment_error(exc):
-                return _triton_reference_fallback(operation, inputs, str(exc))
+                return with_payload_plan(_triton_reference_fallback(operation, inputs, str(exc)), "reference_fallback")
             raise
     if operation == TRITON_SEGMENTED_SUM_F64_OPERATION:
         try:
-            return run_triton_segmented_sum_f64(
+            return with_payload_plan(run_triton_segmented_sum_f64(
                 inputs["group_ids"],
                 inputs["values"],
                 group_count=int(inputs["group_count"]),
                 block_size=block_size,
                 group_id_bounds_validation_mode=group_id_bounds_validation_mode,
-            )
+            ))
         except (ModuleNotFoundError, RuntimeError) as exc:
             if allow_reference_fallback and _is_triton_environment_error(exc):
-                return _triton_reference_fallback(operation, inputs, str(exc))
+                return with_payload_plan(_triton_reference_fallback(operation, inputs, str(exc)), "reference_fallback")
             raise
     if operation == TRITON_GROUPED_VECTOR_SUM_F64X2_OPERATION:
         try:
-            return run_triton_grouped_vector_sum_f64x2(
+            return with_payload_plan(run_triton_grouped_vector_sum_f64x2(
                 inputs["group_ids"],
                 inputs["values_x"],
                 inputs["values_y"],
                 group_count=int(inputs["group_count"]),
                 block_size=block_size,
                 group_id_bounds_validation_mode=group_id_bounds_validation_mode,
-            )
+            ))
         except (ModuleNotFoundError, RuntimeError) as exc:
             if allow_reference_fallback and _is_triton_environment_error(exc):
-                return _triton_reference_fallback(operation, inputs, str(exc))
+                return with_payload_plan(_triton_reference_fallback(operation, inputs, str(exc)), "reference_fallback")
             raise
     if operation == TRITON_SEGMENTED_MIN_F64_OPERATION:
         try:
-            return run_triton_segmented_min_f64(
+            return with_payload_plan(run_triton_segmented_min_f64(
                 inputs["group_ids"],
                 inputs["values"],
                 group_count=int(inputs["group_count"]),
                 block_size=block_size,
                 group_id_bounds_validation_mode=group_id_bounds_validation_mode,
-            )
+            ))
         except (ModuleNotFoundError, RuntimeError) as exc:
             if allow_reference_fallback and _is_triton_environment_error(exc):
-                return _triton_reference_fallback(operation, inputs, str(exc))
+                return with_payload_plan(_triton_reference_fallback(operation, inputs, str(exc)), "reference_fallback")
             raise
     if operation == TRITON_SEGMENTED_MAX_F64_OPERATION:
         try:
-            return run_triton_segmented_max_f64(
+            return with_payload_plan(run_triton_segmented_max_f64(
                 inputs["group_ids"],
                 inputs["values"],
                 group_count=int(inputs["group_count"]),
                 block_size=block_size,
                 group_id_bounds_validation_mode=group_id_bounds_validation_mode,
-            )
+            ))
         except (ModuleNotFoundError, RuntimeError) as exc:
             if allow_reference_fallback and _is_triton_environment_error(exc):
-                return _triton_reference_fallback(operation, inputs, str(exc))
+                return with_payload_plan(_triton_reference_fallback(operation, inputs, str(exc)), "reference_fallback")
             raise
     if operation == TRITON_COMPACT_MASK_I64_OPERATION:
         try:
-            return run_triton_compact_mask_i64(
+            return with_payload_plan(run_triton_compact_mask_i64(
                 inputs["values"],
                 inputs["mask"],
                 block_size=block_size,
-            )
+            ))
         except (ModuleNotFoundError, RuntimeError) as exc:
             if allow_reference_fallback and _is_triton_environment_error(exc):
-                return _triton_reference_fallback(operation, inputs, str(exc))
+                return with_payload_plan(_triton_reference_fallback(operation, inputs, str(exc)), "reference_fallback")
             raise
     if operation == TRITON_EDGE_LIST_COMPONENTS_I64_OPERATION:
         try:
-            return run_triton_edge_list_components_i64(
+            return with_payload_plan(run_triton_edge_list_components_i64(
                 inputs["source_ids"],
                 inputs["target_ids"],
                 node_count=int(inputs["node_count"]),
                 max_iterations=int(inputs["max_iterations"]),
                 block_size=block_size,
-            )
+            ))
         except (ModuleNotFoundError, RuntimeError) as exc:
             if allow_reference_fallback and _is_triton_environment_error(exc):
-                return _triton_reference_fallback(operation, inputs, str(exc))
+                return with_payload_plan(_triton_reference_fallback(operation, inputs, str(exc)), "reference_fallback")
             raise
     if operation == TRITON_GROUPED_ARGMIN_F64_OPERATION:
         try:
-            return run_triton_grouped_argmin_f64(
+            return with_payload_plan(run_triton_grouped_argmin_f64(
                 inputs["group_ids"],
                 inputs["item_ids"],
                 inputs["scores"],
                 group_count=int(inputs["group_count"]),
                 block_size=block_size,
                 group_id_bounds_validation_mode=group_id_bounds_validation_mode,
-            )
+            ))
         except (ModuleNotFoundError, RuntimeError) as exc:
             if allow_reference_fallback and _is_triton_environment_error(exc):
-                return _triton_reference_fallback(operation, inputs, str(exc))
+                return with_payload_plan(_triton_reference_fallback(operation, inputs, str(exc)), "reference_fallback")
             raise
     if operation == TRITON_GROUPED_ARGMAX_F64_OPERATION:
         try:
-            return run_triton_grouped_argmax_f64(
+            return with_payload_plan(run_triton_grouped_argmax_f64(
                 inputs["group_ids"],
                 inputs["item_ids"],
                 inputs["scores"],
                 group_count=int(inputs["group_count"]),
                 block_size=block_size,
                 group_id_bounds_validation_mode=group_id_bounds_validation_mode,
-            )
+            ))
         except (ModuleNotFoundError, RuntimeError) as exc:
             if allow_reference_fallback and _is_triton_environment_error(exc):
-                return _triton_reference_fallback(operation, inputs, str(exc))
+                return with_payload_plan(_triton_reference_fallback(operation, inputs, str(exc)), "reference_fallback")
             raise
     if operation == TRITON_GROUPED_TOPK_F64_OPERATION:
         try:
-            return run_triton_grouped_topk_f64(
+            return with_payload_plan(run_triton_grouped_topk_f64(
                 inputs["group_ids"],
                 inputs["item_ids"],
                 inputs["scores"],
@@ -394,14 +410,14 @@ def run_triton_partner_continuation(
                 k=int(inputs["k"]),
                 block_size=block_size,
                 group_id_bounds_validation_mode=group_id_bounds_validation_mode,
-            )
+            ))
         except (ModuleNotFoundError, RuntimeError) as exc:
             if allow_reference_fallback and _is_triton_environment_error(exc):
-                return _triton_reference_fallback(operation, inputs, str(exc))
+                return with_payload_plan(_triton_reference_fallback(operation, inputs, str(exc)), "reference_fallback")
             raise
     if operation == TRITON_BOUNDED_COLLECT_FINALIZE_I64_OPERATION:
         try:
-            return run_triton_bounded_collect_finalize_i64(
+            return with_payload_plan(run_triton_bounded_collect_finalize_i64(
                 inputs["group_ids"],
                 inputs["item_ids"],
                 group_count=int(inputs["group_count"]),
@@ -409,17 +425,20 @@ def run_triton_partner_continuation(
                 total_row_capacity=inputs.get("total_row_capacity"),
                 block_size=block_size,
                 group_id_bounds_validation_mode=group_id_bounds_validation_mode,
-            )
+            ))
         except (ModuleNotFoundError, RuntimeError) as exc:
             if allow_reference_fallback and _is_triton_environment_error(exc):
-                return _triton_reference_fallback(operation, inputs, str(exc))
+                return with_payload_plan(_triton_reference_fallback(operation, inputs, str(exc)), "reference_fallback")
             raise
     if not allow_reference_fallback:
         raise ValueError(
             f"Triton continuation `{operation}` is descriptor-only; "
             "pass allow_reference_fallback=True for conformance-only execution"
         )
-    return _triton_reference_fallback(operation, inputs, "triton_descriptor_only_operation")
+    return with_payload_plan(
+        _triton_reference_fallback(operation, inputs, "triton_descriptor_only_operation"),
+        "reference_fallback",
+    )
 
 
 def _triton_reference_fallback(

@@ -114,6 +114,9 @@ GENERIC_PRIMITIVE_PAYLOAD_CONTINUATION_PLAN_STATUSES = (
     "reference_contract",
     "fallback_required",
 )
+GENERIC_PRIMITIVE_PAYLOAD_CONTINUATION_ENTRYPOINT_METADATA_VERSION = (
+    "rtdl.primitive_payload_continuation_entrypoint.v2.5"
+)
 
 
 @dataclass(frozen=True)
@@ -393,6 +396,79 @@ def plan_primitive_payload_partner_continuation(
     }
 
 
+def describe_primitive_payload_partner_continuation_entrypoint(
+    *,
+    operation: str,
+    partner: str,
+    descriptors: Sequence[Mapping[str, Any] | RtdlPrimitivePayloadColumnDescriptor],
+    entrypoint: str,
+    execution_status: str = "planned_not_executed",
+) -> dict[str, object]:
+    """Describe how a concrete continuation entrypoint resolves a payload plan."""
+
+    plan = plan_primitive_payload_partner_continuation(operation, partner, descriptors)
+    return {
+        "contract_version": GENERIC_PRIMITIVE_PAYLOAD_CONTINUATION_ENTRYPOINT_METADATA_VERSION,
+        "entrypoint": str(entrypoint),
+        "execution_status": str(execution_status),
+        "operation": str(plan["operation"]),
+        "requested_partner": str(plan["requested_partner"]),
+        "resolved_partner": str(plan["resolved_partner"]),
+        "support_status": str(plan["support_status"]),
+        "plan_status": str(plan["plan_status"]),
+        "runtime_action": _primitive_payload_entrypoint_runtime_action(plan),
+        "can_execute_preview": bool(plan["can_execute_preview"]),
+        "fallback_required": bool(plan["fallback_required"]),
+        "fallback_reasons": tuple(plan["fallback_reasons"]),
+        "descriptor_count": int(plan["descriptor_count"]),
+        "stream_ordering_preserved": bool(plan["stream_ordering_preserved"]),
+        "primitive_payload_continuation_plan": plan,
+        "rt_traversal_replacement_allowed": False,
+        "true_zero_copy_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "claim_boundary": (
+            "This metadata attaches a primitive-payload planner decision to a "
+            "specific continuation entrypoint. It is an explain/fail-closed "
+            "record only; it does not promote a partner path, replace RT "
+            "traversal, or authorize public speedup or true-zero-copy claims."
+        ),
+    }
+
+
+def attach_primitive_payload_partner_continuation_metadata(
+    result: Mapping[str, Any],
+    *,
+    operation: str,
+    partner: str,
+    descriptors: Sequence[Mapping[str, Any] | RtdlPrimitivePayloadColumnDescriptor],
+    entrypoint: str,
+    execution_status: str = "completed",
+) -> dict[str, object]:
+    """Return a continuation result with explicit primitive-payload plan metadata."""
+
+    output = dict(result)
+    entrypoint_metadata = describe_primitive_payload_partner_continuation_entrypoint(
+        operation=operation,
+        partner=partner,
+        descriptors=descriptors,
+        entrypoint=entrypoint,
+        execution_status=execution_status,
+    )
+    output["primitive_payload_continuation_entrypoint"] = entrypoint_metadata
+    output["primitive_payload_continuation_plan"] = entrypoint_metadata[
+        "primitive_payload_continuation_plan"
+    ]
+    output["primitive_payload_planner_fallback_required"] = bool(
+        entrypoint_metadata["fallback_required"]
+    )
+    output["primitive_payload_planner_fallback_reasons"] = tuple(
+        entrypoint_metadata["fallback_reasons"]
+    )
+    output["true_zero_copy_authorized"] = False
+    output["public_speedup_claim_authorized"] = False
+    return output
+
+
 def _primitive_payload_descriptor_metadata(
     descriptor: Mapping[str, Any] | RtdlPrimitivePayloadColumnDescriptor,
 ) -> dict[str, Any]:
@@ -402,6 +478,18 @@ def _primitive_payload_descriptor_metadata(
     if metadata.get("contract_version") != GENERIC_PRIMITIVE_PAYLOAD_COLUMN_DESCRIPTOR_VERSION:
         raise ValueError("primitive payload continuation planner requires descriptor metadata")
     return metadata
+
+
+def _primitive_payload_entrypoint_runtime_action(plan: Mapping[str, Any]) -> str:
+    plan_status = str(plan["plan_status"])
+    support_status = str(plan["support_status"])
+    if plan_status == "accepted_preview":
+        return "execute_preview_with_explicit_descriptor_plan"
+    if plan_status == "reference_contract":
+        return "execute_reference_contract"
+    if support_status == "descriptor_only":
+        return "descriptor_only_fail_closed_or_reference_fallback"
+    return "fallback_required_before_partner_execution"
 
 
 @dataclass(frozen=True)

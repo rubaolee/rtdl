@@ -503,6 +503,8 @@ def plan_v2_5_partner_continuation(
 def execute_v2_5_partner_continuation_reference(
     operation: str,
     inputs: Mapping[str, object],
+    *,
+    primitive_payload_descriptors: Sequence[Mapping[str, Any]] = (),
 ) -> dict[str, object]:
     """CPU/Python reference semantics for v2.5 generic continuation ops."""
 
@@ -612,7 +614,7 @@ def execute_v2_5_partner_continuation_reference(
         "promoted_performance_path": False,
         "same_phase_contract_as_basis": False,
     }
-    return {
+    result: dict[str, object] = {
         "contract_version": V2_5_PARTNER_CONTINUATION_VERSION,
         "operation": operation,
         "partner": V2_5_REFERENCE_PARTNER,
@@ -621,6 +623,18 @@ def execute_v2_5_partner_continuation_reference(
         "promoted_performance_path": False,
         "rt_core_speedup_claim_authorized": False,
     }
+    if primitive_payload_descriptors:
+        from .hit_stream_handoff import attach_primitive_payload_partner_continuation_metadata
+
+        result = attach_primitive_payload_partner_continuation_metadata(
+            result,
+            operation=operation,
+            partner=V2_5_REFERENCE_PARTNER,
+            descriptors=primitive_payload_descriptors,
+            entrypoint="execute_v2_5_partner_continuation_reference",
+            execution_status="completed_reference",
+        )
+    return result
 
 
 def _bounded_collect(
