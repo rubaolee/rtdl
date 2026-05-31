@@ -119,6 +119,12 @@ Observation:
   caller-owned lifetime in the handoff metadata, but it remains
   host-synchronized before partner consumption and does not authorize a true
   zero-copy or public speedup claim.
+- Goal2758 measured that reusable output buffers do reduce the narrow
+  output-allocation overhead on the RTX A5000 pod: total median reusable/native
+  ratios were about `0.90x`, `0.97x`, `0.95x`, `0.73x`, and `0.90x` for
+  1,024 through 524,288 generic hit rows. This is an internal primitive/runtime
+  probe, not a public speedup claim, and it does not close the larger
+  hit-stream-continuation gap from Goal2754.
 
 Future work:
 

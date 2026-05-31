@@ -1,0 +1,693 @@
+{
+  "claim_boundary": {
+    "compares_output_allocation_strategy_only": true,
+    "host_synchronized_before_consumer": true,
+    "public_speedup_claim_authorized": false,
+    "true_zero_copy_authorized": false
+  },
+  "goal": "goal2758",
+  "rtdl_commit": "2f7579e8",
+  "rtdl_optix_library": "/root/rtdl/build/librtdl_optix.so",
+  "sizes": {
+    "1024": {
+      "caller_owned_reusable": {
+        "samples": [
+          {
+            "iteration": 0,
+            "native_call_sec": 0.00013559008948504925,
+            "overflow": false,
+            "row_count": 1024,
+            "total_sec": 0.00016732700169086456,
+            "traversal_sec": 3.6587e-05
+          },
+          {
+            "iteration": 1,
+            "native_call_sec": 0.00013097398914396763,
+            "overflow": false,
+            "row_count": 1024,
+            "total_sec": 0.0001653861254453659,
+            "traversal_sec": 3.4873e-05
+          },
+          {
+            "iteration": 2,
+            "native_call_sec": 0.0001293530222028494,
+            "overflow": false,
+            "row_count": 1024,
+            "total_sec": 0.00016059400513768196,
+            "traversal_sec": 3.5899e-05
+          },
+          {
+            "iteration": 3,
+            "native_call_sec": 0.00012936489656567574,
+            "overflow": false,
+            "row_count": 1024,
+            "total_sec": 0.0001593329943716526,
+            "traversal_sec": 3.4704e-05
+          },
+          {
+            "iteration": 4,
+            "native_call_sec": 0.0001375460997223854,
+            "overflow": false,
+            "row_count": 1024,
+            "total_sec": 0.0001680420245975256,
+            "traversal_sec": 3.4712e-05
+          },
+          {
+            "iteration": 5,
+            "native_call_sec": 0.0001314990222454071,
+            "overflow": false,
+            "row_count": 1024,
+            "total_sec": 0.00016147596761584282,
+            "traversal_sec": 3.548e-05
+          },
+          {
+            "iteration": 6,
+            "native_call_sec": 0.00012965896166861057,
+            "overflow": false,
+            "row_count": 1024,
+            "total_sec": 0.0001586370635777712,
+            "traversal_sec": 3.5807e-05
+          },
+          {
+            "iteration": 7,
+            "native_call_sec": 0.00013590487651526928,
+            "overflow": false,
+            "row_count": 1024,
+            "total_sec": 0.0001664480660110712,
+            "traversal_sec": 3.441e-05
+          },
+          {
+            "iteration": 8,
+            "native_call_sec": 0.00012807780876755714,
+            "overflow": false,
+            "row_count": 1024,
+            "total_sec": 0.00015865894965827465,
+            "traversal_sec": 3.5174e-05
+          },
+          {
+            "iteration": 9,
+            "native_call_sec": 0.00012762099504470825,
+            "overflow": false,
+            "row_count": 1024,
+            "total_sec": 0.0001566458959132433,
+            "traversal_sec": 3.4649e-05
+          },
+          {
+            "iteration": 10,
+            "native_call_sec": 0.00013082986697554588,
+            "overflow": false,
+            "row_count": 1024,
+            "total_sec": 0.00016555096954107285,
+            "traversal_sec": 3.8701e-05
+          },
+          {
+            "iteration": 11,
+            "native_call_sec": 0.00012670899741351604,
+            "overflow": false,
+            "row_count": 1024,
+            "total_sec": 0.00015657907351851463,
+            "traversal_sec": 3.5003e-05
+          }
+        ],
+        "summary": {
+          "max_total_sec": 0.0001680420245975256,
+          "median_native_call_sec": 0.00013024441432207823,
+          "median_total_sec": 0.0001610349863767624,
+          "median_traversal_sec": 3.5088499999999994e-05,
+          "min_total_sec": 0.00015657907351851463,
+          "row_count_max": 1024,
+          "row_count_min": 1024,
+          "sample_count": 12
+        }
+      },
+      "native_owned": {
+        "samples": [
+          {
+            "iteration": 0,
+            "native_call_sec": 0.000135085079818964,
+            "overflow": false,
+            "row_count": 1024,
+            "total_sec": 0.00020546792075037956,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 1,
+            "native_call_sec": 0.00013385689817368984,
+            "overflow": false,
+            "row_count": 1024,
+            "total_sec": 0.000190013088285923,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 2,
+            "native_call_sec": 0.00012984289787709713,
+            "overflow": false,
+            "row_count": 1024,
+            "total_sec": 0.0001816549338400364,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 3,
+            "native_call_sec": 0.00012797093950212002,
+            "overflow": false,
+            "row_count": 1024,
+            "total_sec": 0.00017757387831807137,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 4,
+            "native_call_sec": 0.0001275970134884119,
+            "overflow": false,
+            "row_count": 1024,
+            "total_sec": 0.00017481204122304916,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 5,
+            "native_call_sec": 0.0001259970013052225,
+            "overflow": false,
+            "row_count": 1024,
+            "total_sec": 0.0001729039940983057,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 6,
+            "native_call_sec": 0.00013080192729830742,
+            "overflow": false,
+            "row_count": 1024,
+            "total_sec": 0.00017885607667267323,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 7,
+            "native_call_sec": 0.00012643891386687756,
+            "overflow": false,
+            "row_count": 1024,
+            "total_sec": 0.0001740048173815012,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 8,
+            "native_call_sec": 0.00013204594142735004,
+            "overflow": false,
+            "row_count": 1024,
+            "total_sec": 0.00018404587171971798,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 9,
+            "native_call_sec": 0.00012701889500021935,
+            "overflow": false,
+            "row_count": 1024,
+            "total_sec": 0.00017505791038274765,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 10,
+            "native_call_sec": 0.00012556416913866997,
+            "overflow": false,
+            "row_count": 1024,
+            "total_sec": 0.00017854291945695877,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 11,
+            "native_call_sec": 0.00012826407328248024,
+            "overflow": false,
+            "row_count": 1024,
+            "total_sec": 0.0001754730474203825,
+            "traversal_sec": 0.0
+          }
+        ],
+        "summary": {
+          "max_total_sec": 0.00020546792075037956,
+          "median_native_call_sec": 0.00012811750639230013,
+          "median_total_sec": 0.00017805839888751507,
+          "median_traversal_sec": 0.0,
+          "min_total_sec": 0.0001729039940983057,
+          "row_count_max": 1024,
+          "row_count_min": 1024,
+          "sample_count": 12
+        }
+      },
+      "ratios": {
+        "reusable_vs_native_owned_native_call": 1.016601227963846,
+        "reusable_vs_native_owned_total": 0.9043942177560134
+      }
+    },
+    "32768": {
+      "caller_owned_reusable": {
+        "samples": [
+          {
+            "iteration": 0,
+            "native_call_sec": 0.0008879781235009432,
+            "overflow": false,
+            "row_count": 32768,
+            "total_sec": 0.0009532850235700607,
+            "traversal_sec": 6.0524e-05
+          },
+          {
+            "iteration": 1,
+            "native_call_sec": 0.0008894330821931362,
+            "overflow": false,
+            "row_count": 32768,
+            "total_sec": 0.0009448241908103228,
+            "traversal_sec": 6.018e-05
+          },
+          {
+            "iteration": 2,
+            "native_call_sec": 0.0008953700307756662,
+            "overflow": false,
+            "row_count": 32768,
+            "total_sec": 0.0009503019973635674,
+            "traversal_sec": 6.0553e-05
+          },
+          {
+            "iteration": 3,
+            "native_call_sec": 0.0008990659844130278,
+            "overflow": false,
+            "row_count": 32768,
+            "total_sec": 0.0009542959742248058,
+            "traversal_sec": 6.0663e-05
+          },
+          {
+            "iteration": 4,
+            "native_call_sec": 0.0008963278960436583,
+            "overflow": false,
+            "row_count": 32768,
+            "total_sec": 0.0009511199314147234,
+            "traversal_sec": 6.0032e-05
+          },
+          {
+            "iteration": 5,
+            "native_call_sec": 0.0008907441515475512,
+            "overflow": false,
+            "row_count": 32768,
+            "total_sec": 0.00094360182993114,
+            "traversal_sec": 5.9835e-05
+          },
+          {
+            "iteration": 6,
+            "native_call_sec": 0.0008954228833317757,
+            "overflow": false,
+            "row_count": 32768,
+            "total_sec": 0.000949339009821415,
+            "traversal_sec": 6.0668e-05
+          },
+          {
+            "iteration": 7,
+            "native_call_sec": 0.0008911218028515577,
+            "overflow": false,
+            "row_count": 32768,
+            "total_sec": 0.0009447638876736164,
+            "traversal_sec": 5.9951e-05
+          },
+          {
+            "iteration": 8,
+            "native_call_sec": 0.0008929939940571785,
+            "overflow": false,
+            "row_count": 32768,
+            "total_sec": 0.0009463229216635227,
+            "traversal_sec": 6.0403e-05
+          },
+          {
+            "iteration": 9,
+            "native_call_sec": 0.00089109200052917,
+            "overflow": false,
+            "row_count": 32768,
+            "total_sec": 0.0009438940323889256,
+            "traversal_sec": 5.9655e-05
+          },
+          {
+            "iteration": 10,
+            "native_call_sec": 0.0008914670906960964,
+            "overflow": false,
+            "row_count": 32768,
+            "total_sec": 0.0009446779731661081,
+            "traversal_sec": 6.0164e-05
+          },
+          {
+            "iteration": 11,
+            "native_call_sec": 0.000894918804988265,
+            "overflow": false,
+            "row_count": 32768,
+            "total_sec": 0.0009487101342529058,
+            "traversal_sec": 6.033e-05
+          }
+        ],
+        "summary": {
+          "max_total_sec": 0.0009542959742248058,
+          "median_native_call_sec": 0.0008922305423766375,
+          "median_total_sec": 0.0009475165279582143,
+          "median_traversal_sec": 6.0255e-05,
+          "min_total_sec": 0.00094360182993114,
+          "row_count_max": 32768,
+          "row_count_min": 32768,
+          "sample_count": 12
+        }
+      },
+      "native_owned": {
+        "samples": [
+          {
+            "iteration": 0,
+            "native_call_sec": 0.00103320786729455,
+            "overflow": false,
+            "row_count": 32768,
+            "total_sec": 0.0011106759775429964,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 1,
+            "native_call_sec": 0.000945152947679162,
+            "overflow": false,
+            "row_count": 32768,
+            "total_sec": 0.001019895076751709,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 2,
+            "native_call_sec": 0.0009339528623968363,
+            "overflow": false,
+            "row_count": 32768,
+            "total_sec": 0.001002290053293109,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 3,
+            "native_call_sec": 0.0009251278825104237,
+            "overflow": false,
+            "row_count": 32768,
+            "total_sec": 0.0009933849796652794,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 4,
+            "native_call_sec": 0.0009195429738610983,
+            "overflow": false,
+            "row_count": 32768,
+            "total_sec": 0.0009873530361801386,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 5,
+            "native_call_sec": 0.0009322511032223701,
+            "overflow": false,
+            "row_count": 32768,
+            "total_sec": 0.001002703094854951,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 6,
+            "native_call_sec": 0.0009289118461310863,
+            "overflow": false,
+            "row_count": 32768,
+            "total_sec": 0.001000950112938881,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 7,
+            "native_call_sec": 0.0009230361320078373,
+            "overflow": false,
+            "row_count": 32768,
+            "total_sec": 0.0009938678704202175,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 8,
+            "native_call_sec": 0.0009249979630112648,
+            "overflow": false,
+            "row_count": 32768,
+            "total_sec": 0.0009939579758793116,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 9,
+            "native_call_sec": 0.0009163410868495703,
+            "overflow": false,
+            "row_count": 32768,
+            "total_sec": 0.000983511097729206,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 10,
+            "native_call_sec": 0.0009313980117440224,
+            "overflow": false,
+            "row_count": 32768,
+            "total_sec": 0.000997448805719614,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 11,
+            "native_call_sec": 0.0008976149838417768,
+            "overflow": false,
+            "row_count": 32768,
+            "total_sec": 0.0009623928926885128,
+            "traversal_sec": 0.0
+          }
+        ],
+        "summary": {
+          "max_total_sec": 0.0011106759775429964,
+          "median_native_call_sec": 0.000927019864320755,
+          "median_total_sec": 0.0009957033907994628,
+          "median_traversal_sec": 0.0,
+          "min_total_sec": 0.0009623928926885128,
+          "row_count_max": 32768,
+          "row_count_min": 32768,
+          "sample_count": 12
+        }
+      },
+      "ratios": {
+        "reusable_vs_native_owned_native_call": 0.9624718700395829,
+        "reusable_vs_native_owned_total": 0.9516052036314161
+      }
+    },
+    "8192": {
+      "caller_owned_reusable": {
+        "samples": [
+          {
+            "iteration": 0,
+            "native_call_sec": 0.0002848152071237564,
+            "overflow": false,
+            "row_count": 8192,
+            "total_sec": 0.0003262318205088377,
+            "traversal_sec": 6.6076e-05
+          },
+          {
+            "iteration": 1,
+            "native_call_sec": 0.00027054385282099247,
+            "overflow": false,
+            "row_count": 8192,
+            "total_sec": 0.0003120449837297201,
+            "traversal_sec": 6.1874e-05
+          },
+          {
+            "iteration": 2,
+            "native_call_sec": 0.0002747399266809225,
+            "overflow": false,
+            "row_count": 8192,
+            "total_sec": 0.00031491881236433983,
+            "traversal_sec": 6.5971e-05
+          },
+          {
+            "iteration": 3,
+            "native_call_sec": 0.00030046096071600914,
+            "overflow": false,
+            "row_count": 8192,
+            "total_sec": 0.00034310691989958286,
+            "traversal_sec": 7.057e-05
+          },
+          {
+            "iteration": 4,
+            "native_call_sec": 0.0002660960890352726,
+            "overflow": false,
+            "row_count": 8192,
+            "total_sec": 0.0003062719479203224,
+            "traversal_sec": 5.9198e-05
+          },
+          {
+            "iteration": 5,
+            "native_call_sec": 0.00027349498122930527,
+            "overflow": false,
+            "row_count": 8192,
+            "total_sec": 0.00031495909206569195,
+            "traversal_sec": 6.004e-05
+          },
+          {
+            "iteration": 6,
+            "native_call_sec": 0.0002715820446610451,
+            "overflow": false,
+            "row_count": 8192,
+            "total_sec": 0.0003121062181890011,
+            "traversal_sec": 5.9564e-05
+          },
+          {
+            "iteration": 7,
+            "native_call_sec": 0.0002801499795168638,
+            "overflow": false,
+            "row_count": 8192,
+            "total_sec": 0.0003218860365450382,
+            "traversal_sec": 7.1123e-05
+          },
+          {
+            "iteration": 8,
+            "native_call_sec": 0.0002687058877199888,
+            "overflow": false,
+            "row_count": 8192,
+            "total_sec": 0.00031196000054478645,
+            "traversal_sec": 6.2444e-05
+          },
+          {
+            "iteration": 9,
+            "native_call_sec": 0.000284791924059391,
+            "overflow": false,
+            "row_count": 8192,
+            "total_sec": 0.0003274420741945505,
+            "traversal_sec": 7.1929e-05
+          },
+          {
+            "iteration": 10,
+            "native_call_sec": 0.00027438695542514324,
+            "overflow": false,
+            "row_count": 8192,
+            "total_sec": 0.0003157260362058878,
+            "traversal_sec": 6.6987e-05
+          },
+          {
+            "iteration": 11,
+            "native_call_sec": 0.0002765348181128502,
+            "overflow": false,
+            "row_count": 8192,
+            "total_sec": 0.00031764409504830837,
+            "traversal_sec": 6.8359e-05
+          }
+        ],
+        "summary": {
+          "max_total_sec": 0.00034310691989958286,
+          "median_native_call_sec": 0.0002745634410530329,
+          "median_total_sec": 0.00031534256413578987,
+          "median_traversal_sec": 6.60235e-05,
+          "min_total_sec": 0.0003062719479203224,
+          "row_count_max": 8192,
+          "row_count_min": 8192,
+          "sample_count": 12
+        }
+      },
+      "native_owned": {
+        "samples": [
+          {
+            "iteration": 0,
+            "native_call_sec": 0.0002587689086794853,
+            "overflow": false,
+            "row_count": 8192,
+            "total_sec": 0.000314145116135478,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 1,
+            "native_call_sec": 0.0002637819852679968,
+            "overflow": false,
+            "row_count": 8192,
+            "total_sec": 0.00031896401196718216,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 2,
+            "native_call_sec": 0.00026210304349660873,
+            "overflow": false,
+            "row_count": 8192,
+            "total_sec": 0.000316492049023509,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 3,
+            "native_call_sec": 0.00026671006344258785,
+            "overflow": false,
+            "row_count": 8192,
+            "total_sec": 0.0003224120009690523,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 4,
+            "native_call_sec": 0.00026878993958234787,
+            "overflow": false,
+            "row_count": 8192,
+            "total_sec": 0.0003260618541389704,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 5,
+            "native_call_sec": 0.0002639389131218195,
+            "overflow": false,
+            "row_count": 8192,
+            "total_sec": 0.00031741708517074585,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 6,
+            "native_call_sec": 0.0002721021883189678,
+            "overflow": false,
+            "row_count": 8192,
+            "total_sec": 0.0003331738989800215,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 7,
+            "native_call_sec": 0.0002730530686676502,
+            "overflow": false,
+            "row_count": 8192,
+            "total_sec": 0.000326802022755146,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 8,
+            "native_call_sec": 0.0002720039337873459,
+            "overflow": false,
+            "row_count": 8192,
+            "total_sec": 0.0003316020593047142,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 9,
+            "native_call_sec": 0.0003010961227118969,
+            "overflow": false,
+            "row_count": 8192,
+            "total_sec": 0.00035546300932765007,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 10,
+            "native_call_sec": 0.00027472712099552155,
+            "overflow": false,
+            "row_count": 8192,
+            "total_sec": 0.0003306830767542124,
+            "traversal_sec": 0.0
+          },
+          {
+            "iteration": 11,
+            "native_call_sec": 0.0002710202243179083,
+            "overflow": false,
+            "row_count": 8192,
+            "total_sec": 0.0003245288971811533,
+            "traversal_sec": 0.0
+          }
+        ],
+        "summary": {
+          "max_total_sec": 0.00035546300932765007,
+          "median_native_call_sec": 0.0002699050819501281,
+          "median_total_sec": 0.00032529537566006184,
+          "median_traversal_sec": 0.0,
+          "min_total_sec": 0.000314145116135478,
+          "row_count_max": 8192,
+          "row_count_min": 8192,
+          "sample_count": 12
+        }
+      },
+      "ratios": {
+        "reusable_vs_native_owned_native_call": 1.0172592493229362,
+        "reusable_vs_native_owned_total": 0.9694037718671021
+      }
+    }
+  },
+  "torch_cuda_available": true,
+  "torch_cuda_device": "NVIDIA RTX A5000"
+}
