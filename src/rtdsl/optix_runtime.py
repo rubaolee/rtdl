@@ -4432,6 +4432,7 @@ def _get_last_fixed_radius_neighbors_3d_phase_timings_from_library(lib) -> dict[
             9: "prepared_uniform_cell_ranked_summary_rows",
             10: "prepared_uniform_cell_ranked_summary_aggregate",
             11: "prepared_uniform_cell_ranked_summary_aggregate_f32",
+            12: "prepared_uniform_cell_ranked_summary_aggregate_f32_direct",
         }.get(mode_value, "none"),
         "prepare": float(prepare.value),
         "upload": float(upload.value),

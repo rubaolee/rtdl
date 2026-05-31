@@ -14107,6 +14107,7 @@ struct PreparedFixedRadiusNeighborsGrid3D {
     std::unique_ptr<DevPtr> d_search;
     std::unique_ptr<DevPtr> d_search_exact;
     std::unique_ptr<DevPtr> d_offsets;
+    size_t occupied_cell_count = 0;
     uint32_t grid_x = 0;
     uint32_t grid_y = 0;
     uint32_t grid_z = 0;
@@ -14207,6 +14208,10 @@ struct PreparedFixedRadiusNeighborsGrid3D {
             search_cell[i] = cell;
             counts[cell] += 1u;
         }
+        occupied_cell_count = static_cast<size_t>(std::count_if(
+            counts.begin(),
+            counts.end(),
+            [](uint32_t count) { return count != 0u; }));
 
         cell_offsets.assign(cell_count + 1u, 0u);
         for (size_t cell = 0; cell < cell_count; ++cell) {
@@ -14801,8 +14806,16 @@ static RtdlFixedRadiusRankedNeighborAggregate aggregate_prepared_ranked_fixed_ra
     if (k_max > 64)
         throw std::runtime_error("prepared ranked fixed_radius_neighbors_3d aggregate currently supports k_max <= 64");
 
+    const double mean_search_points_per_occupied_cell =
+        prepared->occupied_cell_count == 0
+            ? 0.0
+            : static_cast<double>(prepared->search_points.size()) /
+                static_cast<double>(prepared->occupied_cell_count);
+    const bool use_direct_float32_aggregate =
+        use_float32_precision && mean_search_points_per_occupied_cell <= 4.0;
+
     RtdlFixedRadiusRankedNeighborAggregate aggregate{0u, 0u, 0u, 0u, 0.0};
-    reset_fixed_radius_3d_phase_timings(use_float32_precision ? 11u : 10u);
+    reset_fixed_radius_3d_phase_timings(use_direct_float32_aggregate ? 12u : use_float32_precision ? 11u : 10u);
     g_optix_last_fixed_radius_3d_prepare_s = 0.0;
     if (query_count == 0 || prepared->search_points.empty()) return aggregate;
 
@@ -14837,7 +14850,7 @@ static RtdlFixedRadiusRankedNeighborAggregate aggregate_prepared_ranked_fixed_ra
     unsigned block = 256;
     unsigned grid = (qc + block - 1u) / block;
     auto t_start_summary = std::chrono::steady_clock::now();
-    if (use_float32_precision) {
+    if (use_direct_float32_aggregate) {
         float min_x = prepared->min_x;
         float min_y = prepared->min_y;
         float min_z = prepared->min_z;
@@ -14863,6 +14876,45 @@ static RtdlFixedRadiusRankedNeighborAggregate aggregate_prepared_ranked_fixed_ra
         CU_CHECK(cuStreamSynchronize(nullptr));
         auto t_end_summary = std::chrono::steady_clock::now();
         g_optix_last_fixed_radius_3d_count_s = seconds_between(t_start_summary, t_end_summary);
+    } else if (use_float32_precision) {
+        DevPtr d_summaries(sizeof(RtdlFixedRadiusRankedNeighborSummary) * query_count);
+        float min_x = prepared->min_x;
+        float min_y = prepared->min_y;
+        float min_z = prepared->min_z;
+        float inv_cell_size = prepared->inv_cell_size;
+        float radius_f = static_cast<float>(radius);
+        void* summary_args[] = {
+            &d_queries.ptr,
+            &qc,
+            &prepared->d_search->ptr,
+            &prepared->d_offsets->ptr,
+            &grid_x,
+            &grid_y,
+            &grid_z,
+            &min_x,
+            &min_y,
+            &min_z,
+            &inv_cell_size,
+            &radius_f,
+            &k_max_u32,
+            &d_summaries.ptr,
+        };
+        CU_CHECK(cuLaunchKernel(g_frn3d_grid_ranked_summary_f32.fn, grid, 1, 1, block, 1, 1, 0, nullptr, summary_args, nullptr));
+        CU_CHECK(cuStreamSynchronize(nullptr));
+        auto t_end_summary = std::chrono::steady_clock::now();
+        g_optix_last_fixed_radius_3d_count_s = seconds_between(t_start_summary, t_end_summary);
+
+        void* aggregate_args[] = {
+            &d_summaries.ptr,
+            &qc,
+            &d_aggregate.ptr,
+        };
+        unsigned aggregate_grid = std::min<unsigned>(1024u, std::max<unsigned>(1u, grid));
+        auto t_start_aggregate = std::chrono::steady_clock::now();
+        CU_CHECK(cuLaunchKernel(g_frn3d_grid_ranked_summary_aggregate.fn, aggregate_grid, 1, 1, block, 1, 1, 0, nullptr, aggregate_args, nullptr));
+        CU_CHECK(cuStreamSynchronize(nullptr));
+        auto t_end_aggregate = std::chrono::steady_clock::now();
+        g_optix_last_fixed_radius_3d_exact_refine_s = seconds_between(t_start_aggregate, t_end_aggregate);
     } else {
         DevPtr d_summaries(sizeof(RtdlFixedRadiusRankedNeighborSummary) * query_count);
         double min_x = prepared->min_x_exact;
