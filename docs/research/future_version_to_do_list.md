@@ -76,6 +76,41 @@ Boundary:
 
 ## v2.5+ Optimization Lane
 
+### Exact Hausdorff Device-Resident Nearest-Witness Continuation
+
+Origin: Goal2808 current-head v2.5 harness rerun and Goal2809 warm/tuned
+Hausdorff entrypoint probe on the RTX A5000 pod.
+
+Observation:
+
+- The exact RTDL/OptiX Hausdorff path is correct and RT-core-backed, but after
+  fair warmup and adaptive parameter tuning it is still slower than the
+  optimized CuPy grouped-grid exact baseline on the 4096x4096 synthetic row.
+- Goal2809 reduced the misleading cold-start ratio from about 151.6x slower to
+  about 17.6x slower by warming RTDL, using repeated median timing, and
+  choosing the better existing adaptive grouped traversal defaults
+  (`growth_factor=8`, 512 target points per group).
+- The remaining gap is not a native app-customization problem. It points to a
+  generic runtime need: device-resident nearest-witness/max-distance
+  continuation and better pruning without downloading or iterating through
+  repeated host-driven active sets.
+
+Future work:
+
+- Keep the native primitive generic: points, point groups, radius, nearest
+  witness, max-distance reduction, threshold flags.
+- Explore a device-resident active-set compaction / max-distance witness
+  continuation that can run after RT traversal without host worklist churn.
+- Compare against the same exact CuPy grouped-grid contract with warmup and
+  repeated median timing.
+- Do not claim RTDL beats X-HD or CuPy until a reviewed artifact proves that
+  exact claim on named datasets and hardware.
+
+Boundary:
+
+- This is v2.5+ runtime/primitive hardening, not v3.0 user shader injection.
+- Do not reintroduce Hausdorff-specific native ABI names.
+
 ### Hit-Stream Continuation Promotion Gates After Goal2744
 
 Origin: Goals2685-2744 device-resident hit-stream handoff, native OptiX
