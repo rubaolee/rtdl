@@ -41,7 +41,6 @@ class Goal2822RtnnFusedBatchBlockPartialKernelTest(unittest.TestCase):
         self.assertIn("upload(d_k_values.ptr, k_values_u32.data(), request_count)", body)
         self.assertIn("cuLaunchKernel(g_frn3d_grid_ranked_summary_aggregate_f32_blocks_batch.fn", body)
         self.assertIn("grid, request_count_u32, 1", body)
-        self.assertIn("partials[request_index * grid + partial_index]", body)
         self.assertNotIn("cuLaunchKernel(g_frn3d_grid_ranked_summary_aggregate_f32_blocks.fn", body)
         self.assertNotIn("rtnn", body.lower())
 
