@@ -145,6 +145,16 @@ V2_5_PARTNER_CONTINUATION_OPERATIONS: tuple[RtdlPartnerContinuationOperation, ..
         ),
     ),
     RtdlPartnerContinuationOperation(
+        name="grouped_argmax_f64",
+        category="ranked_summary",
+        input_names=("group_ids", "item_ids", "scores", "group_count"),
+        output_names=("group_ids", "item_ids", "scores", "missing_group_ids"),
+        behavior=(
+            "select the highest-score item per group with deterministic item-id tie-break; "
+            + V2_5_GROUP_ID_VALIDATION_CONTRACT
+        ),
+    ),
+    RtdlPartnerContinuationOperation(
         name="hit_stream_grouped_ray_id_primitive_i64",
         category="hit_stream_grouped_reduction",
         input_names=("ray_ids", "primitive_ids", "row_count", "hit_event_count", "overflow", "group_count"),
@@ -178,6 +188,7 @@ V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS = (
     "segmented_max_f64",
     "compact_mask_i64",
     "grouped_argmin_f64",
+    "grouped_argmax_f64",
     "bounded_collect_finalize_i64",
 )
 V2_5_NUMBA_PREVIEW_OPERATIONS = (
@@ -510,6 +521,14 @@ def execute_v2_5_partner_continuation_reference(
         if not (len(group_ids) == len(item_ids) == len(scores)):
             raise ValueError("group_ids, item_ids, and scores must have the same length")
         outputs = _grouped_argmin(group_ids, item_ids, scores, group_count)
+    elif operation == "grouped_argmax_f64":
+        group_count = _required_int(inputs, "group_count")
+        group_ids = _required_i64_sequence(inputs, "group_ids")
+        item_ids = _required_i64_sequence(inputs, "item_ids")
+        scores = _required_f64_sequence(inputs, "scores")
+        if not (len(group_ids) == len(item_ids) == len(scores)):
+            raise ValueError("group_ids, item_ids, and scores must have the same length")
+        outputs = _grouped_argmax(group_ids, item_ids, scores, group_count)
     elif operation == "hit_stream_grouped_ray_id_primitive_i64":
         group_count = _required_int(inputs, "group_count")
         row_count = _required_int(inputs, "row_count")
@@ -606,6 +625,39 @@ def _grouped_argmin(
         score, item = candidate
         out_groups.append(group)
         out_items.append(item)
+        out_scores.append(score)
+    return {
+        "group_ids": out_groups,
+        "item_ids": out_items,
+        "scores": out_scores,
+        "missing_group_ids": missing,
+    }
+
+
+def _grouped_argmax(
+    group_ids: Sequence[int],
+    item_ids: Sequence[int],
+    scores: Sequence[float],
+    group_count: int,
+) -> dict[str, list[int] | list[float]]:
+    best: list[tuple[float, int] | None] = [None] * group_count
+    for group, item, score in zip(group_ids, item_ids, scores):
+        _validate_group_id(group, group_count)
+        candidate = (float(score), -int(item))
+        current = best[group]
+        if current is None or candidate > current:
+            best[group] = candidate
+    out_groups: list[int] = []
+    out_items: list[int] = []
+    out_scores: list[float] = []
+    missing: list[int] = []
+    for group, candidate in enumerate(best):
+        if candidate is None:
+            missing.append(group)
+            continue
+        score, negative_item = candidate
+        out_groups.append(group)
+        out_items.append(-negative_item)
         out_scores.append(score)
     return {
         "group_ids": out_groups,

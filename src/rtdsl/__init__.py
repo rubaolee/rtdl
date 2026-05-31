@@ -107,6 +107,7 @@ from .triton_partner_continuation import TRITON_COMPACT_MASK_I64_OPERATION
 from .triton_partner_continuation import TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_HOST_RAISE_MODE
 from .triton_partner_continuation import TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_I64_OPERATION
 from .triton_partner_continuation import TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_MODE
+from .triton_partner_continuation import TRITON_GROUPED_ARGMAX_F64_OPERATION
 from .triton_partner_continuation import TRITON_GROUPED_ARGMIN_F64_OPERATION
 from .triton_partner_continuation import TRITON_SEGMENTED_COUNT_I64_OPERATION
 from .triton_partner_continuation import TRITON_SEGMENTED_MAX_F64_OPERATION
@@ -117,6 +118,7 @@ from .triton_partner_continuation import assert_triton_group_ids_in_bounds_devic
 from .triton_partner_continuation import describe_triton_bounded_collect_finalize_i64
 from .triton_partner_continuation import describe_triton_compact_mask_i64
 from .triton_partner_continuation import describe_triton_group_id_bounds_device_flag_i64
+from .triton_partner_continuation import describe_triton_grouped_argmax_f64
 from .triton_partner_continuation import describe_triton_grouped_argmin_f64
 from .triton_partner_continuation import describe_triton_partner_continuation
 from .triton_partner_continuation import describe_triton_segmented_count_i64
@@ -126,6 +128,7 @@ from .triton_partner_continuation import describe_triton_segmented_sum_f64
 from .triton_partner_continuation import run_triton_bounded_collect_finalize_i64
 from .triton_partner_continuation import run_triton_compact_mask_i64
 from .triton_partner_continuation import run_triton_group_id_bounds_device_flag_i64
+from .triton_partner_continuation import run_triton_grouped_argmax_f64
 from .triton_partner_continuation import run_triton_grouped_argmin_f64
 from .triton_partner_continuation import run_triton_partner_continuation
 from .triton_partner_continuation import run_triton_segmented_count_i64
@@ -1584,6 +1587,7 @@ __all__ = [
     "TRITON_PARTNER_CONTINUATION_STATUS",
     "TRITON_BOUNDED_COLLECT_FINALIZE_I64_OPERATION",
     "TRITON_COMPACT_MASK_I64_OPERATION",
+    "TRITON_GROUPED_ARGMAX_F64_OPERATION",
     "TRITON_GROUPED_ARGMIN_F64_OPERATION",
     "TRITON_SEGMENTED_COUNT_I64_OPERATION",
     "TRITON_SEGMENTED_MAX_F64_OPERATION",
@@ -1592,6 +1596,7 @@ __all__ = [
     "TRITON_TENSOR_CARRIER",
     "describe_triton_bounded_collect_finalize_i64",
     "describe_triton_compact_mask_i64",
+    "describe_triton_grouped_argmax_f64",
     "describe_triton_grouped_argmin_f64",
     "describe_triton_partner_continuation",
     "describe_triton_segmented_count_i64",
@@ -1600,6 +1605,7 @@ __all__ = [
     "describe_triton_segmented_sum_f64",
     "run_triton_bounded_collect_finalize_i64",
     "run_triton_compact_mask_i64",
+    "run_triton_grouped_argmax_f64",
     "run_triton_grouped_argmin_f64",
     "run_triton_partner_continuation",
     "run_triton_segmented_count_i64",

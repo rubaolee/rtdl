@@ -1,0 +1,46 @@
+{
+  "goal": "Goal2776",
+  "artifact_kind": "pod_cuda_smoke",
+  "date": "2026-05-31",
+  "pod": {
+    "ssh_host": "69.30.85.171",
+    "ssh_port": 22167,
+    "gpu": "NVIDIA RTX A5000",
+    "driver_version": "570.211.01",
+    "python_version": "Python 3.12.3",
+    "torch_version": "2.8.0+cu128",
+    "torch_cuda_available": true,
+    "triton_version": "3.4.0"
+  },
+  "remote_checkout": {
+    "path": "/root/rtdl_goal2776",
+    "base_commit": "23f1f92af1493a8485f8b97f68c0f3a0d95d3b76",
+    "base_commit_label": "Goal2775 reconcile hit stream neutral seam",
+    "local_goal2776_delta_applied": true
+  },
+  "commands": [
+    {
+      "command": "PYTHONPATH=src:. timeout 240 python3 -m unittest tests.goal2776_v2_5_triton_grouped_argmax_preview_test",
+      "result": "pass",
+      "tests_run": 6,
+      "skipped": 0,
+      "duration_seconds": 2.771,
+      "notes": "Includes executable Torch CUDA/Triton run_triton_grouped_argmax_f64 validation."
+    },
+    {
+      "command": "PYTHONPATH=src:. timeout 300 python3 -m unittest tests.goal2662_v2_5_partner_continuation_contract_test tests.goal2671_v2_5_preview_gate_test tests.goal2676_v2_5_triton_partner_pivot_test tests.goal2677_v2_5_triton_segmented_minmax_preview_test tests.goal2678_v2_5_triton_compact_mask_preview_test tests.goal2679_v2_5_triton_grouped_argmin_preview_test tests.goal2680_v2_5_triton_bounded_collect_preview_test tests.goal2696_v2_5_partner_support_matrix_test tests.goal2776_v2_5_triton_grouped_argmax_preview_test",
+      "result": "pass",
+      "tests_run": 52,
+      "skipped": 0,
+      "duration_seconds": 4.012,
+      "notes": "Checks Goal2776 against the existing v2.5 preview/protocol/support-matrix slice."
+    }
+  ],
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "release_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "rt_traversal_replacement_claim_authorized": false,
+    "performance_path_promoted": false
+  }
+}

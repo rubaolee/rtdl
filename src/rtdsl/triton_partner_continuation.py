@@ -21,6 +21,7 @@ TRITON_SEGMENTED_MIN_F64_OPERATION = "segmented_min_f64"
 TRITON_SEGMENTED_MAX_F64_OPERATION = "segmented_max_f64"
 TRITON_COMPACT_MASK_I64_OPERATION = "compact_mask_i64"
 TRITON_GROUPED_ARGMIN_F64_OPERATION = "grouped_argmin_f64"
+TRITON_GROUPED_ARGMAX_F64_OPERATION = "grouped_argmax_f64"
 TRITON_BOUNDED_COLLECT_FINALIZE_I64_OPERATION = "bounded_collect_finalize_i64"
 TRITON_PARTNER_CONTINUATION_STATUS = V2_5_STATUS_PREVIEW_NOT_PROMOTED
 TRITON_TENSOR_CARRIER = "torch_cuda_tensor_for_triton_launch"
@@ -93,6 +94,20 @@ def describe_triton_grouped_argmin_f64() -> dict[str, object]:
     return descriptor
 
 
+def describe_triton_grouped_argmax_f64() -> dict[str, object]:
+    descriptor = _base_triton_descriptor(TRITON_GROUPED_ARGMAX_F64_OPERATION)
+    descriptor["input_columns"] = ("group_ids:int64", "item_ids:int64", "scores:float64")
+    descriptor["output_columns"] = (
+        "group_ids:int64",
+        "item_ids:int64",
+        "scores:float64",
+        "missing_group_ids:int64",
+    )
+    descriptor["tie_break"] = "highest_score_then_lowest_item_id"
+    descriptor["tensor_carrier_compaction_used"] = True
+    return descriptor
+
+
 def describe_triton_bounded_collect_finalize_i64() -> dict[str, object]:
     descriptor = _base_triton_descriptor(TRITON_BOUNDED_COLLECT_FINALIZE_I64_OPERATION)
     descriptor["input_columns"] = ("group_ids:int64", "item_ids:int64")
@@ -154,6 +169,8 @@ def describe_triton_partner_continuation(operation: str) -> dict[str, object]:
         return describe_triton_compact_mask_i64()
     if operation == TRITON_GROUPED_ARGMIN_F64_OPERATION:
         return describe_triton_grouped_argmin_f64()
+    if operation == TRITON_GROUPED_ARGMAX_F64_OPERATION:
+        return describe_triton_grouped_argmax_f64()
     if operation == TRITON_BOUNDED_COLLECT_FINALIZE_I64_OPERATION:
         return describe_triton_bounded_collect_finalize_i64()
     spec = RtdlPartnerContinuationSpec(
@@ -263,6 +280,20 @@ def run_triton_partner_continuation(
     if operation == TRITON_GROUPED_ARGMIN_F64_OPERATION:
         try:
             return run_triton_grouped_argmin_f64(
+                inputs["group_ids"],
+                inputs["item_ids"],
+                inputs["scores"],
+                group_count=int(inputs["group_count"]),
+                block_size=block_size,
+                group_id_bounds_validation_mode=group_id_bounds_validation_mode,
+            )
+        except (ModuleNotFoundError, RuntimeError) as exc:
+            if allow_reference_fallback and _is_triton_environment_error(exc):
+                return _triton_reference_fallback(operation, inputs, str(exc))
+            raise
+    if operation == TRITON_GROUPED_ARGMAX_F64_OPERATION:
+        try:
+            return run_triton_grouped_argmax_f64(
                 inputs["group_ids"],
                 inputs["item_ids"],
                 inputs["scores"],
@@ -710,6 +741,93 @@ def run_triton_grouped_argmin_f64(
     )
 
 
+def run_triton_grouped_argmax_f64(
+    group_ids: Any,
+    item_ids: Any,
+    scores: Any,
+    *,
+    group_count: int,
+    block_size: int = 256,
+    group_id_bounds_validation_mode: str = TRITON_GROUP_ID_BOUNDS_VALIDATION_MODE,
+) -> dict[str, object]:
+    """Run the v2.5 Triton grouped-argmax continuation preview."""
+
+    triton, torch, tl = _import_triton_stack()
+    _validate_torch_cuda_vector(group_ids, name="group_ids", dtype=torch.int64)
+    _validate_torch_cuda_vector(item_ids, name="item_ids", dtype=torch.int64)
+    _validate_torch_cuda_vector(scores, name="scores", dtype=torch.float64)
+    if not (tuple(group_ids.shape) == tuple(item_ids.shape) == tuple(scores.shape)):
+        raise ValueError("group_ids, item_ids, and scores must have the same shape")
+    if int(scores.numel()) and bool(torch.any(torch.isnan(scores)).item()):
+        raise ValueError("grouped argmax rejects NaN scores")
+    group_count, block_size, row_count = _validate_group_run_shape(
+        group_ids,
+        group_count=group_count,
+        block_size=block_size,
+        torch=torch,
+        validation_mode=group_id_bounds_validation_mode,
+    )
+
+    torch.cuda.synchronize(group_ids.device)
+    started = perf_counter()
+    dense_scores = torch.full((group_count,), -float("inf"), dtype=torch.float64, device=scores.device)
+    dense_item_ids = torch.full(
+        (group_count,),
+        torch.iinfo(torch.int64).max,
+        dtype=torch.int64,
+        device=item_ids.device,
+    )
+    counts = torch.zeros((group_count,), dtype=torch.int64, device=group_ids.device)
+    if row_count:
+        grid = (triton.cdiv(row_count, block_size),)
+        _triton_grouped_argmax_score_f64_kernel(tl)[grid](
+            group_ids,
+            scores,
+            dense_scores,
+            counts,
+            row_count,
+            group_count,
+            BLOCK_SIZE=block_size,
+        )
+        _triton_grouped_argmax_item_i64_kernel(tl)[grid](
+            group_ids,
+            item_ids,
+            scores,
+            dense_scores,
+            dense_item_ids,
+            row_count,
+            group_count,
+            BLOCK_SIZE=block_size,
+        )
+    present_mask = counts > 0
+    present_group_ids = torch.nonzero(present_mask, as_tuple=False).reshape(-1).to(torch.int64)
+    missing_group_ids = torch.nonzero(~present_mask, as_tuple=False).reshape(-1).to(torch.int64)
+    compact_item_ids = dense_item_ids[present_mask]
+    compact_scores = dense_scores[present_mask]
+    torch.cuda.synchronize(group_ids.device)
+    elapsed = perf_counter() - started
+
+    return _triton_run_result(
+        operation=TRITON_GROUPED_ARGMAX_F64_OPERATION,
+        outputs={
+            "group_ids": present_group_ids,
+            "item_ids": compact_item_ids,
+            "scores": compact_scores,
+            "missing_group_ids": missing_group_ids,
+            "dense_item_ids": dense_item_ids,
+            "dense_scores": dense_scores,
+            "present_counts": counts,
+        },
+        elapsed=elapsed,
+        source="run_triton_grouped_argmax_f64",
+        group_id_bounds_validation_mode=group_id_bounds_validation_mode,
+        extra_metadata={
+            "tie_break": "highest_score_then_lowest_item_id",
+            "tensor_carrier_compaction_used": True,
+        },
+    )
+
+
 def run_triton_bounded_collect_finalize_i64(
     group_ids: Any,
     item_ids: Any,
@@ -1098,6 +1216,39 @@ def _triton_grouped_argmin_item_i64_kernel(tl):
         vals = tl.load(scores + offsets, mask=mask, other=float("inf"))
         valid = mask & (groups >= 0) & (groups < group_count)
         best_scores = tl.load(dense_scores + groups, mask=valid, other=float("inf"))
+        is_best = valid & (vals == best_scores)
+        tl.atomic_min(dense_item_ids + groups, items, sem="relaxed", mask=is_best)
+
+    return kernel
+
+
+def _triton_grouped_argmax_score_f64_kernel(tl):
+    @__import__("triton").jit
+    def kernel(group_ids, scores, dense_scores, counts, row_count: tl.constexpr, group_count: tl.constexpr, BLOCK_SIZE: tl.constexpr):
+        program_id = tl.program_id(0)
+        offsets = program_id * BLOCK_SIZE + tl.arange(0, BLOCK_SIZE)
+        mask = offsets < row_count
+        groups = tl.load(group_ids + offsets, mask=mask, other=-1)
+        vals = tl.load(scores + offsets, mask=mask, other=-float("inf"))
+        valid = mask & (groups >= 0) & (groups < group_count)
+        tl.atomic_max(dense_scores + groups, vals, sem="relaxed", mask=valid)
+        ones = tl.full((BLOCK_SIZE,), 1, tl.int64)
+        tl.atomic_add(counts + groups, ones, sem="relaxed", mask=valid)
+
+    return kernel
+
+
+def _triton_grouped_argmax_item_i64_kernel(tl):
+    @__import__("triton").jit
+    def kernel(group_ids, item_ids, scores, dense_scores, dense_item_ids, row_count: tl.constexpr, group_count: tl.constexpr, BLOCK_SIZE: tl.constexpr):
+        program_id = tl.program_id(0)
+        offsets = program_id * BLOCK_SIZE + tl.arange(0, BLOCK_SIZE)
+        mask = offsets < row_count
+        groups = tl.load(group_ids + offsets, mask=mask, other=-1)
+        items = tl.load(item_ids + offsets, mask=mask, other=0)
+        vals = tl.load(scores + offsets, mask=mask, other=-float("inf"))
+        valid = mask & (groups >= 0) & (groups < group_count)
+        best_scores = tl.load(dense_scores + groups, mask=valid, other=-float("inf"))
         is_best = valid & (vals == best_scores)
         tl.atomic_min(dense_item_ids + groups, items, sem="relaxed", mask=is_best)
 
