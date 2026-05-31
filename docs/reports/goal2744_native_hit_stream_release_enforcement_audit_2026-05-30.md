@@ -70,3 +70,14 @@ py -3 -m py_compile \
   src/rtdsl/hit_stream_handoff.py
 clean
 ```
+
+Pod validation on `root@69.30.85.171:22167` after pulling commit `e80fcf1d`:
+
+```text
+python3 -m unittest \
+  tests.goal2744_native_hit_stream_release_enforcement_audit_test \
+  tests.goal2706_native_optix_hit_stream_device_columns_test \
+  tests.goal2737_native_hit_stream_owner_lifecycle_guard_test \
+  tests.goal2738_native_hit_stream_stream_ordering_boundary_test
+16 tests OK
+```
