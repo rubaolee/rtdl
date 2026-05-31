@@ -18,6 +18,7 @@ from .partner_protocol import v2_4_phase_timing_metadata
 TRITON_SEGMENTED_SUM_F64_OPERATION = "segmented_sum_f64"
 TRITON_GROUPED_VECTOR_SUM_F64X2_OPERATION = "grouped_vector_sum_f64x2"
 TRITON_GROUPED_VECTOR_SUM_F64X2_OFFSETS_KERNEL = "grouped_vector_sum_f64x2_offsets_kernel"
+TRITON_GROUPED_VECTOR_SUM_F64X2_OFFSETS_BATCHED_KERNEL = "grouped_vector_sum_f64x2_offsets_batched_kernel"
 TRITON_SEGMENTED_COUNT_I64_OPERATION = "segmented_count_i64"
 TRITON_SEGMENTED_MIN_F64_OPERATION = "segmented_min_f64"
 TRITON_SEGMENTED_MAX_F64_OPERATION = "segmented_max_f64"
@@ -628,6 +629,7 @@ def run_triton_grouped_vector_sum_f64x2_by_offsets(
     values_y: Any,
     *,
     max_group_block_size: int = 2048,
+    groups_per_program: int = 1,
 ) -> dict[str, object]:
     """Run grouped vector sum for presegmented rows using row offsets."""
 
@@ -637,6 +639,9 @@ def run_triton_grouped_vector_sum_f64x2_by_offsets(
     _validate_torch_cuda_vector(values_y, name="values_y", dtype=torch.float64)
     if tuple(values_x.shape) != tuple(values_y.shape):
         raise ValueError("values_x and values_y must have the same shape")
+    groups_per_program = int(groups_per_program)
+    if groups_per_program < 1:
+        raise ValueError("groups_per_program must be positive")
     group_count = int(row_offsets.numel()) - 1
     row_count = int(values_x.numel())
     if group_count < 0:
@@ -653,6 +658,9 @@ def run_triton_grouped_vector_sum_f64x2_by_offsets(
             extra_metadata={
                 "presegmented_row_offsets": True,
                 "adapter_kernel": TRITON_GROUPED_VECTOR_SUM_F64X2_OFFSETS_KERNEL,
+                "groups_per_program": groups_per_program,
+                "program_count": 0,
+                "global_atomic_add_used": False,
             },
         )
     if bool(torch.any(row_offsets[1:] < row_offsets[:-1]).item()):
@@ -669,14 +677,30 @@ def run_triton_grouped_vector_sum_f64x2_by_offsets(
     started = perf_counter()
     sum_x = torch.empty((group_count,), dtype=torch.float64, device=values_x.device)
     sum_y = torch.empty((group_count,), dtype=torch.float64, device=values_y.device)
-    _triton_grouped_vector_sum_f64x2_offsets_kernel(tl)[(group_count,)](
-        row_offsets,
-        values_x,
-        values_y,
-        sum_x,
-        sum_y,
-        BLOCK_SIZE=block_size,
-    )
+    if groups_per_program == 1:
+        adapter_kernel = TRITON_GROUPED_VECTOR_SUM_F64X2_OFFSETS_KERNEL
+        program_count = group_count
+        _triton_grouped_vector_sum_f64x2_offsets_kernel(tl)[(program_count,)](
+            row_offsets,
+            values_x,
+            values_y,
+            sum_x,
+            sum_y,
+            BLOCK_SIZE=block_size,
+        )
+    else:
+        adapter_kernel = TRITON_GROUPED_VECTOR_SUM_F64X2_OFFSETS_BATCHED_KERNEL
+        program_count = int(triton.cdiv(group_count, groups_per_program))
+        _triton_grouped_vector_sum_f64x2_offsets_batched_kernel(tl)[(program_count,)](
+            row_offsets,
+            values_x,
+            values_y,
+            sum_x,
+            sum_y,
+            group_count,
+            BLOCK_SIZE=block_size,
+            GROUPS_PER_PROGRAM=groups_per_program,
+        )
     torch.cuda.synchronize(values_x.device)
     elapsed = perf_counter() - started
 
@@ -690,9 +714,11 @@ def run_triton_grouped_vector_sum_f64x2_by_offsets(
             "vector_width": 2,
             "component_contract": "paired_float64_components",
             "presegmented_row_offsets": True,
-            "adapter_kernel": TRITON_GROUPED_VECTOR_SUM_F64X2_OFFSETS_KERNEL,
+            "adapter_kernel": adapter_kernel,
             "max_group_size": max_group_size,
             "max_group_block_size": int(max_group_block_size),
+            "groups_per_program": groups_per_program,
+            "program_count": program_count,
             "global_atomic_add_used": False,
         },
     )
@@ -1686,6 +1712,35 @@ def _triton_grouped_vector_sum_f64x2_offsets_kernel(tl):
         vals_y = tl.load(values_y + offsets, mask=valid, other=0.0)
         tl.store(output_x + group, tl.sum(vals_x, axis=0))
         tl.store(output_y + group, tl.sum(vals_y, axis=0))
+
+    return kernel
+
+
+def _triton_grouped_vector_sum_f64x2_offsets_batched_kernel(tl):
+    @__import__("triton").jit
+    def kernel(
+        row_offsets,
+        values_x,
+        values_y,
+        output_x,
+        output_y,
+        group_count: tl.constexpr,
+        BLOCK_SIZE: tl.constexpr,
+        GROUPS_PER_PROGRAM: tl.constexpr,
+    ):
+        program_id = tl.program_id(0)
+        offsets_in_group = tl.arange(0, BLOCK_SIZE)
+        for slot in tl.static_range(0, GROUPS_PER_PROGRAM):
+            group = program_id * GROUPS_PER_PROGRAM + slot
+            active_group = group < group_count
+            start = tl.load(row_offsets + group, mask=active_group, other=0)
+            end = tl.load(row_offsets + group + 1, mask=active_group, other=0)
+            offsets = start + offsets_in_group
+            valid = active_group & (offsets < end)
+            vals_x = tl.load(values_x + offsets, mask=valid, other=0.0)
+            vals_y = tl.load(values_y + offsets, mask=valid, other=0.0)
+            tl.store(output_x + group, tl.sum(vals_x, axis=0), mask=active_group)
+            tl.store(output_y + group, tl.sum(vals_y, axis=0), mask=active_group)
 
     return kernel
 

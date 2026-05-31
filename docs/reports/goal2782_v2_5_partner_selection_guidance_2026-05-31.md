@@ -4,7 +4,8 @@ Date: 2026-05-31
 
 ## Purpose
 
-Goal2780 and Goal2781 both produced the same design lesson:
+Goal2780 and Goal2781 both produced the same design lesson, later refreshed by
+Goal2784 and Goal2786:
 
 **preview kernel available is not the same as selected partner.**
 
@@ -33,8 +34,8 @@ The registry currently has two measured negative-guidance rows:
 
 | Operation | Workload shape | Evidence | Finding | Recommendation |
 | --- | --- | --- | --- | --- |
-| `grouped_topk_f64` | dense exact top-k candidate ranking | Goal2780 | Triton 47.28x-150.90x slower than Torch | do not auto-select Triton |
-| `grouped_vector_sum_f64x2` | dense grouped 2D vector sum | Goal2781 | Triton 4.09x-16.59x slower than Torch | do not auto-select Triton |
+| `grouped_topk_f64` | dense exact top-k candidate ranking | Goal2784 | Triton 4.91x-10.04x slower than Torch | do not auto-select Triton |
+| `grouped_vector_sum_f64x2` | dense grouped 2D vector sum | Goal2786 | Triton 3.76x-16.86x slower than Torch | do not auto-select Triton |
 
 This does not demote the generic contracts. It separates **contract
 availability** from **performance partner selection**.
@@ -46,6 +47,15 @@ Goal2784 refresh:
 - The updated top-k range is 4.91x-10.04x slower than Torch on the measured RTX
   A5000 shapes. This is substantially better than Goal2780, but still negative
   selection guidance.
+
+Goal2786 refresh:
+
+- The dense grouped vector-sum row now points at Goal2786, after the Triton
+  adapter tested batched presegmented row-offset programs.
+- The best measured path remained the single-group row-offset kernel; batching
+  several groups per program was slower on every measured shape.
+- The updated vector-sum range is 3.76x-16.86x slower than Torch on the measured
+  RTX A5000 shapes. This keeps the negative selection guidance in place.
 
 ## Boundary
 
@@ -103,8 +113,10 @@ Ran 123 tests in 0.093s
 OK (skipped=10)
 ```
 
-No pod is required for this goal because it consumes the already-recorded
+No pod was required for the original Goal2782 because it consumed already-recorded
 Goal2780 and Goal2781 pod artifacts instead of producing new timing evidence.
+The current guidance has since been refreshed by Goal2784 and Goal2786 pod
+artifacts.
 
 Pod no-new-timing validation:
 

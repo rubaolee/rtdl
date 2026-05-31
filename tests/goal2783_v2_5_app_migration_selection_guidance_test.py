@@ -40,7 +40,7 @@ class Goal2783V25AppMigrationSelectionGuidanceTest(unittest.TestCase):
         self.assertFalse(guidance["auto_select_partner_allowed"])
         self.assertIn("Do not auto-select Triton", guidance["recommendation"])
 
-    def test_barnes_hut_dense_vector_sum_records_goal2781_negative_guidance(self) -> None:
+    def test_barnes_hut_dense_vector_sum_records_goal2786_negative_guidance(self) -> None:
         apps = {app["app_id"]: app for app in rt.v2_5_triton_benchmark_app_migration_plan()["apps"]}
         barnes = apps["barnes_hut"]
         guidance = barnes["partner_selection_guidance"][0]
@@ -50,7 +50,7 @@ class Goal2783V25AppMigrationSelectionGuidanceTest(unittest.TestCase):
         self.assertFalse(barnes["auto_select_preview_partner_allowed"])
         self.assertEqual(guidance["status"], "measured_negative_preview_guidance")
         self.assertEqual(guidance["matches"][0]["operation"], "grouped_vector_sum_f64x2")
-        self.assertEqual(guidance["matches"][0]["evidence_goal"], "Goal2781")
+        self.assertEqual(guidance["matches"][0]["evidence_goal"], "Goal2786")
         self.assertFalse(guidance["auto_select_partner_allowed"])
         self.assertIn("Do not auto-select Triton", guidance["recommendation"])
 

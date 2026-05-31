@@ -709,6 +709,13 @@ Future work:
   Torch scatter-add. The next vector-sum leap likely needs a stronger persistent
   block/warp segmented reduction, better rows-per-group batching, or explicit
   Torch selection for dense prepared vector sums.
+- Goal2786 tested a simple batched row-offset Triton vector-sum kernel that
+  reduces multiple presegmented groups per program. It was correct and
+  atomics-free, but slower than the single-group offset kernel on all measured
+  RTX A5000 shapes. Do not pursue simple serial groups-per-program batching as
+  the next vector-sum performance path; the next candidate needs a genuinely
+  different segmented/block reduction design or an explicit non-Triton selected
+  partner for dense vector sums.
 
 Boundary:
 

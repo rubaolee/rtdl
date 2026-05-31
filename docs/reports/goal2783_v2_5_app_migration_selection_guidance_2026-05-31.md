@@ -31,7 +31,7 @@ Two benchmark app rows now consume Goal2782 guidance:
 | App | Operation | Workload shape | Evidence | Planner result |
 | --- | --- | --- | --- | --- |
 | RTNN | `grouped_topk_f64` | dense exact top-k candidate ranking | Goal2784 | do not auto-select Triton |
-| Barnes-Hut | `grouped_vector_sum_f64x2` | dense grouped vector sum 2D | Goal2781 | do not auto-select Triton |
+| Barnes-Hut | `grouped_vector_sum_f64x2` | dense grouped vector sum 2D | Goal2786 | do not auto-select Triton |
 
 The generic Triton preview kernels still exist. This goal only prevents a
 planner or benchmark harness from mistaking preview availability for a selected
@@ -77,9 +77,10 @@ py_compile with `PYTHONPYCACHEPREFIX=scratch\pycache_goal2783`
 OK
 ```
 
-Pod validation is useful but not required for new timing because this goal
-consumes the Goal2780 and Goal2781 pod artifacts rather than collecting new
-kernel timing.
+Pod validation was useful but not required for the original Goal2783 because
+that goal consumed the Goal2780 and Goal2781 pod artifacts rather than
+collecting new kernel timing. The current dense top-k and vector-sum guidance
+has since been refreshed by Goal2784 and Goal2786 artifacts.
 
 Pod no-new-timing validation:
 

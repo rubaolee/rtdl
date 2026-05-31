@@ -1698,6 +1698,7 @@ def grouped_vector_sum_2d_partner_columns(
     *,
     group_count: int,
     partner: str = "triton",
+    triton_offset_groups_per_program: int = 1,
     return_metadata: bool = False,
 ) -> dict[str, object]:
     """Reduce generic grouped 2D vector rows into dense per-group vector sums."""
@@ -1735,6 +1736,7 @@ def grouped_vector_sum_2d_partner_columns(
             row_offsets.to(runtime["int64"]),
             values_x,
             values_y,
+            groups_per_program=triton_offset_groups_per_program,
         )
         sum_x = triton_offset_result["outputs"]["sum_x"]
         sum_y = triton_offset_result["outputs"]["sum_y"]
@@ -1770,6 +1772,12 @@ def grouped_vector_sum_2d_partner_columns(
         ),
         "v2_5_triton_global_atomic_add_used": (
             triton_offset_result["global_atomic_add_used"] if triton_offset_result is not None else None
+        ),
+        "v2_5_triton_offset_groups_per_program": (
+            triton_offset_result["groups_per_program"] if triton_offset_result is not None else None
+        ),
+        "v2_5_triton_offset_program_count": (
+            triton_offset_result["program_count"] if triton_offset_result is not None else None
         ),
         "native_engine_row_contract": "not_called_partner_continuation_only",
         "group_count": group_count,

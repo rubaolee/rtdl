@@ -166,13 +166,14 @@ V2_5_TRITON_BENCHMARK_APP_PLANS: tuple[V25TritonBenchmarkAppPlan, ...] = (
         promoted_benchmark=True,
         current_hot_path_partner="app_owned_math_with_legacy_partner_force_helpers",
         v2_5_required_operations=("bounded_collect_finalize_i64", "grouped_vector_sum_f64x2"),
-        v2_5_status="covered_but_dense_vector_sum_has_goal2781_negative_triton_selection_guidance",
+        v2_5_status="covered_but_dense_vector_sum_has_goal2786_negative_triton_selection_guidance",
         first_port_action=(
             "Lower aggregate-frontier rows to generic grouped vector-sum metadata, but keep "
             "Torch scatter-add or another explicitly selected same-contract partner for dense "
-            "vector sums until a segmented/block-reduction Triton design replaces the atomic preview."
+            "vector sums until a segmented/block-reduction Triton design beats both the atomic "
+            "preview and the presegmented row-offset preview."
         ),
-        notes="Never embed inverse-square force law inside the engine or Triton primitive contract. Goal2781 blocks blind Triton auto-selection for dense grouped vector sums.",
+        notes="Never embed inverse-square force law inside the engine or Triton primitive contract. Goal2786 keeps blind Triton auto-selection blocked for dense grouped vector sums after batched row-offset tuning failed to beat Torch.",
         measured_selection_shapes=(("grouped_vector_sum_f64x2", "dense_grouped_vector_sum_2d"),),
     ),
     V25TritonBenchmarkAppPlan(

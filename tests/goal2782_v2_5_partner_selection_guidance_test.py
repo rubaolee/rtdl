@@ -51,10 +51,10 @@ class Goal2782V25PartnerSelectionGuidanceTest(unittest.TestCase):
         topk_row = topk["matches"][0]
         vector_row = vector["matches"][0]
         self.assertEqual(topk_row["evidence_goal"], "Goal2784")
-        self.assertEqual(vector_row["evidence_goal"], "Goal2781")
+        self.assertEqual(vector_row["evidence_goal"], "Goal2786")
         self.assertGreaterEqual(topk_row["measured_partner_slower_min_ratio"], 4.0)
         self.assertGreaterEqual(topk_row["measured_partner_slower_max_ratio"], 10.0)
-        self.assertGreaterEqual(vector_row["measured_partner_slower_min_ratio"], 4.0)
+        self.assertGreaterEqual(vector_row["measured_partner_slower_min_ratio"], 3.0)
         self.assertGreaterEqual(vector_row["measured_partner_slower_max_ratio"], 16.0)
         self.assertFalse(topk_row["rt_core_speedup_claim_authorized"])
         self.assertFalse(topk_row["whole_app_speedup_claim_authorized"])
@@ -84,6 +84,7 @@ class Goal2782V25PartnerSelectionGuidanceTest(unittest.TestCase):
         self.assertIn("Goal2782", report)
         self.assertIn("Goal2780", report)
         self.assertIn("Goal2781", report)
+        self.assertIn("Goal2786", report)
         self.assertIn("preview kernel available", report)
         self.assertIn("not the same as selected partner", report)
         self.assertIn("no public speedup claim", report.lower())

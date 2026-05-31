@@ -110,17 +110,20 @@ V2_5_PARTNER_SELECTION_GUIDANCE_ROWS = (
         workload_shape="dense_grouped_vector_sum_2d",
         measured_partner="triton",
         comparison_partner="torch_same_contract_branch",
-        evidence_goal="Goal2781",
+        evidence_goal="Goal2786",
         artifact_path=(
-            "docs/reports/goal2781_pod_artifacts/"
-            "goal2781_grouped_vector_sum_adapter_pod_69_30_85_171_2026-05-31.json"
+            "docs/reports/goal2786_pod_artifacts/"
+            "goal2786_batched_vector_sum_offsets_pod_69_30_85_171_2026-05-31.json"
         ),
-        measured_partner_slower_min_ratio=4.09,
-        measured_partner_slower_max_ratio=16.59,
+        measured_partner_slower_min_ratio=3.76,
+        measured_partner_slower_max_ratio=16.86,
         recommendation=(
-            "Do not auto-select Triton for dense grouped vector sums. Keep Torch "
-            "scatter-add as the measured better same-contract branch until a segmented "
-            "or block-reduction Triton design replaces the atomic-add preview."
+            "Do not auto-select Triton for dense grouped vector sums. Goal2786 tested "
+            "batched presegmented row-offset programs, but the single-group offset path "
+            "was still best and Torch scatter-add remained 3.76x-16.86x faster on the "
+            "measured RTX A5000 shapes. Keep Torch or another explicitly selected "
+            "same-contract partner as the performance path until a stronger segmented "
+            "or block-reduction Triton design wins timing."
         ),
     ),
 )

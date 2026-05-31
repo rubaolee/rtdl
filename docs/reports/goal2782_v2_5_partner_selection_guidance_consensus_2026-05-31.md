@@ -15,6 +15,11 @@ evidence: the direct dense point top-k adapter removed dense score
 materialization and reduced the measured RTX A5000 slowdown to 4.91x-10.04x
 slower than Torch, so the advisory "do not auto-select Triton" decision remains.
 
+Goal2786 later refreshed the dense vector-sum row with still-negative evidence:
+the batched presegmented row-offset candidate was slower than the single-group
+offset path, and the best Triton offset path remained 3.76x-16.86x slower than
+Torch, so the advisory "do not auto-select Triton" decision remains.
+
 ## Evidence
 
 Codex implementation and validation:
@@ -25,7 +30,8 @@ Codex implementation and validation:
 - added `plan_v2_5_partner_selection(...)`
 - encoded measured negative guidance for:
   - `grouped_topk_f64` / dense exact top-k candidate ranking
-  - `grouped_vector_sum_f64x2` / dense grouped 2D vector sum
+  - `grouped_vector_sum_f64x2` / dense grouped 2D vector sum, refreshed by
+    Goal2786
 - kept planner guidance advisory-only with no forced partner
 - kept public speedup, RT-core, true-zero-copy, whole-app, and release claims
   blocked
