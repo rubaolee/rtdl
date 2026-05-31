@@ -152,11 +152,20 @@ V2_5_TRITON_BENCHMARK_APP_PLANS: tuple[V25TritonBenchmarkAppPlan, ...] = (
         app_id="rt_dbscan",
         benchmark_name="RT-DBSCAN",
         promoted_benchmark=True,
-        current_hot_path_partner="legacy_cupy_for_component_continuations",
+        current_hot_path_partner="app_chosen_cupy_component_phase_with_numba_as_generic_fallback_partner",
         v2_5_required_operations=("compact_mask_i64", "bounded_collect_finalize_i64"),
-        v2_5_status="covered_by_compact_and_bounded_finalize_preview_pending_app_wiring",
-        first_port_action="Replace legacy CuPy component/adjacency continuation with generic Triton compaction and bounded finalize previews.",
-        notes="DBSCAN cluster semantics must stay in app code; RTDL owns fixed-radius row generation only.",
+        v2_5_status="app_chosen_cupy_phase_allowed_generic_fallback_partner_remains_numba",
+        first_port_action=(
+            "Wire generic Triton compaction and bounded finalize previews where they fit; "
+            "keep any CuPy component/union-find phase as an explicit app-chosen phase, "
+            "not as the v2.5 generic fallback partner."
+        ),
+        notes=(
+            "DBSCAN cluster semantics must stay in app code; RTDL owns fixed-radius row "
+            "generation and generic continuation contracts only. The declared v2.5 "
+            "fallback partner is Numba; CuPy remains conformance/interoperability or an "
+            "explicit app-chosen phase."
+        ),
     ),
     V25TritonBenchmarkAppPlan(
         app_id="rtnn",
