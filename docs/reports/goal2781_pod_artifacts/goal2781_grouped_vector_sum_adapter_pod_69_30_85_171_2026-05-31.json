@@ -1,0 +1,100 @@
+{
+  "claim_flags": {
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v2_5_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": "Goal2781",
+  "pod": {
+    "gpu": "NVIDIA RTX A5000, 570.211.01",
+    "host": "69.30.85.171",
+    "port": 22167
+  },
+  "repo_head": "7e1ec5c2cc5a6ceafc2eec091cfe61bb0800baaa",
+  "rows": [
+    {
+      "correctness_match": true,
+      "group_count": 512,
+      "max_abs_error_x": 3.552713678800501e-15,
+      "max_abs_error_y": 3.552713678800501e-15,
+      "row_count": 8192,
+      "torch_median_sec": 0.00017796410247683525,
+      "triton_median_sec": 0.0029516369104385376,
+      "triton_metadata": {
+        "adapter": "grouped_vector_sum_2d_partner_columns",
+        "claim_boundary": "Generic grouped vector-sum adapter over partner-owned columns. It does not call native RT traversal, does not authorize true zero-copy wording, and is preview integration evidence only.",
+        "direct_device_handoff_authorized": false,
+        "group_count": 512,
+        "input_contract": "caller_supplied_grouped_vector_rows_2d",
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "partner": "triton",
+        "partner_reference_contract": "generic_grouped_vector_sum_f64x2",
+        "row_count": 8192,
+        "rt_core_speedup_claim_authorized": false,
+        "v2_5_partner_continuation_operation": "grouped_vector_sum_f64x2",
+        "v2_5_release_authorized": false,
+        "v2_5_triton_preview_kernel_status": "preview_not_promoted",
+        "v2_5_triton_preview_kernel_used": true,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "triton_over_torch_ratio": 16.58557467128933
+    },
+    {
+      "correctness_match": true,
+      "group_count": 4096,
+      "max_abs_error_x": 1.7763568394002505e-14,
+      "max_abs_error_y": 2.1316282072803006e-14,
+      "row_count": 262144,
+      "torch_median_sec": 0.0004897019825875759,
+      "triton_median_sec": 0.0032920490484684706,
+      "triton_metadata": {
+        "adapter": "grouped_vector_sum_2d_partner_columns",
+        "claim_boundary": "Generic grouped vector-sum adapter over partner-owned columns. It does not call native RT traversal, does not authorize true zero-copy wording, and is preview integration evidence only.",
+        "direct_device_handoff_authorized": false,
+        "group_count": 4096,
+        "input_contract": "caller_supplied_grouped_vector_rows_2d",
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "partner": "triton",
+        "partner_reference_contract": "generic_grouped_vector_sum_f64x2",
+        "row_count": 262144,
+        "rt_core_speedup_claim_authorized": false,
+        "v2_5_partner_continuation_operation": "grouped_vector_sum_f64x2",
+        "v2_5_release_authorized": false,
+        "v2_5_triton_preview_kernel_status": "preview_not_promoted",
+        "v2_5_triton_preview_kernel_used": true,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "triton_over_torch_ratio": 6.722556096410609
+    },
+    {
+      "correctness_match": true,
+      "group_count": 8192,
+      "max_abs_error_x": 4.973799150320701e-14,
+      "max_abs_error_y": 3.552713678800501e-14,
+      "row_count": 1048576,
+      "torch_median_sec": 0.0008902440313249826,
+      "triton_median_sec": 0.003644089912995696,
+      "triton_metadata": {
+        "adapter": "grouped_vector_sum_2d_partner_columns",
+        "claim_boundary": "Generic grouped vector-sum adapter over partner-owned columns. It does not call native RT traversal, does not authorize true zero-copy wording, and is preview integration evidence only.",
+        "direct_device_handoff_authorized": false,
+        "group_count": 8192,
+        "input_contract": "caller_supplied_grouped_vector_rows_2d",
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "partner": "triton",
+        "partner_reference_contract": "generic_grouped_vector_sum_f64x2",
+        "row_count": 1048576,
+        "rt_core_speedup_claim_authorized": false,
+        "v2_5_partner_continuation_operation": "grouped_vector_sum_f64x2",
+        "v2_5_release_authorized": false,
+        "v2_5_triton_preview_kernel_status": "preview_not_promoted",
+        "v2_5_triton_preview_kernel_used": true,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "triton_over_torch_ratio": 4.093360679511734
+    }
+  ],
+  "status": "pass"
+}

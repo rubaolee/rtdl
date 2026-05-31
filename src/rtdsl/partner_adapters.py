@@ -244,6 +244,49 @@ def partner_group_sum_by_key(keys, values, group_count: int, *, partner: str = "
     raise ValueError("partner must be 'triton', 'torch', or 'cupy'")
 
 
+def partner_group_vector_sum_2d_by_key(keys, values_x, values_y, group_count: int, *, partner: str = "torch"):
+    """Sum paired float64 vector components per integer key with the selected partner."""
+
+    group_count = int(group_count)
+    if group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    runtime = _partner_module(partner)
+    if runtime["name"] == "triton":
+        _require_triton_float64(values_x, name="values_x")
+        _require_triton_float64(values_y, name="values_y")
+        result = run_triton_partner_continuation(
+            "grouped_vector_sum_f64x2",
+            {
+                "group_ids": keys.to(runtime["int64"]),
+                "values_x": values_x,
+                "values_y": values_y,
+                "group_count": group_count,
+            },
+        )
+        return result["outputs"]["sum_x"], result["outputs"]["sum_y"]
+    if runtime["name"] == "torch":
+        torch = runtime["module"]
+        out_x = torch.zeros((group_count,), dtype=values_x.dtype, device=values_x.device)
+        out_y = torch.zeros((group_count,), dtype=values_y.dtype, device=values_y.device)
+        if int(keys.numel()) == 0:
+            return out_x, out_y
+        group_ids = keys.to(torch.int64)
+        out_x.scatter_add_(0, group_ids, values_x)
+        out_y.scatter_add_(0, group_ids, values_y)
+        return out_x, out_y
+    if runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        out_x = cupy.zeros((group_count,), dtype=values_x.dtype)
+        out_y = cupy.zeros((group_count,), dtype=values_y.dtype)
+        if int(keys.size) == 0:
+            return out_x, out_y
+        group_ids = keys.astype(cupy.int64, copy=False)
+        cupy.add.at(out_x, group_ids, values_x)
+        cupy.add.at(out_y, group_ids, values_y)
+        return out_x, out_y
+    raise ValueError("partner must be 'triton', 'torch', or 'cupy'")
+
+
 def partner_group_max_by_key(keys, values, group_count: int, *, partner: str = "torch", initial=0):
     """Compute max(values) per integer key with the selected partner tensor runtime."""
     group_count = int(group_count)
@@ -1645,6 +1688,84 @@ def aggregate_frontier_collect_to_partner_columns(
                 ),
             },
         }
+    return columns
+
+
+def grouped_vector_sum_2d_partner_columns(
+    vector_columns: dict[str, object],
+    *,
+    group_count: int,
+    partner: str = "triton",
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Reduce generic grouped 2D vector rows into dense per-group vector sums."""
+
+    if not isinstance(vector_columns, dict):
+        raise ValueError("vector_columns must be a mapping")
+    group_count = int(group_count)
+    if group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    runtime = _partner_module(partner)
+    group_ids = vector_columns.get("group_ids", vector_columns.get("source_ids"))
+    values_x = vector_columns.get("values_x", vector_columns.get("vector_x"))
+    values_y = vector_columns.get("values_y", vector_columns.get("vector_y"))
+    if group_ids is None or values_x is None or values_y is None:
+        raise ValueError(
+            "vector_columns must contain group_ids/source_ids and values_x/vector_x plus values_y/vector_y"
+        )
+    if runtime["name"] == "cupy":
+        module = runtime["module"]
+        group_ids = group_ids.astype(module.int64, copy=False)
+        values_x = values_x.astype(module.float64, copy=False)
+        values_y = values_y.astype(module.float64, copy=False)
+        row_count = int(group_ids.size)
+    else:
+        module = runtime["module"]
+        group_ids = group_ids.to(module.int64)
+        values_x = values_x.to(module.float64)
+        values_y = values_y.to(module.float64)
+        row_count = int(group_ids.numel())
+
+    sum_x, sum_y = partner_group_vector_sum_2d_by_key(
+        group_ids,
+        values_x,
+        values_y,
+        group_count,
+        partner=runtime["name"],
+    )
+    runtime["sync"]()
+    columns = {
+        "group_ids": runtime["tensor"](range(group_count), runtime["int64"], runtime["device"]),
+        "sum_x": sum_x,
+        "sum_y": sum_y,
+    }
+    metadata = {
+        "adapter": "grouped_vector_sum_2d_partner_columns",
+        "partner": runtime["name"],
+        "input_contract": "caller_supplied_grouped_vector_rows_2d",
+        "partner_reference_contract": "generic_grouped_vector_sum_f64x2",
+        "v2_5_partner_continuation_operation": (
+            "grouped_vector_sum_f64x2" if runtime["name"] == "triton" else None
+        ),
+        "v2_5_triton_preview_kernel_used": runtime["name"] == "triton",
+        "v2_5_triton_preview_kernel_status": (
+            "preview_not_promoted" if runtime["name"] == "triton" else None
+        ),
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "group_count": group_count,
+        "row_count": row_count,
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_5_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "claim_boundary": (
+            "Generic grouped vector-sum adapter over partner-owned columns. "
+            "It does not call native RT traversal, does not authorize true "
+            "zero-copy wording, and is preview integration evidence only."
+        ),
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
     return columns
 
 

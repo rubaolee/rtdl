@@ -690,6 +690,12 @@ Future work:
   explicit selected partner for dense exact ranking or replace the iterative
   rank-by-rank Triton preview with a tiled/block-level top-k selection kernel
   before making RTNN-style performance claims.
+- Goal2781 wires a generic grouped 2D vector-sum adapter through
+  `grouped_vector_sum_f64x2` and proves RTX A5000 correctness, but the current
+  Triton atomic-add preview is about 4x-17x slower than Torch scatter-add for
+  dense rows. Keep the adapter as a correct generic surface, but do not promote
+  this Triton implementation for Barnes-Hut/N-body-style performance until a
+  stronger segmented/block reduction design replaces the direct atomic preview.
 
 Boundary:
 
