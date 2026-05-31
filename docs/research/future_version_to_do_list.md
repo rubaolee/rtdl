@@ -736,6 +736,10 @@ Future work:
   dense point sets, but faster at the measured 16K x 16K shape. Future work
   should define conditional partner-selection guidance by shape, memory budget,
   and dtype instead of recording only negative rows.
+- Goal2791 turns that crossover into thresholded guidance instead of a hidden
+  dispatcher rule. Future selection logic should stay explicit and explainable:
+  record shape thresholds, memory/OOM status, dtype, selected partner, fallback
+  reason, and claim boundary before any planner chooses a preview kernel.
 
 Boundary:
 

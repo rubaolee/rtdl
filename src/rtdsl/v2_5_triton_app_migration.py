@@ -42,6 +42,11 @@ class V25TritonBenchmarkAppPlan:
             for guidance in partner_selection_guidance
             if guidance["status"] == "measured_negative_preview_guidance"
         )
+        measured_mixed_guidance_count = sum(
+            1
+            for guidance in partner_selection_guidance
+            if guidance["status"] == "measured_mixed_preview_guidance"
+        )
         return {
             "app_id": self.app_id,
             "benchmark_name": self.benchmark_name,
@@ -54,6 +59,7 @@ class V25TritonBenchmarkAppPlan:
             "partner_selection_guidance_version": V2_5_PARTNER_SELECTION_GUIDANCE_VERSION,
             "partner_selection_guidance": partner_selection_guidance,
             "measured_negative_preview_guidance_count": measured_negative_guidance_count,
+            "measured_mixed_preview_guidance_count": measured_mixed_guidance_count,
             "auto_select_preview_partner_allowed": False,
         }
 
@@ -121,17 +127,25 @@ V2_5_TRITON_BENCHMARK_APP_PLANS: tuple[V25TritonBenchmarkAppPlan, ...] = (
         promoted_benchmark=True,
         current_hot_path_partner="legacy_cupy_for_some_exact_partner_continuations",
         v2_5_required_operations=("grouped_argmin_f64", "grouped_argmax_f64"),
-        v2_5_status="wired_but_dense_point_nearest_has_goal2788_negative_triton_selection_guidance",
+        v2_5_status="wired_with_goal2790_thresholded_tiled_triton_selection_guidance",
         first_port_action=(
             "Keep optimized Torch/CuPy/CUDA or another explicitly selected same-contract "
-            "partner for dense exact Hausdorff witness reduction. Goal2788's fused "
-            "dense point-nearest route improves the Goal2787 generic score-row route, "
-            "but still does not win enough to become the selected Triton path."
+            "partner for dense exact Hausdorff witness reduction unless the caller "
+            "explicitly selects the Goal2790 tiled Triton route for large dense shapes "
+            "after same-contract measurement. Goal2790 is thresholded evidence, not "
+            "a blanket default."
         ),
-        notes="Do not add Hausdorff-specific native code; nearest-witness scoring remains generic point-nearest plus grouped reduction. Goal2787 and Goal2788 both block blind Triton auto-selection for dense exact Hausdorff-style witness reduction.",
+        notes=(
+            "Do not add Hausdorff-specific native code; nearest-witness scoring remains "
+            "generic point-nearest plus grouped reduction. Goal2787 and Goal2788 block "
+            "blind Triton auto-selection for dense exact Hausdorff-style witness "
+            "reduction, while Goal2790 adds mixed thresholded guidance after the tiled "
+            "route wins only at the measured 16K dense shape."
+        ),
         measured_selection_shapes=(
             ("grouped_argmin_f64", "dense_exact_hausdorff_argmin_argmax"),
             ("grouped_argmin_f64", "dense_exact_hausdorff_nearest_then_global_max"),
+            ("grouped_argmin_f64", "dense_exact_hausdorff_tiled_nearest_then_global_max"),
         ),
     ),
     V25TritonBenchmarkAppPlan(
@@ -437,6 +451,9 @@ def validate_v2_5_triton_benchmark_app_migration_plan() -> dict[str, object]:
             if guidance["status"] == "measured_negative_preview_guidance":
                 if guidance["auto_select_partner_allowed"] is not False:
                     errors.append(f"{app['app_id']} measured negative guidance must block auto-selection")
+            if guidance["status"] == "measured_mixed_preview_guidance":
+                if guidance["auto_select_partner_allowed"] is not False:
+                    errors.append(f"{app['app_id']} measured mixed guidance must block auto-selection")
     return {
         "status": "accept" if not errors else "reject",
         "benchmark_app_count": plan["benchmark_app_count"],

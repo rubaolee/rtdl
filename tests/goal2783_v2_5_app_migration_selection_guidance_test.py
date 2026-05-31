@@ -65,6 +65,7 @@ class Goal2783V25AppMigrationSelectionGuidanceTest(unittest.TestCase):
         self.assertIn("grouped_argmin_f64", hausdorff["v2_5_required_operations"])
         self.assertIn("grouped_argmax_f64", hausdorff["v2_5_required_operations"])
         self.assertEqual(hausdorff["measured_negative_preview_guidance_count"], 2)
+        self.assertEqual(hausdorff["measured_mixed_preview_guidance_count"], 1)
         self.assertFalse(hausdorff["auto_select_preview_partner_allowed"])
         self.assertEqual(
             guidance_by_shape["dense_exact_hausdorff_argmin_argmax"]["matches"][0]["evidence_goal"],
@@ -74,7 +75,18 @@ class Goal2783V25AppMigrationSelectionGuidanceTest(unittest.TestCase):
             guidance_by_shape["dense_exact_hausdorff_nearest_then_global_max"]["matches"][0]["evidence_goal"],
             "Goal2788",
         )
-        for guidance in guidance_by_shape.values():
+        self.assertEqual(
+            guidance_by_shape["dense_exact_hausdorff_tiled_nearest_then_global_max"]["matches"][0][
+                "evidence_goal"
+            ],
+            "Goal2790",
+        )
+        for shape, guidance in guidance_by_shape.items():
+            if shape == "dense_exact_hausdorff_tiled_nearest_then_global_max":
+                self.assertEqual(guidance["status"], "measured_mixed_preview_guidance")
+                self.assertIn("thresholded preview evidence", guidance["recommendation"])
+                self.assertFalse(guidance["auto_select_partner_allowed"])
+                continue
             self.assertEqual(guidance["status"], "measured_negative_preview_guidance")
             self.assertFalse(guidance["auto_select_partner_allowed"])
             self.assertIn("Do not auto-select Triton", guidance["recommendation"])
@@ -85,6 +97,7 @@ class Goal2783V25AppMigrationSelectionGuidanceTest(unittest.TestCase):
             with self.subTest(app_id=app_id):
                 app = apps[app_id]
                 self.assertEqual(app["measured_negative_preview_guidance_count"], 0)
+                self.assertEqual(app["measured_mixed_preview_guidance_count"], 0)
                 self.assertEqual(app["partner_selection_guidance"], ())
                 self.assertFalse(app["auto_select_preview_partner_allowed"])
 

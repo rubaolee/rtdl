@@ -64,6 +64,7 @@ class V25PartnerSelectionGuidanceRow:
     def to_metadata(self) -> dict[str, Any]:
         return {
             "guidance_version": V2_5_PARTNER_SELECTION_GUIDANCE_VERSION,
+            "guidance_status": "measured_negative_preview_guidance",
             "operation": self.operation,
             "workload_shape": self.workload_shape,
             "measured_partner": self.measured_partner,
@@ -84,7 +85,88 @@ class V25PartnerSelectionGuidanceRow:
         }
 
 
-V2_5_PARTNER_SELECTION_GUIDANCE_ROWS = (
+@dataclass(frozen=True)
+class V25PartnerConditionalGuidanceRow:
+    operation: str
+    workload_shape: str
+    measured_partner: str
+    comparison_partner: str
+    evidence_goal: str
+    artifact_path: str
+    measured_partner_over_comparison_min_ratio: float
+    measured_partner_over_comparison_max_ratio: float
+    measured_partner_faster_shape_count: int
+    measured_partner_slower_shape_count: int
+    measured_crossover_summary: str
+    recommendation: str
+    auto_select_measured_partner_allowed: bool = False
+    promoted_performance_path: bool = False
+    public_speedup_claim_authorized: bool = False
+    rt_core_speedup_claim_authorized: bool = False
+    whole_app_speedup_claim_authorized: bool = False
+    true_zero_copy_claim_authorized: bool = False
+    release_readiness_authorized: bool = False
+
+    def __post_init__(self) -> None:
+        if self.operation not in V2_5_PARTNER_CONTINUATION_OPERATION_NAMES:
+            raise ValueError("conditional guidance row operation is not a v2.5 continuation operation")
+        if self.measured_partner != V2_5_PRIMARY_PARTNER:
+            raise ValueError("current v2.5 conditional rows measure the Triton preview partner")
+        if self.measured_partner_over_comparison_min_ratio <= 0.0:
+            raise ValueError("minimum timing ratio must be positive")
+        if self.measured_partner_over_comparison_max_ratio < self.measured_partner_over_comparison_min_ratio:
+            raise ValueError("maximum timing ratio must be >= minimum timing ratio")
+        if self.measured_partner_faster_shape_count <= 0:
+            raise ValueError("conditional guidance must record at least one faster measured shape")
+        if self.measured_partner_slower_shape_count <= 0:
+            raise ValueError("conditional guidance must record at least one slower measured shape")
+        if self.auto_select_measured_partner_allowed:
+            raise ValueError("conditional preview guidance must not auto-select the measured partner")
+        if self.promoted_performance_path:
+            raise ValueError("conditional preview guidance must not promote a performance path")
+        if self.public_speedup_claim_authorized:
+            raise ValueError("partner guidance must not authorize public speedup claims")
+        if self.rt_core_speedup_claim_authorized:
+            raise ValueError("partner guidance must not authorize RT-core speedup claims")
+        if self.whole_app_speedup_claim_authorized:
+            raise ValueError("partner guidance must not authorize whole-app speedup claims")
+        if self.true_zero_copy_claim_authorized:
+            raise ValueError("partner guidance must not authorize true zero-copy claims")
+        if self.release_readiness_authorized:
+            raise ValueError("partner guidance must not authorize release readiness")
+
+    def to_metadata(self) -> dict[str, Any]:
+        return {
+            "guidance_version": V2_5_PARTNER_SELECTION_GUIDANCE_VERSION,
+            "guidance_status": "measured_mixed_preview_guidance",
+            "operation": self.operation,
+            "workload_shape": self.workload_shape,
+            "measured_partner": self.measured_partner,
+            "comparison_partner": self.comparison_partner,
+            "evidence_goal": self.evidence_goal,
+            "artifact_path": self.artifact_path,
+            "measurement_ratio_kind": "measured_partner_wall_time_over_comparison_partner_wall_time",
+            "ratio_less_than_one_means_measured_partner_faster": True,
+            "measured_partner_over_comparison_min_ratio": self.measured_partner_over_comparison_min_ratio,
+            "measured_partner_over_comparison_max_ratio": self.measured_partner_over_comparison_max_ratio,
+            "measured_partner_faster_shape_count": self.measured_partner_faster_shape_count,
+            "measured_partner_slower_shape_count": self.measured_partner_slower_shape_count,
+            "measured_crossover_summary": self.measured_crossover_summary,
+            "recommendation": self.recommendation,
+            "auto_select_measured_partner_allowed": self.auto_select_measured_partner_allowed,
+            "promoted_performance_path": self.promoted_performance_path,
+            "public_speedup_claim_authorized": self.public_speedup_claim_authorized,
+            "rt_core_speedup_claim_authorized": self.rt_core_speedup_claim_authorized,
+            "whole_app_speedup_claim_authorized": self.whole_app_speedup_claim_authorized,
+            "true_zero_copy_claim_authorized": self.true_zero_copy_claim_authorized,
+            "release_readiness_authorized": self.release_readiness_authorized,
+            "claim_boundary": V2_5_PARTNER_SELECTION_GUIDANCE_CLAIM_BOUNDARY,
+        }
+
+
+V2_5_PARTNER_SELECTION_GUIDANCE_ROWS: tuple[
+    V25PartnerSelectionGuidanceRow | V25PartnerConditionalGuidanceRow, ...
+] = (
     V25PartnerSelectionGuidanceRow(
         operation="grouped_topk_f64",
         workload_shape="dense_exact_topk_candidate_ranking",
@@ -173,6 +255,33 @@ V2_5_PARTNER_SELECTION_GUIDANCE_ROWS = (
             "wins timing."
         ),
     ),
+    V25PartnerConditionalGuidanceRow(
+        operation="grouped_argmin_f64",
+        workload_shape="dense_exact_hausdorff_tiled_nearest_then_global_max",
+        measured_partner="triton",
+        comparison_partner="torch_same_contract_branch",
+        evidence_goal="Goal2790",
+        artifact_path=(
+            "docs/reports/goal2790_pod_artifacts/"
+            "goal2790_tiled_dense_point_nearest_hausdorff_pod_69_30_85_171_2026-05-31.json"
+        ),
+        measured_partner_over_comparison_min_ratio=0.745,
+        measured_partner_over_comparison_max_ratio=19.61,
+        measured_partner_faster_shape_count=1,
+        measured_partner_slower_shape_count=3,
+        measured_crossover_summary=(
+            "Goal2790 measured the tiled Triton route slower than Torch at "
+            "2048x2048, 4096x4096, and 8192x8192, but faster at 16384x16384 "
+            "(16K x 16K) on the RTX A5000 pod."
+        ),
+        recommendation=(
+            "Treat tiled dense point-nearest Hausdorff-style reduction as "
+            "thresholded preview evidence, not a default. It may be explicitly "
+            "selected for large dense shapes after same-contract measurement, "
+            "but planners must not auto-select it or publish a blanket Triton "
+            "speedup claim from the mixed Goal2790 evidence."
+        ),
+    ),
 )
 
 
@@ -214,11 +323,15 @@ def plan_v2_5_partner_selection(operation: str, workload_shape: str | None = Non
             "recommendation": "Require explicit app/user partner choice and same-contract evidence.",
             "claim_boundary": V2_5_PARTNER_SELECTION_GUIDANCE_CLAIM_BOUNDARY,
         }
+    status = str(matches[0].get("guidance_status", "measured_negative_preview_guidance"))
+    if len(matches) > 1:
+        statuses = {str(match.get("guidance_status", "")) for match in matches}
+        status = next(iter(statuses)) if len(statuses) == 1 else "measured_preview_guidance_multiple"
     return {
         "guidance_version": V2_5_PARTNER_SELECTION_GUIDANCE_VERSION,
         "operation": normalized_operation,
         "workload_shape": normalized_shape,
-        "status": "measured_negative_preview_guidance",
+        "status": status,
         "matches": matches,
         "auto_select_partner_allowed": False,
         "recommendation": matches[0]["recommendation"] if len(matches) == 1 else "Review all matching guidance rows.",
@@ -258,6 +371,9 @@ def validate_v2_5_partner_selection_guidance(
         operation = str(row.get("operation", ""))
         if operation not in V2_5_PARTNER_CONTINUATION_OPERATION_NAMES:
             errors.append(f"unknown operation in guidance row: {operation}")
+        guidance_status = str(row.get("guidance_status", ""))
+        if guidance_status not in {"measured_negative_preview_guidance", "measured_mixed_preview_guidance"}:
+            errors.append(f"{operation} has unknown guidance status: {guidance_status}")
         if row.get("measured_partner") != V2_5_PRIMARY_PARTNER:
             errors.append(f"{operation} must record Triton as the measured preview partner")
         if row.get("auto_select_measured_partner_allowed") is not False:
