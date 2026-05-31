@@ -96,11 +96,19 @@ Ran 2 tests in 0.002s
 OK
 ```
 
-Pod executable Triton validation was run on `69.30.85.171:22167` against the
-Goal2861 working tree patch on top of `52898c4d`:
+Pod executable Triton validation was first run on `69.30.85.171:22167` against
+the Goal2861 working tree patch on top of `52898c4d`:
 
 ```text
 Ran 33 tests in 3.121s
+OK (skipped=1)
+```
+
+After commit and push, the pod was stashed back to a clean worktree, fast-forwarded
+to `d60537e6`, and rerun:
+
+```text
+Ran 34 tests in 2.545s
 OK (skipped=1)
 ```
 
