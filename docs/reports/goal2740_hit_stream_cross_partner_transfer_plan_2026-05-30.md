@@ -73,6 +73,9 @@ RT traversal.
   - Added transfer status and carrier protocol vocabularies.
   - Added `plan_v2_5_hit_stream_partner_transfer(...)`.
   - Nested the transfer plan in `plan_v2_5_hit_stream_partner_continuation(...)`.
+  - Hardened explicit Triton gather so raw CUDA-array-interface columns require
+    either an existing Torch tensor carrier or hardware-proven native CUDA
+    columns before runtime adaptation is attempted.
 - `src/rtdsl/__init__.py`
   - Imported the experimental planning symbols without adding them to
     `rt.__all__`.
@@ -96,8 +99,10 @@ py -3 -m unittest \
   tests.goal2696_v2_5_partner_support_matrix_test \
   tests.goal2738_native_hit_stream_stream_ordering_boundary_test \
   tests.goal2737_native_hit_stream_owner_lifecycle_guard_test \
+  tests.goal2704_native_hit_stream_output_abi_contract_test \
+  tests.goal2708_hit_stream_cuda_array_torch_carrier_adapter_test \
   tests.goal2734_v2_5_same_pointer_zero_copy_boundary_audit_test
-35 tests OK
+45 tests OK
 
 py -3 -m py_compile src/rtdsl/hit_stream_handoff.py src/rtdsl/__init__.py \
   tests/goal2740_hit_stream_cross_partner_transfer_plan_test.py

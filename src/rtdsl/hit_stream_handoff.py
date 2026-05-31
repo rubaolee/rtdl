@@ -789,6 +789,15 @@ def gather_typed_payload_columns_for_hit_stream(
                 "triton gather requires torch tensor carrier columns or CUDA-array-interface columns; "
                 "pass allow_explicit_copy=True only when the host/device copy is explicit"
             )
+        if (
+            bool(torch_carrier_adapter["raw_cuda_adapter_required"])
+            and not bool(hit_stream_columns.native_device_column_output_proven_on_hardware)
+            and not _all_torch_gather_columns(hit_stream_columns, payload_columns)
+        ):
+            raise ValueError(
+                "triton gather requires existing torch tensor carrier columns or "
+                "hardware-proven native CUDA-array-interface columns"
+            )
         _validate_primitive_ids_in_payload_range(
             hit_stream_columns.primitive_ids,
             payload_columns.primitive_count,
