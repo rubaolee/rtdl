@@ -77,3 +77,18 @@ python3 -m unittest \
   tests.goal2704_native_hit_stream_output_abi_contract_test
 23 tests OK
 ```
+
+Actual OptiX device-column metadata smoke on the same pod after pulling
+`02a716ae`:
+
+```json
+{
+  "device": "cuda:0",
+  "native_device_column_output_proven_on_hardware": true,
+  "producer_consumer_stream_ordering": "host_synchronized_before_consumer",
+  "row_count": 1,
+  "source_mode": "native_device_columns",
+  "stream_synchronization_proven": true,
+  "true_zero_copy_authorized": false
+}
+```
