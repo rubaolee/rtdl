@@ -128,6 +128,7 @@ from .columnar_partner import prepare_partner_resident_columnar_record_set
 from .grouped_reduction import GroupedReductionCapacityStatus
 from .grouped_reduction import GroupedReductionSpec
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT
+from .hit_stream_handoff import prepare_generic_device_resident_hit_stream_columns
 from .hit_stream_handoff import prepare_native_device_hit_stream_columns_from_abi
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_NATIVE_ABI_CONTRACT
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE
@@ -169,6 +170,9 @@ OPTIX_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL = (
 OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_SYMBOL = "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream"
 OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns"
+)
+OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_SYMBOL = (
+    "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_into_device_columns"
 )
 OPTIX_RELEASE_RAY_TRIANGLE_HIT_STREAM_3D_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_release_ray_triangle_hit_stream_device_columns"
@@ -9836,6 +9840,62 @@ class _OptixNativeHitStreamDeviceColumnsOwner:
             pass
 
 
+class PreparedOptixHitStreamDeviceColumnBuffers:
+    """Caller-owned CUDA int64 columns for reusable OptiX hit-stream output."""
+
+    def __init__(self, capacity: int, *, device=None) -> None:
+        capacity = int(capacity)
+        if capacity < 0:
+            raise ValueError("hit-stream output buffer capacity must be non-negative")
+        try:
+            import torch
+        except Exception as exc:
+            raise RuntimeError("reusable OptiX hit-stream output buffers require torch") from exc
+        if not torch.cuda.is_available():
+            raise RuntimeError("reusable OptiX hit-stream output buffers require CUDA-capable torch")
+        resolved_device = "cuda" if device is None else device
+        self.capacity = capacity
+        self.ray_ids = torch.empty((capacity,), dtype=torch.int64, device=resolved_device)
+        self.primitive_ids = torch.empty((capacity,), dtype=torch.int64, device=self.ray_ids.device)
+        self._closed = False
+
+    @property
+    def closed(self) -> bool:
+        return self._closed
+
+    @property
+    def ray_ids_device_ptr(self) -> int:
+        self._assert_open()
+        return int(self.ray_ids.data_ptr())
+
+    @property
+    def primitive_ids_device_ptr(self) -> int:
+        self._assert_open()
+        return int(self.primitive_ids.data_ptr())
+
+    def _assert_open(self) -> None:
+        if self._closed:
+            raise RuntimeError("reusable OptiX hit-stream output buffers are closed")
+
+    def _slice(self, row_count: int):
+        self._assert_open()
+        row_count = int(row_count)
+        if row_count < 0 or row_count > self.capacity:
+            raise ValueError("hit-stream output row_count is outside buffer capacity")
+        return self.ray_ids[:row_count], self.primitive_ids[:row_count]
+
+    def close(self) -> None:
+        self._closed = True
+        self.ray_ids = None
+        self.primitive_ids = None
+
+    def __enter__(self) -> "PreparedOptixHitStreamDeviceColumnBuffers":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+
 class PreparedOptixStaticTriangleScene3D:
     """Reusable OptiX handle for grouped finite 3D segment any-hit flags."""
 
@@ -9905,6 +9965,16 @@ class PreparedOptixStaticTriangleScene3D:
         if self._closed:
             raise RuntimeError("prepared OptiX static triangle scene handle is closed")
         return PreparedOptixRayBatch3D.from_device_ray_columns(self._lib, ray_columns)
+
+    def prepare_ray_triangle_hit_stream_device_column_buffers(
+        self,
+        capacity: int,
+        *,
+        device=None,
+    ) -> PreparedOptixHitStreamDeviceColumnBuffers:
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        return PreparedOptixHitStreamDeviceColumnBuffers(capacity, device=device)
 
     def prepare_closest_hit_grouped_argmin_inputs(
         self,
@@ -10957,6 +11027,94 @@ class PreparedOptixStaticTriangleScene3D:
             native_device_column_output_proven_on_hardware=handoff.native_device_column_output_proven_on_hardware,
             owner=handoff.owner,
             producer_consumer_stream_ordering=handoff.producer_consumer_stream_ordering,
+            caller_owned_output_buffers=handoff.caller_owned_output_buffers,
+            reusable_output_buffers_used=handoff.reusable_output_buffers_used,
+        )
+
+    def ray_triangle_hit_stream_into_device_columns(
+        self,
+        rays,
+        output_buffers: PreparedOptixHitStreamDeviceColumnBuffers,
+        *,
+        max_rows: int | None = None,
+        deduplicate_primitives: bool = True,
+    ):
+        """Emit generic bounded hit columns into caller-owned reusable CUDA buffers."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        if not isinstance(output_buffers, PreparedOptixHitStreamDeviceColumnBuffers):
+            raise TypeError(
+                "ray_triangle_hit_stream_into_device_columns requires "
+                "PreparedOptixHitStreamDeviceColumnBuffers"
+            )
+        output_buffers._assert_open()
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_SYMBOL}. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+
+        pack_start = time.perf_counter()
+        packed_rays = rays if isinstance(rays, PackedRays) else pack_rays(rays, dimension=3)
+        if packed_rays.dimension != 3:
+            raise ValueError("ray_triangle_hit_stream_into_device_columns requires 3-D rays")
+        capacity = output_buffers.capacity if max_rows is None else int(max_rows)
+        if capacity < 0:
+            raise ValueError("max_rows must be non-negative")
+        if capacity > output_buffers.capacity:
+            raise ValueError("max_rows must not exceed reusable output buffer capacity")
+        query_pack_seconds = time.perf_counter() - pack_start
+
+        columns = _RtdlNativeDeviceHitStreamColumns()
+        error = ctypes.create_string_buffer(4096)
+        native_start = time.perf_counter()
+        status = run_symbol(
+            self._handle,
+            packed_rays.records,
+            packed_rays.count,
+            ctypes.c_uint32(1 if deduplicate_primitives else 0),
+            ctypes.c_size_t(capacity),
+            ctypes.c_uint64(output_buffers.ray_ids_device_ptr),
+            ctypes.c_uint64(output_buffers.primitive_ids_device_ptr),
+            ctypes.byref(columns),
+            error,
+            len(error),
+        )
+        native_call_seconds = time.perf_counter() - native_start
+        _check_status(status, error)
+
+        row_count = int(columns.row_count)
+        ray_ids, primitive_ids = output_buffers._slice(row_count)
+        if not bool(columns.overflow) and row_count != 0:
+            if int(columns.ray_ids_device_ptr) != output_buffers.ray_ids_device_ptr:
+                raise RuntimeError("native OptiX backend returned an unexpected ray_ids output pointer")
+            if int(columns.primitive_ids_device_ptr) != output_buffers.primitive_ids_device_ptr:
+                raise RuntimeError("native OptiX backend returned an unexpected primitive_ids output pointer")
+        self._run_count += 1
+        return prepare_generic_device_resident_hit_stream_columns(
+            ray_ids=ray_ids,
+            primitive_ids=primitive_ids,
+            row_count=row_count,
+            capacity=int(columns.capacity),
+            overflow=bool(columns.overflow),
+            backend="optix",
+            phase_timing_seconds={
+                "prepare_build": float(self.prepare_seconds),
+                "query_pack": float(query_pack_seconds),
+                "traversal": float(columns.traversal_seconds),
+                "native_call": float(native_call_seconds),
+            },
+            native_symbol=OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_SYMBOL,
+            native_device_column_output_proven_on_hardware=True,
+            owner=output_buffers,
+            producer_consumer_stream_ordering="host_synchronized_before_consumer",
+            caller_owned_output_buffers=True,
+            reusable_output_buffers_used=True,
         )
 
     def ray_triangle_prepared_primitive_grouped_i64_reduction(
@@ -13356,6 +13514,24 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_static_scene_3d_hit_stream_device_columns.restype = ctypes.c_int
+    optional_static_scene_3d_hit_stream_into_device_columns = _find_optional_backend_symbol(
+        lib,
+        OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_SYMBOL,
+    )
+    if optional_static_scene_3d_hit_stream_into_device_columns is not None:
+        optional_static_scene_3d_hit_stream_into_device_columns.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlRay3D),
+            ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.c_size_t,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.POINTER(_RtdlNativeDeviceHitStreamColumns),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_hit_stream_into_device_columns.restype = ctypes.c_int
     optional_static_scene_3d_release_hit_stream_device_columns = _find_optional_backend_symbol(
         lib,
         OPTIX_RELEASE_RAY_TRIANGLE_HIT_STREAM_3D_DEVICE_COLUMNS_SYMBOL,

@@ -113,6 +113,12 @@ Observation:
   correctness and same-pointer adapter evidence. This supports primitive-first
   selection for scalar reductions and reserves hit streams for unfused
   continuations or future lower-overhead handoff work.
+- Goal2756 added caller-owned reusable CUDA output buffers for the generic
+  OptiX ray/triangle hit-stream column path. This removes the per-run native
+  output-column `cuMemAlloc`/release from the reusable path and records the
+  caller-owned lifetime in the handoff metadata, but it remains
+  host-synchronized before partner consumption and does not authorize a true
+  zero-copy or public speedup claim.
 
 Future work:
 
@@ -122,8 +128,9 @@ Future work:
 - Add stream/event evidence that proves the OptiX producer and Triton consumer
   are ordered on real hardware without relying on device-wide synchronization.
 - Reduce generic hit-stream continuation overhead only through generic runtime
-  work: event/same-stream ordering, reusable output buffers, fused
-  gather+continuation, and device-resident row-count/overflow handling.
+  work: event/same-stream ordering, fused gather+continuation, and
+  device-resident row-count/overflow handling. Reusable output buffers are now
+  available as a Goal2756 building block and need broader scale/perf validation.
 - Run multi-GPU and multi-driver same-pointer/lifetime validation before any
   public true-zero-copy wording is considered.
 - Extend cross-partner transfer plans only when CuPy or Numba has a real

@@ -100,6 +100,8 @@ class RtdlHitStreamColumnHandoff:
     native_device_column_output_proven_on_hardware: bool = False
     owner: Any = None
     producer_consumer_stream_ordering: str = "not_proven"
+    caller_owned_output_buffers: bool = False
+    reusable_output_buffers_used: bool = False
 
     def __post_init__(self) -> None:
         row_count = int(self.row_count)
@@ -180,6 +182,9 @@ class RtdlHitStreamColumnHandoff:
                 and not bool(self.native_device_column_output_proven_on_hardware)
             ),
             "ownership_lifetime_model": (
+                "caller_retained_python_reference"
+                if self.caller_owned_output_buffers
+                else
                 "native_owner_state_machine_required_before_promotion"
                 if self.source_mode == "native_device_columns"
                 else "caller_retained_python_reference"
@@ -187,6 +192,8 @@ class RtdlHitStreamColumnHandoff:
             "owner_lifetime_state": _owner_lifetime_state(self.owner),
             "owner_close_supported": callable(getattr(self.owner, "close", None)),
             "handoff_after_owner_close_allowed": False if self.source_mode == "native_device_columns" else None,
+            "caller_owned_output_buffers": bool(self.caller_owned_output_buffers),
+            "reusable_output_buffers_used": bool(self.reusable_output_buffers_used),
             "producer_consumer_stream_ordering": self.producer_consumer_stream_ordering,
             "stream_synchronization_proven": self.producer_consumer_stream_ordering != "not_proven",
             "host_synchronization_used": self.producer_consumer_stream_ordering == "host_synchronized_before_consumer",
@@ -206,8 +213,10 @@ class RtdlHitStreamColumnHandoff:
                     producer=self.source_mode,
                     consumer="typed_payload_gather",
                     access_mode="read",
-                    native_producer=self.source_mode == "native_device_columns",
+                    native_producer=self.source_mode == "native_device_columns"
+                    and not self.caller_owned_output_buffers,
                     host_materialized_before_handoff=bool(self.materializes_host_rows_for_bridge),
+                    lifetime_state="caller_retained" if self.caller_owned_output_buffers else None,
                 ),
                 _neutral_buffer_seam_metadata(
                     "primitive_ids",
@@ -216,8 +225,10 @@ class RtdlHitStreamColumnHandoff:
                     producer=self.source_mode,
                     consumer="typed_payload_gather",
                     access_mode="read",
-                    native_producer=self.source_mode == "native_device_columns",
+                    native_producer=self.source_mode == "native_device_columns"
+                    and not self.caller_owned_output_buffers,
                     host_materialized_before_handoff=bool(self.materializes_host_rows_for_bridge),
+                    lifetime_state="caller_retained" if self.caller_owned_output_buffers else None,
                 ),
             ),
             "column_descriptors": (
@@ -642,6 +653,8 @@ def prepare_generic_device_resident_hit_stream_columns(
     native_device_column_output_proven_on_hardware: bool = False,
     owner: Any = None,
     producer_consumer_stream_ordering: str = "not_proven",
+    caller_owned_output_buffers: bool = False,
+    reusable_output_buffers_used: bool = False,
 ) -> RtdlHitStreamColumnHandoff:
     resolved_count = _column_length(primitive_ids) if row_count is None else int(row_count)
     return RtdlHitStreamColumnHandoff(
@@ -658,6 +671,8 @@ def prepare_generic_device_resident_hit_stream_columns(
         native_device_column_output_proven_on_hardware=bool(native_device_column_output_proven_on_hardware),
         owner=owner,
         producer_consumer_stream_ordering=producer_consumer_stream_ordering,
+        caller_owned_output_buffers=bool(caller_owned_output_buffers),
+        reusable_output_buffers_used=bool(reusable_output_buffers_used),
     )
 
 
@@ -1446,14 +1461,21 @@ def _neutral_buffer_seam_metadata(
     access_mode: str,
     native_producer: bool = False,
     host_materialized_before_handoff: bool = False,
+    lifetime_state: str | None = None,
 ) -> dict[str, Any]:
-    lifetime_state = "native_owned_pending_state_machine" if native_producer else "caller_retained"
+    resolved_lifetime_state = (
+        lifetime_state
+        if lifetime_state is not None
+        else "native_owned_pending_state_machine"
+        if native_producer
+        else "caller_retained"
+    )
     transfer_status = "host_stage" if host_materialized_before_handoff else None
     descriptor = neutral_buffer_descriptor_from_rtdl_buffer(
         _buffer_descriptor(name, column, dtype, access_mode=access_mode),
         producer=producer,
         consumer=consumer,
-        lifetime_state=lifetime_state,
+        lifetime_state=resolved_lifetime_state,
         native_producer=native_producer,
         transfer_status=transfer_status,
         host_materialized_before_handoff=host_materialized_before_handoff,

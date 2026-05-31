@@ -13,10 +13,10 @@ class Goal2746OptixHitStreamHostSyncOrderingTest(unittest.TestCase):
     def test_native_device_column_source_synchronizes_before_returning_owner(self) -> None:
         workloads = OPTIX_WORKLOADS.read_text(encoding="utf-8")
         function_start = workloads.index(
-            "run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns_optix"
+            "run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns_impl_optix"
         )
         function_end = workloads.index(
-            "release_ray_triangle_hit_stream_device_columns_optix",
+            "run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns_optix",
             function_start,
         )
         function = workloads[function_start:function_end]

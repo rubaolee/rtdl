@@ -684,6 +684,7 @@ from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d_device_triangle
 from .optix_runtime import prepare_optix_static_triangle_scene_3d
 from .optix_runtime import prepare_optix_static_triangle_scene_3d_device_triangles
 from .optix_runtime import prepare_optix_primitive_grouped_i64_payload_3d
+from .optix_runtime import PreparedOptixHitStreamDeviceColumnBuffers
 from .optix_runtime import prepare_optix_grouped_segment_query_3d
 from .optix_runtime import prepare_optix_grouped_candidate_argmin
 from .optix_runtime import grouped_candidate_argmin_host_reference
@@ -1969,6 +1970,7 @@ __all__ = [
     "prepare_optix_static_triangle_scene_3d",
     "prepare_optix_static_triangle_scene_3d_device_triangles",
     "prepare_optix_primitive_grouped_i64_payload_3d",
+    "PreparedOptixHitStreamDeviceColumnBuffers",
     "prepare_optix_grouped_segment_query_3d",
     "prepare_optix_grouped_candidate_argmin",
     "grouped_candidate_argmin_host_reference",

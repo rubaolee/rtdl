@@ -10313,12 +10313,15 @@ static void run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_optix(
         *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
 }
 
-static void run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns_optix(
+static void run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns_impl_optix(
         PreparedStaticTriangleScene3D* prepared,
         const RtdlRay3D* rays,
         size_t ray_count,
         uint32_t deduplicate_primitives,
         size_t max_rows,
+        CUdeviceptr caller_ray_ids,
+        CUdeviceptr caller_primitive_ids,
+        bool caller_owned_output,
         RtdlNativeDeviceHitStreamColumns* columns_out)
 {
     if (!prepared)
@@ -10336,6 +10339,8 @@ static void run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_device
 
     *columns_out = {};
     columns_out->capacity = static_cast<uint64_t>(max_rows);
+    if (caller_owned_output && max_rows != 0 && (!caller_ray_ids || !caller_primitive_ids))
+        throw std::runtime_error("caller-owned hit-stream output columns require nonzero device pointers");
     if (ray_count == 0 || prepared->triangle_count == 0)
         return;
 
@@ -10345,10 +10350,17 @@ static void run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_device
 
     ensure_ray_triangle_hit_stream_device_columns_3d_pipeline();
 
-    auto owner = std::make_unique<NativeRayTriangleHitStreamDeviceColumnsOwner>();
-    if (max_rows != 0) {
-        CU_CHECK(cuMemAlloc(&owner->ray_ids, sizeof(unsigned long long) * max_rows));
-        CU_CHECK(cuMemAlloc(&owner->primitive_ids, sizeof(unsigned long long) * max_rows));
+    std::unique_ptr<NativeRayTriangleHitStreamDeviceColumnsOwner> owner;
+    CUdeviceptr ray_ids_output = caller_ray_ids;
+    CUdeviceptr primitive_ids_output = caller_primitive_ids;
+    if (!caller_owned_output) {
+        owner = std::make_unique<NativeRayTriangleHitStreamDeviceColumnsOwner>();
+        if (max_rows != 0) {
+            CU_CHECK(cuMemAlloc(&owner->ray_ids, sizeof(unsigned long long) * max_rows));
+            CU_CHECK(cuMemAlloc(&owner->primitive_ids, sizeof(unsigned long long) * max_rows));
+            ray_ids_output = owner->ray_ids;
+            primitive_ids_output = owner->primitive_ids;
+        }
     }
 
     const size_t flag_word_count = std::max<size_t>(1, (prepared->triangle_count + 31u) / 32u);
@@ -10370,8 +10382,8 @@ static void run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_device
     lp.traversable = prepared->accel.handle;
     lp.rays = reinterpret_cast<const GpuRay3DHost*>(d_rays.ptr);
     lp.triangles = reinterpret_cast<const GpuTriangle3DHost*>(prepared->d_triangles.ptr);
-    lp.ray_ids = reinterpret_cast<unsigned long long*>(owner->ray_ids);
-    lp.primitive_ids = reinterpret_cast<unsigned long long*>(owner->primitive_ids);
+    lp.ray_ids = reinterpret_cast<unsigned long long*>(ray_ids_output);
+    lp.primitive_ids = reinterpret_cast<unsigned long long*>(primitive_ids_output);
     lp.row_count = reinterpret_cast<unsigned long long*>(d_row_count.ptr);
     lp.hit_event_count = reinterpret_cast<unsigned long long*>(d_hit_events.ptr);
     lp.overflow = reinterpret_cast<uint32_t*>(d_overflow.ptr);
@@ -10412,11 +10424,54 @@ static void run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_device
         return;
     }
 
-    columns_out->ray_ids_device_ptr = static_cast<uint64_t>(owner->ray_ids);
-    columns_out->primitive_ids_device_ptr = static_cast<uint64_t>(owner->primitive_ids);
+    columns_out->ray_ids_device_ptr = static_cast<uint64_t>(ray_ids_output);
+    columns_out->primitive_ids_device_ptr = static_cast<uint64_t>(primitive_ids_output);
     columns_out->row_count = static_cast<uint64_t>(attempted_rows);
     columns_out->overflow = 0u;
-    columns_out->owner_handle = owner.release();
+    if (!caller_owned_output && owner)
+        columns_out->owner_handle = owner.release();
+}
+
+static void run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        const RtdlRay3D* rays,
+        size_t ray_count,
+        uint32_t deduplicate_primitives,
+        size_t max_rows,
+        RtdlNativeDeviceHitStreamColumns* columns_out)
+{
+    run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns_impl_optix(
+        prepared,
+        rays,
+        ray_count,
+        deduplicate_primitives,
+        max_rows,
+        0,
+        0,
+        false,
+        columns_out);
+}
+
+static void run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_into_device_columns_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        const RtdlRay3D* rays,
+        size_t ray_count,
+        uint32_t deduplicate_primitives,
+        size_t max_rows,
+        uint64_t ray_ids_device_ptr,
+        uint64_t primitive_ids_device_ptr,
+        RtdlNativeDeviceHitStreamColumns* columns_out)
+{
+    run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns_impl_optix(
+        prepared,
+        rays,
+        ray_count,
+        deduplicate_primitives,
+        max_rows,
+        static_cast<CUdeviceptr>(ray_ids_device_ptr),
+        static_cast<CUdeviceptr>(primitive_ids_device_ptr),
+        true,
+        columns_out);
 }
 
 static void release_ray_triangle_hit_stream_device_columns_optix(void* owner_handle)
