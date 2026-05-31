@@ -101,6 +101,9 @@ Observation:
 - Goal2748 added the first Triton device-resident group-id invalid-count flag
   and an opt-in host-raise mode, but default grouped-operation enforcement still
   preserves the conservative host-scalar exception boundary.
+- Goal2750 added a transfer-planner safety gate: device partners now fail
+  closed with `stream_ordering_proof_required` when hit-stream columns are
+  device-resident but producer/consumer stream ordering is not proven.
 
 Future work:
 

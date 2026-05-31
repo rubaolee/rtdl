@@ -87,14 +87,16 @@ def _host_payload_columns() -> rt.RtdlTypedPrimitivePayloadColumns:
     )
 
 
-def _device_hit_columns() -> rt.RtdlHitStreamColumnHandoff:
+def _device_hit_columns(
+    producer_consumer_stream_ordering: str = "producer_event_waited_by_consumer",
+) -> rt.RtdlHitStreamColumnHandoff:
     return rt.prepare_generic_device_resident_hit_stream_columns(
         ray_ids=_FakeCudaInt64Column((0, 1), ptr=0x275000),
         primitive_ids=_FakeCudaInt64Column((0, 1), ptr=0x276000),
         row_count=2,
         capacity=2,
         backend="optix",
-        producer_consumer_stream_ordering="producer_event_waited_by_consumer",
+        producer_consumer_stream_ordering=producer_consumer_stream_ordering,
     )
 
 
@@ -156,8 +158,42 @@ class Goal2740HitStreamCrossPartnerTransferPlanTest(unittest.TestCase):
         self.assertTrue(plan["execution_allowed_without_copy"])
         self.assertTrue(plan["executable_preview_available"])
         self.assertTrue(plan["stream_synchronization_proven"])
+        self.assertFalse(plan["stream_ordering_blocks_device_consumer"])
         self.assertFalse(plan["true_zero_copy_authorized"])
         self.assertFalse(plan["public_speedup_claim_authorized"])
+
+    def test_triton_device_columns_without_stream_ordering_proof_fail_closed(self) -> None:
+        plan = rt.plan_v2_5_hit_stream_partner_transfer(
+            _device_hit_columns(producer_consumer_stream_ordering="not_proven"),
+            _device_payload_columns(),
+            operation="segmented_sum_f64",
+            partner="triton",
+        )
+
+        self.assertEqual(plan["status"], "stream_ordering_proof_required")
+        self.assertEqual(plan["runtime_action"], "requires_stream_ordering_proof_before_device_consumer")
+        self.assertEqual(plan["producer_consumer_stream_ordering"], "not_proven")
+        self.assertFalse(plan["stream_synchronization_proven"])
+        self.assertTrue(plan["device_consumer_requires_stream_ordering"])
+        self.assertTrue(plan["stream_ordering_blocks_device_consumer"])
+        self.assertFalse(plan["execution_allowed_without_copy"])
+        self.assertFalse(plan["executable_preview_available"])
+        self.assertFalse(plan["true_zero_copy_authorized"])
+
+    def test_host_synchronized_optix_columns_can_feed_device_partner_without_zero_copy_claim(self) -> None:
+        plan = rt.plan_v2_5_hit_stream_partner_transfer(
+            _device_hit_columns(producer_consumer_stream_ordering="host_synchronized_before_consumer"),
+            _device_payload_columns(),
+            operation="segmented_sum_f64",
+            partner="triton",
+        )
+
+        self.assertEqual(plan["status"], "torch_carrier_preview")
+        self.assertEqual(plan["producer_consumer_stream_ordering"], "host_synchronized_before_consumer")
+        self.assertTrue(plan["stream_synchronization_proven"])
+        self.assertFalse(plan["stream_ordering_blocks_device_consumer"])
+        self.assertTrue(plan["execution_allowed_without_copy"])
+        self.assertFalse(plan["true_zero_copy_authorized"])
 
     def test_cupy_is_descriptor_only_for_current_generic_hit_stream(self) -> None:
         plan = rt.plan_v2_5_hit_stream_partner_transfer(
@@ -173,6 +209,19 @@ class Goal2740HitStreamCrossPartnerTransferPlanTest(unittest.TestCase):
         self.assertTrue(plan["descriptor_only"])
         self.assertFalse(plan["executable_preview_available"])
         self.assertEqual(plan["runtime_action"], "descriptor_only_no_generic_kernel_execution")
+
+    def test_cupy_descriptor_requires_stream_ordering_proof_before_device_use(self) -> None:
+        plan = rt.plan_v2_5_hit_stream_partner_transfer(
+            _device_hit_columns(producer_consumer_stream_ordering="not_proven"),
+            _device_payload_columns(),
+            operation="segmented_sum_f64",
+            partner="cupy",
+        )
+
+        self.assertEqual(plan["status"], "stream_ordering_proof_required")
+        self.assertEqual(plan["carrier_protocol"], "cuda_array_interface_descriptor")
+        self.assertFalse(plan["descriptor_only"])
+        self.assertEqual(plan["runtime_action"], "requires_stream_ordering_proof_before_device_consumer")
 
     def test_numba_supported_operation_is_cuda_descriptor_preview(self) -> None:
         plan = rt.plan_v2_5_hit_stream_partner_transfer(

@@ -68,6 +68,7 @@ GENERIC_HIT_STREAM_PARTNER_TRANSFER_STATUSES = (
     "torch_carrier_preview",
     "cuda_descriptor_preview",
     "descriptor_only",
+    "stream_ordering_proof_required",
     "unsupported_fail_closed",
 )
 GENERIC_HIT_STREAM_PARTNER_CARRIER_PROTOCOLS = (
@@ -1027,12 +1028,18 @@ def plan_v2_5_hit_stream_partner_transfer(
     device_ready = _all_seams_device_ready(seams)
     any_host_stage = bool(summary["any_host_stage"])
     any_device_resident = any(bool(seam["device_resident"]) for seam in seams)
+    producer_consumer_stream_ordering = str(hit_metadata["producer_consumer_stream_ordering"])
     stream_synchronization_proven = bool(hit_metadata["stream_synchronization_proven"])
     torch_carrier_adapter = describe_v2_5_hit_stream_torch_carrier_adapter(
         hit_stream_columns,
         payload_columns,
     )
     selected_partner = str(support["partner"])
+    device_partner_requested = selected_partner in {"triton", "cupy_conformance", "numba"}
+    device_consumer_requires_stream_ordering = bool(device_partner_requested and device_ready)
+    stream_ordering_blocks_device_consumer = bool(
+        device_consumer_requires_stream_ordering and not stream_synchronization_proven
+    )
 
     status = "unsupported_fail_closed"
     carrier_protocol = "none"
@@ -1059,6 +1066,14 @@ def plan_v2_5_hit_stream_partner_transfer(
                 carrier_protocol = "torch_tensor_carrier"
                 copy_or_host_stage_required = True
                 runtime_action = "requires_device_resident_columns_or_explicit_copy"
+            elif stream_ordering_blocks_device_consumer:
+                status = "stream_ordering_proof_required"
+                carrier_protocol = (
+                    "cuda_array_interface_to_torch_carrier"
+                    if bool(torch_carrier_adapter["raw_cuda_adapter_required"])
+                    else "torch_tensor_carrier"
+                )
+                runtime_action = "requires_stream_ordering_proof_before_device_consumer"
             elif bool(torch_carrier_adapter["raw_cuda_adapter_required"]):
                 status = "torch_carrier_preview"
                 carrier_protocol = "cuda_array_interface_to_torch_carrier"
@@ -1077,6 +1092,10 @@ def plan_v2_5_hit_stream_partner_transfer(
                 carrier_protocol = "cuda_array_interface_descriptor"
                 copy_or_host_stage_required = True
                 runtime_action = "requires_device_resident_columns_or_explicit_copy"
+            elif stream_ordering_blocks_device_consumer:
+                status = "stream_ordering_proof_required"
+                carrier_protocol = "cuda_array_interface_descriptor"
+                runtime_action = "requires_stream_ordering_proof_before_device_consumer"
             else:
                 status = "descriptor_only"
                 carrier_protocol = "cuda_array_interface_descriptor"
@@ -1089,6 +1108,10 @@ def plan_v2_5_hit_stream_partner_transfer(
                 carrier_protocol = "cuda_array_interface_descriptor"
                 copy_or_host_stage_required = True
                 runtime_action = "requires_device_resident_columns_or_explicit_copy"
+            elif stream_ordering_blocks_device_consumer:
+                status = "stream_ordering_proof_required"
+                carrier_protocol = "cuda_array_interface_descriptor"
+                runtime_action = "requires_stream_ordering_proof_before_device_consumer"
             else:
                 status = "cuda_descriptor_preview"
                 carrier_protocol = "cuda_array_interface_descriptor"
@@ -1118,7 +1141,10 @@ def plan_v2_5_hit_stream_partner_transfer(
         "current_inputs_device_ready": bool(device_ready),
         "any_host_stage": any_host_stage,
         "any_device_resident": bool(any_device_resident),
+        "producer_consumer_stream_ordering": producer_consumer_stream_ordering,
         "stream_synchronization_proven": stream_synchronization_proven,
+        "device_consumer_requires_stream_ordering": device_consumer_requires_stream_ordering,
+        "stream_ordering_blocks_device_consumer": stream_ordering_blocks_device_consumer,
         "stream_synchronization_required_for_zero_copy_claim": True,
         "true_zero_copy_authorized": False,
         "public_speedup_claim_authorized": False,
