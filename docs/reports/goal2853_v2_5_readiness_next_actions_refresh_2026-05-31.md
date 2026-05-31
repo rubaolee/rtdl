@@ -45,9 +45,50 @@ Local validation:
 
 ```text
 py -3 -m unittest tests.goal2853_v2_5_readiness_next_actions_refresh_test
+
+Ran 3 tests in 0.180s
+OK
 ```
 
-Expected result: all tests pass.
+Expanded local readiness validation:
+
+```text
+py -3 -m unittest \
+  tests.goal2853_v2_5_readiness_next_actions_refresh_test \
+  tests.goal2851_barnes_hut_harness_progress_logging_test \
+  tests.goal2849_v2_5_readiness_indexes_current_canonical_harness_test \
+  tests.goal2847_current_head_canonical_harness_refresh_test \
+  tests.goal2806_v2_5_internal_readiness_packet_test
+
+Ran 22 tests in 0.170s
+OK
+```
+
+Pod validation from pushed `main`:
+
+```text
+commit: c18a26c6
+scope:
+  tests.goal2853_v2_5_readiness_next_actions_refresh_test
+  tests.goal2851_barnes_hut_harness_progress_logging_test
+  tests.goal2849_v2_5_readiness_indexes_current_canonical_harness_test
+  tests.goal2847_current_head_canonical_harness_refresh_test
+  tests.goal2806_v2_5_internal_readiness_packet_test
+
+Ran 22 tests in 0.027s
+OK
+```
+
+Pod recent v2.5 module-band validation:
+
+```text
+commit: c18a26c6
+module_count: 148
+scope: tests.goal2621_* through tests.goal2853_*
+
+Ran 714 tests in 8.823s
+OK (skipped=1)
+```
 
 ## Codex Verdict
 

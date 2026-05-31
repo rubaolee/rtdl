@@ -54,6 +54,8 @@ class Goal2853V25ReadinessNextActionsRefreshTest(unittest.TestCase):
             "Goal2852",
             "metadata-only",
             "not a release authorization",
+            "Pod recent v2.5 module-band validation",
+            "Ran 714 tests",
         ):
             self.assertIn(phrase, text)
 
