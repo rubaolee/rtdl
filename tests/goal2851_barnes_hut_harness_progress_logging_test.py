@@ -40,6 +40,9 @@ class Goal2851BarnesHutHarnessProgressLoggingTest(unittest.TestCase):
             "not a performance change",
             "not a public speedup claim",
             "pod smoke",
+            "Post-review full canonical validation",
+            "backend=embree repeat=1/3 start",
+            "backend=optix repeat=3/3 done",
         ):
             self.assertIn(phrase, text)
 

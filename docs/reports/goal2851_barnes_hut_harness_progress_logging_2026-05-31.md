@@ -75,6 +75,37 @@ source_commit 80d4c561b900d75398414662dc66ee0a3c9a02b8
 source_dirty []
 ```
 
+Post-review full canonical validation also ran on the real default Goal2803
+case set:
+
+```text
+commit: c12fae04d28aeb21b7f81d2b36356bfefa7fe521
+command:
+timeout 900s python3 -u scripts/goal2803_barnes_hut_v25_consolidated_harness.py \
+  --output /tmp/goal2851_barnes_hut_full_progress_validation.json
+
+large-case progress:
+[goal2803] membership case 3/3 progress: backend=embree repeat=1/3 start
+[goal2803] membership case 3/3 progress: backend=embree repeat=1/3 done sec=97.702
+[goal2803] membership case 3/3 progress: backend=embree repeat=2/3 start
+[goal2803] membership case 3/3 progress: backend=embree repeat=2/3 done sec=97.141
+[goal2803] membership case 3/3 progress: backend=embree repeat=3/3 start
+[goal2803] membership case 3/3 progress: backend=embree repeat=3/3 done sec=94.271
+[goal2803] membership case 3/3 progress: backend=optix repeat=1/3 start
+[goal2803] membership case 3/3 progress: backend=optix repeat=1/3 done sec=22.111
+[goal2803] membership case 3/3 progress: backend=optix repeat=2/3 start
+[goal2803] membership case 3/3 progress: backend=optix repeat=2/3 done sec=19.001
+[goal2803] membership case 3/3 progress: backend=optix repeat=3/3 start
+[goal2803] membership case 3/3 progress: backend=optix repeat=3/3 done sec=18.594
+
+result:
+[pod2851full] status pass rows 3
+min_speedup 8.550645619613132
+max_speedup 157.219054168451
+source_commit c12fae04d28aeb21b7f81d2b36356bfefa7fe521
+source_dirty []
+```
+
 ## Codex Verdict
 
 `accept-with-boundary`
