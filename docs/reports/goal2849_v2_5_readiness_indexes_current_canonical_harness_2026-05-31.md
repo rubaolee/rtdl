@@ -58,9 +58,52 @@ py -3 -m unittest \
   tests.goal2845_v2_5_internal_readiness_refresh_test \
   tests.goal2843_v2_5_execution_path_policy_test \
   tests.goal2841_rtnn_same_stream_scale_probe_test
+
+Ran 20 tests in 0.103s
+OK
 ```
 
-Expected result: all tests pass.
+Expanded local readiness validation:
+
+```text
+py -3 -m unittest \
+  tests.goal2849_v2_5_readiness_indexes_current_canonical_harness_test \
+  tests.goal2847_current_head_canonical_harness_refresh_test \
+  tests.goal2845_v2_5_internal_readiness_refresh_test \
+  tests.goal2843_v2_5_execution_path_policy_test \
+  tests.goal2841_rtnn_same_stream_scale_probe_test \
+  tests.goal2806_v2_5_internal_readiness_packet_test
+
+Ran 26 tests in 0.162s
+OK
+```
+
+Pod validation from pushed `main`:
+
+```text
+commit: 3b229b4e
+scope:
+  tests.goal2849_v2_5_readiness_indexes_current_canonical_harness_test
+  tests.goal2847_current_head_canonical_harness_refresh_test
+  tests.goal2845_v2_5_internal_readiness_refresh_test
+  tests.goal2843_v2_5_execution_path_policy_test
+  tests.goal2841_rtnn_same_stream_scale_probe_test
+  tests.goal2806_v2_5_internal_readiness_packet_test
+
+Ran 26 tests in 0.028s
+OK
+```
+
+Pod recent v2.5 module-band validation:
+
+```text
+commit: 3b229b4e
+module_count: 146
+scope: tests.goal2621_* through tests.goal2849_*
+
+Ran 706 tests in 9.183s
+OK (skipped=1)
+```
 
 ## Codex Verdict
 
