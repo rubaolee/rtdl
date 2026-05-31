@@ -67,6 +67,8 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2842_goal2841_rtnn_same_stream_scale_probe_consensus_2026-05-31.md",
     "docs/reports/goal2843_v2_5_execution_path_policy_2026-05-31.md",
     "docs/reports/goal2844_goal2843_execution_path_policy_consensus_2026-05-31.md",
+    "docs/reports/goal2847_current_head_canonical_harness_refresh_2026-05-31.md",
+    "docs/reports/goal2848_goal2847_current_head_canonical_harness_consensus_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -88,6 +90,19 @@ V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
     ),
 }
 
+V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_HARNESS_SUMMARY = (
+    "docs/reports/goal2847_current_head_canonical_harness_pod/goal2847_summary.json"
+)
+V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_HARNESS_ARTIFACTS = (
+    "docs/reports/goal2847_current_head_canonical_harness_pod/goal2797_triangle_counting.json",
+    "docs/reports/goal2847_current_head_canonical_harness_pod/goal2798_librts.json",
+    "docs/reports/goal2847_current_head_canonical_harness_pod/goal2799_spatial_rayjoin.json",
+    "docs/reports/goal2847_current_head_canonical_harness_pod/goal2800_rtnn.json",
+    "docs/reports/goal2847_current_head_canonical_harness_pod/goal2801_hausdorff_xhd.json",
+    "docs/reports/goal2847_current_head_canonical_harness_pod/goal2802_rt_dbscan.json",
+    "docs/reports/goal2847_current_head_canonical_harness_pod/goal2803_barnes_hut.json",
+)
+
 V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
     "docs/reviews/goal2773_claude_review_v2_5_status_next_goals_2026-05-31.md",
     "docs/reviews/goal2800_claude_review_rtnn_live_ranked_summary_harness_2026-05-31.md",
@@ -104,6 +119,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
     "docs/reviews/goal2840_gemini_review_goal2839_rtnn_same_stream_runner_mode_2026-05-31.md",
     "docs/reviews/goal2842_gemini_review_goal2841_rtnn_same_stream_scale_probe_2026-05-31.md",
     "docs/reviews/goal2844_gemini_review_goal2843_execution_path_policy_2026-05-31.md",
+    "docs/reviews/goal2848_gemini_review_goal2847_current_head_canonical_harness_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_BLOCKED_ACTIONS = (
@@ -138,6 +154,7 @@ def v2_5_internal_readiness_packet(
     root = Path.cwd() if repo_root is None else Path(repo_root)
     manifest = v2_5_tiered_benchmark_manifest()
     tier_b_artifacts = _tier_b_artifact_metadata(root)
+    current_canonical_harness = _current_canonical_harness_metadata(root)
     required_report_presence = _path_presence(root, V2_5_INTERNAL_READINESS_REQUIRED_REPORTS)
     review_presence = _path_presence(root, V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS)
 
@@ -162,6 +179,7 @@ def v2_5_internal_readiness_packet(
         "tier_counts": manifest["tier_counts"],
         "tier_b_clean_artifacts": tier_b_artifacts,
         "tier_b_clean_artifact_count": len(tier_b_artifacts),
+        "current_canonical_harness": current_canonical_harness,
         "required_reports": V2_5_INTERNAL_READINESS_REQUIRED_REPORTS,
         "required_report_presence": required_report_presence,
         "missing_required_reports": tuple(
@@ -224,6 +242,22 @@ def validate_v2_5_internal_readiness_packet(
         errors.append("required v2.5 external review paths are missing")
     if packet["tier_b_clean_artifact_count"] != 4:
         errors.append("expected four Tier B clean artifacts")
+    current_harness = packet["current_canonical_harness"]
+    if current_harness.get("summary_status") != "pass":
+        errors.append("current canonical harness summary did not pass")
+    if current_harness.get("artifact_count") != 7:
+        errors.append("expected seven current canonical harness artifacts")
+    if not _looks_like_sha(str(current_harness.get("source_commit", ""))):
+        errors.append("current canonical harness lacks source commit")
+    for name, artifact in current_harness.get("artifacts", {}).items():
+        if artifact.get("status") != "pass":
+            errors.append(f"{name} current canonical artifact did not pass")
+        if artifact.get("source_dirty") != []:
+            errors.append(f"{name} current canonical artifact is not source clean")
+        if artifact.get("source_commit") != current_harness.get("source_commit"):
+            errors.append(f"{name} source commit differs from current canonical summary")
+        if "NVIDIA" not in str(artifact.get("gpu", "")):
+            errors.append(f"{name} current canonical artifact lacks NVIDIA pod identity")
     for app_id, artifact in packet["tier_b_clean_artifacts"].items():
         if artifact.get("status") != "pass":
             errors.append(f"{app_id} clean artifact did not pass")
@@ -265,6 +299,7 @@ def validate_v2_5_internal_readiness_packet(
         "benchmark_app_count": packet["benchmark_app_count"],
         "tier_counts": packet["tier_counts"],
         "tier_b_clean_artifact_count": packet["tier_b_clean_artifact_count"],
+        "current_canonical_harness_artifact_count": packet["current_canonical_harness"]["artifact_count"],
         "broad_clean_pod_gate_result": packet["broad_clean_pod_gate"]["result"],
         "blocked_actions": packet["blocked_actions"],
         "errors": tuple(errors),
@@ -292,6 +327,47 @@ def _tier_b_artifact_metadata(root: Path) -> dict[str, dict[str, Any]]:
             "claim_boundary": payload.get("claim_boundary", {}),
         }
     return artifacts
+
+
+def _current_canonical_harness_metadata(root: Path) -> dict[str, Any]:
+    summary_path = root / V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_HARNESS_SUMMARY
+    if not summary_path.exists():
+        return {
+            "summary_path": V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_HARNESS_SUMMARY,
+            "summary_status": "missing",
+            "source_commit": None,
+            "artifact_count": 0,
+            "artifacts": {},
+        }
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    artifacts: dict[str, dict[str, Any]] = {}
+    for relative_path in V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_HARNESS_ARTIFACTS:
+        path = root / relative_path
+        name = path.name
+        if not path.exists():
+            artifacts[name] = {"path": relative_path, "status": "missing"}
+            continue
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        artifacts[name] = {
+            "path": relative_path,
+            "goal": payload.get("goal"),
+            "status": payload.get("status"),
+            "source_commit": payload.get("source_commit"),
+            "source_dirty": payload.get("source_dirty"),
+            "gpu": payload.get("gpu"),
+        }
+    return {
+        "summary_path": V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_HARNESS_SUMMARY,
+        "summary_status": "pass" if summary.get("all_pass") is True else "reject",
+        "goal": summary.get("goal"),
+        "source_commit": summary.get("source_commit"),
+        "artifact_count": len(artifacts),
+        "artifacts": artifacts,
+        "claim_boundary": (
+            "The current canonical harness packet is engineering health evidence. "
+            "It does not authorize v2.5 release or broad public speedup claims."
+        ),
+    }
 
 
 def _looks_like_sha(value: str) -> bool:
