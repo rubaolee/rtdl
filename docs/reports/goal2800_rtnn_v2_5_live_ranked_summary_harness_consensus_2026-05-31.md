@@ -22,6 +22,14 @@ Goal2800 is accepted with boundary:
 
 ## Boundary
 
-The first artifact was produced by copying the new Goal2800 harness into a pod checkout at commit `6da008bc`. This is valid first evidence, but a clean-from-Git pod rerun is still required after the Goal2800 commit is pushed.
+The first artifact was produced by copying the new Goal2800 harness into a pod checkout at commit `6da008bc`. That first-run boundary was closed by a clean-from-Git pod rerun after the Goal2800 commit was pushed.
+
+Clean-from-Git validation:
+
+- commit: `a22d388f1826c9e892f8b8a26196c8f0963c90e4`
+- GPU: NVIDIA RTX A5000, driver 570.211.01
+- OptiX build: pass
+- Goal2800 harness: pass, 3 rows
+- Focused pod test slice: 18 tests run, 18 passed
 
 The tolerance for candidate counts is a narrow float32-boundary tolerance, not a license to accept broad semantic drift. At the 65K fixture scale it is effectively a maximum delta of 2 candidates.

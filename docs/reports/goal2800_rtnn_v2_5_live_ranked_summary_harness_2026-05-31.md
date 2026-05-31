@@ -2,9 +2,9 @@
 
 Date: 2026-05-31
 
-Status: implemented locally with first OptiX/CuPy pod evidence and external review.
+Status: implemented, reviewed, and clean-from-Git pod validated.
 
-Verdict: accept-with-boundary pending clean-from-Git rerun.
+Verdict: accept-with-boundary.
 
 ## Purpose
 
@@ -29,6 +29,8 @@ This is Tier B benchmark-app evidence. It is meant to keep RTNN honest in v2.5, 
 | `src/rtdsl/v2_5_triton_app_migration.py` | Marks `rtnn` as ready with the Goal2800 live harness and keeps dense top-k Triton auto-selection blocked. |
 | `docs/reports/goal2800_pod_artifacts/rtnn_v25_live_ranked_summary_65536.json` | First pod evidence artifact. |
 | `docs/reports/goal2800_pod_artifacts/rtnn_v25_live_ranked_summary_65536.stdout` | Captured stdout from the first pod run. |
+| `docs/reports/goal2800_pod_artifacts/rtnn_v25_live_ranked_summary_65536_clean_from_git.json` | Clean-from-Git pod evidence artifact after the Goal2800 commit was pushed. |
+| `docs/reports/goal2800_pod_artifacts/rtnn_v25_live_ranked_summary_65536_clean_from_git.stdout` | Captured stdout from the clean-from-Git pod run. |
 
 ## Pod Environment
 
@@ -59,7 +61,13 @@ The first evidence run was executed on a pod checkout at:
 6da008bc
 ```
 
-The new Goal2800 script was copied into that checkout for the first artifact run. A clean-from-Git rerun must follow after the Goal2800 commit is pushed.
+The new Goal2800 script was copied into that checkout for the first artifact run. That boundary was closed by the clean-from-Git rerun below.
+
+The clean-from-Git rerun was executed after the Goal2800 commit was pushed, on a pod checkout reset to `origin/main` at:
+
+```text
+a22d388f1826c9e892f8b8a26196c8f0963c90e4
+```
 
 ## Evidence Command
 
@@ -81,6 +89,14 @@ All three distributions passed the live harness. The RTDL and CuPy grid paths ag
 | `uniform` | 0.001880 | 0.000140 | 0.0746x | 206446 | 206446 | 0 | 2 | pass |
 | `clustered` | 0.096477 | 0.046966 | 0.4868x | 2914108 | 2914109 | 1 | 2 | pass |
 | `shell` | 0.005670 | 0.002724 | 0.4804x | 1158440 | 1158438 | 2 | 2 | pass |
+
+Clean-from-Git rerun:
+
+| Distribution | RTDL/OptiX Last Run (s) | CuPy Grid Last Run (s) | CuPy/RTDL Ratio | Delta | Tolerance | Status |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| `uniform` | 0.002396 | 0.000143 | 0.0597x | 0 | 2 | pass |
+| `clustered` | 0.096271 | 0.046990 | 0.4881x | 1 | 2 | pass |
+| `shell` | 0.005706 | 0.002730 | 0.4785x | 2 | 2 | pass |
 
 Interpretation:
 
@@ -141,4 +157,12 @@ tests.goal2780_topk_adapter_triton_grouped_topk_test
 18 tests run, 16 passed, 2 skipped.
 ```
 
-Clean-from-Git pod validation is still pending.
+Clean-from-Git pod validation:
+
+```text
+commit: a22d388f1826c9e892f8b8a26196c8f0963c90e4
+GPU: NVIDIA RTX A5000, driver 570.211.01
+OptiX build: pass
+Goal2800 harness: pass, 3 rows
+Focused pod test slice: 18 tests run, 18 passed
+```
