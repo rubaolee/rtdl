@@ -39,7 +39,8 @@ class Goal2811RtnnDirectAggregateKernelTest(unittest.TestCase):
         self.assertIn(f'cuModuleGetFunction(&g_frn3d_grid_ranked_summary_aggregate_f32_direct.fn, g_frn3d_grid.module, "{direct_name}")', workloads)
         self.assertIn("cuLaunchKernel(g_frn3d_grid_ranked_summary_aggregate_f32_direct.fn", workloads)
         self.assertIn("cuLaunchKernel(g_frn3d_grid_ranked_summary_f32.fn", workloads)
-        self.assertIn("&d_aggregate.ptr", workloads)
+        self.assertIn("CUdeviceptr d_aggregate = prepared->d_ranked_aggregate->ptr", workloads)
+        self.assertIn("&d_aggregate", workloads)
         self.assertIn('12: "prepared_uniform_cell_ranked_summary_aggregate_f32_direct"', runtime)
 
     def test_pod_artifacts_are_clean_and_median_timed(self) -> None:

@@ -7,6 +7,7 @@ from typing import Any
 from .partner_continuation_protocol import validate_v2_5_partner_continuation_contract
 from .partner_continuation_protocol import validate_v2_5_partner_preview_gate
 from .v2_5_determinism_policy import validate_v2_5_continuation_determinism_policies
+from .v2_5_execution_path_policy import validate_v2_5_execution_path_policy
 from .v2_5_partner_selection_guidance import validate_v2_5_partner_selection_guidance
 from .v2_5_partner_support_matrix import validate_v2_5_partner_support_matrix
 from .v2_5_triton_app_migration import validate_v2_5_tiered_benchmark_manifest
@@ -56,6 +57,16 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2803_barnes_hut_v2_5_consolidated_harness_2026-05-31.md",
     "docs/reports/goal2804_v2_5_clean_artifact_metadata_refresh_2026-05-31.md",
     "docs/reports/goal2805_v2_5_broad_clean_pod_regression_gate_2026-05-31.md",
+    "docs/reports/goal2835_primitive_payload_entrypoint_metadata_2026-05-31.md",
+    "docs/reports/goal2836_goal2835_primitive_payload_entrypoint_metadata_consensus_2026-05-31.md",
+    "docs/reports/goal2837_fixed_radius_graph_entrypoint_metadata_2026-05-31.md",
+    "docs/reports/goal2838_goal2837_fixed_radius_graph_entrypoint_metadata_consensus_2026-05-31.md",
+    "docs/reports/goal2839_rtnn_same_stream_runner_mode_2026-05-31.md",
+    "docs/reports/goal2840_goal2839_rtnn_same_stream_runner_mode_consensus_2026-05-31.md",
+    "docs/reports/goal2841_rtnn_same_stream_scale_probe_2026-05-31.md",
+    "docs/reports/goal2842_goal2841_rtnn_same_stream_scale_probe_consensus_2026-05-31.md",
+    "docs/reports/goal2843_v2_5_execution_path_policy_2026-05-31.md",
+    "docs/reports/goal2844_goal2843_execution_path_policy_consensus_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -88,6 +99,11 @@ V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
     "docs/reviews/goal2804_gemini_review_v2_5_clean_artifact_metadata_refresh_2026-05-31.md",
     "docs/reviews/goal2806_claude_review_v2_5_internal_readiness_packet_2026-05-31.md",
     "docs/reviews/goal2806_gemini_review_v2_5_internal_readiness_packet_2026-05-31.md",
+    "docs/reviews/goal2836_gemini_review_goal2835_primitive_payload_entrypoint_metadata_2026-05-31.md",
+    "docs/reviews/goal2838_gemini_review_goal2837_fixed_radius_graph_entrypoint_metadata_2026-05-31.md",
+    "docs/reviews/goal2840_gemini_review_goal2839_rtnn_same_stream_runner_mode_2026-05-31.md",
+    "docs/reviews/goal2842_gemini_review_goal2841_rtnn_same_stream_scale_probe_2026-05-31.md",
+    "docs/reviews/goal2844_gemini_review_goal2843_execution_path_policy_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_BLOCKED_ACTIONS = (
@@ -139,6 +155,7 @@ def v2_5_internal_readiness_packet(
             "partner_selection_guidance": validate_v2_5_partner_selection_guidance(
                 repo_root=root
             ),
+            "execution_path_policy": validate_v2_5_execution_path_policy(),
             "determinism_policy": validate_v2_5_continuation_determinism_policies(),
         },
         "benchmark_app_count": manifest["benchmark_app_count"],
