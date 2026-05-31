@@ -94,6 +94,24 @@ Ran 36 tests in 0.895s
 OK
 ```
 
+Post-commit pod unit validation from pushed `main`:
+
+```text
+commit: 8f6fa8be
+scope:
+  tests.goal2880_current_packet_after_torch_carrier_provenance_test
+  tests.goal2879_torch_carrier_seam_authority_provenance_test
+  tests.goal2878_goal2868_residual_closure_mapping_test
+  tests.goal2876_current_packet_after_partner_conformance_closure_test
+  tests.goal2870_v2_5_last_day_review_intake_and_runner_fail_closed_hardening_test
+  tests.goal2865_current_head_packet_after_front_doors_test
+  tests.goal2857_v2_5_readiness_indexes_packet_runner_test
+  tests.goal2806_v2_5_internal_readiness_packet_test
+
+Ran 36 tests in 0.384s
+OK
+```
+
 ## Codex Verdict
 
 `accept-with-boundary`
