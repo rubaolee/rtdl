@@ -51,7 +51,7 @@ class Goal2865CurrentHeadPacketAfterFrontDoorsTest(unittest.TestCase):
                 self.assertEqual("3c5efc3130829aced34abb34f5863d3f3b652ad5", artifact["source_commit"])
                 self.assertEqual([], artifact["source_dirty"])
 
-    def test_readiness_packet_points_to_goal2865_runner_summary(self) -> None:
+    def test_readiness_packet_preserves_goal2865_but_points_to_newer_runner_summary(self) -> None:
         packet = rt.v2_5_internal_readiness_packet(repo_root=ROOT)
         validation = rt.validate_v2_5_internal_readiness_packet(repo_root=ROOT)
 
@@ -66,8 +66,8 @@ class Goal2865CurrentHeadPacketAfterFrontDoorsTest(unittest.TestCase):
                 "docs/reviews/goal2866_gemini_review_goal2865_current_head_packet_2026-05-31.md"
             ]
         )
-        self.assertIn("goal2865_current_packet_after_front_doors_pod", packet["current_canonical_runner"]["summary_path"])
-        self.assertEqual("3c5efc3130829aced34abb34f5863d3f3b652ad5", packet["current_canonical_runner"]["source_commit"])
+        self.assertIn("goal2876_current_packet_after_conformance_pod", packet["current_canonical_runner"]["summary_path"])
+        self.assertEqual("cb9345bea472ac1167e8c289050146cc4fae30aa", packet["current_canonical_runner"]["source_commit"])
         self.assertEqual(7, packet["current_canonical_runner"]["artifact_count"])
 
     def test_report_review_and_consensus_record_claim_boundary(self) -> None:
