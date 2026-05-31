@@ -4997,6 +4997,71 @@ static __device__ __forceinline__ void frn_ranked_insert_f32(
     }
 }
 
+static __device__ __forceinline__ bool frn_ranked_f32_less(
+        float left_distance_sq,
+        uint32_t left_id,
+        float right_distance_sq,
+        uint32_t right_id)
+{
+    return left_distance_sq < right_distance_sq ||
+        (left_distance_sq == right_distance_sq && left_id < right_id);
+}
+
+static __device__ __forceinline__ bool frn_ranked_f32_worse(
+        float left_distance_sq,
+        uint32_t left_id,
+        float right_distance_sq,
+        uint32_t right_id)
+{
+    return left_distance_sq > right_distance_sq ||
+        (left_distance_sq == right_distance_sq && left_id > right_id);
+}
+
+static __device__ __forceinline__ void frn_ranked_insert_unsorted_f32(
+        float distance_sq,
+        uint32_t neighbor_id,
+        uint32_t k_max,
+        float* best_distance_sq,
+        uint32_t* best_neighbor_id,
+        uint32_t* best_count,
+        uint32_t* worst_index,
+        float* worst_distance_sq,
+        uint32_t* worst_neighbor_id)
+{
+    if (*best_count < k_max) {
+        const uint32_t pos = *best_count;
+        best_distance_sq[pos] = distance_sq;
+        best_neighbor_id[pos] = neighbor_id;
+        if (pos == 0u || frn_ranked_f32_worse(distance_sq, neighbor_id, *worst_distance_sq, *worst_neighbor_id)) {
+            *worst_index = pos;
+            *worst_distance_sq = distance_sq;
+            *worst_neighbor_id = neighbor_id;
+        }
+        *best_count += 1u;
+        return;
+    }
+
+    if (!frn_ranked_f32_less(distance_sq, neighbor_id, *worst_distance_sq, *worst_neighbor_id)) {
+        return;
+    }
+
+    best_distance_sq[*worst_index] = distance_sq;
+    best_neighbor_id[*worst_index] = neighbor_id;
+    uint32_t new_worst_index = 0u;
+    float new_worst_distance_sq = best_distance_sq[0];
+    uint32_t new_worst_neighbor_id = best_neighbor_id[0];
+    for (uint32_t rank = 1u; rank < k_max; ++rank) {
+        if (frn_ranked_f32_worse(best_distance_sq[rank], best_neighbor_id[rank], new_worst_distance_sq, new_worst_neighbor_id)) {
+            new_worst_index = rank;
+            new_worst_distance_sq = best_distance_sq[rank];
+            new_worst_neighbor_id = best_neighbor_id[rank];
+        }
+    }
+    *worst_index = new_worst_index;
+    *worst_distance_sq = new_worst_distance_sq;
+    *worst_neighbor_id = new_worst_neighbor_id;
+}
+
 static __device__ __forceinline__ double frn_atomic_add_double(double* address, double value)
 {
 #if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 600
@@ -5242,6 +5307,9 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_summary_f32(
     float best_distance_sq[64];
     uint32_t best_neighbor_id[64];
     uint32_t best_count = 0u;
+    uint32_t worst_index = 0u;
+    float worst_distance_sq = 0.0f;
+    uint32_t worst_neighbor_id = 0u;
     const GpuPoint3D q = query_points[qidx];
     const int cx = floor_to_int_float((q.x - min_x) * inv_cell_size);
     const int cy = floor_to_int_float((q.y - min_y) * inv_cell_size);
@@ -5270,7 +5338,9 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_summary_f32(
                     const float sz = t.z - q.z;
                     const float d2 = sx * sx + sy * sy + sz * sz;
                     if (d2 > radius_sq) continue;
-                    frn_ranked_insert_f32(d2, t.id, k_max, best_distance_sq, best_neighbor_id, &best_count);
+                    frn_ranked_insert_unsorted_f32(
+                        d2, t.id, k_max, best_distance_sq, best_neighbor_id,
+                        &best_count, &worst_index, &worst_distance_sq, &worst_neighbor_id);
                 }
             }
         }
@@ -5285,14 +5355,21 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_summary_f32(
     summary.kth_distance = 0.0;
     summary.sum_distance = 0.0;
     if (best_count > 0u) {
-        summary.nearest_neighbor_id = best_neighbor_id[0];
-        summary.nearest_distance = static_cast<double>(sqrtf(best_distance_sq[0]));
-        const uint32_t kth_index = best_count - 1u;
-        summary.kth_neighbor_id = best_neighbor_id[kth_index];
-        summary.kth_distance = static_cast<double>(sqrtf(best_distance_sq[kth_index]));
+        uint32_t nearest_index = 0u;
+        uint32_t kth_index = 0u;
         for (uint32_t rank = 0u; rank < best_count; ++rank) {
+            if (frn_ranked_f32_less(best_distance_sq[rank], best_neighbor_id[rank], best_distance_sq[nearest_index], best_neighbor_id[nearest_index])) {
+                nearest_index = rank;
+            }
+            if (frn_ranked_f32_worse(best_distance_sq[rank], best_neighbor_id[rank], best_distance_sq[kth_index], best_neighbor_id[kth_index])) {
+                kth_index = rank;
+            }
             summary.sum_distance += static_cast<double>(sqrtf(best_distance_sq[rank]));
         }
+        summary.nearest_neighbor_id = best_neighbor_id[nearest_index];
+        summary.nearest_distance = static_cast<double>(sqrtf(best_distance_sq[nearest_index]));
+        summary.kth_neighbor_id = best_neighbor_id[kth_index];
+        summary.kth_distance = static_cast<double>(sqrtf(best_distance_sq[kth_index]));
     }
     summaries_out[qidx] = summary;
 }
@@ -5389,6 +5466,9 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_summary_aggrega
         float best_distance_sq[64];
         uint32_t best_neighbor_id[64];
         uint32_t best_count = 0u;
+        uint32_t worst_index = 0u;
+        float worst_distance_sq = 0.0f;
+        uint32_t worst_neighbor_id = 0u;
         const GpuPoint3D q = query_points[qidx];
         const int cx = floor_to_int_float((q.x - min_x) * inv_cell_size);
         const int cy = floor_to_int_float((q.y - min_y) * inv_cell_size);
@@ -5416,7 +5496,9 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_summary_aggrega
                         const float sz = t.z - q.z;
                         const float d2 = sx * sx + sy * sy + sz * sz;
                         if (d2 > radius_sq) continue;
-                        frn_ranked_insert_f32(d2, t.id, k_max, best_distance_sq, best_neighbor_id, &best_count);
+                        frn_ranked_insert_unsorted_f32(
+                            d2, t.id, k_max, best_distance_sq, best_neighbor_id,
+                            &best_count, &worst_index, &worst_distance_sq, &worst_neighbor_id);
                     }
                 }
             }
@@ -5429,11 +5511,19 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_summary_aggrega
             local_kth_checksum += 0xffffffffull;
             continue;
         }
-        local_nearest_checksum += static_cast<unsigned long long>(best_neighbor_id[0]);
-        local_kth_checksum += static_cast<unsigned long long>(best_neighbor_id[best_count - 1u]);
+        uint32_t nearest_index = 0u;
+        uint32_t kth_index = 0u;
         for (uint32_t rank = 0u; rank < best_count; ++rank) {
+            if (frn_ranked_f32_less(best_distance_sq[rank], best_neighbor_id[rank], best_distance_sq[nearest_index], best_neighbor_id[nearest_index])) {
+                nearest_index = rank;
+            }
+            if (frn_ranked_f32_worse(best_distance_sq[rank], best_neighbor_id[rank], best_distance_sq[kth_index], best_neighbor_id[kth_index])) {
+                kth_index = rank;
+            }
             local_sum_distance += static_cast<double>(sqrtf(best_distance_sq[rank]));
         }
+        local_nearest_checksum += static_cast<unsigned long long>(best_neighbor_id[nearest_index]);
+        local_kth_checksum += static_cast<unsigned long long>(best_neighbor_id[kth_index]);
     }
 
     s_query_count[tid] = local_query_count;
