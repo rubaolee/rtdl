@@ -10349,8 +10349,15 @@ void rtdl_hit_stream_event_ordered_grouped_ray_id_reduction_u64(
     unsigned long long* group_hit_counts,
     unsigned long long* group_primitive_id_sum,
     unsigned long long* group_primitive_id_xor,
+    unsigned long long* group_primitive_id_min,
+    unsigned long long* group_primitive_id_max,
+    unsigned long long* group_first_hit_row_index,
+    unsigned long long* group_last_hit_row_index,
+    unsigned long long* group_first_primitive_id,
+    unsigned long long* group_last_primitive_id,
     unsigned long long* summary)
 {
+    const unsigned long long missing = 0xffffffffffffffffull;
     const unsigned long long observed_rows = row_count[0];
     const unsigned long long observed_hits = hit_event_count[0];
     const unsigned long long stored_rows =
@@ -10363,6 +10370,12 @@ void rtdl_hit_stream_event_ordered_grouped_ray_id_reduction_u64(
         group_hit_counts[g] = 0ull;
         group_primitive_id_sum[g] = 0ull;
         group_primitive_id_xor[g] = 0ull;
+        group_primitive_id_min[g] = missing;
+        group_primitive_id_max[g] = 0ull;
+        group_first_hit_row_index[g] = missing;
+        group_last_hit_row_index[g] = 0ull;
+        group_first_primitive_id[g] = missing;
+        group_last_primitive_id[g] = missing;
     }
     if (threadIdx.x == 0) {
         summary[0] = observed_rows;
@@ -10394,6 +10407,31 @@ void rtdl_hit_stream_event_ordered_grouped_ray_id_reduction_u64(
         atomicAdd(&group_hit_counts[group_id], 1ull);
         atomicAdd(&group_primitive_id_sum[group_id], primitive);
         atomicXor(&group_primitive_id_xor[group_id], primitive);
+        atomicMin(&group_primitive_id_min[group_id], primitive);
+        atomicMax(&group_primitive_id_max[group_id], primitive);
+        atomicMin(&group_first_hit_row_index[group_id], i);
+        atomicMax(&group_last_hit_row_index[group_id], i);
+    }
+    __syncthreads();
+
+    for (unsigned long long i = static_cast<unsigned long long>(threadIdx.x);
+         i < stored_rows;
+         i += static_cast<unsigned long long>(blockDim.x)) {
+        const long long group_id_signed = ray_ids[i];
+        if (group_id_signed < 0ll) {
+            continue;
+        }
+        const unsigned long long group_id = static_cast<unsigned long long>(group_id_signed);
+        if (group_id >= group_count) {
+            continue;
+        }
+        const unsigned long long primitive = static_cast<unsigned long long>(primitive_ids[i]);
+        if (i == group_first_hit_row_index[group_id]) {
+            group_first_primitive_id[group_id] = primitive;
+        }
+        if (i == group_last_hit_row_index[group_id]) {
+            group_last_primitive_id[group_id] = primitive;
+        }
     }
     __syncthreads();
 
@@ -10404,6 +10442,13 @@ void rtdl_hit_stream_event_ordered_grouped_ray_id_reduction_u64(
         if (count != 0ull) {
             atomicAdd(&summary[6], 1ull);
             atomicAdd(&summary[7], count);
+        } else {
+            group_primitive_id_min[g] = missing;
+            group_primitive_id_max[g] = missing;
+            group_first_hit_row_index[g] = missing;
+            group_last_hit_row_index[g] = missing;
+            group_first_primitive_id[g] = missing;
+            group_last_primitive_id[g] = missing;
         }
     }
 }
@@ -10448,6 +10493,12 @@ def _run_hit_stream_event_ordered_grouped_ray_id_reduction_cupy(
         group_hit_counts = cp.asarray(group_buffers.group_hit_counts)
         group_primitive_id_sum = cp.asarray(group_buffers.group_primitive_id_sum)
         group_primitive_id_xor = cp.asarray(group_buffers.group_primitive_id_xor)
+        group_primitive_id_min = cp.asarray(group_buffers.group_primitive_id_min)
+        group_primitive_id_max = cp.asarray(group_buffers.group_primitive_id_max)
+        group_first_hit_row_index = cp.asarray(group_buffers.group_first_hit_row_index)
+        group_last_hit_row_index = cp.asarray(group_buffers.group_last_hit_row_index)
+        group_first_primitive_id = cp.asarray(group_buffers.group_first_primitive_id)
+        group_last_primitive_id = cp.asarray(group_buffers.group_last_primitive_id)
         summary = cp.empty((9,), dtype=cp.uint64)
         kernel(
             (1,),
@@ -10463,6 +10514,12 @@ def _run_hit_stream_event_ordered_grouped_ray_id_reduction_cupy(
                 group_hit_counts,
                 group_primitive_id_sum,
                 group_primitive_id_xor,
+                group_primitive_id_min,
+                group_primitive_id_max,
+                group_first_hit_row_index,
+                group_last_hit_row_index,
+                group_first_primitive_id,
+                group_last_primitive_id,
                 summary,
             ),
         )
@@ -10483,6 +10540,17 @@ def _run_hit_stream_event_ordered_grouped_ray_id_reduction_cupy(
             "consumer_read_status_on_device": True,
             "consumer_read_rows_on_device": True,
             "consumer_reduction_scope": "grouped_by_ray_id_over_all_stored_hit_rows",
+            "grouped_reduction_fields": (
+                "hit_count",
+                "primitive_id_sum_mod_u64",
+                "primitive_id_xor",
+                "primitive_id_min",
+                "primitive_id_max",
+                "first_hit_row_index",
+                "last_hit_row_index",
+                "first_primitive_id_by_row_order",
+                "last_primitive_id_by_row_order",
+            ),
             "grouped_output_columns_written_on_device": True,
             "host_scalar_read_before_consumer": False,
             "host_row_materialization_before_consumer": False,
@@ -10587,6 +10655,12 @@ class PreparedOptixHitStreamGroupedReductionBuffers:
         self.group_hit_counts = torch.empty((group_count,), dtype=torch.int64, device=resolved_device)
         self.group_primitive_id_sum = torch.empty((group_count,), dtype=torch.int64, device=self.group_hit_counts.device)
         self.group_primitive_id_xor = torch.empty((group_count,), dtype=torch.int64, device=self.group_hit_counts.device)
+        self.group_primitive_id_min = torch.empty((group_count,), dtype=torch.int64, device=self.group_hit_counts.device)
+        self.group_primitive_id_max = torch.empty((group_count,), dtype=torch.int64, device=self.group_hit_counts.device)
+        self.group_first_hit_row_index = torch.empty((group_count,), dtype=torch.int64, device=self.group_hit_counts.device)
+        self.group_last_hit_row_index = torch.empty((group_count,), dtype=torch.int64, device=self.group_hit_counts.device)
+        self.group_first_primitive_id = torch.empty((group_count,), dtype=torch.int64, device=self.group_hit_counts.device)
+        self.group_last_primitive_id = torch.empty((group_count,), dtype=torch.int64, device=self.group_hit_counts.device)
         self._closed = False
 
     @property
@@ -10602,6 +10676,12 @@ class PreparedOptixHitStreamGroupedReductionBuffers:
         self.group_hit_counts = None
         self.group_primitive_id_sum = None
         self.group_primitive_id_xor = None
+        self.group_primitive_id_min = None
+        self.group_primitive_id_max = None
+        self.group_first_hit_row_index = None
+        self.group_last_hit_row_index = None
+        self.group_first_primitive_id = None
+        self.group_last_primitive_id = None
 
     def __enter__(self) -> "PreparedOptixHitStreamGroupedReductionBuffers":
         return self
@@ -12615,8 +12695,19 @@ class PreparedOptixStaticTriangleScene3D:
             )
         hit_buffers._assert_open()
         group_buffers._assert_open()
-        if group_buffers.group_hit_counts.device != hit_buffers.ray_ids.device:
-            raise ValueError("grouped reduction buffers must live on the hit-stream buffer device")
+        for tensor_name in (
+            "group_hit_counts",
+            "group_primitive_id_sum",
+            "group_primitive_id_xor",
+            "group_primitive_id_min",
+            "group_primitive_id_max",
+            "group_first_hit_row_index",
+            "group_last_hit_row_index",
+            "group_first_primitive_id",
+            "group_last_primitive_id",
+        ):
+            if getattr(group_buffers, tensor_name).device != hit_buffers.ray_ids.device:
+                raise ValueError("grouped reduction buffers must live on the hit-stream buffer device")
         run_symbol = _find_optional_backend_symbol(
             self._lib,
             OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_ON_STREAM_SYMBOL,
@@ -12727,6 +12818,17 @@ class PreparedOptixStaticTriangleScene3D:
                 "device_resident_status_for_partner": True,
                 "device_resident_grouped_reduction_for_partner": True,
                 "grouping_key": "ray_id",
+                "grouped_reduction_fields": (
+                    "hit_count",
+                    "primitive_id_sum_mod_u64",
+                    "primitive_id_xor",
+                    "primitive_id_min",
+                    "primitive_id_max",
+                    "first_hit_row_index",
+                    "last_hit_row_index",
+                    "first_primitive_id_by_row_order",
+                    "last_primitive_id_by_row_order",
+                ),
                 "grouped_output_columns_written_on_device": True,
                 "row_count_scalar_visibility_before_consumer": "device_only",
                 "overflow_scalar_visibility_before_consumer": "device_only",
