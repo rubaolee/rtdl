@@ -42,6 +42,15 @@ _REFERENCE_EVIDENCE = (
     "tests.goal2774_v2_5_grouped_hit_stream_support_matrix_test",
 )
 _TRITON_POD_RUNTIME_EVIDENCE: dict[str, tuple[str, tuple[str, ...], tuple[str, ...]]] = {
+    "segmented_count_i64": (
+        "Goal2874",
+        ("tests.goal2663_v2_5_triton_segmented_sum_test",),
+        (
+            "docs/reports/goal2663_v2_5_triton_segmented_sum_preview_2026-05-27.md",
+            "docs/reports/goal2664_v2_5_triton_segmented_count_preview_2026-05-27.md",
+            "docs/reports/goal2874_triton_preview_current_pod_conformance_backfill_2026-05-31.md",
+        ),
+    ),
     "segmented_sum_f64": (
         "Goal2872",
         ("tests.goal2872_triton_tie_break_conformance_smoke_test",),
@@ -67,6 +76,30 @@ _TRITON_POD_RUNTIME_EVIDENCE: dict[str, tuple[str, tuple[str, ...], tuple[str, .
         ("tests.goal2872_triton_tie_break_conformance_smoke_test",),
         ("docs/reports/goal2872_triton_tie_break_conformance_smoke_2026-05-31.md",),
     ),
+    "segmented_min_f64": (
+        "Goal2874",
+        ("tests.goal2677_v2_5_triton_segmented_minmax_preview_test",),
+        (
+            "docs/reports/goal2677_v2_5_triton_segmented_minmax_preview_2026-05-27.md",
+            "docs/reports/goal2874_triton_preview_current_pod_conformance_backfill_2026-05-31.md",
+        ),
+    ),
+    "segmented_max_f64": (
+        "Goal2874",
+        ("tests.goal2677_v2_5_triton_segmented_minmax_preview_test",),
+        (
+            "docs/reports/goal2677_v2_5_triton_segmented_minmax_preview_2026-05-27.md",
+            "docs/reports/goal2874_triton_preview_current_pod_conformance_backfill_2026-05-31.md",
+        ),
+    ),
+    "compact_mask_i64": (
+        "Goal2874",
+        ("tests.goal2678_v2_5_triton_compact_mask_preview_test",),
+        (
+            "docs/reports/goal2678_v2_5_triton_compact_mask_preview_2026-05-27.md",
+            "docs/reports/goal2874_triton_preview_current_pod_conformance_backfill_2026-05-31.md",
+        ),
+    ),
     "edge_list_components_i64": (
         "Goal2779",
         ("tests.goal2779_v2_5_triton_edge_list_components_preview_test",),
@@ -75,37 +108,16 @@ _TRITON_POD_RUNTIME_EVIDENCE: dict[str, tuple[str, tuple[str, ...], tuple[str, .
             "docs/reports/goal2779_v2_5_edge_list_components_consensus_2026-05-31.md",
         ),
     ),
-}
-_TRITON_CUDA_SMOKE_PRESENT_EVIDENCE: dict[str, tuple[str, tuple[str, ...], tuple[str, ...]]] = {
-    "segmented_count_i64": (
-        "Goal2663/Goal2664",
-        ("tests.goal2663_v2_5_triton_segmented_sum_test",),
+    "bounded_collect_finalize_i64": (
+        "Goal2874",
+        ("tests.goal2680_v2_5_triton_bounded_collect_preview_test",),
         (
-            "docs/reports/goal2663_v2_5_triton_segmented_sum_preview_2026-05-27.md",
-            "docs/reports/goal2664_v2_5_triton_segmented_count_preview_2026-05-27.md",
+            "docs/reports/goal2680_v2_5_triton_bounded_collect_preview_2026-05-27.md",
+            "docs/reports/goal2874_triton_preview_current_pod_conformance_backfill_2026-05-31.md",
         ),
     ),
-    "segmented_min_f64": (
-        "Goal2677",
-        ("tests.goal2677_v2_5_triton_segmented_minmax_preview_test",),
-        ("docs/reports/goal2677_v2_5_triton_segmented_minmax_preview_2026-05-27.md",),
-    ),
-    "segmented_max_f64": (
-        "Goal2677",
-        ("tests.goal2677_v2_5_triton_segmented_minmax_preview_test",),
-        ("docs/reports/goal2677_v2_5_triton_segmented_minmax_preview_2026-05-27.md",),
-    ),
-    "compact_mask_i64": (
-        "Goal2678",
-        ("tests.goal2678_v2_5_triton_compact_mask_preview_test",),
-        ("docs/reports/goal2678_v2_5_triton_compact_mask_preview_2026-05-27.md",),
-    ),
-    "bounded_collect_finalize_i64": (
-        "Goal2680",
-        ("tests.goal2680_v2_5_triton_bounded_collect_preview_test",),
-        ("docs/reports/goal2680_v2_5_triton_bounded_collect_preview_2026-05-27.md",),
-    ),
 }
+_TRITON_CUDA_SMOKE_PRESENT_EVIDENCE: dict[str, tuple[str, tuple[str, ...], tuple[str, ...]]] = {}
 _CUPY_POD_RUNTIME_EVIDENCE = {
     "hit_stream_grouped_ray_id_primitive_i64": (
         "Goal2771/Goal2772",
