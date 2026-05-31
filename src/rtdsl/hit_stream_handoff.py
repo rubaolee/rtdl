@@ -106,6 +106,14 @@ GENERIC_PRIMITIVE_PAYLOAD_FALLBACK_REASONS = (
     "dtype_or_shape_unsupported",
     "lifetime_unproven",
 )
+GENERIC_PRIMITIVE_PAYLOAD_CONTINUATION_PLANNER_VERSION = (
+    "rtdl.primitive_payload_continuation_planner.v2.5"
+)
+GENERIC_PRIMITIVE_PAYLOAD_CONTINUATION_PLAN_STATUSES = (
+    "accepted_preview",
+    "reference_contract",
+    "fallback_required",
+)
 
 
 @dataclass(frozen=True)
@@ -306,6 +314,94 @@ def describe_fixed_radius_graph_partial_payload_descriptor(
         native_producer=True,
         measured_evidence=evidence,
     )
+
+
+def plan_primitive_payload_partner_continuation(
+    operation: str,
+    partner: str,
+    descriptors: Sequence[Mapping[str, Any] | RtdlPrimitivePayloadColumnDescriptor],
+) -> dict[str, object]:
+    """Plan partner consumption from typed primitive payload descriptors."""
+
+    support = plan_v2_5_partner_support(operation, partner)
+    descriptor_metadata = tuple(_primitive_payload_descriptor_metadata(descriptor) for descriptor in descriptors)
+    fallback_reasons: list[str] = []
+    resolved_partner = str(support["partner"])
+    support_status = str(support["status"])
+    reference_partner = resolved_partner == "python_reference"
+
+    if not descriptor_metadata:
+        fallback_reasons.append("dtype_or_shape_unsupported")
+    if not bool(support["supported"]):
+        fallback_reasons.append("partner_unavailable")
+    if support_status == "descriptor_only" and not reference_partner:
+        fallback_reasons.append("partner_unavailable")
+
+    for descriptor in descriptor_metadata:
+        if bool(support["requires_cuda"]) and not str(descriptor.get("device", "")).startswith("cuda:"):
+            fallback_reasons.append("host_reference")
+        if bool(support["requires_neutral_buffer_seam"]) and "neutral_buffer_seam" not in descriptor:
+            fallback_reasons.append("lifetime_unproven")
+        if not reference_partner and bool(descriptor.get("fallback_required")):
+            fallback_reasons.append(str(descriptor.get("fallback_reason", "dtype_or_shape_unsupported")))
+        if (
+            not reference_partner
+            and bool(support["requires_cuda"])
+            and not bool(descriptor.get("stream_ordering_proven"))
+        ):
+            fallback_reasons.append("stream_ordering_unproven")
+        if bool(descriptor.get("native_producer")) and descriptor.get("lifetime_state") not in {
+            "producer_retained",
+            "native_owned_pending_state_machine",
+        }:
+            fallback_reasons.append("lifetime_unproven")
+
+    unique_reasons = tuple(dict.fromkeys(reason for reason in fallback_reasons if reason != "none"))
+    if unique_reasons:
+        plan_status = "fallback_required"
+    elif reference_partner:
+        plan_status = "reference_contract"
+    else:
+        plan_status = "accepted_preview"
+
+    return {
+        "planner_version": GENERIC_PRIMITIVE_PAYLOAD_CONTINUATION_PLANNER_VERSION,
+        "operation": str(operation),
+        "requested_partner": str(partner),
+        "resolved_partner": resolved_partner,
+        "support_status": support_status,
+        "plan_status": plan_status,
+        "can_execute_preview": plan_status == "accepted_preview",
+        "fallback_required": plan_status == "fallback_required",
+        "fallback_reasons": unique_reasons,
+        "descriptor_count": len(descriptor_metadata),
+        "descriptors": descriptor_metadata,
+        "support_cell": support,
+        "stream_ordering_preserved": all(
+            bool(descriptor.get("stream_ordering_proven")) for descriptor in descriptor_metadata
+        ),
+        "neutral_buffer_seam_version": V2_5_NEUTRAL_BUFFER_SEAM_VERSION,
+        "rt_traversal_replacement_allowed": False,
+        "true_zero_copy_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "claim_boundary": (
+            "Primitive payload continuation plans select only from explicit descriptor "
+            "capabilities and support-matrix cells. They do not execute arbitrary "
+            "partner code, replace RT traversal, authorize public speedup claims, or "
+            "authorize true-zero-copy claims."
+        ),
+    }
+
+
+def _primitive_payload_descriptor_metadata(
+    descriptor: Mapping[str, Any] | RtdlPrimitivePayloadColumnDescriptor,
+) -> dict[str, Any]:
+    if isinstance(descriptor, RtdlPrimitivePayloadColumnDescriptor):
+        return descriptor.to_metadata()
+    metadata = dict(descriptor)
+    if metadata.get("contract_version") != GENERIC_PRIMITIVE_PAYLOAD_COLUMN_DESCRIPTOR_VERSION:
+        raise ValueError("primitive payload continuation planner requires descriptor metadata")
+    return metadata
 
 
 @dataclass(frozen=True)
