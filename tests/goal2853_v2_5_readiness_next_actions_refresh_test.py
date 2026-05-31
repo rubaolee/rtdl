@@ -35,6 +35,8 @@ class Goal2853V25ReadinessNextActionsRefreshTest(unittest.TestCase):
         self.assertEqual(
             (
                 "keep_goal2855_current_canonical_packet_runner_green",
+                "keep_goal2867_front_door_bypass_audit_green",
+                "triage_goal2868_last_day_external_review_before_any_release_packet",
                 "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
                 "request_fresh_3ai_release_review_only_if_user_requests_release",
             ),

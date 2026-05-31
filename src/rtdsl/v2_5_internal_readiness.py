@@ -78,6 +78,10 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2862_goal2861_generic_front_door_completion_consensus_2026-05-31.md",
     "docs/reports/goal2865_current_head_packet_after_front_doors_2026-05-31.md",
     "docs/reports/goal2866_goal2865_current_head_packet_consensus_2026-05-31.md",
+    "docs/reports/goal2867_v2_5_app_facing_front_door_bypass_audit_2026-05-31.md",
+    "docs/reports/goal2869_v2_5_readiness_indexes_front_door_bypass_audit_2026-05-31.md",
+    "docs/reports/goal2870_v2_5_last_day_review_intake_and_runner_fail_closed_hardening_2026-05-31.md",
+    "docs/reports/goal2870_goal2868_last_day_review_intake_consensus_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -136,6 +140,8 @@ V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
     "docs/reviews/goal2856_gemini_review_goal2855_v2_5_canonical_packet_runner_2026-05-31.md",
     "docs/reviews/goal2862_gemini_review_goal2861_generic_front_door_completion_2026-05-31.md",
     "docs/reviews/goal2866_gemini_review_goal2865_current_head_packet_2026-05-31.md",
+    "docs/reviews/goal2868_claude_review_v2_5_last_day_work_since_claude_reviews_2026-05-31.md",
+    "docs/reviews/goal2868_gemini_review_v2_5_last_day_work_since_claude_reviews_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_BLOCKED_ACTIONS = (
@@ -152,6 +158,8 @@ V2_5_INTERNAL_READINESS_BLOCKED_ACTIONS = (
 
 V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "keep_goal2855_current_canonical_packet_runner_green",
+    "keep_goal2867_front_door_bypass_audit_green",
+    "triage_goal2868_last_day_external_review_before_any_release_packet",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
@@ -293,6 +301,12 @@ def validate_v2_5_internal_readiness_packet(
     current_runner = packet["current_canonical_runner"]
     if current_runner.get("status") != "pass":
         errors.append("current canonical packet runner summary did not pass")
+    if current_runner.get("returncode_ok") is not True:
+        errors.append("current canonical packet runner child return codes were not all OK")
+    if current_runner.get("artifact_status_ok") is not True:
+        errors.append("current canonical packet runner artifact statuses were not all OK")
+    if current_runner.get("source_commit_consistent") is not True:
+        errors.append("current canonical packet runner source commits are inconsistent")
     if current_runner.get("artifact_count") != 7:
         errors.append("current canonical packet runner must cover seven artifacts")
     if current_runner.get("expected_artifact_count") != 7:
@@ -433,6 +447,9 @@ def _current_canonical_runner_metadata(root: Path) -> dict[str, Any]:
         "all_pass": summary.get("all_pass"),
         "artifact_count": summary.get("artifact_count"),
         "expected_artifact_count": summary.get("expected_artifact_count"),
+        "returncode_ok": summary.get("returncode_ok"),
+        "artifact_status_ok": summary.get("artifact_status_ok"),
+        "source_commit_consistent": summary.get("source_commit_consistent"),
         "source_commit": summary.get("source_commit"),
         "dirty_artifacts": summary.get("dirty_artifacts"),
         "claim_boundary_violations": summary.get("claim_boundary_violations"),
