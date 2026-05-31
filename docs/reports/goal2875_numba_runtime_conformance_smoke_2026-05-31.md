@@ -90,6 +90,26 @@ Ran 85 tests in 2.577s
 OK (skipped=7)
 ```
 
+Pod validation from pushed `main`:
+
+```text
+commit: fc49b01c
+scope:
+  tests.goal2875_numba_runtime_conformance_smoke_test
+  tests.goal2874_triton_preview_current_pod_conformance_backfill_test
+  tests.goal2873_v2_5_partner_conformance_matrix_test
+
+Ran 18 tests in 1.024s
+OK
+```
+
+Expanded pod readiness/conformance slice:
+
+```text
+Ran 85 tests in 1.976s
+OK
+```
+
 ## Boundary
 
 Goal2875 is not a v2.5 release authorization, not a public speedup claim, not a
