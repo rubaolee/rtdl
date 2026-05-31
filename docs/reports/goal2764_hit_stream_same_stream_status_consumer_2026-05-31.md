@@ -124,6 +124,10 @@ Pod:
 
 Pod checkout before patch: `c2d0c389`.
 
+Final pushed commit validation: pod reset to `origin/main` at `363300dc`,
+rebuilt `build/librtdl_optix.so`, and reran the corrected hit-stream gate
+successfully.
+
 Pod setup note: `cupy` was already importable. `torch` initially failed because
 the pod Python environment lacked `pytest`; installing `pytest` with
 `python3 -m pip install --break-system-packages pytest` made
@@ -169,7 +173,8 @@ Corrected hit-stream gate:
 
 `PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=/root/rtdl/build/librtdl_optix.so python3 -m unittest tests.goal2704_native_hit_stream_output_abi_contract_test tests.goal2706_native_optix_hit_stream_device_columns_test tests.goal2710_raydb_native_device_hit_stream_path_test tests.goal2719_native_hit_stream_materialization_proof_metadata_test tests.goal2720_raydb_prepared_device_hit_stream_steady_state_test tests.goal2737_native_hit_stream_owner_lifecycle_guard_test tests.goal2738_native_hit_stream_stream_ordering_boundary_test tests.goal2746_optix_hit_stream_host_sync_ordering_test tests.goal2750_hit_stream_transfer_stream_ordering_gate_test tests.goal2752_hit_stream_zero_copy_ordering_metadata_test tests.goal2756_reusable_hit_stream_device_output_buffers_test tests.goal2758_reusable_hit_stream_buffer_perf_probe_test tests.goal2760_hit_stream_async_promotion_requirements_test tests.goal2762_hit_stream_device_status_buffers_test tests.goal2764_hit_stream_same_stream_status_consumer_test`
 
-Result: 58 tests passed.
+Result: 58 tests passed. The same 58-test gate also passed after resetting the
+pod checkout to pushed commit `363300dc` and rebuilding OptiX from that commit.
 
 ## Review Requirement
 

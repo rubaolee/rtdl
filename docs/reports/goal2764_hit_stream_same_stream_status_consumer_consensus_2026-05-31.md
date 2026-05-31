@@ -39,6 +39,8 @@ external systems, Gemini and Claude.
   `make build-optix OPTIX_PREFIX=/root/vendor/optix-sdk`.
 - Pod live Goal2764 test: 6 passed, 0 skipped.
 - Pod corrected hit-stream gate: 58 passed.
+- Final pushed-commit validation reset the pod checkout to `origin/main` at
+  `363300dc`, rebuilt OptiX, and reran the corrected hit-stream gate: 58 passed.
 
 ## Boundaries And Follow-Up
 
