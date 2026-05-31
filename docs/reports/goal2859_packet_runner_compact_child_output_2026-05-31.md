@@ -73,6 +73,31 @@ py -3 scripts/goal2855_v2_5_current_canonical_harness_packet_runner.py \
 The plan records `compact_child_output: true` for all seven harnesses and assigns
 each one a `.stdout` log path.
 
+## Pod Validation
+
+Clean compact packet validation was run on the RTX A5000 pod from pushed `main`
+at:
+
+`22487c07ffe1afb793d8011df95120b51cb32664`
+
+The preserved summary is:
+
+`docs/reports/goal2859_compact_child_output_pod/goal2855_summary.json`
+
+Readback:
+
+```text
+pass True 22487c07ffe1afb793d8011df95120b51cb32664 7 7 430.93
+7
+{}
+{}
+```
+
+The second line is the number of executions with
+`compact_child_output: true` and a non-empty `stdout_log_path`. All seven child
+harnesses wrote compact-mode stdout logs on the pod. The packet remained clean:
+`dirty_artifacts: {}` and `claim_boundary_violations: {}`.
+
 ## Conclusion
 
 Goal2859 accepts compact child-output mode as a safer operator experience for

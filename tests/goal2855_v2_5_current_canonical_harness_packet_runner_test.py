@@ -11,6 +11,9 @@ from scripts import goal2855_v2_5_current_canonical_harness_packet_runner as run
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs" / "reports" / "goal2855_v2_5_current_canonical_harness_packet_runner_2026-05-31.md"
 COMPACT_REPORT = ROOT / "docs" / "reports" / "goal2859_packet_runner_compact_child_output_2026-05-31.md"
+COMPACT_POD_SUMMARY = ROOT / "docs" / "reports" / "goal2859_compact_child_output_pod" / "goal2855_summary.json"
+COMPACT_REVIEW = ROOT / "docs" / "reviews" / "goal2860_gemini_review_goal2859_compact_packet_output_2026-05-31.md"
+COMPACT_CONSENSUS = ROOT / "docs" / "reports" / "goal2860_goal2859_compact_packet_output_consensus_2026-05-31.md"
 POD_SUMMARY = ROOT / "docs" / "reports" / "goal2855_current_canonical_harness_runner_pod" / "goal2855_summary.json"
 REVIEW = ROOT / "docs" / "reviews" / "goal2856_gemini_review_goal2855_v2_5_canonical_packet_runner_2026-05-31.md"
 CONSENSUS = ROOT / "docs" / "reports" / "goal2856_goal2855_v2_5_canonical_packet_runner_consensus_2026-05-31.md"
@@ -217,6 +220,45 @@ class Goal2855V25CurrentCanonicalHarnessPacketRunnerTest(unittest.TestCase):
             "not authorize release",
         ):
             self.assertIn(phrase, text)
+
+    def test_compact_output_pod_summary_records_stdout_logs(self) -> None:
+        summary = json.loads(COMPACT_POD_SUMMARY.read_text(encoding="utf-8"))
+
+        self.assertEqual("pass", summary["status"])
+        self.assertTrue(summary["all_pass"])
+        self.assertEqual(7, summary["artifact_count"])
+        self.assertEqual({}, summary["dirty_artifacts"])
+        self.assertEqual({}, summary["claim_boundary_violations"])
+        self.assertTrue(summary["claim_boundary"]["compact_child_output_safe_to_use"])
+        self.assertEqual(
+            7,
+            sum(
+                1
+                for execution in summary["executions"]
+                if execution["compact_child_output"] and execution["stdout_log_path"]
+            ),
+        )
+
+    def test_compact_output_review_and_consensus_accept_with_boundary(self) -> None:
+        review = COMPACT_REVIEW.read_text(encoding="utf-8")
+        consensus = COMPACT_CONSENSUS.read_text(encoding="utf-8")
+
+        for phrase in (
+            "independent Gemini review",
+            "accept-with-boundary",
+            "default runner behavior",
+            "timeout",
+        ):
+            self.assertIn(phrase, review)
+
+        for phrase in (
+            "Consensus verdict: **accept-with-boundary**",
+            "Codex",
+            "Gemini",
+            "not final v2.5 release consensus",
+            "--compact-child-output",
+        ):
+            self.assertIn(phrase, consensus)
 
 
 if __name__ == "__main__":
