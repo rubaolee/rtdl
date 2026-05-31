@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 import tempfile
 import time
@@ -31,6 +32,13 @@ CLAIM_BOUNDARY = {
     "paper_reproduction_claim_authorized": False,
     "native_engine_customization": False,
 }
+
+
+def _check_output(args: list[str]) -> str | None:
+    try:
+        return subprocess.check_output(args, text=True, stderr=subprocess.DEVNULL).strip()
+    except Exception:
+        return None
 
 
 def run_goal2800_rtnn_live_harness(
@@ -130,6 +138,9 @@ def run_goal2800_rtnn_live_harness(
         "k_max": int(k_max),
         "query_batch_size": batch_size,
         "repeat": int(repeat),
+        "source_commit": _check_output(["git", "rev-parse", "HEAD"]),
+        "source_dirty": (_check_output(["git", "status", "--short"]) or "").splitlines(),
+        "gpu": _check_output(["nvidia-smi", "--query-gpu=name,driver_version", "--format=csv,noheader"]),
         "run_cupy_grid": bool(run_cupy_grid),
         "distributions": distributions,
         "rows": tuple(rows),

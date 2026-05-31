@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import subprocess
 import sys
 import time
 from dataclasses import asdict
@@ -32,6 +33,13 @@ CLAIM_BOUNDARY = {
     "paper_reproduction_claim_authorized": False,
     "native_engine_customization": False,
 }
+
+
+def _check_output(args: list[str]) -> str | None:
+    try:
+        return subprocess.check_output(args, text=True, stderr=subprocess.DEVNULL).strip()
+    except Exception:
+        return None
 
 
 def run_goal2801_hausdorff_entrypoint(
@@ -83,6 +91,9 @@ def run_goal2801_hausdorff_entrypoint(
         "status": status,
         "app": "hausdorff_xhd",
         "benchmark_track": "canonical_exact_hausdorff_entrypoint",
+        "source_commit": _check_output(["git", "rev-parse", "HEAD"]),
+        "source_dirty": (_check_output(["git", "status", "--short"]) or "").splitlines(),
+        "gpu": _check_output(["nvidia-smi", "--query-gpu=name,driver_version", "--format=csv,noheader"]),
         "scenario": {
             "points_a": int(points_a),
             "points_b": int(points_b),
