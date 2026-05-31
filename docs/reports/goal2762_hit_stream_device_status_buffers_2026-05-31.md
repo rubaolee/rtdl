@@ -102,7 +102,7 @@ $env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal2684_generic_rt_hit_stream_
 
 Result: `107` tests passed, `3` skipped on the local non-CUDA Windows runtime.
 
-Pod gate on `root@69.30.85.171:22167`, patched from pushed commit `ccc07b5f`:
+Pod gate on `root@69.30.85.171:22167`:
 
 ```bash
 make build-optix OPTIX_PREFIX=/root/vendor/optix-sdk
@@ -114,10 +114,12 @@ RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so PYTHONPATH=src:. \
     tests.goal2752_hit_stream_zero_copy_ordering_metadata_test
 ```
 
-Result: OptiX rebuild completed, and `17` pod tests passed. The runtime smoke
-proved that the native symbol loads, the device status pointers preserve
-identity, and the status tensors hold `row_count=1`, `hit_event_count=1`, and
-`overflow=0` for the smoke fixture.
+Result: OptiX rebuild completed on the pre-commit patch from `ccc07b5f`, and
+`17` pod tests passed. After commit and push, the pod checkout was reset to
+`origin/main` at `bea6fb81`, OptiX was rebuilt again, and the same `17` runtime
+tests passed. The runtime smoke proved that the native symbol loads, the device
+status pointers preserve identity, and the status tensors hold `row_count=1`,
+`hit_event_count=1`, and `overflow=0` for the smoke fixture.
 
 ## External Review
 
