@@ -39,6 +39,16 @@ OptiX build: pass
 focused tests: 8 passed
 ```
 
+Final current-head guard after the Goal2809 review-only commit:
+
+```text
+commit: 000e5f34b8eb6b1d79d04f9a49254189683ce4c3
+source_dirty: []
+GPU: NVIDIA RTX A5000, 570.211.01
+focused tests: 12 passed
+32768 aggregate smoke: pass, exact aggregate matches on uniform/clustered/shell
+```
+
 Artifacts:
 
 - `docs/reports/goal2810_rtnn_ranked_summary_aggregate_pod/rtnn_aggregate_f32_32768.json`
