@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import unittest
 from pathlib import Path
 
@@ -16,6 +17,13 @@ POD_ARTIFACT = (
     / "reports"
     / "goal2803_pod_artifacts"
     / "barnes_hut_v25_consolidated_harness.json"
+)
+CLEAN_POD_ARTIFACT = (
+    ROOT
+    / "docs"
+    / "reports"
+    / "goal2803_pod_artifacts"
+    / "barnes_hut_v25_consolidated_harness_clean_from_git.json"
 )
 
 
@@ -49,6 +57,25 @@ class Goal2803BarnesHutV25ConsolidatedHarnessTest(unittest.TestCase):
         self.assertIn('"triton_vector_sum_auto_selection_allowed": false', text)
         self.assertIn('"triton_vector_sum_auto_selection_authorized": false', text)
         self.assertIn('"native_engine_customization": false', text)
+
+    def test_clean_pod_artifact_records_default_case_validation(self) -> None:
+        payload = json.loads(CLEAN_POD_ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["status"], "pass")
+        self.assertEqual(payload["source_dirty"], [])
+        self.assertEqual(payload["source_commit"], "60237c663c64b3322310817f0e0ece28e15e0f30")
+        self.assertEqual(payload["repeats"], 3)
+        self.assertEqual(payload["vector_warmups"], 2)
+        self.assertEqual(len(payload["membership_rows"]), 3)
+        self.assertEqual(
+            payload["membership_validation_policy"],
+            "first_case_reference_validation_plus_all_case_embree_optix_shape_parity",
+        )
+        self.assertTrue(all(row["rows_match_between_backends"] for row in payload["membership_rows"]))
+        self.assertTrue(all(row["optix_rt_core_accelerated"] for row in payload["membership_rows"]))
+        self.assertGreater(payload["max_optix_membership_speedup_vs_embree"], 100.0)
+        self.assertTrue(payload["vector_sum"]["matches_torch"])
+        self.assertTrue(payload["vector_sum"]["torch_faster"])
 
     def test_report_and_consensus_keep_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")
