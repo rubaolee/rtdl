@@ -34,7 +34,7 @@ class Goal2853V25ReadinessNextActionsRefreshTest(unittest.TestCase):
 
         self.assertEqual(
             (
-                "keep_current_canonical_harness_and_observability_guards_green",
+                "keep_goal2855_current_canonical_packet_runner_green",
                 "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
                 "request_fresh_3ai_release_review_only_if_user_requests_release",
             ),
