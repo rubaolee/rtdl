@@ -44,19 +44,25 @@ class Goal2736TierAPrimitiveFirstPlanAlignmentTest(unittest.TestCase):
         self.assertFalse(boundary["triton_speedup_claim_authorized"])
         self.assertTrue(boundary["primitive_first_plan_only"])
 
-    def test_manifest_marks_tier_a_count_rows_as_primitive_first(self) -> None:
+    def test_manifest_splits_tier_a_count_from_no_partner_baseline(self) -> None:
         validation = rt.validate_v2_5_tiered_benchmark_manifest()
         manifest = rt.v2_5_tiered_benchmark_manifest()
         rows = {row["app_id"]: row for row in manifest["apps"]}
 
         self.assertEqual(validation["status"], "accept")
-        for app_id in ("spatial_rayjoin", "librts_spatial_index"):
-            with self.subTest(app_id=app_id):
-                row = rows[app_id]
-                self.assertEqual(row["tier"], "A")
-                self.assertEqual(row["benchmark_track"], "primitive_first_rt_count_or_parity")
-                self.assertIn("primitive-first", row["next_action"])
-                self.assertIn("segmented_count_i64", row["required_partner_operations"])
+
+        spatial = rows["spatial_rayjoin"]
+        self.assertEqual(spatial["tier"], "A")
+        self.assertIn("primitive_first_rt_count_or_parity", spatial["benchmark_track"])
+        self.assertIn("Tier A count/parity", spatial["parity_target"])
+        self.assertIn("deferred Tier B", spatial["next_action"])
+        self.assertIn("segmented_count_i64", spatial["required_partner_operations"])
+
+        librts_row = rows["librts_spatial_index"]
+        self.assertEqual(librts_row["tier"], "C")
+        self.assertIn("rt_core", librts_row["benchmark_track"])
+        self.assertIn("no-regression", librts_row["parity_target"])
+        self.assertEqual(librts_row["required_partner_operations"], ())
 
     def test_report_records_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")

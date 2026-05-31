@@ -257,24 +257,24 @@ V2_5_TIERED_BENCHMARK_MANIFEST_ROWS: tuple[V25TieredBenchmarkManifestRow, ...] =
     V25TieredBenchmarkManifestRow(
         app_id="spatial_rayjoin",
         tier="A",
-        benchmark_track="primitive_first_rt_count_or_parity",
-        parity_target="count/parity same-contract comparison; row-heavy modes stay RT-core track",
+        benchmark_track="primitive_first_rt_count_or_parity_rows_overlay_deferred_tier_b",
+        parity_target="Tier A count/parity same-contract comparison; row/overlay modes are deferred Tier B continuation work",
         canonical_harness_status="needs_partner_row_if_count_path_enters_v2_5_gate",
         same_contract_opponent="prepared OptiX count/parity path and RayJoin-exported same-query streams",
         required_partner_operations=("segmented_count_i64", "compact_mask_i64"),
         pod_evidence_status="historical RayJoin-style pod evidence exists; v2.5 Triton count/parity row missing",
-        next_action="make primitive-first count/parity selection canonical; only add Triton if optional grouped post-processing enters benchmark timing",
+        next_action="make primitive-first count/parity selection canonical; keep row/overlay output as deferred Tier B device-resident continuation work",
     ),
     V25TieredBenchmarkManifestRow(
         app_id="librts_spatial_index",
-        tier="A",
-        benchmark_track="primitive_first_rt_count_or_parity",
-        parity_target="count-only no-regression plus optional Triton grouped summary",
+        tier="C",
+        benchmark_track="rt_core_aabb_no_partner_parity",
+        parity_target="RT AABB count no-regression only",
         canonical_harness_status="needs_warm_median_harness",
         same_contract_opponent="prepared RTDL AABB count path and authors-code RTSpatial baseline",
-        required_partner_operations=("segmented_count_i64",),
+        required_partner_operations=(),
         pod_evidence_status="authors-code baseline evidence exists; v2.5 Triton row missing",
-        next_action="make primitive-first AABB count selection canonical; add warm/median command before quoting v2.5 count timings",
+        next_action="keep as RT-core no-regression baseline; add warm/median command before quoting v2.5 count timings",
     ),
     V25TieredBenchmarkManifestRow(
         app_id="rt_dbscan",
@@ -406,7 +406,7 @@ def validate_v2_5_tiered_benchmark_manifest() -> dict[str, object]:
         errors.append("manifest must not authorize public speedup claims")
     if manifest["true_zero_copy_claim_authorized"] is not False:
         errors.append("manifest must not authorize true zero-copy claims")
-    expected_tiers = {"A": 4, "B": 4, "C": 2}
+    expected_tiers = {"A": 3, "B": 4, "C": 3}
     if manifest["tier_counts"] != expected_tiers:
         errors.append("unexpected v2.5 benchmark tier partition")
     for row in rows:
@@ -416,6 +416,20 @@ def validate_v2_5_tiered_benchmark_manifest() -> dict[str, object]:
             errors.append(f"{app_id} tier C row must not require partner parity")
         if tier in {"A", "B"} and not row["same_contract_opponent"]:  # type: ignore[index]
             errors.append(f"{app_id} must name a same-contract opponent")
+        if app_id == "librts_spatial_index":
+            if tier != "C":
+                errors.append("librts_spatial_index must remain Tier C no-partner no-regression")
+            if row["required_partner_operations"]:  # type: ignore[index]
+                errors.append("librts_spatial_index Tier C row must not require partner operations")
+            if "no-regression" not in str(row["parity_target"]):  # type: ignore[index]
+                errors.append("librts_spatial_index must be framed as no-regression evidence")
+        if app_id == "spatial_rayjoin":
+            row_text = " ".join(
+                str(row[field])  # type: ignore[index]
+                for field in ("benchmark_track", "parity_target", "next_action")
+            )
+            if "Tier A count/parity" not in row_text or "deferred Tier B" not in row_text:
+                errors.append("spatial_rayjoin must split Tier A count/parity from deferred Tier B row/overlay")
         if "raydb" in str(app_id):
             status = str(row["pod_evidence_status"])  # type: ignore[index]
             if "prepared" not in status or "pod evidence" not in status:

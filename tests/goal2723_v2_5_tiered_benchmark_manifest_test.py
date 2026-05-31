@@ -15,7 +15,7 @@ class Goal2723V25TieredBenchmarkManifestTest(unittest.TestCase):
 
         self.assertEqual(validation["status"], "accept")
         self.assertEqual(manifest["benchmark_app_count"], 10)
-        self.assertEqual(manifest["tier_counts"], {"A": 4, "B": 4, "C": 2})
+        self.assertEqual(manifest["tier_counts"], {"A": 3, "B": 4, "C": 3})
         self.assertTrue(manifest["same_contract_required"])
         self.assertTrue(manifest["phase_separated_timing_required"])
         self.assertTrue(manifest["sm70_plus_pod_required_for_triton_perf"])
@@ -58,7 +58,10 @@ class Goal2723V25TieredBenchmarkManifestTest(unittest.TestCase):
         manifest = rt.v2_5_tiered_benchmark_manifest()
         tier_c = [row for row in manifest["apps"] if row["tier"] == "C"]
 
-        self.assertEqual({row["app_id"] for row in tier_c}, {"contact_manifold", "robot_collision"})
+        self.assertEqual(
+            {row["app_id"] for row in tier_c},
+            {"contact_manifold", "robot_collision", "librts_spatial_index"},
+        )
         for row in tier_c:
             with self.subTest(app_id=row["app_id"]):
                 self.assertIn("no-regression", row["parity_target"])
@@ -74,6 +77,22 @@ class Goal2723V25TieredBenchmarkManifestTest(unittest.TestCase):
         self.assertIn("bounded_topk_or_ranked_summary", rows["rtnn"]["required_partner_operations"])
         self.assertIn("grouped_vector_sum", rows["barnes_hut"]["required_partner_operations"])
         self.assertIn("grouped_argmax_witness", rows["hausdorff_xhd"]["required_partner_operations"])
+
+    def test_spatial_rayjoin_and_librts_tier_labels_are_split_precisely(self) -> None:
+        manifest = rt.v2_5_tiered_benchmark_manifest()
+        rows = {row["app_id"]: row for row in manifest["apps"]}
+        spatial = rows["spatial_rayjoin"]
+        librts = rows["librts_spatial_index"]
+
+        self.assertEqual(spatial["tier"], "A")
+        self.assertIn("Tier A count/parity", spatial["parity_target"])
+        self.assertIn("deferred Tier B", spatial["next_action"])
+        self.assertIn("rows_overlay_deferred_tier_b", spatial["benchmark_track"])
+
+        self.assertEqual(librts["tier"], "C")
+        self.assertEqual(librts["required_partner_operations"], ())
+        self.assertIn("no-regression", librts["parity_target"])
+        self.assertIn("no_partner_parity", librts["benchmark_track"])
 
     def test_report_and_public_api_record_manifest_boundary(self) -> None:
         self.assertIn("v2_5_tiered_benchmark_manifest", rt.__all__)
