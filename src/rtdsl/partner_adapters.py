@@ -13,6 +13,7 @@ from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE
 from .triton_partner_continuation import run_triton_partner_continuation
 from .triton_partner_continuation import run_triton_dense_point_nearest_2d
+from .triton_partner_continuation import run_triton_dense_point_nearest_2d_tiled
 from .triton_partner_continuation import run_triton_dense_point_topk_2d
 from .triton_partner_continuation import run_triton_grouped_argmax_f64
 from .triton_partner_continuation import run_triton_grouped_argmin_f64
@@ -1929,6 +1930,7 @@ def directed_hausdorff_2d_partner_columns(
     *,
     partner: str = "torch",
     triton_strategy: str = "generic_score_rows",
+    triton_candidate_block_size: int = 1024,
     return_metadata: bool = False,
 ):
     """Compute exact directed Hausdorff distance from generic point columns."""
@@ -2017,8 +2019,63 @@ def directed_hausdorff_2d_partner_columns(
                     farthest_result["phase_timing"]["phases_sec"]["partner_continuation"]
                 ),
             }
+        elif triton_strategy == "dense_point_nearest_tiled":
+            nearest_result = run_triton_dense_point_nearest_2d_tiled(
+                source_point_columns["ids"].to(torch.int64),
+                sx,
+                sy,
+                target_point_columns["ids"].to(torch.int64),
+                tx,
+                ty,
+                candidate_block_size=triton_candidate_block_size,
+            )
+            nearest_outputs = nearest_result["outputs"]
+            nearest_target_ids = nearest_outputs["neighbor_ids"]
+            nearest_distance_sq = nearest_outputs["scores"]
+            global_group_ids = torch.zeros_like(nearest_outputs["query_indices"])
+            farthest_result = run_triton_grouped_argmax_f64(
+                global_group_ids,
+                nearest_outputs["query_indices"],
+                nearest_distance_sq,
+                group_count=1,
+            )
+            source_index_tensor = farthest_result["outputs"]["item_ids"][0]
+            source_index_i = int(source_index_tensor.detach().cpu().item())
+            target_index_i = None
+            directed_distance_sq = nearest_distance_sq[source_index_i]
+            directed_distance = torch.sqrt(directed_distance_sq)
+            nearest_distances = torch.sqrt(nearest_distance_sq)
+            triton_witness_metadata = {
+                "adapter": "directed_hausdorff_2d_partner_columns",
+                "partner": "triton",
+                "partner_reference_contract": "generic_exact_directed_hausdorff_2d",
+                "v2_5_triton_strategy": triton_strategy,
+                "v2_5_partner_continuation_operations": (
+                    "dense_point_nearest_2d_tiled",
+                    "grouped_argmin_f64",
+                    "grouped_argmax_f64",
+                ),
+                "v2_5_triton_preview_kernel_status": "preview_not_promoted",
+                "v2_5_triton_adapter_kernel": nearest_result["adapter_kernel"],
+                "app_distance_materialization": "partner_gpu_tiled_point_nearest_then_global_max",
+                "winner_group_id": source_index_i,
+                "winner_item_id": int(nearest_target_ids[source_index_i].detach().cpu().item()),
+                "winner_score": float(directed_distance_sq.detach().cpu().item()),
+                "triton_dense_point_nearest_elapsed_seconds": float(
+                    nearest_result["phase_timing"]["phases_sec"]["partner_continuation"]
+                ),
+                "triton_grouped_argmax_elapsed_seconds": float(
+                    farthest_result["phase_timing"]["phases_sec"]["partner_continuation"]
+                ),
+                "triton_candidate_block_size": int(triton_candidate_block_size),
+                "triton_candidate_tile_count": nearest_result["candidate_tile_count"],
+                "triton_tile_witness_row_count": nearest_result["tile_witness_row_count"],
+            }
         else:
-            raise ValueError("triton_strategy must be 'generic_score_rows' or 'dense_point_nearest'")
+            raise ValueError(
+                "triton_strategy must be 'generic_score_rows', 'dense_point_nearest', "
+                "or 'dense_point_nearest_tiled'"
+            )
     elif runtime["name"] == "torch":
         torch = runtime["module"]
         sx = source_point_columns["x"].to(torch.float64)

@@ -29,6 +29,7 @@ TRITON_GROUPED_ARGMAX_F64_OPERATION = "grouped_argmax_f64"
 TRITON_GROUPED_TOPK_F64_OPERATION = "grouped_topk_f64"
 TRITON_DENSE_POINT_TOPK_2D_ADAPTER_KERNEL = "dense_point_topk_2d_adapter_kernel"
 TRITON_DENSE_POINT_NEAREST_2D_ADAPTER_KERNEL = "dense_point_nearest_2d_adapter_kernel"
+TRITON_DENSE_POINT_NEAREST_2D_TILED_ADAPTER_KERNEL = "dense_point_nearest_2d_tiled_adapter_kernel"
 TRITON_BOUNDED_COLLECT_FINALIZE_I64_OPERATION = "bounded_collect_finalize_i64"
 TRITON_PARTNER_CONTINUATION_STATUS = V2_5_STATUS_PREVIEW_NOT_PROMOTED
 TRITON_TENSOR_CARRIER = "torch_cuda_tensor_for_triton_launch"
@@ -1451,6 +1452,102 @@ def run_triton_dense_point_nearest_2d(
     )
 
 
+def run_triton_dense_point_nearest_2d_tiled(
+    query_ids: Any,
+    query_x: Any,
+    query_y: Any,
+    candidate_ids: Any,
+    candidate_x: Any,
+    candidate_y: Any,
+    *,
+    candidate_block_size: int = 1024,
+) -> dict[str, object]:
+    """Run tiled dense 2D point nearest-witness without score-row materialization."""
+
+    triton, torch, tl = _import_triton_stack()
+    _validate_torch_cuda_vector(query_ids, name="query_ids", dtype=torch.int64)
+    _validate_torch_cuda_vector(query_x, name="query_x", dtype=torch.float64)
+    _validate_torch_cuda_vector(query_y, name="query_y", dtype=torch.float64)
+    _validate_torch_cuda_vector(candidate_ids, name="candidate_ids", dtype=torch.int64)
+    _validate_torch_cuda_vector(candidate_x, name="candidate_x", dtype=torch.float64)
+    _validate_torch_cuda_vector(candidate_y, name="candidate_y", dtype=torch.float64)
+    if not (tuple(query_ids.shape) == tuple(query_x.shape) == tuple(query_y.shape)):
+        raise ValueError("query ids/x/y must have the same shape")
+    if not (tuple(candidate_ids.shape) == tuple(candidate_x.shape) == tuple(candidate_y.shape)):
+        raise ValueError("candidate ids/x/y must have the same shape")
+    query_count = int(query_ids.numel())
+    candidate_count = int(candidate_ids.numel())
+    if query_count <= 0 or candidate_count <= 0:
+        raise ValueError("dense point nearest tiled requires non-empty query and candidate columns")
+    candidate_block_size = int(candidate_block_size)
+    if candidate_block_size <= 0:
+        raise ValueError("candidate_block_size must be positive")
+    block_size = int(triton.next_power_of_2(candidate_block_size))
+    tile_count = (candidate_count + candidate_block_size - 1) // candidate_block_size
+    tile_rows = query_count * tile_count
+    tile_query_indices = torch.empty((tile_rows,), dtype=torch.int64, device=query_ids.device)
+    tile_neighbor_ids = torch.empty((tile_rows,), dtype=torch.int64, device=candidate_ids.device)
+    tile_scores = torch.empty((tile_rows,), dtype=torch.float64, device=query_x.device)
+
+    torch.cuda.synchronize(query_ids.device)
+    started = perf_counter()
+    _triton_dense_point_nearest_2d_tile_kernel(tl)[(query_count, tile_count)](
+        query_ids,
+        query_x,
+        query_y,
+        candidate_ids,
+        candidate_x,
+        candidate_y,
+        tile_query_indices,
+        tile_neighbor_ids,
+        tile_scores,
+        candidate_count,
+        CANDIDATE_BLOCK_SIZE=candidate_block_size,
+        BLOCK_SIZE=block_size,
+    )
+    torch.cuda.synchronize(query_ids.device)
+    tile_elapsed = perf_counter() - started
+
+    reduce_started = perf_counter()
+    argmin_result = run_triton_grouped_argmin_f64(
+        tile_query_indices,
+        tile_neighbor_ids,
+        tile_scores,
+        group_count=query_count,
+    )
+    reduce_elapsed = perf_counter() - reduce_started
+    query_indices = torch.arange(query_count, dtype=torch.int64, device=query_ids.device)
+    outputs = {
+        "query_indices": query_indices,
+        "query_ids": query_ids,
+        "neighbor_ids": argmin_result["outputs"]["dense_item_ids"],
+        "scores": argmin_result["outputs"]["dense_scores"],
+        "tile_query_indices": tile_query_indices,
+        "tile_neighbor_ids": tile_neighbor_ids,
+        "tile_scores": tile_scores,
+    }
+    elapsed = tile_elapsed + reduce_elapsed
+
+    return _triton_run_result(
+        operation=TRITON_GROUPED_ARGMIN_F64_OPERATION,
+        outputs=outputs,
+        elapsed=elapsed,
+        source="run_triton_dense_point_nearest_2d_tiled",
+        group_id_bounds_validation_mode=TRITON_GROUP_ID_BOUNDS_NOT_APPLICABLE,
+        extra_metadata={
+            "adapter_kernel": TRITON_DENSE_POINT_NEAREST_2D_TILED_ADAPTER_KERNEL,
+            "logical_operation": TRITON_GROUPED_ARGMIN_F64_OPERATION,
+            "tie_break": "lowest_score_then_lowest_candidate_id",
+            "score_materialization": "tile_witness_rows_only",
+            "candidate_block_size": candidate_block_size,
+            "candidate_tile_count": tile_count,
+            "tile_witness_row_count": tile_rows,
+            "tile_kernel_elapsed_seconds": float(tile_elapsed),
+            "tile_argmin_reduce_elapsed_seconds": float(reduce_elapsed),
+        },
+    )
+
+
 def run_triton_bounded_collect_finalize_i64(
     group_ids: Any,
     item_ids: Any,
@@ -2125,6 +2222,47 @@ def _triton_dense_point_nearest_2d_kernel(tl):
         tl.store(output_query_ids + query_index, qid)
         tl.store(output_neighbor_ids + query_index, best_id)
         tl.store(output_scores + query_index, best_score)
+
+    return kernel
+
+
+def _triton_dense_point_nearest_2d_tile_kernel(tl):
+    @__import__("triton").jit
+    def kernel(
+        query_ids,
+        query_x,
+        query_y,
+        candidate_ids,
+        candidate_x,
+        candidate_y,
+        tile_query_indices,
+        tile_neighbor_ids,
+        tile_scores,
+        candidate_count: tl.constexpr,
+        CANDIDATE_BLOCK_SIZE: tl.constexpr,
+        BLOCK_SIZE: tl.constexpr,
+    ):
+        query_index = tl.program_id(0)
+        tile_index = tl.program_id(1)
+        offsets = tl.arange(0, BLOCK_SIZE)
+        candidate_offset = tile_index * CANDIDATE_BLOCK_SIZE + offsets
+        valid = candidate_offset < candidate_count
+
+        qx = tl.load(query_x + query_index)
+        qy = tl.load(query_y + query_index)
+        cids = tl.load(candidate_ids + candidate_offset, mask=valid, other=9223372036854775807)
+        cx = tl.load(candidate_x + candidate_offset, mask=valid, other=0.0)
+        cy = tl.load(candidate_y + candidate_offset, mask=valid, other=0.0)
+        dx = qx - cx
+        dy = qy - cy
+        scores = tl.where(valid, dx * dx + dy * dy, float("inf"))
+        best_score = tl.min(scores, axis=0)
+        best_score_mask = valid & (scores == best_score)
+        best_id = tl.min(tl.where(best_score_mask, cids, 9223372036854775807), axis=0)
+        out_offset = query_index * tl.num_programs(1) + tile_index
+        tl.store(tile_query_indices + out_offset, query_index)
+        tl.store(tile_neighbor_ids + out_offset, best_id)
+        tl.store(tile_scores + out_offset, best_score)
 
     return kernel
 

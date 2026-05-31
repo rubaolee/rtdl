@@ -731,6 +731,11 @@ Future work:
   nearest kernel; it needs a stronger tiled/block-reduction design, a dtype
   strategy, or explicit selection of the optimized Torch/CuPy/CUDA path for
   dense exact Hausdorff.
+- Goal2790 adds a tiled dense-point-nearest Triton strategy and finds the first
+  large-shape crossover in this lane: still slower than Torch at 2K/4K/8K
+  dense point sets, but faster at the measured 16K x 16K shape. Future work
+  should define conditional partner-selection guidance by shape, memory budget,
+  and dtype instead of recording only negative rows.
 
 Boundary:
 
