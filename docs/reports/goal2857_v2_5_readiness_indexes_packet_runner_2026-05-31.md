@@ -84,6 +84,28 @@ Expected result:
 OK
 ```
 
+Pod validation at pushed `main` (`fe34bda9`) also passed:
+
+```text
+python3 -m unittest
+  tests.goal2857_v2_5_readiness_indexes_packet_runner_test
+  tests.goal2855_v2_5_current_canonical_harness_packet_runner_test
+  tests.goal2853_v2_5_readiness_next_actions_refresh_test
+  tests.goal2849_v2_5_readiness_indexes_current_canonical_harness_test
+  tests.goal2806_v2_5_internal_readiness_packet_test
+Ran 24 tests in 0.248s
+OK
+```
+
+Recent v2.5 pod module sweep:
+
+```text
+[codex] recent v2.5 module count 128
+[codex] recent v2.5 tests successful True tests 546 failures 0 errors 0
+Ran 546 tests in 2.534s
+OK
+```
+
 ## Conclusion
 
 Goal2857 accepts the packet-runner readiness index update. Future v2.5 health
