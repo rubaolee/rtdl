@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import statistics
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -32,6 +33,21 @@ CLAIM_BOUNDARY = {
 }
 
 
+def _check_output(args: list[str]) -> str | None:
+    try:
+        return subprocess.check_output(args, text=True, stderr=subprocess.DEVNULL).strip()
+    except Exception:
+        return None
+
+
+def _run_metadata() -> dict[str, Any]:
+    return {
+        "source_commit": _check_output(["git", "rev-parse", "HEAD"]),
+        "source_dirty": (_check_output(["git", "status", "--short"]) or "").splitlines(),
+        "gpu": _check_output(["nvidia-smi", "--query-gpu=name,driver_version", "--format=csv,noheader"]),
+    }
+
+
 def run_goal2798_librts_warm_median_harness(
     *,
     box_count: int,
@@ -41,6 +57,7 @@ def run_goal2798_librts_warm_median_harness(
     repeat: int = 9,
     operations: tuple[str, ...] = librts_app.OPERATIONS,
 ) -> dict[str, Any]:
+    started = time.perf_counter()
     fixture = librts_app.make_uniform_fixture(
         box_count=int(box_count),
         query_count=int(query_count),
@@ -124,6 +141,8 @@ def run_goal2798_librts_warm_median_harness(
         "cpu_counts": cpu_counts,
         "rows": tuple(rows),
         "row_count": len(rows),
+        "elapsed_sec": time.perf_counter() - started,
+        **_run_metadata(),
         "claim_boundary": CLAIM_BOUNDARY,
     }
 

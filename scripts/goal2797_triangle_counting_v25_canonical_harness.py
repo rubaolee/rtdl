@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 import tempfile
 import time
@@ -33,6 +34,21 @@ CLAIM_BOUNDARY = {
     "paper_reproduction_claim_authorized": False,
     "native_engine_customization": False,
 }
+
+
+def _check_output(args: list[str]) -> str | None:
+    try:
+        return subprocess.check_output(args, text=True, stderr=subprocess.DEVNULL).strip()
+    except Exception:
+        return None
+
+
+def _run_metadata() -> dict[str, Any]:
+    return {
+        "source_commit": _check_output(["git", "rev-parse", "HEAD"]),
+        "source_dirty": (_check_output(["git", "status", "--short"]) or "").splitlines(),
+        "gpu": _check_output(["nvidia-smi", "--query-gpu=name,driver_version", "--format=csv,noheader"]),
+    }
 
 
 def disjoint_triangle_edges(triangle_count: int) -> tuple[tuple[int, int], ...]:
@@ -130,6 +146,7 @@ def run_goal2797_triangle_counting_harness(
         "rows": tuple(rows),
         "row_count": len(rows),
         "elapsed_sec": time.perf_counter() - started,
+        **_run_metadata(),
         "claim_boundary": CLAIM_BOUNDARY,
     }
 
