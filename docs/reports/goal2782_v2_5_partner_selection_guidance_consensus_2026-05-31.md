@@ -26,6 +26,12 @@ route is correct but 31.88x-45.15x slower than Torch on measured RTX A5000
 shapes, so the advisory "do not auto-select Triton" decision applies to that
 shape too.
 
+Goal2788 later added a dense point-nearest Hausdorff-style row with
+still-negative evidence: the fused dense point-nearest strategy removes dense
+score-row materialization and improves on Goal2787, but remains 3.77x-30.73x
+slower than Torch on measured RTX A5000 shapes, so the advisory "do not
+auto-select Triton" decision remains.
+
 ## Evidence
 
 Codex implementation and validation:
@@ -40,6 +46,8 @@ Codex implementation and validation:
     Goal2786
   - `grouped_argmin_f64` / dense exact Hausdorff-style argmin/argmax, added by
     Goal2787
+  - `grouped_argmin_f64` / dense exact Hausdorff-style nearest then global max
+    via dense-point-nearest adapter, added by Goal2788
 - kept planner guidance advisory-only with no forced partner
 - kept public speedup, RT-core, true-zero-copy, whole-app, and release claims
   blocked

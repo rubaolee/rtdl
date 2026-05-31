@@ -8,8 +8,9 @@ Date: 2026-05-31
 
 Goal2783 is accepted as a narrow planner-metadata hardening step. It wires the
 Goal2782 measured negative guidance into the v2.5 benchmark-app migration plan
-so dense top-k and dense vector-sum rows cannot be treated as automatic Triton
-performance selections merely because preview kernels exist.
+so dense top-k, dense vector-sum, and dense Hausdorff-style witness-reduction
+rows cannot be treated as automatic Triton performance selections merely
+because preview kernels exist.
 
 ## Evidence
 
@@ -26,6 +27,9 @@ Codex implementation and validation:
   `dense_grouped_vector_sum_2d`
 - Hausdorff/X-HD now records Goal2787 guidance for `grouped_argmin_f64` /
   `dense_exact_hausdorff_argmin_argmax`
+- Hausdorff/X-HD now also records Goal2788 guidance for `grouped_argmin_f64` /
+  `dense_exact_hausdorff_nearest_then_global_max` through the dense-point-nearest
+  adapter
 
 Local Windows validation:
 

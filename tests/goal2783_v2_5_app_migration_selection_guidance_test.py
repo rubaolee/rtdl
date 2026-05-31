@@ -54,19 +54,30 @@ class Goal2783V25AppMigrationSelectionGuidanceTest(unittest.TestCase):
         self.assertFalse(guidance["auto_select_partner_allowed"])
         self.assertIn("Do not auto-select Triton", guidance["recommendation"])
 
-    def test_hausdorff_dense_argmin_argmax_records_goal2787_negative_guidance(self) -> None:
+    def test_hausdorff_dense_witness_reductions_record_negative_guidance(self) -> None:
         apps = {app["app_id"]: app for app in rt.v2_5_triton_benchmark_app_migration_plan()["apps"]}
         hausdorff = apps["hausdorff_xhd"]
-        guidance = hausdorff["partner_selection_guidance"][0]
+        guidance_by_shape = {
+            guidance["matches"][0]["workload_shape"]: guidance
+            for guidance in hausdorff["partner_selection_guidance"]
+        }
 
         self.assertIn("grouped_argmin_f64", hausdorff["v2_5_required_operations"])
-        self.assertEqual(hausdorff["measured_negative_preview_guidance_count"], 1)
+        self.assertIn("grouped_argmax_f64", hausdorff["v2_5_required_operations"])
+        self.assertEqual(hausdorff["measured_negative_preview_guidance_count"], 2)
         self.assertFalse(hausdorff["auto_select_preview_partner_allowed"])
-        self.assertEqual(guidance["status"], "measured_negative_preview_guidance")
-        self.assertEqual(guidance["matches"][0]["operation"], "grouped_argmin_f64")
-        self.assertEqual(guidance["matches"][0]["evidence_goal"], "Goal2787")
-        self.assertFalse(guidance["auto_select_partner_allowed"])
-        self.assertIn("Do not auto-select Triton", guidance["recommendation"])
+        self.assertEqual(
+            guidance_by_shape["dense_exact_hausdorff_argmin_argmax"]["matches"][0]["evidence_goal"],
+            "Goal2787",
+        )
+        self.assertEqual(
+            guidance_by_shape["dense_exact_hausdorff_nearest_then_global_max"]["matches"][0]["evidence_goal"],
+            "Goal2788",
+        )
+        for guidance in guidance_by_shape.values():
+            self.assertEqual(guidance["status"], "measured_negative_preview_guidance")
+            self.assertFalse(guidance["auto_select_partner_allowed"])
+            self.assertIn("Do not auto-select Triton", guidance["recommendation"])
 
     def test_apps_without_measured_negative_guidance_do_not_gain_false_selection_claims(self) -> None:
         apps = {app["app_id"]: app for app in rt.v2_5_triton_benchmark_app_migration_plan()["apps"]}
@@ -85,6 +96,7 @@ class Goal2783V25AppMigrationSelectionGuidanceTest(unittest.TestCase):
         self.assertIn("Goal2783", report)
         self.assertIn("RTNN", report)
         self.assertIn("Barnes-Hut", report)
+        self.assertIn("Hausdorff/X-HD", report)
         self.assertIn("do not auto-select Triton", report)
         self.assertIn("`accept`", consensus)
         self.assertIn(str(CLAUDE_REVIEW.relative_to(REPO_ROOT)).replace("\\", "/"), consensus)

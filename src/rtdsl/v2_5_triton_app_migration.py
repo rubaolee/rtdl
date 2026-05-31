@@ -120,15 +120,19 @@ V2_5_TRITON_BENCHMARK_APP_PLANS: tuple[V25TritonBenchmarkAppPlan, ...] = (
         benchmark_name="Hausdorff/X-HD",
         promoted_benchmark=True,
         current_hot_path_partner="legacy_cupy_for_some_exact_partner_continuations",
-        v2_5_required_operations=("grouped_argmin_f64", "segmented_max_f64"),
-        v2_5_status="wired_but_dense_argmin_argmax_has_goal2787_negative_triton_selection_guidance",
+        v2_5_required_operations=("grouped_argmin_f64", "grouped_argmax_f64"),
+        v2_5_status="wired_but_dense_point_nearest_has_goal2788_negative_triton_selection_guidance",
         first_port_action=(
             "Keep optimized Torch/CuPy/CUDA or another explicitly selected same-contract "
-            "partner for dense exact Hausdorff witness reduction until a fused/tiled "
-            "generic Triton design replaces the two-kernel preview."
+            "partner for dense exact Hausdorff witness reduction. Goal2788's fused "
+            "dense point-nearest route improves the Goal2787 generic score-row route, "
+            "but still does not win enough to become the selected Triton path."
         ),
-        notes="Do not add Hausdorff-specific native code; nearest-witness scoring remains generic grouped reduction. Goal2787 blocks blind Triton auto-selection for dense exact Hausdorff-style argmin-then-argmax.",
-        measured_selection_shapes=(("grouped_argmin_f64", "dense_exact_hausdorff_argmin_argmax"),),
+        notes="Do not add Hausdorff-specific native code; nearest-witness scoring remains generic point-nearest plus grouped reduction. Goal2787 and Goal2788 both block blind Triton auto-selection for dense exact Hausdorff-style witness reduction.",
+        measured_selection_shapes=(
+            ("grouped_argmin_f64", "dense_exact_hausdorff_argmin_argmax"),
+            ("grouped_argmin_f64", "dense_exact_hausdorff_nearest_then_global_max"),
+        ),
     ),
     V25TritonBenchmarkAppPlan(
         app_id="rt_dbscan",

@@ -149,6 +149,30 @@ V2_5_PARTNER_SELECTION_GUIDANCE_ROWS = (
             "design wins timing."
         ),
     ),
+    V25PartnerSelectionGuidanceRow(
+        operation="grouped_argmin_f64",
+        workload_shape="dense_exact_hausdorff_nearest_then_global_max",
+        measured_partner="triton",
+        comparison_partner="torch_same_contract_branch",
+        evidence_goal="Goal2788",
+        artifact_path=(
+            "docs/reports/goal2788_pod_artifacts/"
+            "goal2788_dense_point_nearest_hausdorff_pod_69_30_85_171_2026-05-31.json"
+        ),
+        measured_partner_slower_min_ratio=3.77,
+        measured_partner_slower_max_ratio=30.73,
+        recommendation=(
+            "Do not auto-select Triton for dense exact Hausdorff-style "
+            "nearest-then-global-max witness reduction yet. Goal2788's fused "
+            "dense_point_nearest_2d route removes dense score-row materialization "
+            "and is faster than the Goal2787 generic score-row route, but it is "
+            "still 3.77x-30.73x slower than the dense Torch same-contract branch "
+            "on measured RTX A5000 shapes. Keep optimized Torch/CuPy/CUDA or "
+            "another explicitly selected same-contract partner as the performance "
+            "path until a stronger tiled/fused generic witness-reduction design "
+            "wins timing."
+        ),
+    ),
 )
 
 

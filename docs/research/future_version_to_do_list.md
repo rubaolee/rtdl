@@ -723,6 +723,14 @@ Future work:
   around separate generic argmin and argmax kernels; it needs a fused/tiled
   witness-reduction design or explicit selection of an optimized Torch/CuPy/CUDA
   partner for dense exact reductions.
+- Goal2788 tests the first fused/tiled direction by adding a generic
+  dense-point-nearest Triton adapter and using it as an explicit Hausdorff
+  strategy. It improves over Goal2787 by removing dense score-row
+  materialization, but remains 3.77x-30.73x slower than Torch on measured RTX
+  A5000 dense shapes. The next useful step is not another one-query-per-program
+  nearest kernel; it needs a stronger tiled/block-reduction design, a dtype
+  strategy, or explicit selection of the optimized Torch/CuPy/CUDA path for
+  dense exact Hausdorff.
 
 Boundary:
 

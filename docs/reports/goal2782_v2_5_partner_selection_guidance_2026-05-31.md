@@ -5,14 +5,15 @@ Date: 2026-05-31
 ## Purpose
 
 Goal2780 and Goal2781 both produced the same design lesson, later refreshed by
-Goal2784, Goal2786, and Goal2787:
+Goal2784, Goal2786, Goal2787, and Goal2788:
 
 **preview kernel available is not the same as selected partner.**
 
-The `grouped_topk_f64`, `grouped_vector_sum_f64x2`, and dense Hausdorff-style
-`grouped_argmin_f64` Triton paths are correct and useful as generic preview
-surfaces, but the measured RTX A5000 evidence says they are slower than the
-same-contract Torch branches for the dense shapes that were tested.
+The `grouped_topk_f64`, `grouped_vector_sum_f64x2`, dense Hausdorff-style
+`grouped_argmin_f64`, and dense point-nearest Triton paths are correct and
+useful as generic preview surfaces, but the measured RTX A5000 evidence says
+they are slower than the same-contract Torch branches for the dense shapes that
+were tested.
 
 Goal2782 turns that lesson into a machine-readable guidance registry so future
 planners, examples, and benchmark harnesses do not blindly choose Triton just
@@ -30,13 +31,14 @@ New public-but-experimental helpers:
 - `validate_v2_5_partner_selection_guidance(...)`
 - `plan_v2_5_partner_selection(operation, workload_shape=None)`
 
-The registry currently has three measured negative-guidance rows:
+The registry currently has four measured negative-guidance rows:
 
 | Operation | Workload shape | Evidence | Finding | Recommendation |
 | --- | --- | --- | --- | --- |
 | `grouped_topk_f64` | dense exact top-k candidate ranking | Goal2784 | Triton 4.91x-10.04x slower than Torch | do not auto-select Triton |
 | `grouped_vector_sum_f64x2` | dense grouped 2D vector sum | Goal2786 | Triton 3.76x-16.86x slower than Torch | do not auto-select Triton |
 | `grouped_argmin_f64` | dense exact Hausdorff-style argmin/argmax | Goal2787 | Triton 31.88x-45.15x slower than Torch | do not auto-select Triton |
+| `grouped_argmin_f64` | dense exact Hausdorff-style nearest then global max via dense-point-nearest adapter | Goal2788 | Triton 3.77x-30.73x slower than Torch | do not auto-select Triton |
 
 This does not demote the generic contracts. It separates **contract
 availability** from **performance partner selection**.
@@ -66,6 +68,15 @@ Goal2787 refresh:
 - The updated Hausdorff-style range is 31.88x-45.15x slower than Torch on the
   measured RTX A5000 shapes. This keeps the negative selection guidance in
   place for the current two-kernel generic route.
+
+Goal2788 refresh:
+
+- The dense point-nearest row now points at Goal2788, after the Hausdorff
+  wrapper gained an explicit `dense_point_nearest` Triton strategy that avoids
+  dense score-row materialization.
+- The updated dense point-nearest range is 3.77x-30.73x slower than Torch on
+  the measured RTX A5000 shapes. It improves the Goal2787 route but still keeps
+  negative selection guidance in place.
 
 ## Boundary
 
@@ -125,8 +136,8 @@ OK (skipped=10)
 
 No pod was required for the original Goal2782 because it consumed already-recorded
 Goal2780 and Goal2781 pod artifacts instead of producing new timing evidence.
-The current guidance has since been refreshed by Goal2784, Goal2786, and Goal2787 pod
-artifacts.
+The current guidance has since been refreshed by Goal2784, Goal2786, Goal2787,
+and Goal2788 pod artifacts.
 
 Pod no-new-timing validation:
 
