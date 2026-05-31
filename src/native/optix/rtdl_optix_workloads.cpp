@@ -14088,7 +14088,6 @@ static void ensure_fixed_radius_neighbors_grid_cuda_3d_kernel()
         g_frn3d_grid_ranked_summary_aggregate_f32_direct.module = g_frn3d_grid.module;
         g_frn3d_grid_ranked_summary_aggregate_f32_blocks.module = g_frn3d_grid.module;
         g_frn3d_grid_ranked_summary_aggregate_f32_blocks_batch.module = g_frn3d_grid.module;
-        g_frn3d_ranked_aggregate_partials_reduce.module = g_frn3d_grid.module;
         g_frn3d_grid_compact.module = g_frn3d_grid.module;
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_count.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_count"));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_exact_count.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_exact_count"));
@@ -14102,7 +14101,6 @@ static void ensure_fixed_radius_neighbors_grid_cuda_3d_kernel()
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_ranked_summary_aggregate_f32_direct.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_ranked_summary_aggregate_f32_direct"));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_ranked_summary_aggregate_f32_blocks.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_ranked_summary_aggregate_f32_blocks"));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_ranked_summary_aggregate_f32_blocks_batch.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_ranked_summary_aggregate_f32_blocks_batch"));
-        CU_CHECK(cuModuleGetFunction(&g_frn3d_ranked_aggregate_partials_reduce.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_ranked_aggregate_partials_reduce"));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_compact.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_compact"));
     });
 }
@@ -15275,21 +15273,24 @@ static void aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_grid
             &d_partials.ptr,
         };
         CU_CHECK(cuLaunchKernel(g_frn3d_grid_ranked_summary_aggregate_f32_blocks_batch.fn, grid, request_count_u32, 1, block, 1, 1, 0, nullptr, summary_args, nullptr));
-        DevPtr d_aggregates(sizeof(RtdlFixedRadiusRankedNeighborAggregate) * request_count);
-        uint32_t partial_count_u32 = static_cast<uint32_t>(grid);
-        void* reduce_args[] = {
-            &d_partials.ptr,
-            &partial_count_u32,
-            &request_count_u32,
-            &d_aggregates.ptr,
-        };
-        CU_CHECK(cuLaunchKernel(g_frn3d_ranked_aggregate_partials_reduce.fn, request_count_u32, 1, 1, block, 1, 1, 0, nullptr, reduce_args, nullptr));
         CU_CHECK(cuStreamSynchronize(nullptr));
         auto t_end_summary = std::chrono::steady_clock::now();
         g_optix_last_fixed_radius_3d_count_s = seconds_between(t_start_summary, t_end_summary);
 
         auto t_start_download = std::chrono::steady_clock::now();
-        download(aggregates_out, d_aggregates.ptr, request_count);
+        std::vector<RtdlFixedRadiusRankedNeighborAggregate> partials(request_count * grid);
+        download(partials.data(), d_partials.ptr, partials.size());
+        for (size_t request_index = 0; request_index < request_count; ++request_index) {
+            RtdlFixedRadiusRankedNeighborAggregate& aggregate = aggregates_out[request_index];
+            for (size_t partial_index = 0; partial_index < grid; ++partial_index) {
+                const auto& partial = partials[request_index * grid + partial_index];
+                aggregate.query_count += partial.query_count;
+                aggregate.bounded_neighbor_count += partial.bounded_neighbor_count;
+                aggregate.nearest_id_checksum += partial.nearest_id_checksum;
+                aggregate.kth_id_checksum += partial.kth_id_checksum;
+                aggregate.sum_distance += partial.sum_distance;
+            }
+        }
         auto t_end_download = std::chrono::steady_clock::now();
         g_optix_last_fixed_radius_3d_row_download_s = seconds_between(t_start_download, t_end_download);
     } else {

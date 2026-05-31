@@ -5806,65 +5806,6 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_summary_aggrega
     }
 }
 
-extern "C" __global__ void fixed_radius_neighbors_3d_ranked_aggregate_partials_reduce(
-        const FrnRankedAggregate* partials,
-        uint32_t partial_count,
-        uint32_t request_count,
-        FrnRankedAggregate* aggregates_out)
-{
-    const uint32_t request_index = blockIdx.x;
-    if (request_index >= request_count) return;
-
-    __shared__ unsigned long long s_query_count[256];
-    __shared__ unsigned long long s_neighbor_count[256];
-    __shared__ unsigned long long s_nearest_checksum[256];
-    __shared__ unsigned long long s_kth_checksum[256];
-    __shared__ double s_sum_distance[256];
-
-    const uint32_t tid = threadIdx.x;
-    unsigned long long local_query_count = 0ull;
-    unsigned long long local_neighbor_count = 0ull;
-    unsigned long long local_nearest_checksum = 0ull;
-    unsigned long long local_kth_checksum = 0ull;
-    double local_sum_distance = 0.0;
-    const uint32_t base = request_index * partial_count;
-
-    for (uint32_t partial_index = tid; partial_index < partial_count; partial_index += blockDim.x) {
-        const FrnRankedAggregate partial = partials[base + partial_index];
-        local_query_count += partial.query_count;
-        local_neighbor_count += partial.bounded_neighbor_count;
-        local_nearest_checksum += partial.nearest_id_checksum;
-        local_kth_checksum += partial.kth_id_checksum;
-        local_sum_distance += partial.sum_distance;
-    }
-
-    s_query_count[tid] = local_query_count;
-    s_neighbor_count[tid] = local_neighbor_count;
-    s_nearest_checksum[tid] = local_nearest_checksum;
-    s_kth_checksum[tid] = local_kth_checksum;
-    s_sum_distance[tid] = local_sum_distance;
-    __syncthreads();
-
-    for (uint32_t stride = blockDim.x >> 1u; stride > 0u; stride >>= 1u) {
-        if (tid < stride) {
-            s_query_count[tid] += s_query_count[tid + stride];
-            s_neighbor_count[tid] += s_neighbor_count[tid + stride];
-            s_nearest_checksum[tid] += s_nearest_checksum[tid + stride];
-            s_kth_checksum[tid] += s_kth_checksum[tid + stride];
-            s_sum_distance[tid] += s_sum_distance[tid + stride];
-        }
-        __syncthreads();
-    }
-
-    if (tid == 0u) {
-        aggregates_out[request_index].query_count = s_query_count[0];
-        aggregates_out[request_index].bounded_neighbor_count = s_neighbor_count[0];
-        aggregates_out[request_index].nearest_id_checksum = s_nearest_checksum[0];
-        aggregates_out[request_index].kth_id_checksum = s_kth_checksum[0];
-        aggregates_out[request_index].sum_distance = s_sum_distance[0];
-    }
-}
-
 extern "C" __global__ void fixed_radius_neighbors_3d_grid_compact(
         const GpuPoint3D* query_points,
         uint32_t query_count,
@@ -7156,7 +7097,6 @@ static FrnCuFunction      g_frn3d_grid_ranked_summary_aggregate;
 static FrnCuFunction      g_frn3d_grid_ranked_summary_aggregate_f32_direct;
 static FrnCuFunction      g_frn3d_grid_ranked_summary_aggregate_f32_blocks;
 static FrnCuFunction      g_frn3d_grid_ranked_summary_aggregate_f32_blocks_batch;
-static FrnCuFunction      g_frn3d_ranked_aggregate_partials_reduce;
 static FrnCuFunction      g_frn3d_grid_compact;
 static KnnCuFunction      g_partner_ray2d_pack;
 static KnnCuFunction      g_partner_triangle2d_pack;

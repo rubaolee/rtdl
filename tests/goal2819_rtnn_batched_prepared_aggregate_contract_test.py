@@ -44,9 +44,9 @@ class Goal2819RtnnBatchedPreparedAggregateContractTest(unittest.TestCase):
         self.assertIn("DevPtr d_partials", body)
         self.assertIn("cuLaunchKernel(g_frn3d_grid_ranked_summary_aggregate_f32_direct.fn", body)
         self.assertIn("cuLaunchKernel(g_frn3d_grid_ranked_summary_aggregate_f32_blocks_batch.fn", body)
-        self.assertIn("cuLaunchKernel(g_frn3d_ranked_aggregate_partials_reduce.fn", body)
         self.assertEqual(body.count("cuStreamSynchronize(nullptr)"), 2)
         self.assertIn("download(aggregates_out, d_aggregates.ptr, request_count)", body)
+        self.assertIn("download(partials.data(), d_partials.ptr, partials.size())", body)
         self.assertNotIn("rtnn", body.lower())
 
     def test_python_runtime_exposes_validated_batch_method(self) -> None:
