@@ -37,7 +37,7 @@ class Goal2815RtnnPreparedAggregateWorkspaceTest(unittest.TestCase):
 
         self.assertIn("prepared->d_ranked_aggregate->ptr", prepared_query_body)
         self.assertIn("CUdeviceptr d_aggregate", prepared_query_body)
-        self.assertIn("cuMemsetD8(d_aggregate", prepared_query_body)
+        self.assertIn("cuMemsetD8Async(d_aggregate", prepared_query_body)
         self.assertNotIn("DevPtr d_aggregate", prepared_query_body)
         self.assertNotIn("rtnn", prepared_query_body.lower())
 
@@ -50,7 +50,7 @@ class Goal2815RtnnPreparedAggregateWorkspaceTest(unittest.TestCase):
 
         self.assertIn("prepared->d_ranked_aggregate->ptr", aggregate_body)
         self.assertIn("CUdeviceptr d_aggregate", aggregate_body)
-        self.assertIn("cuMemsetD8(d_aggregate", aggregate_body)
+        self.assertIn("cuMemsetD8Async(d_aggregate", aggregate_body)
         self.assertNotIn("DevPtr d_aggregate", aggregate_body)
         self.assertNotIn("rtnn", aggregate_body.lower())
 
