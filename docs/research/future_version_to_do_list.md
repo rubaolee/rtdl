@@ -76,6 +76,50 @@ Boundary:
 
 ## v2.5+ Optimization Lane
 
+### Hit-Stream Continuation Promotion Gates After Goal2744
+
+Origin: Goals2685-2744 device-resident hit-stream handoff, native OptiX
+device-column output, owner lifecycle guards, stream-ordering metadata,
+cross-partner transfer planning, Triton group-id validation boundary, and native
+release-entrypoint audit.
+
+Observation:
+
+- RTDL now has a generic OptiX hit-stream device-column path for
+  `ray_ids:int64` and `primitive_ids:int64`, plus a Python owner guard and a
+  native release entrypoint audit.
+- Goal2740 made partner transfer semantics explicit: Triton is a preview
+  executable carrier path, CuPy is descriptor-only for the current generic
+  hit-stream slice, Numba is a narrow preview where supported, and silent copies
+  are forbidden.
+- Goal2743 made the current Triton group-id bounds check honest: it is a Torch
+  CUDA precheck with a host scalar sync, not a device-resident error-flag
+  primitive.
+- Goal2744 reduces the release-entrypoint risk from "unknown" to
+  "present/audited", but native lifetime still needs broader hardware and
+  failure-path validation.
+
+Future work:
+
+- Add a device-resident group-id validation/error-flag primitive so partner
+  continuation can reject invalid ids without a host scalar sync.
+- Add stream/event evidence that proves the OptiX producer and Triton consumer
+  are ordered on real hardware without relying on device-wide synchronization.
+- Run multi-GPU and multi-driver same-pointer/lifetime validation before any
+  public true-zero-copy wording is considered.
+- Extend cross-partner transfer plans only when CuPy or Numba has a real
+  executable generic kernel path; until then, keep descriptor-only and preview
+  labels explicit.
+- Keep app logic out of the native engine: hit streams carry generic ray and
+  primitive ids; app grouping, values, and semantics remain in Python/partner
+  payload columns.
+
+Boundary:
+
+- This is v2.x runtime hardening, not v3.0 shader injection.
+- None of these items authorizes public speedup, true zero-copy, or release
+  promotion without the normal report/review/consensus process.
+
 ### RayJoin-Style Work After v2.0 Closure
 
 Origin: Goals2192-2314 RayJoin same-query stream adapter, prepared OptiX
