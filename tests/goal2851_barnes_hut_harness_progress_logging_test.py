@@ -6,6 +6,8 @@ ROOT = Path(__file__).resolve().parents[1]
 RUN_CASE_SCRIPT = ROOT / "scripts" / "goal2642_barnes_hut_embree_vs_optix_lowering_perf.py"
 HARNESS_SCRIPT = ROOT / "scripts" / "goal2803_barnes_hut_v25_consolidated_harness.py"
 REPORT = ROOT / "docs" / "reports" / "goal2851_barnes_hut_harness_progress_logging_2026-05-31.md"
+REVIEW = ROOT / "docs" / "reviews" / "goal2852_gemini_review_goal2851_barnes_hut_progress_logging_2026-05-31.md"
+CONSENSUS = ROOT / "docs" / "reports" / "goal2852_goal2851_barnes_hut_progress_logging_consensus_2026-05-31.md"
 
 
 class Goal2851BarnesHutHarnessProgressLoggingTest(unittest.TestCase):
@@ -40,6 +42,27 @@ class Goal2851BarnesHutHarnessProgressLoggingTest(unittest.TestCase):
             "pod smoke",
         ):
             self.assertIn(phrase, text)
+
+    def test_review_and_consensus_accept_the_observability_boundary(self) -> None:
+        review = REVIEW.read_text(encoding="utf-8")
+        consensus = CONSENSUS.read_text(encoding="utf-8")
+
+        for phrase in (
+            "independent Gemini review",
+            "accept-with-boundary",
+            "preserving backward compatibility",
+            "avoid performance/release overclaims",
+        ):
+            self.assertIn(phrase, review)
+
+        for phrase in (
+            "Consensus verdict: **accept-with-boundary**",
+            "Codex",
+            "Gemini",
+            "only an operational progress-logging improvement",
+            "not release evidence by itself",
+        ):
+            self.assertIn(phrase, consensus)
 
 
 if __name__ == "__main__":

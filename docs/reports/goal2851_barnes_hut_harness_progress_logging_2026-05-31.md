@@ -43,10 +43,37 @@ Local static guard:
 
 ```text
 py -3 -m unittest tests.goal2851_barnes_hut_harness_progress_logging_test
+
+Ran 3 tests in 0.017s
+OK
 ```
 
-The pod smoke validation should run a tiny Barnes-Hut case and confirm the progress
-lines appear before completion while the per-case JSON remains suppressed.
+The pod smoke validation ran a tiny Barnes-Hut case and confirmed that the
+progress lines appear before completion while the per-case JSON remains
+suppressed:
+
+```text
+commit: 80d4c561b900d75398414662dc66ee0a3c9a02b8
+command:
+python3 -u scripts/goal2803_barnes_hut_v25_consolidated_harness.py \
+  --case 64:8 \
+  --repeats 1 \
+  --vector-group-count 16 \
+  --vector-rows-per-group 2 \
+  --vector-warmups 0 \
+  --output /tmp/goal2851_barnes_hut_progress_smoke_v2.json
+
+observed progress:
+[goal2803] membership case 1/1 progress: backend=embree repeat=1/1 start
+[goal2803] membership case 1/1 progress: backend=embree repeat=1/1 done sec=0.046
+[goal2803] membership case 1/1 progress: backend=optix repeat=1/1 start
+[goal2803] membership case 1/1 progress: backend=optix repeat=1/1 done sec=0.801
+
+result:
+[pod2851b] status pass rows 1 vector pass
+source_commit 80d4c561b900d75398414662dc66ee0a3c9a02b8
+source_dirty []
+```
 
 ## Codex Verdict
 
