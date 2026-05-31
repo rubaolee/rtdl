@@ -455,14 +455,16 @@ Future work:
   output contracts.
 - Goal2814 showed that the unsorted summary-only path beats the CuPy grid
   opponent on all tested 131K/262K rows while preserving exact same-contract
-  aggregate agreement. Goal2815 improved 32K/65K small rows modestly, but the
-  32K/65K uniform rows still trail CuPy. Goal2816 rejected async aggregate reset
-  as a non-useful micro-optimization.
+  aggregate agreement. Goal2815 improved 32K/65K small rows modestly. Goal2816
+  rejected async aggregate reset as a non-useful micro-optimization. Goal2817
+  then added a generic block-partial aggregate path, moving 65K uniform across
+  parity and leaving only 32K uniform below CuPy among the 32K/65K rows.
 - The next RTNN runtime target should therefore be a larger generic small-row
   amortization contract, not another reset/allocation tweak: batched aggregate
   calls, CUDA graph capture for repeated prepared aggregates, event-ordered
-  aggregate chaining, or a small-row partial-output path that avoids
-  per-call launch/setup overhead.
+  aggregate chaining, or another contract-level way to reduce per-call
+  launch/setup overhead. A 128-thread block-partial probe was worse than the
+  retained 256-thread path and should not be promoted without new evidence.
 - Study whether a real RT-core prepared variant can beat the uniform-cell path
   only after the prepared contract exists; do not treat naked OptiX traversal as
   sufficient.
