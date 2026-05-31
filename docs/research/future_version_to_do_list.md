@@ -677,6 +677,11 @@ Future work:
   fingerprints/min/max/sums before host materialization. The next useful
   runtime step is event-based cross-stream ordering or richer grouped
   reductions that consume the same hit stream without app-specific native ABI.
+- Goal2770 adds the first event-ordered cross-stream continuation proof: a
+  Torch/OptiX producer stream records a CUDA event and a separate CuPy consumer
+  stream waits on that event before reducing stored hit rows. The next hard
+  target is richer generic grouped reductions over the same event-ordered
+  stream, or multi-partner conformance for this event contract.
 
 Boundary:
 

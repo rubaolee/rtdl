@@ -10269,6 +10269,73 @@ def _run_hit_stream_same_stream_row_reduction_summary_cupy(
     }
 
 
+def _run_hit_stream_event_ordered_row_reduction_summary_cupy(
+    output_buffers: "PreparedOptixHitStreamDeviceColumnBuffers",
+    *,
+    capacity: int,
+    producer_event_ptr: int,
+) -> tuple[dict[str, object], int]:
+    try:
+        import cupy as cp
+    except Exception as exc:
+        raise RuntimeError("event-ordered hit-stream row-reduction consumer requires cupy") from exc
+    producer_event_ptr = int(producer_event_ptr)
+    if producer_event_ptr == 0:
+        raise ValueError("event-ordered hit-stream row-reduction consumer requires a nonzero CUDA event pointer")
+    kernel = _hit_stream_same_stream_row_reduction_summary_cupy_kernel()
+    consumer_stream = cp.cuda.Stream(non_blocking=True)
+    with consumer_stream:
+        cp.cuda.runtime.streamWaitEvent(consumer_stream.ptr, producer_event_ptr, 0)
+        ray_ids = cp.asarray(output_buffers.ray_ids)
+        primitive_ids = cp.asarray(output_buffers.primitive_ids)
+        row_count = cp.asarray(output_buffers.row_count)
+        hit_event_count = cp.asarray(output_buffers.hit_event_count)
+        overflow = cp.asarray(output_buffers.overflow)
+        summary = cp.empty((14,), dtype=cp.uint64)
+        kernel(
+            (1,),
+            (256,),
+            (
+                ray_ids,
+                primitive_ids,
+                row_count,
+                hit_event_count,
+                overflow,
+                cp.uint64(int(capacity)),
+                summary,
+            ),
+        )
+    consumer_stream.synchronize()
+    values = [int(item) for item in cp.asnumpy(summary).tolist()]
+    missing = (1 << 64) - 1
+    return (
+        {
+            "row_count": values[0],
+            "overflow": bool(values[1]),
+            "hit_event_count": values[2],
+            "stored_row_count": values[3],
+            "ray_id_sum_mod_u64": values[4],
+            "primitive_id_sum_mod_u64": values[5],
+            "ray_id_xor": values[6],
+            "primitive_id_xor": values[7],
+            "min_ray_id": None if values[8] == missing else values[8],
+            "max_ray_id": None if values[9] == missing else values[9],
+            "min_primitive_id": None if values[10] == missing else values[10],
+            "max_primitive_id": None if values[11] == missing else values[11],
+            "capacity": values[12],
+            "status_ok": bool(values[13]),
+            "consumer_partner": "cupy_rawkernel",
+            "consumer_read_status_on_device": True,
+            "consumer_read_rows_on_device": True,
+            "consumer_reduction_scope": "all_stored_hit_rows",
+            "host_scalar_read_before_consumer": False,
+            "host_row_materialization_before_consumer": False,
+            "cuda_event_wait_inserted_before_consumer": True,
+        },
+        int(consumer_stream.ptr),
+    )
+
+
 class PreparedOptixHitStreamDeviceColumnBuffers:
     """Caller-owned CUDA int64 columns for reusable OptiX hit-stream output."""
 
@@ -12149,6 +12216,171 @@ class PreparedOptixStaticTriangleScene3D:
             },
             "output_buffers": output_buffers,
             "cuda_stream": stream,
+        }
+
+    def ray_triangle_hit_stream_event_ordered_row_reduction_summary(
+        self,
+        rays,
+        output_buffers: PreparedOptixHitStreamDeviceColumnBuffers,
+        *,
+        max_rows: int | None = None,
+        deduplicate_primitives: bool = True,
+        producer_cuda_stream=None,
+    ) -> dict[str, object]:
+        """Launch producer and CuPy row reduction on different event-ordered streams."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        if not isinstance(output_buffers, PreparedOptixHitStreamDeviceColumnBuffers):
+            raise TypeError(
+                "ray_triangle_hit_stream_event_ordered_row_reduction_summary requires "
+                "PreparedOptixHitStreamDeviceColumnBuffers"
+            )
+        output_buffers._assert_open()
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_ON_STREAM_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_ON_STREAM_SYMBOL}. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+
+        try:
+            import torch
+        except Exception as exc:
+            raise RuntimeError("event-ordered hit-stream row-reduction summary requires torch") from exc
+        if producer_cuda_stream is None:
+            producer_stream = torch.cuda.Stream(device=output_buffers.ray_ids.device)
+        elif hasattr(producer_cuda_stream, "cuda_stream"):
+            producer_stream = producer_cuda_stream
+        else:
+            raise TypeError("producer_cuda_stream must be None or a torch CUDA Stream")
+        producer_stream_ptr = int(producer_stream.cuda_stream)
+        if producer_stream_ptr == 0:
+            raise ValueError("event-ordered hit-stream row-reduction summary requires a nonzero producer stream")
+
+        pack_start = time.perf_counter()
+        packed_rays = rays if isinstance(rays, PackedRays) else pack_rays(rays, dimension=3)
+        if packed_rays.dimension != 3:
+            raise ValueError("ray_triangle_hit_stream_event_ordered_row_reduction_summary requires 3-D rays")
+        capacity = output_buffers.capacity if max_rows is None else int(max_rows)
+        if capacity < 0:
+            raise ValueError("max_rows must be non-negative")
+        if capacity > output_buffers.capacity:
+            raise ValueError("max_rows must not exceed reusable output buffer capacity")
+        query_pack_seconds = time.perf_counter() - pack_start
+
+        columns = _RtdlNativeDeviceHitStreamColumns()
+        error = ctypes.create_string_buffer(4096)
+        native_start = time.perf_counter()
+        status = run_symbol(
+            self._handle,
+            packed_rays.records,
+            packed_rays.count,
+            ctypes.c_uint32(1 if deduplicate_primitives else 0),
+            ctypes.c_size_t(capacity),
+            ctypes.c_uint64(output_buffers.ray_ids_device_ptr),
+            ctypes.c_uint64(output_buffers.primitive_ids_device_ptr),
+            ctypes.c_uint64(output_buffers.row_count_device_ptr),
+            ctypes.c_uint64(output_buffers.hit_event_count_device_ptr),
+            ctypes.c_uint64(output_buffers.overflow_device_ptr),
+            ctypes.c_uint64(producer_stream_ptr),
+            ctypes.byref(columns),
+            error,
+            len(error),
+        )
+        native_launch_seconds = time.perf_counter() - native_start
+        _check_status(status, error)
+
+        for observed, expected, name in (
+            (int(columns.ray_ids_device_ptr), output_buffers.ray_ids_device_ptr, "ray_ids"),
+            (int(columns.primitive_ids_device_ptr), output_buffers.primitive_ids_device_ptr, "primitive_ids"),
+            (int(columns.row_count_device_ptr), output_buffers.row_count_device_ptr, "row_count"),
+            (int(columns.hit_event_count_device_ptr), output_buffers.hit_event_count_device_ptr, "hit_event_count"),
+            (int(columns.overflow_device_ptr), output_buffers.overflow_device_ptr, "overflow"),
+        ):
+            if observed != expected:
+                raise RuntimeError(f"native OptiX backend returned an unexpected {name} pointer")
+
+        async_owner = _OptixNativeHitStreamAsyncLaunchOwner(self._lib, columns.owner_handle)
+        owner_handle_observed = async_owner.handle_value != 0
+        producer_event = torch.cuda.Event(blocking=False)
+        producer_event.record(producer_stream)
+        producer_event_ptr = int(producer_event.cuda_event)
+        consumer_start = time.perf_counter()
+        try:
+            summary, consumer_stream_ptr = _run_hit_stream_event_ordered_row_reduction_summary_cupy(
+                output_buffers,
+                capacity=int(columns.capacity),
+                producer_event_ptr=producer_event_ptr,
+            )
+        finally:
+            async_owner.close()
+        consumer_seconds = time.perf_counter() - consumer_start
+
+        self._run_count += 1
+        return {
+            "summary": summary,
+            "metadata": {
+                "contract_version": "rtdl.hit_stream_event_ordered_row_reduction_consumer.v2.5",
+                "backend": "optix",
+                "native_symbol": OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_ON_STREAM_SYMBOL,
+                "release_symbol": OPTIX_RELEASE_RAY_TRIANGLE_HIT_STREAM_3D_ASYNC_LAUNCH_SYMBOL,
+                "producer_consumer_stream_ordering": "cuda_event_cross_stream",
+                "stream_synchronization_proven": True,
+                "event_or_same_stream_ordering_proven": True,
+                "cuda_event_cross_stream_ordering_proven": True,
+                "zero_copy_compatible_stream_ordering": True,
+                "producer_host_synchronization_used": False,
+                "host_scalar_read_before_consumer": False,
+                "host_row_materialization_before_consumer": False,
+                "producer_input_upload_mode": "stream_ordered_pinned_host_to_device_async",
+                "producer_input_upload_host_blocking_cuda_copy": False,
+                "query_rays_still_packed_on_host": True,
+                "final_materialization_synchronization_used": True,
+                "device_resident_status_for_partner": True,
+                "device_resident_row_reduction_for_partner": True,
+                "row_count_scalar_visibility_before_consumer": "device_only",
+                "overflow_scalar_visibility_before_consumer": "device_only",
+                "bounded_partner_consumer_executed": True,
+                "bounded_partner_consumer": "cupy_rawkernel",
+                "cuda_event_wait_inserted_before_consumer": True,
+                "producer_cuda_event_ptr_nonzero": bool(producer_event_ptr),
+                "producer_cuda_stream_ptr_nonzero": bool(producer_stream_ptr),
+                "consumer_cuda_stream_ptr_nonzero": bool(consumer_stream_ptr),
+                "async_partner_continuation_authorized": True,
+                "async_partner_continuation_authorization_scope": (
+                    "bounded_event_ordered_row_reduction_consumer_only"
+                ),
+                "general_partner_continuation_authorized": False,
+                "true_zero_copy_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "native_launch_owner_handle_observed": owner_handle_observed,
+                "async_launch_owner_release_required": owner_handle_observed,
+                "stream_lifetime_contract": (
+                    "producer stream/event and consumer stream must remain valid "
+                    "until async launch owner release"
+                ),
+                "capacity": int(columns.capacity),
+                "phase_timing_seconds": {
+                    "prepare_build": float(self.prepare_seconds),
+                    "query_pack": float(query_pack_seconds),
+                    "native_async_launch_enqueue": float(native_launch_seconds),
+                    "event_ordered_partner_row_reduction_consumer_and_materialization": float(consumer_seconds),
+                },
+                "claim_boundary": (
+                    "This proves one bounded CuPy consumer can wait on a CUDA event "
+                    "recorded after an OptiX producer stream and reduce stored "
+                    "device-resident hit rows on a separate consumer stream. It does "
+                    "not authorize broad true-zero-copy, public speedup, or arbitrary "
+                    "partner claims."
+                ),
+            },
+            "output_buffers": output_buffers,
+            "producer_cuda_stream": producer_stream,
+            "producer_cuda_event": producer_event,
         }
 
     def ray_triangle_prepared_primitive_grouped_i64_reduction(
