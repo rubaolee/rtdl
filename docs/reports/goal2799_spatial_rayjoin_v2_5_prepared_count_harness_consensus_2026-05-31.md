@@ -23,6 +23,14 @@ Goal2799 is accepted with a boundary:
 
 ## Boundary
 
-The first artifact was produced on a pod checkout reset to `origin/main` at `72f6d8de15cd915c2e58323b95d7a029631b1367`, with the new Goal2799 harness copied into that checkout. This is valid first evidence for the harness, but a clean-from-Git pod rerun is still required after the Goal2799 commit is pushed.
+The first artifact was produced on a pod checkout reset to `origin/main` at `72f6d8de15cd915c2e58323b95d7a029631b1367`, with the new Goal2799 harness copied into that checkout. That first-run boundary was closed by a clean-from-Git pod rerun after the Goal2799 commit was pushed.
+
+Clean-from-Git validation:
+
+- commit: `0ecac36df0118b3080b7925f5cee9e2e6fd90727`
+- GPU: NVIDIA RTX A5000, driver 570.211.01
+- OptiX build: pass
+- Goal2799 harness: pass, 3 rows
+- Focused pod test slice: 47 tests run, 46 passed, 1 skipped
 
 The row materialization and overlay continuation path remains deferred Tier B work. Goal2799 closes only the primitive-first prepared count/parity gap.

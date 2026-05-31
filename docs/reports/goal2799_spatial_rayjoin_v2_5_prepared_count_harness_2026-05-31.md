@@ -2,9 +2,9 @@
 
 Date: 2026-05-31
 
-Status: implemented locally with first OptiX pod evidence and external review.
+Status: implemented, reviewed, and clean-from-Git pod validated.
 
-Verdict: accept-with-boundary pending clean-from-Git rerun.
+Verdict: accept-with-boundary.
 
 ## Purpose
 
@@ -31,6 +31,8 @@ This goal adds a canonical harness around the existing Spatial RayJoin prepared 
 | `src/rtdsl/v2_5_triton_app_migration.py` | Marks `spatial_rayjoin` as ready with the Goal2799 prepared count harness while keeping row/overlay work deferred to Tier B. |
 | `docs/reports/goal2799_pod_artifacts/spatial_rayjoin_v25_prepared_count_optix_fixture.json` | First pod evidence artifact. |
 | `docs/reports/goal2799_pod_artifacts/spatial_rayjoin_v25_prepared_count_optix_fixture.stdout` | Captured stdout from the first pod run. |
+| `docs/reports/goal2799_pod_artifacts/spatial_rayjoin_v25_prepared_count_optix_fixture_clean_from_git.json` | Clean-from-Git pod evidence artifact after the Goal2799 commit was pushed. |
+| `docs/reports/goal2799_pod_artifacts/spatial_rayjoin_v25_prepared_count_optix_fixture_clean_from_git.stdout` | Captured stdout from the clean-from-Git pod run. |
 
 ## Pod Environment
 
@@ -61,7 +63,13 @@ The first evidence run was executed on a pod checkout reset to `origin/main` at:
 72f6d8de15cd915c2e58323b95d7a029631b1367
 ```
 
-The new Goal2799 script was copied into that checkout for the initial artifact run. A clean-from-Git rerun must follow after the goal commit is pushed.
+The new Goal2799 script was copied into that checkout for the initial artifact run. That boundary was closed by the clean-from-Git rerun below.
+
+The clean-from-Git rerun was executed after the Goal2799 commit was pushed, on a pod checkout reset to `origin/main` at:
+
+```text
+0ecac36df0118b3080b7925f5cee9e2e6fd90727
+```
 
 ## Evidence Command
 
@@ -82,6 +90,14 @@ All three workloads matched the CPU reference count.
 | `pip` | `POINT_CLOSED_SHAPE_MEMBERSHIP_2D` | 6 | 6 | 0.129229 | pass |
 | `lsi` | `SEGMENT_PAIR_INTERSECTION_2D` | 1 | 1 | 0.143813 | pass |
 | `overlay_seed` | `SHAPE_PAIR_RELATION_FLAGS_2D` | 0 | 0 | 0.008794 | pass |
+
+Clean-from-Git rerun:
+
+| Workload | Generic Primitive | CPU Reference Count | Prepared OptiX Count | Prepared Query Median (ms) | Status |
+| --- | --- | ---: | ---: | ---: | --- |
+| `pip` | `POINT_CLOSED_SHAPE_MEMBERSHIP_2D` | 6 | 6 | 0.120952 | pass |
+| `lsi` | `SEGMENT_PAIR_INTERSECTION_2D` | 1 | 1 | 0.136977 | pass |
+| `overlay_seed` | `SHAPE_PAIR_RELATION_FLAGS_2D` | 0 | 0 | 0.006768 | pass |
 
 Phase medians from the artifact:
 
@@ -150,4 +166,12 @@ tests.goal2799_spatial_rayjoin_v25_prepared_count_harness_test
 47 tests run, 46 passed, 1 skipped.
 ```
 
-Clean-from-Git pod validation remains pending.
+Clean-from-Git pod validation:
+
+```text
+commit: 0ecac36df0118b3080b7925f5cee9e2e6fd90727
+GPU: NVIDIA RTX A5000, driver 570.211.01
+OptiX build: pass
+Goal2799 harness: pass, 3 rows
+Focused pod test slice: 47 tests run, 46 passed, 1 skipped
+```
