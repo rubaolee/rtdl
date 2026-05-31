@@ -1,0 +1,259 @@
+{
+  "goal": "Goal2821",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "rows": [
+    {
+      "amortized_improvement_vs_sequential": 1.1606984376766656,
+      "batch_elapsed_runs_sec": [
+        0.0003109639510512352,
+        0.00030908104963600636,
+        0.00030026002787053585,
+        0.0003021161537617445,
+        0.0003006500191986561,
+        0.00030091102235019207,
+        0.0002984169404953718,
+        0.0003013450186699629,
+        0.0002933479845523834,
+        0.0002925179433077574,
+        0.0002943540457636118
+      ],
+      "batch_median_sec": 0.0003006500191986561,
+      "batch_per_request_median_sec": 7.516250479966402e-05,
+      "batch_results": [
+        {
+          "bounded_neighbor_count": 37260,
+          "kth_id_checksum": 537169174,
+          "nearest_id_checksum": 536854528,
+          "precision": "float32",
+          "query_count": 32768,
+          "query_resident": true,
+          "sum_distance": 33.87553850945551
+        },
+        {
+          "bounded_neighbor_count": 68270,
+          "kth_id_checksum": 537137514,
+          "nearest_id_checksum": 536854528,
+          "precision": "float32",
+          "query_count": 32768,
+          "query_resident": true,
+          "sum_distance": 532.354934536037
+        },
+        {
+          "bounded_neighbor_count": 150950,
+          "kth_id_checksum": 536948581,
+          "nearest_id_checksum": 536854528,
+          "precision": "float32",
+          "query_count": 32768,
+          "query_resident": true,
+          "sum_distance": 2654.0831223354908
+        },
+        {
+          "bounded_neighbor_count": 308758,
+          "kth_id_checksum": 535305340,
+          "nearest_id_checksum": 536854528,
+          "precision": "float32",
+          "query_count": 32768,
+          "query_resident": true,
+          "sum_distance": 8250.115642231074
+        }
+      ],
+      "batch_results_match_sequential": true,
+      "claim_boundary": {
+        "heterogeneous_batch_internal_evidence_only": true,
+        "public_speedup_claim_authorized": false,
+        "rtdl_beats_rtnn_claim_authorized": false,
+        "single_request_speedup_claim_authorized": false,
+        "v2_5_release_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "distribution": "uniform",
+      "generated": {
+        "dimension": 3,
+        "format": "rtnn_csv_xyz",
+        "path": "/tmp/goal2821_32768_bfyjw52k/uniform_32768.csv",
+        "point_count": 32768,
+        "seed": 35589
+      },
+      "goal": "Goal2821",
+      "gpu": "NVIDIA RTX A5000, 570.211.01",
+      "phase_summary_after_batch": {
+        "candidate_count_pass": 0.00025976,
+        "candidate_write_pass": 0.0,
+        "count_download_and_prefix": 0.0,
+        "emitted_count": 131072,
+        "exact_refine": 0.0,
+        "mode": "prepared_query_uniform_cell_ranked_summary_aggregate_f32_batch_block_partials",
+        "prepare": 0.0,
+        "raw_candidate_count": 565238,
+        "row_download": 1.4789e-05,
+        "row_offset_upload": 0.0,
+        "upload": 0.0
+      },
+      "point_count": 32768,
+      "requests": [
+        {
+          "k_max": 8,
+          "radius": 0.01
+        },
+        {
+          "k_max": 16,
+          "radius": 0.02
+        },
+        {
+          "k_max": 32,
+          "radius": 0.03
+        },
+        {
+          "k_max": 50,
+          "radius": 0.04
+        }
+      ],
+      "sequential_elapsed_runs_sec": [
+        0.0003644349053502083,
+        0.0003501218743622303,
+        0.00034942314960062504,
+        0.0003489640075713396,
+        0.00034734606742858887,
+        0.00034972093999385834,
+        0.00034943013451993465,
+        0.00034315604716539383,
+        0.0003340821713209152,
+        0.00033643096685409546,
+        0.000336978817358613
+      ],
+      "sequential_per_request_median_sec": 8.72410018928349e-05,
+      "sequential_total_median_sec": 0.0003489640075713396,
+      "source_commit": "17302d0f02bc0630cd7f4993309727d1bd47ebb7",
+      "source_dirty": [],
+      "status": "pass"
+    },
+    {
+      "amortized_improvement_vs_sequential": 2.496088559203978,
+      "batch_elapsed_runs_sec": [
+        0.0009265970438718796,
+        0.0009061421733349562,
+        0.0009045018814504147,
+        0.0008942268323153257,
+        0.0008993870578706264,
+        0.000892226118594408,
+        0.0008944820147007704,
+        0.0009042590390890837,
+        0.0008954920340329409,
+        0.0008927099406719208,
+        0.0008991928771138191
+      ],
+      "batch_median_sec": 0.0008991928771138191,
+      "batch_per_request_median_sec": 0.00022479821927845478,
+      "batch_results": [
+        {
+          "bounded_neighbor_count": 83132,
+          "kth_id_checksum": 2146924532,
+          "nearest_id_checksum": 2147450880,
+          "precision": "float32",
+          "query_count": 65536,
+          "query_resident": true,
+          "sum_distance": 131.96795592759736
+        },
+        {
+          "bounded_neighbor_count": 206070,
+          "kth_id_checksum": 2144823838,
+          "nearest_id_checksum": 2147450880,
+          "precision": "float32",
+          "query_count": 65536,
+          "query_resident": true,
+          "sum_distance": 2105.4547057051677
+        },
+        {
+          "bounded_neighbor_count": 535330,
+          "kth_id_checksum": 2150763773,
+          "nearest_id_checksum": 2147450880,
+          "precision": "float32",
+          "query_count": 65536,
+          "query_resident": true,
+          "sum_distance": 10549.5068514694
+        },
+        {
+          "bounded_neighbor_count": 1165676,
+          "kth_id_checksum": 2149371445,
+          "nearest_id_checksum": 2147450880,
+          "precision": "float32",
+          "query_count": 65536,
+          "query_resident": true,
+          "sum_distance": 32902.358402059646
+        }
+      ],
+      "batch_results_match_sequential": true,
+      "claim_boundary": {
+        "heterogeneous_batch_internal_evidence_only": true,
+        "public_speedup_claim_authorized": false,
+        "rtdl_beats_rtnn_claim_authorized": false,
+        "single_request_speedup_claim_authorized": false,
+        "v2_5_release_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "distribution": "uniform",
+      "generated": {
+        "dimension": 3,
+        "format": "rtnn_csv_xyz",
+        "path": "/tmp/goal2821_65536_n74jvji0/uniform_65536.csv",
+        "point_count": 65536,
+        "seed": 68357
+      },
+      "goal": "Goal2821",
+      "gpu": "NVIDIA RTX A5000, 570.211.01",
+      "phase_summary_after_batch": {
+        "candidate_count_pass": 0.000820961,
+        "candidate_write_pass": 0.0,
+        "count_download_and_prefix": 0.0,
+        "emitted_count": 262144,
+        "exact_refine": 0.0,
+        "mode": "prepared_query_uniform_cell_ranked_summary_aggregate_f32_batch_block_partials",
+        "prepare": 0.0,
+        "raw_candidate_count": 1990208,
+        "row_download": 4.6588e-05,
+        "row_offset_upload": 0.0,
+        "upload": 0.0
+      },
+      "point_count": 65536,
+      "requests": [
+        {
+          "k_max": 8,
+          "radius": 0.01
+        },
+        {
+          "k_max": 16,
+          "radius": 0.02
+        },
+        {
+          "k_max": 32,
+          "radius": 0.03
+        },
+        {
+          "k_max": 50,
+          "radius": 0.04
+        }
+      ],
+      "sequential_elapsed_runs_sec": [
+        0.0022826141212135553,
+        0.0022444650530815125,
+        0.00224123103544116,
+        0.004281043075025082,
+        0.002261436078697443,
+        0.004011904122307897,
+        0.0021441348362714052,
+        0.0022290090564638376,
+        0.0021632269490510225,
+        0.002141611184924841,
+        0.003671184880658984
+      ],
+      "sequential_per_request_median_sec": 0.0005611162632703781,
+      "sequential_total_median_sec": 0.0022444650530815125,
+      "source_commit": "17302d0f02bc0630cd7f4993309727d1bd47ebb7",
+      "source_dirty": [],
+      "status": "pass"
+    }
+  ],
+  "source_commit": "17302d0f02bc0630cd7f4993309727d1bd47ebb7",
+  "source_dirty": [],
+  "status": "pass"
+}
