@@ -81,6 +81,27 @@ Pod validation is useful but not required for new timing because this goal
 consumes the Goal2780 and Goal2781 pod artifacts rather than collecting new
 kernel timing.
 
+Pod no-new-timing validation:
+
+```text
+Host: 69.30.85.171
+Port: 22167
+GPU: NVIDIA RTX A5000
+Driver: 570.211.01
+Clean clone: /root/rtdl_goal2783_clean
+Commit: 2d52694e
+
+PYTHONPATH=src:. python3 -m unittest \
+  tests.goal2783_v2_5_app_migration_selection_guidance_test \
+  tests.goal2782_v2_5_partner_selection_guidance_test \
+  tests.goal2676_v2_5_triton_partner_pivot_test \
+  tests.goal2681_v2_5_triton_partner_adapter_front_door_test \
+  tests.goal2723_v2_5_tiered_benchmark_manifest_test
+
+Ran 33 tests in 2.627s
+OK (skipped=1)
+```
+
 Independent review:
 
 - `docs/reviews/goal2783_claude_review_app_migration_selection_guidance_2026-05-31.md`

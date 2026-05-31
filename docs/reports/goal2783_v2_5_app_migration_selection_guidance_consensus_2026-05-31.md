@@ -38,6 +38,20 @@ Ran 33 tests in 0.048s
 OK (skipped=3)
 ```
 
+Pod no-new-timing validation:
+
+```text
+Host: 69.30.85.171
+Port: 22167
+GPU: NVIDIA RTX A5000
+Driver: 570.211.01
+Clean clone: /root/rtdl_goal2783_clean
+Commit: 2d52694e
+
+Ran 33 tests in 2.627s
+OK (skipped=1)
+```
+
 Independent Claude review:
 
 - `docs/reviews/goal2783_claude_review_app_migration_selection_guidance_2026-05-31.md`
