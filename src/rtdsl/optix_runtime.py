@@ -2094,6 +2094,140 @@ class PreparedOptixFixedRadiusRankedSummaryAggregateBatchGraph3D:
             for index, aggregate in enumerate(aggregates)
         )
 
+    def replay_same_stream_device_partials_summary_cupy(self) -> dict[str, object]:
+        """Launch graph and reduce native partial rows with a same-stream CuPy consumer."""
+        if self._closed:
+            raise RuntimeError("prepared fixed-radius aggregate graph handle is closed")
+        if self._owner.closed:
+            raise RuntimeError("prepared OptiX fixed-radius-neighbor 3D handle is closed")
+        if self._prepared_queries.closed:
+            raise RuntimeError("prepared OptiX fixed-radius query handle is closed")
+        if self._empty_results is not None:
+            return {
+                "aggregates": self._empty_results,
+                "metadata": {
+                    "contract_version": (
+                        "rtdl.fixed_radius_ranked_summary_aggregate_graph_same_stream_partials.v2.5"
+                    ),
+                    "backend": "optix",
+                    "empty_graph_path": True,
+                    "same_stream_partner_consumer_executed": False,
+                    "device_resident_partial_rows_for_partner": False,
+                    "host_scalar_read_before_consumer": False,
+                    "host_partial_materialization_before_consumer": False,
+                    "true_zero_copy_authorized": False,
+                    "public_speedup_claim_authorized": False,
+                },
+            }
+
+        lib = _load_optix_library()
+        symbol_name = "rtdl_optix_launch_fixed_radius_ranked_summary_aggregate_batch_graph_device_partials_3d"
+        symbol = _find_optional_backend_symbol(lib, symbol_name)
+        if symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                f"{symbol_name}; rebuild the OptiX backend from current main"
+            )
+        partials_device_ptr = ctypes.c_uint64()
+        partial_count = ctypes.c_size_t()
+        request_count = ctypes.c_size_t()
+        query_block_count = ctypes.c_size_t()
+        cuda_stream_ptr = ctypes.c_uint64()
+        error = ctypes.create_string_buffer(4096)
+        native_start = time.perf_counter()
+        status = symbol(
+            self._handle,
+            ctypes.byref(partials_device_ptr),
+            ctypes.byref(partial_count),
+            ctypes.byref(request_count),
+            ctypes.byref(query_block_count),
+            ctypes.byref(cuda_stream_ptr),
+            error,
+            len(error),
+        )
+        native_launch_enqueue_seconds = time.perf_counter() - native_start
+        _check_status(status, error)
+        observed_request_count = int(request_count.value)
+        if observed_request_count != len(self._requests):
+            raise RuntimeError("native fixed-radius graph returned unexpected request_count")
+        expected_partial_count = observed_request_count * int(query_block_count.value)
+        if int(partial_count.value) != expected_partial_count:
+            raise RuntimeError("native fixed-radius graph returned inconsistent partial_count")
+
+        consumer_start = time.perf_counter()
+        aggregates = _run_fixed_radius_graph_partials_same_stream_summary_cupy(
+            owner=self,
+            partials_device_ptr=int(partials_device_ptr.value),
+            partial_count=int(partial_count.value),
+            request_count=observed_request_count,
+            query_block_count=int(query_block_count.value),
+            cuda_stream_ptr=int(cuda_stream_ptr.value),
+        )
+        consumer_seconds = time.perf_counter() - consumer_start
+        return {
+            "aggregates": tuple(
+                {
+                    "query_count": int(aggregate["query_count"]),
+                    "bounded_neighbor_count": int(aggregate["bounded_neighbor_count"]),
+                    "nearest_id_checksum": int(aggregate["nearest_id_checksum"]),
+                    "kth_id_checksum": int(aggregate["kth_id_checksum"]),
+                    "sum_distance": float(aggregate["sum_distance"]),
+                    "precision": self._precision,
+                    "query_resident": True,
+                    "request_index": index,
+                    "radius": float(self._requests[index]["radius"]),
+                    "k_max": int(self._requests[index]["k_max"]),
+                    "cuda_graph_replay": True,
+                    "request_buffer_update_count": self.request_buffer_update_count,
+                    "same_stream_partner_reduced": True,
+                }
+                for index, aggregate in enumerate(aggregates)
+            ),
+            "metadata": {
+                "contract_version": (
+                    "rtdl.fixed_radius_ranked_summary_aggregate_graph_same_stream_partials.v2.5"
+                ),
+                "backend": "optix",
+                "native_symbol": symbol_name,
+                "producer_consumer_stream_ordering": "same_cuda_stream",
+                "stream_synchronization_proven": True,
+                "event_or_same_stream_ordering_proven": True,
+                "same_stream_ordering_proven": True,
+                "cuda_stream_ptr_nonzero": bool(int(cuda_stream_ptr.value)),
+                "producer_host_synchronization_used": False,
+                "host_scalar_read_before_consumer": False,
+                "host_partial_materialization_before_consumer": False,
+                "final_materialization_synchronization_used": True,
+                "device_resident_partial_rows_for_partner": True,
+                "bounded_partner_consumer_executed": True,
+                "bounded_partner_consumer": "cupy_rawkernel",
+                "async_partner_continuation_authorized": True,
+                "async_partner_continuation_authorization_scope": (
+                    "bounded_same_stream_fixed_radius_graph_partial_summary_consumer_only"
+                ),
+                "general_partner_continuation_authorized": False,
+                "true_zero_copy_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "partial_row_type": "RtdlFixedRadiusRankedNeighborAggregate",
+                "partial_row_size_bytes": ctypes.sizeof(_RtdlFixedRadiusRankedNeighborAggregate),
+                "partial_count": int(partial_count.value),
+                "request_count": observed_request_count,
+                "query_block_count": int(query_block_count.value),
+                "phase_timing_seconds": {
+                    "native_graph_launch_enqueue": float(native_launch_enqueue_seconds),
+                    "same_stream_partner_partial_reduction_consumer_and_materialization": float(
+                        consumer_seconds
+                    ),
+                },
+                "claim_boundary": (
+                    "This proves one bounded CuPy consumer can reduce device-resident "
+                    "fixed-radius graph partial rows on the same native CUDA stream "
+                    "without a producer-side host scalar sync. It does not authorize "
+                    "broad true-zero-copy, public speedup, or arbitrary partner claims."
+                ),
+            },
+        }
+
     def close(self) -> None:
         if self._closed:
             return
@@ -10468,6 +10602,155 @@ class _OptixNativeHitStreamAsyncLaunchOwner:
             pass
 
 
+_FIXED_RADIUS_GRAPH_PARTIALS_SAME_STREAM_SUMMARY_CUPY_SOURCE = r"""
+extern "C" __global__
+void rtdl_fixed_radius_graph_partials_same_stream_summary(
+    const unsigned long long* partial_slots_u64,
+    const double* partial_slots_f64,
+    unsigned long long request_count,
+    unsigned long long query_block_count,
+    unsigned long long* aggregate_slots_u64,
+    double* aggregate_sum_distance)
+{
+    const unsigned int request_index = blockIdx.x;
+    if (request_index >= request_count) {
+        return;
+    }
+
+    __shared__ unsigned long long query_count[256];
+    __shared__ unsigned long long bounded_neighbor_count[256];
+    __shared__ unsigned long long nearest_id_checksum[256];
+    __shared__ unsigned long long kth_id_checksum[256];
+    __shared__ double sum_distance[256];
+
+    unsigned long long local_query_count = 0ull;
+    unsigned long long local_bounded_neighbor_count = 0ull;
+    unsigned long long local_nearest_id_checksum = 0ull;
+    unsigned long long local_kth_id_checksum = 0ull;
+    double local_sum_distance = 0.0;
+
+    for (unsigned long long partial_index = static_cast<unsigned long long>(threadIdx.x);
+         partial_index < query_block_count;
+         partial_index += static_cast<unsigned long long>(blockDim.x)) {
+        const unsigned long long slot =
+            (static_cast<unsigned long long>(request_index) * query_block_count + partial_index) * 5ull;
+        local_query_count += partial_slots_u64[slot + 0ull];
+        local_bounded_neighbor_count += partial_slots_u64[slot + 1ull];
+        local_nearest_id_checksum += partial_slots_u64[slot + 2ull];
+        local_kth_id_checksum += partial_slots_u64[slot + 3ull];
+        local_sum_distance += partial_slots_f64[slot + 4ull];
+    }
+
+    query_count[threadIdx.x] = local_query_count;
+    bounded_neighbor_count[threadIdx.x] = local_bounded_neighbor_count;
+    nearest_id_checksum[threadIdx.x] = local_nearest_id_checksum;
+    kth_id_checksum[threadIdx.x] = local_kth_id_checksum;
+    sum_distance[threadIdx.x] = local_sum_distance;
+    __syncthreads();
+
+    for (unsigned int stride = blockDim.x >> 1; stride > 0u; stride >>= 1) {
+        if (threadIdx.x < stride) {
+            query_count[threadIdx.x] += query_count[threadIdx.x + stride];
+            bounded_neighbor_count[threadIdx.x] += bounded_neighbor_count[threadIdx.x + stride];
+            nearest_id_checksum[threadIdx.x] += nearest_id_checksum[threadIdx.x + stride];
+            kth_id_checksum[threadIdx.x] += kth_id_checksum[threadIdx.x + stride];
+            sum_distance[threadIdx.x] += sum_distance[threadIdx.x + stride];
+        }
+        __syncthreads();
+    }
+
+    if (threadIdx.x == 0u) {
+        const unsigned long long out_slot = static_cast<unsigned long long>(request_index) * 4ull;
+        aggregate_slots_u64[out_slot + 0ull] = query_count[0];
+        aggregate_slots_u64[out_slot + 1ull] = bounded_neighbor_count[0];
+        aggregate_slots_u64[out_slot + 2ull] = nearest_id_checksum[0];
+        aggregate_slots_u64[out_slot + 3ull] = kth_id_checksum[0];
+        aggregate_sum_distance[request_index] = sum_distance[0];
+    }
+}
+"""
+
+
+@functools.lru_cache(maxsize=1)
+def _fixed_radius_graph_partials_same_stream_summary_cupy_kernel():
+    try:
+        import cupy as cp
+    except Exception as exc:
+        raise RuntimeError("same-stream fixed-radius graph partial consumer requires cupy") from exc
+    return cp.RawKernel(
+        _FIXED_RADIUS_GRAPH_PARTIALS_SAME_STREAM_SUMMARY_CUPY_SOURCE,
+        "rtdl_fixed_radius_graph_partials_same_stream_summary",
+    )
+
+
+def _run_fixed_radius_graph_partials_same_stream_summary_cupy(
+    *,
+    owner,
+    partials_device_ptr: int,
+    partial_count: int,
+    request_count: int,
+    query_block_count: int,
+    cuda_stream_ptr: int,
+) -> tuple[dict[str, object], ...]:
+    try:
+        import cupy as cp
+    except Exception as exc:
+        raise RuntimeError("same-stream fixed-radius graph partial consumer requires cupy") from exc
+    if int(partials_device_ptr) == 0:
+        raise ValueError("same-stream fixed-radius graph partial consumer requires a nonzero partial pointer")
+    if int(cuda_stream_ptr) == 0:
+        raise ValueError("same-stream fixed-radius graph partial consumer requires a nonzero CUDA stream pointer")
+    if int(request_count) <= 0:
+        raise ValueError("same-stream fixed-radius graph partial consumer requires request_count > 0")
+    if int(query_block_count) <= 0:
+        raise ValueError("same-stream fixed-radius graph partial consumer requires query_block_count > 0")
+    if int(partial_count) != int(request_count) * int(query_block_count):
+        raise ValueError("fixed-radius graph partial_count must equal request_count * query_block_count")
+
+    kernel = _fixed_radius_graph_partials_same_stream_summary_cupy_kernel()
+    row_size_bytes = ctypes.sizeof(_RtdlFixedRadiusRankedNeighborAggregate)
+    memory = cp.cuda.UnownedMemory(
+        int(partials_device_ptr),
+        int(partial_count) * row_size_bytes,
+        owner,
+    )
+    memory_pointer = cp.cuda.MemoryPointer(memory, 0)
+    slot_count = int(partial_count) * 5
+    partial_slots_u64 = cp.ndarray((slot_count,), dtype=cp.uint64, memptr=memory_pointer)
+    partial_slots_f64 = cp.ndarray((slot_count,), dtype=cp.float64, memptr=memory_pointer)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        external_stream = cp.cuda.ExternalStream(int(cuda_stream_ptr))
+    with external_stream:
+        aggregate_slots_u64 = cp.empty((int(request_count), 4), dtype=cp.uint64)
+        aggregate_sum_distance = cp.empty((int(request_count),), dtype=cp.float64)
+        kernel(
+            (int(request_count),),
+            (256,),
+            (
+                partial_slots_u64,
+                partial_slots_f64,
+                cp.uint64(int(request_count)),
+                cp.uint64(int(query_block_count)),
+                aggregate_slots_u64,
+                aggregate_sum_distance,
+            ),
+        )
+    external_stream.synchronize()
+    slots = cp.asnumpy(aggregate_slots_u64)
+    sums = cp.asnumpy(aggregate_sum_distance)
+    return tuple(
+        {
+            "query_count": int(slots[index, 0]),
+            "bounded_neighbor_count": int(slots[index, 1]),
+            "nearest_id_checksum": int(slots[index, 2]),
+            "kth_id_checksum": int(slots[index, 3]),
+            "sum_distance": float(sums[index]),
+        }
+        for index in range(int(request_count))
+    )
+
+
 _HIT_STREAM_SAME_STREAM_STATUS_SUMMARY_CUPY_SOURCE = r"""
 extern "C" __global__
 void rtdl_hit_stream_same_stream_status_summary_u64(
@@ -16937,6 +17220,22 @@ def _register_argtypes(lib) -> None:
         symbol.argtypes = [
             ctypes.c_void_p,
             ctypes.POINTER(_RtdlFixedRadiusRankedNeighborAggregate),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_launch_fixed_radius_ranked_summary_aggregate_batch_graph_device_partials_3d",
+    )
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_uint64),
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         symbol.restype = ctypes.c_int

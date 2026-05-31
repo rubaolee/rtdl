@@ -15583,6 +15583,38 @@ static void replay_fixed_radius_ranked_summary_aggregate_batch_graph_3d_optix(
     g_optix_last_fixed_radius_3d_emitted_count = total_queries;
 }
 
+static void launch_fixed_radius_ranked_summary_aggregate_batch_graph_device_partials_3d_optix(
+        PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D* graph_handle,
+        uint64_t* partials_device_ptr_out,
+        size_t* partial_count_out,
+        size_t* request_count_out,
+        size_t* query_block_count_out,
+        uint64_t* cuda_stream_ptr_out)
+{
+    if (!graph_handle) throw std::runtime_error("prepared fixed_radius_neighbors_3d graph handle must not be null");
+    if (!partials_device_ptr_out) throw std::runtime_error("partials_device_ptr_out must not be null");
+    if (!partial_count_out) throw std::runtime_error("partial_count_out must not be null");
+    if (!request_count_out) throw std::runtime_error("request_count_out must not be null");
+    if (!query_block_count_out) throw std::runtime_error("query_block_count_out must not be null");
+    if (!cuda_stream_ptr_out) throw std::runtime_error("cuda_stream_ptr_out must not be null");
+
+    reset_fixed_radius_3d_phase_timings(19u);
+    g_optix_last_fixed_radius_3d_prepare_s = 0.0;
+    g_optix_last_fixed_radius_3d_upload_s = 0.0;
+    g_optix_last_fixed_radius_3d_row_download_s = 0.0;
+
+    auto t_start_summary = std::chrono::steady_clock::now();
+    CU_CHECK(cuGraphLaunch(graph_handle->graph_exec, graph_handle->stream));
+    auto t_end_summary = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_count_s = seconds_between(t_start_summary, t_end_summary);
+
+    *partials_device_ptr_out = static_cast<uint64_t>(graph_handle->d_partials->ptr);
+    *partial_count_out = graph_handle->request_count * graph_handle->query_block_count;
+    *request_count_out = graph_handle->request_count;
+    *query_block_count_out = graph_handle->query_block_count;
+    *cuda_stream_ptr_out = reinterpret_cast<uint64_t>(graph_handle->stream);
+}
+
 static void run_prepared_fixed_radius_neighbors_grid_3d_optix(
         PreparedFixedRadiusNeighborsGrid3D* prepared,
         const RtdlPoint3D* query_points, size_t query_count,

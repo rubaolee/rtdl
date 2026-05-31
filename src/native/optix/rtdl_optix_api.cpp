@@ -4354,6 +4354,26 @@ extern "C" int rtdl_optix_replay_fixed_radius_ranked_summary_aggregate_batch_gra
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_launch_fixed_radius_ranked_summary_aggregate_batch_graph_device_partials_3d(
+        void* graph,
+        uint64_t* partials_device_ptr_out,
+        size_t* partial_count_out,
+        size_t* request_count_out,
+        size_t* query_block_count_out,
+        uint64_t* cuda_stream_ptr_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        launch_fixed_radius_ranked_summary_aggregate_batch_graph_device_partials_3d_optix(
+            reinterpret_cast<PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D*>(graph),
+            partials_device_ptr_out,
+            partial_count_out,
+            request_count_out,
+            query_block_count_out,
+            cuda_stream_ptr_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_update_fixed_radius_ranked_summary_aggregate_batch_graph_3d(
         void* graph,
         const double* radii,

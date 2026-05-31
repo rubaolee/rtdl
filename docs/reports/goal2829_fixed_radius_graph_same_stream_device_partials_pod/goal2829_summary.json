@@ -1,0 +1,46 @@
+{
+  "elapsed_same_stream_seconds": 0.236941086826846,
+  "first_direct": {
+    "bounded_neighbor_count": 16376,
+    "cuda_graph_replay": true,
+    "k_max": 4,
+    "kth_id_checksum": 8382370,
+    "nearest_id_checksum": 8386560,
+    "precision": "float32",
+    "query_count": 4096,
+    "query_resident": true,
+    "radius": 0.025,
+    "request_buffer_update_count": 0,
+    "request_index": 0,
+    "sum_distance": 182.67742414213717
+  },
+  "first_same_stream": {
+    "bounded_neighbor_count": 16376,
+    "cuda_graph_replay": true,
+    "k_max": 4,
+    "kth_id_checksum": 8382370,
+    "nearest_id_checksum": 8386560,
+    "precision": "float32",
+    "query_count": 4096,
+    "query_resident": true,
+    "radius": 0.025,
+    "request_buffer_update_count": 0,
+    "request_index": 0,
+    "same_stream_partner_reduced": true,
+    "sum_distance": 182.67742414213717
+  },
+  "goal": "Goal2829",
+  "metadata_subset": {
+    "bounded_partner_consumer": "cupy_rawkernel",
+    "device_resident_partial_rows_for_partner": true,
+    "host_partial_materialization_before_consumer": false,
+    "host_scalar_read_before_consumer": false,
+    "producer_consumer_stream_ordering": "same_cuda_stream",
+    "producer_host_synchronization_used": false,
+    "public_speedup_claim_authorized": false
+  },
+  "mismatches": [],
+  "ok": true,
+  "point_count": 4096,
+  "request_count": 4
+}
