@@ -136,3 +136,14 @@ OptiX build: pass
 Goal2801 harness: pass
 Focused pod test slice: 20 tests run, 20 passed
 ```
+
+## Goal2804 Metadata Refresh
+
+Goal2804 refreshed the clean artifact to include source commit, source dirty
+state, and GPU identity. The refreshed artifact remains `pass` and records:
+
+```text
+commit: 6ae202919c2af07ae8d8a9c662edd656ae77aa87
+source_dirty: []
+gpu: NVIDIA RTX A5000, 570.211.01
+```

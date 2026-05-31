@@ -18,8 +18,9 @@
     "clustered",
     "shell"
   ],
-  "elapsed_sec": 3.7788857058621943,
+  "elapsed_sec": 3.5075660618022084,
   "goal": "Goal2800",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
   "harness_version": "rtdl.goal2800.rtnn_v2_5_live_ranked_summary_harness.v1",
   "k_max": 50,
   "point_count": 65536,
@@ -54,13 +55,13 @@
       },
       "cupy_grid_bounded_neighbor_count": 206446,
       "cupy_grid_elapsed_runs_sec": [
-        0.00020456104539334774,
-        0.00016033509746193886,
-        0.00014294800348579884
+        0.00018657906912267208,
+        0.00015422585420310497,
+        0.0001409389078617096
       ],
-      "cupy_grid_elapsed_sec": 0.00014294800348579884,
+      "cupy_grid_elapsed_sec": 0.0001409389078617096,
       "cupy_grid_ok": true,
-      "cupy_grid_over_rtdl_elapsed_ratio": 0.05965612732714058,
+      "cupy_grid_over_rtdl_elapsed_ratio": 0.09784732901917641,
       "cupy_grid_summary": {
         "bounded_neighbor_count": 206446,
         "kth_id_checksum": 2152173198,
@@ -69,7 +70,7 @@
         "sum_distance": 2112.1991681938525
       },
       "distribution": "uniform",
-      "elapsed_sec": 2.345449656015262,
+      "elapsed_sec": 1.9983756660949439,
       "generated": {
         "dimension": 3,
         "format": "rtnn_csv_xyz",
@@ -79,24 +80,24 @@
       },
       "query_count": 65536,
       "rtdl_elapsed_runs_sec": [
-        0.00509457103908062,
-        0.0029678051359951496,
-        0.0023961998522281647
+        0.003394318977370858,
+        0.0018717818893492222,
+        0.0014403960667550564
       ],
-      "rtdl_elapsed_sec": 0.0023961998522281647,
-      "rtdl_input_pack_sec": 0.039234261959791183,
+      "rtdl_elapsed_sec": 0.0014403960667550564,
+      "rtdl_input_pack_sec": 0.03461952693760395,
       "rtdl_ok": true,
       "rtdl_phase_summary": {
         "batch_count": 1,
-        "candidate_count_pass_sec": 0.000369115,
+        "candidate_count_pass_sec": 0.000353718,
         "modes": [
           "prepared_uniform_cell_ranked_summary_rows"
         ],
         "raw_candidate_count": 206446,
-        "row_download_sec": 0.000599874,
-        "upload_sec": 0.000625604
+        "row_download_sec": 0.000229644,
+        "upload_sec": 0.00034959
       },
-      "rtdl_prepare_sec": 1.2647807840257883,
+      "rtdl_prepare_sec": 1.0817106689792126,
       "rtdl_raw_candidate_count": 206446,
       "rtdl_row_count": 65536,
       "search_count": 65536,
@@ -128,13 +129,13 @@
       },
       "cupy_grid_bounded_neighbor_count": 2914109,
       "cupy_grid_elapsed_runs_sec": [
-        0.04704508394934237,
-        0.046919574961066246,
-        0.04699013801291585
+        0.046994725009426475,
+        0.04701963416300714,
+        0.0470214260276407
       ],
-      "cupy_grid_elapsed_sec": 0.04699013801291585,
+      "cupy_grid_elapsed_sec": 0.0470214260276407,
       "cupy_grid_ok": true,
-      "cupy_grid_over_rtdl_elapsed_ratio": 0.48810138234357076,
+      "cupy_grid_over_rtdl_elapsed_ratio": 0.4722782480542776,
       "cupy_grid_summary": {
         "bounded_neighbor_count": 2914109,
         "kth_id_checksum": 2144378896,
@@ -143,7 +144,7 @@
         "sum_distance": 31343.765593762975
       },
       "distribution": "clustered",
-      "elapsed_sec": 0.9663869158830494,
+      "elapsed_sec": 0.968437640927732,
       "generated": {
         "cluster_count": 8,
         "cluster_stddev": 0.035,
@@ -156,24 +157,24 @@
       },
       "query_count": 65536,
       "rtdl_elapsed_runs_sec": [
-        0.09825770021416247,
-        0.09805129398591816,
-        0.09627126599662006
+        0.0982199979480356,
+        0.09611068293452263,
+        0.09956297208555043
       ],
-      "rtdl_elapsed_sec": 0.09627126599662006,
-      "rtdl_input_pack_sec": 0.030381149845197797,
+      "rtdl_elapsed_sec": 0.09956297208555043,
+      "rtdl_input_pack_sec": 0.03683938202448189,
       "rtdl_ok": true,
       "rtdl_phase_summary": {
         "batch_count": 1,
-        "candidate_count_pass_sec": 0.09435691,
+        "candidate_count_pass_sec": 0.094430157,
         "modes": [
           "prepared_uniform_cell_ranked_summary_rows"
         ],
         "raw_candidate_count": 2914108,
-        "row_download_sec": 0.000250556,
-        "upload_sec": 0.000980259
+        "row_download_sec": 0.000511643,
+        "upload_sec": 0.000435916
       },
-      "rtdl_prepare_sec": 0.00898486003279686,
+      "rtdl_prepare_sec": 0.004866268020123243,
       "rtdl_raw_candidate_count": 2914108,
       "rtdl_row_count": 65536,
       "search_count": 65536,
@@ -205,13 +206,13 @@
       },
       "cupy_grid_bounded_neighbor_count": 1158438,
       "cupy_grid_elapsed_runs_sec": [
-        0.002755202120169997,
-        0.0027359090745449066,
-        0.002730156062170863
+        0.002747840015217662,
+        0.00272375694476068,
+        0.002715504029765725
       ],
-      "cupy_grid_elapsed_sec": 0.002730156062170863,
+      "cupy_grid_elapsed_sec": 0.002715504029765725,
       "cupy_grid_ok": true,
-      "cupy_grid_over_rtdl_elapsed_ratio": 0.4785032008608375,
+      "cupy_grid_over_rtdl_elapsed_ratio": 0.48772203885776455,
       "cupy_grid_summary": {
         "bounded_neighbor_count": 1158438,
         "kth_id_checksum": 2149724424,
@@ -220,7 +221,7 @@
         "sum_distance": 16341.84431558894
       },
       "distribution": "shell",
-      "elapsed_sec": 0.46624157298356295,
+      "elapsed_sec": 0.46536730183288455,
       "generated": {
         "cluster_count": null,
         "cluster_stddev": null,
@@ -233,24 +234,24 @@
       },
       "query_count": 65536,
       "rtdl_elapsed_runs_sec": [
-        0.006103388965129852,
-        0.005876607960090041,
-        0.005705617135390639
+        0.006158045958727598,
+        0.005609665997326374,
+        0.005567728774622083
       ],
-      "rtdl_elapsed_sec": 0.005705617135390639,
-      "rtdl_input_pack_sec": 0.029319294029846787,
+      "rtdl_elapsed_sec": 0.005567728774622083,
+      "rtdl_input_pack_sec": 0.03267377684824169,
       "rtdl_ok": true,
       "rtdl_phase_summary": {
         "batch_count": 1,
-        "candidate_count_pass_sec": 0.004246022,
+        "candidate_count_pass_sec": 0.004228748,
         "modes": [
           "prepared_uniform_cell_ranked_summary_rows"
         ],
         "raw_candidate_count": 1158440,
-        "row_download_sec": 0.000488702,
-        "upload_sec": 0.000406429
+        "row_download_sec": 0.000450379,
+        "upload_sec": 0.00036771
       },
-      "rtdl_prepare_sec": 0.004635076969861984,
+      "rtdl_prepare_sec": 0.005833192029967904,
       "rtdl_raw_candidate_count": 1158440,
       "rtdl_row_count": 65536,
       "search_count": 65536,
@@ -258,5 +259,7 @@
     }
   ],
   "run_cupy_grid": true,
+  "source_commit": "6ae202919c2af07ae8d8a9c662edd656ae77aa87",
+  "source_dirty": [],
   "status": "pass"
 }

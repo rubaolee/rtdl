@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import unittest
 from pathlib import Path
 
@@ -58,6 +59,17 @@ class Goal2802RTDBSCANV25LiveGroupedStreamHarnessTest(unittest.TestCase):
             self.assertIn('"grouped_stream_avoids_neighbor_rows_and_full_adjacency_stream": true', artifact_text)
             self.assertIn('"paper_speedup_claim_authorized": false', artifact_text)
             self.assertIn('"native_engine_customization": false', artifact_text)
+
+    def test_clean_pod_artifact_records_source_metadata(self) -> None:
+        payload = json.loads(CLEAN_POD_ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["status"], "pass")
+        self.assertRegex(payload["source_commit"], r"^[0-9a-f]{40}$")
+        self.assertEqual(payload["source_dirty"], [])
+        self.assertIn("NVIDIA", payload["gpu"])
+        self.assertTrue(payload["signatures_match"])
+        self.assertTrue(payload["grouped_stream_rt_core_accelerated"])
+        self.assertTrue(payload["grouped_stream_avoids_neighbor_rows_and_full_adjacency_stream"])
 
     def test_report_and_consensus_keep_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")

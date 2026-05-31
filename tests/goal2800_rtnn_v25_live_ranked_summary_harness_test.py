@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import unittest
 from pathlib import Path
 
@@ -16,6 +17,13 @@ POD_ARTIFACT = (
     / "reports"
     / "goal2800_pod_artifacts"
     / "rtnn_v25_live_ranked_summary_65536.json"
+)
+CLEAN_POD_ARTIFACT = (
+    ROOT
+    / "docs"
+    / "reports"
+    / "goal2800_pod_artifacts"
+    / "rtnn_v25_live_ranked_summary_65536_clean_from_git.json"
 )
 
 
@@ -54,6 +62,16 @@ class Goal2800RtnnV25LiveRankedSummaryHarnessTest(unittest.TestCase):
         self.assertIn('"rtdl_beats_cupy_grid_claim_authorized": false', text)
         self.assertIn('"paper_reproduction_claim_authorized": false', text)
         self.assertIn('"native_engine_customization": false', text)
+
+    def test_clean_pod_artifact_records_source_metadata(self) -> None:
+        payload = json.loads(CLEAN_POD_ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["status"], "pass")
+        self.assertRegex(payload["source_commit"], r"^[0-9a-f]{40}$")
+        self.assertEqual(payload["source_dirty"], [])
+        self.assertIn("NVIDIA", payload["gpu"])
+        self.assertEqual(payload["row_count"], 3)
+        self.assertTrue(all(row["status"] == "pass" for row in payload["rows"]))
 
     def test_report_and_consensus_keep_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")

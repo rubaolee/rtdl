@@ -291,7 +291,7 @@ V2_5_TIERED_BENCHMARK_MANIFEST_ROWS: tuple[V25TieredBenchmarkManifestRow, ...] =
         same_contract_opponent="existing CuPy grouped-stream/microcell component-continuation path",
         required_partner_operations=("compact_mask_i64", "bounded_collect_finalize_i64", "grouped_components_or_fallback"),
         pod_evidence_status="Goal2802 current OptiX grouped-stream and CuPy prepared-grid same-contract evidence recorded",
-        next_action="keep Goal2802 live harness current; keep pure Triton components auto-selection blocked until a generic component continuation beats the same-contract CuPy/grid/grouped-stream opponent",
+        next_action="keep Goal2802 live harness current; keep pure Triton components auto-selection blocked until a generic component continuation or accepted fallback beats the same-contract CuPy/grid/grouped-stream opponent",
     ),
     V25TieredBenchmarkManifestRow(
         app_id="rtnn",

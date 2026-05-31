@@ -38,3 +38,7 @@ Clean-from-Git validation:
 ## Boundary
 
 This consensus does not authorize a public speedup claim. The accepted claim is narrower: the canonical entrypoint exists, the same-contract comparison is exact, the first pod artifact is internally consistent, and the claim boundary is preserved.
+
+Goal2804 later refreshed the clean artifact metadata at commit
+`6ae202919c2af07ae8d8a9c662edd656ae77aa87`; the refreshed artifact remains
+`pass` and records `source_dirty: []`.

@@ -33,3 +33,7 @@ Clean-from-Git validation:
 - Focused pod test slice: 18 tests run, 18 passed
 
 The tolerance for candidate counts is a narrow float32-boundary tolerance, not a license to accept broad semantic drift. At the 65K fixture scale it is effectively a maximum delta of 2 candidates.
+
+Goal2804 later refreshed the clean artifact metadata at commit
+`6ae202919c2af07ae8d8a9c662edd656ae77aa87`; the refreshed artifact remains
+`pass` and records `source_dirty: []`.

@@ -155,3 +155,15 @@ OptiX build: pass
 Goal2802 harness: pass, 3 rows
 Focused pod test slice: 16 tests run, 16 passed
 ```
+
+## Goal2804 Metadata Refresh
+
+Goal2804 refreshed the clean artifact so stdout is not created inside the repo
+before the harness records source state. The refreshed artifact remains `pass`
+and records:
+
+```text
+commit: 6ae202919c2af07ae8d8a9c662edd656ae77aa87
+source_dirty: []
+gpu: NVIDIA RTX A5000, 570.211.01
+```

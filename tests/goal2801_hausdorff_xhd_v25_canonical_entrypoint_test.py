@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import unittest
 from pathlib import Path
 
@@ -57,6 +58,16 @@ class Goal2801HausdorffXHDV25CanonicalEntrypointTest(unittest.TestCase):
             self.assertIn('"rtdl_beats_cupy_grid_claim_authorized": false', artifact_text)
             self.assertIn('"paper_reproduction_claim_authorized": false', artifact_text)
             self.assertIn('"native_engine_customization": false', artifact_text)
+
+    def test_clean_pod_artifact_records_source_metadata(self) -> None:
+        payload = json.loads(CLEAN_POD_ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["status"], "pass")
+        self.assertRegex(payload["source_commit"], r"^[0-9a-f]{40}$")
+        self.assertEqual(payload["source_dirty"], [])
+        self.assertIn("NVIDIA", payload["gpu"])
+        self.assertTrue(payload["matches_exact_baseline"])
+        self.assertTrue(payload["rtdl"]["uses_rt_cores"])
 
     def test_report_and_consensus_keep_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")
