@@ -85,6 +85,28 @@ Ran 61 tests in 1.419s
 OK (skipped=6)
 ```
 
+Pod validation from pushed `main`:
+
+```text
+commit: 3b116a53
+scope:
+  tests.goal2879_torch_carrier_seam_authority_provenance_test
+  tests.goal2878_goal2868_residual_closure_mapping_test
+  tests.goal2876_current_packet_after_partner_conformance_closure_test
+  tests.goal2875_numba_runtime_conformance_smoke_test
+  tests.goal2874_triton_preview_current_pod_conformance_backfill_test
+  tests.goal2873_v2_5_partner_conformance_matrix_test
+  tests.goal2872_triton_tie_break_conformance_smoke_test
+  tests.goal2871_hit_stream_torch_carrier_seam_authority_guard_test
+  tests.goal2870_v2_5_last_day_review_intake_and_runner_fail_closed_hardening_test
+  tests.goal2806_v2_5_internal_readiness_packet_test
+  tests.goal2789_neutral_buffer_torch_carrier_reconciliation_test
+  tests.goal2775_hit_stream_neutral_seam_reconciliation_test
+
+Ran 61 tests in 1.938s
+OK
+```
+
 ## Codex Verdict
 
 `accept-with-boundary`
