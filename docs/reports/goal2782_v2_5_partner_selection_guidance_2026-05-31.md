@@ -5,14 +5,14 @@ Date: 2026-05-31
 ## Purpose
 
 Goal2780 and Goal2781 both produced the same design lesson, later refreshed by
-Goal2784 and Goal2786:
+Goal2784, Goal2786, and Goal2787:
 
 **preview kernel available is not the same as selected partner.**
 
-The `grouped_topk_f64` and `grouped_vector_sum_f64x2` Triton paths are correct
-and useful as generic preview surfaces, but the measured RTX A5000 evidence says
-they are slower than the same-contract Torch branches for the dense shapes that
-were tested.
+The `grouped_topk_f64`, `grouped_vector_sum_f64x2`, and dense Hausdorff-style
+`grouped_argmin_f64` Triton paths are correct and useful as generic preview
+surfaces, but the measured RTX A5000 evidence says they are slower than the
+same-contract Torch branches for the dense shapes that were tested.
 
 Goal2782 turns that lesson into a machine-readable guidance registry so future
 planners, examples, and benchmark harnesses do not blindly choose Triton just
@@ -30,12 +30,13 @@ New public-but-experimental helpers:
 - `validate_v2_5_partner_selection_guidance(...)`
 - `plan_v2_5_partner_selection(operation, workload_shape=None)`
 
-The registry currently has two measured negative-guidance rows:
+The registry currently has three measured negative-guidance rows:
 
 | Operation | Workload shape | Evidence | Finding | Recommendation |
 | --- | --- | --- | --- | --- |
 | `grouped_topk_f64` | dense exact top-k candidate ranking | Goal2784 | Triton 4.91x-10.04x slower than Torch | do not auto-select Triton |
 | `grouped_vector_sum_f64x2` | dense grouped 2D vector sum | Goal2786 | Triton 3.76x-16.86x slower than Torch | do not auto-select Triton |
+| `grouped_argmin_f64` | dense exact Hausdorff-style argmin/argmax | Goal2787 | Triton 31.88x-45.15x slower than Torch | do not auto-select Triton |
 
 This does not demote the generic contracts. It separates **contract
 availability** from **performance partner selection**.
@@ -56,6 +57,15 @@ Goal2786 refresh:
   several groups per program was slower on every measured shape.
 - The updated vector-sum range is 3.76x-16.86x slower than Torch on the measured
   RTX A5000 shapes. This keeps the negative selection guidance in place.
+
+Goal2787 refresh:
+
+- The dense exact Hausdorff-style witness row now points at Goal2787, after the
+  Python wrapper was wired through generic `grouped_argmin_f64` plus
+  `grouped_argmax_f64`.
+- The updated Hausdorff-style range is 31.88x-45.15x slower than Torch on the
+  measured RTX A5000 shapes. This keeps the negative selection guidance in
+  place for the current two-kernel generic route.
 
 ## Boundary
 
@@ -115,7 +125,7 @@ OK (skipped=10)
 
 No pod was required for the original Goal2782 because it consumed already-recorded
 Goal2780 and Goal2781 pod artifacts instead of producing new timing evidence.
-The current guidance has since been refreshed by Goal2784 and Goal2786 pod
+The current guidance has since been refreshed by Goal2784, Goal2786, and Goal2787 pod
 artifacts.
 
 Pod no-new-timing validation:

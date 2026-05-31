@@ -24,6 +24,8 @@ Codex implementation and validation:
   `dense_exact_topk_candidate_ranking`
 - Barnes-Hut now records Goal2786 guidance for `grouped_vector_sum_f64x2` /
   `dense_grouped_vector_sum_2d`
+- Hausdorff/X-HD now records Goal2787 guidance for `grouped_argmin_f64` /
+  `dense_exact_hausdorff_argmin_argmax`
 
 Local Windows validation:
 

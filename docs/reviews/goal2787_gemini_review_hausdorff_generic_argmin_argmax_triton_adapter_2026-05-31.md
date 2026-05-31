@@ -1,0 +1,30 @@
+# Gemini Review For Goal2787
+
+Date: 2026-05-31
+
+## Review of Goal2787: Hausdorff Generic Argmin/Argmax Triton Adapter
+
+This independent review assesses Goal2787's implementation of a Python-side Hausdorff/X-HD wrapper utilizing generic v2.5 continuation primitives, without introducing Hausdorff-specific native or Triton continuation code. The review is based on an inspection of the specified files, focusing on generic substrate, correct composition, adherence to claims boundaries, pod timing evidence, and partner selection guidance.
+
+### Review Questions and Answers:
+
+1.  **Does Goal2787 keep the reusable continuation substrate generic, with no Hausdorff/X-HD/app vocabulary in `src/rtdsl/triton_partner_continuation.py`?**
+    *   **Answer:** Yes. Inspection of `src/rtdsl/triton_partner_continuation.py` confirms that the file remains generic. It defines operations such as `TRITON_GROUPED_ARGMIN_F64_OPERATION` and `TRITON_GROUPED_ARGMAX_F64_OPERATION` and their corresponding kernels (e.g., `_triton_grouped_argmin_score_f64_kernel`, `_triton_grouped_argmax_item_i64_kernel`). These operations are described and implemented using generic terms like `group_ids`, `item_ids`, and `scores`, without any specific references to Hausdorff, X-HD, or other application-specific vocabulary.
+
+2.  **Does the Python adapter correctly compose `grouped_argmin_f64` followed by `grouped_argmax_f64` and preserve deterministic witness/tie behavior?**
+    *   **Answer:** Yes. The `group_argmin_then_global_argmax_partner_columns` function in `src/rtdsl/partner_adapters.py` explicitly composes `run_triton_grouped_argmin_f64` and `run_triton_grouped_argmax_f64`. The tie-breaking logic is defined in the Triton continuation descriptors (`describe_triton_grouped_argmin_f64` specifies "lowest_score_then_lowest_item_id" and `describe_triton_grouped_argmax_f64` specifies "highest_score_then_lowest_item_id"). The `group_argmin_then_global_argmax_partner_columns` metadata aggregates this to "per_group_lowest_score_then_lowest_item_id__global_highest_score_then_lowest_group_id". The test `tests/goal2787_hausdorff_generic_argmin_argmax_triton_adapter_test.py` validates this composition and deterministic behavior against a Torch reference, confirming its correctness.
+
+3.  **Does the Hausdorff wrapper use the generic adapter without claiming RT-core acceleration, true zero-copy, whole-app speedup, or v2.5 release readiness?**
+    *   **Answer:** Yes. The `directed_hausdorff_2d_partner_columns` function in `src/rtdsl/partner_adapters.py` (the Hausdorff wrapper) invokes the generic `group_argmin_then_global_argmax_partner_columns`. Both the generic adapter and the Hausdorff wrapper explicitly set metadata flags such as `direct_device_handoff_authorized`, `rt_core_speedup_claim_authorized`, `v2_5_release_authorized`, and `whole_app_speedup_claim_authorized` to `False`. Their `claim_boundary` fields also clearly state that no zero-copy, speedup, or release claims are authorized, and the adapter is purely for preview integration evidence. This is further verified by assertions in `tests/goal2787_hausdorff_generic_argmin_argmax_triton_adapter_test.py`.
+
+4.  **Does the pod timing evidence correctly support a negative guidance row for dense exact Hausdorff-style reductions, with Triton measured 31.880x to 45.145x slower than Torch on the tested shapes?**
+    *   **Answer:** Yes. The "Pod Timing" section of `docs/reports/goal2787_hausdorff_generic_argmin_argmax_triton_adapter_2026-05-31.md` clearly presents a table showing "Triton / Torch" ratios ranging from 31.880x to 45.145x across various dense exact Hausdorff-style reduction shapes on an NVIDIA RTX A5000 GPU. The report explicitly concludes that "The generic Triton route is correct but not competitive for dense exact Hausdorff-style reductions." The raw data in `docs/reports/goal2787_pod_artifacts/goal2787_hausdorff_generic_argmin_argmax_pod_69_30_85_171_2026-05-31.json` corroborates these findings.
+
+5.  **Do the partner-selection and app-migration guidance files block blind automatic Triton selection for this dense witness-reduction shape?**
+    *   **Answer:** Yes. `src/rtdsl/v2_5_partner_selection_guidance.py` includes a `V25PartnerSelectionGuidanceRow` for the `grouped_argmin_f64` operation with `workload_shape="dense_exact_hausdorff_argmin_argmax"`. This row explicitly sets `auto_select_measured_partner_allowed=False` and provides a recommendation to "Do not auto-select Triton". Similarly, `src/rtdsl/v2_5_triton_app_migration.py`'s `V2_5_TRITON_BENCHMARK_APP_PLANS` includes a plan for `hausdorff_xhd` that references this negative guidance, stating in `first_port_action` and `notes` that optimized Torch/CuPy/CUDA should be kept as the performance path and that blind Triton auto-selection is blocked. Tests in `tests/goal2782_v2_5_partner_selection_guidance_test.py` and `tests/goal2783_v2_5_app_migration_selection_guidance_test.py` confirm this behavior.
+
+### Required Verdict:
+
+`accept-with-boundary`
+
+**Boundary:** Goal2787 successfully implements the Hausdorff wrapper using generic Triton continuation primitives (`grouped_argmin_f64` and `grouped_argmax_f64`) and maintains strict adherence to claims boundaries regarding performance, zero-copy, and release readiness. The implementation is functionally correct. However, the performance evidence clearly indicates that for dense exact Hausdorff-style reductions on the tested shapes, the current generic Triton two-kernel route is significantly slower (31.880x to 45.145x) than the Torch equivalent. Therefore, while functionally correct, it is not a competitive performance path for this specific workload, and automated selection of Triton for this workload is explicitly blocked by the partner-selection and app-migration guidance. Optimized Torch/CuPy/CUDA or other explicitly selected same-contract partners should remain the recommended performance path until a more optimized (e.g., fused or tiled) generic Triton witness-reduction design emerges.

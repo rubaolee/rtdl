@@ -792,6 +792,7 @@ from .partner_adapters import point_rows_to_partner_columns
 from .partner_adapters import weighted_point_rows_to_partner_columns
 from .partner_adapters import aggregate_frontier_collect_to_partner_columns
 from .partner_adapters import grouped_vector_sum_2d_partner_columns
+from .partner_adapters import group_argmin_then_global_argmax_partner_columns
 from .app_adapters import pairwise_inverse_square_force_2d_partner_columns
 from .partner_adapters import directed_hausdorff_2d_partner_columns
 from .partner_adapters import top_k_nearest_points_2d_partner_columns
@@ -2093,6 +2094,7 @@ __all__ = [
     "point_rows_to_partner_columns",
     "weighted_point_rows_to_partner_columns",
     "grouped_vector_sum_2d_partner_columns",
+    "group_argmin_then_global_argmax_partner_columns",
     "pairwise_inverse_square_force_2d_partner_columns",
     "directed_hausdorff_2d_partner_columns",
     "top_k_nearest_points_2d_partner_columns",

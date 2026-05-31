@@ -13,6 +13,8 @@ from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE
 from .triton_partner_continuation import run_triton_partner_continuation
 from .triton_partner_continuation import run_triton_dense_point_topk_2d
+from .triton_partner_continuation import run_triton_grouped_argmax_f64
+from .triton_partner_continuation import run_triton_grouped_argmin_f64
 from .triton_partner_continuation import run_triton_grouped_vector_sum_f64x2_by_offsets
 
 _UINT32_MAX = 2**32 - 1
@@ -1797,6 +1799,129 @@ def grouped_vector_sum_2d_partner_columns(
     return columns
 
 
+def group_argmin_then_global_argmax_partner_columns(
+    score_columns: dict[str, object],
+    *,
+    group_count: int,
+    partner: str = "triton",
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Run generic per-group argmin followed by global argmax with witness."""
+
+    if not isinstance(score_columns, dict):
+        raise ValueError("score_columns must be a mapping")
+    runtime = _partner_module(partner)
+    group_ids = score_columns.get("group_ids")
+    item_ids = score_columns.get("item_ids")
+    scores = score_columns.get("scores", score_columns.get("values"))
+    if group_ids is None or item_ids is None or scores is None:
+        raise ValueError("score_columns must contain group_ids, item_ids, and scores/values")
+    group_count = int(group_count)
+    if group_count <= 0:
+        raise ValueError("group_count must be positive")
+
+    if runtime["name"] in {"triton", "torch"}:
+        torch = runtime["module"]
+        group_ids = group_ids.to(torch.int64)
+        item_ids = item_ids.to(torch.int64)
+        scores = scores.to(torch.float64)
+        row_count = int(group_ids.numel())
+        if not (tuple(group_ids.shape) == tuple(item_ids.shape) == tuple(scores.shape)):
+            raise ValueError("group_ids, item_ids, and scores must have the same shape")
+        if runtime["name"] == "triton":
+            argmin_result = run_triton_grouped_argmin_f64(
+                group_ids,
+                item_ids,
+                scores,
+                group_count=group_count,
+            )
+            if int(argmin_result["outputs"]["missing_group_ids"].numel()) != 0:
+                missing = argmin_result["outputs"]["missing_group_ids"].detach().cpu().tolist()
+                raise ValueError(f"every group must have at least one candidate; missing groups: {missing}")
+            per_group_ids = argmin_result["outputs"]["group_ids"]
+            per_group_item_ids = argmin_result["outputs"]["item_ids"]
+            per_group_scores = argmin_result["outputs"]["scores"]
+            global_group_ids = torch.zeros_like(per_group_ids)
+            argmax_result = run_triton_grouped_argmax_f64(
+                global_group_ids,
+                per_group_ids,
+                per_group_scores,
+                group_count=1,
+            )
+            winner_group_id = argmax_result["outputs"]["item_ids"][0]
+            winner_score = argmax_result["outputs"]["scores"][0]
+            winner_item_id = argmin_result["outputs"]["dense_item_ids"][winner_group_id]
+            dense_item_ids = argmin_result["outputs"]["dense_item_ids"]
+            dense_scores = argmin_result["outputs"]["dense_scores"]
+            operations = ("grouped_argmin_f64", "grouped_argmax_f64")
+            preview_kernel_status = "preview_not_promoted"
+            argmin_elapsed = float(argmin_result["phase_timing"]["phases_sec"]["partner_continuation"])
+            argmax_elapsed = float(argmax_result["phase_timing"]["phases_sec"]["partner_continuation"])
+        else:
+            dense_scores = torch.full((group_count,), float("inf"), dtype=torch.float64, device=scores.device)
+            dense_item_ids = torch.full(
+                (group_count,),
+                torch.iinfo(torch.int64).max,
+                dtype=torch.int64,
+                device=item_ids.device,
+            )
+            for group in range(group_count):
+                mask = group_ids == group
+                if not bool(torch.any(mask).detach().cpu().item()):
+                    raise ValueError(f"every group must have at least one candidate; missing groups: [{group}]")
+                group_scores = scores[mask]
+                group_items = item_ids[mask]
+                best_score = torch.min(group_scores)
+                tied_items = group_items[group_scores == best_score]
+                dense_scores[group] = best_score
+                dense_item_ids[group] = torch.min(tied_items)
+            winner_score = torch.max(dense_scores)
+            tied_groups = torch.nonzero(dense_scores == winner_score, as_tuple=False).reshape(-1)
+            winner_group_id = torch.min(tied_groups).to(torch.int64)
+            winner_item_id = dense_item_ids[winner_group_id]
+            operations = ()
+            preview_kernel_status = None
+            argmin_elapsed = None
+            argmax_elapsed = None
+        runtime["sync"]()
+        columns = {
+            "group_ids": runtime["tensor"](range(group_count), runtime["int64"], runtime["device"]),
+            "argmin_item_ids": dense_item_ids,
+            "argmin_scores": dense_scores,
+        }
+        metadata = {
+            "adapter": "group_argmin_then_global_argmax_partner_columns",
+            "partner": runtime["name"],
+            "input_contract": "caller_supplied_grouped_score_rows",
+            "partner_reference_contract": "generic_group_argmin_then_global_argmax_with_witness",
+            "v2_5_partner_continuation_operations": operations,
+            "v2_5_triton_preview_kernel_status": preview_kernel_status,
+            "native_engine_row_contract": "not_called_partner_continuation_only",
+            "group_count": group_count,
+            "row_count": row_count,
+            "winner_group_id": int(winner_group_id.detach().cpu().item()),
+            "winner_item_id": int(winner_item_id.detach().cpu().item()),
+            "winner_score": float(winner_score.detach().cpu().item()),
+            "tie_break": "per_group_lowest_score_then_lowest_item_id__global_highest_score_then_lowest_group_id",
+            "triton_grouped_argmin_elapsed_seconds": argmin_elapsed,
+            "triton_grouped_argmax_elapsed_seconds": argmax_elapsed,
+            "direct_device_handoff_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_5_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "claim_boundary": (
+                "Generic group-argmin then global-argmax witness adapter over partner-owned "
+                "score rows. It does not call native RT traversal, does not embed app "
+                "distance semantics, and does not authorize speedup, zero-copy, or release claims."
+            ),
+        }
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+    raise ValueError("partner must be 'triton' or 'torch'")
+
+
 def directed_hausdorff_2d_partner_columns(
     source_point_columns: dict[str, object],
     target_point_columns: dict[str, object],
@@ -1811,7 +1936,33 @@ def directed_hausdorff_2d_partner_columns(
     if source_count <= 0 or target_count <= 0:
         raise ValueError("directed Hausdorff requires non-empty source and target columns")
 
-    if runtime["name"] == "torch":
+    if runtime["name"] == "triton":
+        torch = runtime["module"]
+        sx = source_point_columns["x"].to(torch.float64)
+        sy = source_point_columns["y"].to(torch.float64)
+        tx = target_point_columns["x"].to(torch.float64)
+        ty = target_point_columns["y"].to(torch.float64)
+        dx = sx.reshape(-1, 1) - tx.reshape(1, -1)
+        dy = sy.reshape(-1, 1) - ty.reshape(1, -1)
+        distance_sq = dx * dx + dy * dy
+        group_ids = torch.arange(source_count, dtype=torch.int64, device=sx.device).repeat_interleave(target_count)
+        item_ids = target_point_columns["ids"].to(torch.int64).repeat(source_count)
+        witness = group_argmin_then_global_argmax_partner_columns(
+            {"group_ids": group_ids, "item_ids": item_ids, "scores": distance_sq.reshape(-1)},
+            group_count=source_count,
+            partner="triton",
+            return_metadata=True,
+        )
+        nearest_indices = None
+        nearest_target_ids = witness["columns"]["argmin_item_ids"]
+        nearest_distance_sq = witness["columns"]["argmin_scores"]
+        source_index_i = int(witness["metadata"]["winner_group_id"])
+        target_index_i = None
+        directed_distance_sq = nearest_distance_sq[source_index_i]
+        directed_distance = torch.sqrt(directed_distance_sq)
+        nearest_distances = torch.sqrt(nearest_distance_sq)
+        triton_witness_metadata = witness["metadata"]
+    elif runtime["name"] == "torch":
         torch = runtime["module"]
         sx = source_point_columns["x"].to(torch.float64)
         sy = source_point_columns["y"].to(torch.float64)
@@ -1826,6 +1977,8 @@ def directed_hausdorff_2d_partner_columns(
         target_index_i = int(nearest_indices[source_index_i].detach().cpu().item())
         directed_distance = torch.sqrt(directed_distance_sq)
         nearest_distances = torch.sqrt(nearest_distance_sq)
+        nearest_target_ids = target_point_columns["ids"][nearest_indices]
+        triton_witness_metadata = None
     elif runtime["name"] == "cupy":
         cupy = runtime["module"]
         sx = source_point_columns["x"].astype(cupy.float64, copy=False)
@@ -1843,13 +1996,15 @@ def directed_hausdorff_2d_partner_columns(
         directed_distance_sq = nearest_distance_sq[source_index_i]
         directed_distance = cupy.sqrt(directed_distance_sq)
         nearest_distances = cupy.sqrt(nearest_distance_sq)
+        nearest_target_ids = target_point_columns["ids"][nearest_indices]
+        triton_witness_metadata = None
     else:
-        raise ValueError("partner must be 'torch' or 'cupy'")
+        raise ValueError("partner must be 'triton', 'torch', or 'cupy'")
 
     runtime["sync"]()
     columns = {
         "source_ids": source_point_columns["ids"],
-        "nearest_target_ids": target_point_columns["ids"][nearest_indices],
+        "nearest_target_ids": nearest_target_ids,
         "nearest_distances": nearest_distances,
     }
     metadata = {
@@ -1861,18 +2016,31 @@ def directed_hausdorff_2d_partner_columns(
         "source_count": source_count,
         "target_count": target_count,
         "source_id": int(runtime["to_host"](source_point_columns["ids"][source_index_i : source_index_i + 1])[0]),
-        "target_id": int(runtime["to_host"](target_point_columns["ids"][target_index_i : target_index_i + 1])[0]),
+        "target_id": int(triton_witness_metadata["winner_item_id"])
+        if runtime["name"] == "triton"
+        else int(runtime["to_host"](target_point_columns["ids"][target_index_i : target_index_i + 1])[0]),
         "distance": float(directed_distance.detach().cpu().item())
-        if runtime["name"] == "torch"
+        if runtime["name"] in {"triton", "torch"}
         else float(directed_distance.item()),
         "distance_sq": float(directed_distance_sq.detach().cpu().item())
-        if runtime["name"] == "torch"
+        if runtime["name"] in {"triton", "torch"}
         else float(directed_distance_sq.item()),
         "app_distance_materialization": "partner_gpu_exact_min_then_max_distance",
         "app_distance_host_materialization": False,
+        "v2_5_partner_continuation_operations": triton_witness_metadata[
+            "v2_5_partner_continuation_operations"
+        ]
+        if runtime["name"] == "triton"
+        else (),
+        "v2_5_triton_preview_kernel_status": triton_witness_metadata[
+            "v2_5_triton_preview_kernel_status"
+        ]
+        if runtime["name"] == "triton"
+        else None,
         "direct_device_handoff_authorized": False,
         "rt_core_speedup_claim_authorized": False,
         "v2_0_release_authorized": False,
+        "v2_5_release_authorized": False,
         "whole_app_speedup_claim_authorized": False,
     }
     if return_metadata:

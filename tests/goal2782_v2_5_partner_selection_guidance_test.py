@@ -19,7 +19,7 @@ class Goal2782V25PartnerSelectionGuidanceTest(unittest.TestCase):
         validation = rt.validate_v2_5_partner_selection_guidance(guidance, repo_root=REPO_ROOT)
 
         self.assertEqual(validation["status"], "accept")
-        self.assertEqual(guidance["row_count"], 2)
+        self.assertEqual(guidance["row_count"], 3)
         self.assertTrue(guidance["preview_kernel_available_does_not_imply_auto_select"])
         self.assertTrue(guidance["no_partner_forced"])
         self.assertFalse(guidance["promoted_performance_path"])
@@ -38,30 +38,45 @@ class Goal2782V25PartnerSelectionGuidanceTest(unittest.TestCase):
             "grouped_vector_sum_f64x2",
             "dense_grouped_vector_sum_2d",
         )
+        hausdorff = rt.plan_v2_5_partner_selection(
+            "grouped_argmin_f64",
+            "dense_exact_hausdorff_argmin_argmax",
+        )
 
         self.assertEqual(topk["status"], "measured_negative_preview_guidance")
         self.assertEqual(vector["status"], "measured_negative_preview_guidance")
+        self.assertEqual(hausdorff["status"], "measured_negative_preview_guidance")
         self.assertFalse(topk["auto_select_partner_allowed"])
         self.assertFalse(vector["auto_select_partner_allowed"])
+        self.assertFalse(hausdorff["auto_select_partner_allowed"])
         self.assertIn("Do not auto-select Triton", topk["recommendation"])
         self.assertIn("Do not auto-select Triton", vector["recommendation"])
+        self.assertIn("Do not auto-select Triton", hausdorff["recommendation"])
         self.assertIn("Torch", topk["recommendation"])
         self.assertIn("Torch", vector["recommendation"])
+        self.assertIn("Torch", hausdorff["recommendation"])
 
         topk_row = topk["matches"][0]
         vector_row = vector["matches"][0]
+        hausdorff_row = hausdorff["matches"][0]
         self.assertEqual(topk_row["evidence_goal"], "Goal2784")
         self.assertEqual(vector_row["evidence_goal"], "Goal2786")
+        self.assertEqual(hausdorff_row["evidence_goal"], "Goal2787")
         self.assertGreaterEqual(topk_row["measured_partner_slower_min_ratio"], 4.0)
         self.assertGreaterEqual(topk_row["measured_partner_slower_max_ratio"], 10.0)
         self.assertGreaterEqual(vector_row["measured_partner_slower_min_ratio"], 3.0)
         self.assertGreaterEqual(vector_row["measured_partner_slower_max_ratio"], 16.0)
+        self.assertGreaterEqual(hausdorff_row["measured_partner_slower_min_ratio"], 31.0)
+        self.assertGreaterEqual(hausdorff_row["measured_partner_slower_max_ratio"], 45.0)
         self.assertFalse(topk_row["rt_core_speedup_claim_authorized"])
         self.assertFalse(topk_row["whole_app_speedup_claim_authorized"])
         self.assertFalse(vector_row["rt_core_speedup_claim_authorized"])
         self.assertFalse(vector_row["whole_app_speedup_claim_authorized"])
+        self.assertFalse(hausdorff_row["rt_core_speedup_claim_authorized"])
+        self.assertFalse(hausdorff_row["whole_app_speedup_claim_authorized"])
         self.assertTrue((REPO_ROOT / topk_row["artifact_path"]).exists())
         self.assertTrue((REPO_ROOT / vector_row["artifact_path"]).exists())
+        self.assertTrue((REPO_ROOT / hausdorff_row["artifact_path"]).exists())
 
     def test_unknown_shape_fails_to_advisory_explicit_choice(self) -> None:
         plan = rt.plan_v2_5_partner_selection("segmented_count_i64", "unmeasured_shape")
@@ -85,6 +100,7 @@ class Goal2782V25PartnerSelectionGuidanceTest(unittest.TestCase):
         self.assertIn("Goal2780", report)
         self.assertIn("Goal2781", report)
         self.assertIn("Goal2786", report)
+        self.assertIn("Goal2787", report)
         self.assertIn("preview kernel available", report)
         self.assertIn("not the same as selected partner", report)
         self.assertIn("no public speedup claim", report.lower())

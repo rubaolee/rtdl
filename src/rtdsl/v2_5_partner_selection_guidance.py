@@ -126,6 +126,29 @@ V2_5_PARTNER_SELECTION_GUIDANCE_ROWS = (
             "or block-reduction Triton design wins timing."
         ),
     ),
+    V25PartnerSelectionGuidanceRow(
+        operation="grouped_argmin_f64",
+        workload_shape="dense_exact_hausdorff_argmin_argmax",
+        measured_partner="triton",
+        comparison_partner="torch_same_contract_branch",
+        evidence_goal="Goal2787",
+        artifact_path=(
+            "docs/reports/goal2787_pod_artifacts/"
+            "goal2787_hausdorff_generic_argmin_argmax_pod_69_30_85_171_2026-05-31.json"
+        ),
+        measured_partner_slower_min_ratio=31.88,
+        measured_partner_slower_max_ratio=45.15,
+        recommendation=(
+            "Do not auto-select Triton for dense exact Hausdorff-style "
+            "argmin-then-argmax witness reduction. Goal2787 wires the app wrapper "
+            "through generic grouped_argmin_f64 plus grouped_argmax_f64, but the "
+            "two-kernel generic route is 31.88x-45.15x slower than the dense Torch "
+            "same-contract branch on measured RTX A5000 shapes. Keep optimized "
+            "Torch/CuPy/CUDA or another explicitly selected same-contract partner "
+            "as the performance path until a fused/tiled generic witness-reduction "
+            "design wins timing."
+        ),
+    ),
 )
 
 

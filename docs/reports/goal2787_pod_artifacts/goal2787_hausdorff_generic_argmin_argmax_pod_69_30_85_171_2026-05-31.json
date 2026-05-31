@@ -1,0 +1,126 @@
+{
+  "claim_boundary": {
+    "adapter_preview_evidence": true,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v2_5_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": "Goal2787",
+  "gpu": "NVIDIA RTX A5000",
+  "host": "69.30.85.171:22167",
+  "rows": [
+    {
+      "distance_error": 0.0,
+      "max_nearest_distance_error": 0.0,
+      "pair_count": 16384,
+      "source_count": 128,
+      "source_id_match": true,
+      "target_count": 128,
+      "target_id_match": true,
+      "torch_median_sec": 0.000254760030657053,
+      "triton_median_sec": 0.010251699015498161,
+      "triton_metadata": {
+        "adapter": "directed_hausdorff_2d_partner_columns",
+        "app_distance_host_materialization": false,
+        "app_distance_materialization": "partner_gpu_exact_min_then_max_distance",
+        "direct_device_handoff_authorized": false,
+        "distance": 0.1346480461048944,
+        "distance_sq": 0.018130096319865764,
+        "input_contract": "caller_supplied_partner_device_point_columns",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "partner": "triton",
+        "partner_reference_contract": "generic_exact_directed_hausdorff_2d",
+        "rt_core_speedup_claim_authorized": false,
+        "source_count": 128,
+        "source_id": 62,
+        "target_count": 128,
+        "target_id": 100070,
+        "v2_0_release_authorized": false,
+        "v2_5_partner_continuation_operations": [
+          "grouped_argmin_f64",
+          "grouped_argmax_f64"
+        ],
+        "v2_5_release_authorized": false,
+        "v2_5_triton_preview_kernel_status": "preview_not_promoted",
+        "whole_app_speedup_claim_authorized": false
+      },
+      "triton_over_torch_ratio": 40.24060991458491
+    },
+    {
+      "distance_error": 0.0,
+      "max_nearest_distance_error": 0.0,
+      "pair_count": 262144,
+      "source_count": 512,
+      "source_id_match": true,
+      "target_count": 512,
+      "target_id_match": true,
+      "torch_median_sec": 0.00026274495758116245,
+      "triton_median_sec": 0.011861596954986453,
+      "triton_metadata": {
+        "adapter": "directed_hausdorff_2d_partner_columns",
+        "app_distance_host_materialization": false,
+        "app_distance_materialization": "partner_gpu_exact_min_then_max_distance",
+        "direct_device_handoff_authorized": false,
+        "distance": 0.07479447008743399,
+        "distance_sq": 0.005594212755660058,
+        "input_contract": "caller_supplied_partner_device_point_columns",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "partner": "triton",
+        "partner_reference_contract": "generic_exact_directed_hausdorff_2d",
+        "rt_core_speedup_claim_authorized": false,
+        "source_count": 512,
+        "source_id": 78,
+        "target_count": 512,
+        "target_id": 100099,
+        "v2_0_release_authorized": false,
+        "v2_5_partner_continuation_operations": [
+          "grouped_argmin_f64",
+          "grouped_argmax_f64"
+        ],
+        "v2_5_release_authorized": false,
+        "v2_5_triton_preview_kernel_status": "preview_not_promoted",
+        "whole_app_speedup_claim_authorized": false
+      },
+      "triton_over_torch_ratio": 45.14490806668433
+    },
+    {
+      "distance_error": 0.0,
+      "max_nearest_distance_error": 0.0,
+      "pair_count": 1048576,
+      "source_count": 1024,
+      "source_id_match": true,
+      "target_count": 1024,
+      "target_id_match": true,
+      "torch_median_sec": 0.0003749891184270382,
+      "triton_median_sec": 0.011954754125326872,
+      "triton_metadata": {
+        "adapter": "directed_hausdorff_2d_partner_columns",
+        "app_distance_host_materialization": false,
+        "app_distance_materialization": "partner_gpu_exact_min_then_max_distance",
+        "direct_device_handoff_authorized": false,
+        "distance": 0.06563882225045409,
+        "distance_sq": 0.0043084549864267074,
+        "input_contract": "caller_supplied_partner_device_point_columns",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "partner": "triton",
+        "partner_reference_contract": "generic_exact_directed_hausdorff_2d",
+        "rt_core_speedup_claim_authorized": false,
+        "source_count": 1024,
+        "source_id": 770,
+        "target_count": 1024,
+        "target_id": 100037,
+        "v2_0_release_authorized": false,
+        "v2_5_partner_continuation_operations": [
+          "grouped_argmin_f64",
+          "grouped_argmax_f64"
+        ],
+        "v2_5_release_authorized": false,
+        "v2_5_triton_preview_kernel_status": "preview_not_promoted",
+        "whole_app_speedup_claim_authorized": false
+      },
+      "triton_over_torch_ratio": 31.88026942081231
+    }
+  ]
+}

@@ -20,6 +20,12 @@ the batched presegmented row-offset candidate was slower than the single-group
 offset path, and the best Triton offset path remained 3.76x-16.86x slower than
 Torch, so the advisory "do not auto-select Triton" decision remains.
 
+Goal2787 later added a dense exact Hausdorff-style witness row with
+still-negative evidence: the generic Triton grouped-argmin plus grouped-argmax
+route is correct but 31.88x-45.15x slower than Torch on measured RTX A5000
+shapes, so the advisory "do not auto-select Triton" decision applies to that
+shape too.
+
 ## Evidence
 
 Codex implementation and validation:
@@ -32,6 +38,8 @@ Codex implementation and validation:
   - `grouped_topk_f64` / dense exact top-k candidate ranking
   - `grouped_vector_sum_f64x2` / dense grouped 2D vector sum, refreshed by
     Goal2786
+  - `grouped_argmin_f64` / dense exact Hausdorff-style argmin/argmax, added by
+    Goal2787
 - kept planner guidance advisory-only with no forced partner
 - kept public speedup, RT-core, true-zero-copy, whole-app, and release claims
   blocked

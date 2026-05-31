@@ -121,9 +121,14 @@ V2_5_TRITON_BENCHMARK_APP_PLANS: tuple[V25TritonBenchmarkAppPlan, ...] = (
         promoted_benchmark=True,
         current_hot_path_partner="legacy_cupy_for_some_exact_partner_continuations",
         v2_5_required_operations=("grouped_argmin_f64", "segmented_max_f64"),
-        v2_5_status="covered_by_grouped_argmin_and_segmented_max_preview_pending_app_wiring",
-        first_port_action="Replace legacy CuPy paths with generic Triton grouped argmin plus segmented max, then collect CUDA evidence.",
-        notes="Do not add Hausdorff-specific native code; nearest-witness scoring remains generic grouped reduction.",
+        v2_5_status="wired_but_dense_argmin_argmax_has_goal2787_negative_triton_selection_guidance",
+        first_port_action=(
+            "Keep optimized Torch/CuPy/CUDA or another explicitly selected same-contract "
+            "partner for dense exact Hausdorff witness reduction until a fused/tiled "
+            "generic Triton design replaces the two-kernel preview."
+        ),
+        notes="Do not add Hausdorff-specific native code; nearest-witness scoring remains generic grouped reduction. Goal2787 blocks blind Triton auto-selection for dense exact Hausdorff-style argmin-then-argmax.",
+        measured_selection_shapes=(("grouped_argmin_f64", "dense_exact_hausdorff_argmin_argmax"),),
     ),
     V25TritonBenchmarkAppPlan(
         app_id="rt_dbscan",

@@ -26,12 +26,13 @@ The migration plan now carries:
 - per-app `partner_selection_guidance`
 - per-app `measured_negative_preview_guidance_count`
 
-Two benchmark app rows now consume Goal2782 guidance:
+Three benchmark app rows now consume Goal2782 guidance:
 
 | App | Operation | Workload shape | Evidence | Planner result |
 | --- | --- | --- | --- | --- |
 | RTNN | `grouped_topk_f64` | dense exact top-k candidate ranking | Goal2784 | do not auto-select Triton |
 | Barnes-Hut | `grouped_vector_sum_f64x2` | dense grouped vector sum 2D | Goal2786 | do not auto-select Triton |
+| Hausdorff/X-HD | `grouped_argmin_f64` | dense exact Hausdorff-style argmin/argmax | Goal2787 | do not auto-select Triton |
 
 The generic Triton preview kernels still exist. This goal only prevents a
 planner or benchmark harness from mistaking preview availability for a selected
@@ -42,8 +43,8 @@ performance path.
 This goal authorizes:
 
 - app-migration planner metadata that consumes measured negative guidance;
-- explicit same-contract partner choice for dense top-k and dense vector-sum
-  paths;
+- explicit same-contract partner choice for dense top-k, dense vector-sum, and
+  dense Hausdorff-style witness-reduction paths;
 - continued Triton preview coverage without automatic selection.
 
 This goal does not authorize:
@@ -79,8 +80,9 @@ OK
 
 Pod validation was useful but not required for the original Goal2783 because
 that goal consumed the Goal2780 and Goal2781 pod artifacts rather than
-collecting new kernel timing. The current dense top-k and vector-sum guidance
-has since been refreshed by Goal2784 and Goal2786 artifacts.
+collecting new kernel timing. The current dense top-k, vector-sum, and
+Hausdorff-style witness-reduction guidance has since been refreshed by Goal2784,
+Goal2786, and Goal2787 artifacts.
 
 Pod no-new-timing validation:
 

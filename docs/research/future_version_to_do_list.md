@@ -716,6 +716,13 @@ Future work:
   the next vector-sum performance path; the next candidate needs a genuinely
   different segmented/block reduction design or an explicit non-Triton selected
   partner for dense vector sums.
+- Goal2787 wires directed Hausdorff through a generic
+  group-argmin-then-global-argmax Triton adapter and proves correctness, but the
+  current two-kernel generic route is 31.88x-45.15x slower than Torch on dense
+  measured shapes. The next Hausdorff/X-HD leap should not be another wrapper
+  around separate generic argmin and argmax kernels; it needs a fused/tiled
+  witness-reduction design or explicit selection of an optimized Torch/CuPy/CUDA
+  partner for dense exact reductions.
 
 Boundary:
 

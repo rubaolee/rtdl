@@ -54,9 +54,23 @@ class Goal2783V25AppMigrationSelectionGuidanceTest(unittest.TestCase):
         self.assertFalse(guidance["auto_select_partner_allowed"])
         self.assertIn("Do not auto-select Triton", guidance["recommendation"])
 
+    def test_hausdorff_dense_argmin_argmax_records_goal2787_negative_guidance(self) -> None:
+        apps = {app["app_id"]: app for app in rt.v2_5_triton_benchmark_app_migration_plan()["apps"]}
+        hausdorff = apps["hausdorff_xhd"]
+        guidance = hausdorff["partner_selection_guidance"][0]
+
+        self.assertIn("grouped_argmin_f64", hausdorff["v2_5_required_operations"])
+        self.assertEqual(hausdorff["measured_negative_preview_guidance_count"], 1)
+        self.assertFalse(hausdorff["auto_select_preview_partner_allowed"])
+        self.assertEqual(guidance["status"], "measured_negative_preview_guidance")
+        self.assertEqual(guidance["matches"][0]["operation"], "grouped_argmin_f64")
+        self.assertEqual(guidance["matches"][0]["evidence_goal"], "Goal2787")
+        self.assertFalse(guidance["auto_select_partner_allowed"])
+        self.assertIn("Do not auto-select Triton", guidance["recommendation"])
+
     def test_apps_without_measured_negative_guidance_do_not_gain_false_selection_claims(self) -> None:
         apps = {app["app_id"]: app for app in rt.v2_5_triton_benchmark_app_migration_plan()["apps"]}
-        for app_id in ("raydb_style", "spatial_rayjoin", "hausdorff_xhd", "rt_dbscan"):
+        for app_id in ("raydb_style", "spatial_rayjoin", "rt_dbscan"):
             with self.subTest(app_id=app_id):
                 app = apps[app_id]
                 self.assertEqual(app["measured_negative_preview_guidance_count"], 0)
