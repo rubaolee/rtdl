@@ -667,6 +667,11 @@ Future work:
   moves the producer's ray/launch-param upload to stream-ordered pinned
   host-to-device async copies, but query rays are still packed on the host, so
   it is not a true-zero-copy input contract.
+- Goal2768 adds the first bounded same-stream row-window consumer: a CuPy
+  RawKernel reads device status plus bounded `ray_id` / `primitive_id` hit rows
+  before host scalar or row materialization. The next hard work is larger
+  device-resident reductions or event-based cross-stream handoff, not another
+  status-only proof.
 
 Boundary:
 
