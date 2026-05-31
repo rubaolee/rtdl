@@ -1,0 +1,26 @@
+{
+  "direct_median_sec": 0.00045323814265429974,
+  "direct_ok": true,
+  "direct_runs_sec": [
+    0.000648248940706253,
+    0.00045323814265429974,
+    0.0004190120380371809
+  ],
+  "entrypoint_fallback_required": false,
+  "entrypoint_plan_status": "accepted_preview",
+  "entrypoint_resolved_partner": "cupy_conformance",
+  "goal": "Goal2841",
+  "host_scalar_read_before_consumer": false,
+  "mismatches": [],
+  "point_count": 65536,
+  "public_speedup_claim_authorized": false,
+  "same_over_direct_median_ratio": 1.9232031759290225,
+  "same_stream_median_sec": 0.0008716690354049206,
+  "same_stream_ok": true,
+  "same_stream_runs_sec": [
+    0.2274444941431284,
+    0.0008716690354049206,
+    0.0007124810945242643
+  ],
+  "source_commit": "35ac09fe8f54bfb9e60584b7dee5f9618fb7708c"
+}
