@@ -40,6 +40,14 @@ OptiX build: pass
 focused tests: 14 passed
 ```
 
+Final clean-head guard after report/artifact commit:
+
+```text
+commit: 95091daad801811d95ae2d301fd9a27235189396
+source_dirty: []
+focused tests: 16 passed
+```
+
 Artifacts:
 
 - `docs/reports/goal2811_rtnn_direct_density_aggregate_pod/rtnn_direct_density_median_f32_32768.json`
