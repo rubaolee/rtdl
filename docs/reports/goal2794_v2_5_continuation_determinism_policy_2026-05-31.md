@@ -91,4 +91,12 @@ Local syntax/import probe:
 - `py -3 -m unittest tests.goal2794_v2_5_determinism_policy_test tests.goal2696_v2_5_partner_support_matrix_test tests.goal2782_v2_5_partner_selection_guidance_test tests.goal2792_partner_selection_explain_plan_test` passed:
   25 tests.
 
-Pod clean-check validation will be recorded after this goal lands on `main`.
+Pod clean-check validation:
+
+- Host: `root@69.30.85.171`, port `22167`, key:
+  `C:\Users\Lestat\.ssh\id_ed25519_rtdl_codex_current_pod`.
+- Checkout: `/root/rtdl_goal2785_work`.
+- Commit: `ba5d99cedc9b56b6770aab07723546577364bc21`.
+- Command:
+  `PYTHONPATH=src:. python3 -m unittest tests.goal2794_v2_5_determinism_policy_test tests.goal2696_v2_5_partner_support_matrix_test tests.goal2782_v2_5_partner_selection_guidance_test tests.goal2792_partner_selection_explain_plan_test`.
+- Result: 25 tests passed on Python 3.12.3.
