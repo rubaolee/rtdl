@@ -1,0 +1,49 @@
+{
+  "all_pass": true,
+  "artifacts": {
+    "goal2797_triangle_counting.json": {
+      "gpu": "NVIDIA RTX A5000, 570.211.01",
+      "source_commit": "23b047e5d44bfda7e535ca7ba78d94f195e2be86",
+      "source_dirty": [],
+      "status": "pass"
+    },
+    "goal2798_librts.json": {
+      "gpu": "NVIDIA RTX A5000, 570.211.01",
+      "source_commit": "23b047e5d44bfda7e535ca7ba78d94f195e2be86",
+      "source_dirty": [],
+      "status": "pass"
+    },
+    "goal2799_spatial_rayjoin.json": {
+      "gpu": "NVIDIA RTX A5000, 570.211.01",
+      "source_commit": "23b047e5d44bfda7e535ca7ba78d94f195e2be86",
+      "source_dirty": [],
+      "status": "pass"
+    },
+    "goal2800_rtnn.json": {
+      "gpu": "NVIDIA RTX A5000, 570.211.01",
+      "source_commit": "23b047e5d44bfda7e535ca7ba78d94f195e2be86",
+      "source_dirty": [],
+      "status": "pass"
+    },
+    "goal2801_hausdorff_xhd.json": {
+      "gpu": "NVIDIA RTX A5000, 570.211.01",
+      "source_commit": "23b047e5d44bfda7e535ca7ba78d94f195e2be86",
+      "source_dirty": [],
+      "status": "pass"
+    },
+    "goal2802_rt_dbscan.json": {
+      "gpu": "NVIDIA RTX A5000, 570.211.01",
+      "source_commit": "23b047e5d44bfda7e535ca7ba78d94f195e2be86",
+      "source_dirty": [],
+      "status": "pass"
+    },
+    "goal2803_barnes_hut.json": {
+      "gpu": "NVIDIA RTX A5000, 570.211.01",
+      "source_commit": "23b047e5d44bfda7e535ca7ba78d94f195e2be86",
+      "source_dirty": [],
+      "status": "pass"
+    }
+  },
+  "goal": "Goal2847",
+  "source_commit": "23b047e5d44bfda7e535ca7ba78d94f195e2be86"
+}
