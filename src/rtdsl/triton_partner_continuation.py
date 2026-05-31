@@ -16,6 +16,7 @@ from .partner_protocol import v2_4_phase_timing_metadata
 
 
 TRITON_SEGMENTED_SUM_F64_OPERATION = "segmented_sum_f64"
+TRITON_GROUPED_VECTOR_SUM_F64X2_OPERATION = "grouped_vector_sum_f64x2"
 TRITON_SEGMENTED_COUNT_I64_OPERATION = "segmented_count_i64"
 TRITON_SEGMENTED_MIN_F64_OPERATION = "segmented_min_f64"
 TRITON_SEGMENTED_MAX_F64_OPERATION = "segmented_max_f64"
@@ -48,6 +49,15 @@ def describe_triton_segmented_sum_f64() -> dict[str, object]:
     descriptor = _base_triton_descriptor(TRITON_SEGMENTED_SUM_F64_OPERATION)
     descriptor["input_columns"] = ("group_ids:int64", "values:float64")
     descriptor["output_columns"] = ("sums:float64",)
+    return descriptor
+
+
+def describe_triton_grouped_vector_sum_f64x2() -> dict[str, object]:
+    descriptor = _base_triton_descriptor(TRITON_GROUPED_VECTOR_SUM_F64X2_OPERATION)
+    descriptor["input_columns"] = ("group_ids:int64", "values_x:float64", "values_y:float64")
+    descriptor["output_columns"] = ("sum_x:float64", "sum_y:float64")
+    descriptor["vector_width"] = 2
+    descriptor["component_contract"] = "paired_float64_components"
     return descriptor
 
 
@@ -181,6 +191,8 @@ def describe_triton_partner_continuation(operation: str) -> dict[str, object]:
         return describe_triton_segmented_count_i64()
     if operation == TRITON_SEGMENTED_SUM_F64_OPERATION:
         return describe_triton_segmented_sum_f64()
+    if operation == TRITON_GROUPED_VECTOR_SUM_F64X2_OPERATION:
+        return describe_triton_grouped_vector_sum_f64x2()
     if operation == TRITON_SEGMENTED_MIN_F64_OPERATION:
         return describe_triton_segmented_min_f64()
     if operation == TRITON_SEGMENTED_MAX_F64_OPERATION:
@@ -254,6 +266,20 @@ def run_triton_partner_continuation(
             return run_triton_segmented_sum_f64(
                 inputs["group_ids"],
                 inputs["values"],
+                group_count=int(inputs["group_count"]),
+                block_size=block_size,
+                group_id_bounds_validation_mode=group_id_bounds_validation_mode,
+            )
+        except (ModuleNotFoundError, RuntimeError) as exc:
+            if allow_reference_fallback and _is_triton_environment_error(exc):
+                return _triton_reference_fallback(operation, inputs, str(exc))
+            raise
+    if operation == TRITON_GROUPED_VECTOR_SUM_F64X2_OPERATION:
+        try:
+            return run_triton_grouped_vector_sum_f64x2(
+                inputs["group_ids"],
+                inputs["values_x"],
+                inputs["values_y"],
                 group_count=int(inputs["group_count"]),
                 block_size=block_size,
                 group_id_bounds_validation_mode=group_id_bounds_validation_mode,
@@ -508,6 +534,63 @@ def run_triton_segmented_sum_f64(
         elapsed=elapsed,
         source="run_triton_segmented_sum_f64",
         group_id_bounds_validation_mode=group_id_bounds_validation_mode,
+    )
+
+
+def run_triton_grouped_vector_sum_f64x2(
+    group_ids: Any,
+    values_x: Any,
+    values_y: Any,
+    *,
+    group_count: int,
+    block_size: int = 256,
+    group_id_bounds_validation_mode: str = TRITON_GROUP_ID_BOUNDS_VALIDATION_MODE,
+) -> dict[str, object]:
+    """Run the v2.5 Triton grouped two-component vector-sum preview."""
+
+    triton, torch, tl = _import_triton_stack()
+    _validate_torch_cuda_vector(group_ids, name="group_ids", dtype=torch.int64)
+    _validate_torch_cuda_vector(values_x, name="values_x", dtype=torch.float64)
+    _validate_torch_cuda_vector(values_y, name="values_y", dtype=torch.float64)
+    if not (tuple(group_ids.shape) == tuple(values_x.shape) == tuple(values_y.shape)):
+        raise ValueError("group_ids, values_x, and values_y must have the same shape")
+    group_count, block_size, row_count = _validate_group_run_shape(
+        group_ids,
+        group_count=group_count,
+        block_size=block_size,
+        torch=torch,
+        validation_mode=group_id_bounds_validation_mode,
+    )
+
+    torch.cuda.synchronize(group_ids.device)
+    started = perf_counter()
+    sum_x = torch.zeros((group_count,), dtype=torch.float64, device=values_x.device)
+    sum_y = torch.zeros((group_count,), dtype=torch.float64, device=values_y.device)
+    if row_count:
+        grid = (triton.cdiv(row_count, block_size),)
+        _triton_grouped_vector_sum_f64x2_kernel(tl)[grid](
+            group_ids,
+            values_x,
+            values_y,
+            sum_x,
+            sum_y,
+            row_count,
+            group_count,
+            BLOCK_SIZE=block_size,
+        )
+    torch.cuda.synchronize(group_ids.device)
+    elapsed = perf_counter() - started
+
+    return _triton_run_result(
+        operation=TRITON_GROUPED_VECTOR_SUM_F64X2_OPERATION,
+        outputs={"sum_x": sum_x, "sum_y": sum_y},
+        elapsed=elapsed,
+        source="run_triton_grouped_vector_sum_f64x2",
+        group_id_bounds_validation_mode=group_id_bounds_validation_mode,
+        extra_metadata={
+            "vector_width": 2,
+            "component_contract": "paired_float64_components",
+        },
     )
 
 
@@ -1298,6 +1381,22 @@ def _triton_segmented_sum_f64_kernel(tl):
         vals = tl.load(values + offsets, mask=mask, other=0.0)
         valid = mask & (groups >= 0) & (groups < group_count)
         tl.atomic_add(output + groups, vals, sem="relaxed", mask=valid)
+
+    return kernel
+
+
+def _triton_grouped_vector_sum_f64x2_kernel(tl):
+    @__import__("triton").jit
+    def kernel(group_ids, values_x, values_y, output_x, output_y, row_count: tl.constexpr, group_count: tl.constexpr, BLOCK_SIZE: tl.constexpr):
+        program_id = tl.program_id(0)
+        offsets = program_id * BLOCK_SIZE + tl.arange(0, BLOCK_SIZE)
+        mask = offsets < row_count
+        groups = tl.load(group_ids + offsets, mask=mask, other=-1)
+        vals_x = tl.load(values_x + offsets, mask=mask, other=0.0)
+        vals_y = tl.load(values_y + offsets, mask=mask, other=0.0)
+        valid = mask & (groups >= 0) & (groups < group_count)
+        tl.atomic_add(output_x + groups, vals_x, sem="relaxed", mask=valid)
+        tl.atomic_add(output_y + groups, vals_y, sem="relaxed", mask=valid)
 
     return kernel
 

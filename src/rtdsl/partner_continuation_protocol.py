@@ -98,6 +98,16 @@ V2_5_PARTNER_CONTINUATION_OPERATIONS: tuple[RtdlPartnerContinuationOperation, ..
         ),
     ),
     RtdlPartnerContinuationOperation(
+        name="grouped_vector_sum_f64x2",
+        category="grouped_vector_reduction",
+        input_names=("group_ids", "values_x", "values_y", "group_count"),
+        output_names=("sum_x", "sum_y"),
+        behavior=(
+            "sum paired float64 vector components per integer group id; "
+            + V2_5_GROUP_ID_VALIDATION_CONTRACT
+        ),
+    ),
+    RtdlPartnerContinuationOperation(
         name="segmented_min_f64",
         category="segmented_reduction",
         input_names=("group_ids", "values", "group_count"),
@@ -195,6 +205,7 @@ V2_5_PARTNER_CONTINUATION_OPERATION_NAMES = tuple(
 V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS = (
     "segmented_count_i64",
     "segmented_sum_f64",
+    "grouped_vector_sum_f64x2",
     "segmented_min_f64",
     "segmented_max_f64",
     "compact_mask_i64",
@@ -496,6 +507,14 @@ def execute_v2_5_partner_continuation_reference(
         if len(group_ids) != len(values):
             raise ValueError("group_ids and values must have the same length")
         outputs = {"sums": _segmented_sum(group_ids, values, group_count)}
+    elif operation == "grouped_vector_sum_f64x2":
+        group_count = _required_int(inputs, "group_count")
+        group_ids = _required_i64_sequence(inputs, "group_ids")
+        values_x = _required_f64_sequence(inputs, "values_x")
+        values_y = _required_f64_sequence(inputs, "values_y")
+        if not (len(group_ids) == len(values_x) == len(values_y)):
+            raise ValueError("group_ids, values_x, and values_y must have the same length")
+        outputs = _grouped_vector_sum_f64x2(group_ids, values_x, values_y, group_count)
     elif operation == "segmented_min_f64":
         group_count = _required_int(inputs, "group_count")
         group_ids = _required_i64_sequence(inputs, "group_ids")
@@ -813,6 +832,21 @@ def _segmented_sum(group_ids: Sequence[int], values: Sequence[float], group_coun
         _validate_group_id(group, group_count)
         sums[group] += float(value)
     return sums
+
+
+def _grouped_vector_sum_f64x2(
+    group_ids: Sequence[int],
+    values_x: Sequence[float],
+    values_y: Sequence[float],
+    group_count: int,
+) -> dict[str, list[float]]:
+    sum_x = [0.0] * group_count
+    sum_y = [0.0] * group_count
+    for group, value_x, value_y in zip(group_ids, values_x, values_y):
+        _validate_group_id(group, group_count)
+        sum_x[group] += float(value_x)
+        sum_y[group] += float(value_y)
+    return {"sum_x": sum_x, "sum_y": sum_y}
 
 
 def _segmented_minmax(

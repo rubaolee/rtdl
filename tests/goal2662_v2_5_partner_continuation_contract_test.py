@@ -31,6 +31,7 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
             {
                 "segmented_count_i64",
                 "segmented_sum_f64",
+                "grouped_vector_sum_f64x2",
                 "segmented_min_f64",
                 "segmented_max_f64",
                 "compact_mask_i64",
@@ -52,6 +53,7 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
         for operation_name in (
             "segmented_count_i64",
             "segmented_sum_f64",
+            "grouped_vector_sum_f64x2",
             "segmented_min_f64",
             "segmented_max_f64",
             "bounded_collect_finalize_i64",
@@ -177,6 +179,18 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
             {"group_ids": [0, 2, 2, 1, 0], "values": [1.0, 2.5, 3.5, 4.0, 6.0], "group_count": 4},
         )
         self.assertEqual(sum_result["outputs"]["sums"], [7.0, 4.0, 6.0, 0.0])
+
+        vector_sum = rt.execute_v2_5_partner_continuation_reference(
+            "grouped_vector_sum_f64x2",
+            {
+                "group_ids": [0, 2, 2, 1, 0],
+                "values_x": [1.0, 2.5, 3.5, 4.0, 6.0],
+                "values_y": [0.5, -1.0, 2.0, 3.0, -0.5],
+                "group_count": 4,
+            },
+        )
+        self.assertEqual(vector_sum["outputs"]["sum_x"], [7.0, 4.0, 6.0, 0.0])
+        self.assertEqual(vector_sum["outputs"]["sum_y"], [0.0, 3.0, 1.0, 0.0])
 
     def test_reference_segmented_min_and_max(self):
         min_result = rt.execute_v2_5_partner_continuation_reference(
@@ -326,6 +340,10 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
         reference_cases = (
             ("segmented_count_i64", {"group_ids": [-1, 0], "group_count": 2}),
             ("segmented_sum_f64", {"group_ids": [0, 2], "values": [1.0, 2.0], "group_count": 2}),
+            (
+                "grouped_vector_sum_f64x2",
+                {"group_ids": [0, 2], "values_x": [1.0, 2.0], "values_y": [3.0, 4.0], "group_count": 2},
+            ),
             ("segmented_min_f64", {"group_ids": [0, 2], "values": [1.0, 2.0], "group_count": 2}),
             ("segmented_max_f64", {"group_ids": [0, 2], "values": [1.0, 2.0], "group_count": 2}),
             (
@@ -362,6 +380,15 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
                 {
                     "group_ids": torch.tensor([0, 2], dtype=torch.int64, device="cuda"),
                     "values": torch.tensor([1.0, 2.0], dtype=torch.float64, device="cuda"),
+                    "group_count": 2,
+                },
+            ),
+            (
+                "grouped_vector_sum_f64x2",
+                {
+                    "group_ids": torch.tensor([0, 2], dtype=torch.int64, device="cuda"),
+                    "values_x": torch.tensor([1.0, 2.0], dtype=torch.float64, device="cuda"),
+                    "values_y": torch.tensor([3.0, 4.0], dtype=torch.float64, device="cuda"),
                     "group_count": 2,
                 },
             ),

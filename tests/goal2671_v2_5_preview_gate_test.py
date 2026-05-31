@@ -35,6 +35,7 @@ class Goal2671V25PreviewGateTest(unittest.TestCase):
             (
                 "segmented_count_i64",
                 "segmented_sum_f64",
+                "grouped_vector_sum_f64x2",
                 "segmented_min_f64",
                 "segmented_max_f64",
                 "compact_mask_i64",
