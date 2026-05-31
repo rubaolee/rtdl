@@ -832,6 +832,15 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
         raise ValueError("batched RTDL path supports backend='optix' or backend='embree'")
     if backend == "embree" and result_mode != "ranked-summary-raw":
         raise ValueError("Embree batched RTNN path currently supports result_mode='ranked-summary-raw'")
+    execution_path_plan = (
+        rt.plan_v2_5_fixed_radius_aggregate_execution_path(
+            requires_partner_continuation=result_mode == same_stream_graph_mode,
+            backend=backend,
+            partner="cupy_conformance",
+        )
+        if result_mode in graph_modes
+        else None
+    )
     aggregate_batch_requests = _aggregate_batch_requests(args, base_radius=radius, base_k_max=k_max)
     max_prepared_radius = (
         max(request["radius"] for request in aggregate_batch_requests)
@@ -1090,6 +1099,7 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
         "ranked_aggregate_summary": ranked_aggregate_summary,
         "ranked_aggregate_batch_summaries": ranked_aggregate_batch_summaries,
         "same_stream_entrypoint_metadata": same_stream_entrypoint_metadata,
+        "execution_path_plan": execution_path_plan,
         "batch_phase_timings": batch_phase_timings,
         "error": error,
         "contract": {
@@ -1116,6 +1126,9 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
             ),
             "prepared_cuda_graph_replay": result_mode in graph_modes,
             "same_stream_partner_consumer": result_mode == same_stream_graph_mode,
+            "execution_path_policy_version": (
+                execution_path_plan["policy_version"] if execution_path_plan is not None else None
+            ),
         },
         "claim_boundary": {
             "paper_equivalent_rtnn_row": False,
