@@ -60,6 +60,16 @@ py -3 -m py_compile src/rtdsl/triton_partner_continuation.py \
 clean
 ```
 
+Pod validation on `root@69.30.85.171:22167` after pulling commit `a5dbe3d5`:
+
+```text
+python3 -m unittest \
+  tests.goal2743_triton_group_id_validation_boundary_test \
+  tests.goal2662_v2_5_partner_continuation_contract_test \
+  tests.goal2696_v2_5_partner_support_matrix_test
+19 tests OK
+```
+
 ## Boundary
 
 - No native ABI changed.
