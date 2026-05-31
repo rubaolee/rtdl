@@ -115,6 +115,16 @@ Consensus: docs/reports/goal2804_v2_5_clean_artifact_metadata_refresh_consensus_
 Claude was attempted, but wrote no review output before the stuck process was
 stopped; it is not counted for Goal2804 consensus.
 
+Final clean pod validation after consensus commit:
+
+```text
+Commit: 1d80710e
+Command: python3 -m unittest [same 11-test-module slice]
+
+Ran 56 tests in 0.008s
+OK
+```
+
 This test verifies:
 
 - all four Tier B clean artifacts are `pass`;
