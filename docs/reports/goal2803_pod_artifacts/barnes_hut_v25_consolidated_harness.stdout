@@ -1,0 +1,243 @@
+{
+  "backends": {
+    "embree": {
+      "backend": "embree",
+      "body_count": 512,
+      "exact_opening_test_count": 11058,
+      "external_sec_median": 0.7624906104756519,
+      "force_interpretation_sec_median": 0.335309338523075,
+      "force_row_count": 512,
+      "frontier_lowering_sec_median": 0.28658078564330935,
+      "frontier_row_count": 54178,
+      "membership_wrapper_sec_median": 0.15695604600477964,
+      "native_generic_symbol": "rtdl_embree_columnar_payload_multi_predicate_scan",
+      "near_zone_candidate_row_count": 13106,
+      "rows_match_reference": true,
+      "rt_core_accelerated": false,
+      "safe_far_accept_count": 13266,
+      "total_sec_median": 0.7495506454724818,
+      "tree_build_sec_median": 0.006079631973989308,
+      "tree_node_count": 85,
+      "validation_skipped": false
+    },
+    "optix": {
+      "backend": "optix",
+      "body_count": 512,
+      "exact_opening_test_count": 11058,
+      "external_sec_median": 0.8933484670706093,
+      "force_interpretation_sec_median": 0.3421649660449475,
+      "force_row_count": 512,
+      "frontier_lowering_sec_median": 0.4072902405168861,
+      "frontier_row_count": 54178,
+      "membership_wrapper_sec_median": 0.2802604290191084,
+      "native_generic_symbol": "rtdl_optix_collect_prepared_aabb_index_2d_point_contains_rows",
+      "near_zone_candidate_row_count": 13106,
+      "rows_match_reference": true,
+      "rt_core_accelerated": true,
+      "safe_far_accept_count": 13266,
+      "total_sec_median": 0.8801338889170438,
+      "tree_build_sec_median": 0.005947967059910297,
+      "tree_node_count": 85,
+      "validation_skipped": false
+    }
+  },
+  "body_count": 512,
+  "bucket_size": 16,
+  "repeats": 2,
+  "rows_match_between_backends": true,
+  "speedups_optix_vs_embree": {
+    "force_interpretation": 0.9799639700080459,
+    "frontier_lowering": 0.7036279221412569,
+    "membership_wrapper": 0.5600364152517523,
+    "total": 0.8516325242228345
+  },
+  "theta": 0.5,
+  "validate": true
+}
+{
+  "backends": {
+    "embree": {
+      "backend": "embree",
+      "body_count": 2048,
+      "exact_opening_test_count": 56184,
+      "external_sec_median": 6.093222440453246,
+      "force_interpretation_sec_median": 2.626271760556847,
+      "force_row_count": 2048,
+      "frontier_lowering_sec_median": 3.3189852110808715,
+      "frontier_row_count": 514055,
+      "membership_wrapper_sec_median": 2.2969926031073555,
+      "native_generic_symbol": "rtdl_embree_columnar_payload_multi_predicate_scan",
+      "near_zone_candidate_row_count": 65400,
+      "rows_match_reference": null,
+      "rt_core_accelerated": false,
+      "safe_far_accept_count": 76812,
+      "total_sec_median": 5.970258985995315,
+      "tree_build_sec_median": 0.02152353140991181,
+      "tree_node_count": 201,
+      "validation_skipped": true
+    },
+    "optix": {
+      "backend": "optix",
+      "body_count": 2048,
+      "exact_opening_test_count": 56184,
+      "external_sec_median": 3.976897625019774,
+      "force_interpretation_sec_median": 2.68031348742079,
+      "force_row_count": 2048,
+      "frontier_lowering_sec_median": 1.1367482895730063,
+      "frontier_row_count": 514055,
+      "membership_wrapper_sec_median": 0.08914599206764251,
+      "native_generic_symbol": "rtdl_optix_collect_prepared_aabb_index_2d_point_contains_rows",
+      "near_zone_candidate_row_count": 65400,
+      "rows_match_reference": null,
+      "rt_core_accelerated": true,
+      "safe_far_accept_count": 76812,
+      "total_sec_median": 3.841082463040948,
+      "tree_build_sec_median": 0.020820461912080646,
+      "tree_node_count": 201,
+      "validation_skipped": true
+    }
+  },
+  "body_count": 2048,
+  "bucket_size": 32,
+  "repeats": 2,
+  "rows_match_between_backends": true,
+  "speedups_optix_vs_embree": {
+    "force_interpretation": 0.9798375350056734,
+    "frontier_lowering": 2.919718676091057,
+    "membership_wrapper": 25.766639080806183,
+    "total": 1.5543167957057393
+  },
+  "theta": 0.5,
+  "validate": false
+}
+{
+  "app": "barnes_hut",
+  "benchmark_track": "consolidated_membership_and_vector_sum",
+  "cases": [
+    {
+      "body_count": 512,
+      "bucket_size": 16
+    },
+    {
+      "body_count": 2048,
+      "bucket_size": 32
+    }
+  ],
+  "claim_boundary": {
+    "authors_code_comparison_authorized": false,
+    "canonical_consolidated_harness": true,
+    "native_engine_customization": false,
+    "paper_reproduction_claim_authorized": false,
+    "paper_speedup_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "triton_vector_sum_auto_selection_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "elapsed_sec": 25.534315722994506,
+  "entrypoint_version": "rtdl.goal2803.barnes_hut_v2_5_consolidated_harness.v1",
+  "goal": "Goal2803",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "max_optix_membership_speedup_vs_embree": 25.766639080806183,
+  "membership_rows": [
+    {
+      "body_count": 512,
+      "bucket_size": 16,
+      "embree_frontier_lowering_sec_median": 0.28658078564330935,
+      "embree_membership_wrapper_sec_median": 0.15695604600477964,
+      "embree_total_sec_median": 0.7495506454724818,
+      "frontier_row_count": 54178,
+      "near_zone_candidate_row_count": 13106,
+      "optix_frontier_lowering_sec_median": 0.4072902405168861,
+      "optix_frontier_lowering_speedup_vs_embree": 0.7036279221412569,
+      "optix_membership_wrapper_sec_median": 0.2802604290191084,
+      "optix_membership_wrapper_speedup_vs_embree": 0.5600364152517523,
+      "optix_rt_core_accelerated": true,
+      "optix_total_sec_median": 0.8801338889170438,
+      "optix_total_speedup_vs_embree": 0.8516325242228345,
+      "rows_match_between_backends": true,
+      "validation_skipped": false
+    },
+    {
+      "body_count": 2048,
+      "bucket_size": 32,
+      "embree_frontier_lowering_sec_median": 3.3189852110808715,
+      "embree_membership_wrapper_sec_median": 2.2969926031073555,
+      "embree_total_sec_median": 5.970258985995315,
+      "frontier_row_count": 514055,
+      "near_zone_candidate_row_count": 65400,
+      "optix_frontier_lowering_sec_median": 1.1367482895730063,
+      "optix_frontier_lowering_speedup_vs_embree": 2.919718676091057,
+      "optix_membership_wrapper_sec_median": 0.08914599206764251,
+      "optix_membership_wrapper_speedup_vs_embree": 25.766639080806183,
+      "optix_rt_core_accelerated": true,
+      "optix_total_sec_median": 3.841082463040948,
+      "optix_total_speedup_vs_embree": 1.5543167957057393,
+      "rows_match_between_backends": true,
+      "validation_skipped": true
+    }
+  ],
+  "min_optix_membership_speedup_vs_embree": 0.5600364152517523,
+  "repeats": 2,
+  "source_commit": "feed82707a0947e3876adfb3e96809075c9b7db0",
+  "source_dirty": [
+    "?? docs/reports/goal2803_pod_artifacts/",
+    "?? scripts/goal2803_barnes_hut_v25_consolidated_harness.py"
+  ],
+  "status": "pass",
+  "triton_vector_sum_auto_selection_allowed": false,
+  "vector_sum": {
+    "group_count": 4096,
+    "matches_torch": true,
+    "row_count": 65536,
+    "rows_per_group": 16,
+    "status": "pass",
+    "torch_faster": true,
+    "torch_median_sec": 0.0005316659808158875,
+    "torch_metadata": {
+      "adapter": "grouped_vector_sum_2d_partner_columns",
+      "claim_boundary": "Generic grouped vector-sum adapter over partner-owned columns. It does not call native RT traversal, does not authorize true zero-copy wording, and is preview integration evidence only.",
+      "direct_device_handoff_authorized": false,
+      "group_count": 4096,
+      "input_contract": "caller_supplied_grouped_vector_rows_2d",
+      "native_engine_row_contract": "not_called_partner_continuation_only",
+      "partner": "torch",
+      "partner_reference_contract": "generic_grouped_vector_sum_f64x2",
+      "row_count": 65536,
+      "rt_core_speedup_claim_authorized": false,
+      "v2_5_partner_continuation_operation": null,
+      "v2_5_release_authorized": false,
+      "v2_5_triton_adapter_kernel": null,
+      "v2_5_triton_global_atomic_add_used": null,
+      "v2_5_triton_offset_groups_per_program": null,
+      "v2_5_triton_offset_program_count": null,
+      "v2_5_triton_presegmented_offsets_used": false,
+      "v2_5_triton_preview_kernel_status": null,
+      "v2_5_triton_preview_kernel_used": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "triton_median_sec": 0.0036387370200827718,
+    "triton_metadata": {
+      "adapter": "grouped_vector_sum_2d_partner_columns",
+      "claim_boundary": "Generic grouped vector-sum adapter over partner-owned columns. It does not call native RT traversal, does not authorize true zero-copy wording, and is preview integration evidence only.",
+      "direct_device_handoff_authorized": false,
+      "group_count": 4096,
+      "input_contract": "caller_supplied_grouped_vector_rows_2d",
+      "native_engine_row_contract": "not_called_partner_continuation_only",
+      "partner": "triton",
+      "partner_reference_contract": "generic_grouped_vector_sum_f64x2",
+      "row_count": 65536,
+      "rt_core_speedup_claim_authorized": false,
+      "v2_5_partner_continuation_operation": "grouped_vector_sum_f64x2",
+      "v2_5_release_authorized": false,
+      "v2_5_triton_adapter_kernel": "grouped_vector_sum_f64x2_offsets_kernel",
+      "v2_5_triton_global_atomic_add_used": false,
+      "v2_5_triton_offset_groups_per_program": 1,
+      "v2_5_triton_offset_program_count": 4096,
+      "v2_5_triton_presegmented_offsets_used": true,
+      "v2_5_triton_preview_kernel_status": "preview_not_promoted",
+      "v2_5_triton_preview_kernel_used": true,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "triton_over_torch_ratio": 6.844028302316456
+  }
+}
