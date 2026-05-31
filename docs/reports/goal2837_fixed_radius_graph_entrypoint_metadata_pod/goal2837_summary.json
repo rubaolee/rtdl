@@ -1,0 +1,19 @@
+{
+  "elapsed_same_stream_seconds": 0.17878216807730496,
+  "entrypoint_descriptor_count": 1,
+  "entrypoint_fallback_reasons": [],
+  "entrypoint_fallback_required": false,
+  "entrypoint_plan_status": "accepted_preview",
+  "entrypoint_resolved_partner": "cupy_conformance",
+  "entrypoint_runtime_action": "execute_preview_with_explicit_descriptor_plan",
+  "goal": "Goal2837",
+  "host_partial_materialization_before_consumer": false,
+  "host_scalar_read_before_consumer": false,
+  "mismatches": [],
+  "ok": true,
+  "point_count": 4096,
+  "producer_consumer_stream_ordering": "same_cuda_stream",
+  "public_speedup_claim_authorized": false,
+  "request_count": 4,
+  "true_zero_copy_authorized": false
+}
