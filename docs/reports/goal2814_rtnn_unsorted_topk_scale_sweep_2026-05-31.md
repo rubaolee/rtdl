@@ -28,6 +28,14 @@ OptiX SDK: /root/vendor/optix-sdk
 OptiX library: /root/rtdl_goal2785_work/build/librtdl_optix.so
 ```
 
+Final clean-head guard after report/artifact commit:
+
+```text
+commit: 1551b8bfdd0fe9f326351ba896738f3b3a6c929b
+source_dirty: []
+focused tests: 10 passed
+```
+
 Harness:
 
 ```text
