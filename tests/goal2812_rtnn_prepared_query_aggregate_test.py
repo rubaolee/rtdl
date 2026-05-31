@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import unittest
 from pathlib import Path
 
@@ -12,6 +13,11 @@ RUNTIME = ROOT / "src" / "rtdsl" / "optix_runtime.py"
 INIT = ROOT / "src" / "rtdsl" / "__init__.py"
 RUNNER = ROOT / "scripts" / "goal2348_rtnn_v2_2_external_runner.py"
 HARNESS = ROOT / "scripts" / "goal2800_rtnn_v25_live_ranked_summary_harness.py"
+REPORT = ROOT / "docs" / "reports" / "goal2812_rtnn_prepared_query_aggregate_2026-05-31.md"
+ARTIFACT_DIR = ROOT / "docs" / "reports" / "goal2812_rtnn_prepared_query_aggregate_pod"
+ARTIFACT_32768 = ARTIFACT_DIR / "rtnn_prepared_query_median_f32_32768.json"
+ARTIFACT_65536 = ARTIFACT_DIR / "rtnn_prepared_query_median_f32_65536.json"
+EXPECTED_COMMIT = "aaf8d5799b69c61b47c4c467e777c1065ea7375f"
 
 
 class Goal2812RtnnPreparedQueryAggregateTest(unittest.TestCase):
@@ -48,6 +54,33 @@ class Goal2812RtnnPreparedQueryAggregateTest(unittest.TestCase):
         self.assertIn("device_resident_query_points", runner)
         self.assertIn("ranked-summary-aggregate-prepared-query-float32", harness)
         self.assertIn("prepared_query_aggregate_float32_median", harness)
+
+    def test_pod_artifacts_are_clean_query_resident_and_correct(self) -> None:
+        for artifact in (ARTIFACT_32768, ARTIFACT_65536):
+            payload = json.loads(artifact.read_text(encoding="utf-8"))
+            with self.subTest(artifact=artifact.name):
+                self.assertEqual(payload["status"], "pass")
+                self.assertEqual(payload["source_commit"], EXPECTED_COMMIT)
+                self.assertEqual(payload["source_dirty"], [])
+                self.assertIn("prepared_query_aggregate_float32_median", payload["harness_version"])
+                for row in payload["rows"]:
+                    phase = row["rtdl_phase_summary"]
+                    self.assertEqual(row["contract"]["mode"], "ranked-summary-aggregate-prepared-query-float32")
+                    self.assertTrue(row["contract"]["prepared_query_points"])
+                    self.assertEqual(row["rtdl_elapsed_statistic"], "median")
+                    self.assertTrue(row["ranked_aggregate_matches_cupy_grid"])
+                    self.assertEqual(float(phase["upload_sec"]), 0.0)
+                    self.assertTrue(all(mode.startswith("prepared_query_uniform_cell") for mode in phase["modes"]))
+                    self.assertLess(float(row["cupy_grid_over_rtdl_elapsed_ratio"]), 1.0)
+
+    def test_report_keeps_boundary_and_names_remaining_work(self) -> None:
+        report = REPORT.read_text(encoding="utf-8")
+
+        self.assertIn("accept-with-boundary", report)
+        self.assertIn("upload_sec: 0.0", report)
+        self.assertIn("No RTDL-beats-CuPy claim is authorized", report)
+        self.assertIn("near-neutral rather than dramatic", report)
+        self.assertIn("cooperative/tiled top-k reducer", report)
 
 
 if __name__ == "__main__":
