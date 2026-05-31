@@ -6,7 +6,7 @@ import rtdsl as rt
 
 
 class Goal2743TritonGroupIdValidationBoundaryTest(unittest.TestCase):
-    def test_triton_descriptors_expose_host_scalar_sync_validation_boundary(self) -> None:
+    def test_triton_descriptors_expose_default_host_scalar_sync_validation_boundary(self) -> None:
         for operation in (
             rt.TRITON_SEGMENTED_COUNT_I64_OPERATION,
             rt.TRITON_SEGMENTED_SUM_F64_OPERATION,
@@ -21,7 +21,8 @@ class Goal2743TritonGroupIdValidationBoundaryTest(unittest.TestCase):
             self.assertEqual(validation["mode"], "torch_cuda_precheck_host_scalar_sync")
             self.assertTrue(validation["checked_before_kernel_launch"])
             self.assertTrue(validation["uses_host_scalar_sync"])
-            self.assertFalse(validation["device_error_flag_available"])
+            self.assertTrue(validation["device_error_flag_available"])
+            self.assertFalse(validation["device_error_flag_used_by_default"])
             self.assertFalse(validation["true_zero_copy_claim_authorized"])
 
     def test_compact_mask_descriptor_marks_group_id_validation_not_applicable(self) -> None:
@@ -41,6 +42,7 @@ class Goal2743TritonGroupIdValidationBoundaryTest(unittest.TestCase):
 
         self.assertIn("TRITON_GROUP_ID_BOUNDS_VALIDATION_MODE", source)
         self.assertIn("torch_cuda_precheck_host_scalar_sync", source)
+        self.assertIn("triton_device_error_flag_no_host_read", source)
         self.assertIn("device_error_flag_available", source)
         self.assertIn("true_zero_copy_claim_authorized", source)
 

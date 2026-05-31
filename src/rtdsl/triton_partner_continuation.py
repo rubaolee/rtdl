@@ -24,9 +24,12 @@ TRITON_GROUPED_ARGMIN_F64_OPERATION = "grouped_argmin_f64"
 TRITON_BOUNDED_COLLECT_FINALIZE_I64_OPERATION = "bounded_collect_finalize_i64"
 TRITON_PARTNER_CONTINUATION_STATUS = V2_5_STATUS_PREVIEW_NOT_PROMOTED
 TRITON_TENSOR_CARRIER = "torch_cuda_tensor_for_triton_launch"
+TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_I64_OPERATION = "group_id_bounds_device_flag_i64"
 TRITON_GROUP_ID_BOUNDS_VALIDATION_MODE = "torch_cuda_precheck_host_scalar_sync"
+TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_MODE = "triton_device_error_flag_no_host_read"
+TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_HOST_RAISE_MODE = "triton_device_error_flag_host_scalar_raise"
 TRITON_GROUP_ID_BOUNDS_NOT_APPLICABLE = "not_applicable_no_group_ids"
-TRITON_GROUP_ID_BOUNDS_DEVICE_ERROR_FLAG_AVAILABLE = False
+TRITON_GROUP_ID_BOUNDS_DEVICE_ERROR_FLAG_AVAILABLE = True
 
 
 def triton_partner_available() -> bool:
@@ -100,9 +103,45 @@ def describe_triton_bounded_collect_finalize_i64() -> dict[str, object]:
     return descriptor
 
 
+def describe_triton_group_id_bounds_device_flag_i64() -> dict[str, object]:
+    """Describe the optional device-resident group-id validation helper."""
+
+    return {
+        "contract_version": V2_5_PARTNER_CONTINUATION_VERSION,
+        "operation": TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_I64_OPERATION,
+        "partner": "triton",
+        "status": TRITON_PARTNER_CONTINUATION_STATUS,
+        "phase": "partner_validation",
+        "requires_cuda": True,
+        "tensor_carrier": TRITON_TENSOR_CARRIER,
+        "tensor_carrier_is_partner": False,
+        "requires_torch_tensor_inputs": True,
+        "input_columns": ("group_ids:int64",),
+        "output_columns": ("invalid_count:int64[1]",),
+        "triton_kernel_available": True,
+        "raw_kernel_required": False,
+        "replaces_rt_traversal": False,
+        "promoted_performance_path": False,
+        "rt_core_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "device_error_flag_available": True,
+        "group_id_bounds_validation": _triton_group_id_bounds_validation_metadata(
+            TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_I64_OPERATION,
+            mode=TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_MODE,
+        ),
+        "claim_boundary": (
+            "This helper writes an invalid-group counter on device for future "
+            "device-resident continuation planning. Raising a Python exception "
+            "from that counter still requires an explicit host scalar read."
+        ),
+    }
+
+
 def describe_triton_partner_continuation(operation: str) -> dict[str, object]:
     """Describe the Triton-owned v2.5 continuation for any generic operation."""
 
+    if operation == TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_I64_OPERATION:
+        return describe_triton_group_id_bounds_device_flag_i64()
     if operation == TRITON_SEGMENTED_COUNT_I64_OPERATION:
         return describe_triton_segmented_count_i64()
     if operation == TRITON_SEGMENTED_SUM_F64_OPERATION:
@@ -147,6 +186,7 @@ def run_triton_partner_continuation(
     inputs: Mapping[str, object],
     *,
     block_size: int = 256,
+    group_id_bounds_validation_mode: str = TRITON_GROUP_ID_BOUNDS_VALIDATION_MODE,
     allow_reference_fallback: bool = False,
 ) -> dict[str, object]:
     """Run a Triton v2.5 continuation when a preview kernel exists.
@@ -164,6 +204,7 @@ def run_triton_partner_continuation(
                 inputs["group_ids"],
                 group_count=int(inputs["group_count"]),
                 block_size=block_size,
+                group_id_bounds_validation_mode=group_id_bounds_validation_mode,
             )
         except (ModuleNotFoundError, RuntimeError) as exc:
             if allow_reference_fallback and _is_triton_environment_error(exc):
@@ -176,6 +217,7 @@ def run_triton_partner_continuation(
                 inputs["values"],
                 group_count=int(inputs["group_count"]),
                 block_size=block_size,
+                group_id_bounds_validation_mode=group_id_bounds_validation_mode,
             )
         except (ModuleNotFoundError, RuntimeError) as exc:
             if allow_reference_fallback and _is_triton_environment_error(exc):
@@ -188,6 +230,7 @@ def run_triton_partner_continuation(
                 inputs["values"],
                 group_count=int(inputs["group_count"]),
                 block_size=block_size,
+                group_id_bounds_validation_mode=group_id_bounds_validation_mode,
             )
         except (ModuleNotFoundError, RuntimeError) as exc:
             if allow_reference_fallback and _is_triton_environment_error(exc):
@@ -200,6 +243,7 @@ def run_triton_partner_continuation(
                 inputs["values"],
                 group_count=int(inputs["group_count"]),
                 block_size=block_size,
+                group_id_bounds_validation_mode=group_id_bounds_validation_mode,
             )
         except (ModuleNotFoundError, RuntimeError) as exc:
             if allow_reference_fallback and _is_triton_environment_error(exc):
@@ -224,6 +268,7 @@ def run_triton_partner_continuation(
                 inputs["scores"],
                 group_count=int(inputs["group_count"]),
                 block_size=block_size,
+                group_id_bounds_validation_mode=group_id_bounds_validation_mode,
             )
         except (ModuleNotFoundError, RuntimeError) as exc:
             if allow_reference_fallback and _is_triton_environment_error(exc):
@@ -238,6 +283,7 @@ def run_triton_partner_continuation(
                 k=int(inputs["k"]),
                 total_row_capacity=inputs.get("total_row_capacity"),
                 block_size=block_size,
+                group_id_bounds_validation_mode=group_id_bounds_validation_mode,
             )
         except (ModuleNotFoundError, RuntimeError) as exc:
             if allow_reference_fallback and _is_triton_environment_error(exc):
@@ -302,6 +348,7 @@ def run_triton_segmented_count_i64(
     *,
     group_count: int,
     block_size: int = 256,
+    group_id_bounds_validation_mode: str = TRITON_GROUP_ID_BOUNDS_VALIDATION_MODE,
 ) -> dict[str, object]:
     """Run the v2.5 Triton segmented-count continuation pilot."""
 
@@ -312,6 +359,7 @@ def run_triton_segmented_count_i64(
         group_count=group_count,
         block_size=block_size,
         torch=torch,
+        validation_mode=group_id_bounds_validation_mode,
     )
 
     torch.cuda.synchronize(group_ids.device)
@@ -334,6 +382,7 @@ def run_triton_segmented_count_i64(
         outputs={"counts": output},
         elapsed=elapsed,
         source="run_triton_segmented_count_i64",
+        group_id_bounds_validation_mode=group_id_bounds_validation_mode,
     )
 
 
@@ -343,6 +392,7 @@ def run_triton_segmented_sum_f64(
     *,
     group_count: int,
     block_size: int = 256,
+    group_id_bounds_validation_mode: str = TRITON_GROUP_ID_BOUNDS_VALIDATION_MODE,
 ) -> dict[str, object]:
     """Run the first v2.5 Triton continuation kernel.
 
@@ -365,6 +415,7 @@ def run_triton_segmented_sum_f64(
         group_count=group_count,
         block_size=block_size,
         torch=torch,
+        validation_mode=group_id_bounds_validation_mode,
     )
 
     torch.cuda.synchronize(group_ids.device)
@@ -388,6 +439,7 @@ def run_triton_segmented_sum_f64(
         outputs={"sums": output},
         elapsed=elapsed,
         source="run_triton_segmented_sum_f64",
+        group_id_bounds_validation_mode=group_id_bounds_validation_mode,
     )
 
 
@@ -397,6 +449,7 @@ def run_triton_segmented_min_f64(
     *,
     group_count: int,
     block_size: int = 256,
+    group_id_bounds_validation_mode: str = TRITON_GROUP_ID_BOUNDS_VALIDATION_MODE,
 ) -> dict[str, object]:
     """Run the v2.5 Triton segmented-min continuation preview."""
 
@@ -405,6 +458,7 @@ def run_triton_segmented_min_f64(
         values,
         group_count=group_count,
         block_size=block_size,
+        group_id_bounds_validation_mode=group_id_bounds_validation_mode,
         reduce="min",
     )
 
@@ -415,6 +469,7 @@ def run_triton_segmented_max_f64(
     *,
     group_count: int,
     block_size: int = 256,
+    group_id_bounds_validation_mode: str = TRITON_GROUP_ID_BOUNDS_VALIDATION_MODE,
 ) -> dict[str, object]:
     """Run the v2.5 Triton segmented-max continuation preview."""
 
@@ -423,6 +478,7 @@ def run_triton_segmented_max_f64(
         values,
         group_count=group_count,
         block_size=block_size,
+        group_id_bounds_validation_mode=group_id_bounds_validation_mode,
         reduce="max",
     )
 
@@ -433,6 +489,7 @@ def _run_triton_segmented_minmax_f64(
     *,
     group_count: int,
     block_size: int,
+    group_id_bounds_validation_mode: str,
     reduce: str,
 ) -> dict[str, object]:
     triton, torch, tl = _import_triton_stack()
@@ -447,6 +504,7 @@ def _run_triton_segmented_minmax_f64(
         group_count=group_count,
         block_size=block_size,
         torch=torch,
+        validation_mode=group_id_bounds_validation_mode,
     )
 
     operation = TRITON_SEGMENTED_MIN_F64_OPERATION if reduce == "min" else TRITON_SEGMENTED_MAX_F64_OPERATION
@@ -486,6 +544,7 @@ def _run_triton_segmented_minmax_f64(
         },
         elapsed=elapsed,
         source=f"run_triton_segmented_{reduce}_f64",
+        group_id_bounds_validation_mode=group_id_bounds_validation_mode,
         extra_metadata={"tensor_carrier_compaction_used": True},
     )
 
@@ -568,6 +627,7 @@ def run_triton_grouped_argmin_f64(
     *,
     group_count: int,
     block_size: int = 256,
+    group_id_bounds_validation_mode: str = TRITON_GROUP_ID_BOUNDS_VALIDATION_MODE,
 ) -> dict[str, object]:
     """Run the v2.5 Triton grouped-argmin continuation preview."""
 
@@ -584,6 +644,7 @@ def run_triton_grouped_argmin_f64(
         group_count=group_count,
         block_size=block_size,
         torch=torch,
+        validation_mode=group_id_bounds_validation_mode,
     )
 
     torch.cuda.synchronize(group_ids.device)
@@ -641,6 +702,7 @@ def run_triton_grouped_argmin_f64(
         },
         elapsed=elapsed,
         source="run_triton_grouped_argmin_f64",
+        group_id_bounds_validation_mode=group_id_bounds_validation_mode,
         extra_metadata={
             "tie_break": "lowest_score_then_lowest_item_id",
             "tensor_carrier_compaction_used": True,
@@ -656,6 +718,7 @@ def run_triton_bounded_collect_finalize_i64(
     k: int,
     total_row_capacity: int | None = None,
     block_size: int = 256,
+    group_id_bounds_validation_mode: str = TRITON_GROUP_ID_BOUNDS_VALIDATION_MODE,
 ) -> dict[str, object]:
     """Run the v2.5 Triton bounded collect/finalize continuation preview.
 
@@ -676,6 +739,7 @@ def run_triton_bounded_collect_finalize_i64(
         group_count=group_count,
         block_size=block_size,
         torch=torch,
+        validation_mode=group_id_bounds_validation_mode,
     )
     if total_row_capacity is not None and row_count > int(total_row_capacity):
         raise PartnerContinuationOverflowError(
@@ -734,6 +798,7 @@ def run_triton_bounded_collect_finalize_i64(
         },
         elapsed=elapsed,
         source="run_triton_bounded_collect_finalize_i64",
+        group_id_bounds_validation_mode=group_id_bounds_validation_mode,
         extra_metadata={
             "failure_mode": "fail_closed_overflow",
             "within_group_order": "unspecified_nonsemantic",
@@ -742,12 +807,88 @@ def run_triton_bounded_collect_finalize_i64(
     )
 
 
+def run_triton_group_id_bounds_device_flag_i64(
+    group_ids: Any,
+    *,
+    group_count: int,
+    block_size: int = 256,
+) -> dict[str, object]:
+    """Write a device-resident invalid-group counter for v2.5 Triton previews."""
+
+    triton, torch, tl = _import_triton_stack()
+    _validate_torch_cuda_vector(group_ids, name="group_ids", dtype=torch.int64)
+    group_count, block_size, row_count = _validate_group_run_shape(
+        group_ids,
+        group_count=group_count,
+        block_size=block_size,
+        torch=torch,
+        validation_mode=TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_MODE,
+    )
+
+    torch.cuda.synchronize(group_ids.device)
+    started = perf_counter()
+    invalid_count = torch.zeros((1,), dtype=torch.int64, device=group_ids.device)
+    if row_count:
+        grid = (triton.cdiv(row_count, block_size),)
+        _triton_group_id_bounds_device_flag_i64_kernel(tl)[grid](
+            group_ids,
+            invalid_count,
+            row_count,
+            group_count,
+            BLOCK_SIZE=block_size,
+        )
+    torch.cuda.synchronize(group_ids.device)
+    elapsed = perf_counter() - started
+
+    return _triton_run_result(
+        operation=TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_I64_OPERATION,
+        outputs={"invalid_count": invalid_count},
+        elapsed=elapsed,
+        source="run_triton_group_id_bounds_device_flag_i64",
+        group_id_bounds_validation_mode=TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_MODE,
+        extra_metadata={
+            "phase": "partner_validation",
+            "device_error_flag_available": True,
+            "host_scalar_sync_for_exception": False,
+            "strict_exception_requires_host_read": True,
+        },
+    )
+
+
+def assert_triton_group_ids_in_bounds_device_flag_i64(
+    group_ids: Any,
+    *,
+    group_count: int,
+    block_size: int = 256,
+) -> dict[str, object]:
+    """Enforce group-id bounds through the device flag, then a host exception read."""
+
+    result = run_triton_group_id_bounds_device_flag_i64(
+        group_ids,
+        group_count=group_count,
+        block_size=block_size,
+    )
+    invalid_count = int(result["outputs"]["invalid_count"].item())
+    result["group_id_bounds_validation"] = _triton_group_id_bounds_validation_metadata(
+        TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_I64_OPERATION,
+        mode=TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_HOST_RAISE_MODE,
+    )
+    result["host_scalar_sync_for_exception"] = True
+    if invalid_count:
+        raise ValueError(
+            "group_ids must be in [0, group_count); "
+            f"device_error_flag invalid_count={invalid_count}"
+        )
+    return result
+
+
 def _triton_run_result(
     *,
     operation: str,
     outputs: dict[str, object],
     elapsed: float,
     source: str,
+    group_id_bounds_validation_mode: str = TRITON_GROUP_ID_BOUNDS_VALIDATION_MODE,
     extra_metadata: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
     result = {
@@ -770,14 +911,21 @@ def _triton_run_result(
         "tensor_carrier_is_partner": False,
         "cupy_required": False,
         "pytorch_partner_required": False,
-        "group_id_bounds_validation": _triton_group_id_bounds_validation_metadata(operation),
+        "group_id_bounds_validation": _triton_group_id_bounds_validation_metadata(
+            operation,
+            mode=group_id_bounds_validation_mode,
+        ),
     }
     if extra_metadata:
         result.update(dict(extra_metadata))
     return result
 
 
-def _triton_group_id_bounds_validation_metadata(operation: str) -> dict[str, object]:
+def _triton_group_id_bounds_validation_metadata(
+    operation: str,
+    *,
+    mode: str = TRITON_GROUP_ID_BOUNDS_VALIDATION_MODE,
+) -> dict[str, object]:
     if operation == TRITON_COMPACT_MASK_I64_OPERATION:
         return {
             "mode": TRITON_GROUP_ID_BOUNDS_NOT_APPLICABLE,
@@ -786,16 +934,47 @@ def _triton_group_id_bounds_validation_metadata(operation: str) -> dict[str, obj
             "device_error_flag_available": False,
             "claim_boundary": "compact_mask_i64 has no group-id bounds contract",
         }
+    if mode == TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_MODE:
+        return {
+            "mode": TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_MODE,
+            "checked_before_kernel_launch": True,
+            "uses_host_scalar_sync": False,
+            "device_error_flag_available": True,
+            "host_scalar_sync_required_for_python_exception": True,
+            "true_zero_copy_claim_authorized": False,
+            "claim_boundary": (
+                "The Triton helper writes an invalid-group counter on device "
+                "without reading it on the host. Treating that counter as a "
+                "Python exception still requires a separate host scalar read."
+            ),
+        }
+    if mode == TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_HOST_RAISE_MODE:
+        return {
+            "mode": TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_HOST_RAISE_MODE,
+            "checked_before_kernel_launch": True,
+            "uses_host_scalar_sync": True,
+            "device_error_flag_available": True,
+            "device_error_flag_used": True,
+            "true_zero_copy_claim_authorized": False,
+            "claim_boundary": (
+                "Bounds are detected by a Triton device counter, then read "
+                "back as a host scalar to preserve Python fail-closed errors. "
+                "This is not a zero-copy validation path."
+            ),
+        }
     return {
         "mode": TRITON_GROUP_ID_BOUNDS_VALIDATION_MODE,
         "checked_before_kernel_launch": True,
         "uses_host_scalar_sync": True,
         "device_error_flag_available": TRITON_GROUP_ID_BOUNDS_DEVICE_ERROR_FLAG_AVAILABLE,
+        "device_error_flag_mode": TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_MODE,
+        "device_error_flag_used_by_default": False,
         "true_zero_copy_claim_authorized": False,
         "claim_boundary": (
             "v2.5 Triton preview kernels reject out-of-range group ids before "
-            "launch via a Torch CUDA predicate and host scalar sync. This is "
-            "correctness protection, not a device-resident error-flag path."
+            "launch via a Torch CUDA predicate and host scalar sync. A "
+            "separate device-error-flag helper is available, but the default "
+            "strict Python exception path still reads a host scalar."
         ),
     }
 
@@ -944,6 +1123,20 @@ def _triton_bounded_collect_scatter_i64_kernel(tl):
     return kernel
 
 
+def _triton_group_id_bounds_device_flag_i64_kernel(tl):
+    @__import__("triton").jit
+    def kernel(group_ids, invalid_count, row_count: tl.constexpr, group_count: tl.constexpr, BLOCK_SIZE: tl.constexpr):
+        program_id = tl.program_id(0)
+        offsets = program_id * BLOCK_SIZE + tl.arange(0, BLOCK_SIZE)
+        mask = offsets < row_count
+        groups = tl.load(group_ids + offsets, mask=mask, other=0)
+        invalid = mask & ((groups < 0) | (groups >= group_count))
+        local_count = tl.sum(tl.where(invalid, 1, 0), axis=0)
+        tl.atomic_add(invalid_count, local_count, sem="relaxed", mask=local_count != 0)
+
+    return kernel
+
+
 def _import_triton_stack():
     try:
         import triton
@@ -967,6 +1160,7 @@ def _validate_group_run_shape(
     group_count: int,
     block_size: int,
     torch: Any,
+    validation_mode: str = TRITON_GROUP_ID_BOUNDS_VALIDATION_MODE,
 ) -> tuple[int, int, int]:
     group_count = int(group_count)
     if group_count < 0:
@@ -975,6 +1169,18 @@ def _validate_group_run_shape(
     if block_size <= 0:
         raise ValueError("block_size must be positive")
     row_count = int(group_ids.numel())
+    if validation_mode == TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_MODE:
+        return group_count, block_size, row_count
+    if validation_mode == TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_HOST_RAISE_MODE:
+        if row_count:
+            assert_triton_group_ids_in_bounds_device_flag_i64(
+                group_ids,
+                group_count=group_count,
+                block_size=block_size,
+            )
+        return group_count, block_size, row_count
+    if validation_mode != TRITON_GROUP_ID_BOUNDS_VALIDATION_MODE:
+        raise ValueError(f"unsupported group_id_bounds_validation_mode: {validation_mode}")
     if row_count and bool(torch.any((group_ids < 0) | (group_ids >= group_count)).item()):
         raise ValueError("group_ids must be in [0, group_count)")
     return group_count, block_size, row_count

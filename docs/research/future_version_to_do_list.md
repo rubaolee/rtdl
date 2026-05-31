@@ -98,11 +98,15 @@ Observation:
 - Goal2744 reduces the release-entrypoint risk from "unknown" to
   "present/audited", but native lifetime still needs broader hardware and
   failure-path validation.
+- Goal2748 added the first Triton device-resident group-id invalid-count flag
+  and an opt-in host-raise mode, but default grouped-operation enforcement still
+  preserves the conservative host-scalar exception boundary.
 
 Future work:
 
-- Add a device-resident group-id validation/error-flag primitive so partner
-  continuation can reject invalid ids without a host scalar sync.
+- Integrate device-resident group-id validation/error flags into a larger
+  no-host-read continuation plan; Goal2748 supplies the flag primitive, but
+  Python exception enforcement still reads a host scalar by design.
 - Add stream/event evidence that proves the OptiX producer and Triton consumer
   are ordered on real hardware without relying on device-wide synchronization.
 - Run multi-GPU and multi-driver same-pointer/lifetime validation before any
