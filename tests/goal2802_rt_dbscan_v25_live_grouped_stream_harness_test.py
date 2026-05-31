@@ -17,6 +17,13 @@ POD_ARTIFACT = (
     / "goal2802_pod_artifacts"
     / "rt_dbscan_v25_live_grouped_stream_32768_65536_131072.json"
 )
+CLEAN_POD_ARTIFACT = (
+    ROOT
+    / "docs"
+    / "reports"
+    / "goal2802_pod_artifacts"
+    / "rt_dbscan_v25_live_grouped_stream_32768_65536_131072_clean_from_git.json"
+)
 
 
 class Goal2802RTDBSCANV25LiveGroupedStreamHarnessTest(unittest.TestCase):
@@ -42,13 +49,15 @@ class Goal2802RTDBSCANV25LiveGroupedStreamHarnessTest(unittest.TestCase):
 
     def test_pod_artifact_records_signature_match_and_claim_boundary(self) -> None:
         text = POD_ARTIFACT.read_text(encoding="utf-8")
+        clean_text = CLEAN_POD_ARTIFACT.read_text(encoding="utf-8")
 
-        self.assertIn('"status": "pass"', text)
-        self.assertIn('"signatures_match": true', text)
-        self.assertIn('"grouped_stream_rt_core_accelerated": true', text)
-        self.assertIn('"grouped_stream_avoids_neighbor_rows_and_full_adjacency_stream": true', text)
-        self.assertIn('"paper_speedup_claim_authorized": false', text)
-        self.assertIn('"native_engine_customization": false', text)
+        for artifact_text in (text, clean_text):
+            self.assertIn('"status": "pass"', artifact_text)
+            self.assertIn('"signatures_match": true', artifact_text)
+            self.assertIn('"grouped_stream_rt_core_accelerated": true', artifact_text)
+            self.assertIn('"grouped_stream_avoids_neighbor_rows_and_full_adjacency_stream": true', artifact_text)
+            self.assertIn('"paper_speedup_claim_authorized": false', artifact_text)
+            self.assertIn('"native_engine_customization": false', artifact_text)
 
     def test_report_and_consensus_keep_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")
@@ -59,6 +68,8 @@ class Goal2802RTDBSCANV25LiveGroupedStreamHarnessTest(unittest.TestCase):
         self.assertIn("accept-with-boundary", consensus)
         self.assertIn("not a paper-reproduction claim", report)
         self.assertIn("CuPy prepared-grid", report)
+        self.assertIn("clean-from-Git pod validated", report)
+        self.assertIn("676844e4dc9d0883984827a2b6241781167020ef", consensus)
 
 
 if __name__ == "__main__":

@@ -23,16 +23,24 @@ Goal2802 is accepted with boundary:
 - public speedup, whole-app speedup, paper reproduction, paper-level speedup, broad DBSCAN speedup, pure Triton component, and native app-customization claims remain unauthorized;
 - pure Triton component auto-selection remains blocked until a generic component continuation beats the same-contract CuPy/grid/grouped-stream opponent.
 
+## Clean-From-Git Validation
+
+The first evidence artifact was produced by copying the new Goal2802 harness into a pod checkout at commit `afcea27599c4738cdee62b111e22c3111598efe8`. That first-run boundary is disclosed in the report and in the artifact `source_dirty` field.
+
+That boundary is now closed by a clean-from-Git pod rerun.
+
+Clean-from-Git validation:
+
+- commit: `676844e4dc9d0883984827a2b6241781167020ef`
+- GPU: NVIDIA RTX A5000, driver 570.211.01
+- OptiX build: pass
+- Goal2802 harness: pass, 3 rows
+- signatures match: true
+- grouped stream uses RT cores: true
+- grouped stream avoids neighbor rows and full directed adjacency stream: true
+- grouped-stream speedups vs prepared CuPy grid: 4.289x, 4.829x, 4.910x
+- focused pod test slice: 16 tests run, 16 passed
+
 ## Boundary
-
-The current evidence artifact was produced by copying the new Goal2802 harness into a pod checkout at commit `afcea27599c4738cdee62b111e22c3111598efe8`. That first-run boundary is disclosed in the report and in the artifact `source_dirty` field.
-
-Clean-from-Git validation remains required before final evidence closure:
-
-- fetch/reset the pod checkout to `origin/main` after the Goal2802 commit is pushed;
-- rebuild or verify `librtdl_optix.so`;
-- rerun the Goal2802 entrypoint from the committed file;
-- rerun the focused test slice;
-- record the clean artifact and commit hash in the Goal2802 report.
 
 This consensus does not authorize a paper, broad DBSCAN, whole-app, pure Triton, or public speedup claim. The accepted claim is narrower: the live harness exists, the same-contract comparison is current, the grouped-stream generic continuation is correct on the recorded fixtures, and the claim boundary is preserved.

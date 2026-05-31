@@ -2,9 +2,9 @@
 
 Date: 2026-05-31
 
-Status: implemented locally with first OptiX/CuPy pod evidence and external reviews.
+Status: implemented, reviewed, and clean-from-Git pod validated.
 
-Verdict: accept-with-boundary pending clean-from-Git rerun.
+Verdict: accept-with-boundary.
 
 ## Purpose
 
@@ -27,6 +27,8 @@ This is not a paper-reproduction claim and not a broad DBSCAN speedup claim. The
 | `src/rtdsl/v2_5_triton_app_migration.py` | Marks `rt_dbscan` as ready with Goal2802 while keeping pure Triton component auto-selection blocked. |
 | `docs/reports/goal2802_pod_artifacts/rt_dbscan_v25_live_grouped_stream_32768_65536_131072.json` | First pod evidence artifact. |
 | `docs/reports/goal2802_pod_artifacts/rt_dbscan_v25_live_grouped_stream_32768_65536_131072.stdout` | Captured stdout from the first pod run. |
+| `docs/reports/goal2802_pod_artifacts/rt_dbscan_v25_live_grouped_stream_32768_65536_131072_clean_from_git.json` | Clean-from-Git pod evidence artifact after the Goal2802 commit was pushed. |
+| `docs/reports/goal2802_pod_artifacts/rt_dbscan_v25_live_grouped_stream_32768_65536_131072_clean_from_git.stdout` | Captured stdout from the clean-from-Git pod run. |
 | `docs/reviews/goal2802_claude_review_rt_dbscan_live_grouped_stream_harness_2026-05-31.md` | Independent Claude review, verdict `accept-with-boundary`. |
 | `docs/reviews/goal2802_gemini_review_rt_dbscan_live_grouped_stream_harness_2026-05-31.md` | Independent Gemini review, verdict `accept-with-boundary`. |
 | `docs/reports/goal2802_rt_dbscan_v2_5_live_grouped_stream_harness_consensus_2026-05-31.md` | Codex+Claude+Gemini consensus for the current boundary. |
@@ -76,6 +78,29 @@ Artifact checks:
 - grouped stream does not materialize a full directed adjacency stream
 - minimum grouped-stream speedup vs prepared CuPy grid: 4.019x
 
+The clean-from-Git rerun was executed after the Goal2802 commit was pushed, on a pod checkout reset to `origin/main` at:
+
+```text
+676844e4dc9d0883984827a2b6241781167020ef
+```
+
+Clean-from-Git results:
+
+| Points | Prepared CuPy Grid Tail Median (s) | RT Count + Prepared Grid Tail Median (s) | RT Count Speedup | Grouped Stream Tail Median (s) | Grouped Native Tail Median (s) | Grouped Speedup | Status |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| 32,768 | 0.152686 | 0.137320 | 1.112x | 0.035597 | 0.021800 | 4.289x | pass |
+| 65,536 | 0.439252 | 0.342244 | 1.283x | 0.090953 | 0.065749 | 4.829x | pass |
+| 131,072 | 1.477062 | 0.962397 | 1.535x | 0.300814 | 0.251246 | 4.910x | pass |
+
+Clean artifact checks:
+
+- `status`: `pass`
+- signatures match across prepared CuPy grid, RT count bridge, and grouped stream
+- grouped stream uses RT cores
+- grouped stream does not materialize neighbor rows
+- grouped stream does not materialize a full directed adjacency stream
+- minimum grouped-stream speedup vs prepared CuPy grid: 4.289x
+
 ## Boundary
 
 Not claimed:
@@ -121,4 +146,12 @@ tests.goal2801_hausdorff_xhd_v25_canonical_entrypoint_test
 16 tests run, 16 passed.
 ```
 
-Clean-from-Git pod validation is still pending at the time of this revision.
+Clean-from-Git pod validation:
+
+```text
+commit: 676844e4dc9d0883984827a2b6241781167020ef
+GPU: NVIDIA RTX A5000, driver 570.211.01
+OptiX build: pass
+Goal2802 harness: pass, 3 rows
+Focused pod test slice: 16 tests run, 16 passed
+```
