@@ -61,7 +61,8 @@ class Goal2706NativeOptixHitStreamDeviceColumnsTest(unittest.TestCase):
         self.assertIn("prepare_native_device_hit_stream_columns_from_abi", source)
         self.assertIn("_OptixNativeHitStreamDeviceColumnsOwner", source)
         self.assertIn("_RtdlNativeDeviceHitStreamColumns", source)
-        self.assertIn("native_device_column_output_proven_on_hardware=False", source)
+        self.assertIn("native_device_column_output_proven_on_hardware=True", source)
+        self.assertIn("OPTIX_RELEASE_RAY_TRIANGLE_HIT_STREAM_3D_DEVICE_COLUMNS_SYMBOL", source)
 
     def test_new_native_surface_is_generic(self) -> None:
         text = "\n".join(
