@@ -43,7 +43,7 @@ class Goal2819RtnnBatchedPreparedAggregateContractTest(unittest.TestCase):
         self.assertIn("DevPtr d_aggregates", body)
         self.assertIn("DevPtr d_partials", body)
         self.assertIn("cuLaunchKernel(g_frn3d_grid_ranked_summary_aggregate_f32_direct.fn", body)
-        self.assertIn("cuLaunchKernel(g_frn3d_grid_ranked_summary_aggregate_f32_blocks.fn", body)
+        self.assertIn("cuLaunchKernel(g_frn3d_grid_ranked_summary_aggregate_f32_blocks_batch.fn", body)
         self.assertEqual(body.count("cuStreamSynchronize(nullptr)"), 2)
         self.assertIn("download(aggregates_out, d_aggregates.ptr, request_count)", body)
         self.assertIn("download(partials.data(), d_partials.ptr, partials.size())", body)
