@@ -17,6 +17,7 @@ from .v2_5_partner_support_matrix import plan_v2_5_partner_support
 GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION = "rtdl.rt_hit_stream_handoff.v2.5"
 GENERIC_HIT_STREAM_PARTNER_TRANSFER_PLAN_VERSION = "rtdl.hit_stream_partner_transfer_plan.v2.5"
 GENERIC_HIT_STREAM_ASYNC_PROMOTION_REQUIREMENTS_VERSION = "rtdl.hit_stream_async_promotion_requirements.v2.5"
+GENERIC_HIT_STREAM_NEUTRAL_SEAM_RECONCILIATION_VERSION = "rtdl.hit_stream_neutral_seam_reconciliation.v2.5"
 GENERIC_HIT_STREAM_HANDOFF_API_MATURITY = "experimental_host_bridge_contract"
 GENERIC_DEVICE_RESIDENT_HIT_STREAM_COLUMNS = ("ray_ids:int64", "primitive_ids:int64")
 GENERIC_TYPED_PRIMITIVE_PAYLOAD_COLUMNS = ("primitive_group_ids:int64", "primitive_values:float64")
@@ -914,6 +915,8 @@ def describe_v2_5_hit_stream_torch_carrier_adapter(
     no_copy_candidate = not unsupported and not host_copy_required
     return {
         "contract_version": GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION,
+        "neutral_seam_reconciliation_version": GENERIC_HIT_STREAM_NEUTRAL_SEAM_RECONCILIATION_VERSION,
+        "neutral_buffer_seam_contract_version": V2_5_NEUTRAL_BUFFER_SEAM_VERSION,
         "adapter_modes": GENERIC_TORCH_CARRIER_ADAPTER_MODES,
         "columns": tuple(descriptors),
         "all_columns_adaptable_to_torch_carrier": not unsupported,
@@ -921,6 +924,10 @@ def describe_v2_5_hit_stream_torch_carrier_adapter(
         "raw_cuda_adapter_required": raw_cuda_adapter_required,
         "requires_torch_runtime": True,
         "requires_cupy_for_cuda_array_interface_without_dlpack": raw_cuda_adapter_required,
+        "support_matrix_is_authority": True,
+        "torch_is_neutral_protocol": False,
+        "torch_carrier_allowed_only_for_partner": "triton",
+        "silent_cross_partner_torch_coercion_allowed": False,
         "host_copy_required": host_copy_required,
         "explicit_copy_required": host_copy_required,
         "adapter_execution_proven_on_hardware": False,
@@ -930,6 +937,31 @@ def describe_v2_5_hit_stream_torch_carrier_adapter(
             "This explains the torch/Triton carrier bridge for hit-stream continuation. "
             "Raw CUDA-array columns are only no-copy candidates until pod evidence proves "
             "same-pointer DLPack/CUDA-array-interface adaptation without a host stage."
+        ),
+    }
+
+
+def describe_v2_5_hit_stream_neutral_seam_reconciliation() -> dict[str, object]:
+    """Describe how the neutral seam bounds legacy Torch carrier helpers."""
+
+    return {
+        "contract_version": GENERIC_HIT_STREAM_NEUTRAL_SEAM_RECONCILIATION_VERSION,
+        "hit_stream_handoff_contract_version": GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION,
+        "partner_transfer_plan_contract_version": GENERIC_HIT_STREAM_PARTNER_TRANSFER_PLAN_VERSION,
+        "neutral_buffer_seam_contract_version": V2_5_NEUTRAL_BUFFER_SEAM_VERSION,
+        "support_matrix_is_authority": True,
+        "torch_is_neutral_protocol": False,
+        "torch_is_partner": False,
+        "torch_carrier_allowed_only_for_partners": ("triton",),
+        "torch_carrier_protocols": ("torch_tensor_carrier", "cuda_array_interface_to_torch_carrier"),
+        "non_triton_device_carrier_protocol": "cuda_array_interface_descriptor",
+        "silent_cross_partner_torch_coercion_allowed": False,
+        "legacy_torch_helper_status": "bounded_triton_launch_carrier_not_neutral_seam",
+        "partner_choice_policy": "explicit_per_boundary_app_choice",
+        "claim_boundary": (
+            "The neutral buffer seam is the authority for transfer/copy/lifetime metadata. "
+            "Torch may be used only as a Triton tensor carrier and must not become a "
+            "hidden neutral protocol, forced partner, zero-copy proof, or public speedup claim."
         ),
     }
 
@@ -1314,6 +1346,7 @@ def plan_v2_5_hit_stream_partner_transfer(
     return {
         "contract_version": GENERIC_HIT_STREAM_PARTNER_TRANSFER_PLAN_VERSION,
         "hit_stream_handoff_contract_version": GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION,
+        "neutral_seam_reconciliation_version": GENERIC_HIT_STREAM_NEUTRAL_SEAM_RECONCILIATION_VERSION,
         "neutral_buffer_seam_contract_version": V2_5_NEUTRAL_BUFFER_SEAM_VERSION,
         "operation": str(operation),
         "requested_partner": str(partner),
@@ -1325,6 +1358,10 @@ def plan_v2_5_hit_stream_partner_transfer(
         "execution_allowed_without_copy": bool(execution_allowed_without_copy),
         "copy_or_host_stage_required": bool(copy_or_host_stage_required),
         "silent_copy_forbidden": True,
+        "support_matrix_is_authority": True,
+        "torch_is_neutral_protocol": False,
+        "torch_carrier_allowed": selected_partner == "triton",
+        "silent_cross_partner_torch_coercion_allowed": False,
         "current_inputs_device_ready": bool(device_ready),
         "any_host_stage": any_host_stage,
         "any_device_resident": bool(any_device_resident),
@@ -1399,6 +1436,7 @@ def plan_v2_5_hit_stream_partner_continuation(
     fail_closed = not bool(support["supported"])
     return {
         "contract_version": GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION,
+        "neutral_seam_reconciliation_version": GENERIC_HIT_STREAM_NEUTRAL_SEAM_RECONCILIATION_VERSION,
         "neutral_buffer_seam_contract_version": V2_5_NEUTRAL_BUFFER_SEAM_VERSION,
         "operation": str(operation),
         "requested_partner": str(partner),
