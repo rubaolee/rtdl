@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import unittest
 from pathlib import Path
 
@@ -11,6 +12,9 @@ WORKLOADS = ROOT / "src" / "native" / "optix" / "rtdl_optix_workloads.cpp"
 RUNTIME = ROOT / "src" / "rtdsl" / "optix_runtime.py"
 RUNNER = ROOT / "scripts" / "goal2348_rtnn_v2_2_external_runner.py"
 REPORT = ROOT / "docs" / "reports" / "goal2819_rtnn_batched_prepared_aggregate_contract_2026-05-31.md"
+ARTIFACT_DIR = ROOT / "docs" / "reports" / "goal2819_rtnn_batched_prepared_aggregate_contract_pod"
+SUMMARY = ARTIFACT_DIR / "goal2819_summary.json"
+EXPECTED_COMMIT = "0cb57ed07e396dff487acb9c5aefe346af36fc35"
 
 
 class Goal2819RtnnBatchedPreparedAggregateContractTest(unittest.TestCase):
@@ -71,12 +75,39 @@ class Goal2819RtnnBatchedPreparedAggregateContractTest(unittest.TestCase):
     def test_report_defers_pod_claims_and_names_measurement_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")
 
-        self.assertIn("implementation-pending-pod-evidence", report)
+        self.assertIn("accept-with-boundary", report)
         self.assertIn("one native crossing", report)
         self.assertIn("per-request amortized timing", report)
         self.assertIn("must not be compared to a single CuPy call", report)
-        self.assertIn("No pod performance claim is authorized until clean pod artifacts exist", report)
+        self.assertIn("No single-request speedup claim is authorized by the amortized batch result", report)
         self.assertIn("No native app-specific engine customization is introduced", report)
+
+    def test_pod_artifacts_record_clean_amortized_batch_evidence(self) -> None:
+        summary = json.loads(SUMMARY.read_text(encoding="utf-8"))
+
+        self.assertEqual(summary["status"], "pass")
+        self.assertEqual(summary["source_commit"], EXPECTED_COMMIT)
+        self.assertEqual(summary["source_dirty"], [])
+        self.assertEqual(len(summary["rows"]), 2)
+
+        by_count = {int(row["point_count"]): row for row in summary["rows"]}
+        self.assertEqual(set(by_count), {32768, 65536})
+        self.assertGreater(by_count[32768]["per_request_improvement_vs_single"], 1.4)
+        self.assertGreater(by_count[65536]["per_request_improvement_vs_single"], 1.2)
+
+        for row in summary["rows"]:
+            with self.subTest(point_count=row["point_count"]):
+                self.assertEqual(row["status"], "pass")
+                self.assertEqual(row["source_dirty"], [])
+                self.assertEqual(row["aggregate_request_count"], 4)
+                self.assertTrue(row["first_batch_result_matches_single"])
+                self.assertEqual(
+                    row["batch_phase_summary"][0]["mode"],
+                    "prepared_query_uniform_cell_ranked_summary_aggregate_f32_batch_block_partials",
+                )
+                self.assertLess(row["batch_per_request_median_sec"], row["single_median_sec"])
+                self.assertFalse(row["claim_boundary"]["public_speedup_claim_authorized"])
+                self.assertFalse(row["claim_boundary"]["single_request_comparison_authorized"])
 
 
 if __name__ == "__main__":

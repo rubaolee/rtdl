@@ -459,12 +459,17 @@ Future work:
   rejected async aggregate reset as a non-useful micro-optimization. Goal2817
   then added a generic block-partial aggregate path, moving 65K uniform across
   parity and leaving only 32K uniform below CuPy among the 32K/65K rows.
-- The next RTNN runtime target should therefore be a larger generic small-row
-  amortization contract, not another reset/allocation tweak: batched aggregate
-  calls, CUDA graph capture for repeated prepared aggregates, event-ordered
-  aggregate chaining, or another contract-level way to reduce per-call
-  launch/setup overhead. A 128-thread block-partial probe was worse than the
-  retained 256-thread path and should not be promoted without new evidence.
+- Goal2819 added the first generic small-row amortization contract: batched
+  prepared-query ranked-summary aggregate requests over the same resident
+  search/query handles. Clean RTX A5000 evidence showed the four-request
+  amortized path preserving exact aggregate agreement and improving per-request
+  timing by about 1.48x at 32K uniform and 1.34x at 65K uniform. This is
+  amortized batch evidence, not a single-request CuPy-speedup claim.
+- The next RTNN runtime target should therefore move beyond batched requests:
+  CUDA graph capture for repeated prepared aggregates, event-ordered aggregate
+  chaining, or another contract-level way to reduce single-call launch/setup
+  overhead. A 128-thread block-partial probe was worse than the retained
+  256-thread path and should not be promoted without new evidence.
 - Study whether a real RT-core prepared variant can beat the uniform-cell path
   only after the prepared contract exists; do not treat naked OptiX traversal as
   sufficient.
