@@ -180,12 +180,27 @@ def default_target_points_per_group(point_count: int) -> int:
     return min(8192, 1 << int(math.ceil(math.log2(target))))
 
 
+def default_adaptive_target_points_per_group(point_count: int) -> int:
+    """Return the warmed v2.5 default for adaptive grouped RT traversal."""
+
+    return max(512, default_target_points_per_group(point_count))
+
+
 def _resolve_target_points_per_group(columns: dict[str, np.ndarray], target_points_per_group: int | None) -> int:
     if target_points_per_group is None:
         return default_target_points_per_group(int(columns["ids"].size))
     if target_points_per_group <= 0:
         raise ValueError("target_points_per_group must be positive")
     return int(target_points_per_group)
+
+
+def _resolve_adaptive_target_points_per_group(
+    columns: dict[str, np.ndarray],
+    target_points_per_group: int | None,
+) -> int:
+    if target_points_per_group is None:
+        return default_adaptive_target_points_per_group(int(columns["ids"].size))
+    return _resolve_target_points_per_group(columns, target_points_per_group)
 
 
 def _build_uniform_point_groups(
@@ -930,7 +945,7 @@ def hausdorff_distance_2d_rt_grouped_adaptive_nearest_witness(
     points_b: Sequence[Sequence[float]] | np.ndarray,
     *,
     initial_radius: float | None = None,
-    growth_factor: float = 2.0,
+    growth_factor: float = 8.0,
     max_iterations: int = 12,
     target_points_per_group: int | None = None,
 ) -> HausdorffRtNearestResult:
@@ -938,8 +953,8 @@ def hausdorff_distance_2d_rt_grouped_adaptive_nearest_witness(
 
     columns_a = _as_point_columns(points_a, name="points_a")
     columns_b = _as_point_columns(points_b, name="points_b")
-    group_size_ab = _resolve_target_points_per_group(columns_b, target_points_per_group)
-    group_size_ba = _resolve_target_points_per_group(columns_a, target_points_per_group)
+    group_size_ab = _resolve_adaptive_target_points_per_group(columns_b, target_points_per_group)
+    group_size_ba = _resolve_adaptive_target_points_per_group(columns_a, target_points_per_group)
     upper_bound = _point_set_upper_bound(columns_a, columns_b)
     start = time.perf_counter()
     ab = _directed_rt_grouped_adaptive_nearest_witness(

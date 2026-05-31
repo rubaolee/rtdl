@@ -22,6 +22,9 @@ from examples.v2_0.research_benchmarks.hausdorff_xhd import (  # noqa: E402
 
 GOAL2801_ENTRYPOINT_VERSION = "rtdl.goal2801.hausdorff_xhd_v2_5_canonical_entrypoint.v1"
 DEFAULT_RTDL_METHOD = "rtdl_rt_grouped_adaptive_nearest_witness"
+DEFAULT_RTDL_WARMUP = 1
+DEFAULT_ADAPTIVE_GROWTH_FACTOR = 8.0
+DEFAULT_ADAPTIVE_TARGET_POINTS_PER_GROUP = 512
 CLAIM_BOUNDARY = {
     "canonical_entrypoint": True,
     "public_speedup_claim_authorized": False,
@@ -42,6 +45,19 @@ def _check_output(args: list[str]) -> str | None:
         return None
 
 
+def _run_rtdl_method(a_points, b_points, *, rtdl_method: str):
+    if rtdl_method == "rtdl_rt_grouped_adaptive_nearest_witness":
+        return hd.hausdorff_distance_2d_rt_grouped_adaptive_nearest_witness(
+            a_points,
+            b_points,
+            growth_factor=DEFAULT_ADAPTIVE_GROWTH_FACTOR,
+            target_points_per_group=DEFAULT_ADAPTIVE_TARGET_POINTS_PER_GROUP,
+        )
+    if rtdl_method == "rtdl_rt_grouped_reduced_nearest_witness":
+        return hd.hausdorff_distance_2d_rt_grouped_reduced_nearest_witness(a_points, b_points)
+    raise ValueError("rtdl_method must be rtdl_rt_grouped_adaptive_nearest_witness or rtdl_rt_grouped_reduced_nearest_witness")
+
+
 def run_goal2801_hausdorff_entrypoint(
     *,
     points_a: int,
@@ -51,6 +67,7 @@ def run_goal2801_hausdorff_entrypoint(
     offset_x: float = 0.08,
     offset_y: float = -0.06,
     rtdl_method: str = DEFAULT_RTDL_METHOD,
+    rtdl_warmup: int = DEFAULT_RTDL_WARMUP,
     exact_tolerance: float = 1.0e-9,
 ) -> dict[str, Any]:
     started = time.perf_counter()
@@ -66,13 +83,14 @@ def run_goal2801_hausdorff_entrypoint(
     )
     baseline_elapsed_sec = time.perf_counter() - baseline_started
 
+    rtdl_warmup_elapsed_sec = 0.0
+    for _ in range(max(0, int(rtdl_warmup))):
+        warmup_started = time.perf_counter()
+        _run_rtdl_method(a_points, b_points, rtdl_method=rtdl_method)
+        rtdl_warmup_elapsed_sec += time.perf_counter() - warmup_started
+
     rtdl_started = time.perf_counter()
-    if rtdl_method == "rtdl_rt_grouped_adaptive_nearest_witness":
-        rtdl_result = hd.hausdorff_distance_2d_rt_grouped_adaptive_nearest_witness(a_points, b_points)
-    elif rtdl_method == "rtdl_rt_grouped_reduced_nearest_witness":
-        rtdl_result = hd.hausdorff_distance_2d_rt_grouped_reduced_nearest_witness(a_points, b_points)
-    else:
-        raise ValueError("rtdl_method must be rtdl_rt_grouped_adaptive_nearest_witness or rtdl_rt_grouped_reduced_nearest_witness")
+    rtdl_result = _run_rtdl_method(a_points, b_points, rtdl_method=rtdl_method)
     rtdl_elapsed_sec = time.perf_counter() - rtdl_started
 
     baseline_payload = asdict(baseline)
@@ -102,6 +120,7 @@ def run_goal2801_hausdorff_entrypoint(
             "offset_x": float(offset_x),
             "offset_y": float(offset_y),
             "exact_tolerance": float(exact_tolerance),
+            "rtdl_warmup": int(rtdl_warmup),
         },
         "baseline": {
             "method": "cupy_grouped_grid_rawkernel",
@@ -117,6 +136,13 @@ def run_goal2801_hausdorff_entrypoint(
             "uses_rtdl": True,
             "uses_rt_cores": True,
             "exact_value": True,
+            "warmup_elapsed_sec": rtdl_warmup_elapsed_sec,
+            "adaptive_growth_factor": DEFAULT_ADAPTIVE_GROWTH_FACTOR
+            if rtdl_method == "rtdl_rt_grouped_adaptive_nearest_witness"
+            else None,
+            "adaptive_target_points_per_group": DEFAULT_ADAPTIVE_TARGET_POINTS_PER_GROUP
+            if rtdl_method == "rtdl_rt_grouped_adaptive_nearest_witness"
+            else None,
             "elapsed_sec": float(rtdl_result.elapsed_sec),
             "wrapper_elapsed_sec": rtdl_elapsed_sec,
             "result": rtdl_payload,
@@ -147,6 +173,7 @@ def main(argv: list[str] | None = None) -> int:
         default=DEFAULT_RTDL_METHOD,
     )
     parser.add_argument("--exact-tolerance", type=float, default=1.0e-9)
+    parser.add_argument("--rtdl-warmup", type=int, default=DEFAULT_RTDL_WARMUP)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
 
@@ -158,6 +185,7 @@ def main(argv: list[str] | None = None) -> int:
         offset_x=args.offset_x,
         offset_y=args.offset_y,
         rtdl_method=args.rtdl_method,
+        rtdl_warmup=args.rtdl_warmup,
         exact_tolerance=args.exact_tolerance,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
