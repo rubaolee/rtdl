@@ -4300,6 +4300,26 @@ extern "C" int rtdl_optix_aggregate_prepared_query_ranked_fixed_radius_neighbor_
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_3d_f32_batch(
+        void* prepared,
+        void* prepared_queries,
+        const double* radii,
+        const size_t* k_values,
+        size_t request_count,
+        RtdlFixedRadiusRankedNeighborAggregate* aggregates_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_grid_3d_batch_optix(
+            reinterpret_cast<PreparedFixedRadiusNeighborsGrid3D*>(prepared),
+            reinterpret_cast<PreparedFixedRadiusQueryPoints3D*>(prepared_queries),
+            radii,
+            k_values,
+            request_count,
+            aggregates_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_count_prepared_fixed_radius_neighbors_3d(
         void* prepared,
         const RtdlPoint3D* query_points, size_t query_count,

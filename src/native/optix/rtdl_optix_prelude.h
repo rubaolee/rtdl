@@ -1243,6 +1243,14 @@ int  rtdl_optix_aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_
          size_t k_max,
          RtdlFixedRadiusRankedNeighborAggregate* aggregate_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_3d_f32_batch(
+         void* prepared,
+         void* prepared_queries,
+         const double* radii,
+         const size_t* k_values,
+         size_t request_count,
+         RtdlFixedRadiusRankedNeighborAggregate* aggregates_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_count_prepared_fixed_radius_neighbors_3d(
          void* prepared,
          const RtdlPoint3D* query_points, size_t query_count,
