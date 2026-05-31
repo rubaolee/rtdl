@@ -96,6 +96,7 @@ GENERIC_HIT_STREAM_TORCH_CARRIER_FORBIDDEN_AUTHORITY_FIELDS = (
     "owner_state",
     "release_event",
     "failure_cleanup_event",
+    "transfer_copy_lifetime_authority",
     "zero_copy_claim_authorized",
     "native_device_output_promotion_ready",
 )
@@ -1349,7 +1350,8 @@ def describe_v2_5_hit_stream_torch_carrier_adapter(
         "host_copy_required": host_copy_required,
         "explicit_copy_required": host_copy_required,
         "torch_carrier_copy_diagnostics_are_advisory": True,
-        "transfer_copy_lifetime_authority": "neutral_buffer_seam",
+        "carrier_metadata_scope": "triton_launch_carrier_only",
+        "authoritative_metadata_origin": "neutral_buffer_seam_only",
         "adapter_execution_proven_on_hardware": False,
         "true_zero_copy_authorized": False,
         "public_speedup_claim_authorized": False,
@@ -1445,6 +1447,10 @@ def validate_v2_5_hit_stream_neutral_seam_authority(
         errors.append("torch must not become a neutral protocol")
     if adapter["true_zero_copy_authorized"] is not False:
         errors.append("torch carrier adapter must not authorize true zero-copy")
+    if adapter["carrier_metadata_scope"] != "triton_launch_carrier_only":
+        errors.append("torch carrier adapter must remain launch-carrier scoped")
+    if adapter["authoritative_metadata_origin"] != "neutral_buffer_seam_only":
+        errors.append("torch carrier adapter must not originate transfer/copy/lifetime metadata")
     return {
         "status": "accept" if not errors else "reject",
         "contract_version": GENERIC_HIT_STREAM_NEUTRAL_SEAM_RECONCILIATION_VERSION,
@@ -1457,6 +1463,8 @@ def validate_v2_5_hit_stream_neutral_seam_authority(
         "neutral_seam_count": len(seams),
         "torch_carrier_allowed_only_for_partner": adapter["torch_carrier_allowed_only_for_partner"],
         "torch_is_neutral_protocol": adapter["torch_is_neutral_protocol"],
+        "torch_carrier_metadata_scope": adapter["carrier_metadata_scope"],
+        "torch_carrier_authoritative_metadata_origin": adapter["authoritative_metadata_origin"],
         "true_zero_copy_authorized": adapter["true_zero_copy_authorized"],
         "public_speedup_claim_authorized": adapter["public_speedup_claim_authorized"],
         "errors": tuple(errors),

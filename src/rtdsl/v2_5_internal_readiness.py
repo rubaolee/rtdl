@@ -90,6 +90,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2875_numba_runtime_conformance_smoke_2026-05-31.md",
     "docs/reports/goal2876_current_packet_after_partner_conformance_closure_2026-05-31.md",
     "docs/reports/goal2878_goal2868_residual_closure_map_after_conformance_2026-05-31.md",
+    "docs/reports/goal2879_torch_carrier_seam_authority_provenance_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -170,6 +171,7 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "triage_goal2868_last_day_external_review_before_any_release_packet",
     "use_goal2878_to_distinguish_goal2868_historical_residuals_from_post_goal2873_closure",
     "request_goal2877_external_review_for_goal2873_to_goal2876_conformance_closure",
+    "keep_goal2879_torch_carrier_seam_authority_provenance_green",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
