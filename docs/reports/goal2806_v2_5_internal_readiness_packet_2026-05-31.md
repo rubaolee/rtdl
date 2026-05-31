@@ -96,6 +96,19 @@ The accepted claim is narrower: the current v2.5 source-tree evidence packet is
 internally coherent enough for external review and further engineering
 hardening.
 
+## External Review
+
+Goal2806 now has 3-AI consensus:
+
+| Reviewer | File | Verdict |
+| --- | --- | --- |
+| Codex | `docs/reports/goal2806_v2_5_internal_readiness_packet_2026-05-31.md` | accept-with-boundary |
+| Claude | `docs/reviews/goal2806_claude_review_v2_5_internal_readiness_packet_2026-05-31.md` | accept-with-boundary |
+| Gemini | `docs/reviews/goal2806_gemini_review_v2_5_internal_readiness_packet_2026-05-31.md` | accept-with-boundary |
+
+Consensus:
+`docs/reports/goal2806_v2_5_internal_readiness_packet_consensus_2026-05-31.md`
+
 ## Validation
 
 Local focused validation:
@@ -111,9 +124,23 @@ py -3 -m unittest \
 Result:
 
 ```text
-Ran 11 tests in 0.046s
+Ran 12 tests in 0.061s
 OK
 ```
 
 The next useful step is external review of this packet, then a clean pod rerun
 of the Goal2806/Goal2805/Goal2804 slice after the review/consensus files land.
+
+Clean pod validation after push:
+
+```text
+Host: root@69.30.85.171:22167
+Commit: 28c8063b1f0b0a9c3de9297213c694e170687315
+Command: python3 -m unittest \
+  tests.goal2806_v2_5_internal_readiness_packet_test \
+  tests.goal2805_v2_5_broad_clean_pod_regression_gate_test \
+  tests.goal2804_v2_5_clean_artifact_metadata_refresh_test
+
+Ran 11 tests in 0.008s
+OK
+```

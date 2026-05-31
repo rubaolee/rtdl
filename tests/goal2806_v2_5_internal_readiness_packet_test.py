@@ -8,6 +8,24 @@ import rtdsl as rt
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs" / "reports" / "goal2806_v2_5_internal_readiness_packet_2026-05-31.md"
+CONSENSUS = (
+    ROOT
+    / "docs"
+    / "reports"
+    / "goal2806_v2_5_internal_readiness_packet_consensus_2026-05-31.md"
+)
+CLAUDE_REVIEW = (
+    ROOT
+    / "docs"
+    / "reviews"
+    / "goal2806_claude_review_v2_5_internal_readiness_packet_2026-05-31.md"
+)
+GEMINI_REVIEW = (
+    ROOT
+    / "docs"
+    / "reviews"
+    / "goal2806_gemini_review_v2_5_internal_readiness_packet_2026-05-31.md"
+)
 
 
 class Goal2806V25InternalReadinessPacketTest(unittest.TestCase):
@@ -58,6 +76,19 @@ class Goal2806V25InternalReadinessPacketTest(unittest.TestCase):
         self.assertIn("not a v2.5 release authorization", text)
         self.assertIn("not a public speedup claim", text)
         self.assertIn("not a true-zero-copy claim", text)
+
+    def test_external_reviews_and_consensus_are_recorded(self) -> None:
+        claude = CLAUDE_REVIEW.read_text(encoding="utf-8")
+        gemini = GEMINI_REVIEW.read_text(encoding="utf-8")
+        consensus = CONSENSUS.read_text(encoding="utf-8")
+
+        self.assertIn("Independent Claude Review", claude)
+        self.assertIn("accept-with-boundary", claude)
+        self.assertIn("Independent Gemini Review", gemini)
+        self.assertIn("accept-with-boundary", gemini)
+        self.assertIn("Codex + Claude + Gemini", consensus)
+        self.assertIn("accept-with-boundary", consensus)
+        self.assertIn("does not authorize", consensus)
 
 
 if __name__ == "__main__":

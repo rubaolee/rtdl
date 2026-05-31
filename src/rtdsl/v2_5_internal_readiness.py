@@ -86,6 +86,8 @@ V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
     "docs/reviews/goal2803_claude_review_barnes_hut_consolidated_harness_2026-05-31.md",
     "docs/reviews/goal2803_gemini_review_barnes_hut_consolidated_harness_2026-05-31.md",
     "docs/reviews/goal2804_gemini_review_v2_5_clean_artifact_metadata_refresh_2026-05-31.md",
+    "docs/reviews/goal2806_claude_review_v2_5_internal_readiness_packet_2026-05-31.md",
+    "docs/reviews/goal2806_gemini_review_v2_5_internal_readiness_packet_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_BLOCKED_ACTIONS = (
