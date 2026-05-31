@@ -730,6 +730,58 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
     }
 
 
+def _parse_csv_floats(value: str | None, *, label: str) -> tuple[float, ...]:
+    if value is None or str(value).strip() == "":
+        return ()
+    try:
+        return tuple(float(part.strip()) for part in str(value).split(",") if part.strip())
+    except ValueError as exc:
+        raise ValueError(f"{label} must be a comma-separated list of numbers") from exc
+
+
+def _parse_csv_ints(value: str | None, *, label: str) -> tuple[int, ...]:
+    if value is None or str(value).strip() == "":
+        return ()
+    try:
+        return tuple(int(part.strip()) for part in str(value).split(",") if part.strip())
+    except ValueError as exc:
+        raise ValueError(f"{label} must be a comma-separated list of integers") from exc
+
+
+def _aggregate_batch_requests(
+    args: argparse.Namespace,
+    *,
+    base_radius: float,
+    base_k_max: int,
+) -> tuple[dict[str, object], ...]:
+    request_count = int(getattr(args, "aggregate_request_count", 1))
+    if request_count <= 0:
+        raise ValueError("aggregate_request_count must be positive")
+    radius_multipliers = _parse_csv_floats(
+        getattr(args, "aggregate_radius_multipliers", None),
+        label="aggregate_radius_multipliers",
+    )
+    k_values = _parse_csv_ints(getattr(args, "aggregate_k_values", None), label="aggregate_k_values")
+    if radius_multipliers and len(radius_multipliers) != request_count:
+        raise ValueError("aggregate_radius_multipliers length must match aggregate_request_count")
+    if k_values and len(k_values) != request_count:
+        raise ValueError("aggregate_k_values length must match aggregate_request_count")
+
+    requests: list[dict[str, object]] = []
+    for index in range(request_count):
+        multiplier = radius_multipliers[index] if radius_multipliers else 1.0
+        radius = float(base_radius) * float(multiplier)
+        k_max = int(k_values[index] if k_values else base_k_max)
+        if multiplier <= 0.0:
+            raise ValueError("aggregate_radius_multipliers must be positive")
+        if radius < 0.0:
+            raise ValueError("aggregate request radius must be non-negative")
+        if k_max <= 0:
+            raise ValueError("aggregate request k_max must be positive")
+        requests.append({"radius": radius, "k_max": k_max})
+    return tuple(requests)
+
+
 def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]:
     """Run a prepared native 3D neighbor handle over query batches.
 
@@ -761,6 +813,12 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
         raise ValueError("batched RTDL path supports backend='optix' or backend='embree'")
     if backend == "embree" and result_mode != "ranked-summary-raw":
         raise ValueError("Embree batched RTNN path currently supports result_mode='ranked-summary-raw'")
+    aggregate_batch_requests = _aggregate_batch_requests(args, base_radius=radius, base_k_max=k_max)
+    max_prepared_radius = (
+        max(request["radius"] for request in aggregate_batch_requests)
+        if result_mode == "ranked-summary-aggregate-prepared-query-batch-float32"
+        else radius
+    )
 
     load_started = time.perf_counter()
     search_columns = _read_xyz_columns(args.point_file)
@@ -797,7 +855,7 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
     prepare_started = time.perf_counter()
     prepared_query_batches = []
     if backend == "optix":
-        prepared = rt.prepare_optix_fixed_radius_neighbors_3d(search, max_radius=radius)
+        prepared = rt.prepare_optix_fixed_radius_neighbors_3d(search, max_radius=max_prepared_radius)
         if result_mode in {
             "ranked-summary-aggregate-prepared-query-float32",
             "ranked-summary-aggregate-prepared-query-batch-float32",
@@ -821,9 +879,7 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
     ranked_aggregate_batch_summaries = None
     error = ""
     ok = True
-    aggregate_request_count = int(getattr(args, "aggregate_request_count", 1))
-    if aggregate_request_count <= 0:
-        raise ValueError("aggregate_request_count must be positive")
+    aggregate_request_count = len(aggregate_batch_requests)
     try:
         for run_index in range(repeat):
             started = time.perf_counter()
@@ -875,7 +931,7 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
                     if result_mode == "ranked-summary-aggregate-prepared-query-batch-float32":
                         aggregates = prepared.aggregate_ranked_summary_prepared_queries_batch(
                             prepared_query_batches[batch_index],
-                            tuple({"radius": radius, "k_max": k_max} for _ in range(aggregate_request_count)),
+                            aggregate_batch_requests,
                             precision="float32",
                         )
                         aggregate = aggregates[0]
@@ -966,6 +1022,17 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
             "batched_queries": True,
             "prepared_query_points": result_mode in {"ranked-summary-aggregate-prepared-query-float32", "ranked-summary-aggregate-prepared-query-batch-float32"},
             "aggregate_request_count": aggregate_request_count if result_mode == "ranked-summary-aggregate-prepared-query-batch-float32" else 1,
+            "aggregate_batch_requests": aggregate_batch_requests
+            if result_mode == "ranked-summary-aggregate-prepared-query-batch-float32"
+            else (),
+            "aggregate_batch_request_mode": (
+                "heterogeneous"
+                if result_mode == "ranked-summary-aggregate-prepared-query-batch-float32"
+                and len({(request["radius"], request["k_max"]) for request in aggregate_batch_requests}) > 1
+                else "homogeneous"
+                if result_mode == "ranked-summary-aggregate-prepared-query-batch-float32"
+                else "not_batched"
+            ),
         },
         "claim_boundary": {
             "paper_equivalent_rtnn_row": False,
@@ -1753,6 +1820,8 @@ def main(argv: list[str] | None = None) -> int:
     batched3d.add_argument("--query-batch-size", type=int, default=65536)
     batched3d.add_argument("--result-mode", choices=("count", "summary", "ranked-summary-raw", "ranked-summary-aggregate", "ranked-summary-aggregate-float32", "ranked-summary-aggregate-prepared-query-float32", "ranked-summary-aggregate-prepared-query-batch-float32"), default="ranked-summary-raw")
     batched3d.add_argument("--aggregate-request-count", type=int, default=1)
+    batched3d.add_argument("--aggregate-radius-multipliers", help="Comma-separated per-request radius multipliers for prepared-query aggregate batches.")
+    batched3d.add_argument("--aggregate-k-values", help="Comma-separated per-request k_max values for prepared-query aggregate batches.")
     batched3d.add_argument("--repeat", type=int, default=1)
     batched3d.add_argument("--row-label", default="rtdl_batched_3d_neighbors")
     batched3d.add_argument("--json-out", type=Path, required=True)
