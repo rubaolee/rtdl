@@ -32,7 +32,10 @@ class Goal2815RtnnPreparedAggregateWorkspaceTest(unittest.TestCase):
         )
 
         start = workloads.index("aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_grid_3d_optix")
-        end = workloads.index("static void run_prepared_fixed_radius_neighbors_grid_3d_optix", start)
+        end = workloads.index(
+            "static void aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_grid_3d_batch_optix",
+            start,
+        )
         prepared_query_body = workloads[start:end]
 
         self.assertIn("prepared->d_ranked_aggregate->ptr", prepared_query_body)
