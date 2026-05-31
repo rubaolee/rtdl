@@ -65,6 +65,39 @@ OK (skipped=4)
 
 Pod validation should run the CUDA methods on NVIDIA hardware.
 
+Pod validation from pushed `main`:
+
+```text
+commit: 8caa7693
+scope: tests.goal2872_triton_tie_break_conformance_smoke_test
+
+Ran 6 tests in 2.046s
+OK
+```
+
+Expanded pod readiness/conformance slice:
+
+```text
+scope:
+  tests.goal2872_triton_tie_break_conformance_smoke_test
+  tests.goal2871_hit_stream_torch_carrier_seam_authority_guard_test
+  tests.goal2870_v2_5_last_day_review_intake_and_runner_fail_closed_hardening_test
+  tests.goal2869_v2_5_readiness_indexes_front_door_bypass_audit_test
+  tests.goal2867_v2_5_app_facing_front_door_bypass_audit_test
+  tests.goal2865_current_head_packet_after_front_doors_test
+  tests.goal2863_v2_5_readiness_indexes_front_doors_test
+  tests.goal2861_v2_5_generic_partner_front_door_completion_test
+  tests.goal2855_v2_5_current_canonical_harness_packet_runner_test
+  tests.goal2853_v2_5_readiness_next_actions_refresh_test
+  tests.goal2843_v2_5_execution_path_policy_test
+  tests.goal2806_v2_5_internal_readiness_packet_test
+  tests.goal2789_neutral_buffer_torch_carrier_reconciliation_test
+  tests.goal2775_hit_stream_neutral_seam_reconciliation_test
+
+Ran 67 tests in 1.100s
+OK
+```
+
 ## Codex Verdict
 
 `accept-with-boundary`
