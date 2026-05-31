@@ -70,9 +70,10 @@ def _run_membership_cases(
         )
 
         def _case_progress(message: str) -> None:
+            stream = getattr(sys, "__stdout__", None) or sys.stderr
             print(
                 f"[goal2803] membership case {index + 1}/{len(cases)} progress: {message}",
-                file=sys.stderr,
+                file=stream,
                 flush=True,
             )
 

@@ -20,8 +20,9 @@ Updated:
 - `scripts/goal2803_barnes_hut_v25_consolidated_harness.py`
 
 The underlying `run_case(...)` now accepts an optional `progress_callback`.
-Goal2803 passes a callback that prints to `stderr`, which means progress remains
-visible even while `stdout` is redirected around the suppressed per-case JSON.
+Goal2803 passes a callback that prints to `sys.__stdout__` with a `stderr`
+fallback, which means progress remains visible even while `stdout` is
+redirected around the suppressed per-case JSON.
 
 The new messages are shaped like:
 

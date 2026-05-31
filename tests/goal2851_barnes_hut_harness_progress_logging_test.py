@@ -22,7 +22,8 @@ class Goal2851BarnesHutHarnessProgressLoggingTest(unittest.TestCase):
         source = HARNESS_SCRIPT.read_text(encoding="utf-8")
 
         self.assertIn("def _case_progress(message: str) -> None:", source)
-        self.assertIn("file=sys.stderr", source)
+        self.assertIn('getattr(sys, "__stdout__", None) or sys.stderr', source)
+        self.assertIn("file=stream", source)
         self.assertIn("membership case {index + 1}/{len(cases)} progress", source)
         self.assertIn("progress_callback=_case_progress", source)
         self.assertIn("contextlib.redirect_stdout", source)
