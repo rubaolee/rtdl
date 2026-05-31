@@ -104,6 +104,9 @@ Observation:
 - Goal2750 added a transfer-planner safety gate: device partners now fail
   closed with `stream_ordering_proof_required` when hit-stream columns are
   device-resident but producer/consumer stream ordering is not proven.
+- Goal2752 separated host-synchronized safety from event/same-stream
+  zero-copy-compatible ordering metadata, so host sync is no longer easy to
+  mistake for a future no-sync zero-copy proof.
 
 Future work:
 

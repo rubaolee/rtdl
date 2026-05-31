@@ -62,6 +62,10 @@ GENERIC_HIT_STREAM_STREAM_ORDERING_STATES = (
     "producer_event_waited_by_consumer",
     "host_synchronized_before_consumer",
 )
+GENERIC_HIT_STREAM_ZERO_COPY_COMPATIBLE_STREAM_ORDERING_STATES = (
+    "same_stream",
+    "producer_event_waited_by_consumer",
+)
 GENERIC_HIT_STREAM_PARTNER_TRANSFER_STATUSES = (
     "host_reference_ready",
     "explicit_host_materialization_required",
@@ -185,6 +189,11 @@ class RtdlHitStreamColumnHandoff:
             "handoff_after_owner_close_allowed": False if self.source_mode == "native_device_columns" else None,
             "producer_consumer_stream_ordering": self.producer_consumer_stream_ordering,
             "stream_synchronization_proven": self.producer_consumer_stream_ordering != "not_proven",
+            "host_synchronization_used": self.producer_consumer_stream_ordering == "host_synchronized_before_consumer",
+            "event_or_same_stream_ordering_proven": self.producer_consumer_stream_ordering
+            in GENERIC_HIT_STREAM_ZERO_COPY_COMPATIBLE_STREAM_ORDERING_STATES,
+            "zero_copy_compatible_stream_ordering": self.producer_consumer_stream_ordering
+            in GENERIC_HIT_STREAM_ZERO_COPY_COMPATIBLE_STREAM_ORDERING_STATES,
             "true_zero_copy_requires_stream_synchronization": True,
             "true_zero_copy_authorized": False,
             "public_speedup_claim_authorized": False,
@@ -323,6 +332,11 @@ class RtdlNativeDeviceHitStreamOutput:
             "handoff_after_close_allowed": False,
             "producer_consumer_stream_ordering": self.producer_consumer_stream_ordering,
             "stream_synchronization_proven": self.producer_consumer_stream_ordering != "not_proven",
+            "host_synchronization_used": self.producer_consumer_stream_ordering == "host_synchronized_before_consumer",
+            "event_or_same_stream_ordering_proven": self.producer_consumer_stream_ordering
+            in GENERIC_HIT_STREAM_ZERO_COPY_COMPATIBLE_STREAM_ORDERING_STATES,
+            "zero_copy_compatible_stream_ordering": self.producer_consumer_stream_ordering
+            in GENERIC_HIT_STREAM_ZERO_COPY_COMPATIBLE_STREAM_ORDERING_STATES,
             "true_zero_copy_requires_stream_synchronization": True,
             "traversal_seconds": self.traversal_seconds,
             "native_device_column_output_proven_on_hardware": bool(
@@ -1030,6 +1044,8 @@ def plan_v2_5_hit_stream_partner_transfer(
     any_device_resident = any(bool(seam["device_resident"]) for seam in seams)
     producer_consumer_stream_ordering = str(hit_metadata["producer_consumer_stream_ordering"])
     stream_synchronization_proven = bool(hit_metadata["stream_synchronization_proven"])
+    host_synchronization_used = bool(hit_metadata["host_synchronization_used"])
+    zero_copy_compatible_stream_ordering = bool(hit_metadata["zero_copy_compatible_stream_ordering"])
     torch_carrier_adapter = describe_v2_5_hit_stream_torch_carrier_adapter(
         hit_stream_columns,
         payload_columns,
@@ -1143,6 +1159,8 @@ def plan_v2_5_hit_stream_partner_transfer(
         "any_device_resident": bool(any_device_resident),
         "producer_consumer_stream_ordering": producer_consumer_stream_ordering,
         "stream_synchronization_proven": stream_synchronization_proven,
+        "host_synchronization_used": host_synchronization_used,
+        "zero_copy_compatible_stream_ordering": zero_copy_compatible_stream_ordering,
         "device_consumer_requires_stream_ordering": device_consumer_requires_stream_ordering,
         "stream_ordering_blocks_device_consumer": stream_ordering_blocks_device_consumer,
         "stream_synchronization_required_for_zero_copy_claim": True,
