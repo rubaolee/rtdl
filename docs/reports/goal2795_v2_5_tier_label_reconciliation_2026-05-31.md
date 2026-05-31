@@ -68,4 +68,12 @@ Local validation:
 - `py -3 -m unittest tests.goal2723_v2_5_tiered_benchmark_manifest_test tests.goal2736_tier_a_primitive_first_plan_alignment_test tests.goal2795_v2_5_tier_label_reconciliation_test tests.goal2676_v2_5_triton_partner_pivot_test tests.goal2730_triangle_counting_v2_5_primitive_first_plan_test tests.goal2783_v2_5_app_migration_selection_guidance_test` passed:
   31 tests.
 
-Pod clean-check validation will be recorded after this goal lands on `main`.
+Pod clean-check validation:
+
+- Host: `root@69.30.85.171`, port `22167`, key:
+  `C:\Users\Lestat\.ssh\id_ed25519_rtdl_codex_current_pod`.
+- Checkout: `/root/rtdl_goal2785_work`.
+- Commit: `7b8e409e61fa401f06ef3c8f848ab7b1a0b7cc6b`.
+- Command:
+  `PYTHONPATH=src:. python3 -m unittest tests.goal2723_v2_5_tiered_benchmark_manifest_test tests.goal2736_tier_a_primitive_first_plan_alignment_test tests.goal2795_v2_5_tier_label_reconciliation_test tests.goal2676_v2_5_triton_partner_pivot_test tests.goal2730_triangle_counting_v2_5_primitive_first_plan_test tests.goal2783_v2_5_app_migration_selection_guidance_test`.
+- Result: 31 tests passed on Python 3.12.3.
