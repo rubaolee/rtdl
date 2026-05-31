@@ -446,6 +446,23 @@ Future work:
   CUDA-core opponent beats current RTDL on dense clustered rows, which is a
   useful benchmark pressure signal rather than a failure of the app-agnostic
   design.
+- Goals2810-2815 substantially advanced the v2.5 RTNN path with generic
+  fixed-radius ranked-summary aggregate contracts: device-side aggregate output,
+  density-aware direct/two-step selection, prepared query-point residency,
+  unsorted summary-only bounded top-k, larger scale-sweep evidence, and a
+  reusable prepared aggregate workspace. The important design split is now
+  explicit: ordered witness rows and aggregate summaries should be separate
+  output contracts.
+- Goal2814 showed that the unsorted summary-only path beats the CuPy grid
+  opponent on all tested 131K/262K rows while preserving exact same-contract
+  aggregate agreement. Goal2815 improved 32K/65K small rows modestly, but the
+  32K/65K uniform rows still trail CuPy. Goal2816 rejected async aggregate reset
+  as a non-useful micro-optimization.
+- The next RTNN runtime target should therefore be a larger generic small-row
+  amortization contract, not another reset/allocation tweak: batched aggregate
+  calls, CUDA graph capture for repeated prepared aggregates, event-ordered
+  aggregate chaining, or a small-row partial-output path that avoids
+  per-call launch/setup overhead.
 - Study whether a real RT-core prepared variant can beat the uniform-cell path
   only after the prepared contract exists; do not treat naked OptiX traversal as
   sufficient.
