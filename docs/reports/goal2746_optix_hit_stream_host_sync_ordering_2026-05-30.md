@@ -65,3 +65,15 @@ py -3 -m py_compile src/rtdsl/optix_runtime.py \
   tests/goal2746_optix_hit_stream_host_sync_ordering_test.py
 clean
 ```
+
+Pod validation on `root@69.30.85.171:22167` after pulling commit `00e5cf32`:
+
+```text
+python3 -m unittest \
+  tests.goal2746_optix_hit_stream_host_sync_ordering_test \
+  tests.goal2738_native_hit_stream_stream_ordering_boundary_test \
+  tests.goal2744_native_hit_stream_release_enforcement_audit_test \
+  tests.goal2706_native_optix_hit_stream_device_columns_test \
+  tests.goal2704_native_hit_stream_output_abi_contract_test
+23 tests OK
+```
