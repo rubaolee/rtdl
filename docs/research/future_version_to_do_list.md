@@ -465,11 +465,25 @@ Future work:
   amortized path preserving exact aggregate agreement and improving per-request
   timing by about 1.48x at 32K uniform and 1.34x at 65K uniform. This is
   amortized batch evidence, not a single-request CuPy-speedup claim.
-- The next RTNN runtime target should therefore move beyond batched requests:
-  CUDA graph capture for repeated prepared aggregates, event-ordered aggregate
-  chaining, or another contract-level way to reduce single-call launch/setup
-  overhead. A 128-thread block-partial probe was worse than the retained
-  256-thread path and should not be promoted without new evidence.
+- Goal2820 tested unused aggregate-workspace reset elision in the small-row
+  block-partial single-request path. It was correct but neutral/slightly noisy
+  on the RTX A5000 rows, confirming that this reset was not the next material
+  bottleneck.
+- Goal2821 hardened the batch contract for heterogeneous radius/`k_max`
+  parameter sweeps and showed exact four-request batch results matching four
+  sequential single aggregate calls while improving total sweep time by about
+  1.16x at 32K and 2.50x at 65K versus sequential calls over the same prepared
+  data.
+- Goal2822 fused the small-row block-partial batch path into one 2D-grid kernel
+  launch (`blockIdx.y` as request index), improving the Goal2821 heterogeneous
+  batch median by about 1.11x at 32K and 1.08x at 65K. This is a modest but real
+  generic runtime win, not a new public RTNN-speedup claim.
+- The next RTNN runtime target should therefore move beyond launch-count
+  cleanup inside the current batch path: CUDA graph capture/replay for repeated
+  prepared aggregates, device-side final reduction of block partials, or
+  event-ordered aggregate chaining into a partner consumer that avoids compact
+  partial downloads. A 128-thread block-partial probe was worse than the
+  retained 256-thread path and should not be promoted without new evidence.
 - Study whether a real RT-core prepared variant can beat the uniform-cell path
   only after the prepared contract exists; do not treat naked OptiX traversal as
   sufficient.
