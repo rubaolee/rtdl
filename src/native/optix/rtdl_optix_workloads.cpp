@@ -8833,6 +8833,8 @@ struct NativeRayTriangleHitStreamAsyncLaunchOwner {
     CUdeviceptr rays = 0;
     CUdeviceptr primitive_flags = 0;
     CUdeviceptr params = 0;
+    void* host_rays = nullptr;
+    void* host_params = nullptr;
     CUstream producer_stream = 0;
 
     ~NativeRayTriangleHitStreamAsyncLaunchOwner() {
@@ -8840,6 +8842,8 @@ struct NativeRayTriangleHitStreamAsyncLaunchOwner {
         if (params) cuMemFree(params);
         if (primitive_flags) cuMemFree(primitive_flags);
         if (rays) cuMemFree(rays);
+        if (host_params) cuMemFreeHost(host_params);
+        if (host_rays) cuMemFreeHost(host_rays);
     }
 };
 
@@ -10626,8 +10630,11 @@ static void run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_into_d
     CU_CHECK(cuMemAlloc(&owner->rays, sizeof(GpuRay3DHost) * ray_count));
     CU_CHECK(cuMemAlloc(&owner->primitive_flags, sizeof(uint32_t) * flag_word_count));
     CU_CHECK(cuMemAlloc(&owner->params, sizeof(RayTriangleHitStreamDeviceColumns3DLaunchParams)));
+    CU_CHECK(cuMemAllocHost(&owner->host_rays, sizeof(GpuRay3DHost) * ray_count));
+    CU_CHECK(cuMemAllocHost(&owner->host_params, sizeof(RayTriangleHitStreamDeviceColumns3DLaunchParams)));
 
-    upload(owner->rays, gpu_rays.data(), gpu_rays.size());
+    std::memcpy(owner->host_rays, gpu_rays.data(), sizeof(GpuRay3DHost) * gpu_rays.size());
+    upload_async(owner->rays, static_cast<const GpuRay3DHost*>(owner->host_rays), gpu_rays.size(), stream);
     CU_CHECK(cuMemsetD32Async(owner->primitive_flags, 0u, flag_word_count, stream));
 
     RayTriangleHitStreamDeviceColumns3DLaunchParams lp;
@@ -10645,7 +10652,12 @@ static void run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_into_d
     lp.max_rows = static_cast<uint32_t>(max_rows);
     lp.deduplicate_primitives = deduplicate_primitives != 0u ? 1u : 0u;
 
-    upload(owner->params, &lp, 1);
+    std::memcpy(owner->host_params, &lp, sizeof(RayTriangleHitStreamDeviceColumns3DLaunchParams));
+    upload_async(
+        owner->params,
+        static_cast<const RayTriangleHitStreamDeviceColumns3DLaunchParams*>(owner->host_params),
+        1,
+        stream);
     OPTIX_CHECK(optixLaunch(g_raytriangle_hitstream_device_columns3d.pipe->pipeline, stream,
                              owner->params, sizeof(RayTriangleHitStreamDeviceColumns3DLaunchParams),
                              &g_raytriangle_hitstream_device_columns3d.pipe->sbt,

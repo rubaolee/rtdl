@@ -88,6 +88,12 @@ void upload(CUdeviceptr dst, const T* src, size_t count) {
 }
 
 template <typename T>
+void upload_async(CUdeviceptr dst, const T* src, size_t count, CUstream stream) {
+    if (count == 0) return;
+    CU_CHECK(cuMemcpyHtoDAsync(dst, src, sizeof(T) * count, stream));
+}
+
+template <typename T>
 void download(T* dst, CUdeviceptr src, size_t count) {
     if (count == 0) return;
     CU_CHECK(cuMemcpyDtoH(dst, src, sizeof(T) * count));
