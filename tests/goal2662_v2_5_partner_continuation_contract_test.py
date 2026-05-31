@@ -37,6 +37,7 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
                 "bounded_collect_finalize_i64",
                 "grouped_argmin_f64",
                 "grouped_argmax_f64",
+                "grouped_topk_f64",
                 "hit_stream_grouped_ray_id_primitive_i64",
             },
         )
@@ -56,6 +57,7 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
             "bounded_collect_finalize_i64",
             "grouped_argmin_f64",
             "grouped_argmax_f64",
+            "grouped_topk_f64",
         ):
             self.assertIn(rt.V2_5_GROUP_ID_VALIDATION_CONTRACT, operations[operation_name]["behavior"])
         hit_stream = operations["hit_stream_grouped_ray_id_primitive_i64"]
@@ -235,6 +237,23 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
         self.assertEqual(argmax["outputs"]["scores"], [4.0, 9.0])
         self.assertEqual(argmax["outputs"]["missing_group_ids"], [2])
 
+        topk = rt.execute_v2_5_partner_continuation_reference(
+            "grouped_topk_f64",
+            {
+                "group_ids": [0, 0, 0, 1, 1, 1, 1],
+                "item_ids": [9, 8, 8, 2, 1, 3, 4],
+                "scores": [4.0, 4.0, 3.5, 7.0, 9.0, 9.0, 6.0],
+                "group_count": 3,
+                "k": 2,
+            },
+        )
+        self.assertEqual(topk["outputs"]["group_ids"], [0, 0, 1, 1])
+        self.assertEqual(topk["outputs"]["item_ids"], [8, 9, 4, 2])
+        self.assertEqual(topk["outputs"]["scores"], [3.5, 4.0, 6.0, 7.0])
+        self.assertEqual(topk["outputs"]["ranks"], [1, 2, 1, 2])
+        self.assertEqual(topk["outputs"]["row_offsets"], [0, 2, 4, 4])
+        self.assertEqual(topk["outputs"]["missing_group_ids"], [2])
+
     def test_bounded_collect_finalize_is_fail_closed(self):
         ok = rt.execute_v2_5_partner_continuation_reference(
             "bounded_collect_finalize_i64",
@@ -321,6 +340,10 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
                 "grouped_argmax_f64",
                 {"group_ids": [0, 2], "item_ids": [10, 20], "scores": [1.0, 2.0], "group_count": 2},
             ),
+            (
+                "grouped_topk_f64",
+                {"group_ids": [0, 2], "item_ids": [10, 20], "scores": [1.0, 2.0], "group_count": 2, "k": 1},
+            ),
         )
         for operation, inputs in reference_cases:
             with self.subTest(operation=operation, backend="reference"):
@@ -383,6 +406,16 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
                     "item_ids": torch.tensor([10, 20], dtype=torch.int64, device="cuda"),
                     "scores": torch.tensor([1.0, 2.0], dtype=torch.float64, device="cuda"),
                     "group_count": 2,
+                },
+            ),
+            (
+                "grouped_topk_f64",
+                {
+                    "group_ids": torch.tensor([0, 2], dtype=torch.int64, device="cuda"),
+                    "item_ids": torch.tensor([10, 20], dtype=torch.int64, device="cuda"),
+                    "scores": torch.tensor([1.0, 2.0], dtype=torch.float64, device="cuda"),
+                    "group_count": 2,
+                    "k": 1,
                 },
             ),
         )

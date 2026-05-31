@@ -42,6 +42,7 @@ class Goal2676V25TritonPartnerPivotTest(unittest.TestCase):
         self.assertTrue(rt.describe_triton_partner_continuation("compact_mask_i64")["triton_kernel_available"])
         self.assertTrue(rt.describe_triton_partner_continuation("grouped_argmin_f64")["triton_kernel_available"])
         self.assertTrue(rt.describe_triton_partner_continuation("grouped_argmax_f64")["triton_kernel_available"])
+        self.assertTrue(rt.describe_triton_partner_continuation("grouped_topk_f64")["triton_kernel_available"])
         self.assertTrue(rt.describe_triton_partner_continuation("bounded_collect_finalize_i64")["triton_kernel_available"])
 
     def test_triton_dispatcher_rejects_unknown_operations(self):

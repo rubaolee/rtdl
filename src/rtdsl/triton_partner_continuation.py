@@ -22,9 +22,11 @@ TRITON_SEGMENTED_MAX_F64_OPERATION = "segmented_max_f64"
 TRITON_COMPACT_MASK_I64_OPERATION = "compact_mask_i64"
 TRITON_GROUPED_ARGMIN_F64_OPERATION = "grouped_argmin_f64"
 TRITON_GROUPED_ARGMAX_F64_OPERATION = "grouped_argmax_f64"
+TRITON_GROUPED_TOPK_F64_OPERATION = "grouped_topk_f64"
 TRITON_BOUNDED_COLLECT_FINALIZE_I64_OPERATION = "bounded_collect_finalize_i64"
 TRITON_PARTNER_CONTINUATION_STATUS = V2_5_STATUS_PREVIEW_NOT_PROMOTED
 TRITON_TENSOR_CARRIER = "torch_cuda_tensor_for_triton_launch"
+TRITON_GROUPED_TOPK_F64_MAX_K = 64
 TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_I64_OPERATION = "group_id_bounds_device_flag_i64"
 TRITON_GROUP_ID_BOUNDS_VALIDATION_MODE = "torch_cuda_precheck_host_scalar_sync"
 TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_MODE = "triton_device_error_flag_no_host_read"
@@ -108,6 +110,24 @@ def describe_triton_grouped_argmax_f64() -> dict[str, object]:
     return descriptor
 
 
+def describe_triton_grouped_topk_f64() -> dict[str, object]:
+    descriptor = _base_triton_descriptor(TRITON_GROUPED_TOPK_F64_OPERATION)
+    descriptor["input_columns"] = ("group_ids:int64", "item_ids:int64", "scores:float64")
+    descriptor["output_columns"] = (
+        "group_ids:int64",
+        "item_ids:int64",
+        "scores:float64",
+        "ranks:int64",
+        "row_offsets:int64",
+        "missing_group_ids:int64",
+    )
+    descriptor["tie_break"] = "lowest_score_then_lowest_item_id"
+    descriptor["duplicate_item_policy"] = "lowest_score_per_group_item"
+    descriptor["max_k"] = TRITON_GROUPED_TOPK_F64_MAX_K
+    descriptor["tensor_carrier_compaction_used"] = True
+    return descriptor
+
+
 def describe_triton_bounded_collect_finalize_i64() -> dict[str, object]:
     descriptor = _base_triton_descriptor(TRITON_BOUNDED_COLLECT_FINALIZE_I64_OPERATION)
     descriptor["input_columns"] = ("group_ids:int64", "item_ids:int64")
@@ -171,6 +191,8 @@ def describe_triton_partner_continuation(operation: str) -> dict[str, object]:
         return describe_triton_grouped_argmin_f64()
     if operation == TRITON_GROUPED_ARGMAX_F64_OPERATION:
         return describe_triton_grouped_argmax_f64()
+    if operation == TRITON_GROUPED_TOPK_F64_OPERATION:
+        return describe_triton_grouped_topk_f64()
     if operation == TRITON_BOUNDED_COLLECT_FINALIZE_I64_OPERATION:
         return describe_triton_bounded_collect_finalize_i64()
     spec = RtdlPartnerContinuationSpec(
@@ -298,6 +320,21 @@ def run_triton_partner_continuation(
                 inputs["item_ids"],
                 inputs["scores"],
                 group_count=int(inputs["group_count"]),
+                block_size=block_size,
+                group_id_bounds_validation_mode=group_id_bounds_validation_mode,
+            )
+        except (ModuleNotFoundError, RuntimeError) as exc:
+            if allow_reference_fallback and _is_triton_environment_error(exc):
+                return _triton_reference_fallback(operation, inputs, str(exc))
+            raise
+    if operation == TRITON_GROUPED_TOPK_F64_OPERATION:
+        try:
+            return run_triton_grouped_topk_f64(
+                inputs["group_ids"],
+                inputs["item_ids"],
+                inputs["scores"],
+                group_count=int(inputs["group_count"]),
+                k=int(inputs["k"]),
                 block_size=block_size,
                 group_id_bounds_validation_mode=group_id_bounds_validation_mode,
             )
@@ -828,6 +865,146 @@ def run_triton_grouped_argmax_f64(
     )
 
 
+def run_triton_grouped_topk_f64(
+    group_ids: Any,
+    item_ids: Any,
+    scores: Any,
+    *,
+    group_count: int,
+    k: int,
+    block_size: int = 256,
+    group_id_bounds_validation_mode: str = TRITON_GROUP_ID_BOUNDS_VALIDATION_MODE,
+) -> dict[str, object]:
+    """Run the v2.5 Triton grouped top-k ranked-summary continuation preview."""
+
+    triton, torch, tl = _import_triton_stack()
+    _validate_torch_cuda_vector(group_ids, name="group_ids", dtype=torch.int64)
+    _validate_torch_cuda_vector(item_ids, name="item_ids", dtype=torch.int64)
+    _validate_torch_cuda_vector(scores, name="scores", dtype=torch.float64)
+    if not (tuple(group_ids.shape) == tuple(item_ids.shape) == tuple(scores.shape)):
+        raise ValueError("group_ids, item_ids, and scores must have the same shape")
+    k = int(k)
+    if k <= 0:
+        raise ValueError("k must be positive")
+    if k > TRITON_GROUPED_TOPK_F64_MAX_K:
+        raise ValueError(f"grouped_topk_f64 preview supports k <= {TRITON_GROUPED_TOPK_F64_MAX_K}")
+    if int(scores.numel()) and bool(torch.any(torch.isnan(scores)).item()):
+        raise ValueError("grouped top-k rejects NaN scores")
+    group_count, block_size, row_count = _validate_group_run_shape(
+        group_ids,
+        group_count=group_count,
+        block_size=block_size,
+        torch=torch,
+        validation_mode=group_id_bounds_validation_mode,
+    )
+
+    torch.cuda.synchronize(group_ids.device)
+    started = perf_counter()
+    counts = torch.zeros((group_count,), dtype=torch.int64, device=group_ids.device)
+    dense_scores = torch.full((group_count, k), float("inf"), dtype=torch.float64, device=scores.device)
+    dense_item_ids = torch.full(
+        (group_count, k),
+        torch.iinfo(torch.int64).max,
+        dtype=torch.int64,
+        device=item_ids.device,
+    )
+    if row_count:
+        grid = (triton.cdiv(row_count, block_size),)
+        _triton_segmented_count_i64_kernel(tl)[grid](
+            group_ids,
+            counts,
+            row_count,
+            group_count,
+            BLOCK_SIZE=block_size,
+        )
+        for rank in range(k):
+            rank_scores = torch.full((group_count,), float("inf"), dtype=torch.float64, device=scores.device)
+            rank_item_ids = torch.full(
+                (group_count,),
+                torch.iinfo(torch.int64).max,
+                dtype=torch.int64,
+                device=item_ids.device,
+            )
+            _triton_grouped_topk_score_f64_kernel(tl)[grid](
+                group_ids,
+                item_ids,
+                scores,
+                dense_item_ids,
+                rank_scores,
+                row_count,
+                group_count,
+                RANK=rank,
+                K=k,
+                BLOCK_SIZE=block_size,
+            )
+            _triton_grouped_topk_item_i64_kernel(tl)[grid](
+                group_ids,
+                item_ids,
+                scores,
+                dense_item_ids,
+                rank_scores,
+                rank_item_ids,
+                row_count,
+                group_count,
+                RANK=rank,
+                K=k,
+                BLOCK_SIZE=block_size,
+            )
+            store_grid = (triton.cdiv(group_count, block_size),)
+            _triton_grouped_topk_store_rank_kernel(tl)[store_grid](
+                counts,
+                rank_scores,
+                rank_item_ids,
+                dense_scores,
+                dense_item_ids,
+                group_count,
+                RANK=rank,
+                K=k,
+                BLOCK_SIZE=block_size,
+            )
+
+    compact_counts = torch.clamp(counts, max=k)
+    row_offsets = torch.empty((group_count + 1,), dtype=torch.int64, device=group_ids.device)
+    row_offsets[0] = 0
+    if group_count:
+        row_offsets[1:] = torch.cumsum(compact_counts, dim=0)
+    rank_values = torch.arange(1, k + 1, dtype=torch.int64, device=group_ids.device)
+    rank_matrix = rank_values.reshape(1, k).expand(group_count, k)
+    valid_mask = rank_matrix <= compact_counts.reshape(group_count, 1)
+    repeated_group_ids = torch.arange(group_count, dtype=torch.int64, device=group_ids.device).reshape(group_count, 1).expand(group_count, k)
+    compact_group_ids = repeated_group_ids[valid_mask]
+    compact_item_ids = dense_item_ids[valid_mask]
+    compact_scores = dense_scores[valid_mask]
+    compact_ranks = rank_matrix[valid_mask]
+    missing_group_ids = torch.nonzero(counts == 0, as_tuple=False).reshape(-1).to(torch.int64)
+    torch.cuda.synchronize(group_ids.device)
+    elapsed = perf_counter() - started
+
+    return _triton_run_result(
+        operation=TRITON_GROUPED_TOPK_F64_OPERATION,
+        outputs={
+            "group_ids": compact_group_ids,
+            "item_ids": compact_item_ids,
+            "scores": compact_scores,
+            "ranks": compact_ranks,
+            "row_offsets": row_offsets,
+            "missing_group_ids": missing_group_ids,
+            "dense_item_ids": dense_item_ids,
+            "dense_scores": dense_scores,
+            "counts": counts,
+        },
+        elapsed=elapsed,
+        source="run_triton_grouped_topk_f64",
+        group_id_bounds_validation_mode=group_id_bounds_validation_mode,
+        extra_metadata={
+            "tie_break": "lowest_score_then_lowest_item_id",
+            "duplicate_item_policy": "lowest_score_per_group_item",
+            "max_k": TRITON_GROUPED_TOPK_F64_MAX_K,
+            "tensor_carrier_compaction_used": True,
+        },
+    )
+
+
 def run_triton_bounded_collect_finalize_i64(
     group_ids: Any,
     item_ids: Any,
@@ -1251,6 +1428,64 @@ def _triton_grouped_argmax_item_i64_kernel(tl):
         best_scores = tl.load(dense_scores + groups, mask=valid, other=-float("inf"))
         is_best = valid & (vals == best_scores)
         tl.atomic_min(dense_item_ids + groups, items, sem="relaxed", mask=is_best)
+
+    return kernel
+
+
+def _triton_grouped_topk_score_f64_kernel(tl):
+    @__import__("triton").jit
+    def kernel(group_ids, item_ids, scores, selected_item_ids, rank_scores, row_count: tl.constexpr, group_count: tl.constexpr, RANK: tl.constexpr, K: tl.constexpr, BLOCK_SIZE: tl.constexpr):
+        program_id = tl.program_id(0)
+        offsets = program_id * BLOCK_SIZE + tl.arange(0, BLOCK_SIZE)
+        mask = offsets < row_count
+        groups = tl.load(group_ids + offsets, mask=mask, other=-1)
+        items = tl.load(item_ids + offsets, mask=mask, other=0)
+        vals = tl.load(scores + offsets, mask=mask, other=float("inf"))
+        valid = mask & (groups >= 0) & (groups < group_count)
+        already_selected = tl.full((BLOCK_SIZE,), False, tl.int1)
+        for previous_rank in tl.static_range(0, RANK):
+            previous_items = tl.load(selected_item_ids + groups * K + previous_rank, mask=valid, other=-1)
+            already_selected = already_selected | (previous_items == items)
+        candidate = valid & (~already_selected)
+        tl.atomic_min(rank_scores + groups, vals, sem="relaxed", mask=candidate)
+
+    return kernel
+
+
+def _triton_grouped_topk_item_i64_kernel(tl):
+    @__import__("triton").jit
+    def kernel(group_ids, item_ids, scores, selected_item_ids, rank_scores, rank_item_ids, row_count: tl.constexpr, group_count: tl.constexpr, RANK: tl.constexpr, K: tl.constexpr, BLOCK_SIZE: tl.constexpr):
+        program_id = tl.program_id(0)
+        offsets = program_id * BLOCK_SIZE + tl.arange(0, BLOCK_SIZE)
+        mask = offsets < row_count
+        groups = tl.load(group_ids + offsets, mask=mask, other=-1)
+        items = tl.load(item_ids + offsets, mask=mask, other=0)
+        vals = tl.load(scores + offsets, mask=mask, other=float("inf"))
+        valid = mask & (groups >= 0) & (groups < group_count)
+        already_selected = tl.full((BLOCK_SIZE,), False, tl.int1)
+        for previous_rank in tl.static_range(0, RANK):
+            previous_items = tl.load(selected_item_ids + groups * K + previous_rank, mask=valid, other=-1)
+            already_selected = already_selected | (previous_items == items)
+        best_scores = tl.load(rank_scores + groups, mask=valid, other=float("inf"))
+        is_best = valid & (~already_selected) & (vals == best_scores)
+        tl.atomic_min(rank_item_ids + groups, items, sem="relaxed", mask=is_best)
+
+    return kernel
+
+
+def _triton_grouped_topk_store_rank_kernel(tl):
+    @__import__("triton").jit
+    def kernel(counts, rank_scores, rank_item_ids, dense_scores, dense_item_ids, group_count: tl.constexpr, RANK: tl.constexpr, K: tl.constexpr, BLOCK_SIZE: tl.constexpr):
+        program_id = tl.program_id(0)
+        groups = program_id * BLOCK_SIZE + tl.arange(0, BLOCK_SIZE)
+        valid = groups < group_count
+        counts_for_group = tl.load(counts + groups, mask=valid, other=0)
+        items = tl.load(rank_item_ids + groups, mask=valid, other=9223372036854775807)
+        scores = tl.load(rank_scores + groups, mask=valid, other=float("inf"))
+        has_rank = valid & (RANK < counts_for_group) & (items != 9223372036854775807)
+        offsets = groups * K + RANK
+        tl.store(dense_item_ids + offsets, items, mask=has_rank)
+        tl.store(dense_scores + offsets, scores, mask=has_rank)
 
     return kernel
 

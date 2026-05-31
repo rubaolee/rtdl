@@ -155,6 +155,17 @@ V2_5_PARTNER_CONTINUATION_OPERATIONS: tuple[RtdlPartnerContinuationOperation, ..
         ),
     ),
     RtdlPartnerContinuationOperation(
+        name="grouped_topk_f64",
+        category="ranked_summary",
+        input_names=("group_ids", "item_ids", "scores", "group_count", "k"),
+        output_names=("group_ids", "item_ids", "scores", "ranks", "row_offsets", "missing_group_ids"),
+        behavior=(
+            "select up to k lowest-score distinct items per group with deterministic "
+            "score-then-item-id order; duplicate item rows use the lowest score; "
+            + V2_5_GROUP_ID_VALIDATION_CONTRACT
+        ),
+    ),
+    RtdlPartnerContinuationOperation(
         name="hit_stream_grouped_ray_id_primitive_i64",
         category="hit_stream_grouped_reduction",
         input_names=("ray_ids", "primitive_ids", "row_count", "hit_event_count", "overflow", "group_count"),
@@ -189,6 +200,7 @@ V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS = (
     "compact_mask_i64",
     "grouped_argmin_f64",
     "grouped_argmax_f64",
+    "grouped_topk_f64",
     "bounded_collect_finalize_i64",
 )
 V2_5_NUMBA_PREVIEW_OPERATIONS = (
@@ -529,6 +541,15 @@ def execute_v2_5_partner_continuation_reference(
         if not (len(group_ids) == len(item_ids) == len(scores)):
             raise ValueError("group_ids, item_ids, and scores must have the same length")
         outputs = _grouped_argmax(group_ids, item_ids, scores, group_count)
+    elif operation == "grouped_topk_f64":
+        group_count = _required_int(inputs, "group_count")
+        k = _required_int(inputs, "k")
+        group_ids = _required_i64_sequence(inputs, "group_ids")
+        item_ids = _required_i64_sequence(inputs, "item_ids")
+        scores = _required_f64_sequence(inputs, "scores")
+        if not (len(group_ids) == len(item_ids) == len(scores)):
+            raise ValueError("group_ids, item_ids, and scores must have the same length")
+        outputs = _grouped_topk(group_ids, item_ids, scores, group_count, k)
     elif operation == "hit_stream_grouped_ray_id_primitive_i64":
         group_count = _required_int(inputs, "group_count")
         row_count = _required_int(inputs, "row_count")
@@ -663,6 +684,53 @@ def _grouped_argmax(
         "group_ids": out_groups,
         "item_ids": out_items,
         "scores": out_scores,
+        "missing_group_ids": missing,
+    }
+
+
+def _grouped_topk(
+    group_ids: Sequence[int],
+    item_ids: Sequence[int],
+    scores: Sequence[float],
+    group_count: int,
+    k: int,
+) -> dict[str, list[int] | list[float]]:
+    k = int(k)
+    if k <= 0:
+        raise ValueError("k must be positive")
+    per_group: list[dict[int, float]] = [dict() for _ in range(group_count)]
+    for group, item, score in zip(group_ids, item_ids, scores):
+        _validate_group_id(group, group_count)
+        item = int(item)
+        score = float(score)
+        if math.isnan(score):
+            raise ValueError("grouped top-k rejects NaN scores")
+        current = per_group[group].get(item)
+        if current is None or score < current:
+            per_group[group][item] = score
+
+    out_groups: list[int] = []
+    out_items: list[int] = []
+    out_scores: list[float] = []
+    out_ranks: list[int] = []
+    row_offsets: list[int] = [0]
+    missing: list[int] = []
+    for group, item_scores in enumerate(per_group):
+        ranked = sorted(item_scores.items(), key=lambda item_score: (item_score[1], item_score[0]))[:k]
+        if not ranked:
+            missing.append(group)
+        for rank, (item, score) in enumerate(ranked, start=1):
+            out_groups.append(group)
+            out_items.append(item)
+            out_scores.append(score)
+            out_ranks.append(rank)
+        row_offsets.append(len(out_groups))
+    return {
+        "group_ids": out_groups,
+        "item_ids": out_items,
+        "scores": out_scores,
+        "ranks": out_ranks,
+        "row_offsets": row_offsets,
         "missing_group_ids": missing,
     }
 
