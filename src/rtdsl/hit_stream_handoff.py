@@ -15,6 +15,7 @@ from .v2_5_partner_support_matrix import plan_v2_5_partner_support
 
 
 GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION = "rtdl.rt_hit_stream_handoff.v2.5"
+GENERIC_HIT_STREAM_PARTNER_TRANSFER_PLAN_VERSION = "rtdl.hit_stream_partner_transfer_plan.v2.5"
 GENERIC_HIT_STREAM_HANDOFF_API_MATURITY = "experimental_host_bridge_contract"
 GENERIC_DEVICE_RESIDENT_HIT_STREAM_COLUMNS = ("ray_ids:int64", "primitive_ids:int64")
 GENERIC_TYPED_PRIMITIVE_PAYLOAD_COLUMNS = ("primitive_group_ids:int64", "primitive_values:float64")
@@ -60,6 +61,22 @@ GENERIC_HIT_STREAM_STREAM_ORDERING_STATES = (
     "same_stream",
     "producer_event_waited_by_consumer",
     "host_synchronized_before_consumer",
+)
+GENERIC_HIT_STREAM_PARTNER_TRANSFER_STATUSES = (
+    "host_reference_ready",
+    "explicit_host_materialization_required",
+    "torch_carrier_preview",
+    "cuda_descriptor_preview",
+    "descriptor_only",
+    "unsupported_fail_closed",
+)
+GENERIC_HIT_STREAM_PARTNER_CARRIER_PROTOCOLS = (
+    "host_columns",
+    "torch_tensor_carrier",
+    "cuda_array_interface_to_torch_carrier",
+    "cuda_array_interface_descriptor",
+    "neutral_buffer_descriptor",
+    "none",
 )
 
 
@@ -976,6 +993,138 @@ def _gather_payload_python_reference(
     }, "python_reference_columns", "python_reference"
 
 
+def plan_v2_5_hit_stream_partner_transfer(
+    hit_stream_columns: RtdlHitStreamColumnHandoff,
+    payload_columns: RtdlTypedPrimitivePayloadColumns,
+    *,
+    operation: str,
+    partner: str,
+) -> dict[str, object]:
+    """Explain the buffer transfer/carrier boundary for a partner continuation.
+
+    This is deliberately stricter than the execution helpers: every partner
+    gets an explicit carrier/status row, and unsupported or descriptor-only
+    choices fail closed instead of silently routing through another partner.
+    """
+
+    support = plan_v2_5_partner_support(operation, partner)
+    hit_metadata = hit_stream_columns.to_metadata()
+    payload_metadata = payload_columns.to_metadata()
+    summary = _neutral_buffer_handoff_summary(hit_stream_columns, payload_columns)
+    seams = (
+        *hit_metadata["neutral_buffer_seams"],
+        *payload_metadata["neutral_buffer_seams"],
+    )
+    device_ready = _all_seams_device_ready(seams)
+    any_host_stage = bool(summary["any_host_stage"])
+    any_device_resident = any(bool(seam["device_resident"]) for seam in seams)
+    stream_synchronization_proven = bool(hit_metadata["stream_synchronization_proven"])
+    torch_carrier_adapter = describe_v2_5_hit_stream_torch_carrier_adapter(
+        hit_stream_columns,
+        payload_columns,
+    )
+    selected_partner = str(support["partner"])
+
+    status = "unsupported_fail_closed"
+    carrier_protocol = "none"
+    descriptor_only = False
+    executable_preview_available = False
+    execution_allowed_without_copy = False
+    copy_or_host_stage_required = False
+    runtime_action = "fail_closed_unsupported_partner_operation"
+
+    if bool(support["supported"]):
+        if selected_partner == "python_reference":
+            carrier_protocol = "host_columns"
+            if any_device_resident or any_host_stage:
+                status = "explicit_host_materialization_required"
+                copy_or_host_stage_required = True
+                runtime_action = "cpu_reference_requires_explicit_host_materialization"
+            else:
+                status = "host_reference_ready"
+                execution_allowed_without_copy = True
+                runtime_action = "plan_available"
+        elif selected_partner == "triton":
+            if not device_ready:
+                status = "explicit_host_materialization_required"
+                carrier_protocol = "torch_tensor_carrier"
+                copy_or_host_stage_required = True
+                runtime_action = "requires_device_resident_columns_or_explicit_copy"
+            elif bool(torch_carrier_adapter["raw_cuda_adapter_required"]):
+                status = "torch_carrier_preview"
+                carrier_protocol = "cuda_array_interface_to_torch_carrier"
+                executable_preview_available = True
+                execution_allowed_without_copy = True
+                runtime_action = "requires_torch_cuda_array_interface_adapter_and_pod_validation"
+            else:
+                status = "torch_carrier_preview"
+                carrier_protocol = "torch_tensor_carrier"
+                executable_preview_available = True
+                execution_allowed_without_copy = True
+                runtime_action = "requires_sm70_pod_validation_before_performance_claim"
+        elif selected_partner == "cupy_conformance":
+            if not device_ready:
+                status = "explicit_host_materialization_required"
+                carrier_protocol = "cuda_array_interface_descriptor"
+                copy_or_host_stage_required = True
+                runtime_action = "requires_device_resident_columns_or_explicit_copy"
+            else:
+                status = "descriptor_only"
+                carrier_protocol = "cuda_array_interface_descriptor"
+                descriptor_only = True
+                execution_allowed_without_copy = True
+                runtime_action = "descriptor_only_no_generic_kernel_execution"
+        elif selected_partner == "numba":
+            if not device_ready:
+                status = "explicit_host_materialization_required"
+                carrier_protocol = "cuda_array_interface_descriptor"
+                copy_or_host_stage_required = True
+                runtime_action = "requires_device_resident_columns_or_explicit_copy"
+            else:
+                status = "cuda_descriptor_preview"
+                carrier_protocol = "cuda_array_interface_descriptor"
+                executable_preview_available = True
+                execution_allowed_without_copy = True
+                runtime_action = "numba_preview_requires_explicit_runtime_validation"
+
+    if status not in GENERIC_HIT_STREAM_PARTNER_TRANSFER_STATUSES:
+        raise ValueError("unsupported hit-stream partner transfer status")
+    if carrier_protocol not in GENERIC_HIT_STREAM_PARTNER_CARRIER_PROTOCOLS:
+        raise ValueError("unsupported hit-stream partner carrier protocol")
+
+    return {
+        "contract_version": GENERIC_HIT_STREAM_PARTNER_TRANSFER_PLAN_VERSION,
+        "hit_stream_handoff_contract_version": GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION,
+        "neutral_buffer_seam_contract_version": V2_5_NEUTRAL_BUFFER_SEAM_VERSION,
+        "operation": str(operation),
+        "requested_partner": str(partner),
+        "selected_partner": selected_partner,
+        "status": status,
+        "carrier_protocol": carrier_protocol,
+        "descriptor_only": bool(descriptor_only),
+        "executable_preview_available": bool(executable_preview_available),
+        "execution_allowed_without_copy": bool(execution_allowed_without_copy),
+        "copy_or_host_stage_required": bool(copy_or_host_stage_required),
+        "silent_copy_forbidden": True,
+        "current_inputs_device_ready": bool(device_ready),
+        "any_host_stage": any_host_stage,
+        "any_device_resident": bool(any_device_resident),
+        "stream_synchronization_proven": stream_synchronization_proven,
+        "stream_synchronization_required_for_zero_copy_claim": True,
+        "true_zero_copy_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "support_cell": support,
+        "neutral_buffer_handoff_summary": summary,
+        "torch_carrier_adapter": torch_carrier_adapter,
+        "runtime_action": runtime_action,
+        "claim_boundary": (
+            "This plan records the chosen partner carrier and transfer status. "
+            "It forbids silent copies and does not execute, prove true zero-copy, "
+            "or authorize public performance claims."
+        ),
+    }
+
+
 def plan_v2_5_hit_stream_partner_continuation(
     hit_stream_columns: RtdlHitStreamColumnHandoff,
     payload_columns: RtdlTypedPrimitivePayloadColumns,
@@ -991,6 +1140,12 @@ def plan_v2_5_hit_stream_partner_continuation(
     """
 
     support = plan_v2_5_partner_support(operation, partner)
+    transfer_plan = plan_v2_5_hit_stream_partner_transfer(
+        hit_stream_columns,
+        payload_columns,
+        operation=operation,
+        partner=partner,
+    )
     summary = _neutral_buffer_handoff_summary(hit_stream_columns, payload_columns)
     hit_metadata = hit_stream_columns.to_metadata()
     payload_metadata = payload_columns.to_metadata()
@@ -1014,6 +1169,7 @@ def plan_v2_5_hit_stream_partner_continuation(
         "requested_partner": str(partner),
         "selected_partner": support["partner"],
         "support_cell": support,
+        "partner_transfer_plan": transfer_plan,
         "neutral_buffer_handoff_summary": summary,
         "current_inputs_device_ready": current_inputs_device_ready,
         "current_inputs_satisfy_device_requirements": requirements_satisfied,
@@ -1295,6 +1451,15 @@ def _neutral_buffer_handoff_summary(
             "true zero-copy and public speedup claims remain unauthorized."
         ),
     }
+
+
+def _all_seams_device_ready(seams: Sequence[Mapping[str, Any]]) -> bool:
+    return bool(seams) and all(
+        bool(seam["device_resident"])
+        and seam["transfer_status"] != "host_stage"
+        and str(seam["buffer"]["device"]).startswith("cuda:")
+        for seam in seams
+    )
 
 
 def _partner_plan_runtime_action(
