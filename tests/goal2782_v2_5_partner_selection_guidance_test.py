@@ -121,6 +121,7 @@ class Goal2782V25PartnerSelectionGuidanceTest(unittest.TestCase):
             "v2_5_partner_selection_guidance",
             "validate_v2_5_partner_selection_guidance",
             "plan_v2_5_partner_selection",
+            "explain_v2_5_partner_selection",
         ):
             self.assertTrue(hasattr(rt, name))
             self.assertNotIn(name, rt.__all__)

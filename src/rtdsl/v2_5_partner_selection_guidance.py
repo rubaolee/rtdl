@@ -339,6 +339,121 @@ def plan_v2_5_partner_selection(operation: str, workload_shape: str | None = Non
     }
 
 
+def explain_v2_5_partner_selection(
+    operation: str,
+    workload_shape: str,
+    *,
+    source_count: int | None = None,
+    target_count: int | None = None,
+    row_count: int | None = None,
+    dtype: str = "float64",
+    available_device_bytes: int | None = None,
+    candidate_block_size: int = 4096,
+) -> dict[str, Any]:
+    """Return an explain-only partner-selection plan.
+
+    This helper deliberately does not execute and does not select a partner for
+    the caller. It turns measured guidance into explicit, claim-safe planner
+    metadata that examples or benchmark harnesses can show to users before the
+    user/app chooses a partner.
+    """
+
+    guidance = plan_v2_5_partner_selection(operation, workload_shape)
+    normalized_dtype = str(dtype).strip().lower()
+    normalized_source_count = None if source_count is None else int(source_count)
+    normalized_target_count = None if target_count is None else int(target_count)
+    normalized_row_count = None if row_count is None else int(row_count)
+    normalized_candidate_block_size = int(candidate_block_size)
+    if normalized_candidate_block_size <= 0:
+        raise ValueError("candidate_block_size must be positive")
+    for name, value in (
+        ("source_count", normalized_source_count),
+        ("target_count", normalized_target_count),
+        ("row_count", normalized_row_count),
+        ("available_device_bytes", available_device_bytes),
+    ):
+        if value is not None and int(value) < 0:
+            raise ValueError(f"{name} must be non-negative when provided")
+
+    estimated_dense_score_bytes = None
+    estimated_tiled_witness_bytes = None
+    if normalized_source_count is not None and normalized_target_count is not None:
+        estimated_dense_score_bytes = normalized_source_count * normalized_target_count * 8
+        tile_count = (normalized_target_count + normalized_candidate_block_size - 1) // normalized_candidate_block_size
+        # tile_query_indices, tile_neighbor_ids, and tile_scores are i64/i64/f64.
+        estimated_tiled_witness_bytes = normalized_source_count * tile_count * 24
+
+    reasons: list[str] = []
+    suggested_explicit_partner_candidate = None
+    suggested_explicit_strategy_candidate = None
+    planner_status = "no_measured_guidance_explicit_choice_required"
+    threshold_shape_met = False
+    memory_note = "not_evaluated"
+
+    if guidance["status"] == "measured_negative_preview_guidance":
+        match = guidance["matches"][0]
+        suggested_explicit_partner_candidate = match["comparison_partner"]
+        planner_status = "comparison_partner_candidate_due_to_negative_preview"
+        reasons.append("Measured Triton preview evidence is negative for this workload shape.")
+    elif guidance["status"] == "measured_mixed_preview_guidance":
+        match = guidance["matches"][0]
+        if normalized_source_count is None or normalized_target_count is None:
+            planner_status = "shape_required_for_thresholded_guidance"
+            reasons.append("Thresholded guidance needs source_count and target_count.")
+        else:
+            threshold_shape_met = normalized_source_count >= 16384 and normalized_target_count >= 16384
+            if threshold_shape_met and normalized_dtype in {"float64", "f64", "double"}:
+                suggested_explicit_partner_candidate = match["measured_partner"]
+                suggested_explicit_strategy_candidate = "dense_point_nearest_tiled"
+                planner_status = "thresholded_triton_candidate_explicit_choice_required"
+                reasons.append("Measured Goal2790 crossover threshold is met for the float64 dense shape.")
+            else:
+                suggested_explicit_partner_candidate = match["comparison_partner"]
+                planner_status = "comparison_partner_candidate_below_threshold_or_unmeasured_dtype"
+                reasons.append("Measured Goal2790 crossover threshold is not met or dtype is unmeasured.")
+    else:
+        reasons.append("No measured guidance row exists for this operation/workload shape.")
+
+    if available_device_bytes is not None and estimated_dense_score_bytes is not None:
+        if estimated_dense_score_bytes > int(available_device_bytes):
+            memory_note = "dense_score_matrix_exceeds_available_device_bytes"
+        else:
+            memory_note = "dense_score_matrix_fits_reported_available_device_bytes"
+
+    return {
+        "guidance_version": V2_5_PARTNER_SELECTION_GUIDANCE_VERSION,
+        "operation": str(operation).strip(),
+        "workload_shape": str(workload_shape).strip(),
+        "input_shape": {
+            "source_count": normalized_source_count,
+            "target_count": normalized_target_count,
+            "row_count": normalized_row_count,
+            "dtype": normalized_dtype,
+            "candidate_block_size": normalized_candidate_block_size,
+        },
+        "guidance_status": guidance["status"],
+        "planner_status": planner_status,
+        "guidance": guidance,
+        "threshold_shape_met": threshold_shape_met,
+        "suggested_explicit_partner_candidate": suggested_explicit_partner_candidate,
+        "suggested_explicit_strategy_candidate": suggested_explicit_strategy_candidate,
+        "execution_strategy_selected": False,
+        "auto_select_partner_allowed": False,
+        "requires_explicit_caller_choice": True,
+        "estimated_dense_score_bytes": estimated_dense_score_bytes,
+        "estimated_tiled_witness_bytes": estimated_tiled_witness_bytes,
+        "available_device_bytes": available_device_bytes,
+        "memory_note": memory_note,
+        "reasons": tuple(reasons),
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "release_readiness_authorized": False,
+        "claim_boundary": V2_5_PARTNER_SELECTION_GUIDANCE_CLAIM_BOUNDARY,
+    }
+
+
 def validate_v2_5_partner_selection_guidance(
     guidance: dict[str, Any] | None = None,
     *,
