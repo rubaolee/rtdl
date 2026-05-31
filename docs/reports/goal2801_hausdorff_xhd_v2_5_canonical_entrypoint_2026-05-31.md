@@ -2,9 +2,9 @@
 
 Date: 2026-05-31
 
-Status: implemented locally with first OptiX/CuPy pod evidence and Claude review.
+Status: implemented, reviewed, and clean-from-Git pod validated.
 
-Verdict: accept-with-boundary pending clean-from-Git rerun.
+Verdict: accept-with-boundary.
 
 ## Purpose
 
@@ -26,6 +26,8 @@ This is not a speedup claim. The first artifact shows the RTDL/OptiX path is cor
 | `src/rtdsl/v2_5_triton_app_migration.py` | Marks `hausdorff_xhd` as ready with Goal2801 while keeping Triton witness auto-selection blocked. |
 | `docs/reports/goal2801_pod_artifacts/hausdorff_xhd_v25_canonical_entrypoint_4096.json` | First pod evidence artifact. |
 | `docs/reports/goal2801_pod_artifacts/hausdorff_xhd_v25_canonical_entrypoint_4096.stdout` | Captured stdout from the first pod run. |
+| `docs/reports/goal2801_pod_artifacts/hausdorff_xhd_v25_canonical_entrypoint_4096_clean_from_git.json` | Clean-from-Git pod evidence artifact after the Goal2801 commit was pushed. |
+| `docs/reports/goal2801_pod_artifacts/hausdorff_xhd_v25_canonical_entrypoint_4096_clean_from_git.stdout` | Captured stdout from the clean-from-Git pod run. |
 | `docs/reviews/goal2801_claude_review_hausdorff_xhd_canonical_entrypoint_2026-05-31.md` | Independent Claude review, verdict `accept-with-boundary`. |
 | `docs/reports/goal2801_hausdorff_xhd_v2_5_canonical_entrypoint_consensus_2026-05-31.md` | Codex+Claude consensus for the current boundary. |
 
@@ -56,6 +58,23 @@ Results:
 | CuPy grid elapsed | 0.004478 s |
 | RTDL/OptiX adaptive witness elapsed | 0.649487 s |
 | RTDL/CuPy elapsed ratio | 145.03x slower |
+| RTDL method uses RT cores | true |
+
+The clean-from-Git rerun was executed after the Goal2801 commit was pushed, on a pod checkout reset to `origin/main` at:
+
+```text
+7a764ad8b742fb621c0fcc0154335f5b19c251f1
+```
+
+Clean-from-Git results:
+
+| Metric | Value |
+| --- | ---: |
+| Status | pass |
+| Distance error vs CuPy grid | 0.0 |
+| CuPy grid elapsed | 0.004488 s |
+| RTDL/OptiX adaptive witness elapsed | 0.646395 s |
+| RTDL/CuPy elapsed ratio | 144.04x slower |
 | RTDL method uses RT cores | true |
 
 ## Boundary
@@ -96,4 +115,24 @@ Review: docs/reviews/goal2801_claude_review_hausdorff_xhd_canonical_entrypoint_2
 Consensus: docs/reports/goal2801_hausdorff_xhd_v2_5_canonical_entrypoint_consensus_2026-05-31.md
 ```
 
-Focused tests and clean-from-Git pod validation are still pending at the time of this revision.
+Focused local test slice after report/review/consensus:
+
+```text
+tests.goal2801_hausdorff_xhd_v25_canonical_entrypoint_test
+tests.goal2800_rtnn_v25_live_ranked_summary_harness_test
+tests.goal2795_v2_5_tier_label_reconciliation_test
+tests.goal2790_hausdorff_tiled_dense_point_nearest_test
+tests.goal2788_hausdorff_dense_point_nearest_triton_strategy_test
+
+20 tests run, 17 passed, 3 skipped.
+```
+
+Clean-from-Git pod validation:
+
+```text
+commit: 7a764ad8b742fb621c0fcc0154335f5b19c251f1
+GPU: NVIDIA RTX A5000, driver 570.211.01
+OptiX build: pass
+Goal2801 harness: pass
+Focused pod test slice: 20 tests run, 20 passed
+```

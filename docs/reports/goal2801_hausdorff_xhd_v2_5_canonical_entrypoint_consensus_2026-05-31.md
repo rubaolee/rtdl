@@ -20,16 +20,21 @@ Goal2801 is accepted with boundary:
 - the report honestly records that the RTDL/OptiX path is much slower than the CuPy grid opponent on the 4K fixture;
 - public speedup, whole-app speedup, RTDL-beats-X-HD, RTDL-beats-CuPy-grid, broad RT-core speedup, Triton speedup, full paper reproduction, and native app-customization claims remain unauthorized.
 
+## Clean-From-Git Validation
+
+The first evidence artifact was produced on the pod with the Goal2801 script copied into an existing checkout before the Goal2801 commit was pushed. That boundary is now closed by a clean-from-Git pod rerun.
+
+Clean-from-Git validation:
+
+- commit: `7a764ad8b742fb621c0fcc0154335f5b19c251f1`
+- GPU: NVIDIA RTX A5000, driver 570.211.01
+- OptiX build: pass
+- Goal2801 harness: pass
+- distance error vs CuPy grid: 0.0
+- RTDL method uses RT cores: true
+- RTDL/CuPy elapsed ratio: 144.04x slower
+- focused pod test slice: 20 tests run, 20 passed
+
 ## Boundary
-
-The current evidence artifact was produced on the pod with the Goal2801 script copied into an existing checkout before the Goal2801 commit was pushed. This is useful first evidence, but not final reproducibility evidence.
-
-Clean-from-Git validation remains required before final evidence closure:
-
-- fetch/reset the pod checkout to `origin/main` after the Goal2801 commit is pushed;
-- rebuild `librtdl_optix.so`;
-- rerun the Goal2801 entrypoint from the committed file;
-- rerun the focused test slice;
-- record the clean artifact and commit hash in the Goal2801 report.
 
 This consensus does not authorize a public speedup claim. The accepted claim is narrower: the canonical entrypoint exists, the same-contract comparison is exact, the first pod artifact is internally consistent, and the claim boundary is preserved.

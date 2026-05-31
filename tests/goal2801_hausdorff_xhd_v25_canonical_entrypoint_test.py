@@ -17,6 +17,13 @@ POD_ARTIFACT = (
     / "goal2801_pod_artifacts"
     / "hausdorff_xhd_v25_canonical_entrypoint_4096.json"
 )
+CLEAN_POD_ARTIFACT = (
+    ROOT
+    / "docs"
+    / "reports"
+    / "goal2801_pod_artifacts"
+    / "hausdorff_xhd_v25_canonical_entrypoint_4096_clean_from_git.json"
+)
 
 
 class Goal2801HausdorffXHDV25CanonicalEntrypointTest(unittest.TestCase):
@@ -41,13 +48,15 @@ class Goal2801HausdorffXHDV25CanonicalEntrypointTest(unittest.TestCase):
 
     def test_pod_artifact_records_exact_match_without_speedup_claim(self) -> None:
         text = POD_ARTIFACT.read_text(encoding="utf-8")
+        clean_text = CLEAN_POD_ARTIFACT.read_text(encoding="utf-8")
 
-        self.assertIn('"status": "pass"', text)
-        self.assertIn('"matches_exact_baseline": true', text)
-        self.assertIn('"uses_rt_cores": true', text)
-        self.assertIn('"rtdl_beats_cupy_grid_claim_authorized": false', text)
-        self.assertIn('"paper_reproduction_claim_authorized": false', text)
-        self.assertIn('"native_engine_customization": false', text)
+        for artifact_text in (text, clean_text):
+            self.assertIn('"status": "pass"', artifact_text)
+            self.assertIn('"matches_exact_baseline": true', artifact_text)
+            self.assertIn('"uses_rt_cores": true', artifact_text)
+            self.assertIn('"rtdl_beats_cupy_grid_claim_authorized": false', artifact_text)
+            self.assertIn('"paper_reproduction_claim_authorized": false', artifact_text)
+            self.assertIn('"native_engine_customization": false', artifact_text)
 
     def test_report_and_consensus_keep_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")
@@ -58,6 +67,8 @@ class Goal2801HausdorffXHDV25CanonicalEntrypointTest(unittest.TestCase):
         self.assertIn("accept-with-boundary", consensus)
         self.assertIn("not a speedup claim", report)
         self.assertIn("CuPy grid", report)
+        self.assertIn("clean-from-Git pod validated", report)
+        self.assertIn("7a764ad8b742fb621c0fcc0154335f5b19c251f1", consensus)
 
 
 if __name__ == "__main__":
