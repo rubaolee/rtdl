@@ -80,7 +80,13 @@ PYTHONPATH=src:. python -m unittest \
   tests.goal2348_rtnn_v2_2_external_runner_test
 ```
 
-Pod validation will be run after commit/push from exact `origin/main`.
+Pod validation after commit/push from exact `origin/main`:
+
+```text
+commit: 8fc3a50cefd9c35400a30c0742e6172ed09eb2de
+Ran 52 tests in 0.152s
+OK
+```
 
 ## Codex Verdict
 
