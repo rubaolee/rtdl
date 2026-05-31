@@ -66,8 +66,8 @@ class Goal2865CurrentHeadPacketAfterFrontDoorsTest(unittest.TestCase):
                 "docs/reviews/goal2866_gemini_review_goal2865_current_head_packet_2026-05-31.md"
             ]
         )
-        self.assertIn("goal2876_current_packet_after_conformance_pod", packet["current_canonical_runner"]["summary_path"])
-        self.assertEqual("cb9345bea472ac1167e8c289050146cc4fae30aa", packet["current_canonical_runner"]["source_commit"])
+        self.assertIn("goal2880_current_packet_after_seam_provenance_pod", packet["current_canonical_runner"]["summary_path"])
+        self.assertEqual("613f11e09017eef49bc7aed29cebdeabb60a7553", packet["current_canonical_runner"]["source_commit"])
         self.assertEqual(7, packet["current_canonical_runner"]["artifact_count"])
 
     def test_report_review_and_consensus_record_claim_boundary(self) -> None:

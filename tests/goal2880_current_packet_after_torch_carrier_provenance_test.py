@@ -6,16 +6,18 @@ import rtdsl as rt
 
 
 ROOT = Path(__file__).resolve().parents[1]
-ARTIFACT_DIR = ROOT / "docs/reports/goal2876_current_packet_after_conformance_pod"
-REPORT = ROOT / "docs/reports/goal2876_current_packet_after_partner_conformance_closure_2026-05-31.md"
+ARTIFACT_DIR = ROOT / "docs/reports/goal2880_current_packet_after_seam_provenance_pod"
+REPORT = ROOT / "docs/reports/goal2880_current_packet_after_torch_carrier_provenance_2026-05-31.md"
+EXPECTED_COMMIT = "613f11e09017eef49bc7aed29cebdeabb60a7553"
 
 
-class Goal2876CurrentPacketAfterPartnerConformanceClosureTest(unittest.TestCase):
+class Goal2880CurrentPacketAfterTorchCarrierProvenanceTest(unittest.TestCase):
     def test_current_packet_summary_passes_with_clean_source_and_boundaries(self) -> None:
         summary = json.loads((ARTIFACT_DIR / "goal2855_summary.json").read_text(encoding="utf-8"))
 
         self.assertEqual("pass", summary["status"])
         self.assertTrue(summary["all_pass"])
+        self.assertEqual(EXPECTED_COMMIT, summary["source_commit"])
         self.assertEqual(7, summary["artifact_count"])
         self.assertTrue(summary["returncode_ok"])
         self.assertTrue(summary["artifact_status_ok"])
@@ -27,20 +29,20 @@ class Goal2876CurrentPacketAfterPartnerConformanceClosureTest(unittest.TestCase)
 
     def test_all_child_artifacts_are_clean_passes_on_same_commit(self) -> None:
         summary = json.loads((ARTIFACT_DIR / "goal2855_summary.json").read_text(encoding="utf-8"))
-        expected_commit = summary["source_commit"]
 
-        for artifact_name, metadata in summary["artifacts"].items():
-            payload = json.loads((ARTIFACT_DIR / artifact_name).read_text(encoding="utf-8"))
-            self.assertEqual("pass", payload["status"], artifact_name)
-            self.assertEqual(expected_commit, payload["source_commit"], artifact_name)
-            self.assertEqual([], payload["source_dirty"], artifact_name)
-            self.assertIn("NVIDIA RTX A5000", payload["gpu"], artifact_name)
-            boundary = payload.get("claim_boundary", {})
-            for key, value in boundary.items():
-                if key.endswith("_claim_authorized") or key == "native_engine_customization":
-                    self.assertFalse(value, f"{artifact_name} boundary {key}")
+        for artifact_name in summary["artifacts"]:
+            with self.subTest(artifact_name=artifact_name):
+                payload = json.loads((ARTIFACT_DIR / artifact_name).read_text(encoding="utf-8"))
+                self.assertEqual("pass", payload["status"])
+                self.assertEqual(EXPECTED_COMMIT, payload["source_commit"])
+                self.assertEqual([], payload["source_dirty"])
+                self.assertIn("NVIDIA RTX A5000", payload["gpu"])
+                boundary = payload.get("claim_boundary", {})
+                for key, value in boundary.items():
+                    if key.endswith("_claim_authorized") or key == "native_engine_customization":
+                        self.assertFalse(value, f"{artifact_name} boundary {key}")
 
-    def test_readiness_packet_preserves_goal2876_but_points_to_newer_runner_summary(self) -> None:
+    def test_readiness_packet_uses_goal2880_runner_summary(self) -> None:
         packet = rt.v2_5_internal_readiness_packet(repo_root=ROOT)
         validation = rt.validate_v2_5_internal_readiness_packet(repo_root=ROOT)
 
@@ -50,20 +52,23 @@ class Goal2876CurrentPacketAfterPartnerConformanceClosureTest(unittest.TestCase)
             packet["current_canonical_runner"]["summary_path"],
         )
         self.assertEqual("pass", packet["current_canonical_runner"]["status"])
+        self.assertEqual(EXPECTED_COMMIT, packet["current_canonical_runner"]["source_commit"])
         self.assertTrue(packet["required_report_presence"][
-            "docs/reports/goal2876_current_packet_after_partner_conformance_closure_2026-05-31.md"
+            "docs/reports/goal2880_current_packet_after_torch_carrier_provenance_2026-05-31.md"
         ])
 
-    def test_report_records_self_dirty_retry_and_boundary(self) -> None:
+    def test_report_records_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
 
         for phrase in (
-            "Goal2876",
-            "self-dirty",
+            "Goal2880",
+            EXPECTED_COMMIT,
             "all_pass: true",
-            "NVIDIA RTX A5000",
+            "claim_boundary_violations: {}",
             "not a v2.5 release authorization",
             "not a public speedup claim",
+            "not true-zero-copy wording",
+            "does not prove Tier A/B parity",
         ):
             self.assertIn(phrase, text)
 

@@ -52,7 +52,7 @@ class Goal2878Goal2868ResidualClosureMappingTest(unittest.TestCase):
 
         self.assertEqual("accept", readiness["status"])
         self.assertEqual(
-            "docs/reports/goal2876_current_packet_after_conformance_pod/goal2855_summary.json",
+            "docs/reports/goal2880_current_packet_after_seam_provenance_pod/goal2855_summary.json",
             packet["current_canonical_runner"]["summary_path"],
         )
         self.assertTrue(packet["required_report_presence"][str(REPORT.relative_to(ROOT)).replace("\\", "/")])

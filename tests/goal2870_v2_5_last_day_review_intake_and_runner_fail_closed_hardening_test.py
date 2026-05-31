@@ -34,7 +34,7 @@ RUNNER_SUMMARY = (
     ROOT
     / "docs"
     / "reports"
-    / "goal2865_current_packet_after_front_doors_pod"
+    / "goal2880_current_packet_after_seam_provenance_pod"
     / "goal2855_summary.json"
 )
 
