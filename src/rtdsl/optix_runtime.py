@@ -10955,6 +10955,7 @@ class PreparedOptixStaticTriangleScene3D:
             materializes_host_rows_for_bridge=handoff.materializes_host_rows_for_bridge,
             native_device_column_output_proven_on_hardware=handoff.native_device_column_output_proven_on_hardware,
             owner=handoff.owner,
+            producer_consumer_stream_ordering=handoff.producer_consumer_stream_ordering,
         )
 
     def ray_triangle_prepared_primitive_grouped_i64_reduction(

@@ -1,6 +1,10 @@
 import unittest
+from pathlib import Path
 
 import rtdsl as rt
+
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 class Goal2738NativeHitStreamStreamOrderingBoundaryTest(unittest.TestCase):
@@ -56,6 +60,14 @@ class Goal2738NativeHitStreamStreamOrderingBoundaryTest(unittest.TestCase):
                 hit_event_count=1,
                 producer_consumer_stream_ordering="trust_me",
             )
+
+    def test_optix_runtime_preserves_stream_ordering_when_rebuilding_handoff(self) -> None:
+        source = (ROOT / "src" / "rtdsl" / "optix_runtime.py").read_text()
+
+        self.assertIn(
+            "producer_consumer_stream_ordering=handoff.producer_consumer_stream_ordering",
+            source,
+        )
 
 
 if __name__ == "__main__":
