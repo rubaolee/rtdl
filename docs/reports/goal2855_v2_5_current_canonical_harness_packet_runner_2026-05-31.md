@@ -56,6 +56,10 @@ The runner writes `goal2855_summary.json` into the output directory. It streams
 `[goal2855]` progress before and after each harness, while Goal2803 continues to
 stream its own per-repeat Barnes-Hut progress.
 
+For the first clean pod validation, the summary artifact is preserved at:
+
+`docs/reports/goal2855_current_canonical_harness_runner_pod/goal2855_summary.json`
+
 ## Fail-Closed Summary Checks
 
 The packet summary is `pass` only when all of the following hold:
@@ -97,9 +101,35 @@ Ran 4 tests
 OK
 ```
 
-Pod validation is the next step: run the full packet from a clean pushed commit,
-confirm `goal2855_summary.json` is `pass`, and record the exact commit, GPU,
-dirty state, and elapsed time.
+## Pod Validation
+
+Clean pod validation was run on the RTX A5000 pod from pushed `main`:
+
+| Field | Value |
+| --- | --- |
+| Source commit | `e8b95e9e4cbdc0893747be949d5c7b587e8dbe35` |
+| Output directory | `/tmp/goal2855_packet_e8b95e9e_1780261491` |
+| Summary artifact | `docs/reports/goal2855_current_canonical_harness_runner_pod/goal2855_summary.json` |
+| GPU | `NVIDIA RTX A5000, 570.211.01` |
+| Runner elapsed | `434.92` seconds |
+| Artifact count | `7 / 7` |
+| Summary status | `pass` |
+| `source_dirty` | `[]` |
+| Claim-boundary violations | `{}` |
+
+Readback:
+
+```text
+pass True e8b95e9e4cbdc0893747be949d5c7b587e8dbe35 7 7 434.92
+{}
+{}
+```
+
+The full packet runner printed progress for all seven harnesses. The long
+Barnes-Hut 8,192-body case printed per-repeat substeps, including the three
+large Embree repeats at `99.562`, `102.794`, and `94.667` seconds and the three
+OptiX repeats at `21.184`, `19.607`, and `20.488` seconds. That validates the
+Goal2851 observability requirement inside the packet-level runner.
 
 ## Conclusion
 

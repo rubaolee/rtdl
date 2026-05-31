@@ -10,6 +10,7 @@ from scripts import goal2855_v2_5_current_canonical_harness_packet_runner as run
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs" / "reports" / "goal2855_v2_5_current_canonical_harness_packet_runner_2026-05-31.md"
+POD_SUMMARY = ROOT / "docs" / "reports" / "goal2855_current_canonical_harness_runner_pod" / "goal2855_summary.json"
 
 
 class Goal2855V25CurrentCanonicalHarnessPacketRunnerTest(unittest.TestCase):
@@ -155,6 +156,19 @@ class Goal2855V25CurrentCanonicalHarnessPacketRunnerTest(unittest.TestCase):
             "Goal2803",
         ):
             self.assertIn(phrase, text)
+
+    def test_pod_summary_records_clean_successful_packet(self) -> None:
+        summary = json.loads(POD_SUMMARY.read_text(encoding="utf-8"))
+
+        self.assertEqual("Goal2855", summary["goal"])
+        self.assertEqual("pass", summary["status"])
+        self.assertTrue(summary["all_pass"])
+        self.assertEqual(7, summary["artifact_count"])
+        self.assertEqual(7, summary["expected_artifact_count"])
+        self.assertEqual({}, summary["dirty_artifacts"])
+        self.assertEqual({}, summary["claim_boundary_violations"])
+        self.assertEqual([], summary["runner_metadata"]["source_dirty"])
+        self.assertFalse(summary["claim_boundary"]["v2_5_release_authorized"])
 
 
 if __name__ == "__main__":
