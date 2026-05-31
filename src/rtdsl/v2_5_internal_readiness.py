@@ -9,6 +9,7 @@ from .partner_continuation_protocol import validate_v2_5_partner_preview_gate
 from .v2_5_determinism_policy import validate_v2_5_continuation_determinism_policies
 from .v2_5_execution_path_policy import validate_v2_5_execution_path_policy
 from .v2_5_partner_selection_guidance import validate_v2_5_partner_selection_guidance
+from .v2_5_partner_conformance_matrix import validate_v2_5_partner_conformance_matrix
 from .v2_5_partner_support_matrix import validate_v2_5_partner_support_matrix
 from .v2_5_triton_app_migration import validate_v2_5_tiered_benchmark_manifest
 from .v2_5_triton_app_migration import v2_5_tiered_benchmark_manifest
@@ -84,6 +85,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2870_goal2868_last_day_review_intake_consensus_2026-05-31.md",
     "docs/reports/goal2871_hit_stream_torch_carrier_seam_authority_guard_2026-05-31.md",
     "docs/reports/goal2872_triton_tie_break_conformance_smoke_2026-05-31.md",
+    "docs/reports/goal2873_v2_5_partner_conformance_matrix_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -203,6 +205,7 @@ def v2_5_internal_readiness_packet(
             ),
             "execution_path_policy": validate_v2_5_execution_path_policy(),
             "determinism_policy": validate_v2_5_continuation_determinism_policies(),
+            "partner_conformance_matrix": validate_v2_5_partner_conformance_matrix(),
         },
         "benchmark_app_count": manifest["benchmark_app_count"],
         "tier_counts": manifest["tier_counts"],
