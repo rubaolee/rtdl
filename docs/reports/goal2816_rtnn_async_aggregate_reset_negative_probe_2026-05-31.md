@@ -26,6 +26,15 @@ OptiX build: pass
 focused tests: 6 passed
 ```
 
+Final clean-head rollback guard:
+
+```text
+commit: 30f06c83951d7ebb755a37ae3e4fcf70a86aa67b
+source_dirty: []
+OptiX build: pass
+focused tests: 12 passed
+```
+
 Artifacts:
 
 - `docs/reports/goal2816_rtnn_async_aggregate_reset_negative_probe_pod/rtnn_async_reset_median_f32_32768.json`
