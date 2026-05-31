@@ -10,6 +10,7 @@ from scripts import goal2855_v2_5_current_canonical_harness_packet_runner as run
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs" / "reports" / "goal2855_v2_5_current_canonical_harness_packet_runner_2026-05-31.md"
+COMPACT_REPORT = ROOT / "docs" / "reports" / "goal2859_packet_runner_compact_child_output_2026-05-31.md"
 POD_SUMMARY = ROOT / "docs" / "reports" / "goal2855_current_canonical_harness_runner_pod" / "goal2855_summary.json"
 REVIEW = ROOT / "docs" / "reviews" / "goal2856_gemini_review_goal2855_v2_5_canonical_packet_runner_2026-05-31.md"
 CONSENSUS = ROOT / "docs" / "reports" / "goal2856_goal2855_v2_5_canonical_packet_runner_consensus_2026-05-31.md"
@@ -24,6 +25,8 @@ class Goal2855V25CurrentCanonicalHarnessPacketRunnerTest(unittest.TestCase):
             work_dir=Path("/tmp/goal2855_work"),
             raw_output_dir=Path("/tmp/goal2855_raw"),
             fail_fast=True,
+            compact_child_output=True,
+            stdout_dir=Path("/tmp/goal2855_stdout"),
         )
 
         self.assertEqual(7, len(plan))
@@ -54,6 +57,16 @@ class Goal2855V25CurrentCanonicalHarnessPacketRunnerTest(unittest.TestCase):
         self.assertTrue(any("--fail-fast" in item["command"] for item in plan))
         self.assertTrue(any("--raw-output-dir" in item["command"] for item in plan))
         self.assertTrue(all(str(output_dir) in " ".join(item["command"]) for item in plan))
+        self.assertTrue(all(item["compact_child_output"] for item in plan))
+        self.assertTrue(all(str(item["stdout_log_path"]).endswith(".stdout") for item in plan))
+
+    def test_compact_output_echo_policy_keeps_progress_and_errors(self) -> None:
+        self.assertTrue(runner._should_echo_child_line("[goal2803] repeat start"))
+        self.assertTrue(runner._should_echo_child_line("Traceback (most recent call last):"))
+        self.assertTrue(runner._should_echo_child_line("FAILED (errors=1)"))
+        self.assertTrue(runner._should_echo_child_line("usage: harness.py --output PATH"))
+        self.assertFalse(runner._should_echo_child_line("{"))
+        self.assertFalse(runner._should_echo_child_line('  "status": "pass",'))
 
     def test_summarize_packet_fails_closed_on_dirty_artifact_or_claim_violation(self) -> None:
         with tempfile.TemporaryDirectory(prefix="goal2855_test_") as temp_name:
@@ -192,6 +205,18 @@ class Goal2855V25CurrentCanonicalHarnessPacketRunnerTest(unittest.TestCase):
             "source_commit: e8b95e9e4cbdc0893747be949d5c7b587e8dbe35",
         ):
             self.assertIn(phrase, consensus)
+
+    def test_compact_output_report_documents_logging_boundary(self) -> None:
+        text = COMPACT_REPORT.read_text(encoding="utf-8")
+        for phrase in (
+            "Goal2859",
+            "--compact-child-output",
+            "default behavior is unchanged",
+            "_stdout/<goal>_<app>.stdout",
+            "operational logging improvement only",
+            "not authorize release",
+        ):
+            self.assertIn(phrase, text)
 
 
 if __name__ == "__main__":

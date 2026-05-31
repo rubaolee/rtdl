@@ -3,9 +3,11 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import queue
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -149,6 +151,8 @@ def packet_plan(
     work_dir: Path,
     raw_output_dir: Path,
     fail_fast: bool,
+    compact_child_output: bool = False,
+    stdout_dir: Path | None = None,
 ) -> list[dict[str, Any]]:
     return [
         {
@@ -167,6 +171,11 @@ def packet_plan(
                     fail_fast=fail_fast,
                 )
             ),
+            "compact_child_output": bool(compact_child_output),
+            "stdout_log_name": f"{spec.goal.lower()}_{spec.app}.stdout" if compact_child_output else None,
+            "stdout_log_path": str((stdout_dir or output_dir / "_stdout") / f"{spec.goal.lower()}_{spec.app}.stdout")
+            if compact_child_output
+            else None,
         }
         for spec in HARNESS_SPECS
     ]
@@ -181,10 +190,15 @@ def run_packet(
     summary_name: str,
     timeout_seconds: int,
     fail_fast: bool,
+    compact_child_output: bool = False,
+    stdout_dir: Path | None = None,
 ) -> dict[str, Any]:
     output_dir.mkdir(parents=True, exist_ok=True)
     work_dir.mkdir(parents=True, exist_ok=True)
     raw_output_dir.mkdir(parents=True, exist_ok=True)
+    stdout_root = Path(stdout_dir) if stdout_dir is not None else output_dir / "_stdout"
+    if compact_child_output:
+        stdout_root.mkdir(parents=True, exist_ok=True)
     started = time.perf_counter()
     env = os.environ.copy()
     python_path_entries = [str(ROOT / "src"), str(ROOT)]
@@ -207,21 +221,30 @@ def run_packet(
             f"({spec.app}) -> {spec.artifact_name}"
         )
         step_started = time.perf_counter()
-        try:
-            completed = subprocess.run(
-                list(command),
-                cwd=ROOT,
+        stdout_log_path = stdout_root / f"{spec.goal.lower()}_{spec.app}.stdout" if compact_child_output else None
+        if compact_child_output:
+            returncode, timed_out, error = _run_child_compact(
+                command=command,
                 env=env,
-                timeout=int(timeout_seconds),
-                check=False,
+                timeout_seconds=int(timeout_seconds),
+                stdout_log_path=stdout_log_path,
             )
-            returncode = int(completed.returncode)
-            timed_out = False
-            error = None
-        except subprocess.TimeoutExpired as exc:
-            returncode = 124
-            timed_out = True
-            error = f"timeout after {exc.timeout} seconds"
+        else:
+            try:
+                completed = subprocess.run(
+                    list(command),
+                    cwd=ROOT,
+                    env=env,
+                    timeout=int(timeout_seconds),
+                    check=False,
+                )
+                returncode = int(completed.returncode)
+                timed_out = False
+                error = None
+            except subprocess.TimeoutExpired as exc:
+                returncode = 124
+                timed_out = True
+                error = f"timeout after {exc.timeout} seconds"
         elapsed = time.perf_counter() - step_started
         artifact_path = output_dir / spec.artifact_name
         execution = {
@@ -234,6 +257,8 @@ def run_packet(
             "timed_out": timed_out,
             "error": error,
             "elapsed_sec": elapsed,
+            "compact_child_output": bool(compact_child_output),
+            "stdout_log_path": str(stdout_log_path) if stdout_log_path is not None else None,
         }
         executions.append(execution)
         _log(f"finished {spec.goal}: returncode={returncode}, elapsed={elapsed:.2f}s")
@@ -343,6 +368,7 @@ def summarize_packet(
         "executions": executions,
         "claim_boundary": {
             "canonical_packet_runner": True,
+            "compact_child_output_safe_to_use": True,
             "public_speedup_claim_authorized": False,
             "whole_app_speedup_claim_authorized": False,
             "paper_reproduction_claim_authorized": False,
@@ -353,6 +379,79 @@ def summarize_packet(
         "runner_metadata": metadata,
         "elapsed_sec": float(elapsed_sec),
     }
+
+
+def _run_child_compact(
+    *,
+    command: tuple[str, ...],
+    env: dict[str, str],
+    timeout_seconds: int,
+    stdout_log_path: Path,
+) -> tuple[int, bool, str | None]:
+    stdout_log_path.parent.mkdir(parents=True, exist_ok=True)
+    process = subprocess.Popen(
+        list(command),
+        cwd=ROOT,
+        env=env,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        bufsize=1,
+    )
+    assert process.stdout is not None
+    lines: queue.Queue[str | None] = queue.Queue()
+
+    def _reader() -> None:
+        try:
+            for line in process.stdout:
+                lines.put(line)
+        finally:
+            lines.put(None)
+
+    reader = threading.Thread(target=_reader, daemon=True)
+    reader.start()
+    started = time.perf_counter()
+    timed_out = False
+    error: str | None = None
+    reader_done = False
+
+    with stdout_log_path.open("w", encoding="utf-8") as log:
+        while not reader_done:
+            try:
+                line = lines.get(timeout=1.0)
+            except queue.Empty:
+                if process.poll() is not None:
+                    continue
+                if time.perf_counter() - started > timeout_seconds:
+                    timed_out = True
+                    error = f"timeout after {timeout_seconds} seconds"
+                    process.kill()
+                continue
+            if line is None:
+                reader_done = True
+                continue
+            log.write(line)
+            log.flush()
+            if _should_echo_child_line(line):
+                print(line, end="", flush=True)
+
+    returncode = int(process.wait())
+    if timed_out:
+        returncode = 124
+    return returncode, timed_out, error
+
+
+def _should_echo_child_line(line: str) -> bool:
+    stripped = line.strip()
+    if not stripped:
+        return False
+    if stripped.startswith("["):
+        return True
+    if stripped.startswith(("Traceback", "ERROR", "FAILED", "OK", "Ran ", "usage:")):
+        return True
+    if "error:" in stripped.lower():
+        return True
+    return False
 
 
 def _log(message: str) -> None:
@@ -368,6 +467,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--timeout-seconds", type=int, default=1200)
     parser.add_argument("--python", default=sys.executable)
     parser.add_argument("--fail-fast", action="store_true")
+    parser.add_argument(
+        "--compact-child-output",
+        action="store_true",
+        help="Save each child harness stdout to a log file while echoing only progress and error lines.",
+    )
+    parser.add_argument("--stdout-dir", type=Path)
     parser.add_argument("--list", action="store_true", help="Print the seven-harness plan without running it.")
     args = parser.parse_args(argv)
 
@@ -383,13 +488,17 @@ def main(argv: list[str] | None = None) -> int:
             "output_dir": str(output_dir),
             "work_dir": str(work_dir),
             "raw_output_dir": str(raw_output_dir),
+            "stdout_dir": str(Path(args.stdout_dir) if args.stdout_dir else output_dir / "_stdout"),
             "fail_fast": bool(args.fail_fast),
+            "compact_child_output": bool(args.compact_child_output),
             "plan": packet_plan(
                 python_exe=str(args.python),
                 output_dir=output_dir,
                 work_dir=work_dir,
                 raw_output_dir=raw_output_dir,
                 fail_fast=bool(args.fail_fast),
+                compact_child_output=bool(args.compact_child_output),
+                stdout_dir=Path(args.stdout_dir) if args.stdout_dir else output_dir / "_stdout",
             ),
             "claim_boundary": {
                 "plan_only": True,
@@ -408,6 +517,8 @@ def main(argv: list[str] | None = None) -> int:
         summary_name=str(args.summary_name),
         timeout_seconds=int(args.timeout_seconds),
         fail_fast=bool(args.fail_fast),
+        compact_child_output=bool(args.compact_child_output),
+        stdout_dir=Path(args.stdout_dir) if args.stdout_dir else None,
     )
     return 0 if summary["status"] == "pass" else 1
 

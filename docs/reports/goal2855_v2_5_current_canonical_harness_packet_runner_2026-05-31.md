@@ -49,12 +49,17 @@ Full pod run:
 PYTHONPATH=src:. timeout 2400s python3 -u \
   scripts/goal2855_v2_5_current_canonical_harness_packet_runner.py \
   --fail-fast \
+  --compact-child-output \
   --output-dir /tmp/goal2855_current_packet
 ```
 
 The runner writes `goal2855_summary.json` into the output directory. It streams
 `[goal2855]` progress before and after each harness, while Goal2803 continues to
 stream its own per-repeat Barnes-Hut progress.
+
+With `--compact-child-output`, each child harness writes its full stdout to
+`_stdout/<goal>_<app>.stdout`, while the terminal echoes only progress and error
+lines. This keeps long pod runs readable without discarding diagnostic JSON.
 
 For the first clean pod validation, the summary artifact is preserved at:
 
