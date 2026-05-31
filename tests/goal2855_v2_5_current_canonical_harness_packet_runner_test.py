@@ -11,6 +11,8 @@ from scripts import goal2855_v2_5_current_canonical_harness_packet_runner as run
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs" / "reports" / "goal2855_v2_5_current_canonical_harness_packet_runner_2026-05-31.md"
 POD_SUMMARY = ROOT / "docs" / "reports" / "goal2855_current_canonical_harness_runner_pod" / "goal2855_summary.json"
+REVIEW = ROOT / "docs" / "reviews" / "goal2856_gemini_review_goal2855_v2_5_canonical_packet_runner_2026-05-31.md"
+CONSENSUS = ROOT / "docs" / "reports" / "goal2856_goal2855_v2_5_canonical_packet_runner_consensus_2026-05-31.md"
 
 
 class Goal2855V25CurrentCanonicalHarnessPacketRunnerTest(unittest.TestCase):
@@ -169,6 +171,27 @@ class Goal2855V25CurrentCanonicalHarnessPacketRunnerTest(unittest.TestCase):
         self.assertEqual({}, summary["claim_boundary_violations"])
         self.assertEqual([], summary["runner_metadata"]["source_dirty"])
         self.assertFalse(summary["claim_boundary"]["v2_5_release_authorized"])
+
+    def test_review_and_consensus_accept_with_boundary(self) -> None:
+        review = REVIEW.read_text(encoding="utf-8")
+        consensus = CONSENSUS.read_text(encoding="utf-8")
+
+        for phrase in (
+            "Independent Gemini Review",
+            "distinct from Codex authoring",
+            "`accept-with-boundary`",
+            "operational readiness tracking only",
+        ):
+            self.assertIn(phrase, review)
+
+        for phrase in (
+            "Consensus verdict: **accept-with-boundary**",
+            "Codex",
+            "Gemini",
+            "not final v2.5 release consensus",
+            "source_commit: e8b95e9e4cbdc0893747be949d5c7b587e8dbe35",
+        ):
+            self.assertIn(phrase, consensus)
 
 
 if __name__ == "__main__":
