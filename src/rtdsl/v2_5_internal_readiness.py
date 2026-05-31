@@ -12,6 +12,7 @@ from .v2_5_partner_selection_guidance import validate_v2_5_partner_selection_gui
 from .v2_5_partner_support_matrix import validate_v2_5_partner_support_matrix
 from .v2_5_triton_app_migration import validate_v2_5_tiered_benchmark_manifest
 from .v2_5_triton_app_migration import v2_5_tiered_benchmark_manifest
+from .v2_5_triton_app_migration import v2_5_triton_front_door_coverage
 
 
 V2_5_INTERNAL_READINESS_PACKET_VERSION = "rtdl.v2_5.internal_readiness_packet.v1"
@@ -73,6 +74,8 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2852_goal2851_barnes_hut_progress_logging_consensus_2026-05-31.md",
     "docs/reports/goal2855_v2_5_current_canonical_harness_packet_runner_2026-05-31.md",
     "docs/reports/goal2856_goal2855_v2_5_canonical_packet_runner_consensus_2026-05-31.md",
+    "docs/reports/goal2861_v2_5_generic_partner_front_door_completion_2026-05-31.md",
+    "docs/reports/goal2862_goal2861_generic_front_door_completion_consensus_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -129,6 +132,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
     "docs/reviews/goal2848_gemini_review_goal2847_current_head_canonical_harness_2026-05-31.md",
     "docs/reviews/goal2852_gemini_review_goal2851_barnes_hut_progress_logging_2026-05-31.md",
     "docs/reviews/goal2856_gemini_review_goal2855_v2_5_canonical_packet_runner_2026-05-31.md",
+    "docs/reviews/goal2862_gemini_review_goal2861_generic_front_door_completion_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_BLOCKED_ACTIONS = (
@@ -162,6 +166,7 @@ def v2_5_internal_readiness_packet(
 
     root = Path.cwd() if repo_root is None else Path(repo_root)
     manifest = v2_5_tiered_benchmark_manifest()
+    front_door_coverage = v2_5_triton_front_door_coverage()
     tier_b_artifacts = _tier_b_artifact_metadata(root)
     current_canonical_harness = _current_canonical_harness_metadata(root)
     current_canonical_runner = _current_canonical_runner_metadata(root)
@@ -174,6 +179,7 @@ def v2_5_internal_readiness_packet(
         "milestone": "v2.5",
         "scope": "internal_source_tree_engineering_readiness_index",
         "manifest": manifest,
+        "front_door_coverage": front_door_coverage,
         "manifest_validation": validate_v2_5_tiered_benchmark_manifest(),
         "core_validations": {
             "partner_continuation_contract": validate_v2_5_partner_continuation_contract(),
@@ -244,6 +250,18 @@ def validate_v2_5_internal_readiness_packet(
         errors.append("v2.5 internal packet must cover exactly 10 benchmark apps")
     if packet["tier_counts"] != {"A": 3, "B": 4, "C": 3}:
         errors.append("v2.5 internal packet tier counts changed")
+    front_door_coverage = packet["front_door_coverage"]
+    if front_door_coverage["benchmark_app_count"] != 10:
+        errors.append("v2.5 front-door coverage must cover exactly 10 benchmark apps")
+    if front_door_coverage["fully_front_door_ready_count"] != 10:
+        errors.append("all promoted v2.5 benchmark apps must have generic front-door coverage")
+    for row in front_door_coverage["apps"]:
+        if row["front_door_status"] != "adapter_front_door_ready":
+            errors.append(f"{row['app_id']} is not adapter-front-door-ready")
+        if tuple(row["dispatcher_only_operations"]) != ():
+            errors.append(f"{row['app_id']} still has dispatcher-only front-door gaps")
+        if tuple(row["missing_operations"]) != ():
+            errors.append(f"{row['app_id']} still has missing front-door operations")
     for name, validation in packet["core_validations"].items():
         if validation["status"] != "accept":
             errors.append(f"core validation failed: {name}")
