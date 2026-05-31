@@ -31,10 +31,10 @@ This is not a v2.5 release authorization, not a public speedup claim, not a
 broad RT-core claim, not a whole-app speedup claim, not true-zero-copy wording,
 and not package-install wording.
 
-The matrix still reports `release_conformance_complete: false` because the
-Numba fallback preview rows remain explicit runtime conformance gaps. That is
-now the precise partner-conformance blocker rather than a mixed Triton/Numba
-uncertainty.
+Goal2875 later installed Numba on the pod and closed the remaining Numba
+runtime conformance gaps. The matrix still reports
+`release_conformance_complete: false` because conformance closure is not a
+release authorization.
 
 ## Pod Validation
 

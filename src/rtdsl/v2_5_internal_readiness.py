@@ -87,6 +87,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2872_triton_tie_break_conformance_smoke_2026-05-31.md",
     "docs/reports/goal2873_v2_5_partner_conformance_matrix_2026-05-31.md",
     "docs/reports/goal2874_triton_preview_current_pod_conformance_backfill_2026-05-31.md",
+    "docs/reports/goal2875_numba_runtime_conformance_smoke_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {

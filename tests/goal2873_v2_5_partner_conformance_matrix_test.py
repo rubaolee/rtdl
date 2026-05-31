@@ -19,8 +19,9 @@ class Goal2873V25PartnerConformanceMatrixTest(unittest.TestCase):
         self.assertEqual(expected_count, matrix["cell_count"])
         self.assertEqual(support["cell_count"], matrix["cell_count"])
         self.assertFalse(matrix["release_conformance_complete"])
-        self.assertGreater(matrix["release_blocker_count"], 0)
-        self.assertGreater(matrix["runtime_conformance_gap_count"], 0)
+        self.assertTrue(matrix["preview_runtime_conformance_complete"])
+        self.assertEqual(0, matrix["release_blocker_count"])
+        self.assertEqual(0, matrix["runtime_conformance_gap_count"])
         self.assertFalse(matrix["public_speedup_claim_authorized"])
         self.assertFalse(matrix["broad_rt_core_claim_authorized"])
         self.assertFalse(matrix["whole_app_speedup_claim_authorized"])
@@ -36,14 +37,14 @@ class Goal2873V25PartnerConformanceMatrixTest(unittest.TestCase):
             self.assertIn("tests.goal2872_triton_tie_break_conformance_smoke_test", cell["test_modules"])
             self.assertFalse(cell["release_blocker"])
 
-    def test_numba_preview_rows_remain_explicit_runtime_gaps(self) -> None:
+    def test_numba_preview_rows_now_point_to_goal2875_pod_runtime_evidence(self) -> None:
         for operation in ("segmented_count_i64", "segmented_sum_f64"):
             cell = rt.plan_v2_5_partner_conformance(operation, "numba")
 
             self.assertEqual(rt.V2_5_SUPPORT_STATUS_PREVIEW, cell["support_status"])
-            self.assertEqual(rt.V2_5_CONFORMANCE_STATUS_RUNTIME_GAP, cell["conformance_status"])
-            self.assertEqual("Goal2666", cell["evidence_goal"])
-            self.assertTrue(cell["release_blocker"])
+            self.assertEqual(rt.V2_5_CONFORMANCE_STATUS_POD_RUNTIME, cell["conformance_status"])
+            self.assertEqual("Goal2875", cell["evidence_goal"])
+            self.assertFalse(cell["release_blocker"])
             self.assertFalse(cell["public_speedup_claim_authorized"])
 
     def test_cupy_conformance_is_descriptor_only_except_hit_stream_preview(self) -> None:

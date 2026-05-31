@@ -56,9 +56,8 @@ Important rows:
 - Goal2874 later backfilled current-pod runtime conformance for Triton count,
   min/max, compact, and bounded collect. The remaining runtime conformance gaps
   are now the two Numba fallback preview rows.
-- Numba preview rows for `segmented_count_i64` and `segmented_sum_f64` remain
-  explicit runtime conformance gaps; Goal2666 only proves descriptors and lazy
-  import boundaries.
+- Goal2875 later installed Numba on the pod and closed runtime conformance for
+  the two Numba fallback preview rows.
 - CuPy is descriptor-only for generic continuation rows except the scoped
   event-ordered grouped hit-stream consumer proven by Goals2771-2772.
 

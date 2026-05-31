@@ -20,22 +20,17 @@ class Goal2874TritonPreviewCurrentPodConformanceBackfillTest(unittest.TestCase):
             self.assertFalse(cell["release_blocker"], operation)
             self.assertNotEqual("support-matrix", cell["evidence_goal"])
 
-    def test_only_numba_preview_rows_remain_runtime_conformance_gaps(self) -> None:
+    def test_goal2875_supersedes_the_numba_runtime_conformance_gaps(self) -> None:
         matrix = rt.v2_5_partner_conformance_matrix()
         blockers = {
             (cell["operation"], cell["partner"]): cell["conformance_status"]
             for cell in matrix["release_blockers"]
         }
 
-        self.assertEqual(
-            {
-                ("segmented_count_i64", rt.V2_5_FALLBACK_PARTNER): rt.V2_5_CONFORMANCE_STATUS_RUNTIME_GAP,
-                ("segmented_sum_f64", rt.V2_5_FALLBACK_PARTNER): rt.V2_5_CONFORMANCE_STATUS_RUNTIME_GAP,
-            },
-            blockers,
-        )
-        self.assertEqual(2, matrix["release_blocker_count"])
-        self.assertEqual(2, matrix["runtime_conformance_gap_count"])
+        self.assertEqual({}, blockers)
+        self.assertEqual(0, matrix["release_blocker_count"])
+        self.assertEqual(0, matrix["runtime_conformance_gap_count"])
+        self.assertTrue(matrix["preview_runtime_conformance_complete"])
 
     def test_goal2874_rows_reference_current_pod_backfill_report(self) -> None:
         for operation in (

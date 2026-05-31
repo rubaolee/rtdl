@@ -131,6 +131,18 @@ _CUPY_POD_RUNTIME_EVIDENCE = {
         ),
     )
 }
+_NUMBA_POD_RUNTIME_EVIDENCE = {
+    "segmented_count_i64": (
+        "Goal2875",
+        ("tests.goal2875_numba_runtime_conformance_smoke_test",),
+        ("docs/reports/goal2875_numba_runtime_conformance_smoke_2026-05-31.md",),
+    ),
+    "segmented_sum_f64": (
+        "Goal2875",
+        ("tests.goal2875_numba_runtime_conformance_smoke_test",),
+        ("docs/reports/goal2875_numba_runtime_conformance_smoke_2026-05-31.md",),
+    ),
+}
 
 
 @dataclass(frozen=True)
@@ -200,6 +212,11 @@ def v2_5_partner_conformance_cells() -> tuple[V25PartnerConformanceCell, ...]:
 
 def v2_5_partner_conformance_matrix() -> dict[str, Any]:
     cells = tuple(cell.to_metadata() for cell in v2_5_partner_conformance_cells())
+    runtime_gap_count = sum(
+        1
+        for cell in cells
+        if cell["conformance_status"] == V2_5_CONFORMANCE_STATUS_RUNTIME_GAP
+    )
     release_blockers = tuple(
         cell
         for cell in cells
@@ -214,11 +231,8 @@ def v2_5_partner_conformance_matrix() -> dict[str, Any]:
         "cell_count": len(cells),
         "cells": cells,
         "release_conformance_complete": False,
-        "runtime_conformance_gap_count": sum(
-            1
-            for cell in cells
-            if cell["conformance_status"] == V2_5_CONFORMANCE_STATUS_RUNTIME_GAP
-        ),
+        "preview_runtime_conformance_complete": runtime_gap_count == 0,
+        "runtime_conformance_gap_count": runtime_gap_count,
         "release_blocker_count": len(release_blockers),
         "release_blockers": release_blockers,
         "public_speedup_claim_authorized": False,
@@ -291,17 +305,25 @@ def validate_v2_5_partner_conformance_matrix(matrix: dict[str, Any] | None = Non
             errors.append(f"{operation} must keep Triton pod tie-break conformance evidence")
         elif "tests.goal2872_triton_tie_break_conformance_smoke_test" not in triton.get("test_modules", ()):
             errors.append(f"{operation} must point at Goal2872 tie-break smoke")
+    actual_runtime_gap_count = sum(
+        1
+        for cell in cells
+        if isinstance(cell, dict)
+        and cell.get("conformance_status") == V2_5_CONFORMANCE_STATUS_RUNTIME_GAP
+    )
+    if int(matrix.get("runtime_conformance_gap_count", -1)) != actual_runtime_gap_count:
+        errors.append("runtime conformance gap count does not match rows")
     for operation in ("segmented_count_i64", "segmented_sum_f64"):
         numba = _cell(cells, operation, V2_5_FALLBACK_PARTNER)
-        if not numba or numba.get("conformance_status") != V2_5_CONFORMANCE_STATUS_RUNTIME_GAP:
-            errors.append(f"{operation} Numba preview must remain an explicit runtime conformance gap")
+        if not numba or numba.get("conformance_status") != V2_5_CONFORMANCE_STATUS_POD_RUNTIME:
+            errors.append(f"{operation} Numba preview must keep pod runtime conformance evidence")
     cupy_hit = _cell(cells, "hit_stream_grouped_ray_id_primitive_i64", V2_5_CONFORMANCE_PARTNER)
     if not cupy_hit or cupy_hit.get("conformance_status") != V2_5_CONFORMANCE_STATUS_POD_RUNTIME:
         errors.append("CuPy hit-stream grouped reduction must keep pod runtime conformance evidence")
     if matrix.get("release_conformance_complete") is not False:
         errors.append("v2.5 conformance matrix must not mark release conformance complete")
-    if int(matrix.get("runtime_conformance_gap_count", -1)) <= 0:
-        errors.append("runtime conformance gaps must remain explicit until fully closed")
+    if matrix.get("preview_runtime_conformance_complete") is not (actual_runtime_gap_count == 0):
+        errors.append("preview runtime conformance completion flag does not match rows")
     for claim_field in (
         "public_speedup_claim_authorized",
         "broad_rt_core_claim_authorized",
@@ -395,6 +417,19 @@ def _conformance_cell(operation: str, partner: str) -> V25PartnerConformanceCell
                 ),
             )
     if partner == V2_5_FALLBACK_PARTNER:
+        if operation in _NUMBA_POD_RUNTIME_EVIDENCE:
+            goal, tests, reports = _NUMBA_POD_RUNTIME_EVIDENCE[operation]
+            return V25PartnerConformanceCell(
+                operation=operation,
+                partner=partner,
+                support_status=support_status,
+                conformance_status=V2_5_CONFORMANCE_STATUS_POD_RUNTIME,
+                evidence_goal=goal,
+                test_modules=tests,
+                report_paths=reports,
+                release_blocker=False,
+                notes="Numba fallback preview has CUDA runtime conformance evidence recorded in Goal2875",
+            )
         return V25PartnerConformanceCell(
             operation=operation,
             partner=partner,
