@@ -109,5 +109,24 @@ Pod execution evidence:
 - The `goal2683_raydb_triton_front_door_pod_runner.py` command above completed
   on the RTX A5000 pod and wrote the Goal2796 artifact.
 
-Pod clean-check validation from Git will be recorded after this goal lands on
-`main`.
+Pod clean-check validation from Git:
+
+- Pod: `root@69.30.85.171`, port `22167`, key
+  `C:\Users\Lestat\.ssh\id_ed25519_rtdl_codex_current_pod`.
+- Commit: `faadc6edcd91fa6e1bcc11de142633cc034037cb`.
+- Python: `3.12.3`.
+- Command:
+
+```text
+git fetch origin main
+git reset --hard origin/main
+git clean -fd
+PYTHONPATH=src:. python3 -m unittest \
+  tests.goal2796_raydb_scalar_reduction_selection_guidance_test \
+  tests.goal2782_v2_5_partner_selection_guidance_test \
+  tests.goal2783_v2_5_app_migration_selection_guidance_test \
+  tests.goal2792_partner_selection_explain_plan_test \
+  tests.goal2791_thresholded_partner_selection_guidance_test
+```
+
+- Result: 29 tests passed.
