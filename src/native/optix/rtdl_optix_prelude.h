@@ -1190,6 +1190,10 @@ int  rtdl_optix_prepare_fixed_radius_neighbors_3d(
          double max_radius,
          void** prepared_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_fixed_radius_query_points_3d(
+         const RtdlPoint3D* query_points, size_t query_count,
+         void** prepared_queries_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_run_prepared_fixed_radius_neighbors_3d(
          void* prepared,
          const RtdlPoint3D* query_points, size_t query_count,
@@ -1232,6 +1236,13 @@ int  rtdl_optix_aggregate_prepared_ranked_fixed_radius_neighbor_summaries_3d_f32
          size_t k_max,
          RtdlFixedRadiusRankedNeighborAggregate* aggregate_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_3d_f32(
+         void* prepared,
+         void* prepared_queries,
+         double radius,
+         size_t k_max,
+         RtdlFixedRadiusRankedNeighborAggregate* aggregate_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_count_prepared_fixed_radius_neighbors_3d(
          void* prepared,
          const RtdlPoint3D* query_points, size_t query_count,
@@ -1247,6 +1258,7 @@ int  rtdl_optix_summarize_prepared_fixed_radius_neighbors_3d(
          RtdlFixedRadiusNeighborSummary* summary_out,
          char* error_out, size_t error_size);
 void rtdl_optix_destroy_prepared_fixed_radius_neighbors_3d(void* prepared);
+void rtdl_optix_destroy_prepared_fixed_radius_query_points_3d(void* prepared_queries);
 int  rtdl_optix_prepare_fixed_radius_count_threshold_3d(
          const RtdlPoint3D* search_points, size_t search_count,
          double max_radius,

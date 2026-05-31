@@ -701,6 +701,7 @@ from .optix_runtime import prepare_optix_columnar_record_set
 from .optix_runtime import prepare_optix_partner_resident_columnar_record_set
 from .optix_runtime import prepare_optix_db_dataset
 from .optix_runtime import prepare_optix_fixed_radius_neighbors_3d
+from .optix_runtime import prepare_optix_fixed_radius_query_points_3d
 from .optix_runtime import prepare_optix_fixed_radius_count_threshold_3d
 from .optix_runtime import prepare_optix_fixed_radius_count_threshold_2d
 from .optix_runtime import prepare_optix_fixed_radius_count_threshold_2d_device_search_columns
@@ -731,6 +732,7 @@ from .optix_runtime import PreparedOptixDbDataset
 from .optix_runtime import PreparedOptixExecution
 from .optix_runtime import PreparedOptixFixedRadiusCountThreshold2D
 from .optix_runtime import PreparedOptixFixedRadiusNeighbors3D
+from .optix_runtime import PreparedOptixFixedRadiusQueryPoints3D
 from .optix_runtime import PreparedOptixFixedRadiusCountThreshold3D
 from .optix_runtime import PreparedOptixKernel
 from .optix_runtime import PreparedOptixAabbIndex2D
@@ -2007,6 +2009,7 @@ __all__ = [
     "prepare_optix_partner_resident_columnar_record_set",
     "prepare_optix_db_dataset",
     "prepare_optix_fixed_radius_neighbors_3d",
+    "prepare_optix_fixed_radius_query_points_3d",
     "prepare_optix_fixed_radius_count_threshold_3d",
     "prepare_optix_fixed_radius_count_threshold_2d",
     "prepare_optix_fixed_radius_count_threshold_2d_device_search_columns",
@@ -2045,6 +2048,7 @@ __all__ = [
     "PreparedOptixExecution",
     "PreparedOptixFixedRadiusCountThreshold2D",
     "PreparedOptixFixedRadiusNeighbors3D",
+    "PreparedOptixFixedRadiusQueryPoints3D",
     "PreparedOptixFixedRadiusCountThreshold3D",
     "PreparedOptixKernel",
     "PreparedOptixAabbIndex2D",

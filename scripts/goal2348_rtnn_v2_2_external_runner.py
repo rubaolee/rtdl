@@ -749,8 +749,13 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
     repeat = int(args.repeat)
     if batch_size <= 0:
         raise ValueError("query_batch_size must be positive")
-    if result_mode not in ("count", "summary", "ranked-summary-raw", "ranked-summary-aggregate", "ranked-summary-aggregate-float32"):
-        raise ValueError("batched RTDL path currently supports count, summary, ranked-summary-raw, ranked-summary-aggregate, and ranked-summary-aggregate-float32")
+    aggregate_modes = {
+        "ranked-summary-aggregate",
+        "ranked-summary-aggregate-float32",
+        "ranked-summary-aggregate-prepared-query-float32",
+    }
+    if result_mode not in ("count", "summary", "ranked-summary-raw", *aggregate_modes):
+        raise ValueError("batched RTDL path currently supports count, summary, ranked-summary-raw, ranked-summary-aggregate, ranked-summary-aggregate-float32, and ranked-summary-aggregate-prepared-query-float32")
     if backend not in {"optix", "embree"}:
         raise ValueError("batched RTDL path supports backend='optix' or backend='embree'")
     if backend == "embree" and result_mode != "ranked-summary-raw":
@@ -789,8 +794,11 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
     pack_sec = time.perf_counter() - pack_started
 
     prepare_started = time.perf_counter()
+    prepared_query_batches = []
     if backend == "optix":
         prepared = rt.prepare_optix_fixed_radius_neighbors_3d(search, max_radius=radius)
+        if result_mode == "ranked-summary-aggregate-prepared-query-float32":
+            prepared_query_batches = [prepared.prepare_query_points(batch) for batch, _batch_ids in query_batches]
         embree_kernel = None
     else:
         prepared = None
@@ -821,7 +829,7 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
                 "sum_distance": 0.0,
             }
             run_phase_timings = []
-            for batch, batch_ids in query_batches:
+            for batch_index, (batch, batch_ids) in enumerate(query_batches):
                 if backend == "embree":
                     rows = rt.run_embree(
                         embree_kernel,
@@ -855,13 +863,21 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
                         run_distance_summary["count"] += summary["count"]
                         run_distance_summary["sum_distance"] += summary["sum_distance"]
                     run_row_count = int(run_distance_summary["count"])
-                elif result_mode in {"ranked-summary-aggregate", "ranked-summary-aggregate-float32"}:
-                    aggregate = prepared.aggregate_ranked_summary(
-                        batch,
-                        radius=radius,
-                        k_max=k_max,
-                        precision="float32" if result_mode == "ranked-summary-aggregate-float32" else "float64",
-                    )
+                elif result_mode in aggregate_modes:
+                    if result_mode == "ranked-summary-aggregate-prepared-query-float32":
+                        aggregate = prepared.aggregate_ranked_summary_prepared_queries(
+                            prepared_query_batches[batch_index],
+                            radius=radius,
+                            k_max=k_max,
+                            precision="float32",
+                        )
+                    else:
+                        aggregate = prepared.aggregate_ranked_summary(
+                            batch,
+                            radius=radius,
+                            k_max=k_max,
+                            precision="float32" if result_mode == "ranked-summary-aggregate-float32" else "float64",
+                        )
                     run_ranked_aggregate_summary["row_count"] += int(aggregate["query_count"])
                     run_ranked_aggregate_summary["bounded_neighbor_count"] += int(aggregate["bounded_neighbor_count"])
                     run_ranked_aggregate_summary["nearest_id_checksum"] += int(aggregate["nearest_id_checksum"])
@@ -879,7 +895,7 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
             batch_phase_timings = run_phase_timings
             ranked_aggregate_summary = (
                 run_ranked_aggregate_summary
-                if result_mode in {"ranked-summary-aggregate", "ranked-summary-aggregate-float32"}
+                if result_mode in aggregate_modes
                 else None
             )
             elapsed_runs.append(time.perf_counter() - started)
@@ -892,6 +908,8 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
         ok = False
         error = repr(exc)
     finally:
+        for prepared_query in prepared_query_batches:
+            prepared_query.close()
         if prepared is not None:
             prepared.close()
 
@@ -923,12 +941,13 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
         "contract": {
             "family": "fixed_radius_neighbors_3d",
             "mode": result_mode,
-            "exact": result_mode != "ranked-summary-aggregate-float32",
-            "precision": "float32" if result_mode == "ranked-summary-aggregate-float32" else "float64",
+            "exact": result_mode not in {"ranked-summary-aggregate-float32", "ranked-summary-aggregate-prepared-query-float32"},
+            "precision": "float32" if result_mode in {"ranked-summary-aggregate-float32", "ranked-summary-aggregate-prepared-query-float32"} else "float64",
             "approximate": False,
             "bounded_k": k_max,
             "prepared_search_structure": backend == "optix",
             "batched_queries": True,
+            "prepared_query_points": result_mode == "ranked-summary-aggregate-prepared-query-float32",
         },
         "claim_boundary": {
             "paper_equivalent_rtnn_row": False,
@@ -937,8 +956,9 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
             "rt_core_neighbor_search_claim_authorized": False,
             "partitioned_or_batched_like_rtnn": True,
             "device_ranked_summary_rows": backend == "optix" and result_mode == "ranked-summary-raw",
-            "device_ranked_summary_aggregate": backend == "optix" and result_mode in {"ranked-summary-aggregate", "ranked-summary-aggregate-float32"},
-            "float32_precision": result_mode == "ranked-summary-aggregate-float32",
+            "device_ranked_summary_aggregate": backend == "optix" and result_mode in aggregate_modes,
+            "device_resident_query_points": result_mode == "ranked-summary-aggregate-prepared-query-float32",
+            "float32_precision": result_mode in {"ranked-summary-aggregate-float32", "ranked-summary-aggregate-prepared-query-float32"},
             "embree_ranked_summary_rows": backend == "embree" and result_mode == "ranked-summary-raw",
             "materializes_neighbor_rows": backend == "embree",
         },
@@ -1712,7 +1732,7 @@ def main(argv: list[str] | None = None) -> int:
     batched3d.add_argument("--k-max", type=int, default=50)
     batched3d.add_argument("--backend", choices=("optix", "embree"), default="optix")
     batched3d.add_argument("--query-batch-size", type=int, default=65536)
-    batched3d.add_argument("--result-mode", choices=("count", "summary", "ranked-summary-raw", "ranked-summary-aggregate", "ranked-summary-aggregate-float32"), default="ranked-summary-raw")
+    batched3d.add_argument("--result-mode", choices=("count", "summary", "ranked-summary-raw", "ranked-summary-aggregate", "ranked-summary-aggregate-float32", "ranked-summary-aggregate-prepared-query-float32"), default="ranked-summary-raw")
     batched3d.add_argument("--repeat", type=int, default=1)
     batched3d.add_argument("--row-label", default="rtdl_batched_3d_neighbors")
     batched3d.add_argument("--json-out", type=Path, required=True)

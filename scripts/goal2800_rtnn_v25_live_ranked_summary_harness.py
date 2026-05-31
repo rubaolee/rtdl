@@ -18,7 +18,7 @@ sys.path.insert(0, str(ROOT))
 from scripts import goal2348_rtnn_v2_2_external_runner as rtnn_runner  # noqa: E402
 
 
-GOAL2800_HARNESS_VERSION = "rtdl.goal2800.rtnn_v2_5_live_ranked_summary_harness.v4.aggregate_float32_median"
+GOAL2800_HARNESS_VERSION = "rtdl.goal2800.rtnn_v2_5_live_ranked_summary_harness.v5.prepared_query_aggregate_float32_median"
 DEFAULT_DISTRIBUTIONS = ("uniform", "clustered", "shell")
 CLAIM_BOUNDARY = {
     "canonical_live_harness": True,
@@ -85,7 +85,7 @@ def run_goal2800_rtnn_live_harness(
                         k_max=int(k_max),
                         backend="optix",
                         query_batch_size=batch_size,
-                        result_mode="ranked-summary-aggregate-float32",
+                        result_mode="ranked-summary-aggregate-prepared-query-float32",
                         repeat=int(repeat),
                         row_label=f"goal2800_rtdl_{distribution}_{int(point_count)}",
                     )

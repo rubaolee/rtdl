@@ -1838,6 +1838,75 @@ def prepare_optix_fixed_radius_count_threshold_2d(
     return PreparedOptixFixedRadiusCountThreshold2D(search_points, max_radius=max_radius)
 
 
+class PreparedOptixFixedRadiusQueryPoints3D:
+    """Prepared OptiX 3-D fixed-radius query columns.
+
+    The handle is generic query-side point state for repeated fixed-radius
+    neighbor operations. It keeps float32 query columns resident on the device
+    for same-precision aggregate paths.
+    """
+
+    def __init__(self, query_points):
+        packed = query_points if isinstance(query_points, PackedPoints) else pack_points(records=query_points, dimension=3)
+        if packed.dimension != 3:
+            raise ValueError("prepare_optix_fixed_radius_query_points_3d requires 3-D points")
+        self._packed_queries = packed
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        self._count = int(packed.count)
+        if packed.count == 0:
+            return
+
+        lib = _load_optix_library()
+        prepare_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_fixed_radius_query_points_3d")
+        if prepare_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_prepare_fixed_radius_query_points_3d; rebuild the OptiX backend from current main"
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = prepare_symbol(
+            packed.records,
+            packed.count,
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+    @property
+    def count(self) -> int:
+        return self._count
+
+    @property
+    def closed(self) -> bool:
+        return self._closed
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        handle = self._handle
+        self._handle = ctypes.c_void_p()
+        self._closed = True
+        if handle.value:
+            lib = _load_optix_library()
+            destroy_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_fixed_radius_query_points_3d")
+            if destroy_symbol is not None:
+                destroy_symbol(handle)
+
+    def __enter__(self) -> "PreparedOptixFixedRadiusQueryPoints3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
 class PreparedOptixFixedRadiusNeighbors3D:
     """Prepared OptiX 3-D fixed-radius neighbor scene.
 
@@ -2207,6 +2276,74 @@ class PreparedOptixFixedRadiusNeighbors3D:
             "precision": precision,
         }
 
+    def prepare_query_points(self, query_points) -> PreparedOptixFixedRadiusQueryPoints3D:
+        if self._closed:
+            raise RuntimeError("prepared OptiX fixed-radius-neighbor 3D handle is closed")
+        return PreparedOptixFixedRadiusQueryPoints3D(query_points)
+
+    def aggregate_ranked_summary_prepared_queries(
+        self,
+        prepared_queries: PreparedOptixFixedRadiusQueryPoints3D,
+        *,
+        radius: float,
+        k_max: int,
+        precision: str = "float32",
+    ) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX fixed-radius-neighbor 3D handle is closed")
+        if prepared_queries.closed:
+            raise RuntimeError("prepared OptiX fixed-radius query handle is closed")
+        if precision != "float32":
+            raise ValueError("prepared query aggregate currently supports precision='float32'")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if radius > self._max_radius:
+            raise ValueError("radius must be less than or equal to prepared max_radius")
+        if k_max <= 0:
+            raise ValueError("k_max must be positive")
+        if k_max > 64:
+            raise ValueError("PreparedOptixFixedRadiusNeighbors3D.aggregate_ranked_summary_prepared_queries currently supports k_max <= 64")
+        if prepared_queries.count == 0 or self._packed_search.count == 0:
+            return {
+                "query_count": int(prepared_queries.count),
+                "bounded_neighbor_count": 0,
+                "nearest_id_checksum": 0,
+                "kth_id_checksum": 0,
+                "sum_distance": 0.0,
+                "precision": precision,
+                "query_resident": True,
+            }
+
+        lib = _load_optix_library()
+        symbol_name = "rtdl_optix_aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_3d_f32"
+        symbol = _find_optional_backend_symbol(lib, symbol_name)
+        if symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                f"{symbol_name}; rebuild the OptiX backend from current main"
+            )
+        aggregate = _RtdlFixedRadiusRankedNeighborAggregate()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            self._handle,
+            prepared_queries._handle,
+            ctypes.c_double(float(radius)),
+            ctypes.c_size_t(int(k_max)),
+            ctypes.byref(aggregate),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return {
+            "query_count": int(aggregate.query_count),
+            "bounded_neighbor_count": int(aggregate.bounded_neighbor_count),
+            "nearest_id_checksum": int(aggregate.nearest_id_checksum),
+            "kth_id_checksum": int(aggregate.kth_id_checksum),
+            "sum_distance": float(aggregate.sum_distance),
+            "precision": precision,
+            "query_resident": True,
+        }
+
     def count(self, query_points, *, radius: float, k_max: int) -> int:
         if self._closed:
             raise RuntimeError("prepared OptiX fixed-radius-neighbor 3D handle is closed")
@@ -2317,6 +2454,10 @@ def prepare_optix_fixed_radius_neighbors_3d(
     max_radius: float,
 ) -> PreparedOptixFixedRadiusNeighbors3D:
     return PreparedOptixFixedRadiusNeighbors3D(search_points, max_radius=max_radius)
+
+
+def prepare_optix_fixed_radius_query_points_3d(query_points) -> PreparedOptixFixedRadiusQueryPoints3D:
+    return PreparedOptixFixedRadiusQueryPoints3D(query_points)
 
 
 class PreparedOptixFixedRadiusCountThreshold3D:
@@ -4433,6 +4574,8 @@ def _get_last_fixed_radius_neighbors_3d_phase_timings_from_library(lib) -> dict[
             10: "prepared_uniform_cell_ranked_summary_aggregate",
             11: "prepared_uniform_cell_ranked_summary_aggregate_f32",
             12: "prepared_uniform_cell_ranked_summary_aggregate_f32_direct",
+            13: "prepared_query_uniform_cell_ranked_summary_aggregate_f32_direct",
+            14: "prepared_query_uniform_cell_ranked_summary_aggregate_f32",
         }.get(mode_value, "none"),
         "prepare": float(prepare.value),
         "upload": float(upload.value),
@@ -16306,6 +16449,15 @@ def _register_argtypes(lib) -> None:
         ]
         symbol.restype = ctypes.c_int
 
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_fixed_radius_query_points_3d")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.POINTER(_RtdlPoint3D), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
     symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_prepared_fixed_radius_neighbors_3d")
     if symbol is not None:
         symbol.argtypes = [
@@ -16394,6 +16546,18 @@ def _register_argtypes(lib) -> None:
         ]
         symbol.restype = ctypes.c_int
 
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_3d_f32")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_double,
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlFixedRadiusRankedNeighborAggregate),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
     symbol = _find_optional_backend_symbol(lib, "rtdl_optix_summarize_prepared_fixed_radius_neighbors_3d")
     if symbol is not None:
         symbol.argtypes = [
@@ -16407,6 +16571,11 @@ def _register_argtypes(lib) -> None:
         symbol.restype = ctypes.c_int
 
     symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_fixed_radius_neighbors_3d")
+    if symbol is not None:
+        symbol.argtypes = [ctypes.c_void_p]
+        symbol.restype = None
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_fixed_radius_query_points_3d")
     if symbol is not None:
         symbol.argtypes = [ctypes.c_void_p]
         symbol.restype = None

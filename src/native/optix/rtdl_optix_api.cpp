@@ -4230,6 +4230,24 @@ extern "C" int rtdl_optix_run_prepared_ranked_fixed_radius_neighbor_summaries_3d
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepare_fixed_radius_query_points_3d(
+        const RtdlPoint3D* query_points, size_t query_count,
+        void** prepared_queries_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_queries_out)
+            throw std::runtime_error("prepared_queries_out must not be null");
+        if (!query_points && query_count != 0)
+            throw std::runtime_error("query_points pointer must not be null when query_count is nonzero");
+        if (query_count > static_cast<size_t>(UINT32_MAX))
+            throw std::runtime_error("fixed_radius_neighbors_3d query_count exceeds uint32 limit");
+        *prepared_queries_out = nullptr;
+        *prepared_queries_out = prepare_fixed_radius_query_points_grid_3d_optix(
+            query_points, query_count);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_aggregate_prepared_ranked_fixed_radius_neighbor_summaries_3d(
         void* prepared,
         const RtdlPoint3D* query_points, size_t query_count,
@@ -4261,6 +4279,24 @@ extern "C" int rtdl_optix_aggregate_prepared_ranked_fixed_radius_neighbor_summar
         *aggregate_out = aggregate_prepared_ranked_fixed_radius_neighbor_summaries_grid_3d_optix(
             reinterpret_cast<PreparedFixedRadiusNeighborsGrid3D*>(prepared),
             query_points, query_count, radius, k_max, true);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_3d_f32(
+        void* prepared,
+        void* prepared_queries,
+        double radius,
+        size_t k_max,
+        RtdlFixedRadiusRankedNeighborAggregate* aggregate_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!aggregate_out)
+            throw std::runtime_error("aggregate_out must not be null");
+        *aggregate_out = aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_grid_3d_optix(
+            reinterpret_cast<PreparedFixedRadiusNeighborsGrid3D*>(prepared),
+            reinterpret_cast<PreparedFixedRadiusQueryPoints3D*>(prepared_queries),
+            radius, k_max);
     }, error_out, error_size);
 }
 
@@ -4301,6 +4337,11 @@ extern "C" int rtdl_optix_summarize_prepared_fixed_radius_neighbors_3d(
 extern "C" void rtdl_optix_destroy_prepared_fixed_radius_neighbors_3d(void* prepared)
 {
     delete reinterpret_cast<PreparedFixedRadiusNeighborsGrid3D*>(prepared);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_fixed_radius_query_points_3d(void* prepared_queries)
+{
+    delete reinterpret_cast<PreparedFixedRadiusQueryPoints3D*>(prepared_queries);
 }
 
 extern "C" int rtdl_optix_prepare_fixed_radius_count_threshold_3d(
