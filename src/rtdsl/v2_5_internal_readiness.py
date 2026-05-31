@@ -76,6 +76,8 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2856_goal2855_v2_5_canonical_packet_runner_consensus_2026-05-31.md",
     "docs/reports/goal2861_v2_5_generic_partner_front_door_completion_2026-05-31.md",
     "docs/reports/goal2862_goal2861_generic_front_door_completion_consensus_2026-05-31.md",
+    "docs/reports/goal2865_current_head_packet_after_front_doors_2026-05-31.md",
+    "docs/reports/goal2866_goal2865_current_head_packet_consensus_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -110,7 +112,7 @@ V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_HARNESS_ARTIFACTS = (
     "docs/reports/goal2847_current_head_canonical_harness_pod/goal2803_barnes_hut.json",
 )
 V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_RUNNER_SUMMARY = (
-    "docs/reports/goal2855_current_canonical_harness_runner_pod/goal2855_summary.json"
+    "docs/reports/goal2865_current_packet_after_front_doors_pod/goal2855_summary.json"
 )
 
 V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
@@ -133,6 +135,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
     "docs/reviews/goal2852_gemini_review_goal2851_barnes_hut_progress_logging_2026-05-31.md",
     "docs/reviews/goal2856_gemini_review_goal2855_v2_5_canonical_packet_runner_2026-05-31.md",
     "docs/reviews/goal2862_gemini_review_goal2861_generic_front_door_completion_2026-05-31.md",
+    "docs/reviews/goal2866_gemini_review_goal2865_current_head_packet_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_BLOCKED_ACTIONS = (
