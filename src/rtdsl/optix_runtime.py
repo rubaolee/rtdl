@@ -10938,6 +10938,7 @@ class PreparedOptixStaticTriangleScene3D:
             owner=owner,
             traversal_seconds=float(columns.traversal_seconds),
             native_device_column_output_proven_on_hardware=True,
+            producer_consumer_stream_ordering="host_synchronized_before_consumer",
         )
         timings = dict(handoff.phase_timing_seconds)
         timings["query_pack"] = float(query_pack_seconds)
