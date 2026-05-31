@@ -88,6 +88,17 @@ GENERIC_HIT_STREAM_PARTNER_CARRIER_PROTOCOLS = (
     "neutral_buffer_descriptor",
     "none",
 )
+GENERIC_HIT_STREAM_TORCH_CARRIER_FORBIDDEN_AUTHORITY_FIELDS = (
+    "transfer_status",
+    "copy_status",
+    "lifetime_state",
+    "ownership_state",
+    "owner_state",
+    "release_event",
+    "failure_cleanup_event",
+    "zero_copy_claim_authorized",
+    "native_device_output_promotion_ready",
+)
 GENERIC_PRIMITIVE_PAYLOAD_COLUMN_DESCRIPTOR_VERSION = (
     "rtdl.primitive_payload_column_descriptor.v2.5"
 )
@@ -1337,6 +1348,8 @@ def describe_v2_5_hit_stream_torch_carrier_adapter(
         "silent_cross_partner_torch_coercion_allowed": False,
         "host_copy_required": host_copy_required,
         "explicit_copy_required": host_copy_required,
+        "torch_carrier_copy_diagnostics_are_advisory": True,
+        "transfer_copy_lifetime_authority": "neutral_buffer_seam",
         "adapter_execution_proven_on_hardware": False,
         "true_zero_copy_authorized": False,
         "public_speedup_claim_authorized": False,
@@ -1363,6 +1376,10 @@ def describe_v2_5_hit_stream_neutral_seam_reconciliation() -> dict[str, object]:
         "torch_carrier_protocols": ("torch_tensor_carrier", "cuda_array_interface_to_torch_carrier"),
         "non_triton_device_carrier_protocol": "cuda_array_interface_descriptor",
         "silent_cross_partner_torch_coercion_allowed": False,
+        "neutral_seam_authority_enforced": True,
+        "transfer_copy_lifetime_authority": "neutral_buffer_seam",
+        "torch_carrier_forbidden_authority_fields": GENERIC_HIT_STREAM_TORCH_CARRIER_FORBIDDEN_AUTHORITY_FIELDS,
+        "torch_carrier_copy_diagnostics_are_advisory": True,
         "legacy_torch_helper_status": "bounded_triton_launch_carrier_not_neutral_seam",
         "partner_choice_policy": "explicit_per_boundary_app_choice",
         "claim_boundary": (
@@ -1370,6 +1387,79 @@ def describe_v2_5_hit_stream_neutral_seam_reconciliation() -> dict[str, object]:
             "Torch may be used only as a Triton tensor carrier and must not become a "
             "hidden neutral protocol, forced partner, zero-copy proof, or public speedup claim."
         ),
+    }
+
+
+def validate_v2_5_hit_stream_neutral_seam_authority(
+    hit_stream_columns: RtdlHitStreamColumnHandoff | None = None,
+    payload_columns: RtdlTypedPrimitivePayloadColumns | None = None,
+) -> dict[str, object]:
+    """Validate that torch-carrier metadata cannot become seam authority."""
+
+    if hit_stream_columns is None or payload_columns is None:
+        sample_hit_stream = {
+            "primitive": GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_PRIMITIVE,
+            "row_schema": GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_ROW_SCHEMA,
+            "rows": ({"ray_id": 0, "primitive_id": 1}, {"ray_id": 1, "primitive_id": 0}),
+            "max_rows": 2,
+            "backend": "reference",
+            "overflow": False,
+            "phase_timing_seconds": {},
+        }
+        hit_stream_columns = prepare_generic_hit_stream_columns_from_rows(sample_hit_stream)
+        payload_columns = prepare_generic_typed_primitive_payload_columns(
+            [0, 1],
+            [10.0, 20.0],
+            group_count=2,
+        )
+
+    contract = describe_v2_5_hit_stream_neutral_seam_reconciliation()
+    adapter = describe_v2_5_hit_stream_torch_carrier_adapter(hit_stream_columns, payload_columns)
+    hit_metadata = hit_stream_columns.to_metadata()
+    payload_metadata = payload_columns.to_metadata()
+    seams = (
+        *hit_metadata["neutral_buffer_seams"],
+        *payload_metadata["neutral_buffer_seams"],
+    )
+    forbidden_fields = GENERIC_HIT_STREAM_TORCH_CARRIER_FORBIDDEN_AUTHORITY_FIELDS
+    forbidden_hits = tuple(_metadata_key_hits(adapter, forbidden_fields))
+    seam_required_fields = (
+        "transfer_status",
+        "copy_status",
+        "lifetime_state",
+        "zero_copy_claim_authorized",
+    )
+    missing_seam_fields = tuple(
+        field for field in seam_required_fields if not all(field in seam for seam in seams)
+    )
+    errors: list[str] = []
+    if contract["transfer_copy_lifetime_authority"] != "neutral_buffer_seam":
+        errors.append("neutral seam must be the transfer/copy/lifetime authority")
+    if forbidden_hits:
+        errors.append("torch carrier metadata contains forbidden authority fields")
+    if missing_seam_fields:
+        errors.append("neutral seams are missing required authority fields")
+    if adapter["torch_carrier_allowed_only_for_partner"] != "triton":
+        errors.append("torch carrier must remain Triton-only")
+    if adapter["torch_is_neutral_protocol"] is not False:
+        errors.append("torch must not become a neutral protocol")
+    if adapter["true_zero_copy_authorized"] is not False:
+        errors.append("torch carrier adapter must not authorize true zero-copy")
+    return {
+        "status": "accept" if not errors else "reject",
+        "contract_version": GENERIC_HIT_STREAM_NEUTRAL_SEAM_RECONCILIATION_VERSION,
+        "neutral_buffer_seam_contract_version": V2_5_NEUTRAL_BUFFER_SEAM_VERSION,
+        "transfer_copy_lifetime_authority": contract["transfer_copy_lifetime_authority"],
+        "torch_carrier_forbidden_authority_fields": forbidden_fields,
+        "torch_carrier_forbidden_authority_field_hits": forbidden_hits,
+        "neutral_seam_required_authority_fields": seam_required_fields,
+        "neutral_seam_missing_authority_fields": missing_seam_fields,
+        "neutral_seam_count": len(seams),
+        "torch_carrier_allowed_only_for_partner": adapter["torch_carrier_allowed_only_for_partner"],
+        "torch_is_neutral_protocol": adapter["torch_is_neutral_protocol"],
+        "true_zero_copy_authorized": adapter["true_zero_copy_authorized"],
+        "public_speedup_claim_authorized": adapter["public_speedup_claim_authorized"],
+        "errors": tuple(errors),
     }
 
 
@@ -2138,6 +2228,22 @@ def _neutral_buffer_handoff_summary(
             "true zero-copy and public speedup claims remain unauthorized."
         ),
     }
+
+
+def _metadata_key_hits(payload: object, keys: Sequence[str], *, prefix: str = "") -> tuple[str, ...]:
+    hits: list[str] = []
+    key_set = set(keys)
+    if isinstance(payload, Mapping):
+        for key, value in payload.items():
+            path = f"{prefix}.{key}" if prefix else str(key)
+            if str(key) in key_set:
+                hits.append(path)
+            hits.extend(_metadata_key_hits(value, keys, prefix=path))
+    elif isinstance(payload, SequenceABC) and not isinstance(payload, (str, bytes, bytearray)):
+        for index, value in enumerate(payload):
+            path = f"{prefix}[{index}]" if prefix else f"[{index}]"
+            hits.extend(_metadata_key_hits(value, keys, prefix=path))
+    return tuple(hits)
 
 
 def _all_seams_device_ready(seams: Sequence[Mapping[str, Any]]) -> bool:
