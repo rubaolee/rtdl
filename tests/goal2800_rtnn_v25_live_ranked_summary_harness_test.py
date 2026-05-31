@@ -38,6 +38,8 @@ class Goal2800RtnnV25LiveRankedSummaryHarnessTest(unittest.TestCase):
         self.assertIn("candidate_count_within_tolerance", text)
         self.assertIn("candidate_count_delta", text)
         self.assertIn("ranked_aggregate_matches_cupy_grid", text)
+        self.assertIn("_median_or_elapsed", text)
+        self.assertIn("rtdl_elapsed_statistic", text)
         self.assertIn("rtdl_beats_cupy_grid_claim_authorized", text)
         self.assertIn("native_engine_customization", text)
 

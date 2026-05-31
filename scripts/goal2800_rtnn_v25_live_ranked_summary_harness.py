@@ -18,7 +18,7 @@ sys.path.insert(0, str(ROOT))
 from scripts import goal2348_rtnn_v2_2_external_runner as rtnn_runner  # noqa: E402
 
 
-GOAL2800_HARNESS_VERSION = "rtdl.goal2800.rtnn_v2_5_live_ranked_summary_harness.v3.aggregate_float32"
+GOAL2800_HARNESS_VERSION = "rtdl.goal2800.rtnn_v2_5_live_ranked_summary_harness.v4.aggregate_float32_median"
 DEFAULT_DISTRIBUTIONS = ("uniform", "clustered", "shell")
 CLAIM_BOUNDARY = {
     "canonical_live_harness": True,
@@ -193,8 +193,18 @@ def _row_from_payloads(
     )
     aggregate_match = _ranked_aggregate_matches_cupy(rtdl_aggregate, cupy_payload)
     status = "pass" if rtdl_ok and cupy_ok and candidate_count_within_tolerance else "mismatch"
-    rtdl_elapsed = float(rtdl_payload.get("elapsed_sec", 0.0))
-    cupy_elapsed = float(cupy_payload.get("elapsed_sec", 0.0)) if cupy_payload is not None else None
+    rtdl_runs = tuple(float(value) for value in rtdl_payload.get("elapsed_runs_sec", ()))
+    cupy_runs = (
+        tuple(float(value) for value in cupy_payload.get("elapsed_runs_sec", ()))
+        if cupy_payload is not None
+        else ()
+    )
+    rtdl_elapsed = _median_or_elapsed(rtdl_runs, float(rtdl_payload.get("elapsed_sec", 0.0)))
+    cupy_elapsed = (
+        _median_or_elapsed(cupy_runs, float(cupy_payload.get("elapsed_sec", 0.0)))
+        if cupy_payload is not None
+        else None
+    )
     return {
         "distribution": distribution,
         "status": status,
@@ -217,12 +227,10 @@ def _row_from_payloads(
         "search_count": int(rtdl_payload.get("search_count", 0)),
         "rtdl_prepare_sec": float(rtdl_payload.get("execution_prepare_sec", 0.0)),
         "rtdl_input_pack_sec": float(rtdl_payload.get("input_pack_sec", 0.0)),
-        "rtdl_elapsed_runs_sec": tuple(float(value) for value in rtdl_payload.get("elapsed_runs_sec", ())),
-        "cupy_grid_elapsed_runs_sec": (
-            tuple(float(value) for value in cupy_payload.get("elapsed_runs_sec", ()))
-            if cupy_payload is not None
-            else None
-        ),
+        "rtdl_elapsed_statistic": "median" if rtdl_runs else "single",
+        "cupy_grid_elapsed_statistic": "median" if cupy_runs else ("single" if cupy_payload is not None else None),
+        "rtdl_elapsed_runs_sec": rtdl_runs,
+        "cupy_grid_elapsed_runs_sec": cupy_runs if cupy_payload is not None else None,
         "rtdl_phase_summary": _rtdl_phase_summary(rtdl_payload),
         "rtdl_ranked_aggregate_summary": rtdl_aggregate or None,
         "cupy_grid_summary": cupy_payload.get("summary") if cupy_payload is not None else None,
@@ -242,6 +250,16 @@ def _row_from_payloads(
 
 def _rtdl_raw_candidate_count(payload: dict[str, Any]) -> int:
     return sum(int(item.get("raw_candidate_count", 0)) for item in payload.get("batch_phase_timings", ()))
+
+
+def _median_or_elapsed(values: tuple[float, ...], fallback: float) -> float:
+    if not values:
+        return float(fallback)
+    ordered = sorted(float(value) for value in values)
+    mid = len(ordered) // 2
+    if len(ordered) % 2:
+        return ordered[mid]
+    return (ordered[mid - 1] + ordered[mid]) / 2.0
 
 
 def _ranked_aggregate_matches_cupy(rtdl_aggregate: dict[str, Any], cupy_payload: dict[str, Any] | None) -> bool:
