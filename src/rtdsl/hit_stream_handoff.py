@@ -759,8 +759,13 @@ def prepare_generic_hit_stream_columns_from_rows(
     rows = tuple(hit_stream.get("rows", ()))
     ray_values = tuple(int(row["ray_id"]) for row in rows)
     primitive_values = tuple(int(row["primitive_id"]) for row in rows)
-    ray_ids = _maybe_torch_column(ray_values, dtype="int64", prefer_cuda=prefer_torch_cuda, require_cuda=require_torch_cuda)
-    primitive_ids = _maybe_torch_column(
+    ray_ids = _prepare_triton_tensor_carrier_column(
+        ray_values,
+        dtype="int64",
+        prefer_cuda=prefer_torch_cuda,
+        require_cuda=require_torch_cuda,
+    )
+    primitive_ids = _prepare_triton_tensor_carrier_column(
         primitive_values,
         dtype="int64",
         prefer_cuda=prefer_torch_cuda,
@@ -851,14 +856,14 @@ def prepare_generic_typed_primitive_payload_columns(
             raise ValueError("group_count must be provided when primitive group ids are not host-scanned")
         group_count = max(_column_to_host_ints(primitive_group_ids), default=-1) + 1
     use_cuda = prefer_torch_cuda or _device_info(device_like)[0] == "cuda"
-    group_ids = _maybe_torch_column(
+    group_ids = _prepare_triton_tensor_carrier_column(
         primitive_group_ids,
         dtype="int64",
         prefer_cuda=use_cuda,
         require_cuda=require_torch_cuda,
         device_like=device_like,
     )
-    values = _maybe_torch_column(
+    values = _prepare_triton_tensor_carrier_column(
         primitive_values,
         dtype="float64",
         prefer_cuda=use_cuda,
@@ -1801,7 +1806,7 @@ def _is_torch_tensor(value: Any) -> bool:
     return type(value).__module__.split(".", 1)[0] == "torch"
 
 
-def _maybe_torch_column(
+def _prepare_triton_tensor_carrier_column(
     values: Any,
     *,
     dtype: str,
@@ -1809,6 +1814,8 @@ def _maybe_torch_column(
     require_cuda: bool,
     device_like: Any = None,
 ) -> Any:
+    """Prepare an explicit Triton tensor carrier without authorizing zero-copy."""
+
     if _is_torch_tensor(values):
         import torch
 
