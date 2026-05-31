@@ -141,3 +141,38 @@ PYTHONPATH=src;. py -3 -m unittest \
 Ran 17 tests
 OK
 ```
+
+Pod clean-check validation from Git:
+
+```text
+Host: 69.30.85.171
+Port: 22167
+Commit: 75a4d08cb45d451ede5bb09cdbad1e8c9fa0011b
+
+git fetch origin main
+git reset --hard origin/main
+git clean -fd
+OPTIX_PREFIX=/root/vendor/optix-sdk make build-optix
+
+PYTHONPATH=src:. python3 scripts/goal2798_librts_v25_warm_median_harness.py \
+  --box-count 4096 \
+  --query-count 2048 \
+  --seed 2798 \
+  --warmup 3 \
+  --repeat 9 \
+  --output /tmp/goal2798_clean_harness.json
+
+harness pass 3
+point_contains pass 371793 371793 0.8344119414687157
+range_contains pass 255739 255739 0.8668338414281607
+range_intersects pass 553819 553819 1.5271329320967197
+
+PYTHONPATH=src:. python3 -m unittest \
+  tests.goal2798_librts_v25_warm_median_harness_test \
+  tests.goal2723_v2_5_tiered_benchmark_manifest_test \
+  tests.goal2736_tier_a_primitive_first_plan_alignment_test \
+  tests.goal2795_v2_5_tier_label_reconciliation_test
+
+Ran 17 tests
+OK
+```
