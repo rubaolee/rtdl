@@ -59,6 +59,7 @@ OK (skipped=5)
 Run from pushed `main` on the NVIDIA pod:
 
 ```text
+commit: a8edfa0a
 scope:
   tests.goal2663_v2_5_triton_segmented_sum_test
   tests.goal2677_v2_5_triton_segmented_minmax_preview_test
@@ -67,6 +68,24 @@ scope:
   tests.goal2779_v2_5_triton_edge_list_components_preview_test
 
 Ran 25 tests in 2.894s
+OK
+```
+
+Post-commit focused pod validation:
+
+```text
+scope:
+  tests.goal2874_triton_preview_current_pod_conformance_backfill_test
+  tests.goal2873_v2_5_partner_conformance_matrix_test
+
+Ran 12 tests in 0.377s
+OK
+```
+
+Post-commit expanded pod readiness/conformance slice:
+
+```text
+Ran 79 tests in 1.936s
 OK
 ```
 
