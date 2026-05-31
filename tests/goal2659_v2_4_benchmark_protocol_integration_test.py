@@ -96,7 +96,7 @@ class Goal2659V24BenchmarkProtocolIntegrationTest(unittest.TestCase):
 
         self.assertEqual(timing["validation"]["status"], "accept")
         self.assertIn("rt_traversal", timing["validation"]["known_phases"])
-        self.assertTrue(timing["promoted_performance_path"])
+        self.assertFalse(timing["promoted_performance_path"])
         self.assertTrue(timing["same_phase_contract_as_basis"])
 
 
