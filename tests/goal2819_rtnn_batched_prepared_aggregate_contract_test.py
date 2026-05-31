@@ -37,9 +37,12 @@ class Goal2819RtnnBatchedPreparedAggregateContractTest(unittest.TestCase):
         body = workloads[start:end]
 
         self.assertIn("DevPtr d_aggregates", body)
+        self.assertIn("DevPtr d_partials", body)
         self.assertIn("cuLaunchKernel(g_frn3d_grid_ranked_summary_aggregate_f32_direct.fn", body)
-        self.assertEqual(body.count("cuStreamSynchronize(nullptr)"), 1)
+        self.assertIn("cuLaunchKernel(g_frn3d_grid_ranked_summary_aggregate_f32_blocks.fn", body)
+        self.assertEqual(body.count("cuStreamSynchronize(nullptr)"), 2)
         self.assertIn("download(aggregates_out, d_aggregates.ptr, request_count)", body)
+        self.assertIn("download(partials.data(), d_partials.ptr, partials.size())", body)
         self.assertNotIn("rtnn", body.lower())
 
     def test_python_runtime_exposes_validated_batch_method(self) -> None:
@@ -53,6 +56,7 @@ class Goal2819RtnnBatchedPreparedAggregateContractTest(unittest.TestCase):
         self.assertIn("ctypes.POINTER(ctypes.c_double)", runtime)
         self.assertIn("ctypes.POINTER(ctypes.c_size_t)", runtime)
         self.assertIn("prepared_query_uniform_cell_ranked_summary_aggregate_f32_batch_direct", runtime)
+        self.assertIn("prepared_query_uniform_cell_ranked_summary_aggregate_f32_batch_block_partials", runtime)
 
     def test_runner_exposes_controlled_batch_mode_without_promoting_claims(self) -> None:
         runner = RUNNER.read_text(encoding="utf-8")

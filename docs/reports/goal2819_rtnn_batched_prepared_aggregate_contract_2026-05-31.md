@@ -19,9 +19,9 @@ requests, instead of treating every tiny summary as a standalone host call.
 
 | File | Change |
 | --- | --- |
-| `src/native/optix/rtdl_optix_workloads.cpp` | Added `aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_grid_3d_batch_optix`, which launches direct float32 aggregate kernels for a batch of `(radius, k_max)` requests and downloads one aggregate array. |
+| `src/native/optix/rtdl_optix_workloads.cpp` | Added `aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_grid_3d_batch_optix`, which batches `(radius, k_max)` requests over resident query/search handles. Small rows use the current block-partial aggregate path; larger rows fall back to the direct aggregate path. |
 | `src/native/optix/rtdl_optix_api.cpp` / `src/native/optix/rtdl_optix_prelude.h` | Added `rtdl_optix_aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_3d_f32_batch`. |
-| `src/rtdsl/optix_runtime.py` | Added `PreparedOptixFixedRadiusNeighbors3D.aggregate_ranked_summary_prepared_queries_batch(...)` and phase label `prepared_query_uniform_cell_ranked_summary_aggregate_f32_batch_direct`. |
+| `src/rtdsl/optix_runtime.py` | Added `PreparedOptixFixedRadiusNeighbors3D.aggregate_ranked_summary_prepared_queries_batch(...)` and batch phase labels for direct and block-partial aggregate modes. |
 | `scripts/goal2348_rtnn_v2_2_external_runner.py` | Added controlled runner mode `ranked-summary-aggregate-prepared-query-batch-float32` with explicit `--aggregate-request-count`. |
 | `tests/goal2819_rtnn_batched_prepared_aggregate_contract_test.py` | Guards generic naming, ABI wiring, Python runtime validation, runner exposure, and claim boundary. |
 
