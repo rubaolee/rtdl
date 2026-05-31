@@ -88,6 +88,224 @@ GENERIC_HIT_STREAM_PARTNER_CARRIER_PROTOCOLS = (
     "neutral_buffer_descriptor",
     "none",
 )
+GENERIC_PRIMITIVE_PAYLOAD_COLUMN_DESCRIPTOR_VERSION = (
+    "rtdl.primitive_payload_column_descriptor.v2.5"
+)
+GENERIC_PRIMITIVE_PAYLOAD_COLUMN_ROLES = (
+    "hit_stream_key",
+    "primitive_payload",
+    "status_counter",
+    "partial_aggregate_rows",
+    "partner_output",
+)
+GENERIC_PRIMITIVE_PAYLOAD_FALLBACK_REASONS = (
+    "none",
+    "host_reference",
+    "partner_unavailable",
+    "stream_ordering_unproven",
+    "dtype_or_shape_unsupported",
+    "lifetime_unproven",
+)
+
+
+@dataclass(frozen=True)
+class RtdlPrimitivePayloadColumnDescriptor:
+    """Partner-neutral descriptor for a primitive payload column.
+
+    This layer wraps an `RtdlBufferDescriptor` with the v2.5 information a
+    continuation planner needs: semantic role, producer/consumer boundary,
+    stream ordering, fallback reason, and neutral-buffer lifetime accounting.
+    """
+
+    buffer: RtdlBufferDescriptor
+    semantic_role: str
+    producer: str
+    consumer: str
+    stream_ordering: str = "not_proven"
+    lifetime_state: str = "caller_retained"
+    transfer_status: str | None = None
+    fallback_reason: str = "none"
+    host_materialized_before_handoff: bool = False
+    native_producer: bool = False
+    measured_same_pointer: bool = False
+    measured_no_host_stage: bool = False
+    measured_evidence: Mapping[str, Any] | None = None
+
+    def __post_init__(self) -> None:
+        if self.semantic_role not in GENERIC_PRIMITIVE_PAYLOAD_COLUMN_ROLES:
+            raise ValueError("unsupported primitive payload column role")
+        if self.stream_ordering not in GENERIC_HIT_STREAM_STREAM_ORDERING_STATES:
+            raise ValueError("unsupported primitive payload stream ordering")
+        if self.fallback_reason not in GENERIC_PRIMITIVE_PAYLOAD_FALLBACK_REASONS:
+            raise ValueError("unsupported primitive payload fallback reason")
+        if not str(self.producer):
+            raise ValueError("primitive payload descriptor requires a non-empty producer")
+        if not str(self.consumer):
+            raise ValueError("primitive payload descriptor requires a non-empty consumer")
+        if self.native_producer and self.lifetime_state not in {
+            "producer_retained",
+            "native_owned_pending_state_machine",
+        }:
+            raise ValueError("native primitive payload producers must retain ownership")
+
+    @property
+    def device_resident(self) -> bool:
+        return self.buffer.device_type == "cuda" and self.buffer.data_ptr is not None and int(self.buffer.data_ptr) > 0
+
+    @property
+    def stream_ordering_proven(self) -> bool:
+        return self.stream_ordering in GENERIC_HIT_STREAM_ZERO_COPY_COMPATIBLE_STREAM_ORDERING_STATES
+
+    @property
+    def fallback_required(self) -> bool:
+        return self.fallback_reason != "none"
+
+    def neutral_seam(self):
+        return neutral_buffer_descriptor_from_rtdl_buffer(
+            self.buffer,
+            producer=self.producer,
+            consumer=self.consumer,
+            transfer_status=self.transfer_status,
+            lifetime_state=self.lifetime_state,
+            native_producer=bool(self.native_producer),
+            host_materialized_before_handoff=bool(self.host_materialized_before_handoff),
+            measured_same_pointer=bool(self.measured_same_pointer),
+            measured_no_host_stage=bool(self.measured_no_host_stage),
+            measured_evidence=self.measured_evidence,
+        )
+
+    def to_metadata(self) -> dict[str, object]:
+        seam = self.neutral_seam()
+        return {
+            "contract_version": GENERIC_PRIMITIVE_PAYLOAD_COLUMN_DESCRIPTOR_VERSION,
+            "name": self.buffer.name,
+            "semantic_role": self.semantic_role,
+            "producer": self.producer,
+            "consumer": self.consumer,
+            "dtype": self.buffer.dtype,
+            "shape": self.buffer.shape,
+            "device": f"{self.buffer.device_type}:{self.buffer.device_id}",
+            "data_ptr_observed": self.device_resident,
+            "source_protocol": self.buffer.source_protocol,
+            "access_mode": self.buffer.access_mode,
+            "mutability": self.buffer.mutability,
+            "stream_ordering": self.stream_ordering,
+            "stream_ordering_proven": self.stream_ordering_proven,
+            "event_or_same_stream_ordering_proven": self.stream_ordering_proven,
+            "lifetime_state": self.lifetime_state,
+            "fallback_reason": self.fallback_reason,
+            "fallback_required": self.fallback_required,
+            "host_materialized_before_handoff": bool(self.host_materialized_before_handoff),
+            "native_producer": bool(self.native_producer),
+            "neutral_buffer_seam": seam.to_metadata(),
+            "true_zero_copy_authorized": bool(seam.zero_copy_claim_authorized and self.stream_ordering_proven),
+            "public_speedup_claim_authorized": False,
+            "claim_boundary": (
+                "Primitive payload column descriptors describe typed buffers, stream "
+                "ordering, fallback reasons, and neutral-buffer lifetime state. They "
+                "do not authorize arbitrary partner execution, public speedup claims, "
+                "or true-zero-copy claims without measured evidence and ordering proof."
+            ),
+        }
+
+
+def describe_primitive_payload_column_descriptor(
+    *,
+    name: str,
+    dtype: str,
+    shape: Sequence[int],
+    semantic_role: str,
+    producer: str,
+    consumer: str,
+    device_type: str = "cpu",
+    device_id: int = 0,
+    data_ptr: int | None = None,
+    source_protocol: str = "python",
+    access_mode: str = "read",
+    mutability: str = "immutable",
+    stream_ordering: str = "not_proven",
+    lifetime_state: str = "caller_retained",
+    transfer_status: str | None = None,
+    fallback_reason: str = "none",
+    capacity_elements: int | None = None,
+    owner: Any = None,
+    host_materialized_before_handoff: bool = False,
+    native_producer: bool = False,
+    measured_same_pointer: bool = False,
+    measured_no_host_stage: bool = False,
+    measured_evidence: Mapping[str, Any] | None = None,
+) -> dict[str, object]:
+    """Describe one typed primitive payload column without partner-specific coercion."""
+
+    buffer = RtdlBufferDescriptor(
+        name=name,
+        dtype=dtype,
+        shape=tuple(int(dim) for dim in shape),
+        device_type=device_type,
+        device_id=int(device_id),
+        data_ptr=None if data_ptr is None else int(data_ptr),
+        access_mode=access_mode,
+        source_protocol=source_protocol,
+        lifetime="borrowed" if lifetime_state == "partner_borrowed" else "session_retained"
+        if lifetime_state in {"producer_retained", "native_owned_pending_state_machine"}
+        else "caller_retained",
+        mutability=mutability,
+        capacity_elements=capacity_elements,
+        owner=owner,
+    )
+    return RtdlPrimitivePayloadColumnDescriptor(
+        buffer=buffer,
+        semantic_role=semantic_role,
+        producer=producer,
+        consumer=consumer,
+        stream_ordering=stream_ordering,
+        lifetime_state=lifetime_state,
+        transfer_status=transfer_status,
+        fallback_reason=fallback_reason,
+        host_materialized_before_handoff=host_materialized_before_handoff,
+        native_producer=native_producer,
+        measured_same_pointer=measured_same_pointer,
+        measured_no_host_stage=measured_no_host_stage,
+        measured_evidence=measured_evidence,
+    ).to_metadata()
+
+
+def describe_fixed_radius_graph_partial_payload_descriptor(
+    *,
+    partials_device_ptr: int,
+    partial_count: int,
+    stream_ordering: str,
+    owner: Any = None,
+    request_count: int | None = None,
+    query_block_count: int | None = None,
+) -> dict[str, object]:
+    evidence = {
+        "request_count": None if request_count is None else int(request_count),
+        "query_block_count": None if query_block_count is None else int(query_block_count),
+    }
+    return describe_primitive_payload_column_descriptor(
+        name="fixed_radius_ranked_summary_aggregate_partials",
+        dtype="struct:RtdlFixedRadiusRankedNeighborAggregate",
+        shape=(int(partial_count),),
+        semantic_role="partial_aggregate_rows",
+        producer="optix_cuda_graph",
+        consumer="partner_partial_reduction",
+        device_type="cuda",
+        device_id=0,
+        data_ptr=int(partials_device_ptr),
+        source_protocol="native_cuda_device_pointer",
+        access_mode="read",
+        mutability="mutable",
+        stream_ordering=stream_ordering,
+        lifetime_state="producer_retained",
+        transfer_status="borrowed_device_pointer_unmeasured",
+        fallback_reason="none",
+        capacity_elements=int(partial_count),
+        owner=owner,
+        host_materialized_before_handoff=False,
+        native_producer=True,
+        measured_evidence=evidence,
+    )
 
 
 @dataclass(frozen=True)

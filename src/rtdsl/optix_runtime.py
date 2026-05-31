@@ -129,6 +129,7 @@ from .columnar_partner import prepare_partner_resident_columnar_record_set
 from .grouped_reduction import GroupedReductionCapacityStatus
 from .grouped_reduction import GroupedReductionSpec
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT
+from .hit_stream_handoff import describe_fixed_radius_graph_partial_payload_descriptor
 from .hit_stream_handoff import prepare_generic_device_resident_hit_stream_columns
 from .hit_stream_handoff import prepare_native_device_hit_stream_columns_from_abi
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_NATIVE_ABI_CONTRACT
@@ -2213,6 +2214,16 @@ class PreparedOptixFixedRadiusRankedSummaryAggregateBatchGraph3D:
                 "partial_count": int(partial_count.value),
                 "request_count": observed_request_count,
                 "query_block_count": int(query_block_count.value),
+                "primitive_payload_column_descriptors": (
+                    describe_fixed_radius_graph_partial_payload_descriptor(
+                        partials_device_ptr=int(partials_device_ptr.value),
+                        partial_count=int(partial_count.value),
+                        stream_ordering="same_stream",
+                        owner=self,
+                        request_count=observed_request_count,
+                        query_block_count=int(query_block_count.value),
+                    ),
+                ),
                 "phase_timing_seconds": {
                     "native_graph_launch_enqueue": float(native_launch_enqueue_seconds),
                     "same_stream_partner_partial_reduction_consumer_and_materialization": float(
