@@ -66,7 +66,7 @@ OK
 
 The broader pod sweep should be rerun after this alignment.
 
-Clean pod broad sweep after push:
+Clean pod broad sweep after first push:
 
 ```text
 Host: root@69.30.85.171:22167
@@ -74,5 +74,16 @@ Commit: e39c1c53e4bfa37cf401b7ce3ef865afcd37f716
 Scope: 100 v2.4/v2.5-era test modules through Goal2807
 
 Ran 477 tests in 3.769s
+OK (skipped=1)
+```
+
+Clean pod broad sweep after adding the Goal2807 regression test:
+
+```text
+Host: root@69.30.85.171:22167
+Commit: 9ccc841706f7b71c7f4e14595b9da420063a027e
+Scope: 101 v2.4/v2.5-era test modules through Goal2807
+
+Ran 479 tests in 3.852s
 OK (skipped=1)
 ```

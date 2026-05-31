@@ -26,8 +26,8 @@ class Goal2807V25BroadSweepClaimBoundaryAlignmentTest(unittest.TestCase):
         text = REPORT.read_text(encoding="utf-8")
 
         self.assertIn("Goal2807", text)
-        self.assertIn("100 v2.4/v2.5-era test modules", text)
-        self.assertIn("Ran 477 tests", text)
+        self.assertIn("101 v2.4/v2.5-era test modules", text)
+        self.assertIn("Ran 479 tests", text)
         self.assertIn("OK (skipped=1)", text)
         self.assertIn("does not authorize", text)
         self.assertIn("public speedup wording", text)
