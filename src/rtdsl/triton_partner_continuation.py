@@ -24,6 +24,9 @@ TRITON_GROUPED_ARGMIN_F64_OPERATION = "grouped_argmin_f64"
 TRITON_BOUNDED_COLLECT_FINALIZE_I64_OPERATION = "bounded_collect_finalize_i64"
 TRITON_PARTNER_CONTINUATION_STATUS = V2_5_STATUS_PREVIEW_NOT_PROMOTED
 TRITON_TENSOR_CARRIER = "torch_cuda_tensor_for_triton_launch"
+TRITON_GROUP_ID_BOUNDS_VALIDATION_MODE = "torch_cuda_precheck_host_scalar_sync"
+TRITON_GROUP_ID_BOUNDS_NOT_APPLICABLE = "not_applicable_no_group_ids"
+TRITON_GROUP_ID_BOUNDS_DEVICE_ERROR_FLAG_AVAILABLE = False
 
 
 def triton_partner_available() -> bool:
@@ -285,6 +288,7 @@ def _base_triton_descriptor(operation: str) -> dict[str, object]:
         "replaces_rt_traversal": False,
         "promoted_performance_path": False,
         "rt_traversal_contract_version": V2_4_PARTNER_PROTOCOL_VERSION,
+        "group_id_bounds_validation": _triton_group_id_bounds_validation_metadata(operation),
         "claim_boundary": (
             "Triton executes only a generic post-RT continuation over tensor "
             "carriers used for launch; Torch is a carrier here, not the v2.5 "
@@ -766,10 +770,34 @@ def _triton_run_result(
         "tensor_carrier_is_partner": False,
         "cupy_required": False,
         "pytorch_partner_required": False,
+        "group_id_bounds_validation": _triton_group_id_bounds_validation_metadata(operation),
     }
     if extra_metadata:
         result.update(dict(extra_metadata))
     return result
+
+
+def _triton_group_id_bounds_validation_metadata(operation: str) -> dict[str, object]:
+    if operation == TRITON_COMPACT_MASK_I64_OPERATION:
+        return {
+            "mode": TRITON_GROUP_ID_BOUNDS_NOT_APPLICABLE,
+            "checked_before_kernel_launch": False,
+            "uses_host_scalar_sync": False,
+            "device_error_flag_available": False,
+            "claim_boundary": "compact_mask_i64 has no group-id bounds contract",
+        }
+    return {
+        "mode": TRITON_GROUP_ID_BOUNDS_VALIDATION_MODE,
+        "checked_before_kernel_launch": True,
+        "uses_host_scalar_sync": True,
+        "device_error_flag_available": TRITON_GROUP_ID_BOUNDS_DEVICE_ERROR_FLAG_AVAILABLE,
+        "true_zero_copy_claim_authorized": False,
+        "claim_boundary": (
+            "v2.5 Triton preview kernels reject out-of-range group ids before "
+            "launch via a Torch CUDA predicate and host scalar sync. This is "
+            "correctness protection, not a device-resident error-flag path."
+        ),
+    }
 
 
 def _triton_segmented_count_i64_kernel(tl):
