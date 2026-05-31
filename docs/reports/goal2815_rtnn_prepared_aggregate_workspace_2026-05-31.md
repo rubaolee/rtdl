@@ -45,6 +45,14 @@ OptiX build: pass
 focused tests: 8 passed
 ```
 
+Final clean-head guard after report/artifact commit:
+
+```text
+commit: 88ba39b0d18eab1c77a365a54174ae1d48b36f12
+source_dirty: []
+focused tests: 14 passed
+```
+
 Pre-workspace A/B baseline:
 
 ```text
