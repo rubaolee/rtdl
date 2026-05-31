@@ -15046,10 +15046,6 @@ static RtdlFixedRadiusRankedNeighborAggregate aggregate_prepared_query_ranked_fi
     g_optix_last_fixed_radius_3d_upload_s = 0.0;
     if (prepared_queries->query_count == 0 || prepared->search_points.empty()) return aggregate;
 
-    if (!prepared->d_ranked_aggregate) throw std::runtime_error("prepared fixed_radius_neighbors_3d aggregate workspace is not initialized");
-    CUdeviceptr d_aggregate = prepared->d_ranked_aggregate->ptr;
-    CU_CHECK(cuMemsetD8(d_aggregate, 0, sizeof(RtdlFixedRadiusRankedNeighborAggregate)));
-
     uint32_t qc = static_cast<uint32_t>(prepared_queries->query_count);
     uint32_t grid_x = prepared->grid_x;
     uint32_t grid_y = prepared->grid_y;
@@ -15105,7 +15101,13 @@ static RtdlFixedRadiusRankedNeighborAggregate aggregate_prepared_query_ranked_fi
         g_optix_last_fixed_radius_3d_raw_candidate_count = aggregate.bounded_neighbor_count;
         g_optix_last_fixed_radius_3d_emitted_count = aggregate.query_count;
         return aggregate;
-    } else if (use_direct_float32_aggregate) {
+    }
+
+    if (!prepared->d_ranked_aggregate) throw std::runtime_error("prepared fixed_radius_neighbors_3d aggregate workspace is not initialized");
+    CUdeviceptr d_aggregate = prepared->d_ranked_aggregate->ptr;
+    CU_CHECK(cuMemsetD8(d_aggregate, 0, sizeof(RtdlFixedRadiusRankedNeighborAggregate)));
+
+    if (use_direct_float32_aggregate) {
         float min_x = prepared->min_x;
         float min_y = prepared->min_y;
         float min_z = prepared->min_z;
