@@ -174,6 +174,9 @@ OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_DEVICE_COLUMNS_SYMBOL = (
 OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_into_device_columns"
 )
+OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_SYMBOL = (
+    "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_into_device_columns_with_status"
+)
 OPTIX_RELEASE_RAY_TRIANGLE_HIT_STREAM_3D_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_release_ray_triangle_hit_stream_device_columns"
 )
@@ -595,6 +598,9 @@ class _RtdlNativeDeviceHitStreamColumns(ctypes.Structure):
         ("device_ordinal", ctypes.c_int32),
         ("owner_handle", ctypes.c_void_p),
         ("traversal_seconds", ctypes.c_double),
+        ("row_count_device_ptr", ctypes.c_uint64),
+        ("hit_event_count_device_ptr", ctypes.c_uint64),
+        ("overflow_device_ptr", ctypes.c_uint64),
     ]
 
 
@@ -9857,6 +9863,9 @@ class PreparedOptixHitStreamDeviceColumnBuffers:
         self.capacity = capacity
         self.ray_ids = torch.empty((capacity,), dtype=torch.int64, device=resolved_device)
         self.primitive_ids = torch.empty((capacity,), dtype=torch.int64, device=self.ray_ids.device)
+        self.row_count = torch.empty((1,), dtype=torch.int64, device=self.ray_ids.device)
+        self.hit_event_count = torch.empty((1,), dtype=torch.int64, device=self.ray_ids.device)
+        self.overflow = torch.empty((1,), dtype=torch.int32, device=self.ray_ids.device)
         self._closed = False
 
     @property
@@ -9873,6 +9882,21 @@ class PreparedOptixHitStreamDeviceColumnBuffers:
         self._assert_open()
         return int(self.primitive_ids.data_ptr())
 
+    @property
+    def row_count_device_ptr(self) -> int:
+        self._assert_open()
+        return int(self.row_count.data_ptr())
+
+    @property
+    def hit_event_count_device_ptr(self) -> int:
+        self._assert_open()
+        return int(self.hit_event_count.data_ptr())
+
+    @property
+    def overflow_device_ptr(self) -> int:
+        self._assert_open()
+        return int(self.overflow.data_ptr())
+
     def _assert_open(self) -> None:
         if self._closed:
             raise RuntimeError("reusable OptiX hit-stream output buffers are closed")
@@ -9888,6 +9912,9 @@ class PreparedOptixHitStreamDeviceColumnBuffers:
         self._closed = True
         self.ray_ids = None
         self.primitive_ids = None
+        self.row_count = None
+        self.hit_event_count = None
+        self.overflow = None
 
     def __enter__(self) -> "PreparedOptixHitStreamDeviceColumnBuffers":
         return self
@@ -11009,6 +11036,9 @@ class PreparedOptixStaticTriangleScene3D:
             traversal_seconds=float(columns.traversal_seconds),
             native_device_column_output_proven_on_hardware=True,
             producer_consumer_stream_ordering="host_synchronized_before_consumer",
+            row_count_device_ptr=int(columns.row_count_device_ptr) or None,
+            hit_event_count_device_ptr=int(columns.hit_event_count_device_ptr) or None,
+            overflow_device_ptr=int(columns.overflow_device_ptr) or None,
         )
         timings = dict(handoff.phase_timing_seconds)
         timings["query_pack"] = float(query_pack_seconds)
@@ -11029,6 +11059,9 @@ class PreparedOptixStaticTriangleScene3D:
             producer_consumer_stream_ordering=handoff.producer_consumer_stream_ordering,
             caller_owned_output_buffers=handoff.caller_owned_output_buffers,
             reusable_output_buffers_used=handoff.reusable_output_buffers_used,
+            row_count_device_ptr=handoff.row_count_device_ptr,
+            hit_event_count_device_ptr=handoff.hit_event_count_device_ptr,
+            overflow_device_ptr=handoff.overflow_device_ptr,
         )
 
     def ray_triangle_hit_stream_into_device_columns(
@@ -11115,6 +11148,105 @@ class PreparedOptixStaticTriangleScene3D:
             producer_consumer_stream_ordering="host_synchronized_before_consumer",
             caller_owned_output_buffers=True,
             reusable_output_buffers_used=True,
+        )
+
+    def ray_triangle_hit_stream_into_device_columns_with_status(
+        self,
+        rays,
+        output_buffers: PreparedOptixHitStreamDeviceColumnBuffers,
+        *,
+        max_rows: int | None = None,
+        deduplicate_primitives: bool = True,
+    ):
+        """Emit bounded hit columns and device-resident status counters."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        if not isinstance(output_buffers, PreparedOptixHitStreamDeviceColumnBuffers):
+            raise TypeError(
+                "ray_triangle_hit_stream_into_device_columns_with_status requires "
+                "PreparedOptixHitStreamDeviceColumnBuffers"
+            )
+        output_buffers._assert_open()
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_SYMBOL}. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+
+        pack_start = time.perf_counter()
+        packed_rays = rays if isinstance(rays, PackedRays) else pack_rays(rays, dimension=3)
+        if packed_rays.dimension != 3:
+            raise ValueError("ray_triangle_hit_stream_into_device_columns_with_status requires 3-D rays")
+        capacity = output_buffers.capacity if max_rows is None else int(max_rows)
+        if capacity < 0:
+            raise ValueError("max_rows must be non-negative")
+        if capacity > output_buffers.capacity:
+            raise ValueError("max_rows must not exceed reusable output buffer capacity")
+        query_pack_seconds = time.perf_counter() - pack_start
+
+        columns = _RtdlNativeDeviceHitStreamColumns()
+        error = ctypes.create_string_buffer(4096)
+        native_start = time.perf_counter()
+        status = run_symbol(
+            self._handle,
+            packed_rays.records,
+            packed_rays.count,
+            ctypes.c_uint32(1 if deduplicate_primitives else 0),
+            ctypes.c_size_t(capacity),
+            ctypes.c_uint64(output_buffers.ray_ids_device_ptr),
+            ctypes.c_uint64(output_buffers.primitive_ids_device_ptr),
+            ctypes.c_uint64(output_buffers.row_count_device_ptr),
+            ctypes.c_uint64(output_buffers.hit_event_count_device_ptr),
+            ctypes.c_uint64(output_buffers.overflow_device_ptr),
+            ctypes.byref(columns),
+            error,
+            len(error),
+        )
+        native_call_seconds = time.perf_counter() - native_start
+        _check_status(status, error)
+
+        row_count = int(columns.row_count)
+        ray_ids, primitive_ids = output_buffers._slice(row_count)
+        if not bool(columns.overflow) and row_count != 0:
+            if int(columns.ray_ids_device_ptr) != output_buffers.ray_ids_device_ptr:
+                raise RuntimeError("native OptiX backend returned an unexpected ray_ids output pointer")
+            if int(columns.primitive_ids_device_ptr) != output_buffers.primitive_ids_device_ptr:
+                raise RuntimeError("native OptiX backend returned an unexpected primitive_ids output pointer")
+        for observed, expected, name in (
+            (int(columns.row_count_device_ptr), output_buffers.row_count_device_ptr, "row_count"),
+            (int(columns.hit_event_count_device_ptr), output_buffers.hit_event_count_device_ptr, "hit_event_count"),
+            (int(columns.overflow_device_ptr), output_buffers.overflow_device_ptr, "overflow"),
+        ):
+            if observed != expected:
+                raise RuntimeError(f"native OptiX backend returned an unexpected {name} status pointer")
+        self._run_count += 1
+        return prepare_generic_device_resident_hit_stream_columns(
+            ray_ids=ray_ids,
+            primitive_ids=primitive_ids,
+            row_count=row_count,
+            capacity=int(columns.capacity),
+            overflow=bool(columns.overflow),
+            backend="optix",
+            phase_timing_seconds={
+                "prepare_build": float(self.prepare_seconds),
+                "query_pack": float(query_pack_seconds),
+                "traversal": float(columns.traversal_seconds),
+                "native_call": float(native_call_seconds),
+            },
+            native_symbol=OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_SYMBOL,
+            native_device_column_output_proven_on_hardware=True,
+            owner=output_buffers,
+            producer_consumer_stream_ordering="host_synchronized_before_consumer",
+            caller_owned_output_buffers=True,
+            reusable_output_buffers_used=True,
+            row_count_device_ptr=int(columns.row_count_device_ptr),
+            hit_event_count_device_ptr=int(columns.hit_event_count_device_ptr),
+            overflow_device_ptr=int(columns.overflow_device_ptr),
         )
 
     def ray_triangle_prepared_primitive_grouped_i64_reduction(
@@ -13532,6 +13664,27 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_static_scene_3d_hit_stream_into_device_columns.restype = ctypes.c_int
+    optional_static_scene_3d_hit_stream_into_device_columns_with_status = _find_optional_backend_symbol(
+        lib,
+        OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_SYMBOL,
+    )
+    if optional_static_scene_3d_hit_stream_into_device_columns_with_status is not None:
+        optional_static_scene_3d_hit_stream_into_device_columns_with_status.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlRay3D),
+            ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.c_size_t,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.POINTER(_RtdlNativeDeviceHitStreamColumns),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_hit_stream_into_device_columns_with_status.restype = ctypes.c_int
     optional_static_scene_3d_release_hit_stream_device_columns = _find_optional_backend_symbol(
         lib,
         OPTIX_RELEASE_RAY_TRIANGLE_HIT_STREAM_3D_DEVICE_COLUMNS_SYMBOL,

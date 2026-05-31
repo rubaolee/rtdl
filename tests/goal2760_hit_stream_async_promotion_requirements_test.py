@@ -160,7 +160,10 @@ class Goal2760HitStreamAsyncPromotionRequirementsTest(unittest.TestCase):
         into_start = runtime.index("def ray_triangle_hit_stream_into_device_columns(")
         method_end = runtime.index("def ray_triangle_prepared_primitive_grouped_i64_reduction", into_start)
         methods = runtime[device_start:method_end]
-        self.assertEqual(methods.count('producer_consumer_stream_ordering="host_synchronized_before_consumer"'), 2)
+        self.assertGreaterEqual(
+            methods.count('producer_consumer_stream_ordering="host_synchronized_before_consumer"'),
+            2,
+        )
         self.assertNotIn('producer_consumer_stream_ordering="same_stream"', methods)
         self.assertNotIn('producer_consumer_stream_ordering="producer_event_waited_by_consumer"', methods)
 

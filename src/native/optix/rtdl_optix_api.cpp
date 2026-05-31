@@ -763,6 +763,35 @@ extern "C" int rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_into_
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_into_device_columns_with_status(
+        void* scene_handle,
+        const RtdlRay3D* rays, size_t ray_count,
+        uint32_t deduplicate_primitives,
+        size_t max_rows,
+        uint64_t ray_ids_device_ptr,
+        uint64_t primitive_ids_device_ptr,
+        uint64_t row_count_device_ptr,
+        uint64_t hit_event_count_device_ptr,
+        uint64_t overflow_device_ptr,
+        RtdlNativeDeviceHitStreamColumns* columns_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_into_device_columns_with_status_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
+            rays,
+            ray_count,
+            deduplicate_primitives,
+            max_rows,
+            ray_ids_device_ptr,
+            primitive_ids_device_ptr,
+            row_count_device_ptr,
+            hit_event_count_device_ptr,
+            overflow_device_ptr,
+            columns_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_release_ray_triangle_hit_stream_device_columns(
         void* owner_handle,
         char* error_out, size_t error_size)

@@ -131,6 +131,12 @@ Observation:
   has a producer stream/event handle, device-resident row-count/overflow state,
   and a partner consumer that proves same-stream or event-wait ordering on a
   pod.
+- Goal2762 added the first generic device-resident status carrier for OptiX
+  hit streams: caller-owned CUDA buffers can now receive row-count,
+  hit-event-count, and overflow values alongside reusable hit-stream columns.
+  This is a prerequisite for async continuation, but the current method remains
+  `host_synchronized_before_consumer` and still does not authorize true
+  zero-copy or public speedup wording.
 
 Future work:
 

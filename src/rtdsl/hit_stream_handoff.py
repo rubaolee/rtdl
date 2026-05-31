@@ -33,6 +33,9 @@ GENERIC_NATIVE_DEVICE_HIT_STREAM_OUTPUT_ABI_FIELDS = (
     "device_ordinal:int32",
     "owner_handle:uint64",
     "traversal_seconds:float64",
+    "row_count_device_ptr:uint64",
+    "hit_event_count_device_ptr:uint64",
+    "overflow_device_ptr:uint64",
 )
 GENERIC_HIT_STREAM_HANDOFF_SOURCE_MODES = (
     "native_device_columns",
@@ -103,6 +106,9 @@ class RtdlHitStreamColumnHandoff:
     producer_consumer_stream_ordering: str = "not_proven"
     caller_owned_output_buffers: bool = False
     reusable_output_buffers_used: bool = False
+    row_count_device_ptr: int | None = None
+    hit_event_count_device_ptr: int | None = None
+    overflow_device_ptr: int | None = None
 
     def __post_init__(self) -> None:
         row_count = int(self.row_count)
@@ -121,6 +127,13 @@ class RtdlHitStreamColumnHandoff:
             raise ValueError("unsupported hit-stream column source mode")
         if self.producer_consumer_stream_ordering not in GENERIC_HIT_STREAM_STREAM_ORDERING_STATES:
             raise ValueError("unsupported hit-stream stream ordering state")
+        for name, value in (
+            ("row_count_device_ptr", self.row_count_device_ptr),
+            ("hit_event_count_device_ptr", self.hit_event_count_device_ptr),
+            ("overflow_device_ptr", self.overflow_device_ptr),
+        ):
+            if value is not None and int(value) <= 0:
+                raise ValueError(f"hit-stream {name} must be a non-zero device pointer when provided")
         _validate_int64_column(self.ray_ids, "ray_ids")
         _validate_int64_column(self.primitive_ids, "primitive_ids")
         if self.native_device_column_output_proven_on_hardware:
@@ -157,6 +170,11 @@ class RtdlHitStreamColumnHandoff:
         )
 
     def to_metadata(self) -> dict[str, object]:
+        row_count_device_ptr = 0 if self.row_count_device_ptr is None else int(self.row_count_device_ptr)
+        hit_event_count_device_ptr = (
+            0 if self.hit_event_count_device_ptr is None else int(self.hit_event_count_device_ptr)
+        )
+        overflow_device_ptr = 0 if self.overflow_device_ptr is None else int(self.overflow_device_ptr)
         return {
             "contract_version": GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION,
             "api_maturity": GENERIC_HIT_STREAM_HANDOFF_API_MATURITY,
@@ -204,8 +222,13 @@ class RtdlHitStreamColumnHandoff:
             in GENERIC_HIT_STREAM_ZERO_COPY_COMPATIBLE_STREAM_ORDERING_STATES,
             "row_count_scalar_visibility": "host_visible_after_producer_synchronization",
             "overflow_scalar_visibility": "host_visible_after_producer_synchronization",
-            "device_resident_row_count_for_partner": False,
-            "device_resident_overflow_for_partner": False,
+            "row_count_device_ptr": row_count_device_ptr,
+            "hit_event_count_device_ptr": hit_event_count_device_ptr,
+            "overflow_device_ptr": overflow_device_ptr,
+            "device_resident_row_count_for_partner": row_count_device_ptr != 0,
+            "device_resident_hit_event_count_for_partner": hit_event_count_device_ptr != 0,
+            "device_resident_overflow_for_partner": overflow_device_ptr != 0,
+            "device_resident_status_for_partner": row_count_device_ptr != 0 and overflow_device_ptr != 0,
             "completion_event_handle_available": False,
             "same_stream_handle_available": False,
             "async_partner_continuation_authorized": False,
@@ -303,6 +326,9 @@ class RtdlNativeDeviceHitStreamOutput:
     native_device_column_output_proven_on_hardware: bool = False
     closed: bool = False
     producer_consumer_stream_ordering: str = "not_proven"
+    row_count_device_ptr: int | None = None
+    hit_event_count_device_ptr: int | None = None
+    overflow_device_ptr: int | None = None
 
     def __post_init__(self) -> None:
         backend = str(self.backend).strip().lower()
@@ -329,11 +355,23 @@ class RtdlNativeDeviceHitStreamOutput:
             raise ValueError("native hit-stream device_id must be non-negative")
         if self.producer_consumer_stream_ordering not in GENERIC_HIT_STREAM_STREAM_ORDERING_STATES:
             raise ValueError("unsupported native hit-stream stream ordering state")
+        for name, value in (
+            ("row_count_device_ptr", self.row_count_device_ptr),
+            ("hit_event_count_device_ptr", self.hit_event_count_device_ptr),
+            ("overflow_device_ptr", self.overflow_device_ptr),
+        ):
+            if value is not None and int(value) <= 0:
+                raise ValueError(f"native hit-stream {name} must be a non-zero device pointer when provided")
         resolved_symbol = self.native_symbol or GENERIC_NATIVE_DEVICE_HIT_STREAM_OUTPUT_ABI_SYMBOLS[backend]
         object.__setattr__(self, "backend", backend)
         object.__setattr__(self, "native_symbol", resolved_symbol)
 
     def to_metadata(self) -> dict[str, object]:
+        row_count_device_ptr = 0 if self.row_count_device_ptr is None else int(self.row_count_device_ptr)
+        hit_event_count_device_ptr = (
+            0 if self.hit_event_count_device_ptr is None else int(self.hit_event_count_device_ptr)
+        )
+        overflow_device_ptr = 0 if self.overflow_device_ptr is None else int(self.overflow_device_ptr)
         return {
             "contract_version": GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION,
             "native_output_abi_symbol": self.native_symbol,
@@ -358,8 +396,13 @@ class RtdlNativeDeviceHitStreamOutput:
             in GENERIC_HIT_STREAM_ZERO_COPY_COMPATIBLE_STREAM_ORDERING_STATES,
             "row_count_scalar_visibility": "host_visible_after_producer_synchronization",
             "overflow_scalar_visibility": "host_visible_after_producer_synchronization",
-            "device_resident_row_count_for_partner": False,
-            "device_resident_overflow_for_partner": False,
+            "row_count_device_ptr": row_count_device_ptr,
+            "hit_event_count_device_ptr": hit_event_count_device_ptr,
+            "overflow_device_ptr": overflow_device_ptr,
+            "device_resident_row_count_for_partner": row_count_device_ptr != 0,
+            "device_resident_hit_event_count_for_partner": hit_event_count_device_ptr != 0,
+            "device_resident_overflow_for_partner": overflow_device_ptr != 0,
+            "device_resident_status_for_partner": row_count_device_ptr != 0 and overflow_device_ptr != 0,
             "completion_event_handle_available": False,
             "same_stream_handle_available": False,
             "async_partner_continuation_authorized": False,
@@ -428,6 +471,9 @@ class RtdlNativeDeviceHitStreamOutput:
             ),
             owner=self,
             producer_consumer_stream_ordering=self.producer_consumer_stream_ordering,
+            row_count_device_ptr=self.row_count_device_ptr,
+            hit_event_count_device_ptr=self.hit_event_count_device_ptr,
+            overflow_device_ptr=self.overflow_device_ptr,
         )
 
 
@@ -664,6 +710,9 @@ def prepare_native_device_hit_stream_columns_from_abi(
     traversal_seconds: float | None = None,
     native_device_column_output_proven_on_hardware: bool = False,
     producer_consumer_stream_ordering: str = "not_proven",
+    row_count_device_ptr: int | None = None,
+    hit_event_count_device_ptr: int | None = None,
+    overflow_device_ptr: int | None = None,
 ) -> RtdlHitStreamColumnHandoff:
     native_output = RtdlNativeDeviceHitStreamOutput(
         ray_ids_device_ptr=ray_ids_device_ptr,
@@ -680,6 +729,9 @@ def prepare_native_device_hit_stream_columns_from_abi(
         traversal_seconds=traversal_seconds,
         native_device_column_output_proven_on_hardware=native_device_column_output_proven_on_hardware,
         producer_consumer_stream_ordering=producer_consumer_stream_ordering,
+        row_count_device_ptr=row_count_device_ptr,
+        hit_event_count_device_ptr=hit_event_count_device_ptr,
+        overflow_device_ptr=overflow_device_ptr,
     )
     return native_output.to_handoff()
 
@@ -741,6 +793,9 @@ def prepare_generic_device_resident_hit_stream_columns(
     producer_consumer_stream_ordering: str = "not_proven",
     caller_owned_output_buffers: bool = False,
     reusable_output_buffers_used: bool = False,
+    row_count_device_ptr: int | None = None,
+    hit_event_count_device_ptr: int | None = None,
+    overflow_device_ptr: int | None = None,
 ) -> RtdlHitStreamColumnHandoff:
     resolved_count = _column_length(primitive_ids) if row_count is None else int(row_count)
     return RtdlHitStreamColumnHandoff(
@@ -759,6 +814,9 @@ def prepare_generic_device_resident_hit_stream_columns(
         producer_consumer_stream_ordering=producer_consumer_stream_ordering,
         caller_owned_output_buffers=bool(caller_owned_output_buffers),
         reusable_output_buffers_used=bool(reusable_output_buffers_used),
+        row_count_device_ptr=row_count_device_ptr,
+        hit_event_count_device_ptr=hit_event_count_device_ptr,
+        overflow_device_ptr=overflow_device_ptr,
     )
 
 
@@ -1266,7 +1324,11 @@ def plan_v2_5_hit_stream_partner_transfer(
         "row_count_scalar_visibility": hit_metadata["row_count_scalar_visibility"],
         "overflow_scalar_visibility": hit_metadata["overflow_scalar_visibility"],
         "device_resident_row_count_for_partner": bool(hit_metadata["device_resident_row_count_for_partner"]),
+        "device_resident_hit_event_count_for_partner": bool(
+            hit_metadata["device_resident_hit_event_count_for_partner"]
+        ),
         "device_resident_overflow_for_partner": bool(hit_metadata["device_resident_overflow_for_partner"]),
+        "device_resident_status_for_partner": bool(hit_metadata["device_resident_status_for_partner"]),
         "completion_event_handle_available": bool(hit_metadata["completion_event_handle_available"]),
         "same_stream_handle_available": bool(hit_metadata["same_stream_handle_available"]),
         "async_partner_continuation_authorized": async_partner_continuation_authorized,

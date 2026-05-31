@@ -234,6 +234,9 @@ struct RtdlNativeDeviceHitStreamColumns {
     int32_t device_ordinal;
     void* owner_handle;
     double traversal_seconds;
+    uint64_t row_count_device_ptr;
+    uint64_t hit_event_count_device_ptr;
+    uint64_t overflow_device_ptr;
 };
 
 struct RtdlRaySegmentGroupCountRow {
@@ -684,6 +687,18 @@ int rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_into_device_colu
          size_t max_rows,
          uint64_t ray_ids_device_ptr,
          uint64_t primitive_ids_device_ptr,
+         RtdlNativeDeviceHitStreamColumns* columns_out,
+         char* error_out, size_t error_size);
+int rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_into_device_columns_with_status(
+         void* scene_handle,
+         const RtdlRay3D* rays, size_t ray_count,
+         uint32_t deduplicate_primitives,
+         size_t max_rows,
+         uint64_t ray_ids_device_ptr,
+         uint64_t primitive_ids_device_ptr,
+         uint64_t row_count_device_ptr,
+         uint64_t hit_event_count_device_ptr,
+         uint64_t overflow_device_ptr,
          RtdlNativeDeviceHitStreamColumns* columns_out,
          char* error_out, size_t error_size);
 int rtdl_optix_release_ray_triangle_hit_stream_device_columns(

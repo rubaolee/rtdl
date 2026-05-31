@@ -10322,6 +10322,10 @@ static void run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_device
         CUdeviceptr caller_ray_ids,
         CUdeviceptr caller_primitive_ids,
         bool caller_owned_output,
+        CUdeviceptr caller_row_count,
+        CUdeviceptr caller_hit_events,
+        CUdeviceptr caller_overflow,
+        bool caller_owned_status,
         RtdlNativeDeviceHitStreamColumns* columns_out)
 {
     if (!prepared)
@@ -10341,6 +10345,18 @@ static void run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_device
     columns_out->capacity = static_cast<uint64_t>(max_rows);
     if (caller_owned_output && max_rows != 0 && (!caller_ray_ids || !caller_primitive_ids))
         throw std::runtime_error("caller-owned hit-stream output columns require nonzero device pointers");
+    if (caller_owned_status && (!caller_row_count || !caller_hit_events || !caller_overflow))
+        throw std::runtime_error("caller-owned hit-stream status requires nonzero device pointers");
+    if (caller_owned_status) {
+        unsigned long long zero64 = 0ull;
+        uint32_t zero32 = 0u;
+        upload(caller_row_count, &zero64, 1);
+        upload(caller_hit_events, &zero64, 1);
+        upload(caller_overflow, &zero32, 1);
+        columns_out->row_count_device_ptr = static_cast<uint64_t>(caller_row_count);
+        columns_out->hit_event_count_device_ptr = static_cast<uint64_t>(caller_hit_events);
+        columns_out->overflow_device_ptr = static_cast<uint64_t>(caller_overflow);
+    }
     if (ray_count == 0 || prepared->triangle_count == 0)
         return;
 
@@ -10365,17 +10381,28 @@ static void run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_device
 
     const size_t flag_word_count = std::max<size_t>(1, (prepared->triangle_count + 31u) / 32u);
     DevPtr d_rays(sizeof(GpuRay3DHost) * ray_count);
-    DevPtr d_row_count(sizeof(unsigned long long));
-    DevPtr d_hit_events(sizeof(unsigned long long));
-    DevPtr d_overflow(sizeof(uint32_t));
+    std::unique_ptr<DevPtr> d_row_count_storage;
+    std::unique_ptr<DevPtr> d_hit_events_storage;
+    std::unique_ptr<DevPtr> d_overflow_storage;
     DevPtr d_flags(sizeof(uint32_t) * flag_word_count);
+    CUdeviceptr row_count_ptr = caller_row_count;
+    CUdeviceptr hit_events_ptr = caller_hit_events;
+    CUdeviceptr overflow_ptr = caller_overflow;
+    if (!caller_owned_status) {
+        d_row_count_storage = std::make_unique<DevPtr>(sizeof(unsigned long long));
+        d_hit_events_storage = std::make_unique<DevPtr>(sizeof(unsigned long long));
+        d_overflow_storage = std::make_unique<DevPtr>(sizeof(uint32_t));
+        row_count_ptr = d_row_count_storage->ptr;
+        hit_events_ptr = d_hit_events_storage->ptr;
+        overflow_ptr = d_overflow_storage->ptr;
+    }
 
     upload(d_rays.ptr, gpu_rays.data(), gpu_rays.size());
     unsigned long long zero64 = 0ull;
     uint32_t zero32 = 0u;
-    upload(d_row_count.ptr, &zero64, 1);
-    upload(d_hit_events.ptr, &zero64, 1);
-    upload(d_overflow.ptr, &zero32, 1);
+    upload(row_count_ptr, &zero64, 1);
+    upload(hit_events_ptr, &zero64, 1);
+    upload(overflow_ptr, &zero32, 1);
     CU_CHECK(cuMemsetD32(d_flags.ptr, 0u, flag_word_count));
 
     RayTriangleHitStreamDeviceColumns3DLaunchParams lp;
@@ -10384,9 +10411,9 @@ static void run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_device
     lp.triangles = reinterpret_cast<const GpuTriangle3DHost*>(prepared->d_triangles.ptr);
     lp.ray_ids = reinterpret_cast<unsigned long long*>(ray_ids_output);
     lp.primitive_ids = reinterpret_cast<unsigned long long*>(primitive_ids_output);
-    lp.row_count = reinterpret_cast<unsigned long long*>(d_row_count.ptr);
-    lp.hit_event_count = reinterpret_cast<unsigned long long*>(d_hit_events.ptr);
-    lp.overflow = reinterpret_cast<uint32_t*>(d_overflow.ptr);
+    lp.row_count = reinterpret_cast<unsigned long long*>(row_count_ptr);
+    lp.hit_event_count = reinterpret_cast<unsigned long long*>(hit_events_ptr);
+    lp.overflow = reinterpret_cast<uint32_t*>(overflow_ptr);
     lp.primitive_flags = reinterpret_cast<uint32_t*>(d_flags.ptr);
     lp.ray_count = static_cast<uint32_t>(ray_count);
     lp.triangle_count = static_cast<uint32_t>(prepared->triangle_count);
@@ -10408,15 +10435,20 @@ static void run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_device
     unsigned long long attempted_rows = 0ull;
     unsigned long long hit_events = 0ull;
     uint32_t overflow = 0u;
-    download(&attempted_rows, d_row_count.ptr, 1);
-    download(&hit_events, d_hit_events.ptr, 1);
-    download(&overflow, d_overflow.ptr, 1);
+    download(&attempted_rows, row_count_ptr, 1);
+    download(&hit_events, hit_events_ptr, 1);
+    download(&overflow, overflow_ptr, 1);
 
     columns_out->hit_event_count = static_cast<uint64_t>(hit_events);
     columns_out->traversal_seconds = std::chrono::duration<double>(traversal_end - traversal_start).count();
     CUdevice current_device = 0;
     CU_CHECK(cuCtxGetDevice(&current_device));
     columns_out->device_ordinal = static_cast<int32_t>(current_device);
+    if (caller_owned_status) {
+        columns_out->row_count_device_ptr = static_cast<uint64_t>(row_count_ptr);
+        columns_out->hit_event_count_device_ptr = static_cast<uint64_t>(hit_events_ptr);
+        columns_out->overflow_device_ptr = static_cast<uint64_t>(overflow_ptr);
+    }
 
     if (overflow != 0u || attempted_rows > static_cast<unsigned long long>(max_rows)) {
         columns_out->row_count = 0u;
@@ -10449,6 +10481,10 @@ static void run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_device
         0,
         0,
         false,
+        0,
+        0,
+        0,
+        false,
         columns_out);
 }
 
@@ -10470,6 +10506,39 @@ static void run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_into_d
         max_rows,
         static_cast<CUdeviceptr>(ray_ids_device_ptr),
         static_cast<CUdeviceptr>(primitive_ids_device_ptr),
+        true,
+        0,
+        0,
+        0,
+        false,
+        columns_out);
+}
+
+static void run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_into_device_columns_with_status_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        const RtdlRay3D* rays,
+        size_t ray_count,
+        uint32_t deduplicate_primitives,
+        size_t max_rows,
+        uint64_t ray_ids_device_ptr,
+        uint64_t primitive_ids_device_ptr,
+        uint64_t row_count_device_ptr,
+        uint64_t hit_event_count_device_ptr,
+        uint64_t overflow_device_ptr,
+        RtdlNativeDeviceHitStreamColumns* columns_out)
+{
+    run_prepared_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns_impl_optix(
+        prepared,
+        rays,
+        ray_count,
+        deduplicate_primitives,
+        max_rows,
+        static_cast<CUdeviceptr>(ray_ids_device_ptr),
+        static_cast<CUdeviceptr>(primitive_ids_device_ptr),
+        true,
+        static_cast<CUdeviceptr>(row_count_device_ptr),
+        static_cast<CUdeviceptr>(hit_event_count_device_ptr),
+        static_cast<CUdeviceptr>(overflow_device_ptr),
         true,
         columns_out);
 }
