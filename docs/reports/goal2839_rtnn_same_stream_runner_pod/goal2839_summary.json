@@ -1,0 +1,18 @@
+{
+  "claim_same_stream_partner_consumer": true,
+  "elapsed_runs_sec": [
+    0.1728073488920927,
+    0.0007668619509786367
+  ],
+  "first_entrypoint_fallback_required": false,
+  "first_entrypoint_plan_status": "accepted_preview",
+  "first_entrypoint_resolved_partner": "cupy_conformance",
+  "goal": "Goal2839",
+  "host_scalar_read_before_consumer": false,
+  "ok": true,
+  "public_speedup_claim_authorized": false,
+  "result_mode": "ranked-summary-aggregate-prepared-query-batch-graph-same-stream-cupy-float32",
+  "row_count": 8192,
+  "same_stream_entrypoint_metadata_count": 1,
+  "same_stream_partner_consumer": true
+}

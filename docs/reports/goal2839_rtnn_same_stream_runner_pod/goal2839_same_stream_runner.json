@@ -1,0 +1,157 @@
+{
+  "backend": "optix",
+  "batch_count": 1,
+  "batch_phase_timings": [
+    {
+      "candidate_count_pass": 1.1101e-05,
+      "candidate_write_pass": 0.0,
+      "count_download_and_prefix": 0.0,
+      "emitted_count": 0,
+      "exact_refine": 0.0,
+      "mode": "none",
+      "prepare": 0.0,
+      "raw_candidate_count": 0,
+      "row_download": 0.0,
+      "row_offset_upload": 0.0,
+      "same_stream_entrypoint_fallback_required": false,
+      "same_stream_entrypoint_plan_status": "accepted_preview",
+      "same_stream_entrypoint_resolved_partner": "cupy_conformance",
+      "upload": 0.0
+    }
+  ],
+  "claim_boundary": {
+    "aggregate_requests_batched": true,
+    "broad_rt_core_speedup_claim_authorized": false,
+    "device_ranked_summary_aggregate": true,
+    "device_ranked_summary_rows": false,
+    "device_resident_query_points": true,
+    "embree_ranked_summary_rows": false,
+    "float32_precision": true,
+    "materializes_neighbor_rows": false,
+    "paper_equivalent_rtnn_row": false,
+    "partitioned_or_batched_like_rtnn": true,
+    "prepared_cuda_graph_replay": true,
+    "rt_core_neighbor_search_claim_authorized": false,
+    "rtdl_speedup_claim_authorized": false,
+    "same_stream_partner_consumer": true
+  },
+  "contract": {
+    "aggregate_batch_request_mode": "heterogeneous",
+    "aggregate_batch_requests": [
+      {
+        "k_max": 4,
+        "radius": 0.08
+      },
+      {
+        "k_max": 8,
+        "radius": 0.1
+      },
+      {
+        "k_max": 12,
+        "radius": 0.12
+      }
+    ],
+    "aggregate_request_count": 3,
+    "approximate": false,
+    "batched_queries": true,
+    "bounded_k": 8,
+    "exact": false,
+    "family": "fixed_radius_neighbors_3d",
+    "mode": "ranked-summary-aggregate-prepared-query-batch-graph-same-stream-cupy-float32",
+    "precision": "float32",
+    "prepared_cuda_graph_replay": true,
+    "prepared_query_points": true,
+    "prepared_search_structure": true,
+    "same_stream_partner_consumer": true
+  },
+  "elapsed_runs_sec": [
+    0.1728073488920927,
+    0.0007668619509786367
+  ],
+  "elapsed_sec": 0.0007668619509786367,
+  "error": "",
+  "execution_prepare_sec": 1.8751110578887165,
+  "external": "RTDL current",
+  "input_load_sec": 0.008995732991024852,
+  "input_pack_sec": 0.0038185149896889925,
+  "k_max": 8,
+  "mode": "current_3d_fixed_radius_neighbors_optix_batched",
+  "ok": true,
+  "query_batch_size": 8192,
+  "query_count": 8192,
+  "radius": 0.08,
+  "ranked_aggregate_batch_summaries": [
+    {
+      "bounded_neighbor_count": 32758,
+      "cuda_graph_replay": true,
+      "k_max": 4,
+      "kth_id_checksum": 33683600,
+      "nearest_id_checksum": 33550336,
+      "precision": "float32",
+      "query_count": 8192,
+      "query_resident": true,
+      "radius": 0.08,
+      "request_buffer_update_count": 0,
+      "request_index": 0,
+      "same_stream_partner_reduced": true,
+      "sum_distance": 894.569598607719
+    },
+    {
+      "bounded_neighbor_count": 65530,
+      "cuda_graph_replay": true,
+      "k_max": 8,
+      "kth_id_checksum": 33483120,
+      "nearest_id_checksum": 33550336,
+      "precision": "float32",
+      "query_count": 8192,
+      "query_resident": true,
+      "radius": 0.1,
+      "request_buffer_update_count": 0,
+      "request_index": 1,
+      "same_stream_partner_reduced": true,
+      "sum_distance": 2677.6323244199157
+    },
+    {
+      "bounded_neighbor_count": 98299,
+      "cuda_graph_replay": true,
+      "k_max": 12,
+      "kth_id_checksum": 33793962,
+      "nearest_id_checksum": 33550336,
+      "precision": "float32",
+      "query_count": 8192,
+      "query_resident": true,
+      "radius": 0.12,
+      "request_buffer_update_count": 0,
+      "request_index": 2,
+      "same_stream_partner_reduced": true,
+      "sum_distance": 4856.474860709161
+    }
+  ],
+  "ranked_aggregate_summary": {
+    "bounded_neighbor_count": 32758,
+    "kth_id_checksum": 33683600,
+    "nearest_id_checksum": 33550336,
+    "row_count": 8192,
+    "sum_distance": 894.569598607719
+  },
+  "repeat": 2,
+  "result_mode": "ranked-summary-aggregate-prepared-query-batch-graph-same-stream-cupy-float32",
+  "row": "goal2839_same_stream_runner",
+  "row_count": 8192,
+  "runner": "goal2348_rtnn_v2_2_external_runner",
+  "same_stream_entrypoint_metadata": [
+    {
+      "batch_index": 0,
+      "entrypoint_descriptor_count": 1,
+      "entrypoint_fallback_reasons": [],
+      "entrypoint_fallback_required": false,
+      "entrypoint_plan_status": "accepted_preview",
+      "entrypoint_resolved_partner": "cupy_conformance",
+      "entrypoint_runtime_action": "execute_preview_with_explicit_descriptor_plan",
+      "host_partial_materialization_before_consumer": false,
+      "host_scalar_read_before_consumer": false,
+      "producer_consumer_stream_ordering": "same_cuda_stream"
+    }
+  ],
+  "search_count": 8192
+}
