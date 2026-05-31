@@ -682,6 +682,14 @@ Future work:
   stream waits on that event before reducing stored hit rows. The next hard
   target is richer generic grouped reductions over the same event-ordered
   stream, or multi-partner conformance for this event contract.
+- Goal2780 wires the RTNN/top-k adapter through the generic Triton
+  `grouped_topk_f64` continuation and proves correctness on the RTX A5000, but
+  the dense exact top-k Triton preview is about 47x-151x slower than the Torch
+  same-contract branch on the measured rows. Do not promote this Triton top-k
+  route for performance. Future v2.x work should either keep Torch/CuPy as the
+  explicit selected partner for dense exact ranking or replace the iterative
+  rank-by-rank Triton preview with a tiled/block-level top-k selection kernel
+  before making RTNN-style performance claims.
 
 Boundary:
 

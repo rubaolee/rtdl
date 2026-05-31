@@ -1751,30 +1751,55 @@ def top_k_nearest_points_2d_partner_columns(
     if k > candidate_count:
         raise ValueError("k must be <= candidate point count")
 
-    if runtime["name"] == "torch":
+    if runtime["name"] in {"triton", "torch"}:
         torch = runtime["module"]
         qx = query_point_columns["x"].to(torch.float64)
         qy = query_point_columns["y"].to(torch.float64)
         cx = candidate_point_columns["x"].to(torch.float64)
         cy = candidate_point_columns["y"].to(torch.float64)
         candidate_ids_i64 = candidate_point_columns["ids"].to(torch.int64)
-        candidate_id_order = torch.argsort(candidate_ids_i64)
         dx = qx.reshape(-1, 1) - cx.reshape(1, -1)
         dy = qy.reshape(-1, 1) - cy.reshape(1, -1)
-        distance_sq_by_id = (dx * dx + dy * dy)[:, candidate_id_order]
-        rank_order_by_id = torch.argsort(distance_sq_by_id, dim=1, stable=True)[:, :k]
-        nearest_indices = candidate_id_order[rank_order_by_id]
-        nearest_distance_sq = torch.gather(dx * dx + dy * dy, 1, nearest_indices)
-        query_ids = query_point_columns["ids"].reshape(-1, 1).expand(query_count, k).reshape(-1)
-        neighbor_ids = candidate_point_columns["ids"][nearest_indices].reshape(-1)
-        distances = torch.sqrt(nearest_distance_sq).reshape(-1)
-        neighbor_rank = (
-            torch.arange(1, k + 1, dtype=torch.int64, device=query_ids.device)
-            .to(query_point_columns["ids"].dtype)
-            .reshape(1, k)
-            .expand(query_count, k)
-            .reshape(-1)
-        )
+        distance_sq = dx * dx + dy * dy
+        if runtime["name"] == "triton":
+            group_ids = (
+                torch.arange(query_count, dtype=torch.int64, device=qx.device)
+                .reshape(-1, 1)
+                .expand(query_count, candidate_count)
+                .reshape(-1)
+            )
+            item_ids = candidate_ids_i64.reshape(1, -1).expand(query_count, candidate_count).reshape(-1)
+            topk_result = run_triton_partner_continuation(
+                "grouped_topk_f64",
+                {
+                    "group_ids": group_ids,
+                    "item_ids": item_ids,
+                    "scores": distance_sq.reshape(-1),
+                    "group_count": query_count,
+                    "k": k,
+                },
+            )
+            topk_outputs = topk_result["outputs"]
+            output_group_ids = topk_outputs["group_ids"]
+            query_ids = query_point_columns["ids"].to(torch.int64)[output_group_ids]
+            neighbor_ids = topk_outputs["item_ids"]
+            distances = torch.sqrt(topk_outputs["scores"])
+            neighbor_rank = topk_outputs["ranks"]
+        else:
+            candidate_id_order = torch.argsort(candidate_ids_i64)
+            distance_sq_by_id = distance_sq[:, candidate_id_order]
+            rank_order_by_id = torch.argsort(distance_sq_by_id, dim=1, stable=True)[:, :k]
+            nearest_indices = candidate_id_order[rank_order_by_id]
+            nearest_distance_sq = torch.gather(distance_sq, 1, nearest_indices)
+            query_ids = query_point_columns["ids"].to(torch.int64).reshape(-1, 1).expand(query_count, k).reshape(-1)
+            neighbor_ids = candidate_ids_i64[nearest_indices].reshape(-1)
+            distances = torch.sqrt(nearest_distance_sq).reshape(-1)
+            neighbor_rank = (
+                torch.arange(1, k + 1, dtype=torch.int64, device=query_ids.device)
+                .reshape(1, k)
+                .expand(query_count, k)
+                .reshape(-1)
+            )
     elif runtime["name"] == "cupy":
         cupy = runtime["module"]
         qx = query_point_columns["x"].astype(cupy.float64, copy=False)
@@ -1814,6 +1839,13 @@ def top_k_nearest_points_2d_partner_columns(
         "candidate_count": candidate_count,
         "k": k,
         "tie_break": "distance_then_candidate_id",
+        "v2_5_partner_continuation_operation": (
+            "grouped_topk_f64" if runtime["name"] == "triton" else None
+        ),
+        "v2_5_triton_preview_kernel_used": runtime["name"] == "triton",
+        "v2_5_triton_preview_kernel_status": (
+            "preview_not_promoted" if runtime["name"] == "triton" else None
+        ),
         "app_row_materialization": "caller_optional",
         "direct_device_handoff_authorized": False,
         "rt_core_speedup_claim_authorized": False,

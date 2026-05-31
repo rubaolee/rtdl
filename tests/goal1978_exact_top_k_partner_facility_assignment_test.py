@@ -10,7 +10,7 @@ import unittest
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 ADAPTERS = ROOT / "src" / "rtdsl" / "partner_adapters.py"
 INIT = ROOT / "src" / "rtdsl" / "__init__.py"
-EXAMPLE = ROOT / "examples" / "rtdl_facility_knn_assignment.py"
+EXAMPLE = ROOT / "examples" / "v2_0" / "apps" / "geospatial" / "rtdl_facility_knn_assignment.py"
 PREFLIGHT = ROOT / "scripts" / "goal1908_v2_local_preflight.py"
 REPORT = ROOT / "docs" / "reports" / "goal1978_exact_top_k_partner_facility_assignment_2026-05-14.md"
 POD_ARTIFACT = ROOT / "docs" / "reports" / "goal1978_pod_exact_top_k_facility_cupy_perf.json"
