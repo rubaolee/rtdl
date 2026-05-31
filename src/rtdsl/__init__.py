@@ -223,6 +223,10 @@ from .v2_5_determinism_policy import V2_5_DETERMINISM_POLICY_VERSION
 from .v2_5_determinism_policy import plan_v2_5_continuation_determinism
 from .v2_5_determinism_policy import v2_5_continuation_determinism_policies
 from .v2_5_determinism_policy import validate_v2_5_continuation_determinism_policies
+from .v2_5_internal_readiness import V2_5_INTERNAL_READINESS_PACKET_VERSION
+from .v2_5_internal_readiness import V2_5_INTERNAL_READINESS_STATUS
+from .v2_5_internal_readiness import v2_5_internal_readiness_packet
+from .v2_5_internal_readiness import validate_v2_5_internal_readiness_packet
 from .api import polygon_pair_overlap_area_rows
 from .api import polygon_set_jaccard
 from .api import ray_triangle_any_hit
@@ -1659,6 +1663,10 @@ __all__ = [
     "v2_5_tiered_benchmark_manifest",
     "v2_5_triton_front_door_coverage",
     "v2_5_triton_benchmark_app_migration_plan",
+    "V2_5_INTERNAL_READINESS_PACKET_VERSION",
+    "V2_5_INTERNAL_READINESS_STATUS",
+    "v2_5_internal_readiness_packet",
+    "validate_v2_5_internal_readiness_packet",
     "overlay_compose",
     "overlay_compose_hiprt",
     "oracle_version",
