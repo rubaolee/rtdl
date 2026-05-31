@@ -315,6 +315,20 @@ static_assert(offsetof(RtdlFixedRadiusRankedNeighborSummary, kth_distance) == 24
 static_assert(offsetof(RtdlFixedRadiusRankedNeighborSummary, sum_distance) == 32, "RtdlFixedRadiusRankedNeighborSummary sum offset mismatch");
 static_assert(sizeof(RtdlFixedRadiusRankedNeighborSummary) == 40, "RtdlFixedRadiusRankedNeighborSummary size mismatch");
 
+struct RtdlFixedRadiusRankedNeighborAggregate {
+    size_t query_count;
+    size_t bounded_neighbor_count;
+    uint64_t nearest_id_checksum;
+    uint64_t kth_id_checksum;
+    double sum_distance;
+};
+static_assert(offsetof(RtdlFixedRadiusRankedNeighborAggregate, query_count) == 0, "RtdlFixedRadiusRankedNeighborAggregate query count offset mismatch");
+static_assert(offsetof(RtdlFixedRadiusRankedNeighborAggregate, bounded_neighbor_count) == 8, "RtdlFixedRadiusRankedNeighborAggregate neighbor count offset mismatch");
+static_assert(offsetof(RtdlFixedRadiusRankedNeighborAggregate, nearest_id_checksum) == 16, "RtdlFixedRadiusRankedNeighborAggregate nearest checksum offset mismatch");
+static_assert(offsetof(RtdlFixedRadiusRankedNeighborAggregate, kth_id_checksum) == 24, "RtdlFixedRadiusRankedNeighborAggregate kth checksum offset mismatch");
+static_assert(offsetof(RtdlFixedRadiusRankedNeighborAggregate, sum_distance) == 32, "RtdlFixedRadiusRankedNeighborAggregate sum offset mismatch");
+static_assert(sizeof(RtdlFixedRadiusRankedNeighborAggregate) == 40, "RtdlFixedRadiusRankedNeighborAggregate size mismatch");
+
 struct RtdlPointNearestSegmentRow {
     uint32_t point_id, segment_id;
     double distance;
@@ -1203,6 +1217,20 @@ int  rtdl_optix_run_prepared_ranked_fixed_radius_neighbor_summaries_3d(
          double radius,
          size_t k_max,
          RtdlFixedRadiusRankedNeighborSummary** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_aggregate_prepared_ranked_fixed_radius_neighbor_summaries_3d(
+         void* prepared,
+         const RtdlPoint3D* query_points, size_t query_count,
+         double radius,
+         size_t k_max,
+         RtdlFixedRadiusRankedNeighborAggregate* aggregate_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_aggregate_prepared_ranked_fixed_radius_neighbor_summaries_3d_f32(
+         void* prepared,
+         const RtdlPoint3D* query_points, size_t query_count,
+         double radius,
+         size_t k_max,
+         RtdlFixedRadiusRankedNeighborAggregate* aggregate_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_count_prepared_fixed_radius_neighbors_3d(
          void* prepared,

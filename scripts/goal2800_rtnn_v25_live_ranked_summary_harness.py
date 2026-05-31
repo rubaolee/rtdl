@@ -18,7 +18,7 @@ sys.path.insert(0, str(ROOT))
 from scripts import goal2348_rtnn_v2_2_external_runner as rtnn_runner  # noqa: E402
 
 
-GOAL2800_HARNESS_VERSION = "rtdl.goal2800.rtnn_v2_5_live_ranked_summary_harness.v1"
+GOAL2800_HARNESS_VERSION = "rtdl.goal2800.rtnn_v2_5_live_ranked_summary_harness.v3.aggregate_float32"
 DEFAULT_DISTRIBUTIONS = ("uniform", "clustered", "shell")
 CLAIM_BOUNDARY = {
     "canonical_live_harness": True,
@@ -85,7 +85,7 @@ def run_goal2800_rtnn_live_harness(
                         k_max=int(k_max),
                         backend="optix",
                         query_batch_size=batch_size,
-                        result_mode="ranked-summary-raw",
+                        result_mode="ranked-summary-aggregate-float32",
                         repeat=int(repeat),
                         row_label=f"goal2800_rtdl_{distribution}_{int(point_count)}",
                     )
@@ -166,7 +166,10 @@ def _row_from_payloads(
     cupy_payload: dict[str, Any] | None,
     elapsed_sec: float,
 ) -> dict[str, Any]:
-    rtdl_candidate_count = _rtdl_raw_candidate_count(rtdl_payload)
+    rtdl_aggregate = rtdl_payload.get("ranked_aggregate_summary") or {}
+    rtdl_candidate_count = int(
+        rtdl_aggregate.get("bounded_neighbor_count", _rtdl_raw_candidate_count(rtdl_payload))
+    )
     cupy_bounded_count = (
         int(cupy_payload["summary"]["bounded_neighbor_count"])
         if cupy_payload is not None and cupy_payload.get("summary")
@@ -188,6 +191,7 @@ def _row_from_payloads(
     candidate_count_within_tolerance = (
         cupy_bounded_count is None or int(candidate_count_delta) <= int(candidate_count_tolerance)
     )
+    aggregate_match = _ranked_aggregate_matches_cupy(rtdl_aggregate, cupy_payload)
     status = "pass" if rtdl_ok and cupy_ok and candidate_count_within_tolerance else "mismatch"
     rtdl_elapsed = float(rtdl_payload.get("elapsed_sec", 0.0))
     cupy_elapsed = float(cupy_payload.get("elapsed_sec", 0.0)) if cupy_payload is not None else None
@@ -220,11 +224,14 @@ def _row_from_payloads(
             else None
         ),
         "rtdl_phase_summary": _rtdl_phase_summary(rtdl_payload),
+        "rtdl_ranked_aggregate_summary": rtdl_aggregate or None,
         "cupy_grid_summary": cupy_payload.get("summary") if cupy_payload is not None else None,
+        "ranked_aggregate_matches_cupy_grid": aggregate_match if cupy_payload is not None else None,
         "contract": {
             "family": "fixed_radius_neighbors_3d",
-            "mode": "ranked-summary",
-            "exact": True,
+            "mode": str(rtdl_payload.get("result_mode", "ranked-summary-aggregate")),
+            "exact": bool(rtdl_payload.get("contract", {}).get("exact", True)),
+            "precision": str(rtdl_payload.get("contract", {}).get("precision", "float64")),
             "bounded_k": int(rtdl_payload.get("k_max", 0)),
             "same_contract_opponent": "cupy_grid_exact_ranked_summary_3d" if cupy_payload is not None else None,
         },
@@ -235,6 +242,24 @@ def _row_from_payloads(
 
 def _rtdl_raw_candidate_count(payload: dict[str, Any]) -> int:
     return sum(int(item.get("raw_candidate_count", 0)) for item in payload.get("batch_phase_timings", ()))
+
+
+def _ranked_aggregate_matches_cupy(rtdl_aggregate: dict[str, Any], cupy_payload: dict[str, Any] | None) -> bool:
+    if cupy_payload is None:
+        return True
+    cupy_summary = cupy_payload.get("summary")
+    if not rtdl_aggregate or not cupy_summary:
+        return False
+    if int(rtdl_aggregate.get("bounded_neighbor_count", -1)) != int(cupy_summary.get("bounded_neighbor_count", -2)):
+        return False
+    if int(rtdl_aggregate.get("nearest_id_checksum", -1)) != int(cupy_summary.get("nearest_id_checksum", -2)):
+        return False
+    if int(rtdl_aggregate.get("kth_id_checksum", -1)) != int(cupy_summary.get("kth_id_checksum", -2)):
+        return False
+    rtdl_sum = float(rtdl_aggregate.get("sum_distance", 0.0))
+    cupy_sum = float(cupy_summary.get("sum_distance", 0.0))
+    tolerance = max(1.0e-5, abs(cupy_sum) * 1.0e-5)
+    return abs(rtdl_sum - cupy_sum) <= tolerance
 
 
 def _rtdl_phase_summary(payload: dict[str, Any]) -> dict[str, Any]:

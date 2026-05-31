@@ -749,8 +749,8 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
     repeat = int(args.repeat)
     if batch_size <= 0:
         raise ValueError("query_batch_size must be positive")
-    if result_mode not in ("count", "summary", "ranked-summary-raw"):
-        raise ValueError("batched RTDL path currently supports count, summary, and ranked-summary-raw")
+    if result_mode not in ("count", "summary", "ranked-summary-raw", "ranked-summary-aggregate", "ranked-summary-aggregate-float32"):
+        raise ValueError("batched RTDL path currently supports count, summary, ranked-summary-raw, ranked-summary-aggregate, and ranked-summary-aggregate-float32")
     if backend not in {"optix", "embree"}:
         raise ValueError("batched RTDL path supports backend='optix' or backend='embree'")
     if backend == "embree" and result_mode != "ranked-summary-raw":
@@ -805,6 +805,7 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
     elapsed_runs = []
     row_count = 0
     batch_phase_timings = []
+    ranked_aggregate_summary = None
     error = ""
     ok = True
     try:
@@ -812,6 +813,13 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
             started = time.perf_counter()
             run_row_count = 0
             run_distance_summary = {"count": 0, "min_distance": 0.0, "max_distance": 0.0, "sum_distance": 0.0}
+            run_ranked_aggregate_summary = {
+                "row_count": 0,
+                "bounded_neighbor_count": 0,
+                "nearest_id_checksum": 0,
+                "kth_id_checksum": 0,
+                "sum_distance": 0.0,
+            }
             run_phase_timings = []
             for batch, batch_ids in query_batches:
                 if backend == "embree":
@@ -847,6 +855,19 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
                         run_distance_summary["count"] += summary["count"]
                         run_distance_summary["sum_distance"] += summary["sum_distance"]
                     run_row_count = int(run_distance_summary["count"])
+                elif result_mode in {"ranked-summary-aggregate", "ranked-summary-aggregate-float32"}:
+                    aggregate = prepared.aggregate_ranked_summary(
+                        batch,
+                        radius=radius,
+                        k_max=k_max,
+                        precision="float32" if result_mode == "ranked-summary-aggregate-float32" else "float64",
+                    )
+                    run_ranked_aggregate_summary["row_count"] += int(aggregate["query_count"])
+                    run_ranked_aggregate_summary["bounded_neighbor_count"] += int(aggregate["bounded_neighbor_count"])
+                    run_ranked_aggregate_summary["nearest_id_checksum"] += int(aggregate["nearest_id_checksum"])
+                    run_ranked_aggregate_summary["kth_id_checksum"] += int(aggregate["kth_id_checksum"])
+                    run_ranked_aggregate_summary["sum_distance"] += float(aggregate["sum_distance"])
+                    run_row_count = int(run_ranked_aggregate_summary["row_count"])
                 else:
                     rows = prepared.run_ranked_summary_raw(batch, radius=radius, k_max=k_max)
                     try:
@@ -856,6 +877,11 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
                 run_phase_timings.append(rt.get_last_fixed_radius_neighbors_3d_phase_timings())
             row_count = run_row_count
             batch_phase_timings = run_phase_timings
+            ranked_aggregate_summary = (
+                run_ranked_aggregate_summary
+                if result_mode in {"ranked-summary-aggregate", "ranked-summary-aggregate-float32"}
+                else None
+            )
             elapsed_runs.append(time.perf_counter() - started)
             print(
                 f"[goal2348] RTDL batched 3D repeat {run_index + 1}/{repeat} "
@@ -891,12 +917,14 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
         "execution_prepare_sec": prepare_sec,
         "repeat": repeat,
         "row_count": row_count,
+        "ranked_aggregate_summary": ranked_aggregate_summary,
         "batch_phase_timings": batch_phase_timings,
         "error": error,
         "contract": {
             "family": "fixed_radius_neighbors_3d",
             "mode": result_mode,
-            "exact": True,
+            "exact": result_mode != "ranked-summary-aggregate-float32",
+            "precision": "float32" if result_mode == "ranked-summary-aggregate-float32" else "float64",
             "approximate": False,
             "bounded_k": k_max,
             "prepared_search_structure": backend == "optix",
@@ -909,6 +937,8 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
             "rt_core_neighbor_search_claim_authorized": False,
             "partitioned_or_batched_like_rtnn": True,
             "device_ranked_summary_rows": backend == "optix" and result_mode == "ranked-summary-raw",
+            "device_ranked_summary_aggregate": backend == "optix" and result_mode in {"ranked-summary-aggregate", "ranked-summary-aggregate-float32"},
+            "float32_precision": result_mode == "ranked-summary-aggregate-float32",
             "embree_ranked_summary_rows": backend == "embree" and result_mode == "ranked-summary-raw",
             "materializes_neighbor_rows": backend == "embree",
         },
@@ -1682,7 +1712,7 @@ def main(argv: list[str] | None = None) -> int:
     batched3d.add_argument("--k-max", type=int, default=50)
     batched3d.add_argument("--backend", choices=("optix", "embree"), default="optix")
     batched3d.add_argument("--query-batch-size", type=int, default=65536)
-    batched3d.add_argument("--result-mode", choices=("count", "summary", "ranked-summary-raw"), default="ranked-summary-raw")
+    batched3d.add_argument("--result-mode", choices=("count", "summary", "ranked-summary-raw", "ranked-summary-aggregate", "ranked-summary-aggregate-float32"), default="ranked-summary-raw")
     batched3d.add_argument("--repeat", type=int, default=1)
     batched3d.add_argument("--row-label", default="rtdl_batched_3d_neighbors")
     batched3d.add_argument("--json-out", type=Path, required=True)

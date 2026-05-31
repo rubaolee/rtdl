@@ -33,10 +33,11 @@ class Goal2800RtnnV25LiveRankedSummaryHarnessTest(unittest.TestCase):
 
         self.assertIn("run_rtdl_batched_3d_neighbors", text)
         self.assertIn("run_cupy_grid_3d_ranked_summary", text)
-        self.assertIn("ranked-summary-raw", text)
+        self.assertIn("ranked-summary-aggregate", text)
         self.assertIn("candidate_count_matches_cupy_grid", text)
         self.assertIn("candidate_count_within_tolerance", text)
         self.assertIn("candidate_count_delta", text)
+        self.assertIn("ranked_aggregate_matches_cupy_grid", text)
         self.assertIn("rtdl_beats_cupy_grid_claim_authorized", text)
         self.assertIn("native_engine_customization", text)
 

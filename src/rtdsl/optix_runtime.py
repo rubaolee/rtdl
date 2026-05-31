@@ -699,6 +699,16 @@ class _RtdlFixedRadiusRankedNeighborSummary(ctypes.Structure):
     ]
 
 
+class _RtdlFixedRadiusRankedNeighborAggregate(ctypes.Structure):
+    _fields_ = [
+        ("query_count", ctypes.c_size_t),
+        ("bounded_neighbor_count", ctypes.c_size_t),
+        ("nearest_id_checksum", ctypes.c_uint64),
+        ("kth_id_checksum", ctypes.c_uint64),
+        ("sum_distance", ctypes.c_double),
+    ]
+
+
 class _RtdlPointNearestSegmentRow(ctypes.Structure):
     _fields_ = [
         ("point_id",   ctypes.c_uint32),
@@ -2130,6 +2140,72 @@ class PreparedOptixFixedRadiusNeighbors3D:
             return rows.to_dict_rows()
         finally:
             rows.close()
+
+    def aggregate_ranked_summary(
+        self,
+        query_points,
+        *,
+        radius: float,
+        k_max: int,
+        precision: str = "float64",
+    ) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX fixed-radius-neighbor 3D handle is closed")
+        if precision not in {"float64", "float32"}:
+            raise ValueError("precision must be 'float64' or 'float32'")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if radius > self._max_radius:
+            raise ValueError("radius must be less than or equal to prepared max_radius")
+        if k_max <= 0:
+            raise ValueError("k_max must be positive")
+        if k_max > 64:
+            raise ValueError("PreparedOptixFixedRadiusNeighbors3D.aggregate_ranked_summary currently supports k_max <= 64")
+        packed_queries = query_points if isinstance(query_points, PackedPoints) else pack_points(records=query_points, dimension=3)
+        if packed_queries.dimension != 3:
+            raise ValueError("PreparedOptixFixedRadiusNeighbors3D.aggregate_ranked_summary requires 3-D points")
+        if packed_queries.count == 0 or self._packed_search.count == 0:
+            return {
+                "query_count": int(packed_queries.count),
+                "bounded_neighbor_count": 0,
+                "nearest_id_checksum": 0,
+                "kth_id_checksum": 0,
+                "sum_distance": 0.0,
+            }
+
+        lib = _load_optix_library()
+        symbol_name = (
+            "rtdl_optix_aggregate_prepared_ranked_fixed_radius_neighbor_summaries_3d_f32"
+            if precision == "float32"
+            else "rtdl_optix_aggregate_prepared_ranked_fixed_radius_neighbor_summaries_3d"
+        )
+        symbol = _find_optional_backend_symbol(lib, symbol_name)
+        if symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                f"{symbol_name}; rebuild the OptiX backend from current main"
+            )
+        aggregate = _RtdlFixedRadiusRankedNeighborAggregate()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            self._handle,
+            packed_queries.records,
+            packed_queries.count,
+            ctypes.c_double(float(radius)),
+            ctypes.c_size_t(int(k_max)),
+            ctypes.byref(aggregate),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return {
+            "query_count": int(aggregate.query_count),
+            "bounded_neighbor_count": int(aggregate.bounded_neighbor_count),
+            "nearest_id_checksum": int(aggregate.nearest_id_checksum),
+            "kth_id_checksum": int(aggregate.kth_id_checksum),
+            "sum_distance": float(aggregate.sum_distance),
+            "precision": precision,
+        }
 
     def count(self, query_points, *, radius: float, k_max: int) -> int:
         if self._closed:
@@ -4354,6 +4430,8 @@ def _get_last_fixed_radius_neighbors_3d_phase_timings_from_library(lib) -> dict[
             7: "prepared_uniform_cell_exact_rows",
             8: "prepared_uniform_cell_ranked_rows",
             9: "prepared_uniform_cell_ranked_summary_rows",
+            10: "prepared_uniform_cell_ranked_summary_aggregate",
+            11: "prepared_uniform_cell_ranked_summary_aggregate_f32",
         }.get(mode_value, "none"),
         "prepare": float(prepare.value),
         "upload": float(upload.value),
@@ -16287,6 +16365,30 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
             ctypes.POINTER(ctypes.POINTER(_RtdlFixedRadiusRankedNeighborSummary)),
             ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_aggregate_prepared_ranked_fixed_radius_neighbor_summaries_3d")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint3D), ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlFixedRadiusRankedNeighborAggregate),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_aggregate_prepared_ranked_fixed_radius_neighbor_summaries_3d_f32")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint3D), ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlFixedRadiusRankedNeighborAggregate),
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         symbol.restype = ctypes.c_int
