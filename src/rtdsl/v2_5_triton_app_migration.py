@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from .partner_continuation_protocol import V2_5_PARTNER_CONTINUATION_VERSION
 from .partner_continuation_protocol import V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS
 from .partner_continuation_protocol import V2_5_PRIMARY_PARTNER
+from .v2_5_partner_selection_guidance import V2_5_PARTNER_SELECTION_GUIDANCE_VERSION
+from .v2_5_partner_selection_guidance import plan_v2_5_partner_selection
 
 
 V2_5_TRITON_APP_MIGRATION_VERSION = "rtdl.v2_5.triton_app_migration.v1"
@@ -28,8 +30,18 @@ class V25TritonBenchmarkAppPlan:
     v2_5_status: str
     first_port_action: str
     notes: str
+    measured_selection_shapes: tuple[tuple[str, str], ...] = ()
 
     def to_metadata(self) -> dict[str, object]:
+        partner_selection_guidance = tuple(
+            plan_v2_5_partner_selection(operation, workload_shape)
+            for operation, workload_shape in self.measured_selection_shapes
+        )
+        measured_negative_guidance_count = sum(
+            1
+            for guidance in partner_selection_guidance
+            if guidance["status"] == "measured_negative_preview_guidance"
+        )
         return {
             "app_id": self.app_id,
             "benchmark_name": self.benchmark_name,
@@ -39,6 +51,10 @@ class V25TritonBenchmarkAppPlan:
             "v2_5_status": self.v2_5_status,
             "first_port_action": self.first_port_action,
             "notes": self.notes,
+            "partner_selection_guidance_version": V2_5_PARTNER_SELECTION_GUIDANCE_VERSION,
+            "partner_selection_guidance": partner_selection_guidance,
+            "measured_negative_preview_guidance_count": measured_negative_guidance_count,
+            "auto_select_preview_partner_allowed": False,
         }
 
 
@@ -124,10 +140,15 @@ V2_5_TRITON_BENCHMARK_APP_PLANS: tuple[V25TritonBenchmarkAppPlan, ...] = (
         benchmark_name="RTNN neighbor search",
         promoted_benchmark=True,
         current_hot_path_partner="legacy_cupy_for_topk_or_candidate_continuations",
-        v2_5_required_operations=("grouped_argmin_f64", "bounded_collect_finalize_i64"),
-        v2_5_status="covered_by_grouped_argmin_and_bounded_finalize_preview_pending_app_wiring",
-        first_port_action="Use grouped argmin preview where top-1 is enough; use bounded finalize for bounded top-k rows.",
-        notes="Approximate-neighbor policy remains app code; primitive behavior is grouped candidate ranking.",
+        v2_5_required_operations=("grouped_argmin_f64", "grouped_topk_f64", "bounded_collect_finalize_i64"),
+        v2_5_status="covered_but_dense_topk_has_goal2780_negative_triton_selection_guidance",
+        first_port_action=(
+            "Use grouped argmin preview where top-1 is enough; for dense exact top-k, keep "
+            "Torch/CuPy or another explicitly selected same-contract partner until a tiled "
+            "top-k Triton design replaces the iterative preview."
+        ),
+        notes="Approximate-neighbor policy remains app code; primitive behavior is grouped candidate ranking. Goal2780 blocks blind Triton auto-selection for dense exact top-k.",
+        measured_selection_shapes=(("grouped_topk_f64", "dense_exact_topk_candidate_ranking"),),
     ),
     V25TritonBenchmarkAppPlan(
         app_id="triangle_counting",
@@ -144,10 +165,15 @@ V2_5_TRITON_BENCHMARK_APP_PLANS: tuple[V25TritonBenchmarkAppPlan, ...] = (
         benchmark_name="Barnes-Hut / aggregate frontier",
         promoted_benchmark=True,
         current_hot_path_partner="app_owned_math_with_legacy_partner_force_helpers",
-        v2_5_required_operations=("bounded_collect_finalize_i64", "segmented_sum_f64"),
-        v2_5_status="blocked_on_generic_frontier_to_triton_reduction",
-        first_port_action="Lower aggregate-frontier rows to generic Triton reductions while force math stays app-owned.",
-        notes="Never embed inverse-square force law inside the engine or Triton primitive contract.",
+        v2_5_required_operations=("bounded_collect_finalize_i64", "grouped_vector_sum_f64x2"),
+        v2_5_status="covered_but_dense_vector_sum_has_goal2781_negative_triton_selection_guidance",
+        first_port_action=(
+            "Lower aggregate-frontier rows to generic grouped vector-sum metadata, but keep "
+            "Torch scatter-add or another explicitly selected same-contract partner for dense "
+            "vector sums until a segmented/block-reduction Triton design replaces the atomic preview."
+        ),
+        notes="Never embed inverse-square force law inside the engine or Triton primitive contract. Goal2781 blocks blind Triton auto-selection for dense grouped vector sums.",
+        measured_selection_shapes=(("grouped_vector_sum_f64x2", "dense_grouped_vector_sum_2d"),),
     ),
     V25TritonBenchmarkAppPlan(
         app_id="robot_collision",
@@ -291,13 +317,17 @@ def v2_5_triton_benchmark_app_migration_plan() -> dict[str, object]:
         "contract_version": V2_5_PARTNER_CONTINUATION_VERSION,
         "migration_version": V2_5_TRITON_APP_MIGRATION_VERSION,
         "primary_partner": V2_5_PRIMARY_PARTNER,
+        "partner_selection_guidance_version": V2_5_PARTNER_SELECTION_GUIDANCE_VERSION,
+        "partner_selection_guidance_integrated": True,
+        "auto_select_preview_partner_allowed": False,
         "preview_kernel_operations": V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS,
         "benchmark_app_count": len(V2_5_TRITON_BENCHMARK_APP_PLANS),
         "apps": tuple(plan.to_metadata() for plan in V2_5_TRITON_BENCHMARK_APP_PLANS),
         "claim_boundary": (
             "This is a v2.5 implementation/migration plan. It is not a release "
-            "gate, not a public speedup claim, and not authorization to replace "
-            "RTDL/OptiX traversal with partner code."
+            "gate, not a public speedup claim, not authorization to replace "
+            "RTDL/OptiX traversal with partner code, and not authorization to "
+            "auto-select Triton just because a preview kernel exists."
         ),
     }
 
@@ -374,6 +404,10 @@ def validate_v2_5_triton_benchmark_app_migration_plan() -> dict[str, object]:
         errors.append("duplicate benchmark app id in v2.5 Triton migration plan")
     if plan["primary_partner"] != "triton":
         errors.append("v2.5 benchmark migration must remain Triton-first")
+    if plan["auto_select_preview_partner_allowed"] is not False:
+        errors.append("v2.5 benchmark migration plan must not auto-select preview partners")
+    if plan["partner_selection_guidance_integrated"] is not True:
+        errors.append("v2.5 benchmark migration plan must integrate partner-selection guidance")
     for app in plan["apps"]:  # type: ignore[assignment]
         if not app["promoted_benchmark"]:
             errors.append(f"{app['app_id']} is not marked as a promoted benchmark")
@@ -387,6 +421,12 @@ def validate_v2_5_triton_benchmark_app_migration_plan() -> dict[str, object]:
             errors.append(
                 f"{app['app_id']} requires operations without Triton previews: {missing_operations}"
             )
+        if app.get("auto_select_preview_partner_allowed") is not False:
+            errors.append(f"{app['app_id']} must not auto-select a preview partner")
+        for guidance in app.get("partner_selection_guidance", ()):
+            if guidance["status"] == "measured_negative_preview_guidance":
+                if guidance["auto_select_partner_allowed"] is not False:
+                    errors.append(f"{app['app_id']} measured negative guidance must block auto-selection")
     return {
         "status": "accept" if not errors else "reject",
         "benchmark_app_count": plan["benchmark_app_count"],
