@@ -83,6 +83,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2870_v2_5_last_day_review_intake_and_runner_fail_closed_hardening_2026-05-31.md",
     "docs/reports/goal2870_goal2868_last_day_review_intake_consensus_2026-05-31.md",
     "docs/reports/goal2871_hit_stream_torch_carrier_seam_authority_guard_2026-05-31.md",
+    "docs/reports/goal2872_triton_tie_break_conformance_smoke_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
