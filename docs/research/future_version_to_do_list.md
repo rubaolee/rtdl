@@ -125,14 +125,21 @@ Observation:
   1,024 through 524,288 generic hit rows. This is an internal primitive/runtime
   probe, not a public speedup claim, and it does not close the larger
   hit-stream-continuation gap from Goal2754.
+- Goal2760 made the next async-promotion blocker explicit in the API metadata:
+  the current OptiX producer remains `host_synchronized_before_consumer`, and
+  no event/same-stream or true-zero-copy promotion is allowed until the runtime
+  has a producer stream/event handle, device-resident row-count/overflow state,
+  and a partner consumer that proves same-stream or event-wait ordering on a
+  pod.
 
 Future work:
 
 - Integrate device-resident group-id validation/error flags into a larger
   no-host-read continuation plan; Goal2748 supplies the flag primitive, but
   Python exception enforcement still reads a host scalar by design.
-- Add stream/event evidence that proves the OptiX producer and Triton consumer
-  are ordered on real hardware without relying on device-wide synchronization.
+- Add a real stream/event API that proves the OptiX producer and Triton
+  consumer are ordered on hardware without relying on device-wide
+  synchronization; Goal2760 records the required ABI and carrier fields.
 - Reduce generic hit-stream continuation overhead only through generic runtime
   work: event/same-stream ordering, fused gather+continuation, and
   device-resident row-count/overflow handling. Reusable output buffers are now

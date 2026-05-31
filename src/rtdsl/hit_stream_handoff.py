@@ -16,6 +16,7 @@ from .v2_5_partner_support_matrix import plan_v2_5_partner_support
 
 GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION = "rtdl.rt_hit_stream_handoff.v2.5"
 GENERIC_HIT_STREAM_PARTNER_TRANSFER_PLAN_VERSION = "rtdl.hit_stream_partner_transfer_plan.v2.5"
+GENERIC_HIT_STREAM_ASYNC_PROMOTION_REQUIREMENTS_VERSION = "rtdl.hit_stream_async_promotion_requirements.v2.5"
 GENERIC_HIT_STREAM_HANDOFF_API_MATURITY = "experimental_host_bridge_contract"
 GENERIC_DEVICE_RESIDENT_HIT_STREAM_COLUMNS = ("ray_ids:int64", "primitive_ids:int64")
 GENERIC_TYPED_PRIMITIVE_PAYLOAD_COLUMNS = ("primitive_group_ids:int64", "primitive_values:float64")
@@ -201,6 +202,13 @@ class RtdlHitStreamColumnHandoff:
             in GENERIC_HIT_STREAM_ZERO_COPY_COMPATIBLE_STREAM_ORDERING_STATES,
             "zero_copy_compatible_stream_ordering": self.producer_consumer_stream_ordering
             in GENERIC_HIT_STREAM_ZERO_COPY_COMPATIBLE_STREAM_ORDERING_STATES,
+            "row_count_scalar_visibility": "host_visible_after_producer_synchronization",
+            "overflow_scalar_visibility": "host_visible_after_producer_synchronization",
+            "device_resident_row_count_for_partner": False,
+            "device_resident_overflow_for_partner": False,
+            "completion_event_handle_available": False,
+            "same_stream_handle_available": False,
+            "async_partner_continuation_authorized": False,
             "true_zero_copy_requires_stream_synchronization": True,
             "true_zero_copy_authorized": False,
             "public_speedup_claim_authorized": False,
@@ -348,6 +356,13 @@ class RtdlNativeDeviceHitStreamOutput:
             in GENERIC_HIT_STREAM_ZERO_COPY_COMPATIBLE_STREAM_ORDERING_STATES,
             "zero_copy_compatible_stream_ordering": self.producer_consumer_stream_ordering
             in GENERIC_HIT_STREAM_ZERO_COPY_COMPATIBLE_STREAM_ORDERING_STATES,
+            "row_count_scalar_visibility": "host_visible_after_producer_synchronization",
+            "overflow_scalar_visibility": "host_visible_after_producer_synchronization",
+            "device_resident_row_count_for_partner": False,
+            "device_resident_overflow_for_partner": False,
+            "completion_event_handle_available": False,
+            "same_stream_handle_available": False,
+            "async_partner_continuation_authorized": False,
             "true_zero_copy_requires_stream_synchronization": True,
             "traversal_seconds": self.traversal_seconds,
             "native_device_column_output_proven_on_hardware": bool(
@@ -549,15 +564,86 @@ def describe_v2_5_native_hit_stream_output_abi(backend: str = "optix") -> dict[s
         "ownership": "native_owner_state_machine_required_until_partner_continuation_finishes",
         "requires_native_release_entrypoint": True,
         "requires_same_pointer_no_host_stage_measurement": True,
+        "current_optix_output_abi_proven_on_hardware": True,
+        "current_runtime_ordering_state": "host_synchronized_before_consumer",
+        "current_runtime_async_promotion_authorized": False,
         "requires_sm70_pod_validation_for_triton": True,
         "native_engine_app_specific_vocab_allowed": False,
         "host_row_materialization_allowed_for_promotion": False,
         "true_zero_copy_claim_authorized": False,
         "public_speedup_claim_authorized": False,
         "claim_boundary": (
-            "This describes the native output ABI target for v2.5 hit streams. "
-            "The current Python contract can wrap raw CUDA pointers, but native OptiX "
-            "must still implement and validate this ABI on a pod before promotion."
+            "This describes the native output ABI for v2.5 hit streams. The current "
+            "OptiX implementation can return CUDA-resident hit-stream columns and has "
+            "pod evidence, but it synchronizes before returning host-visible row-count "
+            "metadata. Event/same-stream ordering and device-resident counters are still "
+            "required before async partner promotion or true zero-copy wording."
+        ),
+    }
+
+
+def describe_v2_5_hit_stream_async_promotion_requirements() -> dict[str, object]:
+    """Describe the missing pieces before hit-stream continuations can be async.
+
+    This is a fail-closed design surface. It is intentionally separate from the
+    current host-synchronized runtime path so reports and partner code cannot
+    confuse reusable CUDA output buffers with a proven event/same-stream handoff.
+    """
+
+    return {
+        "contract_version": GENERIC_HIT_STREAM_ASYNC_PROMOTION_REQUIREMENTS_VERSION,
+        "hit_stream_handoff_contract_version": GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION,
+        "partner_transfer_plan_contract_version": GENERIC_HIT_STREAM_PARTNER_TRANSFER_PLAN_VERSION,
+        "current_runtime_ordering_state": "host_synchronized_before_consumer",
+        "current_runtime_async_promotion_authorized": False,
+        "current_runtime_true_zero_copy_authorized": False,
+        "current_runtime_public_speedup_claim_authorized": False,
+        "current_runtime_row_count_scalar_visibility": "host_visible_after_producer_synchronization",
+        "current_runtime_overflow_scalar_visibility": "host_visible_after_producer_synchronization",
+        "current_runtime_has_completion_event_handle": False,
+        "current_runtime_has_same_stream_handle": False,
+        "current_runtime_has_device_resident_row_count_for_partner": False,
+        "current_runtime_has_device_resident_overflow_for_partner": False,
+        "zero_copy_compatible_ordering_states": GENERIC_HIT_STREAM_ZERO_COPY_COMPATIBLE_STREAM_ORDERING_STATES,
+        "required_native_abi_extensions": (
+            "producer_stream_handle_or_same_stream_token",
+            "completion_event_handle_with_lifetime_owner",
+            "device_resident_row_count_ptr",
+            "device_resident_overflow_ptr",
+            "fail_closed_overflow_flag_visible_to_partner",
+            "explicit_release_for_event_and_temporary_counter_storage",
+        ),
+        "required_python_carrier_fields": (
+            "producer_stream_identity",
+            "completion_event_identity",
+            "consumer_wait_contract",
+            "row_count_device_column_or_bounded_capacity_contract",
+            "overflow_device_flag_contract",
+            "event_owner_lifetime_state",
+        ),
+        "required_partner_consumer_proofs": (
+            "consumer_launches_on_same_stream_or_waits_on_recorded_event",
+            "consumer_respects_bounded_capacity_without_host_row_count_read",
+            "consumer_observes_overflow_fail_closed_flag_before_using_rows",
+            "no_hidden_host_materialization_or_scalar_sync",
+        ),
+        "required_pod_validation": (
+            "same-pointer hit-stream columns preserved",
+            "no cuStreamSynchronize on the producer path before partner launch",
+            "event_wait_or_same_stream ordering verified by a dependent consumer",
+            "row_count_or_overflow consumed through device-resident state",
+            "timing separates producer launch, event wait, continuation, and materialization",
+        ),
+        "forbidden_promotion_shortcuts": (
+            "treating host_synchronized_before_consumer as zero-copy-compatible",
+            "using reusable output buffers as async proof",
+            "using host-visible row_count after cuStreamSynchronize as a device-resident counter",
+            "authorizing public speedup from metadata alone",
+        ),
+        "claim_boundary": (
+            "Current v2.5 hit-stream output can be CUDA-resident and reusable, but it is "
+            "still host-synchronized before partner continuation. Async promotion requires "
+            "real event/same-stream evidence plus device-resident count/overflow handling."
         ),
     }
 
@@ -1061,6 +1147,7 @@ def plan_v2_5_hit_stream_partner_transfer(
     stream_synchronization_proven = bool(hit_metadata["stream_synchronization_proven"])
     host_synchronization_used = bool(hit_metadata["host_synchronization_used"])
     zero_copy_compatible_stream_ordering = bool(hit_metadata["zero_copy_compatible_stream_ordering"])
+    async_partner_continuation_authorized = bool(hit_metadata["async_partner_continuation_authorized"])
     torch_carrier_adapter = describe_v2_5_hit_stream_torch_carrier_adapter(
         hit_stream_columns,
         payload_columns,
@@ -1176,6 +1263,13 @@ def plan_v2_5_hit_stream_partner_transfer(
         "stream_synchronization_proven": stream_synchronization_proven,
         "host_synchronization_used": host_synchronization_used,
         "zero_copy_compatible_stream_ordering": zero_copy_compatible_stream_ordering,
+        "row_count_scalar_visibility": hit_metadata["row_count_scalar_visibility"],
+        "overflow_scalar_visibility": hit_metadata["overflow_scalar_visibility"],
+        "device_resident_row_count_for_partner": bool(hit_metadata["device_resident_row_count_for_partner"]),
+        "device_resident_overflow_for_partner": bool(hit_metadata["device_resident_overflow_for_partner"]),
+        "completion_event_handle_available": bool(hit_metadata["completion_event_handle_available"]),
+        "same_stream_handle_available": bool(hit_metadata["same_stream_handle_available"]),
+        "async_partner_continuation_authorized": async_partner_continuation_authorized,
         "device_consumer_requires_stream_ordering": device_consumer_requires_stream_ordering,
         "stream_ordering_blocks_device_consumer": stream_ordering_blocks_device_consumer,
         "stream_synchronization_required_for_zero_copy_claim": True,
