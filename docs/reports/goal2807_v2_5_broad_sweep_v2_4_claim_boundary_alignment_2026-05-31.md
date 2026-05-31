@@ -55,12 +55,24 @@ Local focused validation:
 ```text
 $env:PYTHONPATH='src;.'
 py -3 -m unittest \
+  tests.goal2807_v2_5_broad_sweep_claim_boundary_alignment_test \
   tests.goal2659_v2_4_benchmark_protocol_integration_test \
   tests.goal2690_post_goal2689_contract_honesty_test \
   tests.goal2806_v2_5_internal_readiness_packet_test
 
-Ran 13 tests in 0.641s
+Ran 15 tests in 0.697s
 OK
 ```
 
 The broader pod sweep should be rerun after this alignment.
+
+Clean pod broad sweep after push:
+
+```text
+Host: root@69.30.85.171:22167
+Commit: e39c1c53e4bfa37cf401b7ce3ef865afcd37f716
+Scope: 100 v2.4/v2.5-era test modules through Goal2807
+
+Ran 477 tests in 3.769s
+OK (skipped=1)
+```
