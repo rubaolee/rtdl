@@ -43,6 +43,14 @@ OptiX library: /root/rtdl_goal2785_work/build/librtdl_optix.so
 focused tests: 21 passed
 ```
 
+Final clean-head guard after report/artifact commit:
+
+```text
+commit: 27ab586ef3454e85cd2ef1457a4e151417bf2132
+source_dirty: []
+focused tests: 24 passed
+```
+
 Artifacts:
 
 - `docs/reports/goal2813_rtnn_unsorted_topk_summary_pod/rtnn_unsorted_topk_median_f32_32768.json`
