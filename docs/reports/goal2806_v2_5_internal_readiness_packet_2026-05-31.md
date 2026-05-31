@@ -144,3 +144,17 @@ Command: python3 -m unittest \
 Ran 11 tests in 0.008s
 OK
 ```
+
+Clean pod validation after external-review consensus commit:
+
+```text
+Host: root@69.30.85.171:22167
+Commit: 2904fa73c5acaf7f87469f555488dec700ae09d2
+Command: python3 -m unittest \
+  tests.goal2806_v2_5_internal_readiness_packet_test \
+  tests.goal2805_v2_5_broad_clean_pod_regression_gate_test \
+  tests.goal2804_v2_5_clean_artifact_metadata_refresh_test
+
+Ran 12 tests in 0.008s
+OK
+```
