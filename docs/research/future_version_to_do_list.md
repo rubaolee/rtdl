@@ -659,6 +659,11 @@ Future work:
 - Do not spend more v2.2 time on neighbor-index workspace reuse unless a new
   stream-ordered event mechanism avoids device-wide synchronization. The
   current evidence says the next useful work is the grouped continuation leap.
+- After Goal2764, promote the narrow same-stream hit-stream status proof into
+  fuller generic continuations only through explicit gates: event-based
+  cross-stream ordering, bounded row-window consumers beyond status summaries,
+  lifetime-owned async launch state, and partner conformance tests that prove
+  no hidden host scalar sync before the device consumer.
 
 Boundary:
 

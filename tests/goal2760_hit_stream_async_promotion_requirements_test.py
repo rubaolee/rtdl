@@ -110,7 +110,12 @@ class Goal2760HitStreamAsyncPromotionRequirementsTest(unittest.TestCase):
         self.assertFalse(requirements["current_runtime_async_promotion_authorized"])
         self.assertFalse(requirements["current_runtime_true_zero_copy_authorized"])
         self.assertFalse(requirements["current_runtime_has_completion_event_handle"])
-        self.assertFalse(requirements["current_runtime_has_same_stream_handle"])
+        self.assertTrue(requirements["current_runtime_has_same_stream_handle"])
+        self.assertTrue(requirements["current_runtime_has_device_resident_row_count_for_partner"])
+        self.assertTrue(requirements["current_runtime_has_device_resident_overflow_for_partner"])
+        self.assertTrue(requirements["current_runtime_has_bounded_same_stream_status_consumer"])
+        self.assertEqual(requirements["current_bounded_status_consumer_ordering_state"], "same_stream")
+        self.assertFalse(requirements["general_async_partner_continuation_authorized"])
         self.assertIn("completion_event_handle_with_lifetime_owner", requirements["required_native_abi_extensions"])
         self.assertIn("device_resident_row_count_ptr", requirements["required_native_abi_extensions"])
         self.assertIn("no cuStreamSynchronize on the producer path before partner launch", requirements["required_pod_validation"])
@@ -158,7 +163,7 @@ class Goal2760HitStreamAsyncPromotionRequirementsTest(unittest.TestCase):
         runtime = OPTIX_RUNTIME.read_text(encoding="utf-8")
         device_start = runtime.index("def ray_triangle_hit_stream_device_columns(")
         into_start = runtime.index("def ray_triangle_hit_stream_into_device_columns(")
-        method_end = runtime.index("def ray_triangle_prepared_primitive_grouped_i64_reduction", into_start)
+        method_end = runtime.index("def ray_triangle_hit_stream_same_stream_status_summary", into_start)
         methods = runtime[device_start:method_end]
         self.assertGreaterEqual(
             methods.count('producer_consumer_stream_ordering="host_synchronized_before_consumer"'),

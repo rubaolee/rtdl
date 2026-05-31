@@ -641,15 +641,19 @@ def describe_v2_5_hit_stream_async_promotion_requirements() -> dict[str, object]
         "hit_stream_handoff_contract_version": GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION,
         "partner_transfer_plan_contract_version": GENERIC_HIT_STREAM_PARTNER_TRANSFER_PLAN_VERSION,
         "current_runtime_ordering_state": "host_synchronized_before_consumer",
+        "current_bounded_status_consumer_ordering_state": "same_stream",
         "current_runtime_async_promotion_authorized": False,
         "current_runtime_true_zero_copy_authorized": False,
         "current_runtime_public_speedup_claim_authorized": False,
         "current_runtime_row_count_scalar_visibility": "host_visible_after_producer_synchronization",
         "current_runtime_overflow_scalar_visibility": "host_visible_after_producer_synchronization",
         "current_runtime_has_completion_event_handle": False,
-        "current_runtime_has_same_stream_handle": False,
-        "current_runtime_has_device_resident_row_count_for_partner": False,
-        "current_runtime_has_device_resident_overflow_for_partner": False,
+        "current_runtime_has_same_stream_handle": True,
+        "current_runtime_has_device_resident_row_count_for_partner": True,
+        "current_runtime_has_device_resident_overflow_for_partner": True,
+        "current_runtime_has_bounded_same_stream_status_consumer": True,
+        "bounded_same_stream_status_consumer_scope": "OptiX hit-stream status summary with CuPy RawKernel",
+        "general_async_partner_continuation_authorized": False,
         "zero_copy_compatible_ordering_states": GENERIC_HIT_STREAM_ZERO_COPY_COMPATIBLE_STREAM_ORDERING_STATES,
         "required_native_abi_extensions": (
             "producer_stream_handle_or_same_stream_token",
@@ -687,9 +691,10 @@ def describe_v2_5_hit_stream_async_promotion_requirements() -> dict[str, object]
             "authorizing public speedup from metadata alone",
         ),
         "claim_boundary": (
-            "Current v2.5 hit-stream output can be CUDA-resident and reusable, but it is "
-            "still host-synchronized before partner continuation. Async promotion requires "
-            "real event/same-stream evidence plus device-resident count/overflow handling."
+            "Current v2.5 hit-stream output can be CUDA-resident, reusable, and can drive "
+            "a bounded same-stream CuPy status consumer without a producer-side host "
+            "scalar sync. General async continuation, true zero-copy wording, and public "
+            "speedup claims still require broader event/same-stream evidence."
         ),
     }
 

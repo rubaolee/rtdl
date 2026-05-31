@@ -36,6 +36,7 @@ import functools
 import os
 import platform
 import time
+import warnings
 from collections import OrderedDict
 from dataclasses import dataclass
 from pathlib import Path
@@ -177,8 +178,14 @@ OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_SYMBOL = (
 OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_SYMBOL = (
     "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_into_device_columns_with_status"
 )
+OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_ON_STREAM_SYMBOL = (
+    "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_into_device_columns_with_status_on_stream"
+)
 OPTIX_RELEASE_RAY_TRIANGLE_HIT_STREAM_3D_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_release_ray_triangle_hit_stream_device_columns"
+)
+OPTIX_RELEASE_RAY_TRIANGLE_HIT_STREAM_3D_ASYNC_LAUNCH_SYMBOL = (
+    "rtdl_optix_release_ray_triangle_hit_stream_async_launch"
 )
 OPTIX_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_CREATE_SYMBOL = (
     "rtdl_optix_primitive_grouped_i64_payload_3d_create"
@@ -9846,6 +9853,150 @@ class _OptixNativeHitStreamDeviceColumnsOwner:
             pass
 
 
+class _OptixNativeHitStreamAsyncLaunchOwner:
+    def __init__(self, library: ctypes.CDLL, owner_handle: int | None) -> None:
+        self._library = library
+        self._owner_handle = ctypes.c_void_p(0 if owner_handle is None else int(owner_handle))
+        self._closed = False
+
+    @property
+    def handle_value(self) -> int:
+        return 0 if self._owner_handle.value is None else int(self._owner_handle.value)
+
+    @property
+    def closed(self) -> bool:
+        return bool(self._closed)
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        self._closed = True
+        handle = self._owner_handle
+        self._owner_handle = ctypes.c_void_p()
+        if not handle.value:
+            return
+        release_symbol = _find_optional_backend_symbol(
+            self._library,
+            OPTIX_RELEASE_RAY_TRIANGLE_HIT_STREAM_3D_ASYNC_LAUNCH_SYMBOL,
+        )
+        if release_symbol is None:
+            return
+        error = ctypes.create_string_buffer(4096)
+        status = release_symbol(handle, error, len(error))
+        _check_status(status, error)
+
+    def __enter__(self) -> "_OptixNativeHitStreamAsyncLaunchOwner":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+_HIT_STREAM_SAME_STREAM_STATUS_SUMMARY_CUPY_SOURCE = r"""
+extern "C" __global__
+void rtdl_hit_stream_same_stream_status_summary_u64(
+    const long long* ray_ids,
+    const long long* primitive_ids,
+    const unsigned long long* row_count,
+    const unsigned long long* hit_event_count,
+    const unsigned int* overflow,
+    unsigned long long capacity,
+    unsigned long long* summary)
+{
+    if (blockIdx.x != 0 || threadIdx.x != 0) {
+        return;
+    }
+    const unsigned long long observed_rows = row_count[0];
+    const unsigned long long observed_hits = hit_event_count[0];
+    const unsigned long long bounded_rows =
+        observed_rows < capacity ? observed_rows : capacity;
+    const unsigned int observed_overflow = overflow[0];
+    const unsigned long long missing = 18446744073709551615ull;
+
+    summary[0] = observed_rows;
+    summary[1] = static_cast<unsigned long long>(observed_overflow);
+    summary[2] = observed_hits;
+    summary[3] = bounded_rows;
+    summary[4] = bounded_rows == 0ull ? missing : static_cast<unsigned long long>(ray_ids[0]);
+    summary[5] = bounded_rows == 0ull ? missing : static_cast<unsigned long long>(primitive_ids[0]);
+    summary[6] = capacity;
+    summary[7] = (observed_overflow == 0u && observed_rows <= capacity) ? 1ull : 0ull;
+}
+"""
+
+
+@functools.lru_cache(maxsize=1)
+def _hit_stream_same_stream_status_summary_cupy_kernel():
+    try:
+        import cupy as cp
+    except Exception as exc:
+        raise RuntimeError("same-stream hit-stream status consumer requires cupy") from exc
+    return cp.RawKernel(
+        _HIT_STREAM_SAME_STREAM_STATUS_SUMMARY_CUPY_SOURCE,
+        "rtdl_hit_stream_same_stream_status_summary_u64",
+    )
+
+
+def _run_hit_stream_same_stream_status_summary_cupy(
+    output_buffers: "PreparedOptixHitStreamDeviceColumnBuffers",
+    *,
+    capacity: int,
+    cuda_stream_ptr: int,
+) -> dict[str, object]:
+    try:
+        import cupy as cp
+    except Exception as exc:
+        raise RuntimeError("same-stream hit-stream status consumer requires cupy") from exc
+    if int(cuda_stream_ptr) == 0:
+        raise ValueError("same-stream hit-stream status consumer requires a nonzero CUDA stream pointer")
+    kernel = _hit_stream_same_stream_status_summary_cupy_kernel()
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        external_stream = cp.cuda.ExternalStream(int(cuda_stream_ptr))
+    with external_stream:
+        ray_ids = cp.asarray(output_buffers.ray_ids)
+        primitive_ids = cp.asarray(output_buffers.primitive_ids)
+        row_count = cp.asarray(output_buffers.row_count)
+        hit_event_count = cp.asarray(output_buffers.hit_event_count)
+        overflow = cp.asarray(output_buffers.overflow)
+        summary = cp.empty((8,), dtype=cp.uint64)
+        kernel(
+            (1,),
+            (1,),
+            (
+                ray_ids,
+                primitive_ids,
+                row_count,
+                hit_event_count,
+                overflow,
+                cp.uint64(int(capacity)),
+                summary,
+            ),
+        )
+    external_stream.synchronize()
+    values = [int(item) for item in cp.asnumpy(summary).tolist()]
+    missing = (1 << 64) - 1
+    return {
+        "row_count": values[0],
+        "overflow": bool(values[1]),
+        "hit_event_count": values[2],
+        "bounded_row_count": values[3],
+        "first_ray_id": None if values[4] == missing else values[4],
+        "first_primitive_id": None if values[5] == missing else values[5],
+        "capacity": values[6],
+        "status_ok": bool(values[7]),
+        "consumer_partner": "cupy_rawkernel",
+        "consumer_read_status_on_device": True,
+        "host_scalar_read_before_consumer": False,
+    }
+
+
 class PreparedOptixHitStreamDeviceColumnBuffers:
     """Caller-owned CUDA int64 columns for reusable OptiX hit-stream output."""
 
@@ -11248,6 +11399,162 @@ class PreparedOptixStaticTriangleScene3D:
             hit_event_count_device_ptr=int(columns.hit_event_count_device_ptr),
             overflow_device_ptr=int(columns.overflow_device_ptr),
         )
+
+    def ray_triangle_hit_stream_same_stream_status_summary(
+        self,
+        rays,
+        output_buffers: PreparedOptixHitStreamDeviceColumnBuffers,
+        *,
+        max_rows: int | None = None,
+        deduplicate_primitives: bool = True,
+        cuda_stream=None,
+    ) -> dict[str, object]:
+        """Launch a hit stream and a bounded CuPy status consumer on one CUDA stream.
+
+        The producer does not return a host-visible row count before the partner
+        consumer runs. The returned summary is materialized only after the CuPy
+        consumer completes, so this is a narrow same-stream proof rather than a
+        blanket true-zero-copy or speedup claim.
+        """
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        if not isinstance(output_buffers, PreparedOptixHitStreamDeviceColumnBuffers):
+            raise TypeError(
+                "ray_triangle_hit_stream_same_stream_status_summary requires "
+                "PreparedOptixHitStreamDeviceColumnBuffers"
+            )
+        output_buffers._assert_open()
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_ON_STREAM_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_ON_STREAM_SYMBOL}. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+
+        try:
+            import torch
+        except Exception as exc:
+            raise RuntimeError("same-stream hit-stream status summary requires torch") from exc
+        if cuda_stream is None:
+            stream = torch.cuda.Stream(device=output_buffers.ray_ids.device)
+            cuda_stream_ptr = int(stream.cuda_stream)
+        elif isinstance(cuda_stream, int):
+            stream = None
+            cuda_stream_ptr = int(cuda_stream)
+        elif hasattr(cuda_stream, "cuda_stream"):
+            stream = cuda_stream
+            cuda_stream_ptr = int(cuda_stream.cuda_stream)
+        else:
+            raise TypeError("cuda_stream must be None, an integer CUDA stream pointer, or a torch CUDA Stream")
+        if cuda_stream_ptr == 0:
+            raise ValueError("same-stream hit-stream status summary requires a nonzero CUDA stream pointer")
+
+        pack_start = time.perf_counter()
+        packed_rays = rays if isinstance(rays, PackedRays) else pack_rays(rays, dimension=3)
+        if packed_rays.dimension != 3:
+            raise ValueError("ray_triangle_hit_stream_same_stream_status_summary requires 3-D rays")
+        capacity = output_buffers.capacity if max_rows is None else int(max_rows)
+        if capacity < 0:
+            raise ValueError("max_rows must be non-negative")
+        if capacity > output_buffers.capacity:
+            raise ValueError("max_rows must not exceed reusable output buffer capacity")
+        query_pack_seconds = time.perf_counter() - pack_start
+
+        columns = _RtdlNativeDeviceHitStreamColumns()
+        error = ctypes.create_string_buffer(4096)
+        native_start = time.perf_counter()
+        status = run_symbol(
+            self._handle,
+            packed_rays.records,
+            packed_rays.count,
+            ctypes.c_uint32(1 if deduplicate_primitives else 0),
+            ctypes.c_size_t(capacity),
+            ctypes.c_uint64(output_buffers.ray_ids_device_ptr),
+            ctypes.c_uint64(output_buffers.primitive_ids_device_ptr),
+            ctypes.c_uint64(output_buffers.row_count_device_ptr),
+            ctypes.c_uint64(output_buffers.hit_event_count_device_ptr),
+            ctypes.c_uint64(output_buffers.overflow_device_ptr),
+            ctypes.c_uint64(cuda_stream_ptr),
+            ctypes.byref(columns),
+            error,
+            len(error),
+        )
+        native_launch_seconds = time.perf_counter() - native_start
+        _check_status(status, error)
+
+        for observed, expected, name in (
+            (int(columns.ray_ids_device_ptr), output_buffers.ray_ids_device_ptr, "ray_ids"),
+            (int(columns.primitive_ids_device_ptr), output_buffers.primitive_ids_device_ptr, "primitive_ids"),
+            (int(columns.row_count_device_ptr), output_buffers.row_count_device_ptr, "row_count"),
+            (int(columns.hit_event_count_device_ptr), output_buffers.hit_event_count_device_ptr, "hit_event_count"),
+            (int(columns.overflow_device_ptr), output_buffers.overflow_device_ptr, "overflow"),
+        ):
+            if observed != expected:
+                raise RuntimeError(f"native OptiX backend returned an unexpected {name} pointer")
+
+        async_owner = _OptixNativeHitStreamAsyncLaunchOwner(self._lib, columns.owner_handle)
+        owner_handle_observed = async_owner.handle_value != 0
+        consumer_start = time.perf_counter()
+        try:
+            summary = _run_hit_stream_same_stream_status_summary_cupy(
+                output_buffers,
+                capacity=int(columns.capacity),
+                cuda_stream_ptr=cuda_stream_ptr,
+            )
+        finally:
+            async_owner.close()
+        consumer_seconds = time.perf_counter() - consumer_start
+
+        self._run_count += 1
+        return {
+            "summary": summary,
+            "metadata": {
+                "contract_version": "rtdl.hit_stream_same_stream_status_consumer.v2.5",
+                "backend": "optix",
+                "native_symbol": OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_ON_STREAM_SYMBOL,
+                "release_symbol": OPTIX_RELEASE_RAY_TRIANGLE_HIT_STREAM_3D_ASYNC_LAUNCH_SYMBOL,
+                "producer_consumer_stream_ordering": "same_stream",
+                "stream_synchronization_proven": True,
+                "event_or_same_stream_ordering_proven": True,
+                "zero_copy_compatible_stream_ordering": True,
+                "producer_host_synchronization_used": False,
+                "host_scalar_read_before_consumer": False,
+                "final_materialization_synchronization_used": True,
+                "device_resident_status_for_partner": True,
+                "row_count_scalar_visibility_before_consumer": "device_only",
+                "overflow_scalar_visibility_before_consumer": "device_only",
+                "bounded_partner_consumer_executed": True,
+                "bounded_partner_consumer": "cupy_rawkernel",
+                "async_partner_continuation_authorized": True,
+                "async_partner_continuation_authorization_scope": "bounded_same_stream_status_consumer_only",
+                "general_partner_continuation_authorized": False,
+                "true_zero_copy_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "native_launch_owner_handle_observed": owner_handle_observed,
+                "async_launch_owner_release_required": owner_handle_observed,
+                "stream_lifetime_contract": "caller stream must remain valid until async launch owner release",
+                "cuda_stream_ptr_nonzero": bool(cuda_stream_ptr),
+                "capacity": int(columns.capacity),
+                "phase_timing_seconds": {
+                    "prepare_build": float(self.prepare_seconds),
+                    "query_pack": float(query_pack_seconds),
+                    "native_async_launch_enqueue": float(native_launch_seconds),
+                    "same_stream_partner_consumer_and_materialization": float(consumer_seconds),
+                },
+                "claim_boundary": (
+                    "This proves one bounded CuPy consumer can read device-resident "
+                    "hit-stream status after an OptiX producer on the same CUDA stream "
+                    "without a producer-side host scalar sync. It does not authorize "
+                    "broad true-zero-copy, public speedup, or arbitrary partner claims."
+                ),
+            },
+            "output_buffers": output_buffers,
+            "cuda_stream": stream,
+        }
 
     def ray_triangle_prepared_primitive_grouped_i64_reduction(
         self,
@@ -13685,6 +13992,28 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_static_scene_3d_hit_stream_into_device_columns_with_status.restype = ctypes.c_int
+    optional_static_scene_3d_hit_stream_into_device_columns_with_status_on_stream = _find_optional_backend_symbol(
+        lib,
+        OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_ON_STREAM_SYMBOL,
+    )
+    if optional_static_scene_3d_hit_stream_into_device_columns_with_status_on_stream is not None:
+        optional_static_scene_3d_hit_stream_into_device_columns_with_status_on_stream.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlRay3D),
+            ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.c_size_t,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.POINTER(_RtdlNativeDeviceHitStreamColumns),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_hit_stream_into_device_columns_with_status_on_stream.restype = ctypes.c_int
     optional_static_scene_3d_release_hit_stream_device_columns = _find_optional_backend_symbol(
         lib,
         OPTIX_RELEASE_RAY_TRIANGLE_HIT_STREAM_3D_DEVICE_COLUMNS_SYMBOL,
@@ -13696,6 +14025,17 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_static_scene_3d_release_hit_stream_device_columns.restype = ctypes.c_int
+    optional_static_scene_3d_release_hit_stream_async_launch = _find_optional_backend_symbol(
+        lib,
+        OPTIX_RELEASE_RAY_TRIANGLE_HIT_STREAM_3D_ASYNC_LAUNCH_SYMBOL,
+    )
+    if optional_static_scene_3d_release_hit_stream_async_launch is not None:
+        optional_static_scene_3d_release_hit_stream_async_launch.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_release_hit_stream_async_launch.restype = ctypes.c_int
     optional_static_scene_3d_closest_hit_rows = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_static_triangle_scene_3d_ray_closest_hit_rows",
