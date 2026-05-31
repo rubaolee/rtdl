@@ -109,6 +109,22 @@ py -3 -m py_compile src/rtdsl/hit_stream_handoff.py src/rtdsl/__init__.py \
 clean
 ```
 
+Pod validation on `root@69.30.85.171:22167` after pulling commit `613f250e`:
+
+```text
+python3 -m unittest \
+  tests.goal2740_hit_stream_cross_partner_transfer_plan_test \
+  tests.goal2698_hit_stream_partner_continuation_plan_test \
+  tests.goal2700_explicit_hit_stream_gather_partner_test \
+  tests.goal2694_hit_stream_neutral_seam_metadata_test \
+  tests.goal2696_v2_5_partner_support_matrix_test \
+  tests.goal2738_native_hit_stream_stream_ordering_boundary_test \
+  tests.goal2737_native_hit_stream_owner_lifecycle_guard_test \
+  tests.goal2704_native_hit_stream_output_abi_contract_test \
+  tests.goal2708_hit_stream_cuda_array_torch_carrier_adapter_test
+41 tests OK
+```
+
 ## Boundary
 
 This is a contract/planning hardening goal, not a new performance result.
