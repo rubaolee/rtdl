@@ -107,6 +107,12 @@ Observation:
 - Goal2752 separated host-synchronized safety from event/same-stream
   zero-copy-compatible ordering metadata, so host sync is no longer easy to
   mistake for a future no-sync zero-copy proof.
+- Goal2754 pod evidence showed current generic hit-stream + Triton continuation
+  is 29.5x-147.9x slower than the fused prepared grouped primitive on the
+  low-hit-count scalar grouped-reduction RayDB-style fixture, while preserving
+  correctness and same-pointer adapter evidence. This supports primitive-first
+  selection for scalar reductions and reserves hit streams for unfused
+  continuations or future lower-overhead handoff work.
 
 Future work:
 
@@ -115,6 +121,9 @@ Future work:
   Python exception enforcement still reads a host scalar by design.
 - Add stream/event evidence that proves the OptiX producer and Triton consumer
   are ordered on real hardware without relying on device-wide synchronization.
+- Reduce generic hit-stream continuation overhead only through generic runtime
+  work: event/same-stream ordering, reusable output buffers, fused
+  gather+continuation, and device-resident row-count/overflow handling.
 - Run multi-GPU and multi-driver same-pointer/lifetime validation before any
   public true-zero-copy wording is considered.
 - Extend cross-partner transfer plans only when CuPy or Numba has a real
