@@ -96,3 +96,13 @@ This is app wiring for generic post-RT continuation only. It does not complete
 v2.5, does not authorize public performance claims, and does not replace RTDL
 RT traversal. Promotion still requires pod correctness/timing evidence and
 benchmark-app integration.
+
+## Goal2861 Refresh
+
+Goal2861 completes the generic front-door coverage for the promoted v2.5
+benchmark operation set by adding explicit partner-column adapters for grouped
+argmin, grouped argmax, grouped top-k, and bounded collect/finalize. The
+coverage report now shows 10 of 10 promoted benchmark apps as
+adapter-front-door-ready, with zero dispatcher-only operations for that app
+set. This refresh does not change the claim boundary above: it is API coverage
+and executable wrapper evidence, not a public speedup or release claim.

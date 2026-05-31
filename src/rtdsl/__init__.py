@@ -821,6 +821,10 @@ from .partner_adapters import partner_unique_pair_keys
 from .partner_adapters import point_rows_to_partner_columns
 from .partner_adapters import weighted_point_rows_to_partner_columns
 from .partner_adapters import aggregate_frontier_collect_to_partner_columns
+from .partner_adapters import bounded_collect_finalize_i64_partner_columns
+from .partner_adapters import grouped_argmax_f64_partner_columns
+from .partner_adapters import grouped_argmin_f64_partner_columns
+from .partner_adapters import grouped_topk_f64_partner_columns
 from .partner_adapters import grouped_vector_sum_2d_partner_columns
 from .partner_adapters import group_argmin_then_global_argmax_partner_columns
 from .app_adapters import pairwise_inverse_square_force_2d_partner_columns
@@ -2130,6 +2134,10 @@ __all__ = [
     "partner_unique_pair_keys",
     "point_rows_to_partner_columns",
     "weighted_point_rows_to_partner_columns",
+    "bounded_collect_finalize_i64_partner_columns",
+    "grouped_argmax_f64_partner_columns",
+    "grouped_argmin_f64_partner_columns",
+    "grouped_topk_f64_partner_columns",
     "grouped_vector_sum_2d_partner_columns",
     "group_argmin_then_global_argmax_partner_columns",
     "pairwise_inverse_square_force_2d_partner_columns",

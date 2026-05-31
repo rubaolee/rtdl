@@ -12,12 +12,15 @@ from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE
 from .triton_partner_continuation import run_triton_partner_continuation
+from .triton_partner_continuation import run_triton_bounded_collect_finalize_i64
 from .triton_partner_continuation import run_triton_dense_point_nearest_2d
 from .triton_partner_continuation import run_triton_dense_point_nearest_2d_tiled
 from .triton_partner_continuation import run_triton_dense_point_topk_2d
 from .triton_partner_continuation import run_triton_grouped_argmax_f64
 from .triton_partner_continuation import run_triton_grouped_argmin_f64
+from .triton_partner_continuation import run_triton_grouped_topk_f64
 from .triton_partner_continuation import run_triton_grouped_vector_sum_f64x2_by_offsets
+from .partner_continuation_protocol import PartnerContinuationOverflowError
 
 _UINT32_MAX = 2**32 - 1
 _CUPY_COLUMNAR_PREDICATE_BATCH_KERNELS = {}
@@ -1796,6 +1799,434 @@ def grouped_vector_sum_2d_partner_columns(
             "zero-copy wording, and is preview integration evidence only."
         ),
     }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def _coerce_torch_group_item_score_columns(score_columns: dict[str, object], runtime):
+    if not isinstance(score_columns, dict):
+        raise ValueError("score_columns must be a mapping")
+    group_ids = score_columns.get("group_ids")
+    item_ids = score_columns.get("item_ids")
+    scores = score_columns.get("scores", score_columns.get("values"))
+    if group_ids is None or item_ids is None or scores is None:
+        raise ValueError("score_columns must contain group_ids, item_ids, and scores/values")
+    torch = runtime["module"]
+    group_ids = group_ids.to(torch.int64)
+    item_ids = item_ids.to(torch.int64)
+    scores = scores.to(torch.float64)
+    if not (tuple(group_ids.shape) == tuple(item_ids.shape) == tuple(scores.shape)):
+        raise ValueError("group_ids, item_ids, and scores must have the same shape")
+    return torch, group_ids, item_ids, scores
+
+
+def _validate_torch_group_ids(group_ids, group_count: int, torch) -> None:
+    if group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    if int(group_ids.numel()) == 0:
+        return
+    if bool(torch.any(group_ids < 0).detach().cpu().item()):
+        raise ValueError("group_ids must be non-negative")
+    if bool(torch.any(group_ids >= group_count).detach().cpu().item()):
+        raise ValueError("group_ids must be < group_count")
+
+
+def _generic_partner_front_door_metadata(
+    *,
+    adapter: str,
+    partner: str,
+    operation: str,
+    group_count: int,
+    row_count: int,
+    contract: str,
+    extra: dict[str, object] | None = None,
+) -> dict[str, object]:
+    metadata = {
+        "adapter": adapter,
+        "partner": partner,
+        "input_contract": "caller_supplied_partner_device_columns",
+        "partner_reference_contract": contract,
+        "v2_5_partner_continuation_operation": operation if partner == "triton" else None,
+        "v2_5_triton_preview_kernel_used": partner == "triton",
+        "v2_5_triton_preview_kernel_status": "preview_not_promoted" if partner == "triton" else None,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "group_count": int(group_count),
+        "row_count": int(row_count),
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_5_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "claim_boundary": (
+            "Generic partner-column continuation front door. It does not call native RT "
+            "traversal, does not embed app semantics, and does not authorize speedup, "
+            "zero-copy, or release claims."
+        ),
+    }
+    if extra:
+        metadata.update(extra)
+    return metadata
+
+
+def _torch_grouped_arg_reduce(score_columns: dict[str, object], *, group_count: int, reduce: str, runtime):
+    torch, group_ids, item_ids, scores = _coerce_torch_group_item_score_columns(score_columns, runtime)
+    group_count = int(group_count)
+    _validate_torch_group_ids(group_ids, group_count, torch)
+    row_count = int(group_ids.numel())
+    if bool(torch.any(torch.isnan(scores)).detach().cpu().item()) if row_count else False:
+        raise ValueError(f"grouped {reduce} rejects NaN scores")
+    fill_score = float("inf") if reduce == "argmin" else -float("inf")
+    dense_scores = torch.full((group_count,), fill_score, dtype=torch.float64, device=scores.device)
+    dense_item_ids = torch.full(
+        (group_count,),
+        torch.iinfo(torch.int64).max,
+        dtype=torch.int64,
+        device=item_ids.device,
+    )
+    counts = torch.zeros((group_count,), dtype=torch.int64, device=group_ids.device)
+    for group in range(group_count):
+        mask = group_ids == group
+        count = int(torch.count_nonzero(mask).detach().cpu().item())
+        if count == 0:
+            continue
+        group_scores = scores[mask]
+        group_items = item_ids[mask]
+        best_score = torch.min(group_scores) if reduce == "argmin" else torch.max(group_scores)
+        tied_items = group_items[group_scores == best_score]
+        dense_scores[group] = best_score
+        dense_item_ids[group] = torch.min(tied_items)
+        counts[group] = count
+    present_mask = counts > 0
+    return {
+        "group_ids": torch.nonzero(present_mask, as_tuple=False).reshape(-1).to(torch.int64),
+        "item_ids": dense_item_ids[present_mask],
+        "scores": dense_scores[present_mask],
+        "missing_group_ids": torch.nonzero(~present_mask, as_tuple=False).reshape(-1).to(torch.int64),
+        "dense_item_ids": dense_item_ids,
+        "dense_scores": dense_scores,
+        "present_counts": counts,
+    }, row_count
+
+
+def grouped_argmin_f64_partner_columns(
+    score_columns: dict[str, object],
+    *,
+    group_count: int,
+    partner: str = "triton",
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Reduce generic grouped score rows to the lowest-score item per group."""
+
+    runtime = _partner_module(partner)
+    group_count = int(group_count)
+    if runtime["name"] == "triton":
+        torch, group_ids, item_ids, scores = _coerce_torch_group_item_score_columns(score_columns, runtime)
+        _validate_torch_group_ids(group_ids, group_count, torch)
+        result = run_triton_grouped_argmin_f64(group_ids, item_ids, scores, group_count=group_count)
+        columns = result["outputs"]
+        row_count = int(group_ids.numel())
+        elapsed = float(result["phase_timing"]["phases_sec"]["partner_continuation"])
+    elif runtime["name"] == "torch":
+        columns, row_count = _torch_grouped_arg_reduce(
+            score_columns,
+            group_count=group_count,
+            reduce="argmin",
+            runtime=runtime,
+        )
+        runtime["sync"]()
+        elapsed = None
+    else:
+        raise ValueError("partner must be 'triton' or 'torch'")
+    metadata = _generic_partner_front_door_metadata(
+        adapter="grouped_argmin_f64_partner_columns",
+        partner=runtime["name"],
+        operation="grouped_argmin_f64",
+        group_count=group_count,
+        row_count=row_count,
+        contract="generic_grouped_argmin_f64",
+        extra={
+            "tie_break": "lowest_score_then_lowest_item_id",
+            "triton_elapsed_seconds": elapsed,
+        },
+    )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def grouped_argmax_f64_partner_columns(
+    score_columns: dict[str, object],
+    *,
+    group_count: int,
+    partner: str = "triton",
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Reduce generic grouped score rows to the highest-score item per group."""
+
+    runtime = _partner_module(partner)
+    group_count = int(group_count)
+    if runtime["name"] == "triton":
+        torch, group_ids, item_ids, scores = _coerce_torch_group_item_score_columns(score_columns, runtime)
+        _validate_torch_group_ids(group_ids, group_count, torch)
+        result = run_triton_grouped_argmax_f64(group_ids, item_ids, scores, group_count=group_count)
+        columns = result["outputs"]
+        row_count = int(group_ids.numel())
+        elapsed = float(result["phase_timing"]["phases_sec"]["partner_continuation"])
+    elif runtime["name"] == "torch":
+        columns, row_count = _torch_grouped_arg_reduce(
+            score_columns,
+            group_count=group_count,
+            reduce="argmax",
+            runtime=runtime,
+        )
+        runtime["sync"]()
+        elapsed = None
+    else:
+        raise ValueError("partner must be 'triton' or 'torch'")
+    metadata = _generic_partner_front_door_metadata(
+        adapter="grouped_argmax_f64_partner_columns",
+        partner=runtime["name"],
+        operation="grouped_argmax_f64",
+        group_count=group_count,
+        row_count=row_count,
+        contract="generic_grouped_argmax_f64",
+        extra={
+            "tie_break": "highest_score_then_lowest_item_id",
+            "triton_elapsed_seconds": elapsed,
+        },
+    )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def _torch_grouped_topk(score_columns: dict[str, object], *, group_count: int, k: int, runtime):
+    torch, group_ids, item_ids, scores = _coerce_torch_group_item_score_columns(score_columns, runtime)
+    group_count = int(group_count)
+    k = int(k)
+    if k <= 0:
+        raise ValueError("k must be positive")
+    _validate_torch_group_ids(group_ids, group_count, torch)
+    row_count = int(group_ids.numel())
+    if bool(torch.any(torch.isnan(scores)).detach().cpu().item()) if row_count else False:
+        raise ValueError("grouped top-k rejects NaN scores")
+    dense_scores = torch.full((group_count, k), float("inf"), dtype=torch.float64, device=scores.device)
+    dense_item_ids = torch.full(
+        (group_count, k),
+        torch.iinfo(torch.int64).max,
+        dtype=torch.int64,
+        device=item_ids.device,
+    )
+    counts = torch.zeros((group_count,), dtype=torch.int64, device=group_ids.device)
+    compact_group_ids: list[int] = []
+    compact_item_ids: list[int] = []
+    compact_scores: list[float] = []
+    compact_ranks: list[int] = []
+    row_offsets = [0]
+    for group in range(group_count):
+        mask = group_ids == group
+        count = int(torch.count_nonzero(mask).detach().cpu().item())
+        counts[group] = count
+        if count == 0:
+            row_offsets.append(row_offsets[-1])
+            continue
+        raw_items = item_ids[mask]
+        raw_scores = scores[mask]
+        unique_items = torch.unique(raw_items)
+        best_pairs: list[tuple[float, int]] = []
+        for item in unique_items.detach().cpu().tolist():
+            item_i = int(item)
+            item_mask = raw_items == item_i
+            best_score = torch.min(raw_scores[item_mask])
+            best_pairs.append((float(best_score.detach().cpu().item()), item_i))
+        best_pairs.sort(key=lambda item: (item[0], item[1]))
+        selected = best_pairs[:k]
+        for rank, (score, item_i) in enumerate(selected, start=1):
+            dense_scores[group, rank - 1] = score
+            dense_item_ids[group, rank - 1] = item_i
+            compact_group_ids.append(group)
+            compact_item_ids.append(item_i)
+            compact_scores.append(score)
+            compact_ranks.append(rank)
+        row_offsets.append(row_offsets[-1] + len(selected))
+    device = group_ids.device
+    return {
+        "group_ids": torch.tensor(compact_group_ids, dtype=torch.int64, device=device),
+        "item_ids": torch.tensor(compact_item_ids, dtype=torch.int64, device=device),
+        "scores": torch.tensor(compact_scores, dtype=torch.float64, device=device),
+        "ranks": torch.tensor(compact_ranks, dtype=torch.int64, device=device),
+        "row_offsets": torch.tensor(row_offsets, dtype=torch.int64, device=device),
+        "missing_group_ids": torch.nonzero(counts == 0, as_tuple=False).reshape(-1).to(torch.int64),
+        "dense_item_ids": dense_item_ids,
+        "dense_scores": dense_scores,
+        "counts": counts,
+    }, row_count
+
+
+def grouped_topk_f64_partner_columns(
+    score_columns: dict[str, object],
+    *,
+    group_count: int,
+    k: int,
+    partner: str = "triton",
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Finalize generic grouped score rows into deterministic top-k rows."""
+
+    runtime = _partner_module(partner)
+    group_count = int(group_count)
+    k = int(k)
+    if runtime["name"] == "triton":
+        torch, group_ids, item_ids, scores = _coerce_torch_group_item_score_columns(score_columns, runtime)
+        _validate_torch_group_ids(group_ids, group_count, torch)
+        result = run_triton_grouped_topk_f64(group_ids, item_ids, scores, group_count=group_count, k=k)
+        columns = result["outputs"]
+        row_count = int(group_ids.numel())
+        elapsed = float(result["phase_timing"]["phases_sec"]["partner_continuation"])
+    elif runtime["name"] == "torch":
+        columns, row_count = _torch_grouped_topk(score_columns, group_count=group_count, k=k, runtime=runtime)
+        runtime["sync"]()
+        elapsed = None
+    else:
+        raise ValueError("partner must be 'triton' or 'torch'")
+    metadata = _generic_partner_front_door_metadata(
+        adapter="grouped_topk_f64_partner_columns",
+        partner=runtime["name"],
+        operation="grouped_topk_f64",
+        group_count=group_count,
+        row_count=row_count,
+        contract="generic_grouped_topk_f64",
+        extra={
+            "k": k,
+            "tie_break": "lowest_score_then_lowest_item_id",
+            "duplicate_item_policy": "lowest_score_per_group_item",
+            "triton_elapsed_seconds": elapsed,
+        },
+    )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def _torch_bounded_collect(row_columns: dict[str, object], *, group_count: int, k: int, total_row_capacity, runtime):
+    if not isinstance(row_columns, dict):
+        raise ValueError("row_columns must be a mapping")
+    group_ids = row_columns.get("group_ids")
+    item_ids = row_columns.get("item_ids")
+    if group_ids is None or item_ids is None:
+        raise ValueError("row_columns must contain group_ids and item_ids")
+    torch = runtime["module"]
+    group_ids = group_ids.to(torch.int64)
+    item_ids = item_ids.to(torch.int64)
+    if tuple(group_ids.shape) != tuple(item_ids.shape):
+        raise ValueError("group_ids and item_ids must have the same shape")
+    group_count = int(group_count)
+    k = int(k)
+    if k <= 0:
+        raise ValueError("k must be positive")
+    _validate_torch_group_ids(group_ids, group_count, torch)
+    row_count = int(group_ids.numel())
+    if total_row_capacity is not None and row_count > int(total_row_capacity):
+        raise PartnerContinuationOverflowError(
+            "bounded_collect_finalize_i64 overflowed total row capacity; "
+            "failure_mode=fail_closed_overflow; partial_result_returned=False"
+        )
+    counts = torch.zeros((group_count,), dtype=torch.int64, device=group_ids.device)
+    for group in range(group_count):
+        counts[group] = int(torch.count_nonzero(group_ids == group).detach().cpu().item())
+    if bool(torch.any(counts > k).detach().cpu().item()) if group_count else False:
+        raise PartnerContinuationOverflowError(
+            "bounded_collect_finalize_i64 overflowed per-group capacity; "
+            "failure_mode=fail_closed_overflow; partial_result_returned=False"
+        )
+    row_offsets = torch.empty((group_count + 1,), dtype=torch.int64, device=group_ids.device)
+    row_offsets[0] = 0
+    if group_count:
+        row_offsets[1:] = torch.cumsum(counts, dim=0)
+    out_group_chunks = []
+    out_item_chunks = []
+    for group in range(group_count):
+        mask = group_ids == group
+        if int(torch.count_nonzero(mask).detach().cpu().item()) == 0:
+            continue
+        out_group_chunks.append(group_ids[mask])
+        out_item_chunks.append(item_ids[mask])
+    if out_group_chunks:
+        out_group_ids = torch.cat(out_group_chunks)
+        out_item_ids = torch.cat(out_item_chunks)
+    else:
+        out_group_ids = torch.empty((0,), dtype=torch.int64, device=group_ids.device)
+        out_item_ids = torch.empty((0,), dtype=torch.int64, device=item_ids.device)
+    return {
+        "group_ids": out_group_ids,
+        "item_ids": out_item_ids,
+        "row_offsets": row_offsets,
+        "counts": counts,
+    }, row_count
+
+
+def bounded_collect_finalize_i64_partner_columns(
+    row_columns: dict[str, object],
+    *,
+    group_count: int,
+    k: int,
+    total_row_capacity: int | None = None,
+    partner: str = "triton",
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Finalize bounded generic item rows per group with fail-closed overflow."""
+
+    runtime = _partner_module(partner)
+    group_count = int(group_count)
+    k = int(k)
+    if runtime["name"] == "triton":
+        if not isinstance(row_columns, dict):
+            raise ValueError("row_columns must be a mapping")
+        group_ids = row_columns.get("group_ids")
+        item_ids = row_columns.get("item_ids")
+        if group_ids is None or item_ids is None:
+            raise ValueError("row_columns must contain group_ids and item_ids")
+        torch = runtime["module"]
+        group_ids = group_ids.to(torch.int64)
+        item_ids = item_ids.to(torch.int64)
+        _validate_torch_group_ids(group_ids, group_count, torch)
+        result = run_triton_bounded_collect_finalize_i64(
+            group_ids,
+            item_ids,
+            group_count=group_count,
+            k=k,
+            total_row_capacity=total_row_capacity,
+        )
+        columns = result["outputs"]
+        row_count = int(group_ids.numel())
+        elapsed = float(result["phase_timing"]["phases_sec"]["partner_continuation"])
+    elif runtime["name"] == "torch":
+        columns, row_count = _torch_bounded_collect(
+            row_columns,
+            group_count=group_count,
+            k=k,
+            total_row_capacity=total_row_capacity,
+            runtime=runtime,
+        )
+        runtime["sync"]()
+        elapsed = None
+    else:
+        raise ValueError("partner must be 'triton' or 'torch'")
+    metadata = _generic_partner_front_door_metadata(
+        adapter="bounded_collect_finalize_i64_partner_columns",
+        partner=runtime["name"],
+        operation="bounded_collect_finalize_i64",
+        group_count=group_count,
+        row_count=row_count,
+        contract="generic_bounded_collect_finalize_i64",
+        extra={
+            "k": k,
+            "total_row_capacity": total_row_capacity,
+            "failure_mode": "fail_closed_overflow",
+            "within_group_order": "unspecified_nonsemantic",
+            "triton_elapsed_seconds": elapsed,
+        },
+    )
     if return_metadata:
         return {"columns": columns, "metadata": metadata}
     return columns

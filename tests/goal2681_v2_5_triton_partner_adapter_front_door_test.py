@@ -34,21 +34,27 @@ class Goal2681V25TritonPartnerAdapterFrontDoorTest(unittest.TestCase):
             "partner_compact_columns_by_mask",
             "v2_5_triton_front_door_coverage",
             "V2_5_TRITON_PARTNER_ADAPTER_FRONT_DOOR_OPERATIONS",
+            "bounded_collect_finalize_i64_partner_columns",
+            "grouped_argmax_f64_partner_columns",
+            "grouped_argmin_f64_partner_columns",
+            "grouped_topk_f64_partner_columns",
+            "grouped_vector_sum_2d_partner_columns",
         ):
             self.assertIn(name, rt.__all__)
 
-    def test_front_door_coverage_keeps_dispatcher_only_apps_explicit(self):
+    def test_front_door_coverage_records_goal2861_generic_completion(self):
         coverage = rt.v2_5_triton_front_door_coverage()
         self.assertEqual(coverage["primary_partner"], "triton")
         self.assertEqual(coverage["benchmark_app_count"], 10)
-        self.assertEqual(coverage["fully_front_door_ready_count"], 4)
+        self.assertEqual(coverage["fully_front_door_ready_count"], 10)
 
         rows = {row["app_id"]: row for row in coverage["apps"]}
         self.assertEqual(rows["raydb_style"]["front_door_status"], "adapter_front_door_ready")
         self.assertEqual(rows["triangle_counting"]["front_door_status"], "adapter_front_door_ready")
-        self.assertEqual(rows["barnes_hut"]["front_door_status"], "dispatcher_ready_app_wiring_required")
-        self.assertIn("bounded_collect_finalize_i64", rows["barnes_hut"]["dispatcher_only_operations"])
-        self.assertEqual(rows["contact_manifold"]["dispatcher_only_operations"], ("bounded_collect_finalize_i64",))
+        self.assertEqual(rows["barnes_hut"]["front_door_status"], "adapter_front_door_ready")
+        self.assertIn("bounded_collect_finalize_i64", rows["barnes_hut"]["adapter_front_door_operations"])
+        self.assertEqual(rows["contact_manifold"]["dispatcher_only_operations"], ())
+        self.assertEqual(rows["contact_manifold"]["front_door_status"], "adapter_front_door_ready")
         self.assertEqual(rows["contact_manifold"]["missing_operations"], ())
 
     def test_no_cuda_environment_rejects_triton_front_door_explicitly(self):
