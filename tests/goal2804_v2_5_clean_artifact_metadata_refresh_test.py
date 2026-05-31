@@ -9,6 +9,8 @@ import rtdsl as rt
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs" / "reports" / "goal2804_v2_5_clean_artifact_metadata_refresh_2026-05-31.md"
+REVIEW = ROOT / "docs" / "reviews" / "goal2804_gemini_review_v2_5_clean_artifact_metadata_refresh_2026-05-31.md"
+CONSENSUS = ROOT / "docs" / "reports" / "goal2804_v2_5_clean_artifact_metadata_refresh_consensus_2026-05-31.md"
 
 CLEAN_ARTIFACTS = {
     "rtnn": ROOT
@@ -83,6 +85,17 @@ class Goal2804V25CleanArtifactMetadataRefreshTest(unittest.TestCase):
         self.assertIn("not a release authorization", text)
         self.assertIn("not a public speedup claim", text)
         self.assertIn("not a true-zero-copy claim", text)
+
+    def test_gemini_review_and_consensus_are_recorded(self) -> None:
+        review = REVIEW.read_text(encoding="utf-8")
+        consensus = CONSENSUS.read_text(encoding="utf-8")
+
+        self.assertIn("independent Gemini review", review)
+        self.assertIn("accept-with-boundary", review)
+        self.assertIn("Codex + Gemini", consensus)
+        self.assertIn("accept-with-boundary", consensus)
+        self.assertIn("Claude was attempted", consensus)
+        self.assertIn("not authorize a v2.5 release", consensus)
 
 
 if __name__ == "__main__":

@@ -93,6 +93,28 @@ Ran 55 tests in 0.023s
 OK
 ```
 
+Clean pod validation after push:
+
+```text
+Host: root@69.30.85.171:22167
+Commit: 8e322b0a
+Command: python3 -m unittest [same 11-test-module slice]
+
+Ran 55 tests in 0.008s
+OK
+```
+
+External review:
+
+```text
+Gemini: accept-with-boundary
+Review: docs/reviews/goal2804_gemini_review_v2_5_clean_artifact_metadata_refresh_2026-05-31.md
+Consensus: docs/reports/goal2804_v2_5_clean_artifact_metadata_refresh_consensus_2026-05-31.md
+```
+
+Claude was attempted, but wrote no review output before the stuck process was
+stopped; it is not counted for Goal2804 consensus.
+
 This test verifies:
 
 - all four Tier B clean artifacts are `pass`;
