@@ -478,12 +478,16 @@ Future work:
   launch (`blockIdx.y` as request index), improving the Goal2821 heterogeneous
   batch median by about 1.11x at 32K and 1.08x at 65K. This is a modest but real
   generic runtime win, not a new public RTNN-speedup claim.
+- Goal2823 tested a device-side final reduction of block partials and rejected
+  it as the default. It was correct, but the clean RTX A5000 evidence was mixed:
+  about 0.99x versus Goal2822 at 32K and 1.02x at 65K. The implementation was
+  reverted and the artifacts retained as a negative probe.
 - The next RTNN runtime target should therefore move beyond launch-count
   cleanup inside the current batch path: CUDA graph capture/replay for repeated
-  prepared aggregates, device-side final reduction of block partials, or
-  event-ordered aggregate chaining into a partner consumer that avoids compact
-  partial downloads. A 128-thread block-partial probe was worse than the
-  retained 256-thread path and should not be promoted without new evidence.
+  prepared aggregates or event-ordered aggregate chaining into a partner
+  consumer. A 128-thread block-partial probe and the Goal2823 device-side
+  partial reducer were both worse/mixed and should not be promoted without a
+  substantially different design.
 - Study whether a real RT-core prepared variant can beat the uniform-cell path
   only after the prepared contract exists; do not treat naked OptiX traversal as
   sufficient.
