@@ -145,3 +145,41 @@ PYTHONPATH=src;. py -3 -m unittest \
 Ran 21 tests
 OK
 ```
+
+Pod clean-check validation from Git:
+
+```text
+Host: 69.30.85.171
+Port: 22167
+Commit: 5a79728d9fd5467342148b907b1c3bd02b131588
+
+git fetch origin main
+git reset --hard origin/main
+git clean -fd
+OPTIX_PREFIX=/root/vendor/optix-sdk make build-optix
+
+PYTHONPATH=src:. python3 scripts/goal2797_triangle_counting_v25_canonical_harness.py \
+  --triangle-counts 16,1024,5000 \
+  --backends optix \
+  --warmup 2 \
+  --repeat 5 \
+  --output /tmp/goal2797_clean_harness.json
+
+harness pass 6
+16 rt_graph_2a1_generic_rt pass 0.3700628876686096
+16 rt_graph_1a2_generic_rt pass 0.0745218712836504
+1024 rt_graph_2a1_generic_rt pass 0.39024907164275646
+1024 rt_graph_1a2_generic_rt pass 0.13312697410583496
+5000 rt_graph_2a1_generic_rt pass 0.3820951096713543
+5000 rt_graph_1a2_generic_rt pass 0.32616988755762577
+
+PYTHONPATH=src:. python3 -m unittest \
+  tests.goal2797_triangle_counting_v25_canonical_harness_test \
+  tests.goal2730_triangle_counting_v2_5_primitive_first_plan_test \
+  tests.goal2723_v2_5_tiered_benchmark_manifest_test \
+  tests.goal2736_tier_a_primitive_first_plan_alignment_test \
+  tests.goal2795_v2_5_tier_label_reconciliation_test
+
+Ran 21 tests
+OK
+```
