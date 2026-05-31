@@ -41,6 +41,7 @@ class Goal2676V25TritonPartnerPivotTest(unittest.TestCase):
         self.assertTrue(rt.describe_triton_partner_continuation("segmented_min_f64")["triton_kernel_available"])
         self.assertTrue(rt.describe_triton_partner_continuation("segmented_max_f64")["triton_kernel_available"])
         self.assertTrue(rt.describe_triton_partner_continuation("compact_mask_i64")["triton_kernel_available"])
+        self.assertTrue(rt.describe_triton_partner_continuation("edge_list_components_i64")["triton_kernel_available"])
         self.assertTrue(rt.describe_triton_partner_continuation("grouped_argmin_f64")["triton_kernel_available"])
         self.assertTrue(rt.describe_triton_partner_continuation("grouped_argmax_f64")["triton_kernel_available"])
         self.assertTrue(rt.describe_triton_partner_continuation("grouped_topk_f64")["triton_kernel_available"])

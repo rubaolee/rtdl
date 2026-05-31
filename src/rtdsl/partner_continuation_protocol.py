@@ -135,6 +135,17 @@ V2_5_PARTNER_CONTINUATION_OPERATIONS: tuple[RtdlPartnerContinuationOperation, ..
         behavior="compact int64 values by a boolean mask while preserving source indices",
     ),
     RtdlPartnerContinuationOperation(
+        name="edge_list_components_i64",
+        category="component_labeling",
+        input_names=("source_ids", "target_ids", "node_count", "max_iterations"),
+        output_names=("component_ids",),
+        behavior=(
+            "label connected components over an undirected int64 edge list; "
+            "source and target node ids must be in [0, node_count); labels use "
+            "the smallest node id in each component"
+        ),
+    ),
+    RtdlPartnerContinuationOperation(
         name="bounded_collect_finalize_i64",
         category="bounded_finalization",
         input_names=("group_ids", "item_ids", "group_count", "k"),
@@ -209,6 +220,7 @@ V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS = (
     "segmented_min_f64",
     "segmented_max_f64",
     "compact_mask_i64",
+    "edge_list_components_i64",
     "grouped_argmin_f64",
     "grouped_argmax_f64",
     "grouped_topk_f64",
@@ -537,6 +549,14 @@ def execute_v2_5_partner_continuation_reference(
         compact_values = [value for value, keep in zip(values, mask) if keep]
         original_indices = [index for index, keep in enumerate(mask) if keep]
         outputs = {"values": compact_values, "original_indices": original_indices}
+    elif operation == "edge_list_components_i64":
+        node_count = _required_int(inputs, "node_count")
+        max_iterations = _required_int(inputs, "max_iterations")
+        source_ids = _required_i64_sequence(inputs, "source_ids")
+        target_ids = _required_i64_sequence(inputs, "target_ids")
+        if len(source_ids) != len(target_ids):
+            raise ValueError("source_ids and target_ids must have the same length")
+        outputs = _edge_list_components_i64(source_ids, target_ids, node_count, max_iterations)
     elif operation == "bounded_collect_finalize_i64":
         group_count = _required_int(inputs, "group_count")
         k = _required_int(inputs, "k")
@@ -847,6 +867,51 @@ def _grouped_vector_sum_f64x2(
         sum_x[group] += float(value_x)
         sum_y[group] += float(value_y)
     return {"sum_x": sum_x, "sum_y": sum_y}
+
+
+def _edge_list_components_i64(
+    source_ids: Sequence[int],
+    target_ids: Sequence[int],
+    node_count: int,
+    max_iterations: int,
+) -> dict[str, list[int]]:
+    node_count = int(node_count)
+    max_iterations = int(max_iterations)
+    if node_count < 0:
+        raise ValueError("node_count must be non-negative")
+    if max_iterations <= 0:
+        raise ValueError("max_iterations must be positive")
+    parent = list(range(node_count))
+
+    def find(node: int) -> int:
+        while parent[node] != node:
+            parent[node] = parent[parent[node]]
+            node = parent[node]
+        return node
+
+    for source, target in zip(source_ids, target_ids):
+        source = int(source)
+        target = int(target)
+        if source < 0 or source >= node_count or target < 0 or target >= node_count:
+            raise ValueError("source_ids and target_ids must be in [0, node_count)")
+        source_root = find(source)
+        target_root = find(target)
+        if source_root == target_root:
+            continue
+        low = min(source_root, target_root)
+        high = max(source_root, target_root)
+        parent[high] = low
+
+    for _ in range(max_iterations):
+        changed = False
+        for node in range(node_count):
+            root = find(node)
+            if parent[node] != root:
+                parent[node] = root
+                changed = True
+        if not changed:
+            break
+    return {"component_ids": [find(node) for node in range(node_count)]}
 
 
 def _segmented_minmax(

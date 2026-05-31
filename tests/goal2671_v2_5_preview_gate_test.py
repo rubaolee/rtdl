@@ -39,6 +39,7 @@ class Goal2671V25PreviewGateTest(unittest.TestCase):
                 "segmented_min_f64",
                 "segmented_max_f64",
                 "compact_mask_i64",
+                "edge_list_components_i64",
                 "grouped_argmin_f64",
                 "grouped_argmax_f64",
                 "grouped_topk_f64",

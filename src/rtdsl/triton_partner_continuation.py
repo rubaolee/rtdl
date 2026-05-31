@@ -21,6 +21,7 @@ TRITON_SEGMENTED_COUNT_I64_OPERATION = "segmented_count_i64"
 TRITON_SEGMENTED_MIN_F64_OPERATION = "segmented_min_f64"
 TRITON_SEGMENTED_MAX_F64_OPERATION = "segmented_max_f64"
 TRITON_COMPACT_MASK_I64_OPERATION = "compact_mask_i64"
+TRITON_EDGE_LIST_COMPONENTS_I64_OPERATION = "edge_list_components_i64"
 TRITON_GROUPED_ARGMIN_F64_OPERATION = "grouped_argmin_f64"
 TRITON_GROUPED_ARGMAX_F64_OPERATION = "grouped_argmax_f64"
 TRITON_GROUPED_TOPK_F64_OPERATION = "grouped_topk_f64"
@@ -89,6 +90,16 @@ def describe_triton_compact_mask_i64() -> dict[str, object]:
     descriptor["input_columns"] = ("values:int64", "mask:bool")
     descriptor["output_columns"] = ("values:int64", "original_indices:int64")
     descriptor["tensor_carrier_prefix_sum_used"] = True
+    return descriptor
+
+
+def describe_triton_edge_list_components_i64() -> dict[str, object]:
+    descriptor = _base_triton_descriptor(TRITON_EDGE_LIST_COMPONENTS_I64_OPERATION)
+    descriptor["input_columns"] = ("source_ids:int64", "target_ids:int64")
+    descriptor["output_columns"] = ("component_ids:int64",)
+    descriptor["algorithm"] = "fixed_iteration_min_label_propagation"
+    descriptor["component_label"] = "smallest_node_id_in_component"
+    descriptor["convergence_contract"] = "caller_supplied_max_iterations_must_cover_component_diameter"
     return descriptor
 
 
@@ -199,6 +210,8 @@ def describe_triton_partner_continuation(operation: str) -> dict[str, object]:
         return describe_triton_segmented_max_f64()
     if operation == TRITON_COMPACT_MASK_I64_OPERATION:
         return describe_triton_compact_mask_i64()
+    if operation == TRITON_EDGE_LIST_COMPONENTS_I64_OPERATION:
+        return describe_triton_edge_list_components_i64()
     if operation == TRITON_GROUPED_ARGMIN_F64_OPERATION:
         return describe_triton_grouped_argmin_f64()
     if operation == TRITON_GROUPED_ARGMAX_F64_OPERATION:
@@ -319,6 +332,19 @@ def run_triton_partner_continuation(
             return run_triton_compact_mask_i64(
                 inputs["values"],
                 inputs["mask"],
+                block_size=block_size,
+            )
+        except (ModuleNotFoundError, RuntimeError) as exc:
+            if allow_reference_fallback and _is_triton_environment_error(exc):
+                return _triton_reference_fallback(operation, inputs, str(exc))
+            raise
+    if operation == TRITON_EDGE_LIST_COMPONENTS_I64_OPERATION:
+        try:
+            return run_triton_edge_list_components_i64(
+                inputs["source_ids"],
+                inputs["target_ids"],
+                node_count=int(inputs["node_count"]),
+                max_iterations=int(inputs["max_iterations"]),
                 block_size=block_size,
             )
         except (ModuleNotFoundError, RuntimeError) as exc:
@@ -768,6 +794,75 @@ def run_triton_compact_mask_i64(
         elapsed=elapsed,
         source="run_triton_compact_mask_i64",
         extra_metadata={"tensor_carrier_prefix_sum_used": True},
+    )
+
+
+def run_triton_edge_list_components_i64(
+    source_ids: Any,
+    target_ids: Any,
+    *,
+    node_count: int,
+    max_iterations: int,
+    block_size: int = 256,
+) -> dict[str, object]:
+    """Run the v2.5 Triton edge-list component-labeling preview."""
+
+    triton, torch, tl = _import_triton_stack()
+    _validate_torch_cuda_vector(source_ids, name="source_ids", dtype=torch.int64)
+    _validate_torch_cuda_vector(target_ids, name="target_ids", dtype=torch.int64)
+    if tuple(source_ids.shape) != tuple(target_ids.shape):
+        raise ValueError("source_ids and target_ids must have the same shape")
+    if source_ids.device != target_ids.device:
+        raise ValueError("source_ids and target_ids must be on the same CUDA device")
+    node_count = int(node_count)
+    max_iterations = int(max_iterations)
+    block_size = int(block_size)
+    if node_count < 0:
+        raise ValueError("node_count must be non-negative")
+    if max_iterations <= 0:
+        raise ValueError("max_iterations must be positive")
+    if block_size <= 0:
+        raise ValueError("block_size must be positive")
+    edge_count = int(source_ids.numel())
+    if edge_count and bool(
+        torch.any((source_ids < 0) | (source_ids >= node_count) | (target_ids < 0) | (target_ids >= node_count)).item()
+    ):
+        raise ValueError("source_ids and target_ids must be in [0, node_count)")
+
+    torch.cuda.synchronize(source_ids.device)
+    started = perf_counter()
+    component_ids = torch.arange(node_count, dtype=torch.int64, device=source_ids.device)
+    if edge_count and node_count:
+        edge_grid = (triton.cdiv(edge_count, block_size),)
+        node_grid = (triton.cdiv(node_count, block_size),)
+        for _ in range(max_iterations):
+            _triton_edge_list_component_relax_i64_kernel(tl)[edge_grid](
+                source_ids,
+                target_ids,
+                component_ids,
+                edge_count,
+                node_count,
+                BLOCK_SIZE=block_size,
+            )
+            _triton_edge_list_component_compress_i64_kernel(tl)[node_grid](
+                component_ids,
+                node_count,
+                BLOCK_SIZE=block_size,
+            )
+    torch.cuda.synchronize(source_ids.device)
+    elapsed = perf_counter() - started
+
+    return _triton_run_result(
+        operation=TRITON_EDGE_LIST_COMPONENTS_I64_OPERATION,
+        outputs={"component_ids": component_ids},
+        elapsed=elapsed,
+        source="run_triton_edge_list_components_i64",
+        extra_metadata={
+            "algorithm": "fixed_iteration_min_label_propagation",
+            "component_label": "smallest_node_id_in_component",
+            "max_iterations": max_iterations,
+            "convergence_contract": "caller_supplied_max_iterations_must_cover_component_diameter",
+        },
     )
 
 
@@ -1312,6 +1407,19 @@ def _triton_group_id_bounds_validation_metadata(
             "device_error_flag_available": False,
             "claim_boundary": "compact_mask_i64 has no group-id bounds contract",
         }
+    if operation == TRITON_EDGE_LIST_COMPONENTS_I64_OPERATION:
+        return {
+            "mode": "edge_endpoint_bounds_host_scalar_sync",
+            "checked_before_kernel_launch": True,
+            "uses_host_scalar_sync": True,
+            "device_error_flag_available": False,
+            "true_zero_copy_claim_authorized": False,
+            "claim_boundary": (
+                "edge_list_components_i64 checks source/target endpoint bounds "
+                "before launch through a Torch CUDA predicate and host scalar sync. "
+                "This is not a zero-copy validation path."
+            ),
+        }
     if mode == TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_MODE:
         return {
             "mode": TRITON_GROUP_ID_BOUNDS_DEVICE_FLAG_MODE,
@@ -1461,6 +1569,38 @@ def _triton_compact_scatter_i64_kernel(tl):
         write_mask = valid & keep
         tl.store(compact_values + out_offsets, vals, mask=write_mask)
         tl.store(original_indices + out_offsets, offsets, mask=write_mask)
+
+    return kernel
+
+
+def _triton_edge_list_component_relax_i64_kernel(tl):
+    @__import__("triton").jit
+    def kernel(source_ids, target_ids, component_ids, edge_count: tl.constexpr, node_count: tl.constexpr, BLOCK_SIZE: tl.constexpr):
+        program_id = tl.program_id(0)
+        offsets = program_id * BLOCK_SIZE + tl.arange(0, BLOCK_SIZE)
+        mask = offsets < edge_count
+        sources = tl.load(source_ids + offsets, mask=mask, other=0)
+        targets = tl.load(target_ids + offsets, mask=mask, other=0)
+        valid = mask & (sources >= 0) & (sources < node_count) & (targets >= 0) & (targets < node_count)
+        source_labels = tl.load(component_ids + sources, mask=valid, other=0)
+        target_labels = tl.load(component_ids + targets, mask=valid, other=0)
+        low = tl.minimum(source_labels, target_labels)
+        tl.atomic_min(component_ids + sources, low, sem="relaxed", mask=valid)
+        tl.atomic_min(component_ids + targets, low, sem="relaxed", mask=valid)
+
+    return kernel
+
+
+def _triton_edge_list_component_compress_i64_kernel(tl):
+    @__import__("triton").jit
+    def kernel(component_ids, node_count: tl.constexpr, BLOCK_SIZE: tl.constexpr):
+        program_id = tl.program_id(0)
+        nodes = program_id * BLOCK_SIZE + tl.arange(0, BLOCK_SIZE)
+        valid = nodes < node_count
+        parents = tl.load(component_ids + nodes, mask=valid, other=0)
+        grandparents = tl.load(component_ids + parents, mask=valid, other=0)
+        new_parent = tl.minimum(parents, grandparents)
+        tl.store(component_ids + nodes, new_parent, mask=valid)
 
     return kernel
 

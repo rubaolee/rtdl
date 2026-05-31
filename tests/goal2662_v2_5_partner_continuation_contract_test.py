@@ -35,6 +35,7 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
                 "segmented_min_f64",
                 "segmented_max_f64",
                 "compact_mask_i64",
+                "edge_list_components_i64",
                 "bounded_collect_finalize_i64",
                 "grouped_argmin_f64",
                 "grouped_argmax_f64",
@@ -67,6 +68,9 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
         self.assertIn("ray_id", hit_stream["behavior"])
         self.assertIn("row-order", hit_stream["behavior"])
         self.assertIn("-1 sentinels", hit_stream["behavior"])
+        components = operations["edge_list_components_i64"]
+        self.assertEqual(components["category"], "component_labeling")
+        self.assertIn("source and target node ids", components["behavior"])
 
     def test_planner_prefers_triton_then_numba_then_reference(self):
         triton = rt.plan_v2_5_partner_continuation(
@@ -223,6 +227,17 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
         self.assertEqual(compact["outputs"]["values"], [20, 30])
         self.assertEqual(compact["outputs"]["original_indices"], [1, 2])
 
+        components = rt.execute_v2_5_partner_continuation_reference(
+            "edge_list_components_i64",
+            {
+                "source_ids": [0, 1, 3],
+                "target_ids": [1, 2, 4],
+                "node_count": 6,
+                "max_iterations": 6,
+            },
+        )
+        self.assertEqual(components["outputs"]["component_ids"], [0, 0, 0, 3, 3, 5])
+
         argmin = rt.execute_v2_5_partner_continuation_reference(
             "grouped_argmin_f64",
             {
@@ -351,6 +366,10 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
                 {"group_ids": [0, 2], "item_ids": [10, 20], "group_count": 2, "k": 2},
             ),
             (
+                "edge_list_components_i64",
+                {"source_ids": [0, 2], "target_ids": [1, 0], "node_count": 2, "max_iterations": 2},
+            ),
+            (
                 "grouped_argmin_f64",
                 {"group_ids": [0, 2], "item_ids": [10, 20], "scores": [1.0, 2.0], "group_count": 2},
             ),
@@ -365,7 +384,10 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
         )
         for operation, inputs in reference_cases:
             with self.subTest(operation=operation, backend="reference"):
-                with self.assertRaisesRegex(ValueError, r"group ids must be in \[0, group_count\)"):
+                with self.assertRaisesRegex(
+                    ValueError,
+                    r"group ids must be in \[0, group_count\)|source_ids and target_ids must be in \[0, node_count\)",
+                ):
                     rt.execute_v2_5_partner_continuation_reference(operation, inputs)
 
         if not rt.triton_partner_available():
@@ -418,6 +440,15 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
                 },
             ),
             (
+                "edge_list_components_i64",
+                {
+                    "source_ids": torch.tensor([0, 2], dtype=torch.int64, device="cuda"),
+                    "target_ids": torch.tensor([1, 0], dtype=torch.int64, device="cuda"),
+                    "node_count": 2,
+                    "max_iterations": 2,
+                },
+            ),
+            (
                 "grouped_argmin_f64",
                 {
                     "group_ids": torch.tensor([0, 2], dtype=torch.int64, device="cuda"),
@@ -448,7 +479,10 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
         )
         for operation, inputs in triton_cases:
             with self.subTest(operation=operation, backend="triton"):
-                with self.assertRaisesRegex(ValueError, r"group_ids must be in \[0, group_count\)"):
+                with self.assertRaisesRegex(
+                    ValueError,
+                    r"group_ids must be in \[0, group_count\)|source_ids and target_ids must be in \[0, node_count\)",
+                ):
                     rt.run_triton_partner_continuation(operation, inputs)
 
     def test_docs_record_goal2662_boundary(self):
