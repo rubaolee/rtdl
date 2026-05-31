@@ -42,6 +42,14 @@ OptiX build: pass
 focused tests: 18 passed
 ```
 
+Final clean-head guard after report/artifact commit:
+
+```text
+commit: aa4f0cf0a78b25c995919bc18594429f76454479
+source_dirty: []
+focused tests: 20 passed
+```
+
 Artifacts:
 
 - `docs/reports/goal2812_rtnn_prepared_query_aggregate_pod/rtnn_prepared_query_median_f32_32768.json`
