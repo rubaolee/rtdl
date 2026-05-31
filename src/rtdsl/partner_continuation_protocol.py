@@ -144,6 +144,28 @@ V2_5_PARTNER_CONTINUATION_OPERATIONS: tuple[RtdlPartnerContinuationOperation, ..
             + V2_5_GROUP_ID_VALIDATION_CONTRACT
         ),
     ),
+    RtdlPartnerContinuationOperation(
+        name="hit_stream_grouped_ray_id_primitive_i64",
+        category="hit_stream_grouped_reduction",
+        input_names=("ray_ids", "primitive_ids", "row_count", "hit_event_count", "overflow", "group_count"),
+        output_names=(
+            "group_hit_counts",
+            "group_primitive_id_sum",
+            "group_primitive_id_xor",
+            "group_primitive_id_min",
+            "group_primitive_id_max",
+            "group_first_hit_row_index",
+            "group_last_hit_row_index",
+            "group_first_primitive_id",
+            "group_last_primitive_id",
+        ),
+        behavior=(
+            "group event-ordered RT hit-stream rows by generic ray_id; reduce nonnegative "
+            "primitive_id rows with count, sum, xor, min, max, and first/last row-order "
+            "primitive ids; ray ids must be in [0, group_count); empty groups use signed "
+            "-1 sentinels; overflow fails closed without returning partial reductions"
+        ),
+    ),
 )
 
 V2_5_PARTNER_CONTINUATION_OPERATION_NAMES = tuple(
@@ -158,10 +180,18 @@ V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS = (
     "grouped_argmin_f64",
     "bounded_collect_finalize_i64",
 )
+V2_5_NUMBA_PREVIEW_OPERATIONS = (
+    "segmented_count_i64",
+    "segmented_sum_f64",
+)
+V2_5_CUPY_PREVIEW_OPERATIONS = (
+    "hit_stream_grouped_ray_id_primitive_i64",
+)
 V2_5_PARTNER_REFERENCE_ONLY_OPERATIONS = tuple(
     operation
     for operation in V2_5_PARTNER_CONTINUATION_OPERATION_NAMES
     if operation not in V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS
+    and operation not in V2_5_CUPY_PREVIEW_OPERATIONS
 )
 
 
@@ -309,6 +339,7 @@ def v2_5_partner_preview_gate() -> dict[str, object]:
         "fallback_partner": V2_5_FALLBACK_PARTNER,
         "operation_names": V2_5_PARTNER_CONTINUATION_OPERATION_NAMES,
         "preview_kernel_operations": V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS,
+        "cupy_preview_operations": V2_5_CUPY_PREVIEW_OPERATIONS,
         "reference_only_operations": V2_5_PARTNER_REFERENCE_ONLY_OPERATIONS,
         "first_benchmark_pilot": "raydb_style_grouped_count_sum",
         "pod_validation_required": True,
@@ -342,14 +373,24 @@ def validate_v2_5_partner_preview_gate(
     if tuple(gate.get("operation_names", ())) != V2_5_PARTNER_CONTINUATION_OPERATION_NAMES:
         errors.append("preview gate operation set changed unexpectedly")
     preview_kernel_operations = tuple(gate.get("preview_kernel_operations", ()))
+    cupy_preview_operations = tuple(gate.get("cupy_preview_operations", ()))
     reference_only_operations = tuple(gate.get("reference_only_operations", ()))
     if preview_kernel_operations != V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS:
         errors.append("preview kernel operation set changed unexpectedly")
+    if cupy_preview_operations != V2_5_CUPY_PREVIEW_OPERATIONS:
+        errors.append("CuPy preview operation set changed unexpectedly")
     if reference_only_operations != V2_5_PARTNER_REFERENCE_ONLY_OPERATIONS:
         errors.append("reference-only operation set changed unexpectedly")
     if set(preview_kernel_operations).intersection(reference_only_operations):
         errors.append("preview and reference-only operation sets must not overlap")
-    if set(preview_kernel_operations).union(reference_only_operations) != set(V2_5_PARTNER_CONTINUATION_OPERATION_NAMES):
+    if set(cupy_preview_operations).intersection(reference_only_operations):
+        errors.append("CuPy preview and reference-only operation sets must not overlap")
+    if set(preview_kernel_operations).intersection(cupy_preview_operations):
+        errors.append("Triton and CuPy preview operation sets must not overlap")
+    if (
+        set(preview_kernel_operations).union(cupy_preview_operations, reference_only_operations)
+        != set(V2_5_PARTNER_CONTINUATION_OPERATION_NAMES)
+    ):
         errors.append("preview/reference operation partition must cover all operations")
     if gate.get("pod_validation_required") is not True:
         errors.append("v2.5 preview must require CUDA pod validation")
@@ -372,6 +413,7 @@ def validate_v2_5_partner_preview_gate(
         "status": "accept" if not errors else "reject",
         "preview_status": gate.get("status"),
         "preview_kernel_operations": preview_kernel_operations,
+        "cupy_preview_operations": cupy_preview_operations,
         "reference_only_operations": reference_only_operations,
         "pod_validation_required": gate.get("pod_validation_required"),
         "errors": tuple(errors),
@@ -398,17 +440,10 @@ def plan_v2_5_partner_continuation(
     _validate_partner(preferred)
     _validate_partner(fallback)
     available = tuple(_normalize_partner(partner) for partner in available_partners)
-    if preferred in available:
-        partner = preferred
-    elif fallback in available:
-        partner = fallback
-    elif V2_5_CONFORMANCE_PARTNER in available:
-        partner = V2_5_CONFORMANCE_PARTNER
-    else:
-        partner = V2_5_REFERENCE_PARTNER
+    partner = _select_partner_for_operation(operation, available, preferred, fallback)
     if partner == V2_5_REFERENCE_PARTNER:
         status = V2_5_STATUS_REFERENCE_CONTRACT
-    elif operation in V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS:
+    elif _partner_has_preview_for_operation(partner, operation):
         status = V2_5_STATUS_PREVIEW_NOT_PROMOTED
     else:
         status = V2_5_STATUS_PARTNER_DESCRIPTOR_ONLY
@@ -475,6 +510,21 @@ def execute_v2_5_partner_continuation_reference(
         if not (len(group_ids) == len(item_ids) == len(scores)):
             raise ValueError("group_ids, item_ids, and scores must have the same length")
         outputs = _grouped_argmin(group_ids, item_ids, scores, group_count)
+    elif operation == "hit_stream_grouped_ray_id_primitive_i64":
+        group_count = _required_int(inputs, "group_count")
+        row_count = _required_int(inputs, "row_count")
+        hit_event_count = _required_int(inputs, "hit_event_count")
+        overflow = bool(inputs.get("overflow"))
+        ray_ids = _required_i64_sequence(inputs, "ray_ids")
+        primitive_ids = _required_i64_sequence(inputs, "primitive_ids")
+        outputs = _hit_stream_grouped_ray_id_primitive_i64(
+            ray_ids,
+            primitive_ids,
+            group_count,
+            row_count,
+            hit_event_count,
+            overflow,
+        )
     else:  # pragma: no cover - guarded by _validate_operation_name
         raise ValueError(f"unsupported v2.5 partner continuation operation: {operation}")
 
@@ -562,6 +612,70 @@ def _grouped_argmin(
         "item_ids": out_items,
         "scores": out_scores,
         "missing_group_ids": missing,
+    }
+
+
+def _hit_stream_grouped_ray_id_primitive_i64(
+    ray_ids: Sequence[int],
+    primitive_ids: Sequence[int],
+    group_count: int,
+    row_count: int,
+    hit_event_count: int,
+    overflow: bool,
+) -> dict[str, list[int]]:
+    if group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    if row_count < 0:
+        raise ValueError("row_count must be non-negative")
+    if hit_event_count < row_count:
+        raise ValueError("hit_event_count cannot be smaller than row_count")
+    if len(ray_ids) < row_count or len(primitive_ids) < row_count:
+        raise ValueError("ray_ids and primitive_ids must contain at least row_count rows")
+    if overflow:
+        raise PartnerContinuationOverflowError(
+            "hit_stream_grouped_ray_id_primitive_i64 overflowed stored hit capacity; "
+            "failure_mode=fail_closed_overflow; partial_result_returned=False"
+        )
+
+    missing = -1
+    counts = [0] * group_count
+    primitive_sum = [0] * group_count
+    primitive_xor = [0] * group_count
+    primitive_min = [missing] * group_count
+    primitive_max = [missing] * group_count
+    first_row = [missing] * group_count
+    last_row = [missing] * group_count
+    first_primitive = [missing] * group_count
+    last_primitive = [missing] * group_count
+
+    for row_index in range(row_count):
+        group = int(ray_ids[row_index])
+        primitive = int(primitive_ids[row_index])
+        _validate_group_id(group, group_count)
+        if primitive < 0:
+            raise ValueError("primitive_ids must be non-negative")
+
+        counts[group] += 1
+        primitive_sum[group] += primitive
+        primitive_xor[group] ^= primitive
+        primitive_min[group] = primitive if primitive_min[group] == missing else min(primitive_min[group], primitive)
+        primitive_max[group] = primitive if primitive_max[group] == missing else max(primitive_max[group], primitive)
+        if first_row[group] == missing:
+            first_row[group] = row_index
+            first_primitive[group] = primitive
+        last_row[group] = row_index
+        last_primitive[group] = primitive
+
+    return {
+        "group_hit_counts": counts,
+        "group_primitive_id_sum": primitive_sum,
+        "group_primitive_id_xor": primitive_xor,
+        "group_primitive_id_min": primitive_min,
+        "group_primitive_id_max": primitive_max,
+        "group_first_hit_row_index": first_row,
+        "group_last_hit_row_index": last_row,
+        "group_first_primitive_id": first_primitive,
+        "group_last_primitive_id": last_primitive,
     }
 
 
@@ -671,6 +785,35 @@ def _validate_operation_name(name: str) -> None:
             raise ValueError(f"operation contains app-specific token `{token}`")
 
 
+def _partner_has_preview_for_operation(partner: str, operation: str) -> bool:
+    if partner == V2_5_PRIMARY_PARTNER:
+        return operation in V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS
+    if partner == V2_5_FALLBACK_PARTNER:
+        return operation in V2_5_NUMBA_PREVIEW_OPERATIONS
+    if partner == V2_5_CONFORMANCE_PARTNER:
+        return operation in V2_5_CUPY_PREVIEW_OPERATIONS
+    return False
+
+
+def _select_partner_for_operation(
+    operation: str,
+    available: tuple[str, ...],
+    preferred: str,
+    fallback: str,
+) -> str:
+    ordered = tuple(
+        partner
+        for partner in (preferred, fallback, V2_5_CONFORMANCE_PARTNER)
+        if partner in available
+    )
+    for partner in ordered:
+        if _partner_has_preview_for_operation(partner, operation):
+            return partner
+    if V2_5_CONFORMANCE_PARTNER in ordered:
+        return V2_5_CONFORMANCE_PARTNER
+    return V2_5_REFERENCE_PARTNER
+
+
 def _operation_by_name(name: str) -> RtdlPartnerContinuationOperation:
     for operation in V2_5_PARTNER_CONTINUATION_OPERATIONS:
         if operation.name == name:
@@ -679,7 +822,13 @@ def _operation_by_name(name: str) -> RtdlPartnerContinuationOperation:
 
 
 def _normalize_partner(partner: str) -> str:
-    return str(partner).strip().lower().replace("-", "_")
+    normalized = str(partner).strip().lower().replace("-", "_")
+    aliases = {
+        "python": V2_5_REFERENCE_PARTNER,
+        "reference": V2_5_REFERENCE_PARTNER,
+        "cupy": V2_5_CONFORMANCE_PARTNER,
+    }
+    return aliases.get(normalized, normalized)
 
 
 def _validate_partner(partner: str) -> None:

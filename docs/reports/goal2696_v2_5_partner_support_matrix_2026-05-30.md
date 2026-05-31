@@ -34,9 +34,9 @@ but are intentionally not added to `rtdsl.__all__`.
 | Partner | Matrix status |
 | --- | --- |
 | `python_reference` | Universal correctness reference for every continuation operation. |
-| `triton` | Preview-not-promoted for every operation in `V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS`; requires CUDA and `sm_70+`. |
+| `triton` | Preview-not-promoted for every operation in `V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS`; unsupported cells fail closed; preview rows require CUDA and `sm_70+`. |
 | `numba` | Preview-not-promoted only for `segmented_count_i64` and `segmented_sum_f64`; all other operation cells fail closed. |
-| `cupy_conformance` | Descriptor/conformance cells for all operations; no generic v2.5 CuPy kernel promotion is claimed. |
+| `cupy_conformance` | Descriptor/conformance cells for most operations; Goal2774 adds a narrow preview-not-promoted cell for `hit_stream_grouped_ray_id_primitive_i64`. |
 
 Every cell records:
 
@@ -115,9 +115,9 @@ OK
 The test covers:
 
 - full `(allowed partner x continuation operation)` coverage;
-- reference and Triton cells are universal but claim-bounded;
+- reference cells are universal; Triton preview cells are operation-specific and claim-bounded;
 - Numba preview is intentionally narrow;
-- CuPy conformance cells are descriptor-only, not promoted;
+- CuPy conformance cells are descriptor-only except the explicit Goal2774 grouped hit-stream preview, not promoted;
 - support-matrix symbols are experimental and absent from `rtdsl.__all__`.
 
 ## Boundary

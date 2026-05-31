@@ -36,6 +36,7 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
                 "compact_mask_i64",
                 "bounded_collect_finalize_i64",
                 "grouped_argmin_f64",
+                "hit_stream_grouped_ray_id_primitive_i64",
             },
         )
         serialized = repr(rt.v2_5_partner_continuation_contract()).lower()
@@ -55,6 +56,11 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
             "grouped_argmin_f64",
         ):
             self.assertIn(rt.V2_5_GROUP_ID_VALIDATION_CONTRACT, operations[operation_name]["behavior"])
+        hit_stream = operations["hit_stream_grouped_ray_id_primitive_i64"]
+        self.assertEqual(hit_stream["category"], "hit_stream_grouped_reduction")
+        self.assertIn("ray_id", hit_stream["behavior"])
+        self.assertIn("row-order", hit_stream["behavior"])
+        self.assertIn("-1 sentinels", hit_stream["behavior"])
 
     def test_planner_prefers_triton_then_numba_then_reference(self):
         triton = rt.plan_v2_5_partner_continuation(
@@ -84,6 +90,34 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
         )
         self.assertEqual(reference.partner, "python_reference")
         self.assertEqual(reference.status, "reference_contract")
+
+        cupy_hit_stream = rt.plan_v2_5_partner_continuation(
+            "hit_stream_grouped_ray_id_primitive_i64",
+            available_partners=("cupy",),
+        )
+        self.assertEqual(cupy_hit_stream.partner, "cupy_conformance")
+        self.assertEqual(cupy_hit_stream.status, "preview_not_promoted")
+
+        cupy_hit_stream_over_triton_descriptor = rt.plan_v2_5_partner_continuation(
+            "hit_stream_grouped_ray_id_primitive_i64",
+            available_partners=("triton", "cupy"),
+        )
+        self.assertEqual(cupy_hit_stream_over_triton_descriptor.partner, "cupy_conformance")
+        self.assertEqual(cupy_hit_stream_over_triton_descriptor.status, "preview_not_promoted")
+
+        unsupported_triton = rt.plan_v2_5_partner_continuation(
+            "hit_stream_grouped_ray_id_primitive_i64",
+            available_partners=("triton",),
+        )
+        self.assertEqual(unsupported_triton.partner, "python_reference")
+        self.assertEqual(unsupported_triton.status, "reference_contract")
+
+        unsupported_numba = rt.plan_v2_5_partner_continuation(
+            "compact_mask_i64",
+            available_partners=("numba",),
+        )
+        self.assertEqual(unsupported_numba.partner, "python_reference")
+        self.assertEqual(unsupported_numba.status, "reference_contract")
 
     def test_spec_rejects_rt_replacement_rawkernel_and_promotion(self):
         with self.assertRaisesRegex(ValueError, "must not replace"):
@@ -211,6 +245,45 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
                     "item_ids": [20, 21, 22],
                     "group_count": 3,
                     "k": 2,
+                },
+            )
+
+    def test_reference_hit_stream_grouped_ray_id_primitive_reduction(self):
+        result = rt.execute_v2_5_partner_continuation_reference(
+            "hit_stream_grouped_ray_id_primitive_i64",
+            {
+                "ray_ids": [0, 2, 0, 2],
+                "primitive_ids": [5, 7, 3, 7],
+                "row_count": 4,
+                "hit_event_count": 4,
+                "overflow": False,
+                "group_count": 3,
+            },
+        )
+        outputs = result["outputs"]
+        self.assertEqual(outputs["group_hit_counts"], [2, 0, 2])
+        self.assertEqual(outputs["group_primitive_id_sum"], [8, 0, 14])
+        self.assertEqual(outputs["group_primitive_id_xor"], [6, 0, 0])
+        self.assertEqual(outputs["group_primitive_id_min"], [3, -1, 7])
+        self.assertEqual(outputs["group_primitive_id_max"], [5, -1, 7])
+        self.assertEqual(outputs["group_first_hit_row_index"], [0, -1, 1])
+        self.assertEqual(outputs["group_last_hit_row_index"], [2, -1, 3])
+        self.assertEqual(outputs["group_first_primitive_id"], [5, -1, 7])
+        self.assertEqual(outputs["group_last_primitive_id"], [3, -1, 7])
+
+        with self.assertRaisesRegex(
+            rt.PartnerContinuationOverflowError,
+            "failure_mode=fail_closed_overflow.*partial_result_returned=False",
+        ):
+            rt.execute_v2_5_partner_continuation_reference(
+                "hit_stream_grouped_ray_id_primitive_i64",
+                {
+                    "ray_ids": [0],
+                    "primitive_ids": [1],
+                    "row_count": 1,
+                    "hit_event_count": 2,
+                    "overflow": True,
+                    "group_count": 1,
                 },
             )
 

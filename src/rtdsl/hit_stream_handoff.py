@@ -1277,6 +1277,12 @@ def plan_v2_5_hit_stream_partner_transfer(
                 status = "stream_ordering_proof_required"
                 carrier_protocol = "cuda_array_interface_descriptor"
                 runtime_action = "requires_stream_ordering_proof_before_device_consumer"
+            elif support["status"] == "preview_not_promoted":
+                status = "cuda_descriptor_preview"
+                carrier_protocol = "cuda_array_interface_descriptor"
+                executable_preview_available = True
+                execution_allowed_without_copy = True
+                runtime_action = "cupy_preview_requires_explicit_runtime_validation"
             else:
                 status = "descriptor_only"
                 carrier_protocol = "cuda_array_interface_descriptor"

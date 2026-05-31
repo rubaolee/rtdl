@@ -22,8 +22,10 @@ class Goal2680V25TritonBoundedCollectPreviewTest(unittest.TestCase):
         self.assertFalse(descriptor["pytorch_partner_required"])
         self.assertFalse(descriptor["promoted_performance_path"])
 
-    def test_all_partner_operations_now_have_triton_preview_kernels(self):
+    def test_bounded_collect_has_triton_preview_while_hit_stream_preview_is_cupy_scoped(self):
         self.assertIn("bounded_collect_finalize_i64", rt.V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS)
+        self.assertNotIn("hit_stream_grouped_ray_id_primitive_i64", rt.V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS)
+        self.assertIn("hit_stream_grouped_ray_id_primitive_i64", rt.V2_5_CUPY_PREVIEW_OPERATIONS)
         self.assertEqual(rt.V2_5_PARTNER_REFERENCE_ONLY_OPERATIONS, ())
 
     def test_source_uses_triton_count_prefix_sum_scatter_and_no_rawkernel(self):

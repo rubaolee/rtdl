@@ -19,8 +19,9 @@ class Goal2696V25PartnerSupportMatrixTest(unittest.TestCase):
         self.assertFalse(matrix["rt_traversal_replacement_allowed"])
         self.assertFalse(matrix["public_speedup_claim_authorized"])
         self.assertFalse(matrix["true_zero_copy_claim_authorized"])
+        self.assertEqual(matrix["cupy_preview_operations"], rt.V2_5_CUPY_PREVIEW_OPERATIONS)
 
-    def test_reference_and_triton_cells_are_universal_but_claim_bounded(self) -> None:
+    def test_reference_cells_are_universal_and_triton_cells_are_operation_specific(self) -> None:
         for operation in rt.V2_5_PARTNER_CONTINUATION_OPERATION_NAMES:
             reference = rt.plan_v2_5_partner_support(operation, "reference")
             triton = rt.plan_v2_5_partner_support(operation, "triton")
@@ -31,11 +32,16 @@ class Goal2696V25PartnerSupportMatrixTest(unittest.TestCase):
             self.assertFalse(reference["requires_neutral_buffer_seam"])
 
             self.assertEqual(triton["partner"], rt.V2_5_PRIMARY_PARTNER)
-            self.assertEqual(triton["status"], rt.V2_5_SUPPORT_STATUS_PREVIEW)
-            self.assertTrue(triton["supported"])
+            if operation in rt.V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS:
+                self.assertEqual(triton["status"], rt.V2_5_SUPPORT_STATUS_PREVIEW)
+                self.assertTrue(triton["supported"])
+                self.assertTrue(triton["requires_cuda"])
+                self.assertTrue(triton["requires_sm70_plus"])
+            else:
+                self.assertEqual(triton["status"], rt.V2_5_SUPPORT_STATUS_UNSUPPORTED)
+                self.assertFalse(triton["supported"])
+                self.assertIn("not implemented", triton["notes"])
             self.assertTrue(triton["requires_neutral_buffer_seam"])
-            self.assertTrue(triton["requires_cuda"])
-            self.assertTrue(triton["requires_sm70_plus"])
             self.assertFalse(triton["promoted_performance_path"])
             self.assertFalse(triton["public_speedup_claim_authorized"])
             self.assertFalse(triton["true_zero_copy_claim_authorized"])
@@ -52,12 +58,16 @@ class Goal2696V25PartnerSupportMatrixTest(unittest.TestCase):
                 self.assertFalse(numba["supported"])
                 self.assertIn("not implemented", numba["notes"])
 
-    def test_cupy_conformance_cells_are_descriptor_only_not_promoted(self) -> None:
+    def test_cupy_conformance_cells_are_descriptor_only_except_explicit_hit_stream_preview(self) -> None:
         for operation in rt.V2_5_PARTNER_CONTINUATION_OPERATION_NAMES:
             cupy = rt.plan_v2_5_partner_support(operation, "cupy")
 
             self.assertEqual(cupy["partner"], rt.V2_5_CONFORMANCE_PARTNER)
-            self.assertEqual(cupy["status"], rt.V2_5_SUPPORT_STATUS_DESCRIPTOR)
+            if operation in rt.V2_5_CUPY_PREVIEW_OPERATIONS:
+                self.assertEqual(cupy["status"], rt.V2_5_SUPPORT_STATUS_PREVIEW)
+                self.assertIn("Goals2771-2772", cupy["notes"])
+            else:
+                self.assertEqual(cupy["status"], rt.V2_5_SUPPORT_STATUS_DESCRIPTOR)
             self.assertTrue(cupy["supported"])
             self.assertTrue(cupy["requires_neutral_buffer_seam"])
             self.assertTrue(cupy["requires_cuda"])

@@ -6,7 +6,9 @@ from typing import Any
 from .neutral_buffer_seam import V2_5_NEUTRAL_BUFFER_SEAM_VERSION
 from .partner_continuation_protocol import V2_5_ALLOWED_PARTNERS
 from .partner_continuation_protocol import V2_5_CONFORMANCE_PARTNER
+from .partner_continuation_protocol import V2_5_CUPY_PREVIEW_OPERATIONS
 from .partner_continuation_protocol import V2_5_FALLBACK_PARTNER
+from .partner_continuation_protocol import V2_5_NUMBA_PREVIEW_OPERATIONS
 from .partner_continuation_protocol import V2_5_PARTNER_CONTINUATION_OPERATION_NAMES
 from .partner_continuation_protocol import V2_5_PARTNER_CONTINUATION_VERSION
 from .partner_continuation_protocol import V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS
@@ -25,10 +27,6 @@ V2_5_SUPPORT_STATUSES = (
     V2_5_SUPPORT_STATUS_PREVIEW,
     V2_5_SUPPORT_STATUS_DESCRIPTOR,
     V2_5_SUPPORT_STATUS_UNSUPPORTED,
-)
-V2_5_NUMBA_PREVIEW_OPERATIONS = (
-    "segmented_count_i64",
-    "segmented_sum_f64",
 )
 V2_5_PARTNER_SUPPORT_CLAIM_BOUNDARY = (
     "v2.5 partner support rows declare conformance envelope only. They do not "
@@ -74,6 +72,9 @@ class V25PartnerSupportCell:
         if self.partner == V2_5_FALLBACK_PARTNER and self.status == V2_5_SUPPORT_STATUS_PREVIEW:
             if self.operation not in V2_5_NUMBA_PREVIEW_OPERATIONS:
                 raise ValueError("Numba preview row requires a Numba preview operation")
+        if self.partner == V2_5_CONFORMANCE_PARTNER and self.status == V2_5_SUPPORT_STATUS_PREVIEW:
+            if self.operation not in V2_5_CUPY_PREVIEW_OPERATIONS:
+                raise ValueError("CuPy preview row requires a CuPy preview operation")
         if self.status == V2_5_SUPPORT_STATUS_UNSUPPORTED and not self.notes:
             raise ValueError("unsupported support cells require a fail-closed reason")
 
@@ -117,18 +118,30 @@ def v2_5_partner_support_cells() -> tuple[V25PartnerSupportCell, ...]:
                 notes="universal correctness reference",
             )
         )
-        cells.append(
-            V25PartnerSupportCell(
-                operation=operation,
-                partner=V2_5_PRIMARY_PARTNER,
-                status=V2_5_SUPPORT_STATUS_PREVIEW,
-                execution_backend="cuda_triton_preview_sm70_plus",
-                requires_neutral_buffer_seam=True,
-                requires_cuda=True,
-                requires_sm70_plus=True,
-                notes="preview kernel exists; benchmark promotion still requires pod evidence",
+        if operation in V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS:
+            cells.append(
+                V25PartnerSupportCell(
+                    operation=operation,
+                    partner=V2_5_PRIMARY_PARTNER,
+                    status=V2_5_SUPPORT_STATUS_PREVIEW,
+                    execution_backend="cuda_triton_preview_sm70_plus",
+                    requires_neutral_buffer_seam=True,
+                    requires_cuda=True,
+                    requires_sm70_plus=True,
+                    notes="preview kernel exists; benchmark promotion still requires pod evidence",
+                )
             )
-        )
+        else:
+            cells.append(
+                V25PartnerSupportCell(
+                    operation=operation,
+                    partner=V2_5_PRIMARY_PARTNER,
+                    status=V2_5_SUPPORT_STATUS_UNSUPPORTED,
+                    execution_backend="none",
+                    requires_neutral_buffer_seam=True,
+                    notes="Triton preview kernel is not implemented for this operation",
+                )
+            )
         if operation in V2_5_NUMBA_PREVIEW_OPERATIONS:
             cells.append(
                 V25PartnerSupportCell(
@@ -152,20 +165,36 @@ def v2_5_partner_support_cells() -> tuple[V25PartnerSupportCell, ...]:
                     notes="Numba fallback kernel is not implemented for this operation",
                 )
             )
-        cells.append(
-            V25PartnerSupportCell(
-                operation=operation,
-                partner=V2_5_CONFORMANCE_PARTNER,
-                status=V2_5_SUPPORT_STATUS_DESCRIPTOR,
-                execution_backend="cuda_cupy_conformance_descriptor",
-                requires_neutral_buffer_seam=True,
-                requires_cuda=True,
-                notes=(
-                    "CuPy remains an app-chosen conformance/interoperability partner; "
-                    "generic v2.5 kernels are not promoted here"
-                ),
+        if operation in V2_5_CUPY_PREVIEW_OPERATIONS:
+            cells.append(
+                V25PartnerSupportCell(
+                    operation=operation,
+                    partner=V2_5_CONFORMANCE_PARTNER,
+                    status=V2_5_SUPPORT_STATUS_PREVIEW,
+                    execution_backend="cuda_cupy_rawkernel_preview_neutral_event_stream",
+                    requires_neutral_buffer_seam=True,
+                    requires_cuda=True,
+                    notes=(
+                        "CuPy preview exists only for the event-ordered grouped hit-stream "
+                        "consumer proven in Goals2771-2772; it remains unpromoted"
+                    ),
+                )
             )
-        )
+        else:
+            cells.append(
+                V25PartnerSupportCell(
+                    operation=operation,
+                    partner=V2_5_CONFORMANCE_PARTNER,
+                    status=V2_5_SUPPORT_STATUS_DESCRIPTOR,
+                    execution_backend="cuda_cupy_conformance_descriptor",
+                    requires_neutral_buffer_seam=True,
+                    requires_cuda=True,
+                    notes=(
+                        "CuPy remains an app-chosen conformance/interoperability partner; "
+                        "generic v2.5 kernels are not promoted here"
+                    ),
+                )
+            )
     return tuple(cells)
 
 
@@ -182,6 +211,7 @@ def v2_5_partner_support_matrix() -> dict[str, Any]:
         "cells": tuple(cell.to_metadata() for cell in cells),
         "triton_preview_operations": V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS,
         "numba_preview_operations": V2_5_NUMBA_PREVIEW_OPERATIONS,
+        "cupy_preview_operations": V2_5_CUPY_PREVIEW_OPERATIONS,
         "partner_choice_policy": "explicit_per_boundary_app_choice",
         "no_partner_forced": True,
         "unsupported_cells_fail_closed": True,
@@ -236,14 +266,23 @@ def validate_v2_5_partner_support_matrix(matrix: dict[str, Any] | None = None) -
         if ref is None or ref.get("status") != V2_5_SUPPORT_STATUS_REFERENCE:
             errors.append(f"{operation} lacks a reference contract cell")
         triton = _cell(cells, operation, V2_5_PRIMARY_PARTNER)
-        if triton is None or triton.get("status") != V2_5_SUPPORT_STATUS_PREVIEW:
-            errors.append(f"{operation} lacks a Triton preview cell")
+        if operation in V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS:
+            if triton is None or triton.get("status") != V2_5_SUPPORT_STATUS_PREVIEW:
+                errors.append(f"{operation} lacks a Triton preview cell")
+        elif triton is None or triton.get("status") != V2_5_SUPPORT_STATUS_UNSUPPORTED:
+            errors.append(f"{operation} must fail closed for Triton")
         numba = _cell(cells, operation, V2_5_FALLBACK_PARTNER)
         if operation in V2_5_NUMBA_PREVIEW_OPERATIONS:
             if numba is None or numba.get("status") != V2_5_SUPPORT_STATUS_PREVIEW:
                 errors.append(f"{operation} lacks expected Numba preview cell")
         elif numba is None or numba.get("status") != V2_5_SUPPORT_STATUS_UNSUPPORTED:
             errors.append(f"{operation} must fail closed for Numba")
+        cupy = _cell(cells, operation, V2_5_CONFORMANCE_PARTNER)
+        if operation in V2_5_CUPY_PREVIEW_OPERATIONS:
+            if cupy is None or cupy.get("status") != V2_5_SUPPORT_STATUS_PREVIEW:
+                errors.append(f"{operation} lacks expected CuPy preview cell")
+        elif cupy is None or cupy.get("status") != V2_5_SUPPORT_STATUS_DESCRIPTOR:
+            errors.append(f"{operation} must remain descriptor-only for CuPy")
     return {
         "status": "accept" if not errors else "reject",
         "matrix_version": matrix.get("matrix_version"),
