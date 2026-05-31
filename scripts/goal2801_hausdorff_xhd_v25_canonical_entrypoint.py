@@ -8,6 +8,7 @@ import sys
 import time
 from dataclasses import asdict
 from pathlib import Path
+from statistics import median
 from typing import Any
 
 
@@ -23,6 +24,7 @@ from examples.v2_0.research_benchmarks.hausdorff_xhd import (  # noqa: E402
 GOAL2801_ENTRYPOINT_VERSION = "rtdl.goal2801.hausdorff_xhd_v2_5_canonical_entrypoint.v1"
 DEFAULT_RTDL_METHOD = "rtdl_rt_grouped_adaptive_nearest_witness"
 DEFAULT_RTDL_WARMUP = 1
+DEFAULT_REPEAT = 3
 DEFAULT_ADAPTIVE_GROWTH_FACTOR = 8.0
 DEFAULT_ADAPTIVE_TARGET_POINTS_PER_GROUP = 512
 CLAIM_BOUNDARY = {
@@ -55,7 +57,15 @@ def _run_rtdl_method(a_points, b_points, *, rtdl_method: str):
         )
     if rtdl_method == "rtdl_rt_grouped_reduced_nearest_witness":
         return hd.hausdorff_distance_2d_rt_grouped_reduced_nearest_witness(a_points, b_points)
-    raise ValueError("rtdl_method must be rtdl_rt_grouped_adaptive_nearest_witness or rtdl_rt_grouped_reduced_nearest_witness")
+    raise ValueError(
+        "rtdl_method must be rtdl_rt_grouped_adaptive_nearest_witness or "
+        "rtdl_rt_grouped_reduced_nearest_witness"
+    )
+
+
+def _median_by_elapsed(results):
+    ordered = sorted(results, key=lambda item: float(item.elapsed_sec))
+    return ordered[len(ordered) // 2]
 
 
 def run_goal2801_hausdorff_entrypoint(
@@ -68,19 +78,33 @@ def run_goal2801_hausdorff_entrypoint(
     offset_y: float = -0.06,
     rtdl_method: str = DEFAULT_RTDL_METHOD,
     rtdl_warmup: int = DEFAULT_RTDL_WARMUP,
+    repeat: int = DEFAULT_REPEAT,
     exact_tolerance: float = 1.0e-9,
 ) -> dict[str, Any]:
     started = time.perf_counter()
+    repeat_count = max(1, int(repeat))
     a_points = hd.make_demo_points(int(points_a), seed=int(seed_a))
     b_points = hd.make_demo_points(int(points_b), seed=int(seed_b), offset=(float(offset_x), float(offset_y)))
 
-    baseline_started = time.perf_counter()
-    baseline = hd.hausdorff_distance_2d(
+    baseline_warmup_started = time.perf_counter()
+    hd.hausdorff_distance_2d(
         a_points,
         b_points,
         method="cupy_grouped_grid_rawkernel",
         warmup=1,
     )
+    baseline_warmup_elapsed_sec = time.perf_counter() - baseline_warmup_started
+    baseline_started = time.perf_counter()
+    baseline_runs = tuple(
+        hd.hausdorff_distance_2d(
+            a_points,
+            b_points,
+            method="cupy_grouped_grid_rawkernel",
+            warmup=0,
+        )
+        for _ in range(repeat_count)
+    )
+    baseline = _median_by_elapsed(baseline_runs)
     baseline_elapsed_sec = time.perf_counter() - baseline_started
 
     rtdl_warmup_elapsed_sec = 0.0
@@ -90,7 +114,8 @@ def run_goal2801_hausdorff_entrypoint(
         rtdl_warmup_elapsed_sec += time.perf_counter() - warmup_started
 
     rtdl_started = time.perf_counter()
-    rtdl_result = _run_rtdl_method(a_points, b_points, rtdl_method=rtdl_method)
+    rtdl_runs = tuple(_run_rtdl_method(a_points, b_points, rtdl_method=rtdl_method) for _ in range(repeat_count))
+    rtdl_result = _median_by_elapsed(rtdl_runs)
     rtdl_elapsed_sec = time.perf_counter() - rtdl_started
 
     baseline_payload = asdict(baseline)
@@ -121,6 +146,7 @@ def run_goal2801_hausdorff_entrypoint(
             "offset_y": float(offset_y),
             "exact_tolerance": float(exact_tolerance),
             "rtdl_warmup": int(rtdl_warmup),
+            "repeat": repeat_count,
         },
         "baseline": {
             "method": "cupy_grouped_grid_rawkernel",
@@ -128,6 +154,9 @@ def run_goal2801_hausdorff_entrypoint(
             "uses_rt_cores": False,
             "exact_value": True,
             "elapsed_sec": float(baseline.elapsed_sec),
+            "elapsed_runs_sec": tuple(float(run.elapsed_sec) for run in baseline_runs),
+            "median_elapsed_sec": float(median(float(run.elapsed_sec) for run in baseline_runs)),
+            "warmup_elapsed_sec": baseline_warmup_elapsed_sec,
             "wrapper_elapsed_sec": baseline_elapsed_sec,
             "result": baseline_payload,
         },
@@ -144,6 +173,8 @@ def run_goal2801_hausdorff_entrypoint(
             if rtdl_method == "rtdl_rt_grouped_adaptive_nearest_witness"
             else None,
             "elapsed_sec": float(rtdl_result.elapsed_sec),
+            "elapsed_runs_sec": tuple(float(run.elapsed_sec) for run in rtdl_runs),
+            "median_elapsed_sec": float(median(float(run.elapsed_sec) for run in rtdl_runs)),
             "wrapper_elapsed_sec": rtdl_elapsed_sec,
             "result": rtdl_payload,
         },
@@ -174,6 +205,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--exact-tolerance", type=float, default=1.0e-9)
     parser.add_argument("--rtdl-warmup", type=int, default=DEFAULT_RTDL_WARMUP)
+    parser.add_argument("--repeat", type=int, default=DEFAULT_REPEAT)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
 
@@ -186,6 +218,7 @@ def main(argv: list[str] | None = None) -> int:
         offset_y=args.offset_y,
         rtdl_method=args.rtdl_method,
         rtdl_warmup=args.rtdl_warmup,
+        repeat=args.repeat,
         exact_tolerance=args.exact_tolerance,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
