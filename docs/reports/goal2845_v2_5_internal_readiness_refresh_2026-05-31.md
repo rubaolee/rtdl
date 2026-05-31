@@ -55,7 +55,16 @@ exact Goal2621-Goal2843 module band: Ran 694 tests in 16.854s, FAILED
 only failure: Goal2811 stale source-shape assertion
 ```
 
-The exact module-band rerun after committing this repair will be recorded before Goal2845 closes.
+Exact module-band rerun after committing this repair:
+
+```text
+commit: 6ebb0bce50efa30c262fdf526f3db055879072a3
+module_count: 144
+scope: tests.goal2621_* through tests.goal2845_*
+elapsed_sec: 12.593
+Ran 697 tests in 10.506s
+OK (skipped=1)
+```
 
 ## Boundary
 
