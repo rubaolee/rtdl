@@ -52,6 +52,17 @@ py -3 -m py_compile src/rtdsl/optix_runtime.py \
 clean
 ```
 
+Pod validation on `root@69.30.85.171:22167` after pulling commit `af74e334`:
+
+```text
+python3 -m unittest \
+  tests.goal2738_native_hit_stream_stream_ordering_boundary_test \
+  tests.goal2740_hit_stream_cross_partner_transfer_plan_test \
+  tests.goal2704_native_hit_stream_output_abi_contract_test \
+  tests.goal2708_hit_stream_cuda_array_torch_carrier_adapter_test
+21 tests OK
+```
+
 ## Boundary
 
 - No native ABI changed.
