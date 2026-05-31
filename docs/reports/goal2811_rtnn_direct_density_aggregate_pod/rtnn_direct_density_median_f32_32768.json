@@ -1,0 +1,298 @@
+{
+  "app": "rtnn",
+  "benchmark_track": "tier_b_live_exact_fixed_radius_ranked_summary",
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "canonical_live_harness": true,
+    "native_engine_customization": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rtdl_beats_cupy_grid_claim_authorized": false,
+    "rtdl_beats_rtnn_claim_authorized": false,
+    "tier_b_same_contract_opponent": true,
+    "triton_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "distributions": [
+    "uniform",
+    "clustered",
+    "shell"
+  ],
+  "elapsed_sec": 2.7834131899289787,
+  "goal": "Goal2800",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "harness_version": "rtdl.goal2800.rtnn_v2_5_live_ranked_summary_harness.v4.aggregate_float32_median",
+  "k_max": 50,
+  "point_count": 32768,
+  "query_batch_size": 32768,
+  "radius": 0.02,
+  "repeat": 3,
+  "row_count": 3,
+  "rows": [
+    {
+      "candidate_count_delta": 0,
+      "candidate_count_matches_cupy_grid": true,
+      "candidate_count_tolerance": 2,
+      "candidate_count_within_tolerance": true,
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "canonical_live_harness": true,
+        "native_engine_customization": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rtdl_beats_cupy_grid_claim_authorized": false,
+        "rtdl_beats_rtnn_claim_authorized": false,
+        "tier_b_same_contract_opponent": true,
+        "triton_speedup_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "contract": {
+        "bounded_k": 50,
+        "exact": false,
+        "family": "fixed_radius_neighbors_3d",
+        "mode": "ranked-summary-aggregate-float32",
+        "precision": "float32",
+        "same_contract_opponent": "cupy_grid_exact_ranked_summary_3d"
+      },
+      "cupy_grid_bounded_neighbor_count": 68178,
+      "cupy_grid_elapsed_runs_sec": [
+        0.0001066101249307394,
+        0.00010209297761321068,
+        6.859702989459038e-05
+      ],
+      "cupy_grid_elapsed_sec": 0.00010209297761321068,
+      "cupy_grid_elapsed_statistic": "median",
+      "cupy_grid_ok": true,
+      "cupy_grid_over_rtdl_elapsed_ratio": 0.18014104446524132,
+      "cupy_grid_summary": {
+        "bounded_neighbor_count": 68178,
+        "kth_id_checksum": 536120173,
+        "nearest_id_checksum": 536854528,
+        "row_count": 32768,
+        "sum_distance": 530.9112822508905
+      },
+      "distribution": "uniform",
+      "elapsed_sec": 2.121064957929775,
+      "generated": {
+        "dimension": 3,
+        "format": "rtnn_csv_xyz",
+        "path": "/tmp/goal2800_rtnn_5r2hzp7j/uniform_32768.csv",
+        "point_count": 32768,
+        "seed": 2800
+      },
+      "query_count": 32768,
+      "ranked_aggregate_matches_cupy_grid": true,
+      "rtdl_elapsed_runs_sec": [
+        0.0008483740966767073,
+        0.0005667391233146191,
+        0.00047144899144768715
+      ],
+      "rtdl_elapsed_sec": 0.0005667391233146191,
+      "rtdl_elapsed_statistic": "median",
+      "rtdl_input_pack_sec": 0.015404937788844109,
+      "rtdl_ok": true,
+      "rtdl_phase_summary": {
+        "batch_count": 1,
+        "candidate_count_pass_sec": 8.6611e-05,
+        "modes": [
+          "prepared_uniform_cell_ranked_summary_aggregate_f32_direct"
+        ],
+        "raw_candidate_count": 68178,
+        "row_download_sec": 8.617e-06,
+        "upload_sec": 0.000218847
+      },
+      "rtdl_prepare_sec": 1.369706368073821,
+      "rtdl_ranked_aggregate_summary": {
+        "bounded_neighbor_count": 68178,
+        "kth_id_checksum": 536120173,
+        "nearest_id_checksum": 536854528,
+        "row_count": 32768,
+        "sum_distance": 530.9112821479794
+      },
+      "rtdl_raw_candidate_count": 68178,
+      "rtdl_row_count": 32768,
+      "search_count": 32768,
+      "status": "pass"
+    },
+    {
+      "candidate_count_delta": 0,
+      "candidate_count_matches_cupy_grid": true,
+      "candidate_count_tolerance": 2,
+      "candidate_count_within_tolerance": true,
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "canonical_live_harness": true,
+        "native_engine_customization": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rtdl_beats_cupy_grid_claim_authorized": false,
+        "rtdl_beats_rtnn_claim_authorized": false,
+        "tier_b_same_contract_opponent": true,
+        "triton_speedup_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "contract": {
+        "bounded_k": 50,
+        "exact": false,
+        "family": "fixed_radius_neighbors_3d",
+        "mode": "ranked-summary-aggregate-float32",
+        "precision": "float32",
+        "same_contract_opponent": "cupy_grid_exact_ranked_summary_3d"
+      },
+      "cupy_grid_bounded_neighbor_count": 1287932,
+      "cupy_grid_elapsed_runs_sec": [
+        0.011977080954238772,
+        0.01191613799892366,
+        0.011946430895477533
+      ],
+      "cupy_grid_elapsed_sec": 0.011946430895477533,
+      "cupy_grid_elapsed_statistic": "median",
+      "cupy_grid_ok": true,
+      "cupy_grid_over_rtdl_elapsed_ratio": 0.737769553103251,
+      "cupy_grid_summary": {
+        "bounded_neighbor_count": 1287932,
+        "kth_id_checksum": 536303594,
+        "nearest_id_checksum": 536854528,
+        "row_count": 32768,
+        "sum_distance": 16023.810639339034
+      },
+      "distribution": "clustered",
+      "elapsed_sec": 0.35056639509275556,
+      "generated": {
+        "cluster_count": 8,
+        "cluster_stddev": 0.035,
+        "dimension": 3,
+        "distribution": "clustered",
+        "format": "rtnn_csv_xyz",
+        "path": "/tmp/goal2800_rtnn_5r2hzp7j/clustered_32768.csv",
+        "point_count": 32768,
+        "seed": 2801
+      },
+      "query_count": 32768,
+      "ranked_aggregate_matches_cupy_grid": true,
+      "rtdl_elapsed_runs_sec": [
+        0.01635749009437859,
+        0.01619263202883303,
+        0.016106750117614865
+      ],
+      "rtdl_elapsed_sec": 0.01619263202883303,
+      "rtdl_elapsed_statistic": "median",
+      "rtdl_input_pack_sec": 0.015985139878466725,
+      "rtdl_ok": true,
+      "rtdl_phase_summary": {
+        "batch_count": 1,
+        "candidate_count_pass_sec": 0.015733431,
+        "modes": [
+          "prepared_uniform_cell_ranked_summary_aggregate_f32"
+        ],
+        "raw_candidate_count": 1287932,
+        "row_download_sec": 1.1231e-05,
+        "upload_sec": 0.000150067
+      },
+      "rtdl_prepare_sec": 0.0033944810274988413,
+      "rtdl_ranked_aggregate_summary": {
+        "bounded_neighbor_count": 1287932,
+        "kth_id_checksum": 536303594,
+        "nearest_id_checksum": 536854528,
+        "row_count": 32768,
+        "sum_distance": 16023.81063813626
+      },
+      "rtdl_raw_candidate_count": 1287932,
+      "rtdl_row_count": 32768,
+      "search_count": 32768,
+      "status": "pass"
+    },
+    {
+      "candidate_count_delta": 0,
+      "candidate_count_matches_cupy_grid": true,
+      "candidate_count_tolerance": 2,
+      "candidate_count_within_tolerance": true,
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "canonical_live_harness": true,
+        "native_engine_customization": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rtdl_beats_cupy_grid_claim_authorized": false,
+        "rtdl_beats_rtnn_claim_authorized": false,
+        "tier_b_same_contract_opponent": true,
+        "triton_speedup_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "contract": {
+        "bounded_k": 50,
+        "exact": false,
+        "family": "fixed_radius_neighbors_3d",
+        "mode": "ranked-summary-aggregate-float32",
+        "precision": "float32",
+        "same_contract_opponent": "cupy_grid_exact_ranked_summary_3d"
+      },
+      "cupy_grid_bounded_neighbor_count": 307566,
+      "cupy_grid_elapsed_runs_sec": [
+        0.0002855330239981413,
+        0.0002615849953144789,
+        0.0002624909393489361
+      ],
+      "cupy_grid_elapsed_sec": 0.0002624909393489361,
+      "cupy_grid_elapsed_statistic": "median",
+      "cupy_grid_ok": true,
+      "cupy_grid_over_rtdl_elapsed_ratio": 0.477140921185558,
+      "cupy_grid_summary": {
+        "bounded_neighbor_count": 307566,
+        "kth_id_checksum": 538505264,
+        "nearest_id_checksum": 536854528,
+        "row_count": 32768,
+        "sum_distance": 4108.110285707051
+      },
+      "distribution": "shell",
+      "elapsed_sec": 0.22094386187382042,
+      "generated": {
+        "cluster_count": null,
+        "cluster_stddev": null,
+        "dimension": 3,
+        "distribution": "shell",
+        "format": "rtnn_csv_xyz",
+        "path": "/tmp/goal2800_rtnn_5r2hzp7j/shell_32768.csv",
+        "point_count": 32768,
+        "seed": 2802
+      },
+      "query_count": 32768,
+      "ranked_aggregate_matches_cupy_grid": true,
+      "rtdl_elapsed_runs_sec": [
+        0.0006342411506921053,
+        0.0005501329433172941,
+        0.0005423568654805422
+      ],
+      "rtdl_elapsed_sec": 0.0005501329433172941,
+      "rtdl_elapsed_statistic": "median",
+      "rtdl_input_pack_sec": 0.01632728916592896,
+      "rtdl_ok": true,
+      "rtdl_phase_summary": {
+        "batch_count": 1,
+        "candidate_count_pass_sec": 0.000364574,
+        "modes": [
+          "prepared_uniform_cell_ranked_summary_aggregate_f32_direct"
+        ],
+        "raw_candidate_count": 307566,
+        "row_download_sec": 8.265e-06,
+        "upload_sec": 0.000127279
+      },
+      "rtdl_prepare_sec": 0.0019257920794188976,
+      "rtdl_ranked_aggregate_summary": {
+        "bounded_neighbor_count": 307566,
+        "kth_id_checksum": 538505264,
+        "nearest_id_checksum": 536854528,
+        "row_count": 32768,
+        "sum_distance": 4108.110285904608
+      },
+      "rtdl_raw_candidate_count": 307566,
+      "rtdl_row_count": 32768,
+      "search_count": 32768,
+      "status": "pass"
+    }
+  ],
+  "run_cupy_grid": true,
+  "source_commit": "4de076381c6012ee1d9e62e14a8d8d44399109ba",
+  "source_dirty": [],
+  "status": "pass"
+}
