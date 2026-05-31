@@ -20,7 +20,7 @@ Codex implementation and validation:
 - added per-app `measured_negative_preview_guidance_count`
 - added plan-level `partner_selection_guidance_integrated: True`
 - added plan-level and per-app `auto_select_preview_partner_allowed: False`
-- RTNN now records Goal2780 guidance for `grouped_topk_f64` /
+- RTNN now records Goal2784 guidance for `grouped_topk_f64` /
   `dense_exact_topk_candidate_ranking`
 - Barnes-Hut now records Goal2781 guidance for `grouped_vector_sum_f64x2` /
   `dense_grouped_vector_sum_2d`

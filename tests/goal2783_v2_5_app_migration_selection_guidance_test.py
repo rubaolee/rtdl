@@ -26,7 +26,7 @@ class Goal2783V25AppMigrationSelectionGuidanceTest(unittest.TestCase):
         self.assertFalse(plan["auto_select_preview_partner_allowed"])
         self.assertIn("not authorization to auto-select Triton", plan["claim_boundary"])
 
-    def test_rtnn_dense_topk_records_goal2780_negative_guidance(self) -> None:
+    def test_rtnn_dense_topk_records_goal2784_negative_guidance(self) -> None:
         apps = {app["app_id"]: app for app in rt.v2_5_triton_benchmark_app_migration_plan()["apps"]}
         rtnn = apps["rtnn"]
         guidance = rtnn["partner_selection_guidance"][0]
@@ -36,7 +36,7 @@ class Goal2783V25AppMigrationSelectionGuidanceTest(unittest.TestCase):
         self.assertFalse(rtnn["auto_select_preview_partner_allowed"])
         self.assertEqual(guidance["status"], "measured_negative_preview_guidance")
         self.assertEqual(guidance["matches"][0]["operation"], "grouped_topk_f64")
-        self.assertEqual(guidance["matches"][0]["evidence_goal"], "Goal2780")
+        self.assertEqual(guidance["matches"][0]["evidence_goal"], "Goal2784")
         self.assertFalse(guidance["auto_select_partner_allowed"])
         self.assertIn("Do not auto-select Triton", guidance["recommendation"])
 

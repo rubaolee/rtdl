@@ -12,6 +12,7 @@ from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE
 from .triton_partner_continuation import run_triton_partner_continuation
+from .triton_partner_continuation import run_triton_dense_point_topk_2d
 
 _UINT32_MAX = 2**32 - 1
 _CUPY_COLUMNAR_PREDICATE_BATCH_KERNELS = {}
@@ -1879,34 +1880,25 @@ def top_k_nearest_points_2d_partner_columns(
         cx = candidate_point_columns["x"].to(torch.float64)
         cy = candidate_point_columns["y"].to(torch.float64)
         candidate_ids_i64 = candidate_point_columns["ids"].to(torch.int64)
-        dx = qx.reshape(-1, 1) - cx.reshape(1, -1)
-        dy = qy.reshape(-1, 1) - cy.reshape(1, -1)
-        distance_sq = dx * dx + dy * dy
         if runtime["name"] == "triton":
-            group_ids = (
-                torch.arange(query_count, dtype=torch.int64, device=qx.device)
-                .reshape(-1, 1)
-                .expand(query_count, candidate_count)
-                .reshape(-1)
-            )
-            item_ids = candidate_ids_i64.reshape(1, -1).expand(query_count, candidate_count).reshape(-1)
-            topk_result = run_triton_partner_continuation(
-                "grouped_topk_f64",
-                {
-                    "group_ids": group_ids,
-                    "item_ids": item_ids,
-                    "scores": distance_sq.reshape(-1),
-                    "group_count": query_count,
-                    "k": k,
-                },
+            topk_result = run_triton_dense_point_topk_2d(
+                query_point_columns["ids"].to(torch.int64),
+                qx,
+                qy,
+                candidate_ids_i64,
+                cx,
+                cy,
+                k=k,
             )
             topk_outputs = topk_result["outputs"]
-            output_group_ids = topk_outputs["group_ids"]
-            query_ids = query_point_columns["ids"].to(torch.int64)[output_group_ids]
-            neighbor_ids = topk_outputs["item_ids"]
+            query_ids = topk_outputs["query_ids"]
+            neighbor_ids = topk_outputs["neighbor_ids"]
             distances = torch.sqrt(topk_outputs["scores"])
             neighbor_rank = topk_outputs["ranks"]
         else:
+            dx = qx.reshape(-1, 1) - cx.reshape(1, -1)
+            dy = qy.reshape(-1, 1) - cy.reshape(1, -1)
+            distance_sq = dx * dx + dy * dy
             candidate_id_order = torch.argsort(candidate_ids_i64)
             distance_sq_by_id = distance_sq[:, candidate_id_order]
             rank_order_by_id = torch.argsort(distance_sq_by_id, dim=1, stable=True)[:, :k]
@@ -1962,6 +1954,12 @@ def top_k_nearest_points_2d_partner_columns(
         "tie_break": "distance_then_candidate_id",
         "v2_5_partner_continuation_operation": (
             "grouped_topk_f64" if runtime["name"] == "triton" else None
+        ),
+        "v2_5_triton_adapter_kernel": (
+            topk_result["adapter_kernel"] if runtime["name"] == "triton" else None
+        ),
+        "v2_5_triton_score_materialization": (
+            topk_result["score_materialization"] if runtime["name"] == "triton" else None
         ),
         "v2_5_triton_preview_kernel_used": runtime["name"] == "triton",
         "v2_5_triton_preview_kernel_status": (

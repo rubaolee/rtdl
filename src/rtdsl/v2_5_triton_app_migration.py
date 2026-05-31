@@ -141,13 +141,13 @@ V2_5_TRITON_BENCHMARK_APP_PLANS: tuple[V25TritonBenchmarkAppPlan, ...] = (
         promoted_benchmark=True,
         current_hot_path_partner="legacy_cupy_for_topk_or_candidate_continuations",
         v2_5_required_operations=("grouped_argmin_f64", "grouped_topk_f64", "bounded_collect_finalize_i64"),
-        v2_5_status="covered_but_dense_topk_has_goal2780_negative_triton_selection_guidance",
+        v2_5_status="covered_but_dense_topk_has_goal2784_negative_triton_selection_guidance",
         first_port_action=(
             "Use grouped argmin preview where top-1 is enough; for dense exact top-k, keep "
             "Torch/CuPy or another explicitly selected same-contract partner until a tiled "
             "top-k Triton design replaces the iterative preview."
         ),
-        notes="Approximate-neighbor policy remains app code; primitive behavior is grouped candidate ranking. Goal2780 blocks blind Triton auto-selection for dense exact top-k.",
+        notes="Approximate-neighbor policy remains app code; primitive behavior is grouped candidate ranking. Goal2784 blocks blind Triton auto-selection for dense exact top-k while recording the improved no-dense-score adapter.",
         measured_selection_shapes=(("grouped_topk_f64", "dense_exact_topk_candidate_ranking"),),
     ),
     V25TritonBenchmarkAppPlan(

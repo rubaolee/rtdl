@@ -50,10 +50,10 @@ class Goal2782V25PartnerSelectionGuidanceTest(unittest.TestCase):
 
         topk_row = topk["matches"][0]
         vector_row = vector["matches"][0]
-        self.assertEqual(topk_row["evidence_goal"], "Goal2780")
+        self.assertEqual(topk_row["evidence_goal"], "Goal2784")
         self.assertEqual(vector_row["evidence_goal"], "Goal2781")
-        self.assertGreaterEqual(topk_row["measured_partner_slower_min_ratio"], 47.0)
-        self.assertGreaterEqual(topk_row["measured_partner_slower_max_ratio"], 150.0)
+        self.assertGreaterEqual(topk_row["measured_partner_slower_min_ratio"], 4.0)
+        self.assertGreaterEqual(topk_row["measured_partner_slower_max_ratio"], 10.0)
         self.assertGreaterEqual(vector_row["measured_partner_slower_min_ratio"], 4.0)
         self.assertGreaterEqual(vector_row["measured_partner_slower_max_ratio"], 16.0)
         self.assertFalse(topk_row["rt_core_speedup_claim_authorized"])

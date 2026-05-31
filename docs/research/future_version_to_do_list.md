@@ -690,6 +690,13 @@ Future work:
   explicit selected partner for dense exact ranking or replace the iterative
   rank-by-rank Triton preview with a tiled/block-level top-k selection kernel
   before making RTNN-style performance claims.
+- Goal2784 replaces that adapter route with a direct dense point top-k Triton
+  adapter kernel that avoids dense score materialization and cuts the measured
+  slowdown to about 4.9x-10.0x versus Torch on RTX A5000. This is a real
+  implementation improvement, but still negative selection guidance. The next
+  top-k leap needs a stronger block/warp-level selection design, multi-block
+  candidate tiling for larger candidate sets, or continued explicit Torch/CuPy
+  selection for dense exact ranking.
 - Goal2781 wires a generic grouped 2D vector-sum adapter through
   `grouped_vector_sum_f64x2` and proves RTX A5000 correctness, but the current
   Triton atomic-add preview is about 4x-17x slower than Torch scatter-add for

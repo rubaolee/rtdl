@@ -10,6 +10,11 @@ Goal2782 is accepted as a narrow metadata/planner hardening step. It makes the
 Goal2780 and Goal2781 performance lesson machine-readable: a Triton preview
 kernel being available does not authorize automatic partner selection.
 
+Goal2784 later refreshed the dense top-k row with improved, still-negative
+evidence: the direct dense point top-k adapter removed dense score
+materialization and reduced the measured RTX A5000 slowdown to 4.91x-10.04x
+slower than Torch, so the advisory "do not auto-select Triton" decision remains.
+
 ## Evidence
 
 Codex implementation and validation:

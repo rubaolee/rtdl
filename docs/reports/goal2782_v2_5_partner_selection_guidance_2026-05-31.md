@@ -39,6 +39,14 @@ The registry currently has two measured negative-guidance rows:
 This does not demote the generic contracts. It separates **contract
 availability** from **performance partner selection**.
 
+Goal2784 refresh:
+
+- The dense top-k row now points at Goal2784, after the Triton adapter moved to
+  `dense_point_topk_2d_adapter_kernel` without dense score materialization.
+- The updated top-k range is 4.91x-10.04x slower than Torch on the measured RTX
+  A5000 shapes. This is substantially better than Goal2780, but still negative
+  selection guidance.
+
 ## Boundary
 
 This goal authorizes:

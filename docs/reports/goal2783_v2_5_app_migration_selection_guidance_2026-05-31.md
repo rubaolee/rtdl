@@ -30,7 +30,7 @@ Two benchmark app rows now consume Goal2782 guidance:
 
 | App | Operation | Workload shape | Evidence | Planner result |
 | --- | --- | --- | --- | --- |
-| RTNN | `grouped_topk_f64` | dense exact top-k candidate ranking | Goal2780 | do not auto-select Triton |
+| RTNN | `grouped_topk_f64` | dense exact top-k candidate ranking | Goal2784 | do not auto-select Triton |
 | Barnes-Hut | `grouped_vector_sum_f64x2` | dense grouped vector sum 2D | Goal2781 | do not auto-select Triton |
 
 The generic Triton preview kernels still exist. This goal only prevents a

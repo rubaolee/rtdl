@@ -90,17 +90,19 @@ V2_5_PARTNER_SELECTION_GUIDANCE_ROWS = (
         workload_shape="dense_exact_topk_candidate_ranking",
         measured_partner="triton",
         comparison_partner="torch_same_contract_branch",
-        evidence_goal="Goal2780",
+        evidence_goal="Goal2784",
         artifact_path=(
-            "docs/reports/goal2780_pod_artifacts/"
-            "goal2780_topk_adapter_triton_pod_69_30_85_171_2026-05-31.json"
+            "docs/reports/goal2784_pod_artifacts/"
+            "goal2784_dense_point_topk_triton_adapter_pod_69_30_85_171_2026-05-31.json"
         ),
-        measured_partner_slower_min_ratio=47.28,
-        measured_partner_slower_max_ratio=150.90,
+        measured_partner_slower_min_ratio=4.91,
+        measured_partner_slower_max_ratio=10.04,
         recommendation=(
-            "Do not auto-select Triton for dense exact top-k ranking. Keep Torch/CuPy "
-            "or another explicitly selected partner as the performance path until a "
-            "tiled/block-level top-k kernel replaces the iterative preview."
+            "Do not auto-select Triton for dense exact top-k ranking. Goal2784 removed "
+            "dense score materialization and improved the preview substantially, but "
+            "Torch is still 4.91x-10.04x faster on the measured RTX A5000 shapes. Keep "
+            "Torch/CuPy or another explicitly selected partner as the performance path "
+            "until a stronger tiled/block-level top-k kernel wins same-contract timing."
         ),
     ),
     V25PartnerSelectionGuidanceRow(
