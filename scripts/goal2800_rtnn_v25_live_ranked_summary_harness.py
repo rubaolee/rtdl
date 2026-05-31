@@ -242,6 +242,7 @@ def _row_from_payloads(
             "precision": str(rtdl_payload.get("contract", {}).get("precision", "float64")),
             "bounded_k": int(rtdl_payload.get("k_max", 0)),
             "same_contract_opponent": "cupy_grid_exact_ranked_summary_3d" if cupy_payload is not None else None,
+            "prepared_query_points": bool(rtdl_payload.get("contract", {}).get("prepared_query_points", False)),
         },
         "claim_boundary": CLAIM_BOUNDARY,
         "elapsed_sec": float(elapsed_sec),
