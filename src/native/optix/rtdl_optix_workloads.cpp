@@ -14280,6 +14280,142 @@ struct PreparedFixedRadiusQueryPoints3D {
     }
 };
 
+struct PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D {
+    PreparedFixedRadiusNeighborsGrid3D* prepared = nullptr;
+    PreparedFixedRadiusQueryPoints3D* prepared_queries = nullptr;
+    size_t request_count = 0;
+    size_t query_block_count = 0;
+    uint32_t request_count_u32 = 0;
+    uint32_t query_count_u32 = 0;
+    std::unique_ptr<DevPtr> d_partials;
+    std::unique_ptr<DevPtr> d_radii;
+    std::unique_ptr<DevPtr> d_k_values;
+    CUstream stream = nullptr;
+    CUgraph graph = nullptr;
+    CUgraphExec graph_exec = nullptr;
+
+    PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D(
+            PreparedFixedRadiusNeighborsGrid3D* prepared_in,
+            PreparedFixedRadiusQueryPoints3D* prepared_queries_in,
+            const double* radii,
+            const size_t* k_values,
+            size_t request_count_in)
+        : prepared(prepared_in),
+          prepared_queries(prepared_queries_in),
+          request_count(request_count_in)
+    {
+        if (!prepared) throw std::runtime_error("prepared OptiX fixed-radius-neighbor 3D handle must not be null");
+        if (!prepared_queries) throw std::runtime_error("prepared fixed-radius query handle must not be null");
+        if (!radii && request_count != 0) throw std::runtime_error("radii pointer must not be null when request_count is nonzero");
+        if (!k_values && request_count != 0) throw std::runtime_error("k_values pointer must not be null when request_count is nonzero");
+        if (request_count == 0)
+            throw std::runtime_error("fixed_radius_neighbors_3d graph request_count must be positive");
+        if (request_count > static_cast<size_t>(UINT32_MAX))
+            throw std::runtime_error("fixed_radius_neighbors_3d graph request_count exceeds uint32 limit");
+        if (prepared_queries->query_count == 0 || prepared->search_points.empty())
+            throw std::runtime_error("fixed_radius_neighbors_3d graph requires non-empty prepared search and query handles");
+        if (prepared_queries->query_count > static_cast<size_t>(UINT32_MAX))
+            throw std::runtime_error("fixed_radius_neighbors_3d graph query_count exceeds uint32 limit");
+        if (prepared_queries->query_count > 65536u)
+            throw std::runtime_error("fixed_radius_neighbors_3d graph path currently supports query_count <= 65536");
+
+        std::vector<float> radii_f(request_count);
+        std::vector<uint32_t> k_values_u32(request_count);
+        for (size_t request_index = 0; request_index < request_count; ++request_index) {
+            const double radius = radii[request_index];
+            const size_t k_max = k_values[request_index];
+            if (radius < 0.0) throw std::runtime_error("fixed_radius_neighbors_3d radius must be non-negative");
+            if (radius > prepared->max_radius + 1.0e-7) {
+                throw std::runtime_error("fixed_radius_neighbors_3d radius exceeds prepared max_radius");
+            }
+            if (k_max == 0)
+                throw std::runtime_error("fixed_radius_neighbors_3d k_max must be positive");
+            if (k_max > 64)
+                throw std::runtime_error("prepared ranked fixed_radius_neighbors_3d aggregate currently supports k_max <= 64");
+            radii_f[request_index] = static_cast<float>(radius);
+            k_values_u32[request_index] =
+                static_cast<uint32_t>(std::min(k_max, prepared->search_points.size()));
+        }
+
+        ensure_fixed_radius_neighbors_grid_cuda_3d_kernel();
+        constexpr unsigned block = 256u;
+        query_count_u32 = static_cast<uint32_t>(prepared_queries->query_count);
+        query_block_count = (prepared_queries->query_count + block - 1u) / block;
+        request_count_u32 = static_cast<uint32_t>(request_count);
+        d_partials = std::make_unique<DevPtr>(
+            sizeof(RtdlFixedRadiusRankedNeighborAggregate) * request_count * query_block_count);
+        d_radii = std::make_unique<DevPtr>(sizeof(float) * request_count);
+        d_k_values = std::make_unique<DevPtr>(sizeof(uint32_t) * request_count);
+        upload(d_radii->ptr, radii_f.data(), request_count);
+        upload(d_k_values->ptr, k_values_u32.data(), request_count);
+
+        uint32_t grid_x = prepared->grid_x;
+        uint32_t grid_y = prepared->grid_y;
+        uint32_t grid_z = prepared->grid_z;
+        float min_x = prepared->min_x;
+        float min_y = prepared->min_y;
+        float min_z = prepared->min_z;
+        float inv_cell_size = prepared->inv_cell_size;
+        CUdeviceptr d_partials_ptr = d_partials->ptr;
+        void* summary_args[] = {
+            &prepared_queries->d_queries->ptr,
+            &query_count_u32,
+            &prepared->d_search->ptr,
+            &prepared->d_offsets->ptr,
+            &grid_x,
+            &grid_y,
+            &grid_z,
+            &min_x,
+            &min_y,
+            &min_z,
+            &inv_cell_size,
+            &d_radii->ptr,
+            &d_k_values->ptr,
+            &request_count_u32,
+            &d_partials_ptr,
+        };
+
+        try {
+            CU_CHECK(cuStreamCreate(&stream, CU_STREAM_NON_BLOCKING));
+            CU_CHECK(cuStreamBeginCapture(stream, CU_STREAM_CAPTURE_MODE_GLOBAL));
+            CU_CHECK(cuLaunchKernel(
+                g_frn3d_grid_ranked_summary_aggregate_f32_blocks_batch.fn,
+                static_cast<unsigned int>(query_block_count),
+                request_count_u32,
+                1,
+                block,
+                1,
+                1,
+                0,
+                stream,
+                summary_args,
+                nullptr));
+            CU_CHECK(cuStreamEndCapture(stream, &graph));
+            CU_CHECK(cuGraphInstantiate(&graph_exec, graph, 0));
+        } catch (...) {
+            if (graph_exec) cuGraphExecDestroy(graph_exec);
+            if (graph) cuGraphDestroy(graph);
+            if (stream) cuStreamDestroy(stream);
+            graph_exec = nullptr;
+            graph = nullptr;
+            stream = nullptr;
+            throw;
+        }
+    }
+
+    ~PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D()
+    {
+        if (graph_exec) cuGraphExecDestroy(graph_exec);
+        if (graph) cuGraphDestroy(graph);
+        if (stream) cuStreamDestroy(stream);
+    }
+
+    PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D(
+        const PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D&) = delete;
+    PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D& operator=(
+        const PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D&) = delete;
+};
+
 static PreparedFixedRadiusNeighborsGrid3D* prepare_fixed_radius_neighbors_grid_3d_optix(
         const RtdlPoint3D* search_points,
         size_t search_count,
@@ -15332,6 +15468,71 @@ static void aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_grid
     size_t total_bounded = 0u;
     size_t total_queries = 0u;
     for (size_t request_index = 0; request_index < request_count; ++request_index) {
+        total_bounded += aggregates_out[request_index].bounded_neighbor_count;
+        total_queries += aggregates_out[request_index].query_count;
+    }
+    g_optix_last_fixed_radius_3d_raw_candidate_count = total_bounded;
+    g_optix_last_fixed_radius_3d_emitted_count = total_queries;
+}
+
+static PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D*
+prepare_fixed_radius_ranked_summary_aggregate_batch_graph_3d_optix(
+        PreparedFixedRadiusNeighborsGrid3D* prepared,
+        PreparedFixedRadiusQueryPoints3D* prepared_queries,
+        const double* radii,
+        const size_t* k_values,
+        size_t request_count)
+{
+    return new PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D(
+        prepared,
+        prepared_queries,
+        radii,
+        k_values,
+        request_count);
+}
+
+static void replay_fixed_radius_ranked_summary_aggregate_batch_graph_3d_optix(
+        PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D* graph_handle,
+        RtdlFixedRadiusRankedNeighborAggregate* aggregates_out)
+{
+    if (!graph_handle) throw std::runtime_error("prepared fixed_radius_neighbors_3d graph handle must not be null");
+    if (!aggregates_out) throw std::runtime_error("aggregates_out must not be null");
+
+    std::fill(
+        aggregates_out,
+        aggregates_out + graph_handle->request_count,
+        RtdlFixedRadiusRankedNeighborAggregate{0u, 0u, 0u, 0u, 0.0});
+    reset_fixed_radius_3d_phase_timings(18u);
+    g_optix_last_fixed_radius_3d_prepare_s = 0.0;
+    g_optix_last_fixed_radius_3d_upload_s = 0.0;
+
+    auto t_start_summary = std::chrono::steady_clock::now();
+    CU_CHECK(cuGraphLaunch(graph_handle->graph_exec, graph_handle->stream));
+    CU_CHECK(cuStreamSynchronize(graph_handle->stream));
+    auto t_end_summary = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_count_s = seconds_between(t_start_summary, t_end_summary);
+
+    auto t_start_download = std::chrono::steady_clock::now();
+    std::vector<RtdlFixedRadiusRankedNeighborAggregate> partials(
+        graph_handle->request_count * graph_handle->query_block_count);
+    download(partials.data(), graph_handle->d_partials->ptr, partials.size());
+    for (size_t request_index = 0; request_index < graph_handle->request_count; ++request_index) {
+        RtdlFixedRadiusRankedNeighborAggregate& aggregate = aggregates_out[request_index];
+        for (size_t partial_index = 0; partial_index < graph_handle->query_block_count; ++partial_index) {
+            const auto& partial = partials[request_index * graph_handle->query_block_count + partial_index];
+            aggregate.query_count += partial.query_count;
+            aggregate.bounded_neighbor_count += partial.bounded_neighbor_count;
+            aggregate.nearest_id_checksum += partial.nearest_id_checksum;
+            aggregate.kth_id_checksum += partial.kth_id_checksum;
+            aggregate.sum_distance += partial.sum_distance;
+        }
+    }
+    auto t_end_download = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_row_download_s = seconds_between(t_start_download, t_end_download);
+
+    size_t total_bounded = 0u;
+    size_t total_queries = 0u;
+    for (size_t request_index = 0; request_index < graph_handle->request_count; ++request_index) {
         total_bounded += aggregates_out[request_index].bounded_neighbor_count;
         total_queries += aggregates_out[request_index].query_count;
     }

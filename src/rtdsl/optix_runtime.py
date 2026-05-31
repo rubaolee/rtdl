@@ -1907,6 +1907,155 @@ class PreparedOptixFixedRadiusQueryPoints3D:
             pass
 
 
+class PreparedOptixFixedRadiusRankedSummaryAggregateBatchGraph3D:
+    """Static CUDA graph for generic prepared fixed-radius aggregate batches."""
+
+    def __init__(
+        self,
+        owner: "PreparedOptixFixedRadiusNeighbors3D",
+        prepared_queries: PreparedOptixFixedRadiusQueryPoints3D,
+        requests: tuple[dict[str, object], ...],
+        *,
+        precision: str = "float32",
+    ):
+        if precision != "float32":
+            raise ValueError("prepared fixed-radius aggregate graph currently supports precision='float32'")
+        if owner.closed:
+            raise RuntimeError("prepared OptiX fixed-radius-neighbor 3D handle is closed")
+        if prepared_queries.closed:
+            raise RuntimeError("prepared OptiX fixed-radius query handle is closed")
+        if not requests:
+            raise ValueError("prepared fixed-radius aggregate graph requires at least one request")
+        self._owner = owner
+        self._prepared_queries = prepared_queries
+        self._requests = requests
+        self._precision = precision
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        self._empty_results = None
+
+        if prepared_queries.count == 0 or owner._packed_search.count == 0:
+            self._empty_results = tuple(
+                {
+                    "query_count": int(prepared_queries.count),
+                    "bounded_neighbor_count": 0,
+                    "nearest_id_checksum": 0,
+                    "kth_id_checksum": 0,
+                    "sum_distance": 0.0,
+                    "precision": precision,
+                    "query_resident": True,
+                    "request_index": index,
+                    "radius": float(request["radius"]),
+                    "k_max": int(request["k_max"]),
+                    "cuda_graph_replay": True,
+                }
+                for index, request in enumerate(requests)
+            )
+            return
+
+        lib = _load_optix_library()
+        symbol_name = "rtdl_optix_prepare_fixed_radius_ranked_summary_aggregate_batch_graph_3d"
+        symbol = _find_optional_backend_symbol(lib, symbol_name)
+        if symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                f"{symbol_name}; rebuild the OptiX backend from current main"
+            )
+        radii = (ctypes.c_double * len(requests))(
+            *[float(request["radius"]) for request in requests]
+        )
+        k_values = (ctypes.c_size_t * len(requests))(
+            *[int(request["k_max"]) for request in requests]
+        )
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            owner._handle,
+            prepared_queries._handle,
+            radii,
+            k_values,
+            ctypes.c_size_t(len(requests)),
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+    @property
+    def closed(self) -> bool:
+        return self._closed
+
+    def replay(self) -> tuple[dict[str, object], ...]:
+        if self._closed:
+            raise RuntimeError("prepared fixed-radius aggregate graph handle is closed")
+        if self._owner.closed:
+            raise RuntimeError("prepared OptiX fixed-radius-neighbor 3D handle is closed")
+        if self._prepared_queries.closed:
+            raise RuntimeError("prepared OptiX fixed-radius query handle is closed")
+        if self._empty_results is not None:
+            return self._empty_results
+
+        lib = _load_optix_library()
+        symbol_name = "rtdl_optix_replay_fixed_radius_ranked_summary_aggregate_batch_graph_3d"
+        symbol = _find_optional_backend_symbol(lib, symbol_name)
+        if symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                f"{symbol_name}; rebuild the OptiX backend from current main"
+            )
+        aggregates = (_RtdlFixedRadiusRankedNeighborAggregate * len(self._requests))()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            self._handle,
+            aggregates,
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return tuple(
+            {
+                "query_count": int(aggregate.query_count),
+                "bounded_neighbor_count": int(aggregate.bounded_neighbor_count),
+                "nearest_id_checksum": int(aggregate.nearest_id_checksum),
+                "kth_id_checksum": int(aggregate.kth_id_checksum),
+                "sum_distance": float(aggregate.sum_distance),
+                "precision": self._precision,
+                "query_resident": True,
+                "request_index": index,
+                "radius": float(self._requests[index]["radius"]),
+                "k_max": int(self._requests[index]["k_max"]),
+                "cuda_graph_replay": True,
+            }
+            for index, aggregate in enumerate(aggregates)
+        )
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        handle = self._handle
+        self._handle = ctypes.c_void_p()
+        self._closed = True
+        if handle.value:
+            lib = _load_optix_library()
+            destroy_symbol = _find_optional_backend_symbol(
+                lib,
+                "rtdl_optix_destroy_fixed_radius_ranked_summary_aggregate_batch_graph_3d",
+            )
+            if destroy_symbol is not None:
+                destroy_symbol(handle)
+
+    def __enter__(self) -> "PreparedOptixFixedRadiusRankedSummaryAggregateBatchGraph3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
 class PreparedOptixFixedRadiusNeighbors3D:
     """Prepared OptiX 3-D fixed-radius neighbor scene.
 
@@ -2428,6 +2577,42 @@ class PreparedOptixFixedRadiusNeighbors3D:
                 "k_max": k_values[index],
             }
             for index, aggregate in enumerate(aggregates)
+        )
+
+    def prepare_ranked_summary_prepared_queries_batch_graph(
+        self,
+        prepared_queries: PreparedOptixFixedRadiusQueryPoints3D,
+        requests,
+        *,
+        precision: str = "float32",
+    ) -> PreparedOptixFixedRadiusRankedSummaryAggregateBatchGraph3D:
+        if self._closed:
+            raise RuntimeError("prepared OptiX fixed-radius-neighbor 3D handle is closed")
+        if prepared_queries.closed:
+            raise RuntimeError("prepared OptiX fixed-radius query handle is closed")
+        if precision != "float32":
+            raise ValueError("prepared query aggregate graph currently supports precision='float32'")
+        normalized = tuple(dict(request) for request in requests)
+        if not normalized:
+            raise ValueError("prepared query aggregate graph requires at least one request")
+        requests_out = []
+        for request in normalized:
+            radius = float(request["radius"])
+            k_max = int(request["k_max"])
+            if radius < 0:
+                raise ValueError("radius must be non-negative")
+            if radius > self._max_radius:
+                raise ValueError("radius must be less than or equal to prepared max_radius")
+            if k_max <= 0:
+                raise ValueError("k_max must be positive")
+            if k_max > 64:
+                raise ValueError("PreparedOptixFixedRadiusNeighbors3D prepared query aggregate graph currently supports k_max <= 64")
+            requests_out.append({"radius": radius, "k_max": k_max})
+        return PreparedOptixFixedRadiusRankedSummaryAggregateBatchGraph3D(
+            self,
+            prepared_queries,
+            tuple(requests_out),
+            precision=precision,
         )
 
     def count(self, query_points, *, radius: float, k_max: int) -> int:
@@ -4665,6 +4850,7 @@ def _get_last_fixed_radius_neighbors_3d_phase_timings_from_library(lib) -> dict[
             15: "prepared_query_uniform_cell_ranked_summary_aggregate_f32_block_partials",
             16: "prepared_query_uniform_cell_ranked_summary_aggregate_f32_batch_direct",
             17: "prepared_query_uniform_cell_ranked_summary_aggregate_f32_batch_block_partials",
+            18: "prepared_query_uniform_cell_ranked_summary_aggregate_f32_batch_cuda_graph_replay",
         }.get(mode_value, "none"),
         "prepare": float(prepare.value),
         "upload": float(upload.value),
@@ -16659,6 +16845,33 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_fixed_radius_ranked_summary_aggregate_batch_graph_3d")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_replay_fixed_radius_ranked_summary_aggregate_batch_graph_3d")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlFixedRadiusRankedNeighborAggregate),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_fixed_radius_ranked_summary_aggregate_batch_graph_3d")
+    if symbol is not None:
+        symbol.argtypes = [ctypes.c_void_p]
+        symbol.restype = None
 
     symbol = _find_optional_backend_symbol(lib, "rtdl_optix_summarize_prepared_fixed_radius_neighbors_3d")
     if symbol is not None:

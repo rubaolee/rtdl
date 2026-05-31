@@ -1,0 +1,37 @@
+{
+  "claim_boundary": {
+    "default_runtime_changed": false,
+    "prepared_static_cuda_graph_replay_probe": true,
+    "public_speedup_claim_authorized": false,
+    "rtnn_paper_reproduction_claim_authorized": false,
+    "v2_5_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": "Goal2825",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "rows": [
+    {
+      "fused_batch_median_sec": 0.00030246819369494915,
+      "fused_phase_mode": "prepared_query_uniform_cell_ranked_summary_aggregate_f32_batch_block_partials",
+      "graph_phase_mode": "prepared_query_uniform_cell_ranked_summary_aggregate_f32_batch_cuda_graph_replay",
+      "graph_replay_median_sec": 0.0002615440171211958,
+      "graph_replay_vs_fused_batch": 1.1564714690253828,
+      "point_count": 32768,
+      "same_ranked_aggregate_batch_summaries_normalized": true,
+      "same_ranked_aggregate_summary": true
+    },
+    {
+      "fused_batch_median_sec": 0.0008294249419122934,
+      "fused_phase_mode": "prepared_query_uniform_cell_ranked_summary_aggregate_f32_batch_block_partials",
+      "graph_phase_mode": "prepared_query_uniform_cell_ranked_summary_aggregate_f32_batch_cuda_graph_replay",
+      "graph_replay_median_sec": 0.0008080790285021067,
+      "graph_replay_vs_fused_batch": 1.0264156260183543,
+      "point_count": 65536,
+      "same_ranked_aggregate_batch_summaries_normalized": true,
+      "same_ranked_aggregate_summary": true
+    }
+  ],
+  "speedup_graph_replay_vs_fused_normalized_max": 1.1564714690253828,
+  "speedup_graph_replay_vs_fused_normalized_min": 1.0264156260183543,
+  "source_commit_before_patch": "c542ba8006458ac9784f89418c794e72399e1b45"
+}

@@ -1,0 +1,14 @@
+{
+  "claim_boundary": {
+    "paper_dataset": false,
+    "synthetic_input_only": true
+  },
+  "generated": {
+    "dimension": 3,
+    "format": "rtnn_csv_xyz",
+    "path": "docs/reports/goal2825_rtnn_cuda_graph_replay_pod/generated_65536.txt",
+    "point_count": 65536,
+    "seed": 2825
+  },
+  "runner": "goal2348_rtnn_v2_2_external_runner"
+}

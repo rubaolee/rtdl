@@ -733,6 +733,7 @@ from .optix_runtime import PreparedOptixExecution
 from .optix_runtime import PreparedOptixFixedRadiusCountThreshold2D
 from .optix_runtime import PreparedOptixFixedRadiusNeighbors3D
 from .optix_runtime import PreparedOptixFixedRadiusQueryPoints3D
+from .optix_runtime import PreparedOptixFixedRadiusRankedSummaryAggregateBatchGraph3D
 from .optix_runtime import PreparedOptixFixedRadiusCountThreshold3D
 from .optix_runtime import PreparedOptixKernel
 from .optix_runtime import PreparedOptixAabbIndex2D
@@ -2049,6 +2050,7 @@ __all__ = [
     "PreparedOptixFixedRadiusCountThreshold2D",
     "PreparedOptixFixedRadiusNeighbors3D",
     "PreparedOptixFixedRadiusQueryPoints3D",
+    "PreparedOptixFixedRadiusRankedSummaryAggregateBatchGraph3D",
     "PreparedOptixFixedRadiusCountThreshold3D",
     "PreparedOptixKernel",
     "PreparedOptixAabbIndex2D",

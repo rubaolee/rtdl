@@ -4316,8 +4316,47 @@ extern "C" int rtdl_optix_aggregate_prepared_query_ranked_fixed_radius_neighbor_
             radii,
             k_values,
             request_count,
+        aggregates_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_prepare_fixed_radius_ranked_summary_aggregate_batch_graph_3d(
+        void* prepared,
+        void* prepared_queries,
+        const double* radii,
+        const size_t* k_values,
+        size_t request_count,
+        void** graph_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!graph_out)
+            throw std::runtime_error("graph_out must not be null");
+        *graph_out = nullptr;
+        *graph_out = prepare_fixed_radius_ranked_summary_aggregate_batch_graph_3d_optix(
+            reinterpret_cast<PreparedFixedRadiusNeighborsGrid3D*>(prepared),
+            reinterpret_cast<PreparedFixedRadiusQueryPoints3D*>(prepared_queries),
+            radii,
+            k_values,
+            request_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_replay_fixed_radius_ranked_summary_aggregate_batch_graph_3d(
+        void* graph,
+        RtdlFixedRadiusRankedNeighborAggregate* aggregates_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        replay_fixed_radius_ranked_summary_aggregate_batch_graph_3d_optix(
+            reinterpret_cast<PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D*>(graph),
             aggregates_out);
     }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_fixed_radius_ranked_summary_aggregate_batch_graph_3d(void* graph)
+{
+    delete reinterpret_cast<PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D*>(graph);
 }
 
 extern "C" int rtdl_optix_count_prepared_fixed_radius_neighbors_3d(
