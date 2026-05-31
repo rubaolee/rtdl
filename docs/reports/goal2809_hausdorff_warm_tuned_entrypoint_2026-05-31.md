@@ -74,3 +74,13 @@ Pod command:
 ```text
 python3 scripts/goal2801_hausdorff_xhd_v25_canonical_entrypoint.py --points-a 4096 --points-b 4096 --output /tmp/goal2809_hauptune/hausdorff_xhd_v25_warm_median_4096.json
 ```
+
+Final clean-pod guard validation after this packet was pushed:
+
+```text
+commit: 0375bc607d835a9d540f2c7bd369dd3ca555f4eb
+git status --short: 0 dirty lines
+python3 -m unittest tests.goal2809_hausdorff_warm_tuned_entrypoint_test tests.goal2801_hausdorff_xhd_v25_canonical_entrypoint_test
+Ran 10 tests in 0.001s
+OK
+```
