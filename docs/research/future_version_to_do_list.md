@@ -672,6 +672,11 @@ Future work:
   before host scalar or row materialization. The next hard work is larger
   device-resident reductions or event-based cross-stream handoff, not another
   status-only proof.
+- Goal2769 adds the first same-stream row-reduction consumer over all stored
+  generic hit rows. It reduces device-resident hit-row ids into compact
+  fingerprints/min/max/sums before host materialization. The next useful
+  runtime step is event-based cross-stream ordering or richer grouped
+  reductions that consume the same hit stream without app-specific native ABI.
 
 Boundary:
 
