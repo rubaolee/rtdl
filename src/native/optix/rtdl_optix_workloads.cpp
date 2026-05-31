@@ -14085,6 +14085,7 @@ static void ensure_fixed_radius_neighbors_grid_cuda_3d_kernel()
         g_frn3d_grid_ranked_summary.module = g_frn3d_grid.module;
         g_frn3d_grid_ranked_summary_f32.module = g_frn3d_grid.module;
         g_frn3d_grid_ranked_summary_aggregate.module = g_frn3d_grid.module;
+        g_frn3d_grid_ranked_summary_aggregate_f32_direct.module = g_frn3d_grid.module;
         g_frn3d_grid_compact.module = g_frn3d_grid.module;
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_count.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_count"));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_exact_count.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_exact_count"));
@@ -14095,6 +14096,7 @@ static void ensure_fixed_radius_neighbors_grid_cuda_3d_kernel()
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_ranked_summary.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_ranked_summary"));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_ranked_summary_f32.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_ranked_summary_f32"));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_ranked_summary_aggregate.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_ranked_summary_aggregate"));
+        CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_ranked_summary_aggregate_f32_direct.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_ranked_summary_aggregate_f32_direct"));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_compact.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_compact"));
     });
 }
@@ -14806,7 +14808,6 @@ static RtdlFixedRadiusRankedNeighborAggregate aggregate_prepared_ranked_fixed_ra
 
     auto t_start_upload = std::chrono::steady_clock::now();
     DevPtr d_queries((use_float32_precision ? sizeof(GpuPoint3DHost) : sizeof(RtdlPoint3D)) * query_count);
-    DevPtr d_summaries(sizeof(RtdlFixedRadiusRankedNeighborSummary) * query_count);
     DevPtr d_aggregate(sizeof(RtdlFixedRadiusRankedNeighborAggregate));
     std::vector<GpuPoint3DHost> gpu_queries;
     if (use_float32_precision) {
@@ -14856,10 +14857,14 @@ static RtdlFixedRadiusRankedNeighborAggregate aggregate_prepared_ranked_fixed_ra
             &inv_cell_size,
             &radius_f,
             &k_max_u32,
-            &d_summaries.ptr,
+            &d_aggregate.ptr,
         };
-        CU_CHECK(cuLaunchKernel(g_frn3d_grid_ranked_summary_f32.fn, grid, 1, 1, block, 1, 1, 0, nullptr, summary_args, nullptr));
+        CU_CHECK(cuLaunchKernel(g_frn3d_grid_ranked_summary_aggregate_f32_direct.fn, grid, 1, 1, block, 1, 1, 0, nullptr, summary_args, nullptr));
+        CU_CHECK(cuStreamSynchronize(nullptr));
+        auto t_end_summary = std::chrono::steady_clock::now();
+        g_optix_last_fixed_radius_3d_count_s = seconds_between(t_start_summary, t_end_summary);
     } else {
+        DevPtr d_summaries(sizeof(RtdlFixedRadiusRankedNeighborSummary) * query_count);
         double min_x = prepared->min_x_exact;
         double min_y = prepared->min_y_exact;
         double min_z = prepared->min_z_exact;
@@ -14882,22 +14887,22 @@ static RtdlFixedRadiusRankedNeighborAggregate aggregate_prepared_ranked_fixed_ra
             &d_summaries.ptr,
         };
         CU_CHECK(cuLaunchKernel(g_frn3d_grid_ranked_summary.fn, grid, 1, 1, block, 1, 1, 0, nullptr, summary_args, nullptr));
-    }
-    CU_CHECK(cuStreamSynchronize(nullptr));
-    auto t_end_summary = std::chrono::steady_clock::now();
-    g_optix_last_fixed_radius_3d_count_s = seconds_between(t_start_summary, t_end_summary);
+        CU_CHECK(cuStreamSynchronize(nullptr));
+        auto t_end_summary = std::chrono::steady_clock::now();
+        g_optix_last_fixed_radius_3d_count_s = seconds_between(t_start_summary, t_end_summary);
 
-    void* aggregate_args[] = {
-        &d_summaries.ptr,
-        &qc,
-        &d_aggregate.ptr,
-    };
-    unsigned aggregate_grid = std::min<unsigned>(1024u, std::max<unsigned>(1u, grid));
-    auto t_start_aggregate = std::chrono::steady_clock::now();
-    CU_CHECK(cuLaunchKernel(g_frn3d_grid_ranked_summary_aggregate.fn, aggregate_grid, 1, 1, block, 1, 1, 0, nullptr, aggregate_args, nullptr));
-    CU_CHECK(cuStreamSynchronize(nullptr));
-    auto t_end_aggregate = std::chrono::steady_clock::now();
-    g_optix_last_fixed_radius_3d_exact_refine_s = seconds_between(t_start_aggregate, t_end_aggregate);
+        void* aggregate_args[] = {
+            &d_summaries.ptr,
+            &qc,
+            &d_aggregate.ptr,
+        };
+        unsigned aggregate_grid = std::min<unsigned>(1024u, std::max<unsigned>(1u, grid));
+        auto t_start_aggregate = std::chrono::steady_clock::now();
+        CU_CHECK(cuLaunchKernel(g_frn3d_grid_ranked_summary_aggregate.fn, aggregate_grid, 1, 1, block, 1, 1, 0, nullptr, aggregate_args, nullptr));
+        CU_CHECK(cuStreamSynchronize(nullptr));
+        auto t_end_aggregate = std::chrono::steady_clock::now();
+        g_optix_last_fixed_radius_3d_exact_refine_s = seconds_between(t_start_aggregate, t_end_aggregate);
+    }
 
     auto t_start_download = std::chrono::steady_clock::now();
     download(&aggregate, d_aggregate.ptr, 1);

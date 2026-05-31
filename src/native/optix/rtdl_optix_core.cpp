@@ -5353,6 +5353,116 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_summary_aggrega
     }
 }
 
+extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_summary_aggregate_f32_direct(
+        const GpuPoint3D* query_points,
+        uint32_t query_count,
+        const GpuPoint3D* sorted_search_points,
+        const uint32_t* cell_offsets,
+        uint32_t grid_x,
+        uint32_t grid_y,
+        uint32_t grid_z,
+        float min_x,
+        float min_y,
+        float min_z,
+        float inv_cell_size,
+        float radius,
+        uint32_t k_max,
+        FrnRankedAggregate* aggregate_out)
+{
+    __shared__ unsigned long long s_query_count[256];
+    __shared__ unsigned long long s_neighbor_count[256];
+    __shared__ unsigned long long s_nearest_checksum[256];
+    __shared__ unsigned long long s_kth_checksum[256];
+    __shared__ double s_sum_distance[256];
+
+    const uint32_t tid = threadIdx.x;
+    unsigned long long local_query_count = 0ull;
+    unsigned long long local_neighbor_count = 0ull;
+    unsigned long long local_nearest_checksum = 0ull;
+    unsigned long long local_kth_checksum = 0ull;
+    double local_sum_distance = 0.0;
+    const float radius_sq = radius * radius;
+
+    for (uint32_t qidx = blockIdx.x * blockDim.x + tid;
+         qidx < query_count;
+         qidx += blockDim.x * gridDim.x) {
+        float best_distance_sq[64];
+        uint32_t best_neighbor_id[64];
+        uint32_t best_count = 0u;
+        const GpuPoint3D q = query_points[qidx];
+        const int cx = floor_to_int_float((q.x - min_x) * inv_cell_size);
+        const int cy = floor_to_int_float((q.y - min_y) * inv_cell_size);
+        const int cz = floor_to_int_float((q.z - min_z) * inv_cell_size);
+
+        for (int dz = -1; dz <= 1; ++dz) {
+            const int gz_i = cz + dz;
+            if (gz_i < 0 || gz_i >= static_cast<int>(grid_z)) continue;
+            const uint32_t gz_u = static_cast<uint32_t>(gz_i);
+            for (int dy = -1; dy <= 1; ++dy) {
+                const int gy_i = cy + dy;
+                if (gy_i < 0 || gy_i >= static_cast<int>(grid_y)) continue;
+                const uint32_t gy_u = static_cast<uint32_t>(gy_i);
+                for (int dx_cell = -1; dx_cell <= 1; ++dx_cell) {
+                    const int gx_i = cx + dx_cell;
+                    if (gx_i < 0 || gx_i >= static_cast<int>(grid_x)) continue;
+                    const uint32_t gx_u = static_cast<uint32_t>(gx_i);
+                    const uint32_t cell = (gz_u * grid_y + gy_u) * grid_x + gx_u;
+                    const uint32_t begin = cell_offsets[cell];
+                    const uint32_t end = cell_offsets[cell + 1u];
+                    for (uint32_t pos = begin; pos < end; ++pos) {
+                        const GpuPoint3D t = sorted_search_points[pos];
+                        const float sx = t.x - q.x;
+                        const float sy = t.y - q.y;
+                        const float sz = t.z - q.z;
+                        const float d2 = sx * sx + sy * sy + sz * sz;
+                        if (d2 > radius_sq) continue;
+                        frn_ranked_insert_f32(d2, t.id, k_max, best_distance_sq, best_neighbor_id, &best_count);
+                    }
+                }
+            }
+        }
+
+        local_query_count += 1ull;
+        local_neighbor_count += static_cast<unsigned long long>(best_count);
+        if (best_count == 0u) {
+            local_nearest_checksum += 0xffffffffull;
+            local_kth_checksum += 0xffffffffull;
+            continue;
+        }
+        local_nearest_checksum += static_cast<unsigned long long>(best_neighbor_id[0]);
+        local_kth_checksum += static_cast<unsigned long long>(best_neighbor_id[best_count - 1u]);
+        for (uint32_t rank = 0u; rank < best_count; ++rank) {
+            local_sum_distance += static_cast<double>(sqrtf(best_distance_sq[rank]));
+        }
+    }
+
+    s_query_count[tid] = local_query_count;
+    s_neighbor_count[tid] = local_neighbor_count;
+    s_nearest_checksum[tid] = local_nearest_checksum;
+    s_kth_checksum[tid] = local_kth_checksum;
+    s_sum_distance[tid] = local_sum_distance;
+    __syncthreads();
+
+    for (uint32_t stride = blockDim.x >> 1u; stride > 0u; stride >>= 1u) {
+        if (tid < stride) {
+            s_query_count[tid] += s_query_count[tid + stride];
+            s_neighbor_count[tid] += s_neighbor_count[tid + stride];
+            s_nearest_checksum[tid] += s_nearest_checksum[tid + stride];
+            s_kth_checksum[tid] += s_kth_checksum[tid + stride];
+            s_sum_distance[tid] += s_sum_distance[tid + stride];
+        }
+        __syncthreads();
+    }
+
+    if (tid == 0u) {
+        atomicAdd(&aggregate_out->query_count, s_query_count[0]);
+        atomicAdd(&aggregate_out->bounded_neighbor_count, s_neighbor_count[0]);
+        atomicAdd(&aggregate_out->nearest_id_checksum, s_nearest_checksum[0]);
+        atomicAdd(&aggregate_out->kth_id_checksum, s_kth_checksum[0]);
+        frn_atomic_add_double(&aggregate_out->sum_distance, s_sum_distance[0]);
+    }
+}
+
 extern "C" __global__ void fixed_radius_neighbors_3d_grid_compact(
         const GpuPoint3D* query_points,
         uint32_t query_count,
@@ -6641,6 +6751,7 @@ static FrnCuFunction      g_frn3d_grid_ranked_rows;
 static FrnCuFunction      g_frn3d_grid_ranked_summary;
 static FrnCuFunction      g_frn3d_grid_ranked_summary_f32;
 static FrnCuFunction      g_frn3d_grid_ranked_summary_aggregate;
+static FrnCuFunction      g_frn3d_grid_ranked_summary_aggregate_f32_direct;
 static FrnCuFunction      g_frn3d_grid_compact;
 static KnnCuFunction      g_partner_ray2d_pack;
 static KnnCuFunction      g_partner_triangle2d_pack;
