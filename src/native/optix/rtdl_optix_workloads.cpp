@@ -14086,6 +14086,7 @@ static void ensure_fixed_radius_neighbors_grid_cuda_3d_kernel()
         g_frn3d_grid_ranked_summary_f32.module = g_frn3d_grid.module;
         g_frn3d_grid_ranked_summary_aggregate.module = g_frn3d_grid.module;
         g_frn3d_grid_ranked_summary_aggregate_f32_direct.module = g_frn3d_grid.module;
+        g_frn3d_grid_ranked_summary_aggregate_f32_blocks.module = g_frn3d_grid.module;
         g_frn3d_grid_compact.module = g_frn3d_grid.module;
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_count.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_count"));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_exact_count.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_exact_count"));
@@ -14097,6 +14098,7 @@ static void ensure_fixed_radius_neighbors_grid_cuda_3d_kernel()
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_ranked_summary_f32.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_ranked_summary_f32"));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_ranked_summary_aggregate.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_ranked_summary_aggregate"));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_ranked_summary_aggregate_f32_direct.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_ranked_summary_aggregate_f32_direct"));
+        CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_ranked_summary_aggregate_f32_blocks.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_ranked_summary_aggregate_f32_blocks"));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_compact.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_compact"));
     });
 }
@@ -14246,7 +14248,9 @@ struct PreparedFixedRadiusNeighborsGrid3D {
 
 struct PreparedFixedRadiusQueryPoints3D {
     size_t query_count = 0;
+    size_t aggregate_block_count = 0;
     std::unique_ptr<DevPtr> d_queries;
+    std::unique_ptr<DevPtr> d_aggregate_partials;
 
     PreparedFixedRadiusQueryPoints3D(const RtdlPoint3D* query_points, size_t count)
         : query_count(count)
@@ -14267,6 +14271,9 @@ struct PreparedFixedRadiusQueryPoints3D {
             };
         }
         d_queries = std::make_unique<DevPtr>(sizeof(GpuPoint3DHost) * count);
+        aggregate_block_count = (count + 255u) / 256u;
+        d_aggregate_partials = std::make_unique<DevPtr>(
+            sizeof(RtdlFixedRadiusRankedNeighborAggregate) * aggregate_block_count);
         upload(d_queries->ptr, gpu_queries.data(), count);
     }
 };
@@ -15028,9 +15035,13 @@ static RtdlFixedRadiusRankedNeighborAggregate aggregate_prepared_query_ranked_fi
             : static_cast<double>(prepared->search_points.size()) /
                 static_cast<double>(prepared->occupied_cell_count);
     const bool use_direct_float32_aggregate = mean_search_points_per_occupied_cell <= 4.0;
+    const bool use_block_partial_direct =
+        use_direct_float32_aggregate &&
+        prepared_queries->query_count <= 65536u &&
+        prepared_queries->d_aggregate_partials != nullptr;
 
     RtdlFixedRadiusRankedNeighborAggregate aggregate{0u, 0u, 0u, 0u, 0.0};
-    reset_fixed_radius_3d_phase_timings(use_direct_float32_aggregate ? 13u : 14u);
+    reset_fixed_radius_3d_phase_timings(use_block_partial_direct ? 15u : use_direct_float32_aggregate ? 13u : 14u);
     g_optix_last_fixed_radius_3d_prepare_s = 0.0;
     g_optix_last_fixed_radius_3d_upload_s = 0.0;
     if (prepared_queries->query_count == 0 || prepared->search_points.empty()) return aggregate;
@@ -15048,7 +15059,53 @@ static RtdlFixedRadiusRankedNeighborAggregate aggregate_prepared_query_ranked_fi
     unsigned block = 256;
     unsigned grid = (qc + block - 1u) / block;
     auto t_start_summary = std::chrono::steady_clock::now();
-    if (use_direct_float32_aggregate) {
+    if (use_block_partial_direct) {
+        if (prepared_queries->aggregate_block_count < grid) {
+            throw std::runtime_error("prepared fixed_radius_neighbors_3d aggregate partial workspace is too small");
+        }
+        float min_x = prepared->min_x;
+        float min_y = prepared->min_y;
+        float min_z = prepared->min_z;
+        float inv_cell_size = prepared->inv_cell_size;
+        float radius_f = static_cast<float>(radius);
+        CUdeviceptr d_partials = prepared_queries->d_aggregate_partials->ptr;
+        void* summary_args[] = {
+            &prepared_queries->d_queries->ptr,
+            &qc,
+            &prepared->d_search->ptr,
+            &prepared->d_offsets->ptr,
+            &grid_x,
+            &grid_y,
+            &grid_z,
+            &min_x,
+            &min_y,
+            &min_z,
+            &inv_cell_size,
+            &radius_f,
+            &k_max_u32,
+            &d_partials,
+        };
+        CU_CHECK(cuLaunchKernel(g_frn3d_grid_ranked_summary_aggregate_f32_blocks.fn, grid, 1, 1, block, 1, 1, 0, nullptr, summary_args, nullptr));
+        CU_CHECK(cuStreamSynchronize(nullptr));
+        auto t_end_summary = std::chrono::steady_clock::now();
+        g_optix_last_fixed_radius_3d_count_s = seconds_between(t_start_summary, t_end_summary);
+
+        auto t_start_download = std::chrono::steady_clock::now();
+        std::vector<RtdlFixedRadiusRankedNeighborAggregate> partials(grid);
+        download(partials.data(), d_partials, grid);
+        for (const auto& partial : partials) {
+            aggregate.query_count += partial.query_count;
+            aggregate.bounded_neighbor_count += partial.bounded_neighbor_count;
+            aggregate.nearest_id_checksum += partial.nearest_id_checksum;
+            aggregate.kth_id_checksum += partial.kth_id_checksum;
+            aggregate.sum_distance += partial.sum_distance;
+        }
+        auto t_end_download = std::chrono::steady_clock::now();
+        g_optix_last_fixed_radius_3d_row_download_s = seconds_between(t_start_download, t_end_download);
+        g_optix_last_fixed_radius_3d_raw_candidate_count = aggregate.bounded_neighbor_count;
+        g_optix_last_fixed_radius_3d_emitted_count = aggregate.query_count;
+        return aggregate;
+    } else if (use_direct_float32_aggregate) {
         float min_x = prepared->min_x;
         float min_y = prepared->min_y;
         float min_z = prepared->min_z;
