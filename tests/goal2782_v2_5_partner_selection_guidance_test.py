@@ -19,7 +19,7 @@ class Goal2782V25PartnerSelectionGuidanceTest(unittest.TestCase):
         validation = rt.validate_v2_5_partner_selection_guidance(guidance, repo_root=REPO_ROOT)
 
         self.assertEqual(validation["status"], "accept")
-        self.assertEqual(guidance["row_count"], 5)
+        self.assertEqual(guidance["row_count"], 9)
         self.assertTrue(guidance["preview_kernel_available_does_not_imply_auto_select"])
         self.assertTrue(guidance["no_partner_forced"])
         self.assertFalse(guidance["promoted_performance_path"])
@@ -108,6 +108,31 @@ class Goal2782V25PartnerSelectionGuidanceTest(unittest.TestCase):
         self.assertTrue((REPO_ROOT / hausdorff_row["artifact_path"]).exists())
         self.assertTrue((REPO_ROOT / hausdorff_dense_row["artifact_path"]).exists())
         self.assertTrue((REPO_ROOT / hausdorff_tiled_row["artifact_path"]).exists())
+
+    def test_raydb_scalar_reductions_record_goal2796_negative_guidance(self) -> None:
+        expected = {
+            "segmented_count_i64": (22.0, 38.0),
+            "segmented_sum_f64": (38.0, 84.0),
+            "segmented_min_f64": (44.0, 192.0),
+            "segmented_max_f64": (36.0, 142.0),
+        }
+
+        for operation, (min_floor, max_floor) in expected.items():
+            with self.subTest(operation=operation):
+                plan = rt.plan_v2_5_partner_selection(
+                    operation,
+                    "raydb_scalar_grouped_reduction_frontdoor",
+                )
+                row = plan["matches"][0]
+
+                self.assertEqual(plan["status"], "measured_negative_preview_guidance")
+                self.assertEqual(row["evidence_goal"], "Goal2796")
+                self.assertEqual(row["comparison_partner"], "torch_cuda_same_contract_reduction")
+                self.assertGreaterEqual(row["measured_partner_slower_min_ratio"], min_floor)
+                self.assertGreaterEqual(row["measured_partner_slower_max_ratio"], max_floor)
+                self.assertFalse(plan["auto_select_partner_allowed"])
+                self.assertIn("Do not auto-select Triton", plan["recommendation"])
+                self.assertTrue((REPO_ROOT / row["artifact_path"]).exists())
 
     def test_unknown_shape_fails_to_advisory_explicit_choice(self) -> None:
         plan = rt.plan_v2_5_partner_selection("segmented_count_i64", "unmeasured_shape")

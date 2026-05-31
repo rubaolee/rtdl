@@ -1,0 +1,303 @@
+{
+  "all_correct": true,
+  "cases": [
+    {
+      "all_correct": true,
+      "group_count": 4096,
+      "modes": [
+        {
+          "correct_vs_torch_cuda": true,
+          "median_sec": {
+            "raydb_triton_public_front_door": 0.004282271955162287,
+            "torch_cuda_baseline": 0.00011258292943239212
+          },
+          "metadata": {
+            "adapter_front_door_integrated": true,
+            "execution_path": "partner_adapter_front_door",
+            "partner": "triton",
+            "promoted_performance_path": false,
+            "replaces_rt_traversal": false,
+            "uses_cupy_partner": false,
+            "uses_pytorch_partner": false
+          },
+          "mode": "count"
+        },
+        {
+          "correct_vs_torch_cuda": true,
+          "median_sec": {
+            "raydb_triton_public_front_door": 0.003162094159051776,
+            "torch_cuda_baseline": 8.258107118308544e-05
+          },
+          "metadata": {
+            "adapter_front_door_integrated": true,
+            "execution_path": "partner_adapter_front_door",
+            "partner": "triton",
+            "promoted_performance_path": false,
+            "replaces_rt_traversal": false,
+            "uses_cupy_partner": false,
+            "uses_pytorch_partner": false
+          },
+          "mode": "sum"
+        },
+        {
+          "correct_vs_torch_cuda": true,
+          "median_sec": {
+            "raydb_triton_public_front_door": 0.008014297112822533,
+            "torch_cuda_baseline": 4.163500852882862e-05
+          },
+          "metadata": {
+            "adapter_front_door_integrated": true,
+            "execution_path": "partner_adapter_front_door",
+            "partner": "triton",
+            "promoted_performance_path": false,
+            "replaces_rt_traversal": false,
+            "uses_cupy_partner": false,
+            "uses_pytorch_partner": false
+          },
+          "mode": "min"
+        },
+        {
+          "correct_vs_torch_cuda": true,
+          "median_sec": {
+            "raydb_triton_public_front_door": 0.007316253846511245,
+            "torch_cuda_baseline": 5.1437877118587494e-05
+          },
+          "metadata": {
+            "adapter_front_door_integrated": true,
+            "execution_path": "partner_adapter_front_door",
+            "partner": "triton",
+            "promoted_performance_path": false,
+            "replaces_rt_traversal": false,
+            "uses_cupy_partner": false,
+            "uses_pytorch_partner": false
+          },
+          "mode": "max"
+        },
+        {
+          "correct_vs_torch_cuda": true,
+          "median_sec": {
+            "raydb_triton_public_front_door": 0.005992075894027948,
+            "torch_cuda_baseline": 0.0001502661034464836
+          },
+          "metadata": {
+            "adapter_front_door_integrated": true,
+            "execution_path": "partner_adapter_front_door",
+            "partner": "triton",
+            "promoted_performance_path": false,
+            "replaces_rt_traversal": false,
+            "uses_cupy_partner": false,
+            "uses_pytorch_partner": false
+          },
+          "mode": "avg_as_sum_count"
+        }
+      ],
+      "repeats": 5,
+      "row_count": 1024
+    },
+    {
+      "all_correct": true,
+      "group_count": 4096,
+      "modes": [
+        {
+          "correct_vs_torch_cuda": true,
+          "median_sec": {
+            "raydb_triton_public_front_door": 0.0041102098766714334,
+            "torch_cuda_baseline": 0.00010916893370449543
+          },
+          "metadata": {
+            "adapter_front_door_integrated": true,
+            "execution_path": "partner_adapter_front_door",
+            "partner": "triton",
+            "promoted_performance_path": false,
+            "replaces_rt_traversal": false,
+            "uses_cupy_partner": false,
+            "uses_pytorch_partner": false
+          },
+          "mode": "count"
+        },
+        {
+          "correct_vs_torch_cuda": true,
+          "median_sec": {
+            "raydb_triton_public_front_door": 0.0032212070655077696,
+            "torch_cuda_baseline": 3.829994238913059e-05
+          },
+          "metadata": {
+            "adapter_front_door_integrated": true,
+            "execution_path": "partner_adapter_front_door",
+            "partner": "triton",
+            "promoted_performance_path": false,
+            "replaces_rt_traversal": false,
+            "uses_cupy_partner": false,
+            "uses_pytorch_partner": false
+          },
+          "mode": "sum"
+        },
+        {
+          "correct_vs_torch_cuda": true,
+          "median_sec": {
+            "raydb_triton_public_front_door": 0.005950307939201593,
+            "torch_cuda_baseline": 5.143298767507076e-05
+          },
+          "metadata": {
+            "adapter_front_door_integrated": true,
+            "execution_path": "partner_adapter_front_door",
+            "partner": "triton",
+            "promoted_performance_path": false,
+            "replaces_rt_traversal": false,
+            "uses_cupy_partner": false,
+            "uses_pytorch_partner": false
+          },
+          "mode": "min"
+        },
+        {
+          "correct_vs_torch_cuda": true,
+          "median_sec": {
+            "raydb_triton_public_front_door": 0.007392925908789039,
+            "torch_cuda_baseline": 5.24760689586401e-05
+          },
+          "metadata": {
+            "adapter_front_door_integrated": true,
+            "execution_path": "partner_adapter_front_door",
+            "partner": "triton",
+            "promoted_performance_path": false,
+            "replaces_rt_traversal": false,
+            "uses_cupy_partner": false,
+            "uses_pytorch_partner": false
+          },
+          "mode": "max"
+        },
+        {
+          "correct_vs_torch_cuda": true,
+          "median_sec": {
+            "raydb_triton_public_front_door": 0.005026948172599077,
+            "torch_cuda_baseline": 0.00013650278560817242
+          },
+          "metadata": {
+            "adapter_front_door_integrated": true,
+            "execution_path": "partner_adapter_front_door",
+            "partner": "triton",
+            "promoted_performance_path": false,
+            "replaces_rt_traversal": false,
+            "uses_cupy_partner": false,
+            "uses_pytorch_partner": false
+          },
+          "mode": "avg_as_sum_count"
+        }
+      ],
+      "repeats": 5,
+      "row_count": 65536
+    },
+    {
+      "all_correct": true,
+      "group_count": 4096,
+      "modes": [
+        {
+          "correct_vs_torch_cuda": true,
+          "median_sec": {
+            "raydb_triton_public_front_door": 0.0030160262249410152,
+            "torch_cuda_baseline": 0.00013238401152193546
+          },
+          "metadata": {
+            "adapter_front_door_integrated": true,
+            "execution_path": "partner_adapter_front_door",
+            "partner": "triton",
+            "promoted_performance_path": false,
+            "replaces_rt_traversal": false,
+            "uses_cupy_partner": false,
+            "uses_pytorch_partner": false
+          },
+          "mode": "count"
+        },
+        {
+          "correct_vs_torch_cuda": true,
+          "median_sec": {
+            "raydb_triton_public_front_door": 0.0032630080822855234,
+            "torch_cuda_baseline": 6.544217467308044e-05
+          },
+          "metadata": {
+            "adapter_front_door_integrated": true,
+            "execution_path": "partner_adapter_front_door",
+            "partner": "triton",
+            "promoted_performance_path": false,
+            "replaces_rt_traversal": false,
+            "uses_cupy_partner": false,
+            "uses_pytorch_partner": false
+          },
+          "mode": "sum"
+        },
+        {
+          "correct_vs_torch_cuda": true,
+          "median_sec": {
+            "raydb_triton_public_front_door": 0.006206894991919398,
+            "torch_cuda_baseline": 0.00013843202032148838
+          },
+          "metadata": {
+            "adapter_front_door_integrated": true,
+            "execution_path": "partner_adapter_front_door",
+            "partner": "triton",
+            "promoted_performance_path": false,
+            "replaces_rt_traversal": false,
+            "uses_cupy_partner": false,
+            "uses_pytorch_partner": false
+          },
+          "mode": "min"
+        },
+        {
+          "correct_vs_torch_cuda": true,
+          "median_sec": {
+            "raydb_triton_public_front_door": 0.007411950966343284,
+            "torch_cuda_baseline": 0.0002058891113847494
+          },
+          "metadata": {
+            "adapter_front_door_integrated": true,
+            "execution_path": "partner_adapter_front_door",
+            "partner": "triton",
+            "promoted_performance_path": false,
+            "replaces_rt_traversal": false,
+            "uses_cupy_partner": false,
+            "uses_pytorch_partner": false
+          },
+          "mode": "max"
+        },
+        {
+          "correct_vs_torch_cuda": true,
+          "median_sec": {
+            "raydb_triton_public_front_door": 0.005174244055524468,
+            "torch_cuda_baseline": 0.0002008338924497366
+          },
+          "metadata": {
+            "adapter_front_door_integrated": true,
+            "execution_path": "partner_adapter_front_door",
+            "partner": "triton",
+            "promoted_performance_path": false,
+            "replaces_rt_traversal": false,
+            "uses_cupy_partner": false,
+            "uses_pytorch_partner": false
+          },
+          "mode": "avg_as_sum_count"
+        }
+      ],
+      "repeats": 5,
+      "row_count": 1048576
+    }
+  ],
+  "device": "NVIDIA RTX A5000",
+  "git_head": "d0cd5a022408236c5274e2e21510451bb96df2c7",
+  "goal": "Goal2683 RayDB v2.5 Triton public front-door app validation",
+  "group_count": 4096,
+  "no_public_speedup_claim": true,
+  "pod_validation_required": true,
+  "python_version": "3.12.3",
+  "repeats": 5,
+  "repo_root": "/root/rtdl_goal2785_work",
+  "row_counts": [
+    1024,
+    65536,
+    1048576
+  ],
+  "rt_traversal_replaced": false,
+  "scope": "post_rt_generic_continuation_only",
+  "status": "ok",
+  "torch_version": "2.8.0+cu128",
+  "triton_version": "3.4.0"
+}

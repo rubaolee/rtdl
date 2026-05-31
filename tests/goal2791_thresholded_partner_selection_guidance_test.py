@@ -41,7 +41,7 @@ class Goal2791ThresholdedPartnerSelectionGuidanceTest(unittest.TestCase):
         )
 
         self.assertEqual(validation["status"], "accept")
-        self.assertEqual(guidance["row_count"], 5)
+        self.assertEqual(guidance["row_count"], 9)
         self.assertEqual(plan["status"], "measured_mixed_preview_guidance")
         self.assertFalse(plan["auto_select_partner_allowed"])
 

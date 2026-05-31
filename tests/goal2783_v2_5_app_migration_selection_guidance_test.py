@@ -93,13 +93,31 @@ class Goal2783V25AppMigrationSelectionGuidanceTest(unittest.TestCase):
 
     def test_apps_without_measured_negative_guidance_do_not_gain_false_selection_claims(self) -> None:
         apps = {app["app_id"]: app for app in rt.v2_5_triton_benchmark_app_migration_plan()["apps"]}
-        for app_id in ("raydb_style", "spatial_rayjoin", "rt_dbscan"):
+        for app_id in ("spatial_rayjoin", "rt_dbscan"):
             with self.subTest(app_id=app_id):
                 app = apps[app_id]
                 self.assertEqual(app["measured_negative_preview_guidance_count"], 0)
                 self.assertEqual(app["measured_mixed_preview_guidance_count"], 0)
                 self.assertEqual(app["partner_selection_guidance"], ())
                 self.assertFalse(app["auto_select_preview_partner_allowed"])
+
+    def test_raydb_scalar_reductions_record_goal2796_negative_guidance(self) -> None:
+        apps = {app["app_id"]: app for app in rt.v2_5_triton_benchmark_app_migration_plan()["apps"]}
+        raydb = apps["raydb_style"]
+        guidance_by_operation = {
+            guidance["matches"][0]["operation"]: guidance
+            for guidance in raydb["partner_selection_guidance"]
+        }
+
+        self.assertEqual(raydb["measured_negative_preview_guidance_count"], 4)
+        self.assertEqual(raydb["measured_mixed_preview_guidance_count"], 0)
+        self.assertFalse(raydb["auto_select_preview_partner_allowed"])
+        for operation in ("segmented_count_i64", "segmented_sum_f64", "segmented_min_f64", "segmented_max_f64"):
+            with self.subTest(operation=operation):
+                guidance = guidance_by_operation[operation]
+                self.assertEqual(guidance["status"], "measured_negative_preview_guidance")
+                self.assertEqual(guidance["matches"][0]["evidence_goal"], "Goal2796")
+                self.assertFalse(guidance["auto_select_partner_allowed"])
 
     def test_report_and_consensus_record_selection_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")

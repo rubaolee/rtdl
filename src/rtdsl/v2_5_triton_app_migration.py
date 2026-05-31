@@ -100,6 +100,12 @@ V2_5_TRITON_BENCHMARK_APP_PLANS: tuple[V25TritonBenchmarkAppPlan, ...] = (
         v2_5_status="primitive_first_after_goal2727_hit_stream_reserved_for_unfused_continuations",
         first_port_action="Route grouped count/sum/min/max to the prepared fused RTDL primitive; reserve typed hit-stream adapters for unfused continuations.",
         notes="Goal2727 showed hit-stream plus Triton is slower than the prepared fused primitive for RayDB scalar grouped reductions.",
+        measured_selection_shapes=(
+            ("segmented_count_i64", "raydb_scalar_grouped_reduction_frontdoor"),
+            ("segmented_sum_f64", "raydb_scalar_grouped_reduction_frontdoor"),
+            ("segmented_min_f64", "raydb_scalar_grouped_reduction_frontdoor"),
+            ("segmented_max_f64", "raydb_scalar_grouped_reduction_frontdoor"),
+        ),
     ),
     V25TritonBenchmarkAppPlan(
         app_id="spatial_rayjoin",

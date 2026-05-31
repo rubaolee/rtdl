@@ -168,6 +168,78 @@ V2_5_PARTNER_SELECTION_GUIDANCE_ROWS: tuple[
     V25PartnerSelectionGuidanceRow | V25PartnerConditionalGuidanceRow, ...
 ] = (
     V25PartnerSelectionGuidanceRow(
+        operation="segmented_count_i64",
+        workload_shape="raydb_scalar_grouped_reduction_frontdoor",
+        measured_partner="triton",
+        comparison_partner="torch_cuda_same_contract_reduction",
+        evidence_goal="Goal2796",
+        artifact_path="docs/reports/goal2796_pod_artifacts/raydb_triton_frontdoor_current.json",
+        measured_partner_slower_min_ratio=22.78,
+        measured_partner_slower_max_ratio=38.04,
+        recommendation=(
+            "Do not auto-select Triton for RayDB-style scalar grouped count. "
+            "Goal2796 shows the Triton public front door is correct, but "
+            "Torch CUDA is 22.78x-38.04x faster on the measured RTX A5000 "
+            "row-count sweep. Keep primitive-first RTDL or another explicitly "
+            "selected same-contract partner until the scalar reduction preview "
+            "wins timing."
+        ),
+    ),
+    V25PartnerSelectionGuidanceRow(
+        operation="segmented_sum_f64",
+        workload_shape="raydb_scalar_grouped_reduction_frontdoor",
+        measured_partner="triton",
+        comparison_partner="torch_cuda_same_contract_reduction",
+        evidence_goal="Goal2796",
+        artifact_path="docs/reports/goal2796_pod_artifacts/raydb_triton_frontdoor_current.json",
+        measured_partner_slower_min_ratio=38.29,
+        measured_partner_slower_max_ratio=84.10,
+        recommendation=(
+            "Do not auto-select Triton for RayDB-style scalar grouped sum. "
+            "Goal2796 shows the Triton public front door is correct, but "
+            "Torch CUDA is 38.29x-84.10x faster on the measured RTX A5000 "
+            "row-count sweep. Keep primitive-first RTDL or another explicitly "
+            "selected same-contract partner until the scalar reduction preview "
+            "wins timing."
+        ),
+    ),
+    V25PartnerSelectionGuidanceRow(
+        operation="segmented_min_f64",
+        workload_shape="raydb_scalar_grouped_reduction_frontdoor",
+        measured_partner="triton",
+        comparison_partner="torch_cuda_same_contract_reduction",
+        evidence_goal="Goal2796",
+        artifact_path="docs/reports/goal2796_pod_artifacts/raydb_triton_frontdoor_current.json",
+        measured_partner_slower_min_ratio=44.84,
+        measured_partner_slower_max_ratio=192.49,
+        recommendation=(
+            "Do not auto-select Triton for RayDB-style scalar grouped min. "
+            "Goal2796 shows the Triton public front door is correct, but "
+            "Torch CUDA is 44.84x-192.49x faster on the measured RTX A5000 "
+            "row-count sweep. Keep primitive-first RTDL or another explicitly "
+            "selected same-contract partner until the scalar reduction preview "
+            "wins timing."
+        ),
+    ),
+    V25PartnerSelectionGuidanceRow(
+        operation="segmented_max_f64",
+        workload_shape="raydb_scalar_grouped_reduction_frontdoor",
+        measured_partner="triton",
+        comparison_partner="torch_cuda_same_contract_reduction",
+        evidence_goal="Goal2796",
+        artifact_path="docs/reports/goal2796_pod_artifacts/raydb_triton_frontdoor_current.json",
+        measured_partner_slower_min_ratio=36.00,
+        measured_partner_slower_max_ratio=142.23,
+        recommendation=(
+            "Do not auto-select Triton for RayDB-style scalar grouped max. "
+            "Goal2796 shows the Triton public front door is correct, but "
+            "Torch CUDA is 36.00x-142.23x faster on the measured RTX A5000 "
+            "row-count sweep. Keep primitive-first RTDL or another explicitly "
+            "selected same-contract partner until the scalar reduction preview "
+            "wins timing."
+        ),
+    ),
+    V25PartnerSelectionGuidanceRow(
         operation="grouped_topk_f64",
         workload_shape="dense_exact_topk_candidate_ranking",
         measured_partner="triton",
