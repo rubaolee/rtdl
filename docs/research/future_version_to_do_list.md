@@ -703,6 +703,12 @@ Future work:
   dense rows. Keep the adapter as a correct generic surface, but do not promote
   this Triton implementation for Barnes-Hut/N-body-style performance until a
   stronger segmented/block reduction design replaces the direct atomic preview.
+- Goal2785 adds an atomics-free presegmented row-offset vector-sum path. It is
+  generic and correct, but only improves the Triton atomic path by about 0.7% to
+  9.3% on the measured RTX A5000 rows and remains about 4.3x-14.6x slower than
+  Torch scatter-add. The next vector-sum leap likely needs a stronger persistent
+  block/warp segmented reduction, better rows-per-group batching, or explicit
+  Torch selection for dense prepared vector sums.
 
 Boundary:
 

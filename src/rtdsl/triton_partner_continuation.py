@@ -17,6 +17,7 @@ from .partner_protocol import v2_4_phase_timing_metadata
 
 TRITON_SEGMENTED_SUM_F64_OPERATION = "segmented_sum_f64"
 TRITON_GROUPED_VECTOR_SUM_F64X2_OPERATION = "grouped_vector_sum_f64x2"
+TRITON_GROUPED_VECTOR_SUM_F64X2_OFFSETS_KERNEL = "grouped_vector_sum_f64x2_offsets_kernel"
 TRITON_SEGMENTED_COUNT_I64_OPERATION = "segmented_count_i64"
 TRITON_SEGMENTED_MIN_F64_OPERATION = "segmented_min_f64"
 TRITON_SEGMENTED_MAX_F64_OPERATION = "segmented_max_f64"
@@ -617,6 +618,82 @@ def run_triton_grouped_vector_sum_f64x2(
         extra_metadata={
             "vector_width": 2,
             "component_contract": "paired_float64_components",
+        },
+    )
+
+
+def run_triton_grouped_vector_sum_f64x2_by_offsets(
+    row_offsets: Any,
+    values_x: Any,
+    values_y: Any,
+    *,
+    max_group_block_size: int = 2048,
+) -> dict[str, object]:
+    """Run grouped vector sum for presegmented rows using row offsets."""
+
+    triton, torch, tl = _import_triton_stack()
+    _validate_torch_cuda_vector(row_offsets, name="row_offsets", dtype=torch.int64)
+    _validate_torch_cuda_vector(values_x, name="values_x", dtype=torch.float64)
+    _validate_torch_cuda_vector(values_y, name="values_y", dtype=torch.float64)
+    if tuple(values_x.shape) != tuple(values_y.shape):
+        raise ValueError("values_x and values_y must have the same shape")
+    group_count = int(row_offsets.numel()) - 1
+    row_count = int(values_x.numel())
+    if group_count < 0:
+        raise ValueError("row_offsets must contain at least one element")
+    if group_count == 0:
+        sum_x = torch.empty((0,), dtype=torch.float64, device=values_x.device)
+        sum_y = torch.empty((0,), dtype=torch.float64, device=values_y.device)
+        return _triton_run_result(
+            operation=TRITON_GROUPED_VECTOR_SUM_F64X2_OPERATION,
+            outputs={"sum_x": sum_x, "sum_y": sum_y},
+            elapsed=0.0,
+            source="run_triton_grouped_vector_sum_f64x2_by_offsets",
+            group_id_bounds_validation_mode=TRITON_GROUP_ID_BOUNDS_NOT_APPLICABLE,
+            extra_metadata={
+                "presegmented_row_offsets": True,
+                "adapter_kernel": TRITON_GROUPED_VECTOR_SUM_F64X2_OFFSETS_KERNEL,
+            },
+        )
+    if bool(torch.any(row_offsets[1:] < row_offsets[:-1]).item()):
+        raise ValueError("row_offsets must be monotonically nondecreasing")
+    if int(row_offsets[0].item()) != 0 or int(row_offsets[-1].item()) != row_count:
+        raise ValueError("row_offsets must start at 0 and end at the row count")
+    group_lengths = row_offsets[1:] - row_offsets[:-1]
+    max_group_size = int(torch.max(group_lengths).item())
+    block_size = max(1, int(triton.next_power_of_2(max_group_size)))
+    if block_size > int(max_group_block_size):
+        raise ValueError("presegmented vector-sum group length exceeds max_group_block_size")
+
+    torch.cuda.synchronize(values_x.device)
+    started = perf_counter()
+    sum_x = torch.empty((group_count,), dtype=torch.float64, device=values_x.device)
+    sum_y = torch.empty((group_count,), dtype=torch.float64, device=values_y.device)
+    _triton_grouped_vector_sum_f64x2_offsets_kernel(tl)[(group_count,)](
+        row_offsets,
+        values_x,
+        values_y,
+        sum_x,
+        sum_y,
+        BLOCK_SIZE=block_size,
+    )
+    torch.cuda.synchronize(values_x.device)
+    elapsed = perf_counter() - started
+
+    return _triton_run_result(
+        operation=TRITON_GROUPED_VECTOR_SUM_F64X2_OPERATION,
+        outputs={"sum_x": sum_x, "sum_y": sum_y},
+        elapsed=elapsed,
+        source="run_triton_grouped_vector_sum_f64x2_by_offsets",
+        group_id_bounds_validation_mode=TRITON_GROUP_ID_BOUNDS_NOT_APPLICABLE,
+        extra_metadata={
+            "vector_width": 2,
+            "component_contract": "paired_float64_components",
+            "presegmented_row_offsets": True,
+            "adapter_kernel": TRITON_GROUPED_VECTOR_SUM_F64X2_OFFSETS_KERNEL,
+            "max_group_size": max_group_size,
+            "max_group_block_size": int(max_group_block_size),
+            "global_atomic_add_used": False,
         },
     )
 
@@ -1593,6 +1670,22 @@ def _triton_grouped_vector_sum_f64x2_kernel(tl):
         valid = mask & (groups >= 0) & (groups < group_count)
         tl.atomic_add(output_x + groups, vals_x, sem="relaxed", mask=valid)
         tl.atomic_add(output_y + groups, vals_y, sem="relaxed", mask=valid)
+
+    return kernel
+
+
+def _triton_grouped_vector_sum_f64x2_offsets_kernel(tl):
+    @__import__("triton").jit
+    def kernel(row_offsets, values_x, values_y, output_x, output_y, BLOCK_SIZE: tl.constexpr):
+        group = tl.program_id(0)
+        start = tl.load(row_offsets + group)
+        end = tl.load(row_offsets + group + 1)
+        offsets = start + tl.arange(0, BLOCK_SIZE)
+        valid = offsets < end
+        vals_x = tl.load(values_x + offsets, mask=valid, other=0.0)
+        vals_y = tl.load(values_y + offsets, mask=valid, other=0.0)
+        tl.store(output_x + group, tl.sum(vals_x, axis=0))
+        tl.store(output_y + group, tl.sum(vals_y, axis=0))
 
     return kernel
 

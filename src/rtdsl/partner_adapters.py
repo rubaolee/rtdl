@@ -13,6 +13,7 @@ from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE
 from .triton_partner_continuation import run_triton_partner_continuation
 from .triton_partner_continuation import run_triton_dense_point_topk_2d
+from .triton_partner_continuation import run_triton_grouped_vector_sum_f64x2_by_offsets
 
 _UINT32_MAX = 2**32 - 1
 _CUPY_COLUMNAR_PREDICATE_BATCH_KERNELS = {}
@@ -1710,6 +1711,7 @@ def grouped_vector_sum_2d_partner_columns(
     group_ids = vector_columns.get("group_ids", vector_columns.get("source_ids"))
     values_x = vector_columns.get("values_x", vector_columns.get("vector_x"))
     values_y = vector_columns.get("values_y", vector_columns.get("vector_y"))
+    row_offsets = vector_columns.get("row_offsets")
     if group_ids is None or values_x is None or values_y is None:
         raise ValueError(
             "vector_columns must contain group_ids/source_ids and values_x/vector_x plus values_y/vector_y"
@@ -1727,13 +1729,23 @@ def grouped_vector_sum_2d_partner_columns(
         values_y = values_y.to(module.float64)
         row_count = int(group_ids.numel())
 
-    sum_x, sum_y = partner_group_vector_sum_2d_by_key(
-        group_ids,
-        values_x,
-        values_y,
-        group_count,
-        partner=runtime["name"],
-    )
+    triton_offset_result = None
+    if runtime["name"] == "triton" and row_offsets is not None:
+        triton_offset_result = run_triton_grouped_vector_sum_f64x2_by_offsets(
+            row_offsets.to(runtime["int64"]),
+            values_x,
+            values_y,
+        )
+        sum_x = triton_offset_result["outputs"]["sum_x"]
+        sum_y = triton_offset_result["outputs"]["sum_y"]
+    else:
+        sum_x, sum_y = partner_group_vector_sum_2d_by_key(
+            group_ids,
+            values_x,
+            values_y,
+            group_count,
+            partner=runtime["name"],
+        )
     runtime["sync"]()
     columns = {
         "group_ids": runtime["tensor"](range(group_count), runtime["int64"], runtime["device"]),
@@ -1751,6 +1763,13 @@ def grouped_vector_sum_2d_partner_columns(
         "v2_5_triton_preview_kernel_used": runtime["name"] == "triton",
         "v2_5_triton_preview_kernel_status": (
             "preview_not_promoted" if runtime["name"] == "triton" else None
+        ),
+        "v2_5_triton_presegmented_offsets_used": triton_offset_result is not None,
+        "v2_5_triton_adapter_kernel": (
+            triton_offset_result["adapter_kernel"] if triton_offset_result is not None else None
+        ),
+        "v2_5_triton_global_atomic_add_used": (
+            triton_offset_result["global_atomic_add_used"] if triton_offset_result is not None else None
         ),
         "native_engine_row_contract": "not_called_partner_continuation_only",
         "group_count": group_count,
