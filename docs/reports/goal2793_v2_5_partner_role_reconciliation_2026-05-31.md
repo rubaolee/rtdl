@@ -74,6 +74,22 @@ py_compile with PYTHONPYCACHEPREFIX=scratch\pycache_goal2793_local
 OK
 ```
 
+Pod clean-check validation after push:
+
+```text
+Host: 69.30.85.171
+Port: 22167
+Commit: 52a65623
+
+PYTHONPATH=src:. python3 -m unittest \
+  tests.goal2793_v2_5_partner_role_reconciliation_test \
+  tests.goal2696_v2_5_partner_support_matrix_test \
+  tests.goal2783_v2_5_app_migration_selection_guidance_test
+
+Ran 15 tests in 0.009s
+OK
+```
+
 ## Decision
 
 `accept-with-boundary`
