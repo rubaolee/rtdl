@@ -1924,15 +1924,15 @@ class PreparedOptixFixedRadiusRankedSummaryAggregateBatchGraph3D:
             raise RuntimeError("prepared OptiX fixed-radius-neighbor 3D handle is closed")
         if prepared_queries.closed:
             raise RuntimeError("prepared OptiX fixed-radius query handle is closed")
-        if not requests:
-            raise ValueError("prepared fixed-radius aggregate graph requires at least one request")
+        normalized_requests = _normalize_fixed_radius_graph_requests(owner, requests)
         self._owner = owner
         self._prepared_queries = prepared_queries
-        self._requests = requests
+        self._requests = normalized_requests
         self._precision = precision
         self._handle = ctypes.c_void_p()
         self._closed = False
         self._empty_results = None
+        self._request_buffer_update_count = 0
 
         if prepared_queries.count == 0 or owner._packed_search.count == 0:
             self._empty_results = tuple(
@@ -1948,8 +1948,9 @@ class PreparedOptixFixedRadiusRankedSummaryAggregateBatchGraph3D:
                     "radius": float(request["radius"]),
                     "k_max": int(request["k_max"]),
                     "cuda_graph_replay": True,
+                    "request_buffer_update_count": 0,
                 }
-                for index, request in enumerate(requests)
+                for index, request in enumerate(self._requests)
             )
             return
 
@@ -1961,11 +1962,11 @@ class PreparedOptixFixedRadiusRankedSummaryAggregateBatchGraph3D:
                 "loaded OptiX backend library does not export "
                 f"{symbol_name}; rebuild the OptiX backend from current main"
             )
-        radii = (ctypes.c_double * len(requests))(
-            *[float(request["radius"]) for request in requests]
+        radii = (ctypes.c_double * len(self._requests))(
+            *[float(request["radius"]) for request in self._requests]
         )
-        k_values = (ctypes.c_size_t * len(requests))(
-            *[int(request["k_max"]) for request in requests]
+        k_values = (ctypes.c_size_t * len(self._requests))(
+            *[int(request["k_max"]) for request in self._requests]
         )
         error = ctypes.create_string_buffer(4096)
         status = symbol(
@@ -1973,7 +1974,7 @@ class PreparedOptixFixedRadiusRankedSummaryAggregateBatchGraph3D:
             prepared_queries._handle,
             radii,
             k_values,
-            ctypes.c_size_t(len(requests)),
+            ctypes.c_size_t(len(self._requests)),
             ctypes.byref(self._handle),
             error,
             len(error),
@@ -1983,6 +1984,70 @@ class PreparedOptixFixedRadiusRankedSummaryAggregateBatchGraph3D:
     @property
     def closed(self) -> bool:
         return self._closed
+
+    @property
+    def request_buffer_update_count(self) -> int:
+        return int(getattr(self, "_request_buffer_update_count", 0))
+
+    def update_requests(self, requests) -> None:
+        if self._closed:
+            raise RuntimeError("prepared fixed-radius aggregate graph handle is closed")
+        if self._owner.closed:
+            raise RuntimeError("prepared OptiX fixed-radius-neighbor 3D handle is closed")
+        if self._prepared_queries.closed:
+            raise RuntimeError("prepared OptiX fixed-radius query handle is closed")
+        normalized_requests = _normalize_fixed_radius_graph_requests(self._owner, requests)
+        if len(normalized_requests) != len(self._requests):
+            raise ValueError("prepared fixed-radius aggregate graph request updates must keep request_count unchanged")
+
+        if self._empty_results is not None:
+            self._requests = normalized_requests
+            self._request_buffer_update_count += 1
+            self._empty_results = tuple(
+                {
+                    "query_count": int(self._prepared_queries.count),
+                    "bounded_neighbor_count": 0,
+                    "nearest_id_checksum": 0,
+                    "kth_id_checksum": 0,
+                    "sum_distance": 0.0,
+                    "precision": self._precision,
+                    "query_resident": True,
+                    "request_index": index,
+                    "radius": float(request["radius"]),
+                    "k_max": int(request["k_max"]),
+                    "cuda_graph_replay": True,
+                    "request_buffer_update_count": self.request_buffer_update_count,
+                }
+                for index, request in enumerate(self._requests)
+            )
+            return
+
+        lib = _load_optix_library()
+        symbol_name = "rtdl_optix_update_fixed_radius_ranked_summary_aggregate_batch_graph_3d"
+        symbol = _find_optional_backend_symbol(lib, symbol_name)
+        if symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                f"{symbol_name}; rebuild the OptiX backend from current main"
+            )
+        radii = (ctypes.c_double * len(normalized_requests))(
+            *[float(request["radius"]) for request in normalized_requests]
+        )
+        k_values = (ctypes.c_size_t * len(normalized_requests))(
+            *[int(request["k_max"]) for request in normalized_requests]
+        )
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            self._handle,
+            radii,
+            k_values,
+            ctypes.c_size_t(len(normalized_requests)),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        self._requests = normalized_requests
+        self._request_buffer_update_count += 1
 
     def replay(self) -> tuple[dict[str, object], ...]:
         if self._closed:
@@ -2024,6 +2089,7 @@ class PreparedOptixFixedRadiusRankedSummaryAggregateBatchGraph3D:
                 "radius": float(self._requests[index]["radius"]),
                 "k_max": int(self._requests[index]["k_max"]),
                 "cuda_graph_replay": True,
+                "request_buffer_update_count": self.request_buffer_update_count,
             }
             for index, aggregate in enumerate(aggregates)
         )
@@ -2054,6 +2120,29 @@ class PreparedOptixFixedRadiusRankedSummaryAggregateBatchGraph3D:
             self.close()
         except Exception:
             pass
+
+
+def _normalize_fixed_radius_graph_requests(
+    owner: "PreparedOptixFixedRadiusNeighbors3D",
+    requests,
+) -> tuple[dict[str, object], ...]:
+    normalized = tuple(dict(request) for request in requests)
+    if not normalized:
+        raise ValueError("prepared fixed-radius aggregate graph requires at least one request")
+    requests_out = []
+    for request in normalized:
+        radius = float(request["radius"])
+        k_max = int(request["k_max"])
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if radius > owner._max_radius:
+            raise ValueError("radius must be less than or equal to prepared max_radius")
+        if k_max <= 0:
+            raise ValueError("k_max must be positive")
+        if k_max > 64:
+            raise ValueError("PreparedOptixFixedRadiusNeighbors3D prepared query aggregate graph currently supports k_max <= 64")
+        requests_out.append({"radius": radius, "k_max": k_max})
+    return tuple(requests_out)
 
 
 class PreparedOptixFixedRadiusNeighbors3D:
@@ -2592,26 +2681,10 @@ class PreparedOptixFixedRadiusNeighbors3D:
             raise RuntimeError("prepared OptiX fixed-radius query handle is closed")
         if precision != "float32":
             raise ValueError("prepared query aggregate graph currently supports precision='float32'")
-        normalized = tuple(dict(request) for request in requests)
-        if not normalized:
-            raise ValueError("prepared query aggregate graph requires at least one request")
-        requests_out = []
-        for request in normalized:
-            radius = float(request["radius"])
-            k_max = int(request["k_max"])
-            if radius < 0:
-                raise ValueError("radius must be non-negative")
-            if radius > self._max_radius:
-                raise ValueError("radius must be less than or equal to prepared max_radius")
-            if k_max <= 0:
-                raise ValueError("k_max must be positive")
-            if k_max > 64:
-                raise ValueError("PreparedOptixFixedRadiusNeighbors3D prepared query aggregate graph currently supports k_max <= 64")
-            requests_out.append({"radius": radius, "k_max": k_max})
         return PreparedOptixFixedRadiusRankedSummaryAggregateBatchGraph3D(
             self,
             prepared_queries,
-            tuple(requests_out),
+            _normalize_fixed_radius_graph_requests(self, requests),
             precision=precision,
         )
 
@@ -16864,6 +16937,17 @@ def _register_argtypes(lib) -> None:
         symbol.argtypes = [
             ctypes.c_void_p,
             ctypes.POINTER(_RtdlFixedRadiusRankedNeighborAggregate),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_update_fixed_radius_ranked_summary_aggregate_batch_graph_3d")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_size_t,
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         symbol.restype = ctypes.c_int

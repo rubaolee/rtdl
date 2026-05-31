@@ -4354,6 +4354,22 @@ extern "C" int rtdl_optix_replay_fixed_radius_ranked_summary_aggregate_batch_gra
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_update_fixed_radius_ranked_summary_aggregate_batch_graph_3d(
+        void* graph,
+        const double* radii,
+        const size_t* k_values,
+        size_t request_count,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        update_fixed_radius_ranked_summary_aggregate_batch_graph_3d_optix(
+            reinterpret_cast<PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D*>(graph),
+            radii,
+            k_values,
+            request_count);
+    }, error_out, error_size);
+}
+
 extern "C" void rtdl_optix_destroy_fixed_radius_ranked_summary_aggregate_batch_graph_3d(void* graph)
 {
     delete reinterpret_cast<PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D*>(graph);

@@ -14414,6 +14414,39 @@ struct PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D {
         const PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D&) = delete;
     PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D& operator=(
         const PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D&) = delete;
+
+    void update_requests(
+            const double* radii,
+            const size_t* k_values,
+            size_t request_count_in)
+    {
+        if (!radii && request_count_in != 0)
+            throw std::runtime_error("radii pointer must not be null when request_count is nonzero");
+        if (!k_values && request_count_in != 0)
+            throw std::runtime_error("k_values pointer must not be null when request_count is nonzero");
+        if (request_count_in != request_count)
+            throw std::runtime_error("fixed_radius_neighbors_3d graph request update requires unchanged request_count");
+
+        std::vector<float> radii_f(request_count);
+        std::vector<uint32_t> k_values_u32(request_count);
+        for (size_t request_index = 0; request_index < request_count; ++request_index) {
+            const double radius = radii[request_index];
+            const size_t k_max = k_values[request_index];
+            if (radius < 0.0) throw std::runtime_error("fixed_radius_neighbors_3d radius must be non-negative");
+            if (radius > prepared->max_radius + 1.0e-7) {
+                throw std::runtime_error("fixed_radius_neighbors_3d radius exceeds prepared max_radius");
+            }
+            if (k_max == 0)
+                throw std::runtime_error("fixed_radius_neighbors_3d k_max must be positive");
+            if (k_max > 64)
+                throw std::runtime_error("prepared ranked fixed_radius_neighbors_3d aggregate currently supports k_max <= 64");
+            radii_f[request_index] = static_cast<float>(radius);
+            k_values_u32[request_index] =
+                static_cast<uint32_t>(std::min(k_max, prepared->search_points.size()));
+        }
+        upload(d_radii->ptr, radii_f.data(), request_count);
+        upload(d_k_values->ptr, k_values_u32.data(), request_count);
+    }
 };
 
 static PreparedFixedRadiusNeighborsGrid3D* prepare_fixed_radius_neighbors_grid_3d_optix(
@@ -15489,6 +15522,16 @@ prepare_fixed_radius_ranked_summary_aggregate_batch_graph_3d_optix(
         radii,
         k_values,
         request_count);
+}
+
+static void update_fixed_radius_ranked_summary_aggregate_batch_graph_3d_optix(
+        PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D* graph_handle,
+        const double* radii,
+        const size_t* k_values,
+        size_t request_count)
+{
+    if (!graph_handle) throw std::runtime_error("prepared fixed_radius_neighbors_3d graph handle must not be null");
+    graph_handle->update_requests(radii, k_values, request_count);
 }
 
 static void replay_fixed_radius_ranked_summary_aggregate_batch_graph_3d_optix(
