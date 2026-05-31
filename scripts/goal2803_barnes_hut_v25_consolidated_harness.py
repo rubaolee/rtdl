@@ -68,6 +68,14 @@ def _run_membership_cases(
             f"{index + 1}/{len(cases)}: bodies={body_count}, bucket={bucket_size}, "
             f"repeats={repeats}, validate={validate_case}"
         )
+
+        def _case_progress(message: str) -> None:
+            print(
+                f"[goal2803] membership case {index + 1}/{len(cases)} progress: {message}",
+                file=sys.stderr,
+                flush=True,
+            )
+
         start = time.perf_counter()
         with contextlib.redirect_stdout(io.StringIO()) if suppress_case_json else contextlib.nullcontext():
             case = run_case(
@@ -76,6 +84,7 @@ def _run_membership_cases(
                 theta=0.5,
                 repeats=int(repeats),
                 validate=validate_case,
+                progress_callback=_case_progress,
             )
         embree = case["backends"]["embree"]
         optix = case["backends"]["optix"]

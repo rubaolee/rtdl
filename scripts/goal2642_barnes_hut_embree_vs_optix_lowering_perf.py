@@ -7,7 +7,7 @@ import json
 import statistics
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from examples.v2_0.research_benchmarks.barnes_hut import (
     rtdl_barnes_hut_benchmark_app as bench,
@@ -85,6 +85,7 @@ def run_case(
     theta: float,
     repeats: int,
     validate: bool,
+    progress_callback: Callable[[str], None] | None = None,
 ) -> dict[str, Any]:
     case: dict[str, Any] = {
         "body_count": body_count,
@@ -96,8 +97,13 @@ def run_case(
     }
     for backend in ("embree", "optix"):
         samples: list[dict[str, Any]] = []
-        for _ in range(repeats):
+        for repeat_index in range(repeats):
+            if progress_callback is not None:
+                progress_callback(
+                    f"backend={backend} repeat={repeat_index + 1}/{repeats} start"
+                )
             gc.collect()
+            repeat_start = time.perf_counter()
             samples.append(
                 _run_once(
                     backend=backend,
@@ -107,6 +113,11 @@ def run_case(
                     validate=validate,
                 )
             )
+            if progress_callback is not None:
+                progress_callback(
+                    f"backend={backend} repeat={repeat_index + 1}/{repeats} "
+                    f"done sec={time.perf_counter() - repeat_start:.3f}"
+                )
         case["backends"][backend] = _summarize_samples(samples)
     embree = case["backends"]["embree"]
     optix = case["backends"]["optix"]
