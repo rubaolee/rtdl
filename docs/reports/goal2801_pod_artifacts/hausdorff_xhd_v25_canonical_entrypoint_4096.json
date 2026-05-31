@@ -1,0 +1,69 @@
+{
+  "app": "hausdorff_xhd",
+  "baseline": {
+    "elapsed_sec": 0.004478201037272811,
+    "exact_value": true,
+    "method": "cupy_grouped_grid_rawkernel",
+    "result": {
+      "direction": "b_to_a",
+      "distance": 0.13528455701336056,
+      "elapsed_sec": 0.004478201037272811,
+      "method": "cupy_grouped_grid_rawkernel",
+      "source_index": 472,
+      "target_index": 1183
+    },
+    "uses_rt_cores": false,
+    "uses_rtdl": false,
+    "wrapper_elapsed_sec": 0.5479244838934392
+  },
+  "benchmark_track": "canonical_exact_hausdorff_entrypoint",
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "canonical_entrypoint": true,
+    "native_engine_customization": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rtdl_beats_cupy_grid_claim_authorized": false,
+    "rtdl_beats_xhd_claim_authorized": false,
+    "triton_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "distance_error": 0.0,
+  "elapsed_sec": 1.2056151770520955,
+  "entrypoint_version": "rtdl.goal2801.hausdorff_xhd_v2_5_canonical_entrypoint.v1",
+  "goal": "Goal2801",
+  "matches_exact_baseline": true,
+  "rtdl": {
+    "elapsed_sec": 0.6494873950723559,
+    "exact_value": true,
+    "method": "rtdl_rt_grouped_adaptive_nearest_witness",
+    "result": {
+      "backend": "optix",
+      "direction": "b_to_a",
+      "distance": 0.13528455701336056,
+      "elapsed_sec": 0.6494873950723559,
+      "exact_value": true,
+      "method": "rtdl_rt_grouped_adaptive_nearest_witness",
+      "radius_strategy": "rt_grouped_adaptive_radius",
+      "rt_core_accelerated": true,
+      "source_index": 472,
+      "target_index": 1183,
+      "threshold_iterations": 6,
+      "witness_radius": 0.21841777968662535
+    },
+    "uses_rt_cores": true,
+    "uses_rtdl": true,
+    "wrapper_elapsed_sec": 0.6496582550462335
+  },
+  "rtdl_over_cupy_grid_elapsed_ratio": 145.03310362053074,
+  "scenario": {
+    "exact_tolerance": 1e-09,
+    "offset_x": 0.08,
+    "offset_y": -0.06,
+    "points_a": 4096,
+    "points_b": 4096,
+    "seed_a": 11,
+    "seed_b": 29
+  },
+  "status": "pass"
+}

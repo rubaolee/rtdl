@@ -1,0 +1,159 @@
+from __future__ import annotations
+
+import argparse
+import json
+import math
+import sys
+import time
+from dataclasses import asdict
+from pathlib import Path
+from typing import Any
+
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT))
+
+from examples.v2_0.research_benchmarks.hausdorff_xhd import (  # noqa: E402
+    rtdl_hausdorff_v2_function as hd,
+)
+
+
+GOAL2801_ENTRYPOINT_VERSION = "rtdl.goal2801.hausdorff_xhd_v2_5_canonical_entrypoint.v1"
+DEFAULT_RTDL_METHOD = "rtdl_rt_grouped_adaptive_nearest_witness"
+CLAIM_BOUNDARY = {
+    "canonical_entrypoint": True,
+    "public_speedup_claim_authorized": False,
+    "whole_app_speedup_claim_authorized": False,
+    "rtdl_beats_xhd_claim_authorized": False,
+    "rtdl_beats_cupy_grid_claim_authorized": False,
+    "broad_rt_core_speedup_claim_authorized": False,
+    "triton_speedup_claim_authorized": False,
+    "paper_reproduction_claim_authorized": False,
+    "native_engine_customization": False,
+}
+
+
+def run_goal2801_hausdorff_entrypoint(
+    *,
+    points_a: int,
+    points_b: int,
+    seed_a: int = 11,
+    seed_b: int = 29,
+    offset_x: float = 0.08,
+    offset_y: float = -0.06,
+    rtdl_method: str = DEFAULT_RTDL_METHOD,
+    exact_tolerance: float = 1.0e-9,
+) -> dict[str, Any]:
+    started = time.perf_counter()
+    a_points = hd.make_demo_points(int(points_a), seed=int(seed_a))
+    b_points = hd.make_demo_points(int(points_b), seed=int(seed_b), offset=(float(offset_x), float(offset_y)))
+
+    baseline_started = time.perf_counter()
+    baseline = hd.hausdorff_distance_2d(
+        a_points,
+        b_points,
+        method="cupy_grouped_grid_rawkernel",
+        warmup=1,
+    )
+    baseline_elapsed_sec = time.perf_counter() - baseline_started
+
+    rtdl_started = time.perf_counter()
+    if rtdl_method == "rtdl_rt_grouped_adaptive_nearest_witness":
+        rtdl_result = hd.hausdorff_distance_2d_rt_grouped_adaptive_nearest_witness(a_points, b_points)
+    elif rtdl_method == "rtdl_rt_grouped_reduced_nearest_witness":
+        rtdl_result = hd.hausdorff_distance_2d_rt_grouped_reduced_nearest_witness(a_points, b_points)
+    else:
+        raise ValueError("rtdl_method must be rtdl_rt_grouped_adaptive_nearest_witness or rtdl_rt_grouped_reduced_nearest_witness")
+    rtdl_elapsed_sec = time.perf_counter() - rtdl_started
+
+    baseline_payload = asdict(baseline)
+    rtdl_payload = asdict(rtdl_result)
+    distance_error = abs(float(rtdl_result.distance) - float(baseline.distance))
+    witness_distance_match = math.isclose(
+        float(rtdl_result.distance),
+        float(baseline.distance),
+        rel_tol=float(exact_tolerance),
+        abs_tol=float(exact_tolerance),
+    )
+    status = "pass" if witness_distance_match else "mismatch"
+    return {
+        "goal": "Goal2801",
+        "entrypoint_version": GOAL2801_ENTRYPOINT_VERSION,
+        "status": status,
+        "app": "hausdorff_xhd",
+        "benchmark_track": "canonical_exact_hausdorff_entrypoint",
+        "scenario": {
+            "points_a": int(points_a),
+            "points_b": int(points_b),
+            "seed_a": int(seed_a),
+            "seed_b": int(seed_b),
+            "offset_x": float(offset_x),
+            "offset_y": float(offset_y),
+            "exact_tolerance": float(exact_tolerance),
+        },
+        "baseline": {
+            "method": "cupy_grouped_grid_rawkernel",
+            "uses_rtdl": False,
+            "uses_rt_cores": False,
+            "exact_value": True,
+            "elapsed_sec": float(baseline.elapsed_sec),
+            "wrapper_elapsed_sec": baseline_elapsed_sec,
+            "result": baseline_payload,
+        },
+        "rtdl": {
+            "method": rtdl_method,
+            "uses_rtdl": True,
+            "uses_rt_cores": True,
+            "exact_value": True,
+            "elapsed_sec": float(rtdl_result.elapsed_sec),
+            "wrapper_elapsed_sec": rtdl_elapsed_sec,
+            "result": rtdl_payload,
+        },
+        "distance_error": distance_error,
+        "matches_exact_baseline": witness_distance_match,
+        "rtdl_over_cupy_grid_elapsed_ratio": (
+            float(rtdl_result.elapsed_sec) / float(baseline.elapsed_sec)
+            if float(baseline.elapsed_sec) > 0.0
+            else None
+        ),
+        "claim_boundary": CLAIM_BOUNDARY,
+        "elapsed_sec": time.perf_counter() - started,
+    }
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Goal2801 Hausdorff/X-HD v2.5 canonical exact entrypoint.")
+    parser.add_argument("--points-a", type=int, default=4096)
+    parser.add_argument("--points-b", type=int, default=4096)
+    parser.add_argument("--seed-a", type=int, default=11)
+    parser.add_argument("--seed-b", type=int, default=29)
+    parser.add_argument("--offset-x", type=float, default=0.08)
+    parser.add_argument("--offset-y", type=float, default=-0.06)
+    parser.add_argument(
+        "--rtdl-method",
+        choices=("rtdl_rt_grouped_adaptive_nearest_witness", "rtdl_rt_grouped_reduced_nearest_witness"),
+        default=DEFAULT_RTDL_METHOD,
+    )
+    parser.add_argument("--exact-tolerance", type=float, default=1.0e-9)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args(argv)
+
+    payload = run_goal2801_hausdorff_entrypoint(
+        points_a=args.points_a,
+        points_b=args.points_b,
+        seed_a=args.seed_a,
+        seed_b=args.seed_b,
+        offset_x=args.offset_x,
+        offset_y=args.offset_y,
+        rtdl_method=args.rtdl_method,
+        exact_tolerance=args.exact_tolerance,
+    )
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+    print(json.dumps(payload, indent=2, sort_keys=True))
+    return 0 if payload["status"] == "pass" else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
