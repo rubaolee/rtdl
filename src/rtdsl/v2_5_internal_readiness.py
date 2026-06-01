@@ -152,6 +152,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
     "docs/reviews/goal2866_gemini_review_goal2865_current_head_packet_2026-05-31.md",
     "docs/reviews/goal2868_claude_review_v2_5_last_day_work_since_claude_reviews_2026-05-31.md",
     "docs/reviews/goal2868_gemini_review_v2_5_last_day_work_since_claude_reviews_2026-05-31.md",
+    "docs/reviews/goal2881_claude_review_v2_5_residual_closure_and_current_packet_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_BLOCKED_ACTIONS = (
@@ -173,6 +174,7 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "use_goal2878_to_distinguish_goal2868_historical_residuals_from_post_goal2873_closure",
     "request_goal2877_external_review_for_goal2873_to_goal2876_conformance_closure",
     "keep_goal2879_torch_carrier_seam_authority_provenance_green",
+    "triage_goal2881_claude_review_before_any_release_packet",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
