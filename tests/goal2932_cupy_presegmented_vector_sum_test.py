@@ -65,8 +65,6 @@ class Goal2932CupyPresegmentedVectorSumTest(unittest.TestCase):
         self.assertFalse(metadata["rt_core_speedup_claim_authorized"])
 
     def test_pod_report_records_result_and_boundaries(self) -> None:
-        if not REPORT.exists() or not ARTIFACT.exists():
-            self.skipTest("Goal2932 pod artifact has not been recorded yet")
         report = REPORT.read_text(encoding="utf-8")
         artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
 

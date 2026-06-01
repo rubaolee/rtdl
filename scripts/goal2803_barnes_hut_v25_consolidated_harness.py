@@ -137,6 +137,13 @@ def _run_vector_sum_probe(
         return {"status": "skipped", "reason": f"torch import failed: {exc}"}
     if not torch.cuda.is_available():  # pragma: no cover - environment dependent
         return {"status": "skipped", "reason": "torch cuda is not available"}
+    try:
+        import cupy
+    except ImportError:  # pragma: no cover - environment dependent
+        cupy = None
+    cupy_available = bool(
+        cupy is not None and int(cupy.cuda.runtime.getDeviceCount()) > 0
+    )
 
     device = "cuda"
     group_count = int(group_count)
@@ -147,6 +154,16 @@ def _run_vector_sum_probe(
     row_offsets = torch.arange(0, row_count + 1, rows_per_group, dtype=torch.int64, device=device)
     values_x = torch.sin(base * 0.001) + 0.25 * torch.cos(base * 0.0003)
     values_y = torch.cos(base * 0.0007) - 0.125 * torch.sin(base * 0.0002)
+    cupy_columns = None
+    if cupy_available:
+        cupy_base = cupy.arange(row_count, dtype=cupy.float64)
+        cupy_columns = {
+            "group_ids": cupy.arange(group_count, dtype=cupy.int64).repeat(rows_per_group),
+            "values_x": cupy.sin(cupy_base * 0.001)
+            + 0.25 * cupy.cos(cupy_base * 0.0003),
+            "values_y": cupy.cos(cupy_base * 0.0007)
+            - 0.125 * cupy.sin(cupy_base * 0.0002),
+        }
 
     columns_with_offsets = {
         "group_ids": group_ids,
@@ -162,12 +179,15 @@ def _run_vector_sum_probe(
 
     torch_times: list[float] = []
     triton_times: list[float] = []
+    cupy_times: list[float] = []
     torch_result = None
     triton_result = None
+    cupy_result = None
 
     _log(
         "vector-sum probe: "
-        f"groups={group_count}, rows_per_group={rows_per_group}, repeats={repeats}, warmups={warmups}"
+        f"groups={group_count}, rows_per_group={rows_per_group}, repeats={repeats}, "
+        f"warmups={warmups}, cupy_available={cupy_available}"
     )
     for index in range(int(warmups)):
         _log(f"vector-sum warmup {index + 1}/{warmups}")
@@ -184,7 +204,16 @@ def _run_vector_sum_probe(
             triton_offset_groups_per_program=triton_groups_per_program,
             return_metadata=True,
         )
+        if cupy_available and cupy_columns is not None:
+            rt.grouped_vector_sum_2d_partner_columns(
+                cupy_columns,
+                group_count=group_count,
+                partner="cupy",
+                return_metadata=True,
+            )
     torch.cuda.synchronize()
+    if cupy_available:
+        cupy.cuda.runtime.deviceSynchronize()
 
     for index in range(int(repeats)):
         _log(f"vector-sum timed repeat {index + 1}/{repeats}: torch")
@@ -212,6 +241,19 @@ def _run_vector_sum_probe(
         torch.cuda.synchronize()
         triton_times.append(time.perf_counter() - start)
 
+        if cupy_available and cupy_columns is not None:
+            _log(f"vector-sum timed repeat {index + 1}/{repeats}: cupy")
+            cupy.cuda.runtime.deviceSynchronize()
+            start = time.perf_counter()
+            cupy_result = rt.grouped_vector_sum_2d_partner_columns(
+                cupy_columns,
+                group_count=group_count,
+                partner="cupy",
+                return_metadata=True,
+            )
+            cupy.cuda.runtime.deviceSynchronize()
+            cupy_times.append(time.perf_counter() - start)
+
     assert torch_result is not None and triton_result is not None
     matches = bool(
         torch.allclose(
@@ -227,14 +269,38 @@ def _run_vector_sum_probe(
             atol=1.0e-9,
         )
     )
+    cupy_matches_torch = None
+    if cupy_result is not None and cupy is not None:
+        import numpy as np
+
+        cupy_matches_torch = bool(
+            np.allclose(
+                cupy.asnumpy(cupy_result["columns"]["sum_x"]),
+                torch_result["columns"]["sum_x"].detach().cpu().numpy(),
+                rtol=1.0e-9,
+                atol=1.0e-9,
+            )
+            and np.allclose(
+                cupy.asnumpy(cupy_result["columns"]["sum_y"]),
+                torch_result["columns"]["sum_y"].detach().cpu().numpy(),
+                rtol=1.0e-9,
+                atol=1.0e-9,
+            )
+        )
+        matches = bool(matches and cupy_matches_torch)
     torch_median = _median(torch_times)
     triton_median = _median(triton_times)
-    selected_partner = "torch" if torch_median <= triton_median else "triton"
-    selected_median = torch_median if selected_partner == "torch" else triton_median
+    cupy_median = _median(cupy_times) if cupy_times else None
+    candidates = [("torch", torch_median), ("triton", triton_median)]
+    if cupy_median is not None:
+        candidates.append(("cupy", cupy_median))
+    selected_partner, selected_median = min(candidates, key=lambda item: item[1])
     _log(
         "vector-sum probe done: "
         f"matches={matches}, torch={torch_median:.6f}s, "
-        f"triton={triton_median:.6f}s, ratio={triton_median / torch_median if torch_median > 0.0 else float('inf'):.3f}x"
+        f"triton={triton_median:.6f}s, "
+        f"cupy={cupy_median if cupy_median is not None else 'unavailable'}, "
+        f"selected={selected_partner}"
     )
     return {
         "status": "pass" if matches else "mismatch",
@@ -243,20 +309,27 @@ def _run_vector_sum_probe(
         "row_count": row_count,
         "torch_median_sec": torch_median,
         "triton_median_sec": triton_median,
+        "cupy_available": cupy_available,
+        "cupy_median_sec": cupy_median,
         "triton_over_torch_ratio": triton_median / torch_median if torch_median > 0.0 else None,
+        "cupy_over_torch_ratio": (
+            cupy_median / torch_median
+            if cupy_median is not None and torch_median > 0.0
+            else None
+        ),
         "torch_faster": torch_median < triton_median,
         "selected_partner": selected_partner,
         "selected_partner_median_sec": selected_median,
         "selected_partner_reason": (
-            "torch_scatter_add_wins_same_contract_timing"
-            if selected_partner == "torch"
-            else "triton_preview_wins_same_contract_timing"
+            f"{selected_partner}_wins_same_contract_timing"
         ),
         "triton_preview_promoted": selected_partner == "triton",
         "matches_torch": matches,
+        "cupy_matches_torch": cupy_matches_torch,
         "warmups": int(warmups),
         "triton_metadata": triton_result["metadata"],
         "torch_metadata": torch_result["metadata"],
+        "cupy_metadata": cupy_result["metadata"] if cupy_result is not None else None,
     }
 
 
