@@ -1,7 +1,7 @@
 # Goal2943: Generic Event-Ordered Hit-Stream Front Door
 
 Date: 2026-06-01
-Status: implemented locally; pod smoke pending import
+Status: implemented and pod-smoked
 
 ## Purpose
 
@@ -84,3 +84,32 @@ Expected smoke result:
 - selected partner: `cupy_conformance`
 - stream ordering: `cuda_event_cross_stream`
 - true-zero-copy/public-speedup flags: `false`
+
+## Validation
+
+Local focused gate:
+
+```text
+$env:PYTHONPATH='src;.'
+py -3 -m unittest tests.goal2943_generic_event_ordered_hit_stream_front_door_test tests.goal2771_hit_stream_event_ordered_grouped_reduction_consumer_test tests.goal2772_hit_stream_event_ordered_grouped_richer_reductions_test tests.goal2806_v2_5_internal_readiness_packet_test
+
+Ran 24 tests
+OK (skipped=3)
+```
+
+Pod smoke:
+
+- SSH target: `root@69.30.85.171 -p 22167`
+- source commit: `1a487903ab10812b192879b1be3ab211a7628dd4`
+- source dirty entries: `0`
+- artifact: `docs/reports/goal2943_generic_event_ordered_hit_stream_front_door_pod/goal2943_front_door_smoke.json`
+- status: `pass`
+- row count: `4`
+- group hit counts: `[2, 0, 2]`
+- group primitive-id sums: `[1, 0, 1]`
+- selected partner: `cupy_conformance`
+- stream ordering: `cuda_event_cross_stream`
+
+The pod smoke validates that a user can call the public RTDL front door and get
+the event-ordered RT producer plus CuPy grouped consumer without using the
+lower-level prepared-scene methods directly.
