@@ -112,6 +112,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2909_rtnn_repeat_stability_2026-05-31.md",
     "docs/reports/goal2911_scale_stable_canonical_perf_rows_2026-05-31.md",
     "docs/reports/goal2912_current_packet_scaled_defaults_2026-05-31.md",
+    "docs/reports/goal2915_goal2912_scaled_v2_5_packet_external_review_consensus_2026-06-01.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -175,6 +176,8 @@ V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
     "docs/reviews/goal2881_claude_review_v2_5_residual_closure_and_current_packet_2026-05-31.md",
     "docs/reviews/goal2886_claude_review_runtime_trace_and_conformance_snapshot_2026-05-31.md",
     "docs/reviews/goal2897_external_review_goal2896_raydb_same_contract_perf_gate_2026-05-31.md",
+    "docs/reviews/goal2913_gemini_review_goal2907_2912_scaled_v2_5_perf_packet_2026-05-31.md",
+    "docs/reviews/goal2914_claude_review_goal2907_2912_scaled_v2_5_perf_packet_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_BLOCKED_ACTIONS = (
@@ -215,6 +218,7 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "use_goal2909_rtnn_repeat_stability_for_distribution_dependent_perf_triage",
     "use_goal2911_scaled_canonical_rows_for_short_row_perf_stability",
     "keep_goal2912_scaled_current_packet_green",
+    "keep_goal2915_scaled_packet_external_review_consensus_green",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
