@@ -8,6 +8,7 @@ from typing import Any, Mapping, Sequence
 from .generic_primitives import GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_PRIMITIVE
 from .generic_primitives import GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_ROW_SCHEMA
 from .neutral_buffer_seam import V2_5_NEUTRAL_BUFFER_SEAM_VERSION
+from .neutral_buffer_seam import create_neutral_buffer_lease
 from .neutral_buffer_seam import neutral_buffer_descriptor_from_rtdl_buffer
 from .partner_protocol import RtdlBufferDescriptor
 from .partner_protocol import V2_4_PHASES
@@ -1417,6 +1418,11 @@ def validate_v2_5_hit_stream_neutral_seam_authority(
 
     contract = describe_v2_5_hit_stream_neutral_seam_reconciliation()
     adapter = describe_v2_5_hit_stream_torch_carrier_adapter(hit_stream_columns, payload_columns)
+    runtime_trace = trace_v2_5_hit_stream_torch_carrier_runtime_seam_authority(
+        hit_stream_columns,
+        payload_columns,
+        executed=False,
+    )
     hit_metadata = hit_stream_columns.to_metadata()
     payload_metadata = payload_columns.to_metadata()
     seams = (
@@ -1451,6 +1457,8 @@ def validate_v2_5_hit_stream_neutral_seam_authority(
         errors.append("torch carrier adapter must remain launch-carrier scoped")
     if adapter["authoritative_metadata_origin"] != "neutral_buffer_seam_only":
         errors.append("torch carrier adapter must not originate transfer/copy/lifetime metadata")
+    if runtime_trace["status"] != "accept":
+        errors.append("runtime seam authority trace did not validate")
     return {
         "status": "accept" if not errors else "reject",
         "contract_version": GENERIC_HIT_STREAM_NEUTRAL_SEAM_RECONCILIATION_VERSION,
@@ -1465,6 +1473,8 @@ def validate_v2_5_hit_stream_neutral_seam_authority(
         "torch_is_neutral_protocol": adapter["torch_is_neutral_protocol"],
         "torch_carrier_metadata_scope": adapter["carrier_metadata_scope"],
         "torch_carrier_authoritative_metadata_origin": adapter["authoritative_metadata_origin"],
+        "runtime_seam_authority_trace_status": runtime_trace["status"],
+        "runtime_seam_authority_trace": runtime_trace,
         "true_zero_copy_authorized": adapter["true_zero_copy_authorized"],
         "public_speedup_claim_authorized": adapter["public_speedup_claim_authorized"],
         "errors": tuple(errors),
@@ -1674,6 +1684,11 @@ def _gather_payload_torch_carrier(
     execution_metadata = {
         "executed": True,
         "adapter_execution_proven_on_hardware": adapter_execution_proven_on_hardware,
+        "neutral_seam_runtime_authority_trace": trace_v2_5_hit_stream_torch_carrier_runtime_seam_authority(
+            hit_stream_columns,
+            payload_columns,
+            executed=True,
+        ),
         "primitive_ids_input_data_ptr": primitive_ids_input_ptr,
         "primitive_ids_carrier_data_ptr": primitive_ids_carrier_ptr,
         "primitive_ids_same_pointer_as_input": primitive_ids_same_pointer,
@@ -1702,6 +1717,87 @@ def _gather_payload_torch_carrier(
         "values": values,
         "group_count": int(payload_columns.group_count),
     }, gather_mode, "triton_torch_tensor_carrier", execution_metadata
+
+
+def trace_v2_5_hit_stream_torch_carrier_runtime_seam_authority(
+    hit_stream_columns: RtdlHitStreamColumnHandoff,
+    payload_columns: RtdlTypedPrimitivePayloadColumns,
+    *,
+    executed: bool = False,
+) -> dict[str, object]:
+    """Trace seam lease transitions for the bounded Triton torch carrier.
+
+    This is deliberately narrow: it records the neutral-buffer lease transitions
+    for the columns consumed by the Triton carrier path. It does not allocate,
+    copy, free, or prove zero-copy; it makes the runtime authority path explicit
+    enough for review and tests.
+    """
+
+    adapter = describe_v2_5_hit_stream_torch_carrier_adapter(hit_stream_columns, payload_columns)
+    descriptors = _torch_carrier_gather_neutral_seam_descriptors(
+        hit_stream_columns,
+        payload_columns,
+    )
+    lease_records: list[dict[str, object]] = []
+    errors: list[str] = []
+
+    for descriptor in descriptors:
+        try:
+            lease = create_neutral_buffer_lease(descriptor)
+            borrowed = lease.begin_partner_borrow()
+            completed = borrowed.complete_partner_borrow()
+        except ValueError as exc:
+            errors.append(f"{descriptor.buffer.name}: {exc}")
+            continue
+        record = completed.to_metadata()
+        lease_records.append(
+            {
+                "buffer_name": record["buffer_name"],
+                "producer": record["producer"],
+                "consumer": record["consumer"],
+                "owner_state": record["owner_state"],
+                "final_state": record["state"],
+                "retain_until": record["retain_until"],
+                "event_log": record["event_log"],
+                "authority_origin": "neutral_buffer_seam",
+                "carrier_originated_transfer_copy_lifetime": False,
+                "true_zero_copy_authorized": False,
+                "public_speedup_claim_authorized": False,
+            }
+        )
+
+    if adapter["carrier_metadata_scope"] != "triton_launch_carrier_only":
+        errors.append("torch carrier metadata scope is not launch-carrier-only")
+    if adapter["authoritative_metadata_origin"] != "neutral_buffer_seam_only":
+        errors.append("torch carrier authoritative metadata origin is not seam-only")
+    if any(record["event_log"] != ("handoff_begin", "continuation_complete") for record in lease_records):
+        errors.append("neutral seam leases did not record handoff_begin -> continuation_complete")
+    if len(lease_records) != len(descriptors):
+        errors.append("not all torch-carrier gather columns produced seam lease records")
+
+    return {
+        "contract_version": GENERIC_HIT_STREAM_NEUTRAL_SEAM_RECONCILIATION_VERSION,
+        "neutral_buffer_seam_contract_version": V2_5_NEUTRAL_BUFFER_SEAM_VERSION,
+        "status": "accept" if not errors else "reject",
+        "executed": bool(executed),
+        "trace_scope": "triton_torch_carrier_gather_columns",
+        "carrier_metadata_scope": adapter["carrier_metadata_scope"],
+        "authoritative_metadata_origin": adapter["authoritative_metadata_origin"],
+        "authority_origin": "neutral_buffer_seam",
+        "lease_count": len(lease_records),
+        "lease_records": tuple(lease_records),
+        "all_leases_completed": not errors
+        and all(record["final_state"] == record["owner_state"] for record in lease_records),
+        "carrier_originated_transfer_copy_lifetime": False,
+        "true_zero_copy_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "errors": tuple(errors),
+        "claim_boundary": (
+            "This trace records neutral-seam lease transitions around the bounded "
+            "Triton torch-carrier gather path. It is runtime provenance evidence, "
+            "not a zero-copy, speedup, or release claim."
+        ),
+    }
 
 
 def _gather_payload_python_reference(
@@ -2181,7 +2277,41 @@ def _neutral_buffer_seam_metadata(
         else "caller_retained"
     )
     transfer_status = "host_stage" if host_materialized_before_handoff else None
-    descriptor = neutral_buffer_descriptor_from_rtdl_buffer(
+    descriptor = _neutral_buffer_seam_descriptor(
+        name,
+        column,
+        dtype,
+        producer=producer,
+        consumer=consumer,
+        access_mode=access_mode,
+        native_producer=native_producer,
+        host_materialized_before_handoff=host_materialized_before_handoff,
+        lifetime_state=lifetime_state,
+    )
+    return descriptor.to_metadata()
+
+
+def _neutral_buffer_seam_descriptor(
+    name: str,
+    column: Any,
+    dtype: str,
+    *,
+    producer: str,
+    consumer: str,
+    access_mode: str,
+    native_producer: bool = False,
+    host_materialized_before_handoff: bool = False,
+    lifetime_state: str | None = None,
+) -> Any:
+    resolved_lifetime_state = (
+        lifetime_state
+        if lifetime_state is not None
+        else "native_owned_pending_state_machine"
+        if native_producer
+        else "caller_retained"
+    )
+    transfer_status = "host_stage" if host_materialized_before_handoff else None
+    return neutral_buffer_descriptor_from_rtdl_buffer(
         _buffer_descriptor(name, column, dtype, access_mode=access_mode),
         producer=producer,
         consumer=consumer,
@@ -2190,7 +2320,46 @@ def _neutral_buffer_seam_metadata(
         transfer_status=transfer_status,
         host_materialized_before_handoff=host_materialized_before_handoff,
     )
-    return descriptor.to_metadata()
+
+
+def _torch_carrier_gather_neutral_seam_descriptors(
+    hit_stream_columns: RtdlHitStreamColumnHandoff,
+    payload_columns: RtdlTypedPrimitivePayloadColumns,
+) -> tuple[Any, ...]:
+    return (
+        _neutral_buffer_seam_descriptor(
+            "primitive_ids",
+            hit_stream_columns.primitive_ids,
+            "int64",
+            producer=hit_stream_columns.source_mode,
+            consumer="triton_torch_carrier_gather",
+            access_mode="read",
+            native_producer=hit_stream_columns.source_mode == "native_device_columns"
+            and not hit_stream_columns.caller_owned_output_buffers,
+            host_materialized_before_handoff=bool(hit_stream_columns.materializes_host_rows_for_bridge),
+            lifetime_state=(
+                "caller_retained"
+                if hit_stream_columns.caller_owned_output_buffers
+                else None
+            ),
+        ),
+        _neutral_buffer_seam_descriptor(
+            "primitive_group_ids",
+            payload_columns.primitive_group_ids,
+            "int64",
+            producer=payload_columns.source_mode,
+            consumer="triton_torch_carrier_gather",
+            access_mode="read",
+        ),
+        _neutral_buffer_seam_descriptor(
+            "primitive_values",
+            payload_columns.primitive_values,
+            "float64",
+            producer=payload_columns.source_mode,
+            consumer="triton_torch_carrier_gather",
+            access_mode="read",
+        ),
+    )
 
 
 def _neutral_buffer_handoff_summary(

@@ -92,6 +92,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2878_goal2868_residual_closure_map_after_conformance_2026-05-31.md",
     "docs/reports/goal2879_torch_carrier_seam_authority_provenance_2026-05-31.md",
     "docs/reports/goal2880_current_packet_after_torch_carrier_provenance_2026-05-31.md",
+    "docs/reports/goal2883_torch_carrier_runtime_seam_trace_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -175,6 +176,7 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "request_goal2877_external_review_for_goal2873_to_goal2876_conformance_closure",
     "keep_goal2879_torch_carrier_seam_authority_provenance_green",
     "triage_goal2881_claude_review_before_any_release_packet",
+    "keep_goal2883_runtime_seam_trace_green",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
