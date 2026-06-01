@@ -1,0 +1,213 @@
+[goal2803] starting Barnes-Hut consolidated harness: cases=((512, 16), (2048, 32), (8192, 32)), repeats=3, validate_all_cases=False
+[goal2803] membership case 1/3: bodies=512, bucket=16, repeats=3, validate=True
+[goal2803] membership case 1/3 progress: backend=embree repeat=1/3 start
+[goal2803] membership case 1/3 progress: backend=embree repeat=1/3 done sec=0.770
+[goal2803] membership case 1/3 progress: backend=embree repeat=2/3 start
+[goal2803] membership case 1/3 progress: backend=embree repeat=2/3 done sec=0.735
+[goal2803] membership case 1/3 progress: backend=embree repeat=3/3 start
+[goal2803] membership case 1/3 progress: backend=embree repeat=3/3 done sec=0.781
+[goal2803] membership case 1/3 progress: backend=optix repeat=1/3 start
+[goal2803] membership case 1/3 progress: backend=optix repeat=1/3 done sec=1.554
+[goal2803] membership case 1/3 progress: backend=optix repeat=2/3 start
+[goal2803] membership case 1/3 progress: backend=optix repeat=2/3 done sec=0.704
+[goal2803] membership case 1/3 progress: backend=optix repeat=3/3 start
+[goal2803] membership case 1/3 progress: backend=optix repeat=3/3 done sec=0.650
+[goal2803] membership case done: bodies=512, rows_match=True, rt_core=True, membership_speedup=4.918x, elapsed=5.37s
+[goal2803] membership case 2/3: bodies=2048, bucket=32, repeats=3, validate=False
+[goal2803] membership case 2/3 progress: backend=embree repeat=1/3 start
+[goal2803] membership case 2/3 progress: backend=embree repeat=1/3 done sec=5.981
+[goal2803] membership case 2/3 progress: backend=embree repeat=2/3 start
+[goal2803] membership case 2/3 progress: backend=embree repeat=2/3 done sec=5.653
+[goal2803] membership case 2/3 progress: backend=embree repeat=3/3 start
+[goal2803] membership case 2/3 progress: backend=embree repeat=3/3 done sec=5.975
+[goal2803] membership case 2/3 progress: backend=optix repeat=1/3 start
+[goal2803] membership case 2/3 progress: backend=optix repeat=1/3 done sec=4.569
+[goal2803] membership case 2/3 progress: backend=optix repeat=2/3 start
+[goal2803] membership case 2/3 progress: backend=optix repeat=2/3 done sec=4.115
+[goal2803] membership case 2/3 progress: backend=optix repeat=3/3 start
+[goal2803] membership case 2/3 progress: backend=optix repeat=3/3 done sec=3.798
+[goal2803] membership case done: bodies=2048, rows_match=True, rt_core=True, membership_speedup=18.860x, elapsed=30.21s
+[goal2803] membership case 3/3: bodies=8192, bucket=32, repeats=3, validate=False
+[goal2803] membership case 3/3 progress: backend=embree repeat=1/3 start
+[goal2803] membership case 3/3 progress: backend=embree repeat=1/3 done sec=98.957
+[goal2803] membership case 3/3 progress: backend=embree repeat=2/3 start
+[goal2803] membership case 3/3 progress: backend=embree repeat=2/3 done sec=99.463
+[goal2803] membership case 3/3 progress: backend=embree repeat=3/3 start
+[goal2803] membership case 3/3 progress: backend=embree repeat=3/3 done sec=102.225
+[goal2803] membership case 3/3 progress: backend=optix repeat=1/3 start
+[goal2803] membership case 3/3 progress: backend=optix repeat=1/3 done sec=20.721
+[goal2803] membership case 3/3 progress: backend=optix repeat=2/3 start
+[goal2803] membership case 3/3 progress: backend=optix repeat=2/3 done sec=22.463
+[goal2803] membership case 3/3 progress: backend=optix repeat=3/3 start
+[goal2803] membership case 3/3 progress: backend=optix repeat=3/3 done sec=22.340
+[goal2803] membership case done: bodies=8192, rows_match=True, rt_core=True, membership_speedup=128.846x, elapsed=366.40s
+[goal2803] vector-sum probe: groups=8192, rows_per_group=16, repeats=3, warmups=2
+[goal2803] vector-sum warmup 1/2
+[goal2803] vector-sum warmup 2/2
+[goal2803] vector-sum timed repeat 1/3: torch
+[goal2803] vector-sum timed repeat 1/3: triton
+[goal2803] vector-sum timed repeat 2/3: torch
+[goal2803] vector-sum timed repeat 2/3: triton
+[goal2803] vector-sum timed repeat 3/3: torch
+[goal2803] vector-sum timed repeat 3/3: triton
+[goal2803] vector-sum probe done: matches=True, torch=0.000971s, triton=0.004041s, ratio=4.162x
+{
+  "app": "barnes_hut",
+  "benchmark_track": "consolidated_membership_and_vector_sum",
+  "cases": [
+    {
+      "body_count": 512,
+      "bucket_size": 16
+    },
+    {
+      "body_count": 2048,
+      "bucket_size": 32
+    },
+    {
+      "body_count": 8192,
+      "bucket_size": 32
+    }
+  ],
+  "claim_boundary": {
+    "authors_code_comparison_authorized": false,
+    "canonical_consolidated_harness": true,
+    "native_engine_customization": false,
+    "paper_reproduction_claim_authorized": false,
+    "paper_speedup_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "triton_vector_sum_auto_selection_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "elapsed_sec": 404.10867956699803,
+  "entrypoint_version": "rtdl.goal2803.barnes_hut_v2_5_consolidated_harness.v1",
+  "goal": "Goal2803",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "max_optix_membership_speedup_vs_embree": 128.84631581454565,
+  "membership_rows": [
+    {
+      "body_count": 512,
+      "bucket_size": 16,
+      "case_elapsed_sec": 5.37208263296634,
+      "embree_frontier_lowering_sec_median": 0.28715242096222937,
+      "embree_membership_wrapper_sec_median": 0.1559460109565407,
+      "embree_total_sec_median": 0.7543640160001814,
+      "frontier_row_count": 54178,
+      "near_zone_candidate_row_count": 13106,
+      "optix_frontier_lowering_sec_median": 0.1799647780135274,
+      "optix_frontier_lowering_speedup_vs_embree": 1.5956034515856488,
+      "optix_membership_wrapper_sec_median": 0.03170729405246675,
+      "optix_membership_wrapper_speedup_vs_embree": 4.918300839500635,
+      "optix_rt_core_accelerated": true,
+      "optix_total_sec_median": 0.6906712930649519,
+      "optix_total_speedup_vs_embree": 1.0922185757172331,
+      "rows_match_between_backends": true,
+      "validation_skipped": false
+    },
+    {
+      "body_count": 2048,
+      "bucket_size": 32,
+      "case_elapsed_sec": 30.212656883057207,
+      "embree_frontier_lowering_sec_median": 3.003228042041883,
+      "embree_membership_wrapper_sec_median": 2.09915592498146,
+      "embree_total_sec_median": 5.822912763105705,
+      "frontier_row_count": 514055,
+      "near_zone_candidate_row_count": 65400,
+      "optix_frontier_lowering_sec_median": 1.26276198704727,
+      "optix_frontier_lowering_speedup_vs_embree": 2.3783009568290567,
+      "optix_membership_wrapper_sec_median": 0.1113034188747406,
+      "optix_membership_wrapper_speedup_vs_embree": 18.859761417965267,
+      "optix_rt_core_accelerated": true,
+      "optix_total_sec_median": 4.00383072393015,
+      "optix_total_speedup_vs_embree": 1.454335401420255,
+      "rows_match_between_backends": true,
+      "validation_skipped": true
+    },
+    {
+      "body_count": 8192,
+      "bucket_size": 32,
+      "case_elapsed_sec": 366.40000273496844,
+      "embree_frontier_lowering_sec_median": 84.4017650228925,
+      "embree_membership_wrapper_sec_median": 78.95089930994436,
+      "embree_total_sec_median": 98.86068969103508,
+      "frontier_row_count": 2469712,
+      "near_zone_candidate_row_count": 381692,
+      "optix_frontier_lowering_sec_median": 6.313587706070393,
+      "optix_frontier_lowering_speedup_vs_embree": 13.36827315184706,
+      "optix_membership_wrapper_sec_median": 0.6127524781040847,
+      "optix_membership_wrapper_speedup_vs_embree": 128.84631581454565,
+      "optix_rt_core_accelerated": true,
+      "optix_total_sec_median": 21.698827625019476,
+      "optix_total_speedup_vs_embree": 4.556038298449147,
+      "rows_match_between_backends": true,
+      "validation_skipped": true
+    }
+  ],
+  "membership_validation_policy": "first_case_reference_validation_plus_all_case_embree_optix_shape_parity",
+  "min_optix_membership_speedup_vs_embree": 4.918300839500635,
+  "repeats": 3,
+  "source_commit": "fe628f4faec8e7d43521f11afd395b29462fba8b",
+  "source_dirty": [],
+  "status": "pass",
+  "triton_vector_sum_auto_selection_allowed": false,
+  "vector_sum": {
+    "group_count": 8192,
+    "matches_torch": true,
+    "row_count": 131072,
+    "rows_per_group": 16,
+    "selected_partner": "torch",
+    "selected_partner_median_sec": 0.0009707449935376644,
+    "selected_partner_reason": "torch_scatter_add_wins_same_contract_timing",
+    "status": "pass",
+    "torch_faster": true,
+    "torch_median_sec": 0.0009707449935376644,
+    "torch_metadata": {
+      "adapter": "grouped_vector_sum_2d_partner_columns",
+      "claim_boundary": "Generic grouped vector-sum adapter over partner-owned columns. It does not call native RT traversal, does not authorize true zero-copy wording, and is preview integration evidence only.",
+      "direct_device_handoff_authorized": false,
+      "group_count": 8192,
+      "input_contract": "caller_supplied_grouped_vector_rows_2d",
+      "native_engine_row_contract": "not_called_partner_continuation_only",
+      "partner": "torch",
+      "partner_reference_contract": "generic_grouped_vector_sum_f64x2",
+      "row_count": 131072,
+      "rt_core_speedup_claim_authorized": false,
+      "v2_5_partner_continuation_operation": null,
+      "v2_5_release_authorized": false,
+      "v2_5_triton_adapter_kernel": null,
+      "v2_5_triton_global_atomic_add_used": null,
+      "v2_5_triton_offset_groups_per_program": null,
+      "v2_5_triton_offset_program_count": null,
+      "v2_5_triton_presegmented_offsets_used": false,
+      "v2_5_triton_preview_kernel_status": null,
+      "v2_5_triton_preview_kernel_used": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "triton_median_sec": 0.004040650092065334,
+    "triton_metadata": {
+      "adapter": "grouped_vector_sum_2d_partner_columns",
+      "claim_boundary": "Generic grouped vector-sum adapter over partner-owned columns. It does not call native RT traversal, does not authorize true zero-copy wording, and is preview integration evidence only.",
+      "direct_device_handoff_authorized": false,
+      "group_count": 8192,
+      "input_contract": "caller_supplied_grouped_vector_rows_2d",
+      "native_engine_row_contract": "not_called_partner_continuation_only",
+      "partner": "triton",
+      "partner_reference_contract": "generic_grouped_vector_sum_f64x2",
+      "row_count": 131072,
+      "rt_core_speedup_claim_authorized": false,
+      "v2_5_partner_continuation_operation": "grouped_vector_sum_f64x2",
+      "v2_5_release_authorized": false,
+      "v2_5_triton_adapter_kernel": "grouped_vector_sum_f64x2_offsets_kernel",
+      "v2_5_triton_global_atomic_add_used": false,
+      "v2_5_triton_offset_groups_per_program": 1,
+      "v2_5_triton_offset_program_count": 8192,
+      "v2_5_triton_presegmented_offsets_used": true,
+      "v2_5_triton_preview_kernel_status": "preview_not_promoted",
+      "v2_5_triton_preview_kernel_used": true,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "triton_over_torch_ratio": 4.162421767780725,
+    "triton_preview_promoted": false,
+    "warmups": 2
+  },
+  "vector_warmups": 2
+}

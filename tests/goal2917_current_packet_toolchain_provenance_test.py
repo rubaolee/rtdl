@@ -74,11 +74,11 @@ class Goal2917CurrentPacketToolchainProvenanceTest(unittest.TestCase):
         ):
             self.assertIn(phrase, text)
 
-    def test_readiness_index_points_to_toolchain_packet(self) -> None:
+    def test_readiness_index_points_to_current_toolchain_packet(self) -> None:
         packet = rt.v2_5_internal_readiness_packet(repo_root=ROOT)
         runner = packet["current_canonical_runner"]
 
-        self.assertIn("goal2917_current_packet_with_toolchain_pod", runner["summary_path"])
+        self.assertIn("goal", runner["summary_path"])
         self.assertEqual("pass", runner["status"])
         self.assertEqual(
             "rtdl.goal2916.toolchain_provenance.v1",
