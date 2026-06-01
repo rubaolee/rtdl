@@ -1,0 +1,128 @@
+{
+  "app": "librts_spatial_index",
+  "backend": "optix",
+  "box_count": 4096,
+  "box_query_prepare_sec": 0.0032548680901527405,
+  "claim_boundary": {
+    "canonical_harness": true,
+    "native_engine_customization": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "tier_c_no_regression_harness": true,
+    "triton_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "cpu_counts": {
+    "point_contains": 371793,
+    "range_contains": 255739,
+    "range_intersects": 553819
+  },
+  "cpu_reference_sec": 1.7479931935667992,
+  "elapsed_sec": 0.3909122198820114,
+  "fixture": {
+    "box_count": 4096,
+    "box_query_count": 2048,
+    "dataset": "uniform",
+    "paper_equivalent_dataset": false,
+    "point_query_count": 2048,
+    "seed": 2798
+  },
+  "generic_primitive": "AABB_INDEX_QUERY_2D",
+  "goal": "Goal2798",
+  "gpu": "NVIDIA RTX 4000 Ada Generation, 565.57.01",
+  "harness_version": "rtdl.goal2798.librts_v2_5_warm_median_harness.v1",
+  "operations": [
+    "point_contains",
+    "range_contains",
+    "range_intersects"
+  ],
+  "point_query_prepare_sec": 0.0011509284377098083,
+  "query_count": 2048,
+  "row_count": 3,
+  "rows": [
+    {
+      "expected_count": 371793,
+      "generic_primitive": "AABB_INDEX_QUERY_2D",
+      "matches_cpu_reference": true,
+      "observed_count": 371793,
+      "operation": "point_contains",
+      "primitive_contract": "generic_prepared_aabb_index_query_2d",
+      "query_max_ms": 0.721760094165802,
+      "query_median_ms": 0.7072612643241882,
+      "query_min_ms": 0.7017552852630615,
+      "query_times_ms": [
+        0.707581639289856,
+        0.7134899497032166,
+        0.7072612643241882,
+        0.7042735815048218,
+        0.721760094165802,
+        0.7118955254554749,
+        0.7046535611152649,
+        0.7017552852630615,
+        0.7027089595794678
+      ],
+      "repeat": 9,
+      "rt_core_accelerated": true,
+      "status": "pass",
+      "warmup": 3
+    },
+    {
+      "expected_count": 255739,
+      "generic_primitive": "AABB_INDEX_QUERY_2D",
+      "matches_cpu_reference": true,
+      "observed_count": 255739,
+      "operation": "range_contains",
+      "primitive_contract": "generic_prepared_aabb_index_query_2d",
+      "query_max_ms": 0.7142201066017151,
+      "query_median_ms": 0.7000640034675598,
+      "query_min_ms": 0.6939694285392761,
+      "query_times_ms": [
+        0.6965398788452148,
+        0.6939694285392761,
+        0.7000640034675598,
+        0.6972700357437134,
+        0.6963163614273071,
+        0.7002055644989014,
+        0.7109940052032471,
+        0.7101818919181824,
+        0.7142201066017151
+      ],
+      "repeat": 9,
+      "rt_core_accelerated": true,
+      "status": "pass",
+      "warmup": 3
+    },
+    {
+      "expected_count": 553819,
+      "generic_primitive": "AABB_INDEX_QUERY_2D",
+      "matches_cpu_reference": true,
+      "observed_count": 553819,
+      "operation": "range_intersects",
+      "primitive_contract": "generic_prepared_aabb_index_query_2d",
+      "query_max_ms": 1.3478994369506836,
+      "query_median_ms": 1.2788623571395874,
+      "query_min_ms": 1.2706518173217773,
+      "query_times_ms": [
+        1.2820586562156677,
+        1.2706518173217773,
+        1.2712851166725159,
+        1.2760385870933533,
+        1.2735351920127869,
+        1.3478994369506836,
+        1.2821406126022339,
+        1.2788623571395874,
+        1.2860745191574097
+      ],
+      "repeat": 9,
+      "rt_core_accelerated": true,
+      "status": "pass",
+      "warmup": 3
+    }
+  ],
+  "scene_prepare_sec": 0.3545324504375458,
+  "seed": 2798,
+  "source_commit": "20b62a3eb21607a4e313b58fd8804de91e681f4e",
+  "source_dirty": [],
+  "status": "pass"
+}

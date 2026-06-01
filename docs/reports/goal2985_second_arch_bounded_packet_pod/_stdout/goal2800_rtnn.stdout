@@ -1,0 +1,397 @@
+[goal2348] RTDL batched 3D start backend=optix queries=65536 search=65536 batch_size=65536 batches=1 result_mode=ranked-summary-aggregate-prepared-query-batch-graph-float32
+[goal2348] RTDL batched 3D repeat 1/9 ok=True sec=0.000371
+[goal2348] RTDL batched 3D repeat 2/9 ok=True sec=0.000175
+[goal2348] RTDL batched 3D repeat 3/9 ok=True sec=0.000166
+[goal2348] RTDL batched 3D repeat 4/9 ok=True sec=0.000161
+[goal2348] RTDL batched 3D repeat 5/9 ok=True sec=0.000158
+[goal2348] RTDL batched 3D repeat 6/9 ok=True sec=0.000159
+[goal2348] RTDL batched 3D repeat 7/9 ok=True sec=0.000155
+[goal2348] RTDL batched 3D repeat 8/9 ok=True sec=0.000162
+[goal2348] RTDL batched 3D repeat 9/9 ok=True sec=0.000148
+[goal2348] CuPy grid 3D ranked summary start queries=65536 search=65536 grid=52x51x51 occupied_cells=51018 k=50
+[goal2348] CuPy grid 3D ranked summary repeat 1/9 ok=True sec=0.000210
+[goal2348] CuPy grid 3D ranked summary repeat 2/9 ok=True sec=0.000181
+[goal2348] CuPy grid 3D ranked summary repeat 3/9 ok=True sec=0.000161
+[goal2348] CuPy grid 3D ranked summary repeat 4/9 ok=True sec=0.000163
+[goal2348] CuPy grid 3D ranked summary repeat 5/9 ok=True sec=0.000160
+[goal2348] CuPy grid 3D ranked summary repeat 6/9 ok=True sec=0.000162
+[goal2348] CuPy grid 3D ranked summary repeat 7/9 ok=True sec=0.000158
+[goal2348] CuPy grid 3D ranked summary repeat 8/9 ok=True sec=0.000165
+[goal2348] CuPy grid 3D ranked summary repeat 9/9 ok=True sec=0.000159
+[goal2348] RTDL batched 3D start backend=optix queries=65536 search=65536 batch_size=65536 batches=1 result_mode=ranked-summary-aggregate-prepared-query-batch-graph-float32
+[goal2348] RTDL batched 3D repeat 1/9 ok=True sec=0.007476
+[goal2348] RTDL batched 3D repeat 2/9 ok=True sec=0.007388
+[goal2348] RTDL batched 3D repeat 3/9 ok=True sec=0.007289
+[goal2348] RTDL batched 3D repeat 4/9 ok=True sec=0.007252
+[goal2348] RTDL batched 3D repeat 5/9 ok=True sec=0.007377
+[goal2348] RTDL batched 3D repeat 6/9 ok=True sec=0.007332
+[goal2348] RTDL batched 3D repeat 7/9 ok=True sec=0.007389
+[goal2348] RTDL batched 3D repeat 8/9 ok=True sec=0.007198
+[goal2348] RTDL batched 3D repeat 9/9 ok=True sec=0.007371
+[goal2348] CuPy grid 3D ranked summary start queries=65536 search=65536 grid=38x50x50 occupied_cells=5931 k=50
+[goal2348] CuPy grid 3D ranked summary repeat 1/9 ok=True sec=0.024170
+[goal2348] CuPy grid 3D ranked summary repeat 2/9 ok=True sec=0.023980
+[goal2348] CuPy grid 3D ranked summary repeat 3/9 ok=True sec=0.023987
+[goal2348] CuPy grid 3D ranked summary repeat 4/9 ok=True sec=0.023836
+[goal2348] CuPy grid 3D ranked summary repeat 5/9 ok=True sec=0.023934
+[goal2348] CuPy grid 3D ranked summary repeat 6/9 ok=True sec=0.023833
+[goal2348] CuPy grid 3D ranked summary repeat 7/9 ok=True sec=0.023887
+[goal2348] CuPy grid 3D ranked summary repeat 8/9 ok=True sec=0.023832
+[goal2348] CuPy grid 3D ranked summary repeat 9/9 ok=True sec=0.023932
+[goal2348] RTDL batched 3D start backend=optix queries=65536 search=65536 batch_size=65536 batches=1 result_mode=ranked-summary-aggregate-prepared-query-batch-graph-float32
+[goal2348] RTDL batched 3D repeat 1/9 ok=True sec=0.000488
+[goal2348] RTDL batched 3D repeat 2/9 ok=True sec=0.000427
+[goal2348] RTDL batched 3D repeat 3/9 ok=True sec=0.000424
+[goal2348] RTDL batched 3D repeat 4/9 ok=True sec=0.000417
+[goal2348] RTDL batched 3D repeat 5/9 ok=True sec=0.000415
+[goal2348] RTDL batched 3D repeat 6/9 ok=True sec=0.000417
+[goal2348] RTDL batched 3D repeat 7/9 ok=True sec=0.000416
+[goal2348] RTDL batched 3D repeat 8/9 ok=True sec=0.000417
+[goal2348] RTDL batched 3D repeat 9/9 ok=True sec=0.000417
+[goal2348] CuPy grid 3D ranked summary start queries=65536 search=65536 grid=43x44x43 occupied_cells=19194 k=50
+[goal2348] CuPy grid 3D ranked summary repeat 1/9 ok=True sec=0.001782
+[goal2348] CuPy grid 3D ranked summary repeat 2/9 ok=True sec=0.001743
+[goal2348] CuPy grid 3D ranked summary repeat 3/9 ok=True sec=0.001745
+[goal2348] CuPy grid 3D ranked summary repeat 4/9 ok=True sec=0.001749
+[goal2348] CuPy grid 3D ranked summary repeat 5/9 ok=True sec=0.001740
+[goal2348] CuPy grid 3D ranked summary repeat 6/9 ok=True sec=0.001751
+[goal2348] CuPy grid 3D ranked summary repeat 7/9 ok=True sec=0.001754
+[goal2348] CuPy grid 3D ranked summary repeat 8/9 ok=True sec=0.001759
+[goal2348] CuPy grid 3D ranked summary repeat 9/9 ok=True sec=0.001737
+{
+  "app": "rtnn",
+  "benchmark_track": "tier_b_live_exact_fixed_radius_ranked_summary",
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "canonical_live_harness": true,
+    "native_engine_customization": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rtdl_beats_cupy_grid_claim_authorized": false,
+    "rtdl_beats_rtnn_claim_authorized": false,
+    "tier_b_same_contract_opponent": true,
+    "triton_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "distributions": [
+    "uniform",
+    "clustered",
+    "shell"
+  ],
+  "elapsed_sec": 3.8142620623111725,
+  "goal": "Goal2800",
+  "gpu": "NVIDIA RTX 4000 Ada Generation, 565.57.01",
+  "harness_version": "rtdl.goal2800.rtnn_v2_5_live_ranked_summary_harness.v8.scale65536_repeat9_graph_replay",
+  "k_max": 50,
+  "point_count": 65536,
+  "query_batch_size": 65536,
+  "radius": 0.02,
+  "repeat": 9,
+  "row_count": 3,
+  "rows": [
+    {
+      "candidate_count_delta": 0,
+      "candidate_count_matches_cupy_grid": true,
+      "candidate_count_tolerance": 2,
+      "candidate_count_within_tolerance": true,
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "canonical_live_harness": true,
+        "native_engine_customization": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rtdl_beats_cupy_grid_claim_authorized": false,
+        "rtdl_beats_rtnn_claim_authorized": false,
+        "tier_b_same_contract_opponent": true,
+        "triton_speedup_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "contract": {
+        "bounded_k": 50,
+        "exact": false,
+        "family": "fixed_radius_neighbors_3d",
+        "mode": "ranked-summary-aggregate-prepared-query-batch-graph-float32",
+        "precision": "float32",
+        "prepared_query_points": true,
+        "same_contract_opponent": "cupy_grid_exact_ranked_summary_3d"
+      },
+      "cupy_grid_bounded_neighbor_count": 206446,
+      "cupy_grid_elapsed_runs_sec": [
+        0.0002102777361869812,
+        0.00018126517534255981,
+        0.00016091763973236084,
+        0.00016289949417114258,
+        0.00015952438116073608,
+        0.00016198307275772095,
+        0.00015766918659210205,
+        0.00016469508409500122,
+        0.00015907734632492065
+      ],
+      "cupy_grid_elapsed_sec": 0.00016198307275772095,
+      "cupy_grid_elapsed_statistic": "median",
+      "cupy_grid_ok": true,
+      "cupy_grid_over_rtdl_elapsed_ratio": 1.0062948391576023,
+      "cupy_grid_summary": {
+        "bounded_neighbor_count": 206446,
+        "kth_id_checksum": 2152173198,
+        "nearest_id_checksum": 2147450880,
+        "row_count": 65536,
+        "sum_distance": 2112.1991681938525
+      },
+      "distribution": "uniform",
+      "elapsed_sec": 2.5333574637770653,
+      "generated": {
+        "dimension": 3,
+        "format": "rtnn_csv_xyz",
+        "path": "/tmp/goal2984_second_arch_bounded_packet/_work/goal2800/uniform_65536.csv",
+        "point_count": 65536,
+        "seed": 2800
+      },
+      "query_count": 65536,
+      "ranked_aggregate_matches_cupy_grid": true,
+      "rtdl_elapsed_runs_sec": [
+        0.00037070363759994507,
+        0.00017496943473815918,
+        0.00016561150550842285,
+        0.0001609697937965393,
+        0.0001584663987159729,
+        0.00015923380851745605,
+        0.00015548616647720337,
+        0.0001615285873413086,
+        0.00014798343181610107
+      ],
+      "rtdl_elapsed_sec": 0.0001609697937965393,
+      "rtdl_elapsed_statistic": "median",
+      "rtdl_input_pack_sec": 0.02288541942834854,
+      "rtdl_ok": true,
+      "rtdl_phase_summary": {
+        "batch_count": 1,
+        "candidate_count_pass_sec": 0.000118244,
+        "modes": [
+          "prepared_query_uniform_cell_ranked_summary_aggregate_f32_batch_cuda_graph_replay"
+        ],
+        "raw_candidate_count": 206446,
+        "row_download_sec": 9.619e-06,
+        "upload_sec": 0.0
+      },
+      "rtdl_prepare_sec": 1.6000801548361778,
+      "rtdl_ranked_aggregate_summary": {
+        "bounded_neighbor_count": 206446,
+        "kth_id_checksum": 2152173198,
+        "nearest_id_checksum": 2147450880,
+        "row_count": 65536,
+        "sum_distance": 2112.1991674860474
+      },
+      "rtdl_raw_candidate_count": 206446,
+      "rtdl_row_count": 65536,
+      "search_count": 65536,
+      "status": "pass"
+    },
+    {
+      "candidate_count_delta": 0,
+      "candidate_count_matches_cupy_grid": true,
+      "candidate_count_tolerance": 2,
+      "candidate_count_within_tolerance": true,
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "canonical_live_harness": true,
+        "native_engine_customization": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rtdl_beats_cupy_grid_claim_authorized": false,
+        "rtdl_beats_rtnn_claim_authorized": false,
+        "tier_b_same_contract_opponent": true,
+        "triton_speedup_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "contract": {
+        "bounded_k": 50,
+        "exact": false,
+        "family": "fixed_radius_neighbors_3d",
+        "mode": "ranked-summary-aggregate-prepared-query-batch-graph-float32",
+        "precision": "float32",
+        "prepared_query_points": true,
+        "same_contract_opponent": "cupy_grid_exact_ranked_summary_3d"
+      },
+      "cupy_grid_bounded_neighbor_count": 2914109,
+      "cupy_grid_elapsed_runs_sec": [
+        0.024170249700546265,
+        0.023980267345905304,
+        0.023987218737602234,
+        0.02383602410554886,
+        0.02393399178981781,
+        0.02383323758840561,
+        0.02388671785593033,
+        0.0238315612077713,
+        0.02393200993537903
+      ],
+      "cupy_grid_elapsed_sec": 0.02393200993537903,
+      "cupy_grid_elapsed_statistic": "median",
+      "cupy_grid_ok": true,
+      "cupy_grid_over_rtdl_elapsed_ratio": 3.2469527912614,
+      "cupy_grid_summary": {
+        "bounded_neighbor_count": 2914109,
+        "kth_id_checksum": 2144378896,
+        "nearest_id_checksum": 2147450880,
+        "row_count": 65536,
+        "sum_distance": 31343.765593762975
+      },
+      "distribution": "clustered",
+      "elapsed_sec": 0.7524481043219566,
+      "generated": {
+        "cluster_count": 8,
+        "cluster_stddev": 0.035,
+        "dimension": 3,
+        "distribution": "clustered",
+        "format": "rtnn_csv_xyz",
+        "path": "/tmp/goal2984_second_arch_bounded_packet/_work/goal2800/clustered_65536.csv",
+        "point_count": 65536,
+        "seed": 2801
+      },
+      "query_count": 65536,
+      "ranked_aggregate_matches_cupy_grid": true,
+      "rtdl_elapsed_runs_sec": [
+        0.007475987076759338,
+        0.007387608289718628,
+        0.0072889551520347595,
+        0.007252149283885956,
+        0.007376663386821747,
+        0.00733165442943573,
+        0.007389046251773834,
+        0.007198445498943329,
+        0.007370606064796448
+      ],
+      "rtdl_elapsed_sec": 0.007370606064796448,
+      "rtdl_elapsed_statistic": "median",
+      "rtdl_input_pack_sec": 0.01950007677078247,
+      "rtdl_ok": true,
+      "rtdl_phase_summary": {
+        "batch_count": 1,
+        "candidate_count_pass_sec": 0.007342611,
+        "modes": [
+          "prepared_query_uniform_cell_ranked_summary_aggregate_f32_batch_cuda_graph_replay"
+        ],
+        "raw_candidate_count": 2914109,
+        "row_download_sec": 9.789e-06,
+        "upload_sec": 0.0
+      },
+      "rtdl_prepare_sec": 0.00523732602596283,
+      "rtdl_ranked_aggregate_summary": {
+        "bounded_neighbor_count": 2914109,
+        "kth_id_checksum": 2144378896,
+        "nearest_id_checksum": 2147450880,
+        "row_count": 65536,
+        "sum_distance": 31343.765581409214
+      },
+      "rtdl_raw_candidate_count": 2914109,
+      "rtdl_row_count": 65536,
+      "search_count": 65536,
+      "status": "pass"
+    },
+    {
+      "candidate_count_delta": 0,
+      "candidate_count_matches_cupy_grid": true,
+      "candidate_count_tolerance": 2,
+      "candidate_count_within_tolerance": true,
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "canonical_live_harness": true,
+        "native_engine_customization": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rtdl_beats_cupy_grid_claim_authorized": false,
+        "rtdl_beats_rtnn_claim_authorized": false,
+        "tier_b_same_contract_opponent": true,
+        "triton_speedup_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "contract": {
+        "bounded_k": 50,
+        "exact": false,
+        "family": "fixed_radius_neighbors_3d",
+        "mode": "ranked-summary-aggregate-prepared-query-batch-graph-float32",
+        "precision": "float32",
+        "prepared_query_points": true,
+        "same_contract_opponent": "cupy_grid_exact_ranked_summary_3d"
+      },
+      "cupy_grid_bounded_neighbor_count": 1158438,
+      "cupy_grid_elapsed_runs_sec": [
+        0.0017817243933677673,
+        0.0017426162958145142,
+        0.0017454102635383606,
+        0.0017487183213233948,
+        0.0017398595809936523,
+        0.001750752329826355,
+        0.0017539933323860168,
+        0.001758679747581482,
+        0.001737356185913086
+      ],
+      "cupy_grid_elapsed_sec": 0.0017487183213233948,
+      "cupy_grid_elapsed_statistic": "median",
+      "cupy_grid_ok": true,
+      "cupy_grid_over_rtdl_elapsed_ratio": 4.194452883464089,
+      "cupy_grid_summary": {
+        "bounded_neighbor_count": 1158438,
+        "kth_id_checksum": 2149724424,
+        "nearest_id_checksum": 2147450880,
+        "row_count": 65536,
+        "sum_distance": 16341.84431558894
+      },
+      "distribution": "shell",
+      "elapsed_sec": 0.41619860380887985,
+      "generated": {
+        "cluster_count": null,
+        "cluster_stddev": null,
+        "dimension": 3,
+        "distribution": "shell",
+        "format": "rtnn_csv_xyz",
+        "path": "/tmp/goal2984_second_arch_bounded_packet/_work/goal2800/shell_65536.csv",
+        "point_count": 65536,
+        "seed": 2802
+      },
+      "query_count": 65536,
+      "ranked_aggregate_matches_cupy_grid": true,
+      "rtdl_elapsed_runs_sec": [
+        0.00048779696226119995,
+        0.00042732059955596924,
+        0.00042434781789779663,
+        0.0004165768623352051,
+        0.00041460245847702026,
+        0.00041691213846206665,
+        0.0004155784845352173,
+        0.0004169270396232605,
+        0.0004168301820755005
+      ],
+      "rtdl_elapsed_sec": 0.00041691213846206665,
+      "rtdl_elapsed_statistic": "median",
+      "rtdl_input_pack_sec": 0.01828916370868683,
+      "rtdl_ok": true,
+      "rtdl_phase_summary": {
+        "batch_count": 1,
+        "candidate_count_pass_sec": 0.000391524,
+        "modes": [
+          "prepared_query_uniform_cell_ranked_summary_aggregate_f32_batch_cuda_graph_replay"
+        ],
+        "raw_candidate_count": 1158438,
+        "row_download_sec": 9.328e-06,
+        "upload_sec": 0.0
+      },
+      "rtdl_prepare_sec": 0.005101904273033142,
+      "rtdl_ranked_aggregate_summary": {
+        "bounded_neighbor_count": 1158438,
+        "kth_id_checksum": 2149724424,
+        "nearest_id_checksum": 2147450880,
+        "row_count": 65536,
+        "sum_distance": 16341.844321162382
+      },
+      "rtdl_raw_candidate_count": 1158438,
+      "rtdl_row_count": 65536,
+      "search_count": 65536,
+      "status": "pass"
+    }
+  ],
+  "run_cupy_grid": true,
+  "source_commit": "20b62a3eb21607a4e313b58fd8804de91e681f4e",
+  "source_dirty": [],
+  "status": "pass"
+}

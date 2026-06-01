@@ -1,0 +1,392 @@
+{
+  "all_pass": true,
+  "artifact_count": 7,
+  "artifact_count_ok": true,
+  "artifact_status_ok": true,
+  "artifacts": {
+    "goal2797_triangle_counting.json": {
+      "app": "triangle_counting",
+      "boundary": "canonical app harness only",
+      "claim_boundary_keys": [
+        "canonical_harness",
+        "native_engine_customization",
+        "paper_reproduction_claim_authorized",
+        "public_speedup_claim_authorized",
+        "triton_speedup_claim_authorized",
+        "true_zero_copy_claim_authorized",
+        "whole_app_speedup_claim_authorized"
+      ],
+      "claim_boundary_violations": {},
+      "exists": true,
+      "goal": "Goal2797",
+      "gpu": "NVIDIA RTX 4000 Ada Generation, 565.57.01",
+      "source_commit": "20b62a3eb21607a4e313b58fd8804de91e681f4e",
+      "source_dirty": [],
+      "status": "pass"
+    },
+    "goal2798_librts.json": {
+      "app": "librts_spatial_index",
+      "boundary": "Tier C no-regression harness; no partner or public RT claim",
+      "claim_boundary_keys": [
+        "canonical_harness",
+        "native_engine_customization",
+        "paper_reproduction_claim_authorized",
+        "public_speedup_claim_authorized",
+        "tier_c_no_regression_harness",
+        "triton_speedup_claim_authorized",
+        "true_zero_copy_claim_authorized",
+        "whole_app_speedup_claim_authorized"
+      ],
+      "claim_boundary_violations": {},
+      "exists": true,
+      "goal": "Goal2798",
+      "gpu": "NVIDIA RTX 4000 Ada Generation, 565.57.01",
+      "source_commit": "20b62a3eb21607a4e313b58fd8804de91e681f4e",
+      "source_dirty": [],
+      "status": "pass"
+    },
+    "goal2799_spatial_rayjoin.json": {
+      "app": "spatial_rayjoin",
+      "boundary": "prepared OptiX count/parity route, not full RayJoin reproduction",
+      "claim_boundary_keys": [
+        "canonical_harness",
+        "native_engine_customization",
+        "paper_reproduction_claim_authorized",
+        "public_speedup_claim_authorized",
+        "row_overlay_continuation_deferred_tier_b",
+        "rtdl_beats_rayjoin_claim_authorized",
+        "tier_a_count_or_parity_only",
+        "triton_speedup_claim_authorized",
+        "true_zero_copy_claim_authorized",
+        "whole_app_speedup_claim_authorized"
+      ],
+      "claim_boundary_violations": {},
+      "exists": true,
+      "goal": "Goal2799",
+      "gpu": "NVIDIA RTX 4000 Ada Generation, 565.57.01",
+      "source_commit": "20b62a3eb21607a4e313b58fd8804de91e681f4e",
+      "source_dirty": [],
+      "status": "pass"
+    },
+    "goal2800_rtnn.json": {
+      "app": "rtnn",
+      "boundary": "Tier B exact ranked-summary opponent; distribution-dependent",
+      "claim_boundary_keys": [
+        "broad_rt_core_speedup_claim_authorized",
+        "canonical_live_harness",
+        "native_engine_customization",
+        "paper_reproduction_claim_authorized",
+        "public_speedup_claim_authorized",
+        "rtdl_beats_cupy_grid_claim_authorized",
+        "rtdl_beats_rtnn_claim_authorized",
+        "tier_b_same_contract_opponent",
+        "triton_speedup_claim_authorized",
+        "whole_app_speedup_claim_authorized"
+      ],
+      "claim_boundary_violations": {},
+      "exists": true,
+      "goal": "Goal2800",
+      "gpu": "NVIDIA RTX 4000 Ada Generation, 565.57.01",
+      "source_commit": "20b62a3eb21607a4e313b58fd8804de91e681f4e",
+      "source_dirty": [],
+      "status": "pass"
+    },
+    "goal2801_hausdorff_xhd.json": {
+      "app": "hausdorff_xhd",
+      "boundary": "exact RTDL/OptiX path; no claim to beat optimized CuPy grid",
+      "claim_boundary_keys": [
+        "broad_rt_core_speedup_claim_authorized",
+        "canonical_entrypoint",
+        "native_engine_customization",
+        "paper_reproduction_claim_authorized",
+        "public_speedup_claim_authorized",
+        "rtdl_beats_cupy_grid_claim_authorized",
+        "rtdl_beats_xhd_claim_authorized",
+        "triton_speedup_claim_authorized",
+        "whole_app_speedup_claim_authorized"
+      ],
+      "claim_boundary_violations": {},
+      "exists": true,
+      "goal": "Goal2801",
+      "gpu": "NVIDIA RTX 4000 Ada Generation, 565.57.01",
+      "source_commit": "20b62a3eb21607a4e313b58fd8804de91e681f4e",
+      "source_dirty": [],
+      "status": "pass"
+    },
+    "goal2802_rt_dbscan.json": {
+      "app": "rt_dbscan",
+      "boundary": "grouped stream continuation evidence; no paper reproduction claim",
+      "claim_boundary_keys": [
+        "broad_dbscan_speedup_claim_authorized",
+        "canonical_live_harness",
+        "native_engine_customization",
+        "paper_reproduction_claim_authorized",
+        "paper_speedup_claim_authorized",
+        "public_speedup_claim_authorized",
+        "pure_triton_components_claim_authorized",
+        "whole_app_speedup_claim_authorized"
+      ],
+      "claim_boundary_violations": {},
+      "exists": true,
+      "goal": "Goal2802",
+      "gpu": "NVIDIA RTX 4000 Ada Generation, 565.57.01",
+      "source_commit": "20b62a3eb21607a4e313b58fd8804de91e681f4e",
+      "source_dirty": [],
+      "status": "pass"
+    },
+    "goal2803_barnes_hut.json": {
+      "app": "barnes_hut",
+      "boundary": "membership and vector-sum harness; Triton vector path not promoted",
+      "claim_boundary_keys": [
+        "authors_code_comparison_authorized",
+        "canonical_consolidated_harness",
+        "native_engine_customization",
+        "paper_reproduction_claim_authorized",
+        "paper_speedup_claim_authorized",
+        "public_speedup_claim_authorized",
+        "triton_vector_sum_auto_selection_authorized",
+        "whole_app_speedup_claim_authorized"
+      ],
+      "claim_boundary_violations": {},
+      "exists": true,
+      "goal": "Goal2803",
+      "gpu": "NVIDIA RTX 4000 Ada Generation, 565.57.01",
+      "source_commit": "20b62a3eb21607a4e313b58fd8804de91e681f4e",
+      "source_dirty": [],
+      "status": "pass"
+    }
+  },
+  "barnes_hut_case_profile": "second_arch_bounded",
+  "barnes_hut_case_profile_boundary": "explicit second-architecture CPU-baseline profile; excludes the 8192-body Embree row and is not a release shortcut unless the release scope names this bounded tier",
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "canonical_packet_runner": true,
+    "compact_child_output_safe_to_use": true,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v2_5_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "claim_boundary_violations": {},
+  "dirty_artifacts": {},
+  "elapsed_sec": 242.7535092011094,
+  "executions": [
+    {
+      "app": "triangle_counting",
+      "artifact_name": "goal2797_triangle_counting.json",
+      "artifact_path": "/tmp/goal2984_second_arch_bounded_packet/goal2797_triangle_counting.json",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/goal2797_triangle_counting_v25_canonical_harness.py",
+        "--output",
+        "/tmp/goal2984_second_arch_bounded_packet/goal2797_triangle_counting.json",
+        "--work-dir",
+        "/tmp/goal2984_second_arch_bounded_packet/_work/goal2797"
+      ],
+      "compact_child_output": true,
+      "elapsed_sec": 2.735745169222355,
+      "error": null,
+      "goal": "Goal2797",
+      "returncode": 0,
+      "stdout_log_path": "/tmp/goal2984_second_arch_bounded_packet/_stdout/goal2797_triangle_counting.stdout",
+      "timed_out": false
+    },
+    {
+      "app": "librts_spatial_index",
+      "artifact_name": "goal2798_librts.json",
+      "artifact_path": "/tmp/goal2984_second_arch_bounded_packet/goal2798_librts.json",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/goal2798_librts_v25_warm_median_harness.py",
+        "--output",
+        "/tmp/goal2984_second_arch_bounded_packet/goal2798_librts.json"
+      ],
+      "compact_child_output": true,
+      "elapsed_sec": 3.241934187710285,
+      "error": null,
+      "goal": "Goal2798",
+      "returncode": 0,
+      "stdout_log_path": "/tmp/goal2984_second_arch_bounded_packet/_stdout/goal2798_librts_spatial_index.stdout",
+      "timed_out": false
+    },
+    {
+      "app": "spatial_rayjoin",
+      "artifact_name": "goal2799_spatial_rayjoin.json",
+      "artifact_path": "/tmp/goal2984_second_arch_bounded_packet/goal2799_spatial_rayjoin.json",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/goal2799_spatial_rayjoin_v25_prepared_count_harness.py",
+        "--output",
+        "/tmp/goal2984_second_arch_bounded_packet/goal2799_spatial_rayjoin.json"
+      ],
+      "compact_child_output": true,
+      "elapsed_sec": 1.9880298003554344,
+      "error": null,
+      "goal": "Goal2799",
+      "returncode": 0,
+      "stdout_log_path": "/tmp/goal2984_second_arch_bounded_packet/_stdout/goal2799_spatial_rayjoin.stdout",
+      "timed_out": false
+    },
+    {
+      "app": "rtnn",
+      "artifact_name": "goal2800_rtnn.json",
+      "artifact_path": "/tmp/goal2984_second_arch_bounded_packet/goal2800_rtnn.json",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/goal2800_rtnn_v25_live_ranked_summary_harness.py",
+        "--output",
+        "/tmp/goal2984_second_arch_bounded_packet/goal2800_rtnn.json",
+        "--work-dir",
+        "/tmp/goal2984_second_arch_bounded_packet/_work/goal2800"
+      ],
+      "compact_child_output": true,
+      "elapsed_sec": 4.060729958117008,
+      "error": null,
+      "goal": "Goal2800",
+      "returncode": 0,
+      "stdout_log_path": "/tmp/goal2984_second_arch_bounded_packet/_stdout/goal2800_rtnn.stdout",
+      "timed_out": false
+    },
+    {
+      "app": "hausdorff_xhd",
+      "artifact_name": "goal2801_hausdorff_xhd.json",
+      "artifact_path": "/tmp/goal2984_second_arch_bounded_packet/goal2801_hausdorff_xhd.json",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/goal2801_hausdorff_xhd_v25_canonical_entrypoint.py",
+        "--output",
+        "/tmp/goal2984_second_arch_bounded_packet/goal2801_hausdorff_xhd.json"
+      ],
+      "compact_child_output": true,
+      "elapsed_sec": 2.1578593999147415,
+      "error": null,
+      "goal": "Goal2801",
+      "returncode": 0,
+      "stdout_log_path": "/tmp/goal2984_second_arch_bounded_packet/_stdout/goal2801_hausdorff_xhd.stdout",
+      "timed_out": false
+    },
+    {
+      "app": "rt_dbscan",
+      "artifact_name": "goal2802_rt_dbscan.json",
+      "artifact_path": "/tmp/goal2984_second_arch_bounded_packet/goal2802_rt_dbscan.json",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/goal2802_rt_dbscan_v25_live_grouped_stream_harness.py",
+        "--output",
+        "/tmp/goal2984_second_arch_bounded_packet/goal2802_rt_dbscan.json",
+        "--raw-output-dir",
+        "/tmp/goal2984_second_arch_bounded_packet/_raw/goal2802"
+      ],
+      "compact_child_output": true,
+      "elapsed_sec": 24.10844638198614,
+      "error": null,
+      "goal": "Goal2802",
+      "returncode": 0,
+      "stdout_log_path": "/tmp/goal2984_second_arch_bounded_packet/_stdout/goal2802_rt_dbscan.stdout",
+      "timed_out": false
+    },
+    {
+      "app": "barnes_hut",
+      "artifact_name": "goal2803_barnes_hut.json",
+      "artifact_path": "/tmp/goal2984_second_arch_bounded_packet/goal2803_barnes_hut.json",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/goal2803_barnes_hut_v25_consolidated_harness.py",
+        "--output",
+        "/tmp/goal2984_second_arch_bounded_packet/goal2803_barnes_hut.json",
+        "--case",
+        "512:16",
+        "--case",
+        "2048:32"
+      ],
+      "compact_child_output": true,
+      "elapsed_sec": 204.4599499180913,
+      "error": null,
+      "goal": "Goal2803",
+      "returncode": 0,
+      "stdout_log_path": "/tmp/goal2984_second_arch_bounded_packet/_stdout/goal2803_barnes_hut.stdout",
+      "timed_out": false
+    }
+  ],
+  "expected_artifact_count": 7,
+  "goal": "Goal2855",
+  "returncode_ok": true,
+  "runner_metadata": {
+    "gpu": "NVIDIA RTX 4000 Ada Generation, 565.57.01",
+    "source_commit": "20b62a3eb21607a4e313b58fd8804de91e681f4e",
+    "source_dirty": [],
+    "toolchain": {
+      "claim_boundary": {
+        "compiler_fairness_claim_authorized": false,
+        "compiler_provenance_index_only": true,
+        "multivendor_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "v2_5_release_authorized": false
+      },
+      "comparison_toolchain_scope": {
+        "compiler_flag_alignment_proven": false,
+        "cross_compiler_fairness_claim_authorized": false,
+        "host_compiler_version_recorded": true,
+        "known_non_equivalence": [
+          "OptiX native code is built ahead-of-time with nvcc/PTX.",
+          "Triton kernels are JIT-compiled by Triton/LLVM for the active GPU.",
+          "CuPy RawKernels and reductions use CuPy/NVRTC or library-backed CUDA paths.",
+          "Torch reductions use Torch/ATen implementation choices.",
+          "Numba kernels use Numba's CUDA JIT when that partner path is selected."
+        ],
+        "native_optix_requirements": {
+          "nvcc_version_recorded": true,
+          "optix_header_exists": true,
+          "ptx_arch_recorded": true,
+          "ptx_compiler": "nvcc",
+          "rtdl_optix_library_exists": true
+        },
+        "native_optix_stack_observed": true,
+        "observed_stack_complete_for_current_packet": true,
+        "paper_reproduction_claim_authorized": false,
+        "partner_versions_recorded": {
+          "cupy": true,
+          "numba": true,
+          "torch": true,
+          "triton": true
+        },
+        "public_speedup_wording_authorized": false,
+        "purpose": "Make the current packet's comparison scope machine-readable: same source, same GPU, same runner, visible native/partner toolchains, but no claim that all compilers used identical optimization flags.",
+        "release_authorized": false,
+        "same_gpu_required": true,
+        "same_packet_runner_required": true,
+        "same_source_commit_required": true,
+        "scope_version": "rtdl.goal2972.comparison_toolchain_scope.v1"
+      },
+      "cuda_home": null,
+      "cupy_version": "14.1.1",
+      "cxx_compiler": "g++",
+      "cxx_version": "g++ (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+      "metadata_version": "rtdl.goal2916.toolchain_provenance.v1",
+      "numba_version": "0.65.1",
+      "nvcc_probe_path": "nvcc",
+      "nvcc_version": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Thu_Mar_28_02:18:24_PDT_2024\nCuda compilation tools, release 12.4, V12.4.131\nBuild cuda_12.4.r12.4/compiler.34097967_0",
+      "nvidia_smi_topology": "NVIDIA RTX 4000 Ada Generation, GPU-24de0ecf-5714-5355-8100-820a75373cec, 565.57.01",
+      "optix_header": "/root/vendor/optix-sdk/include/optix.h",
+      "optix_header_exists": true,
+      "optix_prefix": "/root/vendor/optix-sdk",
+      "python_executable": "/usr/bin/python3",
+      "python_version": "3.11.10",
+      "rtdl_nvcc": null,
+      "rtdl_optix_library": "/tmp/rtdl_goal2984_second_arch_profile/build/librtdl_optix.so",
+      "rtdl_optix_library_exists": true,
+      "rtdl_optix_ptx_arch": "compute_89",
+      "rtdl_optix_ptx_compiler": "nvcc",
+      "torch_version": "2.4.1+cu124",
+      "triton_version": "3.0.0"
+    }
+  },
+  "runner_version": "rtdl.goal2855.v2_5_current_canonical_harness_packet_runner.v1",
+  "source_commit": "20b62a3eb21607a4e313b58fd8804de91e681f4e",
+  "source_commit_consistent": true,
+  "source_commits": [
+    "20b62a3eb21607a4e313b58fd8804de91e681f4e"
+  ],
+  "status": "pass"
+}
