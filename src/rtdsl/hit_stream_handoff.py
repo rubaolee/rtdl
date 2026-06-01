@@ -1760,7 +1760,7 @@ def trace_v2_5_hit_stream_torch_carrier_runtime_seam_authority(
                 "retain_until": record["retain_until"],
                 "event_log": record["event_log"],
                 "authority_origin": "neutral_buffer_seam",
-                "carrier_originated_transfer_copy_lifetime": False,
+                "carrier_authority_disallowed_by_contract": True,
                 "true_zero_copy_authorized": False,
                 "public_speedup_claim_authorized": False,
             }
@@ -1788,7 +1788,7 @@ def trace_v2_5_hit_stream_torch_carrier_runtime_seam_authority(
         "lease_records": tuple(lease_records),
         "all_leases_completed": not errors
         and all(record["final_state"] == record["owner_state"] for record in lease_records),
-        "carrier_originated_transfer_copy_lifetime": False,
+        "carrier_authority_disallowed_by_contract": True,
         "true_zero_copy_authorized": False,
         "public_speedup_claim_authorized": False,
         "errors": tuple(errors),

@@ -95,6 +95,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2880_current_packet_after_torch_carrier_provenance_2026-05-31.md",
     "docs/reports/goal2883_torch_carrier_runtime_seam_trace_2026-05-31.md",
     "docs/reports/goal2885_v2_5_partner_conformance_readiness_snapshot_2026-05-31.md",
+    "docs/reports/goal2887_goal2886_review_intake_and_carrier_authority_field_rename_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -156,6 +157,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
     "docs/reviews/goal2868_claude_review_v2_5_last_day_work_since_claude_reviews_2026-05-31.md",
     "docs/reviews/goal2868_gemini_review_v2_5_last_day_work_since_claude_reviews_2026-05-31.md",
     "docs/reviews/goal2881_claude_review_v2_5_residual_closure_and_current_packet_2026-05-31.md",
+    "docs/reviews/goal2886_claude_review_runtime_trace_and_conformance_snapshot_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_BLOCKED_ACTIONS = (
@@ -180,6 +182,8 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "triage_goal2881_claude_review_before_any_release_packet",
     "keep_goal2883_runtime_seam_trace_green",
     "keep_goal2885_partner_conformance_snapshot_green",
+    "triage_goal2886_claude_review_before_any_release_packet",
+    "keep_goal2887_carrier_authority_field_rename_green",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )

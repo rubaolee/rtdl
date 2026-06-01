@@ -26,12 +26,12 @@ class Goal2883TorchCarrierRuntimeSeamTraceTest(unittest.TestCase):
         self.assertEqual("neutral_buffer_seam", trace["authority_origin"])
         self.assertEqual(3, trace["lease_count"])
         self.assertTrue(trace["all_leases_completed"])
-        self.assertFalse(trace["carrier_originated_transfer_copy_lifetime"])
+        self.assertTrue(trace["carrier_authority_disallowed_by_contract"])
         self.assertFalse(trace["true_zero_copy_authorized"])
         for record in trace["lease_records"]:
             self.assertEqual(("handoff_begin", "continuation_complete"), record["event_log"])
             self.assertEqual("neutral_buffer_seam", record["authority_origin"])
-            self.assertFalse(record["carrier_originated_transfer_copy_lifetime"])
+            self.assertTrue(record["carrier_authority_disallowed_by_contract"])
 
     def test_authority_validation_includes_runtime_trace_status(self) -> None:
         validation = rt.validate_v2_5_hit_stream_neutral_seam_authority(

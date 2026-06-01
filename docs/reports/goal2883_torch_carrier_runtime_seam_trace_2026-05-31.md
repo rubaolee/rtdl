@@ -39,7 +39,7 @@ Each lease records:
 - `handoff_begin`
 - `continuation_complete`
 - `authority_origin: neutral_buffer_seam`
-- `carrier_originated_transfer_copy_lifetime: false`
+- `carrier_authority_disallowed_by_contract: true`
 
 `_gather_payload_torch_carrier(...)` now records this trace in
 `torch_carrier_execution.neutral_seam_runtime_authority_trace` when the carrier
