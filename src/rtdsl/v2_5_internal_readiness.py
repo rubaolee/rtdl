@@ -141,6 +141,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2954_rtnn_graph_replay_route_tuning_2026-06-01.md",
     "docs/reports/goal2955_current_packet_after_rtnn_graph_replay_2026-06-01.md",
     "docs/reports/goal2958_rtnn_graph_replay_scale_chunking_2026-06-01.md",
+    "docs/reports/goal2959_current_packet_after_rtnn_chunking_2026-06-01.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -175,10 +176,10 @@ V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_HARNESS_ARTIFACTS = (
     "docs/reports/goal2847_current_head_canonical_harness_pod/goal2803_barnes_hut.json",
 )
 V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_RUNNER_SUMMARY = (
-    "docs/reports/goal2955_current_packet_after_rtnn_graph_pod/goal2855_summary.json"
+    "docs/reports/goal2959_current_packet_after_rtnn_chunk_pod/goal2855_summary.json"
 )
 V2_5_INTERNAL_READINESS_CURRENT_PACKET_PERF_TRIAGE = (
-    "docs/reports/goal2955_current_packet_after_rtnn_graph_pod/goal2955_triage.json"
+    "docs/reports/goal2959_current_packet_after_rtnn_chunk_pod/goal2959_triage.json"
 )
 
 V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
@@ -212,6 +213,8 @@ V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
     "docs/reviews/goal2922_gemini_review_goal2920_2921_rtnn_hausdorff_stability_2026-06-01.md",
     "docs/reviews/goal2926_gemini_review_goal2924_2925_radius_guard_packet_2026-06-01.md",
     "docs/reviews/goal2930_gemini_review_goal2929_tier_c_10_benchmark_foundation_2026-06-01.md",
+    "docs/reviews/goal2956_gemini_review_goal2955_zero_target_packet_2026-06-01.md",
+    "docs/reviews/goal2957_claude_review_goal2955_zero_target_packet_2026-06-01.md",
 )
 
 V2_5_INTERNAL_READINESS_BLOCKED_ACTIONS = (
@@ -281,6 +284,8 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "keep_goal2954_rtnn_graph_replay_route_green",
     "keep_goal2955_current_packet_zero_perf_targets_green",
     "keep_goal2958_rtnn_graph_replay_scale_chunking_green",
+    "keep_goal2959_current_packet_after_rtnn_chunking_green",
+    "triage_goal2956_2957_zero_target_packet_reviews_before_release_packet",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )

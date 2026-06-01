@@ -72,14 +72,12 @@ class Goal2955CurrentPacketAfterRtnnGraphReplayTest(unittest.TestCase):
         self.assertEqual("cupy", barnes["vector_sum"]["selected_partner"])
         self.assertFalse(barnes["claim_boundary"]["public_speedup_claim_authorized"])
 
-    def test_readiness_indexes_latest_packet_and_keeps_release_blocked(self) -> None:
+    def test_readiness_keeps_release_blocked_after_goal2955(self) -> None:
         packet = rt.v2_5_internal_readiness_packet(repo_root=ROOT)
         validation = rt.validate_v2_5_internal_readiness_packet(repo_root=ROOT)
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual(0, validation["current_packet_perf_target_count"])
-        self.assertIn("goal2955_current_packet_after_rtnn_graph_pod", packet["current_canonical_runner"]["summary_path"])
-        self.assertEqual(EXPECTED_COMMIT, packet["current_canonical_runner"]["source_commit"])
         self.assertEqual(0, packet["current_packet_perf_triage"]["performance_target_count"])
         self.assertIn("keep_goal2955_current_packet_zero_perf_targets_green", packet["allowed_next_actions"])
         self.assertFalse(packet["claim_authorization"]["v2_5_release_authorized"])
