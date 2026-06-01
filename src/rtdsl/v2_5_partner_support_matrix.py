@@ -175,8 +175,8 @@ def v2_5_partner_support_cells() -> tuple[V25PartnerSupportCell, ...]:
                     requires_neutral_buffer_seam=True,
                     requires_cuda=True,
                     notes=(
-                        "CuPy preview exists only for the event-ordered grouped hit-stream "
-                        "consumer proven in Goals2771-2772; it remains unpromoted"
+                        "CuPy preview exists for an explicitly listed RawKernel-backed "
+                        "or event-ordered conformance operation; it remains unpromoted"
                     ),
                 )
             )

@@ -119,6 +119,11 @@ _TRITON_POD_RUNTIME_EVIDENCE: dict[str, tuple[str, tuple[str, ...], tuple[str, .
 }
 _TRITON_CUDA_SMOKE_PRESENT_EVIDENCE: dict[str, tuple[str, tuple[str, ...], tuple[str, ...]]] = {}
 _CUPY_POD_RUNTIME_EVIDENCE = {
+    "grouped_vector_sum_f64x2": (
+        "Goal2932",
+        ("tests.goal2932_cupy_presegmented_vector_sum_test",),
+        ("docs/reports/goal2932_cupy_presegmented_vector_sum_partner_2026-06-01.md",),
+    ),
     "hit_stream_grouped_ray_id_primitive_i64": (
         "Goal2771/Goal2772",
         (
@@ -443,6 +448,11 @@ def _conformance_cell(operation: str, partner: str) -> V25PartnerConformanceCell
         )
     if partner == V2_5_CONFORMANCE_PARTNER and operation in _CUPY_POD_RUNTIME_EVIDENCE:
         goal, tests, reports = _CUPY_POD_RUNTIME_EVIDENCE[operation]
+        notes = (
+            "CuPy RawKernel preview has CUDA runtime conformance evidence recorded in Goal2932"
+            if operation == "grouped_vector_sum_f64x2"
+            else "CuPy RawKernel consumer is scoped to the event-ordered hit-stream preview"
+        )
         return V25PartnerConformanceCell(
             operation=operation,
             partner=partner,
@@ -452,7 +462,7 @@ def _conformance_cell(operation: str, partner: str) -> V25PartnerConformanceCell
             test_modules=tests,
             report_paths=reports,
             release_blocker=False,
-            notes="CuPy RawKernel consumer is scoped to the event-ordered hit-stream preview",
+            notes=notes,
         )
     raise ValueError(f"preview conformance row is not classified: {partner}/{operation}")
 

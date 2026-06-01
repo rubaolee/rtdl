@@ -47,10 +47,14 @@ class Goal2873V25PartnerConformanceMatrixTest(unittest.TestCase):
             self.assertFalse(cell["release_blocker"])
             self.assertFalse(cell["public_speedup_claim_authorized"])
 
-    def test_cupy_conformance_is_descriptor_only_except_hit_stream_preview(self) -> None:
+    def test_cupy_conformance_is_descriptor_only_except_explicit_previews(self) -> None:
         for operation in rt.V2_5_PARTNER_CONTINUATION_OPERATION_NAMES:
             cell = rt.plan_v2_5_partner_conformance(operation, "cupy")
-            if operation == "hit_stream_grouped_ray_id_primitive_i64":
+            if operation == "grouped_vector_sum_f64x2":
+                self.assertEqual(rt.V2_5_CONFORMANCE_STATUS_POD_RUNTIME, cell["conformance_status"])
+                self.assertEqual("Goal2932", cell["evidence_goal"])
+                self.assertIn("tests.goal2932_cupy_presegmented_vector_sum_test", cell["test_modules"])
+            elif operation == "hit_stream_grouped_ray_id_primitive_i64":
                 self.assertEqual(rt.V2_5_CONFORMANCE_STATUS_POD_RUNTIME, cell["conformance_status"])
                 self.assertEqual("Goal2771/Goal2772", cell["evidence_goal"])
                 self.assertIn(

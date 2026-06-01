@@ -46,7 +46,10 @@ class Goal2671V25PreviewGateTest(unittest.TestCase):
                 "bounded_collect_finalize_i64",
             ),
         )
-        self.assertEqual(gate["cupy_preview_operations"], ("hit_stream_grouped_ray_id_primitive_i64",))
+        self.assertEqual(
+            gate["cupy_preview_operations"],
+            ("grouped_vector_sum_f64x2", "hit_stream_grouped_ray_id_primitive_i64"),
+        )
         self.assertEqual(gate["reference_only_operations"], ())
         self.assertEqual(
             set(gate["preview_kernel_operations"]).union(

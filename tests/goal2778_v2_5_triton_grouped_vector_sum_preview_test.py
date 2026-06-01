@@ -32,7 +32,7 @@ class Goal2778V25TritonGroupedVectorSumPreviewTest(unittest.TestCase):
         cupy = rt.plan_v2_5_partner_support("grouped_vector_sum_f64x2", "cupy")
         self.assertEqual(triton["status"], rt.V2_5_SUPPORT_STATUS_PREVIEW)
         self.assertEqual(numba["status"], rt.V2_5_SUPPORT_STATUS_UNSUPPORTED)
-        self.assertEqual(cupy["status"], rt.V2_5_SUPPORT_STATUS_DESCRIPTOR)
+        self.assertEqual(cupy["status"], rt.V2_5_SUPPORT_STATUS_PREVIEW)
 
     def test_reference_grouped_vector_sum_is_componentwise(self):
         result = rt.execute_v2_5_partner_continuation_reference(

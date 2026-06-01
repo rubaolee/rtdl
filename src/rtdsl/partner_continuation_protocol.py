@@ -231,6 +231,7 @@ V2_5_NUMBA_PREVIEW_OPERATIONS = (
     "segmented_sum_f64",
 )
 V2_5_CUPY_PREVIEW_OPERATIONS = (
+    "grouped_vector_sum_f64x2",
     "hit_stream_grouped_ray_id_primitive_i64",
 )
 V2_5_PARTNER_REFERENCE_ONLY_OPERATIONS = tuple(
@@ -431,8 +432,6 @@ def validate_v2_5_partner_preview_gate(
         errors.append("preview and reference-only operation sets must not overlap")
     if set(cupy_preview_operations).intersection(reference_only_operations):
         errors.append("CuPy preview and reference-only operation sets must not overlap")
-    if set(preview_kernel_operations).intersection(cupy_preview_operations):
-        errors.append("Triton and CuPy preview operation sets must not overlap")
     if (
         set(preview_kernel_operations).union(cupy_preview_operations, reference_only_operations)
         != set(V2_5_PARTNER_CONTINUATION_OPERATION_NAMES)

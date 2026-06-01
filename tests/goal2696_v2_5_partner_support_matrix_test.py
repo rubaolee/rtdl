@@ -58,14 +58,14 @@ class Goal2696V25PartnerSupportMatrixTest(unittest.TestCase):
                 self.assertFalse(numba["supported"])
                 self.assertIn("not implemented", numba["notes"])
 
-    def test_cupy_conformance_cells_are_descriptor_only_except_explicit_hit_stream_preview(self) -> None:
+    def test_cupy_conformance_cells_are_descriptor_only_except_explicit_previews(self) -> None:
         for operation in rt.V2_5_PARTNER_CONTINUATION_OPERATION_NAMES:
             cupy = rt.plan_v2_5_partner_support(operation, "cupy")
 
             self.assertEqual(cupy["partner"], rt.V2_5_CONFORMANCE_PARTNER)
             if operation in rt.V2_5_CUPY_PREVIEW_OPERATIONS:
                 self.assertEqual(cupy["status"], rt.V2_5_SUPPORT_STATUS_PREVIEW)
-                self.assertIn("Goals2771-2772", cupy["notes"])
+                self.assertIn("preview", cupy["notes"].lower())
             else:
                 self.assertEqual(cupy["status"], rt.V2_5_SUPPORT_STATUS_DESCRIPTOR)
             self.assertTrue(cupy["supported"])

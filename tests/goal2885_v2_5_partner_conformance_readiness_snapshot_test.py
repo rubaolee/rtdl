@@ -56,6 +56,14 @@ class Goal2885V25PartnerConformanceReadinessSnapshotTest(unittest.TestCase):
                 for cell in pod_cells
             )
         )
+        self.assertTrue(
+            any(
+                cell["partner"] == "cupy_conformance"
+                and cell["operation"] == "grouped_vector_sum_f64x2"
+                and cell["evidence_goal"] == "Goal2932"
+                for cell in pod_cells
+            )
+        )
 
     def test_readiness_indexes_goal2885_report(self) -> None:
         packet = rt.v2_5_internal_readiness_packet(repo_root=ROOT)

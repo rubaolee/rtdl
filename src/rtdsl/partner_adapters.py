@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+
 from .reference import Polygon as _CanonicalPolygon
 from .reference import Ray2D as _CanonicalRay2D
 from .reference import Segment as _CanonicalSegment
@@ -28,6 +30,7 @@ _CUPY_AABB_PAIR_OVERLAP_SUMMARY_2D_KERNEL = None
 _CUPY_SEGMENT_TRIANGLE_EXACT_WITNESS_FILTER_KERNEL = None
 _CUPY_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS = None
 _CUPY_RADIUS_GRAPH_COMPONENTS_3D_MICROCELL_GRAPH_KERNELS = None
+_CUPY_GROUPED_VECTOR_SUM_OFFSETS_F64X2_KERNEL = None
 
 _AABB_PAIR_PAYLOAD_FIELDS = (
     "left_index",
@@ -294,6 +297,89 @@ def partner_group_vector_sum_2d_by_key(keys, values_x, values_y, group_count: in
         cupy.add.at(out_y, group_ids, values_y)
         return out_x, out_y
     raise ValueError("partner must be 'triton', 'torch', or 'cupy'")
+
+
+def _cupy_grouped_vector_sum_2d_by_offsets(cupy, row_offsets, values_x, values_y):
+    """Reduce presegmented grouped 2D vectors with a generic CuPy RawKernel."""
+
+    global _CUPY_GROUPED_VECTOR_SUM_OFFSETS_F64X2_KERNEL
+
+    row_offsets = row_offsets.astype(cupy.int64, copy=False)
+    values_x = values_x.astype(cupy.float64, copy=False)
+    values_y = values_y.astype(cupy.float64, copy=False)
+    if values_x.shape != values_y.shape:
+        raise ValueError("values_x and values_y must have the same shape")
+    group_count = int(row_offsets.size) - 1
+    row_count = int(values_x.size)
+    if group_count < 0:
+        raise ValueError("row_offsets must contain at least one element")
+    if group_count == 0:
+        return (
+            cupy.empty((0,), dtype=cupy.float64),
+            cupy.empty((0,), dtype=cupy.float64),
+            {
+                "presegmented_row_offsets": True,
+                "adapter_kernel": "cupy_grouped_vector_sum_offsets_f64x2_kernel",
+                "program_count": 0,
+                "threads_per_block": 128,
+                "global_atomic_add_used": False,
+            },
+        )
+    if bool(cupy.any(row_offsets[1:] < row_offsets[:-1]).item()):
+        raise ValueError("row_offsets must be monotonically nondecreasing")
+    if int(row_offsets[0].item()) != 0 or int(row_offsets[-1].item()) != row_count:
+        raise ValueError("row_offsets must start at 0 and end at the row count")
+    if _CUPY_GROUPED_VECTOR_SUM_OFFSETS_F64X2_KERNEL is None:
+        source = r'''
+        extern "C" __global__
+        void rtdl_cupy_grouped_vector_sum_offsets_f64x2(
+            const long long* row_offsets,
+            const double* values_x,
+            const double* values_y,
+            double* output_x,
+            double* output_y,
+            const long long group_count
+        ) {
+            const long long group = (long long)blockIdx.x * blockDim.x + threadIdx.x;
+            if (group >= group_count) {
+                return;
+            }
+            const long long start = row_offsets[group];
+            const long long end = row_offsets[group + 1];
+            double sum_x = 0.0;
+            double sum_y = 0.0;
+            for (long long index = start; index < end; ++index) {
+                sum_x += values_x[index];
+                sum_y += values_y[index];
+            }
+            output_x[group] = sum_x;
+            output_y[group] = sum_y;
+        }
+        '''
+        _CUPY_GROUPED_VECTOR_SUM_OFFSETS_F64X2_KERNEL = cupy.RawKernel(
+            source,
+            "rtdl_cupy_grouped_vector_sum_offsets_f64x2",
+        )
+    output_x = cupy.empty((group_count,), dtype=cupy.float64)
+    output_y = cupy.empty((group_count,), dtype=cupy.float64)
+    threads_per_block = 128
+    blocks = (max(1, math.ceil(group_count / threads_per_block)),)
+    _CUPY_GROUPED_VECTOR_SUM_OFFSETS_F64X2_KERNEL(
+        blocks,
+        (threads_per_block,),
+        (row_offsets, values_x, values_y, output_x, output_y, group_count),
+    )
+    return (
+        output_x,
+        output_y,
+        {
+            "presegmented_row_offsets": True,
+            "adapter_kernel": "cupy_grouped_vector_sum_offsets_f64x2_kernel",
+            "program_count": int(blocks[0]),
+            "threads_per_block": threads_per_block,
+            "global_atomic_add_used": False,
+        },
+    )
 
 
 def partner_group_max_by_key(keys, values, group_count: int, *, partner: str = "torch", initial=0):
@@ -1729,6 +1815,8 @@ def grouped_vector_sum_2d_partner_columns(
         group_ids = group_ids.astype(module.int64, copy=False)
         values_x = values_x.astype(module.float64, copy=False)
         values_y = values_y.astype(module.float64, copy=False)
+        if row_offsets is not None:
+            row_offsets = row_offsets.astype(module.int64, copy=False)
         row_count = int(group_ids.size)
     else:
         module = runtime["module"]
@@ -1738,6 +1826,7 @@ def grouped_vector_sum_2d_partner_columns(
         row_count = int(group_ids.numel())
 
     triton_offset_result = None
+    cupy_offset_result = None
     if runtime["name"] == "triton" and row_offsets is not None:
         triton_offset_result = run_triton_grouped_vector_sum_f64x2_by_offsets(
             row_offsets.to(runtime["int64"]),
@@ -1747,6 +1836,13 @@ def grouped_vector_sum_2d_partner_columns(
         )
         sum_x = triton_offset_result["outputs"]["sum_x"]
         sum_y = triton_offset_result["outputs"]["sum_y"]
+    elif runtime["name"] == "cupy" and row_offsets is not None:
+        sum_x, sum_y, cupy_offset_result = _cupy_grouped_vector_sum_2d_by_offsets(
+            runtime["module"],
+            row_offsets,
+            values_x,
+            values_y,
+        )
     else:
         sum_x, sum_y = partner_group_vector_sum_2d_by_key(
             group_ids,
@@ -1785,6 +1881,17 @@ def grouped_vector_sum_2d_partner_columns(
         ),
         "v2_5_triton_offset_program_count": (
             triton_offset_result["program_count"] if triton_offset_result is not None else None
+        ),
+        "v2_5_cupy_rawkernel_used": cupy_offset_result is not None,
+        "v2_5_cupy_presegmented_offsets_used": cupy_offset_result is not None,
+        "v2_5_cupy_adapter_kernel": (
+            cupy_offset_result["adapter_kernel"] if cupy_offset_result is not None else None
+        ),
+        "v2_5_cupy_global_atomic_add_used": (
+            cupy_offset_result["global_atomic_add_used"] if cupy_offset_result is not None else None
+        ),
+        "v2_5_cupy_offset_program_count": (
+            cupy_offset_result["program_count"] if cupy_offset_result is not None else None
         ),
         "native_engine_row_contract": "not_called_partner_continuation_only",
         "group_count": group_count,
