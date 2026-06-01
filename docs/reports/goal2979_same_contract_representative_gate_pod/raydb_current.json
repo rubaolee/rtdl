@@ -1,0 +1,140 @@
+{
+  "all_correct": true,
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "internal_decision_gate_only": true,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "true_zero_copy_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "comparisons": [
+    {
+      "mode": "count",
+      "pass": true,
+      "prepared_hit_stream_triton_backend": "paper_rt_optix_device_hit_stream_triton_prepared",
+      "prepared_hit_stream_triton_median_wall_sec": 0.016847729682922363,
+      "prepared_hit_stream_triton_slowdown_vs_primitive_first": 43.85013962147068,
+      "primitive_first_backend": "paper_rt_optix_v2_5_primitive_first",
+      "primitive_first_median_wall_sec": 0.00038421154022216797,
+      "required_min_slowdown": 10.0,
+      "row_count": 250000
+    },
+    {
+      "mode": "sum",
+      "pass": true,
+      "prepared_hit_stream_triton_backend": "paper_rt_optix_device_hit_stream_triton_prepared",
+      "prepared_hit_stream_triton_median_wall_sec": 0.34755659103393555,
+      "prepared_hit_stream_triton_slowdown_vs_primitive_first": 175.1514318648599,
+      "primitive_first_backend": "paper_rt_optix_v2_5_primitive_first",
+      "primitive_first_median_wall_sec": 0.00198432058095932,
+      "required_min_slowdown": 50.0,
+      "row_count": 250000
+    },
+    {
+      "mode": "count",
+      "pass": true,
+      "prepared_hit_stream_triton_backend": "paper_rt_optix_device_hit_stream_triton_prepared",
+      "prepared_hit_stream_triton_median_wall_sec": 0.011307694017887115,
+      "prepared_hit_stream_triton_slowdown_vs_primitive_first": 28.532890902596304,
+      "primitive_first_backend": "paper_rt_optix_v2_5_primitive_first",
+      "primitive_first_median_wall_sec": 0.00039630383253097534,
+      "required_min_slowdown": 10.0,
+      "row_count": 1000000
+    },
+    {
+      "mode": "sum",
+      "pass": true,
+      "prepared_hit_stream_triton_backend": "paper_rt_optix_device_hit_stream_triton_prepared",
+      "prepared_hit_stream_triton_median_wall_sec": 0.35192595422267914,
+      "prepared_hit_stream_triton_slowdown_vs_primitive_first": 152.81909741207224,
+      "primitive_first_backend": "paper_rt_optix_v2_5_primitive_first",
+      "primitive_first_median_wall_sec": 0.002302892506122589,
+      "required_min_slowdown": 50.0,
+      "row_count": 1000000
+    }
+  ],
+  "decision": {
+    "auto_triton_promotion_authorized": false,
+    "hit_stream_triton_reserved_for": "continuations_not_expressible_as_fused_generic_rtdl_reductions",
+    "raydb_scalar_grouped_fast_path": "paper_rt_optix_v2_5_primitive_first",
+    "selected_design_rule": "primitive_first_for_exact_fused_generic_grouped_reductions",
+    "triton_front_door_promoted_for_scalar_grouped_reductions": false
+  },
+  "diagnostics": [
+    {
+      "comparison_scope": "diagnostic_full_call_baseline_not_prepared_same_contract",
+      "mode": "count",
+      "old_paper_rt_optix_backend": "paper_rt_optix",
+      "old_paper_rt_optix_median_wall_sec": 0.5330348089337349,
+      "pass": true,
+      "primitive_first_median_wall_sec": 0.00038421154022216797,
+      "primitive_first_speedup_vs_old_paper_rt_optix": 1387.3472114489607,
+      "required_min_speedup": 20.0,
+      "row_count": 250000
+    },
+    {
+      "comparison_scope": "diagnostic_full_call_baseline_not_prepared_same_contract",
+      "mode": "sum",
+      "old_paper_rt_optix_backend": "paper_rt_optix",
+      "old_paper_rt_optix_median_wall_sec": 5.626257322728634,
+      "pass": true,
+      "primitive_first_median_wall_sec": 0.00198432058095932,
+      "primitive_first_speedup_vs_old_paper_rt_optix": 2835.3570369202234,
+      "required_min_speedup": 5.0,
+      "row_count": 250000
+    },
+    {
+      "comparison_scope": "diagnostic_full_call_baseline_not_prepared_same_contract",
+      "mode": "count",
+      "old_paper_rt_optix_backend": "paper_rt_optix",
+      "old_paper_rt_optix_median_wall_sec": 2.1557904183864594,
+      "pass": true,
+      "primitive_first_median_wall_sec": 0.00039630383253097534,
+      "primitive_first_speedup_vs_old_paper_rt_optix": 5439.741535222124,
+      "required_min_speedup": 20.0,
+      "row_count": 1000000
+    },
+    {
+      "comparison_scope": "diagnostic_full_call_baseline_not_prepared_same_contract",
+      "mode": "sum",
+      "old_paper_rt_optix_backend": "paper_rt_optix",
+      "old_paper_rt_optix_median_wall_sec": 3.121168829500675,
+      "pass": true,
+      "primitive_first_median_wall_sec": 0.002302892506122589,
+      "primitive_first_speedup_vs_old_paper_rt_optix": 1355.3254531866226,
+      "required_min_speedup": 5.0,
+      "row_count": 1000000
+    }
+  ],
+  "errors": [],
+  "git_head": "6fd7be7c9ab20b2128634cfffb6e673caf2c8824",
+  "goal": "Goal2896 RayDB same-contract performance decision gate",
+  "modes": [
+    "count",
+    "sum"
+  ],
+  "nvidia_smi": "NVIDIA RTX 4000 Ada Generation, 565.57.01, 20475 MiB",
+  "required_backends": [
+    "paper_rt_optix",
+    "paper_rt_optix_v2_5_primitive_first",
+    "paper_rt_optix_device_hit_stream_triton_prepared"
+  ],
+  "row_counts": [
+    250000,
+    1000000
+  ],
+  "source_artifact": "/tmp/goal2979_same_contract_gate/raydb_raw_current.json",
+  "status": "pass",
+  "thresholds": {
+    "old_paper_rt_optix_min_speedup_for_primitive_first": {
+      "count": 20.0,
+      "sum": 5.0
+    },
+    "prepared_hit_stream_triton_min_slowdown_vs_primitive_first": {
+      "count": 10.0,
+      "sum": 50.0
+    }
+  }
+}
