@@ -1,0 +1,20 @@
+{
+  "source_commit": "6ad6314192e9db0f659c76acc58a20767a194697",
+  "source_dirty": [],
+  "gpu": "NVIDIA GeForce GTX 1070, 580.126.09",
+  "cuda_home": "/usr",
+  "optix_prefix": "/home/lestat/vendor/optix-dev",
+  "optix_header_exists": true,
+  "rtdl_optix_library_exists": true,
+  "rtdl_optix_ptx_arch": "compute_61",
+  "rtdl_nvcc": "/usr/bin/nvcc",
+  "nvcc_version": [
+    "nvcc: NVIDIA (R) Cuda compiler driver",
+    "Copyright (c) 2005-2023 NVIDIA Corporation",
+    "Built on Fri_Jan__6_16:45:21_PST_2023",
+    "Cuda compilation tools, release 12.0, V12.0.140",
+    "Build cuda_12.0.r12.0/compiler.32267302_0"
+  ],
+  "release_performance_evidence_authorized": false,
+  "second_architecture_smoke_only": true
+}
