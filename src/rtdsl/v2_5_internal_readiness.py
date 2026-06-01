@@ -10,6 +10,7 @@ from .v2_5_determinism_policy import validate_v2_5_continuation_determinism_poli
 from .v2_5_execution_path_policy import validate_v2_5_execution_path_policy
 from .v2_5_partner_selection_guidance import validate_v2_5_partner_selection_guidance
 from .v2_5_partner_conformance_matrix import validate_v2_5_partner_conformance_matrix
+from .v2_5_partner_conformance_matrix import v2_5_partner_conformance_matrix
 from .v2_5_partner_support_matrix import validate_v2_5_partner_support_matrix
 from .v2_5_triton_app_migration import validate_v2_5_tiered_benchmark_manifest
 from .v2_5_triton_app_migration import v2_5_tiered_benchmark_manifest
@@ -93,6 +94,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2879_torch_carrier_seam_authority_provenance_2026-05-31.md",
     "docs/reports/goal2880_current_packet_after_torch_carrier_provenance_2026-05-31.md",
     "docs/reports/goal2883_torch_carrier_runtime_seam_trace_2026-05-31.md",
+    "docs/reports/goal2885_v2_5_partner_conformance_readiness_snapshot_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -177,6 +179,7 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "keep_goal2879_torch_carrier_seam_authority_provenance_green",
     "triage_goal2881_claude_review_before_any_release_packet",
     "keep_goal2883_runtime_seam_trace_green",
+    "keep_goal2885_partner_conformance_snapshot_green",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
@@ -198,6 +201,7 @@ def v2_5_internal_readiness_packet(
     tier_b_artifacts = _tier_b_artifact_metadata(root)
     current_canonical_harness = _current_canonical_harness_metadata(root)
     current_canonical_runner = _current_canonical_runner_metadata(root)
+    partner_conformance_snapshot = _partner_conformance_snapshot()
     required_report_presence = _path_presence(root, V2_5_INTERNAL_READINESS_REQUIRED_REPORTS)
     review_presence = _path_presence(root, V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS)
 
@@ -226,6 +230,7 @@ def v2_5_internal_readiness_packet(
         "tier_b_clean_artifact_count": len(tier_b_artifacts),
         "current_canonical_harness": current_canonical_harness,
         "current_canonical_runner": current_canonical_runner,
+        "partner_conformance_snapshot": partner_conformance_snapshot,
         "required_reports": V2_5_INTERNAL_READINESS_REQUIRED_REPORTS,
         "required_report_presence": required_report_presence,
         "missing_required_reports": tuple(
@@ -335,6 +340,15 @@ def validate_v2_5_internal_readiness_packet(
         errors.append("current canonical packet runner recorded claim-boundary violations")
     if not _looks_like_sha(str(current_runner.get("source_commit", ""))):
         errors.append("current canonical packet runner lacks source commit")
+    conformance_snapshot = packet["partner_conformance_snapshot"]
+    if conformance_snapshot["runtime_conformance_gap_count"] != 0:
+        errors.append("partner conformance snapshot recorded runtime gaps")
+    if conformance_snapshot["release_conformance_complete"] is not False:
+        errors.append("partner conformance snapshot must keep release conformance false")
+    if conformance_snapshot["preview_runtime_conformance_complete"] is not True:
+        errors.append("partner conformance snapshot must keep preview runtime conformance complete")
+    if conformance_snapshot["cell_count"] != 48:
+        errors.append("partner conformance snapshot cell count changed")
     for app_id, artifact in packet["tier_b_clean_artifacts"].items():
         if artifact.get("status") != "pass":
             errors.append(f"{app_id} clean artifact did not pass")
@@ -475,6 +489,50 @@ def _current_canonical_runner_metadata(root: Path) -> dict[str, Any]:
         "claim_boundary": (
             "Goal2855 runner evidence is an operational readiness guard. "
             "It does not authorize v2.5 release or public performance claims."
+        ),
+    }
+
+
+def _partner_conformance_snapshot() -> dict[str, Any]:
+    matrix = validate_v2_5_partner_conformance_matrix()
+    full_matrix = v2_5_partner_conformance_matrix()
+    cells = tuple(full_matrix["cells"])
+    pod_runtime_cells = tuple(
+        {
+            "operation": cell["operation"],
+            "partner": cell["partner"],
+            "evidence_goal": cell["evidence_goal"],
+        }
+        for cell in cells
+        if cell["conformance_status"] == "pod_cuda_runtime_smoke_recorded"
+    )
+    descriptor_only_cells = tuple(
+        {
+            "operation": cell["operation"],
+            "partner": cell["partner"],
+            "evidence_goal": cell["evidence_goal"],
+        }
+        for cell in cells
+        if cell["conformance_status"] == "descriptor_only_no_generic_kernel"
+    )
+    return {
+        "matrix_version": full_matrix["matrix_version"],
+        "status": matrix["status"],
+        "allowed_partners": full_matrix["allowed_partners"],
+        "operation_count": len(full_matrix["operations"]),
+        "cell_count": full_matrix["cell_count"],
+        "preview_runtime_conformance_complete": full_matrix["preview_runtime_conformance_complete"],
+        "runtime_conformance_gap_count": full_matrix["runtime_conformance_gap_count"],
+        "release_conformance_complete": full_matrix["release_conformance_complete"],
+        "release_blocker_count": full_matrix["release_blocker_count"],
+        "pod_runtime_cell_count": len(pod_runtime_cells),
+        "descriptor_only_cell_count": len(descriptor_only_cells),
+        "pod_runtime_cells": pod_runtime_cells,
+        "descriptor_only_cells": descriptor_only_cells,
+        "claim_boundary": (
+            "This snapshot indexes partner conformance evidence for readiness review. "
+            "It does not authorize release, public speedup claims, true-zero-copy "
+            "claims, or Triton preview auto-selection."
         ),
     }
 
