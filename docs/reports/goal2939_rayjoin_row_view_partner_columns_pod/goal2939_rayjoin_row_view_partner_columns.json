@@ -1,0 +1,176 @@
+{
+  "claim_boundary": {
+    "device_resident_handoff_claim_authorized": false,
+    "native_engine_customization": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v2_5_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": "Goal2939",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "partner": "cupy",
+  "rows": [
+    {
+      "elapsed_sec": 1.076108010020107,
+      "expected_row_count": 6,
+      "fields": [
+        "point_id",
+        "shape_id",
+        "membership"
+      ],
+      "host_preview_first3": {
+        "membership": [
+          1,
+          1,
+          1
+        ],
+        "point_id": [
+          1,
+          2,
+          3
+        ],
+        "shape_id": [
+          1,
+          1,
+          1
+        ]
+      },
+      "metadata": {
+        "adapter": "optix_row_view_to_partner_columns",
+        "claim_boundary": "Generic typed row-view to partner-column bridge. It host-stages existing OptiX row-view fields into partner-owned columns and does not authorize true zero-copy, speedup, release, or app-specific engine claims.",
+        "direct_device_handoff_authorized": false,
+        "field_dtypes": {
+          "membership": "int64",
+          "point_id": "int64",
+          "shape_id": "int64"
+        },
+        "field_names": [
+          "point_id",
+          "shape_id",
+          "membership"
+        ],
+        "host_stage_copy_used": true,
+        "input_contract": "generic_optix_row_view_numeric_fields",
+        "native_engine_row_contract": "existing_generic_optix_row_view",
+        "partner": "cupy",
+        "partner_reference_contract": "typed_primitive_payload_columns",
+        "public_speedup_claim_authorized": false,
+        "python_dict_row_materialization_used": false,
+        "row_count": 6,
+        "true_zero_copy_claim_authorized": false,
+        "v2_5_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "observed_row_count": 6,
+      "status": "pass",
+      "workload": "pip"
+    },
+    {
+      "elapsed_sec": 0.37788705504499376,
+      "expected_row_count": 1,
+      "fields": [
+        "left_id",
+        "right_id",
+        "intersection_point_x",
+        "intersection_point_y"
+      ],
+      "host_preview_first3": {
+        "intersection_point_x": [
+          -51.19127358
+        ],
+        "intersection_point_y": [
+          -31.495554653
+        ],
+        "left_id": [
+          1
+        ],
+        "right_id": [
+          27
+        ]
+      },
+      "metadata": {
+        "adapter": "optix_row_view_to_partner_columns",
+        "claim_boundary": "Generic typed row-view to partner-column bridge. It host-stages existing OptiX row-view fields into partner-owned columns and does not authorize true zero-copy, speedup, release, or app-specific engine claims.",
+        "direct_device_handoff_authorized": false,
+        "field_dtypes": {
+          "intersection_point_x": "float64",
+          "intersection_point_y": "float64",
+          "left_id": "int64",
+          "right_id": "int64"
+        },
+        "field_names": [
+          "left_id",
+          "right_id",
+          "intersection_point_x",
+          "intersection_point_y"
+        ],
+        "host_stage_copy_used": true,
+        "input_contract": "generic_optix_row_view_numeric_fields",
+        "native_engine_row_contract": "existing_generic_optix_row_view",
+        "partner": "cupy",
+        "partner_reference_contract": "typed_primitive_payload_columns",
+        "public_speedup_claim_authorized": false,
+        "python_dict_row_materialization_used": false,
+        "row_count": 1,
+        "true_zero_copy_claim_authorized": false,
+        "v2_5_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "observed_row_count": 1,
+      "status": "pass",
+      "workload": "lsi"
+    },
+    {
+      "elapsed_sec": 0.3681970490142703,
+      "expected_row_count": 0,
+      "fields": [
+        "left_polygon_id",
+        "right_polygon_id",
+        "requires_lsi",
+        "requires_pip"
+      ],
+      "host_preview_first3": {
+        "left_polygon_id": [],
+        "requires_lsi": [],
+        "requires_pip": [],
+        "right_polygon_id": []
+      },
+      "metadata": {
+        "adapter": "optix_row_view_to_partner_columns",
+        "claim_boundary": "Generic typed row-view to partner-column bridge. It host-stages existing OptiX row-view fields into partner-owned columns and does not authorize true zero-copy, speedup, release, or app-specific engine claims.",
+        "direct_device_handoff_authorized": false,
+        "field_dtypes": {
+          "left_polygon_id": "int64",
+          "requires_lsi": "int64",
+          "requires_pip": "int64",
+          "right_polygon_id": "int64"
+        },
+        "field_names": [
+          "left_polygon_id",
+          "right_polygon_id",
+          "requires_lsi",
+          "requires_pip"
+        ],
+        "host_stage_copy_used": true,
+        "input_contract": "generic_optix_row_view_numeric_fields",
+        "native_engine_row_contract": "existing_generic_optix_row_view",
+        "partner": "cupy",
+        "partner_reference_contract": "typed_primitive_payload_columns",
+        "public_speedup_claim_authorized": false,
+        "python_dict_row_materialization_used": false,
+        "row_count": 0,
+        "true_zero_copy_claim_authorized": false,
+        "v2_5_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "observed_row_count": 0,
+      "status": "pass",
+      "workload": "overlay_seed"
+    }
+  ],
+  "source_commit": "fed661d370bd3ee899bc93b8b383ee7a586fbe58",
+  "source_dirty": [],
+  "status": "pass"
+}
