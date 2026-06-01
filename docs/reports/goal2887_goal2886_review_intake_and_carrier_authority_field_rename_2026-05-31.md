@@ -78,6 +78,20 @@ Ran 20 tests in 1.061s
 OK (skipped=1)
 ```
 
+Pod validation from pushed `main`:
+
+```text
+commit: 7ea31894
+scope:
+  tests.goal2887_goal2886_review_intake_and_carrier_authority_field_rename_test
+  tests.goal2885_v2_5_partner_conformance_readiness_snapshot_test
+  tests.goal2883_torch_carrier_runtime_seam_trace_test
+  tests.goal2806_v2_5_internal_readiness_packet_test
+
+Ran 20 tests in 1.956s
+OK
+```
+
 ## Codex Verdict
 
 `accept-with-boundary`
