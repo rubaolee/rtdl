@@ -1,7 +1,7 @@
 # Goal2947: Generic Event-Ordered Payload Grouped-Sum Front Door
 
 Date: 2026-06-01
-Status: implemented; pod validation pending in this report until artifact import
+Status: implemented and pod-smoked
 
 ## Purpose
 
@@ -78,3 +78,23 @@ Expected pod smoke:
 - selected partner: `cupy_conformance`
 - stream ordering: `cuda_event_cross_stream`
 - claim flags: all false
+
+Imported pod artifact:
+
+`docs/reports/goal2947_generic_event_ordered_payload_grouped_sum_front_door_pod/goal2947_payload_grouped_sum_smoke.json`
+
+Observed pod result:
+
+- SSH target: `root@69.30.85.171 -p 22167`
+- source commit: `c3c7f7c494068f6bac936a931b3b281f96ba3cbc`
+- source dirty entries: `0`
+- status: `pass`
+- elapsed: `2.792s`
+- row count: `4`
+- group hit counts: `[2, 0, 2]`
+- group payload sums: `[21.0, 0.0, 2.5]`
+- selected partner: `cupy_conformance`
+- producer/consumer ordering: `cuda_event_cross_stream`
+- device status read before host scalar: `true`
+- host row materialization before consumer: `false`
+- true-zero-copy/public-speedup/release/whole-app flags: `false`
