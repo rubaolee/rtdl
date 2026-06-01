@@ -41,6 +41,18 @@ class Goal2952HausdorffTarget8192DefaultTuningTest(unittest.TestCase):
         self.assertLess(float(payload["rtdl_over_cupy_grid_elapsed_ratio"]), 0.9)
         self.assertFalse(payload["claim_boundary"]["rtdl_beats_cupy_grid_claim_authorized"])
 
+    def test_clean_pod_default_run_uses_target8192(self) -> None:
+        payload = json.loads((ARTIFACT_DIR / "goal2952_hd_default_target8192_repeat9.json").read_text(encoding="utf-8"))
+
+        self.assertEqual("pass", payload["status"])
+        self.assertEqual([], payload["source_dirty"])
+        self.assertTrue(payload["matches_exact_baseline"])
+        self.assertIn("v3.reduced_target8192", payload["entrypoint_version"])
+        self.assertEqual(8192, payload["rtdl"]["reduced_target_points_per_group"])
+        self.assertTrue(payload["rtdl"]["uses_rt_cores"])
+        self.assertLess(float(payload["rtdl_over_cupy_grid_elapsed_ratio"]), 0.9)
+        self.assertFalse(payload["claim_boundary"]["rtdl_beats_cupy_grid_claim_authorized"])
+
     def test_report_documents_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
 
@@ -49,6 +61,8 @@ class Goal2952HausdorffTarget8192DefaultTuningTest(unittest.TestCase):
             "Target points/group",
             "`0.843x`",
             "`0.873x`",
+            "`0.856x`",
+            "Clean default confirmation",
             "app-level parameter/default tuning",
             "does not customize the native engine",
             "does not authorize public speedup",

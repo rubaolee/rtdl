@@ -19,10 +19,14 @@ Pod target: `root@69.30.85.171 -p 22167`
 
 Source commit for sweep: `17b477944a5c15087148c651227d498f506ec0f6`
 
+Source commit for clean default confirmation:
+`f246ca5ebbb2ee7adc3c83dffdcc7672c136887d`
+
 Artifacts:
 
 - `docs/reports/goal2952_hausdorff_target8192_sweep_pod/goal2952_hd_sweep.json`
 - `docs/reports/goal2952_hausdorff_target8192_sweep_pod/goal2952_hd16384_target8192_repeat7.json`
+- `docs/reports/goal2952_hausdorff_target8192_sweep_pod/goal2952_hd_default_target8192_repeat9.json`
 
 8K sweep, exact 8192 x 8192 fixture:
 
@@ -42,6 +46,12 @@ Artifacts:
 | Points | Target points/group | RTDL sec | CuPy sec | Ratio |
 | ---: | ---: | ---: | ---: | ---: |
 | `16384 x 16384` | `8192` | `0.013721` | `0.015722` | `0.873x` |
+
+Clean default confirmation at commit `f246ca5e`:
+
+| Points | Entrypoint version | Default target points/group | RTDL sec | CuPy sec | Ratio |
+| ---: | --- | ---: | ---: | ---: | ---: |
+| `8192 x 8192` | `v3.reduced_target8192` | `8192` | `0.007071` | `0.008258` | `0.856x` |
 
 All measured RTDL rows matched the exact CuPy baseline with zero distance error
 and used RTDL/OptiX RT traversal. The seeded/pruned variant is slower on this
