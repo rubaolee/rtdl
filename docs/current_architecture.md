@@ -36,7 +36,7 @@ and compatibility wrappers, not in exported native engine APIs.
 | --- | --- |
 | Python application | domain data, command-line flags, labels, policies, app reductions, plots, files |
 | RTDL language | kernel declaration, input roles, traversal/refinement, emitted schema |
-| Partner adapter | Triton-first v2.5 continuation, Numba fallback, and legacy NumPy/PyTorch/CuPy handoff compatibility |
+| Partner adapter | Explicit app-chosen partner continuations for unfused work; Numba fallback; PyTorch/CuPy/Triton interop where same-contract evidence supports it |
 | Native backend | generic RT-shaped primitive execution through CPU/oracle, Embree, or OptiX where supported |
 | Evidence layer | exact benchmark artifacts, review files, and claim boundaries |
 
@@ -56,20 +56,22 @@ the workload, backend, partner, hardware, command shape, and artifact.
 ## Partner Architecture
 
 The v2.x-facing partner design is protocol first. v2.3 remains the current
-released source-tree partner release, but the active v2.5 implementation
-direction is Triton-first:
+released source-tree partner release. The active v2.5 closeout rule is now
+primitive-first:
 
 ```text
-Triton primary. Numba fallback. CuPy/PyTorch are not benchmark-path partners.
+Use a fused generic native RTDL primitive when it exactly expresses the work.
+Use an explicit partner continuation only for unfused work or app choice.
+Choose the partner by same-contract evidence; never auto-select Triton.
 Engine absolutely app-agnostic throughout.
 ```
 
-Triton owns generic post-traversal continuations such as segmented reductions,
-mask compaction, grouped argmin, bounded finalize, and the generic adapter
-front doors that route those operations from benchmark apps.
-Torch CUDA tensors may be used as a launch carrier for Triton kernels, but that
-does not make PyTorch the v2.5 partner. RTDL owns only the supported RTDL
-primitive call and its documented result contract.
+Triton, CuPy, PyTorch, and Numba are possible continuation partners, not hidden
+defaults. Triton owns preview kernels for several generic continuations, but a
+preview kernel is not a performance path until same-contract timing says so.
+Torch CUDA tensors may still appear as a launch carrier for some Triton paths,
+but that does not make PyTorch the v2.5 default. RTDL owns only the supported
+RTDL primitive call and its documented result contract.
 
 Examples of valid v2.x-facing output contracts:
 

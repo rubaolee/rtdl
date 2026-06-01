@@ -7,6 +7,7 @@ from .partner_continuation_protocol import V2_5_PARTNER_PREVIEW_KERNEL_OPERATION
 from .partner_continuation_protocol import V2_5_PRIMARY_PARTNER
 from .v2_5_partner_selection_guidance import V2_5_PARTNER_SELECTION_GUIDANCE_VERSION
 from .v2_5_partner_selection_guidance import plan_v2_5_partner_selection
+from .v2_5_execution_path_policy import V2_5_PRIMITIVE_FIRST_SELECTION_DOCTRINE_VERSION
 
 
 V2_5_TRITON_APP_MIGRATION_VERSION = "rtdl.v2_5.triton_app_migration.v1"
@@ -379,6 +380,13 @@ def v2_5_triton_benchmark_app_migration_plan() -> dict[str, object]:
         "contract_version": V2_5_PARTNER_CONTINUATION_VERSION,
         "migration_version": V2_5_TRITON_APP_MIGRATION_VERSION,
         "primary_partner": V2_5_PRIMARY_PARTNER,
+        "declared_preview_partner": V2_5_PRIMARY_PARTNER,
+        "primitive_first_selection_doctrine_version": V2_5_PRIMITIVE_FIRST_SELECTION_DOCTRINE_VERSION,
+        "closeout_selection_doctrine_integrated": True,
+        "fast_path_rule": "primitive_first_native_rtdl_when_fused_generic_primitive_exactly_expresses_continuation",
+        "partner_use_rule": "partner_continuation_only_for_unfused_continuations_or_explicit_app_choice",
+        "partner_choice_rule": "same_contract_evidence_never_default_triton",
+        "triton_default_allowed": False,
         "partner_selection_guidance_version": V2_5_PARTNER_SELECTION_GUIDANCE_VERSION,
         "partner_selection_guidance_integrated": True,
         "auto_select_preview_partner_allowed": False,
@@ -389,7 +397,9 @@ def v2_5_triton_benchmark_app_migration_plan() -> dict[str, object]:
             "This is a v2.5 implementation/migration plan. It is not a release "
             "gate, not a public speedup claim, not authorization to replace "
             "RTDL/OptiX traversal with partner code, and not authorization to "
-            "auto-select Triton just because a preview kernel exists."
+            "auto-select Triton just because a preview kernel exists. The "
+            "post-Goal2896 closeout rule is primitive-first native RTDL when "
+            "a fused generic primitive exactly expresses the continuation."
         ),
     }
 
@@ -404,6 +414,14 @@ def v2_5_tiered_benchmark_manifest() -> dict[str, object]:
         "manifest_version": V2_5_TIERED_BENCHMARK_MANIFEST_VERSION,
         "contract_version": V2_5_PARTNER_CONTINUATION_VERSION,
         "primary_partner": V2_5_PRIMARY_PARTNER,
+        "primitive_first_selection_doctrine_version": V2_5_PRIMITIVE_FIRST_SELECTION_DOCTRINE_VERSION,
+        "fast_path_rule": "primitive_first_native_rtdl_when_fused_generic_primitive_exactly_expresses_continuation",
+        "tier_b_definition": (
+            "Tier B means an explicit partner continuation is needed because no "
+            "fused native primitive exactly expresses the continuation; it does "
+            "not mean Triton is the selected or fastest partner."
+        ),
+        "automatic_triton_selection_allowed": False,
         "benchmark_app_count": len(rows),
         "tier_counts": tier_counts,
         "apps": rows,
@@ -431,6 +449,14 @@ def validate_v2_5_tiered_benchmark_manifest() -> dict[str, object]:
         errors.append("v2.5 tiered benchmark manifest must cover exactly 10 apps")
     if manifest["primary_partner"] != V2_5_PRIMARY_PARTNER:
         errors.append("manifest primary partner must match v2.5 primary partner")
+    if manifest.get("primitive_first_selection_doctrine_version") != V2_5_PRIMITIVE_FIRST_SELECTION_DOCTRINE_VERSION:
+        errors.append("manifest must index the primitive-first selection doctrine")
+    if "primitive_first" not in str(manifest.get("fast_path_rule", "")):
+        errors.append("manifest must name primitive-first as the fast path")
+    if "no fused native primitive" not in str(manifest.get("tier_b_definition", "")):
+        errors.append("manifest must define Tier B as coverage/unfused-continuation work")
+    if manifest.get("automatic_triton_selection_allowed") is not False:
+        errors.append("manifest must block automatic Triton selection")
     if manifest["public_speedup_claim_authorized"] is not False:
         errors.append("manifest must not authorize public speedup claims")
     if manifest["true_zero_copy_claim_authorized"] is not False:
@@ -486,6 +512,16 @@ def validate_v2_5_triton_benchmark_app_migration_plan() -> dict[str, object]:
         errors.append("duplicate benchmark app id in v2.5 Triton migration plan")
     if plan["primary_partner"] != "triton":
         errors.append("v2.5 benchmark migration must keep Triton as the declared primary partner")
+    if plan.get("primitive_first_selection_doctrine_version") != V2_5_PRIMITIVE_FIRST_SELECTION_DOCTRINE_VERSION:
+        errors.append("migration plan must index the primitive-first selection doctrine")
+    if plan.get("closeout_selection_doctrine_integrated") is not True:
+        errors.append("migration plan must integrate the closeout selection doctrine")
+    if "primitive_first" not in str(plan.get("fast_path_rule", "")):
+        errors.append("migration plan must name primitive-first as the fast path")
+    if "unfused" not in str(plan.get("partner_use_rule", "")):
+        errors.append("migration plan must reserve partner continuation for unfused work")
+    if plan.get("triton_default_allowed") is not False:
+        errors.append("migration plan must block Triton as a default")
     if plan["auto_select_preview_partner_allowed"] is not False:
         errors.append("v2.5 benchmark migration plan must not auto-select preview partners")
     if plan["partner_selection_guidance_integrated"] is not True:

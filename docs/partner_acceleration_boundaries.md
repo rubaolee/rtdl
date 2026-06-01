@@ -127,6 +127,20 @@ The next partner direction is performance-preserving ease of use. The goal is
 to make RT-core programming substantially easier without replacing the current
 10 promoted benchmark apps with slower convenience paths.
 
+Post-Goal2978 closeout correction: older planning notes below describe the
+exploratory v2.5 direction as "Triton-first." The current v2.5 closeout rule is
+stricter and supersedes that wording for new work:
+
+- If a fused generic native RTDL primitive exactly expresses the continuation,
+  use that primitive-first path.
+- Use partner continuation only for unfused continuations or explicit app
+  choice.
+- Choose the partner by same-contract evidence; never auto-select Triton just
+  because a preview kernel exists.
+- Tier B means a coverage gap that needs an explicit continuation because no
+  fused native primitive expresses the continuation. It does not mean Triton is
+  selected or fastest.
+
 For the detailed roadmap, see
 `docs/reports/goal2657_v2_4_v2_5_partner_roadmap_2026-05-27.md`.
 

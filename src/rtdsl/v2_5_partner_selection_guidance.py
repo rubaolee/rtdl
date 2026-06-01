@@ -6,6 +6,7 @@ from typing import Any
 
 from .partner_continuation_protocol import V2_5_PARTNER_CONTINUATION_OPERATION_NAMES
 from .partner_continuation_protocol import V2_5_PRIMARY_PARTNER
+from .v2_5_execution_path_policy import V2_5_PRIMITIVE_FIRST_SELECTION_DOCTRINE_VERSION
 
 
 V2_5_PARTNER_SELECTION_GUIDANCE_VERSION = "rtdl.v2_5.partner_selection_guidance.v1"
@@ -361,11 +362,16 @@ def v2_5_partner_selection_guidance() -> dict[str, Any]:
     rows = tuple(row.to_metadata() for row in V2_5_PARTNER_SELECTION_GUIDANCE_ROWS)
     return {
         "guidance_version": V2_5_PARTNER_SELECTION_GUIDANCE_VERSION,
+        "primitive_first_selection_doctrine_version": V2_5_PRIMITIVE_FIRST_SELECTION_DOCTRINE_VERSION,
         "rows": rows,
         "row_count": len(rows),
         "planner_policy": "advisory_only_explicit_app_partner_choice",
+        "fast_path_rule": "primitive_first_native_rtdl_when_fused_generic_primitive_exactly_expresses_continuation",
+        "partner_use_rule": "partner_continuation_only_for_unfused_continuations_or_explicit_app_choice",
+        "partner_choice_rule": "same_contract_evidence_never_default_triton",
         "preview_kernel_available_does_not_imply_auto_select": True,
         "no_partner_forced": True,
+        "automatic_triton_selection_allowed": False,
         "promoted_performance_path": False,
         "public_speedup_claim_authorized": False,
         "rt_core_speedup_claim_authorized": False,
@@ -536,11 +542,21 @@ def validate_v2_5_partner_selection_guidance(
     errors: list[str] = []
     if guidance.get("guidance_version") != V2_5_PARTNER_SELECTION_GUIDANCE_VERSION:
         errors.append("unexpected partner-selection guidance version")
+    if guidance.get("primitive_first_selection_doctrine_version") != V2_5_PRIMITIVE_FIRST_SELECTION_DOCTRINE_VERSION:
+        errors.append("partner guidance must index the primitive-first doctrine")
+    if "primitive_first" not in str(guidance.get("fast_path_rule", "")):
+        errors.append("partner guidance must name primitive-first as the fast path")
+    if "unfused" not in str(guidance.get("partner_use_rule", "")):
+        errors.append("partner guidance must reserve partners for unfused continuation work")
+    if "same_contract" not in str(guidance.get("partner_choice_rule", "")):
+        errors.append("partner guidance must require same-contract evidence")
     rows = tuple(guidance.get("rows", ()))
     if int(guidance.get("row_count", -1)) != len(rows):
         errors.append("row_count does not match rows")
     if guidance.get("preview_kernel_available_does_not_imply_auto_select") is not True:
         errors.append("guidance must distinguish preview availability from partner selection")
+    if guidance.get("automatic_triton_selection_allowed") is not False:
+        errors.append("guidance must block automatic Triton selection")
     for field in (
         "promoted_performance_path",
         "public_speedup_claim_authorized",

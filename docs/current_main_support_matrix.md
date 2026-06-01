@@ -17,9 +17,10 @@ cells and silent CPU fallback are not allowed.
 - Current public docs target: v2.3 release.
 - Current released version is `v2.3`.
 - Active release engines: Embree for CPU RT, OptiX for NVIDIA RT.
-- Active partner direction: v2.5 Triton-first continuation, Numba fallback;
-  PyTorch/CuPy remain v2.3 compatibility and conformance surfaces, not the new
-  benchmark-path partner direction.
+- Active v2.5 closeout direction: primitive-first native RTDL when a fused
+  generic primitive exactly expresses the work; explicit partner continuation
+  only for unfused work or app choice; partner chosen by same-contract evidence,
+  never by default.
 - Engine ABI rule: native backends stay app-agnostic.
 - Performance rule: a backend flag is not a speedup claim.
 - Release rule: public claims must stay inside the completed external
@@ -38,7 +39,7 @@ cells and silent CPU fallback are not allowed.
 | Bounded polygon summaries | supported | native-assisted | native-assisted | not a release target | not a release target | not a release target |
 | DB-style compact summaries | supported | native | native | proof path | proof path | proof path |
 | Graph traversal rows | supported | native | native | proof path | proof path | proof path |
-| Partner tensor continuation | Python-owned | CPU partner path | Triton-first preview plus legacy PyTorch/CuPy compatibility | not a release target | not a release target | not a release target |
+| Partner tensor continuation | Python-owned | CPU partner path | explicit app-chosen partner path for unfused continuations; Triton/CuPy/PyTorch/Numba selected only by same-contract evidence | not a release target | not a release target | not a release target |
 
 ## Current Performance Reading
 
@@ -50,9 +51,10 @@ backend ranking. The useful reading is:
   uses one.
 - A fast compact summary does not imply full witness-row output is equally
   fast.
-- A CuPy RawKernel continuation is allowed as legacy partner/user code and
-  should be documented as such. New v2.5 benchmark-path continuation work should
-  target Triton first.
+- A CuPy RawKernel continuation is allowed as partner/user code and should be
+  documented as such. New v2.5 continuation work should first ask whether a
+  fused native RTDL primitive already expresses the continuation; if not, the
+  partner is an explicit same-contract choice, not a Triton default.
 
 ## Non-Claims
 
