@@ -19,6 +19,9 @@ GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION = "rtdl.rt_hit_stream_handoff
 GENERIC_HIT_STREAM_PARTNER_TRANSFER_PLAN_VERSION = "rtdl.hit_stream_partner_transfer_plan.v2.5"
 GENERIC_HIT_STREAM_ASYNC_PROMOTION_REQUIREMENTS_VERSION = "rtdl.hit_stream_async_promotion_requirements.v2.5"
 GENERIC_HIT_STREAM_NEUTRAL_SEAM_RECONCILIATION_VERSION = "rtdl.hit_stream_neutral_seam_reconciliation.v2.5"
+GENERIC_HIT_STREAM_NEUTRAL_SEAM_CLOSEOUT_DECISION_VERSION = (
+    "rtdl.hit_stream_neutral_seam_closeout_decision.v2.5"
+)
 GENERIC_HIT_STREAM_HANDOFF_API_MATURITY = "experimental_host_bridge_contract"
 GENERIC_DEVICE_RESIDENT_HIT_STREAM_COLUMNS = ("ray_ids:int64", "primitive_ids:int64")
 GENERIC_TYPED_PRIMITIVE_PAYLOAD_COLUMNS = ("primitive_group_ids:int64", "primitive_values:float64")
@@ -1391,6 +1394,107 @@ def describe_v2_5_hit_stream_neutral_seam_reconciliation() -> dict[str, object]:
             "hidden neutral protocol, forced partner, zero-copy proof, or public speedup claim."
         ),
     }
+
+
+def v2_5_neutral_seam_closeout_decision() -> dict[str, object]:
+    """Return the v2.5 closeout decision for neutral multi-partner composition."""
+
+    reconciliation = describe_v2_5_hit_stream_neutral_seam_reconciliation()
+    return {
+        "decision_version": GENERIC_HIT_STREAM_NEUTRAL_SEAM_CLOSEOUT_DECISION_VERSION,
+        "selected_option": "C-3b_scope_out_for_v2_5",
+        "decision": "scope_out_full_partner_neutral_composition_for_v2_5",
+        "recommended_by": (
+            "docs/reports/claude_v2_5_closeout_and_v3_0_residency_first_roadmap_2026-05-31.md"
+        ),
+        "neutral_seam_reconciliation_version": GENERIC_HIT_STREAM_NEUTRAL_SEAM_RECONCILIATION_VERSION,
+        "neutral_buffer_seam_contract_version": V2_5_NEUTRAL_BUFFER_SEAM_VERSION,
+        "multi_partner_composition_scaffolded": True,
+        "multi_partner_composition_delivered": False,
+        "full_partner_neutral_handoff_delivered": False,
+        "composition_claim_authorized": False,
+        "true_zero_copy_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "automatic_triton_selection_allowed": False,
+        "v2_5_release_authorized": False,
+        "torch_carrier_status": reconciliation["legacy_torch_helper_status"],
+        "torch_carrier_allowed_only_for_partners": reconciliation["torch_carrier_allowed_only_for_partners"],
+        "torch_is_neutral_protocol": reconciliation["torch_is_neutral_protocol"],
+        "silent_cross_partner_torch_coercion_allowed": reconciliation[
+            "silent_cross_partner_torch_coercion_allowed"
+        ],
+        "non_triton_device_carrier_protocol": reconciliation["non_triton_device_carrier_protocol"],
+        "v2_5_delivered": (
+            "typed_hit_stream_and_payload_handoff_scaffold",
+            "neutral_seam_authority_metadata_and_runtime_trace",
+            "bounded_triton_launch_carrier_for_triton_only",
+            "descriptor_routes_for_non_triton_partners",
+            "primitive_first_selection_policy",
+        ),
+        "v2_5_not_delivered": (
+            "end_to_end_partner_neutral_device_resident_composition",
+            "true_zero_copy_contract",
+            "automatic_triton_selection",
+            "partner_composition_public_speedup_claim",
+            "v3_0_residency_pipeline",
+        ),
+        "deferred_to_v3_0_or_later": (
+            "native_device_resident_hit_stream_output_state_machine",
+            "partner_neutral_dlpack_cuda_array_interface_execution_without_torch_carrier",
+            "cuda_graph_or_event_ordered_resident_pipeline",
+            "whole_app_residency_measurement_on_at_least_one_app",
+        ),
+        "claim_boundary": (
+            "v2.5 scopes full partner-neutral composition out of the release lane. "
+            "Torch remains only a bounded Triton launch carrier; non-Triton partners "
+            "must use explicit descriptor or partner-owned paths. This decision does "
+            "not authorize true zero-copy, public speedup, whole-app speedup, "
+            "automatic Triton selection, release, or app-specific native engine logic."
+        ),
+    }
+
+
+def validate_v2_5_neutral_seam_closeout_decision(
+    decision: Mapping[str, Any] | None = None,
+) -> dict[str, object]:
+    """Validate the v2.5 neutral-seam closeout decision."""
+
+    payload = dict(v2_5_neutral_seam_closeout_decision() if decision is None else decision)
+    errors: list[str] = []
+    if payload.get("decision_version") != GENERIC_HIT_STREAM_NEUTRAL_SEAM_CLOSEOUT_DECISION_VERSION:
+        errors.append("neutral seam closeout decision version mismatch")
+    if payload.get("selected_option") != "C-3b_scope_out_for_v2_5":
+        errors.append("v2.5 neutral seam closeout must pick the explicit scope-out option")
+    if payload.get("multi_partner_composition_scaffolded") is not True:
+        errors.append("v2.5 closeout must acknowledge composition scaffolding")
+    for key in (
+        "multi_partner_composition_delivered",
+        "full_partner_neutral_handoff_delivered",
+        "composition_claim_authorized",
+        "true_zero_copy_authorized",
+        "public_speedup_claim_authorized",
+        "whole_app_speedup_claim_authorized",
+        "automatic_triton_selection_allowed",
+        "v2_5_release_authorized",
+        "torch_is_neutral_protocol",
+        "silent_cross_partner_torch_coercion_allowed",
+    ):
+        if payload.get(key) is not False:
+            errors.append(f"{key} must be false for v2.5 scope-out closeout")
+    if payload.get("torch_carrier_allowed_only_for_partners") != ("triton",):
+        errors.append("torch carrier must remain Triton-only")
+    if payload.get("non_triton_device_carrier_protocol") != "cuda_array_interface_descriptor":
+        errors.append("non-Triton partners must stay on descriptor routes")
+    if "end_to_end_partner_neutral_device_resident_composition" not in tuple(
+        payload.get("v2_5_not_delivered", ())
+    ):
+        errors.append("v2.5 not-delivered list must include full partner-neutral composition")
+    if "whole_app_residency_measurement_on_at_least_one_app" not in tuple(
+        payload.get("deferred_to_v3_0_or_later", ())
+    ):
+        errors.append("v3.0 deferral must include a whole-app residency measurement")
+    return {"status": "accept" if not errors else "reject", "errors": tuple(errors), "decision": payload}
 
 
 def validate_v2_5_hit_stream_neutral_seam_authority(

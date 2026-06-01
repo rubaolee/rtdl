@@ -151,6 +151,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2976_v2_5_release_gap_position_after_toolchain_scope_2026-06-01.md",
     "docs/reports/goal2978_primitive_first_v2_5_closeout_policy_2026-06-01.md",
     "docs/reports/goal2979_representative_same_contract_gate_after_primitive_first_policy_2026-06-01.md",
+    "docs/reports/goal2980_neutral_seam_scope_out_closeout_decision_2026-06-01.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -320,6 +321,8 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "keep_goal2978_primitive_first_closeout_policy_green",
     "keep_goal2979_representative_same_contract_gate_green",
     "request_external_review_for_goal2978_2979_before_closeout_packet",
+    "keep_goal2980_neutral_seam_scope_out_closeout_decision_green",
+    "request_external_review_for_goal2980_before_closeout_packet",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
