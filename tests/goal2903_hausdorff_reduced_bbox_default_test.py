@@ -2,6 +2,7 @@ import unittest
 import json
 from pathlib import Path
 
+import rtdsl as rt
 from scripts import goal2801_hausdorff_xhd_v25_canonical_entrypoint as entrypoint
 
 
@@ -82,6 +83,16 @@ class Goal2903HausdorffReducedBboxDefaultTest(unittest.TestCase):
         self.assertEqual(payload["rtdl"]["result"]["threshold_iterations"], 0)
         self.assertTrue(payload["rtdl"]["uses_rt_cores"])
         self.assertLess(payload["rtdl_over_cupy_grid_elapsed_ratio"], 1.05)
+
+    def test_readiness_indexes_goal2903_as_internal_perf_fix_only(self) -> None:
+        packet = rt.v2_5_internal_readiness_packet(repo_root=ROOT)
+        validation = rt.validate_v2_5_internal_readiness_packet(repo_root=ROOT)
+        report_path = "docs/reports/goal2903_hausdorff_reduced_bbox_default_2026-05-31.md"
+
+        self.assertEqual(validation["status"], "accept")
+        self.assertTrue(packet["required_report_presence"][report_path])
+        self.assertIn("keep_goal2903_hausdorff_reduced_bbox_default_green", packet["allowed_next_actions"])
+        self.assertFalse(packet["claim_authorization"]["v2_5_release_authorized"])
 
 
 if __name__ == "__main__":

@@ -103,6 +103,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2898_raydb_perf_gate_readiness_integration_2026-05-31.md",
     "docs/reports/goal2901_goal2897_raydb_perf_gate_review_intake_2026-05-31.md",
     "docs/reports/goal2902_current_packet_perf_triage_2026-05-31.md",
+    "docs/reports/goal2903_hausdorff_reduced_bbox_default_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -199,6 +200,7 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "track_goal2897_compiler_flag_alignment_before_release_packet",
     "track_goal2897_multivendor_or_second_arch_perf_check_before_release_packet",
     "use_goal2902_current_packet_perf_triage_for_next_perf_targets",
+    "keep_goal2903_hausdorff_reduced_bbox_default_green",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
