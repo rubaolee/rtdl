@@ -225,6 +225,8 @@ V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
     "docs/reviews/goal2964_claude_review_goal2962_large_scale_stress_2026-06-01.md",
     "docs/reviews/goal2966_gemini_review_goal2965_raydb_current_gate_2026-06-01.md",
     "docs/reviews/goal2967_claude_review_goal2965_raydb_current_gate_2026-06-01.md",
+    "docs/reviews/goal2970_gemini_review_goal2969_current_head_packet_2026-06-01.md",
+    "docs/reviews/goal2971_claude_review_goal2969_current_head_packet_2026-06-01.md",
 )
 
 V2_5_INTERNAL_READINESS_BLOCKED_ACTIONS = (
@@ -303,6 +305,7 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "triage_goal2966_2967_raydb_current_gate_reviews_before_release_packet",
     "keep_goal2968_current_10_app_perf_triage_with_raydb_gate_green",
     "keep_goal2969_current_head_packet_and_10_app_triage_green",
+    "triage_goal2970_2971_current_head_packet_reviews_before_release_packet",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
