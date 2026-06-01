@@ -66,6 +66,20 @@ Ran 20 tests in 0.999s
 OK (skipped=1)
 ```
 
+Pod validation from pushed `main`:
+
+```text
+commit: f728063d
+scope:
+  tests.goal2885_v2_5_partner_conformance_readiness_snapshot_test
+  tests.goal2883_torch_carrier_runtime_seam_trace_test
+  tests.goal2882_goal2881_claude_review_intake_test
+  tests.goal2806_v2_5_internal_readiness_packet_test
+
+Ran 20 tests in 1.981s
+OK
+```
+
 ## Codex Verdict
 
 `accept-with-boundary`
