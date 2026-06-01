@@ -24,7 +24,8 @@ V2_5_PRIMITIVE_FIRST_SELECTION_DOCTRINE_CLAIM_BOUNDARY = (
     "v2.5 primitive-first selection doctrine is closeout policy only. It does "
     "not authorize release readiness, public speedup wording, whole-app speedup "
     "wording, broad RT-core wording, true zero-copy wording, automatic Triton "
-    "selection, or app-specific native-engine behavior."
+    "selection, automatic partner selection, partner-choice constraints on "
+    "users, or app-specific native-engine behavior."
 )
 
 
@@ -42,13 +43,17 @@ def v2_5_primitive_first_selection_doctrine() -> dict[str, Any]:
         "status": "closeout_policy_not_release_authorization",
         "fast_path_rule": "primitive_first_native_rtdl_when_fused_generic_primitive_exactly_expresses_continuation",
         "partner_use_rule": "partner_continuation_only_for_unfused_continuations_or_explicit_app_choice",
-        "partner_choice_rule": "choose_partner_by_same_contract_evidence_never_by_default",
+        "partner_choice_rule": "user_selects_partner_explicitly; benchmark_recommendations_require_same_contract_evidence; never_by_default",
+        "partner_authority_rule": "partner_choice_belongs_to_the_user_not_hidden_runtime_dispatch",
+        "supported_partner_duty": "rtdl_provides_high_performance_support_for_supported_partners_without_forcing_a_partner",
+        "benchmark_app_role": "benchmark_apps_record_reference_or_recommended_implementations_with_project_chosen_partner_paths",
+        "generic_engine_rule": "native_engine_exposes_app_agnostic_high_performance_primitives_not_app_specific_partner_logic",
         "tier_b_definition": (
             "Tier B means an explicit partner continuation is needed because no "
             "fused native primitive exactly expresses the continuation; it does "
             "not mean Triton is the selected or fastest partner."
         ),
-        "triton_role": "preview_partner_candidate_not_default",
+        "triton_role": "paused_not_recommended_for_v2_5_paths_after_negative_same_contract_evidence",
         "numba_role": "declared_generic_fallback_partner",
         "cupy_torch_role": "allowed_explicit_app_or_conformance_partners_when_same_contract_evidence_wins",
         "hidden_dispatch_allowed": False,
@@ -85,6 +90,16 @@ def validate_v2_5_primitive_first_selection_doctrine(
         errors.append("doctrine must reserve partner continuations for unfused work")
     if "same_contract" not in str(doctrine.get("partner_choice_rule", "")):
         errors.append("doctrine must require same-contract partner evidence")
+    if "user" not in str(doctrine.get("partner_choice_rule", "")):
+        errors.append("doctrine must state that partner choice belongs to the user")
+    if "benchmark" not in str(doctrine.get("benchmark_app_role", "")):
+        errors.append("doctrine must state benchmark apps are reference/recommended implementations")
+    if "high_performance_support" not in str(doctrine.get("supported_partner_duty", "")):
+        errors.append("doctrine must state RTDL's duty for supported partners")
+    if "app_agnostic" not in str(doctrine.get("generic_engine_rule", "")):
+        errors.append("doctrine must keep the native engine app-agnostic")
+    if "paused" not in str(doctrine.get("triton_role", "")):
+        errors.append("doctrine must record Triton as paused/not recommended for v2.5 planning")
     if "no fused native primitive" not in str(doctrine.get("tier_b_definition", "")):
         errors.append("Tier B definition must be coverage/unfused-continuation based")
     if doctrine.get("same_contract_evidence_required") is not True:

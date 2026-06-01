@@ -177,7 +177,7 @@ def v2_5_partner_support_cells() -> tuple[V25PartnerSupportCell, ...]:
                 notes=(
                     "CuPy preview exists for an explicitly listed RawKernel-backed "
                     "event-ordered grouped hit-stream or primitive-payload "
-                    "conformance operation; it remains unpromoted"
+                    "conformance operation from Goals2771-2772; it remains unpromoted"
                 ),
             )
             )

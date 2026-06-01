@@ -62,13 +62,16 @@ primitive-first:
 ```text
 Use a fused generic native RTDL primitive when it exactly expresses the work.
 Use an explicit partner continuation only for unfused work or app choice.
-Choose the partner by same-contract evidence; never auto-select Triton.
+Users choose supported partners explicitly; benchmark recommendations must be
+backed by same-contract evidence.
 Engine absolutely app-agnostic throughout.
 ```
 
 Triton, CuPy, PyTorch, and Numba are possible continuation partners, not hidden
 defaults. Triton owns preview kernels for several generic continuations, but a
-preview kernel is not a performance path until same-contract timing says so.
+preview kernel is not a recommended performance path until same-contract timing
+says so. Post-v2.5 closeout, Triton is paused for recommended paths and v2.6
+starts from the neutral-buffer seam plus Numba-first-class support lane.
 Torch CUDA tensors may still appear as a launch carrier for some Triton paths,
 but that does not make PyTorch the v2.5 default. RTDL owns only the supported
 RTDL primitive call and its documented result contract.

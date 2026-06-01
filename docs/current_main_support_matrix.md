@@ -19,8 +19,9 @@ cells and silent CPU fallback are not allowed.
 - Active release engines: Embree for CPU RT, OptiX for NVIDIA RT.
 - Active v2.5 closeout direction: primitive-first native RTDL when a fused
   generic primitive exactly expresses the work; explicit partner continuation
-  only for unfused work or app choice; partner chosen by same-contract evidence,
-  never by default.
+  only for unfused work or app choice; users choose supported partners
+  explicitly, while benchmark recommendations must be backed by same-contract
+  evidence and never by hidden defaults.
 - Engine ABI rule: native backends stay app-agnostic.
 - Performance rule: a backend flag is not a speedup claim.
 - Release rule: public claims must stay inside the completed external
@@ -39,7 +40,7 @@ cells and silent CPU fallback are not allowed.
 | Bounded polygon summaries | supported | native-assisted | native-assisted | not a release target | not a release target | not a release target |
 | DB-style compact summaries | supported | native | native | proof path | proof path | proof path |
 | Graph traversal rows | supported | native | native | proof path | proof path | proof path |
-| Partner tensor continuation | Python-owned | CPU partner path | explicit app-chosen partner path for unfused continuations; Triton/CuPy/PyTorch/Numba selected only by same-contract evidence | not a release target | not a release target | not a release target |
+| Partner tensor continuation | Python-owned | CPU partner path | explicit user/app-chosen partner path for unfused continuations; benchmark recommendations for CuPy/PyTorch/Numba/Triton require same-contract evidence | not a release target | not a release target | not a release target |
 
 ## Current Performance Reading
 
@@ -54,7 +55,8 @@ backend ranking. The useful reading is:
 - A CuPy RawKernel continuation is allowed as partner/user code and should be
   documented as such. New v2.5 continuation work should first ask whether a
   fused native RTDL primitive already expresses the continuation; if not, the
-  partner is an explicit same-contract choice, not a Triton default.
+  partner is an explicit user/app choice. Benchmark reference implementations
+  can recommend a partner only when same-contract evidence supports that path.
 
 ## Non-Claims
 

@@ -135,16 +135,24 @@ stricter and supersedes that wording for new work:
   use that primitive-first path.
 - Use partner continuation only for unfused continuations or explicit app
   choice.
-- Choose the partner by same-contract evidence; never auto-select Triton just
-  because a preview kernel exists.
+- Users choose supported partners explicitly. Benchmark reference
+  implementations may recommend a partner only when same-contract evidence
+  supports that recommendation; never auto-select Triton just because a preview
+  kernel exists.
 - Tier B means a coverage gap that needs an explicit continuation because no
   fused native primitive expresses the continuation. It does not mean Triton is
   selected or fastest.
+- Post-Goal2989, Triton is ignored for recommended v2.5 paths after negative
+  same-contract evidence. v2.6 begins from neutral-buffer-seam cleanup and a
+  Numba first-class, user-selectable partner lane.
 
 For the detailed roadmap, see
 `docs/reports/goal2657_v2_4_v2_5_partner_roadmap_2026-05-27.md`.
 
-The short boundary is:
+The historical planning notes below are retained for reviewers. They do not
+override the post-Goal2989 cleanup above.
+
+The short historical boundary was:
 
 - v2.4 should stabilize typed buffers, prepared sessions, segmented/chunked row
   streaming, and generic partner continuation contracts.

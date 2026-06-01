@@ -8,6 +8,7 @@ from .partner_continuation_protocol import validate_v2_5_partner_continuation_co
 from .partner_continuation_protocol import validate_v2_5_partner_preview_gate
 from .v2_5_determinism_policy import validate_v2_5_continuation_determinism_policies
 from .v2_5_execution_path_policy import validate_v2_5_execution_path_policy
+from .v2_5_partner_selection_guidance import validate_v2_5_partner_choice_cleanup_policy
 from .v2_5_partner_selection_guidance import validate_v2_5_partner_selection_guidance
 from .v2_5_partner_conformance_matrix import validate_v2_5_partner_conformance_matrix
 from .v2_5_partner_conformance_matrix import v2_5_partner_conformance_matrix
@@ -15,6 +16,7 @@ from .v2_5_partner_support_matrix import validate_v2_5_partner_support_matrix
 from .v2_5_triton_app_migration import validate_v2_5_tiered_benchmark_manifest
 from .v2_5_triton_app_migration import v2_5_tiered_benchmark_manifest
 from .v2_5_triton_app_migration import v2_5_triton_front_door_coverage
+from .v2_6_roadmap import validate_v2_6_roadmap
 
 
 V2_5_INTERNAL_READINESS_PACKET_VERSION = "rtdl.v2_5.internal_readiness_packet.v1"
@@ -158,6 +160,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2984_barnes_hut_second_arch_profile_policy_2026-06-01.md",
     "docs/reports/goal2985_rtx4000ada_second_arch_bounded_packet_2026-06-01.md",
     "docs/reports/goal2988_goal2984_2985_second_arch_bounded_packet_consensus_2026-06-01.md",
+    "docs/reports/goal2989_v2_5_partner_choice_cleanup_and_v2_6_kickoff_2026-06-01.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -342,6 +345,8 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "triage_goal2985_second_arch_bounded_packet_before_release_packet",
     "request_external_review_for_goal2985_before_release_packet",
     "use_goal2988_second_arch_bounded_packet_consensus_before_release_packet",
+    "keep_goal2989_partner_choice_cleanup_and_v2_6_kickoff_green",
+    "begin_v2_6_neutral_seam_numba_partner_lane_after_goal2989",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
@@ -383,9 +388,11 @@ def v2_5_internal_readiness_packet(
             "partner_selection_guidance": validate_v2_5_partner_selection_guidance(
                 repo_root=root
             ),
+            "partner_choice_cleanup_policy": validate_v2_5_partner_choice_cleanup_policy(),
             "execution_path_policy": validate_v2_5_execution_path_policy(),
             "determinism_policy": validate_v2_5_continuation_determinism_policies(),
             "partner_conformance_matrix": validate_v2_5_partner_conformance_matrix(),
+            "v2_6_roadmap": validate_v2_6_roadmap(repo_root=root),
         },
         "benchmark_app_count": manifest["benchmark_app_count"],
         "tier_counts": manifest["tier_counts"],

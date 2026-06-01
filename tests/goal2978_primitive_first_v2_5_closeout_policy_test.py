@@ -26,7 +26,9 @@ class Goal2978PrimitiveFirstV25CloseoutPolicyTest(unittest.TestCase):
         self.assertIn("primitive_first", doctrine["fast_path_rule"])
         self.assertIn("unfused", doctrine["partner_use_rule"])
         self.assertIn("same_contract", doctrine["partner_choice_rule"])
+        self.assertIn("user", doctrine["partner_choice_rule"])
         self.assertIn("no fused native primitive", doctrine["tier_b_definition"])
+        self.assertIn("paused", doctrine["triton_role"])
         self.assertFalse(doctrine["automatic_triton_selection_allowed"])
         self.assertFalse(doctrine["triton_default_allowed"])
         self.assertFalse(doctrine["preview_kernel_availability_implies_selection"])
@@ -66,6 +68,9 @@ class Goal2978PrimitiveFirstV25CloseoutPolicyTest(unittest.TestCase):
         )
         self.assertIn("primitive_first", guidance["fast_path_rule"])
         self.assertIn("unfused", guidance["partner_use_rule"])
+        self.assertTrue(guidance["user_partner_choice_authority"])
+        self.assertIn("reference_or_recommended", guidance["benchmark_app_role"])
+        self.assertIn("ignored", guidance["triton_recommended_path_status"])
         self.assertFalse(guidance["automatic_triton_selection_allowed"])
 
         self.assertEqual(
@@ -89,15 +94,18 @@ class Goal2978PrimitiveFirstV25CloseoutPolicyTest(unittest.TestCase):
         self.assertNotIn("direction is Triton-first", arch)
         self.assertNotIn("Triton primary. Numba fallback", arch)
         self.assertIn("active v2.5 closeout rule is now primitive-first", arch_normalized)
-        self.assertIn("never auto-select Triton", arch)
+        self.assertIn("Users choose supported partners explicitly", arch)
+        self.assertIn("Triton is paused for recommended paths", arch)
 
         self.assertNotIn("Active partner direction: v2.5 Triton-first", support)
         self.assertIn("Active v2.5 closeout direction", support)
-        self.assertIn("partner chosen by same-contract evidence", support)
+        self.assertIn("users choose supported partners", support)
+        self.assertIn("benchmark recommendations must be backed by same-contract", support)
 
         self.assertIn("Post-Goal2978 closeout correction", boundary)
         self.assertIn("supersedes that wording for new work", boundary)
         self.assertIn("never auto-select Triton", boundary)
+        self.assertIn("Post-Goal2989", boundary)
 
     def test_report_records_release_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")

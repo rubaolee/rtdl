@@ -10,12 +10,14 @@ from .v2_5_execution_path_policy import V2_5_PRIMITIVE_FIRST_SELECTION_DOCTRINE_
 
 
 V2_5_PARTNER_SELECTION_GUIDANCE_VERSION = "rtdl.v2_5.partner_selection_guidance.v1"
+V2_5_PARTNER_CHOICE_CLEANUP_VERSION = "rtdl.v2_5.partner_choice_cleanup.v1"
 V2_5_PARTNER_SELECTION_GUIDANCE_CLAIM_BOUNDARY = (
-    "v2.5 partner-selection guidance records measured preview evidence and "
-    "planner cautions only. It does not force a partner, promote a performance "
-    "path, authorize public speedup wording, authorize RT-core speedup wording, "
-    "authorize whole-app speedup wording, authorize true zero-copy wording, or "
-    "authorize release readiness."
+    "v2.5 partner-selection guidance records measured preview evidence, "
+    "benchmark recommendations, and planner cautions only. User code chooses "
+    "the partner explicitly. This guidance does not force a partner, promote a "
+    "performance path, authorize public speedup wording, authorize RT-core "
+    "speedup wording, authorize whole-app speedup wording, authorize true "
+    "zero-copy wording, or authorize release readiness."
 )
 
 
@@ -360,15 +362,22 @@ V2_5_PARTNER_SELECTION_GUIDANCE_ROWS: tuple[
 
 def v2_5_partner_selection_guidance() -> dict[str, Any]:
     rows = tuple(row.to_metadata() for row in V2_5_PARTNER_SELECTION_GUIDANCE_ROWS)
+    cleanup = v2_5_partner_choice_cleanup_policy()
     return {
         "guidance_version": V2_5_PARTNER_SELECTION_GUIDANCE_VERSION,
+        "partner_choice_cleanup_version": V2_5_PARTNER_CHOICE_CLEANUP_VERSION,
         "primitive_first_selection_doctrine_version": V2_5_PRIMITIVE_FIRST_SELECTION_DOCTRINE_VERSION,
         "rows": rows,
         "row_count": len(rows),
         "planner_policy": "advisory_only_explicit_app_partner_choice",
         "fast_path_rule": "primitive_first_native_rtdl_when_fused_generic_primitive_exactly_expresses_continuation",
         "partner_use_rule": "partner_continuation_only_for_unfused_continuations_or_explicit_app_choice",
-        "partner_choice_rule": "same_contract_evidence_never_default_triton",
+        "partner_choice_rule": "user_explicit_partner_choice_with_same_contract_benchmark_recommendations_never_default_triton",
+        "user_partner_choice_authority": cleanup["user_partner_choice_authority"],
+        "supported_partner_duty": cleanup["supported_partner_duty"],
+        "benchmark_app_role": cleanup["benchmark_app_role"],
+        "generic_engine_boundary": cleanup["generic_engine_boundary"],
+        "triton_recommended_path_status": cleanup["triton_recommended_path_status"],
         "preview_kernel_available_does_not_imply_auto_select": True,
         "no_partner_forced": True,
         "automatic_triton_selection_allowed": False,
@@ -379,6 +388,74 @@ def v2_5_partner_selection_guidance() -> dict[str, Any]:
         "true_zero_copy_claim_authorized": False,
         "release_readiness_authorized": False,
         "claim_boundary": V2_5_PARTNER_SELECTION_GUIDANCE_CLAIM_BOUNDARY,
+    }
+
+
+def v2_5_partner_choice_cleanup_policy() -> dict[str, Any]:
+    """Return the post-closeout partner-choice cleanup policy.
+
+    This policy does not rewrite old evidence rows. It states how v2.5 should
+    be read after the Goal2978/2981/2988 closeout and before v2.6 begins.
+    """
+
+    return {
+        "cleanup_version": V2_5_PARTNER_CHOICE_CLEANUP_VERSION,
+        "status": "closeout_cleanup_not_release_authorization",
+        "user_partner_choice_authority": True,
+        "user_partner_choice_rule": "users_choose_supported_partners_explicitly",
+        "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
+        "benchmark_app_role": "reference_or_recommended_implementations_with_project_chosen_partner_paths",
+        "benchmark_recommendations_require_same_contract_evidence": True,
+        "generic_engine_boundary": "generic_app_agnostic_native_primitives_only",
+        "triton_recommended_path_status": "ignored_for_recommended_v2_5_paths_after_negative_same_contract_evidence",
+        "triton_preview_history_preserved_as_evidence": True,
+        "triton_resume_condition": "new_same_contract_evidence_from_a_user_selected_path",
+        "numba_v2_6_lane": "first_class_user_selectable_partner_after_neutral_seam_cleanup",
+        "automatic_partner_selection_allowed": False,
+        "automatic_triton_selection_allowed": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "release_readiness_authorized": False,
+        "claim_boundary": V2_5_PARTNER_SELECTION_GUIDANCE_CLAIM_BOUNDARY,
+    }
+
+
+def validate_v2_5_partner_choice_cleanup_policy(
+    policy: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    policy = v2_5_partner_choice_cleanup_policy() if policy is None else policy
+    errors: list[str] = []
+    if policy.get("cleanup_version") != V2_5_PARTNER_CHOICE_CLEANUP_VERSION:
+        errors.append("unexpected partner-choice cleanup version")
+    if policy.get("user_partner_choice_authority") is not True:
+        errors.append("partner choice must belong to the user")
+    if "high_performance_support" not in str(policy.get("supported_partner_duty", "")):
+        errors.append("supported partner duty must name high-performance support")
+    if "reference_or_recommended" not in str(policy.get("benchmark_app_role", "")):
+        errors.append("benchmark apps must be reference/recommended implementations")
+    if policy.get("benchmark_recommendations_require_same_contract_evidence") is not True:
+        errors.append("benchmark recommendations must require same-contract evidence")
+    if "app_agnostic" not in str(policy.get("generic_engine_boundary", "")):
+        errors.append("cleanup policy must keep the native engine app-agnostic")
+    if "ignored" not in str(policy.get("triton_recommended_path_status", "")):
+        errors.append("Triton must be ignored for recommended v2.5 paths")
+    for field in (
+        "automatic_partner_selection_allowed",
+        "automatic_triton_selection_allowed",
+        "public_speedup_claim_authorized",
+        "rt_core_speedup_claim_authorized",
+        "whole_app_speedup_claim_authorized",
+        "true_zero_copy_claim_authorized",
+        "release_readiness_authorized",
+    ):
+        if policy.get(field) is not False:
+            errors.append(f"{field} must remain false")
+    return {
+        "status": "accept" if not errors else "reject",
+        "cleanup_version": policy.get("cleanup_version"),
+        "errors": tuple(errors),
     }
 
 
@@ -550,6 +627,16 @@ def validate_v2_5_partner_selection_guidance(
         errors.append("partner guidance must reserve partners for unfused continuation work")
     if "same_contract" not in str(guidance.get("partner_choice_rule", "")):
         errors.append("partner guidance must require same-contract evidence")
+    if "user" not in str(guidance.get("partner_choice_rule", "")):
+        errors.append("partner guidance must keep partner choice explicit/user-owned")
+    if guidance.get("user_partner_choice_authority") is not True:
+        errors.append("partner guidance must record user partner-choice authority")
+    if "reference_or_recommended" not in str(guidance.get("benchmark_app_role", "")):
+        errors.append("benchmark app role must be reference/recommended implementation")
+    if "app_agnostic" not in str(guidance.get("generic_engine_boundary", "")):
+        errors.append("guidance must preserve the app-agnostic engine boundary")
+    if "ignored" not in str(guidance.get("triton_recommended_path_status", "")):
+        errors.append("Triton must be ignored for recommended v2.5 paths")
     rows = tuple(guidance.get("rows", ()))
     if int(guidance.get("row_count", -1)) != len(rows):
         errors.append("row_count does not match rows")
