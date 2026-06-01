@@ -49,11 +49,12 @@ class Goal2812RtnnPreparedQueryAggregateTest(unittest.TestCase):
         self.assertIn("PreparedOptixFixedRadiusQueryPoints3D", init)
         self.assertIn("prepare_optix_fixed_radius_query_points_3d", init)
         self.assertIn("ranked-summary-aggregate-prepared-query-float32", runner)
+        self.assertIn("ranked-summary-aggregate-prepared-query-batch-graph-float32", runner)
         self.assertIn("prepared.prepare_query_points", runner)
         self.assertIn("aggregate_ranked_summary_prepared_queries", runner)
         self.assertIn("device_resident_query_points", runner)
-        self.assertIn("ranked-summary-aggregate-prepared-query-float32", harness)
-        self.assertIn("prepared_query_aggregate_float32_median", harness)
+        self.assertIn("ranked-summary-aggregate-prepared-query-batch-graph-float32", harness)
+        self.assertIn("graph_replay", harness)
 
     def test_pod_artifacts_are_clean_query_resident_and_correct(self) -> None:
         for artifact in (ARTIFACT_32768, ARTIFACT_65536):
