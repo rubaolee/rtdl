@@ -101,6 +101,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2893_current_packet_after_runtime_provenance_index_2026-05-31.md",
     "docs/reports/goal2896_raydb_same_contract_performance_decision_gate_2026-05-31.md",
     "docs/reports/goal2898_raydb_perf_gate_readiness_integration_2026-05-31.md",
+    "docs/reports/goal2901_goal2897_raydb_perf_gate_review_intake_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -163,6 +164,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
     "docs/reviews/goal2868_gemini_review_v2_5_last_day_work_since_claude_reviews_2026-05-31.md",
     "docs/reviews/goal2881_claude_review_v2_5_residual_closure_and_current_packet_2026-05-31.md",
     "docs/reviews/goal2886_claude_review_runtime_trace_and_conformance_snapshot_2026-05-31.md",
+    "docs/reviews/goal2897_external_review_goal2896_raydb_same_contract_perf_gate_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_BLOCKED_ACTIONS = (
@@ -193,6 +195,8 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "keep_goal2891_runtime_provenance_snapshot_green",
     "keep_goal2896_raydb_same_contract_perf_gate_green",
     "triage_goal2897_external_review_for_goal2896_raydb_perf_gate",
+    "track_goal2897_compiler_flag_alignment_before_release_packet",
+    "track_goal2897_multivendor_or_second_arch_perf_check_before_release_packet",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
