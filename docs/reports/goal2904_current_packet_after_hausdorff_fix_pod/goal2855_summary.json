@@ -1,0 +1,324 @@
+{
+  "all_pass": true,
+  "artifact_count": 7,
+  "artifact_count_ok": true,
+  "artifact_status_ok": true,
+  "artifacts": {
+    "goal2797_triangle_counting.json": {
+      "app": "triangle_counting",
+      "boundary": "canonical app harness only",
+      "claim_boundary_keys": [
+        "canonical_harness",
+        "native_engine_customization",
+        "paper_reproduction_claim_authorized",
+        "public_speedup_claim_authorized",
+        "triton_speedup_claim_authorized",
+        "true_zero_copy_claim_authorized",
+        "whole_app_speedup_claim_authorized"
+      ],
+      "claim_boundary_violations": {},
+      "exists": true,
+      "goal": "Goal2797",
+      "gpu": "NVIDIA RTX A5000, 570.211.01",
+      "source_commit": "b6cc4591a0d475489a7cdddb9c15d32aa852afbc",
+      "source_dirty": [],
+      "status": "pass"
+    },
+    "goal2798_librts.json": {
+      "app": "librts_spatial_index",
+      "boundary": "Tier C no-regression harness; no partner or public RT claim",
+      "claim_boundary_keys": [
+        "canonical_harness",
+        "native_engine_customization",
+        "paper_reproduction_claim_authorized",
+        "public_speedup_claim_authorized",
+        "tier_c_no_regression_harness",
+        "triton_speedup_claim_authorized",
+        "true_zero_copy_claim_authorized",
+        "whole_app_speedup_claim_authorized"
+      ],
+      "claim_boundary_violations": {},
+      "exists": true,
+      "goal": "Goal2798",
+      "gpu": "NVIDIA RTX A5000, 570.211.01",
+      "source_commit": "b6cc4591a0d475489a7cdddb9c15d32aa852afbc",
+      "source_dirty": [],
+      "status": "pass"
+    },
+    "goal2799_spatial_rayjoin.json": {
+      "app": "spatial_rayjoin",
+      "boundary": "prepared OptiX count/parity route, not full RayJoin reproduction",
+      "claim_boundary_keys": [
+        "canonical_harness",
+        "native_engine_customization",
+        "paper_reproduction_claim_authorized",
+        "public_speedup_claim_authorized",
+        "row_overlay_continuation_deferred_tier_b",
+        "rtdl_beats_rayjoin_claim_authorized",
+        "tier_a_count_or_parity_only",
+        "triton_speedup_claim_authorized",
+        "true_zero_copy_claim_authorized",
+        "whole_app_speedup_claim_authorized"
+      ],
+      "claim_boundary_violations": {},
+      "exists": true,
+      "goal": "Goal2799",
+      "gpu": "NVIDIA RTX A5000, 570.211.01",
+      "source_commit": "b6cc4591a0d475489a7cdddb9c15d32aa852afbc",
+      "source_dirty": [],
+      "status": "pass"
+    },
+    "goal2800_rtnn.json": {
+      "app": "rtnn",
+      "boundary": "Tier B exact ranked-summary opponent; distribution-dependent",
+      "claim_boundary_keys": [
+        "broad_rt_core_speedup_claim_authorized",
+        "canonical_live_harness",
+        "native_engine_customization",
+        "paper_reproduction_claim_authorized",
+        "public_speedup_claim_authorized",
+        "rtdl_beats_cupy_grid_claim_authorized",
+        "rtdl_beats_rtnn_claim_authorized",
+        "tier_b_same_contract_opponent",
+        "triton_speedup_claim_authorized",
+        "whole_app_speedup_claim_authorized"
+      ],
+      "claim_boundary_violations": {},
+      "exists": true,
+      "goal": "Goal2800",
+      "gpu": "NVIDIA RTX A5000, 570.211.01",
+      "source_commit": "b6cc4591a0d475489a7cdddb9c15d32aa852afbc",
+      "source_dirty": [],
+      "status": "pass"
+    },
+    "goal2801_hausdorff_xhd.json": {
+      "app": "hausdorff_xhd",
+      "boundary": "exact RTDL/OptiX path; no claim to beat optimized CuPy grid",
+      "claim_boundary_keys": [
+        "broad_rt_core_speedup_claim_authorized",
+        "canonical_entrypoint",
+        "native_engine_customization",
+        "paper_reproduction_claim_authorized",
+        "public_speedup_claim_authorized",
+        "rtdl_beats_cupy_grid_claim_authorized",
+        "rtdl_beats_xhd_claim_authorized",
+        "triton_speedup_claim_authorized",
+        "whole_app_speedup_claim_authorized"
+      ],
+      "claim_boundary_violations": {},
+      "exists": true,
+      "goal": "Goal2801",
+      "gpu": "NVIDIA RTX A5000, 570.211.01",
+      "source_commit": "b6cc4591a0d475489a7cdddb9c15d32aa852afbc",
+      "source_dirty": [],
+      "status": "pass"
+    },
+    "goal2802_rt_dbscan.json": {
+      "app": "rt_dbscan",
+      "boundary": "grouped stream continuation evidence; no paper reproduction claim",
+      "claim_boundary_keys": [
+        "broad_dbscan_speedup_claim_authorized",
+        "canonical_live_harness",
+        "native_engine_customization",
+        "paper_reproduction_claim_authorized",
+        "paper_speedup_claim_authorized",
+        "public_speedup_claim_authorized",
+        "pure_triton_components_claim_authorized",
+        "whole_app_speedup_claim_authorized"
+      ],
+      "claim_boundary_violations": {},
+      "exists": true,
+      "goal": "Goal2802",
+      "gpu": "NVIDIA RTX A5000, 570.211.01",
+      "source_commit": "b6cc4591a0d475489a7cdddb9c15d32aa852afbc",
+      "source_dirty": [],
+      "status": "pass"
+    },
+    "goal2803_barnes_hut.json": {
+      "app": "barnes_hut",
+      "boundary": "membership and vector-sum harness; Triton vector path not promoted",
+      "claim_boundary_keys": [
+        "authors_code_comparison_authorized",
+        "canonical_consolidated_harness",
+        "native_engine_customization",
+        "paper_reproduction_claim_authorized",
+        "paper_speedup_claim_authorized",
+        "public_speedup_claim_authorized",
+        "triton_vector_sum_auto_selection_authorized",
+        "whole_app_speedup_claim_authorized"
+      ],
+      "claim_boundary_violations": {},
+      "exists": true,
+      "goal": "Goal2803",
+      "gpu": "NVIDIA RTX A5000, 570.211.01",
+      "source_commit": "b6cc4591a0d475489a7cdddb9c15d32aa852afbc",
+      "source_dirty": [],
+      "status": "pass"
+    }
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "canonical_packet_runner": true,
+    "compact_child_output_safe_to_use": true,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v2_5_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "claim_boundary_violations": {},
+  "dirty_artifacts": {},
+  "elapsed_sec": 423.44155069300905,
+  "executions": [
+    {
+      "app": "triangle_counting",
+      "artifact_name": "goal2797_triangle_counting.json",
+      "artifact_path": "/tmp/goal2904_current_packet_after_hausdorff/goal2797_triangle_counting.json",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/goal2797_triangle_counting_v25_canonical_harness.py",
+        "--output",
+        "/tmp/goal2904_current_packet_after_hausdorff/goal2797_triangle_counting.json",
+        "--fail-fast",
+        "--work-dir",
+        "/tmp/goal2904_current_packet_after_hausdorff/_work/goal2797"
+      ],
+      "compact_child_output": true,
+      "elapsed_sec": 3.5929797310382128,
+      "error": null,
+      "goal": "Goal2797",
+      "returncode": 0,
+      "stdout_log_path": "/tmp/goal2904_current_packet_after_hausdorff/_stdout/goal2797_triangle_counting.stdout",
+      "timed_out": false
+    },
+    {
+      "app": "librts_spatial_index",
+      "artifact_name": "goal2798_librts.json",
+      "artifact_path": "/tmp/goal2904_current_packet_after_hausdorff/goal2798_librts.json",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/goal2798_librts_v25_warm_median_harness.py",
+        "--output",
+        "/tmp/goal2904_current_packet_after_hausdorff/goal2798_librts.json"
+      ],
+      "compact_child_output": true,
+      "elapsed_sec": 4.279886559117585,
+      "error": null,
+      "goal": "Goal2798",
+      "returncode": 0,
+      "stdout_log_path": "/tmp/goal2904_current_packet_after_hausdorff/_stdout/goal2798_librts_spatial_index.stdout",
+      "timed_out": false
+    },
+    {
+      "app": "spatial_rayjoin",
+      "artifact_name": "goal2799_spatial_rayjoin.json",
+      "artifact_path": "/tmp/goal2904_current_packet_after_hausdorff/goal2799_spatial_rayjoin.json",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/goal2799_spatial_rayjoin_v25_prepared_count_harness.py",
+        "--output",
+        "/tmp/goal2904_current_packet_after_hausdorff/goal2799_spatial_rayjoin.json",
+        "--fail-fast"
+      ],
+      "compact_child_output": true,
+      "elapsed_sec": 2.2800687241833657,
+      "error": null,
+      "goal": "Goal2799",
+      "returncode": 0,
+      "stdout_log_path": "/tmp/goal2904_current_packet_after_hausdorff/_stdout/goal2799_spatial_rayjoin.stdout",
+      "timed_out": false
+    },
+    {
+      "app": "rtnn",
+      "artifact_name": "goal2800_rtnn.json",
+      "artifact_path": "/tmp/goal2904_current_packet_after_hausdorff/goal2800_rtnn.json",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/goal2800_rtnn_v25_live_ranked_summary_harness.py",
+        "--output",
+        "/tmp/goal2904_current_packet_after_hausdorff/goal2800_rtnn.json",
+        "--fail-fast",
+        "--work-dir",
+        "/tmp/goal2904_current_packet_after_hausdorff/_work/goal2800"
+      ],
+      "compact_child_output": true,
+      "elapsed_sec": 3.74453942803666,
+      "error": null,
+      "goal": "Goal2800",
+      "returncode": 0,
+      "stdout_log_path": "/tmp/goal2904_current_packet_after_hausdorff/_stdout/goal2800_rtnn.stdout",
+      "timed_out": false
+    },
+    {
+      "app": "hausdorff_xhd",
+      "artifact_name": "goal2801_hausdorff_xhd.json",
+      "artifact_path": "/tmp/goal2904_current_packet_after_hausdorff/goal2801_hausdorff_xhd.json",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/goal2801_hausdorff_xhd_v25_canonical_entrypoint.py",
+        "--output",
+        "/tmp/goal2904_current_packet_after_hausdorff/goal2801_hausdorff_xhd.json"
+      ],
+      "compact_child_output": true,
+      "elapsed_sec": 2.1901250388473272,
+      "error": null,
+      "goal": "Goal2801",
+      "returncode": 0,
+      "stdout_log_path": "/tmp/goal2904_current_packet_after_hausdorff/_stdout/goal2801_hausdorff_xhd.stdout",
+      "timed_out": false
+    },
+    {
+      "app": "rt_dbscan",
+      "artifact_name": "goal2802_rt_dbscan.json",
+      "artifact_path": "/tmp/goal2904_current_packet_after_hausdorff/goal2802_rt_dbscan.json",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/goal2802_rt_dbscan_v25_live_grouped_stream_harness.py",
+        "--output",
+        "/tmp/goal2904_current_packet_after_hausdorff/goal2802_rt_dbscan.json",
+        "--raw-output-dir",
+        "/tmp/goal2904_current_packet_after_hausdorff/_raw/goal2802"
+      ],
+      "compact_child_output": true,
+      "elapsed_sec": 24.478910183068365,
+      "error": null,
+      "goal": "Goal2802",
+      "returncode": 0,
+      "stdout_log_path": "/tmp/goal2904_current_packet_after_hausdorff/_stdout/goal2802_rt_dbscan.stdout",
+      "timed_out": false
+    },
+    {
+      "app": "barnes_hut",
+      "artifact_name": "goal2803_barnes_hut.json",
+      "artifact_path": "/tmp/goal2904_current_packet_after_hausdorff/goal2803_barnes_hut.json",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/goal2803_barnes_hut_v25_consolidated_harness.py",
+        "--output",
+        "/tmp/goal2904_current_packet_after_hausdorff/goal2803_barnes_hut.json"
+      ],
+      "compact_child_output": true,
+      "elapsed_sec": 382.8735654230695,
+      "error": null,
+      "goal": "Goal2803",
+      "returncode": 0,
+      "stdout_log_path": "/tmp/goal2904_current_packet_after_hausdorff/_stdout/goal2803_barnes_hut.stdout",
+      "timed_out": false
+    }
+  ],
+  "expected_artifact_count": 7,
+  "goal": "Goal2855",
+  "returncode_ok": true,
+  "runner_metadata": {
+    "gpu": "NVIDIA RTX A5000, 570.211.01",
+    "source_commit": "b6cc4591a0d475489a7cdddb9c15d32aa852afbc",
+    "source_dirty": []
+  },
+  "runner_version": "rtdl.goal2855.v2_5_current_canonical_harness_packet_runner.v1",
+  "source_commit": "b6cc4591a0d475489a7cdddb9c15d32aa852afbc",
+  "source_commit_consistent": true,
+  "source_commits": [
+    "b6cc4591a0d475489a7cdddb9c15d32aa852afbc"
+  ],
+  "status": "pass"
+}

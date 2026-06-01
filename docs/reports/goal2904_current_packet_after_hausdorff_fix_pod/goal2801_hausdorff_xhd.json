@@ -1,0 +1,92 @@
+{
+  "app": "hausdorff_xhd",
+  "baseline": {
+    "elapsed_runs_sec": [
+      0.004835916683077812,
+      0.004499376052990556,
+      0.004489055136218667
+    ],
+    "elapsed_sec": 0.004499376052990556,
+    "exact_value": true,
+    "median_elapsed_sec": 0.004499376052990556,
+    "method": "cupy_grouped_grid_rawkernel",
+    "result": {
+      "direction": "b_to_a",
+      "distance": 0.13528455701336056,
+      "elapsed_sec": 0.004499376052990556,
+      "method": "cupy_grouped_grid_rawkernel",
+      "source_index": 472,
+      "target_index": 1183
+    },
+    "uses_rt_cores": false,
+    "uses_rtdl": false,
+    "warmup_elapsed_sec": 0.6152009081561118,
+    "wrapper_elapsed_sec": 0.025481302989646792
+  },
+  "benchmark_track": "canonical_exact_hausdorff_entrypoint",
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "canonical_entrypoint": true,
+    "native_engine_customization": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rtdl_beats_cupy_grid_claim_authorized": false,
+    "rtdl_beats_xhd_claim_authorized": false,
+    "triton_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "distance_error": 0.0,
+  "elapsed_sec": 1.4850448488723487,
+  "entrypoint_version": "rtdl.goal2801.hausdorff_xhd_v2_5_canonical_entrypoint.v1",
+  "goal": "Goal2801",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "matches_exact_baseline": true,
+  "rtdl": {
+    "adaptive_growth_factor": null,
+    "adaptive_target_points_per_group": null,
+    "elapsed_runs_sec": [
+      0.006452979054301977,
+      0.004801325034350157,
+      0.004630587995052338
+    ],
+    "elapsed_sec": 0.004801325034350157,
+    "exact_value": true,
+    "median_elapsed_sec": 0.004801325034350157,
+    "method": "rtdl_rt_grouped_reduced_nearest_witness",
+    "reduced_seed_with_threshold": false,
+    "reduced_target_points_per_group": 2048,
+    "result": {
+      "backend": "optix",
+      "direction": "b_to_a",
+      "distance": 0.13528455701336056,
+      "elapsed_sec": 0.004801325034350157,
+      "exact_value": true,
+      "method": "rtdl_rt_grouped_reduced_nearest_witness",
+      "radius_strategy": "bbox_upper_bound",
+      "rt_core_accelerated": true,
+      "source_index": 472,
+      "target_index": 1305,
+      "threshold_iterations": 0,
+      "witness_radius": 3.4946844749860055
+    },
+    "uses_rt_cores": true,
+    "uses_rtdl": true,
+    "warmup_elapsed_sec": 0.7544586539734155,
+    "wrapper_elapsed_sec": 0.016359233064576983
+  },
+  "rtdl_over_cupy_grid_elapsed_ratio": 1.0671090786374497,
+  "scenario": {
+    "exact_tolerance": 1e-09,
+    "offset_x": 0.08,
+    "offset_y": -0.06,
+    "points_a": 4096,
+    "points_b": 4096,
+    "repeat": 3,
+    "rtdl_warmup": 1,
+    "seed_a": 11,
+    "seed_b": 29
+  },
+  "source_commit": "b6cc4591a0d475489a7cdddb9c15d32aa852afbc",
+  "source_dirty": [],
+  "status": "pass"
+}

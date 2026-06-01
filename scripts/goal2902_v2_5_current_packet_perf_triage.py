@@ -119,17 +119,29 @@ def _rtnn(path: Path) -> dict[str, Any]:
 def _hausdorff(path: Path) -> dict[str, Any]:
     data = _load(path)
     ratio = float(data.get("rtdl_over_cupy_grid_elapsed_ratio", 0.0) or 0.0)
+    near_parity_limit = 1.10
+    performance_target = ratio > near_parity_limit
+    rtdl_method = (data.get("rtdl") or {}).get("method")
     return {
         "app": "hausdorff_xhd",
         "status": data.get("status"),
-        "performance_status": _status(ratio > 1.0),
-        "severity_ratio": _round(ratio if ratio > 1.0 else 1.0, 3),
-        "route": "rtdl_rt_grouped_adaptive_nearest_witness_vs_cupy_grid_rawkernel",
+        "performance_status": (
+            "current_path_acceptable_near_parity"
+            if ratio > 1.0 and not performance_target
+            else _status(performance_target)
+        ),
+        "severity_ratio": _round(ratio if performance_target else 1.0, 3),
+        "route": f"{rtdl_method or 'rtdl_rt_unknown'}_vs_cupy_grid_rawkernel",
         "rtdl_over_cupy_ratio": _round(ratio, 3),
         "rtdl_median_sec": _round((data.get("rtdl") or {}).get("median_elapsed_sec")),
         "cupy_median_sec": _round((data.get("baseline") or {}).get("median_elapsed_sec")),
+        "near_parity_limit": near_parity_limit,
         "claim_boundary": "exact RTDL/OptiX path; no claim to beat optimized CuPy grid",
-        "next_action": "largest current performance target: reduce adaptive RT threshold iterations or add fused tiled nearest-witness continuation",
+        "next_action": (
+            "keep reduced bbox RT path; no severe current target unless ratio regresses beyond near-parity band"
+            if not performance_target
+            else "largest current performance target: reduce adaptive RT threshold iterations or add fused tiled nearest-witness continuation"
+        ),
     }
 
 

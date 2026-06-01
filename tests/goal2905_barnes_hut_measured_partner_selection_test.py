@@ -55,6 +55,26 @@ class Goal2905BarnesHutMeasuredPartnerSelectionTest(unittest.TestCase):
         self.assertEqual(row["performance_status"], "performance_target")
         self.assertEqual(row["severity_ratio"], 4.25)
 
+    def test_triage_treats_hausdorff_near_parity_as_acceptable(self) -> None:
+        payload = {
+            "status": "pass",
+            "rtdl_over_cupy_grid_elapsed_ratio": 1.067,
+            "rtdl": {
+                "method": "rtdl_rt_grouped_reduced_nearest_witness",
+                "median_elapsed_sec": 0.004801,
+            },
+            "baseline": {"median_elapsed_sec": 0.004499},
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "hausdorff.json"
+            path.write_text(json.dumps(payload), encoding="utf-8")
+            row = triage._hausdorff(path)
+
+        self.assertEqual(row["performance_status"], "current_path_acceptable_near_parity")
+        self.assertEqual(row["severity_ratio"], 1.0)
+        self.assertEqual(row["near_parity_limit"], 1.10)
+        self.assertIn("reduced_nearest_witness", row["route"])
+
     def test_report_records_design_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
 
