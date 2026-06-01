@@ -140,6 +140,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2952_hausdorff_target8192_default_tuning_2026-06-01.md",
     "docs/reports/goal2954_rtnn_graph_replay_route_tuning_2026-06-01.md",
     "docs/reports/goal2955_current_packet_after_rtnn_graph_replay_2026-06-01.md",
+    "docs/reports/goal2958_rtnn_graph_replay_scale_chunking_2026-06-01.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -279,6 +280,7 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "keep_goal2952_hausdorff_target8192_default_green",
     "keep_goal2954_rtnn_graph_replay_route_green",
     "keep_goal2955_current_packet_zero_perf_targets_green",
+    "keep_goal2958_rtnn_graph_replay_scale_chunking_green",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
