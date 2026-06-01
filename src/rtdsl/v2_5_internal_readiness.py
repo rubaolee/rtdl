@@ -157,6 +157,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2983_claude_review_intake_goal2981_v2_5_closeout_2026-06-01.md",
     "docs/reports/goal2984_barnes_hut_second_arch_profile_policy_2026-06-01.md",
     "docs/reports/goal2985_rtx4000ada_second_arch_bounded_packet_2026-06-01.md",
+    "docs/reports/goal2988_goal2984_2985_second_arch_bounded_packet_consensus_2026-06-01.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -242,6 +243,8 @@ V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
     "docs/reviews/goal2975_claude_review_goal2972_2973_toolchain_scope_2026-06-01.md",
     "docs/reviews/gemini_goal2981_v2_5_closeout_positioning_and_external_review_packet_review_2026-06-01.md",
     "docs/reviews/goal2981_claude_review_v2_5_closeout_positioning_and_external_review_packet_2026-06-01.md",
+    "docs/reviews/goal2986_gemini_review_goal2984_2985_second_arch_bounded_packet_2026-06-01.md",
+    "docs/reviews/goal2987_claude_review_goal2984_2985_second_arch_bounded_packet_2026-06-01.md",
 )
 
 V2_5_INTERNAL_READINESS_BLOCKED_ACTIONS = (
@@ -338,6 +341,7 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "request_external_review_for_goal2984_before_release_packet",
     "triage_goal2985_second_arch_bounded_packet_before_release_packet",
     "request_external_review_for_goal2985_before_release_packet",
+    "use_goal2988_second_arch_bounded_packet_consensus_before_release_packet",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
