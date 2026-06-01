@@ -8,6 +8,16 @@ Companion docs:
 - `docs/reviews/v2_5_ten_benchmark_apps_baseline_readiness_review_2026-05-29.md`
 - `docs/reviews/goal2689_claude_rereview_goal2688_hit_stream_contract_hardening_2026-05-29.md`
 
+Post-Goal2896 correction, 2026-05-31:
+
+This report was written before the Goal2896 RayDB same-contract performance
+gate. Its central principles still stand: partner choice belongs to the app,
+no partner is forced, and multi-partner composition must be explicit. However,
+RayDB is no longer evidence that Triton should be the chosen partner for scalar
+grouped reductions. Goal2896 shows the correct current rule: use the fused
+primitive-first RTDL path when it exactly expresses the continuation, and reserve
+typed hit-stream plus partner continuation for unfused continuations.
+
 ## 1. Thesis
 
 RTDL is a language. The language's job is to let an app author (call them X) express a workload over generic, app-agnostic engine primitives and then *choose* how each phase is continued. Three principles follow, and this report argues all three are correct, shows what each one actually requires to be true, and flags where the current v2.5 code does not yet satisfy them.
@@ -96,7 +106,10 @@ These principles improve and re-scope the stated v2.5 goal ("make the 10 apps ru
 - The honest goal is **not** "the 10 apps on Triton." It is "**Triton is one well-optimized partner; each app composes the best partner(s) per phase over neutral handoff contracts**, and v2.5 proves Triton is excellent for the reduction-shaped phases and composes cleanly with others."
 - **Tier C apps** (`contact_manifold`, `robot_collision`) choosing no partner is the design working, not a coverage gap.
 - **DBSCAN** keeping CuPy union-find is X's correct per-phase choice, not a fallback.
-- **Tier A apps** (raydb, triangle_counting, rayjoin-count, librts-count) are where Triton-as-chosen-partner is demonstrated at parity.
+- **Tier A apps** are not a blanket "Triton chosen at parity" bucket. RayDB
+  scalar grouped reductions are now explicitly primitive-first after Goal2896;
+  typed hit-stream plus partner continuation remains available for continuations
+  that are not expressible as fused generic RTDL primitives.
 - Parity claims should therefore be **per-phase and per-partner**, not per-app-monolithic: "Triton matches CuPy on the grouped-reduction phase," not "Triton matches the app."
 
 ## 8. Concrete recommendations
