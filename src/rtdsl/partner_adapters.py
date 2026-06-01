@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import math
+import statistics
+import time
 
 from .reference import Polygon as _CanonicalPolygon
 from .reference import Ray2D as _CanonicalRay2D
@@ -1909,6 +1911,192 @@ def grouped_vector_sum_2d_partner_columns(
     if return_metadata:
         return {"columns": columns, "metadata": metadata}
     return columns
+
+
+def _host_float_list(values) -> list[float]:
+    if hasattr(values, "detach"):
+        return [float(item) for item in values.detach().cpu().tolist()]
+    module_name = type(values).__module__.split(".", 1)[0]
+    if module_name == "cupy":
+        import cupy
+
+        return [float(item) for item in cupy.asnumpy(values).tolist()]
+    if hasattr(values, "tolist"):
+        return [float(item) for item in values.tolist()]
+    return [float(item) for item in values]
+
+
+def _same_float_rows(left: list[float], right: list[float], *, atol: float, rtol: float) -> bool:
+    if len(left) != len(right):
+        return False
+    return all(math.isclose(a, b, abs_tol=atol, rel_tol=rtol) for a, b in zip(left, right))
+
+
+def measured_grouped_vector_sum_2d_partner_selection(
+    partner_vector_columns: dict[str, dict[str, object]],
+    *,
+    group_count: int,
+    partners: tuple[str, ...] = ("torch", "triton", "cupy"),
+    repeats: int = 3,
+    warmups: int = 1,
+    triton_offset_groups_per_program: int = 1,
+    validate_same_contract: bool = True,
+    atol: float = 1e-9,
+    rtol: float = 1e-9,
+) -> dict[str, object]:
+    """Measure same-contract grouped vector-sum partners and return the winner.
+
+    This is caller-requested measurement, not invisible runtime dispatch. The
+    native RT engine is not called; users provide partner-owned columns for each
+    candidate they want to compare.
+    """
+
+    if not isinstance(partner_vector_columns, dict):
+        raise ValueError("partner_vector_columns must map partner names to vector column mappings")
+    group_count = int(group_count)
+    if group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    repeats = int(repeats)
+    warmups = int(warmups)
+    if repeats <= 0:
+        raise ValueError("repeats must be positive")
+    if warmups < 0:
+        raise ValueError("warmups must be non-negative")
+
+    candidate_results: list[dict[str, object]] = []
+    selected_result: dict[str, object] | None = None
+    reference: tuple[list[float], list[float]] | None = None
+    for partner in partners:
+        if partner not in partner_vector_columns:
+            candidate_results.append(
+                {
+                    "partner": partner,
+                    "status": "skipped",
+                    "reason": "no columns supplied for partner",
+                }
+            )
+            continue
+        vector_columns = partner_vector_columns[partner]
+        try:
+            for _ in range(warmups):
+                grouped_vector_sum_2d_partner_columns(
+                    vector_columns,
+                    group_count=group_count,
+                    partner=partner,
+                    triton_offset_groups_per_program=triton_offset_groups_per_program,
+                    return_metadata=True,
+                )
+            times: list[float] = []
+            result: dict[str, object] | None = None
+            for _ in range(repeats):
+                start = time.perf_counter()
+                result = grouped_vector_sum_2d_partner_columns(
+                    vector_columns,
+                    group_count=group_count,
+                    partner=partner,
+                    triton_offset_groups_per_program=triton_offset_groups_per_program,
+                    return_metadata=True,
+                )
+                times.append(time.perf_counter() - start)
+            assert result is not None
+            columns = result["columns"]
+            host_pair = (
+                _host_float_list(columns["sum_x"]),
+                _host_float_list(columns["sum_y"]),
+            )
+            matches_reference = True
+            if validate_same_contract:
+                if reference is None:
+                    reference = host_pair
+                else:
+                    matches_reference = _same_float_rows(
+                        host_pair[0],
+                        reference[0],
+                        atol=atol,
+                        rtol=rtol,
+                    ) and _same_float_rows(
+                        host_pair[1],
+                        reference[1],
+                        atol=atol,
+                        rtol=rtol,
+                    )
+            status = "pass" if matches_reference else "mismatch"
+            candidate_results.append(
+                {
+                    "partner": partner,
+                    "status": status,
+                    "median_sec": float(statistics.median(times)),
+                    "min_sec": float(min(times)),
+                    "max_sec": float(max(times)),
+                    "repeats": repeats,
+                    "warmups": warmups,
+                    "matches_reference": matches_reference,
+                    "partner_metadata": result.get("metadata", {}),
+                    "result": result,
+                }
+            )
+        except Exception as exc:  # pragma: no cover - environment dependent
+            candidate_results.append(
+                {
+                    "partner": partner,
+                    "status": "error",
+                    "reason": f"{type(exc).__name__}: {exc}",
+                }
+            )
+
+    successful = [row for row in candidate_results if row.get("status") == "pass"]
+    if not successful:
+        return {
+            "columns": None,
+            "metadata": {
+                "adapter": "measured_grouped_vector_sum_2d_partner_selection",
+                "status": "no_successful_partner",
+                "operation": "grouped_vector_sum_f64x2",
+                "candidate_results": tuple(
+                    {k: v for k, v in row.items() if k != "result"} for row in candidate_results
+                ),
+                "selected_partner": None,
+                "native_engine_row_contract": "not_called_partner_continuation_only",
+                "selection_policy": "caller_requested_same_contract_measurement",
+                "silent_auto_selection_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "v2_5_release_authorized": False,
+                "claim_boundary": (
+                    "No partner passed the measured same-contract grouped vector-sum selection. "
+                    "This helper does not authorize fallback claims or public speedup wording."
+                ),
+            },
+        }
+
+    selected = min(successful, key=lambda row: float(row["median_sec"]))
+    selected_result = selected["result"]
+    compact_results = tuple({k: v for k, v in row.items() if k != "result"} for row in candidate_results)
+    selected_partner = str(selected["partner"])
+    metadata = {
+        "adapter": "measured_grouped_vector_sum_2d_partner_selection",
+        "status": "pass",
+        "operation": "grouped_vector_sum_f64x2",
+        "group_count": group_count,
+        "candidate_order": tuple(partners),
+        "candidate_results": compact_results,
+        "selected_partner": selected_partner,
+        "selected_partner_median_sec": float(selected["median_sec"]),
+        "selected_partner_reason": f"{selected_partner}_wins_caller_requested_same_contract_measurement",
+        "selected_partner_metadata": selected.get("partner_metadata", {}),
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "selection_policy": "caller_requested_same_contract_measurement",
+        "silent_auto_selection_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "v2_5_release_authorized": False,
+        "claim_boundary": (
+            "Measured grouped vector-sum partner selection over caller-supplied "
+            "same-contract columns. It is explicit user/app measurement, not hidden "
+            "engine dispatch, and it does not authorize speedup, zero-copy, or release claims."
+        ),
+    }
+    return {"columns": selected_result["columns"], "metadata": metadata}
 
 
 def _coerce_torch_group_item_score_columns(score_columns: dict[str, object], runtime):

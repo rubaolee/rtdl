@@ -126,6 +126,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2932_cupy_presegmented_vector_sum_partner_2026-06-01.md",
     "docs/reports/goal2933_barnes_hut_cupy_vector_selection_2026-06-01.md",
     "docs/reports/goal2934_current_packet_after_cupy_vector_2026-06-01.md",
+    "docs/reports/goal2936_measured_vector_partner_selection_helper_2026-06-01.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -248,6 +249,7 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "keep_goal2932_cupy_vector_sum_preview_green",
     "keep_goal2933_barnes_hut_cupy_vector_selection_green",
     "keep_goal2934_current_packet_after_cupy_vector_green",
+    "keep_goal2936_measured_vector_partner_selection_helper_green",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
