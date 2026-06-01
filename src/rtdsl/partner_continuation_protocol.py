@@ -208,6 +208,29 @@ V2_5_PARTNER_CONTINUATION_OPERATIONS: tuple[RtdlPartnerContinuationOperation, ..
             "-1 sentinels; overflow fails closed without returning partial reductions"
         ),
     ),
+    RtdlPartnerContinuationOperation(
+        name="hit_stream_primitive_payload_grouped_sum_f64",
+        category="hit_stream_payload_reduction",
+        input_names=(
+            "ray_ids",
+            "primitive_ids",
+            "row_count",
+            "hit_event_count",
+            "overflow",
+            "primitive_group_ids",
+            "primitive_values",
+            "primitive_count",
+            "group_count",
+        ),
+        output_names=("group_hit_counts", "group_payload_sums"),
+        behavior=(
+            "map event-ordered RT hit-stream primitive_id rows through generic primitive "
+            "payload columns, then sum float64 primitive_values per primitive_group_id; "
+            "primitive ids must be in [0, primitive_count), primitive group ids must be "
+            "in [0, group_count), missing groups use zero count and zero sum, and "
+            "producer overflow fails closed without returning partial reductions"
+        ),
+    ),
 )
 
 V2_5_PARTNER_CONTINUATION_OPERATION_NAMES = tuple(
@@ -233,6 +256,7 @@ V2_5_NUMBA_PREVIEW_OPERATIONS = (
 V2_5_CUPY_PREVIEW_OPERATIONS = (
     "grouped_vector_sum_f64x2",
     "hit_stream_grouped_ray_id_primitive_i64",
+    "hit_stream_primitive_payload_grouped_sum_f64",
 )
 V2_5_PARTNER_REFERENCE_ONLY_OPERATIONS = tuple(
     operation
@@ -605,6 +629,27 @@ def execute_v2_5_partner_continuation_reference(
             hit_event_count,
             overflow,
         )
+    elif operation == "hit_stream_primitive_payload_grouped_sum_f64":
+        group_count = _required_int(inputs, "group_count")
+        primitive_count = _required_int(inputs, "primitive_count")
+        row_count = _required_int(inputs, "row_count")
+        hit_event_count = _required_int(inputs, "hit_event_count")
+        overflow = bool(inputs.get("overflow"))
+        ray_ids = _required_i64_sequence(inputs, "ray_ids")
+        primitive_ids = _required_i64_sequence(inputs, "primitive_ids")
+        primitive_group_ids = _required_i64_sequence(inputs, "primitive_group_ids")
+        primitive_values = _required_f64_sequence(inputs, "primitive_values")
+        outputs = _hit_stream_primitive_payload_grouped_sum_f64(
+            ray_ids,
+            primitive_ids,
+            primitive_group_ids,
+            primitive_values,
+            primitive_count,
+            group_count,
+            row_count,
+            hit_event_count,
+            overflow,
+        )
     else:  # pragma: no cover - guarded by _validate_operation_name
         raise ValueError(f"unsupported v2.5 partner continuation operation: {operation}")
 
@@ -848,6 +893,56 @@ def _hit_stream_grouped_ray_id_primitive_i64(
         "group_last_hit_row_index": last_row,
         "group_first_primitive_id": first_primitive,
         "group_last_primitive_id": last_primitive,
+    }
+
+
+def _hit_stream_primitive_payload_grouped_sum_f64(
+    ray_ids: Sequence[int],
+    primitive_ids: Sequence[int],
+    primitive_group_ids: Sequence[int],
+    primitive_values: Sequence[float],
+    primitive_count: int,
+    group_count: int,
+    row_count: int,
+    hit_event_count: int,
+    overflow: bool,
+) -> dict[str, list[int] | list[float]]:
+    if primitive_count < 0:
+        raise ValueError("primitive_count must be non-negative")
+    if group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    if row_count < 0:
+        raise ValueError("row_count must be non-negative")
+    if hit_event_count < row_count:
+        raise ValueError("hit_event_count cannot be smaller than row_count")
+    if len(ray_ids) < row_count or len(primitive_ids) < row_count:
+        raise ValueError("ray_ids and primitive_ids must contain at least row_count rows")
+    if len(primitive_group_ids) != primitive_count:
+        raise ValueError("primitive_group_ids length must match primitive_count")
+    if len(primitive_values) != primitive_count:
+        raise ValueError("primitive_values length must match primitive_count")
+    if overflow:
+        raise PartnerContinuationOverflowError(
+            "hit_stream_primitive_payload_grouped_sum_f64 overflowed stored hit capacity; "
+            "failure_mode=fail_closed_overflow; partial_result_returned=False"
+        )
+
+    counts = [0] * group_count
+    sums = [0.0] * group_count
+    for row_index in range(row_count):
+        primitive = int(primitive_ids[row_index])
+        if primitive < 0 or primitive >= primitive_count:
+            raise ValueError("primitive_ids must be in [0, primitive_count)")
+        group = int(primitive_group_ids[primitive])
+        _validate_group_id(group, group_count)
+        value = float(primitive_values[primitive])
+        if math.isnan(value):
+            raise ValueError("primitive_values reject NaN")
+        counts[group] += 1
+        sums[group] += value
+    return {
+        "group_hit_counts": counts,
+        "group_payload_sums": sums,
     }
 
 

@@ -95,8 +95,22 @@ class Goal2774V25GroupedHitStreamSupportMatrixTest(unittest.TestCase):
 
         self.assertEqual(gate_validation["status"], "accept")
         self.assertEqual(matrix_validation["status"], "accept")
-        self.assertEqual(gate["cupy_preview_operations"], ("hit_stream_grouped_ray_id_primitive_i64",))
-        self.assertEqual(matrix["cupy_preview_operations"], ("hit_stream_grouped_ray_id_primitive_i64",))
+        self.assertEqual(
+            gate["cupy_preview_operations"],
+            (
+                "grouped_vector_sum_f64x2",
+                "hit_stream_grouped_ray_id_primitive_i64",
+                "hit_stream_primitive_payload_grouped_sum_f64",
+            ),
+        )
+        self.assertEqual(
+            matrix["cupy_preview_operations"],
+            (
+                "grouped_vector_sum_f64x2",
+                "hit_stream_grouped_ray_id_primitive_i64",
+                "hit_stream_primitive_payload_grouped_sum_f64",
+            ),
+        )
         self.assertEqual(gate["reference_only_operations"], ())
 
     def test_reference_semantics_match_goal2772_signed_empty_group_sentinels(self) -> None:

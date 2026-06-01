@@ -134,6 +134,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2942_current_packet_after_row_columns_2026-06-01.md",
     "docs/reports/goal2943_generic_event_ordered_hit_stream_front_door_2026-06-01.md",
     "docs/reports/goal2945_current_packet_after_hit_stream_front_door_2026-06-01.md",
+    "docs/reports/goal2947_generic_event_ordered_payload_grouped_sum_front_door_2026-06-01.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -264,6 +265,7 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "keep_goal2942_current_packet_after_row_columns_green",
     "keep_goal2943_generic_event_ordered_hit_stream_front_door_green",
     "keep_goal2945_current_packet_after_hit_stream_front_door_green",
+    "keep_goal2947_payload_grouped_sum_front_door_green",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
@@ -444,7 +446,7 @@ def validate_v2_5_internal_readiness_packet(
         errors.append("partner conformance snapshot must keep release conformance false")
     if conformance_snapshot["preview_runtime_conformance_complete"] is not True:
         errors.append("partner conformance snapshot must keep preview runtime conformance complete")
-    if conformance_snapshot["cell_count"] != 48:
+    if conformance_snapshot["cell_count"] != 52:
         errors.append("partner conformance snapshot cell count changed")
     if conformance_snapshot["runtime_provenance_record_count"] != 1:
         errors.append("partner conformance snapshot must index the current runtime provenance record")

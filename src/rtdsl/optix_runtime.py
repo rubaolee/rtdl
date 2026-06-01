@@ -11446,6 +11446,178 @@ def _run_hit_stream_event_ordered_grouped_ray_id_reduction_cupy(
     )
 
 
+_HIT_STREAM_EVENT_ORDERED_PRIMITIVE_PAYLOAD_GROUPED_SUM_CUPY_SOURCE = r"""
+extern "C" __global__
+void rtdl_hit_stream_event_ordered_primitive_payload_grouped_sum_f64(
+    const long long* ray_ids,
+    const long long* primitive_ids,
+    const long long* row_count,
+    const long long* hit_event_count,
+    const unsigned int* overflow,
+    unsigned long long capacity,
+    unsigned long long primitive_count,
+    unsigned long long group_count,
+    const long long* primitive_group_ids,
+    const double* primitive_values,
+    unsigned long long* group_hit_counts,
+    double* group_payload_sums,
+    unsigned long long* summary)
+{
+    const unsigned long long observed_rows = static_cast<unsigned long long>(row_count[0]);
+    const unsigned long long observed_hits = static_cast<unsigned long long>(hit_event_count[0]);
+    const unsigned long long stored_rows =
+        observed_rows < capacity ? observed_rows : capacity;
+    const unsigned int observed_overflow = overflow[0];
+
+    for (unsigned long long g = static_cast<unsigned long long>(threadIdx.x);
+         g < group_count;
+         g += static_cast<unsigned long long>(blockDim.x)) {
+        group_hit_counts[g] = 0ull;
+        group_payload_sums[g] = 0.0;
+    }
+    if (threadIdx.x == 0) {
+        summary[0] = observed_rows;
+        summary[1] = static_cast<unsigned long long>(observed_overflow);
+        summary[2] = observed_hits;
+        summary[3] = stored_rows;
+        summary[4] = group_count;
+        summary[5] = 0ull; // invalid primitive id row count
+        summary[6] = 0ull; // invalid primitive group id row count
+        summary[7] = 0ull; // populated group count
+        summary[8] = 0ull; // valid reduced row count
+        summary[9] = (observed_overflow == 0u && observed_rows <= capacity) ? 1ull : 0ull;
+    }
+    __syncthreads();
+
+    for (unsigned long long i = static_cast<unsigned long long>(threadIdx.x);
+         i < stored_rows;
+         i += static_cast<unsigned long long>(blockDim.x)) {
+        const long long primitive_signed = primitive_ids[i];
+        if (primitive_signed < 0ll) {
+            atomicAdd(&summary[5], 1ull);
+            continue;
+        }
+        const unsigned long long primitive = static_cast<unsigned long long>(primitive_signed);
+        if (primitive >= primitive_count) {
+            atomicAdd(&summary[5], 1ull);
+            continue;
+        }
+        const long long group_signed = primitive_group_ids[primitive];
+        if (group_signed < 0ll) {
+            atomicAdd(&summary[6], 1ull);
+            continue;
+        }
+        const unsigned long long group_id = static_cast<unsigned long long>(group_signed);
+        if (group_id >= group_count) {
+            atomicAdd(&summary[6], 1ull);
+            continue;
+        }
+        atomicAdd(&group_hit_counts[group_id], 1ull);
+        atomicAdd(&group_payload_sums[group_id], primitive_values[primitive]);
+    }
+    __syncthreads();
+
+    for (unsigned long long g = static_cast<unsigned long long>(threadIdx.x);
+         g < group_count;
+         g += static_cast<unsigned long long>(blockDim.x)) {
+        const unsigned long long count = group_hit_counts[g];
+        if (count != 0ull) {
+            atomicAdd(&summary[7], 1ull);
+            atomicAdd(&summary[8], count);
+        }
+    }
+}
+"""
+
+
+@functools.lru_cache(maxsize=1)
+def _hit_stream_event_ordered_primitive_payload_grouped_sum_cupy_kernel():
+    try:
+        import cupy as cp
+    except Exception as exc:
+        raise RuntimeError("event-ordered primitive-payload grouped sum requires cupy") from exc
+    return cp.RawKernel(
+        _HIT_STREAM_EVENT_ORDERED_PRIMITIVE_PAYLOAD_GROUPED_SUM_CUPY_SOURCE,
+        "rtdl_hit_stream_event_ordered_primitive_payload_grouped_sum_f64",
+    )
+
+
+def _run_hit_stream_event_ordered_primitive_payload_grouped_sum_cupy(
+    hit_buffers: "PreparedOptixHitStreamDeviceColumnBuffers",
+    payload_columns,
+    output_buffers: "PreparedOptixHitStreamPrimitivePayloadGroupedSumBuffers",
+    *,
+    capacity: int,
+    producer_event_ptr: int,
+) -> tuple[dict[str, object], int]:
+    try:
+        import cupy as cp
+    except Exception as exc:
+        raise RuntimeError("event-ordered primitive-payload grouped sum requires cupy") from exc
+    producer_event_ptr = int(producer_event_ptr)
+    if producer_event_ptr == 0:
+        raise ValueError("event-ordered primitive-payload grouped sum requires a nonzero CUDA event pointer")
+    kernel = _hit_stream_event_ordered_primitive_payload_grouped_sum_cupy_kernel()
+    consumer_stream = cp.cuda.Stream(non_blocking=True)
+    with consumer_stream:
+        cp.cuda.runtime.streamWaitEvent(consumer_stream.ptr, producer_event_ptr, 0)
+        ray_ids = cp.asarray(hit_buffers.ray_ids)
+        primitive_ids = cp.asarray(hit_buffers.primitive_ids)
+        row_count = cp.asarray(hit_buffers.row_count)
+        hit_event_count = cp.asarray(hit_buffers.hit_event_count)
+        overflow = cp.asarray(hit_buffers.overflow)
+        primitive_group_ids = cp.asarray(payload_columns.primitive_group_ids)
+        primitive_values = cp.asarray(payload_columns.primitive_values)
+        group_hit_counts = cp.asarray(output_buffers.group_hit_counts)
+        group_payload_sums = cp.asarray(output_buffers.group_payload_sums)
+        summary = cp.empty((10,), dtype=cp.uint64)
+        kernel(
+            (1,),
+            (256,),
+            (
+                ray_ids,
+                primitive_ids,
+                row_count,
+                hit_event_count,
+                overflow,
+                cp.uint64(int(capacity)),
+                cp.uint64(int(payload_columns.primitive_count)),
+                cp.uint64(int(output_buffers.group_count)),
+                primitive_group_ids,
+                primitive_values,
+                group_hit_counts,
+                group_payload_sums,
+                summary,
+            ),
+        )
+    consumer_stream.synchronize()
+    values = [int(item) for item in cp.asnumpy(summary).tolist()]
+    return (
+        {
+            "row_count": values[0],
+            "overflow": bool(values[1]),
+            "hit_event_count": values[2],
+            "stored_row_count": values[3],
+            "group_count": values[4],
+            "invalid_primitive_id_row_count": values[5],
+            "invalid_primitive_group_id_row_count": values[6],
+            "populated_group_count": values[7],
+            "valid_group_reduced_row_count": values[8],
+            "status_ok": bool(values[9]) and values[5] == 0 and values[6] == 0,
+            "consumer_partner": "cupy_rawkernel",
+            "consumer_read_status_on_device": True,
+            "consumer_read_rows_on_device": True,
+            "consumer_reduction_scope": "primitive_payload_grouped_sum_over_all_stored_hit_rows",
+            "grouped_reduction_fields": ("hit_count", "payload_sum_f64"),
+            "grouped_output_columns_written_on_device": True,
+            "host_scalar_read_before_consumer": False,
+            "host_row_materialization_before_consumer": False,
+            "cuda_event_wait_inserted_before_consumer": True,
+        },
+        int(consumer_stream.ptr),
+    )
+
+
 class PreparedOptixHitStreamDeviceColumnBuffers:
     """Caller-owned CUDA int64 columns for reusable OptiX hit-stream output."""
 
@@ -11576,6 +11748,49 @@ class PreparedOptixHitStreamGroupedReductionBuffers:
         self.close()
 
 
+class PreparedOptixHitStreamPrimitivePayloadGroupedSumBuffers:
+    """Caller-owned CUDA columns for primitive-payload grouped sums."""
+
+    def __init__(self, group_count: int, *, device=None) -> None:
+        group_count = int(group_count)
+        if group_count < 0:
+            raise ValueError("primitive-payload grouped sum group_count must be non-negative")
+        try:
+            import torch
+        except Exception as exc:
+            raise RuntimeError("primitive-payload grouped sum buffers require torch") from exc
+        if not torch.cuda.is_available():
+            raise RuntimeError("primitive-payload grouped sum buffers require CUDA-capable torch")
+        resolved_device = "cuda" if device is None else device
+        self.group_count = group_count
+        self.group_hit_counts = torch.empty((group_count,), dtype=torch.int64, device=resolved_device)
+        self.group_payload_sums = torch.empty(
+            (group_count,),
+            dtype=torch.float64,
+            device=self.group_hit_counts.device,
+        )
+        self._closed = False
+
+    @property
+    def closed(self) -> bool:
+        return self._closed
+
+    def _assert_open(self) -> None:
+        if self._closed:
+            raise RuntimeError("primitive-payload grouped sum buffers are closed")
+
+    def close(self) -> None:
+        self._closed = True
+        self.group_hit_counts = None
+        self.group_payload_sums = None
+
+    def __enter__(self) -> "PreparedOptixHitStreamPrimitivePayloadGroupedSumBuffers":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+
 class PreparedOptixStaticTriangleScene3D:
     """Reusable OptiX handle for grouped finite 3D segment any-hit flags."""
 
@@ -11665,6 +11880,16 @@ class PreparedOptixStaticTriangleScene3D:
         if self._closed:
             raise RuntimeError("prepared OptiX static triangle scene handle is closed")
         return PreparedOptixHitStreamGroupedReductionBuffers(group_count, device=device)
+
+    def prepare_ray_triangle_hit_stream_primitive_payload_grouped_sum_buffers(
+        self,
+        group_count: int,
+        *,
+        device=None,
+    ) -> PreparedOptixHitStreamPrimitivePayloadGroupedSumBuffers:
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        return PreparedOptixHitStreamPrimitivePayloadGroupedSumBuffers(group_count, device=device)
 
     def prepare_closest_hit_grouped_argmin_inputs(
         self,
@@ -13757,6 +13982,207 @@ class PreparedOptixStaticTriangleScene3D:
             },
             "hit_buffers": hit_buffers,
             "group_buffers": group_buffers,
+            "producer_cuda_stream": producer_stream,
+            "producer_cuda_event": producer_event,
+        }
+
+    def ray_triangle_hit_stream_event_ordered_primitive_payload_grouped_sum(
+        self,
+        rays,
+        hit_buffers: PreparedOptixHitStreamDeviceColumnBuffers,
+        payload_columns,
+        output_buffers: PreparedOptixHitStreamPrimitivePayloadGroupedSumBuffers,
+        *,
+        max_rows: int | None = None,
+        deduplicate_primitives: bool = True,
+        producer_cuda_stream=None,
+    ) -> dict[str, object]:
+        """Launch producer and CuPy primitive-payload grouped sum on event-ordered streams."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        if not isinstance(hit_buffers, PreparedOptixHitStreamDeviceColumnBuffers):
+            raise TypeError(
+                "ray_triangle_hit_stream_event_ordered_primitive_payload_grouped_sum requires "
+                "PreparedOptixHitStreamDeviceColumnBuffers"
+            )
+        if not isinstance(output_buffers, PreparedOptixHitStreamPrimitivePayloadGroupedSumBuffers):
+            raise TypeError(
+                "ray_triangle_hit_stream_event_ordered_primitive_payload_grouped_sum requires "
+                "PreparedOptixHitStreamPrimitivePayloadGroupedSumBuffers"
+            )
+        if int(getattr(payload_columns, "primitive_count", -1)) != self.triangle_count:
+            raise ValueError("primitive payload count must match prepared triangle count")
+        if int(getattr(payload_columns, "group_count", -1)) != int(output_buffers.group_count):
+            raise ValueError("primitive payload group_count must match output buffer group_count")
+        hit_buffers._assert_open()
+        output_buffers._assert_open()
+        if output_buffers.group_hit_counts.device != hit_buffers.ray_ids.device:
+            raise ValueError("primitive-payload grouped sum buffers must live on the hit-stream buffer device")
+        if output_buffers.group_payload_sums.device != hit_buffers.ray_ids.device:
+            raise ValueError("primitive-payload grouped sum buffers must live on the hit-stream buffer device")
+        for column_name in ("primitive_group_ids", "primitive_values"):
+            column = getattr(payload_columns, column_name)
+            if not hasattr(column, "__cuda_array_interface__") and not (
+                hasattr(column, "is_cuda") and bool(column.is_cuda)
+            ):
+                raise ValueError("primitive payload columns must be CUDA-resident for event-ordered CuPy continuation")
+
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_ON_STREAM_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_ON_STREAM_SYMBOL}. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+
+        try:
+            import torch
+        except Exception as exc:
+            raise RuntimeError("event-ordered primitive-payload grouped sum requires torch") from exc
+        if producer_cuda_stream is None:
+            producer_stream = torch.cuda.Stream(device=hit_buffers.ray_ids.device)
+        elif hasattr(producer_cuda_stream, "cuda_stream"):
+            producer_stream = producer_cuda_stream
+        else:
+            raise TypeError("producer_cuda_stream must be None or a torch CUDA Stream")
+        producer_stream_ptr = int(producer_stream.cuda_stream)
+        if producer_stream_ptr == 0:
+            raise ValueError("event-ordered primitive-payload grouped sum requires a nonzero producer stream")
+
+        pack_start = time.perf_counter()
+        packed_rays = rays if isinstance(rays, PackedRays) else pack_rays(rays, dimension=3)
+        if packed_rays.dimension != 3:
+            raise ValueError(
+                "ray_triangle_hit_stream_event_ordered_primitive_payload_grouped_sum requires 3-D rays"
+            )
+        capacity = hit_buffers.capacity if max_rows is None else int(max_rows)
+        if capacity < 0:
+            raise ValueError("max_rows must be non-negative")
+        if capacity > hit_buffers.capacity:
+            raise ValueError("max_rows must not exceed reusable hit-stream buffer capacity")
+        query_pack_seconds = time.perf_counter() - pack_start
+
+        columns = _RtdlNativeDeviceHitStreamColumns()
+        error = ctypes.create_string_buffer(4096)
+        native_start = time.perf_counter()
+        status = run_symbol(
+            self._handle,
+            packed_rays.records,
+            packed_rays.count,
+            ctypes.c_uint32(1 if deduplicate_primitives else 0),
+            ctypes.c_size_t(capacity),
+            ctypes.c_uint64(hit_buffers.ray_ids_device_ptr),
+            ctypes.c_uint64(hit_buffers.primitive_ids_device_ptr),
+            ctypes.c_uint64(hit_buffers.row_count_device_ptr),
+            ctypes.c_uint64(hit_buffers.hit_event_count_device_ptr),
+            ctypes.c_uint64(hit_buffers.overflow_device_ptr),
+            ctypes.c_uint64(producer_stream_ptr),
+            ctypes.byref(columns),
+            error,
+            len(error),
+        )
+        native_launch_seconds = time.perf_counter() - native_start
+        _check_status(status, error)
+
+        for observed, expected, name in (
+            (int(columns.ray_ids_device_ptr), hit_buffers.ray_ids_device_ptr, "ray_ids"),
+            (int(columns.primitive_ids_device_ptr), hit_buffers.primitive_ids_device_ptr, "primitive_ids"),
+            (int(columns.row_count_device_ptr), hit_buffers.row_count_device_ptr, "row_count"),
+            (int(columns.hit_event_count_device_ptr), hit_buffers.hit_event_count_device_ptr, "hit_event_count"),
+            (int(columns.overflow_device_ptr), hit_buffers.overflow_device_ptr, "overflow"),
+        ):
+            if observed != expected:
+                raise RuntimeError(f"native OptiX backend returned an unexpected {name} pointer")
+
+        async_owner = _OptixNativeHitStreamAsyncLaunchOwner(self._lib, columns.owner_handle)
+        owner_handle_observed = async_owner.handle_value != 0
+        producer_event = torch.cuda.Event(blocking=False)
+        producer_event.record(producer_stream)
+        producer_event_ptr = int(producer_event.cuda_event)
+        consumer_start = time.perf_counter()
+        try:
+            summary, consumer_stream_ptr = _run_hit_stream_event_ordered_primitive_payload_grouped_sum_cupy(
+                hit_buffers,
+                payload_columns,
+                output_buffers,
+                capacity=int(columns.capacity),
+                producer_event_ptr=producer_event_ptr,
+            )
+        finally:
+            async_owner.close()
+        consumer_seconds = time.perf_counter() - consumer_start
+
+        self._run_count += 1
+        return {
+            "summary": summary,
+            "metadata": {
+                "contract_version": "rtdl.hit_stream_event_ordered_primitive_payload_grouped_sum_consumer.v2.5",
+                "backend": "optix",
+                "native_symbol": OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_ON_STREAM_SYMBOL,
+                "release_symbol": OPTIX_RELEASE_RAY_TRIANGLE_HIT_STREAM_3D_ASYNC_LAUNCH_SYMBOL,
+                "producer_consumer_stream_ordering": "cuda_event_cross_stream",
+                "stream_synchronization_proven": True,
+                "event_or_same_stream_ordering_proven": True,
+                "cuda_event_cross_stream_ordering_proven": True,
+                "zero_copy_compatible_stream_ordering": True,
+                "producer_host_synchronization_used": False,
+                "host_scalar_read_before_consumer": False,
+                "host_row_materialization_before_consumer": False,
+                "producer_input_upload_mode": "stream_ordered_pinned_host_to_device_async",
+                "query_rays_still_packed_on_host": True,
+                "final_materialization_synchronization_used": True,
+                "device_resident_status_for_partner": True,
+                "device_resident_payload_columns_for_partner": True,
+                "device_resident_grouped_reduction_for_partner": True,
+                "grouping_key": "primitive_group_ids[primitive_id]",
+                "reduced_value": "primitive_values[primitive_id]",
+                "grouped_reduction_fields": ("hit_count", "payload_sum_f64"),
+                "grouped_output_columns_written_on_device": True,
+                "row_count_scalar_visibility_before_consumer": "device_only",
+                "overflow_scalar_visibility_before_consumer": "device_only",
+                "bounded_partner_consumer_executed": True,
+                "bounded_partner_consumer": "cupy_rawkernel",
+                "cuda_event_wait_inserted_before_consumer": True,
+                "producer_cuda_event_ptr_nonzero": bool(producer_event_ptr),
+                "producer_cuda_stream_ptr_nonzero": bool(producer_stream_ptr),
+                "consumer_cuda_stream_ptr_nonzero": bool(consumer_stream_ptr),
+                "async_partner_continuation_authorized": True,
+                "async_partner_continuation_authorization_scope": (
+                    "bounded_event_ordered_primitive_payload_grouped_sum_consumer_only"
+                ),
+                "general_partner_continuation_authorized": False,
+                "true_zero_copy_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "native_launch_owner_handle_observed": owner_handle_observed,
+                "async_launch_owner_release_required": owner_handle_observed,
+                "stream_lifetime_contract": (
+                    "producer stream/event and consumer stream must remain valid "
+                    "until async launch owner release"
+                ),
+                "capacity": int(columns.capacity),
+                "primitive_count": int(payload_columns.primitive_count),
+                "group_count": int(output_buffers.group_count),
+                "phase_timing_seconds": {
+                    "prepare_build": float(self.prepare_seconds),
+                    "query_pack": float(query_pack_seconds),
+                    "native_async_launch_enqueue": float(native_launch_seconds),
+                    "event_ordered_partner_payload_grouped_sum_consumer_and_materialization": float(
+                        consumer_seconds
+                    ),
+                },
+                "claim_boundary": (
+                    "This proves one bounded CuPy consumer can wait on a CUDA event "
+                    "recorded after an OptiX producer stream and reduce generic "
+                    "primitive payload columns from stored device-resident hit rows. "
+                    "It does not authorize broad true-zero-copy, public speedup, "
+                    "or arbitrary partner claims."
+                ),
+            },
+            "hit_buffers": hit_buffers,
+            "output_buffers": output_buffers,
             "producer_cuda_stream": producer_stream,
             "producer_cuda_event": producer_event,
         }

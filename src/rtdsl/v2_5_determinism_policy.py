@@ -181,6 +181,16 @@ V2_5_DETERMINISM_POLICIES: tuple[V25ContinuationDeterminismPolicy, ...] = (
         missing_group_policy="empty_groups_use_signed_minus_one_sentinels_for_first_last",
         overflow_policy="producer_overflow_fails_closed_before_reduction",
     ),
+    V25ContinuationDeterminismPolicy(
+        operation="hit_stream_primitive_payload_grouped_sum_f64",
+        determinism_class="event_ordered_hit_stream_payload_sum",
+        tie_break_policy="not_applicable_commutative_payload_sum",
+        tolerance_policy="backend_must_publish_reduction_order_or_abs_rel_tolerance",
+        output_order_policy="dense_primitive_group_id_order",
+        missing_group_policy="zero_count_and_zero_sum_for_missing_groups",
+        overflow_policy="producer_overflow_fails_closed_before_reduction",
+        notes="primitive_id rows map through generic primitive_group_ids and primitive_values columns",
+    ),
 )
 
 

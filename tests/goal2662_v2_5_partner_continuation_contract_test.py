@@ -41,6 +41,7 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
                 "grouped_argmax_f64",
                 "grouped_topk_f64",
                 "hit_stream_grouped_ray_id_primitive_i64",
+                "hit_stream_primitive_payload_grouped_sum_f64",
             },
         )
         serialized = repr(rt.v2_5_partner_continuation_contract()).lower()
@@ -68,6 +69,10 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
         self.assertIn("ray_id", hit_stream["behavior"])
         self.assertIn("row-order", hit_stream["behavior"])
         self.assertIn("-1 sentinels", hit_stream["behavior"])
+        payload_sum = operations["hit_stream_primitive_payload_grouped_sum_f64"]
+        self.assertEqual(payload_sum["category"], "hit_stream_payload_reduction")
+        self.assertIn("primitive payload columns", payload_sum["behavior"])
+        self.assertIn("producer overflow fails closed", payload_sum["behavior"])
         components = operations["edge_list_components_i64"]
         self.assertEqual(components["category"], "component_labeling")
         self.assertIn("source and target node ids", components["behavior"])
@@ -114,6 +119,13 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
         )
         self.assertEqual(cupy_hit_stream_over_triton_descriptor.partner, "cupy_conformance")
         self.assertEqual(cupy_hit_stream_over_triton_descriptor.status, "preview_not_promoted")
+
+        cupy_payload_hit_stream = rt.plan_v2_5_partner_continuation(
+            "hit_stream_primitive_payload_grouped_sum_f64",
+            available_partners=("cupy",),
+        )
+        self.assertEqual(cupy_payload_hit_stream.partner, "cupy_conformance")
+        self.assertEqual(cupy_payload_hit_stream.status, "preview_not_promoted")
 
         unsupported_triton = rt.plan_v2_5_partner_continuation(
             "hit_stream_grouped_ray_id_primitive_i64",
@@ -350,6 +362,23 @@ class Goal2662V25PartnerContinuationContractTest(unittest.TestCase):
                     "group_count": 1,
                 },
             )
+
+        payload_sum = rt.execute_v2_5_partner_continuation_reference(
+            "hit_stream_primitive_payload_grouped_sum_f64",
+            {
+                "ray_ids": [0, 2, 0, 2],
+                "primitive_ids": [0, 1, 0, 1],
+                "row_count": 4,
+                "hit_event_count": 4,
+                "overflow": False,
+                "primitive_group_ids": [0, 2],
+                "primitive_values": [10.5, 1.25],
+                "primitive_count": 2,
+                "group_count": 3,
+            },
+        )
+        self.assertEqual(payload_sum["outputs"]["group_hit_counts"], [2, 0, 2])
+        self.assertEqual(payload_sum["outputs"]["group_payload_sums"], [21.0, 0.0, 2.5])
 
     def test_group_id_bounds_are_rejected_by_reference_and_triton_precheck(self):
         reference_cases = (

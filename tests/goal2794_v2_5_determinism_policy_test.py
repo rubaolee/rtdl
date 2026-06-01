@@ -53,7 +53,11 @@ class Goal2794V25DeterminismPolicyTest(unittest.TestCase):
         self.assertIn("deduplicate_items_by_lowest_score", topk["tie_break_policy"])
 
     def test_float_reductions_publish_tolerance_or_order_policy(self) -> None:
-        for operation in ("segmented_sum_f64", "grouped_vector_sum_f64x2"):
+        for operation in (
+            "segmented_sum_f64",
+            "grouped_vector_sum_f64x2",
+            "hit_stream_primitive_payload_grouped_sum_f64",
+        ):
             row = rt.plan_v2_5_continuation_determinism(operation)
             self.assertIn("tolerance", row["tolerance_policy"])
             self.assertIn("reduction_order", row["tolerance_policy"])
@@ -61,10 +65,13 @@ class Goal2794V25DeterminismPolicyTest(unittest.TestCase):
     def test_bounded_and_event_stream_overflow_fail_closed(self) -> None:
         bounded = rt.plan_v2_5_continuation_determinism("bounded_collect_finalize_i64")
         hit_stream = rt.plan_v2_5_continuation_determinism("hit_stream_grouped_ray_id_primitive_i64")
+        payload_sum = rt.plan_v2_5_continuation_determinism("hit_stream_primitive_payload_grouped_sum_f64")
 
         self.assertIn("fail_closed", bounded["overflow_policy"])
         self.assertIn("fails_closed", hit_stream["overflow_policy"])
+        self.assertIn("fails_closed", payload_sum["overflow_policy"])
         self.assertEqual(hit_stream["output_order_policy"], "dense_ray_id_group_order")
+        self.assertEqual(payload_sum["output_order_policy"], "dense_primitive_group_id_order")
         self.assertIn("producer_event_row_order", hit_stream["tie_break_policy"])
 
     def test_policy_is_explain_surface_not_contract_first_star_export(self) -> None:

@@ -134,7 +134,12 @@ _CUPY_POD_RUNTIME_EVIDENCE = {
             "docs/reports/goal2771_hit_stream_event_ordered_grouped_reduction_consumer_2026-05-31.md",
             "docs/reports/goal2772_hit_stream_event_ordered_grouped_richer_reductions_2026-05-31.md",
         ),
-    )
+    ),
+    "hit_stream_primitive_payload_grouped_sum_f64": (
+        "Goal2947",
+        ("tests.goal2947_generic_event_ordered_payload_grouped_sum_front_door_test",),
+        ("docs/reports/goal2947_generic_event_ordered_payload_grouped_sum_front_door_2026-06-01.md",),
+    ),
 }
 _NUMBA_POD_RUNTIME_EVIDENCE = {
     "segmented_count_i64": (

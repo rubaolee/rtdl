@@ -61,6 +61,13 @@ class Goal2873V25PartnerConformanceMatrixTest(unittest.TestCase):
                     "tests.goal2772_hit_stream_event_ordered_grouped_richer_reductions_test",
                     cell["test_modules"],
                 )
+            elif operation == "hit_stream_primitive_payload_grouped_sum_f64":
+                self.assertEqual(rt.V2_5_CONFORMANCE_STATUS_POD_RUNTIME, cell["conformance_status"])
+                self.assertEqual("Goal2947", cell["evidence_goal"])
+                self.assertIn(
+                    "tests.goal2947_generic_event_ordered_payload_grouped_sum_front_door_test",
+                    cell["test_modules"],
+                )
             else:
                 self.assertEqual(rt.V2_5_SUPPORT_STATUS_DESCRIPTOR, cell["support_status"])
                 self.assertEqual(rt.V2_5_CONFORMANCE_STATUS_DESCRIPTOR, cell["conformance_status"])

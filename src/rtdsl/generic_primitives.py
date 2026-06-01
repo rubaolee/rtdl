@@ -619,6 +619,214 @@ def run_generic_ray_triangle_event_ordered_grouped_ray_id_reduction_3d(
             raise
 
 
+class GenericPreparedRayTriangleEventOrderedPayloadGroupedSum3D:
+    """Prepared generic RT hit stream plus partner primitive-payload grouped sum."""
+
+    contract = "GENERIC_PREPARED_RAY_TRIANGLE_EVENT_ORDERED_PAYLOAD_GROUPED_SUM_3D_V1"
+
+    def __init__(
+        self,
+        triangles: Any,
+        *,
+        primitive_group_ids: Any,
+        primitive_values: Any | None = None,
+        group_count: int | None = None,
+        backend: str = "optix",
+        partner: str = "cupy",
+        group_id_bounds_validation: str | None = None,
+    ) -> None:
+        normalized_backend = _normalize_backend(backend)
+        if normalized_backend != "optix":
+            raise ValueError("event-ordered primitive-payload grouped sums currently require backend='optix'")
+        from .v2_5_partner_support_matrix import V2_5_SUPPORT_STATUS_PREVIEW
+        from .v2_5_partner_support_matrix import plan_v2_5_partner_support
+
+        self.operation = "hit_stream_primitive_payload_grouped_sum_f64"
+        self.requested_partner = str(partner)
+        self.support = plan_v2_5_partner_support(self.operation, partner)
+        if self.support["partner"] != "cupy_conformance" or self.support["status"] != V2_5_SUPPORT_STATUS_PREVIEW:
+            raise ValueError(
+                "event-ordered primitive-payload grouped sum execution currently requires "
+                "partner='cupy' or partner='cupy_conformance'; other partners fail closed "
+                f"through the support matrix with status {self.support['status']!r}"
+            )
+
+        from .hit_stream_handoff import prepare_generic_typed_primitive_payload_columns
+        from .optix_runtime import prepare_optix_static_triangle_scene_3d
+
+        self.backend = normalized_backend
+        self.triangles = _normalize_triangle3d_sequence_for_front_door(triangles)
+        self.triangle_count = len(self.triangles)
+        self._scene_cm = None
+        self._prepared_scene = None
+        self._closed = False
+
+        payload_prepare_start = time.perf_counter()
+        self.payload_columns = prepare_generic_typed_primitive_payload_columns(
+            primitive_group_ids,
+            primitive_values,
+            primitive_count=self.triangle_count,
+            group_count=group_count,
+            prefer_torch_cuda=True,
+            require_torch_cuda=True,
+            group_id_bounds_validation=group_id_bounds_validation,
+        )
+        self.payload_prepare_sec = time.perf_counter() - payload_prepare_start
+        scene_prepare_start = time.perf_counter()
+        self._scene_cm = prepare_optix_static_triangle_scene_3d(self.triangles)
+        self._prepared_scene = self._scene_cm.__enter__()
+        self.scene_prepare_sec = time.perf_counter() - scene_prepare_start
+
+    @property
+    def group_count(self) -> int:
+        return int(self.payload_columns.group_count)
+
+    def run(
+        self,
+        rays: Any,
+        *,
+        max_rows: int | None = None,
+        deduplicate_primitives: bool = False,
+        return_device_buffers: bool = False,
+    ) -> dict[str, Any]:
+        if self._closed or self._prepared_scene is None:
+            raise RuntimeError("prepared event-ordered primitive-payload grouped sum is closed")
+        normalized_rays = _normalize_ray3d_sequence_for_front_door(rays)
+        if max_rows is None:
+            max_rows = len(normalized_rays) * self.triangle_count
+        max_rows = int(max_rows)
+        if max_rows < 0:
+            raise ValueError("max_rows must be non-negative")
+
+        hit_buffers = self._prepared_scene.prepare_ray_triangle_hit_stream_device_column_buffers(max_rows)
+        output_buffers = self._prepared_scene.prepare_ray_triangle_hit_stream_primitive_payload_grouped_sum_buffers(
+            self.group_count
+        )
+        try:
+            result = self._prepared_scene.ray_triangle_hit_stream_event_ordered_primitive_payload_grouped_sum(
+                normalized_rays,
+                hit_buffers,
+                self.payload_columns,
+                output_buffers,
+                max_rows=max_rows,
+                deduplicate_primitives=deduplicate_primitives,
+            )
+            group_hit_counts = [int(value) for value in output_buffers.group_hit_counts.detach().cpu().tolist()]
+            group_payload_sums = [
+                float(value) for value in output_buffers.group_payload_sums.detach().cpu().tolist()
+            ]
+            metadata = dict(result["metadata"])
+            timings = dict(metadata.get("phase_timing_seconds", {}))
+            timings["generic_scene_prepare"] = float(self.scene_prepare_sec)
+            timings["generic_payload_prepare"] = float(self.payload_prepare_sec)
+            metadata.update(
+                {
+                    "front_door": "prepare_generic_ray_triangle_event_ordered_payload_grouped_sum_3d",
+                    "operation": self.operation,
+                    "requested_partner": self.requested_partner,
+                    "selected_partner": self.support["partner"],
+                    "support_cell": self.support,
+                    "backend": self.backend,
+                    "grouping_key": "primitive_group_ids[primitive_id]",
+                    "reduced_value": "primitive_values[primitive_id]",
+                    "generic_user_facing_primitive": True,
+                    "native_engine_app_specific_vocab_allowed": False,
+                    "rt_traversal_replacement_allowed": False,
+                    "return_device_buffers": bool(return_device_buffers),
+                    "caller_must_close_returned_buffers": bool(return_device_buffers),
+                    "public_speedup_claim_authorized": False,
+                    "true_zero_copy_authorized": False,
+                    "phase_timing_seconds": timings,
+                }
+            )
+            payload: dict[str, Any] = {
+                "summary": result["summary"],
+                "group_hit_counts": tuple(group_hit_counts),
+                "group_payload_sums": tuple(group_payload_sums),
+                "metadata": metadata,
+            }
+            if return_device_buffers:
+                payload["hit_buffers"] = hit_buffers
+                payload["output_buffers"] = output_buffers
+            else:
+                output_buffers.close()
+                hit_buffers.close()
+            return payload
+        except Exception:
+            output_buffers.close()
+            hit_buffers.close()
+            raise
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        self._closed = True
+        if self._scene_cm is not None:
+            self._scene_cm.__exit__(None, None, None)
+            self._scene_cm = None
+            self._prepared_scene = None
+
+    def __enter__(self) -> "GenericPreparedRayTriangleEventOrderedPayloadGroupedSum3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+
+def prepare_generic_ray_triangle_event_ordered_payload_grouped_sum_3d(
+    triangles: Any,
+    *,
+    primitive_group_ids: Any,
+    primitive_values: Any | None = None,
+    group_count: int | None = None,
+    backend: str = "optix",
+    partner: str = "cupy",
+    group_id_bounds_validation: str | None = None,
+) -> GenericPreparedRayTriangleEventOrderedPayloadGroupedSum3D:
+    """Prepare a generic RT hit-stream front door for partner payload sums."""
+    return GenericPreparedRayTriangleEventOrderedPayloadGroupedSum3D(
+        triangles,
+        primitive_group_ids=primitive_group_ids,
+        primitive_values=primitive_values,
+        group_count=group_count,
+        backend=backend,
+        partner=partner,
+        group_id_bounds_validation=group_id_bounds_validation,
+    )
+
+
+def run_generic_ray_triangle_event_ordered_payload_grouped_sum_3d(
+    rays: Any,
+    triangles: Any,
+    *,
+    primitive_group_ids: Any,
+    primitive_values: Any | None = None,
+    group_count: int | None = None,
+    max_rows: int | None = None,
+    deduplicate_primitives: bool = False,
+    backend: str = "optix",
+    partner: str = "cupy",
+    return_device_buffers: bool = False,
+    group_id_bounds_validation: str | None = None,
+) -> dict[str, Any]:
+    """Run generic RT hit rows into a partner primitive-payload grouped sum."""
+    with prepare_generic_ray_triangle_event_ordered_payload_grouped_sum_3d(
+        triangles,
+        primitive_group_ids=primitive_group_ids,
+        primitive_values=primitive_values,
+        group_count=group_count,
+        backend=backend,
+        partner=partner,
+        group_id_bounds_validation=group_id_bounds_validation,
+    ) as prepared:
+        return prepared.run(
+            rays,
+            max_rows=max_rows,
+            deduplicate_primitives=deduplicate_primitives,
+            return_device_buffers=return_device_buffers,
+        )
+
+
 def _normalize_ray3d_sequence_for_front_door(rays: Any) -> tuple[Ray3D, ...]:
     if hasattr(rays, "records") and hasattr(rays, "count") and hasattr(rays, "dimension"):
         if int(rays.dimension) != 3:

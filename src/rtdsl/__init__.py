@@ -1178,8 +1178,10 @@ from .generic_primitives import GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_PRIMITIVE
 from .generic_primitives import GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_ROW_SCHEMA
 from .generic_primitives import GenericPreparedFixedRadiusCountThreshold2D
 from .generic_primitives import GenericPreparedRayTriangleAnyHitScene
+from .generic_primitives import GenericPreparedRayTriangleEventOrderedPayloadGroupedSum3D
 from .generic_primitives import GenericPreparedRayTrianglePrimitiveGroupedI64Reduction3D
 from .generic_primitives import prepare_generic_fixed_radius_count_threshold_2d
+from .generic_primitives import prepare_generic_ray_triangle_event_ordered_payload_grouped_sum_3d
 from .generic_primitives import prepare_generic_ray_triangle_any_hit_scene
 from .generic_primitives import prepare_generic_ray_triangle_primitive_grouped_i64_reduction_3d
 from .generic_primitives import run_generic_fixed_radius_count_threshold_2d
@@ -1190,6 +1192,7 @@ from .generic_primitives import run_generic_ray_triangle_any_hit
 from .generic_primitives import run_generic_ray_triangle_any_hit_count
 from .generic_primitives import run_generic_ray_triangle_closest_hit
 from .generic_primitives import run_generic_ray_triangle_event_ordered_grouped_ray_id_reduction_3d
+from .generic_primitives import run_generic_ray_triangle_event_ordered_payload_grouped_sum_3d
 from .generic_primitives import run_generic_ray_triangle_hit_stream_device_columns_3d
 from .generic_primitives import run_generic_ray_triangle_hit_stream_3d
 from .generic_primitives import run_generic_ray_triangle_primitive_grouped_i64_reduction_3d
@@ -1791,8 +1794,10 @@ __all__ = [
     "GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_ROW_SCHEMA",
     "GenericPreparedFixedRadiusCountThreshold2D",
     "GenericPreparedRayTriangleAnyHitScene",
+    "GenericPreparedRayTriangleEventOrderedPayloadGroupedSum3D",
     "GenericPreparedRayTrianglePrimitiveGroupedI64Reduction3D",
     "prepare_generic_fixed_radius_count_threshold_2d",
+    "prepare_generic_ray_triangle_event_ordered_payload_grouped_sum_3d",
     "prepare_generic_ray_triangle_any_hit_scene",
     "prepare_generic_ray_triangle_primitive_grouped_i64_reduction_3d",
     "run_generic_fixed_radius_count_threshold_2d",
@@ -1803,6 +1808,7 @@ __all__ = [
     "run_generic_ray_triangle_any_hit_count",
     "run_generic_ray_triangle_closest_hit",
     "run_generic_ray_triangle_event_ordered_grouped_ray_id_reduction_3d",
+    "run_generic_ray_triangle_event_ordered_payload_grouped_sum_3d",
     "run_generic_ray_triangle_hit_stream_device_columns_3d",
     "run_generic_ray_triangle_hit_stream_3d",
     "run_generic_ray_triangle_primitive_grouped_i64_reduction_3d",

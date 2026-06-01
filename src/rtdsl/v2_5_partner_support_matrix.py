@@ -172,13 +172,14 @@ def v2_5_partner_support_cells() -> tuple[V25PartnerSupportCell, ...]:
                     partner=V2_5_CONFORMANCE_PARTNER,
                     status=V2_5_SUPPORT_STATUS_PREVIEW,
                     execution_backend="cuda_cupy_rawkernel_preview_neutral_event_stream",
-                    requires_neutral_buffer_seam=True,
-                    requires_cuda=True,
-                    notes=(
-                        "CuPy preview exists for an explicitly listed RawKernel-backed "
-                        "or event-ordered conformance operation; it remains unpromoted"
-                    ),
-                )
+                requires_neutral_buffer_seam=True,
+                requires_cuda=True,
+                notes=(
+                    "CuPy preview exists for an explicitly listed RawKernel-backed "
+                    "event-ordered grouped hit-stream or primitive-payload "
+                    "conformance operation; it remains unpromoted"
+                ),
+            )
             )
         else:
             cells.append(
