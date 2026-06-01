@@ -655,8 +655,8 @@ class GenericPreparedRayTriangleEventOrderedPayloadGroupedSum3D:
         from .optix_runtime import prepare_optix_static_triangle_scene_3d
 
         self.backend = normalized_backend
-        self.triangles = _normalize_triangle3d_sequence_for_front_door(triangles)
-        self.triangle_count = len(self.triangles)
+        self.triangles = _normalize_triangle3d_input_for_front_door(triangles)
+        self.triangle_count = _front_door_record_count(self.triangles)
         self._scene_cm = None
         self._prepared_scene = None
         self._closed = False
@@ -691,9 +691,10 @@ class GenericPreparedRayTriangleEventOrderedPayloadGroupedSum3D:
     ) -> dict[str, Any]:
         if self._closed or self._prepared_scene is None:
             raise RuntimeError("prepared event-ordered primitive-payload grouped sum is closed")
-        normalized_rays = _normalize_ray3d_sequence_for_front_door(rays)
+        normalized_rays = _normalize_ray3d_input_for_front_door(rays)
+        ray_count = _front_door_record_count(normalized_rays)
         if max_rows is None:
-            max_rows = len(normalized_rays) * self.triangle_count
+            max_rows = ray_count * self.triangle_count
         max_rows = int(max_rows)
         if max_rows < 0:
             raise ValueError("max_rows must be non-negative")
@@ -825,6 +826,33 @@ def run_generic_ray_triangle_event_ordered_payload_grouped_sum_3d(
             deduplicate_primitives=deduplicate_primitives,
             return_device_buffers=return_device_buffers,
         )
+
+
+def _is_packed_3d_records(value: Any) -> bool:
+    return hasattr(value, "records") and hasattr(value, "count") and hasattr(value, "dimension")
+
+
+def _front_door_record_count(value: Any) -> int:
+    count = getattr(value, "count", None)
+    if count is not None and not callable(count):
+        return int(count)
+    return len(value)
+
+
+def _normalize_ray3d_input_for_front_door(rays: Any) -> Any:
+    if _is_packed_3d_records(rays):
+        if int(rays.dimension) != 3:
+            raise TypeError("event-ordered hit-stream grouped reductions require 3-D rays")
+        return rays
+    return _normalize_ray3d_sequence_for_front_door(rays)
+
+
+def _normalize_triangle3d_input_for_front_door(triangles: Any) -> Any:
+    if _is_packed_3d_records(triangles):
+        if int(triangles.dimension) != 3:
+            raise TypeError("event-ordered hit-stream grouped reductions require 3-D triangles")
+        return triangles
+    return _normalize_triangle3d_sequence_for_front_door(triangles)
 
 
 def _normalize_ray3d_sequence_for_front_door(rays: Any) -> tuple[Ray3D, ...]:
