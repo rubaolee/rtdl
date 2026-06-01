@@ -6,6 +6,11 @@ Please perform an independent review of the Goal2984/Goal2985 v2.5
 second-architecture bounded packet work and write a review file under
 `docs/reviews/`.
 
+Suggested output paths:
+
+- Gemini: `docs/reviews/goal2986_gemini_review_goal2984_2985_second_arch_bounded_packet_2026-06-01.md`
+- Claude: `docs/reviews/goal2987_claude_review_goal2984_2985_second_arch_bounded_packet_2026-06-01.md`
+
 ## Files To Inspect
 
 - `docs/reports/goal2984_barnes_hut_second_arch_profile_policy_2026-06-01.md`
