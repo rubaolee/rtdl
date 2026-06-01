@@ -1189,6 +1189,7 @@ from .generic_primitives import run_generic_prepared_ray_triangle_any_hit_count
 from .generic_primitives import run_generic_ray_triangle_any_hit
 from .generic_primitives import run_generic_ray_triangle_any_hit_count
 from .generic_primitives import run_generic_ray_triangle_closest_hit
+from .generic_primitives import run_generic_ray_triangle_event_ordered_grouped_ray_id_reduction_3d
 from .generic_primitives import run_generic_ray_triangle_hit_stream_device_columns_3d
 from .generic_primitives import run_generic_ray_triangle_hit_stream_3d
 from .generic_primitives import run_generic_ray_triangle_primitive_grouped_i64_reduction_3d
@@ -1801,6 +1802,8 @@ __all__ = [
     "run_generic_ray_triangle_any_hit",
     "run_generic_ray_triangle_any_hit_count",
     "run_generic_ray_triangle_closest_hit",
+    "run_generic_ray_triangle_event_ordered_grouped_ray_id_reduction_3d",
+    "run_generic_ray_triangle_hit_stream_device_columns_3d",
     "run_generic_ray_triangle_hit_stream_3d",
     "run_generic_ray_triangle_primitive_grouped_i64_reduction_3d",
     "run_generic_scalar_reduction",

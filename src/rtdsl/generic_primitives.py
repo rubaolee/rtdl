@@ -517,6 +517,165 @@ def run_generic_ray_triangle_hit_stream_device_columns_3d(
     )
 
 
+def run_generic_ray_triangle_event_ordered_grouped_ray_id_reduction_3d(
+    rays: tuple[Ray3D, ...],
+    triangles: tuple[Triangle3D, ...],
+    *,
+    group_count: int | None = None,
+    max_rows: int | None = None,
+    deduplicate_primitives: bool = False,
+    backend: str = "optix",
+    partner: str = "cupy",
+    return_device_buffers: bool = False,
+) -> dict[str, Any]:
+    """Run generic RT hit-stream rows into an event-ordered grouped reduction.
+
+    This is a v2.5 user-facing convenience front door over the generic OptiX
+    hit-stream grouped-reduction consumer. It deliberately groups by the generic
+    `ray_id` column and reduces the generic `primitive_id` column. App logic can
+    interpret those ids outside the native engine.
+    """
+
+    normalized_backend = _normalize_backend(backend)
+    if normalized_backend != "optix":
+        raise ValueError("event-ordered hit-stream grouped reductions currently require backend='optix'")
+
+    from .v2_5_partner_support_matrix import V2_5_SUPPORT_STATUS_PREVIEW
+    from .v2_5_partner_support_matrix import plan_v2_5_partner_support
+
+    operation = "hit_stream_grouped_ray_id_primitive_i64"
+    support = plan_v2_5_partner_support(operation, partner)
+    if support["partner"] != "cupy_conformance" or support["status"] != V2_5_SUPPORT_STATUS_PREVIEW:
+        raise ValueError(
+            "event-ordered hit-stream grouped reduction execution currently requires "
+            "partner='cupy' or partner='cupy_conformance'; other partners fail closed "
+            f"through the support matrix with status {support['status']!r}"
+        )
+
+    normalized_rays = _normalize_ray3d_sequence_for_front_door(rays)
+    normalized_triangles = _normalize_triangle3d_sequence_for_front_door(triangles)
+    resolved_group_count = (
+        _infer_ray_id_group_count(normalized_rays) if group_count is None else int(group_count)
+    )
+    if resolved_group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    if max_rows is None:
+        max_rows = len(normalized_rays) * len(normalized_triangles)
+    max_rows = int(max_rows)
+    if max_rows < 0:
+        raise ValueError("max_rows must be non-negative")
+
+    from .optix_runtime import prepare_optix_static_triangle_scene_3d
+
+    with prepare_optix_static_triangle_scene_3d(normalized_triangles) as scene:
+        hit_buffers = scene.prepare_ray_triangle_hit_stream_device_column_buffers(max_rows)
+        group_buffers = scene.prepare_ray_triangle_hit_stream_grouped_reduction_buffers(
+            resolved_group_count
+        )
+        try:
+            result = scene.ray_triangle_hit_stream_event_ordered_grouped_ray_id_reduction(
+                normalized_rays,
+                hit_buffers,
+                group_buffers,
+                max_rows=max_rows,
+                deduplicate_primitives=deduplicate_primitives,
+            )
+            metadata = dict(result["metadata"])
+            metadata.update(
+                {
+                    "front_door": (
+                        "run_generic_ray_triangle_event_ordered_grouped_ray_id_reduction_3d"
+                    ),
+                    "operation": operation,
+                    "requested_partner": str(partner),
+                    "selected_partner": support["partner"],
+                    "support_cell": support,
+                    "backend": normalized_backend,
+                    "grouping_key": "ray_id",
+                    "reduced_value": "primitive_id",
+                    "generic_user_facing_primitive": True,
+                    "native_engine_app_specific_vocab_allowed": False,
+                    "rt_traversal_replacement_allowed": False,
+                    "return_device_buffers": bool(return_device_buffers),
+                    "caller_must_close_returned_buffers": bool(return_device_buffers),
+                    "public_speedup_claim_authorized": False,
+                    "true_zero_copy_authorized": False,
+                }
+            )
+            payload = {
+                "summary": result["summary"],
+                "metadata": metadata,
+            }
+            if return_device_buffers:
+                payload["hit_buffers"] = hit_buffers
+                payload["group_buffers"] = group_buffers
+            else:
+                group_buffers.close()
+                hit_buffers.close()
+            return payload
+        except Exception:
+            group_buffers.close()
+            hit_buffers.close()
+            raise
+
+
+def _normalize_ray3d_sequence_for_front_door(rays: Any) -> tuple[Ray3D, ...]:
+    if hasattr(rays, "records") and hasattr(rays, "count") and hasattr(rays, "dimension"):
+        if int(rays.dimension) != 3:
+            raise TypeError("event-ordered hit-stream grouped reductions require 3-D rays")
+        return tuple(
+            Ray3D(
+                id=int(rays.records[index].id),
+                ox=float(rays.records[index].ox),
+                oy=float(rays.records[index].oy),
+                oz=float(rays.records[index].oz),
+                dx=float(rays.records[index].dx),
+                dy=float(rays.records[index].dy),
+                dz=float(rays.records[index].dz),
+                tmax=float(rays.records[index].tmax),
+            )
+            for index in range(int(rays.count))
+        )
+    ray_tuple = tuple(rays)
+    if any(not isinstance(ray, Ray3D) for ray in ray_tuple):
+        raise TypeError("event-ordered hit-stream grouped reductions require Ray3D inputs")
+    return ray_tuple
+
+
+def _normalize_triangle3d_sequence_for_front_door(triangles: Any) -> tuple[Triangle3D, ...]:
+    if hasattr(triangles, "records") and hasattr(triangles, "count") and hasattr(triangles, "dimension"):
+        if int(triangles.dimension) != 3:
+            raise TypeError("event-ordered hit-stream grouped reductions require 3-D triangles")
+        return tuple(
+            Triangle3D(
+                id=int(triangles.records[index].id),
+                x0=float(triangles.records[index].x0),
+                y0=float(triangles.records[index].y0),
+                z0=float(triangles.records[index].z0),
+                x1=float(triangles.records[index].x1),
+                y1=float(triangles.records[index].y1),
+                z1=float(triangles.records[index].z1),
+                x2=float(triangles.records[index].x2),
+                y2=float(triangles.records[index].y2),
+                z2=float(triangles.records[index].z2),
+            )
+            for index in range(int(triangles.count))
+        )
+    triangle_tuple = tuple(triangles)
+    if any(not isinstance(triangle, Triangle3D) for triangle in triangle_tuple):
+        raise TypeError("event-ordered hit-stream grouped reductions require Triangle3D inputs")
+    return triangle_tuple
+
+
+def _infer_ray_id_group_count(rays: tuple[Ray3D, ...]) -> int:
+    if not rays:
+        return 0
+    max_id = max(int(ray.id) for ray in rays)
+    if max_id < 0:
+        raise ValueError("ray ids must be non-negative for grouped ray-id reduction")
+    return max_id + 1
+
+
 def run_generic_ray_triangle_primitive_grouped_i64_reduction_3d(
     rays: tuple[Ray3D, ...],
     triangles: tuple[Triangle3D, ...],
