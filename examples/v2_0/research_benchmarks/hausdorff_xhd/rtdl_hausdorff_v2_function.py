@@ -223,6 +223,15 @@ def _point_set_upper_bound(points_a: dict[str, np.ndarray], points_b: dict[str, 
     return math.hypot(max_x - min_x, max_y - min_y)
 
 
+def _prepared_radius_guard(radius: float) -> float:
+    """Return a conservative preparation radius for exact-radius OptiX queries."""
+
+    value = float(radius)
+    if value <= 0.0:
+        return 0.0
+    return value + max(1.0e-9, abs(value) * 1.0e-6)
+
+
 def _subset_point_columns(columns: dict[str, np.ndarray], indices: np.ndarray) -> dict[str, np.ndarray]:
     return {
         "ids": np.ascontiguousarray(np.asarray(columns["ids"], dtype=np.int64)[indices], dtype=np.int64),
@@ -429,7 +438,7 @@ def _directed_rt_grouped_threshold_seeded_nearest_witness(
     with prepare_optix_point_group_nearest_witness_2d(
         sorted_target_points,
         target_groups,
-        max_radius=upper_bound,
+        max_radius=_prepared_radius_guard(upper_bound),
     ) as prepared:
         if radius is None and seed_with_threshold:
             threshold = _threshold_search_prepared(
@@ -480,7 +489,7 @@ def _directed_rt_grouped_reduced_nearest_witness(
     with prepare_optix_point_group_nearest_witness_2d(
         sorted_target_points,
         target_groups,
-        max_radius=upper_bound,
+        max_radius=_prepared_radius_guard(upper_bound),
     ) as prepared:
         if radius is None and seed_with_threshold:
             threshold = _threshold_search_prepared(
@@ -535,7 +544,7 @@ def _directed_rt_grouped_seeded_pruned_nearest_witness(
     with prepare_optix_point_group_nearest_witness_2d(
         sorted_target_points,
         target_groups,
-        max_radius=witness_radius,
+        max_radius=_prepared_radius_guard(witness_radius),
     ) as prepared:
         if seed_with_threshold and int(source_columns["ids"].size) > int(seed_sample_count) > 0:
             seed_columns, _seed_indices = _seed_sample_point_columns(
@@ -635,7 +644,7 @@ def _directed_rt_grouped_adaptive_nearest_witness(
     with prepare_optix_point_group_nearest_witness_2d(
         sorted_target_points,
         target_groups,
-        max_radius=upper_bound,
+        max_radius=_prepared_radius_guard(upper_bound),
     ) as prepared:
         while active_indices:
             iterations += 1
