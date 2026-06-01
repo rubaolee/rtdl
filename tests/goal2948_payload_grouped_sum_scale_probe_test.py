@@ -15,6 +15,13 @@ POD_ARTIFACT = (
     / "goal2948_payload_grouped_sum_scale_probe_pod"
     / "goal2948_payload_grouped_sum_scale_probe.json"
 )
+POD_ARTIFACT_1M = (
+    ROOT
+    / "docs"
+    / "reports"
+    / "goal2948_payload_grouped_sum_scale_probe_pod"
+    / "goal2948_payload_grouped_sum_scale_probe_1m.json"
+)
 
 
 class Goal2948PayloadGroupedSumScaleProbeTest(unittest.TestCase):
@@ -33,6 +40,8 @@ class Goal2948PayloadGroupedSumScaleProbeTest(unittest.TestCase):
         self.assertIn("Goal2948", text)
         self.assertIn("multi-block/partial-reduction", text)
         self.assertIn("262144", text)
+        self.assertIn("1048576", text)
+        self.assertIn("not the immediate blocker", text)
         self.assertIn("not a v2.5 release authorization", text)
         self.assertIn("not encode RayJoin", text)
 
@@ -61,6 +70,23 @@ class Goal2948PayloadGroupedSumScaleProbeTest(unittest.TestCase):
             self.assertFalse(metadata["true_zero_copy_authorized"])
         self.assertFalse(payload["claim_boundary"]["public_speedup_claim_authorized"])
         self.assertFalse(payload["claim_boundary"]["true_zero_copy_claim_authorized"])
+
+    def test_1m_pod_artifact_when_available(self) -> None:
+        if not POD_ARTIFACT_1M.exists():
+            self.skipTest("Goal2948 1M-row pod artifact has not been imported yet")
+        payload = json.loads(POD_ARTIFACT_1M.read_text(encoding="utf-8"))
+
+        self.assertEqual("pass", payload["status"])
+        self.assertEqual([], payload["source_dirty"])
+        self.assertEqual(1048576, payload["expected_row_count"])
+        self.assertEqual(16384, payload["ray_count"])
+        self.assertEqual(64, payload["triangle_count"])
+        self.assertGreater(payload["consumer_rows_per_second_median"], 250_000_000)
+        self.assertLess(payload["consumer_median_sec"], 0.01)
+        for result in payload["timed_results"]:
+            self.assertEqual(1048576, result["summary"]["row_count"])
+            self.assertEqual(payload["expected_group_hit_counts"], result["group_hit_counts"])
+            self.assertEqual(payload["expected_group_payload_sums"], result["group_payload_sums"])
 
 
 if __name__ == "__main__":

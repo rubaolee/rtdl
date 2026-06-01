@@ -1,7 +1,7 @@
 # Goal2948: Payload Grouped-Sum Scale Probe
 
 Date: 2026-06-01
-Status: scale runner added; pod evidence pending
+Status: pod scale probe passed
 
 ## Purpose
 
@@ -48,3 +48,26 @@ selection claim, package-install claim, paper-reproduction claim, or app-specifi
 native engine logic claim.
 
 The result is a diagnostic for the next optimization target.
+
+## Pod Results
+
+Pod target: `root@69.30.85.171 -p 22167`
+
+Source commit: `0111488efb324b49d3258e0ac57254451b46a19e`
+
+Artifacts:
+
+- `docs/reports/goal2948_payload_grouped_sum_scale_probe_pod/goal2948_payload_grouped_sum_scale_probe.json`
+- `docs/reports/goal2948_payload_grouped_sum_scale_probe_pod/goal2948_payload_grouped_sum_scale_probe_1m.json`
+
+| Rows | Rays | Triangles | Median sec | Consumer sec | Native enqueue sec | Rows/sec | Consumer rows/sec |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `262144` | `4096` | `64` | `0.008242` | `0.001423` | `0.001450` | `31.805M` | `184.205M` |
+| `1048576` | `16384` | `64` | `0.031053` | `0.003489` | `0.002249` | `33.767M` | `300.572M` |
+
+Both runs preserved exact grouped counts and payload sums. The 1M-row consumer
+time is still only `3.489 ms`, so the current single-kernel CuPy continuation is
+not the immediate blocker for this primitive. The next likely performance target
+is not "fix this consumer now"; it is to apply the same generic payload-mapped
+front door to a benchmark app row path and measure whether traversal, row
+production, or app-level payload preparation dominates at realistic workloads.
