@@ -104,6 +104,10 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2901_goal2897_raydb_perf_gate_review_intake_2026-05-31.md",
     "docs/reports/goal2902_current_packet_perf_triage_2026-05-31.md",
     "docs/reports/goal2903_hausdorff_reduced_bbox_default_2026-05-31.md",
+    "docs/reports/goal2904_current_packet_after_hausdorff_fix_2026-05-31.md",
+    "docs/reports/goal2905_barnes_hut_measured_partner_selection_2026-05-31.md",
+    "docs/reports/goal2906_current_packet_after_partner_selection_2026-05-31.md",
+    "docs/reports/goal2907_hausdorff_repeat_stability_and_rtnn_near_parity_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -201,6 +205,8 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "track_goal2897_multivendor_or_second_arch_perf_check_before_release_packet",
     "use_goal2902_current_packet_perf_triage_for_next_perf_targets",
     "keep_goal2903_hausdorff_reduced_bbox_default_green",
+    "keep_goal2905_measured_partner_selection_green",
+    "use_goal2907_repeat_stability_for_short_row_perf_triage",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )

@@ -24,7 +24,7 @@ from examples.v2_0.research_benchmarks.hausdorff_xhd import (  # noqa: E402
 GOAL2801_ENTRYPOINT_VERSION = "rtdl.goal2801.hausdorff_xhd_v2_5_canonical_entrypoint.v1"
 DEFAULT_RTDL_METHOD = "rtdl_rt_grouped_reduced_nearest_witness"
 DEFAULT_RTDL_WARMUP = 1
-DEFAULT_REPEAT = 3
+DEFAULT_REPEAT = 9
 DEFAULT_ADAPTIVE_GROWTH_FACTOR = 8.0
 DEFAULT_ADAPTIVE_TARGET_POINTS_PER_GROUP = 512
 DEFAULT_REDUCED_TARGET_POINTS_PER_GROUP = 2048

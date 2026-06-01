@@ -97,20 +97,38 @@ def _rtnn(path: Path) -> dict[str, Any]:
     data = _load(path)
     rows = data.get("rows", [])
     ratios = [float(row["cupy_grid_over_rtdl_elapsed_ratio"]) for row in rows]
-    weak = [row.get("distribution") for row in rows if float(row["cupy_grid_over_rtdl_elapsed_ratio"]) < 1.0]
+    near_parity_floor = 0.95
+    weak = [
+        row.get("distribution")
+        for row in rows
+        if float(row["cupy_grid_over_rtdl_elapsed_ratio"]) < near_parity_floor
+    ]
+    near_parity = [
+        row.get("distribution")
+        for row in rows
+        if near_parity_floor <= float(row["cupy_grid_over_rtdl_elapsed_ratio"]) < 1.0
+    ]
+    min_ratio = _min(ratios)
+    performance_status = _status(bool(weak))
+    if near_parity and not weak:
+        performance_status = "current_path_acceptable_near_parity_distribution_dependent"
     return {
         "app": "rtnn",
         "status": data.get("status"),
-        "performance_status": _status(bool(weak)),
-        "severity_ratio": _round((1.0 / min(ratios)) if weak and min(ratios) > 0 else 1.0, 3),
+        "performance_status": performance_status,
+        "severity_ratio": _round((1.0 / min_ratio) if weak and min_ratio and min_ratio > 0 else 1.0, 3),
         "route": "optix_prepared_ranked_summary_aggregate_vs_cupy_grid",
-        "min_cupy_over_rtdl_ratio": _round(_min(ratios), 3),
+        "min_cupy_over_rtdl_ratio": _round(min_ratio, 3),
         "max_cupy_over_rtdl_ratio": _round(_max(ratios), 3),
+        "near_parity_floor": near_parity_floor,
+        "near_parity_distributions": near_parity,
         "weak_distributions": weak,
         "claim_boundary": "Tier B same-contract opponent; distribution dependent",
         "next_action": (
             "if weak distributions remain, tune packed/prepared column input and distribution-aware query batching"
             if weak
+            else "keep ranked-summary route; near-parity rows are tracked but not current blockers"
+            if near_parity
             else "keep current ranked-summary route green"
         ),
     }

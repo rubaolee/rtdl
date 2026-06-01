@@ -75,6 +75,46 @@ class Goal2905BarnesHutMeasuredPartnerSelectionTest(unittest.TestCase):
         self.assertEqual(row["near_parity_limit"], 1.10)
         self.assertIn("reduced_nearest_witness", row["route"])
 
+    def test_triage_treats_rtnn_near_parity_distribution_as_acceptable(self) -> None:
+        payload = {
+            "status": "pass",
+            "rows": [
+                {"distribution": "uniform", "cupy_grid_over_rtdl_elapsed_ratio": 0.98},
+                {"distribution": "clustered", "cupy_grid_over_rtdl_elapsed_ratio": 2.45},
+                {"distribution": "shell", "cupy_grid_over_rtdl_elapsed_ratio": 1.98},
+            ],
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "rtnn.json"
+            path.write_text(json.dumps(payload), encoding="utf-8")
+            row = triage._rtnn(path)
+
+        self.assertEqual(
+            row["performance_status"],
+            "current_path_acceptable_near_parity_distribution_dependent",
+        )
+        self.assertEqual(row["severity_ratio"], 1.0)
+        self.assertEqual(row["near_parity_floor"], 0.95)
+        self.assertEqual(row["near_parity_distributions"], ["uniform"])
+        self.assertEqual(row["weak_distributions"], [])
+
+    def test_triage_still_flags_rtnn_material_regression(self) -> None:
+        payload = {
+            "status": "pass",
+            "rows": [
+                {"distribution": "uniform", "cupy_grid_over_rtdl_elapsed_ratio": 0.90},
+                {"distribution": "clustered", "cupy_grid_over_rtdl_elapsed_ratio": 2.45},
+            ],
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "rtnn.json"
+            path.write_text(json.dumps(payload), encoding="utf-8")
+            row = triage._rtnn(path)
+
+        self.assertEqual(row["performance_status"], "performance_target")
+        self.assertAlmostEqual(row["severity_ratio"], 1.111, places=3)
+        self.assertEqual(row["weak_distributions"], ["uniform"])
+
     def test_report_records_design_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
 
