@@ -17,6 +17,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 GOAL2855_RUNNER_VERSION = "rtdl.goal2855.v2_5_current_canonical_harness_packet_runner.v1"
 TOOLCHAIN_PROVENANCE_VERSION = "rtdl.goal2916.toolchain_provenance.v1"
+COMPARISON_TOOLCHAIN_SCOPE_VERSION = "rtdl.goal2972.comparison_toolchain_scope.v1"
 
 DEFAULT_OUTPUT_DIR = Path(tempfile.gettempdir()) / "goal2855_current_canonical_harness_runner_pod"
 FALSE_CLAIM_KEYS = (
@@ -152,12 +153,96 @@ def _python_module_version(module: str) -> str | None:
     )
 
 
+def _has_text(value: Any) -> bool:
+    return bool(str(value or "").strip())
+
+
+def _comparison_toolchain_scope(
+    *,
+    nvcc_version: str | None,
+    cxx_version: str | None,
+    triton_version: str | None,
+    torch_version: str | None,
+    cupy_version: str | None,
+    numba_version: str | None,
+    ptx_arch: str | None,
+    ptx_compiler: str | None,
+    optix_header_exists: bool,
+    optix_library_exists: bool,
+) -> dict[str, Any]:
+    native_optix_observed = (
+        _has_text(nvcc_version)
+        and _has_text(ptx_arch)
+        and ptx_compiler == "nvcc"
+        and optix_header_exists
+        and optix_library_exists
+    )
+    partner_versions = {
+        "triton": triton_version,
+        "torch": torch_version,
+        "cupy": cupy_version,
+        "numba": numba_version,
+    }
+    partner_versions_recorded = {
+        name: _has_text(version) for name, version in partner_versions.items()
+    }
+    observed_stack_complete_for_current_packet = (
+        native_optix_observed
+        and _has_text(cxx_version)
+        and all(partner_versions_recorded.values())
+    )
+    return {
+        "scope_version": COMPARISON_TOOLCHAIN_SCOPE_VERSION,
+        "purpose": (
+            "Make the current packet's comparison scope machine-readable: same "
+            "source, same GPU, same runner, visible native/partner toolchains, "
+            "but no claim that all compilers used identical optimization flags."
+        ),
+        "same_source_commit_required": True,
+        "same_gpu_required": True,
+        "same_packet_runner_required": True,
+        "native_optix_stack_observed": native_optix_observed,
+        "native_optix_requirements": {
+            "ptx_compiler": "nvcc",
+            "ptx_arch_recorded": _has_text(ptx_arch),
+            "nvcc_version_recorded": _has_text(nvcc_version),
+            "optix_header_exists": optix_header_exists,
+            "rtdl_optix_library_exists": optix_library_exists,
+        },
+        "host_compiler_version_recorded": _has_text(cxx_version),
+        "partner_versions_recorded": partner_versions_recorded,
+        "observed_stack_complete_for_current_packet": observed_stack_complete_for_current_packet,
+        "known_non_equivalence": (
+            "OptiX native code is built ahead-of-time with nvcc/PTX.",
+            "Triton kernels are JIT-compiled by Triton/LLVM for the active GPU.",
+            "CuPy RawKernels and reductions use CuPy/NVRTC or library-backed CUDA paths.",
+            "Torch reductions use Torch/ATen implementation choices.",
+            "Numba kernels use Numba's CUDA JIT when that partner path is selected.",
+        ),
+        "compiler_flag_alignment_proven": False,
+        "cross_compiler_fairness_claim_authorized": False,
+        "public_speedup_wording_authorized": False,
+        "paper_reproduction_claim_authorized": False,
+        "release_authorized": False,
+    }
+
+
 def _toolchain_metadata() -> dict[str, Any]:
     nvcc = _nvcc_path()
     cxx = _env_path("RTDL_NVCC_CCBIN", "CXX") or "g++"
     optix_prefix = _env_path("OPTIX_PREFIX")
     optix_header = str(Path(optix_prefix) / "include" / "optix.h") if optix_prefix else None
     optix_library = _env_path("RTDL_OPTIX_LIBRARY", "RTDL_OPTIX_LIB")
+    optix_header_exists = _path_exists(optix_header)
+    optix_library_exists = _path_exists(optix_library)
+    nvcc_version = _check_output([nvcc, "--version"])
+    cxx_version = _check_output([cxx, "--version"])
+    triton_version = _python_module_version("triton")
+    torch_version = _python_module_version("torch")
+    cupy_version = _python_module_version("cupy")
+    numba_version = _python_module_version("numba")
+    ptx_arch = os.environ.get("RTDL_OPTIX_PTX_ARCH")
+    ptx_compiler = os.environ.get("RTDL_OPTIX_PTX_COMPILER")
     return {
         "metadata_version": TOOLCHAIN_PROVENANCE_VERSION,
         "python_executable": sys.executable,
@@ -165,21 +250,33 @@ def _toolchain_metadata() -> dict[str, Any]:
         "cuda_home": _cuda_home(),
         "optix_prefix": optix_prefix,
         "optix_header": optix_header,
-        "optix_header_exists": _path_exists(optix_header),
+        "optix_header_exists": optix_header_exists,
         "rtdl_optix_library": optix_library,
-        "rtdl_optix_library_exists": _path_exists(optix_library),
-        "rtdl_optix_ptx_arch": os.environ.get("RTDL_OPTIX_PTX_ARCH"),
-        "rtdl_optix_ptx_compiler": os.environ.get("RTDL_OPTIX_PTX_COMPILER"),
+        "rtdl_optix_library_exists": optix_library_exists,
+        "rtdl_optix_ptx_arch": ptx_arch,
+        "rtdl_optix_ptx_compiler": ptx_compiler,
         "rtdl_nvcc": os.environ.get("RTDL_NVCC"),
         "nvcc_probe_path": nvcc,
-        "nvcc_version": _check_output([nvcc, "--version"]),
+        "nvcc_version": nvcc_version,
         "cxx_compiler": cxx,
-        "cxx_version": _check_output([cxx, "--version"]),
-        "triton_version": _python_module_version("triton"),
-        "torch_version": _python_module_version("torch"),
-        "cupy_version": _python_module_version("cupy"),
-        "numba_version": _python_module_version("numba"),
+        "cxx_version": cxx_version,
+        "triton_version": triton_version,
+        "torch_version": torch_version,
+        "cupy_version": cupy_version,
+        "numba_version": numba_version,
         "nvidia_smi_topology": _check_output(["nvidia-smi", "--query-gpu=name,uuid,driver_version", "--format=csv,noheader"]),
+        "comparison_toolchain_scope": _comparison_toolchain_scope(
+            nvcc_version=nvcc_version,
+            cxx_version=cxx_version,
+            triton_version=triton_version,
+            torch_version=torch_version,
+            cupy_version=cupy_version,
+            numba_version=numba_version,
+            ptx_arch=ptx_arch,
+            ptx_compiler=ptx_compiler,
+            optix_header_exists=optix_header_exists,
+            optix_library_exists=optix_library_exists,
+        ),
         "claim_boundary": {
             "compiler_provenance_index_only": True,
             "compiler_fairness_claim_authorized": False,
