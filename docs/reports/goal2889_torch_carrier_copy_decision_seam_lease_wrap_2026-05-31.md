@@ -65,6 +65,21 @@ Ran 20 tests in 0.804s
 OK (skipped=2)
 ```
 
+Focused pod validation on `root@69.30.85.171:22167`, after fast-forwarding
+`/root/rtdl_goal2785_work` to `86cbcaae`, with torch execution active:
+
+```text
+python3 -m unittest \
+  tests.goal2889_torch_carrier_copy_decision_seam_lease_wrap_test \
+  tests.goal2887_goal2886_review_intake_and_carrier_authority_field_rename_test \
+  tests.goal2883_torch_carrier_runtime_seam_trace_test \
+  tests.goal2806_v2_5_internal_readiness_packet_test
+
+Ran 20 tests in 1.804s
+
+OK
+```
+
 ## Codex Verdict
 
 `accept-with-boundary`
