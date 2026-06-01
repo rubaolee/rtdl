@@ -18,6 +18,19 @@ ROOT = Path(__file__).resolve().parents[1]
 GOAL2855_RUNNER_VERSION = "rtdl.goal2855.v2_5_current_canonical_harness_packet_runner.v1"
 TOOLCHAIN_PROVENANCE_VERSION = "rtdl.goal2916.toolchain_provenance.v1"
 COMPARISON_TOOLCHAIN_SCOPE_VERSION = "rtdl.goal2972.comparison_toolchain_scope.v1"
+BARNES_HUT_CASE_PROFILE_DEFAULT = "default"
+BARNES_HUT_CASE_PROFILES: dict[str, tuple[tuple[int, int], ...]] = {
+    "default": ((512, 16), (2048, 32), (8192, 32)),
+    "second_arch_bounded": ((512, 16), (2048, 32)),
+}
+BARNES_HUT_CASE_PROFILE_BOUNDARIES: dict[str, str] = {
+    "default": "full Goal2803 three-case profile, including 8192-body Embree baseline",
+    "second_arch_bounded": (
+        "explicit second-architecture CPU-baseline profile; excludes the "
+        "8192-body Embree row and is not a release shortcut unless the release "
+        "scope names this bounded tier"
+    ),
+}
 
 DEFAULT_OUTPUT_DIR = Path(tempfile.gettempdir()) / "goal2855_current_canonical_harness_runner_pod"
 FALSE_CLAIM_KEYS = (
@@ -304,6 +317,7 @@ def build_harness_command(
     work_dir: Path,
     raw_output_dir: Path,
     fail_fast: bool,
+    barnes_hut_case_profile: str = BARNES_HUT_CASE_PROFILE_DEFAULT,
 ) -> tuple[str, ...]:
     command = [
         str(python_exe),
@@ -311,6 +325,9 @@ def build_harness_command(
         "--output",
         str(output_dir / spec.artifact_name),
     ]
+    if spec.goal == "Goal2803":
+        for body_count, bucket_size in _barnes_hut_cases_for_profile(barnes_hut_case_profile):
+            command.extend(["--case", f"{body_count}:{bucket_size}"])
     if spec.fail_fast_supported and fail_fast:
         command.append("--fail-fast")
     if spec.work_dir_supported:
@@ -327,9 +344,11 @@ def packet_plan(
     work_dir: Path,
     raw_output_dir: Path,
     fail_fast: bool,
+    barnes_hut_case_profile: str = BARNES_HUT_CASE_PROFILE_DEFAULT,
     compact_child_output: bool = False,
     stdout_dir: Path | None = None,
 ) -> list[dict[str, Any]]:
+    _barnes_hut_cases_for_profile(barnes_hut_case_profile)
     return [
         {
             "goal": spec.goal,
@@ -337,6 +356,12 @@ def packet_plan(
             "script": spec.script,
             "artifact_name": spec.artifact_name,
             "boundary": spec.boundary,
+            "barnes_hut_case_profile": barnes_hut_case_profile if spec.goal == "Goal2803" else None,
+            "barnes_hut_case_profile_boundary": (
+                BARNES_HUT_CASE_PROFILE_BOUNDARIES[barnes_hut_case_profile]
+                if spec.goal == "Goal2803"
+                else None
+            ),
             "command": list(
                 build_harness_command(
                     spec,
@@ -345,6 +370,7 @@ def packet_plan(
                     work_dir=work_dir,
                     raw_output_dir=raw_output_dir,
                     fail_fast=fail_fast,
+                    barnes_hut_case_profile=barnes_hut_case_profile,
                 )
             ),
             "compact_child_output": bool(compact_child_output),
@@ -367,8 +393,10 @@ def run_packet(
     timeout_seconds: int,
     fail_fast: bool,
     compact_child_output: bool = False,
+    barnes_hut_case_profile: str = BARNES_HUT_CASE_PROFILE_DEFAULT,
     stdout_dir: Path | None = None,
 ) -> dict[str, Any]:
+    _barnes_hut_cases_for_profile(barnes_hut_case_profile)
     output_dir.mkdir(parents=True, exist_ok=True)
     work_dir.mkdir(parents=True, exist_ok=True)
     raw_output_dir.mkdir(parents=True, exist_ok=True)
@@ -391,6 +419,7 @@ def run_packet(
             work_dir=work_dir,
             raw_output_dir=raw_output_dir,
             fail_fast=fail_fast,
+            barnes_hut_case_profile=barnes_hut_case_profile,
         )
         _log(
             f"starting {index}/{len(HARNESS_SPECS)} {spec.goal} "
@@ -446,6 +475,7 @@ def run_packet(
         output_dir=output_dir,
         executions=executions,
         elapsed_sec=time.perf_counter() - started,
+        barnes_hut_case_profile=barnes_hut_case_profile,
     )
     summary_path = output_dir / summary_name
     summary_path.write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
@@ -459,7 +489,9 @@ def summarize_packet(
     output_dir: Path,
     executions: list[dict[str, Any]],
     elapsed_sec: float,
+    barnes_hut_case_profile: str = BARNES_HUT_CASE_PROFILE_DEFAULT,
 ) -> dict[str, Any]:
+    _barnes_hut_cases_for_profile(barnes_hut_case_profile)
     artifact_summaries: dict[str, Any] = {}
     source_commits: set[str] = set()
     dirty_artifacts: dict[str, list[str]] = {}
@@ -532,6 +564,10 @@ def summarize_packet(
         "all_pass": all_pass,
         "artifact_count": len([item for item in artifact_summaries.values() if item["exists"]]),
         "expected_artifact_count": len(HARNESS_SPECS),
+        "barnes_hut_case_profile": barnes_hut_case_profile,
+        "barnes_hut_case_profile_boundary": BARNES_HUT_CASE_PROFILE_BOUNDARIES[
+            barnes_hut_case_profile
+        ],
         "returncode_ok": returncode_ok,
         "artifact_status_ok": artifact_status_ok,
         "artifact_count_ok": artifact_count_ok,
@@ -555,6 +591,14 @@ def summarize_packet(
         "runner_metadata": metadata,
         "elapsed_sec": float(elapsed_sec),
     }
+
+
+def _barnes_hut_cases_for_profile(profile: str) -> tuple[tuple[int, int], ...]:
+    try:
+        return BARNES_HUT_CASE_PROFILES[profile]
+    except KeyError as exc:
+        valid = ", ".join(sorted(BARNES_HUT_CASE_PROFILES))
+        raise ValueError(f"unknown Barnes-Hut case profile {profile!r}; expected one of: {valid}") from exc
 
 
 def _run_child_compact(
@@ -644,6 +688,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--python", default=sys.executable)
     parser.add_argument("--fail-fast", action="store_true")
     parser.add_argument(
+        "--barnes-hut-case-profile",
+        choices=sorted(BARNES_HUT_CASE_PROFILES),
+        default=BARNES_HUT_CASE_PROFILE_DEFAULT,
+        help=(
+            "Goal2803 case profile. The default remains the full 512/2048/8192 "
+            "profile; second_arch_bounded is an explicit release-gap profile for "
+            "second-architecture packets where the 8192 Embree CPU baseline is "
+            "the bottleneck."
+        ),
+    )
+    parser.add_argument(
         "--compact-child-output",
         action="store_true",
         help="Save each child harness stdout to a log file while echoing only progress and error lines.",
@@ -667,12 +722,17 @@ def main(argv: list[str] | None = None) -> int:
             "stdout_dir": str(Path(args.stdout_dir) if args.stdout_dir else output_dir / "_stdout"),
             "fail_fast": bool(args.fail_fast),
             "compact_child_output": bool(args.compact_child_output),
+            "barnes_hut_case_profile": str(args.barnes_hut_case_profile),
+            "barnes_hut_case_profile_boundary": BARNES_HUT_CASE_PROFILE_BOUNDARIES[
+                str(args.barnes_hut_case_profile)
+            ],
             "plan": packet_plan(
                 python_exe=str(args.python),
                 output_dir=output_dir,
                 work_dir=work_dir,
                 raw_output_dir=raw_output_dir,
                 fail_fast=bool(args.fail_fast),
+                barnes_hut_case_profile=str(args.barnes_hut_case_profile),
                 compact_child_output=bool(args.compact_child_output),
                 stdout_dir=Path(args.stdout_dir) if args.stdout_dir else output_dir / "_stdout",
             ),
@@ -694,6 +754,7 @@ def main(argv: list[str] | None = None) -> int:
         timeout_seconds=int(args.timeout_seconds),
         fail_fast=bool(args.fail_fast),
         compact_child_output=bool(args.compact_child_output),
+        barnes_hut_case_profile=str(args.barnes_hut_case_profile),
         stdout_dir=Path(args.stdout_dir) if args.stdout_dir else None,
     )
     return 0 if summary["status"] == "pass" else 1
