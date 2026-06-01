@@ -257,7 +257,7 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "keep_goal2937_measured_vector_partner_selection_pod_smoke_green",
     "keep_goal2938_optix_row_view_typed_partner_columns_green",
     "keep_goal2939_rayjoin_row_view_partner_columns_pod_smoke_green",
-    "run_goal2941_rayjoin_row_view_partner_columns_scale_probe_on_pod",
+    "keep_goal2941_rayjoin_row_view_partner_columns_scale_probe_green",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
