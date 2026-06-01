@@ -151,16 +151,28 @@ def _barnes(path: Path) -> dict[str, Any]:
     data = _load(path)
     vector = data.get("vector_sum", {})
     triton_over_torch = float(vector.get("triton_over_torch_ratio", 0.0) or 0.0)
+    selected_partner = vector.get("selected_partner")
+    performance_target = triton_over_torch > 1.0 and selected_partner not in {"torch", "cupy"}
     return {
         "app": "barnes_hut",
         "status": data.get("status"),
-        "performance_status": _status(triton_over_torch > 1.0),
-        "severity_ratio": _round(triton_over_torch if triton_over_torch > 1.0 else 1.0, 3),
+        "performance_status": (
+            "current_path_acceptable_with_measured_partner_selection"
+            if selected_partner in {"torch", "cupy"}
+            else _status(performance_target)
+        ),
+        "severity_ratio": _round(triton_over_torch if performance_target else 1.0, 3),
         "route": "optix_membership_plus_partner_vector_sum",
         "max_optix_membership_speedup_vs_embree": _round(data.get("max_optix_membership_speedup_vs_embree"), 3),
         "triton_over_torch_vector_sum_ratio": _round(triton_over_torch, 3),
+        "selected_vector_sum_partner": selected_partner,
+        "selected_vector_sum_partner_median_sec": _round(vector.get("selected_partner_median_sec")),
         "claim_boundary": "membership/vector-sum harness; Triton vector path not promoted",
-        "next_action": "do not auto-select Triton vector sum; optimize segmented/block vector reduction or keep Torch/CuPy partner",
+        "next_action": (
+            "keep measured Torch/CuPy partner selection for vector sums; Triton remains preview"
+            if selected_partner in {"torch", "cupy"}
+            else "do not auto-select Triton vector sum; optimize segmented/block vector reduction or keep Torch/CuPy partner"
+        ),
     }
 
 

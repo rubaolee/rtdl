@@ -229,6 +229,8 @@ def _run_vector_sum_probe(
     )
     torch_median = _median(torch_times)
     triton_median = _median(triton_times)
+    selected_partner = "torch" if torch_median <= triton_median else "triton"
+    selected_median = torch_median if selected_partner == "torch" else triton_median
     _log(
         "vector-sum probe done: "
         f"matches={matches}, torch={torch_median:.6f}s, "
@@ -243,6 +245,14 @@ def _run_vector_sum_probe(
         "triton_median_sec": triton_median,
         "triton_over_torch_ratio": triton_median / torch_median if torch_median > 0.0 else None,
         "torch_faster": torch_median < triton_median,
+        "selected_partner": selected_partner,
+        "selected_partner_median_sec": selected_median,
+        "selected_partner_reason": (
+            "torch_scatter_add_wins_same_contract_timing"
+            if selected_partner == "torch"
+            else "triton_preview_wins_same_contract_timing"
+        ),
+        "triton_preview_promoted": selected_partner == "triton",
         "matches_torch": matches,
         "warmups": int(warmups),
         "triton_metadata": triton_result["metadata"],
