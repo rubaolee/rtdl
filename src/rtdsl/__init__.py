@@ -832,6 +832,7 @@ from .partner_adapters import partner_take_columns_by_indices
 from .partner_adapters import partner_compact_columns_by_mask
 from .partner_adapters import partner_page_columns
 from .partner_adapters import partner_unique_pair_keys
+from .partner_adapters import optix_row_view_to_partner_columns
 from .partner_adapters import point_rows_to_partner_columns
 from .partner_adapters import weighted_point_rows_to_partner_columns
 from .partner_adapters import aggregate_frontier_collect_to_partner_columns
@@ -2147,6 +2148,7 @@ __all__ = [
     "partner_compact_columns_by_mask",
     "partner_page_columns",
     "partner_unique_pair_keys",
+    "optix_row_view_to_partner_columns",
     "point_rows_to_partner_columns",
     "weighted_point_rows_to_partner_columns",
     "bounded_collect_finalize_i64_partner_columns",

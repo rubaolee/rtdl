@@ -191,6 +191,92 @@ def _as_partner_column(runtime: dict[str, object], values):
     return module.asarray(values)
 
 
+def _field_dtype_from_row_type(row_type: object, field: str) -> str:
+    for name, ctype in getattr(row_type, "_fields_", ()):
+        if name != field:
+            continue
+        ctype_name = getattr(ctype, "__name__", str(ctype)).lower()
+        if "float" in ctype_name or "double" in ctype_name:
+            return "float64"
+        return "int64"
+    return "unknown"
+
+
+def _numeric_row_view_field_values(row_view, field: str):
+    try:
+        import numpy as np
+
+        row_array = np.ctypeslib.as_array(row_view.rows_ptr, shape=(int(row_view.row_count),))
+        if getattr(row_array.dtype, "names", None) and field in row_array.dtype.names:
+            return row_array[field].copy()
+    except Exception:
+        pass
+    return tuple(getattr(row_view.rows_ptr[index], field) for index in range(int(row_view.row_count)))
+
+
+def optix_row_view_to_partner_columns(
+    row_view,
+    *,
+    fields: tuple[str, ...] | None = None,
+    partner: str = "torch",
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Convert a generic OptiX row view into typed partner-owned columns.
+
+    This is a host-staged bridge for generic row views. It is useful for
+    partner continuations that should not depend on app-shaped Python dict
+    materialization, but it is deliberately not a true zero-copy/device-resident
+    handoff claim.
+    """
+
+    row_count = int(getattr(row_view, "row_count"))
+    available_fields = tuple(str(field) for field in getattr(row_view, "field_names"))
+    requested_fields = available_fields if fields is None else tuple(str(field) for field in fields)
+    missing = [field for field in requested_fields if field not in available_fields]
+    if missing:
+        raise ValueError(f"row view missing requested fields: {', '.join(missing)}")
+    runtime = _partner_module(partner)
+    columns: dict[str, object] = {}
+    field_dtypes: dict[str, str] = {}
+    row_type = getattr(row_view, "row_type", object)
+    for field in requested_fields:
+        dtype_name = _field_dtype_from_row_type(row_type, field)
+        values = _numeric_row_view_field_values(row_view, field)
+        if dtype_name == "float64":
+            dtype = runtime["float64"]
+        else:
+            dtype = runtime["int64"]
+            dtype_name = "int64" if dtype_name == "unknown" else dtype_name
+        columns[field] = runtime["tensor"](values, dtype, runtime["device"])
+        field_dtypes[field] = dtype_name
+    runtime["sync"]()
+    metadata = {
+        "adapter": "optix_row_view_to_partner_columns",
+        "partner": runtime["name"],
+        "input_contract": "generic_optix_row_view_numeric_fields",
+        "partner_reference_contract": "typed_primitive_payload_columns",
+        "field_names": requested_fields,
+        "field_dtypes": field_dtypes,
+        "row_count": row_count,
+        "host_stage_copy_used": True,
+        "python_dict_row_materialization_used": False,
+        "native_engine_row_contract": "existing_generic_optix_row_view",
+        "direct_device_handoff_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "v2_5_release_authorized": False,
+        "claim_boundary": (
+            "Generic typed row-view to partner-column bridge. It host-stages "
+            "existing OptiX row-view fields into partner-owned columns and does "
+            "not authorize true zero-copy, speedup, release, or app-specific engine claims."
+        ),
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
 def _mask_to_partner_f64(mask, runtime: dict[str, object]):
     if runtime["name"] == "cupy":
         return mask.astype(runtime["module"].float64, copy=False)
