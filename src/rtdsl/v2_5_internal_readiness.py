@@ -113,6 +113,8 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2911_scale_stable_canonical_perf_rows_2026-05-31.md",
     "docs/reports/goal2912_current_packet_scaled_defaults_2026-05-31.md",
     "docs/reports/goal2915_goal2912_scaled_v2_5_packet_external_review_consensus_2026-06-01.md",
+    "docs/reports/goal2916_packet_toolchain_provenance_metadata_2026-06-01.md",
+    "docs/reports/goal2917_current_packet_with_toolchain_provenance_2026-06-01.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -147,7 +149,7 @@ V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_HARNESS_ARTIFACTS = (
     "docs/reports/goal2847_current_head_canonical_harness_pod/goal2803_barnes_hut.json",
 )
 V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_RUNNER_SUMMARY = (
-    "docs/reports/goal2912_current_packet_scaled_defaults_pod/goal2855_summary.json"
+    "docs/reports/goal2917_current_packet_with_toolchain_pod/goal2855_summary.json"
 )
 
 V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
@@ -219,6 +221,8 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "use_goal2911_scaled_canonical_rows_for_short_row_perf_stability",
     "keep_goal2912_scaled_current_packet_green",
     "keep_goal2915_scaled_packet_external_review_consensus_green",
+    "keep_goal2916_toolchain_provenance_metadata_green",
+    "keep_goal2917_toolchain_packet_green",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
@@ -379,6 +383,19 @@ def validate_v2_5_internal_readiness_packet(
         errors.append("current canonical packet runner recorded claim-boundary violations")
     if not _looks_like_sha(str(current_runner.get("source_commit", ""))):
         errors.append("current canonical packet runner lacks source commit")
+    toolchain = (current_runner.get("runner_metadata") or {}).get("toolchain") or {}
+    if toolchain.get("metadata_version") != "rtdl.goal2916.toolchain_provenance.v1":
+        errors.append("current canonical packet runner lacks Goal2916 toolchain metadata")
+    if toolchain.get("rtdl_optix_ptx_compiler") != "nvcc":
+        errors.append("current canonical packet runner must record nvcc PTX compiler")
+    if toolchain.get("rtdl_optix_library_exists") is not True:
+        errors.append("current canonical packet runner must record reachable RTDL OptiX library")
+    if toolchain.get("optix_header_exists") is not True:
+        errors.append("current canonical packet runner must record reachable OptiX header")
+    if (toolchain.get("claim_boundary") or {}).get("compiler_fairness_claim_authorized") is not False:
+        errors.append("toolchain metadata must not authorize compiler fairness claims")
+    if (toolchain.get("claim_boundary") or {}).get("multivendor_claim_authorized") is not False:
+        errors.append("toolchain metadata must not authorize multivendor claims")
     conformance_snapshot = packet["partner_conformance_snapshot"]
     if conformance_snapshot["runtime_conformance_gap_count"] != 0:
         errors.append("partner conformance snapshot recorded runtime gaps")
