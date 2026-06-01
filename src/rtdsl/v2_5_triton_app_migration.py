@@ -215,16 +215,22 @@ V2_5_TRITON_BENCHMARK_APP_PLANS: tuple[V25TritonBenchmarkAppPlan, ...] = (
         app_id="barnes_hut",
         benchmark_name="Barnes-Hut / aggregate frontier",
         promoted_benchmark=True,
-        current_hot_path_partner="app_owned_math_with_legacy_partner_force_helpers",
+        current_hot_path_partner="explicit_measured_cupy_for_grouped_vector_sum_after_goal2933",
         v2_5_required_operations=("bounded_collect_finalize_i64", "grouped_vector_sum_f64x2"),
-        v2_5_status="covered_but_dense_vector_sum_has_goal2786_negative_triton_selection_guidance",
+        v2_5_status="covered_with_goal2933_cupy_vector_sum_selection_and_goal2786_negative_triton_guidance",
         first_port_action=(
             "Lower aggregate-frontier rows to generic grouped vector-sum metadata, but keep "
-            "Torch scatter-add or another explicitly selected same-contract partner for dense "
+            "CuPy, Torch, or another explicitly selected same-contract partner for dense "
             "vector sums until a segmented/block-reduction Triton design beats both the atomic "
             "preview and the presegmented row-offset preview."
         ),
-        notes="Never embed inverse-square force law inside the engine or Triton primitive contract. Goal2786 keeps blind Triton auto-selection blocked for dense grouped vector sums after batched row-offset tuning failed to beat Torch.",
+        notes=(
+            "Never embed inverse-square force law inside the engine or Triton primitive "
+            "contract. Goal2786 keeps blind Triton auto-selection blocked for dense "
+            "grouped vector sums after batched row-offset tuning failed to beat Torch. "
+            "Goal2933 then shows the app-level same-contract selector can choose CuPy "
+            "for this generic vector-sum shape when CuPy wins timing."
+        ),
         measured_selection_shapes=(("grouped_vector_sum_f64x2", "dense_grouped_vector_sum_2d"),),
     ),
     V25TritonBenchmarkAppPlan(
@@ -325,8 +331,12 @@ V2_5_TIERED_BENCHMARK_MANIFEST_ROWS: tuple[V25TieredBenchmarkManifestRow, ...] =
         canonical_harness_status="ready_with_goal2803_consolidated_harness",
         same_contract_opponent="existing fused CuPy/Torch frontier-vector-sum path",
         required_partner_operations=("bounded_collect_finalize_i64", "segmented_sum_f64", "grouped_vector_sum"),
-        pod_evidence_status="Goal2803 current OptiX expanded-membership and Torch/Triton grouped-vector-sum same-contract evidence recorded",
-        next_action="keep Goal2803 consolidated harness current; keep Triton vector-sum auto-selection blocked until it beats the same-contract Torch/CuPy vector-sum opponent",
+        pod_evidence_status=(
+            "Goal2803 current OptiX expanded-membership and Torch/Triton grouped-vector-sum "
+            "same-contract evidence recorded; Goal2933 records CuPy as the measured selected "
+            "same-contract vector-sum partner on the bounded pod smoke"
+        ),
+        next_action="keep CuPy as an explicit measured vector-sum partner where it wins; keep Triton vector-sum auto-selection blocked until it beats the same-contract Torch/CuPy vector-sum opponent",
     ),
     V25TieredBenchmarkManifestRow(
         app_id="hausdorff_xhd",
