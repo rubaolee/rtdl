@@ -60,11 +60,43 @@ class Goal2950RaydbPayloadGroupedSumFrontDoorProbeTest(unittest.TestCase):
         self.assertIn('"public_speedup_claim_authorized": False', source)
         self.assertIn('"native_engine_customization": False', source)
 
+    def test_planner_explains_primitive_first_default_and_explicit_hit_stream_choice(self) -> None:
+        primitive_first = rt.plan_v2_5_ray_triangle_payload_grouped_reduction_execution(
+            reduction="sum",
+            requested_partner="cupy",
+        )
+        self.assertEqual("prepared_fused_generic_grouped_reduction", primitive_first["selected_path"])
+        self.assertFalse(primitive_first["partner_continuation_required"])
+        self.assertFalse(primitive_first["typed_hit_stream_forced"])
+        self.assertIn("primitive-first", primitive_first["selection_reason"])
+        self.assertFalse(primitive_first["public_speedup_claim_authorized"])
+
+        explicit_hit_stream = rt.plan_v2_5_ray_triangle_payload_grouped_reduction_execution(
+            reduction="sum",
+            requested_partner="cupy",
+            user_requires_event_ordered_hit_stream=True,
+        )
+        self.assertEqual("event_ordered_payload_hit_stream_continuation", explicit_hit_stream["selected_path"])
+        self.assertTrue(explicit_hit_stream["partner_continuation_required"])
+        self.assertTrue(explicit_hit_stream["typed_hit_stream_forced"])
+        self.assertEqual("cupy_conformance", explicit_hit_stream["partner_support"]["partner"])
+        self.assertFalse(explicit_hit_stream["true_zero_copy_claim_authorized"])
+
+        unsupported = rt.plan_v2_5_ray_triangle_payload_grouped_reduction_execution(
+            reduction="max",
+            requested_partner="cupy",
+            user_requires_event_ordered_hit_stream=True,
+            fused_generic_reduction_available=False,
+        )
+        self.assertEqual("unsupported_hit_stream_payload_reduction", unsupported["selected_path"])
+        self.assertFalse(unsupported["hit_stream_can_express_reduction"])
+
     def test_report_records_diagnostic_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
 
         self.assertIn("Goal2950", text)
         self.assertIn("preserves packed RTDL ray and", text)
+        self.assertIn("planner guard", text)
         self.assertIn("primitive-first fused grouped reduction is still", text)
         self.assertIn("expected to win", text)
         self.assertIn("not a v2.5 release authorization", text)

@@ -25,6 +25,10 @@ Two changes matter:
 - The generic payload-grouped front door now preserves packed RTDL ray and
   triangle buffers instead of unpacking them into Python `Ray3D`/`Triangle3D`
   objects before calling OptiX.
+- `rt.plan_v2_5_ray_triangle_payload_grouped_reduction_execution(...)` is the
+  planner guard that explains when primitive-first fused reduction should remain
+  the selected path and when an explicit event-ordered hit-stream continuation
+  is appropriate.
 - `scripts/goal2950_raydb_payload_grouped_sum_front_door_probe.py` lowers
   RayDB count/sum into generic packed rays, packed triangles,
   `primitive_group_ids`, and `primitive_values`, then calls

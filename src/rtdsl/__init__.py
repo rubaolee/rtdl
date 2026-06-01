@@ -1184,6 +1184,7 @@ from .generic_primitives import prepare_generic_fixed_radius_count_threshold_2d
 from .generic_primitives import prepare_generic_ray_triangle_event_ordered_payload_grouped_sum_3d
 from .generic_primitives import prepare_generic_ray_triangle_any_hit_scene
 from .generic_primitives import prepare_generic_ray_triangle_primitive_grouped_i64_reduction_3d
+from .generic_primitives import plan_v2_5_ray_triangle_payload_grouped_reduction_execution
 from .generic_primitives import run_generic_fixed_radius_count_threshold_2d
 from .generic_primitives import run_generic_prepared_fixed_radius_threshold_reached_count_2d
 from .generic_primitives import run_generic_prepared_ray_triangle_any_hit_grouped_count_threshold_bool
@@ -1800,6 +1801,7 @@ __all__ = [
     "prepare_generic_ray_triangle_event_ordered_payload_grouped_sum_3d",
     "prepare_generic_ray_triangle_any_hit_scene",
     "prepare_generic_ray_triangle_primitive_grouped_i64_reduction_3d",
+    "plan_v2_5_ray_triangle_payload_grouped_reduction_execution",
     "run_generic_fixed_radius_count_threshold_2d",
     "run_generic_prepared_fixed_radius_threshold_reached_count_2d",
     "run_generic_prepared_ray_triangle_any_hit_grouped_count_threshold_bool",

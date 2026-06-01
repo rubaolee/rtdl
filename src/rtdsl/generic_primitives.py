@@ -828,6 +828,82 @@ def run_generic_ray_triangle_event_ordered_payload_grouped_sum_3d(
         )
 
 
+def plan_v2_5_ray_triangle_payload_grouped_reduction_execution(
+    *,
+    reduction: str,
+    requested_partner: str = "cupy",
+    user_requires_event_ordered_hit_stream: bool = False,
+    fused_generic_reduction_available: bool = True,
+) -> dict[str, Any]:
+    """Explain whether to use fused RTDL reduction or a partner hit stream.
+
+    This helper is deliberately a planner/explain surface. It does not launch
+    kernels and does not override the caller's explicit partner choice.
+    """
+    normalized_reduction = str(reduction).strip().lower()
+    if normalized_reduction not in {"count", "sum", "min", "max", "sum_count"}:
+        raise ValueError("reduction must be one of: count, sum, min, max, sum_count")
+    from .v2_5_partner_support_matrix import plan_v2_5_partner_support
+
+    operation = "hit_stream_primitive_payload_grouped_sum_f64"
+    support = plan_v2_5_partner_support(operation, requested_partner)
+    hit_stream_can_express = normalized_reduction in {"count", "sum", "sum_count"}
+    if (
+        fused_generic_reduction_available
+        and not user_requires_event_ordered_hit_stream
+    ):
+        selected_path = "prepared_fused_generic_grouped_reduction"
+        selected_operation = "generic_ray_triangle_primitive_grouped_i64_reduction_3d"
+        reason = (
+            "primitive-first: the requested reduction is exactly expressible by "
+            "an app-agnostic fused RTDL primitive, so exposing a hit stream to a "
+            "partner would add unnecessary continuation overhead"
+        )
+        partner_continuation_required = False
+    elif not hit_stream_can_express:
+        selected_path = "unsupported_hit_stream_payload_reduction"
+        selected_operation = operation
+        reason = (
+            "the current payload-mapped event-ordered hit-stream front door only "
+            "returns grouped hit counts and grouped payload sums"
+        )
+        partner_continuation_required = True
+    else:
+        selected_path = "event_ordered_payload_hit_stream_continuation"
+        selected_operation = operation
+        reason = (
+            "caller explicitly requested an event-ordered hit stream or no fused "
+            "generic reduction is available; use the bounded partner continuation "
+            "with the requested partner support cell"
+        )
+        partner_continuation_required = True
+
+    return {
+        "planner_version": "rtdl.v2_5.ray_triangle_payload_grouped_reduction_execution_plan.v1",
+        "reduction": normalized_reduction,
+        "requested_partner": str(requested_partner),
+        "selected_path": selected_path,
+        "selected_operation": selected_operation,
+        "partner_support": support,
+        "partner_continuation_required": partner_continuation_required,
+        "hit_stream_can_express_reduction": hit_stream_can_express,
+        "fused_generic_reduction_available": bool(fused_generic_reduction_available),
+        "user_requires_event_ordered_hit_stream": bool(user_requires_event_ordered_hit_stream),
+        "typed_hit_stream_forced": bool(user_requires_event_ordered_hit_stream),
+        "selection_reason": reason,
+        "goal2950_pod_evidence_summary": (
+            "RayDB count/sum pod evidence showed the payload hit-stream front door "
+            "is correct but much slower than the fused primitive for reductions "
+            "already covered by generic RTDL grouped reduction."
+        ),
+        "native_engine_app_specific_vocab_allowed": False,
+        "rt_traversal_replacement_allowed": False,
+        "public_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "release_authorized": False,
+    }
+
+
 def _is_packed_3d_records(value: Any) -> bool:
     return hasattr(value, "records") and hasattr(value, "count") and hasattr(value, "dimension")
 
