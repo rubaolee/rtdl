@@ -16,6 +16,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 GOAL2855_RUNNER_VERSION = "rtdl.goal2855.v2_5_current_canonical_harness_packet_runner.v1"
+TOOLCHAIN_PROVENANCE_VERSION = "rtdl.goal2916.toolchain_provenance.v1"
 
 DEFAULT_OUTPUT_DIR = Path(tempfile.gettempdir()) / "goal2855_current_canonical_harness_runner_pod"
 FALSE_CLAIM_KEYS = (
@@ -112,11 +113,89 @@ def _check_output(args: list[str]) -> str | None:
         return None
 
 
+def _path_exists(value: str | None) -> bool:
+    return bool(value) and Path(str(value)).exists()
+
+
+def _env_path(*names: str) -> str | None:
+    for name in names:
+        value = os.environ.get(name)
+        if value:
+            return value
+    return None
+
+
+def _cuda_home() -> str | None:
+    return _env_path("CUDA_HOME", "CUDA_PREFIX")
+
+
+def _nvcc_path() -> str:
+    explicit = _env_path("RTDL_NVCC", "NVCC")
+    if explicit:
+        return explicit
+    cuda_home = _cuda_home()
+    if cuda_home:
+        return str(Path(cuda_home) / "bin" / ("nvcc.exe" if os.name == "nt" else "nvcc"))
+    return "nvcc"
+
+
+def _python_module_version(module: str) -> str | None:
+    return _check_output(
+        [
+            sys.executable,
+            "-c",
+            (
+                f"import {module}; "
+                f"print(getattr({module}, '__version__', 'unknown'))"
+            ),
+        ]
+    )
+
+
+def _toolchain_metadata() -> dict[str, Any]:
+    nvcc = _nvcc_path()
+    cxx = _env_path("RTDL_NVCC_CCBIN", "CXX") or "g++"
+    optix_prefix = _env_path("OPTIX_PREFIX")
+    optix_header = str(Path(optix_prefix) / "include" / "optix.h") if optix_prefix else None
+    optix_library = _env_path("RTDL_OPTIX_LIBRARY", "RTDL_OPTIX_LIB")
+    return {
+        "metadata_version": TOOLCHAIN_PROVENANCE_VERSION,
+        "python_executable": sys.executable,
+        "python_version": sys.version.split()[0],
+        "cuda_home": _cuda_home(),
+        "optix_prefix": optix_prefix,
+        "optix_header": optix_header,
+        "optix_header_exists": _path_exists(optix_header),
+        "rtdl_optix_library": optix_library,
+        "rtdl_optix_library_exists": _path_exists(optix_library),
+        "rtdl_optix_ptx_arch": os.environ.get("RTDL_OPTIX_PTX_ARCH"),
+        "rtdl_optix_ptx_compiler": os.environ.get("RTDL_OPTIX_PTX_COMPILER"),
+        "rtdl_nvcc": os.environ.get("RTDL_NVCC"),
+        "nvcc_probe_path": nvcc,
+        "nvcc_version": _check_output([nvcc, "--version"]),
+        "cxx_compiler": cxx,
+        "cxx_version": _check_output([cxx, "--version"]),
+        "triton_version": _python_module_version("triton"),
+        "torch_version": _python_module_version("torch"),
+        "cupy_version": _python_module_version("cupy"),
+        "numba_version": _python_module_version("numba"),
+        "nvidia_smi_topology": _check_output(["nvidia-smi", "--query-gpu=name,uuid,driver_version", "--format=csv,noheader"]),
+        "claim_boundary": {
+            "compiler_provenance_index_only": True,
+            "compiler_fairness_claim_authorized": False,
+            "multivendor_claim_authorized": False,
+            "v2_5_release_authorized": False,
+            "public_speedup_claim_authorized": False,
+        },
+    }
+
+
 def _run_metadata() -> dict[str, Any]:
     return {
         "source_commit": _check_output(["git", "rev-parse", "HEAD"]),
         "source_dirty": (_check_output(["git", "status", "--short"]) or "").splitlines(),
         "gpu": _check_output(["nvidia-smi", "--query-gpu=name,driver_version", "--format=csv,noheader"]),
+        "toolchain": _toolchain_metadata(),
     }
 
 
