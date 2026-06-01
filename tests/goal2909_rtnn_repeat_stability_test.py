@@ -18,7 +18,7 @@ def _median(values: list[float]) -> float:
 class Goal2909RtnnRepeatStabilityTest(unittest.TestCase):
     def test_rtnn_default_repeat_is_stable_enough_for_short_rows(self) -> None:
         self.assertEqual(rtnn_harness.DEFAULT_REPEAT, 9)
-        self.assertIn("repeat9_stability", rtnn_harness.GOAL2800_HARNESS_VERSION)
+        self.assertIn("repeat9", rtnn_harness.GOAL2800_HARNESS_VERSION)
 
     def test_repeat9_clustered_probe_beats_cupy_same_contract(self) -> None:
         current = json.loads(

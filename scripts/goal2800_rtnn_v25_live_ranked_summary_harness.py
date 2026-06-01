@@ -18,8 +18,9 @@ sys.path.insert(0, str(ROOT))
 from scripts import goal2348_rtnn_v2_2_external_runner as rtnn_runner  # noqa: E402
 
 
-GOAL2800_HARNESS_VERSION = "rtdl.goal2800.rtnn_v2_5_live_ranked_summary_harness.v6.repeat9_stability"
+GOAL2800_HARNESS_VERSION = "rtdl.goal2800.rtnn_v2_5_live_ranked_summary_harness.v7.scale65536_repeat9"
 DEFAULT_DISTRIBUTIONS = ("uniform", "clustered", "shell")
+DEFAULT_POINT_COUNT = 65536
 DEFAULT_REPEAT = 9
 CLAIM_BOUNDARY = {
     "canonical_live_harness": True,
@@ -300,7 +301,7 @@ def _parse_csv_strings(value: str) -> tuple[str, ...]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Goal2800 RTNN v2.5 live ranked-summary harness.")
-    parser.add_argument("--point-count", type=int, default=32768)
+    parser.add_argument("--point-count", type=int, default=DEFAULT_POINT_COUNT)
     parser.add_argument("--distributions", default=",".join(DEFAULT_DISTRIBUTIONS))
     parser.add_argument("--radius", type=float, default=0.02)
     parser.add_argument("--k-max", type=int, default=50)

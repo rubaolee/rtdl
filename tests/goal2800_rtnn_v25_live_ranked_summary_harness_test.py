@@ -31,8 +31,9 @@ class Goal2800RtnnV25LiveRankedSummaryHarnessTest(unittest.TestCase):
     def test_harness_runs_rtdl_and_cupy_grid_same_contract_paths(self) -> None:
         text = SCRIPT.read_text(encoding="utf-8")
 
+        self.assertIn("DEFAULT_POINT_COUNT = 65536", text)
         self.assertIn("DEFAULT_REPEAT = 9", text)
-        self.assertIn("repeat9_stability", text)
+        self.assertIn("scale65536_repeat9", text)
         self.assertIn("run_rtdl_batched_3d_neighbors", text)
         self.assertIn("run_cupy_grid_3d_ranked_summary", text)
         self.assertIn("ranked-summary-aggregate", text)

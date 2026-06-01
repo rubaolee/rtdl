@@ -23,6 +23,8 @@ from examples.v2_0.research_benchmarks.hausdorff_xhd import (  # noqa: E402
 
 GOAL2801_ENTRYPOINT_VERSION = "rtdl.goal2801.hausdorff_xhd_v2_5_canonical_entrypoint.v1"
 DEFAULT_RTDL_METHOD = "rtdl_rt_grouped_reduced_nearest_witness"
+DEFAULT_POINTS_A = 8192
+DEFAULT_POINTS_B = 8192
 DEFAULT_RTDL_WARMUP = 1
 DEFAULT_REPEAT = 9
 DEFAULT_ADAPTIVE_GROWTH_FACTOR = 8.0
@@ -229,8 +231,8 @@ def run_goal2801_hausdorff_entrypoint(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Goal2801 Hausdorff/X-HD v2.5 canonical exact entrypoint.")
-    parser.add_argument("--points-a", type=int, default=4096)
-    parser.add_argument("--points-b", type=int, default=4096)
+    parser.add_argument("--points-a", type=int, default=DEFAULT_POINTS_A)
+    parser.add_argument("--points-b", type=int, default=DEFAULT_POINTS_B)
     parser.add_argument("--seed-a", type=int, default=11)
     parser.add_argument("--seed-b", type=int, default=29)
     parser.add_argument("--offset-x", type=float, default=0.08)

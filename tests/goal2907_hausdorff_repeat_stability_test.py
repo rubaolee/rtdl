@@ -18,6 +18,8 @@ ARTIFACT = (
 
 class Goal2907HausdorffRepeatStabilityTest(unittest.TestCase):
     def test_hausdorff_default_repeat_is_stable_enough_for_short_rows(self) -> None:
+        self.assertEqual(hausdorff_entry.DEFAULT_POINTS_A, 8192)
+        self.assertEqual(hausdorff_entry.DEFAULT_POINTS_B, 8192)
         self.assertEqual(hausdorff_entry.DEFAULT_REPEAT, 9)
 
     def test_repeat9_pod_artifact_keeps_hausdorff_near_parity(self) -> None:
