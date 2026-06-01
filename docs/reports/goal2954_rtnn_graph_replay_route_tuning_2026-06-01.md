@@ -1,7 +1,7 @@
 # Goal2954: RTNN Graph Replay Route Tuning
 
 Date: 2026-06-01
-Status: pod route sweep passed; canonical harness updated
+Status: pod route sweep passed; clean canonical harness passed
 
 ## Purpose
 
@@ -20,10 +20,14 @@ Pod target: `root@69.30.85.171 -p 22167`
 
 Source commit for sweeps: `3a5cc1ac6a65d9b18cc4ae325210bdc5c6503679`
 
+Source commit for clean canonical harness confirmation:
+`67b6dc3ea2dbc31efd944b6d6834845b0a48fe63`
+
 Artifacts:
 
 - `docs/reports/goal2954_rtnn_graph_replay_sweep_pod/goal2954_rtnn_uniform_mode_sweep.json`
 - `docs/reports/goal2954_rtnn_graph_replay_sweep_pod/goal2954_rtnn_graph_all_distributions.json`
+- `docs/reports/goal2954_rtnn_graph_replay_sweep_pod/goal2954_clean_rtnn_graph_harness.json`
 
 Uniform route sweep, 65,536 query/search points, radius `0.02`, `k=50`,
 repeat `13`:
@@ -44,6 +48,14 @@ distributions:
 | uniform | `0.000116` | `0.000138` | `1.187x` |
 | clustered | `0.017139` | `0.047067` | `2.746x` |
 | shell | `0.000375` | `0.002715` | `7.241x` |
+
+Clean canonical harness confirmation at commit `67b6dc3e`:
+
+| Distribution | RTDL graph replay sec | CuPy grid sec | CuPy/RTDL ratio |
+| --- | ---: | ---: | ---: |
+| uniform | `0.000124` | `0.000137` | `1.104x` |
+| clustered | `0.017253` | `0.046959` | `2.722x` |
+| shell | `0.000354` | `0.002723` | `7.684x` |
 
 All rows preserve the same ranked-summary aggregate contract:
 

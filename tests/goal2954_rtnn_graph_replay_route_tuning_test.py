@@ -75,6 +75,21 @@ class Goal2954RtnnGraphReplayRouteTuningTest(unittest.TestCase):
                 )
                 self.assertEqual(0.0, float(rtdl["batch_phase_timings"][-1]["upload"]))
 
+    def test_clean_canonical_harness_confirms_graph_replay_ratios(self) -> None:
+        payload = json.loads((ARTIFACT_DIR / "goal2954_clean_rtnn_graph_harness.json").read_text(encoding="utf-8"))
+
+        self.assertEqual("pass", payload["status"])
+        self.assertEqual([], payload["source_dirty"])
+        self.assertIn("v8.scale65536_repeat9_graph_replay", payload["harness_version"])
+        ratios = {row["distribution"]: float(row["cupy_grid_over_rtdl_elapsed_ratio"]) for row in payload["rows"]}
+        self.assertGreater(ratios["uniform"], 1.0)
+        self.assertGreater(ratios["clustered"], 2.0)
+        self.assertGreater(ratios["shell"], 7.0)
+        for row in payload["rows"]:
+            self.assertEqual("ranked-summary-aggregate-prepared-query-batch-graph-float32", row["contract"]["mode"])
+            self.assertTrue(row["ranked_aggregate_matches_cupy_grid"])
+            self.assertFalse(row["claim_boundary"]["rtdl_beats_cupy_grid_claim_authorized"])
+
     def test_report_documents_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
 
@@ -84,6 +99,8 @@ class Goal2954RtnnGraphReplayRouteTuningTest(unittest.TestCase):
             "`1.187x`",
             "`2.746x`",
             "`7.241x`",
+            "`1.104x`",
+            "clean canonical harness",
             "does not add RTNN-specific native code",
             "does not authorize public speedup",
         ):
