@@ -8,27 +8,26 @@ import rtdsl as rt
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REPORT = ROOT / "docs" / "reports" / "goal2942_current_packet_after_row_columns_2026-06-01.md"
-ARTIFACT_DIR = ROOT / "docs" / "reports" / "goal2942_current_packet_after_row_columns_pod"
+REPORT = ROOT / "docs" / "reports" / "goal2945_current_packet_after_hit_stream_front_door_2026-06-01.md"
+ARTIFACT_DIR = ROOT / "docs" / "reports" / "goal2945_current_packet_after_hit_stream_front_door_pod"
 SUMMARY = ARTIFACT_DIR / "goal2855_summary.json"
-TRIAGE = ARTIFACT_DIR / "goal2942_triage.json"
-ROW_COLUMN_ARTIFACT = (
+TRIAGE = ARTIFACT_DIR / "goal2945_triage.json"
+FRONT_DOOR_REPORT = (
     ROOT
     / "docs"
     / "reports"
-    / "goal2941_rayjoin_row_view_partner_columns_scale_probe_pod"
-    / "goal2941_rayjoin_row_view_partner_columns_large.json"
+    / "goal2943_generic_event_ordered_hit_stream_front_door_2026-06-01.md"
 )
 
 
-class Goal2942CurrentPacketAfterRowColumnsTest(unittest.TestCase):
-    def test_packet_passes_cleanly_after_row_column_bridge(self) -> None:
+class Goal2945CurrentPacketAfterHitStreamFrontDoorTest(unittest.TestCase):
+    def test_packet_passes_cleanly_after_hit_stream_front_door(self) -> None:
         summary = json.loads(SUMMARY.read_text(encoding="utf-8"))
 
         self.assertEqual("pass", summary["status"])
         self.assertTrue(summary["all_pass"])
         self.assertEqual(7, summary["artifact_count"])
-        self.assertEqual("74f6c66ef9cb44b0af0cec8c8c67113dffac2831", summary["source_commit"])
+        self.assertEqual("5b6741fa7bf08a4934b283bd755a67af2b04ed7b", summary["source_commit"])
         self.assertTrue(summary["source_commit_consistent"])
         self.assertEqual({}, summary["dirty_artifacts"])
         self.assertEqual({}, summary["claim_boundary_violations"])
@@ -58,56 +57,53 @@ class Goal2942CurrentPacketAfterRowColumnsTest(unittest.TestCase):
         self.assertIsNone(triage["top_priority"])
         self.assertEqual("current_path_acceptable", apps["rtnn"]["performance_status"])
         self.assertGreater(apps["rtnn"]["min_cupy_over_rtdl_ratio"], 1.0)
-        self.assertEqual("current_path_acceptable_near_parity", apps["hausdorff_xhd"]["performance_status"])
-        self.assertLess(apps["hausdorff_xhd"]["rtdl_over_cupy_ratio"], 1.1)
+        self.assertEqual("current_path_acceptable", apps["hausdorff_xhd"]["performance_status"])
+        self.assertLess(apps["hausdorff_xhd"]["rtdl_over_cupy_ratio"], 1.0)
         self.assertEqual("current_path_acceptable", apps["rt_dbscan"]["performance_status"])
         self.assertGreater(apps["rt_dbscan"]["min_speedup_vs_prepared_cupy_grid"], 3.5)
         self.assertEqual("cupy", apps["barnes_hut"]["selected_vector_sum_partner"])
+        self.assertEqual(
+            "current_path_acceptable_but_rows_overlay_deferred",
+            apps["spatial_rayjoin"]["performance_status"],
+        )
 
-    def test_row_column_scale_evidence_remains_bounded_and_green(self) -> None:
-        payload = json.loads(ROW_COLUMN_ARTIFACT.read_text(encoding="utf-8"))
-        rows = {row["workload"]: row for row in payload["rows"]}
+    def test_front_door_remains_generic_and_bounded(self) -> None:
+        text = FRONT_DOOR_REPORT.read_text(encoding="utf-8")
 
-        self.assertEqual("pass", payload["status"])
-        self.assertEqual("large", payload["scale"])
-        self.assertEqual("cupy", payload["partner"])
-        self.assertEqual(4096, rows["pip"]["expected_row_count"])
-        self.assertEqual(65536, rows["lsi"]["expected_row_count"])
-        self.assertEqual(262144, rows["overlay_seed"]["expected_row_count"])
-        self.assertFalse(rows["pip"]["python_dict_row_materialization_used"])
-        self.assertLess(rows["overlay_seed"]["typed_columns_over_count_only_ratio"], 1.05)
-        self.assertLess(rows["lsi"]["typed_columns_over_count_only_ratio"], 1.35)
-        self.assertFalse(payload["claim_boundary"]["device_resident_handoff_claim_authorized"])
-        self.assertFalse(payload["claim_boundary"]["public_speedup_claim_authorized"])
+        self.assertIn("run_generic_ray_triangle_event_ordered_grouped_ray_id_reduction_3d", text)
+        self.assertIn("hit_stream_grouped_ray_id_primitive_i64", text)
+        self.assertIn("event ordered", text)
+        self.assertIn("not a public speedup claim", text)
+        self.assertIn("true-zero-copy", text)
 
-    def test_readiness_index_keeps_goal2942_report_after_newer_packet(self) -> None:
+    def test_readiness_index_points_to_goal2945_packet(self) -> None:
         packet = rt.v2_5_internal_readiness_packet(repo_root=ROOT)
         runner = packet["current_canonical_runner"]
 
+        self.assertIn("goal2945_current_packet_after_hit_stream_front_door_pod", runner["summary_path"])
         self.assertEqual("pass", runner["status"])
         self.assertTrue(
             packet["required_report_presence"][
-                "docs/reports/goal2942_current_packet_after_row_columns_2026-06-01.md"
+                "docs/reports/goal2945_current_packet_after_hit_stream_front_door_2026-06-01.md"
             ]
         )
-        self.assertIn("keep_goal2942_current_packet_after_row_columns_green", packet["allowed_next_actions"])
-        self.assertIn("goal2945_current_packet_after_hit_stream_front_door_pod", runner["summary_path"])
+        self.assertIn("keep_goal2945_current_packet_after_hit_stream_front_door_green", packet["allowed_next_actions"])
         validation = rt.validate_v2_5_internal_readiness_packet(repo_root=ROOT)
         self.assertEqual("accept", validation["status"])
         self.assertEqual((), validation["errors"])
 
-    def test_report_documents_boundary_and_design_lesson(self) -> None:
+    def test_report_documents_boundary_and_next_runtime_target(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
 
         for phrase in (
-            "Goal2942",
-            "typed partner-column bridge",
+            "Goal2945",
+            "generic event-ordered RT hit-stream front door",
             "performance targets: `[]`",
-            "Overlay seed rows | `262144`",
-            "row-stream handoff is still",
+            "payload-mapped continuation",
+            "App terms and app-specific logic",
             "not a v2.5 release authorization",
             "true-zero-copy claim",
-            "user-requested release packet",
+            "fresh 3-AI release",
         ):
             self.assertIn(phrase, text)
 
