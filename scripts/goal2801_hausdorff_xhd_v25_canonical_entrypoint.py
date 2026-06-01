@@ -22,11 +22,13 @@ from examples.v2_0.research_benchmarks.hausdorff_xhd import (  # noqa: E402
 
 
 GOAL2801_ENTRYPOINT_VERSION = "rtdl.goal2801.hausdorff_xhd_v2_5_canonical_entrypoint.v1"
-DEFAULT_RTDL_METHOD = "rtdl_rt_grouped_adaptive_nearest_witness"
+DEFAULT_RTDL_METHOD = "rtdl_rt_grouped_reduced_nearest_witness"
 DEFAULT_RTDL_WARMUP = 1
 DEFAULT_REPEAT = 3
 DEFAULT_ADAPTIVE_GROWTH_FACTOR = 8.0
 DEFAULT_ADAPTIVE_TARGET_POINTS_PER_GROUP = 512
+DEFAULT_REDUCED_TARGET_POINTS_PER_GROUP = 2048
+DEFAULT_REDUCED_SEED_WITH_THRESHOLD = False
 CLAIM_BOUNDARY = {
     "canonical_entrypoint": True,
     "public_speedup_claim_authorized": False,
@@ -47,7 +49,14 @@ def _check_output(args: list[str]) -> str | None:
         return None
 
 
-def _run_rtdl_method(a_points, b_points, *, rtdl_method: str):
+def _run_rtdl_method(
+    a_points,
+    b_points,
+    *,
+    rtdl_method: str,
+    reduced_target_points_per_group: int = DEFAULT_REDUCED_TARGET_POINTS_PER_GROUP,
+    reduced_seed_with_threshold: bool = DEFAULT_REDUCED_SEED_WITH_THRESHOLD,
+):
     if rtdl_method == "rtdl_rt_grouped_adaptive_nearest_witness":
         return hd.hausdorff_distance_2d_rt_grouped_adaptive_nearest_witness(
             a_points,
@@ -56,7 +65,12 @@ def _run_rtdl_method(a_points, b_points, *, rtdl_method: str):
             target_points_per_group=DEFAULT_ADAPTIVE_TARGET_POINTS_PER_GROUP,
         )
     if rtdl_method == "rtdl_rt_grouped_reduced_nearest_witness":
-        return hd.hausdorff_distance_2d_rt_grouped_reduced_nearest_witness(a_points, b_points)
+        return hd.hausdorff_distance_2d_rt_grouped_reduced_nearest_witness(
+            a_points,
+            b_points,
+            seed_with_threshold=bool(reduced_seed_with_threshold),
+            target_points_per_group=int(reduced_target_points_per_group),
+        )
     raise ValueError(
         "rtdl_method must be rtdl_rt_grouped_adaptive_nearest_witness or "
         "rtdl_rt_grouped_reduced_nearest_witness"
@@ -77,6 +91,8 @@ def run_goal2801_hausdorff_entrypoint(
     offset_x: float = 0.08,
     offset_y: float = -0.06,
     rtdl_method: str = DEFAULT_RTDL_METHOD,
+    reduced_target_points_per_group: int = DEFAULT_REDUCED_TARGET_POINTS_PER_GROUP,
+    reduced_seed_with_threshold: bool = DEFAULT_REDUCED_SEED_WITH_THRESHOLD,
     rtdl_warmup: int = DEFAULT_RTDL_WARMUP,
     repeat: int = DEFAULT_REPEAT,
     exact_tolerance: float = 1.0e-9,
@@ -110,11 +126,26 @@ def run_goal2801_hausdorff_entrypoint(
     rtdl_warmup_elapsed_sec = 0.0
     for _ in range(max(0, int(rtdl_warmup))):
         warmup_started = time.perf_counter()
-        _run_rtdl_method(a_points, b_points, rtdl_method=rtdl_method)
+        _run_rtdl_method(
+            a_points,
+            b_points,
+            rtdl_method=rtdl_method,
+            reduced_target_points_per_group=reduced_target_points_per_group,
+            reduced_seed_with_threshold=reduced_seed_with_threshold,
+        )
         rtdl_warmup_elapsed_sec += time.perf_counter() - warmup_started
 
     rtdl_started = time.perf_counter()
-    rtdl_runs = tuple(_run_rtdl_method(a_points, b_points, rtdl_method=rtdl_method) for _ in range(repeat_count))
+    rtdl_runs = tuple(
+        _run_rtdl_method(
+            a_points,
+            b_points,
+            rtdl_method=rtdl_method,
+            reduced_target_points_per_group=reduced_target_points_per_group,
+            reduced_seed_with_threshold=reduced_seed_with_threshold,
+        )
+        for _ in range(repeat_count)
+    )
     rtdl_result = _median_by_elapsed(rtdl_runs)
     rtdl_elapsed_sec = time.perf_counter() - rtdl_started
 
@@ -172,6 +203,12 @@ def run_goal2801_hausdorff_entrypoint(
             "adaptive_target_points_per_group": DEFAULT_ADAPTIVE_TARGET_POINTS_PER_GROUP
             if rtdl_method == "rtdl_rt_grouped_adaptive_nearest_witness"
             else None,
+            "reduced_target_points_per_group": int(reduced_target_points_per_group)
+            if rtdl_method == "rtdl_rt_grouped_reduced_nearest_witness"
+            else None,
+            "reduced_seed_with_threshold": bool(reduced_seed_with_threshold)
+            if rtdl_method == "rtdl_rt_grouped_reduced_nearest_witness"
+            else None,
             "elapsed_sec": float(rtdl_result.elapsed_sec),
             "elapsed_runs_sec": tuple(float(run.elapsed_sec) for run in rtdl_runs),
             "median_elapsed_sec": float(median(float(run.elapsed_sec) for run in rtdl_runs)),
@@ -203,6 +240,13 @@ def main(argv: list[str] | None = None) -> int:
         choices=("rtdl_rt_grouped_adaptive_nearest_witness", "rtdl_rt_grouped_reduced_nearest_witness"),
         default=DEFAULT_RTDL_METHOD,
     )
+    parser.add_argument("--reduced-target-points-per-group", type=int, default=DEFAULT_REDUCED_TARGET_POINTS_PER_GROUP)
+    parser.add_argument(
+        "--reduced-seed-with-threshold",
+        action="store_true",
+        default=DEFAULT_REDUCED_SEED_WITH_THRESHOLD,
+        help="Use RT threshold search before reduced nearest-witness traversal. Disabled by default for dense exact HD.",
+    )
     parser.add_argument("--exact-tolerance", type=float, default=1.0e-9)
     parser.add_argument("--rtdl-warmup", type=int, default=DEFAULT_RTDL_WARMUP)
     parser.add_argument("--repeat", type=int, default=DEFAULT_REPEAT)
@@ -217,6 +261,8 @@ def main(argv: list[str] | None = None) -> int:
         offset_x=args.offset_x,
         offset_y=args.offset_y,
         rtdl_method=args.rtdl_method,
+        reduced_target_points_per_group=args.reduced_target_points_per_group,
+        reduced_seed_with_threshold=args.reduced_seed_with_threshold,
         rtdl_warmup=args.rtdl_warmup,
         repeat=args.repeat,
         exact_tolerance=args.exact_tolerance,
