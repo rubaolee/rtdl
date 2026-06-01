@@ -47,6 +47,8 @@ class Goal2902V25CurrentPacketPerfTriageTest(unittest.TestCase):
             output.unlink(missing_ok=True)
 
         self.assertEqual(data["status"], "pass")
+        self.assertEqual(data["goal"], "Goal2902 v2.5 current packet performance triage")
+        self.assertEqual(data["triage_schema"], "Goal2902 v2.5 current packet performance triage")
         self.assertEqual(len(data["apps"]), 10)
         self.assertEqual(data["top_priority"], "hausdorff_xhd")
         self.assertEqual(
@@ -58,6 +60,34 @@ class Goal2902V25CurrentPacketPerfTriageTest(unittest.TestCase):
         self.assertEqual(data["claim_boundary_violations"], {})
         self.assertFalse(data["claim_boundary"]["release_authorized"])
         self.assertFalse(data["claim_boundary"]["public_speedup_claim_authorized"])
+
+    def test_script_accepts_current_goal_label_without_changing_schema(self) -> None:
+        output = ROOT / "docs" / "reports" / "_goal2902_test_labeled_rebuild.json"
+        try:
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--packet-dir",
+                    str(ARTIFACT_DIR),
+                    "--raydb-gate",
+                    str(RAYDB_GATE),
+                    "--output",
+                    str(output),
+                    "--goal-label",
+                    "Goal2973 current packet performance triage",
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=True,
+            )
+            data = json.loads(output.read_text(encoding="utf-8"))
+        finally:
+            output.unlink(missing_ok=True)
+
+        self.assertEqual(data["goal"], "Goal2973 current packet performance triage")
+        self.assertEqual(data["triage_schema"], "Goal2902 v2.5 current packet performance triage")
 
     def test_report_records_current_perf_targets_and_boundaries(self) -> None:
         text = MD_REPORT.read_text(encoding="utf-8")

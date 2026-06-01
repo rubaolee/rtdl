@@ -245,7 +245,15 @@ def _raydb(path: Path | None) -> dict[str, Any]:
     }
 
 
-def analyze(packet_dir: Path, *, raydb_gate: Path | None = None) -> dict[str, Any]:
+DEFAULT_TRIAGE_GOAL_LABEL = "Goal2902 v2.5 current packet performance triage"
+
+
+def analyze(
+    packet_dir: Path,
+    *,
+    raydb_gate: Path | None = None,
+    goal_label: str = DEFAULT_TRIAGE_GOAL_LABEL,
+) -> dict[str, Any]:
     summary = _load(packet_dir / "goal2855_summary.json")
     apps = [
         _raydb(raydb_gate),
@@ -278,7 +286,8 @@ def analyze(packet_dir: Path, *, raydb_gate: Path | None = None) -> dict[str, An
     ]
     targets = sorted(targets, key=lambda app: float(app.get("severity_ratio", 1.0)), reverse=True)
     return {
-        "goal": "Goal2902 v2.5 current packet performance triage",
+        "goal": goal_label,
+        "triage_schema": DEFAULT_TRIAGE_GOAL_LABEL,
         "status": "pass" if summary.get("all_pass") is True else "fail",
         "source_commit": summary.get("source_commit"),
         "gpu": summary.get("gpu") or (summary.get("runner_metadata") or {}).get("gpu"),
@@ -303,9 +312,10 @@ def main() -> None:
     parser.add_argument("--packet-dir", required=True, type=Path)
     parser.add_argument("--raydb-gate", type=Path)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--goal-label", default=DEFAULT_TRIAGE_GOAL_LABEL)
     args = parser.parse_args()
 
-    result = analyze(args.packet_dir, raydb_gate=args.raydb_gate)
+    result = analyze(args.packet_dir, raydb_gate=args.raydb_gate, goal_label=args.goal_label)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(

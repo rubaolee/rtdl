@@ -146,6 +146,8 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2965_raydb_current_commit_gate_refresh_2026-06-01.md",
     "docs/reports/goal2968_current_10_app_perf_triage_with_raydb_gate_2026-06-01.md",
     "docs/reports/goal2969_current_head_packet_and_10_app_triage_2026-06-01.md",
+    "docs/reports/goal2972_comparison_toolchain_scope_guard_2026-06-01.md",
+    "docs/reports/goal2973_current_packet_with_comparison_toolchain_scope_2026-06-01.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -180,10 +182,10 @@ V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_HARNESS_ARTIFACTS = (
     "docs/reports/goal2847_current_head_canonical_harness_pod/goal2803_barnes_hut.json",
 )
 V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_RUNNER_SUMMARY = (
-    "docs/reports/goal2969_current_head_packet_pod/goal2855_summary.json"
+    "docs/reports/goal2973_current_packet_with_toolchain_scope_pod/goal2855_summary.json"
 )
 V2_5_INTERNAL_READINESS_CURRENT_PACKET_PERF_TRIAGE = (
-    "docs/reports/goal2969_current_head_packet_pod/goal2969_triage.json"
+    "docs/reports/goal2973_current_packet_with_toolchain_scope_pod/goal2973_triage.json"
 )
 
 V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
@@ -227,6 +229,8 @@ V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
     "docs/reviews/goal2967_claude_review_goal2965_raydb_current_gate_2026-06-01.md",
     "docs/reviews/goal2970_gemini_review_goal2969_current_head_packet_2026-06-01.md",
     "docs/reviews/goal2971_claude_review_goal2969_current_head_packet_2026-06-01.md",
+    "docs/reviews/goal2974_gemini_review_goal2972_2973_toolchain_scope_2026-06-01.md",
+    "docs/reviews/goal2975_claude_review_goal2972_2973_toolchain_scope_2026-06-01.md",
 )
 
 V2_5_INTERNAL_READINESS_BLOCKED_ACTIONS = (
@@ -306,6 +310,9 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "keep_goal2968_current_10_app_perf_triage_with_raydb_gate_green",
     "keep_goal2969_current_head_packet_and_10_app_triage_green",
     "triage_goal2970_2971_current_head_packet_reviews_before_release_packet",
+    "keep_goal2972_comparison_toolchain_scope_guard_green",
+    "keep_goal2973_current_packet_with_comparison_toolchain_scope_green",
+    "triage_goal2974_2975_toolchain_scope_reviews_before_release_packet",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
@@ -481,6 +488,27 @@ def validate_v2_5_internal_readiness_packet(
         errors.append("toolchain metadata must not authorize compiler fairness claims")
     if (toolchain.get("claim_boundary") or {}).get("multivendor_claim_authorized") is not False:
         errors.append("toolchain metadata must not authorize multivendor claims")
+    comparison_scope = toolchain.get("comparison_toolchain_scope") or {}
+    if comparison_scope.get("scope_version") != "rtdl.goal2972.comparison_toolchain_scope.v1":
+        errors.append("current canonical packet runner lacks Goal2972 comparison toolchain scope")
+    if comparison_scope.get("same_source_commit_required") is not True:
+        errors.append("comparison toolchain scope must require same source commit")
+    if comparison_scope.get("same_gpu_required") is not True:
+        errors.append("comparison toolchain scope must require same GPU")
+    if comparison_scope.get("same_packet_runner_required") is not True:
+        errors.append("comparison toolchain scope must require same packet runner")
+    if comparison_scope.get("native_optix_stack_observed") is not True:
+        errors.append("comparison toolchain scope must observe native OptiX stack")
+    if comparison_scope.get("observed_stack_complete_for_current_packet") is not True:
+        errors.append("comparison toolchain scope must observe the current packet stack")
+    if comparison_scope.get("compiler_flag_alignment_proven") is not False:
+        errors.append("comparison toolchain scope must not claim compiler flag alignment proof")
+    if comparison_scope.get("cross_compiler_fairness_claim_authorized") is not False:
+        errors.append("comparison toolchain scope must not authorize cross-compiler fairness claims")
+    if comparison_scope.get("public_speedup_wording_authorized") is not False:
+        errors.append("comparison toolchain scope must not authorize public speedup wording")
+    if comparison_scope.get("release_authorized") is not False:
+        errors.append("comparison toolchain scope must not authorize release")
     perf_triage = packet["current_packet_perf_triage"]
     if perf_triage.get("status") != "pass":
         errors.append("current packet performance triage did not pass")

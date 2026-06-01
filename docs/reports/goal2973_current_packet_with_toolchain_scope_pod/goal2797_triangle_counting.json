@@ -1,0 +1,304 @@
+{
+  "backends": [
+    "optix"
+  ],
+  "claim_boundary": {
+    "canonical_harness": true,
+    "native_engine_customization": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "triton_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "elapsed_sec": 2.33013375592418,
+  "generated_edge_files": [
+    "/tmp/goal2973_packet_work_clean/goal2797/disjoint_triangles_16.edgebin",
+    "/tmp/goal2973_packet_work_clean/goal2797/disjoint_triangles_1024.edgebin",
+    "/tmp/goal2973_packet_work_clean/goal2797/disjoint_triangles_5000.edgebin"
+  ],
+  "goal": "Goal2797",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "harness_version": "rtdl.goal2797.triangle_counting_v2_5_canonical_harness.v1",
+  "methods": [
+    "rt_graph_2a1_generic_rt",
+    "rt_graph_1a2_generic_rt"
+  ],
+  "repeat": 5,
+  "row_count": 6,
+  "rows": [
+    {
+      "backend": "optix",
+      "elapsed_sec": 1.746517162071541,
+      "method": "rt_graph_2a1_generic_rt",
+      "oracle_triangle_count": 16,
+      "partner": "cupy",
+      "prepare_scene_ms": 504.22281096689403,
+      "primitive_count": 48,
+      "query_max_ms": 0.4447100218385458,
+      "query_median_ms": 0.39991107769310474,
+      "query_min_ms": 0.37809601053595543,
+      "ray_count": 16,
+      "ray_tracing_accelerated": true,
+      "result_triangle_count": 16,
+      "rt_core_accelerated": true,
+      "run_backend_ms": 886.1985369585454,
+      "same_contract_native_timing": true,
+      "status": "pass",
+      "total_ms": 1745.535088935867,
+      "triangle_count": 16,
+      "triangle_count_matches_oracle": true,
+      "v2_4_phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 1.6810372471809387e-07,
+          "query_preparation": 0.004372444003820419,
+          "rt_traversal": 0.00039991107769310474,
+          "scene_build": 0.504222810966894
+        },
+        "promoted_performance_path": true,
+        "same_phase_contract_as_basis": true,
+        "source": "triangle_counting.rt_graph_2a1_generic_rt",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      }
+    },
+    {
+      "backend": "optix",
+      "elapsed_sec": 0.35543234017677605,
+      "method": "rt_graph_1a2_generic_rt",
+      "oracle_triangle_count": 16,
+      "partner": "none",
+      "prepare_scene_ms": 0.34387013874948025,
+      "primitive_count": 16,
+      "query_max_ms": 0.09998795576393604,
+      "query_median_ms": 0.09326217696070671,
+      "query_min_ms": 0.09033712558448315,
+      "ray_count": 48,
+      "ray_tracing_accelerated": true,
+      "result_triangle_count": 16,
+      "rt_core_accelerated": true,
+      "run_backend_ms": 353.5559030715376,
+      "same_contract_native_timing": true,
+      "status": "pass",
+      "total_ms": 354.9402169883251,
+      "triangle_count": 16,
+      "triangle_count_matches_oracle": true,
+      "v2_4_phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 1.5692785382270813e-07,
+          "query_preparation": 0.0006234738975763321,
+          "rt_traversal": 9.326217696070671e-05,
+          "scene_build": 0.00034387013874948025
+        },
+        "promoted_performance_path": true,
+        "same_phase_contract_as_basis": true,
+        "source": "triangle_counting.rt_graph_1a2_generic_rt",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      }
+    },
+    {
+      "backend": "optix",
+      "elapsed_sec": 0.05478330212645233,
+      "method": "rt_graph_2a1_generic_rt",
+      "oracle_triangle_count": 1024,
+      "partner": "cupy",
+      "prepare_scene_ms": 0.9864908643066883,
+      "primitive_count": 3072,
+      "query_max_ms": 0.4317390266805887,
+      "query_median_ms": 0.408852007240057,
+      "query_min_ms": 0.3957438748329878,
+      "ray_count": 1024,
+      "ray_tracing_accelerated": true,
+      "result_triangle_count": 1024,
+      "rt_core_accelerated": true,
+      "run_backend_ms": 4.061425104737282,
+      "same_contract_native_timing": true,
+      "status": "pass",
+      "total_ms": 54.457325022667646,
+      "triangle_count": 1024,
+      "triangle_count_matches_oracle": true,
+      "v2_4_phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 1.748558133840561e-07,
+          "query_preparation": 0.0005682110786437988,
+          "rt_traversal": 0.000408852007240057,
+          "scene_build": 0.0009864908643066883
+        },
+        "promoted_performance_path": true,
+        "same_phase_contract_as_basis": true,
+        "source": "triangle_counting.rt_graph_2a1_generic_rt",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      }
+    },
+    {
+      "backend": "optix",
+      "elapsed_sec": 0.01989527279511094,
+      "method": "rt_graph_1a2_generic_rt",
+      "oracle_triangle_count": 1024,
+      "partner": "none",
+      "prepare_scene_ms": 0.4294768441468477,
+      "primitive_count": 1024,
+      "query_max_ms": 0.1590740866959095,
+      "query_median_ms": 0.14369096606969833,
+      "query_min_ms": 0.13980199582874775,
+      "ray_count": 3072,
+      "ray_tracing_accelerated": true,
+      "result_triangle_count": 1024,
+      "rt_core_accelerated": true,
+      "run_backend_ms": 1.5969839878380299,
+      "same_contract_native_timing": true,
+      "status": "pass",
+      "total_ms": 18.544777063652873,
+      "triangle_count": 1024,
+      "triangle_count_matches_oracle": true,
+      "v2_4_phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 1.41095370054245e-07,
+          "query_preparation": 0.0019017020240426064,
+          "rt_traversal": 0.00014369096606969833,
+          "scene_build": 0.0004294768441468477
+        },
+        "promoted_performance_path": true,
+        "same_phase_contract_as_basis": true,
+        "source": "triangle_counting.rt_graph_1a2_generic_rt",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      }
+    },
+    {
+      "backend": "optix",
+      "elapsed_sec": 0.015324746957048774,
+      "method": "rt_graph_2a1_generic_rt",
+      "oracle_triangle_count": 5000,
+      "partner": "cupy",
+      "prepare_scene_ms": 1.6264941077679396,
+      "primitive_count": 15000,
+      "query_max_ms": 0.4064580425620079,
+      "query_median_ms": 0.4021578934043646,
+      "query_min_ms": 0.39181183092296124,
+      "ray_count": 5000,
+      "ray_tracing_accelerated": true,
+      "result_triangle_count": 5000,
+      "rt_core_accelerated": true,
+      "run_backend_ms": 5.427908850833774,
+      "same_contract_native_timing": true,
+      "status": "pass",
+      "total_ms": 14.980035135522485,
+      "triangle_count": 5000,
+      "triangle_count_matches_oracle": true,
+      "v2_4_phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 5.131587386131287e-07,
+          "query_preparation": 0.0005284661892801523,
+          "rt_traversal": 0.0004021578934043646,
+          "scene_build": 0.0016264941077679396
+        },
+        "promoted_performance_path": true,
+        "same_phase_contract_as_basis": true,
+        "source": "triangle_counting.rt_graph_2a1_generic_rt",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      }
+    },
+    {
+      "backend": "optix",
+      "elapsed_sec": 0.12677099299617112,
+      "method": "rt_graph_1a2_generic_rt",
+      "oracle_triangle_count": 5000,
+      "partner": "none",
+      "prepare_scene_ms": 3.483413951471448,
+      "primitive_count": 5000,
+      "query_max_ms": 0.4433700814843178,
+      "query_median_ms": 0.42129005305469036,
+      "query_min_ms": 0.4170490428805351,
+      "ray_count": 15000,
+      "ray_tracing_accelerated": true,
+      "result_triangle_count": 5000,
+      "rt_core_accelerated": true,
+      "run_backend_ms": 8.806105935946107,
+      "same_contract_native_timing": true,
+      "status": "pass",
+      "total_ms": 120.33993494696915,
+      "triangle_count": 5000,
+      "triangle_count_matches_oracle": true,
+      "v2_4_phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 4.370231181383133e-07,
+          "query_preparation": 0.007376109017059207,
+          "rt_traversal": 0.00042129005305469036,
+          "scene_build": 0.003483413951471448
+        },
+        "promoted_performance_path": true,
+        "same_phase_contract_as_basis": true,
+        "source": "triangle_counting.rt_graph_1a2_generic_rt",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "query_preparation",
+            "rt_traversal",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      }
+    }
+  ],
+  "source_commit": "63158f6db0a2248d203476633ea9f5171a0b596b",
+  "source_dirty": [],
+  "status": "pass",
+  "triangle_counts": [
+    16,
+    1024,
+    5000
+  ],
+  "warmup": 2
+}

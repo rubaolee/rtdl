@@ -1,7 +1,7 @@
 # Goal2972: Comparison Toolchain Scope Guard
 
 Date: 2026-06-01
-Status: implemented locally; current packet rerun still required
+Status: implemented; current packet rerun completed by Goal2973
 
 ## Purpose
 
@@ -55,8 +55,8 @@ automatic Triton-selection claim, or paper-reproduction claim.
 
 ## Next Step
 
-Rerun the seven-app packet on the RTX pod and refresh the 10-app triage. The
-follow-up packet should show
+Goal2973 reran the seven-app packet on the RTX pod and refreshed the 10-app
+triage. The follow-up packet shows
 `comparison_toolchain_scope.scope_version:
 rtdl.goal2972.comparison_toolchain_scope.v1` and
 `compiler_flag_alignment_proven: false`.
