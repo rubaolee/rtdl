@@ -1632,41 +1632,39 @@ def _gather_payload_torch_carrier(
             "CUDA-array-interface adapter with torch runtime"
         ) from exc
 
-    primitive_ids = _torch_as(
+    (
+        primitive_ids_descriptor,
+        group_ids_descriptor,
+        values_descriptor,
+    ) = _torch_carrier_gather_neutral_seam_descriptors(hit_stream_columns, payload_columns)
+    primitive_ids, primitive_lease_record = _torch_as_under_neutral_seam_lease(
+        primitive_ids_descriptor,
         hit_stream_columns.primitive_ids,
         dtype=torch.int64,
         device_like=payload_columns.primitive_group_ids,
         allow_explicit_copy=allow_explicit_copy,
     )
-    group_ids = _torch_as(
+    group_ids_carrier_source, group_ids_lease_record = _torch_as_under_neutral_seam_lease(
+        group_ids_descriptor,
         payload_columns.primitive_group_ids,
         dtype=torch.int64,
         device_like=primitive_ids,
         allow_explicit_copy=allow_explicit_copy,
-    )[primitive_ids]
-    values = _torch_as(
+    )
+    group_ids = group_ids_carrier_source[primitive_ids]
+    values_carrier_source, values_lease_record = _torch_as_under_neutral_seam_lease(
+        values_descriptor,
         payload_columns.primitive_values,
         dtype=torch.float64,
         device_like=primitive_ids,
         allow_explicit_copy=allow_explicit_copy,
-    )[primitive_ids]
+    )
+    values = values_carrier_source[primitive_ids]
     primitive_ids_input_ptr = _data_ptr(hit_stream_columns.primitive_ids)
     primitive_ids_carrier_ptr = _data_ptr(primitive_ids)
     group_ids_input_ptr = _data_ptr(payload_columns.primitive_group_ids)
-    group_ids_carrier_source = _torch_as(
-        payload_columns.primitive_group_ids,
-        dtype=torch.int64,
-        device_like=primitive_ids,
-        allow_explicit_copy=allow_explicit_copy,
-    )
     group_ids_carrier_ptr = _data_ptr(group_ids_carrier_source)
     values_input_ptr = _data_ptr(payload_columns.primitive_values)
-    values_carrier_source = _torch_as(
-        payload_columns.primitive_values,
-        dtype=torch.float64,
-        device_like=primitive_ids,
-        allow_explicit_copy=allow_explicit_copy,
-    )
     values_carrier_ptr = _data_ptr(values_carrier_source)
     primitive_ids_same_pointer = primitive_ids_input_ptr is not None and primitive_ids_input_ptr == primitive_ids_carrier_ptr
     group_ids_same_pointer = group_ids_input_ptr is not None and group_ids_input_ptr == group_ids_carrier_ptr
@@ -1684,9 +1682,13 @@ def _gather_payload_torch_carrier(
     execution_metadata = {
         "executed": True,
         "adapter_execution_proven_on_hardware": adapter_execution_proven_on_hardware,
-        "neutral_seam_runtime_authority_trace": trace_v2_5_hit_stream_torch_carrier_runtime_seam_authority(
-            hit_stream_columns,
-            payload_columns,
+        "neutral_seam_runtime_authority_trace": _neutral_seam_runtime_trace_from_lease_records(
+            adapter,
+            (
+                primitive_lease_record,
+                group_ids_lease_record,
+                values_lease_record,
+            ),
             executed=True,
         ),
         "primitive_ids_input_data_ptr": primitive_ids_input_ptr,
@@ -1749,22 +1751,29 @@ def trace_v2_5_hit_stream_torch_carrier_runtime_seam_authority(
         except ValueError as exc:
             errors.append(f"{descriptor.buffer.name}: {exc}")
             continue
-        record = completed.to_metadata()
         lease_records.append(
-            {
-                "buffer_name": record["buffer_name"],
-                "producer": record["producer"],
-                "consumer": record["consumer"],
-                "owner_state": record["owner_state"],
-                "final_state": record["state"],
-                "retain_until": record["retain_until"],
-                "event_log": record["event_log"],
-                "authority_origin": "neutral_buffer_seam",
-                "carrier_authority_disallowed_by_contract": True,
-                "true_zero_copy_authorized": False,
-                "public_speedup_claim_authorized": False,
-            }
+            _neutral_seam_lease_record(
+                completed,
+                conversion_executed_under_seam_lease=False,
+            )
         )
+
+    return _neutral_seam_runtime_trace_from_lease_records(
+        adapter,
+        tuple(lease_records),
+        executed=executed,
+        existing_errors=tuple(errors),
+    )
+
+
+def _neutral_seam_runtime_trace_from_lease_records(
+    adapter: Mapping[str, object],
+    lease_records: Sequence[Mapping[str, object]],
+    *,
+    executed: bool,
+    existing_errors: Sequence[str] = (),
+) -> dict[str, object]:
+    errors = list(existing_errors)
 
     if adapter["carrier_metadata_scope"] != "triton_launch_carrier_only":
         errors.append("torch carrier metadata scope is not launch-carrier-only")
@@ -1772,8 +1781,15 @@ def trace_v2_5_hit_stream_torch_carrier_runtime_seam_authority(
         errors.append("torch carrier authoritative metadata origin is not seam-only")
     if any(record["event_log"] != ("handoff_begin", "continuation_complete") for record in lease_records):
         errors.append("neutral seam leases did not record handoff_begin -> continuation_complete")
-    if len(lease_records) != len(descriptors):
+    if len(lease_records) != 3:
         errors.append("not all torch-carrier gather columns produced seam lease records")
+    copy_decision_wrapped = bool(
+        executed
+        and lease_records
+        and all(bool(record.get("conversion_executed_under_seam_lease")) for record in lease_records)
+    )
+    if executed and not copy_decision_wrapped:
+        errors.append("executed torch-carrier conversions were not wrapped by seam leases")
 
     return {
         "contract_version": GENERIC_HIT_STREAM_NEUTRAL_SEAM_RECONCILIATION_VERSION,
@@ -1788,6 +1804,7 @@ def trace_v2_5_hit_stream_torch_carrier_runtime_seam_authority(
         "lease_records": tuple(lease_records),
         "all_leases_completed": not errors
         and all(record["final_state"] == record["owner_state"] for record in lease_records),
+        "copy_decision_wrapped_by_seam_lease": copy_decision_wrapped,
         "carrier_authority_disallowed_by_contract": True,
         "true_zero_copy_authorized": False,
         "public_speedup_claim_authorized": False,
@@ -1798,6 +1815,55 @@ def trace_v2_5_hit_stream_torch_carrier_runtime_seam_authority(
             "not a zero-copy, speedup, or release claim."
         ),
     }
+
+
+def _neutral_seam_lease_record(
+    lease: Any,
+    *,
+    conversion_executed_under_seam_lease: bool,
+) -> dict[str, object]:
+    record = lease.to_metadata()
+    return {
+        "buffer_name": record["buffer_name"],
+        "producer": record["producer"],
+        "consumer": record["consumer"],
+        "owner_state": record["owner_state"],
+        "final_state": record["state"],
+        "retain_until": record["retain_until"],
+        "event_log": record["event_log"],
+        "authority_origin": "neutral_buffer_seam",
+        "conversion_executed_under_seam_lease": bool(conversion_executed_under_seam_lease),
+        "carrier_authority_disallowed_by_contract": True,
+        "true_zero_copy_authorized": False,
+        "public_speedup_claim_authorized": False,
+    }
+
+
+def _torch_as_under_neutral_seam_lease(
+    descriptor: Any,
+    value: Any,
+    *,
+    dtype: Any,
+    device_like: Any,
+    allow_explicit_copy: bool,
+) -> tuple[Any, dict[str, object]]:
+    lease = create_neutral_buffer_lease(descriptor)
+    borrowed = lease.begin_partner_borrow()
+    try:
+        tensor = _torch_as(
+            value,
+            dtype=dtype,
+            device_like=device_like,
+            allow_explicit_copy=allow_explicit_copy,
+        )
+    except Exception:
+        borrowed.failure_cleanup()
+        raise
+    completed = borrowed.complete_partner_borrow()
+    return tensor, _neutral_seam_lease_record(
+        completed,
+        conversion_executed_under_seam_lease=True,
+    )
 
 
 def _gather_payload_python_reference(

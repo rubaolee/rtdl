@@ -96,6 +96,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2883_torch_carrier_runtime_seam_trace_2026-05-31.md",
     "docs/reports/goal2885_v2_5_partner_conformance_readiness_snapshot_2026-05-31.md",
     "docs/reports/goal2887_goal2886_review_intake_and_carrier_authority_field_rename_2026-05-31.md",
+    "docs/reports/goal2889_torch_carrier_copy_decision_seam_lease_wrap_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -184,6 +185,7 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "keep_goal2885_partner_conformance_snapshot_green",
     "triage_goal2886_claude_review_before_any_release_packet",
     "keep_goal2887_carrier_authority_field_rename_green",
+    "keep_goal2889_copy_decision_seam_lease_wrap_green",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
