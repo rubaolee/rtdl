@@ -1,0 +1,47 @@
+[goal2803] starting Barnes-Hut consolidated harness: cases=((512, 16), (2048, 32), (8192, 32)), repeats=3, validate_all_cases=False
+[goal2803] membership case 1/3: bodies=512, bucket=16, repeats=3, validate=True
+[goal2803] membership case 1/3 progress: backend=embree repeat=1/3 start
+Traceback (most recent call last):
+  File "/tmp/rtdl_goal2977_rtx4000ada/scripts/goal2803_barnes_hut_v25_consolidated_harness.py", line 451, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/tmp/rtdl_goal2977_rtx4000ada/scripts/goal2803_barnes_hut_v25_consolidated_harness.py", line 434, in main
+    payload = run_goal2803_barnes_hut_consolidated_harness(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/rtdl_goal2977_rtx4000ada/scripts/goal2803_barnes_hut_v25_consolidated_harness.py", line 356, in run_goal2803_barnes_hut_consolidated_harness
+    membership_rows = _run_membership_cases(
+                      ^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/rtdl_goal2977_rtx4000ada/scripts/goal2803_barnes_hut_v25_consolidated_harness.py", line 82, in _run_membership_cases
+    case = run_case(
+           ^^^^^^^^^
+  File "/tmp/rtdl_goal2977_rtx4000ada/scripts/goal2642_barnes_hut_embree_vs_optix_lowering_perf.py", line 108, in run_case
+    _run_once(
+  File "/tmp/rtdl_goal2977_rtx4000ada/scripts/goal2642_barnes_hut_embree_vs_optix_lowering_perf.py", line 31, in _run_once
+    payload = bench.run_benchmark(
+              ^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/rtdl_goal2977_rtx4000ada/examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py", line 1164, in run_benchmark
+    _aggregate_frontier_expanded_membership_payload(
+  File "/tmp/rtdl_goal2977_rtx4000ada/examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py", line 607, in _aggregate_frontier_expanded_membership_payload
+    lowered = _frontier_rows_via_expanded_membership(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/rtdl_goal2977_rtx4000ada/examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py", line 375, in _frontier_rows_via_expanded_membership
+    membership = rt.expanded_aabb_point_membership_rows_2d(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/rtdl_goal2977_rtx4000ada/src/rtdsl/aabb_index.py", line 856, in expanded_aabb_point_membership_rows_2d
+    prepared_embree = _prepare_embree_aabb_index_2d(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/rtdl_goal2977_rtx4000ada/src/rtdsl/aabb_index.py", line 1013, in _prepare_embree_aabb_index_2d
+    prepared = prepare_embree_columnar_record_set(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/rtdl_goal2977_rtx4000ada/src/rtdsl/embree_runtime.py", line 3501, in prepare_embree_columnar_record_set
+    return PreparedEmbreeColumnarPayload.from_columnar_record_set(record_set, primary_fields=primary_fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/rtdl_goal2977_rtx4000ada/src/rtdsl/embree_runtime.py", line 3320, in from_columnar_record_set
+    _load_embree_library(),
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/rtdl_goal2977_rtx4000ada/src/rtdsl/embree_runtime.py", line 5049, in _load_embree_library
+    library_path = _ensure_embree_library()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/rtdl_goal2977_rtx4000ada/src/rtdsl/embree_runtime.py", line 5726, in _ensure_embree_library
+    raise RuntimeError(
+RuntimeError: Embree is not installed at the configured prefix. Set RTDL_EMBREE_PREFIX to a prefix with include/embree4 or include/embree3, or install Embree first.
