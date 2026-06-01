@@ -4,6 +4,8 @@ import json
 import unittest
 from pathlib import Path
 
+from scripts import goal2800_rtnn_v25_live_ranked_summary_harness as harness
+
 
 ROOT = Path(__file__).resolve().parents[1]
 HARNESS = ROOT / "scripts" / "goal2800_rtnn_v25_live_ranked_summary_harness.py"
@@ -16,14 +18,14 @@ class Goal2954RtnnGraphReplayRouteTuningTest(unittest.TestCase):
         text = HARNESS.read_text(encoding="utf-8")
 
         self.assertIn("v8.scale65536_repeat9_graph_replay", text)
-        self.assertIn(
-            'result_mode="ranked-summary-aggregate-prepared-query-batch-graph-float32"',
-            text,
-        )
+        self.assertEqual("ranked-summary-aggregate-prepared-query-batch-graph-float32", harness.GOAL2800_RESULT_MODE)
+        self.assertEqual(65536, harness.GOAL2800_GRAPH_REPLAY_QUERY_BATCH_LIMIT)
+        self.assertIn("result_mode=GOAL2800_RESULT_MODE", text)
         self.assertNotIn(
             'result_mode="ranked-summary-aggregate-prepared-query-float32"',
             text,
         )
+        self.assertIn("min(int(point_count), GOAL2800_GRAPH_REPLAY_QUERY_BATCH_LIMIT)", text)
 
     def test_uniform_mode_sweep_selects_graph_replay(self) -> None:
         payload = json.loads((ARTIFACT_DIR / "goal2954_rtnn_uniform_mode_sweep.json").read_text(encoding="utf-8"))

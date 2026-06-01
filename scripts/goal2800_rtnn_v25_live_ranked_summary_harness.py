@@ -22,6 +22,8 @@ GOAL2800_HARNESS_VERSION = "rtdl.goal2800.rtnn_v2_5_live_ranked_summary_harness.
 DEFAULT_DISTRIBUTIONS = ("uniform", "clustered", "shell")
 DEFAULT_POINT_COUNT = 65536
 DEFAULT_REPEAT = 9
+GOAL2800_RESULT_MODE = "ranked-summary-aggregate-prepared-query-batch-graph-float32"
+GOAL2800_GRAPH_REPLAY_QUERY_BATCH_LIMIT = 65536
 CLAIM_BOUNDARY = {
     "canonical_live_harness": True,
     "tier_b_same_contract_opponent": True,
@@ -60,7 +62,11 @@ def run_goal2800_rtnn_live_harness(
         raise ValueError("point_count must be positive")
     if k_max <= 0:
         raise ValueError("k_max must be positive")
-    batch_size = int(query_batch_size or point_count)
+    batch_size = int(
+        query_batch_size
+        if query_batch_size is not None
+        else min(int(point_count), GOAL2800_GRAPH_REPLAY_QUERY_BATCH_LIMIT)
+    )
     rows: list[dict[str, Any]] = []
 
     with tempfile.TemporaryDirectory(prefix="goal2800_rtnn_") as temp_name:
@@ -87,7 +93,7 @@ def run_goal2800_rtnn_live_harness(
                         k_max=int(k_max),
                         backend="optix",
                         query_batch_size=batch_size,
-                        result_mode="ranked-summary-aggregate-prepared-query-batch-graph-float32",
+                        result_mode=GOAL2800_RESULT_MODE,
                         repeat=int(repeat),
                         row_label=f"goal2800_rtdl_{distribution}_{int(point_count)}",
                     )
