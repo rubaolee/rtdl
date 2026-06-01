@@ -20,7 +20,7 @@ POD_ARTIFACT = (
 class Goal2903HausdorffReducedBboxDefaultTest(unittest.TestCase):
     def test_canonical_entrypoint_defaults_to_reduced_bbox_path(self) -> None:
         self.assertEqual(entrypoint.DEFAULT_RTDL_METHOD, "rtdl_rt_grouped_reduced_nearest_witness")
-        self.assertEqual(entrypoint.DEFAULT_REDUCED_TARGET_POINTS_PER_GROUP, 2048)
+        self.assertEqual(entrypoint.DEFAULT_REDUCED_TARGET_POINTS_PER_GROUP, 8192)
         self.assertFalse(entrypoint.DEFAULT_REDUCED_SEED_WITH_THRESHOLD)
 
     def test_run_helper_passes_reduced_bbox_defaults_to_user_function(self) -> None:
@@ -57,7 +57,7 @@ class Goal2903HausdorffReducedBboxDefaultTest(unittest.TestCase):
         self.assertEqual(result.elapsed_sec, 0.001)
         self.assertEqual(
             calls,
-            [{"seed_with_threshold": False, "target_points_per_group": 2048}],
+            [{"seed_with_threshold": False, "target_points_per_group": 8192}],
         )
 
     def test_report_records_design_boundary(self) -> None:

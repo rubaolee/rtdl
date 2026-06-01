@@ -41,9 +41,9 @@ class Goal2920RtnnHausdorffLargeScaleStabilityTest(unittest.TestCase):
                 self.assertEqual(4096, payload["rtdl"]["reduced_target_points_per_group"])
                 self.assertFalse(payload["claim_boundary"]["rtdl_beats_cupy_grid_claim_authorized"])
 
-    def test_hausdorff_default_uses_target4096_without_native_engine_change(self) -> None:
-        self.assertEqual(4096, hd_entrypoint.DEFAULT_REDUCED_TARGET_POINTS_PER_GROUP)
-        self.assertIn("target4096", hd_entrypoint.GOAL2801_ENTRYPOINT_VERSION)
+    def test_hausdorff_default_uses_latest_target_without_native_engine_change(self) -> None:
+        self.assertEqual(8192, hd_entrypoint.DEFAULT_REDUCED_TARGET_POINTS_PER_GROUP)
+        self.assertIn("target8192", hd_entrypoint.GOAL2801_ENTRYPOINT_VERSION)
         self.assertFalse(hd_entrypoint.CLAIM_BOUNDARY["native_engine_customization"])
 
     def test_report_documents_boundary_and_next_packet_requirement(self) -> None:

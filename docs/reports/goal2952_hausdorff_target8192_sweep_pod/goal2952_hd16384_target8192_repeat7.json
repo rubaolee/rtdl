@@ -1,0 +1,100 @@
+{
+  "app": "hausdorff_xhd",
+  "baseline": {
+    "elapsed_runs_sec": [
+      0.015770511934533715,
+      0.015721850795671344,
+      0.015826875111088157,
+      0.015872353920713067,
+      0.01571569824591279,
+      0.014666174072772264,
+      0.013808396877720952
+    ],
+    "elapsed_sec": 0.015721850795671344,
+    "exact_value": true,
+    "median_elapsed_sec": 0.015721850795671344,
+    "method": "cupy_grouped_grid_rawkernel",
+    "result": {
+      "direction": "a_to_b",
+      "distance": 0.11858844621300667,
+      "elapsed_sec": 0.015721850795671344,
+      "method": "cupy_grouped_grid_rawkernel",
+      "source_index": 13024,
+      "target_index": 462
+    },
+    "uses_rt_cores": false,
+    "uses_rtdl": false,
+    "warmup_elapsed_sec": 0.7198638261761516,
+    "wrapper_elapsed_sec": 0.20282120304182172
+  },
+  "benchmark_track": "canonical_exact_hausdorff_entrypoint",
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "canonical_entrypoint": true,
+    "native_engine_customization": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rtdl_beats_cupy_grid_claim_authorized": false,
+    "rtdl_beats_xhd_claim_authorized": false,
+    "triton_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "distance_error": 0.0,
+  "elapsed_sec": 1.9577940348535776,
+  "entrypoint_version": "rtdl.goal2801.hausdorff_xhd_v2_5_canonical_entrypoint.v2.reduced_target4096",
+  "goal": "Goal2801",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "matches_exact_baseline": true,
+  "rtdl": {
+    "adaptive_growth_factor": null,
+    "adaptive_target_points_per_group": null,
+    "elapsed_runs_sec": [
+      0.013890123926103115,
+      0.013537188991904259,
+      0.016794815892353654,
+      0.014120119158178568,
+      0.013720902148634195,
+      0.013515130151063204,
+      0.013667111052200198
+    ],
+    "elapsed_sec": 0.013720902148634195,
+    "exact_value": true,
+    "median_elapsed_sec": 0.013720902148634195,
+    "method": "rtdl_rt_grouped_reduced_nearest_witness",
+    "reduced_seed_with_threshold": false,
+    "reduced_target_points_per_group": 8192,
+    "result": {
+      "backend": "optix",
+      "direction": "a_to_b",
+      "distance": 0.11858844621300667,
+      "elapsed_sec": 0.013720902148634195,
+      "exact_value": true,
+      "method": "rtdl_rt_grouped_reduced_nearest_witness",
+      "radius_strategy": "bbox_upper_bound",
+      "rt_core_accelerated": true,
+      "source_index": 13024,
+      "target_index": 8210,
+      "threshold_iterations": 0,
+      "witness_radius": 3.5202286382107038
+    },
+    "uses_rt_cores": true,
+    "uses_rtdl": true,
+    "warmup_elapsed_sec": 0.86316107516177,
+    "wrapper_elapsed_sec": 0.10068788914941251
+  },
+  "rtdl_over_cupy_grid_elapsed_ratio": 0.8727281747522967,
+  "scenario": {
+    "exact_tolerance": 1e-09,
+    "offset_x": 0.08,
+    "offset_y": -0.06,
+    "points_a": 16384,
+    "points_b": 16384,
+    "repeat": 7,
+    "rtdl_warmup": 1,
+    "seed_a": 11,
+    "seed_b": 29
+  },
+  "source_commit": "17b477944a5c15087148c651227d498f506ec0f6",
+  "source_dirty": [],
+  "status": "pass"
+}
