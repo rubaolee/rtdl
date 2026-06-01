@@ -102,9 +102,17 @@ V2_5_TRITON_BENCHMARK_APP_PLANS: tuple[V25TritonBenchmarkAppPlan, ...] = (
         promoted_benchmark=True,
         current_hot_path_partner="primitive_first_fused_rtdl_for_grouped_scalar_reductions",
         v2_5_required_operations=("segmented_count_i64", "segmented_sum_f64", "segmented_min_f64", "segmented_max_f64"),
-        v2_5_status="primitive_first_after_goal2727_hit_stream_reserved_for_unfused_continuations",
-        first_port_action="Route grouped count/sum/min/max to the prepared fused RTDL primitive; reserve typed hit-stream adapters for unfused continuations.",
-        notes="Goal2727 showed hit-stream plus Triton is slower than the prepared fused primitive for RayDB scalar grouped reductions.",
+        v2_5_status="primitive_first_after_Goal2896_same_contract_perf_gate_hit_stream_reserved_for_unfused_continuations",
+        first_port_action=(
+            "Route grouped count/sum/min/max to the prepared fused RTDL primitive; "
+            "reserve typed hit-stream adapters for unfused continuations. Goal2896 "
+            "is the current same-contract performance-decision gate."
+        ),
+        notes=(
+            "Goal2896 measured the prepared hit-stream plus Triton path as "
+            "22.58x-205.08x slower than primitive-first for RayDB count/sum on "
+            "the RTX A5000 pod. Do not promote Triton simply to use Triton."
+        ),
         measured_selection_shapes=(
             ("segmented_count_i64", "raydb_scalar_grouped_reduction_frontdoor"),
             ("segmented_sum_f64", "raydb_scalar_grouped_reduction_frontdoor"),
@@ -248,11 +256,11 @@ V2_5_TIERED_BENCHMARK_MANIFEST_ROWS: tuple[V25TieredBenchmarkManifestRow, ...] =
         tier="A",
         benchmark_track="partner_continuation",
         parity_target="primitive-first prepared steady-state parity first; whole-app timing remains separately bounded",
-        canonical_harness_status="ready_with_goal2720_goal2722_goal2727_prepared_pod_evidence",
-        same_contract_opponent="prepared fused generic grouped-reduction path plus typed hit-stream alternative",
+        canonical_harness_status="ready_with_goal2720_goal2722_goal2727_and_Goal2896_prepared_pod_evidence",
+        same_contract_opponent="Goal2896 prepared fused primitive-first path versus prepared typed hit-stream plus Triton alternative",
         required_partner_operations=("segmented_count_i64", "segmented_sum_f64", "segmented_min_f64", "segmented_max_f64"),
-        pod_evidence_status="prepared pod evidence for OptiX/Triton plus Goal2727 prepared fused-opponent evidence recorded",
-        next_action="make primitive-first explain output canonical; use hit-stream path only for unfused continuations",
+        pod_evidence_status="Goal2896 current prepared pod evidence same-contract performance gate passed for count/sum; Goal2727/2728 historical prepared evidence retained",
+        next_action="keep Goal2896 gate current; use hit-stream path only for unfused continuations",
     ),
     V25TieredBenchmarkManifestRow(
         app_id="triangle_counting",
@@ -445,6 +453,12 @@ def validate_v2_5_tiered_benchmark_manifest() -> dict[str, object]:
             status = str(row["pod_evidence_status"])  # type: ignore[index]
             if "prepared" not in status or "pod evidence" not in status:
                 errors.append("RayDB row must record prepared pod evidence")
+            row_text = " ".join(
+                str(row[field])  # type: ignore[index]
+                for field in ("canonical_harness_status", "same_contract_opponent", "pod_evidence_status", "next_action")
+            )
+            if "Goal2896" not in row_text:
+                errors.append("RayDB row must index Goal2896 same-contract performance gate")
     return {
         "status": "accept" if not errors else "reject",
         "manifest_version": manifest["manifest_version"],
@@ -461,7 +475,7 @@ def validate_v2_5_triton_benchmark_app_migration_plan() -> dict[str, object]:
     if len(app_ids) != len(set(app_ids)):
         errors.append("duplicate benchmark app id in v2.5 Triton migration plan")
     if plan["primary_partner"] != "triton":
-        errors.append("v2.5 benchmark migration must remain Triton-first")
+        errors.append("v2.5 benchmark migration must keep Triton as the declared primary partner")
     if plan["auto_select_preview_partner_allowed"] is not False:
         errors.append("v2.5 benchmark migration plan must not auto-select preview partners")
     if plan["partner_selection_guidance_integrated"] is not True:
@@ -481,6 +495,15 @@ def validate_v2_5_triton_benchmark_app_migration_plan() -> dict[str, object]:
             )
         if app.get("auto_select_preview_partner_allowed") is not False:
             errors.append(f"{app['app_id']} must not auto-select a preview partner")
+        if app["app_id"] == "raydb_style":
+            raydb_text = " ".join(
+                str(app[field])
+                for field in ("current_hot_path_partner", "v2_5_status", "first_port_action", "notes")
+            )
+            if "Goal2896" not in raydb_text:
+                errors.append("raydb_style migration plan must cite Goal2896 current performance gate")
+            if "primitive_first" not in str(app["current_hot_path_partner"]):
+                errors.append("raydb_style current hot path must remain primitive-first")
         for guidance in app.get("partner_selection_guidance", ()):
             if guidance["status"] == "measured_negative_preview_guidance":
                 if guidance["auto_select_partner_allowed"] is not False:

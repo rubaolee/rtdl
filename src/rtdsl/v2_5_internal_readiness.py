@@ -99,6 +99,8 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2889_torch_carrier_copy_decision_seam_lease_wrap_2026-05-31.md",
     "docs/reports/goal2891_runtime_provenance_index_in_conformance_snapshot_2026-05-31.md",
     "docs/reports/goal2893_current_packet_after_runtime_provenance_index_2026-05-31.md",
+    "docs/reports/goal2896_raydb_same_contract_performance_decision_gate_2026-05-31.md",
+    "docs/reports/goal2898_raydb_perf_gate_readiness_integration_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -189,6 +191,8 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "keep_goal2887_carrier_authority_field_rename_green",
     "keep_goal2889_copy_decision_seam_lease_wrap_green",
     "keep_goal2891_runtime_provenance_snapshot_green",
+    "keep_goal2896_raydb_same_contract_perf_gate_green",
+    "triage_goal2897_external_review_for_goal2896_raydb_perf_gate",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
