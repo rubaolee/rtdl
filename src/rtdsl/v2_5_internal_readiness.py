@@ -131,6 +131,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2938_optix_row_view_typed_partner_columns_2026-06-01.md",
     "docs/reports/goal2939_rayjoin_row_view_partner_columns_pod_smoke_2026-06-01.md",
     "docs/reports/goal2941_rayjoin_row_view_partner_columns_scale_probe_2026-06-01.md",
+    "docs/reports/goal2942_current_packet_after_row_columns_2026-06-01.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -165,7 +166,7 @@ V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_HARNESS_ARTIFACTS = (
     "docs/reports/goal2847_current_head_canonical_harness_pod/goal2803_barnes_hut.json",
 )
 V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_RUNNER_SUMMARY = (
-    "docs/reports/goal2934_current_packet_after_cupy_vector_pod/goal2855_summary.json"
+    "docs/reports/goal2942_current_packet_after_row_columns_pod/goal2855_summary.json"
 )
 
 V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
@@ -258,6 +259,7 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "keep_goal2938_optix_row_view_typed_partner_columns_green",
     "keep_goal2939_rayjoin_row_view_partner_columns_pod_smoke_green",
     "keep_goal2941_rayjoin_row_view_partner_columns_scale_probe_green",
+    "keep_goal2942_current_packet_after_row_columns_green",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
