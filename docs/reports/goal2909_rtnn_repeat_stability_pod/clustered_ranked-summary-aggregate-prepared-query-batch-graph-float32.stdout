@@ -1,0 +1,152 @@
+[goal2348] RTDL batched 3D start backend=optix queries=32768 search=32768 batch_size=32768 batches=1 result_mode=ranked-summary-aggregate-prepared-query-batch-graph-float32
+[goal2348] RTDL batched 3D repeat 1/9 ok=True sec=0.004802
+[goal2348] RTDL batched 3D repeat 2/9 ok=True sec=0.004555
+[goal2348] RTDL batched 3D repeat 3/9 ok=True sec=0.004541
+[goal2348] RTDL batched 3D repeat 4/9 ok=True sec=0.004516
+[goal2348] RTDL batched 3D repeat 5/9 ok=True sec=0.004541
+[goal2348] RTDL batched 3D repeat 6/9 ok=True sec=0.004504
+[goal2348] RTDL batched 3D repeat 7/9 ok=True sec=0.004523
+[goal2348] RTDL batched 3D repeat 8/9 ok=True sec=0.004509
+[goal2348] RTDL batched 3D repeat 9/9 ok=True sec=0.004526
+{
+  "backend": "optix",
+  "batch_count": 1,
+  "batch_phase_timings": [
+    {
+      "candidate_count_pass": 0.004488244,
+      "candidate_write_pass": 0.0,
+      "count_download_and_prefix": 0.0,
+      "emitted_count": 32768,
+      "exact_refine": 0.0,
+      "mode": "prepared_query_uniform_cell_ranked_summary_aggregate_f32_batch_cuda_graph_replay",
+      "prepare": 0.0,
+      "raw_candidate_count": 1287932,
+      "row_download": 1.2472e-05,
+      "row_offset_upload": 0.0,
+      "upload": 0.0
+    }
+  ],
+  "claim_boundary": {
+    "aggregate_requests_batched": true,
+    "broad_rt_core_speedup_claim_authorized": false,
+    "device_ranked_summary_aggregate": true,
+    "device_ranked_summary_rows": false,
+    "device_resident_query_points": true,
+    "embree_ranked_summary_rows": false,
+    "float32_precision": true,
+    "materializes_neighbor_rows": false,
+    "paper_equivalent_rtnn_row": false,
+    "partitioned_or_batched_like_rtnn": true,
+    "prepared_cuda_graph_replay": true,
+    "rt_core_neighbor_search_claim_authorized": false,
+    "rtdl_speedup_claim_authorized": false,
+    "same_stream_partner_consumer": false
+  },
+  "contract": {
+    "aggregate_batch_request_mode": "homogeneous",
+    "aggregate_batch_requests": [
+      {
+        "k_max": 50,
+        "radius": 0.02
+      }
+    ],
+    "aggregate_request_count": 1,
+    "approximate": false,
+    "batched_queries": true,
+    "bounded_k": 50,
+    "exact": false,
+    "execution_path_policy_version": "rtdl.v2_5.execution_path_policy.v1",
+    "family": "fixed_radius_neighbors_3d",
+    "mode": "ranked-summary-aggregate-prepared-query-batch-graph-float32",
+    "precision": "float32",
+    "prepared_cuda_graph_replay": true,
+    "prepared_query_points": true,
+    "prepared_search_structure": true,
+    "same_stream_partner_consumer": false
+  },
+  "elapsed_runs_sec": [
+    0.00480210199020803,
+    0.004555010003969073,
+    0.004541144939139485,
+    0.004515757085755467,
+    0.004541253903880715,
+    0.004504387034103274,
+    0.004522673087194562,
+    0.004509378224611282,
+    0.004526314092800021
+  ],
+  "elapsed_sec": 0.004526314092800021,
+  "error": "",
+  "execution_path_plan": {
+    "auto_select_same_stream_for_speed_allowed": false,
+    "backend": "optix",
+    "claim_boundary": "v2.5 execution-path policy is explain-only guidance. It does not hide dispatch, force a partner, authorize public speedup wording, authorize RT-core speedup wording, authorize whole-app speedup wording, authorize true zero-copy wording, or authorize release readiness.",
+    "direct_native_graph_preferred_when_no_partner_continuation": true,
+    "direct_native_graph_result_mode": "ranked-summary-aggregate-prepared-query-batch-graph-float32",
+    "evidence_artifact": "docs/reports/goal2841_rtnn_same_stream_scale_pod/goal2841_summary.json",
+    "evidence_goal": "Goal2841",
+    "explicit_result_mode_required": true,
+    "hidden_auto_dispatch_allowed": false,
+    "operation": "fixed_radius_ranked_summary_aggregate_3d",
+    "partner": "cupy_conformance",
+    "policy_version": "rtdl.v2_5.execution_path_policy.v1",
+    "prefer_fastest_native_aggregate": true,
+    "public_speedup_claim_authorized": false,
+    "reasons": [
+      "No partner continuation is required, so direct native graph replay is the fastest measured path.",
+      "Goal2841 measured same-stream replay at 1.923x the direct median on the 65K fixture."
+    ],
+    "recommended_result_mode": "ranked-summary-aggregate-prepared-query-batch-graph-float32",
+    "release_readiness_authorized": false,
+    "requires_partner_continuation": false,
+    "rt_core_speedup_claim_authorized": false,
+    "same_stream_over_direct_median_ratio": 1.9232031759290225,
+    "same_stream_partner_result_mode": "ranked-summary-aggregate-prepared-query-batch-graph-same-stream-cupy-float32",
+    "same_stream_required_for_partner_continuation": false,
+    "same_stream_slower_than_direct_on_goal2841_fixture": true,
+    "selected_path": "direct_native_graph_replay",
+    "true_zero_copy_claim_authorized": false,
+    "warnings": [],
+    "whole_app_speedup_claim_authorized": false
+  },
+  "execution_prepare_sec": 2.034419881179929,
+  "external": "RTDL current",
+  "input_load_sec": 0.04057432897388935,
+  "input_pack_sec": 0.019957176875323057,
+  "k_max": 50,
+  "mode": "current_3d_fixed_radius_neighbors_optix_batched",
+  "ok": true,
+  "query_batch_size": 32768,
+  "query_count": 32768,
+  "radius": 0.02,
+  "ranked_aggregate_batch_summaries": [
+    {
+      "bounded_neighbor_count": 1287932,
+      "cuda_graph_replay": true,
+      "k_max": 50,
+      "kth_id_checksum": 536303594,
+      "nearest_id_checksum": 536854528,
+      "precision": "float32",
+      "query_count": 32768,
+      "query_resident": true,
+      "radius": 0.02,
+      "request_buffer_update_count": 0,
+      "request_index": 0,
+      "sum_distance": 16023.81063813626
+    }
+  ],
+  "ranked_aggregate_summary": {
+    "bounded_neighbor_count": 1287932,
+    "kth_id_checksum": 536303594,
+    "nearest_id_checksum": 536854528,
+    "row_count": 32768,
+    "sum_distance": 16023.81063813626
+  },
+  "repeat": 9,
+  "result_mode": "ranked-summary-aggregate-prepared-query-batch-graph-float32",
+  "row": "goal2909_clustered_ranked-summary-aggregate-prepared-query-batch-graph-float32",
+  "row_count": 32768,
+  "runner": "goal2348_rtnn_v2_2_external_runner",
+  "same_stream_entrypoint_metadata": null,
+  "search_count": 32768
+}

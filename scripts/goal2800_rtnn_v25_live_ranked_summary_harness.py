@@ -18,8 +18,9 @@ sys.path.insert(0, str(ROOT))
 from scripts import goal2348_rtnn_v2_2_external_runner as rtnn_runner  # noqa: E402
 
 
-GOAL2800_HARNESS_VERSION = "rtdl.goal2800.rtnn_v2_5_live_ranked_summary_harness.v5.prepared_query_aggregate_float32_median"
+GOAL2800_HARNESS_VERSION = "rtdl.goal2800.rtnn_v2_5_live_ranked_summary_harness.v6.repeat9_stability"
 DEFAULT_DISTRIBUTIONS = ("uniform", "clustered", "shell")
+DEFAULT_REPEAT = 9
 CLAIM_BOUNDARY = {
     "canonical_live_harness": True,
     "tier_b_same_contract_opponent": True,
@@ -48,7 +49,7 @@ def run_goal2800_rtnn_live_harness(
     radius: float = 0.02,
     k_max: int = 50,
     query_batch_size: int | None = None,
-    repeat: int = 3,
+    repeat: int = DEFAULT_REPEAT,
     run_cupy_grid: bool = True,
     work_dir: Path | None = None,
     fail_fast: bool = False,
@@ -304,7 +305,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--radius", type=float, default=0.02)
     parser.add_argument("--k-max", type=int, default=50)
     parser.add_argument("--query-batch-size", type=int)
-    parser.add_argument("--repeat", type=int, default=3)
+    parser.add_argument("--repeat", type=int, default=DEFAULT_REPEAT)
     parser.add_argument("--work-dir", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--skip-cupy-grid", action="store_true")

@@ -1,0 +1,57 @@
+{
+  "claim_boundary": {
+    "cuda_core_baseline": true,
+    "native_abi_changed_for_rtnn": false,
+    "paper_equivalent_rtnn_row": false,
+    "rtdl_speedup_claim_authorized": false,
+    "stronger_than_all_pairs_baseline": true,
+    "uses_rt_cores": false
+  },
+  "contract": {
+    "approximate": false,
+    "bounded_k": 50,
+    "exact": true,
+    "family": "fixed_radius_neighbors_3d",
+    "mode": "ranked-summary",
+    "prepared_search_structure": true,
+    "uniform_grid_cuda_core": true
+  },
+  "dtype": "float32",
+  "elapsed_runs_sec": [
+    0.01201530802063644,
+    0.012030289974063635,
+    0.011921219062060118,
+    0.012021779082715511,
+    0.011934889946132898,
+    0.01197826792486012,
+    0.011904527200385928,
+    0.012016398133710027,
+    0.011938674142584205
+  ],
+  "elapsed_sec": 0.011938674142584205,
+  "external": "CuPy",
+  "grid_cell_count": 92500,
+  "grid_dimensions": [
+    37,
+    50,
+    50
+  ],
+  "grid_prepare_sec": 0.36094474396668375,
+  "input_load_sec": 0.04191006510518491,
+  "k_max": 50,
+  "mode": "cupy_cuda_core_grid_exact_ranked_summary_3d",
+  "occupied_cell_count": 4841,
+  "ok": true,
+  "query_count": 32768,
+  "radius": 0.02,
+  "row": "cupy_grid_3d_ranked_summary",
+  "runner": "goal2348_rtnn_v2_2_external_runner",
+  "search_count": 32768,
+  "summary": {
+    "bounded_neighbor_count": 1287932,
+    "kth_id_checksum": 536303594,
+    "nearest_id_checksum": 536854528,
+    "row_count": 32768,
+    "sum_distance": 16023.810639339034
+  }
+}

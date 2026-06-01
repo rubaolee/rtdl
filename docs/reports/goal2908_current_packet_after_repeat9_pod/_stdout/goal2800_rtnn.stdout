@@ -1,0 +1,325 @@
+[goal2348] RTDL batched 3D start backend=optix queries=32768 search=32768 batch_size=32768 batches=1 result_mode=ranked-summary-aggregate-prepared-query-float32
+[goal2348] RTDL batched 3D repeat 1/3 ok=True sec=0.000377
+[goal2348] RTDL batched 3D repeat 2/3 ok=True sec=0.000119
+[goal2348] RTDL batched 3D repeat 3/3 ok=True sec=0.000110
+[goal2348] CuPy grid 3D ranked summary start queries=32768 search=32768 grid=52x51x51 occupied_cells=28880 k=50
+[goal2348] CuPy grid 3D ranked summary repeat 1/3 ok=True sec=0.000240
+[goal2348] CuPy grid 3D ranked summary repeat 2/3 ok=True sec=0.000117
+[goal2348] CuPy grid 3D ranked summary repeat 3/3 ok=True sec=0.000073
+[goal2348] RTDL batched 3D start backend=optix queries=32768 search=32768 batch_size=32768 batches=1 result_mode=ranked-summary-aggregate-prepared-query-float32
+[goal2348] RTDL batched 3D repeat 1/3 ok=True sec=0.008351
+[goal2348] RTDL batched 3D repeat 2/3 ok=True sec=0.015559
+[goal2348] RTDL batched 3D repeat 3/3 ok=True sec=0.012699
+[goal2348] CuPy grid 3D ranked summary start queries=32768 search=32768 grid=37x50x50 occupied_cells=4841 k=50
+[goal2348] CuPy grid 3D ranked summary repeat 1/3 ok=True sec=0.011997
+[goal2348] CuPy grid 3D ranked summary repeat 2/3 ok=True sec=0.012053
+[goal2348] CuPy grid 3D ranked summary repeat 3/3 ok=True sec=0.011971
+[goal2348] RTDL batched 3D start backend=optix queries=32768 search=32768 batch_size=32768 batches=1 result_mode=ranked-summary-aggregate-prepared-query-float32
+[goal2348] RTDL batched 3D repeat 1/3 ok=True sec=0.000241
+[goal2348] RTDL batched 3D repeat 2/3 ok=True sec=0.000146
+[goal2348] RTDL batched 3D repeat 3/3 ok=True sec=0.000124
+[goal2348] CuPy grid 3D ranked summary start queries=32768 search=32768 grid=43x44x42 occupied_cells=15226 k=50
+[goal2348] CuPy grid 3D ranked summary repeat 1/3 ok=True sec=0.000313
+[goal2348] CuPy grid 3D ranked summary repeat 2/3 ok=True sec=0.000268
+[goal2348] CuPy grid 3D ranked summary repeat 3/3 ok=True sec=0.000270
+{
+  "app": "rtnn",
+  "benchmark_track": "tier_b_live_exact_fixed_radius_ranked_summary",
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "canonical_live_harness": true,
+    "native_engine_customization": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rtdl_beats_cupy_grid_claim_authorized": false,
+    "rtdl_beats_rtnn_claim_authorized": false,
+    "tier_b_same_contract_opponent": true,
+    "triton_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "distributions": [
+    "uniform",
+    "clustered",
+    "shell"
+  ],
+  "elapsed_sec": 3.451783078024164,
+  "goal": "Goal2800",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "harness_version": "rtdl.goal2800.rtnn_v2_5_live_ranked_summary_harness.v5.prepared_query_aggregate_float32_median",
+  "k_max": 50,
+  "point_count": 32768,
+  "query_batch_size": 32768,
+  "radius": 0.02,
+  "repeat": 3,
+  "row_count": 3,
+  "rows": [
+    {
+      "candidate_count_delta": 0,
+      "candidate_count_matches_cupy_grid": true,
+      "candidate_count_tolerance": 2,
+      "candidate_count_within_tolerance": true,
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "canonical_live_harness": true,
+        "native_engine_customization": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rtdl_beats_cupy_grid_claim_authorized": false,
+        "rtdl_beats_rtnn_claim_authorized": false,
+        "tier_b_same_contract_opponent": true,
+        "triton_speedup_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "contract": {
+        "bounded_k": 50,
+        "exact": false,
+        "family": "fixed_radius_neighbors_3d",
+        "mode": "ranked-summary-aggregate-prepared-query-float32",
+        "precision": "float32",
+        "prepared_query_points": true,
+        "same_contract_opponent": "cupy_grid_exact_ranked_summary_3d"
+      },
+      "cupy_grid_bounded_neighbor_count": 68178,
+      "cupy_grid_elapsed_runs_sec": [
+        0.00023964210413396358,
+        0.00011684698984026909,
+        7.28850718587637e-05
+      ],
+      "cupy_grid_elapsed_sec": 0.00011684698984026909,
+      "cupy_grid_elapsed_statistic": "median",
+      "cupy_grid_ok": true,
+      "cupy_grid_over_rtdl_elapsed_ratio": 0.9799405225656918,
+      "cupy_grid_summary": {
+        "bounded_neighbor_count": 68178,
+        "kth_id_checksum": 536120173,
+        "nearest_id_checksum": 536854528,
+        "row_count": 32768,
+        "sum_distance": 530.9112822508905
+      },
+      "distribution": "uniform",
+      "elapsed_sec": 2.7645239159464836,
+      "generated": {
+        "dimension": 3,
+        "format": "rtnn_csv_xyz",
+        "path": "/tmp/goal2908_current_packet_after_repeat9/_work/goal2800/uniform_32768.csv",
+        "point_count": 32768,
+        "seed": 2800
+      },
+      "query_count": 32768,
+      "ranked_aggregate_matches_cupy_grid": true,
+      "rtdl_elapsed_runs_sec": [
+        0.0003774380311369896,
+        0.00011923885904252529,
+        0.00010973797179758549
+      ],
+      "rtdl_elapsed_sec": 0.00011923885904252529,
+      "rtdl_elapsed_statistic": "median",
+      "rtdl_input_pack_sec": 0.0176829828415066,
+      "rtdl_ok": true,
+      "rtdl_phase_summary": {
+        "batch_count": 1,
+        "candidate_count_pass_sec": 4.1413e-05,
+        "modes": [
+          "prepared_query_uniform_cell_ranked_summary_aggregate_f32_block_partials"
+        ],
+        "raw_candidate_count": 68178,
+        "row_download_sec": 1.6608e-05,
+        "upload_sec": 0.0
+      },
+      "rtdl_prepare_sec": 1.850651573156938,
+      "rtdl_ranked_aggregate_summary": {
+        "bounded_neighbor_count": 68178,
+        "kth_id_checksum": 536120173,
+        "nearest_id_checksum": 536854528,
+        "row_count": 32768,
+        "sum_distance": 530.9112821479794
+      },
+      "rtdl_raw_candidate_count": 68178,
+      "rtdl_row_count": 32768,
+      "search_count": 32768,
+      "status": "pass"
+    },
+    {
+      "candidate_count_delta": 0,
+      "candidate_count_matches_cupy_grid": true,
+      "candidate_count_tolerance": 2,
+      "candidate_count_within_tolerance": true,
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "canonical_live_harness": true,
+        "native_engine_customization": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rtdl_beats_cupy_grid_claim_authorized": false,
+        "rtdl_beats_rtnn_claim_authorized": false,
+        "tier_b_same_contract_opponent": true,
+        "triton_speedup_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "contract": {
+        "bounded_k": 50,
+        "exact": false,
+        "family": "fixed_radius_neighbors_3d",
+        "mode": "ranked-summary-aggregate-prepared-query-float32",
+        "precision": "float32",
+        "prepared_query_points": true,
+        "same_contract_opponent": "cupy_grid_exact_ranked_summary_3d"
+      },
+      "cupy_grid_bounded_neighbor_count": 1287932,
+      "cupy_grid_elapsed_runs_sec": [
+        0.011996780056506395,
+        0.012053017970174551,
+        0.011971452040597796
+      ],
+      "cupy_grid_elapsed_sec": 0.011996780056506395,
+      "cupy_grid_elapsed_statistic": "median",
+      "cupy_grid_ok": true,
+      "cupy_grid_over_rtdl_elapsed_ratio": 0.9446788642713236,
+      "cupy_grid_summary": {
+        "bounded_neighbor_count": 1287932,
+        "kth_id_checksum": 536303594,
+        "nearest_id_checksum": 536854528,
+        "row_count": 32768,
+        "sum_distance": 16023.810639339034
+      },
+      "distribution": "clustered",
+      "elapsed_sec": 0.37222017790190876,
+      "generated": {
+        "cluster_count": 8,
+        "cluster_stddev": 0.035,
+        "dimension": 3,
+        "distribution": "clustered",
+        "format": "rtnn_csv_xyz",
+        "path": "/tmp/goal2908_current_packet_after_repeat9/_work/goal2800/clustered_32768.csv",
+        "point_count": 32768,
+        "seed": 2801
+      },
+      "query_count": 32768,
+      "ranked_aggregate_matches_cupy_grid": true,
+      "rtdl_elapsed_runs_sec": [
+        0.008350966032594442,
+        0.015559194842353463,
+        0.012699320912361145
+      ],
+      "rtdl_elapsed_sec": 0.012699320912361145,
+      "rtdl_elapsed_statistic": "median",
+      "rtdl_input_pack_sec": 0.018165543908253312,
+      "rtdl_ok": true,
+      "rtdl_phase_summary": {
+        "batch_count": 1,
+        "candidate_count_pass_sec": 0.00751049,
+        "modes": [
+          "prepared_query_uniform_cell_ranked_summary_aggregate_f32"
+        ],
+        "raw_candidate_count": 1287932,
+        "row_download_sec": 1.9243e-05,
+        "upload_sec": 0.0
+      },
+      "rtdl_prepare_sec": 0.019581075990572572,
+      "rtdl_ranked_aggregate_summary": {
+        "bounded_neighbor_count": 1287932,
+        "kth_id_checksum": 536303594,
+        "nearest_id_checksum": 536854528,
+        "row_count": 32768,
+        "sum_distance": 16023.81063813626
+      },
+      "rtdl_raw_candidate_count": 1287932,
+      "rtdl_row_count": 32768,
+      "search_count": 32768,
+      "status": "pass"
+    },
+    {
+      "candidate_count_delta": 0,
+      "candidate_count_matches_cupy_grid": true,
+      "candidate_count_tolerance": 2,
+      "candidate_count_within_tolerance": true,
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "canonical_live_harness": true,
+        "native_engine_customization": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rtdl_beats_cupy_grid_claim_authorized": false,
+        "rtdl_beats_rtnn_claim_authorized": false,
+        "tier_b_same_contract_opponent": true,
+        "triton_speedup_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "contract": {
+        "bounded_k": 50,
+        "exact": false,
+        "family": "fixed_radius_neighbors_3d",
+        "mode": "ranked-summary-aggregate-prepared-query-float32",
+        "precision": "float32",
+        "prepared_query_points": true,
+        "same_contract_opponent": "cupy_grid_exact_ranked_summary_3d"
+      },
+      "cupy_grid_bounded_neighbor_count": 307566,
+      "cupy_grid_elapsed_runs_sec": [
+        0.00031344383023679256,
+        0.0002676290459930897,
+        0.0002704600337892771
+      ],
+      "cupy_grid_elapsed_sec": 0.0002704600337892771,
+      "cupy_grid_elapsed_statistic": "median",
+      "cupy_grid_ok": true,
+      "cupy_grid_over_rtdl_elapsed_ratio": 1.8467737576272103,
+      "cupy_grid_summary": {
+        "bounded_neighbor_count": 307566,
+        "kth_id_checksum": 538505264,
+        "nearest_id_checksum": 536854528,
+        "row_count": 32768,
+        "sum_distance": 4108.110285707051
+      },
+      "distribution": "shell",
+      "elapsed_sec": 0.23225824092514813,
+      "generated": {
+        "cluster_count": null,
+        "cluster_stddev": null,
+        "dimension": 3,
+        "distribution": "shell",
+        "format": "rtnn_csv_xyz",
+        "path": "/tmp/goal2908_current_packet_after_repeat9/_work/goal2800/shell_32768.csv",
+        "point_count": 32768,
+        "seed": 2802
+      },
+      "query_count": 32768,
+      "ranked_aggregate_matches_cupy_grid": true,
+      "rtdl_elapsed_runs_sec": [
+        0.00024098693393170834,
+        0.0001464500091969967,
+        0.00012443400919437408
+      ],
+      "rtdl_elapsed_sec": 0.0001464500091969967,
+      "rtdl_elapsed_statistic": "median",
+      "rtdl_input_pack_sec": 0.01642231596633792,
+      "rtdl_ok": true,
+      "rtdl_phase_summary": {
+        "batch_count": 1,
+        "candidate_count_pass_sec": 8.7886e-05,
+        "modes": [
+          "prepared_query_uniform_cell_ranked_summary_aggregate_f32_block_partials"
+        ],
+        "raw_candidate_count": 307566,
+        "row_download_sec": 1.4541e-05,
+        "upload_sec": 0.0
+      },
+      "rtdl_prepare_sec": 0.0033679238986223936,
+      "rtdl_ranked_aggregate_summary": {
+        "bounded_neighbor_count": 307566,
+        "kth_id_checksum": 538505264,
+        "nearest_id_checksum": 536854528,
+        "row_count": 32768,
+        "sum_distance": 4108.110285904608
+      },
+      "rtdl_raw_candidate_count": 307566,
+      "rtdl_row_count": 32768,
+      "search_count": 32768,
+      "status": "pass"
+    }
+  ],
+  "run_cupy_grid": true,
+  "source_commit": "f101b4da0fa088c76ed30711e5b32b1984a411da",
+  "source_dirty": [],
+  "status": "pass"
+}

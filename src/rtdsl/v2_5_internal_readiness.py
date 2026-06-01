@@ -108,6 +108,8 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2905_barnes_hut_measured_partner_selection_2026-05-31.md",
     "docs/reports/goal2906_current_packet_after_partner_selection_2026-05-31.md",
     "docs/reports/goal2907_hausdorff_repeat_stability_and_rtnn_near_parity_2026-05-31.md",
+    "docs/reports/goal2908_current_packet_after_repeat9_2026-05-31.md",
+    "docs/reports/goal2909_rtnn_repeat_stability_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -207,6 +209,8 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "keep_goal2903_hausdorff_reduced_bbox_default_green",
     "keep_goal2905_measured_partner_selection_green",
     "use_goal2907_repeat_stability_for_short_row_perf_triage",
+    "use_goal2908_current_packet_after_repeat9_for_rtnn_stability_followup",
+    "use_goal2909_rtnn_repeat_stability_for_distribution_dependent_perf_triage",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
