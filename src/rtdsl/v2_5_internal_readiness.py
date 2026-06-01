@@ -111,6 +111,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2908_current_packet_after_repeat9_2026-05-31.md",
     "docs/reports/goal2909_rtnn_repeat_stability_2026-05-31.md",
     "docs/reports/goal2911_scale_stable_canonical_perf_rows_2026-05-31.md",
+    "docs/reports/goal2912_current_packet_scaled_defaults_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -145,7 +146,7 @@ V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_HARNESS_ARTIFACTS = (
     "docs/reports/goal2847_current_head_canonical_harness_pod/goal2803_barnes_hut.json",
 )
 V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_RUNNER_SUMMARY = (
-    "docs/reports/goal2893_current_packet_after_runtime_provenance_index_pod/goal2855_summary.json"
+    "docs/reports/goal2912_current_packet_scaled_defaults_pod/goal2855_summary.json"
 )
 
 V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
@@ -213,6 +214,7 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "use_goal2908_current_packet_after_repeat9_for_rtnn_stability_followup",
     "use_goal2909_rtnn_repeat_stability_for_distribution_dependent_perf_triage",
     "use_goal2911_scaled_canonical_rows_for_short_row_perf_stability",
+    "keep_goal2912_scaled_current_packet_green",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )

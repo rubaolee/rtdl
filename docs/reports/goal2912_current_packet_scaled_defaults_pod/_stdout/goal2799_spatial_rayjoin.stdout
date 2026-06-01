@@ -1,0 +1,205 @@
+{
+  "app": "spatial_rayjoin",
+  "backend": "optix",
+  "benchmark_track": "primitive_first_rt_count_or_parity",
+  "claim_boundary": {
+    "canonical_harness": true,
+    "native_engine_customization": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "row_overlay_continuation_deferred_tier_b": true,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "tier_a_count_or_parity_only": true,
+    "triton_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "elapsed_sec": 1.4582167048938572,
+  "execution_route": "prepared_optix",
+  "goal": "Goal2799",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "harness_version": "rtdl.goal2799.spatial_rayjoin_v2_5_prepared_count_harness.v1",
+  "include_rows": false,
+  "repeat": 7,
+  "result_mode": "count",
+  "row_count": 3,
+  "rows": [
+    {
+      "backend": "optix",
+      "cpu_output_contract": "point_to_polygon_positive_hit_rows",
+      "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+      "dataset_note": "County subset probe points against deterministic chain-derived polygons.",
+      "elapsed_sec": 0.7630514409393072,
+      "execution_route": "prepared_optix",
+      "expected_count": 6,
+      "generic_primitive": "POINT_CLOSED_SHAPE_MEMBERSHIP_2D",
+      "include_rows": false,
+      "matches_cpu_reference": true,
+      "native_engine_boundary": "The native engine sees generic prepared point/shape, segment-pair, or shape-pair contracts; RayJoin workload interpretation stays in Python.",
+      "observed_count": 6,
+      "observed_counts": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "phase_max_ms": {
+        "prepare_static_scene_sec": 0.21106796339154243,
+        "prepared_query_sec": 0.1741829328238964,
+        "query_pack_sec": 0.009979121387004852,
+        "static_shape_pack_sec": 0.024840934202075005
+      },
+      "phase_medians_ms": {
+        "prepare_static_scene_sec": 0.1930061262100935,
+        "prepared_query_sec": 0.16155699267983437,
+        "query_pack_sec": 0.008178874850273132,
+        "static_shape_pack_sec": 0.021290965378284454
+      },
+      "phase_min_ms": {
+        "prepare_static_scene_sec": 0.18788292072713375,
+        "prepared_query_sec": 0.15402096323668957,
+        "query_pack_sec": 0.0073481351137161255,
+        "static_shape_pack_sec": 0.019763829186558723
+      },
+      "prepared_output_contract": "point_to_shape_positive_hit_count",
+      "prepared_query_times_ms": [
+        0.1741829328238964,
+        0.1645761076360941,
+        0.16155699267983437,
+        0.16041798517107964,
+        0.15945499762892723,
+        0.15402096323668957,
+        0.16285991296172142
+      ],
+      "repeat": 7,
+      "result_mode": "count",
+      "status": "pass",
+      "uses_prepared_optix_rt_backend": true,
+      "warmup": 2,
+      "workload": "pip"
+    },
+    {
+      "backend": "optix",
+      "cpu_output_contract": "segment_segment_intersection_rows",
+      "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+      "dataset_note": "Deterministic county-subset segment slice chosen to preserve CPU/Embree parity.",
+      "elapsed_sec": 0.35407906910404563,
+      "execution_route": "prepared_optix",
+      "expected_count": 1,
+      "generic_primitive": "SEGMENT_PAIR_INTERSECTION_2D",
+      "include_rows": false,
+      "matches_cpu_reference": true,
+      "native_engine_boundary": "The native engine sees generic prepared point/shape, segment-pair, or shape-pair contracts; RayJoin workload interpretation stays in Python.",
+      "observed_count": 1,
+      "observed_counts": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_max_ms": {
+        "prepare_static_scene_sec": 0.2192249521613121,
+        "prepared_query_sec": 0.2059729304164648,
+        "query_pack_sec": 0.040918122977018356
+      },
+      "phase_medians_ms": {
+        "prepare_static_scene_sec": 0.200705137103796,
+        "prepared_query_sec": 0.19772094674408436,
+        "query_pack_sec": 0.03114202991127968
+      },
+      "phase_min_ms": {
+        "prepare_static_scene_sec": 0.19087293185293674,
+        "prepared_query_sec": 0.18195202574133873,
+        "query_pack_sec": 0.0271480530500412
+      },
+      "prepared_output_contract": "segment_segment_intersection_count",
+      "prepared_query_times_ms": [
+        0.2016308717429638,
+        0.20581111311912537,
+        0.19772094674408436,
+        0.1842370256781578,
+        0.1904431264847517,
+        0.18195202574133873,
+        0.2059729304164648
+      ],
+      "repeat": 7,
+      "result_mode": "count",
+      "status": "pass",
+      "uses_prepared_optix_rt_backend": true,
+      "warmup": 2,
+      "workload": "lsi"
+    },
+    {
+      "backend": "optix",
+      "cpu_output_contract": "overlay_pair_dependency_rows_with_lsi_pip_flags",
+      "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb + tests/fixtures/rayjoin/br_soil_subset.cdb",
+      "dataset_note": "County and soil subset chain-derived polygons for overlay seed generation.",
+      "elapsed_sec": 0.3410532991401851,
+      "execution_route": "prepared_optix",
+      "expected_count": 0,
+      "generic_primitive": "SHAPE_PAIR_RELATION_FLAGS_2D",
+      "include_rows": false,
+      "matches_cpu_reference": true,
+      "native_engine_boundary": "The native engine sees generic prepared point/shape, segment-pair, or shape-pair contracts; RayJoin workload interpretation stays in Python.",
+      "observed_count": 0,
+      "observed_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "phase_max_ms": {
+        "prepare_static_scene_sec": 0.010121846571564674,
+        "prepared_query_sec": 0.008946983143687248,
+        "query_pack_sec": 0.022999942302703857,
+        "static_shape_pack_sec": 0.0075018033385276794
+      },
+      "phase_medians_ms": {
+        "prepare_static_scene_sec": 0.008255941793322563,
+        "prepared_query_sec": 0.007207971066236496,
+        "query_pack_sec": 0.021342886611819267,
+        "static_shape_pack_sec": 0.0036600977182388306
+      },
+      "phase_min_ms": {
+        "prepare_static_scene_sec": 0.007702037692070007,
+        "prepared_query_sec": 0.006393995136022568,
+        "query_pack_sec": 0.020876992493867874,
+        "static_shape_pack_sec": 0.0033141113817691803
+      },
+      "prepared_output_contract": "overlay_pair_dependency_count",
+      "prepared_query_times_ms": [
+        0.008360948413610458,
+        0.008946983143687248,
+        0.007207971066236496,
+        0.006709014996886253,
+        0.006393995136022568,
+        0.0081649050116539,
+        0.0064498744904994965
+      ],
+      "repeat": 7,
+      "result_mode": "count",
+      "status": "pass",
+      "uses_prepared_optix_rt_backend": true,
+      "warmup": 2,
+      "workload": "overlay_seed"
+    }
+  ],
+  "source_commit": "cf3a479d7f40c36df1b3f44f68de20ef1b098221",
+  "source_dirty": [],
+  "status": "pass",
+  "warmup": 2,
+  "workloads": [
+    "pip",
+    "lsi",
+    "overlay_seed"
+  ]
+}
