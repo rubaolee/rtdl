@@ -1,7 +1,7 @@
 # Goal2950: RayDB Payload-Grouped Front-Door Probe
 
 Date: 2026-06-01
-Status: runner added; pod evidence pending
+Status: pod diagnostic passed
 
 ## Purpose
 
@@ -53,6 +53,41 @@ primitive.
 
 This goal is therefore a planner/diagnostic hardening step, not a promotion
 claim.
+
+## Pod Results
+
+Pod target: `root@69.30.85.171 -p 22167`
+
+Source commit: `38f7302cf7e4cf91d5ae02aaae09eecb318d244c`
+
+Artifact:
+
+`docs/reports/goal2950_raydb_payload_grouped_sum_front_door_probe_pod/goal2950_raydb_payload_grouped_sum_front_door_probe.json`
+
+| Rows | Mode | Query rays | Payload front door sec | Primitive-first sec | Payload / primitive-first | Consumer sec | Native enqueue sec |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `250000` | `count` | `110592` | `0.009484` | `0.000345` | `27.460x` | `0.001856` | `0.006886` |
+| `250000` | `sum` | `4755456` | `0.291365` | `0.000938` | `310.743x` | `0.023817` | `0.264591` |
+| `1000000` | `count` | `110592` | `0.006293` | `0.000287` | `21.914x` | `0.001371` | `0.003824` |
+| `1000000` | `sum` | `4755456` | `0.309383` | `0.001589` | `194.724x` | `0.029135` | `0.275000` |
+
+All rows matched the CPU reference, and the pod source tree was clean.
+
+## Design Decision
+
+The packed-input fix is valuable: `query_pack` is now effectively zero in the
+payload front-door timing. But this benchmark also confirms the planner rule:
+RayDB `count` and `sum` should not force the generic hit-stream continuation
+when an exact fused RTDL primitive already exists. The fused primitive is one to
+two orders of magnitude faster for this workload.
+
+The next performance work should therefore not be "make RayDB count/sum use the
+payload front door." It should be:
+
+- keep primitive-first selection for count/sum/min/max/sum-count reductions;
+- use payload-mapped hit streams for richer continuations that cannot be fused;
+- add a planner guard so users get an explanation when they request a slower
+  hit-stream continuation for an operation already covered by a fused primitive.
 
 ## Boundary
 
