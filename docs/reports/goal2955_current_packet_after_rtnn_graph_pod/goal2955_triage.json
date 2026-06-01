@@ -1,0 +1,131 @@
+{
+  "apps": [
+    {
+      "app": "raydb_style",
+      "next_action": "keep Goal2896 gate current; external review and compiler/second-arch cautions remain",
+      "performance_status": "covered_by_goal2896_external_gate",
+      "route": "primitive_first_fused_grouped_reduction",
+      "status": "not_indexed_in_current_packet"
+    },
+    {
+      "app": "triangle_counting",
+      "claim_boundary": "canonical app harness; no public speedup claim",
+      "max_query_median_ms": 0.427,
+      "next_action": "keep primitive-first; add partner only for row-stream/compact-mask continuations",
+      "performance_status": "current_path_acceptable",
+      "route": "primitive_first_optix_summary",
+      "row_count": 6,
+      "status": "pass"
+    },
+    {
+      "app": "librts_spatial_index",
+      "claim_boundary": "Tier C no-regression; no partner parity claim",
+      "cpu_over_max_query_ratio": 1341.719,
+      "cpu_reference_sec": 2.111209,
+      "max_query_median_ms": 1.574,
+      "next_action": "keep as RT-core prepared AABB no-regression baseline",
+      "performance_status": "tier_c_no_regression",
+      "route": "primitive_first_prepared_aabb_index_query_2d",
+      "status": "pass"
+    },
+    {
+      "app": "spatial_rayjoin",
+      "claim_boundary": "count/parity only; row/overlay continuation deferred",
+      "max_prepared_query_ms": 0.161626,
+      "next_action": "do not force Triton for count/parity; future work is row/overlay device continuation",
+      "performance_status": "current_path_acceptable_but_rows_overlay_deferred",
+      "route": "primitive_first_prepared_count_or_parity",
+      "status": "pass",
+      "workloads": [
+        "pip",
+        "lsi",
+        "overlay_seed"
+      ]
+    },
+    {
+      "app": "rtnn",
+      "claim_boundary": "Tier B same-contract opponent; distribution dependent",
+      "max_cupy_over_rtdl_ratio": 7.503,
+      "min_cupy_over_rtdl_ratio": 1.147,
+      "near_parity_distributions": [],
+      "near_parity_floor": 0.95,
+      "next_action": "keep current ranked-summary route green",
+      "performance_status": "current_path_acceptable",
+      "result_modes": [
+        "ranked-summary-aggregate-prepared-query-batch-graph-float32"
+      ],
+      "route": "optix_prepared_query_cuda_graph_ranked_summary_aggregate_vs_cupy_grid",
+      "severity_ratio": 1.0,
+      "status": "pass",
+      "weak_distributions": []
+    },
+    {
+      "app": "hausdorff_xhd",
+      "claim_boundary": "exact RTDL/OptiX path; no claim to beat optimized CuPy grid",
+      "cupy_median_sec": 0.00831,
+      "near_parity_limit": 1.1,
+      "next_action": "keep reduced bbox RT path; no severe current target unless ratio regresses beyond near-parity band",
+      "performance_status": "current_path_acceptable",
+      "route": "rtdl_rt_grouped_reduced_nearest_witness_vs_cupy_grid_rawkernel",
+      "rtdl_median_sec": 0.007488,
+      "rtdl_over_cupy_ratio": 0.901,
+      "severity_ratio": 1.0,
+      "status": "pass"
+    },
+    {
+      "app": "rt_dbscan",
+      "claim_boundary": "grouped stream continuation evidence; no paper reproduction claim",
+      "max_speedup_vs_prepared_cupy_grid": 4.76,
+      "min_speedup_vs_prepared_cupy_grid": 3.959,
+      "next_action": "keep grouped stream; pure Triton components remain blocked until same-contract win",
+      "performance_status": "current_path_acceptable",
+      "route": "optix_grouped_stream_plus_cupy_components",
+      "status": "pass"
+    },
+    {
+      "app": "barnes_hut",
+      "claim_boundary": "membership/vector-sum harness; Triton vector path not promoted",
+      "max_optix_membership_speedup_vs_embree": 163.93,
+      "next_action": "keep measured Torch/CuPy partner selection for vector sums; Triton remains preview",
+      "performance_status": "current_path_acceptable_with_measured_partner_selection",
+      "route": "optix_membership_plus_partner_vector_sum",
+      "selected_vector_sum_partner": "cupy",
+      "selected_vector_sum_partner_median_sec": 0.000776,
+      "severity_ratio": 1.0,
+      "status": "pass",
+      "triton_over_torch_vector_sum_ratio": 4.197
+    },
+    {
+      "app": "contact_manifold",
+      "claim_boundary": "no partner parity claim",
+      "next_action": "measure no-regression only unless exact refinement is partnerized",
+      "performance_status": "tier_c_no_regression",
+      "route": "prepared_bounded_witness_collection",
+      "status": "tier_c_not_in_seven_app_packet"
+    },
+    {
+      "app": "robot_collision",
+      "claim_boundary": "no partner parity claim",
+      "next_action": "keep prepared RT any-hit no-regression track",
+      "performance_status": "tier_c_no_regression",
+      "route": "prepared_anyhit_pose_flag",
+      "status": "tier_c_not_in_seven_app_packet"
+    }
+  ],
+  "artifact_count": 7,
+  "claim_boundary": {
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "claim_boundary_violations": {},
+  "goal": "Goal2902 v2.5 current packet performance triage",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "packet_elapsed_sec": 459.078,
+  "performance_targets": [],
+  "source_commit": "747716c7141341b43a4bed37f66c53d0ff2bcc14",
+  "status": "pass",
+  "top_priority": null
+}

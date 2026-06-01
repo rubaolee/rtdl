@@ -97,6 +97,18 @@ def _rtnn(path: Path) -> dict[str, Any]:
     data = _load(path)
     rows = data.get("rows", [])
     ratios = [float(row["cupy_grid_over_rtdl_elapsed_ratio"]) for row in rows]
+    modes = sorted(
+        {
+            str((row.get("contract") or {}).get("mode"))
+            for row in rows
+            if (row.get("contract") or {}).get("mode")
+        }
+    )
+    route = (
+        "optix_prepared_query_cuda_graph_ranked_summary_aggregate_vs_cupy_grid"
+        if any("batch-graph" in mode for mode in modes)
+        else "optix_prepared_ranked_summary_aggregate_vs_cupy_grid"
+    )
     near_parity_floor = 0.95
     weak = [
         row.get("distribution")
@@ -117,7 +129,8 @@ def _rtnn(path: Path) -> dict[str, Any]:
         "status": data.get("status"),
         "performance_status": performance_status,
         "severity_ratio": _round((1.0 / min_ratio) if weak and min_ratio and min_ratio > 0 else 1.0, 3),
-        "route": "optix_prepared_ranked_summary_aggregate_vs_cupy_grid",
+        "route": route,
+        "result_modes": modes,
         "min_cupy_over_rtdl_ratio": _round(min_ratio, 3),
         "max_cupy_over_rtdl_ratio": _round(_max(ratios), 3),
         "near_parity_floor": near_parity_floor,

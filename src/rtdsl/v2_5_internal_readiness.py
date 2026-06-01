@@ -135,6 +135,11 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2943_generic_event_ordered_hit_stream_front_door_2026-06-01.md",
     "docs/reports/goal2945_current_packet_after_hit_stream_front_door_2026-06-01.md",
     "docs/reports/goal2947_generic_event_ordered_payload_grouped_sum_front_door_2026-06-01.md",
+    "docs/reports/goal2948_payload_grouped_sum_scale_probe_2026-06-01.md",
+    "docs/reports/goal2950_raydb_payload_grouped_sum_front_door_probe_2026-06-01.md",
+    "docs/reports/goal2952_hausdorff_target8192_default_tuning_2026-06-01.md",
+    "docs/reports/goal2954_rtnn_graph_replay_route_tuning_2026-06-01.md",
+    "docs/reports/goal2955_current_packet_after_rtnn_graph_replay_2026-06-01.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -169,7 +174,10 @@ V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_HARNESS_ARTIFACTS = (
     "docs/reports/goal2847_current_head_canonical_harness_pod/goal2803_barnes_hut.json",
 )
 V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_RUNNER_SUMMARY = (
-    "docs/reports/goal2945_current_packet_after_hit_stream_front_door_pod/goal2855_summary.json"
+    "docs/reports/goal2955_current_packet_after_rtnn_graph_pod/goal2855_summary.json"
+)
+V2_5_INTERNAL_READINESS_CURRENT_PACKET_PERF_TRIAGE = (
+    "docs/reports/goal2955_current_packet_after_rtnn_graph_pod/goal2955_triage.json"
 )
 
 V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
@@ -266,6 +274,11 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "keep_goal2943_generic_event_ordered_hit_stream_front_door_green",
     "keep_goal2945_current_packet_after_hit_stream_front_door_green",
     "keep_goal2947_payload_grouped_sum_front_door_green",
+    "keep_goal2948_payload_grouped_sum_scale_probe_green",
+    "keep_goal2950_raydb_payload_grouped_sum_planner_guard_green",
+    "keep_goal2952_hausdorff_target8192_default_green",
+    "keep_goal2954_rtnn_graph_replay_route_green",
+    "keep_goal2955_current_packet_zero_perf_targets_green",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
@@ -287,6 +300,7 @@ def v2_5_internal_readiness_packet(
     tier_b_artifacts = _tier_b_artifact_metadata(root)
     current_canonical_harness = _current_canonical_harness_metadata(root)
     current_canonical_runner = _current_canonical_runner_metadata(root)
+    current_packet_perf_triage = _current_packet_perf_triage_metadata(root)
     partner_conformance_snapshot = _partner_conformance_snapshot()
     required_report_presence = _path_presence(root, V2_5_INTERNAL_READINESS_REQUIRED_REPORTS)
     review_presence = _path_presence(root, V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS)
@@ -316,6 +330,7 @@ def v2_5_internal_readiness_packet(
         "tier_b_clean_artifact_count": len(tier_b_artifacts),
         "current_canonical_harness": current_canonical_harness,
         "current_canonical_runner": current_canonical_runner,
+        "current_packet_perf_triage": current_packet_perf_triage,
         "partner_conformance_snapshot": partner_conformance_snapshot,
         "required_reports": V2_5_INTERNAL_READINESS_REQUIRED_REPORTS,
         "required_report_presence": required_report_presence,
@@ -439,6 +454,13 @@ def validate_v2_5_internal_readiness_packet(
         errors.append("toolchain metadata must not authorize compiler fairness claims")
     if (toolchain.get("claim_boundary") or {}).get("multivendor_claim_authorized") is not False:
         errors.append("toolchain metadata must not authorize multivendor claims")
+    perf_triage = packet["current_packet_perf_triage"]
+    if perf_triage.get("status") != "pass":
+        errors.append("current packet performance triage did not pass")
+    if perf_triage.get("performance_target_count") != 0:
+        errors.append("current packet performance triage still has performance targets")
+    if perf_triage.get("top_priority") is not None:
+        errors.append("current packet performance triage top priority should be empty")
     conformance_snapshot = packet["partner_conformance_snapshot"]
     if conformance_snapshot["runtime_conformance_gap_count"] != 0:
         errors.append("partner conformance snapshot recorded runtime gaps")
@@ -506,6 +528,7 @@ def validate_v2_5_internal_readiness_packet(
         "tier_b_clean_artifact_count": packet["tier_b_clean_artifact_count"],
         "current_canonical_harness_artifact_count": packet["current_canonical_harness"]["artifact_count"],
         "current_canonical_runner_artifact_count": packet["current_canonical_runner"]["artifact_count"],
+        "current_packet_perf_target_count": packet["current_packet_perf_triage"]["performance_target_count"],
         "broad_clean_pod_gate_result": packet["broad_clean_pod_gate"]["result"],
         "blocked_actions": packet["blocked_actions"],
         "errors": tuple(errors),
@@ -603,6 +626,34 @@ def _current_canonical_runner_metadata(root: Path) -> dict[str, Any]:
         "claim_boundary": (
             "Goal2855 runner evidence is an operational readiness guard. "
             "It does not authorize v2.5 release or public performance claims."
+        ),
+    }
+
+
+def _current_packet_perf_triage_metadata(root: Path) -> dict[str, Any]:
+    triage_path = root / V2_5_INTERNAL_READINESS_CURRENT_PACKET_PERF_TRIAGE
+    if not triage_path.exists():
+        return {
+            "path": V2_5_INTERNAL_READINESS_CURRENT_PACKET_PERF_TRIAGE,
+            "status": "missing",
+            "app_count": 0,
+            "performance_target_count": None,
+            "top_priority": None,
+            "performance_targets": (),
+        }
+    triage = json.loads(triage_path.read_text(encoding="utf-8"))
+    targets = tuple(triage.get("performance_targets", ()))
+    apps = tuple(triage.get("apps", ()))
+    return {
+        "path": V2_5_INTERNAL_READINESS_CURRENT_PACKET_PERF_TRIAGE,
+        "status": triage.get("status"),
+        "app_count": len(apps),
+        "performance_target_count": len(targets),
+        "top_priority": triage.get("top_priority"),
+        "performance_targets": targets,
+        "claim_boundary": (
+            "The current packet performance triage is an internal optimization index. "
+            "Zero current targets does not authorize release or public speedup claims."
         ),
     }
 
