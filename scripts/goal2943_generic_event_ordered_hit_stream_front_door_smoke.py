@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import subprocess
 import time
 
 import rtdsl as rt
@@ -74,6 +75,8 @@ def main() -> None:
         payload = {
             "goal": "Goal2943",
             "status": "pass",
+            "source_commit": _git_output("rev-parse", "HEAD"),
+            "source_dirty": _git_output("status", "--short").splitlines(),
             "elapsed_sec": elapsed,
             "summary": result["summary"],
             "group_hit_counts": group_counts,
@@ -92,6 +95,20 @@ def main() -> None:
 
     output.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
     print(f"[goal2943] wrote {output}", flush=True)
+
+
+def _git_output(*args: str) -> str:
+    try:
+        completed = subprocess.run(
+            ("git", *args),
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+    except Exception:
+        return ""
+    return completed.stdout.strip()
 
 
 if __name__ == "__main__":

@@ -90,6 +90,8 @@ class Goal2943GenericEventOrderedHitStreamFrontDoorTest(unittest.TestCase):
         summary = payload["summary"]
 
         self.assertEqual("pass", payload["status"])
+        self.assertRegex(payload["source_commit"], r"^[0-9a-f]{40}$")
+        self.assertEqual([], payload["source_dirty"])
         self.assertEqual("run_generic_ray_triangle_event_ordered_grouped_ray_id_reduction_3d", metadata["front_door"])
         self.assertEqual("cupy_conformance", metadata["selected_partner"])
         self.assertEqual("hit_stream_grouped_ray_id_primitive_i64", metadata["operation"])
