@@ -73,6 +73,21 @@ Ran 24 tests in 0.540s
 OK
 ```
 
+Pod validation from pushed `main`:
+
+```text
+commit: 86daf2b9
+scope:
+  tests.goal2882_goal2881_claude_review_intake_test
+  tests.goal2880_current_packet_after_torch_carrier_provenance_test
+  tests.goal2879_torch_carrier_seam_authority_provenance_test
+  tests.goal2878_goal2868_residual_closure_mapping_test
+  tests.goal2806_v2_5_internal_readiness_packet_test
+
+Ran 24 tests in 0.318s
+OK
+```
+
 ## Codex Verdict
 
 `accept-with-boundary`
