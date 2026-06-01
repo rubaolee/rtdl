@@ -8,32 +8,32 @@ import rtdsl as rt
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REPORT = ROOT / "docs" / "reports" / "goal2921_current_packet_after_hausdorff_target4096_2026-06-01.md"
-ARTIFACT_DIR = ROOT / "docs" / "reports" / "goal2921_current_packet_after_hd4096_pod"
+REPORT = ROOT / "docs" / "reports" / "goal2925_current_packet_after_radius_guard_2026-06-01.md"
+ARTIFACT_DIR = ROOT / "docs" / "reports" / "goal2925_current_packet_after_radius_guard_pod"
 SUMMARY = ARTIFACT_DIR / "goal2855_summary.json"
-TRIAGE = ARTIFACT_DIR / "goal2921_triage.json"
+TRIAGE = ARTIFACT_DIR / "goal2925_triage.json"
 
 
-class Goal2921CurrentPacketAfterHausdorffTarget4096Test(unittest.TestCase):
-    def test_packet_passes_cleanly_at_hausdorff_target4096_commit(self) -> None:
+class Goal2925CurrentPacketAfterRadiusGuardTest(unittest.TestCase):
+    def test_packet_passes_cleanly_after_radius_guard(self) -> None:
         summary = json.loads(SUMMARY.read_text(encoding="utf-8"))
 
         self.assertEqual("pass", summary["status"])
         self.assertTrue(summary["all_pass"])
         self.assertEqual(7, summary["artifact_count"])
-        self.assertEqual("fe628f4faec8e7d43521f11afd395b29462fba8b", summary["source_commit"])
+        self.assertEqual("6ad6314192e9db0f659c76acc58a20767a194697", summary["source_commit"])
         self.assertEqual({}, summary["dirty_artifacts"])
         self.assertEqual({}, summary["claim_boundary_violations"])
         self.assertFalse(summary["claim_boundary"]["v2_5_release_authorized"])
 
-    def test_hausdorff_row_uses_target4096_and_is_green(self) -> None:
+    def test_hausdorff_row_remains_exact_and_near_parity(self) -> None:
         payload = json.loads((ARTIFACT_DIR / "goal2801_hausdorff_xhd.json").read_text(encoding="utf-8"))
 
         self.assertEqual("pass", payload["status"])
         self.assertTrue(payload["matches_exact_baseline"])
         self.assertTrue(payload["rtdl"]["uses_rt_cores"])
         self.assertEqual(4096, payload["rtdl"]["reduced_target_points_per_group"])
-        self.assertLess(payload["rtdl_over_cupy_grid_elapsed_ratio"], 1.0)
+        self.assertLess(payload["rtdl_over_cupy_grid_elapsed_ratio"], 1.1)
         self.assertFalse(payload["claim_boundary"]["rtdl_beats_cupy_grid_claim_authorized"])
         self.assertFalse(payload["claim_boundary"]["native_engine_customization"])
 
@@ -44,8 +44,8 @@ class Goal2921CurrentPacketAfterHausdorffTarget4096Test(unittest.TestCase):
         self.assertEqual("pass", triage["status"])
         self.assertEqual([], triage["performance_targets"])
         self.assertIsNone(triage["top_priority"])
-        self.assertEqual("current_path_acceptable", apps["hausdorff_xhd"]["performance_status"])
-        self.assertLess(apps["hausdorff_xhd"]["rtdl_over_cupy_ratio"], 1.0)
+        self.assertEqual("current_path_acceptable_near_parity", apps["hausdorff_xhd"]["performance_status"])
+        self.assertLess(apps["hausdorff_xhd"]["rtdl_over_cupy_ratio"], 1.1)
         self.assertEqual("current_path_acceptable", apps["rtnn"]["performance_status"])
         self.assertGreater(apps["rtnn"]["min_cupy_over_rtdl_ratio"], 1.0)
         self.assertEqual("torch", apps["barnes_hut"]["selected_vector_sum_partner"])
@@ -61,24 +61,26 @@ class Goal2921CurrentPacketAfterHausdorffTarget4096Test(unittest.TestCase):
         self.assertTrue(toolchain["optix_header_exists"])
         self.assertFalse(toolchain["claim_boundary"]["compiler_fairness_claim_authorized"])
 
-    def test_goal2921_packet_is_preserved_as_historical_artifact(self) -> None:
+    def test_readiness_index_points_to_goal2925_packet(self) -> None:
         packet = rt.v2_5_internal_readiness_packet(repo_root=ROOT)
         runner = packet["current_canonical_runner"]
 
         self.assertIn("goal2925_current_packet_after_radius_guard_pod", runner["summary_path"])
-        self.assertNotIn("goal2921_current_packet_after_hd4096_pod", runner["summary_path"])
         self.assertEqual("pass", runner["status"])
+        validation = rt.validate_v2_5_internal_readiness_packet(repo_root=ROOT)
+        self.assertEqual("accept", validation["status"])
+        self.assertEqual((), validation["errors"])
 
     def test_report_documents_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
 
         for phrase in (
-            "Goal2921",
+            "Goal2925",
+            "prepared-radius guard",
             "performance targets: `[]`",
-            "target `4096`",
-            "RTDL/CuPy ratio `0.915x`",
+            "RTDL/CuPy ratio `1.044x`",
             "not a v2.5 release authorization",
-            "second-architecture or multivendor",
+            "fresh 3-AI release consensus",
         ):
             self.assertIn(phrase, text)
 

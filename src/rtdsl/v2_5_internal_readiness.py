@@ -118,6 +118,8 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2920_rtnn_hausdorff_large_scale_stability_and_hd_default_2026-06-01.md",
     "docs/reports/goal2921_current_packet_after_hausdorff_target4096_2026-06-01.md",
     "docs/reports/goal2923_goal2920_2921_stability_review_consensus_2026-06-01.md",
+    "docs/reports/goal2924_hausdorff_prepared_radius_guard_second_arch_smoke_2026-06-01.md",
+    "docs/reports/goal2925_current_packet_after_radius_guard_2026-06-01.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -152,7 +154,7 @@ V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_HARNESS_ARTIFACTS = (
     "docs/reports/goal2847_current_head_canonical_harness_pod/goal2803_barnes_hut.json",
 )
 V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_RUNNER_SUMMARY = (
-    "docs/reports/goal2921_current_packet_after_hd4096_pod/goal2855_summary.json"
+    "docs/reports/goal2925_current_packet_after_radius_guard_pod/goal2855_summary.json"
 )
 
 V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
@@ -230,6 +232,8 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "keep_goal2920_hausdorff_target4096_large_probe_green",
     "keep_goal2921_current_packet_after_hausdorff_target4096_green",
     "keep_goal2923_stability_review_consensus_green",
+    "keep_goal2924_hausdorff_prepared_radius_guard_green",
+    "keep_goal2925_current_packet_after_radius_guard_green",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
