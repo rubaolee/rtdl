@@ -97,6 +97,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2885_v2_5_partner_conformance_readiness_snapshot_2026-05-31.md",
     "docs/reports/goal2887_goal2886_review_intake_and_carrier_authority_field_rename_2026-05-31.md",
     "docs/reports/goal2889_torch_carrier_copy_decision_seam_lease_wrap_2026-05-31.md",
+    "docs/reports/goal2891_runtime_provenance_index_in_conformance_snapshot_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -186,6 +187,7 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "triage_goal2886_claude_review_before_any_release_packet",
     "keep_goal2887_carrier_authority_field_rename_green",
     "keep_goal2889_copy_decision_seam_lease_wrap_green",
+    "keep_goal2891_runtime_provenance_snapshot_green",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
@@ -355,6 +357,21 @@ def validate_v2_5_internal_readiness_packet(
         errors.append("partner conformance snapshot must keep preview runtime conformance complete")
     if conformance_snapshot["cell_count"] != 48:
         errors.append("partner conformance snapshot cell count changed")
+    if conformance_snapshot["runtime_provenance_record_count"] != 1:
+        errors.append("partner conformance snapshot must index the current runtime provenance record")
+    for record in conformance_snapshot.get("runtime_provenance_records", ()):
+        if record.get("status") != "pod_runtime_copy_decision_seam_wrapped":
+            errors.append("runtime provenance record status changed")
+        if record.get("goal2889_copy_decision_seam_wrap_indexed") is not True:
+            errors.append("runtime provenance record lost copy-decision seam wrap")
+        if record.get("goal2889_executed_conversion_seam_lease_indexed") is not True:
+            errors.append("runtime provenance record lost executed conversion seam lease")
+        if record.get("goal2883_same_pointer_evidence_indexed") is not True:
+            errors.append("runtime provenance record lost observed pointer-equality evidence")
+        if record.get("true_zero_copy_claim_authorized") is not False:
+            errors.append("runtime provenance record must not authorize true zero-copy")
+        if record.get("release_authorized") is not False:
+            errors.append("runtime provenance record must not authorize release")
     for app_id, artifact in packet["tier_b_clean_artifacts"].items():
         if artifact.get("status") != "pass":
             errors.append(f"{app_id} clean artifact did not pass")
@@ -521,6 +538,7 @@ def _partner_conformance_snapshot() -> dict[str, Any]:
         for cell in cells
         if cell["conformance_status"] == "descriptor_only_no_generic_kernel"
     )
+    runtime_provenance_records = _runtime_provenance_records()
     return {
         "matrix_version": full_matrix["matrix_version"],
         "status": matrix["status"],
@@ -535,12 +553,46 @@ def _partner_conformance_snapshot() -> dict[str, Any]:
         "descriptor_only_cell_count": len(descriptor_only_cells),
         "pod_runtime_cells": pod_runtime_cells,
         "descriptor_only_cells": descriptor_only_cells,
+        "runtime_provenance_record_count": len(runtime_provenance_records),
+        "runtime_provenance_records": runtime_provenance_records,
         "claim_boundary": (
             "This snapshot indexes partner conformance evidence for readiness review. "
             "It does not authorize release, public speedup claims, true-zero-copy "
             "claims, or Triton preview auto-selection."
         ),
     }
+
+
+def _runtime_provenance_records() -> tuple[dict[str, Any], ...]:
+    return (
+        {
+            "path": "bounded_triton_torch_carrier_typed_payload_gather",
+            "partner": "triton",
+            "carrier": "torch",
+            "operation": "hit_stream_typed_payload_gather",
+            "status": "pod_runtime_copy_decision_seam_wrapped",
+            "evidence_goal": "Goal2889",
+            "report_path": (
+                "docs/reports/"
+                "goal2889_torch_carrier_copy_decision_seam_lease_wrap_2026-05-31.md"
+            ),
+            "test_module": "tests.goal2889_torch_carrier_copy_decision_seam_lease_wrap_test",
+            "same_pointer_evidence_goal": "Goal2883",
+            "goal2883_same_pointer_evidence_indexed": True,
+            "goal2889_copy_decision_seam_wrap_indexed": True,
+            "goal2889_executed_conversion_seam_lease_indexed": True,
+            "scope": (
+                "runtime provenance for the bounded Triton torch-carrier gather path; "
+                "not a release-grade proof for every future partner path"
+            ),
+            "public_speedup_claim_authorized": False,
+            "broad_rt_core_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "triton_preview_auto_selection_authorized": False,
+            "release_authorized": False,
+        },
+    )
 
 
 def _looks_like_sha(value: str) -> bool:
