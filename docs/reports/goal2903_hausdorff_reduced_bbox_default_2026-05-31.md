@@ -1,7 +1,7 @@
 # Goal2903: Hausdorff Exact RT Default Uses Reduced BBox Path
 
 Date: 2026-05-31
-Status: implemented pending clean current-commit pod artifact
+Status: implemented with clean current-commit pod evidence
 
 ## Purpose
 
@@ -29,6 +29,30 @@ The RTX A5000 probe before this report showed:
 
 The previous canonical adaptive path in Goal2902 was `19.119x` slower than CuPy on the 4096-point packet. The reduced bbox path turns that into near parity or a small win on the measured scales while preserving exact distance.
 
+## Clean Current-Commit Pod Artifact
+
+Artifact:
+
+`docs/reports/goal2903_pod_artifacts/goal2903_hausdorff_reduced_bbox_default_pod_69_30_85_171_2026-05-31.json`
+
+Clean run:
+
+- source commit: `3bf14b04823cabb112de93c2d204481082dc46b8`
+- source dirty: none
+- GPU: `NVIDIA RTX A5000, 570.211.01`
+- status: `pass`
+- exact baseline match: `true`
+- distance error: `0.0`
+- RTDL method: `rtdl_rt_grouped_reduced_nearest_witness`
+- radius strategy: `bbox_upper_bound`
+- threshold iterations: `0`
+- RTDL uses RT cores: `true`
+- median CuPy grid: `0.004536 s`
+- median RTDL/OptiX: `0.004584 s`
+- RTDL/CuPy ratio: `1.010x`
+
+The clean run confirms that the canonical path moved from a severe `19.119x` deficit to near parity while keeping the exact Hausdorff value.
+
 ## Boundary
 
 This is a canonical-path correction for the benchmark app, not a public speedup claim and not a release packet.
@@ -37,4 +61,4 @@ It does not claim RTDL beats X-HD, does not claim RTDL beats every optimized CuP
 
 ## Next Validation
 
-Run a clean current-commit pod artifact after this code lands, then refresh the v2.5 performance triage if the result is stable.
+Refresh the full current canonical packet when useful. The expected result is that `hausdorff_xhd` should no longer be treated as the top severe performance target; the remaining strong target should be Barnes-Hut partner vector reduction.
