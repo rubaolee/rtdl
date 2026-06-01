@@ -39,6 +39,10 @@ class Goal2929TierCNoRegressionFoundationTest(unittest.TestCase):
         self.assertEqual("skipped", timing["validation_mode"])
         self.assertTrue(timing["native_continuation_active"])
         self.assertIn("one collision flag per pose", timing["boundary"])
+        self.assertIn("artifact_compaction", timing)
+        self.assertNotIn("pose_collision_flags", timing["prepared_summary"])
+        self.assertEqual(65536, timing["prepared_summary"]["pose_collision_flag_count"])
+        self.assertGreater(timing["prepared_summary"]["pose_collision_flag_true_count"], 0)
 
     def test_toolchain_and_report_preserve_no_regression_boundary(self) -> None:
         toolchain = json.loads((ARTIFACT_DIR / "toolchain.json").read_text(encoding="utf-8"))
@@ -58,6 +62,7 @@ class Goal2929TierCNoRegressionFoundationTest(unittest.TestCase):
             "Tier C no-regression",
             "does not authorize v2.5 release",
             "not public speedup",
+            "timing artifact is compacted",
         ):
             self.assertIn(phrase, report)
 

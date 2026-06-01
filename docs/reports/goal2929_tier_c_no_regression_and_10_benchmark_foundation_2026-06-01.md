@@ -57,6 +57,10 @@ python3 examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py \
 | `robot_collision` | `robot_pose_flags_512_256_validation.json` | `matches_oracle = true`; prepared OptiX pose-flags path active | Tier C correctness/no-regression |
 | `robot_collision` | `robot_pose_flags_65536_1024_timing_skip_validation.json` | 65,536 poses timing smoke; validation explicitly skipped for timing scale | timing-only companion, not correctness proof |
 
+The 65,536-pose timing artifact is compacted: it stores pose-flag counts,
+checksums, and samples rather than the full per-pose flag array. The smaller
+512-pose validation artifact carries the correctness proof.
+
 The contact path remains generic:
 
 - RTDL sees `AABB_INDEX_QUERY_2D` candidate discovery and
