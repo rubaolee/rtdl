@@ -121,6 +121,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2924_hausdorff_prepared_radius_guard_second_arch_smoke_2026-06-01.md",
     "docs/reports/goal2925_current_packet_after_radius_guard_2026-06-01.md",
     "docs/reports/goal2928_goal2924_2925_radius_guard_packet_consensus_2026-06-01.md",
+    "docs/reports/goal2929_tier_c_no_regression_and_10_benchmark_foundation_2026-06-01.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -237,6 +238,7 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "keep_goal2924_hausdorff_prepared_radius_guard_green",
     "keep_goal2925_current_packet_after_radius_guard_green",
     "keep_goal2928_radius_guard_packet_consensus_green",
+    "keep_goal2929_tier_c_no_regression_foundation_green",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )

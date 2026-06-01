@@ -1,0 +1,3048 @@
+{
+  "app": "robot_collision_screening",
+  "backend": "optix",
+  "boundary": "Prepared pose-flags mode returns one collision flag per pose. Use optix_summary_mode='rows' when edge-level witnesses or hit-ray IDs are needed.",
+  "edge_ray_count": 2048,
+  "matches_oracle": true,
+  "native_continuation_active": true,
+  "native_continuation_backend": "optix_prepared_pose_flags",
+  "obstacle_triangle_count": 512,
+  "optix_summary_mode": "prepared_pose_flags",
+  "oracle_colliding_pose_ids": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95,
+    96,
+    98,
+    99,
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110,
+    111,
+    112,
+    114,
+    115,
+    116,
+    117,
+    118,
+    119,
+    120,
+    121,
+    122,
+    123,
+    124,
+    125,
+    126,
+    127,
+    128,
+    130,
+    131,
+    132,
+    133,
+    134,
+    135,
+    136,
+    137,
+    138,
+    139,
+    140,
+    141,
+    142,
+    143,
+    144,
+    146,
+    147,
+    148,
+    149,
+    150,
+    151,
+    152,
+    153,
+    154,
+    155,
+    156,
+    157,
+    158,
+    159,
+    160,
+    162,
+    163,
+    164,
+    165,
+    166,
+    167,
+    168,
+    169,
+    170,
+    171,
+    172,
+    173,
+    174,
+    175,
+    176,
+    178,
+    179,
+    180,
+    181,
+    182,
+    183,
+    184,
+    185,
+    186,
+    187,
+    188,
+    189,
+    190,
+    191,
+    192,
+    194,
+    195,
+    196,
+    197,
+    198,
+    199,
+    200,
+    201,
+    202,
+    203,
+    204,
+    205,
+    206,
+    207,
+    208,
+    210,
+    211,
+    212,
+    213,
+    214,
+    215,
+    216,
+    217,
+    218,
+    219,
+    220,
+    221,
+    222,
+    223,
+    224,
+    226,
+    227,
+    228,
+    229,
+    230,
+    231,
+    232,
+    233,
+    234,
+    235,
+    236,
+    237,
+    238,
+    239,
+    240,
+    242,
+    243,
+    244,
+    245,
+    246,
+    247,
+    248,
+    249,
+    250,
+    251,
+    252,
+    253,
+    254,
+    255,
+    256,
+    258,
+    259,
+    260,
+    261,
+    262,
+    263,
+    264,
+    265,
+    266,
+    267,
+    268,
+    269,
+    270,
+    271,
+    272,
+    274,
+    275,
+    276,
+    277,
+    278,
+    279,
+    280,
+    281,
+    282,
+    283,
+    284,
+    285,
+    286,
+    287,
+    288,
+    290,
+    291,
+    292,
+    293,
+    294,
+    295,
+    296,
+    297,
+    298,
+    299,
+    300,
+    301,
+    302,
+    303,
+    304,
+    306,
+    307,
+    308,
+    309,
+    310,
+    311,
+    312,
+    313,
+    314,
+    315,
+    316,
+    317,
+    318,
+    319,
+    320,
+    322,
+    323,
+    324,
+    325,
+    326,
+    327,
+    328,
+    329,
+    330,
+    331,
+    332,
+    333,
+    334,
+    335,
+    336,
+    338,
+    339,
+    340,
+    341,
+    342,
+    343,
+    344,
+    345,
+    346,
+    347,
+    348,
+    349,
+    350,
+    351,
+    352,
+    354,
+    355,
+    356,
+    357,
+    358,
+    359,
+    360,
+    361,
+    362,
+    363,
+    364,
+    365,
+    366,
+    367,
+    368,
+    370,
+    371,
+    372,
+    373,
+    374,
+    375,
+    376,
+    377,
+    378,
+    379,
+    380,
+    381,
+    382,
+    383,
+    384,
+    386,
+    387,
+    388,
+    389,
+    390,
+    391,
+    392,
+    393,
+    394,
+    395,
+    396,
+    397,
+    398,
+    399,
+    400,
+    402,
+    403,
+    404,
+    405,
+    406,
+    407,
+    408,
+    409,
+    410,
+    411,
+    412,
+    413,
+    414,
+    415,
+    416,
+    418,
+    419,
+    420,
+    421,
+    422,
+    423,
+    424,
+    425,
+    426,
+    427,
+    428,
+    429,
+    430,
+    431,
+    432,
+    434,
+    435,
+    436,
+    437,
+    438,
+    439,
+    440,
+    441,
+    442,
+    443,
+    444,
+    445,
+    446,
+    447,
+    448,
+    450,
+    451,
+    452,
+    453,
+    454,
+    455,
+    456,
+    457,
+    458,
+    459,
+    460,
+    461,
+    462,
+    463,
+    464,
+    466,
+    467,
+    468,
+    469,
+    470,
+    471,
+    472,
+    473,
+    474,
+    475,
+    476,
+    477,
+    478,
+    479,
+    480,
+    482,
+    483,
+    484,
+    485,
+    486,
+    487,
+    488,
+    489,
+    490,
+    491,
+    492,
+    493,
+    494,
+    495,
+    496,
+    498,
+    499,
+    500,
+    501,
+    502,
+    503,
+    504,
+    505,
+    506,
+    507,
+    508,
+    509,
+    510,
+    511,
+    512
+  ],
+  "output_mode": "pose_flags",
+  "pose_count": 512,
+  "prepared_summary": {
+    "colliding_pose_count": 480,
+    "colliding_pose_ids": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119,
+      120,
+      121,
+      122,
+      123,
+      124,
+      125,
+      126,
+      127,
+      128,
+      130,
+      131,
+      132,
+      133,
+      134,
+      135,
+      136,
+      137,
+      138,
+      139,
+      140,
+      141,
+      142,
+      143,
+      144,
+      146,
+      147,
+      148,
+      149,
+      150,
+      151,
+      152,
+      153,
+      154,
+      155,
+      156,
+      157,
+      158,
+      159,
+      160,
+      162,
+      163,
+      164,
+      165,
+      166,
+      167,
+      168,
+      169,
+      170,
+      171,
+      172,
+      173,
+      174,
+      175,
+      176,
+      178,
+      179,
+      180,
+      181,
+      182,
+      183,
+      184,
+      185,
+      186,
+      187,
+      188,
+      189,
+      190,
+      191,
+      192,
+      194,
+      195,
+      196,
+      197,
+      198,
+      199,
+      200,
+      201,
+      202,
+      203,
+      204,
+      205,
+      206,
+      207,
+      208,
+      210,
+      211,
+      212,
+      213,
+      214,
+      215,
+      216,
+      217,
+      218,
+      219,
+      220,
+      221,
+      222,
+      223,
+      224,
+      226,
+      227,
+      228,
+      229,
+      230,
+      231,
+      232,
+      233,
+      234,
+      235,
+      236,
+      237,
+      238,
+      239,
+      240,
+      242,
+      243,
+      244,
+      245,
+      246,
+      247,
+      248,
+      249,
+      250,
+      251,
+      252,
+      253,
+      254,
+      255,
+      256,
+      258,
+      259,
+      260,
+      261,
+      262,
+      263,
+      264,
+      265,
+      266,
+      267,
+      268,
+      269,
+      270,
+      271,
+      272,
+      274,
+      275,
+      276,
+      277,
+      278,
+      279,
+      280,
+      281,
+      282,
+      283,
+      284,
+      285,
+      286,
+      287,
+      288,
+      290,
+      291,
+      292,
+      293,
+      294,
+      295,
+      296,
+      297,
+      298,
+      299,
+      300,
+      301,
+      302,
+      303,
+      304,
+      306,
+      307,
+      308,
+      309,
+      310,
+      311,
+      312,
+      313,
+      314,
+      315,
+      316,
+      317,
+      318,
+      319,
+      320,
+      322,
+      323,
+      324,
+      325,
+      326,
+      327,
+      328,
+      329,
+      330,
+      331,
+      332,
+      333,
+      334,
+      335,
+      336,
+      338,
+      339,
+      340,
+      341,
+      342,
+      343,
+      344,
+      345,
+      346,
+      347,
+      348,
+      349,
+      350,
+      351,
+      352,
+      354,
+      355,
+      356,
+      357,
+      358,
+      359,
+      360,
+      361,
+      362,
+      363,
+      364,
+      365,
+      366,
+      367,
+      368,
+      370,
+      371,
+      372,
+      373,
+      374,
+      375,
+      376,
+      377,
+      378,
+      379,
+      380,
+      381,
+      382,
+      383,
+      384,
+      386,
+      387,
+      388,
+      389,
+      390,
+      391,
+      392,
+      393,
+      394,
+      395,
+      396,
+      397,
+      398,
+      399,
+      400,
+      402,
+      403,
+      404,
+      405,
+      406,
+      407,
+      408,
+      409,
+      410,
+      411,
+      412,
+      413,
+      414,
+      415,
+      416,
+      418,
+      419,
+      420,
+      421,
+      422,
+      423,
+      424,
+      425,
+      426,
+      427,
+      428,
+      429,
+      430,
+      431,
+      432,
+      434,
+      435,
+      436,
+      437,
+      438,
+      439,
+      440,
+      441,
+      442,
+      443,
+      444,
+      445,
+      446,
+      447,
+      448,
+      450,
+      451,
+      452,
+      453,
+      454,
+      455,
+      456,
+      457,
+      458,
+      459,
+      460,
+      461,
+      462,
+      463,
+      464,
+      466,
+      467,
+      468,
+      469,
+      470,
+      471,
+      472,
+      473,
+      474,
+      475,
+      476,
+      477,
+      478,
+      479,
+      480,
+      482,
+      483,
+      484,
+      485,
+      486,
+      487,
+      488,
+      489,
+      490,
+      491,
+      492,
+      493,
+      494,
+      495,
+      496,
+      498,
+      499,
+      500,
+      501,
+      502,
+      503,
+      504,
+      505,
+      506,
+      507,
+      508,
+      509,
+      510,
+      511,
+      512
+    ],
+    "edge_ray_count": 2048,
+    "generic_primitive": "ANY_HIT",
+    "mode": "optix_prepared_pose_flags",
+    "obstacle_triangle_count": 512,
+    "pose_collision_flags": [
+      {
+        "collides": false,
+        "pose_id": 1
+      },
+      {
+        "collides": true,
+        "pose_id": 2
+      },
+      {
+        "collides": true,
+        "pose_id": 3
+      },
+      {
+        "collides": true,
+        "pose_id": 4
+      },
+      {
+        "collides": true,
+        "pose_id": 5
+      },
+      {
+        "collides": true,
+        "pose_id": 6
+      },
+      {
+        "collides": true,
+        "pose_id": 7
+      },
+      {
+        "collides": true,
+        "pose_id": 8
+      },
+      {
+        "collides": true,
+        "pose_id": 9
+      },
+      {
+        "collides": true,
+        "pose_id": 10
+      },
+      {
+        "collides": true,
+        "pose_id": 11
+      },
+      {
+        "collides": true,
+        "pose_id": 12
+      },
+      {
+        "collides": true,
+        "pose_id": 13
+      },
+      {
+        "collides": true,
+        "pose_id": 14
+      },
+      {
+        "collides": true,
+        "pose_id": 15
+      },
+      {
+        "collides": true,
+        "pose_id": 16
+      },
+      {
+        "collides": false,
+        "pose_id": 17
+      },
+      {
+        "collides": true,
+        "pose_id": 18
+      },
+      {
+        "collides": true,
+        "pose_id": 19
+      },
+      {
+        "collides": true,
+        "pose_id": 20
+      },
+      {
+        "collides": true,
+        "pose_id": 21
+      },
+      {
+        "collides": true,
+        "pose_id": 22
+      },
+      {
+        "collides": true,
+        "pose_id": 23
+      },
+      {
+        "collides": true,
+        "pose_id": 24
+      },
+      {
+        "collides": true,
+        "pose_id": 25
+      },
+      {
+        "collides": true,
+        "pose_id": 26
+      },
+      {
+        "collides": true,
+        "pose_id": 27
+      },
+      {
+        "collides": true,
+        "pose_id": 28
+      },
+      {
+        "collides": true,
+        "pose_id": 29
+      },
+      {
+        "collides": true,
+        "pose_id": 30
+      },
+      {
+        "collides": true,
+        "pose_id": 31
+      },
+      {
+        "collides": true,
+        "pose_id": 32
+      },
+      {
+        "collides": false,
+        "pose_id": 33
+      },
+      {
+        "collides": true,
+        "pose_id": 34
+      },
+      {
+        "collides": true,
+        "pose_id": 35
+      },
+      {
+        "collides": true,
+        "pose_id": 36
+      },
+      {
+        "collides": true,
+        "pose_id": 37
+      },
+      {
+        "collides": true,
+        "pose_id": 38
+      },
+      {
+        "collides": true,
+        "pose_id": 39
+      },
+      {
+        "collides": true,
+        "pose_id": 40
+      },
+      {
+        "collides": true,
+        "pose_id": 41
+      },
+      {
+        "collides": true,
+        "pose_id": 42
+      },
+      {
+        "collides": true,
+        "pose_id": 43
+      },
+      {
+        "collides": true,
+        "pose_id": 44
+      },
+      {
+        "collides": true,
+        "pose_id": 45
+      },
+      {
+        "collides": true,
+        "pose_id": 46
+      },
+      {
+        "collides": true,
+        "pose_id": 47
+      },
+      {
+        "collides": true,
+        "pose_id": 48
+      },
+      {
+        "collides": false,
+        "pose_id": 49
+      },
+      {
+        "collides": true,
+        "pose_id": 50
+      },
+      {
+        "collides": true,
+        "pose_id": 51
+      },
+      {
+        "collides": true,
+        "pose_id": 52
+      },
+      {
+        "collides": true,
+        "pose_id": 53
+      },
+      {
+        "collides": true,
+        "pose_id": 54
+      },
+      {
+        "collides": true,
+        "pose_id": 55
+      },
+      {
+        "collides": true,
+        "pose_id": 56
+      },
+      {
+        "collides": true,
+        "pose_id": 57
+      },
+      {
+        "collides": true,
+        "pose_id": 58
+      },
+      {
+        "collides": true,
+        "pose_id": 59
+      },
+      {
+        "collides": true,
+        "pose_id": 60
+      },
+      {
+        "collides": true,
+        "pose_id": 61
+      },
+      {
+        "collides": true,
+        "pose_id": 62
+      },
+      {
+        "collides": true,
+        "pose_id": 63
+      },
+      {
+        "collides": true,
+        "pose_id": 64
+      },
+      {
+        "collides": false,
+        "pose_id": 65
+      },
+      {
+        "collides": true,
+        "pose_id": 66
+      },
+      {
+        "collides": true,
+        "pose_id": 67
+      },
+      {
+        "collides": true,
+        "pose_id": 68
+      },
+      {
+        "collides": true,
+        "pose_id": 69
+      },
+      {
+        "collides": true,
+        "pose_id": 70
+      },
+      {
+        "collides": true,
+        "pose_id": 71
+      },
+      {
+        "collides": true,
+        "pose_id": 72
+      },
+      {
+        "collides": true,
+        "pose_id": 73
+      },
+      {
+        "collides": true,
+        "pose_id": 74
+      },
+      {
+        "collides": true,
+        "pose_id": 75
+      },
+      {
+        "collides": true,
+        "pose_id": 76
+      },
+      {
+        "collides": true,
+        "pose_id": 77
+      },
+      {
+        "collides": true,
+        "pose_id": 78
+      },
+      {
+        "collides": true,
+        "pose_id": 79
+      },
+      {
+        "collides": true,
+        "pose_id": 80
+      },
+      {
+        "collides": false,
+        "pose_id": 81
+      },
+      {
+        "collides": true,
+        "pose_id": 82
+      },
+      {
+        "collides": true,
+        "pose_id": 83
+      },
+      {
+        "collides": true,
+        "pose_id": 84
+      },
+      {
+        "collides": true,
+        "pose_id": 85
+      },
+      {
+        "collides": true,
+        "pose_id": 86
+      },
+      {
+        "collides": true,
+        "pose_id": 87
+      },
+      {
+        "collides": true,
+        "pose_id": 88
+      },
+      {
+        "collides": true,
+        "pose_id": 89
+      },
+      {
+        "collides": true,
+        "pose_id": 90
+      },
+      {
+        "collides": true,
+        "pose_id": 91
+      },
+      {
+        "collides": true,
+        "pose_id": 92
+      },
+      {
+        "collides": true,
+        "pose_id": 93
+      },
+      {
+        "collides": true,
+        "pose_id": 94
+      },
+      {
+        "collides": true,
+        "pose_id": 95
+      },
+      {
+        "collides": true,
+        "pose_id": 96
+      },
+      {
+        "collides": false,
+        "pose_id": 97
+      },
+      {
+        "collides": true,
+        "pose_id": 98
+      },
+      {
+        "collides": true,
+        "pose_id": 99
+      },
+      {
+        "collides": true,
+        "pose_id": 100
+      },
+      {
+        "collides": true,
+        "pose_id": 101
+      },
+      {
+        "collides": true,
+        "pose_id": 102
+      },
+      {
+        "collides": true,
+        "pose_id": 103
+      },
+      {
+        "collides": true,
+        "pose_id": 104
+      },
+      {
+        "collides": true,
+        "pose_id": 105
+      },
+      {
+        "collides": true,
+        "pose_id": 106
+      },
+      {
+        "collides": true,
+        "pose_id": 107
+      },
+      {
+        "collides": true,
+        "pose_id": 108
+      },
+      {
+        "collides": true,
+        "pose_id": 109
+      },
+      {
+        "collides": true,
+        "pose_id": 110
+      },
+      {
+        "collides": true,
+        "pose_id": 111
+      },
+      {
+        "collides": true,
+        "pose_id": 112
+      },
+      {
+        "collides": false,
+        "pose_id": 113
+      },
+      {
+        "collides": true,
+        "pose_id": 114
+      },
+      {
+        "collides": true,
+        "pose_id": 115
+      },
+      {
+        "collides": true,
+        "pose_id": 116
+      },
+      {
+        "collides": true,
+        "pose_id": 117
+      },
+      {
+        "collides": true,
+        "pose_id": 118
+      },
+      {
+        "collides": true,
+        "pose_id": 119
+      },
+      {
+        "collides": true,
+        "pose_id": 120
+      },
+      {
+        "collides": true,
+        "pose_id": 121
+      },
+      {
+        "collides": true,
+        "pose_id": 122
+      },
+      {
+        "collides": true,
+        "pose_id": 123
+      },
+      {
+        "collides": true,
+        "pose_id": 124
+      },
+      {
+        "collides": true,
+        "pose_id": 125
+      },
+      {
+        "collides": true,
+        "pose_id": 126
+      },
+      {
+        "collides": true,
+        "pose_id": 127
+      },
+      {
+        "collides": true,
+        "pose_id": 128
+      },
+      {
+        "collides": false,
+        "pose_id": 129
+      },
+      {
+        "collides": true,
+        "pose_id": 130
+      },
+      {
+        "collides": true,
+        "pose_id": 131
+      },
+      {
+        "collides": true,
+        "pose_id": 132
+      },
+      {
+        "collides": true,
+        "pose_id": 133
+      },
+      {
+        "collides": true,
+        "pose_id": 134
+      },
+      {
+        "collides": true,
+        "pose_id": 135
+      },
+      {
+        "collides": true,
+        "pose_id": 136
+      },
+      {
+        "collides": true,
+        "pose_id": 137
+      },
+      {
+        "collides": true,
+        "pose_id": 138
+      },
+      {
+        "collides": true,
+        "pose_id": 139
+      },
+      {
+        "collides": true,
+        "pose_id": 140
+      },
+      {
+        "collides": true,
+        "pose_id": 141
+      },
+      {
+        "collides": true,
+        "pose_id": 142
+      },
+      {
+        "collides": true,
+        "pose_id": 143
+      },
+      {
+        "collides": true,
+        "pose_id": 144
+      },
+      {
+        "collides": false,
+        "pose_id": 145
+      },
+      {
+        "collides": true,
+        "pose_id": 146
+      },
+      {
+        "collides": true,
+        "pose_id": 147
+      },
+      {
+        "collides": true,
+        "pose_id": 148
+      },
+      {
+        "collides": true,
+        "pose_id": 149
+      },
+      {
+        "collides": true,
+        "pose_id": 150
+      },
+      {
+        "collides": true,
+        "pose_id": 151
+      },
+      {
+        "collides": true,
+        "pose_id": 152
+      },
+      {
+        "collides": true,
+        "pose_id": 153
+      },
+      {
+        "collides": true,
+        "pose_id": 154
+      },
+      {
+        "collides": true,
+        "pose_id": 155
+      },
+      {
+        "collides": true,
+        "pose_id": 156
+      },
+      {
+        "collides": true,
+        "pose_id": 157
+      },
+      {
+        "collides": true,
+        "pose_id": 158
+      },
+      {
+        "collides": true,
+        "pose_id": 159
+      },
+      {
+        "collides": true,
+        "pose_id": 160
+      },
+      {
+        "collides": false,
+        "pose_id": 161
+      },
+      {
+        "collides": true,
+        "pose_id": 162
+      },
+      {
+        "collides": true,
+        "pose_id": 163
+      },
+      {
+        "collides": true,
+        "pose_id": 164
+      },
+      {
+        "collides": true,
+        "pose_id": 165
+      },
+      {
+        "collides": true,
+        "pose_id": 166
+      },
+      {
+        "collides": true,
+        "pose_id": 167
+      },
+      {
+        "collides": true,
+        "pose_id": 168
+      },
+      {
+        "collides": true,
+        "pose_id": 169
+      },
+      {
+        "collides": true,
+        "pose_id": 170
+      },
+      {
+        "collides": true,
+        "pose_id": 171
+      },
+      {
+        "collides": true,
+        "pose_id": 172
+      },
+      {
+        "collides": true,
+        "pose_id": 173
+      },
+      {
+        "collides": true,
+        "pose_id": 174
+      },
+      {
+        "collides": true,
+        "pose_id": 175
+      },
+      {
+        "collides": true,
+        "pose_id": 176
+      },
+      {
+        "collides": false,
+        "pose_id": 177
+      },
+      {
+        "collides": true,
+        "pose_id": 178
+      },
+      {
+        "collides": true,
+        "pose_id": 179
+      },
+      {
+        "collides": true,
+        "pose_id": 180
+      },
+      {
+        "collides": true,
+        "pose_id": 181
+      },
+      {
+        "collides": true,
+        "pose_id": 182
+      },
+      {
+        "collides": true,
+        "pose_id": 183
+      },
+      {
+        "collides": true,
+        "pose_id": 184
+      },
+      {
+        "collides": true,
+        "pose_id": 185
+      },
+      {
+        "collides": true,
+        "pose_id": 186
+      },
+      {
+        "collides": true,
+        "pose_id": 187
+      },
+      {
+        "collides": true,
+        "pose_id": 188
+      },
+      {
+        "collides": true,
+        "pose_id": 189
+      },
+      {
+        "collides": true,
+        "pose_id": 190
+      },
+      {
+        "collides": true,
+        "pose_id": 191
+      },
+      {
+        "collides": true,
+        "pose_id": 192
+      },
+      {
+        "collides": false,
+        "pose_id": 193
+      },
+      {
+        "collides": true,
+        "pose_id": 194
+      },
+      {
+        "collides": true,
+        "pose_id": 195
+      },
+      {
+        "collides": true,
+        "pose_id": 196
+      },
+      {
+        "collides": true,
+        "pose_id": 197
+      },
+      {
+        "collides": true,
+        "pose_id": 198
+      },
+      {
+        "collides": true,
+        "pose_id": 199
+      },
+      {
+        "collides": true,
+        "pose_id": 200
+      },
+      {
+        "collides": true,
+        "pose_id": 201
+      },
+      {
+        "collides": true,
+        "pose_id": 202
+      },
+      {
+        "collides": true,
+        "pose_id": 203
+      },
+      {
+        "collides": true,
+        "pose_id": 204
+      },
+      {
+        "collides": true,
+        "pose_id": 205
+      },
+      {
+        "collides": true,
+        "pose_id": 206
+      },
+      {
+        "collides": true,
+        "pose_id": 207
+      },
+      {
+        "collides": true,
+        "pose_id": 208
+      },
+      {
+        "collides": false,
+        "pose_id": 209
+      },
+      {
+        "collides": true,
+        "pose_id": 210
+      },
+      {
+        "collides": true,
+        "pose_id": 211
+      },
+      {
+        "collides": true,
+        "pose_id": 212
+      },
+      {
+        "collides": true,
+        "pose_id": 213
+      },
+      {
+        "collides": true,
+        "pose_id": 214
+      },
+      {
+        "collides": true,
+        "pose_id": 215
+      },
+      {
+        "collides": true,
+        "pose_id": 216
+      },
+      {
+        "collides": true,
+        "pose_id": 217
+      },
+      {
+        "collides": true,
+        "pose_id": 218
+      },
+      {
+        "collides": true,
+        "pose_id": 219
+      },
+      {
+        "collides": true,
+        "pose_id": 220
+      },
+      {
+        "collides": true,
+        "pose_id": 221
+      },
+      {
+        "collides": true,
+        "pose_id": 222
+      },
+      {
+        "collides": true,
+        "pose_id": 223
+      },
+      {
+        "collides": true,
+        "pose_id": 224
+      },
+      {
+        "collides": false,
+        "pose_id": 225
+      },
+      {
+        "collides": true,
+        "pose_id": 226
+      },
+      {
+        "collides": true,
+        "pose_id": 227
+      },
+      {
+        "collides": true,
+        "pose_id": 228
+      },
+      {
+        "collides": true,
+        "pose_id": 229
+      },
+      {
+        "collides": true,
+        "pose_id": 230
+      },
+      {
+        "collides": true,
+        "pose_id": 231
+      },
+      {
+        "collides": true,
+        "pose_id": 232
+      },
+      {
+        "collides": true,
+        "pose_id": 233
+      },
+      {
+        "collides": true,
+        "pose_id": 234
+      },
+      {
+        "collides": true,
+        "pose_id": 235
+      },
+      {
+        "collides": true,
+        "pose_id": 236
+      },
+      {
+        "collides": true,
+        "pose_id": 237
+      },
+      {
+        "collides": true,
+        "pose_id": 238
+      },
+      {
+        "collides": true,
+        "pose_id": 239
+      },
+      {
+        "collides": true,
+        "pose_id": 240
+      },
+      {
+        "collides": false,
+        "pose_id": 241
+      },
+      {
+        "collides": true,
+        "pose_id": 242
+      },
+      {
+        "collides": true,
+        "pose_id": 243
+      },
+      {
+        "collides": true,
+        "pose_id": 244
+      },
+      {
+        "collides": true,
+        "pose_id": 245
+      },
+      {
+        "collides": true,
+        "pose_id": 246
+      },
+      {
+        "collides": true,
+        "pose_id": 247
+      },
+      {
+        "collides": true,
+        "pose_id": 248
+      },
+      {
+        "collides": true,
+        "pose_id": 249
+      },
+      {
+        "collides": true,
+        "pose_id": 250
+      },
+      {
+        "collides": true,
+        "pose_id": 251
+      },
+      {
+        "collides": true,
+        "pose_id": 252
+      },
+      {
+        "collides": true,
+        "pose_id": 253
+      },
+      {
+        "collides": true,
+        "pose_id": 254
+      },
+      {
+        "collides": true,
+        "pose_id": 255
+      },
+      {
+        "collides": true,
+        "pose_id": 256
+      },
+      {
+        "collides": false,
+        "pose_id": 257
+      },
+      {
+        "collides": true,
+        "pose_id": 258
+      },
+      {
+        "collides": true,
+        "pose_id": 259
+      },
+      {
+        "collides": true,
+        "pose_id": 260
+      },
+      {
+        "collides": true,
+        "pose_id": 261
+      },
+      {
+        "collides": true,
+        "pose_id": 262
+      },
+      {
+        "collides": true,
+        "pose_id": 263
+      },
+      {
+        "collides": true,
+        "pose_id": 264
+      },
+      {
+        "collides": true,
+        "pose_id": 265
+      },
+      {
+        "collides": true,
+        "pose_id": 266
+      },
+      {
+        "collides": true,
+        "pose_id": 267
+      },
+      {
+        "collides": true,
+        "pose_id": 268
+      },
+      {
+        "collides": true,
+        "pose_id": 269
+      },
+      {
+        "collides": true,
+        "pose_id": 270
+      },
+      {
+        "collides": true,
+        "pose_id": 271
+      },
+      {
+        "collides": true,
+        "pose_id": 272
+      },
+      {
+        "collides": false,
+        "pose_id": 273
+      },
+      {
+        "collides": true,
+        "pose_id": 274
+      },
+      {
+        "collides": true,
+        "pose_id": 275
+      },
+      {
+        "collides": true,
+        "pose_id": 276
+      },
+      {
+        "collides": true,
+        "pose_id": 277
+      },
+      {
+        "collides": true,
+        "pose_id": 278
+      },
+      {
+        "collides": true,
+        "pose_id": 279
+      },
+      {
+        "collides": true,
+        "pose_id": 280
+      },
+      {
+        "collides": true,
+        "pose_id": 281
+      },
+      {
+        "collides": true,
+        "pose_id": 282
+      },
+      {
+        "collides": true,
+        "pose_id": 283
+      },
+      {
+        "collides": true,
+        "pose_id": 284
+      },
+      {
+        "collides": true,
+        "pose_id": 285
+      },
+      {
+        "collides": true,
+        "pose_id": 286
+      },
+      {
+        "collides": true,
+        "pose_id": 287
+      },
+      {
+        "collides": true,
+        "pose_id": 288
+      },
+      {
+        "collides": false,
+        "pose_id": 289
+      },
+      {
+        "collides": true,
+        "pose_id": 290
+      },
+      {
+        "collides": true,
+        "pose_id": 291
+      },
+      {
+        "collides": true,
+        "pose_id": 292
+      },
+      {
+        "collides": true,
+        "pose_id": 293
+      },
+      {
+        "collides": true,
+        "pose_id": 294
+      },
+      {
+        "collides": true,
+        "pose_id": 295
+      },
+      {
+        "collides": true,
+        "pose_id": 296
+      },
+      {
+        "collides": true,
+        "pose_id": 297
+      },
+      {
+        "collides": true,
+        "pose_id": 298
+      },
+      {
+        "collides": true,
+        "pose_id": 299
+      },
+      {
+        "collides": true,
+        "pose_id": 300
+      },
+      {
+        "collides": true,
+        "pose_id": 301
+      },
+      {
+        "collides": true,
+        "pose_id": 302
+      },
+      {
+        "collides": true,
+        "pose_id": 303
+      },
+      {
+        "collides": true,
+        "pose_id": 304
+      },
+      {
+        "collides": false,
+        "pose_id": 305
+      },
+      {
+        "collides": true,
+        "pose_id": 306
+      },
+      {
+        "collides": true,
+        "pose_id": 307
+      },
+      {
+        "collides": true,
+        "pose_id": 308
+      },
+      {
+        "collides": true,
+        "pose_id": 309
+      },
+      {
+        "collides": true,
+        "pose_id": 310
+      },
+      {
+        "collides": true,
+        "pose_id": 311
+      },
+      {
+        "collides": true,
+        "pose_id": 312
+      },
+      {
+        "collides": true,
+        "pose_id": 313
+      },
+      {
+        "collides": true,
+        "pose_id": 314
+      },
+      {
+        "collides": true,
+        "pose_id": 315
+      },
+      {
+        "collides": true,
+        "pose_id": 316
+      },
+      {
+        "collides": true,
+        "pose_id": 317
+      },
+      {
+        "collides": true,
+        "pose_id": 318
+      },
+      {
+        "collides": true,
+        "pose_id": 319
+      },
+      {
+        "collides": true,
+        "pose_id": 320
+      },
+      {
+        "collides": false,
+        "pose_id": 321
+      },
+      {
+        "collides": true,
+        "pose_id": 322
+      },
+      {
+        "collides": true,
+        "pose_id": 323
+      },
+      {
+        "collides": true,
+        "pose_id": 324
+      },
+      {
+        "collides": true,
+        "pose_id": 325
+      },
+      {
+        "collides": true,
+        "pose_id": 326
+      },
+      {
+        "collides": true,
+        "pose_id": 327
+      },
+      {
+        "collides": true,
+        "pose_id": 328
+      },
+      {
+        "collides": true,
+        "pose_id": 329
+      },
+      {
+        "collides": true,
+        "pose_id": 330
+      },
+      {
+        "collides": true,
+        "pose_id": 331
+      },
+      {
+        "collides": true,
+        "pose_id": 332
+      },
+      {
+        "collides": true,
+        "pose_id": 333
+      },
+      {
+        "collides": true,
+        "pose_id": 334
+      },
+      {
+        "collides": true,
+        "pose_id": 335
+      },
+      {
+        "collides": true,
+        "pose_id": 336
+      },
+      {
+        "collides": false,
+        "pose_id": 337
+      },
+      {
+        "collides": true,
+        "pose_id": 338
+      },
+      {
+        "collides": true,
+        "pose_id": 339
+      },
+      {
+        "collides": true,
+        "pose_id": 340
+      },
+      {
+        "collides": true,
+        "pose_id": 341
+      },
+      {
+        "collides": true,
+        "pose_id": 342
+      },
+      {
+        "collides": true,
+        "pose_id": 343
+      },
+      {
+        "collides": true,
+        "pose_id": 344
+      },
+      {
+        "collides": true,
+        "pose_id": 345
+      },
+      {
+        "collides": true,
+        "pose_id": 346
+      },
+      {
+        "collides": true,
+        "pose_id": 347
+      },
+      {
+        "collides": true,
+        "pose_id": 348
+      },
+      {
+        "collides": true,
+        "pose_id": 349
+      },
+      {
+        "collides": true,
+        "pose_id": 350
+      },
+      {
+        "collides": true,
+        "pose_id": 351
+      },
+      {
+        "collides": true,
+        "pose_id": 352
+      },
+      {
+        "collides": false,
+        "pose_id": 353
+      },
+      {
+        "collides": true,
+        "pose_id": 354
+      },
+      {
+        "collides": true,
+        "pose_id": 355
+      },
+      {
+        "collides": true,
+        "pose_id": 356
+      },
+      {
+        "collides": true,
+        "pose_id": 357
+      },
+      {
+        "collides": true,
+        "pose_id": 358
+      },
+      {
+        "collides": true,
+        "pose_id": 359
+      },
+      {
+        "collides": true,
+        "pose_id": 360
+      },
+      {
+        "collides": true,
+        "pose_id": 361
+      },
+      {
+        "collides": true,
+        "pose_id": 362
+      },
+      {
+        "collides": true,
+        "pose_id": 363
+      },
+      {
+        "collides": true,
+        "pose_id": 364
+      },
+      {
+        "collides": true,
+        "pose_id": 365
+      },
+      {
+        "collides": true,
+        "pose_id": 366
+      },
+      {
+        "collides": true,
+        "pose_id": 367
+      },
+      {
+        "collides": true,
+        "pose_id": 368
+      },
+      {
+        "collides": false,
+        "pose_id": 369
+      },
+      {
+        "collides": true,
+        "pose_id": 370
+      },
+      {
+        "collides": true,
+        "pose_id": 371
+      },
+      {
+        "collides": true,
+        "pose_id": 372
+      },
+      {
+        "collides": true,
+        "pose_id": 373
+      },
+      {
+        "collides": true,
+        "pose_id": 374
+      },
+      {
+        "collides": true,
+        "pose_id": 375
+      },
+      {
+        "collides": true,
+        "pose_id": 376
+      },
+      {
+        "collides": true,
+        "pose_id": 377
+      },
+      {
+        "collides": true,
+        "pose_id": 378
+      },
+      {
+        "collides": true,
+        "pose_id": 379
+      },
+      {
+        "collides": true,
+        "pose_id": 380
+      },
+      {
+        "collides": true,
+        "pose_id": 381
+      },
+      {
+        "collides": true,
+        "pose_id": 382
+      },
+      {
+        "collides": true,
+        "pose_id": 383
+      },
+      {
+        "collides": true,
+        "pose_id": 384
+      },
+      {
+        "collides": false,
+        "pose_id": 385
+      },
+      {
+        "collides": true,
+        "pose_id": 386
+      },
+      {
+        "collides": true,
+        "pose_id": 387
+      },
+      {
+        "collides": true,
+        "pose_id": 388
+      },
+      {
+        "collides": true,
+        "pose_id": 389
+      },
+      {
+        "collides": true,
+        "pose_id": 390
+      },
+      {
+        "collides": true,
+        "pose_id": 391
+      },
+      {
+        "collides": true,
+        "pose_id": 392
+      },
+      {
+        "collides": true,
+        "pose_id": 393
+      },
+      {
+        "collides": true,
+        "pose_id": 394
+      },
+      {
+        "collides": true,
+        "pose_id": 395
+      },
+      {
+        "collides": true,
+        "pose_id": 396
+      },
+      {
+        "collides": true,
+        "pose_id": 397
+      },
+      {
+        "collides": true,
+        "pose_id": 398
+      },
+      {
+        "collides": true,
+        "pose_id": 399
+      },
+      {
+        "collides": true,
+        "pose_id": 400
+      },
+      {
+        "collides": false,
+        "pose_id": 401
+      },
+      {
+        "collides": true,
+        "pose_id": 402
+      },
+      {
+        "collides": true,
+        "pose_id": 403
+      },
+      {
+        "collides": true,
+        "pose_id": 404
+      },
+      {
+        "collides": true,
+        "pose_id": 405
+      },
+      {
+        "collides": true,
+        "pose_id": 406
+      },
+      {
+        "collides": true,
+        "pose_id": 407
+      },
+      {
+        "collides": true,
+        "pose_id": 408
+      },
+      {
+        "collides": true,
+        "pose_id": 409
+      },
+      {
+        "collides": true,
+        "pose_id": 410
+      },
+      {
+        "collides": true,
+        "pose_id": 411
+      },
+      {
+        "collides": true,
+        "pose_id": 412
+      },
+      {
+        "collides": true,
+        "pose_id": 413
+      },
+      {
+        "collides": true,
+        "pose_id": 414
+      },
+      {
+        "collides": true,
+        "pose_id": 415
+      },
+      {
+        "collides": true,
+        "pose_id": 416
+      },
+      {
+        "collides": false,
+        "pose_id": 417
+      },
+      {
+        "collides": true,
+        "pose_id": 418
+      },
+      {
+        "collides": true,
+        "pose_id": 419
+      },
+      {
+        "collides": true,
+        "pose_id": 420
+      },
+      {
+        "collides": true,
+        "pose_id": 421
+      },
+      {
+        "collides": true,
+        "pose_id": 422
+      },
+      {
+        "collides": true,
+        "pose_id": 423
+      },
+      {
+        "collides": true,
+        "pose_id": 424
+      },
+      {
+        "collides": true,
+        "pose_id": 425
+      },
+      {
+        "collides": true,
+        "pose_id": 426
+      },
+      {
+        "collides": true,
+        "pose_id": 427
+      },
+      {
+        "collides": true,
+        "pose_id": 428
+      },
+      {
+        "collides": true,
+        "pose_id": 429
+      },
+      {
+        "collides": true,
+        "pose_id": 430
+      },
+      {
+        "collides": true,
+        "pose_id": 431
+      },
+      {
+        "collides": true,
+        "pose_id": 432
+      },
+      {
+        "collides": false,
+        "pose_id": 433
+      },
+      {
+        "collides": true,
+        "pose_id": 434
+      },
+      {
+        "collides": true,
+        "pose_id": 435
+      },
+      {
+        "collides": true,
+        "pose_id": 436
+      },
+      {
+        "collides": true,
+        "pose_id": 437
+      },
+      {
+        "collides": true,
+        "pose_id": 438
+      },
+      {
+        "collides": true,
+        "pose_id": 439
+      },
+      {
+        "collides": true,
+        "pose_id": 440
+      },
+      {
+        "collides": true,
+        "pose_id": 441
+      },
+      {
+        "collides": true,
+        "pose_id": 442
+      },
+      {
+        "collides": true,
+        "pose_id": 443
+      },
+      {
+        "collides": true,
+        "pose_id": 444
+      },
+      {
+        "collides": true,
+        "pose_id": 445
+      },
+      {
+        "collides": true,
+        "pose_id": 446
+      },
+      {
+        "collides": true,
+        "pose_id": 447
+      },
+      {
+        "collides": true,
+        "pose_id": 448
+      },
+      {
+        "collides": false,
+        "pose_id": 449
+      },
+      {
+        "collides": true,
+        "pose_id": 450
+      },
+      {
+        "collides": true,
+        "pose_id": 451
+      },
+      {
+        "collides": true,
+        "pose_id": 452
+      },
+      {
+        "collides": true,
+        "pose_id": 453
+      },
+      {
+        "collides": true,
+        "pose_id": 454
+      },
+      {
+        "collides": true,
+        "pose_id": 455
+      },
+      {
+        "collides": true,
+        "pose_id": 456
+      },
+      {
+        "collides": true,
+        "pose_id": 457
+      },
+      {
+        "collides": true,
+        "pose_id": 458
+      },
+      {
+        "collides": true,
+        "pose_id": 459
+      },
+      {
+        "collides": true,
+        "pose_id": 460
+      },
+      {
+        "collides": true,
+        "pose_id": 461
+      },
+      {
+        "collides": true,
+        "pose_id": 462
+      },
+      {
+        "collides": true,
+        "pose_id": 463
+      },
+      {
+        "collides": true,
+        "pose_id": 464
+      },
+      {
+        "collides": false,
+        "pose_id": 465
+      },
+      {
+        "collides": true,
+        "pose_id": 466
+      },
+      {
+        "collides": true,
+        "pose_id": 467
+      },
+      {
+        "collides": true,
+        "pose_id": 468
+      },
+      {
+        "collides": true,
+        "pose_id": 469
+      },
+      {
+        "collides": true,
+        "pose_id": 470
+      },
+      {
+        "collides": true,
+        "pose_id": 471
+      },
+      {
+        "collides": true,
+        "pose_id": 472
+      },
+      {
+        "collides": true,
+        "pose_id": 473
+      },
+      {
+        "collides": true,
+        "pose_id": 474
+      },
+      {
+        "collides": true,
+        "pose_id": 475
+      },
+      {
+        "collides": true,
+        "pose_id": 476
+      },
+      {
+        "collides": true,
+        "pose_id": 477
+      },
+      {
+        "collides": true,
+        "pose_id": 478
+      },
+      {
+        "collides": true,
+        "pose_id": 479
+      },
+      {
+        "collides": true,
+        "pose_id": 480
+      },
+      {
+        "collides": false,
+        "pose_id": 481
+      },
+      {
+        "collides": true,
+        "pose_id": 482
+      },
+      {
+        "collides": true,
+        "pose_id": 483
+      },
+      {
+        "collides": true,
+        "pose_id": 484
+      },
+      {
+        "collides": true,
+        "pose_id": 485
+      },
+      {
+        "collides": true,
+        "pose_id": 486
+      },
+      {
+        "collides": true,
+        "pose_id": 487
+      },
+      {
+        "collides": true,
+        "pose_id": 488
+      },
+      {
+        "collides": true,
+        "pose_id": 489
+      },
+      {
+        "collides": true,
+        "pose_id": 490
+      },
+      {
+        "collides": true,
+        "pose_id": 491
+      },
+      {
+        "collides": true,
+        "pose_id": 492
+      },
+      {
+        "collides": true,
+        "pose_id": 493
+      },
+      {
+        "collides": true,
+        "pose_id": 494
+      },
+      {
+        "collides": true,
+        "pose_id": 495
+      },
+      {
+        "collides": true,
+        "pose_id": 496
+      },
+      {
+        "collides": false,
+        "pose_id": 497
+      },
+      {
+        "collides": true,
+        "pose_id": 498
+      },
+      {
+        "collides": true,
+        "pose_id": 499
+      },
+      {
+        "collides": true,
+        "pose_id": 500
+      },
+      {
+        "collides": true,
+        "pose_id": 501
+      },
+      {
+        "collides": true,
+        "pose_id": 502
+      },
+      {
+        "collides": true,
+        "pose_id": 503
+      },
+      {
+        "collides": true,
+        "pose_id": 504
+      },
+      {
+        "collides": true,
+        "pose_id": 505
+      },
+      {
+        "collides": true,
+        "pose_id": 506
+      },
+      {
+        "collides": true,
+        "pose_id": 507
+      },
+      {
+        "collides": true,
+        "pose_id": 508
+      },
+      {
+        "collides": true,
+        "pose_id": 509
+      },
+      {
+        "collides": true,
+        "pose_id": 510
+      },
+      {
+        "collides": true,
+        "pose_id": 511
+      },
+      {
+        "collides": true,
+        "pose_id": 512
+      }
+    ],
+    "result_layout": "grouped_threshold_bool",
+    "run_phases": {
+      "group_index_prepare_sec": 0.0005479548126459122,
+      "query_grouped_count_threshold_bool_first_sec": 0.4916512130293995,
+      "query_grouped_count_threshold_bool_mean_sec": 0.4916512130293995,
+      "query_grouped_count_threshold_bool_min_sec": 0.4916512130293995,
+      "query_grouped_count_threshold_bool_sec": 0.4916512130293995,
+      "ray_prepare_sec": 0.003587836865335703,
+      "scene_prepare_sec": 0.34159703995101154,
+      "scene_prepare_sec_this_batch": 0.0
+    },
+    "summary_primitive": "REDUCE_INT(COUNT)"
+  },
+  "rtdl_role": "RTDL uses a prepared OptiX ray/triangle any-hit scene and returns native pose collision flags, avoiding per-ray Python dict row materialization for this app summary path.",
+  "validation_mode": "cpu_oracle"
+}

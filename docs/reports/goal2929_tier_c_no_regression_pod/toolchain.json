@@ -1,0 +1,12 @@
+{
+  "cuda_home": "/usr/local/cuda-12",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "optix_prefix": "/root/vendor/optix-sdk",
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "rtdl_optix_ptx_arch": "compute_86",
+  "rtdl_optix_ptx_compiler": "nvcc",
+  "source_commit": "1ec2cf9efe23eb2c4067671b394cc32d52c64e11",
+  "source_dirty": [],
+  "tier_c_no_regression_only": true
+}
