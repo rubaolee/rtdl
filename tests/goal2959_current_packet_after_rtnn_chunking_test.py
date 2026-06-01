@@ -38,14 +38,12 @@ class Goal2959CurrentPacketAfterRtnnChunkingTest(unittest.TestCase):
         self.assertIsNone(triage["top_priority"])
         self.assertEqual(10, len(triage["apps"]))
 
-    def test_readiness_indexes_goal2959_current_packet(self) -> None:
+    def test_readiness_keeps_goal2959_packet_green_after_later_packets(self) -> None:
         packet = rt.v2_5_internal_readiness_packet(repo_root=ROOT)
         validation = rt.validate_v2_5_internal_readiness_packet(repo_root=ROOT)
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual(0, validation["current_packet_perf_target_count"])
-        self.assertIn("goal2959_current_packet_after_rtnn_chunk_pod", packet["current_canonical_runner"]["summary_path"])
-        self.assertEqual(EXPECTED_COMMIT, packet["current_canonical_runner"]["source_commit"])
         self.assertEqual(0, packet["current_packet_perf_triage"]["performance_target_count"])
         self.assertIn("keep_goal2959_current_packet_after_rtnn_chunking_green", packet["allowed_next_actions"])
         self.assertFalse(packet["claim_authorization"]["v2_5_release_authorized"])

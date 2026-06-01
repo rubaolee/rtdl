@@ -145,6 +145,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2962_large_scale_v2_5_stress_probe_2026-06-01.md",
     "docs/reports/goal2965_raydb_current_commit_gate_refresh_2026-06-01.md",
     "docs/reports/goal2968_current_10_app_perf_triage_with_raydb_gate_2026-06-01.md",
+    "docs/reports/goal2969_current_head_packet_and_10_app_triage_2026-06-01.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -179,10 +180,10 @@ V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_HARNESS_ARTIFACTS = (
     "docs/reports/goal2847_current_head_canonical_harness_pod/goal2803_barnes_hut.json",
 )
 V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_RUNNER_SUMMARY = (
-    "docs/reports/goal2959_current_packet_after_rtnn_chunk_pod/goal2855_summary.json"
+    "docs/reports/goal2969_current_head_packet_pod/goal2855_summary.json"
 )
 V2_5_INTERNAL_READINESS_CURRENT_PACKET_PERF_TRIAGE = (
-    "docs/reports/goal2968_current_packet_plus_raydb_gate_triage_2026-06-01.json"
+    "docs/reports/goal2969_current_head_packet_pod/goal2969_triage.json"
 )
 
 V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
@@ -301,6 +302,7 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "keep_goal2965_raydb_current_commit_gate_refresh_green",
     "triage_goal2966_2967_raydb_current_gate_reviews_before_release_packet",
     "keep_goal2968_current_10_app_perf_triage_with_raydb_gate_green",
+    "keep_goal2969_current_head_packet_and_10_app_triage_green",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )

@@ -1,0 +1,242 @@
+{
+  "app": "rt_dbscan_project_close_matrix",
+  "claim_boundary": {
+    "paper_dataset_reproduction": false,
+    "paper_speedup_claim_authorized": false,
+    "project_close_internal_evidence": true,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "cuda_nvcc": null,
+  "dataset": "clustered3d",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "point_counts": [
+    32768,
+    65536,
+    131072
+  ],
+  "repeat_count": 3,
+  "source_commit": "deb8369056009cde7c8027f97b45fffbb01729da",
+  "source_dirty": [],
+  "source_tree_is_git_checkout": true,
+  "summaries": [
+    {
+      "dataset": "clustered3d",
+      "grouped_stream_summary": {
+        "grouped_native_tail_median_sec": 0.024749080068431795,
+        "materializes_directed_adjacency_stream": false,
+        "materializes_neighbor_rows": false,
+        "mode": "optix_rt_core_grouped_stream_cupy_column_signature_3d",
+        "repeat_count": 3,
+        "rt_core_accelerated": true,
+        "signatures_match_probe": true,
+        "speedup_vs_prepared_cupy_grid": 3.6070279334236766,
+        "tail_median_sec": 0.04682296758983284
+      },
+      "planned_continuation_policy": {
+        "adapter": "plan_rt_dbscan_continuation_execution",
+        "directed_edge_budget": 160000000,
+        "estimated_directed_edge_count": 135291470,
+        "estimated_full_adjacency_bytes": 541428032,
+        "evidence_goals": [
+          "Goal2431",
+          "Goal2433",
+          "Goal2435",
+          "Goal2452",
+          "Goal2457",
+          "Goal2461",
+          "Goal2463",
+          "Goal2465",
+          "Goal2475",
+          "Goal2476"
+        ],
+        "full_stream_fits_budget": true,
+        "not_hidden_dispatcher": true,
+        "paper_reproduction_claim_authorized": false,
+        "planner_surface": "benchmark_app_plan_explain_not_engine_dispatch",
+        "policy": "explicit_continuation_plan_from_goal2431_2433_2435_2452_2457_2461_2463_2465_2475_2476_evidence",
+        "reason": "estimated directed adjacency stream fits the explicit budget; Goal2431/2435/2452/2457 evidence says the full stream is faster than chunked or grouped when it fits",
+        "release_claim_authorized": false,
+        "selected_mode": "optix_rt_core_adjacency_cupy_components_3d"
+      },
+      "planned_continuation_reason": "estimated directed adjacency stream fits the explicit budget; Goal2431/2435/2452/2457 evidence says the full stream is faster than chunked or grouped when it fits",
+      "planned_continuation_selected_mode": "optix_rt_core_adjacency_cupy_components_3d",
+      "planned_high_level_policy": {
+        "adapter": "plan_rt_dbscan_execution",
+        "not_hidden_dispatcher": true,
+        "paper_reproduction_claim_authorized": false,
+        "policy": "explicit_benchmark_plan_from_goal2425_prepared_fairness_evidence",
+        "reason": "Goal2425 showed clustered3d needs at least the 65k scale before prepared RT wins over prepared pure CuPy",
+        "release_claim_authorized": false,
+        "selected_mode": "partner_cupy_prepared_grid_components_3d"
+      },
+      "planned_rt_dbscan_reason": "Goal2425 showed clustered3d needs at least the 65k scale before prepared RT wins over prepared pure CuPy",
+      "planned_rt_dbscan_selected_mode": "partner_cupy_prepared_grid_components_3d",
+      "point_count": 32768,
+      "repeat_probe_summary": {
+        "optix_rt_core_flags_cupy_prepared_grid_components_3d": {
+          "materializes_neighbor_rows": false,
+          "mode": "optix_rt_core_flags_cupy_prepared_grid_components_3d",
+          "repeat_count": 3,
+          "rt_core_accelerated": true,
+          "signatures_match_probe": true,
+          "speedup_vs_prepared_cupy_grid": 0.933772400175186,
+          "tail_median_sec": 0.1808703619753942
+        },
+        "partner_cupy_prepared_grid_components_3d": {
+          "materializes_neighbor_rows": false,
+          "mode": "partner_cupy_prepared_grid_components_3d",
+          "repeat_count": 3,
+          "rt_core_accelerated": false,
+          "signatures_match_probe": true,
+          "tail_median_sec": 0.16889175202231854
+        }
+      }
+    },
+    {
+      "dataset": "clustered3d",
+      "grouped_stream_summary": {
+        "grouped_native_tail_median_sec": 0.06639924005139619,
+        "materializes_directed_adjacency_stream": false,
+        "materializes_neighbor_rows": false,
+        "mode": "optix_rt_core_grouped_stream_cupy_column_signature_3d",
+        "repeat_count": 3,
+        "rt_core_accelerated": true,
+        "signatures_match_probe": true,
+        "speedup_vs_prepared_cupy_grid": 5.10048850495843,
+        "tail_median_sec": 0.09164216439239681
+      },
+      "planned_continuation_policy": {
+        "adapter": "plan_rt_dbscan_continuation_execution",
+        "directed_edge_budget": 160000000,
+        "estimated_directed_edge_count": 541165879,
+        "estimated_full_adjacency_bytes": 2165187812,
+        "evidence_goals": [
+          "Goal2431",
+          "Goal2433",
+          "Goal2435",
+          "Goal2452",
+          "Goal2457",
+          "Goal2461",
+          "Goal2463",
+          "Goal2465",
+          "Goal2475",
+          "Goal2476"
+        ],
+        "full_stream_fits_budget": false,
+        "not_hidden_dispatcher": true,
+        "paper_reproduction_claim_authorized": false,
+        "planner_surface": "benchmark_app_plan_explain_not_engine_dispatch",
+        "policy": "explicit_continuation_plan_from_goal2431_2433_2435_2452_2457_2461_2463_2465_2475_2476_evidence",
+        "reason": "estimated directed adjacency stream exceeds the explicit budget; Goal2457/2461/2463/2465/2475/2476 evidence says the grouped stream avoids the giant neighbor-index table, reuses prepared device search points, reduces avoidable anyhit work, and beats chunked continuation for the measured dense branch",
+        "release_claim_authorized": false,
+        "selected_mode": "optix_rt_core_grouped_stream_cupy_components_3d"
+      },
+      "planned_continuation_reason": "estimated directed adjacency stream exceeds the explicit budget; Goal2457/2461/2463/2465/2475/2476 evidence says the grouped stream avoids the giant neighbor-index table, reuses prepared device search points, reduces avoidable anyhit work, and beats chunked continuation for the measured dense branch",
+      "planned_continuation_selected_mode": "optix_rt_core_grouped_stream_cupy_components_3d",
+      "planned_high_level_policy": {
+        "adapter": "plan_rt_dbscan_execution",
+        "not_hidden_dispatcher": true,
+        "paper_reproduction_claim_authorized": false,
+        "policy": "explicit_benchmark_plan_from_goal2425_prepared_fairness_evidence",
+        "reason": "Goal2425 showed prepared RT-count plus prepared CuPy grid wins for this measured scale/shape",
+        "release_claim_authorized": false,
+        "selected_mode": "optix_rt_core_flags_cupy_prepared_grid_components_3d"
+      },
+      "planned_rt_dbscan_reason": "Goal2425 showed prepared RT-count plus prepared CuPy grid wins for this measured scale/shape",
+      "planned_rt_dbscan_selected_mode": "optix_rt_core_flags_cupy_prepared_grid_components_3d",
+      "point_count": 65536,
+      "repeat_probe_summary": {
+        "optix_rt_core_flags_cupy_prepared_grid_components_3d": {
+          "materializes_neighbor_rows": false,
+          "mode": "optix_rt_core_flags_cupy_prepared_grid_components_3d",
+          "repeat_count": 3,
+          "rt_core_accelerated": true,
+          "signatures_match_probe": true,
+          "speedup_vs_prepared_cupy_grid": 1.1012800494831092,
+          "tail_median_sec": 0.4244331914233044
+        },
+        "partner_cupy_prepared_grid_components_3d": {
+          "materializes_neighbor_rows": false,
+          "mode": "partner_cupy_prepared_grid_components_3d",
+          "repeat_count": 3,
+          "rt_core_accelerated": false,
+          "signatures_match_probe": true,
+          "tail_median_sec": 0.46741980605293065
+        }
+      }
+    },
+    {
+      "dataset": "clustered3d",
+      "grouped_stream_summary": {
+        "grouped_native_tail_median_sec": 0.2506986784283072,
+        "materializes_directed_adjacency_stream": false,
+        "materializes_neighbor_rows": false,
+        "mode": "optix_rt_core_grouped_stream_cupy_column_signature_3d",
+        "repeat_count": 3,
+        "rt_core_accelerated": true,
+        "signatures_match_probe": true,
+        "speedup_vs_prepared_cupy_grid": 4.711660355222983,
+        "tail_median_sec": 0.3134885175386444
+      },
+      "planned_continuation_policy": {
+        "adapter": "plan_rt_dbscan_continuation_execution",
+        "directed_edge_budget": 160000000,
+        "estimated_directed_edge_count": 2164663517,
+        "estimated_full_adjacency_bytes": 8659702652,
+        "evidence_goals": [
+          "Goal2431",
+          "Goal2433",
+          "Goal2435",
+          "Goal2452",
+          "Goal2457",
+          "Goal2461",
+          "Goal2463",
+          "Goal2465",
+          "Goal2475",
+          "Goal2476"
+        ],
+        "full_stream_fits_budget": false,
+        "not_hidden_dispatcher": true,
+        "paper_reproduction_claim_authorized": false,
+        "planner_surface": "benchmark_app_plan_explain_not_engine_dispatch",
+        "policy": "explicit_continuation_plan_from_goal2431_2433_2435_2452_2457_2461_2463_2465_2475_2476_evidence",
+        "reason": "estimated directed adjacency stream exceeds the explicit budget; Goal2457/2461/2463/2465/2475/2476 evidence says the grouped stream avoids the giant neighbor-index table, reuses prepared device search points, reduces avoidable anyhit work, and beats chunked continuation for the measured dense branch",
+        "release_claim_authorized": false,
+        "selected_mode": "optix_rt_core_grouped_stream_cupy_components_3d"
+      },
+      "planned_continuation_reason": "estimated directed adjacency stream exceeds the explicit budget; Goal2457/2461/2463/2465/2475/2476 evidence says the grouped stream avoids the giant neighbor-index table, reuses prepared device search points, reduces avoidable anyhit work, and beats chunked continuation for the measured dense branch",
+      "planned_continuation_selected_mode": "optix_rt_core_grouped_stream_cupy_components_3d",
+      "planned_high_level_policy": {
+        "adapter": "plan_rt_dbscan_execution",
+        "not_hidden_dispatcher": true,
+        "paper_reproduction_claim_authorized": false,
+        "policy": "explicit_benchmark_plan_from_goal2425_prepared_fairness_evidence",
+        "reason": "Goal2425 showed prepared RT-count plus prepared CuPy grid wins for this measured scale/shape",
+        "release_claim_authorized": false,
+        "selected_mode": "optix_rt_core_flags_cupy_prepared_grid_components_3d"
+      },
+      "planned_rt_dbscan_reason": "Goal2425 showed prepared RT-count plus prepared CuPy grid wins for this measured scale/shape",
+      "planned_rt_dbscan_selected_mode": "optix_rt_core_flags_cupy_prepared_grid_components_3d",
+      "point_count": 131072,
+      "repeat_probe_summary": {
+        "optix_rt_core_flags_cupy_prepared_grid_components_3d": {
+          "materializes_neighbor_rows": false,
+          "mode": "optix_rt_core_flags_cupy_prepared_grid_components_3d",
+          "repeat_count": 3,
+          "rt_core_accelerated": true,
+          "signatures_match_probe": true,
+          "speedup_vs_prepared_cupy_grid": 1.5491257737283712,
+          "tail_median_sec": 0.9534741755342111
+        },
+        "partner_cupy_prepared_grid_components_3d": {
+          "materializes_neighbor_rows": false,
+          "mode": "partner_cupy_prepared_grid_components_3d",
+          "repeat_count": 3,
+          "rt_core_accelerated": false,
+          "signatures_match_probe": true,
+          "tail_median_sec": 1.4770514199044555
+        }
+      }
+    }
+  ]
+}

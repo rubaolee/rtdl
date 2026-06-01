@@ -29,13 +29,12 @@ class Goal2968Current10AppPerfTriageWithRaydbGateTest(unittest.TestCase):
         self.assertGreaterEqual(float(raydb["min_hit_stream_triton_slowdown_vs_primitive_first"]), 30.0)
         self.assertGreater(float(raydb["max_hit_stream_triton_slowdown_vs_primitive_first"]), 100.0)
 
-    def test_readiness_uses_current_10_app_triage(self) -> None:
+    def test_readiness_keeps_zero_target_triage_after_goal2968(self) -> None:
         packet = rt.v2_5_internal_readiness_packet(repo_root=ROOT)
         validation = rt.validate_v2_5_internal_readiness_packet(repo_root=ROOT)
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual(0, validation["current_packet_perf_target_count"])
-        self.assertIn("goal2968_current_packet_plus_raydb_gate_triage", packet["current_packet_perf_triage"]["path"])
         self.assertEqual(0, packet["current_packet_perf_triage"]["performance_target_count"])
         self.assertFalse(packet["claim_authorization"]["v2_5_release_authorized"])
 
