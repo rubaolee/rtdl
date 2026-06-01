@@ -98,6 +98,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2887_goal2886_review_intake_and_carrier_authority_field_rename_2026-05-31.md",
     "docs/reports/goal2889_torch_carrier_copy_decision_seam_lease_wrap_2026-05-31.md",
     "docs/reports/goal2891_runtime_provenance_index_in_conformance_snapshot_2026-05-31.md",
+    "docs/reports/goal2893_current_packet_after_runtime_provenance_index_2026-05-31.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -132,7 +133,7 @@ V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_HARNESS_ARTIFACTS = (
     "docs/reports/goal2847_current_head_canonical_harness_pod/goal2803_barnes_hut.json",
 )
 V2_5_INTERNAL_READINESS_CURRENT_CANONICAL_RUNNER_SUMMARY = (
-    "docs/reports/goal2880_current_packet_after_seam_provenance_pod/goal2855_summary.json"
+    "docs/reports/goal2893_current_packet_after_runtime_provenance_index_pod/goal2855_summary.json"
 )
 
 V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
