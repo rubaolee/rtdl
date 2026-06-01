@@ -1,0 +1,96 @@
+{
+  "app": "hausdorff_xhd",
+  "baseline": {
+    "elapsed_runs_sec": [
+      0.018812397262081504,
+      0.01572665898129344,
+      0.015683315927162766,
+      0.015734684886410832,
+      0.015693971188738942
+    ],
+    "elapsed_sec": 0.01572665898129344,
+    "exact_value": true,
+    "median_elapsed_sec": 0.01572665898129344,
+    "method": "cupy_grouped_grid_rawkernel",
+    "result": {
+      "direction": "a_to_b",
+      "distance": 0.11858844621300667,
+      "elapsed_sec": 0.01572665898129344,
+      "method": "cupy_grouped_grid_rawkernel",
+      "source_index": 13024,
+      "target_index": 462
+    },
+    "uses_rt_cores": false,
+    "uses_rtdl": false,
+    "warmup_elapsed_sec": 0.6217590339947492,
+    "wrapper_elapsed_sec": 0.14621267607435584
+  },
+  "benchmark_track": "canonical_exact_hausdorff_entrypoint",
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "canonical_entrypoint": true,
+    "native_engine_customization": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rtdl_beats_cupy_grid_claim_authorized": false,
+    "rtdl_beats_xhd_claim_authorized": false,
+    "triton_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "distance_error": 0.0,
+  "elapsed_sec": 1.916119750123471,
+  "entrypoint_version": "rtdl.goal2801.hausdorff_xhd_v2_5_canonical_entrypoint.v3.reduced_target8192",
+  "goal": "Goal2801",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "matches_exact_baseline": true,
+  "rtdl": {
+    "adaptive_growth_factor": null,
+    "adaptive_target_points_per_group": null,
+    "elapsed_runs_sec": [
+      0.014730028109624982,
+      0.01463235798291862,
+      0.015261338092386723,
+      0.014629484154284,
+      0.023192723048850894
+    ],
+    "elapsed_sec": 0.014730028109624982,
+    "exact_value": true,
+    "median_elapsed_sec": 0.014730028109624982,
+    "method": "rtdl_rt_grouped_reduced_nearest_witness",
+    "reduced_seed_with_threshold": false,
+    "reduced_target_points_per_group": 8192,
+    "result": {
+      "backend": "optix",
+      "direction": "a_to_b",
+      "distance": 0.11858844621300667,
+      "elapsed_sec": 0.014730028109624982,
+      "exact_value": true,
+      "method": "rtdl_rt_grouped_reduced_nearest_witness",
+      "radius_strategy": "bbox_upper_bound",
+      "rt_core_accelerated": true,
+      "source_index": 13024,
+      "target_index": 8210,
+      "threshold_iterations": 0,
+      "witness_radius": 3.5202286382107038
+    },
+    "uses_rt_cores": true,
+    "uses_rtdl": true,
+    "warmup_elapsed_sec": 0.9746551429852843,
+    "wrapper_elapsed_sec": 0.08399884006939828
+  },
+  "rtdl_over_cupy_grid_elapsed_ratio": 0.9366279339525369,
+  "scenario": {
+    "exact_tolerance": 1e-09,
+    "offset_x": 0.08,
+    "offset_y": -0.06,
+    "points_a": 16384,
+    "points_b": 16384,
+    "repeat": 5,
+    "rtdl_warmup": 2,
+    "seed_a": 11,
+    "seed_b": 29
+  },
+  "source_commit": "8deb21bea3930830ad03d3d7410356c786af5479",
+  "source_dirty": [],
+  "status": "pass"
+}

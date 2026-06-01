@@ -142,6 +142,7 @@ V2_5_INTERNAL_READINESS_REQUIRED_REPORTS = (
     "docs/reports/goal2955_current_packet_after_rtnn_graph_replay_2026-06-01.md",
     "docs/reports/goal2958_rtnn_graph_replay_scale_chunking_2026-06-01.md",
     "docs/reports/goal2959_current_packet_after_rtnn_chunking_2026-06-01.md",
+    "docs/reports/goal2962_large_scale_v2_5_stress_probe_2026-06-01.md",
 )
 
 V2_5_INTERNAL_READINESS_TIER_B_CLEAN_ARTIFACTS = {
@@ -215,6 +216,8 @@ V2_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PATHS = (
     "docs/reviews/goal2930_gemini_review_goal2929_tier_c_10_benchmark_foundation_2026-06-01.md",
     "docs/reviews/goal2956_gemini_review_goal2955_zero_target_packet_2026-06-01.md",
     "docs/reviews/goal2957_claude_review_goal2955_zero_target_packet_2026-06-01.md",
+    "docs/reviews/goal2960_gemini_review_goal2958_2959_rtnn_chunk_packet_2026-06-01.md",
+    "docs/reviews/goal2961_claude_review_goal2958_2959_rtnn_chunk_packet_2026-06-01.md",
 )
 
 V2_5_INTERNAL_READINESS_BLOCKED_ACTIONS = (
@@ -286,6 +289,8 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "keep_goal2958_rtnn_graph_replay_scale_chunking_green",
     "keep_goal2959_current_packet_after_rtnn_chunking_green",
     "triage_goal2956_2957_zero_target_packet_reviews_before_release_packet",
+    "triage_goal2960_2961_rtnn_chunk_packet_reviews_before_release_packet",
+    "keep_goal2962_large_scale_stress_probe_green",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
