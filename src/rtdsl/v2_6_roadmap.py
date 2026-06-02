@@ -108,6 +108,10 @@ def v2_6_roadmap() -> dict[str, Any]:
         "hausdorff_optix_cupy_perf_probe_report": "docs/reports/goal3022_hausdorff_optix_cupy_perf_probe_2026-06-02.md",
         "hausdorff_optix_cupy_perf_probe_artifact": "docs/reports/goal3022_hausdorff_optix_cupy_perf_probe_2026-06-02.json",
         "hausdorff_optix_cupy_perf_probe_status": "rt_core_correct_but_cupy_grouped_grid_current_fast_reference_for_dense_exact_2d_hausdorff_not_speedup_evidence",
+        "hausdorff_optix_group_sweep_goal": "Goal3024",
+        "hausdorff_optix_group_sweep_report": "docs/reports/goal3024_hausdorff_optix_group_sweep_2026-06-02.md",
+        "hausdorff_optix_group_sweep_artifact": "docs/reports/goal3024_hausdorff_optix_group_sweep_2026-06-02.json",
+        "hausdorff_optix_group_sweep_status": "adaptive_group_512_best_current_rt_row_but_cheap_tuning_does_not_close_gap_not_speedup_evidence",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -382,6 +386,16 @@ def validate_v2_6_roadmap(
         errors.append("Goal3022 Hausdorff OptiX/CuPy perf report is missing")
     if not (root / str(roadmap.get("hausdorff_optix_cupy_perf_probe_artifact", ""))).exists():
         errors.append("Goal3022 Hausdorff OptiX/CuPy perf artifact is missing")
+    if roadmap.get("hausdorff_optix_group_sweep_goal") != "Goal3024":
+        errors.append("v2.6 roadmap must index Goal3024 as the Hausdorff OptiX group sweep")
+    if "cheap_tuning_does_not_close_gap" not in str(roadmap.get("hausdorff_optix_group_sweep_status", "")):
+        errors.append("Goal3024 status must record that cheap tuning does not close the gap")
+    if "not_speedup_evidence" not in str(roadmap.get("hausdorff_optix_group_sweep_status", "")):
+        errors.append("Goal3024 group sweep must not be treated as speedup evidence")
+    if not (root / str(roadmap.get("hausdorff_optix_group_sweep_report", ""))).exists():
+        errors.append("Goal3024 Hausdorff OptiX group-sweep report is missing")
+    if not (root / str(roadmap.get("hausdorff_optix_group_sweep_artifact", ""))).exists():
+        errors.append("Goal3024 Hausdorff OptiX group-sweep artifact is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):
