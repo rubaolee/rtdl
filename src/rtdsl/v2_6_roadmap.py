@@ -174,6 +174,15 @@ def v2_6_roadmap() -> dict[str, Any]:
         "hausdorff_active_frontier_parameter_sweep_report": "docs/reports/goal3048_hausdorff_active_frontier_parameter_sweep_2026-06-02.md",
         "hausdorff_active_frontier_parameter_sweep_artifact": "docs/reports/goal3048_hausdorff_active_frontier_parameter_sweep_a4000_2026-06-02.json",
         "hausdorff_active_frontier_parameter_sweep_status": "a4000_seed_group_sweep_8_cases_seed_default_1024_promoted_group_floor_512_internal_evidence_not_public_speedup_evidence",
+        "partner_choice_docs_goal": "Goal3050",
+        "partner_choice_docs_report": "docs/reports/goal3050_partner_choice_for_custom_logic_docs_and_benchmark_matrix_2026-06-02.md",
+        "partner_choice_docs_status": "learner_facing_cupy_vs_numba_guidance_and_10_benchmark_matrix_not_release_not_speedup_evidence",
+        "partner_choice_pod_refresh_goal": "Goal3052",
+        "partner_choice_pod_refresh_report": "docs/reports/goal3052_partner_choice_pod_refresh_2026-06-02.md",
+        "partner_choice_pod_refresh_status": "a4000_numba_1m_raydb_triangle_rayjoin_grouped_arg_passes_plus_hausdorff_refresh_not_release_not_speedup_evidence",
+        "partner_choice_guidance_goal": "Goal3054",
+        "partner_choice_guidance_report": "docs/reports/goal3054_v2_6_machine_readable_partner_choice_guidance_2026-06-02.md",
+        "partner_choice_guidance_status": "machine_readable_advisory_api_for_10_benchmark_partner_choices_not_auto_select_not_release_not_speedup_evidence",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -599,6 +608,30 @@ def validate_v2_6_roadmap(
         errors.append("Goal3048 active-frontier parameter-sweep report is missing")
     if not (root / str(roadmap.get("hausdorff_active_frontier_parameter_sweep_artifact", ""))).exists():
         errors.append("Goal3048 active-frontier parameter-sweep artifact is missing")
+    if roadmap.get("partner_choice_docs_goal") != "Goal3050":
+        errors.append("v2.6 roadmap must index Goal3050 as the partner-choice learner docs")
+    if "10_benchmark_matrix" not in str(roadmap.get("partner_choice_docs_status", "")):
+        errors.append("Goal3050 status must record the ten-benchmark matrix")
+    if "not_release_not_speedup" not in str(roadmap.get("partner_choice_docs_status", "")):
+        errors.append("Goal3050 docs must not be treated as release or speedup evidence")
+    if not (root / str(roadmap.get("partner_choice_docs_report", ""))).exists():
+        errors.append("Goal3050 partner-choice docs report is missing")
+    if roadmap.get("partner_choice_pod_refresh_goal") != "Goal3052":
+        errors.append("v2.6 roadmap must index Goal3052 as the partner-choice pod refresh")
+    if "numba_1m" not in str(roadmap.get("partner_choice_pod_refresh_status", "")):
+        errors.append("Goal3052 status must record the 1M-row Numba pod refresh")
+    if "not_release_not_speedup" not in str(roadmap.get("partner_choice_pod_refresh_status", "")):
+        errors.append("Goal3052 pod refresh must not be treated as release or speedup evidence")
+    if not (root / str(roadmap.get("partner_choice_pod_refresh_report", ""))).exists():
+        errors.append("Goal3052 partner-choice pod refresh report is missing")
+    if roadmap.get("partner_choice_guidance_goal") != "Goal3054":
+        errors.append("v2.6 roadmap must index Goal3054 as machine-readable partner-choice guidance")
+    if "not_auto_select" not in str(roadmap.get("partner_choice_guidance_status", "")):
+        errors.append("Goal3054 status must block automatic partner selection")
+    if "not_release_not_speedup" not in str(roadmap.get("partner_choice_guidance_status", "")):
+        errors.append("Goal3054 guidance must not be treated as release or speedup evidence")
+    if not (root / str(roadmap.get("partner_choice_guidance_report", ""))).exists():
+        errors.append("Goal3054 partner-choice guidance report is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):

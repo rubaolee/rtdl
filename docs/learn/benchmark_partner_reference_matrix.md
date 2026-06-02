@@ -36,3 +36,7 @@ benchmark apps; it does not define hidden auto-selection rules.
 
 For the practical decision guide, read
 [Choosing A Partner For Custom Logic](partner_choice_for_custom_logic.md).
+
+The same benchmark recommendations are available as advisory metadata through
+`rtdsl.plan_v2_6_partner_choice(...)`. That helper is explanatory only; it does
+not auto-select a partner or authorize performance wording.

@@ -93,6 +93,24 @@ When in doubt, write down the primitive, backend, partner, hardware, dataset,
 script, commit, and result contract. If those details are missing, call the path
 compatible or experimental rather than performance-ready.
 
+## Programmatic Guidance
+
+The learner docs and benchmark matrix are mirrored by an advisory helper:
+
+```python
+import rtdsl as rt
+
+plan = rt.plan_v2_6_partner_choice(
+    "spatial_rayjoin",
+    "row_stream_compact_mask",
+)
+print(plan["recommended_partner"])  # "numba"
+```
+
+The helper does not auto-select or run the partner. It returns current
+recommendation metadata, evidence paths, and claim boundaries so apps can show a
+clear explanation before the user chooses a partner.
+
 ## See Also
 
 - [Benchmark Partner Reference Matrix](benchmark_partner_reference_matrix.md)
