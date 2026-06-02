@@ -270,6 +270,11 @@ from .v2_6_roadmap import V2_6_ROADMAP_STATUS
 from .v2_6_roadmap import V2_6_ROADMAP_VERSION
 from .v2_6_roadmap import v2_6_roadmap
 from .v2_6_roadmap import validate_v2_6_roadmap
+from .v2_6_neutral_partner_handoff import V2_6_NEUTRAL_PARTNER_HANDOFF_SUPPORTED_PARTNERS
+from .v2_6_neutral_partner_handoff import V2_6_NEUTRAL_PARTNER_HANDOFF_VERSION
+from .v2_6_neutral_partner_handoff import plan_v2_6_neutral_partner_handoff
+from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff
+from .v2_6_neutral_partner_handoff import validate_v2_6_neutral_partner_handoff
 from .api import polygon_pair_overlap_area_rows
 from .api import polygon_set_jaccard
 from .api import ray_triangle_any_hit

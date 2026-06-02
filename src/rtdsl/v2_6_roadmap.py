@@ -26,6 +26,12 @@ def v2_6_roadmap() -> dict[str, Any]:
         "status": V2_6_ROADMAP_STATUS,
         "source_reference": V2_6_CLAUDE_REFERENCE_REPORT,
         "opening_goal": "neutral_buffer_seam_runtime_cleanup_before_first_class_numba",
+        "n0_foundation_goal": "Goal2990",
+        "n0_foundation_report": "docs/reports/goal2990_v2_6_neutral_partner_handoff_2026-06-01.md",
+        "n0_foundation_status": "neutral_descriptor_and_lease_packet_landed_pod_runtime_demonstrator_pending",
+        "pod_runner_goal": "Goal2991",
+        "pod_runner_report": "docs/reports/goal2991_v2_6_numba_neutral_handoff_pod_runner_2026-06-01.md",
+        "pod_runner_status": "prepared_not_executed",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -44,10 +50,12 @@ def v2_6_roadmap() -> dict[str, Any]:
             {
                 "step": "N-0",
                 "title": "neutral_buffer_seam_cleanup",
+                "foundation_status": "Goal2990 neutral descriptor/lease packet landed",
                 "exit_gate": (
                     "CuPy and Numba CUDA arrays pass through a neutral descriptor "
                     "without torch conversion on the data path; copy/borrow status "
-                    "is runtime-observed and labeled."
+                    "is runtime-observed and labeled; pod-backed app continuation "
+                    "execution remains pending."
                 ),
             },
             {
@@ -98,6 +106,18 @@ def validate_v2_6_roadmap(
         errors.append("unexpected v2.6 roadmap status")
     if "neutral_buffer_seam" not in str(roadmap.get("opening_goal", "")):
         errors.append("v2.6 must begin with the neutral buffer seam cleanup")
+    if roadmap.get("n0_foundation_goal") != "Goal2990":
+        errors.append("v2.6 roadmap must index Goal2990 as the N-0 foundation")
+    if "pod_runtime_demonstrator_pending" not in str(roadmap.get("n0_foundation_status", "")):
+        errors.append("v2.6 roadmap must keep the pod runtime demonstrator pending")
+    if not (root / str(roadmap.get("n0_foundation_report", ""))).exists():
+        errors.append("Goal2990 N-0 foundation report is missing")
+    if roadmap.get("pod_runner_goal") != "Goal2991":
+        errors.append("v2.6 roadmap must index Goal2991 as the Numba neutral-handoff pod runner")
+    if roadmap.get("pod_runner_status") != "prepared_not_executed":
+        errors.append("Goal2991 runner must remain prepared_not_executed until pod evidence exists")
+    if not (root / str(roadmap.get("pod_runner_report", ""))).exists():
+        errors.append("Goal2991 pod-runner report is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):
