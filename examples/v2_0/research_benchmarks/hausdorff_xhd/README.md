@@ -99,7 +99,7 @@ OptiX pod/workstation run:
 
 ```bash
 export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
-PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_v2_language_lab.py --points-a 16384 --points-b 16384 --method cupy_grouped_grid_rawkernel --method rtdl_rt_grouped_reduced_nearest_witness --method rtdl_rt_grouped_adaptive_nearest_witness --json-out scratch/hausdorff_lab_optix.json
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_v2_language_lab.py --points-a 16384 --points-b 16384 --method cupy_grouped_grid_rawkernel --method rtdl_rt_grouped_reduced_nearest_witness --method rtdl_rt_grouped_adaptive_raw_nearest_witness --json-out scratch/hausdorff_lab_optix.json
 ```
 
 ## Method Guide
@@ -117,6 +117,7 @@ PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hau
 | `rtdl_rt_grouped_reduced_nearest_witness` | yes | no | yes on OptiX | yes | Grouped traversal plus device-side max-distance reduction |
 | `rtdl_rt_grouped_seeded_pruned_nearest_witness` | yes | no | yes on OptiX | yes | X-HD-style seed lower bound, threshold flags, and exact unsafe-subset reduction |
 | `rtdl_rt_grouped_adaptive_nearest_witness` | yes | no | yes on OptiX | yes | Adaptive grouped traversal with shrinking active work |
+| `rtdl_rt_grouped_adaptive_raw_nearest_witness` | yes | no | yes on OptiX | yes | Preferred current RT path; consumes generic raw row views instead of Python dictionaries |
 
 ## Interpreting JSON
 
@@ -139,8 +140,8 @@ Check these fields before quoting a result:
 - Exact RTDL/OptiX Hausdorff claims should use an exact witness method such as
   `rtdl_rt_grouped_seeded_pruned_nearest_witness`,
   `rtdl_rt_grouped_reduced_nearest_witness`, or
-  `rtdl_rt_grouped_adaptive_nearest_witness`, cite the dataset and hardware,
-  and include correctness evidence.
+  `rtdl_rt_grouped_adaptive_raw_nearest_witness`, cite the dataset and
+  hardware, and include correctness evidence.
 - Do not use this directory to claim that RTDL universally beats X-HD or every
   optimized CUDA implementation.
 

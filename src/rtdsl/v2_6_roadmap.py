@@ -116,6 +116,10 @@ def v2_6_roadmap() -> dict[str, Any]:
         "hausdorff_adaptive_reduced_probe_report": "docs/reports/goal3025_hausdorff_adaptive_reduced_pod_probe_2026-06-02.md",
         "hausdorff_adaptive_reduced_probe_artifact": "docs/reports/goal3025_hausdorff_adaptive_reduced_pod_probe_2026-06-02.json",
         "hausdorff_adaptive_reduced_probe_status": "correct_but_slower_than_existing_adaptive_rt_and_cupy_not_promoted_not_speedup_evidence",
+        "hausdorff_raw_row_view_probe_goal": "Goal3026",
+        "hausdorff_raw_row_view_probe_report": "docs/reports/goal3026_hausdorff_raw_row_view_probe_2026-06-02.md",
+        "hausdorff_raw_row_view_probe_artifact": "docs/reports/goal3026_hausdorff_raw_row_view_probe_2026-06-02.json",
+        "hausdorff_raw_row_view_probe_status": "raw_row_view_faster_than_old_adaptive_rt_but_still_slower_than_cupy_not_public_speedup_evidence",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -412,6 +416,18 @@ def validate_v2_6_roadmap(
         errors.append("Goal3025 Hausdorff adaptive-reduced report is missing")
     if not (root / str(roadmap.get("hausdorff_adaptive_reduced_probe_artifact", ""))).exists():
         errors.append("Goal3025 Hausdorff adaptive-reduced artifact is missing")
+    if roadmap.get("hausdorff_raw_row_view_probe_goal") != "Goal3026":
+        errors.append("v2.6 roadmap must index Goal3026 as the Hausdorff raw row-view probe")
+    if "raw_row_view_faster_than_old_adaptive_rt" not in str(roadmap.get("hausdorff_raw_row_view_probe_status", "")):
+        errors.append("Goal3026 status must record the raw row-view RT improvement")
+    if "still_slower_than_cupy" not in str(roadmap.get("hausdorff_raw_row_view_probe_status", "")):
+        errors.append("Goal3026 status must keep CuPy as the faster dense exact reference")
+    if "not_public_speedup_evidence" not in str(roadmap.get("hausdorff_raw_row_view_probe_status", "")):
+        errors.append("Goal3026 raw row-view probe must not be treated as public speedup evidence")
+    if not (root / str(roadmap.get("hausdorff_raw_row_view_probe_report", ""))).exists():
+        errors.append("Goal3026 Hausdorff raw row-view report is missing")
+    if not (root / str(roadmap.get("hausdorff_raw_row_view_probe_artifact", ""))).exists():
+        errors.append("Goal3026 Hausdorff raw row-view artifact is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):

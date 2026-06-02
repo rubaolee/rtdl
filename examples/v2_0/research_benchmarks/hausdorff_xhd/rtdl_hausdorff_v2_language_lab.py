@@ -21,6 +21,7 @@ METHODS = (
     "rtdl_rt_grouped_nearest_witness",
     "rtdl_rt_grouped_reduced_nearest_witness",
     "rtdl_rt_grouped_adaptive_nearest_witness",
+    "rtdl_rt_grouped_adaptive_raw_nearest_witness",
     "rtdl_rt_nearest_witness_oracle_radius",
 )
 
@@ -98,6 +99,14 @@ METHOD_METADATA = {
         "exact_value": True,
         "notes": "X-HD-inspired grouped OptiX traversal with app-level active-query worklist shrink",
     },
+    "rtdl_rt_grouped_adaptive_raw_nearest_witness": {
+        "role": "rtdl_v2_language",
+        "uses_rtdl": True,
+        "uses_partner": False,
+        "uses_rt_cores": True,
+        "exact_value": True,
+        "notes": "preferred current RT path using generic raw row views instead of Python dictionaries",
+    },
     "rtdl_rt_nearest_witness_oracle_radius": {
         "role": "diagnostic_lower_bound",
         "uses_rtdl": True,
@@ -158,6 +167,14 @@ def _run_method(method: str, points_a, points_b, args, exact_reference: dict[str
             payload["distance_for_compare"] = result.distance
         elif method == "rtdl_rt_grouped_adaptive_nearest_witness":
             result = hd.hausdorff_distance_2d_rt_grouped_adaptive_nearest_witness(
+                points_a,
+                points_b,
+                max_iterations=args.rt_max_iterations,
+            )
+            payload = asdict(result)
+            payload["distance_for_compare"] = result.distance
+        elif method == "rtdl_rt_grouped_adaptive_raw_nearest_witness":
+            result = hd.hausdorff_distance_2d_rt_grouped_adaptive_raw_nearest_witness(
                 points_a,
                 points_b,
                 max_iterations=args.rt_max_iterations,

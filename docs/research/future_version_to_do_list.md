@@ -831,6 +831,12 @@ Future work:
   loop. Do not promote another host-orchestrated threshold/reduction variant;
   the next attempt should keep active-set compaction, candidate frontiers, and
   nearest-witness continuation device-resident.
+- Goal3026 added a generic raw row-view output path for prepared point-group
+  nearest-witness rows. It improves the warm exact RT Hausdorff adaptive path
+  versus Python dictionary materialization, but remains slower than the CuPy
+  grouped-grid reference on dense random point sets. This closes the cheap
+  row-materialization branch; the remaining gap still needs device-resident
+  active-set and nearest-witness continuation.
 
 Boundary:
 
