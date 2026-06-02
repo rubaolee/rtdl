@@ -662,7 +662,7 @@ def _directed_rt_grouped_active_frontier_nearest_witness(
             )
             seed_points = _pack_point_columns_for_optix(seed_columns)
             seed_row = prepared.nearest_max_distance_row(seed_points, radius=witness_radius)
-            seed_reduced = _reduce_nearest_max_distance_row(source_columns, sorted_target_columns, seed_row)
+            seed_reduced = _reduce_nearest_max_distance_row(source_columns, target_columns, seed_row)
             seed_distance = float(seed_reduced["distance"])
             safety_margin = max(1.0e-7, abs(seed_distance) * 1.0e-6)
             threshold_radius = max(0.0, seed_distance - safety_margin)
@@ -679,7 +679,7 @@ def _directed_rt_grouped_active_frontier_nearest_witness(
             else:
                 frontier_reduced = _reduce_nearest_max_distance_row(
                     source_columns,
-                    sorted_target_columns,
+                    target_columns,
                     frontier_row,
                 )
                 if (
@@ -694,7 +694,7 @@ def _directed_rt_grouped_active_frontier_nearest_witness(
                     selected = seed_reduced
         if selected is None:
             row = prepared.nearest_max_distance_row(source_points, radius=witness_radius)
-            selected = _reduce_nearest_max_distance_row(source_columns, sorted_target_columns, row)
+            selected = _reduce_nearest_max_distance_row(source_columns, target_columns, row)
             seed_distance = float(selected["distance"])
             active_count = int(source_columns["ids"].size)
     selected["witness_radius"] = witness_radius

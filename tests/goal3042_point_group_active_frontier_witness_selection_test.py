@@ -101,6 +101,7 @@ class Goal3042PointGroupActiveFrontierWitnessSelectionTest(unittest.TestCase):
         self.assertIn("nearest_max_distance_active_frontier_row", helper)
         self.assertIn('"point_group_nearest_max_distance_active_frontier"', helper)
         self.assertIn('"materializes_frontier_on_host"', helper)
+        self.assertIn("_reduce_nearest_max_distance_row(source_columns, target_columns", helper)
         self.assertNotIn("prepared.threshold_flags", helper)
         self.assertNotIn("_subset_point_columns", helper)
 
