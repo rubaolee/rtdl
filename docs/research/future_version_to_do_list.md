@@ -871,6 +871,10 @@ Future work:
   composition against the current CuPy grouped-grid reference under a same
   contract and then decide whether the remaining gap needs a larger generic
   active-set/candidate-frontier primitive.
+- Goal3039 wires that Goal3037 composition into the Hausdorff benchmark app as
+  `rtdl_rt_grouped_device_columns_numba_argmax_nearest_witness`. The next pod
+  task is same-contract timing against `cupy_grouped_grid_rawkernel`; keep the
+  conclusion as evidence-only unless the timing actually wins.
 
 Boundary:
 

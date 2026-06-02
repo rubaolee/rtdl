@@ -147,6 +147,9 @@ def v2_6_roadmap() -> dict[str, Any]:
         "point_group_nearest_numba_argmax_pod_report": "docs/reports/goal3037_point_group_nearest_numba_argmax_a4000_pod_2026-06-02.md",
         "point_group_nearest_numba_argmax_pod_artifact": "docs/reports/goal3037_point_group_nearest_numba_argmax_a4000_pod_2026-06-02.json",
         "point_group_nearest_numba_argmax_pod_status": "clean_a4000_optix_device_columns_to_numba_global_argmax_conformance_passed_not_release_not_speedup_true_zero_copy_still_blocked",
+        "hausdorff_device_columns_numba_argmax_strategy_goal": "Goal3039",
+        "hausdorff_device_columns_numba_argmax_strategy_report": "docs/reports/goal3039_hausdorff_device_columns_numba_argmax_strategy_2026-06-02.md",
+        "hausdorff_device_columns_numba_argmax_strategy_status": "app_level_exact_hausdorff_strategy_wired_pod_perf_evidence_pending_not_speedup_evidence",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -486,6 +489,18 @@ def validate_v2_6_roadmap(
         errors.append("Goal3037 point-group nearest Numba argmax pod report is missing")
     if not (root / str(roadmap.get("point_group_nearest_numba_argmax_pod_artifact", ""))).exists():
         errors.append("Goal3037 point-group nearest Numba argmax pod artifact is missing")
+    if roadmap.get("hausdorff_device_columns_numba_argmax_strategy_goal") != "Goal3039":
+        errors.append("v2.6 roadmap must index Goal3039 as Hausdorff device-column Numba argmax strategy wiring")
+    if "app_level_exact_hausdorff_strategy_wired" not in str(
+        roadmap.get("hausdorff_device_columns_numba_argmax_strategy_status", "")
+    ):
+        errors.append("Goal3039 status must record app-level exact Hausdorff strategy wiring")
+    if "pod_perf_evidence_pending" not in str(roadmap.get("hausdorff_device_columns_numba_argmax_strategy_status", "")):
+        errors.append("Goal3039 status must keep pod performance evidence pending")
+    if "not_speedup_evidence" not in str(roadmap.get("hausdorff_device_columns_numba_argmax_strategy_status", "")):
+        errors.append("Goal3039 strategy wiring must not be treated as speedup evidence")
+    if not (root / str(roadmap.get("hausdorff_device_columns_numba_argmax_strategy_report", ""))).exists():
+        errors.append("Goal3039 Hausdorff device-column Numba argmax strategy report is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):

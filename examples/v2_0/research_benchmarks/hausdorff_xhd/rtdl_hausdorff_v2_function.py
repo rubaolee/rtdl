@@ -922,6 +922,84 @@ def _directed_rt_grouped_adaptive_reduced_nearest_witness(
     return best
 
 
+def _directed_rt_grouped_device_columns_numba_argmax_nearest_witness(
+    source_columns: dict[str, np.ndarray],
+    target_columns: dict[str, np.ndarray],
+    *,
+    upper_bound: float,
+    radius: float | None,
+    target_points_per_group: int,
+) -> dict[str, object]:
+    """RT witness device columns plus generic Numba global argmax."""
+
+    import cupy as cp
+    import rtdsl as rt
+    from rtdsl.optix_runtime import prepare_optix_point_group_nearest_witness_2d
+
+    source_count = int(source_columns["ids"].size)
+    if upper_bound <= 0.0:
+        return {
+            "distance": 0.0,
+            "source_index": 0,
+            "target_index": 0,
+            "witness_radius": 0.0,
+            "radius_strategy": "rt_grouped_device_columns_numba_argmax_radius",
+            "threshold_iterations": 0,
+            "threshold_elapsed_sec": 0.0,
+            "target_group_count": 0,
+            "target_points_per_group": target_points_per_group,
+            "native_reduction": "numba_global_argmax_u32_f64",
+        }
+
+    source_points = _pack_point_columns_for_optix(source_columns)
+    sorted_target_columns, target_groups = _build_uniform_point_group_columns(
+        target_columns,
+        target_points_per_group=target_points_per_group,
+    )
+    sorted_target_points = _pack_point_columns_for_optix(sorted_target_columns)
+    witness_radius = float(upper_bound) if radius is None else float(radius)
+    query_ids = cp.empty(source_count, dtype=cp.uint32)
+    neighbor_ids = cp.empty(source_count, dtype=cp.uint32)
+    distances = cp.empty(source_count, dtype=cp.float64)
+    start = time.perf_counter()
+    with prepare_optix_point_group_nearest_witness_2d(
+        sorted_target_points,
+        target_groups,
+        max_radius=_prepared_radius_guard(upper_bound),
+    ) as prepared:
+        producer = prepared.write_device_nearest_witness_columns(
+            source_points,
+            radius=witness_radius,
+            query_ids_out=query_ids,
+            neighbor_ids_out=neighbor_ids,
+            distances_out=distances,
+        )
+    consumer = rt.global_argmax_u32_f64_partner_columns(
+        {"item_ids": query_ids, "scores": distances},
+        partner="numba",
+        return_metadata=True,
+    )
+    cp.cuda.Stream.null.synchronize()
+    row_index = int(consumer["columns"]["row_indices"].copy_to_host()[0])
+    row = {
+        "query_id": int(consumer["columns"]["item_ids"].copy_to_host()[0]),
+        "neighbor_id": int(cp.asnumpy(neighbor_ids[row_index])),
+        "distance": float(consumer["columns"]["scores"].copy_to_host()[0]),
+    }
+    reduced = _reduce_nearest_max_distance_row(source_columns, sorted_target_columns, row)
+    reduced["witness_radius"] = witness_radius
+    reduced["radius_strategy"] = "rt_grouped_device_columns_numba_argmax_radius"
+    reduced["threshold_iterations"] = 0
+    reduced["threshold_elapsed_sec"] = time.perf_counter() - start
+    reduced["target_group_count"] = len(target_groups)
+    reduced["target_points_per_group"] = target_points_per_group
+    reduced["native_reduction"] = "numba_global_argmax_u32_f64"
+    reduced["producer_native_execution_path"] = producer["metadata"]["native_execution_path"]
+    reduced["consumer_reduction_strategy"] = consumer["metadata"]["reduction_strategy"]
+    reduced["host_row_materialization_used_on_new_path"] = False
+    return reduced
+
+
 def hausdorff_distance_2d_rt_nearest_witness(
     points_a: Sequence[Sequence[float]] | np.ndarray,
     points_b: Sequence[Sequence[float]] | np.ndarray,
@@ -1350,6 +1428,57 @@ def hausdorff_distance_2d_rt_grouped_adaptive_reduced_nearest_witness(
     )
 
 
+def hausdorff_distance_2d_rt_grouped_device_columns_numba_argmax_nearest_witness(
+    points_a: Sequence[Sequence[float]] | np.ndarray,
+    points_b: Sequence[Sequence[float]] | np.ndarray,
+    *,
+    radius: float | None = None,
+    target_points_per_group: int | None = None,
+) -> HausdorffRtNearestResult:
+    """Return exact HD using RT device columns plus Numba global argmax."""
+
+    columns_a = _as_point_columns(points_a, name="points_a")
+    columns_b = _as_point_columns(points_b, name="points_b")
+    group_size_ab = _resolve_adaptive_target_points_per_group(columns_b, target_points_per_group)
+    group_size_ba = _resolve_adaptive_target_points_per_group(columns_a, target_points_per_group)
+    upper_bound = _point_set_upper_bound(columns_a, columns_b)
+    start = time.perf_counter()
+    ab = _directed_rt_grouped_device_columns_numba_argmax_nearest_witness(
+        columns_a,
+        columns_b,
+        upper_bound=upper_bound,
+        radius=radius,
+        target_points_per_group=group_size_ab,
+    )
+    ba = _directed_rt_grouped_device_columns_numba_argmax_nearest_witness(
+        columns_b,
+        columns_a,
+        upper_bound=upper_bound,
+        radius=radius,
+        target_points_per_group=group_size_ba,
+    )
+    if (float(ab["distance"]), "a_to_b") >= (float(ba["distance"]), "b_to_a"):
+        selected = ab
+        direction = "a_to_b"
+    else:
+        selected = ba
+        direction = "b_to_a"
+    return HausdorffRtNearestResult(
+        distance=float(selected["distance"]),
+        direction=direction,
+        source_index=int(selected["source_index"]),
+        target_index=int(selected["target_index"]),
+        elapsed_sec=time.perf_counter() - start,
+        method="rtdl_rt_grouped_device_columns_numba_argmax_nearest_witness",
+        backend="optix",
+        rt_core_accelerated=True,
+        exact_value=True,
+        witness_radius=max(float(ab["witness_radius"]), float(ba["witness_radius"])),
+        radius_strategy=str(selected["radius_strategy"]),
+        threshold_iterations=0,
+    )
+
+
 def _directed_hd_threshold_search(
     source_columns: dict[str, np.ndarray],
     target_columns: dict[str, np.ndarray],
@@ -1537,6 +1666,16 @@ def hausdorff_distance_2d(
             elapsed_sec=rt_result.elapsed_sec,
             method=method,
         )
+    if method == "rtdl_rt_grouped_device_columns_numba_argmax_nearest_witness":
+        rt_result = hausdorff_distance_2d_rt_grouped_device_columns_numba_argmax_nearest_witness(points_a, points_b)
+        return HausdorffResult(
+            distance=rt_result.distance,
+            direction=rt_result.direction,
+            source_index=rt_result.source_index,
+            target_index=rt_result.target_index,
+            elapsed_sec=rt_result.elapsed_sec,
+            method=method,
+        )
 
     cache = cache_dir or (ROOT / "build" / "hausdorff_v2_user_benchmark")
     columns_a = _as_point_columns(points_a, name="points_a")
@@ -1577,6 +1716,7 @@ def main(argv: Iterable[str] | None = None) -> int:
             "rtdl_rt_grouped_adaptive_nearest_witness",
             "rtdl_rt_grouped_adaptive_raw_nearest_witness",
             "rtdl_rt_grouped_adaptive_reduced_nearest_witness",
+            "rtdl_rt_grouped_device_columns_numba_argmax_nearest_witness",
             "rtdl_rt_threshold_search",
             "openmp_cpu",
             "cuda_cpp",
@@ -1688,6 +1828,15 @@ def main(argv: Iterable[str] | None = None) -> int:
             points_a,
             points_b,
             max_iterations=args.rt_max_iterations,
+            target_points_per_group=args.target_points_per_group,
+        )
+        primary_distance = rt_exact.distance
+        payload = {"primary": asdict(rt_exact)}
+    elif args.method == "rtdl_rt_grouped_device_columns_numba_argmax_nearest_witness":
+        rt_exact = hausdorff_distance_2d_rt_grouped_device_columns_numba_argmax_nearest_witness(
+            points_a,
+            points_b,
+            radius=args.rt_nearest_radius,
             target_points_per_group=args.target_points_per_group,
         )
         primary_distance = rt_exact.distance
