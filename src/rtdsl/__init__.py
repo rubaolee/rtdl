@@ -95,6 +95,7 @@ from .partner_continuation_protocol import v2_5_partner_preview_gate
 from .numba_partner_continuation import NUMBA_PARTNER_CONTINUATION_STATUS
 from .numba_partner_continuation import NUMBA_GROUP_ID_VALIDATION_MODE
 from .numba_partner_continuation import NUMBA_COMPACT_MASK_I64_OPERATION
+from .numba_partner_continuation import NUMBA_GLOBAL_ARGMAX_U32_F64_OPERATION
 from .numba_partner_continuation import NUMBA_GROUPED_ARGMAX_F64_OPERATION
 from .numba_partner_continuation import NUMBA_GROUPED_ARGMIN_F64_OPERATION
 from .numba_partner_continuation import NUMBA_PAIRWISE_L2_SQ_BLOCK_NEAREST_ROWS_2D_OPERATION
@@ -104,6 +105,7 @@ from .numba_partner_continuation import NUMBA_SEGMENTED_MAX_F64_OPERATION
 from .numba_partner_continuation import NUMBA_SEGMENTED_MIN_F64_OPERATION
 from .numba_partner_continuation import NUMBA_SEGMENTED_SUM_F64_OPERATION
 from .numba_partner_continuation import describe_numba_compact_mask_i64
+from .numba_partner_continuation import describe_numba_global_argmax_u32_f64
 from .numba_partner_continuation import describe_numba_grouped_argmax_f64
 from .numba_partner_continuation import describe_numba_grouped_argmin_f64
 from .numba_partner_continuation import describe_numba_pairwise_l2_sq_block_nearest_rows_2d
@@ -113,6 +115,7 @@ from .numba_partner_continuation import describe_numba_segmented_max_f64
 from .numba_partner_continuation import describe_numba_segmented_min_f64
 from .numba_partner_continuation import describe_numba_segmented_sum_f64
 from .numba_partner_continuation import numba_partner_available
+from .numba_partner_continuation import run_numba_global_argmax_u32_f64
 from .numba_partner_continuation import run_numba_grouped_argmax_f64
 from .numba_partner_continuation import run_numba_grouped_argmin_f64
 from .numba_partner_continuation import run_numba_pairwise_l2_sq_block_nearest_rows_2d
@@ -876,6 +879,7 @@ from .partner_adapters import point_rows_to_partner_columns
 from .partner_adapters import weighted_point_rows_to_partner_columns
 from .partner_adapters import aggregate_frontier_collect_to_partner_columns
 from .partner_adapters import bounded_collect_finalize_i64_partner_columns
+from .partner_adapters import global_argmax_u32_f64_partner_columns
 from .partner_adapters import grouped_argmax_f64_partner_columns
 from .partner_adapters import grouped_argmin_f64_partner_columns
 from .partner_adapters import grouped_topk_f64_partner_columns
@@ -1692,6 +1696,7 @@ __all__ = [
     "NUMBA_PARTNER_CONTINUATION_STATUS",
     "NUMBA_GROUP_ID_VALIDATION_MODE",
     "NUMBA_COMPACT_MASK_I64_OPERATION",
+    "NUMBA_GLOBAL_ARGMAX_U32_F64_OPERATION",
     "NUMBA_GROUPED_ARGMAX_F64_OPERATION",
     "NUMBA_GROUPED_ARGMIN_F64_OPERATION",
     "NUMBA_PAIRWISE_L2_SQ_BLOCK_NEAREST_ROWS_2D_OPERATION",
@@ -1701,6 +1706,7 @@ __all__ = [
     "NUMBA_SEGMENTED_MIN_F64_OPERATION",
     "NUMBA_SEGMENTED_SUM_F64_OPERATION",
     "describe_numba_compact_mask_i64",
+    "describe_numba_global_argmax_u32_f64",
     "describe_numba_grouped_argmax_f64",
     "describe_numba_grouped_argmin_f64",
     "describe_numba_pairwise_l2_sq_block_nearest_rows_2d",
@@ -1710,6 +1716,7 @@ __all__ = [
     "describe_numba_segmented_min_f64",
     "describe_numba_segmented_sum_f64",
     "numba_partner_available",
+    "run_numba_global_argmax_u32_f64",
     "run_numba_grouped_argmax_f64",
     "run_numba_grouped_argmin_f64",
     "run_numba_pairwise_l2_sq_block_nearest_rows_2d",
@@ -2226,6 +2233,7 @@ __all__ = [
     "point_rows_to_partner_columns",
     "weighted_point_rows_to_partner_columns",
     "bounded_collect_finalize_i64_partner_columns",
+    "global_argmax_u32_f64_partner_columns",
     "grouped_argmax_f64_partner_columns",
     "grouped_argmin_f64_partner_columns",
     "grouped_topk_f64_partner_columns",

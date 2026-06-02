@@ -16,6 +16,7 @@ NUMBA_SEGMENTED_MAX_F64_OPERATION = "segmented_max_f64"
 NUMBA_COMPACT_MASK_I64_OPERATION = "compact_mask_i64"
 NUMBA_GROUPED_ARGMIN_F64_OPERATION = "grouped_argmin_f64"
 NUMBA_GROUPED_ARGMAX_F64_OPERATION = "grouped_argmax_f64"
+NUMBA_GLOBAL_ARGMAX_U32_F64_OPERATION = "global_argmax_u32_f64"
 NUMBA_PAIRWISE_L2_SQ_SCORE_ROWS_2D_OPERATION = "pairwise_l2_sq_score_rows_2d"
 NUMBA_PAIRWISE_L2_SQ_BLOCK_NEAREST_ROWS_2D_OPERATION = "pairwise_l2_sq_block_nearest_rows_2d"
 NUMBA_PARTNER_CONTINUATION_STATUS = V2_5_STATUS_PREVIEW_NOT_PROMOTED
@@ -95,6 +96,15 @@ def describe_numba_grouped_argmax_f64() -> dict[str, object]:
     )
     descriptor["tie_break"] = "highest_score_then_lowest_item_id"
     descriptor["host_present_group_compaction_used"] = True
+    return descriptor
+
+
+def describe_numba_global_argmax_u32_f64() -> dict[str, object]:
+    descriptor = _base_numba_descriptor(NUMBA_GLOBAL_ARGMAX_U32_F64_OPERATION)
+    descriptor["input_columns"] = ("item_ids:uint32", "scores:float64")
+    descriptor["output_columns"] = ("item_ids:uint32", "scores:float64", "row_indices:int64")
+    descriptor["tie_break"] = "highest_score_then_lowest_item_id_then_lowest_row_index"
+    descriptor["invalid_item_id_default"] = 0xFFFFFFFF
     return descriptor
 
 
@@ -342,6 +352,92 @@ def run_numba_grouped_argmax_f64(
         score_initial=-float("inf"),
         score_kernel_factory=_numba_grouped_argmax_score_f64_kernel,
         tie_break="highest_score_then_lowest_item_id",
+    )
+
+
+def run_numba_global_argmax_u32_f64(
+    item_ids: Any,
+    scores: Any,
+    *,
+    invalid_item_id: int = 0xFFFFFFFF,
+    block_size: int = 256,
+) -> dict[str, object]:
+    """Run a generic global argmax over CUDA columns with a stable uint32 item tie-break."""
+
+    cuda, np = _import_numba_stack()
+    item_ids = _as_numba_cuda_vector(item_ids, name="item_ids", dtype=np.uint32, cuda=cuda, np=np)
+    scores = _as_numba_cuda_vector(scores, name="scores", dtype=np.float64, cuda=cuda, np=np)
+    if tuple(item_ids.shape) != tuple(scores.shape):
+        raise ValueError("item_ids and scores must have the same shape")
+    row_count = int(item_ids.shape[0])
+    block_size = int(block_size)
+    if block_size <= 0:
+        raise ValueError("block_size must be positive")
+    invalid_u32 = int(invalid_item_id) & 0xFFFFFFFF
+
+    cuda.synchronize()
+    started = perf_counter()
+    best_scores = cuda.device_array((1,), dtype=np.float64)
+    best_scores.copy_to_device(np.asarray([-np.inf], dtype=np.float64))
+    valid_count = cuda.device_array((1,), dtype=np.int64)
+    valid_count.copy_to_device(np.zeros((1,), dtype=np.int64))
+    if row_count:
+        grid = ((row_count + block_size - 1) // block_size,)
+        _numba_global_argmax_score_u32_f64_kernel(cuda)[grid, block_size](
+            item_ids,
+            scores,
+            best_scores,
+            valid_count,
+            row_count,
+            invalid_u32,
+        )
+    cuda.synchronize()
+    if int(valid_count.copy_to_host()[0]) == 0:
+        raise ValueError("global_argmax_u32_f64 requires at least one valid item row")
+
+    best_item_ids = cuda.device_array((1,), dtype=np.uint32)
+    best_item_ids.copy_to_device(np.asarray([invalid_u32], dtype=np.uint32))
+    if row_count:
+        grid = ((row_count + block_size - 1) // block_size,)
+        _numba_global_argmax_item_u32_f64_kernel(cuda)[grid, block_size](
+            item_ids,
+            scores,
+            best_scores,
+            best_item_ids,
+            row_count,
+            invalid_u32,
+        )
+    best_row_indices = cuda.device_array((1,), dtype=np.int64)
+    best_row_indices.copy_to_device(np.asarray([np.iinfo(np.int64).max], dtype=np.int64))
+    if row_count:
+        _numba_global_argmax_row_u32_f64_kernel(cuda)[grid, block_size](
+            item_ids,
+            scores,
+            best_scores,
+            best_item_ids,
+            best_row_indices,
+            row_count,
+            invalid_u32,
+        )
+    cuda.synchronize()
+    elapsed = perf_counter() - started
+
+    return _numba_run_result(
+        operation=NUMBA_GLOBAL_ARGMAX_U32_F64_OPERATION,
+        outputs={
+            "item_ids": best_item_ids,
+            "scores": best_scores,
+            "row_indices": best_row_indices,
+            "valid_count": valid_count,
+        },
+        elapsed=elapsed,
+        source="run_numba_global_argmax_u32_f64",
+        extra_metadata={
+            "row_count": row_count,
+            "invalid_item_id": invalid_u32,
+            "tie_break": "highest_score_then_lowest_item_id_then_lowest_row_index",
+            "host_row_materialization_used": False,
+        },
     )
 
 
@@ -860,6 +956,46 @@ def _numba_grouped_arg_item_i64_kernel(cuda: Any):
     return kernel
 
 
+def _numba_global_argmax_score_u32_f64_kernel(cuda: Any):
+    @cuda.jit
+    def kernel(item_ids, scores, best_scores, valid_count, row_count, invalid_item_id):
+        index = cuda.grid(1)
+        if index < row_count:
+            item = item_ids[index]
+            score = scores[index]
+            if item != invalid_item_id and score == score:
+                cuda.atomic.max(best_scores, 0, score)
+                cuda.atomic.add(valid_count, 0, 1)
+
+    return kernel
+
+
+def _numba_global_argmax_item_u32_f64_kernel(cuda: Any):
+    @cuda.jit
+    def kernel(item_ids, scores, best_scores, best_item_ids, row_count, invalid_item_id):
+        index = cuda.grid(1)
+        if index < row_count:
+            item = item_ids[index]
+            score = scores[index]
+            if item != invalid_item_id and score == best_scores[0]:
+                cuda.atomic.min(best_item_ids, 0, item)
+
+    return kernel
+
+
+def _numba_global_argmax_row_u32_f64_kernel(cuda: Any):
+    @cuda.jit
+    def kernel(item_ids, scores, best_scores, best_item_ids, best_row_indices, row_count, invalid_item_id):
+        index = cuda.grid(1)
+        if index < row_count:
+            item = item_ids[index]
+            score = scores[index]
+            if item != invalid_item_id and item == best_item_ids[0] and score == best_scores[0]:
+                cuda.atomic.min(best_row_indices, 0, index)
+
+    return kernel
+
+
 def _numba_gather_group_arg_outputs_kernel(cuda: Any):
     @cuda.jit
     def kernel(present_group_ids, dense_item_ids, dense_scores, compact_item_ids, compact_scores, group_count):
@@ -1038,6 +1174,13 @@ def _activate_numba_cuda_redirector() -> None:
         import _numba_cuda_redirector  # noqa: F401
     except ImportError:
         pass
+
+
+def _as_numba_cuda_vector(array: Any, *, name: str, dtype: Any, cuda: Any, np: Any) -> Any:
+    if not hasattr(array, "copy_to_host") and hasattr(array, "__cuda_array_interface__"):
+        array = cuda.as_cuda_array(array)
+    _validate_numba_cuda_vector(array, name=name, dtype=dtype)
+    return array
 
 
 def _validate_group_run_shape(

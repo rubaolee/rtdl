@@ -7,6 +7,7 @@ from ..partner_adapters import partner_group_max_by_key
 from ..partner_adapters import partner_group_min_by_key
 from ..partner_adapters import partner_group_sum_by_key
 from ..partner_adapters import partner_group_vector_sum_2d_by_key
+from ..partner_adapters import global_argmax_u32_f64_partner_columns
 from ..partner_adapters import grouped_argmax_f64_partner_columns
 from ..partner_adapters import grouped_argmin_f64_partner_columns
 from ..partner_adapters import grouped_topk_f64_partner_columns
@@ -26,6 +27,7 @@ __all__ = [
     "partner_group_min_by_key",
     "partner_group_sum_by_key",
     "partner_group_vector_sum_2d_by_key",
+    "global_argmax_u32_f64_partner_columns",
     "grouped_argmax_f64_partner_columns",
     "grouped_argmin_f64_partner_columns",
     "grouped_topk_f64_partner_columns",

@@ -2591,6 +2591,75 @@ def grouped_argmax_f64_partner_columns(
     return columns
 
 
+def global_argmax_u32_f64_partner_columns(
+    score_columns: dict[str, object],
+    *,
+    partner: str = "numba",
+    invalid_item_id: int = _UINT32_MAX,
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Select the highest-score uint32 item from generic device columns."""
+
+    if partner != "numba":
+        raise ValueError("global_argmax_u32_f64 currently supports partner='numba'")
+    if not isinstance(score_columns, dict):
+        raise ValueError("score_columns must be a mapping")
+    item_ids = score_columns.get("item_ids")
+    scores = score_columns.get("scores", score_columns.get("values"))
+    if item_ids is None or scores is None:
+        raise ValueError("score_columns must contain item_ids and scores/values")
+
+    from .numba_partner_continuation import run_numba_global_argmax_u32_f64
+    from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff
+    from .v2_6_neutral_partner_handoff import validate_v2_6_neutral_partner_handoff
+
+    try:
+        handoff = prepare_v2_6_neutral_partner_handoff(
+            {"item_ids": item_ids, "scores": scores},
+            partner="numba",
+            producer="generic_device_column_producer",
+            consumer="global_argmax_u32_f64_partner_columns",
+            access_modes={"item_ids": "read", "scores": "read"},
+        )
+    except ValueError as exc:
+        raise RuntimeError(f"Numba neutral handoff rejected: {exc}") from exc
+    validation = validate_v2_6_neutral_partner_handoff(handoff)
+    if validation["status"] != "accept":
+        raise RuntimeError(f"Numba neutral handoff rejected: {validation['errors']}")
+
+    result = run_numba_global_argmax_u32_f64(
+        item_ids,
+        scores,
+        invalid_item_id=invalid_item_id,
+    )
+    elapsed = float(result["phase_timing"]["phases_sec"]["partner_continuation"])
+    columns = result["outputs"]
+    metadata = _generic_partner_front_door_metadata(
+        adapter="global_argmax_u32_f64_partner_columns",
+        partner="numba",
+        operation="global_argmax_u32_f64",
+        group_count=1,
+        row_count=int(result["row_count"]),
+        contract="generic_global_argmax_u32_f64",
+        extra={
+            "tie_break": result["tie_break"],
+            "invalid_item_id": int(result["invalid_item_id"]),
+            "partner_elapsed_seconds": elapsed,
+            "numba_elapsed_seconds": elapsed,
+            "host_row_materialization_used": False,
+            "neutral_handoff_status": handoff["status"],
+            "neutral_handoff_source_protocols": tuple(
+                str(record["source_protocol"]) for record in handoff["column_records"]
+            ),
+            "direct_device_handoff_authorized": True,
+            "true_zero_copy_claim_authorized": False,
+        },
+    )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
 def _torch_grouped_topk(score_columns: dict[str, object], *, group_count: int, k: int, runtime):
     torch, group_ids, item_ids, scores = _coerce_torch_group_item_score_columns(score_columns, runtime)
     group_count = int(group_count)
