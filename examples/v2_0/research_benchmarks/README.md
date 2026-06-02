@@ -10,6 +10,15 @@ missing RTDL primitive, memory contract, partner boundary, prepared execution
 model, or result contract. The success condition is the language/runtime design
 pressure extracted from the app, not full paper-system reproduction.
 
+For custom continuation choices, use the current learner guide:
+[Choosing A Partner For Custom Logic](../../../docs/learn/partner_choice_for_custom_logic.md)
+and the
+[Benchmark Partner Reference Matrix](../../../docs/learn/benchmark_partner_reference_matrix.md).
+The short rule is primitive first, explicit partner second: CuPy remains the
+recommended CUDA-array/baseline partner for several rows, while Numba is the
+v2.6 custom-kernel lane for selected generic continuations such as compaction
+and grouped arg reducers.
+
 Run commands from the repository root with source-tree usage:
 
 ```bash

@@ -10,9 +10,11 @@ Use this door if you want to understand RTDL quickly and write programs.
 4. [Tutorial Ladder](../tutorials/README.md)
 5. [App And Example Quickstart](../app_example_quickstart.md)
 6. [Application Catalog](../application_catalog.md)
-7. [Feature Guide](../rtdl_feature_guide.md)
-8. [Programming Guide](../rtdl/programming_guide.md)
-9. [DSL Reference](../rtdl/dsl_reference.md)
+7. [Choosing A Partner For Custom Logic](partner_choice_for_custom_logic.md)
+8. [Benchmark Partner Reference Matrix](benchmark_partner_reference_matrix.md)
+9. [Feature Guide](../rtdl_feature_guide.md)
+10. [Programming Guide](../rtdl/programming_guide.md)
+11. [DSL Reference](../rtdl/dsl_reference.md)
 
 ## Keep In Mind
 
@@ -29,3 +31,4 @@ For backend and performance boundaries, read:
 - [Backend Maturity](../backend_maturity.md)
 - [Performance Model](../performance_model.md)
 - [Partner Acceleration Boundaries](../partner_acceleration_boundaries.md)
+- [Choosing A Partner For Custom Logic](partner_choice_for_custom_logic.md)

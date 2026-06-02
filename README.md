@@ -159,6 +159,7 @@ Use exact benchmark artifacts before publishing performance wording.
 - [Quick Tutorial](docs/quick_tutorial.md)
 - [Tutorial Ladder](docs/tutorials/README.md)
 - [App And Example Quickstart](docs/app_example_quickstart.md)
+- [Choosing A Partner For Custom Logic](docs/learn/partner_choice_for_custom_logic.md)
 - [Application Catalog](docs/application_catalog.md)
 - [Feature Guide](docs/rtdl_feature_guide.md)
 - [Engine Feature Support Contract](docs/features/engine_support_matrix.md)
