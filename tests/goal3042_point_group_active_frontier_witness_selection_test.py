@@ -110,6 +110,7 @@ class Goal3042PointGroupActiveFrontierWitnessSelectionTest(unittest.TestCase):
         readme = HAUSDORFF_README.read_text(encoding="utf-8")
 
         self.assertIn('"rtdl_rt_grouped_active_frontier_nearest_witness"', lab)
+        self.assertIn('"cupy_grouped_grid_rawkernel"', lab)
         self.assertIn("--seed-sample-count", lab)
         self.assertIn("--target-points-per-group", lab)
         self.assertIn("rtdl_rt_grouped_active_frontier_nearest_witness", readme)

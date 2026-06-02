@@ -15,6 +15,7 @@ METHODS = (
     "openmp_cpu",
     "cuda_cpp",
     "cupy_rawkernel",
+    "cupy_grouped_grid_rawkernel",
     "rtdl_v2_user_cuda",
     "rtdl_rt_threshold_search",
     "rtdl_rt_nearest_witness",
@@ -52,6 +53,14 @@ METHOD_METADATA = {
         "uses_rt_cores": False,
         "exact_value": True,
         "notes": "CuPy RawKernel exact nearest-neighbor continuation",
+    },
+    "cupy_grouped_grid_rawkernel": {
+        "role": "baseline",
+        "uses_rtdl": False,
+        "uses_partner": True,
+        "uses_rt_cores": False,
+        "exact_value": True,
+        "notes": "CuPy RawKernel exact grouped-grid nearest-neighbor continuation",
     },
     "rtdl_v2_user_cuda": {
         "role": "rtdl_v2_language",
