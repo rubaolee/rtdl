@@ -1245,7 +1245,7 @@ def run_raydb_v2_5_partner_continuation_preview(
 
 
 RAYDB_V2_6_NUMBA_NEUTRAL_CONTINUATION_VERSION = "rtdl.raydb.v2_6.numba_neutral_continuation.v1"
-RAYDB_V2_6_NUMBA_SUPPORTED_MODES = ("count", "sum", "avg_as_sum_count")
+RAYDB_V2_6_NUMBA_SUPPORTED_MODES = ("count", "sum", "min", "max", "avg_as_sum_count")
 
 
 def describe_raydb_v2_6_numba_neutral_continuation(mode: str) -> dict[str, Any]:
@@ -1263,18 +1263,33 @@ def describe_raydb_v2_6_numba_neutral_continuation(mode: str) -> dict[str, Any]:
         operations = ("segmented_count_i64",)
     elif mode == "sum":
         operations = ("segmented_sum_f64",)
+    elif mode == "min":
+        operations = ("segmented_min_f64",)
+    elif mode == "max":
+        operations = ("segmented_max_f64",)
     elif mode == "avg_as_sum_count":
         operations = ("segmented_sum_f64", "segmented_count_i64")
     else:
         operations = ()
     blocked = not operations
+    numba_descriptors = []
+    for operation in operations:
+        if operation == "segmented_count_i64":
+            numba_descriptors.append(rt.describe_numba_segmented_count_i64())
+        elif operation == "segmented_sum_f64":
+            numba_descriptors.append(rt.describe_numba_segmented_sum_f64())
+        elif operation == "segmented_min_f64":
+            numba_descriptors.append(rt.describe_numba_segmented_min_f64())
+        elif operation == "segmented_max_f64":
+            numba_descriptors.append(rt.describe_numba_segmented_max_f64())
     return {
         "contract_version": RAYDB_V2_6_NUMBA_NEUTRAL_CONTINUATION_VERSION,
         "app": "raydb_style_columnar_aggregate",
         "mode": mode,
         "selected_partner": "numba",
-        "status": "executable_for_count_sum" if not blocked else "blocked_until_numba_min_max",
+        "status": "executable_for_count_sum_min_max" if not blocked else "blocked_unknown_mode",
         "operations": operations,
+        "numba_descriptors": tuple(numba_descriptors),
         "requires_device_resident_columns": True,
         "uses_v2_6_neutral_partner_handoff": True,
         "uses_legacy_torch_carrier": False,
@@ -1285,7 +1300,7 @@ def describe_raydb_v2_6_numba_neutral_continuation(mode: str) -> dict[str, Any]:
         "public_speedup_claim_authorized": False,
         "rt_core_speedup_claim_authorized": False,
         "true_zero_copy_claim_authorized": False,
-        "blocked_reason": "Numba segmented min/max not implemented yet" if blocked else None,
+        "blocked_reason": "unsupported RayDB v2.6 Numba mode" if blocked else None,
         "app_owned_lowering": (
             "RayDB query encoding remains Python app code. The v2.6 Numba "
             "continuation sees only generic group ids and numeric payload values."
@@ -1309,9 +1324,9 @@ def run_raydb_v2_6_numba_neutral_continuation_preview(
     values = inputs.get("values")
     group_count = int(inputs["group_count"])
     columns = {"group_ids": group_ids}
-    if any(operation == "segmented_sum_f64" for operation in operations):
+    if any(operation in {"segmented_sum_f64", "segmented_min_f64", "segmented_max_f64"} for operation in operations):
         if values is None:
-            raise ValueError("RayDB v2.6 Numba sum continuation requires values")
+            raise ValueError("RayDB v2.6 Numba value reduction requires values")
         columns["values"] = values
     handoff = rt.prepare_v2_6_neutral_partner_handoff(
         columns,
@@ -1330,6 +1345,38 @@ def run_raydb_v2_6_numba_neutral_continuation_preview(
         outputs["sums"] = sums
         continuation_results.append(
             {"operation": "segmented_sum_f64", "path": "v2_6_numba_neutral_front_door", "outputs": {"sums": sums}}
+        )
+    if "segmented_min_f64" in operations:
+        dense_mins = rt.partner_group_min_by_key(
+            group_ids,
+            values,
+            group_count,
+            partner="numba",
+            initial=math.inf,
+        )
+        outputs["dense_mins"] = dense_mins
+        continuation_results.append(
+            {
+                "operation": "segmented_min_f64",
+                "path": "v2_6_numba_neutral_front_door",
+                "outputs": {"dense_mins": dense_mins},
+            }
+        )
+    if "segmented_max_f64" in operations:
+        dense_maxes = rt.partner_group_max_by_key(
+            group_ids,
+            values,
+            group_count,
+            partner="numba",
+            initial=-math.inf,
+        )
+        outputs["dense_maxes"] = dense_maxes
+        continuation_results.append(
+            {
+                "operation": "segmented_max_f64",
+                "path": "v2_6_numba_neutral_front_door",
+                "outputs": {"dense_maxes": dense_maxes},
+            }
         )
     if "segmented_count_i64" in operations:
         counts = rt.partner_group_count_by_key(group_ids, group_count, partner="numba")

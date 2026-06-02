@@ -30,6 +30,8 @@ class Goal2994RaydbNumbaNeutralDemoTest(unittest.TestCase):
         self.assertIn("validate_v2_6_neutral_partner_handoff", source)
         self.assertIn("run_numba_segmented_count_i64", source)
         self.assertIn("run_numba_segmented_sum_f64", source)
+        self.assertIn("run_numba_segmented_min_f64", source)
+        self.assertIn("run_numba_segmented_max_f64", source)
         self.assertIn("partner must be 'triton', 'torch', 'cupy', or 'numba'", source)
 
     def test_numba_front_door_rejects_host_columns_before_cuda_execution(self) -> None:
@@ -39,6 +41,10 @@ class Goal2994RaydbNumbaNeutralDemoTest(unittest.TestCase):
             rt.partner_group_count_by_key(group_ids, 2, partner="numba")
         with self.assertRaisesRegex(RuntimeError, "Numba neutral handoff rejected"):
             rt.partner_group_sum_by_key(group_ids, values, 2, partner="numba")
+        with self.assertRaisesRegex(RuntimeError, "Numba neutral handoff rejected"):
+            rt.partner_group_min_by_key(group_ids, values, 2, partner="numba", initial=np.inf)
+        with self.assertRaisesRegex(RuntimeError, "Numba neutral handoff rejected"):
+            rt.partner_group_max_by_key(group_ids, values, 2, partner="numba", initial=-np.inf)
 
     def test_raydb_v2_6_descriptor_is_app_level_and_bounded(self) -> None:
         descriptor = raydb.describe_raydb_v2_6_numba_neutral_continuation("avg_as_sum_count")
@@ -52,11 +58,11 @@ class Goal2994RaydbNumbaNeutralDemoTest(unittest.TestCase):
         self.assertFalse(descriptor["true_zero_copy_claim_authorized"])
         self.assertIn("RayDB query encoding remains Python app code", descriptor["app_owned_lowering"])
 
-    def test_raydb_v2_6_descriptor_blocks_missing_numba_min_max(self) -> None:
+    def test_raydb_v2_6_descriptor_tracks_minmax_gap_closed_after_goal2995(self) -> None:
         descriptor = raydb.describe_raydb_v2_6_numba_neutral_continuation("min")
-        self.assertEqual(descriptor["status"], "blocked_until_numba_min_max")
-        self.assertEqual(descriptor["operations"], ())
-        self.assertIn("Numba segmented min/max", descriptor["blocked_reason"])
+        self.assertEqual(descriptor["status"], "executable_for_count_sum_min_max")
+        self.assertEqual(descriptor["operations"], ("segmented_min_f64",))
+        self.assertIsNone(descriptor["blocked_reason"])
 
     def test_runner_uses_app_path_and_claim_boundary(self) -> None:
         source = RUNNER.read_text(encoding="utf-8")

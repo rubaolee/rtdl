@@ -95,11 +95,17 @@ from .partner_continuation_protocol import v2_5_partner_preview_gate
 from .numba_partner_continuation import NUMBA_PARTNER_CONTINUATION_STATUS
 from .numba_partner_continuation import NUMBA_GROUP_ID_VALIDATION_MODE
 from .numba_partner_continuation import NUMBA_SEGMENTED_COUNT_I64_OPERATION
+from .numba_partner_continuation import NUMBA_SEGMENTED_MAX_F64_OPERATION
+from .numba_partner_continuation import NUMBA_SEGMENTED_MIN_F64_OPERATION
 from .numba_partner_continuation import NUMBA_SEGMENTED_SUM_F64_OPERATION
 from .numba_partner_continuation import describe_numba_segmented_count_i64
+from .numba_partner_continuation import describe_numba_segmented_max_f64
+from .numba_partner_continuation import describe_numba_segmented_min_f64
 from .numba_partner_continuation import describe_numba_segmented_sum_f64
 from .numba_partner_continuation import numba_partner_available
 from .numba_partner_continuation import run_numba_segmented_count_i64
+from .numba_partner_continuation import run_numba_segmented_max_f64
+from .numba_partner_continuation import run_numba_segmented_min_f64
 from .numba_partner_continuation import run_numba_segmented_sum_f64
 from .triton_partner_continuation import TRITON_PARTNER_CONTINUATION_STATUS
 from .triton_partner_continuation import TRITON_BOUNDED_COLLECT_FINALIZE_I64_OPERATION
@@ -1668,11 +1674,17 @@ __all__ = [
     "NUMBA_PARTNER_CONTINUATION_STATUS",
     "NUMBA_GROUP_ID_VALIDATION_MODE",
     "NUMBA_SEGMENTED_COUNT_I64_OPERATION",
+    "NUMBA_SEGMENTED_MAX_F64_OPERATION",
+    "NUMBA_SEGMENTED_MIN_F64_OPERATION",
     "NUMBA_SEGMENTED_SUM_F64_OPERATION",
     "describe_numba_segmented_count_i64",
+    "describe_numba_segmented_max_f64",
+    "describe_numba_segmented_min_f64",
     "describe_numba_segmented_sum_f64",
     "numba_partner_available",
     "run_numba_segmented_count_i64",
+    "run_numba_segmented_max_f64",
+    "run_numba_segmented_min_f64",
     "run_numba_segmented_sum_f64",
     "TRITON_PARTNER_CONTINUATION_STATUS",
     "TRITON_BOUNDED_COLLECT_FINALIZE_I64_OPERATION",

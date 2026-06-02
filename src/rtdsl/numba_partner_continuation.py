@@ -11,6 +11,8 @@ from .partner_protocol import v2_4_phase_timing_metadata
 
 NUMBA_SEGMENTED_COUNT_I64_OPERATION = "segmented_count_i64"
 NUMBA_SEGMENTED_SUM_F64_OPERATION = "segmented_sum_f64"
+NUMBA_SEGMENTED_MIN_F64_OPERATION = "segmented_min_f64"
+NUMBA_SEGMENTED_MAX_F64_OPERATION = "segmented_max_f64"
 NUMBA_PARTNER_CONTINUATION_STATUS = V2_5_STATUS_PREVIEW_NOT_PROMOTED
 NUMBA_GROUP_ID_VALIDATION_MODE = "device_resident_error_flag"
 
@@ -34,6 +36,22 @@ def describe_numba_segmented_sum_f64() -> dict[str, object]:
     descriptor = _base_numba_descriptor(NUMBA_SEGMENTED_SUM_F64_OPERATION)
     descriptor["input_columns"] = ("group_ids:int64", "values:float64")
     descriptor["output_columns"] = ("sums:float64",)
+    return descriptor
+
+
+def describe_numba_segmented_min_f64() -> dict[str, object]:
+    descriptor = _base_numba_descriptor(NUMBA_SEGMENTED_MIN_F64_OPERATION)
+    descriptor["input_columns"] = ("group_ids:int64", "values:float64")
+    descriptor["output_columns"] = ("mins:float64",)
+    descriptor["empty_group_fill"] = "initial"
+    return descriptor
+
+
+def describe_numba_segmented_max_f64() -> dict[str, object]:
+    descriptor = _base_numba_descriptor(NUMBA_SEGMENTED_MAX_F64_OPERATION)
+    descriptor["input_columns"] = ("group_ids:int64", "values:float64")
+    descriptor["output_columns"] = ("maxes:float64",)
+    descriptor["empty_group_fill"] = "initial"
     return descriptor
 
 
@@ -138,6 +156,101 @@ def run_numba_segmented_sum_f64(
     )
 
 
+def run_numba_segmented_min_f64(
+    group_ids: Any,
+    values: Any,
+    *,
+    group_count: int,
+    initial: float,
+    block_size: int = 256,
+    validate_group_ids: bool = True,
+) -> dict[str, object]:
+    """Run the v2.6 Numba segmented-min continuation over CUDA arrays."""
+
+    return _run_numba_segmented_extreme_f64(
+        group_ids,
+        values,
+        group_count=group_count,
+        initial=initial,
+        block_size=block_size,
+        validate_group_ids=validate_group_ids,
+        operation=NUMBA_SEGMENTED_MIN_F64_OPERATION,
+        output_name="mins",
+        source="run_numba_segmented_min_f64",
+        kernel_factory=_numba_segmented_min_f64_kernel,
+    )
+
+
+def run_numba_segmented_max_f64(
+    group_ids: Any,
+    values: Any,
+    *,
+    group_count: int,
+    initial: float,
+    block_size: int = 256,
+    validate_group_ids: bool = True,
+) -> dict[str, object]:
+    """Run the v2.6 Numba segmented-max continuation over CUDA arrays."""
+
+    return _run_numba_segmented_extreme_f64(
+        group_ids,
+        values,
+        group_count=group_count,
+        initial=initial,
+        block_size=block_size,
+        validate_group_ids=validate_group_ids,
+        operation=NUMBA_SEGMENTED_MAX_F64_OPERATION,
+        output_name="maxes",
+        source="run_numba_segmented_max_f64",
+        kernel_factory=_numba_segmented_max_f64_kernel,
+    )
+
+
+def _run_numba_segmented_extreme_f64(
+    group_ids: Any,
+    values: Any,
+    *,
+    group_count: int,
+    initial: float,
+    block_size: int,
+    validate_group_ids: bool,
+    operation: str,
+    output_name: str,
+    source: str,
+    kernel_factory: Any,
+) -> dict[str, object]:
+    cuda, np = _import_numba_stack()
+    _validate_numba_cuda_vector(group_ids, name="group_ids", dtype=np.int64)
+    _validate_numba_cuda_vector(values, name="values", dtype=np.float64)
+    if tuple(group_ids.shape) != tuple(values.shape):
+        raise ValueError("group_ids and values must have the same shape")
+    group_count, block_size, row_count = _validate_group_run_shape(
+        group_ids,
+        group_count=group_count,
+        block_size=block_size,
+        validate_group_ids=validate_group_ids,
+        cuda=cuda,
+        np=np,
+    )
+
+    cuda.synchronize()
+    started = perf_counter()
+    output = cuda.device_array((group_count,), dtype=np.float64)
+    output.copy_to_device(np.full((group_count,), float(initial), dtype=np.float64))
+    if row_count:
+        grid = ((row_count + block_size - 1) // block_size,)
+        kernel_factory(cuda)[grid, block_size](group_ids, values, output, row_count, group_count)
+    cuda.synchronize()
+    elapsed = perf_counter() - started
+
+    return _numba_run_result(
+        operation=operation,
+        outputs={output_name: output},
+        elapsed=elapsed,
+        source=source,
+    )
+
+
 def _numba_run_result(
     *,
     operation: str,
@@ -184,6 +297,30 @@ def _numba_segmented_sum_f64_kernel(cuda: Any):
             group = group_ids[index]
             if 0 <= group < group_count:
                 cuda.atomic.add(output, group, values[index])
+
+    return kernel
+
+
+def _numba_segmented_min_f64_kernel(cuda: Any):
+    @cuda.jit
+    def kernel(group_ids, values, output, row_count, group_count):
+        index = cuda.grid(1)
+        if index < row_count:
+            group = group_ids[index]
+            if 0 <= group < group_count:
+                cuda.atomic.min(output, group, values[index])
+
+    return kernel
+
+
+def _numba_segmented_max_f64_kernel(cuda: Any):
+    @cuda.jit
+    def kernel(group_ids, values, output, row_count, group_count):
+        index = cuda.grid(1)
+        if index < row_count:
+            group = group_ids[index]
+            if 0 <= group < group_count:
+                cuda.atomic.max(output, group, values[index])
 
     return kernel
 
