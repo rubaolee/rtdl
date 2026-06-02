@@ -52,6 +52,9 @@ def v2_6_roadmap() -> dict[str, Any]:
         "compact_mask_report": "docs/reports/goal2997_numba_compact_mask_l4_pod_2026-06-01.md",
         "compact_mask_artifact": "docs/reports/goal2997_numba_compact_mask_l4_pod_2026-06-01.json",
         "compact_mask_status": "compact_mask_i64_l4_pod_conformance_passed_stable_order_host_prefix_sum_not_speedup_evidence",
+        "triangle_compact_mask_goal": "Goal2999",
+        "triangle_compact_mask_report": "docs/reports/goal2999_triangle_counting_numba_compact_mask_wiring_2026-06-01.md",
+        "triangle_compact_mask_status": "triangle_counting_witness_row_compact_mask_wiring_prepared_pod_runtime_pending_not_speedup_evidence",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -86,7 +89,7 @@ def v2_6_roadmap() -> dict[str, Any]:
             {
                 "step": "N-2",
                 "title": "benchmark_app_numba_user_selected_path",
-                "exit_gate": "Goal2994 and Goal2995 route RayDB-style continuations through user-selected Numba and match CPU reference",
+                "exit_gate": "Goal2994 and Goal2995 route RayDB-style continuations through user-selected Numba and Goal2999 wires triangle witness compaction without changing the fused scalar fast path",
             },
             {
                 "step": "N-3",
@@ -182,6 +185,14 @@ def validate_v2_6_roadmap(
         errors.append("Goal2997 compact-mask report is missing")
     if not (root / str(roadmap.get("compact_mask_artifact", ""))).exists():
         errors.append("Goal2997 compact-mask artifact is missing")
+    if roadmap.get("triangle_compact_mask_goal") != "Goal2999":
+        errors.append("v2.6 roadmap must index Goal2999 as triangle-counting compact-mask app wiring")
+    if "triangle_counting" not in str(roadmap.get("triangle_compact_mask_status", "")):
+        errors.append("Goal2999 triangle compact-mask status must name triangle_counting")
+    if "not_speedup_evidence" not in str(roadmap.get("triangle_compact_mask_status", "")):
+        errors.append("Goal2999 triangle compact-mask wiring must not be treated as speedup evidence")
+    if not (root / str(roadmap.get("triangle_compact_mask_report", ""))).exists():
+        errors.append("Goal2999 triangle compact-mask wiring report is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):

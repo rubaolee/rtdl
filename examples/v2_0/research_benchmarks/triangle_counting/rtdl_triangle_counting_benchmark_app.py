@@ -29,6 +29,9 @@ import rtdsl as rt
 BENCHMARK_NAME = "triangle_counting"
 V2_4_RT_GRAPH_2A1_PRIMITIVE = "ray_triangle_weighted_any_hit_sum_3d"
 V2_4_RT_GRAPH_1A2_PRIMITIVE = "ray_triangle_hit_count_sum_3d"
+TRIANGLE_COUNTING_V2_6_NUMBA_COMPACT_MASK_VERSION = (
+    "rtdl.triangle_counting.v2_6.numba_compact_mask_preview.v1"
+)
 
 
 @rt.kernel(backend="rtdl", precision="float_approx")
@@ -276,6 +279,130 @@ def v2_5_plan_payload() -> dict[str, Any]:
             "v2_5_triton_benchmark_integrated": False,
             "triton_speedup_claim_authorized": False,
             "same_contract_parity_claim_authorized": False,
+        },
+    }
+
+
+def describe_triangle_counting_v2_6_numba_compact_mask_continuation() -> dict[str, Any]:
+    """Describe the triangle app's user-selected Numba compact-mask continuation.
+
+    Triangle candidate interpretation remains app-owned. The Numba continuation
+    receives only generic int64 row ids plus a boolean keep mask.
+    """
+
+    return {
+        "contract_version": TRIANGLE_COUNTING_V2_6_NUMBA_COMPACT_MASK_VERSION,
+        "app": BENCHMARK_NAME,
+        "mode": "v2_6_numba_compact_mask_plan",
+        "selected_partner": "numba",
+        "status": "preview_ready_not_promoted",
+        "operation": "compact_mask_i64",
+        "numba_descriptor": rt.describe_numba_compact_mask_i64(),
+        "requires_device_resident_columns": True,
+        "uses_v2_6_neutral_partner_handoff": True,
+        "uses_legacy_torch_carrier": False,
+        "uses_torch_conversion": False,
+        "input_columns": ("candidate_row_ids:int64", "valid_triangle_mask:bool"),
+        "output_columns": ("selected_candidate_row_ids:int64", "original_indices:int64"),
+        "fast_scalar_summary_path_unchanged": True,
+        "post_rt_continuation_only": True,
+        "replaces_rt_traversal": False,
+        "promoted_performance_path": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "app_owned_lowering": (
+            "Triangle candidate construction, duplicate filtering, and witness-row "
+            "meaning remain benchmark/app code. RTDL/Numba sees only generic "
+            "candidate row ids and a boolean keep mask."
+        ),
+        "integration_decision": (
+            "Keep the v2.5 primitive-first fused scalar summary as the recommended "
+            "triangle-count path. Use this v2.6 Numba compact-mask path only for "
+            "witness-row streams or tensor post-processing that cannot be expressed "
+            "as the fused generic RTDL summary."
+        ),
+    }
+
+
+def v2_6_numba_compact_mask_plan_payload() -> dict[str, Any]:
+    plan = describe_triangle_counting_v2_6_numba_compact_mask_continuation()
+    return {
+        **plan,
+        "command_shape": (
+            "Use run_triangle_counting_v2_6_numba_compact_mask_preview(...) from "
+            "Python with Numba CUDA device arrays for candidate_row_ids:int64 and "
+            "valid_triangle_mask:bool."
+        ),
+        "claim_boundary": {
+            **CLAIM_BOUNDARY,
+            "v2_6_numba_benchmark_app_integrated": True,
+            "numba_speedup_claim_authorized": False,
+            "same_contract_perf_claim_authorized": False,
+        },
+    }
+
+
+def run_triangle_counting_v2_6_numba_compact_mask_preview(
+    inputs: dict[str, Any],
+    *,
+    block_size: int = 256,
+) -> dict[str, Any]:
+    """Run the triangle witness-row compact-mask preview over CUDA arrays."""
+
+    plan = describe_triangle_counting_v2_6_numba_compact_mask_continuation()
+    candidate_row_ids = inputs["candidate_row_ids"]
+    valid_triangle_mask = inputs["valid_triangle_mask"]
+    handoff = rt.prepare_v2_6_neutral_partner_handoff(
+        {
+            "candidate_row_ids": candidate_row_ids,
+            "valid_triangle_mask": valid_triangle_mask,
+        },
+        partner="numba",
+        consumer="triangle_counting_v2_6_numba_compact_mask_continuation",
+        access_modes={"candidate_row_ids": "read", "valid_triangle_mask": "read"},
+    )
+    handoff_validation = rt.validate_v2_6_neutral_partner_handoff(handoff)
+    if handoff_validation["status"] != "accept":
+        raise RuntimeError(
+            "Triangle counting v2.6 Numba neutral handoff rejected: "
+            f"{handoff_validation['errors']}"
+        )
+
+    result = rt.run_numba_compact_mask_i64(
+        candidate_row_ids,
+        valid_triangle_mask,
+        block_size=block_size,
+    )
+    outputs = {
+        "selected_candidate_row_ids": result["outputs"]["values"],
+        "original_indices": result["outputs"]["original_indices"],
+    }
+    if "block_counts" in result["outputs"]:
+        outputs["block_counts"] = result["outputs"]["block_counts"]
+    return {
+        "app": BENCHMARK_NAME,
+        "mode": "v2_6_numba_compact_mask_preview",
+        "partner": "numba",
+        "status": "preview_not_promoted",
+        "operation": "compact_mask_i64",
+        "outputs": outputs,
+        "metadata": {
+            "v2_6_numba_compact_mask_plan": plan,
+            "v2_6_neutral_handoff_validation": handoff_validation,
+            "execution_path": "v2_6_numba_compact_mask_front_door",
+            "block_size": int(block_size),
+            "stable_input_order": bool(result.get("stable_input_order")),
+            "host_prefix_sum_used": bool(result.get("host_prefix_sum_used")),
+            "post_rt_continuation_only": True,
+            "replaces_rt_traversal": False,
+            "promoted_performance_path": False,
+            "rt_core_speedup_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "uses_legacy_torch_carrier": False,
+            "uses_torch_conversion": False,
+            "phase_timing": result["phase_timing"],
         },
     }
 
@@ -1415,6 +1542,8 @@ def run_app(
         return command_plan_payload()
     if mode == "v2_5_plan":
         return v2_5_plan_payload()
+    if mode == "v2_6_numba_compact_mask_plan":
+        return v2_6_numba_compact_mask_plan_payload()
     if mode == "rt_graph_contract":
         return rt_graph_contract_payload(
             fixture=fixture,
@@ -1466,6 +1595,7 @@ def main(argv: list[str] | None = None) -> int:
             "run",
             "command_plan",
             "v2_5_plan",
+            "v2_6_numba_compact_mask_plan",
             "rt_graph_contract",
             "rt_graph_rtdl_adapter",
             "rt_graph_2a1_generic_rt",
@@ -1489,7 +1619,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--edge-file")
     parser.add_argument("--edge-format", choices=("text", "binary"), default="text")
     parser.add_argument("--detail", choices=("full", "summary"), default="full")
-    parser.add_argument("--partner", choices=("none", "cupy"), default="none")
+    parser.add_argument("--partner", choices=("none", "cupy", "numba"), default="none")
     parser.add_argument("--warmup", type=int, default=0)
     parser.add_argument("--repeat", type=int, default=1)
     args = parser.parse_args(argv)
