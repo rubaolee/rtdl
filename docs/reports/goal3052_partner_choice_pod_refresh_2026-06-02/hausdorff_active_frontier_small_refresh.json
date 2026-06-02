@@ -1,0 +1,199 @@
+{
+  "all_rows_match_distance": true,
+  "claim_boundary": "Internal dataset-diversity timing evidence only. Public Hausdorff RT-core speedup wording still needs external review, second-GPU confirmation, and reviewed dataset policy.",
+  "datasets": [
+    "demo_offset",
+    "clustered_shift"
+  ],
+  "goal": "Goal3046",
+  "max_median_speedup_vs_cupy": 4.470930709837436,
+  "median_of_median_speedups_vs_cupy": 3.025957491281857,
+  "method_under_test": "rtdl_rt_grouped_active_frontier_nearest_witness",
+  "min_median_speedup_vs_cupy": 2.1427008153859406,
+  "public_speedup_claim_authorized": false,
+  "reference_method": "cupy_grouped_grid_rawkernel",
+  "rows": [
+    {
+      "active_direction": "a_to_b",
+      "active_frontier": {
+        "count": 2,
+        "iqr_sec": 5.9493002481758595e-05,
+        "max_sec": 0.03987608989700675,
+        "median_sec": 0.03981659689452499,
+        "min_sec": 0.03975710389204323,
+        "q1_sec": 0.03978685039328411,
+        "q3_sec": 0.03984634339576587,
+        "samples": [
+          0.03975710389204323,
+          0.03987608989700675
+        ]
+      },
+      "active_source_index": 17108,
+      "active_speedup_vs_cupy_median": 2.1427008153859406,
+      "active_target_index": 17833,
+      "active_vs_cupy_median_ratio": 0.46670071379978506,
+      "all_trials_match_distance": true,
+      "cupy_grouped_grid": {
+        "count": 2,
+        "iqr_sec": 0.005964598502032459,
+        "max_sec": 0.09127965313382447,
+        "median_sec": 0.08531505463179201,
+        "min_sec": 0.07935045612975955,
+        "q1_sec": 0.08233275538077578,
+        "q3_sec": 0.08829735388280824,
+        "samples": [
+          0.09127965313382447,
+          0.07935045612975955
+        ]
+      },
+      "dataset": "demo_offset",
+      "points_a": 32768,
+      "points_b": 32768,
+      "reference_direction": "a_to_b",
+      "reference_distance": 0.11607729155254294,
+      "reference_source_index": 17108,
+      "reference_target_index": 17833,
+      "seed_sample_count": 1024,
+      "target_points_per_group": 512
+    },
+    {
+      "active_direction": "a_to_b",
+      "active_frontier": {
+        "count": 2,
+        "iqr_sec": 0.0010633483761921525,
+        "max_sec": 0.08077521086670458,
+        "median_sec": 0.07971186249051243,
+        "min_sec": 0.07864851411432028,
+        "q1_sec": 0.07918018830241635,
+        "q3_sec": 0.0802435366786085,
+        "samples": [
+          0.08077521086670458,
+          0.07864851411432028
+        ]
+      },
+      "active_source_index": 48139,
+      "active_speedup_vs_cupy_median": 3.7815449938466426,
+      "active_target_index": 55536,
+      "active_vs_cupy_median_ratio": 0.2644421794867461,
+      "all_trials_match_distance": true,
+      "cupy_grouped_grid": {
+        "count": 2,
+        "iqr_sec": 0.0001691203797236085,
+        "max_sec": 0.30160311493091285,
+        "median_sec": 0.30143399455118924,
+        "min_sec": 0.30126487417146564,
+        "q1_sec": 0.30134943436132744,
+        "q3_sec": 0.30151855474105105,
+        "samples": [
+          0.30126487417146564,
+          0.30160311493091285
+        ]
+      },
+      "dataset": "demo_offset",
+      "points_a": 65536,
+      "points_b": 65536,
+      "reference_direction": "a_to_b",
+      "reference_distance": 0.13085040452901578,
+      "reference_source_index": 48139,
+      "reference_target_index": 55536,
+      "seed_sample_count": 1024,
+      "target_points_per_group": 512
+    },
+    {
+      "active_direction": "a_to_b",
+      "active_frontier": {
+        "count": 2,
+        "iqr_sec": 0.00012150558177381754,
+        "max_sec": 0.03881160914897919,
+        "median_sec": 0.03869010356720537,
+        "min_sec": 0.03856859798543155,
+        "q1_sec": 0.03862935077631846,
+        "q3_sec": 0.03875085635809228,
+        "samples": [
+          0.03856859798543155,
+          0.03881160914897919
+        ]
+      },
+      "active_source_index": 18178,
+      "active_speedup_vs_cupy_median": 2.270369988717072,
+      "active_target_index": 11710,
+      "active_vs_cupy_median_ratio": 0.4404568440252659,
+      "all_trials_match_distance": true,
+      "cupy_grouped_grid": {
+        "count": 2,
+        "iqr_sec": 7.388880476355553e-06,
+        "max_sec": 0.08784823887981474,
+        "median_sec": 0.08784084999933839,
+        "min_sec": 0.08783346111886203,
+        "q1_sec": 0.08783715555910021,
+        "q3_sec": 0.08784454443957657,
+        "samples": [
+          0.08783346111886203,
+          0.08784823887981474
+        ]
+      },
+      "dataset": "clustered_shift",
+      "points_a": 32768,
+      "points_b": 32768,
+      "reference_direction": "a_to_b",
+      "reference_distance": 0.11346658640189468,
+      "reference_source_index": 18178,
+      "reference_target_index": 11710,
+      "seed_sample_count": 1024,
+      "target_points_per_group": 512
+    },
+    {
+      "active_direction": "a_to_b",
+      "active_frontier": {
+        "count": 2,
+        "iqr_sec": 0.0013671750202775002,
+        "max_sec": 0.07991897594183683,
+        "median_sec": 0.07855180092155933,
+        "min_sec": 0.07718462590128183,
+        "q1_sec": 0.07786821341142058,
+        "q3_sec": 0.07923538843169808,
+        "samples": [
+          0.07991897594183683,
+          0.07718462590128183
+        ]
+      },
+      "active_source_index": 22492,
+      "active_speedup_vs_cupy_median": 4.470930709837436,
+      "active_target_index": 2984,
+      "active_vs_cupy_median_ratio": 0.2236670762532037,
+      "all_trials_match_distance": true,
+      "cupy_grouped_grid": {
+        "count": 2,
+        "iqr_sec": 8.014962077140808e-06,
+        "max_sec": 0.3512076740153134,
+        "median_sec": 0.35119965905323625,
+        "min_sec": 0.3511916440911591,
+        "q1_sec": 0.3511956515721977,
+        "q3_sec": 0.3512036665342748,
+        "samples": [
+          0.3511916440911591,
+          0.3512076740153134
+        ]
+      },
+      "dataset": "clustered_shift",
+      "points_a": 65536,
+      "points_b": 65536,
+      "reference_direction": "a_to_b",
+      "reference_distance": 0.12074698968887759,
+      "reference_source_index": 22492,
+      "reference_target_index": 2984,
+      "seed_sample_count": 1024,
+      "target_points_per_group": 512
+    }
+  ],
+  "rt_core_speedup_claim_authorized": false,
+  "sizes": [
+    32768,
+    65536
+  ],
+  "trials": 2,
+  "true_zero_copy_claim_authorized": false,
+  "v2_6_release_authorized": false,
+  "warmup": 1,
+  "whole_app_speedup_claim_authorized": false
+}

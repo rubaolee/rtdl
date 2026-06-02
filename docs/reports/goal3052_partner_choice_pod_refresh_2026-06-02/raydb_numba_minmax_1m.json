@@ -1,0 +1,132 @@
+{
+  "app": "raydb_style_columnar_aggregate",
+  "block_size": 256,
+  "claim_boundary": {
+    "numba_speedup_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "raydb_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "elapsed_sec": 1.1847562729381025,
+  "goal": "Goal2995",
+  "gpu": "<CUDA device 0 'b'NVIDIA RTX A4000''>",
+  "groups": 4096,
+  "mode_results": {
+    "avg_as_sum_count": {
+      "continuation_paths": [
+        "v2_6_numba_neutral_front_door",
+        "v2_6_numba_neutral_front_door"
+      ],
+      "match_cpu": true,
+      "max_abs_error": 4.547473508864641e-13,
+      "mode": "avg_as_sum_count",
+      "neutral_handoff_status": "accept",
+      "operations": [
+        "segmented_sum_f64",
+        "segmented_count_i64"
+      ],
+      "promoted_performance_path": false,
+      "uses_legacy_torch_carrier": false,
+      "uses_torch_conversion": false
+    },
+    "count": {
+      "continuation_paths": [
+        "v2_6_numba_neutral_front_door"
+      ],
+      "match_cpu": true,
+      "max_abs_error": 0.0,
+      "mode": "count",
+      "neutral_handoff_status": "accept",
+      "operations": [
+        "segmented_count_i64"
+      ],
+      "promoted_performance_path": false,
+      "uses_legacy_torch_carrier": false,
+      "uses_torch_conversion": false
+    },
+    "max": {
+      "continuation_paths": [
+        "v2_6_numba_neutral_front_door"
+      ],
+      "match_cpu": true,
+      "max_abs_error": 0.0,
+      "mode": "max",
+      "neutral_handoff_status": "accept",
+      "operations": [
+        "segmented_max_f64"
+      ],
+      "promoted_performance_path": false,
+      "uses_legacy_torch_carrier": false,
+      "uses_torch_conversion": false
+    },
+    "min": {
+      "continuation_paths": [
+        "v2_6_numba_neutral_front_door"
+      ],
+      "match_cpu": true,
+      "max_abs_error": 0.0,
+      "mode": "min",
+      "neutral_handoff_status": "accept",
+      "operations": [
+        "segmented_min_f64"
+      ],
+      "promoted_performance_path": false,
+      "uses_legacy_torch_carrier": false,
+      "uses_torch_conversion": false
+    },
+    "sum": {
+      "continuation_paths": [
+        "v2_6_numba_neutral_front_door"
+      ],
+      "match_cpu": true,
+      "max_abs_error": 6.821210263296962e-13,
+      "mode": "sum",
+      "neutral_handoff_status": "accept",
+      "operations": [
+        "segmented_sum_f64"
+      ],
+      "promoted_performance_path": false,
+      "uses_legacy_torch_carrier": false,
+      "uses_torch_conversion": false
+    }
+  },
+  "modes": [
+    "count",
+    "sum",
+    "min",
+    "max",
+    "avg_as_sum_count"
+  ],
+  "partner": "numba",
+  "rows": 1000000,
+  "source_commit": "4cb8ce65255c6be8438e0a97ef69b2ea0c77a074",
+  "source_dirty": [
+    "?? docs/reports/goal3042_active_frontier_perf_a4000_2026-06-02/size_131072_with_cupy.out",
+    "?? docs/reports/goal3042_active_frontier_perf_a4000_2026-06-02/size_16384.json",
+    "?? docs/reports/goal3042_active_frontier_perf_a4000_2026-06-02/size_16384.out",
+    "?? docs/reports/goal3042_active_frontier_perf_a4000_2026-06-02/size_16384_with_cupy.out",
+    "?? docs/reports/goal3042_active_frontier_perf_a4000_2026-06-02/size_32768_with_cupy.out",
+    "?? docs/reports/goal3042_active_frontier_perf_a4000_2026-06-02/size_4096.json",
+    "?? docs/reports/goal3042_active_frontier_perf_a4000_2026-06-02/size_4096.out",
+    "?? docs/reports/goal3042_active_frontier_perf_a4000_2026-06-02/size_4096_with_cupy.out",
+    "?? docs/reports/goal3042_active_frontier_perf_a4000_2026-06-02/size_65536_with_cupy.out",
+    "?? docs/reports/goal3042_active_frontier_perf_a4000_2026-06-02/size_8192.json",
+    "?? docs/reports/goal3042_active_frontier_perf_a4000_2026-06-02/size_8192.out",
+    "?? docs/reports/goal3042_active_frontier_perf_a4000_2026-06-02/size_8192_with_cupy.out",
+    "?? docs/reports/goal3042_active_frontier_smoke_a4000_2026-06-02.json",
+    "?? docs/reports/goal3045_hausdorff_active_frontier_multitrial_a4000_2026-06-02.out",
+    "?? docs/reports/goal3050_partner_choice_pod_refresh_2026-06-02/"
+  ],
+  "status": "pass",
+  "toolchain": {
+    "numba_cuda_enable_minor_version_compatibility": "",
+    "numba_cuda_module": "/root/.venvs/rtdl_goal3042/lib/python3.12/site-packages/numba/cuda/__init__.py",
+    "numba_cuda_use_nvidia_binding": "",
+    "numba_version": "0.65.1",
+    "numpy_version": "2.1.2",
+    "python_version": "3.12.3"
+  }
+}
