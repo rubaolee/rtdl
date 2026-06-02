@@ -150,6 +150,10 @@ def v2_6_roadmap() -> dict[str, Any]:
         "hausdorff_device_columns_numba_argmax_strategy_goal": "Goal3039",
         "hausdorff_device_columns_numba_argmax_strategy_report": "docs/reports/goal3039_hausdorff_device_columns_numba_argmax_strategy_2026-06-02.md",
         "hausdorff_device_columns_numba_argmax_strategy_status": "app_level_exact_hausdorff_strategy_wired_pod_perf_evidence_pending_not_speedup_evidence",
+        "hausdorff_device_columns_numba_argmax_perf_goal": "Goal3040",
+        "hausdorff_device_columns_numba_argmax_perf_report": "docs/reports/goal3040_hausdorff_device_columns_numba_argmax_a4000_perf_2026-06-02.md",
+        "hausdorff_device_columns_numba_argmax_perf_artifact": "docs/reports/goal3040_hausdorff_device_columns_numba_argmax_a4000_perf_2026-06-02.json",
+        "hausdorff_device_columns_numba_argmax_perf_status": "clean_a4000_correct_negative_perf_result_needs_device_resident_active_set_candidate_frontier_not_speedup_evidence",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -501,6 +505,18 @@ def validate_v2_6_roadmap(
         errors.append("Goal3039 strategy wiring must not be treated as speedup evidence")
     if not (root / str(roadmap.get("hausdorff_device_columns_numba_argmax_strategy_report", ""))).exists():
         errors.append("Goal3039 Hausdorff device-column Numba argmax strategy report is missing")
+    if roadmap.get("hausdorff_device_columns_numba_argmax_perf_goal") != "Goal3040":
+        errors.append("v2.6 roadmap must index Goal3040 as Hausdorff device-column Numba argmax timing evidence")
+    if "negative_perf_result" not in str(roadmap.get("hausdorff_device_columns_numba_argmax_perf_status", "")):
+        errors.append("Goal3040 status must record the negative performance result")
+    if "not_speedup_evidence" not in str(roadmap.get("hausdorff_device_columns_numba_argmax_perf_status", "")):
+        errors.append("Goal3040 timing must not be treated as speedup evidence")
+    if "active_set_candidate_frontier" not in str(roadmap.get("hausdorff_device_columns_numba_argmax_perf_status", "")):
+        errors.append("Goal3040 status must name active-set/candidate-frontier as the next gap")
+    if not (root / str(roadmap.get("hausdorff_device_columns_numba_argmax_perf_report", ""))).exists():
+        errors.append("Goal3040 Hausdorff device-column Numba argmax perf report is missing")
+    if not (root / str(roadmap.get("hausdorff_device_columns_numba_argmax_perf_artifact", ""))).exists():
+        errors.append("Goal3040 Hausdorff device-column Numba argmax perf artifact is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):

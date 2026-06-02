@@ -875,6 +875,13 @@ Future work:
   `rtdl_rt_grouped_device_columns_numba_argmax_nearest_witness`. The next pod
   task is same-contract timing against `cupy_grouped_grid_rawkernel`; keep the
   conclusion as evidence-only unless the timing actually wins.
+- Goal3040 ran that timing on the RTX A4000 pod. The value is correct, but the
+  full witness-column plus Numba global-argmax strategy is 75x-536x slower than
+  the CuPy grouped-grid reference on 2K-8K dense point sets and slower than the
+  adaptive raw RT path. The next Hausdorff performance primitive should keep
+  active-set/candidate-frontier pruning and witness selection device-resident;
+  do not spend another goal on full-column global reduction wrappers for dense
+  exact HD.
 
 Boundary:
 
