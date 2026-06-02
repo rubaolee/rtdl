@@ -1244,6 +1244,125 @@ def run_raydb_v2_5_partner_continuation_preview(
     }
 
 
+RAYDB_V2_6_NUMBA_NEUTRAL_CONTINUATION_VERSION = "rtdl.raydb.v2_6.numba_neutral_continuation.v1"
+RAYDB_V2_6_NUMBA_SUPPORTED_MODES = ("count", "sum", "avg_as_sum_count")
+
+
+def describe_raydb_v2_6_numba_neutral_continuation(mode: str) -> dict[str, Any]:
+    """Describe RayDB's v2.6 user-selected Numba continuation path.
+
+    This is an app-level plan over generic RTDL partner primitives. RayDB
+    predicate encoding and result interpretation stay in Python app code; RTDL
+    sees only device-resident group ids, optional values, and grouped
+    reductions.
+    """
+
+    if mode not in PAPER_RT_RESULT_MODES:
+        raise ValueError(f"unsupported paper RT result mode: {mode}")
+    if mode == "count":
+        operations = ("segmented_count_i64",)
+    elif mode == "sum":
+        operations = ("segmented_sum_f64",)
+    elif mode == "avg_as_sum_count":
+        operations = ("segmented_sum_f64", "segmented_count_i64")
+    else:
+        operations = ()
+    blocked = not operations
+    return {
+        "contract_version": RAYDB_V2_6_NUMBA_NEUTRAL_CONTINUATION_VERSION,
+        "app": "raydb_style_columnar_aggregate",
+        "mode": mode,
+        "selected_partner": "numba",
+        "status": "executable_for_count_sum" if not blocked else "blocked_until_numba_min_max",
+        "operations": operations,
+        "requires_device_resident_columns": True,
+        "uses_v2_6_neutral_partner_handoff": True,
+        "uses_legacy_torch_carrier": False,
+        "uses_torch_conversion": False,
+        "post_rt_continuation_only": True,
+        "replaces_rt_traversal": False,
+        "promoted_performance_path": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "blocked_reason": "Numba segmented min/max not implemented yet" if blocked else None,
+        "app_owned_lowering": (
+            "RayDB query encoding remains Python app code. The v2.6 Numba "
+            "continuation sees only generic group ids and numeric payload values."
+        ),
+    }
+
+
+def run_raydb_v2_6_numba_neutral_continuation_preview(
+    mode: str,
+    inputs: dict[str, Any],
+    *,
+    block_size: int = 256,
+) -> dict[str, Any]:
+    """Run RayDB's v2.6 Numba continuation over generic device columns."""
+
+    plan = describe_raydb_v2_6_numba_neutral_continuation(mode)
+    operations = tuple(plan["operations"])
+    if not operations:
+        raise ValueError(f"RayDB v2.6 Numba continuation does not support mode: {mode}")
+    group_ids = inputs["group_ids"]
+    values = inputs.get("values")
+    group_count = int(inputs["group_count"])
+    columns = {"group_ids": group_ids}
+    if any(operation == "segmented_sum_f64" for operation in operations):
+        if values is None:
+            raise ValueError("RayDB v2.6 Numba sum continuation requires values")
+        columns["values"] = values
+    handoff = rt.prepare_v2_6_neutral_partner_handoff(
+        columns,
+        partner="numba",
+        consumer="raydb_style_v2_6_numba_continuation",
+        access_modes={name: "read" for name in columns},
+    )
+    handoff_validation = rt.validate_v2_6_neutral_partner_handoff(handoff)
+    if handoff_validation["status"] != "accept":
+        raise RuntimeError(f"RayDB v2.6 Numba neutral handoff rejected: {handoff_validation['errors']}")
+
+    outputs: dict[str, Any] = {}
+    continuation_results: list[dict[str, Any]] = []
+    if "segmented_sum_f64" in operations:
+        sums = rt.partner_group_sum_by_key(group_ids, values, group_count, partner="numba")
+        outputs["sums"] = sums
+        continuation_results.append(
+            {"operation": "segmented_sum_f64", "path": "v2_6_numba_neutral_front_door", "outputs": {"sums": sums}}
+        )
+    if "segmented_count_i64" in operations:
+        counts = rt.partner_group_count_by_key(group_ids, group_count, partner="numba")
+        outputs["counts"] = counts
+        continuation_results.append(
+            {"operation": "segmented_count_i64", "path": "v2_6_numba_neutral_front_door", "outputs": {"counts": counts}}
+        )
+
+    return {
+        "app": "raydb_style_columnar_aggregate",
+        "mode": mode,
+        "partner": "numba",
+        "status": "preview_not_promoted",
+        "operations": operations,
+        "outputs": outputs,
+        "continuation_results": tuple(continuation_results),
+        "metadata": {
+            "v2_6_numba_neutral_continuation": plan,
+            "v2_6_neutral_handoff_validation": handoff_validation,
+            "execution_path": "v2_6_numba_neutral_front_door",
+            "block_size": int(block_size),
+            "post_rt_continuation_only": True,
+            "replaces_rt_traversal": False,
+            "promoted_performance_path": False,
+            "rt_core_speedup_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "uses_legacy_torch_carrier": False,
+            "uses_torch_conversion": False,
+        },
+    }
+
+
 def _v2_4_packed_buffer_descriptor(name: str, packed: Any) -> rt.RtdlBufferDescriptor:
     owner = getattr(packed, "owner", None)
     count = _packed_or_sequence_count(packed)

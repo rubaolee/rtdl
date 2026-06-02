@@ -294,6 +294,24 @@ def partner_group_count_by_key(keys, group_count: int, *, partner: str = "torch"
     group_count = int(group_count)
     if group_count < 0:
         raise ValueError("group_count must be non-negative")
+    if partner == "numba":
+        from .numba_partner_continuation import run_numba_segmented_count_i64
+        from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff
+        from .v2_6_neutral_partner_handoff import validate_v2_6_neutral_partner_handoff
+
+        try:
+            handoff = prepare_v2_6_neutral_partner_handoff(
+                {"group_ids": keys},
+                partner="numba",
+                access_modes={"group_ids": "read"},
+            )
+        except ValueError as exc:
+            raise RuntimeError(f"Numba neutral handoff rejected: {exc}") from exc
+        validation = validate_v2_6_neutral_partner_handoff(handoff)
+        if validation["status"] != "accept":
+            raise RuntimeError(f"Numba neutral handoff rejected: {validation['errors']}")
+        result = run_numba_segmented_count_i64(keys, group_count=group_count)
+        return result["outputs"]["counts"]
     runtime = _partner_module(partner)
     if runtime["name"] == "triton":
         result = run_triton_partner_continuation(
@@ -319,6 +337,24 @@ def partner_group_sum_by_key(keys, values, group_count: int, *, partner: str = "
     group_count = int(group_count)
     if group_count < 0:
         raise ValueError("group_count must be non-negative")
+    if partner == "numba":
+        from .numba_partner_continuation import run_numba_segmented_sum_f64
+        from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff
+        from .v2_6_neutral_partner_handoff import validate_v2_6_neutral_partner_handoff
+
+        try:
+            handoff = prepare_v2_6_neutral_partner_handoff(
+                {"group_ids": keys, "values": values},
+                partner="numba",
+                access_modes={"group_ids": "read", "values": "read"},
+            )
+        except ValueError as exc:
+            raise RuntimeError(f"Numba neutral handoff rejected: {exc}") from exc
+        validation = validate_v2_6_neutral_partner_handoff(handoff)
+        if validation["status"] != "accept":
+            raise RuntimeError(f"Numba neutral handoff rejected: {validation['errors']}")
+        result = run_numba_segmented_sum_f64(keys, values, group_count=group_count)
+        return result["outputs"]["sums"]
     runtime = _partner_module(partner)
     if runtime["name"] == "triton":
         _require_triton_float64(values, name="values")
@@ -341,7 +377,7 @@ def partner_group_sum_by_key(keys, values, group_count: int, *, partner: str = "
             return out
         cupy.add.at(out, keys.astype(cupy.int64, copy=False), values)
         return out
-    raise ValueError("partner must be 'triton', 'torch', or 'cupy'")
+    raise ValueError("partner must be 'triton', 'torch', 'cupy', or 'numba'")
 
 
 def partner_group_vector_sum_2d_by_key(keys, values_x, values_y, group_count: int, *, partner: str = "torch"):
@@ -384,7 +420,7 @@ def partner_group_vector_sum_2d_by_key(keys, values_x, values_y, group_count: in
         cupy.add.at(out_x, group_ids, values_x)
         cupy.add.at(out_y, group_ids, values_y)
         return out_x, out_y
-    raise ValueError("partner must be 'triton', 'torch', or 'cupy'")
+    raise ValueError("partner must be 'triton', 'torch', 'cupy', or 'numba'")
 
 
 def _cupy_grouped_vector_sum_2d_by_offsets(cupy, row_offsets, values_x, values_y):
