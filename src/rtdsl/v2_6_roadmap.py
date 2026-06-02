@@ -79,6 +79,10 @@ def v2_6_roadmap() -> dict[str, Any]:
         "numba_pairwise_score_rows_goal": "Goal3012",
         "numba_pairwise_score_rows_report": "docs/reports/goal3012_numba_pairwise_score_rows_for_hausdorff_2026-06-01.md",
         "numba_pairwise_score_rows_status": "pairwise_l2_sq_score_rows_2d_generates_generic_score_rows_on_numba_device_for_hausdorff_witness_mode_not_speedup_evidence",
+        "numba_pairwise_score_rows_pod_goal": "Goal3013",
+        "numba_pairwise_score_rows_pod_report": "docs/reports/goal3013_hausdorff_numba_device_score_rows_l4_pod_2026-06-01.md",
+        "numba_pairwise_score_rows_pod_artifact": "docs/reports/goal3013_hausdorff_numba_device_score_rows_l4_pod_2026-06-01.json",
+        "numba_pairwise_score_rows_pod_status": "hausdorff_numba_device_score_rows_l4_pod_conformance_passed_clean_source_not_speedup_evidence",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -279,6 +283,16 @@ def validate_v2_6_roadmap(
         errors.append("Goal3012 pairwise score-row work must not be treated as speedup evidence")
     if not (root / str(roadmap.get("numba_pairwise_score_rows_report", ""))).exists():
         errors.append("Goal3012 pairwise score-row report is missing")
+    if roadmap.get("numba_pairwise_score_rows_pod_goal") != "Goal3013":
+        errors.append("v2.6 roadmap must index Goal3013 as Hausdorff Numba score-row pod evidence")
+    if "l4_pod_conformance_passed" not in str(roadmap.get("numba_pairwise_score_rows_pod_status", "")):
+        errors.append("Goal3013 pod status must record L4 conformance")
+    if "not_speedup_evidence" not in str(roadmap.get("numba_pairwise_score_rows_pod_status", "")):
+        errors.append("Goal3013 pod evidence must not be treated as speedup evidence")
+    if not (root / str(roadmap.get("numba_pairwise_score_rows_pod_report", ""))).exists():
+        errors.append("Goal3013 pod report is missing")
+    if not (root / str(roadmap.get("numba_pairwise_score_rows_pod_artifact", ""))).exists():
+        errors.append("Goal3013 pod artifact is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):

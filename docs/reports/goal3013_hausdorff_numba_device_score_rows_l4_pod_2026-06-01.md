@@ -18,13 +18,24 @@ It records:
 - oracle parity;
 - claim-boundary flags.
 
-## Expected Evidence
+## Observed Evidence
 
-The expected artifact path after pod execution is:
+The pod artifact is:
 
 `docs/reports/goal3013_hausdorff_numba_device_score_rows_l4_pod_2026-06-01.json`
 
-The artifact must show:
+It was collected from commit:
+
+`69d4818ad33bf2208014b43dd22d4cbfbcf4c2c4`
+
+on:
+
+`NVIDIA L4, 565.57.01`
+
+The evidence run used `copies=256`, producing `1024 x 1024` points and
+`1,048,576` score rows per directed pass.
+
+The artifact shows:
 
 - `backend: partner_numba_witness_exact`;
 - `partner: numba`;
@@ -34,6 +45,9 @@ The artifact must show:
 - `evidence.rt_core_accelerated: false`;
 - `all_claim_flags_false: true`;
 - a clean `source_dirty` list.
+
+The evidence wall time was `1.2707423008978367` seconds. This is phase-timing
+evidence only, not a same-contract speedup claim.
 
 ## Boundary
 
