@@ -97,6 +97,9 @@ def v2_6_roadmap() -> dict[str, Any]:
         "hausdorff_numba_no_host_sync_comparison_report": "docs/reports/goal3018_hausdorff_numba_no_host_sync_comparison_l4_pod_2026-06-01.md",
         "hausdorff_numba_no_host_sync_comparison_artifact": "docs/reports/goal3018_hausdorff_numba_no_host_sync_comparison_l4_pod_2026-06-01.json",
         "hausdorff_numba_no_host_sync_comparison_status": "dense_device_score_rows_faster_after_no_host_sync_block_nearest_retained_for_memory_pressure_not_speedup_evidence",
+        "l4_optix_readiness_goal": "Goal3020",
+        "l4_optix_readiness_report": "docs/reports/goal3020_l4_optix_readiness_and_ptx_toolchain_blocker_2026-06-01.md",
+        "l4_optix_readiness_status": "librtdl_optix_build_succeeded_rt_hausdorff_smoke_blocked_by_cuda12_8_ptx_vs_driver565_toolchain_mismatch",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -343,6 +346,12 @@ def validate_v2_6_roadmap(
         errors.append("Goal3018 comparison report is missing")
     if not (root / str(roadmap.get("hausdorff_numba_no_host_sync_comparison_artifact", ""))).exists():
         errors.append("Goal3018 comparison artifact is missing")
+    if roadmap.get("l4_optix_readiness_goal") != "Goal3020":
+        errors.append("v2.6 roadmap must index Goal3020 as the L4 OptiX readiness probe")
+    if "ptx_vs_driver565" not in str(roadmap.get("l4_optix_readiness_status", "")):
+        errors.append("Goal3020 status must record the PTX/driver blocker")
+    if not (root / str(roadmap.get("l4_optix_readiness_report", ""))).exists():
+        errors.append("Goal3020 L4 OptiX readiness report is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):
