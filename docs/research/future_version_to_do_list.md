@@ -849,6 +849,13 @@ Future work:
   reference. This closes the cheap host row-consumer branch more firmly; the
   next useful work remains device-resident active-set/candidate-frontier and
   nearest-witness continuation.
+- Goal3033/3034 add and validate a generic OptiX point-group nearest-witness
+  producer that writes `query_ids`, `neighbor_ids`, and `distances` into
+  caller-owned CUDA device columns. This avoids host row materialization on the
+  output side, but still uploads host query points in the first slice and does
+  not authorize true zero-copy or speedup claims. The next useful work is a
+  generic device-resident consumer over those columns, such as grouped/global
+  max-distance witness reduction for Hausdorff-style continuations.
 
 Boundary:
 

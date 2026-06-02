@@ -1,0 +1,47 @@
+{
+  "cuda_home": "/usr/local/cuda-12.6",
+  "distances_match_raw_rows": true,
+  "goal": "3034",
+  "gpu": "NVIDIA L4, 565.57.01",
+  "group_count": 16,
+  "materializes_neighbor_rows": false,
+  "metadata": {
+    "backend": "optix",
+    "direct_device_handoff_authorized": true,
+    "group_count": 16,
+    "materializes_neighbor_rows": false,
+    "native_elapsed_sec": 0.3129175677895546,
+    "native_engine_row_contract": "generic_point_group_nearest_witness_2d_device_columns",
+    "native_execution_path": "prepared_rt_core_point_group_nearest_witness_2d_device_columns",
+    "native_symbol": "rtdl_optix_write_prepared_point_group_nearest_witness_2d_device_columns",
+    "output_columns_true_zero_copy_authorized": true,
+    "query_count": 2048,
+    "radius": 3.4198221881983364,
+    "rt_core_accelerated": true,
+    "rt_core_speedup_claim_authorized": false,
+    "search_count": 3072,
+    "source_devices": [
+      "cuda:0"
+    ],
+    "source_protocols": [
+      "cupy"
+    ],
+    "transfer_mode": "host_query_points_to_device_witness_columns",
+    "true_zero_copy_authorized": false,
+    "v2_6_release_authorized": false
+  },
+  "native_elapsed_sec": 0.3129175677895546,
+  "native_execution_path": "prepared_rt_core_point_group_nearest_witness_2d_device_columns",
+  "native_symbol": "rtdl_optix_write_prepared_point_group_nearest_witness_2d_device_columns",
+  "neighbor_ids_match_raw_rows": true,
+  "optix_prefix": "/root/vendor/optix-sdk",
+  "query_count": 2048,
+  "query_ids_match_raw_rows": true,
+  "rt_core_accelerated": true,
+  "rt_core_speedup_claim_authorized": false,
+  "search_count": 3072,
+  "source_commit": "a4f867d833edea0b30e4a8e7650243bb371eb60e",
+  "source_dirty": [],
+  "true_zero_copy_authorized": false,
+  "v2_6_release_authorized": false
+}
