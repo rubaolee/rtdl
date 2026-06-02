@@ -525,7 +525,7 @@ def _directed_rt_grouped_reduced_nearest_witness(
             threshold_elapsed_sec = float(threshold["elapsed_sec"])
             radius_strategy = "rt_grouped_threshold_upper_bound"
         row = prepared.nearest_max_distance_row(source_points, radius=witness_radius)
-    reduced = _reduce_nearest_max_distance_row(source_columns, sorted_target_columns, row)
+    reduced = _reduce_nearest_max_distance_row(source_columns, target_columns, row)
     reduced["witness_radius"] = witness_radius
     reduced["radius_strategy"] = radius_strategy
     reduced["threshold_iterations"] = threshold_iterations
@@ -979,7 +979,7 @@ def _directed_rt_grouped_adaptive_reduced_nearest_witness(
                 matched_points = _pack_point_columns_for_optix(matched_columns)
                 row = prepared.nearest_max_distance_row(matched_points, radius=radius)
                 native_reduction_calls += 1
-                reduced = _reduce_nearest_max_distance_row(source_columns, sorted_target_columns, row)
+                reduced = _reduce_nearest_max_distance_row(source_columns, target_columns, row)
                 if best is None or (
                     float(reduced["distance"]) > float(best["distance"])
                     or (
@@ -1076,7 +1076,7 @@ def _directed_rt_grouped_device_columns_numba_argmax_nearest_witness(
         "neighbor_id": int(cp.asnumpy(neighbor_ids[row_index])),
         "distance": float(consumer["columns"]["scores"].copy_to_host()[0]),
     }
-    reduced = _reduce_nearest_max_distance_row(source_columns, sorted_target_columns, row)
+    reduced = _reduce_nearest_max_distance_row(source_columns, target_columns, row)
     reduced["witness_radius"] = witness_radius
     reduced["radius_strategy"] = "rt_grouped_device_columns_numba_argmax_radius"
     reduced["threshold_iterations"] = 0
