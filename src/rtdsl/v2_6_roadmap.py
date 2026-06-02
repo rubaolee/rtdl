@@ -100,6 +100,10 @@ def v2_6_roadmap() -> dict[str, Any]:
         "l4_optix_readiness_goal": "Goal3020",
         "l4_optix_readiness_report": "docs/reports/goal3020_l4_optix_readiness_and_ptx_toolchain_blocker_2026-06-01.md",
         "l4_optix_readiness_status": "librtdl_optix_build_succeeded_rt_hausdorff_smoke_blocked_by_cuda12_8_ptx_vs_driver565_toolchain_mismatch",
+        "l4_optix_cuda126_smoke_goal": "Goal3021",
+        "l4_optix_cuda126_smoke_report": "docs/reports/goal3021_l4_optix_cuda126_hausdorff_rt_smoke_2026-06-02.md",
+        "l4_optix_cuda126_smoke_artifact": "docs/reports/goal3021_l4_optix_cuda126_hausdorff_rt_smoke_2026-06-02.json",
+        "l4_optix_cuda126_smoke_status": "cuda12_6_side_by_side_toolchain_unblocked_rt_hausdorff_smoke_openmp_distance_parity_not_speedup_evidence",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -352,6 +356,16 @@ def validate_v2_6_roadmap(
         errors.append("Goal3020 status must record the PTX/driver blocker")
     if not (root / str(roadmap.get("l4_optix_readiness_report", ""))).exists():
         errors.append("Goal3020 L4 OptiX readiness report is missing")
+    if roadmap.get("l4_optix_cuda126_smoke_goal") != "Goal3021":
+        errors.append("v2.6 roadmap must index Goal3021 as the CUDA 12.6 L4 OptiX smoke unblock")
+    if "cuda12_6" not in str(roadmap.get("l4_optix_cuda126_smoke_status", "")):
+        errors.append("Goal3021 status must record the CUDA 12.6 side-by-side toolkit")
+    if "not_speedup_evidence" not in str(roadmap.get("l4_optix_cuda126_smoke_status", "")):
+        errors.append("Goal3021 smoke must not be treated as speedup evidence")
+    if not (root / str(roadmap.get("l4_optix_cuda126_smoke_report", ""))).exists():
+        errors.append("Goal3021 CUDA 12.6 OptiX smoke report is missing")
+    if not (root / str(roadmap.get("l4_optix_cuda126_smoke_artifact", ""))).exists():
+        errors.append("Goal3021 CUDA 12.6 OptiX smoke artifact is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):

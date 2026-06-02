@@ -1,0 +1,71 @@
+{
+  "command": "python3 examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_v2_function.py --points-a 512 --points-b 512 --method rtdl_rt_grouped_reduced_nearest_witness --compare --json-out /tmp/goal3021_hd_rt_grouped_reduced_cuda126_smoke.json",
+  "cuda_prefix": "/usr/local/cuda-12.6",
+  "env": {
+    "RTDL_NVCC": "/usr/local/cuda-12.6/bin/nvcc",
+    "RTDL_OPTIX_LIB": "/root/rtdl_goal2991_v26_pod/build/librtdl_optix.so",
+    "RTDL_OPTIX_LIBRARY": "/root/rtdl_goal2991_v26_pod/build/librtdl_optix.so",
+    "RTDL_OPTIX_PTX_ARCH": "compute_89",
+    "RTDL_OPTIX_PTX_COMPILER": "nvcc"
+  },
+  "goal": "Goal3021",
+  "gpu": "NVIDIA L4, 565.57.01",
+  "linked_nvrtc_line": "libnvrtc.so.12 => /usr/local/cuda-12.6/targets/x86_64-linux/lib/libnvrtc.so.12 (0x0000745201800000)",
+  "nvcc_version_tail": "Build cuda_12.6.r12.6/compiler.35059454_0",
+  "openmp_parity": true,
+  "optix_sdk": "/root/vendor/optix-sdk",
+  "package_install_claim_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "purpose": "Record CUDA 12.6 side-by-side toolkit fix for L4 OptiX RT Hausdorff smoke after Goal3020 PTX blocker.",
+  "release_authorized": false,
+  "result": {
+    "comparisons": {
+      "cuda_cpp": {
+        "elapsed_sec": 0.004915054887533188,
+        "error": "FileNotFoundError(2, 'No such file or directory')"
+      },
+      "cupy_grouped_grid_rawkernel": {
+        "elapsed_sec": 0.0003494247794151306,
+        "error": "ModuleNotFoundError(\"No module named 'cupy'\")"
+      },
+      "cupy_rawkernel": {
+        "elapsed_sec": 0.0005293413996696472,
+        "error": "ModuleNotFoundError(\"No module named 'cupy'\")"
+      },
+      "openmp_cpu": {
+        "direction": "b_to_a",
+        "distance": 0.14627873169442843,
+        "elapsed_sec": 0.15259814634919167,
+        "matches_primary": true,
+        "method": "openmp_cpu",
+        "source_index": 447,
+        "target_index": 486
+      },
+      "rtdl_v2_user_cuda": {
+        "elapsed_sec": 0.0029311664402484894,
+        "error": "ModuleNotFoundError(\"No module named 'cupy'\")"
+      }
+    },
+    "primary": {
+      "backend": "optix",
+      "direction": "b_to_a",
+      "distance": 0.14627873169442843,
+      "elapsed_sec": 1.6226482726633549,
+      "exact_value": true,
+      "method": "rtdl_rt_grouped_reduced_nearest_witness",
+      "radius_strategy": "rt_grouped_threshold_upper_bound",
+      "rt_core_accelerated": true,
+      "source_index": 447,
+      "target_index": 180,
+      "threshold_iterations": 38,
+      "witness_radius": 0.146281619300756
+    }
+  },
+  "rt_core_smoke_passed": true,
+  "rt_core_speedup_claim_authorized": false,
+  "rtdl_optix_library": "/root/rtdl_goal2991_v26_pod/build/librtdl_optix.so",
+  "source_commit": "aa643d2c272a8106f33b939f688a1cb73f1bd48b",
+  "source_dirty": [],
+  "true_zero_copy_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}
