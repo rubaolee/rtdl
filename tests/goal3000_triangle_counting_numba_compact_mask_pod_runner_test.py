@@ -26,6 +26,7 @@ class Goal3000TriangleCountingNumbaCompactMaskPodRunnerTest(unittest.TestCase):
             "candidates_match_cpu",
             "indices_match_cpu",
             "partner_indices_match_cpu",
+            "import _numba_cuda_redirector",
             "source_commit",
             "source_dirty",
             '"triangle_counting_whole_app_speedup_claim_authorized": False',

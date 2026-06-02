@@ -43,6 +43,10 @@ def main(argv: list[str] | None = None) -> int:
     started = perf_counter()
     print("[goal3000] importing Numba/CUDA stack", flush=True)
     try:
+        try:
+            import _numba_cuda_redirector  # noqa: F401
+        except ImportError:
+            pass
         import numpy as np
         import numba
         from numba import cuda
