@@ -46,14 +46,13 @@ supported kernel through the appropriate backend. Python remains the app and
 control layer. RTDL owns the kernel contract, traversal/refinement shape, and
 backend bridge for supported primitive paths.
 
-The current learner surface is the v2.3 release. The current released version is
-`v2.3`.
+The current learner surface is the v2.6 release-candidate source-tree surface.
 
-- Python+partner+RTDL is the released source-tree Python+partner+RTDL surface;
-- PyTorch is the reference partner and CuPy is the lightweight conformance
-  partner;
+- Python+partner+RTDL is the current source-tree programming model;
+- CuPy is the mature CUDA-array continuation partner and Numba is the measured
+  custom CUDA-style continuation lane;
 - native engines remain app-agnostic;
-- release claims stay inside the completed release-package boundary.
+- release claims stay inside the completed evidence and consensus boundary.
 
 If a page does not help a learner answer "how do I write and run a current RTDL
 program?", it belongs in Research or Audit rather than the beginner path.

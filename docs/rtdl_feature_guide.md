@@ -39,7 +39,7 @@ outputs through partner-owned columns:
 - NumPy for CPU/host partner paths;
 - PyTorch as the reference GPU framework partner;
 - CuPy as a lightweight GPU conformance and RawKernel-friendly partner.
-- Numba as the active v2.6 pre-release lane for selected measured custom
+- Numba as the active v2.6 lane for selected measured custom
   CUDA-style continuations.
 
 The partner path can support fast app-level continuations when the user stays in
@@ -86,4 +86,3 @@ That list is a teaching catalog, not the fixed capacity of the language.
 - [Application Catalog](application_catalog.md)
 - [RTDL Language Docs](rtdl/README.md)
 - [Partner Acceleration Boundaries](partner_acceleration_boundaries.md)
-- [v2.3 Release Package](release_reports/v2_3/README.md)

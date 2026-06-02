@@ -34,8 +34,8 @@ What this does not show:
 | --- | --- | --- | --- |
 | First working command | `examples/v2_0/getting_started/rtdl_hello_world.py` | import and output smoke path | performance |
 | Backend selection | `examples/v2_0/getting_started/rtdl_hello_world_backends.py` | same kernel idea through selected runners | backend speedup |
-| Python+partner first path | `examples/v2_0/partners/rtdl_partner_anyhit.py --partner numpy --backend embree` | partner-owned columns staged into Embree any-hit | true-zero-copy or RT-core speedup |
-| Advanced OptiX partner path | [OptiX Partner Column Any-Hit](tutorials/partner_optix_column_anyhit.md) | Torch/CuPy CUDA input-plus-output evidence for a prepared OptiX any-hit primitive | final release status, true-zero-copy, or broad acceleration |
+| Python+partner first path | `examples/v2_0/partners/rtdl_partner_anyhit.py --partner numpy --backend embree` | partner-owned columns staged into Embree any-hit | zero-copy or RT-core speedup |
+| Advanced OptiX partner path | [OptiX Partner Column Any-Hit](tutorials/partner_optix_column_anyhit.md) | Torch/CuPy CUDA input-plus-output evidence for a prepared OptiX any-hit primitive | final release status, zero-copy, or broad acceleration |
 | Feature recipes | `examples/v2_0/getting_started/rtdl_feature_quickstart_cookbook.py` | one compact recipe per public feature | production readiness for every backend |
 | Geometry/spatial joins | `examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py` | segment/polygon candidate traversal and refinement | full GIS engine |
 | Spatial coverage app | `examples/v2_0/apps/geospatial/rtdl_service_coverage_gaps.py` | fixed-radius household/clinic join | full service optimization |
@@ -54,8 +54,10 @@ What this does not show:
 
 For the full app inventory, read [Application Catalog](application_catalog.md).
 For backend support, read [App Engine Support Matrix](app_engine_support_matrix.md).
-For implementation notes, use [Technical App Notes](research/app_notes/README.md).
-For older version evidence, use [Learner Doc Version Notes](history/learner_doc_version_notes.md).
+For current design lessons, use
+[Design Insights By Benchmark Apps](research/design_insights_by_benchmark_apps_2026-05-19.md).
+Archived implementation-transition notes live under
+[Research Archive](research/archive/README.md).
 
 ## Backend Names
 
@@ -79,7 +81,7 @@ the needed local dependencies.
 | App catalog | [Application Catalog](application_catalog.md) | current app inventory and boundaries |
 | All examples | [Examples Index](../examples/README.md) | compact directory inventory |
 | Command archive | [Release-Facing Examples](release_facing_examples.md) | large evidence-oriented command list |
-| Technical app notes | [Technical App Notes](research/app_notes/README.md) | implementation boundaries and primitive groups |
+| Research notes | [Design Insights By Benchmark Apps](research/design_insights_by_benchmark_apps_2026-05-19.md) | current benchmark-driven primitive lessons |
 
 ## OptiX Rule For App Runs
 

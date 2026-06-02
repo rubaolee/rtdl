@@ -6,9 +6,9 @@ users. Older release history is kept separately in
 
 ## Current Status
 
-RTDL v2.3 is the current source-tree Python+partner+RTDL release. It preserves
-the current v2.x language boundary and adds the cleaned benchmark-vs-learner app
-portfolio.
+RTDL v2.6 is the current release-candidate source-tree
+Python+partner+RTDL surface. It preserves the v2.x language boundary and
+provides the cleaned benchmark-vs-learner app portfolio.
 
 ## Short Version
 
@@ -71,7 +71,7 @@ Allowed performance wording names the exact:
 
 When any of those are missing, use candidate or preview wording.
 
-## v2.3 Release Boundaries
+## v2.6 Release-Candidate Boundaries
 
 Allowed:
 
@@ -87,4 +87,5 @@ Not allowed:
 - arbitrary polygon overlay;
 - package-install support;
 - every user program is faster.
-- true zero-copy unless the exact measured path proves device-resident handoff.
+- general zero-copy unless the exact measured path proves device-resident
+  handoff.

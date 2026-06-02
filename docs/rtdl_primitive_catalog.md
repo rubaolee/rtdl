@@ -130,7 +130,7 @@ Reduction
 
 Continuation
   fixed-radius graph continuation
-  Triton-first partner continuation
+  explicit partner continuation
   segmented / chunked row continuation (`SEGMENTED_ROW_STREAM` /
     `CHUNKED_ROW_CONTINUATION`)
   candidate-quality / ranked-summary continuation
@@ -139,7 +139,7 @@ Candidate / Experimental
   aggregate-frontier traversal
   streamed / segmented graph lowering
   device-resident grouped candidate merge / finalize
-  future zero-copy row streams
+  future device-resident row streams
 ```
 
 Status metadata used below:

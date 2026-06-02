@@ -1,6 +1,6 @@
 # Release-Facing Example Command Archive
 
-Status: current v2.3 source-tree command archive.
+Status: current v2.6 release-candidate source-tree command archive.
 
 This page is for reviewers who need a compact command list for the public
 example surface. If you are learning RTDL for the first time, start with:
@@ -41,7 +41,6 @@ PYTHONPATH=src:. python examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.
 PYTHONPATH=src:. python examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py --backend cpu_python_reference
 PYTHONPATH=src:. python examples/v2_0/apps/analytics/rtdl_database_analytics_app.py --backend cpu_python_reference
 PYTHONPATH=src:. python examples/v2_0/apps/geospatial/rtdl_road_hazard_screening.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/legacy_or_backend_proofs/rtdl_apple_rt_demo_app.py
 ```
 
 ## Embree And OptiX Examples
@@ -71,7 +70,7 @@ PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner 
 PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner cupy --backend optix
 ```
 
-Partner commands are part of the v2.3 release surface. They do not imply
+Partner commands are part of the v2.6 release-candidate surface. They do not imply
 arbitrary PyTorch/CuPy acceleration, package-install support, or whole-program
 speedup.
 

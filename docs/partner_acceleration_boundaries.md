@@ -100,13 +100,13 @@ For app continuations, the intended interpretation is:
   semantics, and final reports in Python or user partner code unless RTDL has
   shipped a reviewed generic primitive for that exact contract.
 
-## Current Release And Pre-Release Boundary
+## v2.6 Release-Candidate Boundary
 
-v2.3 is the current released source-tree Python+partner+RTDL evidence package.
-The active v2.6 lane is internal pre-release work for clearer user-chosen
-partner guidance and selected Numba custom-continuation support. v2.6 is not a
-release tag yet and does not authorize package-install wording, broad speedup
-wording, automatic partner selection, or a general true-zero-copy product claim.
+v2.6 is the current release-candidate source-tree Python+partner+RTDL evidence
+package. It provides user-chosen partner guidance and selected Numba
+custom-continuation support. It does not authorize package-install wording,
+broad speedup wording, automatic partner selection, or a general zero-copy
+product claim.
 
 Every public performance statement must stay inside the reviewed evidence:
 
@@ -126,7 +126,7 @@ replace Claude or Gemini under the strict 3-AI consensus rule.
 
 ## v2.6 Partner Choice Rule
 
-The current pre-release rule is intentionally simple:
+The current rule is intentionally simple:
 
 - Use a fused generic native RTDL primitive when it exactly expresses the work.
 - Use partner continuation only for unfused work or explicit app choice.
@@ -152,10 +152,6 @@ Current guidance lives in:
 - `docs/reports/goal3052_partner_choice_pod_refresh_2026-06-02.md`
 - `docs/reports/goal3054_v2_6_machine_readable_partner_choice_guidance_2026-06-02.md`
 
-Historical v2.4/v2.5 partner-continuation reports remain in `docs/reports/`
-for reviewers, including
-`docs/reports/goal2657_v2_4_v2_5_partner_roadmap_2026-05-27.md`,
-`docs/reports/goal2662_v2_5_partner_continuation_contract_2026-05-27.md`, and
-`docs/reports/goal2981_v2_5_closeout_positioning_and_external_review_packet_2026-06-01.md`.
-Those reports explain how the project reached the current v2.6 rule; they do
+Historical partner-continuation reports remain in `docs/reports/` for
+reviewers. They explain how the project reached the current v2.6 rule; they do
 not override this learner-facing boundary.

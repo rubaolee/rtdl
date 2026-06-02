@@ -4,10 +4,9 @@ This directory is organized for current v2.x RTDL users first.  Start in
 `v2_0/`, then choose by purpose: first run, feature, full app, partner
 continuation, or research benchmark.
 
-The directory name `v2_0/` is stable for the current v2.x learner tree. The
-latest released evidence package is v2.3, and active v2.6 pre-release partner
-guidance is documented inside the same source-tree example family rather than a
-duplicate directory.
+The directory name `v2_0/` is a stable compatibility path for the current v2.x
+learner tree. The content and guidance in that tree are maintained for the v2.6
+release-candidate surface rather than split into duplicate version directories.
 
 Run examples from the repository root with source-tree usage:
 
@@ -111,7 +110,6 @@ For guided learning and support boundaries, prefer:
 - [Choosing A Partner For Custom Logic](../docs/learn/partner_choice_for_custom_logic.md)
 - [Benchmark Partner Reference Matrix](../docs/learn/benchmark_partner_reference_matrix.md)
 - [Current Support Matrix](../docs/current_main_support_matrix.md)
-- [v2.3 Release Package](../docs/release_reports/v2_3/README.md)
 - [App Engine Support Matrix](../docs/app_engine_support_matrix.md)
 - [Performance Model](../docs/performance_model.md)
 

@@ -80,7 +80,7 @@ PYTHONPATH=src:. python examples/v2_0/research_benchmarks/robot_collision/rtdl_r
 ```
 
 The prepared-buffer modes remove repeated Python packing/allocation on the
-query path. They do not claim native device-buffer reuse or true zero-copy;
+query path. They do not claim native device-buffer reuse or general zero-copy;
 OptiX still uploads query segments per run through the current native ABI.
 
 Run a bounded matrix without OptiX:

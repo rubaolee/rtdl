@@ -1,6 +1,6 @@
 # RTDL App Engine Support Matrix
 
-Status: public app-level support map for the v2.3 release source
+Status: public app-level support map for the v2.6 release-candidate source
 tree.
 
 This matrix answers which engines each public app entry point exposes today.
@@ -23,7 +23,6 @@ For OptiX performance classification, use
 - `partial_cpu_oracle`: part of the app has a CPU/Python oracle, but another
   scenario is hardware-gated or may skip.
 - `not_exposed_by_app_cli`: the public app file does not expose this engine.
-- `apple_specific`: the app is specifically an Apple RT demo.
 
 ## Matrix
 
@@ -31,7 +30,6 @@ For OptiX performance classification, use
 | --- | --- | --- | --- | --- | --- | --- |
 | `examples/v2_0/apps/analytics/rtdl_database_analytics_app.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
 | `examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_compatibility_fallback` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
-| `examples/legacy_or_backend_proofs/rtdl_apple_rt_demo_app.py` | `partial_cpu_oracle` | `apple_specific` | `apple_specific` | `apple_specific` | `apple_specific` | `direct_cli_native_assisted` |
 | `examples/v2_0/apps/geospatial/rtdl_service_coverage_gaps.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
 | `examples/v2_0/apps/geospatial/rtdl_event_hotspot_screening.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
 | `examples/v2_0/apps/geospatial/rtdl_facility_knn_assignment.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
@@ -46,9 +44,8 @@ For OptiX performance classification, use
 | `examples/v2_0/apps/ml/rtdl_dbscan_clustering_app.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
 | `examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
 | `examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
-| `examples/legacy_or_backend_proofs/rtdl_hiprt_ray_triangle_hitcount.py` | `portable_cpu_oracle` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `direct_cli_native` | `not_exposed_by_app_cli` |
 
-## v2.3 Reading Guide
+## v2.6 Reading Guide
 
 - Embree rows are the CPU RT implementation path.
 - OptiX rows are the NVIDIA RT implementation path, but only reviewed
@@ -60,6 +57,8 @@ For OptiX performance classification, use
   becoming RTDL engine customization.
 - Full witness rows, compact summaries, and streaming witness pages are
   different contracts. Compare performance only when the contracts match.
+- Backend proof demos live under `examples/legacy_or_backend_proofs/` and are
+  intentionally excluded from this learner-facing app matrix.
 
 ## Boundaries
 

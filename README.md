@@ -11,14 +11,11 @@ reference runner, Embree, or OptiX without rewriting the application.
 RTDL is not a renderer or graphics engine. It uses ray-tracing-style
 acceleration structures and traversal for application kernels.
 
-This documentation is written for the current v2.x RTDL surface. The current
-released version is `v2.3`: the source-tree Python+partner+RTDL app-portfolio
-release. The active internal pre-release lane is `v2.6`, which keeps the same
-app-agnostic engine rule while adding clearer partner-choice guidance for CuPy
-and Numba continuations. Use RTDL from the repository source tree with
-`PYTHONPATH=src:.`; do not read any current or pre-release doc as a
-package-install promise, automatic partner-selection promise, true-zero-copy
-claim, or broad speedup claim.
+This documentation is written for the v2.6 release-candidate RTDL surface:
+Python+partner+RTDL over a generic, app-agnostic native engine. Use RTDL from
+the repository source tree with `PYTHONPATH=src:.`; do not read any current doc
+as a package-install promise, automatic partner-selection promise, general
+device-residency/zero-copy product claim, or broad speedup claim.
 
 ## Start Fast
 
@@ -129,26 +126,24 @@ Backend support varies by feature and platform. Start with the portable
 `cpu_python_reference` backend, then use Embree or OptiX when your host has the
 native dependencies configured.
 
-## Current Release And v2.6 Pre-Release Lane
+## v2.6 Release Candidate
 
-RTDL v2.3 is the Python+partner+RTDL app-portfolio source-tree release. It keeps
-the current v2.x language boundary, adds the current promoted benchmark-app portfolio,
-demotes non-competitive candidates such as GPU-RMQ and Continuous Frechet to
-learner/research status, and documents the app-agnostic primitive lessons from
+RTDL v2.6 is the current release-candidate source-tree surface. It keeps the
+v2.x language boundary, documents the promoted benchmark-app portfolio, demotes
+non-competitive candidates such as GPU-RMQ and Continuous Frechet to
+learner/research status, and records the app-agnostic primitive lessons from
 the benchmark wave.
 
 The release packet separates promoted benchmark apps from learner/example apps.
 Promoted benchmarks are reconstruction instruments for RTDL language/runtime
 design, not broad paper-reproduction or whole-application speedup claims.
 
-Do not read v2.3 as a package-install promise, broad RT-core claim, arbitrary
+Do not read v2.6 as a package-install promise, broad RT-core claim, arbitrary
 PyTorch/CuPy/Numba acceleration claim, arbitrary polygon overlay claim, or proof
 that every user program is faster. For the exact positive and negative rule, read
-[Partner Acceleration Boundaries](docs/partner_acceleration_boundaries.md) and
-[v2.3 Release Package](docs/release_reports/v2_3/README.md).
+[Partner Acceleration Boundaries](docs/partner_acceleration_boundaries.md).
 
-The v2.6 lane is not a release tag yet. It is the active source-tree
-pre-release work for user-chosen partner continuations:
+The v2.6 partner rule is user-chosen and evidence-gated:
 
 - use fused RTDL primitives first when they exactly express the work;
 - choose a partner explicitly when custom continuation logic is needed;
@@ -192,7 +187,6 @@ Use exact benchmark artifacts before publishing performance wording.
 - [Current Architecture](docs/current_architecture.md)
 - [Performance Model](docs/performance_model.md)
 - [IR And Lowering](docs/rtdl/ir_and_lowering.md)
-- [v2.3 Release Package](docs/release_reports/v2_3/README.md)
 
 ## History And Audit Trail
 
@@ -201,6 +195,7 @@ release evidence, review records, and goal archives live separately:
 
 - [History Index](docs/history/README.md)
 - [Version Archive Notes](docs/history/version_archive_notes.md)
+- [Previous v2.3 Release Package](docs/release_reports/v2_3/README.md)
 - [Release Reports](docs/release_reports/)
 - [Benchmark And Audit Reports](docs/reports/)
 

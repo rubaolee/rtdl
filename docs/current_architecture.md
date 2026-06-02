@@ -7,10 +7,9 @@ and the release-report archive.
 
 ## Current Status
 
-RTDL v2.3 is the current source-tree Python+partner+RTDL release. The active
-internal v2.6 pre-release lane preserves the same v2.x language boundary and
-adds clearer user-chosen partner guidance for CuPy and Numba continuations.
-The current released version remains `v2.3`; v2.6 is not a release tag yet.
+RTDL v2.6 is the current release-candidate source-tree
+Python+partner+RTDL surface. It preserves the v2.x language boundary and adds
+clear user-chosen partner guidance for CuPy and Numba continuations.
 
 ## The User Contract
 
@@ -55,9 +54,7 @@ the workload, backend, partner, hardware, command shape, and artifact.
 
 ## Partner Architecture
 
-The v2.x-facing partner design is protocol first. v2.3 remains the current
-released source-tree partner release. The active v2.6 pre-release rule is
-primitive-first:
+The v2.6 partner design is protocol first and primitive first:
 
 ```text
 Use a fused generic native RTDL primitive when it exactly expresses the work.
@@ -95,9 +92,9 @@ general PyTorch/CuPy/Numba/Triton optimizer. Users may call those systems from
 Python, but user-written kernels remain application code unless RTDL ships and
 reviews that exact generic contract.
 
-Full residency-first, partner-neutral device-memory composition remains a
-v3.0 roadmap item. v2.6 has selective reduced-transfer/device-resident evidence
-for specific paths, not a general true-zero-copy product guarantee.
+Full residency-first, partner-neutral device-memory composition remains future
+roadmap work. v2.6 has selective reduced-transfer/device-resident evidence for
+specific paths, not a general zero-copy product guarantee.
 
 ## Read Next
 
@@ -106,4 +103,3 @@ for specific paths, not a general true-zero-copy product guarantee.
 - [Partner Acceleration Boundaries](partner_acceleration_boundaries.md)
 - [Current Support Matrix](current_main_support_matrix.md)
 - [Capability Boundaries](capability_boundaries.md)
-- [v2.3 Release Package](release_reports/v2_3/README.md)

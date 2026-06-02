@@ -1,7 +1,6 @@
 # RTDL Current Support Matrix
 
-Status: live support matrix for the current v2.x release source tree and active
-v2.6 internal pre-release lane.
+Status: live support matrix for the v2.6 release-candidate source tree.
 
 This page is the current learner-facing matrix. Older release matrices remain
 under `docs/release_reports/` for audit work, but normal users should read this
@@ -15,8 +14,7 @@ cells and silent CPU fallback are not allowed.
 
 ## Boundary
 
-- Current released version is `v2.3`.
-- Active pre-release docs target: v2.6 source-tree partner-choice guidance.
+- Current docs target: v2.6 source-tree partner-choice guidance.
 - Active release engines: Embree for CPU RT, OptiX for NVIDIA RT.
 - Active v2.6 direction: primitive-first native RTDL when a fused generic
   primitive exactly expresses the work; explicit partner continuation only for
@@ -70,7 +68,7 @@ Do not use this matrix to claim:
 - Apple RT performance for the current release target;
 - that partner-side RawKernel, PyTorch, or NumPy code is part of the native
   app-agnostic RTDL engine;
-- true zero-copy unless the exact measured path proves device-resident handoff.
+- zero-copy unless the exact measured path proves device-resident handoff.
 
 ## Where To Go Next
 

@@ -1,7 +1,7 @@
 # RTDL Research Door
 
-Use this door if you are studying architecture, backend design, research
-lineage, or future directions.
+Use this door if you are studying current v2.6 architecture, backend design,
+benchmark-app insights, or future directions.
 
 ## Current Architecture
 
@@ -11,17 +11,15 @@ lineage, or future directions.
 - [ITRE App Programming Model](../rtdl/itre_app_model.md)
 - [Engine Feature Support Contract](../features/engine_support_matrix.md)
 
-## Backend And Research Areas
+## Current Research Areas
 
-- [Internal v2.1 Closure](../reports/goal2344_v2_1_internal_closure_2026-05-18.md)
-- [RTNN Nearest-Neighbor Campaign](../reports/goal2346_v2_2_rtnn_nearest_neighbor_campaign_2026-05-18.md)
 - [Design Insights By Benchmark Apps](design_insights_by_benchmark_apps_2026-05-19.md)
-- [RayJoin And Embree Research Notes](rayjoin/README.md)
-- [Technical App Notes](app_notes/README.md)
-- [Design Proposals](proposals/)
-- [Future Directions](future/README.md)
+- [RayJoin Dataset And Reproduction Notes](rayjoin/README.md)
+- [Archived Research Notes](archive/README.md)
 
 ## Rule
 
-Research notes can be deeper and more speculative than learner docs, but they
-must not override the current public claim boundaries.
+Research notes can be deeper and more speculative than learner docs, but the
+live research door should still present the current v2.6 surface first. Older
+version-specific plans, proposals, and transition notes belong under
+`archive/` and must not override the current public claim boundaries.

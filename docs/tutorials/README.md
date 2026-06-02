@@ -9,9 +9,9 @@ CPU reference path, Embree, or OptiX. In the v2.x track, partner frameworks such
 as NumPy, PyTorch, CuPy, and selected Numba continuations can own or continue
 columns around supported RTDL primitives.
 
-This page is intentionally single-surface. It teaches the current v2.x source
-tree: v2.3 is the latest released evidence package, while v2.6 is the active
-internal pre-release lane for explicit CuPy/Numba partner-choice guidance.
+This page is intentionally single-surface. It teaches the current v2.6
+release-candidate source tree and its explicit CuPy/Numba partner-choice
+guidance.
 
 ## Start Here
 
@@ -56,14 +56,14 @@ internal pre-release lane for explicit CuPy/Numba partner-choice guidance.
 
 ## Current Claim Boundary
 
-The v2.x tutorial path teaches the released source-tree Python+partner+RTDL surface.
+The v2.6 tutorial path teaches the source-tree Python+partner+RTDL surface.
 Use it from the source tree with `PYTHONPATH=src:.`.
 
 Allowed tutorial wording:
 
 - RTDL can run the documented Python+RTDL examples from source.
-- The v2.3 release has partner-column paths for documented primitives.
-- The v2.6 pre-release lane adds explicit CuPy/Numba partner-choice guidance.
+- v2.6 has partner-column paths for documented primitives.
+- v2.6 has explicit CuPy/Numba partner-choice guidance.
 - OptiX evidence exists for specific measured contracts.
 - Python or partner frameworks own app continuation outside the RTDL primitive.
 
@@ -76,8 +76,7 @@ Not allowed:
 - universal speedup wording beyond reviewed evidence.
 
 For the exact boundary, read
-[Partner Acceleration Boundaries](../partner_acceleration_boundaries.md) and
-[v2.3 Release Package](../release_reports/v2_3/README.md).
+[Partner Acceleration Boundaries](../partner_acceleration_boundaries.md).
 
 ## More Navigation
 
