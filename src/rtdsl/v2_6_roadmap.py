@@ -143,6 +143,10 @@ def v2_6_roadmap() -> dict[str, Any]:
         "numba_global_argmax_hardening_goal": "Goal3036",
         "numba_global_argmax_hardening_report": "docs/reports/goal3036_numba_global_argmax_block_reduce_hardening_2026-06-02.md",
         "numba_global_argmax_hardening_status": "global_argmax_u32_f64_block_reduce_no_global_atomics_dirty_overlay_a4000_passed_clean_composition_evidence_pending",
+        "point_group_nearest_numba_argmax_pod_goal": "Goal3037",
+        "point_group_nearest_numba_argmax_pod_report": "docs/reports/goal3037_point_group_nearest_numba_argmax_a4000_pod_2026-06-02.md",
+        "point_group_nearest_numba_argmax_pod_artifact": "docs/reports/goal3037_point_group_nearest_numba_argmax_a4000_pod_2026-06-02.json",
+        "point_group_nearest_numba_argmax_pod_status": "clean_a4000_optix_device_columns_to_numba_global_argmax_conformance_passed_not_release_not_speedup_true_zero_copy_still_blocked",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -470,6 +474,18 @@ def validate_v2_6_roadmap(
         errors.append("Goal3036 status must keep clean composition evidence pending")
     if not (root / str(roadmap.get("numba_global_argmax_hardening_report", ""))).exists():
         errors.append("Goal3036 Numba global argmax hardening report is missing")
+    if roadmap.get("point_group_nearest_numba_argmax_pod_goal") != "Goal3037":
+        errors.append("v2.6 roadmap must index Goal3037 as point-group nearest to Numba argmax pod evidence")
+    if "clean_a4000" not in str(roadmap.get("point_group_nearest_numba_argmax_pod_status", "")):
+        errors.append("Goal3037 status must record clean A4000 evidence")
+    if "not_release_not_speedup" not in str(roadmap.get("point_group_nearest_numba_argmax_pod_status", "")):
+        errors.append("Goal3037 status must not be treated as release or speedup evidence")
+    if "true_zero_copy_still_blocked" not in str(roadmap.get("point_group_nearest_numba_argmax_pod_status", "")):
+        errors.append("Goal3037 status must keep true-zero-copy wording blocked")
+    if not (root / str(roadmap.get("point_group_nearest_numba_argmax_pod_report", ""))).exists():
+        errors.append("Goal3037 point-group nearest Numba argmax pod report is missing")
+    if not (root / str(roadmap.get("point_group_nearest_numba_argmax_pod_artifact", ""))).exists():
+        errors.append("Goal3037 point-group nearest Numba argmax pod artifact is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):

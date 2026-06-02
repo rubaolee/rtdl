@@ -863,6 +863,14 @@ Future work:
   enable minor-version compatibility unless `ptxcompiler`/`cubinlinker` are
   installed. Future dependency setup should make this explicit instead of
   letting CUDA tests skip.
+- Goal3037 proves, from clean source on an RTX A4000 pod, that the generic
+  OptiX point-group nearest-witness device-column producer composes with the
+  generic Numba `global_argmax_u32_f64` consumer through CuPy-owned columns and
+  neutral handoff. This is still conformance evidence, not speedup or
+  true-zero-copy evidence. The next useful benchmark-app step is to compare this
+  composition against the current CuPy grouped-grid reference under a same
+  contract and then decide whether the remaining gap needs a larger generic
+  active-set/candidate-frontier primitive.
 
 Boundary:
 
