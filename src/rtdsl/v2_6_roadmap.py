@@ -61,7 +61,11 @@ def v2_6_roadmap() -> dict[str, Any]:
         "triangle_compact_mask_pod_status": "l4_pod_conformance_passed_clean_source_not_speedup_evidence",
         "rayjoin_compact_mask_goal": "Goal3002",
         "rayjoin_compact_mask_report": "docs/reports/goal3002_rayjoin_numba_compact_mask_wiring_2026-06-01.md",
-        "rayjoin_compact_mask_status": "rayjoin_v2_spatial_join_compact_mask_wiring_prepared_pod_runtime_pending_not_speedup_evidence",
+        "rayjoin_compact_mask_status": "rayjoin_v2_spatial_join_compact_mask_wiring_prepared_l4_runtime_passed_via_goal3003_not_speedup_evidence",
+        "rayjoin_compact_mask_pod_goal": "Goal3003",
+        "rayjoin_compact_mask_pod_report": "docs/reports/goal3003_rayjoin_numba_compact_mask_l4_pod_2026-06-01.md",
+        "rayjoin_compact_mask_pod_artifact": "docs/reports/goal3003_rayjoin_numba_compact_mask_l4_pod_2026-06-01.json",
+        "rayjoin_compact_mask_pod_status": "l4_pod_conformance_passed_all_three_workloads_clean_source_not_speedup_evidence",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -96,7 +100,7 @@ def v2_6_roadmap() -> dict[str, Any]:
             {
                 "step": "N-2",
                 "title": "benchmark_app_numba_user_selected_path",
-                "exit_gate": "Goal2994 and Goal2995 route RayDB-style continuations through user-selected Numba; Goal2999/3000 prove triangle witness compaction; Goal3002 wires RayJoin row-stream compaction without changing prepared count/parity fast paths",
+                "exit_gate": "Goal2994 and Goal2995 route RayDB-style continuations through user-selected Numba; Goal2999/3000 prove triangle witness compaction; Goal3002/3003 prove RayJoin row-stream compaction without changing prepared count/parity fast paths",
             },
             {
                 "step": "N-3",
@@ -218,6 +222,16 @@ def validate_v2_6_roadmap(
         errors.append("Goal3002 RayJoin compact-mask wiring must not be treated as speedup evidence")
     if not (root / str(roadmap.get("rayjoin_compact_mask_report", ""))).exists():
         errors.append("Goal3002 RayJoin compact-mask wiring report is missing")
+    if roadmap.get("rayjoin_compact_mask_pod_goal") != "Goal3003":
+        errors.append("v2.6 roadmap must index Goal3003 as RayJoin compact-mask pod evidence")
+    if "l4_pod_conformance_passed" not in str(roadmap.get("rayjoin_compact_mask_pod_status", "")):
+        errors.append("Goal3003 RayJoin compact-mask pod status must record L4 conformance")
+    if "not_speedup_evidence" not in str(roadmap.get("rayjoin_compact_mask_pod_status", "")):
+        errors.append("Goal3003 RayJoin compact-mask pod evidence must not be treated as speedup evidence")
+    if not (root / str(roadmap.get("rayjoin_compact_mask_pod_report", ""))).exists():
+        errors.append("Goal3003 RayJoin compact-mask pod report is missing")
+    if not (root / str(roadmap.get("rayjoin_compact_mask_pod_artifact", ""))).exists():
+        errors.append("Goal3003 RayJoin compact-mask pod artifact is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):
