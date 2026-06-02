@@ -2789,7 +2789,6 @@ def group_argmin_then_global_argmax_partner_columns(
 
     if not isinstance(score_columns, dict):
         raise ValueError("score_columns must be a mapping")
-    runtime = _partner_module(partner)
     group_ids = score_columns.get("group_ids")
     item_ids = score_columns.get("item_ids")
     scores = score_columns.get("scores", score_columns.get("values"))
@@ -2799,6 +2798,77 @@ def group_argmin_then_global_argmax_partner_columns(
     if group_count <= 0:
         raise ValueError("group_count must be positive")
 
+    if partner == "numba":
+        from .numba_partner_continuation import _import_numba_stack
+        from .numba_partner_continuation import run_numba_grouped_argmax_f64
+
+        cuda, np = _import_numba_stack()
+        row_count = int(group_ids.shape[0])
+        argmin_result = grouped_argmin_f64_partner_columns(
+            {"group_ids": group_ids, "item_ids": item_ids, "scores": scores},
+            group_count=group_count,
+            partner="numba",
+            return_metadata=True,
+        )
+        argmin_outputs = argmin_result["columns"]
+        missing = argmin_outputs["missing_group_ids"].copy_to_host().tolist()
+        if missing:
+            raise ValueError(f"every group must have at least one candidate; missing groups: {missing}")
+
+        per_group_ids = argmin_outputs["group_ids"]
+        per_group_scores = argmin_outputs["scores"]
+        global_group_ids = cuda.to_device(np.zeros((int(per_group_ids.shape[0]),), dtype=np.int64))
+        argmax_result = run_numba_grouped_argmax_f64(
+            global_group_ids,
+            per_group_ids,
+            per_group_scores,
+            group_count=1,
+        )
+        winner_group_id = int(argmax_result["outputs"]["item_ids"].copy_to_host()[0])
+        winner_score = float(argmax_result["outputs"]["scores"].copy_to_host()[0])
+        dense_item_ids = argmin_outputs["dense_item_ids"]
+        dense_scores = argmin_outputs["dense_scores"]
+        winner_item_id = int(dense_item_ids.copy_to_host()[winner_group_id])
+        columns = {
+            "group_ids": per_group_ids,
+            "argmin_item_ids": dense_item_ids,
+            "argmin_scores": dense_scores,
+        }
+        metadata = {
+            "adapter": "group_argmin_then_global_argmax_partner_columns",
+            "partner": "numba",
+            "input_contract": "caller_supplied_grouped_score_rows",
+            "partner_reference_contract": "generic_group_argmin_then_global_argmax_with_witness",
+            "v2_6_numba_partner_continuation_operations": ("grouped_argmin_f64", "grouped_argmax_f64"),
+            "v2_6_numba_preview_kernel_status": "preview_not_promoted",
+            "native_engine_row_contract": "not_called_partner_continuation_only",
+            "group_count": group_count,
+            "row_count": row_count,
+            "winner_group_id": winner_group_id,
+            "winner_item_id": winner_item_id,
+            "winner_score": winner_score,
+            "tie_break": "per_group_lowest_score_then_lowest_item_id__global_highest_score_then_lowest_group_id",
+            "numba_grouped_argmin_elapsed_seconds": argmin_result["metadata"]["numba_elapsed_seconds"],
+            "numba_grouped_argmax_elapsed_seconds": float(
+                argmax_result["phase_timing"]["phases_sec"]["partner_continuation"]
+            ),
+            "host_present_group_compaction_used": True,
+            "direct_device_handoff_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_6_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "claim_boundary": (
+                "Generic group-argmin then global-argmax witness adapter over Numba-owned "
+                "score rows. It does not call native RT traversal, does not embed app "
+                "distance semantics, and does not authorize speedup, zero-copy, or release claims."
+            ),
+        }
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+    runtime = _partner_module(partner)
     if runtime["name"] in {"triton", "torch"}:
         torch = runtime["module"]
         group_ids = group_ids.to(torch.int64)
@@ -2898,7 +2968,7 @@ def group_argmin_then_global_argmax_partner_columns(
             return {"columns": columns, "metadata": metadata}
         return columns
 
-    raise ValueError("partner must be 'triton' or 'torch'")
+    raise ValueError("partner must be 'triton', 'torch', or 'numba'")
 
 
 def directed_hausdorff_2d_partner_columns(
