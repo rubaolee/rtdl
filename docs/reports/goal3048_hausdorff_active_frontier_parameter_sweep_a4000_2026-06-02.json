@@ -1,0 +1,2623 @@
+{
+  "all_rows_match_distance": true,
+  "best_config_frequency": {
+    "seed_1024_group_1024": 3,
+    "seed_1024_group_2048": 2,
+    "seed_1024_group_512": 0,
+    "seed_2048_group_1024": 1,
+    "seed_2048_group_2048": 0,
+    "seed_2048_group_512": 0,
+    "seed_512_group_1024": 1,
+    "seed_512_group_2048": 0,
+    "seed_512_group_512": 1,
+    "seed_8192_group_1024": 0,
+    "seed_8192_group_2048": 0,
+    "seed_8192_group_512": 0
+  },
+  "claim_boundary": "Internal active-frontier tuning evidence only. A default policy change needs reviewed multi-dataset evidence and a focused code change; this artifact alone does not authorize public claims.",
+  "current_seed_sample_count": 1024,
+  "current_target_points_per_group": 512,
+  "datasets": [
+    "adversarial_tail_outlier",
+    "clustered_shift",
+    "demo_offset",
+    "ring_vs_spiral"
+  ],
+  "default_policy_change_authorized": false,
+  "goal": "Goal3048",
+  "median_best_vs_current_policy_median_ratio": 0.9878701245531536,
+  "method_under_test": "rtdl_rt_grouped_active_frontier_nearest_witness",
+  "min_best_vs_current_policy_median_ratio": 0.9509688709876608,
+  "public_speedup_claim_authorized": false,
+  "rows": [
+    {
+      "all_configs_match_distance": true,
+      "best_config": {
+        "active_frontier": {
+          "count": 3,
+          "iqr_sec": 0.0015167439123615623,
+          "max_sec": 0.08014151989482343,
+          "median_sec": 0.07735915808007121,
+          "min_sec": 0.07710803207010031,
+          "q1_sec": 0.07723359507508576,
+          "q3_sec": 0.07875033898744732,
+          "samples": [
+            0.07735915808007121,
+            0.07710803207010031,
+            0.08014151989482343
+          ]
+        },
+        "all_trials_match_distance": true,
+        "direction": "a_to_b",
+        "seed_sample_count": 512,
+        "source_index": 65535,
+        "target_index": 65535,
+        "target_points_per_group": 1024
+      },
+      "best_speedup_vs_reference_median": 5.411573203638913,
+      "best_vs_current_policy_median_ratio": 0.9509688709876608,
+      "configs": [
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0003193760057911277,
+            "max_sec": 0.07800002489238977,
+            "median_sec": 0.07742412202060223,
+            "min_sec": 0.07736127288080752,
+            "q1_sec": 0.07739269745070487,
+            "q3_sec": 0.077712073456496,
+            "samples": [
+              0.07742412202060223,
+              0.07736127288080752,
+              0.07800002489238977
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 512,
+          "source_index": 65535,
+          "target_index": 65535,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0015167439123615623,
+            "max_sec": 0.08014151989482343,
+            "median_sec": 0.07735915808007121,
+            "min_sec": 0.07710803207010031,
+            "q1_sec": 0.07723359507508576,
+            "q3_sec": 0.07875033898744732,
+            "samples": [
+              0.07735915808007121,
+              0.07710803207010031,
+              0.08014151989482343
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 512,
+          "source_index": 65535,
+          "target_index": 65535,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0002386934356763959,
+            "max_sec": 0.08361673704348505,
+            "median_sec": 0.08324014209210873,
+            "min_sec": 0.08313935017213225,
+            "q1_sec": 0.08318974613212049,
+            "q3_sec": 0.08342843956779689,
+            "samples": [
+              0.08361673704348505,
+              0.08324014209210873,
+              0.08313935017213225
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 512,
+          "source_index": 65535,
+          "target_index": 65535,
+          "target_points_per_group": 2048
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.00041823345236480236,
+            "max_sec": 0.08161237090826035,
+            "median_sec": 0.08134772907942533,
+            "min_sec": 0.08077590400353074,
+            "q1_sec": 0.08106181654147804,
+            "q3_sec": 0.08148004999384284,
+            "samples": [
+              0.08077590400353074,
+              0.08134772907942533,
+              0.08161237090826035
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 1024,
+          "source_index": 65535,
+          "target_index": 65535,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0004806026117876172,
+            "max_sec": 0.08158669318072498,
+            "median_sec": 0.08098817709833384,
+            "min_sec": 0.08062548795714974,
+            "q1_sec": 0.08080683252774179,
+            "q3_sec": 0.08128743513952941,
+            "samples": [
+              0.08062548795714974,
+              0.08098817709833384,
+              0.08158669318072498
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 1024,
+          "source_index": 65535,
+          "target_index": 65535,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0002464230637997389,
+            "max_sec": 0.082853889092803,
+            "median_sec": 0.08241559704765677,
+            "min_sec": 0.08236104296520352,
+            "q1_sec": 0.08238832000643015,
+            "q3_sec": 0.08263474307022989,
+            "samples": [
+              0.08236104296520352,
+              0.082853889092803,
+              0.08241559704765677
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 1024,
+          "source_index": 65535,
+          "target_index": 65535,
+          "target_points_per_group": 2048
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.00022384501062333584,
+            "max_sec": 0.08123645791783929,
+            "median_sec": 0.08121736207976937,
+            "min_sec": 0.08078876789659262,
+            "q1_sec": 0.081003064988181,
+            "q3_sec": 0.08122690999880433,
+            "samples": [
+              0.08123645791783929,
+              0.08078876789659262,
+              0.08121736207976937
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 2048,
+          "source_index": 65535,
+          "target_index": 65535,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.00021517346613109112,
+            "max_sec": 0.08181837294250727,
+            "median_sec": 0.08140771300531924,
+            "min_sec": 0.08138802601024508,
+            "q1_sec": 0.08139786950778216,
+            "q3_sec": 0.08161304297391325,
+            "samples": [
+              0.08140771300531924,
+              0.08138802601024508,
+              0.08181837294250727
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 2048,
+          "source_index": 65535,
+          "target_index": 65535,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0010609040036797523,
+            "max_sec": 0.08486694982275367,
+            "median_sec": 0.08289902401156723,
+            "min_sec": 0.08274514181539416,
+            "q1_sec": 0.0828220829134807,
+            "q3_sec": 0.08388298691716045,
+            "samples": [
+              0.08289902401156723,
+              0.08486694982275367,
+              0.08274514181539416
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 2048,
+          "source_index": 65535,
+          "target_index": 65535,
+          "target_points_per_group": 2048
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.00047123944386839867,
+            "max_sec": 0.08301258995197713,
+            "median_sec": 0.08231196901760995,
+            "min_sec": 0.08207011106424034,
+            "q1_sec": 0.08219104004092515,
+            "q3_sec": 0.08266227948479354,
+            "samples": [
+              0.08301258995197713,
+              0.08231196901760995,
+              0.08207011106424034
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 8192,
+          "source_index": 65535,
+          "target_index": 65535,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.00041711691301316023,
+            "max_sec": 0.08292999281547964,
+            "median_sec": 0.08217758499085903,
+            "min_sec": 0.08209575898945332,
+            "q1_sec": 0.08213667199015617,
+            "q3_sec": 0.08255378890316933,
+            "samples": [
+              0.08292999281547964,
+              0.08217758499085903,
+              0.08209575898945332
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 8192,
+          "source_index": 65535,
+          "target_index": 65535,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.00013218040112406015,
+            "max_sec": 0.08438761881552637,
+            "median_sec": 0.08416108903475106,
+            "min_sec": 0.08412325801327825,
+            "q1_sec": 0.08414217352401465,
+            "q3_sec": 0.08427435392513871,
+            "samples": [
+              0.08438761881552637,
+              0.08412325801327825,
+              0.08416108903475106
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 8192,
+          "source_index": 65535,
+          "target_index": 65535,
+          "target_points_per_group": 2048
+        }
+      ],
+      "current_policy_config": {
+        "active_frontier": {
+          "count": 3,
+          "iqr_sec": 0.00041823345236480236,
+          "max_sec": 0.08161237090826035,
+          "median_sec": 0.08134772907942533,
+          "min_sec": 0.08077590400353074,
+          "q1_sec": 0.08106181654147804,
+          "q3_sec": 0.08148004999384284,
+          "samples": [
+            0.08077590400353074,
+            0.08134772907942533,
+            0.08161237090826035
+          ]
+        },
+        "all_trials_match_distance": true,
+        "direction": "a_to_b",
+        "seed_sample_count": 1024,
+        "source_index": 65535,
+        "target_index": 65535,
+        "target_points_per_group": 512
+      },
+      "dataset": "adversarial_tail_outlier",
+      "points_a": 65536,
+      "points_b": 65536,
+      "reference_distance": 1.5654072952429985,
+      "reference_elapsed_sec": 0.41863474692218006,
+      "reference_method": "cupy_grouped_grid_rawkernel"
+    },
+    {
+      "all_configs_match_distance": true,
+      "best_config": {
+        "active_frontier": {
+          "count": 3,
+          "iqr_sec": 0.0010173110058531165,
+          "max_sec": 0.16427333396859467,
+          "median_sec": 0.1642140110488981,
+          "min_sec": 0.16223871195688844,
+          "q1_sec": 0.16322636150289327,
+          "q3_sec": 0.16424367250874639,
+          "samples": [
+            0.1642140110488981,
+            0.16223871195688844,
+            0.16427333396859467
+          ]
+        },
+        "all_trials_match_distance": true,
+        "direction": "a_to_b",
+        "seed_sample_count": 1024,
+        "source_index": 131071,
+        "target_index": 131071,
+        "target_points_per_group": 1024
+      },
+      "best_speedup_vs_reference_median": 7.904679330326234,
+      "best_vs_current_policy_median_ratio": 0.9843788040248838,
+      "configs": [
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0009838121477514505,
+            "max_sec": 0.16958320210687816,
+            "median_sec": 0.16781250177882612,
+            "min_sec": 0.16761557781137526,
+            "q1_sec": 0.1677140397951007,
+            "q3_sec": 0.16869785194285214,
+            "samples": [
+              0.16761557781137526,
+              0.16958320210687816,
+              0.16781250177882612
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 512,
+          "source_index": 131071,
+          "target_index": 131071,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0008505249861627817,
+            "max_sec": 0.16558105684816837,
+            "median_sec": 0.16438230080530047,
+            "min_sec": 0.1638800068758428,
+            "q1_sec": 0.16413115384057164,
+            "q3_sec": 0.16498167882673442,
+            "samples": [
+              0.16558105684816837,
+              0.16438230080530047,
+              0.1638800068758428
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 512,
+          "source_index": 131071,
+          "target_index": 131071,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 3.215600736439228e-05,
+            "max_sec": 0.16832314105704427,
+            "median_sec": 0.16830037697218359,
+            "min_sec": 0.16825882904231548,
+            "q1_sec": 0.16827960300724953,
+            "q3_sec": 0.16831175901461393,
+            "samples": [
+              0.16830037697218359,
+              0.16825882904231548,
+              0.16832314105704427
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 512,
+          "source_index": 131071,
+          "target_index": 131071,
+          "target_points_per_group": 2048
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0007542171515524387,
+            "max_sec": 0.16796725615859032,
+            "median_sec": 0.166819937992841,
+            "min_sec": 0.16645882185548544,
+            "q1_sec": 0.16663937992416322,
+            "q3_sec": 0.16739359707571566,
+            "samples": [
+              0.16796725615859032,
+              0.166819937992841,
+              0.16645882185548544
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 1024,
+          "source_index": 131071,
+          "target_index": 131071,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0010173110058531165,
+            "max_sec": 0.16427333396859467,
+            "median_sec": 0.1642140110488981,
+            "min_sec": 0.16223871195688844,
+            "q1_sec": 0.16322636150289327,
+            "q3_sec": 0.16424367250874639,
+            "samples": [
+              0.1642140110488981,
+              0.16223871195688844,
+              0.16427333396859467
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 1024,
+          "source_index": 131071,
+          "target_index": 131071,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.00019562640227377415,
+            "max_sec": 0.16798400692641735,
+            "median_sec": 0.16771056898869574,
+            "min_sec": 0.1675927541218698,
+            "q1_sec": 0.16765166155528277,
+            "q3_sec": 0.16784728795755655,
+            "samples": [
+              0.16771056898869574,
+              0.16798400692641735,
+              0.1675927541218698
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 1024,
+          "source_index": 131071,
+          "target_index": 131071,
+          "target_points_per_group": 2048
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0008584249299019575,
+            "max_sec": 0.16896603186614811,
+            "median_sec": 0.1679892868269235,
+            "min_sec": 0.1672491820063442,
+            "q1_sec": 0.16761923441663384,
+            "q3_sec": 0.1684776593465358,
+            "samples": [
+              0.1679892868269235,
+              0.16896603186614811,
+              0.1672491820063442
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 2048,
+          "source_index": 131071,
+          "target_index": 131071,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.001175550976768136,
+            "max_sec": 0.16634653904475272,
+            "median_sec": 0.16453055199235678,
+            "min_sec": 0.16399543709121644,
+            "q1_sec": 0.1642629945417866,
+            "q3_sec": 0.16543854551855475,
+            "samples": [
+              0.16399543709121644,
+              0.16634653904475272,
+              0.16453055199235678
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 2048,
+          "source_index": 131071,
+          "target_index": 131071,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0017366415122523904,
+            "max_sec": 0.1735711230430752,
+            "median_sec": 0.17099287803284824,
+            "min_sec": 0.17009784001857042,
+            "q1_sec": 0.17054535902570933,
+            "q3_sec": 0.17228200053796172,
+            "samples": [
+              0.17009784001857042,
+              0.17099287803284824,
+              0.1735711230430752
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 2048,
+          "source_index": 131071,
+          "target_index": 131071,
+          "target_points_per_group": 2048
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0022396513959392905,
+            "max_sec": 0.173949530813843,
+            "median_sec": 0.17006883420981467,
+            "min_sec": 0.16947022802196443,
+            "q1_sec": 0.16976953111588955,
+            "q3_sec": 0.17200918251182884,
+            "samples": [
+              0.173949530813843,
+              0.17006883420981467,
+              0.16947022802196443
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 8192,
+          "source_index": 131071,
+          "target_index": 131071,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0021894105011597276,
+            "max_sec": 0.16993121313862503,
+            "median_sec": 0.16740694199688733,
+            "min_sec": 0.16555239213630557,
+            "q1_sec": 0.16647966706659645,
+            "q3_sec": 0.16866907756775618,
+            "samples": [
+              0.16555239213630557,
+              0.16740694199688733,
+              0.16993121313862503
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 8192,
+          "source_index": 131071,
+          "target_index": 131071,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.008293953025713563,
+            "max_sec": 0.18802266311831772,
+            "median_sec": 0.17418806278146803,
+            "min_sec": 0.1714347570668906,
+            "q1_sec": 0.17281140992417932,
+            "q3_sec": 0.18110536294989288,
+            "samples": [
+              0.17418806278146803,
+              0.1714347570668906,
+              0.18802266311831772
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 8192,
+          "source_index": 131071,
+          "target_index": 131071,
+          "target_points_per_group": 2048
+        }
+      ],
+      "current_policy_config": {
+        "active_frontier": {
+          "count": 3,
+          "iqr_sec": 0.0007542171515524387,
+          "max_sec": 0.16796725615859032,
+          "median_sec": 0.166819937992841,
+          "min_sec": 0.16645882185548544,
+          "q1_sec": 0.16663937992416322,
+          "q3_sec": 0.16739359707571566,
+          "samples": [
+            0.16796725615859032,
+            0.166819937992841,
+            0.16645882185548544
+          ]
+        },
+        "all_trials_match_distance": true,
+        "direction": "a_to_b",
+        "seed_sample_count": 1024,
+        "source_index": 131071,
+        "target_index": 131071,
+        "target_points_per_group": 512
+      },
+      "dataset": "adversarial_tail_outlier",
+      "points_a": 131072,
+      "points_b": 131072,
+      "reference_distance": 1.5654072952429985,
+      "reference_elapsed_sec": 1.2980590988881886,
+      "reference_method": "cupy_grouped_grid_rawkernel"
+    },
+    {
+      "all_configs_match_distance": true,
+      "best_config": {
+        "active_frontier": {
+          "count": 3,
+          "iqr_sec": 0.0004757379647344351,
+          "max_sec": 0.07377886306494474,
+          "median_sec": 0.07296199188567698,
+          "min_sec": 0.07282738713547587,
+          "q1_sec": 0.07289468951057643,
+          "q3_sec": 0.07337042747531086,
+          "samples": [
+            0.07282738713547587,
+            0.07377886306494474,
+            0.07296199188567698
+          ]
+        },
+        "all_trials_match_distance": true,
+        "direction": "a_to_b",
+        "seed_sample_count": 1024,
+        "source_index": 22492,
+        "target_index": 2984,
+        "target_points_per_group": 2048
+      },
+      "best_speedup_vs_reference_median": 4.835647845338706,
+      "best_vs_current_policy_median_ratio": 0.9588905560378153,
+      "configs": [
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.00036165653727948666,
+            "max_sec": 0.07660297304391861,
+            "median_sec": 0.07634649705141783,
+            "min_sec": 0.07587965996935964,
+            "q1_sec": 0.07611307851038873,
+            "q3_sec": 0.07647473504766822,
+            "samples": [
+              0.07660297304391861,
+              0.07634649705141783,
+              0.07587965996935964
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 512,
+          "source_index": 22492,
+          "target_index": 2984,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0005193710094317794,
+            "max_sec": 0.07495143893174827,
+            "median_sec": 0.07456910284236073,
+            "min_sec": 0.07391269691288471,
+            "q1_sec": 0.07424089987762272,
+            "q3_sec": 0.0747602708870545,
+            "samples": [
+              0.07391269691288471,
+              0.07456910284236073,
+              0.07495143893174827
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 512,
+          "source_index": 22492,
+          "target_index": 2984,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.00042966543696820736,
+            "max_sec": 0.0734705668874085,
+            "median_sec": 0.07330577494576573,
+            "min_sec": 0.07261123601347208,
+            "q1_sec": 0.07295850547961891,
+            "q3_sec": 0.07338817091658711,
+            "samples": [
+              0.07330577494576573,
+              0.0734705668874085,
+              0.07261123601347208
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 512,
+          "source_index": 22492,
+          "target_index": 2984,
+          "target_points_per_group": 2048
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0007873000577092171,
+            "max_sec": 0.07704245811328292,
+            "median_sec": 0.07609000988304615,
+            "min_sec": 0.07546785799786448,
+            "q1_sec": 0.07577893394045532,
+            "q3_sec": 0.07656623399816453,
+            "samples": [
+              0.07546785799786448,
+              0.07609000988304615,
+              0.07704245811328292
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 1024,
+          "source_index": 22492,
+          "target_index": 2984,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0008405460976064205,
+            "max_sec": 0.0763519371394068,
+            "median_sec": 0.07502514799125493,
+            "min_sec": 0.07467084494419396,
+            "q1_sec": 0.07484799646772444,
+            "q3_sec": 0.07568854256533086,
+            "samples": [
+              0.07467084494419396,
+              0.07502514799125493,
+              0.0763519371394068
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 1024,
+          "source_index": 22492,
+          "target_index": 2984,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0004757379647344351,
+            "max_sec": 0.07377886306494474,
+            "median_sec": 0.07296199188567698,
+            "min_sec": 0.07282738713547587,
+            "q1_sec": 0.07289468951057643,
+            "q3_sec": 0.07337042747531086,
+            "samples": [
+              0.07282738713547587,
+              0.07377886306494474,
+              0.07296199188567698
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 1024,
+          "source_index": 22492,
+          "target_index": 2984,
+          "target_points_per_group": 2048
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0006692151073366404,
+            "max_sec": 0.07708404609002173,
+            "median_sec": 0.07690694998018444,
+            "min_sec": 0.07574561587534845,
+            "q1_sec": 0.07632628292776644,
+            "q3_sec": 0.07699549803510308,
+            "samples": [
+              0.07708404609002173,
+              0.07690694998018444,
+              0.07574561587534845
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 2048,
+          "source_index": 22492,
+          "target_index": 2984,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.002870238618925214,
+            "max_sec": 0.07964933617040515,
+            "median_sec": 0.07518863794393837,
+            "min_sec": 0.07390885893255472,
+            "q1_sec": 0.07454874843824655,
+            "q3_sec": 0.07741898705717176,
+            "samples": [
+              0.07390885893255472,
+              0.07518863794393837,
+              0.07964933617040515
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 2048,
+          "source_index": 22492,
+          "target_index": 2984,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.001357205561362207,
+            "max_sec": 0.0797477220185101,
+            "median_sec": 0.0785713701043278,
+            "min_sec": 0.07703331089578569,
+            "q1_sec": 0.07780234050005674,
+            "q3_sec": 0.07915954606141895,
+            "samples": [
+              0.07703331089578569,
+              0.0797477220185101,
+              0.0785713701043278
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 2048,
+          "source_index": 22492,
+          "target_index": 2984,
+          "target_points_per_group": 2048
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 4.802143666893244e-05,
+            "max_sec": 0.08191110892221332,
+            "median_sec": 0.08185621490702033,
+            "min_sec": 0.08181506604887545,
+            "q1_sec": 0.08183564047794789,
+            "q3_sec": 0.08188366191461682,
+            "samples": [
+              0.08185621490702033,
+              0.08181506604887545,
+              0.08191110892221332
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 8192,
+          "source_index": 22492,
+          "target_index": 2984,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.00035035540349781513,
+            "max_sec": 0.07984943594783545,
+            "median_sec": 0.07945486600510776,
+            "min_sec": 0.07914872514083982,
+            "q1_sec": 0.07930179557297379,
+            "q3_sec": 0.0796521509764716,
+            "samples": [
+              0.07945486600510776,
+              0.07984943594783545,
+              0.07914872514083982
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 8192,
+          "source_index": 22492,
+          "target_index": 2984,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0008531544590368867,
+            "max_sec": 0.07908757892437279,
+            "median_sec": 0.07842976995743811,
+            "min_sec": 0.07738127000629902,
+            "q1_sec": 0.07790551998186857,
+            "q3_sec": 0.07875867444090545,
+            "samples": [
+              0.07908757892437279,
+              0.07842976995743811,
+              0.07738127000629902
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 8192,
+          "source_index": 22492,
+          "target_index": 2984,
+          "target_points_per_group": 2048
+        }
+      ],
+      "current_policy_config": {
+        "active_frontier": {
+          "count": 3,
+          "iqr_sec": 0.0007873000577092171,
+          "max_sec": 0.07704245811328292,
+          "median_sec": 0.07609000988304615,
+          "min_sec": 0.07546785799786448,
+          "q1_sec": 0.07577893394045532,
+          "q3_sec": 0.07656623399816453,
+          "samples": [
+            0.07546785799786448,
+            0.07609000988304615,
+            0.07704245811328292
+          ]
+        },
+        "all_trials_match_distance": true,
+        "direction": "a_to_b",
+        "seed_sample_count": 1024,
+        "source_index": 22492,
+        "target_index": 2984,
+        "target_points_per_group": 512
+      },
+      "dataset": "clustered_shift",
+      "points_a": 65536,
+      "points_b": 65536,
+      "reference_distance": 0.12074698968887759,
+      "reference_elapsed_sec": 0.35281849885359406,
+      "reference_method": "cupy_grouped_grid_rawkernel"
+    },
+    {
+      "all_configs_match_distance": true,
+      "best_config": {
+        "active_frontier": {
+          "count": 3,
+          "iqr_sec": 0.001514063565991819,
+          "max_sec": 0.16240283311344683,
+          "median_sec": 0.16032856609672308,
+          "min_sec": 0.1593747059814632,
+          "q1_sec": 0.15985163603909314,
+          "q3_sec": 0.16136569960508496,
+          "samples": [
+            0.16240283311344683,
+            0.1593747059814632,
+            0.16032856609672308
+          ]
+        },
+        "all_trials_match_distance": true,
+        "direction": "b_to_a",
+        "seed_sample_count": 1024,
+        "source_index": 47518,
+        "target_index": 83502,
+        "target_points_per_group": 1024
+      },
+      "best_speedup_vs_reference_median": 8.217011876580537,
+      "best_vs_current_policy_median_ratio": 0.9965923551149009,
+      "configs": [
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0014847784768790007,
+            "max_sec": 0.16331896209158003,
+            "median_sec": 0.16262881201691926,
+            "min_sec": 0.16034940513782203,
+            "q1_sec": 0.16148910857737064,
+            "q3_sec": 0.16297388705424964,
+            "samples": [
+              0.16034940513782203,
+              0.16331896209158003,
+              0.16262881201691926
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 512,
+          "source_index": 47518,
+          "target_index": 83502,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0005245055072009563,
+            "max_sec": 0.16175839002244174,
+            "median_sec": 0.16131095099262893,
+            "min_sec": 0.16070937900803983,
+            "q1_sec": 0.16101016500033438,
+            "q3_sec": 0.16153467050753534,
+            "samples": [
+              0.16070937900803983,
+              0.16175839002244174,
+              0.16131095099262893
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 512,
+          "source_index": 47518,
+          "target_index": 83502,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0031668103765696287,
+            "max_sec": 0.16484927688725293,
+            "median_sec": 0.16127081494778395,
+            "min_sec": 0.15851565613411367,
+            "q1_sec": 0.1598932355409488,
+            "q3_sec": 0.16306004591751844,
+            "samples": [
+              0.16484927688725293,
+              0.16127081494778395,
+              0.15851565613411367
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 512,
+          "source_index": 47518,
+          "target_index": 83502,
+          "target_points_per_group": 2048
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0018360349349677563,
+            "max_sec": 0.16357440687716007,
+            "median_sec": 0.160876777023077,
+            "min_sec": 0.15990233700722456,
+            "q1_sec": 0.16038955701515079,
+            "q3_sec": 0.16222559195011854,
+            "samples": [
+              0.15990233700722456,
+              0.160876777023077,
+              0.16357440687716007
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 1024,
+          "source_index": 47518,
+          "target_index": 83502,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.001514063565991819,
+            "max_sec": 0.16240283311344683,
+            "median_sec": 0.16032856609672308,
+            "min_sec": 0.1593747059814632,
+            "q1_sec": 0.15985163603909314,
+            "q3_sec": 0.16136569960508496,
+            "samples": [
+              0.16240283311344683,
+              0.1593747059814632,
+              0.16032856609672308
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 1024,
+          "source_index": 47518,
+          "target_index": 83502,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0011507043382152915,
+            "max_sec": 0.16195812984369695,
+            "median_sec": 0.16053173202089965,
+            "min_sec": 0.15965672116726637,
+            "q1_sec": 0.160094226594083,
+            "q3_sec": 0.1612449309322983,
+            "samples": [
+              0.16195812984369695,
+              0.16053173202089965,
+              0.15965672116726637
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 1024,
+          "source_index": 47518,
+          "target_index": 83502,
+          "target_points_per_group": 2048
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0018178611062467098,
+            "max_sec": 0.1667915740981698,
+            "median_sec": 0.16416128096170723,
+            "min_sec": 0.16315585188567638,
+            "q1_sec": 0.1636585664236918,
+            "q3_sec": 0.16547642752993852,
+            "samples": [
+              0.16315585188567638,
+              0.16416128096170723,
+              0.1667915740981698
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 2048,
+          "source_index": 47518,
+          "target_index": 83502,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0007745354669168591,
+            "max_sec": 0.16588762891478837,
+            "median_sec": 0.16571632283739746,
+            "min_sec": 0.16433855798095465,
+            "q1_sec": 0.16502744040917605,
+            "q3_sec": 0.1658019758760929,
+            "samples": [
+              0.16588762891478837,
+              0.16571632283739746,
+              0.16433855798095465
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 2048,
+          "source_index": 47518,
+          "target_index": 83502,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0008476688526570797,
+            "max_sec": 0.16360986488871276,
+            "median_sec": 0.16335534094832838,
+            "min_sec": 0.1619145271833986,
+            "q1_sec": 0.1626349340658635,
+            "q3_sec": 0.16348260291852057,
+            "samples": [
+              0.16335534094832838,
+              0.1619145271833986,
+              0.16360986488871276
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 2048,
+          "source_index": 47518,
+          "target_index": 83502,
+          "target_points_per_group": 2048
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0009670959552749991,
+            "max_sec": 0.1674297759309411,
+            "median_sec": 0.1658786409534514,
+            "min_sec": 0.1654955840203911,
+            "q1_sec": 0.16568711248692125,
+            "q3_sec": 0.16665420844219625,
+            "samples": [
+              0.1654955840203911,
+              0.1658786409534514,
+              0.1674297759309411
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 8192,
+          "source_index": 47518,
+          "target_index": 83502,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0013576365308836102,
+            "max_sec": 0.16906626103445888,
+            "median_sec": 0.16788710397668183,
+            "min_sec": 0.16635098797269166,
+            "q1_sec": 0.16711904597468674,
+            "q3_sec": 0.16847668250557035,
+            "samples": [
+              0.16906626103445888,
+              0.16788710397668183,
+              0.16635098797269166
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 8192,
+          "source_index": 47518,
+          "target_index": 83502,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0007014060392975807,
+            "max_sec": 0.16450918093323708,
+            "median_sec": 0.16315952991135418,
+            "min_sec": 0.16310636885464191,
+            "q1_sec": 0.16313294938299805,
+            "q3_sec": 0.16383435542229563,
+            "samples": [
+              0.16310636885464191,
+              0.16315952991135418,
+              0.16450918093323708
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 8192,
+          "source_index": 47518,
+          "target_index": 83502,
+          "target_points_per_group": 2048
+        }
+      ],
+      "current_policy_config": {
+        "active_frontier": {
+          "count": 3,
+          "iqr_sec": 0.0018360349349677563,
+          "max_sec": 0.16357440687716007,
+          "median_sec": 0.160876777023077,
+          "min_sec": 0.15990233700722456,
+          "q1_sec": 0.16038955701515079,
+          "q3_sec": 0.16222559195011854,
+          "samples": [
+            0.15990233700722456,
+            0.160876777023077,
+            0.16357440687716007
+          ]
+        },
+        "all_trials_match_distance": true,
+        "direction": "b_to_a",
+        "seed_sample_count": 1024,
+        "source_index": 47518,
+        "target_index": 83502,
+        "target_points_per_group": 512
+      },
+      "dataset": "clustered_shift",
+      "points_a": 131072,
+      "points_b": 131072,
+      "reference_distance": 0.12479896544574075,
+      "reference_elapsed_sec": 1.3174217317719012,
+      "reference_method": "cupy_grouped_grid_rawkernel"
+    },
+    {
+      "all_configs_match_distance": true,
+      "best_config": {
+        "active_frontier": {
+          "count": 3,
+          "iqr_sec": 0.006505713565275073,
+          "max_sec": 0.08744298899546266,
+          "median_sec": 0.07542477687820792,
+          "min_sec": 0.07443156186491251,
+          "q1_sec": 0.07492816937156022,
+          "q3_sec": 0.08143388293683529,
+          "samples": [
+            0.08744298899546266,
+            0.07443156186491251,
+            0.07542477687820792
+          ]
+        },
+        "all_trials_match_distance": true,
+        "direction": "a_to_b",
+        "seed_sample_count": 2048,
+        "source_index": 48139,
+        "target_index": 55536,
+        "target_points_per_group": 1024
+      },
+      "best_speedup_vs_reference_median": 4.02265971943863,
+      "best_vs_current_policy_median_ratio": 0.9788622120060618,
+      "configs": [
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.00021159695461392403,
+            "max_sec": 0.07666448992677033,
+            "median_sec": 0.07636120403185487,
+            "min_sec": 0.07624129601754248,
+            "q1_sec": 0.07630125002469867,
+            "q3_sec": 0.0765128469793126,
+            "samples": [
+              0.07666448992677033,
+              0.07636120403185487,
+              0.07624129601754248
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 512,
+          "source_index": 48139,
+          "target_index": 55536,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0006429054774343967,
+            "max_sec": 0.07672499492764473,
+            "median_sec": 0.07651327294297516,
+            "min_sec": 0.07543918397277594,
+            "q1_sec": 0.07597622845787555,
+            "q3_sec": 0.07661913393530995,
+            "samples": [
+              0.07672499492764473,
+              0.07651327294297516,
+              0.07543918397277594
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 512,
+          "source_index": 48139,
+          "target_index": 55536,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0008862924296408892,
+            "max_sec": 0.07671224093064666,
+            "median_sec": 0.07605959195643663,
+            "min_sec": 0.07493965607136488,
+            "q1_sec": 0.07549962401390076,
+            "q3_sec": 0.07638591644354165,
+            "samples": [
+              0.07605959195643663,
+              0.07671224093064666,
+              0.07493965607136488
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 512,
+          "source_index": 48139,
+          "target_index": 55536,
+          "target_points_per_group": 2048
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 2.549856435507536e-05,
+            "max_sec": 0.07708889502100646,
+            "median_sec": 0.07705351780168712,
+            "min_sec": 0.07703789789229631,
+            "q1_sec": 0.07704570784699172,
+            "q3_sec": 0.0770712064113468,
+            "samples": [
+              0.07703789789229631,
+              0.07708889502100646,
+              0.07705351780168712
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 1024,
+          "source_index": 48139,
+          "target_index": 55536,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.00018696452025324106,
+            "max_sec": 0.07640398503281176,
+            "median_sec": 0.07608922803774476,
+            "min_sec": 0.07603005599230528,
+            "q1_sec": 0.07605964201502502,
+            "q3_sec": 0.07624660653527826,
+            "samples": [
+              0.07603005599230528,
+              0.07608922803774476,
+              0.07640398503281176
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 1024,
+          "source_index": 48139,
+          "target_index": 55536,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0010312675731256604,
+            "max_sec": 0.07882400904782116,
+            "median_sec": 0.07720532617531717,
+            "min_sec": 0.07676147390156984,
+            "q1_sec": 0.0769834000384435,
+            "q3_sec": 0.07801466761156917,
+            "samples": [
+              0.07676147390156984,
+              0.07882400904782116,
+              0.07720532617531717
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 1024,
+          "source_index": 48139,
+          "target_index": 55536,
+          "target_points_per_group": 2048
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0002165810437873006,
+            "max_sec": 0.07636592304334044,
+            "median_sec": 0.07605687598697841,
+            "min_sec": 0.07593276095576584,
+            "q1_sec": 0.07599481847137213,
+            "q3_sec": 0.07621139951515943,
+            "samples": [
+              0.07605687598697841,
+              0.07593276095576584,
+              0.07636592304334044
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 2048,
+          "source_index": 48139,
+          "target_index": 55536,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.006505713565275073,
+            "max_sec": 0.08744298899546266,
+            "median_sec": 0.07542477687820792,
+            "min_sec": 0.07443156186491251,
+            "q1_sec": 0.07492816937156022,
+            "q3_sec": 0.08143388293683529,
+            "samples": [
+              0.08744298899546266,
+              0.07443156186491251,
+              0.07542477687820792
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 2048,
+          "source_index": 48139,
+          "target_index": 55536,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0005531050264835358,
+            "max_sec": 0.07926283194683492,
+            "median_sec": 0.07843165495432913,
+            "min_sec": 0.07815662189386785,
+            "q1_sec": 0.07829413842409849,
+            "q3_sec": 0.07884724345058203,
+            "samples": [
+              0.07926283194683492,
+              0.07843165495432913,
+              0.07815662189386785
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 2048,
+          "source_index": 48139,
+          "target_index": 55536,
+          "target_points_per_group": 2048
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 7.422547787427902e-05,
+            "max_sec": 0.08186451997607946,
+            "median_sec": 0.08175035403110087,
+            "min_sec": 0.0817160690203309,
+            "q1_sec": 0.08173321152571589,
+            "q3_sec": 0.08180743700359017,
+            "samples": [
+              0.08186451997607946,
+              0.0817160690203309,
+              0.08175035403110087
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 8192,
+          "source_index": 48139,
+          "target_index": 55536,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0005367789417505264,
+            "max_sec": 0.08099208399653435,
+            "median_sec": 0.08043713099323213,
+            "min_sec": 0.0799185261130333,
+            "q1_sec": 0.08017782855313271,
+            "q3_sec": 0.08071460749488324,
+            "samples": [
+              0.0799185261130333,
+              0.08099208399653435,
+              0.08043713099323213
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 8192,
+          "source_index": 48139,
+          "target_index": 55536,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.003522837068885565,
+            "max_sec": 0.08632259303703904,
+            "median_sec": 0.08088049292564392,
+            "min_sec": 0.07927691889926791,
+            "q1_sec": 0.08007870591245592,
+            "q3_sec": 0.08360154298134148,
+            "samples": [
+              0.08088049292564392,
+              0.08632259303703904,
+              0.07927691889926791
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "a_to_b",
+          "seed_sample_count": 8192,
+          "source_index": 48139,
+          "target_index": 55536,
+          "target_points_per_group": 2048
+        }
+      ],
+      "current_policy_config": {
+        "active_frontier": {
+          "count": 3,
+          "iqr_sec": 2.549856435507536e-05,
+          "max_sec": 0.07708889502100646,
+          "median_sec": 0.07705351780168712,
+          "min_sec": 0.07703789789229631,
+          "q1_sec": 0.07704570784699172,
+          "q3_sec": 0.0770712064113468,
+          "samples": [
+            0.07703789789229631,
+            0.07708889502100646,
+            0.07705351780168712
+          ]
+        },
+        "all_trials_match_distance": true,
+        "direction": "a_to_b",
+        "seed_sample_count": 1024,
+        "source_index": 48139,
+        "target_index": 55536,
+        "target_points_per_group": 512
+      },
+      "dataset": "demo_offset",
+      "points_a": 65536,
+      "points_b": 65536,
+      "reference_distance": 0.13085040452901578,
+      "reference_elapsed_sec": 0.30340821179561317,
+      "reference_method": "cupy_grouped_grid_rawkernel"
+    },
+    {
+      "all_configs_match_distance": true,
+      "best_config": {
+        "active_frontier": {
+          "count": 3,
+          "iqr_sec": 0.000427201041020453,
+          "max_sec": 0.1627741490956396,
+          "median_sec": 0.1622540110256523,
+          "min_sec": 0.16191974701359868,
+          "q1_sec": 0.16208687901962548,
+          "q3_sec": 0.16251408006064594,
+          "samples": [
+            0.1627741490956396,
+            0.16191974701359868,
+            0.1622540110256523
+          ]
+        },
+        "all_trials_match_distance": true,
+        "direction": "b_to_a",
+        "seed_sample_count": 1024,
+        "source_index": 4515,
+        "target_index": 101341,
+        "target_points_per_group": 2048
+      },
+      "best_speedup_vs_reference_median": 6.892953720291377,
+      "best_vs_current_policy_median_ratio": 0.9913614450814234,
+      "configs": [
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0007724513998255134,
+            "max_sec": 0.17190512991510332,
+            "median_sec": 0.1707680921535939,
+            "min_sec": 0.1703602271154523,
+            "q1_sec": 0.1705641596345231,
+            "q3_sec": 0.1713366110343486,
+            "samples": [
+              0.1703602271154523,
+              0.17190512991510332,
+              0.1707680921535939
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 512,
+          "source_index": 4515,
+          "target_index": 101341,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0026467388961464167,
+            "max_sec": 0.17358798487111926,
+            "median_sec": 0.16852137818932533,
+            "min_sec": 0.16829450707882643,
+            "q1_sec": 0.16840794263407588,
+            "q3_sec": 0.1710546815302223,
+            "samples": [
+              0.16829450707882643,
+              0.17358798487111926,
+              0.16852137818932533
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 512,
+          "source_index": 4515,
+          "target_index": 101341,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0017823484959080815,
+            "max_sec": 0.17242117994464934,
+            "median_sec": 0.1721100490540266,
+            "min_sec": 0.16885648295283318,
+            "q1_sec": 0.1704832660034299,
+            "q3_sec": 0.17226561449933797,
+            "samples": [
+              0.17242117994464934,
+              0.16885648295283318,
+              0.1721100490540266
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 512,
+          "source_index": 4515,
+          "target_index": 101341,
+          "target_points_per_group": 2048
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0012866868637502193,
+            "max_sec": 0.16470879991538823,
+            "median_sec": 0.1636678648646921,
+            "min_sec": 0.1621354261878878,
+            "q1_sec": 0.16290164552628994,
+            "q3_sec": 0.16418833239004016,
+            "samples": [
+              0.16470879991538823,
+              0.1636678648646921,
+              0.1621354261878878
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 1024,
+          "source_index": 4515,
+          "target_index": 101341,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0004309030482545495,
+            "max_sec": 0.16317431814968586,
+            "median_sec": 0.16294869990088046,
+            "min_sec": 0.16231251205317676,
+            "q1_sec": 0.1626306059770286,
+            "q3_sec": 0.16306150902528316,
+            "samples": [
+              0.16294869990088046,
+              0.16231251205317676,
+              0.16317431814968586
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 1024,
+          "source_index": 4515,
+          "target_index": 101341,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.000427201041020453,
+            "max_sec": 0.1627741490956396,
+            "median_sec": 0.1622540110256523,
+            "min_sec": 0.16191974701359868,
+            "q1_sec": 0.16208687901962548,
+            "q3_sec": 0.16251408006064594,
+            "samples": [
+              0.1627741490956396,
+              0.16191974701359868,
+              0.1622540110256523
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 1024,
+          "source_index": 4515,
+          "target_index": 101341,
+          "target_points_per_group": 2048
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.001014881068840623,
+            "max_sec": 0.1647555090021342,
+            "median_sec": 0.16366719407960773,
+            "min_sec": 0.16272574686445296,
+            "q1_sec": 0.16319647047203034,
+            "q3_sec": 0.16421135154087096,
+            "samples": [
+              0.16366719407960773,
+              0.16272574686445296,
+              0.1647555090021342
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 2048,
+          "source_index": 4515,
+          "target_index": 101341,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0012199353659525514,
+            "max_sec": 0.16700444789603353,
+            "median_sec": 0.16609270800836384,
+            "min_sec": 0.16456457716412842,
+            "q1_sec": 0.16532864258624613,
+            "q3_sec": 0.16654857795219868,
+            "samples": [
+              0.16456457716412842,
+              0.16609270800836384,
+              0.16700444789603353
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 2048,
+          "source_index": 4515,
+          "target_index": 101341,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0013097960036247969,
+            "max_sec": 0.16978273098357022,
+            "median_sec": 0.1680102979298681,
+            "min_sec": 0.16716313897632062,
+            "q1_sec": 0.16758671845309436,
+            "q3_sec": 0.16889651445671916,
+            "samples": [
+              0.16716313897632062,
+              0.1680102979298681,
+              0.16978273098357022
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 2048,
+          "source_index": 4515,
+          "target_index": 101341,
+          "target_points_per_group": 2048
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0007765688933432102,
+            "max_sec": 0.17163602891378105,
+            "median_sec": 0.17060153605416417,
+            "min_sec": 0.17008289112709463,
+            "q1_sec": 0.1703422135906294,
+            "q3_sec": 0.1711187824839726,
+            "samples": [
+              0.17060153605416417,
+              0.17008289112709463,
+              0.17163602891378105
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 8192,
+          "source_index": 4515,
+          "target_index": 101341,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0008009909652173519,
+            "max_sec": 0.17037394386716187,
+            "median_sec": 0.16887984797358513,
+            "min_sec": 0.16877196193672717,
+            "q1_sec": 0.16882590495515615,
+            "q3_sec": 0.1696268959203735,
+            "samples": [
+              0.16877196193672717,
+              0.17037394386716187,
+              0.16887984797358513
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 8192,
+          "source_index": 4515,
+          "target_index": 101341,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0005033405032008886,
+            "max_sec": 0.16821520612575114,
+            "median_sec": 0.16814708709716797,
+            "min_sec": 0.16720852511934936,
+            "q1_sec": 0.16767780610825866,
+            "q3_sec": 0.16818114661145955,
+            "samples": [
+              0.16814708709716797,
+              0.16720852511934936,
+              0.16821520612575114
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 8192,
+          "source_index": 4515,
+          "target_index": 101341,
+          "target_points_per_group": 2048
+        }
+      ],
+      "current_policy_config": {
+        "active_frontier": {
+          "count": 3,
+          "iqr_sec": 0.0012866868637502193,
+          "max_sec": 0.16470879991538823,
+          "median_sec": 0.1636678648646921,
+          "min_sec": 0.1621354261878878,
+          "q1_sec": 0.16290164552628994,
+          "q3_sec": 0.16418833239004016,
+          "samples": [
+            0.16470879991538823,
+            0.1636678648646921,
+            0.1621354261878878
+          ]
+        },
+        "all_trials_match_distance": true,
+        "direction": "b_to_a",
+        "seed_sample_count": 1024,
+        "source_index": 4515,
+        "target_index": 101341,
+        "target_points_per_group": 512
+      },
+      "dataset": "demo_offset",
+      "points_a": 131072,
+      "points_b": 131072,
+      "reference_distance": 0.1283029281659503,
+      "reference_elapsed_sec": 1.1184093889314681,
+      "reference_method": "cupy_grouped_grid_rawkernel"
+    },
+    {
+      "all_configs_match_distance": true,
+      "best_config": {
+        "active_frontier": {
+          "count": 3,
+          "iqr_sec": 0.0005893190391361713,
+          "max_sec": 0.07647230592556298,
+          "median_sec": 0.07547584315761924,
+          "min_sec": 0.07529366784729064,
+          "q1_sec": 0.07538475550245494,
+          "q3_sec": 0.07597407454159111,
+          "samples": [
+            0.07547584315761924,
+            0.07529366784729064,
+            0.07647230592556298
+          ]
+        },
+        "all_trials_match_distance": true,
+        "direction": "b_to_a",
+        "seed_sample_count": 512,
+        "source_index": 17457,
+        "target_index": 5291,
+        "target_points_per_group": 512
+      },
+      "best_speedup_vs_reference_median": 4.47611754668695,
+      "best_vs_current_policy_median_ratio": 0.992508138502502,
+      "configs": [
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0005893190391361713,
+            "max_sec": 0.07647230592556298,
+            "median_sec": 0.07547584315761924,
+            "min_sec": 0.07529366784729064,
+            "q1_sec": 0.07538475550245494,
+            "q3_sec": 0.07597407454159111,
+            "samples": [
+              0.07547584315761924,
+              0.07529366784729064,
+              0.07647230592556298
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 512,
+          "source_index": 17457,
+          "target_index": 5291,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0003570830449461937,
+            "max_sec": 0.07692787004634738,
+            "median_sec": 0.07676727510988712,
+            "min_sec": 0.07621370395645499,
+            "q1_sec": 0.07649048953317106,
+            "q3_sec": 0.07684757257811725,
+            "samples": [
+              0.07621370395645499,
+              0.07676727510988712,
+              0.07692787004634738
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 512,
+          "source_index": 17457,
+          "target_index": 5291,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0006278564687818289,
+            "max_sec": 0.07698600995354354,
+            "median_sec": 0.07675364892929792,
+            "min_sec": 0.07573029701597989,
+            "q1_sec": 0.0762419729726389,
+            "q3_sec": 0.07686982944142073,
+            "samples": [
+              0.07573029701597989,
+              0.07698600995354354,
+              0.07675364892929792
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 512,
+          "source_index": 17457,
+          "target_index": 5291,
+          "target_points_per_group": 2048
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.00017907994333654642,
+            "max_sec": 0.07611461589112878,
+            "median_sec": 0.07604556600563228,
+            "min_sec": 0.07575645600445569,
+            "q1_sec": 0.07590101100504398,
+            "q3_sec": 0.07608009094838053,
+            "samples": [
+              0.07604556600563228,
+              0.07575645600445569,
+              0.07611461589112878
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 1024,
+          "source_index": 17457,
+          "target_index": 5291,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0001802269835025072,
+            "max_sec": 0.07690248196013272,
+            "median_sec": 0.07664291909895837,
+            "min_sec": 0.0765420279931277,
+            "q1_sec": 0.07659247354604304,
+            "q3_sec": 0.07677270052954555,
+            "samples": [
+              0.07664291909895837,
+              0.0765420279931277,
+              0.07690248196013272
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 1024,
+          "source_index": 17457,
+          "target_index": 5291,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.000602088519372046,
+            "max_sec": 0.0778305740095675,
+            "median_sec": 0.07742969202809036,
+            "min_sec": 0.07662639697082341,
+            "q1_sec": 0.07702804449945688,
+            "q3_sec": 0.07763013301882893,
+            "samples": [
+              0.07662639697082341,
+              0.07742969202809036,
+              0.0778305740095675
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 1024,
+          "source_index": 17457,
+          "target_index": 5291,
+          "target_points_per_group": 2048
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.00030216900631785393,
+            "max_sec": 0.07647581212222576,
+            "median_sec": 0.0762303660158068,
+            "min_sec": 0.07587147410959005,
+            "q1_sec": 0.07605092006269842,
+            "q3_sec": 0.07635308906901628,
+            "samples": [
+              0.07647581212222576,
+              0.0762303660158068,
+              0.07587147410959005
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 2048,
+          "source_index": 17457,
+          "target_index": 5291,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0029469234868884087,
+            "max_sec": 0.08076131599955261,
+            "median_sec": 0.0795151109341532,
+            "min_sec": 0.07486746902577579,
+            "q1_sec": 0.0771912899799645,
+            "q3_sec": 0.0801382134668529,
+            "samples": [
+              0.07486746902577579,
+              0.0795151109341532,
+              0.08076131599955261
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 2048,
+          "source_index": 17457,
+          "target_index": 5291,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0006580440094694495,
+            "max_sec": 0.08198266406543553,
+            "median_sec": 0.08111691195517778,
+            "min_sec": 0.08066657604649663,
+            "q1_sec": 0.0808917440008372,
+            "q3_sec": 0.08154978801030666,
+            "samples": [
+              0.08111691195517778,
+              0.08066657604649663,
+              0.08198266406543553
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 2048,
+          "source_index": 17457,
+          "target_index": 5291,
+          "target_points_per_group": 2048
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0009974284330382943,
+            "max_sec": 0.08080319594591856,
+            "median_sec": 0.08035481511615217,
+            "min_sec": 0.07880833907984197,
+            "q1_sec": 0.07958157709799707,
+            "q3_sec": 0.08057900553103536,
+            "samples": [
+              0.08035481511615217,
+              0.08080319594591856,
+              0.07880833907984197
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 8192,
+          "source_index": 17457,
+          "target_index": 5291,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0005934714572504163,
+            "max_sec": 0.0810781680047512,
+            "median_sec": 0.0810605539008975,
+            "min_sec": 0.07989122509025037,
+            "q1_sec": 0.08047588949557394,
+            "q3_sec": 0.08106936095282435,
+            "samples": [
+              0.0810781680047512,
+              0.07989122509025037,
+              0.0810605539008975
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 8192,
+          "source_index": 17457,
+          "target_index": 5291,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.000583798042498529,
+            "max_sec": 0.08128736517392099,
+            "median_sec": 0.0802539240103215,
+            "min_sec": 0.08011976908892393,
+            "q1_sec": 0.08018684654962271,
+            "q3_sec": 0.08077064459212124,
+            "samples": [
+              0.0802539240103215,
+              0.08011976908892393,
+              0.08128736517392099
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 8192,
+          "source_index": 17457,
+          "target_index": 5291,
+          "target_points_per_group": 2048
+        }
+      ],
+      "current_policy_config": {
+        "active_frontier": {
+          "count": 3,
+          "iqr_sec": 0.00017907994333654642,
+          "max_sec": 0.07611461589112878,
+          "median_sec": 0.07604556600563228,
+          "min_sec": 0.07575645600445569,
+          "q1_sec": 0.07590101100504398,
+          "q3_sec": 0.07608009094838053,
+          "samples": [
+            0.07604556600563228,
+            0.07575645600445569,
+            0.07611461589112878
+          ]
+        },
+        "all_trials_match_distance": true,
+        "direction": "b_to_a",
+        "seed_sample_count": 1024,
+        "source_index": 17457,
+        "target_index": 5291,
+        "target_points_per_group": 512
+      },
+      "dataset": "ring_vs_spiral",
+      "points_a": 65536,
+      "points_b": 65536,
+      "reference_distance": 0.09691832900672458,
+      "reference_elapsed_sec": 0.3378387459088117,
+      "reference_method": "cupy_grouped_grid_rawkernel"
+    },
+    {
+      "all_configs_match_distance": true,
+      "best_config": {
+        "active_frontier": {
+          "count": 3,
+          "iqr_sec": 0.000490922131575644,
+          "max_sec": 0.16237606317736208,
+          "median_sec": 0.16201034910045564,
+          "min_sec": 0.1613942189142108,
+          "q1_sec": 0.16170228400733322,
+          "q3_sec": 0.16219320613890886,
+          "samples": [
+            0.1613942189142108,
+            0.16201034910045564,
+            0.16237606317736208
+          ]
+        },
+        "all_trials_match_distance": true,
+        "direction": "b_to_a",
+        "seed_sample_count": 1024,
+        "source_index": 97040,
+        "target_index": 27560,
+        "target_points_per_group": 1024
+      },
+      "best_speedup_vs_reference_median": 7.5761181468524015,
+      "best_vs_current_policy_median_ratio": 0.9993746787679292,
+      "configs": [
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0006843940354883671,
+            "max_sec": 0.1711095799691975,
+            "median_sec": 0.16995567991398275,
+            "min_sec": 0.16974079189822078,
+            "q1_sec": 0.16984823590610176,
+            "q3_sec": 0.17053262994159013,
+            "samples": [
+              0.16974079189822078,
+              0.1711095799691975,
+              0.16995567991398275
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 512,
+          "source_index": 97040,
+          "target_index": 27560,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0008619409054517746,
+            "max_sec": 0.17142613092437387,
+            "median_sec": 0.17059524403885007,
+            "min_sec": 0.16970224911347032,
+            "q1_sec": 0.1701487465761602,
+            "q3_sec": 0.17101068748161197,
+            "samples": [
+              0.16970224911347032,
+              0.17059524403885007,
+              0.17142613092437387
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 512,
+          "source_index": 97040,
+          "target_index": 27560,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0005643160548061132,
+            "max_sec": 0.17416533012874424,
+            "median_sec": 0.17364335991442204,
+            "min_sec": 0.17303669801913202,
+            "q1_sec": 0.17334002896677703,
+            "q3_sec": 0.17390434502158314,
+            "samples": [
+              0.17303669801913202,
+              0.17416533012874424,
+              0.17364335991442204
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 512,
+          "source_index": 97040,
+          "target_index": 27560,
+          "target_points_per_group": 2048
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.000300705898553133,
+            "max_sec": 0.1621742199640721,
+            "median_sec": 0.16211172100156546,
+            "min_sec": 0.16157280816696584,
+            "q1_sec": 0.16184226458426565,
+            "q3_sec": 0.16214297048281878,
+            "samples": [
+              0.16211172100156546,
+              0.16157280816696584,
+              0.1621742199640721
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 1024,
+          "source_index": 97040,
+          "target_index": 27560,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.000490922131575644,
+            "max_sec": 0.16237606317736208,
+            "median_sec": 0.16201034910045564,
+            "min_sec": 0.1613942189142108,
+            "q1_sec": 0.16170228400733322,
+            "q3_sec": 0.16219320613890886,
+            "samples": [
+              0.1613942189142108,
+              0.16201034910045564,
+              0.16237606317736208
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 1024,
+          "source_index": 97040,
+          "target_index": 27560,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0006216198671609163,
+            "max_sec": 0.16572738392278552,
+            "median_sec": 0.1651509499642998,
+            "min_sec": 0.1644841441884637,
+            "q1_sec": 0.16481754707638174,
+            "q3_sec": 0.16543916694354266,
+            "samples": [
+              0.1651509499642998,
+              0.1644841441884637,
+              0.16572738392278552
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 1024,
+          "source_index": 97040,
+          "target_index": 27560,
+          "target_points_per_group": 2048
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0026851565344259143,
+            "max_sec": 0.17064837412908673,
+            "median_sec": 0.16847667191177607,
+            "min_sec": 0.1652780610602349,
+            "q1_sec": 0.16687736648600549,
+            "q3_sec": 0.1695625230204314,
+            "samples": [
+              0.1652780610602349,
+              0.16847667191177607,
+              0.17064837412908673
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 2048,
+          "source_index": 97040,
+          "target_index": 27560,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.001670095487497747,
+            "max_sec": 0.1697478659916669,
+            "median_sec": 0.16899990499950945,
+            "min_sec": 0.16640767501667142,
+            "q1_sec": 0.16770379000809044,
+            "q3_sec": 0.16937388549558818,
+            "samples": [
+              0.16640767501667142,
+              0.1697478659916669,
+              0.16899990499950945
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 2048,
+          "source_index": 97040,
+          "target_index": 27560,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0022064680233597755,
+            "max_sec": 0.1744854780845344,
+            "median_sec": 0.17152479803189635,
+            "min_sec": 0.17007254203781486,
+            "q1_sec": 0.1707986700348556,
+            "q3_sec": 0.17300513805821538,
+            "samples": [
+              0.1744854780845344,
+              0.17007254203781486,
+              0.17152479803189635
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 2048,
+          "source_index": 97040,
+          "target_index": 27560,
+          "target_points_per_group": 2048
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.00042736600153148174,
+            "max_sec": 0.17037114803679287,
+            "median_sec": 0.17021033307537436,
+            "min_sec": 0.1695164160337299,
+            "q1_sec": 0.16986337455455214,
+            "q3_sec": 0.17029074055608362,
+            "samples": [
+              0.17037114803679287,
+              0.17021033307537436,
+              0.1695164160337299
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 8192,
+          "source_index": 97040,
+          "target_index": 27560,
+          "target_points_per_group": 512
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.00091416051145643,
+            "max_sec": 0.17102594207972288,
+            "median_sec": 0.16979465493932366,
+            "min_sec": 0.16919762105681002,
+            "q1_sec": 0.16949613799806684,
+            "q3_sec": 0.17041029850952327,
+            "samples": [
+              0.16979465493932366,
+              0.16919762105681002,
+              0.17102594207972288
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 8192,
+          "source_index": 97040,
+          "target_index": 27560,
+          "target_points_per_group": 1024
+        },
+        {
+          "active_frontier": {
+            "count": 3,
+            "iqr_sec": 0.0015154114225879312,
+            "max_sec": 0.17514807591214776,
+            "median_sec": 0.17427438707090914,
+            "min_sec": 0.1721172530669719,
+            "q1_sec": 0.17319582006894052,
+            "q3_sec": 0.17471123149152845,
+            "samples": [
+              0.1721172530669719,
+              0.17427438707090914,
+              0.17514807591214776
+            ]
+          },
+          "all_trials_match_distance": true,
+          "direction": "b_to_a",
+          "seed_sample_count": 8192,
+          "source_index": 97040,
+          "target_index": 27560,
+          "target_points_per_group": 2048
+        }
+      ],
+      "current_policy_config": {
+        "active_frontier": {
+          "count": 3,
+          "iqr_sec": 0.000300705898553133,
+          "max_sec": 0.1621742199640721,
+          "median_sec": 0.16211172100156546,
+          "min_sec": 0.16157280816696584,
+          "q1_sec": 0.16184226458426565,
+          "q3_sec": 0.16214297048281878,
+          "samples": [
+            0.16211172100156546,
+            0.16157280816696584,
+            0.1621742199640721
+          ]
+        },
+        "all_trials_match_distance": true,
+        "direction": "b_to_a",
+        "seed_sample_count": 1024,
+        "source_index": 97040,
+        "target_index": 27560,
+        "target_points_per_group": 512
+      },
+      "dataset": "ring_vs_spiral",
+      "points_a": 131072,
+      "points_b": 131072,
+      "reference_distance": 0.09683920163418548,
+      "reference_elapsed_sec": 1.2274095457978547,
+      "reference_method": "cupy_grouped_grid_rawkernel"
+    }
+  ],
+  "rt_core_speedup_claim_authorized": false,
+  "seed_sample_counts": [
+    512,
+    1024,
+    2048,
+    8192
+  ],
+  "sizes": [
+    65536,
+    131072
+  ],
+  "target_points_per_groups": [
+    512,
+    1024,
+    2048
+  ],
+  "trials": 3,
+  "true_zero_copy_claim_authorized": false,
+  "v2_6_release_authorized": false,
+  "warmup": 1,
+  "whole_app_speedup_claim_authorized": false
+}

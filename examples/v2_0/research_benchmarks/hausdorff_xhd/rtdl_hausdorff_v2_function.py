@@ -20,6 +20,9 @@ from examples.v2_0.research_benchmarks.hausdorff_xhd import rtdl_hausdorff_v2_us
 from rtdsl.reference import Point
 
 
+DEFAULT_ACTIVE_FRONTIER_SEED_SAMPLE_COUNT = 1024
+
+
 @dataclass(frozen=True)
 class HausdorffResult:
     distance: float
@@ -1353,7 +1356,7 @@ def hausdorff_distance_2d_rt_grouped_active_frontier_nearest_witness(
     *,
     radius: float | None = None,
     seed_with_threshold: bool = True,
-    seed_sample_count: int = 8192,
+    seed_sample_count: int = DEFAULT_ACTIVE_FRONTIER_SEED_SAMPLE_COUNT,
     target_points_per_group: int | None = None,
 ) -> HausdorffRtNearestResult:
     """Return exact HD with native device-resident active-frontier pruning."""
@@ -1906,8 +1909,11 @@ def main(argv: Iterable[str] | None = None) -> int:
     parser.add_argument(
         "--seed-sample-count",
         type=int,
-        default=8192,
-        help="sample count for X-HD-style seeded-pruned RT witness methods",
+        default=DEFAULT_ACTIVE_FRONTIER_SEED_SAMPLE_COUNT,
+        help=(
+            "sample count for seeded-pruned and active-frontier RT witness methods; "
+            "the measured active-frontier default is 1024"
+        ),
     )
     parser.add_argument("--compare", action="store_true", help="also run all available baselines and compare")
     parser.add_argument("--warmup", type=int, default=1)

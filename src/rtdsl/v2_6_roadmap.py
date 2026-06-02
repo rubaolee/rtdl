@@ -170,6 +170,10 @@ def v2_6_roadmap() -> dict[str, Any]:
         "hausdorff_active_frontier_dataset_diversity_report": "docs/reports/goal3046_hausdorff_active_frontier_dataset_diversity_2026-06-02.md",
         "hausdorff_active_frontier_dataset_diversity_artifact": "docs/reports/goal3046_hausdorff_active_frontier_dataset_diversity_a4000_2026-06-02.json",
         "hausdorff_active_frontier_dataset_diversity_status": "a4000_12_cases_4_dataset_shapes_3_sizes_exact_distance_parity_min_2x_median_speedup_internal_evidence_not_public_speedup_evidence",
+        "hausdorff_active_frontier_parameter_sweep_goal": "Goal3048",
+        "hausdorff_active_frontier_parameter_sweep_report": "docs/reports/goal3048_hausdorff_active_frontier_parameter_sweep_2026-06-02.md",
+        "hausdorff_active_frontier_parameter_sweep_artifact": "docs/reports/goal3048_hausdorff_active_frontier_parameter_sweep_a4000_2026-06-02.json",
+        "hausdorff_active_frontier_parameter_sweep_status": "a4000_seed_group_sweep_8_cases_seed_default_1024_promoted_group_default_unchanged_internal_evidence_not_public_speedup_evidence",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -583,6 +587,18 @@ def validate_v2_6_roadmap(
         errors.append("Goal3046 active-frontier dataset-diversity report is missing")
     if not (root / str(roadmap.get("hausdorff_active_frontier_dataset_diversity_artifact", ""))).exists():
         errors.append("Goal3046 active-frontier dataset-diversity artifact is missing")
+    if roadmap.get("hausdorff_active_frontier_parameter_sweep_goal") != "Goal3048":
+        errors.append("v2.6 roadmap must index Goal3048 as active-frontier parameter-sweep evidence")
+    if "seed_default_1024" not in str(roadmap.get("hausdorff_active_frontier_parameter_sweep_status", "")):
+        errors.append("Goal3048 status must record active-frontier seed default 1024")
+    if "group_default_unchanged" not in str(roadmap.get("hausdorff_active_frontier_parameter_sweep_status", "")):
+        errors.append("Goal3048 status must record unchanged group default")
+    if "not_public_speedup_evidence" not in str(roadmap.get("hausdorff_active_frontier_parameter_sweep_status", "")):
+        errors.append("Goal3048 status must not be treated as public speedup evidence")
+    if not (root / str(roadmap.get("hausdorff_active_frontier_parameter_sweep_report", ""))).exists():
+        errors.append("Goal3048 active-frontier parameter-sweep report is missing")
+    if not (root / str(roadmap.get("hausdorff_active_frontier_parameter_sweep_artifact", ""))).exists():
+        errors.append("Goal3048 active-frontier parameter-sweep artifact is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):

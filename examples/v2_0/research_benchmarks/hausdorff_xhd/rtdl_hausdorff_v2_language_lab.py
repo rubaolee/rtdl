@@ -346,8 +346,11 @@ def main(argv: Iterable[str] | None = None) -> int:
     parser.add_argument(
         "--seed-sample-count",
         type=int,
-        default=8192,
-        help="sample count for seeded-pruned and active-frontier RT witness methods",
+        default=hd.DEFAULT_ACTIVE_FRONTIER_SEED_SAMPLE_COUNT,
+        help=(
+            "sample count for seeded-pruned and active-frontier RT witness methods; "
+            "the measured active-frontier default is 1024"
+        ),
     )
     parser.add_argument(
         "--oracle-radius-slack",
