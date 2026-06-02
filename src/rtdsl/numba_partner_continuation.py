@@ -17,6 +17,7 @@ NUMBA_COMPACT_MASK_I64_OPERATION = "compact_mask_i64"
 NUMBA_GROUPED_ARGMIN_F64_OPERATION = "grouped_argmin_f64"
 NUMBA_GROUPED_ARGMAX_F64_OPERATION = "grouped_argmax_f64"
 NUMBA_PAIRWISE_L2_SQ_SCORE_ROWS_2D_OPERATION = "pairwise_l2_sq_score_rows_2d"
+NUMBA_PAIRWISE_L2_SQ_BLOCK_NEAREST_ROWS_2D_OPERATION = "pairwise_l2_sq_block_nearest_rows_2d"
 NUMBA_PARTNER_CONTINUATION_STATUS = V2_5_STATUS_PREVIEW_NOT_PROMOTED
 NUMBA_GROUP_ID_VALIDATION_MODE = "device_resident_error_flag"
 
@@ -111,6 +112,25 @@ def describe_numba_pairwise_l2_sq_score_rows_2d() -> dict[str, object]:
     descriptor["item_id_semantics"] = "caller_supplied_target_id"
     descriptor["score_semantics"] = "squared_l2_distance"
     descriptor["host_score_row_materialization_used"] = False
+    return descriptor
+
+
+def describe_numba_pairwise_l2_sq_block_nearest_rows_2d() -> dict[str, object]:
+    descriptor = _base_numba_descriptor(NUMBA_PAIRWISE_L2_SQ_BLOCK_NEAREST_ROWS_2D_OPERATION)
+    descriptor["input_columns"] = (
+        "source_x:float64",
+        "source_y:float64",
+        "target_ids:int64",
+        "target_x:float64",
+        "target_y:float64",
+    )
+    descriptor["output_columns"] = ("group_ids:int64", "item_ids:int64", "scores:float64")
+    descriptor["group_id_semantics"] = "dense_source_row_index"
+    descriptor["item_id_semantics"] = "caller_supplied_target_id"
+    descriptor["score_semantics"] = "per_source_tile_nearest_squared_l2_distance"
+    descriptor["tie_break"] = "lowest_score_then_lowest_item_id_per_source_tile"
+    descriptor["host_score_row_materialization_used"] = False
+    descriptor["bounded_tile_summary_rows"] = True
     return descriptor
 
 
@@ -382,6 +402,79 @@ def run_numba_pairwise_l2_sq_score_rows_2d(
             "score_semantics": "squared_l2_distance",
             "host_score_row_materialization_used": False,
             "score_rows_generated_on_partner_device": True,
+        },
+    )
+
+
+def run_numba_pairwise_l2_sq_block_nearest_rows_2d(
+    source_x: Any,
+    source_y: Any,
+    target_ids: Any,
+    target_x: Any,
+    target_y: Any,
+    *,
+    block_size: int = 256,
+) -> dict[str, object]:
+    """Emit one nearest squared-L2 score row per source point and target tile."""
+
+    cuda, np = _import_numba_stack()
+    _validate_numba_cuda_vector(source_x, name="source_x", dtype=np.float64)
+    _validate_numba_cuda_vector(source_y, name="source_y", dtype=np.float64)
+    _validate_numba_cuda_vector(target_ids, name="target_ids", dtype=np.int64)
+    _validate_numba_cuda_vector(target_x, name="target_x", dtype=np.float64)
+    _validate_numba_cuda_vector(target_y, name="target_y", dtype=np.float64)
+    if tuple(source_x.shape) != tuple(source_y.shape):
+        raise ValueError("source_x and source_y must have the same shape")
+    if not (tuple(target_ids.shape) == tuple(target_x.shape) == tuple(target_y.shape)):
+        raise ValueError("target_ids, target_x, and target_y must have the same shape")
+    source_count = int(source_x.shape[0])
+    target_count = int(target_ids.shape[0])
+    block_size = int(block_size)
+    if block_size not in {32, 64, 128, 256}:
+        raise ValueError("block_size must be one of 32, 64, 128, or 256")
+    target_tile_count = (target_count + block_size - 1) // block_size if target_count else 0
+    row_count = source_count * target_tile_count
+
+    cuda.synchronize()
+    started = perf_counter()
+    group_ids = cuda.device_array((row_count,), dtype=np.int64)
+    item_ids = cuda.device_array((row_count,), dtype=np.int64)
+    scores = cuda.device_array((row_count,), dtype=np.float64)
+    if row_count:
+        grid = (source_count, target_tile_count)
+        _numba_pairwise_l2_sq_block_nearest_rows_2d_kernel(cuda)[grid, block_size](
+            source_x,
+            source_y,
+            target_ids,
+            target_x,
+            target_y,
+            group_ids,
+            item_ids,
+            scores,
+            target_count,
+            target_tile_count,
+        )
+    cuda.synchronize()
+    elapsed = perf_counter() - started
+
+    return _numba_run_result(
+        operation=NUMBA_PAIRWISE_L2_SQ_BLOCK_NEAREST_ROWS_2D_OPERATION,
+        outputs={"group_ids": group_ids, "item_ids": item_ids, "scores": scores},
+        elapsed=elapsed,
+        source="run_numba_pairwise_l2_sq_block_nearest_rows_2d",
+        extra_metadata={
+            "source_count": source_count,
+            "target_count": target_count,
+            "target_tile_count": target_tile_count,
+            "row_count": row_count,
+            "logical_pair_count": source_count * target_count,
+            "group_id_semantics": "dense_source_row_index",
+            "item_id_semantics": "caller_supplied_target_id",
+            "score_semantics": "per_source_tile_nearest_squared_l2_distance",
+            "tie_break": "lowest_score_then_lowest_item_id_per_source_tile",
+            "host_score_row_materialization_used": False,
+            "score_rows_generated_on_partner_device": True,
+            "bounded_tile_summary_rows": True,
         },
     )
 
@@ -781,6 +874,63 @@ def _numba_pairwise_l2_sq_score_rows_2d_kernel(cuda: Any):
             group_ids[index] = source_index
             item_ids[index] = target_ids[target_index]
             scores[index] = dx * dx + dy * dy
+
+    return kernel
+
+
+def _numba_pairwise_l2_sq_block_nearest_rows_2d_kernel(cuda: Any):
+    from numba import float64, int64
+
+    @cuda.jit
+    def kernel(
+        source_x,
+        source_y,
+        target_ids,
+        target_x,
+        target_y,
+        group_ids,
+        item_ids,
+        scores,
+        target_count,
+        target_tile_count,
+    ):
+        shared_scores = cuda.shared.array(256, dtype=float64)
+        shared_item_ids = cuda.shared.array(256, dtype=int64)
+        source_index = cuda.blockIdx.x
+        tile_index = cuda.blockIdx.y
+        thread = cuda.threadIdx.x
+        target_index = tile_index * cuda.blockDim.x + thread
+        best_score = float("inf")
+        best_item = 9223372036854775807
+        if target_index < target_count:
+            dx = source_x[source_index] - target_x[target_index]
+            dy = source_y[source_index] - target_y[target_index]
+            best_score = dx * dx + dy * dy
+            best_item = target_ids[target_index]
+        shared_scores[thread] = best_score
+        shared_item_ids[thread] = best_item
+        cuda.syncthreads()
+
+        stride = cuda.blockDim.x // 2
+        while stride > 0:
+            if thread < stride:
+                other_score = shared_scores[thread + stride]
+                other_item = shared_item_ids[thread + stride]
+                current_score = shared_scores[thread]
+                current_item = shared_item_ids[thread]
+                if other_score < current_score or (
+                    other_score == current_score and other_item < current_item
+                ):
+                    shared_scores[thread] = other_score
+                    shared_item_ids[thread] = other_item
+            cuda.syncthreads()
+            stride //= 2
+
+        if thread == 0:
+            output_index = source_index * target_tile_count + tile_index
+            group_ids[output_index] = source_index
+            item_ids[output_index] = shared_item_ids[0]
+            scores[output_index] = shared_scores[0]
 
     return kernel
 
