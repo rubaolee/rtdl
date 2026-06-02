@@ -135,7 +135,7 @@ def main(argv: list[str] | None = None) -> int:
             ),
         },
         source_commit=_git("rev-parse", "HEAD"),
-        source_dirty=_git("status", "--short").splitlines(),
+        source_dirty=_git("status", "--short", "--untracked-files=no").splitlines(),
     )
     _write(args.output, payload)
     print(f"[goal3000] wrote {args.output}", flush=True)
