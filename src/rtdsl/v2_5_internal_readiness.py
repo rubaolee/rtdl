@@ -353,6 +353,8 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "begin_goal2995_numba_segmented_min_max_after_raydb_demo",
     "request_external_review_for_goal2995_raydb_numba_minmax",
     "begin_next_v2_6_benchmark_app_numba_path_after_goal2995_review",
+    "request_external_review_for_goal2997_numba_compact_mask",
+    "begin_goal2998_numba_compact_mask_benchmark_app_wiring_after_review",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
