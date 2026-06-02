@@ -140,6 +140,9 @@ def v2_6_roadmap() -> dict[str, Any]:
         "point_group_nearest_device_columns_pod_report": "docs/reports/goal3034_point_group_nearest_device_columns_l4_pod_2026-06-02.md",
         "point_group_nearest_device_columns_pod_artifact": "docs/reports/goal3034_point_group_nearest_device_columns_l4_pod_2026-06-02.json",
         "point_group_nearest_device_columns_pod_status": "l4_clean_source_device_columns_match_raw_rows_not_release_not_speedup_evidence_true_zero_copy_still_unauthorized",
+        "numba_global_argmax_hardening_goal": "Goal3036",
+        "numba_global_argmax_hardening_report": "docs/reports/goal3036_numba_global_argmax_block_reduce_hardening_2026-06-02.md",
+        "numba_global_argmax_hardening_status": "global_argmax_u32_f64_block_reduce_no_global_atomics_dirty_overlay_a4000_passed_clean_composition_evidence_pending",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -459,6 +462,14 @@ def validate_v2_6_roadmap(
     for artifact in roadmap.get("hausdorff_raw_row_view_larger_scale_artifacts", ()):
         if not (root / str(artifact)).exists():
             errors.append(f"Goal3028 larger-scale Hausdorff artifact is missing: {artifact}")
+    if roadmap.get("numba_global_argmax_hardening_goal") != "Goal3036":
+        errors.append("v2.6 roadmap must index Goal3036 as Numba global argmax hardening")
+    if "block_reduce_no_global_atomics" not in str(roadmap.get("numba_global_argmax_hardening_status", "")):
+        errors.append("Goal3036 status must record block-reduce replacement of global atomics")
+    if "clean_composition_evidence_pending" not in str(roadmap.get("numba_global_argmax_hardening_status", "")):
+        errors.append("Goal3036 status must keep clean composition evidence pending")
+    if not (root / str(roadmap.get("numba_global_argmax_hardening_report", ""))).exists():
+        errors.append("Goal3036 Numba global argmax hardening report is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):

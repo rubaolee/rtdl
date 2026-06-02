@@ -42,9 +42,9 @@ class Goal3035NumbaGlobalArgmaxU32F64Test(unittest.TestCase):
         for phrase in (
             "NUMBA_GLOBAL_ARGMAX_U32_F64_OPERATION",
             "run_numba_global_argmax_u32_f64",
-            "_numba_global_argmax_score_u32_f64_kernel",
-            "_numba_global_argmax_item_u32_f64_kernel",
-            "_numba_global_argmax_row_u32_f64_kernel",
+            "_numba_global_argmax_initial_block_reduce_u32_f64_kernel",
+            "_numba_global_argmax_block_reduce_u32_f64_kernel",
+            "multi_stage_block_reduce_no_global_atomics",
             "_as_numba_cuda_vector",
         ):
             self.assertIn(phrase, numba_source)
@@ -109,6 +109,7 @@ class Goal3035NumbaGlobalArgmaxU32F64Test(unittest.TestCase):
         self.assertEqual(result["columns"]["scores"].copy_to_host().tolist(), [4.0])
         self.assertEqual(result["metadata"]["partner"], "numba")
         self.assertEqual(result["metadata"]["operation"], "global_argmax_u32_f64")
+        self.assertEqual(result["metadata"]["reduction_strategy"], "multi_stage_block_reduce_no_global_atomics")
         self.assertFalse(result["metadata"]["rt_core_speedup_claim_authorized"])
         self.assertFalse(result["metadata"]["true_zero_copy_claim_authorized"])
 

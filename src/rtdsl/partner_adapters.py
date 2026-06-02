@@ -2642,7 +2642,10 @@ def global_argmax_u32_f64_partner_columns(
         row_count=int(result["row_count"]),
         contract="generic_global_argmax_u32_f64",
         extra={
+            "operation": "global_argmax_u32_f64",
+            "contract": "generic_global_argmax_u32_f64",
             "tie_break": result["tie_break"],
+            "reduction_strategy": result.get("reduction_strategy"),
             "invalid_item_id": int(result["invalid_item_id"]),
             "partner_elapsed_seconds": elapsed,
             "numba_elapsed_seconds": elapsed,

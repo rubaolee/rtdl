@@ -375,59 +375,70 @@ def run_numba_global_argmax_u32_f64(
         raise ValueError("block_size must be positive")
     invalid_u32 = int(invalid_item_id) & 0xFFFFFFFF
 
-    cuda.synchronize()
-    started = perf_counter()
-    best_scores = cuda.device_array((1,), dtype=np.float64)
-    best_scores.copy_to_device(np.asarray([-np.inf], dtype=np.float64))
-    valid_count = cuda.device_array((1,), dtype=np.int64)
-    valid_count.copy_to_device(np.zeros((1,), dtype=np.int64))
-    if row_count:
-        grid = ((row_count + block_size - 1) // block_size,)
-        _numba_global_argmax_score_u32_f64_kernel(cuda)[grid, block_size](
-            item_ids,
-            scores,
-            best_scores,
-            valid_count,
-            row_count,
-            invalid_u32,
-        )
-    cuda.synchronize()
-    if int(valid_count.copy_to_host()[0]) == 0:
+    if block_size > 256:
+        raise ValueError("block_size must be <= 256 for global_argmax_u32_f64")
+    if row_count == 0:
         raise ValueError("global_argmax_u32_f64 requires at least one valid item row")
 
-    best_item_ids = cuda.device_array((1,), dtype=np.uint32)
-    best_item_ids.copy_to_device(np.asarray([invalid_u32], dtype=np.uint32))
-    if row_count:
-        grid = ((row_count + block_size - 1) // block_size,)
-        _numba_global_argmax_item_u32_f64_kernel(cuda)[grid, block_size](
-            item_ids,
-            scores,
-            best_scores,
-            best_item_ids,
-            row_count,
-            invalid_u32,
-        )
-    best_row_indices = cuda.device_array((1,), dtype=np.int64)
-    best_row_indices.copy_to_device(np.asarray([np.iinfo(np.int64).max], dtype=np.int64))
-    if row_count:
-        _numba_global_argmax_row_u32_f64_kernel(cuda)[grid, block_size](
-            item_ids,
-            scores,
-            best_scores,
-            best_item_ids,
-            best_row_indices,
-            row_count,
-            invalid_u32,
-        )
     cuda.synchronize()
+    started = perf_counter()
+    current_count = row_count
+    block_count = (current_count + block_size - 1) // block_size
+    current_item_ids = cuda.device_array((block_count,), dtype=np.uint32)
+    current_scores = cuda.device_array((block_count,), dtype=np.float64)
+    current_row_indices = cuda.device_array((block_count,), dtype=np.int64)
+    current_valid_counts = cuda.device_array((block_count,), dtype=np.int64)
+    _numba_global_argmax_initial_block_reduce_u32_f64_kernel(cuda)[(block_count,), block_size](
+        item_ids,
+        scores,
+        current_item_ids,
+        current_scores,
+        current_row_indices,
+        current_valid_counts,
+        row_count,
+        invalid_u32,
+    )
+    cuda.synchronize()
+    valid_count = cuda.device_array((1,), dtype=np.int64)
+    valid_total = int(np.asarray(current_valid_counts.copy_to_host(), dtype=np.int64).sum())
+    valid_count.copy_to_device(np.asarray([valid_total], dtype=np.int64))
+    if valid_total == 0:
+        raise ValueError("global_argmax_u32_f64 requires at least one valid item row")
+
+    current_count = block_count
+    while current_count > 1:
+        block_count = (current_count + block_size - 1) // block_size
+        next_item_ids = cuda.device_array((block_count,), dtype=np.uint32)
+        next_scores = cuda.device_array((block_count,), dtype=np.float64)
+        next_row_indices = cuda.device_array((block_count,), dtype=np.int64)
+        next_valid_counts = cuda.device_array((block_count,), dtype=np.int64)
+        _numba_global_argmax_block_reduce_u32_f64_kernel(cuda)[(block_count,), block_size](
+            current_item_ids,
+            current_scores,
+            current_row_indices,
+            current_valid_counts,
+            next_item_ids,
+            next_scores,
+            next_row_indices,
+            next_valid_counts,
+            current_count,
+            invalid_u32,
+        )
+        cuda.synchronize()
+        current_item_ids = next_item_ids
+        current_scores = next_scores
+        current_row_indices = next_row_indices
+        current_valid_counts = next_valid_counts
+        current_count = block_count
+
     elapsed = perf_counter() - started
 
     return _numba_run_result(
         operation=NUMBA_GLOBAL_ARGMAX_U32_F64_OPERATION,
         outputs={
-            "item_ids": best_item_ids,
-            "scores": best_scores,
-            "row_indices": best_row_indices,
+            "item_ids": current_item_ids,
+            "scores": current_scores,
+            "row_indices": current_row_indices,
             "valid_count": valid_count,
         },
         elapsed=elapsed,
@@ -436,6 +447,7 @@ def run_numba_global_argmax_u32_f64(
             "row_count": row_count,
             "invalid_item_id": invalid_u32,
             "tie_break": "highest_score_then_lowest_item_id_then_lowest_row_index",
+            "reduction_strategy": "multi_stage_block_reduce_no_global_atomics",
             "host_row_materialization_used": False,
         },
     )
@@ -956,42 +968,134 @@ def _numba_grouped_arg_item_i64_kernel(cuda: Any):
     return kernel
 
 
-def _numba_global_argmax_score_u32_f64_kernel(cuda: Any):
+def _numba_global_argmax_initial_block_reduce_u32_f64_kernel(cuda: Any):
+    from numba import float64, int64, uint32
+
     @cuda.jit
-    def kernel(item_ids, scores, best_scores, valid_count, row_count, invalid_item_id):
-        index = cuda.grid(1)
+    def kernel(item_ids, scores, out_item_ids, out_scores, out_row_indices, out_valid_counts, row_count, invalid_item_id):
+        shared_scores = cuda.shared.array(256, dtype=float64)
+        shared_item_ids = cuda.shared.array(256, dtype=uint32)
+        shared_row_indices = cuda.shared.array(256, dtype=int64)
+        shared_valid_counts = cuda.shared.array(256, dtype=int64)
+
+        thread = cuda.threadIdx.x
+        index = cuda.blockIdx.x * cuda.blockDim.x + thread
+        best_score = -float("inf")
+        best_item = invalid_item_id
+        best_row = 9223372036854775807
+        valid = 0
         if index < row_count:
             item = item_ids[index]
             score = scores[index]
             if item != invalid_item_id and score == score:
-                cuda.atomic.max(best_scores, 0, score)
-                cuda.atomic.add(valid_count, 0, 1)
+                best_score = score
+                best_item = item
+                best_row = index
+                valid = 1
+        shared_scores[thread] = best_score
+        shared_item_ids[thread] = best_item
+        shared_row_indices[thread] = best_row
+        shared_valid_counts[thread] = valid
+        cuda.syncthreads()
+
+        stride = cuda.blockDim.x // 2
+        while stride > 0:
+            if thread < stride:
+                other_valid = shared_valid_counts[thread + stride]
+                current_valid = shared_valid_counts[thread]
+                if other_valid > 0:
+                    other_score = shared_scores[thread + stride]
+                    other_item = shared_item_ids[thread + stride]
+                    other_row = shared_row_indices[thread + stride]
+                    current_score = shared_scores[thread]
+                    current_item = shared_item_ids[thread]
+                    current_row = shared_row_indices[thread]
+                    if current_valid == 0 or other_score > current_score or (
+                        other_score == current_score
+                        and (
+                            other_item < current_item
+                            or (other_item == current_item and other_row < current_row)
+                        )
+                    ):
+                        shared_scores[thread] = other_score
+                        shared_item_ids[thread] = other_item
+                        shared_row_indices[thread] = other_row
+                    shared_valid_counts[thread] = current_valid + other_valid
+            cuda.syncthreads()
+            stride //= 2
+
+        if thread == 0:
+            block = cuda.blockIdx.x
+            out_item_ids[block] = shared_item_ids[0]
+            out_scores[block] = shared_scores[0]
+            out_row_indices[block] = shared_row_indices[0]
+            out_valid_counts[block] = shared_valid_counts[0]
 
     return kernel
 
 
-def _numba_global_argmax_item_u32_f64_kernel(cuda: Any):
+def _numba_global_argmax_block_reduce_u32_f64_kernel(cuda: Any):
+    from numba import float64, int64, uint32
+
     @cuda.jit
-    def kernel(item_ids, scores, best_scores, best_item_ids, row_count, invalid_item_id):
-        index = cuda.grid(1)
-        if index < row_count:
+    def kernel(item_ids, scores, row_indices, valid_counts, out_item_ids, out_scores, out_row_indices, out_valid_counts, row_count, invalid_item_id):
+        shared_scores = cuda.shared.array(256, dtype=float64)
+        shared_item_ids = cuda.shared.array(256, dtype=uint32)
+        shared_row_indices = cuda.shared.array(256, dtype=int64)
+        shared_valid_counts = cuda.shared.array(256, dtype=int64)
+
+        thread = cuda.threadIdx.x
+        index = cuda.blockIdx.x * cuda.blockDim.x + thread
+        best_score = -float("inf")
+        best_item = invalid_item_id
+        best_row = 9223372036854775807
+        valid = 0
+        if index < row_count and valid_counts[index] > 0:
             item = item_ids[index]
             score = scores[index]
-            if item != invalid_item_id and score == best_scores[0]:
-                cuda.atomic.min(best_item_ids, 0, item)
+            if item != invalid_item_id and score == score:
+                best_score = score
+                best_item = item
+                best_row = row_indices[index]
+                valid = valid_counts[index]
+        shared_scores[thread] = best_score
+        shared_item_ids[thread] = best_item
+        shared_row_indices[thread] = best_row
+        shared_valid_counts[thread] = valid
+        cuda.syncthreads()
 
-    return kernel
+        stride = cuda.blockDim.x // 2
+        while stride > 0:
+            if thread < stride:
+                other_valid = shared_valid_counts[thread + stride]
+                current_valid = shared_valid_counts[thread]
+                if other_valid > 0:
+                    other_score = shared_scores[thread + stride]
+                    other_item = shared_item_ids[thread + stride]
+                    other_row = shared_row_indices[thread + stride]
+                    current_score = shared_scores[thread]
+                    current_item = shared_item_ids[thread]
+                    current_row = shared_row_indices[thread]
+                    if current_valid == 0 or other_score > current_score or (
+                        other_score == current_score
+                        and (
+                            other_item < current_item
+                            or (other_item == current_item and other_row < current_row)
+                        )
+                    ):
+                        shared_scores[thread] = other_score
+                        shared_item_ids[thread] = other_item
+                        shared_row_indices[thread] = other_row
+                    shared_valid_counts[thread] = current_valid + other_valid
+            cuda.syncthreads()
+            stride //= 2
 
-
-def _numba_global_argmax_row_u32_f64_kernel(cuda: Any):
-    @cuda.jit
-    def kernel(item_ids, scores, best_scores, best_item_ids, best_row_indices, row_count, invalid_item_id):
-        index = cuda.grid(1)
-        if index < row_count:
-            item = item_ids[index]
-            score = scores[index]
-            if item != invalid_item_id and item == best_item_ids[0] and score == best_scores[0]:
-                cuda.atomic.min(best_row_indices, 0, index)
+        if thread == 0:
+            block = cuda.blockIdx.x
+            out_item_ids[block] = shared_item_ids[0]
+            out_scores[block] = shared_scores[0]
+            out_row_indices[block] = shared_row_indices[0]
+            out_valid_counts[block] = shared_valid_counts[0]
 
     return kernel
 

@@ -856,6 +856,13 @@ Future work:
   not authorize true zero-copy or speedup claims. The next useful work is a
   generic device-resident consumer over those columns, such as grouped/global
   max-distance witness reduction for Hausdorff-style continuations.
+- Goal3036 hardened the first generic Numba global-argmax consumer by replacing
+  fragile global `float64`/`uint32` atomics with a multi-stage block reduction.
+  The RTX A4000 pod also showed a dependency rule for current Numba 0.61:
+  use `cuda-python>=12,<13` with `NUMBA_CUDA_USE_NVIDIA_BINDING=1`, and do not
+  enable minor-version compatibility unless `ptxcompiler`/`cubinlinker` are
+  installed. Future dependency setup should make this explicit instead of
+  letting CUDA tests skip.
 
 Boundary:
 
