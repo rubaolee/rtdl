@@ -44,6 +44,10 @@ def v2_6_roadmap() -> dict[str, Any]:
         "benchmark_demonstrator_report": "docs/reports/goal2994_raydb_numba_neutral_demo_l4_pod_2026-06-01.md",
         "benchmark_demonstrator_artifact": "docs/reports/goal2994_raydb_numba_neutral_demo_l4_pod_2026-06-01.json",
         "benchmark_demonstrator_status": "raydb_style_avg_sum_count_l4_pod_conformance_passed_not_speedup_evidence",
+        "benchmark_minmax_goal": "Goal2995",
+        "benchmark_minmax_report": "docs/reports/goal2995_raydb_numba_minmax_l4_pod_2026-06-01.md",
+        "benchmark_minmax_artifact": "docs/reports/goal2995_raydb_numba_minmax_l4_pod_2026-06-01.json",
+        "benchmark_minmax_status": "raydb_style_all_five_scalar_modes_l4_pod_conformance_passed_not_speedup_evidence",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -73,12 +77,12 @@ def v2_6_roadmap() -> dict[str, Any]:
             {
                 "step": "N-1",
                 "title": "numba_op_coverage_for_one_demonstrator",
-                "exit_gate": "only the ops used by the chosen benchmark app gain Numba coverage, each with reference parity",
+                "exit_gate": "Goal2995 covers count/sum/min/max and avg-as-sum-count for the RayDB-style demonstrator with CPU reference parity",
             },
             {
                 "step": "N-2",
                 "title": "benchmark_app_numba_user_selected_path",
-                "exit_gate": "Goal2994 RayDB-style avg_as_sum_count routes a real continuation through user-selected Numba and matches CPU reference",
+                "exit_gate": "Goal2994 and Goal2995 route RayDB-style continuations through user-selected Numba and match CPU reference",
             },
             {
                 "step": "N-3",
@@ -154,6 +158,16 @@ def validate_v2_6_roadmap(
         errors.append("Goal2994 benchmark demonstrator report is missing")
     if not (root / str(roadmap.get("benchmark_demonstrator_artifact", ""))).exists():
         errors.append("Goal2994 benchmark demonstrator artifact is missing")
+    if roadmap.get("benchmark_minmax_goal") != "Goal2995":
+        errors.append("v2.6 roadmap must index Goal2995 as the RayDB min/max Numba demonstrator")
+    if "all_five_scalar_modes" not in str(roadmap.get("benchmark_minmax_status", "")):
+        errors.append("Goal2995 benchmark min/max status must cover all five scalar modes")
+    if "not_speedup_evidence" not in str(roadmap.get("benchmark_minmax_status", "")):
+        errors.append("Goal2995 benchmark min/max demonstrator must not be treated as speedup evidence")
+    if not (root / str(roadmap.get("benchmark_minmax_report", ""))).exists():
+        errors.append("Goal2995 benchmark min/max report is missing")
+    if not (root / str(roadmap.get("benchmark_minmax_artifact", ""))).exists():
+        errors.append("Goal2995 benchmark min/max artifact is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):

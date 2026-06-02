@@ -351,6 +351,8 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "request_external_review_for_goal2993_l4_numba_neutral_handoff",
     "begin_goal2994_numba_benchmark_app_demonstrator_after_goal2993_review",
     "begin_goal2995_numba_segmented_min_max_after_raydb_demo",
+    "request_external_review_for_goal2995_raydb_numba_minmax",
+    "begin_next_v2_6_benchmark_app_numba_path_after_goal2995_review",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )
