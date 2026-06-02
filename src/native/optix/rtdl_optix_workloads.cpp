@@ -13816,6 +13816,101 @@ static void run_prepared_point_group_nearest_witness_2d_optix(
     *row_count_out = query_count;
 }
 
+static void write_prepared_point_group_nearest_witness_2d_device_columns_optix(
+        PreparedPointGroupNearestWitness2D* prepared,
+        const RtdlPoint* query_points,
+        size_t query_count,
+        double radius,
+        uint32_t* query_ids_out,
+        uint32_t* neighbor_ids_out,
+        double* distances_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX point-group handle must not be null");
+    if (!query_points && query_count != 0) throw std::runtime_error("query_points pointer must not be null when query_count is nonzero");
+    if (radius < 0.0) throw std::runtime_error("point_group_nearest_witness_device_columns radius must be non-negative");
+    if (radius > static_cast<double>(prepared->max_radius) + 1.0e-7)
+        throw std::runtime_error("point_group_nearest_witness_device_columns radius exceeds prepared max_radius");
+    if (query_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("point_group_nearest_witness_device_columns query_count exceeds uint32 limit");
+    if (query_count == 0 || prepared->groups.empty()) return;
+    if (!query_ids_out || !neighbor_ids_out || !distances_out)
+        throw std::runtime_error("point_group_nearest_witness_device_columns output pointers must not be null when query_count is nonzero");
+
+    std::call_once(g_point_group_nearest_rt.init, [&]() {
+        std::string ptx = compile_to_ptx(kPointGroupNearestRtKernelSrc, "point_group_nearest_rt_kernel.cu");
+        g_point_group_nearest_rt.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__point_group_nearest_probe",
+            "__miss__point_group_nearest_miss",
+            "__intersection__point_group_nearest_isect",
+            "__anyhit__point_group_nearest_anyhit",
+            nullptr, 4).release();
+    });
+    std::call_once(g_point_group_nearest_split_columns.init, [&]() {
+        std::string ptx = compile_to_ptx(
+            kPointGroupNearestMaxReduceKernelSrc,
+            "point_group_nearest_split_columns_kernel.cu");
+        CU_CHECK(cuModuleLoadData(&g_point_group_nearest_split_columns.module, ptx.c_str()));
+        CU_CHECK(cuModuleGetFunction(
+            &g_point_group_nearest_split_columns.fn,
+            g_point_group_nearest_split_columns.module,
+            "split_point_group_nearest_columns"));
+    });
+
+    std::vector<GpuPoint> gpu_queries(query_count);
+    for (size_t i = 0; i < query_count; ++i) {
+        gpu_queries[i] = {
+            static_cast<float>(query_points[i].x),
+            static_cast<float>(query_points[i].y),
+            query_points[i].id
+        };
+    }
+
+    DevPtr d_queries(sizeof(GpuPoint) * query_count);
+    DevPtr d_output(sizeof(GpuFixedRadiusNearestRecord) * query_count);
+    upload(d_queries.ptr, gpu_queries.data(), query_count);
+
+    PointGroupNearestRtLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.query_points = reinterpret_cast<const GpuPoint*>(d_queries.ptr);
+    lp.search_points = reinterpret_cast<const GpuPoint*>(prepared->d_search.ptr);
+    lp.groups = reinterpret_cast<const GpuPointGroupBounds*>(prepared->d_groups.ptr);
+    lp.output = reinterpret_cast<GpuFixedRadiusNearestRecord*>(d_output.ptr);
+    lp.query_count = static_cast<uint32_t>(query_count);
+    lp.radius = static_cast<float>(radius);
+    lp.trace_tmax = 2.0f * (prepared->max_radius + 1.0e-4f);
+
+    DevPtr d_params(sizeof(PointGroupNearestRtLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    g_optix_last_bvh_build_s = 0.0;
+    auto t_start_trav = std::chrono::steady_clock::now();
+    OPTIX_CHECK(optixLaunch(g_point_group_nearest_rt.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(PointGroupNearestRtLaunchParams),
+                             &g_point_group_nearest_rt.pipe->sbt,
+                             static_cast<unsigned>(query_count), 1, 1));
+    uint32_t count_u32 = static_cast<uint32_t>(query_count);
+    void* split_args[] = {
+        &d_output.ptr,
+        &count_u32,
+        &query_ids_out,
+        &neighbor_ids_out,
+        &distances_out,
+    };
+    const unsigned block = 256;
+    const unsigned grid = static_cast<unsigned>((query_count + block - 1) / block);
+    CU_CHECK(cuLaunchKernel(
+        g_point_group_nearest_split_columns.fn,
+        grid, 1, 1,
+        block, 1, 1,
+        0, stream, split_args, nullptr));
+    CU_CHECK(cuStreamSynchronize(stream));
+    auto t_end_trav = std::chrono::steady_clock::now();
+    g_optix_last_traversal_s = std::chrono::duration<double>(t_end_trav - t_start_trav).count();
+    g_optix_last_copy_s = 0.0;
+}
+
 static void reduce_prepared_point_group_nearest_max_distance_2d_optix(
         PreparedPointGroupNearestWitness2D* prepared,
         const RtdlPoint* query_points,

@@ -4505,6 +4505,114 @@ class PreparedOptixPointGroupNearestWitness2D:
         finally:
             rows.close()
 
+    def write_device_nearest_witness_columns(
+        self,
+        query_points,
+        *,
+        radius: float,
+        query_ids_out,
+        neighbor_ids_out,
+        distances_out,
+    ) -> dict[str, object]:
+        """Write nearest-witness rows into partner-owned CUDA output columns."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX point-group handle is closed")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if radius > self._max_radius:
+            raise ValueError("radius must be less than or equal to prepared max_radius")
+        packed_queries = query_points if isinstance(query_points, PackedPoints) else pack_points(records=query_points, dimension=2)
+        if packed_queries.dimension != 2:
+            raise ValueError("PreparedOptixPointGroupNearestWitness2D.write_device_nearest_witness_columns requires 2-D points")
+
+        outputs = {}
+        expected_device = None
+        for name, value, dtype_tokens in (
+            ("query_ids", query_ids_out, {"uint32"}),
+            ("neighbor_ids", neighbor_ids_out, {"uint32"}),
+            ("distances", distances_out, {"float64", "double"}),
+        ):
+            handoff = _partner.prepare_direct_device_pointer_handoff(value, access="write")
+            if expected_device is None:
+                expected_device = (handoff.device_type, handoff.device_id)
+            _require_partner_device_vector_output_layout(
+                handoff,
+                row_count=packed_queries.count,
+                expected_device=expected_device,
+                dtype_tokens=dtype_tokens,
+                label=name,
+            )
+            outputs[name] = handoff
+
+        if packed_queries.count == 0 or self._packed_search.count == 0 or self._group_count == 0:
+            return {
+                "metadata": {
+                    "backend": "optix",
+                    "native_symbol": _OPTIX_PREPARED_POINT_GROUP_NEAREST_WITNESS_2D_DEVICE_COLUMNS_SYMBOL,
+                    "native_engine_row_contract": "generic_point_group_nearest_witness_2d_device_columns",
+                    "query_count": packed_queries.count,
+                    "search_count": self._packed_search.count,
+                    "group_count": self._group_count,
+                    "radius": float(radius),
+                    "transfer_mode": "host_query_points_to_device_witness_columns_empty_shortcut",
+                    "rt_core_accelerated": True,
+                    "materializes_neighbor_rows": False,
+                    "direct_device_handoff_authorized": True,
+                    "output_columns_true_zero_copy_authorized": True,
+                    "true_zero_copy_authorized": False,
+                }
+            }
+
+        lib = _load_optix_library()
+        write_symbol = _find_optional_backend_symbol(
+            lib,
+            _OPTIX_PREPARED_POINT_GROUP_NEAREST_WITNESS_2D_DEVICE_COLUMNS_SYMBOL,
+        )
+        if write_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                f"{_OPTIX_PREPARED_POINT_GROUP_NEAREST_WITNESS_2D_DEVICE_COLUMNS_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        error = ctypes.create_string_buffer(4096)
+        start = time.perf_counter()
+        status = write_symbol(
+            self._handle,
+            packed_queries.records,
+            packed_queries.count,
+            ctypes.c_double(float(radius)),
+            ctypes.c_void_p(outputs["query_ids"].data_ptr),
+            ctypes.c_void_p(outputs["neighbor_ids"].data_ptr),
+            ctypes.c_void_p(outputs["distances"].data_ptr),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        elapsed = time.perf_counter() - start
+        return {
+            "metadata": {
+                "backend": "optix",
+                "native_symbol": _OPTIX_PREPARED_POINT_GROUP_NEAREST_WITNESS_2D_DEVICE_COLUMNS_SYMBOL,
+                "native_engine_row_contract": "generic_point_group_nearest_witness_2d_device_columns",
+                "native_execution_path": "prepared_rt_core_point_group_nearest_witness_2d_device_columns",
+                "query_count": packed_queries.count,
+                "search_count": self._packed_search.count,
+                "group_count": self._group_count,
+                "radius": float(radius),
+                "native_elapsed_sec": elapsed,
+                "transfer_mode": "host_query_points_to_device_witness_columns",
+                "source_protocols": tuple(sorted({handoff.source_protocol for handoff in outputs.values()})),
+                "source_devices": tuple(sorted({f"{handoff.device_type}:{handoff.device_id}" for handoff in outputs.values()})),
+                "rt_core_accelerated": True,
+                "materializes_neighbor_rows": False,
+                "direct_device_handoff_authorized": True,
+                "output_columns_true_zero_copy_authorized": True,
+                "true_zero_copy_authorized": False,
+                "rt_core_speedup_claim_authorized": False,
+                "v2_6_release_authorized": False,
+            }
+        }
+
     def nearest_max_distance_row(self, query_points, *, radius: float) -> dict[str, object]:
         """Return the max-distance row after reducing nearest witnesses on device."""
         if self._closed:
@@ -7193,6 +7301,9 @@ _OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_SEARCH_SYMBOL = (
 _OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_QUERY_OUTPUT_SYMBOL = (
     "rtdl_optix_write_prepared_fixed_radius_count_threshold_2d_device_query_columns"
 )
+_OPTIX_PREPARED_POINT_GROUP_NEAREST_WITNESS_2D_DEVICE_COLUMNS_SYMBOL = (
+    "rtdl_optix_write_prepared_point_group_nearest_witness_2d_device_columns"
+)
 _OPTIX_PREPARED_FIXED_RADIUS_COUNT_THRESHOLD_3D_DEVICE_OUTPUT_SYMBOL = (
     "rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_device_outputs"
 )
@@ -7501,6 +7612,29 @@ def _require_partner_device_any_hit_output_layout(
         raise ValueError("partner device any-hit output buffer must be contiguous")
     if (handoff.device_type, handoff.device_id) != expected_device:
         raise ValueError("partner device any-hit output buffer must live on the same CUDA device as ray columns")
+
+
+def _require_partner_device_vector_output_layout(
+    handoff,
+    *,
+    row_count: int,
+    expected_device: tuple[str, int],
+    dtype_tokens: set[str],
+    label: str,
+) -> None:
+    dtype = _partner_dtype_token(handoff.dtype)
+    if dtype not in dtype_tokens:
+        allowed = ", ".join(sorted(dtype_tokens))
+        raise ValueError(f"partner device {label} output buffer must use dtype {allowed}")
+    if tuple(handoff.shape) != (row_count,):
+        raise ValueError(f"partner device {label} output buffer must have shape (row_count,)")
+    if not _partner_contiguous_column_strides(
+        handoff.strides,
+        itemsize=_partner_dtype_itemsize(dtype),
+    ):
+        raise ValueError(f"partner device {label} output buffer must be contiguous")
+    if (handoff.device_type, handoff.device_id) != expected_device:
+        raise ValueError(f"partner device {label} output buffer must live on the same CUDA device as the other output columns")
 
 
 def _require_partner_device_bounded_witness_output_layout(
@@ -18124,6 +18258,21 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_run_point_group_nearest.restype = ctypes.c_int
+
+    optional_write_point_group_nearest_device_columns = _find_optional_backend_symbol(
+        lib, _OPTIX_PREPARED_POINT_GROUP_NEAREST_WITNESS_2D_DEVICE_COLUMNS_SYMBOL
+    )
+    if optional_write_point_group_nearest_device_columns is not None:
+        optional_write_point_group_nearest_device_columns.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_write_point_group_nearest_device_columns.restype = ctypes.c_int
 
     optional_reduce_point_group_nearest = _find_optional_backend_symbol(
         lib, "rtdl_optix_reduce_prepared_point_group_nearest_max_distance_2d"

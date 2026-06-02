@@ -4949,6 +4949,23 @@ extern "C" int rtdl_optix_run_prepared_point_group_nearest_witness_2d(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_write_prepared_point_group_nearest_witness_2d_device_columns(
+        void* prepared,
+        const RtdlPoint* query_points, size_t query_count,
+        double radius,
+        uint32_t* query_ids_out,
+        uint32_t* neighbor_ids_out,
+        double* distances_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        write_prepared_point_group_nearest_witness_2d_device_columns_optix(
+            reinterpret_cast<PreparedPointGroupNearestWitness2D*>(prepared),
+            query_points, query_count, radius,
+            query_ids_out, neighbor_ids_out, distances_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_reduce_prepared_point_group_nearest_max_distance_2d(
         void* prepared,
         const RtdlPoint* query_points, size_t query_count,

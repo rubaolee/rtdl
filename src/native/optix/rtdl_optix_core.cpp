@@ -6355,6 +6355,21 @@ extern "C" __global__ void reduce_point_group_nearest_max_distance(
         output[0] = scratch[0];
     }
 }
+
+extern "C" __global__ void split_point_group_nearest_columns(
+        const FixedRadiusNearestRecord* input,
+        uint32_t count,
+        uint32_t* query_ids_out,
+        uint32_t* neighbor_ids_out,
+        double* distances_out)
+{
+    const uint32_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index >= count) return;
+    const FixedRadiusNearestRecord row = input[index];
+    query_ids_out[index] = row.query_id;
+    neighbor_ids_out[index] = row.neighbor_id;
+    distances_out[index] = static_cast<double>(row.distance);
+}
 )CUDA";
 
 static const char* kKnnRowsKernelSrc = R"CUDA(
@@ -7076,6 +7091,7 @@ static RayAnyHitPipeline    g_frn3d_grouped_union_rt;
 static RayAnyHitPipeline    g_point_group_threshold_rt;
 static RayAnyHitPipeline    g_point_group_nearest_rt;
 static KnnCuFunction       g_point_group_nearest_reduce;
+static KnnCuFunction       g_point_group_nearest_split_columns;
 static SegPolyPipeline     g_segpoly;
 static SegPolyPipeline     g_segpoly_rows;
 static ColumnarPredicateScanPipeline g_columnar_predicate_scan;
