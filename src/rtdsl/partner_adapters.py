@@ -2778,6 +2778,68 @@ def bounded_collect_finalize_i64_partner_columns(
     return columns
 
 
+def pairwise_l2_sq_score_rows_2d_partner_columns(
+    source_point_columns: dict[str, object],
+    target_point_columns: dict[str, object],
+    *,
+    partner: str = "numba",
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Produce generic squared-L2 score rows for 2D point pairs on a user-selected partner."""
+
+    if partner != "numba":
+        raise ValueError("pairwise_l2_sq_score_rows_2d currently supports partner='numba'")
+    for name, columns in (("source_point_columns", source_point_columns), ("target_point_columns", target_point_columns)):
+        if not isinstance(columns, dict):
+            raise ValueError(f"{name} must be a mapping")
+        for key in ("ids", "x", "y"):
+            if key not in columns:
+                raise ValueError(f"{name} must contain ids, x, and y")
+
+    from .numba_partner_continuation import run_numba_pairwise_l2_sq_score_rows_2d
+
+    result = run_numba_pairwise_l2_sq_score_rows_2d(
+        source_point_columns["x"],
+        source_point_columns["y"],
+        target_point_columns["ids"],
+        target_point_columns["x"],
+        target_point_columns["y"],
+    )
+    outputs = result["outputs"]
+    row_count = int(result["row_count"])
+    metadata = {
+        "adapter": "pairwise_l2_sq_score_rows_2d_partner_columns",
+        "partner": "numba",
+        "operation": "pairwise_l2_sq_score_rows_2d",
+        "input_contract": "source_and_target_point_columns_2d",
+        "output_contract": "generic_grouped_score_rows",
+        "group_id_semantics": result["group_id_semantics"],
+        "item_id_semantics": result["item_id_semantics"],
+        "score_semantics": result["score_semantics"],
+        "source_count": int(result["source_count"]),
+        "target_count": int(result["target_count"]),
+        "row_count": row_count,
+        "numba_pairwise_score_rows_elapsed_seconds": float(
+            result["phase_timing"]["phases_sec"]["partner_continuation"]
+        ),
+        "host_score_row_materialization_used": False,
+        "score_rows_generated_on_partner_device": True,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "rt_core_speedup_claim_authorized": False,
+        "v2_6_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "claim_boundary": (
+            "Generic pairwise squared-L2 score-row generation over Numba-owned device "
+            "arrays. It does not call native RT traversal, does not embed app "
+            "distance semantics, and does not authorize speedup, zero-copy, or release claims."
+        ),
+    }
+    if return_metadata:
+        return {"columns": outputs, "metadata": metadata}
+    return outputs
+
+
 def group_argmin_then_global_argmax_partner_columns(
     score_columns: dict[str, object],
     *,

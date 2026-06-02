@@ -73,6 +73,12 @@ def v2_6_roadmap() -> dict[str, Any]:
         "numba_grouped_arg_pod_report": "docs/reports/goal3007_numba_grouped_arg_reducer_l4_pod_2026-06-01.md",
         "numba_grouped_arg_pod_artifact": "docs/reports/goal3007_numba_grouped_arg_reducer_l4_pod_2026-06-01.json",
         "numba_grouped_arg_pod_status": "l4_pod_conformance_passed_clean_source_not_speedup_evidence",
+        "hausdorff_numba_witness_goal": "Goal3010",
+        "hausdorff_numba_witness_report": "docs/reports/goal3010_hausdorff_numba_witness_exact_app_wiring_2026-06-01.md",
+        "hausdorff_numba_witness_status": "hausdorff_app_wired_to_generic_numba_grouped_witness_front_door_not_rt_core_path",
+        "numba_pairwise_score_rows_goal": "Goal3012",
+        "numba_pairwise_score_rows_report": "docs/reports/goal3012_numba_pairwise_score_rows_for_hausdorff_2026-06-01.md",
+        "numba_pairwise_score_rows_status": "pairwise_l2_sq_score_rows_2d_generates_generic_score_rows_on_numba_device_for_hausdorff_witness_mode_not_speedup_evidence",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -259,6 +265,20 @@ def validate_v2_6_roadmap(
         errors.append("Goal3007 grouped arg pod report is missing")
     if not (root / str(roadmap.get("numba_grouped_arg_pod_artifact", ""))).exists():
         errors.append("Goal3007 grouped arg pod artifact is missing")
+    if roadmap.get("hausdorff_numba_witness_goal") != "Goal3010":
+        errors.append("v2.6 roadmap must index Goal3010 as Hausdorff Numba witness app wiring")
+    if "not_rt_core_path" not in str(roadmap.get("hausdorff_numba_witness_status", "")):
+        errors.append("Goal3010 Hausdorff Numba witness status must keep the RT-core boundary")
+    if not (root / str(roadmap.get("hausdorff_numba_witness_report", ""))).exists():
+        errors.append("Goal3010 Hausdorff Numba witness report is missing")
+    if roadmap.get("numba_pairwise_score_rows_goal") != "Goal3012":
+        errors.append("v2.6 roadmap must index Goal3012 as Numba pairwise score-row generation")
+    if "pairwise_l2_sq_score_rows_2d" not in str(roadmap.get("numba_pairwise_score_rows_status", "")):
+        errors.append("Goal3012 pairwise score-row status must name pairwise_l2_sq_score_rows_2d")
+    if "not_speedup_evidence" not in str(roadmap.get("numba_pairwise_score_rows_status", "")):
+        errors.append("Goal3012 pairwise score-row work must not be treated as speedup evidence")
+    if not (root / str(roadmap.get("numba_pairwise_score_rows_report", ""))).exists():
+        errors.append("Goal3012 pairwise score-row report is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):

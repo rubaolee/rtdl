@@ -16,6 +16,7 @@ NUMBA_SEGMENTED_MAX_F64_OPERATION = "segmented_max_f64"
 NUMBA_COMPACT_MASK_I64_OPERATION = "compact_mask_i64"
 NUMBA_GROUPED_ARGMIN_F64_OPERATION = "grouped_argmin_f64"
 NUMBA_GROUPED_ARGMAX_F64_OPERATION = "grouped_argmax_f64"
+NUMBA_PAIRWISE_L2_SQ_SCORE_ROWS_2D_OPERATION = "pairwise_l2_sq_score_rows_2d"
 NUMBA_PARTNER_CONTINUATION_STATUS = V2_5_STATUS_PREVIEW_NOT_PROMOTED
 NUMBA_GROUP_ID_VALIDATION_MODE = "device_resident_error_flag"
 
@@ -93,6 +94,23 @@ def describe_numba_grouped_argmax_f64() -> dict[str, object]:
     )
     descriptor["tie_break"] = "highest_score_then_lowest_item_id"
     descriptor["host_present_group_compaction_used"] = True
+    return descriptor
+
+
+def describe_numba_pairwise_l2_sq_score_rows_2d() -> dict[str, object]:
+    descriptor = _base_numba_descriptor(NUMBA_PAIRWISE_L2_SQ_SCORE_ROWS_2D_OPERATION)
+    descriptor["input_columns"] = (
+        "source_x:float64",
+        "source_y:float64",
+        "target_ids:int64",
+        "target_x:float64",
+        "target_y:float64",
+    )
+    descriptor["output_columns"] = ("group_ids:int64", "item_ids:int64", "scores:float64")
+    descriptor["group_id_semantics"] = "dense_source_row_index"
+    descriptor["item_id_semantics"] = "caller_supplied_target_id"
+    descriptor["score_semantics"] = "squared_l2_distance"
+    descriptor["host_score_row_materialization_used"] = False
     return descriptor
 
 
@@ -296,6 +314,75 @@ def run_numba_grouped_argmax_f64(
         score_initial=-float("inf"),
         score_kernel_factory=_numba_grouped_argmax_score_f64_kernel,
         tie_break="highest_score_then_lowest_item_id",
+    )
+
+
+def run_numba_pairwise_l2_sq_score_rows_2d(
+    source_x: Any,
+    source_y: Any,
+    target_ids: Any,
+    target_x: Any,
+    target_y: Any,
+    *,
+    block_size: int = 256,
+) -> dict[str, object]:
+    """Generate generic pairwise 2D squared-L2 score rows on a Numba CUDA device."""
+
+    cuda, np = _import_numba_stack()
+    _validate_numba_cuda_vector(source_x, name="source_x", dtype=np.float64)
+    _validate_numba_cuda_vector(source_y, name="source_y", dtype=np.float64)
+    _validate_numba_cuda_vector(target_ids, name="target_ids", dtype=np.int64)
+    _validate_numba_cuda_vector(target_x, name="target_x", dtype=np.float64)
+    _validate_numba_cuda_vector(target_y, name="target_y", dtype=np.float64)
+    if tuple(source_x.shape) != tuple(source_y.shape):
+        raise ValueError("source_x and source_y must have the same shape")
+    if not (tuple(target_ids.shape) == tuple(target_x.shape) == tuple(target_y.shape)):
+        raise ValueError("target_ids, target_x, and target_y must have the same shape")
+    source_count = int(source_x.shape[0])
+    target_count = int(target_ids.shape[0])
+    block_size = int(block_size)
+    if block_size <= 0:
+        raise ValueError("block_size must be positive")
+    row_count = source_count * target_count
+
+    cuda.synchronize()
+    started = perf_counter()
+    group_ids = cuda.device_array((row_count,), dtype=np.int64)
+    item_ids = cuda.device_array((row_count,), dtype=np.int64)
+    scores = cuda.device_array((row_count,), dtype=np.float64)
+    if row_count:
+        grid = ((row_count + block_size - 1) // block_size,)
+        _numba_pairwise_l2_sq_score_rows_2d_kernel(cuda)[grid, block_size](
+            source_x,
+            source_y,
+            target_ids,
+            target_x,
+            target_y,
+            group_ids,
+            item_ids,
+            scores,
+            source_count,
+            target_count,
+            row_count,
+        )
+    cuda.synchronize()
+    elapsed = perf_counter() - started
+
+    return _numba_run_result(
+        operation=NUMBA_PAIRWISE_L2_SQ_SCORE_ROWS_2D_OPERATION,
+        outputs={"group_ids": group_ids, "item_ids": item_ids, "scores": scores},
+        elapsed=elapsed,
+        source="run_numba_pairwise_l2_sq_score_rows_2d",
+        extra_metadata={
+            "source_count": source_count,
+            "target_count": target_count,
+            "row_count": row_count,
+            "group_id_semantics": "dense_source_row_index",
+            "item_id_semantics": "caller_supplied_target_id",
+            "score_semantics": "squared_l2_distance",
+            "host_score_row_materialization_used": False,
+            "score_rows_generated_on_partner_device": True,
+        },
     )
 
 
@@ -666,6 +753,34 @@ def _numba_gather_group_arg_outputs_kernel(cuda: Any):
             group = present_group_ids[index]
             compact_item_ids[index] = dense_item_ids[group]
             compact_scores[index] = dense_scores[group]
+
+    return kernel
+
+
+def _numba_pairwise_l2_sq_score_rows_2d_kernel(cuda: Any):
+    @cuda.jit
+    def kernel(
+        source_x,
+        source_y,
+        target_ids,
+        target_x,
+        target_y,
+        group_ids,
+        item_ids,
+        scores,
+        source_count,
+        target_count,
+        row_count,
+    ):
+        index = cuda.grid(1)
+        if index < row_count:
+            source_index = index // target_count
+            target_index = index - source_index * target_count
+            dx = source_x[source_index] - target_x[target_index]
+            dy = source_y[source_index] - target_y[target_index]
+            group_ids[index] = source_index
+            item_ids[index] = target_ids[target_index]
+            scores[index] = dx * dx + dy * dy
 
     return kernel
 

@@ -97,6 +97,7 @@ from .numba_partner_continuation import NUMBA_GROUP_ID_VALIDATION_MODE
 from .numba_partner_continuation import NUMBA_COMPACT_MASK_I64_OPERATION
 from .numba_partner_continuation import NUMBA_GROUPED_ARGMAX_F64_OPERATION
 from .numba_partner_continuation import NUMBA_GROUPED_ARGMIN_F64_OPERATION
+from .numba_partner_continuation import NUMBA_PAIRWISE_L2_SQ_SCORE_ROWS_2D_OPERATION
 from .numba_partner_continuation import NUMBA_SEGMENTED_COUNT_I64_OPERATION
 from .numba_partner_continuation import NUMBA_SEGMENTED_MAX_F64_OPERATION
 from .numba_partner_continuation import NUMBA_SEGMENTED_MIN_F64_OPERATION
@@ -104,6 +105,7 @@ from .numba_partner_continuation import NUMBA_SEGMENTED_SUM_F64_OPERATION
 from .numba_partner_continuation import describe_numba_compact_mask_i64
 from .numba_partner_continuation import describe_numba_grouped_argmax_f64
 from .numba_partner_continuation import describe_numba_grouped_argmin_f64
+from .numba_partner_continuation import describe_numba_pairwise_l2_sq_score_rows_2d
 from .numba_partner_continuation import describe_numba_segmented_count_i64
 from .numba_partner_continuation import describe_numba_segmented_max_f64
 from .numba_partner_continuation import describe_numba_segmented_min_f64
@@ -111,6 +113,7 @@ from .numba_partner_continuation import describe_numba_segmented_sum_f64
 from .numba_partner_continuation import numba_partner_available
 from .numba_partner_continuation import run_numba_grouped_argmax_f64
 from .numba_partner_continuation import run_numba_grouped_argmin_f64
+from .numba_partner_continuation import run_numba_pairwise_l2_sq_score_rows_2d
 from .numba_partner_continuation import run_numba_segmented_count_i64
 from .numba_partner_continuation import run_numba_segmented_max_f64
 from .numba_partner_continuation import run_numba_segmented_min_f64
@@ -876,6 +879,7 @@ from .partner_adapters import grouped_topk_f64_partner_columns
 from .partner_adapters import grouped_vector_sum_2d_partner_columns
 from .partner_adapters import measured_grouped_vector_sum_2d_partner_selection
 from .partner_adapters import group_argmin_then_global_argmax_partner_columns
+from .partner_adapters import pairwise_l2_sq_score_rows_2d_partner_columns
 from .app_adapters import pairwise_inverse_square_force_2d_partner_columns
 from .partner_adapters import directed_hausdorff_2d_partner_columns
 from .partner_adapters import top_k_nearest_points_2d_partner_columns
@@ -1686,6 +1690,7 @@ __all__ = [
     "NUMBA_COMPACT_MASK_I64_OPERATION",
     "NUMBA_GROUPED_ARGMAX_F64_OPERATION",
     "NUMBA_GROUPED_ARGMIN_F64_OPERATION",
+    "NUMBA_PAIRWISE_L2_SQ_SCORE_ROWS_2D_OPERATION",
     "NUMBA_SEGMENTED_COUNT_I64_OPERATION",
     "NUMBA_SEGMENTED_MAX_F64_OPERATION",
     "NUMBA_SEGMENTED_MIN_F64_OPERATION",
@@ -1693,6 +1698,7 @@ __all__ = [
     "describe_numba_compact_mask_i64",
     "describe_numba_grouped_argmax_f64",
     "describe_numba_grouped_argmin_f64",
+    "describe_numba_pairwise_l2_sq_score_rows_2d",
     "describe_numba_segmented_count_i64",
     "describe_numba_segmented_max_f64",
     "describe_numba_segmented_min_f64",
@@ -1700,6 +1706,7 @@ __all__ = [
     "numba_partner_available",
     "run_numba_grouped_argmax_f64",
     "run_numba_grouped_argmin_f64",
+    "run_numba_pairwise_l2_sq_score_rows_2d",
     "run_numba_segmented_count_i64",
     "run_numba_segmented_max_f64",
     "run_numba_segmented_min_f64",
@@ -2218,6 +2225,7 @@ __all__ = [
     "grouped_vector_sum_2d_partner_columns",
     "measured_grouped_vector_sum_2d_partner_selection",
     "group_argmin_then_global_argmax_partner_columns",
+    "pairwise_l2_sq_score_rows_2d_partner_columns",
     "pairwise_inverse_square_force_2d_partner_columns",
     "directed_hausdorff_2d_partner_columns",
     "top_k_nearest_points_2d_partner_columns",

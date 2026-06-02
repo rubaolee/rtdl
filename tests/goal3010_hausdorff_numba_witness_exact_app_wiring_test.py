@@ -22,6 +22,7 @@ class Goal3010HausdorffNumbaWitnessExactAppWiringTest(unittest.TestCase):
             "group_argmin_then_global_argmax_partner_columns",
             'partner="numba"',
             "host_score_row_materialization_used",
+            "score_rows_generated_on_partner_device",
             "rt_core_accelerated",
             "RT traversal is not called in this exact dense path",
         ):
@@ -33,7 +34,7 @@ class Goal3010HausdorffNumbaWitnessExactAppWiringTest(unittest.TestCase):
         for phrase in (
             "exact dense partner-continuation path",
             "not an RT-core path",
-            "host_score_row_materialization_used: True",
+            "host_score_row_materialization_used",
             "rt_core_accelerated: False",
             "does not authorize",
             "v2.6 release",
@@ -54,7 +55,8 @@ class Goal3010HausdorffNumbaWitnessExactAppWiringTest(unittest.TestCase):
         self.assertEqual(payload["partner"], "numba")
         self.assertTrue(payload["matches_oracle"])
         self.assertEqual(payload["partner_reference_contract"], "generic_group_argmin_then_global_argmax_with_witness")
-        self.assertTrue(payload["host_score_row_materialization_used"])
+        self.assertFalse(payload["host_score_row_materialization_used"])
+        self.assertTrue(payload["score_rows_generated_on_partner_device"])
         self.assertFalse(payload["rt_core_accelerated"])
         self.assertFalse(payload["claim_boundary"]["numba_speedup_claim_authorized"])
         self.assertIn(

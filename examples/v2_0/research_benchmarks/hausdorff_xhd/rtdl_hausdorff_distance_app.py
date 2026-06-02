@@ -366,28 +366,35 @@ def _run_partner_numba_witness_exact_directed(
     target_count = len(target)
     if source_count <= 0 or target_count <= 0:
         raise ValueError("directed Hausdorff requires non-empty source and target rows")
+    source_ids = np.asarray([int(point.id) for point in source], dtype=np.int64)
     source_x = np.asarray([float(point.x) for point in source], dtype=np.float64)
     source_y = np.asarray([float(point.y) for point in source], dtype=np.float64)
     target_x = np.asarray([float(point.x) for point in target], dtype=np.float64)
     target_y = np.asarray([float(point.y) for point in target], dtype=np.float64)
     target_ids = np.asarray([int(point.id) for point in target], dtype=np.int64)
-    dx = source_x.reshape(-1, 1) - target_x.reshape(1, -1)
-    dy = source_y.reshape(-1, 1) - target_y.reshape(1, -1)
-    score_rows = (dx * dx + dy * dy).reshape(-1)
-    group_rows = np.repeat(np.arange(source_count, dtype=np.int64), target_count)
-    item_rows = np.tile(target_ids, source_count)
+    score_rows = rt.pairwise_l2_sq_score_rows_2d_partner_columns(
+        {
+            "ids": cuda.to_device(source_ids),
+            "x": cuda.to_device(source_x),
+            "y": cuda.to_device(source_y),
+        },
+        {
+            "ids": cuda.to_device(target_ids),
+            "x": cuda.to_device(target_x),
+            "y": cuda.to_device(target_y),
+        },
+        partner="numba",
+        return_metadata=True,
+    )
 
     result = rt.group_argmin_then_global_argmax_partner_columns(
-        {
-            "group_ids": cuda.to_device(group_rows),
-            "item_ids": cuda.to_device(item_rows),
-            "scores": cuda.to_device(score_rows),
-        },
+        score_rows["columns"],
         group_count=source_count,
         partner="numba",
         return_metadata=True,
     )
     metadata = result["metadata"]
+    score_metadata = score_rows["metadata"]
     source_index = int(metadata["winner_group_id"])
     return {
         "label": label,
@@ -395,12 +402,17 @@ def _run_partner_numba_witness_exact_directed(
         "source_id": int(source[source_index].id),
         "target_id": int(metadata["winner_item_id"]),
         "row_count": source_count,
-        "dense_score_row_count": int(score_rows.size),
+        "dense_score_row_count": int(score_metadata["row_count"]),
         "partner_reference_contract": metadata["partner_reference_contract"],
         "v2_6_numba_partner_continuation_operations": metadata[
             "v2_6_numba_partner_continuation_operations"
         ],
-        "host_score_row_materialization_used": True,
+        "v2_6_numba_score_row_operation": score_metadata["operation"],
+        "numba_pairwise_score_rows_elapsed_seconds": score_metadata[
+            "numba_pairwise_score_rows_elapsed_seconds"
+        ],
+        "host_score_row_materialization_used": False,
+        "score_rows_generated_on_partner_device": True,
         "native_engine_row_contract": metadata["native_engine_row_contract"],
     }
 
@@ -612,7 +624,7 @@ def run_app(
             ),
             "rtdl_role": (
                 "RTDL v2.6 Numba witness mode turns point rows into generic grouped "
-                "score rows, then uses group_argmin_then_global_argmax_partner_columns "
+                "score rows on the Numba device, then uses group_argmin_then_global_argmax_partner_columns "
                 "with user-selected partner=\"numba\". The native engine is not "
                 "app-customized and RT traversal is not called in this exact dense path."
             ),
@@ -621,7 +633,8 @@ def run_app(
             "native_continuation_backend": "none",
             "rt_core_accelerated": False,
             "partner_reference_contract": "generic_group_argmin_then_global_argmax_with_witness",
-            "host_score_row_materialization_used": True,
+            "host_score_row_materialization_used": False,
+            "score_rows_generated_on_partner_device": True,
             "run_phases": run_phases,
             "claim_boundary": {
                 "v2_6_release_authorized": False,
