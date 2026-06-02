@@ -86,6 +86,10 @@ def v2_6_roadmap() -> dict[str, Any]:
         "numba_block_nearest_rows_goal": "Goal3015",
         "numba_block_nearest_rows_report": "docs/reports/goal3015_numba_block_nearest_rows_for_hausdorff_2026-06-01.md",
         "numba_block_nearest_rows_status": "pairwise_l2_sq_block_nearest_rows_2d_bounded_tile_summary_for_hausdorff_witness_mode_not_speedup_evidence",
+        "hausdorff_numba_dense_vs_block_goal": "Goal3016",
+        "hausdorff_numba_dense_vs_block_report": "docs/reports/goal3016_hausdorff_numba_dense_vs_block_l4_pod_2026-06-01.md",
+        "hausdorff_numba_dense_vs_block_artifact": "docs/reports/goal3016_hausdorff_numba_dense_vs_block_l4_pod_2026-06-01.json",
+        "hausdorff_numba_dense_vs_block_status": "l4_internal_phase_timing_dense_device_score_rows_still_faster_block_nearest_is_memory_pressure_path_not_speedup_evidence",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -304,6 +308,16 @@ def validate_v2_6_roadmap(
         errors.append("Goal3015 block-nearest work must not be treated as speedup evidence")
     if not (root / str(roadmap.get("numba_block_nearest_rows_report", ""))).exists():
         errors.append("Goal3015 block-nearest report is missing")
+    if roadmap.get("hausdorff_numba_dense_vs_block_goal") != "Goal3016":
+        errors.append("v2.6 roadmap must index Goal3016 as Hausdorff dense-vs-block comparison")
+    if "not_speedup_evidence" not in str(roadmap.get("hausdorff_numba_dense_vs_block_status", "")):
+        errors.append("Goal3016 dense-vs-block comparison must not be treated as speedup evidence")
+    if "block_nearest_is_memory_pressure_path" not in str(roadmap.get("hausdorff_numba_dense_vs_block_status", "")):
+        errors.append("Goal3016 status must preserve the block-nearest memory-pressure boundary")
+    if not (root / str(roadmap.get("hausdorff_numba_dense_vs_block_report", ""))).exists():
+        errors.append("Goal3016 dense-vs-block report is missing")
+    if not (root / str(roadmap.get("hausdorff_numba_dense_vs_block_artifact", ""))).exists():
+        errors.append("Goal3016 dense-vs-block artifact is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):

@@ -1,0 +1,296 @@
+{
+  "all_claim_flags_false": true,
+  "all_match_oracle": true,
+  "block_nearest_wall_sec": 1.4156021513044834,
+  "block_vs_dense_wall_ratio": 1.049232405448049,
+  "claim_boundary": {
+    "numba_speedup_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v2_6_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "commit": "dc4ab582f3c89e88eae596224d56a20cae0a428f",
+  "dense_device_score_wall_sec": 1.3491788320243359,
+  "evidence_summaries": [
+    {
+      "bounded_tile_summary_rows": false,
+      "copies": 512,
+      "directed_summary_sec": 1.3438945189118385,
+      "host_score_row_materialization_used": false,
+      "logical_pair_count": 4194304,
+      "matches_oracle": true,
+      "materialized_summary_row_count": 4194304,
+      "mode": "partner_numba_witness_exact",
+      "point_count_a": 2048,
+      "point_count_b": 2048,
+      "rt_core_accelerated": false,
+      "score_operation": "pairwise_l2_sq_score_rows_2d",
+      "score_rows_generated_on_partner_device": true,
+      "wall_sec": 1.3491788320243359
+    },
+    {
+      "bounded_tile_summary_rows": true,
+      "copies": 512,
+      "directed_summary_sec": 1.4111124463379383,
+      "host_score_row_materialization_used": false,
+      "logical_pair_count": 4194304,
+      "matches_oracle": true,
+      "materialized_summary_row_count": 16384,
+      "mode": "partner_numba_block_nearest_exact",
+      "point_count_a": 2048,
+      "point_count_b": 2048,
+      "rt_core_accelerated": false,
+      "score_operation": "pairwise_l2_sq_block_nearest_rows_2d",
+      "score_rows_generated_on_partner_device": true,
+      "wall_sec": 1.4156021513044834
+    }
+  ],
+  "full_evidence": {
+    "partner_numba_block_nearest_exact": {
+      "app": "hausdorff_distance",
+      "backend": "partner_numba_block_nearest_exact",
+      "bounded_tile_summary_rows": true,
+      "claim_boundary": {
+        "numba_speedup_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "v2_6_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "copies": 512,
+      "directed_a_to_b": {
+        "bounded_tile_summary_rows": true,
+        "distance": 0.30000000000000004,
+        "host_score_row_materialization_used": false,
+        "label": "a_to_b",
+        "logical_pair_count": 4194304,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "numba_pairwise_block_nearest_rows_elapsed_seconds": 0.177433580160141,
+        "partial_nearest_row_count": 16384,
+        "partner_reference_contract": "generic_group_argmin_then_global_argmax_with_witness",
+        "row_count": 2048,
+        "score_rows_generated_on_partner_device": true,
+        "source_id": 3,
+        "target_id": 103,
+        "target_tile_count": 8,
+        "v2_6_numba_partner_continuation_operations": [
+          "grouped_argmin_f64",
+          "grouped_argmax_f64"
+        ],
+        "v2_6_numba_score_row_operation": "pairwise_l2_sq_block_nearest_rows_2d"
+      },
+      "directed_b_to_a": {
+        "bounded_tile_summary_rows": true,
+        "distance": 0.30000000000000004,
+        "host_score_row_materialization_used": false,
+        "label": "b_to_a",
+        "logical_pair_count": 4194304,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "numba_pairwise_block_nearest_rows_elapsed_seconds": 0.18200409784913063,
+        "partial_nearest_row_count": 16384,
+        "partner_reference_contract": "generic_group_argmin_then_global_argmax_with_witness",
+        "row_count": 2048,
+        "score_rows_generated_on_partner_device": true,
+        "source_id": 103,
+        "target_id": 3,
+        "target_tile_count": 8,
+        "v2_6_numba_partner_continuation_operations": [
+          "grouped_argmin_f64",
+          "grouped_argmax_f64"
+        ],
+        "v2_6_numba_score_row_operation": "pairwise_l2_sq_block_nearest_rows_2d"
+      },
+      "embree_result_mode": null,
+      "hausdorff_distance": 0.30000000000000004,
+      "hausdorff_threshold": null,
+      "host_score_row_materialization_used": false,
+      "matches_oracle": true,
+      "native_continuation_active": false,
+      "native_continuation_backend": "none",
+      "optix_performance": {
+        "class": "optix_traversal_prepared_summary",
+        "note": "Default exact-distance mode uses KNN rows through CUDA-style kernels; explicit directed_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions only."
+      },
+      "optix_summary_mode": null,
+      "oracle": {
+        "directed_a_to_b": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 2048,
+          "source_id": 3,
+          "target_id": 103
+        },
+        "directed_b_to_a": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 2048,
+          "source_id": 103,
+          "target_id": 3
+        },
+        "hausdorff_distance": 0.30000000000000004,
+        "witness_direction": "b_to_a"
+      },
+      "partner": "numba",
+      "partner_reference_contract": "generic_group_argmin_then_global_argmax_with_witness",
+      "point_count_a": 2048,
+      "point_count_b": 2048,
+      "rt_core_accelerated": false,
+      "rtdl_role": "RTDL v2.6 Numba block-nearest witness mode summarizes point-pair tiles into generic nearest score rows on the Numba device, then uses group_argmin_then_global_argmax_partner_columns with user-selected partner=\"numba\". The native engine is not app-customized and RT traversal is not called in this exact dense path.",
+      "run_phases": {
+        "input_construction_sec": 0.0038928352296352386,
+        "partner_numba_block_nearest_exact_directed_summary_sec": 1.4111124463379383,
+        "validation_sec": 9.491667151451111e-05
+      },
+      "score_rows_generated_on_partner_device": true,
+      "witness_direction": "b_to_a"
+    },
+    "partner_numba_witness_exact": {
+      "app": "hausdorff_distance",
+      "backend": "partner_numba_witness_exact",
+      "claim_boundary": {
+        "numba_speedup_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "v2_6_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "copies": 512,
+      "directed_a_to_b": {
+        "dense_score_row_count": 4194304,
+        "distance": 0.30000000000000004,
+        "host_score_row_materialization_used": false,
+        "label": "a_to_b",
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "numba_pairwise_score_rows_elapsed_seconds": 0.09487054497003555,
+        "partner_reference_contract": "generic_group_argmin_then_global_argmax_with_witness",
+        "row_count": 2048,
+        "score_rows_generated_on_partner_device": true,
+        "source_id": 3,
+        "target_id": 103,
+        "v2_6_numba_partner_continuation_operations": [
+          "grouped_argmin_f64",
+          "grouped_argmax_f64"
+        ],
+        "v2_6_numba_score_row_operation": "pairwise_l2_sq_score_rows_2d"
+      },
+      "directed_b_to_a": {
+        "dense_score_row_count": 4194304,
+        "distance": 0.30000000000000004,
+        "host_score_row_materialization_used": false,
+        "label": "b_to_a",
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "numba_pairwise_score_rows_elapsed_seconds": 0.09531614556908607,
+        "partner_reference_contract": "generic_group_argmin_then_global_argmax_with_witness",
+        "row_count": 2048,
+        "score_rows_generated_on_partner_device": true,
+        "source_id": 103,
+        "target_id": 3,
+        "v2_6_numba_partner_continuation_operations": [
+          "grouped_argmin_f64",
+          "grouped_argmax_f64"
+        ],
+        "v2_6_numba_score_row_operation": "pairwise_l2_sq_score_rows_2d"
+      },
+      "embree_result_mode": null,
+      "hausdorff_distance": 0.30000000000000004,
+      "hausdorff_threshold": null,
+      "host_score_row_materialization_used": false,
+      "matches_oracle": true,
+      "native_continuation_active": false,
+      "native_continuation_backend": "none",
+      "optix_performance": {
+        "class": "optix_traversal_prepared_summary",
+        "note": "Default exact-distance mode uses KNN rows through CUDA-style kernels; explicit directed_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions only."
+      },
+      "optix_summary_mode": null,
+      "oracle": {
+        "directed_a_to_b": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 2048,
+          "source_id": 3,
+          "target_id": 103
+        },
+        "directed_b_to_a": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 2048,
+          "source_id": 103,
+          "target_id": 3
+        },
+        "hausdorff_distance": 0.30000000000000004,
+        "witness_direction": "b_to_a"
+      },
+      "partner": "numba",
+      "partner_reference_contract": "generic_group_argmin_then_global_argmax_with_witness",
+      "point_count_a": 2048,
+      "point_count_b": 2048,
+      "rt_core_accelerated": false,
+      "rtdl_role": "RTDL v2.6 Numba witness mode turns point rows into generic grouped score rows on the Numba device, then uses group_argmin_then_global_argmax_partner_columns with user-selected partner=\"numba\". The native engine is not app-customized and RT traversal is not called in this exact dense path.",
+      "run_phases": {
+        "input_construction_sec": 0.004675000905990601,
+        "partner_numba_witness_exact_directed_summary_sec": 1.3438945189118385,
+        "validation_sec": 9.959563612937927e-05
+      },
+      "score_rows_generated_on_partner_device": true,
+      "witness_direction": "b_to_a"
+    }
+  },
+  "goal": "Goal3016",
+  "gpu": "NVIDIA L4, 565.57.01",
+  "source_dirty": [],
+  "warmup_summaries": [
+    {
+      "bounded_tile_summary_rows": false,
+      "copies": 64,
+      "directed_summary_sec": 1.7771101258695126,
+      "host_score_row_materialization_used": false,
+      "logical_pair_count": 65536,
+      "matches_oracle": true,
+      "materialized_summary_row_count": 65536,
+      "mode": "partner_numba_witness_exact",
+      "point_count_a": 256,
+      "point_count_b": 256,
+      "rt_core_accelerated": false,
+      "score_operation": "pairwise_l2_sq_score_rows_2d",
+      "score_rows_generated_on_partner_device": true,
+      "wall_sec": 1.7779568955302238
+    },
+    {
+      "bounded_tile_summary_rows": true,
+      "copies": 64,
+      "directed_summary_sec": 1.1350597813725471,
+      "host_score_row_materialization_used": false,
+      "logical_pair_count": 65536,
+      "matches_oracle": true,
+      "materialized_summary_row_count": 256,
+      "mode": "partner_numba_block_nearest_exact",
+      "point_count_a": 256,
+      "point_count_b": 256,
+      "rt_core_accelerated": false,
+      "score_operation": "pairwise_l2_sq_block_nearest_rows_2d",
+      "score_rows_generated_on_partner_device": true,
+      "wall_sec": 1.1357434056699276
+    }
+  ]
+}

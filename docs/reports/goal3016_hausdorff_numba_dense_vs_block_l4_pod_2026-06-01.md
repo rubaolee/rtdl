@@ -23,12 +23,29 @@ Both modes are exact partner paths and do not call native RT traversal.
 
 Blocked wording includes `RT-core speedup wording`.
 
-## Expected Artifact
+## Observed Artifact
 
-After pod execution, the expected artifact is:
+The pod artifact is:
 
 `docs/reports/goal3016_hausdorff_numba_dense_vs_block_l4_pod_2026-06-01.json`
 
-The artifact must record clean source status, GPU/driver, warmup summaries,
-evidence summaries, oracle parity, claim-boundary flags, and the internal
-`block_vs_dense_wall_ratio`.
+It was collected from clean commit:
+
+`dc4ab582f3c89e88eae596224d56a20cae0a428f`
+
+on:
+
+`NVIDIA L4, 565.57.01`
+
+The evidence run used `copies=512`, producing `2048 x 2048` points per
+directed pass.
+
+| Mode | Logical Pairs | Materialized Summary Rows | Wall Seconds | Notes |
+| --- | ---: | ---: | ---: | --- |
+| `partner_numba_witness_exact` | 4,194,304 | 4,194,304 | 1.3491788320243359 | dense device score rows |
+| `partner_numba_block_nearest_exact` | 4,194,304 | 16,384 | 1.4156021513044834 | bounded tile summaries |
+
+The internal `block_vs_dense_wall_ratio` is `1.049232405448049`: the bounded
+path greatly reduces row materialization, but it is not faster on this L4 run.
+Treat it as a memory-pressure path and design signal, not as a recommended
+performance path yet.
