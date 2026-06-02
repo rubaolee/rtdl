@@ -1,0 +1,345 @@
+{
+  "goal": "3062",
+  "date": "2026-06-02",
+  "commit": "e126a1b93f138f527ad6d5cff256127dafbf6719",
+  "note": "Runtime validation for corrected public docs command; final docs commit records cupy-cuda spelling.",
+  "gpu": "NVIDIA L4, 580.159.04",
+  "python": "Python 3.12.3",
+  "cuda": "/bin/sh: 1: nvcc: not found",
+  "cupy": "14.1.1",
+  "optix_sdk": "v8.1.0",
+  "rtdl_optix_library": "/root/rtdl/build/librtdl_optix.so",
+  "all_pass": true,
+  "pass_count": 21,
+  "total_count": 21,
+  "results": [
+    {
+      "name": "hello_world",
+      "cmd": [
+        "python3",
+        "examples/v2_0/getting_started/rtdl_hello_world.py"
+      ],
+      "timeout_sec": 60,
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.35620391403790563,
+      "log": "docs/reports/goal3062_v2_6_native_tutorial_example_pod_validation_logs_2026-06-02/hello_world.log",
+      "tail": "hello, world"
+    },
+    {
+      "name": "hello_world_cpu_backend",
+      "cmd": [
+        "python3",
+        "examples/v2_0/getting_started/rtdl_hello_world_backends.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "timeout_sec": 60,
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.3680890779942274,
+      "log": "docs/reports/goal3062_v2_6_native_tutorial_example_pod_validation_logs_2026-06-02/hello_world_cpu_backend.log",
+      "tail": "{\n  \"backend\": \"cpu_python_reference\",\n  \"triangle_hit_count\": 2,\n  \"visible_hit_rect_id\": 2,\n  \"visible_hit_label\": \"hello, world\"\n}"
+    },
+    {
+      "name": "feature_quickstart_cookbook",
+      "cmd": [
+        "python3",
+        "examples/v2_0/getting_started/rtdl_feature_quickstart_cookbook.py"
+      ],
+      "timeout_sec": 90,
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.3745893280720338,
+      "log": "docs/reports/goal3062_v2_6_native_tutorial_example_pod_validation_logs_2026-06-02/feature_quickstart_cookbook.log",
+      "tail": "          \"sum\": 6\n        },\n        {\n          \"region\": \"west\",\n          \"sum\": 20\n        }\n      ]\n    }\n  ]\n}"
+    },
+    {
+      "name": "hausdorff_cpu",
+      "cmd": [
+        "python3",
+        "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "timeout_sec": 60,
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.3635921449167654,
+      "log": "docs/reports/goal3062_v2_6_native_tutorial_example_pod_validation_logs_2026-06-02/hausdorff_cpu.log",
+      "tail": "  \"rt_core_accelerated\": false,\n  \"rtdl_role\": \"RTDL emits k=1 nearest-neighbor rows; rt.reduce_rows(max) computes directed Hausdorff distances, while Python keeps witness selection and undirected comparison.\",\n  \"run_phases\": {\n    \"input_construction_sec\": 1.7507001757621765e-05,\n    \"python_reduction_sec\": 4.8542977310717106e-05,\n    \"query_and_materialize_sec\": 0.0001402819762006402,\n    \"validation_sec\": 2.7272035367786884e-05\n  },\n  \"witness_direction\": \"b_to_a\"\n}"
+    },
+    {
+      "name": "ann_cpu",
+      "cmd": [
+        "python3",
+        "examples/v2_0/apps/ml/rtdl_ann_candidate_app.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "timeout_sec": 60,
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.4070211690850556,
+      "log": "docs/reports/goal3062_v2_6_native_tutorial_example_pod_validation_logs_2026-06-02/ann_cpu.log",
+      "tail": "  },\n  \"optix_summary_mode\": null,\n  \"output_mode\": \"full\",\n  \"query_count\": 3,\n  \"query_count_with_candidate\": 3,\n  \"recall_at_1\": 0.6666666666666666,\n  \"rt_core_accelerated\": false,\n  \"rtdl_role\": \"RTDL emits k=1 nearest-neighbor rows for candidate-subset kNN reranking over a Python-selected candidate subset; Python evaluates approximation quality against exact search.\",\n  \"search_count\": 6\n}"
+    },
+    {
+      "name": "outlier_cpu",
+      "cmd": [
+        "python3",
+        "examples/v2_0/apps/ml/rtdl_outlier_detection_app.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "timeout_sec": 60,
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.38753269996959716,
+      "log": "docs/reports/goal3062_v2_6_native_tutorial_example_pod_validation_logs_2026-06-02/outlier_cpu.log",
+      "tail": "    8\n  ],\n  \"output_mode\": \"full\",\n  \"point_count\": 8,\n  \"radius\": 0.35,\n  \"rtdl_role\": \"Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) converts them into local density counts, and Python applies the outlier threshold. The compact density paths use prepared fixed-radius threshold traversal through native backend fixed-radius threshold-count continuation and avoid neighbor-row materialization.\",\n  \"summary_mode\": null,\n  \"summary_primitive\": null,\n  \"threshold_reached_count\": null\n}"
+    },
+    {
+      "name": "dbscan_cpu",
+      "cmd": [
+        "python3",
+        "examples/v2_0/apps/ml/rtdl_dbscan_clustering_app.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "timeout_sec": 60,
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.3998949140077457,
+      "log": "docs/reports/goal3062_v2_6_native_tutorial_example_pod_validation_logs_2026-06-02/dbscan_cpu.log",
+      "tail": "  \"partner\": null,\n  \"partner_metadata\": null,\n  \"partner_reference_contract\": null,\n  \"point_count\": 8,\n  \"rtdl_role\": \"Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. The partner exact-cluster paths compute generic radius-graph component labels over point columns outside the native engine.\",\n  \"summary_mode\": null,\n  \"summary_primitive\": null,\n  \"threshold_reached_count\": null,\n  \"validation_skipped\": false\n}"
+    },
+    {
+      "name": "robot_cpu",
+      "cmd": [
+        "python3",
+        "examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "timeout_sec": 60,
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.41030603100080043,
+      "log": "docs/reports/goal3062_v2_6_native_tutorial_example_pod_validation_logs_2026-06-02/robot_cpu.log",
+      "tail": "      \"ray_id\": 4012\n    },\n    {\n      \"any_hit\": 0,\n      \"ray_id\": 4013\n    }\n  ],\n  \"rtdl_role\": \"RTDL emits per-edge ray/triangle any-hit rows; rt.reduce_rows(any) converts edge rows into pose collision flags, and Python maps witnesses back to pose/link summaries.\",\n  \"validation_mode\": \"cpu_oracle\"\n}"
+    },
+    {
+      "name": "barnes_cpu",
+      "cmd": [
+        "python3",
+        "examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "timeout_sec": 60,
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.4020011860411614,
+      "log": "docs/reports/goal3062_v2_6_native_tutorial_example_pod_validation_logs_2026-06-02/barnes_cpu.log",
+      "tail": "  \"optix_performance\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Default candidate rows use fixed-radius candidate generation and native fixed-radius candidate-summary continuation for compact candidate summaries. Explicit node_coverage_prepared mode uses prepared OptiX fixed-radius threshold traversal for node-coverage decisions only. Python opening-rule and force reduction remain outside the claim.\"\n  },\n  \"optix_summary_mode\": null,\n  \"output_mode\": \"full\",\n  \"rt_core_accelerated\": false,\n  \"rtdl_role\": \"RTDL emits body-to-quadtree-node candidate rows; native fixed-radius candidate-summary continuation summarizes candidate rows; Python applies the Barnes-Hut opening rule and computes force vectors.\",\n  \"theta\": 0.75\n}"
+    },
+    {
+      "name": "graph_cpu",
+      "cmd": [
+        "python3",
+        "examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "timeout_sec": 90,
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.40041478897910565,
+      "log": "docs/reports/goal3062_v2_6_native_tutorial_example_pod_validation_logs_2026-06-02/graph_cpu.log",
+      "tail": "      \"visibility_ray_batches\": 1\n    }\n  },\n  \"unifies\": [\n    \"examples/v2_0/features/graph/rtdl_graph_bfs.py\",\n    \"examples/v2_0/features/graph/rtdl_graph_triangle_count.py\"\n  ],\n  \"visibility_query_repeats\": 1,\n  \"visibility_ray_batches\": 1\n}"
+    },
+    {
+      "name": "database_cpu",
+      "cmd": [
+        "python3",
+        "examples/v2_0/apps/analytics/rtdl_database_analytics_app.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "timeout_sec": 90,
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.38776262709870934,
+      "log": "docs/reports/goal3062_v2_6_native_tutorial_example_pod_validation_logs_2026-06-02/database_cpu.log",
+      "tail": "        ],\n        \"risky_revenue_by_region\": {\n          \"central\": 260,\n          \"east\": 310,\n          \"west\": 430\n        }\n      }\n    }\n  }\n}"
+    },
+    {
+      "name": "road_hazard_cpu",
+      "cmd": [
+        "python3",
+        "examples/v2_0/apps/geospatial/rtdl_road_hazard_screening.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "timeout_sec": 60,
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.39243587607052177,
+      "log": "docs/reports/goal3062_v2_6_native_tutorial_example_pod_validation_logs_2026-06-02/road_hazard_cpu.log",
+      "tail": "    }\n  ],\n  \"rt_core_accelerated\": false,\n  \"run_phases\": {\n    \"input_construction_sec\": 2.4676905013620853e-05,\n    \"query_and_materialize_sec\": 0.0001543828984722495,\n    \"summary_postprocess_sec\": 7.610069587826729e-07\n  },\n  \"summary_materializes_rows\": true\n}"
+    },
+    {
+      "name": "hausdorff_embree",
+      "cmd": [
+        "python3",
+        "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "embree"
+      ],
+      "timeout_sec": 90,
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.3862261369358748,
+      "log": "docs/reports/goal3062_v2_6_native_tutorial_example_pod_validation_logs_2026-06-02/hausdorff_embree.log",
+      "tail": "  \"rt_core_accelerated\": false,\n  \"rtdl_role\": \"RTDL emits k=1 nearest-neighbor rows; rt.reduce_rows(max) computes directed Hausdorff distances, while Python keeps witness selection and undirected comparison.\",\n  \"run_phases\": {\n    \"input_construction_sec\": 1.7215963453054428e-05,\n    \"python_reduction_sec\": 5.777692422270775e-05,\n    \"query_and_materialize_sec\": 0.014484780025668442,\n    \"validation_sec\": 2.2624037228524685e-05\n  },\n  \"witness_direction\": \"b_to_a\"\n}"
+    },
+    {
+      "name": "hausdorff_optix_default",
+      "cmd": [
+        "python3",
+        "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "optix"
+      ],
+      "timeout_sec": 120,
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.9653238350292668,
+      "log": "docs/reports/goal3062_v2_6_native_tutorial_example_pod_validation_logs_2026-06-02/hausdorff_optix_default.log",
+      "tail": "  \"rt_core_accelerated\": false,\n  \"rtdl_role\": \"RTDL emits k=1 nearest-neighbor rows; rt.reduce_rows(max) computes directed Hausdorff distances, while Python keeps witness selection and undirected comparison.\",\n  \"run_phases\": {\n    \"input_construction_sec\": 2.170202787965536e-05,\n    \"python_reduction_sec\": 8.97659920156002e-05,\n    \"query_and_materialize_sec\": 0.5366921009263024,\n    \"validation_sec\": 3.642507363110781e-05\n  },\n  \"witness_direction\": \"b_to_a\"\n}"
+    },
+    {
+      "name": "hausdorff_optix_threshold_rtcore",
+      "cmd": [
+        "python3",
+        "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "optix",
+        "--optix-summary-mode",
+        "directed_threshold_prepared",
+        "--hausdorff-threshold",
+        "0.4",
+        "--require-rt-core"
+      ],
+      "timeout_sec": 120,
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.9523299060529098,
+      "log": "docs/reports/goal3062_v2_6_native_tutorial_example_pod_validation_logs_2026-06-02/hausdorff_optix_threshold_rtcore.log",
+      "tail": "  \"rtdl_role\": \"RTDL/optix uses prepared fixed-radius threshold traversal to answer the Hausdorff decision subproblem: every source point has at least one target within the threshold. Python combines the two directed decisions and validates against the deterministic oracle.\",\n  \"run_phases\": {\n    \"input_construction_sec\": 1.64650846272707e-05,\n    \"python_postprocess_sec\": 3.4098047763109207e-07,\n    \"query_fixed_radius_threshold_reached_count_sec\": 0.00034390902146697044,\n    \"scene_prepare_sec\": 0.4914554259739816,\n    \"validation_sec\": 0.0001547139836475253\n  },\n  \"within_threshold\": true\n}"
+    },
+    {
+      "name": "segment_polygon_anyhit_embree_counts",
+      "cmd": [
+        "python3",
+        "examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py",
+        "--backend",
+        "embree",
+        "--output-mode",
+        "segment_counts"
+      ],
+      "timeout_sec": 90,
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.43037182290572673,
+      "log": "docs/reports/goal3062_v2_6_native_tutorial_example_pod_validation_logs_2026-06-02/segment_polygon_anyhit_embree_counts.log",
+      "tail": "      \"hit_count\": 1,\n      \"segment_id\": 1\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 2\n    }\n  ],\n  \"summary_source\": \"segment_polygon_hitcount\"\n}"
+    },
+    {
+      "name": "segment_polygon_anyhit_optix_counts",
+      "cmd": [
+        "python3",
+        "examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py",
+        "--backend",
+        "optix",
+        "--output-mode",
+        "segment_counts"
+      ],
+      "timeout_sec": 120,
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.6093918409897014,
+      "log": "docs/reports/goal3062_v2_6_native_tutorial_example_pod_validation_logs_2026-06-02/segment_polygon_anyhit_optix_counts.log",
+      "tail": "      \"hit_count\": 1,\n      \"segment_id\": 1\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 2\n    }\n  ],\n  \"summary_source\": \"segment_polygon_hitcount\"\n}"
+    },
+    {
+      "name": "polygon_pair_overlap_embree_summary",
+      "cmd": [
+        "python3",
+        "examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py",
+        "--backend",
+        "embree",
+        "--output-mode",
+        "summary"
+      ],
+      "timeout_sec": 90,
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.3820460010319948,
+      "log": "docs/reports/goal3062_v2_6_native_tutorial_example_pod_validation_logs_2026-06-02/polygon_pair_overlap_embree_summary.log",
+      "tail": "    \"native_exact_continuation_sec\": 0.00012595998123288155,\n    \"query_polygon_exact_area_reduce_float_sum_sec\": 0.00012595998123288155,\n    \"rt_candidate_discovery_sec\": 0.018479094957001507\n  },\n  \"summary\": {\n    \"overlap_pair_count\": 2,\n    \"total_intersection_area\": 5,\n    \"total_union_area\": 19\n  }\n}"
+    },
+    {
+      "name": "polygon_pair_overlap_optix_summary",
+      "cmd": [
+        "python3",
+        "examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py",
+        "--backend",
+        "optix",
+        "--output-mode",
+        "summary"
+      ],
+      "timeout_sec": 120,
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 1.0261122930096462,
+      "log": "docs/reports/goal3062_v2_6_native_tutorial_example_pod_validation_logs_2026-06-02/polygon_pair_overlap_optix_summary.log",
+      "tail": "    \"native_exact_continuation_sec\": 0.000145580037496984,\n    \"query_polygon_exact_area_reduce_float_sum_sec\": 0.000145580037496984,\n    \"rt_candidate_discovery_sec\": 0.5420954129658639\n  },\n  \"summary\": {\n    \"overlap_pair_count\": 2,\n    \"total_intersection_area\": 5,\n    \"total_union_area\": 19\n  }\n}"
+    },
+    {
+      "name": "partner_anyhit_numpy_embree",
+      "cmd": [
+        "python3",
+        "examples/v2_0/partners/rtdl_partner_anyhit.py",
+        "--partner",
+        "numpy",
+        "--backend",
+        "embree"
+      ],
+      "timeout_sec": 90,
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.37070672295521945,
+      "log": "docs/reports/goal3062_v2_6_native_tutorial_example_pod_validation_logs_2026-06-02/partner_anyhit_numpy_embree.log",
+      "tail": "  \"source_devices\": [\n    \"cpu:0\"\n  ],\n  \"source_protocols\": [\n    \"numpy\"\n  ],\n  \"transfer_mode\": \"host_stage\",\n  \"triangle_count\": 1,\n  \"true_zero_copy_authorized\": false\n}"
+    },
+    {
+      "name": "partner_anyhit_cupy_cuda_optix",
+      "cmd": [
+        "python3",
+        "examples/v2_0/partners/rtdl_partner_anyhit.py",
+        "--partner",
+        "cupy-cuda",
+        "--backend",
+        "optix"
+      ],
+      "timeout_sec": 120,
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.9835650100139901,
+      "log": "docs/reports/goal3062_v2_6_native_tutorial_example_pod_validation_logs_2026-06-02/partner_anyhit_cupy_cuda_optix.log",
+      "tail": "  \"source_devices\": [\n    \"cuda:0\"\n  ],\n  \"source_protocols\": [\n    \"cupy\"\n  ],\n  \"transfer_mode\": \"host_stage\",\n  \"triangle_count\": 1,\n  \"true_zero_copy_authorized\": false\n}"
+    }
+  ]
+}

@@ -67,7 +67,7 @@ PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_polygon_pair_overlap
 
 ```bash
 PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner numpy --backend embree
-PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner cupy --backend optix
+PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner cupy-cuda --backend optix
 ```
 
 Partner commands are part of the v2.6 release-candidate surface. They do not imply

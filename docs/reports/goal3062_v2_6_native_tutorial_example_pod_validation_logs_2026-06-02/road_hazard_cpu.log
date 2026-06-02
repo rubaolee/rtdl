@@ -1,0 +1,40 @@
+{
+  "app": "road_hazard_screening",
+  "backend": "cpu_python_reference",
+  "boundary": "Rows mode emits per-road hit-count rows. Compact priority_segments and summary modes omit rows from the app payload when only priority road ids or counts are needed. Native OptiX summary mode returns a count-only threshold summary and does not materialize segment ids. OptiX app exposure is currently classified separately from RT-core performance; use optix_performance for the current classification.",
+  "copies": 1,
+  "native_continuation_active": false,
+  "native_continuation_backend": "none",
+  "optix_mode": "not_applicable",
+  "optix_performance": {
+    "class": "optix_traversal_prepared_summary",
+    "note": "Default segment/polygon OptiX app path remains conservative, but the prepared road-hazard summary profiler reuses a polygon BVH and runs native OptiX custom-AABB segment/polygon traversal for compact hazard summaries."
+  },
+  "output_mode": "rows",
+  "priority_segment_count": 1,
+  "priority_segments": [
+    1
+  ],
+  "row_count": 3,
+  "rows": [
+    {
+      "hit_count": 2,
+      "segment_id": 1
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 3
+    }
+  ],
+  "rt_core_accelerated": false,
+  "run_phases": {
+    "input_construction_sec": 2.4676905013620853e-05,
+    "query_and_materialize_sec": 0.0001543828984722495,
+    "summary_postprocess_sec": 7.610069587826729e-07
+  },
+  "summary_materializes_rows": true
+}

@@ -1,0 +1,293 @@
+{
+  "accepted_node_total": 5,
+  "app": "barnes_hut_force_app",
+  "backend": "cpu_python_reference",
+  "body_count": 6,
+  "body_count_with_candidates": 6,
+  "boundary": "Bounded one-level 2D approximation only; RTDL does not yet expose hierarchical tree-node primitives, Barnes-Hut opening predicates, or vector force reductions. Compact output modes characterize the RTDL candidate-generation slice separately from Python force rows.",
+  "candidate_row_count": 24,
+  "candidate_rows": [
+    {
+      "distance": 0.0,
+      "neighbor_id": 10,
+      "query_id": 1
+    },
+    {
+      "distance": 1.0907795377618705,
+      "neighbor_id": 12,
+      "query_id": 1
+    },
+    {
+      "distance": 2.205107707119995,
+      "neighbor_id": 11,
+      "query_id": 1
+    },
+    {
+      "distance": 2.9179530598440118,
+      "neighbor_id": 13,
+      "query_id": 1
+    },
+    {
+      "distance": 0.42638011210655674,
+      "neighbor_id": 12,
+      "query_id": 2
+    },
+    {
+      "distance": 0.6708203932499368,
+      "neighbor_id": 10,
+      "query_id": 2
+    },
+    {
+      "distance": 2.04266982158155,
+      "neighbor_id": 11,
+      "query_id": 2
+    },
+    {
+      "distance": 2.4993726918081824,
+      "neighbor_id": 13,
+      "query_id": 2
+    },
+    {
+      "distance": 0.28425340807103805,
+      "neighbor_id": 12,
+      "query_id": 3
+    },
+    {
+      "distance": 1.372953021774598,
+      "neighbor_id": 10,
+      "query_id": 3
+    },
+    {
+      "distance": 1.9474342094150447,
+      "neighbor_id": 11,
+      "query_id": 3
+    },
+    {
+      "distance": 2.05333246148403,
+      "neighbor_id": 13,
+      "query_id": 3
+    },
+    {
+      "distance": 0.0,
+      "neighbor_id": 11,
+      "query_id": 4
+    },
+    {
+      "distance": 1.177688439041936,
+      "neighbor_id": 13,
+      "query_id": 4
+    },
+    {
+      "distance": 1.955326059765992,
+      "neighbor_id": 12,
+      "query_id": 4
+    },
+    {
+      "distance": 2.205107707119995,
+      "neighbor_id": 10,
+      "query_id": 4
+    },
+    {
+      "distance": 0.3986637907732803,
+      "neighbor_id": 13,
+      "query_id": 5
+    },
+    {
+      "distance": 0.7826237921249263,
+      "neighbor_id": 11,
+      "query_id": 5
+    },
+    {
+      "distance": 2.0161349161204467,
+      "neighbor_id": 12,
+      "query_id": 5
+    },
+    {
+      "distance": 2.6086394921491163,
+      "neighbor_id": 10,
+      "query_id": 5
+    },
+    {
+      "distance": 0.28140973466349195,
+      "neighbor_id": 13,
+      "query_id": 6
+    },
+    {
+      "distance": 1.4577379737113252,
+      "neighbor_id": 11,
+      "query_id": 6
+    },
+    {
+      "distance": 2.386063704095094,
+      "neighbor_id": 12,
+      "query_id": 6
+    },
+    {
+      "distance": 3.1484122982862335,
+      "neighbor_id": 10,
+      "query_id": 6
+    }
+  ],
+  "error_rows": [
+    {
+      "abs_error": 0.018656369847309225,
+      "body_id": 1,
+      "relative_error": 0.00264779731021958
+    },
+    {
+      "abs_error": 0.013502147953277583,
+      "body_id": 2,
+      "relative_error": 0.006558786879803883
+    },
+    {
+      "abs_error": 0.0,
+      "body_id": 3,
+      "relative_error": 0.0
+    },
+    {
+      "abs_error": 0.0,
+      "body_id": 4,
+      "relative_error": 0.0
+    },
+    {
+      "abs_error": 0.0,
+      "body_id": 5,
+      "relative_error": 0.0
+    },
+    {
+      "abs_error": 0.0246485454208788,
+      "body_id": 6,
+      "relative_error": 0.003449595910263197
+    }
+  ],
+  "exact_body_total": 22,
+  "exact_force_rows": [
+    {
+      "body_id": 1,
+      "force_x": 4.529764834252745,
+      "force_y": 5.396970754241206
+    },
+    {
+      "body_id": 2,
+      "force_x": 0.9189409922421019,
+      "force_y": -1.842152367029925
+    },
+    {
+      "body_id": 3,
+      "force_x": -0.9992978572724248,
+      "force_y": -4.44165387497898
+    },
+    {
+      "body_id": 4,
+      "force_x": 0.8868538042053737,
+      "force_y": 7.01524633578666
+    },
+    {
+      "body_id": 5,
+      "force_x": -0.6587691871493502,
+      "force_y": -0.7268381757030715
+    },
+    {
+      "body_id": 6,
+      "force_x": -4.677492586278445,
+      "force_y": -5.40157267231589
+    }
+  ],
+  "force_row_count": 6,
+  "force_rows": [
+    {
+      "accepted_node_ids": [
+        13
+      ],
+      "body_id": 1,
+      "exact_body_ids": [
+        2,
+        3,
+        4
+      ],
+      "force_x": 4.513687081310003,
+      "force_y": 5.406434685569768
+    },
+    {
+      "accepted_node_ids": [
+        13
+      ],
+      "body_id": 2,
+      "exact_body_ids": [
+        1,
+        3,
+        4
+      ],
+      "force_x": 0.9138591530808194,
+      "force_y": -1.8296430540955126
+    },
+    {
+      "accepted_node_ids": [],
+      "body_id": 3,
+      "exact_body_ids": [
+        1,
+        2,
+        4,
+        5,
+        6
+      ],
+      "force_x": -0.9992978572724248,
+      "force_y": -4.44165387497898
+    },
+    {
+      "accepted_node_ids": [],
+      "body_id": 4,
+      "exact_body_ids": [
+        1,
+        2,
+        3,
+        5,
+        6
+      ],
+      "force_x": 0.8868538042053737,
+      "force_y": 7.01524633578666
+    },
+    {
+      "accepted_node_ids": [
+        10
+      ],
+      "body_id": 5,
+      "exact_body_ids": [
+        2,
+        3,
+        4,
+        6
+      ],
+      "force_x": -0.6587691871493502,
+      "force_y": -0.7268381757030715
+    },
+    {
+      "accepted_node_ids": [
+        10,
+        12
+      ],
+      "body_id": 6,
+      "exact_body_ids": [
+        4,
+        5
+      ],
+      "force_x": -4.665966756850863,
+      "force_y": -5.423360422254133
+    }
+  ],
+  "max_relative_error": 0.006558786879803883,
+  "native_continuation_active": false,
+  "native_continuation_backend": null,
+  "node_count": 4,
+  "node_count_seen": 4,
+  "node_radius": null,
+  "optix_performance": {
+    "class": "optix_traversal_prepared_summary",
+    "note": "Default candidate rows use fixed-radius candidate generation and native fixed-radius candidate-summary continuation for compact candidate summaries. Explicit node_coverage_prepared mode uses prepared OptiX fixed-radius threshold traversal for node-coverage decisions only. Python opening-rule and force reduction remain outside the claim."
+  },
+  "optix_summary_mode": null,
+  "output_mode": "full",
+  "rt_core_accelerated": false,
+  "rtdl_role": "RTDL emits body-to-quadtree-node candidate rows; native fixed-radius candidate-summary continuation summarizes candidate rows; Python applies the Barnes-Hut opening rule and computes force vectors.",
+  "theta": 0.75
+}

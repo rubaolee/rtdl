@@ -1,0 +1,291 @@
+{
+  "app": "database_analytics",
+  "copies": 1,
+  "data_flow": [
+    "application-owned denormalized rows",
+    "bounded RTDL DB kernels",
+    "scan and grouped aggregate rows",
+    "Python-owned dashboard or risk-summary JSON"
+  ],
+  "execution_mode": "one_shot",
+  "honesty_boundary": "Unified app over bounded RTDL DB kernels; not SQL, indexes, joins, transactions, query planning, or a DBMS.",
+  "native_continuation_active": false,
+  "native_continuation_backend": "none",
+  "optix_performance": {
+    "class": "python_interface_dominated",
+    "note": "Uses real OptiX DB BVH candidate discovery and native C++ exact filtering/grouping. App-level performance is still limited by Python/ctypes preparation, candidate bitset copy-back, grouped-row decoding, and row materialization unless materialization-free compact_summary is selected; native-continuation metadata is active only for compact DB summaries that avoid row/group materialization."
+  },
+  "output_mode": "full",
+  "requested_backend": "cpu_python_reference",
+  "retired_compatibility_helpers": [
+    "examples/internal/archived_apps/rtdl_v0_7_db_app_demo.py",
+    "examples/v2_0/apps/geospatial/rtdl_sales_risk_screening.py"
+  ],
+  "rt_core_accelerated": false,
+  "rt_core_claim_scope": "partial prepared compact-summary DB traversal only; not a broad DBMS or whole-app speedup claim",
+  "scenario": "all",
+  "sections": {
+    "regional_dashboard": {
+      "app": "regional_order_dashboard",
+      "backend": "cpu_reference",
+      "copies": 1,
+      "data_flow": [
+        "app order rows",
+        "RTDL v0.7 bounded DB workload",
+        "CPU reference evaluator",
+        "application-ready JSON rows"
+      ],
+      "execution_mode": "one_shot",
+      "fallback_note": null,
+      "honesty_boundary": "Demo of bounded v0.7 DB kernels; not a SQL engine, optimizer, transaction system, or DBMS.",
+      "input_table": {
+        "fields": [
+          "channel",
+          "discount",
+          "quantity",
+          "region",
+          "revenue",
+          "row_id",
+          "ship_date"
+        ],
+        "row_count": 7
+      },
+      "native_continuation_active": false,
+      "native_continuation_backend": "none",
+      "output_mode": "full",
+      "prepared_dataset": null,
+      "queries": {
+        "open_order_count_by_region": {
+          "meaning": "How many small post-window orders remain by region?",
+          "operation": "grouped_count",
+          "query": {
+            "group_keys": [
+              "region"
+            ],
+            "predicates": [
+              [
+                "ship_date",
+                "ge",
+                12
+              ],
+              [
+                "quantity",
+                "lt",
+                20
+              ]
+            ]
+          }
+        },
+        "promo_order_ids": {
+          "meaning": "Which discounted small-quantity orders shipped during the campaign window?",
+          "operation": "conjunctive_scan",
+          "predicates": [
+            [
+              "ship_date",
+              "between",
+              12,
+              15
+            ],
+            [
+              "discount",
+              "eq",
+              6
+            ],
+            [
+              "quantity",
+              "lt",
+              20
+            ]
+          ]
+        },
+        "web_revenue_by_region": {
+          "meaning": "How much web-channel revenue is covered by region?",
+          "operation": "grouped_sum",
+          "query": {
+            "group_keys": [
+              "region"
+            ],
+            "predicates": [
+              [
+                "ship_date",
+                "ge",
+                12
+              ],
+              [
+                "channel",
+                "eq",
+                "web"
+              ]
+            ],
+            "value_field": "revenue"
+          }
+        }
+      },
+      "requested_backend": "cpu_reference",
+      "results": {
+        "open_order_count_by_region": [
+          {
+            "count": 2,
+            "region": "east"
+          },
+          {
+            "count": 1,
+            "region": "south"
+          },
+          {
+            "count": 2,
+            "region": "west"
+          }
+        ],
+        "promo_order_ids": [
+          {
+            "row_id": 3
+          },
+          {
+            "row_id": 4
+          },
+          {
+            "row_id": 5
+          },
+          {
+            "row_id": 7
+          }
+        ],
+        "web_revenue_by_region": [
+          {
+            "region": "east",
+            "sum": 180
+          },
+          {
+            "region": "west",
+            "sum": 240
+          }
+        ]
+      },
+      "summary": {
+        "open_order_count_by_region": {
+          "east": 2,
+          "south": 1,
+          "west": 2
+        },
+        "promo_order_count": 4,
+        "web_revenue_by_region": {
+          "east": 180,
+          "west": 240
+        }
+      }
+    },
+    "sales_risk": {
+      "app": "sales_risk_screening",
+      "backend": "cpu_python_reference",
+      "copies": 1,
+      "execution_mode": "one_shot",
+      "native_continuation_active": false,
+      "native_continuation_backend": "none",
+      "output_mode": "full",
+      "prepared_dataset": null,
+      "primitive_contract": {
+        "active_v1_4_backend": false,
+        "alternate_primitive": "not_applicable",
+        "app_row": "database_analytics.sales_risk",
+        "backend": "cpu_python_reference",
+        "backend_contract_role": "compatibility_or_inactive",
+        "backend_scope": [
+          "embree",
+          "optix"
+        ],
+        "build_layout": "columnar_denorm_table",
+        "chunked_compact_summary": false,
+        "claim_boundary": "database_analytics.sales_risk compact-summary only: bounded predicate count, grouped integer count, and grouped integer sum over an application-owned denormalized table. This excludes SQL engines, DBMS behavior, query planning, joins, transactions, indexes as a database feature, and row-materializing output.",
+        "materialization_free": false,
+        "migration_status": "compatibility_wrapper_metadata_only",
+        "mode": "one_shot_or_materializing",
+        "phase_counters": [
+          "query_compact_summary_batch_sec",
+          "query_conjunctive_scan_count_sec",
+          "query_grouped_count_summary_sec",
+          "query_grouped_sum_summary_sec",
+          "query_conjunctive_scan_and_materialize_sec",
+          "query_grouped_count_and_materialize_sec",
+          "query_grouped_sum_and_materialize_sec",
+          "python_summary_postprocess_sec"
+        ],
+        "prepared_state": "none_required_for_materializing_rows",
+        "primitive": "row_materialization",
+        "probe_layout": "predicate_bundle_and_grouped_query",
+        "result_layout": "materialized_scan_count_sum_rows",
+        "same_contract_baseline_required": false,
+        "secondary_primitive": "not_applicable"
+      },
+      "row_counts": {
+        "grouped_count": 3,
+        "grouped_sum": 3,
+        "scan": 4
+      },
+      "rows": {
+        "grouped_count": [
+          {
+            "count": 1,
+            "region": "central"
+          },
+          {
+            "count": 1,
+            "region": "east"
+          },
+          {
+            "count": 2,
+            "region": "west"
+          }
+        ],
+        "grouped_sum": [
+          {
+            "region": "central",
+            "sum": 260
+          },
+          {
+            "region": "east",
+            "sum": 310
+          },
+          {
+            "region": "west",
+            "sum": 430
+          }
+        ],
+        "scan": [
+          {
+            "row_id": 2
+          },
+          {
+            "row_id": 3
+          },
+          {
+            "row_id": 4
+          },
+          {
+            "row_id": 6
+          }
+        ]
+      },
+      "summary": {
+        "highest_risk_region": "west",
+        "risky_order_count": 4,
+        "risky_order_count_by_region": {
+          "central": 1,
+          "east": 1,
+          "west": 2
+        },
+        "risky_order_ids": [
+          2,
+          3,
+          4,
+          6
+        ],
+        "risky_revenue_by_region": {
+          "central": 260,
+          "east": 310,
+          "west": 430
+        }
+      }
+    }
+  }
+}

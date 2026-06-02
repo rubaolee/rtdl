@@ -1,0 +1,28 @@
+{
+  "app": "segment_polygon_anyhit_rows",
+  "backend": "embree",
+  "boundary": "Rows mode emits segment/polygon pair rows. Compact segment_flags and segment_counts use the RTDL segment_polygon_hitcount primitive to avoid materializing full segment/polygon pair rows. Explicit --backend optix --output-mode rows --optix-mode native uses the bounded native OptiX pair-row emitter; overflow fails rather than truncating. This exposes a true traversal path, but speedup claims still require strict RTX artifact review.",
+  "dataset": "authored_segment_polygon_minimal",
+  "native_continuation_active": false,
+  "native_continuation_backend": "none",
+  "native_output_capacity": null,
+  "optix_mode": "not_applicable",
+  "optix_performance": {
+    "class": "optix_traversal",
+    "note": "Default segment/polygon OptiX pair-row path remains conservative, but the prepared bounded pair-row profiler reuses a polygon BVH and runs native OptiX custom-AABB traversal with bounded output and overflow metadata."
+  },
+  "output_mode": "segment_counts",
+  "row_count": 2,
+  "rt_core_accelerated": false,
+  "segment_counts": [
+    {
+      "hit_count": 1,
+      "segment_id": 1
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2
+    }
+  ],
+  "summary_source": "segment_polygon_hitcount"
+}
