@@ -20,6 +20,7 @@ NUMBA_GROUP_ID_VALIDATION_MODE = "device_resident_error_flag"
 
 def numba_partner_available() -> bool:
     try:
+        _activate_numba_cuda_redirector()
         from numba import cuda
     except ImportError:
         return False
@@ -495,6 +496,7 @@ def _numba_group_id_validation_kernel(cuda: Any):
 def _import_numba_stack() -> tuple[Any, Any]:
     try:
         import numpy as np
+        _activate_numba_cuda_redirector()
         from numba import cuda
     except ImportError as exc:
         raise ModuleNotFoundError(
@@ -504,6 +506,15 @@ def _import_numba_stack() -> tuple[Any, Any]:
     if not cuda.is_available():
         raise RuntimeError("Numba continuation execution requires CUDA; use an NVIDIA pod")
     return cuda, np
+
+
+def _activate_numba_cuda_redirector() -> None:
+    """Activate numba-cuda's redirector when installed via --target/PYTHONPATH."""
+
+    try:
+        import _numba_cuda_redirector  # noqa: F401
+    except ImportError:
+        pass
 
 
 def _validate_group_run_shape(

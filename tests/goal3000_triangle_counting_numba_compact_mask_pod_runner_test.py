@@ -6,6 +6,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 RUNNER = REPO_ROOT / "scripts" / "goal3000_triangle_counting_numba_compact_mask_pod_runner.py"
+NUMBA_CONTINUATION = REPO_ROOT / "src" / "rtdsl" / "numba_partner_continuation.py"
 REPORT = (
     REPO_ROOT
     / "docs"
@@ -30,6 +31,12 @@ class Goal3000TriangleCountingNumbaCompactMaskPodRunnerTest(unittest.TestCase):
             '"triangle_counting_whole_app_speedup_claim_authorized": False',
         ):
             self.assertIn(phrase, source)
+
+    def test_numba_import_helper_activates_target_install_redirector(self) -> None:
+        source = NUMBA_CONTINUATION.read_text(encoding="utf-8")
+        self.assertIn("_activate_numba_cuda_redirector", source)
+        self.assertIn("import _numba_cuda_redirector", source)
+        self.assertIn("from numba import cuda", source)
 
     def test_report_keeps_pod_and_claim_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
