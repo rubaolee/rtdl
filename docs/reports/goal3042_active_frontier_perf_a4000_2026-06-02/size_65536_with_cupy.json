@@ -1,0 +1,125 @@
+{
+  "exact_reference": {
+    "direction": "a_to_b",
+    "distance": 0.13085040452901578,
+    "method": "cupy_grouped_grid_rawkernel",
+    "source_index": 48139,
+    "target_index": 55536
+  },
+  "results": {
+    "cupy_grouped_grid_rawkernel": {
+      "direction": "a_to_b",
+      "distance": 0.13085040452901578,
+      "distance_for_compare": 0.13085040452901578,
+      "elapsed_sec": 0.3004813890438527,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "CuPy RawKernel exact grouped-grid nearest-neighbor continuation",
+        "role": "baseline",
+        "uses_partner": true,
+        "uses_rt_cores": false,
+        "uses_rtdl": false
+      },
+      "method": "cupy_grouped_grid_rawkernel",
+      "ok": true,
+      "source_index": 48139,
+      "target_index": 55536
+    },
+    "rtdl_rt_grouped_active_frontier_nearest_witness": {
+      "backend": "optix",
+      "direction": "a_to_b",
+      "distance": 0.13085040452901578,
+      "distance_for_compare": 0.13085040452901578,
+      "elapsed_sec": 0.07855842192657292,
+      "exact_value": true,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "sample lower-bound seed plus native device-resident active frontier and one-row witness reduction",
+        "role": "rtdl_v2_language",
+        "uses_partner": false,
+        "uses_rt_cores": true,
+        "uses_rtdl": true
+      },
+      "method": "rtdl_rt_grouped_active_frontier_nearest_witness",
+      "ok": true,
+      "radius_strategy": "rt_grouped_active_frontier_seed",
+      "rt_core_accelerated": true,
+      "source_index": 48139,
+      "target_index": 55536,
+      "threshold_iterations": 2,
+      "witness_radius": 3.5377767072117257
+    },
+    "rtdl_rt_grouped_adaptive_raw_nearest_witness": {
+      "backend": "optix",
+      "direction": "a_to_b",
+      "distance": 0.13085040452901578,
+      "distance_for_compare": 0.13085040452901578,
+      "elapsed_sec": 1.069001241819933,
+      "exact_value": true,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "preferred current RT path using generic raw row views instead of Python dictionaries",
+        "role": "rtdl_v2_language",
+        "uses_partner": false,
+        "uses_rt_cores": true,
+        "uses_rtdl": true
+      },
+      "method": "rtdl_rt_grouped_adaptive_raw_nearest_witness",
+      "ok": true,
+      "radius_strategy": "rt_grouped_adaptive_raw_radius",
+      "rt_core_accelerated": true,
+      "source_index": 48139,
+      "target_index": 55536,
+      "threshold_iterations": 6,
+      "witness_radius": 0.8844441768029314
+    },
+    "rtdl_rt_grouped_seeded_pruned_nearest_witness": {
+      "backend": "optix",
+      "direction": "a_to_b",
+      "distance": 0.13085040452901578,
+      "distance_for_compare": 0.13085040452901578,
+      "elapsed_sec": 1.364961639046669,
+      "exact_value": true,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "sample lower-bound seed plus host-visible threshold flags and unsafe-subset reduction",
+        "role": "rtdl_v2_language",
+        "uses_partner": false,
+        "uses_rt_cores": true,
+        "uses_rtdl": true
+      },
+      "method": "rtdl_rt_grouped_seeded_pruned_nearest_witness",
+      "ok": true,
+      "radius_strategy": "xhd_sample_seed_threshold_prune",
+      "rt_core_accelerated": true,
+      "source_index": 48139,
+      "target_index": 55536,
+      "threshold_iterations": 2,
+      "witness_radius": 3.5377767072117257
+    }
+  },
+  "scenario": {
+    "methods": [
+      "cupy_grouped_grid_rawkernel",
+      "rtdl_rt_grouped_seeded_pruned_nearest_witness",
+      "rtdl_rt_grouped_active_frontier_nearest_witness",
+      "rtdl_rt_grouped_adaptive_raw_nearest_witness"
+    ],
+    "offset_x": 0.08,
+    "offset_y": -0.06,
+    "oracle_radius_slack": 1e-07,
+    "points_a": 65536,
+    "points_b": 65536,
+    "rt_backend": "optix",
+    "rt_nearest_seed_strategy": "rt_threshold_upper_bound",
+    "rt_tolerance": 0.0001,
+    "seed_a": 11,
+    "seed_b": 29,
+    "seed_sample_count": 1024,
+    "target_points_per_group": 512
+  }
+}

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import unittest
 from pathlib import Path
 
@@ -8,6 +9,7 @@ import rtdsl as rt
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 REPORT = REPO_ROOT / "docs" / "reports" / "goal3042_point_group_active_frontier_witness_selection_2026-06-02.md"
+PERF_ARTIFACT = REPO_ROOT / "docs" / "reports" / "goal3042_active_frontier_perf_a4000_2026-06-02.json"
 OPTIX_RUNTIME = REPO_ROOT / "src" / "rtdsl" / "optix_runtime.py"
 OPTIX_API = REPO_ROOT / "src" / "native" / "optix" / "rtdl_optix_api.cpp"
 OPTIX_CORE = REPO_ROOT / "src" / "native" / "optix" / "rtdl_optix_core.cpp"
@@ -45,11 +47,40 @@ class Goal3042PointGroupActiveFrontierWitnessSelectionTest(unittest.TestCase):
             "not Hausdorff-specific",
             "materializes_frontier_on_host = False",
             "not a true-zero-copy claim",
-            "pod timing pending",
+            "A4000 pod timing collected",
+            "6.536x over CuPy",
             "Public speedup claim: false",
             "App-specific native-engine logic: false",
         ):
             self.assertIn(phrase, text)
+
+    def test_a4000_perf_artifact_records_bounded_positive_result(self) -> None:
+        data = json.loads(PERF_ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(data["goal"], "Goal3042")
+        self.assertEqual(data["source_commit"], "f0b42a1828943de8751084a0d2438b174299fb4b")
+        self.assertEqual(data["gpu"], "NVIDIA RTX A4000")
+        self.assertEqual(data["cupy_version"], "14.1.1")
+        self.assertTrue(data["build_passed"])
+        self.assertTrue(data["focused_tests_passed"])
+        self.assertTrue(data["runtime_smoke_matched_openmp_witness"])
+        self.assertTrue(data["all_rows_match_exact_reference"])
+        self.assertGreater(data["best_active_speedup_vs_cupy"], 6.5)
+        self.assertFalse(data["v2_6_release_authorized"])
+        self.assertFalse(data["public_speedup_claim_authorized"])
+        self.assertFalse(data["rt_core_speedup_claim_authorized"])
+        self.assertFalse(data["true_zero_copy_claim_authorized"])
+
+        rows = data["rows"]
+        self.assertEqual([row["points_a"] for row in rows], [4096, 8192, 16384, 32768, 65536, 131072])
+        self.assertGreater(rows[0]["active_vs_cupy_ratio"], 1.0)
+        self.assertGreater(rows[1]["active_vs_cupy_ratio"], 1.0)
+        self.assertLess(rows[2]["active_vs_cupy_ratio"], 1.0)
+        self.assertLess(rows[-1]["active_vs_cupy_ratio"], 0.16)
+        for row in rows:
+            self.assertTrue(row["all_methods_ok"])
+            self.assertTrue(row["all_methods_match_exact_reference"])
+            self.assertIn("goal3042_active_frontier_perf_a4000_2026-06-02", row["artifact"])
 
     def test_native_export_is_generic_and_filters_rows_on_device(self) -> None:
         symbol = "rtdl_optix_reduce_prepared_point_group_nearest_max_distance_active_frontier_2d"
@@ -122,7 +153,13 @@ class Goal3042PointGroupActiveFrontierWitnessSelectionTest(unittest.TestCase):
 
         self.assertEqual(roadmap["point_group_active_frontier_goal"], "Goal3042")
         self.assertIn("generic_optix_active_frontier", roadmap["point_group_active_frontier_status"])
-        self.assertIn("pod_timing_pending", roadmap["point_group_active_frontier_status"])
+        self.assertIn("a4000_positive_perf_evidence", roadmap["point_group_active_frontier_status"])
+        self.assertIn("external_review_pending", roadmap["point_group_active_frontier_status"])
+        self.assertIn("not_public_speedup_evidence", roadmap["point_group_active_frontier_status"])
+        self.assertEqual(
+            roadmap["point_group_active_frontier_artifact"],
+            "docs/reports/goal3042_active_frontier_perf_a4000_2026-06-02.json",
+        )
         self.assertFalse(roadmap["release_authorized"])
         self.assertFalse(roadmap["public_speedup_claim_authorized"])
         self.assertFalse(roadmap["rt_core_speedup_claim_authorized"])
