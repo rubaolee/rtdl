@@ -162,6 +162,10 @@ def v2_6_roadmap() -> dict[str, Any]:
         "hausdorff_witness_index_cleanup_report": "docs/reports/goal3044_hausdorff_grouped_witness_index_mapping_cleanup_2026-06-02.md",
         "hausdorff_witness_index_cleanup_artifact": "docs/reports/goal3044_grouped_reduced_witness_index_smoke_a4000_2026-06-02.json",
         "hausdorff_witness_index_cleanup_status": "grouped_one_row_hausdorff_paths_map_native_point_ids_to_original_target_columns_a4000_smoke_passed_not_native_or_speedup_work",
+        "hausdorff_active_frontier_multitrial_goal": "Goal3045",
+        "hausdorff_active_frontier_multitrial_report": "docs/reports/goal3045_hausdorff_active_frontier_multitrial_harness_2026-06-02.md",
+        "hausdorff_active_frontier_multitrial_artifact": "docs/reports/goal3045_hausdorff_active_frontier_multitrial_a4000_2026-06-02.json",
+        "hausdorff_active_frontier_multitrial_status": "a4000_same_process_10_trial_median_confirms_active_frontier_crossover_internal_evidence_not_public_speedup_evidence",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -551,6 +555,16 @@ def validate_v2_6_roadmap(
         errors.append("Goal3044 Hausdorff witness-index cleanup report is missing")
     if not (root / str(roadmap.get("hausdorff_witness_index_cleanup_artifact", ""))).exists():
         errors.append("Goal3044 Hausdorff witness-index cleanup artifact is missing")
+    if roadmap.get("hausdorff_active_frontier_multitrial_goal") != "Goal3045":
+        errors.append("v2.6 roadmap must index Goal3045 as active-frontier multitrial evidence")
+    if "10_trial_median" not in str(roadmap.get("hausdorff_active_frontier_multitrial_status", "")):
+        errors.append("Goal3045 status must record 10-trial median evidence")
+    if "not_public_speedup_evidence" not in str(roadmap.get("hausdorff_active_frontier_multitrial_status", "")):
+        errors.append("Goal3045 status must not be treated as public speedup evidence")
+    if not (root / str(roadmap.get("hausdorff_active_frontier_multitrial_report", ""))).exists():
+        errors.append("Goal3045 active-frontier multitrial report is missing")
+    if not (root / str(roadmap.get("hausdorff_active_frontier_multitrial_artifact", ""))).exists():
+        errors.append("Goal3045 active-frontier multitrial artifact is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):
