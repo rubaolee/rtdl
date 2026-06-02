@@ -1,0 +1,71 @@
+{
+  "block_size": 128,
+  "claim_boundary": {
+    "numba_speedup_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "count_phase_timing": {
+    "phase_contract_version": "rtdl.partner.v2.4",
+    "phases_sec": {
+      "partner_continuation": 0.042070502997376025
+    },
+    "promoted_performance_path": false,
+    "same_phase_contract_as_basis": false,
+    "source": "run_numba_segmented_count_i64",
+    "validation": {
+      "errors": [],
+      "known_phases": [
+        "partner_continuation"
+      ],
+      "status": "accept"
+    }
+  },
+  "counts_match_cpu": true,
+  "elapsed_sec": 0.8406514819944277,
+  "goal": "Goal2991",
+  "gpu": "<CUDA device 0 'b'NVIDIA GeForce GTX 1070''>",
+  "groups": 1024,
+  "handoff": {
+    "all_columns_device_resident": true,
+    "all_leases_completed": true,
+    "runtime_observed_descriptor_count": 2,
+    "selected_partner": "numba",
+    "torch_carrier_used": false,
+    "torch_conversion_used": false,
+    "validation": {
+      "contract_version": "rtdl.v2_6.neutral_partner_handoff.v1",
+      "errors": [],
+      "runtime_observed_descriptor_count": 2,
+      "selected_partner": "numba",
+      "status": "accept"
+    }
+  },
+  "max_sum_abs_error": 1.7053025658242404e-13,
+  "rows": 65536,
+  "source_commit": "dbb06449c474a7df48914258b927a4cef550cc45",
+  "source_dirty": [
+    "?? .pydeps_v26_numba/"
+  ],
+  "status": "pass",
+  "sum_phase_timing": {
+    "phase_contract_version": "rtdl.partner.v2.4",
+    "phases_sec": {
+      "partner_continuation": 0.044134657946415246
+    },
+    "promoted_performance_path": false,
+    "same_phase_contract_as_basis": false,
+    "source": "run_numba_segmented_sum_f64",
+    "validation": {
+      "errors": [],
+      "known_phases": [
+        "partner_continuation"
+      ],
+      "status": "accept"
+    }
+  },
+  "sums_match_cpu": true
+}

@@ -32,6 +32,10 @@ def v2_6_roadmap() -> dict[str, Any]:
         "pod_runner_goal": "Goal2991",
         "pod_runner_report": "docs/reports/goal2991_v2_6_numba_neutral_handoff_pod_runner_2026-06-01.md",
         "pod_runner_status": "prepared_not_executed",
+        "local_smoke_goal": "Goal2992",
+        "local_smoke_report": "docs/reports/goal2992_v2_6_numba_neutral_handoff_local_linux_smoke_2026-06-01.md",
+        "local_smoke_artifact": "docs/reports/goal2992_v2_6_numba_neutral_handoff_local_linux_smoke_2026-06-01.json",
+        "local_smoke_status": "passed_on_gtx1070_not_release_or_performance_evidence",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -118,6 +122,14 @@ def validate_v2_6_roadmap(
         errors.append("Goal2991 runner must remain prepared_not_executed until pod evidence exists")
     if not (root / str(roadmap.get("pod_runner_report", ""))).exists():
         errors.append("Goal2991 pod-runner report is missing")
+    if roadmap.get("local_smoke_goal") != "Goal2992":
+        errors.append("v2.6 roadmap must index Goal2992 as the local Linux smoke checkpoint")
+    if "not_release_or_performance_evidence" not in str(roadmap.get("local_smoke_status", "")):
+        errors.append("Goal2992 local smoke must not be treated as release or performance evidence")
+    if not (root / str(roadmap.get("local_smoke_report", ""))).exists():
+        errors.append("Goal2992 local smoke report is missing")
+    if not (root / str(roadmap.get("local_smoke_artifact", ""))).exists():
+        errors.append("Goal2992 local smoke artifact is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):
