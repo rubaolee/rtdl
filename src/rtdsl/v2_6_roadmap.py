@@ -120,6 +120,14 @@ def v2_6_roadmap() -> dict[str, Any]:
         "hausdorff_raw_row_view_probe_report": "docs/reports/goal3026_hausdorff_raw_row_view_probe_2026-06-02.md",
         "hausdorff_raw_row_view_probe_artifact": "docs/reports/goal3026_hausdorff_raw_row_view_probe_2026-06-02.json",
         "hausdorff_raw_row_view_probe_status": "raw_row_view_faster_than_old_adaptive_rt_but_still_slower_than_cupy_not_public_speedup_evidence",
+        "hausdorff_raw_row_view_larger_scale_goal": "Goal3028",
+        "hausdorff_raw_row_view_larger_scale_report": "docs/reports/goal3028_hausdorff_raw_row_view_larger_scale_probe_2026-06-02.md",
+        "hausdorff_raw_row_view_larger_scale_artifacts": (
+            "docs/reports/goal3028_hausdorff_raw_row_view_larger_scale_probe_2026-06-02.json",
+            "docs/reports/goal3028_hausdorff_raw_row_view_32768_probe_2026-06-02.json",
+            "docs/reports/goal3028_hausdorff_raw_row_view_65536_probe_2026-06-02.json",
+        ),
+        "hausdorff_raw_row_view_larger_scale_status": "raw_row_view_rt_stable_improvement_over_old_rt_gap_narrows_but_no_crossover_against_cupy_not_public_speedup_evidence",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -428,6 +436,17 @@ def validate_v2_6_roadmap(
         errors.append("Goal3026 Hausdorff raw row-view report is missing")
     if not (root / str(roadmap.get("hausdorff_raw_row_view_probe_artifact", ""))).exists():
         errors.append("Goal3026 Hausdorff raw row-view artifact is missing")
+    if roadmap.get("hausdorff_raw_row_view_larger_scale_goal") != "Goal3028":
+        errors.append("v2.6 roadmap must index Goal3028 as the larger-scale Hausdorff raw row-view probe")
+    if "gap_narrows_but_no_crossover" not in str(roadmap.get("hausdorff_raw_row_view_larger_scale_status", "")):
+        errors.append("Goal3028 status must record that the CuPy gap narrows but does not cross over")
+    if "not_public_speedup_evidence" not in str(roadmap.get("hausdorff_raw_row_view_larger_scale_status", "")):
+        errors.append("Goal3028 larger-scale probe must not be treated as public speedup evidence")
+    if not (root / str(roadmap.get("hausdorff_raw_row_view_larger_scale_report", ""))).exists():
+        errors.append("Goal3028 larger-scale Hausdorff report is missing")
+    for artifact in roadmap.get("hausdorff_raw_row_view_larger_scale_artifacts", ()):
+        if not (root / str(artifact)).exists():
+            errors.append(f"Goal3028 larger-scale Hausdorff artifact is missing: {artifact}")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):

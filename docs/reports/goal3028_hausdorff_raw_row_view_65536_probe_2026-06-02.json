@@ -1,0 +1,91 @@
+{
+  "app_specific_native_engine_logic_authorized": false,
+  "cuda_prefix": "/usr/local/cuda-12.6",
+  "goal": "Goal3026",
+  "gpu": "NVIDIA L4, 565.57.01",
+  "methods": [
+    "rtdl_rt_grouped_adaptive_nearest_witness",
+    "rtdl_rt_grouped_adaptive_raw_nearest_witness",
+    "cupy_grouped_grid_rawkernel"
+  ],
+  "promote_raw_row_view_path": true,
+  "public_speedup_claim_authorized": false,
+  "purpose": "Measure generic point-group nearest-witness raw row-view output for exact Hausdorff adaptive RT path.",
+  "ratios": {
+    "raw_vs_cupy_ratio_65536": 4.74342729436076,
+    "raw_vs_old_ratio_65536": 0.8065281836024736
+  },
+  "release_authorized": false,
+  "repeats": 3,
+  "rows": [
+    {
+      "direction": "a_to_b",
+      "distance": 0.13085040452901578,
+      "exact_value": true,
+      "max_elapsed_sec": 1.4294959008693695,
+      "median_elapsed_sec": 1.3800964392721653,
+      "method": "rtdl_rt_grouped_adaptive_nearest_witness",
+      "min_elapsed_sec": 1.3354829624295235,
+      "points": 65536,
+      "radius_strategy": "rt_grouped_adaptive_radius",
+      "rt_core_accelerated": true,
+      "samples_sec": [
+        1.4294959008693695,
+        1.3800964392721653,
+        1.3354829624295235
+      ],
+      "source_index": 48139,
+      "target_index": 55536,
+      "threshold_iterations": 6,
+      "witness_radius": 0.8844441768029314
+    },
+    {
+      "direction": "a_to_b",
+      "distance": 0.13085040452901578,
+      "exact_value": true,
+      "max_elapsed_sec": 1.1162988916039467,
+      "median_elapsed_sec": 1.113086674362421,
+      "method": "rtdl_rt_grouped_adaptive_raw_nearest_witness",
+      "min_elapsed_sec": 1.0910179242491722,
+      "points": 65536,
+      "radius_strategy": "rt_grouped_adaptive_raw_radius",
+      "rt_core_accelerated": true,
+      "samples_sec": [
+        1.0910179242491722,
+        1.113086674362421,
+        1.1162988916039467
+      ],
+      "source_index": 48139,
+      "target_index": 55536,
+      "threshold_iterations": 6,
+      "witness_radius": 0.8844441768029314
+    },
+    {
+      "direction": "a_to_b",
+      "distance": 0.13085040452901578,
+      "exact_value": true,
+      "max_elapsed_sec": 0.23467053845524788,
+      "median_elapsed_sec": 0.23465874046087265,
+      "method": "cupy_grouped_grid_rawkernel",
+      "min_elapsed_sec": 0.23463262245059013,
+      "points": 65536,
+      "radius_strategy": null,
+      "rt_core_accelerated": false,
+      "samples_sec": [
+        0.23463262245059013,
+        0.23467053845524788,
+        0.23465874046087265
+      ],
+      "source_index": 48139,
+      "target_index": 55536,
+      "threshold_iterations": null,
+      "witness_radius": null
+    }
+  ],
+  "rt_core_speedup_claim_authorized": false,
+  "source_commit": "ee44ee06d296c1f206f1e3b5d3047bec8fb0e522",
+  "source_dirty": [],
+  "true_zero_copy_claim_authorized": false,
+  "warmup": 1,
+  "whole_app_speedup_claim_authorized": false
+}

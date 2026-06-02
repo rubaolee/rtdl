@@ -837,6 +837,11 @@ Future work:
   grouped-grid reference on dense random point sets. This closes the cheap
   row-materialization branch; the remaining gap still needs device-resident
   active-set and nearest-witness continuation.
+- Goal3028 extended that probe to 8192 through 65536 points. The raw row-view
+  RT path stays consistently faster than the old adaptive RT path, and the
+  CuPy gap narrows with scale, but no crossover appears by 65536 points on the
+  L4 pod. Treat this as stronger evidence that the next win must change the
+  generic continuation contract, not just the Python row-consumer shape.
 
 Boundary:
 
