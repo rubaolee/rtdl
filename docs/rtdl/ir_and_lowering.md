@@ -110,7 +110,7 @@ Stable current facts:
 
 ## What The Current Engine Boundary Tightens
 
-The current release-prep chain tightens app-specific engine customization by
+The current v2.6 release chain tightens app-specific engine customization by
 turning common backend work into reviewed generic primitives and generic native
 ABI terminology. The accepted direction separates primitives by result
 semantics, not by app names:

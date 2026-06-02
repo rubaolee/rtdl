@@ -6,7 +6,7 @@ continuation, or research benchmark.
 
 The directory name `v2_0/` is a stable compatibility path for the current v2.x
 learner tree. The content and guidance in that tree are maintained for the v2.6
-release-candidate surface rather than split into duplicate version directories.
+released surface rather than split into duplicate version directories.
 
 Run examples from the repository root with source-tree usage:
 

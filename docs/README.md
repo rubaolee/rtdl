@@ -4,7 +4,7 @@ This directory has three doors:
 
 | Door | Audience | Purpose |
 | --- | --- | --- |
-| [Learn](learn/README.md) | Learners and app builders | Quick path to run examples, write kernels, choose backends, and understand the v2.6 release-candidate boundaries. |
+| [Learn](learn/README.md) | Learners and app builders | Quick path to run examples, write kernels, choose backends, and understand the v2.6 release boundaries. |
 | [Research](research/README.md) | Internal researchers and advanced developers | Architecture notes, backend research, RayJoin/Embree context, future ideas, and design constraints. |
 | [Audit](audit/README.md) | Release reviewers and auditors | Process docs, runbooks, release reports, evidence reports, reviews, and archived goal logs. |
 
@@ -12,7 +12,7 @@ If you are new, start in **Learn**. If you are evaluating design or extending
 the system, start in **Research**. If you are checking evidence, consensus, or
 project history, start in **Audit**.
 
-Current status: RTDL v2.6 is the release-candidate source-tree
+Current status: RTDL v2.6 is the released source-tree
 Python+partner+RTDL app-portfolio surface. It keeps source-tree usage,
 preserves the no-broad-speedup/no-package-install boundary, and provides the
 current partner-choice guidance for CuPy and Numba continuations.
@@ -56,6 +56,7 @@ Read these in order:
 | Runtime overhead | [Runtime Overhead Architecture](runtime_overhead_architecture.md) |
 | Public map | [Public Documentation Map](public_documentation_map.md) |
 | Release Reports | [Release Reports](release_reports/) |
+| Current release package | [v2.6 Release Package](release_reports/v2_6/README.md) |
 | History Index | [History Index](history/README.md) |
 
 ## Directory Map

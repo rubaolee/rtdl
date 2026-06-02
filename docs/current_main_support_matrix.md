@@ -1,6 +1,6 @@
 # RTDL Current Support Matrix
 
-Status: live support matrix for the v2.6 release-candidate source tree.
+Status: live support matrix for the v2.6 released source tree.
 
 This page is the current learner-facing matrix. Older release matrices remain
 under `docs/release_reports/` for audit work, but normal users should read this

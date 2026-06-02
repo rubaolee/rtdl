@@ -1,6 +1,6 @@
 # RTDL Backend Maturity
 
-Status: v2.6 release-candidate backend maturity guide.
+Status: v2.6 released backend maturity guide.
 
 This page separates three claims that are easy to mix up:
 

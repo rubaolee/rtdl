@@ -1,8 +1,8 @@
 # Benchmark Partner Reference Matrix
 
-Status: current v2.x source-tree guidance, with v2.6 Numba work in progress.
+Status: current v2.6 released source-tree guidance.
 This page is a guide for app authors choosing a custom continuation partner. It
-does not authorize release wording or broad speedup claims.
+does not broaden release wording or authorize broad speedup claims.
 
 The first choice is always the same: if a fused generic RTDL primitive exactly
 expresses the answer, use that primitive. Partner code is for the work that is

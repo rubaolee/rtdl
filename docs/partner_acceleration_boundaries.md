@@ -100,9 +100,9 @@ For app continuations, the intended interpretation is:
   semantics, and final reports in Python or user partner code unless RTDL has
   shipped a reviewed generic primitive for that exact contract.
 
-## v2.6 Release-Candidate Boundary
+## v2.6 Release Boundary
 
-v2.6 is the current release-candidate source-tree Python+partner+RTDL evidence
+v2.6 is the current released source-tree Python+partner+RTDL evidence
 package. It provides user-chosen partner guidance and selected Numba
 custom-continuation support. It does not authorize package-install wording,
 broad speedup wording, automatic partner selection, or a general zero-copy

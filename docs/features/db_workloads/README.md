@@ -1,6 +1,6 @@
 # Database Workloads
 
-Status: current v2.6 release-candidate workload family.
+Status: current v2.6 released workload family.
 
 RTDL's first database-style workload family is a bounded analytical kernel
 surface over denormalized rows:

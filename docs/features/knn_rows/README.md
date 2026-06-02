@@ -2,7 +2,7 @@
 
 ## Status
 
-Active public workload line for the v2.6 release candidate.
+Active public workload line for the v2.6 release.
 
 Current implemented boundary:
 

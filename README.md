@@ -11,7 +11,7 @@ reference runner, Embree, or OptiX without rewriting the application.
 RTDL is not a renderer or graphics engine. It uses ray-tracing-style
 acceleration structures and traversal for application kernels.
 
-This documentation is written for the v2.6 release-candidate RTDL surface:
+This documentation is written for the v2.6 released RTDL surface:
 Python+partner+RTDL over a generic, app-agnostic native engine. Use RTDL from
 the repository source tree with `PYTHONPATH=src:.`; do not read any current doc
 as a package-install promise, automatic partner-selection promise, general
@@ -126,9 +126,9 @@ Backend support varies by feature and platform. Start with the portable
 `cpu_python_reference` backend, then use Embree or OptiX when your host has the
 native dependencies configured.
 
-## v2.6 Release Candidate
+## v2.6 Release
 
-RTDL v2.6 is the current release-candidate source-tree surface. It keeps the
+RTDL v2.6 is the current released source-tree surface. It keeps the
 v2.x language boundary, documents the promoted benchmark-app portfolio, demotes
 non-competitive candidates such as GPU-RMQ and Continuous Frechet to
 learner/research status, and records the app-agnostic primitive lessons from
@@ -195,6 +195,7 @@ release evidence, review records, and goal archives live separately:
 
 - [History Index](docs/history/README.md)
 - [Version Archive Notes](docs/history/version_archive_notes.md)
+- [Current v2.6 Release Package](docs/release_reports/v2_6/README.md)
 - [Previous v2.3 Release Package](docs/release_reports/v2_3/README.md)
 - [Release Reports](docs/release_reports/)
 - [Benchmark And Audit Reports](docs/reports/)

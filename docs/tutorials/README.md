@@ -10,7 +10,7 @@ as NumPy, PyTorch, CuPy, and selected Numba continuations can own or continue
 columns around supported RTDL primitives.
 
 This page is intentionally single-surface. It teaches the current v2.6
-release-candidate source tree and its explicit CuPy/Numba partner-choice
+released source tree and its explicit CuPy/Numba partner-choice
 guidance.
 
 ## Start Here

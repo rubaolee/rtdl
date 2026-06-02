@@ -6,7 +6,7 @@ users. Older release history is kept separately in
 
 ## Current Status
 
-RTDL v2.6 is the current release-candidate source-tree
+RTDL v2.6 is the current released source-tree
 Python+partner+RTDL surface. It preserves the v2.x language boundary and
 provides the cleaned benchmark-vs-learner app portfolio.
 
@@ -71,7 +71,7 @@ Allowed performance wording names the exact:
 
 When any of those are missing, use candidate or preview wording.
 
-## v2.6 Release-Candidate Boundaries
+## v2.6 Release Boundaries
 
 Allowed:
 

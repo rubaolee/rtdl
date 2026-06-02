@@ -1,6 +1,6 @@
 # RTDL Feature Homes
 
-Status: current v2.6 release-candidate feature index.
+Status: current v2.6 released feature index.
 
 Use these pages when you want to answer practical questions:
 
