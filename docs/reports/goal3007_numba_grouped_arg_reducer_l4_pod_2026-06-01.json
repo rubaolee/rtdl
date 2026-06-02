@@ -1,0 +1,108 @@
+{
+  "all_cases_match_cpu_reference": true,
+  "app": "generic_partner_continuation",
+  "app_specific_native_engine_logic_authorized": false,
+  "automatic_partner_selection_allowed": false,
+  "case_results": [
+    {
+      "argmax_adapter": "grouped_argmax_f64_partner_columns",
+      "argmax_all_match": true,
+      "argmax_matches": {
+        "dense_item_ids_match": true,
+        "dense_scores_match": true,
+        "group_ids_match": true,
+        "item_ids_match": true,
+        "missing_group_ids_match": true,
+        "present_counts_match": true,
+        "scores_match": true
+      },
+      "argmax_partner": "numba",
+      "argmax_phase_sec": 0.1511741802096367,
+      "argmax_rt_core_speedup_claim_authorized": false,
+      "argmax_tie_break": "highest_score_then_lowest_item_id",
+      "argmax_wall_sec": 0.1875714734196663,
+      "argmin_all_match": true,
+      "argmin_host_present_group_compaction_used": true,
+      "argmin_matches": {
+        "dense_item_ids_match": true,
+        "dense_scores_match": true,
+        "group_ids_match": true,
+        "item_ids_match": true,
+        "missing_group_ids_match": true,
+        "present_counts_match": true,
+        "scores_match": true
+      },
+      "argmin_phase_sec": 0.15889496356248856,
+      "argmin_tie_break": "lowest_score_then_lowest_item_id",
+      "argmin_wall_sec": 0.4963890388607979,
+      "block_size": 256,
+      "case": "tie_fixture",
+      "group_count": 4,
+      "row_count": 5
+    },
+    {
+      "argmax_adapter": "grouped_argmax_f64_partner_columns",
+      "argmax_all_match": true,
+      "argmax_matches": {
+        "dense_item_ids_match": true,
+        "dense_scores_match": true,
+        "group_ids_match": true,
+        "item_ids_match": true,
+        "missing_group_ids_match": true,
+        "present_counts_match": true,
+        "scores_match": true
+      },
+      "argmax_partner": "numba",
+      "argmax_phase_sec": 0.15518895536661148,
+      "argmax_rt_core_speedup_claim_authorized": false,
+      "argmax_tie_break": "highest_score_then_lowest_item_id",
+      "argmax_wall_sec": 0.19628207385540009,
+      "argmin_all_match": true,
+      "argmin_host_present_group_compaction_used": true,
+      "argmin_matches": {
+        "dense_item_ids_match": true,
+        "dense_scores_match": true,
+        "group_ids_match": true,
+        "item_ids_match": true,
+        "missing_group_ids_match": true,
+        "present_counts_match": true,
+        "scores_match": true
+      },
+      "argmin_phase_sec": 0.15539401769638062,
+      "argmin_tie_break": "lowest_score_then_lowest_item_id",
+      "argmin_wall_sec": 0.1979409120976925,
+      "block_size": 256,
+      "case": "large_stream",
+      "group_count": 4096,
+      "row_count": 1000000
+    }
+  ],
+  "goal": "Goal3007",
+  "host_present_group_compaction_used": true,
+  "numba_speedup_claim_authorized": false,
+  "operation_family": "numba_grouped_argmin_argmax_f64",
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "replaces_rt_traversal": false,
+  "rt_core_speedup_claim_authorized": false,
+  "selected_partner": "numba",
+  "source_commit": "a8933b1b20b5a98d388efa05a7b49cd69f65d87b",
+  "source_dirty": [],
+  "status": "pass",
+  "toolchain": {
+    "compute_capability": [
+      8,
+      9
+    ],
+    "cuda_available": true,
+    "gpu_name": "NVIDIA L4",
+    "numba_cuda_module": "/root/rtdl_goal2991_v26_pod/.pydeps_v26_numba_cuda/numba_cuda/numba/cuda/__init__.py",
+    "numba_version": "0.65.1",
+    "python": "3.12.3"
+  },
+  "true_zero_copy_claim_authorized": false,
+  "uses_legacy_torch_carrier": false,
+  "uses_torch_conversion": false,
+  "uses_v2_6_neutral_partner_handoff": true,
+  "whole_app_speedup_claim_authorized": false
+}

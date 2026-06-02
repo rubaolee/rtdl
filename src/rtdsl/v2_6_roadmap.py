@@ -66,6 +66,13 @@ def v2_6_roadmap() -> dict[str, Any]:
         "rayjoin_compact_mask_pod_report": "docs/reports/goal3003_rayjoin_numba_compact_mask_l4_pod_2026-06-01.md",
         "rayjoin_compact_mask_pod_artifact": "docs/reports/goal3003_rayjoin_numba_compact_mask_l4_pod_2026-06-01.json",
         "rayjoin_compact_mask_pod_status": "l4_pod_conformance_passed_all_three_workloads_clean_source_not_speedup_evidence",
+        "numba_grouped_arg_goal": "Goal3006",
+        "numba_grouped_arg_report": "docs/reports/goal3006_numba_grouped_argmin_argmax_preview_2026-06-01.md",
+        "numba_grouped_arg_status": "grouped_argmin_f64_and_grouped_argmax_f64_preview_front_door_prepared_not_speedup_evidence",
+        "numba_grouped_arg_pod_goal": "Goal3007",
+        "numba_grouped_arg_pod_report": "docs/reports/goal3007_numba_grouped_arg_reducer_l4_pod_2026-06-01.md",
+        "numba_grouped_arg_pod_artifact": "docs/reports/goal3007_numba_grouped_arg_reducer_l4_pod_2026-06-01.json",
+        "numba_grouped_arg_pod_status": "l4_pod_conformance_passed_clean_source_not_speedup_evidence",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -105,7 +112,7 @@ def v2_6_roadmap() -> dict[str, Any]:
             {
                 "step": "N-3",
                 "title": "conformance_matrix_and_readiness_refresh",
-                "exit_gate": "Numba demonstrated ops carry runtime conformance, including Goal2997 compact_mask_i64, while release_conformance_complete remains false",
+                "exit_gate": "Numba demonstrated ops carry runtime conformance, including Goal2997 compact_mask_i64 and Goal3007 grouped_argmin_f64/grouped_argmax_f64, while release_conformance_complete remains false",
             },
             {
                 "step": "N-4",
@@ -232,6 +239,26 @@ def validate_v2_6_roadmap(
         errors.append("Goal3003 RayJoin compact-mask pod report is missing")
     if not (root / str(roadmap.get("rayjoin_compact_mask_pod_artifact", ""))).exists():
         errors.append("Goal3003 RayJoin compact-mask pod artifact is missing")
+    if roadmap.get("numba_grouped_arg_goal") != "Goal3006":
+        errors.append("v2.6 roadmap must index Goal3006 as Numba grouped arg reducer preview")
+    if "grouped_argmin_f64" not in str(roadmap.get("numba_grouped_arg_status", "")):
+        errors.append("Goal3006 grouped arg status must name grouped_argmin_f64")
+    if "grouped_argmax_f64" not in str(roadmap.get("numba_grouped_arg_status", "")):
+        errors.append("Goal3006 grouped arg status must name grouped_argmax_f64")
+    if "not_speedup_evidence" not in str(roadmap.get("numba_grouped_arg_status", "")):
+        errors.append("Goal3006 grouped arg preview must not be treated as speedup evidence")
+    if not (root / str(roadmap.get("numba_grouped_arg_report", ""))).exists():
+        errors.append("Goal3006 grouped arg preview report is missing")
+    if roadmap.get("numba_grouped_arg_pod_goal") != "Goal3007":
+        errors.append("v2.6 roadmap must index Goal3007 as Numba grouped arg reducer pod evidence")
+    if "l4_pod_conformance_passed" not in str(roadmap.get("numba_grouped_arg_pod_status", "")):
+        errors.append("Goal3007 grouped arg pod status must record L4 conformance")
+    if "not_speedup_evidence" not in str(roadmap.get("numba_grouped_arg_pod_status", "")):
+        errors.append("Goal3007 grouped arg pod evidence must not be treated as speedup evidence")
+    if not (root / str(roadmap.get("numba_grouped_arg_pod_report", ""))).exists():
+        errors.append("Goal3007 grouped arg pod report is missing")
+    if not (root / str(roadmap.get("numba_grouped_arg_pod_artifact", ""))).exists():
+        errors.append("Goal3007 grouped arg pod artifact is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):
