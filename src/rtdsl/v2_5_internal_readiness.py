@@ -350,6 +350,7 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "run_goal2991_numba_neutral_handoff_on_cuda_pod",
     "request_external_review_for_goal2993_l4_numba_neutral_handoff",
     "begin_goal2994_numba_benchmark_app_demonstrator_after_goal2993_review",
+    "begin_goal2995_numba_segmented_min_max_after_raydb_demo",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )

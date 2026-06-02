@@ -1,0 +1,88 @@
+{
+  "app": "raydb_style_columnar_aggregate",
+  "block_size": 256,
+  "claim_boundary": {
+    "numba_speedup_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "raydb_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "continuation_paths": [
+    "v2_6_numba_neutral_front_door",
+    "v2_6_numba_neutral_front_door"
+  ],
+  "counts_match_cpu": true,
+  "elapsed_sec": 1.235245008021593,
+  "goal": "Goal2994",
+  "gpu": "<CUDA device 0 'NVIDIA L4'>",
+  "groups": 4096,
+  "max_sum_abs_error": 6.821210263296962e-13,
+  "metadata": {
+    "block_size": 256,
+    "execution_path": "v2_6_numba_neutral_front_door",
+    "post_rt_continuation_only": true,
+    "promoted_performance_path": false,
+    "public_speedup_claim_authorized": false,
+    "replaces_rt_traversal": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "uses_legacy_torch_carrier": false,
+    "uses_torch_conversion": false,
+    "v2_6_neutral_handoff_validation": {
+      "contract_version": "rtdl.v2_6.neutral_partner_handoff.v1",
+      "errors": [],
+      "runtime_observed_descriptor_count": 2,
+      "selected_partner": "numba",
+      "status": "accept"
+    },
+    "v2_6_numba_neutral_continuation": {
+      "app": "raydb_style_columnar_aggregate",
+      "app_owned_lowering": "RayDB query encoding remains Python app code. The v2.6 Numba continuation sees only generic group ids and numeric payload values.",
+      "blocked_reason": null,
+      "contract_version": "rtdl.raydb.v2_6.numba_neutral_continuation.v1",
+      "mode": "avg_as_sum_count",
+      "operations": [
+        "segmented_sum_f64",
+        "segmented_count_i64"
+      ],
+      "post_rt_continuation_only": true,
+      "promoted_performance_path": false,
+      "public_speedup_claim_authorized": false,
+      "replaces_rt_traversal": false,
+      "requires_device_resident_columns": true,
+      "rt_core_speedup_claim_authorized": false,
+      "selected_partner": "numba",
+      "status": "executable_for_count_sum",
+      "true_zero_copy_claim_authorized": false,
+      "uses_legacy_torch_carrier": false,
+      "uses_torch_conversion": false,
+      "uses_v2_6_neutral_partner_handoff": true
+    }
+  },
+  "mode": "avg_as_sum_count",
+  "operations": [
+    "segmented_sum_f64",
+    "segmented_count_i64"
+  ],
+  "partner": "numba",
+  "rows": 1000000,
+  "source_commit": "43f0c63791b1dd078c4a4c66f69fa8e45b709839",
+  "source_dirty": [
+    "?? .pydeps_v26_numba/",
+    "?? .pydeps_v26_numba_compat/",
+    "?? .pydeps_v26_numba_cuda/"
+  ],
+  "status": "pass",
+  "sums_match_cpu": true,
+  "toolchain": {
+    "numba_cuda_enable_minor_version_compatibility": "1",
+    "numba_cuda_module": "/root/rtdl_goal2991_v26_pod/.pydeps_v26_numba_cuda/numba_cuda/numba/cuda/__init__.py",
+    "numba_cuda_use_nvidia_binding": "1",
+    "numba_version": "0.65.1",
+    "numpy_version": "2.1.2",
+    "python_version": "3.12.3"
+  }
+}
