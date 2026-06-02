@@ -14,6 +14,8 @@ NUMBA_SEGMENTED_SUM_F64_OPERATION = "segmented_sum_f64"
 NUMBA_SEGMENTED_MIN_F64_OPERATION = "segmented_min_f64"
 NUMBA_SEGMENTED_MAX_F64_OPERATION = "segmented_max_f64"
 NUMBA_COMPACT_MASK_I64_OPERATION = "compact_mask_i64"
+NUMBA_GROUPED_ARGMIN_F64_OPERATION = "grouped_argmin_f64"
+NUMBA_GROUPED_ARGMAX_F64_OPERATION = "grouped_argmax_f64"
 NUMBA_PARTNER_CONTINUATION_STATUS = V2_5_STATUS_PREVIEW_NOT_PROMOTED
 NUMBA_GROUP_ID_VALIDATION_MODE = "device_resident_error_flag"
 
@@ -63,6 +65,34 @@ def describe_numba_compact_mask_i64() -> dict[str, object]:
     descriptor["output_columns"] = ("values:int64", "original_indices:int64")
     descriptor["stable_input_order"] = True
     descriptor["host_prefix_sum_used"] = True
+    return descriptor
+
+
+def describe_numba_grouped_argmin_f64() -> dict[str, object]:
+    descriptor = _base_numba_descriptor(NUMBA_GROUPED_ARGMIN_F64_OPERATION)
+    descriptor["input_columns"] = ("group_ids:int64", "item_ids:int64", "scores:float64")
+    descriptor["output_columns"] = (
+        "group_ids:int64",
+        "item_ids:int64",
+        "scores:float64",
+        "missing_group_ids:int64",
+    )
+    descriptor["tie_break"] = "lowest_score_then_lowest_item_id"
+    descriptor["host_present_group_compaction_used"] = True
+    return descriptor
+
+
+def describe_numba_grouped_argmax_f64() -> dict[str, object]:
+    descriptor = _base_numba_descriptor(NUMBA_GROUPED_ARGMAX_F64_OPERATION)
+    descriptor["input_columns"] = ("group_ids:int64", "item_ids:int64", "scores:float64")
+    descriptor["output_columns"] = (
+        "group_ids:int64",
+        "item_ids:int64",
+        "scores:float64",
+        "missing_group_ids:int64",
+    )
+    descriptor["tie_break"] = "highest_score_then_lowest_item_id"
+    descriptor["host_present_group_compaction_used"] = True
     return descriptor
 
 
@@ -217,6 +247,58 @@ def run_numba_segmented_max_f64(
     )
 
 
+def run_numba_grouped_argmin_f64(
+    group_ids: Any,
+    item_ids: Any,
+    scores: Any,
+    *,
+    group_count: int,
+    block_size: int = 256,
+    validate_group_ids: bool = True,
+) -> dict[str, object]:
+    """Run grouped argmin over Numba CUDA arrays with a stable item-id tie-break."""
+
+    return _run_numba_grouped_arg_reduce_f64(
+        group_ids,
+        item_ids,
+        scores,
+        group_count=group_count,
+        block_size=block_size,
+        validate_group_ids=validate_group_ids,
+        operation=NUMBA_GROUPED_ARGMIN_F64_OPERATION,
+        source="run_numba_grouped_argmin_f64",
+        score_initial=float("inf"),
+        score_kernel_factory=_numba_grouped_argmin_score_f64_kernel,
+        tie_break="lowest_score_then_lowest_item_id",
+    )
+
+
+def run_numba_grouped_argmax_f64(
+    group_ids: Any,
+    item_ids: Any,
+    scores: Any,
+    *,
+    group_count: int,
+    block_size: int = 256,
+    validate_group_ids: bool = True,
+) -> dict[str, object]:
+    """Run grouped argmax over Numba CUDA arrays with a stable item-id tie-break."""
+
+    return _run_numba_grouped_arg_reduce_f64(
+        group_ids,
+        item_ids,
+        scores,
+        group_count=group_count,
+        block_size=block_size,
+        validate_group_ids=validate_group_ids,
+        operation=NUMBA_GROUPED_ARGMAX_F64_OPERATION,
+        source="run_numba_grouped_argmax_f64",
+        score_initial=-float("inf"),
+        score_kernel_factory=_numba_grouped_argmax_score_f64_kernel,
+        tie_break="highest_score_then_lowest_item_id",
+    )
+
+
 def run_numba_compact_mask_i64(
     values: Any,
     mask: Any,
@@ -357,6 +439,110 @@ def _run_numba_segmented_extreme_f64(
     )
 
 
+def _run_numba_grouped_arg_reduce_f64(
+    group_ids: Any,
+    item_ids: Any,
+    scores: Any,
+    *,
+    group_count: int,
+    block_size: int,
+    validate_group_ids: bool,
+    operation: str,
+    source: str,
+    score_initial: float,
+    score_kernel_factory: Any,
+    tie_break: str,
+) -> dict[str, object]:
+    cuda, np = _import_numba_stack()
+    _validate_numba_cuda_vector(group_ids, name="group_ids", dtype=np.int64)
+    _validate_numba_cuda_vector(item_ids, name="item_ids", dtype=np.int64)
+    _validate_numba_cuda_vector(scores, name="scores", dtype=np.float64)
+    if not (tuple(group_ids.shape) == tuple(item_ids.shape) == tuple(scores.shape)):
+        raise ValueError("group_ids, item_ids, and scores must have the same shape")
+    if int(scores.shape[0]) and bool(np.isnan(scores.copy_to_host()).any()):
+        raise ValueError("grouped arg reductions reject NaN scores")
+    group_count, block_size, row_count = _validate_group_run_shape(
+        group_ids,
+        group_count=group_count,
+        block_size=block_size,
+        validate_group_ids=validate_group_ids,
+        cuda=cuda,
+        np=np,
+    )
+
+    cuda.synchronize()
+    started = perf_counter()
+    dense_scores = cuda.device_array((group_count,), dtype=np.float64)
+    dense_scores.copy_to_device(np.full((group_count,), float(score_initial), dtype=np.float64))
+    dense_item_ids = cuda.device_array((group_count,), dtype=np.int64)
+    dense_item_ids.copy_to_device(
+        np.full((group_count,), np.iinfo(np.int64).max, dtype=np.int64)
+    )
+    counts = cuda.device_array((group_count,), dtype=np.int64)
+    counts.copy_to_device(np.zeros((group_count,), dtype=np.int64))
+    if row_count:
+        grid = ((row_count + block_size - 1) // block_size,)
+        score_kernel_factory(cuda)[grid, block_size](
+            group_ids,
+            scores,
+            dense_scores,
+            counts,
+            row_count,
+            group_count,
+        )
+        _numba_grouped_arg_item_i64_kernel(cuda)[grid, block_size](
+            group_ids,
+            item_ids,
+            scores,
+            dense_scores,
+            dense_item_ids,
+            row_count,
+            group_count,
+        )
+    cuda.synchronize()
+
+    host_counts = counts.copy_to_host()
+    present_host = np.nonzero(host_counts > 0)[0].astype(np.int64)
+    missing_host = np.nonzero(host_counts == 0)[0].astype(np.int64)
+    present_group_ids = cuda.to_device(present_host)
+    missing_group_ids = cuda.to_device(missing_host)
+    compact_item_ids = cuda.device_array((int(present_host.size),), dtype=np.int64)
+    compact_scores = cuda.device_array((int(present_host.size),), dtype=np.float64)
+    if int(present_host.size):
+        compact_block = min(block_size, 256)
+        compact_grid = ((int(present_host.size) + compact_block - 1) // compact_block,)
+        _numba_gather_group_arg_outputs_kernel(cuda)[compact_grid, compact_block](
+            present_group_ids,
+            dense_item_ids,
+            dense_scores,
+            compact_item_ids,
+            compact_scores,
+            int(present_host.size),
+        )
+    cuda.synchronize()
+    elapsed = perf_counter() - started
+
+    return _numba_run_result(
+        operation=operation,
+        outputs={
+            "group_ids": present_group_ids,
+            "item_ids": compact_item_ids,
+            "scores": compact_scores,
+            "missing_group_ids": missing_group_ids,
+            "dense_item_ids": dense_item_ids,
+            "dense_scores": dense_scores,
+            "present_counts": counts,
+        },
+        elapsed=elapsed,
+        source=source,
+        extra_metadata={
+            "tie_break": tie_break,
+            "host_present_group_compaction_used": True,
+            "nan_validation_host_sync_used": True,
+        },
+    )
+
+
 def _numba_run_result(
     *,
     operation: str,
@@ -430,6 +616,56 @@ def _numba_segmented_max_f64_kernel(cuda: Any):
             group = group_ids[index]
             if 0 <= group < group_count:
                 cuda.atomic.max(output, group, values[index])
+
+    return kernel
+
+
+def _numba_grouped_argmin_score_f64_kernel(cuda: Any):
+    @cuda.jit
+    def kernel(group_ids, scores, dense_scores, counts, row_count, group_count):
+        index = cuda.grid(1)
+        if index < row_count:
+            group = group_ids[index]
+            if 0 <= group < group_count:
+                cuda.atomic.add(counts, group, 1)
+                cuda.atomic.min(dense_scores, group, scores[index])
+
+    return kernel
+
+
+def _numba_grouped_argmax_score_f64_kernel(cuda: Any):
+    @cuda.jit
+    def kernel(group_ids, scores, dense_scores, counts, row_count, group_count):
+        index = cuda.grid(1)
+        if index < row_count:
+            group = group_ids[index]
+            if 0 <= group < group_count:
+                cuda.atomic.add(counts, group, 1)
+                cuda.atomic.max(dense_scores, group, scores[index])
+
+    return kernel
+
+
+def _numba_grouped_arg_item_i64_kernel(cuda: Any):
+    @cuda.jit
+    def kernel(group_ids, item_ids, scores, dense_scores, dense_item_ids, row_count, group_count):
+        index = cuda.grid(1)
+        if index < row_count:
+            group = group_ids[index]
+            if 0 <= group < group_count and scores[index] == dense_scores[group]:
+                cuda.atomic.min(dense_item_ids, group, item_ids[index])
+
+    return kernel
+
+
+def _numba_gather_group_arg_outputs_kernel(cuda: Any):
+    @cuda.jit
+    def kernel(present_group_ids, dense_item_ids, dense_scores, compact_item_ids, compact_scores, group_count):
+        index = cuda.grid(1)
+        if index < group_count:
+            group = present_group_ids[index]
+            compact_item_ids[index] = dense_item_ids[group]
+            compact_scores[index] = dense_scores[group]
 
     return kernel
 

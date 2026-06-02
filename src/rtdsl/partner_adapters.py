@@ -2389,6 +2389,45 @@ def _torch_grouped_arg_reduce(score_columns: dict[str, object], *, group_count: 
     }, row_count
 
 
+def _numba_grouped_arg_reduce(score_columns: dict[str, object], *, group_count: int, reduce: str):
+    if not isinstance(score_columns, dict):
+        raise ValueError("score_columns must be a mapping")
+    group_ids = score_columns.get("group_ids")
+    item_ids = score_columns.get("item_ids")
+    scores = score_columns.get("scores", score_columns.get("values"))
+    if group_ids is None or item_ids is None or scores is None:
+        raise ValueError("score_columns must contain group_ids, item_ids, and scores/values")
+
+    from .numba_partner_continuation import run_numba_grouped_argmax_f64
+    from .numba_partner_continuation import run_numba_grouped_argmin_f64
+    from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff
+    from .v2_6_neutral_partner_handoff import validate_v2_6_neutral_partner_handoff
+
+    try:
+        handoff = prepare_v2_6_neutral_partner_handoff(
+            {"group_ids": group_ids, "item_ids": item_ids, "scores": scores},
+            partner="numba",
+            access_modes={"group_ids": "read", "item_ids": "read", "scores": "read"},
+        )
+    except ValueError as exc:
+        raise RuntimeError(f"Numba neutral handoff rejected: {exc}") from exc
+    validation = validate_v2_6_neutral_partner_handoff(handoff)
+    if validation["status"] != "accept":
+        raise RuntimeError(f"Numba neutral handoff rejected: {validation['errors']}")
+
+    if reduce == "argmin":
+        result = run_numba_grouped_argmin_f64(group_ids, item_ids, scores, group_count=group_count)
+    elif reduce == "argmax":
+        result = run_numba_grouped_argmax_f64(group_ids, item_ids, scores, group_count=group_count)
+    else:
+        raise ValueError("reduce must be 'argmin' or 'argmax'")
+    return (
+        result["outputs"],
+        int(group_ids.shape[0]),
+        float(result["phase_timing"]["phases_sec"]["partner_continuation"]),
+    )
+
+
 def grouped_argmin_f64_partner_columns(
     score_columns: dict[str, object],
     *,
@@ -2398,16 +2437,25 @@ def grouped_argmin_f64_partner_columns(
 ) -> dict[str, object]:
     """Reduce generic grouped score rows to the lowest-score item per group."""
 
-    runtime = _partner_module(partner)
     group_count = int(group_count)
-    if runtime["name"] == "triton":
+    if partner == "numba":
+        columns, row_count, elapsed = _numba_grouped_arg_reduce(
+            score_columns,
+            group_count=group_count,
+            reduce="argmin",
+        )
+        partner_name = "numba"
+    else:
+        runtime = _partner_module(partner)
+        partner_name = runtime["name"]
+    if partner_name == "triton":
         torch, group_ids, item_ids, scores = _coerce_torch_group_item_score_columns(score_columns, runtime)
         _validate_torch_group_ids(group_ids, group_count, torch)
         result = run_triton_grouped_argmin_f64(group_ids, item_ids, scores, group_count=group_count)
         columns = result["outputs"]
         row_count = int(group_ids.numel())
         elapsed = float(result["phase_timing"]["phases_sec"]["partner_continuation"])
-    elif runtime["name"] == "torch":
+    elif partner_name == "torch":
         columns, row_count = _torch_grouped_arg_reduce(
             score_columns,
             group_count=group_count,
@@ -2416,18 +2464,22 @@ def grouped_argmin_f64_partner_columns(
         )
         runtime["sync"]()
         elapsed = None
+    elif partner_name == "numba":
+        pass
     else:
-        raise ValueError("partner must be 'triton' or 'torch'")
+        raise ValueError("partner must be 'triton', 'torch', or 'numba'")
     metadata = _generic_partner_front_door_metadata(
         adapter="grouped_argmin_f64_partner_columns",
-        partner=runtime["name"],
+        partner=partner_name,
         operation="grouped_argmin_f64",
         group_count=group_count,
         row_count=row_count,
         contract="generic_grouped_argmin_f64",
         extra={
             "tie_break": "lowest_score_then_lowest_item_id",
-            "triton_elapsed_seconds": elapsed,
+            "partner_elapsed_seconds": elapsed,
+            "triton_elapsed_seconds": elapsed if partner_name == "triton" else None,
+            "numba_elapsed_seconds": elapsed if partner_name == "numba" else None,
         },
     )
     if return_metadata:
@@ -2444,16 +2496,25 @@ def grouped_argmax_f64_partner_columns(
 ) -> dict[str, object]:
     """Reduce generic grouped score rows to the highest-score item per group."""
 
-    runtime = _partner_module(partner)
     group_count = int(group_count)
-    if runtime["name"] == "triton":
+    if partner == "numba":
+        columns, row_count, elapsed = _numba_grouped_arg_reduce(
+            score_columns,
+            group_count=group_count,
+            reduce="argmax",
+        )
+        partner_name = "numba"
+    else:
+        runtime = _partner_module(partner)
+        partner_name = runtime["name"]
+    if partner_name == "triton":
         torch, group_ids, item_ids, scores = _coerce_torch_group_item_score_columns(score_columns, runtime)
         _validate_torch_group_ids(group_ids, group_count, torch)
         result = run_triton_grouped_argmax_f64(group_ids, item_ids, scores, group_count=group_count)
         columns = result["outputs"]
         row_count = int(group_ids.numel())
         elapsed = float(result["phase_timing"]["phases_sec"]["partner_continuation"])
-    elif runtime["name"] == "torch":
+    elif partner_name == "torch":
         columns, row_count = _torch_grouped_arg_reduce(
             score_columns,
             group_count=group_count,
@@ -2462,18 +2523,22 @@ def grouped_argmax_f64_partner_columns(
         )
         runtime["sync"]()
         elapsed = None
+    elif partner_name == "numba":
+        pass
     else:
-        raise ValueError("partner must be 'triton' or 'torch'")
+        raise ValueError("partner must be 'triton', 'torch', or 'numba'")
     metadata = _generic_partner_front_door_metadata(
         adapter="grouped_argmax_f64_partner_columns",
-        partner=runtime["name"],
+        partner=partner_name,
         operation="grouped_argmax_f64",
         group_count=group_count,
         row_count=row_count,
         contract="generic_grouped_argmax_f64",
         extra={
             "tie_break": "highest_score_then_lowest_item_id",
-            "triton_elapsed_seconds": elapsed,
+            "partner_elapsed_seconds": elapsed,
+            "triton_elapsed_seconds": elapsed if partner_name == "triton" else None,
+            "numba_elapsed_seconds": elapsed if partner_name == "numba" else None,
         },
     )
     if return_metadata:
