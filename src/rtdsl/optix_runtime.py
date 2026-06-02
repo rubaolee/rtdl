@@ -4420,7 +4420,8 @@ class PreparedOptixPointGroupNearestWitness2D:
         _check_status(status, error)
         return _np.ctypeslib.as_array(flags).copy()
 
-    def nearest_witness_rows(self, query_points, *, radius: float) -> tuple[dict[str, object], ...]:
+    def nearest_witness_raw(self, query_points, *, radius: float) -> OptixRowView:
+        """Return a raw row view for one nearest in-radius witness per query point."""
         if self._closed:
             raise RuntimeError("prepared OptiX point-group handle is closed")
         if radius < 0:
@@ -4429,9 +4430,13 @@ class PreparedOptixPointGroupNearestWitness2D:
             raise ValueError("radius must be less than or equal to prepared max_radius")
         packed_queries = query_points if isinstance(query_points, PackedPoints) else pack_points(records=query_points, dimension=2)
         if packed_queries.dimension != 2:
-            raise ValueError("PreparedOptixPointGroupNearestWitness2D.nearest_witness_rows requires 2-D points")
+            raise ValueError("PreparedOptixPointGroupNearestWitness2D.nearest_witness_raw requires 2-D points")
         if packed_queries.count == 0 or self._packed_search.count == 0 or self._group_count == 0:
-            return ()
+            return _make_owned_row_view(
+                _RtdlFixedRadiusNeighborRow,
+                (),
+                ("query_id", "neighbor_id", "distance"),
+            )
 
         lib = _load_optix_library()
         symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_prepared_point_group_nearest_witness_2d")
@@ -4461,6 +4466,10 @@ class PreparedOptixPointGroupNearestWitness2D:
             row_type=_RtdlFixedRadiusNeighborRow,
             field_names=("query_id", "neighbor_id", "distance"),
         )
+        return view
+
+    def nearest_witness_rows(self, query_points, *, radius: float) -> tuple[dict[str, object], ...]:
+        rows = self.nearest_witness_raw(query_points, radius=radius)
         try:
             return tuple(
                 {
@@ -4468,10 +4477,10 @@ class PreparedOptixPointGroupNearestWitness2D:
                     "neighbor_id": int(row["neighbor_id"]),
                     "distance": float(row["distance"]),
                 }
-                for row in view.to_dict_rows()
+                for row in rows.to_dict_rows()
             )
         finally:
-            view.close()
+            rows.close()
 
     def nearest_max_distance_row(self, query_points, *, radius: float) -> dict[str, object]:
         """Return the max-distance row after reducing nearest witnesses on device."""
