@@ -13,6 +13,7 @@ NUMBA_SEGMENTED_COUNT_I64_OPERATION = "segmented_count_i64"
 NUMBA_SEGMENTED_SUM_F64_OPERATION = "segmented_sum_f64"
 NUMBA_SEGMENTED_MIN_F64_OPERATION = "segmented_min_f64"
 NUMBA_SEGMENTED_MAX_F64_OPERATION = "segmented_max_f64"
+NUMBA_COMPACT_MASK_I64_OPERATION = "compact_mask_i64"
 NUMBA_PARTNER_CONTINUATION_STATUS = V2_5_STATUS_PREVIEW_NOT_PROMOTED
 NUMBA_GROUP_ID_VALIDATION_MODE = "device_resident_error_flag"
 
@@ -52,6 +53,15 @@ def describe_numba_segmented_max_f64() -> dict[str, object]:
     descriptor["input_columns"] = ("group_ids:int64", "values:float64")
     descriptor["output_columns"] = ("maxes:float64",)
     descriptor["empty_group_fill"] = "initial"
+    return descriptor
+
+
+def describe_numba_compact_mask_i64() -> dict[str, object]:
+    descriptor = _base_numba_descriptor(NUMBA_COMPACT_MASK_I64_OPERATION)
+    descriptor["input_columns"] = ("values:int64", "mask:bool")
+    descriptor["output_columns"] = ("values:int64", "original_indices:int64")
+    descriptor["stable_input_order"] = True
+    descriptor["host_prefix_sum_used"] = True
     return descriptor
 
 
@@ -206,6 +216,101 @@ def run_numba_segmented_max_f64(
     )
 
 
+def run_numba_compact_mask_i64(
+    values: Any,
+    mask: Any,
+    *,
+    block_size: int = 256,
+) -> dict[str, object]:
+    """Run a stable Numba compact-by-mask continuation over CUDA arrays."""
+
+    cuda, np = _import_numba_stack()
+    _validate_numba_cuda_vector(values, name="values", dtype=np.int64)
+    _validate_numba_cuda_vector(mask, name="mask", dtype=np.bool_)
+    if tuple(values.shape) != tuple(mask.shape):
+        raise ValueError("values and mask must have the same shape")
+    block_size = int(block_size)
+    if block_size <= 0:
+        raise ValueError("block_size must be positive")
+    row_count = int(values.shape[0])
+
+    cuda.synchronize()
+    started = perf_counter()
+    if row_count == 0:
+        compact_values = cuda.device_array((0,), dtype=np.int64)
+        original_indices = cuda.device_array((0,), dtype=np.int64)
+        elapsed = perf_counter() - started
+        return _numba_run_result(
+            operation=NUMBA_COMPACT_MASK_I64_OPERATION,
+            outputs={"values": compact_values, "original_indices": original_indices},
+            elapsed=elapsed,
+            source="run_numba_compact_mask_i64",
+            extra_metadata={"stable_input_order": True, "host_prefix_sum_used": True},
+        )
+
+    block_count = (row_count + block_size - 1) // block_size
+    block_counts = cuda.device_array((block_count,), dtype=np.int64)
+    _numba_compact_count_blocks_i64_kernel(cuda)[(block_count,), 1](
+        mask,
+        block_counts,
+        row_count,
+        block_size,
+    )
+    cuda.synchronize()
+    host_counts = block_counts.copy_to_host()
+    host_offsets = np.empty((block_count,), dtype=np.int64)
+    total_count = 0
+    for index, count in enumerate(host_counts):
+        host_offsets[index] = total_count
+        total_count += int(count)
+    block_offsets = cuda.to_device(host_offsets)
+    compact_values = cuda.device_array((total_count,), dtype=np.int64)
+    original_indices = cuda.device_array((total_count,), dtype=np.int64)
+    if total_count:
+        _numba_compact_scatter_i64_kernel(cuda)[(block_count,), block_size](
+            values,
+            mask,
+            block_offsets,
+            compact_values,
+            original_indices,
+            row_count,
+            block_size,
+        )
+    cuda.synchronize()
+    elapsed = perf_counter() - started
+    return _numba_run_result(
+        operation=NUMBA_COMPACT_MASK_I64_OPERATION,
+        outputs={
+            "values": compact_values,
+            "original_indices": original_indices,
+            "block_counts": block_counts,
+        },
+        elapsed=elapsed,
+        source="run_numba_compact_mask_i64",
+        extra_metadata={"stable_input_order": True, "host_prefix_sum_used": True},
+    )
+
+
+def run_numba_mask_indices_i64(
+    mask: Any,
+    *,
+    block_size: int = 256,
+) -> dict[str, object]:
+    """Return stable original indices where a Numba CUDA boolean mask is true."""
+
+    cuda, np = _import_numba_stack()
+    _validate_numba_cuda_vector(mask, name="mask", dtype=np.bool_)
+    row_count = int(mask.shape[0])
+    values = cuda.device_array((row_count,), dtype=np.int64)
+    if row_count:
+        block_size = int(block_size)
+        if block_size <= 0:
+            raise ValueError("block_size must be positive")
+        grid = ((row_count + block_size - 1) // block_size,)
+        _numba_iota_i64_kernel(cuda)[grid, block_size](values, row_count)
+    return run_numba_compact_mask_i64(values, mask, block_size=block_size)
+
+
 def _run_numba_segmented_extreme_f64(
     group_ids: Any,
     values: Any,
@@ -257,7 +362,9 @@ def _numba_run_result(
     outputs: dict[str, object],
     elapsed: float,
     source: str,
+    extra_metadata: dict[str, object] | None = None,
 ) -> dict[str, object]:
+    metadata = {} if extra_metadata is None else dict(extra_metadata)
     return {
         "contract_version": V2_5_PARTNER_CONTINUATION_VERSION,
         "operation": operation,
@@ -274,6 +381,7 @@ def _numba_run_result(
         "replaces_rt_traversal": False,
         "promoted_performance_path": False,
         "rt_core_speedup_claim_authorized": False,
+        **metadata,
     }
 
 
@@ -321,6 +429,53 @@ def _numba_segmented_max_f64_kernel(cuda: Any):
             group = group_ids[index]
             if 0 <= group < group_count:
                 cuda.atomic.max(output, group, values[index])
+
+    return kernel
+
+
+def _numba_compact_count_blocks_i64_kernel(cuda: Any):
+    @cuda.jit
+    def kernel(mask, block_counts, row_count, block_size):
+        block = cuda.blockIdx.x
+        start = block * block_size
+        end = start + block_size
+        if end > row_count:
+            end = row_count
+        count = 0
+        for index in range(start, end):
+            if mask[index]:
+                count += 1
+        block_counts[block] = count
+
+    return kernel
+
+
+def _numba_iota_i64_kernel(cuda: Any):
+    @cuda.jit
+    def kernel(values, row_count):
+        index = cuda.grid(1)
+        if index < row_count:
+            values[index] = index
+
+    return kernel
+
+
+def _numba_compact_scatter_i64_kernel(cuda: Any):
+    @cuda.jit
+    def kernel(values, mask, block_offsets, compact_values, original_indices, row_count, block_size):
+        block = cuda.blockIdx.x
+        thread = cuda.threadIdx.x
+        index = block * block_size + thread
+        if index >= row_count or not mask[index]:
+            return
+        start = block * block_size
+        local_rank = 0
+        for previous in range(start, index):
+            if mask[previous]:
+                local_rank += 1
+        output_index = block_offsets[block] + local_rank
+        compact_values[output_index] = values[index]
+        original_indices[output_index] = index
 
     return kernel
 

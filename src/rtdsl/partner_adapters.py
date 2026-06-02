@@ -1104,6 +1104,24 @@ def _cupy_aabb_pair_overlap_summary_2d(cupy, pair_columns: dict[str, object]) ->
 
 def partner_mask_indices(mask, *, partner: str = "torch"):
     """Return partner-owned indices where mask is true/non-zero."""
+    if partner == "numba":
+        from .numba_partner_continuation import run_numba_mask_indices_i64
+        from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff
+        from .v2_6_neutral_partner_handoff import validate_v2_6_neutral_partner_handoff
+
+        try:
+            handoff = prepare_v2_6_neutral_partner_handoff(
+                {"mask": mask},
+                partner="numba",
+                access_modes={"mask": "read"},
+            )
+        except ValueError as exc:
+            raise RuntimeError(f"Numba neutral handoff rejected: {exc}") from exc
+        validation = validate_v2_6_neutral_partner_handoff(handoff)
+        if validation["status"] != "accept":
+            raise RuntimeError(f"Numba neutral handoff rejected: {validation['errors']}")
+        result = run_numba_mask_indices_i64(mask)
+        return result["outputs"]["original_indices"]
     runtime = _partner_module(partner)
     if runtime["name"] == "triton":
         torch = runtime["module"]
@@ -1119,7 +1137,7 @@ def partner_mask_indices(mask, *, partner: str = "torch"):
     if runtime["name"] == "cupy":
         cupy = runtime["module"]
         return cupy.nonzero(mask.astype(cupy.bool_, copy=False))[0].astype(cupy.int64, copy=False)
-    raise ValueError("partner must be 'torch' or 'cupy'")
+    raise ValueError("partner must be 'triton', 'torch', 'cupy', or 'numba'")
 
 
 def partner_take_columns_by_indices(columns: dict[str, object], indices, *, partner: str = "torch"):
