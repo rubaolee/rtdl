@@ -6,10 +6,12 @@ Python+partner+RTDL surface.
 RTDL is a Python eDSL. You write the surrounding Python application, describe
 the traversal-heavy kernel in RTDL, and choose a backend such as the portable
 CPU reference path, Embree, or OptiX. In the v2.x track, partner frameworks such
-as NumPy, PyTorch, and CuPy can own columns around supported RTDL primitives.
+as NumPy, PyTorch, CuPy, and selected Numba continuations can own or continue
+columns around supported RTDL primitives.
 
-This page is intentionally single-version. It teaches the current v2.3 release
-surface and links old tutorial history only from the final archive section.
+This page is intentionally single-surface. It teaches the current v2.x source
+tree: v2.3 is the latest released evidence package, while v2.6 is the active
+internal pre-release lane for explicit CuPy/Numba partner-choice guidance.
 
 ## Start Here
 
@@ -19,7 +21,7 @@ surface and links old tutorial history only from the final archive section.
 | 1 | [Hello World](hello_world.md) | The smallest complete RTDL program |
 | 2 | [v2.x App Building](v2_app_building.md) | How Python, RTDL, and partner arrays divide work |
 | 3 | [Python Partner Any-Hit](partner_anyhit.md) | Partner-owned columns with Embree as the CPU RT fallback |
-| 4 | [OptiX Partner Column Any-Hit](partner_optix_zero_copy_anyhit.md) | The GPU partner-column shape and its claim boundary |
+| 4 | [OptiX Partner Column Any-Hit](partner_optix_column_anyhit.md) | The GPU partner-column shape and its claim boundary |
 | 5 | [Feature Quickstart Cookbook](feature_quickstart_cookbook.md) | Which RTDL primitive shape to choose for a workload |
 | 6 | [Segment And Polygon Workloads](segment_polygon_workloads.md) | Count rows, witness rows, and streaming witness summaries |
 | 7 | [Nearest-Neighbor Workloads](nearest_neighbor_workloads.md) | Fixed-radius, K-closest, and Hausdorff-style composition |
@@ -39,7 +41,9 @@ surface and links old tutorial history only from the final archive section.
 
 - [v2.x App Building](v2_app_building.md)
 - [Python Partner Any-Hit](partner_anyhit.md)
-- [OptiX Partner Column Any-Hit](partner_optix_zero_copy_anyhit.md)
+- [OptiX Partner Column Any-Hit](partner_optix_column_anyhit.md)
+- [Choosing A Partner For Custom Logic](../learn/partner_choice_for_custom_logic.md)
+- [Benchmark Partner Reference Matrix](../learn/benchmark_partner_reference_matrix.md)
 - [Partner Acceleration Boundaries](../partner_acceleration_boundaries.md)
 
 ### Workload Families
@@ -59,6 +63,7 @@ Allowed tutorial wording:
 
 - RTDL can run the documented Python+RTDL examples from source.
 - The v2.3 release has partner-column paths for documented primitives.
+- The v2.6 pre-release lane adds explicit CuPy/Numba partner-choice guidance.
 - OptiX evidence exists for specific measured contracts.
 - Python or partner frameworks own app continuation outside the RTDL primitive.
 
@@ -66,7 +71,7 @@ Not allowed:
 
 - package-install promises;
 - broad RT-core speedup claims;
-- arbitrary PyTorch/CuPy acceleration claims;
+- arbitrary PyTorch/CuPy/Numba acceleration claims;
 - arbitrary polygon overlay, graph analytics, or database acceleration claims;
 - universal speedup wording beyond reviewed evidence.
 

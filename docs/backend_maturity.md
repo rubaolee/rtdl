@@ -1,6 +1,6 @@
 # RTDL Backend Maturity
 
-Status: current v2.3 release backend maturity guide.
+Status: current v2.x release plus v2.6 pre-release backend maturity guide.
 
 This page separates three claims that are easy to mix up:
 
@@ -23,24 +23,26 @@ machine-readable feature source is `rtdsl.engine_feature_support_matrix()`.
 | CPU reference | Correctness oracle | Useful for parity and debugging, not a speed backend. |
 | Embree | Mature CPU RT backend | The default CPU acceleration baseline for all-thread local testing. |
 | OptiX | Primary NVIDIA RT backend | Supports RT-core-facing evidence only for reviewed bounded paths on RTX hardware. |
-| Vulkan | Proof/portability backend | Preserved support surface; not the main v2.3 performance target. |
+| Vulkan | Proof/portability backend | Preserved support surface; not the main current performance target. |
 | HIPRT | Proof backend | Preserved support surface; no AMD performance claim without AMD evidence. |
-| Apple RT | Proof/native-assisted backend | Preserved support surface; not a v2.3 release performance target. |
+| Apple RT | Proof/native-assisted backend | Preserved support surface; not a current release performance target. |
 | PyTorch partner | Reference partner direction | Current v2.x partner model for tensor-side work where PyTorch can express it. |
 | CuPy partner | Conformance and GPU escape-hatch partner | Current v2.x partner model for device arrays and explicit user kernels where needed. |
+| Numba partner | v2.6 pre-release custom-continuation lane | Recommended only for measured custom CUDA-style continuation rows; never auto-selected. |
+| Triton partner | Paused recommendation lane | Preview/history surface only until same-contract timing proves a useful path. |
 
 ## How To Read This
 
 Embree and OptiX are the active release-performance engines. Embree gives the
 CPU all-thread baseline and OptiX gives the NVIDIA RT path. The other engines
-remain valuable for portability, proof coverage, and future work, but v2.3
+remain valuable for portability, proof coverage, and future work, but current
 release-facing performance tables should not lean on them.
 
 The partner layer is separate from the engine ABI. RTDL owns traversal,
 candidate discovery, compact rows, bounded witness pages, and app-agnostic
-runtime contracts. PyTorch or CuPy own tensor-side filtering, reductions,
-ranking, grouping, or user-authored GPU code when the app needs work after RTDL
-returns candidates or witnesses.
+runtime contracts. PyTorch, CuPy, Numba, or user code own tensor-side filtering,
+reductions, ranking, grouping, or user-authored GPU code when the app needs work
+after RTDL returns candidates or witnesses.
 
 ## Claim Rules
 
@@ -60,7 +62,8 @@ returns candidates or witnesses.
 | Learn the language | CPU reference, then Embree | Easy setup and deterministic parity. |
 | CPU performance | Embree | Mature CPU BVH path with all-thread testing. |
 | NVIDIA RT experiments | OptiX | Primary RT-core-facing backend. |
-| Tensor continuation | PyTorch or CuPy partner | Keeps non-RT work outside the app-agnostic engine. |
+| CUDA-array continuation | CuPy partner | Mature CUDA-array/library continuation and RawKernel-friendly user path. |
+| Custom CUDA-style continuation | Numba partner | v2.6 pre-release lane for selected measured custom compact-mask and grouped-reduction rows. |
 | Portability research | Vulkan, HIPRT, Apple RT | Preserved proof paths with bounded claims. |
 
 ## Evidence Links

@@ -1,6 +1,7 @@
 # RTDL Current Support Matrix
 
-Status: live support matrix for the v2.3 release source tree.
+Status: live support matrix for the current v2.x release source tree and active
+v2.6 internal pre-release lane.
 
 This page is the current learner-facing matrix. Older release matrices remain
 under `docs/release_reports/` for audit work, but normal users should read this
@@ -14,14 +15,14 @@ cells and silent CPU fallback are not allowed.
 
 ## Boundary
 
-- Current public docs target: v2.3 release.
 - Current released version is `v2.3`.
+- Active pre-release docs target: v2.6 source-tree partner-choice guidance.
 - Active release engines: Embree for CPU RT, OptiX for NVIDIA RT.
-- Active v2.5 closeout direction: primitive-first native RTDL when a fused
-  generic primitive exactly expresses the work; explicit partner continuation
-  only for unfused work or app choice; users choose supported partners
-  explicitly, while benchmark recommendations must be backed by same-contract
-  evidence and never by hidden defaults.
+- Active v2.6 direction: primitive-first native RTDL when a fused generic
+  primitive exactly expresses the work; explicit partner continuation only for
+  unfused work or app choice; users choose supported partners explicitly, while
+  benchmark recommendations must be backed by same-contract evidence and never
+  by hidden defaults.
 - Engine ABI rule: native backends stay app-agnostic.
 - Performance rule: a backend flag is not a speedup claim.
 - Release rule: public claims must stay inside the completed external
@@ -40,11 +41,11 @@ cells and silent CPU fallback are not allowed.
 | Bounded polygon summaries | supported | native-assisted | native-assisted | not a release target | not a release target | not a release target |
 | DB-style compact summaries | supported | native | native | proof path | proof path | proof path |
 | Graph traversal rows | supported | native | native | proof path | proof path | proof path |
-| Partner tensor continuation | Python-owned | CPU partner path | explicit user/app-chosen partner path for unfused continuations; benchmark recommendations for CuPy/PyTorch/Numba/Triton require same-contract evidence | not a release target | not a release target | not a release target |
+| Partner tensor/custom continuation | Python-owned | CPU partner path | explicit user/app-chosen partner path for unfused continuations; CuPy is the mature CUDA-array lane, Numba is the current v2.6 custom-kernel lane, Triton remains paused until same-contract timing wins | not a release target | not a release target | not a release target |
 
 ## Current Performance Reading
 
-Use the v2.3 performance tables as app-level evidence, not as a universal
+Use the current performance tables as app-level evidence, not as a universal
 backend ranking. The useful reading is:
 
 - Embree measures the CPU RT path plus CPU partner continuation.
@@ -52,11 +53,12 @@ backend ranking. The useful reading is:
   uses one.
 - A fast compact summary does not imply full witness-row output is equally
   fast.
-- A CuPy RawKernel continuation is allowed as partner/user code and should be
-  documented as such. New v2.5 continuation work should first ask whether a
-  fused native RTDL primitive already expresses the continuation; if not, the
-  partner is an explicit user/app choice. Benchmark reference implementations
-  can recommend a partner only when same-contract evidence supports that path.
+- A CuPy RawKernel or Numba CUDA continuation is allowed as partner/user code
+  and should be documented as such. New v2.6 continuation work should first ask
+  whether a fused native RTDL primitive already expresses the continuation; if
+  not, the partner is an explicit user/app choice. Benchmark reference
+  implementations can recommend a partner only when same-contract evidence
+  supports that path.
 
 ## Non-Claims
 
@@ -65,7 +67,7 @@ Do not use this matrix to claim:
 - broad speedup across all workloads;
 - package-install support;
 - AMD GPU performance;
-- Apple RT performance for the v2.3 release target;
+- Apple RT performance for the current release target;
 - that partner-side RawKernel, PyTorch, or NumPy code is part of the native
   app-agnostic RTDL engine;
 - true zero-copy unless the exact measured path proves device-resident handoff.

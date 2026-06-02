@@ -126,4 +126,4 @@ This bridge is deliberately conservative:
 - public speedup claims still require exact evidence and release-boundary review.
 
 That boundary is what lets RTDL support partner frameworks without turning the
-engine into a PyTorch-, CuPy-, or app-specific runtime.
+engine into a PyTorch-, CuPy-, Numba-, or app-specific runtime.

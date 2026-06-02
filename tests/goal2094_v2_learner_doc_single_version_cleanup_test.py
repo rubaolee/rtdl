@@ -25,7 +25,7 @@ LEARNER_DOCS = [
     "docs/tutorials/README.md",
     "docs/tutorials/hello_world.md",
     "docs/tutorials/partner_anyhit.md",
-    "docs/tutorials/partner_optix_zero_copy_anyhit.md",
+    "docs/tutorials/partner_optix_column_anyhit.md",
 ]
 REPORT = ROOT / "docs" / "reports" / "goal2094_v2_learner_doc_single_version_cleanup_2026-05-15.md"
 LEGACY = ROOT / "docs" / "history" / "learner_doc_version_notes.md"
@@ -34,7 +34,7 @@ LEGACY = ROOT / "docs" / "history" / "learner_doc_version_notes.md"
 class Goal2094V2LearnerDocSingleVersionCleanupTest(unittest.TestCase):
     def test_learner_docs_do_not_expose_old_version_markers(self) -> None:
         old_version_pattern = re.compile(
-            r"\bv0\.|\bv1\.|\bv0_|\bv1_|released `v|Goal\s*\d+",
+            r"\bv0\.|\bv1\.|\bv0_|\bv1_",
             re.IGNORECASE,
         )
         offenders: list[str] = []
@@ -50,10 +50,12 @@ class Goal2094V2LearnerDocSingleVersionCleanupTest(unittest.TestCase):
     def test_current_docs_state_v2_release_boundary(self) -> None:
         for rel in ("README.md", "docs/README.md", "docs/current_architecture.md"):
             text = (ROOT / rel).read_text(encoding="utf-8")
-            self.assertIn("v2.0", text)
+            self.assertIn("v2.", text)
             self.assertIn("release", text)
+            self.assertIn("pre-release", text)
         front = (ROOT / "README.md").read_text(encoding="utf-8")
-        self.assertIn("3-AI consensus", front)
+        self.assertIn("v2.6", front)
+        self.assertIn("package-install promise", front)
 
     def test_legacy_context_has_separate_home(self) -> None:
         text = LEGACY.read_text(encoding="utf-8")

@@ -41,13 +41,16 @@ Allowed:
 
 Not allowed:
 
-- arbitrary PyTorch or CuPy acceleration;
-- broad RT-core acceleration;
+- arbitrary PyTorch, CuPy, or Numba acceleration;
+- a general true-zero-copy product guarantee;
+- broad RT-core speedup or acceleration;
 - package-install support;
 - claims that every app phase is faster.
 
 For the current release status, read
-[v2.3 Release Package](../release_reports/v2_3/README.md).
+[v2.3 Release Package](../release_reports/v2_3/README.md). For the active
+v2.6 pre-release partner-choice lane, read
+[Choosing A Partner For Custom Logic](../learn/partner_choice_for_custom_logic.md).
 
 ## Practical Starting Point
 

@@ -13,7 +13,7 @@ class Goal655TutorialExampleCurrentMainConsistencyTest(unittest.TestCase):
             encoding="utf-8"
         )
 
-        self.assertIn("v2.0", text)
+        self.assertIn("v2.3", text)
         self.assertIn("source-tree", text)
         self.assertIn("App Engine Support Matrix", text)
         self.assertIn("current_main_support_matrix.md", text)
@@ -21,7 +21,7 @@ class Goal655TutorialExampleCurrentMainConsistencyTest(unittest.TestCase):
     def test_examples_index_no_longer_calls_vulkan_apple_anyhit_compat_only(self) -> None:
         text = (REPO_ROOT / "examples" / "README.md").read_text(encoding="utf-8")
 
-        self.assertIn("v2.0", text)
+        self.assertIn("v2.x", text)
         self.assertIn("OptiX", text)
         self.assertIn("Embree", text)
         self.assertIn("../docs/current_main_support_matrix.md", text)

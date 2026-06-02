@@ -12,26 +12,22 @@ class Goal654CurrentMainSupportMatrixTest(unittest.TestCase):
     def test_current_main_matrix_exists_and_marks_release_boundary(self) -> None:
         text = MATRIX.read_text(encoding="utf-8")
 
-        self.assertIn("Current public release: `v1.5`.", text)
-        self.assertIn("Current `main`: released `v1.5` surface plus", text)
-        self.assertIn("released `v1.5` tag is the current public release boundary", text)
-        self.assertIn("[v1.5 Release Package](release_reports/v1_5/README.md)", text)
-        self.assertIn("[v1.5 Support Matrix](release_reports/v1_5/support_matrix.md)", text)
-        self.assertIn("[v1.0 Release Package](release_reports/v1_0/README.md)", text)
-        self.assertIn("[v1.0 Support Matrix](release_reports/v1_0/support_matrix.md)", text)
-        self.assertIn("This page is not a speedup claim.", text)
+        self.assertIn("Current released version is `v2.3`.", text)
+        self.assertIn("Active pre-release docs target: v2.6", text)
+        self.assertIn("Active release engines: Embree for CPU RT, OptiX for NVIDIA RT.", text)
+        self.assertIn("Engine ABI rule: native backends stay app-agnostic.", text)
+        self.assertIn("Performance rule: a backend flag is not a speedup claim.", text)
 
     def test_current_main_matrix_lists_native_anyhit_backend_support(self) -> None:
         text = MATRIX.read_text(encoding="utf-8")
 
         for phrase in (
-            "Embree any-hit uses `rtcOccluded1`",
-            "OptiX any-hit uses `optixTerminateRay()`",
-            "Vulkan any-hit uses Vulkan ray tracing shaders with `terminateRayEXT`",
-            "HIPRT any-hit uses HIPRT traversal",
-            "Apple RT 3D any-hit uses `MPSRayIntersector`",
-            "Apple RT 2D any-hit extrudes triangles into MPS-traversed prisms",
-            "visibility_rows(..., backend=...)",
+            "Any-hit rows",
+            "Hit counts",
+            "Closest hit",
+            "Fixed-radius rows",
+            "Segment/polygon witnesses",
+            "Partner tensor/custom continuation",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)
@@ -40,12 +36,11 @@ class Goal654CurrentMainSupportMatrixTest(unittest.TestCase):
         text = MATRIX.read_text(encoding="utf-8")
 
         for phrase in (
-            "Apple RT any-hit is not programmable shader-level Apple any-hit.",
-            "`reduce_rows` is a deterministic Python standard-library helper",
-            "AMD GPU validation for HIPRT",
-            "HIPRT CPU fallback",
-            "RT-core speedup from the GTX 1070 Linux evidence",
-            "Apple MPS ray-tracing-hardware traversal for DB or graph workloads",
+            "broad speedup across all workloads",
+            "package-install support",
+            "AMD GPU performance",
+            "Apple RT performance for the current release target",
+            "true zero-copy unless the exact measured path proves device-resident handoff",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)

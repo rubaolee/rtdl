@@ -157,7 +157,9 @@ than treating those older goal-named tests as the learner path.
 PYTHONPATH=src:. python examples/v2_0/apps/analytics/rtdl_database_analytics_app.py --backend cpu_python_reference
 ```
 
-For current v2.3 learning, the unified example above is the public entry point.
+For current v2.x learning, the unified example above is the public entry point.
+Use the v2.6 partner-choice guide when you need a measured CuPy or Numba
+continuation after an RTDL primitive.
 
 ## 6. Current Limits
 

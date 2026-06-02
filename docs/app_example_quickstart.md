@@ -34,8 +34,8 @@ What this does not show:
 | --- | --- | --- | --- |
 | First working command | `examples/v2_0/getting_started/rtdl_hello_world.py` | import and output smoke path | performance |
 | Backend selection | `examples/v2_0/getting_started/rtdl_hello_world_backends.py` | same kernel idea through selected runners | backend speedup |
-| Python+partner first path | `examples/v2_0/partners/rtdl_partner_anyhit.py --partner numpy --backend embree` | partner-owned columns staged into Embree any-hit | zero-copy or RT-core speedup |
-| Advanced OptiX partner path | [OptiX Partner Column Any-Hit](tutorials/partner_optix_zero_copy_anyhit.md) | Torch/CuPy CUDA input-plus-output evidence for a prepared OptiX any-hit primitive | final release status or broad acceleration |
+| Python+partner first path | `examples/v2_0/partners/rtdl_partner_anyhit.py --partner numpy --backend embree` | partner-owned columns staged into Embree any-hit | true-zero-copy or RT-core speedup |
+| Advanced OptiX partner path | [OptiX Partner Column Any-Hit](tutorials/partner_optix_column_anyhit.md) | Torch/CuPy CUDA input-plus-output evidence for a prepared OptiX any-hit primitive | final release status, true-zero-copy, or broad acceleration |
 | Feature recipes | `examples/v2_0/getting_started/rtdl_feature_quickstart_cookbook.py` | one compact recipe per public feature | production readiness for every backend |
 | Geometry/spatial joins | `examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py` | segment/polygon candidate traversal and refinement | full GIS engine |
 | Spatial coverage app | `examples/v2_0/apps/geospatial/rtdl_service_coverage_gaps.py` | fixed-radius household/clinic join | full service optimization |

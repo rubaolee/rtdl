@@ -11,7 +11,14 @@ reference runner, Embree, or OptiX without rewriting the application.
 RTDL is not a renderer or graphics engine. It uses ray-tracing-style
 acceleration structures and traversal for application kernels.
 
-This documentation is written for the current v2.x RTDL surface. The current released version is `v2.3`: the source-tree Python+partner+RTDL app-portfolio release. Use RTDL from the repository source tree with `PYTHONPATH=src:.`; do not read the release as a package-install promise or broad speedup claim.
+This documentation is written for the current v2.x RTDL surface. The current
+released version is `v2.3`: the source-tree Python+partner+RTDL app-portfolio
+release. The active internal pre-release lane is `v2.6`, which keeps the same
+app-agnostic engine rule while adding clearer partner-choice guidance for CuPy
+and Numba continuations. Use RTDL from the repository source tree with
+`PYTHONPATH=src:.`; do not read any current or pre-release doc as a
+package-install promise, automatic partner-selection promise, true-zero-copy
+claim, or broad speedup claim.
 
 ## Start Fast
 
@@ -122,7 +129,7 @@ Backend support varies by feature and platform. Start with the portable
 `cpu_python_reference` backend, then use Embree or OptiX when your host has the
 native dependencies configured.
 
-## v2.3 Release
+## Current Release And v2.6 Pre-Release Lane
 
 RTDL v2.3 is the Python+partner+RTDL app-portfolio source-tree release. It keeps
 the current v2.x language boundary, adds the current promoted benchmark-app portfolio,
@@ -135,10 +142,25 @@ Promoted benchmarks are reconstruction instruments for RTDL language/runtime
 design, not broad paper-reproduction or whole-application speedup claims.
 
 Do not read v2.3 as a package-install promise, broad RT-core claim, arbitrary
-PyTorch/CuPy acceleration claim, arbitrary polygon overlay claim, or proof that
-every user program is faster. For the exact positive and negative rule, read
+PyTorch/CuPy/Numba acceleration claim, arbitrary polygon overlay claim, or proof
+that every user program is faster. For the exact positive and negative rule, read
 [Partner Acceleration Boundaries](docs/partner_acceleration_boundaries.md) and
 [v2.3 Release Package](docs/release_reports/v2_3/README.md).
+
+The v2.6 lane is not a release tag yet. It is the active source-tree
+pre-release work for user-chosen partner continuations:
+
+- use fused RTDL primitives first when they exactly express the work;
+- choose a partner explicitly when custom continuation logic is needed;
+- prefer CuPy for mature CUDA-array/library continuations;
+- use Numba for measured custom CUDA-style continuations such as selected
+  compact-mask and grouped-reduction rows;
+- keep Triton paused for recommended paths until same-contract timing proves it
+  should return.
+
+For the current partner-choice guide, read
+[Choosing A Partner For Custom Logic](docs/learn/partner_choice_for_custom_logic.md)
+and the [Benchmark Partner Reference Matrix](docs/learn/benchmark_partner_reference_matrix.md).
 
 ## Performance Boundary
 
@@ -164,6 +186,7 @@ Use exact benchmark artifacts before publishing performance wording.
 - [Feature Guide](docs/rtdl_feature_guide.md)
 - [Engine Feature Support Contract](docs/features/engine_support_matrix.md)
 - [App Engine Support Matrix](docs/app_engine_support_matrix.md)
+- [Current Support Matrix](docs/current_main_support_matrix.md)
 - [Capability Boundaries](docs/capability_boundaries.md)
 - [Partner Acceleration Boundaries](docs/partner_acceleration_boundaries.md)
 - [Current Architecture](docs/current_architecture.md)

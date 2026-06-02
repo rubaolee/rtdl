@@ -1,17 +1,22 @@
 # RTDL Examples
 
-This directory is organized for RTDL v2.3 users first.  Start in
+This directory is organized for current v2.x RTDL users first.  Start in
 `v2_0/`, then choose by purpose: first run, feature, full app, partner
 continuation, or research benchmark.
 
-The directory name `v2_0/` is stable for the current v2.x learner tree; v2.3
-does not create a duplicate example tree.
+The directory name `v2_0/` is stable for the current v2.x learner tree. The
+latest released evidence package is v2.3, and active v2.6 pre-release partner
+guidance is documented inside the same source-tree example family rather than a
+duplicate directory.
 
 Run examples from the repository root with source-tree usage:
 
 ```bash
 PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world.py
 ```
+
+Start with the portable CPU reference path, then move to Embree for CPU RT and
+OptiX for NVIDIA RT when those native backends are configured.
 
 For a full Linux/pod smoke run across tutorials, examples, demos, and benchmark
 front doors, install the native/runtime prerequisites first:
@@ -42,7 +47,7 @@ the same `pip` command inside it.
 | `v2_0/getting_started/` | New learner | Hello world, backend selection, feature cookbook |
 | `v2_0/features/` | User learning one RTDL primitive family | Ray queries, neighbors, database reductions, graph traversal, spatial rows |
 | `v2_0/apps/` | User building an application | Analytics, geospatial, ML, robotics, simulation, trajectory examples |
-| `v2_0/partners/` | Advanced user | NumPy/CuPy/user-owned continuation examples around RTDL outputs |
+| `v2_0/partners/` | Advanced user | NumPy/CuPy/Numba/user-owned continuation examples around RTDL outputs |
 | `v2_0/learner_apps/` | Learner/research reader | Demoted or design-pressure app-scale examples that are not benchmark claims |
 | `v2_0/research_benchmarks/hausdorff_xhd/` | Research/performance reader | Hausdorff/X-HD-inspired RTDL study and benchmark harnesses |
 | `v2_0/research_benchmarks/spatial_rayjoin/` | Research/performance reader | RayJoin-inspired spatial join study |
@@ -92,7 +97,7 @@ the explicit `examples/v2_0/...` paths.
 
 - `--backend optix` is not by itself a broad NVIDIA RT-core speedup claim.
 - Partner examples show user-owned continuation around RTDL outputs; RTDL does
-  not claim to accelerate arbitrary NumPy, PyTorch, or CuPy programs.
+  not claim to accelerate arbitrary NumPy, PyTorch, CuPy, or Numba programs.
 - `legacy_or_backend_proofs/`, `generated/`, `reference/`, and `internal/` are
   not first-run learner directories.
 
@@ -103,6 +108,9 @@ For guided learning and support boundaries, prefer:
 - [Tutorial Ladder](../docs/tutorials/README.md)
 - [App And Example Quickstart](../docs/app_example_quickstart.md)
 - [Application Catalog](../docs/application_catalog.md)
+- [Choosing A Partner For Custom Logic](../docs/learn/partner_choice_for_custom_logic.md)
+- [Benchmark Partner Reference Matrix](../docs/learn/benchmark_partner_reference_matrix.md)
+- [Current Support Matrix](../docs/current_main_support_matrix.md)
 - [v2.3 Release Package](../docs/release_reports/v2_3/README.md)
 - [App Engine Support Matrix](../docs/app_engine_support_matrix.md)
 - [Performance Model](../docs/performance_model.md)

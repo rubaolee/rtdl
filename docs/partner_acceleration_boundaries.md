@@ -8,9 +8,10 @@ they are not general-purpose program optimizers.
 
 RTDL accelerates the RTDL primitive call you explicitly make.
 
-For the current v2.3 release, the supported shape is:
+For the current v2.x source-tree surface, the supported shape is:
 
-1. You build columns in Python with NumPy, PyTorch, or CuPy.
+1. You build columns in Python with NumPy, PyTorch, CuPy, or Numba-compatible
+   arrays.
 2. You call an RTDL partner API for a supported primitive.
 3. RTDL executes the primitive on the selected backend, such as Embree or OptiX.
 4. RTDL returns a defined result contract, such as flags, counts, or witness
@@ -25,17 +26,18 @@ Examples of valid narrow wording:
 
 ## What RTDL Does Not Accelerate
 
-RTDL does not accelerate arbitrary PyTorch or CuPy programs.
+RTDL does not accelerate arbitrary PyTorch, CuPy, or Numba programs.
 
 If your Python code runs a neural network, tensor expression, optimizer step,
-DataFrame operation, or custom PyTorch/CuPy kernel, RTDL does not rewrite or
-speed up that code. RTDL only executes the RTDL primitive you call through the
-RTDL API.
+DataFrame operation, custom CuPy kernel, or custom Numba kernel, RTDL does not
+rewrite or speed up that code. RTDL only executes the RTDL primitive you call
+through the RTDL API.
 
 Blocked wording:
 
 - RTDL accelerates arbitrary PyTorch code.
 - RTDL accelerates arbitrary CuPy code.
+- RTDL accelerates arbitrary Numba code.
 - RTDL optimizes partner programs automatically.
 - RTDL makes whole applications faster by default.
 - RTDL provides broad RT-core acceleration for all partner workloads.
@@ -43,9 +45,9 @@ Blocked wording:
 ## Partner-Owned Columns Are Not Whole-Program Acceleration
 
 Partner-owned columns mean the input or output arrays are owned by a partner
-runtime such as PyTorch or CuPy. That can reduce copies for a supported RTDL
-primitive path, but it does not mean the rest of the partner program is
-accelerated by RTDL.
+runtime such as PyTorch, CuPy, or Numba-compatible CUDA arrays. That can reduce
+copies for a supported RTDL primitive path, but it does not mean the rest of the
+partner program is accelerated by RTDL.
 
 The public claim must name the exact primitive, backend, partner, output
 contract, and evidence artifact.
@@ -54,7 +56,8 @@ contract, and evidence artifact.
 
 RTDL does not restrict users from doing normal partner work after an RTDL
 primitive returns. If the partner is CuPy, users may continue with ordinary CuPy
-operations, including `cupy.RawKernel`. If the partner is PyTorch, users may
+operations, including `cupy.RawKernel`. If the partner is Numba, users may
+continue with their own Numba CUDA kernels. If the partner is PyTorch, users may
 continue with ordinary PyTorch tensor operations.
 
 That user continuation belongs to the user's application unless RTDL ships,
@@ -78,7 +81,7 @@ RTDL accelerates arbitrary CuPy RawKernel programs.
 Allowed claim:
 
 ```text
-RTDL v2.3 can interoperate with CuPy-owned device arrays, so users can continue
+RTDL v2.x can interoperate with CuPy-owned device arrays, so users can continue
 with normal CuPy code, including RawKernel, subject to their own correctness and
 performance responsibility.
 ```
@@ -87,23 +90,23 @@ The same boundary applies to user C/C++ continuations in source-tree Python
 apps: RTDL does not forbid them, but their performance is not automatically an
 RTDL speedup claim.
 
-For the current four all-app control rows, the intended interpretation is:
+For app continuations, the intended interpretation is:
 
-- `database_analytics`: v2 users may write CuPy scans, reductions, or RawKernel
-  grouping continuations, but those are not official speedup rows until reviewed.
-- `graph_analytics`: v2 users may write CuPy graph continuations for BFS or
-  triangle counting, but RTDL does not claim to accelerate those graph programs.
-- `polygon_pair_overlap_area_rows`: v2 users may use RTDL for candidate
-  discovery and CuPy or RawKernel for exact area refinement.
-- `polygon_set_jaccard`: v2 users may use RTDL for candidate hits and CuPy or
-  RawKernel for exact set intersection/union reduction.
+- use RTDL primitives for the traversal-heavy, app-agnostic contract;
+- use CuPy for mature CUDA-array scans, masks, reductions, and RawKernel paths;
+- use Numba for measured custom CUDA-style continuations such as selected
+  compact masks and grouped reductions;
+- keep app policy, labels, graph iteration, GIS interpretation, SQL-like
+  semantics, and final reports in Python or user partner code unless RTDL has
+  shipped a reviewed generic primitive for that exact contract.
 
-## Current Release Boundary
+## Current Release And Pre-Release Boundary
 
-v2.3 is the current source-tree Python+partner+RTDL release. The evidence
-supports documented Python+partner+RTDL contracts and separates promoted
-benchmark apps from learner/example apps. The release passed the strict 3-AI
-consensus redline with Codex, Claude, and Gemini.
+v2.3 is the current released source-tree Python+partner+RTDL evidence package.
+The active v2.6 lane is internal pre-release work for clearer user-chosen
+partner guidance and selected Numba custom-continuation support. v2.6 is not a
+release tag yet and does not authorize package-install wording, broad speedup
+wording, automatic partner selection, or a general true-zero-copy product claim.
 
 Every public performance statement must stay inside the reviewed evidence:
 
@@ -112,7 +115,7 @@ Every public performance statement must stay inside the reviewed evidence:
 - exact backend;
 - exact partner;
 - exact hardware class;
-- exact transfer or zero-copy boundary;
+- exact transfer or residency boundary;
 - reviewed artifact path.
 
 When those details are missing, use compatibility or preview wording instead
@@ -121,164 +124,38 @@ of performance wording.
 Copilot supplemental review may be useful engineering signal, but it does not
 replace Claude or Gemini under the strict 3-AI consensus rule.
 
-## v2.4/v2.5 Partner Direction
+## v2.6 Partner Choice Rule
 
-The next partner direction is performance-preserving ease of use. The goal is
-to make RT-core programming substantially easier without replacing the current
-10 promoted benchmark apps with slower convenience paths.
+The current pre-release rule is intentionally simple:
 
-Post-Goal2978 closeout correction: older planning notes below describe the
-exploratory v2.5 direction as "Triton-first." The current v2.5 closeout rule is
-stricter and supersedes that wording for new work:
+- Use a fused generic native RTDL primitive when it exactly expresses the work.
+- Use partner continuation only for unfused work or explicit app choice.
+- Users choose supported partners explicitly. RTDL guidance may recommend a
+  partner only when same-contract evidence supports that recommendation.
+- CuPy is the mature CUDA-array and library-continuation partner.
+- Numba is the v2.6 custom CUDA-style continuation lane for selected measured
+  contracts such as compact masks and grouped reductions.
+- PyTorch remains useful for tensor interop and reference paths where measured.
+- Triton remains paused for recommended paths until same-contract timing proves
+  it should return.
 
-- If a fused generic native RTDL primitive exactly expresses the continuation,
-  use that primitive-first path.
-- Use partner continuation only for unfused continuations or explicit app
-  choice.
-- Users choose supported partners explicitly. Benchmark reference
-  implementations may recommend a partner only when same-contract evidence
-  supports that recommendation; never auto-select Triton just because a preview
-  kernel exists.
-- Tier B means a coverage gap that needs an explicit continuation because no
-  fused native primitive expresses the continuation. It does not mean Triton is
-  selected or fastest.
-- Post-Goal2989, Triton is ignored for recommended v2.5 paths after negative
-  same-contract evidence. v2.6 begins from neutral-buffer-seam cleanup and a
-  Numba first-class, user-selectable partner lane.
+The benchmark reference implementations document recommendations, not hidden
+dispatch defaults. If a user chooses a different partner, that choice is allowed
+application code; it becomes an RTDL-supported recommendation only after the
+same contract is measured, reviewed, and recorded.
 
-For the detailed roadmap, see
-`docs/reports/goal2657_v2_4_v2_5_partner_roadmap_2026-05-27.md`.
+Current guidance lives in:
 
-The historical planning notes below are retained for reviewers. They do not
-override the post-Goal2989 cleanup above.
+- [Choosing A Partner For Custom Logic](learn/partner_choice_for_custom_logic.md)
+- [Benchmark Partner Reference Matrix](learn/benchmark_partner_reference_matrix.md)
+- `docs/reports/goal3050_partner_choice_for_custom_logic_docs_and_benchmark_matrix_2026-06-02.md`
+- `docs/reports/goal3052_partner_choice_pod_refresh_2026-06-02.md`
+- `docs/reports/goal3054_v2_6_machine_readable_partner_choice_guidance_2026-06-02.md`
 
-The short historical boundary was:
-
-- v2.4 should stabilize typed buffers, prepared sessions, segmented/chunked row
-  streaming, and generic partner continuation contracts.
-- v2.5 should add a Triton-first partner path, with Numba treated as secondary
-  or exploratory.
-- Triton or Numba should own preparation, continuation, reduction, compaction,
-  and finalization around RTDL primitives; they must not replace OptiX RT-core
-  traversal for RT-core claims.
-- A friendlier partner path is not a promoted performance path if it
-  significantly regresses the current same-contract OptiX-vs-Embree benchmark
-  evidence.
-
-The first implemented v2.4 slice is the RTDL-specific handoff protocol in
-`src/rtdsl/partner_protocol.py`; see
-`docs/reports/goal2658_v2_4_partner_protocol_foundation_2026-05-27.md`.
-The next metadata-only integration slice applies that protocol to RayDB,
-bounded witness collection, and RT-Graph-style triangle counting; see
-`docs/reports/goal2659_v2_4_benchmark_protocol_integration_2026-05-27.md`.
-The follow-up phase-timing slice adds machine-readable v2.4 timing validation
-for the same prepared paths; see
-`docs/reports/goal2660_v2_4_phase_timing_metadata_2026-05-27.md`.
-
-v2.4 is now internally complete as a protocol-cleanup milestone; see
-`docs/reports/goal2661_v2_4_completion_gate_2026-05-27.md`. This does not
-authorize a public release tag, package-install wording, or new public speedup
-claims. It authorizes v2.5 work to begin from the tested typed-buffer,
-prepared-session, segmented-row-stream, benchmark-metadata, and phase-timing
-contracts.
-
-The first v2.5 slice is the generic partner-continuation contract; see
-`docs/reports/goal2662_v2_5_partner_continuation_contract_2026-05-27.md`.
-It defines Triton-first / Numba-fallback continuation operations such as
-segmented count/sum, compaction, bounded finalization, and grouped argmin.
-Count/sum/min/max, compact mask, grouped argmin, and bounded collect/finalize
-now have executable Triton preview kernels. None of this authorizes Triton
-performance claims, public speedup wording, or replacing RTDL/OptiX traversal.
-
-The first Triton-targeted implementation preview is
-`segmented_sum_f64`; see
-`docs/reports/goal2663_v2_5_triton_segmented_sum_preview_2026-05-27.md`.
-It is lazy-imported and skip-safe on non-CUDA machines, but executable
-correctness and performance validation require a Linux NVIDIA pod. It remains
-`preview_not_promoted` and only covers generic post-RT continuation, not RT
-traversal replacement.
-
-The matching `segmented_count_i64` Triton preview is documented in
-`docs/reports/goal2664_v2_5_triton_segmented_count_preview_2026-05-27.md`.
-Together, count and sum form the initial RayDB-style grouped continuation pair,
-but both remain unpromoted until CUDA pod validation and same-contract benchmark
-phase evidence exist.
-
-The pod validation runner for this pair is
-`scripts/goal2665_v2_5_triton_grouped_continuation_pod_runner.py`; see
-`docs/reports/goal2665_v2_5_triton_grouped_pod_runner_2026-05-27.md`.
-It compares the RTDL Triton continuations with Torch device baselines and emits
-JSON evidence, but still measures only partner continuation, not RT traversal.
-
-The first Numba fallback preview mirrors the same segmented count/sum contract;
-see `docs/reports/goal2666_v2_5_numba_segmented_preview_2026-05-27.md`.
-It is secondary to Triton and remains `preview_not_promoted` until CUDA pod
-correctness, timing, and benchmark-integration evidence exist.
-Goal2668 changes Numba group-id validation from a full host copy to a
-device-resident error-flag kernel; see
-`docs/reports/goal2668_v2_5_numba_device_validation_2026-05-27.md`.
-The first benchmark integration plan is RayDB descriptor-only mapping for
-count/sum/avg-as-sum-count; see
-`docs/reports/goal2669_v2_5_raydb_continuation_plan_2026-05-27.md`. It does not
-execute Triton/Numba or change benchmark claims yet.
-Goal2670 extends the reference contract with segmented min/max so RayDB
-min/max have generic semantics, but no Triton/Numba min/max kernel or speedup
-claim exists yet.
-Goal2671 adds the v2.5 preview gate:
-`internal_v2_5_preview_pod_validation_required`. It is not a completion or
-release gate; it only records what is ready for CUDA pod validation.
-
-Goal2676 starts the implementation pivot from legacy CuPy/PyTorch partner paths
-to Triton-first v2.5 continuations; see
-`docs/reports/goal2676_v2_5_triton_partner_pivot_2026-05-27.md`. Count/sum now
-plan as executable Triton previews, every generic continuation operation has a
-Triton descriptor, and RayDB records Triton as the preferred app-facing
-continuation partner. Later local slices add min/max, compaction, and grouped
-argmin previews. Torch may still appear as a CUDA tensor carrier for Triton
-launch, but it is not the v2.5 partner.
-
-Goal2677 extends the executable Triton preview set to segmented min/max; see
-`docs/reports/goal2677_v2_5_triton_segmented_minmax_preview_2026-05-27.md`.
-This moves RayDB count/sum/min/max onto generic Triton preview operations, while
-compaction, grouped argmin, and bounded finalize remain future generic kernels
-at Goal2677.
-
-Goal2678 adds `compact_mask_i64` as a Triton executable preview; see
-`docs/reports/goal2678_v2_5_triton_compact_mask_preview_2026-05-27.md`.
-Goal2679 adds `grouped_argmin_f64` as a Triton executable preview; see
-`docs/reports/goal2679_v2_5_triton_grouped_argmin_preview_2026-05-27.md`.
-Goal2680 adds `bounded_collect_finalize_i64` as a fail-closed Triton executable
-preview; see
-`docs/reports/goal2680_v2_5_triton_bounded_collect_preview_2026-05-27.md`.
-At this point all v2.5 generic continuation operations have local Triton
-preview implementations, but CUDA pod evidence and app wiring are still
-required before completion or performance claims.
-
-Goal2681 adds the first generic adapter front door for `partner="triton"`; see
-`docs/reports/goal2681_v2_5_triton_partner_adapter_front_door_2026-05-27.md`.
-Generic grouped reductions, mask compaction, metric-table reductions, and
-columnar predicate reductions can now route through the Triton continuation
-dispatcher instead of requiring apps to call low-level Triton helpers directly.
-This does not convert old app-math adapters into Triton partners; they must be
-decomposed into reviewed generic operations before joining the v2.5 path.
-`v2_5_triton_front_door_coverage()` records this split so apps that still need
-dispatcher-only `grouped_argmin_f64` or `bounded_collect_finalize_i64` wiring
-are not mislabeled as fully ported.
-
-Goal2682 adds a CUDA pod runner for the public Triton adapter front door; see
-`docs/reports/goal2682_v2_5_triton_adapter_front_door_runner_2026-05-27.md`.
-It is separate from the low-level Goal2665 runner and must pass before we treat
-the adapter API as pod-validated.
-
-Goal2683 provides the first CUDA pod validation for the v2.5 Triton partner
-path; see
-`docs/reports/goal2683_v2_5_triton_partner_gpu_validation_2026-05-28.md`.
-It validates both low-level Triton continuation kernels and public
-`partner="triton"` adapter front doors on an NVIDIA L4. It also wires RayDB's
-post-RT grouped continuation through the public Triton front door for
-`count`, `sum`, `min`, `max`, and `avg_as_sum_count`. The result is correctness
-evidence only: current Triton preview kernels are slower than Torch CUDA
-baselines on the tested synthetic continuations, and no public performance
-claim is authorized. A full RT+Triton RayDB total-path comparison remains
-blocked until the RT path exposes a generic raw hit stream for partner
-continuation without embedding app semantics.
+Historical v2.4/v2.5 partner-continuation reports remain in `docs/reports/`
+for reviewers, including
+`docs/reports/goal2657_v2_4_v2_5_partner_roadmap_2026-05-27.md`,
+`docs/reports/goal2662_v2_5_partner_continuation_contract_2026-05-27.md`, and
+`docs/reports/goal2981_v2_5_closeout_positioning_and_external_review_packet_2026-06-01.md`.
+Those reports explain how the project reached the current v2.6 rule; they do
+not override this learner-facing boundary.

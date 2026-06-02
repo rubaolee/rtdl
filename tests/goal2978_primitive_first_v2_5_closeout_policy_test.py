@@ -90,22 +90,23 @@ class Goal2978PrimitiveFirstV25CloseoutPolicyTest(unittest.TestCase):
         support = CURRENT_SUPPORT.read_text(encoding="utf-8")
         boundary = PARTNER_BOUNDARY.read_text(encoding="utf-8")
         arch_normalized = " ".join(arch.lower().split())
+        boundary_normalized = " ".join(boundary.split())
 
         self.assertNotIn("direction is Triton-first", arch)
         self.assertNotIn("Triton primary. Numba fallback", arch)
-        self.assertIn("active v2.5 closeout rule is now primitive-first", arch_normalized)
+        self.assertIn("active v2.6 pre-release rule is primitive-first", arch_normalized)
         self.assertIn("Users choose supported partners explicitly", arch)
         self.assertIn("Triton is paused for recommended paths", arch)
 
         self.assertNotIn("Active partner direction: v2.5 Triton-first", support)
-        self.assertIn("Active v2.5 closeout direction", support)
+        self.assertIn("Active v2.6 direction", support)
         self.assertIn("users choose supported partners", support)
         self.assertIn("benchmark recommendations must be backed by same-contract", support)
 
-        self.assertIn("Post-Goal2978 closeout correction", boundary)
-        self.assertIn("supersedes that wording for new work", boundary)
-        self.assertIn("never auto-select Triton", boundary)
-        self.assertIn("Post-Goal2989", boundary)
+        self.assertIn("## v2.6 Partner Choice Rule", boundary)
+        self.assertIn("Users choose supported partners explicitly", boundary)
+        self.assertIn("Triton remains paused", boundary)
+        self.assertIn("do not override this learner-facing boundary", boundary_normalized)
 
     def test_report_records_release_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")

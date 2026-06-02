@@ -17,7 +17,7 @@ class Goal1900PartnerAccelerationBoundaryDocTest(unittest.TestCase):
         text = DOC.read_text(encoding="utf-8")
 
         self.assertIn("RTDL accelerates the RTDL primitive call you explicitly make", text)
-        self.assertIn("RTDL does not accelerate arbitrary PyTorch or CuPy programs", text)
+        self.assertIn("RTDL does not accelerate arbitrary PyTorch, CuPy, or Numba programs", text)
         self.assertIn("Partner-Owned Columns Are Not Whole-Program Acceleration", text)
         self.assertIn("exact primitive", text)
         self.assertIn("exact backend", text)

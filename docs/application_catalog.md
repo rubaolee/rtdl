@@ -91,7 +91,7 @@ benchmark claims.
 | Database feature recipes | `examples/v2_0/features/database/` | Conjunctive scan, grouped count, grouped sum | Feature examples |
 | Graph feature recipes | `examples/v2_0/features/graph/` | BFS and simple triangle-count feature shapes | Feature examples; promoted graph benchmark is triangle-counting only |
 | Spatial feature recipes | `examples/v2_0/features/spatial/` | Segment/polygon hit count, any-hit rows, overlap rows, Jaccard | Feature examples |
-| Partner continuation examples | `examples/v2_0/partners/` | NumPy/CuPy/user-owned continuation around RTDL outputs | Partner examples |
+| Partner continuation examples | `examples/v2_0/partners/` | NumPy/CuPy/Numba/user-owned continuation around RTDL outputs | Partner examples |
 | Geospatial apps | `examples/v2_0/apps/geospatial/` | Road hazard, service coverage, hotspot, facility assignment, sales-risk screening | Learner apps |
 | ML apps | `examples/v2_0/apps/ml/` | ANN candidate quality, outlier detection, DBSCAN learner path | Learner apps; promoted DBSCAN benchmark is under `research_benchmarks/rt_dbscan/` |
 | Analytics apps | `examples/v2_0/apps/analytics/` | Database-style summaries and graph analytics examples | Learner apps; promoted RayDB and triangle-counting benchmarks live under `research_benchmarks/` |
@@ -158,7 +158,8 @@ For performance-oriented v2.x apps, prefer compact or partner-owned outputs:
 - counts instead of pair tables when only totals are needed;
 - streaming witness columns instead of Python dictionaries for large witness
   output;
-- partner-owned arrays when the next computation will run in PyTorch or CuPy.
+- partner-owned arrays when the next computation will run in PyTorch, CuPy, or
+  a measured Numba continuation.
 
 Use Python row dictionaries when clarity or inspection matters more than
 throughput.

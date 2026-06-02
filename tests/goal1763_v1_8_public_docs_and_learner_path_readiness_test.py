@@ -12,7 +12,9 @@ class Goal1763V18PublicDocsAndLearnerPathReadinessTest(unittest.TestCase):
 
     def test_front_page_teaches_current_design_split(self) -> None:
         text = self._read("README.md")
-        self.assertIn("current released version is `v2.3`", text)
+        normalized = " ".join(text.split())
+        self.assertIn("current released version is `v2.3`", normalized)
+        self.assertIn("active internal pre-release lane is `v2.6`", text)
         self.assertIn("Python app layer", text)
         self.assertIn("RTDL engine layer", text)
         self.assertIn("native engine must stay app-agnostic", text)
@@ -56,7 +58,8 @@ class Goal1763V18PublicDocsAndLearnerPathReadinessTest(unittest.TestCase):
         ):
             self.assertNotIn(stale, joined)
         self.assertIn("RTDL v2.3 is the current source-tree", joined)
-        self.assertIn("current released version is `v2.3`", joined)
+        self.assertIn("current released version remains `v2.3`", joined)
+        self.assertIn("Active pre-release docs target: v2.6", joined)
 
     def test_docs_keep_public_overclaims_blocked(self) -> None:
         joined = "\n".join(

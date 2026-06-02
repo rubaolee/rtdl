@@ -119,10 +119,11 @@ class Goal1604V16BlockedClaimRegressionGateTest(unittest.TestCase):
 
     def test_architecture_docs_preserve_track_split(self):
         text = _flat(CURRENT_ARCHITECTURE)
-        self.assertIn("v1.6 is the current release line and the first Python+RTDL architecture milestone", text)
-        self.assertIn("v1.6 is an architecture anchor, not a performance freeze", text)
-        self.assertIn("v1.7-v2.0 are the staged Python+partner+RTDL mechanism track", text)
-        self.assertNotIn("v1.6-v2.0 are the staged partner-mechanism track", text)
+        self.assertIn("RTDL v2.3 is the current source-tree Python+partner+RTDL release", text)
+        self.assertIn("active internal v2.6 pre-release lane", text)
+        self.assertIn("The v2.x-facing partner design is protocol first", text)
+        self.assertIn("Engine absolutely app-agnostic throughout", text)
+        self.assertIn("not hidden defaults", text)
 
     def test_native_internals_full_app_agnostic_claim_stays_blocked(self):
         text = _flat(GOAL1603_REPORT)

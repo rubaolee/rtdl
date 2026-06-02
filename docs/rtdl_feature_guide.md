@@ -27,7 +27,7 @@ evidence.
 | Hit outputs | any-hit flags, hit counts, bounded witness columns |
 | Neighbor rows | fixed-radius rows, nearest-neighbor rows, bounded KNN-style rows |
 | Compact summaries | counts, sums, min/max-style summaries where documented |
-| Columnar partner path | NumPy/PyTorch/CuPy-owned inputs and outputs for supported primitives |
+| Columnar partner path | NumPy/PyTorch/CuPy-owned inputs and outputs, plus selected Numba continuations for supported measured contracts |
 | Backend dispatch | CPU reference, native CPU/oracle, Embree, OptiX, and bounded proof surfaces where documented |
 | IR/lowering | `CompiledKernel` to `RTExecutionPlan` for the supported language shape |
 
@@ -39,6 +39,8 @@ outputs through partner-owned columns:
 - NumPy for CPU/host partner paths;
 - PyTorch as the reference GPU framework partner;
 - CuPy as a lightweight GPU conformance and RawKernel-friendly partner.
+- Numba as the active v2.6 pre-release lane for selected measured custom
+  CUDA-style continuations.
 
 The partner path can support fast app-level continuations when the user stays in
 partner-owned arrays. It does not make RTDL a general tensor compiler.

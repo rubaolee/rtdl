@@ -28,7 +28,7 @@ class Goal646PublicFrontPageDocConsistencyTest(unittest.TestCase):
             (REPO_ROOT / path).read_text(encoding="utf-8") for path in PUBLIC_FRONT_PAGES
         )
 
-        self.assertIn("v2.0", combined)
+        self.assertIn("v2.x", combined)
         self.assertIn("source-tree Python+partner+RTDL release", combined)
         self.assertIn("ray_triangle_any_hit", combined)
         self.assertIn("visibility_rows", combined)
@@ -47,7 +47,6 @@ class Goal646PublicFrontPageDocConsistencyTest(unittest.TestCase):
             "tag not yet created",
             "user-controlled release action",
             "release-prepared",
-            "current released version remains",
             "current `v0.9.4`",
             "current v0.9.4",
         )

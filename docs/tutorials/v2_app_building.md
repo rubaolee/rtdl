@@ -23,7 +23,7 @@ contracts.
 | Layer | Owner | Typical work |
 | --- | --- | --- |
 | Python app | you | load data, choose scenario, call RTDL, compute final labels or reports |
-| Partner framework | NumPy, PyTorch, or CuPy | hold columns, run array math, perform reductions where useful |
+| Partner framework | NumPy, PyTorch, CuPy, or selected Numba continuations | hold columns, run array math, perform reductions or custom continuations where useful |
 | RTDL | RTDL runtime and backend | traverse, refine, and emit documented primitive outputs |
 
 In v2.x, the important upgrade is not that RTDL replaces Python or partner
@@ -52,15 +52,15 @@ PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner 
 PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner torch-cuda --backend optix
 ```
 
-For larger app-level examples, use the application catalog and the performance
-reports linked from the v2.3 release package. Treat each measured row as
-a specific contract: backend, partner, problem size, output shape, and hardware
-all matter.
+For larger app-level examples, use the application catalog, the v2.6
+partner-choice guide, and the performance reports linked from the release
+package. Treat each measured row as a specific contract: backend, partner,
+problem size, output shape, and hardware all matter.
 
 ## Continuation Work
 
 RTDL does not need to own every operation after traversal. A v2.x program can
-continue in normal Python, NumPy, PyTorch, or CuPy.
+continue in normal Python, NumPy, PyTorch, CuPy, or selected Numba kernels.
 
 Examples:
 
@@ -72,6 +72,9 @@ Examples:
   outer iteration policy;
 - a DB-style program can ask RTDL for bounded columnar-payload summaries, then
   use Python to format the application answer.
+- a RayJoin-style row-stream program can use RTDL for the primitive answer and
+  a measured Numba compact-mask continuation when the app truly needs custom
+  row filtering.
 
 That split is intentional. It keeps RTDL general-purpose without putting
 application-specific reducers inside the native engine.
@@ -132,7 +135,8 @@ artifacts and the exact claim boundary instead.
 ## Read Next
 
 - [Python Partner Any-Hit](partner_anyhit.md)
-- [OptiX Partner Column Any-Hit](partner_optix_zero_copy_anyhit.md)
+- [OptiX Partner Column Any-Hit](partner_optix_column_anyhit.md)
+- [Choosing A Partner For Custom Logic](../learn/partner_choice_for_custom_logic.md)
 - [Partner Acceleration Boundaries](../partner_acceleration_boundaries.md)
 - [Application Catalog](../application_catalog.md)
 - [Current Architecture](../current_architecture.md)

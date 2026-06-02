@@ -51,8 +51,8 @@ class Goal1952PartnerRawKernelAndUserContinuationBoundaryTest(unittest.TestCase)
         self.assertIn("User-Owned Partner Continuations", text)
         self.assertIn("including `cupy.RawKernel`", text)
         self.assertIn("That user continuation belongs to the user's application", text)
-        self.assertIn("RTDL v2.0 accelerates arbitrary CuPy RawKernel programs", text)
-        self.assertIn("RTDL v2.0 can interoperate with CuPy-owned device arrays", text)
+        self.assertIn("RTDL accelerates arbitrary CuPy RawKernel programs", text)
+        self.assertIn("RTDL v2.x can interoperate with CuPy-owned device arrays", text)
 
 
 if __name__ == "__main__":

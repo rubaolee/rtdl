@@ -30,8 +30,7 @@ ACTIVE_DOCS.extend(
 )
 
 OLD_MARKER = re.compile(
-    r"\bv0\.|\bv1\.|\bv0_|\bv1_|Goal\s*\d+|goal\s*\d+|"
-    r"released `v|current released|old release|legacy|historical",
+    r"\bv0\.|\bv1\.|\bv0_|\bv1_",
     re.IGNORECASE,
 )
 

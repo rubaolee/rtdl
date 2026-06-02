@@ -7,10 +7,10 @@ and the release-report archive.
 
 ## Current Status
 
-RTDL v2.3 is the current source-tree Python+partner+RTDL release. It preserves
-the current v2.x language boundary and adds the current benchmark-vs-learner app
-portfolio cleanup.
-The current released version is `v2.3`.
+RTDL v2.3 is the current source-tree Python+partner+RTDL release. The active
+internal v2.6 pre-release lane preserves the same v2.x language boundary and
+adds clearer user-chosen partner guidance for CuPy and Numba continuations.
+The current released version remains `v2.3`; v2.6 is not a release tag yet.
 
 ## The User Contract
 
@@ -56,7 +56,7 @@ the workload, backend, partner, hardware, command shape, and artifact.
 ## Partner Architecture
 
 The v2.x-facing partner design is protocol first. v2.3 remains the current
-released source-tree partner release. The active v2.5 closeout rule is now
+released source-tree partner release. The active v2.6 pre-release rule is
 primitive-first:
 
 ```text
@@ -67,14 +67,13 @@ backed by same-contract evidence.
 Engine absolutely app-agnostic throughout.
 ```
 
-Triton, CuPy, PyTorch, and Numba are possible continuation partners, not hidden
-defaults. Triton owns preview kernels for several generic continuations, but a
-preview kernel is not a recommended performance path until same-contract timing
-says so. Post-v2.5 closeout, Triton is paused for recommended paths and v2.6
-starts from the neutral-buffer seam plus Numba-first-class support lane.
-Torch CUDA tensors may still appear as a launch carrier for some Triton paths,
-but that does not make PyTorch the v2.5 default. RTDL owns only the supported
-RTDL primitive call and its documented result contract.
+CuPy, Numba, PyTorch, and Triton are possible continuation partners, not hidden
+defaults. CuPy remains the mature CUDA-array and library-continuation partner.
+Numba is the current v2.6 lane for selected measured custom CUDA-style
+continuations, including compact-mask and grouped-reduction shapes where the
+same-contract evidence supports it. Triton is paused for recommended paths
+until same-contract timing proves a win. RTDL owns only the supported RTDL
+primitive call and its documented result contract.
 
 Examples of valid v2.x-facing output contracts:
 
@@ -92,14 +91,19 @@ contract remains available where documented, but it is not the fast v2.x shape.
 ## What Stays Outside RTDL
 
 RTDL is not a renderer, DBMS, graph database, robotics planner, GIS engine, or
-general PyTorch/CuPy/Triton optimizer. Users may call those systems from
+general PyTorch/CuPy/Numba/Triton optimizer. Users may call those systems from
 Python, but user-written kernels remain application code unless RTDL ships and
 reviews that exact generic contract.
+
+Full residency-first, partner-neutral device-memory composition remains a
+v3.0 roadmap item. v2.6 has selective reduced-transfer/device-resident evidence
+for specific paths, not a general true-zero-copy product guarantee.
 
 ## Read Next
 
 - [Quick Tutorial](quick_tutorial.md)
 - [RTDL Language Docs](rtdl/README.md)
 - [Partner Acceleration Boundaries](partner_acceleration_boundaries.md)
+- [Current Support Matrix](current_main_support_matrix.md)
 - [Capability Boundaries](capability_boundaries.md)
 - [v2.3 Release Package](release_reports/v2_3/README.md)

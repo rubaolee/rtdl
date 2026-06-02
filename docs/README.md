@@ -4,7 +4,7 @@ This directory has three doors:
 
 | Door | Audience | Purpose |
 | --- | --- | --- |
-| [Learn](learn/README.md) | Learners and app builders | Quick path to run examples, write kernels, choose backends, and understand v2.3 boundaries. |
+| [Learn](learn/README.md) | Learners and app builders | Quick path to run examples, write kernels, choose backends, and understand current v2.x and v2.6 pre-release boundaries. |
 | [Research](research/README.md) | Internal researchers and advanced developers | Architecture notes, backend research, RayJoin/Embree context, future ideas, and design constraints. |
 | [Audit](audit/README.md) | Release reviewers and auditors | Process docs, runbooks, release reports, evidence reports, reviews, and archived goal logs. |
 
@@ -13,9 +13,9 @@ the system, start in **Research**. If you are checking evidence, consensus, or
 project history, start in **Audit**.
 
 Current status: RTDL v2.3 is the released source-tree Python+partner+RTDL
-app-portfolio surface. The current released version is `v2.3`. The release
-keeps source-tree usage, documents the benchmark-vs-learner app split, and
-preserves the no-broad-speedup/no-package-install boundary.
+app-portfolio surface. The active internal v2.6 pre-release lane keeps
+source-tree usage, preserves the no-broad-speedup/no-package-install boundary,
+and adds current partner-choice guidance for CuPy and Numba continuations.
 
 Short model:
 
@@ -76,6 +76,7 @@ Read these in order:
 
 ## Rule
 
-Current learner docs should explain one surface: the v2.3 release.
-Older context is preserved for review, but it should not interrupt the normal
-learning path.
+Current learner docs should explain one coherent v2.x surface: v2.3 is the
+latest released evidence package, and v2.6 is the active internal pre-release
+lane. Older context is preserved for review, but it should not interrupt the
+normal learning path.
