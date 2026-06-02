@@ -240,6 +240,27 @@ def _subset_point_columns(columns: dict[str, np.ndarray], indices: np.ndarray) -
     }
 
 
+def _dense_id_to_index_lookup(ids: np.ndarray) -> np.ndarray | None:
+    normalized = np.asarray(ids, dtype=np.int64)
+    if normalized.size == 0 or normalized.min(initial=0) < 0:
+        return None
+    max_id = int(normalized.max(initial=-1))
+    if max_id > max(1024, int(normalized.size) * 4):
+        return None
+    lookup = np.full(max_id + 1, -1, dtype=np.int64)
+    lookup[normalized] = np.arange(normalized.size, dtype=np.int64)
+    return lookup
+
+
+def _map_ids_to_indices(ids: np.ndarray, lookup: np.ndarray | None, fallback: dict[int, int]) -> np.ndarray:
+    normalized = np.asarray(ids, dtype=np.int64)
+    if lookup is not None and normalized.size and int(normalized.max(initial=-1)) < lookup.size:
+        mapped = lookup[normalized]
+        if np.all(mapped >= 0):
+            return mapped
+    return np.fromiter((fallback[int(value)] for value in normalized), dtype=np.int64, count=normalized.size)
+
+
 def _seed_sample_point_columns(
     columns: dict[str, np.ndarray],
     *,
@@ -727,8 +748,12 @@ def _directed_rt_grouped_adaptive_raw_nearest_witness(
         }
     radius = float(initial_radius) if initial_radius is not None else upper_bound / max(16.0, math.sqrt(len(sorted_target_points)))
     radius = min(max(radius, 1.0e-12), upper_bound)
-    target_by_id = {int(point.id): point for point in sorted_target_points}
     target_id_to_index = {int(target_columns["ids"][i]): i for i in range(int(target_columns["ids"].size))}
+    target_index_lookup = _dense_id_to_index_lookup(np.asarray(target_columns["ids"], dtype=np.int64))
+    source_x = np.asarray(source_columns["x"], dtype=np.float64)
+    source_y = np.asarray(source_columns["y"], dtype=np.float64)
+    target_x = np.asarray(target_columns["x"], dtype=np.float64)
+    target_y = np.asarray(target_columns["y"], dtype=np.float64)
     active_indices = list(range(len(source_points)))
     best_distance = -1.0
     best_source_index = -1
@@ -749,24 +774,32 @@ def _directed_rt_grouped_adaptive_raw_nearest_witness(
             try:
                 if len(raw_rows) != len(active_points):
                     raise RuntimeError("adaptive nearest_witness_raw must return one row per active source point")
-                next_active: list[int] = []
-                for local_index in range(raw_rows.row_count):
-                    row = raw_rows.rows_ptr[local_index]
-                    source_index = active_indices[local_index]
-                    neighbor_id = int(row.neighbor_id)
-                    if neighbor_id == 0xFFFFFFFF:
-                        next_active.append(source_index)
-                        continue
-                    target_point = target_by_id[neighbor_id]
-                    source_point = source_points[source_index]
-                    distance = math.hypot(source_point.x - target_point.x, source_point.y - target_point.y)
-                    if distance > best_distance or (
-                        math.isclose(distance, best_distance) and source_index < best_source_index
+                rows = raw_rows.to_numpy(copy=False)
+                active_array = np.asarray(active_indices, dtype=np.int64)
+                found_mask = rows["neighbor_id"] != np.uint32(0xFFFFFFFF)
+                if np.any(found_mask):
+                    found_source_indices = active_array[found_mask]
+                    found_neighbor_ids = rows["neighbor_id"][found_mask].astype(np.int64, copy=False)
+                    found_target_indices = _map_ids_to_indices(
+                        found_neighbor_ids,
+                        target_index_lookup,
+                        target_id_to_index,
+                    )
+                    dx = source_x[found_source_indices] - target_x[found_target_indices]
+                    dy = source_y[found_source_indices] - target_y[found_target_indices]
+                    distances = np.hypot(dx, dy)
+                    local_best = int(np.argmax(distances))
+                    candidate_distance = float(distances[local_best])
+                    candidate_source_index = int(found_source_indices[local_best])
+                    candidate_target_index = int(found_target_indices[local_best])
+                    if candidate_distance > best_distance or (
+                        math.isclose(candidate_distance, best_distance)
+                        and candidate_source_index < best_source_index
                     ):
-                        best_distance = distance
-                        best_source_index = source_index
-                        best_target_index = target_id_to_index[neighbor_id]
-                active_indices = next_active
+                        best_distance = candidate_distance
+                        best_source_index = candidate_source_index
+                        best_target_index = candidate_target_index
+                active_indices = active_array[~found_mask].astype(np.int64, copy=False).tolist()
             finally:
                 raw_rows.close()
             if not active_indices:

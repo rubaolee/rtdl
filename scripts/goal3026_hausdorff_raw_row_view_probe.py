@@ -91,7 +91,9 @@ def run_probe(points: tuple[int, ...], *, warmup: int, repeats: int) -> dict[str
                     f"iter={repeat_index + 1} elapsed={elapsed}",
                     flush=True,
                 )
-            selected = payloads[samples.index(statistics.median(samples))]
+            median_sample = statistics.median(samples)
+            selected_index = min(range(len(samples)), key=lambda index: abs(samples[index] - median_sample))
+            selected = payloads[selected_index]
             rows.append(
                 {
                     "points": point_count,

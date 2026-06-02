@@ -42,7 +42,7 @@ class Goal3026HausdorffAdaptiveRawRowViewTest(unittest.TestCase):
             source.index("def _directed_rt_grouped_adaptive_reduced_nearest_witness")
         ]
         self.assertIn("prepared.nearest_witness_raw", block)
-        self.assertIn("raw_rows.rows_ptr[local_index]", block)
+        self.assertIn("raw_rows.to_numpy(copy=False)", block)
         self.assertIn("raw_rows.close()", block)
         self.assertNotIn("nearest_witness_rows", block)
         self.assertNotIn("to_dict_rows", block)

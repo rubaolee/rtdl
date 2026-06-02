@@ -841,6 +841,29 @@ class OptixRowView:
             for i in range(self.row_count)
         )
 
+    def to_numpy(self, *, copy: bool = False):
+        """Return a structured NumPy view over the host row buffer.
+
+        The default is a borrowed host-memory view and is valid only until the
+        row view is closed. Set ``copy=True`` when the result must outlive this
+        ``OptixRowView``. This is a host row-buffer convenience, not a
+        device-memory or zero-copy partner handoff claim.
+        """
+        if self._closed:
+            raise RuntimeError("cannot expose NumPy rows after OptixRowView is closed")
+        import numpy as _np
+
+        rows = _np.ctypeslib.as_array(self.rows_ptr, shape=(self.row_count,))
+        return rows.copy() if copy else rows
+
+    def to_numpy_columns(self, *, copy: bool = False) -> dict:
+        """Return row fields as NumPy arrays keyed by field name."""
+        rows = self.to_numpy(copy=False)
+        columns = {field: rows[field] for field in self.field_names}
+        if copy:
+            columns = {field: column.copy() for field, column in columns.items()}
+        return columns
+
     def __del__(self) -> None:
         try:
             self.close()
