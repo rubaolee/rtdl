@@ -74,10 +74,12 @@ Summary:
 - Best-vs-current median ratio was 0.951 at best and 0.988 at median, so the
   current 1024/512 evidence policy is already close to the local optimum.
 - Group-size winners vary by dataset, so Goal3048 does not choose one global
-  large group size. A follow-up default-path smoke did show that the old
-  fine-grained small-row group default is too slow for active-frontier, so the
-  active-frontier public function now uses the existing adaptive resolver with a
-  512 floor.
+  large group size. A follow-up warm-state smoke at 16384 points measured
+  explicit group 512 slightly faster than group 128 (0.020586306s vs
+  0.022531558s), so the active-frontier public function now uses the existing
+  adaptive resolver with a 512 floor. The separate roughly 1.3s first-call timing
+  observed in default-path smoke is cold OptiX setup, not steady-state group
+  policy.
 
 Artifact:
 
