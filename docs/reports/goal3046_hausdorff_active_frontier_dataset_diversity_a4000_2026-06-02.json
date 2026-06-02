@@ -1,0 +1,618 @@
+{
+  "all_rows_match_distance": true,
+  "claim_boundary": "Internal dataset-diversity timing evidence only. Public Hausdorff RT-core speedup wording still needs external review, second-GPU confirmation, and reviewed dataset policy.",
+  "datasets": [
+    "adversarial_tail_outlier",
+    "clustered_shift",
+    "demo_offset",
+    "ring_vs_spiral"
+  ],
+  "goal": "Goal3046",
+  "max_median_speedup_vs_cupy": 7.672567299481475,
+  "median_of_median_speedups_vs_cupy": 4.303008840259581,
+  "method_under_test": "rtdl_rt_grouped_active_frontier_nearest_witness",
+  "min_median_speedup_vs_cupy": 2.043927660859682,
+  "public_speedup_claim_authorized": false,
+  "reference_method": "cupy_grouped_grid_rawkernel",
+  "rows": [
+    {
+      "active_direction": "a_to_b",
+      "active_frontier": {
+        "count": 5,
+        "iqr_sec": 9.511108510196209e-05,
+        "max_sec": 0.039778657956048846,
+        "median_sec": 0.03957461006939411,
+        "min_sec": 0.03952437499538064,
+        "q1_sec": 0.039547007996588945,
+        "q3_sec": 0.03964211908169091,
+        "samples": [
+          0.039778657956048846,
+          0.03952437499538064,
+          0.03964211908169091,
+          0.039547007996588945,
+          0.03957461006939411
+        ]
+      },
+      "active_source_index": 32767,
+      "active_speedup_vs_cupy_median": 2.2250911410782512,
+      "active_target_index": 32767,
+      "active_vs_cupy_median_ratio": 0.44941979298673246,
+      "all_trials_match_distance": true,
+      "cupy_grouped_grid": {
+        "count": 5,
+        "iqr_sec": 4.5806635171175e-05,
+        "max_sec": 0.08807685016654432,
+        "median_sec": 0.088057114277035,
+        "min_sec": 0.08800084586255252,
+        "q1_sec": 0.08801945112645626,
+        "q3_sec": 0.08806525776162744,
+        "samples": [
+          0.088057114277035,
+          0.08806525776162744,
+          0.08800084586255252,
+          0.08807685016654432,
+          0.08801945112645626
+        ]
+      },
+      "dataset": "adversarial_tail_outlier",
+      "points_a": 32768,
+      "points_b": 32768,
+      "reference_direction": "a_to_b",
+      "reference_distance": 1.5654072952429985,
+      "reference_source_index": 32767,
+      "reference_target_index": 32767,
+      "seed_sample_count": 1024,
+      "target_points_per_group": 512
+    },
+    {
+      "active_direction": "a_to_b",
+      "active_frontier": {
+        "count": 5,
+        "iqr_sec": 0.0018912109080702066,
+        "max_sec": 0.08089702995494008,
+        "median_sec": 0.07911668997257948,
+        "min_sec": 0.07826799782924354,
+        "q1_sec": 0.0783480100799352,
+        "q3_sec": 0.0802392209880054,
+        "samples": [
+          0.08089702995494008,
+          0.0783480100799352,
+          0.0802392209880054,
+          0.07826799782924354,
+          0.07911668997257948
+        ]
+      },
+      "active_source_index": 65535,
+      "active_speedup_vs_cupy_median": 4.409835968893042,
+      "active_target_index": 65535,
+      "active_vs_cupy_median_ratio": 0.22676580422809242,
+      "all_trials_match_distance": true,
+      "cupy_grouped_grid": {
+        "count": 5,
+        "iqr_sec": 4.459405317902565e-05,
+        "max_sec": 0.3489888298790902,
+        "median_sec": 0.3488916251808405,
+        "min_sec": 0.3488792919088155,
+        "q1_sec": 0.34888968197628856,
+        "q3_sec": 0.3489342760294676,
+        "samples": [
+          0.3489342760294676,
+          0.34888968197628856,
+          0.3488792919088155,
+          0.3488916251808405,
+          0.3489888298790902
+        ]
+      },
+      "dataset": "adversarial_tail_outlier",
+      "points_a": 65536,
+      "points_b": 65536,
+      "reference_direction": "a_to_b",
+      "reference_distance": 1.5654072952429985,
+      "reference_source_index": 65535,
+      "reference_target_index": 65535,
+      "seed_sample_count": 1024,
+      "target_points_per_group": 512
+    },
+    {
+      "active_direction": "a_to_b",
+      "active_frontier": {
+        "count": 5,
+        "iqr_sec": 0.0035528240259736776,
+        "max_sec": 0.17802952113561332,
+        "median_sec": 0.17588117299601436,
+        "min_sec": 0.1714593879878521,
+        "q1_sec": 0.17417035507969558,
+        "q3_sec": 0.17772317910566926,
+        "samples": [
+          0.17772317910566926,
+          0.1714593879878521,
+          0.17802952113561332,
+          0.17417035507969558,
+          0.17588117299601436
+        ]
+      },
+      "active_source_index": 131071,
+      "active_speedup_vs_cupy_median": 7.244115496911807,
+      "active_target_index": 131071,
+      "active_vs_cupy_median_ratio": 0.13804307791976864,
+      "all_trials_match_distance": true,
+      "cupy_grouped_grid": {
+        "count": 5,
+        "iqr_sec": 0.0016100257635116577,
+        "max_sec": 1.2758358989376575,
+        "median_sec": 1.274103530915454,
+        "min_sec": 1.2607824017759413,
+        "q1_sec": 1.2739666909910738,
+        "q3_sec": 1.2755767167545855,
+        "samples": [
+          1.274103530915454,
+          1.2758358989376575,
+          1.2755767167545855,
+          1.2739666909910738,
+          1.2607824017759413
+        ]
+      },
+      "dataset": "adversarial_tail_outlier",
+      "points_a": 131072,
+      "points_b": 131072,
+      "reference_direction": "a_to_b",
+      "reference_distance": 1.5654072952429985,
+      "reference_source_index": 131071,
+      "reference_target_index": 131071,
+      "seed_sample_count": 1024,
+      "target_points_per_group": 512
+    },
+    {
+      "active_direction": "a_to_b",
+      "active_frontier": {
+        "count": 5,
+        "iqr_sec": 0.0010166701395064592,
+        "max_sec": 0.04080685996450484,
+        "median_sec": 0.03965480299666524,
+        "min_sec": 0.03924808115698397,
+        "q1_sec": 0.039373488863930106,
+        "q3_sec": 0.040390159003436565,
+        "samples": [
+          0.04080685996450484,
+          0.040390159003436565,
+          0.03924808115698397,
+          0.039373488863930106,
+          0.03965480299666524
+        ]
+      },
+      "active_source_index": 18178,
+      "active_speedup_vs_cupy_median": 2.206309489904776,
+      "active_target_index": 11710,
+      "active_vs_cupy_median_ratio": 0.45324556893564366,
+      "all_trials_match_distance": true,
+      "cupy_grouped_grid": {
+        "count": 5,
+        "iqr_sec": 0.00010763294994831085,
+        "max_sec": 0.08753851801156998,
+        "median_sec": 0.08749076817184687,
+        "min_sec": 0.08740031602792442,
+        "q1_sec": 0.08741756994277239,
+        "q3_sec": 0.0875252028927207,
+        "samples": [
+          0.08741756994277239,
+          0.0875252028927207,
+          0.08740031602792442,
+          0.08753851801156998,
+          0.08749076817184687
+        ]
+      },
+      "dataset": "clustered_shift",
+      "points_a": 32768,
+      "points_b": 32768,
+      "reference_direction": "a_to_b",
+      "reference_distance": 0.11346658640189468,
+      "reference_source_index": 18178,
+      "reference_target_index": 11710,
+      "seed_sample_count": 1024,
+      "target_points_per_group": 512
+    },
+    {
+      "active_direction": "a_to_b",
+      "active_frontier": {
+        "count": 5,
+        "iqr_sec": 0.0009079540614038706,
+        "max_sec": 0.07863825093954802,
+        "median_sec": 0.07837633416056633,
+        "min_sec": 0.07728908001445234,
+        "q1_sec": 0.07748351898044348,
+        "q3_sec": 0.07839147304184735,
+        "samples": [
+          0.07839147304184735,
+          0.07728908001445234,
+          0.07837633416056633,
+          0.07748351898044348,
+          0.07863825093954802
+        ]
+      },
+      "active_source_index": 22492,
+      "active_speedup_vs_cupy_median": 4.480786934394702,
+      "active_target_index": 2984,
+      "active_vs_cupy_median_ratio": 0.223175083895188,
+      "all_trials_match_distance": true,
+      "cupy_grouped_grid": {
+        "count": 5,
+        "iqr_sec": 1.709279604256153e-05,
+        "max_sec": 0.3512129329610616,
+        "median_sec": 0.3511876540724188,
+        "min_sec": 0.35111370380036533,
+        "q1_sec": 0.3511719452217221,
+        "q3_sec": 0.3511890380177647,
+        "samples": [
+          0.3512129329610616,
+          0.3511719452217221,
+          0.35111370380036533,
+          0.3511890380177647,
+          0.3511876540724188
+        ]
+      },
+      "dataset": "clustered_shift",
+      "points_a": 65536,
+      "points_b": 65536,
+      "reference_direction": "a_to_b",
+      "reference_distance": 0.12074698968887759,
+      "reference_source_index": 22492,
+      "reference_target_index": 2984,
+      "seed_sample_count": 1024,
+      "target_points_per_group": 512
+    },
+    {
+      "active_direction": "b_to_a",
+      "active_frontier": {
+        "count": 5,
+        "iqr_sec": 0.004715342074632645,
+        "max_sec": 0.17049331404268742,
+        "median_sec": 0.1683024950325489,
+        "min_sec": 0.16423431201837957,
+        "q1_sec": 0.16573754488490522,
+        "q3_sec": 0.17045288695953786,
+        "samples": [
+          0.17045288695953786,
+          0.16573754488490522,
+          0.1683024950325489,
+          0.16423431201837957,
+          0.17049331404268742
+        ]
+      },
+      "active_source_index": 47518,
+      "active_speedup_vs_cupy_median": 7.672567299481475,
+      "active_target_index": 83502,
+      "active_vs_cupy_median_ratio": 0.13033447097526035,
+      "all_trials_match_distance": true,
+      "cupy_grouped_grid": {
+        "count": 5,
+        "iqr_sec": 0.006506742909550667,
+        "max_sec": 1.2957446651998907,
+        "median_sec": 1.2913122198078781,
+        "min_sec": 1.286068013869226,
+        "q1_sec": 1.2872165848966688,
+        "q3_sec": 1.2937233278062195,
+        "samples": [
+          1.2872165848966688,
+          1.286068013869226,
+          1.2913122198078781,
+          1.2957446651998907,
+          1.2937233278062195
+        ]
+      },
+      "dataset": "clustered_shift",
+      "points_a": 131072,
+      "points_b": 131072,
+      "reference_direction": "b_to_a",
+      "reference_distance": 0.12479896544574075,
+      "reference_source_index": 47518,
+      "reference_target_index": 83502,
+      "seed_sample_count": 1024,
+      "target_points_per_group": 512
+    },
+    {
+      "active_direction": "a_to_b",
+      "active_frontier": {
+        "count": 5,
+        "iqr_sec": 9.810621850192547e-05,
+        "max_sec": 0.03963728900998831,
+        "median_sec": 0.03914234112016857,
+        "min_sec": 0.03871365590021014,
+        "q1_sec": 0.03910011984407902,
+        "q3_sec": 0.03919822606258094,
+        "samples": [
+          0.03963728900998831,
+          0.03871365590021014,
+          0.03914234112016857,
+          0.03919822606258094,
+          0.03910011984407902
+        ]
+      },
+      "active_source_index": 17108,
+      "active_speedup_vs_cupy_median": 2.043927660859682,
+      "active_target_index": 17833,
+      "active_vs_cupy_median_ratio": 0.4892541057834684,
+      "all_trials_match_distance": true,
+      "cupy_grouped_grid": {
+        "count": 5,
+        "iqr_sec": 1.1542113497853279e-05,
+        "max_sec": 0.08001368306577206,
+        "median_sec": 0.08000411372631788,
+        "min_sec": 0.07998525793664157,
+        "q1_sec": 0.07999527687206864,
+        "q3_sec": 0.0800068189855665,
+        "samples": [
+          0.0800068189855665,
+          0.07998525793664157,
+          0.08001368306577206,
+          0.07999527687206864,
+          0.08000411372631788
+        ]
+      },
+      "dataset": "demo_offset",
+      "points_a": 32768,
+      "points_b": 32768,
+      "reference_direction": "a_to_b",
+      "reference_distance": 0.11607729155254294,
+      "reference_source_index": 17108,
+      "reference_target_index": 17833,
+      "seed_sample_count": 1024,
+      "target_points_per_group": 512
+    },
+    {
+      "active_direction": "a_to_b",
+      "active_frontier": {
+        "count": 5,
+        "iqr_sec": 0.0019258258398622274,
+        "max_sec": 0.07991532585583627,
+        "median_sec": 0.07938282494433224,
+        "min_sec": 0.0778018229175359,
+        "q1_sec": 0.07780982903204858,
+        "q3_sec": 0.07973565487191081,
+        "samples": [
+          0.07991532585583627,
+          0.0778018229175359,
+          0.07938282494433224,
+          0.07780982903204858,
+          0.07973565487191081
+        ]
+      },
+      "active_source_index": 48139,
+      "active_speedup_vs_cupy_median": 3.804022660003536,
+      "active_target_index": 55536,
+      "active_vs_cupy_median_ratio": 0.26287961176316194,
+      "all_trials_match_distance": true,
+      "cupy_grouped_grid": {
+        "count": 5,
+        "iqr_sec": 5.719880573451519e-05,
+        "max_sec": 0.30205469694919884,
+        "median_sec": 0.3019740649033338,
+        "min_sec": 0.30192762590013444,
+        "q1_sec": 0.3019696259871125,
+        "q3_sec": 0.30202682479284704,
+        "samples": [
+          0.3019740649033338,
+          0.30192762590013444,
+          0.3019696259871125,
+          0.30202682479284704,
+          0.30205469694919884
+        ]
+      },
+      "dataset": "demo_offset",
+      "points_a": 65536,
+      "points_b": 65536,
+      "reference_direction": "a_to_b",
+      "reference_distance": 0.13085040452901578,
+      "reference_source_index": 48139,
+      "reference_target_index": 55536,
+      "seed_sample_count": 1024,
+      "target_points_per_group": 512
+    },
+    {
+      "active_direction": "b_to_a",
+      "active_frontier": {
+        "count": 5,
+        "iqr_sec": 0.008057347033172846,
+        "max_sec": 0.174834436038509,
+        "median_sec": 0.1719107748940587,
+        "min_sec": 0.16470173909328878,
+        "q1_sec": 0.16617494612000883,
+        "q3_sec": 0.17423229315318167,
+        "samples": [
+          0.17423229315318167,
+          0.16617494612000883,
+          0.174834436038509,
+          0.16470173909328878,
+          0.1719107748940587
+        ]
+      },
+      "active_source_index": 4515,
+      "active_speedup_vs_cupy_median": 6.40514562016884,
+      "active_target_index": 101341,
+      "active_vs_cupy_median_ratio": 0.15612447542974672,
+      "all_trials_match_distance": true,
+      "cupy_grouped_grid": {
+        "count": 5,
+        "iqr_sec": 0.001807230757549405,
+        "max_sec": 1.115105448756367,
+        "median_sec": 1.1011135468725115,
+        "min_sec": 1.097860419889912,
+        "q1_sec": 1.099555018125102,
+        "q3_sec": 1.1013622488826513,
+        "samples": [
+          1.097860419889912,
+          1.1013622488826513,
+          1.1011135468725115,
+          1.099555018125102,
+          1.115105448756367
+        ]
+      },
+      "dataset": "demo_offset",
+      "points_a": 131072,
+      "points_b": 131072,
+      "reference_direction": "b_to_a",
+      "reference_distance": 0.1283029281659503,
+      "reference_source_index": 4515,
+      "reference_target_index": 101341,
+      "seed_sample_count": 1024,
+      "target_points_per_group": 512
+    },
+    {
+      "active_direction": "b_to_a",
+      "active_frontier": {
+        "count": 5,
+        "iqr_sec": 0.00044583575800061226,
+        "max_sec": 0.03910114197060466,
+        "median_sec": 0.03887492208741605,
+        "min_sec": 0.03824233100749552,
+        "q1_sec": 0.03855106816627085,
+        "q3_sec": 0.038996903924271464,
+        "samples": [
+          0.03887492208741605,
+          0.03824233100749552,
+          0.038996903924271464,
+          0.03855106816627085,
+          0.03910114197060466
+        ]
+      },
+      "active_source_index": 17457,
+      "active_speedup_vs_cupy_median": 2.157015077975004,
+      "active_target_index": 5291,
+      "active_vs_cupy_median_ratio": 0.4636036206751023,
+      "all_trials_match_distance": true,
+      "cupy_grouped_grid": {
+        "count": 5,
+        "iqr_sec": 9.937910363078117e-06,
+        "max_sec": 0.08387516415677965,
+        "median_sec": 0.08385379309765995,
+        "min_sec": 0.0838249980006367,
+        "q1_sec": 0.0838463690597564,
+        "q3_sec": 0.08385630697011948,
+        "samples": [
+          0.08385379309765995,
+          0.0838249980006367,
+          0.08387516415677965,
+          0.08385630697011948,
+          0.0838463690597564
+        ]
+      },
+      "dataset": "ring_vs_spiral",
+      "points_a": 32768,
+      "points_b": 32768,
+      "reference_direction": "b_to_a",
+      "reference_distance": 0.09691832900672458,
+      "reference_source_index": 17457,
+      "reference_target_index": 5291,
+      "seed_sample_count": 1024,
+      "target_points_per_group": 512
+    },
+    {
+      "active_direction": "b_to_a",
+      "active_frontier": {
+        "count": 5,
+        "iqr_sec": 0.0027033318765461445,
+        "max_sec": 0.07906542206183076,
+        "median_sec": 0.07874918193556368,
+        "min_sec": 0.07597923302091658,
+        "q1_sec": 0.07635314296931028,
+        "q3_sec": 0.07905647484585643,
+        "samples": [
+          0.07905647484585643,
+          0.07597923302091658,
+          0.07906542206183076,
+          0.07635314296931028,
+          0.07874918193556368
+        ]
+      },
+      "active_source_index": 17457,
+      "active_speedup_vs_cupy_median": 4.19618171162612,
+      "active_target_index": 5291,
+      "active_vs_cupy_median_ratio": 0.23831189131523006,
+      "all_trials_match_distance": true,
+      "cupy_grouped_grid": {
+        "count": 5,
+        "iqr_sec": 7.555214688181877e-05,
+        "max_sec": 0.33050814480520785,
+        "median_sec": 0.33044587704353034,
+        "min_sec": 0.33040984882973135,
+        "q1_sec": 0.3304172339849174,
+        "q3_sec": 0.3304927861317992,
+        "samples": [
+          0.33044587704353034,
+          0.3304927861317992,
+          0.3304172339849174,
+          0.33050814480520785,
+          0.33040984882973135
+        ]
+      },
+      "dataset": "ring_vs_spiral",
+      "points_a": 65536,
+      "points_b": 65536,
+      "reference_direction": "b_to_a",
+      "reference_distance": 0.09691832900672458,
+      "reference_source_index": 17457,
+      "reference_target_index": 5291,
+      "seed_sample_count": 1024,
+      "target_points_per_group": 512
+    },
+    {
+      "active_direction": "b_to_a",
+      "active_frontier": {
+        "count": 5,
+        "iqr_sec": 0.0050103620160371065,
+        "max_sec": 0.17123631504364312,
+        "median_sec": 0.16959917708300054,
+        "min_sec": 0.16524663311429322,
+        "q1_sec": 0.16619214904494584,
+        "q3_sec": 0.17120251106098294,
+        "samples": [
+          0.17120251106098294,
+          0.16524663311429322,
+          0.16959917708300054,
+          0.16619214904494584,
+          0.17123631504364312
+        ]
+      },
+      "active_source_index": 97040,
+      "active_speedup_vs_cupy_median": 7.122414699859272,
+      "active_target_index": 27560,
+      "active_vs_cupy_median_ratio": 0.14040182187366293,
+      "all_trials_match_distance": true,
+      "cupy_grouped_grid": {
+        "count": 5,
+        "iqr_sec": 0.002261783927679062,
+        "max_sec": 1.2098886710591614,
+        "median_sec": 1.2079556719399989,
+        "min_sec": 1.2050757049582899,
+        "q1_sec": 1.2065562850330025,
+        "q3_sec": 1.2088180689606816,
+        "samples": [
+          1.2079556719399989,
+          1.2098886710591614,
+          1.2065562850330025,
+          1.2050757049582899,
+          1.2088180689606816
+        ]
+      },
+      "dataset": "ring_vs_spiral",
+      "points_a": 131072,
+      "points_b": 131072,
+      "reference_direction": "b_to_a",
+      "reference_distance": 0.09683920163418548,
+      "reference_source_index": 97040,
+      "reference_target_index": 27560,
+      "seed_sample_count": 1024,
+      "target_points_per_group": 512
+    }
+  ],
+  "rt_core_speedup_claim_authorized": false,
+  "sizes": [
+    32768,
+    65536,
+    131072
+  ],
+  "trials": 5,
+  "true_zero_copy_claim_authorized": false,
+  "v2_6_release_authorized": false,
+  "warmup": 1,
+  "whole_app_speedup_claim_authorized": false
+}
