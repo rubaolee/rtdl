@@ -20,6 +20,8 @@ METHODS = (
     "rtdl_rt_nearest_witness",
     "rtdl_rt_grouped_nearest_witness",
     "rtdl_rt_grouped_reduced_nearest_witness",
+    "rtdl_rt_grouped_seeded_pruned_nearest_witness",
+    "rtdl_rt_grouped_active_frontier_nearest_witness",
     "rtdl_rt_grouped_adaptive_nearest_witness",
     "rtdl_rt_grouped_adaptive_raw_nearest_witness",
     "rtdl_rt_nearest_witness_oracle_radius",
@@ -91,6 +93,22 @@ METHOD_METADATA = {
         "exact_value": True,
         "notes": "X-HD-inspired point groups plus generic device-side nearest max-distance reduction",
     },
+    "rtdl_rt_grouped_seeded_pruned_nearest_witness": {
+        "role": "rtdl_v2_language",
+        "uses_rtdl": True,
+        "uses_partner": False,
+        "uses_rt_cores": True,
+        "exact_value": True,
+        "notes": "sample lower-bound seed plus host-visible threshold flags and unsafe-subset reduction",
+    },
+    "rtdl_rt_grouped_active_frontier_nearest_witness": {
+        "role": "rtdl_v2_language",
+        "uses_rtdl": True,
+        "uses_partner": False,
+        "uses_rt_cores": True,
+        "exact_value": True,
+        "notes": "sample lower-bound seed plus native device-resident active frontier and one-row witness reduction",
+    },
     "rtdl_rt_grouped_adaptive_nearest_witness": {
         "role": "rtdl_v2_language",
         "uses_rtdl": True,
@@ -151,6 +169,7 @@ def _run_method(method: str, points_a, points_b, args, exact_reference: dict[str
                 seed_with_threshold=not args.rt_nearest_no_threshold_seed,
                 threshold_tolerance=args.rt_tolerance,
                 threshold_max_iterations=args.rt_max_iterations,
+                target_points_per_group=args.target_points_per_group,
             )
             payload = asdict(result)
             payload["distance_for_compare"] = result.distance
@@ -162,6 +181,29 @@ def _run_method(method: str, points_a, points_b, args, exact_reference: dict[str
                 seed_with_threshold=not args.rt_nearest_no_threshold_seed,
                 threshold_tolerance=args.rt_tolerance,
                 threshold_max_iterations=args.rt_max_iterations,
+                target_points_per_group=args.target_points_per_group,
+            )
+            payload = asdict(result)
+            payload["distance_for_compare"] = result.distance
+        elif method == "rtdl_rt_grouped_seeded_pruned_nearest_witness":
+            result = hd.hausdorff_distance_2d_rt_grouped_seeded_pruned_nearest_witness(
+                points_a,
+                points_b,
+                radius=args.rt_nearest_radius,
+                seed_with_threshold=not args.rt_nearest_no_threshold_seed,
+                seed_sample_count=args.seed_sample_count,
+                target_points_per_group=args.target_points_per_group,
+            )
+            payload = asdict(result)
+            payload["distance_for_compare"] = result.distance
+        elif method == "rtdl_rt_grouped_active_frontier_nearest_witness":
+            result = hd.hausdorff_distance_2d_rt_grouped_active_frontier_nearest_witness(
+                points_a,
+                points_b,
+                radius=args.rt_nearest_radius,
+                seed_with_threshold=not args.rt_nearest_no_threshold_seed,
+                seed_sample_count=args.seed_sample_count,
+                target_points_per_group=args.target_points_per_group,
             )
             payload = asdict(result)
             payload["distance_for_compare"] = result.distance
@@ -170,6 +212,7 @@ def _run_method(method: str, points_a, points_b, args, exact_reference: dict[str
                 points_a,
                 points_b,
                 max_iterations=args.rt_max_iterations,
+                target_points_per_group=args.target_points_per_group,
             )
             payload = asdict(result)
             payload["distance_for_compare"] = result.distance
@@ -178,6 +221,7 @@ def _run_method(method: str, points_a, points_b, args, exact_reference: dict[str
                 points_a,
                 points_b,
                 max_iterations=args.rt_max_iterations,
+                target_points_per_group=args.target_points_per_group,
             )
             payload = asdict(result)
             payload["distance_for_compare"] = result.distance
@@ -261,6 +305,8 @@ def run_lab(args) -> dict[str, object]:
             "rt_tolerance": args.rt_tolerance,
             "rt_nearest_seed_strategy": "bbox_upper_bound" if args.rt_nearest_no_threshold_seed else "rt_threshold_upper_bound",
             "oracle_radius_slack": args.oracle_radius_slack,
+            "target_points_per_group": args.target_points_per_group,
+            "seed_sample_count": args.seed_sample_count,
         },
         "exact_reference": exact_reference,
         "results": results,
@@ -282,6 +328,18 @@ def main(argv: Iterable[str] | None = None) -> int:
     parser.add_argument("--rt-max-iterations", type=int, default=32)
     parser.add_argument("--rt-nearest-radius", type=float, default=None)
     parser.add_argument("--rt-nearest-no-threshold-seed", action="store_true")
+    parser.add_argument(
+        "--target-points-per-group",
+        type=int,
+        default=None,
+        help="override the scale-aware grouped RT target group size",
+    )
+    parser.add_argument(
+        "--seed-sample-count",
+        type=int,
+        default=8192,
+        help="sample count for seeded-pruned and active-frontier RT witness methods",
+    )
     parser.add_argument(
         "--oracle-radius-slack",
         type=float,

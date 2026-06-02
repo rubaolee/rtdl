@@ -154,6 +154,9 @@ def v2_6_roadmap() -> dict[str, Any]:
         "hausdorff_device_columns_numba_argmax_perf_report": "docs/reports/goal3040_hausdorff_device_columns_numba_argmax_a4000_perf_2026-06-02.md",
         "hausdorff_device_columns_numba_argmax_perf_artifact": "docs/reports/goal3040_hausdorff_device_columns_numba_argmax_a4000_perf_2026-06-02.json",
         "hausdorff_device_columns_numba_argmax_perf_status": "clean_a4000_correct_negative_perf_result_needs_device_resident_active_set_candidate_frontier_not_speedup_evidence",
+        "point_group_active_frontier_goal": "Goal3042",
+        "point_group_active_frontier_report": "docs/reports/goal3042_point_group_active_frontier_witness_selection_2026-06-02.md",
+        "point_group_active_frontier_status": "generic_optix_active_frontier_witness_selection_landed_pod_timing_pending_not_speedup_evidence",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -517,6 +520,16 @@ def validate_v2_6_roadmap(
         errors.append("Goal3040 Hausdorff device-column Numba argmax perf report is missing")
     if not (root / str(roadmap.get("hausdorff_device_columns_numba_argmax_perf_artifact", ""))).exists():
         errors.append("Goal3040 Hausdorff device-column Numba argmax perf artifact is missing")
+    if roadmap.get("point_group_active_frontier_goal") != "Goal3042":
+        errors.append("v2.6 roadmap must index Goal3042 as point-group active-frontier witness selection")
+    if "generic_optix_active_frontier" not in str(roadmap.get("point_group_active_frontier_status", "")):
+        errors.append("Goal3042 status must record the generic active-frontier primitive")
+    if "pod_timing_pending" not in str(roadmap.get("point_group_active_frontier_status", "")):
+        errors.append("Goal3042 status must keep pod timing pending until measured")
+    if "not_speedup_evidence" not in str(roadmap.get("point_group_active_frontier_status", "")):
+        errors.append("Goal3042 active-frontier work must not be treated as speedup evidence")
+    if not (root / str(roadmap.get("point_group_active_frontier_report", ""))).exists():
+        errors.append("Goal3042 point-group active-frontier report is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):

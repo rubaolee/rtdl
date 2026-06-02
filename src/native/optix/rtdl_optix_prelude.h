@@ -1517,6 +1517,15 @@ int  rtdl_optix_reduce_prepared_point_group_nearest_max_distance_2d(
          double radius,
          RtdlFixedRadiusNeighborRow* row_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_reduce_prepared_point_group_nearest_max_distance_active_frontier_2d(
+         void* prepared,
+         const RtdlPoint* query_points, size_t query_count,
+         double threshold_radius,
+         size_t threshold,
+         double witness_radius,
+         RtdlFixedRadiusNeighborRow* row_out,
+         size_t* active_count_out,
+         char* error_out, size_t error_size);
 void rtdl_optix_destroy_prepared_point_group_nearest_witness_2d(void* prepared);
 int  rtdl_optix_run_k_closest_hits(
          const RtdlPoint* query_points, size_t query_count,

@@ -4655,6 +4655,82 @@ class PreparedOptixPointGroupNearestWitness2D:
             "distance": float(row.distance),
         }
 
+    def nearest_max_distance_active_frontier_row(
+        self,
+        query_points,
+        *,
+        threshold_radius: float,
+        witness_radius: float,
+        threshold: int = 1,
+    ) -> dict[str, object]:
+        """Return the max-distance row over the device-resident active frontier.
+
+        The frontier is generic: a query is active when it does not reach the
+        requested point/group threshold inside ``threshold_radius``. Native
+        code keeps that mask on-device, skips inactive queries in the nearest
+        witness launch, and reduces the active rows to one witness.
+        """
+        if self._closed:
+            raise RuntimeError("prepared OptiX point-group handle is closed")
+        if threshold_radius < 0:
+            raise ValueError("threshold_radius must be non-negative")
+        if witness_radius < 0:
+            raise ValueError("witness_radius must be non-negative")
+        if threshold_radius > self._max_radius or witness_radius > self._max_radius:
+            raise ValueError("radii must be less than or equal to prepared max_radius")
+        if threshold < 0:
+            raise ValueError("threshold must be non-negative")
+        packed_queries = query_points if isinstance(query_points, PackedPoints) else pack_points(records=query_points, dimension=2)
+        if packed_queries.dimension != 2:
+            raise ValueError("PreparedOptixPointGroupNearestWitness2D.nearest_max_distance_active_frontier_row requires 2-D points")
+        if packed_queries.count == 0 or self._packed_search.count == 0 or self._group_count == 0:
+            return {
+                "query_id": 0xFFFFFFFF,
+                "neighbor_id": 0xFFFFFFFF,
+                "distance": -1.0,
+                "active_count": 0,
+                "native_reduction": "point_group_nearest_max_distance_active_frontier",
+            }
+
+        lib = _load_optix_library()
+        symbol = _find_optional_backend_symbol(
+            lib,
+            "rtdl_optix_reduce_prepared_point_group_nearest_max_distance_active_frontier_2d",
+        )
+        if symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_reduce_prepared_point_group_nearest_max_distance_active_frontier_2d; "
+                "rebuild the OptiX backend from current main"
+            )
+        row = _RtdlFixedRadiusNeighborRow()
+        active_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            self._handle,
+            packed_queries.records,
+            packed_queries.count,
+            ctypes.c_double(float(threshold_radius)),
+            ctypes.c_size_t(int(threshold)),
+            ctypes.c_double(float(witness_radius)),
+            ctypes.byref(row),
+            ctypes.byref(active_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return {
+            "query_id": int(row.query_id),
+            "neighbor_id": int(row.neighbor_id),
+            "distance": float(row.distance),
+            "active_count": int(active_count.value),
+            "native_reduction": "point_group_nearest_max_distance_active_frontier",
+            "threshold_radius": float(threshold_radius),
+            "witness_radius": float(witness_radius),
+            "threshold": int(threshold),
+            "materializes_frontier_on_host": False,
+        }
+
     def close(self) -> None:
         if self._closed:
             return
@@ -18286,6 +18362,22 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_reduce_point_group_nearest.restype = ctypes.c_int
+
+    optional_reduce_point_group_active_frontier = _find_optional_backend_symbol(
+        lib, "rtdl_optix_reduce_prepared_point_group_nearest_max_distance_active_frontier_2d"
+    )
+    if optional_reduce_point_group_active_frontier is not None:
+        optional_reduce_point_group_active_frontier.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.POINTER(_RtdlFixedRadiusNeighborRow),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_reduce_point_group_active_frontier.restype = ctypes.c_int
 
     optional_destroy_point_group = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_point_group_nearest_witness_2d")
     if optional_destroy_point_group is not None:

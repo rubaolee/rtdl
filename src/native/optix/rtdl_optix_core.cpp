@@ -6228,8 +6228,11 @@ struct PointGroupNearestParams {
     const GpuPoint* query_points;
     const GpuPoint* search_points;
     const PointGroupBounds* groups;
+    const uint32_t* active_flags;
+    uint32_t* active_query_count;
     FixedRadiusNearestRecord* output;
     uint32_t query_count;
+    uint32_t active_keep_value;
     float radius;
     float trace_tmax;
 };
@@ -6248,6 +6251,13 @@ extern "C" __global__ void __raygen__point_group_nearest_probe() {
     const uint32_t idx = optixGetLaunchIndex().x;
     if (idx >= params.query_count) return;
     const GpuPoint q = params.query_points[idx];
+    if (params.active_flags && params.active_flags[idx] != params.active_keep_value) {
+        params.output[idx] = {q.id, 0xffffffffu, -1.0f};
+        return;
+    }
+    if (params.active_flags && params.active_query_count) {
+        atomicAdd(params.active_query_count, 1u);
+    }
     unsigned int p0 = idx;
     unsigned int p1 = __float_as_uint(3.4028234663852886e38f);
     unsigned int p2 = 0xFFFFFFFFu;
@@ -6336,7 +6346,12 @@ extern "C" __global__ void reduce_point_group_nearest_max_distance(
     FixedRadiusNearestRecord best = {0xffffffffu, 0xffffffffu, -1.0f};
     for (uint32_t index = tid; index < count; index += blockDim.x) {
         FixedRadiusNearestRecord row = input[index];
-        if (row.neighbor_id == 0xffffffffu || !isfinite(row.distance)) {
+        if (row.neighbor_id == 0xffffffffu) {
+            if (row.distance < 0.0f) {
+                continue;
+            }
+            row.distance = INFINITY;
+        } else if (!isfinite(row.distance)) {
             row.distance = INFINITY;
         }
         if (better_max_record(row, best)) {
