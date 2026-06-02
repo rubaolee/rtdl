@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -39,6 +40,7 @@ def main(argv: list[str] | None = None) -> int:
     print("[goal2991] importing Numba/CUDA stack", flush=True)
     try:
         import numpy as np
+        import numba
         from numba import cuda
     except Exception as exc:
         payload = _payload(
@@ -134,6 +136,18 @@ def main(argv: list[str] | None = None) -> int:
         sums_match_cpu=sums_match,
         max_sum_abs_error=float(np.max(np.abs(observed_sums - expected_sums))),
         gpu=str(cuda.get_current_device()),
+        toolchain={
+            "python_version": sys.version.split()[0],
+            "numpy_version": np.__version__,
+            "numba_version": numba.__version__,
+            "numba_cuda_module": str(getattr(cuda, "__file__", "")),
+            "numba_cuda_use_nvidia_binding": os.environ.get(
+                "NUMBA_CUDA_USE_NVIDIA_BINDING", ""
+            ),
+            "numba_cuda_enable_minor_version_compatibility": os.environ.get(
+                "NUMBA_CUDA_ENABLE_MINOR_VERSION_COMPATIBILITY", ""
+            ),
+        },
         source_commit=_git("rev-parse", "HEAD"),
         source_dirty=_git("status", "--short").splitlines(),
     )
