@@ -842,6 +842,13 @@ Future work:
   CuPy gap narrows with scale, but no crossover appears by 65536 points on the
   L4 pod. Treat this as stronger evidence that the next win must change the
   generic continuation contract, not just the Python row-consumer shape.
+- Goal3031 added a vectorized host reducer over the generic `OptixRowView`
+  structured row buffer. It improves the current exact RTDL/OptiX Hausdorff
+  adaptive raw path by about 22-27% versus the old adaptive RT row path on
+  4096/8192/16384 L4 rows, but still loses to the dense CuPy grouped-grid
+  reference. This closes the cheap host row-consumer branch more firmly; the
+  next useful work remains device-resident active-set/candidate-frontier and
+  nearest-witness continuation.
 
 Boundary:
 

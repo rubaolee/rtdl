@@ -1,0 +1,221 @@
+{
+  "app_specific_native_engine_logic_authorized": false,
+  "cuda_prefix": "/usr/local/cuda-12.6",
+  "goal": "Goal3026",
+  "gpu": "NVIDIA L4, 565.57.01",
+  "methods": [
+    "rtdl_rt_grouped_adaptive_nearest_witness",
+    "rtdl_rt_grouped_adaptive_raw_nearest_witness",
+    "cupy_grouped_grid_rawkernel"
+  ],
+  "promote_raw_row_view_path": true,
+  "public_speedup_claim_authorized": false,
+  "purpose": "Measure generic point-group nearest-witness raw row-view output for exact Hausdorff adaptive RT path.",
+  "ratios": {
+    "raw_vs_cupy_ratio_16384": 8.718755328526438,
+    "raw_vs_cupy_ratio_4096": 13.616899675987039,
+    "raw_vs_cupy_ratio_8192": 16.049446003056012,
+    "raw_vs_old_ratio_16384": 0.7345100917854029,
+    "raw_vs_old_ratio_4096": 0.7806494678294922,
+    "raw_vs_old_ratio_8192": 0.7558328779020879
+  },
+  "release_authorized": false,
+  "repeats": 3,
+  "rows": [
+    {
+      "direction": "b_to_a",
+      "distance": 0.13528455701336056,
+      "exact_value": true,
+      "max_elapsed_sec": 0.07141681760549545,
+      "median_elapsed_sec": 0.06497778743505478,
+      "method": "rtdl_rt_grouped_adaptive_nearest_witness",
+      "min_elapsed_sec": 0.0639716312289238,
+      "points": 4096,
+      "radius_strategy": "rt_grouped_adaptive_radius",
+      "rt_core_accelerated": true,
+      "samples_sec": [
+        0.06497778743505478,
+        0.07141681760549545,
+        0.0639716312289238
+      ],
+      "source_index": 472,
+      "target_index": 1183,
+      "threshold_iterations": 4,
+      "witness_radius": 0.4368355593732507
+    },
+    {
+      "direction": "b_to_a",
+      "distance": 0.13528455701336056,
+      "exact_value": true,
+      "max_elapsed_sec": 0.0585516095161438,
+      "median_elapsed_sec": 0.050724875181913376,
+      "method": "rtdl_rt_grouped_adaptive_raw_nearest_witness",
+      "min_elapsed_sec": 0.04918155446648598,
+      "points": 4096,
+      "radius_strategy": "rt_grouped_adaptive_raw_radius",
+      "rt_core_accelerated": true,
+      "samples_sec": [
+        0.04918155446648598,
+        0.050724875181913376,
+        0.0585516095161438
+      ],
+      "source_index": 472,
+      "target_index": 1183,
+      "threshold_iterations": 4,
+      "witness_radius": 0.4368355593732507
+    },
+    {
+      "direction": "b_to_a",
+      "distance": 0.13528455701336056,
+      "exact_value": true,
+      "max_elapsed_sec": 0.003734428435564041,
+      "median_elapsed_sec": 0.0037251412868499756,
+      "method": "cupy_grouped_grid_rawkernel",
+      "min_elapsed_sec": 0.0037180855870246887,
+      "points": 4096,
+      "radius_strategy": null,
+      "rt_core_accelerated": false,
+      "samples_sec": [
+        0.0037251412868499756,
+        0.0037180855870246887,
+        0.003734428435564041
+      ],
+      "source_index": 472,
+      "target_index": 1183,
+      "threshold_iterations": null,
+      "witness_radius": null
+    },
+    {
+      "direction": "a_to_b",
+      "distance": 0.12003618286664636,
+      "exact_value": true,
+      "max_elapsed_sec": 0.15232136473059654,
+      "median_elapsed_sec": 0.1458849236369133,
+      "method": "rtdl_rt_grouped_adaptive_nearest_witness",
+      "min_elapsed_sec": 0.14511937648057938,
+      "points": 8192,
+      "radius_strategy": "rt_grouped_adaptive_radius",
+      "rt_core_accelerated": true,
+      "samples_sec": [
+        0.14511937648057938,
+        0.1458849236369133,
+        0.15232136473059654
+      ],
+      "source_index": 8034,
+      "target_index": 3950,
+      "threshold_iterations": 4,
+      "witness_radius": 0.31130245413597624
+    },
+    {
+      "direction": "a_to_b",
+      "distance": 0.12003618286664636,
+      "exact_value": true,
+      "max_elapsed_sec": 0.1124623715877533,
+      "median_elapsed_sec": 0.1102646216750145,
+      "method": "rtdl_rt_grouped_adaptive_raw_nearest_witness",
+      "min_elapsed_sec": 0.09980033710598946,
+      "points": 8192,
+      "radius_strategy": "rt_grouped_adaptive_raw_radius",
+      "rt_core_accelerated": true,
+      "samples_sec": [
+        0.1102646216750145,
+        0.1124623715877533,
+        0.09980033710598946
+      ],
+      "source_index": 8034,
+      "target_index": 3950,
+      "threshold_iterations": 4,
+      "witness_radius": 0.31130245413597624
+    },
+    {
+      "direction": "a_to_b",
+      "distance": 0.12003618286664636,
+      "exact_value": true,
+      "max_elapsed_sec": 0.006883163005113602,
+      "median_elapsed_sec": 0.00687030702829361,
+      "method": "cupy_grouped_grid_rawkernel",
+      "min_elapsed_sec": 0.006867442280054092,
+      "points": 8192,
+      "radius_strategy": null,
+      "rt_core_accelerated": false,
+      "samples_sec": [
+        0.006867442280054092,
+        0.006883163005113602,
+        0.00687030702829361
+      ],
+      "source_index": 8034,
+      "target_index": 3950,
+      "threshold_iterations": null,
+      "witness_radius": null
+    },
+    {
+      "direction": "a_to_b",
+      "distance": 0.11858844621300667,
+      "exact_value": true,
+      "max_elapsed_sec": 0.31823891401290894,
+      "median_elapsed_sec": 0.2935662791132927,
+      "method": "rtdl_rt_grouped_adaptive_nearest_witness",
+      "min_elapsed_sec": 0.28826848417520523,
+      "points": 16384,
+      "radius_strategy": "rt_grouped_adaptive_radius",
+      "rt_core_accelerated": true,
+      "samples_sec": [
+        0.31823891401290894,
+        0.28826848417520523,
+        0.2935662791132927
+      ],
+      "source_index": 13024,
+      "target_index": 462,
+      "threshold_iterations": 4,
+      "witness_radius": 0.22001428988816898
+    },
+    {
+      "direction": "a_to_b",
+      "distance": 0.11858844621300667,
+      "exact_value": true,
+      "max_elapsed_sec": 0.2249799147248268,
+      "median_elapsed_sec": 0.21562739461660385,
+      "method": "rtdl_rt_grouped_adaptive_raw_nearest_witness",
+      "min_elapsed_sec": 0.20878230035305023,
+      "points": 16384,
+      "radius_strategy": "rt_grouped_adaptive_raw_radius",
+      "rt_core_accelerated": true,
+      "samples_sec": [
+        0.20878230035305023,
+        0.21562739461660385,
+        0.2249799147248268
+      ],
+      "source_index": 13024,
+      "target_index": 462,
+      "threshold_iterations": 4,
+      "witness_radius": 0.22001428988816898
+    },
+    {
+      "direction": "a_to_b",
+      "distance": 0.11858844621300667,
+      "exact_value": true,
+      "max_elapsed_sec": 0.024750862270593643,
+      "median_elapsed_sec": 0.02473144233226776,
+      "method": "cupy_grouped_grid_rawkernel",
+      "min_elapsed_sec": 0.02472662180662155,
+      "points": 16384,
+      "radius_strategy": null,
+      "rt_core_accelerated": false,
+      "samples_sec": [
+        0.024750862270593643,
+        0.02473144233226776,
+        0.02472662180662155
+      ],
+      "source_index": 13024,
+      "target_index": 462,
+      "threshold_iterations": null,
+      "witness_radius": null
+    }
+  ],
+  "rt_core_speedup_claim_authorized": false,
+  "source_commit": "f1ac3efb4177c3bd7edf0044da2491645dcb43cb",
+  "source_dirty": [],
+  "true_zero_copy_claim_authorized": false,
+  "warmup": 1,
+  "whole_app_speedup_claim_authorized": false
+}

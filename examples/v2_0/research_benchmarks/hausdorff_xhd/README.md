@@ -117,7 +117,7 @@ PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hau
 | `rtdl_rt_grouped_reduced_nearest_witness` | yes | no | yes on OptiX | yes | Grouped traversal plus device-side max-distance reduction |
 | `rtdl_rt_grouped_seeded_pruned_nearest_witness` | yes | no | yes on OptiX | yes | X-HD-style seed lower bound, threshold flags, and exact unsafe-subset reduction |
 | `rtdl_rt_grouped_adaptive_nearest_witness` | yes | no | yes on OptiX | yes | Adaptive grouped traversal with shrinking active work |
-| `rtdl_rt_grouped_adaptive_raw_nearest_witness` | yes | no | yes on OptiX | yes | Preferred current RT path; consumes generic raw row views instead of Python dictionaries |
+| `rtdl_rt_grouped_adaptive_raw_nearest_witness` | yes | no | yes on OptiX | yes | Preferred current RT path; consumes generic raw row views with a vectorized host reducer instead of Python dictionaries |
 
 ## Interpreting JSON
 
