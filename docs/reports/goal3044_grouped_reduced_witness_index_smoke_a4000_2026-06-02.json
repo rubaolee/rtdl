@@ -1,0 +1,73 @@
+{
+  "exact_reference": {
+    "direction": "a_to_b",
+    "distance": 0.2056603218290181,
+    "method": "openmp_cpu",
+    "source_index": 84,
+    "target_index": 58
+  },
+  "results": {
+    "openmp_cpu": {
+      "direction": "a_to_b",
+      "distance": 0.2056603218290181,
+      "distance_for_compare": 0.2056603218290181,
+      "elapsed_sec": 0.012327251955866814,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "multi-threaded C++/OpenMP double loop",
+        "role": "baseline",
+        "uses_partner": false,
+        "uses_rt_cores": false,
+        "uses_rtdl": false
+      },
+      "method": "openmp_cpu",
+      "ok": true,
+      "source_index": 84,
+      "target_index": 58
+    },
+    "rtdl_rt_grouped_reduced_nearest_witness": {
+      "backend": "optix",
+      "direction": "a_to_b",
+      "distance": 0.2056603218290181,
+      "distance_for_compare": 0.2056603218290181,
+      "elapsed_sec": 1.6211203269194812,
+      "exact_value": true,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "X-HD-inspired point groups plus generic device-side nearest max-distance reduction",
+        "role": "rtdl_v2_language",
+        "uses_partner": false,
+        "uses_rt_cores": true,
+        "uses_rtdl": true
+      },
+      "method": "rtdl_rt_grouped_reduced_nearest_witness",
+      "ok": true,
+      "radius_strategy": "rt_grouped_threshold_upper_bound",
+      "rt_core_accelerated": true,
+      "source_index": 84,
+      "target_index": 58,
+      "threshold_iterations": 32,
+      "witness_radius": 0.2056618489613621
+    }
+  },
+  "scenario": {
+    "methods": [
+      "openmp_cpu",
+      "rtdl_rt_grouped_reduced_nearest_witness"
+    ],
+    "offset_x": 0.08,
+    "offset_y": -0.06,
+    "oracle_radius_slack": 1e-07,
+    "points_a": 256,
+    "points_b": 256,
+    "rt_backend": "optix",
+    "rt_nearest_seed_strategy": "rt_threshold_upper_bound",
+    "rt_tolerance": 0.0001,
+    "seed_a": 11,
+    "seed_b": 29,
+    "seed_sample_count": 8192,
+    "target_points_per_group": 16
+  }
+}

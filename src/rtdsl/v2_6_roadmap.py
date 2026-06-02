@@ -160,7 +160,8 @@ def v2_6_roadmap() -> dict[str, Any]:
         "point_group_active_frontier_status": "generic_optix_active_frontier_witness_selection_a4000_positive_perf_evidence_external_review_pending_not_public_speedup_evidence",
         "hausdorff_witness_index_cleanup_goal": "Goal3044",
         "hausdorff_witness_index_cleanup_report": "docs/reports/goal3044_hausdorff_grouped_witness_index_mapping_cleanup_2026-06-02.md",
-        "hausdorff_witness_index_cleanup_status": "grouped_one_row_hausdorff_paths_map_native_point_ids_to_original_target_columns_not_native_or_speedup_work",
+        "hausdorff_witness_index_cleanup_artifact": "docs/reports/goal3044_grouped_reduced_witness_index_smoke_a4000_2026-06-02.json",
+        "hausdorff_witness_index_cleanup_status": "grouped_one_row_hausdorff_paths_map_native_point_ids_to_original_target_columns_a4000_smoke_passed_not_native_or_speedup_work",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -542,10 +543,14 @@ def validate_v2_6_roadmap(
         errors.append("v2.6 roadmap must index Goal3044 as the Hausdorff witness-index cleanup")
     if "original_target_columns" not in str(roadmap.get("hausdorff_witness_index_cleanup_status", "")):
         errors.append("Goal3044 status must record original target-column witness mapping")
+    if "a4000_smoke_passed" not in str(roadmap.get("hausdorff_witness_index_cleanup_status", "")):
+        errors.append("Goal3044 status must record A4000 smoke evidence")
     if "not_native_or_speedup_work" not in str(roadmap.get("hausdorff_witness_index_cleanup_status", "")):
         errors.append("Goal3044 status must not be treated as native or speedup work")
     if not (root / str(roadmap.get("hausdorff_witness_index_cleanup_report", ""))).exists():
         errors.append("Goal3044 Hausdorff witness-index cleanup report is missing")
+    if not (root / str(roadmap.get("hausdorff_witness_index_cleanup_artifact", ""))).exists():
+        errors.append("Goal3044 Hausdorff witness-index cleanup artifact is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):

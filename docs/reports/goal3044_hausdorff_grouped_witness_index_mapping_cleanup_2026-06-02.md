@@ -2,7 +2,7 @@
 
 Date: 2026-06-02
 
-Status: source cleanup landed; pod smoke pending.
+Status: source cleanup landed; A4000 pod smoke passed.
 
 ## Purpose
 
@@ -34,3 +34,33 @@ This is an app-level Python cleanup. It does not alter native ABI, native engine
 behavior, performance claims, release status, or true-zero-copy status. It only
 makes returned `target_index` fields consistently refer to original input rows
 when the underlying native row returns original point IDs.
+
+## Pod Smoke
+
+Pod:
+
+- SSH target: `root@157.157.221.29 -p 19771`
+- GPU: NVIDIA RTX A4000
+- Source commit: `81f07a4d0258854992a99538e4a24b95c08c7051`
+
+Command shape:
+
+```bash
+PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so \
+  python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_v2_language_lab.py \
+  --points-a 256 \
+  --points-b 256 \
+  --method openmp_cpu \
+  --method rtdl_rt_grouped_reduced_nearest_witness \
+  --target-points-per-group 16
+```
+
+Result:
+
+- OpenMP reference: distance `0.2056603218290181`, direction `a_to_b`,
+  source index `84`, target index `58`.
+- Grouped-reduced RT: same distance, direction, source index, and target index.
+
+Artifact:
+
+- `docs/reports/goal3044_grouped_reduced_witness_index_smoke_a4000_2026-06-02.json`
