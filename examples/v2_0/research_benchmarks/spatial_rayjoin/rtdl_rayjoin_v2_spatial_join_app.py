@@ -24,6 +24,7 @@ from rtdsl.datasets import load_cdb
 
 _WORKLOADS = ("pip", "lsi", "overlay_seed")
 _PREPARED_OPTIX_WORKLOADS = ("pip", "lsi", "overlay_seed")
+RAYJOIN_V2_6_NUMBA_COMPACT_MASK_VERSION = "rtdl.rayjoin.v2_6.numba_compact_mask_preview.v1"
 
 _DEFAULT_DATASETS = {
     "pip": "tests/fixtures/rayjoin/br_county_subset.cdb",
@@ -556,6 +557,132 @@ def v2_5_plan_payload() -> dict[str, object]:
     }
 
 
+def describe_rayjoin_v2_6_numba_compact_mask_continuation(
+    workload: str = "pip",
+) -> dict[str, object]:
+    if workload not in _WORKLOADS:
+        raise ValueError("workload must be one of: pip, lsi, overlay_seed")
+    return {
+        "contract_version": RAYJOIN_V2_6_NUMBA_COMPACT_MASK_VERSION,
+        "app": "rayjoin_v2_spatial_join",
+        "workload": workload,
+        "mode": "v2_6_numba_compact_mask_plan",
+        "selected_partner": "numba",
+        "status": "preview_ready_not_promoted",
+        "operation": "compact_mask_i64",
+        "numba_descriptor": rt.describe_numba_compact_mask_i64(),
+        "requires_device_resident_columns": True,
+        "uses_v2_6_neutral_partner_handoff": True,
+        "uses_legacy_torch_carrier": False,
+        "uses_torch_conversion": False,
+        "input_columns": ("candidate_row_ids:int64", "keep_mask:bool"),
+        "output_columns": ("selected_candidate_row_ids:int64", "original_indices:int64"),
+        "post_rt_continuation_only": True,
+        "replaces_rt_traversal": False,
+        "promoted_performance_path": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "paper_reproduction_claim_authorized": False,
+        "app_owned_lowering": (
+            "RayJoin workload semantics, positive-hit filtering, pair-dependency "
+            "interpretation, and paper-specific policy remain app code. RTDL/Numba "
+            "sees only generic candidate row ids and a boolean keep mask."
+        ),
+        "integration_decision": (
+            "Keep prepared generic RTDL count/parity primitives as the recommended "
+            "fast path when scalar counts are enough. Use the v2.6 Numba compact-mask "
+            "path for retained row streams or downstream tensor post-processing."
+        ),
+    }
+
+
+def v2_6_numba_compact_mask_plan_payload(workload: str = "pip") -> dict[str, object]:
+    plan = describe_rayjoin_v2_6_numba_compact_mask_continuation(workload)
+    return {
+        **plan,
+        "command_shape": (
+            "Use run_rayjoin_v2_6_numba_compact_mask_preview(...) from Python with "
+            "Numba CUDA device arrays for candidate_row_ids:int64 and keep_mask:bool."
+        ),
+        "claim_boundary": {
+            "full_rayjoin_reproduction": False,
+            "paper_scale_perf_claim_authorized": False,
+            "rtdl_beats_rayjoin_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "numba_speedup_claim_authorized": False,
+            "v2_6_release_authorized": False,
+        },
+    }
+
+
+def run_rayjoin_v2_6_numba_compact_mask_preview(
+    inputs: dict[str, object],
+    *,
+    workload: str = "pip",
+    block_size: int = 256,
+) -> dict[str, object]:
+    plan = describe_rayjoin_v2_6_numba_compact_mask_continuation(workload)
+    candidate_row_ids = inputs["candidate_row_ids"]
+    keep_mask = inputs["keep_mask"]
+    handoff = rt.prepare_v2_6_neutral_partner_handoff(
+        {
+            "candidate_row_ids": candidate_row_ids,
+            "keep_mask": keep_mask,
+        },
+        partner="numba",
+        consumer="rayjoin_v2_6_numba_compact_mask_continuation",
+        access_modes={"candidate_row_ids": "read", "keep_mask": "read"},
+    )
+    handoff_validation = rt.validate_v2_6_neutral_partner_handoff(handoff)
+    if handoff_validation["status"] != "accept":
+        raise RuntimeError(
+            "RayJoin v2.6 Numba neutral handoff rejected: "
+            f"{handoff_validation['errors']}"
+        )
+    result = rt.run_numba_compact_mask_i64(
+        candidate_row_ids,
+        keep_mask,
+        block_size=block_size,
+    )
+    outputs = {
+        "selected_candidate_row_ids": result["outputs"]["values"],
+        "original_indices": result["outputs"]["original_indices"],
+    }
+    if "block_counts" in result["outputs"]:
+        outputs["block_counts"] = result["outputs"]["block_counts"]
+    return {
+        "app": "rayjoin_v2_spatial_join",
+        "workload": workload,
+        "mode": "v2_6_numba_compact_mask_preview",
+        "partner": "numba",
+        "status": "preview_not_promoted",
+        "operation": "compact_mask_i64",
+        "outputs": outputs,
+        "metadata": {
+            "v2_6_numba_compact_mask_plan": plan,
+            "v2_6_neutral_handoff_validation": handoff_validation,
+            "execution_path": "v2_6_numba_compact_mask_front_door",
+            "block_size": int(block_size),
+            "stable_input_order": bool(result.get("stable_input_order")),
+            "host_prefix_sum_used": bool(result.get("host_prefix_sum_used")),
+            "post_rt_continuation_only": True,
+            "replaces_rt_traversal": False,
+            "promoted_performance_path": False,
+            "rt_core_speedup_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "paper_reproduction_claim_authorized": False,
+            "uses_legacy_torch_carrier": False,
+            "uses_torch_conversion": False,
+            "phase_timing": result["phase_timing"],
+        },
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Run RTDL v2 RayJoin-style PIP, LSI, and overlay-seed workloads."
@@ -572,7 +699,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--execution-route",
-        choices=("generic_kernel", "prepared_optix"),
+        choices=("generic_kernel", "prepared_optix", "v2_6_numba_compact_mask_plan"),
         default="generic_kernel",
         help="Use the generic kernel route or the prepared OptiX benchmark route for PIP/LSI.",
     )
@@ -597,14 +724,26 @@ def main(argv: list[str] | None = None) -> int:
     if args.workload == "all":
         if args.dataset is not None:
             raise ValueError("--dataset is only valid when --workload is not all")
-        payload = run_rayjoin_suite(
-            backend=args.backend,
-            execution_route=args.execution_route,
-            result_mode=args.result_mode,
-            include_rows=include_rows,
-        )
+        if args.execution_route == "v2_6_numba_compact_mask_plan":
+            payload = {
+                "app": "rayjoin_v2_spatial_join",
+                "execution_route": args.execution_route,
+                "workloads": {
+                    workload: v2_6_numba_compact_mask_plan_payload(workload)
+                    for workload in _WORKLOADS
+                },
+            }
+        else:
+            payload = run_rayjoin_suite(
+                backend=args.backend,
+                execution_route=args.execution_route,
+                result_mode=args.result_mode,
+                include_rows=include_rows,
+            )
     else:
-        if args.execution_route == "prepared_optix":
+        if args.execution_route == "v2_6_numba_compact_mask_plan":
+            payload = v2_6_numba_compact_mask_plan_payload(args.workload)
+        elif args.execution_route == "prepared_optix":
             payload = run_rayjoin_prepared_optix_workload(
                 args.workload,
                 dataset=args.dataset,
