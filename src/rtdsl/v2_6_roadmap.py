@@ -90,6 +90,9 @@ def v2_6_roadmap() -> dict[str, Any]:
         "hausdorff_numba_dense_vs_block_report": "docs/reports/goal3016_hausdorff_numba_dense_vs_block_l4_pod_2026-06-01.md",
         "hausdorff_numba_dense_vs_block_artifact": "docs/reports/goal3016_hausdorff_numba_dense_vs_block_l4_pod_2026-06-01.json",
         "hausdorff_numba_dense_vs_block_status": "l4_internal_phase_timing_dense_device_score_rows_still_faster_block_nearest_is_memory_pressure_path_not_speedup_evidence",
+        "numba_grouped_witness_no_host_sync_goal": "Goal3017",
+        "numba_grouped_witness_no_host_sync_report": "docs/reports/goal3017_numba_grouped_witness_no_host_sync_fast_path_2026-06-01.md",
+        "numba_grouped_witness_no_host_sync_status": "explicit_generated_score_row_fast_path_skips_host_nan_validation_and_present_group_compaction_not_speedup_evidence",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -318,6 +321,14 @@ def validate_v2_6_roadmap(
         errors.append("Goal3016 dense-vs-block report is missing")
     if not (root / str(roadmap.get("hausdorff_numba_dense_vs_block_artifact", ""))).exists():
         errors.append("Goal3016 dense-vs-block artifact is missing")
+    if roadmap.get("numba_grouped_witness_no_host_sync_goal") != "Goal3017":
+        errors.append("v2.6 roadmap must index Goal3017 as the Numba no-host-sync grouped witness fast path")
+    if "not_speedup_evidence" not in str(roadmap.get("numba_grouped_witness_no_host_sync_status", "")):
+        errors.append("Goal3017 fast path must not be treated as speedup evidence")
+    if "skips_host_nan_validation" not in str(roadmap.get("numba_grouped_witness_no_host_sync_status", "")):
+        errors.append("Goal3017 status must name skipped host NaN validation")
+    if not (root / str(roadmap.get("numba_grouped_witness_no_host_sync_report", ""))).exists():
+        errors.append("Goal3017 no-host-sync report is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):

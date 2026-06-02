@@ -293,6 +293,8 @@ def run_numba_grouped_argmin_f64(
     group_count: int,
     block_size: int = 256,
     validate_group_ids: bool = True,
+    validate_nan_scores: bool = True,
+    compact_present_groups: bool = True,
 ) -> dict[str, object]:
     """Run grouped argmin over Numba CUDA arrays with a stable item-id tie-break."""
 
@@ -303,6 +305,8 @@ def run_numba_grouped_argmin_f64(
         group_count=group_count,
         block_size=block_size,
         validate_group_ids=validate_group_ids,
+        validate_nan_scores=validate_nan_scores,
+        compact_present_groups=compact_present_groups,
         operation=NUMBA_GROUPED_ARGMIN_F64_OPERATION,
         source="run_numba_grouped_argmin_f64",
         score_initial=float("inf"),
@@ -319,6 +323,8 @@ def run_numba_grouped_argmax_f64(
     group_count: int,
     block_size: int = 256,
     validate_group_ids: bool = True,
+    validate_nan_scores: bool = True,
+    compact_present_groups: bool = True,
 ) -> dict[str, object]:
     """Run grouped argmax over Numba CUDA arrays with a stable item-id tie-break."""
 
@@ -329,6 +335,8 @@ def run_numba_grouped_argmax_f64(
         group_count=group_count,
         block_size=block_size,
         validate_group_ids=validate_group_ids,
+        validate_nan_scores=validate_nan_scores,
+        compact_present_groups=compact_present_groups,
         operation=NUMBA_GROUPED_ARGMAX_F64_OPERATION,
         source="run_numba_grouped_argmax_f64",
         score_initial=-float("inf"),
@@ -582,6 +590,8 @@ def _run_numba_segmented_extreme_f64(
     initial: float,
     block_size: int,
     validate_group_ids: bool,
+    validate_nan_scores: bool,
+    compact_present_groups: bool,
     operation: str,
     output_name: str,
     source: str,
@@ -639,7 +649,7 @@ def _run_numba_grouped_arg_reduce_f64(
     _validate_numba_cuda_vector(scores, name="scores", dtype=np.float64)
     if not (tuple(group_ids.shape) == tuple(item_ids.shape) == tuple(scores.shape)):
         raise ValueError("group_ids, item_ids, and scores must have the same shape")
-    if int(scores.shape[0]) and bool(np.isnan(scores.copy_to_host()).any()):
+    if validate_nan_scores and int(scores.shape[0]) and bool(np.isnan(scores.copy_to_host()).any()):
         raise ValueError("grouped arg reductions reject NaN scores")
     group_count, block_size, row_count = _validate_group_run_shape(
         group_ids,
@@ -681,23 +691,35 @@ def _run_numba_grouped_arg_reduce_f64(
         )
     cuda.synchronize()
 
-    host_counts = counts.copy_to_host()
-    present_host = np.nonzero(host_counts > 0)[0].astype(np.int64)
-    missing_host = np.nonzero(host_counts == 0)[0].astype(np.int64)
-    present_group_ids = cuda.to_device(present_host)
-    missing_group_ids = cuda.to_device(missing_host)
-    compact_item_ids = cuda.device_array((int(present_host.size),), dtype=np.int64)
-    compact_scores = cuda.device_array((int(present_host.size),), dtype=np.float64)
-    if int(present_host.size):
+    if compact_present_groups:
+        host_counts = counts.copy_to_host()
+        present_host = np.nonzero(host_counts > 0)[0].astype(np.int64)
+        missing_host = np.nonzero(host_counts == 0)[0].astype(np.int64)
+        present_group_ids = cuda.to_device(present_host)
+        missing_group_ids = cuda.to_device(missing_host)
+        compact_item_ids = cuda.device_array((int(present_host.size),), dtype=np.int64)
+        compact_scores = cuda.device_array((int(present_host.size),), dtype=np.float64)
+        compact_count = int(present_host.size)
+    else:
+        present_group_ids = cuda.device_array((group_count,), dtype=np.int64)
+        if group_count:
+            iota_block = min(block_size, 256)
+            iota_grid = ((group_count + iota_block - 1) // iota_block,)
+            _numba_iota_i64_kernel(cuda)[iota_grid, iota_block](present_group_ids, group_count)
+        missing_group_ids = cuda.device_array((0,), dtype=np.int64)
+        compact_item_ids = dense_item_ids
+        compact_scores = dense_scores
+        compact_count = group_count
+    if compact_present_groups and compact_count:
         compact_block = min(block_size, 256)
-        compact_grid = ((int(present_host.size) + compact_block - 1) // compact_block,)
+        compact_grid = ((compact_count + compact_block - 1) // compact_block,)
         _numba_gather_group_arg_outputs_kernel(cuda)[compact_grid, compact_block](
             present_group_ids,
             dense_item_ids,
             dense_scores,
             compact_item_ids,
             compact_scores,
-            int(present_host.size),
+            compact_count,
         )
     cuda.synchronize()
     elapsed = perf_counter() - started
@@ -717,8 +739,8 @@ def _run_numba_grouped_arg_reduce_f64(
         source=source,
         extra_metadata={
             "tie_break": tie_break,
-            "host_present_group_compaction_used": True,
-            "nan_validation_host_sync_used": True,
+            "host_present_group_compaction_used": compact_present_groups,
+            "nan_validation_host_sync_used": validate_nan_scores,
         },
     )
 

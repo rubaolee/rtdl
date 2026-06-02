@@ -2389,7 +2389,15 @@ def _torch_grouped_arg_reduce(score_columns: dict[str, object], *, group_count: 
     }, row_count
 
 
-def _numba_grouped_arg_reduce(score_columns: dict[str, object], *, group_count: int, reduce: str):
+def _numba_grouped_arg_reduce(
+    score_columns: dict[str, object],
+    *,
+    group_count: int,
+    reduce: str,
+    validate_group_ids: bool = True,
+    validate_nan_scores: bool = True,
+    compact_present_groups: bool = True,
+):
     if not isinstance(score_columns, dict):
         raise ValueError("score_columns must be a mapping")
     group_ids = score_columns.get("group_ids")
@@ -2416,15 +2424,36 @@ def _numba_grouped_arg_reduce(score_columns: dict[str, object], *, group_count: 
         raise RuntimeError(f"Numba neutral handoff rejected: {validation['errors']}")
 
     if reduce == "argmin":
-        result = run_numba_grouped_argmin_f64(group_ids, item_ids, scores, group_count=group_count)
+        result = run_numba_grouped_argmin_f64(
+            group_ids,
+            item_ids,
+            scores,
+            group_count=group_count,
+            validate_group_ids=validate_group_ids,
+            validate_nan_scores=validate_nan_scores,
+            compact_present_groups=compact_present_groups,
+        )
     elif reduce == "argmax":
-        result = run_numba_grouped_argmax_f64(group_ids, item_ids, scores, group_count=group_count)
+        result = run_numba_grouped_argmax_f64(
+            group_ids,
+            item_ids,
+            scores,
+            group_count=group_count,
+            validate_group_ids=validate_group_ids,
+            validate_nan_scores=validate_nan_scores,
+            compact_present_groups=compact_present_groups,
+        )
     else:
         raise ValueError("reduce must be 'argmin' or 'argmax'")
     return (
         result["outputs"],
         int(group_ids.shape[0]),
         float(result["phase_timing"]["phases_sec"]["partner_continuation"]),
+        {
+            "host_present_group_compaction_used": bool(result["host_present_group_compaction_used"]),
+            "nan_validation_host_sync_used": bool(result["nan_validation_host_sync_used"]),
+            "validate_group_ids": validate_group_ids,
+        },
     )
 
 
@@ -2433,16 +2462,23 @@ def grouped_argmin_f64_partner_columns(
     *,
     group_count: int,
     partner: str = "triton",
+    validate_group_ids: bool = True,
+    validate_nan_scores: bool = True,
+    compact_present_groups: bool = True,
     return_metadata: bool = False,
 ) -> dict[str, object]:
     """Reduce generic grouped score rows to the lowest-score item per group."""
 
     group_count = int(group_count)
+    numba_metadata: dict[str, object] = {}
     if partner == "numba":
-        columns, row_count, elapsed = _numba_grouped_arg_reduce(
+        columns, row_count, elapsed, numba_metadata = _numba_grouped_arg_reduce(
             score_columns,
             group_count=group_count,
             reduce="argmin",
+            validate_group_ids=validate_group_ids,
+            validate_nan_scores=validate_nan_scores,
+            compact_present_groups=compact_present_groups,
         )
         partner_name = "numba"
     else:
@@ -2480,6 +2516,7 @@ def grouped_argmin_f64_partner_columns(
             "partner_elapsed_seconds": elapsed,
             "triton_elapsed_seconds": elapsed if partner_name == "triton" else None,
             "numba_elapsed_seconds": elapsed if partner_name == "numba" else None,
+            **numba_metadata,
         },
     )
     if return_metadata:
@@ -2492,16 +2529,23 @@ def grouped_argmax_f64_partner_columns(
     *,
     group_count: int,
     partner: str = "triton",
+    validate_group_ids: bool = True,
+    validate_nan_scores: bool = True,
+    compact_present_groups: bool = True,
     return_metadata: bool = False,
 ) -> dict[str, object]:
     """Reduce generic grouped score rows to the highest-score item per group."""
 
     group_count = int(group_count)
+    numba_metadata: dict[str, object] = {}
     if partner == "numba":
-        columns, row_count, elapsed = _numba_grouped_arg_reduce(
+        columns, row_count, elapsed, numba_metadata = _numba_grouped_arg_reduce(
             score_columns,
             group_count=group_count,
             reduce="argmax",
+            validate_group_ids=validate_group_ids,
+            validate_nan_scores=validate_nan_scores,
+            compact_present_groups=compact_present_groups,
         )
         partner_name = "numba"
     else:
@@ -2539,6 +2583,7 @@ def grouped_argmax_f64_partner_columns(
             "partner_elapsed_seconds": elapsed,
             "triton_elapsed_seconds": elapsed if partner_name == "triton" else None,
             "numba_elapsed_seconds": elapsed if partner_name == "numba" else None,
+            **numba_metadata,
         },
     )
     if return_metadata:
@@ -2913,6 +2958,9 @@ def group_argmin_then_global_argmax_partner_columns(
     *,
     group_count: int,
     partner: str = "triton",
+    numba_known_dense_groups: bool = False,
+    numba_validate_group_ids: bool = True,
+    numba_validate_nan_scores: bool = True,
     return_metadata: bool = False,
 ) -> dict[str, object]:
     """Run generic per-group argmin followed by global argmax with witness."""
@@ -2938,12 +2986,18 @@ def group_argmin_then_global_argmax_partner_columns(
             {"group_ids": group_ids, "item_ids": item_ids, "scores": scores},
             group_count=group_count,
             partner="numba",
+            validate_group_ids=numba_validate_group_ids,
+            validate_nan_scores=numba_validate_nan_scores,
+            compact_present_groups=not numba_known_dense_groups,
             return_metadata=True,
         )
         argmin_outputs = argmin_result["columns"]
-        missing = argmin_outputs["missing_group_ids"].copy_to_host().tolist()
-        if missing:
-            raise ValueError(f"every group must have at least one candidate; missing groups: {missing}")
+        if numba_known_dense_groups:
+            missing = []
+        else:
+            missing = argmin_outputs["missing_group_ids"].copy_to_host().tolist()
+            if missing:
+                raise ValueError(f"every group must have at least one candidate; missing groups: {missing}")
 
         per_group_ids = argmin_outputs["group_ids"]
         per_group_scores = argmin_outputs["scores"]
@@ -2953,6 +3007,9 @@ def group_argmin_then_global_argmax_partner_columns(
             per_group_ids,
             per_group_scores,
             group_count=1,
+            validate_group_ids=False,
+            validate_nan_scores=False,
+            compact_present_groups=False,
         )
         winner_group_id = int(argmax_result["outputs"]["item_ids"].copy_to_host()[0])
         winner_score = float(argmax_result["outputs"]["scores"].copy_to_host()[0])
@@ -2982,7 +3039,15 @@ def group_argmin_then_global_argmax_partner_columns(
             "numba_grouped_argmax_elapsed_seconds": float(
                 argmax_result["phase_timing"]["phases_sec"]["partner_continuation"]
             ),
-            "host_present_group_compaction_used": True,
+            "numba_known_dense_groups": numba_known_dense_groups,
+            "numba_validate_group_ids": numba_validate_group_ids,
+            "numba_validate_nan_scores": numba_validate_nan_scores,
+            "host_present_group_compaction_used": bool(
+                argmin_result["metadata"]["host_present_group_compaction_used"]
+            ),
+            "nan_validation_host_sync_used": bool(
+                argmin_result["metadata"]["nan_validation_host_sync_used"]
+            ),
             "direct_device_handoff_authorized": False,
             "rt_core_speedup_claim_authorized": False,
             "v2_6_release_authorized": False,

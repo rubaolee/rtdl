@@ -391,6 +391,9 @@ def _run_partner_numba_witness_exact_directed(
         score_rows["columns"],
         group_count=source_count,
         partner="numba",
+        numba_known_dense_groups=True,
+        numba_validate_group_ids=False,
+        numba_validate_nan_scores=False,
         return_metadata=True,
     )
     metadata = result["metadata"]
@@ -413,6 +416,9 @@ def _run_partner_numba_witness_exact_directed(
         ],
         "host_score_row_materialization_used": False,
         "score_rows_generated_on_partner_device": True,
+        "numba_known_dense_groups": metadata["numba_known_dense_groups"],
+        "host_present_group_compaction_used": metadata["host_present_group_compaction_used"],
+        "nan_validation_host_sync_used": metadata["nan_validation_host_sync_used"],
         "native_engine_row_contract": metadata["native_engine_row_contract"],
     }
 
@@ -462,6 +468,9 @@ def _run_partner_numba_block_nearest_exact_directed(
         partial_rows["columns"],
         group_count=source_count,
         partner="numba",
+        numba_known_dense_groups=True,
+        numba_validate_group_ids=False,
+        numba_validate_nan_scores=False,
         return_metadata=True,
     )
     metadata = result["metadata"]
@@ -487,6 +496,9 @@ def _run_partner_numba_block_nearest_exact_directed(
         "host_score_row_materialization_used": False,
         "score_rows_generated_on_partner_device": True,
         "bounded_tile_summary_rows": True,
+        "numba_known_dense_groups": metadata["numba_known_dense_groups"],
+        "host_present_group_compaction_used": metadata["host_present_group_compaction_used"],
+        "nan_validation_host_sync_used": metadata["nan_validation_host_sync_used"],
         "native_engine_row_contract": metadata["native_engine_row_contract"],
     }
 
