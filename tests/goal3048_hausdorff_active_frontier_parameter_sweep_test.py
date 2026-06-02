@@ -29,7 +29,7 @@ class Goal3048HausdorffActiveFrontierParameterSweepTest(unittest.TestCase):
             "does not authorize",
             "automatic default-policy change",
             "A4000 run passed",
-            "active-frontier seed default promoted to 1024",
+            "active-frontier defaults promoted to seed 1024 and group floor 512",
             "`seed_sample_count=8192` was never the best configuration",
         ):
             self.assertIn(phrase, text)
@@ -88,6 +88,14 @@ class Goal3048HausdorffActiveFrontierParameterSweepTest(unittest.TestCase):
             "seed_sample_count: int = DEFAULT_ACTIVE_FRONTIER_SEED_SAMPLE_COUNT",
             function_source,
         )
+        self.assertIn(
+            "group_size_ab = _resolve_adaptive_target_points_per_group(columns_b, target_points_per_group)",
+            function_source,
+        )
+        self.assertIn(
+            "group_size_ba = _resolve_adaptive_target_points_per_group(columns_a, target_points_per_group)",
+            function_source,
+        )
         self.assertIn("default=hd.DEFAULT_ACTIVE_FRONTIER_SEED_SAMPLE_COUNT", lab_source)
 
     def test_v2_6_roadmap_indexes_parameter_sweep_without_public_claims(self) -> None:
@@ -96,6 +104,7 @@ class Goal3048HausdorffActiveFrontierParameterSweepTest(unittest.TestCase):
 
         self.assertEqual(roadmap["hausdorff_active_frontier_parameter_sweep_goal"], "Goal3048")
         self.assertIn("seed_default_1024", roadmap["hausdorff_active_frontier_parameter_sweep_status"])
+        self.assertIn("group_floor_512", roadmap["hausdorff_active_frontier_parameter_sweep_status"])
         self.assertIn("not_public_speedup_evidence", roadmap["hausdorff_active_frontier_parameter_sweep_status"])
         self.assertFalse(roadmap["release_authorized"])
         self.assertFalse(roadmap["public_speedup_claim_authorized"])

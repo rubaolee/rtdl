@@ -1363,8 +1363,8 @@ def hausdorff_distance_2d_rt_grouped_active_frontier_nearest_witness(
 
     columns_a = _as_point_columns(points_a, name="points_a")
     columns_b = _as_point_columns(points_b, name="points_b")
-    group_size_ab = _resolve_target_points_per_group(columns_b, target_points_per_group)
-    group_size_ba = _resolve_target_points_per_group(columns_a, target_points_per_group)
+    group_size_ab = _resolve_adaptive_target_points_per_group(columns_b, target_points_per_group)
+    group_size_ba = _resolve_adaptive_target_points_per_group(columns_a, target_points_per_group)
     upper_bound = _point_set_upper_bound(columns_a, columns_b)
     start = time.perf_counter()
     ab = _directed_rt_grouped_active_frontier_nearest_witness(

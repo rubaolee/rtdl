@@ -2,7 +2,7 @@
 
 Date: 2026-06-02
 
-Status: harness landed; A4000 run passed; active-frontier seed default promoted to 1024.
+Status: harness landed; A4000 run passed; active-frontier defaults promoted to seed 1024 and group floor 512.
 
 ## Purpose
 
@@ -73,8 +73,11 @@ Summary:
 - `seed_sample_count=1024` won five of eight cases.
 - Best-vs-current median ratio was 0.951 at best and 0.988 at median, so the
   current 1024/512 evidence policy is already close to the local optimum.
-- Group-size winners vary by dataset, so Goal3048 does not change the
-  scale-aware group default.
+- Group-size winners vary by dataset, so Goal3048 does not choose one global
+  large group size. A follow-up default-path smoke did show that the old
+  fine-grained small-row group default is too slow for active-frontier, so the
+  active-frontier public function now uses the existing adaptive resolver with a
+  512 floor.
 
 Artifact:
 
@@ -82,11 +85,17 @@ Artifact:
 
 ## Narrow Code Action
 
-Goal3048 promotes the active-frontier default seed sample count from the older
-8192 value to `1024` in:
+Goal3048 promotes the active-frontier defaults in:
 
 - `examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_v2_function.py`
 - `examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_v2_language_lab.py`
+
+The promoted defaults are:
+
+- active-frontier seed sample count: `1024`;
+- active-frontier target group default: the existing adaptive grouped resolver,
+  which keeps a 512 floor for smaller rows and remains scale-aware for larger
+  rows.
 
 This is a user-facing app-layer default change only. It does not touch the
 native engine or ABI. It also does not authorize public speedup wording; it only
