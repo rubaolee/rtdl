@@ -348,6 +348,58 @@ def _run_partner_cupy_witness_exact_directed(
     }
 
 
+def _run_partner_numba_witness_exact_directed(
+    source: tuple[Point, ...],
+    target: tuple[Point, ...],
+    *,
+    label: str,
+) -> dict[str, object]:
+    import numpy as np
+    from numba import cuda
+
+    source_count = len(source)
+    target_count = len(target)
+    if source_count <= 0 or target_count <= 0:
+        raise ValueError("directed Hausdorff requires non-empty source and target rows")
+    source_x = np.asarray([float(point.x) for point in source], dtype=np.float64)
+    source_y = np.asarray([float(point.y) for point in source], dtype=np.float64)
+    target_x = np.asarray([float(point.x) for point in target], dtype=np.float64)
+    target_y = np.asarray([float(point.y) for point in target], dtype=np.float64)
+    target_ids = np.asarray([int(point.id) for point in target], dtype=np.int64)
+    dx = source_x.reshape(-1, 1) - target_x.reshape(1, -1)
+    dy = source_y.reshape(-1, 1) - target_y.reshape(1, -1)
+    score_rows = (dx * dx + dy * dy).reshape(-1)
+    group_rows = np.repeat(np.arange(source_count, dtype=np.int64), target_count)
+    item_rows = np.tile(target_ids, source_count)
+
+    result = rt.group_argmin_then_global_argmax_partner_columns(
+        {
+            "group_ids": cuda.to_device(group_rows),
+            "item_ids": cuda.to_device(item_rows),
+            "scores": cuda.to_device(score_rows),
+        },
+        group_count=source_count,
+        partner="numba",
+        return_metadata=True,
+    )
+    metadata = result["metadata"]
+    source_index = int(metadata["winner_group_id"])
+    return {
+        "label": label,
+        "distance": math.sqrt(float(metadata["winner_score"])),
+        "source_id": int(source[source_index].id),
+        "target_id": int(metadata["winner_item_id"]),
+        "row_count": source_count,
+        "dense_score_row_count": int(score_rows.size),
+        "partner_reference_contract": metadata["partner_reference_contract"],
+        "v2_6_numba_partner_continuation_operations": metadata[
+            "v2_6_numba_partner_continuation_operations"
+        ],
+        "host_score_row_materialization_used": True,
+        "native_engine_row_contract": metadata["native_engine_row_contract"],
+    }
+
+
 def run_app(
     backend: str = "cpu_python_reference",
     copies: int = 1,
@@ -520,6 +572,62 @@ def run_app(
             "run_phases": run_phases,
         }
 
+    if backend == "partner_numba_witness_exact":
+        query_start = time.perf_counter()
+        directed_ab = _run_partner_numba_witness_exact_directed(points_a, points_b, label="a_to_b")
+        directed_ba = _run_partner_numba_witness_exact_directed(points_b, points_a, label="b_to_a")
+        run_phases["partner_numba_witness_exact_directed_summary_sec"] = time.perf_counter() - query_start
+        undirected = max(
+            (("a_to_b", directed_ab), ("b_to_a", directed_ba)),
+            key=lambda item: (float(item[1]["distance"]), item[0]),
+        )
+        validation_start = time.perf_counter()
+        oracle = expected_tiled_hausdorff(copies=copies)
+        run_phases["validation_sec"] = time.perf_counter() - validation_start
+        return {
+            "app": "hausdorff_distance",
+            "backend": backend,
+            "partner": "numba",
+            "copies": copies,
+            "point_count_a": len(points_a),
+            "point_count_b": len(points_b),
+            "embree_result_mode": None,
+            "optix_summary_mode": None,
+            "hausdorff_threshold": None,
+            "directed_a_to_b": directed_ab,
+            "directed_b_to_a": directed_ba,
+            "hausdorff_distance": float(undirected[1]["distance"]),
+            "witness_direction": undirected[0],
+            "oracle": oracle,
+            "matches_oracle": math.isclose(
+                float(undirected[1]["distance"]),
+                float(oracle["hausdorff_distance"]),
+                rel_tol=1e-5,
+                abs_tol=1e-5,
+            ),
+            "rtdl_role": (
+                "RTDL v2.6 Numba witness mode turns point rows into generic grouped "
+                "score rows, then uses group_argmin_then_global_argmax_partner_columns "
+                "with user-selected partner=\"numba\". The native engine is not "
+                "app-customized and RT traversal is not called in this exact dense path."
+            ),
+            "optix_performance": _optix_performance(),
+            "native_continuation_active": False,
+            "native_continuation_backend": "none",
+            "rt_core_accelerated": False,
+            "partner_reference_contract": "generic_group_argmin_then_global_argmax_with_witness",
+            "host_score_row_materialization_used": True,
+            "run_phases": run_phases,
+            "claim_boundary": {
+                "v2_6_release_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "numba_speedup_claim_authorized": False,
+                "rt_core_speedup_claim_authorized": False,
+                "whole_app_speedup_claim_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+            },
+        }
+
     if backend in {"embree", "optix"} and optix_summary_mode == "directed_threshold_prepared":
         directed_ab = _run_prepared_directed_threshold(
             points_a,
@@ -675,6 +783,7 @@ def main(argv: list[str] | None = None) -> int:
             "partner_exact",
             "partner_numpy_exact",
             "partner_cupy_witness_exact",
+            "partner_numba_witness_exact",
         ),
         default="cpu_python_reference",
     )
