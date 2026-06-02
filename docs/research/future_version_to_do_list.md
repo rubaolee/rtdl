@@ -824,6 +824,13 @@ Future work:
   producer, device-resident candidate/witness continuation, and proof that BVH
   pruning removes enough work to beat a dense CUDA/CuPy all-pairs kernel. Do
   not solve this by adding Hausdorff-specific native-engine logic.
+- Goal3025 tested an adaptive-reduced RT path that composes existing generic
+  `threshold_flags` and `nearest_max_distance_row` primitives. It was correct
+  on the L4 pod, but slower than the existing adaptive row path because host
+  flag copies plus extra native reductions outweighed the avoided Python row
+  loop. Do not promote another host-orchestrated threshold/reduction variant;
+  the next attempt should keep active-set compaction, candidate frontiers, and
+  nearest-witness continuation device-resident.
 
 Boundary:
 

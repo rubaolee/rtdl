@@ -1,0 +1,44 @@
+{
+  "app_specific_native_engine_logic_authorized": false,
+  "correctness_passed": true,
+  "cuda_prefix": "/usr/local/cuda-12.6",
+  "finding": "host_flag_copy_plus_extra_native_reduction_calls_are_slower_than_existing_adaptive_row_path; do_not_promote_adaptive_reduced_method",
+  "goal": "Goal3025",
+  "gpu": "NVIDIA L4, 565.57.01",
+  "known_better_current_rt_4096_sec": 0.7740153260529041,
+  "known_better_current_rt_method": "rtdl_rt_grouped_adaptive_nearest_witness_target_group_512",
+  "method": "rtdl_rt_grouped_adaptive_reduced_nearest_witness",
+  "promote_as_recommended_rt_path": false,
+  "public_speedup_claim_authorized": false,
+  "purpose": "Record adaptive-reduced OptiX Hausdorff method: correct but slower than old adaptive and CuPy, therefore not promoted.",
+  "release_authorized": false,
+  "rows": [
+    {
+      "cupy_grouped_grid_elapsed_sec": 0.000703670084476471,
+      "cupy_matches_primary": true,
+      "distance": 0.14627873169442843,
+      "points": 512,
+      "primary_elapsed_sec": 1.3788113221526146,
+      "primary_vs_cupy_ratio": 1959.457070252528,
+      "rt_core_accelerated": true,
+      "threshold_iterations": 2,
+      "witness_radius": 0.1526075913477617
+    },
+    {
+      "cupy_grouped_grid_elapsed_sec": 0.0037913545966148376,
+      "cupy_matches_primary": true,
+      "distance": 0.13528455701336056,
+      "points": 4096,
+      "primary_elapsed_sec": 1.2940954267978668,
+      "primary_vs_cupy_ratio": 341.3279855050534,
+      "rt_core_accelerated": true,
+      "threshold_iterations": 4,
+      "witness_radius": 0.4368355593732507
+    }
+  ],
+  "rt_core_speedup_claim_authorized": false,
+  "source_commit": "f0f0253f1fa928ff3a4ba4929ebdf0eb77913c45",
+  "source_dirty": [],
+  "true_zero_copy_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}

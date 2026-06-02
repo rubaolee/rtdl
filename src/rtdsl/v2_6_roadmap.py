@@ -112,6 +112,10 @@ def v2_6_roadmap() -> dict[str, Any]:
         "hausdorff_optix_group_sweep_report": "docs/reports/goal3024_hausdorff_optix_group_sweep_2026-06-02.md",
         "hausdorff_optix_group_sweep_artifact": "docs/reports/goal3024_hausdorff_optix_group_sweep_2026-06-02.json",
         "hausdorff_optix_group_sweep_status": "adaptive_group_512_best_current_rt_row_but_cheap_tuning_does_not_close_gap_not_speedup_evidence",
+        "hausdorff_adaptive_reduced_probe_goal": "Goal3025",
+        "hausdorff_adaptive_reduced_probe_report": "docs/reports/goal3025_hausdorff_adaptive_reduced_pod_probe_2026-06-02.md",
+        "hausdorff_adaptive_reduced_probe_artifact": "docs/reports/goal3025_hausdorff_adaptive_reduced_pod_probe_2026-06-02.json",
+        "hausdorff_adaptive_reduced_probe_status": "correct_but_slower_than_existing_adaptive_rt_and_cupy_not_promoted_not_speedup_evidence",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -396,6 +400,18 @@ def validate_v2_6_roadmap(
         errors.append("Goal3024 Hausdorff OptiX group-sweep report is missing")
     if not (root / str(roadmap.get("hausdorff_optix_group_sweep_artifact", ""))).exists():
         errors.append("Goal3024 Hausdorff OptiX group-sweep artifact is missing")
+    if roadmap.get("hausdorff_adaptive_reduced_probe_goal") != "Goal3025":
+        errors.append("v2.6 roadmap must index Goal3025 as the Hausdorff adaptive-reduced probe")
+    if "correct_but_slower" not in str(roadmap.get("hausdorff_adaptive_reduced_probe_status", "")):
+        errors.append("Goal3025 status must record the correct-but-slower finding")
+    if "not_promoted" not in str(roadmap.get("hausdorff_adaptive_reduced_probe_status", "")):
+        errors.append("Goal3025 status must record that the adaptive-reduced probe is not promoted")
+    if "not_speedup_evidence" not in str(roadmap.get("hausdorff_adaptive_reduced_probe_status", "")):
+        errors.append("Goal3025 adaptive-reduced probe must not be treated as speedup evidence")
+    if not (root / str(roadmap.get("hausdorff_adaptive_reduced_probe_report", ""))).exists():
+        errors.append("Goal3025 Hausdorff adaptive-reduced report is missing")
+    if not (root / str(roadmap.get("hausdorff_adaptive_reduced_probe_artifact", ""))).exists():
+        errors.append("Goal3025 Hausdorff adaptive-reduced artifact is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):
