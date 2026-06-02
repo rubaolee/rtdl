@@ -348,6 +348,8 @@ V2_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "keep_goal2989_partner_choice_cleanup_and_v2_6_kickoff_green",
     "begin_v2_6_neutral_seam_numba_partner_lane_after_goal2989",
     "run_goal2991_numba_neutral_handoff_on_cuda_pod",
+    "request_external_review_for_goal2993_l4_numba_neutral_handoff",
+    "begin_goal2994_numba_benchmark_app_demonstrator_after_goal2993_review",
     "continue_internal_v2_5_hardening_or_prepare_user_requested_release_packet",
     "request_fresh_3ai_release_review_only_if_user_requests_release",
 )

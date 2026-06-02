@@ -1,0 +1,81 @@
+{
+  "block_size": 256,
+  "claim_boundary": {
+    "numba_speedup_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "count_phase_timing": {
+    "phase_contract_version": "rtdl.partner.v2.4",
+    "phases_sec": {
+      "partner_continuation": 0.038955722004175186
+    },
+    "promoted_performance_path": false,
+    "same_phase_contract_as_basis": false,
+    "source": "run_numba_segmented_count_i64",
+    "validation": {
+      "errors": [],
+      "known_phases": [
+        "partner_continuation"
+      ],
+      "status": "accept"
+    }
+  },
+  "counts_match_cpu": true,
+  "elapsed_sec": 1.222635943442583,
+  "goal": "Goal2991",
+  "gpu": "<CUDA device 0 'NVIDIA L4'>",
+  "groups": 4096,
+  "handoff": {
+    "all_columns_device_resident": true,
+    "all_leases_completed": true,
+    "runtime_observed_descriptor_count": 2,
+    "selected_partner": "numba",
+    "torch_carrier_used": false,
+    "torch_conversion_used": false,
+    "validation": {
+      "contract_version": "rtdl.v2_6.neutral_partner_handoff.v1",
+      "errors": [],
+      "runtime_observed_descriptor_count": 2,
+      "selected_partner": "numba",
+      "status": "accept"
+    }
+  },
+  "max_sum_abs_error": 9.094947017729282e-13,
+  "rows": 1000000,
+  "source_commit": "ed36a366cca2ddbaf2f33bcb89393de9f24bf3d5",
+  "source_dirty": [
+    "?? .pydeps_v26_numba/",
+    "?? .pydeps_v26_numba_compat/",
+    "?? .pydeps_v26_numba_cuda/"
+  ],
+  "status": "pass",
+  "sum_phase_timing": {
+    "phase_contract_version": "rtdl.partner.v2.4",
+    "phases_sec": {
+      "partner_continuation": 0.04132115840911865
+    },
+    "promoted_performance_path": false,
+    "same_phase_contract_as_basis": false,
+    "source": "run_numba_segmented_sum_f64",
+    "validation": {
+      "errors": [],
+      "known_phases": [
+        "partner_continuation"
+      ],
+      "status": "accept"
+    }
+  },
+  "sums_match_cpu": true,
+  "toolchain": {
+    "numba_cuda_enable_minor_version_compatibility": "1",
+    "numba_cuda_module": "/root/rtdl_goal2991_v26_pod/.pydeps_v26_numba_cuda/numba_cuda/numba/cuda/__init__.py",
+    "numba_cuda_use_nvidia_binding": "1",
+    "numba_version": "0.65.1",
+    "numpy_version": "2.1.2",
+    "python_version": "3.12.3"
+  }
+}

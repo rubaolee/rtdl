@@ -31,7 +31,11 @@ def v2_6_roadmap() -> dict[str, Any]:
         "n0_foundation_status": "neutral_descriptor_and_lease_packet_landed_pod_runtime_demonstrator_pending",
         "pod_runner_goal": "Goal2991",
         "pod_runner_report": "docs/reports/goal2991_v2_6_numba_neutral_handoff_pod_runner_2026-06-01.md",
-        "pod_runner_status": "prepared_not_executed",
+        "pod_runner_status": "executed_on_l4_pod_via_goal2993",
+        "pod_evidence_goal": "Goal2993",
+        "pod_evidence_report": "docs/reports/goal2993_v2_6_numba_neutral_handoff_l4_pod_2026-06-01.md",
+        "pod_evidence_artifact": "docs/reports/goal2993_v2_6_numba_neutral_handoff_l4_pod_2026-06-01.json",
+        "pod_evidence_status": "l4_pod_runtime_conformance_passed_not_release_or_speedup_evidence",
         "local_smoke_goal": "Goal2992",
         "local_smoke_report": "docs/reports/goal2992_v2_6_numba_neutral_handoff_local_linux_smoke_2026-06-01.md",
         "local_smoke_artifact": "docs/reports/goal2992_v2_6_numba_neutral_handoff_local_linux_smoke_2026-06-01.json",
@@ -58,8 +62,8 @@ def v2_6_roadmap() -> dict[str, Any]:
                 "exit_gate": (
                     "CuPy and Numba CUDA arrays pass through a neutral descriptor "
                     "without torch conversion on the data path; copy/borrow status "
-                    "is runtime-observed and labeled; pod-backed app continuation "
-                    "execution remains pending."
+                    "is runtime-observed and labeled; large L4 pod continuation "
+                    "conformance passed for Numba segmented count/sum in Goal2993."
                 ),
             },
             {
@@ -118,10 +122,18 @@ def validate_v2_6_roadmap(
         errors.append("Goal2990 N-0 foundation report is missing")
     if roadmap.get("pod_runner_goal") != "Goal2991":
         errors.append("v2.6 roadmap must index Goal2991 as the Numba neutral-handoff pod runner")
-    if roadmap.get("pod_runner_status") != "prepared_not_executed":
-        errors.append("Goal2991 runner must remain prepared_not_executed until pod evidence exists")
+    if roadmap.get("pod_runner_status") != "executed_on_l4_pod_via_goal2993":
+        errors.append("Goal2991 runner must point to Goal2993 L4 pod evidence")
     if not (root / str(roadmap.get("pod_runner_report", ""))).exists():
         errors.append("Goal2991 pod-runner report is missing")
+    if roadmap.get("pod_evidence_goal") != "Goal2993":
+        errors.append("v2.6 roadmap must index Goal2993 as the L4 pod evidence")
+    if "not_release_or_speedup_evidence" not in str(roadmap.get("pod_evidence_status", "")):
+        errors.append("Goal2993 pod evidence must not be treated as release or speedup evidence")
+    if not (root / str(roadmap.get("pod_evidence_report", ""))).exists():
+        errors.append("Goal2993 L4 pod evidence report is missing")
+    if not (root / str(roadmap.get("pod_evidence_artifact", ""))).exists():
+        errors.append("Goal2993 L4 pod evidence artifact is missing")
     if roadmap.get("local_smoke_goal") != "Goal2992":
         errors.append("v2.6 roadmap must index Goal2992 as the local Linux smoke checkpoint")
     if "not_release_or_performance_evidence" not in str(roadmap.get("local_smoke_status", "")):
