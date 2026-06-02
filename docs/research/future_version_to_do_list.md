@@ -817,6 +817,13 @@ Future work:
   dispatcher rule. Future selection logic should stay explicit and explainable:
   record shape thresholds, memory/OOM status, dtype, selected partner, fallback
   reason, and claim boundary before any planner chooses a preview kernel.
+- Goal3022 shows that after the CUDA 12.6 L4 OptiX repair, exact dense 2D
+  Hausdorff can execute RT cores correctly but remains hundreds of times slower
+  than the CuPy grouped-grid partner path on dense random point sets. The next
+  RT Hausdorff leap needs a generic sparse candidate frontier or radius-plan
+  producer, device-resident candidate/witness continuation, and proof that BVH
+  pruning removes enough work to beat a dense CUDA/CuPy all-pairs kernel. Do
+  not solve this by adding Hausdorff-specific native-engine logic.
 
 Boundary:
 

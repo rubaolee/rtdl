@@ -104,6 +104,10 @@ def v2_6_roadmap() -> dict[str, Any]:
         "l4_optix_cuda126_smoke_report": "docs/reports/goal3021_l4_optix_cuda126_hausdorff_rt_smoke_2026-06-02.md",
         "l4_optix_cuda126_smoke_artifact": "docs/reports/goal3021_l4_optix_cuda126_hausdorff_rt_smoke_2026-06-02.json",
         "l4_optix_cuda126_smoke_status": "cuda12_6_side_by_side_toolchain_unblocked_rt_hausdorff_smoke_openmp_distance_parity_not_speedup_evidence",
+        "hausdorff_optix_cupy_perf_probe_goal": "Goal3022",
+        "hausdorff_optix_cupy_perf_probe_report": "docs/reports/goal3022_hausdorff_optix_cupy_perf_probe_2026-06-02.md",
+        "hausdorff_optix_cupy_perf_probe_artifact": "docs/reports/goal3022_hausdorff_optix_cupy_perf_probe_2026-06-02.json",
+        "hausdorff_optix_cupy_perf_probe_status": "rt_core_correct_but_cupy_grouped_grid_current_fast_reference_for_dense_exact_2d_hausdorff_not_speedup_evidence",
         "primary_partner_track": "numba_first_class_user_selectable_partner",
         "partner_choice_rule": "users_choose_supported_partners_explicitly",
         "supported_partner_duty": "provide_high_performance_support_for_supported_partners_without_forcing_a_partner",
@@ -366,6 +370,18 @@ def validate_v2_6_roadmap(
         errors.append("Goal3021 CUDA 12.6 OptiX smoke report is missing")
     if not (root / str(roadmap.get("l4_optix_cuda126_smoke_artifact", ""))).exists():
         errors.append("Goal3021 CUDA 12.6 OptiX smoke artifact is missing")
+    if roadmap.get("hausdorff_optix_cupy_perf_probe_goal") != "Goal3022":
+        errors.append("v2.6 roadmap must index Goal3022 as the Hausdorff OptiX/CuPy perf probe")
+    if "cupy_grouped_grid_current_fast_reference" not in str(
+        roadmap.get("hausdorff_optix_cupy_perf_probe_status", "")
+    ):
+        errors.append("Goal3022 status must keep CuPy grouped-grid as the current fast reference")
+    if "not_speedup_evidence" not in str(roadmap.get("hausdorff_optix_cupy_perf_probe_status", "")):
+        errors.append("Goal3022 perf probe must not be treated as speedup evidence")
+    if not (root / str(roadmap.get("hausdorff_optix_cupy_perf_probe_report", ""))).exists():
+        errors.append("Goal3022 Hausdorff OptiX/CuPy perf report is missing")
+    if not (root / str(roadmap.get("hausdorff_optix_cupy_perf_probe_artifact", ""))).exists():
+        errors.append("Goal3022 Hausdorff OptiX/CuPy perf artifact is missing")
     if "numba" not in str(roadmap.get("primary_partner_track", "")):
         errors.append("v2.6 must name Numba as the first-class partner track")
     if "users_choose" not in str(roadmap.get("partner_choice_rule", "")):
