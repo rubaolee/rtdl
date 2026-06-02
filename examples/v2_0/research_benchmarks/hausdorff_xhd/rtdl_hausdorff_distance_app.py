@@ -355,6 +355,11 @@ def _run_partner_numba_witness_exact_directed(
     label: str,
 ) -> dict[str, object]:
     import numpy as np
+
+    try:
+        import _numba_cuda_redirector  # noqa: F401
+    except ImportError:
+        pass
     from numba import cuda
 
     source_count = len(source)
