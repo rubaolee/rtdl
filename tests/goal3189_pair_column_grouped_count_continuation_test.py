@@ -22,6 +22,7 @@ class Goal3189PairColumnGroupedCountContinuationTest(unittest.TestCase):
         self.assertIn("_RtdlDevicePayloadField", body)
         self.assertIn("_DEVICE_PAYLOAD_DTYPE_INT64", body)
         self.assertIn("self.left_ids_device_ptr", body)
+        self.assertIn("pair-column left_id axis", body)
         self.assertIn("segment_pair_candidate_left_id_count", body)
         self.assertIn("OptixRowView", body)
         self.assertNotIn("rayjoin", body.lower())

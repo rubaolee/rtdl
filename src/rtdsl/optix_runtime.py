@@ -1212,6 +1212,7 @@ class OptixNativeDeviceGroupedCountI64Output:
             "counts_device_ptr_nonzero": self.counts_device_ptr > 0,
             "group_capacity": self.group_capacity,
             "group_capacity_semantics": "direct-address key capacity",
+            "group_key_semantics": "dense output uses direct-address array index as the implicit group key",
             "source_row_count": self.source_row_count,
             "overflow": self.overflow,
             "device_ordinal": self.device_ordinal,
@@ -1442,7 +1443,7 @@ class OptixNativeDevicePairColumnOutput:
         return metadata
 
     def grouped_count_by_left_id(self, *, group_capacity: int) -> tuple[dict[str, int], ...]:
-        """Count candidate rows per left_id using the generic device-column reduction."""
+        """Count rows by the pair-column left_id axis using the generic device-column reduction."""
         if self.overflow:
             raise RuntimeError("cannot group an overflowed segment-pair candidate column stream")
         if self.row_count == 0:
@@ -1520,7 +1521,7 @@ class OptixNativeDevicePairColumnOutput:
         *,
         group_capacity: int,
     ) -> OptixNativeDeviceGroupedCountI64Output:
-        """Count candidate rows per left_id and keep the dense count column on device."""
+        """Count rows by pair-column left_id and keep the dense count column on device."""
         if self.overflow:
             raise RuntimeError("cannot group an overflowed segment-pair candidate column stream")
         capacity = int(group_capacity)
@@ -1582,7 +1583,7 @@ class OptixNativeDevicePairColumnOutput:
         *,
         group_capacity: int,
     ) -> OptixNativeDeviceGroupedCountI64CompactOutput:
-        """Count candidate rows per left_id and keep compact group/count columns on device."""
+        """Count rows by pair-column left_id and keep compact group/count columns on device."""
         if self.overflow:
             raise RuntimeError("cannot group an overflowed segment-pair candidate column stream")
         capacity = int(group_capacity)

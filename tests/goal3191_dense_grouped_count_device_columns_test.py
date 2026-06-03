@@ -59,6 +59,7 @@ class Goal3191DenseGroupedCountDeviceColumnsTest(unittest.TestCase):
 
         self.assertIn("device_resident_dense_grouped_count_column", body)
         self.assertIn("direct-address key capacity", body)
+        self.assertIn("direct-address array index as the implicit group key", body)
         self.assertIn("group_key_column_materialized_on_host", body)
         self.assertIn("count_column_materialized_on_host", body)
         self.assertIn("true_zero_copy_authorized", body)
