@@ -93,13 +93,22 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
         benchmark_app="hausdorff_xhd",
         display_name="Hausdorff / X-HD style",
         benchmark_path="examples/v2_0/research_benchmarks/hausdorff_xhd/",
-        current_best_path="active-frontier RTDL/OptiX path for the current exact app contract",
-        partner_position="CuPy remains the CUDA-core fairness baseline; Numba is useful for selected argmax/score-row experiments.",
-        current_bottleneck="witness/frontier continuation is still shaped by benchmark harnesses instead of one reusable typed result-stream contract.",
+        current_best_path=(
+            "generic directed max-of-nearest-distance partner front door for exact partner "
+            "continuation; active-frontier RTDL/OptiX path remains the RT-core research harness"
+        ),
+        partner_position=(
+            "Numba is the recommended exact partner continuation for the scalar max-nearest path; "
+            "CuPy remains the CUDA-core fairness baseline."
+        ),
+        current_bottleneck=(
+            "front-door naming is now generic, but the RT-core nearest-witness stream is not yet "
+            "a reusable typed producer that can feed the partner continuation directly."
+        ),
         generic_runtime_target="typed nearest-witness streams plus grouped max-distance continuation",
         target_family=V2_8_FIRST_RUNTIME_TARGET,
         priority="P0",
-        evidence_refs=("Goal3046", "Goal3048", "Goal3052"),
+        evidence_refs=("Goal3046", "Goal3048", "Goal3052", "Goal3143", "Goal3160"),
     ),
     V28BenchmarkRuntimeGapRow(
         benchmark_app="spatial_rayjoin",
