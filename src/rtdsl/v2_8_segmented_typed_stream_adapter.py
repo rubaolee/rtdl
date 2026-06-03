@@ -662,7 +662,13 @@ def _execute_partner_front_door(
             partner=partner,
             return_metadata=True,
         )
-        return result["columns"], dict(result["metadata"])
+        columns = dict(result["columns"])
+        canonical_columns = {
+            "group_ids": columns["group_ids"],
+            "item_ids": columns["item_ids"],
+            "row_offsets": columns["row_offsets"],
+        }
+        return canonical_columns, dict(result["metadata"])
     raise ValueError(f"unsupported v2.8 typed-stream partner operation: {operation}")
 
 

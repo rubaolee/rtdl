@@ -349,6 +349,49 @@ class Goal3111V28SegmentedTypedStreamAdapterTest(unittest.TestCase):
         self.assertEqual(result["outputs"], {"sums": [4.0, 10.0]})
         mocked.assert_called_once()
 
+    def test_partner_consumer_filters_bounded_collect_to_canonical_outputs(self) -> None:
+        adapter = rt.build_segmented_typed_stream_adapter(
+            ((0, 10), (1, 20)),
+            row_schema=("group_ids", "item_ids"),
+            column_roles={"group_ids": "group_key", "item_ids": "item_id"},
+            page_capacity=2,
+            stream_id="goal3126_bounded_collect_schema",
+            stream_kind="candidate_stream",
+            producer_primitive="segmented_row_stream_reference",
+            ordering="group_ordered",
+            operation="bounded_collect_finalize_i64",
+            group_column="group_ids",
+            item_column="item_ids",
+            user_selected_partner="torch",
+        )
+
+        helper_result = {
+            "columns": {
+                "group_ids": [0, 1],
+                "item_ids": [10, 20],
+                "row_offsets": [0, 1, 2],
+                "counts": [1, 1],
+            },
+            "metadata": {"partner": "torch", "operation": "bounded_collect_finalize_i64"},
+        }
+        with mock.patch(
+            "rtdsl.partner_adapters.bounded_collect_finalize_i64_partner_columns",
+            return_value=helper_result,
+        ) as mocked:
+            result = rt.execute_segmented_typed_stream_partner_continuation(
+                adapter,
+                partner="torch",
+                partner_columns={"group_ids": [0, 1], "item_ids": [10, 20]},
+                k=1,
+            )
+
+        self.assertEqual(
+            result["outputs"],
+            {"group_ids": [0, 1], "item_ids": [10, 20], "row_offsets": [0, 1, 2]},
+        )
+        self.assertNotIn("counts", result["outputs"])
+        mocked.assert_called_once()
+
     def test_partner_consumer_dry_run_marks_unsupported_operation(self) -> None:
         adapter = rt.build_segmented_typed_stream_adapter(
             ((0, 10, 1),),
