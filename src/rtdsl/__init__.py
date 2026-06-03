@@ -307,6 +307,18 @@ from .v2_6_neutral_partner_handoff import V2_6_NEUTRAL_PARTNER_HANDOFF_VERSION
 from .v2_6_neutral_partner_handoff import plan_v2_6_neutral_partner_handoff
 from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff
 from .v2_6_neutral_partner_handoff import validate_v2_6_neutral_partner_handoff
+from .v2_8_benchmark_runtime_gap import V28BenchmarkRuntimeGapRow
+from .v2_8_benchmark_runtime_gap import V2_7_INTERNAL_CLOSEOUT_STATUS
+from .v2_8_benchmark_runtime_gap import V2_7_INTERNAL_CLOSEOUT_VERSION
+from .v2_8_benchmark_runtime_gap import V2_8_BENCHMARK_RUNTIME_GAP_STATUS
+from .v2_8_benchmark_runtime_gap import V2_8_BENCHMARK_RUNTIME_GAP_VERSION
+from .v2_8_benchmark_runtime_gap import V2_8_CLAIM_BOUNDARY
+from .v2_8_benchmark_runtime_gap import V2_8_FIRST_RUNTIME_TARGET
+from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
+from .v2_8_benchmark_runtime_gap import v2_7_internal_closeout_status
+from .v2_8_benchmark_runtime_gap import v2_8_benchmark_runtime_gap_matrix
+from .v2_8_benchmark_runtime_gap import v2_8_runtime_target_summary
+from .v2_8_benchmark_runtime_gap import validate_v2_8_benchmark_runtime_gap_map
 from .api import polygon_pair_overlap_area_rows
 from .api import polygon_set_jaccard
 from .api import ray_triangle_any_hit
@@ -1862,6 +1874,18 @@ __all__ = [
     "V2_5_INTERNAL_READINESS_STATUS",
     "v2_5_internal_readiness_packet",
     "validate_v2_5_internal_readiness_packet",
+    "V28BenchmarkRuntimeGapRow",
+    "V2_7_INTERNAL_CLOSEOUT_STATUS",
+    "V2_7_INTERNAL_CLOSEOUT_VERSION",
+    "V2_8_BENCHMARK_RUNTIME_GAP_STATUS",
+    "V2_8_BENCHMARK_RUNTIME_GAP_VERSION",
+    "V2_8_CLAIM_BOUNDARY",
+    "V2_8_FIRST_RUNTIME_TARGET",
+    "V2_8_PROMOTED_BENCHMARK_APPS",
+    "v2_7_internal_closeout_status",
+    "v2_8_benchmark_runtime_gap_matrix",
+    "v2_8_runtime_target_summary",
+    "validate_v2_8_benchmark_runtime_gap_map",
     "overlay_compose",
     "overlay_compose_hiprt",
     "oracle_version",

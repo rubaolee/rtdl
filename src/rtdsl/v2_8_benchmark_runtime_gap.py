@@ -1,0 +1,344 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Any
+
+
+V2_7_INTERNAL_CLOSEOUT_VERSION = "rtdl.v2_7.internal_closeout.v1"
+V2_7_INTERNAL_CLOSEOUT_STATUS = "closed_internal_version_not_release_authorization"
+V2_8_BENCHMARK_RUNTIME_GAP_VERSION = "rtdl.v2_8.benchmark_runtime_gap.v1"
+V2_8_BENCHMARK_RUNTIME_GAP_STATUS = "v2_8_started_benchmark_runtime_gap_mapping"
+V2_8_FIRST_RUNTIME_TARGET = "typed_device_resident_result_streams_and_grouped_continuation"
+V2_8_PROMOTED_BENCHMARK_APPS = (
+    "hausdorff_xhd",
+    "spatial_rayjoin",
+    "rt_dbscan",
+    "robot_collision",
+    "contact_manifold",
+    "raydb_style",
+    "barnes_hut",
+    "librts_spatial_index",
+    "rtnn",
+    "triangle_counting",
+)
+V2_8_CLAIM_BOUNDARY = (
+    "v2.8 benchmark-runtime gap mapping starts an internal development lane. "
+    "It does not authorize a v2.8 release, public speedup wording, whole-app "
+    "speedup wording, broad RT-core wording, true-zero-copy wording, paper "
+    "reproduction claims, hidden partner selection, hidden dispatch, or "
+    "app-specific native-engine behavior."
+)
+
+
+@dataclass(frozen=True)
+class V28BenchmarkRuntimeGapRow:
+    benchmark_app: str
+    display_name: str
+    benchmark_path: str
+    current_best_path: str
+    partner_position: str
+    current_bottleneck: str
+    generic_runtime_target: str
+    target_family: str
+    priority: str
+    evidence_refs: tuple[str, ...]
+    app_specific_engine_logic_allowed: bool = False
+    automatic_partner_selection_allowed: bool = False
+    release_authorized: bool = False
+    public_speedup_claim_authorized: bool = False
+    rt_core_speedup_claim_authorized: bool = False
+    true_zero_copy_claim_authorized: bool = False
+
+    def __post_init__(self) -> None:
+        if self.benchmark_app not in V2_8_PROMOTED_BENCHMARK_APPS:
+            raise ValueError(f"unknown v2.8 benchmark app: {self.benchmark_app}")
+        if self.priority not in ("P0", "P1", "P2"):
+            raise ValueError("priority must be P0, P1, or P2")
+        for field in (
+            "app_specific_engine_logic_allowed",
+            "automatic_partner_selection_allowed",
+            "release_authorized",
+            "public_speedup_claim_authorized",
+            "rt_core_speedup_claim_authorized",
+            "true_zero_copy_claim_authorized",
+        ):
+            if getattr(self, field):
+                raise ValueError(f"v2.8 gap row must not authorize {field}")
+
+    def to_metadata(self) -> dict[str, Any]:
+        return {
+            "version": V2_8_BENCHMARK_RUNTIME_GAP_VERSION,
+            "benchmark_app": self.benchmark_app,
+            "display_name": self.display_name,
+            "benchmark_path": self.benchmark_path,
+            "current_best_path": self.current_best_path,
+            "partner_position": self.partner_position,
+            "current_bottleneck": self.current_bottleneck,
+            "generic_runtime_target": self.generic_runtime_target,
+            "target_family": self.target_family,
+            "priority": self.priority,
+            "evidence_refs": self.evidence_refs,
+            "app_specific_engine_logic_allowed": self.app_specific_engine_logic_allowed,
+            "automatic_partner_selection_allowed": self.automatic_partner_selection_allowed,
+            "release_authorized": self.release_authorized,
+            "public_speedup_claim_authorized": self.public_speedup_claim_authorized,
+            "rt_core_speedup_claim_authorized": self.rt_core_speedup_claim_authorized,
+            "true_zero_copy_claim_authorized": self.true_zero_copy_claim_authorized,
+            "claim_boundary": V2_8_CLAIM_BOUNDARY,
+        }
+
+
+V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
+    V28BenchmarkRuntimeGapRow(
+        benchmark_app="hausdorff_xhd",
+        display_name="Hausdorff / X-HD style",
+        benchmark_path="examples/v2_0/research_benchmarks/hausdorff_xhd/",
+        current_best_path="active-frontier RTDL/OptiX path for the current exact app contract",
+        partner_position="CuPy remains the CUDA-core fairness baseline; Numba is useful for selected argmax/score-row experiments.",
+        current_bottleneck="witness/frontier continuation is still shaped by benchmark harnesses instead of one reusable typed result-stream contract.",
+        generic_runtime_target="typed nearest-witness streams plus grouped max-distance continuation",
+        target_family=V2_8_FIRST_RUNTIME_TARGET,
+        priority="P0",
+        evidence_refs=("Goal3046", "Goal3048", "Goal3052"),
+    ),
+    V28BenchmarkRuntimeGapRow(
+        benchmark_app="spatial_rayjoin",
+        display_name="Spatial RayJoin",
+        benchmark_path="examples/v2_0/research_benchmarks/spatial_rayjoin/",
+        current_best_path="primitive-first scalar count/parity and first-hit paths; Numba compact-mask continuation for row streams",
+        partner_position="Numba is the recommended custom continuation when row-stream compaction is part of the app.",
+        current_bottleneck="row streams, parity/count grouping, and boundary witnesses still need a reusable device-resident continuation contract.",
+        generic_runtime_target="typed hit streams with grouped parity/count and compact-mask continuation",
+        target_family=V2_8_FIRST_RUNTIME_TARGET,
+        priority="P0",
+        evidence_refs=("Goal3003", "Goal3052"),
+    ),
+    V28BenchmarkRuntimeGapRow(
+        benchmark_app="rt_dbscan",
+        display_name="RT-DBSCAN",
+        benchmark_path="examples/v2_0/research_benchmarks/rt_dbscan/",
+        current_best_path="fixed-radius/core-summary primitives plus app-owned component continuation",
+        partner_position="CuPy is the current measured component-continuation reference; Numba is still a candidate.",
+        current_bottleneck="dense adjacency streams and component expansion need device-resident grouped continuation without DBSCAN-native engine semantics.",
+        generic_runtime_target="typed adjacency streams plus grouped component-continuation handoff",
+        target_family=V2_8_FIRST_RUNTIME_TARGET,
+        priority="P0",
+        evidence_refs=("Goal2425 lineage", "Goal2478"),
+    ),
+    V28BenchmarkRuntimeGapRow(
+        benchmark_app="robot_collision",
+        display_name="Robot collision",
+        benchmark_path="examples/v2_0/research_benchmarks/robot_collision/",
+        current_best_path="generic any-hit/collision flag primitive over prepared static scenes",
+        partner_position="no promoted v2.6 custom partner path; preserve primitive parity first",
+        current_bottleneck="pose flag compaction and optional witness rows need the same typed bounded-output contract as other row-heavy apps.",
+        generic_runtime_target="bounded flag/witness result pages with prepared-scene residency metadata",
+        target_family=V2_8_FIRST_RUNTIME_TARGET,
+        priority="P1",
+        evidence_refs=("Goal2491",),
+    ),
+    V28BenchmarkRuntimeGapRow(
+        benchmark_app="contact_manifold",
+        display_name="Contact manifold",
+        benchmark_path="examples/v2_0/research_benchmarks/contact_manifold/",
+        current_best_path="bounded witness collection with fail-closed overflow behavior",
+        partner_position="no promoted v2.6 custom partner path; partner filtering needs new same-contract evidence",
+        current_bottleneck="bounded contact witnesses need typed pages and stable overflow semantics shared with spatial and collision workloads.",
+        generic_runtime_target="typed bounded witness pages with fail-closed completion metadata",
+        target_family=V2_8_FIRST_RUNTIME_TARGET,
+        priority="P1",
+        evidence_refs=("Goal2510 lineage",),
+    ),
+    V28BenchmarkRuntimeGapRow(
+        benchmark_app="raydb_style",
+        display_name="RayDB-style grouped aggregates",
+        benchmark_path="examples/v2_0/research_benchmarks/raydb_style/",
+        current_best_path="fused columnar grouped reductions when the primitive exactly matches",
+        partner_position="Numba is recommended only for unfused grouped scalar continuations.",
+        current_bottleneck="unfused grouped min/max/stats/witness handoff must avoid forcing partner continuation onto already-fused primitive rows.",
+        generic_runtime_target="typed grouped-reduction streams with explicit fused-vs-continuation selection",
+        target_family=V2_8_FIRST_RUNTIME_TARGET,
+        priority="P0",
+        evidence_refs=("Goal2995", "Goal3052"),
+    ),
+    V28BenchmarkRuntimeGapRow(
+        benchmark_app="barnes_hut",
+        display_name="Barnes-Hut / RT-BarnesHut style",
+        benchmark_path="examples/v2_0/research_benchmarks/barnes_hut/",
+        current_best_path="aggregate-frontier collect primitive; app computes force law",
+        partner_position="CuPy is the current force-vector continuation reference.",
+        current_bottleneck="frontier rows and app-owned force vectors need a reusable grouped vector continuation contract.",
+        generic_runtime_target="typed aggregate-frontier streams plus grouped vector continuation",
+        target_family=V2_8_FIRST_RUNTIME_TARGET,
+        priority="P1",
+        evidence_refs=("Goal2905 lineage",),
+    ),
+    V28BenchmarkRuntimeGapRow(
+        benchmark_app="librts_spatial_index",
+        display_name="LibRTS-style spatial index",
+        benchmark_path="examples/v2_0/research_benchmarks/librts_spatial_index/",
+        current_best_path="generic point/range query rows and count-oriented no-regression evidence",
+        partner_position="no promoted v2.6 custom partner path",
+        current_bottleneck="mutable index/update policy remains app-owned; v2.8 should avoid treating this as the first runtime extension.",
+        generic_runtime_target="prepared spatial-index residency and no-regression query harness",
+        target_family="prepared_residency_and_harness",
+        priority="P2",
+        evidence_refs=("Goal2570 lineage",),
+    ),
+    V28BenchmarkRuntimeGapRow(
+        benchmark_app="rtnn",
+        display_name="RTNN neighbor search",
+        benchmark_path="examples/v2_0/research_benchmarks/rtnn/",
+        current_best_path="prepared fixed-radius ranked-summary primitives with batched request hardening",
+        partner_position="CuPy remains an all-pairs baseline; no promoted Numba default for ranking yet.",
+        current_bottleneck="packed/prepared column input, replay/chunking, and top-k summary handoff must be first-class for serious scale.",
+        generic_runtime_target="typed ranked-summary streams with prepared packed-column residency",
+        target_family=V2_8_FIRST_RUNTIME_TARGET,
+        priority="P0",
+        evidence_refs=("Goal2821", "Goal2822", "Goal2958"),
+    ),
+    V28BenchmarkRuntimeGapRow(
+        benchmark_app="triangle_counting",
+        display_name="Triangle counting",
+        benchmark_path="examples/v2_0/research_benchmarks/triangle_counting/",
+        current_best_path="native scalar triangle-count primitive for scalar answers",
+        partner_position="Numba compact-mask continuation is only for explicit candidate-row interpretation.",
+        current_bottleneck="segmented/streamed graph lowering and candidate-row continuation remain the scale limiter.",
+        generic_runtime_target="typed graph candidate streams with segmented compact-mask continuation",
+        target_family=V2_8_FIRST_RUNTIME_TARGET,
+        priority="P0",
+        evidence_refs=("Goal3000", "Goal3052"),
+    ),
+)
+
+
+def v2_7_internal_closeout_status() -> dict[str, Any]:
+    return {
+        "version": V2_7_INTERNAL_CLOSEOUT_VERSION,
+        "status": V2_7_INTERNAL_CLOSEOUT_STATUS,
+        "current_closeout_report": "docs/reports/goal3102_v2_7_post_semantic_search_current_closeout_2026-06-03.md",
+        "current_consensus_report": "docs/reports/goal3104_v2_7_post_d8_closeout_2ai_consensus_2026-06-03.md",
+        "d1_through_d8_closed": True,
+        "d8_semantic_search_preview_only": True,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "claim_boundary": V2_8_CLAIM_BOUNDARY,
+    }
+
+
+def v2_8_benchmark_runtime_gap_matrix() -> tuple[dict[str, Any], ...]:
+    return tuple(row.to_metadata() for row in V2_8_BENCHMARK_RUNTIME_GAP_ROWS)
+
+
+def v2_8_runtime_target_summary() -> dict[str, Any]:
+    rows = v2_8_benchmark_runtime_gap_matrix()
+    first_target_apps = tuple(
+        row["benchmark_app"]
+        for row in rows
+        if row["target_family"] == V2_8_FIRST_RUNTIME_TARGET
+    )
+    return {
+        "version": V2_8_BENCHMARK_RUNTIME_GAP_VERSION,
+        "status": V2_8_BENCHMARK_RUNTIME_GAP_STATUS,
+        "first_runtime_target": V2_8_FIRST_RUNTIME_TARGET,
+        "first_target_app_count": len(first_target_apps),
+        "first_target_apps": first_target_apps,
+        "first_target_reason": (
+            "typed device-resident result streams and grouped continuation are "
+            "the shared bottleneck across row-heavy spatial, neighbor, graph, "
+            "database, Hausdorff, collision, and witness workloads"
+        ),
+        "not_first_target": (
+            "app-specific RayJoin/RayDB/DBSCAN/Hausdorff kernels",
+            "hidden partner auto-selection",
+            "user-defined shader injection",
+        ),
+        "v3_boundary": "user-defined shader injection remains a later v3.0 lane",
+        "claim_boundary": V2_8_CLAIM_BOUNDARY,
+    }
+
+
+def validate_v2_8_benchmark_runtime_gap_map(
+    *,
+    expected_apps: tuple[str, ...] = V2_8_PROMOTED_BENCHMARK_APPS,
+) -> dict[str, Any]:
+    closeout = v2_7_internal_closeout_status()
+    rows = v2_8_benchmark_runtime_gap_matrix()
+    summary = v2_8_runtime_target_summary()
+    errors: list[str] = []
+
+    apps = tuple(row["benchmark_app"] for row in rows)
+    if apps != expected_apps:
+        errors.append("benchmark app order/coverage changed")
+    if len(set(apps)) != len(expected_apps):
+        errors.append("benchmark apps must be unique")
+    if closeout.get("status") != V2_7_INTERNAL_CLOSEOUT_STATUS:
+        errors.append("v2.7 internal closeout status is not closed")
+    if closeout.get("d1_through_d8_closed") is not True:
+        errors.append("v2.7 D-1 through D-8 must be closed before v2.8 starts")
+    if closeout.get("d8_semantic_search_preview_only") is not True:
+        errors.append("v2.7 D-8 must remain preview-only")
+    if summary.get("first_runtime_target") != V2_8_FIRST_RUNTIME_TARGET:
+        errors.append("first v2.8 runtime target changed")
+    if int(summary.get("first_target_app_count", 0)) < 7:
+        errors.append("first runtime target must cover at least seven benchmark apps")
+    for app in ("hausdorff_xhd", "spatial_rayjoin", "rt_dbscan", "raydb_style", "rtnn", "triangle_counting"):
+        if app not in tuple(summary.get("first_target_apps", ())):
+            errors.append(f"first runtime target must cover {app}")
+    for row in rows:
+        for field in (
+            "app_specific_engine_logic_allowed",
+            "automatic_partner_selection_allowed",
+            "release_authorized",
+            "public_speedup_claim_authorized",
+            "rt_core_speedup_claim_authorized",
+            "true_zero_copy_claim_authorized",
+        ):
+            if row.get(field) is not False:
+                errors.append(f"{row.get('benchmark_app')} authorizes {field}")
+        if not row.get("current_bottleneck"):
+            errors.append(f"{row.get('benchmark_app')} is missing current bottleneck")
+        if not row.get("generic_runtime_target"):
+            errors.append(f"{row.get('benchmark_app')} is missing generic runtime target")
+    for field in (
+        "release_authorized",
+        "public_speedup_claim_authorized",
+        "rt_core_speedup_claim_authorized",
+        "true_zero_copy_claim_authorized",
+    ):
+        if closeout.get(field) is not False:
+            errors.append(f"v2.7 closeout must not authorize {field}")
+
+    return {
+        "status": "accept" if not errors else "reject",
+        "version": V2_8_BENCHMARK_RUNTIME_GAP_VERSION,
+        "errors": tuple(errors),
+        "v2_7_status": closeout.get("status"),
+        "v2_8_status": V2_8_BENCHMARK_RUNTIME_GAP_STATUS,
+        "app_count": len(rows),
+        "first_runtime_target": summary.get("first_runtime_target"),
+        "first_target_app_count": summary.get("first_target_app_count"),
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "claim_boundary": V2_8_CLAIM_BOUNDARY,
+    }
+
+
+__all__ = [
+    "V28BenchmarkRuntimeGapRow",
+    "V2_7_INTERNAL_CLOSEOUT_STATUS",
+    "V2_7_INTERNAL_CLOSEOUT_VERSION",
+    "V2_8_BENCHMARK_RUNTIME_GAP_STATUS",
+    "V2_8_BENCHMARK_RUNTIME_GAP_VERSION",
+    "V2_8_CLAIM_BOUNDARY",
+    "V2_8_FIRST_RUNTIME_TARGET",
+    "V2_8_PROMOTED_BENCHMARK_APPS",
+    "v2_7_internal_closeout_status",
+    "v2_8_benchmark_runtime_gap_matrix",
+    "v2_8_runtime_target_summary",
+    "validate_v2_8_benchmark_runtime_gap_map",
+]
