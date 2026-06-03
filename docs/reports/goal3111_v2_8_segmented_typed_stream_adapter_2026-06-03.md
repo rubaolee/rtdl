@@ -34,6 +34,7 @@ New exported surface:
 
 - `V28SegmentedTypedStreamAdapterResult`
 - `build_segmented_typed_stream_adapter`
+- `execute_segmented_typed_stream_reference_continuation`
 - `validate_segmented_typed_stream_adapter`
 - `v2_8_segmented_typed_stream_adapter_summary`
 - adapter version/status/materialization constants
@@ -47,6 +48,16 @@ The adapter:
 5. optionally creates a `V28GroupedContinuationPlan`,
 6. records concrete status values such as row count, page capacity, overflow,
    and complete-candidate-coverage.
+
+The module also adds a reference grouped-continuation consumer:
+
+- `execute_segmented_typed_stream_reference_continuation`
+
+That function reconstructs the segmented rows, maps the typed continuation plan
+onto the existing v2.5 `execute_v2_5_partner_continuation_reference` oracle, and
+returns reference outputs while preserving the same non-authorizing flags. This
+gives native producers and partner consumers a concrete local oracle before any
+runtime promotion.
 
 ## Boundary
 
@@ -82,7 +93,8 @@ This gives the next native or partner implementation a concrete target:
 - pass the same contract validation.
 
 The next real performance step can now compare a native producer or partner
-consumer against this reference contract without changing the claim boundary.
+consumer against this reference contract and reference grouped-continuation
+consumer without changing the claim boundary.
 
 ## Validation
 
@@ -93,8 +105,8 @@ py -3 -m py_compile src\rtdsl\v2_8_segmented_typed_stream_adapter.py src\rtdsl\v
 $env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal3111_v2_8_segmented_typed_stream_adapter_test tests.goal3108_v2_8_typed_result_stream_contract_test tests.goal3105_v2_8_benchmark_runtime_gap_map_test
 ```
 
-Observed local result: `py_compile` passed, and the focused unittest command
-ran 19 tests successfully.
+Observed local result after the Goal3114 reference-consumer extension:
+`py_compile` passed, and the focused unittest command ran 22 tests successfully.
 
 The test checks:
 
@@ -104,7 +116,9 @@ The test checks:
 - missing roles fail closed,
 - `auto` partner selection fails closed,
 - segmented overflow preserves `SegmentedRowStreamOverflowError`,
-- this report records the reference-adapter boundary.
+- reference grouped-continuation consumer outputs for grouped argmax,
+  segmented sum, and top-k required-`k` behavior,
+- this report records the reference-adapter and reference-consumer boundary.
 
 ## Next Step
 

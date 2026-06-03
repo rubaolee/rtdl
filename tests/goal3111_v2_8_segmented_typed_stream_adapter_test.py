@@ -148,6 +148,92 @@ class Goal3111V28SegmentedTypedStreamAdapterTest(unittest.TestCase):
                 total_row_capacity=2,
             )
 
+    def test_reference_consumer_executes_grouped_argmax_oracle(self) -> None:
+        adapter = rt.build_segmented_typed_stream_adapter(
+            ((0, 10, 1.5), (0, 11, 2.5), (1, 20, 0.25)),
+            row_schema=("group_ids", "item_ids", "scores"),
+            column_roles={
+                "group_ids": "group_key",
+                "item_ids": "item_id",
+                "scores": "score",
+            },
+            page_capacity=2,
+            stream_id="goal3111_reference_argmax",
+            stream_kind="ranked_summary_stream",
+            producer_primitive="segmented_row_stream_reference",
+            ordering="group_ordered",
+            operation="grouped_argmax_f64",
+            group_column="group_ids",
+            value_columns=("scores",),
+            item_column="item_ids",
+            user_selected_partner="numba",
+        )
+
+        result = rt.execute_segmented_typed_stream_reference_continuation(adapter)
+
+        self.assertEqual(result["status"], "completed_reference_consumer")
+        self.assertEqual(result["operation"], "grouped_argmax_f64")
+        self.assertEqual(result["reference_partner"], "python_reference")
+        self.assertEqual(result["outputs"]["group_ids"], [0, 1])
+        self.assertEqual(result["outputs"]["item_ids"], [11, 20])
+        self.assertEqual(result["outputs"]["scores"], [2.5, 0.25])
+        self.assertFalse(result["partner_consumer_promoted"])
+        self.assertFalse(result["device_resident_result_stream_proven"])
+        self.assertFalse(result["true_zero_copy_claim_authorized"])
+        self.assertFalse(result["release_authorized"])
+        self.assertFalse(result["automatic_partner_selection_allowed"])
+
+    def test_reference_consumer_executes_segmented_sum_oracle(self) -> None:
+        adapter = rt.build_segmented_typed_stream_adapter(
+            ((0, 1.5), (0, 2.5), (1, 10.0)),
+            row_schema=("group_ids", "values"),
+            column_roles={"group_ids": "group_key", "values": "score"},
+            page_capacity=2,
+            stream_id="goal3111_reference_sum",
+            stream_kind="grouped_reduction_stream",
+            producer_primitive="segmented_row_stream_reference",
+            ordering="group_ordered",
+            operation="segmented_sum_f64",
+            group_column="group_ids",
+            value_columns=("values",),
+            user_selected_partner="numba",
+        )
+
+        result = rt.execute_segmented_typed_stream_reference_continuation(adapter)
+
+        self.assertEqual(result["outputs"]["sums"], [4.0, 10.0])
+        self.assertFalse(result["public_speedup_claim_authorized"])
+        self.assertFalse(result["rt_core_speedup_claim_authorized"])
+
+    def test_reference_consumer_requires_k_for_topk(self) -> None:
+        adapter = rt.build_segmented_typed_stream_adapter(
+            ((0, 10, 1.5), (0, 11, 2.5)),
+            row_schema=("group_ids", "item_ids", "scores"),
+            column_roles={
+                "group_ids": "group_key",
+                "item_ids": "item_id",
+                "scores": "score",
+            },
+            page_capacity=2,
+            stream_id="goal3111_reference_topk",
+            stream_kind="ranked_summary_stream",
+            producer_primitive="segmented_row_stream_reference",
+            ordering="group_ordered",
+            operation="grouped_topk_f64",
+            group_column="group_ids",
+            value_columns=("scores",),
+            item_column="item_ids",
+            user_selected_partner="numba",
+        )
+
+        with self.assertRaisesRegex(ValueError, "k is required"):
+            rt.execute_segmented_typed_stream_reference_continuation(adapter)
+
+        result = rt.execute_segmented_typed_stream_reference_continuation(adapter, k=1)
+        self.assertEqual(result["outputs"]["group_ids"], [0])
+        self.assertEqual(result["outputs"]["item_ids"], [10])
+        self.assertEqual(result["outputs"]["scores"], [1.5])
+
     def test_report_documents_reference_adapter_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
 
@@ -158,6 +244,7 @@ class Goal3111V28SegmentedTypedStreamAdapterTest(unittest.TestCase):
         self.assertIn("not a true-zero-copy claim", text)
         self.assertIn("not a release authorization", text)
         self.assertIn("not a public speedup claim", text)
+        self.assertIn("reference grouped-continuation consumer", text)
 
 
 if __name__ == "__main__":

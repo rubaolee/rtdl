@@ -325,6 +325,7 @@ from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_ADA
 from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_STATUS
 from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_VERSION
 from .v2_8_segmented_typed_stream_adapter import build_segmented_typed_stream_adapter
+from .v2_8_segmented_typed_stream_adapter import execute_segmented_typed_stream_reference_continuation
 from .v2_8_segmented_typed_stream_adapter import v2_8_segmented_typed_stream_adapter_summary
 from .v2_8_segmented_typed_stream_adapter import validate_segmented_typed_stream_adapter
 from .v2_8_typed_result_stream import V28GroupedContinuationPlan
@@ -1919,6 +1920,7 @@ __all__ = [
     "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_STATUS",
     "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_VERSION",
     "build_segmented_typed_stream_adapter",
+    "execute_segmented_typed_stream_reference_continuation",
     "v2_8_segmented_typed_stream_adapter_summary",
     "validate_segmented_typed_stream_adapter",
     "V28GroupedContinuationPlan",
