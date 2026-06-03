@@ -264,6 +264,20 @@ struct RtdlNativeDeviceGroupedCountI64Columns {
     double reduction_seconds;
 };
 
+struct RtdlNativeDeviceGroupedCountI64CompactColumns {
+    uint64_t group_keys_device_ptr;
+    uint64_t counts_device_ptr;
+    uint64_t row_count;
+    uint64_t capacity;
+    uint64_t group_capacity;
+    uint64_t source_row_count;
+    uint32_t overflow;
+    int32_t device_ordinal;
+    void* owner_handle;
+    double reduction_seconds;
+    double compaction_seconds;
+};
+
 struct RtdlRaySegmentGroupCountRow {
     uint32_t ray_id, group_id, hit_count, parity;
 };
@@ -1659,6 +1673,17 @@ int  rtdl_optix_columnar_device_payload_grouped_count_i64_device_columns_with_ca
          RtdlNativeDeviceGroupedCountI64Columns* columns_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_release_device_grouped_count_i64_columns(
+         void* owner_handle,
+         char* error_out, size_t error_size);
+int  rtdl_optix_columnar_device_payload_grouped_count_i64_compact_device_columns_with_capacity(
+         const RtdlDevicePayloadField* fields, size_t field_count,
+         size_t row_count,
+         const RtdlColumnClause* clauses, size_t clause_count,
+         const char* group_key_field,
+         size_t group_capacity,
+         RtdlNativeDeviceGroupedCountI64CompactColumns* columns_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_release_device_grouped_count_i64_compact_columns(
          void* owner_handle,
          char* error_out, size_t error_size);
 int  rtdl_optix_columnar_device_payload_grouped_sum_i64(

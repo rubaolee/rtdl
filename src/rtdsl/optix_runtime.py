@@ -162,6 +162,12 @@ OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_DEVICE_COLUMNS_WITH_CAPACITY_S
 OPTIX_RELEASE_DEVICE_GROUPED_COUNT_I64_COLUMNS_SYMBOL = (
     "rtdl_optix_release_device_grouped_count_i64_columns"
 )
+OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_COMPACT_DEVICE_COLUMNS_WITH_CAPACITY_SYMBOL = (
+    "rtdl_optix_columnar_device_payload_grouped_count_i64_compact_device_columns_with_capacity"
+)
+OPTIX_RELEASE_DEVICE_GROUPED_COUNT_I64_COMPACT_COLUMNS_SYMBOL = (
+    "rtdl_optix_release_device_grouped_count_i64_compact_columns"
+)
 OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_I64_WITH_CAPACITY_SYMBOL = (
     "rtdl_optix_columnar_device_payload_grouped_sum_i64_with_capacity"
 )
@@ -655,6 +661,22 @@ class _RtdlNativeDeviceGroupedCountI64Columns(ctypes.Structure):
         ("device_ordinal", ctypes.c_int32),
         ("owner_handle", ctypes.c_void_p),
         ("reduction_seconds", ctypes.c_double),
+    ]
+
+
+class _RtdlNativeDeviceGroupedCountI64CompactColumns(ctypes.Structure):
+    _fields_ = [
+        ("group_keys_device_ptr", ctypes.c_uint64),
+        ("counts_device_ptr", ctypes.c_uint64),
+        ("row_count", ctypes.c_uint64),
+        ("capacity", ctypes.c_uint64),
+        ("group_capacity", ctypes.c_uint64),
+        ("source_row_count", ctypes.c_uint64),
+        ("overflow", ctypes.c_uint32),
+        ("device_ordinal", ctypes.c_int32),
+        ("owner_handle", ctypes.c_void_p),
+        ("reduction_seconds", ctypes.c_double),
+        ("compaction_seconds", ctypes.c_double),
     ]
 
 
@@ -1234,6 +1256,139 @@ class OptixNativeDeviceGroupedCountI64Output:
             pass
 
 
+class _OptixNativeDeviceGroupedCountI64CompactColumnsOwner:
+    def __init__(self, library: ctypes.CDLL, owner_handle: int | None) -> None:
+        self._library = library
+        self._owner_handle = ctypes.c_void_p(0 if owner_handle is None else int(owner_handle))
+        self._closed = False
+
+    @property
+    def handle_value(self) -> int:
+        return 0 if self._owner_handle.value is None else int(self._owner_handle.value)
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        self._closed = True
+        handle = self._owner_handle
+        self._owner_handle = ctypes.c_void_p()
+        if not handle.value:
+            return
+        release_symbol = _find_optional_backend_symbol(
+            self._library,
+            OPTIX_RELEASE_DEVICE_GROUPED_COUNT_I64_COMPACT_COLUMNS_SYMBOL,
+        )
+        if release_symbol is None:
+            return
+        error = ctypes.create_string_buffer(4096)
+        status = release_symbol(handle, error, len(error))
+        _check_status(status, error)
+
+    def __enter__(self) -> "_OptixNativeDeviceGroupedCountI64CompactColumnsOwner":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+@dataclass
+class OptixNativeDeviceGroupedCountI64CompactOutput:
+    library: ctypes.CDLL
+    owner: _OptixNativeDeviceGroupedCountI64CompactColumnsOwner
+    group_keys_device_ptr: int
+    counts_device_ptr: int
+    row_count: int
+    capacity: int
+    group_capacity: int
+    source_row_count: int
+    overflow: bool
+    device_ordinal: int
+    reduction_seconds: float
+    compaction_seconds: float
+    native_symbol: str
+
+    @property
+    def device_resident(self) -> bool:
+        return (
+            self.group_keys_device_ptr > 0
+            and self.counts_device_ptr > 0
+            and self.capacity > 0
+            and not self.overflow
+            and self.owner.handle_value != 0
+        )
+
+    def to_metadata(self) -> dict[str, object]:
+        return {
+            "schema": "device_grouped_count_i64_compact_columns",
+            "producer": "device_column_grouped_count_i64_compact_columns",
+            "native_symbol": self.native_symbol,
+            "device_resident": self.device_resident,
+            "output_residency": "device_resident_compact_grouped_count_columns",
+            "column_names": ("group_key", "count"),
+            "group_keys_device_ptr_nonzero": self.group_keys_device_ptr > 0,
+            "counts_device_ptr_nonzero": self.counts_device_ptr > 0,
+            "row_count": self.row_count,
+            "capacity": self.capacity,
+            "group_capacity": self.group_capacity,
+            "group_capacity_semantics": "direct-address key capacity before compaction",
+            "source_row_count": self.source_row_count,
+            "overflow": self.overflow,
+            "device_ordinal": self.device_ordinal,
+            "reduction_seconds": self.reduction_seconds,
+            "compaction_seconds": self.compaction_seconds,
+            "owner_handle": self.owner.handle_value,
+            "row_count_materialized_on_host": True,
+            "group_key_column_materialized_on_host": False,
+            "count_column_materialized_on_host": False,
+            "true_zero_copy_authorized": False,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+        }
+
+    def _cupy_column(self, device_ptr: int):
+        if self.overflow:
+            raise RuntimeError("cannot wrap an overflowed compact grouped-count output")
+        if device_ptr <= 0 or self.capacity <= 0:
+            raise RuntimeError("compact grouped-count output does not own CUDA columns")
+        import cupy as cp  # type: ignore
+
+        memory = cp.cuda.UnownedMemory(
+            int(device_ptr),
+            int(self.capacity) * ctypes.sizeof(ctypes.c_int64),
+            self.owner,
+        )
+        memory_pointer = cp.cuda.MemoryPointer(memory, 0)
+        return cp.ndarray((int(self.row_count),), dtype=cp.int64, memptr=memory_pointer)
+
+    def as_cupy_group_keys(self):
+        return self._cupy_column(self.group_keys_device_ptr)
+
+    def as_cupy_counts(self):
+        return self._cupy_column(self.counts_device_ptr)
+
+    def close(self) -> None:
+        self.owner.close()
+
+    def __enter__(self) -> "OptixNativeDeviceGroupedCountI64CompactOutput":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
 @dataclass
 class OptixNativeDevicePairColumnOutput:
     library: object
@@ -1420,6 +1575,72 @@ class OptixNativeDevicePairColumnOutput:
             device_ordinal=int(columns.device_ordinal),
             reduction_seconds=float(columns.reduction_seconds),
             native_symbol=OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_DEVICE_COLUMNS_WITH_CAPACITY_SYMBOL,
+        )
+
+    def grouped_count_by_left_id_compact_device_columns(
+        self,
+        *,
+        group_capacity: int,
+    ) -> OptixNativeDeviceGroupedCountI64CompactOutput:
+        """Count candidate rows per left_id and keep compact group/count columns on device."""
+        if self.overflow:
+            raise RuntimeError("cannot group an overflowed segment-pair candidate column stream")
+        capacity = int(group_capacity)
+        if capacity <= 0:
+            raise ValueError("group_capacity must be positive")
+        symbol = _find_optional_backend_symbol(
+            self.library,
+            OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_COMPACT_DEVICE_COLUMNS_WITH_CAPACITY_SYMBOL,
+        )
+        if symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_COMPACT_DEVICE_COLUMNS_WITH_CAPACITY_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        name = b"left_id"
+        fields = (_RtdlDevicePayloadField * 1)(
+            _RtdlDevicePayloadField(
+                name,
+                _DB_KIND_INT64,
+                _DEVICE_PAYLOAD_DTYPE_INT64,
+                _DEVICE_PAYLOAD_DEVICE_CUDA,
+                int(self.device_ordinal),
+                int(self.row_count),
+                ctypes.sizeof(ctypes.c_int64),
+                int(self.left_ids_device_ptr),
+            )
+        )
+        columns = _RtdlNativeDeviceGroupedCountI64CompactColumns()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            fields,
+            ctypes.c_size_t(1),
+            ctypes.c_size_t(self.row_count),
+            None,
+            ctypes.c_size_t(0),
+            name,
+            ctypes.c_size_t(capacity),
+            ctypes.byref(columns),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        owner = _OptixNativeDeviceGroupedCountI64CompactColumnsOwner(self.library, columns.owner_handle)
+        return OptixNativeDeviceGroupedCountI64CompactOutput(
+            library=self.library,
+            owner=owner,
+            group_keys_device_ptr=int(columns.group_keys_device_ptr),
+            counts_device_ptr=int(columns.counts_device_ptr),
+            row_count=int(columns.row_count),
+            capacity=int(columns.capacity),
+            group_capacity=int(columns.group_capacity),
+            source_row_count=int(columns.source_row_count),
+            overflow=bool(columns.overflow),
+            device_ordinal=int(columns.device_ordinal),
+            reduction_seconds=float(columns.reduction_seconds),
+            compaction_seconds=float(columns.compaction_seconds),
+            native_symbol=OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_COMPACT_DEVICE_COLUMNS_WITH_CAPACITY_SYMBOL,
         )
 
     def close(self) -> None:
@@ -19185,6 +19406,34 @@ def _register_argtypes(lib) -> None:
         symbol.restype = ctypes.c_int
 
     symbol = _find_optional_backend_symbol(lib, OPTIX_RELEASE_DEVICE_GROUPED_COUNT_I64_COLUMNS_SYMBOL)
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(
+        lib,
+        OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_COMPACT_DEVICE_COLUMNS_WITH_CAPACITY_SYMBOL,
+    )
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.POINTER(_RtdlDevicePayloadField),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlNativeDeviceGroupedCountI64CompactColumns),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, OPTIX_RELEASE_DEVICE_GROUPED_COUNT_I64_COMPACT_COLUMNS_SYMBOL)
     if symbol is not None:
         symbol.argtypes = [
             ctypes.c_void_p,

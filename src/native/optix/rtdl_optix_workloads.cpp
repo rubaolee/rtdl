@@ -627,6 +627,7 @@ struct DeviceColumnGroupedI64Function {
     CUfunction fn = nullptr;
     CUfunction init_values_fn = nullptr;
     CUfunction compact_count_fn = nullptr;
+    CUfunction compact_count_columns_fn = nullptr;
     CUfunction compact_sum_fn = nullptr;
     CUfunction compact_sum_count_fn = nullptr;
     CUfunction compact_stats_fn = nullptr;
@@ -905,6 +906,22 @@ extern "C" __global__ void device_column_grouped_i64_compact_count_kernel(
     rows_out[row_index].count = static_cast<int64_t>(count);
 }
 
+extern "C" __global__ void device_column_grouped_i64_compact_count_columns_kernel(
+    const unsigned long long* group_counts,
+    uint32_t group_capacity,
+    long long* group_keys_out,
+    long long* counts_out,
+    uint32_t* row_count_out)
+{
+    const uint32_t group = blockIdx.x * blockDim.x + threadIdx.x;
+    if (group >= group_capacity) return;
+    const unsigned long long count = group_counts[group];
+    if (count == 0ull) return;
+    const uint32_t row_index = atomicAdd(row_count_out, 1u);
+    group_keys_out[row_index] = static_cast<long long>(group);
+    counts_out[row_index] = static_cast<long long>(count);
+}
+
 extern "C" __global__ void device_column_grouped_i64_compact_sum_kernel(
     const unsigned long long* group_counts,
     const unsigned long long* group_sums,
@@ -1136,6 +1153,10 @@ static void ensure_device_column_grouped_i64_pipeline()
             g_device_column_grouped_i64.module,
             "device_column_grouped_i64_compact_count_kernel"));
         CU_CHECK(cuModuleGetFunction(
+            &g_device_column_grouped_i64.compact_count_columns_fn,
+            g_device_column_grouped_i64.module,
+            "device_column_grouped_i64_compact_count_columns_kernel"));
+        CU_CHECK(cuModuleGetFunction(
             &g_device_column_grouped_i64.compact_sum_fn,
             g_device_column_grouped_i64.module,
             "device_column_grouped_i64_compact_sum_kernel"));
@@ -1154,6 +1175,16 @@ struct NativeDeviceGroupedCountI64ColumnsOwner {
     CUdeviceptr counts = 0;
 
     ~NativeDeviceGroupedCountI64ColumnsOwner() {
+        if (counts) cuMemFree(counts);
+    }
+};
+
+struct NativeDeviceGroupedCountI64CompactColumnsOwner {
+    CUdeviceptr group_keys = 0;
+    CUdeviceptr counts = 0;
+
+    ~NativeDeviceGroupedCountI64CompactColumnsOwner() {
+        if (group_keys) cuMemFree(group_keys);
         if (counts) cuMemFree(counts);
     }
 };
@@ -1523,6 +1554,134 @@ static void run_device_column_grouped_count_i64_device_columns_optix_with_capaci
 static void release_device_grouped_count_i64_columns_optix(void* owner_handle)
 {
     delete reinterpret_cast<NativeDeviceGroupedCountI64ColumnsOwner*>(owner_handle);
+}
+
+static void run_device_column_grouped_count_i64_compact_device_columns_optix_with_capacity(
+        const RtdlDevicePayloadField* fields,
+        size_t field_count,
+        size_t row_count,
+        const RtdlColumnClause* clauses,
+        size_t clause_count,
+        const char* group_key_field,
+        size_t group_capacity,
+        RtdlNativeDeviceGroupedCountI64CompactColumns* columns_out)
+{
+    if (!columns_out) {
+        throw std::runtime_error("grouped-count compact device columns_out must not be null");
+    }
+    *columns_out = {};
+    columns_out->capacity = static_cast<uint64_t>(group_capacity);
+    columns_out->group_capacity = static_cast<uint64_t>(group_capacity);
+    columns_out->source_row_count = static_cast<uint64_t>(row_count);
+    CUdevice current_device = 0;
+    CU_CHECK(cuCtxGetDevice(&current_device));
+    columns_out->device_ordinal = static_cast<int32_t>(current_device);
+
+    columnar_validate_device_payload_grouped_i64_inputs(
+        fields, field_count, row_count, clauses, clause_count, group_key_field, nullptr, group_capacity);
+
+    const std::vector<DeviceColumnRuntimeField> runtime_fields =
+        columnar_make_device_runtime_fields(fields, field_count);
+    const std::vector<DeviceColumnRuntimeClause> runtime_clauses =
+        columnar_make_device_runtime_clauses(fields, field_count, clauses, clause_count);
+    const size_t group_index = columnar_device_payload_field_index_or_throw(fields, field_count, group_key_field);
+
+    ensure_device_column_grouped_i64_pipeline();
+
+    DevPtr d_fields(sizeof(DeviceColumnRuntimeField) * runtime_fields.size());
+    upload(d_fields.ptr, runtime_fields.data(), runtime_fields.size());
+    DevPtr d_clauses(sizeof(DeviceColumnRuntimeClause) * std::max<size_t>(runtime_clauses.size(), 1));
+    if (!runtime_clauses.empty()) {
+        upload(d_clauses.ptr, runtime_clauses.data(), runtime_clauses.size());
+    }
+    DevPtr d_invalid(sizeof(uint32_t));
+    DevPtr d_dense_counts(sizeof(unsigned long long) * group_capacity);
+    uint32_t zero32 = 0u;
+    upload(d_invalid.ptr, &zero32, 1);
+    CU_CHECK(cuMemsetD8(d_dense_counts.ptr, 0, sizeof(unsigned long long) * group_capacity));
+
+    const auto reduction_start = std::chrono::steady_clock::now();
+    if (row_count != 0) {
+        DeviceColumnGroupedI64Params params{};
+        params.fields = reinterpret_cast<const DeviceColumnRuntimeField*>(d_fields.ptr);
+        params.field_count = static_cast<uint32_t>(field_count);
+        params.row_count = static_cast<uint32_t>(row_count);
+        params.clauses = reinterpret_cast<const DeviceColumnRuntimeClause*>(d_clauses.ptr);
+        params.clause_count = static_cast<uint32_t>(clause_count);
+        params.group_field_index = static_cast<uint32_t>(group_index);
+        params.value_field_index = static_cast<uint32_t>(group_index);
+        params.operation = kDeviceColumnGroupedOpCount;
+        params.group_capacity = static_cast<uint32_t>(group_capacity);
+        params.group_counts = reinterpret_cast<unsigned long long*>(d_dense_counts.ptr);
+        params.group_sums = nullptr;
+        params.group_mins = nullptr;
+        params.group_maxs = nullptr;
+        params.invalid_group_count = reinterpret_cast<uint32_t*>(d_invalid.ptr);
+
+        void* args[] = {&params};
+        const unsigned int threads = 256;
+        const unsigned int blocks = static_cast<unsigned int>((row_count + threads - 1) / threads);
+        CU_CHECK(cuLaunchKernel(
+            g_device_column_grouped_i64.fn,
+            blocks, 1, 1,
+            threads, 1, 1,
+            0, nullptr, args, nullptr));
+        CU_CHECK(cuStreamSynchronize(nullptr));
+    }
+    const auto reduction_end = std::chrono::steady_clock::now();
+
+    uint32_t invalid_group_count = 0;
+    download(&invalid_group_count, d_invalid.ptr, 1);
+    columns_out->reduction_seconds = std::chrono::duration<double>(
+        reduction_end - reduction_start).count();
+    if (invalid_group_count != 0) {
+        columns_out->overflow = 1u;
+        return;
+    }
+
+    auto owner = std::make_unique<NativeDeviceGroupedCountI64CompactColumnsOwner>();
+    CU_CHECK(cuMemAlloc(&owner->group_keys, sizeof(long long) * group_capacity));
+    CU_CHECK(cuMemAlloc(&owner->counts, sizeof(long long) * group_capacity));
+    DevPtr d_row_count(sizeof(uint32_t));
+    CU_CHECK(cuMemsetD8(d_row_count.ptr, 0, sizeof(uint32_t)));
+
+    const auto compaction_start = std::chrono::steady_clock::now();
+    const unsigned int threads = 256;
+    const unsigned int compact_blocks = static_cast<unsigned int>((group_capacity + threads - 1) / threads);
+    uint32_t runtime_group_capacity = static_cast<uint32_t>(group_capacity);
+    void* compact_args[] = {
+        &d_dense_counts.ptr,
+        &runtime_group_capacity,
+        &owner->group_keys,
+        &owner->counts,
+        &d_row_count.ptr,
+    };
+    CU_CHECK(cuLaunchKernel(
+        g_device_column_grouped_i64.compact_count_columns_fn,
+        compact_blocks, 1, 1,
+        threads, 1, 1,
+        0, nullptr, compact_args, nullptr));
+    CU_CHECK(cuStreamSynchronize(nullptr));
+    const auto compaction_end = std::chrono::steady_clock::now();
+
+    uint32_t compact_row_count = 0;
+    download(&compact_row_count, d_row_count.ptr, 1);
+    if (compact_row_count > group_capacity) {
+        throw std::runtime_error("device-column grouped compact device output row count exceeded group_capacity");
+    }
+
+    columns_out->group_keys_device_ptr = static_cast<uint64_t>(owner->group_keys);
+    columns_out->counts_device_ptr = static_cast<uint64_t>(owner->counts);
+    columns_out->row_count = static_cast<uint64_t>(compact_row_count);
+    columns_out->overflow = 0u;
+    columns_out->compaction_seconds = std::chrono::duration<double>(
+        compaction_end - compaction_start).count();
+    columns_out->owner_handle = owner.release();
+}
+
+static void release_device_grouped_count_i64_compact_columns_optix(void* owner_handle)
+{
+    delete reinterpret_cast<NativeDeviceGroupedCountI64CompactColumnsOwner*>(owner_handle);
 }
 
 static void run_device_column_grouped_count_i64_optix(

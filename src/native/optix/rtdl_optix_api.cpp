@@ -5455,6 +5455,37 @@ extern "C" int rtdl_optix_release_device_grouped_count_i64_columns(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_columnar_device_payload_grouped_count_i64_compact_device_columns_with_capacity(
+        const RtdlDevicePayloadField* fields, size_t field_count,
+        size_t row_count,
+        const RtdlColumnClause* clauses, size_t clause_count,
+        const char* group_key_field,
+        size_t group_capacity,
+        RtdlNativeDeviceGroupedCountI64CompactColumns* columns_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_device_column_grouped_count_i64_compact_device_columns_optix_with_capacity(
+            fields,
+            field_count,
+            row_count,
+            clauses,
+            clause_count,
+            group_key_field,
+            group_capacity,
+            columns_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_release_device_grouped_count_i64_compact_columns(
+        void* owner_handle,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        release_device_grouped_count_i64_compact_columns_optix(owner_handle);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_columnar_device_payload_grouped_sum_i64(
         const RtdlDevicePayloadField* fields, size_t field_count,
         size_t row_count,
