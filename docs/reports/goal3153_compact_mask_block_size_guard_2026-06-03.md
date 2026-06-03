@@ -2,7 +2,7 @@
 
 Date: 2026-06-03
 
-Status: `complete_local_pending_pod`
+Status: `complete`
 
 ## Purpose
 
@@ -42,5 +42,12 @@ OK
 Pod validation:
 
 ```text
-pending
+Pod SSH: ssh root@69.30.85.131 -p 22063 -i id_ed25519_rtdl_codex
+GPU: NVIDIA A40
+Driver: 570.211.01
+Checkout: /root/rtdl_goal3151
+Commit: 327ab084c1d389e9c23562200a5fd9b58adc4de7
+Command: PYTHONPATH=src:. python3 -m unittest tests.goal3153_compact_mask_block_size_guard_test tests.goal3151_v2_8_benchmark_front_door_adoption_audit_test tests.goal3147_compact_mask_front_door_test tests.goal3111_v2_8_segmented_typed_stream_adapter_test tests.goal2999_triangle_counting_numba_compact_mask_wiring_test tests.goal3002_rayjoin_numba_compact_mask_wiring_test
+Ran 43 tests in 0.502s
+OK
 ```
