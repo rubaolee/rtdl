@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import unittest
 
@@ -7,6 +8,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 WORKLOADS = ROOT / "src" / "native" / "optix" / "rtdl_optix_workloads.cpp"
 REPORT = ROOT / "docs" / "reports" / "goal3187_segment_pair_candidate_chunked_append_2026-06-03.md"
+ARTIFACT = ROOT / "docs" / "reports" / "goal3187_pod_segment_pair_candidate_chunked_append_2026-06-03.json"
 
 
 class Goal3187SegmentPairCandidateChunkedAppendTest(unittest.TestCase):
@@ -45,6 +47,24 @@ class Goal3187SegmentPairCandidateChunkedAppendTest(unittest.TestCase):
             "release_authorized: False",
         ):
             self.assertIn(phrase, report)
+
+    def test_pod_artifact_records_refactor_evidence_boundary(self) -> None:
+        artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(artifact["commit"], "2822f71a")
+        self.assertEqual(artifact["focused_tests"]["status"], "ok")
+        self.assertEqual(artifact["focused_tests"]["tests_run"], 20)
+        self.assertTrue(artifact["evidence_boundary"]["chunked_loop_compiled"])
+        self.assertTrue(artifact["evidence_boundary"]["same_small_live_smoke_still_passes_after_chunked_refactor"])
+        self.assertFalse(artifact["evidence_boundary"]["greater_than_uint32_pair_space_live_case_proven"])
+
+        smoke = artifact["live_smoke"]
+        self.assertEqual(smoke["candidate_row_count"], 64)
+        self.assertFalse(smoke["overflow"])
+        self.assertTrue(smoke["device_resident"])
+
+        for value in artifact["claim_boundary"].values():
+            self.assertIs(value, False)
 
 
 if __name__ == "__main__":
