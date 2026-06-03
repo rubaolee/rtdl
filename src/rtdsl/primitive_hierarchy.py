@@ -654,12 +654,12 @@ PRIMITIVE_HIERARCHY = (
             ),
             PrimitiveHierarchyNode(
                 id="continuation.partner_resident",
-                title="Triton-first Partner Continuation",
+                title="Explicit Partner Continuation",
                 layer="continuation",
                 status="internal_substrate",
                 summary=(
-                    "Triton-first post-traversal continuation over RTDL buffer descriptors, "
-                    "with Numba fallback and legacy array adapters treated as compatibility surfaces."
+                    "Partner-selected post-traversal continuation over RTDL buffer descriptors. "
+                    "Partner roles are explicit metadata, not hidden routing or native-engine policy."
                 ),
                 outputs=("partner_owned_result",),
                 depends_on=("execution.partner_resident_handoff",),

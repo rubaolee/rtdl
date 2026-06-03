@@ -94,12 +94,13 @@ class Goal2676V25TritonPartnerPivotTest(unittest.TestCase):
         self.assertIn('"path": "partner_adapter_front_door"', source)
         self.assertIn('"adapter_front_door_integrated": True', source)
 
-    def test_primitive_hierarchy_records_triton_first_continuation(self):
+    def test_primitive_hierarchy_records_explicit_partner_continuation(self):
         node = rt.find_primitive_hierarchy_node("continuation.partner_resident")
         self.assertIsNotNone(node)
         assert node is not None
-        self.assertIn("Triton-first", node.title)
-        self.assertIn("Triton-first", node.summary)
+        self.assertIn("Explicit Partner", node.title)
+        self.assertIn("Partner-selected", node.summary)
+        self.assertIn("not hidden routing", node.summary)
         self.assertNotIn("NumPy/CuPy/PyTorch-style", node.summary)
 
     def test_benchmark_app_migration_plan_covers_ten_promoted_apps(self):
@@ -131,7 +132,7 @@ class Goal2676V25TritonPartnerPivotTest(unittest.TestCase):
         raydb = next(app for app in plan["apps"] if app["app_id"] == "raydb_style")
         self.assertEqual(
             raydb["v2_5_status"],
-            "primitive_first_after_goal2727_hit_stream_reserved_for_unfused_continuations",
+            "primitive_first_after_Goal2896_same_contract_perf_gate_hit_stream_reserved_for_unfused_continuations",
         )
         self.assertIn("segmented_count_i64", raydb["v2_5_required_operations"])
         self.assertIn("V2_5_TRITON_BENCHMARK_APP_PLANS", rt.__all__)
