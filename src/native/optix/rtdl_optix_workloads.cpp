@@ -5615,11 +5615,16 @@ static void count_prepared_point_closed_shape_membership_2d_optix(
     *count_out = exact_count;
 }
 
-static void run_shape_pair_relation_flags_with_prepared_right_optix(
+struct ShapePairRelationFlagComputation {
+    size_t left_count = 0;
+    size_t right_count = 0;
+    std::vector<GpuShapePairRelationFlags> flags;
+};
+
+static ShapePairRelationFlagComputation compute_shape_pair_relation_flags_with_prepared_right_optix(
         PreparedShapePairRelationBuild* prepared,
         const RtdlPolygonRef* left_polys,  size_t left_count,
-        const double* left_verts_xy,       size_t left_vert_xy_count,
-        RtdlShapePairRelationRow** rows_out, size_t* row_count_out)
+        const double* left_verts_xy,       size_t left_vert_xy_count)
 {
     if (!prepared) {
         throw std::runtime_error("prepared shape-pair relation handle must not be null");
@@ -5627,9 +5632,7 @@ static void run_shape_pair_relation_flags_with_prepared_right_optix(
     ensure_shape_pair_relation_pipeline();
     const size_t right_count = prepared->right_count;
     if (left_count == 0 || right_count == 0) {
-        *rows_out = nullptr;
-        *row_count_out = 0;
-        return;
+        return ShapePairRelationFlagComputation{left_count, right_count, {}};
     }
 
     size_t lv_count = left_vert_xy_count / 2;
@@ -5733,17 +5736,72 @@ static void run_shape_pair_relation_flags_with_prepared_right_optix(
         }
     }
 
-    auto* out = static_cast<RtdlShapePairRelationRow*>(std::malloc(sizeof(RtdlShapePairRelationRow) * out_count));
+    return ShapePairRelationFlagComputation{left_count, right_count, std::move(gpu_flags)};
+}
+
+static void run_shape_pair_relation_flags_with_prepared_right_optix(
+        PreparedShapePairRelationBuild* prepared,
+        const RtdlPolygonRef* left_polys,  size_t left_count,
+        const double* left_verts_xy,       size_t left_vert_xy_count,
+        RtdlShapePairRelationRow** rows_out, size_t* row_count_out)
+{
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    ShapePairRelationFlagComputation computed =
+        compute_shape_pair_relation_flags_with_prepared_right_optix(
+            prepared,
+            left_polys,
+            left_count,
+            left_verts_xy,
+            left_vert_xy_count);
+    const size_t out_count = computed.left_count * computed.right_count;
+    if (out_count == 0) {
+        return;
+    }
+
+    auto* out = static_cast<RtdlShapePairRelationRow*>(
+        std::malloc(sizeof(RtdlShapePairRelationRow) * out_count));
     if (!out) throw std::bad_alloc();
     for (size_t i = 0; i < out_count; ++i) {
-        size_t li = i / right_count, ri = i % right_count;
+        size_t li = i / computed.right_count, ri = i % computed.right_count;
         out[i].left_polygon_id  = left_polys[li].id;
         out[i].right_polygon_id = prepared->host_right_polygons[ri].id;
-        out[i].requires_segment_intersection     = gpu_flags[i].requires_segment_intersection;
-        out[i].requires_point_containment     = gpu_flags[i].requires_point_containment;
+        out[i].requires_segment_intersection = computed.flags[i].requires_segment_intersection;
+        out[i].requires_point_containment = computed.flags[i].requires_point_containment;
     }
     *rows_out      = out;
     *row_count_out = out_count;
+}
+
+static void count_shape_pair_relation_flags_with_prepared_right_optix(
+        PreparedShapePairRelationBuild* prepared,
+        const RtdlPolygonRef* left_polys,  size_t left_count,
+        const double* left_verts_xy,       size_t left_vert_xy_count,
+        size_t* active_count_out)
+{
+    if (!active_count_out) {
+        throw std::runtime_error("active count output pointer must not be null");
+    }
+    *active_count_out = 0;
+    ShapePairRelationFlagComputation computed =
+        compute_shape_pair_relation_flags_with_prepared_right_optix(
+            prepared,
+            left_polys,
+            left_count,
+            left_verts_xy,
+            left_vert_xy_count);
+
+    size_t active_count = 0;
+    for (const auto& flag : computed.flags) {
+        if (flag.requires_segment_intersection != 0u || flag.requires_point_containment != 0u) {
+            ++active_count;
+        }
+    }
+    *active_count_out = active_count;
 }
 
 static void run_shape_pair_relation_flags_optix(

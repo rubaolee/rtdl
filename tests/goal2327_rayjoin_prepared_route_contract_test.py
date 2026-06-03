@@ -28,6 +28,9 @@ class _FakePrepared:
     def count(self, _packed):
         return self.row_count
 
+    def count_active(self, _packed):
+        return self.row_count
+
     def run_raw(self, _packed, **_kwargs):
         return _FakeRawView(self.row_count)
 
@@ -116,7 +119,9 @@ class Goal2327RayJoinPreparedRouteContractTest(unittest.TestCase):
 
         self.assertEqual(payload["execution_route"], "prepared_optix")
         self.assertEqual(payload["row_count"], 11)
-        self.assertEqual(payload["summary"]["output_contract"], "overlay_pair_dependency_count")
+        self.assertEqual(payload["summary"]["output_contract"], "overlay_active_pair_dependency_count")
+        self.assertEqual(payload["summary"]["active_seed_count"], 11)
+        self.assertEqual(payload["native_phase_timings"]["native_count_mode"], "active_relation_flags")
         self.assertIn("query_pack_sec", payload["phases_sec"])
         self.assertIn("static_shape_pack_sec", payload["phases_sec"])
         self.assertIn("prepare_static_scene_sec", payload["phases_sec"])

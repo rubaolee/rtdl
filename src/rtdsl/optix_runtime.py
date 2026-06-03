@@ -1253,6 +1253,35 @@ class PreparedOptixShapePairRelation:
         finally:
             rows.close()
 
+    def count_active(self, left_polygons) -> int:
+        """Return the count of relation rows whose generic flags are active."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX shape-pair relation handle is closed")
+        left = left_polygons if isinstance(left_polygons, PackedPolygons) else pack_polygons(records=left_polygons)
+        count_symbol = _find_optional_backend_symbol(
+            self.library,
+            "rtdl_optix_count_prepared_shape_pair_relation_flags",
+        )
+        if count_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_count_prepared_shape_pair_relation_flags; rebuild the OptiX backend from current main"
+            )
+        active_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self.prepared_handle,
+            left.refs,
+            left.polygon_count,
+            left.vertices_xy,
+            left.vertex_xy_count,
+            ctypes.byref(active_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(active_count.value)
+
     def close(self) -> None:
         if not self._closed:
             destroy = _find_optional_backend_symbol(
@@ -16562,6 +16591,22 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_run_prepared_shape_pair_relation.restype = ctypes.c_int
+    optional_count_prepared_shape_pair_relation = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_count_prepared_shape_pair_relation_flags",
+    )
+    if optional_count_prepared_shape_pair_relation is not None:
+        optional_count_prepared_shape_pair_relation.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPolygonRef),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_count_prepared_shape_pair_relation.restype = ctypes.c_int
     optional_destroy_prepared_shape_pair_relation = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_destroy_prepared_shape_pair_relation_flags",

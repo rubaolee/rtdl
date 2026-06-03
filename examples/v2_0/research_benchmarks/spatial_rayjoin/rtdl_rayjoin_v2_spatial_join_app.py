@@ -254,23 +254,31 @@ def run_rayjoin_prepared_optix_workload(
             lambda: prepare_shape_pair_relation_flags_optix(packed_right),
         )
         try:
-            view = _phase_time(phases, "prepared_query_sec", lambda: prepared.run_raw(packed_left))
-            try:
-                row_count = int(view.row_count)
-                if include_rows and result_mode == "rows":
-                    rows = tuple(view.to_dict_rows())
-            finally:
-                view.close()
+            if result_mode == "count":
+                row_count = int(_phase_time(phases, "prepared_query_sec", lambda: prepared.count_active(packed_left)))
+            else:
+                view = _phase_time(phases, "prepared_query_sec", lambda: prepared.run_raw(packed_left))
+                try:
+                    row_count = int(view.row_count)
+                    if include_rows:
+                        rows = tuple(view.to_dict_rows())
+                finally:
+                    view.close()
             native_phase_timings = {
                 "native_row_count": row_count,
+                "native_count_mode": "active_relation_flags" if result_mode == "count" else "full_pair_dependency_rows",
                 "prepared_shape_pair_relation": True,
             }
         finally:
             prepared.close()
         summary = {
-            "pair_dependency_row_count": row_count,
+            (
+                "active_seed_count"
+                if result_mode == "count"
+                else "pair_dependency_row_count"
+            ): row_count,
             "output_contract": (
-                "overlay_pair_dependency_count"
+                "overlay_active_pair_dependency_count"
                 if result_mode == "count"
                 else "overlay_pair_dependency_rows_with_lsi_pip_flags"
             ),
