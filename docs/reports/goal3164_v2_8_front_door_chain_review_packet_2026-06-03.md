@@ -91,3 +91,12 @@ Ran 36 tests in 0.070s
 
 OK (skipped=3)
 ```
+
+Clean pod validation:
+
+```text
+POD_HEAD=3714ed34
+RUN_GOAL3164_FRONT_DOOR_PACKET
+Ran 13 tests in 1.277s
+OK
+```
