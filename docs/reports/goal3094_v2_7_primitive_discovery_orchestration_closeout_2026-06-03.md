@@ -4,6 +4,10 @@ Date: 2026-06-03
 
 Status: closeout packet; Claude review accepted; not a release packet.
 
+Postscript: this report is the historical closeout before Goal3099. At that
+time D-8 was correctly deferred. The current post-D-8 v2.7 status is recorded
+in `docs/reports/goal3102_v2_7_post_semantic_search_current_closeout_2026-06-03.md`.
+
 ## Purpose
 
 Goal3094 closes the main v2.7 primitive discovery and orchestration campaign
