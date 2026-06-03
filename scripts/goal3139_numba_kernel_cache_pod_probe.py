@@ -124,8 +124,26 @@ def _run_case(
         "steady_seconds": steady,
         "steady_median_seconds": median(steady),
         "partner_elapsed_seconds": partner_elapsed,
-        "metadata": metadata,
+        "metadata_summary": _json_safe(metadata),
     }
+
+
+def _json_safe(value: Any) -> Any:
+    if value is None or isinstance(value, (bool, int, float, str)):
+        return value
+    if isinstance(value, dict):
+        return {str(key): _json_safe(inner) for key, inner in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_safe(inner) for inner in value]
+    shape = getattr(value, "shape", None)
+    dtype = getattr(value, "dtype", None)
+    if shape is not None or dtype is not None:
+        return {
+            "object_type": value.__class__.__name__,
+            "shape": None if shape is None else tuple(int(dim) for dim in shape),
+            "dtype": None if dtype is None else str(dtype),
+        }
+    return repr(value)
 
 
 def main() -> None:
