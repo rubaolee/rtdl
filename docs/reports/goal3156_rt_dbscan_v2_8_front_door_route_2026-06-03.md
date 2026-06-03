@@ -56,4 +56,36 @@ $env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal3156_rt_dbscan_v2_8_front_d
 
 Result: 28 tests passed.
 
-Pod validation should run a focused RT-DBSCAN grouped-stream probe from a clean checkout to verify the app branch still produces matching signatures through the v2.8 front door.
+Pod validation on `root@69.30.85.131:22063` from clean `origin/main` checkout at commit `10ba8ff4`:
+
+```bash
+python -m unittest \
+  tests.goal3156_rt_dbscan_v2_8_front_door_route_test \
+  tests.goal3155_fixed_radius_graph_component_front_door_test \
+  tests.goal2457_generic_grouped_stream_continuation_implementation_test \
+  tests.goal2459_grouped_stream_threshold_capped_core_flags_test \
+  tests.goal2461_grouped_stream_self_query_device_path_test \
+  tests.goal2478_rt_dbscan_project_completion_test
+```
+
+Result: 28 tests passed.
+
+App-level tiny grouped-stream route probe:
+
+```json
+{
+  "front_door": "v2_8_fixed_radius_graph_component_continuation_3d",
+  "front_door_operation": "fixed_radius_graph_component_labels_3d",
+  "matches_reference": true,
+  "materializes_directed_adjacency_stream": false,
+  "materializes_neighbor_rows": false,
+  "mode": "optix_rt_core_grouped_stream_cupy_column_signature_3d",
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "rt_core_accelerated": true,
+  "signature_source": "partner_column_arrays_no_python_row_dicts",
+  "status": "pass",
+  "true_zero_copy_claim_authorized": false,
+  "v2_8_front_door_route": true
+}
+```
