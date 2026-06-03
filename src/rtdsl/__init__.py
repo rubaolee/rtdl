@@ -335,6 +335,8 @@ from .primitives import shape_pair_overlap_rows
 from .primitives import shape_set_similarity
 from .primitives import within_radius
 from .primitive_hierarchy import APP_OWNED_BOUNDARY_EXCLUSIONS
+from .primitive_hierarchy import PRIMITIVE_CAPABILITY_TAGS
+from .primitive_hierarchy import PRIMITIVE_DISCOVERY_VERSION
 from .primitive_hierarchy import PRIMITIVE_HIERARCHY
 from .primitive_hierarchy import PRIMITIVE_HIERARCHY_LAYER_ORDER
 from .primitive_hierarchy import PRIMITIVE_HIERARCHY_STATUSES
@@ -345,6 +347,11 @@ from .primitive_hierarchy import iter_primitive_hierarchy_nodes
 from .primitive_hierarchy import primitive_hierarchy
 from .primitive_hierarchy import primitive_layer_map
 from .primitive_hierarchy import validate_primitive_hierarchy
+from .primitive_discovery import PrimitiveDiscoveryMatch
+from .primitive_discovery import describe_primitive
+from .primitive_discovery import find_primitive
+from .primitive_discovery import lint_new_primitive
+from .primitive_discovery import primitive_index
 from .segmented_row_stream import CHUNKED_ROW_CONTINUATION_ALIAS
 from .segmented_row_stream import SEGMENTED_ROW_STREAM_CONTRACT
 from .segmented_row_stream import SEGMENTED_ROW_STREAM_CONTRACT_VERSION
@@ -1611,6 +1618,8 @@ __all__ = [
     "CuPyAdapter",
     "NumPyAdapter",
     "PyTorchAdapter",
+    "PRIMITIVE_CAPABILITY_TAGS",
+    "PRIMITIVE_DISCOVERY_VERSION",
     "RtdlDevicePointerHandoff",
     "RtdlPartnerProtocolContract",
     "RtdlOutputSpec",
@@ -1623,8 +1632,12 @@ __all__ = [
     "grouped_reduction_contract_metadata",
     "grouped_reduction_spec_from_columnar_plan",
     "find_primitive_hierarchy_node",
+    "describe_primitive",
+    "find_primitive",
     "iter_primitive_hierarchy_nodes",
+    "lint_new_primitive",
     "primitive_hierarchy",
+    "primitive_index",
     "primitive_layer_map",
     "validate_primitive_hierarchy",
     "CHUNKED_ROW_CONTINUATION_ALIAS",
@@ -2701,6 +2714,7 @@ __all__ = [
     "ExecutionPolicy",
     "ExecutionReport",
     "ExecutionResult",
+    "PrimitiveDiscoveryMatch",
     "hit_count",
     "intersections",
     "nearest",

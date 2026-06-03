@@ -26,6 +26,44 @@ PRIMITIVE_HIERARCHY_STATUSES = (
     "app_or_partner_code",
 )
 
+PRIMITIVE_CAPABILITY_TAGS = (
+    "intent:exists",
+    "intent:count",
+    "intent:nearest",
+    "intent:membership",
+    "intent:intersection",
+    "intent:components",
+    "intent:reduce",
+    "intent:topk",
+    "intent:collect_rows",
+    "intent:frontier",
+    "shape:generic",
+    "shape:fixed_radius",
+    "shape:closed_shape",
+    "shape:segment_pair",
+    "shape:ray_triangle",
+    "shape:aabb",
+    "shape:point_in_polygon",
+    "shape:aggregate_frontier",
+    "dim:2d",
+    "dim:3d",
+    "output:scalar",
+    "output:rows",
+    "output:grouped",
+    "output:mask",
+    "output:witness",
+    "output:columns",
+    "exactness:exact",
+    "exactness:approx",
+    "exactness:bounded",
+    "keying:none",
+    "keying:by_group_id",
+    "keying:by_query_id",
+    "keying:by_ray_id",
+)
+
+PRIMITIVE_DISCOVERY_VERSION = "rtdl.primitive_discovery.v1"
+
 APP_OWNED_BOUNDARY_EXCLUSIONS = (
     "DBSCAN cluster expansion",
     "robot pose/link sampling",
@@ -52,6 +90,14 @@ class PrimitiveHierarchyNode:
     depends_on: tuple[str, ...] = ()
     children: tuple["PrimitiveHierarchyNode", ...] = ()
     boundary: str = ""
+    capability_tags: tuple[str, ...] = ()
+    aliases: tuple[str, ...] = ()
+    intent_phrases: tuple[str, ...] = ()
+    reference_path: str = ""
+    backends: tuple[str, ...] = ()
+    partner_ops: tuple[str, ...] = ()
+    considered_alternatives: tuple[str, ...] = ()
+    distinct_from: str = ""
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -64,6 +110,14 @@ class PrimitiveHierarchyNode:
             "depends_on": self.depends_on,
             "children": tuple(child.to_dict() for child in self.children),
             "boundary": self.boundary,
+            "capability_tags": self.capability_tags,
+            "aliases": self.aliases,
+            "intent_phrases": self.intent_phrases,
+            "reference_path": self.reference_path,
+            "backends": self.backends,
+            "partner_ops": self.partner_ops,
+            "considered_alternatives": self.considered_alternatives,
+            "distinct_from": self.distinct_from,
         }
 
 
@@ -125,6 +179,14 @@ PRIMITIVE_HIERARCHY = (
                 summary="Existence of at least one hit between query geometry and prepared/build geometry.",
                 outputs=("hit_flag",),
                 depends_on=("execution.prepared_rt_state",),
+                capability_tags=("intent:exists", "shape:generic", "output:mask", "exactness:exact", "keying:none"),
+                aliases=("any_hit", "exists", "hit_exists", "has_hit", "boolean_hit"),
+                intent_phrases=(
+                    "does any query geometry hit prepared geometry",
+                    "return a boolean hit flag without materializing witness rows",
+                ),
+                reference_path="docs/features/ray_tri_anyhit/README.md",
+                backends=("cpu_python_reference", "cpu", "embree", "optix"),
             ),
             PrimitiveHierarchyNode(
                 id="traversal.closest_hit",
@@ -143,6 +205,14 @@ PRIMITIVE_HIERARCHY = (
                 summary="Count positive hit results without materializing full witness rows.",
                 outputs=("hit_count",),
                 depends_on=("traversal.any_hit",),
+                capability_tags=("intent:count", "shape:generic", "output:scalar", "exactness:exact", "keying:none"),
+                aliases=("count_hits", "hit_count", "count_positive_hits", "scalar_count"),
+                intent_phrases=(
+                    "count hits without returning every witness row",
+                    "compute a scalar hit count",
+                ),
+                reference_path="docs/features/ray_tri_hitcount/README.md",
+                backends=("cpu_python_reference", "cpu", "embree", "optix"),
             ),
             PrimitiveHierarchyNode(
                 id="traversal.aabb_index_query_2d",
@@ -190,6 +260,23 @@ PRIMITIVE_HIERARCHY = (
                 summary="Count nearby points within a radius and optionally return threshold/core flags.",
                 outputs=("count", "threshold_reached"),
                 depends_on=("execution.prepared_rt_state",),
+                capability_tags=(
+                    "intent:count",
+                    "shape:fixed_radius",
+                    "dim:2d",
+                    "dim:3d",
+                    "output:scalar",
+                    "output:mask",
+                    "exactness:exact",
+                    "keying:by_query_id",
+                ),
+                aliases=("fixed_radius_count", "within_radius_count", "neighbor_count", "density_count", "radius_threshold"),
+                intent_phrases=(
+                    "count points within a radius",
+                    "return neighbor counts and threshold flags per query point",
+                ),
+                reference_path="docs/features/fixed_radius_neighbors/README.md",
+                backends=("cpu_python_reference", "cpu", "embree", "optix"),
             ),
         ),
     ),
@@ -222,6 +309,22 @@ PRIMITIVE_HIERARCHY = (
                     "The engine emits only ray and primitive ids. Mapping primitive ids "
                     "to group keys, payload values, predicates, or app rows is app or partner code."
                 ),
+                capability_tags=(
+                    "intent:collect_rows",
+                    "shape:ray_triangle",
+                    "dim:3d",
+                    "output:rows",
+                    "output:witness",
+                    "exactness:bounded",
+                    "keying:by_ray_id",
+                ),
+                aliases=("ray_triangle_rows", "hit_stream", "witness_rows", "all_hit_rows"),
+                intent_phrases=(
+                    "emit bounded ray triangle hit rows",
+                    "collect ray id and primitive id witnesses for partner continuation",
+                ),
+                reference_path="docs/features/ray_tri_anyhit/README.md",
+                backends=("cpu_python_reference", "embree", "optix"),
             ),
             PrimitiveHierarchyNode(
                 id="rows.aabb_range_intersection_rows",
@@ -260,6 +363,24 @@ PRIMITIVE_HIERARCHY = (
                 summary="Neighbor candidate rows emitted by fixed-radius search paths.",
                 outputs=("query_id", "neighbor_id", "distance"),
                 depends_on=("traversal.fixed_radius_count_threshold",),
+                capability_tags=(
+                    "intent:collect_rows",
+                    "intent:nearest",
+                    "shape:fixed_radius",
+                    "dim:2d",
+                    "dim:3d",
+                    "output:rows",
+                    "output:witness",
+                    "exactness:bounded",
+                    "keying:by_query_id",
+                ),
+                aliases=("fixed_radius_rows", "neighbor_rows", "nearest_neighbor_rows", "radius_neighbors"),
+                intent_phrases=(
+                    "emit neighbor rows within a fixed radius",
+                    "return query neighbor distance rows for later ranking or reduction",
+                ),
+                reference_path="docs/features/fixed_radius_neighbors/README.md",
+                backends=("cpu_python_reference", "cpu", "embree", "optix"),
             ),
             PrimitiveHierarchyNode(
                 id="rows.aggregate_frontier_collect",
@@ -311,6 +432,22 @@ PRIMITIVE_HIERARCHY = (
                 summary="Collect up to K rows with exact fail-closed overflow semantics.",
                 outputs=("candidate_id_rows", "valid_count", "overflowed"),
                 depends_on=("rows.generic_candidate_rows", "execution.capacity_overflow_contract"),
+                capability_tags=(
+                    "intent:topk",
+                    "intent:collect_rows",
+                    "shape:generic",
+                    "output:rows",
+                    "output:witness",
+                    "exactness:bounded",
+                    "keying:none",
+                ),
+                aliases=("collect_k", "bounded_collect", "bounded_witness", "top_k_rows"),
+                intent_phrases=(
+                    "collect a bounded number of witness rows",
+                    "fail closed when exact bounded output overflows capacity",
+                ),
+                reference_path="docs/features/knn_rows/README.md",
+                backends=("cpu_python_reference", "cpu", "embree", "optix"),
             ),
             PrimitiveHierarchyNode(
                 id="materialization.prepared_output_buffers",
@@ -386,6 +523,23 @@ PRIMITIVE_HIERARCHY = (
                 summary="Per-group flags, counts, sums, minima, maxima, and fused stats.",
                 outputs=("grouped_rows",),
                 depends_on=("rows.generic_candidate_rows",),
+                capability_tags=(
+                    "intent:reduce",
+                    "intent:count",
+                    "shape:generic",
+                    "output:grouped",
+                    "output:scalar",
+                    "exactness:exact",
+                    "keying:by_group_id",
+                ),
+                aliases=("grouped_reduction", "group_by", "group_count", "group_sum", "segmented_reduction"),
+                intent_phrases=(
+                    "reduce rows per group id",
+                    "compute grouped count sum min max or stats",
+                ),
+                reference_path="docs/features/reduce_rows/README.md",
+                backends=("cpu_python_reference", "cpu", "optix"),
+                partner_ops=("segmented_count_i64", "segmented_sum_f64", "grouped_argmin_f64"),
                 children=(
                     PrimitiveHierarchyNode(
                         id="reduction.group_any",
@@ -444,6 +598,27 @@ PRIMITIVE_HIERARCHY = (
                         outputs=("group_id", "count", "sum", "min", "max"),
                         depends_on=("traversal.any_hit", "reduction.grouped"),
                         boundary="Query encoding and group/value semantics remain app code.",
+                        capability_tags=(
+                            "intent:reduce",
+                            "intent:count",
+                            "shape:ray_triangle",
+                            "dim:3d",
+                            "output:grouped",
+                            "exactness:exact",
+                            "keying:by_group_id",
+                        ),
+                        aliases=("ray_triangle_grouped_reduction", "primitive_grouped_reduction", "grouped_i64_reduction"),
+                        intent_phrases=(
+                            "reduce ray triangle primitive hits by caller supplied group id",
+                            "count or sum primitive payloads per group after ray triangle traversal",
+                        ),
+                        reference_path="examples/v2_0/research_benchmarks/raydb_style/README.md",
+                        backends=("cpu_python_reference", "optix"),
+                        considered_alternatives=("traversal.count_hits", "reduction.grouped", "rows.ray_triangle_hit_stream_3d"),
+                        distinct_from=(
+                            "Combines ray/triangle traversal with caller-supplied primitive group ids; "
+                            "plain grouped reductions do not perform traversal and count_hits is not keyed."
+                        ),
                     ),
                 ),
             ),
@@ -500,6 +675,21 @@ PRIMITIVE_HIERARCHY = (
                 ),
                 outputs=("row_pages", "continuation_state"),
                 depends_on=("rows.generic_candidate_rows", "execution.capacity_overflow_contract"),
+                capability_tags=(
+                    "intent:collect_rows",
+                    "shape:generic",
+                    "output:rows",
+                    "output:columns",
+                    "exactness:bounded",
+                    "keying:by_query_id",
+                ),
+                aliases=("segmented_rows", "chunked_rows", "paged_rows", "streaming_rows"),
+                intent_phrases=(
+                    "page large row streams with deterministic continuation tokens",
+                    "avoid all at once materialization of large generic row outputs",
+                ),
+                reference_path="docs/rtdl_primitive_catalog.md",
+                backends=("cpu_python_reference", "cpu", "embree", "optix"),
             ),
             PrimitiveHierarchyNode(
                 id="continuation.ranked_summary",
@@ -509,6 +699,31 @@ PRIMITIVE_HIERARCHY = (
                 summary="Summarize candidate quality or bounded nearest/ranked rows without owning app policy.",
                 outputs=("ranked_summary",),
                 depends_on=("rows.fixed_radius_neighbor_rows", "reduction.scalar"),
+                capability_tags=(
+                    "intent:nearest",
+                    "intent:topk",
+                    "intent:reduce",
+                    "shape:fixed_radius",
+                    "dim:2d",
+                    "dim:3d",
+                    "output:grouped",
+                    "output:scalar",
+                    "exactness:bounded",
+                    "keying:by_query_id",
+                ),
+                aliases=("ranked_summary", "top_k_summary", "nearest_ranked", "candidate_quality"),
+                intent_phrases=(
+                    "summarize nearest candidate quality by query id",
+                    "compute bounded ranked nearest summaries from fixed radius rows",
+                ),
+                reference_path="docs/features/knn_rows/README.md",
+                backends=("cpu_python_reference", "cpu", "embree", "optix"),
+                partner_ops=("grouped_argmin_f64", "grouped_topk_f64"),
+                considered_alternatives=("rows.fixed_radius_neighbor_rows", "materialization.collect_k_bounded"),
+                distinct_from=(
+                    "Summarizes already emitted fixed-radius rows; it does not own traversal or "
+                    "materialize full witness rows like collect_k_bounded."
+                ),
             ),
         ),
     ),
@@ -607,6 +822,16 @@ def validate_primitive_hierarchy() -> dict[str, object]:
     id_set = set(ids)
     unknown_layers = tuple(sorted({node.layer for node in nodes if node.layer not in PRIMITIVE_HIERARCHY_LAYER_ORDER}))
     unknown_statuses = tuple(sorted({node.status for node in nodes if node.status not in PRIMITIVE_HIERARCHY_STATUSES}))
+    unknown_capability_tags = tuple(
+        sorted(
+            {
+                tag
+                for node in nodes
+                for tag in node.capability_tags
+                if tag not in PRIMITIVE_CAPABILITY_TAGS
+            }
+        )
+    )
     missing_dependencies = tuple(
         sorted(
             {
@@ -630,12 +855,20 @@ def validate_primitive_hierarchy() -> dict[str, object]:
                 backward_dependencies.append((node.id, dependency_id))
     return {
         "version": PRIMITIVE_HIERARCHY_VERSION,
-        "valid": not duplicate_ids and not unknown_layers and not unknown_statuses and not missing_dependencies and not backward_dependencies,
+        "valid": (
+            not duplicate_ids
+            and not unknown_layers
+            and not unknown_statuses
+            and not unknown_capability_tags
+            and not missing_dependencies
+            and not backward_dependencies
+        ),
         "node_count": len(nodes),
         "layer_order": PRIMITIVE_HIERARCHY_LAYER_ORDER,
         "duplicate_ids": duplicate_ids,
         "unknown_layers": unknown_layers,
         "unknown_statuses": unknown_statuses,
+        "unknown_capability_tags": unknown_capability_tags,
         "missing_dependencies": missing_dependencies,
         "backward_dependencies": tuple(backward_dependencies),
         "app_owned_boundary_exclusions": APP_OWNED_BOUNDARY_EXCLUSIONS,
@@ -644,6 +877,8 @@ def validate_primitive_hierarchy() -> dict[str, object]:
 
 __all__ = [
     "APP_OWNED_BOUNDARY_EXCLUSIONS",
+    "PRIMITIVE_CAPABILITY_TAGS",
+    "PRIMITIVE_DISCOVERY_VERSION",
     "PRIMITIVE_HIERARCHY",
     "PRIMITIVE_HIERARCHY_LAYER_ORDER",
     "PRIMITIVE_HIERARCHY_STATUSES",

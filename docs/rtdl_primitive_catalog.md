@@ -52,6 +52,23 @@ rtdsl.primitive_layer_map()
 rtdsl.validate_primitive_hierarchy()
 ```
 
+For v2.7 discovery work, the same node data also carries a metadata overlay
+for user-intent search. The hierarchy remains the governance/dependency source
+of truth; the discovery API is only an index over those nodes:
+
+```python
+rtdsl.primitive_index()
+rtdsl.find_primitive(intent="count", shape="fixed_radius", dim="3d")
+rtdsl.describe_primitive("traversal.fixed_radius_count_threshold")
+rtdsl.lint_new_primitive(candidate_node)
+```
+
+Discovery facets use the controlled families `intent:*`, `shape:*`, `dim:*`,
+`output:*`, `exactness:*`, and `keying:*`. New promoted primitives that overlap
+an existing primitive's key facets must record `considered_alternatives` and
+`distinct_from`; otherwise the duplicate gate fails closed. This keeps the
+catalog searchable without turning RTDL into an app-shaped library.
+
 Approved layer order:
 
 ```text
