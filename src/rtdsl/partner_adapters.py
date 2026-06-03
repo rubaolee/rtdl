@@ -1860,10 +1860,11 @@ def _segment_ray_columns(segments: tuple[_CanonicalSegment, ...], partner: dict)
 def _point_columns(points, partner: dict) -> dict[str, object]:
     device = partner["device"]
     rows = tuple(points)
+    id_dtype = partner["int64"] if partner["name"] == "numba" else partner["uint32"]
     columns = {
         "ids": partner["tensor"](
             [_require_uint32_id(point.id, "point") for point in rows],
-            partner["uint32"],
+            id_dtype,
             device,
         ),
         "x": partner["tensor"]([point.x for point in rows], partner["float64"], device),
@@ -1874,8 +1875,38 @@ def _point_columns(points, partner: dict) -> dict[str, object]:
     return columns
 
 
+def _numba_runtime_for_point_columns() -> dict[str, object]:
+    try:
+        import _numba_cuda_redirector  # noqa: F401
+    except ImportError:
+        pass
+    import numpy as np
+    from numba import cuda
+
+    if not cuda.is_available():
+        raise RuntimeError("Numba partner adapter requires numba.cuda to be available")
+
+    return {
+        "name": "numba",
+        "module": cuda,
+        "device": None,
+        "uint32": np.uint32,
+        "int64": np.int64,
+        "float64": np.float64,
+        "float32": np.float32,
+        "tensor": lambda values, dtype, device: cuda.to_device(np.asarray(values, dtype=dtype)),
+        "zeros": lambda shape, dtype, device: cuda.to_device(np.zeros(shape, dtype=dtype)),
+        "sync": cuda.synchronize,
+        "to_host": lambda value: [int(item) for item in np.asarray(value.copy_to_host()).tolist()],
+        "to_host_float": lambda value: [float(item) for item in np.asarray(value.copy_to_host()).tolist()],
+        "slice": lambda value, count: value[: int(count)],
+    }
+
+
 def point_rows_to_partner_columns(points, *, partner: str = "torch") -> dict[str, object]:
     """Convert point rows into partner-owned generic point columns."""
+    if partner == "numba":
+        return _point_columns(tuple(points), _numba_runtime_for_point_columns())
     runtime = _partner_module(partner)
     return _point_columns(tuple(points), runtime)
 
@@ -3238,6 +3269,126 @@ def group_argmin_then_global_argmax_partner_columns(
     raise ValueError("partner must be 'triton', 'torch', or 'numba'")
 
 
+def _directed_hausdorff_2d_numba_partner_columns(
+    source_point_columns: dict[str, object],
+    target_point_columns: dict[str, object],
+    *,
+    source_count: int,
+    target_count: int,
+    numba_strategy: str,
+    numba_block_size: int,
+    materialize_nearest_distances: bool,
+    return_metadata: bool,
+) -> dict[str, object]:
+    if numba_strategy == "dense_score_rows":
+        score_rows = pairwise_l2_sq_score_rows_2d_partner_columns(
+            source_point_columns,
+            target_point_columns,
+            partner="numba",
+            return_metadata=True,
+        )
+    elif numba_strategy == "block_nearest_rows":
+        score_rows = pairwise_l2_sq_block_nearest_rows_2d_partner_columns(
+            source_point_columns,
+            target_point_columns,
+            partner="numba",
+            block_size=numba_block_size,
+            return_metadata=True,
+        )
+    else:
+        raise ValueError("numba_strategy must be 'dense_score_rows' or 'block_nearest_rows'")
+
+    witness = group_argmin_then_global_argmax_partner_columns(
+        score_rows["columns"],
+        group_count=source_count,
+        partner="numba",
+        numba_known_dense_groups=True,
+        numba_validate_group_ids=False,
+        numba_validate_nan_scores=False,
+        return_metadata=True,
+    )
+    columns = witness["columns"]
+    sqrt_result = None
+    if materialize_nearest_distances:
+        from .numba_partner_continuation import run_numba_sqrt_f64
+
+        sqrt_result = run_numba_sqrt_f64(columns["argmin_scores"])
+    source_index_i = int(witness["metadata"]["winner_group_id"])
+    winner_score = float(witness["metadata"]["winner_score"])
+    source_id = int(source_point_columns["ids"].copy_to_host()[source_index_i])
+    target_id = int(witness["metadata"]["winner_item_id"])
+    output_columns = {
+        "source_ids": source_point_columns["ids"],
+        "nearest_target_ids": columns["argmin_item_ids"],
+        "nearest_distance_sq": columns["argmin_scores"],
+    }
+    if sqrt_result is not None:
+        output_columns["nearest_distances"] = sqrt_result["outputs"]["sqrt_values"]
+    score_metadata = score_rows["metadata"]
+    witness_metadata = witness["metadata"]
+    score_operation = str(score_metadata["operation"])
+    metadata = {
+        "adapter": "directed_hausdorff_2d_partner_columns",
+        "partner": "numba",
+        "input_contract": "caller_supplied_partner_device_point_columns",
+        "partner_reference_contract": "generic_exact_directed_hausdorff_2d",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "source_count": source_count,
+        "target_count": target_count,
+        "source_id": source_id,
+        "target_id": target_id,
+        "distance": math.sqrt(winner_score),
+        "distance_sq": winner_score,
+        "app_distance_materialization": (
+            "partner_gpu_bounded_tile_score_rows_then_generic_min_max"
+            if numba_strategy == "block_nearest_rows"
+            else "partner_gpu_dense_score_rows_then_generic_min_max"
+        ),
+        "app_distance_host_materialization": False,
+        "numba_strategy": numba_strategy,
+        "numba_block_size": int(numba_block_size),
+        "v2_8_partner_continuation_operations": (
+            score_operation,
+            "grouped_argmin_f64",
+            "grouped_argmax_f64",
+            "sqrt_f64",
+        ),
+        "v2_8_numba_preview_kernel_status": "preview_not_promoted",
+        "numba_score_row_operation": score_operation,
+        "numba_score_row_count": int(score_metadata["row_count"]),
+        "numba_logical_pair_count": int(score_metadata.get("logical_pair_count", score_metadata["row_count"])),
+        "numba_pairwise_elapsed_seconds": float(
+            score_metadata.get(
+                "numba_pairwise_block_nearest_rows_elapsed_seconds",
+                score_metadata.get("numba_pairwise_score_rows_elapsed_seconds", 0.0),
+            )
+        ),
+        "numba_grouped_argmin_elapsed_seconds": witness_metadata["numba_grouped_argmin_elapsed_seconds"],
+        "numba_grouped_argmax_elapsed_seconds": witness_metadata["numba_grouped_argmax_elapsed_seconds"],
+        "numba_sqrt_elapsed_seconds": float(
+            sqrt_result["phase_timing"]["phases_sec"]["partner_continuation"]
+        )
+        if sqrt_result is not None
+        else None,
+        "nearest_distance_column_materialized": sqrt_result is not None,
+        "numba_known_dense_groups": witness_metadata["numba_known_dense_groups"],
+        "host_present_group_compaction_used": witness_metadata["host_present_group_compaction_used"],
+        "nan_validation_host_sync_used": witness_metadata["nan_validation_host_sync_used"],
+        "host_score_row_materialization_used": False,
+        "score_rows_generated_on_partner_device": True,
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "v2_5_release_authorized": False,
+        "v2_8_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+    }
+    if return_metadata:
+        return {"columns": output_columns, "metadata": metadata}
+    return output_columns
+
+
 def directed_hausdorff_2d_partner_columns(
     source_point_columns: dict[str, object],
     target_point_columns: dict[str, object],
@@ -3245,15 +3396,29 @@ def directed_hausdorff_2d_partner_columns(
     partner: str = "torch",
     triton_strategy: str = "generic_score_rows",
     triton_candidate_block_size: int = 1024,
+    numba_strategy: str = "block_nearest_rows",
+    numba_block_size: int = 256,
+    materialize_nearest_distances: bool = True,
     return_metadata: bool = False,
 ):
     """Compute exact directed Hausdorff distance from generic point columns."""
-    runtime = _partner_module(partner)
     source_count = _column_length(source_point_columns, "ids")
     target_count = _column_length(target_point_columns, "ids")
     if source_count <= 0 or target_count <= 0:
         raise ValueError("directed Hausdorff requires non-empty source and target columns")
+    if partner == "numba":
+        return _directed_hausdorff_2d_numba_partner_columns(
+            source_point_columns,
+            target_point_columns,
+            source_count=source_count,
+            target_count=target_count,
+            numba_strategy=str(numba_strategy),
+            numba_block_size=int(numba_block_size),
+            materialize_nearest_distances=bool(materialize_nearest_distances),
+            return_metadata=return_metadata,
+        )
 
+    runtime = _partner_module(partner)
     triton_strategy = str(triton_strategy)
 
     if runtime["name"] == "triton":
@@ -3427,7 +3592,7 @@ def directed_hausdorff_2d_partner_columns(
         nearest_target_ids = target_point_columns["ids"][nearest_indices]
         triton_witness_metadata = None
     else:
-        raise ValueError("partner must be 'triton', 'torch', or 'cupy'")
+        raise ValueError("partner must be 'triton', 'torch', 'cupy', or 'numba'")
 
     runtime["sync"]()
     columns = {

@@ -287,10 +287,11 @@ def _run_partner_exact_directed(
         source_columns,
         target_columns,
         partner=partner,
+        materialize_nearest_distances=partner != "numba",
         return_metadata=True,
     )
     metadata = result["metadata"]
-    return {
+    summary = {
         "label": label,
         "distance": float(metadata["distance"]),
         "source_id": int(metadata["source_id"]),
@@ -298,6 +299,22 @@ def _run_partner_exact_directed(
         "row_count": int(metadata["source_count"]),
         "partner_reference_contract": metadata["partner_reference_contract"],
     }
+    for key in (
+        "numba_strategy",
+        "numba_score_row_operation",
+        "numba_score_row_count",
+        "numba_logical_pair_count",
+        "v2_8_partner_continuation_operations",
+        "host_score_row_materialization_used",
+        "score_rows_generated_on_partner_device",
+        "nearest_distance_column_materialized",
+        "host_present_group_compaction_used",
+        "nan_validation_host_sync_used",
+        "native_engine_row_contract",
+    ):
+        if key in metadata:
+            summary[key] = metadata[key]
+    return summary
 
 
 def _run_partner_numpy_exact_directed(
@@ -524,8 +541,8 @@ def run_app(
         raise ValueError("embree_result_mode must be 'rows' or 'directed_summary'")
     if optix_summary_mode not in {"rows", "directed_threshold_prepared"}:
         raise ValueError("optix_summary_mode must be 'rows' or 'directed_threshold_prepared'")
-    if backend == "partner_exact" and partner not in {"torch", "cupy"}:
-        raise ValueError("partner must be 'torch' or 'cupy'")
+    if backend == "partner_exact" and partner not in {"torch", "cupy", "numba"}:
+        raise ValueError("partner must be 'torch', 'cupy', or 'numba'")
     if hausdorff_threshold < 0:
         raise ValueError("hausdorff_threshold must be non-negative")
     _enforce_rt_core_requirement(backend, optix_summary_mode, require_rt_core)
@@ -578,7 +595,22 @@ def run_app(
             "native_continuation_backend": "none",
             "rt_core_accelerated": False,
             "partner_reference_contract": "generic_exact_directed_hausdorff_2d",
+            "host_score_row_materialization_used": directed_ab.get("host_score_row_materialization_used")
+            if partner == "numba"
+            else None,
+            "score_rows_generated_on_partner_device": directed_ab.get("score_rows_generated_on_partner_device")
+            if partner == "numba"
+            else None,
+            "numba_strategy": directed_ab.get("numba_strategy") if partner == "numba" else None,
             "run_phases": run_phases,
+            "claim_boundary": {
+                "v2_8_release_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "numba_speedup_claim_authorized": False,
+                "rt_core_speedup_claim_authorized": False,
+                "whole_app_speedup_claim_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+            },
         }
 
     if backend == "partner_numpy_exact":
@@ -951,7 +983,7 @@ def main(argv: list[str] | None = None) -> int:
         ),
         default="cpu_python_reference",
     )
-    parser.add_argument("--partner", choices=("torch", "cupy"), default="cupy")
+    parser.add_argument("--partner", choices=("torch", "cupy", "numba"), default="cupy")
     parser.add_argument("--copies", type=int, default=1, help="tile the small authored point sets")
     parser.add_argument(
         "--embree-result-mode",

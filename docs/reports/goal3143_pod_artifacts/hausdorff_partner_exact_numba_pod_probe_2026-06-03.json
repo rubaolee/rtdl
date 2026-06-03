@@ -1,0 +1,163 @@
+{
+  "all_match": true,
+  "claim_boundary": {
+    "numba_speedup_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v2_8_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "commit": "dbea3147",
+  "goal": "Goal3143",
+  "gpu": "NVIDIA RTX 4000 Ada Generation",
+  "platform": "Linux-6.14.0-29-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3",
+  "rows": [
+    {
+      "claim_boundary": {
+        "numba_speedup_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "v2_8_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "copies": 256,
+      "elapsed_sec": 0.012994611635804176,
+      "hausdorff_distance": 0.30000000000000004,
+      "host_score_row_materialization_used": false,
+      "logical_pair_count": 1048576,
+      "matches_oracle": true,
+      "mode": "partner_exact_numba",
+      "numba_strategy": "block_nearest_rows",
+      "points_a": 1024,
+      "points_b": 1024,
+      "rt_core_accelerated": false,
+      "score_row_count": 4096,
+      "score_row_operation": "pairwise_l2_sq_block_nearest_rows_2d",
+      "score_rows_generated_on_partner_device": true
+    },
+    {
+      "claim_boundary": {
+        "numba_speedup_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "v2_6_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "copies": 256,
+      "elapsed_sec": 0.012141808867454529,
+      "hausdorff_distance": 0.30000000000000004,
+      "host_score_row_materialization_used": false,
+      "logical_pair_count": 1048576,
+      "matches_oracle": true,
+      "mode": "partner_numba_block_nearest_exact",
+      "numba_strategy": null,
+      "points_a": 1024,
+      "points_b": 1024,
+      "rt_core_accelerated": false,
+      "score_row_count": 4096,
+      "score_row_operation": "pairwise_l2_sq_block_nearest_rows_2d",
+      "score_rows_generated_on_partner_device": true
+    },
+    {
+      "claim_boundary": {
+        "numba_speedup_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "v2_8_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "copies": 1024,
+      "elapsed_sec": 0.024969041347503662,
+      "hausdorff_distance": 0.30000000000000004,
+      "host_score_row_materialization_used": false,
+      "logical_pair_count": 16777216,
+      "matches_oracle": true,
+      "mode": "partner_exact_numba",
+      "numba_strategy": "block_nearest_rows",
+      "points_a": 4096,
+      "points_b": 4096,
+      "rt_core_accelerated": false,
+      "score_row_count": 65536,
+      "score_row_operation": "pairwise_l2_sq_block_nearest_rows_2d",
+      "score_rows_generated_on_partner_device": true
+    },
+    {
+      "claim_boundary": {
+        "numba_speedup_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "v2_6_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "copies": 1024,
+      "elapsed_sec": 0.02296867687255144,
+      "hausdorff_distance": 0.30000000000000004,
+      "host_score_row_materialization_used": false,
+      "logical_pair_count": 16777216,
+      "matches_oracle": true,
+      "mode": "partner_numba_block_nearest_exact",
+      "numba_strategy": null,
+      "points_a": 4096,
+      "points_b": 4096,
+      "rt_core_accelerated": false,
+      "score_row_count": 65536,
+      "score_row_operation": "pairwise_l2_sq_block_nearest_rows_2d",
+      "score_rows_generated_on_partner_device": true
+    },
+    {
+      "claim_boundary": {
+        "numba_speedup_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "v2_8_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "copies": 2048,
+      "elapsed_sec": 0.044528535567224026,
+      "hausdorff_distance": 0.30000000000000004,
+      "host_score_row_materialization_used": false,
+      "logical_pair_count": 67108864,
+      "matches_oracle": true,
+      "mode": "partner_exact_numba",
+      "numba_strategy": "block_nearest_rows",
+      "points_a": 8192,
+      "points_b": 8192,
+      "rt_core_accelerated": false,
+      "score_row_count": 262144,
+      "score_row_operation": "pairwise_l2_sq_block_nearest_rows_2d",
+      "score_rows_generated_on_partner_device": true
+    },
+    {
+      "claim_boundary": {
+        "numba_speedup_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "v2_6_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "copies": 2048,
+      "elapsed_sec": 0.08593312930315733,
+      "hausdorff_distance": 0.30000000000000004,
+      "host_score_row_materialization_used": false,
+      "logical_pair_count": 67108864,
+      "matches_oracle": true,
+      "mode": "partner_numba_block_nearest_exact",
+      "numba_strategy": null,
+      "points_a": 8192,
+      "points_b": 8192,
+      "rt_core_accelerated": false,
+      "score_row_count": 262144,
+      "score_row_operation": "pairwise_l2_sq_block_nearest_rows_2d",
+      "score_rows_generated_on_partner_device": true
+    }
+  ],
+  "warmup_copies": 64
+}

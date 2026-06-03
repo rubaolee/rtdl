@@ -104,6 +104,7 @@ from .numba_partner_continuation import NUMBA_SEGMENTED_COUNT_I64_OPERATION
 from .numba_partner_continuation import NUMBA_SEGMENTED_MAX_F64_OPERATION
 from .numba_partner_continuation import NUMBA_SEGMENTED_MIN_F64_OPERATION
 from .numba_partner_continuation import NUMBA_SEGMENTED_SUM_F64_OPERATION
+from .numba_partner_continuation import NUMBA_SQRT_F64_OPERATION
 from .numba_partner_continuation import describe_numba_compact_mask_i64
 from .numba_partner_continuation import describe_numba_global_argmax_u32_f64
 from .numba_partner_continuation import describe_numba_grouped_argmax_f64
@@ -114,6 +115,7 @@ from .numba_partner_continuation import describe_numba_segmented_count_i64
 from .numba_partner_continuation import describe_numba_segmented_max_f64
 from .numba_partner_continuation import describe_numba_segmented_min_f64
 from .numba_partner_continuation import describe_numba_segmented_sum_f64
+from .numba_partner_continuation import describe_numba_sqrt_f64
 from .numba_partner_continuation import numba_partner_available
 from .numba_partner_continuation import run_numba_global_argmax_u32_f64
 from .numba_partner_continuation import run_numba_grouped_argmax_f64
@@ -124,6 +126,7 @@ from .numba_partner_continuation import run_numba_segmented_count_i64
 from .numba_partner_continuation import run_numba_segmented_max_f64
 from .numba_partner_continuation import run_numba_segmented_min_f64
 from .numba_partner_continuation import run_numba_segmented_sum_f64
+from .numba_partner_continuation import run_numba_sqrt_f64
 from .numba_partner_continuation import run_numba_compact_mask_i64
 from .numba_partner_continuation import run_numba_mask_indices_i64
 from .triton_partner_continuation import TRITON_PARTNER_CONTINUATION_STATUS
@@ -1831,6 +1834,7 @@ __all__ = [
     "NUMBA_SEGMENTED_MAX_F64_OPERATION",
     "NUMBA_SEGMENTED_MIN_F64_OPERATION",
     "NUMBA_SEGMENTED_SUM_F64_OPERATION",
+    "NUMBA_SQRT_F64_OPERATION",
     "describe_numba_compact_mask_i64",
     "describe_numba_global_argmax_u32_f64",
     "describe_numba_grouped_argmax_f64",
@@ -1841,6 +1845,7 @@ __all__ = [
     "describe_numba_segmented_max_f64",
     "describe_numba_segmented_min_f64",
     "describe_numba_segmented_sum_f64",
+    "describe_numba_sqrt_f64",
     "numba_partner_available",
     "run_numba_global_argmax_u32_f64",
     "run_numba_grouped_argmax_f64",
@@ -1851,6 +1856,7 @@ __all__ = [
     "run_numba_segmented_max_f64",
     "run_numba_segmented_min_f64",
     "run_numba_segmented_sum_f64",
+    "run_numba_sqrt_f64",
     "run_numba_compact_mask_i64",
     "run_numba_mask_indices_i64",
     "TRITON_PARTNER_CONTINUATION_STATUS",

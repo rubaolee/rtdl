@@ -19,6 +19,7 @@ NUMBA_GROUPED_ARGMAX_F64_OPERATION = "grouped_argmax_f64"
 NUMBA_GLOBAL_ARGMAX_U32_F64_OPERATION = "global_argmax_u32_f64"
 NUMBA_PAIRWISE_L2_SQ_SCORE_ROWS_2D_OPERATION = "pairwise_l2_sq_score_rows_2d"
 NUMBA_PAIRWISE_L2_SQ_BLOCK_NEAREST_ROWS_2D_OPERATION = "pairwise_l2_sq_block_nearest_rows_2d"
+NUMBA_SQRT_F64_OPERATION = "sqrt_f64"
 NUMBA_PARTNER_CONTINUATION_STATUS = V2_5_STATUS_PREVIEW_NOT_PROMOTED
 NUMBA_GROUP_ID_VALIDATION_MODE = "device_resident_error_flag"
 _NUMBA_KERNEL_CACHE: dict[tuple[int, str], Any] = {}
@@ -142,6 +143,15 @@ def describe_numba_pairwise_l2_sq_block_nearest_rows_2d() -> dict[str, object]:
     descriptor["tie_break"] = "lowest_score_then_lowest_item_id_per_source_tile"
     descriptor["host_score_row_materialization_used"] = False
     descriptor["bounded_tile_summary_rows"] = True
+    return descriptor
+
+
+def describe_numba_sqrt_f64() -> dict[str, object]:
+    descriptor = _base_numba_descriptor(NUMBA_SQRT_F64_OPERATION)
+    descriptor["input_columns"] = ("values:float64",)
+    descriptor["output_columns"] = ("sqrt_values:float64",)
+    descriptor["elementwise_transform"] = True
+    descriptor["host_column_materialization_used"] = False
     return descriptor
 
 
@@ -603,6 +613,42 @@ def run_numba_pairwise_l2_sq_block_nearest_rows_2d(
             "host_score_row_materialization_used": False,
             "score_rows_generated_on_partner_device": True,
             "bounded_tile_summary_rows": True,
+        },
+    )
+
+
+def run_numba_sqrt_f64(
+    values: Any,
+    *,
+    block_size: int = 256,
+) -> dict[str, object]:
+    """Run a generic elementwise sqrt over a float64 CUDA column."""
+
+    cuda, np = _import_numba_stack()
+    _validate_numba_cuda_vector(values, name="values", dtype=np.float64)
+    row_count = int(values.shape[0])
+    block_size = int(block_size)
+    if block_size <= 0:
+        raise ValueError("block_size must be positive")
+
+    cuda.synchronize()
+    started = perf_counter()
+    output = cuda.device_array((row_count,), dtype=np.float64)
+    if row_count:
+        grid = ((row_count + block_size - 1) // block_size,)
+        _cached_numba_kernel(cuda, _numba_sqrt_f64_kernel)[grid, block_size](values, output, row_count)
+    cuda.synchronize()
+    elapsed = perf_counter() - started
+
+    return _numba_run_result(
+        operation=NUMBA_SQRT_F64_OPERATION,
+        outputs={"sqrt_values": output},
+        elapsed=elapsed,
+        source="run_numba_sqrt_f64",
+        extra_metadata={
+            "row_count": row_count,
+            "elementwise_transform": True,
+            "host_column_materialization_used": False,
         },
     )
 
@@ -1205,6 +1251,18 @@ def _numba_pairwise_l2_sq_block_nearest_rows_2d_kernel(cuda: Any):
             group_ids[output_index] = source_index
             item_ids[output_index] = shared_item_ids[0]
             scores[output_index] = shared_scores[0]
+
+    return kernel
+
+
+def _numba_sqrt_f64_kernel(cuda: Any):
+    import math
+
+    @cuda.jit
+    def kernel(values, output, row_count):
+        index = cuda.grid(1)
+        if index < row_count:
+            output[index] = math.sqrt(values[index])
 
     return kernel
 
