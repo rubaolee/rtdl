@@ -79,7 +79,37 @@ $env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal3155_fixed_radius_graph_com
 
 Result: 59 tests passed.
 
-Pod validation should be a focused clean-checkout suite plus an optional tiny OptiX+CuPy execution, because Goal3155 does not change native code and Goal3154 already refreshed large-scale A40 performance evidence for the lower path.
+Pod validation on `root@69.30.85.131:22063` from clean `origin/main` checkout at commit `770d7f1d`:
+
+```bash
+python -m unittest \
+  tests.goal3155_fixed_radius_graph_component_front_door_test \
+  tests.goal3154_rt_dbscan_current_head_a40_grouped_stream_refresh_test \
+  tests.goal3153_compact_mask_block_size_guard_test \
+  tests.goal3073_v2_7_generated_primitive_catalog_test \
+  tests.goal3090_v2_7_discovery_metadata_backfill_test
+```
+
+Result: 24 tests passed.
+
+Tiny live OptiX+CuPy front-door execution also passed with:
+
+```json
+{
+  "front_door": "v2_8_fixed_radius_graph_component_continuation_3d",
+  "labels": [1, 1, 1, -1],
+  "materializes_directed_adjacency_stream": false,
+  "materializes_neighbor_rows": false,
+  "neighbor_counts": [2, 2, 2, 1],
+  "operation": "fixed_radius_graph_component_labels_3d",
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "rt_core_accelerated": true,
+  "status": "pass",
+  "true_zero_copy_claim_authorized": false,
+  "user_selected_partner": "cupy"
+}
+```
 
 ## Next
 
