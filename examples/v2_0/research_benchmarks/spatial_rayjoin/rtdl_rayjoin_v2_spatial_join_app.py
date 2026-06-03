@@ -850,6 +850,29 @@ def run_rayjoin_prepared_optix_compact_grouped_count_workload(
     )
 
 
+def run_rayjoin_prepared_optix_left_id_dense_count_workload(
+    workload: str = "lsi",
+    *,
+    dataset: str | None = None,
+    include_rows: bool = False,
+) -> dict[str, object]:
+    if workload != "lsi":
+        raise ValueError("prepared_optix_left_id_dense_count currently supports only the lsi workload")
+    resolved_dataset = dataset or _DEFAULT_DATASETS[workload]
+    case = _load_rayjoin_case(workload, resolved_dataset)
+    with prepare_rayjoin_optix_compact_grouped_count_segments(
+        case.inputs["right"],
+        dataset=resolved_dataset,
+        dataset_note=case.note,
+    ) as prepared:
+        packed_left = pack_rayjoin_optix_compact_grouped_count_left_segments(case.inputs["left"])
+        return prepared.run_packed_left_dense_count(
+            packed_left,
+            include_rows=include_rows,
+            dataset_note=case.note,
+        )
+
+
 def run_rayjoin_workload(
     workload: str,
     *,
@@ -949,6 +972,31 @@ def run_rayjoin_suite(
                 "phase boundaries to RayJoin query_exec. Full polygon materialization remains "
                 "outside the overlay-seed benchmark contract."
             ),
+        }
+    if execution_route == "prepared_optix_left_id_dense_count":
+        return {
+            "app": "rayjoin_v2_spatial_join",
+            "paper": "RayJoin: Fast and Precise Spatial Join, ICS 2024",
+            "backend": "optix",
+            "execution_route": execution_route,
+            "workloads": {
+                "lsi": run_rayjoin_prepared_optix_left_id_dense_count_workload(
+                    "lsi",
+                    include_rows=include_rows,
+                )
+            },
+            "all_match_cpu_python_reference": None,
+            "implementation_stage": "prepared_dense_left_id_count_route",
+            "native_engine_boundary": (
+                "The engine sees a generic segment-pair left-id count device-column primitive. "
+                "RayJoin interpretation and ID remapping stay in Python."
+            ),
+            "claim_boundary": {
+                "full_rayjoin_reproduction": False,
+                "paper_scale_perf_claim_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+            },
         }
     workloads = {
         workload: run_rayjoin_workload(
@@ -1181,6 +1229,7 @@ def main(argv: list[str] | None = None) -> int:
             "generic_kernel",
             "prepared_optix",
             "prepared_optix_compact_grouped_count",
+            "prepared_optix_left_id_dense_count",
             "v2_6_numba_compact_mask_plan",
         ),
         default="generic_kernel",
@@ -1227,6 +1276,17 @@ def main(argv: list[str] | None = None) -> int:
                     )
                 },
             }
+        elif args.execution_route == "prepared_optix_left_id_dense_count":
+            payload = {
+                "app": "rayjoin_v2_spatial_join",
+                "execution_route": args.execution_route,
+                "workloads": {
+                    "lsi": run_rayjoin_prepared_optix_left_id_dense_count_workload(
+                        "lsi",
+                        include_rows=include_rows,
+                    )
+                },
+            }
         else:
             payload = run_rayjoin_suite(
                 backend=args.backend,
@@ -1239,6 +1299,12 @@ def main(argv: list[str] | None = None) -> int:
             payload = v2_6_numba_compact_mask_plan_payload(args.workload)
         elif args.execution_route == "prepared_optix_compact_grouped_count":
             payload = run_rayjoin_prepared_optix_compact_grouped_count_workload(
+                args.workload,
+                dataset=args.dataset,
+                include_rows=include_rows,
+            )
+        elif args.execution_route == "prepared_optix_left_id_dense_count":
+            payload = run_rayjoin_prepared_optix_left_id_dense_count_workload(
                 args.workload,
                 dataset=args.dataset,
                 include_rows=include_rows,
