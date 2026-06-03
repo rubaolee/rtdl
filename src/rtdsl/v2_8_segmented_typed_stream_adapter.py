@@ -718,7 +718,7 @@ def _execute_partner_front_door(
         if partner == "numba":
             from .numba_partner_continuation import run_numba_compact_mask_i64
 
-            resolved_block_size = 256 if block_size is None else int(block_size)
+            resolved_block_size = _resolve_compact_mask_block_size(block_size)
             result = run_numba_compact_mask_i64(values, mask, block_size=resolved_block_size)
             metadata.update(
                 {
@@ -750,6 +750,13 @@ def _execute_partner_front_door(
         )
         return {"values": compacted, "original_indices": original_indices}, metadata
     raise ValueError(f"unsupported v2.8 typed-stream partner operation: {operation}")
+
+
+def _resolve_compact_mask_block_size(block_size: int | None) -> int:
+    resolved = 256 if block_size is None else int(block_size)
+    if resolved <= 0:
+        raise ValueError("block_size must be positive for compact_mask_i64")
+    return resolved
 
 
 def _mapped_partner_columns(
