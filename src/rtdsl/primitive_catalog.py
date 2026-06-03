@@ -7,6 +7,9 @@ from .primitive_hierarchy import PRIMITIVE_HIERARCHY_LAYER_ORDER
 from .primitive_hierarchy import PRIMITIVE_HIERARCHY_STATUSES
 from .primitive_hierarchy import PrimitiveHierarchyNode
 from .primitive_hierarchy import validate_primitive_hierarchy
+from .primitive_recipes import COMPOSITION_RECIPES
+from .primitive_recipes import CompositionRecipe
+from .primitive_recipes import validate_composition_recipes
 
 
 PRIMITIVE_CATALOG_GENERATOR_VERSION = "rtdl.primitive_catalog.generated.v1"
@@ -27,6 +30,7 @@ def render_primitive_catalog_markdown() -> str:
     """Render the primitive catalog from the Python hierarchy source of truth."""
 
     validation = validate_primitive_hierarchy()
+    recipe_validation = validate_composition_recipes()
     lines: list[str] = [
         "# RTDL Primitive Catalog And Promotion Rules",
         "",
@@ -135,6 +139,8 @@ def render_primitive_catalog_markdown() -> str:
             f"- Unknown capability tags: `{_format_tuple(validation['unknown_capability_tags'])}`",
             f"- Missing dependencies: `{_format_tuple(validation['missing_dependencies'])}`",
             f"- Backward dependencies: `{_format_tuple(validation['backward_dependencies'])}`",
+            f"- Composition recipe validation valid: `{recipe_validation['valid']}`",
+            f"- Composition recipe count: `{recipe_validation['recipe_count']}`",
             "",
             "## Current Hierarchy",
             "",
@@ -168,6 +174,8 @@ def render_primitive_catalog_markdown() -> str:
     )
     for root in PRIMITIVE_HIERARCHY:
         lines.extend(_render_layer_section(root))
+
+    lines.extend(_render_recipe_section())
 
     lines.extend(
         [
@@ -268,6 +276,60 @@ def _render_layer_section(root: PrimitiveHierarchyNode) -> list[str]:
     return lines
 
 
+def _render_recipe_section() -> list[str]:
+    lines = [
+        "",
+        "## Composition Recipes",
+        "",
+        "Recipes are advisory composition metadata over existing primitive nodes.",
+        "They do not execute, dispatch, auto-select partners, or authorize",
+        "performance claims.",
+        "",
+        "| Recipe | Status | Summary | Primitive steps | Partner policy | Claim boundary |",
+        "| --- | --- | --- | --- | --- | --- |",
+    ]
+    for recipe in COMPOSITION_RECIPES:
+        lines.append(
+            "| "
+            + " | ".join(
+                (
+                    f"`{_escape(recipe.id)}`",
+                    f"`{_escape(recipe.status)}`",
+                    _escape(recipe.summary),
+                    _format_recipe_steps(recipe),
+                    _escape(recipe.partner_policy),
+                    _escape(recipe.claim_boundary),
+                )
+            )
+            + " |"
+        )
+    lines.extend(
+        [
+            "",
+            "Recipe discovery metadata:",
+            "",
+            "| Recipe | Capabilities | Aliases | Intent phrases | Recommended when | Boundary |",
+            "| --- | --- | --- | --- | --- | --- |",
+        ]
+    )
+    for recipe in COMPOSITION_RECIPES:
+        lines.append(
+            "| "
+            + " | ".join(
+                (
+                    f"`{_escape(recipe.id)}`",
+                    _format_tuple(recipe.capability_tags),
+                    _format_tuple(recipe.aliases),
+                    _format_tuple(recipe.intent_phrases),
+                    _escape(recipe.recommended_when or "-"),
+                    _escape(recipe.boundary or "-"),
+                )
+            )
+            + " |"
+        )
+    return lines
+
+
 def _render_tree(node: PrimitiveHierarchyNode, indent: int = 0) -> list[str]:
     prefix = "  " * indent
     lines = [f"{prefix}{node.title} ({node.id})"]
@@ -291,6 +353,13 @@ def _format_backends_and_partners(node: PrimitiveHierarchyNode) -> str:
     if node.partner_ops:
         pieces.append("partner ops: " + ", ".join(f"`{_escape(item)}`" for item in node.partner_ops))
     return "<br>".join(pieces) if pieces else "-"
+
+
+def _format_recipe_steps(recipe: CompositionRecipe) -> str:
+    return "<br>".join(
+        f"`{_escape(step.primitive_id)}` ({_escape(step.phase)}: {_escape(step.role)})"
+        for step in recipe.steps
+    )
 
 
 def _format_tuple(values: object) -> str:

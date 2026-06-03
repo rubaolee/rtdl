@@ -108,6 +108,8 @@ app/partner code unless it is redesigned as an app-independent behavior.
 - Unknown capability tags: `-`
 - Missing dependencies: `-`
 - Backward dependencies: `-`
+- Composition recipe validation valid: `True`
+- Composition recipe count: `5`
 
 ## Current Hierarchy
 
@@ -308,6 +310,30 @@ Records design pressure that is not yet a stable app-independent primitive contr
 | `candidate.streamed_graph_lowering` | `candidate_behavior` | Lower large graph-like row contracts without all-at-once materialization. | `row_pages`, `stream_state` | `continuation.segmented_chunked_rows` | - | - | - |
 | `candidate.device_grouped_candidate_merge` | `candidate_behavior` | Merge grouped candidate streams on device before final materialization. | `grouped_candidate_summary` | `reduction.grouped`, `execution.partner_resident_handoff` | - | - | - |
 | `candidate.zero_copy_row_streams` | `candidate_behavior` | Avoid unnecessary host materialization when the consumer remains device-resident. | `device_row_stream` | `execution.partner_resident_handoff`, `rows.generic_candidate_rows` | - | - | - |
+
+## Composition Recipes
+
+Recipes are advisory composition metadata over existing primitive nodes.
+They do not execute, dispatch, auto-select partners, or authorize
+performance claims.
+
+| Recipe | Status | Summary | Primitive steps | Partner policy | Claim boundary |
+| --- | --- | --- | --- | --- | --- |
+| `recipe.hit_existence_to_count_summary` | `advisory_recipe` | Use a hit predicate followed by a scalar count when witness rows are not needed. | `traversal.any_hit` (traversal: predicate traversal)<br>`traversal.count_hits` (reduction: scalar hit count) | Primitive-first. No partner is required by this recipe. | Counts accepted primitive hit flags only; this is not a whole-app speedup claim. |
+| `recipe.fixed_radius_ranked_candidates` | `advisory_recipe` | Compose fixed-radius counts, bounded neighbor rows, and ranked summaries by query id. | `traversal.fixed_radius_count_threshold` (traversal: count or prefilter candidate pressure)<br>`rows.fixed_radius_neighbor_rows` (row_emission: emit bounded neighbor rows)<br>`continuation.ranked_summary` (continuation: summarize candidate quality by query) | Primitive-first for traversal and row contracts. Explicit partner continuation is advisory only when the app chooses unfused ranking logic. | Ranking quality follows the selected row and continuation contract; no ANN or paper-reproduction claim is implied. |
+| `recipe.ray_triangle_hit_stream_grouped_summary` | `advisory_recipe` | Compose ray/triangle traversal, bounded hit streams, and grouped reductions over caller-provided keys. | `traversal.any_hit` (traversal: ray/primitive traversal predicate)<br>`rows.ray_triangle_hit_stream_3d` (row_emission: emit app-free hit stream rows)<br>`reduction.ray_triangle_primitive_grouped_i64` (reduction: grouped primitive payload summary) | Primitive-first for supported grouped summaries. Explicit partners are allowed only for caller-chosen unfused continuation and are never auto-selected. | Not SQL, not a paper-system reproduction, and not a broad RT-core or whole-app claim. |
+| `recipe.aabb_candidate_rows_to_refinement` | `advisory_recipe` | Use generic AABB predicates and candidate rows before caller-owned exact refinement. | `traversal.aabb_range_intersects` (traversal: generic range predicate)<br>`rows.aabb_range_intersection_rows` (row_emission: emit candidate id rows)<br>`continuation.segmented_chunked_rows` (continuation: page large candidate streams when needed) | Primitive-first for candidate discovery. Any exact-refinement partner is caller selected. | Candidate discovery only; no broad overlay, GIS, or whole-app claim is implied. |
+| `recipe.segmented_rows_to_grouped_reduction` | `advisory_recipe` | Page large generic row streams and reduce them by explicit group ids. | `rows.generic_candidate_rows` (row_emission: generic row stream contract)<br>`continuation.segmented_chunked_rows` (continuation: bounded row paging)<br>`reduction.grouped` (reduction: grouped reductions over explicit keys) | Primitive-first when a fused grouped primitive fits; otherwise list explicit partner options for the caller. | A recipe is not a dispatch path and does not authorize zero-copy or performance wording. |
+
+Recipe discovery metadata:
+
+| Recipe | Capabilities | Aliases | Intent phrases | Recommended when | Boundary |
+| --- | --- | --- | --- | --- | --- |
+| `recipe.hit_existence_to_count_summary` | `intent:exists`, `intent:count`, `shape:generic`, `output:mask`, `output:scalar`, `exactness:exact`, `keying:none` | `hit_count_recipe`, `exists_then_count`, `any_hit_count`, `scalar_hit_count` | `count positive hit predicates without witness rows`, `turn any hit flags into a scalar count summary` | The caller needs a scalar count or boolean summary and not per-hit witness rows. | Caller-owned interpretation of the hit predicate stays outside the recipe. |
+| `recipe.fixed_radius_ranked_candidates` | `intent:nearest`, `intent:topk`, `intent:count`, `intent:collect_rows`, `shape:fixed_radius`, `dim:2d`, `dim:3d`, `output:rows`, `output:grouped`, `output:scalar`, `exactness:bounded`, `keying:by_query_id` | `nearest_neighbor_recipe`, `top_k_candidate_recipe`, `fixed_radius_ranked_summary` | `find fixed radius neighbor candidates and summarize nearest quality`, `rank bounded nearest candidates by query id` | The caller needs nearest/top-k style summaries and can bound candidate rows. | Application ranking policy and recall interpretation stay outside the native engine. |
+| `recipe.ray_triangle_hit_stream_grouped_summary` | `intent:collect_rows`, `intent:reduce`, `intent:count`, `shape:ray_triangle`, `dim:3d`, `output:rows`, `output:grouped`, `exactness:bounded`, `exactness:exact`, `keying:by_ray_id`, `keying:by_group_id` | `ray_triangle_grouped_summary`, `ray_triangle_grouped_primitive_summary`, `hit_stream_grouped_reduction`, `primitive_payload_summary` | `reduce ray triangle primitive hits by group id`, `collect ray primitive witnesses then summarize caller payloads` | The caller has ray/triangle hits and wants grouped summaries over caller-owned primitive payloads. | Primitive-to-group mapping, payload values, predicates, and app rows remain app or partner code. |
+| `recipe.aabb_candidate_rows_to_refinement` | `intent:intersection`, `intent:membership`, `intent:collect_rows`, `shape:aabb`, `dim:2d`, `output:rows`, `exactness:bounded`, `keying:by_query_id` | `aabb_candidate_recipe`, `range_intersection_rows_recipe`, `candidate_pair_rows` | `emit AABB candidate rows for exact caller refinement`, `find range intersection candidates without owning app semantics` | The caller needs reusable candidate pairs and will perform exact domain refinement outside RTDL. | Exact refinement and domain scoring remain caller-owned. |
+| `recipe.segmented_rows_to_grouped_reduction` | `intent:collect_rows`, `intent:reduce`, `shape:generic`, `output:rows`, `output:columns`, `output:grouped`, `exactness:bounded`, `exactness:exact`, `keying:by_group_id`, `keying:by_query_id` | `segmented_grouped_reduction`, `chunked_rows_grouped_summary`, `paged_row_reduce` | `page large row streams before grouped reduction`, `avoid unbounded materialization while reducing rows by group id` | The caller has large generic row streams and explicit grouping keys. | Group meaning, value semantics, and final app interpretation remain caller-owned. |
 
 ## Controlled Discovery Facets
 

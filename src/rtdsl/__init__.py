@@ -352,6 +352,17 @@ from .primitive_discovery import describe_primitive
 from .primitive_discovery import find_primitive
 from .primitive_discovery import lint_new_primitive
 from .primitive_discovery import primitive_index
+from .primitive_recipes import COMPOSITION_RECIPE_AUTO_PARTNER_SELECTION_ALLOWED
+from .primitive_recipes import COMPOSITION_RECIPE_STATUSES
+from .primitive_recipes import COMPOSITION_RECIPE_VERSION
+from .primitive_recipes import COMPOSITION_RECIPES
+from .primitive_recipes import CompositionRecipe
+from .primitive_recipes import CompositionRecipeMatch
+from .primitive_recipes import CompositionRecipeStep
+from .primitive_recipes import describe_recipe
+from .primitive_recipes import find_recipe
+from .primitive_recipes import recipe_index
+from .primitive_recipes import validate_composition_recipes
 from .segmented_row_stream import CHUNKED_ROW_CONTINUATION_ALIAS
 from .segmented_row_stream import SEGMENTED_ROW_STREAM_CONTRACT
 from .segmented_row_stream import SEGMENTED_ROW_STREAM_CONTRACT_VERSION
@@ -1636,9 +1647,20 @@ __all__ = [
     "find_primitive",
     "iter_primitive_hierarchy_nodes",
     "lint_new_primitive",
+    "COMPOSITION_RECIPE_AUTO_PARTNER_SELECTION_ALLOWED",
+    "COMPOSITION_RECIPE_STATUSES",
+    "COMPOSITION_RECIPE_VERSION",
+    "COMPOSITION_RECIPES",
+    "CompositionRecipe",
+    "CompositionRecipeMatch",
+    "CompositionRecipeStep",
+    "describe_recipe",
+    "find_recipe",
     "primitive_hierarchy",
     "primitive_index",
+    "recipe_index",
     "primitive_layer_map",
+    "validate_composition_recipes",
     "validate_primitive_hierarchy",
     "CHUNKED_ROW_CONTINUATION_ALIAS",
     "SEGMENTED_ROW_STREAM_CONTRACT",
