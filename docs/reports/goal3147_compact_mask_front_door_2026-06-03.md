@@ -68,8 +68,8 @@ The probe performs an explicit warmup before measured rows so the first measured
 
 | rows | selected | time | values match | indices match | stable order | host prefix-sum |
 | ---: | ---: | ---: | --- | --- | --- | --- |
-| 1,000,000 | 230,770 | 0.046104 s | yes | yes | yes | yes |
-| 4,000,000 | 923,079 | 0.173104 s | yes | yes | yes | yes |
+| 1,000,000 | 230,770 | 0.045889 s | yes | yes | yes | yes |
+| 4,000,000 | 923,079 | 0.175426 s | yes | yes | yes | yes |
 
 All claim-boundary flags stayed false.
 

@@ -6,7 +6,7 @@
     "true_zero_copy_claim_authorized": false,
     "v2_8_release_authorized": false
   },
-  "commit": "01b0fd52",
+  "commit": "a2ed0069",
   "goal": "Goal3147",
   "gpu": "NVIDIA RTX 4000 Ada Generation",
   "rows": [
@@ -15,7 +15,7 @@
         "values",
         "original_indices"
       ],
-      "elapsed_sec": 0.04610443115234375,
+      "elapsed_sec": 0.04588919226080179,
       "host_prefix_sum_used": true,
       "indices_match_reference": true,
       "keep_lt": 3,
@@ -35,7 +35,7 @@
         "values",
         "original_indices"
       ],
-      "elapsed_sec": 0.173104390501976,
+      "elapsed_sec": 0.17542564496397972,
       "host_prefix_sum_used": true,
       "indices_match_reference": true,
       "keep_lt": 3,
