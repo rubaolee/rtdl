@@ -36,13 +36,9 @@ V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_SUPPORTED_OPERATIONS = (
     "grouped_argmax_f64",
     "grouped_topk_f64",
     "bounded_collect_finalize_i64",
+    "compact_mask_i64",
 )
 V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_DEFERRED_OPERATIONS = {
-    "compact_mask_i64": (
-        "reference-only in v2.8 because it is an order-preserving mask compaction "
-        "continuation, not a grouped partner-consumer operation; adding a partner "
-        "front door requires separate mask-compaction smoke evidence"
-    ),
 }
 V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_CLAIM_BOUNDARY = (
     "v2.8 segmented typed stream adapter bridges an existing segmented row "
@@ -713,6 +709,42 @@ def _execute_partner_front_door(
             "row_offsets": columns["row_offsets"],
         }
         return canonical_columns, dict(result["metadata"])
+    if operation == "compact_mask_i64":
+        values = mapped_columns["values"]
+        mask = mapped_columns["mask"]
+        metadata = _partner_bridge_metadata(operation, partner, group_count, len(_adapter_like(values)))
+        if partner == "numba":
+            from .numba_partner_continuation import run_numba_compact_mask_i64
+
+            result = run_numba_compact_mask_i64(values, mask)
+            metadata.update(
+                {
+                    "stable_input_order": bool(result["stable_input_order"]),
+                    "host_prefix_sum_used": bool(result["host_prefix_sum_used"]),
+                    "numba_partner_continuation_status": result["status"],
+                    "numba_partner_continuation_elapsed_seconds": float(
+                        result["phase_timing"]["phases_sec"]["partner_continuation"]
+                    ),
+                    "canonical_output_schema": ("values", "original_indices"),
+                }
+            )
+            return {
+                "values": result["outputs"]["values"],
+                "original_indices": result["outputs"]["original_indices"],
+            }, metadata
+        from .partner_adapters import partner_mask_indices
+        from .partner_adapters import partner_take_columns_by_indices
+
+        original_indices = partner_mask_indices(mask, partner=partner)
+        compacted = partner_take_columns_by_indices({"values": values}, original_indices, partner=partner)["values"]
+        metadata.update(
+            {
+                "stable_input_order": True,
+                "host_prefix_sum_used": None,
+                "canonical_output_schema": ("values", "original_indices"),
+            }
+        )
+        return {"values": compacted, "original_indices": original_indices}, metadata
     raise ValueError(f"unsupported v2.8 typed-stream partner operation: {operation}")
 
 

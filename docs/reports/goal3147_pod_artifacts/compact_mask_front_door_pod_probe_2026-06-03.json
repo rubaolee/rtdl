@@ -1,0 +1,54 @@
+{
+  "all_match": true,
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v2_8_release_authorized": false
+  },
+  "commit": "01b0fd52",
+  "goal": "Goal3147",
+  "gpu": "NVIDIA RTX 4000 Ada Generation",
+  "rows": [
+    {
+      "canonical_output_schema": [
+        "values",
+        "original_indices"
+      ],
+      "elapsed_sec": 0.04610443115234375,
+      "host_prefix_sum_used": true,
+      "indices_match_reference": true,
+      "keep_lt": 3,
+      "modulo": 13,
+      "partner_consumer_promoted": false,
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "row_count": 1000000,
+      "rt_core_speedup_claim_authorized": false,
+      "selected_count": 230770,
+      "stable_input_order": true,
+      "true_zero_copy_claim_authorized": false,
+      "values_match_reference": true
+    },
+    {
+      "canonical_output_schema": [
+        "values",
+        "original_indices"
+      ],
+      "elapsed_sec": 0.173104390501976,
+      "host_prefix_sum_used": true,
+      "indices_match_reference": true,
+      "keep_lt": 3,
+      "modulo": 13,
+      "partner_consumer_promoted": false,
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "row_count": 4000000,
+      "rt_core_speedup_claim_authorized": false,
+      "selected_count": 923079,
+      "stable_input_order": true,
+      "true_zero_copy_claim_authorized": false,
+      "values_match_reference": true
+    }
+  ]
+}

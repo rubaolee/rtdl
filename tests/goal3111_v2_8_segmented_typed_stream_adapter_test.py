@@ -18,11 +18,12 @@ class Goal3111V28SegmentedTypedStreamAdapterTest(unittest.TestCase):
         self.assertEqual(summary["adapter_version"], rt.V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_VERSION)
         self.assertEqual(summary["target"], rt.V2_8_FIRST_RUNTIME_TARGET)
         self.assertEqual(summary["materialization"], "host_reference_contract_adapter")
-        self.assertIn("compact_mask_i64", summary["partner_consumer_deferred_operations"])
         self.assertIn("segmented_min_f64", summary["partner_consumer_supported_operations"])
         self.assertIn("segmented_max_f64", summary["partner_consumer_supported_operations"])
+        self.assertIn("compact_mask_i64", summary["partner_consumer_supported_operations"])
         self.assertNotIn("segmented_min_f64", summary["partner_consumer_deferred_operations"])
         self.assertNotIn("segmented_max_f64", summary["partner_consumer_deferred_operations"])
+        self.assertNotIn("compact_mask_i64", summary["partner_consumer_deferred_operations"])
         self.assertFalse(summary["native_producer_promoted"])
         self.assertFalse(summary["partner_consumer_promoted"])
         self.assertFalse(summary["device_resident_result_stream_proven"])
@@ -611,7 +612,49 @@ class Goal3111V28SegmentedTypedStreamAdapterTest(unittest.TestCase):
         self.assertNotIn("counts", result["outputs"])
         mocked.assert_called_once()
 
-    def test_partner_consumer_dry_run_marks_unsupported_operation(self) -> None:
+    def test_partner_consumer_wraps_compact_mask_in_canonical_outputs(self) -> None:
+        adapter = rt.build_segmented_typed_stream_adapter(
+            ((0, 10, True), (0, 11, False), (1, 12, True)),
+            row_schema=("group_ids", "values", "mask"),
+            column_roles={
+                "group_ids": "group_key",
+                "values": "item_id",
+                "mask": "mask",
+            },
+            page_capacity=2,
+            stream_id="goal3147_compact_mask_front_door",
+            stream_kind="candidate_stream",
+            producer_primitive="segmented_row_stream_reference",
+            ordering="stable_row_order",
+            operation="compact_mask_i64",
+            group_column="group_ids",
+            value_columns=("values", "mask"),
+            user_selected_partner="numba",
+        )
+        helper_result = {
+            "outputs": {"values": [10, 12], "original_indices": [0, 2]},
+            "status": "numba_partner_continuation_preview",
+            "stable_input_order": True,
+            "host_prefix_sum_used": True,
+            "phase_timing": {"phases_sec": {"partner_continuation": 0.25}},
+        }
+        with mock.patch(
+            "rtdsl.numba_partner_continuation.run_numba_compact_mask_i64",
+            return_value=helper_result,
+        ) as mocked:
+            result = rt.execute_segmented_typed_stream_partner_continuation(
+                adapter,
+                partner="numba",
+                partner_columns={"values": [10, 11, 12], "mask": [True, False, True]},
+            )
+
+        self.assertEqual(result["outputs"], {"values": [10, 12], "original_indices": [0, 2]})
+        self.assertTrue(result["partner_metadata"]["stable_input_order"])
+        self.assertTrue(result["partner_metadata"]["host_prefix_sum_used"])
+        self.assertEqual(result["partner_metadata"]["canonical_output_schema"], ("values", "original_indices"))
+        mocked.assert_called_once()
+
+    def test_partner_consumer_dry_run_exposes_compact_mask_without_execution(self) -> None:
         adapter = rt.build_segmented_typed_stream_adapter(
             ((0, 10, 1),),
             row_schema=("group_ids", "values", "mask"),
@@ -637,11 +680,13 @@ class Goal3111V28SegmentedTypedStreamAdapterTest(unittest.TestCase):
             dry_run=True,
         )
 
-        self.assertFalse(request["supported_operation"])
-        self.assertIn("mask compaction", request["unsupported_operation_reason"])
+        self.assertTrue(request["supported_operation"])
+        self.assertIsNone(request["unsupported_operation_reason"])
         self.assertIn("grouped_argmax_f64", request["supported_operations"])
-        self.assertNotIn("compact_mask_i64", request["supported_operations"])
-        self.assertIn("compact_mask_i64", request["deferred_operations"])
+        self.assertIn("compact_mask_i64", request["supported_operations"])
+        self.assertNotIn("compact_mask_i64", request["deferred_operations"])
+        with self.assertRaisesRegex(ValueError, "partner_columns are required"):
+            rt.execute_segmented_typed_stream_partner_continuation(adapter, partner="numba")
 
     def test_report_documents_reference_adapter_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
