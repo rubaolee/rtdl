@@ -35,6 +35,7 @@ def render_primitive_catalog_markdown() -> str:
     """Render the primitive catalog from the Python hierarchy source of truth."""
 
     validation = validate_primitive_hierarchy()
+    discovery_validation = validate_primitive_hierarchy(require_discovery_metadata=True)
     recipe_validation = validate_composition_recipes()
     planner_validation = validate_primitive_advisory_planner()
     lines: list[str] = [
@@ -145,6 +146,8 @@ def render_primitive_catalog_markdown() -> str:
             f"- Unknown capability tags: `{_format_tuple(validation['unknown_capability_tags'])}`",
             f"- Missing dependencies: `{_format_tuple(validation['missing_dependencies'])}`",
             f"- Backward dependencies: `{_format_tuple(validation['backward_dependencies'])}`",
+            f"- Strict discovery metadata validation valid: `{discovery_validation['valid']}`",
+            f"- Strict discovery metadata missing: `{_format_tuple(discovery_validation['discovery_metadata_missing'])}`",
             f"- Composition recipe validation valid: `{recipe_validation['valid']}`",
             f"- Composition recipe count: `{recipe_validation['recipe_count']}`",
             f"- Advisory planner validation status: `{planner_validation['status']}`",

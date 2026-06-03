@@ -71,6 +71,14 @@ PRIMITIVE_PROMOTION_METADATA_STATUSES = (
     "candidate_behavior",
 )
 
+PRIMITIVE_DISCOVERY_METADATA_FIELDS = (
+    "capability_tags",
+    "aliases",
+    "intent_phrases",
+    "reference_path",
+    "backends",
+)
+
 PRIMITIVE_DISCOVERY_VERSION = "rtdl.primitive_discovery.v1"
 
 APP_OWNED_BOUNDARY_EXCLUSIONS = (
@@ -137,6 +145,14 @@ PRIMITIVE_HIERARCHY = (
         layer="execution_residency",
         status="stable_behavior",
         summary="Owns prepared runtime state, buffer descriptors, residency, and capacity contracts.",
+        capability_tags=("intent:collect_rows", "shape:generic", "output:columns", "exactness:bounded", "keying:none"),
+        aliases=("execution_residency", "prepared_state", "buffer_residency", "capacity_contracts"),
+        intent_phrases=(
+            "find prepared runtime state and buffer residency contracts",
+            "understand execution capacity overflow and prepared handle behavior",
+        ),
+        reference_path="docs/rtdl_primitive_catalog.md",
+        backends=("metadata_only",),
         children=(
             PrimitiveHierarchyNode(
                 id="execution.prepared_rt_state",
@@ -145,6 +161,14 @@ PRIMITIVE_HIERARCHY = (
                 status="stable_behavior",
                 summary="Reusable prepared Embree/OptiX scenes, indexes, and query-side state.",
                 outputs=("prepared_handle", "lifetime_metadata"),
+                capability_tags=("intent:exists", "shape:generic", "output:columns", "exactness:bounded", "keying:none"),
+                aliases=("prepared_rt_state", "prepared_scene", "prepared_handle", "reusable_index"),
+                intent_phrases=(
+                    "reuse prepared Embree or OptiX state across queries",
+                    "find prepared scene and query state lifetime metadata",
+                ),
+                reference_path="docs/features/engine_support_matrix.md",
+                backends=("cpu_python_reference", "cpu", "embree", "optix"),
             ),
             PrimitiveHierarchyNode(
                 id="execution.buffer_descriptors",
@@ -169,6 +193,26 @@ PRIMITIVE_HIERARCHY = (
                 status="stable_behavior",
                 summary="Shared capacity accounting and fail-closed overflow behavior for exact outputs.",
                 outputs=("capacity", "overflowed", "complete_candidate_coverage"),
+                capability_tags=(
+                    "intent:collect_rows",
+                    "shape:generic",
+                    "output:rows",
+                    "exactness:bounded",
+                    "keying:none",
+                ),
+                aliases=(
+                    "capacity_overflow",
+                    "overflow_contract",
+                    "fail_closed_capacity",
+                    "fail closed overflow capacity",
+                    "bounded_capacity",
+                ),
+                intent_phrases=(
+                    "fail closed when exact bounded output capacity is exceeded",
+                    "find overflow and complete coverage metadata for bounded rows",
+                ),
+                reference_path="docs/rtdl_primitive_catalog.md",
+                backends=("cpu_python_reference", "cpu", "embree", "optix"),
             ),
         ),
     ),
@@ -179,6 +223,14 @@ PRIMITIVE_HIERARCHY = (
         status="stable_behavior",
         summary="Owns app-independent RT predicate traversal against prepared or query geometry.",
         depends_on=("execution.prepared_rt_state",),
+        capability_tags=("intent:exists", "shape:generic", "output:mask", "exactness:exact", "keying:none"),
+        aliases=("traversal", "rt_traversal", "predicate_traversal", "ray_query"),
+        intent_phrases=(
+            "find app independent RT predicate traversal primitives",
+            "choose any hit count hits or fixed radius traversal behavior",
+        ),
+        reference_path="docs/features/README.md",
+        backends=("cpu_python_reference", "cpu", "embree", "optix"),
         children=(
             PrimitiveHierarchyNode(
                 id="traversal.any_hit",
@@ -354,6 +406,22 @@ PRIMITIVE_HIERARCHY = (
                 outputs=("source_id", "box_id", "metadata_flags", "row_offsets"),
                 depends_on=("traversal.aabb_point_contains", "execution.capacity_overflow_contract"),
                 boundary="Box expansion and row interpretation are caller-owned; native code emits app-free IDs only.",
+                capability_tags=(
+                    "intent:membership",
+                    "intent:collect_rows",
+                    "shape:aabb",
+                    "dim:2d",
+                    "output:rows",
+                    "exactness:bounded",
+                    "keying:by_query_id",
+                ),
+                aliases=("expanded_aabb_rows", "aabb_point_membership_rows", "box_membership_rows"),
+                intent_phrases=(
+                    "emit rows for points inside caller expanded AABBs",
+                    "collect source id and box id membership rows with overflow checks",
+                ),
+                reference_path="docs/features/db_workloads/README.md",
+                backends=("cpu_python_reference", "cpu", "embree", "optix"),
             ),
             PrimitiveHierarchyNode(
                 id="rows.segment_polygon_rows",
@@ -412,6 +480,23 @@ PRIMITIVE_HIERARCHY = (
                 ),
                 depends_on=("rows.generic_candidate_rows", "execution.capacity_overflow_contract"),
                 boundary="Force laws, scores, and app-owned reductions remain app or partner code.",
+                capability_tags=(
+                    "intent:frontier",
+                    "intent:collect_rows",
+                    "shape:aggregate_frontier",
+                    "dim:2d",
+                    "dim:3d",
+                    "output:rows",
+                    "exactness:bounded",
+                    "keying:by_query_id",
+                ),
+                aliases=("aggregate_frontier_rows", "frontier_collect", "aggregate_tree_rows"),
+                intent_phrases=(
+                    "emit aggregate frontier ids and offsets from prepared aggregate traversal",
+                    "collect generic aggregate tree frontier rows without app force laws",
+                ),
+                reference_path="docs/rtdl_primitive_catalog.md",
+                backends=("cpu_python_reference", "cpu", "embree", "optix"),
             ),
             PrimitiveHierarchyNode(
                 id="rows.graph_triangle_witness_rows",
@@ -432,6 +517,14 @@ PRIMITIVE_HIERARCHY = (
         status="stable_behavior",
         summary="Owns bounded exact output materialization and row-schema validation.",
         depends_on=("rows.generic_candidate_rows", "execution.capacity_overflow_contract"),
+        capability_tags=("intent:collect_rows", "shape:generic", "output:rows", "exactness:bounded", "keying:none"),
+        aliases=("bounded_materialization", "bounded_collect", "row_materialization", "row_schema"),
+        intent_phrases=(
+            "collect bounded rows with capacity and schema checks",
+            "validate exact row output ordering and overflow behavior",
+        ),
+        reference_path="docs/rtdl_primitive_catalog.md",
+        backends=("cpu_python_reference", "cpu", "embree", "optix"),
         children=(
             PrimitiveHierarchyNode(
                 id="materialization.collect_k_bounded",
@@ -475,6 +568,20 @@ PRIMITIVE_HIERARCHY = (
                 summary="Validate row width, row ordering, duplicate policy, and exact-output completeness.",
                 outputs=("validated_result",),
                 depends_on=("materialization.collect_k_bounded",),
+                capability_tags=(
+                    "intent:collect_rows",
+                    "shape:generic",
+                    "output:rows",
+                    "exactness:bounded",
+                    "keying:none",
+                ),
+                aliases=("row_schema_validation", "row_width_validation", "bounded_result_validation"),
+                intent_phrases=(
+                    "validate row width ordering duplicate policy and completeness",
+                    "check bounded row materialization metadata before consuming rows",
+                ),
+                reference_path="docs/rtdl_primitive_catalog.md",
+                backends=("cpu_python_reference", "cpu", "embree", "optix"),
             ),
         ),
     ),
@@ -485,6 +592,14 @@ PRIMITIVE_HIERARCHY = (
         status="stable_behavior",
         summary="Owns compact summaries over traversal hits, rows, or partner-resident columns.",
         depends_on=("layer.traversal", "rows.generic_candidate_rows"),
+        capability_tags=("intent:reduce", "shape:generic", "output:scalar", "exactness:exact", "keying:none"),
+        aliases=("reduction", "reduce_rows", "compact_summary", "scalar_or_grouped_reduce"),
+        intent_phrases=(
+            "find scalar and grouped reductions over traversal rows",
+            "reduce hit rows or columnar payloads to compact summaries",
+        ),
+        reference_path="docs/features/reduce_rows/README.md",
+        backends=("cpu_python_reference", "cpu", "embree", "optix"),
         children=(
             PrimitiveHierarchyNode(
                 id="reduction.scalar",
@@ -494,6 +609,14 @@ PRIMITIVE_HIERARCHY = (
                 summary="Reduce primitive outputs to scalar counts, sums, minima, or maxima.",
                 outputs=("scalar_count", "scalar_sum", "scalar_min", "scalar_max"),
                 depends_on=("layer.traversal",),
+                capability_tags=("intent:reduce", "shape:generic", "output:scalar", "exactness:exact", "keying:none"),
+                aliases=("scalar_reduction", "reduce_scalar", "count_sum_min_max", "compact_scalar_summary"),
+                intent_phrases=(
+                    "reduce primitive outputs to scalar counts sums minima or maxima",
+                    "compute compact scalar summaries without returning rows",
+                ),
+                reference_path="docs/features/reduce_rows/README.md",
+                backends=("cpu_python_reference", "cpu", "embree", "optix"),
                 children=(
                     PrimitiveHierarchyNode(
                         id="reduction.count_hits",
@@ -503,6 +626,14 @@ PRIMITIVE_HIERARCHY = (
                         summary="Scalar count over hit flags or emitted positive rows.",
                         outputs=("count",),
                         depends_on=("traversal.any_hit",),
+                        capability_tags=("intent:count", "shape:generic", "output:scalar", "exactness:exact", "keying:none"),
+                        aliases=("count_hits_reduction", "positive_row_count", "hit_flag_count"),
+                        intent_phrases=(
+                            "count hit flags or emitted positive rows",
+                            "compute scalar hit count as a reduction",
+                        ),
+                        reference_path="docs/features/ray_tri_hitcount/README.md",
+                        backends=("cpu_python_reference", "cpu", "embree", "optix"),
                     ),
                     PrimitiveHierarchyNode(
                         id="reduction.reduce_int",
@@ -512,6 +643,14 @@ PRIMITIVE_HIERARCHY = (
                         summary="Integer count and sum reductions.",
                         outputs=("int64_result",),
                         depends_on=("rows.generic_candidate_rows",),
+                        capability_tags=("intent:reduce", "shape:generic", "output:scalar", "exactness:exact", "keying:none"),
+                        aliases=("reduce_int", "integer_reduction", "integer count sum reductions", "int_count_sum", "i64_reduce"),
+                        intent_phrases=(
+                            "reduce integer rows to count or sum",
+                            "compute int64 scalar reductions over generic rows",
+                        ),
+                        reference_path="docs/features/reduce_rows/README.md",
+                        backends=("cpu_python_reference", "cpu", "embree", "optix"),
                     ),
                     PrimitiveHierarchyNode(
                         id="reduction.reduce_float",
@@ -521,6 +660,14 @@ PRIMITIVE_HIERARCHY = (
                         summary="Floating min, max, and sum with explicit tolerance policy.",
                         outputs=("float64_result",),
                         depends_on=("rows.generic_candidate_rows",),
+                        capability_tags=("intent:reduce", "shape:generic", "output:scalar", "exactness:exact", "keying:none"),
+                        aliases=("reduce_float", "floating_reduction", "float_min_max_sum", "f64_reduce"),
+                        intent_phrases=(
+                            "reduce floating rows to min max or sum",
+                            "compute float64 scalar reductions with tolerance policy",
+                        ),
+                        reference_path="docs/features/reduce_rows/README.md",
+                        backends=("cpu_python_reference", "cpu", "embree", "optix"),
                     ),
                 ),
             ),
@@ -640,6 +787,14 @@ PRIMITIVE_HIERARCHY = (
                 outputs=("compact_summary",),
                 depends_on=("execution.partner_resident_handoff", "reduction.grouped"),
                 boundary="Not SQL, not a DBMS, and not a query planner.",
+                capability_tags=("intent:reduce", "shape:generic", "output:columns", "exactness:exact", "keying:by_group_id"),
+                aliases=("columnar_compact_summary", "columnar_grouped_aggregate", "columnar_payload_summary"),
+                intent_phrases=(
+                    "summarize app owned columnar payloads with grouped reductions",
+                    "lower columnar aggregate rows without SQL or DBMS semantics",
+                ),
+                reference_path="docs/features/db_workloads/README.md",
+                backends=("cpu_python_reference", "cpu", "embree", "optix"),
             ),
         ),
     ),
@@ -743,6 +898,14 @@ PRIMITIVE_HIERARCHY = (
         status="candidate_behavior",
         summary="Records design pressure that is not yet a stable app-independent primitive contract.",
         depends_on=("layer.continuation",),
+        capability_tags=("intent:collect_rows", "shape:generic", "output:rows", "exactness:bounded", "keying:none"),
+        aliases=("candidate_experimental", "future_primitives", "experimental_primitives"),
+        intent_phrases=(
+            "find candidate primitive pressure not yet stable",
+            "review future app independent primitive contracts",
+        ),
+        reference_path="docs/research/future_version_to_do_list.md",
+        backends=("metadata_only",),
         children=(
             PrimitiveHierarchyNode(
                 id="candidate.aggregate_frontier_traversal",
@@ -756,6 +919,23 @@ PRIMITIVE_HIERARCHY = (
                 outputs=("frontier_rows", "summary_inputs"),
                 depends_on=("rows.aggregate_frontier_collect", "continuation.partner_resident"),
                 boundary="Force law and scoring math remain app or partner code.",
+                capability_tags=(
+                    "intent:frontier",
+                    "intent:collect_rows",
+                    "shape:aggregate_frontier",
+                    "dim:2d",
+                    "dim:3d",
+                    "output:rows",
+                    "exactness:bounded",
+                    "keying:by_query_id",
+                ),
+                aliases=("aggregate_frontier_traversal", "aggregate_tree_traversal", "frontier_traversal"),
+                intent_phrases=(
+                    "traverse aggregate tree frontier behind generic row contract",
+                    "future lowering for aggregate frontier rows without force law semantics",
+                ),
+                reference_path="docs/rtdl_primitive_catalog.md",
+                backends=("cpu_python_reference", "cpu", "embree", "optix"),
             ),
             PrimitiveHierarchyNode(
                 id="candidate.streamed_graph_lowering",
@@ -765,6 +945,14 @@ PRIMITIVE_HIERARCHY = (
                 summary="Lower large graph-like row contracts without all-at-once materialization.",
                 outputs=("row_pages", "stream_state"),
                 depends_on=("continuation.segmented_chunked_rows",),
+                capability_tags=("intent:collect_rows", "shape:generic", "output:rows", "exactness:bounded", "keying:by_query_id"),
+                aliases=("streamed_graph_lowering", "segmented_graph_rows", "paged_graph_rows"),
+                intent_phrases=(
+                    "lower large graph like row contracts with segmented row pages",
+                    "avoid all at once graph row materialization",
+                ),
+                reference_path="docs/rtdl_primitive_catalog.md",
+                backends=("cpu_python_reference", "cpu", "embree", "optix"),
             ),
             PrimitiveHierarchyNode(
                 id="candidate.device_grouped_candidate_merge",
@@ -774,6 +962,15 @@ PRIMITIVE_HIERARCHY = (
                 summary="Merge grouped candidate streams on device before final materialization.",
                 outputs=("grouped_candidate_summary",),
                 depends_on=("reduction.grouped", "execution.partner_resident_handoff"),
+                capability_tags=("intent:reduce", "shape:generic", "output:grouped", "exactness:bounded", "keying:by_group_id"),
+                aliases=("device_grouped_candidate_merge", "grouped_candidate_finalize", "device_grouped_merge"),
+                intent_phrases=(
+                    "merge grouped candidate streams on device before materialization",
+                    "finalize grouped candidate summaries without host row expansion",
+                ),
+                reference_path="docs/rtdl_primitive_catalog.md",
+                backends=("cpu_python_reference", "cpu", "optix"),
+                partner_ops=("segmented_count_i64", "segmented_sum_f64", "grouped_argmin_f64"),
             ),
             PrimitiveHierarchyNode(
                 id="candidate.zero_copy_row_streams",
@@ -783,6 +980,14 @@ PRIMITIVE_HIERARCHY = (
                 summary="Avoid unnecessary host materialization when the consumer remains device-resident.",
                 outputs=("device_row_stream",),
                 depends_on=("execution.partner_resident_handoff", "rows.generic_candidate_rows"),
+                capability_tags=("intent:collect_rows", "shape:generic", "output:columns", "exactness:bounded", "keying:by_query_id"),
+                aliases=("zero_copy_row_streams", "device_resident_rows", "resident_row_streams"),
+                intent_phrases=(
+                    "avoid host materialization when consuming rows on device",
+                    "future device resident row stream handoff for partner continuation",
+                ),
+                reference_path="docs/research/future_version_to_do_list.md",
+                backends=("metadata_only",),
             ),
         ),
     ),
@@ -829,6 +1034,7 @@ def validate_primitive_hierarchy(
     *,
     enforce_promotion_metadata: bool = False,
     promotion_candidate_ids: Iterable[str] = (),
+    require_discovery_metadata: bool = False,
 ) -> dict[str, object]:
     nodes = iter_primitive_hierarchy_nodes(nodes)
     ids = [node.id for node in nodes]
@@ -876,6 +1082,10 @@ def validate_primitive_hierarchy(
         enforce_promotion_metadata=enforce_promotion_metadata,
         promotion_candidate_ids=promotion_candidate_id_set,
     )
+    discovery_metadata_missing = _discovery_metadata_missing(
+        nodes,
+        require_discovery_metadata=require_discovery_metadata,
+    )
     return {
         "version": PRIMITIVE_HIERARCHY_VERSION,
         "valid": (
@@ -888,6 +1098,7 @@ def validate_primitive_hierarchy(
             and not promotion_candidate_scope_required
             and (not enforce_promotion_metadata or not unknown_promotion_candidate_ids)
             and not promotion_metadata_missing
+            and not discovery_metadata_missing
         ),
         "node_count": len(nodes),
         "layer_order": PRIMITIVE_HIERARCHY_LAYER_ORDER,
@@ -902,8 +1113,38 @@ def validate_primitive_hierarchy(
         "promotion_candidate_scope_required": promotion_candidate_scope_required,
         "unknown_promotion_candidate_ids": unknown_promotion_candidate_ids,
         "promotion_metadata_missing": promotion_metadata_missing,
+        "discovery_metadata_required": require_discovery_metadata,
+        "discovery_metadata_missing": discovery_metadata_missing,
         "app_owned_boundary_exclusions": APP_OWNED_BOUNDARY_EXCLUSIONS,
     }
+
+
+def _discovery_metadata_missing(
+    nodes: tuple[PrimitiveHierarchyNode, ...],
+    *,
+    require_discovery_metadata: bool,
+) -> tuple[dict[str, object], ...]:
+    if not require_discovery_metadata:
+        return ()
+
+    missing: list[dict[str, object]] = []
+    for node in nodes:
+        if node.status not in PRIMITIVE_PROMOTION_METADATA_STATUSES:
+            continue
+        missing_fields = tuple(
+            field
+            for field in PRIMITIVE_DISCOVERY_METADATA_FIELDS
+            if not getattr(node, field)
+        )
+        if missing_fields:
+            missing.append(
+                {
+                    "node_id": node.id,
+                    "status": node.status,
+                    "missing_fields": missing_fields,
+                }
+            )
+    return tuple(missing)
 
 
 def _promotion_metadata_missing(
@@ -980,6 +1221,7 @@ __all__ = [
     "APP_OWNED_BOUNDARY_EXCLUSIONS",
     "PRIMITIVE_CAPABILITY_TAGS",
     "PRIMITIVE_DISCOVERY_VERSION",
+    "PRIMITIVE_DISCOVERY_METADATA_FIELDS",
     "PRIMITIVE_DUPLICATE_KEY_FAMILIES",
     "PRIMITIVE_HIERARCHY",
     "PRIMITIVE_HIERARCHY_LAYER_ORDER",

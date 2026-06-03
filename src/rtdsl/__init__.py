@@ -337,6 +337,7 @@ from .primitives import within_radius
 from .primitive_hierarchy import APP_OWNED_BOUNDARY_EXCLUSIONS
 from .primitive_hierarchy import PRIMITIVE_CAPABILITY_TAGS
 from .primitive_hierarchy import PRIMITIVE_DISCOVERY_VERSION
+from .primitive_hierarchy import PRIMITIVE_DISCOVERY_METADATA_FIELDS
 from .primitive_hierarchy import PRIMITIVE_DUPLICATE_KEY_FAMILIES
 from .primitive_hierarchy import PRIMITIVE_HIERARCHY
 from .primitive_hierarchy import PRIMITIVE_HIERARCHY_LAYER_ORDER
@@ -1642,6 +1643,7 @@ __all__ = [
     "PyTorchAdapter",
     "PRIMITIVE_CAPABILITY_TAGS",
     "PRIMITIVE_DISCOVERY_VERSION",
+    "PRIMITIVE_DISCOVERY_METADATA_FIELDS",
     "PRIMITIVE_DUPLICATE_KEY_FAMILIES",
     "PRIMITIVE_PROMOTION_METADATA_STATUSES",
     "RtdlDevicePointerHandoff",

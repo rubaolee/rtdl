@@ -108,6 +108,8 @@ app/partner code unless it is redesigned as an app-independent behavior.
 - Unknown capability tags: `-`
 - Missing dependencies: `-`
 - Backward dependencies: `-`
+- Strict discovery metadata validation valid: `True`
+- Strict discovery metadata missing: `-`
 - Composition recipe validation valid: `True`
 - Composition recipe count: `5`
 - Advisory planner validation status: `accept`
@@ -194,10 +196,17 @@ Owns prepared runtime state, buffer descriptors, residency, and capacity contrac
 
 | Node | Status | Summary | Outputs | Depends on | Capabilities | Backends / partners | Boundary |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `execution.prepared_rt_state` | `stable_behavior` | Reusable prepared Embree/OptiX scenes, indexes, and query-side state. | `prepared_handle`, `lifetime_metadata` | - | - | - | - |
+| `execution.prepared_rt_state` | `stable_behavior` | Reusable prepared Embree/OptiX scenes, indexes, and query-side state. | `prepared_handle`, `lifetime_metadata` | - | `intent:exists`, `shape:generic`, `output:columns`, `exactness:bounded`, `keying:none` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | - |
 | `execution.buffer_descriptors` | `internal_substrate` | Typed host/device buffers and result-buffer descriptors. | `typed_buffer_descriptor`, `result_buffer_descriptor` | - | - | - | - |
 | `execution.partner_resident_handoff` | `internal_substrate` | Describes user/partner-owned device columns handed to RTDL without changing app ownership. | `partner_column_descriptor`, `device_pointer_handoff` | - | - | - | - |
-| `execution.capacity_overflow_contract` | `stable_behavior` | Shared capacity accounting and fail-closed overflow behavior for exact outputs. | `capacity`, `overflowed`, `complete_candidate_coverage` | - | - | - | - |
+| `execution.capacity_overflow_contract` | `stable_behavior` | Shared capacity accounting and fail-closed overflow behavior for exact outputs. | `capacity`, `overflowed`, `complete_candidate_coverage` | - | `intent:collect_rows`, `shape:generic`, `output:rows`, `exactness:bounded`, `keying:none` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | - |
+
+Discovery metadata:
+
+| Node | Aliases | Intent phrases | Reference | Distinction |
+| --- | --- | --- | --- | --- |
+| `execution.prepared_rt_state` | `prepared_rt_state`, `prepared_scene`, `prepared_handle`, `reusable_index` | `reuse prepared Embree or OptiX state across queries`, `find prepared scene and query state lifetime metadata` | docs/features/engine_support_matrix.md | - |
+| `execution.capacity_overflow_contract` | `capacity_overflow`, `overflow_contract`, `fail_closed_capacity`, `fail closed overflow capacity`, `bounded_capacity` | `fail closed when exact bounded output capacity is exceeded`, `find overflow and complete coverage metadata for bounded rows` | docs/rtdl_primitive_catalog.md | - |
 
 ### Traversal Layer
 
@@ -231,10 +240,10 @@ Owns exact or candidate row emission before bounded materialization or reduction
 | `rows.generic_candidate_rows` | `internal_substrate` | App-independent row streams that carry IDs, not domain meaning. | `row_stream` | `layer.traversal` | - | - | - |
 | `rows.ray_triangle_hit_stream_3d` | `candidate_behavior` | Emit bounded app-free 3-D ray/triangle hit rows for partner continuation. | `ray_id`, `primitive_id` | `traversal.any_hit`, `execution.capacity_overflow_contract` | `intent:collect_rows`, `shape:ray_triangle`, `dim:3d`, `output:rows`, `output:witness`, `exactness:bounded`, `keying:by_ray_id` | backends: `cpu_python_reference`, `embree`, `optix` | The engine emits only ray and primitive ids. Mapping primitive ids to group keys, payload values, predicates, or app rows is app or partner code. |
 | `rows.aabb_range_intersection_rows` | `internal_generic_path` | Emit generic (query_id, indexed_id) rows for 2-D AABB intersections. | `query_id`, `indexed_id` | `traversal.aabb_range_intersects`, `execution.capacity_overflow_contract` | - | - | Exact app refinement remains outside this primitive. |
-| `rows.expanded_aabb_point_membership_rows` | `candidate_behavior` | Emit generic bounded rows for points contained by caller-expanded 2-D AABBs. | `source_id`, `box_id`, `metadata_flags`, `row_offsets` | `traversal.aabb_point_contains`, `execution.capacity_overflow_contract` | - | - | Box expansion and row interpretation are caller-owned; native code emits app-free IDs only. |
+| `rows.expanded_aabb_point_membership_rows` | `candidate_behavior` | Emit generic bounded rows for points contained by caller-expanded 2-D AABBs. | `source_id`, `box_id`, `metadata_flags`, `row_offsets` | `traversal.aabb_point_contains`, `execution.capacity_overflow_contract` | `intent:membership`, `intent:collect_rows`, `shape:aabb`, `dim:2d`, `output:rows`, `exactness:bounded`, `keying:by_query_id` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | Box expansion and row interpretation are caller-owned; native code emits app-free IDs only. |
 | `rows.segment_polygon_rows` | `internal_substrate` | Generic segment/polygon witness rows used by spatial workloads. | `segment_id`, `polygon_id` | `traversal.any_hit` | - | - | - |
 | `rows.fixed_radius_neighbor_rows` | `internal_substrate` | Neighbor candidate rows emitted by fixed-radius search paths. | `query_id`, `neighbor_id`, `distance` | `traversal.fixed_radius_count_threshold` | `intent:collect_rows`, `intent:nearest`, `shape:fixed_radius`, `dim:2d`, `dim:3d`, `output:rows`, `output:witness`, `exactness:bounded`, `keying:by_query_id` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | - |
-| `rows.aggregate_frontier_collect` | `candidate_behavior` | Emit app-independent aggregate-frontier IDs, kind codes, and source offsets from prepared aggregate-tree traversal. | `source_id`, `frontier_kind_code`, `item_id`, `owner_aggregate_id`, `dfs_index`, `resume_index`, `metadata_flags`, `row_offsets` | `rows.generic_candidate_rows`, `execution.capacity_overflow_contract` | - | - | Force laws, scores, and app-owned reductions remain app or partner code. |
+| `rows.aggregate_frontier_collect` | `candidate_behavior` | Emit app-independent aggregate-frontier IDs, kind codes, and source offsets from prepared aggregate-tree traversal. | `source_id`, `frontier_kind_code`, `item_id`, `owner_aggregate_id`, `dfs_index`, `resume_index`, `metadata_flags`, `row_offsets` | `rows.generic_candidate_rows`, `execution.capacity_overflow_contract` | `intent:frontier`, `intent:collect_rows`, `shape:aggregate_frontier`, `dim:2d`, `dim:3d`, `output:rows`, `exactness:bounded`, `keying:by_query_id` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | Force laws, scores, and app-owned reductions remain app or partner code. |
 | `rows.graph_triangle_witness_rows` | `internal_substrate` | Generic row shapes used by graph-like and triangle-witness examples. | `left_id`, `right_id`, `witness_id` | `rows.generic_candidate_rows` | - | - | Graph interpretation remains app code. |
 
 Discovery metadata:
@@ -242,7 +251,9 @@ Discovery metadata:
 | Node | Aliases | Intent phrases | Reference | Distinction |
 | --- | --- | --- | --- | --- |
 | `rows.ray_triangle_hit_stream_3d` | `ray_triangle_rows`, `hit_stream`, `witness_rows`, `all_hit_rows` | `emit bounded ray triangle hit rows`, `collect ray id and primitive id witnesses for partner continuation` | docs/features/ray_tri_anyhit/README.md | - |
+| `rows.expanded_aabb_point_membership_rows` | `expanded_aabb_rows`, `aabb_point_membership_rows`, `box_membership_rows` | `emit rows for points inside caller expanded AABBs`, `collect source id and box id membership rows with overflow checks` | docs/features/db_workloads/README.md | - |
 | `rows.fixed_radius_neighbor_rows` | `fixed_radius_rows`, `neighbor_rows`, `nearest_neighbor_rows`, `radius_neighbors` | `emit neighbor rows within a fixed radius`, `return query neighbor distance rows for later ranking or reduction` | docs/features/fixed_radius_neighbors/README.md | - |
+| `rows.aggregate_frontier_collect` | `aggregate_frontier_rows`, `frontier_collect`, `aggregate_tree_rows` | `emit aggregate frontier ids and offsets from prepared aggregate traversal`, `collect generic aggregate tree frontier rows without app force laws` | docs/rtdl_primitive_catalog.md | - |
 
 ### Bounded Materialization Layer
 
@@ -252,13 +263,14 @@ Owns bounded exact output materialization and row-schema validation.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `materialization.collect_k_bounded` | `stable_primitive` | Collect up to K rows with exact fail-closed overflow semantics. | `candidate_id_rows`, `valid_count`, `overflowed` | `rows.generic_candidate_rows`, `execution.capacity_overflow_contract` | `intent:topk`, `intent:collect_rows`, `shape:generic`, `output:rows`, `output:witness`, `exactness:bounded`, `keying:none` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | - |
 | `materialization.prepared_output_buffers` | `internal_substrate` | Reusable host/device result buffers for bounded row output. | `prepared_result_buffer` | `execution.buffer_descriptors`, `materialization.collect_k_bounded` | - | - | - |
-| `materialization.row_schema_validation` | `stable_behavior` | Validate row width, row ordering, duplicate policy, and exact-output completeness. | `validated_result` | `materialization.collect_k_bounded` | - | - | - |
+| `materialization.row_schema_validation` | `stable_behavior` | Validate row width, row ordering, duplicate policy, and exact-output completeness. | `validated_result` | `materialization.collect_k_bounded` | `intent:collect_rows`, `shape:generic`, `output:rows`, `exactness:bounded`, `keying:none` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | - |
 
 Discovery metadata:
 
 | Node | Aliases | Intent phrases | Reference | Distinction |
 | --- | --- | --- | --- | --- |
 | `materialization.collect_k_bounded` | `collect_k`, `bounded_collect`, `bounded_witness`, `top_k_rows` | `collect a bounded number of witness rows`, `fail closed when exact bounded output overflows capacity` | docs/features/knn_rows/README.md | - |
+| `materialization.row_schema_validation` | `row_schema_validation`, `row_width_validation`, `bounded_result_validation` | `validate row width ordering duplicate policy and completeness`, `check bounded row materialization metadata before consuming rows` | docs/rtdl_primitive_catalog.md | - |
 
 ### Reduction Layer
 
@@ -266,10 +278,10 @@ Owns compact summaries over traversal hits, rows, or partner-resident columns.
 
 | Node | Status | Summary | Outputs | Depends on | Capabilities | Backends / partners | Boundary |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `reduction.scalar` | `stable_primitive` | Reduce primitive outputs to scalar counts, sums, minima, or maxima. | `scalar_count`, `scalar_sum`, `scalar_min`, `scalar_max` | `layer.traversal` | - | - | - |
-| `reduction.count_hits` | `stable_primitive` | Scalar count over hit flags or emitted positive rows. | `count` | `traversal.any_hit` | - | - | - |
-| `reduction.reduce_int` | `stable_primitive` | Integer count and sum reductions. | `int64_result` | `rows.generic_candidate_rows` | - | - | - |
-| `reduction.reduce_float` | `stable_primitive` | Floating min, max, and sum with explicit tolerance policy. | `float64_result` | `rows.generic_candidate_rows` | - | - | - |
+| `reduction.scalar` | `stable_primitive` | Reduce primitive outputs to scalar counts, sums, minima, or maxima. | `scalar_count`, `scalar_sum`, `scalar_min`, `scalar_max` | `layer.traversal` | `intent:reduce`, `shape:generic`, `output:scalar`, `exactness:exact`, `keying:none` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | - |
+| `reduction.count_hits` | `stable_primitive` | Scalar count over hit flags or emitted positive rows. | `count` | `traversal.any_hit` | `intent:count`, `shape:generic`, `output:scalar`, `exactness:exact`, `keying:none` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | - |
+| `reduction.reduce_int` | `stable_primitive` | Integer count and sum reductions. | `int64_result` | `rows.generic_candidate_rows` | `intent:reduce`, `shape:generic`, `output:scalar`, `exactness:exact`, `keying:none` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | - |
+| `reduction.reduce_float` | `stable_primitive` | Floating min, max, and sum with explicit tolerance policy. | `float64_result` | `rows.generic_candidate_rows` | `intent:reduce`, `shape:generic`, `output:scalar`, `exactness:exact`, `keying:none` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | - |
 | `reduction.grouped` | `internal_substrate` | Per-group flags, counts, sums, minima, maxima, and fused stats. | `grouped_rows` | `rows.generic_candidate_rows` | `intent:reduce`, `intent:count`, `shape:generic`, `output:grouped`, `output:scalar`, `exactness:exact`, `keying:by_group_id` | backends: `cpu_python_reference`, `cpu`, `optix`<br>partner ops: `segmented_count_i64`, `segmented_sum_f64`, `grouped_argmin_f64` | - |
 | `reduction.group_any` | `internal_substrate` | Per-group boolean existence. | `group_id`, `any_flag` | `reduction.grouped` | - | - | - |
 | `reduction.group_count` | `internal_substrate` | Per-group count aggregation. | `group_id`, `count` | `reduction.grouped` | - | - | - |
@@ -277,14 +289,19 @@ Owns compact summaries over traversal hits, rows, or partner-resident columns.
 | `reduction.group_min_max` | `internal_substrate` | Per-group minimum and maximum. | `group_id`, `min`, `max` | `reduction.grouped` | - | - | - |
 | `reduction.group_stats` | `internal_substrate` | Fused grouped count, sum, min, and max statistics. | `group_id`, `count`, `sum`, `min`, `max` | `reduction.grouped` | - | - | - |
 | `reduction.ray_triangle_primitive_grouped_i64` | `candidate_behavior` | All-hit 3-D ray/triangle primitive-id deduplication followed by grouped integer reduction over app-provided group ids and payloads. | `group_id`, `count`, `sum`, `min`, `max` | `traversal.any_hit`, `reduction.grouped` | `intent:reduce`, `intent:count`, `shape:ray_triangle`, `dim:3d`, `output:grouped`, `exactness:exact`, `keying:by_group_id` | backends: `cpu_python_reference`, `optix` | Query encoding and group/value semantics remain app code. |
-| `reduction.columnar_compact_summary` | `stable_compatibility_path` | Compact summaries over app-owned columnar/denormalized input. | `compact_summary` | `execution.partner_resident_handoff`, `reduction.grouped` | - | - | Not SQL, not a DBMS, and not a query planner. |
+| `reduction.columnar_compact_summary` | `stable_compatibility_path` | Compact summaries over app-owned columnar/denormalized input. | `compact_summary` | `execution.partner_resident_handoff`, `reduction.grouped` | `intent:reduce`, `shape:generic`, `output:columns`, `exactness:exact`, `keying:by_group_id` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | Not SQL, not a DBMS, and not a query planner. |
 
 Discovery metadata:
 
 | Node | Aliases | Intent phrases | Reference | Distinction |
 | --- | --- | --- | --- | --- |
+| `reduction.scalar` | `scalar_reduction`, `reduce_scalar`, `count_sum_min_max`, `compact_scalar_summary` | `reduce primitive outputs to scalar counts sums minima or maxima`, `compute compact scalar summaries without returning rows` | docs/features/reduce_rows/README.md | - |
+| `reduction.count_hits` | `count_hits_reduction`, `positive_row_count`, `hit_flag_count` | `count hit flags or emitted positive rows`, `compute scalar hit count as a reduction` | docs/features/ray_tri_hitcount/README.md | - |
+| `reduction.reduce_int` | `reduce_int`, `integer_reduction`, `integer count sum reductions`, `int_count_sum`, `i64_reduce` | `reduce integer rows to count or sum`, `compute int64 scalar reductions over generic rows` | docs/features/reduce_rows/README.md | - |
+| `reduction.reduce_float` | `reduce_float`, `floating_reduction`, `float_min_max_sum`, `f64_reduce` | `reduce floating rows to min max or sum`, `compute float64 scalar reductions with tolerance policy` | docs/features/reduce_rows/README.md | - |
 | `reduction.grouped` | `grouped_reduction`, `group_by`, `group_count`, `group_sum`, `segmented_reduction` | `reduce rows per group id`, `compute grouped count sum min max or stats` | docs/features/reduce_rows/README.md | - |
 | `reduction.ray_triangle_primitive_grouped_i64` | `ray_triangle_grouped_reduction`, `primitive_grouped_reduction`, `grouped_i64_reduction` | `reduce ray triangle primitive hits by caller supplied group id`, `count or sum primitive payloads per group after ray triangle traversal` | examples/v2_0/research_benchmarks/raydb_style/README.md | Combines ray/triangle traversal with caller-supplied primitive group ids; plain grouped reductions do not perform traversal and count_hits is not keyed. |
+| `reduction.columnar_compact_summary` | `columnar_compact_summary`, `columnar_grouped_aggregate`, `columnar_payload_summary` | `summarize app owned columnar payloads with grouped reductions`, `lower columnar aggregate rows without SQL or DBMS semantics` | docs/features/db_workloads/README.md | - |
 
 ### Continuation Layer
 
@@ -310,10 +327,19 @@ Records design pressure that is not yet a stable app-independent primitive contr
 
 | Node | Status | Summary | Outputs | Depends on | Capabilities | Backends / partners | Boundary |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `candidate.aggregate_frontier_traversal` | `candidate_behavior` | Future native/partner lowering of aggregate-tree traversal behind the generic aggregate-frontier row contract. | `frontier_rows`, `summary_inputs` | `rows.aggregate_frontier_collect`, `continuation.partner_resident` | - | - | Force law and scoring math remain app or partner code. |
-| `candidate.streamed_graph_lowering` | `candidate_behavior` | Lower large graph-like row contracts without all-at-once materialization. | `row_pages`, `stream_state` | `continuation.segmented_chunked_rows` | - | - | - |
-| `candidate.device_grouped_candidate_merge` | `candidate_behavior` | Merge grouped candidate streams on device before final materialization. | `grouped_candidate_summary` | `reduction.grouped`, `execution.partner_resident_handoff` | - | - | - |
-| `candidate.zero_copy_row_streams` | `candidate_behavior` | Avoid unnecessary host materialization when the consumer remains device-resident. | `device_row_stream` | `execution.partner_resident_handoff`, `rows.generic_candidate_rows` | - | - | - |
+| `candidate.aggregate_frontier_traversal` | `candidate_behavior` | Future native/partner lowering of aggregate-tree traversal behind the generic aggregate-frontier row contract. | `frontier_rows`, `summary_inputs` | `rows.aggregate_frontier_collect`, `continuation.partner_resident` | `intent:frontier`, `intent:collect_rows`, `shape:aggregate_frontier`, `dim:2d`, `dim:3d`, `output:rows`, `exactness:bounded`, `keying:by_query_id` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | Force law and scoring math remain app or partner code. |
+| `candidate.streamed_graph_lowering` | `candidate_behavior` | Lower large graph-like row contracts without all-at-once materialization. | `row_pages`, `stream_state` | `continuation.segmented_chunked_rows` | `intent:collect_rows`, `shape:generic`, `output:rows`, `exactness:bounded`, `keying:by_query_id` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | - |
+| `candidate.device_grouped_candidate_merge` | `candidate_behavior` | Merge grouped candidate streams on device before final materialization. | `grouped_candidate_summary` | `reduction.grouped`, `execution.partner_resident_handoff` | `intent:reduce`, `shape:generic`, `output:grouped`, `exactness:bounded`, `keying:by_group_id` | backends: `cpu_python_reference`, `cpu`, `optix`<br>partner ops: `segmented_count_i64`, `segmented_sum_f64`, `grouped_argmin_f64` | - |
+| `candidate.zero_copy_row_streams` | `candidate_behavior` | Avoid unnecessary host materialization when the consumer remains device-resident. | `device_row_stream` | `execution.partner_resident_handoff`, `rows.generic_candidate_rows` | `intent:collect_rows`, `shape:generic`, `output:columns`, `exactness:bounded`, `keying:by_query_id` | backends: `metadata_only` | - |
+
+Discovery metadata:
+
+| Node | Aliases | Intent phrases | Reference | Distinction |
+| --- | --- | --- | --- | --- |
+| `candidate.aggregate_frontier_traversal` | `aggregate_frontier_traversal`, `aggregate_tree_traversal`, `frontier_traversal` | `traverse aggregate tree frontier behind generic row contract`, `future lowering for aggregate frontier rows without force law semantics` | docs/rtdl_primitive_catalog.md | - |
+| `candidate.streamed_graph_lowering` | `streamed_graph_lowering`, `segmented_graph_rows`, `paged_graph_rows` | `lower large graph like row contracts with segmented row pages`, `avoid all at once graph row materialization` | docs/rtdl_primitive_catalog.md | - |
+| `candidate.device_grouped_candidate_merge` | `device_grouped_candidate_merge`, `grouped_candidate_finalize`, `device_grouped_merge` | `merge grouped candidate streams on device before materialization`, `finalize grouped candidate summaries without host row expansion` | docs/rtdl_primitive_catalog.md | - |
+| `candidate.zero_copy_row_streams` | `zero_copy_row_streams`, `device_resident_rows`, `resident_row_streams` | `avoid host materialization when consuming rows on device`, `future device resident row stream handoff for partner continuation` | docs/research/future_version_to_do_list.md | - |
 
 ## Composition Recipes
 
