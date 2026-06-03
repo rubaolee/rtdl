@@ -192,7 +192,12 @@ def run_numba_segmented_count_i64(
     output.copy_to_device(np.zeros((group_count,), dtype=np.int64))
     if row_count:
         grid = ((row_count + block_size - 1) // block_size,)
-        _numba_segmented_count_i64_kernel(cuda)[grid, block_size](group_ids, output, row_count, group_count)
+        _cached_numba_kernel(cuda, _numba_segmented_count_i64_kernel)[grid, block_size](
+            group_ids,
+            output,
+            row_count,
+            group_count,
+        )
     cuda.synchronize()
     elapsed = perf_counter() - started
 
@@ -234,7 +239,13 @@ def run_numba_segmented_sum_f64(
     output.copy_to_device(np.zeros((group_count,), dtype=np.float64))
     if row_count:
         grid = ((row_count + block_size - 1) // block_size,)
-        _numba_segmented_sum_f64_kernel(cuda)[grid, block_size](group_ids, values, output, row_count, group_count)
+        _cached_numba_kernel(cuda, _numba_segmented_sum_f64_kernel)[grid, block_size](
+            group_ids,
+            values,
+            output,
+            row_count,
+            group_count,
+        )
     cuda.synchronize()
     elapsed = perf_counter() - started
 
@@ -389,7 +400,7 @@ def run_numba_global_argmax_u32_f64(
     current_scores = cuda.device_array((block_count,), dtype=np.float64)
     current_row_indices = cuda.device_array((block_count,), dtype=np.int64)
     current_valid_counts = cuda.device_array((block_count,), dtype=np.int64)
-    _numba_global_argmax_initial_block_reduce_u32_f64_kernel(cuda)[(block_count,), block_size](
+    _cached_numba_kernel(cuda, _numba_global_argmax_initial_block_reduce_u32_f64_kernel)[(block_count,), block_size](
         item_ids,
         scores,
         current_item_ids,
@@ -413,7 +424,7 @@ def run_numba_global_argmax_u32_f64(
         next_scores = cuda.device_array((block_count,), dtype=np.float64)
         next_row_indices = cuda.device_array((block_count,), dtype=np.int64)
         next_valid_counts = cuda.device_array((block_count,), dtype=np.int64)
-        _numba_global_argmax_block_reduce_u32_f64_kernel(cuda)[(block_count,), block_size](
+        _cached_numba_kernel(cuda, _numba_global_argmax_block_reduce_u32_f64_kernel)[(block_count,), block_size](
             current_item_ids,
             current_scores,
             current_row_indices,
@@ -489,7 +500,7 @@ def run_numba_pairwise_l2_sq_score_rows_2d(
     scores = cuda.device_array((row_count,), dtype=np.float64)
     if row_count:
         grid = ((row_count + block_size - 1) // block_size,)
-        _numba_pairwise_l2_sq_score_rows_2d_kernel(cuda)[grid, block_size](
+        _cached_numba_kernel(cuda, _numba_pairwise_l2_sq_score_rows_2d_kernel)[grid, block_size](
             source_x,
             source_y,
             target_ids,
@@ -559,7 +570,7 @@ def run_numba_pairwise_l2_sq_block_nearest_rows_2d(
     scores = cuda.device_array((row_count,), dtype=np.float64)
     if row_count:
         grid = (source_count, target_tile_count)
-        _numba_pairwise_l2_sq_block_nearest_rows_2d_kernel(cuda)[grid, block_size](
+        _cached_numba_kernel(cuda, _numba_pairwise_l2_sq_block_nearest_rows_2d_kernel)[grid, block_size](
             source_x,
             source_y,
             target_ids,
@@ -630,7 +641,7 @@ def run_numba_compact_mask_i64(
 
     block_count = (row_count + block_size - 1) // block_size
     block_counts = cuda.device_array((block_count,), dtype=np.int64)
-    _numba_compact_count_blocks_i64_kernel(cuda)[(block_count,), 1](
+    _cached_numba_kernel(cuda, _numba_compact_count_blocks_i64_kernel)[(block_count,), 1](
         mask,
         block_counts,
         row_count,
@@ -647,7 +658,7 @@ def run_numba_compact_mask_i64(
     compact_values = cuda.device_array((total_count,), dtype=np.int64)
     original_indices = cuda.device_array((total_count,), dtype=np.int64)
     if total_count:
-        _numba_compact_scatter_i64_kernel(cuda)[(block_count,), block_size](
+        _cached_numba_kernel(cuda, _numba_compact_scatter_i64_kernel)[(block_count,), block_size](
             values,
             mask,
             block_offsets,
@@ -687,7 +698,7 @@ def run_numba_mask_indices_i64(
         if block_size <= 0:
             raise ValueError("block_size must be positive")
         grid = ((row_count + block_size - 1) // block_size,)
-        _numba_iota_i64_kernel(cuda)[grid, block_size](values, row_count)
+        _cached_numba_kernel(cuda, _numba_iota_i64_kernel)[grid, block_size](values, row_count)
     return run_numba_compact_mask_i64(values, mask, block_size=block_size)
 
 
@@ -724,7 +735,7 @@ def _run_numba_segmented_extreme_f64(
     output.copy_to_device(np.full((group_count,), float(initial), dtype=np.float64))
     if row_count:
         grid = ((row_count + block_size - 1) // block_size,)
-        kernel_factory(cuda)[grid, block_size](group_ids, values, output, row_count, group_count)
+        _cached_numba_kernel(cuda, kernel_factory)[grid, block_size](group_ids, values, output, row_count, group_count)
     cuda.synchronize()
     elapsed = perf_counter() - started
 
