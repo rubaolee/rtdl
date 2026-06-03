@@ -11,11 +11,14 @@ ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
+import rtdsl as rt
 from examples.v2_0.apps.ml import rtdl_ann_candidate_app as ann_app
 
 
 BENCHMARK_NAME = "rtnn_neighbor_search"
 ARTIFACT_DIR = ROOT / "docs" / "reports" / "goal2388_rtnn_fair_fight_pod"
+RTNN_V2_8_RANKED_SUMMARY_TYPED_STREAM_VERSION = "rtdl.rtnn.v2_8.ranked_summary_typed_stream.v1"
+RTNN_V2_8_RANKED_SUMMARY_EXECUTION_PATH = "generic_ranked_summary_typed_stream_partner_columns"
 
 
 SUPPORTED_CONTRACTS = (
@@ -207,7 +210,103 @@ def rtnn_command_plan_payload() -> dict[str, Any]:
     }
 
 
-def run_app(mode: str = "scope", *, copies: int = 1, partner: str = "torch") -> dict[str, Any]:
+def describe_rtnn_v2_8_ranked_summary_typed_stream(
+    *,
+    operation: str = "grouped_topk_f64",
+    partner: str = "torch",
+    k: int = 8,
+) -> dict[str, Any]:
+    request = rt.execute_ranked_summary_typed_stream_partner_columns(
+        group_ids=(0, 0, 1),
+        item_ids=(7, 3, 9),
+        scores=(0.5, 1.25, 0.75),
+        group_count=2,
+        operation=operation,
+        partner=partner,
+        stream_id="rtnn_v2_8_ranked_summary_descriptor",
+        producer_primitive="fixed_radius_ranked_summary_columns_3d",
+        k=k if operation == "grouped_topk_f64" else None,
+        dry_run=True,
+    )
+    return {
+        "benchmark_app": BENCHMARK_NAME,
+        "contract_version": RTNN_V2_8_RANKED_SUMMARY_TYPED_STREAM_VERSION,
+        "execution_path": RTNN_V2_8_RANKED_SUMMARY_EXECUTION_PATH,
+        "operation": operation,
+        "partner": partner,
+        "k": k if operation == "grouped_topk_f64" else None,
+        "uses_v2_8_typed_result_stream": True,
+        "uses_v2_8_ranked_summary_front_door": True,
+        "requires_caller_supplied_partner_columns": True,
+        "source_materialization": request["source_materialization"],
+        "typed_stream": request["typed_stream"],
+        "continuation_plan": request["continuation_plan"],
+        "partner_policy": {
+            "explicit_user_partner_choice_required": True,
+            "automatic_partner_selection_allowed": False,
+            "argmin_argmax_partners": ("numba", "torch", "triton"),
+            "topk_partners": ("torch", "triton"),
+            "numba_topk_status": "not_promoted_in_current_partner_adapter",
+        },
+        "claim_boundary": {
+            **CLAIM_BOUNDARY,
+            "device_resident_result_stream_proven": False,
+            "true_zero_copy_claim_authorized": False,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "full_rtnn_paper_reproduction": False,
+        },
+    }
+
+
+def run_rtnn_v2_8_ranked_summary_typed_stream_preview(
+    inputs: dict[str, Any],
+    *,
+    operation: str = "grouped_topk_f64",
+    partner: str = "torch",
+    k: int = 8,
+    block_size: int | None = None,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    request = rt.execute_ranked_summary_typed_stream_partner_columns(
+        group_ids=inputs["group_ids"],
+        item_ids=inputs["item_ids"],
+        scores=inputs["scores"],
+        group_count=int(inputs["group_count"]),
+        operation=operation,
+        partner=partner,
+        stream_id=str(inputs.get("stream_id", "rtnn_v2_8_ranked_summary_preview")),
+        producer_primitive=str(inputs.get("producer_primitive", "fixed_radius_ranked_summary_columns_3d")),
+        k=k if operation == "grouped_topk_f64" else None,
+        block_size=block_size,
+        dry_run=dry_run,
+    )
+    return {
+        "benchmark_app": BENCHMARK_NAME,
+        "contract_version": RTNN_V2_8_RANKED_SUMMARY_TYPED_STREAM_VERSION,
+        "execution_path": RTNN_V2_8_RANKED_SUMMARY_EXECUTION_PATH,
+        **request,
+        "claim_boundary": {
+            **CLAIM_BOUNDARY,
+            "device_resident_result_stream_proven": False,
+            "true_zero_copy_claim_authorized": False,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "full_rtnn_paper_reproduction": False,
+        },
+    }
+
+
+def run_app(
+    mode: str = "scope",
+    *,
+    copies: int = 1,
+    partner: str = "torch",
+    operation: str = "grouped_topk_f64",
+    k: int = 8,
+) -> dict[str, Any]:
     if mode == "scope":
         return scope_payload()
     if mode == "ann_cpu_quality":
@@ -218,6 +317,8 @@ def run_app(mode: str = "scope", *, copies: int = 1, partner: str = "torch") -> 
         return rtnn_known_results_payload()
     if mode == "rtnn_command_plan":
         return rtnn_command_plan_payload()
+    if mode == "rtnn_v2_8_ranked_summary_plan":
+        return describe_rtnn_v2_8_ranked_summary_typed_stream(operation=operation, partner=partner, k=k)
     raise ValueError(f"unsupported mode: {mode}")
 
 
@@ -227,13 +328,32 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--mode",
-        choices=("scope", "ann_cpu_quality", "ann_partner_quality", "rtnn_known_results", "rtnn_command_plan"),
+        choices=(
+            "scope",
+            "ann_cpu_quality",
+            "ann_partner_quality",
+            "rtnn_known_results",
+            "rtnn_command_plan",
+            "rtnn_v2_8_ranked_summary_plan",
+        ),
         default="scope",
     )
     parser.add_argument("--copies", type=int, default=1)
-    parser.add_argument("--partner", choices=("torch", "cupy"), default="torch")
+    parser.add_argument("--partner", choices=("torch", "cupy", "numba", "triton"), default="torch")
+    parser.add_argument(
+        "--operation",
+        choices=("grouped_argmin_f64", "grouped_argmax_f64", "grouped_topk_f64"),
+        default="grouped_topk_f64",
+    )
+    parser.add_argument("--k", type=int, default=8)
     args = parser.parse_args(argv)
-    print(json.dumps(run_app(args.mode, copies=args.copies, partner=args.partner), indent=2, sort_keys=True))
+    print(
+        json.dumps(
+            run_app(args.mode, copies=args.copies, partner=args.partner, operation=args.operation, k=args.k),
+            indent=2,
+            sort_keys=True,
+        )
+    )
     return 0
 
 
