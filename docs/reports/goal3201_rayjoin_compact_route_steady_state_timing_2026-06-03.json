@@ -1,0 +1,414 @@
+{
+  "goal": 3201,
+  "created_at_utc": "2026-06-03T22:45:32.493072+00:00",
+  "commit": "314ff79f",
+  "description": "Steady-state app-route timing for RayJoin compact grouped-count route with warm-up separated.",
+  "route": "prepared_optix_compact_grouped_count",
+  "repeats_per_scale": 5,
+  "rows": [
+    {
+      "n_left": 512,
+      "n_right": 512,
+      "expected_pair_count": 262144,
+      "warmup_seconds": 0.9906987678259611,
+      "warmup_row_count": 262144,
+      "warmup_compact_row_count": 512,
+      "measurements": [
+        {
+          "rep": 0,
+          "total_seconds": 0.012239031493663788,
+          "phases_sec": {
+            "query_pack_sec": 0.0018927790224552155,
+            "prepare_static_scene_sec": 0.002638513222336769,
+            "candidate_device_columns_sec": 0.003118574619293213,
+            "compact_grouped_count_sec": 0.000182250514626503,
+            "compact_validation_copy_sec": 0.00011848844587802887
+          },
+          "row_count": 262144,
+          "compact_row_count": 512,
+          "count_sum": 262144,
+          "device_resident": true
+        },
+        {
+          "rep": 1,
+          "total_seconds": 0.010487176477909088,
+          "phases_sec": {
+            "query_pack_sec": 0.001891113817691803,
+            "prepare_static_scene_sec": 0.002772238105535507,
+            "candidate_device_columns_sec": 0.002548305317759514,
+            "compact_grouped_count_sec": 0.00015244819223880768,
+            "compact_validation_copy_sec": 9.224377572536469e-05
+          },
+          "row_count": 262144,
+          "compact_row_count": 512,
+          "count_sum": 262144,
+          "device_resident": true
+        },
+        {
+          "rep": 2,
+          "total_seconds": 0.00638449564576149,
+          "phases_sec": {
+            "query_pack_sec": 0.0018003974109888077,
+            "prepare_static_scene_sec": 0.0024554915726184845,
+            "candidate_device_columns_sec": 0.0010458528995513916,
+            "compact_grouped_count_sec": 0.00014579296112060547,
+            "compact_validation_copy_sec": 8.776038885116577e-05
+          },
+          "row_count": 262144,
+          "compact_row_count": 512,
+          "count_sum": 262144,
+          "device_resident": true
+        },
+        {
+          "rep": 3,
+          "total_seconds": 0.006181169301271439,
+          "phases_sec": {
+            "query_pack_sec": 0.001698153093457222,
+            "prepare_static_scene_sec": 0.0023502539843320847,
+            "candidate_device_columns_sec": 0.0010375045239925385,
+            "compact_grouped_count_sec": 0.00015249662101268768,
+            "compact_validation_copy_sec": 8.665397763252258e-05
+          },
+          "row_count": 262144,
+          "compact_row_count": 512,
+          "count_sum": 262144,
+          "device_resident": true
+        },
+        {
+          "rep": 4,
+          "total_seconds": 0.006184715777635574,
+          "phases_sec": {
+            "query_pack_sec": 0.0017721746116876602,
+            "prepare_static_scene_sec": 0.0023441165685653687,
+            "candidate_device_columns_sec": 0.0010100919753313065,
+            "compact_grouped_count_sec": 0.0001400243490934372,
+            "compact_validation_copy_sec": 8.644722402095795e-05
+          },
+          "row_count": 262144,
+          "compact_row_count": 512,
+          "count_sum": 262144,
+          "device_resident": true
+        }
+      ],
+      "median_total_seconds": 0.00638449564576149,
+      "min_total_seconds": 0.006181169301271439,
+      "max_total_seconds": 0.012239031493663788,
+      "mean_total_seconds": 0.008295317739248275,
+      "all_match_expected_counts": true,
+      "claim_boundary": {
+        "release_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false
+      }
+    },
+    {
+      "n_left": 1024,
+      "n_right": 1024,
+      "expected_pair_count": 1048576,
+      "warmup_seconds": 0.01156957820057869,
+      "warmup_row_count": 1048576,
+      "warmup_compact_row_count": 1024,
+      "measurements": [
+        {
+          "rep": 0,
+          "total_seconds": 0.011252926662564278,
+          "phases_sec": {
+            "query_pack_sec": 0.003480907529592514,
+            "prepare_static_scene_sec": 0.004264207556843758,
+            "candidate_device_columns_sec": 0.0017933007329702377,
+            "compact_grouped_count_sec": 0.00015836767852306366,
+            "compact_validation_copy_sec": 9.767524898052216e-05
+          },
+          "row_count": 1048576,
+          "compact_row_count": 1024,
+          "count_sum": 1048576,
+          "device_resident": true
+        },
+        {
+          "rep": 1,
+          "total_seconds": 0.011097695678472519,
+          "phases_sec": {
+            "query_pack_sec": 0.003422420471906662,
+            "prepare_static_scene_sec": 0.004205644130706787,
+            "candidate_device_columns_sec": 0.0018033627420663834,
+            "compact_grouped_count_sec": 0.00014921464025974274,
+            "compact_validation_copy_sec": 9.702518582344055e-05
+          },
+          "row_count": 1048576,
+          "compact_row_count": 1024,
+          "count_sum": 1048576,
+          "device_resident": true
+        },
+        {
+          "rep": 2,
+          "total_seconds": 0.011139078065752983,
+          "phases_sec": {
+            "query_pack_sec": 0.0034195445477962494,
+            "prepare_static_scene_sec": 0.004192657768726349,
+            "candidate_device_columns_sec": 0.0018017906695604324,
+            "compact_grouped_count_sec": 0.00015766918659210205,
+            "compact_validation_copy_sec": 9.865500032901764e-05
+          },
+          "row_count": 1048576,
+          "compact_row_count": 1024,
+          "count_sum": 1048576,
+          "device_resident": true
+        },
+        {
+          "rep": 3,
+          "total_seconds": 0.0112311951816082,
+          "phases_sec": {
+            "query_pack_sec": 0.0034999530762434006,
+            "prepare_static_scene_sec": 0.00420023687183857,
+            "candidate_device_columns_sec": 0.0018076356500387192,
+            "compact_grouped_count_sec": 0.00015570037066936493,
+            "compact_validation_copy_sec": 0.00010164827108383179
+          },
+          "row_count": 1048576,
+          "compact_row_count": 1024,
+          "count_sum": 1048576,
+          "device_resident": true
+        },
+        {
+          "rep": 4,
+          "total_seconds": 0.011709483340382576,
+          "phases_sec": {
+            "query_pack_sec": 0.0035497210919857025,
+            "prepare_static_scene_sec": 0.004329273477196693,
+            "candidate_device_columns_sec": 0.001912243664264679,
+            "compact_grouped_count_sec": 0.0001712758094072342,
+            "compact_validation_copy_sec": 0.00014278292655944824
+          },
+          "row_count": 1048576,
+          "compact_row_count": 1024,
+          "count_sum": 1048576,
+          "device_resident": true
+        }
+      ],
+      "median_total_seconds": 0.0112311951816082,
+      "min_total_seconds": 0.011097695678472519,
+      "max_total_seconds": 0.011709483340382576,
+      "mean_total_seconds": 0.01128607578575611,
+      "all_match_expected_counts": true,
+      "claim_boundary": {
+        "release_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false
+      }
+    },
+    {
+      "n_left": 2048,
+      "n_right": 2048,
+      "expected_pair_count": 4194304,
+      "warmup_seconds": 0.022650089114904404,
+      "warmup_row_count": 4194304,
+      "warmup_compact_row_count": 2048,
+      "measurements": [
+        {
+          "rep": 0,
+          "total_seconds": 0.02155112847685814,
+          "phases_sec": {
+            "query_pack_sec": 0.006855664774775505,
+            "prepare_static_scene_sec": 0.00805334746837616,
+            "candidate_device_columns_sec": 0.003301914781332016,
+            "compact_grouped_count_sec": 0.00021343864500522614,
+            "compact_validation_copy_sec": 0.00013935379683971405
+          },
+          "row_count": 4194304,
+          "compact_row_count": 2048,
+          "count_sum": 4194304,
+          "device_resident": true
+        },
+        {
+          "rep": 1,
+          "total_seconds": 0.021330196410417557,
+          "phases_sec": {
+            "query_pack_sec": 0.006946727633476257,
+            "prepare_static_scene_sec": 0.007819080725312233,
+            "candidate_device_columns_sec": 0.00328647717833519,
+            "compact_grouped_count_sec": 0.00019931234419345856,
+            "compact_validation_copy_sec": 0.00013548694550991058
+          },
+          "row_count": 4194304,
+          "compact_row_count": 2048,
+          "count_sum": 4194304,
+          "device_resident": true
+        },
+        {
+          "rep": 2,
+          "total_seconds": 0.021341977640986443,
+          "phases_sec": {
+            "query_pack_sec": 0.006819223985075951,
+            "prepare_static_scene_sec": 0.007907642051577568,
+            "candidate_device_columns_sec": 0.0033154599368572235,
+            "compact_grouped_count_sec": 0.00020286254584789276,
+            "compact_validation_copy_sec": 0.00012934952974319458
+          },
+          "row_count": 4194304,
+          "compact_row_count": 2048,
+          "count_sum": 4194304,
+          "device_resident": true
+        },
+        {
+          "rep": 3,
+          "total_seconds": 0.03589046746492386,
+          "phases_sec": {
+            "query_pack_sec": 0.020974155515432358,
+            "prepare_static_scene_sec": 0.00807284377515316,
+            "candidate_device_columns_sec": 0.003417428582906723,
+            "compact_grouped_count_sec": 0.00021085143089294434,
+            "compact_validation_copy_sec": 0.00015825964510440826
+          },
+          "row_count": 4194304,
+          "compact_row_count": 2048,
+          "count_sum": 4194304,
+          "device_resident": true
+        },
+        {
+          "rep": 4,
+          "total_seconds": 0.02164783515036106,
+          "phases_sec": {
+            "query_pack_sec": 0.006972990930080414,
+            "prepare_static_scene_sec": 0.00799047015607357,
+            "candidate_device_columns_sec": 0.003310875967144966,
+            "compact_grouped_count_sec": 0.00020507164299488068,
+            "compact_validation_copy_sec": 0.0001432076096534729
+          },
+          "row_count": 4194304,
+          "compact_row_count": 2048,
+          "count_sum": 4194304,
+          "device_resident": true
+        }
+      ],
+      "median_total_seconds": 0.02155112847685814,
+      "min_total_seconds": 0.021330196410417557,
+      "max_total_seconds": 0.03589046746492386,
+      "mean_total_seconds": 0.024352321028709413,
+      "all_match_expected_counts": true,
+      "claim_boundary": {
+        "release_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false
+      }
+    },
+    {
+      "n_left": 4096,
+      "n_right": 4096,
+      "expected_pair_count": 16777216,
+      "warmup_seconds": 0.04441756755113602,
+      "warmup_row_count": 16777216,
+      "warmup_compact_row_count": 4096,
+      "measurements": [
+        {
+          "rep": 0,
+          "total_seconds": 0.04278954677283764,
+          "phases_sec": {
+            "query_pack_sec": 0.014151588082313538,
+            "prepare_static_scene_sec": 0.015710720792412758,
+            "candidate_device_columns_sec": 0.006151236593723297,
+            "compact_grouped_count_sec": 0.00036278925836086273,
+            "compact_validation_copy_sec": 0.0001968834549188614
+          },
+          "row_count": 16777216,
+          "compact_row_count": 4096,
+          "count_sum": 16777216,
+          "device_resident": true
+        },
+        {
+          "rep": 1,
+          "total_seconds": 0.05652499571442604,
+          "phases_sec": {
+            "query_pack_sec": 0.02750241570174694,
+            "prepare_static_scene_sec": 0.015811944380402565,
+            "candidate_device_columns_sec": 0.006277125328779221,
+            "compact_grouped_count_sec": 0.0003735926002264023,
+            "compact_validation_copy_sec": 0.0002252720296382904
+          },
+          "row_count": 16777216,
+          "compact_row_count": 4096,
+          "count_sum": 16777216,
+          "device_resident": true
+        },
+        {
+          "rep": 2,
+          "total_seconds": 0.04226326756179333,
+          "phases_sec": {
+            "query_pack_sec": 0.014083553105592728,
+            "prepare_static_scene_sec": 0.015133380889892578,
+            "candidate_device_columns_sec": 0.006197920069098473,
+            "compact_grouped_count_sec": 0.00036461837589740753,
+            "compact_validation_copy_sec": 0.00020843185484409332
+          },
+          "row_count": 16777216,
+          "compact_row_count": 4096,
+          "count_sum": 16777216,
+          "device_resident": true
+        },
+        {
+          "rep": 3,
+          "total_seconds": 0.045530401170253754,
+          "phases_sec": {
+            "query_pack_sec": 0.015927888453006744,
+            "prepare_static_scene_sec": 0.015953805297613144,
+            "candidate_device_columns_sec": 0.006192659959197044,
+            "compact_grouped_count_sec": 0.0003779325634241104,
+            "compact_validation_copy_sec": 0.0003154892474412918
+          },
+          "row_count": 16777216,
+          "compact_row_count": 4096,
+          "count_sum": 16777216,
+          "device_resident": true
+        },
+        {
+          "rep": 4,
+          "total_seconds": 0.0613513495773077,
+          "phases_sec": {
+            "query_pack_sec": 0.01424260064959526,
+            "prepare_static_scene_sec": 0.031409433111548424,
+            "candidate_device_columns_sec": 0.008026046678423882,
+            "compact_grouped_count_sec": 0.00037807226181030273,
+            "compact_validation_copy_sec": 0.00023434124886989594
+          },
+          "row_count": 16777216,
+          "compact_row_count": 4096,
+          "count_sum": 16777216,
+          "device_resident": true
+        }
+      ],
+      "median_total_seconds": 0.045530401170253754,
+      "min_total_seconds": 0.04226326756179333,
+      "max_total_seconds": 0.0613513495773077,
+      "mean_total_seconds": 0.04969191215932369,
+      "all_match_expected_counts": true,
+      "claim_boundary": {
+        "release_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false
+      }
+    }
+  ],
+  "claim_boundary": {
+    "release_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false
+  }
+}
