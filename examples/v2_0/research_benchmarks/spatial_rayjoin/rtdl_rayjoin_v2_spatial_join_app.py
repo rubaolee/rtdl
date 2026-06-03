@@ -405,6 +405,126 @@ def run_rayjoin_prepared_optix_workload(
     return payload
 
 
+def run_rayjoin_prepared_optix_compact_grouped_count_workload(
+    workload: str = "lsi",
+    *,
+    dataset: str | None = None,
+    include_rows: bool = False,
+) -> dict[str, object]:
+    if workload != "lsi":
+        raise ValueError("prepared_optix_compact_grouped_count currently supports only the lsi workload")
+    resolved_dataset = dataset or _DEFAULT_DATASETS[workload]
+    case = _load_rayjoin_case(workload, resolved_dataset)
+    phases: dict[str, float] = {}
+    rows: tuple[dict[str, int], ...] = ()
+
+    left_segments = tuple(dict(segment) for segment in case.inputs["left"])
+    right_segments = tuple(case.inputs["right"])
+    original_left_ids = tuple(int(segment["id"]) for segment in left_segments)
+    remapped_left_segments = tuple(
+        {**segment, "id": index}
+        for index, segment in enumerate(left_segments)
+    )
+
+    from rtdsl.optix_runtime import pack_segments
+    from rtdsl.optix_runtime import prepare_segment_pair_intersection_optix
+
+    packed_left = _phase_time(
+        phases,
+        "query_pack_sec",
+        lambda: pack_segments(records=remapped_left_segments),
+    )
+    prepared = _phase_time(
+        phases,
+        "prepare_static_scene_sec",
+        lambda: prepare_segment_pair_intersection_optix(right_segments),
+    )
+    candidate_metadata: dict[str, object]
+    compact_metadata: dict[str, object]
+    candidate_row_count = 0
+    try:
+        candidate_start = time.perf_counter()
+        columns = prepared.candidate_device_columns(
+            packed_left,
+            max_rows=len(remapped_left_segments) * len(right_segments),
+        )
+        phases["candidate_device_columns_sec"] = time.perf_counter() - candidate_start
+        try:
+            candidate_metadata = columns.to_metadata()
+            candidate_row_count = int(columns.row_count)
+            compact_start = time.perf_counter()
+            compact = columns.grouped_count_by_left_id_compact_device_columns(
+                group_capacity=max(1, len(remapped_left_segments)),
+            )
+            phases["compact_grouped_count_sec"] = time.perf_counter() - compact_start
+            try:
+                compact_metadata = compact.to_metadata()
+                if include_rows:
+                    import cupy as cp  # type: ignore
+
+                    copy_start = time.perf_counter()
+                    keys = cp.asnumpy(compact.as_cupy_group_keys()).tolist()
+                    counts = cp.asnumpy(compact.as_cupy_counts()).tolist()
+                    phases["compact_validation_copy_sec"] = time.perf_counter() - copy_start
+                    rows = tuple(
+                        {
+                            "left_id": original_left_ids[int(key)],
+                            "count": int(count),
+                        }
+                        for key, count in zip(keys, counts)
+                    )
+            finally:
+                compact.close()
+        finally:
+            columns.close()
+    finally:
+        prepared.close()
+
+    payload: dict[str, object] = {
+        "app": "rayjoin_v2_spatial_join",
+        "workload": workload,
+        "execution_route": "prepared_optix_compact_grouped_count",
+        "backend": "optix",
+        "dataset": resolved_dataset,
+        "dataset_note": case.note,
+        "row_count": candidate_row_count,
+        "summary": {
+            "intersection_count": candidate_row_count,
+            "left_group_count": int(compact_metadata["row_count"]),
+            "output_contract": "segment_segment_intersection_count_by_left_id_compact_device_columns",
+        },
+        "phases_sec": phases,
+        "candidate_columns": candidate_metadata,
+        "compact_grouped_count_columns": compact_metadata,
+        "left_id_remap": {
+            "enabled": True,
+            "reason": "generic grouped-count primitive uses direct-address key capacity",
+            "original_left_id_count": len(original_left_ids),
+        },
+        "device_resident_continuation_status": (
+            "compact_grouped_count_device_columns_complete: group_key/count columns remain CUDA-resident; "
+            "row_count scalar is host-visible; validation copy is optional"
+        ),
+        "native_engine_boundary": (
+            "The engine sees generic segment-pair candidate columns and generic grouped-count compact columns. "
+            "RayJoin workload interpretation and left-ID remapping stay in Python."
+        ),
+        "claim_boundary": {
+            "full_rayjoin_reproduction": False,
+            "paper_scale_perf_claim_authorized": False,
+            "rtdl_beats_rayjoin_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "v2_0_release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "requires_pod_for_optix_perf": False,
+        },
+    }
+    if include_rows:
+        payload["rows"] = rows
+    return payload
+
+
 def run_rayjoin_workload(
     workload: str,
     *,
@@ -732,7 +852,12 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--execution-route",
-        choices=("generic_kernel", "prepared_optix", "v2_6_numba_compact_mask_plan"),
+        choices=(
+            "generic_kernel",
+            "prepared_optix",
+            "prepared_optix_compact_grouped_count",
+            "v2_6_numba_compact_mask_plan",
+        ),
         default="generic_kernel",
         help="Use the generic kernel route or the prepared OptiX benchmark route for PIP/LSI.",
     )
@@ -766,6 +891,17 @@ def main(argv: list[str] | None = None) -> int:
                     for workload in _WORKLOADS
                 },
             }
+        elif args.execution_route == "prepared_optix_compact_grouped_count":
+            payload = {
+                "app": "rayjoin_v2_spatial_join",
+                "execution_route": args.execution_route,
+                "workloads": {
+                    "lsi": run_rayjoin_prepared_optix_compact_grouped_count_workload(
+                        "lsi",
+                        include_rows=include_rows,
+                    )
+                },
+            }
         else:
             payload = run_rayjoin_suite(
                 backend=args.backend,
@@ -776,6 +912,12 @@ def main(argv: list[str] | None = None) -> int:
     else:
         if args.execution_route == "v2_6_numba_compact_mask_plan":
             payload = v2_6_numba_compact_mask_plan_payload(args.workload)
+        elif args.execution_route == "prepared_optix_compact_grouped_count":
+            payload = run_rayjoin_prepared_optix_compact_grouped_count_workload(
+                args.workload,
+                dataset=args.dataset,
+                include_rows=include_rows,
+            )
         elif args.execution_route == "prepared_optix":
             payload = run_rayjoin_prepared_optix_workload(
                 args.workload,
