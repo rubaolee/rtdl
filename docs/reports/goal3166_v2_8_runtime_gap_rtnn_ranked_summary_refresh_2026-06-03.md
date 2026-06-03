@@ -2,7 +2,7 @@
 
 Date: 2026-06-03
 
-Status: local validation complete; pod validation pending.
+Status: local and pod validation complete.
 
 ## Purpose
 
@@ -57,3 +57,34 @@ $env:PYTHONPATH='src;.'; py -3 -m unittest `
 ```
 
 Result: 8 tests pass.
+
+## Pod Validation
+
+Pod: `root@69.30.85.131 -p 22063`, repo `/root/rtdl_goal3151`,
+virtualenv `/root/venvs/rtdl_goal3154`.
+
+Clean commit:
+
+```text
+5e1d636f Goal3166 refresh RTNN v2.8 runtime gap
+```
+
+Command shape:
+
+```bash
+cd /root/rtdl_goal3151
+git fetch origin main
+git reset --hard origin/main
+export PYTHONPATH=src:.
+export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
+/root/venvs/rtdl_goal3154/bin/python -m unittest \
+  tests.goal3166_v2_8_runtime_gap_rtnn_ranked_summary_refresh_test \
+  tests.goal3105_v2_8_benchmark_runtime_gap_map_test
+```
+
+Result:
+
+```text
+Ran 8 tests in 0.001s
+OK
+```
