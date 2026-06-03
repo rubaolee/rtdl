@@ -89,3 +89,31 @@ OK (skipped=5)
 The pod validation should rerun the focused test and Goal3143 compatibility
 test from a clean `origin/main` checkout, including the executable Numba CUDA
 cases that skip on local Windows.
+
+Pod validation from a clean `origin/main` checkout on the A40 pod:
+
+```text
+POD_HEAD=21018a84
+RUN_GOAL3160_HAUSDORFF_ALIAS
+Ran 27 tests in 8.251s
+OK
+```
+
+Pod metadata probe:
+
+```json
+{
+  "adapter": "directed_max_of_nearest_distance_2d_partner_columns",
+  "app_matches_oracle": true,
+  "app_partner_reference_contract": "generic_directed_max_of_nearest_distance_2d",
+  "app_rt_core_speedup_claim_authorized": false,
+  "app_v2_8_release_authorized": false,
+  "compatibility_adapter_aliases": ["directed_hausdorff_2d_partner_columns"],
+  "distance": 1.0,
+  "host_score_row_materialization_used": false,
+  "nearest_distance_column_materialized": false,
+  "partner_reference_contract": "generic_directed_max_of_nearest_distance_2d",
+  "score_rows_generated_on_partner_device": true,
+  "semantic_aliases": ["directed_hausdorff_2d"]
+}
+```
