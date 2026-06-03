@@ -70,15 +70,14 @@ class Goal3180RayTriangleHitStreamTypedProducerMetadataTest(unittest.TestCase):
         self.assertFalse(producer["rt_core_speedup_claim_authorized"])
         self.assertFalse(producer["true_zero_copy_claim_authorized"])
 
-    def test_spatial_and_triangle_gap_rows_record_metadata_not_completion(self) -> None:
+    def test_triangle_gap_row_records_hit_stream_metadata_not_completion(self) -> None:
         rows = {row["benchmark_app"]: row for row in rt.v2_8_benchmark_runtime_gap_matrix()}
 
         spatial = rows["spatial_rayjoin"]
-        self.assertIn("generic ray/triangle hit-stream typed producer metadata", spatial["current_best_path"])
-        self.assertIn("generic native typed hit-stream producer metadata now exists", spatial["current_bottleneck"])
-        self.assertIn("benchmark-app adoption of resident hit streams", spatial["current_bottleneck"])
+        self.assertIn("generic 2-D relation-row typed producer metadata", spatial["current_best_path"])
+        self.assertIn("relation-row typed producer metadata", spatial["current_bottleneck"])
         self.assertIn("parity/count grouping over resident rows", spatial["current_bottleneck"])
-        self.assertIn("Goal3180", spatial["evidence_refs"])
+        self.assertNotIn("Goal3180", spatial["evidence_refs"])
 
         triangle = rows["triangle_counting"]
         self.assertIn("generic ray/triangle hit-stream typed producer metadata", triangle["current_best_path"])

@@ -121,6 +121,7 @@ from .graph_reference import normalize_frontier
 from .graph_reference import normalize_vertex_set
 from .point_nearest_witness_typed_stream import make_v2_8_point_group_nearest_witness_typed_producer_metadata
 from .point_nearest_witness_typed_stream import make_v2_8_point_group_nearest_witness_typed_stream_contract
+from .v2_8_geometry_relation_typed_stream import geometry_relation_typed_stream_metadata_for_row_view
 from . import partner as _partner
 from .columnar_partner import DeviceColumnDescriptor
 from .columnar_partner import PartnerResidentColumnarRecordSet
@@ -865,6 +866,15 @@ class OptixRowView:
         if copy:
             columns = {field: column.copy() for field, column in columns.items()}
         return columns
+
+    def to_v2_8_typed_result_stream_metadata(self) -> dict[str, object]:
+        """Describe supported generic geometry row views as v2.8 typed streams."""
+
+        return geometry_relation_typed_stream_metadata_for_row_view(
+            field_names=self.field_names,
+            row_count=int(self.row_count),
+            source_protocol="optix_host_row_view",
+        )
 
     def __del__(self) -> None:
         try:

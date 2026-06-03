@@ -352,6 +352,16 @@ from .v2_8_fixed_radius_graph_component_front_door import fixed_radius_graph_com
 from .v2_8_fixed_radius_graph_component_front_door import make_v2_8_fixed_radius_graph_component_typed_stream_contract
 from .v2_8_fixed_radius_graph_component_front_door import plan_v2_8_fixed_radius_graph_component_continuation
 from .v2_8_fixed_radius_graph_component_front_door import prepare_v2_8_fixed_radius_graph_component_continuation_3d
+from .v2_8_geometry_relation_typed_stream import V28GeometryRelationColumnSpec
+from .v2_8_geometry_relation_typed_stream import V28GeometryRelationSchema
+from .v2_8_geometry_relation_typed_stream import V2_8_GEOMETRY_RELATION_SCHEMAS
+from .v2_8_geometry_relation_typed_stream import V2_8_GEOMETRY_RELATION_TYPED_PRODUCER_CLAIM_BOUNDARY
+from .v2_8_geometry_relation_typed_stream import V2_8_GEOMETRY_RELATION_TYPED_PRODUCER_STATUS
+from .v2_8_geometry_relation_typed_stream import V2_8_GEOMETRY_RELATION_TYPED_PRODUCER_VERSION
+from .v2_8_geometry_relation_typed_stream import geometry_relation_schema_for_fields
+from .v2_8_geometry_relation_typed_stream import geometry_relation_typed_stream_metadata_for_row_view
+from .v2_8_geometry_relation_typed_stream import make_v2_8_geometry_relation_typed_producer_metadata
+from .v2_8_geometry_relation_typed_stream import make_v2_8_geometry_relation_typed_stream_contract
 from .point_nearest_witness_typed_stream import V2_8_POINT_GROUP_NEAREST_WITNESS_CLAIM_BOUNDARY
 from .point_nearest_witness_typed_stream import V2_8_POINT_GROUP_NEAREST_WITNESS_COLUMNS
 from .point_nearest_witness_typed_stream import V2_8_POINT_GROUP_NEAREST_WITNESS_TYPED_PRODUCER_PRIMITIVE
@@ -1983,6 +1993,16 @@ __all__ = [
     "make_v2_8_fixed_radius_graph_component_typed_stream_contract",
     "plan_v2_8_fixed_radius_graph_component_continuation",
     "prepare_v2_8_fixed_radius_graph_component_continuation_3d",
+    "V28GeometryRelationColumnSpec",
+    "V28GeometryRelationSchema",
+    "V2_8_GEOMETRY_RELATION_SCHEMAS",
+    "V2_8_GEOMETRY_RELATION_TYPED_PRODUCER_CLAIM_BOUNDARY",
+    "V2_8_GEOMETRY_RELATION_TYPED_PRODUCER_STATUS",
+    "V2_8_GEOMETRY_RELATION_TYPED_PRODUCER_VERSION",
+    "geometry_relation_schema_for_fields",
+    "geometry_relation_typed_stream_metadata_for_row_view",
+    "make_v2_8_geometry_relation_typed_producer_metadata",
+    "make_v2_8_geometry_relation_typed_stream_contract",
     "V2_8_POINT_GROUP_NEAREST_WITNESS_CLAIM_BOUNDARY",
     "V2_8_POINT_GROUP_NEAREST_WITNESS_COLUMNS",
     "V2_8_POINT_GROUP_NEAREST_WITNESS_TYPED_PRODUCER_PRIMITIVE",

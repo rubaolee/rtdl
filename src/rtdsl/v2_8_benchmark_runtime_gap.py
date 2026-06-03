@@ -118,20 +118,20 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
         benchmark_path="examples/v2_0/research_benchmarks/spatial_rayjoin/",
         current_best_path=(
             "primitive-first scalar count/parity and first-hit paths; direct v2.8 compact-mask "
-            "typed-stream front door for explicit candidate-row filtering; generic ray/triangle "
-            "hit-stream typed producer metadata"
+            "typed-stream front door for explicit candidate-row filtering; generic 2-D relation-row "
+            "typed producer metadata for prepared shape/segment row views"
         ),
         partner_position="Numba is the recommended custom continuation when row-stream compaction is part of the app.",
         current_bottleneck=(
-            "compact-mask continuation now has a direct caller-column front door, and generic native "
-            "typed hit-stream producer metadata now exists; remaining work is benchmark-app adoption "
-            "of resident hit streams, parity/count grouping over resident rows, and boundary-witness "
-            "ownership at serious scale."
+            "compact-mask continuation now has a direct caller-column front door, and generic "
+            "relation-row typed producer metadata now exists for host row views; remaining work is "
+            "device-resident relation-row output, parity/count grouping over resident rows, and "
+            "boundary-witness ownership at serious scale."
         ),
         generic_runtime_target="typed hit streams with grouped parity/count and compact-mask continuation",
         target_family=V2_8_FIRST_RUNTIME_TARGET,
         priority="P0",
-        evidence_refs=("Goal3003", "Goal3052", "Goal3147", "Goal3171", "Goal3180"),
+        evidence_refs=("Goal3003", "Goal3052", "Goal3147", "Goal3171", "Goal3181"),
     ),
     V28BenchmarkRuntimeGapRow(
         benchmark_app="rt_dbscan",

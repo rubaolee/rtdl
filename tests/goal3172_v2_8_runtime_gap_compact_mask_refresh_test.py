@@ -16,7 +16,7 @@ class Goal3172V28RuntimeGapCompactMaskRefreshTest(unittest.TestCase):
 
         rayjoin = rows["spatial_rayjoin"]
         self.assertIn("direct v2.8 compact-mask typed-stream front door", rayjoin["current_best_path"])
-        self.assertIn("native typed hit-stream producer", rayjoin["current_bottleneck"])
+        self.assertIn("relation-row typed producer metadata", rayjoin["current_bottleneck"])
         self.assertIn("boundary-witness ownership", rayjoin["current_bottleneck"])
         self.assertIn("Goal3147", rayjoin["evidence_refs"])
         self.assertIn("Goal3171", rayjoin["evidence_refs"])
