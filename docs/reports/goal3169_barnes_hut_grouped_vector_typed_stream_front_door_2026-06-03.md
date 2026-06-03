@@ -2,7 +2,7 @@
 
 Date: 2026-06-03
 
-Status: local validation complete; pod validation pending.
+Status: local and pod validation complete.
 
 ## Purpose
 
@@ -120,3 +120,45 @@ $env:PYTHONPATH='src;.'; py -3 `
 Result: JSON payload reports `grouped_reduction_stream`,
 `grouped_vector_sum_f64x2`, explicit partner `cupy`, presegmented offsets, and
 all release/speedup/zero-copy flags as false.
+
+## Pod Validation
+
+Pod: `root@69.30.85.131 -p 22063`, repo `/root/rtdl_goal3151`,
+virtualenv `/root/venvs/rtdl_goal3154`.
+
+Clean commit:
+
+```text
+4fe7f12c Goal3169 add Barnes-Hut grouped vector typed stream front door
+```
+
+Command shape:
+
+```bash
+cd /root/rtdl_goal3151
+git fetch origin main
+git reset --hard origin/main
+export PYTHONPATH=src:.
+export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
+/root/venvs/rtdl_goal3154/bin/python -m unittest \
+  tests.goal3169_barnes_hut_grouped_vector_typed_stream_front_door_test \
+  tests.goal3108_v2_8_typed_result_stream_contract_test \
+  tests.goal3111_v2_8_segmented_typed_stream_adapter_test \
+  tests.goal2781_grouped_vector_sum_adapter_test
+```
+
+Result:
+
+```text
+Ran 35 tests in 0.012s
+OK (skipped=2)
+```
+
+Descriptor probe:
+
+```text
+[pod] descriptor grouped_reduction_stream grouped_vector_sum_f64x2 cupy False
+```
+
+The final `False` is the benchmark metadata
+`public_speedup_claim_authorized` flag.
