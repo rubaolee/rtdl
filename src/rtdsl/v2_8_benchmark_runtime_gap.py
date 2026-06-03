@@ -102,13 +102,15 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "CuPy remains the CUDA-core fairness baseline."
         ),
         current_bottleneck=(
-            "front-door naming is now generic, but the RT-core nearest-witness stream is not yet "
-            "a reusable typed producer that can feed the partner continuation directly."
+            "front-door naming is now generic, and the RT-core nearest-witness stream device-column "
+            "path now emits reusable typed producer metadata; remaining work is serious-scale "
+            "device-resident continuation proof, broader partner conformance, and prepared input "
+            "residency without claiming true zero-copy."
         ),
         generic_runtime_target="typed nearest-witness streams plus grouped max-distance continuation",
         target_family=V2_8_FIRST_RUNTIME_TARGET,
         priority="P0",
-        evidence_refs=("Goal3046", "Goal3048", "Goal3052", "Goal3143", "Goal3160"),
+        evidence_refs=("Goal3046", "Goal3048", "Goal3052", "Goal3143", "Goal3160", "Goal3178"),
     ),
     V28BenchmarkRuntimeGapRow(
         benchmark_app="spatial_rayjoin",

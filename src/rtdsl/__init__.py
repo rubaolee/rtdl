@@ -352,6 +352,12 @@ from .v2_8_fixed_radius_graph_component_front_door import fixed_radius_graph_com
 from .v2_8_fixed_radius_graph_component_front_door import make_v2_8_fixed_radius_graph_component_typed_stream_contract
 from .v2_8_fixed_radius_graph_component_front_door import plan_v2_8_fixed_radius_graph_component_continuation
 from .v2_8_fixed_radius_graph_component_front_door import prepare_v2_8_fixed_radius_graph_component_continuation_3d
+from .point_nearest_witness_typed_stream import V2_8_POINT_GROUP_NEAREST_WITNESS_CLAIM_BOUNDARY
+from .point_nearest_witness_typed_stream import V2_8_POINT_GROUP_NEAREST_WITNESS_COLUMNS
+from .point_nearest_witness_typed_stream import V2_8_POINT_GROUP_NEAREST_WITNESS_TYPED_PRODUCER_PRIMITIVE
+from .point_nearest_witness_typed_stream import V2_8_POINT_GROUP_NEAREST_WITNESS_TYPED_PRODUCER_VERSION
+from .point_nearest_witness_typed_stream import make_v2_8_point_group_nearest_witness_typed_producer_metadata
+from .point_nearest_witness_typed_stream import make_v2_8_point_group_nearest_witness_typed_stream_contract
 from .v2_8_typed_result_stream import V28GroupedContinuationPlan
 from .v2_8_typed_result_stream import V28TypedResultColumn
 from .v2_8_typed_result_stream import V28TypedResultStreamContract
@@ -1974,6 +1980,12 @@ __all__ = [
     "make_v2_8_fixed_radius_graph_component_typed_stream_contract",
     "plan_v2_8_fixed_radius_graph_component_continuation",
     "prepare_v2_8_fixed_radius_graph_component_continuation_3d",
+    "V2_8_POINT_GROUP_NEAREST_WITNESS_CLAIM_BOUNDARY",
+    "V2_8_POINT_GROUP_NEAREST_WITNESS_COLUMNS",
+    "V2_8_POINT_GROUP_NEAREST_WITNESS_TYPED_PRODUCER_PRIMITIVE",
+    "V2_8_POINT_GROUP_NEAREST_WITNESS_TYPED_PRODUCER_VERSION",
+    "make_v2_8_point_group_nearest_witness_typed_producer_metadata",
+    "make_v2_8_point_group_nearest_witness_typed_stream_contract",
     "V28GroupedContinuationPlan",
     "V28TypedResultColumn",
     "V28TypedResultStreamContract",

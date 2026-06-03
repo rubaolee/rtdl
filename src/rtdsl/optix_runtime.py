@@ -119,6 +119,8 @@ from .graph_reference import FrontierVertex
 from .graph_reference import normalize_edge_set
 from .graph_reference import normalize_frontier
 from .graph_reference import normalize_vertex_set
+from .point_nearest_witness_typed_stream import make_v2_8_point_group_nearest_witness_typed_producer_metadata
+from .point_nearest_witness_typed_stream import make_v2_8_point_group_nearest_witness_typed_stream_contract
 from . import partner as _partner
 from .columnar_partner import DeviceColumnDescriptor
 from .columnar_partner import PartnerResidentColumnarRecordSet
@@ -4544,7 +4546,42 @@ class PreparedOptixPointGroupNearestWitness2D:
             )
             outputs[name] = handoff
 
+        source_protocols = tuple(sorted({handoff.source_protocol for handoff in outputs.values()}))
+        source_devices = tuple(
+            sorted({f"{handoff.device_type}:{handoff.device_id}" for handoff in outputs.values()})
+        )
+        device_type, device_id = expected_device if expected_device is not None else ("cuda", 0)
+        typed_stream = make_v2_8_point_group_nearest_witness_typed_stream_contract(
+            packed_queries.count,
+            stream_id="optix_point_group_nearest_witness_2d_device_columns",
+            device_type=str(device_type),
+            device_id=int(device_id),
+            source_protocol=(
+                source_protocols[0]
+                if len(source_protocols) == 1
+                else "mixed_partner_owned_cuda_output_columns"
+            ),
+            data_ptrs={
+                "query_id": outputs["query_ids"].data_ptr,
+                "neighbor_id": outputs["neighbor_ids"].data_ptr,
+                "distance": outputs["distances"].data_ptr,
+            },
+        ).to_metadata()
+
         if packed_queries.count == 0 or self._packed_search.count == 0 or self._group_count == 0:
+            producer_metadata = make_v2_8_point_group_nearest_witness_typed_producer_metadata(
+                typed_stream,
+                backend="optix",
+                native_symbol=_OPTIX_PREPARED_POINT_GROUP_NEAREST_WITNESS_2D_DEVICE_COLUMNS_SYMBOL,
+                native_execution_path="empty_shortcut_no_native_launch",
+                query_count=packed_queries.count,
+                search_count=self._packed_search.count,
+                group_count=self._group_count,
+                radius=float(radius),
+                transfer_mode="host_query_points_to_device_witness_columns_empty_shortcut",
+                source_protocols=source_protocols,
+                source_devices=source_devices,
+            )
             return {
                 "metadata": {
                     "backend": "optix",
@@ -4560,6 +4597,9 @@ class PreparedOptixPointGroupNearestWitness2D:
                     "direct_device_handoff_authorized": True,
                     "output_columns_true_zero_copy_authorized": True,
                     "true_zero_copy_authorized": False,
+                    "v2_8_release_authorized": False,
+                    "typed_result_stream": typed_stream,
+                    "v2_8_typed_producer_metadata": producer_metadata,
                 }
             }
 
@@ -4589,6 +4629,19 @@ class PreparedOptixPointGroupNearestWitness2D:
         )
         _check_status(status, error)
         elapsed = time.perf_counter() - start
+        producer_metadata = make_v2_8_point_group_nearest_witness_typed_producer_metadata(
+            typed_stream,
+            backend="optix",
+            native_symbol=_OPTIX_PREPARED_POINT_GROUP_NEAREST_WITNESS_2D_DEVICE_COLUMNS_SYMBOL,
+            native_execution_path="prepared_rt_core_point_group_nearest_witness_2d_device_columns",
+            query_count=packed_queries.count,
+            search_count=self._packed_search.count,
+            group_count=self._group_count,
+            radius=float(radius),
+            transfer_mode="host_query_points_to_device_witness_columns",
+            source_protocols=source_protocols,
+            source_devices=source_devices,
+        )
         return {
             "metadata": {
                 "backend": "optix",
@@ -4601,8 +4654,8 @@ class PreparedOptixPointGroupNearestWitness2D:
                 "radius": float(radius),
                 "native_elapsed_sec": elapsed,
                 "transfer_mode": "host_query_points_to_device_witness_columns",
-                "source_protocols": tuple(sorted({handoff.source_protocol for handoff in outputs.values()})),
-                "source_devices": tuple(sorted({f"{handoff.device_type}:{handoff.device_id}" for handoff in outputs.values()})),
+                "source_protocols": source_protocols,
+                "source_devices": source_devices,
                 "rt_core_accelerated": True,
                 "materializes_neighbor_rows": False,
                 "direct_device_handoff_authorized": True,
@@ -4610,6 +4663,9 @@ class PreparedOptixPointGroupNearestWitness2D:
                 "true_zero_copy_authorized": False,
                 "rt_core_speedup_claim_authorized": False,
                 "v2_6_release_authorized": False,
+                "v2_8_release_authorized": False,
+                "typed_result_stream": typed_stream,
+                "v2_8_typed_producer_metadata": producer_metadata,
             }
         }
 
