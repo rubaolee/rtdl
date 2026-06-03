@@ -195,17 +195,19 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
         benchmark_path="examples/v2_0/research_benchmarks/raydb_style/",
         current_best_path=(
             "fused columnar grouped reductions when the primitive exactly matches; "
-            "v2.8 grouped-reduction typed-stream front door for explicit unfused partner continuation"
+            "v2.8 grouped-reduction typed-stream front door for explicit unfused partner continuation; "
+            "generic ray/triangle grouped-i64 typed producer metadata"
         ),
         partner_position="Numba is recommended only for unfused grouped scalar continuations.",
         current_bottleneck=(
-            "front-door schema for unfused grouped reductions now exists; remaining work is native typed "
-            "producer/residency evidence and broader partner conformance without overriding fused primitives."
+            "front-door schema for unfused grouped reductions now exists, and native typed producer metadata now exists; "
+            "the remaining native typed producer/residency evidence gap is device-resident output stream "
+            "evidence and broader partner conformance without overriding fused primitives."
         ),
         generic_runtime_target="typed grouped-reduction streams with explicit fused-vs-continuation selection",
         target_family=V2_8_FIRST_RUNTIME_TARGET,
         priority="P0",
-        evidence_refs=("Goal2995", "Goal3052", "Goal3162"),
+        evidence_refs=("Goal2995", "Goal3052", "Goal3162", "Goal3176"),
     ),
     V28BenchmarkRuntimeGapRow(
         benchmark_app="barnes_hut",
