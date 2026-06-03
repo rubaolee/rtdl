@@ -1249,19 +1249,22 @@ def run_rt_dbscan_benchmark(
         )
         timing_breakdown_sec = {}
         prepare_start = time.perf_counter()
-        with rt.prepare_optix_cupy_radius_graph_grouped_stream_continuation_3d(
+        with rt.prepare_v2_8_fixed_radius_graph_component_continuation_3d(
             points,
             radius=resolved_radius,
+            component_threshold=resolved_min_neighbors,
+            backend="optix",
             partner="cupy",
+            strategy="grouped_stream",
             grouped_union_query_block_size=resolved_query_block_size if blocked_grouped_stream else None,
             grouped_union_same_root_culling=grouped_union_same_root_culling,
             grouped_union_direct_side_effect=grouped_union_direct_side_effect,
         ) as prepared:
             timing_breakdown_sec["prepare_sec"] = time.perf_counter() - prepare_start
             adapter_start = time.perf_counter()
-            result = rt.radius_graph_components_3d_optix_cupy_prepared_grouped_stream_partner_columns(
+            result = rt.fixed_radius_graph_component_labels_3d_v2_8(
                 prepared,
-                min_neighbors=resolved_min_neighbors,
+                component_threshold=resolved_min_neighbors,
                 return_metadata=True,
             )
             timing_breakdown_sec["adapter_run_sec"] = time.perf_counter() - adapter_start
@@ -1290,6 +1293,9 @@ def run_rt_dbscan_benchmark(
                     if mode == "optix_rt_core_grouped_stream_cupy_column_signature_3d"
                     else "optix_rt_grouped_stream_cupy_radius_graph_components_3d"
                 ),
+                "front_door": "v2_8_fixed_radius_graph_component_continuation_3d",
+                "front_door_operation": "fixed_radius_graph_component_labels_3d",
+                "v2_8_front_door_route": True,
                 "native_engine_summary_contract": (
                     "generic_prepared_fixed_radius_grouped_union_3d_self_range_device_workspaces"
                     if blocked_grouped_stream
