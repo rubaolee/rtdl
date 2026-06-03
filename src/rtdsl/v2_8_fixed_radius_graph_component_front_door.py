@@ -6,6 +6,10 @@ from typing import Any
 from .partner_adapters import PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D
 from .partner_adapters import prepare_optix_cupy_radius_graph_grouped_stream_continuation_3d
 from .partner_adapters import radius_graph_components_3d_optix_cupy_prepared_grouped_stream_partner_columns
+from .v2_8_typed_result_stream import V28TypedResultStreamContract
+from .v2_8_typed_result_stream import make_typed_result_stream_contract
+from .v2_8_typed_result_stream import typed_result_column
+from .v2_8_typed_result_stream import typed_result_status_columns
 
 
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_FRONT_DOOR_VERSION = (
@@ -94,6 +98,11 @@ class V28FixedRadiusGraphComponentPlan:
             "producer_contract": "prepared_fixed_radius_graph_hit_stream_3d",
             "continuation_contract": "grouped_stream_component_label_columns_3d",
             "result_columns": ("point_ids", "component_labels", "is_core", "neighbor_counts"),
+            "typed_result_stream": make_v2_8_fixed_radius_graph_component_typed_stream_contract(
+                self.point_count,
+                stream_id="fixed_radius_graph_component_labels_3d_plan",
+                source_protocol="planned_cuda_device_columns",
+            ).to_metadata(),
             "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
             "partner_reference_contract": "generic_prepared_optix_cupy_grouped_stream_component_labels_3d",
             "fallback_selected": self.fallback_selected,
@@ -130,6 +139,7 @@ class V28PreparedFixedRadiusGraphComponentContinuation3D:
             self.plan,
             lower_metadata=lower_result["metadata"],
             component_threshold=component_threshold,
+            columns=columns,
         )
         if return_metadata:
             return {"columns": columns, "metadata": metadata}
@@ -159,6 +169,11 @@ def describe_v2_8_fixed_radius_graph_component_front_door() -> dict[str, Any]:
         "supported_partners": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_PARTNERS,
         "supported_strategies": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_STRATEGIES,
         "user_selected_partner_required": True,
+        "typed_result_stream_contract": make_v2_8_fixed_radius_graph_component_typed_stream_contract(
+            1,
+            stream_id="fixed_radius_graph_component_labels_3d_schema",
+            source_protocol="schema_only",
+        ).to_metadata(),
         "automatic_partner_selection_allowed": False,
         "hidden_dispatch_allowed": False,
         "app_specific_engine_logic_allowed": False,
@@ -278,6 +293,94 @@ def fixed_radius_graph_component_labels_3d_v2_8(
     return prepared.run(component_threshold=component_threshold, return_metadata=return_metadata)
 
 
+def make_v2_8_fixed_radius_graph_component_typed_stream_contract(
+    point_count: int,
+    *,
+    stream_id: str = "fixed_radius_graph_component_labels_3d",
+    device_type: str = "cuda",
+    device_id: int = 0,
+    data_ptrs: dict[str, int] | None = None,
+    source_protocol: str = "cuda_array_interface",
+) -> V28TypedResultStreamContract:
+    point_count = int(point_count)
+    if point_count <= 0:
+        raise ValueError("point_count must be positive")
+    pointer_map = {str(key): int(value) for key, value in dict(data_ptrs or {}).items()}
+    shape = (point_count,)
+    columns = (
+        typed_result_column(
+            "point_ids",
+            "item_id",
+            "uint32",
+            shape,
+            device_type=device_type,
+            device_id=device_id,
+            data_ptr=pointer_map.get("point_ids"),
+            source_protocol=source_protocol,
+            lifetime="session_retained",
+            mutability="immutable",
+            capacity_elements=point_count,
+        ),
+        typed_result_column(
+            "component_labels",
+            "group_key",
+            "int64",
+            shape,
+            device_type=device_type,
+            device_id=device_id,
+            data_ptr=pointer_map.get("component_labels"),
+            source_protocol=source_protocol,
+            lifetime="session_retained",
+            mutability="mutable",
+            capacity_elements=point_count,
+        ),
+        typed_result_column(
+            "is_core",
+            "mask",
+            "uint32",
+            shape,
+            device_type=device_type,
+            device_id=device_id,
+            data_ptr=pointer_map.get("is_core"),
+            source_protocol=source_protocol,
+            lifetime="session_retained",
+            mutability="mutable",
+            capacity_elements=point_count,
+        ),
+        typed_result_column(
+            "neighbor_counts",
+            "payload",
+            "uint32",
+            shape,
+            device_type=device_type,
+            device_id=device_id,
+            data_ptr=pointer_map.get("neighbor_counts"),
+            source_protocol=source_protocol,
+            lifetime="session_retained",
+            mutability="mutable",
+            capacity_elements=point_count,
+        ),
+    )
+    status_columns = typed_result_status_columns(
+        device_type=device_type,
+        device_id=device_id,
+        row_count_ptr=pointer_map.get("row_count"),
+        capacity_ptr=pointer_map.get("capacity"),
+        overflow_ptr=pointer_map.get("overflow"),
+        complete_ptr=pointer_map.get("complete_candidate_coverage"),
+        source_protocol=source_protocol,
+    )
+    return make_typed_result_stream_contract(
+        stream_id=stream_id,
+        stream_kind="adjacency_stream",
+        producer_primitive=V2_8_FIXED_RADIUS_GRAPH_COMPONENT_OPERATION,
+        columns=columns,
+        status_columns=status_columns,
+        ordering="stable_row_order",
+        page_capacity=point_count,
+    )
+
+
 def _unsupported_reason(*, backend: str, partner: str, strategy: str) -> str:
     if backend not in V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_BACKENDS:
         return f"unsupported backend {backend!r}; supported backends are {V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_BACKENDS}"
@@ -293,6 +396,7 @@ def _front_door_metadata(
     *,
     lower_metadata: dict[str, Any],
     component_threshold: int,
+    columns: dict[str, Any],
 ) -> dict[str, Any]:
     metadata = dict(lower_metadata)
     metadata.update(
@@ -308,6 +412,12 @@ def _front_door_metadata(
             "producer_contract": "prepared_fixed_radius_graph_hit_stream_3d",
             "continuation_contract": "grouped_stream_component_label_columns_3d",
             "result_columns": ("point_ids", "component_labels", "is_core", "neighbor_counts"),
+            "typed_result_stream": make_v2_8_fixed_radius_graph_component_typed_stream_contract(
+                int(plan.point_count),
+                stream_id="fixed_radius_graph_component_labels_3d_runtime",
+                data_ptrs=_column_data_ptrs(columns),
+                source_protocol="cupy_cuda_array_interface",
+            ).to_metadata(),
             "lower_adapter": lower_metadata.get("adapter"),
             "lower_partner_reference_contract": lower_metadata.get("partner_reference_contract"),
             "hidden_dispatch_allowed": False,
@@ -324,6 +434,16 @@ def _front_door_metadata(
     return metadata
 
 
+def _column_data_ptrs(columns: dict[str, Any]) -> dict[str, int]:
+    pointers: dict[str, int] = {}
+    for name, column in columns.items():
+        data = getattr(column, "data", None)
+        ptr = getattr(data, "ptr", None)
+        if ptr is not None:
+            pointers[str(name)] = int(ptr)
+    return pointers
+
+
 __all__ = [
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY",
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_FRONT_DOOR_STATUS",
@@ -333,6 +453,7 @@ __all__ = [
     "V28PreparedFixedRadiusGraphComponentContinuation3D",
     "describe_v2_8_fixed_radius_graph_component_front_door",
     "fixed_radius_graph_component_labels_3d_v2_8",
+    "make_v2_8_fixed_radius_graph_component_typed_stream_contract",
     "plan_v2_8_fixed_radius_graph_component_continuation",
     "prepare_v2_8_fixed_radius_graph_component_continuation_3d",
 ]

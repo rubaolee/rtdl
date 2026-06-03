@@ -344,6 +344,7 @@ from .v2_8_fixed_radius_graph_component_front_door import V2_8_FIXED_RADIUS_GRAP
 from .v2_8_fixed_radius_graph_component_front_door import V2_8_FIXED_RADIUS_GRAPH_COMPONENT_OPERATION
 from .v2_8_fixed_radius_graph_component_front_door import describe_v2_8_fixed_radius_graph_component_front_door
 from .v2_8_fixed_radius_graph_component_front_door import fixed_radius_graph_component_labels_3d_v2_8
+from .v2_8_fixed_radius_graph_component_front_door import make_v2_8_fixed_radius_graph_component_typed_stream_contract
 from .v2_8_fixed_radius_graph_component_front_door import plan_v2_8_fixed_radius_graph_component_continuation
 from .v2_8_fixed_radius_graph_component_front_door import prepare_v2_8_fixed_radius_graph_component_continuation_3d
 from .v2_8_typed_result_stream import V28GroupedContinuationPlan
@@ -1958,6 +1959,7 @@ __all__ = [
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_OPERATION",
     "describe_v2_8_fixed_radius_graph_component_front_door",
     "fixed_radius_graph_component_labels_3d_v2_8",
+    "make_v2_8_fixed_radius_graph_component_typed_stream_contract",
     "plan_v2_8_fixed_radius_graph_component_continuation",
     "prepare_v2_8_fixed_radius_graph_component_continuation_3d",
     "V28GroupedContinuationPlan",
