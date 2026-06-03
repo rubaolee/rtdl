@@ -172,13 +172,19 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
         benchmark_app="raydb_style",
         display_name="RayDB-style grouped aggregates",
         benchmark_path="examples/v2_0/research_benchmarks/raydb_style/",
-        current_best_path="fused columnar grouped reductions when the primitive exactly matches",
+        current_best_path=(
+            "fused columnar grouped reductions when the primitive exactly matches; "
+            "v2.8 grouped-reduction typed-stream front door for explicit unfused partner continuation"
+        ),
         partner_position="Numba is recommended only for unfused grouped scalar continuations.",
-        current_bottleneck="unfused grouped min/max/stats/witness handoff must avoid forcing partner continuation onto already-fused primitive rows.",
+        current_bottleneck=(
+            "front-door schema for unfused grouped reductions now exists; remaining work is native typed "
+            "producer/residency evidence and broader partner conformance without overriding fused primitives."
+        ),
         generic_runtime_target="typed grouped-reduction streams with explicit fused-vs-continuation selection",
         target_family=V2_8_FIRST_RUNTIME_TARGET,
         priority="P0",
-        evidence_refs=("Goal2995", "Goal3052"),
+        evidence_refs=("Goal2995", "Goal3052", "Goal3162"),
     ),
     V28BenchmarkRuntimeGapRow(
         benchmark_app="barnes_hut",
