@@ -22,6 +22,10 @@ from .reference import _triangle_dimension
 from .reference import ray_triangle_any_hit_cpu
 from .reference import ray_triangle_closest_hit_cpu
 from .reduction_runtime import run_generic_scalar_reduction
+from .v2_8_typed_result_stream import V28TypedResultStreamContract
+from .v2_8_typed_result_stream import make_typed_result_stream_contract
+from .v2_8_typed_result_stream import typed_result_column
+from .v2_8_typed_result_stream import typed_result_status_columns
 
 
 ACTIVE_V1_5_GENERIC_PRIMITIVE_BACKENDS = ("cpu", "embree", "optix")
@@ -38,6 +42,17 @@ GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_CONTRACT = {
     ),
     "overflow_policy": "fail_closed_bounded_rows",
     "native_engine_app_semantics": False,
+}
+V2_8_RAY_TRIANGLE_GROUPED_I64_TYPED_PRODUCER_VERSION = (
+    "rtdl.v2_8.ray_triangle_grouped_i64_typed_producer.v1"
+)
+V2_8_RAY_TRIANGLE_GROUPED_I64_TYPED_PRODUCER_PRIMITIVE = "ray_triangle_grouped_i64_reduction_3d"
+V2_8_RAY_TRIANGLE_GROUPED_I64_REDUCTION_COLUMNS = {
+    "count": ("group_id", "count"),
+    "sum": ("group_id", "sum"),
+    "min": ("group_id", "min"),
+    "max": ("group_id", "max"),
+    "sum_count": ("group_id", "sum", "count"),
 }
 
 
@@ -988,6 +1003,96 @@ def _infer_ray_id_group_count(rays: tuple[Ray3D, ...]) -> int:
     return max_id + 1
 
 
+def make_v2_8_ray_triangle_grouped_i64_reduction_typed_stream_contract(
+    row_count: int,
+    *,
+    reduction: str,
+    stream_id: str = "ray_triangle_grouped_i64_reduction_3d",
+    device_type: str = "cpu",
+    device_id: int = 0,
+    source_protocol: str = "native_host_group_rows_after_materialization",
+    data_ptrs: dict[str, int] | None = None,
+) -> V28TypedResultStreamContract:
+    """Describe generic grouped-i64 reduction output rows as a v2.8 typed stream."""
+
+    if reduction not in V2_8_RAY_TRIANGLE_GROUPED_I64_REDUCTION_COLUMNS:
+        raise ValueError("reduction must be one of: count, sum, min, max, sum_count")
+    count = int(row_count)
+    if count < 0:
+        raise ValueError("row_count must be non-negative")
+    ptrs = {str(key): int(value) for key, value in dict(data_ptrs or {}).items()}
+    columns = []
+    for name in V2_8_RAY_TRIANGLE_GROUPED_I64_REDUCTION_COLUMNS[reduction]:
+        role = "group_key" if name == "group_id" else "payload"
+        dtype = "int64" if name == "group_id" else "uint64"
+        columns.append(
+            typed_result_column(
+                name,
+                role,
+                dtype,
+                (count,),
+                device_type=str(device_type),
+                device_id=int(device_id),
+                data_ptr=ptrs.get(name),
+                source_protocol=str(source_protocol),
+                capacity_elements=count,
+            )
+        )
+    return make_typed_result_stream_contract(
+        stream_id=str(stream_id),
+        stream_kind="grouped_reduction_stream",
+        producer_primitive=V2_8_RAY_TRIANGLE_GROUPED_I64_TYPED_PRODUCER_PRIMITIVE,
+        columns=columns,
+        status_columns=typed_result_status_columns(
+            device_type=str(device_type),
+            device_id=int(device_id),
+            source_protocol=str(source_protocol),
+        ),
+        ordering="group_ordered",
+        page_capacity=max(1, count),
+    )
+
+
+def _with_v2_8_grouped_i64_typed_producer_metadata(
+    result: dict[str, Any],
+    *,
+    reduction: str,
+    source_protocol: str,
+) -> dict[str, Any]:
+    rows = tuple(result.get("rows", ()))
+    typed_stream = make_v2_8_ray_triangle_grouped_i64_reduction_typed_stream_contract(
+        len(rows),
+        reduction=reduction,
+        stream_id=f"ray_triangle_grouped_i64_reduction_3d_{reduction}",
+        device_type="cpu",
+        source_protocol=source_protocol,
+    ).to_metadata()
+    metadata = {
+        "version": V2_8_RAY_TRIANGLE_GROUPED_I64_TYPED_PRODUCER_VERSION,
+        "producer_primitive": V2_8_RAY_TRIANGLE_GROUPED_I64_TYPED_PRODUCER_PRIMITIVE,
+        "reduction": str(reduction),
+        "row_count": len(rows),
+        "source_protocol": str(source_protocol),
+        "producer_output_residency": "host_materialized_group_rows",
+        "device_resident_output_stream_proven": False,
+        "native_typed_producer_metadata_present": True,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "claim_boundary": (
+            "This is typed producer metadata for generic grouped-i64 result rows. "
+            "The current output rows are host-materialized; this does not prove "
+            "device-resident output streams or true zero-copy."
+        ),
+    }
+    return {
+        **result,
+        "typed_result_stream": typed_stream,
+        "v2_8_typed_producer_metadata": metadata,
+    }
+
+
 def run_generic_ray_triangle_primitive_grouped_i64_reduction_3d(
     rays: tuple[Ray3D, ...],
     triangles: tuple[Triangle3D, ...],
@@ -1042,7 +1147,7 @@ def run_generic_ray_triangle_primitive_grouped_i64_reduction_3d(
         from .embree_runtime import ray_triangle_primitive_grouped_i64_reduction_3d_embree
 
         group_count = max((int(group_id) for group_id in primitive_group_ids), default=-1) + 1
-        return ray_triangle_primitive_grouped_i64_reduction_3d_embree(
+        native_result = ray_triangle_primitive_grouped_i64_reduction_3d_embree(
             rays,
             triangles,
             primitive_group_ids=primitive_group_ids,
@@ -1050,18 +1155,28 @@ def run_generic_ray_triangle_primitive_grouped_i64_reduction_3d(
             group_count=group_count,
             reduction=reduction,
         )
+        return _with_v2_8_grouped_i64_typed_producer_metadata(
+            native_result,
+            reduction=reduction,
+            source_protocol="embree_native_host_group_rows_after_materialization",
+        )
     if normalized_backend == "optix":
         from .optix_runtime import prepare_optix_static_triangle_scene_3d
 
         group_count = max((int(group_id) for group_id in primitive_group_ids), default=-1) + 1
         with prepare_optix_static_triangle_scene_3d(triangles) as prepared_scene:
-            return prepared_scene.ray_triangle_primitive_grouped_i64_reduction(
+            native_result = prepared_scene.ray_triangle_primitive_grouped_i64_reduction(
                 rays,
                 primitive_group_ids=primitive_group_ids,
                 primitive_values=primitive_values,
                 group_count=group_count,
                 reduction=reduction,
             )
+        return _with_v2_8_grouped_i64_typed_producer_metadata(
+            native_result,
+            reduction=reduction,
+            source_protocol="optix_native_host_group_rows_after_materialization",
+        )
 
     hit_event_count = 0
     hit_indices: list[int] = []
@@ -1119,7 +1234,11 @@ def run_generic_ray_triangle_primitive_grouped_i64_reduction_3d(
     }
     if include_hit_primitive_indices:
         result["hit_primitive_indices"] = tuple(sorted(set(hit_indices)) if deduplicate_primitives else hit_indices)
-    return result
+    return _with_v2_8_grouped_i64_typed_producer_metadata(
+        result,
+        reduction=reduction,
+        source_protocol="cpu_reference_group_rows",
+    )
 
 
 class GenericPreparedRayTrianglePrimitiveGroupedI64Reduction3D:
@@ -1201,13 +1320,17 @@ class GenericPreparedRayTrianglePrimitiveGroupedI64Reduction3D:
         timings = dict(result.get("phase_timing_seconds", {}))
         timings["generic_scene_prepare"] = float(self.scene_prepare_sec)
         timings["generic_payload_prepare"] = float(self.payload_prepare_sec)
-        return {
+        return _with_v2_8_grouped_i64_typed_producer_metadata(
+            {
             **result,
             "primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
             "prepared_generic_payload_used": True,
             "backend": self.backend,
             "phase_timing_seconds": timings,
-        }
+            },
+            reduction=reduction,
+            source_protocol=f"{self.backend}_prepared_host_group_rows_after_materialization",
+        )
 
     def prepare_ray_batch(self, rays):
         if self._prepared_scene is None:
@@ -1234,14 +1357,18 @@ class GenericPreparedRayTrianglePrimitiveGroupedI64Reduction3D:
         timings = dict(result.get("phase_timing_seconds", {}))
         timings["generic_scene_prepare"] = float(self.scene_prepare_sec)
         timings["generic_payload_prepare"] = float(self.payload_prepare_sec)
-        return {
+        return _with_v2_8_grouped_i64_typed_producer_metadata(
+            {
             **result,
             "primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
             "prepared_generic_payload_used": True,
             "prepared_generic_ray_batch_used": True,
             "backend": self.backend,
             "phase_timing_seconds": timings,
-        }
+            },
+            reduction=reduction,
+            source_protocol=f"{self.backend}_prepared_host_group_rows_after_materialization",
+        )
 
     def close(self) -> None:
         if self._payload_cm is not None:

@@ -1335,6 +1335,7 @@ from .generic_primitives import GenericPreparedFixedRadiusCountThreshold2D
 from .generic_primitives import GenericPreparedRayTriangleAnyHitScene
 from .generic_primitives import GenericPreparedRayTriangleEventOrderedPayloadGroupedSum3D
 from .generic_primitives import GenericPreparedRayTrianglePrimitiveGroupedI64Reduction3D
+from .generic_primitives import make_v2_8_ray_triangle_grouped_i64_reduction_typed_stream_contract
 from .generic_primitives import prepare_generic_fixed_radius_count_threshold_2d
 from .generic_primitives import prepare_generic_ray_triangle_event_ordered_payload_grouped_sum_3d
 from .generic_primitives import prepare_generic_ray_triangle_any_hit_scene
@@ -2078,6 +2079,7 @@ __all__ = [
     "GenericPreparedRayTriangleAnyHitScene",
     "GenericPreparedRayTriangleEventOrderedPayloadGroupedSum3D",
     "GenericPreparedRayTrianglePrimitiveGroupedI64Reduction3D",
+    "make_v2_8_ray_triangle_grouped_i64_reduction_typed_stream_contract",
     "prepare_generic_fixed_radius_count_threshold_2d",
     "prepare_generic_ray_triangle_event_ordered_payload_grouped_sum_3d",
     "prepare_generic_ray_triangle_any_hit_scene",
