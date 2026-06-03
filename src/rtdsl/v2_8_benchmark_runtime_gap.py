@@ -155,25 +155,39 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
         benchmark_app="robot_collision",
         display_name="Robot collision",
         benchmark_path="examples/v2_0/research_benchmarks/robot_collision/",
-        current_best_path="generic any-hit/collision flag primitive over prepared static scenes",
-        partner_position="no promoted v2.6 custom partner path; preserve primitive parity first",
-        current_bottleneck="pose flag compaction and optional witness rows need the same typed bounded-output contract as other row-heavy apps.",
+        current_best_path=(
+            "generic any-hit/collision flag primitive over prepared static scenes; direct v2.8 bounded-collect "
+            "typed-stream front door for optional grouped witness rows"
+        ),
+        partner_position="torch/triton bounded collect is available only when users explicitly request grouped witness continuation.",
+        current_bottleneck=(
+            "bounded-collect continuation now has a direct caller-column front door; remaining work is native "
+            "typed flag/witness producer evidence, prepared-scene residency metadata, and same-scale optional "
+            "witness benchmarks."
+        ),
         generic_runtime_target="bounded flag/witness result pages with prepared-scene residency metadata",
         target_family=V2_8_FIRST_RUNTIME_TARGET,
         priority="P1",
-        evidence_refs=("Goal2491",),
+        evidence_refs=("Goal2491", "Goal3173"),
     ),
     V28BenchmarkRuntimeGapRow(
         benchmark_app="contact_manifold",
         display_name="Contact manifold",
         benchmark_path="examples/v2_0/research_benchmarks/contact_manifold/",
-        current_best_path="bounded witness collection with fail-closed overflow behavior",
-        partner_position="no promoted v2.6 custom partner path; partner filtering needs new same-contract evidence",
-        current_bottleneck="bounded contact witnesses need typed pages and stable overflow semantics shared with spatial and collision workloads.",
+        current_best_path=(
+            "bounded witness collection with fail-closed overflow behavior; direct v2.8 bounded-collect "
+            "typed-stream front door over grouped item rows"
+        ),
+        partner_position="torch/triton bounded collect is available only when users explicitly request grouped witness continuation.",
+        current_bottleneck=(
+            "bounded-collect continuation now has a direct caller-column front door; remaining work is native "
+            "typed bounded-witness producer evidence, device-residency proof, and same-scale partner/native "
+            "benchmarks."
+        ),
         generic_runtime_target="typed bounded witness pages with fail-closed completion metadata",
         target_family=V2_8_FIRST_RUNTIME_TARGET,
         priority="P1",
-        evidence_refs=("Goal2510 lineage",),
+        evidence_refs=("Goal2510 lineage", "Goal3173"),
     ),
     V28BenchmarkRuntimeGapRow(
         benchmark_app="raydb_style",
