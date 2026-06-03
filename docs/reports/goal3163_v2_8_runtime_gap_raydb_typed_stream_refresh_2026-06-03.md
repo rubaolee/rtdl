@@ -38,3 +38,15 @@ Ran 7 tests in 0.016s
 
 OK
 ```
+
+Clean pod validation:
+
+```text
+POD_HEAD=2b726d71
+RUN_GOAL3163_RAYDB_GAP_REFRESH
+.......
+----------------------------------------------------------------------
+Ran 7 tests in 0.001s
+
+OK
+```
