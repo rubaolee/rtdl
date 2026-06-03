@@ -114,13 +114,20 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
         benchmark_app="spatial_rayjoin",
         display_name="Spatial RayJoin",
         benchmark_path="examples/v2_0/research_benchmarks/spatial_rayjoin/",
-        current_best_path="primitive-first scalar count/parity and first-hit paths; Numba compact-mask continuation for row streams",
+        current_best_path=(
+            "primitive-first scalar count/parity and first-hit paths; direct v2.8 compact-mask "
+            "typed-stream front door for explicit candidate-row filtering"
+        ),
         partner_position="Numba is the recommended custom continuation when row-stream compaction is part of the app.",
-        current_bottleneck="row streams, parity/count grouping, and boundary witnesses still need a reusable device-resident continuation contract.",
+        current_bottleneck=(
+            "compact-mask continuation now has a direct caller-column front door; remaining work is "
+            "native typed hit-stream producer/residency evidence, parity/count grouping over resident "
+            "rows, and boundary-witness ownership at serious scale."
+        ),
         generic_runtime_target="typed hit streams with grouped parity/count and compact-mask continuation",
         target_family=V2_8_FIRST_RUNTIME_TARGET,
         priority="P0",
-        evidence_refs=("Goal3003", "Goal3052"),
+        evidence_refs=("Goal3003", "Goal3052", "Goal3147", "Goal3171"),
     ),
     V28BenchmarkRuntimeGapRow(
         benchmark_app="rt_dbscan",
@@ -245,13 +252,20 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
         benchmark_app="triangle_counting",
         display_name="Triangle counting",
         benchmark_path="examples/v2_0/research_benchmarks/triangle_counting/",
-        current_best_path="native scalar triangle-count primitive for scalar answers",
+        current_best_path=(
+            "native scalar triangle-count primitive for scalar answers; direct v2.8 compact-mask "
+            "typed-stream front door for explicit candidate-row interpretation"
+        ),
         partner_position="Numba compact-mask continuation is only for explicit candidate-row interpretation.",
-        current_bottleneck="segmented/streamed graph lowering and candidate-row continuation remain the scale limiter.",
+        current_bottleneck=(
+            "compact-mask continuation now has a direct caller-column front door; remaining work is "
+            "segmented/streamed graph lowering, native typed candidate-row producer evidence, and "
+            "resident continuation at serious scale."
+        ),
         generic_runtime_target="typed graph candidate streams with segmented compact-mask continuation",
         target_family=V2_8_FIRST_RUNTIME_TARGET,
         priority="P0",
-        evidence_refs=("Goal3000", "Goal3052"),
+        evidence_refs=("Goal3000", "Goal3052", "Goal3147", "Goal3171"),
     ),
 )
 
