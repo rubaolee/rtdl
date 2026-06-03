@@ -319,6 +319,25 @@ from .v2_8_benchmark_runtime_gap import v2_7_internal_closeout_status
 from .v2_8_benchmark_runtime_gap import v2_8_benchmark_runtime_gap_matrix
 from .v2_8_benchmark_runtime_gap import v2_8_runtime_target_summary
 from .v2_8_benchmark_runtime_gap import validate_v2_8_benchmark_runtime_gap_map
+from .v2_8_typed_result_stream import V28GroupedContinuationPlan
+from .v2_8_typed_result_stream import V28TypedResultColumn
+from .v2_8_typed_result_stream import V28TypedResultStreamContract
+from .v2_8_typed_result_stream import V2_8_TYPED_RESULT_STREAM_ALLOWED_CONTINUATIONS
+from .v2_8_typed_result_stream import V2_8_TYPED_RESULT_STREAM_CLAIM_BOUNDARY
+from .v2_8_typed_result_stream import V2_8_TYPED_RESULT_STREAM_COLUMN_ROLES
+from .v2_8_typed_result_stream import V2_8_TYPED_RESULT_STREAM_KIND_VALUES
+from .v2_8_typed_result_stream import V2_8_TYPED_RESULT_STREAM_ORDERING_STATES
+from .v2_8_typed_result_stream import V2_8_TYPED_RESULT_STREAM_STATUS
+from .v2_8_typed_result_stream import V2_8_TYPED_RESULT_STREAM_STATUS_COLUMNS
+from .v2_8_typed_result_stream import V2_8_TYPED_RESULT_STREAM_TARGET
+from .v2_8_typed_result_stream import V2_8_TYPED_RESULT_STREAM_VERSION
+from .v2_8_typed_result_stream import make_typed_result_stream_contract
+from .v2_8_typed_result_stream import plan_grouped_continuation_for_typed_result_stream
+from .v2_8_typed_result_stream import typed_result_column
+from .v2_8_typed_result_stream import typed_result_status_columns
+from .v2_8_typed_result_stream import v2_8_typed_result_stream_contract_summary
+from .v2_8_typed_result_stream import validate_grouped_continuation_plan
+from .v2_8_typed_result_stream import validate_typed_result_stream_contract
 from .api import polygon_pair_overlap_area_rows
 from .api import polygon_set_jaccard
 from .api import ray_triangle_any_hit
@@ -1886,6 +1905,25 @@ __all__ = [
     "v2_8_benchmark_runtime_gap_matrix",
     "v2_8_runtime_target_summary",
     "validate_v2_8_benchmark_runtime_gap_map",
+    "V28GroupedContinuationPlan",
+    "V28TypedResultColumn",
+    "V28TypedResultStreamContract",
+    "V2_8_TYPED_RESULT_STREAM_ALLOWED_CONTINUATIONS",
+    "V2_8_TYPED_RESULT_STREAM_CLAIM_BOUNDARY",
+    "V2_8_TYPED_RESULT_STREAM_COLUMN_ROLES",
+    "V2_8_TYPED_RESULT_STREAM_KIND_VALUES",
+    "V2_8_TYPED_RESULT_STREAM_ORDERING_STATES",
+    "V2_8_TYPED_RESULT_STREAM_STATUS",
+    "V2_8_TYPED_RESULT_STREAM_STATUS_COLUMNS",
+    "V2_8_TYPED_RESULT_STREAM_TARGET",
+    "V2_8_TYPED_RESULT_STREAM_VERSION",
+    "make_typed_result_stream_contract",
+    "plan_grouped_continuation_for_typed_result_stream",
+    "typed_result_column",
+    "typed_result_status_columns",
+    "v2_8_typed_result_stream_contract_summary",
+    "validate_grouped_continuation_plan",
+    "validate_typed_result_stream_contract",
     "overlay_compose",
     "overlay_compose_hiprt",
     "oracle_version",
