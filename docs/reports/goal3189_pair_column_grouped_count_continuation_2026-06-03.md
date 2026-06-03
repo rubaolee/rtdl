@@ -32,6 +32,10 @@ It does:
 - fail closed if the caller's `group_capacity` is too small,
 - reuse the existing generic device-column grouped-count implementation.
 
+The reused grouped-count primitive uses direct-address key capacity. For this
+first continuation, `group_capacity` must exceed the maximum non-negative
+`left_id` key unless the caller remaps sparse IDs before grouping.
+
 It does not:
 
 - materialize exact intersection witness rows,
@@ -53,9 +57,22 @@ Boundary flags remain:
 Local validation command:
 
 ```powershell
-$env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal3189_pair_column_grouped_count_continuation_test tests.goal3185_segment_pair_candidate_device_columns_test
+$env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal3189_pair_column_grouped_count_continuation_test tests.goal3187_segment_pair_candidate_chunked_append_test tests.goal3185_segment_pair_candidate_device_columns_test
 ```
 
-Initial status: local source validation is expected first. Pod validation should
-call `candidate_device_columns(...).grouped_count_by_left_id(...)` on an authored
-crossing-segment case and compare counts against the exact row path.
+Status: local source validation passed.
+
+Pod validation artifact:
+
+- `docs/reports/goal3189_pod_pair_column_grouped_count_continuation_2026-06-03.json`
+- Commit under test: `2a33da90`
+- Focused pod tests: passed.
+- Authored live smoke: 16 horizontal left segments crossed 4 vertical right
+  segments.
+- Exact row path produced 64 rows.
+- Device candidate columns produced 64 candidate rows and 64 candidate events.
+- `grouped_count_by_left_id(group_capacity=300)` produced 16 compact count
+  rows.
+- `all_match_exact_rows: true`
+- Negative probe: `group_capacity=64` failed closed because left IDs `200..215`
+  exceed the direct-address key capacity.
