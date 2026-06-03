@@ -18,6 +18,7 @@ class Goal3197RayJoinCompactGroupedCountRouteTest(unittest.TestCase):
     def test_route_is_wired_to_compact_device_columns(self) -> None:
         source = APP.read_text(encoding="utf-8")
 
+        self.assertIn("run_rayjoin_prepared_optix_compact_grouped_count_segments", source)
         self.assertIn("run_rayjoin_prepared_optix_compact_grouped_count_workload", source)
         self.assertIn("prepared_optix_compact_grouped_count", source)
         self.assertIn("grouped_count_by_left_id_compact_device_columns", source)

@@ -405,21 +405,19 @@ def run_rayjoin_prepared_optix_workload(
     return payload
 
 
-def run_rayjoin_prepared_optix_compact_grouped_count_workload(
-    workload: str = "lsi",
+def run_rayjoin_prepared_optix_compact_grouped_count_segments(
+    left_segments,
+    right_segments,
     *,
-    dataset: str | None = None,
+    dataset: str = "direct_segments",
+    dataset_note: str = "Direct segment inputs supplied by the caller.",
     include_rows: bool = False,
 ) -> dict[str, object]:
-    if workload != "lsi":
-        raise ValueError("prepared_optix_compact_grouped_count currently supports only the lsi workload")
-    resolved_dataset = dataset or _DEFAULT_DATASETS[workload]
-    case = _load_rayjoin_case(workload, resolved_dataset)
     phases: dict[str, float] = {}
     rows: tuple[dict[str, int], ...] = ()
 
-    left_segments = tuple(dict(segment) for segment in case.inputs["left"])
-    right_segments = tuple(case.inputs["right"])
+    left_segments = tuple(dict(segment) for segment in left_segments)
+    right_segments = tuple(right_segments)
     original_left_ids = tuple(int(segment["id"]) for segment in left_segments)
     remapped_left_segments = tuple(
         {**segment, "id": index}
@@ -482,11 +480,11 @@ def run_rayjoin_prepared_optix_compact_grouped_count_workload(
 
     payload: dict[str, object] = {
         "app": "rayjoin_v2_spatial_join",
-        "workload": workload,
+        "workload": "lsi",
         "execution_route": "prepared_optix_compact_grouped_count",
         "backend": "optix",
-        "dataset": resolved_dataset,
-        "dataset_note": case.note,
+        "dataset": dataset,
+        "dataset_note": dataset_note,
         "row_count": candidate_row_count,
         "summary": {
             "intersection_count": candidate_row_count,
@@ -523,6 +521,25 @@ def run_rayjoin_prepared_optix_compact_grouped_count_workload(
     if include_rows:
         payload["rows"] = rows
     return payload
+
+
+def run_rayjoin_prepared_optix_compact_grouped_count_workload(
+    workload: str = "lsi",
+    *,
+    dataset: str | None = None,
+    include_rows: bool = False,
+) -> dict[str, object]:
+    if workload != "lsi":
+        raise ValueError("prepared_optix_compact_grouped_count currently supports only the lsi workload")
+    resolved_dataset = dataset or _DEFAULT_DATASETS[workload]
+    case = _load_rayjoin_case(workload, resolved_dataset)
+    return run_rayjoin_prepared_optix_compact_grouped_count_segments(
+        case.inputs["left"],
+        case.inputs["right"],
+        dataset=resolved_dataset,
+        dataset_note=case.note,
+        include_rows=include_rows,
+    )
 
 
 def run_rayjoin_workload(

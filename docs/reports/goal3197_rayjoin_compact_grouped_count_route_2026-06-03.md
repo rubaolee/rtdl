@@ -17,6 +17,8 @@ RayJoin benchmark app:
 
 - Added:
   `run_rayjoin_prepared_optix_compact_grouped_count_workload(...)`.
+- Added direct-input helper:
+  `run_rayjoin_prepared_optix_compact_grouped_count_segments(...)`.
 - Wired CLI execution route:
   `--execution-route prepared_optix_compact_grouped_count`.
 - Scope is intentionally narrow: LSI workload only.
@@ -42,6 +44,7 @@ For this reference route, left-ID remapping stays in Python.
 It does:
 
 - expose a usable reference path for the LSI grouped-count workload,
+- expose a direct segment-input helper for larger authored timing studies,
 - keep compact group_key/count columns remain CUDA-resident,
 - preserve false public claim flags.
 
