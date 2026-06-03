@@ -2,7 +2,7 @@
 
 Date: 2026-06-03
 
-Status: local validation complete; pod validation pending.
+Status: local and pod validation complete.
 
 ## Purpose
 
@@ -84,3 +84,38 @@ $env:PYTHONPATH='src;.'; py -3 -m unittest `
 ```
 
 Result: 43 tests pass.
+
+## Pod Validation
+
+Pod: `root@69.30.85.131 -p 22063`, repo `/root/rtdl_goal3151`,
+virtualenv `/root/venvs/rtdl_goal3154`.
+
+Clean commit:
+
+```text
+0149877a Goal3171 add direct compact mask typed stream front door
+```
+
+Command shape:
+
+```bash
+cd /root/rtdl_goal3151
+git fetch origin main
+git reset --hard origin/main
+export PYTHONPATH=src:.
+export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
+/root/venvs/rtdl_goal3154/bin/python -m unittest \
+  tests.goal3171_direct_compact_mask_typed_stream_front_door_test \
+  tests.goal3151_v2_8_benchmark_front_door_adoption_audit_test \
+  tests.goal3002_rayjoin_numba_compact_mask_wiring_test \
+  tests.goal2999_triangle_counting_numba_compact_mask_wiring_test \
+  tests.goal3111_v2_8_segmented_typed_stream_adapter_test \
+  tests.goal3147_compact_mask_front_door_test
+```
+
+Result:
+
+```text
+Ran 43 tests in 0.523s
+OK
+```
