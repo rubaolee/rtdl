@@ -432,6 +432,149 @@ def execute_segmented_typed_stream_partner_continuation(
     }
 
 
+def execute_grouped_reduction_typed_stream_partner_columns(
+    *,
+    group_ids: Any,
+    values: Any | None = None,
+    group_count: int,
+    operation: str,
+    partner: str,
+    stream_id: str,
+    producer_primitive: str = "caller_supplied_grouped_reduction_columns",
+    ordering: str = "group_ordered",
+    block_size: int | None = None,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """Execute a generic grouped-reduction typed stream over caller columns.
+
+    Unlike ``build_segmented_typed_stream_adapter`` this helper does not require
+    host row materialization. It publishes the same typed stream and grouped
+    continuation plan shape directly over caller-owned partner columns.
+    """
+
+    operation = str(operation)
+    if operation not in {"segmented_count_i64", "segmented_sum_f64", "segmented_min_f64", "segmented_max_f64"}:
+        raise ValueError("operation must be segmented_count_i64, segmented_sum_f64, segmented_min_f64, or segmented_max_f64")
+    if operation != "segmented_count_i64" and values is None:
+        raise ValueError("values are required for segmented sum/min/max typed-stream reductions")
+    if str(partner) in {"", "auto", "explicit_user_choice_required"}:
+        raise ValueError("v2.8 grouped-reduction typed stream requires an explicit partner")
+
+    resolved_group_count = int(group_count)
+    if resolved_group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    row_count = _partner_column_length(group_ids)
+    if row_count < 0:
+        raise ValueError("group_ids must have non-negative length")
+    if values is not None and _partner_column_length(values) != row_count:
+        raise ValueError("values length must match group_ids length")
+
+    group_device_type, group_device_id, group_data_ptr, group_protocol = _partner_column_device_metadata(group_ids)
+    columns = [
+        typed_result_column(
+            "group_ids",
+            "group_key",
+            _partner_column_dtype(group_ids, fallback="int64"),
+            (row_count,),
+            device_type=group_device_type,
+            device_id=group_device_id,
+            data_ptr=group_data_ptr,
+            source_protocol=group_protocol,
+            capacity_elements=row_count,
+        )
+    ]
+    partner_columns: dict[str, Any] = {"group_ids": group_ids}
+    value_columns: tuple[str, ...] = ()
+    if values is not None:
+        value_device_type, value_device_id, value_data_ptr, value_protocol = _partner_column_device_metadata(values)
+        columns.append(
+            typed_result_column(
+                "values",
+                "score",
+                _partner_column_dtype(values, fallback="float64"),
+                (row_count,),
+                device_type=value_device_type,
+                device_id=value_device_id,
+                data_ptr=value_data_ptr,
+                source_protocol=value_protocol,
+                capacity_elements=row_count,
+            )
+        )
+        partner_columns["values"] = values
+        value_columns = ("values",)
+
+    status_columns = typed_result_status_columns(
+        device_type=group_device_type,
+        device_id=group_device_id,
+        source_protocol=group_protocol,
+    )
+    typed_stream = make_typed_result_stream_contract(
+        stream_id=str(stream_id),
+        stream_kind="grouped_reduction_stream",
+        producer_primitive=str(producer_primitive),
+        columns=columns,
+        status_columns=status_columns,
+        ordering=str(ordering),
+        page_capacity=max(1, row_count),
+    )
+    plan = plan_grouped_continuation_for_typed_result_stream(
+        typed_stream,
+        operation=operation,
+        group_column="group_ids",
+        value_columns=value_columns,
+        user_selected_partner=str(partner),
+    )
+    stream_validation = validate_typed_result_stream_contract(typed_stream)
+    plan_validation = validate_grouped_continuation_plan(plan)
+    if stream_validation["status"] != "accept":
+        raise ValueError(f"typed stream validation failed: {stream_validation['errors']}")
+    if plan_validation["status"] != "accept":
+        raise ValueError(f"grouped continuation validation failed: {plan_validation['errors']}")
+    request = {
+        "adapter_version": V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_VERSION,
+        "status": "dry_run_partner_consumer_request" if dry_run else "completed_partner_consumer",
+        "consumer_status": V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_STATUS,
+        "target": V2_8_TYPED_RESULT_STREAM_TARGET,
+        "stream_id": typed_stream.stream_id,
+        "operation": plan.operation,
+        "partner": str(partner),
+        "group_count": resolved_group_count,
+        "row_count": row_count,
+        "typed_stream": typed_stream.to_metadata(),
+        "continuation_plan": plan.to_metadata(),
+        "requires_caller_supplied_partner_columns": True,
+        "source_materialization": "caller_supplied_partner_columns_no_hidden_host_rows",
+        "native_producer_promoted": False,
+        "partner_consumer_promoted": False,
+        "device_resident_result_stream_proven": False,
+        "true_zero_copy_claim_authorized": False,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "hidden_dispatch_allowed": False,
+        "automatic_partner_selection_allowed": False,
+        "app_specific_engine_logic_allowed": False,
+        "claim_boundary": V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_CLAIM_BOUNDARY,
+    }
+    if dry_run:
+        return request
+
+    outputs, metadata = _execute_partner_front_door(
+        plan,
+        partner=str(partner),
+        partner_columns=partner_columns,
+        group_count=resolved_group_count,
+        k=None,
+        total_row_capacity=None,
+        block_size=block_size,
+    )
+    return {
+        **request,
+        "outputs": outputs,
+        "partner_metadata": metadata,
+    }
+
+
 def v2_8_segmented_typed_stream_adapter_summary() -> dict[str, Any]:
     return {
         "adapter_version": V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_VERSION,
@@ -849,6 +992,39 @@ def _adapter_like(values: Any) -> tuple[Any, ...]:
         return tuple(values)
     except TypeError:
         return ()
+
+
+def _partner_column_length(values: Any) -> int:
+    if hasattr(values, "shape"):
+        try:
+            return int(values.shape[0])
+        except Exception:
+            pass
+    try:
+        return len(values)
+    except TypeError as exc:
+        raise ValueError("partner column must expose length or shape") from exc
+
+
+def _partner_column_dtype(values: Any, *, fallback: str) -> str:
+    dtype = getattr(values, "dtype", None)
+    if dtype is not None:
+        return str(dtype)
+    return str(fallback)
+
+
+def _partner_column_device_metadata(values: Any) -> tuple[str, int, int | None, str]:
+    cuda_array_interface = getattr(values, "__cuda_array_interface__", None)
+    if isinstance(cuda_array_interface, dict):
+        data = cuda_array_interface.get("data")
+        ptr = int(data[0]) if data else 0
+        return "cuda", 0, ptr if ptr > 0 else None, "__cuda_array_interface__"
+    data = getattr(values, "data", None)
+    ptr = getattr(data, "ptr", None)
+    if ptr is not None:
+        resolved = int(ptr)
+        return "cuda", 0, resolved if resolved > 0 else None, "cupy_data_ptr"
+    return "cpu", 0, None, "python"
 
 
 def _single_value_column(plan: V28GroupedContinuationPlan) -> str:

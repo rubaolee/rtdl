@@ -1246,6 +1246,8 @@ def run_raydb_v2_5_partner_continuation_preview(
 
 RAYDB_V2_6_NUMBA_NEUTRAL_CONTINUATION_VERSION = "rtdl.raydb.v2_6.numba_neutral_continuation.v1"
 RAYDB_V2_6_NUMBA_SUPPORTED_MODES = ("count", "sum", "min", "max", "avg_as_sum_count")
+RAYDB_V2_8_TYPED_STREAM_CONTINUATION_VERSION = "rtdl.raydb.v2_8.grouped_reduction_typed_stream_continuation.v1"
+RAYDB_V2_8_TYPED_STREAM_EXECUTION_PATH = "v2_8_grouped_reduction_typed_stream_partner_front_door"
 
 
 def describe_raydb_v2_6_numba_neutral_continuation(mode: str) -> dict[str, Any]:
@@ -1397,6 +1399,108 @@ def run_raydb_v2_6_numba_neutral_continuation_preview(
             "v2_6_numba_neutral_continuation": plan,
             "v2_6_neutral_handoff_validation": handoff_validation,
             "execution_path": "v2_6_numba_neutral_front_door",
+            "block_size": int(block_size),
+            "post_rt_continuation_only": True,
+            "replaces_rt_traversal": False,
+            "promoted_performance_path": False,
+            "rt_core_speedup_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "uses_legacy_torch_carrier": False,
+            "uses_torch_conversion": False,
+        },
+    }
+
+
+def describe_raydb_v2_8_typed_stream_continuation(mode: str, *, partner: str = "numba") -> dict[str, Any]:
+    """Describe RayDB's v2.8 typed-stream grouped-reduction continuation path."""
+
+    base = describe_raydb_v2_6_numba_neutral_continuation(mode)
+    return {
+        **base,
+        "contract_version": RAYDB_V2_8_TYPED_STREAM_CONTINUATION_VERSION,
+        "selected_partner": str(partner),
+        "status": "executable_for_count_sum_min_max" if base["operations"] else "blocked_unknown_mode",
+        "uses_v2_6_neutral_partner_handoff": True,
+        "uses_v2_8_typed_result_stream": True,
+        "uses_v2_8_grouped_reduction_front_door": True,
+        "execution_path": RAYDB_V2_8_TYPED_STREAM_EXECUTION_PATH,
+        "source_materialization": "caller_supplied_partner_columns_no_hidden_host_rows",
+        "app_owned_lowering": (
+            "RayDB query encoding remains Python app code. The v2.8 typed-stream "
+            "continuation sees only generic group ids and optional numeric payload values."
+        ),
+    }
+
+
+def run_raydb_v2_8_typed_stream_continuation_preview(
+    mode: str,
+    inputs: dict[str, Any],
+    *,
+    partner: str = "numba",
+    block_size: int = 256,
+) -> dict[str, Any]:
+    """Run RayDB's v2.8 grouped-reduction typed-stream continuation preview."""
+
+    plan = describe_raydb_v2_8_typed_stream_continuation(mode, partner=partner)
+    operations = tuple(plan["operations"])
+    if not operations:
+        raise ValueError(f"RayDB v2.8 typed-stream continuation does not support mode: {mode}")
+    group_ids = inputs["group_ids"]
+    values = inputs.get("values")
+    group_count = int(inputs["group_count"])
+    columns = {"group_ids": group_ids}
+    if any(operation in {"segmented_sum_f64", "segmented_min_f64", "segmented_max_f64"} for operation in operations):
+        if values is None:
+            raise ValueError("RayDB v2.8 typed-stream value reduction requires values")
+        columns["values"] = values
+    handoff = rt.prepare_v2_6_neutral_partner_handoff(
+        columns,
+        partner=partner,
+        consumer="raydb_style_v2_8_typed_stream_continuation",
+        access_modes={name: "read" for name in columns},
+    )
+    handoff_validation = rt.validate_v2_6_neutral_partner_handoff(handoff)
+    if handoff_validation["status"] != "accept":
+        raise RuntimeError(f"RayDB v2.8 typed-stream neutral handoff rejected: {handoff_validation['errors']}")
+
+    outputs: dict[str, Any] = {}
+    continuation_results: list[dict[str, Any]] = []
+    for operation in operations:
+        result = rt.execute_grouped_reduction_typed_stream_partner_columns(
+            group_ids=group_ids,
+            values=values if operation != "segmented_count_i64" else None,
+            group_count=group_count,
+            operation=operation,
+            partner=partner,
+            stream_id=f"raydb_style_{mode}_{operation}",
+            producer_primitive="ray_triangle_grouped_i64_reduction_3d",
+            block_size=block_size,
+        )
+        outputs.update(result["outputs"])
+        continuation_results.append(
+            {
+                "operation": operation,
+                "path": RAYDB_V2_8_TYPED_STREAM_EXECUTION_PATH,
+                "outputs": result["outputs"],
+                "typed_stream": result["typed_stream"],
+                "continuation_plan": result["continuation_plan"],
+                "partner_metadata": result["partner_metadata"],
+            }
+        )
+
+    return {
+        "app": "raydb_style_columnar_aggregate",
+        "mode": mode,
+        "partner": partner,
+        "status": "preview_not_promoted",
+        "operations": operations,
+        "outputs": outputs,
+        "continuation_results": tuple(continuation_results),
+        "metadata": {
+            "v2_8_typed_stream_continuation": plan,
+            "v2_6_neutral_handoff_validation": handoff_validation,
+            "execution_path": RAYDB_V2_8_TYPED_STREAM_EXECUTION_PATH,
             "block_size": int(block_size),
             "post_rt_continuation_only": True,
             "replaces_rt_traversal": False,

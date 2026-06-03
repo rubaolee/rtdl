@@ -331,6 +331,7 @@ from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_PAR
 from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_DEFERRED_OPERATIONS
 from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_SUPPORTED_OPERATIONS
 from .v2_8_segmented_typed_stream_adapter import build_segmented_typed_stream_adapter
+from .v2_8_segmented_typed_stream_adapter import execute_grouped_reduction_typed_stream_partner_columns
 from .v2_8_segmented_typed_stream_adapter import execute_segmented_typed_stream_reference_continuation
 from .v2_8_segmented_typed_stream_adapter import execute_segmented_typed_stream_partner_continuation
 from .v2_8_segmented_typed_stream_adapter import plan_segmented_typed_stream_partner_continuation
@@ -1947,6 +1948,7 @@ __all__ = [
     "V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_DEFERRED_OPERATIONS",
     "V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_SUPPORTED_OPERATIONS",
     "build_segmented_typed_stream_adapter",
+    "execute_grouped_reduction_typed_stream_partner_columns",
     "execute_segmented_typed_stream_reference_continuation",
     "execute_segmented_typed_stream_partner_continuation",
     "plan_segmented_typed_stream_partner_continuation",
