@@ -7,6 +7,9 @@ from typing import Any, Mapping, Sequence
 
 from .generic_primitives import GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_PRIMITIVE
 from .generic_primitives import GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_ROW_SCHEMA
+from .generic_primitives import V2_8_RAY_TRIANGLE_HIT_STREAM_TYPED_PRODUCER_PRIMITIVE
+from .generic_primitives import V2_8_RAY_TRIANGLE_HIT_STREAM_TYPED_PRODUCER_VERSION
+from .generic_primitives import make_v2_8_ray_triangle_hit_stream_typed_stream_contract
 from .neutral_buffer_seam import V2_5_NEUTRAL_BUFFER_SEAM_VERSION
 from .neutral_buffer_seam import create_neutral_buffer_lease
 from .neutral_buffer_seam import neutral_buffer_descriptor_from_rtdl_buffer
@@ -594,6 +597,62 @@ class RtdlHitStreamColumnHandoff:
             0 if self.hit_event_count_device_ptr is None else int(self.hit_event_count_device_ptr)
         )
         overflow_device_ptr = 0 if self.overflow_device_ptr is None else int(self.overflow_device_ptr)
+        typed_stream_source_protocol = (
+            f"native_{self.backend}_device_columns"
+            if self.source_mode == "native_device_columns"
+            else self.source_protocol
+        )
+        typed_stream = make_v2_8_ray_triangle_hit_stream_typed_stream_contract(
+            int(self.row_count),
+            capacity=int(self.capacity),
+            device_type=self.device_type,
+            device_id=self.device_id,
+            source_protocol=typed_stream_source_protocol,
+            data_ptrs={
+                "ray_ids": ptr
+                for ptr in (_data_ptr(self.ray_ids),)
+                if ptr is not None
+            }
+            | {
+                "primitive_ids": ptr
+                for ptr in (_data_ptr(self.primitive_ids),)
+                if ptr is not None
+            },
+            row_count_ptr=self.row_count_device_ptr,
+            overflow_ptr=self.overflow_device_ptr,
+        ).to_metadata()
+        typed_producer_metadata = {
+            "version": V2_8_RAY_TRIANGLE_HIT_STREAM_TYPED_PRODUCER_VERSION,
+            "producer_primitive": V2_8_RAY_TRIANGLE_HIT_STREAM_TYPED_PRODUCER_PRIMITIVE,
+            "row_count": int(self.row_count),
+            "capacity": int(self.capacity),
+            "overflow": bool(self.overflow),
+            "source_mode": self.source_mode,
+            "source_protocol": typed_stream_source_protocol,
+            "producer_output_residency": (
+                "native_device_columns"
+                if self.source_mode == "native_device_columns" and self.device_resident
+                else "host_materialized_or_reference_columns"
+            ),
+            "native_device_column_output_proven_on_hardware": bool(
+                self.native_device_column_output_proven_on_hardware
+            ),
+            "device_resident_output_stream_proven": self.removes_host_materialization_bottleneck,
+            "device_resident_status_for_partner": row_count_device_ptr != 0 and overflow_device_ptr != 0,
+            "producer_consumer_stream_ordering": self.producer_consumer_stream_ordering,
+            "event_or_same_stream_ordering_proven": self.producer_consumer_stream_ordering
+            in GENERIC_HIT_STREAM_ZERO_COPY_COMPATIBLE_STREAM_ORDERING_STATES,
+            "native_typed_producer_metadata_present": True,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "claim_boundary": (
+                "This is v2.8 typed producer metadata for generic ray/triangle hit-stream columns. "
+                "It records device-column residency when present, but does not authorize true "
+                "zero-copy, async continuation, release, or speedup claims."
+            ),
+        }
         return {
             "contract_version": GENERIC_DEVICE_RESIDENT_HIT_STREAM_HANDOFF_VERSION,
             "api_maturity": GENERIC_HIT_STREAM_HANDOFF_API_MATURITY,
@@ -685,6 +744,8 @@ class RtdlHitStreamColumnHandoff:
                 _buffer_descriptor("ray_ids", self.ray_ids, "int64", access_mode="read").to_metadata(),
                 _buffer_descriptor("primitive_ids", self.primitive_ids, "int64", access_mode="read").to_metadata(),
             ),
+            "typed_result_stream": typed_stream,
+            "v2_8_typed_producer_metadata": typed_producer_metadata,
             "phase_timing_seconds": dict(self.phase_timing_seconds),
         }
 

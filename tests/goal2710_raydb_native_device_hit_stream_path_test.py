@@ -10,9 +10,10 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class Goal2710RaydbNativeDeviceHitStreamPathTest(unittest.TestCase):
-    def test_experimental_generic_device_column_front_door_is_not_public_all(self) -> None:
+    def test_experimental_generic_device_column_front_door_is_public_but_non_authorizing(self) -> None:
         self.assertTrue(hasattr(rt, "run_generic_ray_triangle_hit_stream_device_columns_3d"))
-        self.assertNotIn("run_generic_ray_triangle_hit_stream_device_columns_3d", rt.__all__)
+        self.assertIn("run_generic_ray_triangle_hit_stream_device_columns_3d", rt.__all__)
+        self.assertTrue(hasattr(rt, "make_v2_8_ray_triangle_hit_stream_typed_stream_contract"))
 
     def test_device_column_front_door_fails_closed_for_non_optix_backend(self) -> None:
         rays = (Ray3D(0, 0.0, 0.0, -1.0, 0.0, 0.0, 1.0, 2.0),)

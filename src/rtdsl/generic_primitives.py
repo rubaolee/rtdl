@@ -47,6 +47,10 @@ V2_8_RAY_TRIANGLE_GROUPED_I64_TYPED_PRODUCER_VERSION = (
     "rtdl.v2_8.ray_triangle_grouped_i64_typed_producer.v1"
 )
 V2_8_RAY_TRIANGLE_GROUPED_I64_TYPED_PRODUCER_PRIMITIVE = "ray_triangle_grouped_i64_reduction_3d"
+V2_8_RAY_TRIANGLE_HIT_STREAM_TYPED_PRODUCER_VERSION = (
+    "rtdl.v2_8.ray_triangle_hit_stream_typed_producer.v1"
+)
+V2_8_RAY_TRIANGLE_HIT_STREAM_TYPED_PRODUCER_PRIMITIVE = "ray_triangle_hit_stream_3d"
 V2_8_RAY_TRIANGLE_GROUPED_I64_REDUCTION_COLUMNS = {
     "count": ("group_id", "count"),
     "sum": ("group_id", "sum"),
@@ -1050,6 +1054,70 @@ def make_v2_8_ray_triangle_grouped_i64_reduction_typed_stream_contract(
         ),
         ordering="group_ordered",
         page_capacity=max(1, count),
+    )
+
+
+def make_v2_8_ray_triangle_hit_stream_typed_stream_contract(
+    row_count: int,
+    *,
+    capacity: int | None = None,
+    stream_id: str = "ray_triangle_hit_stream_3d",
+    device_type: str = "cpu",
+    device_id: int = 0,
+    source_protocol: str = "python",
+    data_ptrs: dict[str, int] | None = None,
+    row_count_ptr: int | None = None,
+    overflow_ptr: int | None = None,
+    complete_ptr: int | None = None,
+) -> V28TypedResultStreamContract:
+    """Describe generic ray/triangle hit rows as a v2.8 typed result stream."""
+
+    count = int(row_count)
+    if count < 0:
+        raise ValueError("row_count must be non-negative")
+    resolved_capacity = count if capacity is None else int(capacity)
+    if resolved_capacity < count:
+        raise ValueError("capacity cannot be smaller than row_count")
+    ptrs = {str(key): int(value) for key, value in dict(data_ptrs or {}).items()}
+    columns = (
+        typed_result_column(
+            "ray_ids",
+            "group_key",
+            "int64",
+            (count,),
+            device_type=str(device_type),
+            device_id=int(device_id),
+            data_ptr=ptrs.get("ray_ids"),
+            source_protocol=str(source_protocol),
+            capacity_elements=resolved_capacity,
+        ),
+        typed_result_column(
+            "primitive_ids",
+            "item_id",
+            "int64",
+            (count,),
+            device_type=str(device_type),
+            device_id=int(device_id),
+            data_ptr=ptrs.get("primitive_ids"),
+            source_protocol=str(source_protocol),
+            capacity_elements=resolved_capacity,
+        ),
+    )
+    return make_typed_result_stream_contract(
+        stream_id=str(stream_id),
+        stream_kind="hit_stream",
+        producer_primitive=V2_8_RAY_TRIANGLE_HIT_STREAM_TYPED_PRODUCER_PRIMITIVE,
+        columns=columns,
+        status_columns=typed_result_status_columns(
+            device_type=str(device_type),
+            device_id=int(device_id),
+            row_count_ptr=None if row_count_ptr is None else int(row_count_ptr),
+            overflow_ptr=None if overflow_ptr is None else int(overflow_ptr),
+            complete_ptr=None if complete_ptr is None else int(complete_ptr),
+            source_protocol=str(source_protocol),
+        ),
+        ordering="event_ordered",
+        page_capacity=max(1, resolved_capacity),
     )
 
 
