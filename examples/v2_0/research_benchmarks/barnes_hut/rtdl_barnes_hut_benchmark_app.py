@@ -35,6 +35,8 @@ BENCHMARK_SCOPE = (
     "RT-BarnesHut-style reconstruction benchmark over generic RTDL spatial "
     "candidate, node-coverage, and partner force-reference contracts."
 )
+BH_V2_8_GROUPED_VECTOR_TYPED_STREAM_VERSION = "rtdl.barnes_hut.v2_8.grouped_vector_sum_typed_stream.v1"
+BH_V2_8_GROUPED_VECTOR_EXECUTION_PATH = "generic_grouped_vector_sum_typed_stream_partner_columns"
 CLAIM_BOUNDARY = (
     "Research benchmark / reconstruction instrument only. This is not a full "
     "RT-BarnesHut paper reproduction, not an authors-code comparison, not a "
@@ -59,6 +61,7 @@ MODES = (
     "streamed_force_sum_bucketized_cpu",
     "materialization_pressure_bucketized_cpu",
     "fused_frontier_force_sum_bucketized_cpu",
+    "v2_8_grouped_vector_sum_plan",
     "embree_node_coverage_prepared",
     "optix_node_coverage_prepared",
     "partner_exact_force",
@@ -148,6 +151,98 @@ def scope_payload() -> dict[str, Any]:
             "partner-resident force accumulation",
             "prepared tree lifetime versus dynamic body state",
         ),
+    }
+
+
+def describe_barnes_hut_v2_8_grouped_vector_sum_typed_stream(
+    *,
+    partner: str = "cupy",
+    presegmented: bool = True,
+) -> dict[str, Any]:
+    row_offsets = (0, 2, 3) if presegmented else None
+    request = rt.execute_grouped_vector_sum_typed_stream_partner_columns(
+        group_ids=(0, 0, 1),
+        values_x=(1.0, 2.5, -4.0),
+        values_y=(-1.0, 0.5, 3.0),
+        group_count=2,
+        partner=partner,
+        stream_id="barnes_hut_v2_8_grouped_vector_sum_descriptor",
+        producer_primitive="aggregate_frontier_weighted_vector_columns_2d",
+        row_offsets=row_offsets,
+        dry_run=True,
+    )
+    return {
+        "benchmark_app": BENCHMARK_NAME,
+        "contract_version": BH_V2_8_GROUPED_VECTOR_TYPED_STREAM_VERSION,
+        "execution_path": BH_V2_8_GROUPED_VECTOR_EXECUTION_PATH,
+        "operation": "grouped_vector_sum_f64x2",
+        "partner": partner,
+        "presegmented_offsets": presegmented,
+        "uses_v2_8_typed_result_stream": True,
+        "uses_v2_8_grouped_vector_sum_front_door": True,
+        "requires_caller_supplied_partner_columns": True,
+        "source_materialization": request["source_materialization"],
+        "typed_stream": request["typed_stream"],
+        "continuation_plan": request["continuation_plan"],
+        "partner_policy": {
+            "explicit_user_partner_choice_required": True,
+            "automatic_partner_selection_allowed": False,
+            "supported_partners": ("cupy", "torch", "triton"),
+            "numba_status": "not_promoted_for_grouped_vector_sum_f64x2",
+        },
+        "claim_boundary": {
+            "research_benchmark": True,
+            "full_rt_barneshut_paper_reproduction": False,
+            "authors_code_comparison": False,
+            "native_force_law_embedded": False,
+            "native_grouped_vector_sum_promoted": False,
+            "device_resident_result_stream_proven": False,
+            "true_zero_copy_claim_authorized": False,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "automatic_partner_selection_allowed": False,
+        },
+    }
+
+
+def run_barnes_hut_v2_8_grouped_vector_sum_typed_stream_preview(
+    inputs: dict[str, Any],
+    *,
+    partner: str = "cupy",
+    dry_run: bool = False,
+    triton_offset_groups_per_program: int = 1,
+) -> dict[str, Any]:
+    request = rt.execute_grouped_vector_sum_typed_stream_partner_columns(
+        group_ids=inputs["group_ids"],
+        values_x=inputs["values_x"],
+        values_y=inputs["values_y"],
+        group_count=int(inputs["group_count"]),
+        partner=partner,
+        stream_id=str(inputs.get("stream_id", "barnes_hut_v2_8_grouped_vector_sum_preview")),
+        producer_primitive=str(inputs.get("producer_primitive", "aggregate_frontier_weighted_vector_columns_2d")),
+        row_offsets=inputs.get("row_offsets"),
+        triton_offset_groups_per_program=triton_offset_groups_per_program,
+        dry_run=dry_run,
+    )
+    return {
+        "benchmark_app": BENCHMARK_NAME,
+        "contract_version": BH_V2_8_GROUPED_VECTOR_TYPED_STREAM_VERSION,
+        "execution_path": BH_V2_8_GROUPED_VECTOR_EXECUTION_PATH,
+        **request,
+        "claim_boundary": {
+            "research_benchmark": True,
+            "full_rt_barneshut_paper_reproduction": False,
+            "authors_code_comparison": False,
+            "native_force_law_embedded": False,
+            "native_grouped_vector_sum_promoted": False,
+            "device_resident_result_stream_proven": False,
+            "true_zero_copy_claim_authorized": False,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "automatic_partner_selection_allowed": False,
+        },
     }
 
 
@@ -1272,6 +1367,13 @@ def run_benchmark(
                 f"{rt.AGGREGATE_FRONTIER_WEIGHTED_VECTOR_SUM_2D_CONTRACT}+"
                 "python_force_interpretation"
             ),
+            rt_core_accelerated=False,
+        )
+    if mode == "v2_8_grouped_vector_sum_plan":
+        return _annotate(
+            describe_barnes_hut_v2_8_grouped_vector_sum_typed_stream(partner=partner),
+            mode=mode,
+            contract="generic_grouped_vector_sum_f64x2_typed_stream",
             rt_core_accelerated=False,
         )
     if mode == "embree_node_coverage_prepared":
