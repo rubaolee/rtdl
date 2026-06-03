@@ -113,6 +113,7 @@ app/partner code unless it is redesigned as an app-independent behavior.
 - Advisory planner validation status: `accept`
 - Advisory planner executes: `False`
 - Advisory planner auto partner selection: `False`
+- Promotion metadata enforced by default: `False`
 
 ## Current Hierarchy
 
@@ -418,7 +419,14 @@ The following semantics stay outside native engine primitive ownership:
 - New primitive proposals must preserve app-independent semantics.
 - New promoted nodes with overlapping key facets must record
   `considered_alternatives` and `distinct_from`.
-- `rtdsl.lint_new_primitive(...)` is the current duplicate gate.
+- Proposals must paste the `rtdsl.find_primitive(...)` alternatives
+  query that was run before creating the node.
+- `rtdsl.lint_new_primitive(candidate_node)` is the pre-addition
+  duplicate gate.
+- Promotion candidates already inserted in a local tree must run
+  `rtdsl.validate_primitive_hierarchy(..., enforce_promotion_metadata=True,
+  promotion_candidate_ids=(candidate_id,))`; the candidate-scoped gate
+  fails closed if near-duplicate metadata is missing.
 - Catalog generation and orchestration recipes are separate concerns;
   this catalog records primitive contracts and discovery metadata only.
 

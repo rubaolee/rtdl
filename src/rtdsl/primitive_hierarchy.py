@@ -62,6 +62,15 @@ PRIMITIVE_CAPABILITY_TAGS = (
     "keying:by_ray_id",
 )
 
+PRIMITIVE_DUPLICATE_KEY_FAMILIES = ("intent", "shape", "dim", "output", "keying")
+
+PRIMITIVE_PROMOTION_METADATA_STATUSES = (
+    "stable_primitive",
+    "stable_behavior",
+    "stable_compatibility_path",
+    "candidate_behavior",
+)
+
 PRIMITIVE_DISCOVERY_VERSION = "rtdl.primitive_discovery.v1"
 
 APP_OWNED_BOUNDARY_EXCLUSIONS = (
@@ -815,11 +824,20 @@ def find_primitive_hierarchy_node(node_id: str) -> PrimitiveHierarchyNode:
     raise KeyError(f"unknown primitive hierarchy node: {node_id}")
 
 
-def validate_primitive_hierarchy() -> dict[str, object]:
-    nodes = iter_primitive_hierarchy_nodes()
+def validate_primitive_hierarchy(
+    nodes: Iterable[PrimitiveHierarchyNode] = PRIMITIVE_HIERARCHY,
+    *,
+    enforce_promotion_metadata: bool = False,
+    promotion_candidate_ids: Iterable[str] = (),
+) -> dict[str, object]:
+    nodes = iter_primitive_hierarchy_nodes(nodes)
     ids = [node.id for node in nodes]
     duplicate_ids = tuple(sorted({node_id for node_id in ids if ids.count(node_id) > 1}))
     id_set = set(ids)
+    node_by_id = {node.id: node for node in nodes}
+    promotion_candidate_id_set = set(promotion_candidate_ids)
+    unknown_promotion_candidate_ids = tuple(sorted(promotion_candidate_id_set - id_set))
+    promotion_candidate_scope_required = bool(enforce_promotion_metadata and not promotion_candidate_id_set)
     unknown_layers = tuple(sorted({node.layer for node in nodes if node.layer not in PRIMITIVE_HIERARCHY_LAYER_ORDER}))
     unknown_statuses = tuple(sorted({node.status for node in nodes if node.status not in PRIMITIVE_HIERARCHY_STATUSES}))
     unknown_capability_tags = tuple(
@@ -849,10 +867,15 @@ def validate_primitive_hierarchy() -> dict[str, object]:
         for dependency_id in node.depends_on:
             if dependency_id not in id_set:
                 continue
-            dependency = find_primitive_hierarchy_node(dependency_id)
+            dependency = node_by_id[dependency_id]
             dependency_index = layer_index[dependency.layer]
             if dependency_index > node_index:
                 backward_dependencies.append((node.id, dependency_id))
+    promotion_metadata_missing = _promotion_metadata_missing(
+        nodes,
+        enforce_promotion_metadata=enforce_promotion_metadata,
+        promotion_candidate_ids=promotion_candidate_id_set,
+    )
     return {
         "version": PRIMITIVE_HIERARCHY_VERSION,
         "valid": (
@@ -862,6 +885,9 @@ def validate_primitive_hierarchy() -> dict[str, object]:
             and not unknown_capability_tags
             and not missing_dependencies
             and not backward_dependencies
+            and not promotion_candidate_scope_required
+            and (not enforce_promotion_metadata or not unknown_promotion_candidate_ids)
+            and not promotion_metadata_missing
         ),
         "node_count": len(nodes),
         "layer_order": PRIMITIVE_HIERARCHY_LAYER_ORDER,
@@ -871,18 +897,95 @@ def validate_primitive_hierarchy() -> dict[str, object]:
         "unknown_capability_tags": unknown_capability_tags,
         "missing_dependencies": missing_dependencies,
         "backward_dependencies": tuple(backward_dependencies),
+        "promotion_metadata_enforced": enforce_promotion_metadata,
+        "promotion_candidate_ids": tuple(sorted(promotion_candidate_id_set)),
+        "promotion_candidate_scope_required": promotion_candidate_scope_required,
+        "unknown_promotion_candidate_ids": unknown_promotion_candidate_ids,
+        "promotion_metadata_missing": promotion_metadata_missing,
         "app_owned_boundary_exclusions": APP_OWNED_BOUNDARY_EXCLUSIONS,
     }
+
+
+def _promotion_metadata_missing(
+    nodes: tuple[PrimitiveHierarchyNode, ...],
+    *,
+    enforce_promotion_metadata: bool,
+    promotion_candidate_ids: set[str],
+) -> tuple[dict[str, object], ...]:
+    if not enforce_promotion_metadata or not promotion_candidate_ids:
+        return ()
+
+    missing: list[dict[str, object]] = []
+    for node in nodes:
+        if node.id not in promotion_candidate_ids:
+            continue
+        if node.status not in PRIMITIVE_PROMOTION_METADATA_STATUSES:
+            continue
+        possible_duplicates = _possible_duplicate_nodes(node, nodes)
+        if possible_duplicates and not (node.considered_alternatives and node.distinct_from.strip()):
+            missing.append(
+                {
+                    "node_id": node.id,
+                    "status": node.status,
+                    "possible_duplicates": possible_duplicates,
+                    "message": "set considered_alternatives and distinct_from or reuse an existing node",
+                }
+            )
+    return tuple(missing)
+
+
+def _possible_duplicate_nodes(
+    candidate: PrimitiveHierarchyNode,
+    existing_nodes: tuple[PrimitiveHierarchyNode, ...],
+) -> tuple[dict[str, object], ...]:
+    candidate_map = _capability_facet_map(candidate.capability_tags)
+    candidate_key_family_count = sum(
+        1 for family in PRIMITIVE_DUPLICATE_KEY_FAMILIES if candidate_map.get(family)
+    )
+    nearest: list[tuple[str, int, tuple[str, ...]]] = []
+    for node in existing_nodes:
+        if node.id == candidate.id:
+            continue
+        overlap: list[str] = []
+        existing_map = _capability_facet_map(node.capability_tags)
+        for family in PRIMITIVE_DUPLICATE_KEY_FAMILIES:
+            shared = sorted(set(candidate_map.get(family, ())) & set(existing_map.get(family, ())))
+            overlap.extend(f"{family}:{value}" for value in shared)
+        if overlap:
+            nearest.append((node.id, len(overlap), tuple(overlap)))
+
+    threshold = max(3, candidate_key_family_count)
+    return tuple(
+        {
+            "node_id": node_id,
+            "shared_key_facets": shared,
+            "overlap_score": score,
+        }
+        for node_id, score, shared in sorted(nearest, key=lambda item: (-item[1], item[0]))[:5]
+        if score >= threshold
+    )
+
+
+def _capability_facet_map(tags: Iterable[str]) -> dict[str, tuple[str, ...]]:
+    by_family: dict[str, list[str]] = {}
+    for tag in tags:
+        if ":" not in tag:
+            continue
+        family, value = tag.split(":", 1)
+        by_family.setdefault(family, []).append(value)
+    return {family: tuple(sorted(set(values))) for family, values in by_family.items()}
 
 
 __all__ = [
     "APP_OWNED_BOUNDARY_EXCLUSIONS",
     "PRIMITIVE_CAPABILITY_TAGS",
     "PRIMITIVE_DISCOVERY_VERSION",
+    "PRIMITIVE_DUPLICATE_KEY_FAMILIES",
     "PRIMITIVE_HIERARCHY",
     "PRIMITIVE_HIERARCHY_LAYER_ORDER",
     "PRIMITIVE_HIERARCHY_STATUSES",
     "PRIMITIVE_HIERARCHY_VERSION",
+    "PRIMITIVE_PROMOTION_METADATA_STATUSES",
     "PrimitiveHierarchyNode",
     "find_primitive_hierarchy_node",
     "iter_primitive_hierarchy_nodes",
