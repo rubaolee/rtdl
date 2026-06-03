@@ -62,5 +62,51 @@ Local validation command:
 $env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal3180_ray_triangle_hit_stream_typed_producer_metadata_test tests.goal2706_native_optix_hit_stream_device_columns_test tests.goal2710_raydb_native_device_hit_stream_path_test tests.goal3105_v2_8_benchmark_runtime_gap_map_test tests.goal3172_v2_8_runtime_gap_compact_mask_refresh_test
 ```
 
-Pod validation is required before this report is upgraded from local contract
-evidence to current-clean-commit NVIDIA evidence.
+Local result:
+
+```text
+Ran 20 tests in 0.117s
+OK
+```
+
+Pod validation command shape:
+
+```powershell
+ssh -i .\id_ed25519_rtdl_codex -p 22063 -o StrictHostKeyChecking=no root@69.30.85.131 "..."
+```
+
+Pod environment:
+
+- Host: `root@69.30.85.131 -p 22063`
+- Commit: `2757c7da`
+- Repo: `/root/rtdl_goal3151`
+- Python: `/root/venvs/rtdl_goal3154/bin/python`
+- OptiX library: `/root/rtdl_goal3151/build/librtdl_optix.so`
+
+Pod focused-suite result:
+
+```text
+Ran 20 tests in 0.045s
+OK
+```
+
+Additional pod live OptiX smoke, executed from `/tmp/goal3180_smoke.py` with
+`PYTHONPATH=src:.` and
+`RTDL_OPTIX_LIBRARY=/root/rtdl_goal3151/build/librtdl_optix.so`:
+
+```json
+{
+  "row_count": 1,
+  "overflow": false,
+  "native_proven": true,
+  "stream_kind": "hit_stream",
+  "producer": "ray_triangle_hit_stream_3d",
+  "device_resident": true,
+  "zero_copy": false
+}
+```
+
+This proves that the live OptiX device-column handoff carries the new v2.8
+typed producer metadata on NVIDIA hardware. It still does not authorize
+true-zero-copy wording, public speedup wording, release, or paper-reproduction
+claims.
