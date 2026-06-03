@@ -1,0 +1,652 @@
+{
+  "goal": 3208,
+  "created_at_utc": "2026-06-03T23:05:59.819687+00:00",
+  "commit": "b97553c0",
+  "description": "Packed-left plus prepared-right app-handle timing for RayJoin compact grouped-count route.",
+  "route": "prepared_optix_compact_grouped_count_reuse/run_packed_left",
+  "include_rows_measured": false,
+  "validation_pass_include_rows": true,
+  "repeats_per_scale": 11,
+  "rows": [
+    {
+      "n_left": 512,
+      "n_right": 512,
+      "expected_pair_count": 262144,
+      "pack_left_once_seconds": 0.002429187297821045,
+      "prepare_static_scene_paid_once_seconds": 0.47890207916498184,
+      "validation_seconds": 0.5194530114531517,
+      "validation_count_sum": 262144,
+      "warmup_seconds": 0.010423006489872932,
+      "measurements": [
+        {
+          "rep": 0,
+          "total_seconds": 0.011267580091953278,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.006715971976518631,
+            "compact_grouped_count_sec": 0.00020006299018859863
+          },
+          "row_count": 262144,
+          "compact_row_count": 512,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 1,
+          "total_seconds": 0.005462324246764183,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.003220750018954277,
+            "compact_grouped_count_sec": 0.00014827027916908264
+          },
+          "row_count": 262144,
+          "compact_row_count": 512,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 2,
+          "total_seconds": 0.0052257440984249115,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.0033710170537233353,
+            "compact_grouped_count_sec": 0.00015134923160076141
+          },
+          "row_count": 262144,
+          "compact_row_count": 512,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 3,
+          "total_seconds": 0.004547815769910812,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.0019926652312278748,
+            "compact_grouped_count_sec": 0.000138135626912117
+          },
+          "row_count": 262144,
+          "compact_row_count": 512,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 4,
+          "total_seconds": 0.004449028521776199,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.0022658705711364746,
+            "compact_grouped_count_sec": 0.0001457594335079193
+          },
+          "row_count": 262144,
+          "compact_row_count": 512,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 5,
+          "total_seconds": 0.0021709520369768143,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.0015568807721138,
+            "compact_grouped_count_sec": 0.0001465287059545517
+          },
+          "row_count": 262144,
+          "compact_row_count": 512,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 6,
+          "total_seconds": 0.0016466733068227768,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.0011359136551618576,
+            "compact_grouped_count_sec": 0.00012943334877490997
+          },
+          "row_count": 262144,
+          "compact_row_count": 512,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 7,
+          "total_seconds": 0.001508072018623352,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.0010122749954462051,
+            "compact_grouped_count_sec": 0.0001251325011253357
+          },
+          "row_count": 262144,
+          "compact_row_count": 512,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 8,
+          "total_seconds": 0.0014747362583875656,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.001007121056318283,
+            "compact_grouped_count_sec": 0.0001133158802986145
+          },
+          "row_count": 262144,
+          "compact_row_count": 512,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 9,
+          "total_seconds": 0.0014839991927146912,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.001000797376036644,
+            "compact_grouped_count_sec": 0.0001160111278295517
+          },
+          "row_count": 262144,
+          "compact_row_count": 512,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 10,
+          "total_seconds": 0.001494813710451126,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.001012193039059639,
+            "compact_grouped_count_sec": 0.00012006238102912903
+          },
+          "row_count": 262144,
+          "compact_row_count": 512,
+          "has_rows": false,
+          "device_resident": true
+        }
+      ],
+      "median_total_seconds": 0.0021709520369768143,
+      "min_total_seconds": 0.0014747362583875656,
+      "max_total_seconds": 0.011267580091953278,
+      "mean_total_seconds": 0.003702885386618701,
+      "all_match_expected_counts": true,
+      "claim_boundary": {
+        "release_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false
+      }
+    },
+    {
+      "n_left": 1024,
+      "n_right": 1024,
+      "expected_pair_count": 1048576,
+      "pack_left_once_seconds": 0.003810189664363861,
+      "prepare_static_scene_paid_once_seconds": 0.004409259185194969,
+      "validation_seconds": 0.00308886356651783,
+      "validation_count_sum": 1048576,
+      "warmup_seconds": 0.002577671781182289,
+      "measurements": [
+        {
+          "rep": 0,
+          "total_seconds": 0.002565298229455948,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.001899750903248787,
+            "compact_grouped_count_sec": 0.0001383759081363678
+          },
+          "row_count": 1048576,
+          "compact_row_count": 1024,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 1,
+          "total_seconds": 0.002510441467165947,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.0018688663840293884,
+            "compact_grouped_count_sec": 0.00012606196105480194
+          },
+          "row_count": 1048576,
+          "compact_row_count": 1024,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 2,
+          "total_seconds": 0.002536967396736145,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.0018794313073158264,
+            "compact_grouped_count_sec": 0.00014621391892433167
+          },
+          "row_count": 1048576,
+          "compact_row_count": 1024,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 3,
+          "total_seconds": 0.002553945407271385,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.0018776841461658478,
+            "compact_grouped_count_sec": 0.00013237446546554565
+          },
+          "row_count": 1048576,
+          "compact_row_count": 1024,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 4,
+          "total_seconds": 0.0025526750832796097,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.0018825642764568329,
+            "compact_grouped_count_sec": 0.00013108178973197937
+          },
+          "row_count": 1048576,
+          "compact_row_count": 1024,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 5,
+          "total_seconds": 0.0025483760982751846,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.0018957387655973434,
+            "compact_grouped_count_sec": 0.0001264754682779312
+          },
+          "row_count": 1048576,
+          "compact_row_count": 1024,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 6,
+          "total_seconds": 0.002524804323911667,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.0018868092447519302,
+            "compact_grouped_count_sec": 0.00012449361383914948
+          },
+          "row_count": 1048576,
+          "compact_row_count": 1024,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 7,
+          "total_seconds": 0.002551758661866188,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.0018997564911842346,
+            "compact_grouped_count_sec": 0.00012635812163352966
+          },
+          "row_count": 1048576,
+          "compact_row_count": 1024,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 8,
+          "total_seconds": 0.002527710050344467,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.0018891524523496628,
+            "compact_grouped_count_sec": 0.0001232493668794632
+          },
+          "row_count": 1048576,
+          "compact_row_count": 1024,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 9,
+          "total_seconds": 0.002542814239859581,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.0018882211297750473,
+            "compact_grouped_count_sec": 0.000133635476231575
+          },
+          "row_count": 1048576,
+          "compact_row_count": 1024,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 10,
+          "total_seconds": 0.002570725977420807,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.001891307532787323,
+            "compact_grouped_count_sec": 0.00012910179793834686
+          },
+          "row_count": 1048576,
+          "compact_row_count": 1024,
+          "has_rows": false,
+          "device_resident": true
+        }
+      ],
+      "median_total_seconds": 0.0025483760982751846,
+      "min_total_seconds": 0.002510441467165947,
+      "max_total_seconds": 0.002570725977420807,
+      "mean_total_seconds": 0.0025441379032351756,
+      "all_match_expected_counts": true,
+      "claim_boundary": {
+        "release_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false
+      }
+    },
+    {
+      "n_left": 2048,
+      "n_right": 2048,
+      "expected_pair_count": 4194304,
+      "pack_left_once_seconds": 0.0078287273645401,
+      "prepare_static_scene_paid_once_seconds": 0.008337311446666718,
+      "validation_seconds": 0.0060689132660627365,
+      "validation_count_sum": 4194304,
+      "warmup_seconds": 0.0052315350621938705,
+      "measurements": [
+        {
+          "rep": 0,
+          "total_seconds": 0.005416877567768097,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.003975750878453255,
+            "compact_grouped_count_sec": 0.00018892250955104828
+          },
+          "row_count": 4194304,
+          "compact_row_count": 2048,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 1,
+          "total_seconds": 0.005373174324631691,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.003975167870521545,
+            "compact_grouped_count_sec": 0.00018515437841415405
+          },
+          "row_count": 4194304,
+          "compact_row_count": 2048,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 2,
+          "total_seconds": 0.005417494103312492,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.003990635275840759,
+            "compact_grouped_count_sec": 0.0001872144639492035
+          },
+          "row_count": 4194304,
+          "compact_row_count": 2048,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 3,
+          "total_seconds": 0.005336305126547813,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.00399387814104557,
+            "compact_grouped_count_sec": 0.00017420947551727295
+          },
+          "row_count": 4194304,
+          "compact_row_count": 2048,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 4,
+          "total_seconds": 0.005269037559628487,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.003939654678106308,
+            "compact_grouped_count_sec": 0.00017212145030498505
+          },
+          "row_count": 4194304,
+          "compact_row_count": 2048,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 5,
+          "total_seconds": 0.005267154425382614,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.003936244174838066,
+            "compact_grouped_count_sec": 0.00016955658793449402
+          },
+          "row_count": 4194304,
+          "compact_row_count": 2048,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 6,
+          "total_seconds": 0.005281634628772736,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.003943547606468201,
+            "compact_grouped_count_sec": 0.00017495453357696533
+          },
+          "row_count": 4194304,
+          "compact_row_count": 2048,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 7,
+          "total_seconds": 0.00526592880487442,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.003940882161259651,
+            "compact_grouped_count_sec": 0.0001672264188528061
+          },
+          "row_count": 4194304,
+          "compact_row_count": 2048,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 8,
+          "total_seconds": 0.005305882543325424,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.00395309180021286,
+            "compact_grouped_count_sec": 0.0001737549901008606
+          },
+          "row_count": 4194304,
+          "compact_row_count": 2048,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 9,
+          "total_seconds": 0.0052907392382621765,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.0039389971643686295,
+            "compact_grouped_count_sec": 0.0001844596117734909
+          },
+          "row_count": 4194304,
+          "compact_row_count": 2048,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 10,
+          "total_seconds": 0.005303880199790001,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.003959570080041885,
+            "compact_grouped_count_sec": 0.0001713726669549942
+          },
+          "row_count": 4194304,
+          "compact_row_count": 2048,
+          "has_rows": false,
+          "device_resident": true
+        }
+      ],
+      "median_total_seconds": 0.005303880199790001,
+      "min_total_seconds": 0.00526592880487442,
+      "max_total_seconds": 0.005417494103312492,
+      "mean_total_seconds": 0.005320737138390541,
+      "all_match_expected_counts": true,
+      "claim_boundary": {
+        "release_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false
+      }
+    },
+    {
+      "n_left": 4096,
+      "n_right": 4096,
+      "expected_pair_count": 16777216,
+      "pack_left_once_seconds": 0.015463858842849731,
+      "prepare_static_scene_paid_once_seconds": 0.022470535710453987,
+      "validation_seconds": 0.011885937303304672,
+      "validation_count_sum": 16777216,
+      "warmup_seconds": 0.01231888122856617,
+      "measurements": [
+        {
+          "rep": 0,
+          "total_seconds": 0.012787848711013794,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.009855659678578377,
+            "compact_grouped_count_sec": 0.0003343038260936737
+          },
+          "row_count": 16777216,
+          "compact_row_count": 4096,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 1,
+          "total_seconds": 0.01274953968822956,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.00985139049589634,
+            "compact_grouped_count_sec": 0.00033415667712688446
+          },
+          "row_count": 16777216,
+          "compact_row_count": 4096,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 2,
+          "total_seconds": 0.012753259390592575,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.009865708649158478,
+            "compact_grouped_count_sec": 0.0003300439566373825
+          },
+          "row_count": 16777216,
+          "compact_row_count": 4096,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 3,
+          "total_seconds": 0.012736370787024498,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.009855726733803749,
+            "compact_grouped_count_sec": 0.0003309827297925949
+          },
+          "row_count": 16777216,
+          "compact_row_count": 4096,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 4,
+          "total_seconds": 0.012758063152432442,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.009869830682873726,
+            "compact_grouped_count_sec": 0.00033190101385116577
+          },
+          "row_count": 16777216,
+          "compact_row_count": 4096,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 5,
+          "total_seconds": 0.01277102530002594,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.009863747283816338,
+            "compact_grouped_count_sec": 0.00032641738653182983
+          },
+          "row_count": 16777216,
+          "compact_row_count": 4096,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 6,
+          "total_seconds": 0.012721503153443336,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.009842494502663612,
+            "compact_grouped_count_sec": 0.0003255363553762436
+          },
+          "row_count": 16777216,
+          "compact_row_count": 4096,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 7,
+          "total_seconds": 0.012735201045870781,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.009860817342996597,
+            "compact_grouped_count_sec": 0.0003268066793680191
+          },
+          "row_count": 16777216,
+          "compact_row_count": 4096,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 8,
+          "total_seconds": 0.012751894071698189,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.009874964132905006,
+            "compact_grouped_count_sec": 0.00032828189432621
+          },
+          "row_count": 16777216,
+          "compact_row_count": 4096,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 9,
+          "total_seconds": 0.012788509950041771,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.009863097220659256,
+            "compact_grouped_count_sec": 0.0003457479178905487
+          },
+          "row_count": 16777216,
+          "compact_row_count": 4096,
+          "has_rows": false,
+          "device_resident": true
+        },
+        {
+          "rep": 10,
+          "total_seconds": 0.012768896296620369,
+          "phases_sec": {
+            "candidate_device_columns_sec": 0.009871814399957657,
+            "compact_grouped_count_sec": 0.0003340393304824829
+          },
+          "row_count": 16777216,
+          "compact_row_count": 4096,
+          "has_rows": false,
+          "device_resident": true
+        }
+      ],
+      "median_total_seconds": 0.012753259390592575,
+      "min_total_seconds": 0.012721503153443336,
+      "max_total_seconds": 0.012788509950041771,
+      "mean_total_seconds": 0.012756555595181206,
+      "all_match_expected_counts": true,
+      "claim_boundary": {
+        "release_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false
+      }
+    }
+  ],
+  "claim_boundary": {
+    "release_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false
+  }
+}
