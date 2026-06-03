@@ -67,8 +67,22 @@ Local validation command:
 $env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal3191_dense_grouped_count_device_columns_test tests.goal3189_pair_column_grouped_count_continuation_test tests.goal3187_segment_pair_candidate_chunked_append_test tests.goal3185_segment_pair_candidate_device_columns_test
 ```
 
-Initial status: local source validation is expected first. Pod validation should
-rebuild the OptiX library, run the focused tests, call
-`candidate_device_columns(...).grouped_count_by_left_id_device_columns(...)` on
-the authored crossing-segment case, wrap the returned dense counts with CuPy,
-and compare the non-zero entries with the exact row path.
+Status: local source validation passed.
+
+Pod validation artifact:
+
+- `docs/reports/goal3191_pod_dense_grouped_count_device_columns_2026-06-03.json`
+- Commit under test: `efc1d4ef`
+- Pod rebuild: `make build-optix OPTIX_PREFIX=/root/vendor/optix-sdk`
+- Focused pod tests: passed.
+- Authored live smoke: 16 horizontal left segments crossed 4 vertical right
+  segments.
+- Exact row path produced 64 rows.
+- Device candidate columns produced 64 candidate rows.
+- `grouped_count_by_left_id_device_columns(group_capacity=300)` returned a
+  dense CUDA-resident count column with CuPy view shape `[300]`.
+- Non-zero dense counts matched the exact row oracle for left IDs `200..215`.
+- `all_match_exact_rows: true`
+- Negative probe: `group_capacity=64` overflowed and returned no resident dense
+  count output because left IDs `200..215` exceed the direct-address key
+  capacity.

@@ -1,0 +1,392 @@
+{
+  "claim_boundary": {
+    "exact_intersection_witness_rows_materialized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_specific_native_logic_added": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "commit": "efc1d4ef",
+  "created_at_utc": "2026-06-03T22:06:16.428652+00:00",
+  "cupy_version": "14.1.1",
+  "focused_unittest_slice": {
+    "modules": [
+      "tests.goal3191_dense_grouped_count_device_columns_test",
+      "tests.goal3189_pair_column_grouped_count_continuation_test",
+      "tests.goal3187_segment_pair_candidate_chunked_append_test",
+      "tests.goal3185_segment_pair_candidate_device_columns_test"
+    ],
+    "status": "passed"
+  },
+  "goal": 3191,
+  "live_smoke": {
+    "all_match_exact_rows": true,
+    "candidate_columns": {
+      "candidate_event_count": 64,
+      "capacity": 64,
+      "device_ordinal": 0,
+      "device_resident": true,
+      "left_ids_device_ptr_nonzero": true,
+      "metadata": {
+        "runtime": {
+          "backend": "optix",
+          "exact_relation_witness_rows_materialized": false,
+          "output_residency": "device_resident_candidate_id_columns",
+          "owner_handle": 774270032,
+          "traversal_seconds": 7.2174e-05,
+          "true_zero_copy_authorized": false
+        },
+        "typed_result_stream": {
+          "app_specific_engine_logic_allowed": false,
+          "automatic_partner_selection_allowed": false,
+          "claim_boundary": "v2.8 typed result streams are an internal generic contract for RTDL runtime development. They do not authorize release, public speedup wording, broad RT-core wording, true-zero-copy wording, hidden dispatch, hidden partner selection, app-specific native-engine behavior, or user-defined shader injection.",
+          "column_names": [
+            "left_id",
+            "right_id"
+          ],
+          "columns": [
+            {
+              "buffer": {
+                "access_mode": "read",
+                "alignment_bytes": 1,
+                "byte_offset": 0,
+                "capacity_elements": 64,
+                "data_ptr_observed": true,
+                "device": "cuda:0",
+                "dtype": "int64",
+                "element_count": 64,
+                "lifetime": "caller_retained",
+                "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+                "mutability": "immutable",
+                "name": "left_id",
+                "scope": "rtdl_primitive_handoff_only",
+                "shape": [
+                  64
+                ],
+                "source_protocol": "optix_native_device_pair_columns",
+                "stream_handle": 0,
+                "strides_bytes": null
+              },
+              "device_resident": true,
+              "dtype": "int64",
+              "name": "left_id",
+              "nullable": false,
+              "required_for_continuation": true,
+              "role": "group_key",
+              "shape": [
+                64
+              ]
+            },
+            {
+              "buffer": {
+                "access_mode": "read",
+                "alignment_bytes": 1,
+                "byte_offset": 0,
+                "capacity_elements": 64,
+                "data_ptr_observed": true,
+                "device": "cuda:0",
+                "dtype": "int64",
+                "element_count": 64,
+                "lifetime": "caller_retained",
+                "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+                "mutability": "immutable",
+                "name": "right_id",
+                "scope": "rtdl_primitive_handoff_only",
+                "shape": [
+                  64
+                ],
+                "source_protocol": "optix_native_device_pair_columns",
+                "stream_handle": 0,
+                "strides_bytes": null
+              },
+              "device_resident": true,
+              "dtype": "int64",
+              "name": "right_id",
+              "nullable": false,
+              "required_for_continuation": true,
+              "role": "item_id",
+              "shape": [
+                64
+              ]
+            }
+          ],
+          "contract_version": "rtdl.v2_8.typed_result_stream.v1",
+          "device_resident_column_count": 2,
+          "event_or_group_ordering_required": true,
+          "grouped_continuation_ready": true,
+          "hidden_dispatch_allowed": false,
+          "ordering": "stable_row_order",
+          "page_capacity": 64,
+          "producer_primitive": "segment_pair_candidate_2d",
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "segmented_page_failure_mode": "fail_closed_overflow",
+          "status": "internal_contract_no_native_promotion",
+          "status_column_names": [
+            "row_count",
+            "capacity",
+            "overflow",
+            "complete_candidate_coverage"
+          ],
+          "status_columns": [
+            {
+              "buffer": {
+                "access_mode": "read",
+                "alignment_bytes": 1,
+                "byte_offset": 0,
+                "capacity_elements": 1,
+                "data_ptr_observed": false,
+                "device": "cuda:0",
+                "dtype": "uint64",
+                "element_count": 1,
+                "lifetime": "caller_retained",
+                "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+                "mutability": "mutable",
+                "name": "row_count",
+                "scope": "rtdl_primitive_handoff_only",
+                "shape": [
+                  1
+                ],
+                "source_protocol": "optix_native_device_pair_columns",
+                "stream_handle": 0,
+                "strides_bytes": null
+              },
+              "device_resident": false,
+              "dtype": "uint64",
+              "name": "row_count",
+              "nullable": false,
+              "required_for_continuation": true,
+              "role": "status",
+              "shape": [
+                1
+              ]
+            },
+            {
+              "buffer": {
+                "access_mode": "read",
+                "alignment_bytes": 1,
+                "byte_offset": 0,
+                "capacity_elements": 1,
+                "data_ptr_observed": false,
+                "device": "cuda:0",
+                "dtype": "uint64",
+                "element_count": 1,
+                "lifetime": "caller_retained",
+                "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+                "mutability": "mutable",
+                "name": "capacity",
+                "scope": "rtdl_primitive_handoff_only",
+                "shape": [
+                  1
+                ],
+                "source_protocol": "optix_native_device_pair_columns",
+                "stream_handle": 0,
+                "strides_bytes": null
+              },
+              "device_resident": false,
+              "dtype": "uint64",
+              "name": "capacity",
+              "nullable": false,
+              "required_for_continuation": true,
+              "role": "status",
+              "shape": [
+                1
+              ]
+            },
+            {
+              "buffer": {
+                "access_mode": "read",
+                "alignment_bytes": 1,
+                "byte_offset": 0,
+                "capacity_elements": 1,
+                "data_ptr_observed": false,
+                "device": "cuda:0",
+                "dtype": "uint32",
+                "element_count": 1,
+                "lifetime": "caller_retained",
+                "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+                "mutability": "mutable",
+                "name": "overflow",
+                "scope": "rtdl_primitive_handoff_only",
+                "shape": [
+                  1
+                ],
+                "source_protocol": "optix_native_device_pair_columns",
+                "stream_handle": 0,
+                "strides_bytes": null
+              },
+              "device_resident": false,
+              "dtype": "uint32",
+              "name": "overflow",
+              "nullable": false,
+              "required_for_continuation": true,
+              "role": "status",
+              "shape": [
+                1
+              ]
+            },
+            {
+              "buffer": {
+                "access_mode": "read",
+                "alignment_bytes": 1,
+                "byte_offset": 0,
+                "capacity_elements": 1,
+                "data_ptr_observed": false,
+                "device": "cuda:0",
+                "dtype": "uint32",
+                "element_count": 1,
+                "lifetime": "caller_retained",
+                "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+                "mutability": "mutable",
+                "name": "complete_candidate_coverage",
+                "scope": "rtdl_primitive_handoff_only",
+                "shape": [
+                  1
+                ],
+                "source_protocol": "optix_native_device_pair_columns",
+                "stream_handle": 0,
+                "strides_bytes": null
+              },
+              "device_resident": false,
+              "dtype": "uint32",
+              "name": "complete_candidate_coverage",
+              "nullable": false,
+              "required_for_continuation": true,
+              "role": "status",
+              "shape": [
+                1
+              ]
+            }
+          ],
+          "stream_id": "segment_pair_candidate_2d_device_columns",
+          "stream_kind": "candidate_stream",
+          "target": "typed_device_resident_result_streams_and_grouped_continuation",
+          "true_zero_copy_claim_authorized": false
+        },
+        "v2_8_typed_producer_metadata": {
+          "candidate_event_count": 64,
+          "capacity": 64,
+          "claim_boundary": "v2.8 geometry-relation typed producer metadata records generic row schemas for prepared geometry outputs. It does not authorize release, public speedup wording, RT-core speedup wording, true-zero-copy wording, hidden dispatch, hidden partner selection, paper reproduction claims, or app-specific native-engine behavior.",
+          "column_names": [
+            "left_id",
+            "right_id"
+          ],
+          "device_resident_output_stream_proven": true,
+          "exact_relation_witness_rows_materialized": false,
+          "native_symbol": "rtdl_optix_prepared_segment_pair_candidate_device_columns",
+          "native_typed_producer_metadata_present": true,
+          "overflow": false,
+          "producer_output_residency": "device_resident_candidate_id_columns",
+          "producer_primitive": "segment_pair_candidate_2d",
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "row_count": 64,
+          "rt_core_speedup_claim_authorized": false,
+          "schema_id": "segment_pair_candidate_2d_device_columns",
+          "source_protocol": "optix_native_device_pair_columns",
+          "status": "device_resident_candidate_id_columns_no_exact_relation_witnesses",
+          "true_zero_copy_claim_authorized": false,
+          "version": "rtdl.v2_8.geometry_relation_typed_producer.v1"
+        }
+      },
+      "overflow": false,
+      "right_ids_device_ptr_nonzero": true,
+      "row_count": 64,
+      "traversal_seconds": 7.2174e-05
+    },
+    "dense_count_result_compacted_on_device": false,
+    "dense_count_result_device_resident": true,
+    "dense_counts": {
+      "count_column_materialized_on_host": false,
+      "counts_device_ptr_nonzero": true,
+      "device_ordinal": 0,
+      "device_resident": true,
+      "group_capacity": 300,
+      "group_capacity_semantics": "direct-address key capacity",
+      "group_key_column_materialized_on_host": false,
+      "native_symbol": "rtdl_optix_columnar_device_payload_grouped_count_i64_device_columns_with_capacity",
+      "output_residency": "device_resident_dense_grouped_count_column",
+      "overflow": false,
+      "owner_handle": 783634624,
+      "producer": "device_column_grouped_count_i64",
+      "public_speedup_claim_authorized": false,
+      "reduction_seconds": 1.536e-05,
+      "release_authorized": false,
+      "rt_core_speedup_claim_authorized": false,
+      "schema": "device_grouped_count_i64_dense_columns",
+      "source_row_count": 64,
+      "true_zero_copy_authorized": false
+    },
+    "dense_counts_cupy_view_dtype": "int64",
+    "dense_counts_cupy_view_shape": [
+      300
+    ],
+    "dense_counts_materialized_for_validation_only": true,
+    "dense_nonzero_counts_per_left_id": {
+      "200": 4,
+      "201": 4,
+      "202": 4,
+      "203": 4,
+      "204": 4,
+      "205": 4,
+      "206": 4,
+      "207": 4,
+      "208": 4,
+      "209": 4,
+      "210": 4,
+      "211": 4,
+      "212": 4,
+      "213": 4,
+      "214": 4,
+      "215": 4
+    },
+    "exact_counts_per_left_id": {
+      "200": 4,
+      "201": 4,
+      "202": 4,
+      "203": 4,
+      "204": 4,
+      "205": 4,
+      "206": 4,
+      "207": 4,
+      "208": 4,
+      "209": 4,
+      "210": 4,
+      "211": 4,
+      "212": 4,
+      "213": 4,
+      "214": 4,
+      "215": 4
+    },
+    "exact_row_count": 64,
+    "expected_counts_per_left_id": {
+      "200": 4,
+      "201": 4,
+      "202": 4,
+      "203": 4,
+      "204": 4,
+      "205": 4,
+      "206": 4,
+      "207": 4,
+      "208": 4,
+      "209": 4,
+      "210": 4,
+      "211": 4,
+      "212": 4,
+      "213": 4,
+      "214": 4,
+      "215": 4
+    },
+    "left_segment_count": 16,
+    "right_segment_count": 4
+  },
+  "negative_probe": {
+    "group_capacity_64_device_resident": false,
+    "group_capacity_64_overflow": true,
+    "reason": "left_id values 200..215 exceed direct-address capacity 64"
+  },
+  "optix_library": "/root/rtdl_goal3151/build/librtdl_optix.so",
+  "python": "/root/venvs/rtdl_goal3154/bin/python"
+}
