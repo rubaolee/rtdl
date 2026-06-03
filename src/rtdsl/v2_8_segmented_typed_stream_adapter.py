@@ -535,6 +535,12 @@ def _reference_inputs_for_plan(
     total_row_capacity: int | None,
 ) -> dict[str, object]:
     operation = plan.operation
+    if operation == "compact_mask_i64":
+        first, second = _two_value_columns(plan)
+        return {
+            "values": tuple(int(value) for value in columns[first]),
+            "mask": tuple(bool(value) for value in columns[second]),
+        }
     group_ids = tuple(int(value) for value in columns[plan.group_column])
     inputs: dict[str, object] = {
         "group_count": int(group_count),
@@ -570,12 +576,6 @@ def _reference_inputs_for_plan(
         if total_row_capacity is not None:
             inputs["total_row_capacity"] = int(total_row_capacity)
         return inputs
-    if operation == "compact_mask_i64":
-        first, second = _two_value_columns(plan)
-        return {
-            "values": tuple(int(value) for value in columns[first]),
-            "mask": tuple(bool(value) for value in columns[second]),
-        }
     raise ValueError(f"unsupported reference continuation operation: {operation}")
 
 
@@ -593,8 +593,7 @@ def _partner_input_column_mapping(plan: V28GroupedContinuationPlan) -> tuple[tup
         mapping.append(("item_ids", _required_item_column(plan)))
     elif operation == "compact_mask_i64":
         first, second = _two_value_columns(plan)
-        mapping = (("values", first), ("mask", second))
-        return tuple(mapping)
+        return (("values", first), ("mask", second))
     return tuple(mapping)
 
 
