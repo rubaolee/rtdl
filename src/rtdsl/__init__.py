@@ -994,6 +994,7 @@ from .partner_adapters import pairwise_l2_sq_block_nearest_rows_2d_partner_colum
 from .partner_adapters import pairwise_l2_sq_score_rows_2d_partner_columns
 from .app_adapters import pairwise_inverse_square_force_2d_partner_columns
 from .partner_adapters import directed_hausdorff_2d_partner_columns
+from .partner_adapters import directed_max_of_nearest_distance_2d_partner_columns
 from .partner_adapters import top_k_nearest_points_2d_partner_columns
 from .partner_continuations import PartnerCandidateRows
 from .partner_continuations import cupy_group_argmin_then_global_argmax_with_witness
@@ -2444,6 +2445,7 @@ __all__ = [
     "pairwise_l2_sq_score_rows_2d_partner_columns",
     "pairwise_inverse_square_force_2d_partner_columns",
     "directed_hausdorff_2d_partner_columns",
+    "directed_max_of_nearest_distance_2d_partner_columns",
     "top_k_nearest_points_2d_partner_columns",
     "PartnerCandidateRows",
     "cupy_group_argmin_then_global_argmax_with_witness",

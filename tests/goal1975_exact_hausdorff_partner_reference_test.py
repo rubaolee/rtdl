@@ -10,7 +10,7 @@ import unittest
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 ADAPTERS = ROOT / "src" / "rtdsl" / "partner_adapters.py"
 INIT = ROOT / "src" / "rtdsl" / "__init__.py"
-EXAMPLE = ROOT / "examples" / "rtdl_hausdorff_distance_app.py"
+EXAMPLE = ROOT / "examples" / "v2_0" / "research_benchmarks" / "hausdorff_xhd" / "rtdl_hausdorff_distance_app.py"
 PREFLIGHT = ROOT / "scripts" / "goal1908_v2_local_preflight.py"
 REPORT = ROOT / "docs" / "reports" / "goal1975_exact_hausdorff_partner_reference_2026-05-14.md"
 POD_ARTIFACT = ROOT / "docs" / "reports" / "goal1975_pod_exact_hausdorff_partner_cupy_perf.json"
@@ -23,7 +23,9 @@ class Goal1975ExactHausdorffPartnerReferenceTest(unittest.TestCase):
 
         self.assertIn("def point_rows_to_partner_columns", adapters)
         self.assertIn("def directed_hausdorff_2d_partner_columns", adapters)
+        self.assertIn("def directed_max_of_nearest_distance_2d_partner_columns", adapters)
         self.assertIn("generic_exact_directed_hausdorff_2d", adapters)
+        self.assertIn("generic_directed_max_of_nearest_distance_2d", adapters)
         self.assertIn("nearest_distance_sq", adapters)
         self.assertIn("torch.min", adapters)
         self.assertIn("cupy.min", adapters)
@@ -32,15 +34,17 @@ class Goal1975ExactHausdorffPartnerReferenceTest(unittest.TestCase):
         self.assertIn("not_called_partner_reference_only", adapters)
         self.assertIn("rt_core_speedup_claim_authorized", adapters)
         self.assertIn("from .partner_adapters import directed_hausdorff_2d_partner_columns", init_text)
+        self.assertIn("from .partner_adapters import directed_max_of_nearest_distance_2d_partner_columns", init_text)
         self.assertIn('"directed_hausdorff_2d_partner_columns"', init_text)
+        self.assertIn('"directed_max_of_nearest_distance_2d_partner_columns"', init_text)
 
     def test_hausdorff_app_has_partner_exact_mode_without_rt_core_claim(self) -> None:
         text = EXAMPLE.read_text(encoding="utf-8")
 
         self.assertIn('"partner_exact"', text)
         self.assertIn("rt.point_rows_to_partner_columns", text)
-        self.assertIn("rt.directed_hausdorff_2d_partner_columns", text)
-        self.assertIn("generic_exact_directed_hausdorff_2d", text)
+        self.assertIn("rt.directed_max_of_nearest_distance_2d_partner_columns", text)
+        self.assertIn("generic_directed_max_of_nearest_distance_2d", ADAPTERS.read_text(encoding="utf-8"))
         self.assertIn('"rt_core_accelerated": False', text)
         self.assertIn("native engine is not app-customized", text)
 

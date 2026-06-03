@@ -283,7 +283,7 @@ def _run_partner_exact_directed(
 ) -> dict[str, object]:
     source_columns = rt.point_rows_to_partner_columns(source, partner=partner)
     target_columns = rt.point_rows_to_partner_columns(target, partner=partner)
-    result = rt.directed_hausdorff_2d_partner_columns(
+    result = rt.directed_max_of_nearest_distance_2d_partner_columns(
         source_columns,
         target_columns,
         partner=partner,
@@ -595,7 +595,7 @@ def run_app(
             "native_continuation_active": False,
             "native_continuation_backend": "none",
             "rt_core_accelerated": False,
-            "partner_reference_contract": "generic_exact_directed_hausdorff_2d",
+            "partner_reference_contract": directed_ab["partner_reference_contract"],
             "host_score_row_materialization_used": directed_ab.get("host_score_row_materialization_used")
             if partner == "numba"
             else None,

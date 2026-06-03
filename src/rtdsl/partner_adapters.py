@@ -3648,6 +3648,46 @@ def directed_hausdorff_2d_partner_columns(
     return columns
 
 
+def directed_max_of_nearest_distance_2d_partner_columns(
+    source_point_columns: dict[str, object],
+    target_point_columns: dict[str, object],
+    *,
+    partner: str = "torch",
+    triton_strategy: str = "generic_score_rows",
+    triton_candidate_block_size: int = 1024,
+    numba_strategy: str = "block_nearest_rows",
+    numba_block_size: int = 256,
+    materialize_nearest_distances: bool = True,
+    return_metadata: bool = False,
+):
+    """Compute max-over-source of nearest-target distance from generic point columns.
+
+    This is the generic front-door name for the exact directed Hausdorff building
+    block. The older Hausdorff-named adapter remains available for compatibility.
+    """
+    result = directed_hausdorff_2d_partner_columns(
+        source_point_columns,
+        target_point_columns,
+        partner=partner,
+        triton_strategy=triton_strategy,
+        triton_candidate_block_size=triton_candidate_block_size,
+        numba_strategy=numba_strategy,
+        numba_block_size=numba_block_size,
+        materialize_nearest_distances=materialize_nearest_distances,
+        return_metadata=return_metadata,
+    )
+    if not return_metadata:
+        return result
+
+    metadata = dict(result["metadata"])
+    metadata["adapter"] = "directed_max_of_nearest_distance_2d_partner_columns"
+    metadata["partner_reference_contract"] = "generic_directed_max_of_nearest_distance_2d"
+    metadata["compatibility_adapter_aliases"] = ("directed_hausdorff_2d_partner_columns",)
+    metadata["compatibility_partner_reference_contracts"] = ("generic_exact_directed_hausdorff_2d",)
+    metadata["semantic_aliases"] = ("directed_hausdorff_2d",)
+    return {"columns": result["columns"], "metadata": metadata}
+
+
 def top_k_nearest_points_2d_partner_columns(
     query_point_columns: dict[str, object],
     candidate_point_columns: dict[str, object],

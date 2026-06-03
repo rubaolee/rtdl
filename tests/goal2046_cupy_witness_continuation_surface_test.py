@@ -7,6 +7,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs" / "reports" / "goal2046_cupy_witness_continuation_surface_2026-05-14.md"
 SOURCE = ROOT / "src" / "rtdsl" / "partner_continuations.py"
 INIT = ROOT / "src" / "rtdsl" / "__init__.py"
+APP = ROOT / "examples" / "v2_0" / "research_benchmarks" / "hausdorff_xhd" / "rtdl_hausdorff_distance_app.py"
 
 sys.path.insert(0, str(ROOT / "src"))
 
@@ -15,7 +16,7 @@ class Goal2046CuPyWitnessContinuationSurfaceTest(unittest.TestCase):
     def test_cupy_surface_is_exported(self):
         source = SOURCE.read_text(encoding="utf-8")
         init_text = INIT.read_text(encoding="utf-8")
-        app_text = (ROOT / "examples" / "rtdl_hausdorff_distance_app.py").read_text(encoding="utf-8")
+        app_text = APP.read_text(encoding="utf-8")
         required = [
             "def cupy_group_topk",
             "def cupy_group_argmin_then_global_argmax_with_witness",
@@ -76,7 +77,7 @@ class Goal2046CuPyWitnessContinuationSurfaceTest(unittest.TestCase):
         self.assertEqual(result["metadata"]["target_id"], 11)
         self.assertTrue(np.isclose(result["metadata"]["distance"], 1.0))
 
-        from examples import rtdl_hausdorff_distance_app as hausdorff
+        from examples.v2_0.research_benchmarks.hausdorff_xhd import rtdl_hausdorff_distance_app as hausdorff
 
         payload = hausdorff.run_app("partner_cupy_witness_exact", copies=2)
         self.assertTrue(payload["matches_oracle"])
