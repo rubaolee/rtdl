@@ -62,5 +62,82 @@ Local validation command:
 $env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal3181_geometry_relation_row_view_typed_producer_metadata_test tests.goal3180_ray_triangle_hit_stream_typed_producer_metadata_test tests.goal3172_v2_8_runtime_gap_compact_mask_refresh_test tests.goal3105_v2_8_benchmark_runtime_gap_map_test
 ```
 
-Pod validation is the next required step before this report records current
-NVIDIA evidence.
+Result:
+
+```text
+Ran 17 tests in 0.003s
+
+OK
+```
+
+Pod validation:
+
+- Host: `root@69.30.85.131 -p 22063`
+- Repo: `/root/rtdl_goal3151`
+- Commit: `d8ed8a4a`
+- Python: `/root/venvs/rtdl_goal3154/bin/python`
+- OptiX library: `/root/rtdl_goal3151/build/librtdl_optix.so`
+
+Focused pod suite:
+
+```bash
+PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=/root/rtdl_goal3151/build/librtdl_optix.so \
+  /root/venvs/rtdl_goal3154/bin/python -m unittest \
+  tests.goal3181_geometry_relation_row_view_typed_producer_metadata_test \
+  tests.goal3180_ray_triangle_hit_stream_typed_producer_metadata_test \
+  tests.goal3172_v2_8_runtime_gap_compact_mask_refresh_test \
+  tests.goal3105_v2_8_benchmark_runtime_gap_map_test
+```
+
+Result:
+
+```text
+Ran 17 tests in 0.003s
+
+OK
+```
+
+Live prepared-row smoke:
+
+The smoke invoked the actual Spatial RayJoin prepared OptiX routes for PIP,
+LSI, and overlay-seed, then called
+`OptixRowView.to_v2_8_typed_result_stream_metadata()` on each returned row view.
+
+```json
+{
+  "status": "ok",
+  "results": [
+    {
+      "workload": "pip",
+      "row_count": 6,
+      "stream_kind": "candidate_stream",
+      "producer": "point_closed_shape_membership_2d",
+      "residency": "host_materialized_row_view",
+      "device_resident": false,
+      "zero_copy": false
+    },
+    {
+      "workload": "lsi",
+      "row_count": 1,
+      "stream_kind": "candidate_stream",
+      "producer": "segment_pair_intersection_2d",
+      "residency": "host_materialized_row_view",
+      "device_resident": false,
+      "zero_copy": false
+    },
+    {
+      "workload": "overlay_seed",
+      "row_count": 0,
+      "stream_kind": "candidate_stream",
+      "producer": "shape_pair_relation_flags_2d",
+      "residency": "host_materialized_row_view",
+      "device_resident": false,
+      "zero_copy": false
+    }
+  ]
+}
+```
+
+This confirms the metadata path is wired to live prepared OptiX row views while
+preserving the intended boundary: it does not claim device-resident relation-row
+output, zero-copy, public speedup, or release readiness.
