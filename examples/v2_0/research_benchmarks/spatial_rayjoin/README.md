@@ -132,9 +132,11 @@ with prepare_rayjoin_optix_compact_grouped_count_segments(right_segments) as pre
     payload = prepared.run(left_segments, include_rows=False)
     packed_left = pack_rayjoin_optix_compact_grouped_count_left_segments(left_segments)
     repeated_payload = prepared.run_packed_left(packed_left, include_rows=False)
+    dense_count_payload = prepared.run_packed_left_dense_count(packed_left, include_rows=False)
 
 print(payload["summary"])
 print(repeated_payload["summary"])
+print(dense_count_payload["summary"])
 ```
 
 The prepared handle is still app-layer code. Native execution still uses
@@ -143,6 +145,11 @@ columns; RayJoin route policy, left-ID remapping, and repeated-query reuse
 remain in Python. `run_packed_left(...)` is useful when a caller repeatedly
 queries the same left segment batch against one prepared right-side scene and
 wants to avoid paying Python query packing on every call.
+
+When the app only needs dense counts per left segment and does not need
+right-side witness IDs, `run_packed_left_dense_count(...)` uses a generic fused
+segment-pair left-id count primitive. It returns a dense count-column contract
+where `count[index]` corresponds to the remapped left segment index.
 
 For a single external two-input dataset:
 

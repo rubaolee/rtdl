@@ -695,6 +695,99 @@ class PreparedRayJoinOptixCompactGroupedCountSegments:
             payload["rows"] = rows
         return payload
 
+    def run_packed_left_dense_count(
+        self,
+        packed_left: "RayJoinOptixCompactGroupedCountPackedLeftSegments",
+        *,
+        include_rows: bool = False,
+        dataset_note: str | None = None,
+    ) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared RayJoin compact grouped-count handle is closed")
+        if not isinstance(packed_left, RayJoinOptixCompactGroupedCountPackedLeftSegments):
+            raise TypeError("packed_left must be produced by pack_rayjoin_optix_compact_grouped_count_left_segments")
+
+        phases: dict[str, float] = {}
+        rows: tuple[dict[str, int], ...] = ()
+        count_start = time.perf_counter()
+        dense = self._prepared.left_id_count_device_columns(
+            packed_left.packed_segments,
+            group_capacity=max(1, packed_left.count),
+        )
+        phases["left_id_count_device_columns_sec"] = time.perf_counter() - count_start
+        try:
+            dense_metadata = dense.to_metadata()
+            if include_rows:
+                import cupy as cp  # type: ignore
+
+                copy_start = time.perf_counter()
+                counts = cp.asnumpy(dense.as_cupy_counts()).tolist()
+                phases["dense_count_validation_copy_sec"] = time.perf_counter() - copy_start
+                rows = tuple(
+                    {
+                        "left_id": packed_left.original_left_ids[index],
+                        "count": int(count),
+                    }
+                    for index, count in enumerate(counts[: packed_left.count])
+                )
+        finally:
+            dense.close()
+
+        payload: dict[str, object] = {
+            "app": "rayjoin_v2_spatial_join",
+            "workload": "lsi",
+            "execution_route": "prepared_optix_left_id_dense_count_reuse",
+            "backend": "optix",
+            "dataset": self._dataset,
+            "dataset_note": dataset_note or self._dataset_note,
+            "row_count": int(dense_metadata["source_row_count"]),
+            "summary": {
+                "intersection_count": int(dense_metadata["source_row_count"]),
+                "left_group_capacity": packed_left.count,
+                "output_contract": "segment_segment_intersection_count_by_left_id_dense_device_column",
+            },
+            "phases_sec": phases,
+            "dense_left_id_count_columns": dense_metadata,
+            "prepared_reuse": {
+                "enabled": True,
+                "right_segment_count": len(self._right_segments),
+                "prepare_static_scene_sec": self.prepare_static_scene_sec,
+                "prepare_static_scene_paid_once": True,
+            },
+            "packed_left_reuse": {
+                "enabled": True,
+                "left_segment_count": packed_left.count,
+                "pack_seconds": packed_left.pack_seconds,
+                "query_pack_paid_in_call": False,
+            },
+            "left_id_remap": {
+                "enabled": True,
+                "reason": "generic left-id count primitive uses direct-address key capacity",
+                "original_left_id_count": len(packed_left.original_left_ids),
+            },
+            "device_resident_continuation_status": (
+                "dense_left_id_count_device_column_complete: count[index] remains CUDA-resident during the route; "
+                "validation copy is optional"
+            ),
+            "native_engine_boundary": (
+                "The engine sees generic segment-pair left-id count device columns. "
+                "RayJoin workload interpretation, prepared-handle reuse, packed-left reuse, and left-ID remapping stay in Python."
+            ),
+            "claim_boundary": {
+                "full_rayjoin_reproduction": False,
+                "paper_scale_perf_claim_authorized": False,
+                "rtdl_beats_rayjoin_claim_authorized": False,
+                "whole_app_speedup_claim_authorized": False,
+                "v2_0_release_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+                "requires_pod_for_optix_perf": False,
+            },
+        }
+        if include_rows:
+            payload["rows"] = rows
+        return payload
+
 
 class RayJoinOptixCompactGroupedCountPackedLeftSegments:
     """App-layer packed left segments for repeated compact count queries."""
