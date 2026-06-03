@@ -70,6 +70,20 @@ Local validation command:
 $env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal3197_rayjoin_compact_grouped_count_route_test
 ```
 
-Initial status: local source validation is expected first. Pod validation should
-run the new CLI route on the fixture LSI workload and confirm the payload
-contains the compact grouped-count device-column metadata and false claim flags.
+Status: local source validation passed.
+
+Pod validation artifact:
+
+- `docs/reports/goal3197_rayjoin_compact_grouped_count_route_pod_2026-06-03.json`
+- Commit under test: `71812e99`
+- Focused pod tests: passed.
+- App route smoke:
+  `run_rayjoin_prepared_optix_compact_grouped_count_workload("lsi", include_rows=True)`
+- Fixture result: `row_count = 1`, `compact_row_count = 1`, and returned count
+  sum equals `row_count`.
+- Compact grouped-count columns reported
+  `output_residency = device_resident_compact_grouped_count_columns`.
+- Claim flags remained false.
+
+This fixture is intentionally small. It proves route correctness and metadata
+shape, not performance.
