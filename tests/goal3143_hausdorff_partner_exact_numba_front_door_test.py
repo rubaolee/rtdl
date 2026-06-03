@@ -116,6 +116,7 @@ class Goal3143HausdorffPartnerExactNumbaFrontDoorTest(unittest.TestCase):
         self.assertFalse(metadata["host_score_row_materialization_used"])
         self.assertTrue(metadata["nearest_distance_column_materialized"])
         self.assertTrue(metadata["score_rows_generated_on_partner_device"])
+        self.assertEqual(metadata["v2_8_partner_continuation_operations_semantics"], "executed_operations_this_call")
         self.assertIn("sqrt_f64", metadata["v2_8_partner_continuation_operations"])
         self.assertEqual(columns["nearest_target_ids"].copy_to_host().tolist(), [20, 21])
         self.assertEqual(columns["nearest_distances"].copy_to_host().tolist(), [1.0, 1.0])
@@ -131,6 +132,11 @@ class Goal3143HausdorffPartnerExactNumbaFrontDoorTest(unittest.TestCase):
         self.assertEqual(payload["numba_strategy"], "block_nearest_rows")
         self.assertFalse(payload["host_score_row_materialization_used"])
         self.assertFalse(payload["directed_a_to_b"]["nearest_distance_column_materialized"])
+        self.assertEqual(
+            payload["directed_a_to_b"]["v2_8_partner_continuation_operations_semantics"],
+            "executed_operations_this_call",
+        )
+        self.assertNotIn("sqrt_f64", payload["directed_a_to_b"]["v2_8_partner_continuation_operations"])
         self.assertTrue(payload["score_rows_generated_on_partner_device"])
         self.assertFalse(payload["claim_boundary"]["numba_speedup_claim_authorized"])
         self.assertFalse(payload["claim_boundary"]["rt_core_speedup_claim_authorized"])

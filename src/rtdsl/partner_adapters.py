@@ -3327,6 +3327,9 @@ def _directed_hausdorff_2d_numba_partner_columns(
     score_metadata = score_rows["metadata"]
     witness_metadata = witness["metadata"]
     score_operation = str(score_metadata["operation"])
+    executed_operations = [score_operation, "grouped_argmin_f64", "grouped_argmax_f64"]
+    if sqrt_result is not None:
+        executed_operations.append("sqrt_f64")
     metadata = {
         "adapter": "directed_hausdorff_2d_partner_columns",
         "partner": "numba",
@@ -3347,12 +3350,8 @@ def _directed_hausdorff_2d_numba_partner_columns(
         "app_distance_host_materialization": False,
         "numba_strategy": numba_strategy,
         "numba_block_size": int(numba_block_size),
-        "v2_8_partner_continuation_operations": (
-            score_operation,
-            "grouped_argmin_f64",
-            "grouped_argmax_f64",
-            "sqrt_f64",
-        ),
+        "v2_8_partner_continuation_operations": tuple(executed_operations),
+        "v2_8_partner_continuation_operations_semantics": "executed_operations_this_call",
         "v2_8_numba_preview_kernel_status": "preview_not_promoted",
         "numba_score_row_operation": score_operation,
         "numba_score_row_count": int(score_metadata["row_count"]),
