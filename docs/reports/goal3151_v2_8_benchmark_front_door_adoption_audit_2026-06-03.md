@@ -67,7 +67,22 @@ External-review handoff:
 
 - `docs/handoff/HANDOFF_EXTERNAL_REVIEW_GOAL3151_V2_8_BENCHMARK_FRONT_DOOR_ADOPTION_2026-06-03.md`
 
-Required follow-up validation:
+External-review result:
 
-- Run the focused v2.8 front-door/benchmark slice after the report lands.
-- If the pod is reachable, run the same focused slice from `origin/main` or from the exact pushed Goal3151 commit and record the commit, GPU, driver, and command.
+- Claude review: `docs/reviews/goal3152_claude_review_goal3151_v2_8_benchmark_front_door_adoption_2026-06-03.md`
+- Verdict: `accept`
+- Boundary: the review does not authorize v2.8 release, public speedup, RT-core speedup, true-zero-copy, or paper reproduction claims.
+
+Pod validation:
+
+```text
+Pod SSH: ssh root@69.30.85.131 -p 22063 -i id_ed25519_rtdl_codex
+GPU: NVIDIA A40
+Driver: 570.211.01
+Python: 3.12.3
+Checkout: /root/rtdl_goal3151
+Commit: fd419b940fa948178fa9afa0eb17b59654a986af
+Command: PYTHONPATH=src:. python3 -m unittest tests.goal3151_v2_8_benchmark_front_door_adoption_audit_test tests.goal2999_triangle_counting_numba_compact_mask_wiring_test tests.goal3002_rayjoin_numba_compact_mask_wiring_test tests.goal3147_compact_mask_front_door_test tests.goal3111_v2_8_segmented_typed_stream_adapter_test
+Ran 39 tests in 0.478s
+OK
+```
