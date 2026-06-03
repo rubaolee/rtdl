@@ -1,0 +1,372 @@
+{
+  "goal": "Goal3132",
+  "status": "passed",
+  "claim_boundary": {
+    "release_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "hidden_dispatch_allowed": false,
+    "automatic_partner_selection_allowed": false,
+    "app_specific_engine_logic_allowed": false
+  },
+  "environment": {
+    "gpu_name": "NVIDIA RTX 4000 Ada Generation",
+    "torch_version": "2.12.0+cu130",
+    "torch_cuda_available": true,
+    "cupy_version": "14.1.1",
+    "cupy_device_count": 1,
+    "numba_cuda_available": true
+  },
+  "small_functional_cases": [
+    {
+      "name": "segmented_count_i64",
+      "partner": "cupy",
+      "outputs": {
+        "counts": [
+          2,
+          1,
+          2
+        ]
+      },
+      "reference": {
+        "counts": [
+          2,
+          1,
+          2
+        ]
+      },
+      "claim_flags": {
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "public_speedup_claim_authorized": false
+      },
+      "status": "passed"
+    },
+    {
+      "name": "segmented_sum_f64",
+      "partner": "cupy",
+      "outputs": {
+        "sums": [
+          4.0,
+          10.0,
+          10.0
+        ]
+      },
+      "reference": {
+        "sums": [
+          4.0,
+          10.0,
+          10.0
+        ]
+      },
+      "claim_flags": {
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "public_speedup_claim_authorized": false
+      },
+      "status": "passed"
+    },
+    {
+      "name": "grouped_vector_sum_f64x2",
+      "partner": "cupy",
+      "outputs": {
+        "sum_x": [
+          3.0,
+          3.0,
+          9.0
+        ],
+        "sum_y": [
+          30.0,
+          30.0,
+          90.0
+        ]
+      },
+      "reference": {
+        "sum_x": [
+          3.0,
+          3.0,
+          9.0
+        ],
+        "sum_y": [
+          30.0,
+          30.0,
+          90.0
+        ]
+      },
+      "claim_flags": {
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "public_speedup_claim_authorized": false
+      },
+      "status": "passed"
+    },
+    {
+      "name": "grouped_argmin_f64",
+      "partner": "numba",
+      "outputs": {
+        "group_ids": [
+          0,
+          1,
+          2
+        ],
+        "item_ids": [
+          10,
+          20,
+          30
+        ],
+        "scores": [
+          1.5,
+          0.25,
+          9.0
+        ]
+      },
+      "reference": {
+        "group_ids": [
+          0,
+          1,
+          2
+        ],
+        "item_ids": [
+          10,
+          20,
+          30
+        ],
+        "scores": [
+          1.5,
+          0.25,
+          9.0
+        ],
+        "missing_group_ids": []
+      },
+      "claim_flags": {
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "public_speedup_claim_authorized": false
+      },
+      "status": "passed"
+    },
+    {
+      "name": "grouped_argmax_f64",
+      "partner": "numba",
+      "outputs": {
+        "group_ids": [
+          0,
+          1,
+          2
+        ],
+        "item_ids": [
+          11,
+          20,
+          30
+        ],
+        "scores": [
+          2.5,
+          0.25,
+          9.0
+        ]
+      },
+      "reference": {
+        "group_ids": [
+          0,
+          1,
+          2
+        ],
+        "item_ids": [
+          11,
+          20,
+          30
+        ],
+        "scores": [
+          2.5,
+          0.25,
+          9.0
+        ],
+        "missing_group_ids": []
+      },
+      "claim_flags": {
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "public_speedup_claim_authorized": false
+      },
+      "status": "passed"
+    },
+    {
+      "name": "grouped_topk_f64",
+      "partner": "torch",
+      "outputs": {
+        "group_ids": [
+          0,
+          0,
+          1,
+          1,
+          2
+        ],
+        "item_ids": [
+          12,
+          10,
+          20,
+          21,
+          30
+        ],
+        "scores": [
+          0.5,
+          1.5,
+          0.25,
+          0.75,
+          9.0
+        ]
+      },
+      "reference": {
+        "group_ids": [
+          0,
+          0,
+          1,
+          1,
+          2
+        ],
+        "item_ids": [
+          12,
+          10,
+          20,
+          21,
+          30
+        ],
+        "scores": [
+          0.5,
+          1.5,
+          0.25,
+          0.75,
+          9.0
+        ],
+        "ranks": [
+          1,
+          2,
+          1,
+          2,
+          1
+        ],
+        "row_offsets": [
+          0,
+          2,
+          4,
+          5
+        ],
+        "missing_group_ids": []
+      },
+      "claim_flags": {
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "public_speedup_claim_authorized": false
+      },
+      "status": "passed"
+    },
+    {
+      "name": "bounded_collect_finalize_i64",
+      "partner": "torch",
+      "outputs": {
+        "group_ids": [
+          0,
+          0,
+          1,
+          2,
+          2
+        ],
+        "item_ids": [
+          10,
+          11,
+          20,
+          30,
+          31
+        ],
+        "row_offsets": [
+          0,
+          2,
+          3,
+          5
+        ]
+      },
+      "reference": {
+        "group_ids": [
+          0,
+          0,
+          1,
+          2,
+          2
+        ],
+        "item_ids": [
+          10,
+          11,
+          20,
+          30,
+          31
+        ],
+        "row_offsets": [
+          0,
+          2,
+          3,
+          5
+        ]
+      },
+      "claim_flags": {
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "public_speedup_claim_authorized": false
+      },
+      "status": "passed"
+    }
+  ],
+  "numba_sanity": {
+    "status": "passed",
+    "first_values": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ]
+  },
+  "larger_timing_cases": [
+    {
+      "operation": "grouped_argmin_f64",
+      "partner": "numba",
+      "row_count": 65536,
+      "group_count": 1024,
+      "warm_seconds_includes_compile": 0.21320197638124228,
+      "steady_seconds": [
+        0.3124324195086956,
+        0.21639949828386307,
+        0.21677234768867493
+      ],
+      "reference_python_seconds": 0.056126343086361885,
+      "claim_boundary": "timing_probe_not_public_speedup_claim",
+      "claim_flags": {
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "public_speedup_claim_authorized": false
+      }
+    },
+    {
+      "operation": "grouped_argmax_f64",
+      "partner": "numba",
+      "row_count": 65536,
+      "group_count": 1024,
+      "warm_seconds_includes_compile": 0.20843169558793306,
+      "steady_seconds": [
+        0.21036133542656898,
+        0.21156876161694527,
+        0.21223415806889534
+      ],
+      "reference_python_seconds": 0.055611032992601395,
+      "claim_boundary": "timing_probe_not_public_speedup_claim",
+      "claim_flags": {
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "public_speedup_claim_authorized": false
+      }
+    }
+  ]
+}
