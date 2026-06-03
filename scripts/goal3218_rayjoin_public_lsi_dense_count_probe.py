@@ -51,13 +51,27 @@ def _hardware_metadata() -> dict[str, object]:
     nvidia_smi = _command_text(
         [
             "nvidia-smi",
-            "--query-gpu=name,driver_version,cuda_version",
+            "--query-gpu=name,driver_version",
             "--format=csv,noheader",
         ]
     )
+    if nvidia_smi is None and Path("/usr/bin/nvidia-smi").exists():
+        nvidia_smi = _command_text(
+            [
+                "/usr/bin/nvidia-smi",
+                "--query-gpu=name,driver_version",
+                "--format=csv,noheader",
+            ]
+        )
+    cuda_driver = _command_text(["nvidia-smi", "--query", "--display=COMPUTE"])
+    if cuda_driver is None and Path("/usr/bin/nvidia-smi").exists():
+        cuda_driver = _command_text(["/usr/bin/nvidia-smi", "--query", "--display=COMPUTE"])
     nvcc = _command_text(["nvcc", "--version"])
+    if nvcc is None and Path("/usr/local/cuda/bin/nvcc").exists():
+        nvcc = _command_text(["/usr/local/cuda/bin/nvcc", "--version"])
     return {
         "nvidia_smi": nvidia_smi,
+        "cuda_driver_query": cuda_driver,
         "nvcc_version": nvcc,
         "rtdl_optix_library": os.environ.get("RTDL_OPTIX_LIBRARY") or os.environ.get("RTDL_OPTIX_LIB"),
     }

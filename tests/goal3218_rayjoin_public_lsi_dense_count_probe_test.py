@@ -29,6 +29,7 @@ class Goal3218RayJoinPublicLsiDenseCountProbeTest(unittest.TestCase):
             "include_rows_measured",
             "dense_over_compact_ratio",
             "nvidia-smi",
+            "cuda_driver_query",
             "nvcc_version",
             "rtdl_optix_library",
             "public_speedup_claim_authorized",
