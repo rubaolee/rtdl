@@ -2,7 +2,7 @@
 
 Date: 2026-06-03
 
-Status: local implementation ready for focused validation.
+Status: local and pod validation complete.
 
 ## Purpose
 
@@ -51,3 +51,18 @@ $env:PYTHONPATH='src;.'; py -3 -m unittest `
 ```
 
 Result: 11 tests passed locally, 1 CUDA-gated test skipped.
+
+Focused pod validation:
+
+```bash
+cd /root/rtdl_goal3151
+git fetch origin main
+git reset --hard origin/main
+PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so \
+  /root/venvs/rtdl_goal3154/bin/python -m unittest \
+  tests.goal3176_ray_triangle_grouped_i64_typed_producer_metadata_test \
+  tests.goal3162_raydb_grouped_reduction_typed_stream_front_door_test \
+  tests.goal2684_generic_rt_hit_stream_handoff_test
+```
+
+Pod result: commit `592bd3e2`, 11 tests passed.
