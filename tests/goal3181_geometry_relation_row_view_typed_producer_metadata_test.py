@@ -66,9 +66,12 @@ class Goal3181GeometryRelationRowViewTypedProducerMetadataTest(unittest.TestCase
 
         self.assertIn("generic 2-D relation-row typed producer metadata", spatial["current_best_path"])
         self.assertIn("prepared shape/segment row views", spatial["current_best_path"])
+        self.assertIn("shape-pair active-count route", spatial["current_best_path"])
         self.assertIn("relation-row typed producer metadata now exists", spatial["current_bottleneck"])
+        self.assertIn("skips final host row allocation", spatial["current_bottleneck"])
         self.assertIn("device-resident relation-row output", spatial["current_bottleneck"])
         self.assertIn("Goal3181", spatial["evidence_refs"])
+        self.assertIn("Goal3183", spatial["evidence_refs"])
         self.assertNotIn("Goal3180", spatial["evidence_refs"])
         self.assertFalse(spatial["release_authorized"])
         self.assertFalse(spatial["public_speedup_claim_authorized"])
