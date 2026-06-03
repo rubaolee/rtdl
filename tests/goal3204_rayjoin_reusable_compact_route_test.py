@@ -14,9 +14,13 @@ class Goal3204RayJoinReusableCompactRouteTest(unittest.TestCase):
         source = APP.read_text(encoding="utf-8")
 
         self.assertIn("class PreparedRayJoinOptixCompactGroupedCountSegments", source)
+        self.assertIn("class RayJoinOptixCompactGroupedCountPackedLeftSegments", source)
         self.assertIn("prepare_rayjoin_optix_compact_grouped_count_segments", source)
+        self.assertIn("pack_rayjoin_optix_compact_grouped_count_left_segments", source)
+        self.assertIn("run_packed_left", source)
         self.assertIn("prepared_optix_compact_grouped_count_reuse", source)
         self.assertIn("prepare_static_scene_paid_once", source)
+        self.assertIn("query_pack_paid_in_call", source)
         self.assertIn("RayJoin workload interpretation, prepared-handle reuse, and left-ID remapping stay in Python", source)
         self.assertIn("candidate_device_columns(", source)
         self.assertIn("grouped_count_by_left_id_compact_device_columns", source)
@@ -42,12 +46,15 @@ class Goal3204RayJoinReusableCompactRouteTest(unittest.TestCase):
             "prepared Python handle",
             "right-side scene is built once",
             "prepare_rayjoin_optix_compact_grouped_count_segments",
+            "pack_rayjoin_optix_compact_grouped_count_left_segments",
+            "run_packed_left",
             "include_rows=False",
             "generic segment-pair candidate columns",
             "generic compact grouped-count",
             "columns; RayJoin route policy",
             "RayJoin route policy, left-ID remapping, and repeated-query reuse",
             "remain in Python",
+            "avoid paying Python query packing on every call",
         ):
             self.assertIn(phrase, readme)
 

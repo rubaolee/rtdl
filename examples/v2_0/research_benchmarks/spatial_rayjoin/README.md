@@ -124,19 +124,25 @@ prepared Python handle so the OptiX right-side scene is built once:
 
 ```python
 from examples.v2_0.research_benchmarks.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app import (
+    pack_rayjoin_optix_compact_grouped_count_left_segments,
     prepare_rayjoin_optix_compact_grouped_count_segments,
 )
 
 with prepare_rayjoin_optix_compact_grouped_count_segments(right_segments) as prepared:
     payload = prepared.run(left_segments, include_rows=False)
+    packed_left = pack_rayjoin_optix_compact_grouped_count_left_segments(left_segments)
+    repeated_payload = prepared.run_packed_left(packed_left, include_rows=False)
 
 print(payload["summary"])
+print(repeated_payload["summary"])
 ```
 
 The prepared handle is still app-layer code. Native execution still uses
 generic segment-pair candidate columns and generic compact grouped-count
 columns; RayJoin route policy, left-ID remapping, and repeated-query reuse
-remain in Python.
+remain in Python. `run_packed_left(...)` is useful when a caller repeatedly
+queries the same left segment batch against one prepared right-side scene and
+wants to avoid paying Python query packing on every call.
 
 For a single external two-input dataset:
 

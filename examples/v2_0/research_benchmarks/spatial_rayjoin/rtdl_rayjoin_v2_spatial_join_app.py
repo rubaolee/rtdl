@@ -559,6 +559,9 @@ class PreparedRayJoinOptixCompactGroupedCountSegments:
     def __exit__(self, exc_type, exc, tb) -> None:
         self.close()
 
+    def pack_left_segments(self, left_segments) -> "RayJoinOptixCompactGroupedCountPackedLeftSegments":
+        return pack_rayjoin_optix_compact_grouped_count_left_segments(left_segments)
+
     def run(
         self,
         left_segments,
@@ -566,32 +569,45 @@ class PreparedRayJoinOptixCompactGroupedCountSegments:
         include_rows: bool = False,
         dataset_note: str | None = None,
     ) -> dict[str, object]:
+        packed_left = self.pack_left_segments(left_segments)
+        payload = self.run_packed_left(
+            packed_left,
+            include_rows=include_rows,
+            dataset_note=dataset_note,
+        )
+        payload["phases_sec"] = {
+            "query_pack_sec": packed_left.pack_seconds,
+            **payload["phases_sec"],
+        }
+        payload["packed_left_reuse"] = {
+            **payload["packed_left_reuse"],
+            "enabled": False,
+            "query_pack_paid_in_call": True,
+        }
+        return payload
+
+    def run_packed_left(
+        self,
+        packed_left: "RayJoinOptixCompactGroupedCountPackedLeftSegments",
+        *,
+        include_rows: bool = False,
+        dataset_note: str | None = None,
+    ) -> dict[str, object]:
         if self._closed:
             raise RuntimeError("prepared RayJoin compact grouped-count handle is closed")
+        if not isinstance(packed_left, RayJoinOptixCompactGroupedCountPackedLeftSegments):
+            raise TypeError("packed_left must be produced by pack_rayjoin_optix_compact_grouped_count_left_segments")
 
         phases: dict[str, float] = {}
         rows: tuple[dict[str, int], ...] = ()
-        left_segments = tuple(dict(segment) for segment in left_segments)
-        original_left_ids = tuple(int(segment["id"]) for segment in left_segments)
-        remapped_left_segments = tuple(
-            {**segment, "id": index}
-            for index, segment in enumerate(left_segments)
-        )
-
-        from rtdsl.optix_runtime import pack_segments
-
-        packed_left = _phase_time(
-            phases,
-            "query_pack_sec",
-            lambda: pack_segments(records=remapped_left_segments),
-        )
+        original_left_ids = packed_left.original_left_ids
         candidate_metadata: dict[str, object]
         compact_metadata: dict[str, object]
         candidate_row_count = 0
         candidate_start = time.perf_counter()
         columns = self._prepared.candidate_device_columns(
-            packed_left,
-            max_rows=len(remapped_left_segments) * len(self._right_segments),
+            packed_left.packed_segments,
+            max_rows=packed_left.count * len(self._right_segments),
         )
         phases["candidate_device_columns_sec"] = time.perf_counter() - candidate_start
         try:
@@ -599,7 +615,7 @@ class PreparedRayJoinOptixCompactGroupedCountSegments:
             candidate_row_count = int(columns.row_count)
             compact_start = time.perf_counter()
             compact = columns.grouped_count_by_left_id_compact_device_columns(
-                group_capacity=max(1, len(remapped_left_segments)),
+                group_capacity=max(1, packed_left.count),
             )
             phases["compact_grouped_count_sec"] = time.perf_counter() - compact_start
             try:
@@ -645,6 +661,12 @@ class PreparedRayJoinOptixCompactGroupedCountSegments:
                 "prepare_static_scene_sec": self.prepare_static_scene_sec,
                 "prepare_static_scene_paid_once": True,
             },
+            "packed_left_reuse": {
+                "enabled": True,
+                "left_segment_count": packed_left.count,
+                "pack_seconds": packed_left.pack_seconds,
+                "query_pack_paid_in_call": False,
+            },
             "left_id_remap": {
                 "enabled": True,
                 "reason": "generic grouped-count primitive uses direct-address key capacity",
@@ -672,6 +694,35 @@ class PreparedRayJoinOptixCompactGroupedCountSegments:
         if include_rows:
             payload["rows"] = rows
         return payload
+
+
+class RayJoinOptixCompactGroupedCountPackedLeftSegments:
+    """App-layer packed left segments for repeated compact count queries."""
+
+    def __init__(self, left_segments) -> None:
+        phases: dict[str, float] = {}
+        normalized_left = tuple(dict(segment) for segment in left_segments)
+        self.original_left_ids = tuple(int(segment["id"]) for segment in normalized_left)
+        remapped_left_segments = tuple(
+            {**segment, "id": index}
+            for index, segment in enumerate(normalized_left)
+        )
+
+        from rtdsl.optix_runtime import pack_segments
+
+        self.packed_segments = _phase_time(
+            phases,
+            "query_pack_sec",
+            lambda: pack_segments(records=remapped_left_segments),
+        )
+        self.pack_seconds = phases["query_pack_sec"]
+        self.count = len(self.original_left_ids)
+
+
+def pack_rayjoin_optix_compact_grouped_count_left_segments(
+    left_segments,
+) -> RayJoinOptixCompactGroupedCountPackedLeftSegments:
+    return RayJoinOptixCompactGroupedCountPackedLeftSegments(left_segments)
 
 
 def prepare_rayjoin_optix_compact_grouped_count_segments(
