@@ -325,6 +325,7 @@ from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_ADA
 from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_STATUS
 from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_VERSION
 from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_STATUS
+from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_DEFERRED_OPERATIONS
 from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_SUPPORTED_OPERATIONS
 from .v2_8_segmented_typed_stream_adapter import build_segmented_typed_stream_adapter
 from .v2_8_segmented_typed_stream_adapter import execute_segmented_typed_stream_reference_continuation
@@ -1925,6 +1926,7 @@ __all__ = [
     "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_STATUS",
     "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_VERSION",
     "V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_STATUS",
+    "V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_DEFERRED_OPERATIONS",
     "V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_SUPPORTED_OPERATIONS",
     "build_segmented_typed_stream_adapter",
     "execute_segmented_typed_stream_reference_continuation",

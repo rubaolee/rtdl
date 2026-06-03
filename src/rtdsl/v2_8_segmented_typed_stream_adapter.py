@@ -34,6 +34,21 @@ V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_SUPPORTED_OPERATIONS = (
     "grouped_topk_f64",
     "bounded_collect_finalize_i64",
 )
+V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_DEFERRED_OPERATIONS = {
+    "compact_mask_i64": (
+        "reference-only in v2.8 because it is an order-preserving mask compaction "
+        "continuation, not a grouped partner-consumer operation; adding a partner "
+        "front door requires separate mask-compaction smoke evidence"
+    ),
+    "segmented_min_f64": (
+        "lower-level partner operation exists, but v2.8 front-door support is "
+        "deferred until explicit partner-consumer smoke evidence exists"
+    ),
+    "segmented_max_f64": (
+        "lower-level partner operation exists, but v2.8 front-door support is "
+        "deferred until explicit partner-consumer smoke evidence exists"
+    ),
+}
 V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_CLAIM_BOUNDARY = (
     "v2.8 segmented typed stream adapter bridges an existing segmented row "
     "stream into the typed result-stream contract for local contract testing. "
@@ -351,6 +366,15 @@ def plan_segmented_typed_stream_partner_continuation(
         "total_row_capacity": total_row_capacity,
         "supported_operation": supported,
         "supported_operations": V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_SUPPORTED_OPERATIONS,
+        "deferred_operations": V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_DEFERRED_OPERATIONS,
+        "unsupported_operation_reason": (
+            None
+            if supported
+            else V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_DEFERRED_OPERATIONS.get(
+                plan.operation,
+                "operation is not part of the v2.8 partner-consumer front-door surface",
+            )
+        ),
         "continuation_semantics": V2_8_TYPED_RESULT_STREAM_CONTINUATION_SEMANTICS.get(plan.operation),
         "requires_caller_supplied_partner_columns": True,
         "input_column_mapping": input_column_mapping,
@@ -423,6 +447,7 @@ def v2_8_segmented_typed_stream_adapter_summary() -> dict[str, Any]:
         "materialization": V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_MATERIALIZATION,
         "partner_consumer_status": V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_STATUS,
         "partner_consumer_supported_operations": V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_SUPPORTED_OPERATIONS,
+        "partner_consumer_deferred_operations": V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_DEFERRED_OPERATIONS,
         "native_producer_promoted": False,
         "partner_consumer_promoted": False,
         "device_resident_result_stream_proven": False,
@@ -755,6 +780,7 @@ __all__ = [
     "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_STATUS",
     "V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_STATUS",
     "V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_SUPPORTED_OPERATIONS",
+    "V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_DEFERRED_OPERATIONS",
     "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_VERSION",
     "build_segmented_typed_stream_adapter",
     "execute_segmented_typed_stream_reference_continuation",

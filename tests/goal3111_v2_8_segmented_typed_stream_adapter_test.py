@@ -18,6 +18,9 @@ class Goal3111V28SegmentedTypedStreamAdapterTest(unittest.TestCase):
         self.assertEqual(summary["adapter_version"], rt.V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_VERSION)
         self.assertEqual(summary["target"], rt.V2_8_FIRST_RUNTIME_TARGET)
         self.assertEqual(summary["materialization"], "host_reference_contract_adapter")
+        self.assertIn("compact_mask_i64", summary["partner_consumer_deferred_operations"])
+        self.assertIn("segmented_min_f64", summary["partner_consumer_deferred_operations"])
+        self.assertIn("segmented_max_f64", summary["partner_consumer_deferred_operations"])
         self.assertFalse(summary["native_producer_promoted"])
         self.assertFalse(summary["partner_consumer_promoted"])
         self.assertFalse(summary["device_resident_result_stream_proven"])
@@ -538,8 +541,10 @@ class Goal3111V28SegmentedTypedStreamAdapterTest(unittest.TestCase):
         )
 
         self.assertFalse(request["supported_operation"])
+        self.assertIn("mask compaction", request["unsupported_operation_reason"])
         self.assertIn("grouped_argmax_f64", request["supported_operations"])
         self.assertNotIn("compact_mask_i64", request["supported_operations"])
+        self.assertIn("compact_mask_i64", request["deferred_operations"])
 
     def test_report_documents_reference_adapter_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
