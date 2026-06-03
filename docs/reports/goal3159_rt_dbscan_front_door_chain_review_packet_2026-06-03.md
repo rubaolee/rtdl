@@ -50,6 +50,19 @@ The pod checks used clean `origin/main` resets and the existing A40 pod environm
 - Goal3156 app route: tiny grouped-stream path matches reference and reports `v2_8_front_door_route: true`.
 - Goal3158 typed metadata: app output stream reports `device_resident_column_count: 4` with all four output columns observing device pointers.
 
+Packet/front-door slice pod validation on `root@69.30.85.131:22063` from clean `origin/main` checkout at commit `023c5bde`:
+
+```bash
+python -m unittest \
+  tests.goal3159_rt_dbscan_front_door_chain_review_packet_test \
+  tests.goal3158_fixed_radius_graph_typed_producer_metadata_test \
+  tests.goal3157_v2_8_runtime_gap_rt_dbscan_front_door_refresh_test \
+  tests.goal3156_rt_dbscan_v2_8_front_door_route_test \
+  tests.goal3155_fixed_radius_graph_component_front_door_test
+```
+
+Result: 20 tests passed.
+
 ## Reviewer Questions
 
 1. Does Goal3155 keep the runtime front door generic, or does any DBSCAN/cluster policy leak into the reusable API?
