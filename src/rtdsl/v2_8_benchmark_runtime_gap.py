@@ -190,13 +190,23 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
         benchmark_app="barnes_hut",
         display_name="Barnes-Hut / RT-BarnesHut style",
         benchmark_path="examples/v2_0/research_benchmarks/barnes_hut/",
-        current_best_path="aggregate-frontier collect primitive; app computes force law",
-        partner_position="CuPy is the current force-vector continuation reference.",
-        current_bottleneck="frontier rows and app-owned force vectors need a reusable grouped vector continuation contract.",
-        generic_runtime_target="typed aggregate-frontier streams plus grouped vector continuation",
+        current_best_path=(
+            "aggregate-frontier collect primitive plus v2.8 grouped-vector typed-stream "
+            "front door for app-owned force/vector continuation"
+        ),
+        partner_position=(
+            "CuPy remains the current force-vector continuation reference; torch/triton are "
+            "also supported by the generic grouped-vector front door."
+        ),
+        current_bottleneck=(
+            "grouped vector continuation now has a generic front door; remaining work is native "
+            "typed aggregate-frontier producer/residency evidence and force-law ownership boundaries "
+            "at serious scale."
+        ),
+        generic_runtime_target="typed aggregate-frontier streams with prepared residency plus grouped vector continuation",
         target_family=V2_8_FIRST_RUNTIME_TARGET,
         priority="P1",
-        evidence_refs=("Goal2905 lineage",),
+        evidence_refs=("Goal2905 lineage", "Goal3169"),
     ),
     V28BenchmarkRuntimeGapRow(
         benchmark_app="librts_spatial_index",
