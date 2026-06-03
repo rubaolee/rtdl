@@ -305,6 +305,7 @@ def _run_partner_exact_directed(
         "numba_score_row_count",
         "numba_logical_pair_count",
         "v2_8_partner_continuation_operations",
+        "v2_8_partner_continuation_operations_semantics",
         "host_score_row_materialization_used",
         "score_rows_generated_on_partner_device",
         "nearest_distance_column_materialized",
