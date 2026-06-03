@@ -67,8 +67,7 @@ class Goal2999TriangleCountingNumbaCompactMaskWiringTest(unittest.TestCase):
             "describe_triangle_counting_v2_6_numba_compact_mask_continuation",
             "run_triangle_counting_v2_6_numba_compact_mask_preview",
             "prepare_v2_6_neutral_partner_handoff",
-            "build_segmented_typed_stream_adapter",
-            "execute_segmented_typed_stream_partner_continuation",
+            "execute_compact_mask_typed_stream_partner_columns",
             "v2_8_segmented_typed_stream_front_door_used",
             "v2_6_numba_compact_mask_plan",
         ):

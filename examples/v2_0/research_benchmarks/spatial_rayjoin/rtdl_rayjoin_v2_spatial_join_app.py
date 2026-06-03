@@ -647,32 +647,12 @@ def run_rayjoin_v2_6_numba_compact_mask_preview(
             f"{handoff_validation['errors']}"
         )
 
-    stream_adapter = rt.build_segmented_typed_stream_adapter(
-        (),
-        row_schema=("group_ids", "candidate_row_ids", "keep_mask"),
-        column_roles={
-            "group_ids": "group_key",
-            "candidate_row_ids": "item_id",
-            "keep_mask": "mask",
-        },
-        page_capacity=1,
-        stream_id=f"rayjoin_{workload}_v2_8_compact_mask_schema",
-        stream_kind="candidate_stream",
-        producer_primitive="app_supplied_candidate_row_stream",
-        ordering="stable_row_order",
-        operation="compact_mask_i64",
-        group_column="group_ids",
-        value_columns=("candidate_row_ids", "keep_mask"),
-        user_selected_partner="numba",
-    )
-    result = rt.execute_segmented_typed_stream_partner_continuation(
-        stream_adapter,
+    result = rt.execute_compact_mask_typed_stream_partner_columns(
+        values=candidate_row_ids,
+        mask=keep_mask,
         partner="numba",
-        partner_columns={
-            "candidate_row_ids": candidate_row_ids,
-            "keep_mask": keep_mask,
-        },
-        group_count=0,
+        stream_id=f"rayjoin_{workload}_v2_8_compact_mask_schema",
+        producer_primitive="app_supplied_candidate_row_stream",
         block_size=block_size,
     )
     partner_metadata = result["partner_metadata"]

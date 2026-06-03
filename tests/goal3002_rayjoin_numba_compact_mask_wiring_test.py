@@ -91,8 +91,7 @@ class Goal3002RayjoinNumbaCompactMaskWiringTest(unittest.TestCase):
             "RAYJOIN_V2_6_NUMBA_COMPACT_MASK_VERSION",
             "describe_rayjoin_v2_6_numba_compact_mask_continuation",
             "run_rayjoin_v2_6_numba_compact_mask_preview",
-            "build_segmented_typed_stream_adapter",
-            "execute_segmented_typed_stream_partner_continuation",
+            "execute_compact_mask_typed_stream_partner_columns",
             "v2_8_segmented_typed_stream_front_door_used",
         ):
             self.assertIn(phrase, source)

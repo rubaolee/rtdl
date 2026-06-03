@@ -58,8 +58,7 @@ class Goal3151BenchmarkFrontDoorAdoptionAuditTest(unittest.TestCase):
             (triangle_source, "run_triangle_counting_v2_6_numba_compact_mask_preview"),
         ):
             self.assertIn(legacy_function, source)
-            self.assertIn("build_segmented_typed_stream_adapter", source)
-            self.assertIn("execute_segmented_typed_stream_partner_continuation", source)
+            self.assertIn("execute_compact_mask_typed_stream_partner_columns", source)
             self.assertIn("v2_8_segmented_typed_stream_front_door_used", source)
             self.assertNotIn("rt.run_numba_compact_mask_i64(", source)
 
@@ -76,20 +75,6 @@ class Goal3151BenchmarkFrontDoorAdoptionAuditTest(unittest.TestCase):
             self.assertFalse(payload["true_zero_copy_claim_authorized"])
 
     def test_compact_mask_front_door_preserves_block_size_tuning_knob(self) -> None:
-        adapter = rt.build_segmented_typed_stream_adapter(
-            (),
-            row_schema=("group_ids", "values", "mask"),
-            column_roles={"group_ids": "group_key", "values": "item_id", "mask": "mask"},
-            page_capacity=1,
-            stream_id="goal3151_compact_mask_schema",
-            stream_kind="candidate_stream",
-            producer_primitive="schema_only_test_stream",
-            ordering="stable_row_order",
-            operation="compact_mask_i64",
-            group_column="group_ids",
-            value_columns=("values", "mask"),
-            user_selected_partner="numba",
-        )
         fake_result = {
             "status": "completed",
             "outputs": {"values": (10, 12), "original_indices": (0, 2)},
@@ -102,12 +87,13 @@ class Goal3151BenchmarkFrontDoorAdoptionAuditTest(unittest.TestCase):
             "rtdsl.numba_partner_continuation.run_numba_compact_mask_i64",
             return_value=fake_result,
         ) as compact:
-            result = rt.execute_segmented_typed_stream_partner_continuation(
-                adapter,
+            result = rt.execute_compact_mask_typed_stream_partner_columns(
+                values=(10, 11, 12),
+                mask=(True, False, True),
                 partner="numba",
-                partner_columns={"values": (10, 11, 12), "mask": (True, False, True)},
-                group_count=0,
                 block_size=512,
+                stream_id="goal3151_compact_mask_schema",
+                producer_primitive="schema_only_test_stream",
             )
 
         compact.assert_called_once()

@@ -890,6 +890,137 @@ def execute_grouped_vector_sum_typed_stream_partner_columns(
     }
 
 
+def execute_compact_mask_typed_stream_partner_columns(
+    *,
+    values: Any,
+    mask: Any,
+    partner: str,
+    stream_id: str,
+    producer_primitive: str = "caller_supplied_masked_candidate_columns",
+    ordering: str = "stable_row_order",
+    block_size: int | None = None,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """Execute a generic compact-mask typed stream over caller columns."""
+
+    if str(partner) in {"", "auto", "explicit_user_choice_required"}:
+        raise ValueError("v2.8 compact-mask typed stream requires an explicit partner")
+    row_count = _partner_column_length(values)
+    if _partner_column_length(mask) != row_count:
+        raise ValueError("mask length must match values length")
+
+    value_device_type, value_device_id, value_data_ptr, value_protocol = _partner_column_device_metadata(values)
+    mask_device_type, mask_device_id, mask_data_ptr, mask_protocol = _partner_column_device_metadata(mask)
+    columns = [
+        typed_result_column(
+            "group_ids",
+            "group_key",
+            "int64",
+            (0,),
+            device_type=value_device_type,
+            device_id=value_device_id,
+            source_protocol="schema_only",
+            capacity_elements=0,
+            required_for_continuation=False,
+        ),
+        typed_result_column(
+            "values",
+            "item_id",
+            _partner_column_dtype(values, fallback="int64"),
+            (row_count,),
+            device_type=value_device_type,
+            device_id=value_device_id,
+            data_ptr=value_data_ptr,
+            source_protocol=value_protocol,
+            capacity_elements=row_count,
+        ),
+        typed_result_column(
+            "mask",
+            "mask",
+            _partner_column_dtype(mask, fallback="bool"),
+            (row_count,),
+            device_type=mask_device_type,
+            device_id=mask_device_id,
+            data_ptr=mask_data_ptr,
+            source_protocol=mask_protocol,
+            capacity_elements=row_count,
+        ),
+    ]
+    status_columns = typed_result_status_columns(
+        device_type=value_device_type,
+        device_id=value_device_id,
+        source_protocol=value_protocol,
+    )
+    typed_stream = make_typed_result_stream_contract(
+        stream_id=str(stream_id),
+        stream_kind="candidate_stream",
+        producer_primitive=str(producer_primitive),
+        columns=columns,
+        status_columns=status_columns,
+        ordering=str(ordering),
+        page_capacity=max(1, row_count),
+    )
+    plan = plan_grouped_continuation_for_typed_result_stream(
+        typed_stream,
+        operation="compact_mask_i64",
+        group_column="group_ids",
+        value_columns=("values", "mask"),
+        user_selected_partner=str(partner),
+    )
+    stream_validation = validate_typed_result_stream_contract(typed_stream)
+    plan_validation = validate_grouped_continuation_plan(plan)
+    if stream_validation["status"] != "accept":
+        raise ValueError(f"typed stream validation failed: {stream_validation['errors']}")
+    if plan_validation["status"] != "accept":
+        raise ValueError(f"grouped continuation validation failed: {plan_validation['errors']}")
+
+    request = {
+        "adapter_version": V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_VERSION,
+        "status": "dry_run_partner_consumer_request" if dry_run else "completed_partner_consumer",
+        "consumer_status": V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_STATUS,
+        "target": V2_8_TYPED_RESULT_STREAM_TARGET,
+        "stream_id": typed_stream.stream_id,
+        "operation": plan.operation,
+        "partner": str(partner),
+        "group_count": 0,
+        "row_count": row_count,
+        "typed_stream": typed_stream.to_metadata(),
+        "continuation_plan": plan.to_metadata(),
+        "input_column_mapping": (("values", "values"), ("mask", "mask")),
+        "schema_only_group_column": True,
+        "requires_caller_supplied_partner_columns": True,
+        "source_materialization": "caller_supplied_partner_columns_no_hidden_host_rows",
+        "native_producer_promoted": False,
+        "partner_consumer_promoted": False,
+        "device_resident_result_stream_proven": False,
+        "true_zero_copy_claim_authorized": False,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "hidden_dispatch_allowed": False,
+        "automatic_partner_selection_allowed": False,
+        "app_specific_engine_logic_allowed": False,
+        "claim_boundary": V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_CLAIM_BOUNDARY,
+    }
+    if dry_run:
+        return request
+
+    outputs, metadata = _execute_partner_front_door(
+        plan,
+        partner=str(partner),
+        partner_columns={"values": values, "mask": mask},
+        group_count=0,
+        k=None,
+        total_row_capacity=None,
+        block_size=block_size,
+    )
+    return {
+        **request,
+        "outputs": outputs,
+        "partner_metadata": metadata,
+    }
+
+
 def v2_8_segmented_typed_stream_adapter_summary() -> dict[str, Any]:
     return {
         "adapter_version": V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_VERSION,
@@ -1370,6 +1501,7 @@ __all__ = [
     "V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_DEFERRED_OPERATIONS",
     "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_VERSION",
     "build_segmented_typed_stream_adapter",
+    "execute_compact_mask_typed_stream_partner_columns",
     "execute_grouped_reduction_typed_stream_partner_columns",
     "execute_grouped_vector_sum_typed_stream_partner_columns",
     "execute_ranked_summary_typed_stream_partner_columns",

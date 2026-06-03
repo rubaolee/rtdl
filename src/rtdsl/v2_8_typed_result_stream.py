@@ -62,6 +62,7 @@ V2_8_TYPED_RESULT_STREAM_CONTINUATION_SEMANTICS = {
         "ranks are one-based within each group"
     ),
     "grouped_vector_sum_f64x2": "sum paired float64 x/y components per group",
+    "compact_mask_i64": "filter int64 values by a boolean mask while preserving stable input order",
 }
 V2_8_TYPED_RESULT_STREAM_CLAIM_BOUNDARY = (
     "v2.8 typed result streams are an internal generic contract for RTDL "
