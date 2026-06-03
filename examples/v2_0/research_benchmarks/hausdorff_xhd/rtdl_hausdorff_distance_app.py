@@ -757,6 +757,7 @@ def run_app(
             "run_phases": run_phases,
             "claim_boundary": {
                 "v2_6_release_authorized": False,
+                "v2_8_release_authorized": False,
                 "public_speedup_claim_authorized": False,
                 "numba_speedup_claim_authorized": False,
                 "rt_core_speedup_claim_authorized": False,
@@ -816,6 +817,7 @@ def run_app(
             "run_phases": run_phases,
             "claim_boundary": {
                 "v2_6_release_authorized": False,
+                "v2_8_release_authorized": False,
                 "public_speedup_claim_authorized": False,
                 "numba_speedup_claim_authorized": False,
                 "rt_core_speedup_claim_authorized": False,

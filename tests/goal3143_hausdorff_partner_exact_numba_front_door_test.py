@@ -79,6 +79,8 @@ class Goal3143HausdorffPartnerExactNumbaFrontDoorTest(unittest.TestCase):
         self.assertEqual(modes, {"partner_exact_numba", "partner_numba_block_nearest_exact"})
         for row in artifact["rows"]:
             self.assertTrue(row["matches_oracle"])
+            self.assertIn("v2_8_release_authorized", row["claim_boundary"])
+            self.assertFalse(row["claim_boundary"]["v2_8_release_authorized"])
             self.assertFalse(row["host_score_row_materialization_used"])
             self.assertTrue(row["score_rows_generated_on_partner_device"])
             self.assertFalse(row["rt_core_accelerated"])

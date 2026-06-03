@@ -45,6 +45,7 @@
         "rt_core_speedup_claim_authorized": false,
         "true_zero_copy_claim_authorized": false,
         "v2_6_release_authorized": false,
+        "v2_8_release_authorized": false,
         "whole_app_speedup_claim_authorized": false
       },
       "copies": 256,
@@ -93,6 +94,7 @@
         "rt_core_speedup_claim_authorized": false,
         "true_zero_copy_claim_authorized": false,
         "v2_6_release_authorized": false,
+        "v2_8_release_authorized": false,
         "whole_app_speedup_claim_authorized": false
       },
       "copies": 1024,
@@ -141,6 +143,7 @@
         "rt_core_speedup_claim_authorized": false,
         "true_zero_copy_claim_authorized": false,
         "v2_6_release_authorized": false,
+        "v2_8_release_authorized": false,
         "whole_app_speedup_claim_authorized": false
       },
       "copies": 2048,
