@@ -21,6 +21,7 @@ NUMBA_PAIRWISE_L2_SQ_SCORE_ROWS_2D_OPERATION = "pairwise_l2_sq_score_rows_2d"
 NUMBA_PAIRWISE_L2_SQ_BLOCK_NEAREST_ROWS_2D_OPERATION = "pairwise_l2_sq_block_nearest_rows_2d"
 NUMBA_PARTNER_CONTINUATION_STATUS = V2_5_STATUS_PREVIEW_NOT_PROMOTED
 NUMBA_GROUP_ID_VALIDATION_MODE = "device_resident_error_flag"
+_NUMBA_KERNEL_CACHE: dict[tuple[int, str], Any] = {}
 
 
 def numba_partner_available() -> bool:
@@ -780,7 +781,7 @@ def _run_numba_grouped_arg_reduce_f64(
     counts.copy_to_device(np.zeros((group_count,), dtype=np.int64))
     if row_count:
         grid = ((row_count + block_size - 1) // block_size,)
-        score_kernel_factory(cuda)[grid, block_size](
+        _cached_numba_kernel(cuda, score_kernel_factory)[grid, block_size](
             group_ids,
             scores,
             dense_scores,
@@ -788,7 +789,7 @@ def _run_numba_grouped_arg_reduce_f64(
             row_count,
             group_count,
         )
-        _numba_grouped_arg_item_i64_kernel(cuda)[grid, block_size](
+        _cached_numba_kernel(cuda, _numba_grouped_arg_item_i64_kernel)[grid, block_size](
             group_ids,
             item_ids,
             scores,
@@ -813,7 +814,7 @@ def _run_numba_grouped_arg_reduce_f64(
         if group_count:
             iota_block = min(block_size, 256)
             iota_grid = ((group_count + iota_block - 1) // iota_block,)
-            _numba_iota_i64_kernel(cuda)[iota_grid, iota_block](present_group_ids, group_count)
+            _cached_numba_kernel(cuda, _numba_iota_i64_kernel)[iota_grid, iota_block](present_group_ids, group_count)
         missing_group_ids = cuda.device_array((0,), dtype=np.int64)
         compact_item_ids = dense_item_ids
         compact_scores = dense_scores
@@ -821,7 +822,7 @@ def _run_numba_grouped_arg_reduce_f64(
     if compact_present_groups and compact_count:
         compact_block = min(block_size, 256)
         compact_grid = ((compact_count + compact_block - 1) // compact_block,)
-        _numba_gather_group_arg_outputs_kernel(cuda)[compact_grid, compact_block](
+        _cached_numba_kernel(cuda, _numba_gather_group_arg_outputs_kernel)[compact_grid, compact_block](
             present_group_ids,
             dense_item_ids,
             dense_scores,
@@ -1306,7 +1307,7 @@ def _validate_group_run_shape(
     if validate_group_ids and row_count:
         error_flag = cuda.to_device(np.zeros((1,), dtype=np.int32))
         grid = ((row_count + block_size - 1) // block_size,)
-        _numba_group_id_validation_kernel(cuda)[grid, block_size](
+        _cached_numba_kernel(cuda, _numba_group_id_validation_kernel)[grid, block_size](
             group_ids,
             error_flag,
             row_count,
@@ -1327,3 +1328,13 @@ def _validate_numba_cuda_vector(array: Any, *, name: str, dtype: Any) -> None:
         raise ValueError(f"{name} must be a 1-D array")
     if getattr(array, "dtype", None) != dtype:
         raise ValueError(f"{name} has wrong dtype")
+
+
+def _cached_numba_kernel(cuda: Any, factory: Any) -> Any:
+    factory_name = getattr(factory, "__name__", repr(factory))
+    key = (id(cuda), str(factory_name))
+    kernel = _NUMBA_KERNEL_CACHE.get(key)
+    if kernel is None:
+        kernel = factory(cuda)
+        _NUMBA_KERNEL_CACHE[key] = kernel
+    return kernel
