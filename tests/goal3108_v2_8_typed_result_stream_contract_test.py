@@ -108,6 +108,10 @@ class Goal3108V28TypedResultStreamContractTest(unittest.TestCase):
         self.assertEqual(validation["status"], "accept", validation)
         self.assertEqual(metadata["user_selected_partner"], "numba")
         self.assertEqual(metadata["continuation_status"], "contract_only")
+        self.assertEqual(
+            metadata["continuation_semantics"],
+            rt.V2_8_TYPED_RESULT_STREAM_CONTINUATION_SEMANTICS["grouped_argmax_f64"],
+        )
         self.assertFalse(metadata["automatic_partner_selection_allowed"])
         self.assertFalse(metadata["hidden_dispatch_allowed"])
         self.assertFalse(metadata["release_authorized"])
@@ -120,6 +124,14 @@ class Goal3108V28TypedResultStreamContractTest(unittest.TestCase):
                 value_columns=("scores",),
                 item_column="item_ids",
                 user_selected_partner="auto",
+            )
+        with self.assertRaises(ValueError):
+            rt.plan_grouped_continuation_for_typed_result_stream(
+                stream,
+                operation="grouped_argmax_f64",
+                group_column="group_ids",
+                value_columns=("scores",),
+                item_column="item_ids",
             )
 
     def test_contract_rejects_missing_status_columns(self) -> None:
@@ -173,6 +185,7 @@ class Goal3108V28TypedResultStreamContractTest(unittest.TestCase):
         for name in (
             "V28TypedResultStreamContract",
             "V2_8_TYPED_RESULT_STREAM_TARGET",
+            "V2_8_TYPED_RESULT_STREAM_CONTINUATION_SEMANTICS",
             "make_typed_result_stream_contract",
             "plan_grouped_continuation_for_typed_result_stream",
             "validate_typed_result_stream_contract",

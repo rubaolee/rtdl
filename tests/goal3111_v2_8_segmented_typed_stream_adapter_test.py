@@ -266,6 +266,10 @@ class Goal3111V28SegmentedTypedStreamAdapterTest(unittest.TestCase):
         self.assertEqual(request["consumer_status"], rt.V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_STATUS)
         self.assertEqual(request["operation"], "grouped_argmax_f64")
         self.assertEqual(request["partner"], "numba")
+        self.assertEqual(
+            request["continuation_semantics"],
+            rt.V2_8_TYPED_RESULT_STREAM_CONTINUATION_SEMANTICS["grouped_argmax_f64"],
+        )
         self.assertTrue(request["supported_operation"])
         self.assertTrue(request["requires_caller_supplied_partner_columns"])
         self.assertEqual(
@@ -300,6 +304,11 @@ class Goal3111V28SegmentedTypedStreamAdapterTest(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "explicit partner"):
             rt.plan_segmented_typed_stream_partner_continuation(adapter, partner="auto")
+        with self.assertRaisesRegex(ValueError, "explicit partner"):
+            rt.plan_segmented_typed_stream_partner_continuation(
+                adapter,
+                partner="explicit_user_choice_required",
+            )
         with self.assertRaisesRegex(ValueError, "partner_columns are required"):
             rt.execute_segmented_typed_stream_partner_continuation(adapter, partner="numba")
 
@@ -389,6 +398,116 @@ class Goal3111V28SegmentedTypedStreamAdapterTest(unittest.TestCase):
             result["outputs"],
             {"group_ids": [0, 1], "item_ids": [10, 20], "row_offsets": [0, 1, 2]},
         )
+        self.assertNotIn("counts", result["outputs"])
+        mocked.assert_called_once()
+
+    def test_partner_consumer_filters_ranked_summary_helpers_to_canonical_outputs(self) -> None:
+        adapter = rt.build_segmented_typed_stream_adapter(
+            ((0, 10, 1.5), (1, 20, 0.25)),
+            row_schema=("group_ids", "item_ids", "scores"),
+            column_roles={
+                "group_ids": "group_key",
+                "item_ids": "item_id",
+                "scores": "score",
+            },
+            page_capacity=2,
+            stream_id="goal3136_argmin_schema",
+            stream_kind="ranked_summary_stream",
+            producer_primitive="segmented_row_stream_reference",
+            ordering="group_ordered",
+            operation="grouped_argmin_f64",
+            group_column="group_ids",
+            value_columns=("scores",),
+            item_column="item_ids",
+            user_selected_partner="numba",
+        )
+        helper_result = {
+            "columns": {
+                "group_ids": [0, 1],
+                "item_ids": [10, 20],
+                "scores": [1.5, 0.25],
+                "missing_group_ids": [],
+                "dense_item_ids": [10, 20],
+                "dense_scores": [1.5, 0.25],
+                "counts": [1, 1],
+            },
+            "metadata": {"partner": "numba", "operation": "grouped_argmin_f64"},
+        }
+        with mock.patch(
+            "rtdsl.partner_adapters.grouped_argmin_f64_partner_columns",
+            return_value=helper_result,
+        ) as mocked:
+            result = rt.execute_segmented_typed_stream_partner_continuation(
+                adapter,
+                partner="numba",
+                partner_columns={"group_ids": [0, 1], "item_ids": [10, 20], "scores": [1.5, 0.25]},
+            )
+
+        self.assertEqual(
+            result["outputs"],
+            {"group_ids": [0, 1], "item_ids": [10, 20], "scores": [1.5, 0.25], "missing_group_ids": []},
+        )
+        self.assertNotIn("dense_item_ids", result["outputs"])
+        self.assertNotIn("counts", result["outputs"])
+        mocked.assert_called_once()
+
+    def test_partner_consumer_filters_topk_helpers_to_canonical_outputs(self) -> None:
+        adapter = rt.build_segmented_typed_stream_adapter(
+            ((0, 10, 1.5), (0, 11, 2.5)),
+            row_schema=("group_ids", "item_ids", "scores"),
+            column_roles={
+                "group_ids": "group_key",
+                "item_ids": "item_id",
+                "scores": "score",
+            },
+            page_capacity=2,
+            stream_id="goal3136_topk_schema",
+            stream_kind="ranked_summary_stream",
+            producer_primitive="segmented_row_stream_reference",
+            ordering="group_ordered",
+            operation="grouped_topk_f64",
+            group_column="group_ids",
+            value_columns=("scores",),
+            item_column="item_ids",
+            user_selected_partner="torch",
+        )
+        helper_result = {
+            "columns": {
+                "group_ids": [0],
+                "item_ids": [10],
+                "scores": [1.5],
+                "ranks": [0],
+                "row_offsets": [0, 1],
+                "missing_group_ids": [],
+                "dense_item_ids": [10],
+                "dense_scores": [1.5],
+                "counts": [1],
+            },
+            "metadata": {"partner": "torch", "operation": "grouped_topk_f64"},
+        }
+        with mock.patch(
+            "rtdsl.partner_adapters.grouped_topk_f64_partner_columns",
+            return_value=helper_result,
+        ) as mocked:
+            result = rt.execute_segmented_typed_stream_partner_continuation(
+                adapter,
+                partner="torch",
+                partner_columns={"group_ids": [0, 0], "item_ids": [10, 11], "scores": [1.5, 2.5]},
+                k=1,
+            )
+
+        self.assertEqual(
+            result["outputs"],
+            {
+                "group_ids": [0],
+                "item_ids": [10],
+                "scores": [1.5],
+                "ranks": [0],
+                "row_offsets": [0, 1],
+                "missing_group_ids": [],
+            },
+        )
+        self.assertNotIn("dense_item_ids", result["outputs"])
         self.assertNotIn("counts", result["outputs"])
         mocked.assert_called_once()
 

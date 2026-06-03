@@ -11,6 +11,7 @@ from .v2_8_typed_result_stream import V28GroupedContinuationPlan
 from .v2_8_typed_result_stream import V28TypedResultStreamContract
 from .v2_8_typed_result_stream import V2_8_TYPED_RESULT_STREAM_CLAIM_BOUNDARY
 from .v2_8_typed_result_stream import V2_8_TYPED_RESULT_STREAM_COLUMN_ROLES
+from .v2_8_typed_result_stream import V2_8_TYPED_RESULT_STREAM_CONTINUATION_SEMANTICS
 from .v2_8_typed_result_stream import V2_8_TYPED_RESULT_STREAM_TARGET
 from .v2_8_typed_result_stream import make_typed_result_stream_contract
 from .v2_8_typed_result_stream import plan_grouped_continuation_for_typed_result_stream
@@ -329,7 +330,7 @@ def plan_segmented_typed_stream_partner_continuation(
     validation = validate_segmented_typed_stream_adapter(adapter)
     if validation["status"] != "accept":
         raise ValueError(f"segmented typed stream adapter validation failed: {validation['errors']}")
-    if str(partner) in {"", "auto"}:
+    if str(partner) in {"", "auto", "explicit_user_choice_required"}:
         raise ValueError("v2.8 partner consumer requires an explicit partner")
     plan = adapter.continuation_plan
     rows = _adapter_rows(adapter)
@@ -350,6 +351,7 @@ def plan_segmented_typed_stream_partner_continuation(
         "total_row_capacity": total_row_capacity,
         "supported_operation": supported,
         "supported_operations": V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_SUPPORTED_OPERATIONS,
+        "continuation_semantics": V2_8_TYPED_RESULT_STREAM_CONTINUATION_SEMANTICS.get(plan.operation),
         "requires_caller_supplied_partner_columns": True,
         "input_column_mapping": input_column_mapping,
         "row_count": adapter.segmented_stream.total_rows,
@@ -630,12 +632,12 @@ def _execute_partner_front_door(
         from .partner_adapters import grouped_argmin_f64_partner_columns
 
         result = grouped_argmin_f64_partner_columns(mapped_columns, group_count=group_count, partner=partner, return_metadata=True)
-        return result["columns"], dict(result["metadata"])
+        return _canonical_ranked_summary_columns(result["columns"], include_ranked_rows=False), dict(result["metadata"])
     if operation == "grouped_argmax_f64":
         from .partner_adapters import grouped_argmax_f64_partner_columns
 
         result = grouped_argmax_f64_partner_columns(mapped_columns, group_count=group_count, partner=partner, return_metadata=True)
-        return result["columns"], dict(result["metadata"])
+        return _canonical_ranked_summary_columns(result["columns"], include_ranked_rows=False), dict(result["metadata"])
     if operation == "grouped_topk_f64":
         from .partner_adapters import grouped_topk_f64_partner_columns
 
@@ -648,7 +650,7 @@ def _execute_partner_front_door(
             partner=partner,
             return_metadata=True,
         )
-        return result["columns"], dict(result["metadata"])
+        return _canonical_ranked_summary_columns(result["columns"], include_ranked_rows=True), dict(result["metadata"])
     if operation == "bounded_collect_finalize_i64":
         from .partner_adapters import bounded_collect_finalize_i64_partner_columns
 
@@ -682,6 +684,17 @@ def _mapped_partner_columns(
             raise ValueError(f"partner_columns missing required stream column: {stream_name}")
         mapped[partner_name] = partner_columns[stream_name]
     return mapped
+
+
+def _canonical_ranked_summary_columns(columns: Mapping[str, Any], *, include_ranked_rows: bool) -> dict[str, Any]:
+    source = dict(columns)
+    names = ["group_ids", "item_ids", "scores", "missing_group_ids"]
+    if include_ranked_rows:
+        names = ["group_ids", "item_ids", "scores", "ranks", "row_offsets", "missing_group_ids"]
+    missing = [name for name in names if name not in source]
+    if missing:
+        raise ValueError(f"partner output missing canonical ranked-summary columns: {tuple(missing)}")
+    return {name: source[name] for name in names}
 
 
 def _partner_bridge_metadata(

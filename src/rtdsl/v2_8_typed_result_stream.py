@@ -54,6 +54,11 @@ V2_8_TYPED_RESULT_STREAM_ALLOWED_CONTINUATIONS = (
     "compact_mask_i64",
     "bounded_collect_finalize_i64",
 )
+V2_8_TYPED_RESULT_STREAM_CONTINUATION_SEMANTICS = {
+    "grouped_argmin_f64": "select the lowest score per group; ties choose the lowest item_id",
+    "grouped_argmax_f64": "select the highest score per group; ties choose the lowest item_id",
+    "grouped_topk_f64": "select the k lowest scores per group in ascending score then item_id order",
+}
 V2_8_TYPED_RESULT_STREAM_CLAIM_BOUNDARY = (
     "v2.8 typed result streams are an internal generic contract for RTDL "
     "runtime development. They do not authorize release, public speedup "
@@ -235,7 +240,7 @@ class V28GroupedContinuationPlan:
             item = self.stream.column(self.item_column)
             if item.role not in {"item_id", "witness"}:
                 raise ValueError("item_column must have role item_id or witness")
-        if self.user_selected_partner in {"", "auto"}:
+        if self.user_selected_partner in {"", "auto", "explicit_user_choice_required"}:
             raise ValueError("v2.8 grouped continuation requires explicit user partner choice")
         for field in (
             "automatic_partner_selection_allowed",
@@ -260,6 +265,7 @@ class V28GroupedContinuationPlan:
             "item_column": self.item_column,
             "user_selected_partner": self.user_selected_partner,
             "continuation_status": self.continuation_status,
+            "continuation_semantics": V2_8_TYPED_RESULT_STREAM_CONTINUATION_SEMANTICS.get(self.operation),
             "automatic_partner_selection_allowed": self.automatic_partner_selection_allowed,
             "hidden_dispatch_allowed": self.hidden_dispatch_allowed,
             "release_authorized": self.release_authorized,
@@ -435,7 +441,7 @@ def validate_grouped_continuation_plan(
         errors.append("unexpected grouped continuation plan version")
     if metadata.get("operation") not in V2_8_TYPED_RESULT_STREAM_ALLOWED_CONTINUATIONS:
         errors.append("unsupported grouped continuation operation")
-    if metadata.get("user_selected_partner") in {"", "auto"}:
+    if metadata.get("user_selected_partner") in {"", "auto", "explicit_user_choice_required"}:
         errors.append("grouped continuation requires explicit user partner choice")
     for field in (
         "automatic_partner_selection_allowed",
@@ -467,6 +473,7 @@ def v2_8_typed_result_stream_contract_summary() -> dict[str, Any]:
         "status_columns": V2_8_TYPED_RESULT_STREAM_STATUS_COLUMNS,
         "ordering_states": V2_8_TYPED_RESULT_STREAM_ORDERING_STATES,
         "allowed_continuations": V2_8_TYPED_RESULT_STREAM_ALLOWED_CONTINUATIONS,
+        "continuation_semantics": V2_8_TYPED_RESULT_STREAM_CONTINUATION_SEMANTICS,
         "segmented_page_failure_mode": SEGMENTED_ROW_STREAM_FAILURE_MODE,
         "native_engine_app_specific_logic_allowed": False,
         "automatic_partner_selection_allowed": False,
@@ -486,6 +493,7 @@ __all__ = [
     "V2_8_TYPED_RESULT_STREAM_ALLOWED_CONTINUATIONS",
     "V2_8_TYPED_RESULT_STREAM_CLAIM_BOUNDARY",
     "V2_8_TYPED_RESULT_STREAM_COLUMN_ROLES",
+    "V2_8_TYPED_RESULT_STREAM_CONTINUATION_SEMANTICS",
     "V2_8_TYPED_RESULT_STREAM_KIND_VALUES",
     "V2_8_TYPED_RESULT_STREAM_ORDERING_STATES",
     "V2_8_TYPED_RESULT_STREAM_STATUS",
