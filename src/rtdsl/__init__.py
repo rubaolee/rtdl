@@ -351,10 +351,17 @@ from .primitive_hierarchy import primitive_hierarchy
 from .primitive_hierarchy import primitive_layer_map
 from .primitive_hierarchy import validate_primitive_hierarchy
 from .primitive_discovery import PrimitiveDiscoveryMatch
+from .primitive_discovery import PRIMITIVE_SEMANTIC_SEARCH_AUTO_PARTNER_SELECTION_ALLOWED
+from .primitive_discovery import PRIMITIVE_SEMANTIC_SEARCH_CLAIM_BOUNDARY
+from .primitive_discovery import PRIMITIVE_SEMANTIC_SEARCH_EXECUTES
+from .primitive_discovery import PRIMITIVE_SEMANTIC_SEARCH_PREVIEW_VERSION
+from .primitive_discovery import PRIMITIVE_SEMANTIC_SEARCH_USES_EMBEDDINGS
 from .primitive_discovery import describe_primitive
 from .primitive_discovery import find_primitive
+from .primitive_discovery import find_primitive_semantic
 from .primitive_discovery import lint_new_primitive
 from .primitive_discovery import primitive_index
+from .primitive_discovery import validate_primitive_semantic_search
 from .primitive_recipes import COMPOSITION_RECIPE_AUTO_PARTNER_SELECTION_ALLOWED
 from .primitive_recipes import COMPOSITION_RECIPE_STATUSES
 from .primitive_recipes import COMPOSITION_RECIPE_VERSION
@@ -1646,6 +1653,11 @@ __all__ = [
     "PRIMITIVE_DISCOVERY_METADATA_FIELDS",
     "PRIMITIVE_DUPLICATE_KEY_FAMILIES",
     "PRIMITIVE_PROMOTION_METADATA_STATUSES",
+    "PRIMITIVE_SEMANTIC_SEARCH_AUTO_PARTNER_SELECTION_ALLOWED",
+    "PRIMITIVE_SEMANTIC_SEARCH_CLAIM_BOUNDARY",
+    "PRIMITIVE_SEMANTIC_SEARCH_EXECUTES",
+    "PRIMITIVE_SEMANTIC_SEARCH_PREVIEW_VERSION",
+    "PRIMITIVE_SEMANTIC_SEARCH_USES_EMBEDDINGS",
     "RtdlDevicePointerHandoff",
     "RtdlPartnerProtocolContract",
     "RtdlOutputSpec",
@@ -1660,6 +1672,7 @@ __all__ = [
     "find_primitive_hierarchy_node",
     "describe_primitive",
     "find_primitive",
+    "find_primitive_semantic",
     "iter_primitive_hierarchy_nodes",
     "lint_new_primitive",
     "COMPOSITION_RECIPE_AUTO_PARTNER_SELECTION_ALLOWED",
@@ -1686,6 +1699,7 @@ __all__ = [
     "validate_composition_recipes",
     "validate_primitive_advisory_planner",
     "validate_primitive_hierarchy",
+    "validate_primitive_semantic_search",
     "CHUNKED_ROW_CONTINUATION_ALIAS",
     "SEGMENTED_ROW_STREAM_CONTRACT",
     "SEGMENTED_ROW_STREAM_CONTRACT_VERSION",

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import re
 from typing import Iterable
 
 from .primitive_hierarchy import PRIMITIVE_DISCOVERY_VERSION
@@ -11,6 +12,18 @@ from .primitive_hierarchy import iter_primitive_hierarchy_nodes
 
 _FACET_FAMILIES = ("intent", "shape", "dim", "output", "exactness", "keying")
 _DUPLICATE_KEY_FAMILIES = ("intent", "shape", "dim", "output", "keying")
+
+PRIMITIVE_SEMANTIC_SEARCH_PREVIEW_VERSION = "rtdl.primitive_semantic_search.preview.v1"
+PRIMITIVE_SEMANTIC_SEARCH_EXECUTES = False
+PRIMITIVE_SEMANTIC_SEARCH_USES_EMBEDDINGS = False
+PRIMITIVE_SEMANTIC_SEARCH_AUTO_PARTNER_SELECTION_ALLOWED = False
+PRIMITIVE_SEMANTIC_SEARCH_CLAIM_BOUNDARY = (
+    "v2.7 semantic primitive search is opt-in deterministic metadata search. "
+    "It does not execute, dispatch, use embeddings, auto-select partners, "
+    "authorize release readiness, authorize public speedup wording, authorize "
+    "broad RT-core wording, authorize true zero-copy wording, or promote "
+    "internal/candidate primitive steps to stable public primitives."
+)
 
 
 @dataclass(frozen=True)
@@ -139,6 +152,81 @@ def find_primitive(
     return tuple(sorted(matches, key=lambda match: (-match.score, match.layer, match.node_id)))
 
 
+def find_primitive_semantic(
+    query: str,
+    *,
+    enable_preview: bool = False,
+    status: str | None = None,
+    limit: int = 10,
+) -> tuple[PrimitiveDiscoveryMatch, ...]:
+    """Opt-in fuzzy metadata search over primitive discovery text.
+
+    This is a deterministic D-8 preview, not an embedding model. It expands a
+    small controlled synonym set and scores overlap against aliases, intent
+    phrases, summaries, outputs, and capability tags. It never executes or
+    dispatches primitives.
+    """
+
+    if not enable_preview:
+        raise ValueError("semantic primitive search is preview-only; pass enable_preview=True")
+    if limit <= 0:
+        return ()
+
+    query_tokens = _semantic_tokens(query)
+    expanded_query_tokens = _expand_semantic_tokens(query_tokens)
+    normalized_query = _normalize_text(query)
+    matches: list[PrimitiveDiscoveryMatch] = []
+
+    for node in iter_primitive_hierarchy_nodes():
+        if status is not None and node.status != status:
+            continue
+
+        alias_hits = _text_hits(normalized_query, node.aliases)
+        phrase_hits = _text_hits(normalized_query, node.intent_phrases)
+        node_tokens = _semantic_tokens(_node_semantic_text(node))
+        shared_tokens = tuple(sorted(expanded_query_tokens & node_tokens))
+        if not alias_hits and not phrase_hits and not shared_tokens:
+            continue
+
+        matched_on: list[str] = []
+        matched_on.extend(f"alias:{hit}" for hit in alias_hits)
+        matched_on.extend(f"intent_phrase:{hit}" for hit in phrase_hits)
+        matched_on.extend(f"semantic_token:{token}" for token in shared_tokens[:10])
+        score = (9 * len(alias_hits)) + (6 * len(phrase_hits)) + (3 * len(shared_tokens))
+        if node.status in ("stable_primitive", "stable_behavior", "stable_compatibility_path"):
+            score += 1
+
+        matches.append(
+            PrimitiveDiscoveryMatch(
+                node_id=node.id,
+                title=node.title,
+                status=node.status,
+                layer=node.layer,
+                score=score,
+                matched_on=tuple(dict.fromkeys(matched_on)),
+                backends=node.backends,
+                reference_path=node.reference_path,
+                compose_hint=_compose_hint(node),
+            )
+        )
+
+    return tuple(sorted(matches, key=lambda match: (-match.score, match.layer, match.node_id))[:limit])
+
+
+def validate_primitive_semantic_search() -> dict[str, object]:
+    sample_matches = find_primitive_semantic("page huge witness rows", enable_preview=True, limit=3)
+    return {
+        "version": PRIMITIVE_SEMANTIC_SEARCH_PREVIEW_VERSION,
+        "valid": bool(sample_matches),
+        "executes": PRIMITIVE_SEMANTIC_SEARCH_EXECUTES,
+        "uses_embeddings": PRIMITIVE_SEMANTIC_SEARCH_USES_EMBEDDINGS,
+        "automatic_partner_selection_allowed": PRIMITIVE_SEMANTIC_SEARCH_AUTO_PARTNER_SELECTION_ALLOWED,
+        "preview_requires_explicit_enable": True,
+        "sample_match_count": len(sample_matches),
+        "claim_boundary": PRIMITIVE_SEMANTIC_SEARCH_CLAIM_BOUNDARY,
+    }
+
+
 def lint_new_primitive(
     candidate: PrimitiveHierarchyNode,
     *,
@@ -256,10 +344,97 @@ def _compose_hint(node: PrimitiveHierarchyNode) -> str:
     return ""
 
 
+_SEMANTIC_STOP_WORDS = frozenset(
+    {
+        "a",
+        "an",
+        "and",
+        "for",
+        "from",
+        "i",
+        "in",
+        "into",
+        "need",
+        "of",
+        "or",
+        "the",
+        "to",
+        "use",
+        "with",
+        "without",
+    }
+)
+
+_SEMANTIC_SYNONYMS = {
+    "aggregate": ("frontier", "tree", "summary"),
+    "capacity": ("bounded", "overflow", "complete", "coverage"),
+    "core": ("threshold", "mask", "flag"),
+    "density": ("fixed", "radius", "neighbor", "count", "threshold"),
+    "flag": ("mask", "threshold", "exists"),
+    "flags": ("mask", "threshold", "exists"),
+    "group": ("grouped", "keyed", "group_id"),
+    "groupby": ("grouped", "keyed", "group_id"),
+    "grouped": ("group", "keyed", "group_id"),
+    "handle": ("prepared", "state", "reusable"),
+    "huge": ("large", "streaming", "paged", "chunked"),
+    "materialize": ("materialization", "collect", "rows"),
+    "materializing": ("materialization", "collect", "rows"),
+    "near": ("nearest", "neighbor", "radius"),
+    "neighborhood": ("neighbor", "fixed", "radius", "density"),
+    "nearby": ("neighbor", "fixed", "radius"),
+    "page": ("paged", "chunked", "segmented", "streaming"),
+    "paged": ("page", "chunked", "segmented", "streaming"),
+    "payload": ("columns", "values", "grouped"),
+    "prepared": ("reusable", "state", "handle", "scene"),
+    "scene": ("prepared", "state", "handle"),
+    "stream": ("streaming", "paged", "chunked", "segmented"),
+    "streaming": ("stream", "paged", "chunked", "segmented"),
+    "witness": ("rows", "hit", "candidate"),
+}
+
+
+def _node_semantic_text(node: PrimitiveHierarchyNode) -> str:
+    return " ".join(
+        (
+            node.id,
+            node.title,
+            node.summary,
+            node.boundary,
+            " ".join(node.outputs),
+            " ".join(node.capability_tags),
+            " ".join(node.aliases),
+            " ".join(node.intent_phrases),
+        )
+    )
+
+
+def _semantic_tokens(value: str) -> frozenset[str]:
+    normalized = re.sub(r"[^a-z0-9]+", "_", value.lower())
+    return frozenset(
+        token
+        for token in normalized.split("_")
+        if len(token) > 1 and token not in _SEMANTIC_STOP_WORDS
+    )
+
+
+def _expand_semantic_tokens(tokens: Iterable[str]) -> frozenset[str]:
+    expanded: set[str] = set(tokens)
+    for token in tuple(tokens):
+        expanded.update(_SEMANTIC_SYNONYMS.get(token, ()))
+    return frozenset(expanded)
+
+
 __all__ = [
+    "PRIMITIVE_SEMANTIC_SEARCH_AUTO_PARTNER_SELECTION_ALLOWED",
+    "PRIMITIVE_SEMANTIC_SEARCH_CLAIM_BOUNDARY",
+    "PRIMITIVE_SEMANTIC_SEARCH_EXECUTES",
+    "PRIMITIVE_SEMANTIC_SEARCH_PREVIEW_VERSION",
+    "PRIMITIVE_SEMANTIC_SEARCH_USES_EMBEDDINGS",
     "PrimitiveDiscoveryMatch",
     "describe_primitive",
     "find_primitive",
+    "find_primitive_semantic",
     "lint_new_primitive",
     "primitive_index",
+    "validate_primitive_semantic_search",
 ]

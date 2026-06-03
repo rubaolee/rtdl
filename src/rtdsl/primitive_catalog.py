@@ -7,6 +7,7 @@ from .primitive_hierarchy import PRIMITIVE_HIERARCHY_LAYER_ORDER
 from .primitive_hierarchy import PRIMITIVE_HIERARCHY_STATUSES
 from .primitive_hierarchy import PrimitiveHierarchyNode
 from .primitive_hierarchy import validate_primitive_hierarchy
+from .primitive_discovery import validate_primitive_semantic_search
 from .primitive_planner import PRIMITIVE_ADVISORY_PLANNER_AUTO_PARTNER_SELECTION_ALLOWED
 from .primitive_planner import PRIMITIVE_ADVISORY_PLANNER_CLAIM_BOUNDARY
 from .primitive_planner import PRIMITIVE_ADVISORY_PLANNER_EXECUTES
@@ -36,6 +37,7 @@ def render_primitive_catalog_markdown() -> str:
 
     validation = validate_primitive_hierarchy()
     discovery_validation = validate_primitive_hierarchy(require_discovery_metadata=True)
+    semantic_validation = validate_primitive_semantic_search()
     recipe_validation = validate_composition_recipes()
     planner_validation = validate_primitive_advisory_planner()
     lines: list[str] = [
@@ -148,6 +150,10 @@ def render_primitive_catalog_markdown() -> str:
             f"- Backward dependencies: `{_format_tuple(validation['backward_dependencies'])}`",
             f"- Strict discovery metadata validation valid: `{discovery_validation['valid']}`",
             f"- Strict discovery metadata missing: `{_format_tuple(discovery_validation['discovery_metadata_missing'])}`",
+            f"- Semantic search preview validation valid: `{semantic_validation['valid']}`",
+            f"- Semantic search preview executes: `{semantic_validation['executes']}`",
+            f"- Semantic search preview uses embeddings: `{semantic_validation['uses_embeddings']}`",
+            f"- Semantic search preview auto partner selection: `{semantic_validation['automatic_partner_selection_allowed']}`",
             f"- Composition recipe validation valid: `{recipe_validation['valid']}`",
             f"- Composition recipe count: `{recipe_validation['recipe_count']}`",
             f"- Advisory planner validation status: `{planner_validation['status']}`",

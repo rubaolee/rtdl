@@ -110,6 +110,10 @@ app/partner code unless it is redesigned as an app-independent behavior.
 - Backward dependencies: `-`
 - Strict discovery metadata validation valid: `True`
 - Strict discovery metadata missing: `-`
+- Semantic search preview validation valid: `True`
+- Semantic search preview executes: `False`
+- Semantic search preview uses embeddings: `False`
+- Semantic search preview auto partner selection: `False`
 - Composition recipe validation valid: `True`
 - Composition recipe count: `5`
 - Advisory planner validation status: `accept`
