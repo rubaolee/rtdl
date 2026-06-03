@@ -2,7 +2,7 @@
 
 Date: 2026-06-03
 
-Status: local implementation validated; pod validation pending.
+Status: local and pod validation complete.
 
 ## Purpose
 
@@ -124,6 +124,47 @@ Result: JSON payload reports `ranked_summary_stream`, explicit partner
 `torch`, operation `grouped_topk_f64`, and all release/speedup/zero-copy flags
 as false.
 
-Pod validation should fetch/reset to `origin/main`, set `PYTHONPATH=src:.`, and
-run the same slice. Executable top-k checks require `torch`; otherwise the
-dry-run contract checks still validate the front-door metadata.
+## Pod Validation
+
+Pod: `root@69.30.85.131 -p 22063`, repo `/root/rtdl_goal3151`,
+virtualenv `/root/venvs/rtdl_goal3154`.
+
+Clean commit:
+
+```text
+1b71cfc4 Goal3165 add RTNN ranked summary typed stream front door
+```
+
+Command shape:
+
+```bash
+cd /root/rtdl_goal3151
+git fetch origin main
+git reset --hard origin/main
+export PYTHONPATH=src:.
+export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
+/root/venvs/rtdl_goal3154/bin/python -m unittest \
+  tests.goal3165_rtnn_ranked_summary_typed_stream_front_door_test \
+  tests.goal3162_raydb_grouped_reduction_typed_stream_front_door_test \
+  tests.goal3164_v2_8_front_door_chain_review_packet_test \
+  tests.goal3108_v2_8_typed_result_stream_contract_test \
+  tests.goal3111_v2_8_segmented_typed_stream_adapter_test
+```
+
+Result:
+
+```text
+Ran 37 tests in 0.990s
+OK (skipped=1)
+```
+
+Descriptor probe:
+
+```text
+[pod] descriptor ranked_summary_stream grouped_topk_f64 torch False
+```
+
+The final `False` is the descriptor's `release_authorized` flag. The first pod
+descriptor-probe attempt failed because nested Windows/SSH quoting stripped
+Python string quotes; the stdin-based retry above passed and is the recorded
+evidence.
