@@ -121,6 +121,7 @@ from .graph_reference import normalize_frontier
 from .graph_reference import normalize_vertex_set
 from .point_nearest_witness_typed_stream import make_v2_8_point_group_nearest_witness_typed_producer_metadata
 from .point_nearest_witness_typed_stream import make_v2_8_point_group_nearest_witness_typed_stream_contract
+from .v2_8_geometry_relation_typed_stream import geometry_relation_typed_stream_metadata_for_device_pair_columns
 from .v2_8_geometry_relation_typed_stream import geometry_relation_typed_stream_metadata_for_row_view
 from . import partner as _partner
 from .columnar_partner import DeviceColumnDescriptor
@@ -185,6 +186,12 @@ OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_SYMBOL = (
 )
 OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_ON_STREAM_SYMBOL = (
     "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_into_device_columns_with_status_on_stream"
+)
+OPTIX_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL = (
+    "rtdl_optix_prepared_segment_pair_candidate_device_columns"
+)
+OPTIX_RELEASE_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL = (
+    "rtdl_optix_release_segment_pair_candidate_device_columns"
 )
 OPTIX_RELEASE_RAY_TRIANGLE_HIT_STREAM_3D_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_release_ray_triangle_hit_stream_device_columns"
@@ -616,6 +623,23 @@ class _RtdlNativeDeviceHitStreamColumns(ctypes.Structure):
     ]
 
 
+class _RtdlNativeDevicePairColumns(ctypes.Structure):
+    _fields_ = [
+        ("left_ids_device_ptr", ctypes.c_uint64),
+        ("right_ids_device_ptr", ctypes.c_uint64),
+        ("row_count", ctypes.c_uint64),
+        ("capacity", ctypes.c_uint64),
+        ("candidate_event_count", ctypes.c_uint64),
+        ("overflow", ctypes.c_uint32),
+        ("device_ordinal", ctypes.c_int32),
+        ("owner_handle", ctypes.c_void_p),
+        ("traversal_seconds", ctypes.c_double),
+        ("row_count_device_ptr", ctypes.c_uint64),
+        ("candidate_event_count_device_ptr", ctypes.c_uint64),
+        ("overflow_device_ptr", ctypes.c_uint64),
+    ]
+
+
 class _RtdlRaySegmentGroupCountRow(ctypes.Structure):
     _fields_ = [
         ("ray_id", ctypes.c_uint32),
@@ -1035,10 +1059,120 @@ def prepare_optix(kernel_fn_or_compiled) -> PreparedOptixKernel:
     return PreparedOptixKernel(kernel_fn_or_compiled)
 
 
+class _OptixNativeDevicePairColumnsOwner:
+    def __init__(self, library: ctypes.CDLL, owner_handle: int | None) -> None:
+        self._library = library
+        self._owner_handle = ctypes.c_void_p(0 if owner_handle is None else int(owner_handle))
+        self._closed = False
+
+    @property
+    def handle_value(self) -> int:
+        return 0 if self._owner_handle.value is None else int(self._owner_handle.value)
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        self._closed = True
+        handle = self._owner_handle
+        self._owner_handle = ctypes.c_void_p()
+        if not handle.value:
+            return
+        release_symbol = _find_optional_backend_symbol(
+            self._library,
+            OPTIX_RELEASE_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
+        )
+        if release_symbol is None:
+            return
+        error = ctypes.create_string_buffer(4096)
+        status = release_symbol(handle, error, len(error))
+        _check_status(status, error)
+
+    def __enter__(self) -> "_OptixNativeDevicePairColumnsOwner":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+@dataclass
+class OptixNativeDevicePairColumnOutput:
+    library: object
+    owner: _OptixNativeDevicePairColumnsOwner
+    left_ids_device_ptr: int
+    right_ids_device_ptr: int
+    row_count: int
+    capacity: int
+    candidate_event_count: int
+    overflow: bool
+    device_ordinal: int
+    traversal_seconds: float
+    native_symbol: str
+
+    @property
+    def device_resident(self) -> bool:
+        return (
+            self.left_ids_device_ptr > 0
+            and self.right_ids_device_ptr > 0
+            and self.capacity > 0
+            and not self.overflow
+        )
+
+    @property
+    def true_zero_copy_authorized(self) -> bool:
+        return False
+
+    @property
+    def exact_relation_witness_rows_materialized(self) -> bool:
+        return False
+
+    def to_metadata(self) -> dict[str, object]:
+        metadata = geometry_relation_typed_stream_metadata_for_device_pair_columns(
+            row_count=self.row_count,
+            capacity=self.capacity,
+            left_ids_device_ptr=self.left_ids_device_ptr,
+            right_ids_device_ptr=self.right_ids_device_ptr,
+            device_id=self.device_ordinal,
+            candidate_event_count=self.candidate_event_count,
+            overflow=self.overflow,
+            native_symbol=self.native_symbol,
+        )
+        metadata["runtime"] = {
+            "backend": "optix",
+            "output_residency": "device_resident_candidate_id_columns" if self.device_resident else "empty_or_overflow",
+            "owner_handle": self.owner.handle_value,
+            "traversal_seconds": float(self.traversal_seconds),
+            "true_zero_copy_authorized": False,
+            "exact_relation_witness_rows_materialized": False,
+        }
+        return metadata
+
+    def close(self) -> None:
+        self.owner.close()
+
+    def __enter__(self) -> "OptixNativeDevicePairColumnOutput":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
 @dataclass
 class PreparedOptixSegmentPairIntersection:
     library: object
     prepared_handle: ctypes.c_void_p
+    right_count: int = 0
     _closed: bool = False
 
     def run_raw(self, left_segments) -> OptixRowView:
@@ -1098,6 +1232,68 @@ class PreparedOptixSegmentPairIntersection:
         )
         _check_status(status, error)
         return int(count.value)
+
+    def candidate_device_columns(
+        self,
+        left_segments,
+        *,
+        max_rows: int | None = None,
+    ) -> OptixNativeDevicePairColumnOutput:
+        if self._closed:
+            raise RuntimeError("prepared OptiX segment-pair handle is closed")
+        run_symbol = _find_optional_backend_symbol(
+            self.library,
+            OPTIX_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL}; rebuild the OptiX backend from current main"
+            )
+        release_symbol = _find_optional_backend_symbol(
+            self.library,
+            OPTIX_RELEASE_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
+        )
+        if release_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_RELEASE_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL}; rebuild the OptiX backend from current main"
+            )
+        left = _pack_for_geometry("segments", left_segments)
+        capacity = int(
+            max_rows
+            if max_rows is not None
+            else max(1, int(left.count) * int(self.right_count))
+        )
+        if capacity < 0:
+            raise ValueError("max_rows must be non-negative")
+
+        columns = _RtdlNativeDevicePairColumns()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self.prepared_handle,
+            left.records,
+            left.count,
+            ctypes.c_size_t(capacity),
+            ctypes.byref(columns),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        owner = _OptixNativeDevicePairColumnsOwner(self.library, columns.owner_handle)
+        return OptixNativeDevicePairColumnOutput(
+            library=self.library,
+            owner=owner,
+            left_ids_device_ptr=int(columns.left_ids_device_ptr),
+            right_ids_device_ptr=int(columns.right_ids_device_ptr),
+            row_count=int(columns.row_count),
+            capacity=int(columns.capacity),
+            candidate_event_count=int(columns.candidate_event_count),
+            overflow=bool(columns.overflow),
+            device_ordinal=int(columns.device_ordinal),
+            traversal_seconds=float(columns.traversal_seconds),
+            native_symbol=OPTIX_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
+        )
 
     def first_hit_raw(self, probe_segments) -> OptixRowView:
         if self._closed:
@@ -1210,6 +1406,7 @@ def prepare_segment_pair_intersection_optix(right_segments) -> PreparedOptixSegm
     return PreparedOptixSegmentPairIntersection(
         library=lib,
         prepared_handle=prepared,
+        right_count=int(right.count),
     )
 
 
@@ -16436,6 +16633,32 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_count_prepared_segment_pair.restype = ctypes.c_int
+    optional_segment_pair_candidate_device_columns = _find_optional_backend_symbol(
+        lib,
+        OPTIX_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
+    )
+    if optional_segment_pair_candidate_device_columns is not None:
+        optional_segment_pair_candidate_device_columns.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlSegment),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlNativeDevicePairColumns),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_segment_pair_candidate_device_columns.restype = ctypes.c_int
+    optional_release_segment_pair_candidate_device_columns = _find_optional_backend_symbol(
+        lib,
+        OPTIX_RELEASE_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
+    )
+    if optional_release_segment_pair_candidate_device_columns is not None:
+        optional_release_segment_pair_candidate_device_columns.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_release_segment_pair_candidate_device_columns.restype = ctypes.c_int
     optional_run_prepared_segment_first_hit = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_run_prepared_segment_first_hit",

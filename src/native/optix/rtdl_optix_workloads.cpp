@@ -3385,6 +3385,29 @@ struct SegmentPairIntersectionLaunchParams {
     uint32_t          left_offset;
 };
 
+struct SegmentPairCandidateDeviceColumnsLaunchParams {
+    OptixTraversableHandle traversable;
+    const GpuSegment* left_segs;
+    const GpuSegment* right_segs;
+    unsigned long long* left_ids;
+    unsigned long long* right_ids;
+    unsigned long long* row_count;
+    unsigned long long* candidate_event_count;
+    uint32_t* overflow;
+    uint32_t output_capacity;
+    uint32_t probe_count;
+};
+
+struct NativeSegmentPairCandidateDeviceColumnsOwner {
+    CUdeviceptr left_ids = 0;
+    CUdeviceptr right_ids = 0;
+
+    ~NativeSegmentPairCandidateDeviceColumnsOwner() {
+        if (left_ids) cuMemFree(left_ids);
+        if (right_ids) cuMemFree(right_ids);
+    }
+};
+
 struct SegmentFirstHitLaunchParams {
     OptixTraversableHandle traversable;
     const GpuSegment* probes;
@@ -3447,6 +3470,92 @@ static void ensure_segment_pair_intersection_pipeline() {
             "__intersection__segment_pair_intersection_isect",
             "__anyhit__segment_pair_intersection_anyhit",
             nullptr,   // no closesthit
+            4).release();
+    });
+}
+
+static void ensure_segment_pair_candidate_device_columns_pipeline() {
+    std::call_once(g_segment_pair_candidate_device_columns.init, [&]() {
+        std::string src(kSegmentPairIntersectionKernelSrc);
+        const std::string old_record_struct =
+R"CUDA(struct SegmentPairIntersectionRecord {
+    unsigned int left_id, right_id;
+    unsigned int left_index, right_index;
+};
+
+)CUDA";
+        const size_t record_pos = src.find(old_record_struct);
+        if (record_pos == std::string::npos)
+            throw std::runtime_error("segment-pair candidate device-column kernel record snippet not found");
+        src.erase(record_pos, old_record_struct.size());
+
+        const std::string old_params =
+R"CUDA(struct SegmentPairIntersectionParams {
+    OptixTraversableHandle traversable;
+    const GpuSegment* left_segs;
+    const GpuSegment* right_segs;
+    SegmentPairIntersectionRecord* output;
+    unsigned int* output_count;
+    unsigned int  output_capacity;
+    unsigned int  probe_count;
+    unsigned int  left_offset;
+};
+)CUDA";
+        const std::string new_params =
+R"CUDA(struct SegmentPairIntersectionParams {
+    OptixTraversableHandle traversable;
+    const GpuSegment* left_segs;
+    const GpuSegment* right_segs;
+    unsigned long long* left_ids;
+    unsigned long long* right_ids;
+    unsigned long long* row_count;
+    unsigned long long* candidate_event_count;
+    unsigned int* overflow;
+    unsigned int  output_capacity;
+    unsigned int  probe_count;
+};
+)CUDA";
+        size_t pos = src.find(old_params);
+        if (pos == std::string::npos)
+            throw std::runtime_error("segment-pair candidate device-column kernel params snippet not found");
+        src.replace(pos, old_params.size(), new_params);
+
+        const std::string old_write =
+R"CUDA(    const unsigned int slot = atomicAdd(params.output_count, 1u);
+    if (slot < params.output_capacity) {
+        SegmentPairIntersectionRecord r;
+        r.left_id  = left.id;
+        r.right_id = right.id;
+        r.left_index = params.left_offset + pidx;
+        r.right_index = bidx;
+        params.output[slot] = r;
+    }
+    optixIgnoreIntersection();
+)CUDA";
+        const std::string new_write =
+R"CUDA(    atomicAdd(params.candidate_event_count, 1ull);
+    const unsigned long long slot = atomicAdd(params.row_count, 1ull);
+    if (slot < (unsigned long long)params.output_capacity) {
+        params.left_ids[slot] = (unsigned long long)left.id;
+        params.right_ids[slot] = (unsigned long long)right.id;
+    } else {
+        *params.overflow = 1u;
+    }
+    optixIgnoreIntersection();
+)CUDA";
+        pos = src.find(old_write);
+        if (pos == std::string::npos)
+            throw std::runtime_error("segment-pair candidate device-column kernel write snippet not found");
+        src.replace(pos, old_write.size(), new_write);
+
+        std::string ptx = compile_to_ptx(src.c_str(), "segment_pair_candidate_device_columns_kernel.cu");
+        g_segment_pair_candidate_device_columns.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__segment_pair_intersection_probe",
+            "__miss__segment_pair_intersection_miss",
+            "__intersection__segment_pair_intersection_isect",
+            "__anyhit__segment_pair_intersection_anyhit",
+            nullptr,
             4).release();
     });
 }
@@ -3796,6 +3905,127 @@ static std::vector<GpuSegmentPairIntersectionRecord> collect_segment_pair_inters
     }
 
     return gpu_rows;
+}
+
+static void run_prepared_segment_pair_candidate_device_columns_optix(
+        PreparedSegmentPairIntersectionBuild* prepared,
+        const RtdlSegment* left,
+        size_t left_count,
+        size_t max_rows,
+        RtdlNativeDevicePairColumns* columns_out)
+{
+    if (!prepared)
+        throw std::runtime_error("prepared segment-pair handle must not be null");
+    if (!left && left_count != 0)
+        throw std::runtime_error("left pointer must not be null when left_count is nonzero");
+    if (!columns_out)
+        throw std::runtime_error("segment-pair candidate device columns_out pointer must not be null");
+    if (left_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("segment-pair candidate left count exceeds uint32 launch capacity");
+    if (prepared->right_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("segment-pair candidate right count exceeds uint32 primitive capacity");
+    if (max_rows > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("segment-pair candidate max_rows exceeds uint32 output capacity");
+    const uint64_t pair_space =
+        static_cast<uint64_t>(left_count) * static_cast<uint64_t>(prepared->right_count);
+    if (pair_space > static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("segment-pair candidate device columns currently require a single uint32 launch; chunked append is future work");
+
+    *columns_out = {};
+    columns_out->capacity = static_cast<uint64_t>(max_rows);
+    CUdevice current_device = 0;
+    CU_CHECK(cuCtxGetDevice(&current_device));
+    columns_out->device_ordinal = static_cast<int32_t>(current_device);
+    if (left_count == 0 || prepared->right_count == 0)
+        return;
+
+    std::vector<GpuSegment> gpu_left(left_count);
+    for (size_t i = 0; i < left_count; ++i) {
+        gpu_left[i] = {
+            static_cast<float>(left[i].x0),
+            static_cast<float>(left[i].y0),
+            static_cast<float>(left[i].x1),
+            static_cast<float>(left[i].y1),
+            left[i].id,
+        };
+    }
+
+    ensure_segment_pair_candidate_device_columns_pipeline();
+
+    DevPtr d_left(sizeof(GpuSegment) * gpu_left.size());
+    upload(d_left.ptr, gpu_left.data(), gpu_left.size());
+
+    std::unique_ptr<NativeSegmentPairCandidateDeviceColumnsOwner> owner;
+    CUdeviceptr left_ids_output = 0;
+    CUdeviceptr right_ids_output = 0;
+    if (max_rows != 0) {
+        owner = std::make_unique<NativeSegmentPairCandidateDeviceColumnsOwner>();
+        CU_CHECK(cuMemAlloc(&owner->left_ids, sizeof(unsigned long long) * max_rows));
+        CU_CHECK(cuMemAlloc(&owner->right_ids, sizeof(unsigned long long) * max_rows));
+        left_ids_output = owner->left_ids;
+        right_ids_output = owner->right_ids;
+    }
+
+    DevPtr d_row_count(sizeof(unsigned long long));
+    DevPtr d_candidate_events(sizeof(unsigned long long));
+    DevPtr d_overflow(sizeof(uint32_t));
+    unsigned long long zero64 = 0ull;
+    uint32_t zero32 = 0u;
+    upload(d_row_count.ptr, &zero64, 1);
+    upload(d_candidate_events.ptr, &zero64, 1);
+    upload(d_overflow.ptr, &zero32, 1);
+
+    SegmentPairCandidateDeviceColumnsLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.left_segs = reinterpret_cast<const GpuSegment*>(d_left.ptr);
+    lp.right_segs = reinterpret_cast<const GpuSegment*>(prepared->d_right.ptr);
+    lp.left_ids = reinterpret_cast<unsigned long long*>(left_ids_output);
+    lp.right_ids = reinterpret_cast<unsigned long long*>(right_ids_output);
+    lp.row_count = reinterpret_cast<unsigned long long*>(d_row_count.ptr);
+    lp.candidate_event_count = reinterpret_cast<unsigned long long*>(d_candidate_events.ptr);
+    lp.overflow = reinterpret_cast<uint32_t*>(d_overflow.ptr);
+    lp.output_capacity = static_cast<uint32_t>(max_rows);
+    lp.probe_count = static_cast<uint32_t>(left_count);
+
+    DevPtr d_params(sizeof(SegmentPairCandidateDeviceColumnsLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    const auto traversal_start = std::chrono::steady_clock::now();
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_segment_pair_candidate_device_columns.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(SegmentPairCandidateDeviceColumnsLaunchParams),
+                             &g_segment_pair_candidate_device_columns.pipe->sbt,
+                             static_cast<unsigned>(left_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    const auto traversal_end = std::chrono::steady_clock::now();
+
+    unsigned long long attempted_rows = 0ull;
+    unsigned long long candidate_events = 0ull;
+    uint32_t overflow = 0u;
+    download(&attempted_rows, d_row_count.ptr, 1);
+    download(&candidate_events, d_candidate_events.ptr, 1);
+    download(&overflow, d_overflow.ptr, 1);
+
+    columns_out->candidate_event_count = static_cast<uint64_t>(candidate_events);
+    columns_out->traversal_seconds = std::chrono::duration<double>(
+        traversal_end - traversal_start).count();
+    if (overflow != 0u || attempted_rows > static_cast<unsigned long long>(max_rows)) {
+        columns_out->row_count = 0u;
+        columns_out->overflow = 1u;
+        return;
+    }
+
+    columns_out->left_ids_device_ptr = static_cast<uint64_t>(left_ids_output);
+    columns_out->right_ids_device_ptr = static_cast<uint64_t>(right_ids_output);
+    columns_out->row_count = static_cast<uint64_t>(attempted_rows);
+    columns_out->overflow = 0u;
+    if (owner)
+        columns_out->owner_handle = owner.release();
+}
+
+static void release_segment_pair_candidate_device_columns_optix(void* owner_handle)
+{
+    delete reinterpret_cast<NativeSegmentPairCandidateDeviceColumnsOwner*>(owner_handle);
 }
 
 static void launch_segment_pair_intersection_optix(

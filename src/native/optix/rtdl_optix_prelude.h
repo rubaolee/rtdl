@@ -239,6 +239,21 @@ struct RtdlNativeDeviceHitStreamColumns {
     uint64_t overflow_device_ptr;
 };
 
+struct RtdlNativeDevicePairColumns {
+    uint64_t left_ids_device_ptr;
+    uint64_t right_ids_device_ptr;
+    uint64_t row_count;
+    uint64_t capacity;
+    uint64_t candidate_event_count;
+    uint32_t overflow;
+    int32_t device_ordinal;
+    void* owner_handle;
+    double traversal_seconds;
+    uint64_t row_count_device_ptr;
+    uint64_t candidate_event_count_device_ptr;
+    uint64_t overflow_device_ptr;
+};
+
 struct RtdlRaySegmentGroupCountRow {
     uint32_t ray_id, group_id, hit_count, parity;
 };
@@ -501,6 +516,15 @@ int  rtdl_optix_count_prepared_segment_pair_intersection(
          void* prepared,
          const RtdlSegment* left, size_t left_count,
          size_t* count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_prepared_segment_pair_candidate_device_columns(
+         void* prepared,
+         const RtdlSegment* left, size_t left_count,
+         size_t max_rows,
+         RtdlNativeDevicePairColumns* columns_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_release_segment_pair_candidate_device_columns(
+         void* owner_handle,
          char* error_out, size_t error_size);
 int  rtdl_optix_run_prepared_segment_first_hit(
          void* prepared,
