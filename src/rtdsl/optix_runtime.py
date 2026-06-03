@@ -208,6 +208,9 @@ OPTIX_RELEASE_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL = (
 OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_prepared_segment_pair_left_id_count_device_columns"
 )
+OPTIX_RELEASE_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL = (
+    "rtdl_optix_release_segment_pair_left_id_count_device_columns"
+)
 OPTIX_RELEASE_RAY_TRIANGLE_HIT_STREAM_3D_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_release_ray_triangle_hit_stream_device_columns"
 )
@@ -1144,9 +1147,16 @@ class _OptixNativeDevicePairColumnsOwner:
 
 
 class _OptixNativeDeviceGroupedCountI64ColumnsOwner:
-    def __init__(self, library: ctypes.CDLL, owner_handle: int | None) -> None:
+    def __init__(
+        self,
+        library: ctypes.CDLL,
+        owner_handle: int | None,
+        *,
+        release_symbol_name: str = OPTIX_RELEASE_DEVICE_GROUPED_COUNT_I64_COLUMNS_SYMBOL,
+    ) -> None:
         self._library = library
         self._owner_handle = ctypes.c_void_p(0 if owner_handle is None else int(owner_handle))
+        self._release_symbol_name = release_symbol_name
         self._closed = False
 
     @property
@@ -1163,8 +1173,13 @@ class _OptixNativeDeviceGroupedCountI64ColumnsOwner:
             return
         release_symbol = _find_optional_backend_symbol(
             self._library,
-            OPTIX_RELEASE_DEVICE_GROUPED_COUNT_I64_COLUMNS_SYMBOL,
+            self._release_symbol_name,
         )
+        if release_symbol is None and self._release_symbol_name != OPTIX_RELEASE_DEVICE_GROUPED_COUNT_I64_COLUMNS_SYMBOL:
+            release_symbol = _find_optional_backend_symbol(
+                self._library,
+                OPTIX_RELEASE_DEVICE_GROUPED_COUNT_I64_COLUMNS_SYMBOL,
+            )
         if release_symbol is None:
             return
         error = ctypes.create_string_buffer(4096)
@@ -1824,7 +1839,11 @@ class PreparedOptixSegmentPairIntersection:
             len(error),
         )
         _check_status(status, error)
-        owner = _OptixNativeDeviceGroupedCountI64ColumnsOwner(self.library, columns.owner_handle)
+        owner = _OptixNativeDeviceGroupedCountI64ColumnsOwner(
+            self.library,
+            columns.owner_handle,
+            release_symbol_name=OPTIX_RELEASE_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL,
+        )
         return OptixNativeDeviceGroupedCountI64Output(
             library=self.library,
             owner=owner,
@@ -17216,6 +17235,17 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_segment_pair_left_id_count_device_columns.restype = ctypes.c_int
+    optional_release_segment_pair_left_id_count_device_columns = _find_optional_backend_symbol(
+        lib,
+        OPTIX_RELEASE_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL,
+    )
+    if optional_release_segment_pair_left_id_count_device_columns is not None:
+        optional_release_segment_pair_left_id_count_device_columns.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_release_segment_pair_left_id_count_device_columns.restype = ctypes.c_int
     optional_run_prepared_segment_first_hit = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_run_prepared_segment_first_hit",

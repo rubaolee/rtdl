@@ -55,6 +55,9 @@ All rows set `all_match_expected_counts: true`.
 | 2048 x 2048 | 0.020370308309793472 | 0.012733235955238342 | 0.005303880199790001 | 0.0029755420982837677 |
 | 4096 x 4096 | 0.04079877771437168 | 0.02565891481935978 | 0.012753259390592575 | 0.005745925009250641 |
 
+All four comparison-chain artifacts record `include_rows_measured: false` for
+the measured repetitions and reserve `include_rows=True` for validation passes.
+
 At `4096 x 4096`, the fused dense-count route is:
 
 - about `0.1408x` of the Goal3203 one-shot count-only median,

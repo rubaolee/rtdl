@@ -20,14 +20,19 @@ class Goal3210SegmentPairLeftIdCountDeviceColumnsTest(unittest.TestCase):
         core = CORE.read_text(encoding="utf-8")
 
         symbol = "rtdl_optix_prepared_segment_pair_left_id_count_device_columns"
+        release_symbol = "rtdl_optix_release_segment_pair_left_id_count_device_columns"
         self.assertIn(symbol, prelude)
         self.assertIn(symbol, api)
+        self.assertIn(release_symbol, prelude)
+        self.assertIn(release_symbol, api)
         self.assertIn("run_prepared_segment_pair_left_id_count_device_columns_optix", api)
         self.assertIn("run_prepared_segment_pair_left_id_count_device_columns_optix", workloads)
         self.assertIn("SegmentPairLeftIdCountDeviceColumnsLaunchParams", workloads)
         self.assertIn("g_segment_pair_left_id_count_device_columns", core)
         self.assertIn("segment_pair_left_id_count_device_columns_kernel.cu", workloads)
         self.assertIn("atomicAdd(&params.counts[left.id], 1ull)", workloads)
+        self.assertIn("atomicOr(params.overflow, 1u)", workloads)
+        self.assertIn("release_device_grouped_count_i64_columns_optix(owner_handle)", api)
 
         combined_native = "\n".join((prelude, api, workloads, core)).lower()
         self.assertNotIn("rayjoin", combined_native)
@@ -38,6 +43,8 @@ class Goal3210SegmentPairLeftIdCountDeviceColumnsTest(unittest.TestCase):
 
         self.assertIn("OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL", runtime)
         self.assertIn("left_id_count_device_columns", runtime)
+        self.assertIn("OPTIX_RELEASE_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL", runtime)
+        self.assertIn("release_symbol_name=OPTIX_RELEASE_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL", runtime)
         self.assertIn("Count segment-pair hits by pair-column left_id", runtime)
         self.assertIn("OptixNativeDeviceGroupedCountI64Output", runtime)
         self.assertIn("_RtdlNativeDeviceGroupedCountI64Columns", runtime)
@@ -55,6 +62,13 @@ class Goal3210SegmentPairLeftIdCountDeviceColumnsTest(unittest.TestCase):
         self.assertIn("ctypes.POINTER(_RtdlNativeDeviceGroupedCountI64Columns)", body)
         self.assertIn("ctypes.c_size_t", body)
         self.assertIn("restype = ctypes.c_int", body)
+
+        release_start = runtime.index("optional_release_segment_pair_left_id_count_device_columns")
+        release_end = runtime.index("optional_run_prepared_segment_first_hit", release_start)
+        release_body = runtime[release_start:release_end]
+        self.assertIn("OPTIX_RELEASE_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL", release_body)
+        self.assertIn("ctypes.c_void_p", release_body)
+        self.assertIn("restype = ctypes.c_int", release_body)
 
 
 if __name__ == "__main__":

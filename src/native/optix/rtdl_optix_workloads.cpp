@@ -3900,7 +3900,7 @@ R"CUDA(    atomicAdd(params.candidate_event_count, 1ull);
     if (left.id < params.group_capacity) {
         atomicAdd(&params.counts[left.id], 1ull);
     } else {
-        *params.overflow = 1u;
+        atomicOr(params.overflow, 1u);
     }
     optixIgnoreIntersection();
 )CUDA";

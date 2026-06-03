@@ -5478,6 +5478,15 @@ extern "C" int rtdl_optix_release_device_grouped_count_i64_columns(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_release_segment_pair_left_id_count_device_columns(
+        void* owner_handle,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        release_device_grouped_count_i64_columns_optix(owner_handle);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_columnar_device_payload_grouped_count_i64_compact_device_columns_with_capacity(
         const RtdlDevicePayloadField* fields, size_t field_count,
         size_t row_count,

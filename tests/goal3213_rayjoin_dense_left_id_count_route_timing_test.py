@@ -50,21 +50,30 @@ class Goal3213RayJoinDenseLeftIdCountRouteTimingTest(unittest.TestCase):
         self.assertFalse(data["claim_boundary"]["rayjoin_paper_reproduction_claim_authorized"])
 
     def test_dense_route_improves_previous_representative_medians(self) -> None:
+        one_shot_data = json.loads(GOAL3203.read_text(encoding="utf-8"))
+        prepared_data = json.loads(GOAL3205.read_text(encoding="utf-8"))
+        packed_compact_data = json.loads(GOAL3208.read_text(encoding="utf-8"))
+        dense_data = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+
+        for baseline in (one_shot_data, prepared_data, packed_compact_data, dense_data):
+            self.assertFalse(baseline["include_rows_measured"])
+            self.assertTrue(baseline["validation_pass_include_rows"])
+
         one_shot = {
             row["n_left"]: row["median_total_seconds"]
-            for row in json.loads(GOAL3203.read_text(encoding="utf-8"))["rows"]
+            for row in one_shot_data["rows"]
         }
         prepared = {
             row["n_left"]: row["median_total_seconds"]
-            for row in json.loads(GOAL3205.read_text(encoding="utf-8"))["rows"]
+            for row in prepared_data["rows"]
         }
         packed_compact = {
             row["n_left"]: row["median_total_seconds"]
-            for row in json.loads(GOAL3208.read_text(encoding="utf-8"))["rows"]
+            for row in packed_compact_data["rows"]
         }
         dense = {
             row["n_left"]: row["median_total_seconds"]
-            for row in json.loads(ARTIFACT.read_text(encoding="utf-8"))["rows"]
+            for row in dense_data["rows"]
         }
 
         for scale in (512, 1024, 2048, 4096):
@@ -81,6 +90,7 @@ class Goal3213RayJoinDenseLeftIdCountRouteTimingTest(unittest.TestCase):
             "not a RayJoin-specific native",
             "0.005745925009250641",
             "should not emit a pair row stream and then reduce it",
+            "All four comparison-chain artifacts record `include_rows_measured: false`",
             "counts by remapped left ID during traversal",
             "native code exposes a generic segment-pair count primitive",
             "public_speedup_claim_authorized: False",
