@@ -75,9 +75,59 @@ Boundary flags remain:
 Local validation command:
 
 ```powershell
-$env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal3185_segment_pair_candidate_device_columns_test
+$env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal3185_segment_pair_candidate_device_columns_test tests.goal3181_geometry_relation_row_view_typed_producer_metadata_test tests.goal3183_shape_pair_relation_active_count_test
 ```
 
-Initial report status: implementation and local source tests are expected before
-pod execution. Pod evidence should be appended only after a clean rebuild and
-live OptiX smoke.
+Result:
+
+```text
+Ran 16 tests in 0.050s
+
+OK
+```
+
+Pod validation:
+
+- Host: `root@69.30.85.131 -p 22063`
+- Repo: `/root/rtdl_goal3151`
+- Commit: `32ab41a0`
+- Python: `/root/venvs/rtdl_goal3154/bin/python`
+- OptiX library: `/root/rtdl_goal3151/build/librtdl_optix.so`
+- Build: `make build-optix OPTIX_PREFIX=/root/vendor/optix-sdk`
+
+Focused pod suite:
+
+```bash
+PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=/root/rtdl_goal3151/build/librtdl_optix.so \
+  /root/venvs/rtdl_goal3154/bin/python -m unittest \
+  tests.goal3185_segment_pair_candidate_device_columns_test \
+  tests.goal3183_shape_pair_relation_active_count_test \
+  tests.goal3181_geometry_relation_row_view_typed_producer_metadata_test
+```
+
+Result:
+
+```text
+Ran 16 tests in 0.007s
+
+OK
+```
+
+Live pod smoke artifact:
+
+`docs/reports/goal3185_pod_segment_pair_candidate_device_columns_2026-06-03.json`
+
+The authored crossing-segment smoke compared the new device-column candidate
+output against the existing exact row path:
+
+| Dataset | Exact Rows | Candidate Column Rows | Candidate Events | Device Columns | Overflow |
+| --- | ---: | ---: | ---: | ---: | --- |
+| `authored_16_horizontal_by_4_vertical_crossing_segments` | 64 | 64 | 64 | 2 | `False` |
+
+The live smoke also verified:
+
+- `left_id` and `right_id` device pointers were nonzero,
+- the typed producer primitive was `segment_pair_candidate_2d`,
+- the schema was `segment_pair_candidate_2d_device_columns`,
+- `release_authorized` stayed `False`,
+- `true_zero_copy_claim_authorized` stayed `False`.

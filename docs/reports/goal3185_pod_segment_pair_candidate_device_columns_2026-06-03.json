@@ -1,0 +1,41 @@
+{
+  "goal": "Goal3185",
+  "artifact": "segment_pair_candidate_device_columns_live_smoke",
+  "host": "root@69.30.85.131",
+  "ssh_port": 22063,
+  "repo": "/root/rtdl_goal3151",
+  "commit": "32ab41a0",
+  "optix_library": "/root/rtdl_goal3151/build/librtdl_optix.so",
+  "optix_build": {
+    "command": "make build-optix OPTIX_PREFIX=/root/vendor/optix-sdk",
+    "status": "ok"
+  },
+  "focused_tests": {
+    "command": "PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=/root/rtdl_goal3151/build/librtdl_optix.so /root/venvs/rtdl_goal3154/bin/python -m unittest tests.goal3185_segment_pair_candidate_device_columns_test tests.goal3183_shape_pair_relation_active_count_test tests.goal3181_geometry_relation_row_view_typed_producer_metadata_test",
+    "status": "ok",
+    "tests_run": 16
+  },
+  "live_smoke": {
+    "status": "ok",
+    "dataset": "authored_16_horizontal_by_4_vertical_crossing_segments",
+    "exact_row_count": 64,
+    "candidate_row_count": 64,
+    "candidate_event_count": 64,
+    "capacity": 64,
+    "overflow": false,
+    "device_resident": true,
+    "left_ptr_nonzero": true,
+    "right_ptr_nonzero": true,
+    "producer_primitive": "segment_pair_candidate_2d",
+    "schema_id": "segment_pair_candidate_2d_device_columns",
+    "stream_device_resident_column_count": 2,
+    "native_symbol": "rtdl_optix_prepared_segment_pair_candidate_device_columns"
+  },
+  "claim_boundary": {
+    "release_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false
+  }
+}

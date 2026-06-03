@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import unittest
 
@@ -12,6 +13,7 @@ CORE = ROOT / "src" / "native" / "optix" / "rtdl_optix_core.cpp"
 RUNTIME = ROOT / "src" / "rtdsl" / "optix_runtime.py"
 TYPED = ROOT / "src" / "rtdsl" / "v2_8_geometry_relation_typed_stream.py"
 REPORT = ROOT / "docs" / "reports" / "goal3185_segment_pair_candidate_device_columns_2026-06-03.md"
+ARTIFACT = ROOT / "docs" / "reports" / "goal3185_pod_segment_pair_candidate_device_columns_2026-06-03.json"
 
 
 class Goal3185SegmentPairCandidateDeviceColumnsTest(unittest.TestCase):
@@ -85,6 +87,23 @@ class Goal3185SegmentPairCandidateDeviceColumnsTest(unittest.TestCase):
             "release_authorized: False",
         ):
             self.assertIn(phrase, report)
+
+    def test_pod_artifact_records_device_column_smoke(self) -> None:
+        artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(artifact["commit"], "32ab41a0")
+        self.assertEqual(artifact["focused_tests"]["status"], "ok")
+        smoke = artifact["live_smoke"]
+        self.assertEqual(smoke["status"], "ok")
+        self.assertEqual(smoke["exact_row_count"], 64)
+        self.assertEqual(smoke["candidate_row_count"], 64)
+        self.assertEqual(smoke["candidate_event_count"], 64)
+        self.assertFalse(smoke["overflow"])
+        self.assertTrue(smoke["device_resident"])
+        self.assertEqual(smoke["stream_device_resident_column_count"], 2)
+
+        for value in artifact["claim_boundary"].values():
+            self.assertIs(value, False)
 
 
 if __name__ == "__main__":
