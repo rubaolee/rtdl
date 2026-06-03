@@ -1,0 +1,68 @@
+{
+  "app": "rayjoin_v2_spatial_join",
+  "backend": "optix",
+  "claim_boundary": {
+    "full_rayjoin_reproduction": false,
+    "paper_scale_perf_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "requires_pod_for_optix_perf": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+  "dataset_note": "Deterministic county-subset segment slice chosen to preserve CPU/Embree parity.",
+  "dense_left_id_count_columns": {
+    "count_column_materialized_on_host": false,
+    "counts_device_ptr_nonzero": true,
+    "device_ordinal": 0,
+    "device_resident": true,
+    "group_capacity": 3,
+    "group_capacity_semantics": "direct-address key capacity",
+    "group_key_column_materialized_on_host": false,
+    "group_key_semantics": "dense output uses direct-address array index as the implicit group key",
+    "native_symbol": "rtdl_optix_prepared_segment_pair_left_id_count_device_columns",
+    "output_residency": "device_resident_dense_grouped_count_column",
+    "overflow": false,
+    "owner_handle": 583586208,
+    "producer": "device_column_grouped_count_i64",
+    "public_speedup_claim_authorized": false,
+    "reduction_seconds": 0.000115325,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "schema": "device_grouped_count_i64_dense_columns",
+    "source_row_count": 1,
+    "true_zero_copy_authorized": false
+  },
+  "device_resident_continuation_status": "dense_left_id_count_device_column_complete: count[index] remains CUDA-resident during the route; validation copy is optional",
+  "execution_route": "prepared_optix_left_id_dense_count_reuse",
+  "left_id_remap": {
+    "enabled": true,
+    "original_left_id_count": 3,
+    "reason": "generic left-id count primitive uses direct-address key capacity"
+  },
+  "native_engine_boundary": "The engine sees generic segment-pair left-id count device columns. RayJoin workload interpretation, prepared-handle reuse, packed-left reuse, and left-ID remapping stay in Python.",
+  "packed_left_reuse": {
+    "enabled": true,
+    "left_segment_count": 3,
+    "pack_seconds": 7.128715515136719e-05,
+    "query_pack_paid_in_call": false
+  },
+  "phases_sec": {
+    "left_id_count_device_columns_sec": 0.1320203524082899
+  },
+  "prepared_reuse": {
+    "enabled": true,
+    "prepare_static_scene_paid_once": true,
+    "prepare_static_scene_sec": 0.47071402706205845,
+    "right_segment_count": 3
+  },
+  "row_count": 1,
+  "summary": {
+    "intersection_count": 1,
+    "left_group_capacity": 3,
+    "output_contract": "segment_segment_intersection_count_by_left_id_dense_device_column"
+  },
+  "workload": "lsi"
+}
