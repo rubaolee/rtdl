@@ -137,21 +137,22 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
         benchmark_path="examples/v2_0/research_benchmarks/rt_dbscan/",
         current_best_path=(
             "fixed-radius/core-summary primitives plus v2.8 fixed-radius graph component front door "
-            "over the measured OptiX+CuPy grouped-stream path"
+            "over the measured OptiX+CuPy grouped-stream path, with typed adjacency/grouped-stream "
+            "producer metadata from Goal3158"
         ),
         partner_position=(
             "CuPy is the current measured component-continuation reference through an explicit v2.8 front door; "
             "Numba remains a candidate for future same-contract conformance."
         ),
         current_bottleneck=(
-            "the grouped-stream component path is now front-door reachable; the remaining shared work is "
-            "typed producer metadata, broader partner conformance, and larger device-resident continuation "
-            "coverage without DBSCAN-native engine semantics"
+            "the grouped-stream component path is now front-door reachable and typed producer metadata "
+            "now exists; the remaining shared work is broader partner conformance and larger "
+            "device-resident continuation coverage without DBSCAN-native engine semantics"
         ),
         generic_runtime_target="fixed-radius graph component front door plus typed adjacency/grouped-stream producer metadata",
         target_family=V2_8_FIRST_RUNTIME_TARGET,
         priority="P0",
-        evidence_refs=("Goal2425 lineage", "Goal2478", "Goal3154", "Goal3155", "Goal3156"),
+        evidence_refs=("Goal2425 lineage", "Goal2478", "Goal3154", "Goal3155", "Goal3156", "Goal3158", "Goal3179"),
     ),
     V28BenchmarkRuntimeGapRow(
         benchmark_app="robot_collision",
