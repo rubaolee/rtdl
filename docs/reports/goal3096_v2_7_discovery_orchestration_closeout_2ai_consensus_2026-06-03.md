@@ -4,6 +4,11 @@ Date: 2026-06-03
 
 Status: accepted with bounded scope.
 
+Postscript: this is the historical pre-Goal3099 2-AI closeout consensus. D-8
+was correctly deferred at that time. The current post-D-8 v2.7 status is
+recorded in
+`docs/reports/goal3102_v2_7_post_semantic_search_current_closeout_2026-06-03.md`.
+
 ## Inputs
 
 - Codex closeout packet:

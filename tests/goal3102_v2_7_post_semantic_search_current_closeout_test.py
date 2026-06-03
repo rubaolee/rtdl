@@ -9,6 +9,8 @@ import rtdsl as rt
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs" / "reports" / "goal3102_v2_7_post_semantic_search_current_closeout_2026-06-03.md"
 HISTORICAL_REPORT = ROOT / "docs" / "reports" / "goal3094_v2_7_primitive_discovery_orchestration_closeout_2026-06-03.md"
+HISTORICAL_2AI = ROOT / "docs" / "reports" / "goal3096_v2_7_discovery_orchestration_closeout_2ai_consensus_2026-06-03.md"
+HISTORICAL_3AI = ROOT / "docs" / "reports" / "goal3098_v2_7_discovery_orchestration_closeout_3ai_consensus_2026-06-03.md"
 
 
 class Goal3102V27PostSemanticSearchCurrentCloseoutTest(unittest.TestCase):
@@ -63,11 +65,14 @@ class Goal3102V27PostSemanticSearchCurrentCloseoutTest(unittest.TestCase):
                 self.assertIn(phrase, text)
 
     def test_historical_closeout_points_to_current_closeout(self) -> None:
-        text = HISTORICAL_REPORT.read_text(encoding="utf-8")
+        for path in (HISTORICAL_REPORT, HISTORICAL_2AI, HISTORICAL_3AI):
+            with self.subTest(path=path.name):
+                text = path.read_text(encoding="utf-8")
 
-        self.assertIn("Postscript", text)
-        self.assertIn("goal3102_v2_7_post_semantic_search_current_closeout", text)
-        self.assertIn("D-8 was correctly deferred", text)
+                self.assertIn("Postscript", text)
+                self.assertIn("goal3102_v2_7_post_semantic_search_current_closeout", text)
+                self.assertIn("D-8", text)
+                self.assertIn("correctly deferred", text)
 
 
 if __name__ == "__main__":
