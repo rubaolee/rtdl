@@ -58,3 +58,15 @@ Ran 8 tests in 0.017s
 
 OK
 ```
+
+Clean pod validation:
+
+```text
+POD_HEAD=be5ef3f4
+RUN_GOAL3161_GAP_REFRESH
+........
+----------------------------------------------------------------------
+Ran 8 tests in 0.001s
+
+OK
+```
