@@ -815,6 +815,41 @@ PRIMITIVE_HIERARCHY = (
                 outputs=("component_or_group_rows",),
                 depends_on=("rows.fixed_radius_neighbor_rows", "reduction.grouped"),
                 boundary="Cluster semantics remain app code.",
+                capability_tags=(
+                    "intent:components",
+                    "intent:reduce",
+                    "shape:fixed_radius",
+                    "dim:3d",
+                    "output:columns",
+                    "output:grouped",
+                    "exactness:exact",
+                    "keying:by_query_id",
+                ),
+                aliases=(
+                    "fixed_radius_graph_components",
+                    "radius_graph_component_labels",
+                    "grouped_stream_component_labels",
+                    "fixed_radius_component_continuation",
+                ),
+                intent_phrases=(
+                    "compute component labels over a fixed radius graph",
+                    "avoid dense adjacency row materialization for fixed radius graph components",
+                    "run grouped stream continuation for fixed radius graph component labels",
+                ),
+                reference_path="docs/reports/goal3155_fixed_radius_graph_component_front_door_2026-06-03.md",
+                backends=("optix",),
+                partner_ops=("cupy_grouped_stream_component_labels",),
+                considered_alternatives=(
+                    "rows.fixed_radius_neighbor_rows",
+                    "continuation.segmented_chunked_rows",
+                    "reduction.grouped",
+                ),
+                distinct_from=(
+                    "Consumes fixed-radius traversal pressure into component-label columns; "
+                    "it does not emit full neighbor rows like rows.fixed_radius_neighbor_rows, "
+                    "page arbitrary row streams like continuation.segmented_chunked_rows, "
+                    "or own app policy beyond the generic component threshold."
+                ),
             ),
             PrimitiveHierarchyNode(
                 id="continuation.partner_resident",

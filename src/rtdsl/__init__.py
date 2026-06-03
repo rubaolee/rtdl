@@ -336,6 +336,16 @@ from .v2_8_segmented_typed_stream_adapter import execute_segmented_typed_stream_
 from .v2_8_segmented_typed_stream_adapter import plan_segmented_typed_stream_partner_continuation
 from .v2_8_segmented_typed_stream_adapter import v2_8_segmented_typed_stream_adapter_summary
 from .v2_8_segmented_typed_stream_adapter import validate_segmented_typed_stream_adapter
+from .v2_8_fixed_radius_graph_component_front_door import V28FixedRadiusGraphComponentPlan
+from .v2_8_fixed_radius_graph_component_front_door import V28PreparedFixedRadiusGraphComponentContinuation3D
+from .v2_8_fixed_radius_graph_component_front_door import V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY
+from .v2_8_fixed_radius_graph_component_front_door import V2_8_FIXED_RADIUS_GRAPH_COMPONENT_FRONT_DOOR_STATUS
+from .v2_8_fixed_radius_graph_component_front_door import V2_8_FIXED_RADIUS_GRAPH_COMPONENT_FRONT_DOOR_VERSION
+from .v2_8_fixed_radius_graph_component_front_door import V2_8_FIXED_RADIUS_GRAPH_COMPONENT_OPERATION
+from .v2_8_fixed_radius_graph_component_front_door import describe_v2_8_fixed_radius_graph_component_front_door
+from .v2_8_fixed_radius_graph_component_front_door import fixed_radius_graph_component_labels_3d_v2_8
+from .v2_8_fixed_radius_graph_component_front_door import plan_v2_8_fixed_radius_graph_component_continuation
+from .v2_8_fixed_radius_graph_component_front_door import prepare_v2_8_fixed_radius_graph_component_continuation_3d
 from .v2_8_typed_result_stream import V28GroupedContinuationPlan
 from .v2_8_typed_result_stream import V28TypedResultColumn
 from .v2_8_typed_result_stream import V28TypedResultStreamContract
@@ -1940,6 +1950,16 @@ __all__ = [
     "plan_segmented_typed_stream_partner_continuation",
     "v2_8_segmented_typed_stream_adapter_summary",
     "validate_segmented_typed_stream_adapter",
+    "V28FixedRadiusGraphComponentPlan",
+    "V28PreparedFixedRadiusGraphComponentContinuation3D",
+    "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY",
+    "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_FRONT_DOOR_STATUS",
+    "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_FRONT_DOOR_VERSION",
+    "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_OPERATION",
+    "describe_v2_8_fixed_radius_graph_component_front_door",
+    "fixed_radius_graph_component_labels_3d_v2_8",
+    "plan_v2_8_fixed_radius_graph_component_continuation",
+    "prepare_v2_8_fixed_radius_graph_component_continuation_3d",
     "V28GroupedContinuationPlan",
     "V28TypedResultColumn",
     "V28TypedResultStreamContract",
