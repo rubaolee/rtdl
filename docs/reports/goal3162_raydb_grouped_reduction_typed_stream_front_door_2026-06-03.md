@@ -65,3 +65,46 @@ OK (skipped=1)
 
 Pod validation should rerun the same tests from clean `origin/main` so the
 Numba CUDA execution cases run rather than skip.
+
+Clean A40 pod validation:
+
+```text
+POD_HEAD=7e811232
+RUN_GOAL3162_RAYDB_TYPED_STREAM
+Ran 34 tests in 0.840s
+OK
+```
+
+Pod metadata probe:
+
+```json
+{
+  "counts": [2, 1, 2],
+  "execution_path": "v2_8_grouped_reduction_typed_stream_partner_front_door",
+  "operations": ["segmented_sum_f64", "segmented_count_i64"],
+  "public_speedup_claim_authorized": false,
+  "rows": [
+    {
+      "automatic_partner_selection_allowed": false,
+      "device_resident_column_count": 2,
+      "operation": "segmented_sum_f64",
+      "path": "v2_8_grouped_reduction_typed_stream_partner_front_door",
+      "producer_primitive": "ray_triangle_grouped_i64_reduction_3d",
+      "release_authorized": false,
+      "stream_kind": "grouped_reduction_stream"
+    },
+    {
+      "automatic_partner_selection_allowed": false,
+      "device_resident_column_count": 1,
+      "operation": "segmented_count_i64",
+      "path": "v2_8_grouped_reduction_typed_stream_partner_front_door",
+      "producer_primitive": "ray_triangle_grouped_i64_reduction_3d",
+      "release_authorized": false,
+      "stream_kind": "grouped_reduction_stream"
+    }
+  ],
+  "rt_core_speedup_claim_authorized": false,
+  "sums": [4.0, 10.0, 4.0],
+  "true_zero_copy_claim_authorized": false
+}
+```
