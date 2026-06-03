@@ -1,0 +1,63 @@
+{
+  "status": "ok",
+  "commit": "b3e3077f",
+  "pod": {
+    "host": "root@69.30.85.131",
+    "port": 22063,
+    "repo": "/root/rtdl_goal3151",
+    "python": "/root/venvs/rtdl_goal3154/bin/python",
+    "optix_library": "/root/rtdl_goal3151/build/librtdl_optix.so"
+  },
+  "rows": [
+    {
+      "label": "x64",
+      "dataset": "derived/authored_overlay_squares_tiled_x64",
+      "left_count": 64,
+      "right_count": 64,
+      "repeats": 3,
+      "count_active_values": [64, 64, 64],
+      "row_active_values": [64, 64, 64],
+      "row_counts": [4096, 4096, 4096],
+      "count_active_sec_median": 0.00032801181077957153,
+      "row_scan_sec_median": 0.0023468080908060074,
+      "row_scan_over_count_active_ratio": 7.154645088018172,
+      "all_match": true
+    },
+    {
+      "label": "x512",
+      "dataset": "derived/authored_overlay_squares_tiled_x512",
+      "left_count": 512,
+      "right_count": 512,
+      "repeats": 3,
+      "count_active_values": [512, 512, 512],
+      "row_active_values": [512, 512, 512],
+      "row_counts": [262144, 262144, 262144],
+      "count_active_sec_median": 0.015491604804992676,
+      "row_scan_sec_median": 0.14659638330340385,
+      "row_scan_over_count_active_ratio": 9.462956559294515,
+      "all_match": true
+    },
+    {
+      "label": "x2048",
+      "dataset": "derived/authored_overlay_squares_tiled_x2048",
+      "left_count": 2048,
+      "right_count": 2048,
+      "repeats": 1,
+      "count_active_values": [2048],
+      "row_active_values": [2048],
+      "row_counts": [4194304],
+      "count_active_sec_median": 0.2276286967098713,
+      "row_scan_sec_median": 2.2859131433069706,
+      "row_scan_over_count_active_ratio": 10.042288939608202,
+      "all_match": true
+    }
+  ],
+  "claim_boundary": {
+    "release_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  }
+}

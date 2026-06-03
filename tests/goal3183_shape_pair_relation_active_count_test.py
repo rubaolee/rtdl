@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import unittest
 
@@ -18,6 +19,7 @@ APP = (
     / "rtdl_rayjoin_v2_spatial_join_app.py"
 )
 REPORT = ROOT / "docs" / "reports" / "goal3183_shape_pair_relation_active_count_2026-06-03.md"
+ARTIFACT = ROOT / "docs" / "reports" / "goal3183_pod_overlay_active_count_2026-06-03.json"
 
 
 class Goal3183ShapePairRelationActiveCountTest(unittest.TestCase):
@@ -67,6 +69,20 @@ class Goal3183ShapePairRelationActiveCountTest(unittest.TestCase):
             "public_speedup_claim_authorized: False",
         ):
             self.assertIn(phrase, text)
+
+    def test_pod_artifact_records_bounded_active_count_evidence(self) -> None:
+        artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(artifact["commit"], "b3e3077f")
+        self.assertEqual(artifact["status"], "ok")
+        self.assertEqual({row["label"] for row in artifact["rows"]}, {"x64", "x512", "x2048"})
+        for row in artifact["rows"]:
+            self.assertTrue(row["all_match"])
+            self.assertGreater(row["row_scan_over_count_active_ratio"], 1.0)
+            self.assertEqual(row["count_active_values"], row["row_active_values"])
+
+        for value in artifact["claim_boundary"].values():
+            self.assertIs(value, False)
 
 
 if __name__ == "__main__":

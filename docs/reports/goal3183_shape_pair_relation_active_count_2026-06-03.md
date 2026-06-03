@@ -68,5 +68,59 @@ Local validation command:
 $env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal3183_shape_pair_relation_active_count_test tests.goal2327_rayjoin_prepared_route_contract_test
 ```
 
-Pod build and live timing evidence are required before this report can record
-measured performance impact.
+Result:
+
+```text
+Ran 14 tests in 0.038s
+
+OK
+```
+
+Pod validation:
+
+- Host: `root@69.30.85.131 -p 22063`
+- Repo: `/root/rtdl_goal3151`
+- Commit: `b3e3077f`
+- Python: `/root/venvs/rtdl_goal3154/bin/python`
+- OptiX library: `/root/rtdl_goal3151/build/librtdl_optix.so`
+- Build: `make build-optix OPTIX_PREFIX=/root/vendor/optix-sdk`
+
+Focused pod suite:
+
+```bash
+PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=/root/rtdl_goal3151/build/librtdl_optix.so \
+  /root/venvs/rtdl_goal3154/bin/python -m unittest \
+  tests.goal3183_shape_pair_relation_active_count_test \
+  tests.goal2327_rayjoin_prepared_route_contract_test \
+  tests.goal3181_geometry_relation_row_view_typed_producer_metadata_test
+```
+
+Result:
+
+```text
+Ran 14 tests in 0.005s
+
+OK
+```
+
+Live pod measurement artifact:
+
+`docs/reports/goal3183_pod_overlay_active_count_2026-06-03.json`
+
+| Dataset | Active Count Median (s) | Old Row + Scan Median (s) | Row+Scan / Count |
+| --- | ---: | ---: | ---: |
+| `derived/authored_overlay_squares_tiled_x64` | 0.000328 | 0.002347 | 7.15x |
+| `derived/authored_overlay_squares_tiled_x512` | 0.015492 | 0.146596 | 9.46x |
+| `derived/authored_overlay_squares_tiled_x2048` | 0.227629 | 2.285913 | 10.04x |
+
+All active counts matched the active rows obtained by the old row-production
+plus flag-scan method.
+
+Interpretation:
+
+- This is a measured improvement for the exact overlay active-count subpath.
+- The comparison is not a whole RayJoin paper reproduction.
+- The comparison is not a public RT-core speedup claim.
+- The comparison does not prove device-resident relation-row columns; it proves
+  that active-count mode avoids the final host row allocation and Python row
+  flag scan.
