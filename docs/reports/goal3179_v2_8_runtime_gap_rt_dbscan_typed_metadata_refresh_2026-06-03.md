@@ -58,6 +58,27 @@ $env:PYTHONPATH='src;.'; py -3 -m unittest `
 
 Result: 25 tests passed.
 
+Pod validation from a clean `origin/main` reset also passed:
+
+```bash
+cd /root/rtdl_goal3151
+git fetch origin main
+git reset --hard origin/main
+export PYTHONPATH=src:.
+export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
+/root/venvs/rtdl_goal3154/bin/python -m unittest \
+  tests.goal3179_v2_8_runtime_gap_rt_dbscan_typed_metadata_refresh_test \
+  tests.goal3158_fixed_radius_graph_typed_producer_metadata_test \
+  tests.goal3157_v2_8_runtime_gap_rt_dbscan_front_door_refresh_test \
+  tests.goal3156_rt_dbscan_v2_8_front_door_route_test \
+  tests.goal3155_fixed_radius_graph_component_front_door_test \
+  tests.goal3105_v2_8_benchmark_runtime_gap_map_test
+```
+
+Pod head: `04cd50dc`.
+
+Result: 25 tests passed.
+
 ## Boundary
 
 Goal3179 is a status refresh. It changes no kernels, no app semantics, no partner
