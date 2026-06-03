@@ -45,3 +45,39 @@ $env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal3158_fixed_radius_graph_typ
 ```
 
 Result: 36 tests passed.
+
+Pod validation on `root@69.30.85.131:22063` from clean `origin/main` checkout at commit `b649b7ca`:
+
+```bash
+python -m unittest \
+  tests.goal3158_fixed_radius_graph_typed_producer_metadata_test \
+  tests.goal3157_v2_8_runtime_gap_rt_dbscan_front_door_refresh_test \
+  tests.goal3156_rt_dbscan_v2_8_front_door_route_test \
+  tests.goal3155_fixed_radius_graph_component_front_door_test \
+  tests.goal3111_v2_8_segmented_typed_stream_adapter_test
+```
+
+Result: 36 tests passed.
+
+App-level tiny grouped-stream metadata probe:
+
+```json
+{
+  "column_names": ["point_ids", "component_labels", "is_core", "neighbor_counts"],
+  "data_ptr_observed": {
+    "component_labels": true,
+    "is_core": true,
+    "neighbor_counts": true,
+    "point_ids": true
+  },
+  "device_resident_column_count": 4,
+  "front_door": "v2_8_fixed_radius_graph_component_continuation_3d",
+  "matches_reference": true,
+  "producer_primitive": "fixed_radius_graph_component_labels_3d",
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "status": "pass",
+  "stream_kind": "adjacency_stream",
+  "true_zero_copy_claim_authorized": false
+}
+```
