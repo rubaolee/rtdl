@@ -595,19 +595,21 @@ def _execute_partner_front_door(
         from .partner_adapters import partner_group_count_by_key
 
         return (
-            partner_group_count_by_key(mapped_columns["group_ids"], group_count, partner=partner),
+            {"counts": partner_group_count_by_key(mapped_columns["group_ids"], group_count, partner=partner)},
             _partner_bridge_metadata(operation, partner, group_count, len(_adapter_like(mapped_columns["group_ids"]))),
         )
     if operation == "segmented_sum_f64":
         from .partner_adapters import partner_group_sum_by_key
 
         return (
-            partner_group_sum_by_key(
-                mapped_columns["group_ids"],
-                mapped_columns["values"],
-                group_count,
-                partner=partner,
-            ),
+            {
+                "sums": partner_group_sum_by_key(
+                    mapped_columns["group_ids"],
+                    mapped_columns["values"],
+                    group_count,
+                    partner=partner,
+                )
+            },
             _partner_bridge_metadata(operation, partner, group_count, len(_adapter_like(mapped_columns["group_ids"]))),
         )
     if operation == "grouped_vector_sum_f64x2":

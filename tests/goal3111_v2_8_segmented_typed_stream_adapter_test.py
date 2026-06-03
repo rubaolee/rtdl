@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import unittest
+from unittest import mock
 
 import rtdsl as rt
 
@@ -301,6 +302,52 @@ class Goal3111V28SegmentedTypedStreamAdapterTest(unittest.TestCase):
             rt.plan_segmented_typed_stream_partner_continuation(adapter, partner="auto")
         with self.assertRaisesRegex(ValueError, "partner_columns are required"):
             rt.execute_segmented_typed_stream_partner_continuation(adapter, partner="numba")
+
+    def test_partner_consumer_wraps_scalar_reduction_outputs_in_named_columns(self) -> None:
+        count_adapter = rt.build_segmented_typed_stream_adapter(
+            ((0,), (0,), (1,)),
+            row_schema=("group_ids",),
+            column_roles={"group_ids": "group_key"},
+            page_capacity=2,
+            stream_id="goal3123_named_count",
+            stream_kind="grouped_reduction_stream",
+            producer_primitive="segmented_row_stream_reference",
+            ordering="group_ordered",
+            operation="segmented_count_i64",
+            group_column="group_ids",
+            user_selected_partner="cupy",
+        )
+        with mock.patch("rtdsl.partner_adapters.partner_group_count_by_key", return_value=[2, 1]) as mocked:
+            result = rt.execute_segmented_typed_stream_partner_continuation(
+                count_adapter,
+                partner="cupy",
+                partner_columns={"group_ids": [0, 0, 1]},
+            )
+        self.assertEqual(result["outputs"], {"counts": [2, 1]})
+        mocked.assert_called_once()
+
+        sum_adapter = rt.build_segmented_typed_stream_adapter(
+            ((0, 1.5), (0, 2.5), (1, 10.0)),
+            row_schema=("group_ids", "values"),
+            column_roles={"group_ids": "group_key", "values": "score"},
+            page_capacity=2,
+            stream_id="goal3123_named_sum",
+            stream_kind="grouped_reduction_stream",
+            producer_primitive="segmented_row_stream_reference",
+            ordering="group_ordered",
+            operation="segmented_sum_f64",
+            group_column="group_ids",
+            value_columns=("values",),
+            user_selected_partner="cupy",
+        )
+        with mock.patch("rtdsl.partner_adapters.partner_group_sum_by_key", return_value=[4.0, 10.0]) as mocked:
+            result = rt.execute_segmented_typed_stream_partner_continuation(
+                sum_adapter,
+                partner="cupy",
+                partner_columns={"group_ids": [0, 0, 1], "values": [1.5, 2.5, 10.0]},
+            )
+        self.assertEqual(result["outputs"], {"sums": [4.0, 10.0]})
+        mocked.assert_called_once()
 
     def test_partner_consumer_dry_run_marks_unsupported_operation(self) -> None:
         adapter = rt.build_segmented_typed_stream_adapter(
