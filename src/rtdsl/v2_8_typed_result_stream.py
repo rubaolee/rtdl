@@ -63,6 +63,9 @@ V2_8_TYPED_RESULT_STREAM_CONTINUATION_SEMANTICS = {
     ),
     "grouped_vector_sum_f64x2": "sum paired float64 x/y components per group",
     "compact_mask_i64": "filter int64 values by a boolean mask while preserving stable input order",
+    "bounded_collect_finalize_i64": (
+        "collect up to k int64 item IDs per group with fail-closed overflow and row-offset output"
+    ),
 }
 V2_8_TYPED_RESULT_STREAM_CLAIM_BOUNDARY = (
     "v2.8 typed result streams are an internal generic contract for RTDL "

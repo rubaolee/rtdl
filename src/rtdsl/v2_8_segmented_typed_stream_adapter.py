@@ -890,6 +890,141 @@ def execute_grouped_vector_sum_typed_stream_partner_columns(
     }
 
 
+def execute_bounded_collect_typed_stream_partner_columns(
+    *,
+    group_ids: Any,
+    item_ids: Any,
+    group_count: int,
+    k: int,
+    partner: str,
+    stream_id: str,
+    producer_primitive: str = "caller_supplied_grouped_item_columns",
+    ordering: str = "group_ordered",
+    total_row_capacity: int | None = None,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """Execute generic fail-closed bounded collection over caller columns."""
+
+    if str(partner) in {"", "auto", "explicit_user_choice_required"}:
+        raise ValueError("v2.8 bounded-collect typed stream requires an explicit partner")
+    resolved_group_count = int(group_count)
+    if resolved_group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    resolved_k = int(k)
+    if resolved_k <= 0:
+        raise ValueError("k must be positive for bounded_collect_finalize_i64")
+    resolved_total_row_capacity = None if total_row_capacity is None else int(total_row_capacity)
+    if resolved_total_row_capacity is not None and resolved_total_row_capacity < 0:
+        raise ValueError("total_row_capacity must be non-negative")
+
+    row_count = _partner_column_length(group_ids)
+    if _partner_column_length(item_ids) != row_count:
+        raise ValueError("item_ids length must match group_ids length")
+
+    group_device_type, group_device_id, group_data_ptr, group_protocol = _partner_column_device_metadata(group_ids)
+    item_device_type, item_device_id, item_data_ptr, item_protocol = _partner_column_device_metadata(item_ids)
+    columns = [
+        typed_result_column(
+            "group_ids",
+            "group_key",
+            _partner_column_dtype(group_ids, fallback="int64"),
+            (row_count,),
+            device_type=group_device_type,
+            device_id=group_device_id,
+            data_ptr=group_data_ptr,
+            source_protocol=group_protocol,
+            capacity_elements=row_count,
+        ),
+        typed_result_column(
+            "item_ids",
+            "item_id",
+            _partner_column_dtype(item_ids, fallback="int64"),
+            (row_count,),
+            device_type=item_device_type,
+            device_id=item_device_id,
+            data_ptr=item_data_ptr,
+            source_protocol=item_protocol,
+            capacity_elements=row_count,
+        ),
+    ]
+    status_columns = typed_result_status_columns(
+        device_type=group_device_type,
+        device_id=group_device_id,
+        source_protocol=group_protocol,
+    )
+    typed_stream = make_typed_result_stream_contract(
+        stream_id=str(stream_id),
+        stream_kind="bounded_witness_stream",
+        producer_primitive=str(producer_primitive),
+        columns=columns,
+        status_columns=status_columns,
+        ordering=str(ordering),
+        page_capacity=max(1, resolved_total_row_capacity or row_count),
+    )
+    plan = plan_grouped_continuation_for_typed_result_stream(
+        typed_stream,
+        operation="bounded_collect_finalize_i64",
+        group_column="group_ids",
+        item_column="item_ids",
+        user_selected_partner=str(partner),
+    )
+    stream_validation = validate_typed_result_stream_contract(typed_stream)
+    plan_validation = validate_grouped_continuation_plan(plan)
+    if stream_validation["status"] != "accept":
+        raise ValueError(f"typed stream validation failed: {stream_validation['errors']}")
+    if plan_validation["status"] != "accept":
+        raise ValueError(f"grouped continuation validation failed: {plan_validation['errors']}")
+
+    request = {
+        "adapter_version": V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_VERSION,
+        "status": "dry_run_partner_consumer_request" if dry_run else "completed_partner_consumer",
+        "consumer_status": V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_STATUS,
+        "target": V2_8_TYPED_RESULT_STREAM_TARGET,
+        "stream_id": typed_stream.stream_id,
+        "operation": plan.operation,
+        "partner": str(partner),
+        "group_count": resolved_group_count,
+        "row_count": row_count,
+        "k": resolved_k,
+        "total_row_capacity": resolved_total_row_capacity,
+        "typed_stream": typed_stream.to_metadata(),
+        "continuation_plan": plan.to_metadata(),
+        "input_column_mapping": (("group_ids", "group_ids"), ("item_ids", "item_ids")),
+        "bounded_collection_failure_mode": "fail_closed_overflow",
+        "canonical_output_schema": ("group_ids", "item_ids", "row_offsets"),
+        "requires_caller_supplied_partner_columns": True,
+        "source_materialization": "caller_supplied_partner_columns_no_hidden_host_rows",
+        "native_producer_promoted": False,
+        "partner_consumer_promoted": False,
+        "device_resident_result_stream_proven": False,
+        "true_zero_copy_claim_authorized": False,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "hidden_dispatch_allowed": False,
+        "automatic_partner_selection_allowed": False,
+        "app_specific_engine_logic_allowed": False,
+        "claim_boundary": V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_CLAIM_BOUNDARY,
+    }
+    if dry_run:
+        return request
+
+    outputs, metadata = _execute_partner_front_door(
+        plan,
+        partner=str(partner),
+        partner_columns={"group_ids": group_ids, "item_ids": item_ids},
+        group_count=resolved_group_count,
+        k=resolved_k,
+        total_row_capacity=resolved_total_row_capacity,
+        block_size=None,
+    )
+    return {
+        **request,
+        "outputs": outputs,
+        "partner_metadata": metadata,
+    }
+
+
 def execute_compact_mask_typed_stream_partner_columns(
     *,
     values: Any,
@@ -1501,6 +1636,7 @@ __all__ = [
     "V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_DEFERRED_OPERATIONS",
     "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_VERSION",
     "build_segmented_typed_stream_adapter",
+    "execute_bounded_collect_typed_stream_partner_columns",
     "execute_compact_mask_typed_stream_partner_columns",
     "execute_grouped_reduction_typed_stream_partner_columns",
     "execute_grouped_vector_sum_typed_stream_partner_columns",
