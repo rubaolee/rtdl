@@ -8,7 +8,7 @@
     "v2_8_release_authorized": false,
     "whole_app_speedup_claim_authorized": false
   },
-  "commit": "dbea3147",
+  "commit": "3b0bfbd9",
   "goal": "Goal3143",
   "gpu": "NVIDIA RTX 4000 Ada Generation",
   "platform": "Linux-6.14.0-29-generic-x86_64-with-glibc2.39",
@@ -24,7 +24,7 @@
         "whole_app_speedup_claim_authorized": false
       },
       "copies": 256,
-      "elapsed_sec": 0.012994611635804176,
+      "elapsed_sec": 0.013122824020683765,
       "hausdorff_distance": 0.30000000000000004,
       "host_score_row_materialization_used": false,
       "logical_pair_count": 1048576,
@@ -48,7 +48,7 @@
         "whole_app_speedup_claim_authorized": false
       },
       "copies": 256,
-      "elapsed_sec": 0.012141808867454529,
+      "elapsed_sec": 0.011802072636783123,
       "hausdorff_distance": 0.30000000000000004,
       "host_score_row_materialization_used": false,
       "logical_pair_count": 1048576,
@@ -72,7 +72,7 @@
         "whole_app_speedup_claim_authorized": false
       },
       "copies": 1024,
-      "elapsed_sec": 0.024969041347503662,
+      "elapsed_sec": 0.024319255724549294,
       "hausdorff_distance": 0.30000000000000004,
       "host_score_row_materialization_used": false,
       "logical_pair_count": 16777216,
@@ -96,7 +96,7 @@
         "whole_app_speedup_claim_authorized": false
       },
       "copies": 1024,
-      "elapsed_sec": 0.02296867687255144,
+      "elapsed_sec": 0.02251493465155363,
       "hausdorff_distance": 0.30000000000000004,
       "host_score_row_materialization_used": false,
       "logical_pair_count": 16777216,
@@ -120,7 +120,7 @@
         "whole_app_speedup_claim_authorized": false
       },
       "copies": 2048,
-      "elapsed_sec": 0.044528535567224026,
+      "elapsed_sec": 0.04406479373574257,
       "hausdorff_distance": 0.30000000000000004,
       "host_score_row_materialization_used": false,
       "logical_pair_count": 67108864,
@@ -144,7 +144,7 @@
         "whole_app_speedup_claim_authorized": false
       },
       "copies": 2048,
-      "elapsed_sec": 0.08593312930315733,
+      "elapsed_sec": 0.08637280482798815,
       "hausdorff_distance": 0.30000000000000004,
       "host_score_row_materialization_used": false,
       "logical_pair_count": 67108864,

@@ -55,9 +55,9 @@ Warmed timing artifact:
 
 | points A x B | shared `partner_exact,numba` | old `partner_numba_block_nearest_exact` | shared / old | logical pairs | emitted score rows |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| 1024 x 1024 | 0.012995 s | 0.012142 s | 1.070x | 1,048,576 | 4,096 |
-| 4096 x 4096 | 0.024969 s | 0.022969 s | 1.087x | 16,777,216 | 65,536 |
-| 8192 x 8192 | 0.044529 s | 0.085933 s | 0.518x | 67,108,864 | 262,144 |
+| 1024 x 1024 | 0.013123 s | 0.011802 s | 1.112x | 1,048,576 | 4,096 |
+| 4096 x 4096 | 0.024319 s | 0.022515 s | 1.080x | 16,777,216 | 65,536 |
+| 8192 x 8192 | 0.044065 s | 0.086373 s | 0.510x | 67,108,864 | 262,144 |
 
 All rows matched the oracle and all claim-boundary flags stayed false.
 
