@@ -319,6 +319,14 @@ from .v2_8_benchmark_runtime_gap import v2_7_internal_closeout_status
 from .v2_8_benchmark_runtime_gap import v2_8_benchmark_runtime_gap_matrix
 from .v2_8_benchmark_runtime_gap import v2_8_runtime_target_summary
 from .v2_8_benchmark_runtime_gap import validate_v2_8_benchmark_runtime_gap_map
+from .v2_8_segmented_typed_stream_adapter import V28SegmentedTypedStreamAdapterResult
+from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_CLAIM_BOUNDARY
+from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_MATERIALIZATION
+from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_STATUS
+from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_VERSION
+from .v2_8_segmented_typed_stream_adapter import build_segmented_typed_stream_adapter
+from .v2_8_segmented_typed_stream_adapter import v2_8_segmented_typed_stream_adapter_summary
+from .v2_8_segmented_typed_stream_adapter import validate_segmented_typed_stream_adapter
 from .v2_8_typed_result_stream import V28GroupedContinuationPlan
 from .v2_8_typed_result_stream import V28TypedResultColumn
 from .v2_8_typed_result_stream import V28TypedResultStreamContract
@@ -1905,6 +1913,14 @@ __all__ = [
     "v2_8_benchmark_runtime_gap_matrix",
     "v2_8_runtime_target_summary",
     "validate_v2_8_benchmark_runtime_gap_map",
+    "V28SegmentedTypedStreamAdapterResult",
+    "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_CLAIM_BOUNDARY",
+    "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_MATERIALIZATION",
+    "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_STATUS",
+    "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_VERSION",
+    "build_segmented_typed_stream_adapter",
+    "v2_8_segmented_typed_stream_adapter_summary",
+    "validate_segmented_typed_stream_adapter",
     "V28GroupedContinuationPlan",
     "V28TypedResultColumn",
     "V28TypedResultStreamContract",
