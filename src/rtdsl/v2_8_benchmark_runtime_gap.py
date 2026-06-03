@@ -214,13 +214,22 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
         benchmark_app="rtnn",
         display_name="RTNN neighbor search",
         benchmark_path="examples/v2_0/research_benchmarks/rtnn/",
-        current_best_path="prepared fixed-radius ranked-summary primitives with batched request hardening",
-        partner_position="CuPy remains an all-pairs baseline; no promoted Numba default for ranking yet.",
-        current_bottleneck="packed/prepared column input, replay/chunking, and top-k summary handoff must be first-class for serious scale.",
-        generic_runtime_target="typed ranked-summary streams with prepared packed-column residency",
+        current_best_path=(
+            "prepared fixed-radius ranked-summary primitives with batched request hardening; "
+            "v2.8 ranked-summary typed-stream front door for explicit grouped top-k/arg continuation"
+        ),
+        partner_position=(
+            "torch/triton are the current grouped_topk_f64 continuation partners; "
+            "numba supports grouped argmin/argmax but not promoted top-k yet; CuPy remains an all-pairs baseline."
+        ),
+        current_bottleneck=(
+            "ranked-summary top-k handoff now has a generic front door; remaining work is prepared "
+            "packed-column residency, native typed producer evidence, and replay/chunking at serious scale."
+        ),
+        generic_runtime_target="typed ranked-summary streams with prepared packed-column residency and native producer evidence",
         target_family=V2_8_FIRST_RUNTIME_TARGET,
         priority="P0",
-        evidence_refs=("Goal2821", "Goal2822", "Goal2958"),
+        evidence_refs=("Goal2821", "Goal2822", "Goal2958", "Goal3165"),
     ),
     V28BenchmarkRuntimeGapRow(
         benchmark_app="triangle_counting",
