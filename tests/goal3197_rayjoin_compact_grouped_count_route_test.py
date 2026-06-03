@@ -9,6 +9,7 @@ from examples.v2_0.research_benchmarks.spatial_rayjoin import rtdl_rayjoin_v2_sp
 
 ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / "examples" / "v2_0" / "research_benchmarks" / "spatial_rayjoin" / "rtdl_rayjoin_v2_spatial_join_app.py"
+README = ROOT / "examples" / "v2_0" / "research_benchmarks" / "spatial_rayjoin" / "README.md"
 REPORT = ROOT / "docs" / "reports" / "goal3197_rayjoin_compact_grouped_count_route_2026-06-03.md"
 POD_ARTIFACT = ROOT / "docs" / "reports" / "goal3197_rayjoin_compact_grouped_count_route_pod_2026-06-03.json"
 
@@ -26,6 +27,15 @@ class Goal3197RayJoinCompactGroupedCountRouteTest(unittest.TestCase):
         self.assertIn("RayJoin workload interpretation and left-ID remapping stay in Python", source)
         self.assertIn('"public_speedup_claim_authorized": False', source)
         self.assertIn('"true_zero_copy_claim_authorized": False', source)
+
+    def test_readme_documents_compact_grouped_count_route(self) -> None:
+        readme = README.read_text(encoding="utf-8")
+
+        self.assertIn("--execution-route prepared_optix_compact_grouped_count", readme)
+        self.assertIn("counts per left segment", readme)
+        self.assertIn("Left-ID remapping stays in Python", readme)
+        self.assertIn("generic compact grouped-count device columns", readme)
+        self.assertIn("not a full RayJoin reproduction or public speedup claim", readme)
 
     def test_route_rejects_non_lsi_workloads_before_optix_import(self) -> None:
         with self.assertRaisesRegex(ValueError, "supports only the lsi workload"):

@@ -89,9 +89,8 @@ PYTHONPATH=src:. python examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_r
 
 For the serious RayJoin-style performance lane, use the prepared OptiX route.
 It separates query packing, static-scene preparation, prepared query time, and
-native phase telemetry. This route currently covers PIP and LSI; overlay remains
-on the generic dependency-row route until RTDL has a generic device-resident
-continuation primitive.
+native phase telemetry. The prepared route covers PIP, LSI, and overlay-seed
+with generic RTDL primitives.
 
 ```bash
 export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
@@ -102,6 +101,23 @@ PYTHONPATH=src:. python examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_r
 Use `--result-mode count` when the application only needs a scalar count. Use
 `--result-mode rows` when it needs witness rows or positive membership rows.
 Rows are still omitted from JSON when `--no-rows` is supplied.
+
+For LSI workloads that need counts per left segment instead of exact witness
+rows, use the compact grouped-count route:
+
+```bash
+export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py --workload lsi --execution-route prepared_optix_compact_grouped_count --no-rows
+```
+
+That route uses generic segment-pair candidate columns plus generic compact
+grouped-count device columns. Left-ID remapping stays in Python because the
+grouped-count primitive uses direct-address key capacity. The compact
+`group_key[]` and `count[]` columns stay CUDA-resident; a host row-count scalar
+is exposed so Python can know the valid prefix length. This route is a reference
+implementation path, not a full RayJoin reproduction or public speedup claim.
+In short: the route combines generic compact grouped-count device columns with
+Python-owned RayJoin interpretation.
 
 For a single external two-input dataset:
 
