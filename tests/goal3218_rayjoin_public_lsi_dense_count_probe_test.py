@@ -16,6 +16,7 @@ class Goal3218RayJoinPublicLsiDenseCountProbeTest(unittest.TestCase):
         self.assertIn("lsi_county256_soil256_count512", source)
         self.assertIn("prepare_rayjoin_optix_compact_grouped_count_segments", source)
         self.assertIn("pack_rayjoin_optix_compact_grouped_count_left_segments", source)
+        self.assertIn("_load_rayjoin_case", source)
         self.assertIn('route == "dense"', source)
         self.assertIn('route == "compact"', source)
         self.assertIn("run_packed_left_dense_count", source)

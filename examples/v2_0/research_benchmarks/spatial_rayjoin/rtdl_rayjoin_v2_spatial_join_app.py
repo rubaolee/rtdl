@@ -789,12 +789,24 @@ class PreparedRayJoinOptixCompactGroupedCountSegments:
         return payload
 
 
+def _segment_record_dict(segment) -> dict[str, float | int]:
+    if isinstance(segment, dict):
+        return dict(segment)
+    return {
+        "id": int(getattr(segment, "id")),
+        "x0": float(getattr(segment, "x0")),
+        "y0": float(getattr(segment, "y0")),
+        "x1": float(getattr(segment, "x1")),
+        "y1": float(getattr(segment, "y1")),
+    }
+
+
 class RayJoinOptixCompactGroupedCountPackedLeftSegments:
     """App-layer packed left segments for repeated compact count queries."""
 
     def __init__(self, left_segments) -> None:
         phases: dict[str, float] = {}
-        normalized_left = tuple(dict(segment) for segment in left_segments)
+        normalized_left = tuple(_segment_record_dict(segment) for segment in left_segments)
         self.original_left_ids = tuple(int(segment["id"]) for segment in normalized_left)
         remapped_left_segments = tuple(
             {**segment, "id": index}

@@ -13,6 +13,7 @@ class Goal3207PackedLeftRayJoinCompactRouteTest(unittest.TestCase):
     def test_packed_left_api_is_explicit_and_app_layer_scoped(self) -> None:
         source = APP.read_text(encoding="utf-8")
 
+        self.assertIn("def _segment_record_dict", source)
         self.assertIn("class RayJoinOptixCompactGroupedCountPackedLeftSegments", source)
         self.assertIn("pack_rayjoin_optix_compact_grouped_count_left_segments", source)
         self.assertIn("def run_packed_left(", source)
@@ -35,6 +36,22 @@ class Goal3207PackedLeftRayJoinCompactRouteTest(unittest.TestCase):
         self.assertIn('"query_pack_sec": packed_left.pack_seconds', body)
         self.assertIn('"enabled": False', body)
         self.assertIn('"query_pack_paid_in_call": True', body)
+
+    def test_packed_left_accepts_canonical_segment_records(self) -> None:
+        from examples.v2_0.research_benchmarks.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app import (
+            pack_rayjoin_optix_compact_grouped_count_left_segments,
+        )
+        from rtdsl.reference import Segment
+
+        packed = pack_rayjoin_optix_compact_grouped_count_left_segments(
+            (
+                Segment(id=11, x0=0.0, y0=0.0, x1=1.0, y1=0.0),
+                Segment(id=42, x0=0.0, y0=1.0, x1=1.0, y1=1.0),
+            )
+        )
+
+        self.assertEqual(packed.original_left_ids, (11, 42))
+        self.assertEqual(packed.count, 2)
 
     def test_readme_documents_repeated_left_query_reuse(self) -> None:
         readme = README.read_text(encoding="utf-8")
