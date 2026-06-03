@@ -7,6 +7,11 @@ from .primitive_hierarchy import PRIMITIVE_HIERARCHY_LAYER_ORDER
 from .primitive_hierarchy import PRIMITIVE_HIERARCHY_STATUSES
 from .primitive_hierarchy import PrimitiveHierarchyNode
 from .primitive_hierarchy import validate_primitive_hierarchy
+from .primitive_planner import PRIMITIVE_ADVISORY_PLANNER_AUTO_PARTNER_SELECTION_ALLOWED
+from .primitive_planner import PRIMITIVE_ADVISORY_PLANNER_CLAIM_BOUNDARY
+from .primitive_planner import PRIMITIVE_ADVISORY_PLANNER_EXECUTES
+from .primitive_planner import PRIMITIVE_ADVISORY_PLANNER_VERSION
+from .primitive_planner import validate_primitive_advisory_planner
 from .primitive_recipes import COMPOSITION_RECIPES
 from .primitive_recipes import CompositionRecipe
 from .primitive_recipes import validate_composition_recipes
@@ -31,6 +36,7 @@ def render_primitive_catalog_markdown() -> str:
 
     validation = validate_primitive_hierarchy()
     recipe_validation = validate_composition_recipes()
+    planner_validation = validate_primitive_advisory_planner()
     lines: list[str] = [
         "# RTDL Primitive Catalog And Promotion Rules",
         "",
@@ -141,6 +147,9 @@ def render_primitive_catalog_markdown() -> str:
             f"- Backward dependencies: `{_format_tuple(validation['backward_dependencies'])}`",
             f"- Composition recipe validation valid: `{recipe_validation['valid']}`",
             f"- Composition recipe count: `{recipe_validation['recipe_count']}`",
+            f"- Advisory planner validation status: `{planner_validation['status']}`",
+            f"- Advisory planner executes: `{planner_validation['executes']}`",
+            f"- Advisory planner auto partner selection: `{planner_validation['automatic_partner_selection_allowed']}`",
             "",
             "## Current Hierarchy",
             "",
@@ -176,6 +185,7 @@ def render_primitive_catalog_markdown() -> str:
         lines.extend(_render_layer_section(root))
 
     lines.extend(_render_recipe_section())
+    lines.extend(_render_planner_section())
 
     lines.extend(
         [
@@ -328,6 +338,34 @@ def _render_recipe_section() -> list[str]:
             + " |"
         )
     return lines
+
+
+def _render_planner_section() -> list[str]:
+    return [
+        "",
+        "## Advisory Planner",
+        "",
+        "The v2.7 planner is an explain-only layer over primitive discovery and",
+        "composition recipes:",
+        "",
+        "```python",
+        'rtdsl.plan_continuation(intent="nearest", shape="fixed_radius", dim="3d")',
+        "rtdsl.validate_primitive_advisory_planner()",
+        "```",
+        "",
+        "| Property | Value |",
+        "| --- | --- |",
+        f"| Planner version | `{PRIMITIVE_ADVISORY_PLANNER_VERSION}` |",
+        f"| Executes or dispatches | `{PRIMITIVE_ADVISORY_PLANNER_EXECUTES}` |",
+        f"| Auto-selects partners | `{PRIMITIVE_ADVISORY_PLANNER_AUTO_PARTNER_SELECTION_ALLOWED}` |",
+        f"| Claim boundary | {_escape(PRIMITIVE_ADVISORY_PLANNER_CLAIM_BOUNDARY)} |",
+        "",
+        "Every returned plan exposes the matched recipe, each primitive step, each",
+        "step's primitive status, non-stable step warnings, optional partner-support",
+        "cells, and a `selected_partner=None` field. A plan can recommend",
+        "primitive-first execution or list explicit partner options, but it cannot",
+        "make the runtime choice for the user.",
+    ]
 
 
 def _render_tree(node: PrimitiveHierarchyNode, indent: int = 0) -> list[str]:

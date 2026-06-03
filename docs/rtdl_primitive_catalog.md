@@ -110,6 +110,9 @@ app/partner code unless it is redesigned as an app-independent behavior.
 - Backward dependencies: `-`
 - Composition recipe validation valid: `True`
 - Composition recipe count: `5`
+- Advisory planner validation status: `accept`
+- Advisory planner executes: `False`
+- Advisory planner auto partner selection: `False`
 
 ## Current Hierarchy
 
@@ -334,6 +337,29 @@ Recipe discovery metadata:
 | `recipe.ray_triangle_hit_stream_grouped_summary` | `intent:collect_rows`, `intent:reduce`, `intent:count`, `shape:ray_triangle`, `dim:3d`, `output:rows`, `output:grouped`, `exactness:bounded`, `exactness:exact`, `keying:by_ray_id`, `keying:by_group_id` | `ray_triangle_grouped_summary`, `ray_triangle_grouped_primitive_summary`, `hit_stream_grouped_reduction`, `primitive_payload_summary` | `reduce ray triangle primitive hits by group id`, `collect ray primitive witnesses then summarize caller payloads` | The caller has ray/triangle hits and wants grouped summaries over caller-owned primitive payloads. | Primitive-to-group mapping, payload values, predicates, and app rows remain app or partner code. |
 | `recipe.aabb_candidate_rows_to_refinement` | `intent:intersection`, `intent:membership`, `intent:collect_rows`, `shape:aabb`, `dim:2d`, `output:rows`, `exactness:bounded`, `keying:by_query_id` | `aabb_candidate_recipe`, `range_intersection_rows_recipe`, `candidate_pair_rows` | `emit AABB candidate rows for exact caller refinement`, `find range intersection candidates without owning app semantics` | The caller needs reusable candidate pairs and will perform exact domain refinement outside RTDL. | Exact refinement and domain scoring remain caller-owned. |
 | `recipe.segmented_rows_to_grouped_reduction` | `intent:collect_rows`, `intent:reduce`, `shape:generic`, `output:rows`, `output:columns`, `output:grouped`, `exactness:bounded`, `exactness:exact`, `keying:by_group_id`, `keying:by_query_id` | `segmented_grouped_reduction`, `chunked_rows_grouped_summary`, `paged_row_reduce` | `page large row streams before grouped reduction`, `avoid unbounded materialization while reducing rows by group id` | The caller has large generic row streams and explicit grouping keys. | Group meaning, value semantics, and final app interpretation remain caller-owned. |
+
+## Advisory Planner
+
+The v2.7 planner is an explain-only layer over primitive discovery and
+composition recipes:
+
+```python
+rtdsl.plan_continuation(intent="nearest", shape="fixed_radius", dim="3d")
+rtdsl.validate_primitive_advisory_planner()
+```
+
+| Property | Value |
+| --- | --- |
+| Planner version | `rtdl.primitive_advisory_planner.v1` |
+| Executes or dispatches | `False` |
+| Auto-selects partners | `False` |
+| Claim boundary | v2.7 primitive advisory plans are explain-only metadata. They do not execute, dispatch, auto-select partners, authorize release readiness, authorize public speedup wording, authorize broad RT-core wording, authorize true zero-copy wording, or promote internal/candidate primitive steps to stable public primitives. |
+
+Every returned plan exposes the matched recipe, each primitive step, each
+step's primitive status, non-stable step warnings, optional partner-support
+cells, and a `selected_partner=None` field. A plan can recommend
+primitive-first execution or list explicit partner options, but it cannot
+make the runtime choice for the user.
 
 ## Controlled Discovery Facets
 

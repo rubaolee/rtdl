@@ -363,6 +363,15 @@ from .primitive_recipes import describe_recipe
 from .primitive_recipes import find_recipe
 from .primitive_recipes import recipe_index
 from .primitive_recipes import validate_composition_recipes
+from .primitive_planner import PRIMITIVE_ADVISORY_PLANNER_AUTO_PARTNER_SELECTION_ALLOWED
+from .primitive_planner import PRIMITIVE_ADVISORY_PLANNER_CLAIM_BOUNDARY
+from .primitive_planner import PRIMITIVE_ADVISORY_PLANNER_EXECUTES
+from .primitive_planner import PRIMITIVE_ADVISORY_PLANNER_VERSION
+from .primitive_planner import PrimitiveAdvisoryPlan
+from .primitive_planner import PrimitivePartnerOption
+from .primitive_planner import PrimitivePlanStep
+from .primitive_planner import plan_continuation
+from .primitive_planner import validate_primitive_advisory_planner
 from .segmented_row_stream import CHUNKED_ROW_CONTINUATION_ALIAS
 from .segmented_row_stream import SEGMENTED_ROW_STREAM_CONTRACT
 from .segmented_row_stream import SEGMENTED_ROW_STREAM_CONTRACT_VERSION
@@ -1654,13 +1663,22 @@ __all__ = [
     "CompositionRecipe",
     "CompositionRecipeMatch",
     "CompositionRecipeStep",
+    "PrimitiveAdvisoryPlan",
+    "PrimitivePartnerOption",
+    "PrimitivePlanStep",
     "describe_recipe",
     "find_recipe",
+    "plan_continuation",
     "primitive_hierarchy",
     "primitive_index",
+    "PRIMITIVE_ADVISORY_PLANNER_AUTO_PARTNER_SELECTION_ALLOWED",
+    "PRIMITIVE_ADVISORY_PLANNER_CLAIM_BOUNDARY",
+    "PRIMITIVE_ADVISORY_PLANNER_EXECUTES",
+    "PRIMITIVE_ADVISORY_PLANNER_VERSION",
     "recipe_index",
     "primitive_layer_map",
     "validate_composition_recipes",
+    "validate_primitive_advisory_planner",
     "validate_primitive_hierarchy",
     "CHUNKED_ROW_CONTINUATION_ALIAS",
     "SEGMENTED_ROW_STREAM_CONTRACT",
@@ -2740,6 +2758,7 @@ __all__ = [
     "hit_count",
     "intersections",
     "nearest",
+    "plan_continuation",
     "primitives",
     "run",
     "shape_any_hit_rows",
