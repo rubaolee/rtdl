@@ -1,0 +1,102 @@
+{
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "commit": "f0607849",
+  "created_at_utc": "2026-06-03T22:38:19.827439+00:00",
+  "description": "App-route timing for run_rayjoin_prepared_optix_compact_grouped_count_segments on authored all-crossing segment-pair inputs.",
+  "goal": 3199,
+  "optix_library": "/root/rtdl_goal3151/build/librtdl_optix.so",
+  "python": "/root/venvs/rtdl_goal3154/bin/python",
+  "rows": [
+    {
+      "all_match_expected_counts": true,
+      "app_route_total_seconds": 1.0348584651947021,
+      "claim_boundary": {
+        "full_rayjoin_reproduction": false,
+        "paper_scale_perf_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "requires_pod_for_optix_perf": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "compact_row_count": 512,
+      "count_sum": 262144,
+      "device_resident": true,
+      "expected_pair_count": 262144,
+      "n_left": 512,
+      "n_right": 512,
+      "phases_sec": {
+        "candidate_device_columns_sec": 0.06163252703845501,
+        "compact_grouped_count_sec": 0.30068605206906796,
+        "compact_validation_copy_sec": 0.0019432511180639267,
+        "prepare_static_scene_sec": 0.5058695878833532,
+        "query_pack_sec": 0.0019196830689907074
+      },
+      "row_count": 262144
+    },
+    {
+      "all_match_expected_counts": true,
+      "app_route_total_seconds": 0.012706095352768898,
+      "claim_boundary": {
+        "full_rayjoin_reproduction": false,
+        "paper_scale_perf_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "requires_pod_for_optix_perf": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "compact_row_count": 1024,
+      "count_sum": 1048576,
+      "device_resident": true,
+      "expected_pair_count": 1048576,
+      "n_left": 1024,
+      "n_right": 1024,
+      "phases_sec": {
+        "candidate_device_columns_sec": 0.0022077802568674088,
+        "compact_grouped_count_sec": 0.00019158422946929932,
+        "compact_validation_copy_sec": 0.00015418417751789093,
+        "prepare_static_scene_sec": 0.004335576668381691,
+        "query_pack_sec": 0.00402526929974556
+      },
+      "row_count": 1048576
+    },
+    {
+      "all_match_expected_counts": true,
+      "app_route_total_seconds": 0.02264302410185337,
+      "claim_boundary": {
+        "full_rayjoin_reproduction": false,
+        "paper_scale_perf_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "requires_pod_for_optix_perf": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "compact_row_count": 2048,
+      "count_sum": 4194304,
+      "device_resident": true,
+      "expected_pair_count": 4194304,
+      "n_left": 2048,
+      "n_right": 2048,
+      "phases_sec": {
+        "candidate_device_columns_sec": 0.0038305912166833878,
+        "compact_grouped_count_sec": 0.00021530315279960632,
+        "compact_validation_copy_sec": 0.00017580948770046234,
+        "prepare_static_scene_sec": 0.007775729522109032,
+        "query_pack_sec": 0.007341980934143066
+      },
+      "row_count": 4194304
+    }
+  ]
+}
