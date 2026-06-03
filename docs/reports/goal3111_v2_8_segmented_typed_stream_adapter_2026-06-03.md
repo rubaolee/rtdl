@@ -35,6 +35,8 @@ New exported surface:
 - `V28SegmentedTypedStreamAdapterResult`
 - `build_segmented_typed_stream_adapter`
 - `execute_segmented_typed_stream_reference_continuation`
+- `plan_segmented_typed_stream_partner_continuation`
+- `execute_segmented_typed_stream_partner_continuation`
 - `validate_segmented_typed_stream_adapter`
 - `v2_8_segmented_typed_stream_adapter_summary`
 - adapter version/status/materialization constants
@@ -58,6 +60,11 @@ onto the existing v2.5 `execute_v2_5_partner_continuation_reference` oracle, and
 returns reference outputs while preserving the same non-authorizing flags. This
 gives native producers and partner consumers a concrete local oracle before any
 runtime promotion.
+
+Goal3117 extends the same module with an explicit partner-consumer front door.
+It supports a dry-run request locally and a fail-closed execution path that
+requires caller-supplied partner columns. It never secretly materializes host
+rows into partner tensors.
 
 ## Boundary
 

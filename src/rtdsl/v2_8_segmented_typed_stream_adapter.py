@@ -23,6 +23,16 @@ from .v2_8_typed_result_stream import validate_typed_result_stream_contract
 V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_VERSION = "rtdl.v2_8.segmented_typed_stream_adapter.v1"
 V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_STATUS = "internal_reference_adapter_no_native_promotion"
 V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_MATERIALIZATION = "host_reference_contract_adapter"
+V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_STATUS = "explicit_partner_consumer_front_door_no_claims"
+V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_SUPPORTED_OPERATIONS = (
+    "segmented_count_i64",
+    "segmented_sum_f64",
+    "grouped_vector_sum_f64x2",
+    "grouped_argmin_f64",
+    "grouped_argmax_f64",
+    "grouped_topk_f64",
+    "bounded_collect_finalize_i64",
+)
 V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_CLAIM_BOUNDARY = (
     "v2.8 segmented typed stream adapter bridges an existing segmented row "
     "stream into the typed result-stream contract for local contract testing. "
@@ -304,12 +314,113 @@ def execute_segmented_typed_stream_reference_continuation(
     }
 
 
+def plan_segmented_typed_stream_partner_continuation(
+    adapter: V28SegmentedTypedStreamAdapterResult,
+    *,
+    partner: str,
+    group_count: int | None = None,
+    k: int | None = None,
+    total_row_capacity: int | None = None,
+) -> dict[str, Any]:
+    """Describe an explicit partner-consumer call over an adapter stream."""
+
+    if adapter.continuation_plan is None:
+        raise ValueError("adapter has no grouped continuation plan to execute")
+    validation = validate_segmented_typed_stream_adapter(adapter)
+    if validation["status"] != "accept":
+        raise ValueError(f"segmented typed stream adapter validation failed: {validation['errors']}")
+    if str(partner) in {"", "auto"}:
+        raise ValueError("v2.8 partner consumer requires an explicit partner")
+    plan = adapter.continuation_plan
+    rows = _adapter_rows(adapter)
+    columns = _adapter_columns(adapter, rows)
+    inferred_group_count = _resolve_group_count(columns[plan.group_column], group_count)
+    input_column_mapping = _partner_input_column_mapping(plan)
+    supported = plan.operation in V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_SUPPORTED_OPERATIONS
+    return {
+        "adapter_version": V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_VERSION,
+        "status": "dry_run_partner_consumer_request",
+        "consumer_status": V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_STATUS,
+        "target": V2_8_TYPED_RESULT_STREAM_TARGET,
+        "stream_id": adapter.typed_stream.stream_id,
+        "operation": plan.operation,
+        "partner": str(partner),
+        "group_count": inferred_group_count,
+        "k": None if k is None else int(k),
+        "total_row_capacity": total_row_capacity,
+        "supported_operation": supported,
+        "supported_operations": V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_SUPPORTED_OPERATIONS,
+        "requires_caller_supplied_partner_columns": True,
+        "input_column_mapping": input_column_mapping,
+        "row_count": adapter.segmented_stream.total_rows,
+        "native_producer_promoted": False,
+        "partner_consumer_promoted": False,
+        "device_resident_result_stream_proven": False,
+        "true_zero_copy_claim_authorized": False,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "hidden_dispatch_allowed": False,
+        "automatic_partner_selection_allowed": False,
+        "app_specific_engine_logic_allowed": False,
+        "claim_boundary": V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_CLAIM_BOUNDARY,
+    }
+
+
+def execute_segmented_typed_stream_partner_continuation(
+    adapter: V28SegmentedTypedStreamAdapterResult,
+    *,
+    partner: str,
+    partner_columns: Mapping[str, Any] | None = None,
+    group_count: int | None = None,
+    k: int | None = None,
+    total_row_capacity: int | None = None,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """Execute, or dry-run, an explicit partner consumer over a typed stream."""
+
+    request = plan_segmented_typed_stream_partner_continuation(
+        adapter,
+        partner=partner,
+        group_count=group_count,
+        k=k,
+        total_row_capacity=total_row_capacity,
+    )
+    if dry_run:
+        return request
+    if not request["supported_operation"]:
+        raise ValueError(f"unsupported v2.8 typed-stream partner operation: {request['operation']}")
+    if partner_columns is None:
+        raise ValueError("partner_columns are required for partner execution; no hidden host materialization")
+    outputs, metadata = _execute_partner_front_door(
+        adapter.continuation_plan,
+        partner=str(partner),
+        partner_columns={str(key): value for key, value in dict(partner_columns).items()},
+        group_count=int(request["group_count"]),
+        k=k,
+        total_row_capacity=total_row_capacity,
+    )
+    return {
+        **request,
+        "status": "completed_partner_consumer",
+        "outputs": outputs,
+        "partner_metadata": metadata,
+        "partner_consumer_promoted": False,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+    }
+
+
 def v2_8_segmented_typed_stream_adapter_summary() -> dict[str, Any]:
     return {
         "adapter_version": V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_VERSION,
         "status": V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_STATUS,
         "target": V2_8_TYPED_RESULT_STREAM_TARGET,
         "materialization": V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_MATERIALIZATION,
+        "partner_consumer_status": V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_STATUS,
+        "partner_consumer_supported_operations": V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_SUPPORTED_OPERATIONS,
         "native_producer_promoted": False,
         "partner_consumer_promoted": False,
         "device_resident_result_stream_proven": False,
@@ -450,6 +561,154 @@ def _reference_inputs_for_plan(
     raise ValueError(f"unsupported reference continuation operation: {operation}")
 
 
+def _partner_input_column_mapping(plan: V28GroupedContinuationPlan) -> tuple[tuple[str, str], ...]:
+    operation = plan.operation
+    mapping: list[tuple[str, str]] = [("group_ids", plan.group_column)]
+    if operation in {"segmented_sum_f64", "segmented_min_f64", "segmented_max_f64"}:
+        mapping.append(("values", _single_value_column(plan)))
+    elif operation == "grouped_vector_sum_f64x2":
+        first, second = _two_value_columns(plan)
+        mapping.extend((("values_x", first), ("values_y", second)))
+    elif operation in {"grouped_argmin_f64", "grouped_argmax_f64", "grouped_topk_f64"}:
+        mapping.extend((("item_ids", _required_item_column(plan)), ("scores", _single_value_column(plan))))
+    elif operation == "bounded_collect_finalize_i64":
+        mapping.append(("item_ids", _required_item_column(plan)))
+    elif operation == "compact_mask_i64":
+        first, second = _two_value_columns(plan)
+        mapping = (("values", first), ("mask", second))
+        return tuple(mapping)
+    return tuple(mapping)
+
+
+def _execute_partner_front_door(
+    plan: V28GroupedContinuationPlan,
+    *,
+    partner: str,
+    partner_columns: Mapping[str, Any],
+    group_count: int,
+    k: int | None,
+    total_row_capacity: int | None,
+) -> tuple[object, dict[str, Any]]:
+    operation = plan.operation
+    mapped_columns = _mapped_partner_columns(plan, partner_columns)
+    if operation == "segmented_count_i64":
+        from .partner_adapters import partner_group_count_by_key
+
+        return (
+            partner_group_count_by_key(mapped_columns["group_ids"], group_count, partner=partner),
+            _partner_bridge_metadata(operation, partner, group_count, len(_adapter_like(mapped_columns["group_ids"]))),
+        )
+    if operation == "segmented_sum_f64":
+        from .partner_adapters import partner_group_sum_by_key
+
+        return (
+            partner_group_sum_by_key(
+                mapped_columns["group_ids"],
+                mapped_columns["values"],
+                group_count,
+                partner=partner,
+            ),
+            _partner_bridge_metadata(operation, partner, group_count, len(_adapter_like(mapped_columns["group_ids"]))),
+        )
+    if operation == "grouped_vector_sum_f64x2":
+        from .partner_adapters import partner_group_vector_sum_2d_by_key
+
+        output_x, output_y = partner_group_vector_sum_2d_by_key(
+            mapped_columns["group_ids"],
+            mapped_columns["values_x"],
+            mapped_columns["values_y"],
+            group_count,
+            partner=partner,
+        )
+        return (
+            {"sum_x": output_x, "sum_y": output_y},
+            _partner_bridge_metadata(operation, partner, group_count, len(_adapter_like(mapped_columns["group_ids"]))),
+        )
+    if operation == "grouped_argmin_f64":
+        from .partner_adapters import grouped_argmin_f64_partner_columns
+
+        result = grouped_argmin_f64_partner_columns(mapped_columns, group_count=group_count, partner=partner, return_metadata=True)
+        return result["columns"], dict(result["metadata"])
+    if operation == "grouped_argmax_f64":
+        from .partner_adapters import grouped_argmax_f64_partner_columns
+
+        result = grouped_argmax_f64_partner_columns(mapped_columns, group_count=group_count, partner=partner, return_metadata=True)
+        return result["columns"], dict(result["metadata"])
+    if operation == "grouped_topk_f64":
+        from .partner_adapters import grouped_topk_f64_partner_columns
+
+        if k is None:
+            raise ValueError("k is required for grouped_topk_f64")
+        result = grouped_topk_f64_partner_columns(
+            mapped_columns,
+            group_count=group_count,
+            k=int(k),
+            partner=partner,
+            return_metadata=True,
+        )
+        return result["columns"], dict(result["metadata"])
+    if operation == "bounded_collect_finalize_i64":
+        from .partner_adapters import bounded_collect_finalize_i64_partner_columns
+
+        if k is None:
+            raise ValueError("k is required for bounded_collect_finalize_i64")
+        result = bounded_collect_finalize_i64_partner_columns(
+            mapped_columns,
+            group_count=group_count,
+            k=int(k),
+            total_row_capacity=total_row_capacity,
+            partner=partner,
+            return_metadata=True,
+        )
+        return result["columns"], dict(result["metadata"])
+    raise ValueError(f"unsupported v2.8 typed-stream partner operation: {operation}")
+
+
+def _mapped_partner_columns(
+    plan: V28GroupedContinuationPlan,
+    partner_columns: Mapping[str, Any],
+) -> dict[str, Any]:
+    mapped: dict[str, Any] = {}
+    for partner_name, stream_name in _partner_input_column_mapping(plan):
+        if stream_name not in partner_columns:
+            raise ValueError(f"partner_columns missing required stream column: {stream_name}")
+        mapped[partner_name] = partner_columns[stream_name]
+    return mapped
+
+
+def _partner_bridge_metadata(
+    operation: str,
+    partner: str,
+    group_count: int,
+    row_count: int,
+) -> dict[str, Any]:
+    return {
+        "adapter": "execute_segmented_typed_stream_partner_continuation",
+        "partner": partner,
+        "operation": operation,
+        "group_count": int(group_count),
+        "row_count": int(row_count),
+        "direct_device_handoff_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "release_authorized": False,
+        "claim_boundary": V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_CLAIM_BOUNDARY,
+    }
+
+
+def _adapter_like(values: Any) -> tuple[Any, ...]:
+    if hasattr(values, "shape"):
+        try:
+            return tuple(range(int(values.shape[0])))
+        except Exception:
+            pass
+    try:
+        return tuple(values)
+    except TypeError:
+        return ()
+
+
 def _single_value_column(plan: V28GroupedContinuationPlan) -> str:
     if len(plan.value_columns) != 1:
         raise ValueError(f"{plan.operation} requires exactly one value column")
@@ -473,9 +732,13 @@ __all__ = [
     "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_CLAIM_BOUNDARY",
     "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_MATERIALIZATION",
     "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_STATUS",
+    "V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_STATUS",
+    "V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_SUPPORTED_OPERATIONS",
     "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_VERSION",
     "build_segmented_typed_stream_adapter",
     "execute_segmented_typed_stream_reference_continuation",
+    "execute_segmented_typed_stream_partner_continuation",
+    "plan_segmented_typed_stream_partner_continuation",
     "v2_8_segmented_typed_stream_adapter_summary",
     "validate_segmented_typed_stream_adapter",
 ]
