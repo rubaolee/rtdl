@@ -19,8 +19,10 @@ class Goal3111V28SegmentedTypedStreamAdapterTest(unittest.TestCase):
         self.assertEqual(summary["target"], rt.V2_8_FIRST_RUNTIME_TARGET)
         self.assertEqual(summary["materialization"], "host_reference_contract_adapter")
         self.assertIn("compact_mask_i64", summary["partner_consumer_deferred_operations"])
-        self.assertIn("segmented_min_f64", summary["partner_consumer_deferred_operations"])
-        self.assertIn("segmented_max_f64", summary["partner_consumer_deferred_operations"])
+        self.assertIn("segmented_min_f64", summary["partner_consumer_supported_operations"])
+        self.assertIn("segmented_max_f64", summary["partner_consumer_supported_operations"])
+        self.assertNotIn("segmented_min_f64", summary["partner_consumer_deferred_operations"])
+        self.assertNotIn("segmented_max_f64", summary["partner_consumer_deferred_operations"])
         self.assertFalse(summary["native_producer_promoted"])
         self.assertFalse(summary["partner_consumer_promoted"])
         self.assertFalse(summary["device_resident_result_stream_proven"])
@@ -209,6 +211,46 @@ class Goal3111V28SegmentedTypedStreamAdapterTest(unittest.TestCase):
         self.assertFalse(result["public_speedup_claim_authorized"])
         self.assertFalse(result["rt_core_speedup_claim_authorized"])
 
+    def test_reference_consumer_executes_segmented_minmax_oracle(self) -> None:
+        adapter = rt.build_segmented_typed_stream_adapter(
+            ((0, 1.5), (0, 2.5), (2, 10.0)),
+            row_schema=("group_ids", "values"),
+            column_roles={"group_ids": "group_key", "values": "score"},
+            page_capacity=2,
+            stream_id="goal3145_reference_minmax",
+            stream_kind="grouped_reduction_stream",
+            producer_primitive="segmented_row_stream_reference",
+            ordering="group_ordered",
+            operation="segmented_min_f64",
+            group_column="group_ids",
+            value_columns=("values",),
+            user_selected_partner="numba",
+        )
+
+        minimum = rt.execute_segmented_typed_stream_reference_continuation(adapter, group_count=3)
+        self.assertEqual(minimum["outputs"]["group_ids"], [0, 2])
+        self.assertEqual(minimum["outputs"]["mins"], [1.5, 10.0])
+        self.assertEqual(minimum["outputs"]["missing_group_ids"], [1])
+
+        maximum_adapter = rt.build_segmented_typed_stream_adapter(
+            ((0, 1.5), (0, 2.5), (2, 10.0)),
+            row_schema=("group_ids", "values"),
+            column_roles={"group_ids": "group_key", "values": "score"},
+            page_capacity=2,
+            stream_id="goal3145_reference_max",
+            stream_kind="grouped_reduction_stream",
+            producer_primitive="segmented_row_stream_reference",
+            ordering="group_ordered",
+            operation="segmented_max_f64",
+            group_column="group_ids",
+            value_columns=("values",),
+            user_selected_partner="numba",
+        )
+        maximum = rt.execute_segmented_typed_stream_reference_continuation(maximum_adapter, group_count=3)
+        self.assertEqual(maximum["outputs"]["group_ids"], [0, 2])
+        self.assertEqual(maximum["outputs"]["maxes"], [2.5, 10.0])
+        self.assertEqual(maximum["outputs"]["missing_group_ids"], [1])
+
     def test_reference_consumer_requires_k_for_topk(self) -> None:
         adapter = rt.build_segmented_typed_stream_adapter(
             ((0, 10, 1.5), (0, 11, 2.5)),
@@ -360,6 +402,61 @@ class Goal3111V28SegmentedTypedStreamAdapterTest(unittest.TestCase):
             )
         self.assertEqual(result["outputs"], {"sums": [4.0, 10.0]})
         mocked.assert_called_once()
+
+    def test_partner_consumer_wraps_segmented_minmax_in_canonical_outputs(self) -> None:
+        min_adapter = rt.build_segmented_typed_stream_adapter(
+            ((0, 1.5), (0, 2.5), (2, 10.0)),
+            row_schema=("group_ids", "values"),
+            column_roles={"group_ids": "group_key", "values": "score"},
+            page_capacity=2,
+            stream_id="goal3145_min_front_door",
+            stream_kind="grouped_reduction_stream",
+            producer_primitive="segmented_row_stream_reference",
+            ordering="group_ordered",
+            operation="segmented_min_f64",
+            group_column="group_ids",
+            value_columns=("values",),
+            user_selected_partner="numba",
+        )
+        with mock.patch("rtdsl.partner_adapters.partner_group_count_by_key", return_value=[2, 0, 1]) as count_mock:
+            with mock.patch("rtdsl.partner_adapters.partner_group_min_by_key", return_value=[1.5, float("inf"), 10.0]) as min_mock:
+                result = rt.execute_segmented_typed_stream_partner_continuation(
+                    min_adapter,
+                    partner="numba",
+                    partner_columns={"group_ids": [0, 0, 2], "values": [1.5, 2.5, 10.0]},
+                    group_count=3,
+                )
+        self.assertEqual(result["outputs"], {"group_ids": [0, 2], "mins": [1.5, 10.0], "missing_group_ids": [1]})
+        self.assertTrue(result["partner_metadata"]["canonical_output_host_compaction_used"])
+        count_mock.assert_called_once()
+        min_mock.assert_called_once()
+
+        max_adapter = rt.build_segmented_typed_stream_adapter(
+            ((0, 1.5), (0, 2.5), (2, 10.0)),
+            row_schema=("group_ids", "values"),
+            column_roles={"group_ids": "group_key", "values": "score"},
+            page_capacity=2,
+            stream_id="goal3145_max_front_door",
+            stream_kind="grouped_reduction_stream",
+            producer_primitive="segmented_row_stream_reference",
+            ordering="group_ordered",
+            operation="segmented_max_f64",
+            group_column="group_ids",
+            value_columns=("values",),
+            user_selected_partner="numba",
+        )
+        with mock.patch("rtdsl.partner_adapters.partner_group_count_by_key", return_value=[2, 0, 1]) as count_mock:
+            with mock.patch("rtdsl.partner_adapters.partner_group_max_by_key", return_value=[2.5, -float("inf"), 10.0]) as max_mock:
+                result = rt.execute_segmented_typed_stream_partner_continuation(
+                    max_adapter,
+                    partner="numba",
+                    partner_columns={"group_ids": [0, 0, 2], "values": [1.5, 2.5, 10.0]},
+                    group_count=3,
+                )
+        self.assertEqual(result["outputs"], {"group_ids": [0, 2], "maxes": [2.5, 10.0], "missing_group_ids": [1]})
+        self.assertTrue(result["partner_metadata"]["canonical_output_host_compaction_used"])
+        count_mock.assert_called_once()
+        max_mock.assert_called_once()
 
     def test_partner_consumer_filters_bounded_collect_to_canonical_outputs(self) -> None:
         adapter = rt.build_segmented_typed_stream_adapter(

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 from typing import Any, Iterable, Mapping
 
 from .segmented_row_stream import SegmentedRowStream
@@ -28,6 +29,8 @@ V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_STATUS = "explicit_partner_consumer
 V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_SUPPORTED_OPERATIONS = (
     "segmented_count_i64",
     "segmented_sum_f64",
+    "segmented_min_f64",
+    "segmented_max_f64",
     "grouped_vector_sum_f64x2",
     "grouped_argmin_f64",
     "grouped_argmax_f64",
@@ -39,14 +42,6 @@ V2_8_SEGMENTED_TYPED_STREAM_PARTNER_CONSUMER_DEFERRED_OPERATIONS = {
         "reference-only in v2.8 because it is an order-preserving mask compaction "
         "continuation, not a grouped partner-consumer operation; adding a partner "
         "front door requires separate mask-compaction smoke evidence"
-    ),
-    "segmented_min_f64": (
-        "lower-level partner operation exists, but v2.8 front-door support is "
-        "deferred until explicit partner-consumer smoke evidence exists"
-    ),
-    "segmented_max_f64": (
-        "lower-level partner operation exists, but v2.8 front-door support is "
-        "deferred until explicit partner-consumer smoke evidence exists"
     ),
 }
 V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_CLAIM_BOUNDARY = (
@@ -639,6 +634,28 @@ def _execute_partner_front_door(
             },
             _partner_bridge_metadata(operation, partner, group_count, len(_adapter_like(mapped_columns["group_ids"]))),
         )
+    if operation in {"segmented_min_f64", "segmented_max_f64"}:
+        from .partner_adapters import partner_group_count_by_key
+        from .partner_adapters import partner_group_max_by_key
+        from .partner_adapters import partner_group_min_by_key
+
+        group_ids = mapped_columns["group_ids"]
+        values = mapped_columns["values"]
+        counts = partner_group_count_by_key(group_ids, group_count, partner=partner)
+        if operation == "segmented_min_f64":
+            dense = partner_group_min_by_key(group_ids, values, group_count, partner=partner, initial=math.inf)
+            value_name = "mins"
+        else:
+            dense = partner_group_max_by_key(group_ids, values, group_count, partner=partner, initial=-math.inf)
+            value_name = "maxes"
+        metadata = _partner_bridge_metadata(operation, partner, group_count, len(_adapter_like(group_ids)))
+        metadata.update(
+            {
+                "canonical_output_host_compaction_used": True,
+                "empty_group_fill_before_compaction": "initial",
+            }
+        )
+        return _canonical_segmented_minmax_columns(dense, counts, value_name=value_name), metadata
     if operation == "grouped_vector_sum_f64x2":
         from .partner_adapters import partner_group_vector_sum_2d_by_key
 
@@ -720,6 +737,42 @@ def _canonical_ranked_summary_columns(columns: Mapping[str, Any], *, include_ran
     if missing:
         raise ValueError(f"partner output missing canonical ranked-summary columns: {tuple(missing)}")
     return {name: source[name] for name in names}
+
+
+def _canonical_segmented_minmax_columns(values: Any, counts: Any, *, value_name: str) -> dict[str, Any]:
+    if value_name not in {"mins", "maxes"}:
+        raise ValueError("value_name must be 'mins' or 'maxes'")
+    value_rows = [float(value) for value in _column_to_host_list(values)]
+    count_rows = [int(value) for value in _column_to_host_list(counts)]
+    if len(value_rows) != len(count_rows):
+        raise ValueError("segmented min/max values and counts must have the same group_count")
+    group_ids: list[int] = []
+    compact_values: list[float] = []
+    missing_group_ids: list[int] = []
+    for group, count in enumerate(count_rows):
+        if count > 0:
+            group_ids.append(group)
+            compact_values.append(value_rows[group])
+        else:
+            missing_group_ids.append(group)
+    return {
+        "group_ids": group_ids,
+        value_name: compact_values,
+        "missing_group_ids": missing_group_ids,
+    }
+
+
+def _column_to_host_list(values: Any) -> list[Any]:
+    if hasattr(values, "detach") and hasattr(values, "cpu"):
+        return list(values.detach().cpu().tolist())
+    if hasattr(values, "copy_to_host"):
+        return list(values.copy_to_host().tolist())
+    if hasattr(values, "get"):
+        return list(values.get().tolist())
+    if hasattr(values, "tolist"):
+        result = values.tolist()
+        return result if isinstance(result, list) else [result]
+    return list(values)
 
 
 def _partner_bridge_metadata(

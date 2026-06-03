@@ -1,0 +1,80 @@
+{
+  "all_match": true,
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v2_8_release_authorized": false
+  },
+  "commit": "21fddaa4",
+  "goal": "Goal3145",
+  "gpu": "NVIDIA RTX 4000 Ada Generation",
+  "platform": "Linux-6.14.0-29-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3",
+  "rows": [
+    {
+      "canonical_output_host_compaction_used": true,
+      "elapsed_sec": 0.27426891401410103,
+      "group_count": 1024,
+      "matches_reference": true,
+      "max_abs_error": 0.0,
+      "missing_group_count": 0,
+      "operation": "segmented_min_f64",
+      "output_group_count": 1024,
+      "partner_consumer_promoted": false,
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "row_count": 65536,
+      "rt_core_speedup_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false
+    },
+    {
+      "canonical_output_host_compaction_used": true,
+      "elapsed_sec": 0.05050877574831247,
+      "group_count": 1024,
+      "matches_reference": true,
+      "max_abs_error": 0.0,
+      "missing_group_count": 0,
+      "operation": "segmented_max_f64",
+      "output_group_count": 1024,
+      "partner_consumer_promoted": false,
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "row_count": 65536,
+      "rt_core_speedup_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false
+    },
+    {
+      "canonical_output_host_compaction_used": true,
+      "elapsed_sec": 0.04383199010044336,
+      "group_count": 1024,
+      "matches_reference": true,
+      "max_abs_error": 0.0,
+      "missing_group_count": 0,
+      "operation": "segmented_min_f64",
+      "output_group_count": 1024,
+      "partner_consumer_promoted": false,
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "row_count": 1048576,
+      "rt_core_speedup_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false
+    },
+    {
+      "canonical_output_host_compaction_used": true,
+      "elapsed_sec": 0.043966575525701046,
+      "group_count": 1024,
+      "matches_reference": true,
+      "max_abs_error": 0.0,
+      "missing_group_count": 0,
+      "operation": "segmented_max_f64",
+      "output_group_count": 1024,
+      "partner_consumer_promoted": false,
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "row_count": 1048576,
+      "rt_core_speedup_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false
+    }
+  ]
+}
