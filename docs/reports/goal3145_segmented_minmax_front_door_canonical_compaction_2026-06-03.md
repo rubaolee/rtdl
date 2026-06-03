@@ -67,10 +67,10 @@ Pod probe artifact:
 
 | operation | rows | groups | time | output groups | missing groups | match |
 | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| `segmented_min_f64` | 65,536 | 1,024 | 0.274269 s | 1,024 | 0 | yes |
-| `segmented_max_f64` | 65,536 | 1,024 | 0.050509 s | 1,024 | 0 | yes |
-| `segmented_min_f64` | 1,048,576 | 1,024 | 0.043832 s | 1,024 | 0 | yes |
-| `segmented_max_f64` | 1,048,576 | 1,024 | 0.043967 s | 1,024 | 0 | yes |
+| `segmented_min_f64` | 65,536 | 1,024 | 0.254709 s | 1,024 | 0 | yes |
+| `segmented_max_f64` | 65,536 | 1,024 | 0.041285 s | 1,024 | 0 | yes |
+| `segmented_min_f64` | 1,048,576 | 1,024 | 0.049914 s | 1,024 | 0 | yes |
+| `segmented_max_f64` | 1,048,576 | 1,024 | 0.046818 s | 1,024 | 0 | yes |
 
 All rows matched the NumPy reference. All public/release/speedup/RT-core/zero-copy flags stayed false.
 

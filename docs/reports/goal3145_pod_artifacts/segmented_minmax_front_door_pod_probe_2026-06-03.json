@@ -6,7 +6,7 @@
     "true_zero_copy_claim_authorized": false,
     "v2_8_release_authorized": false
   },
-  "commit": "21fddaa4",
+  "commit": "c7f53012",
   "goal": "Goal3145",
   "gpu": "NVIDIA RTX 4000 Ada Generation",
   "platform": "Linux-6.14.0-29-generic-x86_64-with-glibc2.39",
@@ -14,7 +14,7 @@
   "rows": [
     {
       "canonical_output_host_compaction_used": true,
-      "elapsed_sec": 0.27426891401410103,
+      "elapsed_sec": 0.2547091394662857,
       "group_count": 1024,
       "matches_reference": true,
       "max_abs_error": 0.0,
@@ -30,7 +30,7 @@
     },
     {
       "canonical_output_host_compaction_used": true,
-      "elapsed_sec": 0.05050877574831247,
+      "elapsed_sec": 0.04128516651690006,
       "group_count": 1024,
       "matches_reference": true,
       "max_abs_error": 0.0,
@@ -46,7 +46,7 @@
     },
     {
       "canonical_output_host_compaction_used": true,
-      "elapsed_sec": 0.04383199010044336,
+      "elapsed_sec": 0.04991435632109642,
       "group_count": 1024,
       "matches_reference": true,
       "max_abs_error": 0.0,
@@ -62,7 +62,7 @@
     },
     {
       "canonical_output_host_compaction_used": true,
-      "elapsed_sec": 0.043966575525701046,
+      "elapsed_sec": 0.04681842867285013,
       "group_count": 1024,
       "matches_reference": true,
       "max_abs_error": 0.0,
