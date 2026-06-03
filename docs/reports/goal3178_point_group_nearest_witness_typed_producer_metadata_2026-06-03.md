@@ -72,10 +72,24 @@ Result: 14 tests passed, 2 CUDA-gated tests skipped.
 
 ## Pod Validation
 
-Pending. The focused pod validation should run the same tests from a clean
-`origin/main` checkout after this goal lands. If CUDA/Numba tests are available,
-Goal3143 may exercise the existing OptiX device-column to Numba path; otherwise
-the new metadata builder and source wiring still validate locally.
+Passed on the active NVIDIA pod from a clean `origin/main` reset:
+
+```bash
+cd /root/rtdl_goal3151
+git fetch origin main
+git reset --hard origin/main
+export PYTHONPATH=src:.
+export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
+/root/venvs/rtdl_goal3154/bin/python -m unittest \
+  tests.goal3178_point_group_nearest_witness_typed_producer_metadata_test \
+  tests.goal3161_v2_8_runtime_gap_hausdorff_generic_alias_refresh_test \
+  tests.goal3143_hausdorff_partner_exact_numba_front_door_test
+```
+
+Pod head: `324731ed`.
+
+Result: 14 tests passed. The pod run exercised the Goal3143 CUDA/Numba path and
+emitted only low-occupancy Numba warnings from tiny fixture sizes.
 
 ## Next Work
 
