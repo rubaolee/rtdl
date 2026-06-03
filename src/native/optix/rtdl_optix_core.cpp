@@ -7074,6 +7074,7 @@ struct ClosestHitGroupedArgminCuFunctions {
 
 static SegmentPairIntersectionPipeline         g_segment_pair_intersection;
 static SegmentPairIntersectionPipeline         g_segment_pair_candidate_device_columns;
+static SegmentPairIntersectionPipeline         g_segment_pair_left_id_count_device_columns;
 static SegmentFirstHitPipeline                 g_segment_first_hit;
 static PipPipeline         g_pip;
 static ShapePairRelationPipeline     g_shape_pair_relation;
