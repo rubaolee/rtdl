@@ -523,6 +523,170 @@ def run_rayjoin_prepared_optix_compact_grouped_count_segments(
     return payload
 
 
+class PreparedRayJoinOptixCompactGroupedCountSegments:
+    """Python app-layer prepared handle for repeated compact count queries."""
+
+    def __init__(
+        self,
+        right_segments,
+        *,
+        dataset: str = "direct_segments",
+        dataset_note: str = "Direct segment inputs supplied by the caller.",
+    ) -> None:
+        self._right_segments = tuple(right_segments)
+        self._dataset = dataset
+        self._dataset_note = dataset_note
+        self._closed = False
+        phases: dict[str, float] = {}
+
+        from rtdsl.optix_runtime import prepare_segment_pair_intersection_optix
+
+        self._prepared = _phase_time(
+            phases,
+            "prepare_static_scene_sec",
+            lambda: prepare_segment_pair_intersection_optix(self._right_segments),
+        )
+        self.prepare_static_scene_sec = phases["prepare_static_scene_sec"]
+
+    def close(self) -> None:
+        if not self._closed:
+            self._prepared.close()
+            self._closed = True
+
+    def __enter__(self) -> "PreparedRayJoinOptixCompactGroupedCountSegments":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def run(
+        self,
+        left_segments,
+        *,
+        include_rows: bool = False,
+        dataset_note: str | None = None,
+    ) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared RayJoin compact grouped-count handle is closed")
+
+        phases: dict[str, float] = {}
+        rows: tuple[dict[str, int], ...] = ()
+        left_segments = tuple(dict(segment) for segment in left_segments)
+        original_left_ids = tuple(int(segment["id"]) for segment in left_segments)
+        remapped_left_segments = tuple(
+            {**segment, "id": index}
+            for index, segment in enumerate(left_segments)
+        )
+
+        from rtdsl.optix_runtime import pack_segments
+
+        packed_left = _phase_time(
+            phases,
+            "query_pack_sec",
+            lambda: pack_segments(records=remapped_left_segments),
+        )
+        candidate_metadata: dict[str, object]
+        compact_metadata: dict[str, object]
+        candidate_row_count = 0
+        candidate_start = time.perf_counter()
+        columns = self._prepared.candidate_device_columns(
+            packed_left,
+            max_rows=len(remapped_left_segments) * len(self._right_segments),
+        )
+        phases["candidate_device_columns_sec"] = time.perf_counter() - candidate_start
+        try:
+            candidate_metadata = columns.to_metadata()
+            candidate_row_count = int(columns.row_count)
+            compact_start = time.perf_counter()
+            compact = columns.grouped_count_by_left_id_compact_device_columns(
+                group_capacity=max(1, len(remapped_left_segments)),
+            )
+            phases["compact_grouped_count_sec"] = time.perf_counter() - compact_start
+            try:
+                compact_metadata = compact.to_metadata()
+                if include_rows:
+                    import cupy as cp  # type: ignore
+
+                    copy_start = time.perf_counter()
+                    keys = cp.asnumpy(compact.as_cupy_group_keys()).tolist()
+                    counts = cp.asnumpy(compact.as_cupy_counts()).tolist()
+                    phases["compact_validation_copy_sec"] = time.perf_counter() - copy_start
+                    rows = tuple(
+                        {
+                            "left_id": original_left_ids[int(key)],
+                            "count": int(count),
+                        }
+                        for key, count in zip(keys, counts)
+                    )
+            finally:
+                compact.close()
+        finally:
+            columns.close()
+
+        payload: dict[str, object] = {
+            "app": "rayjoin_v2_spatial_join",
+            "workload": "lsi",
+            "execution_route": "prepared_optix_compact_grouped_count_reuse",
+            "backend": "optix",
+            "dataset": self._dataset,
+            "dataset_note": dataset_note or self._dataset_note,
+            "row_count": candidate_row_count,
+            "summary": {
+                "intersection_count": candidate_row_count,
+                "left_group_count": int(compact_metadata["row_count"]),
+                "output_contract": "segment_segment_intersection_count_by_left_id_compact_device_columns",
+            },
+            "phases_sec": phases,
+            "candidate_columns": candidate_metadata,
+            "compact_grouped_count_columns": compact_metadata,
+            "prepared_reuse": {
+                "enabled": True,
+                "right_segment_count": len(self._right_segments),
+                "prepare_static_scene_sec": self.prepare_static_scene_sec,
+                "prepare_static_scene_paid_once": True,
+            },
+            "left_id_remap": {
+                "enabled": True,
+                "reason": "generic grouped-count primitive uses direct-address key capacity",
+                "original_left_id_count": len(original_left_ids),
+            },
+            "device_resident_continuation_status": (
+                "compact_grouped_count_device_columns_complete: group_key/count columns remain CUDA-resident; "
+                "row_count scalar is host-visible; validation copy is optional"
+            ),
+            "native_engine_boundary": (
+                "The engine sees generic segment-pair candidate columns and generic grouped-count compact columns. "
+                "RayJoin workload interpretation, prepared-handle reuse, and left-ID remapping stay in Python."
+            ),
+            "claim_boundary": {
+                "full_rayjoin_reproduction": False,
+                "paper_scale_perf_claim_authorized": False,
+                "rtdl_beats_rayjoin_claim_authorized": False,
+                "whole_app_speedup_claim_authorized": False,
+                "v2_0_release_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+                "requires_pod_for_optix_perf": False,
+            },
+        }
+        if include_rows:
+            payload["rows"] = rows
+        return payload
+
+
+def prepare_rayjoin_optix_compact_grouped_count_segments(
+    right_segments,
+    *,
+    dataset: str = "direct_segments",
+    dataset_note: str = "Direct segment inputs supplied by the caller.",
+) -> PreparedRayJoinOptixCompactGroupedCountSegments:
+    return PreparedRayJoinOptixCompactGroupedCountSegments(
+        right_segments,
+        dataset=dataset,
+        dataset_note=dataset_note,
+    )
+
+
 def run_rayjoin_prepared_optix_compact_grouped_count_workload(
     workload: str = "lsi",
     *,

@@ -119,6 +119,25 @@ implementation path, not a full RayJoin reproduction or public speedup claim.
 In short: the route combines generic compact grouped-count device columns with
 Python-owned RayJoin interpretation.
 
+For repeated count queries against the same right-side segment set, use the
+prepared Python handle so the OptiX right-side scene is built once:
+
+```python
+from examples.v2_0.research_benchmarks.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app import (
+    prepare_rayjoin_optix_compact_grouped_count_segments,
+)
+
+with prepare_rayjoin_optix_compact_grouped_count_segments(right_segments) as prepared:
+    payload = prepared.run(left_segments, include_rows=False)
+
+print(payload["summary"])
+```
+
+The prepared handle is still app-layer code. Native execution still uses
+generic segment-pair candidate columns and generic compact grouped-count
+columns; RayJoin route policy, left-ID remapping, and repeated-query reuse
+remain in Python.
+
 For a single external two-input dataset:
 
 ```bash
