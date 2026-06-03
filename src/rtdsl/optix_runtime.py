@@ -1152,6 +1152,80 @@ class OptixNativeDevicePairColumnOutput:
         }
         return metadata
 
+    def grouped_count_by_left_id(self, *, group_capacity: int) -> tuple[dict[str, int], ...]:
+        """Count candidate rows per left_id using the generic device-column reduction."""
+        if self.overflow:
+            raise RuntimeError("cannot group an overflowed segment-pair candidate column stream")
+        if self.row_count == 0:
+            return ()
+        capacity = int(group_capacity)
+        if capacity <= 0:
+            raise ValueError("group_capacity must be positive")
+        symbol = _find_optional_backend_symbol(
+            self.library,
+            OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_WITH_CAPACITY_SYMBOL,
+        )
+        if symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_WITH_CAPACITY_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        name = b"left_id"
+        fields = (_RtdlDevicePayloadField * 1)(
+            _RtdlDevicePayloadField(
+                name,
+                _DB_KIND_INT64,
+                _DEVICE_PAYLOAD_DTYPE_INT64,
+                _DEVICE_PAYLOAD_DEVICE_CUDA,
+                int(self.device_ordinal),
+                int(self.row_count),
+                ctypes.sizeof(ctypes.c_int64),
+                int(self.left_ids_device_ptr),
+            )
+        )
+        rows_ptr = ctypes.POINTER(_RtdlGroupedCountRow)()
+        row_count_out = ctypes.c_size_t()
+        overflowed = ctypes.c_uint32()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            fields,
+            ctypes.c_size_t(1),
+            ctypes.c_size_t(self.row_count),
+            None,
+            ctypes.c_size_t(0),
+            name,
+            ctypes.c_size_t(capacity),
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count_out),
+            ctypes.byref(overflowed),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        _raise_on_partner_resident_grouped_capacity_overflow(
+            overflowed,
+            operation="segment_pair_candidate_left_id_count",
+            group_capacity=capacity,
+        )
+        rows = OptixRowView(
+            library=self.library,
+            rows_ptr=rows_ptr,
+            row_count=row_count_out.value,
+            row_type=_RtdlGroupedCountRow,
+            field_names=("group_key", "count"),
+        )
+        try:
+            return tuple(
+                {
+                    "left_id": int(rows.rows_ptr[index].group_key),
+                    "count": int(rows.rows_ptr[index].count),
+                }
+                for index in range(rows.row_count)
+            )
+        finally:
+            rows.close()
+
     def close(self) -> None:
         self.owner.close()
 
