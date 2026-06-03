@@ -58,3 +58,15 @@ $env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal3157_v2_8_runtime_gap_rt_db
 ```
 
 Result: 18 tests passed.
+
+Pod validation on `root@69.30.85.131:22063` from clean `origin/main` checkout at commit `04b41bab`:
+
+```bash
+python -m unittest \
+  tests.goal3157_v2_8_runtime_gap_rt_dbscan_front_door_refresh_test \
+  tests.goal3105_v2_8_benchmark_runtime_gap_map_test \
+  tests.goal3156_rt_dbscan_v2_8_front_door_route_test \
+  tests.goal3155_fixed_radius_graph_component_front_door_test
+```
+
+Result: 18 tests passed.
