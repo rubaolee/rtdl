@@ -3926,11 +3926,6 @@ static void run_prepared_segment_pair_candidate_device_columns_optix(
         throw std::runtime_error("segment-pair candidate right count exceeds uint32 primitive capacity");
     if (max_rows > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
         throw std::runtime_error("segment-pair candidate max_rows exceeds uint32 output capacity");
-    const uint64_t pair_space =
-        static_cast<uint64_t>(left_count) * static_cast<uint64_t>(prepared->right_count);
-    if (pair_space > static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()))
-        throw std::runtime_error("segment-pair candidate device columns currently require a single uint32 launch; chunked append is future work");
-
     *columns_out = {};
     columns_out->capacity = static_cast<uint64_t>(max_rows);
     CUdevice current_device = 0;
@@ -3955,6 +3950,14 @@ static void run_prepared_segment_pair_candidate_device_columns_optix(
     DevPtr d_left(sizeof(GpuSegment) * gpu_left.size());
     upload(d_left.ptr, gpu_left.data(), gpu_left.size());
 
+    const uint64_t max_left_per_launch64 =
+        static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()) /
+        static_cast<uint64_t>(prepared->right_count);
+    if (max_left_per_launch64 == 0)
+        throw std::runtime_error("segment-pair candidate device columns cannot chunk right segment set into uint32_t launch capacity");
+    const size_t max_left_per_launch = static_cast<size_t>(
+        std::min<uint64_t>(max_left_per_launch64, static_cast<uint64_t>(left_count)));
+
     std::unique_ptr<NativeSegmentPairCandidateDeviceColumnsOwner> owner;
     CUdeviceptr left_ids_output = 0;
     CUdeviceptr right_ids_output = 0;
@@ -3975,27 +3978,32 @@ static void run_prepared_segment_pair_candidate_device_columns_optix(
     upload(d_candidate_events.ptr, &zero64, 1);
     upload(d_overflow.ptr, &zero32, 1);
 
-    SegmentPairCandidateDeviceColumnsLaunchParams lp;
-    lp.traversable = prepared->accel.handle;
-    lp.left_segs = reinterpret_cast<const GpuSegment*>(d_left.ptr);
-    lp.right_segs = reinterpret_cast<const GpuSegment*>(prepared->d_right.ptr);
-    lp.left_ids = reinterpret_cast<unsigned long long*>(left_ids_output);
-    lp.right_ids = reinterpret_cast<unsigned long long*>(right_ids_output);
-    lp.row_count = reinterpret_cast<unsigned long long*>(d_row_count.ptr);
-    lp.candidate_event_count = reinterpret_cast<unsigned long long*>(d_candidate_events.ptr);
-    lp.overflow = reinterpret_cast<uint32_t*>(d_overflow.ptr);
-    lp.output_capacity = static_cast<uint32_t>(max_rows);
-    lp.probe_count = static_cast<uint32_t>(left_count);
-
-    DevPtr d_params(sizeof(SegmentPairCandidateDeviceColumnsLaunchParams));
-    upload(d_params.ptr, &lp, 1);
-
     const auto traversal_start = std::chrono::steady_clock::now();
     CUstream stream = 0;
-    OPTIX_CHECK(optixLaunch(g_segment_pair_candidate_device_columns.pipe->pipeline, stream,
-                             d_params.ptr, sizeof(SegmentPairCandidateDeviceColumnsLaunchParams),
-                             &g_segment_pair_candidate_device_columns.pipe->sbt,
-                             static_cast<unsigned>(left_count), 1, 1));
+    for (size_t left_offset = 0; left_offset < left_count; left_offset += max_left_per_launch) {
+        const size_t chunk_left_count = std::min(max_left_per_launch, left_count - left_offset);
+        const CUdeviceptr chunk_left_ptr =
+            d_left.ptr + static_cast<CUdeviceptr>(sizeof(GpuSegment) * left_offset);
+        SegmentPairCandidateDeviceColumnsLaunchParams lp;
+        lp.traversable = prepared->accel.handle;
+        lp.left_segs = reinterpret_cast<const GpuSegment*>(chunk_left_ptr);
+        lp.right_segs = reinterpret_cast<const GpuSegment*>(prepared->d_right.ptr);
+        lp.left_ids = reinterpret_cast<unsigned long long*>(left_ids_output);
+        lp.right_ids = reinterpret_cast<unsigned long long*>(right_ids_output);
+        lp.row_count = reinterpret_cast<unsigned long long*>(d_row_count.ptr);
+        lp.candidate_event_count = reinterpret_cast<unsigned long long*>(d_candidate_events.ptr);
+        lp.overflow = reinterpret_cast<uint32_t*>(d_overflow.ptr);
+        lp.output_capacity = static_cast<uint32_t>(max_rows);
+        lp.probe_count = static_cast<uint32_t>(chunk_left_count);
+
+        DevPtr d_params(sizeof(SegmentPairCandidateDeviceColumnsLaunchParams));
+        upload(d_params.ptr, &lp, 1);
+
+        OPTIX_CHECK(optixLaunch(g_segment_pair_candidate_device_columns.pipe->pipeline, stream,
+                                 d_params.ptr, sizeof(SegmentPairCandidateDeviceColumnsLaunchParams),
+                                 &g_segment_pair_candidate_device_columns.pipe->sbt,
+                                 static_cast<unsigned>(chunk_left_count), 1, 1));
+    }
     CU_CHECK(cuStreamSynchronize(stream));
     const auto traversal_end = std::chrono::steady_clock::now();
 

@@ -47,7 +47,6 @@ class Goal3185SegmentPairCandidateDeviceColumnsTest(unittest.TestCase):
         body = workloads[start:end]
         self.assertIn("NativeSegmentPairCandidateDeviceColumnsOwner", body)
         self.assertIn("RtdlNativeDevicePairColumns", body)
-        self.assertIn("single uint32 launch; chunked append is future work", body)
         self.assertNotIn("RtdlSegmentPairIntersectionRow", body)
         self.assertNotIn("finalize_segment_pair_intersection_rows", body)
         self.assertNotIn("download(gpu_rows", body)
