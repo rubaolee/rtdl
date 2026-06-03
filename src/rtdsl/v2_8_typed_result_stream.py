@@ -57,7 +57,10 @@ V2_8_TYPED_RESULT_STREAM_ALLOWED_CONTINUATIONS = (
 V2_8_TYPED_RESULT_STREAM_CONTINUATION_SEMANTICS = {
     "grouped_argmin_f64": "select the lowest score per group; ties choose the lowest item_id",
     "grouped_argmax_f64": "select the highest score per group; ties choose the lowest item_id",
-    "grouped_topk_f64": "select the k lowest scores per group in ascending score then item_id order",
+    "grouped_topk_f64": (
+        "select the k lowest scores per group in ascending score then item_id order; "
+        "ranks are one-based within each group"
+    ),
 }
 V2_8_TYPED_RESULT_STREAM_CLAIM_BOUNDARY = (
     "v2.8 typed result streams are an internal generic contract for RTDL "

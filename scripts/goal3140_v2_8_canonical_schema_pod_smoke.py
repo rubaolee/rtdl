@@ -138,7 +138,7 @@ def main() -> None:
                 "group_ids": [0, 1],
                 "item_ids": [10, 20],
                 "scores": [1.5, 0.25],
-                "ranks": [0, 0],
+                "ranks": [1, 1],
                 "row_offsets": [0, 1, 2],
                 "missing_group_ids": [],
             },
