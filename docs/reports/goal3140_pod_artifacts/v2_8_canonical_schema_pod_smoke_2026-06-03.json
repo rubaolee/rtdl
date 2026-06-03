@@ -1,0 +1,99 @@
+{
+  "cases": [
+    {
+      "host_outputs": {
+        "group_ids": [
+          0,
+          1
+        ],
+        "item_ids": [
+          10,
+          20
+        ],
+        "missing_group_ids": [
+          2
+        ],
+        "scores": [
+          1.5,
+          0.25
+        ]
+      },
+      "keys": [
+        "group_ids",
+        "item_ids",
+        "scores",
+        "missing_group_ids"
+      ],
+      "name": "grouped_argmin_f64_numba",
+      "status": "passed"
+    },
+    {
+      "host_outputs": {
+        "group_ids": [
+          0,
+          1
+        ],
+        "item_ids": [
+          11,
+          20
+        ],
+        "missing_group_ids": [
+          2
+        ],
+        "scores": [
+          2.5,
+          0.25
+        ]
+      },
+      "keys": [
+        "group_ids",
+        "item_ids",
+        "scores",
+        "missing_group_ids"
+      ],
+      "name": "grouped_argmax_f64_numba",
+      "status": "passed"
+    },
+    {
+      "host_outputs": {
+        "group_ids": [
+          0,
+          1
+        ],
+        "item_ids": [
+          10,
+          20
+        ],
+        "missing_group_ids": [],
+        "ranks": [
+          1,
+          1
+        ],
+        "row_offsets": [
+          0,
+          1,
+          2
+        ],
+        "scores": [
+          1.5,
+          0.25
+        ]
+      },
+      "keys": [
+        "group_ids",
+        "item_ids",
+        "scores",
+        "ranks",
+        "row_offsets",
+        "missing_group_ids"
+      ],
+      "name": "grouped_topk_f64_torch",
+      "status": "passed"
+    }
+  ],
+  "claim_boundary": "schema_smoke_not_release_or_speedup_claim",
+  "commit": "a44de908fae81f7fc83c6809f4f152c1f6aa70d9",
+  "goal": "Goal3140",
+  "host": "4463b4adb79b",
+  "status": "passed"
+}

@@ -1,0 +1,1882 @@
+{
+  "cases": [
+    {
+      "compact_present_groups": true,
+      "group_count": 1024,
+      "label": "default_compact",
+      "layer": "direct",
+      "metadata_summary": {
+        "contract_version": "rtdl.partner_continuation.v2.5",
+        "host_present_group_compaction_used": true,
+        "nan_validation_host_sync_used": true,
+        "operation": "grouped_argmin_f64",
+        "outputs": {
+          "dense_item_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              1024
+            ]
+          },
+          "dense_scores": {
+            "dtype": "float64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              1024
+            ]
+          },
+          "group_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              1024
+            ]
+          },
+          "item_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              1024
+            ]
+          },
+          "missing_group_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              0
+            ]
+          },
+          "present_counts": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              1024
+            ]
+          },
+          "scores": {
+            "dtype": "float64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              1024
+            ]
+          }
+        },
+        "partner": "numba",
+        "phase_timing": {
+          "phase_contract_version": "rtdl.partner.v2.4",
+          "phases_sec": {
+            "partner_continuation": 0.1225000973790884
+          },
+          "promoted_performance_path": false,
+          "same_phase_contract_as_basis": false,
+          "source": "run_numba_grouped_argmin_f64",
+          "validation": {
+            "errors": [],
+            "known_phases": [
+              "partner_continuation"
+            ],
+            "status": "accept"
+          }
+        },
+        "promoted_performance_path": false,
+        "raw_kernel_required": false,
+        "replaces_rt_traversal": false,
+        "rt_core_speedup_claim_authorized": false,
+        "status": "preview_not_promoted",
+        "tie_break": "lowest_score_then_lowest_item_id"
+      },
+      "operation": "grouped_argmin_f64",
+      "partner_elapsed_seconds": [
+        0.0013696737587451935,
+        0.00116818118840456,
+        0.0011632619425654411,
+        0.0011995313689112663,
+        0.0011794129386544228
+      ],
+      "row_count": 65536,
+      "steady_median_seconds": 0.0018083387985825539,
+      "steady_seconds": [
+        0.002498691901564598,
+        0.0018216045573353767,
+        0.0017732316628098488,
+        0.0018083387985825539,
+        0.0018054945394396782
+      ],
+      "validate_group_ids": true,
+      "validate_nan_scores": true,
+      "warm_seconds": 0.3029390536248684
+    },
+    {
+      "compact_present_groups": false,
+      "group_count": 1024,
+      "label": "no_validate_dense",
+      "layer": "direct",
+      "metadata_summary": {
+        "contract_version": "rtdl.partner_continuation.v2.5",
+        "host_present_group_compaction_used": false,
+        "nan_validation_host_sync_used": false,
+        "operation": "grouped_argmin_f64",
+        "outputs": {
+          "dense_item_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              1024
+            ]
+          },
+          "dense_scores": {
+            "dtype": "float64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              1024
+            ]
+          },
+          "group_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              1024
+            ]
+          },
+          "item_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              1024
+            ]
+          },
+          "missing_group_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              0
+            ]
+          },
+          "present_counts": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              1024
+            ]
+          },
+          "scores": {
+            "dtype": "float64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              1024
+            ]
+          }
+        },
+        "partner": "numba",
+        "phase_timing": {
+          "phase_contract_version": "rtdl.partner.v2.4",
+          "phases_sec": {
+            "partner_continuation": 0.022464128211140633
+          },
+          "promoted_performance_path": false,
+          "same_phase_contract_as_basis": false,
+          "source": "run_numba_grouped_argmin_f64",
+          "validation": {
+            "errors": [],
+            "known_phases": [
+              "partner_continuation"
+            ],
+            "status": "accept"
+          }
+        },
+        "promoted_performance_path": false,
+        "raw_kernel_required": false,
+        "replaces_rt_traversal": false,
+        "rt_core_speedup_claim_authorized": false,
+        "status": "preview_not_promoted",
+        "tie_break": "lowest_score_then_lowest_item_id"
+      },
+      "operation": "grouped_argmin_f64",
+      "partner_elapsed_seconds": [
+        0.0009660171344876289,
+        0.0010278252884745598,
+        0.0008567590266466141,
+        0.0008386848494410515,
+        0.00091543048620224
+      ],
+      "row_count": 65536,
+      "steady_median_seconds": 0.0010629920288920403,
+      "steady_seconds": [
+        0.001168612390756607,
+        0.0011704042553901672,
+        0.0010071052238345146,
+        0.0009825080633163452,
+        0.0010629920288920403
+      ],
+      "validate_group_ids": false,
+      "validate_nan_scores": false,
+      "warm_seconds": 0.022617550566792488
+    },
+    {
+      "compact_present_groups": true,
+      "group_count": 1024,
+      "label": "default_compact",
+      "layer": "partner_adapter",
+      "metadata_summary": {
+        "adapter": "grouped_argmin_f64_partner_columns",
+        "claim_boundary": "Generic partner-column continuation front door. It does not call native RT traversal, does not embed app semantics, and does not authorize speedup, zero-copy, or release claims.",
+        "direct_device_handoff_authorized": false,
+        "group_count": 1024,
+        "host_present_group_compaction_used": true,
+        "input_contract": "caller_supplied_partner_device_columns",
+        "nan_validation_host_sync_used": true,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "numba_elapsed_seconds": 0.001194271259009838,
+        "partner": "numba",
+        "partner_elapsed_seconds": 0.001194271259009838,
+        "partner_reference_contract": "generic_grouped_argmin_f64",
+        "row_count": 65536,
+        "rt_core_speedup_claim_authorized": false,
+        "tie_break": "lowest_score_then_lowest_item_id",
+        "triton_elapsed_seconds": null,
+        "v2_5_partner_continuation_operation": null,
+        "v2_5_release_authorized": false,
+        "v2_5_triton_preview_kernel_status": null,
+        "v2_5_triton_preview_kernel_used": false,
+        "validate_group_ids": true,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "operation": "grouped_argmin_f64",
+      "partner_elapsed_seconds": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "row_count": 65536,
+      "steady_median_seconds": 0.001929459162056446,
+      "steady_seconds": [
+        0.0018925582990050316,
+        0.0020233970135450363,
+        0.0020433152094483376,
+        0.001929459162056446,
+        0.0018789730966091156
+      ],
+      "validate_group_ids": true,
+      "validate_nan_scores": true,
+      "warm_seconds": 0.002186337485909462
+    },
+    {
+      "compact_present_groups": false,
+      "group_count": 1024,
+      "label": "no_validate_dense",
+      "layer": "partner_adapter",
+      "metadata_summary": {
+        "adapter": "grouped_argmin_f64_partner_columns",
+        "claim_boundary": "Generic partner-column continuation front door. It does not call native RT traversal, does not embed app semantics, and does not authorize speedup, zero-copy, or release claims.",
+        "direct_device_handoff_authorized": false,
+        "group_count": 1024,
+        "host_present_group_compaction_used": false,
+        "input_contract": "caller_supplied_partner_device_columns",
+        "nan_validation_host_sync_used": false,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "numba_elapsed_seconds": 0.0008815266191959381,
+        "partner": "numba",
+        "partner_elapsed_seconds": 0.0008815266191959381,
+        "partner_reference_contract": "generic_grouped_argmin_f64",
+        "row_count": 65536,
+        "rt_core_speedup_claim_authorized": false,
+        "tie_break": "lowest_score_then_lowest_item_id",
+        "triton_elapsed_seconds": null,
+        "v2_5_partner_continuation_operation": null,
+        "v2_5_release_authorized": false,
+        "v2_5_triton_preview_kernel_status": null,
+        "v2_5_triton_preview_kernel_used": false,
+        "validate_group_ids": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "operation": "grouped_argmin_f64",
+      "partner_elapsed_seconds": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "row_count": 65536,
+      "steady_median_seconds": 0.0011872081086039543,
+      "steady_seconds": [
+        0.00112251378595829,
+        0.0011872081086039543,
+        0.0011472217738628387,
+        0.0011919168755412102,
+        0.001200282946228981
+      ],
+      "validate_group_ids": false,
+      "validate_nan_scores": false,
+      "warm_seconds": 0.001191556453704834
+    },
+    {
+      "compact_present_groups": true,
+      "group_count": 1024,
+      "label": "default_compact",
+      "layer": "direct",
+      "metadata_summary": {
+        "contract_version": "rtdl.partner_continuation.v2.5",
+        "host_present_group_compaction_used": true,
+        "nan_validation_host_sync_used": true,
+        "operation": "grouped_argmax_f64",
+        "outputs": {
+          "dense_item_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              1024
+            ]
+          },
+          "dense_scores": {
+            "dtype": "float64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              1024
+            ]
+          },
+          "group_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              1024
+            ]
+          },
+          "item_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              1024
+            ]
+          },
+          "missing_group_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              0
+            ]
+          },
+          "present_counts": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              1024
+            ]
+          },
+          "scores": {
+            "dtype": "float64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              1024
+            ]
+          }
+        },
+        "partner": "numba",
+        "phase_timing": {
+          "phase_contract_version": "rtdl.partner.v2.4",
+          "phases_sec": {
+            "partner_continuation": 0.04193945322185755
+          },
+          "promoted_performance_path": false,
+          "same_phase_contract_as_basis": false,
+          "source": "run_numba_grouped_argmax_f64",
+          "validation": {
+            "errors": [],
+            "known_phases": [
+              "partner_continuation"
+            ],
+            "status": "accept"
+          }
+        },
+        "promoted_performance_path": false,
+        "raw_kernel_required": false,
+        "replaces_rt_traversal": false,
+        "rt_core_speedup_claim_authorized": false,
+        "status": "preview_not_promoted",
+        "tie_break": "highest_score_then_lowest_item_id"
+      },
+      "operation": "grouped_argmax_f64",
+      "partner_elapsed_seconds": [
+        0.0013669691979885101,
+        0.001303618773818016,
+        0.0011473912745714188,
+        0.001114940270781517,
+        0.0011218348518013954
+      ],
+      "row_count": 65536,
+      "steady_median_seconds": 0.0017600459977984428,
+      "steady_seconds": [
+        0.002388782799243927,
+        0.001903199590742588,
+        0.0017600459977984428,
+        0.0017201006412506104,
+        0.001719900406897068
+      ],
+      "validate_group_ids": true,
+      "validate_nan_scores": true,
+      "warm_seconds": 0.042544242925941944
+    },
+    {
+      "compact_present_groups": false,
+      "group_count": 1024,
+      "label": "no_validate_dense",
+      "layer": "direct",
+      "metadata_summary": {
+        "contract_version": "rtdl.partner_continuation.v2.5",
+        "host_present_group_compaction_used": false,
+        "nan_validation_host_sync_used": false,
+        "operation": "grouped_argmax_f64",
+        "outputs": {
+          "dense_item_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              1024
+            ]
+          },
+          "dense_scores": {
+            "dtype": "float64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              1024
+            ]
+          },
+          "group_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              1024
+            ]
+          },
+          "item_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              1024
+            ]
+          },
+          "missing_group_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              0
+            ]
+          },
+          "present_counts": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              1024
+            ]
+          },
+          "scores": {
+            "dtype": "float64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              1024
+            ]
+          }
+        },
+        "partner": "numba",
+        "phase_timing": {
+          "phase_contract_version": "rtdl.partner.v2.4",
+          "phases_sec": {
+            "partner_continuation": 0.0008628806099295616
+          },
+          "promoted_performance_path": false,
+          "same_phase_contract_as_basis": false,
+          "source": "run_numba_grouped_argmax_f64",
+          "validation": {
+            "errors": [],
+            "known_phases": [
+              "partner_continuation"
+            ],
+            "status": "accept"
+          }
+        },
+        "promoted_performance_path": false,
+        "raw_kernel_required": false,
+        "replaces_rt_traversal": false,
+        "rt_core_speedup_claim_authorized": false,
+        "status": "preview_not_promoted",
+        "tie_break": "highest_score_then_lowest_item_id"
+      },
+      "operation": "grouped_argmax_f64",
+      "partner_elapsed_seconds": [
+        0.000816873274743557,
+        0.0008444460108876228,
+        0.0008113523945212364,
+        0.0008604852482676506,
+        0.0008289655670523643
+      ],
+      "row_count": 65536,
+      "steady_median_seconds": 0.0009719692170619965,
+      "steady_seconds": [
+        0.0009625712409615517,
+        0.000983159989118576,
+        0.0009520705789327621,
+        0.0010038195177912712,
+        0.0009719692170619965
+      ],
+      "validate_group_ids": false,
+      "validate_nan_scores": false,
+      "warm_seconds": 0.0010104523971676826
+    },
+    {
+      "compact_present_groups": true,
+      "group_count": 1024,
+      "label": "default_compact",
+      "layer": "partner_adapter",
+      "metadata_summary": {
+        "adapter": "grouped_argmax_f64_partner_columns",
+        "claim_boundary": "Generic partner-column continuation front door. It does not call native RT traversal, does not embed app semantics, and does not authorize speedup, zero-copy, or release claims.",
+        "direct_device_handoff_authorized": false,
+        "group_count": 1024,
+        "host_present_group_compaction_used": true,
+        "input_contract": "caller_supplied_partner_device_columns",
+        "nan_validation_host_sync_used": true,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "numba_elapsed_seconds": 0.0011531328782439232,
+        "partner": "numba",
+        "partner_elapsed_seconds": 0.0011531328782439232,
+        "partner_reference_contract": "generic_grouped_argmax_f64",
+        "row_count": 65536,
+        "rt_core_speedup_claim_authorized": false,
+        "tie_break": "highest_score_then_lowest_item_id",
+        "triton_elapsed_seconds": null,
+        "v2_5_partner_continuation_operation": null,
+        "v2_5_release_authorized": false,
+        "v2_5_triton_preview_kernel_status": null,
+        "v2_5_triton_preview_kernel_used": false,
+        "validate_group_ids": true,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "operation": "grouped_argmax_f64",
+      "partner_elapsed_seconds": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "row_count": 65536,
+      "steady_median_seconds": 0.0019746441394090652,
+      "steady_seconds": [
+        0.0019001243636012077,
+        0.0020499583333730698,
+        0.002023497596383095,
+        0.0019746441394090652,
+        0.0019033793359994888
+      ],
+      "validate_group_ids": true,
+      "validate_nan_scores": true,
+      "warm_seconds": 0.001984313130378723
+    },
+    {
+      "compact_present_groups": false,
+      "group_count": 1024,
+      "label": "no_validate_dense",
+      "layer": "partner_adapter",
+      "metadata_summary": {
+        "adapter": "grouped_argmax_f64_partner_columns",
+        "claim_boundary": "Generic partner-column continuation front door. It does not call native RT traversal, does not embed app semantics, and does not authorize speedup, zero-copy, or release claims.",
+        "direct_device_handoff_authorized": false,
+        "group_count": 1024,
+        "host_present_group_compaction_used": false,
+        "input_contract": "caller_supplied_partner_device_columns",
+        "nan_validation_host_sync_used": false,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "numba_elapsed_seconds": 0.0008738217875361443,
+        "partner": "numba",
+        "partner_elapsed_seconds": 0.0008738217875361443,
+        "partner_reference_contract": "generic_grouped_argmax_f64",
+        "row_count": 65536,
+        "rt_core_speedup_claim_authorized": false,
+        "tie_break": "highest_score_then_lowest_item_id",
+        "triton_elapsed_seconds": null,
+        "v2_5_partner_continuation_operation": null,
+        "v2_5_release_authorized": false,
+        "v2_5_triton_preview_kernel_status": null,
+        "v2_5_triton_preview_kernel_used": false,
+        "validate_group_ids": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "operation": "grouped_argmax_f64",
+      "partner_elapsed_seconds": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "row_count": 65536,
+      "steady_median_seconds": 0.0011829398572444916,
+      "steady_seconds": [
+        0.0011829398572444916,
+        0.0012063132598996162,
+        0.001132182776927948,
+        0.0011368608102202415,
+        0.0012142490595579147
+      ],
+      "validate_group_ids": false,
+      "validate_nan_scores": false,
+      "warm_seconds": 0.0012066932395100594
+    },
+    {
+      "compact_present_groups": true,
+      "group_count": 4096,
+      "label": "default_compact",
+      "layer": "direct",
+      "metadata_summary": {
+        "contract_version": "rtdl.partner_continuation.v2.5",
+        "host_present_group_compaction_used": true,
+        "nan_validation_host_sync_used": true,
+        "operation": "grouped_argmin_f64",
+        "outputs": {
+          "dense_item_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              4096
+            ]
+          },
+          "dense_scores": {
+            "dtype": "float64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              4096
+            ]
+          },
+          "group_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              4096
+            ]
+          },
+          "item_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              4096
+            ]
+          },
+          "missing_group_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              0
+            ]
+          },
+          "present_counts": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              4096
+            ]
+          },
+          "scores": {
+            "dtype": "float64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              4096
+            ]
+          }
+        },
+        "partner": "numba",
+        "phase_timing": {
+          "phase_contract_version": "rtdl.partner.v2.4",
+          "phases_sec": {
+            "partner_continuation": 0.0012964848428964615
+          },
+          "promoted_performance_path": false,
+          "same_phase_contract_as_basis": false,
+          "source": "run_numba_grouped_argmin_f64",
+          "validation": {
+            "errors": [],
+            "known_phases": [
+              "partner_continuation"
+            ],
+            "status": "accept"
+          }
+        },
+        "promoted_performance_path": false,
+        "raw_kernel_required": false,
+        "replaces_rt_traversal": false,
+        "rt_core_speedup_claim_authorized": false,
+        "status": "preview_not_promoted",
+        "tie_break": "lowest_score_then_lowest_item_id"
+      },
+      "operation": "grouped_argmin_f64",
+      "partner_elapsed_seconds": [
+        0.0011438047513365746,
+        0.0014367923140525818,
+        0.0011472813785076141,
+        0.0011369818821549416,
+        0.0011543352156877518
+      ],
+      "row_count": 262144,
+      "steady_median_seconds": 0.0020404811948537827,
+      "steady_seconds": [
+        0.0020404811948537827,
+        0.0022969674319028854,
+        0.0020226556807756424,
+        0.0020470116287469864,
+        0.0020138993859291077
+      ],
+      "validate_group_ids": true,
+      "validate_nan_scores": true,
+      "warm_seconds": 0.003469618037343025
+    },
+    {
+      "compact_present_groups": false,
+      "group_count": 4096,
+      "label": "no_validate_dense",
+      "layer": "direct",
+      "metadata_summary": {
+        "contract_version": "rtdl.partner_continuation.v2.5",
+        "host_present_group_compaction_used": false,
+        "nan_validation_host_sync_used": false,
+        "operation": "grouped_argmin_f64",
+        "outputs": {
+          "dense_item_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              4096
+            ]
+          },
+          "dense_scores": {
+            "dtype": "float64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              4096
+            ]
+          },
+          "group_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              4096
+            ]
+          },
+          "item_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              4096
+            ]
+          },
+          "missing_group_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              0
+            ]
+          },
+          "present_counts": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              4096
+            ]
+          },
+          "scores": {
+            "dtype": "float64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              4096
+            ]
+          }
+        },
+        "partner": "numba",
+        "phase_timing": {
+          "phase_contract_version": "rtdl.partner.v2.4",
+          "phases_sec": {
+            "partner_continuation": 0.0009139580652117729
+          },
+          "promoted_performance_path": false,
+          "same_phase_contract_as_basis": false,
+          "source": "run_numba_grouped_argmin_f64",
+          "validation": {
+            "errors": [],
+            "known_phases": [
+              "partner_continuation"
+            ],
+            "status": "accept"
+          }
+        },
+        "promoted_performance_path": false,
+        "raw_kernel_required": false,
+        "replaces_rt_traversal": false,
+        "rt_core_speedup_claim_authorized": false,
+        "status": "preview_not_promoted",
+        "tie_break": "lowest_score_then_lowest_item_id"
+      },
+      "operation": "grouped_argmin_f64",
+      "partner_elapsed_seconds": [
+        0.0008414695039391518,
+        0.0008239075541496277,
+        0.0008553769439458847,
+        0.0008841808885335922,
+        0.000843193382024765
+      ],
+      "row_count": 262144,
+      "steady_median_seconds": 0.0009837402030825615,
+      "steady_seconds": [
+        0.0009802235290408134,
+        0.0009612580761313438,
+        0.000993870198726654,
+        0.0010224534198641777,
+        0.0009837402030825615
+      ],
+      "validate_group_ids": false,
+      "validate_nan_scores": false,
+      "warm_seconds": 0.0010596150532364845
+    },
+    {
+      "compact_present_groups": true,
+      "group_count": 4096,
+      "label": "default_compact",
+      "layer": "partner_adapter",
+      "metadata_summary": {
+        "adapter": "grouped_argmin_f64_partner_columns",
+        "claim_boundary": "Generic partner-column continuation front door. It does not call native RT traversal, does not embed app semantics, and does not authorize speedup, zero-copy, or release claims.",
+        "direct_device_handoff_authorized": false,
+        "group_count": 4096,
+        "host_present_group_compaction_used": true,
+        "input_contract": "caller_supplied_partner_device_columns",
+        "nan_validation_host_sync_used": true,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "numba_elapsed_seconds": 0.00121355801820755,
+        "partner": "numba",
+        "partner_elapsed_seconds": 0.00121355801820755,
+        "partner_reference_contract": "generic_grouped_argmin_f64",
+        "row_count": 262144,
+        "rt_core_speedup_claim_authorized": false,
+        "tie_break": "lowest_score_then_lowest_item_id",
+        "triton_elapsed_seconds": null,
+        "v2_5_partner_continuation_operation": null,
+        "v2_5_release_authorized": false,
+        "v2_5_triton_preview_kernel_status": null,
+        "v2_5_triton_preview_kernel_used": false,
+        "validate_group_ids": true,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "operation": "grouped_argmin_f64",
+      "partner_elapsed_seconds": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "row_count": 262144,
+      "steady_median_seconds": 0.002232425846159458,
+      "steady_seconds": [
+        0.0021472731605172157,
+        0.0023542167618870735,
+        0.0023235175758600235,
+        0.002232425846159458,
+        0.0022205831483006477
+      ],
+      "validate_group_ids": true,
+      "validate_nan_scores": true,
+      "warm_seconds": 0.002313588745892048
+    },
+    {
+      "compact_present_groups": false,
+      "group_count": 4096,
+      "label": "no_validate_dense",
+      "layer": "partner_adapter",
+      "metadata_summary": {
+        "adapter": "grouped_argmin_f64_partner_columns",
+        "claim_boundary": "Generic partner-column continuation front door. It does not call native RT traversal, does not embed app semantics, and does not authorize speedup, zero-copy, or release claims.",
+        "direct_device_handoff_authorized": false,
+        "group_count": 4096,
+        "host_present_group_compaction_used": false,
+        "input_contract": "caller_supplied_partner_device_columns",
+        "nan_validation_host_sync_used": false,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "numba_elapsed_seconds": 0.0008720988407731056,
+        "partner": "numba",
+        "partner_elapsed_seconds": 0.0008720988407731056,
+        "partner_reference_contract": "generic_grouped_argmin_f64",
+        "row_count": 262144,
+        "rt_core_speedup_claim_authorized": false,
+        "tie_break": "lowest_score_then_lowest_item_id",
+        "triton_elapsed_seconds": null,
+        "v2_5_partner_continuation_operation": null,
+        "v2_5_release_authorized": false,
+        "v2_5_triton_preview_kernel_status": null,
+        "v2_5_triton_preview_kernel_used": false,
+        "validate_group_ids": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "operation": "grouped_argmin_f64",
+      "partner_elapsed_seconds": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "row_count": 262144,
+      "steady_median_seconds": 0.001155126839876175,
+      "steady_seconds": [
+        0.0011620605364441872,
+        0.001155126839876175,
+        0.0011417623609304428,
+        0.0011793524026870728,
+        0.0011532232165336609
+      ],
+      "validate_group_ids": false,
+      "validate_nan_scores": false,
+      "warm_seconds": 0.0011837510392069817
+    },
+    {
+      "compact_present_groups": true,
+      "group_count": 4096,
+      "label": "default_compact",
+      "layer": "direct",
+      "metadata_summary": {
+        "contract_version": "rtdl.partner_continuation.v2.5",
+        "host_present_group_compaction_used": true,
+        "nan_validation_host_sync_used": true,
+        "operation": "grouped_argmax_f64",
+        "outputs": {
+          "dense_item_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              4096
+            ]
+          },
+          "dense_scores": {
+            "dtype": "float64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              4096
+            ]
+          },
+          "group_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              4096
+            ]
+          },
+          "item_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              4096
+            ]
+          },
+          "missing_group_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              0
+            ]
+          },
+          "present_counts": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              4096
+            ]
+          },
+          "scores": {
+            "dtype": "float64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              4096
+            ]
+          }
+        },
+        "partner": "numba",
+        "phase_timing": {
+          "phase_contract_version": "rtdl.partner.v2.4",
+          "phases_sec": {
+            "partner_continuation": 0.0011646347120404243
+          },
+          "promoted_performance_path": false,
+          "same_phase_contract_as_basis": false,
+          "source": "run_numba_grouped_argmax_f64",
+          "validation": {
+            "errors": [],
+            "known_phases": [
+              "partner_continuation"
+            ],
+            "status": "accept"
+          }
+        },
+        "promoted_performance_path": false,
+        "raw_kernel_required": false,
+        "replaces_rt_traversal": false,
+        "rt_core_speedup_claim_authorized": false,
+        "status": "preview_not_promoted",
+        "tie_break": "highest_score_then_lowest_item_id"
+      },
+      "operation": "grouped_argmax_f64",
+      "partner_elapsed_seconds": [
+        0.001112746074795723,
+        0.0011510485783219337,
+        0.0011417409405112267,
+        0.0011379644274711609,
+        0.001156087964773178
+      ],
+      "row_count": 262144,
+      "steady_median_seconds": 0.0020002834498882294,
+      "steady_seconds": [
+        0.001962532289326191,
+        0.0020071668550372124,
+        0.001986667513847351,
+        0.0020002834498882294,
+        0.0020103827118873596
+      ],
+      "validate_group_ids": true,
+      "validate_nan_scores": true,
+      "warm_seconds": 0.002025401219725609
+    },
+    {
+      "compact_present_groups": false,
+      "group_count": 4096,
+      "label": "no_validate_dense",
+      "layer": "direct",
+      "metadata_summary": {
+        "contract_version": "rtdl.partner_continuation.v2.5",
+        "host_present_group_compaction_used": false,
+        "nan_validation_host_sync_used": false,
+        "operation": "grouped_argmax_f64",
+        "outputs": {
+          "dense_item_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              4096
+            ]
+          },
+          "dense_scores": {
+            "dtype": "float64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              4096
+            ]
+          },
+          "group_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              4096
+            ]
+          },
+          "item_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              4096
+            ]
+          },
+          "missing_group_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              0
+            ]
+          },
+          "present_counts": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              4096
+            ]
+          },
+          "scores": {
+            "dtype": "float64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              4096
+            ]
+          }
+        },
+        "partner": "numba",
+        "phase_timing": {
+          "phase_contract_version": "rtdl.partner.v2.4",
+          "phases_sec": {
+            "partner_continuation": 0.0009105009958148003
+          },
+          "promoted_performance_path": false,
+          "same_phase_contract_as_basis": false,
+          "source": "run_numba_grouped_argmax_f64",
+          "validation": {
+            "errors": [],
+            "known_phases": [
+              "partner_continuation"
+            ],
+            "status": "accept"
+          }
+        },
+        "promoted_performance_path": false,
+        "raw_kernel_required": false,
+        "replaces_rt_traversal": false,
+        "rt_core_speedup_claim_authorized": false,
+        "status": "preview_not_promoted",
+        "tie_break": "highest_score_then_lowest_item_id"
+      },
+      "operation": "grouped_argmax_f64",
+      "partner_elapsed_seconds": [
+        0.0008834404870867729,
+        0.0008357586339116096,
+        0.0008445065468549728,
+        0.0008346773684024811,
+        0.0008307890966534615
+      ],
+      "row_count": 262144,
+      "steady_median_seconds": 0.0009730001911520958,
+      "steady_seconds": [
+        0.0010234164074063301,
+        0.0009721284732222557,
+        0.0009822575375437737,
+        0.0009730001911520958,
+        0.0009694630280137062
+      ],
+      "validate_group_ids": false,
+      "validate_nan_scores": false,
+      "warm_seconds": 0.0010563088580965996
+    },
+    {
+      "compact_present_groups": true,
+      "group_count": 4096,
+      "label": "default_compact",
+      "layer": "partner_adapter",
+      "metadata_summary": {
+        "adapter": "grouped_argmax_f64_partner_columns",
+        "claim_boundary": "Generic partner-column continuation front door. It does not call native RT traversal, does not embed app semantics, and does not authorize speedup, zero-copy, or release claims.",
+        "direct_device_handoff_authorized": false,
+        "group_count": 4096,
+        "host_present_group_compaction_used": true,
+        "input_contract": "caller_supplied_partner_device_columns",
+        "nan_validation_host_sync_used": true,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "numba_elapsed_seconds": 0.001155969686806202,
+        "partner": "numba",
+        "partner_elapsed_seconds": 0.001155969686806202,
+        "partner_reference_contract": "generic_grouped_argmax_f64",
+        "row_count": 262144,
+        "rt_core_speedup_claim_authorized": false,
+        "tie_break": "highest_score_then_lowest_item_id",
+        "triton_elapsed_seconds": null,
+        "v2_5_partner_continuation_operation": null,
+        "v2_5_release_authorized": false,
+        "v2_5_triton_preview_kernel_status": null,
+        "v2_5_triton_preview_kernel_used": false,
+        "validate_group_ids": true,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "operation": "grouped_argmax_f64",
+      "partner_elapsed_seconds": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "row_count": 262144,
+      "steady_median_seconds": 0.0022313324734568596,
+      "steady_seconds": [
+        0.002203521318733692,
+        0.0023505501449108124,
+        0.0022440264001488686,
+        0.002211015671491623,
+        0.0022313324734568596
+      ],
+      "validate_group_ids": true,
+      "validate_nan_scores": true,
+      "warm_seconds": 0.0021977098658680916
+    },
+    {
+      "compact_present_groups": false,
+      "group_count": 4096,
+      "label": "no_validate_dense",
+      "layer": "partner_adapter",
+      "metadata_summary": {
+        "adapter": "grouped_argmax_f64_partner_columns",
+        "claim_boundary": "Generic partner-column continuation front door. It does not call native RT traversal, does not embed app semantics, and does not authorize speedup, zero-copy, or release claims.",
+        "direct_device_handoff_authorized": false,
+        "group_count": 4096,
+        "host_present_group_compaction_used": false,
+        "input_contract": "caller_supplied_partner_device_columns",
+        "nan_validation_host_sync_used": false,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "numba_elapsed_seconds": 0.0009202994406223297,
+        "partner": "numba",
+        "partner_elapsed_seconds": 0.0009202994406223297,
+        "partner_reference_contract": "generic_grouped_argmax_f64",
+        "row_count": 262144,
+        "rt_core_speedup_claim_authorized": false,
+        "tie_break": "highest_score_then_lowest_item_id",
+        "triton_elapsed_seconds": null,
+        "v2_5_partner_continuation_operation": null,
+        "v2_5_release_authorized": false,
+        "v2_5_triton_preview_kernel_status": null,
+        "v2_5_triton_preview_kernel_used": false,
+        "validate_group_ids": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "operation": "grouped_argmax_f64",
+      "partner_elapsed_seconds": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "row_count": 262144,
+      "steady_median_seconds": 0.0011450080201029778,
+      "steady_seconds": [
+        0.001114499755203724,
+        0.001146470196545124,
+        0.0011319424957036972,
+        0.0011922670528292656,
+        0.0011450080201029778
+      ],
+      "validate_group_ids": false,
+      "validate_nan_scores": false,
+      "warm_seconds": 0.0012327833101153374
+    },
+    {
+      "compact_present_groups": true,
+      "group_count": 16384,
+      "label": "default_compact",
+      "layer": "direct",
+      "metadata_summary": {
+        "contract_version": "rtdl.partner_continuation.v2.5",
+        "host_present_group_compaction_used": true,
+        "nan_validation_host_sync_used": true,
+        "operation": "grouped_argmin_f64",
+        "outputs": {
+          "dense_item_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              16384
+            ]
+          },
+          "dense_scores": {
+            "dtype": "float64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              16384
+            ]
+          },
+          "group_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              16384
+            ]
+          },
+          "item_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              16384
+            ]
+          },
+          "missing_group_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              0
+            ]
+          },
+          "present_counts": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              16384
+            ]
+          },
+          "scores": {
+            "dtype": "float64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              16384
+            ]
+          }
+        },
+        "partner": "numba",
+        "phase_timing": {
+          "phase_contract_version": "rtdl.partner.v2.4",
+          "phases_sec": {
+            "partner_continuation": 0.0013880394399166107
+          },
+          "promoted_performance_path": false,
+          "same_phase_contract_as_basis": false,
+          "source": "run_numba_grouped_argmin_f64",
+          "validation": {
+            "errors": [],
+            "known_phases": [
+              "partner_continuation"
+            ],
+            "status": "accept"
+          }
+        },
+        "promoted_performance_path": false,
+        "raw_kernel_required": false,
+        "replaces_rt_traversal": false,
+        "rt_core_speedup_claim_authorized": false,
+        "status": "preview_not_promoted",
+        "tie_break": "lowest_score_then_lowest_item_id"
+      },
+      "operation": "grouped_argmin_f64",
+      "partner_elapsed_seconds": [
+        0.0012605572119355202,
+        0.0016559986397624016,
+        0.0012562274932861328,
+        0.00125168077647686,
+        0.0012693237513303757
+      ],
+      "row_count": 1048576,
+      "steady_median_seconds": 0.003123047761619091,
+      "steady_seconds": [
+        0.003164296969771385,
+        0.003505977801978588,
+        0.0031034015119075775,
+        0.0030706794932484627,
+        0.003123047761619091
+      ],
+      "validate_group_ids": true,
+      "validate_nan_scores": true,
+      "warm_seconds": 0.005379850044846535
+    },
+    {
+      "compact_present_groups": false,
+      "group_count": 16384,
+      "label": "no_validate_dense",
+      "layer": "direct",
+      "metadata_summary": {
+        "contract_version": "rtdl.partner_continuation.v2.5",
+        "host_present_group_compaction_used": false,
+        "nan_validation_host_sync_used": false,
+        "operation": "grouped_argmin_f64",
+        "outputs": {
+          "dense_item_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              16384
+            ]
+          },
+          "dense_scores": {
+            "dtype": "float64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              16384
+            ]
+          },
+          "group_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              16384
+            ]
+          },
+          "item_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              16384
+            ]
+          },
+          "missing_group_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              0
+            ]
+          },
+          "present_counts": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              16384
+            ]
+          },
+          "scores": {
+            "dtype": "float64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              16384
+            ]
+          }
+        },
+        "partner": "numba",
+        "phase_timing": {
+          "phase_contract_version": "rtdl.partner.v2.4",
+          "phases_sec": {
+            "partner_continuation": 0.0009398274123668671
+          },
+          "promoted_performance_path": false,
+          "same_phase_contract_as_basis": false,
+          "source": "run_numba_grouped_argmin_f64",
+          "validation": {
+            "errors": [],
+            "known_phases": [
+              "partner_continuation"
+            ],
+            "status": "accept"
+          }
+        },
+        "promoted_performance_path": false,
+        "raw_kernel_required": false,
+        "replaces_rt_traversal": false,
+        "rt_core_speedup_claim_authorized": false,
+        "status": "preview_not_promoted",
+        "tie_break": "lowest_score_then_lowest_item_id"
+      },
+      "operation": "grouped_argmin_f64",
+      "partner_elapsed_seconds": [
+        0.0008894717320799828,
+        0.0011193584650754929,
+        0.0008745547384023666,
+        0.0008724993094801903,
+        0.0009007034823298454
+      ],
+      "row_count": 1048576,
+      "steady_median_seconds": 0.0010268324986100197,
+      "steady_seconds": [
+        0.0010268324986100197,
+        0.0012729903683066368,
+        0.0010153008624911308,
+        0.0010101012885570526,
+        0.0010378537699580193
+      ],
+      "validate_group_ids": false,
+      "validate_nan_scores": false,
+      "warm_seconds": 0.0011117039248347282
+    },
+    {
+      "compact_present_groups": true,
+      "group_count": 16384,
+      "label": "default_compact",
+      "layer": "partner_adapter",
+      "metadata_summary": {
+        "adapter": "grouped_argmin_f64_partner_columns",
+        "claim_boundary": "Generic partner-column continuation front door. It does not call native RT traversal, does not embed app semantics, and does not authorize speedup, zero-copy, or release claims.",
+        "direct_device_handoff_authorized": false,
+        "group_count": 16384,
+        "host_present_group_compaction_used": true,
+        "input_contract": "caller_supplied_partner_device_columns",
+        "nan_validation_host_sync_used": true,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "numba_elapsed_seconds": 0.0013560894876718521,
+        "partner": "numba",
+        "partner_elapsed_seconds": 0.0013560894876718521,
+        "partner_reference_contract": "generic_grouped_argmin_f64",
+        "row_count": 1048576,
+        "rt_core_speedup_claim_authorized": false,
+        "tie_break": "lowest_score_then_lowest_item_id",
+        "triton_elapsed_seconds": null,
+        "v2_5_partner_continuation_operation": null,
+        "v2_5_release_authorized": false,
+        "v2_5_triton_preview_kernel_status": null,
+        "v2_5_triton_preview_kernel_used": false,
+        "validate_group_ids": true,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "operation": "grouped_argmin_f64",
+      "partner_elapsed_seconds": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "row_count": 1048576,
+      "steady_median_seconds": 0.003377191722393036,
+      "steady_seconds": [
+        0.00363776832818985,
+        0.0035421857610344887,
+        0.003377191722393036,
+        0.0032686255872249603,
+        0.003364458680152893
+      ],
+      "validate_group_ids": true,
+      "validate_nan_scores": true,
+      "warm_seconds": 0.003472423180937767
+    },
+    {
+      "compact_present_groups": false,
+      "group_count": 16384,
+      "label": "no_validate_dense",
+      "layer": "partner_adapter",
+      "metadata_summary": {
+        "adapter": "grouped_argmin_f64_partner_columns",
+        "claim_boundary": "Generic partner-column continuation front door. It does not call native RT traversal, does not embed app semantics, and does not authorize speedup, zero-copy, or release claims.",
+        "direct_device_handoff_authorized": false,
+        "group_count": 16384,
+        "host_present_group_compaction_used": false,
+        "input_contract": "caller_supplied_partner_device_columns",
+        "nan_validation_host_sync_used": false,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "numba_elapsed_seconds": 0.000943133607506752,
+        "partner": "numba",
+        "partner_elapsed_seconds": 0.000943133607506752,
+        "partner_reference_contract": "generic_grouped_argmin_f64",
+        "row_count": 1048576,
+        "rt_core_speedup_claim_authorized": false,
+        "tie_break": "lowest_score_then_lowest_item_id",
+        "triton_elapsed_seconds": null,
+        "v2_5_partner_continuation_operation": null,
+        "v2_5_release_authorized": false,
+        "v2_5_triton_preview_kernel_status": null,
+        "v2_5_triton_preview_kernel_used": false,
+        "validate_group_ids": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "operation": "grouped_argmin_f64",
+      "partner_elapsed_seconds": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "row_count": 1048576,
+      "steady_median_seconds": 0.0012098299339413643,
+      "steady_seconds": [
+        0.0011659367009997368,
+        0.0011699944734573364,
+        0.001481526531279087,
+        0.0012098299339413643,
+        0.0012168129906058311
+      ],
+      "validate_group_ids": false,
+      "validate_nan_scores": false,
+      "warm_seconds": 0.0012999419122934341
+    },
+    {
+      "compact_present_groups": true,
+      "group_count": 16384,
+      "label": "default_compact",
+      "layer": "direct",
+      "metadata_summary": {
+        "contract_version": "rtdl.partner_continuation.v2.5",
+        "host_present_group_compaction_used": true,
+        "nan_validation_host_sync_used": true,
+        "operation": "grouped_argmax_f64",
+        "outputs": {
+          "dense_item_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              16384
+            ]
+          },
+          "dense_scores": {
+            "dtype": "float64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              16384
+            ]
+          },
+          "group_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              16384
+            ]
+          },
+          "item_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              16384
+            ]
+          },
+          "missing_group_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              0
+            ]
+          },
+          "present_counts": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              16384
+            ]
+          },
+          "scores": {
+            "dtype": "float64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              16384
+            ]
+          }
+        },
+        "partner": "numba",
+        "phase_timing": {
+          "phase_contract_version": "rtdl.partner.v2.4",
+          "phases_sec": {
+            "partner_continuation": 0.0013104220852255821
+          },
+          "promoted_performance_path": false,
+          "same_phase_contract_as_basis": false,
+          "source": "run_numba_grouped_argmax_f64",
+          "validation": {
+            "errors": [],
+            "known_phases": [
+              "partner_continuation"
+            ],
+            "status": "accept"
+          }
+        },
+        "promoted_performance_path": false,
+        "raw_kernel_required": false,
+        "replaces_rt_traversal": false,
+        "rt_core_speedup_claim_authorized": false,
+        "status": "preview_not_promoted",
+        "tie_break": "highest_score_then_lowest_item_id"
+      },
+      "operation": "grouped_argmax_f64",
+      "partner_elapsed_seconds": [
+        0.00160143431276083,
+        0.0013060932978987694,
+        0.0012474721297621727,
+        0.0012380238622426987,
+        0.0012809056788682938
+      ],
+      "row_count": 1048576,
+      "steady_median_seconds": 0.003110134042799473,
+      "steady_seconds": [
+        0.0034385090693831444,
+        0.0031434884294867516,
+        0.003068806603550911,
+        0.0030445102602243423,
+        0.003110134042799473
+      ],
+      "validate_group_ids": true,
+      "validate_nan_scores": true,
+      "warm_seconds": 0.003148818388581276
+    },
+    {
+      "compact_present_groups": false,
+      "group_count": 16384,
+      "label": "no_validate_dense",
+      "layer": "direct",
+      "metadata_summary": {
+        "contract_version": "rtdl.partner_continuation.v2.5",
+        "host_present_group_compaction_used": false,
+        "nan_validation_host_sync_used": false,
+        "operation": "grouped_argmax_f64",
+        "outputs": {
+          "dense_item_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              16384
+            ]
+          },
+          "dense_scores": {
+            "dtype": "float64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              16384
+            ]
+          },
+          "group_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              16384
+            ]
+          },
+          "item_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              16384
+            ]
+          },
+          "missing_group_ids": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              0
+            ]
+          },
+          "present_counts": {
+            "dtype": "int64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              16384
+            ]
+          },
+          "scores": {
+            "dtype": "float64",
+            "object_type": "DeviceNDArray",
+            "shape": [
+              16384
+            ]
+          }
+        },
+        "partner": "numba",
+        "phase_timing": {
+          "phase_contract_version": "rtdl.partner.v2.4",
+          "phases_sec": {
+            "partner_continuation": 0.0009121736511588097
+          },
+          "promoted_performance_path": false,
+          "same_phase_contract_as_basis": false,
+          "source": "run_numba_grouped_argmax_f64",
+          "validation": {
+            "errors": [],
+            "known_phases": [
+              "partner_continuation"
+            ],
+            "status": "accept"
+          }
+        },
+        "promoted_performance_path": false,
+        "raw_kernel_required": false,
+        "replaces_rt_traversal": false,
+        "rt_core_speedup_claim_authorized": false,
+        "status": "preview_not_promoted",
+        "tie_break": "highest_score_then_lowest_item_id"
+      },
+      "operation": "grouped_argmax_f64",
+      "partner_elapsed_seconds": [
+        0.0008750446140766144,
+        0.0008800439536571503,
+        0.0011325227096676826,
+        0.0008638631552457809,
+        0.0008640233427286148
+      ],
+      "row_count": 1048576,
+      "steady_median_seconds": 0.0010142391547560692,
+      "steady_seconds": [
+        0.0010133367031812668,
+        0.00101483054459095,
+        0.0012705763801932335,
+        0.0010142391547560692,
+        0.001012355089187622
+      ],
+      "validate_group_ids": false,
+      "validate_nan_scores": false,
+      "warm_seconds": 0.0010875286534428596
+    },
+    {
+      "compact_present_groups": true,
+      "group_count": 16384,
+      "label": "default_compact",
+      "layer": "partner_adapter",
+      "metadata_summary": {
+        "adapter": "grouped_argmax_f64_partner_columns",
+        "claim_boundary": "Generic partner-column continuation front door. It does not call native RT traversal, does not embed app semantics, and does not authorize speedup, zero-copy, or release claims.",
+        "direct_device_handoff_authorized": false,
+        "group_count": 16384,
+        "host_present_group_compaction_used": true,
+        "input_contract": "caller_supplied_partner_device_columns",
+        "nan_validation_host_sync_used": true,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "numba_elapsed_seconds": 0.0012784618884325027,
+        "partner": "numba",
+        "partner_elapsed_seconds": 0.0012784618884325027,
+        "partner_reference_contract": "generic_grouped_argmax_f64",
+        "row_count": 1048576,
+        "rt_core_speedup_claim_authorized": false,
+        "tie_break": "highest_score_then_lowest_item_id",
+        "triton_elapsed_seconds": null,
+        "v2_5_partner_continuation_operation": null,
+        "v2_5_release_authorized": false,
+        "v2_5_triton_preview_kernel_status": null,
+        "v2_5_triton_preview_kernel_used": false,
+        "validate_group_ids": true,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "operation": "grouped_argmax_f64",
+      "partner_elapsed_seconds": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "row_count": 1048576,
+      "steady_median_seconds": 0.0034175990149378777,
+      "steady_seconds": [
+        0.0036098649725317955,
+        0.0034737149253487587,
+        0.0034175990149378777,
+        0.0033120084553956985,
+        0.0034008072689175606
+      ],
+      "validate_group_ids": true,
+      "validate_nan_scores": true,
+      "warm_seconds": 0.003397531807422638
+    },
+    {
+      "compact_present_groups": false,
+      "group_count": 16384,
+      "label": "no_validate_dense",
+      "layer": "partner_adapter",
+      "metadata_summary": {
+        "adapter": "grouped_argmax_f64_partner_columns",
+        "claim_boundary": "Generic partner-column continuation front door. It does not call native RT traversal, does not embed app semantics, and does not authorize speedup, zero-copy, or release claims.",
+        "direct_device_handoff_authorized": false,
+        "group_count": 16384,
+        "host_present_group_compaction_used": false,
+        "input_contract": "caller_supplied_partner_device_columns",
+        "nan_validation_host_sync_used": false,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "numba_elapsed_seconds": 0.0009269630536437035,
+        "partner": "numba",
+        "partner_elapsed_seconds": 0.0009269630536437035,
+        "partner_reference_contract": "generic_grouped_argmax_f64",
+        "row_count": 1048576,
+        "rt_core_speedup_claim_authorized": false,
+        "tie_break": "highest_score_then_lowest_item_id",
+        "triton_elapsed_seconds": null,
+        "v2_5_partner_continuation_operation": null,
+        "v2_5_release_authorized": false,
+        "v2_5_triton_preview_kernel_status": null,
+        "v2_5_triton_preview_kernel_used": false,
+        "validate_group_ids": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "operation": "grouped_argmax_f64",
+      "partner_elapsed_seconds": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "row_count": 1048576,
+      "steady_median_seconds": 0.0011847224086523056,
+      "steady_seconds": [
+        0.0011616498231887817,
+        0.0011916663497686386,
+        0.0014802347868680954,
+        0.0011847224086523056,
+        0.0011731209233403206
+      ],
+      "validate_group_ids": false,
+      "validate_nan_scores": false,
+      "warm_seconds": 0.0012705158442258835
+    }
+  ],
+  "claim_boundary": "diagnostic_timing_not_speedup_claim",
+  "commit": "a83cd178259c53467118c9c641958af0a9fc82c2",
+  "goal": "Goal3139",
+  "gpu": "NVIDIA RTX 4000 Ada Generation, 580.65.06",
+  "host": "4463b4adb79b",
+  "status": "completed"
+}
