@@ -34,6 +34,7 @@ What this does not show:
 | --- | --- | --- | --- |
 | First working command | `examples/v2_0/getting_started/rtdl_hello_world.py` | import and output smoke path | performance |
 | Backend selection | `examples/v2_0/getting_started/rtdl_hello_world_backends.py` | same kernel idea through selected runners | backend speedup |
+| Primitive discovery | `examples/v2_0/getting_started/rtdl_primitive_discovery_workflow.py` | primitive, recipe, and explain-only plan metadata | execution, partner selection, or speedup |
 | Python+partner first path | `examples/v2_0/partners/rtdl_partner_anyhit.py --partner numpy --backend embree` | partner-owned columns staged into Embree any-hit | zero-copy or RT-core speedup |
 | Advanced OptiX partner path | [OptiX Partner Column Any-Hit](tutorials/partner_optix_column_anyhit.md) | Torch/CuPy CUDA input-plus-output evidence for a prepared OptiX any-hit primitive | final release status, zero-copy, or broad acceleration |
 | Feature recipes | `examples/v2_0/getting_started/rtdl_feature_quickstart_cookbook.py` | one compact recipe per public feature | production readiness for every backend |
@@ -77,6 +78,7 @@ the needed local dependencies.
 | Example type | Start here | Why |
 | --- | --- | --- |
 | Tutorial examples | [Quick Tutorial](quick_tutorial.md) | shortest path to the kernel shape |
+| Primitive discovery | [Primitive Discovery Workflow](learn/primitive_discovery_workflow.md) | search the primitive catalog and inspect explain-only plans |
 | Feature recipes | `examples/v2_0/getting_started/rtdl_feature_quickstart_cookbook.py` | one runnable recipe per feature |
 | App catalog | [Application Catalog](application_catalog.md) | current app inventory and boundaries |
 | All examples | [Examples Index](../examples/README.md) | compact directory inventory |
@@ -101,11 +103,12 @@ reports authorize.
 ## Recommended Demo Path
 
 1. Run `examples/v2_0/getting_started/rtdl_hello_world.py`.
-2. Run `examples/v2_0/getting_started/rtdl_feature_quickstart_cookbook.py`.
-3. Run one app from the table above on `cpu_python_reference`.
-4. If Embree is available, rerun the same app with `--backend embree`.
-5. Read [Performance Model](performance_model.md) before interpreting timing.
-6. Read [App Engine Support Matrix](app_engine_support_matrix.md) before using
+2. Run `examples/v2_0/getting_started/rtdl_primitive_discovery_workflow.py`.
+3. Run `examples/v2_0/getting_started/rtdl_feature_quickstart_cookbook.py`.
+4. Run one app from the table above on `cpu_python_reference`.
+5. If Embree is available, rerun the same app with `--backend embree`.
+6. Read [Performance Model](performance_model.md) before interpreting timing.
+7. Read [App Engine Support Matrix](app_engine_support_matrix.md) before using
    `--backend optix` or `--require-rt-core`.
 
 This sequence demonstrates the RTDL user model: Python remains the app layer,

@@ -9,12 +9,13 @@ Use this door if you want to understand RTDL quickly and write programs.
 3. [Hello World](../tutorials/hello_world.md)
 4. [Tutorial Ladder](../tutorials/README.md)
 5. [App And Example Quickstart](../app_example_quickstart.md)
-6. [Application Catalog](../application_catalog.md)
-7. [Choosing A Partner For Custom Logic](partner_choice_for_custom_logic.md)
-8. [Benchmark Partner Reference Matrix](benchmark_partner_reference_matrix.md)
-9. [Feature Guide](../rtdl_feature_guide.md)
-10. [Programming Guide](../rtdl/programming_guide.md)
-11. [DSL Reference](../rtdl/dsl_reference.md)
+6. [Primitive Discovery Workflow](primitive_discovery_workflow.md)
+7. [Application Catalog](../application_catalog.md)
+8. [Choosing A Partner For Custom Logic](partner_choice_for_custom_logic.md)
+9. [Benchmark Partner Reference Matrix](benchmark_partner_reference_matrix.md)
+10. [Feature Guide](../rtdl_feature_guide.md)
+11. [Programming Guide](../rtdl/programming_guide.md)
+12. [DSL Reference](../rtdl/dsl_reference.md)
 
 ## Keep In Mind
 

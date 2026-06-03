@@ -9,9 +9,10 @@ CPU reference path, Embree, or OptiX. In the v2.x track, partner frameworks such
 as NumPy, PyTorch, CuPy, and selected Numba continuations can own or continue
 columns around supported RTDL primitives.
 
-This page is intentionally single-surface. It teaches the current v2.6
-released source tree and its explicit CuPy/Numba partner-choice
-guidance.
+This page is intentionally single-surface. Runtime examples teach the current
+v2.6 released source-tree surface; the primitive discovery workflow is a v2.7
+metadata-only source-tree addition and does not change release or performance
+claim boundaries.
 
 ## Start Here
 
@@ -23,11 +24,12 @@ guidance.
 | 3 | [Python Partner Any-Hit](partner_anyhit.md) | Partner-owned columns with Embree as the CPU RT fallback |
 | 4 | [OptiX Partner Column Any-Hit](partner_optix_column_anyhit.md) | The GPU partner-column shape and its claim boundary |
 | 5 | [Feature Quickstart Cookbook](feature_quickstart_cookbook.md) | Which RTDL primitive shape to choose for a workload |
-| 6 | [Segment And Polygon Workloads](segment_polygon_workloads.md) | Count rows, witness rows, and streaming witness summaries |
-| 7 | [Nearest-Neighbor Workloads](nearest_neighbor_workloads.md) | Fixed-radius, K-closest, and Hausdorff-style composition |
-| 8 | [Graph Workloads](graph_workloads.md) | Frontier/edge traversal rows and graph-summary continuation |
-| 9 | [Database Workloads](db_workloads.md) | Columnar-payload scans, grouped summaries, and DB-style boundaries |
-| 10 | [RTDL Plus Python Rendering](rendering_and_visual_demos.md) | RTDL as the compute/query core inside a Python visual program |
+| 6 | [Primitive Discovery Workflow](../learn/primitive_discovery_workflow.md) | How to search primitives, recipes, and explain-only plans |
+| 7 | [Segment And Polygon Workloads](segment_polygon_workloads.md) | Count rows, witness rows, and streaming witness summaries |
+| 8 | [Nearest-Neighbor Workloads](nearest_neighbor_workloads.md) | Fixed-radius, K-closest, and Hausdorff-style composition |
+| 9 | [Graph Workloads](graph_workloads.md) | Frontier/edge traversal rows and graph-summary continuation |
+| 10 | [Database Workloads](db_workloads.md) | Columnar-payload scans, grouped summaries, and DB-style boundaries |
+| 11 | [RTDL Plus Python Rendering](rendering_and_visual_demos.md) | RTDL as the compute/query core inside a Python visual program |
 
 ## Learning Tracks
 
@@ -35,6 +37,7 @@ guidance.
 
 - [Quick Tutorial](../quick_tutorial.md)
 - [Hello World](hello_world.md)
+- [Primitive Discovery Workflow](../learn/primitive_discovery_workflow.md)
 - [Sorting Demo](sorting_demo.md)
 
 ### Python+Partner+RTDL

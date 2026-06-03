@@ -33,6 +33,7 @@ the same `pip` command inside it.
 | Purpose | Directory | First command |
 | --- | --- | --- |
 | First runnable RTDL programs | `v2_0/getting_started/` | `PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world.py` |
+| Primitive discovery workflow | `v2_0/getting_started/` | `PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_primitive_discovery_workflow.py` |
 | Individual feature examples | `v2_0/features/` | `PYTHONPATH=src:. python examples/v2_0/features/ray_queries/rtdl_ray_triangle_any_hit.py` |
 | Complete v2.x applications | `v2_0/apps/` | `PYTHONPATH=src:. python examples/v2_0/apps/ml/rtdl_outlier_detection_app.py --backend cpu_python_reference` |
 | Partner continuation examples | `v2_0/partners/` | `PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner numpy --backend embree` |
@@ -43,7 +44,7 @@ the same `pip` command inside it.
 
 | Directory | Audience | Contents |
 | --- | --- | --- |
-| `v2_0/getting_started/` | New learner | Hello world, backend selection, feature cookbook |
+| `v2_0/getting_started/` | New learner | Hello world, backend selection, primitive discovery, feature cookbook |
 | `v2_0/features/` | User learning one RTDL primitive family | Ray queries, neighbors, database reductions, graph traversal, spatial rows |
 | `v2_0/apps/` | User building an application | Analytics, geospatial, ML, robotics, simulation, trajectory examples |
 | `v2_0/partners/` | Advanced user | NumPy/CuPy/Numba/user-owned continuation examples around RTDL outputs |

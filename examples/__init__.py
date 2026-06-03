@@ -15,6 +15,7 @@ _ALIASES = {
     "rtdl_hello_world": "examples.v2_0.getting_started.rtdl_hello_world",
     "rtdl_hello_world_backends": "examples.v2_0.getting_started.rtdl_hello_world_backends",
     "rtdl_feature_quickstart_cookbook": "examples.v2_0.getting_started.rtdl_feature_quickstart_cookbook",
+    "rtdl_primitive_discovery_workflow": "examples.v2_0.getting_started.rtdl_primitive_discovery_workflow",
     "rtdl_partner_anyhit": "examples.v2_0.partners.rtdl_partner_anyhit",
     "rtdl_control_apps_cupy_rawkernel": "examples.v2_0.partners.rtdl_control_apps_cupy_rawkernel",
     "rtdl_hausdorff_user_cpp_continuation": "examples.v2_0.partners.rtdl_hausdorff_user_cpp_continuation",
