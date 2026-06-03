@@ -392,6 +392,7 @@ def execute_segmented_typed_stream_partner_continuation(
     group_count: int | None = None,
     k: int | None = None,
     total_row_capacity: int | None = None,
+    block_size: int | None = None,
     dry_run: bool = False,
 ) -> dict[str, Any]:
     """Execute, or dry-run, an explicit partner consumer over a typed stream."""
@@ -416,6 +417,7 @@ def execute_segmented_typed_stream_partner_continuation(
         group_count=int(request["group_count"]),
         k=k,
         total_row_capacity=total_row_capacity,
+        block_size=block_size,
     )
     return {
         **request,
@@ -605,6 +607,7 @@ def _execute_partner_front_door(
     group_count: int,
     k: int | None,
     total_row_capacity: int | None,
+    block_size: int | None,
 ) -> tuple[object, dict[str, Any]]:
     operation = plan.operation
     mapped_columns = _mapped_partner_columns(plan, partner_columns)
@@ -715,9 +718,11 @@ def _execute_partner_front_door(
         if partner == "numba":
             from .numba_partner_continuation import run_numba_compact_mask_i64
 
-            result = run_numba_compact_mask_i64(values, mask)
+            resolved_block_size = 256 if block_size is None else int(block_size)
+            result = run_numba_compact_mask_i64(values, mask, block_size=resolved_block_size)
             metadata.update(
                 {
+                    "block_size": resolved_block_size,
                     "stable_input_order": bool(result["stable_input_order"]),
                     "host_prefix_sum_used": bool(result["host_prefix_sum_used"]),
                     "numba_partner_continuation_status": result["status"],

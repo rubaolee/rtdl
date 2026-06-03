@@ -300,6 +300,7 @@ def describe_triangle_counting_v2_6_numba_compact_mask_continuation() -> dict[st
         "numba_descriptor": rt.describe_numba_compact_mask_i64(),
         "requires_device_resident_columns": True,
         "uses_v2_6_neutral_partner_handoff": True,
+        "uses_v2_8_segmented_typed_stream_front_door": True,
         "uses_legacy_torch_carrier": False,
         "uses_torch_conversion": False,
         "input_columns": ("candidate_row_ids:int64", "valid_triangle_mask:bool"),
@@ -332,7 +333,8 @@ def v2_6_numba_compact_mask_plan_payload() -> dict[str, Any]:
         "command_shape": (
             "Use run_triangle_counting_v2_6_numba_compact_mask_preview(...) from "
             "Python with Numba CUDA device arrays for candidate_row_ids:int64 and "
-            "valid_triangle_mask:bool."
+            "valid_triangle_mask:bool. The legacy v2.6 app helper now routes "
+            "through the generic v2.8 segmented typed-stream partner front door."
         ),
         "claim_boundary": {
             **CLAIM_BOUNDARY,
@@ -369,17 +371,39 @@ def run_triangle_counting_v2_6_numba_compact_mask_preview(
             f"{handoff_validation['errors']}"
         )
 
-    result = rt.run_numba_compact_mask_i64(
-        candidate_row_ids,
-        valid_triangle_mask,
+    stream_adapter = rt.build_segmented_typed_stream_adapter(
+        (),
+        row_schema=("group_ids", "candidate_row_ids", "valid_triangle_mask"),
+        column_roles={
+            "group_ids": "group_key",
+            "candidate_row_ids": "item_id",
+            "valid_triangle_mask": "mask",
+        },
+        page_capacity=1,
+        stream_id="triangle_counting_v2_8_compact_mask_schema",
+        stream_kind="candidate_stream",
+        producer_primitive="app_supplied_candidate_row_stream",
+        ordering="stable_row_order",
+        operation="compact_mask_i64",
+        group_column="group_ids",
+        value_columns=("candidate_row_ids", "valid_triangle_mask"),
+        user_selected_partner="numba",
+    )
+    result = rt.execute_segmented_typed_stream_partner_continuation(
+        stream_adapter,
+        partner="numba",
+        partner_columns={
+            "candidate_row_ids": candidate_row_ids,
+            "valid_triangle_mask": valid_triangle_mask,
+        },
+        group_count=0,
         block_size=block_size,
     )
+    partner_metadata = result["partner_metadata"]
     outputs = {
         "selected_candidate_row_ids": result["outputs"]["values"],
         "original_indices": result["outputs"]["original_indices"],
     }
-    if "block_counts" in result["outputs"]:
-        outputs["block_counts"] = result["outputs"]["block_counts"]
     return {
         "app": BENCHMARK_NAME,
         "mode": "v2_6_numba_compact_mask_preview",
@@ -390,10 +414,23 @@ def run_triangle_counting_v2_6_numba_compact_mask_preview(
         "metadata": {
             "v2_6_numba_compact_mask_plan": plan,
             "v2_6_neutral_handoff_validation": handoff_validation,
-            "execution_path": "v2_6_numba_compact_mask_front_door",
+            "v2_8_typed_stream_front_door_request": {
+                "adapter_version": result["adapter_version"],
+                "operation": result["operation"],
+                "stream_id": result["stream_id"],
+                "input_column_mapping": result["input_column_mapping"],
+                "requires_caller_supplied_partner_columns": result[
+                    "requires_caller_supplied_partner_columns"
+                ],
+            },
+            "execution_path": "v2_8_segmented_typed_stream_compact_mask_front_door",
+            "legacy_execution_path_alias": "v2_6_numba_compact_mask_front_door",
             "block_size": int(block_size),
-            "stable_input_order": bool(result.get("stable_input_order")),
-            "host_prefix_sum_used": bool(result.get("host_prefix_sum_used")),
+            "stable_input_order": bool(partner_metadata.get("stable_input_order")),
+            "host_prefix_sum_used": bool(partner_metadata.get("host_prefix_sum_used")),
+            "v2_8_segmented_typed_stream_front_door_used": True,
+            "v2_8_partner_consumer_promoted": bool(result["partner_consumer_promoted"]),
+            "v2_8_release_authorized": bool(result["release_authorized"]),
             "post_rt_continuation_only": True,
             "replaces_rt_traversal": False,
             "promoted_performance_path": False,
@@ -402,7 +439,13 @@ def run_triangle_counting_v2_6_numba_compact_mask_preview(
             "true_zero_copy_claim_authorized": False,
             "uses_legacy_torch_carrier": False,
             "uses_torch_conversion": False,
-            "phase_timing": result["phase_timing"],
+            "phase_timing": {
+                "phases_sec": {
+                    "partner_continuation": float(
+                        partner_metadata.get("numba_partner_continuation_elapsed_seconds", 0.0)
+                    )
+                }
+            },
         },
     }
 

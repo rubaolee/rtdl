@@ -37,6 +37,7 @@ class Goal3002RayjoinNumbaCompactMaskWiringTest(unittest.TestCase):
                 self.assertEqual(payload["numba_descriptor"]["operation"], "compact_mask_i64")
                 self.assertEqual(payload["input_columns"], ("candidate_row_ids:int64", "keep_mask:bool"))
                 self.assertTrue(payload["uses_v2_6_neutral_partner_handoff"])
+                self.assertTrue(payload["uses_v2_8_segmented_typed_stream_front_door"])
                 self.assertFalse(payload["uses_legacy_torch_carrier"])
                 self.assertFalse(payload["uses_torch_conversion"])
                 self.assertFalse(payload["replaces_rt_traversal"])
@@ -90,9 +91,12 @@ class Goal3002RayjoinNumbaCompactMaskWiringTest(unittest.TestCase):
             "RAYJOIN_V2_6_NUMBA_COMPACT_MASK_VERSION",
             "describe_rayjoin_v2_6_numba_compact_mask_continuation",
             "run_rayjoin_v2_6_numba_compact_mask_preview",
-            "run_numba_compact_mask_i64",
+            "build_segmented_typed_stream_adapter",
+            "execute_segmented_typed_stream_partner_continuation",
+            "v2_8_segmented_typed_stream_front_door_used",
         ):
             self.assertIn(phrase, source)
+        self.assertNotIn("rt.run_numba_compact_mask_i64(", source)
         text = REPORT.read_text(encoding="utf-8")
         for phrase in (
             "Goal3002",

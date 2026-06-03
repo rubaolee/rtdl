@@ -42,6 +42,7 @@ class Goal2999TriangleCountingNumbaCompactMaskWiringTest(unittest.TestCase):
             ("candidate_row_ids:int64", "valid_triangle_mask:bool"),
         )
         self.assertTrue(payload["uses_v2_6_neutral_partner_handoff"])
+        self.assertTrue(payload["uses_v2_8_segmented_typed_stream_front_door"])
         self.assertFalse(payload["uses_legacy_torch_carrier"])
         self.assertFalse(payload["uses_torch_conversion"])
         self.assertTrue(payload["fast_scalar_summary_path_unchanged"])
@@ -59,17 +60,20 @@ class Goal2999TriangleCountingNumbaCompactMaskWiringTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "device-resident CUDA column is required"):
             triangle.run_triangle_counting_v2_6_numba_compact_mask_preview(inputs)
 
-    def test_app_source_uses_generic_numba_primitive_and_no_goal2998_collision(self) -> None:
+    def test_app_source_uses_v2_8_front_door_and_no_goal2998_collision(self) -> None:
         source = APP.read_text(encoding="utf-8")
         for phrase in (
             "TRIANGLE_COUNTING_V2_6_NUMBA_COMPACT_MASK_VERSION",
             "describe_triangle_counting_v2_6_numba_compact_mask_continuation",
             "run_triangle_counting_v2_6_numba_compact_mask_preview",
             "prepare_v2_6_neutral_partner_handoff",
-            "run_numba_compact_mask_i64",
+            "build_segmented_typed_stream_adapter",
+            "execute_segmented_typed_stream_partner_continuation",
+            "v2_8_segmented_typed_stream_front_door_used",
             "v2_6_numba_compact_mask_plan",
         ):
             self.assertIn(phrase, source)
+        self.assertNotIn("rt.run_numba_compact_mask_i64(", source)
         readiness = READINESS.read_text(encoding="utf-8")
         self.assertIn("begin_goal2999_numba_compact_mask_benchmark_app_wiring_after_goal2998_review", readiness)
         self.assertNotIn("begin_goal2998_numba_compact_mask_benchmark_app_wiring_after_review", readiness)
