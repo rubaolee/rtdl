@@ -560,8 +560,16 @@ def filter_closed_shape_membership_candidate_columns_by_owner_face_cupy(
     topology_has_right_faces=None,
     missing_owner_policy: str = "raise",
     require_unique_owner_point: bool = True,
+    require_unique_candidate_pair: bool = True,
 ) -> dict[str, object]:
-    """CuPy device-column continuation for owner-face membership filtering."""
+    """CuPy device-column continuation for owner-face membership filtering.
+
+    This helper is a single-owner-face-per-point device continuation. Duplicate
+    candidate ``(point_id, shape_id)`` pairs fail closed by default because the
+    Python row reference deduplicates them while this device path preserves row
+    shape. Use the Python/columnar reference when multiple owner faces per point
+    are required.
+    """
 
     if missing_owner_policy not in {"raise", "drop"}:
         raise ValueError("missing_owner_policy must be 'raise' or 'drop'")
@@ -613,6 +621,19 @@ def filter_closed_shape_membership_candidate_columns_by_owner_face_cupy(
             "owner_face_id": empty,
         }
 
+    if require_unique_candidate_pair and candidate_count > 1:
+        candidate_order = cp.lexsort(cp.stack((candidate_shape_ids, candidate_point_ids)))
+        sorted_candidate_points = candidate_point_ids[candidate_order]
+        sorted_candidate_shapes = candidate_shape_ids[candidate_order]
+        duplicate_candidate = bool(
+            cp.any(
+                (sorted_candidate_points[1:] == sorted_candidate_points[:-1])
+                & (sorted_candidate_shapes[1:] == sorted_candidate_shapes[:-1])
+            ).item()
+        )
+        if duplicate_candidate:
+            raise ValueError("candidate point/shape pairs must be unique for the CuPy filter")
+
     if owner_count == 0:
         owner_found = cp.zeros((candidate_count,), dtype=cp.bool_)
         owner_faces = cp.zeros((candidate_count,), dtype=cp.int64)
@@ -620,12 +641,16 @@ def filter_closed_shape_membership_candidate_columns_by_owner_face_cupy(
         owner_order = cp.argsort(owner_point_ids, kind="stable")
         sorted_owner_points = owner_point_ids[owner_order]
         sorted_owner_faces = owner_face_ids[owner_order]
-        if require_unique_owner_point and owner_count > 1:
+        if owner_count > 1:
             duplicate_owner = bool(
                 cp.any(sorted_owner_points[1:] == sorted_owner_points[:-1]).item()
             )
             if duplicate_owner:
-                raise ValueError("owner point ids must be unique for the CuPy filter")
+                if require_unique_owner_point:
+                    raise ValueError("owner point ids must be unique for the CuPy filter")
+                raise ValueError(
+                    "multiple owner faces per point are not supported by the CuPy filter"
+                )
         owner_pos = cp.searchsorted(sorted_owner_points, candidate_point_ids)
         owner_safe_pos = cp.minimum(owner_pos, owner_count - 1)
         owner_found = (
@@ -661,10 +686,13 @@ def filter_closed_shape_membership_candidate_columns_by_owner_face_cupy(
         has_left = sorted_has_left[topology_safe_pos]
         has_right = sorted_has_right[topology_safe_pos]
 
-    matches_left = has_left & (left_faces == owner_faces)
-    matches_right = has_right & (right_faces == owner_faces)
+    matches_left = has_left & (left_faces >= 0) & (left_faces == owner_faces)
+    matches_right = has_right & (right_faces >= 0) & (right_faces == owner_faces)
     keep = owner_found & topology_found & (matches_left | matches_right)
-    kept_owner_faces = cp.where(matches_left, left_faces, right_faces)[keep]
+    unmatched_face = cp.full((candidate_count,), 9223372036854775807, dtype=cp.int64)
+    matched_left_faces = cp.where(matches_left, left_faces, unmatched_face)
+    matched_right_faces = cp.where(matches_right, right_faces, unmatched_face)
+    kept_owner_faces = cp.minimum(matched_left_faces, matched_right_faces)[keep]
     return {
         "point_id": candidate_point_ids[keep],
         "shape_id": candidate_shape_ids[keep],
@@ -772,6 +800,9 @@ def owner_face_priority_pipeline_contract() -> dict[str, object]:
             "missing_owner": "fail_closed_by_default",
             "missing_topology": "drop_candidate",
             "topology_face_presence_columns": "gate_left_and_right_face_ids_when_present",
+            "device_cupy_filter_candidate_duplicates": "fail_closed_by_default",
+            "device_cupy_filter_face_ids": "non_negative_matches_only",
+            "device_cupy_filter_owner_multiplicity": "single_owner_face_per_point_only",
         },
         "outputs": ("point_id", "shape_id", "membership", "owner_face_id"),
         "app_agnostic": True,
@@ -833,6 +864,11 @@ def validate_owner_face_priority_pipeline_contract() -> dict[str, object]:
         or filter_policy.get("missing_owner") != "fail_closed_by_default"
         or filter_policy.get("topology_face_presence_columns")
         != "gate_left_and_right_face_ids_when_present"
+        or filter_policy.get("device_cupy_filter_candidate_duplicates")
+        != "fail_closed_by_default"
+        or filter_policy.get("device_cupy_filter_face_ids") != "non_negative_matches_only"
+        or filter_policy.get("device_cupy_filter_owner_multiplicity")
+        != "single_owner_face_per_point_only"
     ):
         raise ValueError("owner-face priority pipeline filter policy must stay explicit")
     inputs = contract["inputs"]
