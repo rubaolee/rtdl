@@ -229,6 +229,15 @@ OPTIX_CLOSED_SHAPE_MEMBERSHIP_DEVICE_FILTERED_PREPARED_POINTS_COUNT_SYMBOL = (
 OPTIX_CLOSED_SHAPE_MEMBERSHIP_DEVICE_FILTERED_PREPARED_POINTS_BATCH_COUNT_SYMBOL = (
     "rtdl_optix_count_prepared_point_closed_shape_membership_device_filtered_prepared_points_batch_2d"
 )
+OPTIX_PREPARED_POINTS_BATCH_GRAPH_PREPARE_SYMBOL = (
+    "rtdl_optix_prepare_prepared_point_closed_shape_membership_device_filtered_prepared_points_batch_graph_2d"
+)
+OPTIX_PREPARED_POINTS_BATCH_GRAPH_REPLAY_SYMBOL = (
+    "rtdl_optix_replay_prepared_point_closed_shape_membership_device_filtered_prepared_points_batch_graph_2d"
+)
+OPTIX_PREPARED_POINTS_BATCH_GRAPH_DESTROY_SYMBOL = (
+    "rtdl_optix_destroy_prepared_point_closed_shape_membership_device_filtered_prepared_points_batch_graph_2d"
+)
 OPTIX_CLOSED_SHAPE_FIRST_BOUNDARY_CROSSING_SYMBOL = (
     "rtdl_optix_run_prepared_point_closed_shape_first_boundary_crossing_2d"
 )
@@ -6422,6 +6431,8 @@ def _get_last_closed_shape_membership_phase_timings_from_library(lib) -> dict[st
             if mode_value == 8
             else "prepared_points_device_filtered_batch_count"
             if mode_value == 9
+            else "prepared_points_device_filtered_batch_graph_replay"
+            if mode_value == 10
             else "none"
         ),
         "point_pack": float(point_pack.value),
@@ -9800,6 +9811,110 @@ class PreparedOptixPointProbeColumns2D:
             pass
 
 
+class PreparedOptixPointClosedShapeBatchCountGraph2D:
+    """Replayable generic batch-count graph for prepared point/closed-shape probes."""
+
+    def __init__(
+        self,
+        prepared: "PreparedOptixPointClosedShapeMembership2D",
+        prepared_points: PreparedOptixPointProbeColumns2D,
+        request_count: int,
+    ):
+        if prepared.closed:
+            raise RuntimeError("prepared OptiX closed-shape membership handle is closed")
+        if prepared_points.closed:
+            raise RuntimeError("prepared OptiX point-probe columns handle is closed")
+        request_count = int(request_count)
+        if request_count <= 0:
+            raise ValueError("request_count must be positive")
+        self._prepared_owner = prepared
+        self._prepared_points_owner = prepared_points
+        self.request_count = request_count
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        self._lib = prepared._lib
+        prepare_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_PREPARED_POINTS_BATCH_GRAPH_PREPARE_SYMBOL,
+        )
+        if prepare_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_PREPARED_POINTS_BATCH_GRAPH_PREPARE_SYMBOL}; rebuild the OptiX backend from current main"
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = prepare_symbol(
+            prepared._handle,
+            prepared_points._handle,
+            ctypes.c_size_t(request_count),
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+    @property
+    def closed(self) -> bool:
+        return self._closed
+
+    def replay(self) -> tuple[int, ...]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX batch-count graph handle is closed")
+        replay_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_PREPARED_POINTS_BATCH_GRAPH_REPLAY_SYMBOL,
+        )
+        if replay_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_PREPARED_POINTS_BATCH_GRAPH_REPLAY_SYMBOL}; rebuild the OptiX backend from current main"
+            )
+        counts = (ctypes.c_size_t * self.request_count)()
+        error = ctypes.create_string_buffer(4096)
+        status = replay_symbol(
+            self._handle,
+            counts,
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return tuple(int(counts[index]) for index in range(self.request_count))
+
+    def to_metadata(self) -> dict[str, object]:
+        return {
+            "schema": "rtdl.optix.prepared_point_closed_shape_batch_count_graph_2d.v1",
+            "request_count": self.request_count,
+            "prepared_scene_owner_closed": self._prepared_owner.closed,
+            "prepared_points_owner_closed": self._prepared_points_owner.closed,
+            "native_prepare_symbol": OPTIX_PREPARED_POINTS_BATCH_GRAPH_PREPARE_SYMBOL,
+            "native_replay_symbol": OPTIX_PREPARED_POINTS_BATCH_GRAPH_REPLAY_SYMBOL,
+            "replayable_launch_object": True,
+            "true_zero_copy_claim_authorized": False,
+        }
+
+    def close(self) -> None:
+        if not self._closed:
+            destroy_symbol = _find_optional_backend_symbol(
+                self._lib,
+                OPTIX_PREPARED_POINTS_BATCH_GRAPH_DESTROY_SYMBOL,
+            )
+            if destroy_symbol is not None and self._handle:
+                destroy_symbol(self._handle)
+            self._closed = True
+
+    def __enter__(self) -> "PreparedOptixPointClosedShapeBatchCountGraph2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
 class PreparedOptixPointClosedShapeMembership2D:
     """Prepared generic 2-D point/closed-shape membership scene."""
 
@@ -10045,6 +10160,18 @@ class PreparedOptixPointClosedShapeMembership2D:
         )
         _check_status(status, error)
         return tuple(int(counts[index]) for index in range(request_count))
+
+    def prepare_device_filtered_prepared_points_batch_graph(
+        self,
+        prepared_points: PreparedOptixPointProbeColumns2D,
+        request_count: int,
+    ) -> PreparedOptixPointClosedShapeBatchCountGraph2D:
+        """Prepare a replayable generic batch-count launch object."""
+        return PreparedOptixPointClosedShapeBatchCountGraph2D(
+            self,
+            prepared_points,
+            request_count,
+        )
 
     def first_boundary_crossing_raw(self, points) -> OptixRowView:
         """Return generic first boundary-event rows for point/closed-shape probes."""
@@ -18208,6 +18335,40 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_count_prepared_closed_shape_membership_device_filtered_prepared_points_batch.restype = ctypes.c_int
+
+    optional_prepare_prepared_points_batch_graph = _find_optional_backend_symbol(
+        lib,
+        OPTIX_PREPARED_POINTS_BATCH_GRAPH_PREPARE_SYMBOL,
+    )
+    if optional_prepare_prepared_points_batch_graph is not None:
+        optional_prepare_prepared_points_batch_graph.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_prepare_prepared_points_batch_graph.restype = ctypes.c_int
+
+    optional_replay_prepared_points_batch_graph = _find_optional_backend_symbol(
+        lib,
+        OPTIX_PREPARED_POINTS_BATCH_GRAPH_REPLAY_SYMBOL,
+    )
+    if optional_replay_prepared_points_batch_graph is not None:
+        optional_replay_prepared_points_batch_graph.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_replay_prepared_points_batch_graph.restype = ctypes.c_int
+
+    optional_destroy_prepared_points_batch_graph = _find_optional_backend_symbol(
+        lib,
+        OPTIX_PREPARED_POINTS_BATCH_GRAPH_DESTROY_SYMBOL,
+    )
+    if optional_destroy_prepared_points_batch_graph is not None:
+        optional_destroy_prepared_points_batch_graph.argtypes = [ctypes.c_void_p]
+        optional_destroy_prepared_points_batch_graph.restype = None
 
     optional_first_boundary_crossing = _find_optional_backend_symbol(
         lib,

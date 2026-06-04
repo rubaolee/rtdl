@@ -7531,6 +7531,175 @@ static void count_prepared_point_closed_shape_membership_device_filtered_prepare
     g_optix_last_closed_shape_emitted_count = total_count;
 }
 
+struct PreparedPointClosedShapeMembershipPreparedPointsBatchGraph2D {
+    PreparedShapePairRelationBuild* prepared = nullptr;
+    PreparedPointProbeColumns2D* prepared_points = nullptr;
+    size_t request_count = 0;
+    std::unique_ptr<DevPtr> d_counts;
+    std::unique_ptr<DevPtr> d_params;
+    CUstream stream = nullptr;
+    CUgraph graph = nullptr;
+    CUgraphExec graph_exec = nullptr;
+
+    PreparedPointClosedShapeMembershipPreparedPointsBatchGraph2D(
+            PreparedShapePairRelationBuild* prepared_in,
+            PreparedPointProbeColumns2D* prepared_points_in,
+            size_t request_count_in)
+        : prepared(prepared_in),
+          prepared_points(prepared_points_in),
+          request_count(request_count_in)
+    {
+        if (!prepared) {
+            throw std::runtime_error("prepared closed-shape membership handle must not be null");
+        }
+        if (!prepared_points) {
+            throw std::runtime_error("prepared point-probe columns handle must not be null");
+        }
+        if (request_count == 0) {
+            throw std::runtime_error("prepared-points batch graph request_count must be positive");
+        }
+        if (request_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+            throw std::runtime_error("prepared-points batch graph request_count exceeds uint32_t output capacity");
+        }
+        if (prepared_points->point_count == 0 || prepared->right_count == 0) {
+            throw std::runtime_error("prepared-points batch graph requires non-empty prepared points and closed shapes");
+        }
+        if (prepared_points->point_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+            throw std::runtime_error("prepared-points batch graph point count exceeds uint32_t launch capacity");
+        }
+        if (prepared->right_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+            throw std::runtime_error("prepared-points batch graph shape count exceeds uint32_t launch capacity");
+        }
+        const uint64_t max_points_per_launch64 =
+            static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()) /
+            static_cast<uint64_t>(prepared->right_count);
+        if (max_points_per_launch64 == 0 ||
+                prepared_points->point_count > static_cast<size_t>(max_points_per_launch64)) {
+            throw std::runtime_error("prepared-points batch graph currently requires a single launch per request");
+        }
+
+        const bool use_scalar_count_pipeline = use_prepared_closed_shape_scalar_count_pipeline();
+        if (use_scalar_count_pipeline) {
+            ensure_pip_scalar_count_pipeline();
+        } else {
+            ensure_pip_pipeline();
+        }
+        PipelineHolder* pipeline = use_scalar_count_pipeline
+            ? g_pip_scalar_count.pipe
+            : g_pip.pipe;
+
+        d_counts = std::make_unique<DevPtr>(sizeof(uint32_t) * request_count);
+        d_params = std::make_unique<DevPtr>(sizeof(PipLaunchParams) * request_count);
+        std::vector<PipLaunchParams> params(request_count);
+        for (size_t request_index = 0; request_index < request_count; ++request_index) {
+            PipLaunchParams lp;
+            lp.traversable    = prepared->accel.handle;
+            lp.points_x       = reinterpret_cast<const float*>(prepared_points->d_points_x.ptr);
+            lp.points_y       = reinterpret_cast<const float*>(prepared_points->d_points_y.ptr);
+            lp.point_ids      = reinterpret_cast<const uint32_t*>(prepared_points->d_point_ids.ptr);
+            lp.polygons       = reinterpret_cast<const GpuPolygonRef*>(prepared->d_right_polygons.ptr);
+            lp.vertices_x     = reinterpret_cast<const float*>(prepared->d_right_vx.ptr);
+            lp.vertices_y     = reinterpret_cast<const float*>(prepared->d_right_vy.ptr);
+            lp.prepared_edges = use_prepared_closed_shape_edge_layout()
+                ? reinterpret_cast<const GpuPreparedClosedShapeEdge2D*>(prepared->d_right_edges.ptr)
+                : nullptr;
+            lp.hit_words      = nullptr;
+            lp.output         = nullptr;
+            lp.output_count   = reinterpret_cast<uint32_t*>(
+                d_counts->ptr + static_cast<CUdeviceptr>(sizeof(uint32_t) * request_index));
+            lp.output_capacity = 0u;
+            lp.positive_only  = 1u;
+            lp.hit_word_count = 0u;
+            lp.polygon_count  = static_cast<uint32_t>(prepared->right_count);
+            lp.probe_count    = static_cast<uint32_t>(prepared_points->point_count);
+            lp.point_index_offset = 0u;
+            lp.device_prefilter = 1u;
+            lp.boundary_check = closed_shape_membership_boundary_check_enabled();
+            params[request_index] = lp;
+        }
+        upload(d_params->ptr, params.data(), request_count);
+
+        try {
+            CU_CHECK(cuStreamCreate(&stream, CU_STREAM_NON_BLOCKING));
+            CU_CHECK(cuStreamBeginCapture(stream, CU_STREAM_CAPTURE_MODE_GLOBAL));
+            CU_CHECK(cuMemsetD32Async(d_counts->ptr, 0, request_count, stream));
+            for (size_t request_index = 0; request_index < request_count; ++request_index) {
+                const CUdeviceptr request_params =
+                    d_params->ptr + static_cast<CUdeviceptr>(sizeof(PipLaunchParams) * request_index);
+                OPTIX_CHECK(optixLaunch(pipeline->pipeline, stream,
+                                         request_params, sizeof(PipLaunchParams),
+                                         &pipeline->sbt,
+                                         static_cast<unsigned>(prepared_points->point_count), 1, 1));
+            }
+            CU_CHECK(cuStreamEndCapture(stream, &graph));
+            CU_CHECK(cuGraphInstantiate(&graph_exec, graph, 0));
+        } catch (...) {
+            if (graph_exec) cuGraphExecDestroy(graph_exec);
+            if (graph) cuGraphDestroy(graph);
+            if (stream) cuStreamDestroy(stream);
+            graph_exec = nullptr;
+            graph = nullptr;
+            stream = nullptr;
+            throw;
+        }
+    }
+
+    ~PreparedPointClosedShapeMembershipPreparedPointsBatchGraph2D()
+    {
+        if (graph_exec) cuGraphExecDestroy(graph_exec);
+        if (graph) cuGraphDestroy(graph);
+        if (stream) cuStreamDestroy(stream);
+    }
+
+    PreparedPointClosedShapeMembershipPreparedPointsBatchGraph2D(
+        const PreparedPointClosedShapeMembershipPreparedPointsBatchGraph2D&) = delete;
+    PreparedPointClosedShapeMembershipPreparedPointsBatchGraph2D& operator=(
+        const PreparedPointClosedShapeMembershipPreparedPointsBatchGraph2D&) = delete;
+};
+
+static PreparedPointClosedShapeMembershipPreparedPointsBatchGraph2D*
+prepare_point_closed_shape_membership_device_filtered_prepared_points_batch_graph_2d_optix(
+        PreparedShapePairRelationBuild* prepared,
+        PreparedPointProbeColumns2D* prepared_points,
+        size_t request_count)
+{
+    return new PreparedPointClosedShapeMembershipPreparedPointsBatchGraph2D(
+        prepared,
+        prepared_points,
+        request_count);
+}
+
+static void replay_point_closed_shape_membership_device_filtered_prepared_points_batch_graph_2d_optix(
+        PreparedPointClosedShapeMembershipPreparedPointsBatchGraph2D* graph_handle,
+        size_t* counts_out)
+{
+    if (!graph_handle) {
+        throw std::runtime_error("prepared-points batch graph handle must not be null");
+    }
+    if (!counts_out) {
+        throw std::runtime_error("prepared-points batch graph counts_out must not be null");
+    }
+    std::fill(counts_out, counts_out + graph_handle->request_count, size_t{0});
+    reset_closed_shape_membership_phase_timings(10u);
+
+    const auto t_launch_start = std::chrono::steady_clock::now();
+    CU_CHECK(cuGraphLaunch(graph_handle->graph_exec, graph_handle->stream));
+    CU_CHECK(cuStreamSynchronize(graph_handle->stream));
+    const auto t_launch_end = std::chrono::steady_clock::now();
+    g_optix_last_closed_shape_candidate_count_s = seconds_between(t_launch_start, t_launch_end);
+
+    std::vector<uint32_t> gpu_counts(graph_handle->request_count);
+    download(gpu_counts.data(), graph_handle->d_counts->ptr, graph_handle->request_count);
+    size_t total_count = 0;
+    for (size_t request_index = 0; request_index < graph_handle->request_count; ++request_index) {
+        const size_t count = static_cast<size_t>(gpu_counts[request_index]);
+        counts_out[request_index] = count;
+        total_count += count;
+    }
+    g_optix_last_closed_shape_raw_candidate_count = total_count;
+    g_optix_last_closed_shape_emitted_count = total_count;
+}
+
 static void run_prepared_point_closed_shape_membership_candidate_device_columns_2d_optix(
         PreparedShapePairRelationBuild* prepared,
         const RtdlPoint* points,
