@@ -1,0 +1,33 @@
+{
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "commit": "073ba7ce",
+  "field_names": [
+    "point_id",
+    "shape_id"
+  ],
+  "row_count": 6,
+  "sample": {
+    "point_id": [
+      1,
+      2,
+      3,
+      1,
+      2,
+      3
+    ],
+    "shape_id": [
+      1,
+      1,
+      1,
+      2,
+      2,
+      2
+    ]
+  },
+  "schema": "rtdl.goal3329.pod_cupy_pair_column_smoke.v1",
+  "true_zero_copy_authorized": false
+}

@@ -1,7 +1,13 @@
 import inspect
+import json
+from pathlib import Path
 import unittest
 
 from rtdsl.optix_runtime import OptixNativeDevicePairColumnOutput
+
+
+ROOT = Path(__file__).resolve().parents[1]
+POD_SMOKE = ROOT / "docs" / "reports" / "goal3329_optix_device_pair_columns_cupy_adapter_pod_smoke_2026-06-04.json"
 
 
 class Goal3329OptixDevicePairColumnsCupyAdapterTest(unittest.TestCase):
@@ -35,6 +41,17 @@ class Goal3329OptixDevicePairColumnsCupyAdapterTest(unittest.TestCase):
         self.assertIn("cannot wrap an overflowed device pair-column stream", source)
         self.assertIn("does not own CUDA columns", source)
         self.assertIn("UnownedMemory", source)
+
+    def test_pod_smoke_wrapped_real_pair_columns(self):
+        data = json.loads(POD_SMOKE.read_text(encoding="utf-8"))
+        self.assertEqual(data["schema"], "rtdl.goal3329.pod_cupy_pair_column_smoke.v1")
+        self.assertEqual(data["field_names"], ["point_id", "shape_id"])
+        self.assertEqual(data["row_count"], 6)
+        self.assertEqual(set(data["sample"]), {"point_id", "shape_id"})
+        self.assertFalse(data["true_zero_copy_authorized"])
+        self.assertFalse(data["claim_boundary"]["release_authorized"])
+        self.assertFalse(data["claim_boundary"]["public_speedup_claim_authorized"])
+        self.assertFalse(data["claim_boundary"]["true_zero_copy_claim_authorized"])
 
 
 if __name__ == "__main__":

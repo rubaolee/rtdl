@@ -35,4 +35,10 @@ Local tests confirm:
 - it preserves the existing false `true_zero_copy_authorized` boundary,
 - it retains overflow/device-pointer guards before wrapping.
 
-Pod execution is not required for this narrow Python adapter change, but the method is directly motivated by the A5000 Goal3327 diagnostic path.
+Pod smoke:
+
+- Artifact: `docs/reports/goal3329_optix_device_pair_columns_cupy_adapter_pod_smoke_2026-06-04.json`
+- Commit: `073ba7ce`
+- GPU path: OptiX pair-column stream from `tests/fixtures/rayjoin/br_county_subset.cdb`
+- Result: `as_cupy_columns()` returned `point_id` and `shape_id` arrays with 6 rows.
+- Claim flags remained false.
