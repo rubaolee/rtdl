@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import os
 import re
@@ -110,6 +111,22 @@ def summarize_int_samples(values: list[int]) -> dict[str, Any]:
     }
 
 
+@contextlib.contextmanager
+def temporary_env(name: str, value: str | None):
+    if value is None:
+        yield
+        return
+    previous = os.environ.get(name)
+    os.environ[name] = value
+    try:
+        yield
+    finally:
+        if previous is None:
+            os.environ.pop(name, None)
+        else:
+            os.environ[name] = previous
+
+
 def run_rayjoin_process_samples(
     *,
     query_exec: Path,
@@ -207,6 +224,7 @@ def run_rtdl_samples(
     warmup: int,
     repeat: int,
     count_mode: str = "exact",
+    query_axis: str | None = None,
 ) -> dict[str, Any]:
     if count_mode != "exact" and workload != "pip":
         raise ValueError("non-exact count_mode is only supported for RTDL PIP samples")
@@ -220,13 +238,14 @@ def run_rtdl_samples(
     native_phase_samples: list[dict[str, Any] | None] = []
 
     def one() -> dict[str, Any]:
-        return rayjoin_app.run_rayjoin_prepared_optix_workload(
-            workload,
-            dataset=dataset,
-            result_mode="count",
-            include_rows=False,
-            count_mode=count_mode,
-        )
+        with temporary_env("RTDL_OPTIX_POINT_PRIMITIVE_QUERY_AXIS", query_axis):
+            return rayjoin_app.run_rayjoin_prepared_optix_workload(
+                workload,
+                dataset=dataset,
+                result_mode="count",
+                include_rows=False,
+                count_mode=count_mode,
+            )
 
     for index in range(warmup):
         print(f"[goal3244] RTDL {workload} warmup {index + 1}/{warmup}", flush=True)
@@ -256,6 +275,7 @@ def run_rtdl_samples(
         "route": "prepared_optix",
         "result_mode": "count",
         "count_mode": count_mode,
+        "query_axis": query_axis,
         "warmup": int(warmup),
         "repeat": int(repeat),
         "prepared_query_ms": summarize_samples([value * 1000.0 for value in query_sec]),
@@ -324,6 +344,15 @@ def main(argv: list[str] | None = None) -> int:
             "only after each sample validates it against the exact prepared count."
         ),
     )
+    parser.add_argument(
+        "--rtdl-pip-query-axis",
+        choices=("z_point", "z", "point_z", "aabb_point", "vertical", "y_segment", "default"),
+        help=(
+            "Optional generic closed-shape membership query-axis specialization for RTDL PIP. "
+            "When set, the runner records it in the artifact and exports "
+            "RTDL_OPTIX_POINT_PRIMITIVE_QUERY_AXIS only around RTDL PIP calls."
+        ),
+    )
     parser.add_argument("--timeout-seconds", type=int, default=int(os.environ.get("STEP_TIMEOUT_SECONDS", "300")))
     args = parser.parse_args(argv)
 
@@ -358,6 +387,7 @@ def main(argv: list[str] | None = None) -> int:
             warmup=args.rtdl_warmup,
             repeat=args.rtdl_repeat,
             count_mode=args.rtdl_pip_count_mode,
+            query_axis=args.rtdl_pip_query_axis,
         ),
     }
     comparisons = build_comparison_rows(rayjoin_rows, rtdl_rows)
@@ -384,6 +414,10 @@ def main(argv: list[str] | None = None) -> int:
             "rtdl_pip_count_mode": (
                 "When set to device_filtered_validated, RTDL validates each PIP sample with exact prepared count "
                 "and reports the device-filtered count timing as the prepared_query_ms lane."
+            ),
+            "rtdl_pip_query_axis": (
+                "When --rtdl-pip-query-axis is supplied, the runner exports "
+                "RTDL_OPTIX_POINT_PRIMITIVE_QUERY_AXIS around RTDL PIP calls and records the chosen generic mode."
             ),
         },
         "claim_boundary": CLAIM_BOUNDARY,
