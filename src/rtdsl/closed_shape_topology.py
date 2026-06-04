@@ -547,6 +547,132 @@ def filter_closed_shape_membership_candidate_columns_by_owner_face_columns(
     }
 
 
+def filter_closed_shape_membership_candidate_columns_by_owner_face_cupy(
+    candidate_point_ids,
+    candidate_shape_ids,
+    topology_shape_ids,
+    topology_left_face_ids,
+    topology_right_face_ids,
+    owner_point_ids,
+    owner_face_ids,
+    *,
+    topology_has_left_faces=None,
+    topology_has_right_faces=None,
+    missing_owner_policy: str = "raise",
+    require_unique_owner_point: bool = True,
+) -> dict[str, object]:
+    """CuPy device-column continuation for owner-face membership filtering."""
+
+    if missing_owner_policy not in {"raise", "drop"}:
+        raise ValueError("missing_owner_policy must be 'raise' or 'drop'")
+    try:
+        import cupy as cp  # type: ignore
+    except Exception as exc:  # pragma: no cover - exercised on CUDA hosts.
+        raise RuntimeError("owner-face CuPy filter requires cupy") from exc
+
+    candidate_point_ids = cp.asarray(candidate_point_ids, dtype=cp.int64)
+    candidate_shape_ids = cp.asarray(candidate_shape_ids, dtype=cp.int64)
+    topology_shape_ids = cp.asarray(topology_shape_ids, dtype=cp.int64)
+    topology_left_face_ids = cp.asarray(topology_left_face_ids, dtype=cp.int64)
+    topology_right_face_ids = cp.asarray(topology_right_face_ids, dtype=cp.int64)
+    owner_point_ids = cp.asarray(owner_point_ids, dtype=cp.int64)
+    owner_face_ids = cp.asarray(owner_face_ids, dtype=cp.int64)
+
+    candidate_count = int(candidate_point_ids.size)
+    if int(candidate_shape_ids.size) != candidate_count:
+        raise ValueError("candidate point and shape columns must have the same length")
+    topology_count = int(topology_shape_ids.size)
+    if (
+        int(topology_left_face_ids.size) != topology_count
+        or int(topology_right_face_ids.size) != topology_count
+    ):
+        raise ValueError("topology shape and face columns must have the same length")
+    owner_count = int(owner_point_ids.size)
+    if int(owner_face_ids.size) != owner_count:
+        raise ValueError("owner point and face columns must have the same length")
+
+    if topology_has_left_faces is None:
+        topology_has_left_faces = cp.ones((topology_count,), dtype=cp.int8)
+    else:
+        topology_has_left_faces = cp.asarray(topology_has_left_faces, dtype=cp.int8)
+    if topology_has_right_faces is None:
+        topology_has_right_faces = cp.ones((topology_count,), dtype=cp.int8)
+    else:
+        topology_has_right_faces = cp.asarray(topology_has_right_faces, dtype=cp.int8)
+    if int(topology_has_left_faces.size) != topology_count:
+        raise ValueError("topology_has_left_faces must match topology length")
+    if int(topology_has_right_faces.size) != topology_count:
+        raise ValueError("topology_has_right_faces must match topology length")
+
+    if candidate_count == 0:
+        empty = cp.asarray([], dtype=cp.int64)
+        return {
+            "point_id": empty,
+            "shape_id": empty,
+            "membership": empty,
+            "owner_face_id": empty,
+        }
+
+    if owner_count == 0:
+        owner_found = cp.zeros((candidate_count,), dtype=cp.bool_)
+        owner_faces = cp.zeros((candidate_count,), dtype=cp.int64)
+    else:
+        owner_order = cp.argsort(owner_point_ids, kind="stable")
+        sorted_owner_points = owner_point_ids[owner_order]
+        sorted_owner_faces = owner_face_ids[owner_order]
+        if require_unique_owner_point and owner_count > 1:
+            duplicate_owner = bool(
+                cp.any(sorted_owner_points[1:] == sorted_owner_points[:-1]).item()
+            )
+            if duplicate_owner:
+                raise ValueError("owner point ids must be unique for the CuPy filter")
+        owner_pos = cp.searchsorted(sorted_owner_points, candidate_point_ids)
+        owner_safe_pos = cp.minimum(owner_pos, owner_count - 1)
+        owner_found = (
+            (owner_pos < owner_count)
+            & (sorted_owner_points[owner_safe_pos] == candidate_point_ids)
+        )
+        owner_faces = sorted_owner_faces[owner_safe_pos]
+
+    if missing_owner_policy == "raise" and bool(cp.any(~owner_found).item()):
+        raise KeyError("missing owner face id for one or more point ids")
+
+    if topology_count == 0:
+        topology_found = cp.zeros((candidate_count,), dtype=cp.bool_)
+        left_faces = cp.zeros((candidate_count,), dtype=cp.int64)
+        right_faces = cp.zeros((candidate_count,), dtype=cp.int64)
+        has_left = cp.zeros((candidate_count,), dtype=cp.bool_)
+        has_right = cp.zeros((candidate_count,), dtype=cp.bool_)
+    else:
+        topology_order = cp.argsort(topology_shape_ids, kind="stable")
+        sorted_shape_ids = topology_shape_ids[topology_order]
+        sorted_left_faces = topology_left_face_ids[topology_order]
+        sorted_right_faces = topology_right_face_ids[topology_order]
+        sorted_has_left = topology_has_left_faces[topology_order].astype(cp.bool_, copy=False)
+        sorted_has_right = topology_has_right_faces[topology_order].astype(cp.bool_, copy=False)
+        topology_pos = cp.searchsorted(sorted_shape_ids, candidate_shape_ids)
+        topology_safe_pos = cp.minimum(topology_pos, topology_count - 1)
+        topology_found = (
+            (topology_pos < topology_count)
+            & (sorted_shape_ids[topology_safe_pos] == candidate_shape_ids)
+        )
+        left_faces = sorted_left_faces[topology_safe_pos]
+        right_faces = sorted_right_faces[topology_safe_pos]
+        has_left = sorted_has_left[topology_safe_pos]
+        has_right = sorted_has_right[topology_safe_pos]
+
+    matches_left = has_left & (left_faces == owner_faces)
+    matches_right = has_right & (right_faces == owner_faces)
+    keep = owner_found & topology_found & (matches_left | matches_right)
+    kept_owner_faces = cp.where(matches_left, left_faces, right_faces)[keep]
+    return {
+        "point_id": candidate_point_ids[keep],
+        "shape_id": candidate_shape_ids[keep],
+        "membership": cp.ones((int(cp.count_nonzero(keep).item()),), dtype=cp.int64),
+        "owner_face_id": kept_owner_faces.astype(cp.int64, copy=False),
+    }
+
+
 def owner_face_ids_by_point_from_selection_rows(
     selection_rows: Iterable[Mapping[str, Any]],
     *,
@@ -633,6 +759,7 @@ def owner_face_priority_pipeline_contract() -> dict[str, object]:
         "optional_columnar_pipeline_helpers": (
             "select_owner_faces_from_incident_candidate_columns_with_priority_columns",
             "filter_closed_shape_membership_candidate_columns_by_owner_face_columns",
+            "filter_closed_shape_membership_candidate_columns_by_owner_face_cupy",
         ),
         "selection_rule": {
             "primary": "higher incident_face_count wins",
@@ -724,6 +851,8 @@ def validate_owner_face_priority_pipeline_contract() -> dict[str, object]:
         or "select_owner_faces_from_incident_candidate_columns_with_priority_columns"
         not in columnar_helpers
         or "filter_closed_shape_membership_candidate_columns_by_owner_face_columns"
+        not in columnar_helpers
+        or "filter_closed_shape_membership_candidate_columns_by_owner_face_cupy"
         not in columnar_helpers
     ):
         raise ValueError("owner-face priority pipeline must expose columnar selection helpers")
