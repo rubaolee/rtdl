@@ -197,12 +197,12 @@ class Goal2327RayJoinPreparedRouteContractTest(unittest.TestCase):
                 "pip",
                 result_mode="count",
                 count_mode="boundary_event_point_id_count_device_columns",
-            )
+        )
 
         self.assertEqual(payload["count_mode"], "boundary_event_point_id_count_device_columns")
-        self.assertEqual(payload["row_count"], 1)
+        self.assertEqual(payload["row_count"], 5)
         self.assertIsNone(payload["summary"]["positive_assignment_count"])
-        self.assertEqual(payload["summary"]["boundary_event_row_count"], 1)
+        self.assertEqual(payload["summary"]["boundary_event_row_count"], 5)
         self.assertTrue(payload["summary"]["boundary_event_contract_not_positive_membership"])
         self.assertEqual(
             payload["summary"]["output_contract"],

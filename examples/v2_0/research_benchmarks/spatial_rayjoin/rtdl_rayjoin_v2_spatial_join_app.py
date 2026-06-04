@@ -301,7 +301,7 @@ def _run_prepared_boundary_event_grouped_count_device_columns(
     prepared,
     packed_points,
     *,
-    event_capacity: int,
+    event_capacity: int | None = None,
     group_capacity: int,
 ) -> tuple[int, dict[str, object]]:
     event_columns = prepared.first_boundary_crossing_device_columns(
@@ -583,7 +583,6 @@ def run_rayjoin_prepared_optix_workload(
                         lambda: _run_prepared_boundary_event_grouped_count_device_columns(
                             prepared,
                             packed_points,
-                            event_capacity=max(1, packed_points.count),
                             group_capacity=point_id_group_capacity,
                         ),
                     )
