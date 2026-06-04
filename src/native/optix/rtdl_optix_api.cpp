@@ -407,6 +407,41 @@ extern "C" int rtdl_optix_count_prepared_point_closed_shape_membership_device_fi
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepare_point_probe_columns_2d(
+        const RtdlPoint* points, size_t point_count,
+        void** prepared_points_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_points_out)
+            throw std::runtime_error("prepared point-probe columns output pointer must not be null");
+        if (!points && point_count != 0)
+            throw std::runtime_error("point pointer must not be null when point_count is nonzero");
+        *prepared_points_out = prepare_point_probe_columns_2d_optix(points, point_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_count_prepared_point_closed_shape_membership_device_filtered_prepared_points_2d(
+        void* prepared,
+        void* prepared_points,
+        size_t* count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared closed-shape membership handle must not be null");
+        if (!prepared_points)
+            throw std::runtime_error("prepared point-probe columns handle must not be null");
+        if (!count_out)
+            throw std::runtime_error("device-filtered prepared-points count output pointer must not be null");
+        *count_out = 0;
+        count_prepared_point_closed_shape_membership_device_filtered_prepared_points_2d_optix(
+            reinterpret_cast<PreparedShapePairRelationBuild*>(prepared),
+            reinterpret_cast<PreparedPointProbeColumns2D*>(prepared_points),
+            count_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_run_prepared_point_closed_shape_first_boundary_crossing_2d(
         void* prepared,
         const RtdlPoint* points, size_t point_count,
@@ -509,6 +544,11 @@ extern "C" int rtdl_optix_prepared_point_closed_shape_membership_point_id_count_
 extern "C" void rtdl_optix_destroy_prepared_point_closed_shape_membership_2d(void* prepared)
 {
     delete reinterpret_cast<PreparedShapePairRelationBuild*>(prepared);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_point_probe_columns_2d(void* prepared_points)
+{
+    delete reinterpret_cast<PreparedPointProbeColumns2D*>(prepared_points);
 }
 
 extern "C" int rtdl_optix_run_shape_pair_relation_flags(

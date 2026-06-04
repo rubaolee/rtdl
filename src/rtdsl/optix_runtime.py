@@ -220,6 +220,12 @@ OPTIX_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL = (
 OPTIX_CLOSED_SHAPE_MEMBERSHIP_POINT_ID_COUNT_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_prepared_point_closed_shape_membership_point_id_count_device_columns_2d"
 )
+OPTIX_PREPARE_POINT_PROBE_COLUMNS_2D_SYMBOL = (
+    "rtdl_optix_prepare_point_probe_columns_2d"
+)
+OPTIX_CLOSED_SHAPE_MEMBERSHIP_DEVICE_FILTERED_PREPARED_POINTS_COUNT_SYMBOL = (
+    "rtdl_optix_count_prepared_point_closed_shape_membership_device_filtered_prepared_points_2d"
+)
 OPTIX_CLOSED_SHAPE_FIRST_BOUNDARY_CROSSING_SYMBOL = (
     "rtdl_optix_run_prepared_point_closed_shape_first_boundary_crossing_2d"
 )
@@ -231,6 +237,9 @@ OPTIX_RELEASE_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL = (
 )
 OPTIX_RELEASE_CLOSED_SHAPE_BOUNDARY_EVENT_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_release_point_closed_shape_boundary_event_device_columns_2d"
+)
+OPTIX_DESTROY_PREPARED_POINT_PROBE_COLUMNS_2D_SYMBOL = (
+    "rtdl_optix_destroy_prepared_point_probe_columns_2d"
 )
 OPTIX_RELEASE_RAY_TRIANGLE_HIT_STREAM_3D_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_release_ray_triangle_hit_stream_device_columns"
@@ -9713,6 +9722,77 @@ def closed_shape_membership_2d_optix(points, shapes, *, result_mode: str = "posi
         view.close()
 
 
+class PreparedOptixPointProbeColumns2D:
+    """Prepared generic 2-D point probe columns for repeated OptiX queries."""
+
+    def __init__(self, points):
+        packed_points = points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
+        if packed_points.dimension != 2:
+            raise ValueError("PreparedOptixPointProbeColumns2D requires 2-D points")
+        self._packed_points = packed_points
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        self._lib = _load_optix_library()
+        prepare_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_PREPARE_POINT_PROBE_COLUMNS_2D_SYMBOL,
+        )
+        if prepare_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_PREPARE_POINT_PROBE_COLUMNS_2D_SYMBOL}; rebuild the OptiX backend from current main"
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = prepare_symbol(
+            packed_points.records,
+            packed_points.count,
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+    @property
+    def count(self) -> int:
+        return int(self._packed_points.count)
+
+    @property
+    def closed(self) -> bool:
+        return self._closed
+
+    def to_metadata(self) -> dict[str, object]:
+        return {
+            "schema": "rtdl.optix.prepared_point_probe_columns_2d.v1",
+            "point_count": self.count,
+            "dimension": 2,
+            "native_symbol": OPTIX_PREPARE_POINT_PROBE_COLUMNS_2D_SYMBOL,
+            "device_resident_after_prepare": True,
+            "true_zero_copy_claim_authorized": False,
+        }
+
+    def close(self) -> None:
+        if not self._closed:
+            destroy_symbol = _find_optional_backend_symbol(
+                self._lib,
+                OPTIX_DESTROY_PREPARED_POINT_PROBE_COLUMNS_2D_SYMBOL,
+            )
+            if destroy_symbol is not None and self._handle:
+                destroy_symbol(self._handle)
+            self._closed = True
+
+    def __enter__(self) -> "PreparedOptixPointProbeColumns2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
 class PreparedOptixPointClosedShapeMembership2D:
     """Prepared generic 2-D point/closed-shape membership scene."""
 
@@ -9873,6 +9953,45 @@ class PreparedOptixPointClosedShapeMembership2D:
             self._handle,
             packed_points.records,
             packed_points.count,
+            ctypes.byref(count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(count.value)
+
+    def prepare_point_probe_columns(self, points) -> PreparedOptixPointProbeColumns2D:
+        """Prepare reusable generic point-probe columns for repeated queries."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX closed-shape membership handle is closed")
+        return PreparedOptixPointProbeColumns2D(points)
+
+    def count_device_filtered_prepared_points(
+        self,
+        prepared_points: PreparedOptixPointProbeColumns2D,
+    ) -> int:
+        """Return a device-filtered count using pre-uploaded point-probe columns."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX closed-shape membership handle is closed")
+        if prepared_points.closed:
+            raise RuntimeError("prepared OptiX point-probe columns handle is closed")
+        if prepared_points.count == 0 or self._packed_shapes.polygon_count == 0:
+            return 0
+        count_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_CLOSED_SHAPE_MEMBERSHIP_DEVICE_FILTERED_PREPARED_POINTS_COUNT_SYMBOL,
+        )
+        if count_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_CLOSED_SHAPE_MEMBERSHIP_DEVICE_FILTERED_PREPARED_POINTS_COUNT_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self._handle,
+            prepared_points._handle,
             ctypes.byref(count),
             error,
             len(error),
@@ -10188,6 +10307,10 @@ class PreparedOptixPointClosedShapeMembership2D:
 
 def prepare_point_closed_shape_membership_2d_optix(shapes) -> PreparedOptixPointClosedShapeMembership2D:
     return PreparedOptixPointClosedShapeMembership2D(shapes)
+
+
+def prepare_point_probe_columns_2d_optix(points) -> PreparedOptixPointProbeColumns2D:
+    return PreparedOptixPointProbeColumns2D(points)
 
 
 def _call_overlay_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixRowView:
@@ -17996,6 +18119,33 @@ def _register_argtypes(lib) -> None:
         ]
         optional_count_prepared_closed_shape_membership_device_filtered.restype = ctypes.c_int
 
+    optional_prepare_point_probe_columns = _find_optional_backend_symbol(
+        lib,
+        OPTIX_PREPARE_POINT_PROBE_COLUMNS_2D_SYMBOL,
+    )
+    if optional_prepare_point_probe_columns is not None:
+        optional_prepare_point_probe_columns.argtypes = [
+            ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_prepare_point_probe_columns.restype = ctypes.c_int
+
+    optional_count_prepared_closed_shape_membership_device_filtered_prepared_points = (
+        _find_optional_backend_symbol(
+            lib,
+            OPTIX_CLOSED_SHAPE_MEMBERSHIP_DEVICE_FILTERED_PREPARED_POINTS_COUNT_SYMBOL,
+        )
+    )
+    if optional_count_prepared_closed_shape_membership_device_filtered_prepared_points is not None:
+        optional_count_prepared_closed_shape_membership_device_filtered_prepared_points.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_count_prepared_closed_shape_membership_device_filtered_prepared_points.restype = ctypes.c_int
+
     optional_first_boundary_crossing = _find_optional_backend_symbol(
         lib,
         OPTIX_CLOSED_SHAPE_FIRST_BOUNDARY_CROSSING_SYMBOL,
@@ -18087,6 +18237,13 @@ def _register_argtypes(lib) -> None:
     if optional_destroy_prepared_closed_shape_membership is not None:
         optional_destroy_prepared_closed_shape_membership.argtypes = [ctypes.c_void_p]
         optional_destroy_prepared_closed_shape_membership.restype = None
+    optional_destroy_prepared_point_probe_columns = _find_optional_backend_symbol(
+        lib,
+        OPTIX_DESTROY_PREPARED_POINT_PROBE_COLUMNS_2D_SYMBOL,
+    )
+    if optional_destroy_prepared_point_probe_columns is not None:
+        optional_destroy_prepared_point_probe_columns.argtypes = [ctypes.c_void_p]
+        optional_destroy_prepared_point_probe_columns.restype = None
 
     _require_backend_symbol(lib, "rtdl_optix_run_shape_pair_relation_flags").argtypes = [
         ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,

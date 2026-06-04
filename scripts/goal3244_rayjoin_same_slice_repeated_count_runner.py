@@ -35,6 +35,7 @@ CLAIM_BOUNDARY = {
 PIP_BOUNDARY_EVENT_COUNT_MODE = "boundary_event_point_id_count_device_columns"
 PIP_POSITIVE_DEVICE_COUNT_MODES = {
     "device_filtered_validated",
+    "device_filtered_prepared_points_validated",
     "point_id_count_device_columns_validated",
 }
 
@@ -284,6 +285,7 @@ def run_rtdl_samples(
     query_order_sec: list[float] = []
     static_order_sec: list[float] = []
     query_pack_sec: list[float] = []
+    prepare_query_points_sec: list[float] = []
     prepare_sec: list[float] = []
     static_segment_pack_sec: list[float] = []
     static_shape_pack_sec: list[float] = []
@@ -347,6 +349,8 @@ def run_rtdl_samples(
             boundary_event_device_columns_sec.append(float(phases["boundary_event_device_columns_sec"]))
         if "boundary_event_grouped_count_sec" in phases:
             boundary_event_grouped_count_sec.append(float(phases["boundary_event_grouped_count_sec"]))
+        if "prepare_query_points_sec" in phases:
+            prepare_query_points_sec.append(float(phases["prepare_query_points_sec"]))
         query_pack_sec.append(float(phases.get("query_pack_sec", packed_left_reuse.get("pack_seconds", 0.0))))
         prepare_sec.append(float(phases.get("prepare_static_scene_sec", prepared_reuse.get("prepare_static_scene_sec", 0.0))))
         static_segment_pack_sec.append(float(phases.get("static_segment_pack_sec", 0.0)))
@@ -383,6 +387,7 @@ def run_rtdl_samples(
         "query_order_ms": summarize_samples([value * 1000.0 for value in query_order_sec if value != 0.0]),
         "static_order_ms": summarize_samples([value * 1000.0 for value in static_order_sec if value != 0.0]),
         "query_pack_ms": summarize_samples([value * 1000.0 for value in query_pack_sec]),
+        "prepare_query_points_ms": summarize_samples([value * 1000.0 for value in prepare_query_points_sec]),
         "prepare_static_scene_ms": summarize_samples([value * 1000.0 for value in prepare_sec]),
         "static_segment_pack_ms": summarize_samples([value * 1000.0 for value in static_segment_pack_sec if value != 0.0]),
         "static_shape_pack_ms": summarize_samples([value * 1000.0 for value in static_shape_pack_sec if value != 0.0]),
@@ -465,6 +470,7 @@ def main(argv: list[str] | None = None) -> int:
         choices=(
             "exact",
             "device_filtered_validated",
+            "device_filtered_prepared_points_validated",
             "point_id_count_device_columns_validated",
             PIP_BOUNDARY_EVENT_COUNT_MODE,
         ),
@@ -602,6 +608,8 @@ def main(argv: list[str] | None = None) -> int:
             "rtdl_pip_count_mode": (
                 "When set to a validated device-side mode, RTDL validates each PIP sample with exact prepared count "
                 "and reports the selected device-side count timing as the prepared_query_ms lane. "
+                "device_filtered_prepared_points_validated additionally prepares reusable point-probe columns "
+                "outside the timed prepared_query_ms lane. "
                 "When set to boundary_event_point_id_count_device_columns, RTDL reports the generic "
                 "first-boundary-event stream plus grouped point-id count; that route is not a positive "
                 "membership-count contract."

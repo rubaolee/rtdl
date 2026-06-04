@@ -31,11 +31,13 @@ _PIP_BOUNDARY_EVENT_COUNT_MODE = "boundary_event_point_id_count_device_columns"
 _PIP_COUNT_MODES = (
     "exact",
     "device_filtered_validated",
+    "device_filtered_prepared_points_validated",
     "point_id_count_device_columns_validated",
     _PIP_BOUNDARY_EVENT_COUNT_MODE,
 )
 _PIP_POSITIVE_COUNT_MODES = (
     "device_filtered_validated",
+    "device_filtered_prepared_points_validated",
     "point_id_count_device_columns_validated",
 )
 _PIP_DEVICE_FILTER_BOUNDARY_MODES = ("inclusive", "crossing_only")
@@ -277,6 +279,15 @@ def _run_prepared_device_filtered_count_with_boundary_mode(
         return int(prepared.count_device_filtered(packed_points))
 
 
+def _run_prepared_device_filtered_prepared_points_count_with_boundary_mode(
+    prepared,
+    prepared_point_columns,
+    boundary_mode: str | None,
+) -> int:
+    with _temporary_env("RTDL_OPTIX_POINT_PRIMITIVE_BOUNDARY_MODE", boundary_mode):
+        return int(prepared.count_device_filtered_prepared_points(prepared_point_columns))
+
+
 def _run_prepared_point_id_count_device_columns_with_boundary_mode(
     prepared,
     packed_points,
@@ -343,6 +354,7 @@ def run_rayjoin_prepared_optix_workload(
     if count_mode not in _PIP_COUNT_MODES:
         raise ValueError(
             "count_mode must be 'exact', 'device_filtered_validated', "
+            "'device_filtered_prepared_points_validated', "
             "'point_id_count_device_columns_validated', or "
             f"'{_PIP_BOUNDARY_EVENT_COUNT_MODE}'"
         )
@@ -496,6 +508,8 @@ def run_rayjoin_prepared_optix_workload(
             lambda: prepare_point_closed_shape_membership_2d_optix(packed_shapes),
         )
         point_id_count_metadata: dict[str, object] | None = None
+        prepared_point_columns_metadata: dict[str, object] | None = None
+        prepared_point_columns = None
         boundary_event_count_metadata: dict[str, object] | None = None
         boundary_event_columns = None
         boundary_event_count_columns = None
@@ -517,6 +531,24 @@ def run_rayjoin_prepared_optix_workload(
                                 lambda: _run_prepared_device_filtered_count_with_boundary_mode(
                                     prepared,
                                     packed_points,
+                                    device_filtered_boundary_mode,
+                                ),
+                            )
+                        )
+                    elif count_mode == "device_filtered_prepared_points_validated":
+                        prepared_point_columns = _phase_time(
+                            phases,
+                            "prepare_query_points_sec",
+                            lambda: prepared.prepare_point_probe_columns(packed_points),
+                        )
+                        prepared_point_columns_metadata = prepared_point_columns.to_metadata()
+                        row_count = int(
+                            _phase_time(
+                                phases,
+                                "prepared_query_sec",
+                                lambda: _run_prepared_device_filtered_prepared_points_count_with_boundary_mode(
+                                    prepared,
+                                    prepared_point_columns,
                                     device_filtered_boundary_mode,
                                 ),
                             )
@@ -592,6 +624,8 @@ def run_rayjoin_prepared_optix_workload(
                     view.close()
             native_phase_timings = prepared.last_phase_timings()
         finally:
+            if prepared_point_columns is not None:
+                prepared_point_columns.close()
             if boundary_event_count_columns is not None:
                 boundary_event_count_columns.close()
             if boundary_event_columns is not None:
@@ -608,7 +642,11 @@ def run_rayjoin_prepared_optix_workload(
                     (
                         "point_to_shape_positive_hit_count_device_filtered_validated"
                         if count_mode == "device_filtered_validated"
-                        else "point_to_shape_positive_hit_count_by_point_id_device_columns_validated"
+                        else (
+                            "point_to_shape_positive_hit_count_device_filtered_prepared_points_validated"
+                            if count_mode == "device_filtered_prepared_points_validated"
+                            else "point_to_shape_positive_hit_count_by_point_id_device_columns_validated"
+                        )
                     )
                     if count_mode in _PIP_POSITIVE_COUNT_MODES
                     else "point_to_shape_positive_hit_count"
@@ -630,6 +668,7 @@ def run_rayjoin_prepared_optix_workload(
                 else None
             ),
             "point_id_count_device_columns": point_id_count_metadata,
+            "prepared_point_probe_columns": prepared_point_columns_metadata,
             "boundary_event_grouped_count_device_columns": boundary_event_count_metadata,
             "boundary_event_contract_not_positive_membership": (
                 True if count_mode == _PIP_BOUNDARY_EVENT_COUNT_MODE else None

@@ -628,6 +628,15 @@ int  rtdl_optix_count_prepared_point_closed_shape_membership_device_filtered_2d(
          const RtdlPoint* points, size_t point_count,
          size_t* count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_point_probe_columns_2d(
+         const RtdlPoint* points, size_t point_count,
+         void** prepared_points_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_count_prepared_point_closed_shape_membership_device_filtered_prepared_points_2d(
+         void* prepared,
+         void* prepared_points,
+         size_t* count_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_run_prepared_point_closed_shape_first_boundary_crossing_2d(
          void* prepared,
          const RtdlPoint* points, size_t point_count,
@@ -667,6 +676,7 @@ int  rtdl_optix_closed_shape_membership_get_last_phase_timings(
          size_t* raw_candidate_count,
          size_t* emitted_count,
          uint32_t* mode);
+void rtdl_optix_destroy_prepared_point_probe_columns_2d(void* prepared_points);
 void rtdl_optix_destroy_prepared_point_closed_shape_membership_2d(void* prepared);
 int  rtdl_optix_run_shape_pair_relation_flags(
          const RtdlPolygonRef* left_polys,  size_t left_count,
