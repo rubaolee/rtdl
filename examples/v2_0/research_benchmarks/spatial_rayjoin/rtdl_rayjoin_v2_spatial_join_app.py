@@ -7,6 +7,7 @@ import os
 import sys
 import time
 from pathlib import Path
+from typing import Any
 
 ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "src" / "rtdsl").exists())
 sys.path.insert(0, str(ROOT / "src"))
@@ -326,6 +327,125 @@ def _order_segments_for_locality(segments, mode: str):
     if mode not in _LSI_SEGMENT_ORDER_MODES:
         raise ValueError("segment_order_mode must be one of: natural, x_then_y, y_then_x, morton_xy")
     return rt.spatial_order_segments_2d(segments, mode)
+
+
+def preflight_rayjoin_pip_fast_count_domain(
+    *,
+    dataset: str | None = None,
+    count_mode: str = "device_filtered_prepared_points_validated",
+    device_filtered_boundary_mode: str | None = "inclusive",
+    point_order_mode: str = "natural",
+    query_axis: str | None = None,
+    scalar_count_pipeline: bool = True,
+    require_match: bool = False,
+) -> dict[str, Any]:
+    """Check whether a PIP dataset is safe for a validated fast count route.
+
+    This is app-level benchmark policy over generic RTDL primitives. It does not
+    authorize the native engine to infer RayJoin semantics; it only records
+    whether the chosen generic count route matches the exact prepared count for
+    the supplied input domain.
+    """
+
+    if count_mode not in _PIP_POSITIVE_COUNT_MODES:
+        raise ValueError(
+            "count_mode must be one of the validated positive PIP count modes: "
+            f"{', '.join(_PIP_POSITIVE_COUNT_MODES)}"
+        )
+    if device_filtered_boundary_mode is not None and device_filtered_boundary_mode not in _PIP_DEVICE_FILTER_BOUNDARY_MODES:
+        raise ValueError("device_filtered_boundary_mode must be 'inclusive' or 'crossing_only'")
+    if point_order_mode not in _PIP_POINT_ORDER_MODES:
+        raise ValueError("point_order_mode must be one of: natural, x_then_y, y_then_x, morton_xy")
+
+    from rtdsl.optix_runtime import pack_points
+    from rtdsl.optix_runtime import pack_polygons
+    from rtdsl.optix_runtime import prepare_point_closed_shape_membership_2d_optix
+
+    resolved_dataset = dataset or _DEFAULT_DATASETS["pip"]
+    case = _load_rayjoin_case("pip", resolved_dataset)
+    ordered_points = _order_points_for_locality(case.inputs["points"], point_order_mode)
+    packed_points = pack_points(records=ordered_points, dimension=2)
+    packed_shapes = pack_polygons(records=case.inputs["polygons"])
+
+    point_id_count_metadata: dict[str, object] | None = None
+    prepared_point_columns_metadata: dict[str, object] | None = None
+    prepared_point_columns = None
+
+    with _temporary_env("RTDL_OPTIX_POINT_PRIMITIVE_QUERY_AXIS", query_axis), _temporary_env(
+        "RTDL_OPTIX_POINT_PRIMITIVE_USE_SCALAR_COUNT_PIPELINE",
+        "1" if scalar_count_pipeline else None,
+    ):
+        prepared = prepare_point_closed_shape_membership_2d_optix(packed_shapes)
+        try:
+            exact_count = _run_prepared_count_with_boundary_mode(prepared, packed_points, None)
+            if count_mode == "device_filtered_validated":
+                fast_count = _run_prepared_device_filtered_count_with_boundary_mode(
+                    prepared,
+                    packed_points,
+                    device_filtered_boundary_mode,
+                )
+            elif count_mode == "device_filtered_prepared_points_validated":
+                prepared_point_columns = prepared.prepare_point_probe_columns(packed_points)
+                prepared_point_columns_metadata = prepared_point_columns.to_metadata()
+                fast_count = _run_prepared_device_filtered_prepared_points_count_with_boundary_mode(
+                    prepared,
+                    prepared_point_columns,
+                    device_filtered_boundary_mode,
+                )
+            else:
+                point_id_group_capacity = max(
+                    1,
+                    max(_record_id(point) for point in ordered_points) + 1,
+                )
+                fast_count, point_id_count_metadata = _run_prepared_point_id_count_device_columns_with_boundary_mode(
+                    prepared,
+                    packed_points,
+                    device_filtered_boundary_mode,
+                    group_capacity=point_id_group_capacity,
+                )
+        finally:
+            if prepared_point_columns is not None:
+                prepared_point_columns.close()
+            prepared.close()
+
+    matches = int(fast_count) == int(exact_count)
+    result = {
+        "schema": "rtdl.rayjoin.pip_fast_count_domain_preflight.v1",
+        "dataset": resolved_dataset,
+        "count_mode": count_mode,
+        "device_filtered_boundary_mode": device_filtered_boundary_mode,
+        "query_axis": query_axis,
+        "scalar_count_pipeline": bool(scalar_count_pipeline),
+        "point_order_mode": point_order_mode,
+        "point_count": int(getattr(packed_points, "count", len(ordered_points))),
+        "shape_count": int(getattr(packed_shapes, "polygon_count", len(case.inputs["polygons"]))),
+        "exact_count": int(exact_count),
+        "fast_count": int(fast_count),
+        "matches_exact": matches,
+        "status": "validated_fast_route_allowed" if matches else "fast_route_rejected",
+        "fallback_required": not matches,
+        "fallback_reason": None if matches else "fast count route did not match exact prepared count",
+        "prepared_point_probe_columns": prepared_point_columns_metadata,
+        "point_id_count_device_columns": point_id_count_metadata,
+        "native_engine_boundary": (
+            "The engine sees generic point/closed-shape count primitives. "
+            "RayJoin CDB topology policy remains in Python preflight/fallback logic."
+        ),
+        "claim_boundary": {
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rayjoin_paper_reproduction_claim_authorized": False,
+            "rtdl_beats_rayjoin_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+        },
+    }
+    if require_match and not matches:
+        raise RuntimeError(
+            "validated-domain preflight rejected fast PIP count route: "
+            f"{fast_count} != {exact_count}"
+        )
+    return result
 
 
 def run_rayjoin_prepared_optix_workload(
