@@ -1176,7 +1176,6 @@ struct PipParams {
     const float* vertices_x;
     const float* vertices_y;
     const GpuPreparedClosedShapeEdge2D* prepared_edges;
-    const float* edge_crossing_scale;
     uint32_t* hit_words;
     PipRecord* output;
     uint32_t* output_count;
@@ -1255,11 +1254,8 @@ static __forceinline__ __device__ bool point_in_polygon(
             }
         }
 
-        const float crossing_scale = params.edge_crossing_scale != nullptr
-            ? params.edge_crossing_scale[off + i]
-            : (ax - bx) / ((ay - by) != 0.0f ? (ay - by) : 1.0e-20f);
         if (((by > py) != (ay > py)) &&
-            (px <= crossing_scale * (py - by) + bx))
+            (px <= (ax - bx) * (py - by) / ((ay - by) != 0.0f ? (ay - by) : 1.0e-20f) + bx))
             inside = !inside;
     }
     return inside;

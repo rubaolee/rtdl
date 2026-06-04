@@ -5169,7 +5169,6 @@ struct PipLaunchParams {
     const float*     vertices_x;
     const float*     vertices_y;
     const GpuPreparedClosedShapeEdge2D* prepared_edges;
-    const float*     edge_crossing_scale;
     uint32_t*        hit_words;
     GpuPipRecord*    output;
     uint32_t*        output_count;
@@ -5186,11 +5185,6 @@ struct PipLaunchParams {
 static bool use_prepared_closed_shape_edge_layout()
 {
     return std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_USE_PREPARED_EDGE_LAYOUT") != nullptr;
-}
-
-static bool use_prepared_closed_shape_crossing_scale_layout()
-{
-    return std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_USE_CROSSING_SCALE_LAYOUT") != nullptr;
 }
 
 static uint32_t closed_shape_membership_boundary_check_enabled()
@@ -5356,7 +5350,6 @@ static void run_pip_optix(
     lp.vertices_x     = reinterpret_cast<const float*>(d_vx.ptr);
     lp.vertices_y     = reinterpret_cast<const float*>(d_vy.ptr);
     lp.prepared_edges = nullptr;
-    lp.edge_crossing_scale = nullptr;
     lp.hit_words      = nullptr;
     lp.output         = d_output ? reinterpret_cast<GpuPipRecord*>(d_output->ptr) : nullptr;
     lp.output_count   = reinterpret_cast<uint32_t*>(d_count.ptr);
@@ -5910,7 +5903,6 @@ struct PreparedShapePairRelationBuild {
     std::vector<float> right_vx;
     std::vector<float> right_vy;
     std::vector<GpuPreparedClosedShapeEdge2D> right_edges;
-    std::vector<float> right_edge_crossing_scale;
     size_t right_count = 0;
     size_t right_vert_xy_count = 0;
     size_t right_vert_count = 0;
@@ -5918,7 +5910,6 @@ struct PreparedShapePairRelationBuild {
     DevPtr d_right_vx;
     DevPtr d_right_vy;
     DevPtr d_right_edges;
-    DevPtr d_right_edge_crossing_scale;
     AccelHolder accel;
 #if RTDL_OPTIX_HAS_GEOS
     std::unique_ptr<GeosPreparedPolygonRefs> right_geos;
@@ -5935,15 +5926,13 @@ struct PreparedShapePairRelationBuild {
           right_vx(vert_xy_count / 2u),
           right_vy(vert_xy_count / 2u),
           right_edges(vert_xy_count / 2u),
-          right_edge_crossing_scale(vert_xy_count / 2u),
           right_count(poly_count),
           right_vert_xy_count(vert_xy_count),
           right_vert_count(vert_xy_count / 2u),
           d_right_polygons(sizeof(GpuPolygonRef) * poly_count),
           d_right_vx(sizeof(float) * (vert_xy_count / 2u)),
           d_right_vy(sizeof(float) * (vert_xy_count / 2u)),
-          d_right_edges(sizeof(GpuPreparedClosedShapeEdge2D) * (vert_xy_count / 2u)),
-          d_right_edge_crossing_scale(sizeof(float) * (vert_xy_count / 2u))
+          d_right_edges(sizeof(GpuPreparedClosedShapeEdge2D) * (vert_xy_count / 2u))
     {
         if (poly_count > 0) {
             host_right_polygons.assign(polys, polys + poly_count);
@@ -5975,8 +5964,6 @@ struct PreparedShapePairRelationBuild {
                 const float dx = bx - ax;
                 const float dy = by - ay;
                 const float ay_minus_by = ay - by;
-                const float crossing_scale =
-                    (ax - bx) / (ay_minus_by != 0.0f ? ay_minus_by : point_eps_den);
                 right_edges[off + i] = {
                     ax,
                     ay,
@@ -5985,16 +5972,14 @@ struct PreparedShapePairRelationBuild {
                     dx,
                     dy,
                     dx * dx + dy * dy,
-                    crossing_scale,
+                    (ax - bx) / (ay_minus_by != 0.0f ? ay_minus_by : point_eps_den),
                 };
-                right_edge_crossing_scale[off + i] = crossing_scale;
             }
         }
         upload(d_right_polygons.ptr, right_polygons.data(), right_polygons.size());
         upload(d_right_vx.ptr, right_vx.data(), right_vx.size());
         upload(d_right_vy.ptr, right_vy.data(), right_vy.size());
         upload(d_right_edges.ptr, right_edges.data(), right_edges.size());
-        upload(d_right_edge_crossing_scale.ptr, right_edge_crossing_scale.data(), right_edge_crossing_scale.size());
 
         if (!right_polygons.empty()) {
             std::vector<OptixAabb> aabbs(poly_count);
@@ -6098,9 +6083,6 @@ static void run_prepared_point_closed_shape_membership_2d_optix(
     lp.vertices_y     = reinterpret_cast<const float*>(prepared->d_right_vy.ptr);
     lp.prepared_edges = use_prepared_closed_shape_edge_layout()
         ? reinterpret_cast<const GpuPreparedClosedShapeEdge2D*>(prepared->d_right_edges.ptr)
-        : nullptr;
-    lp.edge_crossing_scale = use_prepared_closed_shape_crossing_scale_layout()
-        ? reinterpret_cast<const float*>(prepared->d_right_edge_crossing_scale.ptr)
         : nullptr;
     lp.hit_words      = nullptr;
     lp.output         = nullptr;
@@ -6320,9 +6302,6 @@ static void count_prepared_point_closed_shape_membership_2d_optix(
     lp.prepared_edges = use_prepared_closed_shape_edge_layout()
         ? reinterpret_cast<const GpuPreparedClosedShapeEdge2D*>(prepared->d_right_edges.ptr)
         : nullptr;
-    lp.edge_crossing_scale = use_prepared_closed_shape_crossing_scale_layout()
-        ? reinterpret_cast<const float*>(prepared->d_right_edge_crossing_scale.ptr)
-        : nullptr;
     lp.hit_words      = nullptr;
     lp.output         = nullptr;
     lp.output_count   = reinterpret_cast<uint32_t*>(d_count.ptr);
@@ -6530,9 +6509,6 @@ static void count_prepared_point_closed_shape_membership_device_filtered_2d_opti
     lp.vertices_y     = reinterpret_cast<const float*>(prepared->d_right_vy.ptr);
     lp.prepared_edges = use_prepared_closed_shape_edge_layout()
         ? reinterpret_cast<const GpuPreparedClosedShapeEdge2D*>(prepared->d_right_edges.ptr)
-        : nullptr;
-    lp.edge_crossing_scale = use_prepared_closed_shape_crossing_scale_layout()
-        ? reinterpret_cast<const float*>(prepared->d_right_edge_crossing_scale.ptr)
         : nullptr;
     lp.hit_words      = nullptr;
     lp.output         = nullptr;
