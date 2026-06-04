@@ -39,6 +39,7 @@ class Goal3225RayJoinPublicOverlayActiveCountProbeArtifactTest(unittest.TestCase
         boundary = data["claim_boundary"]
         self.assertFalse(boundary["public_speedup_claim_authorized"])
         self.assertFalse(boundary["rt_core_speedup_claim_authorized"])
+        self.assertFalse(boundary["true_zero_copy_claim_authorized"])
         self.assertFalse(boundary["rayjoin_paper_reproduction_claim_authorized"])
         self.assertFalse(boundary["rtdl_beats_rayjoin_claim_authorized"])
         self.assertFalse(boundary["release_authorized"])
@@ -47,6 +48,7 @@ class Goal3225RayJoinPublicOverlayActiveCountProbeArtifactTest(unittest.TestCase
             row_boundary = row["claim_boundary"]
             self.assertFalse(row_boundary["public_speedup_claim_authorized"])
             self.assertFalse(row_boundary["rt_core_speedup_claim_authorized"])
+            self.assertFalse(row_boundary["true_zero_copy_claim_authorized"])
             self.assertFalse(row_boundary["rayjoin_paper_reproduction_claim_authorized"])
             self.assertFalse(row_boundary["rtdl_beats_rayjoin_claim_authorized"])
             self.assertFalse(row_boundary["release_authorized"])

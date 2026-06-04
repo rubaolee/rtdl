@@ -140,6 +140,7 @@ def _run_case(case_name: str, *, dataset: str, warmups: int, repeats: int) -> di
         "claim_boundary": {
             "public_speedup_claim_authorized": False,
             "rt_core_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
             "rayjoin_paper_reproduction_claim_authorized": False,
             "rtdl_beats_rayjoin_claim_authorized": False,
             "release_authorized": False,
@@ -173,6 +174,7 @@ def build_artifact(args: argparse.Namespace) -> dict[str, object]:
         "claim_boundary": {
             "public_speedup_claim_authorized": False,
             "rt_core_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
             "rayjoin_paper_reproduction_claim_authorized": False,
             "rtdl_beats_rayjoin_claim_authorized": False,
             "release_authorized": False,

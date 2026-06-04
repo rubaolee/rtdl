@@ -33,6 +33,7 @@ class Goal3227RayJoinPublicPipCountProbeTest(unittest.TestCase):
         for phrase in (
             "public_speedup_claim_authorized",
             "rt_core_speedup_claim_authorized",
+            "true_zero_copy_claim_authorized",
             "rayjoin_paper_reproduction_claim_authorized",
             "rtdl_beats_rayjoin_claim_authorized",
             "release_authorized",
