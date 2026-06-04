@@ -17,13 +17,13 @@ class Goal3346PriorityOwnerFacePipelineCatalogWiringTest(unittest.TestCase):
         assert node is not None
         self.assertEqual(
             node.reference_path,
-            "docs/reports/goal3345_priority_owner_face_membership_pipeline_reference_2026-06-04.md",
+            "docs/reports/goal3349_owner_face_priority_pipeline_contract_2026-06-04.md",
         )
         self.assertIn(
             "filter closed shape membership candidates after explicit owner face selection",
             node.intent_phrases,
         )
-        self.assertIn("membership-filter pipeline", node.summary)
+        self.assertIn("formal priority pipeline contract", node.summary)
 
     def test_candidate_still_unpromoted(self):
         node = _node("candidate.closed_shape_topology_membership_count_2d")
