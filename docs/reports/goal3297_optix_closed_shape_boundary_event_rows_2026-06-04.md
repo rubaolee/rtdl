@@ -2,8 +2,9 @@
 
 Date: 2026-06-04
 
-Status: implementation in progress; pod validation required before using as
-performance evidence.
+Status: pod validated for native correctness on commit
+`d1ef3e73c7853d3db60921a89a24aa7241819c66`; not performance evidence and
+not release evidence.
 
 ## Purpose
 
@@ -50,7 +51,9 @@ host-materialized generic boundary-event rows:
 - `event_kind`
 
 The first implementation uses a two-pass count/write launch so it does not
-allocate `point_count * shape_count` rows up front.
+allocate `point_count * shape_count` rows up front. Its closed-shape telemetry
+mode is `boundary_event_rows` (`6`) so it remains distinct from the existing
+point-id-count device-column mode (`5`).
 
 ## Python Surface
 
@@ -84,17 +87,29 @@ It does not authorize RayJoin reproduction.
 
 RayJoin-specific native logic added: false.
 
-## Required Validation
+## Pod Validation
 
-Before this goal is accepted as implementation evidence:
+Validation artifact:
 
-1. build `librtdl_optix.so` from this commit on a pod;
-2. run the focused Goal3297 unit test with `RTDL_OPTIX_LIBRARY` set;
-3. run a tiny live parity smoke against
-   `rt.point_closed_shape_first_boundary_crossing_2d_cpu`;
-4. record the artifact at
-   `docs/reports/goal3297_optix_closed_shape_boundary_event_rows_pod_2026-06-04.json`;
-5. only then compare against the Goal3294/Goal3295 RayJoin same-slice harness.
+- `docs/reports/goal3297_optix_closed_shape_boundary_event_rows_pod_2026-06-04.json`
+
+Evidence recorded there:
+
+- pod GPU: NVIDIA RTX A5000;
+- CUDA prefix: `/usr/local/cuda-12.8`;
+- OptiX prefix: `/root/vendor/optix-sdk`;
+- native build: `make build-optix OPTIX_PREFIX=/root/vendor/optix-sdk
+  CUDA_PREFIX=/usr/local/cuda-12.8`, status `pass`;
+- focused live tests: 16 run, 0 skipped, status `pass`;
+- live smoke: OptiX observed rows exactly match
+  `rt.point_closed_shape_first_boundary_crossing_2d_cpu`;
+- representative event: point `10`, shape `7`, boundary `3`, crossing
+  `(0.0, 2.0)`, `crossing_t=2.0`, `event_kind=1`;
+- phase telemetry: mode `boundary_event_rows`, raw candidates `1`, emitted
+  rows `1`.
+
+This validates the native ABI, Python binding, typed metadata, and small live
+correctness smoke. It does not validate the next performance route.
 
 ## Next Step After Correctness
 

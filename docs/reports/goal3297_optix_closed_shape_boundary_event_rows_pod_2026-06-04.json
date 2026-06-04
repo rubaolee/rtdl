@@ -1,0 +1,125 @@
+{
+  "build": {
+    "command": "make build-optix OPTIX_PREFIX=/root/vendor/optix-sdk CUDA_PREFIX=/usr/local/cuda-12.8",
+    "library_exists": true,
+    "status": "pass"
+  },
+  "claim_boundaries": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "device_resident_boundary_event_columns_delivered": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_reproduction_claim_authorized": false,
+    "rayjoin_specific_native_logic_added": false,
+    "true_zero_copy_claim_authorized": false,
+    "v2_8_release_authorized": false
+  },
+  "commit": "d1ef3e73c7853d3db60921a89a24aa7241819c66",
+  "created_utc": "2026-06-04T16:06:04Z",
+  "focused_unittest": {
+    "command": "python -m unittest tests.goal3297_closed_shape_boundary_event_optix_rows_test tests.goal3296_closed_shape_boundary_event_contract_test tests.goal3181_geometry_relation_row_view_typed_producer_metadata_test",
+    "skipped": 0,
+    "status": "pass",
+    "tests_run": 16
+  },
+  "goal": 3297,
+  "live_smoke": {
+    "all_match_cpu_reference": true,
+    "column_names": [
+      "point_id",
+      "shape_id",
+      "boundary_id",
+      "crossing_t",
+      "crossing_x",
+      "crossing_y",
+      "event_kind"
+    ],
+    "expected_representative_event": {
+      "boundary_id": 3,
+      "crossing_t": 2.0,
+      "crossing_x": 0.0,
+      "crossing_y": 2.0,
+      "event_kind": 1,
+      "point_id": 10,
+      "shape_id": 7
+    },
+    "expected_rows": [
+      {
+        "boundary_id": 3,
+        "crossing_t": 2.0,
+        "crossing_x": 0.0,
+        "crossing_y": 2.0,
+        "event_kind": 1,
+        "point_id": 10,
+        "shape_id": 7
+      }
+    ],
+    "observed_rows": [
+      {
+        "boundary_id": 3,
+        "crossing_t": 2.0,
+        "crossing_x": 0.0,
+        "crossing_y": 2.0,
+        "event_kind": 1,
+        "point_id": 10,
+        "shape_id": 7
+      }
+    ],
+    "phase_timings": {
+      "candidate_count_pass": 6.7761e-05,
+      "candidate_download": 6.589e-06,
+      "candidate_write_pass": 2.5903e-05,
+      "emitted_count": 1,
+      "exact_refine": 0.0,
+      "mode": "boundary_event_rows",
+      "point_pack": 1.745e-06,
+      "point_upload": 2.7173e-05,
+      "raw_candidate_count": 1
+    },
+    "points": [
+      {
+        "id": 10,
+        "x": 0.0,
+        "y": 0.0
+      },
+      {
+        "id": 20,
+        "x": 2.0,
+        "y": 0.0
+      }
+    ],
+    "shapes": [
+      {
+        "id": 7,
+        "vertices": [
+          [
+            -1.0,
+            -1.0
+          ],
+          [
+            1.0,
+            -1.0
+          ],
+          [
+            1.0,
+            2.0
+          ],
+          [
+            -1.0,
+            2.0
+          ]
+        ]
+      }
+    ],
+    "typed_metadata_producer": "point_closed_shape_first_boundary_crossing_2d",
+    "typed_metadata_schema_id": "point_closed_shape_boundary_event_2d_columns"
+  },
+  "pod": {
+    "cuda_prefix": "/usr/local/cuda-12.8",
+    "gpu": "NVIDIA RTX A5000, 580.126.09",
+    "host": "69.30.85.203",
+    "optix_prefix": "/root/vendor/optix-sdk",
+    "port": 22057,
+    "rtdl_optix_library": "/root/rtdl_goal3293/build/librtdl_optix.so"
+  },
+  "repository": "https://github.com/rubaolee/rtdl"
+}

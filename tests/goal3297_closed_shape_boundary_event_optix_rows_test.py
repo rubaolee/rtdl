@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 import unittest
@@ -72,6 +73,7 @@ class Goal3297ClosedShapeBoundaryEventOptixRowsTest(unittest.TestCase):
         text = REPORT.read_text(encoding="utf-8")
 
         for phrase in (
+            "pod validated for native correctness",
             "host-materialized generic boundary-event rows",
             "not device-resident boundary-event columns",
             "RayJoin-specific native logic added: false",
@@ -79,6 +81,17 @@ class Goal3297ClosedShapeBoundaryEventOptixRowsTest(unittest.TestCase):
             "does not authorize RayJoin reproduction",
         ):
             self.assertIn(phrase, text)
+
+    def test_pod_artifact_records_correctness_without_claim_authorization(self) -> None:
+        artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(artifact["goal"], 3297)
+        self.assertEqual(artifact["build"]["status"], "pass")
+        self.assertEqual(artifact["focused_unittest"]["status"], "pass")
+        self.assertTrue(artifact["live_smoke"]["all_match_cpu_reference"])
+        self.assertEqual(artifact["live_smoke"]["phase_timings"]["mode"], "boundary_event_rows")
+        self.assertEqual(artifact["live_smoke"]["phase_timings"]["emitted_count"], 1)
+        self.assertFalse(any(artifact["claim_boundaries"].values()))
 
     @unittest.skipUnless(
         os.environ.get("RTDL_OPTIX_LIBRARY") or (ROOT / "build" / "librtdl_optix.so").exists(),
