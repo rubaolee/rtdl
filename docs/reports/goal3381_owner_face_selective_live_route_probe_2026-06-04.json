@@ -1,0 +1,131 @@
+{
+  "candidate_extra_row_count_before_filter": 12,
+  "candidate_rows_from_optix_device_columns": true,
+  "cdb_chain_count": 512,
+  "claim_boundary": {
+    "native_default_route_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "county_cdb": "data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+  "cupy_version": "14.1.1",
+  "exact_oracle_generated_by_live_optix_run": true,
+  "exact_row_count": 1417,
+  "expected_owner_face_by_point": {
+    "522": 248,
+    "523": 248,
+    "538": 217,
+    "539": 217,
+    "540": 212,
+    "564": 187,
+    "565": 187
+  },
+  "extra_row_count": 0,
+  "extra_sample": [],
+  "filtered_row_count": 1417,
+  "goal": 3381,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "incident_row_count": 21,
+  "incident_rows_derived_from_cdb": true,
+  "interpretation": "Selective live route probe: OptiX produces generic candidate device columns for the full CDB slice, and the app-provided ambiguity set sends only known ambiguous point ids through the CuPy owner-face continuation while all other candidate rows pass through. This validates the selective continuation contract, but it does not discover the ambiguity set, authorize a native default route, prove zero-copy, or reproduce the RayJoin paper.",
+  "matches_exact": true,
+  "missing_exact_row_count": 0,
+  "missing_sample": [],
+  "optix_candidate_capacity": 244736,
+  "optix_candidate_device_resident": true,
+  "optix_candidate_overflow": false,
+  "optix_candidate_row_count": 1429,
+  "optix_candidate_traversal_seconds": 0.00033595,
+  "owner_face_present_for_all_selected_points": true,
+  "passthrough_candidate_row_count": 1403,
+  "point_count": 512,
+  "removed_candidate_extra_row_count": 12,
+  "removed_candidate_extra_sample": [
+    [
+      522,
+      521
+    ],
+    [
+      523,
+      521
+    ],
+    [
+      538,
+      418
+    ],
+    [
+      538,
+      540
+    ],
+    [
+      539,
+      418
+    ],
+    [
+      539,
+      540
+    ],
+    [
+      540,
+      535
+    ],
+    [
+      540,
+      539
+    ],
+    [
+      564,
+      437
+    ],
+    [
+      564,
+      559
+    ],
+    [
+      565,
+      437
+    ],
+    [
+      565,
+      559
+    ]
+  ],
+  "rtdl_commit": "6ee730b9490ed727c18c6374dd2c085dc161a0f5",
+  "schema": "rtdl.goal3381.owner_face_selective_live_route_probe.v1",
+  "selected_candidate_row_count": 26,
+  "selected_exact_row_count": 14,
+  "selected_filtered_row_count": 14,
+  "selected_output_matches_exact": true,
+  "selected_owner_face_by_point": {
+    "522": 248,
+    "523": 248,
+    "538": 217,
+    "539": 217,
+    "540": 212,
+    "564": 187,
+    "565": 187
+  },
+  "selected_owner_face_source": "caller_supplied_fixture_policy_for_known_mismatch_points",
+  "selected_owner_faces_match_expected": true,
+  "selected_point_ids": [
+    522,
+    523,
+    538,
+    539,
+    540,
+    564,
+    565
+  ],
+  "selected_point_source": "caller_supplied_goal3328_known_mismatch_points",
+  "shape_count": 478,
+  "stored_candidate_artifact_used_as_input": false,
+  "stored_exact_oracle_artifact_used_as_input": false,
+  "stored_incident_artifact_used_as_input": false,
+  "stored_topology_artifact_used_as_input": false,
+  "topology_row_count": 512,
+  "topology_rows_derived_from_cdb": true
+}
