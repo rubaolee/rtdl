@@ -134,6 +134,65 @@ def count_closed_shape_membership_candidates_by_owner_face(
     )
 
 
+def select_unique_owner_faces_from_incident_candidates(
+    incident_face_candidate_rows: Iterable[Mapping[str, Any]],
+    *,
+    ambiguity_policy: str = "raise",
+) -> tuple[dict[str, int | str], ...]:
+    """Select owner faces only when incident-face evidence has a unique maximum.
+
+    This helper is intentionally conservative. It can turn generic incident
+    face candidate rows into explicit owner-face rows when the evidence is
+    unambiguous, but ties are not silently resolved. Callers that need richer
+    semantics must provide an app/data policy outside the native engine.
+    """
+
+    if ambiguity_policy not in {"raise", "drop", "emit_ambiguous"}:
+        raise ValueError("ambiguity_policy must be 'raise', 'drop', or 'emit_ambiguous'")
+
+    grouped: dict[int, list[Mapping[str, Any]]] = {}
+    for row in incident_face_candidate_rows:
+        grouped.setdefault(int(row["point_id"]), []).append(row)
+
+    selected_rows: list[dict[str, int | str]] = []
+    for point_id in sorted(grouped):
+        rows = grouped[point_id]
+        if not rows:
+            continue
+        max_count = max(int(row["incident_face_count"]) for row in rows)
+        winners = sorted(
+            (row for row in rows if int(row["incident_face_count"]) == max_count),
+            key=lambda row: int(row["face_id"]),
+        )
+        if len(winners) != 1:
+            if ambiguity_policy == "raise":
+                faces = tuple(int(row["face_id"]) for row in winners)
+                raise ValueError(f"ambiguous owner face for point_id={point_id}: {faces}")
+            if ambiguity_policy == "drop":
+                continue
+            selected_rows.append(
+                {
+                    "point_id": point_id,
+                    "owner_face_id": -1,
+                    "incident_face_count": max_count,
+                    "candidate_count": len(winners),
+                    "selection_status": "ambiguous_tie",
+                }
+            )
+            continue
+        winner = winners[0]
+        selected_rows.append(
+            {
+                "point_id": point_id,
+                "owner_face_id": int(winner["face_id"]),
+                "incident_face_count": max_count,
+                "candidate_count": 1,
+                "selection_status": "unique_max_incident_face",
+            }
+        )
+    return tuple(selected_rows)
+
+
 def owner_face_membership_contract() -> dict[str, object]:
     """Return the generic reference contract for owner-face membership."""
 
@@ -146,6 +205,7 @@ def owner_face_membership_contract() -> dict[str, object]:
             "owner_face_ids_by_point",
         ),
         "outputs": ("point_id", "shape_id", "membership", "owner_face_id"),
+        "optional_reference_helpers": ("select_unique_owner_faces_from_incident_candidates",),
         "app_agnostic": True,
         "native_engine_may_infer_app_ownership": False,
         "claim_boundary": {
