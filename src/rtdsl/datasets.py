@@ -785,3 +785,28 @@ def chains_to_polygon_refs(dataset: CdbDataset) -> tuple[dict[str, int], ...]:
         refs.append({"id": face_id, "vertex_offset": offset, "vertex_count": count})
         offset += count
     return tuple(refs)
+
+
+def chains_to_topology_rows(dataset: CdbDataset, *, limit_chains: int | None = None) -> tuple[dict[str, int], ...]:
+    """Return normalized CDB chain topology rows without classifying membership.
+
+    The rows expose only generic chain/face ownership columns. They are intended
+    as Python-side input metadata for future topology-aware closed-shape
+    contracts; they do not reconstruct faces, choose boundary ownership, or add
+    RayJoin/GIS application semantics.
+    """
+
+    chains = dataset.chains if limit_chains is None else dataset.chains[:limit_chains]
+    return tuple(
+        {
+            "chain_id": int(chain.chain_id),
+            "point_count": int(chain.point_count),
+            "first_point_id": int(chain.first_point_id),
+            "last_point_id": int(chain.last_point_id),
+            "left_face_id": int(chain.left_face_id),
+            "right_face_id": int(chain.right_face_id),
+            "has_left_face": int(chain.left_face_id != 0),
+            "has_right_face": int(chain.right_face_id != 0),
+        }
+        for chain in chains
+    )

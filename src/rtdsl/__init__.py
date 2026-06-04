@@ -592,6 +592,7 @@ from .datasets import chains_to_polygon_refs
 from .datasets import chains_to_probe_points
 from .datasets import chains_to_segment_columns
 from .datasets import chains_to_segments
+from .datasets import chains_to_topology_rows
 from .datasets import CdbChain
 from .datasets import CdbDataset
 from .datasets import CdbPoint
@@ -2320,6 +2321,7 @@ __all__ = [
     "chains_to_probe_points",
     "chains_to_segment_columns",
     "chains_to_segments",
+    "chains_to_topology_rows",
     "count_arcgis_loaded_pages",
     "download_rayjoin_sample",
     "build_postgis_fixed_radius_neighbors_sql",
