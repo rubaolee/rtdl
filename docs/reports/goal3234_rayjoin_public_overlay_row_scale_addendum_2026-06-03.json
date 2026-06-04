@@ -1,0 +1,1486 @@
+{
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "commit": "a6b040417875bef9f526e548959ab9b515d128de",
+  "data_dir": "/root/rtdl_goal3151/data/rayjoin_public_cdb",
+  "goal": 3234,
+  "hardware": {
+    "cuda_driver_query": "==============NVSMI LOG==============\n\nTimestamp                                 : Thu Jun  4 01:15:11 2026\nDriver Version                            : 570.211.01\nCUDA Version                              : 12.8\n\nAttached GPUs                             : 1\nGPU 00000000:CE:00.0\n    Compute Mode                          : Default",
+    "nvcc_version": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0",
+    "nvidia_smi": "NVIDIA A40, 570.211.01",
+    "rtdl_optix_library": "/root/rtdl_goal3151/build/librtdl_optix.so"
+  },
+  "repeats": 1,
+  "rows": [
+    {
+      "all_repeats_match_cpu_rows": true,
+      "case": "overlay_county384_soil384",
+      "claim_boundary": {
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false
+      },
+      "cpu_active_overlay_rows": 96,
+      "cpu_reference_seconds": 47.730886152014136,
+      "cpu_row_count": 130320,
+      "cpu_summary": {
+        "active_seed_count": 96,
+        "active_seed_pairs": [
+          {
+            "left_polygon_id": 2,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 23
+          },
+          {
+            "left_polygon_id": 181,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 188
+          },
+          {
+            "left_polygon_id": 183,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 186
+          },
+          {
+            "left_polygon_id": 183,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 188
+          },
+          {
+            "left_polygon_id": 184,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 188
+          },
+          {
+            "left_polygon_id": 185,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 186
+          },
+          {
+            "left_polygon_id": 185,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 189
+          },
+          {
+            "left_polygon_id": 185,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 190
+          },
+          {
+            "left_polygon_id": 186,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 186
+          },
+          {
+            "left_polygon_id": 284,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 134
+          },
+          {
+            "left_polygon_id": 285,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 84
+          },
+          {
+            "left_polygon_id": 285,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 85
+          },
+          {
+            "left_polygon_id": 285,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 100
+          },
+          {
+            "left_polygon_id": 285,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 120
+          },
+          {
+            "left_polygon_id": 285,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 121
+          },
+          {
+            "left_polygon_id": 285,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 122
+          },
+          {
+            "left_polygon_id": 285,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 126
+          },
+          {
+            "left_polygon_id": 285,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 127
+          },
+          {
+            "left_polygon_id": 285,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 137
+          },
+          {
+            "left_polygon_id": 285,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 153
+          },
+          {
+            "left_polygon_id": 286,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 150
+          },
+          {
+            "left_polygon_id": 286,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 151
+          },
+          {
+            "left_polygon_id": 286,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 165
+          },
+          {
+            "left_polygon_id": 286,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 172
+          },
+          {
+            "left_polygon_id": 287,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 119
+          },
+          {
+            "left_polygon_id": 287,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 131
+          },
+          {
+            "left_polygon_id": 287,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 132
+          },
+          {
+            "left_polygon_id": 288,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 33
+          },
+          {
+            "left_polygon_id": 288,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 49
+          },
+          {
+            "left_polygon_id": 288,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 52
+          },
+          {
+            "left_polygon_id": 288,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 112
+          },
+          {
+            "left_polygon_id": 288,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 128
+          },
+          {
+            "left_polygon_id": 288,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 130
+          },
+          {
+            "left_polygon_id": 288,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 133
+          },
+          {
+            "left_polygon_id": 289,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 224
+          },
+          {
+            "left_polygon_id": 289,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 235
+          },
+          {
+            "left_polygon_id": 290,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 168
+          },
+          {
+            "left_polygon_id": 290,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 177
+          },
+          {
+            "left_polygon_id": 290,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 201
+          },
+          {
+            "left_polygon_id": 290,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 202
+          },
+          {
+            "left_polygon_id": 290,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 203
+          },
+          {
+            "left_polygon_id": 290,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 221
+          },
+          {
+            "left_polygon_id": 290,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 222
+          },
+          {
+            "left_polygon_id": 290,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 223
+          },
+          {
+            "left_polygon_id": 290,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 224
+          },
+          {
+            "left_polygon_id": 291,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 168
+          },
+          {
+            "left_polygon_id": 291,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 223
+          },
+          {
+            "left_polygon_id": 291,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 224
+          },
+          {
+            "left_polygon_id": 291,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 231
+          },
+          {
+            "left_polygon_id": 291,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 232
+          },
+          {
+            "left_polygon_id": 291,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 233
+          },
+          {
+            "left_polygon_id": 291,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 236
+          },
+          {
+            "left_polygon_id": 292,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 116
+          },
+          {
+            "left_polygon_id": 292,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 117
+          },
+          {
+            "left_polygon_id": 292,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 148
+          },
+          {
+            "left_polygon_id": 292,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 149
+          },
+          {
+            "left_polygon_id": 292,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 160
+          },
+          {
+            "left_polygon_id": 292,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 162
+          },
+          {
+            "left_polygon_id": 292,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 204
+          },
+          {
+            "left_polygon_id": 292,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 205
+          },
+          {
+            "left_polygon_id": 292,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 208
+          },
+          {
+            "left_polygon_id": 292,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 209
+          },
+          {
+            "left_polygon_id": 292,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 235
+          },
+          {
+            "left_polygon_id": 293,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 234
+          },
+          {
+            "left_polygon_id": 293,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 278
+          },
+          {
+            "left_polygon_id": 294,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 279
+          },
+          {
+            "left_polygon_id": 295,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 278
+          },
+          {
+            "left_polygon_id": 295,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 281
+          },
+          {
+            "left_polygon_id": 295,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 294
+          },
+          {
+            "left_polygon_id": 296,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 215
+          },
+          {
+            "left_polygon_id": 296,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 219
+          },
+          {
+            "left_polygon_id": 296,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 220
+          },
+          {
+            "left_polygon_id": 296,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 279
+          },
+          {
+            "left_polygon_id": 296,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 295
+          },
+          {
+            "left_polygon_id": 296,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 356
+          },
+          {
+            "left_polygon_id": 297,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 300
+          },
+          {
+            "left_polygon_id": 302,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 299
+          },
+          {
+            "left_polygon_id": 307,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 242
+          },
+          {
+            "left_polygon_id": 307,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 301
+          },
+          {
+            "left_polygon_id": 307,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 303
+          },
+          {
+            "left_polygon_id": 307,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 326
+          },
+          {
+            "left_polygon_id": 308,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 255
+          },
+          {
+            "left_polygon_id": 308,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 260
+          },
+          {
+            "left_polygon_id": 309,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 334
+          },
+          {
+            "left_polygon_id": 310,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 299
+          },
+          {
+            "left_polygon_id": 310,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 334
+          },
+          {
+            "left_polygon_id": 311,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 299
+          },
+          {
+            "left_polygon_id": 313,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 303
+          },
+          {
+            "left_polygon_id": 313,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 334
+          },
+          {
+            "left_polygon_id": 313,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 335
+          },
+          {
+            "left_polygon_id": 321,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 8
+          },
+          {
+            "left_polygon_id": 366,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 181
+          },
+          {
+            "left_polygon_id": 366,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 182
+          },
+          {
+            "left_polygon_id": 366,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 183
+          },
+          {
+            "left_polygon_id": 366,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 184
+          },
+          {
+            "left_polygon_id": 366,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 185
+          }
+        ],
+        "output_contract": "overlay_pair_dependency_rows_with_lsi_pip_flags",
+        "pair_dependency_row_count": 130320
+      },
+      "dataset": "/root/rtdl_goal3151/data/rayjoin_public_cdb/br_county_start0_count384.cdb + /root/rtdl_goal3151/data/rayjoin_public_cdb/br_soil_start0_count384.cdb",
+      "dataset_note": "External CDB overlay pair-dependency case using left/right polygon chains.",
+      "measurements": {
+        "include_rows_measured": true,
+        "prepared_optix_rows": [
+          {
+            "claim_boundary": {
+              "public_speedup_claim_authorized": false,
+              "rayjoin_paper_reproduction_claim_authorized": false,
+              "release_authorized": false,
+              "rt_core_speedup_claim_authorized": false,
+              "rtdl_beats_rayjoin_claim_authorized": false,
+              "true_zero_copy_claim_authorized": false
+            },
+            "cpu_minus_native_sample": [],
+            "native_minus_cpu_sample": [],
+            "phases_sec": {
+              "prepare_static_scene_sec": 0.7244494631886482,
+              "prepared_query_sec": 0.04803651571273804,
+              "query_pack_sec": 0.006320847198367119,
+              "static_shape_pack_sec": 0.0025932732969522476
+            },
+            "prepared_query_sec": 0.04803651571273804,
+            "prepared_total_seconds": 0.9237234834581614,
+            "repeat_index": 1,
+            "row_count": 130320,
+            "row_set_matches_cpu": true,
+            "summary": {
+              "output_contract": "overlay_pair_dependency_rows_with_lsi_pip_flags",
+              "pair_dependency_row_count": 130320
+            },
+            "symmetric_difference_count": 0
+          }
+        ]
+      },
+      "medians": {
+        "prepared_total_seconds": 0.9237234834581614
+      },
+      "workload": "overlay_seed"
+    },
+    {
+      "all_repeats_match_cpu_rows": true,
+      "case": "overlay_county512_soil512",
+      "claim_boundary": {
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false
+      },
+      "cpu_active_overlay_rows": 121,
+      "cpu_reference_seconds": 79.97762567177415,
+      "cpu_row_count": 233766,
+      "cpu_summary": {
+        "active_seed_count": 121,
+        "active_seed_pairs": [
+          {
+            "left_polygon_id": 2,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 23
+          },
+          {
+            "left_polygon_id": 181,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 188
+          },
+          {
+            "left_polygon_id": 183,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 186
+          },
+          {
+            "left_polygon_id": 183,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 188
+          },
+          {
+            "left_polygon_id": 184,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 188
+          },
+          {
+            "left_polygon_id": 185,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 186
+          },
+          {
+            "left_polygon_id": 185,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 189
+          },
+          {
+            "left_polygon_id": 185,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 190
+          },
+          {
+            "left_polygon_id": 186,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 186
+          },
+          {
+            "left_polygon_id": 284,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 134
+          },
+          {
+            "left_polygon_id": 285,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 84
+          },
+          {
+            "left_polygon_id": 285,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 85
+          },
+          {
+            "left_polygon_id": 285,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 100
+          },
+          {
+            "left_polygon_id": 285,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 120
+          },
+          {
+            "left_polygon_id": 285,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 121
+          },
+          {
+            "left_polygon_id": 285,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 122
+          },
+          {
+            "left_polygon_id": 285,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 126
+          },
+          {
+            "left_polygon_id": 285,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 127
+          },
+          {
+            "left_polygon_id": 285,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 137
+          },
+          {
+            "left_polygon_id": 285,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 153
+          },
+          {
+            "left_polygon_id": 286,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 150
+          },
+          {
+            "left_polygon_id": 286,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 151
+          },
+          {
+            "left_polygon_id": 286,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 165
+          },
+          {
+            "left_polygon_id": 286,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 172
+          },
+          {
+            "left_polygon_id": 287,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 119
+          },
+          {
+            "left_polygon_id": 287,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 131
+          },
+          {
+            "left_polygon_id": 287,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 132
+          },
+          {
+            "left_polygon_id": 288,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 33
+          },
+          {
+            "left_polygon_id": 288,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 49
+          },
+          {
+            "left_polygon_id": 288,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 52
+          },
+          {
+            "left_polygon_id": 288,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 112
+          },
+          {
+            "left_polygon_id": 288,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 128
+          },
+          {
+            "left_polygon_id": 288,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 130
+          },
+          {
+            "left_polygon_id": 288,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 133
+          },
+          {
+            "left_polygon_id": 289,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 224
+          },
+          {
+            "left_polygon_id": 289,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 235
+          },
+          {
+            "left_polygon_id": 290,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 168
+          },
+          {
+            "left_polygon_id": 290,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 177
+          },
+          {
+            "left_polygon_id": 290,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 201
+          },
+          {
+            "left_polygon_id": 290,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 202
+          },
+          {
+            "left_polygon_id": 290,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 203
+          },
+          {
+            "left_polygon_id": 290,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 221
+          },
+          {
+            "left_polygon_id": 290,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 222
+          },
+          {
+            "left_polygon_id": 290,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 223
+          },
+          {
+            "left_polygon_id": 290,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 224
+          },
+          {
+            "left_polygon_id": 291,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 168
+          },
+          {
+            "left_polygon_id": 291,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 223
+          },
+          {
+            "left_polygon_id": 291,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 224
+          },
+          {
+            "left_polygon_id": 291,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 231
+          },
+          {
+            "left_polygon_id": 291,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 232
+          },
+          {
+            "left_polygon_id": 291,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 233
+          },
+          {
+            "left_polygon_id": 291,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 236
+          },
+          {
+            "left_polygon_id": 292,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 116
+          },
+          {
+            "left_polygon_id": 292,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 117
+          },
+          {
+            "left_polygon_id": 292,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 148
+          },
+          {
+            "left_polygon_id": 292,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 149
+          },
+          {
+            "left_polygon_id": 292,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 160
+          },
+          {
+            "left_polygon_id": 292,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 162
+          },
+          {
+            "left_polygon_id": 292,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 204
+          },
+          {
+            "left_polygon_id": 292,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 205
+          },
+          {
+            "left_polygon_id": 292,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 208
+          },
+          {
+            "left_polygon_id": 292,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 209
+          },
+          {
+            "left_polygon_id": 292,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 235
+          },
+          {
+            "left_polygon_id": 293,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 234
+          },
+          {
+            "left_polygon_id": 293,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 278
+          },
+          {
+            "left_polygon_id": 294,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 279
+          },
+          {
+            "left_polygon_id": 295,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 278
+          },
+          {
+            "left_polygon_id": 295,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 281
+          },
+          {
+            "left_polygon_id": 295,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 294
+          },
+          {
+            "left_polygon_id": 296,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 215
+          },
+          {
+            "left_polygon_id": 296,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 219
+          },
+          {
+            "left_polygon_id": 296,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 220
+          },
+          {
+            "left_polygon_id": 296,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 279
+          },
+          {
+            "left_polygon_id": 296,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 295
+          },
+          {
+            "left_polygon_id": 296,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 356
+          },
+          {
+            "left_polygon_id": 297,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 300
+          },
+          {
+            "left_polygon_id": 297,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 427
+          },
+          {
+            "left_polygon_id": 297,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 430
+          },
+          {
+            "left_polygon_id": 302,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 299
+          },
+          {
+            "left_polygon_id": 307,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 242
+          },
+          {
+            "left_polygon_id": 307,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 301
+          },
+          {
+            "left_polygon_id": 307,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 303
+          },
+          {
+            "left_polygon_id": 307,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 326
+          },
+          {
+            "left_polygon_id": 307,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 394
+          },
+          {
+            "left_polygon_id": 307,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 396
+          },
+          {
+            "left_polygon_id": 307,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 398
+          },
+          {
+            "left_polygon_id": 307,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 399
+          },
+          {
+            "left_polygon_id": 307,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 401
+          },
+          {
+            "left_polygon_id": 307,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 403
+          },
+          {
+            "left_polygon_id": 308,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 255
+          },
+          {
+            "left_polygon_id": 308,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 260
+          },
+          {
+            "left_polygon_id": 308,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 414
+          },
+          {
+            "left_polygon_id": 309,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 334
+          },
+          {
+            "left_polygon_id": 310,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 299
+          },
+          {
+            "left_polygon_id": 310,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 334
+          },
+          {
+            "left_polygon_id": 311,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 299
+          },
+          {
+            "left_polygon_id": 313,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 303
+          },
+          {
+            "left_polygon_id": 313,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 334
+          },
+          {
+            "left_polygon_id": 313,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 335
+          },
+          {
+            "left_polygon_id": 321,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 8
+          },
+          {
+            "left_polygon_id": 366,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 181
+          },
+          {
+            "left_polygon_id": 366,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 182
+          },
+          {
+            "left_polygon_id": 366,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 183
+          },
+          {
+            "left_polygon_id": 366,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 184
+          },
+          {
+            "left_polygon_id": 366,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 185
+          },
+          {
+            "left_polygon_id": 485,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 215
+          },
+          {
+            "left_polygon_id": 485,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 220
+          },
+          {
+            "left_polygon_id": 485,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 289
+          },
+          {
+            "left_polygon_id": 485,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 290
+          },
+          {
+            "left_polygon_id": 485,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 291
+          },
+          {
+            "left_polygon_id": 485,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 293
+          },
+          {
+            "left_polygon_id": 485,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 305
+          },
+          {
+            "left_polygon_id": 485,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 460
+          },
+          {
+            "left_polygon_id": 485,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 462
+          },
+          {
+            "left_polygon_id": 485,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 463
+          },
+          {
+            "left_polygon_id": 486,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 214
+          },
+          {
+            "left_polygon_id": 486,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 215
+          },
+          {
+            "left_polygon_id": 486,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 216
+          },
+          {
+            "left_polygon_id": 486,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 217
+          },
+          {
+            "left_polygon_id": 487,
+            "requires_lsi": 1,
+            "requires_pip": 1,
+            "right_polygon_id": 215
+          },
+          {
+            "left_polygon_id": 487,
+            "requires_lsi": 1,
+            "requires_pip": 0,
+            "right_polygon_id": 220
+          }
+        ],
+        "output_contract": "overlay_pair_dependency_rows_with_lsi_pip_flags",
+        "pair_dependency_row_count": 233766
+      },
+      "dataset": "/root/rtdl_goal3151/data/rayjoin_public_cdb/br_county_start0_count512.cdb + /root/rtdl_goal3151/data/rayjoin_public_cdb/br_soil_start0_count512.cdb",
+      "dataset_note": "External CDB overlay pair-dependency case using left/right polygon chains.",
+      "measurements": {
+        "include_rows_measured": true,
+        "prepared_optix_rows": [
+          {
+            "claim_boundary": {
+              "public_speedup_claim_authorized": false,
+              "rayjoin_paper_reproduction_claim_authorized": false,
+              "release_authorized": false,
+              "rt_core_speedup_claim_authorized": false,
+              "rtdl_beats_rayjoin_claim_authorized": false,
+              "true_zero_copy_claim_authorized": false
+            },
+            "cpu_minus_native_sample": [],
+            "native_minus_cpu_sample": [],
+            "phases_sec": {
+              "prepare_static_scene_sec": 0.0006897579878568649,
+              "prepared_query_sec": 0.08455290086567402,
+              "query_pack_sec": 0.008432384580373764,
+              "static_shape_pack_sec": 0.003203250467777252
+            },
+            "prepared_query_sec": 0.08455290086567402,
+            "prepared_total_seconds": 0.3854836765676737,
+            "repeat_index": 1,
+            "row_count": 233766,
+            "row_set_matches_cpu": true,
+            "summary": {
+              "output_contract": "overlay_pair_dependency_rows_with_lsi_pip_flags",
+              "pair_dependency_row_count": 233766
+            },
+            "symmetric_difference_count": 0
+          }
+        ]
+      },
+      "medians": {
+        "prepared_total_seconds": 0.3854836765676737
+      },
+      "workload": "overlay_seed"
+    }
+  ],
+  "schema": "rtdl.goal3234.rayjoin_public_overlay_row_scale_addendum.v1",
+  "slices": {
+    "county_0_384": {
+      "bytes": 692529,
+      "chains": 384,
+      "count": 384,
+      "path": "/root/rtdl_goal3151/data/rayjoin_public_cdb/br_county_start0_count384.cdb",
+      "segments": 18649,
+      "source": "br_county",
+      "start": 0
+    },
+    "county_0_512": {
+      "bytes": 924476,
+      "chains": 512,
+      "count": 512,
+      "path": "/root/rtdl_goal3151/data/rayjoin_public_cdb/br_county_start0_count512.cdb",
+      "segments": 24880,
+      "source": "br_county",
+      "start": 0
+    },
+    "soil_0_384": {
+      "bytes": 268805,
+      "chains": 384,
+      "count": 384,
+      "path": "/root/rtdl_goal3151/data/rayjoin_public_cdb/br_soil_start0_count384.cdb",
+      "segments": 6998,
+      "source": "br_soil",
+      "start": 0
+    },
+    "soil_0_512": {
+      "bytes": 333363,
+      "chains": 512,
+      "count": 512,
+      "path": "/root/rtdl_goal3151/data/rayjoin_public_cdb/br_soil_start0_count512.cdb",
+      "segments": 8619,
+      "source": "br_soil",
+      "start": 0
+    }
+  },
+  "status": "pass"
+}

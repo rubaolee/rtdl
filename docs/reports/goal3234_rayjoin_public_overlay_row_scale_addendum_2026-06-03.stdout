@@ -1,0 +1,3 @@
+[goal3232] repeat overlay_county384_soil384/prepared_rows 1/1 sec=0.923723 rows=130320 symdiff=0
+[goal3232] repeat overlay_county512_soil512/prepared_rows 1/1 sec=0.385484 rows=233766 symdiff=0
+[goal3232] wrote docs/reports/goal3234_rayjoin_public_overlay_row_scale_addendum_2026-06-03.json
