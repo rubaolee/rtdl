@@ -53,6 +53,32 @@ def _command_output(args: list[str]) -> str:
         return ""
 
 
+def _parse_batch_stream_count(value: str) -> int | str:
+    if value == "auto":
+        return value
+    try:
+        parsed = int(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("batch stream count must be a positive integer or auto") from exc
+    if parsed <= 0:
+        raise argparse.ArgumentTypeError("batch stream count must be a positive integer or auto")
+    return parsed
+
+
+def _effective_batch_stream_count(request_count: int, requested: int | str | None) -> int:
+    if requested is None:
+        return 1
+    if requested == "auto":
+        if request_count >= 64:
+            return min(request_count, 16)
+        if request_count >= 16:
+            return min(request_count, 8)
+        if request_count >= 8:
+            return min(request_count, 4)
+        return 1
+    return min(request_count, int(requested))
+
+
 def _time_call(fn) -> tuple[float, Any]:
     start = time.perf_counter()
     result = fn()
@@ -152,6 +178,10 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
                         batch_rows.append(
                             {
                                 "request_count": int(request_count),
+                                "batch_stream_count_effective": _effective_batch_stream_count(
+                                    int(request_count),
+                                    args.batch_stream_count,
+                                ),
                                 "total_ms_median": total_ms,
                                 "per_request_ms_median": (
                                     float(total_ms / request_count) if total_ms is not None else None
@@ -207,6 +237,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--scalar-count-pipeline", action="store_true")
     parser.add_argument(
         "--batch-stream-count",
+        type=_parse_batch_stream_count,
         default=None,
         help="Optional RTDL_OPTIX_POINT_PRIMITIVE_BATCH_STREAM_COUNT value: positive integer or auto.",
     )

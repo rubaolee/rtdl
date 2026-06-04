@@ -38,6 +38,9 @@ class Goal3314PreparedPointMultistreamBatchCountTest(unittest.TestCase):
     def test_probe_script_exposes_stream_count_without_changing_claim_boundary(self) -> None:
         probe = PROBE.read_text(encoding="utf-8")
         self.assertIn("--batch-stream-count", probe)
+        self.assertIn("_parse_batch_stream_count", probe)
+        self.assertIn("_effective_batch_stream_count", probe)
+        self.assertIn('"batch_stream_count_effective"', probe)
         self.assertIn("positive integer or auto", probe)
         self.assertIn("RTDL_OPTIX_POINT_PRIMITIVE_BATCH_STREAM_COUNT", probe)
         self.assertIn('"rtdl_beats_rayjoin_claim_authorized": False', probe)
