@@ -1,0 +1,102 @@
+{
+  "candidate_row_count": 26,
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "cupy_version": "14.1.1",
+  "exact_shape_ids_by_point": {
+    "522": [
+      522,
+      523
+    ],
+    "523": [
+      522,
+      523
+    ],
+    "538": [
+      535,
+      539
+    ],
+    "539": [
+      535,
+      539
+    ],
+    "540": [
+      418,
+      540
+    ],
+    "564": [
+      562,
+      565
+    ],
+    "565": [
+      562,
+      565
+    ]
+  },
+  "expected_owner_face_by_point": {
+    "522": 248,
+    "523": 248,
+    "538": 217,
+    "539": 217,
+    "540": 212,
+    "564": 187,
+    "565": 187
+  },
+  "goal": 3372,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "incident_artifact": "/root/rtdl/docs/reports/goal3335_rayjoin_incident_face_owner_probe_2026-06-04.json",
+  "incident_row_count": 21,
+  "interpretation": "Route-fixture probe only: validates the app-layer owner-face CuPy continuation over stored RayJoin/CDB mismatch artifacts; it is not native RT traversal or a paper reproduction claim.",
+  "point_count": 7,
+  "recovered_shape_ids_by_point": {
+    "522": [
+      522,
+      523
+    ],
+    "523": [
+      522,
+      523
+    ],
+    "538": [
+      535,
+      539
+    ],
+    "539": [
+      535,
+      539
+    ],
+    "540": [
+      418,
+      540
+    ],
+    "564": [
+      562,
+      565
+    ],
+    "565": [
+      562,
+      565
+    ]
+  },
+  "recovered_shapes_match_exact": true,
+  "rtdl_commit": "ef36541ed81695d79c39cdc8c08ac37fc154f4e9",
+  "schema": "rtdl.goal3372.owner_face_cupy_route_fixture_probe.v1",
+  "selected_owner_face_by_point": {
+    "522": 248,
+    "523": 248,
+    "538": 217,
+    "539": 217,
+    "540": 212,
+    "564": 187,
+    "565": 187
+  },
+  "selected_owner_faces_match_expected": true,
+  "topology_artifact": "/root/rtdl/docs/reports/goal3328_rayjoin_cdb_topology_shape_id_probe_2026-06-04.json",
+  "topology_row_count": 11
+}
