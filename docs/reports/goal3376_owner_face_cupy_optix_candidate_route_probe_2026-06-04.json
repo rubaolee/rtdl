@@ -1,0 +1,160 @@
+{
+  "candidate_rows_from_optix_device_columns": true,
+  "cdb_chain_count": 512,
+  "cdb_topology_row_count": 512,
+  "claim_boundary": {
+    "native_default_route_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "county_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+  "cupy_version": "14.1.1",
+  "exact_shape_ids_by_point": {
+    "522": [
+      522,
+      523
+    ],
+    "523": [
+      522,
+      523
+    ],
+    "538": [
+      535,
+      539
+    ],
+    "539": [
+      535,
+      539
+    ],
+    "540": [
+      418,
+      540
+    ],
+    "564": [
+      562,
+      565
+    ],
+    "565": [
+      562,
+      565
+    ]
+  },
+  "expected_artifact": "/root/rtdl/docs/reports/goal3328_rayjoin_cdb_topology_shape_id_probe_2026-06-04.json",
+  "expected_owner_face_by_point": {
+    "522": 248,
+    "523": 248,
+    "538": 217,
+    "539": 217,
+    "540": 212,
+    "564": 187,
+    "565": 187
+  },
+  "goal": 3376,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "incident_row_count": 21,
+  "incident_rows_derived_from_cdb": true,
+  "interpretation": "Live-candidate route probe only: OptiX produces generic point/shape candidate device columns, the app masks the seven fixture points, and the composed CuPy owner-face continuation filters those candidates against CDB-derived topology/incident metadata. The stored artifact supplies only expected exact answers. This is not release, default-route, speedup, true-zero-copy, or RayJoin paper reproduction evidence.",
+  "live_candidate_shape_ids_by_point": {
+    "522": [
+      521,
+      522,
+      523
+    ],
+    "523": [
+      521,
+      522,
+      523
+    ],
+    "538": [
+      418,
+      535,
+      539,
+      540
+    ],
+    "539": [
+      418,
+      535,
+      539,
+      540
+    ],
+    "540": [
+      418,
+      535,
+      539,
+      540
+    ],
+    "564": [
+      437,
+      559,
+      562,
+      565
+    ],
+    "565": [
+      437,
+      559,
+      562,
+      565
+    ]
+  },
+  "optix_candidate_capacity": 244736,
+  "optix_candidate_device_resident": true,
+  "optix_candidate_overflow": false,
+  "optix_candidate_row_count": 1429,
+  "optix_candidate_traversal_seconds": 0.000346161,
+  "owner_face_present_for_all_points": true,
+  "pipeline_topology_row_count": 11,
+  "point_count": 7,
+  "recovered_shape_ids_by_point": {
+    "522": [
+      522,
+      523
+    ],
+    "523": [
+      522,
+      523
+    ],
+    "538": [
+      535,
+      539
+    ],
+    "539": [
+      535,
+      539
+    ],
+    "540": [
+      418,
+      540
+    ],
+    "564": [
+      562,
+      565
+    ],
+    "565": [
+      562,
+      565
+    ]
+  },
+  "recovered_shapes_match_exact": true,
+  "rtdl_commit": "ddc6962c4c23d4bd9091f487d35f029b7b042ef7",
+  "schema": "rtdl.goal3376.owner_face_cupy_optix_candidate_route_probe.v1",
+  "selected_candidate_row_count": 26,
+  "selected_owner_face_by_point": {
+    "522": 248,
+    "523": 248,
+    "538": 217,
+    "539": 217,
+    "540": 212,
+    "564": 187,
+    "565": 187
+  },
+  "selected_owner_faces_match_expected": true,
+  "stored_candidate_artifact_used_as_input": false,
+  "stored_exact_oracle_artifact_used_as_input": true,
+  "stored_incident_artifact_used_as_input": false,
+  "stored_topology_artifact_used_as_input": false,
+  "topology_rows_derived_from_cdb": true
+}
