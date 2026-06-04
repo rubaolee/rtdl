@@ -297,34 +297,6 @@ def _run_prepared_point_id_count_device_columns_with_boundary_mode(
         columns.close()
 
 
-def _run_prepared_boundary_event_grouped_count_device_columns(
-    prepared,
-    packed_points,
-    *,
-    event_capacity: int | None = None,
-    group_capacity: int,
-) -> tuple[int, object, object]:
-    event_columns = prepared.first_boundary_crossing_device_columns(
-        packed_points,
-        max_rows=event_capacity,
-    )
-    count_columns = None
-    try:
-        if event_columns.overflow:
-            raise RuntimeError("boundary-event device-column continuation overflowed event capacity")
-        count_columns = event_columns.grouped_count_by_point_id_device_columns(
-            group_capacity=group_capacity,
-        )
-        if count_columns.overflow:
-            raise RuntimeError("boundary-event grouped-count continuation overflowed group capacity")
-        return int(event_columns.row_count), event_columns, count_columns
-    except Exception:
-        if count_columns is not None:
-            count_columns.close()
-        event_columns.close()
-        raise
-
-
 def _record_id(record: object) -> int:
     if hasattr(record, "id"):
         return int(getattr(record, "id"))
@@ -575,20 +547,27 @@ def run_rayjoin_prepared_optix_workload(
                         1,
                         max(_record_id(point) for point in ordered_points) + 1,
                     )
-                    boundary_event_result = _phase_time(
+                    boundary_event_columns = _phase_time(
                         phases,
-                        "prepared_query_sec",
-                        lambda: _run_prepared_boundary_event_grouped_count_device_columns(
-                            prepared,
-                            packed_points,
+                        "boundary_event_device_columns_sec",
+                        lambda: prepared.first_boundary_crossing_device_columns(packed_points),
+                    )
+                    if boundary_event_columns.overflow:
+                        raise RuntimeError("boundary-event device-column continuation overflowed event capacity")
+                    boundary_event_count_columns = _phase_time(
+                        phases,
+                        "boundary_event_grouped_count_sec",
+                        lambda: boundary_event_columns.grouped_count_by_point_id_device_columns(
                             group_capacity=point_id_group_capacity,
                         ),
                     )
-                    (
-                        row_count,
-                        boundary_event_columns,
-                        boundary_event_count_columns,
-                    ) = boundary_event_result
+                    if boundary_event_count_columns.overflow:
+                        raise RuntimeError("boundary-event grouped-count continuation overflowed group capacity")
+                    row_count = int(boundary_event_columns.row_count)
+                    phases["prepared_query_sec"] = (
+                        phases["boundary_event_device_columns_sec"]
+                        + phases["boundary_event_grouped_count_sec"]
+                    )
                     boundary_event_count_metadata = {
                         "boundary_event_device_columns": boundary_event_columns.to_metadata(),
                         "point_id_grouped_count_device_columns": boundary_event_count_columns.to_metadata(),

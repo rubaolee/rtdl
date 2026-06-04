@@ -396,6 +396,32 @@ Timing results:
         self.assertIsNone(row["device_filtered_boundary_mode"])
         self.assertEqual(calls[0]["kwargs"]["count_mode"], "boundary_event_point_id_count_device_columns")
 
+    def test_rtdl_pip_boundary_event_count_route_rejects_missing_disclosure_even_in_warmup(self) -> None:
+        def fake_run(*_args, **_kwargs):
+            return {
+                "phases_sec": {
+                    "prepared_query_sec": 0.00021,
+                    "query_pack_sec": 0.0001,
+                    "prepare_static_scene_sec": 0.0002,
+                },
+                "summary": {
+                    "boundary_event_row_count": 512,
+                    "output_contract": "point_closed_shape_first_boundary_event_count_by_point_id_device_columns",
+                },
+                "row_count": 512,
+                "native_phase_timings": {"mode": "boundary_event_device_columns"},
+            }
+
+        with mock.patch.object(MODULE.rayjoin_app, "run_rayjoin_prepared_optix_workload", side_effect=fake_run):
+            with self.assertRaisesRegex(RuntimeError, "did not disclose non-membership contract"):
+                MODULE.run_rtdl_samples(
+                    workload="pip",
+                    dataset="fake.cdb",
+                    warmup=1,
+                    repeat=1,
+                    count_mode="boundary_event_point_id_count_device_columns",
+                )
+
     def test_rtdl_non_pip_rejects_device_filtered_mode(self) -> None:
         with self.assertRaisesRegex(ValueError, "only supported for RTDL PIP"):
             MODULE.run_rtdl_samples(

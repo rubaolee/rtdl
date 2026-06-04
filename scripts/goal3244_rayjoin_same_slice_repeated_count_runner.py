@@ -75,6 +75,24 @@ def _gpu_name() -> str | None:
     return _command_output(["nvidia-smi", "--query-gpu=name,driver_version", "--format=csv,noheader"])
 
 
+def validate_rtdl_sample_payload(*, workload: str, count_mode: str, payload: dict[str, Any]) -> None:
+    summary = dict(payload.get("summary") or {})
+    if workload == "lsi":
+        expected_key = "intersection_count"
+    elif count_mode == PIP_BOUNDARY_EVENT_COUNT_MODE:
+        expected_key = "boundary_event_row_count"
+    else:
+        expected_key = "positive_assignment_count"
+    if expected_key in summary and int(summary[expected_key]) != int(payload.get("row_count", 0)):
+        raise RuntimeError(f"{workload}: summary count does not match row_count")
+    if count_mode in PIP_POSITIVE_DEVICE_COUNT_MODES and not summary.get("device_filtered_count_matches_exact"):
+        raise RuntimeError(f"{workload}: validated device-side count was not validated against exact count")
+    if count_mode == PIP_BOUNDARY_EVENT_COUNT_MODE and not summary.get(
+        "boundary_event_contract_not_positive_membership"
+    ):
+        raise RuntimeError(f"{workload}: boundary-event route did not disclose non-membership contract")
+
+
 def parse_rayjoin_query_log(text: str) -> dict[str, Any]:
     """Parse RayJoin query_exec logs without treating them as a parity oracle."""
     timings: dict[str, float] = {}
@@ -300,10 +318,11 @@ def run_rtdl_samples(
 
     for index in range(warmup):
         print(f"[goal3244] RTDL {workload} warmup {index + 1}/{warmup}", flush=True)
-        one()
+        validate_rtdl_sample_payload(workload=workload, count_mode=count_mode, payload=one())
     for index in range(repeat):
         print(f"[goal3244] RTDL {workload} repeat {index + 1}/{repeat}", flush=True)
         payload = one()
+        validate_rtdl_sample_payload(workload=workload, count_mode=count_mode, payload=payload)
         phases = dict(payload.get("phases_sec") or {})
         summary = dict(payload.get("summary") or {})
         prepared_reuse = dict(payload.get("prepared_reuse") or {})
@@ -328,20 +347,6 @@ def run_rtdl_samples(
         static_shape_pack_sec.append(float(phases.get("static_shape_pack_sec", 0.0)))
         counts.append(int(payload.get("row_count", 0)))
         native_phase_samples.append(payload.get("native_phase_timings"))
-        if workload == "lsi":
-            expected_key = "intersection_count"
-        elif count_mode == PIP_BOUNDARY_EVENT_COUNT_MODE:
-            expected_key = "boundary_event_row_count"
-        else:
-            expected_key = "positive_assignment_count"
-        if expected_key in summary and int(summary[expected_key]) != int(payload.get("row_count", 0)):
-            raise RuntimeError(f"{workload}: summary count does not match row_count")
-        if count_mode in PIP_POSITIVE_DEVICE_COUNT_MODES and not summary.get("device_filtered_count_matches_exact"):
-            raise RuntimeError(f"{workload}: validated device-side count was not validated against exact count")
-        if count_mode == PIP_BOUNDARY_EVENT_COUNT_MODE and not summary.get(
-            "boundary_event_contract_not_positive_membership"
-        ):
-            raise RuntimeError(f"{workload}: boundary-event route did not disclose non-membership contract")
 
     return {
         "system": "rtdl_prepared_optix",

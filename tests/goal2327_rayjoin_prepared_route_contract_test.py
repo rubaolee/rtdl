@@ -217,6 +217,14 @@ class Goal2327RayJoinPreparedRouteContractTest(unittest.TestCase):
             metadata["point_id_grouped_count_device_columns"]["output_residency"],
             "device_resident_dense_grouped_count_column",
         )
+        self.assertIn("boundary_event_device_columns_sec", payload["phases_sec"])
+        self.assertIn("boundary_event_grouped_count_sec", payload["phases_sec"])
+        self.assertIn("prepared_query_sec", payload["phases_sec"])
+        self.assertAlmostEqual(
+            payload["phases_sec"]["prepared_query_sec"],
+            payload["phases_sec"]["boundary_event_device_columns_sec"]
+            + payload["phases_sec"]["boundary_event_grouped_count_sec"],
+        )
         self.assertIn("not a PIP membership contract", payload["device_resident_continuation_status"])
 
     def test_device_filtered_count_mode_rejects_non_pip_or_rows(self) -> None:
