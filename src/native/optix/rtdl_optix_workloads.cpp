@@ -5181,6 +5181,11 @@ struct PipLaunchParams {
     uint32_t         device_prefilter;
 };
 
+static bool use_prepared_closed_shape_edge_layout()
+{
+    return std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_USE_PREPARED_EDGE_LAYOUT") != nullptr;
+}
+
 static void ensure_pip_pipeline()
 {
     std::call_once(g_pip.init, [&]() {
@@ -6055,7 +6060,9 @@ static void run_prepared_point_closed_shape_membership_2d_optix(
     lp.polygons       = reinterpret_cast<const GpuPolygonRef*>(prepared->d_right_polygons.ptr);
     lp.vertices_x     = reinterpret_cast<const float*>(prepared->d_right_vx.ptr);
     lp.vertices_y     = reinterpret_cast<const float*>(prepared->d_right_vy.ptr);
-    lp.prepared_edges = reinterpret_cast<const GpuPreparedClosedShapeEdge2D*>(prepared->d_right_edges.ptr);
+    lp.prepared_edges = use_prepared_closed_shape_edge_layout()
+        ? reinterpret_cast<const GpuPreparedClosedShapeEdge2D*>(prepared->d_right_edges.ptr)
+        : nullptr;
     lp.hit_words      = nullptr;
     lp.output         = nullptr;
     lp.output_count   = reinterpret_cast<uint32_t*>(d_count.ptr);
@@ -6270,7 +6277,9 @@ static void count_prepared_point_closed_shape_membership_2d_optix(
     lp.polygons       = reinterpret_cast<const GpuPolygonRef*>(prepared->d_right_polygons.ptr);
     lp.vertices_x     = reinterpret_cast<const float*>(prepared->d_right_vx.ptr);
     lp.vertices_y     = reinterpret_cast<const float*>(prepared->d_right_vy.ptr);
-    lp.prepared_edges = reinterpret_cast<const GpuPreparedClosedShapeEdge2D*>(prepared->d_right_edges.ptr);
+    lp.prepared_edges = use_prepared_closed_shape_edge_layout()
+        ? reinterpret_cast<const GpuPreparedClosedShapeEdge2D*>(prepared->d_right_edges.ptr)
+        : nullptr;
     lp.hit_words      = nullptr;
     lp.output         = nullptr;
     lp.output_count   = reinterpret_cast<uint32_t*>(d_count.ptr);
@@ -6475,7 +6484,9 @@ static void count_prepared_point_closed_shape_membership_device_filtered_2d_opti
     lp.polygons       = reinterpret_cast<const GpuPolygonRef*>(prepared->d_right_polygons.ptr);
     lp.vertices_x     = reinterpret_cast<const float*>(prepared->d_right_vx.ptr);
     lp.vertices_y     = reinterpret_cast<const float*>(prepared->d_right_vy.ptr);
-    lp.prepared_edges = reinterpret_cast<const GpuPreparedClosedShapeEdge2D*>(prepared->d_right_edges.ptr);
+    lp.prepared_edges = use_prepared_closed_shape_edge_layout()
+        ? reinterpret_cast<const GpuPreparedClosedShapeEdge2D*>(prepared->d_right_edges.ptr)
+        : nullptr;
     lp.hit_words      = nullptr;
     lp.output         = nullptr;
     lp.output_count   = reinterpret_cast<uint32_t*>(d_count.ptr);

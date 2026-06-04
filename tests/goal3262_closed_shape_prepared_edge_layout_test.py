@@ -43,12 +43,18 @@ class Goal3262ClosedShapePreparedEdgeLayoutTest(unittest.TestCase):
         ):
             self.assertIn(phrase, body)
 
-    def test_only_prepared_closed_shape_launches_use_prepared_edges(self) -> None:
+    def test_prepared_edge_layout_is_explicitly_opt_in_for_prepared_launches(self) -> None:
         text = WORKLOADS.read_text(encoding="utf-8")
 
         self.assertEqual(text.count("lp.prepared_edges = nullptr;"), 1)
+        self.assertIn("static bool use_prepared_closed_shape_edge_layout()", text)
+        self.assertIn("RTDL_OPTIX_POINT_PRIMITIVE_USE_PREPARED_EDGE_LAYOUT", text)
+        self.assertEqual(text.count("use_prepared_closed_shape_edge_layout()"), 4)
         self.assertEqual(
-            text.count("lp.prepared_edges = reinterpret_cast<const GpuPreparedClosedShapeEdge2D*>(prepared->d_right_edges.ptr);"),
+            text.count(
+                "reinterpret_cast<const GpuPreparedClosedShapeEdge2D*>(prepared->d_right_edges.ptr)\n"
+                "        : nullptr;"
+            ),
             3,
         )
 
@@ -62,7 +68,9 @@ class Goal3262ClosedShapePreparedEdgeLayoutTest(unittest.TestCase):
             if end == -1:
                 end = len(text)
             body = text[start:end]
-            self.assertIn("lp.prepared_edges = reinterpret_cast<const GpuPreparedClosedShapeEdge2D*>", body)
+            self.assertIn("lp.prepared_edges = use_prepared_closed_shape_edge_layout()", body)
+            self.assertIn("reinterpret_cast<const GpuPreparedClosedShapeEdge2D*>", body)
+            self.assertIn(": nullptr;", body)
 
     def test_prepared_edge_layout_is_app_agnostic(self) -> None:
         combined = (CORE.read_text(encoding="utf-8") + WORKLOADS.read_text(encoding="utf-8")).lower()
