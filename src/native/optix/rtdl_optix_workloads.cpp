@@ -5501,6 +5501,68 @@ R"CUDA(            atomicAdd(params.output_count, 1u);
     });
 }
 
+static bool use_prepared_closed_shape_scalar_count_pipeline()
+{
+    return std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_USE_SCALAR_COUNT_PIPELINE") != nullptr;
+}
+
+static void ensure_pip_scalar_count_pipeline()
+{
+    std::call_once(g_pip_scalar_count.init, [&]() {
+        std::string src(kPipKernelSrc);
+        specialize_closed_shape_membership_source_from_env(src);
+
+        const std::string old_raygen_count =
+R"CUDA(    if (params.positive_only != 0u && params.output == nullptr && params.output_capacity == 0u && p2 != 0u) {
+        atomicAdd(params.output_count, p2);
+    }
+)CUDA";
+        const std::string new_raygen_count =
+R"CUDA(    if (p2 != 0u) {
+        atomicAdd(params.output_count, p2);
+    }
+)CUDA";
+        size_t pos = src.find(old_raygen_count);
+        if (pos == std::string::npos) {
+            throw std::runtime_error("closed-shape scalar-count raygen count snippet not found");
+        }
+        src.replace(pos, old_raygen_count.size(), new_raygen_count);
+
+        const std::string intersection_start =
+            "\nextern \"C\" __global__ void __intersection__pip_isect() {";
+        const std::string anyhit_start =
+            "\n\n    extern \"C\" __global__ void __anyhit__pip_anyhit()";
+        const size_t isect_pos = src.find(intersection_start);
+        const size_t anyhit_pos = src.find(anyhit_start);
+        if (isect_pos == std::string::npos || anyhit_pos == std::string::npos || anyhit_pos <= isect_pos) {
+            throw std::runtime_error("closed-shape scalar-count intersection block not found");
+        }
+        const std::string scalar_count_intersection =
+R"CUDA(
+extern "C" __global__ void __intersection__pip_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t pidx = optixGetPayload_0();
+    const GpuPolygonRef poly = params.polygons[prim];
+    const float px = params.points_x[pidx];
+    const float py = params.points_y[pidx];
+    if (point_in_polygon(px, py, poly)) {
+        optixSetPayload_2(optixGetPayload_2() + 1u);
+    }
+}
+)CUDA";
+        src.replace(isect_pos, anyhit_pos - isect_pos, scalar_count_intersection);
+
+        std::string ptx = compile_to_ptx(src.c_str(), "point_closed_shape_scalar_count_kernel.cu");
+        g_pip_scalar_count.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__pip_probe",
+            "__miss__pip_miss",
+            "__intersection__pip_isect",
+            nullptr,
+            nullptr, 4).release();
+    });
+}
+
 static void run_pip_optix(
         const RtdlPoint* points,     size_t point_count,
         const RtdlPolygonRef* polys, size_t poly_count,
@@ -6709,7 +6771,12 @@ static void count_prepared_point_closed_shape_membership_device_filtered_2d_opti
     }
 
     reset_closed_shape_membership_phase_timings(3u);
-    ensure_pip_pipeline();
+    const bool use_scalar_count_pipeline = use_prepared_closed_shape_scalar_count_pipeline();
+    if (use_scalar_count_pipeline) {
+        ensure_pip_scalar_count_pipeline();
+    } else {
+        ensure_pip_pipeline();
+    }
 
     const auto t_pack_start = std::chrono::steady_clock::now();
     std::vector<float> pts_x(point_count), pts_y(point_count);
@@ -6789,9 +6856,12 @@ static void count_prepared_point_closed_shape_membership_device_filtered_2d_opti
         upload(d_params.ptr, &lp, 1);
 
         const auto t_launch_start = std::chrono::steady_clock::now();
-        OPTIX_CHECK(optixLaunch(g_pip.pipe->pipeline, stream,
+        PipelineHolder* pipeline = use_scalar_count_pipeline
+            ? g_pip_scalar_count.pipe
+            : g_pip.pipe;
+        OPTIX_CHECK(optixLaunch(pipeline->pipeline, stream,
                                  d_params.ptr, sizeof(PipLaunchParams),
-                                 &g_pip.pipe->sbt,
+                                 &pipeline->sbt,
                                  static_cast<unsigned>(chunk_point_count), 1, 1));
         CU_CHECK(cuStreamSynchronize(stream));
         const auto t_launch_end = std::chrono::steady_clock::now();
