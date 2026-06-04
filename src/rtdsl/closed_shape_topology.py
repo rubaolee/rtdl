@@ -704,6 +704,8 @@ def validate_owner_face_priority_pipeline_contract() -> dict[str, object]:
         not isinstance(filter_policy, Mapping)
         or filter_policy.get("missing_topology") != "drop_candidate"
         or filter_policy.get("missing_owner") != "fail_closed_by_default"
+        or filter_policy.get("topology_face_presence_columns")
+        != "gate_left_and_right_face_ids_when_present"
     ):
         raise ValueError("owner-face priority pipeline filter policy must stay explicit")
     inputs = contract["inputs"]
