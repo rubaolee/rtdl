@@ -26,7 +26,7 @@ from rtdsl.datasets import load_cdb
 
 _WORKLOADS = ("pip", "lsi", "overlay_seed")
 _PREPARED_OPTIX_WORKLOADS = ("pip", "lsi", "overlay_seed")
-_PIP_COUNT_MODES = ("exact", "device_filtered_validated")
+_PIP_COUNT_MODES = ("exact", "device_filtered_validated", "point_id_count_device_columns_validated")
 _PIP_DEVICE_FILTER_BOUNDARY_MODES = ("inclusive", "crossing_only")
 RAYJOIN_V2_6_NUMBA_COMPACT_MASK_VERSION = "rtdl.rayjoin.v2_6.numba_compact_mask_preview.v1"
 
@@ -242,6 +242,34 @@ def _run_prepared_device_filtered_count_with_boundary_mode(
         return int(prepared.count_device_filtered(packed_points))
 
 
+def _run_prepared_point_id_count_device_columns_with_boundary_mode(
+    prepared,
+    packed_points,
+    boundary_mode: str | None,
+    *,
+    group_capacity: int,
+) -> tuple[int, dict[str, object]]:
+    with _temporary_env("RTDL_OPTIX_POINT_PRIMITIVE_BOUNDARY_MODE", boundary_mode):
+        columns = prepared.point_id_count_device_columns(
+            packed_points,
+            group_capacity=group_capacity,
+        )
+    try:
+        if columns.overflow:
+            raise RuntimeError("point-id count device-column continuation overflowed group capacity")
+        return int(columns.source_row_count), columns.to_metadata()
+    finally:
+        columns.close()
+
+
+def _record_id(record: object) -> int:
+    if hasattr(record, "id"):
+        return int(getattr(record, "id"))
+    if isinstance(record, dict):
+        return int(record["id"])
+    raise TypeError(f"record does not expose an id field: {record!r}")
+
+
 def run_rayjoin_prepared_optix_workload(
     workload: str,
     *,
@@ -264,16 +292,22 @@ def run_rayjoin_prepared_optix_workload(
     if result_mode not in {"count", "rows"}:
         raise ValueError("result_mode must be 'count' or 'rows'")
     if count_mode not in _PIP_COUNT_MODES:
-        raise ValueError("count_mode must be 'exact' or 'device_filtered_validated'")
+        raise ValueError(
+            "count_mode must be 'exact', 'device_filtered_validated', "
+            "or 'point_id_count_device_columns_validated'"
+        )
     if count_mode != "exact" and (workload != "pip" or result_mode != "count"):
-        raise ValueError("device_filtered_validated count_mode is only valid for PIP count workloads")
+        raise ValueError("non-exact count_mode is only valid for PIP count workloads")
     if device_filtered_boundary_mode is not None:
         if device_filtered_boundary_mode not in _PIP_DEVICE_FILTER_BOUNDARY_MODES:
             raise ValueError("device_filtered_boundary_mode must be 'inclusive' or 'crossing_only'")
-        if count_mode != "device_filtered_validated" or workload != "pip" or result_mode != "count":
+        if count_mode not in {
+            "device_filtered_validated",
+            "point_id_count_device_columns_validated",
+        } or workload != "pip" or result_mode != "count":
             raise ValueError(
                 "device_filtered_boundary_mode is only valid for PIP count workloads "
-                "using count_mode='device_filtered_validated'"
+                "using a validated device-side count mode"
             )
 
     resolved_dataset = dataset or _DEFAULT_DATASETS[workload]
@@ -387,9 +421,13 @@ def run_rayjoin_prepared_optix_workload(
             "prepare_static_scene_sec",
             lambda: prepare_point_closed_shape_membership_2d_optix(packed_shapes),
         )
+        point_id_count_metadata: dict[str, object] | None = None
         try:
             if result_mode == "count":
-                if count_mode == "device_filtered_validated":
+                if count_mode in {
+                    "device_filtered_validated",
+                    "point_id_count_device_columns_validated",
+                }:
                     validation_exact_count = int(
                         _phase_time(
                             phases,
@@ -397,20 +435,36 @@ def run_rayjoin_prepared_optix_workload(
                             lambda: _run_prepared_count_with_boundary_mode(prepared, packed_points, None),
                         )
                     )
-                    row_count = int(
-                        _phase_time(
+                    if count_mode == "device_filtered_validated":
+                        row_count = int(
+                            _phase_time(
+                                phases,
+                                "prepared_query_sec",
+                                lambda: _run_prepared_device_filtered_count_with_boundary_mode(
+                                    prepared,
+                                    packed_points,
+                                    device_filtered_boundary_mode,
+                                ),
+                            )
+                        )
+                    else:
+                        point_id_group_capacity = max(
+                            1,
+                            max(_record_id(point) for point in case.inputs["points"]) + 1,
+                        )
+                        row_count, point_id_count_metadata = _phase_time(
                             phases,
                             "prepared_query_sec",
-                            lambda: _run_prepared_device_filtered_count_with_boundary_mode(
+                            lambda: _run_prepared_point_id_count_device_columns_with_boundary_mode(
                                 prepared,
                                 packed_points,
                                 device_filtered_boundary_mode,
+                                group_capacity=point_id_group_capacity,
                             ),
                         )
-                    )
                     if row_count != validation_exact_count:
                         raise RuntimeError(
-                            "device-filtered closed-shape count did not match exact prepared count: "
+                            "validated device-side closed-shape count did not match exact prepared count: "
                             f"{row_count} != {validation_exact_count}"
                         )
                 else:
@@ -437,8 +491,15 @@ def run_rayjoin_prepared_optix_workload(
             "positive_assignment_count": row_count,
             "output_contract": (
                 (
-                    "point_to_shape_positive_hit_count_device_filtered_validated"
-                    if count_mode == "device_filtered_validated"
+                    (
+                        "point_to_shape_positive_hit_count_device_filtered_validated"
+                        if count_mode == "device_filtered_validated"
+                        else "point_to_shape_positive_hit_count_by_point_id_device_columns_validated"
+                    )
+                    if count_mode in {
+                        "device_filtered_validated",
+                        "point_id_count_device_columns_validated",
+                    }
                     else "point_to_shape_positive_hit_count"
                 )
                 if result_mode == "count"
@@ -446,12 +507,24 @@ def run_rayjoin_prepared_optix_workload(
             ),
             "count_mode": count_mode,
             "device_filtered_boundary_mode": (
-                device_filtered_boundary_mode if count_mode == "device_filtered_validated" else None
+                device_filtered_boundary_mode
+                if count_mode in {
+                    "device_filtered_validated",
+                    "point_id_count_device_columns_validated",
+                }
+                else None
             ),
             "device_filtered_is_exact_authority": False,
             "device_filtered_count_matches_exact": (
-                True if count_mode == "device_filtered_validated" and result_mode == "count" else None
+                True
+                if count_mode in {
+                    "device_filtered_validated",
+                    "point_id_count_device_columns_validated",
+                }
+                and result_mode == "count"
+                else None
             ),
+            "point_id_count_device_columns": point_id_count_metadata,
             "validation_exact_count": validation_exact_count,
         }
 

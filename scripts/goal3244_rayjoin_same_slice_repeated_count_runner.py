@@ -268,8 +268,11 @@ def run_rtdl_samples(
         expected_key = "intersection_count" if workload == "lsi" else "positive_assignment_count"
         if expected_key in summary and int(summary[expected_key]) != int(payload.get("row_count", 0)):
             raise RuntimeError(f"{workload}: summary count does not match row_count")
-        if count_mode == "device_filtered_validated" and not summary.get("device_filtered_count_matches_exact"):
-            raise RuntimeError(f"{workload}: device-filtered count was not validated against exact count")
+        if count_mode in {
+            "device_filtered_validated",
+            "point_id_count_device_columns_validated",
+        } and not summary.get("device_filtered_count_matches_exact"):
+            raise RuntimeError(f"{workload}: validated device-side count was not validated against exact count")
 
     return {
         "system": "rtdl_prepared_optix",
@@ -278,7 +281,14 @@ def run_rtdl_samples(
         "result_mode": "count",
         "count_mode": count_mode,
         "query_axis": query_axis,
-        "device_filtered_boundary_mode": boundary_mode if count_mode == "device_filtered_validated" else None,
+        "device_filtered_boundary_mode": (
+            boundary_mode
+            if count_mode in {
+                "device_filtered_validated",
+                "point_id_count_device_columns_validated",
+            }
+            else None
+        ),
         "warmup": int(warmup),
         "repeat": int(repeat),
         "prepared_query_ms": summarize_samples([value * 1000.0 for value in query_sec]),
@@ -340,10 +350,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--rtdl-repeat", type=int, default=7)
     parser.add_argument(
         "--rtdl-pip-count-mode",
-        choices=("exact", "device_filtered_validated"),
+        choices=("exact", "device_filtered_validated", "point_id_count_device_columns_validated"),
         default="exact",
         help=(
-            "RTDL PIP count mode. device_filtered_validated times the device-filtered count "
+            "RTDL PIP count mode. Validated device-side modes time the selected device-side count "
             "only after each sample validates it against the exact prepared count."
         ),
     )
@@ -424,8 +434,8 @@ def main(argv: list[str] | None = None) -> int:
             "rayjoin_query_timing_semantics": "RayJoin query_exec reports a query timing after its own warmup/repeat loop; Goal3244 records that reported timing directly and does not divide it by repeat.",
             "pip_count_boundary": "RayJoin query_exec PIP still does not expose positive assignment count in this unpatched upstream binary.",
             "rtdl_pip_count_mode": (
-                "When set to device_filtered_validated, RTDL validates each PIP sample with exact prepared count "
-                "and reports the device-filtered count timing as the prepared_query_ms lane."
+                "When set to a validated device-side mode, RTDL validates each PIP sample with exact prepared count "
+                "and reports the selected device-side count timing as the prepared_query_ms lane."
             ),
             "rtdl_pip_query_axis": (
                 "When --rtdl-pip-query-axis is supplied, the runner exports "
