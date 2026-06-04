@@ -535,6 +535,7 @@ class _RtdlPayloadField(ctypes.Structure):
 class PackedSegments:
     records: object
     count: int
+    owner: object | None = None
 
 
 @dataclass(frozen=True)
@@ -1058,17 +1059,7 @@ def _try_pack_segments_columns_numpy_arrays(ids, x0, y0, x1, y1) -> PackedSegmen
             ids_array.size == x0_array.size == y0_array.size == x1_array.size == y1_array.size
         ):
             return None
-        array = (_RtdlSegment * int(ids_array.size))(*[
-            _RtdlSegment(
-                _segment_id_to_packed_u32(ids_array[index]),
-                float(x0_array[index]),
-                float(y0_array[index]),
-                float(x1_array[index]),
-                float(y1_array[index]),
-            )
-            for index in range(int(ids_array.size))
-        ])
-        return PackedSegments(records=array, count=int(ids_array.size))
+        return _pack_segments_numpy_structured_arrays(ids_array, x0_array, y0_array, x1_array, y1_array, _np)
     except Exception:
         return None
 
@@ -1090,17 +1081,48 @@ def _pack_segments_numpy_arrays_ordered(ids, x0, y0, x1, y1, order_mode: str, _n
 
         codes = _numpy_morton_codes_2d_16(cx, cy, _np)
         order = _np.lexsort((ids.astype(_np.uint64), codes))
-    array = (_RtdlSegment * int(ids.size))(*[
-        _RtdlSegment(
-            _segment_id_to_packed_u32(ids[int(index)]),
-            float(x0[int(index)]),
-            float(y0[int(index)]),
-            float(x1[int(index)]),
-            float(y1[int(index)]),
-        )
-        for index in order
-    ])
-    return PackedSegments(records=array, count=int(ids.size))
+    return _pack_segments_numpy_structured_arrays(
+        ids[order],
+        x0[order],
+        y0[order],
+        x1[order],
+        y1[order],
+        _np,
+    )
+
+
+def _pack_segments_numpy_structured_arrays(ids, x0, y0, x1, y1, _np) -> PackedSegments:
+    _validate_numpy_segment_ids_for_packing(ids)
+    count = int(ids.size)
+    dtype = _rtdl_segment_numpy_dtype(_np)
+    array = _np.empty(count, dtype=dtype)
+    array["id"] = ids.astype(_np.uint32, copy=False)
+    array["x0"] = _np.asarray(x0, dtype=_np.float64)
+    array["y0"] = _np.asarray(y0, dtype=_np.float64)
+    array["x1"] = _np.asarray(x1, dtype=_np.float64)
+    array["y1"] = _np.asarray(y1, dtype=_np.float64)
+    records = array.ctypes.data_as(ctypes.POINTER(_RtdlSegment))
+    return PackedSegments(records=records, count=count, owner=array)
+
+
+def _rtdl_segment_numpy_dtype(_np):
+    dtype = _np.dtype(
+        {
+            "names": ["id", "x0", "y0", "x1", "y1"],
+            "formats": [_np.uint32, _np.float64, _np.float64, _np.float64, _np.float64],
+            "offsets": [
+                _RtdlSegment.id.offset,
+                _RtdlSegment.x0.offset,
+                _RtdlSegment.y0.offset,
+                _RtdlSegment.x1.offset,
+                _RtdlSegment.y1.offset,
+            ],
+            "itemsize": ctypes.sizeof(_RtdlSegment),
+        }
+    )
+    if dtype.itemsize != ctypes.sizeof(_RtdlSegment):
+        raise RuntimeError("NumPy segment dtype does not match the native segment ABI size")
+    return dtype
 
 
 def _segment_field(record: object, field_name: str):

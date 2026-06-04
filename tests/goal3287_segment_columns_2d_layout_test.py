@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ctypes
 from dataclasses import dataclass
 import inspect
 import unittest
@@ -52,6 +53,24 @@ class Goal3287SegmentColumns2DLayoutTest(unittest.TestCase):
 
         self.assertEqual([int(value) for value in columns.ids], [30, 20, 10])
         self.assertEqual(_packed_ids(packed), [30, 20, 10])
+
+    def test_segment_columns_pack_to_numpy_owned_native_abi_buffer(self) -> None:
+        columns = rt.segment_columns_2d(
+            ids=[7, 8],
+            x0=[0.25, 1.25],
+            y0=[0.5, 1.5],
+            x1=[2.25, 3.25],
+            y1=[2.5, 3.5],
+        )
+
+        packed = embree_runtime.pack_segments(records=columns)
+
+        self.assertIsNotNone(packed.owner)
+        self.assertEqual(packed.owner.dtype.itemsize, ctypes.sizeof(embree_runtime._RtdlSegment))
+        self.assertEqual(packed.owner.dtype.fields["id"][1], embree_runtime._RtdlSegment.id.offset)
+        self.assertEqual(packed.owner.dtype.fields["x0"][1], embree_runtime._RtdlSegment.x0.offset)
+        self.assertEqual(_packed_ids(packed), [7, 8])
+        self.assertAlmostEqual(float(packed.records[1].x1), 3.25)
 
     def test_segment_columns_with_ids_remaps_without_changing_geometry_columns(self) -> None:
         columns = rt.segment_columns_2d(
