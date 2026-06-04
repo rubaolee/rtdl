@@ -1,0 +1,62 @@
+{
+  "batch_rows": [
+    {
+      "count_first": 1430,
+      "count_last": 1430,
+      "native_candidate_per_request_ms_median": 0.24354725,
+      "native_candidate_total_ms_median": 1.948378,
+      "native_modes": [
+        "prepared_points_device_filtered_batch_count"
+      ],
+      "per_request_ms_median": 0.2473381464369595,
+      "request_count": 8,
+      "total_ms_median": 1.978705171495676
+    },
+    {
+      "count_first": 1430,
+      "count_last": 1430,
+      "native_candidate_per_request_ms_median": 0.241759375,
+      "native_candidate_total_ms_median": 3.86815,
+      "native_modes": [
+        "prepared_points_device_filtered_batch_count"
+      ],
+      "per_request_ms_median": 0.24366387515328825,
+      "request_count": 16,
+      "total_ms_median": 3.898622002452612
+    },
+    {
+      "count_first": 1430,
+      "count_last": 1430,
+      "native_candidate_per_request_ms_median": 0.23520109374999998,
+      "native_candidate_total_ms_median": 7.526434999999999,
+      "native_modes": [
+        "prepared_points_device_filtered_batch_count"
+      ],
+      "per_request_ms_median": 0.23639952996745706,
+      "request_count": 32,
+      "total_ms_median": 7.564784958958626
+    }
+  ],
+  "batch_stream_count": 1,
+  "boundary_mode": "inclusive",
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "dataset": "/root/rtdl_goal3293/data/rayjoin_public_cdb/br_county_start0_count512.cdb",
+  "exact_count": 1430,
+  "goal": 3310,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "interpretation": "Batch rows are repeated-query throughput evidence only; they do not replace one-shot RayJoin latency comparisons.",
+  "point_count": 512,
+  "query_axis": "z_point",
+  "rtdl_commit": "0cfc510d19c3026eef8cf409d29ecaa4eabe8d6b",
+  "scalar_count_pipeline": true,
+  "schema": "rtdl.goal3310.rayjoin_pip_batch_scalar_count_probe.v1",
+  "shape_count": 481,
+  "single_ms_median": 0.30871713533997536
+}
