@@ -1,0 +1,1002 @@
+{
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "comparisons": [
+    {
+      "count_contract_status": "matching_visible_lsi_count",
+      "rayjoin_positive_assignment_count_available": null,
+      "rayjoin_query_ms_reported_median": 0.246255,
+      "rayjoin_visible_count": 269,
+      "rtdl_count": 269,
+      "rtdl_over_rayjoin_query_ratio": 2.774819742301784,
+      "rtdl_prepared_query_ms_median": 0.6833132356405258,
+      "workload": "lsi"
+    },
+    {
+      "count_contract_status": "rayjoin_pip_count_not_visible",
+      "rayjoin_positive_assignment_count_available": false,
+      "rayjoin_query_ms_reported_median": 0.208473,
+      "rayjoin_visible_count": null,
+      "rtdl_count": 1430,
+      "rtdl_over_rayjoin_query_ratio": 1.6864884682111725,
+      "rtdl_prepared_query_ms_median": 0.35158731043338776,
+      "workload": "pip"
+    }
+  ],
+  "generated_at_utc": "2026-06-04T04:04:17Z",
+  "goal": 3244,
+  "gpu": "NVIDIA A40, 570.211.01",
+  "interpretation": {
+    "pip_count_boundary": "RayJoin query_exec PIP still does not expose positive assignment count in this unpatched upstream binary.",
+    "rayjoin_query_timing_semantics": "RayJoin query_exec reports a query timing after its own warmup/repeat loop; Goal3244 records that reported timing directly and does not divide it by repeat.",
+    "rtdl_pip_count_mode": "When set to device_filtered_validated, RTDL validates each PIP sample with exact prepared count and reports the device-filtered count timing as the prepared_query_ms lane.",
+    "scope": "Repeated bounded same-slice query/count timing for RayJoin query_exec RT and RTDL prepared OptiX count."
+  },
+  "rayjoin": {
+    "lsi": {
+      "build_index_ms_reported": {
+        "count": 5,
+        "max": 0.595093,
+        "median": 0.540018,
+        "min": 0.494957,
+        "samples": [
+          0.595093,
+          0.540018,
+          0.519037,
+          0.553846,
+          0.494957
+        ]
+      },
+      "command_template": [
+        "/root/RayJoin/build/bin/query_exec",
+        "-poly1=/root/rtdl_goal3151/data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+        "-poly2=/root/rtdl_goal3151/data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+        "-mode=rt",
+        "-query=lsi",
+        "-warmup=3",
+        "-repeat=15",
+        "-check=false",
+        "-logtostderr=true"
+      ],
+      "internal_repeat": 15,
+      "internal_warmup": 3,
+      "intersection_counts": {
+        "consistent": true,
+        "count": 5,
+        "last": 269,
+        "samples": [
+          269,
+          269,
+          269,
+          269,
+          269
+        ]
+      },
+      "mode": "rt",
+      "positive_assignment_count_available": false,
+      "process_repeats": 5,
+      "query_ms_reported": {
+        "count": 5,
+        "max": 0.251611,
+        "median": 0.246255,
+        "min": 0.241454,
+        "samples": [
+          0.246255,
+          0.241454,
+          0.242599,
+          0.251611,
+          0.24759
+        ]
+      },
+      "samples": [
+        {
+          "build_index_ms": 0.595093,
+          "checker_passed": false,
+          "intersections": 269,
+          "log": "/tmp/goal3258_rayjoin_z_point_squared_boundary_logs/rayjoin_lsi_process_1.log",
+          "optix_launch_widths": [
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825
+          ],
+          "positive_assignment_count_available": false,
+          "query_ms": 0.246255,
+          "returncode": 0,
+          "timings_ms": {
+            "adaptive_grouping": 0.237942,
+            "build_index": 0.595093,
+            "cleanup": 3.74103,
+            "create_app": 178.199,
+            "init": 0.167131,
+            "load_data": 0.406981,
+            "query": 0.246255,
+            "read_map_0": 446.956,
+            "read_map_1": 91.9428,
+            "warmup": 0.869989
+          },
+          "warmup_ms": 0.869989
+        },
+        {
+          "build_index_ms": 0.540018,
+          "checker_passed": false,
+          "intersections": 269,
+          "log": "/tmp/goal3258_rayjoin_z_point_squared_boundary_logs/rayjoin_lsi_process_2.log",
+          "optix_launch_widths": [
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825
+          ],
+          "positive_assignment_count_available": false,
+          "query_ms": 0.241454,
+          "returncode": 0,
+          "timings_ms": {
+            "adaptive_grouping": 0.20504,
+            "build_index": 0.540018,
+            "cleanup": 3.75009,
+            "create_app": 179.556,
+            "init": 0.16284,
+            "load_data": 1.12104,
+            "query": 0.241454,
+            "read_map_0": 497.276,
+            "read_map_1": 88.958,
+            "warmup": 0.846148
+          },
+          "warmup_ms": 0.846148
+        },
+        {
+          "build_index_ms": 0.519037,
+          "checker_passed": false,
+          "intersections": 269,
+          "log": "/tmp/goal3258_rayjoin_z_point_squared_boundary_logs/rayjoin_lsi_process_3.log",
+          "optix_launch_widths": [
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825
+          ],
+          "positive_assignment_count_available": false,
+          "query_ms": 0.242599,
+          "returncode": 0,
+          "timings_ms": {
+            "adaptive_grouping": 0.201941,
+            "build_index": 0.519037,
+            "cleanup": 3.69787,
+            "create_app": 170.785,
+            "init": 0.144005,
+            "load_data": 0.406027,
+            "query": 0.242599,
+            "read_map_0": 444.527,
+            "read_map_1": 91.2442,
+            "warmup": 0.833035
+          },
+          "warmup_ms": 0.833035
+        },
+        {
+          "build_index_ms": 0.553846,
+          "checker_passed": false,
+          "intersections": 269,
+          "log": "/tmp/goal3258_rayjoin_z_point_squared_boundary_logs/rayjoin_lsi_process_4.log",
+          "optix_launch_widths": [
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825
+          ],
+          "positive_assignment_count_available": false,
+          "query_ms": 0.251611,
+          "returncode": 0,
+          "timings_ms": {
+            "adaptive_grouping": 0.204086,
+            "build_index": 0.553846,
+            "cleanup": 3.71289,
+            "create_app": 170.495,
+            "init": 0.150919,
+            "load_data": 0.388145,
+            "query": 0.251611,
+            "read_map_0": 497.708,
+            "read_map_1": 88.4991,
+            "warmup": 0.844002
+          },
+          "warmup_ms": 0.844002
+        },
+        {
+          "build_index_ms": 0.494957,
+          "checker_passed": false,
+          "intersections": 269,
+          "log": "/tmp/goal3258_rayjoin_z_point_squared_boundary_logs/rayjoin_lsi_process_5.log",
+          "optix_launch_widths": [
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825,
+            6825
+          ],
+          "positive_assignment_count_available": false,
+          "query_ms": 0.24759,
+          "returncode": 0,
+          "timings_ms": {
+            "adaptive_grouping": 0.222206,
+            "build_index": 0.494957,
+            "cleanup": 6.05416,
+            "create_app": 177.558,
+            "init": 0.165939,
+            "load_data": 1.00994,
+            "query": 0.24759,
+            "read_map_0": 585.417,
+            "read_map_1": 96.3972,
+            "warmup": 0.864983
+          },
+          "warmup_ms": 0.864983
+        }
+      ],
+      "system": "rayjoin_upstream_query_exec",
+      "warmup_ms_reported": {
+        "count": 5,
+        "max": 0.869989,
+        "median": 0.846148,
+        "min": 0.833035,
+        "samples": [
+          0.869989,
+          0.846148,
+          0.833035,
+          0.844002,
+          0.864983
+        ]
+      },
+      "workload": "lsi"
+    },
+    "pip": {
+      "build_index_ms_reported": {
+        "count": 5,
+        "max": 0.622988,
+        "median": 0.597954,
+        "min": 0.578165,
+        "samples": [
+          0.597954,
+          0.622988,
+          0.584841,
+          0.611067,
+          0.578165
+        ]
+      },
+      "command_template": [
+        "/root/RayJoin/build/bin/query_exec",
+        "-poly1=/root/rtdl_goal3151/data/rayjoin_public_cdb/br_county_start0_count512.cdb",
+        "-poly2=/root/rtdl_goal3151/data/rayjoin_public_cdb/br_county_start0_count512.cdb",
+        "-mode=rt",
+        "-query=pip",
+        "-warmup=3",
+        "-repeat=15",
+        "-check=false",
+        "-logtostderr=true"
+      ],
+      "internal_repeat": 15,
+      "internal_warmup": 3,
+      "intersection_counts": {
+        "consistent": true,
+        "count": 0,
+        "last": null,
+        "samples": []
+      },
+      "mode": "rt",
+      "positive_assignment_count_available": false,
+      "process_repeats": 5,
+      "query_ms_reported": {
+        "count": 5,
+        "max": 0.210206,
+        "median": 0.208473,
+        "min": 0.204786,
+        "samples": [
+          0.210206,
+          0.209538,
+          0.208473,
+          0.205135,
+          0.204786
+        ]
+      },
+      "samples": [
+        {
+          "build_index_ms": 0.597954,
+          "checker_passed": false,
+          "intersections": null,
+          "log": "/tmp/goal3258_rayjoin_z_point_squared_boundary_logs/rayjoin_pip_process_1.log",
+          "optix_launch_widths": [
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392
+          ],
+          "positive_assignment_count_available": false,
+          "query_ms": 0.210206,
+          "returncode": 0,
+          "timings_ms": {
+            "adaptive_grouping": 0.547886,
+            "build_index": 0.597954,
+            "cleanup": 4.96101,
+            "create_app": 190.785,
+            "init": 4.08101,
+            "load_data": 1.06692,
+            "query": 0.210206,
+            "read_map_0": 531.337,
+            "read_map_1": 309.796,
+            "warmup": 0.79298
+          },
+          "warmup_ms": 0.79298
+        },
+        {
+          "build_index_ms": 0.622988,
+          "checker_passed": false,
+          "intersections": null,
+          "log": "/tmp/goal3258_rayjoin_z_point_squared_boundary_logs/rayjoin_pip_process_2.log",
+          "optix_launch_widths": [
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392
+          ],
+          "positive_assignment_count_available": false,
+          "query_ms": 0.209538,
+          "returncode": 0,
+          "timings_ms": {
+            "adaptive_grouping": 0.479937,
+            "build_index": 0.622988,
+            "cleanup": 1.86396,
+            "create_app": 169.926,
+            "init": 0.305891,
+            "load_data": 3.99804,
+            "query": 0.209538,
+            "read_map_0": 530.118,
+            "read_map_1": 308.527,
+            "warmup": 0.782013
+          },
+          "warmup_ms": 0.782013
+        },
+        {
+          "build_index_ms": 0.584841,
+          "checker_passed": false,
+          "intersections": null,
+          "log": "/tmp/goal3258_rayjoin_z_point_squared_boundary_logs/rayjoin_pip_process_3.log",
+          "optix_launch_widths": [
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392
+          ],
+          "positive_assignment_count_available": false,
+          "query_ms": 0.208473,
+          "returncode": 0,
+          "timings_ms": {
+            "adaptive_grouping": 0.487089,
+            "build_index": 0.584841,
+            "cleanup": 1.87278,
+            "create_app": 171.144,
+            "init": 0.333071,
+            "load_data": 4.2448,
+            "query": 0.208473,
+            "read_map_0": 541.8,
+            "read_map_1": 314.502,
+            "warmup": 0.765085
+          },
+          "warmup_ms": 0.765085
+        },
+        {
+          "build_index_ms": 0.611067,
+          "checker_passed": false,
+          "intersections": null,
+          "log": "/tmp/goal3258_rayjoin_z_point_squared_boundary_logs/rayjoin_pip_process_4.log",
+          "optix_launch_widths": [
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392
+          ],
+          "positive_assignment_count_available": false,
+          "query_ms": 0.205135,
+          "returncode": 0,
+          "timings_ms": {
+            "adaptive_grouping": 0.464916,
+            "build_index": 0.611067,
+            "cleanup": 1.87993,
+            "create_app": 171.947,
+            "init": 0.31209,
+            "load_data": 0.996828,
+            "query": 0.205135,
+            "read_map_0": 577.019,
+            "read_map_1": 311.486,
+            "warmup": 0.746012
+          },
+          "warmup_ms": 0.746012
+        },
+        {
+          "build_index_ms": 0.578165,
+          "checker_passed": false,
+          "intersections": null,
+          "log": "/tmp/goal3258_rayjoin_z_point_squared_boundary_logs/rayjoin_pip_process_5.log",
+          "optix_launch_widths": [
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392,
+            25392
+          ],
+          "positive_assignment_count_available": false,
+          "query_ms": 0.204786,
+          "returncode": 0,
+          "timings_ms": {
+            "adaptive_grouping": 0.466824,
+            "build_index": 0.578165,
+            "cleanup": 1.85609,
+            "create_app": 167.746,
+            "init": 0.300169,
+            "load_data": 0.908136,
+            "query": 0.204786,
+            "read_map_0": 599.411,
+            "read_map_1": 306.011,
+            "warmup": 0.740051
+          },
+          "warmup_ms": 0.740051
+        }
+      ],
+      "system": "rayjoin_upstream_query_exec",
+      "warmup_ms_reported": {
+        "count": 5,
+        "max": 0.79298,
+        "median": 0.765085,
+        "min": 0.740051,
+        "samples": [
+          0.79298,
+          0.782013,
+          0.765085,
+          0.746012,
+          0.740051
+        ]
+      },
+      "workload": "pip"
+    }
+  },
+  "rtdl": {
+    "lsi": {
+      "count_mode": "exact",
+      "counts": {
+        "consistent": true,
+        "count": 9,
+        "last": 269,
+        "samples": [
+          269,
+          269,
+          269,
+          269,
+          269,
+          269,
+          269,
+          269,
+          269
+        ]
+      },
+      "native_phase_samples": [
+        {
+          "candidate_count_pass": 0.000144112,
+          "candidate_download": 1.3086e-05,
+          "candidate_write_pass": 6.2826e-05,
+          "emitted_count": 269,
+          "exact_refine": 5.3556e-05,
+          "left_upload": 5.6139e-05,
+          "mode": "count",
+          "raw_candidate_count": 269
+        },
+        {
+          "candidate_count_pass": 0.000144114,
+          "candidate_download": 1.4989e-05,
+          "candidate_write_pass": 7.6964e-05,
+          "emitted_count": 269,
+          "exact_refine": 5.2859e-05,
+          "left_upload": 5.8775e-05,
+          "mode": "count",
+          "raw_candidate_count": 269
+        },
+        {
+          "candidate_count_pass": 0.000149091,
+          "candidate_download": 1.3215e-05,
+          "candidate_write_pass": 6.1053e-05,
+          "emitted_count": 269,
+          "exact_refine": 5.019e-05,
+          "left_upload": 5.5982e-05,
+          "mode": "count",
+          "raw_candidate_count": 269
+        },
+        {
+          "candidate_count_pass": 0.00014882,
+          "candidate_download": 1.4805e-05,
+          "candidate_write_pass": 6.1689e-05,
+          "emitted_count": 269,
+          "exact_refine": 5.2394e-05,
+          "left_upload": 5.7452e-05,
+          "mode": "count",
+          "raw_candidate_count": 269
+        },
+        {
+          "candidate_count_pass": 0.0001464,
+          "candidate_download": 1.4424e-05,
+          "candidate_write_pass": 6.1901e-05,
+          "emitted_count": 269,
+          "exact_refine": 5.4591e-05,
+          "left_upload": 5.9518e-05,
+          "mode": "count",
+          "raw_candidate_count": 269
+        },
+        {
+          "candidate_count_pass": 0.000149296,
+          "candidate_download": 1.4907e-05,
+          "candidate_write_pass": 6.3988e-05,
+          "emitted_count": 269,
+          "exact_refine": 4.9732e-05,
+          "left_upload": 5.5944e-05,
+          "mode": "count",
+          "raw_candidate_count": 269
+        },
+        {
+          "candidate_count_pass": 0.00014748,
+          "candidate_download": 1.3217e-05,
+          "candidate_write_pass": 6.2732e-05,
+          "emitted_count": 269,
+          "exact_refine": 5.3569e-05,
+          "left_upload": 5.9955e-05,
+          "mode": "count",
+          "raw_candidate_count": 269
+        },
+        {
+          "candidate_count_pass": 0.000141372,
+          "candidate_download": 1.3469e-05,
+          "candidate_write_pass": 6.2717e-05,
+          "emitted_count": 269,
+          "exact_refine": 5.1575e-05,
+          "left_upload": 5.8786e-05,
+          "mode": "count",
+          "raw_candidate_count": 269
+        },
+        {
+          "candidate_count_pass": 0.000137796,
+          "candidate_download": 1.3859e-05,
+          "candidate_write_pass": 6.3435e-05,
+          "emitted_count": 269,
+          "exact_refine": 4.9127e-05,
+          "left_upload": 5.9728e-05,
+          "mode": "count",
+          "raw_candidate_count": 269
+        }
+      ],
+      "prepare_static_scene_ms": {
+        "count": 9,
+        "max": 9.552964940667152,
+        "median": 8.349841460585594,
+        "min": 7.703583687543869,
+        "samples": [
+          8.349841460585594,
+          8.49674828350544,
+          8.343599736690521,
+          8.344192057847977,
+          7.831975817680359,
+          7.703583687543869,
+          9.552964940667152,
+          8.362699300050735,
+          8.398327976465225
+        ]
+      },
+      "prepared_query_ms": {
+        "count": 9,
+        "max": 0.919826328754425,
+        "median": 0.6833132356405258,
+        "min": 0.543477013707161,
+        "samples": [
+          0.5671493709087372,
+          0.6537828594446182,
+          0.543477013707161,
+          0.7469337433576584,
+          0.6902199238538742,
+          0.6748717278242111,
+          0.919826328754425,
+          0.6863884627819061,
+          0.6833132356405258
+        ]
+      },
+      "query_pack_ms": {
+        "count": 9,
+        "max": 38.025060668587685,
+        "median": 20.266296342015266,
+        "min": 19.989298656582832,
+        "samples": [
+          20.10333351790905,
+          20.266296342015266,
+          20.363783463835716,
+          22.367659956216812,
+          38.025060668587685,
+          20.646391436457634,
+          19.989298656582832,
+          20.066864788532257,
+          20.024720579385757
+        ]
+      },
+      "repeat": 9,
+      "result_mode": "count",
+      "route": "prepared_optix",
+      "static_shape_pack_ms": {
+        "count": 0,
+        "max": null,
+        "median": null,
+        "min": null,
+        "samples": []
+      },
+      "system": "rtdl_prepared_optix",
+      "validation_exact_query_ms": {
+        "count": 0,
+        "max": null,
+        "median": null,
+        "min": null,
+        "samples": []
+      },
+      "warmup": 3,
+      "workload": "lsi"
+    },
+    "pip": {
+      "count_mode": "device_filtered_validated",
+      "counts": {
+        "consistent": true,
+        "count": 9,
+        "last": 1430,
+        "samples": [
+          1430,
+          1430,
+          1430,
+          1430,
+          1430,
+          1430,
+          1430,
+          1430,
+          1430
+        ]
+      },
+      "native_phase_samples": [
+        {
+          "candidate_count_pass": 0.000262831,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 1430,
+          "exact_refine": 0.0,
+          "mode": "device_filtered_count",
+          "point_pack": 1.546e-06,
+          "point_upload": 3.0733e-05,
+          "raw_candidate_count": 1430
+        },
+        {
+          "candidate_count_pass": 0.000262908,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 1430,
+          "exact_refine": 0.0,
+          "mode": "device_filtered_count",
+          "point_pack": 1.499e-06,
+          "point_upload": 2.9773e-05,
+          "raw_candidate_count": 1430
+        },
+        {
+          "candidate_count_pass": 0.000265349,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 1430,
+          "exact_refine": 0.0,
+          "mode": "device_filtered_count",
+          "point_pack": 1.523e-06,
+          "point_upload": 2.9131e-05,
+          "raw_candidate_count": 1430
+        },
+        {
+          "candidate_count_pass": 0.000261677,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 1430,
+          "exact_refine": 0.0,
+          "mode": "device_filtered_count",
+          "point_pack": 1.447e-06,
+          "point_upload": 4.2822e-05,
+          "raw_candidate_count": 1430
+        },
+        {
+          "candidate_count_pass": 0.000260531,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 1430,
+          "exact_refine": 0.0,
+          "mode": "device_filtered_count",
+          "point_pack": 1.538e-06,
+          "point_upload": 2.8862e-05,
+          "raw_candidate_count": 1430
+        },
+        {
+          "candidate_count_pass": 0.00026302,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 1430,
+          "exact_refine": 0.0,
+          "mode": "device_filtered_count",
+          "point_pack": 1.459e-06,
+          "point_upload": 2.8345e-05,
+          "raw_candidate_count": 1430
+        },
+        {
+          "candidate_count_pass": 0.000271225,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 1430,
+          "exact_refine": 0.0,
+          "mode": "device_filtered_count",
+          "point_pack": 1.509e-06,
+          "point_upload": 2.9993e-05,
+          "raw_candidate_count": 1430
+        },
+        {
+          "candidate_count_pass": 0.000268873,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 1430,
+          "exact_refine": 0.0,
+          "mode": "device_filtered_count",
+          "point_pack": 1.469e-06,
+          "point_upload": 2.8739e-05,
+          "raw_candidate_count": 1430
+        },
+        {
+          "candidate_count_pass": 0.000270688,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 1430,
+          "exact_refine": 0.0,
+          "mode": "device_filtered_count",
+          "point_pack": 1.484e-06,
+          "point_upload": 2.8732e-05,
+          "raw_candidate_count": 1430
+        }
+      ],
+      "prepare_static_scene_ms": {
+        "count": 9,
+        "max": 0.7763970643281937,
+        "median": 0.6983112543821335,
+        "min": 0.6830114871263504,
+        "samples": [
+          0.7763970643281937,
+          0.6851609796285629,
+          0.7104054093360901,
+          0.6830114871263504,
+          0.6875209510326385,
+          0.6983112543821335,
+          0.6861072033643723,
+          0.7366538047790527,
+          0.706331804394722
+        ]
+      },
+      "prepared_query_ms": {
+        "count": 9,
+        "max": 0.35919807851314545,
+        "median": 0.35158731043338776,
+        "min": 0.3451816737651825,
+        "samples": [
+          0.3504287451505661,
+          0.3488343209028244,
+          0.35128556191921234,
+          0.35919807851314545,
+          0.3451816737651825,
+          0.35158731043338776,
+          0.35607628524303436,
+          0.35293586552143097,
+          0.3549959510564804
+        ]
+      },
+      "query_pack_ms": {
+        "count": 9,
+        "max": 0.5164649337530136,
+        "median": 0.47595612704753876,
+        "min": 0.4611741751432419,
+        "samples": [
+          0.5164649337530136,
+          0.4611741751432419,
+          0.48575736582279205,
+          0.4747193306684494,
+          0.47595612704753876,
+          0.48768334090709686,
+          0.46210363507270813,
+          0.4721488803625107,
+          0.48490241169929504
+        ]
+      },
+      "repeat": 9,
+      "result_mode": "count",
+      "route": "prepared_optix",
+      "static_shape_pack_ms": {
+        "count": 9,
+        "max": 11.52033731341362,
+        "median": 10.829813778400421,
+        "min": 10.740472003817558,
+        "samples": [
+          10.805660858750343,
+          11.52033731341362,
+          10.829813778400421,
+          10.740472003817558,
+          10.743502527475357,
+          10.84086298942566,
+          10.849867016077042,
+          10.835601016879082,
+          10.82940585911274
+        ]
+      },
+      "system": "rtdl_prepared_optix",
+      "validation_exact_query_ms": {
+        "count": 9,
+        "max": 0.5497168749570847,
+        "median": 0.5316920578479767,
+        "min": 0.5133096128702164,
+        "samples": [
+          0.5497168749570847,
+          0.5385484546422958,
+          0.5359333008527756,
+          0.5133096128702164,
+          0.5209296941757202,
+          0.5260761827230453,
+          0.5220845341682434,
+          0.5316920578479767,
+          0.5379337817430496
+        ]
+      },
+      "warmup": 3,
+      "workload": "pip"
+    }
+  },
+  "rtdl_commit": "2ae2d6d472e2901f858bde20a214a1846149e54b",
+  "schema": "rtdl.goal3244.rayjoin_same_slice_repeated_count.v1",
+  "source_dirty": [],
+  "status": "pass_with_optimization_gap"
+}
