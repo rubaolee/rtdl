@@ -1592,6 +1592,34 @@ class OptixNativeDevicePairColumnOutput:
         }
         return metadata
 
+    def _cupy_column(self, device_ptr: int):
+        if self.overflow:
+            raise RuntimeError("cannot wrap an overflowed device pair-column stream")
+        if device_ptr <= 0 or self.capacity <= 0:
+            raise RuntimeError("device pair-column stream does not own CUDA columns")
+        import cupy as cp  # type: ignore
+
+        memory = cp.cuda.UnownedMemory(
+            int(device_ptr),
+            int(self.capacity) * ctypes.sizeof(ctypes.c_int64),
+            self.owner,
+        )
+        memory_pointer = cp.cuda.MemoryPointer(memory, 0)
+        return cp.ndarray((int(self.row_count),), dtype=cp.int64, memptr=memory_pointer)
+
+    def as_cupy_columns(self) -> dict[str, object]:
+        """Wrap the device-resident id columns as CuPy arrays without copying.
+
+        This is an adapter convenience over already-produced generic device
+        columns. It does not authorize true zero-copy claims for the broader
+        pipeline, and the owning native handle must stay alive while the arrays
+        are used.
+        """
+        return {
+            self.field_names[0]: self._cupy_column(self.left_ids_device_ptr),
+            self.field_names[1]: self._cupy_column(self.right_ids_device_ptr),
+        }
+
     def grouped_count_by_left_id(self, *, group_capacity: int) -> tuple[dict[str, int], ...]:
         """Count rows by the pair-column left_id axis using the generic device-column reduction."""
         if self.overflow:
