@@ -5204,6 +5204,29 @@ static void ensure_pip_pipeline()
             }
             src.replace(pos, needle.size(), replacement);
         }
+        if (const char* raw_axis = std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_QUERY_AXIS")) {
+            const std::string axis(raw_axis);
+            const bool use_z_point =
+                axis == "z_point" || axis == "z" || axis == "point_z" || axis == "aabb_point";
+            const bool use_vertical =
+                axis == "vertical" || axis == "y_segment" || axis == "default";
+            if (!use_z_point && !use_vertical) {
+                throw std::runtime_error(
+                    "RTDL_OPTIX_POINT_PRIMITIVE_QUERY_AXIS must be one of "
+                    "z_point, z, point_z, aabb_point, vertical, y_segment, or default");
+            }
+            const std::string needle = "const uint32_t query_axis_z_point = 0u;";
+            const size_t pos = src.find(needle);
+            if (pos == std::string::npos) {
+                throw std::runtime_error("failed to specialize closed-shape membership query axis");
+            }
+            src.replace(
+                pos,
+                needle.size(),
+                use_z_point
+                    ? "const uint32_t query_axis_z_point = 1u;"
+                    : "const uint32_t query_axis_z_point = 0u;");
+        }
         std::string ptx = compile_to_ptx(src.c_str(), "pip_kernel.cu");
         g_pip.pipe = build_pipeline(
             get_optix_context(), ptx,

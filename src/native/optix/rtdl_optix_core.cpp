@@ -1232,16 +1232,30 @@ extern "C" __global__ void __raygen__pip_probe() {
     float py = params.points_y[idx];
     unsigned int p0 = idx, p1 = 0u, p2 = 0u, p3 = 0u;
     const float query_half_extent = 0.5f;
-    // Bounded vertical probe through the point. Closed-shape membership only
-    // needs shapes whose AABB contains the point, not every shape above it.
-    optixTrace(params.traversable,
-               make_float3(px, py - query_half_extent, 0.0f),
-               make_float3(0.0f, 1.0f, 0.0f),
-               0.0f, 2.0f * query_half_extent, 0.0f,
-               OptixVisibilityMask(255),
-               OPTIX_RAY_FLAG_NONE,
-               0, 1, 0,
-               p0, p1, p2, p3);
+    const uint32_t query_axis_z_point = 0u;
+    if (query_axis_z_point != 0u) {
+        // Point-axis probe: traverse only shape AABBs containing the query
+        // point in XY, then let the generic closed-shape predicate decide.
+        optixTrace(params.traversable,
+                   make_float3(px, py, -1.0f),
+                   make_float3(0.0f, 0.0f, 1.0f),
+                   0.0f, 2.0f, 0.0f,
+                   OptixVisibilityMask(255),
+                   OPTIX_RAY_FLAG_NONE,
+                   0, 1, 0,
+                   p0, p1, p2, p3);
+    } else {
+        // Bounded vertical probe through the point. Closed-shape membership only
+        // needs shapes whose AABB contains the point, not every shape above it.
+        optixTrace(params.traversable,
+                   make_float3(px, py - query_half_extent, 0.0f),
+                   make_float3(0.0f, 1.0f, 0.0f),
+                   0.0f, 2.0f * query_half_extent, 0.0f,
+                   OptixVisibilityMask(255),
+                   OPTIX_RAY_FLAG_NONE,
+                   0, 1, 0,
+                   p0, p1, p2, p3);
+    }
     if (params.positive_only != 0u && params.output == nullptr && params.output_capacity == 0u && p2 != 0u) {
         atomicAdd(params.output_count, p2);
     }
