@@ -1,0 +1,92 @@
+{
+  "goal": 3242,
+  "schema": "rtdl.goal3242.rtdl_rayjoin_count_contract_probe.v1",
+  "status": "pass_with_optimization_gap",
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "rtdl_commit": "b42d6ea4e5f55166db48d26b0721f312d5eacb59",
+  "dataset_slices": {
+    "lsi": "br_county_start256_count512.cdb + br_soil_start256_count512.cdb",
+    "pip": "br_county_start0_count512.cdb"
+  },
+  "rtdl_count_routes": [
+    {
+      "case": "lsi_county256_soil256_count512",
+      "route": "prepared_optix",
+      "output_contract": "segment_segment_intersection_count",
+      "row_count": 269,
+      "query_sec": 0.001537322998046875,
+      "prepare_static_scene_sec": 0.6212359480559826,
+      "query_pack_sec": 0.020383862778544426
+    },
+    {
+      "case": "lsi_county256_soil256_count512",
+      "route": "prepared_optix_compact_grouped_count",
+      "output_contract": "segment_segment_intersection_count_by_left_id_compact_device_columns",
+      "row_count": 269,
+      "left_group_count": 260,
+      "candidate_device_columns_sec": 0.06372006610035896,
+      "compact_grouped_count_sec": 0.2953307833522558,
+      "prepare_static_scene_sec": 0.41284893453121185,
+      "query_pack_sec": 0.072571175172925
+    },
+    {
+      "case": "lsi_county256_soil256_count512",
+      "route": "prepared_optix_left_id_dense_count_reuse",
+      "output_contract": "segment_segment_intersection_count_by_left_id_dense_device_column",
+      "row_count": 269,
+      "left_group_capacity": 19987,
+      "query_sec": 0.058668140321969986
+    },
+    {
+      "case": "pip_county512",
+      "route": "prepared_optix",
+      "output_contract": "point_to_shape_positive_hit_count",
+      "row_count": 1430,
+      "positive_assignment_count": 1430,
+      "query_sec": 0.001268438994884491,
+      "prepare_static_scene_sec": 0.7074111085385084,
+      "query_pack_sec": 0.0004570670425891876,
+      "static_shape_pack_sec": 0.010011546313762665
+    }
+  ],
+  "rayjoin_query_exec_smokes_from_goal3239": [
+    {
+      "case": "lsi_county256_soil256_count512",
+      "mode": "rt",
+      "intersections": 269,
+      "query_sec": 0.000229406
+    },
+    {
+      "case": "lsi_county256_soil256_count512",
+      "mode": "grid",
+      "intersections": 268,
+      "query_sec": 0.000695181
+    },
+    {
+      "case": "pip_county512",
+      "mode": "rt",
+      "positive_assignment_count_available": false,
+      "query_sec": 0.000185776
+    },
+    {
+      "case": "pip_county512",
+      "mode": "grid",
+      "positive_assignment_count_available": false,
+      "query_sec": 0.00245099
+    }
+  ],
+  "interpretation": {
+    "lsi_contract": "RTDL prepared_optix count and RayJoin RT agree at 269 intersections on the same public slice.",
+    "lsi_perf_gap": "RayJoin RT query is about 6.70x faster than RTDL prepared_optix count query on this smoke slice.",
+    "pip_contract": "RTDL prepared_optix count reports 1430 positive assignments; RayJoin PIP logs do not expose the count in this mode.",
+    "pip_perf_gap": "RayJoin RT query is about 6.83x faster than RTDL prepared_optix count query on this smoke slice, but positive-count parity is not yet extractable from RayJoin logs.",
+    "compact_routes": "Current one-shot compact grouped count and dense left-id count routes are not the best same-slice comparison path at this scale; they expose useful device-column contracts but carry overheads that need reuse/larger-scale measurement."
+  }
+}
