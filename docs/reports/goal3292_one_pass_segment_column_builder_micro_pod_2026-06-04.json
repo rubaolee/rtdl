@@ -1,0 +1,55 @@
+{
+  "schema_version": "goal3292_one_pass_segment_column_builder_micro_v1",
+  "source_commit": "71898878",
+  "dataset": "/root/rtdl_goal3151/data/rayjoin_public_cdb/br_county_start256_count512.cdb + /root/rtdl_goal3151/data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+  "left_count": 19987,
+  "segment_columns_prepare_ms": {
+    "median": 14.28899634629488,
+    "samples": [
+      14.365645125508308,
+      15.053607523441315,
+      14.291210100054741,
+      14.330731704831123,
+      14.286782592535019,
+      14.226973056793213,
+      14.292927458882332,
+      14.272280037403107,
+      14.217117801308632,
+      14.280697330832481
+    ]
+  },
+  "segment_columns_pack_ms": {
+    "median": 0.22454559803009033,
+    "samples": [
+      0.6459858268499374,
+      0.5364231765270233,
+      0.23360364139080048,
+      0.23697130382061005,
+      0.21321512758731842,
+      0.29794126749038696,
+      0.2087559551000595,
+      0.2154875546693802,
+      0.20103156566619873,
+      0.19693560898303986
+    ]
+  },
+  "segment_columns_total_ms": {
+    "median": 15.540811233222485,
+    "samples": [
+      16.090987250208855,
+      16.756795346736908,
+      15.555599704384804,
+      15.620356425642967,
+      15.526022762060165,
+      15.5560914427042,
+      15.522850677371025,
+      15.516115352511406,
+      15.444504097104073,
+      15.50365798175335
+    ]
+  },
+  "packed_owner_type": "ndarray",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "rtdl_beats_rayjoin_claim_authorized": false
+}
