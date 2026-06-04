@@ -944,10 +944,9 @@ def pack_segments(records=None, *, ids=None, x0=None, y0=None, x1=None, y1=None,
         y1 = columns.y1
         records = None
     if records is not None:
-        if order_mode != "natural":
-            fast_packed = _try_pack_segments_records_numpy_ordered(records, order_mode)
-            if fast_packed is not None:
-                return fast_packed
+        fast_packed = _try_pack_segments_records_numpy_arrays(records, order_mode)
+        if fast_packed is not None:
+            return fast_packed
         normalized = records if isinstance(records, tuple) and all(isinstance(item, _CanonicalSegment) for item in records) else _normalize_records("segments", "segments", records)
         if order_mode != "natural":
             from .spatial_order import spatial_order_segments_2d
@@ -998,7 +997,7 @@ def pack_segments(records=None, *, ids=None, x0=None, y0=None, x1=None, y1=None,
     return PackedSegments(records=array, count=count)
 
 
-def _try_pack_segments_records_numpy_ordered(records, order_mode: str) -> PackedSegments | None:
+def _try_pack_segments_records_numpy_arrays(records, order_mode: str) -> PackedSegments | None:
     try:
         import numpy as _np
     except Exception:
@@ -1011,6 +1010,8 @@ def _try_pack_segments_records_numpy_ordered(records, order_mode: str) -> Packed
         y0 = _np.fromiter((_segment_field(record, "y0") for record in record_tuple), dtype=_np.float64, count=count)
         x1 = _np.fromiter((_segment_field(record, "x1") for record in record_tuple), dtype=_np.float64, count=count)
         y1 = _np.fromiter((_segment_field(record, "y1") for record in record_tuple), dtype=_np.float64, count=count)
+        if order_mode == "natural":
+            return _pack_segments_numpy_structured_arrays(ids, x0, y0, x1, y1, _np)
         return _pack_segments_numpy_arrays_ordered(ids, x0, y0, x1, y1, order_mode, _np)
     except Exception:
         return None

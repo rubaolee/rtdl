@@ -72,6 +72,18 @@ class Goal3287SegmentColumns2DLayoutTest(unittest.TestCase):
         self.assertEqual(_packed_ids(packed), [7, 8])
         self.assertAlmostEqual(float(packed.records[1].x1), 3.25)
 
+    def test_natural_segment_records_pack_to_numpy_owned_native_abi_buffer(self) -> None:
+        packed = embree_runtime.pack_segments(
+            records=(
+                SegmentRow(11, 0.0, 1.0, 2.0, 3.0),
+                SegmentRow(12, 4.0, 5.0, 6.0, 7.0),
+            )
+        )
+
+        self.assertIsNotNone(packed.owner)
+        self.assertEqual(_packed_ids(packed), [11, 12])
+        self.assertAlmostEqual(float(packed.records[0].y1), 3.0)
+
     def test_segment_columns_with_ids_remaps_without_changing_geometry_columns(self) -> None:
         columns = rt.segment_columns_2d(
             ids=[101, 202],
