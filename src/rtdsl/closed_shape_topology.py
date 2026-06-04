@@ -407,6 +407,70 @@ def derive_owner_face_priority_columns_from_rank_signals(
     }
 
 
+def select_owner_faces_from_incident_candidate_columns_with_priority_columns(
+    incident_point_ids: Sequence[int],
+    incident_face_ids: Sequence[int],
+    incident_face_counts: Sequence[int],
+    priority_point_ids: Sequence[int],
+    priority_face_ids: Sequence[int],
+    priorities: Sequence[int],
+    *,
+    ambiguity_policy: str = "raise",
+) -> dict[str, tuple[Any, ...]]:
+    """Columnar front door for explicit-priority owner-face selection."""
+
+    incident_count = len(incident_point_ids)
+    if (
+        len(incident_face_ids) != incident_count
+        or len(incident_face_counts) != incident_count
+    ):
+        raise ValueError("incident point, face, and count columns must have the same length")
+    priority_count = len(priority_point_ids)
+    priority_lengths_match = (
+        len(priority_face_ids) == priority_count
+        and len(priorities) == priority_count
+    )
+    if not priority_lengths_match:
+        raise ValueError("priority point, face, and priority columns must have the same length")
+
+    incident_rows = tuple(
+        {
+            "point_id": int(point_id),
+            "face_id": int(face_id),
+            "incident_face_count": int(face_count),
+        }
+        for point_id, face_id, face_count in zip(
+            incident_point_ids,
+            incident_face_ids,
+            incident_face_counts,
+        )
+    )
+    priority_rows = tuple(
+        {
+            "point_id": int(point_id),
+            "face_id": int(face_id),
+            "priority": int(priority),
+        }
+        for point_id, face_id, priority in zip(
+            priority_point_ids,
+            priority_face_ids,
+            priorities,
+        )
+    )
+    selected_rows = select_owner_faces_from_incident_candidates_with_priority(
+        incident_rows,
+        priority_rows,
+        ambiguity_policy=ambiguity_policy,
+    )
+    return {
+        "point_id": tuple(row["point_id"] for row in selected_rows),
+        "owner_face_id": tuple(row["owner_face_id"] for row in selected_rows),
+        "incident_face_count": tuple(row["incident_face_count"] for row in selected_rows),
+        "candidate_count": tuple(row["candidate_count"] for row in selected_rows),
+        "selection_status": tuple(row["selection_status"] for row in selected_rows),
+    }
+
+
 def owner_face_ids_by_point_from_selection_rows(
     selection_rows: Iterable[Mapping[str, Any]],
     *,
@@ -490,6 +554,9 @@ def owner_face_priority_pipeline_contract() -> dict[str, object]:
             "derive_owner_face_priority_rows_from_rank_signals",
             "derive_owner_face_priority_columns_from_rank_signals",
         ),
+        "optional_columnar_pipeline_helpers": (
+            "select_owner_faces_from_incident_candidate_columns_with_priority_columns",
+        ),
         "selection_rule": {
             "primary": "higher incident_face_count wins",
             "tie_break": "lower caller_supplied_priority wins",
@@ -560,6 +627,13 @@ def validate_owner_face_priority_pipeline_contract() -> dict[str, object]:
         or "derive_owner_face_priority_columns_from_rank_signals" not in helpers
     ):
         raise ValueError("owner-face priority pipeline must expose rank-signal derivation helpers")
+    columnar_helpers = contract["optional_columnar_pipeline_helpers"]
+    if (
+        not isinstance(columnar_helpers, tuple)
+        or "select_owner_faces_from_incident_candidate_columns_with_priority_columns"
+        not in columnar_helpers
+    ):
+        raise ValueError("owner-face priority pipeline must expose columnar selection helpers")
     boundary = contract["claim_boundary"]
     if not isinstance(boundary, Mapping) or any(bool(value) for value in boundary.values()):
         raise ValueError("owner-face priority pipeline claim boundary must stay blocked")
