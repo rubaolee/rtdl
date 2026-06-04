@@ -23,7 +23,7 @@ class Goal3232RayJoinPublicRowContinuationProbeTest(unittest.TestCase):
             "symmetric_difference_count",
             "prepared PIP rows must be positive-only",
             "unattributed_prepared_total_minus_named_phases_sec",
-            "positive_assignments_count",
+            "positive_assignment_count",
             "active_seed_pairs_count",
             "max_lsi_coordinate_delta",
             "--artifact-goal",

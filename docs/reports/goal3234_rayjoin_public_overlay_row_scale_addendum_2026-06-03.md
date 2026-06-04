@@ -42,7 +42,7 @@ validates hundreds of thousands of generic shape-pair dependency rows against
 the CPU reference without storing the full row arrays in the repository.
 Both rows have symmetric difference `0` against the CPU reference row set.
 
-The prepared query phases remain small (`0.048 s` and `0.085 s`), while the
+The prepared query phases remain small (`0.060 s` and `0.085 s`), while the
 full totals include cold preparation, host-side row materialization, and
 row-set validation. The CPU reference times are reported to show validation
 cost and scale, not to authorize a public speedup claim.

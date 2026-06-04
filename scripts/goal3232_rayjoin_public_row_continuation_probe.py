@@ -162,7 +162,7 @@ def _max_lsi_coordinate_delta(
 def _compact_cpu_summary(workload: str, summary: dict[str, object]) -> dict[str, object]:
     compact = dict(summary)
     if workload == "pip" and "positive_assignments" in compact:
-        compact["positive_assignments_count"] = len(tuple(compact["positive_assignments"]))  # type: ignore[arg-type]
+        compact.setdefault("positive_assignment_count", len(tuple(compact["positive_assignments"])))  # type: ignore[arg-type]
         del compact["positive_assignments"]
     if workload == "overlay_seed" and "active_seed_pairs" in compact:
         compact["active_seed_pairs_count"] = len(tuple(compact["active_seed_pairs"]))  # type: ignore[arg-type]

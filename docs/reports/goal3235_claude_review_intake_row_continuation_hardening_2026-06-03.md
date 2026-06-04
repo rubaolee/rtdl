@@ -23,7 +23,7 @@ The Goal3232 row-continuation harness now:
 - Rejects prepared PIP rows unless `membership == 1`.
 - Records `named_phase_total_sec`.
 - Records `unattributed_prepared_total_minus_named_phases_sec`.
-- Compacts CPU summaries to `positive_assignments_count` and
+- Compacts CPU summaries to `positive_assignment_count` and
   `active_seed_pairs_count` instead of embedding full CPU row lists.
 - Keeps `--artifact-goal` and `--schema` overrides for addendum artifacts.
 

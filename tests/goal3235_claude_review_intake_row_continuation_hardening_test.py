@@ -17,7 +17,7 @@ class Goal3235ClaudeReviewIntakeRowContinuationHardeningTest(unittest.TestCase):
             "Goal3233 Claude review",
             "Rejects prepared PIP rows unless `membership == 1`",
             "unattributed_prepared_total_minus_named_phases_sec",
-            "positive_assignments_count",
+            "positive_assignment_count",
             "active_seed_pairs_count",
             "d19a8175d9e8c211aee2d1395dd5fa8b1ebb5223",
             "275e9f78de6e06cf0905fd90df19c8344f32a970",
@@ -33,7 +33,7 @@ class Goal3235ClaudeReviewIntakeRowContinuationHardeningTest(unittest.TestCase):
             "prepared PIP rows must be positive-only",
             "named_phase_total_sec",
             "unattributed_prepared_total_minus_named_phases_sec",
-            "positive_assignments_count",
+            "positive_assignment_count",
             "active_seed_pairs_count",
         ):
             self.assertIn(phrase, text)
