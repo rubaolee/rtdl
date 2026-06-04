@@ -42,7 +42,8 @@ class Goal3310PreparedPointBatchScalarCountTest(unittest.TestCase):
         self.assertIn("cuMemsetD32Async", body)
         self.assertIn("upload_async(d_params.ptr, params.data(), request_count, stream)", body)
         self.assertIn("optixLaunch", body)
-        self.assertEqual(body.count("cuStreamSynchronize(stream)"), 1)
+        self.assertIn("if (stream_count <= 1u)", body)
+        self.assertIn("for (CUstream stream : streams)", body)
         self.assertNotIn("rayjoin", body.lower())
 
     def test_python_method_and_phase_label_are_exposed(self) -> None:

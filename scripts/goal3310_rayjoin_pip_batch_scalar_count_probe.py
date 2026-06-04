@@ -73,6 +73,9 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     with _temporary_env("RTDL_OPTIX_POINT_PRIMITIVE_QUERY_AXIS", args.query_axis), _temporary_env(
         "RTDL_OPTIX_POINT_PRIMITIVE_USE_SCALAR_COUNT_PIPELINE",
         "1" if args.scalar_count_pipeline else None,
+    ), _temporary_env(
+        "RTDL_OPTIX_POINT_PRIMITIVE_BATCH_STREAM_COUNT",
+        str(args.batch_stream_count) if args.batch_stream_count is not None else None,
     ):
         with prepare_point_closed_shape_membership_2d_optix(packed_shapes) as prepared:
             with _temporary_env("RTDL_OPTIX_POINT_PRIMITIVE_BOUNDARY_MODE", None):
@@ -176,6 +179,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         "query_axis": args.query_axis,
         "boundary_mode": args.boundary_mode,
         "scalar_count_pipeline": bool(args.scalar_count_pipeline),
+        "batch_stream_count": args.batch_stream_count,
         "exact_count": int(exact_count),
         "single_ms_median": _median_ms(single_samples),
         "batch_rows": batch_rows,
@@ -201,6 +205,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--query-axis", default="z_point")
     parser.add_argument("--boundary-mode", default="inclusive")
     parser.add_argument("--scalar-count-pipeline", action="store_true")
+    parser.add_argument("--batch-stream-count", type=int, default=None)
     parser.add_argument("--single-warmup", type=int, default=4)
     parser.add_argument("--single-repeat", type=int, default=20)
     parser.add_argument("--batch-warmup", type=int, default=3)

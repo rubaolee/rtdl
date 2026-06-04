@@ -5564,6 +5564,23 @@ static bool use_prepared_closed_shape_scalar_count_pipeline()
     return std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_USE_SCALAR_COUNT_PIPELINE") != nullptr;
 }
 
+static size_t prepared_closed_shape_batch_stream_count()
+{
+    const char* raw = std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_BATCH_STREAM_COUNT");
+    if (!raw || !*raw) {
+        return 1u;
+    }
+    char* end = nullptr;
+    const unsigned long long parsed = std::strtoull(raw, &end, 10);
+    if (end == raw || (end && *end != '\0')) {
+        throw std::runtime_error("RTDL_OPTIX_POINT_PRIMITIVE_BATCH_STREAM_COUNT must be a positive integer");
+    }
+    if (parsed == 0ull) {
+        throw std::runtime_error("RTDL_OPTIX_POINT_PRIMITIVE_BATCH_STREAM_COUNT must be positive");
+    }
+    return static_cast<size_t>(std::min<unsigned long long>(parsed, 64ull));
+}
+
 static void ensure_pip_scalar_count_pipeline()
 {
     std::call_once(g_pip_scalar_count.init, [&]() {
@@ -7498,23 +7515,58 @@ static void count_prepared_point_closed_shape_membership_device_filtered_prepare
         params[request_index] = lp;
     }
 
-    CUstream stream = 0;
     PipelineHolder* pipeline = use_scalar_count_pipeline
         ? g_pip_scalar_count.pipe
         : g_pip.pipe;
+    const size_t requested_stream_count = prepared_closed_shape_batch_stream_count();
+    const size_t stream_count = std::min(request_count, requested_stream_count);
 
     const auto t_launch_start = std::chrono::steady_clock::now();
-    CU_CHECK(cuMemsetD32Async(d_counts.ptr, 0, static_cast<size_t>(request_count), stream));
-    upload_async(d_params.ptr, params.data(), request_count, stream);
-    for (size_t request_index = 0; request_index < request_count; ++request_index) {
-        const CUdeviceptr request_params =
-            d_params.ptr + static_cast<CUdeviceptr>(sizeof(PipLaunchParams) * request_index);
-        OPTIX_CHECK(optixLaunch(pipeline->pipeline, stream,
-                                 request_params, sizeof(PipLaunchParams),
-                                 &pipeline->sbt,
-                                 static_cast<unsigned>(point_count), 1, 1));
+    if (stream_count <= 1u) {
+        CUstream stream = 0;
+        CU_CHECK(cuMemsetD32Async(d_counts.ptr, 0, static_cast<size_t>(request_count), stream));
+        upload_async(d_params.ptr, params.data(), request_count, stream);
+        for (size_t request_index = 0; request_index < request_count; ++request_index) {
+            const CUdeviceptr request_params =
+                d_params.ptr + static_cast<CUdeviceptr>(sizeof(PipLaunchParams) * request_index);
+            OPTIX_CHECK(optixLaunch(pipeline->pipeline, stream,
+                                     request_params, sizeof(PipLaunchParams),
+                                     &pipeline->sbt,
+                                     static_cast<unsigned>(point_count), 1, 1));
+        }
+        CU_CHECK(cuStreamSynchronize(stream));
+    } else {
+        std::vector<CUstream> streams(stream_count, nullptr);
+        try {
+            for (size_t stream_index = 0; stream_index < stream_count; ++stream_index) {
+                CU_CHECK(cuStreamCreate(&streams[stream_index], CU_STREAM_NON_BLOCKING));
+            }
+            for (size_t request_index = 0; request_index < request_count; ++request_index) {
+                CUstream stream = streams[request_index % stream_count];
+                const CUdeviceptr request_count_ptr =
+                    d_counts.ptr + static_cast<CUdeviceptr>(sizeof(uint32_t) * request_index);
+                const CUdeviceptr request_params =
+                    d_params.ptr + static_cast<CUdeviceptr>(sizeof(PipLaunchParams) * request_index);
+                CU_CHECK(cuMemsetD32Async(request_count_ptr, 0, 1, stream));
+                upload_async(request_params, &params[request_index], 1, stream);
+                OPTIX_CHECK(optixLaunch(pipeline->pipeline, stream,
+                                         request_params, sizeof(PipLaunchParams),
+                                         &pipeline->sbt,
+                                         static_cast<unsigned>(point_count), 1, 1));
+            }
+            for (CUstream stream : streams) {
+                CU_CHECK(cuStreamSynchronize(stream));
+            }
+        } catch (...) {
+            for (CUstream stream : streams) {
+                if (stream) cuStreamDestroy(stream);
+            }
+            throw;
+        }
+        for (CUstream stream : streams) {
+            CU_CHECK(cuStreamDestroy(stream));
+        }
     }
-    CU_CHECK(cuStreamSynchronize(stream));
     const auto t_launch_end = std::chrono::steady_clock::now();
     g_optix_last_closed_shape_candidate_count_s = seconds_between(t_launch_start, t_launch_end);
 
