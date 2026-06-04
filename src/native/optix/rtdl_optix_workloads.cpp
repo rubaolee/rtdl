@@ -6359,6 +6359,124 @@ static void count_prepared_point_closed_shape_membership_2d_optix(
     *count_out = exact_count;
 }
 
+static void count_prepared_point_closed_shape_membership_device_filtered_2d_optix(
+        PreparedShapePairRelationBuild* prepared,
+        const RtdlPoint* points,
+        size_t point_count,
+        size_t* count_out)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared closed-shape membership handle must not be null");
+    }
+    if (!count_out) {
+        throw std::runtime_error("device-filtered count output pointer must not be null");
+    }
+    *count_out = 0;
+    if (point_count == 0 || prepared->right_count == 0) {
+        return;
+    }
+    if (point_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("prepared closed-shape membership device-filtered count point count exceeds uint32_t chunk offset capacity");
+    }
+    if (prepared->right_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("prepared closed-shape membership device-filtered count shape count exceeds uint32_t launch capacity");
+    }
+
+    reset_closed_shape_membership_phase_timings(3u);
+    ensure_pip_pipeline();
+
+    const auto t_pack_start = std::chrono::steady_clock::now();
+    std::vector<float> pts_x(point_count), pts_y(point_count);
+    std::vector<uint32_t> pt_ids(point_count);
+    for (size_t i = 0; i < point_count; ++i) {
+        pts_x[i] = static_cast<float>(points[i].x);
+        pts_y[i] = static_cast<float>(points[i].y);
+        pt_ids[i] = points[i].id;
+    }
+    const auto t_pack_end = std::chrono::steady_clock::now();
+    g_optix_last_closed_shape_point_pack_s = seconds_between(t_pack_start, t_pack_end);
+
+    const auto t_upload_start = std::chrono::steady_clock::now();
+    DevPtr d_pts_x(sizeof(float) * point_count);
+    DevPtr d_pts_y(sizeof(float) * point_count);
+    DevPtr d_pt_ids(sizeof(uint32_t) * point_count);
+    upload(d_pts_x.ptr, pts_x.data(), point_count);
+    upload(d_pts_y.ptr, pts_y.data(), point_count);
+    upload(d_pt_ids.ptr, pt_ids.data(), point_count);
+    const auto t_upload_end = std::chrono::steady_clock::now();
+    g_optix_last_closed_shape_point_upload_s = seconds_between(t_upload_start, t_upload_end);
+
+    DevPtr d_count(sizeof(uint32_t));
+    uint32_t zero = 0;
+    upload<uint32_t>(d_count.ptr, &zero, 1);
+
+    PipLaunchParams lp;
+    lp.traversable    = prepared->accel.handle;
+    lp.points_x       = reinterpret_cast<const float*>(d_pts_x.ptr);
+    lp.points_y       = reinterpret_cast<const float*>(d_pts_y.ptr);
+    lp.point_ids      = reinterpret_cast<const uint32_t*>(d_pt_ids.ptr);
+    lp.polygons       = reinterpret_cast<const GpuPolygonRef*>(prepared->d_right_polygons.ptr);
+    lp.vertices_x     = reinterpret_cast<const float*>(prepared->d_right_vx.ptr);
+    lp.vertices_y     = reinterpret_cast<const float*>(prepared->d_right_vy.ptr);
+    lp.hit_words      = nullptr;
+    lp.output         = nullptr;
+    lp.output_count   = reinterpret_cast<uint32_t*>(d_count.ptr);
+    lp.output_capacity = 0u;
+    lp.positive_only  = 1u;
+    lp.hit_word_count = 0u;
+    lp.polygon_count  = static_cast<uint32_t>(prepared->right_count);
+    lp.probe_count    = 0u;
+    lp.point_index_offset = 0u;
+    lp.device_prefilter = 1u;
+
+    DevPtr d_params(sizeof(PipLaunchParams));
+    CUstream stream = 0;
+
+    const uint64_t max_points_per_launch64 =
+        static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()) /
+        static_cast<uint64_t>(prepared->right_count);
+    if (max_points_per_launch64 == 0) {
+        throw std::runtime_error("prepared closed-shape membership device-filtered count cannot chunk shape set into uint32_t capacity");
+    }
+    const size_t max_points_per_launch = static_cast<size_t>(
+        std::min<uint64_t>(max_points_per_launch64, static_cast<uint64_t>(point_count)));
+
+    size_t total_count = 0;
+    for (size_t point_offset = 0; point_offset < point_count; point_offset += max_points_per_launch) {
+        const size_t chunk_point_count = std::min(max_points_per_launch, point_count - point_offset);
+        upload<uint32_t>(d_count.ptr, &zero, 1);
+        const CUdeviceptr chunk_points_x =
+            d_pts_x.ptr + static_cast<CUdeviceptr>(sizeof(float) * point_offset);
+        const CUdeviceptr chunk_points_y =
+            d_pts_y.ptr + static_cast<CUdeviceptr>(sizeof(float) * point_offset);
+        const CUdeviceptr chunk_point_ids =
+            d_pt_ids.ptr + static_cast<CUdeviceptr>(sizeof(uint32_t) * point_offset);
+        lp.points_x = reinterpret_cast<const float*>(chunk_points_x);
+        lp.points_y = reinterpret_cast<const float*>(chunk_points_y);
+        lp.point_ids = reinterpret_cast<const uint32_t*>(chunk_point_ids);
+        lp.probe_count = static_cast<uint32_t>(chunk_point_count);
+        lp.point_index_offset = static_cast<uint32_t>(point_offset);
+        upload(d_params.ptr, &lp, 1);
+
+        const auto t_launch_start = std::chrono::steady_clock::now();
+        OPTIX_CHECK(optixLaunch(g_pip.pipe->pipeline, stream,
+                                 d_params.ptr, sizeof(PipLaunchParams),
+                                 &g_pip.pipe->sbt,
+                                 static_cast<unsigned>(chunk_point_count), 1, 1));
+        CU_CHECK(cuStreamSynchronize(stream));
+        const auto t_launch_end = std::chrono::steady_clock::now();
+        g_optix_last_closed_shape_candidate_count_s += seconds_between(t_launch_start, t_launch_end);
+
+        uint32_t chunk_count = 0;
+        download(&chunk_count, d_count.ptr, 1);
+        total_count += static_cast<size_t>(chunk_count);
+    }
+
+    g_optix_last_closed_shape_raw_candidate_count = total_count;
+    g_optix_last_closed_shape_emitted_count = total_count;
+    *count_out = total_count;
+}
+
 struct ShapePairRelationFlagComputation {
     size_t left_count = 0;
     size_t right_count = 0;

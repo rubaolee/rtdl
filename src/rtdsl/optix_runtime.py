@@ -6083,7 +6083,15 @@ def _get_last_closed_shape_membership_phase_timings_from_library(lib) -> dict[st
         return None
     mode_value = int(mode.value)
     return {
-        "mode": "rows" if mode_value == 1 else "count" if mode_value == 2 else "none",
+        "mode": (
+            "rows"
+            if mode_value == 1
+            else "count"
+            if mode_value == 2
+            else "device_filtered_count"
+            if mode_value == 3
+            else "none"
+        ),
         "point_pack": float(point_pack.value),
         "point_upload": float(point_upload.value),
         "candidate_count_pass": float(candidate_count.value),
@@ -9514,6 +9522,43 @@ class PreparedOptixPointClosedShapeMembership2D:
             raise RuntimeError(
                 "loaded OptiX backend library does not export "
                 "rtdl_optix_count_prepared_point_closed_shape_membership_2d; rebuild the OptiX backend from current main"
+            )
+        count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self._handle,
+            packed_points.records,
+            packed_points.count,
+            ctypes.byref(count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(count.value)
+
+    def count_device_filtered(self, points) -> int:
+        """Return a fast device-filtered membership count.
+
+        This path uses the device-side closed-shape predicate and avoids
+        candidate-row materialization. It is intentionally separate from
+        ``count`` because ``count`` remains the exact host-refined authority.
+        """
+        if self._closed:
+            raise RuntimeError("prepared OptiX closed-shape membership handle is closed")
+        packed_points = points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
+        if packed_points.dimension != 2:
+            raise ValueError("PreparedOptixPointClosedShapeMembership2D.count_device_filtered requires 2-D points")
+        if packed_points.count == 0 or self._packed_shapes.polygon_count == 0:
+            return 0
+        count_symbol = _find_optional_backend_symbol(
+            self._lib,
+            "rtdl_optix_count_prepared_point_closed_shape_membership_device_filtered_2d",
+        )
+        if count_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_count_prepared_point_closed_shape_membership_device_filtered_2d; "
+                "rebuild the OptiX backend from current main"
             )
         count = ctypes.c_size_t()
         error = ctypes.create_string_buffer(4096)
@@ -17350,6 +17395,19 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_count_prepared_closed_shape_membership.restype = ctypes.c_int
+
+    optional_count_prepared_closed_shape_membership_device_filtered = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_count_prepared_point_closed_shape_membership_device_filtered_2d",
+    )
+    if optional_count_prepared_closed_shape_membership_device_filtered is not None:
+        optional_count_prepared_closed_shape_membership_device_filtered.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_count_prepared_closed_shape_membership_device_filtered.restype = ctypes.c_int
 
     optional_destroy_prepared_closed_shape_membership = _find_optional_backend_symbol(
         lib,
