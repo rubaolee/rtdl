@@ -1184,18 +1184,18 @@ PRIMITIVE_HIERARCHY = (
                 layer="candidate_experimental",
                 status="candidate_behavior",
                 summary=(
-                    "Future generic point/closed-shape membership count contract with explicit "
-                    "face/ring/chain topology, boundary ownership, and duplicate policy."
+                    "Generic point/closed-shape membership count direction with an executable "
+                    "owner-face Python reference contract and future native/device lowering."
                 ),
-                outputs=("membership_count", "ownership_status", "topology_policy_metadata"),
+                outputs=("membership_count", "owner_face_id", "ownership_status", "topology_policy_metadata"),
                 depends_on=(
                     "rows.point_closed_shape_boundary_event_columns",
                     "reduction.grouped",
                 ),
                 boundary=(
-                    "The primitive must expose generic topology and boundary-ownership policy only. "
-                    "CDB source naming, RayJoin assignment interpretation, map/entity lookup, and "
-                    "paper-system semantics remain app code."
+                    "The primitive must expose generic topology and caller-supplied owner-face "
+                    "filtering only. CDB source naming, RayJoin assignment interpretation, "
+                    "map/entity lookup, and paper-system semantics remain app code."
                 ),
                 capability_tags=(
                     "intent:membership",
@@ -1217,9 +1217,10 @@ PRIMITIVE_HIERARCHY = (
                 intent_phrases=(
                     "count point membership in closed shapes with explicit face ring chain topology",
                     "avoid duplicate boundary ownership overcounts in closed shape membership",
+                    "filter closed shape candidates by caller supplied owner face ids",
                     "use deterministic boundary ownership policy for point closed shape counts",
                 ),
-                reference_path="docs/reports/goal3324_closed_shape_topology_membership_candidate_2026-06-04.md",
+                reference_path="docs/reports/goal3330_owner_face_closed_shape_membership_reference_contract_2026-06-04.md",
                 backends=("cpu_python_reference", "planned_optix"),
                 considered_alternatives=(
                     "traversal.count_hits",
