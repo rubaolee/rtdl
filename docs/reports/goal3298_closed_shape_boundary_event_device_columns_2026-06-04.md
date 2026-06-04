@@ -2,8 +2,9 @@
 
 Date: 2026-06-04
 
-Status: local implementation slice; pod validation required before using as
-performance or residency evidence.
+Status: pod validated for device-column correctness on commit
+`3517d648dcedf62bfae419b21990a84fc91fdfc3`; not release evidence and not
+RayJoin reproduction evidence.
 
 ## Purpose
 
@@ -77,17 +78,33 @@ It does not authorize RayJoin reproduction.
 
 RayJoin-specific native logic added: false.
 
-## Required Pod Validation
+## Pod Validation
 
-Before this goal is accepted as implementation evidence:
+Validation artifact:
 
-1. build `librtdl_optix.so` from this commit on a pod;
-2. run `tests.goal3298_closed_shape_boundary_event_device_columns_test` with
-   `RTDL_OPTIX_LIBRARY` set;
-3. validate the device columns against
-   `rt.point_closed_shape_first_boundary_crossing_2d_cpu`;
-4. record the pod artifact at
-   `docs/reports/goal3298_closed_shape_boundary_event_device_columns_pod_2026-06-04.json`.
+- `docs/reports/goal3298_closed_shape_boundary_event_device_columns_pod_2026-06-04.json`
+
+Evidence recorded there:
+
+- pod GPU: NVIDIA RTX A5000;
+- CUDA prefix: `/usr/local/cuda-12.8`;
+- OptiX prefix: `/root/vendor/optix-sdk`;
+- CuPy version: `14.1.1`;
+- native build: `make build-optix OPTIX_PREFIX=/root/vendor/optix-sdk
+  CUDA_PREFIX=/usr/local/cuda-12.8`, status `pass`;
+- focused live tests: 22 run, 0 skipped, status `pass`;
+- live smoke: CuPy readback from the device-resident columns exactly matches
+  `rt.point_closed_shape_first_boundary_crossing_2d_cpu`;
+- device pointers: all seven output columns nonzero;
+- representative event: point `10`, shape `7`, boundary `3`, crossing
+  `(0.0, 2.0)`, `crossing_t=2.0`, `event_kind=1`;
+- phase telemetry: mode `boundary_event_device_columns`, raw candidates `1`,
+  emitted rows `1`, candidate download `0.0`.
+
+This validates the native ABI, Python binding, typed metadata, CuPy
+consumer-view path, and small live correctness smoke for resident boundary
+columns. It still does not validate grouped continuation or RayJoin same-slice
+performance.
 
 ## Next Step
 

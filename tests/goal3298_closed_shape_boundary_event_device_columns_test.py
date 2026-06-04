@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 import unittest
@@ -14,6 +15,7 @@ CORE = ROOT / "src" / "native" / "optix" / "rtdl_optix_core.cpp"
 WORKLOADS = ROOT / "src" / "native" / "optix" / "rtdl_optix_workloads.cpp"
 RUNTIME = ROOT / "src" / "rtdsl" / "optix_runtime.py"
 REPORT = ROOT / "docs" / "reports" / "goal3298_closed_shape_boundary_event_device_columns_2026-06-04.md"
+ARTIFACT = ROOT / "docs" / "reports" / "goal3298_closed_shape_boundary_event_device_columns_pod_2026-06-04.json"
 
 
 class Goal3298ClosedShapeBoundaryEventDeviceColumnsTest(unittest.TestCase):
@@ -64,6 +66,7 @@ class Goal3298ClosedShapeBoundaryEventDeviceColumnsTest(unittest.TestCase):
         text = REPORT.read_text(encoding="utf-8")
 
         for phrase in (
+            "pod validated for device-column correctness",
             "device-resident boundary-event columns",
             "does not yet add the grouped/count continuation",
             "does not prove true zero-copy",
@@ -71,6 +74,20 @@ class Goal3298ClosedShapeBoundaryEventDeviceColumnsTest(unittest.TestCase):
             "does not authorize RayJoin reproduction",
         ):
             self.assertIn(phrase, text)
+
+    def test_pod_artifact_records_device_columns_without_claim_authorization(self) -> None:
+        artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(artifact["goal"], 3298)
+        self.assertEqual(artifact["build"]["status"], "pass")
+        self.assertEqual(artifact["focused_unittest"]["status"], "pass")
+        self.assertEqual(artifact["focused_unittest"]["skipped"], 0)
+        self.assertTrue(artifact["live_smoke"]["all_match_cpu_reference"])
+        self.assertTrue(artifact["live_smoke"]["device_resident"])
+        self.assertTrue(all(artifact["live_smoke"]["device_ptrs_nonzero"].values()))
+        self.assertEqual(artifact["live_smoke"]["phase_timings"]["mode"], "boundary_event_device_columns")
+        self.assertEqual(artifact["live_smoke"]["phase_timings"]["candidate_download"], 0.0)
+        self.assertFalse(any(artifact["claim_boundaries"].values()))
 
     @unittest.skipUnless(
         os.environ.get("RTDL_OPTIX_LIBRARY") or (ROOT / "build" / "librtdl_optix.so").exists(),
