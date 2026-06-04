@@ -68,6 +68,19 @@ class Goal3287SegmentColumns2DLayoutTest(unittest.TestCase):
         self.assertIs(remapped.x0, columns.x0)
         self.assertEqual(_packed_ids(packed), [0, 1])
 
+    def test_segment_columns_keep_wide_ids_until_pack_time_then_fail_closed(self) -> None:
+        columns = rt.segment_columns_2d(
+            ids=[1 << 32],
+            x0=[0.0],
+            y0=[0.0],
+            x1=[1.0],
+            y1=[1.0],
+        )
+
+        self.assertEqual(int(columns.ids[0]), 1 << 32)
+        with self.assertRaisesRegex(ValueError, "uint32 packed segment ABI"):
+            embree_runtime.pack_segments(records=columns)
+
     def test_discovery_exposes_segment_columns_without_app_language(self) -> None:
         matches = rt.find_primitive(text="cache segment column arrays while preserving caller ids")
 

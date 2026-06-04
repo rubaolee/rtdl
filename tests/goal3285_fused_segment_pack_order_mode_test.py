@@ -65,6 +65,17 @@ class Goal3285FusedSegmentPackOrderModeTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "order_mode"):
             embree_runtime.pack_segments(records=(), order_mode="hilbert")
 
+    def test_segment_ids_must_fit_packed_native_abi(self) -> None:
+        too_large_id = (1 << 32)
+        segments = (
+            SegmentRow(too_large_id, 0.0, 0.0, 1.0, 1.0),
+        )
+
+        with self.assertRaisesRegex(ValueError, "uint32 packed segment ABI"):
+            embree_runtime.pack_segments(records=segments)
+        with self.assertRaisesRegex(ValueError, "uint32 packed segment ABI"):
+            embree_runtime.pack_segments(records=segments, order_mode="x_then_y")
+
     def test_rayjoin_lsi_uses_fused_pack_order_path(self) -> None:
         source = inspect.getsource(rayjoin_app.run_rayjoin_prepared_optix_workload)
 

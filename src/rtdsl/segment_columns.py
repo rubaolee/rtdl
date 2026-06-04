@@ -39,7 +39,7 @@ def segment_columns_2d(
     np = _require_numpy()
     if isinstance(records, SegmentColumns2D):
         arrays = (
-            np.asarray(records.ids, dtype=np.uint32),
+            np.asarray(records.ids, dtype=np.int64),
             np.asarray(records.x0, dtype=np.float64),
             np.asarray(records.y0, dtype=np.float64),
             np.asarray(records.x1, dtype=np.float64),
@@ -51,7 +51,7 @@ def segment_columns_2d(
         record_tuple = tuple(records)
         count = len(record_tuple)
         arrays = (
-            np.fromiter((_segment_field(record, "id") for record in record_tuple), dtype=np.uint32, count=count),
+            np.fromiter((_segment_field(record, "id") for record in record_tuple), dtype=np.int64, count=count),
             np.fromiter((_segment_field(record, "x0") for record in record_tuple), dtype=np.float64, count=count),
             np.fromiter((_segment_field(record, "y0") for record in record_tuple), dtype=np.float64, count=count),
             np.fromiter((_segment_field(record, "x1") for record in record_tuple), dtype=np.float64, count=count),
@@ -61,7 +61,7 @@ def segment_columns_2d(
         if any(value is None for value in (ids, x0, y0, x1, y1)):
             raise ValueError("segment column inputs require ids, x0, y0, x1, and y1")
         arrays = (
-            np.asarray(ids, dtype=np.uint32),
+            np.asarray(ids, dtype=np.int64),
             np.asarray(x0, dtype=np.float64),
             np.asarray(y0, dtype=np.float64),
             np.asarray(x1, dtype=np.float64),
@@ -86,7 +86,7 @@ def segment_columns_with_ids(columns: SegmentColumns2D, ids) -> SegmentColumns2D
     """Return a column batch with replacement caller IDs and shared geometry columns."""
 
     np = _require_numpy()
-    replacement_ids = np.asarray(ids, dtype=np.uint32)
+    replacement_ids = np.asarray(ids, dtype=np.int64)
     if replacement_ids.ndim != 1 or int(replacement_ids.size) != int(columns.count):
         raise ValueError("replacement ids must be one-dimensional and match the segment count")
     return SegmentColumns2D(

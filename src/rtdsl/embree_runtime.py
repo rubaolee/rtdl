@@ -79,6 +79,7 @@ _PARTNER_RAY_2D_COLUMNS = ("ids", "ox", "oy", "dx", "dy", "tmax")
 _PARTNER_TRIANGLE_2D_COLUMNS = ("ids", "x0", "y0", "x1", "y1", "x2", "y2")
 _EMBREE_THREAD_OVERRIDE: str | int | None = None
 _UINT64_MAX = (1 << 64) - 1
+_PACKED_SEGMENT_ID_MAX = (1 << 32) - 1
 EMBREE_REQUIRED_SYMBOLS = (
     "rtdl_embree_get_version",
     "rtdl_embree_configure_threads",
@@ -952,7 +953,7 @@ def pack_segments(records=None, *, ids=None, x0=None, y0=None, x1=None, y1=None,
 
             normalized = spatial_order_segments_2d(normalized, order_mode)
         array = (_RtdlSegment * len(normalized))(*[
-            _RtdlSegment(item.id, item.x0, item.y0, item.x1, item.y1) for item in normalized
+            _RtdlSegment(_segment_id_to_packed_u32(item.id), item.x0, item.y0, item.x1, item.y1) for item in normalized
         ])
         return PackedSegments(records=array, count=len(normalized))
 
@@ -980,11 +981,17 @@ def pack_segments(records=None, *, ids=None, x0=None, y0=None, x1=None, y1=None,
 
         ordered = spatial_order_segments_2d(normalized, order_mode)
         array = (_RtdlSegment * len(ordered))(*[
-            _RtdlSegment(item.id, item.x0, item.y0, item.x1, item.y1) for item in ordered
+            _RtdlSegment(_segment_id_to_packed_u32(item.id), item.x0, item.y0, item.x1, item.y1) for item in ordered
         ])
         return PackedSegments(records=array, count=len(ordered))
     array = (_RtdlSegment * count)(*[
-        _RtdlSegment(int(ids_list[i]), float(x0_list[i]), float(y0_list[i]), float(x1_list[i]), float(y1_list[i]))
+        _RtdlSegment(
+            _segment_id_to_packed_u32(ids_list[i]),
+            float(x0_list[i]),
+            float(y0_list[i]),
+            float(x1_list[i]),
+            float(y1_list[i]),
+        )
         for i in range(count)
     ])
     return PackedSegments(records=array, count=count)
@@ -998,7 +1005,7 @@ def _try_pack_segments_records_numpy_ordered(records, order_mode: str) -> Packed
     try:
         record_tuple = tuple(records)
         count = len(record_tuple)
-        ids = _np.fromiter((_segment_field(record, "id") for record in record_tuple), dtype=_np.uint32, count=count)
+        ids = _np.fromiter((_segment_field(record, "id") for record in record_tuple), dtype=_np.int64, count=count)
         x0 = _np.fromiter((_segment_field(record, "x0") for record in record_tuple), dtype=_np.float64, count=count)
         y0 = _np.fromiter((_segment_field(record, "y0") for record in record_tuple), dtype=_np.float64, count=count)
         x1 = _np.fromiter((_segment_field(record, "x1") for record in record_tuple), dtype=_np.float64, count=count)
@@ -1014,7 +1021,7 @@ def _try_pack_segments_columns_numpy_ordered(ids, x0, y0, x1, y1, order_mode: st
     except Exception:
         return None
     try:
-        ids_array = _np.asarray(ids, dtype=_np.uint32)
+        ids_array = _np.asarray(ids, dtype=_np.int64)
         x0_array = _np.asarray(x0, dtype=_np.float64)
         y0_array = _np.asarray(y0, dtype=_np.float64)
         x1_array = _np.asarray(x1, dtype=_np.float64)
@@ -1038,7 +1045,7 @@ def _try_pack_segments_columns_numpy_arrays(ids, x0, y0, x1, y1) -> PackedSegmen
     except Exception:
         return None
     try:
-        ids_array = _np.asarray(ids, dtype=_np.uint32)
+        ids_array = _np.asarray(ids, dtype=_np.int64)
         x0_array = _np.asarray(x0, dtype=_np.float64)
         y0_array = _np.asarray(y0, dtype=_np.float64)
         x1_array = _np.asarray(x1, dtype=_np.float64)
@@ -1053,7 +1060,7 @@ def _try_pack_segments_columns_numpy_arrays(ids, x0, y0, x1, y1) -> PackedSegmen
             return None
         array = (_RtdlSegment * int(ids_array.size))(*[
             _RtdlSegment(
-                int(ids_array[index]),
+                _segment_id_to_packed_u32(ids_array[index]),
                 float(x0_array[index]),
                 float(y0_array[index]),
                 float(x1_array[index]),
@@ -1071,6 +1078,7 @@ def _pack_segments_numpy_arrays_ordered(ids, x0, y0, x1, y1, order_mode: str, _n
         return None
     if not (ids.size == x0.size == y0.size == x1.size == y1.size):
         return None
+    _validate_numpy_segment_ids_for_packing(ids)
     cx = (x0 + x1) * 0.5
     cy = (y0 + y1) * 0.5
     if order_mode == "x_then_y":
@@ -1084,7 +1092,7 @@ def _pack_segments_numpy_arrays_ordered(ids, x0, y0, x1, y1, order_mode: str, _n
         order = _np.lexsort((ids.astype(_np.uint64), codes))
     array = (_RtdlSegment * int(ids.size))(*[
         _RtdlSegment(
-            int(ids[int(index)]),
+            _segment_id_to_packed_u32(ids[int(index)]),
             float(x0[int(index)]),
             float(y0[int(index)]),
             float(x1[int(index)]),
@@ -1104,6 +1112,24 @@ def _segment_field(record: object, field_name: str):
     if isinstance(record, Mapping):
         return record[field_name]
     raise TypeError(f"segment record does not expose {field_name!r}: {record!r}")
+
+
+def _validate_numpy_segment_ids_for_packing(ids) -> None:
+    try:
+        import numpy as _np
+    except Exception:
+        return
+    if int(ids.size) == 0:
+        return
+    if bool(_np.any(ids < 0)) or bool(_np.any(ids > _PACKED_SEGMENT_ID_MAX)):
+        raise ValueError("segment ids must fit the uint32 packed segment ABI")
+
+
+def _segment_id_to_packed_u32(value) -> int:
+    segment_id = int(value)
+    if segment_id < 0 or segment_id > _PACKED_SEGMENT_ID_MAX:
+        raise ValueError("segment ids must fit the uint32 packed segment ABI")
+    return segment_id
 
 
 def _pack_points_columns_numpy(ids, x, y, z=None, *, dimension: int | None = None) -> PackedPoints | None:
