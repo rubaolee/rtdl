@@ -1,0 +1,26 @@
+[goal3247] extent default start
+[goal3247] extent default count=1430 median_ms=1.149502 candidate_write=0.950865
+[goal3247] extent 0.5 start
+[goal3247] extent 0.5 count=1430 median_ms=1.156416 candidate_write=0.948088
+[goal3247] extent 0.35 start
+[goal3247] extent 0.35 count=1430 median_ms=1.229044 candidate_write=0.990494
+[goal3247] extent 0.3 start
+[goal3247] extent 0.3 count=1430 median_ms=1.016732 candidate_write=0.820243
+[goal3247] extent 0.275 start
+[goal3247] extent 0.275 count=1430 median_ms=0.960659 candidate_write=0.760488
+[goal3247] extent 0.25 start
+[goal3247] extent 0.25 count=1430 median_ms=0.936108 candidate_write=0.735469
+[goal3247] extent 0.225 start
+[goal3247] extent 0.225 count=0 median_ms=0.844805 candidate_write=0.7441080000000001
+[goal3247] extent 0.2 start
+[goal3247] extent 0.2 count=0 median_ms=0.862800 candidate_write=0.759639
+[goal3247] extent 0.175 start
+[goal3247] extent 0.175 count=0 median_ms=0.795880 candidate_write=0.6728940000000001
+[goal3247] extent 0.15 start
+[goal3247] extent 0.15 count=0 median_ms=0.661362 candidate_write=0.56359
+[goal3247] extent 0.125 start
+[goal3247] extent 0.125 count=0 median_ms=0.580782 candidate_write=0.48386
+{
+  "written": "docs/reports/goal3247_closed_shape_probe_extent_sweep_pod_2026-06-03.json",
+  "result_count": 11
+}
