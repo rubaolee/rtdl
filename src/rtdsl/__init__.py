@@ -599,6 +599,7 @@ from .closed_shape_topology import OWNER_FACE_PRIORITY_PIPELINE_CONTRACT
 from .closed_shape_topology import count_closed_shape_membership_candidates_by_owner_face
 from .closed_shape_topology import derive_owner_face_priority_columns_from_rank_signals
 from .closed_shape_topology import derive_owner_face_priority_rows_from_rank_signals
+from .closed_shape_topology import filter_closed_shape_membership_candidate_columns_by_owner_face_columns
 from .closed_shape_topology import filter_closed_shape_membership_candidates_by_owner_face
 from .closed_shape_topology import owner_face_ids_by_point_from_selection_rows
 from .closed_shape_topology import owner_face_membership_contract
@@ -2345,6 +2346,7 @@ __all__ = [
     "count_closed_shape_membership_candidates_by_owner_face",
     "derive_owner_face_priority_columns_from_rank_signals",
     "derive_owner_face_priority_rows_from_rank_signals",
+    "filter_closed_shape_membership_candidate_columns_by_owner_face_columns",
     "filter_closed_shape_membership_candidates_by_owner_face",
     "owner_face_ids_by_point_from_selection_rows",
     "owner_face_membership_contract",

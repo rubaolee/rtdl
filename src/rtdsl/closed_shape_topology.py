@@ -471,6 +471,82 @@ def select_owner_faces_from_incident_candidate_columns_with_priority_columns(
     }
 
 
+def filter_closed_shape_membership_candidate_columns_by_owner_face_columns(
+    candidate_point_ids: Sequence[int],
+    candidate_shape_ids: Sequence[int],
+    topology_shape_ids: Sequence[int],
+    topology_left_face_ids: Sequence[int],
+    topology_right_face_ids: Sequence[int],
+    owner_point_ids: Sequence[int],
+    owner_face_ids: Sequence[int],
+    *,
+    topology_has_left_faces: Sequence[int] | None = None,
+    topology_has_right_faces: Sequence[int] | None = None,
+    missing_owner_policy: str = "raise",
+) -> dict[str, tuple[int, ...]]:
+    """Columnar front door for owner-face membership candidate filtering."""
+
+    candidate_count = len(candidate_point_ids)
+    if len(candidate_shape_ids) != candidate_count:
+        raise ValueError("candidate point and shape columns must have the same length")
+
+    topology_count = len(topology_shape_ids)
+    topology_lengths_match = (
+        len(topology_left_face_ids) == topology_count
+        and len(topology_right_face_ids) == topology_count
+    )
+    if not topology_lengths_match:
+        raise ValueError("topology shape and face columns must have the same length")
+    if (
+        topology_has_left_faces is not None
+        and len(topology_has_left_faces) != topology_count
+    ):
+        raise ValueError("topology_has_left_faces must match topology length")
+    if (
+        topology_has_right_faces is not None
+        and len(topology_has_right_faces) != topology_count
+    ):
+        raise ValueError("topology_has_right_faces must match topology length")
+
+    owner_count = len(owner_point_ids)
+    if len(owner_face_ids) != owner_count:
+        raise ValueError("owner point and face columns must have the same length")
+
+    candidate_rows = tuple(
+        {"point_id": int(point_id), "shape_id": int(shape_id)}
+        for point_id, shape_id in zip(candidate_point_ids, candidate_shape_ids)
+    )
+    topology_rows = []
+    for index, shape_id in enumerate(topology_shape_ids):
+        row = {
+            "shape_id": int(shape_id),
+            "left_face_id": int(topology_left_face_ids[index]),
+            "right_face_id": int(topology_right_face_ids[index]),
+        }
+        if topology_has_left_faces is not None:
+            row["has_left_face"] = int(topology_has_left_faces[index])
+        if topology_has_right_faces is not None:
+            row["has_right_face"] = int(topology_has_right_faces[index])
+        topology_rows.append(row)
+
+    owner_faces: dict[int, set[int]] = {}
+    for point_id, face_id in zip(owner_point_ids, owner_face_ids):
+        owner_faces.setdefault(int(point_id), set()).add(int(face_id))
+
+    filtered_rows = filter_closed_shape_membership_candidates_by_owner_face(
+        candidate_rows,
+        topology_rows,
+        owner_faces,
+        missing_owner_policy=missing_owner_policy,
+    )
+    return {
+        "point_id": tuple(int(row["point_id"]) for row in filtered_rows),
+        "shape_id": tuple(int(row["shape_id"]) for row in filtered_rows),
+        "membership": tuple(int(row["membership"]) for row in filtered_rows),
+        "owner_face_id": tuple(int(row["owner_face_id"]) for row in filtered_rows),
+    }
+
+
 def owner_face_ids_by_point_from_selection_rows(
     selection_rows: Iterable[Mapping[str, Any]],
     *,
@@ -556,6 +632,7 @@ def owner_face_priority_pipeline_contract() -> dict[str, object]:
         ),
         "optional_columnar_pipeline_helpers": (
             "select_owner_faces_from_incident_candidate_columns_with_priority_columns",
+            "filter_closed_shape_membership_candidate_columns_by_owner_face_columns",
         ),
         "selection_rule": {
             "primary": "higher incident_face_count wins",
@@ -631,6 +708,8 @@ def validate_owner_face_priority_pipeline_contract() -> dict[str, object]:
     if (
         not isinstance(columnar_helpers, tuple)
         or "select_owner_faces_from_incident_candidate_columns_with_priority_columns"
+        not in columnar_helpers
+        or "filter_closed_shape_membership_candidate_columns_by_owner_face_columns"
         not in columnar_helpers
     ):
         raise ValueError("owner-face priority pipeline must expose columnar selection helpers")
