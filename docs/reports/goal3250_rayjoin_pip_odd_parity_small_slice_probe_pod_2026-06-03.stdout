@@ -1,0 +1,18 @@
+[goal3250] loading dataset: /root/rtdl_goal3151/data/rayjoin_public_cdb/br_county_start0_count512.cdb
+[goal3250] loaded points=512 polygons=481 boundary_segments=25330
+[goal3250] preparing closed-shape membership
+[goal3250] materializing closed-shape reference rows
+[goal3250] closed count warmup 1/1
+[goal3250] closed count repeat 1/5: 0.940798 ms count=1430
+[goal3250] closed count repeat 2/5: 0.925396 ms count=1430
+[goal3250] closed count repeat 3/5: 0.917340 ms count=1430
+[goal3250] closed count repeat 4/5: 0.920307 ms count=1430
+[goal3250] closed count repeat 5/5: 0.910373 ms count=1430
+[goal3250] preparing boundary ray/segment group-count scene
+[goal3250] odd-parity warmup 1/1: rows=123
+[goal3250] odd-parity repeat 1/5: 3.001405 ms rows=123 match=False missing=1307 extra=0
+[goal3250] odd-parity repeat 2/5: 2.948057 ms rows=123 match=False missing=1307 extra=0
+[goal3250] odd-parity repeat 3/5: 3.009237 ms rows=123 match=False missing=1307 extra=0
+[goal3250] odd-parity repeat 4/5: 2.945323 ms rows=123 match=False missing=1307 extra=0
+[goal3250] odd-parity repeat 5/5: 2.925722 ms rows=123 match=False missing=1307 extra=0
+[goal3250] wrote docs/reports/goal3250_rayjoin_pip_odd_parity_small_slice_probe_pod_2026-06-03.json

@@ -1,0 +1,154 @@
+{
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "closed_shape_reference": {
+    "count_median_sec": 0.0009203068912029266,
+    "count_values": [
+      1430,
+      1430,
+      1430,
+      1430,
+      1430
+    ],
+    "native_phase_samples": [
+      {
+        "bvh_build": 0.0,
+        "copyback": 0.0,
+        "traversal": 0.0
+      },
+      {
+        "bvh_build": 0.0,
+        "copyback": 0.0,
+        "traversal": 0.0
+      },
+      {
+        "bvh_build": 0.0,
+        "copyback": 0.0,
+        "traversal": 0.0
+      },
+      {
+        "bvh_build": 0.0,
+        "copyback": 0.0,
+        "traversal": 0.0
+      },
+      {
+        "bvh_build": 0.0,
+        "copyback": 0.0,
+        "traversal": 0.0
+      }
+    ],
+    "positive_rows": 1430,
+    "reference_query_sec": 0.001227760687470436
+  },
+  "dataset": "/root/rtdl_goal3151/data/rayjoin_public_cdb/br_county_start0_count512.cdb",
+  "env": {
+    "RTDL_OPTIX_LIB": "/root/rtdl_goal3239/build/librtdl_optix.so",
+    "RTDL_OPTIX_LIBRARY": "/root/rtdl_goal3239/build/librtdl_optix.so",
+    "RTDL_OPTIX_POINT_PRIMITIVE_QUERY_HALF_EXTENT": "0.25"
+  },
+  "generated_at_utc": "2026-06-04T03:15:20Z",
+  "goal": 3250,
+  "inputs": {
+    "boundary_segment_count": 25330,
+    "point_count": 512,
+    "polygon_count": 481,
+    "ray_count": 512
+  },
+  "odd_parity_route": {
+    "extra_counts": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "missing_counts": [
+      1307,
+      1307,
+      1307,
+      1307,
+      1307
+    ],
+    "query_median_sec": 0.0029480569064617157,
+    "route_status": "negative_or_correctness_failed",
+    "row_count_values": [
+      123,
+      123,
+      123,
+      123,
+      123
+    ],
+    "sample_rows": [
+      {
+        "group_id": 15,
+        "hit_count": 3,
+        "parity": 1,
+        "ray_id": 15
+      },
+      {
+        "group_id": 15,
+        "hit_count": 3,
+        "parity": 1,
+        "ray_id": 16
+      },
+      {
+        "group_id": 21,
+        "hit_count": 5,
+        "parity": 1,
+        "ray_id": 20
+      },
+      {
+        "group_id": 21,
+        "hit_count": 5,
+        "parity": 1,
+        "ray_id": 21
+      },
+      {
+        "group_id": 25,
+        "hit_count": 3,
+        "parity": 1,
+        "ray_id": 25
+      },
+      {
+        "group_id": 25,
+        "hit_count": 3,
+        "parity": 1,
+        "ray_id": 26
+      },
+      {
+        "group_id": 33,
+        "hit_count": 3,
+        "parity": 1,
+        "ray_id": 32
+      },
+      {
+        "group_id": 33,
+        "hit_count": 3,
+        "parity": 1,
+        "ray_id": 33
+      }
+    ],
+    "sets_match_all": false
+  },
+  "phase_sec": {
+    "closed_prepare_sec": 0.9682613220065832,
+    "odd_parity_prepare_sec": 0.0808030553162098,
+    "pack_boundary_segments_sec": 0.031606366857886314,
+    "pack_points_sec": 0.000548025593161583,
+    "pack_polygons_sec": 0.012331914156675339,
+    "pack_rays_sec": 0.0006979051977396011
+  },
+  "ratios": {
+    "odd_parity_over_closed_count_median": 3.203341118752606
+  },
+  "repo_state": {
+    "commit": "76bfa25ca2a03fc68791c7ba2cb6e89f5b67cb99",
+    "source_dirty": []
+  }
+}
