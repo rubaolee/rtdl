@@ -47,10 +47,11 @@ Median same-slice query/count timings:
 | LSI | `left_id_dense_count` | 0.229 ms | 0.306 ms | 1.33x | matching visible count, 269 |
 | PIP | scalar count + prepared edge layout | 0.221 ms | 0.421 ms | 1.90x | RayJoin PIP positive count not exposed; RTDL self-validates 1430 |
 
-The native PIP scalar-count launch median was about 0.325 ms. This is slower
-than the prior tuned Goal3294 PIP route, which reported about 0.361 ms end-to-end
-prepared query median without prepared-edge layout. The prepared-edge loop is
-not the win for this slice.
+The native PIP scalar-count launch median was about 0.325 ms, while the full
+prepared-query end-to-end median rose to about 0.421 ms. That end-to-end result
+is slower than the prior tuned Goal3294 PIP route, which reported about
+0.361 ms end-to-end prepared query median without prepared-edge layout. The
+prepared-edge loop is not the win for this slice.
 
 ## Crossing-Only Boundary Probe
 

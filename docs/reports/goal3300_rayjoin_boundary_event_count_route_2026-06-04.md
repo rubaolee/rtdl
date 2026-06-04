@@ -89,6 +89,11 @@ PIP split timing:
 
 The route produced 3961 boundary-event rows on the 512-feature PIP slice.
 
+The boundary-event device-column samples also contain several large wall-clock
+outliers, including one above 100 ms. The median remains the right summary for
+the table, but the variance reinforces the same conclusion: materializing this
+event stream is not the recommended PIP count route.
+
 ## Interpretation
 
 This is a useful contract probe and a poor PIP performance route.
