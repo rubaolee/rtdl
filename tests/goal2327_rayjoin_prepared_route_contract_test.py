@@ -20,6 +20,50 @@ class _FakeRawView:
         self.closed = True
 
 
+class _FakePackedPoints:
+    count = 1
+    dimension = 2
+
+
+class _FakeGroupedCountColumns:
+    def __init__(self, source_row_count: int):
+        self.source_row_count = source_row_count
+        self.overflow = False
+        self.closed = False
+
+    def to_metadata(self):
+        return {
+            "output_residency": "device_resident_dense_grouped_count_column",
+            "source_row_count": self.source_row_count,
+        }
+
+    def close(self) -> None:
+        self.closed = True
+
+
+class _FakeBoundaryEventColumns:
+    def __init__(self, row_count: int):
+        self.row_count = row_count
+        self.overflow = False
+        self.closed = False
+        self.group_capacity: int | None = None
+
+    def grouped_count_by_point_id_device_columns(self, *, group_capacity: int):
+        self.group_capacity = int(group_capacity)
+        return _FakeGroupedCountColumns(self.row_count)
+
+    def to_metadata(self):
+        return {
+            "runtime": {
+                "output_residency": "device_resident_boundary_event_columns",
+                "row_count": self.row_count,
+            }
+        }
+
+    def close(self) -> None:
+        self.closed = True
+
+
 class _FakePrepared:
     def __init__(self, row_count: int):
         self.row_count = row_count
@@ -36,6 +80,9 @@ class _FakePrepared:
 
     def run_raw(self, _packed, **_kwargs):
         return _FakeRawView(self.row_count)
+
+    def first_boundary_crossing_device_columns(self, _packed, *, max_rows: int | None = None):
+        return _FakeBoundaryEventColumns(min(self.row_count, int(max_rows or self.row_count)))
 
     def last_phase_timings(self):
         return {
@@ -132,6 +179,45 @@ class Goal2327RayJoinPreparedRouteContractTest(unittest.TestCase):
         )
         self.assertIn("validation_exact_query_sec", payload["phases_sec"])
         self.assertIn("prepared_query_sec", payload["phases_sec"])
+
+    def test_pip_boundary_event_route_uses_generic_device_columns_without_membership_claim(self) -> None:
+        pip_case = DatasetCase(
+            workload="pip",
+            dataset="fake",
+            inputs={"points": ({"id": 0, "x": 0.0, "y": 0.0},), "polygons": ("shape",)},
+            note="fake pip",
+        )
+        with (
+            mock.patch.object(app, "_load_rayjoin_case", return_value=pip_case),
+            mock.patch("rtdsl.optix_runtime.pack_points", return_value=_FakePackedPoints()),
+            mock.patch("rtdsl.optix_runtime.pack_polygons", return_value="packed-shapes"),
+            mock.patch("rtdsl.optix_runtime.prepare_point_closed_shape_membership_2d_optix", return_value=_FakePrepared(5)),
+        ):
+            payload = app.run_rayjoin_prepared_optix_workload(
+                "pip",
+                result_mode="count",
+                count_mode="boundary_event_point_id_count_device_columns",
+            )
+
+        self.assertEqual(payload["count_mode"], "boundary_event_point_id_count_device_columns")
+        self.assertEqual(payload["row_count"], 1)
+        self.assertIsNone(payload["summary"]["positive_assignment_count"])
+        self.assertEqual(payload["summary"]["boundary_event_row_count"], 1)
+        self.assertTrue(payload["summary"]["boundary_event_contract_not_positive_membership"])
+        self.assertEqual(
+            payload["summary"]["output_contract"],
+            "point_closed_shape_first_boundary_event_count_by_point_id_device_columns",
+        )
+        metadata = payload["summary"]["boundary_event_grouped_count_device_columns"]
+        self.assertEqual(
+            metadata["boundary_event_device_columns"]["runtime"]["output_residency"],
+            "device_resident_boundary_event_columns",
+        )
+        self.assertEqual(
+            metadata["point_id_grouped_count_device_columns"]["output_residency"],
+            "device_resident_dense_grouped_count_column",
+        )
+        self.assertIn("not a PIP membership contract", payload["device_resident_continuation_status"])
 
     def test_device_filtered_count_mode_rejects_non_pip_or_rows(self) -> None:
         with self.assertRaisesRegex(ValueError, "only valid for PIP count"):

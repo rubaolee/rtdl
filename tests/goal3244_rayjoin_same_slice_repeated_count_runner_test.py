@@ -91,6 +91,35 @@ Timing results:
         self.assertIsNone(pip["rayjoin_visible_count"])
         self.assertFalse(pip["rayjoin_positive_assignment_count_available"])
 
+    def test_comparison_rows_disclose_boundary_event_route_is_not_pip_membership(self) -> None:
+        rayjoin = {
+            "lsi": {
+                "query_ms_reported": {"median": 0.2},
+                "intersection_counts": {"last": 3},
+            },
+            "pip": {
+                "query_ms_reported": {"median": 0.2},
+                "intersection_counts": {"last": None},
+            },
+        }
+        rtdl = {
+            "lsi": {
+                "prepared_query_ms": {"median": 0.3},
+                "counts": {"last": 3},
+            },
+            "pip": {
+                "prepared_query_ms": {"median": 0.1},
+                "counts": {"last": 512},
+                "count_mode": "boundary_event_point_id_count_device_columns",
+            },
+        }
+
+        rows = MODULE.build_comparison_rows(rayjoin, rtdl)
+
+        pip = next(row for row in rows if row["workload"] == "pip")
+        self.assertEqual(pip["count_contract_status"], "rtdl_boundary_event_count_not_pip_membership")
+        self.assertFalse(pip["rayjoin_positive_assignment_count_available"])
+
     def test_runner_contains_claim_boundary_and_no_release_authorization(self) -> None:
         text = SCRIPT.read_text(encoding="utf-8")
 
@@ -330,6 +359,42 @@ Timing results:
         self.assertTrue(row["pip_scalar_count_pipeline"])
         self.assertEqual(row["query_axis"], "z_point")
         self.assertEqual(row["device_filtered_boundary_mode"], "inclusive")
+
+    def test_rtdl_pip_boundary_event_count_route_discloses_non_membership_contract(self) -> None:
+        calls: list[dict[str, object]] = []
+
+        def fake_run(*args, **kwargs):
+            calls.append({"args": args, "kwargs": dict(kwargs)})
+            return {
+                "phases_sec": {
+                    "prepared_query_sec": 0.00021,
+                    "query_pack_sec": 0.0001,
+                    "prepare_static_scene_sec": 0.0002,
+                },
+                "summary": {
+                    "boundary_event_row_count": 512,
+                    "boundary_event_contract_not_positive_membership": True,
+                    "output_contract": "point_closed_shape_first_boundary_event_count_by_point_id_device_columns",
+                },
+                "row_count": 512,
+                "native_phase_timings": {"mode": "boundary_event_device_columns"},
+            }
+
+        with mock.patch.object(MODULE.rayjoin_app, "run_rayjoin_prepared_optix_workload", side_effect=fake_run):
+            row = MODULE.run_rtdl_samples(
+                workload="pip",
+                dataset="fake.cdb",
+                warmup=0,
+                repeat=1,
+                count_mode="boundary_event_point_id_count_device_columns",
+        )
+
+        self.assertEqual(row["count_mode"], "boundary_event_point_id_count_device_columns")
+        self.assertAlmostEqual(row["prepared_query_ms"]["samples"][0], 0.21)
+        self.assertEqual(row["validation_exact_query_ms"]["samples"], [])
+        self.assertEqual(row["counts"]["last"], 512)
+        self.assertIsNone(row["device_filtered_boundary_mode"])
+        self.assertEqual(calls[0]["kwargs"]["count_mode"], "boundary_event_point_id_count_device_columns")
 
     def test_rtdl_non_pip_rejects_device_filtered_mode(self) -> None:
         with self.assertRaisesRegex(ValueError, "only supported for RTDL PIP"):

@@ -32,6 +32,12 @@ CLAIM_BOUNDARY = {
     "true_zero_copy_claim_authorized": False,
 }
 
+PIP_BOUNDARY_EVENT_COUNT_MODE = "boundary_event_point_id_count_device_columns"
+PIP_POSITIVE_DEVICE_COUNT_MODES = {
+    "device_filtered_validated",
+    "point_id_count_device_columns_validated",
+}
+
 
 def _median(values: list[float]) -> float | None:
     return float(statistics.median(values)) if values else None
@@ -322,14 +328,20 @@ def run_rtdl_samples(
         static_shape_pack_sec.append(float(phases.get("static_shape_pack_sec", 0.0)))
         counts.append(int(payload.get("row_count", 0)))
         native_phase_samples.append(payload.get("native_phase_timings"))
-        expected_key = "intersection_count" if workload == "lsi" else "positive_assignment_count"
+        if workload == "lsi":
+            expected_key = "intersection_count"
+        elif count_mode == PIP_BOUNDARY_EVENT_COUNT_MODE:
+            expected_key = "boundary_event_row_count"
+        else:
+            expected_key = "positive_assignment_count"
         if expected_key in summary and int(summary[expected_key]) != int(payload.get("row_count", 0)):
             raise RuntimeError(f"{workload}: summary count does not match row_count")
-        if count_mode in {
-            "device_filtered_validated",
-            "point_id_count_device_columns_validated",
-        } and not summary.get("device_filtered_count_matches_exact"):
+        if count_mode in PIP_POSITIVE_DEVICE_COUNT_MODES and not summary.get("device_filtered_count_matches_exact"):
             raise RuntimeError(f"{workload}: validated device-side count was not validated against exact count")
+        if count_mode == PIP_BOUNDARY_EVENT_COUNT_MODE and not summary.get(
+            "boundary_event_contract_not_positive_membership"
+        ):
+            raise RuntimeError(f"{workload}: boundary-event route did not disclose non-membership contract")
 
     return {
         "system": "rtdl_prepared_optix",
@@ -342,10 +354,7 @@ def run_rtdl_samples(
         "pip_scalar_count_pipeline": pip_scalar_count_pipeline if workload == "pip" else None,
         "device_filtered_boundary_mode": (
             boundary_mode
-            if count_mode in {
-                "device_filtered_validated",
-                "point_id_count_device_columns_validated",
-            }
+            if count_mode in PIP_POSITIVE_DEVICE_COUNT_MODES
             else None
         ),
         "point_order_mode": point_order_mode if workload == "pip" else None,
@@ -390,6 +399,8 @@ def build_comparison_rows(rayjoin_rows: dict[str, dict[str, Any]], rtdl_rows: di
                 "count_contract_status": (
                     "matching_visible_lsi_count"
                     if workload == "lsi" and ray["intersection_counts"]["last"] == rtdl["counts"]["last"]
+                    else "rtdl_boundary_event_count_not_pip_membership"
+                    if workload == "pip" and rtdl.get("count_mode") == PIP_BOUNDARY_EVENT_COUNT_MODE
                     else "rayjoin_pip_count_not_visible"
                     if workload == "pip"
                     else "count_mismatch_or_missing"
@@ -434,7 +445,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--rtdl-repeat", type=int, default=7)
     parser.add_argument(
         "--rtdl-pip-count-mode",
-        choices=("exact", "device_filtered_validated", "point_id_count_device_columns_validated"),
+        choices=(
+            "exact",
+            "device_filtered_validated",
+            "point_id_count_device_columns_validated",
+            PIP_BOUNDARY_EVENT_COUNT_MODE,
+        ),
         default="exact",
         help=(
             "RTDL PIP count mode. Validated device-side modes time the selected device-side count "
@@ -540,7 +556,15 @@ def main(argv: list[str] | None = None) -> int:
     comparisons = build_comparison_rows(rayjoin_rows, rtdl_rows)
     status = (
         "pass_with_optimization_gap"
-        if all(row["count_contract_status"] in {"matching_visible_lsi_count", "rayjoin_pip_count_not_visible"} for row in comparisons)
+        if all(
+            row["count_contract_status"]
+            in {
+                "matching_visible_lsi_count",
+                "rayjoin_pip_count_not_visible",
+                "rtdl_boundary_event_count_not_pip_membership",
+            }
+            for row in comparisons
+        )
         else "needs_more_evidence"
     )
     payload = {
@@ -560,7 +584,10 @@ def main(argv: list[str] | None = None) -> int:
             "pip_count_boundary": "RayJoin query_exec PIP still does not expose positive assignment count in this unpatched upstream binary.",
             "rtdl_pip_count_mode": (
                 "When set to a validated device-side mode, RTDL validates each PIP sample with exact prepared count "
-                "and reports the selected device-side count timing as the prepared_query_ms lane."
+                "and reports the selected device-side count timing as the prepared_query_ms lane. "
+                "When set to boundary_event_point_id_count_device_columns, RTDL reports the generic "
+                "first-boundary-event stream plus grouped point-id count; that route is not a positive "
+                "membership-count contract."
             ),
             "rtdl_lsi_count_route": (
                 "When --rtdl-lsi-count-route=left_id_dense_count is supplied, RTDL uses the existing generic "

@@ -27,7 +27,17 @@ from rtdsl.datasets import load_cdb
 
 _WORKLOADS = ("pip", "lsi", "overlay_seed")
 _PREPARED_OPTIX_WORKLOADS = ("pip", "lsi", "overlay_seed")
-_PIP_COUNT_MODES = ("exact", "device_filtered_validated", "point_id_count_device_columns_validated")
+_PIP_BOUNDARY_EVENT_COUNT_MODE = "boundary_event_point_id_count_device_columns"
+_PIP_COUNT_MODES = (
+    "exact",
+    "device_filtered_validated",
+    "point_id_count_device_columns_validated",
+    _PIP_BOUNDARY_EVENT_COUNT_MODE,
+)
+_PIP_POSITIVE_COUNT_MODES = (
+    "device_filtered_validated",
+    "point_id_count_device_columns_validated",
+)
 _PIP_DEVICE_FILTER_BOUNDARY_MODES = ("inclusive", "crossing_only")
 _PIP_POINT_ORDER_MODES = ("natural", "x_then_y", "y_then_x", "morton_xy")
 _LSI_SEGMENT_ORDER_MODES = ("natural", "x_then_y", "y_then_x", "morton_xy")
@@ -287,6 +297,38 @@ def _run_prepared_point_id_count_device_columns_with_boundary_mode(
         columns.close()
 
 
+def _run_prepared_boundary_event_grouped_count_device_columns(
+    prepared,
+    packed_points,
+    *,
+    event_capacity: int,
+    group_capacity: int,
+) -> tuple[int, dict[str, object]]:
+    event_columns = prepared.first_boundary_crossing_device_columns(
+        packed_points,
+        max_rows=event_capacity,
+    )
+    count_columns = None
+    try:
+        if event_columns.overflow:
+            raise RuntimeError("boundary-event device-column continuation overflowed event capacity")
+        count_columns = event_columns.grouped_count_by_point_id_device_columns(
+            group_capacity=group_capacity,
+        )
+        if count_columns.overflow:
+            raise RuntimeError("boundary-event grouped-count continuation overflowed group capacity")
+        return int(event_columns.row_count), {
+            "boundary_event_device_columns": event_columns.to_metadata(),
+            "point_id_grouped_count_device_columns": count_columns.to_metadata(),
+            "contract": "point_closed_shape_first_boundary_event_count_by_point_id",
+            "positive_membership_equivalent": False,
+        }
+    finally:
+        if count_columns is not None:
+            count_columns.close()
+        event_columns.close()
+
+
 def _record_id(record: object) -> int:
     if hasattr(record, "id"):
         return int(getattr(record, "id"))
@@ -333,17 +375,15 @@ def run_rayjoin_prepared_optix_workload(
     if count_mode not in _PIP_COUNT_MODES:
         raise ValueError(
             "count_mode must be 'exact', 'device_filtered_validated', "
-            "or 'point_id_count_device_columns_validated'"
+            "'point_id_count_device_columns_validated', or "
+            f"'{_PIP_BOUNDARY_EVENT_COUNT_MODE}'"
         )
     if count_mode != "exact" and (workload != "pip" or result_mode != "count"):
         raise ValueError("non-exact count_mode is only valid for PIP count workloads")
     if device_filtered_boundary_mode is not None:
         if device_filtered_boundary_mode not in _PIP_DEVICE_FILTER_BOUNDARY_MODES:
             raise ValueError("device_filtered_boundary_mode must be 'inclusive' or 'crossing_only'")
-        if count_mode not in {
-            "device_filtered_validated",
-            "point_id_count_device_columns_validated",
-        } or workload != "pip" or result_mode != "count":
+        if count_mode not in _PIP_POSITIVE_COUNT_MODES or workload != "pip" or result_mode != "count":
             raise ValueError(
                 "device_filtered_boundary_mode is only valid for PIP count workloads "
                 "using a validated device-side count mode"
@@ -488,12 +528,10 @@ def run_rayjoin_prepared_optix_workload(
             lambda: prepare_point_closed_shape_membership_2d_optix(packed_shapes),
         )
         point_id_count_metadata: dict[str, object] | None = None
+        boundary_event_count_metadata: dict[str, object] | None = None
         try:
             if result_mode == "count":
-                if count_mode in {
-                    "device_filtered_validated",
-                    "point_id_count_device_columns_validated",
-                }:
+                if count_mode in _PIP_POSITIVE_COUNT_MODES:
                     validation_exact_count = int(
                         _phase_time(
                             phases,
@@ -533,6 +571,22 @@ def run_rayjoin_prepared_optix_workload(
                             "validated device-side closed-shape count did not match exact prepared count: "
                             f"{row_count} != {validation_exact_count}"
                         )
+                elif count_mode == _PIP_BOUNDARY_EVENT_COUNT_MODE:
+                    validation_exact_count = None
+                    point_id_group_capacity = max(
+                        1,
+                        max(_record_id(point) for point in ordered_points) + 1,
+                    )
+                    row_count, boundary_event_count_metadata = _phase_time(
+                        phases,
+                        "prepared_query_sec",
+                        lambda: _run_prepared_boundary_event_grouped_count_device_columns(
+                            prepared,
+                            packed_points,
+                            event_capacity=max(1, packed_points.count),
+                            group_capacity=point_id_group_capacity,
+                        ),
+                    )
                 else:
                     validation_exact_count = None
                     row_count = int(_phase_time(phases, "prepared_query_sec", lambda: prepared.count(packed_points)))
@@ -553,19 +607,19 @@ def run_rayjoin_prepared_optix_workload(
         finally:
             prepared.close()
         summary = {
-            "positive_hit_row_count": row_count,
-            "positive_assignment_count": row_count,
+            "positive_hit_row_count": row_count if count_mode != _PIP_BOUNDARY_EVENT_COUNT_MODE else None,
+            "positive_assignment_count": row_count if count_mode != _PIP_BOUNDARY_EVENT_COUNT_MODE else None,
+            "boundary_event_row_count": row_count if count_mode == _PIP_BOUNDARY_EVENT_COUNT_MODE else None,
             "output_contract": (
-                (
+                "point_closed_shape_first_boundary_event_count_by_point_id_device_columns"
+                if count_mode == _PIP_BOUNDARY_EVENT_COUNT_MODE
+                else (
                     (
                         "point_to_shape_positive_hit_count_device_filtered_validated"
                         if count_mode == "device_filtered_validated"
                         else "point_to_shape_positive_hit_count_by_point_id_device_columns_validated"
                     )
-                    if count_mode in {
-                        "device_filtered_validated",
-                        "point_id_count_device_columns_validated",
-                    }
+                    if count_mode in _PIP_POSITIVE_COUNT_MODES
                     else "point_to_shape_positive_hit_count"
                 )
                 if result_mode == "count"
@@ -574,23 +628,21 @@ def run_rayjoin_prepared_optix_workload(
             "count_mode": count_mode,
             "device_filtered_boundary_mode": (
                 device_filtered_boundary_mode
-                if count_mode in {
-                    "device_filtered_validated",
-                    "point_id_count_device_columns_validated",
-                }
+                if count_mode in _PIP_POSITIVE_COUNT_MODES
                 else None
             ),
             "device_filtered_is_exact_authority": False,
             "device_filtered_count_matches_exact": (
                 True
-                if count_mode in {
-                    "device_filtered_validated",
-                    "point_id_count_device_columns_validated",
-                }
+                if count_mode in _PIP_POSITIVE_COUNT_MODES
                 and result_mode == "count"
                 else None
             ),
             "point_id_count_device_columns": point_id_count_metadata,
+            "boundary_event_grouped_count_device_columns": boundary_event_count_metadata,
+            "boundary_event_contract_not_positive_membership": (
+                True if count_mode == _PIP_BOUNDARY_EVENT_COUNT_MODE else None
+            ),
             "validation_exact_count": validation_exact_count,
             "point_order_mode": point_order_mode,
         }
@@ -614,8 +666,13 @@ def run_rayjoin_prepared_optix_workload(
             "overlay_seed_prepared_pair_dependency_flags_complete"
             if workload == "overlay_seed"
             else (
+                "boundary_event_grouped_count_device_columns_complete: first-boundary-event columns "
+                "and grouped point-id counts remain CUDA-resident; this is not a PIP membership contract"
+                if workload == "pip" and count_mode == _PIP_BOUNDARY_EVENT_COUNT_MODE
+                else (
                 "not_complete: prepared query can avoid Python row materialization for counts, "
                 "but generic downstream row-stream continuation still needs pod/native work"
+                )
             )
         ),
         "native_engine_boundary": (
