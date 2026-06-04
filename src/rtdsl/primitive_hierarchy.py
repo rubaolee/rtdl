@@ -37,7 +37,9 @@ PRIMITIVE_CAPABILITY_TAGS = (
     "intent:topk",
     "intent:collect_rows",
     "intent:frontier",
+    "intent:order",
     "shape:generic",
+    "shape:point_set",
     "shape:fixed_radius",
     "shape:closed_shape",
     "shape:segment_pair",
@@ -213,6 +215,39 @@ PRIMITIVE_HIERARCHY = (
                 ),
                 reference_path="docs/rtdl_primitive_catalog.md",
                 backends=("cpu_python_reference", "cpu", "embree", "optix"),
+            ),
+            PrimitiveHierarchyNode(
+                id="execution.spatial_order_points_2d",
+                title="Spatial Order Points 2D",
+                layer="execution_residency",
+                status="stable_behavior",
+                summary="Deterministically reorder caller-owned 2-D point records for traversal locality before packing.",
+                outputs=("ordered_records", "stable_id_order"),
+                boundary=(
+                    "This is a generic preparation hint. It preserves caller IDs and does not add "
+                    "app-specific membership, join, or predicate semantics."
+                ),
+                capability_tags=(
+                    "intent:order",
+                    "shape:point_set",
+                    "dim:2d",
+                    "output:columns",
+                    "exactness:exact",
+                    "keying:none",
+                ),
+                aliases=("spatial_order_points_2d", "morton_point_order", "z_order_points", "locality_order_points"),
+                intent_phrases=(
+                    "order 2d points by spatial locality before packing",
+                    "morton order points before packing",
+                    "use morton or axis point ordering while preserving record ids",
+                ),
+                reference_path="docs/rtdl_primitive_catalog.md",
+                backends=("cpu_python_reference",),
+                considered_alternatives=("execution.prepared_rt_state", "rows.generic_candidate_rows"),
+                distinct_from=(
+                    "Reorders caller-owned query records before execution; it does not prepare an RT scene "
+                    "or emit witness rows."
+                ),
             ),
         ),
     ),
