@@ -1,7 +1,7 @@
-[goal3227] warmup pip_county512/prepared_pip_count 1/1 sec=0.756065 rows=1430
-[goal3227] repeat pip_county512/prepared_pip_count 1/5 sec=0.067785 rows=1430
-[goal3227] repeat pip_county512/prepared_pip_count 2/5 sec=0.082713 rows=1430
-[goal3227] repeat pip_county512/prepared_pip_count 3/5 sec=0.066655 rows=1430
-[goal3227] repeat pip_county512/prepared_pip_count 4/5 sec=0.093086 rows=1430
-[goal3227] repeat pip_county512/prepared_pip_count 5/5 sec=0.074942 rows=1430
-[goal3227] wrote /root/goal3227_rayjoin_public_pip_count_probe_2026-06-03.json
+[goal3227] warmup pip_county512/prepared_pip_count 1/1 sec=0.780933 rows=1430
+[goal3227] repeat pip_county512/prepared_pip_count 1/5 sec=0.067933 rows=1430
+[goal3227] repeat pip_county512/prepared_pip_count 2/5 sec=0.080311 rows=1430
+[goal3227] repeat pip_county512/prepared_pip_count 3/5 sec=0.066463 rows=1430
+[goal3227] repeat pip_county512/prepared_pip_count 4/5 sec=0.085695 rows=1430
+[goal3227] repeat pip_county512/prepared_pip_count 5/5 sec=0.067755 rows=1430
+[goal3227] wrote docs/reports/goal3227_rayjoin_public_pip_count_probe_2026-06-03.json

@@ -18,15 +18,15 @@ current RayJoin count-family workloads now have bounded public CDB coverage:
 
 | Workload | Goal | Public Cases | Count Contract | Observed Counts | Median Prepared/Count Time |
 | --- | --- | --- | --- | --- | --- |
-| `pip` | Goal3227 | `pip_county512` | `positive_assignment_count` | `1430` | 0.0749423447996378 s |
+| `pip` | Goal3227 | `pip_county512` | `positive_assignment_count` | `1430` | 0.06793256662786007 s |
 | `lsi` | Goal3218 | `lsi_county256_soil256_count48` | `intersection_count` | `34` | 0.00014243647456169128 s |
 | `lsi` | Goal3218 | `lsi_county256_soil256_count128` | `intersection_count` | `56` | 0.000667918473482132 s |
 | `lsi` | Goal3218 | `lsi_county256_soil256_count192` | `intersection_count` | `85` | 0.0010464414954185486 s |
 | `lsi` | Goal3218 | `lsi_county256_soil256_count256` | `intersection_count` | `88` | 0.0010501518845558167 s |
 | `lsi` | Goal3218 | `lsi_county256_soil256_count384` | `intersection_count` | `116` | 0.0010411553084850311 s |
 | `lsi` | Goal3218 | `lsi_county256_soil256_count512` | `intersection_count` | `269` | 0.0010526198893785477 s |
-| `overlay_seed` | Goal3225 | `overlay_county128_soil128` | `active_seed_count` | `1` | 0.022725095972418785 s |
-| `overlay_seed` | Goal3225 | `overlay_county256_soil256` | `active_seed_count` | `9` | 0.06209208257496357 s |
+| `overlay_seed` | Goal3225 | `overlay_county128_soil128` | `active_seed_count` | `1` | 0.022716183215379715 s |
+| `overlay_seed` | Goal3225 | `overlay_county256_soil256` | `active_seed_count` | `9` | 0.05908652022480965 s |
 
 ## Interpretation
 
@@ -43,6 +43,10 @@ The coverage is intentionally contract-specific:
 The native engine remains app-agnostic. These routes use generic point/shape,
 segment-pair, segment-pair grouped-count, and shape-pair relation contracts.
 RayJoin interpretation remains in Python.
+
+The PIP and overlay rows use the refreshed `92e16b86` artifacts, which
+normalize the six false claim-boundary flags at the top, row, and measurement
+levels.
 
 ## Remaining Gaps
 

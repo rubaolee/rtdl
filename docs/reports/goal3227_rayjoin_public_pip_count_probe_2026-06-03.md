@@ -18,7 +18,7 @@ OptiX point/closed-shape count route matches the CPU reference
 
 Pod metadata:
 
-- Commit: `67dcad5b4beb5c0d462a13ab75bb681c4aaee611`
+- Commit: `92e16b8649f99aa62fbca0d0c97466a7a2f8eaa3`
 - GPU: `NVIDIA A40, 570.211.01`
 - CUDA driver query: present
 - nvcc version: present
@@ -29,7 +29,7 @@ Pod metadata:
 
 | Case | Public Slice | Expected Positive Assignments | Observed Counts | Median Prepared Count (s) |
 | --- | --- | ---: | --- | ---: |
-| `pip_county512` | county 0:512 | 1430 | `[1430, 1430, 1430, 1430, 1430]` | 0.0749423447996378 |
+| `pip_county512` | county 0:512 | 1430 | `[1430, 1430, 1430, 1430, 1430]` | 0.06793256662786007 |
 
 ## Interpretation
 
@@ -44,6 +44,10 @@ count/parity coverage for all three current RayJoin count-family workloads:
 The native engine remains app-agnostic. It sees the generic
 `POINT_CLOSED_SHAPE_MEMBERSHIP_2D` prepared count contract; RayJoin
 interpretation remains in Python.
+
+The refreshed `92e16b86` pod artifact also normalizes the claim-boundary
+schema at every artifact level: top-level, per-row, and per-measurement blocks
+all use the same six canonical false claim flags.
 
 ## Boundary
 
