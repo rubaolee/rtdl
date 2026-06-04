@@ -28,6 +28,15 @@ DEFAULT_CASES = (
     "overlay_county256_soil256",
 )
 
+CANONICAL_CLAIM_BOUNDARY = {
+    "public_speedup_claim_authorized": False,
+    "rt_core_speedup_claim_authorized": False,
+    "true_zero_copy_claim_authorized": False,
+    "rayjoin_paper_reproduction_claim_authorized": False,
+    "rtdl_beats_rayjoin_claim_authorized": False,
+    "release_authorized": False,
+}
+
 
 def _command_text(command: list[str]) -> str | None:
     try:
@@ -95,7 +104,7 @@ def _run_prepared_count(dataset: str) -> dict[str, Any]:
         "row_count": int(payload["row_count"]),
         "summary": payload.get("summary", {}),
         "phases_sec": payload.get("phases_sec", {}),
-        "claim_boundary": payload.get("claim_boundary", {}),
+        "claim_boundary": dict(CANONICAL_CLAIM_BOUNDARY),
     }
 
 
@@ -140,14 +149,7 @@ def _run_case(case_name: str, *, dataset: str, warmups: int, repeats: int) -> di
         "medians": {
             "prepared_total_seconds": _median(seconds),
         },
-        "claim_boundary": {
-            "public_speedup_claim_authorized": False,
-            "rt_core_speedup_claim_authorized": False,
-            "true_zero_copy_claim_authorized": False,
-            "rayjoin_paper_reproduction_claim_authorized": False,
-            "rtdl_beats_rayjoin_claim_authorized": False,
-            "release_authorized": False,
-        },
+        "claim_boundary": dict(CANONICAL_CLAIM_BOUNDARY),
     }
 
 
@@ -174,14 +176,7 @@ def build_artifact(args: argparse.Namespace) -> dict[str, object]:
         "repeats": args.repeats,
         "rows": rows,
         "status": "pass" if rows and all(row["counts_match"] for row in rows) else "fail",
-        "claim_boundary": {
-            "public_speedup_claim_authorized": False,
-            "rt_core_speedup_claim_authorized": False,
-            "true_zero_copy_claim_authorized": False,
-            "rayjoin_paper_reproduction_claim_authorized": False,
-            "rtdl_beats_rayjoin_claim_authorized": False,
-            "release_authorized": False,
-        },
+        "claim_boundary": dict(CANONICAL_CLAIM_BOUNDARY),
     }
 
 

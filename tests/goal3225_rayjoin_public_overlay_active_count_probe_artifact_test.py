@@ -52,6 +52,11 @@ class Goal3225RayJoinPublicOverlayActiveCountProbeArtifactTest(unittest.TestCase
             self.assertFalse(row_boundary["rayjoin_paper_reproduction_claim_authorized"])
             self.assertFalse(row_boundary["rtdl_beats_rayjoin_claim_authorized"])
             self.assertFalse(row_boundary["release_authorized"])
+            self.assertEqual(set(row_boundary), set(boundary))
+            for measurement in row["measurements"]["prepared_overlay_active_count"]:
+                measurement_boundary = measurement["claim_boundary"]
+                self.assertEqual(set(measurement_boundary), set(boundary))
+                self.assertTrue(all(value is False for value in measurement_boundary.values()))
 
     def test_report_and_stdout_are_consistent(self) -> None:
         report = REPORT.read_text(encoding="utf-8")
