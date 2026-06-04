@@ -229,6 +229,15 @@ OPTIX_CLOSED_SHAPE_MEMBERSHIP_DEVICE_FILTERED_PREPARED_POINTS_COUNT_SYMBOL = (
 OPTIX_CLOSED_SHAPE_MEMBERSHIP_DEVICE_FILTERED_PREPARED_POINTS_BATCH_COUNT_SYMBOL = (
     "rtdl_optix_count_prepared_point_closed_shape_membership_device_filtered_prepared_points_batch_2d"
 )
+OPTIX_PREPARED_POINTS_BATCH_EXECUTOR_PREPARE_SYMBOL = (
+    "rtdl_optix_prepare_prepared_point_closed_shape_membership_device_filtered_prepared_points_batch_executor_2d"
+)
+OPTIX_PREPARED_POINTS_BATCH_EXECUTOR_RUN_SYMBOL = (
+    "rtdl_optix_run_prepared_point_closed_shape_membership_device_filtered_prepared_points_batch_executor_2d"
+)
+OPTIX_PREPARED_POINTS_BATCH_EXECUTOR_DESTROY_SYMBOL = (
+    "rtdl_optix_destroy_prepared_point_closed_shape_membership_device_filtered_prepared_points_batch_executor_2d"
+)
 OPTIX_PREPARED_POINTS_BATCH_GRAPH_PREPARE_SYMBOL = (
     "rtdl_optix_prepare_prepared_point_closed_shape_membership_device_filtered_prepared_points_batch_graph_2d"
 )
@@ -6433,6 +6442,8 @@ def _get_last_closed_shape_membership_phase_timings_from_library(lib) -> dict[st
             if mode_value == 9
             else "prepared_points_device_filtered_batch_graph_replay"
             if mode_value == 10
+            else "prepared_points_device_filtered_batch_executor_run"
+            if mode_value == 11
             else "none"
         ),
         "point_pack": float(point_pack.value),
@@ -9811,6 +9822,149 @@ class PreparedOptixPointProbeColumns2D:
             pass
 
 
+def _prepared_points_batch_effective_stream_count(request_count: int, stream_count: int | str | None) -> int:
+    if stream_count is None:
+        return 1
+    if stream_count == "auto":
+        if request_count >= 64:
+            return min(request_count, 16)
+        if request_count >= 16:
+            return min(request_count, 8)
+        if request_count >= 8:
+            return min(request_count, 4)
+        return 1
+    parsed = int(stream_count)
+    if parsed <= 0:
+        raise ValueError("stream_count must be positive, None, or 'auto'")
+    return min(request_count, min(parsed, 64))
+
+
+def _prepared_points_batch_native_stream_count(stream_count: int | str | None) -> int:
+    if stream_count is None:
+        return 1
+    if stream_count == "auto":
+        return 0
+    parsed = int(stream_count)
+    if parsed <= 0:
+        raise ValueError("stream_count must be positive, None, or 'auto'")
+    return parsed
+
+
+class PreparedOptixPointClosedShapeBatchCountExecutor2D:
+    """Reusable generic batch-count executor for prepared point/closed-shape probes."""
+
+    def __init__(
+        self,
+        prepared: "PreparedOptixPointClosedShapeMembership2D",
+        prepared_points: PreparedOptixPointProbeColumns2D,
+        request_count: int,
+        *,
+        stream_count: int | str | None = None,
+    ):
+        if prepared.closed:
+            raise RuntimeError("prepared OptiX closed-shape membership handle is closed")
+        if prepared_points.closed:
+            raise RuntimeError("prepared OptiX point-probe columns handle is closed")
+        request_count = int(request_count)
+        if request_count <= 0:
+            raise ValueError("request_count must be positive")
+        self._prepared_owner = prepared
+        self._prepared_points_owner = prepared_points
+        self.request_count = request_count
+        self.stream_count_requested = stream_count
+        self.stream_count_effective = _prepared_points_batch_effective_stream_count(
+            request_count,
+            stream_count,
+        )
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        self._lib = prepared._lib
+        prepare_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_PREPARED_POINTS_BATCH_EXECUTOR_PREPARE_SYMBOL,
+        )
+        if prepare_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_PREPARED_POINTS_BATCH_EXECUTOR_PREPARE_SYMBOL}; rebuild the OptiX backend from current main"
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = prepare_symbol(
+            prepared._handle,
+            prepared_points._handle,
+            ctypes.c_size_t(request_count),
+            ctypes.c_size_t(_prepared_points_batch_native_stream_count(stream_count)),
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+    @property
+    def closed(self) -> bool:
+        return self._closed
+
+    def run(self) -> tuple[int, ...]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX batch-count executor handle is closed")
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_PREPARED_POINTS_BATCH_EXECUTOR_RUN_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_PREPARED_POINTS_BATCH_EXECUTOR_RUN_SYMBOL}; rebuild the OptiX backend from current main"
+            )
+        counts = (ctypes.c_size_t * self.request_count)()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            counts,
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return tuple(int(counts[index]) for index in range(self.request_count))
+
+    def to_metadata(self) -> dict[str, object]:
+        return {
+            "schema": "rtdl.optix.prepared_point_closed_shape_batch_count_executor_2d.v1",
+            "request_count": self.request_count,
+            "stream_count_requested": self.stream_count_requested,
+            "stream_count_effective": self.stream_count_effective,
+            "prepared_scene_owner_closed": self._prepared_owner.closed,
+            "prepared_points_owner_closed": self._prepared_points_owner.closed,
+            "native_prepare_symbol": OPTIX_PREPARED_POINTS_BATCH_EXECUTOR_PREPARE_SYMBOL,
+            "native_run_symbol": OPTIX_PREPARED_POINTS_BATCH_EXECUTOR_RUN_SYMBOL,
+            "reusable_launch_executor": True,
+            "true_zero_copy_claim_authorized": False,
+            "release_authorized": False,
+        }
+
+    def close(self) -> None:
+        if not self._closed:
+            destroy_symbol = _find_optional_backend_symbol(
+                self._lib,
+                OPTIX_PREPARED_POINTS_BATCH_EXECUTOR_DESTROY_SYMBOL,
+            )
+            if destroy_symbol is not None and self._handle:
+                destroy_symbol(self._handle)
+            self._closed = True
+
+    def __enter__(self) -> "PreparedOptixPointClosedShapeBatchCountExecutor2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
 class PreparedOptixPointClosedShapeBatchCountGraph2D:
     """Replayable generic batch-count graph for prepared point/closed-shape probes."""
 
@@ -10177,6 +10331,27 @@ class PreparedOptixPointClosedShapeMembership2D:
         )
         _check_status(status, error)
         return tuple(int(counts[index]) for index in range(request_count))
+
+    def prepare_device_filtered_prepared_points_batch_executor(
+        self,
+        prepared_points: PreparedOptixPointProbeColumns2D,
+        request_count: int,
+        *,
+        stream_count: int | str | None = None,
+    ) -> PreparedOptixPointClosedShapeBatchCountExecutor2D:
+        """Prepare a reusable generic batch-count executor.
+
+        ``stream_count='auto'`` uses the conservative batch-size policy measured
+        in Goal3316. The executor owns its stream pool and pre-uploaded launch
+        parameters; each ``run`` performs only count reset, launches,
+        synchronization, and count download.
+        """
+        return PreparedOptixPointClosedShapeBatchCountExecutor2D(
+            self,
+            prepared_points,
+            request_count,
+            stream_count=stream_count,
+        )
 
     def prepare_device_filtered_prepared_points_batch_graph(
         self,
@@ -18354,7 +18529,42 @@ def _register_argtypes(lib) -> None:
             ctypes.POINTER(ctypes.c_size_t),
             ctypes.c_char_p, ctypes.c_size_t,
         ]
-        optional_count_prepared_closed_shape_membership_device_filtered_prepared_points_batch.restype = ctypes.c_int
+    optional_count_prepared_closed_shape_membership_device_filtered_prepared_points_batch.restype = ctypes.c_int
+
+    optional_prepare_prepared_points_batch_executor = _find_optional_backend_symbol(
+        lib,
+        OPTIX_PREPARED_POINTS_BATCH_EXECUTOR_PREPARE_SYMBOL,
+    )
+    if optional_prepare_prepared_points_batch_executor is not None:
+        optional_prepare_prepared_points_batch_executor.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_prepare_prepared_points_batch_executor.restype = ctypes.c_int
+
+    optional_run_prepared_points_batch_executor = _find_optional_backend_symbol(
+        lib,
+        OPTIX_PREPARED_POINTS_BATCH_EXECUTOR_RUN_SYMBOL,
+    )
+    if optional_run_prepared_points_batch_executor is not None:
+        optional_run_prepared_points_batch_executor.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_run_prepared_points_batch_executor.restype = ctypes.c_int
+
+    optional_destroy_prepared_points_batch_executor = _find_optional_backend_symbol(
+        lib,
+        OPTIX_PREPARED_POINTS_BATCH_EXECUTOR_DESTROY_SYMBOL,
+    )
+    if optional_destroy_prepared_points_batch_executor is not None:
+        optional_destroy_prepared_points_batch_executor.argtypes = [ctypes.c_void_p]
+        optional_destroy_prepared_points_batch_executor.restype = None
 
     optional_prepare_prepared_points_batch_graph = _find_optional_backend_symbol(
         lib,

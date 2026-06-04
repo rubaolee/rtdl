@@ -76,7 +76,7 @@ def _effective_batch_stream_count(request_count: int, requested: int | str | Non
         if request_count >= 8:
             return min(request_count, 4)
         return 1
-    return min(request_count, int(requested))
+    return min(request_count, min(int(requested), 64))
 
 
 def _time_call(fn) -> tuple[float, Any]:
@@ -131,10 +131,26 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
 
                     batch_rows: list[dict[str, object]] = []
                     for request_count in args.request_counts:
-                        for index in range(args.batch_warmup):
-                            counts = prepared.count_device_filtered_prepared_points_batch(
+                        batch_executor = None
+                        if args.batch_executor:
+                            batch_executor = prepared.prepare_device_filtered_prepared_points_batch_executor(
                                 prepared_points,
                                 request_count,
+                                stream_count=args.batch_stream_count,
+                            )
+                            print(
+                                f"[goal3310] batch {request_count} executor prepared "
+                                f"effective_streams={batch_executor.stream_count_effective}",
+                                flush=True,
+                            )
+                        for index in range(args.batch_warmup):
+                            counts = (
+                                prepared.count_device_filtered_prepared_points_batch(
+                                    prepared_points,
+                                    request_count,
+                                )
+                                if batch_executor is None
+                                else batch_executor.run()
                             )
                             if any(count != exact_count for count in counts):
                                 raise RuntimeError(
@@ -151,12 +167,15 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
                         native_modes: set[str] = set()
                         last_counts: tuple[int, ...] = ()
                         for index in range(args.batch_repeat):
-                            elapsed_s, counts = _time_call(
-                                lambda request_count=request_count: prepared.count_device_filtered_prepared_points_batch(
-                                    prepared_points,
-                                    request_count,
+                            if batch_executor is None:
+                                elapsed_s, counts = _time_call(
+                                    lambda request_count=request_count: prepared.count_device_filtered_prepared_points_batch(
+                                        prepared_points,
+                                        request_count,
+                                    )
                                 )
-                            )
+                            else:
+                                elapsed_s, counts = _time_call(batch_executor.run)
                             if any(count != exact_count for count in counts):
                                 raise RuntimeError(
                                     f"batch repeat mismatch for request_count={request_count}: {counts[:5]}"
@@ -178,6 +197,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
                         batch_rows.append(
                             {
                                 "request_count": int(request_count),
+                                "batch_executor": bool(args.batch_executor),
                                 "batch_stream_count_effective": _effective_batch_stream_count(
                                     int(request_count),
                                     args.batch_stream_count,
@@ -197,6 +217,8 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
                                 "native_modes": sorted(native_modes),
                             }
                         )
+                        if batch_executor is not None:
+                            batch_executor.close()
 
     return {
         "goal": 3310,
@@ -210,6 +232,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         "boundary_mode": args.boundary_mode,
         "scalar_count_pipeline": bool(args.scalar_count_pipeline),
         "batch_stream_count": args.batch_stream_count,
+        "batch_executor": bool(args.batch_executor),
         "exact_count": int(exact_count),
         "single_ms_median": _median_ms(single_samples),
         "batch_rows": batch_rows,
@@ -241,6 +264,7 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Optional RTDL_OPTIX_POINT_PRIMITIVE_BATCH_STREAM_COUNT value: positive integer or auto.",
     )
+    parser.add_argument("--batch-executor", action="store_true")
     parser.add_argument("--single-warmup", type=int, default=4)
     parser.add_argument("--single-repeat", type=int, default=20)
     parser.add_argument("--batch-warmup", type=int, default=3)

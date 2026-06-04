@@ -952,6 +952,7 @@ from .optix_runtime import PreparedOptixGroupedCandidateArgmin
 from .optix_runtime import PreparedOptixSegmentPolygonAnyHitRows2D
 from .optix_runtime import PreparedOptixSegmentPolygonHitcount2D
 from .optix_runtime import PreparedOptixPointClosedShapeMembership2D
+from .optix_runtime import PreparedOptixPointClosedShapeBatchCountExecutor2D
 from .optix_runtime import PreparedOptixPointClosedShapeBatchCountGraph2D
 from .optix_runtime import PreparedOptixPointProbeColumns2D
 from .optix_runtime import closed_shape_membership_2d_optix
@@ -2452,6 +2453,7 @@ __all__ = [
     "PreparedOptixSegmentPolygonAnyHitRows2D",
     "PreparedOptixSegmentPolygonHitcount2D",
     "PreparedOptixPointClosedShapeMembership2D",
+    "PreparedOptixPointClosedShapeBatchCountExecutor2D",
     "PreparedOptixPointClosedShapeBatchCountGraph2D",
     "PreparedOptixPointProbeColumns2D",
     "closed_shape_membership_2d_optix",
