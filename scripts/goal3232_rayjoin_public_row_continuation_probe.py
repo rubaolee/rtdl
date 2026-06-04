@@ -89,6 +89,14 @@ def _median(values: list[float]) -> float | None:
 def _row_set(workload: str, rows: tuple[dict[str, object], ...], *, source: str) -> set[tuple[int, ...]]:
     if workload == "pip":
         shape_key = "shape_id" if source == "prepared_optix" else "polygon_id"
+        if source == "prepared_optix":
+            bad_memberships = [
+                int(row.get("membership", 0))
+                for row in rows
+                if int(row.get("membership", 0)) != 1
+            ]
+            if bad_memberships:
+                raise ValueError(f"prepared PIP rows must be positive-only; found memberships {bad_memberships[:5]}")
         return {
             (int(row["point_id"]), int(row[shape_key]))
             for row in rows
@@ -118,6 +126,17 @@ def _active_overlay_rows(rows: tuple[dict[str, object], ...]) -> int | None:
     )
 
 
+def _compact_cpu_summary(workload: str, summary: dict[str, object]) -> dict[str, object]:
+    compact = dict(summary)
+    if workload == "pip" and "positive_assignments" in compact:
+        compact["positive_assignments_count"] = len(tuple(compact["positive_assignments"]))  # type: ignore[arg-type]
+        del compact["positive_assignments"]
+    if workload == "overlay_seed" and "active_seed_pairs" in compact:
+        compact["active_seed_pairs_count"] = len(tuple(compact["active_seed_pairs"]))  # type: ignore[arg-type]
+        del compact["active_seed_pairs"]
+    return compact
+
+
 def _run_case(case_name: str, *, workload: str, dataset: str, repeats: int) -> dict[str, object]:
     cpu_start = time.perf_counter()
     cpu_payload = rayjoin.run_rayjoin_workload(
@@ -145,11 +164,14 @@ def _run_case(case_name: str, *, workload: str, dataset: str, repeats: int) -> d
         native_minus_cpu = sorted(native_set - cpu_set)
         cpu_minus_native = sorted(cpu_set - native_set)
         symdiff_count = len(native_minus_cpu) + len(cpu_minus_native)
+        named_phase_total = sum(float(value) for value in native_payload.get("phases_sec", {}).values())
         measurements.append(
             {
                 "repeat_index": index + 1,
                 "prepared_total_seconds": native_seconds,
                 "prepared_query_sec": native_payload["phases_sec"].get("prepared_query_sec"),
+                "named_phase_total_sec": named_phase_total,
+                "unattributed_prepared_total_minus_named_phases_sec": native_seconds - named_phase_total,
                 "row_count": int(native_payload["row_count"]),
                 "row_set_matches_cpu": symdiff_count == 0,
                 "symmetric_difference_count": symdiff_count,
@@ -174,7 +196,7 @@ def _run_case(case_name: str, *, workload: str, dataset: str, repeats: int) -> d
         "dataset_note": rayjoin._load_rayjoin_case(workload, dataset).note,
         "cpu_reference_seconds": cpu_seconds,
         "cpu_row_count": len(cpu_rows),
-        "cpu_summary": cpu_payload.get("summary", {}),
+        "cpu_summary": _compact_cpu_summary(workload, dict(cpu_payload.get("summary", {}))),
         "cpu_active_overlay_rows": _active_overlay_rows(cpu_rows),
         "measurements": {
             "include_rows_measured": True,

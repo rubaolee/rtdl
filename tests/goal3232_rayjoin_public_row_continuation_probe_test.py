@@ -20,6 +20,10 @@ class Goal3232RayJoinPublicRowContinuationProbeTest(unittest.TestCase):
             "include_rows=True",
             "row_set_matches_cpu",
             "symmetric_difference_count",
+            "prepared PIP rows must be positive-only",
+            "unattributed_prepared_total_minus_named_phases_sec",
+            "positive_assignments_count",
+            "active_seed_pairs_count",
             "--artifact-goal",
             "--schema",
         ):
