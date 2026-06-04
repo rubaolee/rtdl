@@ -1907,6 +1907,68 @@ class OptixClosedShapeBoundaryEventDeviceColumnOutput:
             "event_kind": self._cupy_column(self.event_kinds_device_ptr, cp.uint32, ctypes.sizeof(ctypes.c_uint32)),
         }
 
+    def grouped_count_by_point_id_device_columns(
+        self,
+        *,
+        group_capacity: int,
+    ) -> OptixNativeDeviceGroupedCountI64Output:
+        """Count boundary-event rows by point_id and keep the dense count column on device."""
+        if self.overflow:
+            raise RuntimeError("cannot group an overflowed boundary-event device-column stream")
+        capacity = int(group_capacity)
+        if capacity <= 0:
+            raise ValueError("group_capacity must be positive")
+        symbol = _find_optional_backend_symbol(
+            self.library,
+            OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_DEVICE_COLUMNS_WITH_CAPACITY_SYMBOL,
+        )
+        if symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_DEVICE_COLUMNS_WITH_CAPACITY_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        name = b"point_id"
+        fields = (_RtdlDevicePayloadField * 1)(
+            _RtdlDevicePayloadField(
+                name,
+                _DB_KIND_INT64,
+                _DEVICE_PAYLOAD_DTYPE_INT64,
+                _DEVICE_PAYLOAD_DEVICE_CUDA,
+                int(self.device_ordinal),
+                int(self.row_count),
+                ctypes.sizeof(ctypes.c_int64),
+                int(self.point_ids_device_ptr),
+            )
+        )
+        columns = _RtdlNativeDeviceGroupedCountI64Columns()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            fields,
+            ctypes.c_size_t(1),
+            ctypes.c_size_t(self.row_count),
+            None,
+            ctypes.c_size_t(0),
+            name,
+            ctypes.c_size_t(capacity),
+            ctypes.byref(columns),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        owner = _OptixNativeDeviceGroupedCountI64ColumnsOwner(self.library, columns.owner_handle)
+        return OptixNativeDeviceGroupedCountI64Output(
+            library=self.library,
+            owner=owner,
+            counts_device_ptr=int(columns.counts_device_ptr),
+            group_capacity=int(columns.group_capacity),
+            source_row_count=int(columns.source_row_count),
+            overflow=bool(columns.overflow),
+            device_ordinal=int(columns.device_ordinal),
+            reduction_seconds=float(columns.reduction_seconds),
+            native_symbol=OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_DEVICE_COLUMNS_WITH_CAPACITY_SYMBOL,
+        )
+
     def close(self) -> None:
         self.owner.close()
 
