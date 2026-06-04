@@ -32,6 +32,8 @@ class Goal3306PreparedPointProbeColumnsScalarCountTest(unittest.TestCase):
 
         for phrase in (
             "struct PreparedPointProbeColumns2D",
+            "DevPtr d_count",
+            "DevPtr d_params",
             "prepare_point_probe_columns_2d_optix",
             "count_prepared_point_closed_shape_membership_device_filtered_prepared_points_2d_optix",
         ):
@@ -48,6 +50,19 @@ class Goal3306PreparedPointProbeColumnsScalarCountTest(unittest.TestCase):
         start = workloads.index("struct PreparedPointProbeColumns2D")
         end = workloads.index("static void run_prepared_point_closed_shape_first_boundary_crossing_2d_optix", start)
         self.assertNotIn("rayjoin", workloads[start:end].lower())
+
+        count_start = workloads.index(
+            "static void count_prepared_point_closed_shape_membership_device_filtered_prepared_points_2d_optix"
+        )
+        count_end = workloads.index(
+            "static void run_prepared_point_closed_shape_membership_candidate_device_columns_2d_optix",
+            count_start,
+        )
+        prepared_count_body = workloads[count_start:count_end]
+        self.assertIn("prepared_points->d_count.ptr", prepared_count_body)
+        self.assertIn("prepared_points->d_params.ptr", prepared_count_body)
+        self.assertNotIn("DevPtr d_count(sizeof(uint32_t));", prepared_count_body)
+        self.assertNotIn("DevPtr d_params(sizeof(PipLaunchParams));", prepared_count_body)
 
     def test_python_runtime_exposes_context_managed_prepared_points(self) -> None:
         runtime = RUNTIME.read_text(encoding="utf-8")

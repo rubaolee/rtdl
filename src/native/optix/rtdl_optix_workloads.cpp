@@ -6371,6 +6371,8 @@ struct PreparedPointProbeColumns2D {
     DevPtr d_points_x;
     DevPtr d_points_y;
     DevPtr d_point_ids;
+    DevPtr d_count;
+    DevPtr d_params;
 
     PreparedPointProbeColumns2D(const RtdlPoint* points, size_t count)
         : point_count(count),
@@ -6379,7 +6381,9 @@ struct PreparedPointProbeColumns2D {
           point_ids(count),
           d_points_x(sizeof(float) * count),
           d_points_y(sizeof(float) * count),
-          d_point_ids(sizeof(uint32_t) * count)
+          d_point_ids(sizeof(uint32_t) * count),
+          d_count(sizeof(uint32_t)),
+          d_params(sizeof(PipLaunchParams))
     {
         if (!points && count != 0) {
             throw std::runtime_error("point pointer must not be null when point_count is nonzero");
@@ -7336,9 +7340,8 @@ static void count_prepared_point_closed_shape_membership_device_filtered_prepare
         ensure_pip_pipeline();
     }
 
-    DevPtr d_count(sizeof(uint32_t));
     uint32_t zero = 0;
-    upload<uint32_t>(d_count.ptr, &zero, 1);
+    upload<uint32_t>(prepared_points->d_count.ptr, &zero, 1);
 
     PipLaunchParams lp;
     lp.traversable    = prepared->accel.handle;
@@ -7353,7 +7356,7 @@ static void count_prepared_point_closed_shape_membership_device_filtered_prepare
         : nullptr;
     lp.hit_words      = nullptr;
     lp.output         = nullptr;
-    lp.output_count   = reinterpret_cast<uint32_t*>(d_count.ptr);
+    lp.output_count   = reinterpret_cast<uint32_t*>(prepared_points->d_count.ptr);
     lp.output_capacity = 0u;
     lp.positive_only  = 1u;
     lp.hit_word_count = 0u;
@@ -7363,7 +7366,6 @@ static void count_prepared_point_closed_shape_membership_device_filtered_prepare
     lp.device_prefilter = 1u;
     lp.boundary_check = closed_shape_membership_boundary_check_enabled();
 
-    DevPtr d_params(sizeof(PipLaunchParams));
     CUstream stream = 0;
 
     const uint64_t max_points_per_launch64 =
@@ -7378,7 +7380,7 @@ static void count_prepared_point_closed_shape_membership_device_filtered_prepare
     size_t total_count = 0;
     for (size_t point_offset = 0; point_offset < point_count; point_offset += max_points_per_launch) {
         const size_t chunk_point_count = std::min(max_points_per_launch, point_count - point_offset);
-        upload<uint32_t>(d_count.ptr, &zero, 1);
+        upload<uint32_t>(prepared_points->d_count.ptr, &zero, 1);
         const CUdeviceptr chunk_points_x =
             prepared_points->d_points_x.ptr + static_cast<CUdeviceptr>(sizeof(float) * point_offset);
         const CUdeviceptr chunk_points_y =
@@ -7390,14 +7392,14 @@ static void count_prepared_point_closed_shape_membership_device_filtered_prepare
         lp.point_ids = reinterpret_cast<const uint32_t*>(chunk_point_ids);
         lp.probe_count = static_cast<uint32_t>(chunk_point_count);
         lp.point_index_offset = static_cast<uint32_t>(point_offset);
-        upload(d_params.ptr, &lp, 1);
+        upload(prepared_points->d_params.ptr, &lp, 1);
 
         const auto t_launch_start = std::chrono::steady_clock::now();
         PipelineHolder* pipeline = use_scalar_count_pipeline
             ? g_pip_scalar_count.pipe
             : g_pip.pipe;
         OPTIX_CHECK(optixLaunch(pipeline->pipeline, stream,
-                                 d_params.ptr, sizeof(PipLaunchParams),
+                                 prepared_points->d_params.ptr, sizeof(PipLaunchParams),
                                  &pipeline->sbt,
                                  static_cast<unsigned>(chunk_point_count), 1, 1));
         CU_CHECK(cuStreamSynchronize(stream));
@@ -7405,7 +7407,7 @@ static void count_prepared_point_closed_shape_membership_device_filtered_prepare
         g_optix_last_closed_shape_candidate_count_s += seconds_between(t_launch_start, t_launch_end);
 
         uint32_t chunk_count = 0;
-        download(&chunk_count, d_count.ptr, 1);
+        download(&chunk_count, prepared_points->d_count.ptr, 1);
         total_count += static_cast<size_t>(chunk_count);
     }
 
