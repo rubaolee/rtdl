@@ -14,6 +14,7 @@ class Goal3232RayJoinPublicRowContinuationProbeTest(unittest.TestCase):
 
         for phrase in (
             '"pip_county512"',
+            '"lsi_county256_soil256_count512"',
             '"overlay_county128_soil128"',
             '"overlay_county256_soil256"',
             'result_mode="rows"',
@@ -24,6 +25,7 @@ class Goal3232RayJoinPublicRowContinuationProbeTest(unittest.TestCase):
             "unattributed_prepared_total_minus_named_phases_sec",
             "positive_assignments_count",
             "active_seed_pairs_count",
+            "max_lsi_coordinate_delta",
             "--artifact-goal",
             "--schema",
         ):

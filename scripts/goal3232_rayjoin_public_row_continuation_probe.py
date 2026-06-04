@@ -25,6 +25,7 @@ from scripts.goal2159_rayjoin_public_cdb_runner import _resolve_dataset_template
 
 DEFAULT_CASES = (
     "pip_county512",
+    "lsi_county256_soil256_count512",
     "overlay_county128_soil128",
     "overlay_county256_soil256",
 )
@@ -101,6 +102,11 @@ def _row_set(workload: str, rows: tuple[dict[str, object], ...], *, source: str)
             (int(row["point_id"]), int(row[shape_key]))
             for row in rows
         }
+    if workload == "lsi":
+        return {
+            (int(row["left_id"]), int(row["right_id"]))
+            for row in rows
+        }
     if workload == "overlay_seed":
         return {
             (
@@ -123,6 +129,33 @@ def _active_overlay_rows(rows: tuple[dict[str, object], ...]) -> int | None:
         1
         for row in rows
         if int(row["requires_lsi"]) == 1 or int(row["requires_pip"]) == 1
+    )
+
+
+def _max_lsi_coordinate_delta(
+    native_rows: tuple[dict[str, object], ...],
+    cpu_rows: tuple[dict[str, object], ...],
+) -> float | None:
+    native = {
+        (int(row["left_id"]), int(row["right_id"])): (
+            float(row["intersection_point_x"]),
+            float(row["intersection_point_y"]),
+        )
+        for row in native_rows
+    }
+    cpu = {
+        (int(row["left_id"]), int(row["right_id"])): (
+            float(row["intersection_point_x"]),
+            float(row["intersection_point_y"]),
+        )
+        for row in cpu_rows
+    }
+    shared = set(native) & set(cpu)
+    if not shared:
+        return None
+    return max(
+        ((native[key][0] - cpu[key][0]) ** 2 + (native[key][1] - cpu[key][1]) ** 2) ** 0.5
+        for key in shared
     )
 
 
@@ -177,6 +210,9 @@ def _run_case(case_name: str, *, workload: str, dataset: str, repeats: int) -> d
                 "symmetric_difference_count": symdiff_count,
                 "native_minus_cpu_sample": native_minus_cpu[:5],
                 "cpu_minus_native_sample": cpu_minus_native[:5],
+                "max_lsi_coordinate_delta": _max_lsi_coordinate_delta(native_rows, cpu_rows)
+                if workload == "lsi"
+                else None,
                 "summary": native_payload.get("summary", {}),
                 "phases_sec": native_payload.get("phases_sec", {}),
                 "claim_boundary": dict(CANONICAL_CLAIM_BOUNDARY),
@@ -214,8 +250,8 @@ def _run_case(case_name: str, *, workload: str, dataset: str, repeats: int) -> d
 def build_artifact(args: argparse.Namespace) -> dict[str, object]:
     selected = tuple(CASES[name] for name in args.cases.split(",") if name)
     for case in selected:
-        if case.workload not in {"pip", "overlay_seed"}:
-            raise ValueError("goal3232 row-continuation probe supports only PIP and overlay_seed cases")
+        if case.workload not in {"pip", "lsi", "overlay_seed"}:
+            raise ValueError("goal3232 row-continuation probe supports only PIP, LSI, and overlay_seed cases")
     data_dir = Path(args.data_dir)
     _maybe_download_samples(data_dir, download=args.download)
     slices = _materialize_slices(data_dir, selected)
