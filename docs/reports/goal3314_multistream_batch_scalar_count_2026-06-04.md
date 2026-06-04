@@ -54,8 +54,8 @@ The stream sweep artifacts all report exact first and last counts of 1430, and a
 
 | Stream count | Request count | Per-request median ms | Native per-request median ms | Total median ms | Count |
 | ---: | ---: | ---: | ---: | ---: | ---: |
-| 1 | 8 | 0.247555 | 0.240080 | 1.980437 | 1430 |
-| 1 | 16 | 0.243525 | 0.241202 | 3.896400 | 1430 |
+| 1 | 8 | 0.247338 | 0.243547 | 1.978705 | 1430 |
+| 1 | 16 | 0.243664 | 0.241759 | 3.898622 | 1430 |
 | 1 | 32 | 0.236400 | 0.235201 | 7.564785 | 1430 |
 | 2 | 8 | 0.131361 | 0.127213 | 1.050889 | 1430 |
 | 2 | 16 | 0.125156 | 0.122594 | 2.002498 | 1430 |
@@ -97,4 +97,3 @@ The next useful engineering targets are:
 - `true_zero_copy_claim_authorized`: false
 - `rtdl_beats_rayjoin_claim_authorized`: false
 - `rayjoin_paper_reproduction_claim_authorized`: false
-

@@ -1,0 +1,104 @@
+{
+  "batch_rows": [
+    {
+      "batch_stream_count_effective": 1,
+      "count_first": 1430,
+      "count_last": 1430,
+      "native_candidate_per_request_ms_median": 0.261688,
+      "native_candidate_total_ms_median": 0.261688,
+      "native_modes": [
+        "prepared_points_device_filtered_batch_count"
+      ],
+      "per_request_ms_median": 0.2855299971997738,
+      "request_count": 1,
+      "total_ms_median": 0.2855299971997738
+    },
+    {
+      "batch_stream_count_effective": 1,
+      "count_first": 1430,
+      "count_last": 1430,
+      "native_candidate_per_request_ms_median": 0.24528962499999998,
+      "native_candidate_total_ms_median": 0.9811584999999999,
+      "native_modes": [
+        "prepared_points_device_filtered_batch_count"
+      ],
+      "per_request_ms_median": 0.2511937636882067,
+      "request_count": 4,
+      "total_ms_median": 1.0047750547528267
+    },
+    {
+      "batch_stream_count_effective": 4,
+      "count_first": 1430,
+      "count_last": 1430,
+      "native_candidate_per_request_ms_median": 0.07029025000000001,
+      "native_candidate_total_ms_median": 0.5623220000000001,
+      "native_modes": [
+        "prepared_points_device_filtered_batch_count"
+      ],
+      "per_request_ms_median": 0.0734244822524488,
+      "request_count": 8,
+      "total_ms_median": 0.5873958580195904
+    },
+    {
+      "batch_stream_count_effective": 8,
+      "count_first": 1430,
+      "count_last": 1430,
+      "native_candidate_per_request_ms_median": 0.0380071875,
+      "native_candidate_total_ms_median": 0.608115,
+      "native_modes": [
+        "prepared_points_device_filtered_batch_count"
+      ],
+      "per_request_ms_median": 0.03979227039963007,
+      "request_count": 16,
+      "total_ms_median": 0.6366763263940811
+    },
+    {
+      "batch_stream_count_effective": 8,
+      "count_first": 1430,
+      "count_last": 1430,
+      "native_candidate_per_request_ms_median": 0.03456171875,
+      "native_candidate_total_ms_median": 1.105975,
+      "native_modes": [
+        "prepared_points_device_filtered_batch_count"
+      ],
+      "per_request_ms_median": 0.03589648986235261,
+      "request_count": 32,
+      "total_ms_median": 1.1486876755952835
+    },
+    {
+      "batch_stream_count_effective": 16,
+      "count_first": 1430,
+      "count_last": 1430,
+      "native_candidate_per_request_ms_median": 0.0335222734375,
+      "native_candidate_total_ms_median": 2.1454255,
+      "native_modes": [
+        "prepared_points_device_filtered_batch_count"
+      ],
+      "per_request_ms_median": 0.03427877527428791,
+      "request_count": 64,
+      "total_ms_median": 2.193841617554426
+    }
+  ],
+  "batch_stream_count": "auto",
+  "boundary_mode": "inclusive",
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "dataset": "/root/rtdl_goal3293/data/rayjoin_public_cdb/br_county_start0_count512.cdb",
+  "exact_count": 1430,
+  "goal": 3310,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "interpretation": "Batch rows are repeated-query throughput evidence only; they do not replace one-shot RayJoin latency comparisons.",
+  "point_count": 512,
+  "query_axis": "z_point",
+  "rtdl_commit": "8e28f485ed93da0d467b980e483d382f23000271",
+  "scalar_count_pipeline": true,
+  "schema": "rtdl.goal3310.rayjoin_pip_batch_scalar_count_probe.v1",
+  "shape_count": 481,
+  "single_ms_median": 0.2780403010547161
+}
