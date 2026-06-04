@@ -1,0 +1,15 @@
+[goal3252] loading dataset: /root/rtdl_goal3151/data/rayjoin_public_cdb/br_county_start0_count512.cdb
+[goal3252] loaded points=512 shapes=481
+[goal3252] preparing closed-shape scene
+[goal3252] warmup 1/2: exact=1430 device_filtered=1430
+[goal3252] warmup 2/2: exact=1430 device_filtered=1430
+[goal3252] repeat 1/9: exact=1430 0.900958 ms; device_filtered=1430 0.788629 ms
+[goal3252] repeat 2/9: exact=1430 0.892537 ms; device_filtered=1430 0.783002 ms
+[goal3252] repeat 3/9: exact=1430 0.895219 ms; device_filtered=1430 0.789052 ms
+[goal3252] repeat 4/9: exact=1430 0.884598 ms; device_filtered=1430 0.783715 ms
+[goal3252] repeat 5/9: exact=1430 0.895409 ms; device_filtered=1430 0.785675 ms
+[goal3252] repeat 6/9: exact=1430 0.889976 ms; device_filtered=1430 0.781309 ms
+[goal3252] repeat 7/9: exact=1430 0.897795 ms; device_filtered=1430 0.785034 ms
+[goal3252] repeat 8/9: exact=1430 0.926778 ms; device_filtered=1430 0.794325 ms
+[goal3252] repeat 9/9: exact=1430 0.894092 ms; device_filtered=1430 0.797817 ms
+[goal3252] wrote docs/reports/goal3252_closed_shape_device_filtered_count_probe_pod_2026-06-03.json
