@@ -270,6 +270,23 @@ struct RtdlNativeDeviceGroupedCountI64Columns {
     double reduction_seconds;
 };
 
+struct RtdlNativeClosedShapeBoundaryEventDeviceColumns {
+    uint64_t point_ids_device_ptr;
+    uint64_t shape_ids_device_ptr;
+    uint64_t boundary_ids_device_ptr;
+    uint64_t crossing_t_device_ptr;
+    uint64_t crossing_x_device_ptr;
+    uint64_t crossing_y_device_ptr;
+    uint64_t event_kinds_device_ptr;
+    uint64_t row_count;
+    uint64_t capacity;
+    uint64_t candidate_event_count;
+    uint32_t overflow;
+    int32_t device_ordinal;
+    void* owner_handle;
+    double traversal_seconds;
+};
+
 struct RtdlNativeDeviceGroupedCountI64CompactColumns {
     uint64_t group_keys_device_ptr;
     uint64_t counts_device_ptr;
@@ -616,6 +633,12 @@ int  rtdl_optix_run_prepared_point_closed_shape_first_boundary_crossing_2d(
          const RtdlPoint* points, size_t point_count,
          RtdlPointClosedShapeBoundaryEventRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepared_point_closed_shape_first_boundary_crossing_device_columns_2d(
+         void* prepared,
+         const RtdlPoint* points, size_t point_count,
+         size_t max_rows,
+         RtdlNativeClosedShapeBoundaryEventDeviceColumns* columns_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_prepared_point_closed_shape_membership_candidate_device_columns_2d(
          void* prepared,
          const RtdlPoint* points, size_t point_count,
@@ -629,6 +652,9 @@ int  rtdl_optix_prepared_point_closed_shape_membership_point_id_count_device_col
          RtdlNativeDeviceGroupedCountI64Columns* columns_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_release_point_closed_shape_membership_candidate_device_columns_2d(
+         void* owner_handle,
+         char* error_out, size_t error_size);
+int  rtdl_optix_release_point_closed_shape_boundary_event_device_columns_2d(
          void* owner_handle,
          char* error_out, size_t error_size);
 int  rtdl_optix_closed_shape_membership_get_last_phase_timings(

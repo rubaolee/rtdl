@@ -5240,6 +5240,13 @@ struct PointClosedShapeBoundaryEventLaunchParams {
     const GpuPolygonRef* polygons;
     const GpuPreparedClosedShapeEdge2D* prepared_edges;
     RtdlPointClosedShapeBoundaryEventRow* output;
+    unsigned long long* point_ids_out;
+    unsigned long long* shape_ids_out;
+    unsigned long long* boundary_ids_out;
+    double* crossing_t_out;
+    double* crossing_x_out;
+    double* crossing_y_out;
+    unsigned int* event_kinds_out;
     uint32_t* output_count;
     uint32_t output_capacity;
     uint32_t* overflow;
@@ -5254,6 +5261,26 @@ struct NativeClosedShapeMembershipCandidateDeviceColumnsOwner {
     ~NativeClosedShapeMembershipCandidateDeviceColumnsOwner() {
         if (point_ids) cuMemFree(point_ids);
         if (shape_ids) cuMemFree(shape_ids);
+    }
+};
+
+struct NativeClosedShapeBoundaryEventDeviceColumnsOwner {
+    CUdeviceptr point_ids = 0;
+    CUdeviceptr shape_ids = 0;
+    CUdeviceptr boundary_ids = 0;
+    CUdeviceptr crossing_t = 0;
+    CUdeviceptr crossing_x = 0;
+    CUdeviceptr crossing_y = 0;
+    CUdeviceptr event_kinds = 0;
+
+    ~NativeClosedShapeBoundaryEventDeviceColumnsOwner() {
+        if (point_ids) cuMemFree(point_ids);
+        if (shape_ids) cuMemFree(shape_ids);
+        if (boundary_ids) cuMemFree(boundary_ids);
+        if (crossing_t) cuMemFree(crossing_t);
+        if (crossing_x) cuMemFree(crossing_x);
+        if (crossing_y) cuMemFree(crossing_y);
+        if (event_kinds) cuMemFree(event_kinds);
     }
 };
 
@@ -6418,6 +6445,13 @@ static void run_prepared_point_closed_shape_first_boundary_crossing_2d_optix(
     lp.polygons = reinterpret_cast<const GpuPolygonRef*>(prepared->d_right_polygons.ptr);
     lp.prepared_edges = reinterpret_cast<const GpuPreparedClosedShapeEdge2D*>(prepared->d_right_edges.ptr);
     lp.output = nullptr;
+    lp.point_ids_out = nullptr;
+    lp.shape_ids_out = nullptr;
+    lp.boundary_ids_out = nullptr;
+    lp.crossing_t_out = nullptr;
+    lp.crossing_x_out = nullptr;
+    lp.crossing_y_out = nullptr;
+    lp.event_kinds_out = nullptr;
     lp.output_count = reinterpret_cast<uint32_t*>(d_count.ptr);
     lp.output_capacity = 0u;
     lp.overflow = reinterpret_cast<uint32_t*>(d_overflow.ptr);
@@ -6483,6 +6517,188 @@ static void run_prepared_point_closed_shape_first_boundary_crossing_2d_optix(
     }
     *rows_out = out;
     *row_count_out = rows.size();
+}
+
+static void run_prepared_point_closed_shape_first_boundary_crossing_device_columns_2d_optix(
+        PreparedShapePairRelationBuild* prepared,
+        const RtdlPoint* points,
+        size_t point_count,
+        size_t max_rows,
+        RtdlNativeClosedShapeBoundaryEventDeviceColumns* columns_out)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared closed-shape boundary-event device-column handle must not be null");
+    }
+    if (!points && point_count != 0) {
+        throw std::runtime_error("point pointer must not be null when point_count is nonzero");
+    }
+    if (!columns_out) {
+        throw std::runtime_error("boundary-event device columns_out pointer must not be null");
+    }
+    if (point_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("prepared closed-shape boundary-event device-column point count exceeds uint32_t launch capacity");
+    }
+    if (max_rows > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("prepared closed-shape boundary-event device-column max_rows exceeds uint32 output capacity");
+    }
+
+    *columns_out = {};
+    columns_out->capacity = static_cast<uint64_t>(max_rows);
+    CUdevice current_device = 0;
+    CU_CHECK(cuCtxGetDevice(&current_device));
+    columns_out->device_ordinal = static_cast<int32_t>(current_device);
+    if (point_count == 0 || prepared->right_count == 0) {
+        return;
+    }
+
+    reset_closed_shape_membership_phase_timings(7u);
+    ensure_point_closed_shape_boundary_event_pipeline();
+
+    const auto t_pack_start = std::chrono::steady_clock::now();
+    std::vector<float> pts_x(point_count), pts_y(point_count);
+    std::vector<uint32_t> pt_ids(point_count);
+    float min_point_y = 0.0f;
+    for (size_t i = 0; i < point_count; ++i) {
+        pts_x[i] = static_cast<float>(points[i].x);
+        pts_y[i] = static_cast<float>(points[i].y);
+        pt_ids[i] = points[i].id;
+        if (i == 0 || pts_y[i] < min_point_y) {
+            min_point_y = pts_y[i];
+        }
+    }
+    const float ray_tmax = (std::max)(1.0f, prepared->right_max_y - min_point_y + 1.0f);
+    const auto t_pack_end = std::chrono::steady_clock::now();
+    g_optix_last_closed_shape_point_pack_s = seconds_between(t_pack_start, t_pack_end);
+
+    const auto t_upload_start = std::chrono::steady_clock::now();
+    DevPtr d_pts_x(sizeof(float) * point_count);
+    DevPtr d_pts_y(sizeof(float) * point_count);
+    DevPtr d_pt_ids(sizeof(uint32_t) * point_count);
+    upload(d_pts_x.ptr, pts_x.data(), point_count);
+    upload(d_pts_y.ptr, pts_y.data(), point_count);
+    upload(d_pt_ids.ptr, pt_ids.data(), point_count);
+    const auto t_upload_end = std::chrono::steady_clock::now();
+    g_optix_last_closed_shape_point_upload_s = seconds_between(t_upload_start, t_upload_end);
+
+    DevPtr d_count(sizeof(uint32_t));
+    DevPtr d_overflow(sizeof(uint32_t));
+    DevPtr d_params(sizeof(PointClosedShapeBoundaryEventLaunchParams));
+    uint32_t zero = 0u;
+    CUstream stream = 0;
+
+    PointClosedShapeBoundaryEventLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.points_x = reinterpret_cast<const float*>(d_pts_x.ptr);
+    lp.points_y = reinterpret_cast<const float*>(d_pts_y.ptr);
+    lp.point_ids = reinterpret_cast<const uint32_t*>(d_pt_ids.ptr);
+    lp.polygons = reinterpret_cast<const GpuPolygonRef*>(prepared->d_right_polygons.ptr);
+    lp.prepared_edges = reinterpret_cast<const GpuPreparedClosedShapeEdge2D*>(prepared->d_right_edges.ptr);
+    lp.output = nullptr;
+    lp.point_ids_out = nullptr;
+    lp.shape_ids_out = nullptr;
+    lp.boundary_ids_out = nullptr;
+    lp.crossing_t_out = nullptr;
+    lp.crossing_x_out = nullptr;
+    lp.crossing_y_out = nullptr;
+    lp.event_kinds_out = nullptr;
+    lp.output_count = reinterpret_cast<uint32_t*>(d_count.ptr);
+    lp.output_capacity = 0u;
+    lp.overflow = reinterpret_cast<uint32_t*>(d_overflow.ptr);
+    lp.probe_count = static_cast<uint32_t>(point_count);
+    lp.ray_tmax = ray_tmax;
+
+    auto launch_boundary_event_columns_pass = [&](NativeClosedShapeBoundaryEventDeviceColumnsOwner* owner,
+                                                  uint32_t output_capacity) -> uint32_t {
+        upload<uint32_t>(d_count.ptr, &zero, 1);
+        upload<uint32_t>(d_overflow.ptr, &zero, 1);
+        lp.output = nullptr;
+        if (owner) {
+            lp.point_ids_out = reinterpret_cast<unsigned long long*>(owner->point_ids);
+            lp.shape_ids_out = reinterpret_cast<unsigned long long*>(owner->shape_ids);
+            lp.boundary_ids_out = reinterpret_cast<unsigned long long*>(owner->boundary_ids);
+            lp.crossing_t_out = reinterpret_cast<double*>(owner->crossing_t);
+            lp.crossing_x_out = reinterpret_cast<double*>(owner->crossing_x);
+            lp.crossing_y_out = reinterpret_cast<double*>(owner->crossing_y);
+            lp.event_kinds_out = reinterpret_cast<unsigned int*>(owner->event_kinds);
+        } else {
+            lp.point_ids_out = nullptr;
+            lp.shape_ids_out = nullptr;
+            lp.boundary_ids_out = nullptr;
+            lp.crossing_t_out = nullptr;
+            lp.crossing_x_out = nullptr;
+            lp.crossing_y_out = nullptr;
+            lp.event_kinds_out = nullptr;
+        }
+        lp.output_capacity = output_capacity;
+        upload(d_params.ptr, &lp, 1);
+        const auto t_launch_start = std::chrono::steady_clock::now();
+        OPTIX_CHECK(optixLaunch(g_point_closed_shape_boundary_event.pipe->pipeline, stream,
+                                 d_params.ptr, sizeof(PointClosedShapeBoundaryEventLaunchParams),
+                                 &g_point_closed_shape_boundary_event.pipe->sbt,
+                                 static_cast<unsigned>(point_count), 1, 1));
+        CU_CHECK(cuStreamSynchronize(stream));
+        const auto t_launch_end = std::chrono::steady_clock::now();
+        if (!owner) {
+            g_optix_last_closed_shape_candidate_count_s += seconds_between(t_launch_start, t_launch_end);
+        } else {
+            g_optix_last_closed_shape_candidate_write_s += seconds_between(t_launch_start, t_launch_end);
+        }
+        uint32_t emitted = 0u;
+        uint32_t overflow = 0u;
+        download(&emitted, d_count.ptr, 1);
+        download(&overflow, d_overflow.ptr, 1);
+        if (overflow != 0u) {
+            columns_out->overflow = 1u;
+        }
+        return emitted;
+    };
+
+    const uint32_t event_count = launch_boundary_event_columns_pass(nullptr, 0u);
+    columns_out->candidate_event_count = static_cast<uint64_t>(event_count);
+    g_optix_last_closed_shape_raw_candidate_count = static_cast<size_t>(event_count);
+    if (event_count == 0u) {
+        columns_out->row_count = 0u;
+        columns_out->overflow = 0u;
+        g_optix_last_closed_shape_emitted_count = 0;
+        return;
+    }
+    if (event_count > static_cast<uint32_t>(max_rows)) {
+        columns_out->overflow = 1u;
+        columns_out->row_count = 0u;
+        return;
+    }
+
+    auto owner = std::make_unique<NativeClosedShapeBoundaryEventDeviceColumnsOwner>();
+    CU_CHECK(cuMemAlloc(&owner->point_ids, sizeof(unsigned long long) * max_rows));
+    CU_CHECK(cuMemAlloc(&owner->shape_ids, sizeof(unsigned long long) * max_rows));
+    CU_CHECK(cuMemAlloc(&owner->boundary_ids, sizeof(unsigned long long) * max_rows));
+    CU_CHECK(cuMemAlloc(&owner->crossing_t, sizeof(double) * max_rows));
+    CU_CHECK(cuMemAlloc(&owner->crossing_x, sizeof(double) * max_rows));
+    CU_CHECK(cuMemAlloc(&owner->crossing_y, sizeof(double) * max_rows));
+    CU_CHECK(cuMemAlloc(&owner->event_kinds, sizeof(unsigned int) * max_rows));
+
+    const uint32_t emitted = launch_boundary_event_columns_pass(owner.get(), static_cast<uint32_t>(max_rows));
+    if (columns_out->overflow != 0u || emitted != event_count) {
+        throw std::runtime_error("prepared closed-shape boundary-event device-column count changed between count and write passes");
+    }
+
+    columns_out->point_ids_device_ptr = static_cast<uint64_t>(owner->point_ids);
+    columns_out->shape_ids_device_ptr = static_cast<uint64_t>(owner->shape_ids);
+    columns_out->boundary_ids_device_ptr = static_cast<uint64_t>(owner->boundary_ids);
+    columns_out->crossing_t_device_ptr = static_cast<uint64_t>(owner->crossing_t);
+    columns_out->crossing_x_device_ptr = static_cast<uint64_t>(owner->crossing_x);
+    columns_out->crossing_y_device_ptr = static_cast<uint64_t>(owner->crossing_y);
+    columns_out->event_kinds_device_ptr = static_cast<uint64_t>(owner->event_kinds);
+    columns_out->row_count = static_cast<uint64_t>(emitted);
+    columns_out->overflow = 0u;
+    columns_out->traversal_seconds = g_optix_last_closed_shape_candidate_write_s;
+    columns_out->owner_handle = owner.release();
+    g_optix_last_closed_shape_emitted_count = static_cast<size_t>(emitted);
+}
+
+static void release_point_closed_shape_boundary_event_device_columns_2d_optix(void* owner_handle)
+{
+    delete reinterpret_cast<NativeClosedShapeBoundaryEventDeviceColumnsOwner*>(owner_handle);
 }
 
 static void run_prepared_point_closed_shape_membership_2d_optix(

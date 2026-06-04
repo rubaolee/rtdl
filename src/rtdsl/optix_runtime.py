@@ -124,6 +124,8 @@ from .point_nearest_witness_typed_stream import make_v2_8_point_group_nearest_wi
 from .point_nearest_witness_typed_stream import make_v2_8_point_group_nearest_witness_typed_stream_contract
 from .v2_8_geometry_relation_typed_stream import geometry_relation_typed_stream_metadata_for_device_pair_columns
 from .v2_8_geometry_relation_typed_stream import geometry_relation_typed_stream_metadata_for_row_view
+from .v2_8_geometry_relation_typed_stream import make_v2_8_geometry_relation_typed_producer_metadata
+from .v2_8_geometry_relation_typed_stream import make_v2_8_geometry_relation_typed_stream_contract
 from . import partner as _partner
 from .columnar_partner import DeviceColumnDescriptor
 from .columnar_partner import PartnerResidentColumnarRecordSet
@@ -221,8 +223,14 @@ OPTIX_CLOSED_SHAPE_MEMBERSHIP_POINT_ID_COUNT_DEVICE_COLUMNS_SYMBOL = (
 OPTIX_CLOSED_SHAPE_FIRST_BOUNDARY_CROSSING_SYMBOL = (
     "rtdl_optix_run_prepared_point_closed_shape_first_boundary_crossing_2d"
 )
+OPTIX_CLOSED_SHAPE_FIRST_BOUNDARY_CROSSING_DEVICE_COLUMNS_SYMBOL = (
+    "rtdl_optix_prepared_point_closed_shape_first_boundary_crossing_device_columns_2d"
+)
 OPTIX_RELEASE_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_release_point_closed_shape_membership_candidate_device_columns_2d"
+)
+OPTIX_RELEASE_CLOSED_SHAPE_BOUNDARY_EVENT_DEVICE_COLUMNS_SYMBOL = (
+    "rtdl_optix_release_point_closed_shape_boundary_event_device_columns_2d"
 )
 OPTIX_RELEASE_RAY_TRIANGLE_HIT_STREAM_3D_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_release_ray_triangle_hit_stream_device_columns"
@@ -680,6 +688,25 @@ class _RtdlNativeDevicePairColumns(ctypes.Structure):
         ("row_count_device_ptr", ctypes.c_uint64),
         ("candidate_event_count_device_ptr", ctypes.c_uint64),
         ("overflow_device_ptr", ctypes.c_uint64),
+    ]
+
+
+class _RtdlNativeClosedShapeBoundaryEventDeviceColumns(ctypes.Structure):
+    _fields_ = [
+        ("point_ids_device_ptr", ctypes.c_uint64),
+        ("shape_ids_device_ptr", ctypes.c_uint64),
+        ("boundary_ids_device_ptr", ctypes.c_uint64),
+        ("crossing_t_device_ptr", ctypes.c_uint64),
+        ("crossing_x_device_ptr", ctypes.c_uint64),
+        ("crossing_y_device_ptr", ctypes.c_uint64),
+        ("event_kinds_device_ptr", ctypes.c_uint64),
+        ("row_count", ctypes.c_uint64),
+        ("capacity", ctypes.c_uint64),
+        ("candidate_event_count", ctypes.c_uint64),
+        ("overflow", ctypes.c_uint32),
+        ("device_ordinal", ctypes.c_int32),
+        ("owner_handle", ctypes.c_void_p),
+        ("traversal_seconds", ctypes.c_double),
     ]
 
 
@@ -1166,6 +1193,47 @@ class _OptixNativeDevicePairColumnsOwner:
         _check_status(status, error)
 
     def __enter__(self) -> "_OptixNativeDevicePairColumnsOwner":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+class _OptixClosedShapeBoundaryEventDeviceColumnsOwner:
+    def __init__(self, library: ctypes.CDLL, owner_handle: int | None) -> None:
+        self._library = library
+        self._owner_handle = ctypes.c_void_p(0 if owner_handle is None else int(owner_handle))
+        self._closed = False
+
+    @property
+    def handle_value(self) -> int:
+        return 0 if self._owner_handle.value is None else int(self._owner_handle.value)
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        self._closed = True
+        handle = self._owner_handle
+        self._owner_handle = ctypes.c_void_p()
+        if not handle.value:
+            return
+        release_symbol = _find_optional_backend_symbol(
+            self._library,
+            OPTIX_RELEASE_CLOSED_SHAPE_BOUNDARY_EVENT_DEVICE_COLUMNS_SYMBOL,
+        )
+        if release_symbol is None:
+            return
+        error = ctypes.create_string_buffer(4096)
+        status = release_symbol(handle, error, len(error))
+        _check_status(status, error)
+
+    def __enter__(self) -> "_OptixClosedShapeBoundaryEventDeviceColumnsOwner":
         return self
 
     def __exit__(self, exc_type, exc, tb) -> None:
@@ -1700,6 +1768,149 @@ class OptixNativeDevicePairColumnOutput:
         self.owner.close()
 
     def __enter__(self) -> "OptixNativeDevicePairColumnOutput":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+@dataclass
+class OptixClosedShapeBoundaryEventDeviceColumnOutput:
+    library: object
+    owner: _OptixClosedShapeBoundaryEventDeviceColumnsOwner
+    point_ids_device_ptr: int
+    shape_ids_device_ptr: int
+    boundary_ids_device_ptr: int
+    crossing_t_device_ptr: int
+    crossing_x_device_ptr: int
+    crossing_y_device_ptr: int
+    event_kinds_device_ptr: int
+    row_count: int
+    capacity: int
+    candidate_event_count: int
+    overflow: bool
+    device_ordinal: int
+    traversal_seconds: float
+    native_symbol: str
+    field_names: tuple[str, ...] = (
+        "point_id",
+        "shape_id",
+        "boundary_id",
+        "crossing_t",
+        "crossing_x",
+        "crossing_y",
+        "event_kind",
+    )
+
+    @property
+    def device_resident(self) -> bool:
+        return (
+            self.point_ids_device_ptr > 0
+            and self.shape_ids_device_ptr > 0
+            and self.boundary_ids_device_ptr > 0
+            and self.crossing_t_device_ptr > 0
+            and self.crossing_x_device_ptr > 0
+            and self.crossing_y_device_ptr > 0
+            and self.event_kinds_device_ptr > 0
+            and self.capacity > 0
+            and not self.overflow
+        )
+
+    @property
+    def true_zero_copy_authorized(self) -> bool:
+        return False
+
+    def _data_ptrs(self) -> dict[str, int]:
+        return {
+            "point_id": self.point_ids_device_ptr,
+            "shape_id": self.shape_ids_device_ptr,
+            "boundary_id": self.boundary_ids_device_ptr,
+            "crossing_t": self.crossing_t_device_ptr,
+            "crossing_x": self.crossing_x_device_ptr,
+            "crossing_y": self.crossing_y_device_ptr,
+            "event_kind": self.event_kinds_device_ptr,
+        }
+
+    def to_metadata(self) -> dict[str, object]:
+        typed_stream = make_v2_8_geometry_relation_typed_stream_contract(
+            self.field_names,
+            self.row_count,
+            device_type="cuda",
+            device_id=self.device_ordinal,
+            source_protocol="optix_device_columns",
+            data_ptrs=self._data_ptrs(),
+        ).to_metadata()
+        producer_metadata = make_v2_8_geometry_relation_typed_producer_metadata(
+            self.field_names,
+            self.row_count,
+            source_protocol="optix_device_columns",
+            output_residency="device_resident_boundary_event_columns"
+            if self.device_resident
+            else "empty_or_overflow",
+            native_symbol=self.native_symbol,
+        )
+        producer_metadata["status"] = "device_resident_boundary_event_columns_no_grouped_continuation_yet"
+        producer_metadata["device_resident_output_stream_proven"] = bool(self.device_resident)
+        return {
+            "typed_result_stream": typed_stream,
+            "v2_8_typed_producer_metadata": producer_metadata,
+            "runtime": {
+                "backend": "optix",
+                "output_residency": "device_resident_boundary_event_columns"
+                if self.device_resident
+                else "empty_or_overflow",
+                "owner_handle": self.owner.handle_value,
+                "row_count": self.row_count,
+                "capacity": self.capacity,
+                "candidate_event_count": self.candidate_event_count,
+                "overflow": self.overflow,
+                "device_ordinal": self.device_ordinal,
+                "traversal_seconds": float(self.traversal_seconds),
+                "true_zero_copy_authorized": False,
+                "release_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "rt_core_speedup_claim_authorized": False,
+            },
+        }
+
+    def _cupy_column(self, device_ptr: int, dtype, item_size: int):
+        if self.overflow:
+            raise RuntimeError("cannot wrap an overflowed boundary-event device-column stream")
+        if device_ptr <= 0 or self.capacity <= 0:
+            raise RuntimeError("boundary-event device-column stream does not own CUDA columns")
+        import cupy as cp  # type: ignore
+
+        memory = cp.cuda.UnownedMemory(
+            int(device_ptr),
+            int(self.capacity) * int(item_size),
+            self.owner,
+        )
+        memory_pointer = cp.cuda.MemoryPointer(memory, 0)
+        return cp.ndarray((int(self.row_count),), dtype=dtype, memptr=memory_pointer)
+
+    def as_cupy_columns(self) -> dict[str, object]:
+        import cupy as cp  # type: ignore
+
+        return {
+            "point_id": self._cupy_column(self.point_ids_device_ptr, cp.int64, ctypes.sizeof(ctypes.c_int64)),
+            "shape_id": self._cupy_column(self.shape_ids_device_ptr, cp.int64, ctypes.sizeof(ctypes.c_int64)),
+            "boundary_id": self._cupy_column(self.boundary_ids_device_ptr, cp.int64, ctypes.sizeof(ctypes.c_int64)),
+            "crossing_t": self._cupy_column(self.crossing_t_device_ptr, cp.float64, ctypes.sizeof(ctypes.c_double)),
+            "crossing_x": self._cupy_column(self.crossing_x_device_ptr, cp.float64, ctypes.sizeof(ctypes.c_double)),
+            "crossing_y": self._cupy_column(self.crossing_y_device_ptr, cp.float64, ctypes.sizeof(ctypes.c_double)),
+            "event_kind": self._cupy_column(self.event_kinds_device_ptr, cp.uint32, ctypes.sizeof(ctypes.c_uint32)),
+        }
+
+    def close(self) -> None:
+        self.owner.close()
+
+    def __enter__(self) -> "OptixClosedShapeBoundaryEventDeviceColumnOutput":
         return self
 
     def __exit__(self, exc_type, exc, tb) -> None:
@@ -6131,6 +6342,8 @@ def _get_last_closed_shape_membership_phase_timings_from_library(lib) -> dict[st
             if mode_value == 5
             else "boundary_event_rows"
             if mode_value == 6
+            else "boundary_event_device_columns"
+            if mode_value == 7
             else "none"
         ),
         "point_pack": float(point_pack.value),
@@ -9689,6 +9902,79 @@ class PreparedOptixPointClosedShapeMembership2D:
             )
         finally:
             view.close()
+
+    def first_boundary_crossing_device_columns(
+        self,
+        points,
+        *,
+        max_rows: int | None = None,
+    ) -> OptixClosedShapeBoundaryEventDeviceColumnOutput:
+        """Return generic first boundary-event columns resident on the OptiX CUDA device."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX closed-shape membership handle is closed")
+        symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_CLOSED_SHAPE_FIRST_BOUNDARY_CROSSING_DEVICE_COLUMNS_SYMBOL,
+        )
+        if symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_CLOSED_SHAPE_FIRST_BOUNDARY_CROSSING_DEVICE_COLUMNS_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        release_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_RELEASE_CLOSED_SHAPE_BOUNDARY_EVENT_DEVICE_COLUMNS_SYMBOL,
+        )
+        if release_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_RELEASE_CLOSED_SHAPE_BOUNDARY_EVENT_DEVICE_COLUMNS_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        packed_points = points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
+        if packed_points.dimension != 2:
+            raise ValueError(
+                "PreparedOptixPointClosedShapeMembership2D.first_boundary_crossing_device_columns requires 2-D points"
+            )
+        capacity = int(
+            max_rows
+            if max_rows is not None
+            else max(1, int(packed_points.count) * int(self._packed_shapes.polygon_count))
+        )
+        if capacity < 0:
+            raise ValueError("max_rows must be non-negative")
+        columns = _RtdlNativeClosedShapeBoundaryEventDeviceColumns()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            self._handle,
+            packed_points.records,
+            packed_points.count,
+            ctypes.c_size_t(capacity),
+            ctypes.byref(columns),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        owner = _OptixClosedShapeBoundaryEventDeviceColumnsOwner(self._lib, columns.owner_handle)
+        return OptixClosedShapeBoundaryEventDeviceColumnOutput(
+            library=self._lib,
+            owner=owner,
+            point_ids_device_ptr=int(columns.point_ids_device_ptr),
+            shape_ids_device_ptr=int(columns.shape_ids_device_ptr),
+            boundary_ids_device_ptr=int(columns.boundary_ids_device_ptr),
+            crossing_t_device_ptr=int(columns.crossing_t_device_ptr),
+            crossing_x_device_ptr=int(columns.crossing_x_device_ptr),
+            crossing_y_device_ptr=int(columns.crossing_y_device_ptr),
+            event_kinds_device_ptr=int(columns.event_kinds_device_ptr),
+            row_count=int(columns.row_count),
+            capacity=int(columns.capacity),
+            candidate_event_count=int(columns.candidate_event_count),
+            overflow=bool(columns.overflow),
+            device_ordinal=int(columns.device_ordinal),
+            traversal_seconds=float(columns.traversal_seconds),
+            native_symbol=OPTIX_CLOSED_SHAPE_FIRST_BOUNDARY_CROSSING_DEVICE_COLUMNS_SYMBOL,
+        )
 
     def candidate_device_columns(
         self,
@@ -17663,6 +17949,21 @@ def _register_argtypes(lib) -> None:
         ]
         optional_first_boundary_crossing.restype = ctypes.c_int
 
+    optional_first_boundary_crossing_device_columns = _find_optional_backend_symbol(
+        lib,
+        OPTIX_CLOSED_SHAPE_FIRST_BOUNDARY_CROSSING_DEVICE_COLUMNS_SYMBOL,
+    )
+    if optional_first_boundary_crossing_device_columns is not None:
+        optional_first_boundary_crossing_device_columns.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlNativeClosedShapeBoundaryEventDeviceColumns),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_first_boundary_crossing_device_columns.restype = ctypes.c_int
+
     optional_closed_shape_candidate_device_columns = _find_optional_backend_symbol(
         lib,
         OPTIX_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
@@ -17704,6 +18005,18 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_release_closed_shape_candidate_device_columns.restype = ctypes.c_int
+
+    optional_release_closed_shape_boundary_event_device_columns = _find_optional_backend_symbol(
+        lib,
+        OPTIX_RELEASE_CLOSED_SHAPE_BOUNDARY_EVENT_DEVICE_COLUMNS_SYMBOL,
+    )
+    if optional_release_closed_shape_boundary_event_device_columns is not None:
+        optional_release_closed_shape_boundary_event_device_columns.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_release_closed_shape_boundary_event_device_columns.restype = ctypes.c_int
 
     optional_destroy_prepared_closed_shape_membership = _find_optional_backend_symbol(
         lib,

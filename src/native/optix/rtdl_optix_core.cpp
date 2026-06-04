@@ -1396,6 +1396,13 @@ struct BoundaryEventParams {
     const GpuPolygonRef* polygons;
     const GpuPreparedClosedShapeEdge2D* prepared_edges;
     BoundaryEventRecord* output;
+    unsigned long long* point_ids_out;
+    unsigned long long* shape_ids_out;
+    unsigned long long* boundary_ids_out;
+    double* crossing_t_out;
+    double* crossing_x_out;
+    double* crossing_y_out;
+    unsigned int* event_kinds_out;
     uint32_t* output_count;
     uint32_t output_capacity;
     uint32_t* overflow;
@@ -1490,6 +1497,7 @@ extern "C" __global__ void __anyhit__point_closed_shape_boundary_event_anyhit() 
     const uint32_t boundary_id = optixGetPayload_2();
     const float t = __uint_as_float(optixGetPayload_3());
     const uint32_t slot = atomicAdd(params.output_count, 1u);
+    const bool has_columns = params.point_ids_out != nullptr;
     if (params.output != nullptr && slot < params.output_capacity) {
         BoundaryEventRecord row;
         row.point_id = params.point_ids[pidx];
@@ -1500,7 +1508,17 @@ extern "C" __global__ void __anyhit__point_closed_shape_boundary_event_anyhit() 
         row.crossing_y = (double)(params.points_y[pidx] + t);
         row.event_kind = 1u;
         params.output[slot] = row;
-    } else if (params.output != nullptr && params.overflow != nullptr) {
+    }
+    if (has_columns && slot < params.output_capacity) {
+        params.point_ids_out[slot] = (unsigned long long)params.point_ids[pidx];
+        params.shape_ids_out[slot] = (unsigned long long)params.polygons[prim].id;
+        params.boundary_ids_out[slot] = (unsigned long long)boundary_id;
+        params.crossing_t_out[slot] = (double)t;
+        params.crossing_x_out[slot] = (double)params.points_x[pidx];
+        params.crossing_y_out[slot] = (double)(params.points_y[pidx] + t);
+        params.event_kinds_out[slot] = 1u;
+    }
+    if ((params.output != nullptr || has_columns) && slot >= params.output_capacity && params.overflow != nullptr) {
         *params.overflow = 1u;
     }
     optixIgnoreIntersection();
