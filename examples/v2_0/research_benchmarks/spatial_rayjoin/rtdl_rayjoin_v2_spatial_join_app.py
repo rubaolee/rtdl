@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -25,6 +27,7 @@ from rtdsl.datasets import load_cdb
 _WORKLOADS = ("pip", "lsi", "overlay_seed")
 _PREPARED_OPTIX_WORKLOADS = ("pip", "lsi", "overlay_seed")
 _PIP_COUNT_MODES = ("exact", "device_filtered_validated")
+_PIP_DEVICE_FILTER_BOUNDARY_MODES = ("inclusive", "crossing_only")
 RAYJOIN_V2_6_NUMBA_COMPACT_MASK_VERSION = "rtdl.rayjoin.v2_6.numba_compact_mask_preview.v1"
 
 _DEFAULT_DATASETS = {
@@ -209,6 +212,36 @@ def _phase_time(phases: dict[str, float], label: str, fn):
     return value
 
 
+@contextlib.contextmanager
+def _temporary_env(name: str, value: str | None):
+    previous = os.environ.get(name)
+    if value is None:
+        os.environ.pop(name, None)
+    else:
+        os.environ[name] = value
+    try:
+        yield
+    finally:
+        if previous is None:
+            os.environ.pop(name, None)
+        else:
+            os.environ[name] = previous
+
+
+def _run_prepared_count_with_boundary_mode(prepared, packed_points, boundary_mode: str | None) -> int:
+    with _temporary_env("RTDL_OPTIX_POINT_PRIMITIVE_BOUNDARY_MODE", boundary_mode):
+        return int(prepared.count(packed_points))
+
+
+def _run_prepared_device_filtered_count_with_boundary_mode(
+    prepared,
+    packed_points,
+    boundary_mode: str | None,
+) -> int:
+    with _temporary_env("RTDL_OPTIX_POINT_PRIMITIVE_BOUNDARY_MODE", boundary_mode):
+        return int(prepared.count_device_filtered(packed_points))
+
+
 def run_rayjoin_prepared_optix_workload(
     workload: str,
     *,
@@ -216,6 +249,7 @@ def run_rayjoin_prepared_optix_workload(
     result_mode: str = "count",
     include_rows: bool = False,
     count_mode: str = "exact",
+    device_filtered_boundary_mode: str | None = None,
 ) -> dict[str, object]:
     """Run the RayJoin-style prepared OptiX route with phase boundaries.
 
@@ -233,6 +267,14 @@ def run_rayjoin_prepared_optix_workload(
         raise ValueError("count_mode must be 'exact' or 'device_filtered_validated'")
     if count_mode != "exact" and (workload != "pip" or result_mode != "count"):
         raise ValueError("device_filtered_validated count_mode is only valid for PIP count workloads")
+    if device_filtered_boundary_mode is not None:
+        if device_filtered_boundary_mode not in _PIP_DEVICE_FILTER_BOUNDARY_MODES:
+            raise ValueError("device_filtered_boundary_mode must be 'inclusive' or 'crossing_only'")
+        if count_mode != "device_filtered_validated" or workload != "pip" or result_mode != "count":
+            raise ValueError(
+                "device_filtered_boundary_mode is only valid for PIP count workloads "
+                "using count_mode='device_filtered_validated'"
+            )
 
     resolved_dataset = dataset or _DEFAULT_DATASETS[workload]
     case = _load_rayjoin_case(workload, resolved_dataset)
@@ -352,14 +394,18 @@ def run_rayjoin_prepared_optix_workload(
                         _phase_time(
                             phases,
                             "validation_exact_query_sec",
-                            lambda: prepared.count(packed_points),
+                            lambda: _run_prepared_count_with_boundary_mode(prepared, packed_points, None),
                         )
                     )
                     row_count = int(
                         _phase_time(
                             phases,
                             "prepared_query_sec",
-                            lambda: prepared.count_device_filtered(packed_points),
+                            lambda: _run_prepared_device_filtered_count_with_boundary_mode(
+                                prepared,
+                                packed_points,
+                                device_filtered_boundary_mode,
+                            ),
                         )
                     )
                     if row_count != validation_exact_count:
@@ -399,6 +445,9 @@ def run_rayjoin_prepared_optix_workload(
                 else "point_to_shape_positive_hit_rows"
             ),
             "count_mode": count_mode,
+            "device_filtered_boundary_mode": (
+                device_filtered_boundary_mode if count_mode == "device_filtered_validated" else None
+            ),
             "device_filtered_is_exact_authority": False,
             "device_filtered_count_matches_exact": (
                 True if count_mode == "device_filtered_validated" and result_mode == "count" else None

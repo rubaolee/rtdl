@@ -5179,11 +5179,31 @@ struct PipLaunchParams {
     uint32_t         probe_count;
     uint32_t         point_index_offset;
     uint32_t         device_prefilter;
+    uint32_t         boundary_check;
 };
 
 static bool use_prepared_closed_shape_edge_layout()
 {
     return std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_USE_PREPARED_EDGE_LAYOUT") != nullptr;
+}
+
+static uint32_t closed_shape_membership_boundary_check_enabled()
+{
+    const char* raw_mode = std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_BOUNDARY_MODE");
+    if (!raw_mode || raw_mode[0] == '\0') {
+        return 1u;
+    }
+    const std::string mode(raw_mode);
+    if (mode == "inclusive" || mode == "default" || mode == "on" || mode == "true") {
+        return 1u;
+    }
+    if (mode == "crossing_only" || mode == "skip_boundary" || mode == "no_boundary" ||
+        mode == "off" || mode == "false") {
+        return 0u;
+    }
+    throw std::runtime_error(
+        "RTDL_OPTIX_POINT_PRIMITIVE_BOUNDARY_MODE must be one of "
+        "inclusive, default, on, true, crossing_only, skip_boundary, no_boundary, off, or false");
 }
 
 static void ensure_pip_pipeline()
@@ -5341,6 +5361,7 @@ static void run_pip_optix(
     lp.point_index_offset = 0u;
     lp.device_prefilter =
         (positive_only != 0u && std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DISABLE_DEVICE_PREFILTER") == nullptr) ? 1u : 0u;
+    lp.boundary_check = closed_shape_membership_boundary_check_enabled();
 
     DevPtr d_params(sizeof(PipLaunchParams));
     upload(d_params.ptr, &lp, 1);
@@ -6074,6 +6095,7 @@ static void run_prepared_point_closed_shape_membership_2d_optix(
     lp.point_index_offset = 0u;
     lp.device_prefilter =
         std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DISABLE_DEVICE_PREFILTER") == nullptr ? 1u : 0u;
+    lp.boundary_check = closed_shape_membership_boundary_check_enabled();
 
     DevPtr d_params(sizeof(PipLaunchParams));
     upload(d_params.ptr, &lp, 1);
@@ -6291,6 +6313,7 @@ static void count_prepared_point_closed_shape_membership_2d_optix(
     lp.point_index_offset = 0u;
     lp.device_prefilter =
         std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DISABLE_DEVICE_PREFILTER") == nullptr ? 1u : 0u;
+    lp.boundary_check = closed_shape_membership_boundary_check_enabled();
 
     DevPtr d_params(sizeof(PipLaunchParams));
     upload(d_params.ptr, &lp, 1);
@@ -6497,6 +6520,7 @@ static void count_prepared_point_closed_shape_membership_device_filtered_2d_opti
     lp.probe_count    = 0u;
     lp.point_index_offset = 0u;
     lp.device_prefilter = 1u;
+    lp.boundary_check = closed_shape_membership_boundary_check_enabled();
 
     DevPtr d_params(sizeof(PipLaunchParams));
     CUstream stream = 0;

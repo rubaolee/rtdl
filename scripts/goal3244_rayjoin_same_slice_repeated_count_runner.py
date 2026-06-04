@@ -225,6 +225,7 @@ def run_rtdl_samples(
     repeat: int,
     count_mode: str = "exact",
     query_axis: str | None = None,
+    boundary_mode: str | None = None,
 ) -> dict[str, Any]:
     if count_mode != "exact" and workload != "pip":
         raise ValueError("non-exact count_mode is only supported for RTDL PIP samples")
@@ -245,6 +246,7 @@ def run_rtdl_samples(
                 result_mode="count",
                 include_rows=False,
                 count_mode=count_mode,
+                device_filtered_boundary_mode=boundary_mode,
             )
 
     for index in range(warmup):
@@ -276,6 +278,7 @@ def run_rtdl_samples(
         "result_mode": "count",
         "count_mode": count_mode,
         "query_axis": query_axis,
+        "device_filtered_boundary_mode": boundary_mode if count_mode == "device_filtered_validated" else None,
         "warmup": int(warmup),
         "repeat": int(repeat),
         "prepared_query_ms": summarize_samples([value * 1000.0 for value in query_sec]),
@@ -353,6 +356,14 @@ def main(argv: list[str] | None = None) -> int:
             "RTDL_OPTIX_POINT_PRIMITIVE_QUERY_AXIS only around RTDL PIP calls."
         ),
     )
+    parser.add_argument(
+        "--rtdl-pip-boundary-mode",
+        choices=("inclusive", "crossing_only"),
+        help=(
+            "Optional boundary mode for the RTDL PIP device-filtered count lane. "
+            "The app still validates each sample against an inclusive exact prepared count."
+        ),
+    )
     parser.add_argument("--timeout-seconds", type=int, default=int(os.environ.get("STEP_TIMEOUT_SECONDS", "300")))
     args = parser.parse_args(argv)
 
@@ -388,6 +399,7 @@ def main(argv: list[str] | None = None) -> int:
             repeat=args.rtdl_repeat,
             count_mode=args.rtdl_pip_count_mode,
             query_axis=args.rtdl_pip_query_axis,
+            boundary_mode=args.rtdl_pip_boundary_mode,
         ),
     }
     comparisons = build_comparison_rows(rayjoin_rows, rtdl_rows)
@@ -418,6 +430,11 @@ def main(argv: list[str] | None = None) -> int:
             "rtdl_pip_query_axis": (
                 "When --rtdl-pip-query-axis is supplied, the runner exports "
                 "RTDL_OPTIX_POINT_PRIMITIVE_QUERY_AXIS around RTDL PIP calls and records the chosen generic mode."
+            ),
+            "rtdl_pip_boundary_mode": (
+                "When --rtdl-pip-boundary-mode is supplied with device_filtered_validated, "
+                "the app runs the exact validation count with inclusive boundary checks and runs only the "
+                "device-filtered timing lane with the requested generic boundary mode."
             ),
         },
         "claim_boundary": CLAIM_BOUNDARY,

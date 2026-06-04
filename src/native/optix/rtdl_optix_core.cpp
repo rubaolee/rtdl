@@ -1186,6 +1186,7 @@ struct PipParams {
     uint32_t probe_count;
     uint32_t point_index_offset;
     uint32_t device_prefilter;
+    uint32_t boundary_check;
 };
 
 extern "C" {
@@ -1211,15 +1212,17 @@ static __forceinline__ __device__ bool point_in_polygon(
             const float bx = edge.bx;
             const float by = edge.by;
             const float len2 = edge.len2;
-            if (len2 <= point_eps * point_eps) {
-                if (fabsf(px - ax) <= point_eps && fabsf(py - ay) <= point_eps)
-                    return true;
-            } else {
-                float cross = (px - ax) * edge.dy - (py - ay) * edge.dx;
-                if (cross * cross <= point_eps * point_eps * len2) {
-                    float dot = (px - ax) * edge.dx + (py - ay) * edge.dy;
-                    if (dot >= -point_eps && dot <= len2 + point_eps)
+            if (params.boundary_check != 0u) {
+                if (len2 <= point_eps * point_eps) {
+                    if (fabsf(px - ax) <= point_eps && fabsf(py - ay) <= point_eps)
                         return true;
+                } else {
+                    float cross = (px - ax) * edge.dy - (py - ay) * edge.dx;
+                    if (cross * cross <= point_eps * point_eps * len2) {
+                        float dot = (px - ax) * edge.dx + (py - ay) * edge.dy;
+                        if (dot >= -point_eps && dot <= len2 + point_eps)
+                            return true;
+                    }
                 }
             }
 
@@ -1237,15 +1240,17 @@ static __forceinline__ __device__ bool point_in_polygon(
         float dx = bx - ax;
         float dy = by - ay;
         float len2 = dx * dx + dy * dy;
-        if (len2 <= point_eps * point_eps) {
-            if (fabsf(px - ax) <= point_eps && fabsf(py - ay) <= point_eps)
-                return true;
-        } else {
-            float cross = (px - ax) * dy - (py - ay) * dx;
-            if (cross * cross <= point_eps * point_eps * len2) {
-                float dot = (px - ax) * dx + (py - ay) * dy;
-                if (dot >= -point_eps && dot <= len2 + point_eps)
+        if (params.boundary_check != 0u) {
+            if (len2 <= point_eps * point_eps) {
+                if (fabsf(px - ax) <= point_eps && fabsf(py - ay) <= point_eps)
                     return true;
+            } else {
+                float cross = (px - ax) * dy - (py - ay) * dx;
+                if (cross * cross <= point_eps * point_eps * len2) {
+                    float dot = (px - ax) * dx + (py - ay) * dy;
+                    if (dot >= -point_eps && dot <= len2 + point_eps)
+                        return true;
+                }
             }
         }
 
