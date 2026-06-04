@@ -368,6 +368,8 @@ Timing results:
             return {
                 "phases_sec": {
                     "prepared_query_sec": 0.00021,
+                    "boundary_event_device_columns_sec": 0.00018,
+                    "boundary_event_grouped_count_sec": 0.00003,
                     "query_pack_sec": 0.0001,
                     "prepare_static_scene_sec": 0.0002,
                 },
@@ -391,6 +393,8 @@ Timing results:
 
         self.assertEqual(row["count_mode"], "boundary_event_point_id_count_device_columns")
         self.assertAlmostEqual(row["prepared_query_ms"]["samples"][0], 0.21)
+        self.assertAlmostEqual(row["boundary_event_device_columns_ms"]["samples"][0], 0.18)
+        self.assertAlmostEqual(row["boundary_event_grouped_count_ms"]["samples"][0], 0.03)
         self.assertEqual(row["validation_exact_query_ms"]["samples"], [])
         self.assertEqual(row["counts"]["last"], 512)
         self.assertIsNone(row["device_filtered_boundary_mode"])

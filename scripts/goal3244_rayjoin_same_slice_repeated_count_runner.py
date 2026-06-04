@@ -287,6 +287,8 @@ def run_rtdl_samples(
     prepare_sec: list[float] = []
     static_segment_pack_sec: list[float] = []
     static_shape_pack_sec: list[float] = []
+    boundary_event_device_columns_sec: list[float] = []
+    boundary_event_grouped_count_sec: list[float] = []
     counts: list[int] = []
     native_phase_samples: list[dict[str, Any] | None] = []
 
@@ -341,6 +343,10 @@ def run_rtdl_samples(
         static_order_sec.append(float(phases.get("static_segment_order_sec", 0.0)))
         if "validation_exact_query_sec" in phases:
             validation_exact_query_sec.append(float(phases["validation_exact_query_sec"]))
+        if "boundary_event_device_columns_sec" in phases:
+            boundary_event_device_columns_sec.append(float(phases["boundary_event_device_columns_sec"]))
+        if "boundary_event_grouped_count_sec" in phases:
+            boundary_event_grouped_count_sec.append(float(phases["boundary_event_grouped_count_sec"]))
         query_pack_sec.append(float(phases.get("query_pack_sec", packed_left_reuse.get("pack_seconds", 0.0))))
         prepare_sec.append(float(phases.get("prepare_static_scene_sec", prepared_reuse.get("prepare_static_scene_sec", 0.0))))
         static_segment_pack_sec.append(float(phases.get("static_segment_pack_sec", 0.0)))
@@ -368,6 +374,12 @@ def run_rtdl_samples(
         "repeat": int(repeat),
         "prepared_query_ms": summarize_samples([value * 1000.0 for value in query_sec]),
         "validation_exact_query_ms": summarize_samples([value * 1000.0 for value in validation_exact_query_sec]),
+        "boundary_event_device_columns_ms": summarize_samples(
+            [value * 1000.0 for value in boundary_event_device_columns_sec]
+        ),
+        "boundary_event_grouped_count_ms": summarize_samples(
+            [value * 1000.0 for value in boundary_event_grouped_count_sec]
+        ),
         "query_order_ms": summarize_samples([value * 1000.0 for value in query_order_sec if value != 0.0]),
         "static_order_ms": summarize_samples([value * 1000.0 for value in static_order_sec if value != 0.0]),
         "query_pack_ms": summarize_samples([value * 1000.0 for value in query_pack_sec]),
