@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import unittest
 
@@ -18,6 +19,9 @@ APP = (
     / "rtdl_rayjoin_v2_spatial_join_app.py"
 )
 RUNNER = ROOT / "scripts" / "goal3244_rayjoin_same_slice_repeated_count_runner.py"
+REPORT = ROOT / "docs" / "reports" / "goal3306_prepared_point_probe_columns_scalar_count_2026-06-04.md"
+PREPARED_ARTIFACT = ROOT / "docs" / "reports" / "goal3306_prepared_points_rayjoin_same_slice_pod_2026-06-04.json"
+BASELINE_ARTIFACT = ROOT / "docs" / "reports" / "goal3306_baseline_device_filtered_same_slice_pod_2026-06-04.json"
 
 
 class Goal3306PreparedPointProbeColumnsScalarCountTest(unittest.TestCase):
@@ -73,6 +77,41 @@ class Goal3306PreparedPointProbeColumnsScalarCountTest(unittest.TestCase):
         self.assertIn("prepared_point_probe_columns", app)
         self.assertIn("prepare_query_points_ms", runner)
         self.assertIn("validated device-side count was not validated against exact count", runner)
+
+    def test_report_and_artifacts_record_modest_repeated_query_win(self) -> None:
+        text = REPORT.read_text(encoding="utf-8")
+        prepared = json.loads(PREPARED_ARTIFACT.read_text(encoding="utf-8"))
+        baseline = json.loads(BASELINE_ARTIFACT.read_text(encoding="utf-8"))
+
+        for phrase in (
+            "modest repeated-query win",
+            "not a one-shot improvement",
+            "RTDL-beats-RayJoin claims",
+            "persistent launch parameter/count buffers",
+        ):
+            self.assertIn(phrase, text)
+
+        self.assertEqual(prepared["rtdl_commit"], "7890701c9d70dffc4a281d0a4ff5f207606859d2")
+        self.assertEqual(baseline["rtdl_commit"], prepared["rtdl_commit"])
+        self.assertFalse(any(prepared["claim_boundary"].values()))
+        self.assertFalse(any(baseline["claim_boundary"].values()))
+
+        prepared_pip = prepared["rtdl"]["pip"]
+        baseline_pip = baseline["rtdl"]["pip"]
+        self.assertEqual(prepared_pip["count_mode"], "device_filtered_prepared_points_validated")
+        self.assertEqual(baseline_pip["count_mode"], "device_filtered_validated")
+        self.assertEqual(prepared_pip["counts"]["last"], 1430)
+        self.assertEqual(baseline_pip["counts"]["last"], 1430)
+
+        self.assertLess(
+            prepared_pip["prepared_query_ms"]["median"],
+            baseline_pip["prepared_query_ms"]["median"],
+        )
+        self.assertGreater(prepared_pip["prepare_query_points_ms"]["median"], 0.0)
+        self.assertEqual(prepared_pip["native_phase_samples"][0]["mode"], "prepared_points_device_filtered_count")
+        self.assertEqual(prepared_pip["native_phase_samples"][0]["point_upload"], 0.0)
+        self.assertEqual(baseline_pip["native_phase_samples"][0]["mode"], "device_filtered_count")
+        self.assertGreater(baseline_pip["native_phase_samples"][0]["point_upload"], 0.0)
 
 
 if __name__ == "__main__":
