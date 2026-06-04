@@ -1,0 +1,353 @@
+{
+  "commit": "f03e915e",
+  "datasets": [
+    {
+      "candidate_event_count": 1429,
+      "claim_boundary": {
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false
+      },
+      "dataset": "data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+      "delta_total": 12,
+      "device_column_row_count": 1429,
+      "device_column_seconds": 0.5564247015863657,
+      "exact_row_count": 1417,
+      "exact_seconds": 0.004537834785878658,
+      "known_mismatch_points": [
+        {
+          "delta": 1,
+          "device_count": 3,
+          "device_shape_ids": [
+            521,
+            522,
+            523
+          ],
+          "exact_count": 2,
+          "exact_shape_ids": [
+            522,
+            523
+          ],
+          "extra_shape_ids": [
+            521
+          ],
+          "missing_shape_ids": [],
+          "point_id": 522
+        },
+        {
+          "delta": 1,
+          "device_count": 3,
+          "device_shape_ids": [
+            521,
+            522,
+            523
+          ],
+          "exact_count": 2,
+          "exact_shape_ids": [
+            522,
+            523
+          ],
+          "extra_shape_ids": [
+            521
+          ],
+          "missing_shape_ids": [],
+          "point_id": 523
+        },
+        {
+          "delta": 2,
+          "device_count": 4,
+          "device_shape_ids": [
+            418,
+            535,
+            539,
+            540
+          ],
+          "exact_count": 2,
+          "exact_shape_ids": [
+            535,
+            539
+          ],
+          "extra_shape_ids": [
+            418,
+            540
+          ],
+          "missing_shape_ids": [],
+          "point_id": 538
+        },
+        {
+          "delta": 2,
+          "device_count": 4,
+          "device_shape_ids": [
+            418,
+            535,
+            539,
+            540
+          ],
+          "exact_count": 2,
+          "exact_shape_ids": [
+            535,
+            539
+          ],
+          "extra_shape_ids": [
+            418,
+            540
+          ],
+          "missing_shape_ids": [],
+          "point_id": 539
+        },
+        {
+          "delta": 2,
+          "device_count": 4,
+          "device_shape_ids": [
+            418,
+            535,
+            539,
+            540
+          ],
+          "exact_count": 2,
+          "exact_shape_ids": [
+            418,
+            540
+          ],
+          "extra_shape_ids": [
+            535,
+            539
+          ],
+          "missing_shape_ids": [],
+          "point_id": 540
+        },
+        {
+          "delta": 2,
+          "device_count": 4,
+          "device_shape_ids": [
+            437,
+            559,
+            562,
+            565
+          ],
+          "exact_count": 2,
+          "exact_shape_ids": [
+            562,
+            565
+          ],
+          "extra_shape_ids": [
+            437,
+            559
+          ],
+          "missing_shape_ids": [],
+          "point_id": 564
+        },
+        {
+          "delta": 2,
+          "device_count": 4,
+          "device_shape_ids": [
+            437,
+            559,
+            562,
+            565
+          ],
+          "exact_count": 2,
+          "exact_shape_ids": [
+            562,
+            565
+          ],
+          "extra_shape_ids": [
+            437,
+            559
+          ],
+          "missing_shape_ids": [],
+          "point_id": 565
+        }
+      ],
+      "mismatch_point_count": 7,
+      "mismatch_sample": [
+        {
+          "delta": 1,
+          "device_count": 3,
+          "device_shape_ids": [
+            521,
+            522,
+            523
+          ],
+          "exact_count": 2,
+          "exact_shape_ids": [
+            522,
+            523
+          ],
+          "extra_shape_ids": [
+            521
+          ],
+          "missing_shape_ids": [],
+          "point_id": 522
+        },
+        {
+          "delta": 1,
+          "device_count": 3,
+          "device_shape_ids": [
+            521,
+            522,
+            523
+          ],
+          "exact_count": 2,
+          "exact_shape_ids": [
+            522,
+            523
+          ],
+          "extra_shape_ids": [
+            521
+          ],
+          "missing_shape_ids": [],
+          "point_id": 523
+        },
+        {
+          "delta": 2,
+          "device_count": 4,
+          "device_shape_ids": [
+            418,
+            535,
+            539,
+            540
+          ],
+          "exact_count": 2,
+          "exact_shape_ids": [
+            535,
+            539
+          ],
+          "extra_shape_ids": [
+            418,
+            540
+          ],
+          "missing_shape_ids": [],
+          "point_id": 538
+        },
+        {
+          "delta": 2,
+          "device_count": 4,
+          "device_shape_ids": [
+            418,
+            535,
+            539,
+            540
+          ],
+          "exact_count": 2,
+          "exact_shape_ids": [
+            535,
+            539
+          ],
+          "extra_shape_ids": [
+            418,
+            540
+          ],
+          "missing_shape_ids": [],
+          "point_id": 539
+        },
+        {
+          "delta": 2,
+          "device_count": 4,
+          "device_shape_ids": [
+            418,
+            535,
+            539,
+            540
+          ],
+          "exact_count": 2,
+          "exact_shape_ids": [
+            418,
+            540
+          ],
+          "extra_shape_ids": [
+            535,
+            539
+          ],
+          "missing_shape_ids": [],
+          "point_id": 540
+        },
+        {
+          "delta": 2,
+          "device_count": 4,
+          "device_shape_ids": [
+            437,
+            559,
+            562,
+            565
+          ],
+          "exact_count": 2,
+          "exact_shape_ids": [
+            562,
+            565
+          ],
+          "extra_shape_ids": [
+            437,
+            559
+          ],
+          "missing_shape_ids": [],
+          "point_id": 564
+        },
+        {
+          "delta": 2,
+          "device_count": 4,
+          "device_shape_ids": [
+            437,
+            559,
+            562,
+            565
+          ],
+          "exact_count": 2,
+          "exact_shape_ids": [
+            562,
+            565
+          ],
+          "extra_shape_ids": [
+            437,
+            559
+          ],
+          "missing_shape_ids": [],
+          "point_id": 565
+        }
+      ],
+      "negative_delta_count": 0,
+      "overflow": false,
+      "point_count": 512,
+      "positive_delta_count": 7,
+      "shape_count": 478
+    },
+    {
+      "candidate_event_count": 1471,
+      "claim_boundary": {
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false
+      },
+      "dataset": "data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+      "delta_total": 0,
+      "device_column_row_count": 1471,
+      "device_column_seconds": 0.006136816926300526,
+      "exact_row_count": 1471,
+      "exact_seconds": 0.0023369714617729187,
+      "known_mismatch_points": [],
+      "mismatch_point_count": 0,
+      "mismatch_sample": [],
+      "negative_delta_count": 0,
+      "overflow": false,
+      "point_count": 512,
+      "positive_delta_count": 0,
+      "shape_count": 501
+    }
+  ],
+  "environment": {
+    "fast_boundary_mode": "inclusive",
+    "query_axis": "z_point",
+    "scalar_count_pipeline": true
+  },
+  "goal": 3327,
+  "gpu": "NVIDIA RTX A5000",
+  "interpretation_boundary": "Compares exact prepared positive membership rows with the current generic device candidate-column route. It diagnoses extra shape ids for failing CDB slices; it does not authorize RayJoin semantics inside the engine.",
+  "rt_library": "/root/rtdl_goal3293/build/librtdl_optix.so",
+  "schema": "rtdl.goal3327.rayjoin_pip_extra_shape_id_diagnosis.v1"
+}
