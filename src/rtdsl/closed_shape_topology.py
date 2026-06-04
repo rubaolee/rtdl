@@ -1092,6 +1092,133 @@ def run_selective_closed_shape_owner_face_priority_membership_pipeline_cupy(
     }
 
 
+def run_selective_closed_shape_boundary_event_membership_pipeline_cupy(
+    candidate_point_ids,
+    candidate_shape_ids,
+    boundary_point_ids,
+    boundary_shape_ids,
+    boundary_crossing_t,
+    *,
+    selected_point_ids,
+    crossing_tolerance: float = 0.0,
+) -> dict[str, object]:
+    """Filter selected candidates through generic zero-boundary event pairs.
+
+    The caller supplies ``selected_point_ids``. RTDL does not infer which points
+    need boundary-event reconciliation. Non-selected candidate rows pass through
+    unchanged.
+    """
+
+    try:
+        import cupy as cp  # type: ignore
+    except Exception as exc:  # pragma: no cover
+        raise RuntimeError("CuPy is required for boundary-event selective continuation") from exc
+
+    candidate_point_ids = cp.asarray(candidate_point_ids, dtype=cp.int64)
+    candidate_shape_ids = cp.asarray(candidate_shape_ids, dtype=cp.int64)
+    boundary_point_ids = cp.asarray(boundary_point_ids, dtype=cp.int64)
+    boundary_shape_ids = cp.asarray(boundary_shape_ids, dtype=cp.int64)
+    boundary_crossing_t = cp.asarray(boundary_crossing_t, dtype=cp.float64)
+    selected_point_ids = cp.asarray(selected_point_ids, dtype=cp.int64)
+    if int(candidate_point_ids.size) != int(candidate_shape_ids.size):
+        raise ValueError("candidate point and shape columns must have the same length")
+    if (
+        int(boundary_point_ids.size) != int(boundary_shape_ids.size)
+        or int(boundary_point_ids.size) != int(boundary_crossing_t.size)
+    ):
+        raise ValueError("boundary point, shape, and crossing_t columns must have the same length")
+    if crossing_tolerance < 0.0:
+        raise ValueError("crossing_tolerance must be non-negative")
+
+    candidate_count = int(candidate_point_ids.size)
+    selected_mask = cp.isin(candidate_point_ids, selected_point_ids) if selected_point_ids.size else cp.zeros(
+        candidate_count,
+        dtype=cp.bool_,
+    )
+    selected_candidate_count = int(cp.count_nonzero(selected_mask).item())
+    passthrough_mask = ~selected_mask
+    passthrough_count = int(cp.count_nonzero(passthrough_mask).item())
+
+    if candidate_count == 0:
+        empty = cp.asarray((), dtype=cp.int64)
+        return {
+            "point_id": empty,
+            "shape_id": empty,
+            "membership": empty,
+            "boundary_event_filter_status": empty,
+            "selected_candidate_row_count": 0,
+            "passthrough_candidate_row_count": 0,
+            "selected_kept_row_count": 0,
+            "selected_dropped_row_count": 0,
+            "selected_point_filter_mode": "caller_supplied_ambiguity_set",
+            "boundary_event_filter": "candidate_pair_has_zero_crossing_t",
+            "crossing_tolerance": float(crossing_tolerance),
+        }
+
+    zero_boundary_mask = cp.abs(boundary_crossing_t) <= float(crossing_tolerance)
+    zero_boundary_count = int(cp.count_nonzero(zero_boundary_mask).item())
+    if zero_boundary_count:
+        key_points = cp.concatenate((candidate_point_ids, boundary_point_ids[zero_boundary_mask]))
+        key_shapes = cp.concatenate((candidate_shape_ids, boundary_shape_ids[zero_boundary_mask]))
+    else:
+        key_points = candidate_point_ids
+        key_shapes = candidate_shape_ids
+
+    int64_max = 9223372036854775807
+    min_point = int(cp.min(key_points).item())
+    max_point = int(cp.max(key_points).item())
+    min_shape = int(cp.min(key_shapes).item())
+    max_shape = int(cp.max(key_shapes).item())
+    point_offset = -min_point if min_point < 0 else 0
+    shape_offset = -min_shape if min_shape < 0 else 0
+    max_point_key = max_point + point_offset
+    max_shape_key = max_shape + shape_offset
+    base = max_shape_key + 1
+    if base <= 0 or max_point_key > (int64_max - max_shape_key) // base:
+        raise OverflowError("point/shape ids are too large for the CuPy boundary-event pair-key filter")
+
+    def pair_keys(point_ids, shape_ids):
+        return (point_ids + point_offset) * base + (shape_ids + shape_offset)
+
+    candidate_keys = pair_keys(candidate_point_ids, candidate_shape_ids)
+    selected_keep = cp.zeros((candidate_count,), dtype=cp.bool_)
+    if zero_boundary_count and selected_candidate_count:
+        zero_keys = cp.sort(
+            cp.unique(pair_keys(boundary_point_ids[zero_boundary_mask], boundary_shape_ids[zero_boundary_mask]))
+        )
+        candidate_pos = cp.searchsorted(zero_keys, candidate_keys)
+        safe_pos = cp.minimum(candidate_pos, int(zero_keys.size) - 1)
+        found = (candidate_pos < int(zero_keys.size)) & (zero_keys[safe_pos] == candidate_keys)
+        selected_keep = selected_mask & found
+
+    keep = passthrough_mask | selected_keep
+    point_out = candidate_point_ids[keep]
+    shape_out = candidate_shape_ids[keep]
+    membership_out = cp.ones((int(point_out.size),), dtype=cp.int64)
+    status = cp.where(selected_mask[keep], cp.asarray(1, dtype=cp.int64), cp.asarray(0, dtype=cp.int64))
+    if int(point_out.size) > 1:
+        order = cp.lexsort(cp.stack((shape_out, point_out)))
+        point_out = point_out[order]
+        shape_out = shape_out[order]
+        membership_out = membership_out[order]
+        status = status[order]
+
+    selected_kept_count = int(cp.count_nonzero(selected_keep).item())
+    return {
+        "point_id": point_out,
+        "shape_id": shape_out,
+        "membership": membership_out,
+        "boundary_event_filter_status": status,
+        "selected_candidate_row_count": selected_candidate_count,
+        "passthrough_candidate_row_count": passthrough_count,
+        "selected_kept_row_count": selected_kept_count,
+        "selected_dropped_row_count": selected_candidate_count - selected_kept_count,
+        "selected_point_filter_mode": "caller_supplied_ambiguity_set",
+        "boundary_event_filter": "candidate_pair_has_zero_crossing_t",
+        "crossing_tolerance": float(crossing_tolerance),
+    }
+
+
 def owner_face_ids_by_point_from_selection_rows(
     selection_rows: Iterable[Mapping[str, Any]],
     *,
@@ -1182,6 +1309,7 @@ def owner_face_priority_pipeline_contract() -> dict[str, object]:
             "filter_closed_shape_membership_candidate_columns_by_owner_face_cupy",
             "run_closed_shape_owner_face_priority_membership_pipeline_cupy",
             "run_selective_closed_shape_owner_face_priority_membership_pipeline_cupy",
+            "run_selective_closed_shape_boundary_event_membership_pipeline_cupy",
         ),
         "selection_rule": {
             "primary": "higher incident_face_count wins",
@@ -1296,6 +1424,8 @@ def validate_owner_face_priority_pipeline_contract() -> dict[str, object]:
         or "run_closed_shape_owner_face_priority_membership_pipeline_cupy"
         not in columnar_helpers
         or "run_selective_closed_shape_owner_face_priority_membership_pipeline_cupy"
+        not in columnar_helpers
+        or "run_selective_closed_shape_boundary_event_membership_pipeline_cupy"
         not in columnar_helpers
     ):
         raise ValueError("owner-face priority pipeline must expose columnar selection helpers")
