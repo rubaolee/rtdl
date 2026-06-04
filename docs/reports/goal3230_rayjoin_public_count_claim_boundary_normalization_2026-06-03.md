@@ -32,7 +32,7 @@ The canonical boundary is now present at the top, row, and measurement levels.
 
 ## Refreshed Evidence
 
-| Artifact | Cases | Counts | Median Prepared/Count Time |
+| Artifact | Cases | Counts (observed/expected) | Median Prepared/Count Time |
 | --- | --- | --- | --- |
 | Goal3225 overlay | `overlay_county128_soil128`, `overlay_county256_soil256` | `1/1`, `9/9` | 0.022716183215379715 s, 0.05908652022480965 s |
 | Goal3227 PIP | `pip_county512` | `1430/1430` | 0.06793256662786007 s |
