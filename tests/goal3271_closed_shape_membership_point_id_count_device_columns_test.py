@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import unittest
 
@@ -11,6 +12,7 @@ WORKLOADS = ROOT / "src" / "native" / "optix" / "rtdl_optix_workloads.cpp"
 CORE = ROOT / "src" / "native" / "optix" / "rtdl_optix_core.cpp"
 RUNTIME = ROOT / "src" / "rtdsl" / "optix_runtime.py"
 REPORT = ROOT / "docs" / "reports" / "goal3271_closed_shape_membership_point_id_count_device_columns_2026-06-03.md"
+ARTIFACT = ROOT / "docs" / "reports" / "goal3271_pod_closed_shape_point_id_count_device_columns_smoke_2026-06-03.json"
 
 
 class Goal3271ClosedShapeMembershipPointIdCountDeviceColumnsTest(unittest.TestCase):
@@ -65,6 +67,26 @@ class Goal3271ClosedShapeMembershipPointIdCountDeviceColumnsTest(unittest.TestCa
             "true zero-copy claim authorized: false",
         ):
             self.assertIn(phrase, report)
+
+    def test_pod_artifact_records_live_grouped_count_smoke(self) -> None:
+        data = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(data["goal"], 3271)
+        self.assertEqual(data["build"]["status"], "passed")
+        self.assertEqual(data["focused_unittest_slice"]["status"], "passed")
+        smoke = data["live_smoke"]
+        self.assertEqual(smoke["status"], "ok")
+        self.assertEqual(smoke["exact_device_filtered_count"], 2)
+        self.assertEqual(smoke["source_row_count"], 2)
+        self.assertFalse(smoke["overflow"])
+        self.assertTrue(smoke["device_resident"])
+        self.assertEqual(smoke["group_capacity"], 64)
+        self.assertEqual(smoke["selected_counts"], {"10": 1, "20": 1, "30": 0})
+        self.assertEqual(smoke["metadata_schema"], "device_grouped_count_i64_dense_columns")
+        self.assertEqual(smoke["metadata_output_residency"], "device_resident_dense_grouped_count_column")
+        self.assertFalse(data["claim_boundary"]["release_authorized"])
+        self.assertFalse(data["claim_boundary"]["true_zero_copy_claim_authorized"])
+        self.assertFalse(data["claim_boundary"]["rayjoin_specific_native_logic_added"])
 
 
 if __name__ == "__main__":

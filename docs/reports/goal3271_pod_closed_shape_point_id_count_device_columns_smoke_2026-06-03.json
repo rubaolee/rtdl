@@ -1,0 +1,44 @@
+{
+  "build": {
+    "command": "make build-optix OPTIX_PREFIX=/root/vendor/optix-sdk",
+    "status": "passed"
+  },
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_specific_native_logic_added": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "commit": "5123b913",
+  "env": {
+    "OPTIX_PREFIX": "/root/vendor/optix-sdk",
+    "RTDL_OPTIX_LIBRARY": "/root/rtdl_goal3239/build/librtdl_optix.so",
+    "RTDL_OPTIX_POINT_PRIMITIVE_QUERY_AXIS": "z_point"
+  },
+  "focused_unittest_slice": {
+    "command": "python3 -m unittest tests.goal3271_closed_shape_membership_point_id_count_device_columns_test tests.goal3269_closed_shape_membership_candidate_device_columns_test",
+    "status": "passed",
+    "test_count": 10
+  },
+  "goal": 3271,
+  "gpu": "NVIDIA A40, 570.211.01",
+  "live_smoke": {
+    "count_device_filtered_sec": 0.00025813840329647064,
+    "device_resident": true,
+    "exact_device_filtered_count": 2,
+    "group_capacity": 64,
+    "metadata_output_residency": "device_resident_dense_grouped_count_column",
+    "metadata_schema": "device_grouped_count_i64_dense_columns",
+    "overflow": false,
+    "point_id_count_device_columns_sec": 0.38793316297233105,
+    "selected_counts": {
+      "10": 1,
+      "20": 1,
+      "30": 0
+    },
+    "source_row_count": 2,
+    "status": "ok"
+  },
+  "schema": "rtdl.goal3271.closed_shape_membership_point_id_count_device_columns_pod_smoke.v1"
+}

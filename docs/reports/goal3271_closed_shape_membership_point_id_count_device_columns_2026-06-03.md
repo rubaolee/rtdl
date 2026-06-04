@@ -2,7 +2,7 @@
 
 Date: 2026-06-03
 
-Status: implemented locally; pod build/smoke evidence pending.
+Status: implemented with local source gates and pod build/smoke evidence.
 
 ## Purpose
 
@@ -64,18 +64,41 @@ Goal3271 provides one such continuation:
 
 ## Validation
 
-Local validation target:
+Local validation:
 
 ```text
 PYTHONPATH=src;. py -3 -m unittest \
-  tests.goal3271_closed_shape_membership_point_id_count_device_columns_test
+  tests.goal3271_closed_shape_membership_point_id_count_device_columns_test \
+  tests.goal3269_closed_shape_membership_candidate_device_columns_test
 ```
 
-Pod validation target:
+Result: 10 tests passed locally.
+
+Pod validation:
 
 ```text
 make build-optix OPTIX_PREFIX=/root/vendor/optix-sdk
 PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so \
   python3 -m unittest \
-    tests.goal3271_closed_shape_membership_point_id_count_device_columns_test
+    tests.goal3271_closed_shape_membership_point_id_count_device_columns_test \
+    tests.goal3269_closed_shape_membership_candidate_device_columns_test
 ```
+
+Result: OptiX build passed and the same 10-test focused slice passed on the pod.
+
+Live smoke artifact:
+
+- `docs/reports/goal3271_pod_closed_shape_point_id_count_device_columns_smoke_2026-06-03.json`
+
+Live smoke result:
+
+- exact device-filtered count: `2`
+- source row count: `2`
+- dense count output is device resident: `true`
+- overflow: `false`
+- group capacity: `64`
+- selected counts after CuPy wrapping: `10 -> 1`, `20 -> 1`, `30 -> 0`
+- metadata schema: `device_grouped_count_i64_dense_columns`
+- metadata output residency: `device_resident_dense_grouped_count_column`
+
+The selected-count check proves this continuation is keyed by caller point ID.
