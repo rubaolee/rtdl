@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import Iterable, Mapping
 
 
@@ -15,26 +16,10 @@ def spatial_order_points_2d(points: Iterable[object], mode: str = "morton_xy") -
     point_tuple = tuple(points)
     if mode == "natural" or not point_tuple:
         return point_tuple
-    if mode == "x_then_y":
-        return tuple(sorted(point_tuple, key=lambda point: (*_record_xy(point), _record_id(point))))
-    if mode == "y_then_x":
-        return tuple(sorted(point_tuple, key=lambda point: (_record_xy(point)[1], _record_xy(point)[0], _record_id(point))))
-
-    xs_ys = tuple(_record_xy(point) for point in point_tuple)
-    min_x = min(x for x, _ in xs_ys)
-    max_x = max(x for x, _ in xs_ys)
-    min_y = min(y for _, y in xs_ys)
-    max_y = max(y for _, y in xs_ys)
-    span_x = max(max_x - min_x, 1.0e-30)
-    span_y = max(max_y - min_y, 1.0e-30)
-
-    def morton_key(point: object) -> tuple[int, int]:
-        x, y = _record_xy(point)
-        ix = max(0, min(65535, int(((x - min_x) / span_x) * 65535.0)))
-        iy = max(0, min(65535, int(((y - min_y) / span_y) * 65535.0)))
-        return (_morton_code_2d_16(ix, iy), _record_id(point))
-
-    return tuple(sorted(point_tuple, key=morton_key))
+    ordered = _try_numpy_order_by_xy(point_tuple, mode, _record_xy)
+    if ordered is not None:
+        return ordered
+    return _python_order_by_xy(point_tuple, mode, _record_xy)
 
 
 def spatial_order_segments_2d(segments: Iterable[object], mode: str = "morton_xy") -> tuple[object, ...]:
@@ -45,35 +30,95 @@ def spatial_order_segments_2d(segments: Iterable[object], mode: str = "morton_xy
     segment_tuple = tuple(segments)
     if mode == "natural" or not segment_tuple:
         return segment_tuple
+    ordered = _try_numpy_order_by_xy(segment_tuple, mode, _segment_centroid_xy)
+    if ordered is not None:
+        return ordered
+    return _python_order_by_xy(segment_tuple, mode, _segment_centroid_xy)
+
+
+def _python_order_by_xy(
+    records: tuple[object, ...],
+    mode: str,
+    xy_getter: Callable[[object], tuple[float, float]],
+) -> tuple[object, ...]:
     if mode == "x_then_y":
-        return tuple(sorted(segment_tuple, key=lambda segment: (*_segment_centroid_xy(segment), _record_id(segment))))
+        return tuple(sorted(records, key=lambda record: (*xy_getter(record), _record_id(record))))
     if mode == "y_then_x":
         return tuple(
             sorted(
-                segment_tuple,
-                key=lambda segment: (
-                    _segment_centroid_xy(segment)[1],
-                    _segment_centroid_xy(segment)[0],
-                    _record_id(segment),
+                records,
+                key=lambda record: (
+                    xy_getter(record)[1],
+                    xy_getter(record)[0],
+                    _record_id(record),
                 ),
             )
         )
 
-    centroids = tuple(_segment_centroid_xy(segment) for segment in segment_tuple)
-    min_x = min(x for x, _ in centroids)
-    max_x = max(x for x, _ in centroids)
-    min_y = min(y for _, y in centroids)
-    max_y = max(y for _, y in centroids)
+    xs_ys = tuple(xy_getter(record) for record in records)
+    min_x = min(x for x, _ in xs_ys)
+    max_x = max(x for x, _ in xs_ys)
+    min_y = min(y for _, y in xs_ys)
+    max_y = max(y for _, y in xs_ys)
     span_x = max(max_x - min_x, 1.0e-30)
     span_y = max(max_y - min_y, 1.0e-30)
 
-    def morton_key(segment: object) -> tuple[int, int]:
-        x, y = _segment_centroid_xy(segment)
+    def morton_key(record: object) -> tuple[int, int]:
+        x, y = xy_getter(record)
         ix = max(0, min(65535, int(((x - min_x) / span_x) * 65535.0)))
         iy = max(0, min(65535, int(((y - min_y) / span_y) * 65535.0)))
-        return (_morton_code_2d_16(ix, iy), _record_id(segment))
+        return (_morton_code_2d_16(ix, iy), _record_id(record))
 
-    return tuple(sorted(segment_tuple, key=morton_key))
+    return tuple(sorted(records, key=morton_key))
+
+
+def _try_numpy_order_by_xy(
+    records: tuple[object, ...],
+    mode: str,
+    xy_getter: Callable[[object], tuple[float, float]],
+) -> tuple[object, ...] | None:
+    try:
+        import numpy as np
+    except Exception:
+        return None
+    try:
+        ids = np.fromiter((_record_id(record) for record in records), dtype=np.int64, count=len(records))
+        xy = np.asarray([xy_getter(record) for record in records], dtype=np.float64)
+        if xy.shape != (len(records), 2):
+            return None
+        xs = xy[:, 0]
+        ys = xy[:, 1]
+        if mode == "x_then_y":
+            order = np.lexsort((ids, ys, xs))
+        elif mode == "y_then_x":
+            order = np.lexsort((ids, xs, ys))
+        else:
+            codes = _numpy_morton_codes_2d_16(xs, ys, np)
+            order = np.lexsort((ids, codes))
+        return tuple(records[int(index)] for index in order)
+    except Exception:
+        return None
+
+
+def _numpy_morton_codes_2d_16(xs, ys, np):
+    min_x = float(np.min(xs))
+    max_x = float(np.max(xs))
+    min_y = float(np.min(ys))
+    max_y = float(np.max(ys))
+    span_x = max(max_x - min_x, 1.0e-30)
+    span_y = max(max_y - min_y, 1.0e-30)
+    ix = np.clip(((xs - min_x) / span_x) * 65535.0, 0.0, 65535.0).astype(np.uint64)
+    iy = np.clip(((ys - min_y) / span_y) * 65535.0, 0.0, 65535.0).astype(np.uint64)
+    return _numpy_part1by1_16(ix, np) | (_numpy_part1by1_16(iy, np) << np.uint64(1))
+
+
+def _numpy_part1by1_16(values, np):
+    v = values & np.uint64(0x0000ffff)
+    v = (v | (v << np.uint64(8))) & np.uint64(0x00ff00ff)
+    v = (v | (v << np.uint64(4))) & np.uint64(0x0f0f0f0f)
+    v = (v | (v << np.uint64(2))) & np.uint64(0x33333333)
+    v = (v | (v << np.uint64(1))) & np.uint64(0x55555555)
+    return v
 
 
 def _record_id(record: object) -> int:
