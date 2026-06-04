@@ -34,6 +34,7 @@ Artifacts:
 
 - `docs/reports/goal3267_default_compiletime_same_slice_pod_2026-06-03.json`
 - `docs/reports/goal3267_crossing_scale_soa_compiletime_same_slice_pod_2026-06-03.json`
+- `docs/reports/goal3267_reverted_control_same_slice_pod_2026-06-03.json`
 
 | Variant | PIP median ms | PIP candidate-count pass median ms | RTDL/RayJoin | Count |
 | --- | ---: | ---: | ---: | ---: |
@@ -50,12 +51,21 @@ The likely reason is that even the narrowed probe increases launch-parameter
 surface and kernel pressure enough to erase the saved division work. The result
 does not justify keeping the feature in the live engine.
 
+After reverting the live code and rebuilding OptiX, the same-slice control
+returned to the accepted range:
+
+| Commit | PIP median ms | PIP candidate-count pass median ms | Count |
+| --- | ---: | ---: | ---: |
+| `fced1fad` reverted control | 0.339672 | 0.249779 | 1430 |
+
 ## Decision
 
 The live code was reverted after measurement:
 
 - `e7020fa6` reverts the compile-time specialization.
 - `dd9e4595` reverts the gated crossing-scale SoA probe.
+- `fced1fad` records the negative evidence and preserves the reverted live
+  source.
 
 This keeps the repository on the faster accepted default while preserving the
 negative evidence for future design work.
