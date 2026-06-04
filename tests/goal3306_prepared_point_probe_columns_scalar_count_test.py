@@ -54,6 +54,7 @@ class Goal3306PreparedPointProbeColumnsScalarCountTest(unittest.TestCase):
             "prepare_point_probe_columns_2d_optix",
             "count_device_filtered_prepared_points",
             "rtdl.optix.prepared_point_probe_columns_2d.v1",
+            "prepared_points_device_filtered_count",
             "true_zero_copy_claim_authorized",
         ):
             self.assertIn(phrase, runtime)
