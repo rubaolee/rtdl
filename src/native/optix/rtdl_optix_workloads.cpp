@@ -3944,19 +3944,32 @@ static void finalize_segment_pair_intersection_rows(
         const std::unordered_map<uint32_t, const RtdlSegment*>* prepared_right_by_id = nullptr)
 {
     std::unordered_map<uint32_t, const RtdlSegment*> left_by_id;
-    left_by_id.reserve(left_count);
-    for (size_t i = 0; i < left_count; ++i) {
-        left_by_id.emplace(left[i].id, &left[i]);
-    }
     std::unordered_map<uint32_t, const RtdlSegment*> local_right_by_id;
-    const std::unordered_map<uint32_t, const RtdlSegment*>* right_lookup = prepared_right_by_id;
-    if (!right_lookup) {
-        local_right_by_id.reserve(right_count);
-        for (size_t i = 0; i < right_count; ++i) {
-            local_right_by_id.emplace(right[i].id, &right[i]);
+    bool left_lookup_ready = false;
+    bool local_right_lookup_ready = false;
+    auto find_left_by_id = [&]() -> const std::unordered_map<uint32_t, const RtdlSegment*>& {
+        if (!left_lookup_ready) {
+            left_by_id.reserve(left_count);
+            for (size_t i = 0; i < left_count; ++i) {
+                left_by_id.emplace(left[i].id, &left[i]);
+            }
+            left_lookup_ready = true;
         }
-        right_lookup = &local_right_by_id;
-    }
+        return left_by_id;
+    };
+    auto find_right_by_id = [&]() -> const std::unordered_map<uint32_t, const RtdlSegment*>& {
+        if (prepared_right_by_id) {
+            return *prepared_right_by_id;
+        }
+        if (!local_right_lookup_ready) {
+            local_right_by_id.reserve(right_count);
+            for (size_t i = 0; i < right_count; ++i) {
+                local_right_by_id.emplace(right[i].id, &right[i]);
+            }
+            local_right_lookup_ready = true;
+        }
+        return local_right_by_id;
+    };
 
     std::vector<RtdlSegmentPairIntersectionRow> refined;
     refined.reserve(gpu_rows.size());
@@ -3970,9 +3983,11 @@ static void finalize_segment_pair_intersection_rows(
             left_seg = &left[gpu_row.left_index];
             right_seg = &right[gpu_row.right_index];
         } else {
-            const auto left_it = left_by_id.find(gpu_row.left_id);
-            const auto right_it = right_lookup->find(gpu_row.right_id);
-            if (left_it == left_by_id.end() || right_it == right_lookup->end()) {
+            const auto& left_lookup = find_left_by_id();
+            const auto& right_lookup = find_right_by_id();
+            const auto left_it = left_lookup.find(gpu_row.left_id);
+            const auto right_it = right_lookup.find(gpu_row.right_id);
+            if (left_it == left_lookup.end() || right_it == right_lookup.end()) {
                 continue;
             }
             left_seg = left_it->second;
@@ -4016,19 +4031,32 @@ static size_t count_segment_pair_intersection_rows(
         const std::unordered_map<uint32_t, const RtdlSegment*>* prepared_right_by_id = nullptr)
 {
     std::unordered_map<uint32_t, const RtdlSegment*> left_by_id;
-    left_by_id.reserve(left_count);
-    for (size_t i = 0; i < left_count; ++i) {
-        left_by_id.emplace(left[i].id, &left[i]);
-    }
     std::unordered_map<uint32_t, const RtdlSegment*> local_right_by_id;
-    const std::unordered_map<uint32_t, const RtdlSegment*>* right_lookup = prepared_right_by_id;
-    if (!right_lookup) {
-        local_right_by_id.reserve(right_count);
-        for (size_t i = 0; i < right_count; ++i) {
-            local_right_by_id.emplace(right[i].id, &right[i]);
+    bool left_lookup_ready = false;
+    bool local_right_lookup_ready = false;
+    auto find_left_by_id = [&]() -> const std::unordered_map<uint32_t, const RtdlSegment*>& {
+        if (!left_lookup_ready) {
+            left_by_id.reserve(left_count);
+            for (size_t i = 0; i < left_count; ++i) {
+                left_by_id.emplace(left[i].id, &left[i]);
+            }
+            left_lookup_ready = true;
         }
-        right_lookup = &local_right_by_id;
-    }
+        return left_by_id;
+    };
+    auto find_right_by_id = [&]() -> const std::unordered_map<uint32_t, const RtdlSegment*>& {
+        if (prepared_right_by_id) {
+            return *prepared_right_by_id;
+        }
+        if (!local_right_lookup_ready) {
+            local_right_by_id.reserve(right_count);
+            for (size_t i = 0; i < right_count; ++i) {
+                local_right_by_id.emplace(right[i].id, &right[i]);
+            }
+            local_right_lookup_ready = true;
+        }
+        return local_right_by_id;
+    };
 
     size_t exact_count = 0;
     std::unordered_set<uint64_t> seen_pairs;
@@ -4041,9 +4069,11 @@ static size_t count_segment_pair_intersection_rows(
             left_seg = &left[gpu_row.left_index];
             right_seg = &right[gpu_row.right_index];
         } else {
-            const auto left_it = left_by_id.find(gpu_row.left_id);
-            const auto right_it = right_lookup->find(gpu_row.right_id);
-            if (left_it == left_by_id.end() || right_it == right_lookup->end()) {
+            const auto& left_lookup = find_left_by_id();
+            const auto& right_lookup = find_right_by_id();
+            const auto left_it = left_lookup.find(gpu_row.left_id);
+            const auto right_it = right_lookup.find(gpu_row.right_id);
+            if (left_it == left_lookup.end() || right_it == right_lookup.end()) {
                 continue;
             }
             left_seg = left_it->second;
