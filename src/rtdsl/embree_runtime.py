@@ -1116,11 +1116,23 @@ def _pack_segment_records_numpy_structured_one_pass(record_tuple, _np) -> Packed
     x1 = array["x1"]
     y1 = array["y1"]
     for index, record in enumerate(record_tuple):
-        ids[index] = _segment_id_to_packed_u32(_segment_field(record, "id"))
-        x0[index] = float(_segment_field(record, "x0"))
-        y0[index] = float(_segment_field(record, "y0"))
-        x1[index] = float(_segment_field(record, "x1"))
-        y1[index] = float(_segment_field(record, "y1"))
+        if isinstance(record, Mapping):
+            segment_id = record["id"]
+            sx0 = record["x0"]
+            sy0 = record["y0"]
+            sx1 = record["x1"]
+            sy1 = record["y1"]
+        else:
+            segment_id = record.id
+            sx0 = record.x0
+            sy0 = record.y0
+            sx1 = record.x1
+            sy1 = record.y1
+        ids[index] = _segment_id_to_packed_u32(segment_id)
+        x0[index] = float(sx0)
+        y0[index] = float(sy0)
+        x1[index] = float(sx1)
+        y1[index] = float(sy1)
     records = array.ctypes.data_as(ctypes.POINTER(_RtdlSegment))
     return PackedSegments(records=records, count=count, owner=array)
 
