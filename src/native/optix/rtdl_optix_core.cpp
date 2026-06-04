@@ -1193,33 +1193,28 @@ static __forceinline__ __device__ bool point_in_polygon(
     const float point_eps = 1.0e-4f;
     uint32_t n = poly.vertex_count;
     uint32_t off = poly.vertex_offset;
-    // Boundary check
-    for (uint32_t i = 0; i < n; ++i) {
-        float ax = params.vertices_x[off + i];
-        float ay = params.vertices_y[off + i];
-        float bx = params.vertices_x[off + (i + 1) % n];
-        float by = params.vertices_y[off + (i + 1) % n];
-        // Check if point lies on this edge
+    bool inside = false;
+    for (uint32_t i = 0, j = n - 1; i < n; j = i++) {
+        float ax = params.vertices_x[off + j];
+        float ay = params.vertices_y[off + j];
+        float bx = params.vertices_x[off + i];
+        float by = params.vertices_y[off + i];
+
         float len2 = (bx - ax) * (bx - ax) + (by - ay) * (by - ay);
         if (len2 <= point_eps * point_eps) {
             if (fabsf(px - ax) <= point_eps && fabsf(py - ay) <= point_eps)
                 return true;
-            continue;
+        } else {
+            float cross = (px - ax) * (by - ay) - (py - ay) * (bx - ax);
+            if (fabsf(cross) <= point_eps * sqrtf(len2)) {
+                float dot = (px - ax) * (bx - ax) + (py - ay) * (by - ay);
+                if (dot >= -point_eps && dot <= len2 + point_eps)
+                    return true;
+            }
         }
-        float cross = (px - ax) * (by - ay) - (py - ay) * (bx - ax);
-        if (fabsf(cross) <= point_eps * sqrtf(len2)) {
-            float dot = (px - ax) * (bx - ax) + (py - ay) * (by - ay);
-            if (dot >= -point_eps && dot <= len2 + point_eps)
-                return true;
-        }
-    }
-    // Ray casting
-    bool inside = false;
-    for (uint32_t i = 0, j = n - 1; i < n; j = i++) {
-        float xi = params.vertices_x[off + i], yi = params.vertices_y[off + i];
-        float xj = params.vertices_x[off + j], yj = params.vertices_y[off + j];
-        if (((yi > py) != (yj > py)) &&
-            (px <= (xj - xi) * (py - yi) / ((yj - yi) != 0.0f ? (yj - yi) : 1.0e-20f) + xi))
+
+        if (((by > py) != (ay > py)) &&
+            (px <= (ax - bx) * (py - by) / ((ay - by) != 0.0f ? (ay - by) : 1.0e-20f) + bx))
             inside = !inside;
     }
     return inside;
