@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import unittest
 
@@ -11,6 +12,9 @@ WORKLOADS = ROOT / "src" / "native" / "optix" / "rtdl_optix_workloads.cpp"
 RUNTIME = ROOT / "src" / "rtdsl" / "optix_runtime.py"
 INIT = ROOT / "src" / "rtdsl" / "__init__.py"
 PROBE = ROOT / "scripts" / "goal3310_rayjoin_pip_batch_scalar_count_probe.py"
+REPORT = ROOT / "docs" / "reports" / "goal3318_prepared_point_batch_executor_2026-06-04.md"
+ARTIFACT = ROOT / "docs" / "reports" / "goal3318_rayjoin_pip_batch_executor_auto_stream_2026-06-04.json"
+EXPECTED_COMMIT = "c037f510b89a2effd4eff32d025da1a3c053a0b1"
 
 
 class Goal3318PreparedPointBatchExecutorSurfaceTest(unittest.TestCase):
@@ -61,7 +65,44 @@ class Goal3318PreparedPointBatchExecutorSurfaceTest(unittest.TestCase):
         self.assertIn("executor prepared", probe)
         self.assertIn("prepared.prepare_device_filtered_prepared_points_batch_executor", probe)
 
+    def test_report_records_executor_boundary_and_result(self) -> None:
+        text = REPORT.read_text(encoding="utf-8")
+        self.assertIn("Goal3318 - Reusable Prepared Point Batch Count Executor", text)
+        self.assertIn("c037f510b89a2effd4eff32d025da1a3c053a0b1", text)
+        self.assertIn("0.034875", text)
+        self.assertIn("6.78x", text)
+        self.assertIn("contains no RayJoin-specific native logic", text)
+        self.assertIn("rtdl_beats_rayjoin_claim_authorized`: false", text)
+
+    def test_executor_artifact_is_exact_and_claim_boundary_clean(self) -> None:
+        data = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+        self.assertEqual(data["rtdl_commit"], EXPECTED_COMMIT)
+        self.assertEqual(data["batch_stream_count"], "auto")
+        self.assertTrue(data["batch_executor"])
+        self.assertEqual(data["exact_count"], 1430)
+        self.assertEqual(data["gpu"], "NVIDIA RTX A5000, 580.126.09")
+        expected_effective = {
+            1: 1,
+            4: 1,
+            8: 4,
+            16: 8,
+            32: 8,
+            64: 16,
+        }
+        rows = {row["request_count"]: row for row in data["batch_rows"]}
+        self.assertEqual(set(rows), set(expected_effective))
+        for request_count, effective_streams in expected_effective.items():
+            row = rows[request_count]
+            self.assertTrue(row["batch_executor"])
+            self.assertEqual(row["batch_stream_count_effective"], effective_streams)
+            self.assertEqual(row["count_first"], 1430)
+            self.assertEqual(row["count_last"], 1430)
+            self.assertEqual(row["native_modes"], ["prepared_points_device_filtered_batch_executor_run"])
+        self.assertLess(rows[32]["per_request_ms_median"], 0.035)
+        self.assertLess(rows[64]["per_request_ms_median"], 0.034)
+        for authorized in data["claim_boundary"].values():
+            self.assertIs(authorized, False)
+
 
 if __name__ == "__main__":
     unittest.main()
-
