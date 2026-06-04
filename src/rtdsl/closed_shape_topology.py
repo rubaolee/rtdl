@@ -298,6 +298,70 @@ def select_owner_faces_from_incident_candidates_with_priority(
     return tuple(selected_rows)
 
 
+def derive_owner_face_priority_rows_from_rank_signals(
+    priority_signal_rows: Iterable[Mapping[str, Any]],
+    *,
+    rank_fields: Iterable[str],
+    tie_policy: str = "raise",
+) -> tuple[dict[str, object], ...]:
+    """Build deterministic priority rows from caller-supplied rank signals.
+
+    This helper does not infer ownership. The caller supplies generic rank
+    columns and declares their ordering. Lower rank tuples receive lower
+    priority values. Missing rank fields, duplicate point/face rows, and tied
+    rank tuples fail closed by default.
+    """
+
+    fields = tuple(str(field) for field in rank_fields)
+    if not fields:
+        raise ValueError("rank_fields must not be empty")
+    if tie_policy not in {"raise", "drop"}:
+        raise ValueError("tie_policy must be 'raise' or 'drop'")
+
+    grouped: dict[int, list[tuple[int, tuple[Any, ...]]]] = {}
+    seen_pairs: set[tuple[int, int]] = set()
+    for row in priority_signal_rows:
+        point_id = int(row["point_id"])
+        face_id = int(row["face_id"])
+        pair = (point_id, face_id)
+        if pair in seen_pairs:
+            raise ValueError(
+                f"duplicate owner-face priority signal for point_id={point_id}, face_id={face_id}"
+            )
+        seen_pairs.add(pair)
+        missing_fields = tuple(field for field in fields if field not in row)
+        if missing_fields:
+            raise KeyError(f"missing owner-face priority rank fields: {missing_fields}")
+        grouped.setdefault(point_id, []).append((face_id, tuple(row[field] for field in fields)))
+
+    priority_rows: list[dict[str, object]] = []
+    for point_id in sorted(grouped):
+        rows = grouped[point_id]
+        key_counts: dict[tuple[Any, ...], int] = {}
+        for _, rank_key in rows:
+            key_counts[rank_key] = key_counts.get(rank_key, 0) + 1
+        tied_keys = tuple(rank_key for rank_key, count in key_counts.items() if count > 1)
+        if tied_keys:
+            if tie_policy == "raise":
+                raise ValueError(f"ambiguous owner-face priority rank for point_id={point_id}: {tied_keys}")
+            rows = [(face_id, rank_key) for face_id, rank_key in rows if rank_key not in tied_keys]
+
+        try:
+            sorted_rows = sorted(rows, key=lambda item: (item[1], item[0]))
+        except TypeError as exc:
+            raise TypeError("owner-face priority rank values must be mutually sortable") from exc
+        for priority, (face_id, rank_key) in enumerate(sorted_rows):
+            priority_rows.append(
+                {
+                    "point_id": point_id,
+                    "face_id": face_id,
+                    "priority": priority,
+                    "priority_rank_key": rank_key,
+                }
+            )
+    return tuple(priority_rows)
+
+
 def owner_face_ids_by_point_from_selection_rows(
     selection_rows: Iterable[Mapping[str, Any]],
     *,
@@ -377,6 +441,9 @@ def owner_face_priority_pipeline_contract() -> dict[str, object]:
             "owner_face_ids_by_point_from_selection_rows",
             "filter_closed_shape_membership_candidates_by_owner_face",
         ),
+        "optional_priority_derivation_helpers": (
+            "derive_owner_face_priority_rows_from_rank_signals",
+        ),
         "selection_rule": {
             "primary": "higher incident_face_count wins",
             "tie_break": "lower caller_supplied_priority wins",
@@ -440,6 +507,12 @@ def validate_owner_face_priority_pipeline_contract() -> dict[str, object]:
     inputs = contract["inputs"]
     if not isinstance(inputs, tuple) or not any("priority_rows" in item for item in inputs):
         raise ValueError("owner-face priority pipeline must require explicit priority rows")
+    helpers = contract["optional_priority_derivation_helpers"]
+    if (
+        not isinstance(helpers, tuple)
+        or "derive_owner_face_priority_rows_from_rank_signals" not in helpers
+    ):
+        raise ValueError("owner-face priority pipeline must expose the rank-signal derivation helper")
     boundary = contract["claim_boundary"]
     if not isinstance(boundary, Mapping) or any(bool(value) for value in boundary.values()):
         raise ValueError("owner-face priority pipeline claim boundary must stay blocked")
