@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import json
 import unittest
 
 
@@ -10,6 +11,8 @@ API = ROOT / "src" / "native" / "optix" / "rtdl_optix_api.cpp"
 PRELUDE = ROOT / "src" / "native" / "optix" / "rtdl_optix_prelude.h"
 RUNTIME = ROOT / "src" / "rtdsl" / "optix_runtime.py"
 INIT = ROOT / "src" / "rtdsl" / "__init__.py"
+REPORT = ROOT / "docs" / "reports" / "goal3312_prepared_point_batch_graph_negative_probe_2026-06-04.md"
+ARTIFACT = ROOT / "docs" / "reports" / "goal3312_batch_graph_replay_negative_probe_2026-06-04.json"
 
 
 class Goal3312PreparedPointBatchGraphCountTest(unittest.TestCase):
@@ -58,6 +61,19 @@ class Goal3312PreparedPointBatchGraphCountTest(unittest.TestCase):
         self.assertIn("if mode_value == 10", runtime)
         self.assertIn('"true_zero_copy_claim_authorized": False', runtime)
         self.assertIn("PreparedOptixPointClosedShapeBatchCountGraph2D", init_text)
+
+    def test_report_records_negative_fail_closed_result(self) -> None:
+        report = REPORT.read_text(encoding="utf-8")
+        artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+        self.assertIn("fail-closed negative probe", report)
+        self.assertIn("not currently usable as a performance optimization", report)
+        self.assertIn("not a performance win", report)
+        self.assertEqual(artifact["graph_status"], "failed_closed")
+        self.assertEqual(artifact["exact"], 2)
+        self.assertEqual(artifact["single"], 2)
+        self.assertEqual(artifact["batch"], [2, 2, 2, 2, 2])
+        self.assertIn("failed validation", artifact["error"])
+        self.assertFalse(any(artifact["claim_boundary"].values()))
 
 
 if __name__ == "__main__":

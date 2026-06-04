@@ -1,0 +1,35 @@
+{
+  "batch": [
+    2,
+    2,
+    2,
+    2,
+    2
+  ],
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "error": "prepared OptiX batch-count graph replay failed validation: (0, 0, 0, 0, 0) != (2, 2, 2, 2, 2)",
+  "exact": 2,
+  "goal": 3312,
+  "graph_status": "failed_closed",
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "rtdl_commit": "5970995b1b858f75af57da16f03dba0ce07f6d4b",
+  "single": 2,
+  "timings": {
+    "candidate_count_pass": 2.5439e-05,
+    "candidate_download": 0.0,
+    "candidate_write_pass": 0.0,
+    "emitted_count": 0,
+    "exact_refine": 0.0,
+    "mode": "prepared_points_device_filtered_batch_graph_replay",
+    "point_pack": 0.0,
+    "point_upload": 0.0,
+    "raw_candidate_count": 0
+  }
+}
