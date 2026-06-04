@@ -49,14 +49,7 @@ def segment_columns_2d(
         if isinstance(records, (str, bytes)):
             raise ValueError("segment records must be an iterable of records")
         record_tuple = tuple(records)
-        count = len(record_tuple)
-        arrays = (
-            np.fromiter((_segment_field(record, "id") for record in record_tuple), dtype=np.int64, count=count),
-            np.fromiter((_segment_field(record, "x0") for record in record_tuple), dtype=np.float64, count=count),
-            np.fromiter((_segment_field(record, "y0") for record in record_tuple), dtype=np.float64, count=count),
-            np.fromiter((_segment_field(record, "x1") for record in record_tuple), dtype=np.float64, count=count),
-            np.fromiter((_segment_field(record, "y1") for record in record_tuple), dtype=np.float64, count=count),
-        )
+        arrays = _segment_record_arrays_one_pass(record_tuple, np)
     else:
         if any(value is None for value in (ids, x0, y0, x1, y1)):
             raise ValueError("segment column inputs require ids, x0, y0, x1, and y1")
@@ -114,6 +107,41 @@ def _ordered_segment_arrays(arrays, order_mode: str, np):
     else:
         order = np.lexsort((ids.astype(np.uint64), _numpy_morton_codes_2d_16(cx, cy, np)))
     return tuple(array[order] for array in arrays)
+
+
+def _segment_record_arrays_one_pass(record_tuple, np):
+    count = len(record_tuple)
+    ids = np.empty(count, dtype=np.int64)
+    x0 = np.empty(count, dtype=np.float64)
+    y0 = np.empty(count, dtype=np.float64)
+    x1 = np.empty(count, dtype=np.float64)
+    y1 = np.empty(count, dtype=np.float64)
+    for index, record in enumerate(record_tuple):
+        if isinstance(record, Mapping):
+            segment_id = record["id"]
+            sx0 = record["x0"]
+            sy0 = record["y0"]
+            sx1 = record["x1"]
+            sy1 = record["y1"]
+        else:
+            try:
+                segment_id = record.id
+                sx0 = record.x0
+                sy0 = record.y0
+                sx1 = record.x1
+                sy1 = record.y1
+            except AttributeError:
+                segment_id = _segment_field(record, "id")
+                sx0 = _segment_field(record, "x0")
+                sy0 = _segment_field(record, "y0")
+                sx1 = _segment_field(record, "x1")
+                sy1 = _segment_field(record, "y1")
+        ids[index] = int(segment_id)
+        x0[index] = float(sx0)
+        y0[index] = float(sy0)
+        x1[index] = float(sx1)
+        y1[index] = float(sy1)
+    return ids, x0, y0, x1, y1
 
 
 def _validate_segment_arrays(arrays) -> None:
