@@ -492,9 +492,10 @@ def select_owner_faces_from_incident_candidate_columns_with_priority_cupy(
     """CuPy device-column continuation for explicit-priority owner-face selection.
 
     The device continuation emits numeric ``selection_status_code`` values
-    instead of Python strings. It fails closed on duplicate incident or priority
-    ``(point_id, face_id)`` pairs by default so each row has one deterministic
-    role in the grouped selection.
+    instead of the Python reference's ``selection_status`` strings and returns
+    ``selection_status_code_labels`` so callers can translate explicitly. It
+    fails closed on duplicate incident or priority ``(point_id, face_id)`` pairs
+    by default so each row has one deterministic role in the grouped selection.
     """
 
     if ambiguity_policy not in {"raise", "drop", "emit_ambiguous"}:
@@ -1090,6 +1091,7 @@ def owner_face_priority_pipeline_contract() -> dict[str, object]:
         "promotion_requirements": (
             "deterministic priority derivation contract or explicit caller priority columns",
             "same-contract tests against the Python reference",
+            "explicit selection_status_code to selection_status translation at path boundaries",
             "pod/native evidence before any device-lowered implementation is selected by default",
             "claim-boundary review before public performance or paper-reproduction wording",
         ),
@@ -1152,6 +1154,12 @@ def validate_owner_face_priority_pipeline_contract() -> dict[str, object]:
     inputs = contract["inputs"]
     if not isinstance(inputs, tuple) or not any("priority_rows" in item for item in inputs):
         raise ValueError("owner-face priority pipeline must require explicit priority rows")
+    promotion_requirements = contract["promotion_requirements"]
+    if (
+        not isinstance(promotion_requirements, tuple)
+        or not any("selection_status_code" in item for item in promotion_requirements)
+    ):
+        raise ValueError("owner-face priority pipeline must document status-code translation")
     helpers = contract["optional_priority_derivation_helpers"]
     if (
         not isinstance(helpers, tuple)
