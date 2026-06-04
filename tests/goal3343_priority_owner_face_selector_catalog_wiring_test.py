@@ -10,22 +10,22 @@ def _node(node_id: str):
     return None
 
 
-class Goal3340FailClosedOwnerFaceSelectorCatalogWiringTest(unittest.TestCase):
-    def test_catalog_preserves_fail_closed_selector_discovery_terms(self):
+class Goal3343PriorityOwnerFaceSelectorCatalogWiringTest(unittest.TestCase):
+    def test_catalog_points_to_priority_selector_report(self):
         node = _node("candidate.closed_shape_topology_membership_count_2d")
         self.assertIsNotNone(node)
         assert node is not None
-        self.assertTrue(node.reference_path.startswith("docs/reports/goal33"))
+        self.assertEqual(
+            node.reference_path,
+            "docs/reports/goal3342_priority_owner_face_selector_reference_2026-06-04.md",
+        )
         self.assertIn(
-            "derive owner face only when incident topology has a unique maximum",
+            "break incident topology ties only with caller supplied face priorities",
             node.intent_phrases,
         )
-        self.assertTrue(
-            "fail-closed incident-face selector" in node.summary
-            or "explicit-priority tie-break helper" in node.summary
-        )
+        self.assertIn("explicit-priority tie-break helper", node.summary)
 
-    def test_candidate_status_is_not_promoted(self):
+    def test_candidate_remains_unpromoted(self):
         node = _node("candidate.closed_shape_topology_membership_count_2d")
         self.assertIsNotNone(node)
         assert node is not None
