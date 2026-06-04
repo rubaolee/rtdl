@@ -193,6 +193,110 @@ def select_unique_owner_faces_from_incident_candidates(
     return tuple(selected_rows)
 
 
+def select_owner_faces_from_incident_candidates_with_priority(
+    incident_face_candidate_rows: Iterable[Mapping[str, Any]],
+    priority_rows: Iterable[Mapping[str, Any]],
+    *,
+    ambiguity_policy: str = "raise",
+) -> tuple[dict[str, int | str], ...]:
+    """Select owner faces using incident counts plus caller-supplied priorities.
+
+    Higher incident-face count wins first. If counts tie, lower priority value
+    wins. Missing or tied priorities fail closed by default. The priority rows
+    are explicit caller/data policy; this helper does not infer those priorities
+    from application names or native-engine behavior.
+    """
+
+    if ambiguity_policy not in {"raise", "drop", "emit_ambiguous"}:
+        raise ValueError("ambiguity_policy must be 'raise', 'drop', or 'emit_ambiguous'")
+
+    priority_by_key: dict[tuple[int, int], int] = {}
+    for row in priority_rows:
+        priority_by_key[(int(row["point_id"]), int(row["face_id"]))] = int(row["priority"])
+
+    grouped: dict[int, list[Mapping[str, Any]]] = {}
+    for row in incident_face_candidate_rows:
+        grouped.setdefault(int(row["point_id"]), []).append(row)
+
+    selected_rows: list[dict[str, int | str]] = []
+    for point_id in sorted(grouped):
+        rows = grouped[point_id]
+        max_count = max(int(row["incident_face_count"]) for row in rows)
+        count_winners = sorted(
+            (row for row in rows if int(row["incident_face_count"]) == max_count),
+            key=lambda row: int(row["face_id"]),
+        )
+        if len(count_winners) == 1:
+            winner = count_winners[0]
+            selected_rows.append(
+                {
+                    "point_id": point_id,
+                    "owner_face_id": int(winner["face_id"]),
+                    "incident_face_count": max_count,
+                    "candidate_count": 1,
+                    "selection_status": "unique_max_incident_face",
+                }
+            )
+            continue
+
+        missing_priority_faces = tuple(
+            int(row["face_id"])
+            for row in count_winners
+            if (point_id, int(row["face_id"])) not in priority_by_key
+        )
+        if missing_priority_faces:
+            if ambiguity_policy == "raise":
+                raise ValueError(
+                    f"missing owner-face priority for point_id={point_id}: {missing_priority_faces}"
+                )
+            if ambiguity_policy == "drop":
+                continue
+            selected_rows.append(
+                {
+                    "point_id": point_id,
+                    "owner_face_id": -1,
+                    "incident_face_count": max_count,
+                    "candidate_count": len(count_winners),
+                    "selection_status": "missing_priority",
+                }
+            )
+            continue
+
+        min_priority = min(priority_by_key[(point_id, int(row["face_id"]))] for row in count_winners)
+        priority_winners = [
+            row
+            for row in count_winners
+            if priority_by_key[(point_id, int(row["face_id"]))] == min_priority
+        ]
+        if len(priority_winners) != 1:
+            if ambiguity_policy == "raise":
+                faces = tuple(int(row["face_id"]) for row in priority_winners)
+                raise ValueError(f"ambiguous owner-face priority for point_id={point_id}: {faces}")
+            if ambiguity_policy == "drop":
+                continue
+            selected_rows.append(
+                {
+                    "point_id": point_id,
+                    "owner_face_id": -1,
+                    "incident_face_count": max_count,
+                    "candidate_count": len(priority_winners),
+                    "selection_status": "ambiguous_priority_tie",
+                }
+            )
+            continue
+        winner = priority_winners[0]
+        selected_rows.append(
+            {
+                "point_id": point_id,
+                "owner_face_id": int(winner["face_id"]),
+                "incident_face_count": max_count,
+                "candidate_count": len(count_winners),
+                "selection_status": "priority_tie_break",
+            }
+        )
+    return tuple(selected_rows)
+
+
 def owner_face_membership_contract() -> dict[str, object]:
     """Return the generic reference contract for owner-face membership."""
 
@@ -205,7 +309,10 @@ def owner_face_membership_contract() -> dict[str, object]:
             "owner_face_ids_by_point",
         ),
         "outputs": ("point_id", "shape_id", "membership", "owner_face_id"),
-        "optional_reference_helpers": ("select_unique_owner_faces_from_incident_candidates",),
+        "optional_reference_helpers": (
+            "select_unique_owner_faces_from_incident_candidates",
+            "select_owner_faces_from_incident_candidates_with_priority",
+        ),
         "app_agnostic": True,
         "native_engine_may_infer_app_ownership": False,
         "claim_boundary": {
