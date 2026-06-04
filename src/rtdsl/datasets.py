@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import gzip
 import json
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urlencode
@@ -810,3 +811,65 @@ def chains_to_topology_rows(dataset: CdbDataset, *, limit_chains: int | None = N
         }
         for chain in chains
     )
+
+
+def chains_to_incident_face_candidate_rows(
+    dataset: CdbDataset,
+    *,
+    point_chain_ids: set[int] | frozenset[int] | tuple[int, ...] | list[int] | None = None,
+    coordinate_precision: int = 12,
+    endpoint_only: bool = True,
+    limit_chains: int | None = None,
+) -> tuple[dict[str, int | float], ...]:
+    """Return incident face candidates for probe coordinates without choosing ownership.
+
+    Each selected chain contributes its first point as the probe coordinate,
+    matching ``chains_to_probe_points``. The returned rows count face ids from
+    chains incident to that coordinate. This helper intentionally does not pick
+    an owner face; ties and app/data semantics remain explicit caller work.
+    """
+
+    if coordinate_precision < 0:
+        raise ValueError("coordinate_precision must be non-negative")
+    chains = dataset.chains if limit_chains is None else dataset.chains[:limit_chains]
+    selected = None if point_chain_ids is None else {int(chain_id) for chain_id in point_chain_ids}
+
+    def coordinate_key(point: CdbPoint) -> tuple[float, float]:
+        return (round(float(point.x), coordinate_precision), round(float(point.y), coordinate_precision))
+
+    incident_by_coordinate: dict[tuple[float, float], list[CdbChain]] = {}
+    for chain in chains:
+        if not chain.points:
+            continue
+        indices = (0, len(chain.points) - 1) if endpoint_only else range(len(chain.points))
+        for index in indices:
+            if index < 0 or index >= len(chain.points):
+                continue
+            incident_by_coordinate.setdefault(coordinate_key(chain.points[index]), []).append(chain)
+
+    rows: list[dict[str, int | float]] = []
+    for chain in chains:
+        if selected is not None and int(chain.chain_id) not in selected:
+            continue
+        if not chain.points:
+            continue
+        probe_coordinate = coordinate_key(chain.points[0])
+        incident_chains = incident_by_coordinate.get(probe_coordinate, [])
+        counts: Counter[int] = Counter()
+        for incident in incident_chains:
+            if incident.left_face_id != 0:
+                counts[int(incident.left_face_id)] += 1
+            if incident.right_face_id != 0:
+                counts[int(incident.right_face_id)] += 1
+        for face_id, count in sorted(counts.items(), key=lambda item: (-item[1], item[0])):
+            rows.append(
+                {
+                    "point_id": int(chain.chain_id),
+                    "face_id": int(face_id),
+                    "incident_face_count": int(count),
+                    "incident_chain_count": int(len(incident_chains)),
+                    "probe_x": float(probe_coordinate[0]),
+                    "probe_y": float(probe_coordinate[1]),
+                }
+            )
+    return tuple(rows)

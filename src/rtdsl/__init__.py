@@ -593,6 +593,7 @@ from .datasets import chains_to_probe_points
 from .datasets import chains_to_segment_columns
 from .datasets import chains_to_segments
 from .datasets import chains_to_topology_rows
+from .datasets import chains_to_incident_face_candidate_rows
 from .closed_shape_topology import OWNER_FACE_MEMBERSHIP_CONTRACT
 from .closed_shape_topology import count_closed_shape_membership_candidates_by_owner_face
 from .closed_shape_topology import filter_closed_shape_membership_candidates_by_owner_face
@@ -2329,6 +2330,7 @@ __all__ = [
     "chains_to_segment_columns",
     "chains_to_segments",
     "chains_to_topology_rows",
+    "chains_to_incident_face_candidate_rows",
     "OWNER_FACE_MEMBERSHIP_CONTRACT",
     "count_closed_shape_membership_candidates_by_owner_face",
     "filter_closed_shape_membership_candidates_by_owner_face",
