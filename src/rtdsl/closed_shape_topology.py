@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Mapping, Sequence
 from typing import Any
 
 
@@ -362,6 +362,51 @@ def derive_owner_face_priority_rows_from_rank_signals(
     return tuple(priority_rows)
 
 
+def derive_owner_face_priority_columns_from_rank_signals(
+    point_ids: Sequence[int],
+    face_ids: Sequence[int],
+    rank_columns: Mapping[str, Sequence[Any]],
+    *,
+    rank_fields: Iterable[str],
+    tie_policy: str = "raise",
+) -> dict[str, tuple[Any, ...]]:
+    """Columnar front door for deterministic owner-face priority derivation."""
+
+    fields = tuple(str(field) for field in rank_fields)
+    if len(point_ids) != len(face_ids):
+        raise ValueError("point_ids and face_ids must have the same length")
+    row_count = len(point_ids)
+    missing_columns = tuple(field for field in fields if field not in rank_columns)
+    if missing_columns:
+        raise KeyError(f"missing owner-face priority rank columns: {missing_columns}")
+    bad_lengths = tuple(
+        field for field in fields if len(rank_columns[field]) != row_count
+    )
+    if bad_lengths:
+        raise ValueError(
+            f"owner-face priority rank columns have wrong length: {bad_lengths}"
+        )
+
+    rows = []
+    for index, (point_id, face_id) in enumerate(zip(point_ids, face_ids)):
+        row: dict[str, Any] = {"point_id": int(point_id), "face_id": int(face_id)}
+        for field in fields:
+            row[field] = rank_columns[field][index]
+        rows.append(row)
+
+    priority_rows = derive_owner_face_priority_rows_from_rank_signals(
+        rows,
+        rank_fields=fields,
+        tie_policy=tie_policy,
+    )
+    return {
+        "point_id": tuple(row["point_id"] for row in priority_rows),
+        "face_id": tuple(row["face_id"] for row in priority_rows),
+        "priority": tuple(row["priority"] for row in priority_rows),
+        "priority_rank_key": tuple(row["priority_rank_key"] for row in priority_rows),
+    }
+
+
 def owner_face_ids_by_point_from_selection_rows(
     selection_rows: Iterable[Mapping[str, Any]],
     *,
@@ -443,6 +488,7 @@ def owner_face_priority_pipeline_contract() -> dict[str, object]:
         ),
         "optional_priority_derivation_helpers": (
             "derive_owner_face_priority_rows_from_rank_signals",
+            "derive_owner_face_priority_columns_from_rank_signals",
         ),
         "selection_rule": {
             "primary": "higher incident_face_count wins",
@@ -511,8 +557,9 @@ def validate_owner_face_priority_pipeline_contract() -> dict[str, object]:
     if (
         not isinstance(helpers, tuple)
         or "derive_owner_face_priority_rows_from_rank_signals" not in helpers
+        or "derive_owner_face_priority_columns_from_rank_signals" not in helpers
     ):
-        raise ValueError("owner-face priority pipeline must expose the rank-signal derivation helper")
+        raise ValueError("owner-face priority pipeline must expose rank-signal derivation helpers")
     boundary = contract["claim_boundary"]
     if not isinstance(boundary, Mapping) or any(bool(value) for value in boundary.values()):
         raise ValueError("owner-face priority pipeline claim boundary must stay blocked")
