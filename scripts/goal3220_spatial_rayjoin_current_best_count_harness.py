@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import statistics
 import subprocess
 import sys
@@ -17,8 +18,13 @@ sys.path.insert(0, str(ROOT))
 from examples.v2_0.research_benchmarks.spatial_rayjoin import rtdl_rayjoin_v2_spatial_join_app as rayjoin_app
 
 
-GOAL3220_HARNESS_VERSION = "rtdl.goal3220.spatial_rayjoin_current_best_count_harness.v1"
+GOAL3220_HARNESS_VERSION = "rtdl.goal3220.spatial_rayjoin_current_best_count_harness.v2"
 DEFAULT_WORKLOADS = ("pip", "lsi", "overlay_seed")
+DEFAULT_DATASET_BY_WORKLOAD = {
+    "pip": "tests/fixtures/rayjoin/br_county_subset.cdb",
+    "lsi": "tests/fixtures/rayjoin/br_county_subset.cdb",
+    "overlay_seed": "derived/authored_overlay_squares_tiled_x64",
+}
 GENERIC_PRIMITIVE_BY_WORKLOAD = {
     "pip": "POINT_CLOSED_SHAPE_MEMBERSHIP_2D",
     "lsi": "SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_2D",
@@ -44,14 +50,40 @@ def _check_output(args: list[str]) -> str | None:
         return None
 
 
+def _check_first_output(commands: tuple[list[str], ...]) -> str | None:
+    for command in commands:
+        value = _check_output(command)
+        if value:
+            return value
+    return None
+
+
 def _run_metadata() -> dict[str, Any]:
-    gpu = _check_output(["nvidia-smi", "--query-gpu=name,driver_version", "--format=csv,noheader"])
-    if gpu is None and Path("/usr/bin/nvidia-smi").exists():
-        gpu = _check_output(["/usr/bin/nvidia-smi", "--query-gpu=name,driver_version", "--format=csv,noheader"])
+    gpu = _check_first_output(
+        (
+            ["nvidia-smi", "--query-gpu=name,driver_version", "--format=csv,noheader"],
+            ["/usr/bin/nvidia-smi", "--query-gpu=name,driver_version", "--format=csv,noheader"],
+        )
+    )
+    cuda_driver_query = _check_first_output(
+        (
+            ["nvidia-smi", "--query", "--display=COMPUTE"],
+            ["/usr/bin/nvidia-smi", "--query", "--display=COMPUTE"],
+        )
+    )
+    nvcc_version = _check_first_output(
+        (
+            ["nvcc", "--version"],
+            ["/usr/local/cuda/bin/nvcc", "--version"],
+        )
+    )
     return {
         "source_commit": _check_output(["git", "rev-parse", "HEAD"]),
         "source_dirty": (_check_output(["git", "status", "--short"]) or "").splitlines(),
         "gpu": gpu,
+        "cuda_driver_query": cuda_driver_query,
+        "nvcc_version": nvcc_version,
+        "rtdl_optix_library": os.environ.get("RTDL_OPTIX_LIBRARY"),
     }
 
 
@@ -111,20 +143,21 @@ def run_goal3220_spatial_rayjoin_current_best_count_harness(
     for workload in workloads:
         if workload not in DEFAULT_WORKLOADS:
             raise ValueError(f"unsupported Goal3220 workload: {workload}")
+        resolved_dataset = dataset or DEFAULT_DATASET_BY_WORKLOAD[workload]
         row_started = time.perf_counter()
         try:
             cpu_payload = rayjoin_app.run_rayjoin_workload(
                 workload,
                 backend="cpu_python_reference",
-                dataset=dataset,
+                dataset=resolved_dataset,
                 include_rows=False,
             )
             expected_count = _summary_count(workload, cpu_payload["summary"])
             expected_contract = str(cpu_payload["summary"]["output_contract"])
             for _ in range(max(0, int(warmup))):
-                _run_best_count_route(workload, dataset=dataset, include_rows=False)
+                _run_best_count_route(workload, dataset=resolved_dataset, include_rows=False)
             prepared_payloads = tuple(
-                _run_best_count_route(workload, dataset=dataset, include_rows=False)
+                _run_best_count_route(workload, dataset=resolved_dataset, include_rows=False)
                 for _ in range(int(repeat))
             )
             observed_counts = tuple(int(payload["row_count"]) for payload in prepared_payloads)
@@ -185,6 +218,8 @@ def run_goal3220_spatial_rayjoin_current_best_count_harness(
         "app": "spatial_rayjoin",
         "benchmark_track": "current_best_primitive_first_rt_count_or_parity",
         "workloads": workloads,
+        "dataset_policy": "per_workload_defaults_unless_overridden",
+        "default_dataset_by_workload": DEFAULT_DATASET_BY_WORKLOAD,
         "backend": "optix",
         "execution_route_policy": "lsi_dense_count_else_prepared_optix_count",
         "result_mode": "count",

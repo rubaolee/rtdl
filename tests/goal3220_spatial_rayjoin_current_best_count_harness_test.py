@@ -18,6 +18,9 @@ class Goal3220SpatialRayJoinCurrentBestCountHarnessTest(unittest.TestCase):
         self.assertIn('"prepared_optix_left_id_dense_count"', text)
         self.assertIn('"prepared_optix"', text)
         self.assertIn("lsi_dense_count_else_prepared_optix_count", text)
+        self.assertIn("DEFAULT_DATASET_BY_WORKLOAD", text)
+        self.assertIn("derived/authored_overlay_squares_tiled_x64", text)
+        self.assertIn("per_workload_defaults_unless_overridden", text)
 
     def test_harness_preserves_claim_boundaries_and_generic_language(self) -> None:
         text = SCRIPT.read_text(encoding="utf-8")
@@ -33,6 +36,20 @@ class Goal3220SpatialRayJoinCurrentBestCountHarnessTest(unittest.TestCase):
             "native_engine_customization",
             "RayJoin workload",
             "interpretation stays in Python",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_harness_metadata_matches_reproducible_pod_artifact_standard(self) -> None:
+        text = SCRIPT.read_text(encoding="utf-8")
+
+        for phrase in (
+            "cuda_driver_query",
+            "nvcc_version",
+            "rtdl_optix_library",
+            "RTDL_OPTIX_LIBRARY",
+            "/usr/local/cuda/bin/nvcc",
+            "--query",
+            "--display=COMPUTE",
         ):
             self.assertIn(phrase, text)
 
