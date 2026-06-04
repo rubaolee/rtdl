@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import tempfile
 import unittest
 from pathlib import Path, PurePosixPath
 from unittest import mock
@@ -118,7 +119,11 @@ Timing results:
             stderr="",
             returncode=0,
         )
-        with mock.patch.object(MODULE.subprocess, "run", return_value=completed) as run_mock:
+        with tempfile.TemporaryDirectory() as tmp_dir, mock.patch.object(
+            MODULE.subprocess,
+            "run",
+            return_value=completed,
+        ) as run_mock:
             row = MODULE.run_rayjoin_process_samples(
                 query_exec=Path("/bin/query_exec"),
                 workload="pip",
@@ -129,7 +134,7 @@ Timing results:
                 repeat=2,
                 process_repeats=1,
                 timeout_seconds=30,
-                log_dir=ROOT / "scratch",
+                log_dir=Path(tmp_dir),
             )
 
         command = run_mock.call_args.args[0]
