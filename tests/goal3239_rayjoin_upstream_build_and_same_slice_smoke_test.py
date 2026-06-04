@@ -6,6 +6,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs" / "reports" / "goal3239_rayjoin_upstream_build_and_same_slice_smoke_2026-06-03.md"
 ARTIFACT = ROOT / "docs" / "reports" / "goal3239_rayjoin_upstream_build_and_same_slice_smoke_2026-06-03.json"
+CANONICAL_BOUNDARY_KEYS = {
+    "public_speedup_claim_authorized",
+    "rayjoin_paper_reproduction_claim_authorized",
+    "release_authorized",
+    "rt_core_speedup_claim_authorized",
+    "rtdl_beats_rayjoin_claim_authorized",
+    "true_zero_copy_claim_authorized",
+}
 
 
 class Goal3239RayJoinUpstreamBuildAndSameSliceSmokeTest(unittest.TestCase):
@@ -31,11 +39,15 @@ class Goal3239RayJoinUpstreamBuildAndSameSliceSmokeTest(unittest.TestCase):
         self.assertTrue(data["rayjoin"]["executables"]["query_exec"])
         self.assertTrue(data["rayjoin"]["executables"]["polyover_exec"])
         self.assertTrue(data["rayjoin"]["build_status"].startswith("pass_after_local"))
+        self.assertEqual(set(data["claim_boundary"]), CANONICAL_BOUNDARY_KEYS)
         self.assertTrue(all(value is False for value in data["claim_boundary"].values()))
 
     def test_same_slice_statuses_are_explicit(self) -> None:
         data = json.loads(ARTIFACT.read_text(encoding="utf-8"))
         rows = {(row["case"], row["rayjoin_mode"]): row for row in data["same_slice_smokes"]}
+        for row in rows.values():
+            self.assertEqual(set(row["claim_boundary"]), CANONICAL_BOUNDARY_KEYS)
+            self.assertTrue(all(value is False for value in row["claim_boundary"].values()))
         self.assertEqual(rows[("lsi_county256_soil256_count512", "rt")]["rayjoin_intersections"], 269)
         self.assertEqual(rows[("lsi_county256_soil256_count512", "rt")]["rtdl_goal3232_rows"], 269)
         self.assertEqual(rows[("lsi_county256_soil256_count512", "grid")]["rayjoin_intersections"], 268)
