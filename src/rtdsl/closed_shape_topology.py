@@ -6,6 +6,12 @@ from typing import Any
 
 OWNER_FACE_MEMBERSHIP_CONTRACT = "rtdl.closed_shape.owner_face_membership.v1"
 OWNER_FACE_PRIORITY_PIPELINE_CONTRACT = "rtdl.closed_shape.owner_face_priority_pipeline.v1"
+OWNER_FACE_SELECTION_STATUS_CODES = {
+    "unique_max_incident_face": 1,
+    "priority_tie_break": 2,
+    "missing_priority": 3,
+    "ambiguous_priority_tie": 4,
+}
 
 
 def _int_set(value: int | Iterable[int]) -> frozenset[int]:
@@ -471,6 +477,221 @@ def select_owner_faces_from_incident_candidate_columns_with_priority_columns(
     }
 
 
+def select_owner_faces_from_incident_candidate_columns_with_priority_cupy(
+    incident_point_ids,
+    incident_face_ids,
+    incident_face_counts,
+    priority_point_ids,
+    priority_face_ids,
+    priorities,
+    *,
+    ambiguity_policy: str = "raise",
+    require_unique_incident_pair: bool = True,
+    require_unique_priority_pair: bool = True,
+) -> dict[str, object]:
+    """CuPy device-column continuation for explicit-priority owner-face selection.
+
+    The device continuation emits numeric ``selection_status_code`` values
+    instead of Python strings. It fails closed on duplicate incident or priority
+    ``(point_id, face_id)`` pairs by default so each row has one deterministic
+    role in the grouped selection.
+    """
+
+    if ambiguity_policy not in {"raise", "drop", "emit_ambiguous"}:
+        raise ValueError("ambiguity_policy must be 'raise', 'drop', or 'emit_ambiguous'")
+    try:
+        import cupy as cp  # type: ignore
+    except Exception as exc:  # pragma: no cover - exercised on CUDA hosts.
+        raise RuntimeError("owner-face CuPy selector requires cupy") from exc
+
+    incident_point_ids = cp.asarray(incident_point_ids, dtype=cp.int64)
+    incident_face_ids = cp.asarray(incident_face_ids, dtype=cp.int64)
+    incident_face_counts = cp.asarray(incident_face_counts, dtype=cp.int64)
+    priority_point_ids = cp.asarray(priority_point_ids, dtype=cp.int64)
+    priority_face_ids = cp.asarray(priority_face_ids, dtype=cp.int64)
+    priorities = cp.asarray(priorities, dtype=cp.int64)
+
+    incident_count = int(incident_point_ids.size)
+    if (
+        int(incident_face_ids.size) != incident_count
+        or int(incident_face_counts.size) != incident_count
+    ):
+        raise ValueError("incident point, face, and count columns must have the same length")
+    priority_count = int(priority_point_ids.size)
+    if int(priority_face_ids.size) != priority_count or int(priorities.size) != priority_count:
+        raise ValueError("priority point, face, and priority columns must have the same length")
+
+    empty = cp.asarray([], dtype=cp.int64)
+    if incident_count == 0:
+        return {
+            "point_id": empty,
+            "owner_face_id": empty,
+            "incident_face_count": empty,
+            "candidate_count": empty,
+            "selection_status_code": empty,
+            "selection_status_code_labels": dict(OWNER_FACE_SELECTION_STATUS_CODES),
+        }
+
+    int64_max = 9223372036854775807
+    all_points = (
+        cp.concatenate((incident_point_ids, priority_point_ids))
+        if priority_count
+        else incident_point_ids
+    )
+    all_faces = (
+        cp.concatenate((incident_face_ids, priority_face_ids))
+        if priority_count
+        else incident_face_ids
+    )
+    min_point = int(cp.min(all_points).item())
+    max_point = int(cp.max(all_points).item())
+    min_face = int(cp.min(all_faces).item())
+    max_face = int(cp.max(all_faces).item())
+    point_offset = -min_point if min_point < 0 else 0
+    face_offset = -min_face if min_face < 0 else 0
+    max_point_key = max_point + point_offset
+    max_face_key = max_face + face_offset
+    base = max_face_key + 1
+    if base <= 0 or max_point_key > (int64_max - max_face_key) // base:
+        raise OverflowError("point/face ids are too large for the CuPy pair-key selector")
+
+    def pair_keys(point_ids, face_ids):
+        return (point_ids + point_offset) * base + (face_ids + face_offset)
+
+    incident_keys = pair_keys(incident_point_ids, incident_face_ids)
+    if require_unique_incident_pair and incident_count > 1:
+        sorted_incident_keys = cp.sort(incident_keys)
+        duplicate_incident = bool(
+            cp.any(sorted_incident_keys[1:] == sorted_incident_keys[:-1]).item()
+        )
+        if duplicate_incident:
+            raise ValueError("incident point/face pairs must be unique for the CuPy selector")
+
+    if priority_count:
+        priority_keys = pair_keys(priority_point_ids, priority_face_ids)
+        priority_order = cp.argsort(priority_keys, kind="stable")
+        sorted_priority_keys = priority_keys[priority_order]
+        sorted_priorities = priorities[priority_order]
+        if require_unique_priority_pair and priority_count > 1:
+            duplicate_priority = bool(
+                cp.any(sorted_priority_keys[1:] == sorted_priority_keys[:-1]).item()
+            )
+            if duplicate_priority:
+                raise ValueError("priority point/face pairs must be unique for the CuPy selector")
+    else:
+        sorted_priority_keys = empty
+        sorted_priorities = empty
+
+    unique_points, inverse = cp.unique(incident_point_ids, return_inverse=True)
+    point_count = int(unique_points.size)
+    max_counts = cp.full((point_count,), -9223372036854775808, dtype=cp.int64)
+    cp.maximum.at(max_counts, inverse, incident_face_counts)
+
+    winner_mask = incident_face_counts == max_counts[inverse]
+    winner_counts = cp.bincount(inverse[winner_mask], minlength=point_count).astype(
+        cp.int64, copy=False
+    )
+    unique_groups = winner_counts == 1
+    tied_winner_mask = winner_mask & (winner_counts[inverse] > 1)
+
+    def grouped_mask_count(mask):
+        if bool(cp.any(mask).item()):
+            return cp.bincount(inverse[mask], minlength=point_count).astype(
+                cp.int64, copy=False
+            )
+        return cp.zeros((point_count,), dtype=cp.int64)
+
+    if priority_count:
+        priority_pos = cp.searchsorted(sorted_priority_keys, incident_keys)
+        priority_safe_pos = cp.minimum(priority_pos, priority_count - 1)
+        priority_found = (
+            (priority_pos < priority_count)
+            & (sorted_priority_keys[priority_safe_pos] == incident_keys)
+        )
+        incident_priorities = sorted_priorities[priority_safe_pos]
+    else:
+        priority_found = cp.zeros((incident_count,), dtype=cp.bool_)
+        incident_priorities = cp.zeros((incident_count,), dtype=cp.int64)
+
+    missing_priority_rows = tied_winner_mask & ~priority_found
+    missing_priority_counts = grouped_mask_count(missing_priority_rows)
+    missing_priority_groups = missing_priority_counts > 0
+
+    if bool(cp.any(missing_priority_groups).item()):
+        if ambiguity_policy == "raise":
+            raise ValueError("missing owner-face priority for one or more tied points")
+
+    priority_inf = cp.asarray(int64_max, dtype=cp.int64)
+    priority_for_min = cp.where(tied_winner_mask & priority_found, incident_priorities, priority_inf)
+    min_priorities = cp.full((point_count,), priority_inf, dtype=cp.int64)
+    cp.minimum.at(min_priorities, inverse, priority_for_min)
+    priority_winner_mask = (
+        tied_winner_mask
+        & priority_found
+        & (incident_priorities == min_priorities[inverse])
+    )
+    priority_winner_counts = grouped_mask_count(priority_winner_mask)
+    ambiguous_priority_groups = (
+        (winner_counts > 1)
+        & ~missing_priority_groups
+        & (priority_winner_counts != 1)
+    )
+    if bool(cp.any(ambiguous_priority_groups).item()):
+        if ambiguity_policy == "raise":
+            raise ValueError("ambiguous owner-face priority for one or more tied points")
+
+    owner_face_by_group = cp.full((point_count,), -1, dtype=cp.int64)
+    unique_winner_rows = winner_mask & unique_groups[inverse]
+    owner_face_by_group[inverse[unique_winner_rows]] = incident_face_ids[unique_winner_rows]
+    priority_resolved_groups = (
+        (winner_counts > 1)
+        & ~missing_priority_groups
+        & (priority_winner_counts == 1)
+    )
+    priority_winner_rows = priority_winner_mask & priority_resolved_groups[inverse]
+    owner_face_by_group[inverse[priority_winner_rows]] = incident_face_ids[priority_winner_rows]
+
+    status_by_group = cp.zeros((point_count,), dtype=cp.int64)
+    status_by_group[unique_groups] = OWNER_FACE_SELECTION_STATUS_CODES[
+        "unique_max_incident_face"
+    ]
+    status_by_group[priority_resolved_groups] = OWNER_FACE_SELECTION_STATUS_CODES[
+        "priority_tie_break"
+    ]
+    status_by_group[missing_priority_groups] = OWNER_FACE_SELECTION_STATUS_CODES[
+        "missing_priority"
+    ]
+    status_by_group[ambiguous_priority_groups] = OWNER_FACE_SELECTION_STATUS_CODES[
+        "ambiguous_priority_tie"
+    ]
+
+    candidate_count_by_group = cp.where(
+        unique_groups,
+        cp.ones((point_count,), dtype=cp.int64),
+        winner_counts,
+    )
+    candidate_count_by_group = cp.where(
+        ambiguous_priority_groups,
+        priority_winner_counts,
+        candidate_count_by_group,
+    )
+
+    selected_groups = unique_groups | priority_resolved_groups
+    if ambiguity_policy == "emit_ambiguous":
+        selected_groups = selected_groups | missing_priority_groups | ambiguous_priority_groups
+    elif ambiguity_policy == "drop":
+        selected_groups = selected_groups
+
+    return {
+        "point_id": unique_points[selected_groups],
+        "owner_face_id": owner_face_by_group[selected_groups],
+        "incident_face_count": max_counts[selected_groups],
+        "candidate_count": candidate_count_by_group[selected_groups],
+        "selection_status_code": status_by_group[selected_groups],
+        "selection_status_code_labels": dict(OWNER_FACE_SELECTION_STATUS_CODES),
+    }
+
+
 def filter_closed_shape_membership_candidate_columns_by_owner_face_columns(
     candidate_point_ids: Sequence[int],
     candidate_shape_ids: Sequence[int],
@@ -786,6 +1007,7 @@ def owner_face_priority_pipeline_contract() -> dict[str, object]:
         ),
         "optional_columnar_pipeline_helpers": (
             "select_owner_faces_from_incident_candidate_columns_with_priority_columns",
+            "select_owner_faces_from_incident_candidate_columns_with_priority_cupy",
             "filter_closed_shape_membership_candidate_columns_by_owner_face_columns",
             "filter_closed_shape_membership_candidate_columns_by_owner_face_cupy",
         ),
@@ -885,6 +1107,8 @@ def validate_owner_face_priority_pipeline_contract() -> dict[str, object]:
     if (
         not isinstance(columnar_helpers, tuple)
         or "select_owner_faces_from_incident_candidate_columns_with_priority_columns"
+        not in columnar_helpers
+        or "select_owner_faces_from_incident_candidate_columns_with_priority_cupy"
         not in columnar_helpers
         or "filter_closed_shape_membership_candidate_columns_by_owner_face_columns"
         not in columnar_helpers

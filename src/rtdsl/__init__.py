@@ -596,6 +596,7 @@ from .datasets import chains_to_topology_rows
 from .datasets import chains_to_incident_face_candidate_rows
 from .closed_shape_topology import OWNER_FACE_MEMBERSHIP_CONTRACT
 from .closed_shape_topology import OWNER_FACE_PRIORITY_PIPELINE_CONTRACT
+from .closed_shape_topology import OWNER_FACE_SELECTION_STATUS_CODES
 from .closed_shape_topology import count_closed_shape_membership_candidates_by_owner_face
 from .closed_shape_topology import derive_owner_face_priority_columns_from_rank_signals
 from .closed_shape_topology import derive_owner_face_priority_rows_from_rank_signals
@@ -606,6 +607,7 @@ from .closed_shape_topology import owner_face_ids_by_point_from_selection_rows
 from .closed_shape_topology import owner_face_membership_contract
 from .closed_shape_topology import owner_face_priority_pipeline_contract
 from .closed_shape_topology import select_owner_faces_from_incident_candidate_columns_with_priority_columns
+from .closed_shape_topology import select_owner_faces_from_incident_candidate_columns_with_priority_cupy
 from .closed_shape_topology import select_owner_faces_from_incident_candidates_with_priority
 from .closed_shape_topology import select_unique_owner_faces_from_incident_candidates
 from .closed_shape_topology import topology_face_ids
@@ -2344,6 +2346,7 @@ __all__ = [
     "chains_to_incident_face_candidate_rows",
     "OWNER_FACE_MEMBERSHIP_CONTRACT",
     "OWNER_FACE_PRIORITY_PIPELINE_CONTRACT",
+    "OWNER_FACE_SELECTION_STATUS_CODES",
     "count_closed_shape_membership_candidates_by_owner_face",
     "derive_owner_face_priority_columns_from_rank_signals",
     "derive_owner_face_priority_rows_from_rank_signals",
@@ -2354,6 +2357,7 @@ __all__ = [
     "owner_face_membership_contract",
     "owner_face_priority_pipeline_contract",
     "select_owner_faces_from_incident_candidate_columns_with_priority_columns",
+    "select_owner_faces_from_incident_candidate_columns_with_priority_cupy",
     "select_owner_faces_from_incident_candidates_with_priority",
     "select_unique_owner_faces_from_incident_candidates",
     "topology_face_ids",
