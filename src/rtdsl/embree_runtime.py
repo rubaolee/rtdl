@@ -1005,13 +1005,13 @@ def _try_pack_segments_records_numpy_arrays(records, order_mode: str) -> PackedS
     try:
         record_tuple = tuple(records)
         count = len(record_tuple)
+        if order_mode == "natural":
+            return _pack_segment_records_numpy_structured_one_pass(record_tuple, _np)
         ids = _np.fromiter((_segment_field(record, "id") for record in record_tuple), dtype=_np.int64, count=count)
         x0 = _np.fromiter((_segment_field(record, "x0") for record in record_tuple), dtype=_np.float64, count=count)
         y0 = _np.fromiter((_segment_field(record, "y0") for record in record_tuple), dtype=_np.float64, count=count)
         x1 = _np.fromiter((_segment_field(record, "x1") for record in record_tuple), dtype=_np.float64, count=count)
         y1 = _np.fromiter((_segment_field(record, "y1") for record in record_tuple), dtype=_np.float64, count=count)
-        if order_mode == "natural":
-            return _pack_segments_numpy_structured_arrays(ids, x0, y0, x1, y1, _np)
         return _pack_segments_numpy_arrays_ordered(ids, x0, y0, x1, y1, order_mode, _np)
     except Exception:
         return None
@@ -1102,6 +1102,25 @@ def _pack_segments_numpy_structured_arrays(ids, x0, y0, x1, y1, _np) -> PackedSe
     array["y0"] = _np.asarray(y0, dtype=_np.float64)
     array["x1"] = _np.asarray(x1, dtype=_np.float64)
     array["y1"] = _np.asarray(y1, dtype=_np.float64)
+    records = array.ctypes.data_as(ctypes.POINTER(_RtdlSegment))
+    return PackedSegments(records=records, count=count, owner=array)
+
+
+def _pack_segment_records_numpy_structured_one_pass(record_tuple, _np) -> PackedSegments:
+    count = len(record_tuple)
+    dtype = _rtdl_segment_numpy_dtype(_np)
+    array = _np.empty(count, dtype=dtype)
+    ids = array["id"]
+    x0 = array["x0"]
+    y0 = array["y0"]
+    x1 = array["x1"]
+    y1 = array["y1"]
+    for index, record in enumerate(record_tuple):
+        ids[index] = _segment_id_to_packed_u32(_segment_field(record, "id"))
+        x0[index] = float(_segment_field(record, "x0"))
+        y0[index] = float(_segment_field(record, "y0"))
+        x1[index] = float(_segment_field(record, "x1"))
+        y1[index] = float(_segment_field(record, "y1"))
     records = array.ctypes.data_as(ctypes.POINTER(_RtdlSegment))
     return PackedSegments(records=records, count=count, owner=array)
 
