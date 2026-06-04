@@ -436,6 +436,26 @@ extern "C" int rtdl_optix_release_point_closed_shape_membership_candidate_device
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepared_point_closed_shape_membership_point_id_count_device_columns_2d(
+        void* prepared,
+        const RtdlPoint* points, size_t point_count,
+        size_t group_capacity,
+        RtdlNativeDeviceGroupedCountI64Columns* columns_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared closed-shape membership handle must not be null");
+        if (!points && point_count != 0)
+            throw std::runtime_error("point pointer must not be null when point_count is nonzero");
+        if (!columns_out)
+            throw std::runtime_error("closed-shape membership point-id count device columns_out pointer must not be null");
+        run_prepared_point_closed_shape_membership_point_id_count_device_columns_2d_optix(
+            reinterpret_cast<PreparedShapePairRelationBuild*>(prepared),
+            points, point_count, group_capacity, columns_out);
+    }, error_out, error_size);
+}
+
 extern "C" void rtdl_optix_destroy_prepared_point_closed_shape_membership_2d(void* prepared)
 {
     delete reinterpret_cast<PreparedShapePairRelationBuild*>(prepared);

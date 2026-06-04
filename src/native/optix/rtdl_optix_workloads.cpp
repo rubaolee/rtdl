@@ -5207,6 +5207,31 @@ struct PipCandidateDeviceColumnsLaunchParams {
     uint32_t         boundary_check;
 };
 
+struct PipPointIdCountDeviceColumnsLaunchParams {
+    OptixTraversableHandle traversable;
+    const float*     points_x;
+    const float*     points_y;
+    const uint32_t*  point_ids;
+    const GpuPolygonRef* polygons;
+    const float*     vertices_x;
+    const float*     vertices_y;
+    const GpuPreparedClosedShapeEdge2D* prepared_edges;
+    uint32_t*        hit_words;
+    GpuPipRecord*    output;
+    uint32_t*        output_count;
+    uint32_t         output_capacity;
+    unsigned long long* counts;
+    uint32_t*        overflow;
+    uint32_t         group_capacity;
+    uint32_t         positive_only;
+    uint32_t         hit_word_count;
+    uint32_t         polygon_count;
+    uint32_t         probe_count;
+    uint32_t         point_index_offset;
+    uint32_t         device_prefilter;
+    uint32_t         boundary_check;
+};
+
 struct NativeClosedShapeMembershipCandidateDeviceColumnsOwner {
     CUdeviceptr point_ids = 0;
     CUdeviceptr shape_ids = 0;
@@ -5402,6 +5427,71 @@ R"CUDA(            const uint32_t slot = atomicAdd(params.output_count, 1u);
 
         std::string ptx = compile_to_ptx(src.c_str(), "point_closed_shape_candidate_device_columns_kernel.cu");
         g_pip_candidate_device_columns.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__pip_probe",
+            "__miss__pip_miss",
+            "__intersection__pip_isect",
+            "__anyhit__pip_anyhit",
+            nullptr, 4).release();
+    });
+}
+
+static void ensure_pip_point_id_count_device_columns_pipeline()
+{
+    std::call_once(g_pip_point_id_count_device_columns.init, [&]() {
+        std::string src(kPipKernelSrc);
+        specialize_closed_shape_membership_source_from_env(src);
+
+        const std::string old_params_fields =
+R"CUDA(    PipRecord* output;
+    uint32_t* output_count;
+    uint32_t output_capacity;
+    uint32_t positive_only;
+)CUDA";
+        const std::string new_params_fields =
+R"CUDA(    PipRecord* output;
+    uint32_t* output_count;
+    uint32_t output_capacity;
+    unsigned long long* counts;
+    uint32_t* overflow;
+    uint32_t group_capacity;
+    uint32_t positive_only;
+)CUDA";
+        size_t pos = src.find(old_params_fields);
+        if (pos == std::string::npos) {
+            throw std::runtime_error("closed-shape point-id count device-column params snippet not found");
+        }
+        src.replace(pos, old_params_fields.size(), new_params_fields);
+
+        const std::string old_anyhit_write =
+R"CUDA(            const uint32_t slot = atomicAdd(params.output_count, 1u);
+            if (slot < params.output_capacity && params.output != nullptr) {
+                PipRecord r;
+                r.point_id = params.point_index_offset + pidx;
+                r.polygon_id = prim;
+                r.contains = 1u;
+                params.output[slot] = r;
+            }
+)CUDA";
+        const std::string new_anyhit_write =
+R"CUDA(            atomicAdd(params.output_count, 1u);
+            const uint32_t group_key = params.point_ids[pidx];
+            if (group_key < params.group_capacity && params.counts != nullptr) {
+                atomicAdd(params.counts + group_key, 1ull);
+            } else {
+                if (params.overflow != nullptr) {
+                    *params.overflow = 1u;
+                }
+            }
+)CUDA";
+        pos = src.find(old_anyhit_write);
+        if (pos == std::string::npos) {
+            throw std::runtime_error("closed-shape point-id count device-column anyhit write snippet not found");
+        }
+        src.replace(pos, old_anyhit_write.size(), new_anyhit_write);
+
+        std::string ptx = compile_to_ptx(src.c_str(), "point_closed_shape_point_id_count_device_columns_kernel.cu");
+        g_pip_point_id_count_device_columns.pipe = build_pipeline(
             get_optix_context(), ptx,
             "__raygen__pip_probe",
             "__miss__pip_miss",
@@ -6886,6 +6976,159 @@ static void run_prepared_point_closed_shape_membership_candidate_device_columns_
 static void release_point_closed_shape_membership_candidate_device_columns_2d_optix(void* owner_handle)
 {
     delete reinterpret_cast<NativeClosedShapeMembershipCandidateDeviceColumnsOwner*>(owner_handle);
+}
+
+static void run_prepared_point_closed_shape_membership_point_id_count_device_columns_2d_optix(
+        PreparedShapePairRelationBuild* prepared,
+        const RtdlPoint* points,
+        size_t point_count,
+        size_t group_capacity,
+        RtdlNativeDeviceGroupedCountI64Columns* columns_out)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared closed-shape membership handle must not be null");
+    }
+    if (!points && point_count != 0) {
+        throw std::runtime_error("point pointer must not be null when point_count is nonzero");
+    }
+    if (!columns_out) {
+        throw std::runtime_error("closed-shape membership point-id count device columns_out pointer must not be null");
+    }
+    if (point_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("closed-shape membership point-id count point count exceeds uint32_t launch capacity");
+    }
+    if (prepared->right_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("closed-shape membership point-id count shape count exceeds uint32_t launch capacity");
+    }
+    if (group_capacity > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("closed-shape membership point-id count group_capacity exceeds uint32 capacity");
+    }
+
+    *columns_out = {};
+    columns_out->group_capacity = static_cast<uint64_t>(group_capacity);
+    CUdevice current_device = 0;
+    CU_CHECK(cuCtxGetDevice(&current_device));
+    columns_out->device_ordinal = static_cast<int32_t>(current_device);
+    if (point_count == 0 || prepared->right_count == 0 || group_capacity == 0) {
+        return;
+    }
+
+    reset_closed_shape_membership_phase_timings(5u);
+
+    const auto t_pack_start = std::chrono::steady_clock::now();
+    std::vector<float> pts_x(point_count), pts_y(point_count);
+    std::vector<uint32_t> pt_ids(point_count);
+    for (size_t i = 0; i < point_count; ++i) {
+        pts_x[i] = static_cast<float>(points[i].x);
+        pts_y[i] = static_cast<float>(points[i].y);
+        pt_ids[i] = points[i].id;
+    }
+    const auto t_pack_end = std::chrono::steady_clock::now();
+    g_optix_last_closed_shape_point_pack_s = seconds_between(t_pack_start, t_pack_end);
+
+    const auto t_upload_start = std::chrono::steady_clock::now();
+    DevPtr d_pts_x(sizeof(float) * point_count);
+    DevPtr d_pts_y(sizeof(float) * point_count);
+    DevPtr d_pt_ids(sizeof(uint32_t) * point_count);
+    upload(d_pts_x.ptr, pts_x.data(), point_count);
+    upload(d_pts_y.ptr, pts_y.data(), point_count);
+    upload(d_pt_ids.ptr, pt_ids.data(), point_count);
+    const auto t_upload_end = std::chrono::steady_clock::now();
+    g_optix_last_closed_shape_point_upload_s = seconds_between(t_upload_start, t_upload_end);
+
+    ensure_pip_point_id_count_device_columns_pipeline();
+
+    auto owner = std::make_unique<NativeDeviceGroupedCountI64ColumnsOwner>();
+    CU_CHECK(cuMemAlloc(&owner->counts, sizeof(unsigned long long) * group_capacity));
+    CU_CHECK(cuMemsetD8(owner->counts, 0, sizeof(unsigned long long) * group_capacity));
+
+    DevPtr d_count(sizeof(uint32_t));
+    DevPtr d_overflow(sizeof(uint32_t));
+    uint32_t zero = 0u;
+    upload<uint32_t>(d_count.ptr, &zero, 1);
+    upload<uint32_t>(d_overflow.ptr, &zero, 1);
+
+    PipPointIdCountDeviceColumnsLaunchParams lp;
+    lp.traversable    = prepared->accel.handle;
+    lp.points_x       = reinterpret_cast<const float*>(d_pts_x.ptr);
+    lp.points_y       = reinterpret_cast<const float*>(d_pts_y.ptr);
+    lp.point_ids      = reinterpret_cast<const uint32_t*>(d_pt_ids.ptr);
+    lp.polygons       = reinterpret_cast<const GpuPolygonRef*>(prepared->d_right_polygons.ptr);
+    lp.vertices_x     = reinterpret_cast<const float*>(prepared->d_right_vx.ptr);
+    lp.vertices_y     = reinterpret_cast<const float*>(prepared->d_right_vy.ptr);
+    lp.prepared_edges = use_prepared_closed_shape_edge_layout()
+        ? reinterpret_cast<const GpuPreparedClosedShapeEdge2D*>(prepared->d_right_edges.ptr)
+        : nullptr;
+    lp.hit_words      = nullptr;
+    lp.output         = nullptr;
+    lp.output_count   = reinterpret_cast<uint32_t*>(d_count.ptr);
+    lp.output_capacity = 1u;
+    lp.counts         = reinterpret_cast<unsigned long long*>(owner->counts);
+    lp.overflow       = reinterpret_cast<uint32_t*>(d_overflow.ptr);
+    lp.group_capacity = static_cast<uint32_t>(group_capacity);
+    lp.positive_only  = 1u;
+    lp.hit_word_count = 0u;
+    lp.polygon_count  = static_cast<uint32_t>(prepared->right_count);
+    lp.probe_count    = 0u;
+    lp.point_index_offset = 0u;
+    lp.device_prefilter =
+        std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DISABLE_DEVICE_PREFILTER") == nullptr ? 1u : 0u;
+    lp.boundary_check = closed_shape_membership_boundary_check_enabled();
+
+    DevPtr d_params(sizeof(PipPointIdCountDeviceColumnsLaunchParams));
+    CUstream stream = 0;
+
+    const uint64_t max_points_per_launch64 =
+        static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()) /
+        static_cast<uint64_t>(prepared->right_count);
+    if (max_points_per_launch64 == 0) {
+        throw std::runtime_error("closed-shape membership point-id count cannot chunk shape set into uint32_t capacity");
+    }
+    const size_t max_points_per_launch = static_cast<size_t>(
+        std::min<uint64_t>(max_points_per_launch64, static_cast<uint64_t>(point_count)));
+
+    const auto traversal_start = std::chrono::steady_clock::now();
+    for (size_t point_offset = 0; point_offset < point_count; point_offset += max_points_per_launch) {
+        const size_t chunk_point_count = std::min(max_points_per_launch, point_count - point_offset);
+        const CUdeviceptr chunk_points_x =
+            d_pts_x.ptr + static_cast<CUdeviceptr>(sizeof(float) * point_offset);
+        const CUdeviceptr chunk_points_y =
+            d_pts_y.ptr + static_cast<CUdeviceptr>(sizeof(float) * point_offset);
+        const CUdeviceptr chunk_point_ids =
+            d_pt_ids.ptr + static_cast<CUdeviceptr>(sizeof(uint32_t) * point_offset);
+        lp.points_x = reinterpret_cast<const float*>(chunk_points_x);
+        lp.points_y = reinterpret_cast<const float*>(chunk_points_y);
+        lp.point_ids = reinterpret_cast<const uint32_t*>(chunk_point_ids);
+        lp.probe_count = static_cast<uint32_t>(chunk_point_count);
+        upload(d_params.ptr, &lp, 1);
+
+        OPTIX_CHECK(optixLaunch(g_pip_point_id_count_device_columns.pipe->pipeline, stream,
+                                 d_params.ptr, sizeof(PipPointIdCountDeviceColumnsLaunchParams),
+                                 &g_pip_point_id_count_device_columns.pipe->sbt,
+                                 static_cast<unsigned>(chunk_point_count), 1, 1));
+    }
+    CU_CHECK(cuStreamSynchronize(stream));
+    const auto traversal_end = std::chrono::steady_clock::now();
+
+    uint32_t candidate_events = 0u;
+    uint32_t overflow = 0u;
+    download(&candidate_events, d_count.ptr, 1);
+    download(&overflow, d_overflow.ptr, 1);
+
+    columns_out->source_row_count = static_cast<uint64_t>(candidate_events);
+    columns_out->reduction_seconds = std::chrono::duration<double>(
+        traversal_end - traversal_start).count();
+    g_optix_last_closed_shape_candidate_write_s = columns_out->reduction_seconds;
+    g_optix_last_closed_shape_raw_candidate_count = static_cast<size_t>(candidate_events);
+    g_optix_last_closed_shape_emitted_count = static_cast<size_t>(candidate_events);
+    if (overflow != 0u) {
+        columns_out->overflow = 1u;
+        return;
+    }
+
+    columns_out->counts_device_ptr = static_cast<uint64_t>(owner->counts);
+    columns_out->overflow = 0u;
+    columns_out->owner_handle = owner.release();
 }
 
 struct ShapePairRelationFlagComputation {

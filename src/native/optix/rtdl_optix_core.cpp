@@ -7140,6 +7140,7 @@ static SegmentPairIntersectionPipeline         g_segment_pair_left_id_count_devi
 static SegmentFirstHitPipeline                 g_segment_first_hit;
 static PipPipeline         g_pip;
 static PipPipeline         g_pip_candidate_device_columns;
+static PipPipeline         g_pip_point_id_count_device_columns;
 static ShapePairRelationPipeline     g_shape_pair_relation;
 static RayHitCountPipeline  g_rayhit;
 static RayHitCount3DPipeline g_rayhit3d;
