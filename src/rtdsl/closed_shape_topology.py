@@ -297,6 +297,32 @@ def select_owner_faces_from_incident_candidates_with_priority(
     return tuple(selected_rows)
 
 
+def owner_face_ids_by_point_from_selection_rows(
+    selection_rows: Iterable[Mapping[str, Any]],
+    *,
+    require_selected: bool = True,
+) -> dict[int, int]:
+    """Convert owner-face selection rows into a point-id mapping.
+
+    Ambiguous rows carry ``owner_face_id=-1`` and are rejected by default. This
+    keeps downstream membership filtering from accidentally treating ambiguous
+    topology as an accepted ownership decision.
+    """
+
+    mapping: dict[int, int] = {}
+    for row in selection_rows:
+        point_id = int(row["point_id"])
+        owner_face_id = int(row["owner_face_id"])
+        if owner_face_id < 0:
+            if require_selected:
+                raise ValueError(f"owner face is not selected for point_id={point_id}")
+            continue
+        if point_id in mapping and mapping[point_id] != owner_face_id:
+            raise ValueError(f"conflicting owner face selection for point_id={point_id}")
+        mapping[point_id] = owner_face_id
+    return mapping
+
+
 def owner_face_membership_contract() -> dict[str, object]:
     """Return the generic reference contract for owner-face membership."""
 
@@ -312,6 +338,7 @@ def owner_face_membership_contract() -> dict[str, object]:
         "optional_reference_helpers": (
             "select_unique_owner_faces_from_incident_candidates",
             "select_owner_faces_from_incident_candidates_with_priority",
+            "owner_face_ids_by_point_from_selection_rows",
         ),
         "app_agnostic": True,
         "native_engine_may_infer_app_ownership": False,

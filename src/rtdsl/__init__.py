@@ -597,6 +597,7 @@ from .datasets import chains_to_incident_face_candidate_rows
 from .closed_shape_topology import OWNER_FACE_MEMBERSHIP_CONTRACT
 from .closed_shape_topology import count_closed_shape_membership_candidates_by_owner_face
 from .closed_shape_topology import filter_closed_shape_membership_candidates_by_owner_face
+from .closed_shape_topology import owner_face_ids_by_point_from_selection_rows
 from .closed_shape_topology import owner_face_membership_contract
 from .closed_shape_topology import select_owner_faces_from_incident_candidates_with_priority
 from .closed_shape_topology import select_unique_owner_faces_from_incident_candidates
@@ -2336,6 +2337,7 @@ __all__ = [
     "OWNER_FACE_MEMBERSHIP_CONTRACT",
     "count_closed_shape_membership_candidates_by_owner_face",
     "filter_closed_shape_membership_candidates_by_owner_face",
+    "owner_face_ids_by_point_from_selection_rows",
     "owner_face_membership_contract",
     "select_owner_faces_from_incident_candidates_with_priority",
     "select_unique_owner_faces_from_incident_candidates",
