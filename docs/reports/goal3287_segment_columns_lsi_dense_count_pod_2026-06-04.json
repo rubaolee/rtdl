@@ -1,0 +1,80 @@
+{
+  "app": "spatial_rayjoin",
+  "backend": "optix",
+  "benchmark_track": "current_best_primitive_first_rt_count_or_parity",
+  "claim_boundary": {
+    "canonical_harness_candidate": true,
+    "native_engine_customization": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "row_overlay_continuation_deferred_tier_b": true,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "tier_a_count_or_parity_only": true,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "cuda_driver_query": "==============NVSMI LOG==============\n\nTimestamp                                 : Thu Jun  4 11:52:28 2026\nDriver Version                            : 570.211.01\nCUDA Version                              : 12.8\n\nAttached GPUs                             : 1\nGPU 00000000:CE:00.0\n    Compute Mode                          : Default",
+  "dataset_policy": "per_workload_defaults_unless_overridden",
+  "default_dataset_by_workload": {
+    "lsi": "tests/fixtures/rayjoin/br_county_subset.cdb",
+    "overlay_seed": "derived/authored_overlay_squares_tiled_x64",
+    "pip": "tests/fixtures/rayjoin/br_county_subset.cdb"
+  },
+  "elapsed_sec": 46.84736357443035,
+  "execution_route_policy": "lsi_dense_count_else_prepared_optix_count",
+  "goal": "Goal3220",
+  "gpu": "NVIDIA A40, 570.211.01",
+  "harness_version": "rtdl.goal3220.spatial_rayjoin_current_best_count_harness.v2",
+  "include_rows": false,
+  "nvcc_version": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0",
+  "repeat": 5,
+  "result_mode": "count",
+  "row_count": 1,
+  "rows": [
+    {
+      "backend": "optix",
+      "cpu_output_contract": "segment_segment_intersection_rows",
+      "dataset": "/root/rtdl_goal3151/data/rayjoin_public_cdb/br_county_start256_count512.cdb + /root/rtdl_goal3151/data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+      "dataset_note": "External CDB line-segment intersection case using left/right chain segments.",
+      "elapsed_sec": 46.84735506027937,
+      "execution_route": "prepared_optix_left_id_dense_count",
+      "expected_count": 269,
+      "generic_primitive": "SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_2D",
+      "include_rows": false,
+      "matches_cpu_reference": true,
+      "native_engine_boundary": "The native engine sees generic prepared point/shape, segment-pair, segment-pair left-id count, or shape-pair contracts; RayJoin workload interpretation stays in Python.",
+      "observed_count": 269,
+      "observed_counts": [
+        269,
+        269,
+        269,
+        269,
+        269
+      ],
+      "phase_max_ms": {
+        "left_id_count_device_columns_sec": 0.4058200865983963
+      },
+      "phase_medians_ms": {
+        "left_id_count_device_columns_sec": 0.38322992622852325
+      },
+      "phase_min_ms": {
+        "left_id_count_device_columns_sec": 0.3765486180782318
+      },
+      "prepared_output_contract": "segment_segment_intersection_count_by_left_id_dense_device_column",
+      "repeat": 5,
+      "result_mode": "count",
+      "status": "pass",
+      "uses_prepared_optix_rt_backend": true,
+      "warmup": 1,
+      "workload": "lsi"
+    }
+  ],
+  "rtdl_optix_library": "/root/rtdl_goal3239/build/librtdl_optix.so",
+  "source_commit": "38e86dd23846d1675576394ecef715a88def52f0",
+  "source_dirty": [],
+  "status": "pass",
+  "warmup": 1,
+  "workloads": [
+    "lsi"
+  ]
+}
