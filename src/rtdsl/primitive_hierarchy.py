@@ -1185,7 +1185,8 @@ PRIMITIVE_HIERARCHY = (
                 status="candidate_behavior",
                 summary=(
                     "Generic point/closed-shape membership count direction with an executable "
-                    "owner-face Python reference contract and future native/device lowering."
+                    "owner-face Python reference contract, fail-closed incident-face selector, "
+                    "and future native/device lowering."
                 ),
                 outputs=("membership_count", "owner_face_id", "ownership_status", "topology_policy_metadata"),
                 depends_on=(
@@ -1218,9 +1219,10 @@ PRIMITIVE_HIERARCHY = (
                     "count point membership in closed shapes with explicit face ring chain topology",
                     "avoid duplicate boundary ownership overcounts in closed shape membership",
                     "filter closed shape candidates by caller supplied owner face ids",
+                    "derive owner face only when incident topology has a unique maximum",
                     "use deterministic boundary ownership policy for point closed shape counts",
                 ),
-                reference_path="docs/reports/goal3330_owner_face_closed_shape_membership_reference_contract_2026-06-04.md",
+                reference_path="docs/reports/goal3339_fail_closed_incident_owner_face_selector_2026-06-04.md",
                 backends=("cpu_python_reference", "planned_optix"),
                 considered_alternatives=(
                     "traversal.count_hits",
