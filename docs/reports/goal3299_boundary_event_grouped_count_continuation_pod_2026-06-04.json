@@ -1,0 +1,45 @@
+{
+  "claim_boundaries": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_polygon_assignment_policy_delivered": false,
+    "rayjoin_reproduction_claim_authorized": false,
+    "rayjoin_specific_native_logic_added": false,
+    "true_zero_copy_claim_authorized": false,
+    "v2_8_release_authorized": false
+  },
+  "commit": "c44e548162567967a15936d1fd430c591c88c403",
+  "created_utc": "2026-06-04T16:31:14Z",
+  "focused_unittest": {
+    "command": "python -m unittest -v tests.goal3299_boundary_event_grouped_count_continuation_test tests.goal3298_closed_shape_boundary_event_device_columns_test",
+    "skipped": 0,
+    "status": "pass",
+    "tests_run": 9
+  },
+  "goal": 3299,
+  "live_smoke": {
+    "count_device_resident": true,
+    "count_output_residency": "device_resident_dense_grouped_count_column",
+    "count_reduction_seconds": 2.1084e-05,
+    "count_true_zero_copy_authorized": false,
+    "dense_count_capacity": 32,
+    "event_candidate_download": 0.0,
+    "event_device_resident": true,
+    "event_emitted_count": 1,
+    "event_output_residency": "device_resident_boundary_event_columns",
+    "event_row_count": 1,
+    "event_timing_mode": "boundary_event_device_columns",
+    "point_10_count": 1,
+    "point_20_count": 0
+  },
+  "pod": {
+    "cuda_prefix": "/usr/local/cuda-12.8",
+    "cupy_version": "14.1.1",
+    "gpu": "NVIDIA RTX A5000, 580.126.09",
+    "host": "69.30.85.203",
+    "optix_prefix": "/root/vendor/optix-sdk",
+    "port": 22057,
+    "rtdl_optix_library": "/root/rtdl_goal3293/build/librtdl_optix.so"
+  },
+  "repository": "https://github.com/rubaolee/rtdl"
+}

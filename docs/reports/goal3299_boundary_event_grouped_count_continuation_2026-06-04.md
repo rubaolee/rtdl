@@ -2,8 +2,9 @@
 
 Date: 2026-06-04
 
-Status: local implementation slice; pod validation required before using as
-continuation evidence.
+Status: pod validated for continuation correctness on commit
+`c44e548162567967a15936d1fd430c591c88c403`; not release evidence and not
+RayJoin reproduction evidence.
 
 ## Purpose
 
@@ -46,17 +47,28 @@ It does not authorize RayJoin reproduction.
 
 RayJoin-specific native logic added: false.
 
-## Required Pod Validation
+## Pod Validation
 
-Before this goal is accepted as implementation evidence:
+Validation artifact:
 
-1. build `librtdl_optix.so` from current main on a pod;
-2. run `tests.goal3299_boundary_event_grouped_count_continuation_test` with
-   `RTDL_OPTIX_LIBRARY` set;
-3. confirm a device-resident boundary-event stream feeds a device-resident
-   grouped-count output;
-4. record
-   `docs/reports/goal3299_boundary_event_grouped_count_continuation_pod_2026-06-04.json`.
+- `docs/reports/goal3299_boundary_event_grouped_count_continuation_pod_2026-06-04.json`
+
+Evidence recorded there:
+
+- pod GPU: NVIDIA RTX A5000;
+- CuPy version: `14.1.1`;
+- focused live tests: 9 run, 0 skipped, status `pass`;
+- boundary-event stream residency: `device_resident_boundary_event_columns`;
+- grouped-count output residency: `device_resident_dense_grouped_count_column`;
+- dense count result: point `10` count `1`, point `20` count `0`;
+- event telemetry: mode `boundary_event_device_columns`, candidate download
+  `0.0`, emitted rows `1`;
+- grouped count reduction time: `2.1084e-05` seconds.
+
+This validates that a generic resident boundary-event stream can feed a
+generic resident grouped-count continuation. It still does not validate
+RayJoin polygon assignment, simulation-of-simplicity policy, whole-workload
+performance, or release readiness.
 
 ## Next Step
 
