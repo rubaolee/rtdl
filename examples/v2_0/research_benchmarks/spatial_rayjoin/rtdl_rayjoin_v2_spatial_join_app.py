@@ -303,7 +303,7 @@ def _run_prepared_boundary_event_grouped_count_device_columns(
     *,
     event_capacity: int | None = None,
     group_capacity: int,
-) -> tuple[int, dict[str, object]]:
+) -> tuple[int, object, object]:
     event_columns = prepared.first_boundary_crossing_device_columns(
         packed_points,
         max_rows=event_capacity,
@@ -317,16 +317,12 @@ def _run_prepared_boundary_event_grouped_count_device_columns(
         )
         if count_columns.overflow:
             raise RuntimeError("boundary-event grouped-count continuation overflowed group capacity")
-        return int(event_columns.row_count), {
-            "boundary_event_device_columns": event_columns.to_metadata(),
-            "point_id_grouped_count_device_columns": count_columns.to_metadata(),
-            "contract": "point_closed_shape_first_boundary_event_count_by_point_id",
-            "positive_membership_equivalent": False,
-        }
-    finally:
+        return int(event_columns.row_count), event_columns, count_columns
+    except Exception:
         if count_columns is not None:
             count_columns.close()
         event_columns.close()
+        raise
 
 
 def _record_id(record: object) -> int:
@@ -529,6 +525,8 @@ def run_rayjoin_prepared_optix_workload(
         )
         point_id_count_metadata: dict[str, object] | None = None
         boundary_event_count_metadata: dict[str, object] | None = None
+        boundary_event_columns = None
+        boundary_event_count_columns = None
         try:
             if result_mode == "count":
                 if count_mode in _PIP_POSITIVE_COUNT_MODES:
@@ -577,7 +575,7 @@ def run_rayjoin_prepared_optix_workload(
                         1,
                         max(_record_id(point) for point in ordered_points) + 1,
                     )
-                    row_count, boundary_event_count_metadata = _phase_time(
+                    boundary_event_result = _phase_time(
                         phases,
                         "prepared_query_sec",
                         lambda: _run_prepared_boundary_event_grouped_count_device_columns(
@@ -586,6 +584,17 @@ def run_rayjoin_prepared_optix_workload(
                             group_capacity=point_id_group_capacity,
                         ),
                     )
+                    (
+                        row_count,
+                        boundary_event_columns,
+                        boundary_event_count_columns,
+                    ) = boundary_event_result
+                    boundary_event_count_metadata = {
+                        "boundary_event_device_columns": boundary_event_columns.to_metadata(),
+                        "point_id_grouped_count_device_columns": boundary_event_count_columns.to_metadata(),
+                        "contract": "point_closed_shape_first_boundary_event_count_by_point_id",
+                        "positive_membership_equivalent": False,
+                    }
                 else:
                     validation_exact_count = None
                     row_count = int(_phase_time(phases, "prepared_query_sec", lambda: prepared.count(packed_points)))
@@ -604,6 +613,10 @@ def run_rayjoin_prepared_optix_workload(
                     view.close()
             native_phase_timings = prepared.last_phase_timings()
         finally:
+            if boundary_event_count_columns is not None:
+                boundary_event_count_columns.close()
+            if boundary_event_columns is not None:
+                boundary_event_columns.close()
             prepared.close()
         summary = {
             "positive_hit_row_count": row_count if count_mode != _PIP_BOUNDARY_EVENT_COUNT_MODE else None,
