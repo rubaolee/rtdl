@@ -1,0 +1,307 @@
+{
+  "aabb_point_contains": {
+    "candidate_counts": {
+      "consistent": true,
+      "count": 15,
+      "last": 1542,
+      "samples": [
+        1542,
+        1542,
+        1542,
+        1542,
+        1542,
+        1542,
+        1542,
+        1542,
+        1542,
+        1542,
+        1542,
+        1542,
+        1542,
+        1542,
+        1542
+      ]
+    },
+    "operation": "point_contains",
+    "prepared_point_queries": true,
+    "primitive": "AABB_INDEX_QUERY_2D",
+    "semantic_scope": "generic point-in-AABB broadphase only; not an exact closed-shape membership result",
+    "timing": {
+      "count": 15,
+      "max_sec": 8.156336843967438e-05,
+      "median_sec": 7.11437314748764e-05,
+      "min_sec": 6.700493395328522e-05,
+      "samples_sec": [
+        7.599964737892151e-05,
+        8.156336843967438e-05,
+        7.126294076442719e-05,
+        7.309392094612122e-05,
+        7.11437314748764e-05,
+        7.171928882598877e-05,
+        7.035396993160248e-05,
+        6.88992440700531e-05,
+        7.559731602668762e-05,
+        6.910786032676697e-05,
+        7.138773798942566e-05,
+        6.812810897827148e-05,
+        6.810948252677917e-05,
+        6.700493395328522e-05,
+        6.852485239505768e-05
+      ]
+    }
+  },
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "closed_shape_device_filtered": {
+    "operation": "positive_count",
+    "phase_samples": [
+      {
+        "candidate_count_pass": 0.000719539,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 0.0,
+        "emitted_count": 1430,
+        "exact_refine": 0.0,
+        "mode": "device_filtered_count",
+        "point_pack": 1.53e-06,
+        "point_upload": 2.047e-05,
+        "raw_candidate_count": 1430
+      },
+      {
+        "candidate_count_pass": 0.000720637,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 0.0,
+        "emitted_count": 1430,
+        "exact_refine": 0.0,
+        "mode": "device_filtered_count",
+        "point_pack": 1.99e-06,
+        "point_upload": 2.0919e-05,
+        "raw_candidate_count": 1430
+      },
+      {
+        "candidate_count_pass": 0.00072034,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 0.0,
+        "emitted_count": 1430,
+        "exact_refine": 0.0,
+        "mode": "device_filtered_count",
+        "point_pack": 1.623e-06,
+        "point_upload": 2.0323e-05,
+        "raw_candidate_count": 1430
+      },
+      {
+        "candidate_count_pass": 0.000720021,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 0.0,
+        "emitted_count": 1430,
+        "exact_refine": 0.0,
+        "mode": "device_filtered_count",
+        "point_pack": 1.572e-06,
+        "point_upload": 2.0856e-05,
+        "raw_candidate_count": 1430
+      },
+      {
+        "candidate_count_pass": 0.000720052,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 0.0,
+        "emitted_count": 1430,
+        "exact_refine": 0.0,
+        "mode": "device_filtered_count",
+        "point_pack": 1.491e-06,
+        "point_upload": 2.0935e-05,
+        "raw_candidate_count": 1430
+      },
+      {
+        "candidate_count_pass": 0.000720102,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 0.0,
+        "emitted_count": 1430,
+        "exact_refine": 0.0,
+        "mode": "device_filtered_count",
+        "point_pack": 1.78e-06,
+        "point_upload": 2.0779e-05,
+        "raw_candidate_count": 1430
+      },
+      {
+        "candidate_count_pass": 0.000720319,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 0.0,
+        "emitted_count": 1430,
+        "exact_refine": 0.0,
+        "mode": "device_filtered_count",
+        "point_pack": 1.496e-06,
+        "point_upload": 2.0155e-05,
+        "raw_candidate_count": 1430
+      },
+      {
+        "candidate_count_pass": 0.000719118,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 0.0,
+        "emitted_count": 1430,
+        "exact_refine": 0.0,
+        "mode": "device_filtered_count",
+        "point_pack": 1.59e-06,
+        "point_upload": 2.2001e-05,
+        "raw_candidate_count": 1430
+      },
+      {
+        "candidate_count_pass": 0.000720555,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 0.0,
+        "emitted_count": 1430,
+        "exact_refine": 0.0,
+        "mode": "device_filtered_count",
+        "point_pack": 1.487e-06,
+        "point_upload": 2.2299e-05,
+        "raw_candidate_count": 1430
+      },
+      {
+        "candidate_count_pass": 0.000720578,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 0.0,
+        "emitted_count": 1430,
+        "exact_refine": 0.0,
+        "mode": "device_filtered_count",
+        "point_pack": 1.553e-06,
+        "point_upload": 2.0281e-05,
+        "raw_candidate_count": 1430
+      },
+      {
+        "candidate_count_pass": 0.000720867,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 0.0,
+        "emitted_count": 1430,
+        "exact_refine": 0.0,
+        "mode": "device_filtered_count",
+        "point_pack": 1.413e-06,
+        "point_upload": 2.0423e-05,
+        "raw_candidate_count": 1430
+      },
+      {
+        "candidate_count_pass": 0.00072126,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 0.0,
+        "emitted_count": 1430,
+        "exact_refine": 0.0,
+        "mode": "device_filtered_count",
+        "point_pack": 1.57e-06,
+        "point_upload": 2.0228e-05,
+        "raw_candidate_count": 1430
+      },
+      {
+        "candidate_count_pass": 0.000720954,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 0.0,
+        "emitted_count": 1430,
+        "exact_refine": 0.0,
+        "mode": "device_filtered_count",
+        "point_pack": 1.492e-06,
+        "point_upload": 1.8421e-05,
+        "raw_candidate_count": 1430
+      },
+      {
+        "candidate_count_pass": 0.000720359,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 0.0,
+        "emitted_count": 1430,
+        "exact_refine": 0.0,
+        "mode": "device_filtered_count",
+        "point_pack": 1.64e-06,
+        "point_upload": 3.3465e-05,
+        "raw_candidate_count": 1430
+      },
+      {
+        "candidate_count_pass": 0.000718903,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 0.0,
+        "emitted_count": 1430,
+        "exact_refine": 0.0,
+        "mode": "device_filtered_count",
+        "point_pack": 1.481e-06,
+        "point_upload": 1.9594e-05,
+        "raw_candidate_count": 1430
+      }
+    ],
+    "positive_counts": {
+      "consistent": true,
+      "count": 15,
+      "last": 1430,
+      "samples": [
+        1430,
+        1430,
+        1430,
+        1430,
+        1430,
+        1430,
+        1430,
+        1430,
+        1430,
+        1430,
+        1430,
+        1430,
+        1430,
+        1430,
+        1430
+      ]
+    },
+    "primitive": "POINT_CLOSED_SHAPE_MEMBERSHIP_2D",
+    "semantic_scope": "generic exact closed-shape positive membership count",
+    "timing": {
+      "count": 15,
+      "max_sec": 0.0007982011884450912,
+      "median_sec": 0.0007809679955244064,
+      "min_sec": 0.0007767975330352783,
+      "samples_sec": [
+        0.0007846783846616745,
+        0.00078575499355793,
+        0.0007800459861755371,
+        0.0007817745208740234,
+        0.0007833186537027359,
+        0.0007806364446878433,
+        0.0007821638137102127,
+        0.000779295340180397,
+        0.0007817130535840988,
+        0.0007809679955244064,
+        0.0007798038423061371,
+        0.0007795710116624832,
+        0.0007777716964483261,
+        0.0007982011884450912,
+        0.0007767975330352783
+      ]
+    }
+  },
+  "comparison": {
+    "aabb_broadphase_can_replace_closed_shape_count": false,
+    "aabb_broadphase_is_exact_membership": false,
+    "aabb_candidate_to_exact_positive_ratio": 1.0783216783216782,
+    "aabb_time_over_closed_shape_time_ratio": 0.0910968591319861,
+    "next_design_implication": "If AABB is much faster and the candidate ratio is bounded, a future generic device-resident candidate-to-predicate continuation may be worth building; otherwise broadphase-alone is not the RayJoin PIP gap answer."
+  },
+  "dataset": "/root/rtdl_goal3151/data/rayjoin_public_cdb/br_county_start0_count512.cdb",
+  "generated_at_utc": "2026-06-04T03:51:44Z",
+  "goal": 3255,
+  "inputs": {
+    "aabb_box_count": 481,
+    "point_count": 512,
+    "shape_count": 481
+  },
+  "phase_sec": {
+    "pack_points_sec": 0.0004935935139656067,
+    "pack_polygons_sec": 0.010235616937279701,
+    "prepare_aabb_index_sec": 0.49405916035175323,
+    "prepare_aabb_point_queries_sec": 0.0005424916744232178,
+    "prepare_closed_shape_sec": 0.3725691307336092
+  },
+  "repo_state": {
+    "commit": "eea2f7b6e1ec676ce6860b5ac0953dba0e254ce0",
+    "gpu": "NVIDIA A40, 570.211.01",
+    "source_dirty": []
+  },
+  "schema": "rtdl.goal3255.rayjoin_pip_aabb_broadphase_probe.v1",
+  "status": "pass"
+}
