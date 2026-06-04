@@ -7632,6 +7632,11 @@ struct PreparedPointClosedShapeMembershipPreparedPointsBatchGraph2D {
                                          static_cast<unsigned>(prepared_points->point_count), 1, 1));
             }
             CU_CHECK(cuStreamEndCapture(stream, &graph));
+            size_t node_count = 0;
+            CU_CHECK(cuGraphGetNodes(graph, nullptr, &node_count));
+            if (node_count < request_count + 1u) {
+                throw std::runtime_error("prepared-points batch graph capture did not include the expected OptiX launch nodes");
+            }
             CU_CHECK(cuGraphInstantiate(&graph_exec, graph, 0));
         } catch (...) {
             if (graph_exec) cuGraphExecDestroy(graph_exec);

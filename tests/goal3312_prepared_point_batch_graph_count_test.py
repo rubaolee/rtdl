@@ -37,6 +37,8 @@ class Goal3312PreparedPointBatchGraphCountTest(unittest.TestCase):
         body = text[start:end]
         self.assertIn("cuStreamBeginCapture", body)
         self.assertIn("cuGraphInstantiate", body)
+        self.assertIn("cuGraphGetNodes", body)
+        self.assertIn("expected OptiX launch nodes", body)
         self.assertIn("cuGraphLaunch", body)
         self.assertIn("cuGraphExecDestroy", body)
         self.assertIn("cuGraphDestroy", body)
@@ -49,6 +51,9 @@ class Goal3312PreparedPointBatchGraphCountTest(unittest.TestCase):
         self.assertIn("class PreparedOptixPointClosedShapeBatchCountGraph2D", runtime)
         self.assertIn("def prepare_device_filtered_prepared_points_batch_graph", runtime)
         self.assertIn("def replay(self) -> tuple[int, ...]", runtime)
+        self.assertIn("validate_on_prepare: bool = True", runtime)
+        self.assertIn("graph replay failed validation", runtime)
+        self.assertIn("validated_on_prepare", runtime)
         self.assertIn("prepared_points_device_filtered_batch_graph_replay", runtime)
         self.assertIn("if mode_value == 10", runtime)
         self.assertIn('"true_zero_copy_claim_authorized": False', runtime)

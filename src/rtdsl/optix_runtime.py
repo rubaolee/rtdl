@@ -9819,6 +9819,8 @@ class PreparedOptixPointClosedShapeBatchCountGraph2D:
         prepared: "PreparedOptixPointClosedShapeMembership2D",
         prepared_points: PreparedOptixPointProbeColumns2D,
         request_count: int,
+        *,
+        validate_on_prepare: bool = True,
     ):
         if prepared.closed:
             raise RuntimeError("prepared OptiX closed-shape membership handle is closed")
@@ -9852,6 +9854,20 @@ class PreparedOptixPointClosedShapeBatchCountGraph2D:
             len(error),
         )
         _check_status(status, error)
+        self._validation_counts: tuple[int, ...] | None = None
+        if validate_on_prepare:
+            expected = prepared.count_device_filtered_prepared_points_batch(
+                prepared_points,
+                request_count,
+            )
+            observed = self.replay()
+            if observed != expected:
+                self.close()
+                raise RuntimeError(
+                    "prepared OptiX batch-count graph replay failed validation: "
+                    f"{observed[:5]} != {expected[:5]}"
+                )
+            self._validation_counts = expected
 
     @property
     def closed(self) -> bool:
@@ -9889,6 +9905,7 @@ class PreparedOptixPointClosedShapeBatchCountGraph2D:
             "native_prepare_symbol": OPTIX_PREPARED_POINTS_BATCH_GRAPH_PREPARE_SYMBOL,
             "native_replay_symbol": OPTIX_PREPARED_POINTS_BATCH_GRAPH_REPLAY_SYMBOL,
             "replayable_launch_object": True,
+            "validated_on_prepare": self._validation_counts is not None,
             "true_zero_copy_claim_authorized": False,
         }
 
@@ -10165,12 +10182,15 @@ class PreparedOptixPointClosedShapeMembership2D:
         self,
         prepared_points: PreparedOptixPointProbeColumns2D,
         request_count: int,
+        *,
+        validate_on_prepare: bool = True,
     ) -> PreparedOptixPointClosedShapeBatchCountGraph2D:
         """Prepare a replayable generic batch-count launch object."""
         return PreparedOptixPointClosedShapeBatchCountGraph2D(
             self,
             prepared_points,
             request_count,
+            validate_on_prepare=validate_on_prepare,
         )
 
     def first_boundary_crossing_raw(self, points) -> OptixRowView:
