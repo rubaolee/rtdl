@@ -20,7 +20,9 @@ class Goal3235ClaudeReviewIntakeRowContinuationHardeningTest(unittest.TestCase):
             "positive_assignments_count",
             "active_seed_pairs_count",
             "d19a8175d9e8c211aee2d1395dd5fa8b1ebb5223",
-            "9 tests OK",
+            "275e9f78de6e06cf0905fd90df19c8344f32a970",
+            "max_lsi_coordinate_delta = 0",
+            "12 tests OK",
         ):
             self.assertIn(phrase, report)
 

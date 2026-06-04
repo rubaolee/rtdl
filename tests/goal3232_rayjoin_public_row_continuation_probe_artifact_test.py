@@ -30,7 +30,7 @@ class Goal3232RayJoinPublicRowContinuationProbeArtifactTest(unittest.TestCase):
 
         self.assertEqual(data["goal"], 3232)
         self.assertEqual(data["schema"], "rtdl.goal3232.rayjoin_public_row_continuation_probe.v1")
-        self.assertEqual(data["commit"], "d19a8175d9e8c211aee2d1395dd5fa8b1ebb5223")
+        self.assertEqual(data["commit"], "275e9f78de6e06cf0905fd90df19c8344f32a970")
         self.assertEqual(data["status"], "pass")
         self.assertEqual(data["hardware"]["nvidia_smi"], "NVIDIA A40, 570.211.01")
         self.assertIn("CUDA Version", data["hardware"]["cuda_driver_query"])
@@ -38,10 +38,19 @@ class Goal3232RayJoinPublicRowContinuationProbeArtifactTest(unittest.TestCase):
         self.assertEqual(data["hardware"]["rtdl_optix_library"], "/root/rtdl_goal3151/build/librtdl_optix.so")
 
         rows = {row["case"]: row for row in data["rows"]}
-        self.assertEqual(set(rows), {"pip_county512", "overlay_county128_soil128", "overlay_county256_soil256"})
+        self.assertEqual(
+            set(rows),
+            {
+                "pip_county512",
+                "lsi_county256_soil256_count512",
+                "overlay_county128_soil128",
+                "overlay_county256_soil256",
+            },
+        )
 
         expected = {
             "pip_county512": ("pip", 1430, None),
+            "lsi_county256_soil256_count512": ("lsi", 269, None),
             "overlay_county128_soil128": ("overlay_seed", 14036, 1),
             "overlay_county256_soil256": ("overlay_seed", 56876, 9),
         }
@@ -57,6 +66,8 @@ class Goal3232RayJoinPublicRowContinuationProbeArtifactTest(unittest.TestCase):
                 self.assertIn("unattributed_prepared_total_minus_named_phases_sec", measurement)
                 self.assertTrue(row["all_repeats_match_cpu_rows"])
                 self.assertEqual(row["cpu_active_overlay_rows"], active_count)
+                if workload == "lsi":
+                    self.assertEqual(measurement["max_lsi_coordinate_delta"], 0)
                 self.assertNotIn("positive_assignments", row["cpu_summary"])
                 self.assertNotIn("active_seed_pairs", row["cpu_summary"])
 
@@ -75,6 +86,7 @@ class Goal3232RayJoinPublicRowContinuationProbeArtifactTest(unittest.TestCase):
 
         for phrase in (
             "symmetric difference `0`",
+            "max_lsi_coordinate_delta",
             "56,876 row-continuation records",
             "not a public speedup claim",
             "membership",
@@ -86,6 +98,7 @@ class Goal3232RayJoinPublicRowContinuationProbeArtifactTest(unittest.TestCase):
             self.assertIn(phrase, report)
         for phrase in (
             "repeat pip_county512/prepared_rows 1/1",
+            "repeat lsi_county256_soil256_count512/prepared_rows 1/1",
             "repeat overlay_county128_soil128/prepared_rows 1/1",
             "repeat overlay_county256_soil256/prepared_rows 1/1",
             "symdiff=0",

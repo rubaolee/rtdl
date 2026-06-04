@@ -27,13 +27,18 @@ The Goal3232 row-continuation harness now:
   `active_seed_pairs_count` instead of embedding full CPU row lists.
 - Keeps `--artifact-goal` and `--schema` overrides for addendum artifacts.
 
-Both stored artifacts were rerun on the pod at commit
+The stored artifacts were first rerun on the pod at commit
 `d19a8175d9e8c211aee2d1395dd5fa8b1ebb5223`:
 
 - Goal3232 base row-continuation probe: PIP 1430 rows, overlay 14,036 rows,
   overlay 56,876 rows, all symmetric difference `0`.
 - Goal3234 overlay scale addendum: overlay 130,320 rows and 233,766 rows, both
   symmetric difference `0`.
+
+Goal3232 was then extended and rerun at commit
+`275e9f78de6e06cf0905fd90df19c8344f32a970` to include the third RayJoin row
+family: public LSI segment-intersection rows. The LSI slice validates 269 rows
+with symmetric difference `0` and `max_lsi_coordinate_delta = 0`.
 
 ## Validation
 
@@ -43,9 +48,10 @@ Focused validation:
 tests.goal3232_rayjoin_public_row_continuation_probe_test
 tests.goal3232_rayjoin_public_row_continuation_probe_artifact_test
 tests.goal3234_rayjoin_public_overlay_row_scale_addendum_test
+tests.goal3235_claude_review_intake_row_continuation_hardening_test
 ```
 
-Result: `9 tests OK`.
+Result: `12 tests OK`.
 
 ## Remaining Boundary
 

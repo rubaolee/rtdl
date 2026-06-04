@@ -4,10 +4,11 @@ Date: 2026-06-03
 
 ## Purpose
 
-Goal3232 moves the public RayJoin evidence beyond scalar/count parity for two
-workload families:
+Goal3232 moves the public RayJoin evidence beyond scalar/count parity for all
+three current row workload families:
 
 - PIP positive-hit rows on `pip_county512`.
+- LSI segment-intersection rows on `lsi_county256_soil256_count512`.
 - Overlay pair-dependency rows on `overlay_county128_soil128` and
   `overlay_county256_soil256`.
 
@@ -22,7 +23,7 @@ CPU Python reference. It does not dump the full row arrays into the artifact.
 
 Pod metadata:
 
-- Commit: `d19a8175d9e8c211aee2d1395dd5fa8b1ebb5223`
+- Commit: `275e9f78de6e06cf0905fd90df19c8344f32a970`
 - GPU: `NVIDIA A40, 570.211.01`
 - CUDA driver query: present
 - nvcc version: present
@@ -32,9 +33,10 @@ Pod metadata:
 
 | Case | Workload | CPU Rows | Prepared OptiX Rows | Symmetric Difference | Prepared Total (s) | Prepared Query (s) | CPU Reference (s) |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| `pip_county512` | `pip` | 1430 | 1430 | 0 | 1.06510290130973 | 0.00141566433012486 | 0.0943603590130806 |
-| `overlay_county128_soil128` | `overlay_seed` | 14036 | 14036 | 0 | 0.383655160665512 | 0.00565983355045319 | 5.73130021058023 |
-| `overlay_county256_soil256` | `overlay_seed` | 56876 | 56876 | 0 | 0.119168261066079 | 0.0221284925937653 | 23.4377394467592 |
+| `pip_county512` | `pip` | 1430 | 1430 | 0 | 0.950783392414451 | 0.00142483413219452 | 0.099065413698554 |
+| `lsi_county256_soil256_count512` | `lsi` | 269 | 269 | 0 | 0.176557712256908 | 0.00130379013717175 | 43.7014206890017 |
+| `overlay_county128_soil128` | `overlay_seed` | 14036 | 14036 | 0 | 0.364632867276669 | 0.00514533743262291 | 5.13550291396677 |
+| `overlay_county256_soil256` | `overlay_seed` | 56876 | 56876 | 0 | 0.117055296897888 | 0.0217850245535374 | 22.2884713094682 |
 
 ## Interpretation
 
@@ -45,12 +47,18 @@ For PIP, the native prepared row path emits generic
 The refreshed harness explicitly rejects any prepared PIP row whose
 `membership` value is not `1`.
 
+For LSI, the validator compares `(left_id, right_id)` segment-pair sets and
+also records `max_lsi_coordinate_delta`; the refreshed pod artifact reports
+`0`.
+
 For overlay, the prepared row path emits generic shape-pair dependency rows
 with `left_polygon_id`, `right_polygon_id`, `requires_lsi`, and `requires_pip`.
 The app compares those four fields directly against the CPU reference rows.
 
-All three public cases match with symmetric difference `0`, including the
-larger bounded overlay slice with 56,876 row-continuation records.
+All four public cases match with symmetric difference `0`, including the
+bounded LSI row slice and the larger bounded overlay slice with 56,876
+row-continuation records.
+The largest base row-continuation case has 56,876 row-continuation records.
 
 The prepared query phase is much smaller than the full wall time. The total
 time includes cold preparation, host-side row materialization, and row-set
