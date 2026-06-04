@@ -5259,14 +5259,6 @@ static void ensure_pip_pipeline()
                     ? "const uint32_t query_axis_z_point = 1u;"
                     : "const uint32_t query_axis_z_point = 0u;");
         }
-        if (use_prepared_closed_shape_crossing_scale_layout()) {
-            const std::string needle = "const uint32_t edge_crossing_scale_enabled = 0u;";
-            const size_t pos = src.find(needle);
-            if (pos == std::string::npos) {
-                throw std::runtime_error("failed to specialize closed-shape membership crossing-scale layout");
-            }
-            src.replace(pos, needle.size(), "const uint32_t edge_crossing_scale_enabled = 1u;");
-        }
         std::string ptx = compile_to_ptx(src.c_str(), "pip_kernel.cu");
         g_pip.pipe = build_pipeline(
             get_optix_context(), ptx,
