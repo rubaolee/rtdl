@@ -65,6 +65,7 @@ from .embree_runtime import _encode_db_table_columnar
 from .embree_runtime import _encode_db_column_mapping_columnar_with_metadata
 from .embree_runtime import _encode_all_db_text_column_mapping
 from .embree_runtime import _columnar_record_set_to_column_mapping
+from .embree_runtime import pack_segments as _pack_segments_common
 from .oracle_runtime import _decode_db_group_key
 from .oracle_runtime import _DB_KIND_FLOAT64
 from .oracle_runtime import _DB_KIND_INT64
@@ -7848,25 +7849,16 @@ def _prepare_columnar_optix_execution(compiled: CompiledKernel, normalized_input
 # Packing helpers  (same interface as embree_runtime.py)
 # ─────────────────────────────────────────────────────────────────────────────
 
-def pack_segments(records=None, *, ids=None, x0=None, y0=None, x1=None, y1=None) -> PackedSegments:
-    if records is not None:
-        norm = records if isinstance(records, tuple) and all(isinstance(item, _CanonicalSegment) for item in records) else _normalize_records("segments", "segments", records)
-        arr  = (_RtdlSegment * len(norm))(*[
-            _RtdlSegment(r.id, r.x0, r.y0, r.x1, r.y1) for r in norm
-        ])
-        return PackedSegments(records=arr, count=len(norm))
-    ids_l = _coerce_list("ids", ids)
-    x0_l  = _coerce_list("x0",  x0)
-    y0_l  = _coerce_list("y0",  y0)
-    x1_l  = _coerce_list("x1",  x1)
-    y1_l  = _coerce_list("y1",  y1)
-    n = _validate_equal_lengths("segments", ids_l, x0_l, y0_l, x1_l, y1_l)
-    arr = (_RtdlSegment * n)(*[
-        _RtdlSegment(int(ids_l[i]), float(x0_l[i]), float(y0_l[i]),
-                     float(x1_l[i]), float(y1_l[i]))
-        for i in range(n)
-    ])
-    return PackedSegments(records=arr, count=n)
+def pack_segments(records=None, *, ids=None, x0=None, y0=None, x1=None, y1=None, order_mode: str = "natural") -> PackedSegments:
+    return _pack_segments_common(
+        records=records,
+        ids=ids,
+        x0=x0,
+        y0=y0,
+        x1=x1,
+        y1=y1,
+        order_mode=order_mode,
+    )
 
 
 def pack_points(records=None, *, ids=None, x=None, y=None, z=None, dimension: int | None = None) -> PackedPoints:

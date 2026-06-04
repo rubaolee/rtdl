@@ -919,9 +919,19 @@ def clear_embree_prepared_cache() -> None:
     _prepared_embree_execution_cache.clear()
 
 
-def pack_segments(records=None, *, ids=None, x0=None, y0=None, x1=None, y1=None) -> PackedSegments:
+def pack_segments(records=None, *, ids=None, x0=None, y0=None, x1=None, y1=None, order_mode: str = "natural") -> PackedSegments:
+    if order_mode not in {"natural", "x_then_y", "y_then_x", "morton_xy"}:
+        raise ValueError("order_mode must be one of: natural, x_then_y, y_then_x, morton_xy")
     if records is not None:
+        if order_mode != "natural":
+            fast_packed = _try_pack_segments_records_numpy_ordered(records, order_mode)
+            if fast_packed is not None:
+                return fast_packed
         normalized = records if isinstance(records, tuple) and all(isinstance(item, _CanonicalSegment) for item in records) else _normalize_records("segments", "segments", records)
+        if order_mode != "natural":
+            from .spatial_order import spatial_order_segments_2d
+
+            normalized = spatial_order_segments_2d(normalized, order_mode)
         array = (_RtdlSegment * len(normalized))(*[
             _RtdlSegment(item.id, item.x0, item.y0, item.x1, item.y1) for item in normalized
         ])
@@ -933,11 +943,114 @@ def pack_segments(records=None, *, ids=None, x0=None, y0=None, x1=None, y1=None)
     x1_list = _coerce_list("x1", x1)
     y1_list = _coerce_list("y1", y1)
     count = _validate_equal_lengths("segments", ids_list, x0_list, y0_list, x1_list, y1_list)
+    if order_mode != "natural":
+        fast_packed = _try_pack_segments_columns_numpy_ordered(ids_list, x0_list, y0_list, x1_list, y1_list, order_mode)
+        if fast_packed is not None:
+            return fast_packed
+        normalized = tuple(
+            _CanonicalSegment(
+                int(ids_list[i]),
+                float(x0_list[i]),
+                float(y0_list[i]),
+                float(x1_list[i]),
+                float(y1_list[i]),
+            )
+            for i in range(count)
+        )
+        from .spatial_order import spatial_order_segments_2d
+
+        ordered = spatial_order_segments_2d(normalized, order_mode)
+        array = (_RtdlSegment * len(ordered))(*[
+            _RtdlSegment(item.id, item.x0, item.y0, item.x1, item.y1) for item in ordered
+        ])
+        return PackedSegments(records=array, count=len(ordered))
     array = (_RtdlSegment * count)(*[
         _RtdlSegment(int(ids_list[i]), float(x0_list[i]), float(y0_list[i]), float(x1_list[i]), float(y1_list[i]))
         for i in range(count)
     ])
     return PackedSegments(records=array, count=count)
+
+
+def _try_pack_segments_records_numpy_ordered(records, order_mode: str) -> PackedSegments | None:
+    try:
+        import numpy as _np
+    except Exception:
+        return None
+    try:
+        record_tuple = tuple(records)
+        count = len(record_tuple)
+        ids = _np.fromiter((_segment_field(record, "id") for record in record_tuple), dtype=_np.uint32, count=count)
+        x0 = _np.fromiter((_segment_field(record, "x0") for record in record_tuple), dtype=_np.float64, count=count)
+        y0 = _np.fromiter((_segment_field(record, "y0") for record in record_tuple), dtype=_np.float64, count=count)
+        x1 = _np.fromiter((_segment_field(record, "x1") for record in record_tuple), dtype=_np.float64, count=count)
+        y1 = _np.fromiter((_segment_field(record, "y1") for record in record_tuple), dtype=_np.float64, count=count)
+        return _pack_segments_numpy_arrays_ordered(ids, x0, y0, x1, y1, order_mode, _np)
+    except Exception:
+        return None
+
+
+def _try_pack_segments_columns_numpy_ordered(ids, x0, y0, x1, y1, order_mode: str) -> PackedSegments | None:
+    try:
+        import numpy as _np
+    except Exception:
+        return None
+    try:
+        ids_array = _np.asarray(ids, dtype=_np.uint32)
+        x0_array = _np.asarray(x0, dtype=_np.float64)
+        y0_array = _np.asarray(y0, dtype=_np.float64)
+        x1_array = _np.asarray(x1, dtype=_np.float64)
+        y1_array = _np.asarray(y1, dtype=_np.float64)
+        return _pack_segments_numpy_arrays_ordered(
+            ids_array,
+            x0_array,
+            y0_array,
+            x1_array,
+            y1_array,
+            order_mode,
+            _np,
+        )
+    except Exception:
+        return None
+
+
+def _pack_segments_numpy_arrays_ordered(ids, x0, y0, x1, y1, order_mode: str, _np) -> PackedSegments | None:
+    if not (ids.ndim == x0.ndim == y0.ndim == x1.ndim == y1.ndim == 1):
+        return None
+    if not (ids.size == x0.size == y0.size == x1.size == y1.size):
+        return None
+    cx = (x0 + x1) * 0.5
+    cy = (y0 + y1) * 0.5
+    if order_mode == "x_then_y":
+        order = _np.lexsort((ids.astype(_np.uint64), cy, cx))
+    elif order_mode == "y_then_x":
+        order = _np.lexsort((ids.astype(_np.uint64), cx, cy))
+    else:
+        from .spatial_order import _numpy_morton_codes_2d_16
+
+        codes = _numpy_morton_codes_2d_16(cx, cy, _np)
+        order = _np.lexsort((ids.astype(_np.uint64), codes))
+    array = (_RtdlSegment * int(ids.size))(*[
+        _RtdlSegment(
+            int(ids[int(index)]),
+            float(x0[int(index)]),
+            float(y0[int(index)]),
+            float(x1[int(index)]),
+            float(y1[int(index)]),
+        )
+        for index in order
+    ])
+    return PackedSegments(records=array, count=int(ids.size))
+
+
+def _segment_field(record: object, field_name: str):
+    if not isinstance(record, Mapping):
+        try:
+            return getattr(record, field_name)
+        except AttributeError:
+            pass
+    if isinstance(record, Mapping):
+        return record[field_name]
+    raise TypeError(f"segment record does not expose {field_name!r}: {record!r}")
 
 
 def _pack_points_columns_numpy(ids, x, y, z=None, *, dimension: int | None = None) -> PackedPoints | None:

@@ -393,25 +393,20 @@ def run_rayjoin_prepared_optix_workload(
         from rtdsl.optix_runtime import pack_segments
         from rtdsl.optix_runtime import prepare_segment_pair_intersection_optix
 
-        ordered_left = _phase_time(
-            phases,
-            "query_segment_order_sec",
-            lambda: _order_segments_for_locality(case.inputs["left"], segment_order_mode),
-        )
-        ordered_right = _phase_time(
-            phases,
-            "static_segment_order_sec",
-            lambda: _order_segments_for_locality(case.inputs["right"], segment_order_mode),
-        )
         packed_left = _phase_time(
             phases,
             "query_pack_sec",
-            lambda: pack_segments(records=ordered_left),
+            lambda: pack_segments(records=case.inputs["left"], order_mode=segment_order_mode),
+        )
+        packed_right = _phase_time(
+            phases,
+            "static_segment_pack_sec",
+            lambda: pack_segments(records=case.inputs["right"], order_mode=segment_order_mode),
         )
         prepared = _phase_time(
             phases,
             "prepare_static_scene_sec",
-            lambda: prepare_segment_pair_intersection_optix(ordered_right),
+            lambda: prepare_segment_pair_intersection_optix(packed_right),
         )
         try:
             if result_mode == "count":
@@ -433,6 +428,11 @@ def run_rayjoin_prepared_optix_workload(
                 "segment_segment_intersection_count"
                 if result_mode == "count"
                 else "segment_segment_intersection_rows"
+            ),
+            "segment_order_execution": (
+                "fused_into_pack_segments"
+                if segment_order_mode != "natural"
+                else "natural_input_order"
             ),
         }
     else:
