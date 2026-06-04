@@ -5168,6 +5168,7 @@ struct PipLaunchParams {
     const GpuPolygonRef* polygons;
     const float*     vertices_x;
     const float*     vertices_y;
+    const GpuPreparedClosedShapeEdge2D* prepared_edges;
     uint32_t*        hit_words;
     GpuPipRecord*    output;
     uint32_t*        output_count;
@@ -5323,6 +5324,7 @@ static void run_pip_optix(
     lp.polygons       = reinterpret_cast<const GpuPolygonRef*>(d_polys.ptr);
     lp.vertices_x     = reinterpret_cast<const float*>(d_vx.ptr);
     lp.vertices_y     = reinterpret_cast<const float*>(d_vy.ptr);
+    lp.prepared_edges = nullptr;
     lp.hit_words      = nullptr;
     lp.output         = d_output ? reinterpret_cast<GpuPipRecord*>(d_output->ptr) : nullptr;
     lp.output_count   = reinterpret_cast<uint32_t*>(d_count.ptr);
@@ -5874,12 +5876,14 @@ struct PreparedShapePairRelationBuild {
     std::vector<GpuPolygonRef> right_polygons;
     std::vector<float> right_vx;
     std::vector<float> right_vy;
+    std::vector<GpuPreparedClosedShapeEdge2D> right_edges;
     size_t right_count = 0;
     size_t right_vert_xy_count = 0;
     size_t right_vert_count = 0;
     DevPtr d_right_polygons;
     DevPtr d_right_vx;
     DevPtr d_right_vy;
+    DevPtr d_right_edges;
     AccelHolder accel;
 #if RTDL_OPTIX_HAS_GEOS
     std::unique_ptr<GeosPreparedPolygonRefs> right_geos;
@@ -5895,12 +5899,14 @@ struct PreparedShapePairRelationBuild {
           right_polygons(poly_count),
           right_vx(vert_xy_count / 2u),
           right_vy(vert_xy_count / 2u),
+          right_edges(vert_xy_count / 2u),
           right_count(poly_count),
           right_vert_xy_count(vert_xy_count),
           right_vert_count(vert_xy_count / 2u),
           d_right_polygons(sizeof(GpuPolygonRef) * poly_count),
           d_right_vx(sizeof(float) * (vert_xy_count / 2u)),
-          d_right_vy(sizeof(float) * (vert_xy_count / 2u))
+          d_right_vy(sizeof(float) * (vert_xy_count / 2u)),
+          d_right_edges(sizeof(GpuPreparedClosedShapeEdge2D) * (vert_xy_count / 2u))
     {
         if (poly_count > 0) {
             host_right_polygons.assign(polys, polys + poly_count);
@@ -5919,9 +5925,35 @@ struct PreparedShapePairRelationBuild {
             right_vx[i] = static_cast<float>(verts_xy[i * 2u]);
             right_vy[i] = static_cast<float>(verts_xy[i * 2u + 1u]);
         }
+        const float point_eps_den = 1.0e-20f;
+        for (const GpuPolygonRef& poly : right_polygons) {
+            const uint32_t n = poly.vertex_count;
+            const uint32_t off = poly.vertex_offset;
+            for (uint32_t i = 0; i < n; ++i) {
+                const uint32_t j = (i == 0u) ? (n - 1u) : (i - 1u);
+                const float ax = right_vx[off + j];
+                const float ay = right_vy[off + j];
+                const float bx = right_vx[off + i];
+                const float by = right_vy[off + i];
+                const float dx = bx - ax;
+                const float dy = by - ay;
+                const float ay_minus_by = ay - by;
+                right_edges[off + i] = {
+                    ax,
+                    ay,
+                    bx,
+                    by,
+                    dx,
+                    dy,
+                    dx * dx + dy * dy,
+                    (ax - bx) / (ay_minus_by != 0.0f ? ay_minus_by : point_eps_den),
+                };
+            }
+        }
         upload(d_right_polygons.ptr, right_polygons.data(), right_polygons.size());
         upload(d_right_vx.ptr, right_vx.data(), right_vx.size());
         upload(d_right_vy.ptr, right_vy.data(), right_vy.size());
+        upload(d_right_edges.ptr, right_edges.data(), right_edges.size());
 
         if (!right_polygons.empty()) {
             std::vector<OptixAabb> aabbs(poly_count);
@@ -6023,6 +6055,7 @@ static void run_prepared_point_closed_shape_membership_2d_optix(
     lp.polygons       = reinterpret_cast<const GpuPolygonRef*>(prepared->d_right_polygons.ptr);
     lp.vertices_x     = reinterpret_cast<const float*>(prepared->d_right_vx.ptr);
     lp.vertices_y     = reinterpret_cast<const float*>(prepared->d_right_vy.ptr);
+    lp.prepared_edges = reinterpret_cast<const GpuPreparedClosedShapeEdge2D*>(prepared->d_right_edges.ptr);
     lp.hit_words      = nullptr;
     lp.output         = nullptr;
     lp.output_count   = reinterpret_cast<uint32_t*>(d_count.ptr);
@@ -6237,6 +6270,7 @@ static void count_prepared_point_closed_shape_membership_2d_optix(
     lp.polygons       = reinterpret_cast<const GpuPolygonRef*>(prepared->d_right_polygons.ptr);
     lp.vertices_x     = reinterpret_cast<const float*>(prepared->d_right_vx.ptr);
     lp.vertices_y     = reinterpret_cast<const float*>(prepared->d_right_vy.ptr);
+    lp.prepared_edges = reinterpret_cast<const GpuPreparedClosedShapeEdge2D*>(prepared->d_right_edges.ptr);
     lp.hit_words      = nullptr;
     lp.output         = nullptr;
     lp.output_count   = reinterpret_cast<uint32_t*>(d_count.ptr);
@@ -6441,6 +6475,7 @@ static void count_prepared_point_closed_shape_membership_device_filtered_2d_opti
     lp.polygons       = reinterpret_cast<const GpuPolygonRef*>(prepared->d_right_polygons.ptr);
     lp.vertices_x     = reinterpret_cast<const float*>(prepared->d_right_vx.ptr);
     lp.vertices_y     = reinterpret_cast<const float*>(prepared->d_right_vy.ptr);
+    lp.prepared_edges = reinterpret_cast<const GpuPreparedClosedShapeEdge2D*>(prepared->d_right_edges.ptr);
     lp.hit_words      = nullptr;
     lp.output         = nullptr;
     lp.output_count   = reinterpret_cast<uint32_t*>(d_count.ptr);

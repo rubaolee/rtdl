@@ -1155,6 +1155,14 @@ struct GpuPolygonRef {
     uint32_t vertex_count;
 };
 
+struct GpuPreparedClosedShapeEdge2D {
+    float ax, ay;
+    float bx, by;
+    float dx, dy;
+    float len2;
+    float crossing_scale;
+};
+
 struct PipRecord {
     uint32_t point_id, polygon_id, contains;
 };
@@ -1167,6 +1175,7 @@ struct PipParams {
     const GpuPolygonRef* polygons;
     const float* vertices_x;
     const float* vertices_y;
+    const GpuPreparedClosedShapeEdge2D* prepared_edges;
     uint32_t* hit_words;
     PipRecord* output;
     uint32_t* output_count;
@@ -1194,20 +1203,47 @@ static __forceinline__ __device__ bool point_in_polygon(
     uint32_t n = poly.vertex_count;
     uint32_t off = poly.vertex_offset;
     bool inside = false;
+    if (params.prepared_edges != nullptr) {
+        for (uint32_t i = 0; i < n; ++i) {
+            const GpuPreparedClosedShapeEdge2D edge = params.prepared_edges[off + i];
+            const float ax = edge.ax;
+            const float ay = edge.ay;
+            const float bx = edge.bx;
+            const float by = edge.by;
+            const float len2 = edge.len2;
+            if (len2 <= point_eps * point_eps) {
+                if (fabsf(px - ax) <= point_eps && fabsf(py - ay) <= point_eps)
+                    return true;
+            } else {
+                float cross = (px - ax) * edge.dy - (py - ay) * edge.dx;
+                if (cross * cross <= point_eps * point_eps * len2) {
+                    float dot = (px - ax) * edge.dx + (py - ay) * edge.dy;
+                    if (dot >= -point_eps && dot <= len2 + point_eps)
+                        return true;
+                }
+            }
+
+            if (((by > py) != (ay > py)) &&
+                (px <= edge.crossing_scale * (py - by) + bx))
+                inside = !inside;
+        }
+        return inside;
+    }
     for (uint32_t i = 0, j = n - 1; i < n; j = i++) {
         float ax = params.vertices_x[off + j];
         float ay = params.vertices_y[off + j];
         float bx = params.vertices_x[off + i];
         float by = params.vertices_y[off + i];
-
-        float len2 = (bx - ax) * (bx - ax) + (by - ay) * (by - ay);
+        float dx = bx - ax;
+        float dy = by - ay;
+        float len2 = dx * dx + dy * dy;
         if (len2 <= point_eps * point_eps) {
             if (fabsf(px - ax) <= point_eps && fabsf(py - ay) <= point_eps)
                 return true;
         } else {
-            float cross = (px - ax) * (by - ay) - (py - ay) * (bx - ax);
+            float cross = (px - ax) * dy - (py - ay) * dx;
             if (cross * cross <= point_eps * point_eps * len2) {
-                float dot = (px - ax) * (bx - ax) + (py - ay) * (by - ay);
+                float dot = (px - ax) * dx + (py - ay) * dy;
                 if (dot >= -point_eps && dot <= len2 + point_eps)
                     return true;
             }
@@ -7189,6 +7225,13 @@ struct GpuSegment   { float x0, y0, x1, y1; uint32_t id; };
 struct GpuPoint     { float x, y;           uint32_t id; uint32_t pad; };
 struct GpuPoint3DHost { float x, y, z;      uint32_t id; };
 struct GpuPolygonRef { uint32_t id, vertex_offset, vertex_count; };
+struct GpuPreparedClosedShapeEdge2D {
+    float ax, ay;
+    float bx, by;
+    float dx, dy;
+    float len2;
+    float crossing_scale;
+};
 struct GpuTriangle  { float x0, y0, x1, y1, x2, y2; uint32_t id; };
 struct GpuRay       { float ox, oy, dx, dy, tmax; uint32_t id; };
 // 3-D counterparts - direction is pre-normalised before upload.
