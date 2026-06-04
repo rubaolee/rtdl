@@ -1,0 +1,50 @@
+{
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "goal": 3320,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "query_axis": "z_point",
+  "rows": [
+    {
+      "dataset": "/root/rtdl_goal3293/data/rayjoin_public_cdb/br_county.cdb",
+      "device_filtered_prepared_points_matches_exact": false,
+      "device_filtered_prepared_points_scalar_count": 47554,
+      "exact_count": 47262,
+      "point_count": 16545,
+      "point_id_count_device_columns_count": 47554,
+      "point_id_count_device_columns_matches_exact": false,
+      "point_id_count_device_columns_overflow": false,
+      "shape_count": 15700
+    },
+    {
+      "dataset": "/root/rtdl_goal3293/data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+      "device_filtered_prepared_points_matches_exact": false,
+      "device_filtered_prepared_points_scalar_count": 1429,
+      "exact_count": 1417,
+      "point_count": 512,
+      "point_id_count_device_columns_count": 1429,
+      "point_id_count_device_columns_matches_exact": false,
+      "point_id_count_device_columns_overflow": false,
+      "shape_count": 478
+    },
+    {
+      "dataset": "/root/rtdl_goal3293/data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+      "device_filtered_prepared_points_matches_exact": true,
+      "device_filtered_prepared_points_scalar_count": 1471,
+      "exact_count": 1471,
+      "point_count": 512,
+      "point_id_count_device_columns_count": 1471,
+      "point_id_count_device_columns_matches_exact": true,
+      "point_id_count_device_columns_overflow": false,
+      "shape_count": 501
+    }
+  ],
+  "rtdl_commit": "c037f510b89a2effd4eff32d025da1a3c053a0b1",
+  "schema": "rtdl.goal3320.rayjoin_pip_device_count_validation_matrix.v1"
+}

@@ -1,0 +1,83 @@
+{
+  "batch_executor": true,
+  "batch_rows": [
+    {
+      "batch_executor": true,
+      "batch_stream_count_effective": 4,
+      "count_first": 1471,
+      "count_last": 1471,
+      "native_candidate_per_request_ms_median": 0.023892125,
+      "native_candidate_total_ms_median": 0.191137,
+      "native_modes": [
+        "prepared_points_device_filtered_batch_executor_run"
+      ],
+      "per_request_ms_median": 0.02597313141450286,
+      "request_count": 8,
+      "total_ms_median": 0.20778505131602287
+    },
+    {
+      "batch_executor": true,
+      "batch_stream_count_effective": 8,
+      "count_first": 1471,
+      "count_last": 1471,
+      "native_candidate_per_request_ms_median": 0.014447437499999998,
+      "native_candidate_total_ms_median": 0.23115899999999998,
+      "native_modes": [
+        "prepared_points_device_filtered_batch_executor_run"
+      ],
+      "per_request_ms_median": 0.015695986803621054,
+      "request_count": 16,
+      "total_ms_median": 0.25113578885793686
+    },
+    {
+      "batch_executor": true,
+      "batch_stream_count_effective": 8,
+      "count_first": 1471,
+      "count_last": 1471,
+      "native_candidate_per_request_ms_median": 0.012552359375,
+      "native_candidate_total_ms_median": 0.4016755,
+      "native_modes": [
+        "prepared_points_device_filtered_batch_executor_run"
+      ],
+      "per_request_ms_median": 0.013224082067608833,
+      "request_count": 32,
+      "total_ms_median": 0.42317062616348267
+    },
+    {
+      "batch_executor": true,
+      "batch_stream_count_effective": 16,
+      "count_first": 1471,
+      "count_last": 1471,
+      "native_candidate_per_request_ms_median": 0.012358765624999999,
+      "native_candidate_total_ms_median": 0.7909609999999999,
+      "native_modes": [
+        "prepared_points_device_filtered_batch_executor_run"
+      ],
+      "per_request_ms_median": 0.012868338671978563,
+      "request_count": 64,
+      "total_ms_median": 0.823573675006628
+    }
+  ],
+  "batch_stream_count": "auto",
+  "boundary_mode": "inclusive",
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "dataset": "/root/rtdl_goal3293/data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+  "exact_count": 1471,
+  "goal": 3310,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "interpretation": "Batch rows are repeated-query throughput evidence only; they do not replace one-shot RayJoin latency comparisons.",
+  "point_count": 512,
+  "query_axis": "z_point",
+  "rtdl_commit": "c037f510b89a2effd4eff32d025da1a3c053a0b1",
+  "scalar_count_pipeline": true,
+  "schema": "rtdl.goal3310.rayjoin_pip_batch_scalar_count_probe.v1",
+  "shape_count": 501,
+  "single_ms_median": 0.08969148620963097
+}
