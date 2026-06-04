@@ -110,6 +110,8 @@ class Goal3362OwnerFaceCupyFilterContinuationTest(unittest.TestCase):
         self.assertIn("does not authorize release", text)
         self.assertIn("pod evidence required", text)
         self.assertIn("Ran 15 tests in 8.593s", text)
+        self.assertIn("Committed-code rerun", text)
+        self.assertIn("ea7a247f", text)
 
 
 if __name__ == "__main__":

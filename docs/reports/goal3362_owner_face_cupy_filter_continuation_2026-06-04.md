@@ -49,7 +49,8 @@ Collected on 2026-06-04:
 - GPU: `NVIDIA RTX A5000`
 - Driver: `580.126.09`
 - CuPy: `14.1.1`
-- Repo commit basis: `04bd3c01` plus Goal3362 working files copied into the pod checkout before commit.
+- Initial repo commit basis: `04bd3c01` plus Goal3362 working files copied into the pod checkout before commit.
+- Committed-code rerun: `ea7a247f`
 
 Command scope:
 
@@ -65,6 +66,19 @@ Result:
 
 ```text
 Ran 15 tests in 8.593s
+OK
+```
+
+Committed-code rerun scope:
+
+```text
+python3 -m unittest tests.goal3362_owner_face_cupy_filter_continuation_test
+```
+
+Committed-code rerun result:
+
+```text
+Ran 5 tests in 0.657s
 OK
 ```
 
