@@ -1242,6 +1242,9 @@ extern "C" __global__ void __raygen__pip_probe() {
                OPTIX_RAY_FLAG_NONE,
                0, 1, 0,
                p0, p1, p2, p3);
+    if (params.positive_only != 0u && params.output == nullptr && params.output_capacity == 0u && p2 != 0u) {
+        atomicAdd(params.output_count, p2);
+    }
 }
 
 extern "C" __global__ void __miss__pip_miss() {}
@@ -1278,6 +1281,11 @@ extern "C" __global__ void __intersection__pip_isect() {
         const uint32_t pidx = optixGetPayload_0();
         const uint32_t prim = optixGetPayload_1();
         if (params.positive_only != 0u) {
+            if (params.output == nullptr && params.output_capacity == 0u) {
+                optixSetPayload_2(optixGetPayload_2() + 1u);
+                optixIgnoreIntersection();
+                return;
+            }
             const uint32_t slot = atomicAdd(params.output_count, 1u);
             if (slot < params.output_capacity && params.output != nullptr) {
                 PipRecord r;
