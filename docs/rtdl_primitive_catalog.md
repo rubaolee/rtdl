@@ -104,7 +104,7 @@ app/partner code unless it is redesigned as an app-independent behavior.
 
 - Generator version: `rtdl.primitive_catalog.generated.v1`
 - Hierarchy validation valid: `True`
-- Node count: `51`
+- Node count: `52`
 - Unknown capability tags: `-`
 - Missing dependencies: `-`
 - Backward dependencies: `-`
@@ -130,6 +130,7 @@ Execution / Residency Layer (layer.execution_residency)
   Partner-Resident Handoff (execution.partner_resident_handoff)
   Capacity / Overflow Contract (execution.capacity_overflow_contract)
   Spatial Order Points 2D (execution.spatial_order_points_2d)
+  Spatial Order Segments 2D (execution.spatial_order_segments_2d)
 Traversal Layer (layer.traversal)
   ANY_HIT (traversal.any_hit)
   CLOSEST_HIT / First-Hit-Like Paths (traversal.closest_hit)
@@ -206,6 +207,7 @@ Owns prepared runtime state, buffer descriptors, residency, and capacity contrac
 | `execution.partner_resident_handoff` | `internal_substrate` | Describes user/partner-owned device columns handed to RTDL without changing app ownership. | `partner_column_descriptor`, `device_pointer_handoff` | - | - | - | - |
 | `execution.capacity_overflow_contract` | `stable_behavior` | Shared capacity accounting and fail-closed overflow behavior for exact outputs. | `capacity`, `overflowed`, `complete_candidate_coverage` | - | `intent:collect_rows`, `shape:generic`, `output:rows`, `exactness:bounded`, `keying:none` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | - |
 | `execution.spatial_order_points_2d` | `stable_behavior` | Deterministically reorder caller-owned 2-D point records for traversal locality before packing. | `ordered_records`, `stable_id_order` | - | `intent:order`, `shape:point_set`, `dim:2d`, `output:columns`, `exactness:exact`, `keying:none` | backends: `cpu_python_reference` | This is a generic preparation hint. It preserves caller IDs and does not add app-specific membership, join, or predicate semantics. |
+| `execution.spatial_order_segments_2d` | `stable_behavior` | Deterministically reorder caller-owned 2-D segment records by centroid locality before packing. | `ordered_records`, `stable_id_order` | - | `intent:order`, `shape:segment_set`, `dim:2d`, `output:columns`, `exactness:exact`, `keying:none` | backends: `cpu_python_reference` | This is a generic preparation hint. It preserves caller segment IDs and does not add app-specific intersection, join, overlay, or predicate semantics. |
 
 Discovery metadata:
 
@@ -214,6 +216,7 @@ Discovery metadata:
 | `execution.prepared_rt_state` | `prepared_rt_state`, `prepared_scene`, `prepared_handle`, `reusable_index` | `reuse prepared Embree or OptiX state across queries`, `find prepared scene and query state lifetime metadata` | docs/features/engine_support_matrix.md | - |
 | `execution.capacity_overflow_contract` | `capacity_overflow`, `overflow_contract`, `fail_closed_capacity`, `fail closed overflow capacity`, `bounded_capacity` | `fail closed when exact bounded output capacity is exceeded`, `find overflow and complete coverage metadata for bounded rows` | docs/rtdl_primitive_catalog.md | - |
 | `execution.spatial_order_points_2d` | `spatial_order_points_2d`, `morton_point_order`, `z_order_points`, `locality_order_points` | `order 2d points by spatial locality before packing`, `morton order points before packing`, `use morton or axis point ordering while preserving record ids` | docs/rtdl_primitive_catalog.md | Reorders caller-owned query records before execution; it does not prepare an RT scene or emit witness rows. |
+| `execution.spatial_order_segments_2d` | `spatial_order_segments_2d`, `morton_segment_order`, `z_order_segments`, `locality_order_segments` | `order 2d segments by centroid locality before packing`, `morton order segments before packing`, `use morton or axis segment ordering while preserving segment ids` | docs/rtdl_primitive_catalog.md | Reorders caller-owned segment records before execution; it does not prepare an RT scene or emit segment-pair witness rows. |
 
 ### Traversal Layer
 
@@ -413,6 +416,7 @@ make the runtime choice for the user.
 | `intent:order` |
 | `shape:generic` |
 | `shape:point_set` |
+| `shape:segment_set` |
 | `shape:fixed_radius` |
 | `shape:closed_shape` |
 | `shape:segment_pair` |

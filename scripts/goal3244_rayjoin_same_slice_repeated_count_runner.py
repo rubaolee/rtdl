@@ -236,14 +236,19 @@ def run_rtdl_samples(
     query_axis: str | None = None,
     boundary_mode: str | None = None,
     point_order_mode: str = "natural",
+    segment_order_mode: str = "natural",
 ) -> dict[str, Any]:
     if count_mode != "exact" and workload != "pip":
         raise ValueError("non-exact count_mode is only supported for RTDL PIP samples")
     if point_order_mode != "natural" and workload != "pip":
         raise ValueError("point_order_mode is only supported for RTDL PIP samples")
+    if segment_order_mode != "natural" and workload != "lsi":
+        raise ValueError("segment_order_mode is only supported for RTDL LSI samples")
 
     query_sec: list[float] = []
     validation_exact_query_sec: list[float] = []
+    query_order_sec: list[float] = []
+    static_order_sec: list[float] = []
     query_pack_sec: list[float] = []
     prepare_sec: list[float] = []
     static_shape_pack_sec: list[float] = []
@@ -260,6 +265,7 @@ def run_rtdl_samples(
                 count_mode=count_mode,
                 device_filtered_boundary_mode=boundary_mode,
                 point_order_mode=point_order_mode,
+                segment_order_mode=segment_order_mode,
             )
 
     for index in range(warmup):
@@ -271,6 +277,10 @@ def run_rtdl_samples(
         phases = dict(payload.get("phases_sec") or {})
         summary = dict(payload.get("summary") or {})
         query_sec.append(float(phases.get("prepared_query_sec", 0.0)))
+        query_order_sec.append(
+            float(phases.get("query_point_order_sec", phases.get("query_segment_order_sec", 0.0)))
+        )
+        static_order_sec.append(float(phases.get("static_segment_order_sec", 0.0)))
         if "validation_exact_query_sec" in phases:
             validation_exact_query_sec.append(float(phases["validation_exact_query_sec"]))
         query_pack_sec.append(float(phases.get("query_pack_sec", 0.0)))
@@ -303,10 +313,13 @@ def run_rtdl_samples(
             else None
         ),
         "point_order_mode": point_order_mode if workload == "pip" else None,
+        "segment_order_mode": segment_order_mode if workload == "lsi" else None,
         "warmup": int(warmup),
         "repeat": int(repeat),
         "prepared_query_ms": summarize_samples([value * 1000.0 for value in query_sec]),
         "validation_exact_query_ms": summarize_samples([value * 1000.0 for value in validation_exact_query_sec]),
+        "query_order_ms": summarize_samples([value * 1000.0 for value in query_order_sec if value != 0.0]),
+        "static_order_ms": summarize_samples([value * 1000.0 for value in static_order_sec if value != 0.0]),
         "query_pack_ms": summarize_samples([value * 1000.0 for value in query_pack_sec]),
         "prepare_static_scene_ms": summarize_samples([value * 1000.0 for value in prepare_sec]),
         "static_shape_pack_ms": summarize_samples([value * 1000.0 for value in static_shape_pack_sec if value != 0.0]),
@@ -417,6 +430,15 @@ def main(argv: list[str] | None = None) -> int:
             "Caller point ids are preserved; artifacts record the selected order."
         ),
     )
+    parser.add_argument(
+        "--rtdl-lsi-segment-order",
+        choices=("natural", "x_then_y", "y_then_x", "morton_xy"),
+        default="natural",
+        help=(
+            "Optional generic LSI segment ordering before segment packing and prepared-scene build. "
+            "Caller segment ids are preserved; artifacts record the selected order."
+        ),
+    )
     parser.add_argument("--timeout-seconds", type=int, default=int(os.environ.get("STEP_TIMEOUT_SECONDS", "300")))
     args = parser.parse_args(argv)
 
@@ -446,6 +468,7 @@ def main(argv: list[str] | None = None) -> int:
             dataset=args.rtdl_lsi_dataset,
             warmup=args.rtdl_warmup,
             repeat=args.rtdl_repeat,
+            segment_order_mode=args.rtdl_lsi_segment_order,
         ),
         "pip": run_rtdl_samples(
             workload="pip",
@@ -495,6 +518,11 @@ def main(argv: list[str] | None = None) -> int:
             "rtdl_pip_point_order": (
                 "When --rtdl-pip-point-order is supplied, the app reorders only PIP probe points before "
                 "packing while preserving caller point ids; this is a generic locality probe, not a "
+                "RayJoin-specific native engine path."
+            ),
+            "rtdl_lsi_segment_order": (
+                "When --rtdl-lsi-segment-order is supplied, the app reorders only LSI segment records before "
+                "packing/preparation while preserving caller segment ids; this is a generic locality probe, not a "
                 "RayJoin-specific native engine path."
             ),
         },

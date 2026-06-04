@@ -40,6 +40,7 @@ PRIMITIVE_CAPABILITY_TAGS = (
     "intent:order",
     "shape:generic",
     "shape:point_set",
+    "shape:segment_set",
     "shape:fixed_radius",
     "shape:closed_shape",
     "shape:segment_pair",
@@ -247,6 +248,39 @@ PRIMITIVE_HIERARCHY = (
                 distinct_from=(
                     "Reorders caller-owned query records before execution; it does not prepare an RT scene "
                     "or emit witness rows."
+                ),
+            ),
+            PrimitiveHierarchyNode(
+                id="execution.spatial_order_segments_2d",
+                title="Spatial Order Segments 2D",
+                layer="execution_residency",
+                status="stable_behavior",
+                summary="Deterministically reorder caller-owned 2-D segment records by centroid locality before packing.",
+                outputs=("ordered_records", "stable_id_order"),
+                boundary=(
+                    "This is a generic preparation hint. It preserves caller segment IDs and does not add "
+                    "app-specific intersection, join, overlay, or predicate semantics."
+                ),
+                capability_tags=(
+                    "intent:order",
+                    "shape:segment_set",
+                    "dim:2d",
+                    "output:columns",
+                    "exactness:exact",
+                    "keying:none",
+                ),
+                aliases=("spatial_order_segments_2d", "morton_segment_order", "z_order_segments", "locality_order_segments"),
+                intent_phrases=(
+                    "order 2d segments by centroid locality before packing",
+                    "morton order segments before packing",
+                    "use morton or axis segment ordering while preserving segment ids",
+                ),
+                reference_path="docs/rtdl_primitive_catalog.md",
+                backends=("cpu_python_reference",),
+                considered_alternatives=("execution.prepared_rt_state", "rows.generic_candidate_rows"),
+                distinct_from=(
+                    "Reorders caller-owned segment records before execution; it does not prepare an RT scene "
+                    "or emit segment-pair witness rows."
                 ),
             ),
         ),

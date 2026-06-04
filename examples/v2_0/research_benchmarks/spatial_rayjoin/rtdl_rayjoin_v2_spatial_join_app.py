@@ -29,6 +29,7 @@ _PREPARED_OPTIX_WORKLOADS = ("pip", "lsi", "overlay_seed")
 _PIP_COUNT_MODES = ("exact", "device_filtered_validated", "point_id_count_device_columns_validated")
 _PIP_DEVICE_FILTER_BOUNDARY_MODES = ("inclusive", "crossing_only")
 _PIP_POINT_ORDER_MODES = ("natural", "x_then_y", "y_then_x", "morton_xy")
+_LSI_SEGMENT_ORDER_MODES = ("natural", "x_then_y", "y_then_x", "morton_xy")
 RAYJOIN_V2_6_NUMBA_COMPACT_MASK_VERSION = "rtdl.rayjoin.v2_6.numba_compact_mask_preview.v1"
 
 _DEFAULT_DATASETS = {
@@ -277,6 +278,12 @@ def _order_points_for_locality(points, mode: str):
     return rt.spatial_order_points_2d(points, mode)
 
 
+def _order_segments_for_locality(segments, mode: str):
+    if mode not in _LSI_SEGMENT_ORDER_MODES:
+        raise ValueError("segment_order_mode must be one of: natural, x_then_y, y_then_x, morton_xy")
+    return rt.spatial_order_segments_2d(segments, mode)
+
+
 def run_rayjoin_prepared_optix_workload(
     workload: str,
     *,
@@ -286,6 +293,7 @@ def run_rayjoin_prepared_optix_workload(
     count_mode: str = "exact",
     device_filtered_boundary_mode: str | None = None,
     point_order_mode: str = "natural",
+    segment_order_mode: str = "natural",
 ) -> dict[str, object]:
     """Run the RayJoin-style prepared OptiX route with phase boundaries.
 
@@ -321,6 +329,10 @@ def run_rayjoin_prepared_optix_workload(
         raise ValueError("point_order_mode must be one of: natural, x_then_y, y_then_x, morton_xy")
     if point_order_mode != "natural" and workload != "pip":
         raise ValueError("point_order_mode is currently only valid for PIP closed-shape membership workloads")
+    if segment_order_mode not in _LSI_SEGMENT_ORDER_MODES:
+        raise ValueError("segment_order_mode must be one of: natural, x_then_y, y_then_x, morton_xy")
+    if segment_order_mode != "natural" and workload != "lsi":
+        raise ValueError("segment_order_mode is currently only valid for LSI segment-pair workloads")
 
     resolved_dataset = dataset or _DEFAULT_DATASETS[workload]
     case = _load_rayjoin_case(workload, resolved_dataset)
@@ -381,15 +393,25 @@ def run_rayjoin_prepared_optix_workload(
         from rtdsl.optix_runtime import pack_segments
         from rtdsl.optix_runtime import prepare_segment_pair_intersection_optix
 
+        ordered_left = _phase_time(
+            phases,
+            "query_segment_order_sec",
+            lambda: _order_segments_for_locality(case.inputs["left"], segment_order_mode),
+        )
+        ordered_right = _phase_time(
+            phases,
+            "static_segment_order_sec",
+            lambda: _order_segments_for_locality(case.inputs["right"], segment_order_mode),
+        )
         packed_left = _phase_time(
             phases,
             "query_pack_sec",
-            lambda: pack_segments(records=case.inputs["left"]),
+            lambda: pack_segments(records=ordered_left),
         )
         prepared = _phase_time(
             phases,
             "prepare_static_scene_sec",
-            lambda: prepare_segment_pair_intersection_optix(case.inputs["right"]),
+            lambda: prepare_segment_pair_intersection_optix(ordered_right),
         )
         try:
             if result_mode == "count":
@@ -560,6 +582,7 @@ def run_rayjoin_prepared_optix_workload(
         "phases_sec": phases,
         "native_phase_timings": native_phase_timings or {},
         "point_order_mode": point_order_mode if workload == "pip" else None,
+        "segment_order_mode": segment_order_mode if workload == "lsi" else None,
         "device_resident_continuation_status": (
             "overlay_seed_prepared_pair_dependency_flags_complete"
             if workload == "overlay_seed"

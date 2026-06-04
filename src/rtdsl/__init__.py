@@ -567,7 +567,9 @@ from .aggregate_tree_reference import normalize_weighted_point_rows
 from .aggregate_tree_reference import plan_aggregate_frontier_collect_lowering
 from .aggregate_tree_reference import validate_aggregate_frontier_collect_native_abi_contract
 from .spatial_order import SPATIAL_POINT_ORDER_MODES_2D
+from .spatial_order import SPATIAL_SEGMENT_ORDER_MODES_2D
 from .spatial_order import spatial_order_points_2d
+from .spatial_order import spatial_order_segments_2d
 from .app_reference import AGGREGATE_FRONTIER_WEIGHTED_VECTOR_SUM_2D_CONTRACT
 from .app_reference import GROUPED_VECTOR_SUM_ROWS_2D_CONTRACT
 from .app_reference import VECTOR_SUM_MATERIALIZATION_PRESSURE_2D_CONTRACT
@@ -1698,6 +1700,8 @@ __all__ = [
     "collect_aggregate_frontier_2d",
     "spatial_order_points_2d",
     "SPATIAL_POINT_ORDER_MODES_2D",
+    "spatial_order_segments_2d",
+    "SPATIAL_SEGMENT_ORDER_MODES_2D",
     "collect_aggregate_frontier_2d_embree",
     "collect_aggregate_frontier_2d_optix",
     "evaluate_aggregate_opening_rows_2d",
@@ -2992,6 +2996,7 @@ _CONTRACT_FIRST_DIR_EXPORTS = (
     "shape_pair_overlap_rows",
     "shape_set_similarity",
     "spatial_order_points_2d",
+    "spatial_order_segments_2d",
     "traverse",
     "within_radius",
 )
