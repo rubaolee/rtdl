@@ -1255,7 +1255,8 @@ static __forceinline__ __device__ bool point_in_polygon(
             }
         }
 
-        const float crossing_scale = params.edge_crossing_scale != nullptr
+        const uint32_t edge_crossing_scale_enabled = 0u;
+        const float crossing_scale = (edge_crossing_scale_enabled != 0u && params.edge_crossing_scale != nullptr)
             ? params.edge_crossing_scale[off + i]
             : (ax - bx) / ((ay - by) != 0.0f ? (ay - by) : 1.0e-20f);
         if (((by > py) != (ay > py)) &&

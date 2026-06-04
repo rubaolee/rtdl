@@ -14,7 +14,8 @@ class Goal3267CrossingScaleSoAProbeTest(unittest.TestCase):
         text = CORE.read_text(encoding="utf-8")
 
         self.assertIn("const float* edge_crossing_scale;", text)
-        self.assertIn("params.edge_crossing_scale != nullptr", text)
+        self.assertIn("const uint32_t edge_crossing_scale_enabled = 0u;", text)
+        self.assertIn("edge_crossing_scale_enabled != 0u && params.edge_crossing_scale != nullptr", text)
         self.assertIn("params.edge_crossing_scale[off + i]", text)
         self.assertIn("(ax - bx) / ((ay - by) != 0.0f ? (ay - by) : 1.0e-20f)", text)
 
@@ -23,6 +24,8 @@ class Goal3267CrossingScaleSoAProbeTest(unittest.TestCase):
 
         self.assertIn("RTDL_OPTIX_POINT_PRIMITIVE_USE_CROSSING_SCALE_LAYOUT", text)
         self.assertIn("use_prepared_closed_shape_crossing_scale_layout", text)
+        self.assertIn("edge_crossing_scale_enabled = 1u", text)
+        self.assertIn("failed to specialize closed-shape membership crossing-scale layout", text)
         self.assertIn("std::vector<float> right_edge_crossing_scale;", text)
         self.assertIn("DevPtr d_right_edge_crossing_scale;", text)
         self.assertIn("right_edge_crossing_scale[off + i] = crossing_scale;", text)
