@@ -5183,7 +5183,28 @@ struct PipLaunchParams {
 static void ensure_pip_pipeline()
 {
     std::call_once(g_pip.init, [&]() {
-        std::string ptx = compile_to_ptx(kPipKernelSrc, "pip_kernel.cu");
+        std::string src(kPipKernelSrc);
+        if (const char* raw_extent = std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_QUERY_HALF_EXTENT")) {
+            char* end = nullptr;
+            const double extent = std::strtod(raw_extent, &end);
+            if (end == raw_extent || (end && *end != '\0') || !std::isfinite(extent) || extent <= 0.0) {
+                throw std::runtime_error(
+                    "RTDL_OPTIX_POINT_PRIMITIVE_QUERY_HALF_EXTENT must be a finite positive number");
+            }
+            char replacement[96];
+            std::snprintf(
+                replacement,
+                sizeof(replacement),
+                "const float query_half_extent = %.9gf;",
+                extent);
+            const std::string needle = "const float query_half_extent = 0.5f;";
+            const size_t pos = src.find(needle);
+            if (pos == std::string::npos) {
+                throw std::runtime_error("failed to specialize closed-shape membership query half extent");
+            }
+            src.replace(pos, needle.size(), replacement);
+        }
+        std::string ptx = compile_to_ptx(src.c_str(), "pip_kernel.cu");
         g_pip.pipe = build_pipeline(
             get_optix_context(), ptx,
             "__raygen__pip_probe",
