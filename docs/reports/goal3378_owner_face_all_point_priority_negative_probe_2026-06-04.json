@@ -1,0 +1,116 @@
+{
+  "cdb_chain_count": 512,
+  "claim_boundary": {
+    "native_default_route_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "coordinate_precision": 12,
+  "county_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+  "cupy_version": "14.1.1",
+  "exact_row_count": 1417,
+  "extra_row_count": 0,
+  "extra_sample": [],
+  "filtered_row_count": 1007,
+  "goal": 3378,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "incident_row_count": 1507,
+  "interpretation": "Negative all-point policy probe: a generic incident-chain-length priority removes extras but drops true exact rows, so it must not be promoted as a default owner-face route policy.",
+  "matches_exact": false,
+  "missing_exact_row_count": 410,
+  "missing_sample": [
+    [
+      260,
+      260
+    ],
+    [
+      261,
+      260
+    ],
+    [
+      264,
+      264
+    ],
+    [
+      265,
+      264
+    ],
+    [
+      266,
+      264
+    ],
+    [
+      270,
+      270
+    ],
+    [
+      271,
+      270
+    ],
+    [
+      272,
+      270
+    ],
+    [
+      273,
+      273
+    ],
+    [
+      274,
+      273
+    ],
+    [
+      275,
+      276
+    ],
+    [
+      276,
+      276
+    ],
+    [
+      282,
+      280
+    ],
+    [
+      283,
+      273
+    ],
+    [
+      284,
+      286
+    ],
+    [
+      285,
+      286
+    ],
+    [
+      286,
+      286
+    ],
+    [
+      287,
+      287
+    ],
+    [
+      288,
+      287
+    ],
+    [
+      289,
+      289
+    ]
+  ],
+  "optix_candidate_overflow": false,
+  "optix_candidate_row_count": 1429,
+  "point_count": 512,
+  "policy_result": "reject_for_default_route",
+  "policy_under_test": "incident_chain_length_rank",
+  "priority_row_count": 1507,
+  "rtdl_commit": "75876b18c45fe3c22edaa616198b2e35f4ceefb4",
+  "schema": "rtdl.goal3378.owner_face_all_point_priority_negative_probe.v1",
+  "shape_count": 478
+}
