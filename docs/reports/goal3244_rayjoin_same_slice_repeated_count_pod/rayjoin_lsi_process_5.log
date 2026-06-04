@@ -1,0 +1,79 @@
+I20260604 02:34:20.799011 42035 context.h:51] Bounding Box, Bottom-left: (-70.0561, -12.7706), Top-right: (-46.1528, 4.32571)
+I20260604 02:34:20.799093 42035 context.h:58] Scaled Bounding Box, Bottom-left: (-64935557024364, -62998848342965), Top-right: (64935557024363, 62998848342964)
+I20260604 02:34:20.799100 42035 context.h:61] Unscaled Bounding Box, Bottom-left: (-70.0561, -12.7706), Top-right: (-46.1528, 4.32571)
+I20260604 02:34:20.946205 42035 run_query.cu:229] Queue capacity: 5362
+I20260604 02:34:20.946244 42035 lsi.h:22] Queue size: 0 MB
+I20260604 02:34:20.946463 42035 primitive.h:256] Enlarge limit: 5 max iter:5 ne: 19987 aabbs: 1383 Compress ratio: 0.930805 Time: 0.141 ms
+I20260604 02:34:20.946918 42035 lsi_rt.h:50] queries: 6825
+I20260604 02:34:20.946985 42035 rt_engine.cu:554] optixLaunch, [w,h,d] = 6825,1,1
+I20260604 02:34:20.947240 42035 lsi_rt.h:50] queries: 6825
+I20260604 02:34:20.947269 42035 rt_engine.cu:554] optixLaunch, [w,h,d] = 6825,1,1
+I20260604 02:34:20.947472 42035 lsi_rt.h:50] queries: 6825
+I20260604 02:34:20.947497 42035 rt_engine.cu:554] optixLaunch, [w,h,d] = 6825,1,1
+I20260604 02:34:20.947700 42035 run_query.cu:301] Iter: 0
+I20260604 02:34:20.947708 42035 lsi_rt.h:50] queries: 6825
+I20260604 02:34:20.947731 42035 rt_engine.cu:554] optixLaunch, [w,h,d] = 6825,1,1
+I20260604 02:34:20.947934 42035 run_query.cu:301] Iter: 1
+I20260604 02:34:20.947942 42035 lsi_rt.h:50] queries: 6825
+I20260604 02:34:20.947964 42035 rt_engine.cu:554] optixLaunch, [w,h,d] = 6825,1,1
+I20260604 02:34:20.948165 42035 run_query.cu:301] Iter: 2
+I20260604 02:34:20.948174 42035 lsi_rt.h:50] queries: 6825
+I20260604 02:34:20.948197 42035 rt_engine.cu:554] optixLaunch, [w,h,d] = 6825,1,1
+I20260604 02:34:20.948400 42035 run_query.cu:301] Iter: 3
+I20260604 02:34:20.948406 42035 lsi_rt.h:50] queries: 6825
+I20260604 02:34:20.948428 42035 rt_engine.cu:554] optixLaunch, [w,h,d] = 6825,1,1
+I20260604 02:34:20.948629 42035 run_query.cu:301] Iter: 4
+I20260604 02:34:20.948637 42035 lsi_rt.h:50] queries: 6825
+I20260604 02:34:20.948658 42035 rt_engine.cu:554] optixLaunch, [w,h,d] = 6825,1,1
+I20260604 02:34:20.948859 42035 run_query.cu:301] Iter: 5
+I20260604 02:34:20.948866 42035 lsi_rt.h:50] queries: 6825
+I20260604 02:34:20.948889 42035 rt_engine.cu:554] optixLaunch, [w,h,d] = 6825,1,1
+I20260604 02:34:20.949090 42035 run_query.cu:301] Iter: 6
+I20260604 02:34:20.949098 42035 lsi_rt.h:50] queries: 6825
+I20260604 02:34:20.949120 42035 rt_engine.cu:554] optixLaunch, [w,h,d] = 6825,1,1
+I20260604 02:34:20.949321 42035 run_query.cu:301] Iter: 7
+I20260604 02:34:20.949327 42035 lsi_rt.h:50] queries: 6825
+I20260604 02:34:20.949349 42035 rt_engine.cu:554] optixLaunch, [w,h,d] = 6825,1,1
+I20260604 02:34:20.949550 42035 run_query.cu:301] Iter: 8
+I20260604 02:34:20.949558 42035 lsi_rt.h:50] queries: 6825
+I20260604 02:34:20.949579 42035 rt_engine.cu:554] optixLaunch, [w,h,d] = 6825,1,1
+I20260604 02:34:20.949781 42035 run_query.cu:301] Iter: 9
+I20260604 02:34:20.949788 42035 lsi_rt.h:50] queries: 6825
+I20260604 02:34:20.949810 42035 rt_engine.cu:554] optixLaunch, [w,h,d] = 6825,1,1
+I20260604 02:34:20.950011 42035 run_query.cu:301] Iter: 10
+I20260604 02:34:20.950018 42035 lsi_rt.h:50] queries: 6825
+I20260604 02:34:20.950040 42035 rt_engine.cu:554] optixLaunch, [w,h,d] = 6825,1,1
+I20260604 02:34:20.950249 42035 run_query.cu:301] Iter: 11
+I20260604 02:34:20.950258 42035 lsi_rt.h:50] queries: 6825
+I20260604 02:34:20.950279 42035 rt_engine.cu:554] optixLaunch, [w,h,d] = 6825,1,1
+I20260604 02:34:20.950481 42035 run_query.cu:301] Iter: 12
+I20260604 02:34:20.950488 42035 lsi_rt.h:50] queries: 6825
+I20260604 02:34:20.950510 42035 rt_engine.cu:554] optixLaunch, [w,h,d] = 6825,1,1
+I20260604 02:34:20.950711 42035 run_query.cu:301] Iter: 13
+I20260604 02:34:20.950718 42035 lsi_rt.h:50] queries: 6825
+I20260604 02:34:20.950742 42035 rt_engine.cu:554] optixLaunch, [w,h,d] = 6825,1,1
+I20260604 02:34:20.950942 42035 run_query.cu:301] Iter: 14
+I20260604 02:34:20.950949 42035 lsi_rt.h:50] queries: 6825
+I20260604 02:34:20.950971 42035 rt_engine.cu:554] optixLaunch, [w,h,d] = 6825,1,1
+I20260604 02:34:20.951195 42035 run_query.cu:306] Intersections: 269 Queue Load Factor: 0.0501678
+Timing results:
+ - Read map 0: 429.229 ms
+
+ - Read map 1: 81.7459 ms
+
+ - Create App: 146.759 ms
+
+ - Load Data: 0.322104 ms
+
+ - Init: 0.115871 ms
+
+ - Adaptive Grouping: 0.175953 ms
+
+ - Build Index: 0.424147 ms
+
+ - Warmup: 0.782967 ms
+
+ - Query: 0.23373 ms
+
+ - Cleanup: 3.61204 ms
+
