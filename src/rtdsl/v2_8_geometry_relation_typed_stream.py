@@ -80,6 +80,28 @@ V2_8_GEOMETRY_RELATION_SCHEMAS: dict[tuple[str, ...], V28GeometryRelationSchema]
         ),
         output_residency="device_resident_candidate_id_columns",
     ),
+    (
+        "point_id",
+        "shape_id",
+        "boundary_id",
+        "crossing_t",
+        "crossing_x",
+        "crossing_y",
+        "event_kind",
+    ): V28GeometryRelationSchema(
+        schema_id="point_closed_shape_boundary_event_2d_columns",
+        producer_primitive="point_closed_shape_first_boundary_crossing_2d",
+        columns=(
+            V28GeometryRelationColumnSpec("point_id", "group_key", "int64"),
+            V28GeometryRelationColumnSpec("shape_id", "item_id", "int64"),
+            V28GeometryRelationColumnSpec("boundary_id", "item_id", "int64"),
+            V28GeometryRelationColumnSpec("crossing_t", "witness", "float64"),
+            V28GeometryRelationColumnSpec("crossing_x", "witness", "float64"),
+            V28GeometryRelationColumnSpec("crossing_y", "witness", "float64"),
+            V28GeometryRelationColumnSpec("event_kind", "mask", "uint32"),
+        ),
+        output_residency="host_materialized_boundary_event_columns",
+    ),
     ("left_polygon_id", "right_polygon_id", "requires_lsi", "requires_pip"): V28GeometryRelationSchema(
         schema_id="shape_pair_relation_flags_2d_rows",
         producer_primitive="shape_pair_relation_flags_2d",

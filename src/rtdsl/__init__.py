@@ -1288,6 +1288,7 @@ from .reference import knn_rows_cpu
 from .reference import lsi_cpu
 from .reference import overlay_compose_cpu
 from .reference import point_nearest_segment_cpu
+from .reference import point_closed_shape_first_boundary_crossing_2d_cpu
 from .reference import pip_cpu
 from .reference import Point
 from .reference import Point3D
@@ -2645,6 +2646,7 @@ __all__ = [
     "postgresql_available",
     "pip_cpu",
     "Point",
+    "point_closed_shape_first_boundary_crossing_2d_cpu",
     "point_in_polygon_full_matrix_apple_rt",
     "point_nearest_segment_cpu",
     "point_nearest_segment_apple_rt",

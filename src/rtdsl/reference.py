@@ -130,6 +130,68 @@ def pip_cpu(
     return tuple(results)
 
 
+def point_closed_shape_first_boundary_crossing_2d_cpu(
+    points: tuple[Point, ...],
+    shapes: tuple[Polygon, ...],
+    *,
+    ray_direction: tuple[float, float] = (0.0, 1.0),
+    epsilon: float = 1.0e-9,
+) -> tuple[dict[str, float | int], ...]:
+    """Return the first non-colinear boundary crossing for each point/shape pair.
+
+    This is a CPU reference for a generic boundary-event contract. It emits
+    geometry IDs and crossing coordinates only; caller code owns any app
+    interpretation of the event.
+    """
+
+    dx, dy = float(ray_direction[0]), float(ray_direction[1])
+    if dx * dx + dy * dy <= epsilon * epsilon:
+        raise ValueError("ray_direction must be non-zero")
+
+    rows: list[dict[str, float | int]] = []
+    for point in points:
+        for shape in shapes:
+            vertices = list(shape.vertices)
+            if len(vertices) < 3:
+                raise ValueError("closed shapes require at least 3 vertices")
+
+            best: tuple[float, int, float, float] | None = None
+            wrapped = vertices + [vertices[0]]
+            for boundary_id, (start, end) in enumerate(zip(wrapped, wrapped[1:])):
+                crossing = _ray_segment_crossing(
+                    point.x,
+                    point.y,
+                    dx,
+                    dy,
+                    start[0],
+                    start[1],
+                    end[0],
+                    end[1],
+                    epsilon=epsilon,
+                )
+                if crossing is None:
+                    continue
+                t, crossing_x, crossing_y = crossing
+                if best is None or (t, boundary_id) < (best[0], best[1]):
+                    best = (t, boundary_id, crossing_x, crossing_y)
+
+            if best is None:
+                continue
+            t, boundary_id, crossing_x, crossing_y = best
+            rows.append(
+                {
+                    "point_id": point.id,
+                    "shape_id": shape.id,
+                    "boundary_id": boundary_id,
+                    "crossing_t": t,
+                    "crossing_x": crossing_x,
+                    "crossing_y": crossing_y,
+                    "event_kind": 1,
+                }
+            )
+    return tuple(rows)
+
+
 def overlay_compose_cpu(
     left_polygons: tuple[Polygon, ...],
     right_polygons: tuple[Polygon, ...],
@@ -766,6 +828,38 @@ def _point_on_segment(
     if dot - length_sq > along_eps:
         return False
     return True
+
+
+def _ray_segment_crossing(
+    px: float,
+    py: float,
+    dx: float,
+    dy: float,
+    ax: float,
+    ay: float,
+    bx: float,
+    by: float,
+    *,
+    epsilon: float,
+) -> tuple[float, float, float] | None:
+    ex = bx - ax
+    ey = by - ay
+    denom = dx * ey - dy * ex
+    if abs(denom) <= epsilon:
+        return None
+
+    apx = ax - px
+    apy = ay - py
+    t = (apx * ey - apy * ex) / denom
+    u = (apx * dy - apy * dx) / denom
+    if t < -epsilon:
+        return None
+    if u < -epsilon or u > 1.0 + epsilon:
+        return None
+
+    if abs(t) <= epsilon:
+        t = 0.0
+    return t, px + t * dx, py + t * dy
 
 
 def _finite_ray_hits_triangle(ray: Ray2D | Ray3D, triangle: Triangle | Triangle3D) -> bool:

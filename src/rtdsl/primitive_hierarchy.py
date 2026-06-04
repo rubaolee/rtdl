@@ -534,6 +534,67 @@ PRIMITIVE_HIERARCHY = (
                 backends=("cpu_python_reference", "cpu", "embree", "optix"),
             ),
             PrimitiveHierarchyNode(
+                id="rows.point_closed_shape_boundary_event_columns",
+                title="POINT_CLOSED_SHAPE_BOUNDARY_EVENT_COLUMNS_2D",
+                layer="row_emission",
+                status="candidate_behavior",
+                summary=(
+                    "Emit one deterministic first boundary-event column row for each "
+                    "point/closed-shape pair that has a non-colinear crossing along "
+                    "a caller-selected ray direction."
+                ),
+                outputs=(
+                    "point_id",
+                    "shape_id",
+                    "boundary_id",
+                    "crossing_t",
+                    "crossing_x",
+                    "crossing_y",
+                    "event_kind",
+                ),
+                depends_on=("traversal.closest_hit", "execution.capacity_overflow_contract"),
+                boundary=(
+                    "The primitive emits generic boundary-event columns only. Shape "
+                    "membership classification, map/entity lookup, parity rules, and "
+                    "paper-system semantics remain caller-owned."
+                ),
+                capability_tags=(
+                    "intent:membership",
+                    "intent:nearest",
+                    "intent:collect_rows",
+                    "shape:closed_shape",
+                    "dim:2d",
+                    "output:columns",
+                    "output:witness",
+                    "exactness:exact",
+                    "keying:by_query_id",
+                ),
+                aliases=(
+                    "point_closed_shape_first_crossing",
+                    "closed_shape_boundary_event",
+                    "first_boundary_crossing",
+                    "best_boundary_crossing",
+                    "upward_ray_boundary_event",
+                ),
+                intent_phrases=(
+                    "find the first boundary crossing for points against closed shapes",
+                    "emit typed boundary event columns for point shape probes",
+                    "select a closest crossing boundary event without app entity semantics",
+                ),
+                reference_path="docs/rtdl_primitive_catalog.md",
+                backends=("cpu_python_reference", "planned_optix"),
+                considered_alternatives=(
+                    "rows.expanded_aabb_point_membership_rows",
+                    "rows.segment_polygon_rows",
+                    "traversal.count_hits",
+                ),
+                distinct_from=(
+                    "Membership rows answer whether a point is inside a shape, segment/polygon rows "
+                    "emit segment-shape witnesses, and count_hits returns only scalar hit counts; "
+                    "this contract returns the representative boundary event itself."
+                ),
+            ),
+            PrimitiveHierarchyNode(
                 id="rows.segment_polygon_rows",
                 title="Segment / Polygon Rows",
                 layer="row_emission",

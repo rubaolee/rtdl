@@ -235,6 +235,61 @@ COMPOSITION_RECIPES = (
         evidence_paths=("docs/rtdl_primitive_catalog.md",),
     ),
     CompositionRecipe(
+        id="recipe.point_closed_shape_boundary_event_selection",
+        title="Point / Closed-Shape Boundary Event Selection",
+        status="candidate_recipe",
+        summary=(
+            "Use a generic first-crossing boundary-event contract when membership "
+            "classification needs a representative boundary event instead of only "
+            "positive membership counts."
+        ),
+        capability_tags=(
+            "intent:membership",
+            "intent:nearest",
+            "intent:collect_rows",
+            "shape:closed_shape",
+            "dim:2d",
+            "output:columns",
+            "output:witness",
+            "exactness:exact",
+            "keying:by_query_id",
+        ),
+        aliases=(
+            "closed_shape_boundary_event_recipe",
+            "first_crossing_membership_recipe",
+            "boundary_event_selection_recipe",
+        ),
+        intent_phrases=(
+            "select first boundary crossing events for point closed shape probes",
+            "use boundary event columns before caller owned membership classification",
+        ),
+        steps=(
+            CompositionRecipeStep("traversal.closest_hit", "representative boundary-event traversal", "traversal"),
+            CompositionRecipeStep(
+                "rows.point_closed_shape_boundary_event_columns",
+                "emit typed boundary-event columns",
+                "row_emission",
+            ),
+        ),
+        recommended_when=(
+            "The caller needs the selected boundary event itself and scalar membership "
+            "counts are too coarse for the downstream classification."
+        ),
+        partner_policy=(
+            "Primitive-first for boundary-event selection. Explicit partners remain "
+            "caller-selected for classification or grouping after the event columns."
+        ),
+        claim_boundary=(
+            "Candidate recipe only. It does not authorize release, paper-reproduction, "
+            "RT-core speedup, true-zero-copy, or whole-app speedup claims."
+        ),
+        boundary=(
+            "Boundary-event interpretation, parity policy, entity lookup, and final app "
+            "membership classification remain caller-owned."
+        ),
+        evidence_paths=("docs/reports/goal3295_rayjoin_pip_boundary_selection_gap_diagnosis_2026-06-04.md",),
+    ),
+    CompositionRecipe(
         id="recipe.segmented_rows_to_grouped_reduction",
         title="Segmented Rows To Grouped Reduction",
         status="advisory_recipe",
