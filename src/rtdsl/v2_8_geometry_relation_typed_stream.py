@@ -71,6 +71,15 @@ V2_8_GEOMETRY_RELATION_SCHEMAS: dict[tuple[str, ...], V28GeometryRelationSchema]
         ),
         output_residency="device_resident_candidate_id_columns",
     ),
+    ("point_id", "shape_id"): V28GeometryRelationSchema(
+        schema_id="point_closed_shape_membership_2d_candidate_device_columns",
+        producer_primitive="point_closed_shape_membership_2d_candidate",
+        columns=(
+            V28GeometryRelationColumnSpec("point_id", "group_key", "int64"),
+            V28GeometryRelationColumnSpec("shape_id", "item_id", "int64"),
+        ),
+        output_residency="device_resident_candidate_id_columns",
+    ),
     ("left_polygon_id", "right_polygon_id", "requires_lsi", "requires_pip"): V28GeometryRelationSchema(
         schema_id="shape_pair_relation_flags_2d_rows",
         producer_primitive="shape_pair_relation_flags_2d",
@@ -206,21 +215,25 @@ def geometry_relation_typed_stream_metadata_for_device_pair_columns(
     candidate_event_count: int,
     overflow: bool,
     native_symbol: str | None = None,
+    field_names: tuple[str, str] = ("left_id", "right_id"),
 ) -> dict[str, Any]:
     count = int(row_count)
     cap = int(capacity)
+    fields = _normalize_field_names(field_names)
+    if len(fields) != 2:
+        raise ValueError("device pair-column metadata requires exactly two field names")
     typed_stream = make_v2_8_geometry_relation_typed_stream_contract(
-        ("left_id", "right_id"),
+        fields,
         count,
         source_protocol="optix_native_device_pair_columns",
         device_type="cuda",
         device_id=int(device_id),
         data_ptrs={
-            "left_id": int(left_ids_device_ptr),
-            "right_id": int(right_ids_device_ptr),
+            fields[0]: int(left_ids_device_ptr),
+            fields[1]: int(right_ids_device_ptr),
         },
     ).to_metadata()
-    schema = geometry_relation_schema_for_fields(("left_id", "right_id"))
+    schema = geometry_relation_schema_for_fields(fields)
     return {
         "typed_result_stream": typed_stream,
         "v2_8_typed_producer_metadata": {

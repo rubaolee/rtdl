@@ -605,6 +605,15 @@ int  rtdl_optix_count_prepared_point_closed_shape_membership_device_filtered_2d(
          const RtdlPoint* points, size_t point_count,
          size_t* count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepared_point_closed_shape_membership_candidate_device_columns_2d(
+         void* prepared,
+         const RtdlPoint* points, size_t point_count,
+         size_t max_rows,
+         RtdlNativeDevicePairColumns* columns_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_release_point_closed_shape_membership_candidate_device_columns_2d(
+         void* owner_handle,
+         char* error_out, size_t error_size);
 int  rtdl_optix_closed_shape_membership_get_last_phase_timings(
          double* point_pack,
          double* point_upload,

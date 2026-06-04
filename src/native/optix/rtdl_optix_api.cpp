@@ -407,6 +407,35 @@ extern "C" int rtdl_optix_count_prepared_point_closed_shape_membership_device_fi
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepared_point_closed_shape_membership_candidate_device_columns_2d(
+        void* prepared,
+        const RtdlPoint* points, size_t point_count,
+        size_t max_rows,
+        RtdlNativeDevicePairColumns* columns_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared closed-shape membership handle must not be null");
+        if (!points && point_count != 0)
+            throw std::runtime_error("point pointer must not be null when point_count is nonzero");
+        if (!columns_out)
+            throw std::runtime_error("closed-shape membership candidate device columns_out pointer must not be null");
+        run_prepared_point_closed_shape_membership_candidate_device_columns_2d_optix(
+            reinterpret_cast<PreparedShapePairRelationBuild*>(prepared),
+            points, point_count, max_rows, columns_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_release_point_closed_shape_membership_candidate_device_columns_2d(
+        void* owner_handle,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        release_point_closed_shape_membership_candidate_device_columns_2d_optix(owner_handle);
+    }, error_out, error_size);
+}
+
 extern "C" void rtdl_optix_destroy_prepared_point_closed_shape_membership_2d(void* prepared)
 {
     delete reinterpret_cast<PreparedShapePairRelationBuild*>(prepared);

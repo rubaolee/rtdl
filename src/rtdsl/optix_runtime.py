@@ -211,6 +211,12 @@ OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL = (
 OPTIX_RELEASE_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_release_segment_pair_left_id_count_device_columns"
 )
+OPTIX_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL = (
+    "rtdl_optix_prepared_point_closed_shape_membership_candidate_device_columns_2d"
+)
+OPTIX_RELEASE_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL = (
+    "rtdl_optix_release_point_closed_shape_membership_candidate_device_columns_2d"
+)
 OPTIX_RELEASE_RAY_TRIANGLE_HIT_STREAM_3D_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_release_ray_triangle_hit_stream_device_columns"
 )
@@ -1106,9 +1112,16 @@ def prepare_optix(kernel_fn_or_compiled) -> PreparedOptixKernel:
 
 
 class _OptixNativeDevicePairColumnsOwner:
-    def __init__(self, library: ctypes.CDLL, owner_handle: int | None) -> None:
+    def __init__(
+        self,
+        library: ctypes.CDLL,
+        owner_handle: int | None,
+        *,
+        release_symbol_name: str = OPTIX_RELEASE_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
+    ) -> None:
         self._library = library
         self._owner_handle = ctypes.c_void_p(0 if owner_handle is None else int(owner_handle))
+        self._release_symbol_name = str(release_symbol_name)
         self._closed = False
 
     @property
@@ -1125,7 +1138,7 @@ class _OptixNativeDevicePairColumnsOwner:
             return
         release_symbol = _find_optional_backend_symbol(
             self._library,
-            OPTIX_RELEASE_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
+            self._release_symbol_name,
         )
         if release_symbol is None:
             return
@@ -1421,6 +1434,7 @@ class OptixNativeDevicePairColumnOutput:
     device_ordinal: int
     traversal_seconds: float
     native_symbol: str
+    field_names: tuple[str, str] = ("left_id", "right_id")
 
     @property
     def device_resident(self) -> bool:
@@ -1449,6 +1463,7 @@ class OptixNativeDevicePairColumnOutput:
             candidate_event_count=self.candidate_event_count,
             overflow=self.overflow,
             native_symbol=self.native_symbol,
+            field_names=self.field_names,
         )
         metadata["runtime"] = {
             "backend": "optix",
@@ -9573,6 +9588,78 @@ class PreparedOptixPointClosedShapeMembership2D:
         _check_status(status, error)
         return int(count.value)
 
+    def candidate_device_columns(
+        self,
+        points,
+        *,
+        max_rows: int | None = None,
+    ) -> OptixNativeDevicePairColumnOutput:
+        """Return device-resident point/shape positive-membership candidate columns."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX closed-shape membership handle is closed")
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        release_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_RELEASE_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
+        )
+        if release_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_RELEASE_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        packed_points = points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
+        if packed_points.dimension != 2:
+            raise ValueError("PreparedOptixPointClosedShapeMembership2D.candidate_device_columns requires 2-D points")
+        capacity = int(
+            max_rows
+            if max_rows is not None
+            else max(1, int(packed_points.count) * int(self._packed_shapes.polygon_count))
+        )
+        if capacity < 0:
+            raise ValueError("max_rows must be non-negative")
+
+        columns = _RtdlNativeDevicePairColumns()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            packed_points.records,
+            packed_points.count,
+            ctypes.c_size_t(capacity),
+            ctypes.byref(columns),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        owner = _OptixNativeDevicePairColumnsOwner(
+            self._lib,
+            columns.owner_handle,
+            release_symbol_name=OPTIX_RELEASE_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
+        )
+        return OptixNativeDevicePairColumnOutput(
+            library=self._lib,
+            owner=owner,
+            left_ids_device_ptr=int(columns.left_ids_device_ptr),
+            right_ids_device_ptr=int(columns.right_ids_device_ptr),
+            row_count=int(columns.row_count),
+            capacity=int(columns.capacity),
+            candidate_event_count=int(columns.candidate_event_count),
+            overflow=bool(columns.overflow),
+            device_ordinal=int(columns.device_ordinal),
+            traversal_seconds=float(columns.traversal_seconds),
+            native_symbol=OPTIX_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
+            field_names=("point_id", "shape_id"),
+        )
+
     def last_phase_timings(self) -> dict[str, float | int | str] | None:
         return _get_last_closed_shape_membership_phase_timings_from_library(self._lib)
 
@@ -17408,6 +17495,32 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_count_prepared_closed_shape_membership_device_filtered.restype = ctypes.c_int
+
+    optional_closed_shape_candidate_device_columns = _find_optional_backend_symbol(
+        lib,
+        OPTIX_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
+    )
+    if optional_closed_shape_candidate_device_columns is not None:
+        optional_closed_shape_candidate_device_columns.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlNativeDevicePairColumns),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_closed_shape_candidate_device_columns.restype = ctypes.c_int
+    optional_release_closed_shape_candidate_device_columns = _find_optional_backend_symbol(
+        lib,
+        OPTIX_RELEASE_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
+    )
+    if optional_release_closed_shape_candidate_device_columns is not None:
+        optional_release_closed_shape_candidate_device_columns.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_release_closed_shape_candidate_device_columns.restype = ctypes.c_int
 
     optional_destroy_prepared_closed_shape_membership = _find_optional_backend_symbol(
         lib,
