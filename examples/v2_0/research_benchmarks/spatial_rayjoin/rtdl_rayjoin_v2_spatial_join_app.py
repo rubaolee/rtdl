@@ -28,6 +28,7 @@ _WORKLOADS = ("pip", "lsi", "overlay_seed")
 _PREPARED_OPTIX_WORKLOADS = ("pip", "lsi", "overlay_seed")
 _PIP_COUNT_MODES = ("exact", "device_filtered_validated", "point_id_count_device_columns_validated")
 _PIP_DEVICE_FILTER_BOUNDARY_MODES = ("inclusive", "crossing_only")
+_PIP_POINT_ORDER_MODES = ("natural", "x_then_y", "y_then_x", "morton_xy")
 RAYJOIN_V2_6_NUMBA_COMPACT_MASK_VERSION = "rtdl.rayjoin.v2_6.numba_compact_mask_preview.v1"
 
 _DEFAULT_DATASETS = {
@@ -270,6 +271,57 @@ def _record_id(record: object) -> int:
     raise TypeError(f"record does not expose an id field: {record!r}")
 
 
+def _record_xy(record: object) -> tuple[float, float]:
+    if hasattr(record, "x") and hasattr(record, "y"):
+        return float(getattr(record, "x")), float(getattr(record, "y"))
+    if isinstance(record, dict):
+        return float(record["x"]), float(record["y"])
+    raise TypeError(f"record does not expose x/y fields: {record!r}")
+
+
+def _part1by1_16(value: int) -> int:
+    v = int(value) & 0x0000ffff
+    v = (v | (v << 8)) & 0x00ff00ff
+    v = (v | (v << 4)) & 0x0f0f0f0f
+    v = (v | (v << 2)) & 0x33333333
+    v = (v | (v << 1)) & 0x55555555
+    return v
+
+
+def _morton_code_2d_16(ix: int, iy: int) -> int:
+    return _part1by1_16(ix) | (_part1by1_16(iy) << 1)
+
+
+def _order_points_for_locality(points, mode: str):
+    if mode == "natural":
+        return points
+    if mode not in _PIP_POINT_ORDER_MODES:
+        raise ValueError("point_order_mode must be one of: natural, x_then_y, y_then_x, morton_xy")
+    point_tuple = tuple(points)
+    if not point_tuple:
+        return point_tuple
+    if mode == "x_then_y":
+        return tuple(sorted(point_tuple, key=lambda point: (*_record_xy(point), _record_id(point))))
+    if mode == "y_then_x":
+        return tuple(sorted(point_tuple, key=lambda point: (_record_xy(point)[1], _record_xy(point)[0], _record_id(point))))
+
+    xs_ys = tuple(_record_xy(point) for point in point_tuple)
+    min_x = min(x for x, _ in xs_ys)
+    max_x = max(x for x, _ in xs_ys)
+    min_y = min(y for _, y in xs_ys)
+    max_y = max(y for _, y in xs_ys)
+    span_x = max(max_x - min_x, 1.0e-30)
+    span_y = max(max_y - min_y, 1.0e-30)
+
+    def morton_key(point):
+        x, y = _record_xy(point)
+        ix = max(0, min(65535, int(((x - min_x) / span_x) * 65535.0)))
+        iy = max(0, min(65535, int(((y - min_y) / span_y) * 65535.0)))
+        return (_morton_code_2d_16(ix, iy), _record_id(point))
+
+    return tuple(sorted(point_tuple, key=morton_key))
+
+
 def run_rayjoin_prepared_optix_workload(
     workload: str,
     *,
@@ -278,6 +330,7 @@ def run_rayjoin_prepared_optix_workload(
     include_rows: bool = False,
     count_mode: str = "exact",
     device_filtered_boundary_mode: str | None = None,
+    point_order_mode: str = "natural",
 ) -> dict[str, object]:
     """Run the RayJoin-style prepared OptiX route with phase boundaries.
 
@@ -309,6 +362,10 @@ def run_rayjoin_prepared_optix_workload(
                 "device_filtered_boundary_mode is only valid for PIP count workloads "
                 "using a validated device-side count mode"
             )
+    if point_order_mode not in _PIP_POINT_ORDER_MODES:
+        raise ValueError("point_order_mode must be one of: natural, x_then_y, y_then_x, morton_xy")
+    if point_order_mode != "natural" and workload != "pip":
+        raise ValueError("point_order_mode is currently only valid for PIP closed-shape membership workloads")
 
     resolved_dataset = dataset or _DEFAULT_DATASETS[workload]
     case = _load_rayjoin_case(workload, resolved_dataset)
@@ -406,10 +463,15 @@ def run_rayjoin_prepared_optix_workload(
         from rtdsl.optix_runtime import pack_polygons
         from rtdsl.optix_runtime import prepare_point_closed_shape_membership_2d_optix
 
+        ordered_points = _phase_time(
+            phases,
+            "query_point_order_sec",
+            lambda: _order_points_for_locality(case.inputs["points"], point_order_mode),
+        )
         packed_points = _phase_time(
             phases,
             "query_pack_sec",
-            lambda: pack_points(records=case.inputs["points"], dimension=2),
+            lambda: pack_points(records=ordered_points, dimension=2),
         )
         packed_shapes = _phase_time(
             phases,
@@ -450,7 +512,7 @@ def run_rayjoin_prepared_optix_workload(
                     else:
                         point_id_group_capacity = max(
                             1,
-                            max(_record_id(point) for point in case.inputs["points"]) + 1,
+                            max(_record_id(point) for point in ordered_points) + 1,
                         )
                         row_count, point_id_count_metadata = _phase_time(
                             phases,
@@ -526,6 +588,7 @@ def run_rayjoin_prepared_optix_workload(
             ),
             "point_id_count_device_columns": point_id_count_metadata,
             "validation_exact_count": validation_exact_count,
+            "point_order_mode": point_order_mode,
         }
 
     payload: dict[str, object] = {
@@ -541,6 +604,7 @@ def run_rayjoin_prepared_optix_workload(
         "summary": summary,
         "phases_sec": phases,
         "native_phase_timings": native_phase_timings or {},
+        "point_order_mode": point_order_mode if workload == "pip" else None,
         "device_resident_continuation_status": (
             "overlay_seed_prepared_pair_dependency_flags_complete"
             if workload == "overlay_seed"

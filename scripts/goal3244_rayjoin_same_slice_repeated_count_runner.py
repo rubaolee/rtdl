@@ -235,9 +235,12 @@ def run_rtdl_samples(
     count_mode: str = "exact",
     query_axis: str | None = None,
     boundary_mode: str | None = None,
+    point_order_mode: str = "natural",
 ) -> dict[str, Any]:
     if count_mode != "exact" and workload != "pip":
         raise ValueError("non-exact count_mode is only supported for RTDL PIP samples")
+    if point_order_mode != "natural" and workload != "pip":
+        raise ValueError("point_order_mode is only supported for RTDL PIP samples")
 
     query_sec: list[float] = []
     validation_exact_query_sec: list[float] = []
@@ -256,6 +259,7 @@ def run_rtdl_samples(
                 include_rows=False,
                 count_mode=count_mode,
                 device_filtered_boundary_mode=boundary_mode,
+                point_order_mode=point_order_mode,
             )
 
     for index in range(warmup):
@@ -298,6 +302,7 @@ def run_rtdl_samples(
             }
             else None
         ),
+        "point_order_mode": point_order_mode if workload == "pip" else None,
         "warmup": int(warmup),
         "repeat": int(repeat),
         "prepared_query_ms": summarize_samples([value * 1000.0 for value in query_sec]),
@@ -403,6 +408,15 @@ def main(argv: list[str] | None = None) -> int:
             "The app still validates each sample against an inclusive exact prepared count."
         ),
     )
+    parser.add_argument(
+        "--rtdl-pip-point-order",
+        choices=("natural", "x_then_y", "y_then_x", "morton_xy"),
+        default="natural",
+        help=(
+            "Optional generic PIP probe ordering before point packing. "
+            "Caller point ids are preserved; artifacts record the selected order."
+        ),
+    )
     parser.add_argument("--timeout-seconds", type=int, default=int(os.environ.get("STEP_TIMEOUT_SECONDS", "300")))
     args = parser.parse_args(argv)
 
@@ -441,6 +455,7 @@ def main(argv: list[str] | None = None) -> int:
             count_mode=args.rtdl_pip_count_mode,
             query_axis=args.rtdl_pip_query_axis,
             boundary_mode=args.rtdl_pip_boundary_mode,
+            point_order_mode=args.rtdl_pip_point_order,
         ),
     }
     comparisons = build_comparison_rows(rayjoin_rows, rtdl_rows)
@@ -476,6 +491,11 @@ def main(argv: list[str] | None = None) -> int:
                 "When --rtdl-pip-boundary-mode is supplied with device_filtered_validated, "
                 "the app runs the exact validation count with inclusive boundary checks and runs only the "
                 "device-filtered timing lane with the requested generic boundary mode."
+            ),
+            "rtdl_pip_point_order": (
+                "When --rtdl-pip-point-order is supplied, the app reorders only PIP probe points before "
+                "packing while preserving caller point ids; this is a generic locality probe, not a "
+                "RayJoin-specific native engine path."
             ),
         },
         "claim_boundary": CLAIM_BOUNDARY,

@@ -95,10 +95,12 @@ Timing results:
         for phrase in (
             "--rayjoin-lsi-poly1",
             "--rayjoin-pip-poly1",
+            "--rtdl-pip-point-order",
             "public_speedup_claim_authorized",
             "rayjoin_paper_reproduction_claim_authorized",
             "rtdl_beats_rayjoin_claim_authorized",
             "true_zero_copy_claim_authorized",
+            "generic PIP probe ordering",
             "RayJoin query_exec PIP still does not expose positive assignment count",
             "does not divide it by repeat",
         ):
@@ -184,8 +186,37 @@ Timing results:
         self.assertEqual(row["prepared_query_ms"]["samples"], [0.7, 0.7])
         self.assertEqual(row["validation_exact_query_ms"]["samples"], [0.9, 0.9])
         self.assertEqual(row["counts"]["last"], 1430)
+        self.assertEqual(row["point_order_mode"], "natural")
         self.assertEqual(row["native_phase_samples"], [{"mode": "device_filtered_count"}] * 2)
         self.assertTrue(all(call["kwargs"]["count_mode"] == "device_filtered_validated" for call in calls))
+
+    def test_rtdl_pip_point_order_passes_through_to_app(self) -> None:
+        calls: list[dict[str, object]] = []
+
+        def fake_run(*args, **kwargs):
+            calls.append({"args": args, "kwargs": dict(kwargs)})
+            return {
+                "phases_sec": {
+                    "prepared_query_sec": 0.0005,
+                    "query_pack_sec": 0.0001,
+                    "prepare_static_scene_sec": 0.0002,
+                },
+                "summary": {"positive_assignment_count": 7},
+                "row_count": 7,
+                "native_phase_timings": {},
+            }
+
+        with mock.patch.object(MODULE.rayjoin_app, "run_rayjoin_prepared_optix_workload", side_effect=fake_run):
+            row = MODULE.run_rtdl_samples(
+                workload="pip",
+                dataset="fake.cdb",
+                warmup=0,
+                repeat=1,
+                point_order_mode="morton_xy",
+            )
+
+        self.assertEqual(row["point_order_mode"], "morton_xy")
+        self.assertEqual(calls[0]["kwargs"]["point_order_mode"], "morton_xy")
 
     def test_rtdl_non_pip_rejects_device_filtered_mode(self) -> None:
         with self.assertRaisesRegex(ValueError, "only supported for RTDL PIP"):
@@ -195,6 +226,16 @@ Timing results:
                 warmup=0,
                 repeat=1,
                 count_mode="device_filtered_validated",
+            )
+
+    def test_rtdl_non_pip_rejects_point_order_mode(self) -> None:
+        with self.assertRaisesRegex(ValueError, "point_order_mode is only supported"):
+            MODULE.run_rtdl_samples(
+                workload="lsi",
+                dataset="fake.cdb",
+                warmup=0,
+                repeat=1,
+                point_order_mode="morton_xy",
             )
 
 
