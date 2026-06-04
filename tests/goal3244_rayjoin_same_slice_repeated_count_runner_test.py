@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import os
 import tempfile
 import unittest
 from pathlib import Path, PurePosixPath
@@ -98,6 +99,8 @@ Timing results:
             "--rayjoin-pip-poly1",
             "--rtdl-pip-point-order",
             "--rtdl-lsi-segment-order",
+            "--rtdl-lsi-count-route",
+            "--rtdl-pip-scalar-count-pipeline",
             "public_speedup_claim_authorized",
             "rayjoin_paper_reproduction_claim_authorized",
             "rtdl_beats_rayjoin_claim_authorized",
@@ -257,6 +260,77 @@ Timing results:
         self.assertAlmostEqual(row["static_order_ms"]["samples"][0], 0.04)
         self.assertEqual(calls[0]["kwargs"]["segment_order_mode"], "morton_xy")
 
+    def test_rtdl_lsi_dense_count_route_uses_generic_left_id_count_helper(self) -> None:
+        calls: list[dict[str, object]] = []
+
+        def fake_dense(*args, **kwargs):
+            calls.append({"args": args, "kwargs": dict(kwargs)})
+            return {
+                "phases_sec": {"left_id_count_device_columns_sec": 0.00027},
+                "summary": {"intersection_count": 269},
+                "row_count": 269,
+                "prepared_reuse": {"prepare_static_scene_sec": 0.0008},
+                "packed_left_reuse": {"pack_seconds": 0.0002},
+            }
+
+        with mock.patch.object(
+            MODULE.rayjoin_app,
+            "run_rayjoin_prepared_optix_left_id_dense_count_workload",
+            side_effect=fake_dense,
+        ):
+            row = MODULE.run_rtdl_samples(
+                workload="lsi",
+                dataset="fake.cdb + fake2.cdb",
+                warmup=0,
+                repeat=1,
+                lsi_count_route="left_id_dense_count",
+            )
+
+        self.assertEqual(row["lsi_count_route"], "left_id_dense_count")
+        self.assertEqual(row["prepared_query_ms"]["samples"], [0.27])
+        self.assertEqual(row["query_pack_ms"]["samples"], [0.2])
+        self.assertEqual(row["prepare_static_scene_ms"]["samples"], [0.8])
+        self.assertEqual(row["counts"]["last"], 269)
+        self.assertEqual(calls[0]["args"], ("lsi",))
+        self.assertEqual(calls[0]["kwargs"]["dataset"], "fake.cdb + fake2.cdb")
+
+    def test_rtdl_pip_scalar_count_pipeline_is_scoped_and_recorded(self) -> None:
+        observed_env: list[str | None] = []
+
+        def fake_run(*args, **kwargs):
+            observed_env.append(os.environ.get("RTDL_OPTIX_POINT_PRIMITIVE_USE_SCALAR_COUNT_PIPELINE"))
+            return {
+                "phases_sec": {
+                    "prepared_query_sec": 0.00033,
+                    "validation_exact_query_sec": 0.00065,
+                    "query_pack_sec": 0.0001,
+                    "prepare_static_scene_sec": 0.0002,
+                },
+                "summary": {
+                    "positive_assignment_count": 1430,
+                    "device_filtered_count_matches_exact": True,
+                },
+                "row_count": 1430,
+                "native_phase_timings": {"mode": "device_filtered_count"},
+            }
+
+        with mock.patch.object(MODULE.rayjoin_app, "run_rayjoin_prepared_optix_workload", side_effect=fake_run):
+            row = MODULE.run_rtdl_samples(
+                workload="pip",
+                dataset="fake.cdb",
+                warmup=0,
+                repeat=1,
+                count_mode="device_filtered_validated",
+                query_axis="z_point",
+                boundary_mode="inclusive",
+                pip_scalar_count_pipeline=True,
+            )
+
+        self.assertEqual(observed_env, ["1"])
+        self.assertTrue(row["pip_scalar_count_pipeline"])
+        self.assertEqual(row["query_axis"], "z_point")
+        self.assertEqual(row["device_filtered_boundary_mode"], "inclusive")
+
     def test_rtdl_non_pip_rejects_device_filtered_mode(self) -> None:
         with self.assertRaisesRegex(ValueError, "only supported for RTDL PIP"):
             MODULE.run_rtdl_samples(
@@ -284,6 +358,17 @@ Timing results:
                 dataset="fake.cdb",
                 warmup=0,
                 repeat=1,
+                segment_order_mode="morton_xy",
+            )
+
+    def test_rtdl_lsi_dense_count_route_rejects_segment_ordering(self) -> None:
+        with self.assertRaisesRegex(ValueError, "requires natural LSI segment order"):
+            MODULE.run_rtdl_samples(
+                workload="lsi",
+                dataset="fake.cdb",
+                warmup=0,
+                repeat=1,
+                lsi_count_route="left_id_dense_count",
                 segment_order_mode="morton_xy",
             )
 

@@ -233,17 +233,27 @@ def run_rtdl_samples(
     warmup: int,
     repeat: int,
     count_mode: str = "exact",
+    lsi_count_route: str = "exact",
     query_axis: str | None = None,
     boundary_mode: str | None = None,
     point_order_mode: str = "natural",
     segment_order_mode: str = "natural",
+    pip_scalar_count_pipeline: bool = False,
 ) -> dict[str, Any]:
+    if lsi_count_route not in {"exact", "left_id_dense_count"}:
+        raise ValueError("lsi_count_route must be 'exact' or 'left_id_dense_count'")
     if count_mode != "exact" and workload != "pip":
         raise ValueError("non-exact count_mode is only supported for RTDL PIP samples")
+    if lsi_count_route != "exact" and workload != "lsi":
+        raise ValueError("non-exact lsi_count_route is only supported for RTDL LSI samples")
     if point_order_mode != "natural" and workload != "pip":
         raise ValueError("point_order_mode is only supported for RTDL PIP samples")
     if segment_order_mode != "natural" and workload != "lsi":
         raise ValueError("segment_order_mode is only supported for RTDL LSI samples")
+    if lsi_count_route == "left_id_dense_count" and segment_order_mode != "natural":
+        raise ValueError("left_id_dense_count currently requires natural LSI segment order")
+    if pip_scalar_count_pipeline and workload != "pip":
+        raise ValueError("pip_scalar_count_pipeline is only supported for RTDL PIP samples")
 
     query_sec: list[float] = []
     validation_exact_query_sec: list[float] = []
@@ -257,7 +267,20 @@ def run_rtdl_samples(
     native_phase_samples: list[dict[str, Any] | None] = []
 
     def one() -> dict[str, Any]:
-        with temporary_env("RTDL_OPTIX_POINT_PRIMITIVE_QUERY_AXIS", query_axis):
+        with contextlib.ExitStack() as stack:
+            stack.enter_context(temporary_env("RTDL_OPTIX_POINT_PRIMITIVE_QUERY_AXIS", query_axis))
+            stack.enter_context(
+                temporary_env(
+                    "RTDL_OPTIX_POINT_PRIMITIVE_USE_SCALAR_COUNT_PIPELINE",
+                    "1" if pip_scalar_count_pipeline else None,
+                )
+            )
+            if workload == "lsi" and lsi_count_route == "left_id_dense_count":
+                return rayjoin_app.run_rayjoin_prepared_optix_left_id_dense_count_workload(
+                    "lsi",
+                    dataset=dataset,
+                    include_rows=False,
+                )
             return rayjoin_app.run_rayjoin_prepared_optix_workload(
                 workload,
                 dataset=dataset,
@@ -277,15 +300,24 @@ def run_rtdl_samples(
         payload = one()
         phases = dict(payload.get("phases_sec") or {})
         summary = dict(payload.get("summary") or {})
-        query_sec.append(float(phases.get("prepared_query_sec", 0.0)))
+        prepared_reuse = dict(payload.get("prepared_reuse") or {})
+        packed_left_reuse = dict(payload.get("packed_left_reuse") or {})
+        query_sec.append(
+            float(
+                phases.get(
+                    "prepared_query_sec",
+                    phases.get("left_id_count_device_columns_sec", 0.0),
+                )
+            )
+        )
         query_order_sec.append(
             float(phases.get("query_point_order_sec", phases.get("query_segment_order_sec", 0.0)))
         )
         static_order_sec.append(float(phases.get("static_segment_order_sec", 0.0)))
         if "validation_exact_query_sec" in phases:
             validation_exact_query_sec.append(float(phases["validation_exact_query_sec"]))
-        query_pack_sec.append(float(phases.get("query_pack_sec", 0.0)))
-        prepare_sec.append(float(phases.get("prepare_static_scene_sec", 0.0)))
+        query_pack_sec.append(float(phases.get("query_pack_sec", packed_left_reuse.get("pack_seconds", 0.0))))
+        prepare_sec.append(float(phases.get("prepare_static_scene_sec", prepared_reuse.get("prepare_static_scene_sec", 0.0))))
         static_segment_pack_sec.append(float(phases.get("static_segment_pack_sec", 0.0)))
         static_shape_pack_sec.append(float(phases.get("static_shape_pack_sec", 0.0)))
         counts.append(int(payload.get("row_count", 0)))
@@ -305,7 +337,9 @@ def run_rtdl_samples(
         "route": "prepared_optix",
         "result_mode": "count",
         "count_mode": count_mode,
+        "lsi_count_route": lsi_count_route if workload == "lsi" else None,
         "query_axis": query_axis,
+        "pip_scalar_count_pipeline": pip_scalar_count_pipeline if workload == "pip" else None,
         "device_filtered_boundary_mode": (
             boundary_mode
             if count_mode in {
@@ -408,6 +442,15 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     parser.add_argument(
+        "--rtdl-lsi-count-route",
+        choices=("exact", "left_id_dense_count"),
+        default="exact",
+        help=(
+            "RTDL LSI scalar-count route. The left_id_dense_count route uses the existing generic "
+            "segment-pair left-id count device-column primitive and records the selected route."
+        ),
+    )
+    parser.add_argument(
         "--rtdl-pip-query-axis",
         choices=("z_point", "z", "point_z", "aabb_point", "vertical", "y_segment", "default"),
         help=(
@@ -431,6 +474,14 @@ def main(argv: list[str] | None = None) -> int:
         help=(
             "Optional generic PIP probe ordering before point packing. "
             "Caller point ids are preserved; artifacts record the selected order."
+        ),
+    )
+    parser.add_argument(
+        "--rtdl-pip-scalar-count-pipeline",
+        action="store_true",
+        help=(
+            "Enable the gated generic closed-shape scalar-count OptiX pipeline around RTDL PIP calls "
+            "and record the choice in the artifact."
         ),
     )
     parser.add_argument(
@@ -471,6 +522,7 @@ def main(argv: list[str] | None = None) -> int:
             dataset=args.rtdl_lsi_dataset,
             warmup=args.rtdl_warmup,
             repeat=args.rtdl_repeat,
+            lsi_count_route=args.rtdl_lsi_count_route,
             segment_order_mode=args.rtdl_lsi_segment_order,
         ),
         "pip": run_rtdl_samples(
@@ -482,6 +534,7 @@ def main(argv: list[str] | None = None) -> int:
             query_axis=args.rtdl_pip_query_axis,
             boundary_mode=args.rtdl_pip_boundary_mode,
             point_order_mode=args.rtdl_pip_point_order,
+            pip_scalar_count_pipeline=args.rtdl_pip_scalar_count_pipeline,
         ),
     }
     comparisons = build_comparison_rows(rayjoin_rows, rtdl_rows)
@@ -509,9 +562,17 @@ def main(argv: list[str] | None = None) -> int:
                 "When set to a validated device-side mode, RTDL validates each PIP sample with exact prepared count "
                 "and reports the selected device-side count timing as the prepared_query_ms lane."
             ),
+            "rtdl_lsi_count_route": (
+                "When --rtdl-lsi-count-route=left_id_dense_count is supplied, RTDL uses the existing generic "
+                "segment-pair left-id count device-column primitive for the LSI scalar-count lane."
+            ),
             "rtdl_pip_query_axis": (
                 "When --rtdl-pip-query-axis is supplied, the runner exports "
                 "RTDL_OPTIX_POINT_PRIMITIVE_QUERY_AXIS around RTDL PIP calls and records the chosen generic mode."
+            ),
+            "rtdl_pip_scalar_count_pipeline": (
+                "When --rtdl-pip-scalar-count-pipeline is supplied, the runner exports "
+                "RTDL_OPTIX_POINT_PRIMITIVE_USE_SCALAR_COUNT_PIPELINE only around RTDL PIP calls and records the choice."
             ),
             "rtdl_pip_boundary_mode": (
                 "When --rtdl-pip-boundary-mode is supplied with device_filtered_validated, "
