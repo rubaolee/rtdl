@@ -1179,6 +1179,63 @@ PRIMITIVE_HIERARCHY = (
                 partner_ops=("segmented_count_i64", "segmented_sum_f64", "grouped_argmin_f64"),
             ),
             PrimitiveHierarchyNode(
+                id="candidate.closed_shape_topology_membership_count_2d",
+                title="Closed-Shape Topology-Aware Membership Count 2D",
+                layer="candidate_experimental",
+                status="candidate_behavior",
+                summary=(
+                    "Future generic point/closed-shape membership count contract with explicit "
+                    "face/ring/chain topology, boundary ownership, and duplicate policy."
+                ),
+                outputs=("membership_count", "ownership_status", "topology_policy_metadata"),
+                depends_on=(
+                    "rows.point_closed_shape_boundary_event_columns",
+                    "reduction.grouped",
+                ),
+                boundary=(
+                    "The primitive must expose generic topology and boundary-ownership policy only. "
+                    "CDB source naming, RayJoin assignment interpretation, map/entity lookup, and "
+                    "paper-system semantics remain app code."
+                ),
+                capability_tags=(
+                    "intent:membership",
+                    "intent:count",
+                    "shape:closed_shape",
+                    "dim:2d",
+                    "output:scalar",
+                    "output:grouped",
+                    "exactness:exact",
+                    "keying:by_query_id",
+                ),
+                aliases=(
+                    "closed_shape_topology_membership_count",
+                    "topology_aware_membership_count",
+                    "face_aware_closed_shape_count",
+                    "boundary_ownership_count",
+                    "ring_chain_membership_count",
+                ),
+                intent_phrases=(
+                    "count point membership in closed shapes with explicit face ring chain topology",
+                    "avoid duplicate boundary ownership overcounts in closed shape membership",
+                    "use deterministic boundary ownership policy for point closed shape counts",
+                ),
+                reference_path="docs/reports/goal3324_closed_shape_topology_membership_candidate_2026-06-04.md",
+                backends=("cpu_python_reference", "planned_optix"),
+                considered_alternatives=(
+                    "traversal.count_hits",
+                    "rows.point_closed_shape_boundary_event_columns",
+                    "reduction.grouped",
+                    "candidate.device_grouped_candidate_merge",
+                ),
+                distinct_from=(
+                    "traversal.count_hits produces scalar counts without topology ownership policy; "
+                    "rows.point_closed_shape_boundary_event_columns emits boundary witnesses but does not "
+                    "classify membership; reduction.grouped only aggregates explicit keys; "
+                    "candidate.device_grouped_candidate_merge merges candidate streams without owning "
+                    "closed-shape boundary degeneracy semantics."
+                ),
+            ),
+            PrimitiveHierarchyNode(
                 id="candidate.zero_copy_row_streams",
                 title="Future Zero-Copy Row Streams",
                 layer="candidate_experimental",

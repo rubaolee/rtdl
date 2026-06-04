@@ -104,7 +104,7 @@ app/partner code unless it is redesigned as an app-independent behavior.
 
 - Generator version: `rtdl.primitive_catalog.generated.v1`
 - Hierarchy validation valid: `True`
-- Node count: `54`
+- Node count: `55`
 - Unknown capability tags: `-`
 - Missing dependencies: `-`
 - Backward dependencies: `-`
@@ -177,6 +177,7 @@ Candidate / Experimental Layer (layer.candidate_experimental)
   Aggregate-Frontier Traversal (candidate.aggregate_frontier_traversal)
   Streamed / Segmented Graph Lowering (candidate.streamed_graph_lowering)
   Device-Resident Grouped Candidate Merge / Finalize (candidate.device_grouped_candidate_merge)
+  Closed-Shape Topology-Aware Membership Count 2D (candidate.closed_shape_topology_membership_count_2d)
   Future Zero-Copy Row Streams (candidate.zero_copy_row_streams)
 ```
 
@@ -347,6 +348,7 @@ Records design pressure that is not yet a stable app-independent primitive contr
 | `candidate.aggregate_frontier_traversal` | `candidate_behavior` | Future native/partner lowering of aggregate-tree traversal behind the generic aggregate-frontier row contract. | `frontier_rows`, `summary_inputs` | `rows.aggregate_frontier_collect`, `continuation.partner_resident` | `intent:frontier`, `intent:collect_rows`, `shape:aggregate_frontier`, `dim:2d`, `dim:3d`, `output:rows`, `exactness:bounded`, `keying:by_query_id` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | Force law and scoring math remain app or partner code. |
 | `candidate.streamed_graph_lowering` | `candidate_behavior` | Lower large graph-like row contracts without all-at-once materialization. | `row_pages`, `stream_state` | `continuation.segmented_chunked_rows` | `intent:collect_rows`, `shape:generic`, `output:rows`, `exactness:bounded`, `keying:by_query_id` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | - |
 | `candidate.device_grouped_candidate_merge` | `candidate_behavior` | Merge grouped candidate streams on device before final materialization. | `grouped_candidate_summary` | `reduction.grouped`, `execution.partner_resident_handoff` | `intent:reduce`, `shape:generic`, `output:grouped`, `exactness:bounded`, `keying:by_group_id` | backends: `cpu_python_reference`, `cpu`, `optix`<br>partner ops: `segmented_count_i64`, `segmented_sum_f64`, `grouped_argmin_f64` | - |
+| `candidate.closed_shape_topology_membership_count_2d` | `candidate_behavior` | Future generic point/closed-shape membership count contract with explicit face/ring/chain topology, boundary ownership, and duplicate policy. | `membership_count`, `ownership_status`, `topology_policy_metadata` | `rows.point_closed_shape_boundary_event_columns`, `reduction.grouped` | `intent:membership`, `intent:count`, `shape:closed_shape`, `dim:2d`, `output:scalar`, `output:grouped`, `exactness:exact`, `keying:by_query_id` | backends: `cpu_python_reference`, `planned_optix` | The primitive must expose generic topology and boundary-ownership policy only. CDB source naming, RayJoin assignment interpretation, map/entity lookup, and paper-system semantics remain app code. |
 | `candidate.zero_copy_row_streams` | `candidate_behavior` | Avoid unnecessary host materialization when the consumer remains device-resident. | `device_row_stream` | `execution.partner_resident_handoff`, `rows.generic_candidate_rows` | `intent:collect_rows`, `shape:generic`, `output:columns`, `exactness:bounded`, `keying:by_query_id` | backends: `metadata_only` | - |
 
 Discovery metadata:
@@ -356,6 +358,7 @@ Discovery metadata:
 | `candidate.aggregate_frontier_traversal` | `aggregate_frontier_traversal`, `aggregate_tree_traversal`, `frontier_traversal` | `traverse aggregate tree frontier behind generic row contract`, `future lowering for aggregate frontier rows without force law semantics` | docs/rtdl_primitive_catalog.md | - |
 | `candidate.streamed_graph_lowering` | `streamed_graph_lowering`, `segmented_graph_rows`, `paged_graph_rows` | `lower large graph like row contracts with segmented row pages`, `avoid all at once graph row materialization` | docs/rtdl_primitive_catalog.md | - |
 | `candidate.device_grouped_candidate_merge` | `device_grouped_candidate_merge`, `grouped_candidate_finalize`, `device_grouped_merge` | `merge grouped candidate streams on device before materialization`, `finalize grouped candidate summaries without host row expansion` | docs/rtdl_primitive_catalog.md | - |
+| `candidate.closed_shape_topology_membership_count_2d` | `closed_shape_topology_membership_count`, `topology_aware_membership_count`, `face_aware_closed_shape_count`, `boundary_ownership_count`, `ring_chain_membership_count` | `count point membership in closed shapes with explicit face ring chain topology`, `avoid duplicate boundary ownership overcounts in closed shape membership`, `use deterministic boundary ownership policy for point closed shape counts` | docs/reports/goal3324_closed_shape_topology_membership_candidate_2026-06-04.md | traversal.count_hits produces scalar counts without topology ownership policy; rows.point_closed_shape_boundary_event_columns emits boundary witnesses but does not classify membership; reduction.grouped only aggregates explicit keys; candidate.device_grouped_candidate_merge merges candidate streams without owning closed-shape boundary degeneracy semantics. |
 | `candidate.zero_copy_row_streams` | `zero_copy_row_streams`, `device_resident_rows`, `resident_row_streams` | `avoid host materialization when consuming rows on device`, `future device resident row stream handoff for partner continuation` | docs/research/future_version_to_do_list.md | - |
 
 ## Composition Recipes
