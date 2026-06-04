@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import inspect
+from pathlib import Path
 import unittest
 
 from examples.v2_0.research_benchmarks.spatial_rayjoin import (
@@ -71,6 +72,14 @@ class Goal3285FusedSegmentPackOrderModeTest(unittest.TestCase):
         self.assertIn("static_segment_pack_sec", source)
         self.assertNotIn("query_segment_order_sec", source)
         self.assertNotIn("static_segment_order_sec", source)
+
+    def test_repeated_runner_summarizes_static_segment_pack_phase(self) -> None:
+        root = next(parent for parent in Path(__file__).resolve().parents if (parent / "src" / "rtdsl").exists())
+        runner = root / "scripts" / "goal3244_rayjoin_same_slice_repeated_count_runner.py"
+        source = runner.read_text(encoding="utf-8")
+
+        self.assertIn("static_segment_pack_sec", source)
+        self.assertIn("\"static_segment_pack_ms\"", source)
 
 
 if __name__ == "__main__":

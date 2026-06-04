@@ -251,6 +251,7 @@ def run_rtdl_samples(
     static_order_sec: list[float] = []
     query_pack_sec: list[float] = []
     prepare_sec: list[float] = []
+    static_segment_pack_sec: list[float] = []
     static_shape_pack_sec: list[float] = []
     counts: list[int] = []
     native_phase_samples: list[dict[str, Any] | None] = []
@@ -285,6 +286,7 @@ def run_rtdl_samples(
             validation_exact_query_sec.append(float(phases["validation_exact_query_sec"]))
         query_pack_sec.append(float(phases.get("query_pack_sec", 0.0)))
         prepare_sec.append(float(phases.get("prepare_static_scene_sec", 0.0)))
+        static_segment_pack_sec.append(float(phases.get("static_segment_pack_sec", 0.0)))
         static_shape_pack_sec.append(float(phases.get("static_shape_pack_sec", 0.0)))
         counts.append(int(payload.get("row_count", 0)))
         native_phase_samples.append(payload.get("native_phase_timings"))
@@ -322,6 +324,7 @@ def run_rtdl_samples(
         "static_order_ms": summarize_samples([value * 1000.0 for value in static_order_sec if value != 0.0]),
         "query_pack_ms": summarize_samples([value * 1000.0 for value in query_pack_sec]),
         "prepare_static_scene_ms": summarize_samples([value * 1000.0 for value in prepare_sec]),
+        "static_segment_pack_ms": summarize_samples([value * 1000.0 for value in static_segment_pack_sec if value != 0.0]),
         "static_shape_pack_ms": summarize_samples([value * 1000.0 for value in static_shape_pack_sec if value != 0.0]),
         "counts": summarize_int_samples(counts),
         "native_phase_samples": native_phase_samples,
