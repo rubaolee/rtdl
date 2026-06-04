@@ -202,8 +202,8 @@ def build_artifact(args: argparse.Namespace) -> dict[str, object]:
         dataset = _resolve_dataset_template(case.dataset, slices)
         rows.append(_run_case(case.label, workload=case.workload, dataset=dataset, repeats=args.repeats))
     return {
-        "goal": 3232,
-        "schema": "rtdl.goal3232.rayjoin_public_row_continuation_probe.v1",
+        "goal": args.artifact_goal,
+        "schema": args.schema,
         "commit": _commit(),
         "hardware": _hardware_metadata(),
         "data_dir": str(data_dir),
@@ -222,6 +222,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--download", action="store_true")
     parser.add_argument("--cases", default=",".join(DEFAULT_CASES))
     parser.add_argument("--repeats", type=int, default=1)
+    parser.add_argument("--artifact-goal", type=int, default=3232)
+    parser.add_argument("--schema", default="rtdl.goal3232.rayjoin_public_row_continuation_probe.v1")
     return parser.parse_args()
 
 

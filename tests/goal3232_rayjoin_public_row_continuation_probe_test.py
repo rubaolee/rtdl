@@ -20,6 +20,8 @@ class Goal3232RayJoinPublicRowContinuationProbeTest(unittest.TestCase):
             "include_rows=True",
             "row_set_matches_cpu",
             "symmetric_difference_count",
+            "--artifact-goal",
+            "--schema",
         ):
             self.assertIn(phrase, text)
 
