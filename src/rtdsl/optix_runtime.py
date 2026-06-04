@@ -6125,6 +6125,12 @@ def _get_last_closed_shape_membership_phase_timings_from_library(lib) -> dict[st
             if mode_value == 2
             else "device_filtered_count"
             if mode_value == 3
+            else "candidate_device_columns"
+            if mode_value == 4
+            else "point_id_count_device_columns"
+            if mode_value == 5
+            else "boundary_event_rows"
+            if mode_value == 6
             else "none"
         ),
         "point_pack": float(point_pack.value),

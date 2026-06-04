@@ -6375,7 +6375,7 @@ static void run_prepared_point_closed_shape_first_boundary_crossing_2d_optix(
         throw std::runtime_error("prepared closed-shape boundary-event point count exceeds uint32_t launch capacity");
     }
 
-    reset_closed_shape_membership_phase_timings(5u);
+    reset_closed_shape_membership_phase_timings(6u);
     ensure_point_closed_shape_boundary_event_pipeline();
 
     const auto t_pack_start = std::chrono::steady_clock::now();

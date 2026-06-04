@@ -40,7 +40,7 @@ class Goal3297ClosedShapeBoundaryEventOptixRowsTest(unittest.TestCase):
         self.assertIn("params.prepared_edges[off + i]", core)
         self.assertIn("ensure_point_closed_shape_boundary_event_pipeline", workloads)
         self.assertIn("run_prepared_point_closed_shape_first_boundary_crossing_2d_optix", workloads)
-        self.assertIn("reset_closed_shape_membership_phase_timings(5u)", workloads)
+        self.assertIn("reset_closed_shape_membership_phase_timings(6u)", workloads)
         self.assertNotIn("closest_eid", core.lower())
         self.assertNotIn("rayjoin", core.lower())
 
@@ -102,12 +102,15 @@ class Goal3297ClosedShapeBoundaryEventOptixRowsTest(unittest.TestCase):
             observed = prepared.first_boundary_crossing(points)
             metadata_view = prepared.first_boundary_crossing_raw(points)
             metadata = metadata_view.to_v2_8_typed_result_stream_metadata()
+            timings = prepared.last_phase_timings()
         finally:
             if metadata_view is not None:
                 metadata_view.close()
             prepared.close()
 
         self.assertEqual(observed, expected)
+        self.assertEqual(timings["mode"], "boundary_event_rows")
+        self.assertEqual(timings["emitted_count"], len(expected))
         self.assertEqual(
             metadata["v2_8_typed_producer_metadata"]["schema_id"],
             "point_closed_shape_boundary_event_2d_columns",
