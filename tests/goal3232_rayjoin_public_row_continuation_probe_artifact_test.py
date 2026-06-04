@@ -30,7 +30,7 @@ class Goal3232RayJoinPublicRowContinuationProbeArtifactTest(unittest.TestCase):
 
         self.assertEqual(data["goal"], 3232)
         self.assertEqual(data["schema"], "rtdl.goal3232.rayjoin_public_row_continuation_probe.v1")
-        self.assertEqual(data["commit"], "275e9f78de6e06cf0905fd90df19c8344f32a970")
+        self.assertEqual(data["commit"], "e18d1c2cb59231ea573831c58734bd70e02ddd45")
         self.assertEqual(data["status"], "pass")
         self.assertEqual(data["hardware"]["nvidia_smi"], "NVIDIA A40, 570.211.01")
         self.assertIn("CUDA Version", data["hardware"]["cuda_driver_query"])

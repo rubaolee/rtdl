@@ -7,11 +7,11 @@
     "rtdl_beats_rayjoin_claim_authorized": false,
     "true_zero_copy_claim_authorized": false
   },
-  "commit": "275e9f78de6e06cf0905fd90df19c8344f32a970",
+  "commit": "e18d1c2cb59231ea573831c58734bd70e02ddd45",
   "data_dir": "/root/rtdl_goal3151/data/rayjoin_public_cdb",
   "goal": 3232,
   "hardware": {
-    "cuda_driver_query": "==============NVSMI LOG==============\n\nTimestamp                                 : Thu Jun  4 01:31:35 2026\nDriver Version                            : 570.211.01\nCUDA Version                              : 12.8\n\nAttached GPUs                             : 1\nGPU 00000000:CE:00.0\n    Compute Mode                          : Default",
+    "cuda_driver_query": "==============NVSMI LOG==============\n\nTimestamp                                 : Thu Jun  4 01:50:40 2026\nDriver Version                            : 570.211.01\nCUDA Version                              : 12.8\n\nAttached GPUs                             : 1\nGPU 00000000:CE:00.0\n    Compute Mode                          : Default",
     "nvcc_version": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0",
     "nvidia_smi": "NVIDIA A40, 570.211.01",
     "rtdl_optix_library": "/root/rtdl_goal3151/build/librtdl_optix.so"
@@ -30,12 +30,11 @@
         "true_zero_copy_claim_authorized": false
       },
       "cpu_active_overlay_rows": null,
-      "cpu_reference_seconds": 0.09906541369855404,
+      "cpu_reference_seconds": 0.09768342785537243,
       "cpu_row_count": 1430,
       "cpu_summary": {
         "output_contract": "point_to_polygon_positive_hit_rows",
         "positive_assignment_count": 1430,
-        "positive_assignments_count": 1430,
         "positive_hit_row_count": 1430
       },
       "dataset": "/root/rtdl_goal3151/data/rayjoin_public_cdb/br_county_start0_count512.cdb",
@@ -54,16 +53,16 @@
             },
             "cpu_minus_native_sample": [],
             "max_lsi_coordinate_delta": null,
-            "named_phase_total_sec": 0.8862049859017134,
+            "named_phase_total_sec": 1.0116901993751526,
             "native_minus_cpu_sample": [],
             "phases_sec": {
-              "prepare_static_scene_sec": 0.8729291185736656,
-              "prepared_query_sec": 0.001424834132194519,
-              "query_pack_sec": 0.00048371031880378723,
-              "static_shape_pack_sec": 0.011367322877049446
+              "prepare_static_scene_sec": 0.99900764785707,
+              "prepared_query_sec": 0.0015092864632606506,
+              "query_pack_sec": 0.0004922971129417419,
+              "static_shape_pack_sec": 0.010680967941880226
             },
-            "prepared_query_sec": 0.001424834132194519,
-            "prepared_total_seconds": 0.9507833924144506,
+            "prepared_query_sec": 0.0015092864632606506,
+            "prepared_total_seconds": 1.0739387590438128,
             "repeat_index": 1,
             "row_count": 1430,
             "row_set_matches_cpu": true,
@@ -73,12 +72,12 @@
               "positive_hit_row_count": 1430
             },
             "symmetric_difference_count": 0,
-            "unattributed_prepared_total_minus_named_phases_sec": 0.06457840651273727
+            "unattributed_prepared_total_minus_named_phases_sec": 0.062248559668660164
           }
         ]
       },
       "medians": {
-        "prepared_total_seconds": 0.9507833924144506
+        "prepared_total_seconds": 1.0739387590438128
       },
       "workload": "pip"
     },
@@ -94,7 +93,7 @@
         "true_zero_copy_claim_authorized": false
       },
       "cpu_active_overlay_rows": null,
-      "cpu_reference_seconds": 43.70142068900168,
+      "cpu_reference_seconds": 45.83507784642279,
       "cpu_row_count": 269,
       "cpu_summary": {
         "intersection_count": 269,
@@ -116,15 +115,15 @@
             },
             "cpu_minus_native_sample": [],
             "max_lsi_coordinate_delta": 0.0,
-            "named_phase_total_sec": 0.07518231309950352,
+            "named_phase_total_sec": 0.08050900138914585,
             "native_minus_cpu_sample": [],
             "phases_sec": {
-              "prepare_static_scene_sec": 0.0579695887863636,
-              "prepared_query_sec": 0.0013037901371717453,
-              "query_pack_sec": 0.01590893417596817
+              "prepare_static_scene_sec": 0.062546007335186,
+              "prepared_query_sec": 0.0013501476496458054,
+              "query_pack_sec": 0.01661284640431404
             },
-            "prepared_query_sec": 0.0013037901371717453,
-            "prepared_total_seconds": 0.17655771225690842,
+            "prepared_query_sec": 0.0013501476496458054,
+            "prepared_total_seconds": 0.18205567076802254,
             "repeat_index": 1,
             "row_count": 269,
             "row_set_matches_cpu": true,
@@ -133,12 +132,12 @@
               "output_contract": "segment_segment_intersection_rows"
             },
             "symmetric_difference_count": 0,
-            "unattributed_prepared_total_minus_named_phases_sec": 0.1013753991574049
+            "unattributed_prepared_total_minus_named_phases_sec": 0.10154666937887669
           }
         ]
       },
       "medians": {
-        "prepared_total_seconds": 0.17655771225690842
+        "prepared_total_seconds": 0.18205567076802254
       },
       "workload": "lsi"
     },
@@ -154,7 +153,7 @@
         "true_zero_copy_claim_authorized": false
       },
       "cpu_active_overlay_rows": 1,
-      "cpu_reference_seconds": 5.135502913966775,
+      "cpu_reference_seconds": 6.020886076614261,
       "cpu_row_count": 14036,
       "cpu_summary": {
         "active_seed_count": 1,
@@ -178,16 +177,16 @@
             },
             "cpu_minus_native_sample": [],
             "max_lsi_coordinate_delta": null,
-            "named_phase_total_sec": 0.3271069172769785,
+            "named_phase_total_sec": 0.33103528432548046,
             "native_minus_cpu_sample": [],
             "phases_sec": {
-              "prepare_static_scene_sec": 0.3192684277892113,
-              "prepared_query_sec": 0.0051453374326229095,
-              "query_pack_sec": 0.0016843397170305252,
-              "static_shape_pack_sec": 0.0010088123381137848
+              "prepare_static_scene_sec": 0.3215562757104635,
+              "prepared_query_sec": 0.006205299869179726,
+              "query_pack_sec": 0.002035936340689659,
+              "static_shape_pack_sec": 0.0012377724051475525
             },
-            "prepared_query_sec": 0.0051453374326229095,
-            "prepared_total_seconds": 0.36463286727666855,
+            "prepared_query_sec": 0.006205299869179726,
+            "prepared_total_seconds": 0.37149060890078545,
             "repeat_index": 1,
             "row_count": 14036,
             "row_set_matches_cpu": true,
@@ -196,12 +195,12 @@
               "pair_dependency_row_count": 14036
             },
             "symmetric_difference_count": 0,
-            "unattributed_prepared_total_minus_named_phases_sec": 0.037525949999690056
+            "unattributed_prepared_total_minus_named_phases_sec": 0.040455324575304985
           }
         ]
       },
       "medians": {
-        "prepared_total_seconds": 0.36463286727666855
+        "prepared_total_seconds": 0.37149060890078545
       },
       "workload": "overlay_seed"
     },
@@ -217,7 +216,7 @@
         "true_zero_copy_claim_authorized": false
       },
       "cpu_active_overlay_rows": 9,
-      "cpu_reference_seconds": 22.28847130946815,
+      "cpu_reference_seconds": 22.58871091157198,
       "cpu_row_count": 56876,
       "cpu_summary": {
         "active_seed_count": 9,
@@ -241,16 +240,16 @@
             },
             "cpu_minus_native_sample": [],
             "max_lsi_coordinate_delta": null,
-            "named_phase_total_sec": 0.028556933626532555,
+            "named_phase_total_sec": 0.029013562947511673,
             "native_minus_cpu_sample": [],
             "phases_sec": {
-              "prepare_static_scene_sec": 0.0005515571683645248,
-              "prepared_query_sec": 0.02178502455353737,
-              "query_pack_sec": 0.004237191751599312,
-              "static_shape_pack_sec": 0.001983160153031349
+              "prepare_static_scene_sec": 0.0006315615028142929,
+              "prepared_query_sec": 0.022235259413719177,
+              "query_pack_sec": 0.004217289388179779,
+              "static_shape_pack_sec": 0.0019294526427984238
             },
-            "prepared_query_sec": 0.02178502455353737,
-            "prepared_total_seconds": 0.11705529689788818,
+            "prepared_query_sec": 0.022235259413719177,
+            "prepared_total_seconds": 0.11924584023654461,
             "repeat_index": 1,
             "row_count": 56876,
             "row_set_matches_cpu": true,
@@ -259,12 +258,12 @@
               "pair_dependency_row_count": 56876
             },
             "symmetric_difference_count": 0,
-            "unattributed_prepared_total_minus_named_phases_sec": 0.08849836327135563
+            "unattributed_prepared_total_minus_named_phases_sec": 0.09023227728903294
           }
         ]
       },
       "medians": {
-        "prepared_total_seconds": 0.11705529689788818
+        "prepared_total_seconds": 0.11924584023654461
       },
       "workload": "overlay_seed"
     }

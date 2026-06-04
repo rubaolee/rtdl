@@ -23,7 +23,7 @@ CPU Python reference. It does not dump the full row arrays into the artifact.
 
 Pod metadata:
 
-- Commit: `275e9f78de6e06cf0905fd90df19c8344f32a970`
+- Commit: `e18d1c2cb59231ea573831c58734bd70e02ddd45`
 - GPU: `NVIDIA A40, 570.211.01`
 - CUDA driver query: present
 - nvcc version: present
@@ -33,10 +33,10 @@ Pod metadata:
 
 | Case | Workload | CPU Rows | Prepared OptiX Rows | Symmetric Difference | Prepared Total (s) | Prepared Query (s) | CPU Reference (s) |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| `pip_county512` | `pip` | 1430 | 1430 | 0 | 0.950783392414451 | 0.00142483413219452 | 0.099065413698554 |
-| `lsi_county256_soil256_count512` | `lsi` | 269 | 269 | 0 | 0.176557712256908 | 0.00130379013717175 | 43.7014206890017 |
-| `overlay_county128_soil128` | `overlay_seed` | 14036 | 14036 | 0 | 0.364632867276669 | 0.00514533743262291 | 5.13550291396677 |
-| `overlay_county256_soil256` | `overlay_seed` | 56876 | 56876 | 0 | 0.117055296897888 | 0.0217850245535374 | 22.2884713094682 |
+| `pip_county512` | `pip` | 1430 | 1430 | 0 | 1.07393875904381 | 0.00150928646326065 | 0.0976834278553724 |
+| `lsi_county256_soil256_count512` | `lsi` | 269 | 269 | 0 | 0.182055670768023 | 0.00135014764964581 | 45.8350778464228 |
+| `overlay_county128_soil128` | `overlay_seed` | 14036 | 14036 | 0 | 0.371490608900785 | 0.00620529986917973 | 6.02088607661426 |
+| `overlay_county256_soil256` | `overlay_seed` | 56876 | 56876 | 0 | 0.119245840236545 | 0.0222352594137192 | 22.588710911572 |
 
 ## Interpretation
 
