@@ -156,8 +156,8 @@ def point_closed_shape_first_boundary_crossing_2d_cpu(
                 raise ValueError("closed shapes require at least 3 vertices")
 
             best: tuple[float, int, float, float] | None = None
-            wrapped = vertices + [vertices[0]]
-            for boundary_id, (start, end) in enumerate(zip(wrapped, wrapped[1:])):
+            for boundary_id, end in enumerate(vertices):
+                start = vertices[boundary_id - 1]
                 crossing = _ray_segment_crossing(
                     point.x,
                     point.y,

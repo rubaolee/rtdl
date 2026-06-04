@@ -202,6 +202,12 @@ struct RtdlPointClosedShapeMembershipRow {
     uint32_t point_id, shape_id, membership;
 };
 
+struct RtdlPointClosedShapeBoundaryEventRow {
+    uint32_t point_id, shape_id, boundary_id;
+    double crossing_t, crossing_x, crossing_y;
+    uint32_t event_kind;
+};
+
 struct RtdlShapePairRelationRow {
     uint32_t left_polygon_id, right_polygon_id;
     uint32_t requires_segment_intersection, requires_point_containment;
@@ -604,6 +610,11 @@ int  rtdl_optix_count_prepared_point_closed_shape_membership_device_filtered_2d(
          void* prepared,
          const RtdlPoint* points, size_t point_count,
          size_t* count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_prepared_point_closed_shape_first_boundary_crossing_2d(
+         void* prepared,
+         const RtdlPoint* points, size_t point_count,
+         RtdlPointClosedShapeBoundaryEventRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_prepared_point_closed_shape_membership_candidate_device_columns_2d(
          void* prepared,

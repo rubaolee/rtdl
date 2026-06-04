@@ -407,6 +407,27 @@ extern "C" int rtdl_optix_count_prepared_point_closed_shape_membership_device_fi
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_run_prepared_point_closed_shape_first_boundary_crossing_2d(
+        void* prepared,
+        const RtdlPoint* points, size_t point_count,
+        RtdlPointClosedShapeBoundaryEventRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared closed-shape boundary-event handle must not be null");
+        if (!points && point_count != 0)
+            throw std::runtime_error("point pointer must not be null when point_count is nonzero");
+        if (!rows_out || !row_count_out)
+            throw std::runtime_error("boundary-event output pointers must not be null");
+        *rows_out = nullptr;
+        *row_count_out = 0;
+        run_prepared_point_closed_shape_first_boundary_crossing_2d_optix(
+            reinterpret_cast<PreparedShapePairRelationBuild*>(prepared),
+            points, point_count, rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_prepared_point_closed_shape_membership_candidate_device_columns_2d(
         void* prepared,
         const RtdlPoint* points, size_t point_count,

@@ -218,6 +218,9 @@ OPTIX_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL = (
 OPTIX_CLOSED_SHAPE_MEMBERSHIP_POINT_ID_COUNT_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_prepared_point_closed_shape_membership_point_id_count_device_columns_2d"
 )
+OPTIX_CLOSED_SHAPE_FIRST_BOUNDARY_CROSSING_SYMBOL = (
+    "rtdl_optix_run_prepared_point_closed_shape_first_boundary_crossing_2d"
+)
 OPTIX_RELEASE_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_release_point_closed_shape_membership_candidate_device_columns_2d"
 )
@@ -600,6 +603,18 @@ class _RtdlPointClosedShapeMembershipRow(ctypes.Structure):
         ("point_id",   ctypes.c_uint32),
         ("shape_id",   ctypes.c_uint32),
         ("membership", ctypes.c_uint32),
+    ]
+
+
+class _RtdlPointClosedShapeBoundaryEventRow(ctypes.Structure):
+    _fields_ = [
+        ("point_id",    ctypes.c_uint32),
+        ("shape_id",    ctypes.c_uint32),
+        ("boundary_id", ctypes.c_uint32),
+        ("crossing_t",  ctypes.c_double),
+        ("crossing_x",  ctypes.c_double),
+        ("crossing_y",  ctypes.c_double),
+        ("event_kind",  ctypes.c_uint32),
     ]
 
 
@@ -6046,6 +6061,7 @@ def _get_last_segment_pair_phase_timings_from_library(lib) -> dict[str, float | 
         2: "count",
         3: "first_hit_rows",
         4: "first_hit_count",
+        5: "boundary_event_rows",
     }.get(mode_value, "none")
     result = {
         "mode": mode_name,
@@ -9582,6 +9598,91 @@ class PreparedOptixPointClosedShapeMembership2D:
         )
         _check_status(status, error)
         return int(count.value)
+
+    def first_boundary_crossing_raw(self, points) -> OptixRowView:
+        """Return generic first boundary-event rows for point/closed-shape probes."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX closed-shape membership handle is closed")
+        packed_points = points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
+        if packed_points.dimension != 2:
+            raise ValueError(
+                "PreparedOptixPointClosedShapeMembership2D.first_boundary_crossing_raw requires 2-D points"
+            )
+        if packed_points.count == 0 or self._packed_shapes.polygon_count == 0:
+            empty = (_RtdlPointClosedShapeBoundaryEventRow * 0)()
+            return OptixRowView(
+                library=self._lib,
+                rows_ptr=ctypes.cast(empty, ctypes.POINTER(_RtdlPointClosedShapeBoundaryEventRow)),
+                row_count=0,
+                row_type=_RtdlPointClosedShapeBoundaryEventRow,
+                field_names=(
+                    "point_id",
+                    "shape_id",
+                    "boundary_id",
+                    "crossing_t",
+                    "crossing_x",
+                    "crossing_y",
+                    "event_kind",
+                ),
+                _free_on_close=False,
+                _owner=empty,
+            )
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_CLOSED_SHAPE_FIRST_BOUNDARY_CROSSING_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_CLOSED_SHAPE_FIRST_BOUNDARY_CROSSING_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        rows_ptr = ctypes.POINTER(_RtdlPointClosedShapeBoundaryEventRow)()
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            packed_points.records,
+            packed_points.count,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return OptixRowView(
+            library=self._lib,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlPointClosedShapeBoundaryEventRow,
+            field_names=(
+                "point_id",
+                "shape_id",
+                "boundary_id",
+                "crossing_t",
+                "crossing_x",
+                "crossing_y",
+                "event_kind",
+            ),
+        )
+
+    def first_boundary_crossing(self, points) -> tuple[dict[str, float | int], ...]:
+        view = self.first_boundary_crossing_raw(points)
+        try:
+            return tuple(
+                {
+                    "point_id": int(row["point_id"]),
+                    "shape_id": int(row["shape_id"]),
+                    "boundary_id": int(row["boundary_id"]),
+                    "event_kind": int(row["event_kind"]),
+                    "crossing_t": float(row["crossing_t"]),
+                    "crossing_x": float(row["crossing_x"]),
+                    "crossing_y": float(row["crossing_y"]),
+                }
+                for row in view.to_dict_rows()
+            )
+        finally:
+            view.close()
 
     def candidate_device_columns(
         self,
@@ -17540,6 +17641,21 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_count_prepared_closed_shape_membership_device_filtered.restype = ctypes.c_int
+
+    optional_first_boundary_crossing = _find_optional_backend_symbol(
+        lib,
+        OPTIX_CLOSED_SHAPE_FIRST_BOUNDARY_CROSSING_SYMBOL,
+    )
+    if optional_first_boundary_crossing is not None:
+        optional_first_boundary_crossing.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlPointClosedShapeBoundaryEventRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_first_boundary_crossing.restype = ctypes.c_int
 
     optional_closed_shape_candidate_device_columns = _find_optional_backend_symbol(
         lib,

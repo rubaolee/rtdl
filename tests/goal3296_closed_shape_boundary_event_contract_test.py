@@ -31,7 +31,7 @@ class Goal3296ClosedShapeBoundaryEventContractTest(unittest.TestCase):
         row = rows[0]
         self.assertEqual(row["point_id"], 10)
         self.assertEqual(row["shape_id"], 7)
-        self.assertEqual(row["boundary_id"], 2)
+        self.assertEqual(row["boundary_id"], 3)
         self.assertEqual(row["event_kind"], 1)
         self.assertTrue(math.isclose(float(row["crossing_t"]), 2.0))
         self.assertTrue(math.isclose(float(row["crossing_x"]), 0.0))

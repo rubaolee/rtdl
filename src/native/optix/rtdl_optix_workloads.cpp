@@ -5232,6 +5232,21 @@ struct PipPointIdCountDeviceColumnsLaunchParams {
     uint32_t         boundary_check;
 };
 
+struct PointClosedShapeBoundaryEventLaunchParams {
+    OptixTraversableHandle traversable;
+    const float* points_x;
+    const float* points_y;
+    const uint32_t* point_ids;
+    const GpuPolygonRef* polygons;
+    const GpuPreparedClosedShapeEdge2D* prepared_edges;
+    RtdlPointClosedShapeBoundaryEventRow* output;
+    uint32_t* output_count;
+    uint32_t output_capacity;
+    uint32_t* overflow;
+    uint32_t probe_count;
+    float ray_tmax;
+};
+
 struct NativeClosedShapeMembershipCandidateDeviceColumnsOwner {
     CUdeviceptr point_ids = 0;
     CUdeviceptr shape_ids = 0;
@@ -5320,6 +5335,22 @@ static void ensure_pip_pipeline()
             "__miss__pip_miss",
             "__intersection__pip_isect",
             "__anyhit__pip_anyhit",
+            nullptr, 4).release();
+    });
+}
+
+static void ensure_point_closed_shape_boundary_event_pipeline()
+{
+    std::call_once(g_point_closed_shape_boundary_event.init, [&]() {
+        std::string ptx = compile_to_ptx(
+            kPointClosedShapeBoundaryEventKernelSrc,
+            "point_closed_shape_boundary_event_kernel.cu");
+        g_point_closed_shape_boundary_event.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__point_closed_shape_boundary_event_probe",
+            "__miss__point_closed_shape_boundary_event_miss",
+            "__intersection__point_closed_shape_boundary_event_isect",
+            "__anyhit__point_closed_shape_boundary_event_anyhit",
             nullptr, 4).release();
     });
 }
@@ -6205,6 +6236,7 @@ struct PreparedShapePairRelationBuild {
     size_t right_count = 0;
     size_t right_vert_xy_count = 0;
     size_t right_vert_count = 0;
+    float right_max_y = 0.0f;
     DevPtr d_right_polygons;
     DevPtr d_right_vx;
     DevPtr d_right_vy;
@@ -6249,6 +6281,9 @@ struct PreparedShapePairRelationBuild {
         for (size_t i = 0; i < right_vert_count; ++i) {
             right_vx[i] = static_cast<float>(verts_xy[i * 2u]);
             right_vy[i] = static_cast<float>(verts_xy[i * 2u + 1u]);
+            if (i == 0 || right_vy[i] > right_max_y) {
+                right_max_y = right_vy[i];
+            }
         }
         const float point_eps_den = 1.0e-20f;
         for (const GpuPolygonRef& poly : right_polygons) {
@@ -6313,6 +6348,141 @@ static PreparedShapePairRelationBuild* prepare_point_closed_shape_membership_2d_
         shape_count,
         vertices_xy,
         vertex_xy_count);
+}
+
+static void run_prepared_point_closed_shape_first_boundary_crossing_2d_optix(
+        PreparedShapePairRelationBuild* prepared,
+        const RtdlPoint* points,
+        size_t point_count,
+        RtdlPointClosedShapeBoundaryEventRow** rows_out,
+        size_t* row_count_out)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared closed-shape boundary-event handle must not be null");
+    }
+    if (!points && point_count != 0) {
+        throw std::runtime_error("point pointer must not be null when point_count is nonzero");
+    }
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("boundary-event output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    if (point_count == 0 || prepared->right_count == 0) {
+        return;
+    }
+    if (point_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("prepared closed-shape boundary-event point count exceeds uint32_t launch capacity");
+    }
+
+    reset_closed_shape_membership_phase_timings(5u);
+    ensure_point_closed_shape_boundary_event_pipeline();
+
+    const auto t_pack_start = std::chrono::steady_clock::now();
+    std::vector<float> pts_x(point_count), pts_y(point_count);
+    std::vector<uint32_t> pt_ids(point_count);
+    float min_point_y = 0.0f;
+    for (size_t i = 0; i < point_count; ++i) {
+        pts_x[i] = static_cast<float>(points[i].x);
+        pts_y[i] = static_cast<float>(points[i].y);
+        pt_ids[i] = points[i].id;
+        if (i == 0 || pts_y[i] < min_point_y) {
+            min_point_y = pts_y[i];
+        }
+    }
+    const float ray_tmax = (std::max)(1.0f, prepared->right_max_y - min_point_y + 1.0f);
+    const auto t_pack_end = std::chrono::steady_clock::now();
+    g_optix_last_closed_shape_point_pack_s = seconds_between(t_pack_start, t_pack_end);
+
+    const auto t_upload_start = std::chrono::steady_clock::now();
+    DevPtr d_pts_x(sizeof(float) * point_count);
+    DevPtr d_pts_y(sizeof(float) * point_count);
+    DevPtr d_pt_ids(sizeof(uint32_t) * point_count);
+    upload(d_pts_x.ptr, pts_x.data(), point_count);
+    upload(d_pts_y.ptr, pts_y.data(), point_count);
+    upload(d_pt_ids.ptr, pt_ids.data(), point_count);
+    const auto t_upload_end = std::chrono::steady_clock::now();
+    g_optix_last_closed_shape_point_upload_s = seconds_between(t_upload_start, t_upload_end);
+
+    DevPtr d_count(sizeof(uint32_t));
+    DevPtr d_overflow(sizeof(uint32_t));
+    DevPtr d_params(sizeof(PointClosedShapeBoundaryEventLaunchParams));
+    uint32_t zero = 0u;
+    CUstream stream = 0;
+
+    PointClosedShapeBoundaryEventLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.points_x = reinterpret_cast<const float*>(d_pts_x.ptr);
+    lp.points_y = reinterpret_cast<const float*>(d_pts_y.ptr);
+    lp.point_ids = reinterpret_cast<const uint32_t*>(d_pt_ids.ptr);
+    lp.polygons = reinterpret_cast<const GpuPolygonRef*>(prepared->d_right_polygons.ptr);
+    lp.prepared_edges = reinterpret_cast<const GpuPreparedClosedShapeEdge2D*>(prepared->d_right_edges.ptr);
+    lp.output = nullptr;
+    lp.output_count = reinterpret_cast<uint32_t*>(d_count.ptr);
+    lp.output_capacity = 0u;
+    lp.overflow = reinterpret_cast<uint32_t*>(d_overflow.ptr);
+    lp.probe_count = static_cast<uint32_t>(point_count);
+    lp.ray_tmax = ray_tmax;
+
+    auto launch_boundary_event_pass = [&](CUdeviceptr output_ptr, uint32_t output_capacity) -> uint32_t {
+        upload<uint32_t>(d_count.ptr, &zero, 1);
+        upload<uint32_t>(d_overflow.ptr, &zero, 1);
+        lp.output = output_ptr == 0
+            ? nullptr
+            : reinterpret_cast<RtdlPointClosedShapeBoundaryEventRow*>(output_ptr);
+        lp.output_capacity = output_capacity;
+        upload(d_params.ptr, &lp, 1);
+        const auto t_launch_start = std::chrono::steady_clock::now();
+        OPTIX_CHECK(optixLaunch(g_point_closed_shape_boundary_event.pipe->pipeline, stream,
+                                 d_params.ptr, sizeof(PointClosedShapeBoundaryEventLaunchParams),
+                                 &g_point_closed_shape_boundary_event.pipe->sbt,
+                                 static_cast<unsigned>(point_count), 1, 1));
+        CU_CHECK(cuStreamSynchronize(stream));
+        const auto t_launch_end = std::chrono::steady_clock::now();
+        if (output_capacity == 0u) {
+            g_optix_last_closed_shape_candidate_count_s += seconds_between(t_launch_start, t_launch_end);
+        } else {
+            g_optix_last_closed_shape_candidate_write_s += seconds_between(t_launch_start, t_launch_end);
+        }
+        uint32_t emitted = 0u;
+        uint32_t overflow = 0u;
+        download(&emitted, d_count.ptr, 1);
+        download(&overflow, d_overflow.ptr, 1);
+        if (overflow != 0u) {
+            throw std::runtime_error("prepared closed-shape boundary-event output overflowed compact capacity");
+        }
+        return emitted;
+    };
+
+    const uint32_t event_count = launch_boundary_event_pass(0, 0u);
+    g_optix_last_closed_shape_raw_candidate_count = static_cast<size_t>(event_count);
+    if (event_count == 0u) {
+        return;
+    }
+
+    DevPtr d_rows(sizeof(RtdlPointClosedShapeBoundaryEventRow) * static_cast<size_t>(event_count));
+    const uint32_t written_count = launch_boundary_event_pass(d_rows.ptr, event_count);
+    if (written_count != event_count) {
+        throw std::runtime_error("prepared closed-shape boundary-event count changed between count and write passes");
+    }
+
+    std::vector<RtdlPointClosedShapeBoundaryEventRow> rows(event_count);
+    const auto t_download_start = std::chrono::steady_clock::now();
+    download(rows.data(), d_rows.ptr, rows.size());
+    const auto t_download_end = std::chrono::steady_clock::now();
+    g_optix_last_closed_shape_candidate_download_s = seconds_between(t_download_start, t_download_end);
+    g_optix_last_closed_shape_emitted_count = rows.size();
+
+    auto* out = static_cast<RtdlPointClosedShapeBoundaryEventRow*>(
+        std::malloc(sizeof(RtdlPointClosedShapeBoundaryEventRow) * rows.size()));
+    if (!out && !rows.empty()) {
+        throw std::bad_alloc();
+    }
+    for (size_t i = 0; i < rows.size(); ++i) {
+        out[i] = rows[i];
+    }
+    *rows_out = out;
+    *row_count_out = rows.size();
 }
 
 static void run_prepared_point_closed_shape_membership_2d_optix(

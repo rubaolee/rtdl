@@ -1357,6 +1357,156 @@ extern "C" __global__ void __intersection__pip_isect() {
 }
 )CUDA";
 
+// ---------- point/closed-shape boundary-event kernel ------------------------
+
+static const char* kPointClosedShapeBoundaryEventKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+#include <math.h>
+
+struct GpuPolygonRef {
+    uint32_t id;
+    uint32_t vertex_offset;
+    uint32_t vertex_count;
+};
+
+struct GpuPreparedClosedShapeEdge2D {
+    float ax, ay;
+    float bx, by;
+    float dx, dy;
+    float len2;
+    float crossing_scale;
+};
+
+struct BoundaryEventRecord {
+    uint32_t point_id;
+    uint32_t shape_id;
+    uint32_t boundary_id;
+    double crossing_t;
+    double crossing_x;
+    double crossing_y;
+    uint32_t event_kind;
+};
+
+struct BoundaryEventParams {
+    OptixTraversableHandle traversable;
+    const float* points_x;
+    const float* points_y;
+    const uint32_t* point_ids;
+    const GpuPolygonRef* polygons;
+    const GpuPreparedClosedShapeEdge2D* prepared_edges;
+    BoundaryEventRecord* output;
+    uint32_t* output_count;
+    uint32_t output_capacity;
+    uint32_t* overflow;
+    uint32_t probe_count;
+    float ray_tmax;
+};
+
+extern "C" {
+__constant__ BoundaryEventParams params;
+}
+
+static __forceinline__ __device__ bool first_boundary_crossing(
+        const float px,
+        const float py,
+        const GpuPolygonRef& poly,
+        float* best_t,
+        uint32_t* best_boundary_id)
+{
+    if (params.prepared_edges == nullptr) return false;
+    const float eps = 1.0e-6f;
+    bool found = false;
+    float local_best_t = 0.0f;
+    uint32_t local_best_boundary = 0u;
+    const uint32_t off = poly.vertex_offset;
+    for (uint32_t i = 0; i < poly.vertex_count; ++i) {
+        const GpuPreparedClosedShapeEdge2D edge = params.prepared_edges[off + i];
+        const float ex = edge.bx - edge.ax;
+        if (fabsf(ex) <= eps) {
+            continue;
+        }
+        const float u = (px - edge.ax) / ex;
+        if (u < -eps || u > 1.0f + eps) {
+            continue;
+        }
+        const float crossing_y = edge.ay + u * (edge.by - edge.ay);
+        float t = crossing_y - py;
+        if (t < -eps) {
+            continue;
+        }
+        if (fabsf(t) <= eps) {
+            t = 0.0f;
+        }
+        if (!found || t < local_best_t || (fabsf(t - local_best_t) <= eps && i < local_best_boundary)) {
+            found = true;
+            local_best_t = t;
+            local_best_boundary = i;
+        }
+    }
+    if (!found) return false;
+    *best_t = local_best_t;
+    *best_boundary_id = local_best_boundary;
+    return true;
+}
+
+extern "C" __global__ void __raygen__point_closed_shape_boundary_event_probe() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    if (idx >= params.probe_count) return;
+    const float px = params.points_x[idx];
+    const float py = params.points_y[idx];
+    unsigned int p0 = idx, p1 = 0u, p2 = 0u, p3 = 0u;
+    optixTrace(params.traversable,
+               make_float3(px, py, 0.0f),
+               make_float3(0.0f, 1.0f, 0.0f),
+               0.0f, params.ray_tmax, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1, p2, p3);
+}
+
+extern "C" __global__ void __miss__point_closed_shape_boundary_event_miss() {}
+
+extern "C" __global__ void __intersection__point_closed_shape_boundary_event_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t pidx = optixGetPayload_0();
+    const float px = params.points_x[pidx];
+    const float py = params.points_y[pidx];
+    float best_t = 0.0f;
+    uint32_t best_boundary_id = 0u;
+    if (!first_boundary_crossing(px, py, params.polygons[prim], &best_t, &best_boundary_id)) {
+        return;
+    }
+    optixSetPayload_1(prim);
+    optixSetPayload_2(best_boundary_id);
+    optixSetPayload_3(__float_as_uint(best_t));
+    optixReportIntersection(best_t, 0u);
+}
+
+extern "C" __global__ void __anyhit__point_closed_shape_boundary_event_anyhit() {
+    const uint32_t pidx = optixGetPayload_0();
+    const uint32_t prim = optixGetPayload_1();
+    const uint32_t boundary_id = optixGetPayload_2();
+    const float t = __uint_as_float(optixGetPayload_3());
+    const uint32_t slot = atomicAdd(params.output_count, 1u);
+    if (params.output != nullptr && slot < params.output_capacity) {
+        BoundaryEventRecord row;
+        row.point_id = params.point_ids[pidx];
+        row.shape_id = params.polygons[prim].id;
+        row.boundary_id = boundary_id;
+        row.crossing_t = (double)t;
+        row.crossing_x = (double)params.points_x[pidx];
+        row.crossing_y = (double)(params.points_y[pidx] + t);
+        row.event_kind = 1u;
+        params.output[slot] = row;
+    } else if (params.output != nullptr && params.overflow != nullptr) {
+        *params.overflow = 1u;
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
 // ---------- shape-pair relation kernel ---------------------------------------------------
 
 static const char* kShapePairRelationKernelSrc = R"CUDA(
@@ -7142,6 +7292,7 @@ static PipPipeline         g_pip;
 static PipPipeline         g_pip_scalar_count;
 static PipPipeline         g_pip_candidate_device_columns;
 static PipPipeline         g_pip_point_id_count_device_columns;
+static PipPipeline         g_point_closed_shape_boundary_event;
 static ShapePairRelationPipeline     g_shape_pair_relation;
 static RayHitCountPipeline  g_rayhit;
 static RayHitCount3DPipeline g_rayhit3d;
