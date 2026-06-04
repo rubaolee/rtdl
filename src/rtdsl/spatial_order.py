@@ -122,34 +122,43 @@ def _numpy_part1by1_16(values, np):
 
 
 def _record_id(record: object) -> int:
+    if not isinstance(record, Mapping):
+        try:
+            return int(getattr(record, "id"))
+        except AttributeError:
+            pass
     if isinstance(record, Mapping):
         return int(record["id"])
-    if hasattr(record, "id"):
-        return int(getattr(record, "id"))
     raise TypeError(f"record does not expose an id field: {record!r}")
 
 
 def _record_xy(record: object) -> tuple[float, float]:
+    if not isinstance(record, Mapping):
+        try:
+            return float(getattr(record, "x")), float(getattr(record, "y"))
+        except AttributeError:
+            pass
     if isinstance(record, Mapping):
         return float(record["x"]), float(record["y"])
-    if hasattr(record, "x") and hasattr(record, "y"):
-        return float(getattr(record, "x")), float(getattr(record, "y"))
     raise TypeError(f"record does not expose x/y fields: {record!r}")
 
 
 def _segment_centroid_xy(record: object) -> tuple[float, float]:
-    if isinstance(record, Mapping):
-        x0 = float(record["x0"])
-        y0 = float(record["y0"])
-        x1 = float(record["x1"])
-        y1 = float(record["y1"])
-    elif all(hasattr(record, name) for name in ("x0", "y0", "x1", "y1")):
-        x0 = float(getattr(record, "x0"))
-        y0 = float(getattr(record, "y0"))
-        x1 = float(getattr(record, "x1"))
-        y1 = float(getattr(record, "y1"))
-    else:
+    if not isinstance(record, Mapping):
+        try:
+            x0 = float(getattr(record, "x0"))
+            y0 = float(getattr(record, "y0"))
+            x1 = float(getattr(record, "x1"))
+            y1 = float(getattr(record, "y1"))
+            return ((x0 + x1) * 0.5, (y0 + y1) * 0.5)
+        except AttributeError:
+            pass
+    if not isinstance(record, Mapping):
         raise TypeError(f"record does not expose x0/y0/x1/y1 fields: {record!r}")
+    x0 = float(record["x0"])
+    y0 = float(record["y0"])
+    x1 = float(record["x1"])
+    y1 = float(record["y1"])
     return ((x0 + x1) * 0.5, (y0 + y1) * 0.5)
 
 
