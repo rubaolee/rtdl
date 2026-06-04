@@ -4,13 +4,14 @@
     "rayjoin_paper_reproduction_claim_authorized": false,
     "release_authorized": false,
     "rt_core_speedup_claim_authorized": false,
-    "rtdl_beats_rayjoin_claim_authorized": false
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
   },
-  "commit": "021ee498711eb5ad8b21231872930b35461ed4a6",
+  "commit": "67dcad5b4beb5c0d462a13ab75bb681c4aaee611",
   "data_dir": "/root/rtdl_goal3151/data/rayjoin",
   "goal": 3225,
   "hardware": {
-    "cuda_driver_query": "==============NVSMI LOG==============\n\nTimestamp                                 : Thu Jun  4 00:20:13 2026\nDriver Version                            : 570.211.01\nCUDA Version                              : 12.8\n\nAttached GPUs                             : 1\nGPU 00000000:CE:00.0\n    Compute Mode                          : Default",
+    "cuda_driver_query": "==============NVSMI LOG==============\n\nTimestamp                                 : Thu Jun  4 00:31:05 2026\nDriver Version                            : 570.211.01\nCUDA Version                              : 12.8\n\nAttached GPUs                             : 1\nGPU 00000000:CE:00.0\n    Compute Mode                          : Default",
     "nvcc_version": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0",
     "nvidia_smi": "NVIDIA A40, 570.211.01",
     "rtdl_optix_library": "/root/rtdl_goal3151/build/librtdl_optix.so"
@@ -24,7 +25,8 @@
         "rayjoin_paper_reproduction_claim_authorized": false,
         "release_authorized": false,
         "rt_core_speedup_claim_authorized": false,
-        "rtdl_beats_rayjoin_claim_authorized": false
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false
       },
       "counts_match": true,
       "dataset": "/root/rtdl_goal3151/data/rayjoin/br_county_start0_count128.cdb + /root/rtdl_goal3151/data/rayjoin/br_soil_start0_count128.cdb",
@@ -43,17 +45,17 @@
               "whole_app_speedup_claim_authorized": false
             },
             "phases_sec": {
-              "prepare_static_scene_sec": 0.0003744848072528839,
-              "prepared_query_sec": 0.005080312490463257,
-              "query_pack_sec": 0.0016987565904855728,
-              "static_shape_pack_sec": 0.0010055843740701675
+              "prepare_static_scene_sec": 0.0003932435065507889,
+              "prepared_query_sec": 0.005073823034763336,
+              "query_pack_sec": 0.0019201096147298813,
+              "static_shape_pack_sec": 0.001040412113070488
             },
             "row_count": 1,
             "summary": {
               "active_seed_count": 1,
               "output_contract": "overlay_active_pair_dependency_count"
             },
-            "total_seconds": 0.024164440110325813
+            "total_seconds": 0.023912131786346436
           },
           {
             "claim_boundary": {
@@ -65,17 +67,17 @@
               "whole_app_speedup_claim_authorized": false
             },
             "phases_sec": {
-              "prepare_static_scene_sec": 0.0003769621253013611,
-              "prepared_query_sec": 0.005094768479466438,
-              "query_pack_sec": 0.0017064232379198074,
-              "static_shape_pack_sec": 0.0010784883052110672
+              "prepare_static_scene_sec": 0.00039865821599960327,
+              "prepared_query_sec": 0.00497821718454361,
+              "query_pack_sec": 0.0016459356993436813,
+              "static_shape_pack_sec": 0.0010018311440944672
             },
             "row_count": 1,
             "summary": {
               "active_seed_count": 1,
               "output_contract": "overlay_active_pair_dependency_count"
             },
-            "total_seconds": 0.02312331274151802
+            "total_seconds": 0.022725095972418785
           },
           {
             "claim_boundary": {
@@ -87,17 +89,17 @@
               "whole_app_speedup_claim_authorized": false
             },
             "phases_sec": {
-              "prepare_static_scene_sec": 0.00037718378007411957,
-              "prepared_query_sec": 0.005237208679318428,
-              "query_pack_sec": 0.001723935827612877,
-              "static_shape_pack_sec": 0.0010857321321964264
+              "prepare_static_scene_sec": 0.0003763437271118164,
+              "prepared_query_sec": 0.005032725632190704,
+              "query_pack_sec": 0.0016591642051935196,
+              "static_shape_pack_sec": 0.001001548022031784
             },
             "row_count": 1,
             "summary": {
               "active_seed_count": 1,
               "output_contract": "overlay_active_pair_dependency_count"
             },
-            "total_seconds": 0.023647313937544823
+            "total_seconds": 0.02247435413300991
           },
           {
             "claim_boundary": {
@@ -109,17 +111,17 @@
               "whole_app_speedup_claim_authorized": false
             },
             "phases_sec": {
-              "prepare_static_scene_sec": 0.0003787744790315628,
-              "prepared_query_sec": 0.0051719993352890015,
-              "query_pack_sec": 0.0017907526344060898,
-              "static_shape_pack_sec": 0.001048387959599495
+              "prepare_static_scene_sec": 0.0003868956118822098,
+              "prepared_query_sec": 0.005013784393668175,
+              "query_pack_sec": 0.0016551483422517776,
+              "static_shape_pack_sec": 0.0009967219084501266
             },
             "row_count": 1,
             "summary": {
               "active_seed_count": 1,
               "output_contract": "overlay_active_pair_dependency_count"
             },
-            "total_seconds": 0.023576615378260612
+            "total_seconds": 0.02255028858780861
           },
           {
             "claim_boundary": {
@@ -131,22 +133,22 @@
               "whole_app_speedup_claim_authorized": false
             },
             "phases_sec": {
-              "prepare_static_scene_sec": 0.0003683213144540787,
-              "prepared_query_sec": 0.004969758912920952,
-              "query_pack_sec": 0.001674257218837738,
-              "static_shape_pack_sec": 0.0010013468563556671
+              "prepare_static_scene_sec": 0.0003765225410461426,
+              "prepared_query_sec": 0.005181392654776573,
+              "query_pack_sec": 0.0016808360815048218,
+              "static_shape_pack_sec": 0.0010048970580101013
             },
             "row_count": 1,
             "summary": {
               "active_seed_count": 1,
               "output_contract": "overlay_active_pair_dependency_count"
             },
-            "total_seconds": 0.0231766514480114
+            "total_seconds": 0.02275911532342434
           }
         ]
       },
       "medians": {
-        "prepared_total_seconds": 0.023576615378260612
+        "prepared_total_seconds": 0.022725095972418785
       },
       "observed_counts": [
         1,
@@ -163,7 +165,8 @@
         "rayjoin_paper_reproduction_claim_authorized": false,
         "release_authorized": false,
         "rt_core_speedup_claim_authorized": false,
-        "rtdl_beats_rayjoin_claim_authorized": false
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false
       },
       "counts_match": true,
       "dataset": "/root/rtdl_goal3151/data/rayjoin/br_county_start0_count256.cdb + /root/rtdl_goal3151/data/rayjoin/br_soil_start0_count256.cdb",
@@ -182,17 +185,17 @@
               "whole_app_speedup_claim_authorized": false
             },
             "phases_sec": {
-              "prepare_static_scene_sec": 0.0004015229642391205,
-              "prepared_query_sec": 0.0215971190482378,
-              "query_pack_sec": 0.0041663795709609985,
-              "static_shape_pack_sec": 0.0018166005611419678
+              "prepare_static_scene_sec": 0.0004251208156347275,
+              "prepared_query_sec": 0.02183794043958187,
+              "query_pack_sec": 0.00420898012816906,
+              "static_shape_pack_sec": 0.0018445737659931183
             },
             "row_count": 9,
             "summary": {
               "active_seed_count": 9,
               "output_contract": "overlay_active_pair_dependency_count"
             },
-            "total_seconds": 0.061211783438920975
+            "total_seconds": 0.06057866849005222
           },
           {
             "claim_boundary": {
@@ -204,17 +207,17 @@
               "whole_app_speedup_claim_authorized": false
             },
             "phases_sec": {
-              "prepare_static_scene_sec": 0.00039987824857234955,
-              "prepared_query_sec": 0.02171183004975319,
-              "query_pack_sec": 0.004274837672710419,
-              "static_shape_pack_sec": 0.0018534660339355469
+              "prepare_static_scene_sec": 0.00041460804641246796,
+              "prepared_query_sec": 0.0219242125749588,
+              "query_pack_sec": 0.0041758399456739426,
+              "static_shape_pack_sec": 0.0018071439117193222
             },
             "row_count": 9,
             "summary": {
               "active_seed_count": 9,
               "output_contract": "overlay_active_pair_dependency_count"
             },
-            "total_seconds": 0.07806193642318249
+            "total_seconds": 0.08274833485484123
           },
           {
             "claim_boundary": {
@@ -226,17 +229,17 @@
               "whole_app_speedup_claim_authorized": false
             },
             "phases_sec": {
-              "prepare_static_scene_sec": 0.0004021972417831421,
-              "prepared_query_sec": 0.0215104129165411,
-              "query_pack_sec": 0.004161978140473366,
-              "static_shape_pack_sec": 0.0018175188452005386
+              "prepare_static_scene_sec": 0.0004192143678665161,
+              "prepared_query_sec": 0.02170221507549286,
+              "query_pack_sec": 0.004128448665142059,
+              "static_shape_pack_sec": 0.0017978213727474213
             },
             "row_count": 9,
             "summary": {
               "active_seed_count": 9,
               "output_contract": "overlay_active_pair_dependency_count"
             },
-            "total_seconds": 0.060547828674316406
+            "total_seconds": 0.06118367798626423
           },
           {
             "claim_boundary": {
@@ -248,17 +251,17 @@
               "whole_app_speedup_claim_authorized": false
             },
             "phases_sec": {
-              "prepare_static_scene_sec": 0.0004126615822315216,
-              "prepared_query_sec": 0.021667929366230965,
-              "query_pack_sec": 0.004247894510626793,
-              "static_shape_pack_sec": 0.0018434841185808182
+              "prepare_static_scene_sec": 0.0004523675888776779,
+              "prepared_query_sec": 0.022152507677674294,
+              "query_pack_sec": 0.004589816555380821,
+              "static_shape_pack_sec": 0.0019755158573389053
             },
             "row_count": 9,
             "summary": {
               "active_seed_count": 9,
               "output_contract": "overlay_active_pair_dependency_count"
             },
-            "total_seconds": 0.07088656164705753
+            "total_seconds": 0.07215698808431625
           },
           {
             "claim_boundary": {
@@ -270,22 +273,22 @@
               "whole_app_speedup_claim_authorized": false
             },
             "phases_sec": {
-              "prepare_static_scene_sec": 0.0003960970789194107,
-              "prepared_query_sec": 0.021671034395694733,
-              "query_pack_sec": 0.004167718812823296,
-              "static_shape_pack_sec": 0.0018645059317350388
+              "prepare_static_scene_sec": 0.00045362673699855804,
+              "prepared_query_sec": 0.022476134821772575,
+              "query_pack_sec": 0.004202188923954964,
+              "static_shape_pack_sec": 0.0019317716360092163
             },
             "row_count": 9,
             "summary": {
               "active_seed_count": 9,
               "output_contract": "overlay_active_pair_dependency_count"
             },
-            "total_seconds": 0.06053588353097439
+            "total_seconds": 0.06209208257496357
           }
         ]
       },
       "medians": {
-        "prepared_total_seconds": 0.061211783438920975
+        "prepared_total_seconds": 0.06209208257496357
       },
       "observed_counts": [
         9,

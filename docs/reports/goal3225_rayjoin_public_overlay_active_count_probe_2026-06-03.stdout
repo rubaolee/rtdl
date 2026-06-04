@@ -1,13 +1,13 @@
-[goal3225] warmup overlay_county128_soil128/prepared_overlay_active_count 1/1 sec=0.780755 rows=1
-[goal3225] repeat overlay_county128_soil128/prepared_overlay_active_count 1/5 sec=0.024164 rows=1
-[goal3225] repeat overlay_county128_soil128/prepared_overlay_active_count 2/5 sec=0.023123 rows=1
-[goal3225] repeat overlay_county128_soil128/prepared_overlay_active_count 3/5 sec=0.023647 rows=1
-[goal3225] repeat overlay_county128_soil128/prepared_overlay_active_count 4/5 sec=0.023577 rows=1
-[goal3225] repeat overlay_county128_soil128/prepared_overlay_active_count 5/5 sec=0.023177 rows=1
-[goal3225] warmup overlay_county256_soil256/prepared_overlay_active_count 1/1 sec=0.065928 rows=9
-[goal3225] repeat overlay_county256_soil256/prepared_overlay_active_count 1/5 sec=0.061212 rows=9
-[goal3225] repeat overlay_county256_soil256/prepared_overlay_active_count 2/5 sec=0.078062 rows=9
-[goal3225] repeat overlay_county256_soil256/prepared_overlay_active_count 3/5 sec=0.060548 rows=9
-[goal3225] repeat overlay_county256_soil256/prepared_overlay_active_count 4/5 sec=0.070887 rows=9
-[goal3225] repeat overlay_county256_soil256/prepared_overlay_active_count 5/5 sec=0.060536 rows=9
+[goal3225] warmup overlay_county128_soil128/prepared_overlay_active_count 1/1 sec=0.749879 rows=1
+[goal3225] repeat overlay_county128_soil128/prepared_overlay_active_count 1/5 sec=0.023912 rows=1
+[goal3225] repeat overlay_county128_soil128/prepared_overlay_active_count 2/5 sec=0.022725 rows=1
+[goal3225] repeat overlay_county128_soil128/prepared_overlay_active_count 3/5 sec=0.022474 rows=1
+[goal3225] repeat overlay_county128_soil128/prepared_overlay_active_count 4/5 sec=0.022550 rows=1
+[goal3225] repeat overlay_county128_soil128/prepared_overlay_active_count 5/5 sec=0.022759 rows=1
+[goal3225] warmup overlay_county256_soil256/prepared_overlay_active_count 1/1 sec=0.063374 rows=9
+[goal3225] repeat overlay_county256_soil256/prepared_overlay_active_count 1/5 sec=0.060579 rows=9
+[goal3225] repeat overlay_county256_soil256/prepared_overlay_active_count 2/5 sec=0.082748 rows=9
+[goal3225] repeat overlay_county256_soil256/prepared_overlay_active_count 3/5 sec=0.061184 rows=9
+[goal3225] repeat overlay_county256_soil256/prepared_overlay_active_count 4/5 sec=0.072157 rows=9
+[goal3225] repeat overlay_county256_soil256/prepared_overlay_active_count 5/5 sec=0.062092 rows=9
 [goal3225] wrote /root/goal3225_rayjoin_public_overlay_active_count_probe_2026-06-03.json

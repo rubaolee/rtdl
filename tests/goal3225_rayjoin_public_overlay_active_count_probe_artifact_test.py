@@ -18,7 +18,7 @@ class Goal3225RayJoinPublicOverlayActiveCountProbeArtifactTest(unittest.TestCase
         self.assertEqual(data["goal"], 3225)
         self.assertEqual(data["schema"], "rtdl.goal3225.rayjoin_public_overlay_active_count_probe.v1")
         self.assertEqual(data["status"], "pass")
-        self.assertEqual(data["commit"], "021ee498711eb5ad8b21231872930b35461ed4a6")
+        self.assertEqual(data["commit"], "67dcad5b4beb5c0d462a13ab75bb681c4aaee611")
         self.assertEqual(data["hardware"]["nvidia_smi"], "NVIDIA A40, 570.211.01")
         self.assertIn("CUDA Version", data["hardware"]["cuda_driver_query"])
         self.assertIn("release 12.8", data["hardware"]["nvcc_version"])

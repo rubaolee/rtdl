@@ -21,7 +21,7 @@ performance parity.
 
 Pod metadata:
 
-- Commit: `021ee498711eb5ad8b21231872930b35461ed4a6`
+- Commit: `67dcad5b4beb5c0d462a13ab75bb681c4aaee611`
 - GPU: `NVIDIA A40, 570.211.01`
 - CUDA driver query: present
 - nvcc version: present
@@ -32,8 +32,8 @@ Pod metadata:
 
 | Case | Public Slice | Expected Active Seeds | Observed Counts | Median Prepared Count (s) |
 | --- | --- | ---: | --- | ---: |
-| `overlay_county128_soil128` | county 0:128 + soil 0:128 | 1 | `[1, 1, 1, 1, 1]` | 0.023576615378260612 |
-| `overlay_county256_soil256` | county 0:256 + soil 0:256 | 9 | `[9, 9, 9, 9, 9]` | 0.061211783438920975 |
+| `overlay_county128_soil128` | county 0:128 + soil 0:128 | 1 | `[1, 1, 1, 1, 1]` | 0.022725095972418785 |
+| `overlay_county256_soil256` | county 0:256 + soil 0:256 | 9 | `[9, 9, 9, 9, 9]` | 0.06209208257496357 |
 
 ## Interpretation
 
