@@ -5564,21 +5564,51 @@ static bool use_prepared_closed_shape_scalar_count_pipeline()
     return std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_USE_SCALAR_COUNT_PIPELINE") != nullptr;
 }
 
-static size_t prepared_closed_shape_batch_stream_count()
+struct PreparedClosedShapeBatchStreamPolicy {
+    bool auto_select = false;
+    size_t explicit_count = 1u;
+};
+
+static PreparedClosedShapeBatchStreamPolicy prepared_closed_shape_batch_stream_policy()
 {
     const char* raw = std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_BATCH_STREAM_COUNT");
     if (!raw || !*raw) {
-        return 1u;
+        return {};
+    }
+    if (std::string(raw) == "auto") {
+        PreparedClosedShapeBatchStreamPolicy policy;
+        policy.auto_select = true;
+        return policy;
     }
     char* end = nullptr;
     const unsigned long long parsed = std::strtoull(raw, &end, 10);
     if (end == raw || (end && *end != '\0')) {
-        throw std::runtime_error("RTDL_OPTIX_POINT_PRIMITIVE_BATCH_STREAM_COUNT must be a positive integer");
+        throw std::runtime_error("RTDL_OPTIX_POINT_PRIMITIVE_BATCH_STREAM_COUNT must be a positive integer or auto");
     }
     if (parsed == 0ull) {
         throw std::runtime_error("RTDL_OPTIX_POINT_PRIMITIVE_BATCH_STREAM_COUNT must be positive");
     }
-    return static_cast<size_t>(std::min<unsigned long long>(parsed, 64ull));
+    PreparedClosedShapeBatchStreamPolicy policy;
+    policy.explicit_count = static_cast<size_t>(std::min<unsigned long long>(parsed, 64ull));
+    return policy;
+}
+
+static size_t prepared_closed_shape_batch_stream_count(size_t request_count)
+{
+    const PreparedClosedShapeBatchStreamPolicy policy = prepared_closed_shape_batch_stream_policy();
+    if (!policy.auto_select) {
+        return std::min(request_count, policy.explicit_count);
+    }
+    if (request_count >= 64u) {
+        return std::min(request_count, static_cast<size_t>(16u));
+    }
+    if (request_count >= 16u) {
+        return std::min(request_count, static_cast<size_t>(8u));
+    }
+    if (request_count >= 8u) {
+        return std::min(request_count, static_cast<size_t>(4u));
+    }
+    return 1u;
 }
 
 static void ensure_pip_scalar_count_pipeline()
@@ -7518,8 +7548,7 @@ static void count_prepared_point_closed_shape_membership_device_filtered_prepare
     PipelineHolder* pipeline = use_scalar_count_pipeline
         ? g_pip_scalar_count.pipe
         : g_pip.pipe;
-    const size_t requested_stream_count = prepared_closed_shape_batch_stream_count();
-    const size_t stream_count = std::min(request_count, requested_stream_count);
+    const size_t stream_count = prepared_closed_shape_batch_stream_count(request_count);
 
     const auto t_launch_start = std::chrono::steady_clock::now();
     if (stream_count <= 1u) {

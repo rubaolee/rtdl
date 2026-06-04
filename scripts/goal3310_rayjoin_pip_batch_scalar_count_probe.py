@@ -205,7 +205,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--query-axis", default="z_point")
     parser.add_argument("--boundary-mode", default="inclusive")
     parser.add_argument("--scalar-count-pipeline", action="store_true")
-    parser.add_argument("--batch-stream-count", type=int, default=None)
+    parser.add_argument(
+        "--batch-stream-count",
+        default=None,
+        help="Optional RTDL_OPTIX_POINT_PRIMITIVE_BATCH_STREAM_COUNT value: positive integer or auto.",
+    )
     parser.add_argument("--single-warmup", type=int, default=4)
     parser.add_argument("--single-repeat", type=int, default=20)
     parser.add_argument("--batch-warmup", type=int, default=3)

@@ -18,6 +18,10 @@ class Goal3314PreparedPointMultistreamBatchCountTest(unittest.TestCase):
         text = WORKLOADS.read_text(encoding="utf-8")
         self.assertIn("RTDL_OPTIX_POINT_PRIMITIVE_BATCH_STREAM_COUNT", text)
         self.assertIn("prepared_closed_shape_batch_stream_count", text)
+        self.assertIn('std::string(raw) == "auto"', text)
+        self.assertIn("request_count >= 64u", text)
+        self.assertIn("request_count >= 16u", text)
+        self.assertIn("request_count >= 8u", text)
 
         start = text.index(
             "static void count_prepared_point_closed_shape_membership_device_filtered_prepared_points_batch_2d_optix"
@@ -34,6 +38,7 @@ class Goal3314PreparedPointMultistreamBatchCountTest(unittest.TestCase):
     def test_probe_script_exposes_stream_count_without_changing_claim_boundary(self) -> None:
         probe = PROBE.read_text(encoding="utf-8")
         self.assertIn("--batch-stream-count", probe)
+        self.assertIn("positive integer or auto", probe)
         self.assertIn("RTDL_OPTIX_POINT_PRIMITIVE_BATCH_STREAM_COUNT", probe)
         self.assertIn('"rtdl_beats_rayjoin_claim_authorized": False', probe)
         self.assertIn("repeated-query throughput evidence only", probe)
