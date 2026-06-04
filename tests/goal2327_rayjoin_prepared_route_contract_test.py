@@ -28,6 +28,9 @@ class _FakePrepared:
     def count(self, _packed):
         return self.row_count
 
+    def count_device_filtered(self, _packed):
+        return self.row_count
+
     def count_active(self, _packed):
         return self.row_count
 
@@ -104,6 +107,46 @@ class Goal2327RayJoinPreparedRouteContractTest(unittest.TestCase):
         self.assertEqual(payload["summary"]["output_contract"], "point_to_shape_positive_hit_rows")
         self.assertNotIn("rows", payload)
         self.assertIn("static_shape_pack_sec", payload["phases_sec"])
+
+    def test_pip_device_filtered_count_mode_is_validated_and_explicit(self) -> None:
+        with (
+            mock.patch.object(app, "_load_rayjoin_case", return_value=_case("pip")),
+            mock.patch("rtdsl.optix_runtime.pack_points", return_value="packed-points"),
+            mock.patch("rtdsl.optix_runtime.pack_polygons", return_value="packed-shapes"),
+            mock.patch("rtdsl.optix_runtime.prepare_point_closed_shape_membership_2d_optix", return_value=_FakePrepared(7)),
+        ):
+            payload = app.run_rayjoin_prepared_optix_workload(
+                "pip",
+                result_mode="count",
+                count_mode="device_filtered_validated",
+            )
+
+        self.assertEqual(payload["count_mode"], "device_filtered_validated")
+        self.assertEqual(payload["row_count"], 7)
+        self.assertEqual(payload["summary"]["validation_exact_count"], 7)
+        self.assertTrue(payload["summary"]["device_filtered_count_matches_exact"])
+        self.assertFalse(payload["summary"]["device_filtered_is_exact_authority"])
+        self.assertEqual(
+            payload["summary"]["output_contract"],
+            "point_to_shape_positive_hit_count_device_filtered_validated",
+        )
+        self.assertIn("validation_exact_query_sec", payload["phases_sec"])
+        self.assertIn("prepared_query_sec", payload["phases_sec"])
+
+    def test_device_filtered_count_mode_rejects_non_pip_or_rows(self) -> None:
+        with self.assertRaisesRegex(ValueError, "only valid for PIP count"):
+            app.run_rayjoin_prepared_optix_workload(
+                "lsi",
+                result_mode="count",
+                count_mode="device_filtered_validated",
+            )
+
+        with self.assertRaisesRegex(ValueError, "only valid for PIP count"):
+            app.run_rayjoin_prepared_optix_workload(
+                "pip",
+                result_mode="rows",
+                count_mode="device_filtered_validated",
+            )
 
     def test_overlay_prepared_optix_route_uses_generic_shape_pair_relation(self) -> None:
         with (

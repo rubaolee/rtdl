@@ -24,6 +24,7 @@ from rtdsl.datasets import load_cdb
 
 _WORKLOADS = ("pip", "lsi", "overlay_seed")
 _PREPARED_OPTIX_WORKLOADS = ("pip", "lsi", "overlay_seed")
+_PIP_COUNT_MODES = ("exact", "device_filtered_validated")
 RAYJOIN_V2_6_NUMBA_COMPACT_MASK_VERSION = "rtdl.rayjoin.v2_6.numba_compact_mask_preview.v1"
 
 _DEFAULT_DATASETS = {
@@ -214,6 +215,7 @@ def run_rayjoin_prepared_optix_workload(
     dataset: str | None = None,
     result_mode: str = "count",
     include_rows: bool = False,
+    count_mode: str = "exact",
 ) -> dict[str, object]:
     """Run the RayJoin-style prepared OptiX route with phase boundaries.
 
@@ -227,6 +229,10 @@ def run_rayjoin_prepared_optix_workload(
         raise ValueError("prepared_optix route currently supports only: pip, lsi, overlay_seed")
     if result_mode not in {"count", "rows"}:
         raise ValueError("result_mode must be 'count' or 'rows'")
+    if count_mode not in _PIP_COUNT_MODES:
+        raise ValueError("count_mode must be 'exact' or 'device_filtered_validated'")
+    if count_mode != "exact" and (workload != "pip" or result_mode != "count"):
+        raise ValueError("device_filtered_validated count_mode is only valid for PIP count workloads")
 
     resolved_dataset = dataset or _DEFAULT_DATASETS[workload]
     case = _load_rayjoin_case(workload, resolved_dataset)
@@ -341,8 +347,31 @@ def run_rayjoin_prepared_optix_workload(
         )
         try:
             if result_mode == "count":
-                row_count = int(_phase_time(phases, "prepared_query_sec", lambda: prepared.count(packed_points)))
+                if count_mode == "device_filtered_validated":
+                    validation_exact_count = int(
+                        _phase_time(
+                            phases,
+                            "validation_exact_query_sec",
+                            lambda: prepared.count(packed_points),
+                        )
+                    )
+                    row_count = int(
+                        _phase_time(
+                            phases,
+                            "prepared_query_sec",
+                            lambda: prepared.count_device_filtered(packed_points),
+                        )
+                    )
+                    if row_count != validation_exact_count:
+                        raise RuntimeError(
+                            "device-filtered closed-shape count did not match exact prepared count: "
+                            f"{row_count} != {validation_exact_count}"
+                        )
+                else:
+                    validation_exact_count = None
+                    row_count = int(_phase_time(phases, "prepared_query_sec", lambda: prepared.count(packed_points)))
             else:
+                validation_exact_count = None
                 view = _phase_time(
                     phases,
                     "prepared_query_sec",
@@ -361,10 +390,20 @@ def run_rayjoin_prepared_optix_workload(
             "positive_hit_row_count": row_count,
             "positive_assignment_count": row_count,
             "output_contract": (
-                "point_to_shape_positive_hit_count"
+                (
+                    "point_to_shape_positive_hit_count_device_filtered_validated"
+                    if count_mode == "device_filtered_validated"
+                    else "point_to_shape_positive_hit_count"
+                )
                 if result_mode == "count"
                 else "point_to_shape_positive_hit_rows"
             ),
+            "count_mode": count_mode,
+            "device_filtered_is_exact_authority": False,
+            "device_filtered_count_matches_exact": (
+                True if count_mode == "device_filtered_validated" and result_mode == "count" else None
+            ),
+            "validation_exact_count": validation_exact_count,
         }
 
     payload: dict[str, object] = {
@@ -375,6 +414,7 @@ def run_rayjoin_prepared_optix_workload(
         "dataset": resolved_dataset,
         "dataset_note": case.note,
         "result_mode": result_mode,
+        "count_mode": count_mode,
         "row_count": row_count,
         "summary": summary,
         "phases_sec": phases,
@@ -945,6 +985,7 @@ def run_rayjoin_suite(
     execution_route: str = "generic_kernel",
     result_mode: str = "rows",
     include_rows: bool = True,
+    pip_count_mode: str = "exact",
 ) -> dict[str, object]:
     if execution_route == "prepared_optix":
         workloads = {
@@ -952,6 +993,7 @@ def run_rayjoin_suite(
                 workload,
                 result_mode=result_mode,
                 include_rows=include_rows,
+                count_mode=pip_count_mode if workload == "pip" else "exact",
             )
             for workload in _PREPARED_OPTIX_WORKLOADS
         }
@@ -1254,6 +1296,15 @@ def main(argv: list[str] | None = None) -> int:
         help="For prepared_optix, return witness rows or scalar counts.",
     )
     parser.add_argument(
+        "--pip-count-mode",
+        choices=_PIP_COUNT_MODES,
+        default="exact",
+        help=(
+            "For prepared_optix PIP count, optionally time the device-filtered count "
+            "only after validating it against the exact prepared count."
+        ),
+    )
+    parser.add_argument(
         "--dataset",
         default=None,
         help="Override the default dataset for a single workload run.",
@@ -1305,6 +1356,7 @@ def main(argv: list[str] | None = None) -> int:
                 execution_route=args.execution_route,
                 result_mode=args.result_mode,
                 include_rows=include_rows,
+                pip_count_mode=args.pip_count_mode,
             )
     else:
         if args.execution_route == "v2_6_numba_compact_mask_plan":
@@ -1327,6 +1379,7 @@ def main(argv: list[str] | None = None) -> int:
                 dataset=args.dataset,
                 result_mode=args.result_mode,
                 include_rows=include_rows,
+                count_mode=args.pip_count_mode,
             )
         else:
             payload = run_rayjoin_workload(

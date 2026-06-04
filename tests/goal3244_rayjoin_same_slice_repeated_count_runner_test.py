@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -94,6 +95,52 @@ Timing results:
         ):
             self.assertIn(phrase, text)
         self.assertTrue(all(value is False for value in MODULE.CLAIM_BOUNDARY.values()))
+
+    def test_rtdl_pip_device_filtered_mode_records_validation_lane(self) -> None:
+        calls: list[dict[str, object]] = []
+
+        def fake_run(*args, **kwargs):
+            calls.append({"args": args, "kwargs": dict(kwargs)})
+            return {
+                "phases_sec": {
+                    "prepared_query_sec": 0.0007,
+                    "validation_exact_query_sec": 0.0009,
+                    "query_pack_sec": 0.0001,
+                    "prepare_static_scene_sec": 0.0002,
+                },
+                "summary": {
+                    "positive_assignment_count": 1430,
+                    "device_filtered_count_matches_exact": True,
+                },
+                "row_count": 1430,
+                "native_phase_timings": {"mode": "device_filtered_count"},
+            }
+
+        with mock.patch.object(MODULE.rayjoin_app, "run_rayjoin_prepared_optix_workload", side_effect=fake_run):
+            row = MODULE.run_rtdl_samples(
+                workload="pip",
+                dataset="fake.cdb",
+                warmup=1,
+                repeat=2,
+                count_mode="device_filtered_validated",
+            )
+
+        self.assertEqual(row["count_mode"], "device_filtered_validated")
+        self.assertEqual(row["prepared_query_ms"]["samples"], [0.7, 0.7])
+        self.assertEqual(row["validation_exact_query_ms"]["samples"], [0.9, 0.9])
+        self.assertEqual(row["counts"]["last"], 1430)
+        self.assertEqual(row["native_phase_samples"], [{"mode": "device_filtered_count"}] * 2)
+        self.assertTrue(all(call["kwargs"]["count_mode"] == "device_filtered_validated" for call in calls))
+
+    def test_rtdl_non_pip_rejects_device_filtered_mode(self) -> None:
+        with self.assertRaisesRegex(ValueError, "only supported for RTDL PIP"):
+            MODULE.run_rtdl_samples(
+                workload="lsi",
+                dataset="fake.cdb",
+                warmup=0,
+                repeat=1,
+                count_mode="device_filtered_validated",
+            )
 
 
 if __name__ == "__main__":

@@ -206,8 +206,13 @@ def run_rtdl_samples(
     dataset: str,
     warmup: int,
     repeat: int,
+    count_mode: str = "exact",
 ) -> dict[str, Any]:
+    if count_mode != "exact" and workload != "pip":
+        raise ValueError("non-exact count_mode is only supported for RTDL PIP samples")
+
     query_sec: list[float] = []
+    validation_exact_query_sec: list[float] = []
     query_pack_sec: list[float] = []
     prepare_sec: list[float] = []
     static_shape_pack_sec: list[float] = []
@@ -220,6 +225,7 @@ def run_rtdl_samples(
             dataset=dataset,
             result_mode="count",
             include_rows=False,
+            count_mode=count_mode,
         )
 
     for index in range(warmup):
@@ -231,6 +237,8 @@ def run_rtdl_samples(
         phases = dict(payload.get("phases_sec") or {})
         summary = dict(payload.get("summary") or {})
         query_sec.append(float(phases.get("prepared_query_sec", 0.0)))
+        if "validation_exact_query_sec" in phases:
+            validation_exact_query_sec.append(float(phases["validation_exact_query_sec"]))
         query_pack_sec.append(float(phases.get("query_pack_sec", 0.0)))
         prepare_sec.append(float(phases.get("prepare_static_scene_sec", 0.0)))
         static_shape_pack_sec.append(float(phases.get("static_shape_pack_sec", 0.0)))
@@ -239,15 +247,19 @@ def run_rtdl_samples(
         expected_key = "intersection_count" if workload == "lsi" else "positive_assignment_count"
         if expected_key in summary and int(summary[expected_key]) != int(payload.get("row_count", 0)):
             raise RuntimeError(f"{workload}: summary count does not match row_count")
+        if count_mode == "device_filtered_validated" and not summary.get("device_filtered_count_matches_exact"):
+            raise RuntimeError(f"{workload}: device-filtered count was not validated against exact count")
 
     return {
         "system": "rtdl_prepared_optix",
         "workload": workload,
         "route": "prepared_optix",
         "result_mode": "count",
+        "count_mode": count_mode,
         "warmup": int(warmup),
         "repeat": int(repeat),
         "prepared_query_ms": summarize_samples([value * 1000.0 for value in query_sec]),
+        "validation_exact_query_ms": summarize_samples([value * 1000.0 for value in validation_exact_query_sec]),
         "query_pack_ms": summarize_samples([value * 1000.0 for value in query_pack_sec]),
         "prepare_static_scene_ms": summarize_samples([value * 1000.0 for value in prepare_sec]),
         "static_shape_pack_ms": summarize_samples([value * 1000.0 for value in static_shape_pack_sec if value != 0.0]),
@@ -303,6 +315,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--rayjoin-process-repeats", type=int, default=5)
     parser.add_argument("--rtdl-warmup", type=int, default=2)
     parser.add_argument("--rtdl-repeat", type=int, default=7)
+    parser.add_argument(
+        "--rtdl-pip-count-mode",
+        choices=("exact", "device_filtered_validated"),
+        default="exact",
+        help=(
+            "RTDL PIP count mode. device_filtered_validated times the device-filtered count "
+            "only after each sample validates it against the exact prepared count."
+        ),
+    )
     parser.add_argument("--timeout-seconds", type=int, default=int(os.environ.get("STEP_TIMEOUT_SECONDS", "300")))
     args = parser.parse_args(argv)
 
@@ -336,6 +357,7 @@ def main(argv: list[str] | None = None) -> int:
             dataset=args.rtdl_pip_dataset,
             warmup=args.rtdl_warmup,
             repeat=args.rtdl_repeat,
+            count_mode=args.rtdl_pip_count_mode,
         ),
     }
     comparisons = build_comparison_rows(rayjoin_rows, rtdl_rows)
@@ -359,6 +381,10 @@ def main(argv: list[str] | None = None) -> int:
             "scope": "Repeated bounded same-slice query/count timing for RayJoin query_exec RT and RTDL prepared OptiX count.",
             "rayjoin_query_timing_semantics": "RayJoin query_exec reports a query timing after its own warmup/repeat loop; Goal3244 records that reported timing directly and does not divide it by repeat.",
             "pip_count_boundary": "RayJoin query_exec PIP still does not expose positive assignment count in this unpatched upstream binary.",
+            "rtdl_pip_count_mode": (
+                "When set to device_filtered_validated, RTDL validates each PIP sample with exact prepared count "
+                "and reports the device-filtered count timing as the prepared_query_ms lane."
+            ),
         },
         "claim_boundary": CLAIM_BOUNDARY,
     }
