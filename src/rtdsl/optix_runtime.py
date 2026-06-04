@@ -226,6 +226,9 @@ OPTIX_PREPARE_POINT_PROBE_COLUMNS_2D_SYMBOL = (
 OPTIX_CLOSED_SHAPE_MEMBERSHIP_DEVICE_FILTERED_PREPARED_POINTS_COUNT_SYMBOL = (
     "rtdl_optix_count_prepared_point_closed_shape_membership_device_filtered_prepared_points_2d"
 )
+OPTIX_CLOSED_SHAPE_MEMBERSHIP_DEVICE_FILTERED_PREPARED_POINTS_BATCH_COUNT_SYMBOL = (
+    "rtdl_optix_count_prepared_point_closed_shape_membership_device_filtered_prepared_points_batch_2d"
+)
 OPTIX_CLOSED_SHAPE_FIRST_BOUNDARY_CROSSING_SYMBOL = (
     "rtdl_optix_run_prepared_point_closed_shape_first_boundary_crossing_2d"
 )
@@ -6417,6 +6420,8 @@ def _get_last_closed_shape_membership_phase_timings_from_library(lib) -> dict[st
             if mode_value == 7
             else "prepared_points_device_filtered_count"
             if mode_value == 8
+            else "prepared_points_device_filtered_batch_count"
+            if mode_value == 9
             else "none"
         ),
         "point_pack": float(point_pack.value),
@@ -10000,6 +10005,46 @@ class PreparedOptixPointClosedShapeMembership2D:
         )
         _check_status(status, error)
         return int(count.value)
+
+    def count_device_filtered_prepared_points_batch(
+        self,
+        prepared_points: PreparedOptixPointProbeColumns2D,
+        request_count: int,
+    ) -> tuple[int, ...]:
+        """Return repeated device-filtered counts for pre-uploaded point-probe columns."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX closed-shape membership handle is closed")
+        if prepared_points.closed:
+            raise RuntimeError("prepared OptiX point-probe columns handle is closed")
+        request_count = int(request_count)
+        if request_count < 0:
+            raise ValueError("request_count must be non-negative")
+        if request_count == 0:
+            return ()
+        if prepared_points.count == 0 or self._packed_shapes.polygon_count == 0:
+            return tuple(0 for _ in range(request_count))
+        count_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_CLOSED_SHAPE_MEMBERSHIP_DEVICE_FILTERED_PREPARED_POINTS_BATCH_COUNT_SYMBOL,
+        )
+        if count_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_CLOSED_SHAPE_MEMBERSHIP_DEVICE_FILTERED_PREPARED_POINTS_BATCH_COUNT_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        counts = (ctypes.c_size_t * request_count)()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self._handle,
+            prepared_points._handle,
+            ctypes.c_size_t(request_count),
+            counts,
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return tuple(int(counts[index]) for index in range(request_count))
 
     def first_boundary_crossing_raw(self, points) -> OptixRowView:
         """Return generic first boundary-event rows for point/closed-shape probes."""
@@ -18147,6 +18192,22 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_count_prepared_closed_shape_membership_device_filtered_prepared_points.restype = ctypes.c_int
+
+    optional_count_prepared_closed_shape_membership_device_filtered_prepared_points_batch = (
+        _find_optional_backend_symbol(
+            lib,
+            OPTIX_CLOSED_SHAPE_MEMBERSHIP_DEVICE_FILTERED_PREPARED_POINTS_BATCH_COUNT_SYMBOL,
+        )
+    )
+    if optional_count_prepared_closed_shape_membership_device_filtered_prepared_points_batch is not None:
+        optional_count_prepared_closed_shape_membership_device_filtered_prepared_points_batch.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_count_prepared_closed_shape_membership_device_filtered_prepared_points_batch.restype = ctypes.c_int
 
     optional_first_boundary_crossing = _find_optional_backend_symbol(
         lib,
