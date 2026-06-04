@@ -416,8 +416,8 @@ def run_rayjoin_prepared_optix_compact_grouped_count_segments(
     phases: dict[str, float] = {}
     rows: tuple[dict[str, int], ...] = ()
 
-    left_segments = tuple(dict(segment) for segment in left_segments)
-    right_segments = tuple(right_segments)
+    left_segments = tuple(_segment_record_dict(segment) for segment in left_segments)
+    right_segments = tuple(_segment_record_dict(segment) for segment in right_segments)
     original_left_ids = tuple(int(segment["id"]) for segment in left_segments)
     remapped_left_segments = tuple(
         {**segment, "id": index}

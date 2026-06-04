@@ -53,6 +53,16 @@ class Goal3207PackedLeftRayJoinCompactRouteTest(unittest.TestCase):
         self.assertEqual(packed.original_left_ids, (11, 42))
         self.assertEqual(packed.count, 2)
 
+    def test_one_shot_compact_route_uses_same_segment_normalizer(self) -> None:
+        source = APP.read_text(encoding="utf-8")
+        run_start = source.index("def run_rayjoin_prepared_optix_compact_grouped_count_segments(")
+        run_end = source.index("def _segment_record_dict(", run_start)
+        body = source[run_start:run_end]
+
+        self.assertIn("tuple(_segment_record_dict(segment) for segment in left_segments)", body)
+        self.assertIn("tuple(_segment_record_dict(segment) for segment in right_segments)", body)
+        self.assertNotIn("tuple(dict(segment) for segment in left_segments)", body)
+
     def test_readme_documents_repeated_left_query_reuse(self) -> None:
         readme = README.read_text(encoding="utf-8")
 
