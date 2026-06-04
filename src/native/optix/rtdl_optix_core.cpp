@@ -1206,7 +1206,7 @@ static __forceinline__ __device__ bool point_in_polygon(
                 return true;
         } else {
             float cross = (px - ax) * (by - ay) - (py - ay) * (bx - ax);
-            if (fabsf(cross) <= point_eps * sqrtf(len2)) {
+            if (cross * cross <= point_eps * point_eps * len2) {
                 float dot = (px - ax) * (bx - ax) + (py - ay) * (by - ay);
                 if (dot >= -point_eps && dot <= len2 + point_eps)
                     return true;

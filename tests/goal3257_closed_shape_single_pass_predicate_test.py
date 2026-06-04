@@ -20,7 +20,7 @@ class Goal3257ClosedShapeSinglePassPredicateTest(unittest.TestCase):
 
         self.assertIn("const float point_eps = 1.0e-4f;", body)
         self.assertIn("fabsf(px - ax) <= point_eps", body)
-        self.assertIn("fabsf(cross) <= point_eps * sqrtf(len2)", body)
+        self.assertIn("cross * cross <= point_eps * point_eps * len2", body)
         self.assertIn("dot >= -point_eps && dot <= len2 + point_eps", body)
 
     def test_device_predicate_uses_one_edge_loop_for_boundary_and_crossing(self) -> None:
@@ -29,7 +29,7 @@ class Goal3257ClosedShapeSinglePassPredicateTest(unittest.TestCase):
         self.assertEqual(body.count("for (uint32_t i = 0, j = n - 1; i < n; j = i++)"), 1)
         self.assertIn("bool inside = false;", body)
         self.assertIn("inside = !inside;", body)
-        self.assertLess(body.index("fabsf(cross)"), body.index("inside = !inside;"))
+        self.assertLess(body.index("cross * cross"), body.index("inside = !inside;"))
 
 
 if __name__ == "__main__":
