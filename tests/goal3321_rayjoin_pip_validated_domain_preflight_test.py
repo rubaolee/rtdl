@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from types import SimpleNamespace
 import unittest
 from unittest import mock
@@ -7,6 +8,11 @@ from unittest import mock
 from examples.v2_0.research_benchmarks.spatial_rayjoin import (
     rtdl_rayjoin_v2_spatial_join_app as rayjoin_app,
 )
+
+
+ROOT = Path(__file__).resolve().parents[1]
+POD_ARTIFACT = ROOT / "docs" / "reports" / "goal3321_rayjoin_pip_preflight_pod_smoke_2026-06-04.json"
+EXPECTED_POD_COMMIT = "4b72d290b2c3f7fea309e79ad13ce9bbfc5459f1"
 
 
 class _PackedPoints:
@@ -126,22 +132,47 @@ class Goal3321RayJoinPipValidatedDomainPreflightTest(unittest.TestCase):
             self._run_preflight(exact_count=47262, fast_count=47554, require_match=True)
 
     def test_report_documents_boundary(self) -> None:
-        from pathlib import Path
-
-        root = Path(__file__).resolve().parents[1]
         report = (
-            root
+            ROOT
             / "docs"
             / "reports"
             / "goal3321_rayjoin_pip_validated_domain_preflight_2026-06-04.md"
         ).read_text(encoding="utf-8")
         self.assertIn("Goal3321 - RayJoin PIP Validated-Domain Preflight", report)
         self.assertIn("preflight_rayjoin_pip_fast_count_domain", report)
+        self.assertIn("4b72d290b2c3f7fea309e79ad13ce9bbfc5459f1", report)
+        self.assertIn("soil_pass", report)
+        self.assertIn("county_fail", report)
         self.assertIn("fallback is required", report)
         self.assertIn("does not add RayJoin-specific native logic", report)
         self.assertIn("rtdl_beats_rayjoin_claim_authorized`: false", report)
 
+    def test_pod_artifact_records_pass_and_fail_closed_preflight(self) -> None:
+        import json
+
+        data = json.loads(POD_ARTIFACT.read_text(encoding="utf-8"))
+        self.assertEqual(data["schema"], "rtdl.goal3321.rayjoin_pip_preflight_pod_smoke.v1")
+        self.assertEqual(data["goal"], 3321)
+        self.assertEqual(data["rtdl_commit"], EXPECTED_POD_COMMIT)
+        self.assertEqual(data["gpu"], "NVIDIA RTX A5000, 580.126.09")
+
+        rows = {row["label"]: row for row in data["rows"]}
+        self.assertEqual(set(rows), {"soil_pass", "county_fail"})
+        self.assertEqual(rows["soil_pass"]["exact_count"], 1471)
+        self.assertEqual(rows["soil_pass"]["fast_count"], 1471)
+        self.assertTrue(rows["soil_pass"]["matches_exact"])
+        self.assertEqual(rows["soil_pass"]["status"], "validated_fast_route_allowed")
+        self.assertFalse(rows["soil_pass"]["fallback_required"])
+
+        self.assertEqual(rows["county_fail"]["exact_count"], 1417)
+        self.assertEqual(rows["county_fail"]["fast_count"], 1429)
+        self.assertFalse(rows["county_fail"]["matches_exact"])
+        self.assertEqual(rows["county_fail"]["status"], "fast_route_rejected")
+        self.assertTrue(rows["county_fail"]["fallback_required"])
+
+        for authorized in data["claim_boundary"].values():
+            self.assertIs(authorized, False)
+
 
 if __name__ == "__main__":
     unittest.main()
-

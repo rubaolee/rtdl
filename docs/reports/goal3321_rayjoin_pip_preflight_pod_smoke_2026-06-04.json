@@ -1,0 +1,88 @@
+{
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "goal": 3321,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "rows": [
+    {
+      "claim_boundary": {
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false
+      },
+      "count_mode": "device_filtered_prepared_points_validated",
+      "dataset": "/root/rtdl_goal3293/data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+      "device_filtered_boundary_mode": "inclusive",
+      "exact_count": 1471,
+      "fallback_reason": null,
+      "fallback_required": false,
+      "fast_count": 1471,
+      "label": "soil_pass",
+      "matches_exact": true,
+      "native_engine_boundary": "The engine sees generic point/closed-shape count primitives. RayJoin CDB topology policy remains in Python preflight/fallback logic.",
+      "point_count": 512,
+      "point_id_count_device_columns": null,
+      "point_order_mode": "natural",
+      "prepared_point_probe_columns": {
+        "device_resident_after_prepare": true,
+        "dimension": 2,
+        "native_symbol": "rtdl_optix_prepare_point_probe_columns_2d",
+        "point_count": 512,
+        "schema": "rtdl.optix.prepared_point_probe_columns_2d.v1",
+        "true_zero_copy_claim_authorized": false
+      },
+      "query_axis": "z_point",
+      "scalar_count_pipeline": true,
+      "schema": "rtdl.rayjoin.pip_fast_count_domain_preflight.v1",
+      "shape_count": 501,
+      "status": "validated_fast_route_allowed"
+    },
+    {
+      "claim_boundary": {
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false
+      },
+      "count_mode": "device_filtered_prepared_points_validated",
+      "dataset": "/root/rtdl_goal3293/data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+      "device_filtered_boundary_mode": "inclusive",
+      "exact_count": 1417,
+      "fallback_reason": "fast count route did not match exact prepared count",
+      "fallback_required": true,
+      "fast_count": 1429,
+      "label": "county_fail",
+      "matches_exact": false,
+      "native_engine_boundary": "The engine sees generic point/closed-shape count primitives. RayJoin CDB topology policy remains in Python preflight/fallback logic.",
+      "point_count": 512,
+      "point_id_count_device_columns": null,
+      "point_order_mode": "natural",
+      "prepared_point_probe_columns": {
+        "device_resident_after_prepare": true,
+        "dimension": 2,
+        "native_symbol": "rtdl_optix_prepare_point_probe_columns_2d",
+        "point_count": 512,
+        "schema": "rtdl.optix.prepared_point_probe_columns_2d.v1",
+        "true_zero_copy_claim_authorized": false
+      },
+      "query_axis": "z_point",
+      "scalar_count_pipeline": true,
+      "schema": "rtdl.rayjoin.pip_fast_count_domain_preflight.v1",
+      "shape_count": 478,
+      "status": "fast_route_rejected"
+    }
+  ],
+  "rtdl_commit": "4b72d290b2c3f7fea309e79ad13ce9bbfc5459f1",
+  "schema": "rtdl.goal3321.rayjoin_pip_preflight_pod_smoke.v1"
+}

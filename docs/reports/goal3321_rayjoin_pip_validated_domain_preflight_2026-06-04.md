@@ -39,6 +39,26 @@ When `require_match=True`, a mismatch raises:
 validated-domain preflight rejected fast PIP count route
 ```
 
+## Pod Smoke
+
+A clean-from-Git A5000 pod smoke validated the preflight at commit
+`4b72d290b2c3f7fea309e79ad13ce9bbfc5459f1`.
+
+Artifact:
+
+- `docs/reports/goal3321_rayjoin_pip_preflight_pod_smoke_2026-06-04.json`
+
+Rows:
+
+| Label | Dataset | Exact count | Fast count | Status |
+| --- | --- | ---: | ---: | --- |
+| `soil_pass` | `br_soil_start256_count512.cdb` | 1471 | 1471 | `validated_fast_route_allowed` |
+| `county_fail` | `br_county_start256_count512.cdb` | 1417 | 1429 | `fast_route_rejected` |
+
+This confirms the intended behavior: the helper makes the known safe route
+usable and the known unsafe county slice fail closed with structured fallback
+metadata.
+
 ## Boundary
 
 This is Python benchmark-app policy over generic RTDL primitives. It does not add RayJoin-specific native logic and does not expand the engine ABI. The native engine still sees only prepared point / closed-shape count primitives.
@@ -57,4 +77,3 @@ The purpose is to make the Goal3320 boundary operational:
 - `true_zero_copy_claim_authorized`: false
 - `rtdl_beats_rayjoin_claim_authorized`: false
 - `rayjoin_paper_reproduction_claim_authorized`: false
-
