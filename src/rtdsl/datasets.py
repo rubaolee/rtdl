@@ -677,6 +677,47 @@ def chains_to_segments(dataset: CdbDataset, *, limit_chains: int | None = None) 
     return tuple(records)
 
 
+def chains_to_segment_columns(dataset: CdbDataset, *, limit_chains: int | None = None) -> "SegmentColumns2D":
+    """Convert CDB chain edges directly to generic 2-D segment columns."""
+
+    try:
+        import numpy as np
+    except Exception as exc:  # pragma: no cover
+        raise RuntimeError("chains_to_segment_columns requires numpy") from exc
+
+    from .segment_columns import SegmentColumns2D
+
+    chains = dataset.chains if limit_chains is None else dataset.chains[:limit_chains]
+    count = sum(max(0, len(chain.points) - 1) for chain in chains)
+    ids = np.empty(count, dtype=np.int64)
+    x0 = np.empty(count, dtype=np.float64)
+    y0 = np.empty(count, dtype=np.float64)
+    x1 = np.empty(count, dtype=np.float64)
+    y1 = np.empty(count, dtype=np.float64)
+
+    index = 0
+    next_id = 1
+    for chain in chains:
+        for start, end in zip(chain.points, chain.points[1:]):
+            ids[index] = next_id
+            x0[index] = start.x
+            y0[index] = start.y
+            x1[index] = end.x
+            y1[index] = end.y
+            index += 1
+            next_id += 1
+
+    return SegmentColumns2D(
+        ids=ids,
+        x0=x0,
+        y0=y0,
+        x1=x1,
+        y1=y1,
+        count=count,
+        owner=dataset,
+    )
+
+
 def chains_to_polygons(dataset: CdbDataset, *, limit_chains: int | None = None) -> tuple[Polygon, ...]:
     chains = dataset.chains if limit_chains is None else dataset.chains[:limit_chains]
     polygons = []

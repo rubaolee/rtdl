@@ -20,6 +20,7 @@ from rtdsl.baseline_runner import load_representative_case
 from rtdsl.baseline_runner import segments_from_records
 from rtdsl.datasets import chains_to_polygons
 from rtdsl.datasets import chains_to_probe_points
+from rtdsl.datasets import chains_to_segment_columns
 from rtdsl.datasets import chains_to_segments
 from rtdsl.datasets import load_cdb
 
@@ -79,7 +80,12 @@ def _split_dataset_paths(dataset: str) -> tuple[Path, ...]:
     return tuple(_resolve_dataset_path(part.strip()) for part in dataset.split("+") if part.strip())
 
 
-def _load_external_cdb_case(workload: str, dataset: str) -> DatasetCase:
+def _load_external_cdb_case(
+    workload: str,
+    dataset: str,
+    *,
+    segment_column_inputs: bool = False,
+) -> DatasetCase:
     paths = _split_dataset_paths(dataset)
     if workload == "pip":
         if len(paths) == 1:
@@ -105,6 +111,19 @@ def _load_external_cdb_case(workload: str, dataset: str) -> DatasetCase:
             raise ValueError("external LSI dataset must be `left.cdb + right.cdb`")
         left = load_cdb(paths[0])
         right = load_cdb(paths[1])
+        if segment_column_inputs:
+            return DatasetCase(
+                workload="lsi",
+                dataset=dataset,
+                inputs={
+                    "left": chains_to_segment_columns(left),
+                    "right": chains_to_segment_columns(right),
+                },
+                note=(
+                    "External CDB line-segment intersection case using direct generic "
+                    "segment columns from left/right chain edges."
+                ),
+            )
         return DatasetCase(
             workload="lsi",
             dataset=dataset,
@@ -131,14 +150,18 @@ def _load_external_cdb_case(workload: str, dataset: str) -> DatasetCase:
     raise ValueError("workload must be one of: pip, lsi, overlay_seed")
 
 
-def _load_rayjoin_case(workload: str, dataset: str) -> DatasetCase:
+def _load_rayjoin_case(workload: str, dataset: str, *, segment_column_inputs: bool = False) -> DatasetCase:
     baseline_workload = _BASELINE_WORKLOAD[workload]
     try:
         return load_representative_case(baseline_workload, dataset)
     except ValueError:
         paths = _split_dataset_paths(dataset)
         if paths and all(path.exists() for path in paths):
-            return _load_external_cdb_case(workload, dataset)
+            return _load_external_cdb_case(
+                workload,
+                dataset,
+                segment_column_inputs=segment_column_inputs,
+            )
         raise
 
 
@@ -335,7 +358,11 @@ def run_rayjoin_prepared_optix_workload(
         raise ValueError("segment_order_mode is currently only valid for LSI segment-pair workloads")
 
     resolved_dataset = dataset or _DEFAULT_DATASETS[workload]
-    case = _load_rayjoin_case(workload, resolved_dataset)
+    case = _load_rayjoin_case(
+        workload,
+        resolved_dataset,
+        segment_column_inputs=workload == "lsi",
+    )
     phases: dict[str, float] = {}
     rows: tuple[dict[str, object], ...] = ()
     native_phase_timings: dict[str, object] | None = None
@@ -620,13 +647,17 @@ def run_rayjoin_prepared_optix_compact_grouped_count_segments(
     phases: dict[str, float] = {}
     rows: tuple[dict[str, int], ...] = ()
 
-    left_segments = tuple(_segment_record_dict(segment) for segment in left_segments)
-    right_segments = tuple(_segment_record_dict(segment) for segment in right_segments)
-    original_left_ids = tuple(int(segment["id"]) for segment in left_segments)
-    remapped_left_segments = tuple(
-        {**segment, "id": index}
-        for index, segment in enumerate(left_segments)
+    from rtdsl.segment_columns import segment_columns_2d
+    from rtdsl.segment_columns import segment_columns_with_ids
+
+    left_columns = _phase_time(
+        phases,
+        "query_column_prepare_sec",
+        lambda: segment_columns_2d(left_segments),
     )
+    right_segments, right_segment_count = _reusable_segment_input(right_segments)
+    original_left_ids = tuple(int(value) for value in left_columns.ids)
+    remapped_left_segments = segment_columns_with_ids(left_columns, range(left_columns.count))
 
     from rtdsl.optix_runtime import pack_segments
     from rtdsl.optix_runtime import prepare_segment_pair_intersection_optix
@@ -648,7 +679,7 @@ def run_rayjoin_prepared_optix_compact_grouped_count_segments(
         candidate_start = time.perf_counter()
         columns = prepared.candidate_device_columns(
             packed_left,
-            max_rows=len(remapped_left_segments) * len(right_segments),
+            max_rows=remapped_left_segments.count * right_segment_count,
         )
         phases["candidate_device_columns_sec"] = time.perf_counter() - candidate_start
         try:
@@ -656,7 +687,7 @@ def run_rayjoin_prepared_optix_compact_grouped_count_segments(
             candidate_row_count = int(columns.row_count)
             compact_start = time.perf_counter()
             compact = columns.grouped_count_by_left_id_compact_device_columns(
-                group_capacity=max(1, len(remapped_left_segments)),
+                group_capacity=max(1, remapped_left_segments.count),
             )
             phases["compact_grouped_count_sec"] = time.perf_counter() - compact_start
             try:
@@ -737,7 +768,7 @@ class PreparedRayJoinOptixCompactGroupedCountSegments:
         dataset: str = "direct_segments",
         dataset_note: str = "Direct segment inputs supplied by the caller.",
     ) -> None:
-        self._right_segments = tuple(right_segments)
+        self._right_segments, self._right_segment_count = _reusable_segment_input(right_segments)
         self._dataset = dataset
         self._dataset_note = dataset_note
         self._closed = False
@@ -813,7 +844,7 @@ class PreparedRayJoinOptixCompactGroupedCountSegments:
         candidate_start = time.perf_counter()
         columns = self._prepared.candidate_device_columns(
             packed_left.packed_segments,
-            max_rows=packed_left.count * len(self._right_segments),
+            max_rows=packed_left.count * self._right_segment_count,
         )
         phases["candidate_device_columns_sec"] = time.perf_counter() - candidate_start
         try:
@@ -863,7 +894,7 @@ class PreparedRayJoinOptixCompactGroupedCountSegments:
             "compact_grouped_count_columns": compact_metadata,
             "prepared_reuse": {
                 "enabled": True,
-                "right_segment_count": len(self._right_segments),
+                "right_segment_count": self._right_segment_count,
                 "prepare_static_scene_sec": self.prepare_static_scene_sec,
                 "prepare_static_scene_paid_once": True,
             },
@@ -957,7 +988,7 @@ class PreparedRayJoinOptixCompactGroupedCountSegments:
             "dense_left_id_count_columns": dense_metadata,
             "prepared_reuse": {
                 "enabled": True,
-                "right_segment_count": len(self._right_segments),
+                "right_segment_count": self._right_segment_count,
                 "prepare_static_scene_sec": self.prepare_static_scene_sec,
                 "prepare_static_scene_paid_once": True,
             },
@@ -1007,6 +1038,13 @@ def _segment_record_dict(segment) -> dict[str, float | int]:
         "x1": float(getattr(segment, "x1")),
         "y1": float(getattr(segment, "y1")),
     }
+
+
+def _reusable_segment_input(segments):
+    if hasattr(segments, "count") and all(hasattr(segments, field) for field in ("ids", "x0", "y0", "x1", "y1")):
+        return segments, int(segments.count)
+    records = tuple(segments)
+    return records, len(records)
 
 
 class RayJoinOptixCompactGroupedCountPackedLeftSegments:
@@ -1065,7 +1103,11 @@ def run_rayjoin_prepared_optix_compact_grouped_count_workload(
     if workload != "lsi":
         raise ValueError("prepared_optix_compact_grouped_count currently supports only the lsi workload")
     resolved_dataset = dataset or _DEFAULT_DATASETS[workload]
-    case = _load_rayjoin_case(workload, resolved_dataset)
+    case = _load_rayjoin_case(
+        workload,
+        resolved_dataset,
+        segment_column_inputs=workload == "lsi",
+    )
     return run_rayjoin_prepared_optix_compact_grouped_count_segments(
         case.inputs["left"],
         case.inputs["right"],
@@ -1084,7 +1126,11 @@ def run_rayjoin_prepared_optix_left_id_dense_count_workload(
     if workload != "lsi":
         raise ValueError("prepared_optix_left_id_dense_count currently supports only the lsi workload")
     resolved_dataset = dataset or _DEFAULT_DATASETS[workload]
-    case = _load_rayjoin_case(workload, resolved_dataset)
+    case = _load_rayjoin_case(
+        workload,
+        resolved_dataset,
+        segment_column_inputs=workload == "lsi",
+    )
     with prepare_rayjoin_optix_compact_grouped_count_segments(
         case.inputs["right"],
         dataset=resolved_dataset,

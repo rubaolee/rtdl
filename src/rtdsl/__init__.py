@@ -590,6 +590,7 @@ from .datasets import build_arcgis_layer_url
 from .datasets import chains_to_polygons
 from .datasets import chains_to_polygon_refs
 from .datasets import chains_to_probe_points
+from .datasets import chains_to_segment_columns
 from .datasets import chains_to_segments
 from .datasets import CdbChain
 from .datasets import CdbDataset
@@ -2312,6 +2313,7 @@ __all__ = [
     "chains_to_polygons",
     "chains_to_polygon_refs",
     "chains_to_probe_points",
+    "chains_to_segment_columns",
     "chains_to_segments",
     "count_arcgis_loaded_pages",
     "download_rayjoin_sample",
