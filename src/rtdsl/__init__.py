@@ -595,15 +595,18 @@ from .datasets import chains_to_segments
 from .datasets import chains_to_topology_rows
 from .datasets import chains_to_incident_face_candidate_rows
 from .closed_shape_topology import OWNER_FACE_MEMBERSHIP_CONTRACT
+from .closed_shape_topology import OWNER_FACE_PRIORITY_PIPELINE_CONTRACT
 from .closed_shape_topology import count_closed_shape_membership_candidates_by_owner_face
 from .closed_shape_topology import filter_closed_shape_membership_candidates_by_owner_face
 from .closed_shape_topology import owner_face_ids_by_point_from_selection_rows
 from .closed_shape_topology import owner_face_membership_contract
+from .closed_shape_topology import owner_face_priority_pipeline_contract
 from .closed_shape_topology import select_owner_faces_from_incident_candidates_with_priority
 from .closed_shape_topology import select_unique_owner_faces_from_incident_candidates
 from .closed_shape_topology import topology_face_ids
 from .closed_shape_topology import topology_rows_by_shape_id
 from .closed_shape_topology import validate_owner_face_membership_contract
+from .closed_shape_topology import validate_owner_face_priority_pipeline_contract
 from .datasets import CdbChain
 from .datasets import CdbDataset
 from .datasets import CdbPoint
@@ -2335,15 +2338,18 @@ __all__ = [
     "chains_to_topology_rows",
     "chains_to_incident_face_candidate_rows",
     "OWNER_FACE_MEMBERSHIP_CONTRACT",
+    "OWNER_FACE_PRIORITY_PIPELINE_CONTRACT",
     "count_closed_shape_membership_candidates_by_owner_face",
     "filter_closed_shape_membership_candidates_by_owner_face",
     "owner_face_ids_by_point_from_selection_rows",
     "owner_face_membership_contract",
+    "owner_face_priority_pipeline_contract",
     "select_owner_faces_from_incident_candidates_with_priority",
     "select_unique_owner_faces_from_incident_candidates",
     "topology_face_ids",
     "topology_rows_by_shape_id",
     "validate_owner_face_membership_contract",
+    "validate_owner_face_priority_pipeline_contract",
     "count_arcgis_loaded_pages",
     "download_rayjoin_sample",
     "build_postgis_fixed_radius_neighbors_sql",

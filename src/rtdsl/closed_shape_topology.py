@@ -5,6 +5,7 @@ from typing import Any
 
 
 OWNER_FACE_MEMBERSHIP_CONTRACT = "rtdl.closed_shape.owner_face_membership.v1"
+OWNER_FACE_PRIORITY_PIPELINE_CONTRACT = "rtdl.closed_shape.owner_face_priority_pipeline.v1"
 
 
 def _int_set(value: int | Iterable[int]) -> frozenset[int]:
@@ -353,6 +354,58 @@ def owner_face_membership_contract() -> dict[str, object]:
     }
 
 
+def owner_face_priority_pipeline_contract() -> dict[str, object]:
+    """Return the explicit-priority owner-face pipeline contract.
+
+    This is a stricter, compositional contract over the lower-level
+    owner-face helpers. It is intentionally only a Python reference contract:
+    callers may provide deterministic priority columns, but the native engine
+    must not derive application ownership policy by itself.
+    """
+
+    return {
+        "contract": OWNER_FACE_PRIORITY_PIPELINE_CONTRACT,
+        "status": "python_reference_contract_only",
+        "inputs": (
+            "incident_face_candidate_rows(point_id,face_id,incident_face_count)",
+            "priority_rows(point_id,face_id,priority)",
+            "candidate_rows(point_id,shape_id)",
+            "topology_rows(shape_id|chain_id,left_face_id,right_face_id)",
+        ),
+        "pipeline_steps": (
+            "select_owner_faces_from_incident_candidates_with_priority",
+            "owner_face_ids_by_point_from_selection_rows",
+            "filter_closed_shape_membership_candidates_by_owner_face",
+        ),
+        "selection_rule": {
+            "primary": "higher incident_face_count wins",
+            "tie_break": "lower caller_supplied_priority wins",
+            "missing_priority": "fail_closed",
+            "tied_priority": "fail_closed",
+            "native_engine_may_invent_priority": False,
+        },
+        "outputs": ("point_id", "shape_id", "membership", "owner_face_id"),
+        "app_agnostic": True,
+        "caller_policy_required": True,
+        "native_engine_may_infer_app_ownership": False,
+        "native_lowering_status": "blocked_until_contract_stable_and_validated",
+        "promotion_requirements": (
+            "deterministic priority derivation contract or explicit caller priority columns",
+            "same-contract tests against the Python reference",
+            "pod/native evidence before any device-lowered implementation is selected by default",
+            "claim-boundary review before public performance or paper-reproduction wording",
+        ),
+        "claim_boundary": {
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rayjoin_paper_reproduction_claim_authorized": False,
+            "rtdl_beats_rayjoin_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+        },
+    }
+
+
 def validate_owner_face_membership_contract() -> dict[str, object]:
     contract = owner_face_membership_contract()
     if contract["contract"] != OWNER_FACE_MEMBERSHIP_CONTRACT:
@@ -366,4 +419,28 @@ def validate_owner_face_membership_contract() -> dict[str, object]:
     boundary = contract["claim_boundary"]
     if not isinstance(boundary, Mapping) or any(bool(value) for value in boundary.values()):
         raise ValueError("owner-face membership claim boundary must stay blocked")
+    return contract
+
+
+def validate_owner_face_priority_pipeline_contract() -> dict[str, object]:
+    contract = owner_face_priority_pipeline_contract()
+    if contract["contract"] != OWNER_FACE_PRIORITY_PIPELINE_CONTRACT:
+        raise ValueError("owner-face priority pipeline contract id mismatch")
+    if contract["status"] != "python_reference_contract_only":
+        raise ValueError("owner-face priority pipeline must remain Python-reference-only")
+    if contract["app_agnostic"] is not True:
+        raise ValueError("owner-face priority pipeline contract must be app-agnostic")
+    if contract["caller_policy_required"] is not True:
+        raise ValueError("owner-face priority pipeline must require caller policy")
+    if contract["native_engine_may_infer_app_ownership"] is not False:
+        raise ValueError("native engine must not infer app ownership")
+    rule = contract["selection_rule"]
+    if not isinstance(rule, Mapping) or rule.get("native_engine_may_invent_priority") is not False:
+        raise ValueError("native engine must not invent owner-face priority")
+    inputs = contract["inputs"]
+    if not isinstance(inputs, tuple) or not any("priority_rows" in item for item in inputs):
+        raise ValueError("owner-face priority pipeline must require explicit priority rows")
+    boundary = contract["claim_boundary"]
+    if not isinstance(boundary, Mapping) or any(bool(value) for value in boundary.values()):
+        raise ValueError("owner-face priority pipeline claim boundary must stay blocked")
     return contract
