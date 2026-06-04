@@ -1186,7 +1186,8 @@ PRIMITIVE_HIERARCHY = (
                 summary=(
                     "Generic point/closed-shape membership count direction with an executable "
                     "owner-face Python reference contract, fail-closed incident-face selector, "
-                    "explicit-priority tie-break helper, and future native/device lowering."
+                    "explicit-priority tie-break helper, membership-filter pipeline, and "
+                    "future native/device lowering."
                 ),
                 outputs=("membership_count", "owner_face_id", "ownership_status", "topology_policy_metadata"),
                 depends_on=(
@@ -1221,9 +1222,10 @@ PRIMITIVE_HIERARCHY = (
                     "filter closed shape candidates by caller supplied owner face ids",
                     "derive owner face only when incident topology has a unique maximum",
                     "break incident topology ties only with caller supplied face priorities",
+                    "filter closed shape membership candidates after explicit owner face selection",
                     "use deterministic boundary ownership policy for point closed shape counts",
                 ),
-                reference_path="docs/reports/goal3342_priority_owner_face_selector_reference_2026-06-04.md",
+                reference_path="docs/reports/goal3345_priority_owner_face_membership_pipeline_reference_2026-06-04.md",
                 backends=("cpu_python_reference", "planned_optix"),
                 considered_alternatives=(
                     "traversal.count_hits",
