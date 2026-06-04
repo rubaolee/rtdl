@@ -641,6 +641,11 @@ def owner_face_priority_pipeline_contract() -> dict[str, object]:
             "tied_priority": "fail_closed",
             "native_engine_may_invent_priority": False,
         },
+        "filter_policy": {
+            "missing_owner": "fail_closed_by_default",
+            "missing_topology": "drop_candidate",
+            "topology_face_presence_columns": "gate_left_and_right_face_ids_when_present",
+        },
         "outputs": ("point_id", "shape_id", "membership", "owner_face_id"),
         "app_agnostic": True,
         "caller_policy_required": True,
@@ -694,6 +699,13 @@ def validate_owner_face_priority_pipeline_contract() -> dict[str, object]:
     rule = contract["selection_rule"]
     if not isinstance(rule, Mapping) or rule.get("native_engine_may_invent_priority") is not False:
         raise ValueError("native engine must not invent owner-face priority")
+    filter_policy = contract["filter_policy"]
+    if (
+        not isinstance(filter_policy, Mapping)
+        or filter_policy.get("missing_topology") != "drop_candidate"
+        or filter_policy.get("missing_owner") != "fail_closed_by_default"
+    ):
+        raise ValueError("owner-face priority pipeline filter policy must stay explicit")
     inputs = contract["inputs"]
     if not isinstance(inputs, tuple) or not any("priority_rows" in item for item in inputs):
         raise ValueError("owner-face priority pipeline must require explicit priority rows")
