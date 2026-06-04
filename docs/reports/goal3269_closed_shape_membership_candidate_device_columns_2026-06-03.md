@@ -2,7 +2,7 @@
 
 Date: 2026-06-03
 
-Status: implemented locally; pod build/timing evidence still pending.
+Status: implemented with local source gates and pod build/smoke evidence.
 
 ## Purpose
 
@@ -79,16 +79,46 @@ work.
 
 ## Validation
 
-Local validation target:
+Local validation:
 
 ```text
-PYTHONPATH=src;. py -3 -m unittest tests.goal3269_closed_shape_membership_candidate_device_columns_test
+PYTHONPATH=src;. py -3 -m unittest \
+  tests.goal3269_closed_shape_membership_candidate_device_columns_test \
+  tests.goal3266_crossing_only_boundary_mode_probe_test \
+  tests.goal3267_crossing_scale_soa_negative_probe_test
 ```
 
-Pod validation target:
+Result: 12 tests passed locally.
+
+Pod validation:
 
 ```text
 make build-optix OPTIX_PREFIX=/root/vendor/optix-sdk
 PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so \
-  python3 -m unittest tests.goal3269_closed_shape_membership_candidate_device_columns_test
+  python3 -m unittest \
+    tests.goal3269_closed_shape_membership_candidate_device_columns_test \
+    tests.goal3266_crossing_only_boundary_mode_probe_test \
+    tests.goal3267_crossing_scale_soa_negative_probe_test
 ```
+
+Result: OptiX build passed and the same 12-test focused slice passed on the pod.
+
+Live smoke artifact:
+
+- `docs/reports/goal3269_pod_closed_shape_candidate_device_columns_smoke_2026-06-03.json`
+
+Live smoke result:
+
+- GPU: RTX pod recorded in artifact
+- exact device-filtered count: `2`
+- candidate device-column row count: `2`
+- candidate event count: `2`
+- overflow: `false`
+- device resident: `true`
+- field names: `point_id`, `shape_id`
+- typed schema: `point_closed_shape_membership_2d_candidate_device_columns`
+- grouped-count continuation over the returned point-id device column returned:
+  `10 -> 1`, `20 -> 1`
+
+That grouped-count check proves the device column contains caller point IDs, not
+only launch-local row indices.

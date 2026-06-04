@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import unittest
 
@@ -12,6 +13,7 @@ CORE = ROOT / "src" / "native" / "optix" / "rtdl_optix_core.cpp"
 RUNTIME = ROOT / "src" / "rtdsl" / "optix_runtime.py"
 TYPED = ROOT / "src" / "rtdsl" / "v2_8_geometry_relation_typed_stream.py"
 REPORT = ROOT / "docs" / "reports" / "goal3269_closed_shape_membership_candidate_device_columns_2026-06-03.md"
+ARTIFACT = ROOT / "docs" / "reports" / "goal3269_pod_closed_shape_candidate_device_columns_smoke_2026-06-03.json"
 
 
 class Goal3269ClosedShapeMembershipCandidateDeviceColumnsTest(unittest.TestCase):
@@ -78,6 +80,33 @@ class Goal3269ClosedShapeMembershipCandidateDeviceColumnsTest(unittest.TestCase)
             "RayJoin-specific native logic added: false",
         ):
             self.assertIn(phrase, report)
+
+    def test_pod_artifact_records_live_candidate_column_smoke(self) -> None:
+        data = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(data["goal"], 3269)
+        self.assertEqual(data["build"]["status"], "passed")
+        self.assertEqual(data["focused_unittest_slice"]["status"], "passed")
+        smoke = data["live_smoke"]
+        self.assertEqual(smoke["status"], "ok")
+        self.assertEqual(smoke["exact_device_filtered_count"], 2)
+        self.assertEqual(smoke["candidate_row_count"], 2)
+        self.assertEqual(smoke["candidate_event_count"], 2)
+        self.assertFalse(smoke["overflow"])
+        self.assertTrue(smoke["device_resident"])
+        self.assertEqual(smoke["field_names"], ["point_id", "shape_id"])
+        self.assertEqual(smoke["metadata_schema"], "point_closed_shape_membership_2d_candidate_device_columns")
+        self.assertEqual(
+            smoke["metadata_output_residency"],
+            "device_resident_candidate_id_columns",
+        )
+        self.assertEqual(
+            smoke["grouped_count_by_point_id"],
+            [{"count": 1, "left_id": 10}, {"count": 1, "left_id": 20}],
+        )
+        self.assertFalse(data["claim_boundary"]["release_authorized"])
+        self.assertFalse(data["claim_boundary"]["true_zero_copy_claim_authorized"])
+        self.assertFalse(data["claim_boundary"]["rayjoin_specific_native_logic_added"])
 
 
 if __name__ == "__main__":
