@@ -922,6 +922,61 @@ def filter_closed_shape_membership_candidate_columns_by_owner_face_cupy(
     }
 
 
+def run_closed_shape_owner_face_priority_membership_pipeline_cupy(
+    incident_point_ids,
+    incident_face_ids,
+    incident_face_counts,
+    priority_point_ids,
+    priority_face_ids,
+    priorities,
+    candidate_point_ids,
+    candidate_shape_ids,
+    topology_shape_ids,
+    topology_left_face_ids,
+    topology_right_face_ids,
+    *,
+    topology_has_left_faces=None,
+    topology_has_right_faces=None,
+    ambiguity_policy: str = "raise",
+    missing_owner_policy: str = "raise",
+) -> dict[str, object]:
+    """Compose CuPy owner-face selection and membership filtering on columns."""
+
+    selected = select_owner_faces_from_incident_candidate_columns_with_priority_cupy(
+        incident_point_ids=incident_point_ids,
+        incident_face_ids=incident_face_ids,
+        incident_face_counts=incident_face_counts,
+        priority_point_ids=priority_point_ids,
+        priority_face_ids=priority_face_ids,
+        priorities=priorities,
+        ambiguity_policy=ambiguity_policy,
+    )
+    filtered = filter_closed_shape_membership_candidate_columns_by_owner_face_cupy(
+        candidate_point_ids=candidate_point_ids,
+        candidate_shape_ids=candidate_shape_ids,
+        topology_shape_ids=topology_shape_ids,
+        topology_left_face_ids=topology_left_face_ids,
+        topology_right_face_ids=topology_right_face_ids,
+        topology_has_left_faces=topology_has_left_faces,
+        topology_has_right_faces=topology_has_right_faces,
+        owner_point_ids=selected["point_id"],
+        owner_face_ids=selected["owner_face_id"],
+        missing_owner_policy=missing_owner_policy,
+    )
+    return {
+        "point_id": filtered["point_id"],
+        "shape_id": filtered["shape_id"],
+        "membership": filtered["membership"],
+        "owner_face_id": filtered["owner_face_id"],
+        "selection_point_id": selected["point_id"],
+        "selection_owner_face_id": selected["owner_face_id"],
+        "selection_incident_face_count": selected["incident_face_count"],
+        "selection_candidate_count": selected["candidate_count"],
+        "selection_status_code": selected["selection_status_code"],
+        "selection_status_code_labels": selected["selection_status_code_labels"],
+    }
+
+
 def owner_face_ids_by_point_from_selection_rows(
     selection_rows: Iterable[Mapping[str, Any]],
     *,
@@ -1010,6 +1065,7 @@ def owner_face_priority_pipeline_contract() -> dict[str, object]:
             "select_owner_faces_from_incident_candidate_columns_with_priority_cupy",
             "filter_closed_shape_membership_candidate_columns_by_owner_face_columns",
             "filter_closed_shape_membership_candidate_columns_by_owner_face_cupy",
+            "run_closed_shape_owner_face_priority_membership_pipeline_cupy",
         ),
         "selection_rule": {
             "primary": "higher incident_face_count wins",
@@ -1113,6 +1169,8 @@ def validate_owner_face_priority_pipeline_contract() -> dict[str, object]:
         or "filter_closed_shape_membership_candidate_columns_by_owner_face_columns"
         not in columnar_helpers
         or "filter_closed_shape_membership_candidate_columns_by_owner_face_cupy"
+        not in columnar_helpers
+        or "run_closed_shape_owner_face_priority_membership_pipeline_cupy"
         not in columnar_helpers
     ):
         raise ValueError("owner-face priority pipeline must expose columnar selection helpers")
