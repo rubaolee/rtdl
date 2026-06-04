@@ -1306,6 +1306,10 @@ extern "C" __global__ void __intersection__pip_isect() {
                 return;
             }
         }
+        if (params.output == nullptr && params.output_capacity == 0u) {
+            optixSetPayload_2(optixGetPayload_2() + 1u);
+            return;
+        }
         // In positive-hit mode, OptiX is only a conservative candidate
         // generator. Final inclusive truth is decided on the host. The default
         // reports every AABB candidate; the opt-in device prefilter only
