@@ -1,0 +1,145 @@
+{
+  "boundary_mode": "inclusive",
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "goal": 3322,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "query_axis": "z_point",
+  "rows": [
+    {
+      "dataset": "/root/rtdl_goal3293/data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+      "delta_total": 12,
+      "exact_total": 1417,
+      "fast_total": 1429,
+      "label": "county_fail",
+      "mismatch_point_count": 7,
+      "mismatch_sample": [
+        {
+          "delta": 1,
+          "exact": 2,
+          "fast": 3,
+          "point_id": 522,
+          "x": -53.001066428,
+          "y": -2.6712524436
+        },
+        {
+          "delta": 1,
+          "exact": 2,
+          "fast": 3,
+          "point_id": 523,
+          "x": -53.001066428,
+          "y": -2.6712524436
+        },
+        {
+          "delta": 2,
+          "exact": 2,
+          "fast": 4,
+          "point_id": 538,
+          "x": -48.999986134,
+          "y": -4.832694058
+        },
+        {
+          "delta": 2,
+          "exact": 2,
+          "fast": 4,
+          "point_id": 539,
+          "x": -48.999986134,
+          "y": -4.832694058
+        },
+        {
+          "delta": 2,
+          "exact": 2,
+          "fast": 4,
+          "point_id": 540,
+          "x": -49.000030006,
+          "y": -4.8326123986
+        },
+        {
+          "delta": 2,
+          "exact": 2,
+          "fast": 4,
+          "point_id": 564,
+          "x": -47.638011567,
+          "y": -1.3744132563
+        },
+        {
+          "delta": 2,
+          "exact": 2,
+          "fast": 4,
+          "point_id": 565,
+          "x": -47.638011567,
+          "y": -1.3744132563
+        }
+      ],
+      "negative_delta_count": 0,
+      "point_count": 512,
+      "point_id_count_metadata": {
+        "count_column_materialized_on_host": false,
+        "counts_device_ptr_nonzero": true,
+        "device_ordinal": 0,
+        "device_resident": true,
+        "group_capacity": 769,
+        "group_capacity_semantics": "direct-address key capacity",
+        "group_key_column_materialized_on_host": false,
+        "group_key_semantics": "dense output uses direct-address array index as the implicit group key",
+        "native_symbol": "rtdl_optix_prepared_point_closed_shape_membership_point_id_count_device_columns_2d",
+        "output_residency": "device_resident_dense_grouped_count_column",
+        "overflow": false,
+        "owner_handle": 106687392,
+        "producer": "device_column_grouped_count_i64",
+        "public_speedup_claim_authorized": false,
+        "reduction_seconds": 0.000234915,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "schema": "device_grouped_count_i64_dense_columns",
+        "source_row_count": 1429,
+        "true_zero_copy_authorized": false
+      },
+      "positive_delta_count": 7,
+      "shape_count": 478
+    },
+    {
+      "dataset": "/root/rtdl_goal3293/data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+      "delta_total": 0,
+      "exact_total": 1471,
+      "fast_total": 1471,
+      "label": "soil_pass",
+      "mismatch_point_count": 0,
+      "mismatch_sample": [],
+      "negative_delta_count": 0,
+      "point_count": 512,
+      "point_id_count_metadata": {
+        "count_column_materialized_on_host": false,
+        "counts_device_ptr_nonzero": true,
+        "device_ordinal": 0,
+        "device_resident": true,
+        "group_capacity": 769,
+        "group_capacity_semantics": "direct-address key capacity",
+        "group_key_column_materialized_on_host": false,
+        "group_key_semantics": "dense output uses direct-address array index as the implicit group key",
+        "native_symbol": "rtdl_optix_prepared_point_closed_shape_membership_point_id_count_device_columns_2d",
+        "output_residency": "device_resident_dense_grouped_count_column",
+        "overflow": false,
+        "owner_handle": 114763200,
+        "producer": "device_column_grouped_count_i64",
+        "public_speedup_claim_authorized": false,
+        "reduction_seconds": 9.1757e-05,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "schema": "device_grouped_count_i64_dense_columns",
+        "source_row_count": 1471,
+        "true_zero_copy_authorized": false
+      },
+      "positive_delta_count": 0,
+      "shape_count": 501
+    }
+  ],
+  "rtdl_commit": "568d95227cf6c83638ecdc4a86d2500d1d75d29f",
+  "schema": "rtdl.goal3322.rayjoin_pip_per_point_mismatch_diagnosis.v1"
+}
