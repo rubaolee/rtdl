@@ -1,4 +1,4 @@
-[goal3232] repeat pip_county512/prepared_rows 1/1 sec=0.958573 rows=1430 symdiff=0
-[goal3232] repeat overlay_county128_soil128/prepared_rows 1/1 sec=0.362727 rows=14036 symdiff=0
-[goal3232] repeat overlay_county256_soil256/prepared_rows 1/1 sec=0.139688 rows=56876 symdiff=0
+[goal3232] repeat pip_county512/prepared_rows 1/1 sec=1.065103 rows=1430 symdiff=0
+[goal3232] repeat overlay_county128_soil128/prepared_rows 1/1 sec=0.383655 rows=14036 symdiff=0
+[goal3232] repeat overlay_county256_soil256/prepared_rows 1/1 sec=0.119168 rows=56876 symdiff=0
 [goal3232] wrote docs/reports/goal3232_rayjoin_public_row_continuation_probe_2026-06-03.json

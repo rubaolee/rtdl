@@ -30,7 +30,7 @@ class Goal3232RayJoinPublicRowContinuationProbeArtifactTest(unittest.TestCase):
 
         self.assertEqual(data["goal"], 3232)
         self.assertEqual(data["schema"], "rtdl.goal3232.rayjoin_public_row_continuation_probe.v1")
-        self.assertEqual(data["commit"], "0a996ab6132ffd36a2fab637ef8ff1ef5f16cb6a")
+        self.assertEqual(data["commit"], "d19a8175d9e8c211aee2d1395dd5fa8b1ebb5223")
         self.assertEqual(data["status"], "pass")
         self.assertEqual(data["hardware"]["nvidia_smi"], "NVIDIA A40, 570.211.01")
         self.assertIn("CUDA Version", data["hardware"]["cuda_driver_query"])
@@ -54,8 +54,11 @@ class Goal3232RayJoinPublicRowContinuationProbeArtifactTest(unittest.TestCase):
                 self.assertEqual(measurement["row_count"], row_count)
                 self.assertEqual(measurement["symmetric_difference_count"], 0)
                 self.assertTrue(measurement["row_set_matches_cpu"])
+                self.assertIn("unattributed_prepared_total_minus_named_phases_sec", measurement)
                 self.assertTrue(row["all_repeats_match_cpu_rows"])
                 self.assertEqual(row["cpu_active_overlay_rows"], active_count)
+                self.assertNotIn("positive_assignments", row["cpu_summary"])
+                self.assertNotIn("active_seed_pairs", row["cpu_summary"])
 
     def test_artifact_preserves_canonical_false_claim_boundaries(self) -> None:
         data = json.loads(ARTIFACT.read_text(encoding="utf-8"))
@@ -74,6 +77,8 @@ class Goal3232RayJoinPublicRowContinuationProbeArtifactTest(unittest.TestCase):
             "symmetric difference `0`",
             "56,876 row-continuation records",
             "not a public speedup claim",
+            "membership",
+            "unattributed_prepared_total_minus_named_phases_sec",
             "does not authorize release",
             "true zero-copy claims",
             "RayJoin paper-reproduction claims",

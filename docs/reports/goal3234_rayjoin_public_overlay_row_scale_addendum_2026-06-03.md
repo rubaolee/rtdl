@@ -22,7 +22,7 @@ against the CPU Python reference.
 
 Pod metadata:
 
-- Commit: `a6b040417875bef9f526e548959ab9b515d128de`
+- Commit: `d19a8175d9e8c211aee2d1395dd5fa8b1ebb5223`
 - GPU: `NVIDIA A40, 570.211.01`
 - CUDA driver query: present
 - nvcc version: present
@@ -32,8 +32,8 @@ Pod metadata:
 
 | Case | CPU Rows | Prepared OptiX Rows | Active Rows | Symmetric Difference | Prepared Total (s) | Prepared Query (s) | CPU Reference (s) |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `overlay_county384_soil384` | 130320 | 130320 | 96 | 0 | 0.923723483458161 | 0.048036515712738 | 47.7308861520141 |
-| `overlay_county512_soil512` | 233766 | 233766 | 121 | 0 | 0.385483676567674 | 0.084552900865674 | 79.9776256717741 |
+| `overlay_county384_soil384` | 130320 | 130320 | 96 | 0 | 1.15412608534098 | 0.0602301973849535 | 48.7230903431773 |
+| `overlay_county512_soil512` | 233766 | 233766 | 121 | 0 | 0.391926834359765 | 0.0845745280385017 | 81.1785001568496 |
 
 ## Interpretation
 
@@ -46,6 +46,9 @@ The prepared query phases remain small (`0.048 s` and `0.085 s`), while the
 full totals include cold preparation, host-side row materialization, and
 row-set validation. The CPU reference times are reported to show validation
 cost and scale, not to authorize a public speedup claim.
+The artifact also records the unattributed materialization/host overhead per
+measurement and uses compact CPU summaries instead of embedding full active
+seed row lists.
 
 The app-level semantics stay outside the native engine. The engine sees generic
 shape-pair relation rows; the RayJoin interpretation of active overlay seeds

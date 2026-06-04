@@ -30,7 +30,7 @@ class Goal3234RayJoinPublicOverlayRowScaleAddendumTest(unittest.TestCase):
 
         self.assertEqual(data["goal"], 3234)
         self.assertEqual(data["schema"], "rtdl.goal3234.rayjoin_public_overlay_row_scale_addendum.v1")
-        self.assertEqual(data["commit"], "a6b040417875bef9f526e548959ab9b515d128de")
+        self.assertEqual(data["commit"], "d19a8175d9e8c211aee2d1395dd5fa8b1ebb5223")
         self.assertEqual(data["status"], "pass")
         self.assertEqual(data["hardware"]["nvidia_smi"], "NVIDIA A40, 570.211.01")
         self.assertEqual(data["hardware"]["rtdl_optix_library"], "/root/rtdl_goal3151/build/librtdl_optix.so")
@@ -51,7 +51,9 @@ class Goal3234RayJoinPublicOverlayRowScaleAddendumTest(unittest.TestCase):
                 self.assertEqual(measurement["row_count"], row_count)
                 self.assertEqual(measurement["symmetric_difference_count"], 0)
                 self.assertTrue(measurement["row_set_matches_cpu"])
+                self.assertIn("unattributed_prepared_total_minus_named_phases_sec", measurement)
                 self.assertTrue(row["all_repeats_match_cpu_rows"])
+                self.assertNotIn("active_seed_pairs", row["cpu_summary"])
 
     def test_scale_artifact_preserves_claim_boundaries(self) -> None:
         data = json.loads(ARTIFACT.read_text(encoding="utf-8"))
@@ -72,6 +74,7 @@ class Goal3234RayJoinPublicOverlayRowScaleAddendumTest(unittest.TestCase):
             "symmetric difference",
             "does not authorize release",
             "not to authorize a public speedup claim",
+            "unattributed materialization/host overhead",
             "device-resident row-stream continuation remain future work",
         ):
             self.assertIn(phrase, report)
