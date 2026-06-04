@@ -607,6 +607,7 @@ from .closed_shape_topology import owner_face_ids_by_point_from_selection_rows
 from .closed_shape_topology import owner_face_membership_contract
 from .closed_shape_topology import owner_face_priority_pipeline_contract
 from .closed_shape_topology import run_closed_shape_owner_face_priority_membership_pipeline_cupy
+from .closed_shape_topology import run_selective_closed_shape_owner_face_priority_membership_pipeline_cupy
 from .closed_shape_topology import select_owner_faces_from_incident_candidate_columns_with_priority_columns
 from .closed_shape_topology import select_owner_faces_from_incident_candidate_columns_with_priority_cupy
 from .closed_shape_topology import select_owner_faces_from_incident_candidates_with_priority
@@ -2358,6 +2359,7 @@ __all__ = [
     "owner_face_membership_contract",
     "owner_face_priority_pipeline_contract",
     "run_closed_shape_owner_face_priority_membership_pipeline_cupy",
+    "run_selective_closed_shape_owner_face_priority_membership_pipeline_cupy",
     "select_owner_faces_from_incident_candidate_columns_with_priority_columns",
     "select_owner_faces_from_incident_candidate_columns_with_priority_cupy",
     "select_owner_faces_from_incident_candidates_with_priority",

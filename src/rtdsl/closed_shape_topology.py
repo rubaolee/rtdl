@@ -978,6 +978,120 @@ def run_closed_shape_owner_face_priority_membership_pipeline_cupy(
     }
 
 
+def run_selective_closed_shape_owner_face_priority_membership_pipeline_cupy(
+    incident_point_ids,
+    incident_face_ids,
+    incident_face_counts,
+    priority_point_ids,
+    priority_face_ids,
+    priorities,
+    candidate_point_ids,
+    candidate_shape_ids,
+    topology_shape_ids,
+    topology_left_face_ids,
+    topology_right_face_ids,
+    *,
+    selected_point_ids,
+    topology_has_left_faces=None,
+    topology_has_right_faces=None,
+    ambiguity_policy: str = "raise",
+    missing_owner_policy: str = "raise",
+) -> dict[str, object]:
+    """Filter only caller-selected ambiguous point candidates, pass others through.
+
+    The caller supplies ``selected_point_ids`` as the explicit ambiguity set.
+    RTDL does not infer which points need owner-face reconciliation.
+    """
+
+    try:
+        import cupy as cp  # type: ignore
+    except Exception as exc:  # pragma: no cover
+        raise RuntimeError("CuPy is required for owner-face selective pipeline continuation") from exc
+
+    candidate_point_ids = cp.asarray(candidate_point_ids, dtype=cp.int64)
+    candidate_shape_ids = cp.asarray(candidate_shape_ids, dtype=cp.int64)
+    selected_point_ids = cp.asarray(selected_point_ids, dtype=cp.int64)
+    if int(candidate_point_ids.size) != int(candidate_shape_ids.size):
+        raise ValueError("candidate point and shape columns must have the same length")
+
+    candidate_count = int(candidate_point_ids.size)
+    selected_mask = cp.isin(candidate_point_ids, selected_point_ids) if selected_point_ids.size else cp.zeros(
+        candidate_count,
+        dtype=cp.bool_,
+    )
+    passthrough_mask = ~selected_mask
+    passthrough_point_ids = candidate_point_ids[passthrough_mask]
+    passthrough_shape_ids = candidate_shape_ids[passthrough_mask]
+    passthrough_count = int(passthrough_point_ids.size)
+    passthrough_membership = cp.ones((passthrough_count,), dtype=cp.int64)
+    passthrough_owner_face_ids = cp.full((passthrough_count,), -1, dtype=cp.int64)
+
+    selected_candidate_count = int(cp.count_nonzero(selected_mask).item())
+    if selected_candidate_count:
+        selected_result = run_closed_shape_owner_face_priority_membership_pipeline_cupy(
+            incident_point_ids=incident_point_ids,
+            incident_face_ids=incident_face_ids,
+            incident_face_counts=incident_face_counts,
+            priority_point_ids=priority_point_ids,
+            priority_face_ids=priority_face_ids,
+            priorities=priorities,
+            candidate_point_ids=candidate_point_ids[selected_mask],
+            candidate_shape_ids=candidate_shape_ids[selected_mask],
+            topology_shape_ids=topology_shape_ids,
+            topology_left_face_ids=topology_left_face_ids,
+            topology_right_face_ids=topology_right_face_ids,
+            topology_has_left_faces=topology_has_left_faces,
+            topology_has_right_faces=topology_has_right_faces,
+            ambiguity_policy=ambiguity_policy,
+            missing_owner_policy=missing_owner_policy,
+        )
+        selected_point_out = selected_result["point_id"]
+        selected_shape_out = selected_result["shape_id"]
+        selected_membership = selected_result["membership"]
+        selected_owner_face_ids = selected_result["owner_face_id"]
+    else:
+        empty = cp.asarray((), dtype=cp.int64)
+        selected_result = {
+            "selection_point_id": empty,
+            "selection_owner_face_id": empty,
+            "selection_incident_face_count": empty,
+            "selection_candidate_count": empty,
+            "selection_status_code": empty,
+            "selection_status_code_labels": OWNER_FACE_SELECTION_STATUS_CODES,
+        }
+        selected_point_out = empty
+        selected_shape_out = empty
+        selected_membership = empty
+        selected_owner_face_ids = empty
+
+    point_out = cp.concatenate((passthrough_point_ids, selected_point_out))
+    shape_out = cp.concatenate((passthrough_shape_ids, selected_shape_out))
+    membership_out = cp.concatenate((passthrough_membership, selected_membership))
+    owner_face_out = cp.concatenate((passthrough_owner_face_ids, selected_owner_face_ids))
+    if int(point_out.size) > 1:
+        order = cp.lexsort(cp.stack((shape_out, point_out)))
+        point_out = point_out[order]
+        shape_out = shape_out[order]
+        membership_out = membership_out[order]
+        owner_face_out = owner_face_out[order]
+
+    return {
+        "point_id": point_out,
+        "shape_id": shape_out,
+        "membership": membership_out,
+        "owner_face_id": owner_face_out,
+        "selection_point_id": selected_result["selection_point_id"],
+        "selection_owner_face_id": selected_result["selection_owner_face_id"],
+        "selection_incident_face_count": selected_result["selection_incident_face_count"],
+        "selection_candidate_count": selected_result["selection_candidate_count"],
+        "selection_status_code": selected_result["selection_status_code"],
+        "selection_status_code_labels": selected_result["selection_status_code_labels"],
+        "selected_candidate_row_count": selected_candidate_count,
+        "passthrough_candidate_row_count": passthrough_count,
+        "selected_point_filter_mode": "caller_supplied_ambiguity_set",
+    }
+
+
 def owner_face_ids_by_point_from_selection_rows(
     selection_rows: Iterable[Mapping[str, Any]],
     *,
@@ -1067,6 +1181,7 @@ def owner_face_priority_pipeline_contract() -> dict[str, object]:
             "filter_closed_shape_membership_candidate_columns_by_owner_face_columns",
             "filter_closed_shape_membership_candidate_columns_by_owner_face_cupy",
             "run_closed_shape_owner_face_priority_membership_pipeline_cupy",
+            "run_selective_closed_shape_owner_face_priority_membership_pipeline_cupy",
         ),
         "selection_rule": {
             "primary": "higher incident_face_count wins",
@@ -1179,6 +1294,8 @@ def validate_owner_face_priority_pipeline_contract() -> dict[str, object]:
         or "filter_closed_shape_membership_candidate_columns_by_owner_face_cupy"
         not in columnar_helpers
         or "run_closed_shape_owner_face_priority_membership_pipeline_cupy"
+        not in columnar_helpers
+        or "run_selective_closed_shape_owner_face_priority_membership_pipeline_cupy"
         not in columnar_helpers
     ):
         raise ValueError("owner-face priority pipeline must expose columnar selection helpers")
