@@ -1,0 +1,622 @@
+{
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "commit": "83d1c8c5",
+  "dataset": "data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+  "goal": 3335,
+  "interpretation_boundary": "Probe-only local topology evidence for deriving caller-supplied owner-face columns. It does not authorize engine-side app inference.",
+  "owner_face_present_in_all_vertex_incident_faces": 7,
+  "owner_face_present_in_endpoint_incident_faces": 7,
+  "point_count": 7,
+  "rows": [
+    {
+      "all_vertex_face_frequency": [
+        {
+          "count": 2,
+          "face_id": 221
+        },
+        {
+          "count": 2,
+          "face_id": 247
+        },
+        {
+          "count": 2,
+          "face_id": 248
+        }
+      ],
+      "all_vertex_incident_chain_count": 3,
+      "all_vertex_incident_chains": [
+        {
+          "chain_id": 519,
+          "left_face_id": 221,
+          "point_count": 2,
+          "right_face_id": 247,
+          "vertex_index": 1
+        },
+        {
+          "chain_id": 522,
+          "left_face_id": 248,
+          "point_count": 66,
+          "right_face_id": 247,
+          "vertex_index": 0
+        },
+        {
+          "chain_id": 523,
+          "left_face_id": 221,
+          "point_count": 68,
+          "right_face_id": 248,
+          "vertex_index": 0
+        }
+      ],
+      "endpoint_face_frequency": [
+        {
+          "count": 2,
+          "face_id": 221
+        },
+        {
+          "count": 2,
+          "face_id": 247
+        },
+        {
+          "count": 2,
+          "face_id": 248
+        }
+      ],
+      "endpoint_incident_chain_count": 3,
+      "endpoint_incident_chains": [
+        {
+          "chain_id": 519,
+          "left_face_id": 221,
+          "point_count": 2,
+          "right_face_id": 247,
+          "vertex_index": 1
+        },
+        {
+          "chain_id": 522,
+          "left_face_id": 248,
+          "point_count": 66,
+          "right_face_id": 247,
+          "vertex_index": 0
+        },
+        {
+          "chain_id": 523,
+          "left_face_id": 221,
+          "point_count": 68,
+          "right_face_id": 248,
+          "vertex_index": 0
+        }
+      ],
+      "owner_face_all_vertex_frequency": 2,
+      "owner_face_endpoint_frequency": 2,
+      "owner_face_used_in_goal3330": 248,
+      "point_id": 522,
+      "probe_coordinate": [
+        -53.001066428,
+        -2.6712524436
+      ]
+    },
+    {
+      "all_vertex_face_frequency": [
+        {
+          "count": 2,
+          "face_id": 221
+        },
+        {
+          "count": 2,
+          "face_id": 247
+        },
+        {
+          "count": 2,
+          "face_id": 248
+        }
+      ],
+      "all_vertex_incident_chain_count": 3,
+      "all_vertex_incident_chains": [
+        {
+          "chain_id": 519,
+          "left_face_id": 221,
+          "point_count": 2,
+          "right_face_id": 247,
+          "vertex_index": 1
+        },
+        {
+          "chain_id": 522,
+          "left_face_id": 248,
+          "point_count": 66,
+          "right_face_id": 247,
+          "vertex_index": 0
+        },
+        {
+          "chain_id": 523,
+          "left_face_id": 221,
+          "point_count": 68,
+          "right_face_id": 248,
+          "vertex_index": 0
+        }
+      ],
+      "endpoint_face_frequency": [
+        {
+          "count": 2,
+          "face_id": 221
+        },
+        {
+          "count": 2,
+          "face_id": 247
+        },
+        {
+          "count": 2,
+          "face_id": 248
+        }
+      ],
+      "endpoint_incident_chain_count": 3,
+      "endpoint_incident_chains": [
+        {
+          "chain_id": 519,
+          "left_face_id": 221,
+          "point_count": 2,
+          "right_face_id": 247,
+          "vertex_index": 1
+        },
+        {
+          "chain_id": 522,
+          "left_face_id": 248,
+          "point_count": 66,
+          "right_face_id": 247,
+          "vertex_index": 0
+        },
+        {
+          "chain_id": 523,
+          "left_face_id": 221,
+          "point_count": 68,
+          "right_face_id": 248,
+          "vertex_index": 0
+        }
+      ],
+      "owner_face_all_vertex_frequency": 2,
+      "owner_face_endpoint_frequency": 2,
+      "owner_face_used_in_goal3330": 248,
+      "point_id": 523,
+      "probe_coordinate": [
+        -53.001066428,
+        -2.6712524436
+      ]
+    },
+    {
+      "all_vertex_face_frequency": [
+        {
+          "count": 2,
+          "face_id": 217
+        },
+        {
+          "count": 2,
+          "face_id": 228
+        },
+        {
+          "count": 2,
+          "face_id": 253
+        }
+      ],
+      "all_vertex_incident_chain_count": 3,
+      "all_vertex_incident_chains": [
+        {
+          "chain_id": 535,
+          "left_face_id": 217,
+          "point_count": 3,
+          "right_face_id": 253,
+          "vertex_index": 2
+        },
+        {
+          "chain_id": 538,
+          "left_face_id": 228,
+          "point_count": 2,
+          "right_face_id": 253,
+          "vertex_index": 0
+        },
+        {
+          "chain_id": 539,
+          "left_face_id": 217,
+          "point_count": 48,
+          "right_face_id": 228,
+          "vertex_index": 0
+        }
+      ],
+      "endpoint_face_frequency": [
+        {
+          "count": 2,
+          "face_id": 217
+        },
+        {
+          "count": 2,
+          "face_id": 228
+        },
+        {
+          "count": 2,
+          "face_id": 253
+        }
+      ],
+      "endpoint_incident_chain_count": 3,
+      "endpoint_incident_chains": [
+        {
+          "chain_id": 535,
+          "left_face_id": 217,
+          "point_count": 3,
+          "right_face_id": 253,
+          "vertex_index": 2
+        },
+        {
+          "chain_id": 538,
+          "left_face_id": 228,
+          "point_count": 2,
+          "right_face_id": 253,
+          "vertex_index": 0
+        },
+        {
+          "chain_id": 539,
+          "left_face_id": 217,
+          "point_count": 48,
+          "right_face_id": 228,
+          "vertex_index": 0
+        }
+      ],
+      "owner_face_all_vertex_frequency": 2,
+      "owner_face_endpoint_frequency": 2,
+      "owner_face_used_in_goal3330": 217,
+      "point_id": 538,
+      "probe_coordinate": [
+        -48.999986134,
+        -4.832694058
+      ]
+    },
+    {
+      "all_vertex_face_frequency": [
+        {
+          "count": 2,
+          "face_id": 217
+        },
+        {
+          "count": 2,
+          "face_id": 228
+        },
+        {
+          "count": 2,
+          "face_id": 253
+        }
+      ],
+      "all_vertex_incident_chain_count": 3,
+      "all_vertex_incident_chains": [
+        {
+          "chain_id": 535,
+          "left_face_id": 217,
+          "point_count": 3,
+          "right_face_id": 253,
+          "vertex_index": 2
+        },
+        {
+          "chain_id": 538,
+          "left_face_id": 228,
+          "point_count": 2,
+          "right_face_id": 253,
+          "vertex_index": 0
+        },
+        {
+          "chain_id": 539,
+          "left_face_id": 217,
+          "point_count": 48,
+          "right_face_id": 228,
+          "vertex_index": 0
+        }
+      ],
+      "endpoint_face_frequency": [
+        {
+          "count": 2,
+          "face_id": 217
+        },
+        {
+          "count": 2,
+          "face_id": 228
+        },
+        {
+          "count": 2,
+          "face_id": 253
+        }
+      ],
+      "endpoint_incident_chain_count": 3,
+      "endpoint_incident_chains": [
+        {
+          "chain_id": 535,
+          "left_face_id": 217,
+          "point_count": 3,
+          "right_face_id": 253,
+          "vertex_index": 2
+        },
+        {
+          "chain_id": 538,
+          "left_face_id": 228,
+          "point_count": 2,
+          "right_face_id": 253,
+          "vertex_index": 0
+        },
+        {
+          "chain_id": 539,
+          "left_face_id": 217,
+          "point_count": 48,
+          "right_face_id": 228,
+          "vertex_index": 0
+        }
+      ],
+      "owner_face_all_vertex_frequency": 2,
+      "owner_face_endpoint_frequency": 2,
+      "owner_face_used_in_goal3330": 217,
+      "point_id": 539,
+      "probe_coordinate": [
+        -48.999986134,
+        -4.832694058
+      ]
+    },
+    {
+      "all_vertex_face_frequency": [
+        {
+          "count": 2,
+          "face_id": 212
+        },
+        {
+          "count": 2,
+          "face_id": 228
+        },
+        {
+          "count": 2,
+          "face_id": 253
+        }
+      ],
+      "all_vertex_incident_chain_count": 3,
+      "all_vertex_incident_chains": [
+        {
+          "chain_id": 418,
+          "left_face_id": 212,
+          "point_count": 33,
+          "right_face_id": 228,
+          "vertex_index": 32
+        },
+        {
+          "chain_id": 538,
+          "left_face_id": 228,
+          "point_count": 2,
+          "right_face_id": 253,
+          "vertex_index": 1
+        },
+        {
+          "chain_id": 540,
+          "left_face_id": 212,
+          "point_count": 9,
+          "right_face_id": 253,
+          "vertex_index": 0
+        }
+      ],
+      "endpoint_face_frequency": [
+        {
+          "count": 2,
+          "face_id": 212
+        },
+        {
+          "count": 2,
+          "face_id": 228
+        },
+        {
+          "count": 2,
+          "face_id": 253
+        }
+      ],
+      "endpoint_incident_chain_count": 3,
+      "endpoint_incident_chains": [
+        {
+          "chain_id": 418,
+          "left_face_id": 212,
+          "point_count": 33,
+          "right_face_id": 228,
+          "vertex_index": 32
+        },
+        {
+          "chain_id": 538,
+          "left_face_id": 228,
+          "point_count": 2,
+          "right_face_id": 253,
+          "vertex_index": 1
+        },
+        {
+          "chain_id": 540,
+          "left_face_id": 212,
+          "point_count": 9,
+          "right_face_id": 253,
+          "vertex_index": 0
+        }
+      ],
+      "owner_face_all_vertex_frequency": 2,
+      "owner_face_endpoint_frequency": 2,
+      "owner_face_used_in_goal3330": 212,
+      "point_id": 540,
+      "probe_coordinate": [
+        -49.000030006,
+        -4.8326123986
+      ]
+    },
+    {
+      "all_vertex_face_frequency": [
+        {
+          "count": 2,
+          "face_id": 187
+        },
+        {
+          "count": 2,
+          "face_id": 262
+        },
+        {
+          "count": 2,
+          "face_id": 271
+        }
+      ],
+      "all_vertex_incident_chain_count": 3,
+      "all_vertex_incident_chains": [
+        {
+          "chain_id": 562,
+          "left_face_id": 187,
+          "point_count": 6,
+          "right_face_id": 262,
+          "vertex_index": 5
+        },
+        {
+          "chain_id": 564,
+          "left_face_id": 271,
+          "point_count": 2,
+          "right_face_id": 262,
+          "vertex_index": 0
+        },
+        {
+          "chain_id": 565,
+          "left_face_id": 187,
+          "point_count": 20,
+          "right_face_id": 271,
+          "vertex_index": 0
+        }
+      ],
+      "endpoint_face_frequency": [
+        {
+          "count": 2,
+          "face_id": 187
+        },
+        {
+          "count": 2,
+          "face_id": 262
+        },
+        {
+          "count": 2,
+          "face_id": 271
+        }
+      ],
+      "endpoint_incident_chain_count": 3,
+      "endpoint_incident_chains": [
+        {
+          "chain_id": 562,
+          "left_face_id": 187,
+          "point_count": 6,
+          "right_face_id": 262,
+          "vertex_index": 5
+        },
+        {
+          "chain_id": 564,
+          "left_face_id": 271,
+          "point_count": 2,
+          "right_face_id": 262,
+          "vertex_index": 0
+        },
+        {
+          "chain_id": 565,
+          "left_face_id": 187,
+          "point_count": 20,
+          "right_face_id": 271,
+          "vertex_index": 0
+        }
+      ],
+      "owner_face_all_vertex_frequency": 2,
+      "owner_face_endpoint_frequency": 2,
+      "owner_face_used_in_goal3330": 187,
+      "point_id": 564,
+      "probe_coordinate": [
+        -47.638011567,
+        -1.3744132563
+      ]
+    },
+    {
+      "all_vertex_face_frequency": [
+        {
+          "count": 2,
+          "face_id": 187
+        },
+        {
+          "count": 2,
+          "face_id": 262
+        },
+        {
+          "count": 2,
+          "face_id": 271
+        }
+      ],
+      "all_vertex_incident_chain_count": 3,
+      "all_vertex_incident_chains": [
+        {
+          "chain_id": 562,
+          "left_face_id": 187,
+          "point_count": 6,
+          "right_face_id": 262,
+          "vertex_index": 5
+        },
+        {
+          "chain_id": 564,
+          "left_face_id": 271,
+          "point_count": 2,
+          "right_face_id": 262,
+          "vertex_index": 0
+        },
+        {
+          "chain_id": 565,
+          "left_face_id": 187,
+          "point_count": 20,
+          "right_face_id": 271,
+          "vertex_index": 0
+        }
+      ],
+      "endpoint_face_frequency": [
+        {
+          "count": 2,
+          "face_id": 187
+        },
+        {
+          "count": 2,
+          "face_id": 262
+        },
+        {
+          "count": 2,
+          "face_id": 271
+        }
+      ],
+      "endpoint_incident_chain_count": 3,
+      "endpoint_incident_chains": [
+        {
+          "chain_id": 562,
+          "left_face_id": 187,
+          "point_count": 6,
+          "right_face_id": 262,
+          "vertex_index": 5
+        },
+        {
+          "chain_id": 564,
+          "left_face_id": 271,
+          "point_count": 2,
+          "right_face_id": 262,
+          "vertex_index": 0
+        },
+        {
+          "chain_id": 565,
+          "left_face_id": 187,
+          "point_count": 20,
+          "right_face_id": 271,
+          "vertex_index": 0
+        }
+      ],
+      "owner_face_all_vertex_frequency": 2,
+      "owner_face_endpoint_frequency": 2,
+      "owner_face_used_in_goal3330": 187,
+      "point_id": 565,
+      "probe_coordinate": [
+        -47.638011567,
+        -1.3744132563
+      ]
+    }
+  ],
+  "schema": "rtdl.goal3335.rayjoin_incident_face_owner_probe.v1"
+}
