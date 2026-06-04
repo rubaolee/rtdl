@@ -9,6 +9,7 @@ WORKLOADS = ROOT / "src" / "native" / "optix" / "rtdl_optix_workloads.cpp"
 API = ROOT / "src" / "native" / "optix" / "rtdl_optix_api.cpp"
 PRELUDE = ROOT / "src" / "native" / "optix" / "rtdl_optix_prelude.h"
 RUNTIME = ROOT / "src" / "rtdsl" / "optix_runtime.py"
+PROBE = ROOT / "scripts" / "goal3310_rayjoin_pip_batch_scalar_count_probe.py"
 
 
 class Goal3310PreparedPointBatchScalarCountTest(unittest.TestCase):
@@ -48,6 +49,15 @@ class Goal3310PreparedPointBatchScalarCountTest(unittest.TestCase):
         self.assertIn("request_count must be non-negative", runtime)
         self.assertIn("prepared_points_device_filtered_batch_count", runtime)
         self.assertIn("if mode_value == 9", runtime)
+
+    def test_probe_script_is_progress_logged_and_claim_bounded(self) -> None:
+        probe = PROBE.read_text(encoding="utf-8")
+        self.assertIn("[goal3310] batch", probe)
+        self.assertIn("request_counts", probe)
+        self.assertIn("per_request_ms_median", probe)
+        self.assertIn("repeated-query throughput evidence only", probe)
+        self.assertIn('"rtdl_beats_rayjoin_claim_authorized": False', probe)
+        self.assertIn('"true_zero_copy_claim_authorized": False', probe)
 
 
 if __name__ == "__main__":
