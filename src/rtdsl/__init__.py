@@ -570,6 +570,9 @@ from .spatial_order import SPATIAL_POINT_ORDER_MODES_2D
 from .spatial_order import SPATIAL_SEGMENT_ORDER_MODES_2D
 from .spatial_order import spatial_order_points_2d
 from .spatial_order import spatial_order_segments_2d
+from .segment_columns import SegmentColumns2D
+from .segment_columns import segment_columns_2d
+from .segment_columns import segment_columns_with_ids
 from .app_reference import AGGREGATE_FRONTIER_WEIGHTED_VECTOR_SUM_2D_CONTRACT
 from .app_reference import GROUPED_VECTOR_SUM_ROWS_2D_CONTRACT
 from .app_reference import VECTOR_SUM_MATERIALIZATION_PRESSURE_2D_CONTRACT
@@ -1702,6 +1705,9 @@ __all__ = [
     "SPATIAL_POINT_ORDER_MODES_2D",
     "spatial_order_segments_2d",
     "SPATIAL_SEGMENT_ORDER_MODES_2D",
+    "SegmentColumns2D",
+    "segment_columns_2d",
+    "segment_columns_with_ids",
     "collect_aggregate_frontier_2d_embree",
     "collect_aggregate_frontier_2d_optix",
     "evaluate_aggregate_opening_rows_2d",
@@ -2991,10 +2997,13 @@ _CONTRACT_FIRST_DIR_EXPORTS = (
     "primitive_hierarchy",
     "refine",
     "run",
+    "SegmentColumns2D",
     "shape_any_hit_rows",
     "shape_hit_count",
     "shape_pair_overlap_rows",
     "shape_set_similarity",
+    "segment_columns_2d",
+    "segment_columns_with_ids",
     "spatial_order_points_2d",
     "spatial_order_segments_2d",
     "traverse",

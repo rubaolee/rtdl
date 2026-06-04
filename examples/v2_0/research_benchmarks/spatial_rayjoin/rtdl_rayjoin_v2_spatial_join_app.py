@@ -780,12 +780,14 @@ class PreparedRayJoinOptixCompactGroupedCountSegments:
             dataset_note=dataset_note,
         )
         payload["phases_sec"] = {
+            "query_column_prepare_sec": packed_left.column_prepare_seconds,
             "query_pack_sec": packed_left.pack_seconds,
             **payload["phases_sec"],
         }
         payload["packed_left_reuse"] = {
             **payload["packed_left_reuse"],
             "enabled": False,
+            "column_prepare_paid_in_call": True,
             "query_pack_paid_in_call": True,
         }
         return payload
@@ -868,6 +870,7 @@ class PreparedRayJoinOptixCompactGroupedCountSegments:
             "packed_left_reuse": {
                 "enabled": True,
                 "left_segment_count": packed_left.count,
+                "column_prepare_seconds": packed_left.column_prepare_seconds,
                 "pack_seconds": packed_left.pack_seconds,
                 "query_pack_paid_in_call": False,
             },
@@ -961,6 +964,7 @@ class PreparedRayJoinOptixCompactGroupedCountSegments:
             "packed_left_reuse": {
                 "enabled": True,
                 "left_segment_count": packed_left.count,
+                "column_prepare_seconds": packed_left.column_prepare_seconds,
                 "pack_seconds": packed_left.pack_seconds,
                 "query_pack_paid_in_call": False,
             },
@@ -1010,12 +1014,16 @@ class RayJoinOptixCompactGroupedCountPackedLeftSegments:
 
     def __init__(self, left_segments) -> None:
         phases: dict[str, float] = {}
-        normalized_left = tuple(_segment_record_dict(segment) for segment in left_segments)
-        self.original_left_ids = tuple(int(segment["id"]) for segment in normalized_left)
-        remapped_left_segments = tuple(
-            {**segment, "id": index}
-            for index, segment in enumerate(normalized_left)
+        from rtdsl.segment_columns import segment_columns_2d
+        from rtdsl.segment_columns import segment_columns_with_ids
+
+        left_columns = _phase_time(
+            phases,
+            "query_column_prepare_sec",
+            lambda: segment_columns_2d(left_segments),
         )
+        self.original_left_ids = tuple(int(value) for value in left_columns.ids)
+        remapped_left_segments = segment_columns_with_ids(left_columns, range(left_columns.count))
 
         from rtdsl.optix_runtime import pack_segments
 
@@ -1024,6 +1032,7 @@ class RayJoinOptixCompactGroupedCountPackedLeftSegments:
             "query_pack_sec",
             lambda: pack_segments(records=remapped_left_segments),
         )
+        self.column_prepare_seconds = phases["query_column_prepare_sec"]
         self.pack_seconds = phases["query_pack_sec"]
         self.count = len(self.original_left_ids)
 

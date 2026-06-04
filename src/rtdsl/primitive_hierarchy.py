@@ -38,6 +38,7 @@ PRIMITIVE_CAPABILITY_TAGS = (
     "intent:collect_rows",
     "intent:frontier",
     "intent:order",
+    "intent:prepare",
     "shape:generic",
     "shape:point_set",
     "shape:segment_set",
@@ -61,6 +62,7 @@ PRIMITIVE_CAPABILITY_TAGS = (
     "exactness:bounded",
     "keying:none",
     "keying:by_group_id",
+    "keying:caller_id",
     "keying:by_query_id",
     "keying:by_ray_id",
 )
@@ -281,6 +283,45 @@ PRIMITIVE_HIERARCHY = (
                 distinct_from=(
                     "Reorders caller-owned segment records before execution; it does not prepare an RT scene "
                     "or emit segment-pair witness rows."
+                ),
+            ),
+            PrimitiveHierarchyNode(
+                id="execution.segment_columns_2d",
+                title="Segment Columns 2D",
+                layer="execution_residency",
+                status="stable_behavior",
+                summary="Normalize caller-owned 2-D segment records into reusable column batches before packing.",
+                outputs=("segment_id_column", "endpoint_columns", "column_batch"),
+                boundary=(
+                    "This is a generic preparation/layout primitive. It preserves caller IDs and geometry columns "
+                    "and does not add app-specific intersection, join, overlay, or predicate semantics."
+                ),
+                capability_tags=(
+                    "intent:prepare",
+                    "shape:segment_set",
+                    "dim:2d",
+                    "output:columns",
+                    "exactness:exact",
+                    "keying:caller_id",
+                ),
+                aliases=(
+                    "segment_columns_2d",
+                    "segment_column_batch",
+                    "packed_segment_columns",
+                    "segment_column_layout",
+                ),
+                intent_phrases=(
+                    "prepare reusable 2d segment columns before packing",
+                    "convert segment records to id and endpoint columns",
+                    "cache segment column arrays while preserving caller ids",
+                ),
+                reference_path="docs/rtdl_primitive_catalog.md",
+                backends=("cpu_python_reference",),
+                considered_alternatives=("execution.spatial_order_segments_2d", "execution.prepared_rt_state"),
+                distinct_from=(
+                    "Builds reusable segment columns for packing and prepared-state inputs; it does not itself "
+                    "perform locality ordering unless the caller requests an order mode, and it does not build "
+                    "an RT scene."
                 ),
             ),
         ),

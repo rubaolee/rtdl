@@ -104,7 +104,7 @@ app/partner code unless it is redesigned as an app-independent behavior.
 
 - Generator version: `rtdl.primitive_catalog.generated.v1`
 - Hierarchy validation valid: `True`
-- Node count: `52`
+- Node count: `53`
 - Unknown capability tags: `-`
 - Missing dependencies: `-`
 - Backward dependencies: `-`
@@ -131,6 +131,7 @@ Execution / Residency Layer (layer.execution_residency)
   Capacity / Overflow Contract (execution.capacity_overflow_contract)
   Spatial Order Points 2D (execution.spatial_order_points_2d)
   Spatial Order Segments 2D (execution.spatial_order_segments_2d)
+  Segment Columns 2D (execution.segment_columns_2d)
 Traversal Layer (layer.traversal)
   ANY_HIT (traversal.any_hit)
   CLOSEST_HIT / First-Hit-Like Paths (traversal.closest_hit)
@@ -208,6 +209,7 @@ Owns prepared runtime state, buffer descriptors, residency, and capacity contrac
 | `execution.capacity_overflow_contract` | `stable_behavior` | Shared capacity accounting and fail-closed overflow behavior for exact outputs. | `capacity`, `overflowed`, `complete_candidate_coverage` | - | `intent:collect_rows`, `shape:generic`, `output:rows`, `exactness:bounded`, `keying:none` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | - |
 | `execution.spatial_order_points_2d` | `stable_behavior` | Deterministically reorder caller-owned 2-D point records for traversal locality before packing. | `ordered_records`, `stable_id_order` | - | `intent:order`, `shape:point_set`, `dim:2d`, `output:columns`, `exactness:exact`, `keying:none` | backends: `cpu_python_reference` | This is a generic preparation hint. It preserves caller IDs and does not add app-specific membership, join, or predicate semantics. |
 | `execution.spatial_order_segments_2d` | `stable_behavior` | Deterministically reorder caller-owned 2-D segment records by centroid locality before packing. | `ordered_records`, `stable_id_order` | - | `intent:order`, `shape:segment_set`, `dim:2d`, `output:columns`, `exactness:exact`, `keying:none` | backends: `cpu_python_reference` | This is a generic preparation hint. It preserves caller segment IDs and does not add app-specific intersection, join, overlay, or predicate semantics. |
+| `execution.segment_columns_2d` | `stable_behavior` | Normalize caller-owned 2-D segment records into reusable column batches before packing. | `segment_id_column`, `endpoint_columns`, `column_batch` | - | `intent:prepare`, `shape:segment_set`, `dim:2d`, `output:columns`, `exactness:exact`, `keying:caller_id` | backends: `cpu_python_reference` | This is a generic preparation/layout primitive. It preserves caller IDs and geometry columns and does not add app-specific intersection, join, overlay, or predicate semantics. |
 
 Discovery metadata:
 
@@ -217,6 +219,7 @@ Discovery metadata:
 | `execution.capacity_overflow_contract` | `capacity_overflow`, `overflow_contract`, `fail_closed_capacity`, `fail closed overflow capacity`, `bounded_capacity` | `fail closed when exact bounded output capacity is exceeded`, `find overflow and complete coverage metadata for bounded rows` | docs/rtdl_primitive_catalog.md | - |
 | `execution.spatial_order_points_2d` | `spatial_order_points_2d`, `morton_point_order`, `z_order_points`, `locality_order_points` | `order 2d points by spatial locality before packing`, `morton order points before packing`, `use morton or axis point ordering while preserving record ids` | docs/rtdl_primitive_catalog.md | Reorders caller-owned query records before execution; it does not prepare an RT scene or emit witness rows. |
 | `execution.spatial_order_segments_2d` | `spatial_order_segments_2d`, `morton_segment_order`, `z_order_segments`, `locality_order_segments` | `order 2d segments by centroid locality before packing`, `morton order segments before packing`, `use morton or axis segment ordering while preserving segment ids` | docs/rtdl_primitive_catalog.md | Reorders caller-owned segment records before execution; it does not prepare an RT scene or emit segment-pair witness rows. |
+| `execution.segment_columns_2d` | `segment_columns_2d`, `segment_column_batch`, `packed_segment_columns`, `segment_column_layout` | `prepare reusable 2d segment columns before packing`, `convert segment records to id and endpoint columns`, `cache segment column arrays while preserving caller ids` | docs/rtdl_primitive_catalog.md | Builds reusable segment columns for packing and prepared-state inputs; it does not itself perform locality ordering unless the caller requests an order mode, and it does not build an RT scene. |
 
 ### Traversal Layer
 
@@ -414,6 +417,7 @@ make the runtime choice for the user.
 | `intent:collect_rows` |
 | `intent:frontier` |
 | `intent:order` |
+| `intent:prepare` |
 | `shape:generic` |
 | `shape:point_set` |
 | `shape:segment_set` |
@@ -437,6 +441,7 @@ make the runtime choice for the user.
 | `exactness:bounded` |
 | `keying:none` |
 | `keying:by_group_id` |
+| `keying:caller_id` |
 | `keying:by_query_id` |
 | `keying:by_ray_id` |
 

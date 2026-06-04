@@ -22,6 +22,8 @@ from .runtime import _normalize_records
 from .runtime import _resolve_kernel
 from .runtime import _validate_kernel_for_cpu
 from .runtime import _identity_cache_token
+from .segment_columns import SegmentColumns2D
+from .segment_columns import segment_columns_2d
 from .graph_reference import CSRGraph
 from .graph_reference import EdgeSeed
 from .graph_reference import FrontierVertex
@@ -922,6 +924,23 @@ def clear_embree_prepared_cache() -> None:
 def pack_segments(records=None, *, ids=None, x0=None, y0=None, x1=None, y1=None, order_mode: str = "natural") -> PackedSegments:
     if order_mode not in {"natural", "x_then_y", "y_then_x", "morton_xy"}:
         raise ValueError("order_mode must be one of: natural, x_then_y, y_then_x, morton_xy")
+    if isinstance(records, SegmentColumns2D):
+        columns = records if order_mode == "natural" else segment_columns_2d(records, order_mode=order_mode)
+        fast_packed = _try_pack_segments_columns_numpy_arrays(
+            columns.ids,
+            columns.x0,
+            columns.y0,
+            columns.x1,
+            columns.y1,
+        )
+        if fast_packed is not None:
+            return fast_packed
+        ids = columns.ids
+        x0 = columns.x0
+        y0 = columns.y0
+        x1 = columns.x1
+        y1 = columns.y1
+        records = None
     if records is not None:
         if order_mode != "natural":
             fast_packed = _try_pack_segments_records_numpy_ordered(records, order_mode)
@@ -1009,6 +1028,40 @@ def _try_pack_segments_columns_numpy_ordered(ids, x0, y0, x1, y1, order_mode: st
             order_mode,
             _np,
         )
+    except Exception:
+        return None
+
+
+def _try_pack_segments_columns_numpy_arrays(ids, x0, y0, x1, y1) -> PackedSegments | None:
+    try:
+        import numpy as _np
+    except Exception:
+        return None
+    try:
+        ids_array = _np.asarray(ids, dtype=_np.uint32)
+        x0_array = _np.asarray(x0, dtype=_np.float64)
+        y0_array = _np.asarray(y0, dtype=_np.float64)
+        x1_array = _np.asarray(x1, dtype=_np.float64)
+        y1_array = _np.asarray(y1, dtype=_np.float64)
+        if not (
+            ids_array.ndim == x0_array.ndim == y0_array.ndim == x1_array.ndim == y1_array.ndim == 1
+        ):
+            return None
+        if not (
+            ids_array.size == x0_array.size == y0_array.size == x1_array.size == y1_array.size
+        ):
+            return None
+        array = (_RtdlSegment * int(ids_array.size))(*[
+            _RtdlSegment(
+                int(ids_array[index]),
+                float(x0_array[index]),
+                float(y0_array[index]),
+                float(x1_array[index]),
+                float(y1_array[index]),
+            )
+            for index in range(int(ids_array.size))
+        ])
+        return PackedSegments(records=array, count=int(ids_array.size))
     except Exception:
         return None
 
