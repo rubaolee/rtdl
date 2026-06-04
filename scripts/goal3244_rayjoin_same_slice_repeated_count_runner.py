@@ -132,20 +132,27 @@ def run_rayjoin_process_samples(
     query_exec: Path,
     workload: str,
     data_dir: Path,
+    poly1_override: Path | None = None,
+    poly2_override: Path | None = None,
     warmup: int,
     repeat: int,
     process_repeats: int,
     timeout_seconds: int,
     log_dir: Path,
 ) -> dict[str, Any]:
-    if workload == "lsi":
+    if workload not in {"lsi", "pip"}:
+        raise ValueError(f"unsupported RayJoin workload: {workload}")
+    if poly1_override is not None or poly2_override is not None:
+        if poly1_override is None or poly2_override is None:
+            raise ValueError("RayJoin poly override requires both poly1 and poly2")
+        poly1 = poly1_override
+        poly2 = poly2_override
+    elif workload == "lsi":
         poly1 = data_dir / "br_county_start256_count512.cdb"
         poly2 = data_dir / "br_soil_start256_count512.cdb"
-    elif workload == "pip":
+    else:
         poly1 = data_dir / "br_county_start0_count512.cdb"
         poly2 = data_dir / "br_county_start0_count512.cdb"
-    else:
-        raise ValueError(f"unsupported RayJoin workload: {workload}")
 
     query_ms: list[float] = []
     warmup_ms: list[float] = []
@@ -202,6 +209,8 @@ def run_rayjoin_process_samples(
         "build_index_ms_reported": summarize_samples(build_index_ms),
         "intersection_counts": summarize_int_samples(intersections),
         "positive_assignment_count_available": False,
+        "input_poly1": str(poly1),
+        "input_poly2": str(poly2),
         "samples": parsed_samples,
         "command_template": [
             str(query_exec),
@@ -339,6 +348,26 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Goal3244 repeated RTDL/RayJoin same-slice count runner.")
     parser.add_argument("--rayjoin-query-exec", type=Path, required=True)
     parser.add_argument("--rayjoin-data-dir", type=Path, required=True)
+    parser.add_argument(
+        "--rayjoin-lsi-poly1",
+        type=Path,
+        help="Optional RayJoin LSI poly1 input. Defaults to the historical Goal3244 county slice.",
+    )
+    parser.add_argument(
+        "--rayjoin-lsi-poly2",
+        type=Path,
+        help="Optional RayJoin LSI poly2 input. Defaults to the historical Goal3244 soil slice.",
+    )
+    parser.add_argument(
+        "--rayjoin-pip-poly1",
+        type=Path,
+        help="Optional RayJoin PIP poly1 input. Defaults to the historical Goal3244 county slice.",
+    )
+    parser.add_argument(
+        "--rayjoin-pip-poly2",
+        type=Path,
+        help="Optional RayJoin PIP poly2 input. Defaults to the historical Goal3244 county slice.",
+    )
     parser.add_argument("--rtdl-lsi-dataset", required=True)
     parser.add_argument("--rtdl-pip-dataset", required=True)
     parser.add_argument("--output", type=Path, required=True)
@@ -387,6 +416,8 @@ def main(argv: list[str] | None = None) -> int:
             query_exec=args.rayjoin_query_exec,
             workload=workload,
             data_dir=args.rayjoin_data_dir,
+            poly1_override=args.rayjoin_lsi_poly1 if workload == "lsi" else args.rayjoin_pip_poly1,
+            poly2_override=args.rayjoin_lsi_poly2 if workload == "lsi" else args.rayjoin_pip_poly2,
             warmup=args.rayjoin_warmup,
             repeat=args.rayjoin_repeat,
             process_repeats=args.rayjoin_process_repeats,

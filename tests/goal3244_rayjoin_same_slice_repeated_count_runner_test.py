@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import unittest
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from unittest import mock
 
 
@@ -12,6 +12,13 @@ SPEC = importlib.util.spec_from_file_location("goal3244_runner", SCRIPT)
 MODULE = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader is not None
 SPEC.loader.exec_module(MODULE)
+
+
+class subprocess_completed:
+    def __init__(self, *, stdout: str, stderr: str, returncode: int) -> None:
+        self.stdout = stdout
+        self.stderr = stderr
+        self.returncode = returncode
 
 
 class Goal3244RayJoinSameSliceRepeatedCountRunnerTest(unittest.TestCase):
@@ -86,6 +93,8 @@ Timing results:
         text = SCRIPT.read_text(encoding="utf-8")
 
         for phrase in (
+            "--rayjoin-lsi-poly1",
+            "--rayjoin-pip-poly1",
             "public_speedup_claim_authorized",
             "rayjoin_paper_reproduction_claim_authorized",
             "rtdl_beats_rayjoin_claim_authorized",
@@ -95,6 +104,52 @@ Timing results:
         ):
             self.assertIn(phrase, text)
         self.assertTrue(all(value is False for value in MODULE.CLAIM_BOUNDARY.values()))
+
+    def test_rayjoin_process_samples_accepts_explicit_input_overrides(self) -> None:
+        completed = subprocess_completed(
+            stdout="""
+Timing results:
+ - Build Index: 0.4 ms
+ - Warmup: 0.5 ms
+ - Query: 0.6 ms
+""",
+            stderr="",
+            returncode=0,
+        )
+        with mock.patch.object(MODULE.subprocess, "run", return_value=completed) as run_mock:
+            row = MODULE.run_rayjoin_process_samples(
+                query_exec=Path("/bin/query_exec"),
+                workload="pip",
+                data_dir=PurePosixPath("/data"),
+                poly1_override=PurePosixPath("/data/custom_poly1.cdb"),
+                poly2_override=PurePosixPath("/data/custom_poly2.cdb"),
+                warmup=1,
+                repeat=2,
+                process_repeats=1,
+                timeout_seconds=30,
+                log_dir=ROOT / "scratch",
+            )
+
+        command = run_mock.call_args.args[0]
+        self.assertIn("-poly1=/data/custom_poly1.cdb", command)
+        self.assertIn("-poly2=/data/custom_poly2.cdb", command)
+        self.assertEqual(row["input_poly1"], "/data/custom_poly1.cdb")
+        self.assertEqual(row["input_poly2"], "/data/custom_poly2.cdb")
+
+    def test_rayjoin_process_samples_requires_both_override_paths(self) -> None:
+        with self.assertRaisesRegex(ValueError, "requires both poly1 and poly2"):
+            MODULE.run_rayjoin_process_samples(
+                query_exec=Path("/bin/query_exec"),
+                workload="lsi",
+                data_dir=PurePosixPath("/data"),
+                poly1_override=PurePosixPath("/data/custom_poly1.cdb"),
+                poly2_override=None,
+                warmup=1,
+                repeat=1,
+                process_repeats=1,
+                timeout_seconds=30,
+                log_dir=ROOT / "scratch",
+            )
 
     def test_rtdl_pip_device_filtered_mode_records_validation_lane(self) -> None:
         calls: list[dict[str, object]] = []
