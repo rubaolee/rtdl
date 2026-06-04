@@ -93,7 +93,7 @@ def _summary_count(workload: str, summary: dict[str, Any]) -> int:
     if workload == "lsi":
         return int(summary["intersection_count"])
     if workload == "overlay_seed":
-        return int(summary["pair_dependency_row_count"])
+        return int(summary["active_seed_count"])
     raise ValueError(f"unsupported workload: {workload}")
 
 

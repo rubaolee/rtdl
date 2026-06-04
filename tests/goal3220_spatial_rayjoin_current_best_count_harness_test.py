@@ -1,11 +1,16 @@
 from __future__ import annotations
 
 from pathlib import Path
+import importlib.util
 import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "goal3220_spatial_rayjoin_current_best_count_harness.py"
+SPEC = importlib.util.spec_from_file_location("goal3220_harness", SCRIPT)
+MODULE = importlib.util.module_from_spec(SPEC)
+assert SPEC.loader is not None
+SPEC.loader.exec_module(MODULE)
 
 
 class Goal3220SpatialRayJoinCurrentBestCountHarnessTest(unittest.TestCase):
@@ -52,6 +57,14 @@ class Goal3220SpatialRayJoinCurrentBestCountHarnessTest(unittest.TestCase):
             "--display=COMPUTE",
         ):
             self.assertIn(phrase, text)
+
+    def test_overlay_count_contract_uses_active_seed_count(self) -> None:
+        summary = {
+            "pair_dependency_row_count": 4096,
+            "active_seed_count": 64,
+        }
+
+        self.assertEqual(MODULE._summary_count("overlay_seed", summary), 64)
 
 
 if __name__ == "__main__":
