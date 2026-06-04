@@ -1,0 +1,65 @@
+{
+  "schema_version": "goal3290_numpy_segment_abi_pack_final_micro_v1",
+  "source_commit": "a39368ab8ca64fe428f86411b0ea71c012ef0cfb",
+  "dataset": "/root/rtdl_goal3151/data/rayjoin_public_cdb/br_county_start256_count512.cdb + /root/rtdl_goal3151/data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+  "left_count": 19987,
+  "record_pack_ms": {
+    "median": 16.220192424952984,
+    "samples": [
+      16.465194523334503,
+      16.615912318229675,
+      16.230013221502304,
+      16.25698432326317,
+      16.210371628403664,
+      16.24840497970581,
+      16.134649515151978,
+      16.17489382624626,
+      16.122547909617424,
+      16.13813079893589
+    ]
+  },
+  "segment_columns_prepare_ms": {
+    "median": 32.107667066156864,
+    "samples": [
+      32.13749639689922,
+      32.57126361131668,
+      32.16457739472389,
+      32.11493417620659,
+      32.08743594586849,
+      32.0671871304512,
+      32.10039995610714,
+      32.06541948020458
+    ]
+  },
+  "segment_columns_pack_ms": {
+    "median": 0.41523296386003494,
+    "samples": [
+      0.6201881915330887,
+      0.25650113821029663,
+      0.47170184552669525,
+      0.5526319146156311,
+      0.35876408219337463,
+      0.5123913288116455,
+      0.2349652349948883,
+      0.2380087971687317
+    ]
+  },
+  "segment_columns_total_ms": {
+    "median": 33.693352714180946,
+    "samples": [
+      34.025298431515694,
+      33.99863466620445,
+      33.68287533521652,
+      33.71778130531311,
+      33.48900191485882,
+      33.70383009314537,
+      33.38245488703251,
+      33.33288058638573
+    ]
+  },
+  "record_owner_type": "ndarray",
+  "column_owner_type": "ndarray",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "rtdl_beats_rayjoin_claim_authorized": false
+}
