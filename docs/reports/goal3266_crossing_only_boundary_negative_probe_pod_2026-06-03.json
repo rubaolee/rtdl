@@ -1,0 +1,26 @@
+{
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "count_mode": "device_filtered_validated",
+  "crossing_only_count": 129,
+  "crossing_only_validation_passed": false,
+  "dataset": "/root/rtdl_goal3151/data/rayjoin_public_cdb/br_county_start0_count512.cdb",
+  "device_filtered_boundary_mode": "crossing_only",
+  "error": "device-filtered closed-shape count did not match exact prepared count: 129 != 1430",
+  "exact_inclusive_count": 1430,
+  "generated_at_utc": "2026-06-04T04:44:57Z",
+  "goal": 3266,
+  "gpu": "NVIDIA A40, 570.211.01",
+  "interpretation": "Crossing-only boundary mode is an invalid optimization for this RayJoin PIP slice because inclusive exact validation catches boundary-heavy positives.",
+  "query_axis": "z_point",
+  "rtdl_commit": "65eee5c5761e475bcc2cc7ee6a37dbd11a4cc5f5",
+  "schema": "rtdl.goal3266.crossing_only_boundary_negative_probe.v1",
+  "source_dirty": [],
+  "workload": "pip"
+}
