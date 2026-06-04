@@ -593,6 +593,13 @@ from .datasets import chains_to_probe_points
 from .datasets import chains_to_segment_columns
 from .datasets import chains_to_segments
 from .datasets import chains_to_topology_rows
+from .closed_shape_topology import OWNER_FACE_MEMBERSHIP_CONTRACT
+from .closed_shape_topology import count_closed_shape_membership_candidates_by_owner_face
+from .closed_shape_topology import filter_closed_shape_membership_candidates_by_owner_face
+from .closed_shape_topology import owner_face_membership_contract
+from .closed_shape_topology import topology_face_ids
+from .closed_shape_topology import topology_rows_by_shape_id
+from .closed_shape_topology import validate_owner_face_membership_contract
 from .datasets import CdbChain
 from .datasets import CdbDataset
 from .datasets import CdbPoint
@@ -2322,6 +2329,13 @@ __all__ = [
     "chains_to_segment_columns",
     "chains_to_segments",
     "chains_to_topology_rows",
+    "OWNER_FACE_MEMBERSHIP_CONTRACT",
+    "count_closed_shape_membership_candidates_by_owner_face",
+    "filter_closed_shape_membership_candidates_by_owner_face",
+    "owner_face_membership_contract",
+    "topology_face_ids",
+    "topology_rows_by_shape_id",
+    "validate_owner_face_membership_contract",
     "count_arcgis_loaded_pages",
     "download_rayjoin_sample",
     "build_postgis_fixed_radius_neighbors_sql",
