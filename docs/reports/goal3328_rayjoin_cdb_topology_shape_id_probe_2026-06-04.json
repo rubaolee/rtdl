@@ -1,0 +1,534 @@
+{
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "commit": "f03e915e",
+  "dataset": "data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+  "goal": 3328,
+  "interpretation_boundary": "Topology rows are generic CDB chain metadata. This probe explains candidate ownership patterns; it does not implement RayJoin semantics in the engine.",
+  "per_mismatch_point": [
+    {
+      "exact_face_ids": [
+        221,
+        247,
+        248
+      ],
+      "exact_faces": [
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 248,
+          "right_face_id": 247,
+          "shape_id": 522
+        },
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 221,
+          "right_face_id": 248,
+          "shape_id": 523
+        }
+      ],
+      "exact_shape_ids": [
+        522,
+        523
+      ],
+      "extra_face_ids": [
+        176,
+        247
+      ],
+      "extra_faces": [
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 247,
+          "right_face_id": 176,
+          "shape_id": 521
+        }
+      ],
+      "extra_shape_ids": [
+        521
+      ],
+      "point_id": 522,
+      "shared_face_ids": [
+        247
+      ]
+    },
+    {
+      "exact_face_ids": [
+        221,
+        247,
+        248
+      ],
+      "exact_faces": [
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 248,
+          "right_face_id": 247,
+          "shape_id": 522
+        },
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 221,
+          "right_face_id": 248,
+          "shape_id": 523
+        }
+      ],
+      "exact_shape_ids": [
+        522,
+        523
+      ],
+      "extra_face_ids": [
+        176,
+        247
+      ],
+      "extra_faces": [
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 247,
+          "right_face_id": 176,
+          "shape_id": 521
+        }
+      ],
+      "extra_shape_ids": [
+        521
+      ],
+      "point_id": 523,
+      "shared_face_ids": [
+        247
+      ]
+    },
+    {
+      "exact_face_ids": [
+        217,
+        228,
+        253
+      ],
+      "exact_faces": [
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 217,
+          "right_face_id": 253,
+          "shape_id": 535
+        },
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 217,
+          "right_face_id": 228,
+          "shape_id": 539
+        }
+      ],
+      "exact_shape_ids": [
+        535,
+        539
+      ],
+      "extra_face_ids": [
+        212,
+        228,
+        253
+      ],
+      "extra_faces": [
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 212,
+          "right_face_id": 228,
+          "shape_id": 418
+        },
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 212,
+          "right_face_id": 253,
+          "shape_id": 540
+        }
+      ],
+      "extra_shape_ids": [
+        418,
+        540
+      ],
+      "point_id": 538,
+      "shared_face_ids": [
+        228,
+        253
+      ]
+    },
+    {
+      "exact_face_ids": [
+        217,
+        228,
+        253
+      ],
+      "exact_faces": [
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 217,
+          "right_face_id": 253,
+          "shape_id": 535
+        },
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 217,
+          "right_face_id": 228,
+          "shape_id": 539
+        }
+      ],
+      "exact_shape_ids": [
+        535,
+        539
+      ],
+      "extra_face_ids": [
+        212,
+        228,
+        253
+      ],
+      "extra_faces": [
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 212,
+          "right_face_id": 228,
+          "shape_id": 418
+        },
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 212,
+          "right_face_id": 253,
+          "shape_id": 540
+        }
+      ],
+      "extra_shape_ids": [
+        418,
+        540
+      ],
+      "point_id": 539,
+      "shared_face_ids": [
+        228,
+        253
+      ]
+    },
+    {
+      "exact_face_ids": [
+        212,
+        228,
+        253
+      ],
+      "exact_faces": [
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 212,
+          "right_face_id": 228,
+          "shape_id": 418
+        },
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 212,
+          "right_face_id": 253,
+          "shape_id": 540
+        }
+      ],
+      "exact_shape_ids": [
+        418,
+        540
+      ],
+      "extra_face_ids": [
+        217,
+        228,
+        253
+      ],
+      "extra_faces": [
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 217,
+          "right_face_id": 253,
+          "shape_id": 535
+        },
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 217,
+          "right_face_id": 228,
+          "shape_id": 539
+        }
+      ],
+      "extra_shape_ids": [
+        535,
+        539
+      ],
+      "point_id": 540,
+      "shared_face_ids": [
+        228,
+        253
+      ]
+    },
+    {
+      "exact_face_ids": [
+        187,
+        262,
+        271
+      ],
+      "exact_faces": [
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 187,
+          "right_face_id": 262,
+          "shape_id": 562
+        },
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 187,
+          "right_face_id": 271,
+          "shape_id": 565
+        }
+      ],
+      "exact_shape_ids": [
+        562,
+        565
+      ],
+      "extra_face_ids": [
+        204,
+        262,
+        271
+      ],
+      "extra_faces": [
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 204,
+          "right_face_id": 271,
+          "shape_id": 437
+        },
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 262,
+          "right_face_id": 204,
+          "shape_id": 559
+        }
+      ],
+      "extra_shape_ids": [
+        437,
+        559
+      ],
+      "point_id": 564,
+      "shared_face_ids": [
+        262,
+        271
+      ]
+    },
+    {
+      "exact_face_ids": [
+        187,
+        262,
+        271
+      ],
+      "exact_faces": [
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 187,
+          "right_face_id": 262,
+          "shape_id": 562
+        },
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 187,
+          "right_face_id": 271,
+          "shape_id": 565
+        }
+      ],
+      "exact_shape_ids": [
+        562,
+        565
+      ],
+      "extra_face_ids": [
+        204,
+        262,
+        271
+      ],
+      "extra_faces": [
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 204,
+          "right_face_id": 271,
+          "shape_id": 437
+        },
+        {
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "left_face_id": 262,
+          "right_face_id": 204,
+          "shape_id": 559
+        }
+      ],
+      "extra_shape_ids": [
+        437,
+        559
+      ],
+      "point_id": 565,
+      "shared_face_ids": [
+        262,
+        271
+      ]
+    }
+  ],
+  "schema": "rtdl.goal3328.rayjoin_cdb_topology_shape_id_probe.v1",
+  "shape_ids_examined": [
+    418,
+    437,
+    521,
+    522,
+    523,
+    535,
+    539,
+    540,
+    559,
+    562,
+    565
+  ],
+  "shape_topology_rows": [
+    {
+      "chain_id": 418,
+      "first_point_id": 152363,
+      "has_left_face": 1,
+      "has_right_face": 1,
+      "last_point_id": 3246,
+      "left_face_id": 212,
+      "point_count": 33,
+      "present": true,
+      "right_face_id": 228
+    },
+    {
+      "chain_id": 437,
+      "first_point_id": 3687,
+      "has_left_face": 1,
+      "has_right_face": 1,
+      "last_point_id": 3465,
+      "left_face_id": 204,
+      "point_count": 22,
+      "present": true,
+      "right_face_id": 271
+    },
+    {
+      "chain_id": 521,
+      "first_point_id": 156009,
+      "has_left_face": 1,
+      "has_right_face": 1,
+      "last_point_id": 4264,
+      "left_face_id": 247,
+      "point_count": 24,
+      "present": true,
+      "right_face_id": 176
+    },
+    {
+      "chain_id": 522,
+      "first_point_id": 156134,
+      "has_left_face": 1,
+      "has_right_face": 1,
+      "last_point_id": 156020,
+      "left_face_id": 248,
+      "point_count": 66,
+      "present": true,
+      "right_face_id": 247
+    },
+    {
+      "chain_id": 523,
+      "first_point_id": 156198,
+      "has_left_face": 1,
+      "has_right_face": 1,
+      "last_point_id": 4208,
+      "left_face_id": 221,
+      "point_count": 68,
+      "present": true,
+      "right_face_id": 248
+    },
+    {
+      "chain_id": 535,
+      "first_point_id": 3244,
+      "has_left_face": 1,
+      "has_right_face": 1,
+      "last_point_id": 3245,
+      "left_face_id": 217,
+      "point_count": 3,
+      "present": true,
+      "right_face_id": 253
+    },
+    {
+      "chain_id": 539,
+      "first_point_id": 152401,
+      "has_left_face": 1,
+      "has_right_face": 1,
+      "last_point_id": 151629,
+      "left_face_id": 217,
+      "point_count": 48,
+      "present": true,
+      "right_face_id": 228
+    },
+    {
+      "chain_id": 540,
+      "first_point_id": 3250,
+      "has_left_face": 1,
+      "has_right_face": 1,
+      "last_point_id": 3254,
+      "left_face_id": 212,
+      "point_count": 9,
+      "present": true,
+      "right_face_id": 253
+    },
+    {
+      "chain_id": 559,
+      "first_point_id": 3474,
+      "has_left_face": 1,
+      "has_right_face": 1,
+      "last_point_id": 3465,
+      "left_face_id": 262,
+      "point_count": 18,
+      "present": true,
+      "right_face_id": 204
+    },
+    {
+      "chain_id": 562,
+      "first_point_id": 3461,
+      "has_left_face": 1,
+      "has_right_face": 1,
+      "last_point_id": 3464,
+      "left_face_id": 187,
+      "point_count": 6,
+      "present": true,
+      "right_face_id": 262
+    },
+    {
+      "chain_id": 565,
+      "first_point_id": 3706,
+      "has_left_face": 1,
+      "has_right_face": 1,
+      "last_point_id": 3716,
+      "left_face_id": 187,
+      "point_count": 20,
+      "present": true,
+      "right_face_id": 271
+    }
+  ],
+  "source_goal3327_commit": "f03e915e",
+  "topology_row_count": 512
+}
