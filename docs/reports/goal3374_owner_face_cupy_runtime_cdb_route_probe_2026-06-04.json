@@ -1,0 +1,111 @@
+{
+  "candidate_artifact": "/root/rtdl/docs/reports/goal3328_rayjoin_cdb_topology_shape_id_probe_2026-06-04.json",
+  "candidate_oracle_artifact_used_as_input": true,
+  "candidate_row_count": 26,
+  "cdb_chain_count": 512,
+  "cdb_topology_row_count": 512,
+  "claim_boundary": {
+    "native_default_route_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "county_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+  "cupy_version": "14.1.1",
+  "exact_shape_ids_by_point": {
+    "522": [
+      522,
+      523
+    ],
+    "523": [
+      522,
+      523
+    ],
+    "538": [
+      535,
+      539
+    ],
+    "539": [
+      535,
+      539
+    ],
+    "540": [
+      418,
+      540
+    ],
+    "564": [
+      562,
+      565
+    ],
+    "565": [
+      562,
+      565
+    ]
+  },
+  "expected_owner_face_by_point": {
+    "522": 248,
+    "523": 248,
+    "538": 217,
+    "539": 217,
+    "540": 212,
+    "564": 187,
+    "565": 187
+  },
+  "goal": 3374,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "incident_row_count": 21,
+  "incident_rows_derived_from_cdb": true,
+  "interpretation": "Runtime-CDB route probe only: derives topology and incident owner-face columns from the bounded RayJoin public CDB slice, then applies the composed CuPy owner-face continuation to the stored candidate/exact mismatch oracle. It is not native RT traversal, default routing, or RayJoin paper reproduction evidence.",
+  "owner_face_present_for_all_points": true,
+  "pipeline_topology_row_count": 11,
+  "point_count": 7,
+  "recovered_shape_ids_by_point": {
+    "522": [
+      522,
+      523
+    ],
+    "523": [
+      522,
+      523
+    ],
+    "538": [
+      535,
+      539
+    ],
+    "539": [
+      535,
+      539
+    ],
+    "540": [
+      418,
+      540
+    ],
+    "564": [
+      562,
+      565
+    ],
+    "565": [
+      562,
+      565
+    ]
+  },
+  "recovered_shapes_match_exact": true,
+  "rtdl_commit": "4cc57bc49fab9e06532e7cbd08b38fb81e1ae570",
+  "schema": "rtdl.goal3374.owner_face_cupy_runtime_cdb_route_probe.v1",
+  "selected_owner_face_by_point": {
+    "522": 248,
+    "523": 248,
+    "538": 217,
+    "539": 217,
+    "540": 212,
+    "564": 187,
+    "565": 187
+  },
+  "selected_owner_faces_match_expected": true,
+  "stored_incident_artifact_used_as_input": false,
+  "stored_topology_artifact_used_as_input": false,
+  "topology_rows_derived_from_cdb": true
+}
