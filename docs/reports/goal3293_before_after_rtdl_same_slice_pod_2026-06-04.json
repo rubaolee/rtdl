@@ -1,0 +1,63 @@
+{
+  "schema": "goal3293_before_after_rtdl_same_slice_pod_v1",
+  "goal": "Goal3293",
+  "pod": {
+    "ssh": "ssh root@69.30.85.203 -p 22057 -i ~/.ssh/id_ed25519",
+    "working_key_used": "id_ed25519_rtdl_codex",
+    "gpu": "NVIDIA RTX A5000, 580.126.09",
+    "cuda_prefix": "/usr/local/cuda-12.8",
+    "optix_sdk": "/root/vendor/optix-sdk",
+    "rtdl_optix_library": "/root/rtdl_goal3293/build/librtdl_optix.so"
+  },
+  "commits": {
+    "before_goal3293": "5de3bc2655df6946e3c210aa4e4d06327e49a417",
+    "after_goal3293": "651dd8c49a4d4325ab18cc953581a9d3f400031d"
+  },
+  "datasets": {
+    "lsi": "/root/rtdl_goal3293/data/rayjoin_public_cdb/br_county_start256_count512.cdb + /root/rtdl_goal3293/data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+    "pip": "/root/rtdl_goal3293/data/rayjoin_public_cdb/br_county_start0_count512.cdb"
+  },
+  "warmup": 3,
+  "repeat": 15,
+  "rows": {
+    "lsi": {
+      "count": 269,
+      "query_pack_ms_before": 21.213616244494915,
+      "query_pack_ms_after": 0.22983644157648087,
+      "query_pack_speedup_before_over_after": 92.2970008533747,
+      "static_segment_pack_ms_before": 7.172329351305962,
+      "static_segment_pack_ms_after": 0.10952912271022797,
+      "static_segment_pack_speedup_before_over_after": 65.48299234427316,
+      "prepare_static_scene_ms_before": 0.866226851940155,
+      "prepare_static_scene_ms_after": 0.7675774395465851,
+      "prepared_query_ms_before": 0.38214679807424545,
+      "prepared_query_ms_after": 0.33140741288661957,
+      "prepared_query_speedup_before_over_after": 1.1531021162034022
+    },
+    "pip": {
+      "count": 1430,
+      "query_pack_ms_before": 0.600387342274189,
+      "query_pack_ms_after": 0.45068003237247467,
+      "query_pack_speedup_before_over_after": 1.3321809805650296,
+      "static_shape_pack_ms_before": 15.216149389743805,
+      "static_shape_pack_ms_after": 12.328940443694592,
+      "static_shape_pack_speedup_before_over_after": 1.2341781637591747,
+      "prepare_static_scene_ms_before": 0.8159475401043892,
+      "prepare_static_scene_ms_after": 0.6518326699733734,
+      "prepared_query_ms_before": 0.688185915350914,
+      "prepared_query_ms_after": 0.6383731961250305,
+      "prepared_query_speedup_before_over_after": 1.0780369857459643
+    }
+  },
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "source_artifacts": {
+    "before": "docs/reports/goal3293_previous_5de3bc26_rtdl_same_slice_pod_2026-06-04.json",
+    "after": "docs/reports/goal3293_current_651dd8c4_rtdl_same_slice_pod_2026-06-04.json"
+  }
+}
