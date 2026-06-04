@@ -1,0 +1,125 @@
+{
+  "goal": 3239,
+  "schema": "rtdl.goal3239.rayjoin_upstream_build_and_same_slice_smoke.v1",
+  "status": "partial_pass",
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "rtdl_commit": "edc073446c45a078d36bf52b7fb322994eb8f2a0",
+  "rayjoin": {
+    "repo": "https://github.com/rubaolee/RayJoin",
+    "commit": "02bf6220d6d20b04af77ee20364eced75cc029c9",
+    "workdir": "/root/RayJoin",
+    "build_status": "pass_after_local_cuda_12_8_compatibility_shims",
+    "executables": {
+      "query_exec": true,
+      "polyover_exec": true
+    },
+    "local_compatibility_shims": [
+      {
+        "file": "src/util/markers.h",
+        "change": "include nvtx3/nvToolsExt.h instead of legacy nvToolsExt.h",
+        "reason": "Avoid NVTX2/NVTX3 duplicate type definitions with CUDA 12.8."
+      },
+      {
+        "file": "src/app/output_chain.h",
+        "change": "use local Double2Hash/Double2Equal for the output-chain point map",
+        "reason": "Avoid default std::equal_to<double2> failure under GCC 13/CUDA 12.8 without polluting global operator lookup."
+      }
+    ]
+  },
+  "hardware": {
+    "gpu": "NVIDIA A40",
+    "cuda": "12.8",
+    "driver": "570.211.01",
+    "pod_workdir": "/root/RayJoin/build"
+  },
+  "same_slice_smokes": [
+    {
+      "case": "lsi_county256_soil256_count512",
+      "dataset_a": "br_county_start256_count512.cdb",
+      "dataset_b": "br_soil_start256_count512.cdb",
+      "rayjoin_mode": "rt",
+      "status": "pass",
+      "rayjoin_intersections": 269,
+      "rtdl_goal3232_rows": 269,
+      "query_ms": 0.229406,
+      "build_index_ms": 0.428915,
+      "warmup_ms": 1.20902,
+      "log": "/tmp/rayjoin_query_lsi_512_rt.log"
+    },
+    {
+      "case": "lsi_county256_soil256_count512",
+      "dataset_a": "br_county_start256_count512.cdb",
+      "dataset_b": "br_soil_start256_count512.cdb",
+      "rayjoin_mode": "grid",
+      "status": "pass_with_count_difference_vs_rt",
+      "rayjoin_intersections": 268,
+      "rtdl_goal3232_rows": 269,
+      "query_ms": 0.695181,
+      "build_index_ms": 11.497,
+      "warmup_ms": 3.70908,
+      "log": "/tmp/rayjoin_query_lsi_512_grid.log"
+    },
+    {
+      "case": "pip_county512",
+      "dataset_a": "br_county_start0_count512.cdb",
+      "dataset_b": "br_county_start0_count512.cdb",
+      "rayjoin_mode": "rt",
+      "status": "pass_checker_map0",
+      "query_ms": 0.185776,
+      "check_ms": 15.2771,
+      "positive_row_count_available": false,
+      "rtdl_goal3232_positive_rows": 1430,
+      "log": "/tmp/rayjoin_query_pip_512_rt.log"
+    },
+    {
+      "case": "pip_county512",
+      "dataset_a": "br_county_start0_count512.cdb",
+      "dataset_b": "br_county_start0_count512.cdb",
+      "rayjoin_mode": "grid",
+      "status": "pass",
+      "query_ms": 2.45099,
+      "positive_row_count_available": false,
+      "rtdl_goal3232_positive_rows": 1430,
+      "log": "/tmp/rayjoin_query_pip_512_grid.log"
+    },
+    {
+      "case": "overlay_county128_soil128",
+      "dataset_a": "br_county_start0_count128.cdb",
+      "dataset_b": "br_soil_start0_count128.cdb",
+      "rayjoin_mode": "rt",
+      "status": "blocked_runtime_failure",
+      "failure": "thrust parallel_for failed: cudaErrorInvalidDevice: invalid device ordinal in rayjoin::PIPRT::Query during MapOverlayRT::LocateVerticesInOtherMap",
+      "rtdl_goal3232_rows": 14036,
+      "log": "/tmp/rayjoin_overlay_128_rt_nocheck.log"
+    },
+    {
+      "case": "overlay_county128_soil128",
+      "dataset_a": "br_county_start0_count128.cdb",
+      "dataset_b": "br_soil_start0_count128.cdb",
+      "rayjoin_mode": "grid",
+      "status": "pass_no_check",
+      "intersection_edges_ms": 0.228167,
+      "map0_locate_vertices_ms": 2.29883,
+      "map1_locate_vertices_ms": 2.9521,
+      "compute_output_polygons_ms": 0.998974,
+      "write_file_ms": 4.25601,
+      "output_chains": 127,
+      "total_faces": 89,
+      "rtdl_goal3232_rows": 14036,
+      "log": "/tmp/rayjoin_overlay_128_grid_nocheck.log"
+    }
+  ],
+  "interpretation": {
+    "build": "Upstream RayJoin can be built on this pod after two local CUDA 12.8 compatibility shims.",
+    "lsi": "RayJoin RT and RTDL agree on the 269-row LSI public slice; RayJoin grid reports 268 on the same slice.",
+    "pip": "RayJoin PIP RT/grid modes run, but the executable does not print positive-row counts in this mode, so this is runtime/check smoke evidence only.",
+    "overlay": "RayJoin overlay RT remains blocked by an upstream runtime failure on this pod. Grid overlay can run with checking disabled."
+  }
+}
