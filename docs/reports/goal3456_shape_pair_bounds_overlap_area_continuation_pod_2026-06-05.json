@@ -1,0 +1,91 @@
+{
+  "claim_boundary": {
+    "full_overlay_area_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "continuation_metadata": {
+    "app_specific_engine_logic_allowed": false,
+    "area_semantics": "axis_aligned_bounds_overlap_area_upper_bound",
+    "automatic_partner_selection_allowed": false,
+    "exact_polygon_overlay_area": false,
+    "full_overlay_area_claim_authorized": false,
+    "group_by": "left",
+    "input_contract": "shape_pair_relation_flags_with_ordinals_and_geometry_payload",
+    "operation": "shape_pair_bounds_overlap_area",
+    "partner": "cupy",
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "requires_geometry_payload_columns": true,
+    "requires_relation_ordinals": true,
+    "row_count": 3,
+    "rt_core_speedup_claim_authorized": false,
+    "schema": "rtdl.v2_8.geometry_relation.bounds_overlap_area_cupy.v1",
+    "true_zero_copy_claim_authorized": false
+  },
+  "expected_group_sums": [
+    {
+      "bounds_overlap_area_sum": 1.25,
+      "left_id": 3
+    },
+    {
+      "bounds_overlap_area_sum": 1.0,
+      "left_id": 20
+    }
+  ],
+  "expected_rows": [
+    {
+      "bounds_overlap_area": 1.0,
+      "left_id": 3,
+      "right_id": 10
+    },
+    {
+      "bounds_overlap_area": 0.25,
+      "left_id": 3,
+      "right_id": 11
+    },
+    {
+      "bounds_overlap_area": 1.0,
+      "left_id": 20,
+      "right_id": 13
+    }
+  ],
+  "fixture": "sparse_id_three_left_four_right_rectangles",
+  "goal": 3456,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "group_sums_match": true,
+  "observed_group_sums": [
+    {
+      "bounds_overlap_area_sum": 1.25,
+      "left_id": 3
+    },
+    {
+      "bounds_overlap_area_sum": 1.0,
+      "left_id": 20
+    }
+  ],
+  "observed_rows": [
+    {
+      "bounds_overlap_area": 1.0,
+      "left_id": 3,
+      "right_id": 10
+    },
+    {
+      "bounds_overlap_area": 0.25,
+      "left_id": 3,
+      "right_id": 11
+    },
+    {
+      "bounds_overlap_area": 1.0,
+      "left_id": 20,
+      "right_id": 13
+    }
+  ],
+  "rows_match": true,
+  "rtdl_commit": "c02f0aed5a7832088004ba07b30d882516f7ac2f",
+  "schema": "rtdl.goal3456.shape_pair_bounds_overlap_area_continuation.v1"
+}

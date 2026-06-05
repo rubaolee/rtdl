@@ -2,7 +2,7 @@
 
 ## Status
 
-Implemented locally; pod validation pending.
+Implemented and pod-validated on NVIDIA RTX A5000.
 
 Goal3456 adds the first generic consumer of the Goal3453/3455 relation geometry payload: a CuPy continuation that computes axis-aligned bounds-overlap area for active shape-pair relation rows and optionally groups those areas by left or right id.
 
@@ -29,12 +29,24 @@ This goal does not authorize:
 
 ## Validation
 
-Local validation target:
+Pod evidence:
+
+- Artifact: `docs/reports/goal3456_shape_pair_bounds_overlap_area_continuation_pod_2026-06-05.json`
+- Stdout: `docs/reports/goal3456_shape_pair_bounds_overlap_area_continuation_pod_2026-06-05.stdout`
+- GPU: NVIDIA RTX A5000, driver 580.126.09
+- Commit: `c02f0aed5a7832088004ba07b30d882516f7ac2f`
+- `rows_match: true`
+- `group_sums_match: true`
+- `continuation_metadata.area_semantics: axis_aligned_bounds_overlap_area_upper_bound`
+- `continuation_metadata.exact_polygon_overlay_area: false`
+- all claim-boundary flags remained false
+
+Local validation:
 
 - `py -3 -m py_compile src\rtdsl\geometry_relation_continuations.py scripts\goal3456_shape_pair_bounds_overlap_area_continuation_probe.py`
 - `py -3 -m unittest tests.goal3456_shape_pair_bounds_overlap_area_continuation_test`
 
-Pod validation target:
+Pod validation:
 
 ```bash
 PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=/root/rtdl/build/librtdl_optix.so \
