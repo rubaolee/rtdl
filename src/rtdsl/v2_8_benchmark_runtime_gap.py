@@ -123,7 +123,8 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "shape-pair active-count route for overlay-seed scalar summaries; instance-aware "
             "closed-shape candidate columns plus prepared CuPy exact refiner for PIP row/count "
             "continuation; reusable prepared handles for PIP exact continuation, LSI grouped/dense "
-            "counts, and overlay-seed active-count summaries"
+            "counts, and overlay-seed active-count summaries; generic device-side active-count "
+            "continuation is now the default overlay scalar-summary route"
         ),
         partner_position=(
             "Numba is the recommended custom continuation when row-stream compaction is part of the app; "
@@ -135,9 +136,12 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "mode now skips final host row allocation; PIP closed-shape exact continuation now has "
             "instance-aware candidate columns and a prepared CuPy refiner with pod timing evidence; "
             "prepared/reusable route shape now covers PIP, LSI, and overlay-seed scalar summaries. "
-            "Remaining work is device-resident relation-row output for full overlay rows, parity/count "
-            "grouping over resident row streams beyond scalar active-count, and boundary-witness "
-            "ownership at serious scale."
+            "Goal3441 showed the former host overlay active-count bottleneck was flag download, "
+            "CPU containment, host active scan, and orchestration rather than OptiX traversal; "
+            "Goal3442/3443 moved the scalar active-count continuation onto the device and made it "
+            "the default route with pod evidence. Remaining work is device-resident relation-row "
+            "output for full overlay rows, richer parity/count grouping over resident row streams "
+            "beyond scalar active-count, and boundary-witness ownership at serious scale."
         ),
         generic_runtime_target="typed hit streams with grouped parity/count and compact-mask continuation",
         target_family=V2_8_FIRST_RUNTIME_TARGET,
@@ -154,6 +158,9 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "Goal3428",
             "Goal3435",
             "Goal3438",
+            "Goal3441",
+            "Goal3442",
+            "Goal3443",
         ),
     ),
     V28BenchmarkRuntimeGapRow(
