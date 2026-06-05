@@ -126,6 +126,9 @@ from .v2_8_geometry_relation_typed_stream import geometry_relation_typed_stream_
 from .v2_8_geometry_relation_typed_stream import geometry_relation_typed_stream_metadata_for_row_view
 from .v2_8_geometry_relation_typed_stream import make_v2_8_geometry_relation_typed_producer_metadata
 from .v2_8_geometry_relation_typed_stream import make_v2_8_geometry_relation_typed_stream_contract
+from .pair_column_paged_recovery import PairColumnPageRequest
+from .pair_column_paged_recovery import PairColumnPagedRecoveryContract
+from .pair_column_paged_recovery import iter_pair_column_page_requests
 from . import partner as _partner
 from .columnar_partner import DeviceColumnDescriptor
 from .columnar_partner import PartnerResidentColumnarRecordSet
@@ -322,6 +325,58 @@ _OPTIX_AABB_INDEX_OPERATION_CODES = {
     "range_contains": OPTIX_AABB_INDEX_RANGE_CONTAINS,
     "range_intersects": OPTIX_AABB_INDEX_RANGE_INTERSECTS,
 }
+
+
+@dataclass(frozen=True)
+class OptixExactDevicePairColumnPagePlan:
+    prepared: object
+    packed_points: PackedPoints
+    contract: PairColumnPagedRecoveryContract
+    page_requests: tuple[PairColumnPageRequest, ...]
+    native_page_symbol: str = OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_SYMBOL
+
+    @property
+    def page_count(self) -> int:
+        return len(self.page_requests)
+
+    @property
+    def point_count(self) -> int:
+        return int(self.packed_points.count)
+
+    def request(self, page_index: int) -> PairColumnPageRequest:
+        index = int(page_index)
+        if index < 0 or index >= len(self.page_requests):
+            raise IndexError("page_index out of range")
+        return self.page_requests[index]
+
+    def produce_page(self, page_index: int, *, max_rows: int | None = None):
+        request = self.request(page_index)
+        capacity = request.initial_capacity if max_rows is None else int(max_rows)
+        return self.prepared.exact_device_columns_page(
+            self.packed_points,
+            page_start=request.start,
+            page_count=request.item_count,
+            max_rows=capacity,
+        )
+
+    def to_metadata(self) -> dict[str, object]:
+        return {
+            "schema": "rtdl.optix.exact_device_pair_column_page_plan.v1",
+            "runtime_page_plan_object": True,
+            "native_page_symbol": self.native_page_symbol,
+            "point_count": int(self.point_count),
+            "page_count": int(self.page_count),
+            "contract": self.contract.to_metadata(),
+            "page_requests": [request.to_metadata() for request in self.page_requests],
+            "single_packed_point_buffer_reused": True,
+            "native_page_producer_used_by_plan": True,
+            "native_page_plan_handle_implemented": False,
+            "native_page_release_function_implemented": False,
+            "automatic_retry_authorized": False,
+            "hidden_dispatch_authorized": False,
+            "release_authorized": False,
+            "true_zero_copy_authorized": False,
+        }
 
 
 class _RtdlAabb2D(ctypes.Structure):
@@ -10833,6 +10888,35 @@ class PreparedOptixPointClosedShapeMembership2D:
             traversal_seconds=float(columns.traversal_seconds),
             native_symbol=OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL,
             field_names=("point_id", "shape_id"),
+        )
+
+    def exact_device_columns_page_plan(
+        self,
+        points,
+        *,
+        page_size: int,
+        initial_max_rows: int,
+    ) -> OptixExactDevicePairColumnPagePlan:
+        """Create an explicit runtime plan for caller-visible exact pair-column pages."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX closed-shape membership handle is closed")
+        packed_points = points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
+        if packed_points.dimension != 2:
+            raise ValueError("PreparedOptixPointClosedShapeMembership2D.exact_device_columns_page_plan requires 2-D points")
+        contract = PairColumnPagedRecoveryContract(
+            page_size=int(page_size),
+            initial_capacity=int(initial_max_rows),
+        )
+        page_requests = iter_pair_column_page_requests(
+            total_count=int(packed_points.count),
+            page_size=contract.page_size,
+            initial_capacity=contract.initial_capacity,
+        )
+        return OptixExactDevicePairColumnPagePlan(
+            prepared=self,
+            packed_points=packed_points,
+            contract=contract,
+            page_requests=page_requests,
         )
 
     def exact_device_columns_page(
