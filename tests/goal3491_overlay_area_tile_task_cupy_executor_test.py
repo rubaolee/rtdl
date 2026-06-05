@@ -125,7 +125,7 @@ class Goal3491OverlayAreaTileTaskCupyExecutorTest(unittest.TestCase):
 
         self.assertIn("CuPy tile-task executor", spatial["current_best_path"])
         self.assertIn("Goal3491", spatial["evidence_refs"])
-        self.assertIn("public-CDB tile-task executor", spatial["current_bottleneck"])
+        self.assertIn("public-CDB full-stream tile-task executor", spatial["current_bottleneck"])
         self.assertFalse(spatial["release_authorized"])
 
     def test_pod_artifact_records_cuda_fixture_evidence(self) -> None:

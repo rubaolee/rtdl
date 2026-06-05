@@ -199,9 +199,10 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "pairs, with p50/p90/p99 triangle pairs per relation of 294/3,450/25,530. Goal3491 added a "
             "CuPy tile-task executor for that Goal3490 plan, using one GPU thread per tile task plus "
             "cupy_add_at_by_relation_row_ordinal reduction, with RTX A5000 fixture evidence for relation "
-            "totals 1.75 and 2.0. Remaining work is a public-CDB tile-task executor "
-            "run over the full supported stream, integration with the device-resident relation stream, then "
-            "the native-vs-partner acceptance decision over that execution shape."
+            "totals 1.75 and 2.0. Goal3492 adds the public-CDB full-stream tile-task executor runner that "
+            "compares scalar relation areas against the Shapely/GEOS oracle. Remaining work is the pod run "
+            "over the full supported stream, integration with the device-resident relation stream, then the "
+            "native-vs-partner acceptance decision over that execution shape."
         ),
         generic_runtime_target=(
             "typed hit/relation streams with compact-mask, grouped parity/count, bounded witness "
@@ -246,6 +247,7 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "Goal3489",
             "Goal3490",
             "Goal3491",
+            "Goal3492",
         ),
     ),
     V28BenchmarkRuntimeGapRow(
