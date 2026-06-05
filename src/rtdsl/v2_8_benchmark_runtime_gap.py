@@ -124,7 +124,9 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "closed-shape candidate columns plus prepared CuPy exact refiner for PIP row/count "
             "continuation; reusable prepared handles for PIP exact continuation, LSI grouped/dense "
             "counts, and overlay-seed active-count summaries; generic device-side active-count "
-            "continuation is now the default overlay scalar-summary route"
+            "continuation is now the default overlay scalar-summary route; generic resident active "
+            "relation columns now expose left/right ids plus segment/containment dependency flags, "
+            "and those columns feed a generic compact grouped-count continuation by id"
         ),
         partner_position=(
             "Numba is the recommended custom continuation when row-stream compaction is part of the app; "
@@ -139,11 +141,16 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "Goal3441 showed the former host overlay active-count bottleneck was flag download, "
             "CPU containment, host active scan, and orchestration rather than OptiX traversal; "
             "Goal3442/3443 moved the scalar active-count continuation onto the device and made it "
-            "the default route with pod evidence. Remaining work is device-resident relation-row "
-            "output for full overlay rows, richer parity/count grouping over resident row streams "
-            "beyond scalar active-count, and boundary-witness ownership at serious scale."
+            "the default route with pod evidence; Goal3447/3449 added resident active relation "
+            "columns plus generic grouped-count continuation; Goal3450 proved the resident relation "
+            "column content against host materialized rows on a sparse-id fixture. Remaining work is "
+            "exact relation witnesses, overlay-area continuation, large-scale content-reference "
+            "oracles beyond counts/grouping, and boundary-witness ownership at serious scale."
         ),
-        generic_runtime_target="typed hit streams with grouped parity/count and compact-mask continuation",
+        generic_runtime_target=(
+            "typed hit/relation streams with compact-mask, grouped parity/count, and bounded witness "
+            "continuation"
+        ),
         target_family=V2_8_FIRST_RUNTIME_TARGET,
         priority="P0",
         evidence_refs=(
@@ -161,6 +168,10 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "Goal3441",
             "Goal3442",
             "Goal3443",
+            "Goal3447",
+            "Goal3448",
+            "Goal3449",
+            "Goal3450",
         ),
     ),
     V28BenchmarkRuntimeGapRow(
