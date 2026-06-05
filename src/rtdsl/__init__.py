@@ -364,6 +364,16 @@ from .v2_8_geometry_relation_typed_stream import geometry_relation_typed_stream_
 from .v2_8_geometry_relation_typed_stream import geometry_relation_typed_stream_metadata_for_row_view
 from .v2_8_geometry_relation_typed_stream import make_v2_8_geometry_relation_typed_producer_metadata
 from .v2_8_geometry_relation_typed_stream import make_v2_8_geometry_relation_typed_stream_contract
+from .v2_8_overlay_area_continuation_contract import V28OverlayAreaContinuationPlan
+from .v2_8_overlay_area_continuation_contract import V2_8_OVERLAY_AREA_CONTINUATION_CLAIM_BOUNDARY
+from .v2_8_overlay_area_continuation_contract import V2_8_OVERLAY_AREA_CONTINUATION_STATUS
+from .v2_8_overlay_area_continuation_contract import V2_8_OVERLAY_AREA_CONTINUATION_VERSION
+from .v2_8_overlay_area_continuation_contract import V2_8_OVERLAY_AREA_INPUT_CONTRACT
+from .v2_8_overlay_area_continuation_contract import V2_8_OVERLAY_AREA_SCALAR_TARGET
+from .v2_8_overlay_area_continuation_contract import V2_8_OVERLAY_GEOMETRY_STREAM_TARGET
+from .v2_8_overlay_area_continuation_contract import select_v2_8_overlay_area_continuation_target
+from .v2_8_overlay_area_continuation_contract import v2_8_overlay_area_continuation_plan
+from .v2_8_overlay_area_continuation_contract import validate_v2_8_overlay_area_continuation_plan
 from .geometry_relation_continuations import GEOMETRY_RELATION_BOUNDS_OVERLAP_AREA_CUPY_VERSION
 from .geometry_relation_continuations import GEOMETRY_RELATION_COMPLEXITY_CUPY_VERSION
 from .geometry_relation_continuations import GEOMETRY_RELATION_CONVEX_OVERLAY_AREA_CUPY_VERSION
@@ -2066,12 +2076,22 @@ __all__ = [
     "geometry_relation_schema_for_fields",
     "geometry_relation_typed_stream_metadata_for_relation_flag_device_columns",
     "geometry_relation_typed_stream_metadata_for_row_view",
+    "V28OverlayAreaContinuationPlan",
+    "V2_8_OVERLAY_AREA_CONTINUATION_CLAIM_BOUNDARY",
+    "V2_8_OVERLAY_AREA_CONTINUATION_STATUS",
+    "V2_8_OVERLAY_AREA_CONTINUATION_VERSION",
+    "V2_8_OVERLAY_AREA_INPUT_CONTRACT",
+    "V2_8_OVERLAY_AREA_SCALAR_TARGET",
+    "V2_8_OVERLAY_GEOMETRY_STREAM_TARGET",
     "GEOMETRY_RELATION_BOUNDS_OVERLAP_AREA_CUPY_VERSION",
     "GEOMETRY_RELATION_COMPLEXITY_CUPY_VERSION",
     "GEOMETRY_RELATION_CONVEX_OVERLAY_AREA_CUPY_VERSION",
     "GEOMETRY_RELATION_WITNESS_CUPY_VERSION",
     "make_v2_8_geometry_relation_typed_producer_metadata",
     "make_v2_8_geometry_relation_typed_stream_contract",
+    "select_v2_8_overlay_area_continuation_target",
+    "v2_8_overlay_area_continuation_plan",
+    "validate_v2_8_overlay_area_continuation_plan",
     "ShapePairBoundsOverlapAreaCupyResult",
     "ShapePairConvexOverlayAreaCupyResult",
     "ShapePairRelationComplexityCupyResult",
