@@ -53,6 +53,7 @@ class Goal3493OverlayAreaActiveShapePayloadConstructionTest(unittest.TestCase):
         self.assertTrue(data["rtdl_commit"].startswith("6193a493"))
         self.assertEqual(data["prepared_left_shape_count"], 1261)
         self.assertEqual(data["left_shape_count"], 15700)
+        self.assertLess(data["prepared_left_shape_count"], data["left_shape_count"])
         self.assertEqual(data["prepared_right_shape_count"], 949)
         self.assertEqual(data["left_payload_triangle_count"], 46297)
         self.assertEqual(data["right_payload_triangle_count"], 32087)

@@ -101,12 +101,13 @@ def v2_8_overlay_area_continuation_plan() -> tuple[dict[str, Any], ...]:
             output_contract="row_aligned_float64_exact_area_plus_status",
             algorithm_family="generic_simple_polygon_scalar_area_continuation",
             oracle_basis=(
-                "Goal3474 exact oracle: 4,543 active rows, 1,090 positive area rows, "
-                "3,453 zero-area rows, 0 exceptions, total area 26.08321766231042."
+                "Goal3474 exact oracle: 4,543 active rows, 1,090 strict-positive area rows (>0), "
+                "3,453 strict-zero rows, 0 exceptions, total area 26.08321766231042. "
+                "Goals3492-3494 current v2.8 row-threshold acceptance: 1,086 positive rows."
             ),
             acceptance_bars=(
                 "must match Goal3474 total exact area within explicit float64 tolerance",
-                "must match positive/zero row counts against the exact oracle",
+                "must match thresholded positive/zero row counts against the current exact oracle run",
                 "must fail closed on unsupported topology or scratch-capacity overflow",
                 "must consume only generic relation ordinals and geometry payload columns",
                 "must keep app/domain names out of native ABI and runtime metadata",
@@ -206,8 +207,11 @@ def describe_v2_8_overlay_area_pre_kernel_policy() -> dict[str, Any]:
         "status": "pre_kernel_policy_no_runtime_kernel_yet",
         "target": V2_8_OVERLAY_AREA_SCALAR_TARGET,
         "oracle_total_exact_area": total_expected,
-        "oracle_positive_row_count": 1090,
-        "oracle_zero_row_count": 3453,
+        "oracle_strict_positive_row_count": 1090,
+        "oracle_strict_zero_row_count": 3453,
+        "oracle_positive_row_count": 1086,
+        "oracle_zero_row_count": 3457,
+        "oracle_positive_row_threshold": V2_8_OVERLAY_AREA_ROW_ABS_TOLERANCE,
         "total_abs_tolerance": V2_8_OVERLAY_AREA_TOTAL_ABS_TOLERANCE,
         "total_rel_tolerance": V2_8_OVERLAY_AREA_TOTAL_REL_TOLERANCE,
         "effective_total_tolerance": total_tolerance,

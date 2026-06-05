@@ -20,15 +20,17 @@ class Goal3475V28RuntimeGapAfterExactOverlayOracleTest(unittest.TestCase):
 
         for phrase in (
             "external Shapely/GEOS exact oracle",
-            "1,090 positive rows",
-            "total exact area 26.08321766231042",
+            "1,090 strict-positive rows",
+            "1,086 positive",
+            "total exact area is 26.08321766231042",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, spatial["current_best_path"])
 
         for phrase in (
             "Goal3474 added a Shapely/GEOS exact CPU oracle",
-            "3,453 zero-area rows",
+            "3,453 strict-zero rows",
+            "1,086 positive rows under the v2.8 row threshold",
             "0 topology exceptions",
             "GPU-resident exact overlay-area continuation",
         ):

@@ -54,6 +54,7 @@ class Goal3479OverlayAreaContinuationContractTest(unittest.TestCase):
 
         for phrase in (
             "26.08321766231042",
+            "1,086 thresholded positive rows",
             "609 positive MultiPolygon rows",
             "42,314 output vertices",
             "scalar exact-area continuation",

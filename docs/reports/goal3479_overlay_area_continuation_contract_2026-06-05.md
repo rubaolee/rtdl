@@ -23,8 +23,11 @@ It declares two generic targets over the existing
 
 ## Why Scalar First
 
-Goal3474 gives a scalar target: 4,543 active rows, 1,090 positive rows, 3,453
-zero-area rows, 0 exceptions, and total exact area 26.08321766231042.
+Goal3474 gives a scalar target: 4,543 active rows, 1,090 strict-positive rows
+using a raw `>0` test, 3,453 strict-zero rows, 0 exceptions, and total exact
+area 26.08321766231042. Later Goals3492-3494 use the v2.8 row absolute
+tolerance and establish 1,086 thresholded positive rows for the current
+acceptance path.
 
 Goal3477 shows full geometry is a larger contract: 609 positive `MultiPolygon`
 rows, 48 positive `GeometryCollection` rows, 2,801 polygon components, 42,314

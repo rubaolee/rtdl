@@ -23,6 +23,9 @@ class Goal3482OverlayAreaPreKernelPolicyTest(unittest.TestCase):
             policy["scratch_policy"],
             "tile_triangle_pairs_fail_closed_on_tile_or_accumulator_overflow",
         )
+        self.assertEqual(policy["oracle_strict_positive_row_count"], 1090)
+        self.assertEqual(policy["oracle_positive_row_count"], 1086)
+        self.assertEqual(policy["oracle_positive_row_threshold"], 1.0e-10)
         self.assertAlmostEqual(policy["effective_total_tolerance"], max(1.0e-8, 1.0e-9 * 26.08321766231042))
 
     def test_policy_blocks_claims(self) -> None:
