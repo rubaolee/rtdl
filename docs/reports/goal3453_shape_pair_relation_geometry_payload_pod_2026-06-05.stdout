@@ -1,0 +1,341 @@
+{
+  "claim_boundary": {
+    "full_overlay_area_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "expected": {
+    "left_bounds": [
+      [
+        0.0,
+        0.0,
+        2.0,
+        2.0
+      ],
+      [
+        5.0,
+        5.0,
+        6.0,
+        6.0
+      ],
+      [
+        10.0,
+        10.0,
+        11.0,
+        11.0
+      ]
+    ],
+    "left_polygon_refs": [
+      [
+        3,
+        0,
+        4
+      ],
+      [
+        20,
+        4,
+        4
+      ],
+      [
+        31,
+        8,
+        4
+      ]
+    ],
+    "left_vertices_x": [
+      0.0,
+      2.0,
+      2.0,
+      0.0,
+      5.0,
+      6.0,
+      6.0,
+      5.0,
+      10.0,
+      11.0,
+      11.0,
+      10.0
+    ],
+    "left_vertices_y": [
+      0.0,
+      0.0,
+      2.0,
+      2.0,
+      5.0,
+      5.0,
+      6.0,
+      6.0,
+      10.0,
+      10.0,
+      11.0,
+      11.0
+    ],
+    "right_bounds": [
+      [
+        1.0,
+        -1.0,
+        3.0,
+        1.0
+      ],
+      [
+        0.25,
+        0.25,
+        0.75,
+        0.75
+      ],
+      [
+        20.0,
+        20.0,
+        21.0,
+        21.0
+      ],
+      [
+        4.0,
+        4.0,
+        7.0,
+        7.0
+      ]
+    ],
+    "right_polygon_refs": [
+      [
+        10,
+        0,
+        4
+      ],
+      [
+        11,
+        4,
+        4
+      ],
+      [
+        12,
+        8,
+        4
+      ],
+      [
+        13,
+        12,
+        4
+      ]
+    ],
+    "right_vertices_x": [
+      1.0,
+      3.0,
+      3.0,
+      1.0,
+      0.25,
+      0.75,
+      0.75,
+      0.25,
+      20.0,
+      21.0,
+      21.0,
+      20.0,
+      4.0,
+      7.0,
+      7.0,
+      4.0
+    ],
+    "right_vertices_y": [
+      -1.0,
+      -1.0,
+      1.0,
+      1.0,
+      0.25,
+      0.25,
+      0.75,
+      0.75,
+      20.0,
+      20.0,
+      21.0,
+      21.0,
+      4.0,
+      4.0,
+      7.0,
+      7.0
+    ]
+  },
+  "fixture": "sparse_id_three_left_four_right_rectangles",
+  "geometry_payload_matches": true,
+  "goal": 3453,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "metadata_geometry_payload": {
+    "app_specific_engine_logic_allowed": false,
+    "device_resident": true,
+    "exact_relation_witness_rows_materialized": false,
+    "left_bounds_device_ptr": 139964268425216,
+    "left_payload_lifetime": "relation_column_output_owner",
+    "left_polygon_count": 3,
+    "left_polygon_refs_device_ptr": 139964268423680,
+    "left_vertex_count": 12,
+    "left_vertices_x_device_ptr": 139964268424192,
+    "left_vertices_y_device_ptr": 139964268424704,
+    "right_bounds_device_ptr": 139964268415488,
+    "right_payload_lifetime": "prepared_shape_pair_relation_handle",
+    "right_polygon_count": 4,
+    "right_polygon_refs_device_ptr": 139964268413440,
+    "right_vertex_count": 16,
+    "right_vertices_x_device_ptr": 139964268413952,
+    "right_vertices_y_device_ptr": 139964268414464,
+    "schema": "shape_pair_relation_geometry_payload_device_columns",
+    "true_zero_copy_authorized": false
+  },
+  "metadata_schema_id": "shape_pair_relation_flags_2d_device_columns",
+  "observed": {
+    "left_bounds": [
+      [
+        0.0,
+        0.0,
+        2.0,
+        2.0
+      ],
+      [
+        5.0,
+        5.0,
+        6.0,
+        6.0
+      ],
+      [
+        10.0,
+        10.0,
+        11.0,
+        11.0
+      ]
+    ],
+    "left_polygon_refs": [
+      [
+        3,
+        0,
+        4
+      ],
+      [
+        20,
+        4,
+        4
+      ],
+      [
+        31,
+        8,
+        4
+      ]
+    ],
+    "left_vertices_x": [
+      0.0,
+      2.0,
+      2.0,
+      0.0,
+      5.0,
+      6.0,
+      6.0,
+      5.0,
+      10.0,
+      11.0,
+      11.0,
+      10.0
+    ],
+    "left_vertices_y": [
+      0.0,
+      0.0,
+      2.0,
+      2.0,
+      5.0,
+      5.0,
+      6.0,
+      6.0,
+      10.0,
+      10.0,
+      11.0,
+      11.0
+    ],
+    "right_bounds": [
+      [
+        1.0,
+        -1.0,
+        3.0,
+        1.0
+      ],
+      [
+        0.25,
+        0.25,
+        0.75,
+        0.75
+      ],
+      [
+        20.0,
+        20.0,
+        21.0,
+        21.0
+      ],
+      [
+        4.0,
+        4.0,
+        7.0,
+        7.0
+      ]
+    ],
+    "right_polygon_refs": [
+      [
+        10,
+        0,
+        4
+      ],
+      [
+        11,
+        4,
+        4
+      ],
+      [
+        12,
+        8,
+        4
+      ],
+      [
+        13,
+        12,
+        4
+      ]
+    ],
+    "right_vertices_x": [
+      1.0,
+      3.0,
+      3.0,
+      1.0,
+      0.25,
+      0.75,
+      0.75,
+      0.25,
+      20.0,
+      21.0,
+      21.0,
+      20.0,
+      4.0,
+      7.0,
+      7.0,
+      4.0
+    ],
+    "right_vertices_y": [
+      -1.0,
+      -1.0,
+      1.0,
+      1.0,
+      0.25,
+      0.25,
+      0.75,
+      0.75,
+      20.0,
+      20.0,
+      21.0,
+      21.0,
+      4.0,
+      4.0,
+      7.0,
+      7.0
+    ]
+  },
+  "rtdl_commit": "dda288dae545ef115fb46903ad18db62b3bb0aaa",
+  "schema": "rtdl.goal3453.shape_pair_relation_geometry_payload.v1"
+}
