@@ -1911,6 +1911,106 @@ class PreparedRayJoinOptixShapePairActiveCount:
         finally:
             columns.close()
 
+    def run_packed_left_active_relation_grouped_count_by_left(
+        self,
+        packed_left: RayJoinOptixShapePairActiveCountPackedLeftShapes,
+        *,
+        max_rows: int | None = None,
+        group_capacity: int | None = None,
+        dataset_note: str | None = None,
+    ) -> dict[str, object]:
+        phases: dict[str, float] = {}
+        resolved_group_capacity = (
+            int(group_capacity)
+            if group_capacity is not None
+            else max(1, int(packed_left.count))
+        )
+        columns = _phase_time(
+            phases,
+            "active_relation_device_columns_sec",
+            lambda: self.active_relation_device_columns(packed_left, max_rows=max_rows),
+        )
+        try:
+            grouped = _phase_time(
+                phases,
+                "active_relation_grouped_count_by_left_sec",
+                lambda: columns.grouped_count_by_left_id_compact_device_columns(
+                    group_capacity=resolved_group_capacity,
+                ),
+            )
+            try:
+                grouped_metadata = grouped.to_metadata()
+                grouped_sum = None
+                grouped_row_count = int(grouped.row_count)
+                try:
+                    counts = grouped.as_cupy_counts()
+                    import cupy as cp  # type: ignore
+
+                    grouped_sum = int(cp.sum(counts).get()) if int(counts.size) else 0
+                except Exception as exc:  # pragma: no cover - pod dependency diagnostic
+                    grouped_metadata["cupy_sum_error"] = str(exc)
+                native_phase_timings = self._prepared.last_phase_timings()
+                active_count = int(columns.active_relation_count)
+                return {
+                    "app": "rayjoin_v2_spatial_join",
+                    "workload": "overlay_seed",
+                    "execution_route": "prepared_optix_shape_pair_active_relation_grouped_count_by_left_reuse",
+                    "backend": "optix",
+                    "dataset": self._dataset,
+                    "dataset_note": dataset_note or self._dataset_note,
+                    "row_count": grouped_row_count,
+                    "summary": {
+                        "active_seed_count": active_count,
+                        "grouped_left_row_count": grouped_row_count,
+                        "grouped_count_sum": grouped_sum,
+                        "grouped_count_sum_matches_active_count": (
+                            grouped_sum == active_count if grouped_sum is not None else None
+                        ),
+                        "output_contract": "overlay_active_pair_dependency_count_by_left_id",
+                        "relation_column_overflow": bool(columns.overflow),
+                        "grouped_count_overflow": bool(grouped.overflow),
+                    },
+                    "phases_sec": phases,
+                    "native_phase_timings": native_phase_timings,
+                    "relation_column_metadata": columns.to_metadata(),
+                    "grouped_count_metadata": grouped_metadata,
+                    "prepared_reuse": {
+                        "enabled": True,
+                        "right_shape_count": self._right_shape_count,
+                        "prepare_static_scene_sec": self.prepare_static_scene_sec,
+                        "prepare_static_scene_paid_once": True,
+                    },
+                    "packed_left_reuse": {
+                        "enabled": True,
+                        "left_shape_count": packed_left.count,
+                        "pack_seconds": packed_left.pack_seconds,
+                        "left_shape_pack_paid_in_call": False,
+                    },
+                    "device_resident_continuation_status": (
+                        "shape_pair_active_relation_grouped_count_by_left: generic active "
+                        "relation columns feed the existing generic compact grouped-count "
+                        "device-column reducer; richer overlay witnesses remain outside this route"
+                    ),
+                    "native_engine_boundary": (
+                        "The engine sees generic relation columns and a generic grouped count by id. "
+                        "RayJoin interpretation stays in Python."
+                    ),
+                    "claim_boundary": {
+                        "full_rayjoin_reproduction": False,
+                        "paper_scale_perf_claim_authorized": False,
+                        "rtdl_beats_rayjoin_claim_authorized": False,
+                        "whole_app_speedup_claim_authorized": False,
+                        "v2_8_release_authorized": False,
+                        "public_speedup_claim_authorized": False,
+                        "rt_core_speedup_claim_authorized": False,
+                        "true_zero_copy_claim_authorized": False,
+                    },
+                }
+            finally:
+                grouped.close()
+        finally:
+            columns.close()
+
 
 def prepare_rayjoin_optix_shape_pair_active_count(
     right_shapes,

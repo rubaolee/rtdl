@@ -2400,6 +2400,103 @@ class OptixShapePairRelationDeviceColumnOutput:
             ),
         }
 
+    def grouped_count_by_id_compact_device_columns(
+        self,
+        *,
+        id_axis: str,
+        group_capacity: int,
+    ) -> OptixNativeDeviceGroupedCountI64CompactOutput:
+        """Group active relation rows by one id column and keep compact counts on CUDA."""
+        if self.overflow:
+            raise RuntimeError("cannot group an overflowed shape-pair relation column stream")
+        axis = str(id_axis)
+        if axis == "left":
+            source_ptr = int(self.left_ids_device_ptr)
+            field_name = b"left_id"
+        elif axis == "right":
+            source_ptr = int(self.right_ids_device_ptr)
+            field_name = b"right_id"
+        else:
+            raise ValueError("id_axis must be 'left' or 'right'")
+        capacity = int(group_capacity)
+        if capacity <= 0:
+            raise ValueError("group_capacity must be positive")
+        if source_ptr <= 0 and int(self.row_count) != 0:
+            raise RuntimeError(f"shape-pair relation stream does not own the {axis}_id column")
+        symbol = _find_optional_backend_symbol(
+            self.library,
+            OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_COMPACT_DEVICE_COLUMNS_WITH_CAPACITY_SYMBOL,
+        )
+        if symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_COMPACT_DEVICE_COLUMNS_WITH_CAPACITY_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        fields = (_RtdlDevicePayloadField * 1)(
+            _RtdlDevicePayloadField(
+                field_name,
+                _DB_KIND_INT64,
+                _DEVICE_PAYLOAD_DTYPE_INT64,
+                _DEVICE_PAYLOAD_DEVICE_CUDA,
+                int(self.device_ordinal),
+                int(self.row_count),
+                ctypes.sizeof(ctypes.c_int64),
+                source_ptr,
+            )
+        )
+        columns = _RtdlNativeDeviceGroupedCountI64CompactColumns()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            fields,
+            ctypes.c_size_t(1),
+            ctypes.c_size_t(self.row_count),
+            None,
+            ctypes.c_size_t(0),
+            field_name,
+            ctypes.c_size_t(capacity),
+            ctypes.byref(columns),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        owner = _OptixNativeDeviceGroupedCountI64CompactColumnsOwner(self.library, columns.owner_handle)
+        return OptixNativeDeviceGroupedCountI64CompactOutput(
+            library=self.library,
+            owner=owner,
+            group_keys_device_ptr=int(columns.group_keys_device_ptr),
+            counts_device_ptr=int(columns.counts_device_ptr),
+            row_count=int(columns.row_count),
+            capacity=int(columns.capacity),
+            group_capacity=int(columns.group_capacity),
+            source_row_count=int(columns.source_row_count),
+            overflow=bool(columns.overflow),
+            device_ordinal=int(columns.device_ordinal),
+            reduction_seconds=float(columns.reduction_seconds),
+            compaction_seconds=float(columns.compaction_seconds),
+            native_symbol=OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_COMPACT_DEVICE_COLUMNS_WITH_CAPACITY_SYMBOL,
+        )
+
+    def grouped_count_by_left_id_compact_device_columns(
+        self,
+        *,
+        group_capacity: int,
+    ) -> OptixNativeDeviceGroupedCountI64CompactOutput:
+        return self.grouped_count_by_id_compact_device_columns(
+            id_axis="left",
+            group_capacity=group_capacity,
+        )
+
+    def grouped_count_by_right_id_compact_device_columns(
+        self,
+        *,
+        group_capacity: int,
+    ) -> OptixNativeDeviceGroupedCountI64CompactOutput:
+        return self.grouped_count_by_id_compact_device_columns(
+            id_axis="right",
+            group_capacity=group_capacity,
+        )
+
     def close(self) -> None:
         self.owner.close()
 
