@@ -23,7 +23,7 @@ class Goal3446V28RuntimeGapAfterRayJoinActiveCountDeviceDefaultTest(unittest.Tes
         self.assertIn("Goal3442/3443 moved the scalar active-count continuation onto the device", spatial["current_bottleneck"])
         self.assertIn("Goal3447/3449 added resident active relation columns", spatial["current_bottleneck"])
         self.assertIn("Goal3450 proved the resident relation column content", spatial["current_bottleneck"])
-        self.assertIn("Remaining work is exact relation witnesses", spatial["current_bottleneck"])
+        self.assertIn("Remaining work is bounded exact relation witnesses", spatial["current_bottleneck"])
         for goal in ("Goal3441", "Goal3442", "Goal3443"):
             with self.subTest(goal=goal):
                 self.assertIn(goal, spatial["evidence_refs"])
