@@ -1,0 +1,950 @@
+{
+  "claim_boundary": {
+    "app_specific_native_engine_shortcut_authorized": false,
+    "internal_investigation_only": true,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "common_contract_comparisons": [
+    {
+      "claim_boundary": {
+        "app_specific_native_engine_shortcut_authorized": false,
+        "internal_investigation_only": true,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "contract": "point_closed_shape_membership_count",
+      "metric_source": "median(phases_sec.prepared_query_sec)",
+      "row_id": "rayjoin_common_pip_prepared_optix_count",
+      "v23_sec": 0.00025434140115976334,
+      "v23_summary": {
+        "output_contract": "point_to_shape_positive_hit_count",
+        "positive_assignment_count": 9,
+        "positive_hit_row_count": 9
+      },
+      "v28_sec": 0.0002465704455971718,
+      "v28_speedup_vs_v23": 1.0315161678998916,
+      "v28_summary": {
+        "boundary_event_contract_not_positive_membership": null,
+        "boundary_event_grouped_count_device_columns": null,
+        "boundary_event_row_count": null,
+        "count_mode": "exact",
+        "device_filtered_boundary_mode": null,
+        "device_filtered_count_matches_exact": null,
+        "device_filtered_is_exact_authority": false,
+        "output_contract": "point_to_shape_positive_hit_count",
+        "point_id_count_device_columns": null,
+        "point_order_mode": "natural",
+        "positive_assignment_count": 9,
+        "positive_hit_row_count": 9,
+        "prepared_point_probe_columns": null,
+        "validation_exact_count": null
+      }
+    },
+    {
+      "claim_boundary": {
+        "app_specific_native_engine_shortcut_authorized": false,
+        "internal_investigation_only": true,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "contract": "segment_pair_intersection_scalar_count",
+      "metric_source": "median(phases_sec.prepared_query_sec)",
+      "row_id": "rayjoin_common_lsi_prepared_optix_scalar_count",
+      "v23_sec": 0.00024490803480148315,
+      "v23_summary": {
+        "intersection_count": 58,
+        "output_contract": "segment_segment_intersection_count"
+      },
+      "v28_sec": 0.00024395063519477844,
+      "v28_speedup_vs_v23": 1.0039245628769948,
+      "v28_summary": {
+        "intersection_count": 58,
+        "output_contract": "segment_segment_intersection_count",
+        "segment_order_execution": "natural_input_order"
+      }
+    },
+    {
+      "claim_boundary": {
+        "app_specific_native_engine_shortcut_authorized": false,
+        "internal_investigation_only": true,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "contract": "shape_pair_active_dependency_scalar_count",
+      "metric_source": "median(phases_sec.prepared_query_sec)",
+      "row_id": "rayjoin_common_overlay_seed_prepared_optix_active_count",
+      "v23_sec": 0.0002478519454598427,
+      "v23_summary": {
+        "output_contract": "overlay_pair_dependency_count",
+        "pair_dependency_row_count": 9
+      },
+      "v28_sec": 0.00023842602968215942,
+      "v28_speedup_vs_v23": 1.0395339208149745,
+      "v28_summary": {
+        "active_seed_count": 9,
+        "output_contract": "overlay_active_pair_dependency_count"
+      }
+    }
+  ],
+  "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb + tests/fixtures/rayjoin/br_county_subset.cdb",
+  "dry_run": false,
+  "generated_at": "2026-06-05T22:25:56Z",
+  "goal": 3534,
+  "gpu": "NVIDIA RTX A5000, 580.126.09, 24564 MiB",
+  "interpretation": "Measures the old common RayJoin prepared_optix scalar count contracts in both checkouts and records v2.8 promoted contracts as no-v2.3-equivalent unless a matching v2.3 surface exists.",
+  "repeats": 7,
+  "schema": "rtdl.goal3534.rayjoin_v23_contract_baseline_probe.v1",
+  "v23_commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+  "v23_root": "/root/rtdl_goal3524/v23_evidence",
+  "v23_rows": {
+    "lsi": {
+      "checkout_label": "v23_evidence",
+      "claim_boundary": {
+        "app_specific_native_engine_shortcut_authorized": false,
+        "internal_investigation_only": true,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+      "contract": "segment_pair_intersection_scalar_count",
+      "metric_sec": {
+        "max": 0.00026064086705446243,
+        "median": 0.00024490803480148315,
+        "min": 0.0002316972240805626
+      },
+      "metric_source": "phases_sec.prepared_query_sec",
+      "root": "/root/rtdl_goal3524/v23_evidence",
+      "row_id": "rayjoin_common_lsi_prepared_optix_scalar_count",
+      "samples": [
+        {
+          "prepared_query_sec": 0.00025114044547080994,
+          "repeat": 1,
+          "run_elapsed_sec": 1.0369570022448897,
+          "summary": {
+            "intersection_count": 58,
+            "output_contract": "segment_segment_intersection_count"
+          }
+        },
+        {
+          "prepared_query_sec": 0.0002316972240805626,
+          "repeat": 2,
+          "run_elapsed_sec": 1.0527119236066937,
+          "summary": {
+            "intersection_count": 58,
+            "output_contract": "segment_segment_intersection_count"
+          }
+        },
+        {
+          "prepared_query_sec": 0.00024044327437877655,
+          "repeat": 3,
+          "run_elapsed_sec": 1.0751464562490582,
+          "summary": {
+            "intersection_count": 58,
+            "output_contract": "segment_segment_intersection_count"
+          }
+        },
+        {
+          "prepared_query_sec": 0.00026064086705446243,
+          "repeat": 4,
+          "run_elapsed_sec": 1.1715254075825214,
+          "summary": {
+            "intersection_count": 58,
+            "output_contract": "segment_segment_intersection_count"
+          }
+        },
+        {
+          "prepared_query_sec": 0.00023931264877319336,
+          "repeat": 5,
+          "run_elapsed_sec": 1.0592301497235894,
+          "summary": {
+            "intersection_count": 58,
+            "output_contract": "segment_segment_intersection_count"
+          }
+        },
+        {
+          "prepared_query_sec": 0.00025134533643722534,
+          "repeat": 6,
+          "run_elapsed_sec": 1.086939305998385,
+          "summary": {
+            "intersection_count": 58,
+            "output_contract": "segment_segment_intersection_count"
+          }
+        },
+        {
+          "prepared_query_sec": 0.00024490803480148315,
+          "repeat": 7,
+          "run_elapsed_sec": 1.1673793522641063,
+          "summary": {
+            "intersection_count": 58,
+            "output_contract": "segment_segment_intersection_count"
+          }
+        }
+      ]
+    },
+    "overlay_seed": {
+      "checkout_label": "v23_evidence",
+      "claim_boundary": {
+        "app_specific_native_engine_shortcut_authorized": false,
+        "internal_investigation_only": true,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+      "contract": "shape_pair_active_dependency_scalar_count",
+      "metric_sec": {
+        "max": 0.0002574380487203598,
+        "median": 0.0002478519454598427,
+        "min": 0.00023937225341796875
+      },
+      "metric_source": "phases_sec.prepared_query_sec",
+      "root": "/root/rtdl_goal3524/v23_evidence",
+      "row_id": "rayjoin_common_overlay_seed_prepared_optix_active_count",
+      "samples": [
+        {
+          "prepared_query_sec": 0.0002574380487203598,
+          "repeat": 1,
+          "run_elapsed_sec": 1.482545804232359,
+          "summary": {
+            "output_contract": "overlay_pair_dependency_count",
+            "pair_dependency_row_count": 9
+          }
+        },
+        {
+          "prepared_query_sec": 0.0002478519454598427,
+          "repeat": 2,
+          "run_elapsed_sec": 1.443372568115592,
+          "summary": {
+            "output_contract": "overlay_pair_dependency_count",
+            "pair_dependency_row_count": 9
+          }
+        },
+        {
+          "prepared_query_sec": 0.00023937225341796875,
+          "repeat": 3,
+          "run_elapsed_sec": 1.4703889088705182,
+          "summary": {
+            "output_contract": "overlay_pair_dependency_count",
+            "pair_dependency_row_count": 9
+          }
+        },
+        {
+          "prepared_query_sec": 0.0002463236451148987,
+          "repeat": 4,
+          "run_elapsed_sec": 1.3230735249817371,
+          "summary": {
+            "output_contract": "overlay_pair_dependency_count",
+            "pair_dependency_row_count": 9
+          }
+        },
+        {
+          "prepared_query_sec": 0.0002471720799803734,
+          "repeat": 5,
+          "run_elapsed_sec": 1.3630902208387852,
+          "summary": {
+            "output_contract": "overlay_pair_dependency_count",
+            "pair_dependency_row_count": 9
+          }
+        },
+        {
+          "prepared_query_sec": 0.00025019049644470215,
+          "repeat": 6,
+          "run_elapsed_sec": 1.5060814088210464,
+          "summary": {
+            "output_contract": "overlay_pair_dependency_count",
+            "pair_dependency_row_count": 9
+          }
+        },
+        {
+          "prepared_query_sec": 0.000247906893491745,
+          "repeat": 7,
+          "run_elapsed_sec": 1.4713995829224586,
+          "summary": {
+            "output_contract": "overlay_pair_dependency_count",
+            "pair_dependency_row_count": 9
+          }
+        }
+      ]
+    },
+    "pip": {
+      "checkout_label": "v23_evidence",
+      "claim_boundary": {
+        "app_specific_native_engine_shortcut_authorized": false,
+        "internal_investigation_only": true,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+      "contract": "point_closed_shape_membership_count",
+      "metric_sec": {
+        "max": 0.0002824924886226654,
+        "median": 0.00025434140115976334,
+        "min": 0.0002414984628558159
+      },
+      "metric_source": "phases_sec.prepared_query_sec",
+      "root": "/root/rtdl_goal3524/v23_evidence",
+      "row_id": "rayjoin_common_pip_prepared_optix_count",
+      "samples": [
+        {
+          "prepared_query_sec": 0.0002824924886226654,
+          "repeat": 1,
+          "run_elapsed_sec": 1.425395630300045,
+          "summary": {
+            "output_contract": "point_to_shape_positive_hit_count",
+            "positive_assignment_count": 9,
+            "positive_hit_row_count": 9
+          }
+        },
+        {
+          "prepared_query_sec": 0.00025434140115976334,
+          "repeat": 2,
+          "run_elapsed_sec": 1.3244723184034228,
+          "summary": {
+            "output_contract": "point_to_shape_positive_hit_count",
+            "positive_assignment_count": 9,
+            "positive_hit_row_count": 9
+          }
+        },
+        {
+          "prepared_query_sec": 0.00025481078773736954,
+          "repeat": 3,
+          "run_elapsed_sec": 1.4402139419689775,
+          "summary": {
+            "output_contract": "point_to_shape_positive_hit_count",
+            "positive_assignment_count": 9,
+            "positive_hit_row_count": 9
+          }
+        },
+        {
+          "prepared_query_sec": 0.0002414984628558159,
+          "repeat": 4,
+          "run_elapsed_sec": 1.5126690156757832,
+          "summary": {
+            "output_contract": "point_to_shape_positive_hit_count",
+            "positive_assignment_count": 9,
+            "positive_hit_row_count": 9
+          }
+        },
+        {
+          "prepared_query_sec": 0.00025141239166259766,
+          "repeat": 5,
+          "run_elapsed_sec": 1.319404972717166,
+          "summary": {
+            "output_contract": "point_to_shape_positive_hit_count",
+            "positive_assignment_count": 9,
+            "positive_hit_row_count": 9
+          }
+        },
+        {
+          "prepared_query_sec": 0.00024667661637067795,
+          "repeat": 6,
+          "run_elapsed_sec": 1.290934788994491,
+          "summary": {
+            "output_contract": "point_to_shape_positive_hit_count",
+            "positive_assignment_count": 9,
+            "positive_hit_row_count": 9
+          }
+        },
+        {
+          "prepared_query_sec": 0.00025667622685432434,
+          "repeat": 7,
+          "run_elapsed_sec": 1.2988913590088487,
+          "summary": {
+            "output_contract": "point_to_shape_positive_hit_count",
+            "positive_assignment_count": 9,
+            "positive_hit_row_count": 9
+          }
+        }
+      ]
+    }
+  },
+  "v28_commit": "c237b0db296c890455661b16e6066c1c71ee2e97",
+  "v28_root": "/root/rtdl_goal3524/v28_current",
+  "v28_rows": {
+    "lsi": {
+      "checkout_label": "v28_current",
+      "claim_boundary": {
+        "app_specific_native_engine_shortcut_authorized": false,
+        "internal_investigation_only": true,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "commit": "c237b0db296c890455661b16e6066c1c71ee2e97",
+      "contract": "segment_pair_intersection_scalar_count",
+      "metric_sec": {
+        "max": 0.00027725379914045334,
+        "median": 0.00024395063519477844,
+        "min": 0.00022769533097743988
+      },
+      "metric_source": "phases_sec.prepared_query_sec",
+      "root": "/root/rtdl_goal3524/v28_current",
+      "row_id": "rayjoin_common_lsi_prepared_optix_scalar_count",
+      "samples": [
+        {
+          "prepared_query_sec": 0.00024402886629104614,
+          "repeat": 1,
+          "run_elapsed_sec": 1.1910856701433659,
+          "summary": {
+            "intersection_count": 58,
+            "output_contract": "segment_segment_intersection_count",
+            "segment_order_execution": "natural_input_order"
+          }
+        },
+        {
+          "prepared_query_sec": 0.00022769533097743988,
+          "repeat": 2,
+          "run_elapsed_sec": 1.2042455468326807,
+          "summary": {
+            "intersection_count": 58,
+            "output_contract": "segment_segment_intersection_count",
+            "segment_order_execution": "natural_input_order"
+          }
+        },
+        {
+          "prepared_query_sec": 0.00024395063519477844,
+          "repeat": 3,
+          "run_elapsed_sec": 1.1935224989429116,
+          "summary": {
+            "intersection_count": 58,
+            "output_contract": "segment_segment_intersection_count",
+            "segment_order_execution": "natural_input_order"
+          }
+        },
+        {
+          "prepared_query_sec": 0.00027725379914045334,
+          "repeat": 4,
+          "run_elapsed_sec": 1.2516244435682893,
+          "summary": {
+            "intersection_count": 58,
+            "output_contract": "segment_segment_intersection_count",
+            "segment_order_execution": "natural_input_order"
+          }
+        },
+        {
+          "prepared_query_sec": 0.0002409331500530243,
+          "repeat": 5,
+          "run_elapsed_sec": 1.205511862412095,
+          "summary": {
+            "intersection_count": 58,
+            "output_contract": "segment_segment_intersection_count",
+            "segment_order_execution": "natural_input_order"
+          }
+        },
+        {
+          "prepared_query_sec": 0.00023506581783294678,
+          "repeat": 6,
+          "run_elapsed_sec": 1.168793285265565,
+          "summary": {
+            "intersection_count": 58,
+            "output_contract": "segment_segment_intersection_count",
+            "segment_order_execution": "natural_input_order"
+          }
+        },
+        {
+          "prepared_query_sec": 0.00024881958961486816,
+          "repeat": 7,
+          "run_elapsed_sec": 1.2000754810869694,
+          "summary": {
+            "intersection_count": 58,
+            "output_contract": "segment_segment_intersection_count",
+            "segment_order_execution": "natural_input_order"
+          }
+        }
+      ]
+    },
+    "overlay_seed": {
+      "checkout_label": "v28_current",
+      "claim_boundary": {
+        "app_specific_native_engine_shortcut_authorized": false,
+        "internal_investigation_only": true,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "commit": "c237b0db296c890455661b16e6066c1c71ee2e97",
+      "contract": "shape_pair_active_dependency_scalar_count",
+      "metric_sec": {
+        "max": 0.00026008766144514084,
+        "median": 0.00023842602968215942,
+        "min": 0.0002276729792356491
+      },
+      "metric_source": "phases_sec.prepared_query_sec",
+      "root": "/root/rtdl_goal3524/v28_current",
+      "row_id": "rayjoin_common_overlay_seed_prepared_optix_active_count",
+      "samples": [
+        {
+          "prepared_query_sec": 0.0002381782978773117,
+          "repeat": 1,
+          "run_elapsed_sec": 1.4146743584424257,
+          "summary": {
+            "active_seed_count": 9,
+            "output_contract": "overlay_active_pair_dependency_count"
+          }
+        },
+        {
+          "prepared_query_sec": 0.00026008766144514084,
+          "repeat": 2,
+          "run_elapsed_sec": 1.4511202592402697,
+          "summary": {
+            "active_seed_count": 9,
+            "output_contract": "overlay_active_pair_dependency_count"
+          }
+        },
+        {
+          "prepared_query_sec": 0.00023885536938905716,
+          "repeat": 3,
+          "run_elapsed_sec": 1.555672493763268,
+          "summary": {
+            "active_seed_count": 9,
+            "output_contract": "overlay_active_pair_dependency_count"
+          }
+        },
+        {
+          "prepared_query_sec": 0.0002279011532664299,
+          "repeat": 4,
+          "run_elapsed_sec": 1.3920222176238894,
+          "summary": {
+            "active_seed_count": 9,
+            "output_contract": "overlay_active_pair_dependency_count"
+          }
+        },
+        {
+          "prepared_query_sec": 0.0002276729792356491,
+          "repeat": 5,
+          "run_elapsed_sec": 1.6174872191622853,
+          "summary": {
+            "active_seed_count": 9,
+            "output_contract": "overlay_active_pair_dependency_count"
+          }
+        },
+        {
+          "prepared_query_sec": 0.00023842602968215942,
+          "repeat": 6,
+          "run_elapsed_sec": 1.3921284917742014,
+          "summary": {
+            "active_seed_count": 9,
+            "output_contract": "overlay_active_pair_dependency_count"
+          }
+        },
+        {
+          "prepared_query_sec": 0.0002387501299381256,
+          "repeat": 7,
+          "run_elapsed_sec": 1.4245294537395239,
+          "summary": {
+            "active_seed_count": 9,
+            "output_contract": "overlay_active_pair_dependency_count"
+          }
+        }
+      ]
+    },
+    "pip": {
+      "checkout_label": "v28_current",
+      "claim_boundary": {
+        "app_specific_native_engine_shortcut_authorized": false,
+        "internal_investigation_only": true,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "commit": "c237b0db296c890455661b16e6066c1c71ee2e97",
+      "contract": "point_closed_shape_membership_count",
+      "metric_sec": {
+        "max": 0.0003153812140226364,
+        "median": 0.0002465704455971718,
+        "min": 0.0002137497067451477
+      },
+      "metric_source": "phases_sec.prepared_query_sec",
+      "root": "/root/rtdl_goal3524/v28_current",
+      "row_id": "rayjoin_common_pip_prepared_optix_count",
+      "samples": [
+        {
+          "prepared_query_sec": 0.000238833948969841,
+          "repeat": 1,
+          "run_elapsed_sec": 1.3756475504487753,
+          "summary": {
+            "boundary_event_contract_not_positive_membership": null,
+            "boundary_event_grouped_count_device_columns": null,
+            "boundary_event_row_count": null,
+            "count_mode": "exact",
+            "device_filtered_boundary_mode": null,
+            "device_filtered_count_matches_exact": null,
+            "device_filtered_is_exact_authority": false,
+            "output_contract": "point_to_shape_positive_hit_count",
+            "point_id_count_device_columns": null,
+            "point_order_mode": "natural",
+            "positive_assignment_count": 9,
+            "positive_hit_row_count": 9,
+            "prepared_point_probe_columns": null,
+            "validation_exact_count": null
+          }
+        },
+        {
+          "prepared_query_sec": 0.00023526698350906372,
+          "repeat": 2,
+          "run_elapsed_sec": 1.464123702608049,
+          "summary": {
+            "boundary_event_contract_not_positive_membership": null,
+            "boundary_event_grouped_count_device_columns": null,
+            "boundary_event_row_count": null,
+            "count_mode": "exact",
+            "device_filtered_boundary_mode": null,
+            "device_filtered_count_matches_exact": null,
+            "device_filtered_is_exact_authority": false,
+            "output_contract": "point_to_shape_positive_hit_count",
+            "point_id_count_device_columns": null,
+            "point_order_mode": "natural",
+            "positive_assignment_count": 9,
+            "positive_hit_row_count": 9,
+            "prepared_point_probe_columns": null,
+            "validation_exact_count": null
+          }
+        },
+        {
+          "prepared_query_sec": 0.0002137497067451477,
+          "repeat": 3,
+          "run_elapsed_sec": 1.377928008325398,
+          "summary": {
+            "boundary_event_contract_not_positive_membership": null,
+            "boundary_event_grouped_count_device_columns": null,
+            "boundary_event_row_count": null,
+            "count_mode": "exact",
+            "device_filtered_boundary_mode": null,
+            "device_filtered_count_matches_exact": null,
+            "device_filtered_is_exact_authority": false,
+            "output_contract": "point_to_shape_positive_hit_count",
+            "point_id_count_device_columns": null,
+            "point_order_mode": "natural",
+            "positive_assignment_count": 9,
+            "positive_hit_row_count": 9,
+            "prepared_point_probe_columns": null,
+            "validation_exact_count": null
+          }
+        },
+        {
+          "prepared_query_sec": 0.0002625267952680588,
+          "repeat": 4,
+          "run_elapsed_sec": 1.6553029920905828,
+          "summary": {
+            "boundary_event_contract_not_positive_membership": null,
+            "boundary_event_grouped_count_device_columns": null,
+            "boundary_event_row_count": null,
+            "count_mode": "exact",
+            "device_filtered_boundary_mode": null,
+            "device_filtered_count_matches_exact": null,
+            "device_filtered_is_exact_authority": false,
+            "output_contract": "point_to_shape_positive_hit_count",
+            "point_id_count_device_columns": null,
+            "point_order_mode": "natural",
+            "positive_assignment_count": 9,
+            "positive_hit_row_count": 9,
+            "prepared_point_probe_columns": null,
+            "validation_exact_count": null
+          }
+        },
+        {
+          "prepared_query_sec": 0.00025359727442264557,
+          "repeat": 5,
+          "run_elapsed_sec": 1.4215546771883965,
+          "summary": {
+            "boundary_event_contract_not_positive_membership": null,
+            "boundary_event_grouped_count_device_columns": null,
+            "boundary_event_row_count": null,
+            "count_mode": "exact",
+            "device_filtered_boundary_mode": null,
+            "device_filtered_count_matches_exact": null,
+            "device_filtered_is_exact_authority": false,
+            "output_contract": "point_to_shape_positive_hit_count",
+            "point_id_count_device_columns": null,
+            "point_order_mode": "natural",
+            "positive_assignment_count": 9,
+            "positive_hit_row_count": 9,
+            "prepared_point_probe_columns": null,
+            "validation_exact_count": null
+          }
+        },
+        {
+          "prepared_query_sec": 0.0002465704455971718,
+          "repeat": 6,
+          "run_elapsed_sec": 1.363530209288001,
+          "summary": {
+            "boundary_event_contract_not_positive_membership": null,
+            "boundary_event_grouped_count_device_columns": null,
+            "boundary_event_row_count": null,
+            "count_mode": "exact",
+            "device_filtered_boundary_mode": null,
+            "device_filtered_count_matches_exact": null,
+            "device_filtered_is_exact_authority": false,
+            "output_contract": "point_to_shape_positive_hit_count",
+            "point_id_count_device_columns": null,
+            "point_order_mode": "natural",
+            "positive_assignment_count": 9,
+            "positive_hit_row_count": 9,
+            "prepared_point_probe_columns": null,
+            "validation_exact_count": null
+          }
+        },
+        {
+          "prepared_query_sec": 0.0003153812140226364,
+          "repeat": 7,
+          "run_elapsed_sec": 1.6560713239014149,
+          "summary": {
+            "boundary_event_contract_not_positive_membership": null,
+            "boundary_event_grouped_count_device_columns": null,
+            "boundary_event_row_count": null,
+            "count_mode": "exact",
+            "device_filtered_boundary_mode": null,
+            "device_filtered_count_matches_exact": null,
+            "device_filtered_is_exact_authority": false,
+            "output_contract": "point_to_shape_positive_hit_count",
+            "point_id_count_device_columns": null,
+            "point_order_mode": "natural",
+            "positive_assignment_count": 9,
+            "positive_hit_row_count": 9,
+            "prepared_point_probe_columns": null,
+            "validation_exact_count": null
+          }
+        }
+      ]
+    }
+  },
+  "v2_8_promoted_rows_without_v23_equivalent": [
+    {
+      "claim_boundary": {
+        "app_specific_native_engine_shortcut_authorized": false,
+        "internal_investigation_only": true,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "contract": "point_closed_shape_membership_count",
+      "row_id": "rayjoin_count_parity_pip_prepared_optix",
+      "v23_baseline_row_id": "rayjoin_common_pip_prepared_optix_count",
+      "v23_equivalent_status": "common_scalar_contract_measured",
+      "v28_metric_sec": 0.0002751201391220093,
+      "v28_metric_source": "phases_sec.prepared_query_sec"
+    },
+    {
+      "claim_boundary": {
+        "app_specific_native_engine_shortcut_authorized": false,
+        "internal_investigation_only": true,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "contract": "segment_pair_intersection_count_by_left_id",
+      "row_id": "rayjoin_count_parity_lsi_left_id_dense_count",
+      "v23_baseline_row_id": "rayjoin_common_lsi_prepared_optix_scalar_count",
+      "v23_equivalent_status": "no_same_contract_v23_has_scalar_total_lsi_count_only",
+      "v28_metric_sec": 0.05960572510957718,
+      "v28_metric_source": "phases_sec.left_id_count_device_columns_sec"
+    },
+    {
+      "claim_boundary": {
+        "app_specific_native_engine_shortcut_authorized": false,
+        "internal_investigation_only": true,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "contract": "shape_pair_active_dependency_count",
+      "row_id": "rayjoin_count_parity_overlay_seed_active_count",
+      "v23_baseline_row_id": "rayjoin_common_overlay_seed_prepared_optix_active_count",
+      "v23_equivalent_status": "common_scalar_output_contract_measured_but_v2_8_route_is_device_continuation_variant",
+      "v28_metric_sec": 0.3454941278323531,
+      "v28_metric_source": "phases_sec.active_count_device_continuation_sec"
+    },
+    {
+      "claim_boundary": {
+        "app_specific_native_engine_shortcut_authorized": false,
+        "internal_investigation_only": true,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "contract": "shape_pair_relation_device_columns",
+      "row_id": "rayjoin_relation_columns_cdb_pair",
+      "v23_baseline_row_id": null,
+      "v23_equivalent_status": "no_equivalent_contract_in_v23_evidence_checkout",
+      "v28_metric_sec": 0.000532025471329689,
+      "v28_metric_source": "relation_columns_sec.median"
+    },
+    {
+      "claim_boundary": {
+        "app_specific_native_engine_shortcut_authorized": false,
+        "internal_investigation_only": true,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "contract": "shape_pair_relation_grouped_count_by_left",
+      "row_id": "rayjoin_relation_grouped_count_cdb_pair",
+      "v23_baseline_row_id": null,
+      "v23_equivalent_status": "no_equivalent_contract_in_v23_evidence_checkout",
+      "v28_metric_sec": 0.0001771003007888794,
+      "v28_metric_source": "grouped_count_sec.median"
+    },
+    {
+      "claim_boundary": {
+        "app_specific_native_engine_shortcut_authorized": false,
+        "internal_investigation_only": true,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "contract": "shape_pair_relation_bounds_overlap_area_payload",
+      "row_id": "rayjoin_shape_pair_payload_bounds_cdb_pair",
+      "v23_baseline_row_id": null,
+      "v23_equivalent_status": "no_equivalent_contract_in_v23_evidence_checkout",
+      "v28_metric_sec": 0.000936153344810009,
+      "v28_metric_source": "bounds_overlap_area_sec.median"
+    },
+    {
+      "claim_boundary": {
+        "app_specific_native_engine_shortcut_authorized": false,
+        "internal_investigation_only": true,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "contract": "shape_pair_relation_witness_payload",
+      "row_id": "rayjoin_shape_pair_payload_witness_cdb_pair",
+      "v23_baseline_row_id": null,
+      "v23_equivalent_status": "no_equivalent_contract_in_v23_evidence_checkout",
+      "v28_metric_sec": 0.0007206359878182411,
+      "v28_metric_source": "witness_continuation_sec.median"
+    },
+    {
+      "claim_boundary": {
+        "app_specific_native_engine_shortcut_authorized": false,
+        "internal_investigation_only": true,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "contract": "shape_pair_relation_stream_steady_state",
+      "row_id": "rayjoin_overlay_area_relation_stream_cdb_pair",
+      "v23_baseline_row_id": null,
+      "v23_equivalent_status": "no_equivalent_contract_in_v23_evidence_checkout",
+      "v28_metric_sec": 0.00045368820428848267,
+      "v28_metric_source": "timing_sec.active_relation_device_columns"
+    },
+    {
+      "claim_boundary": {
+        "app_specific_native_engine_shortcut_authorized": false,
+        "internal_investigation_only": true,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "contract": "prepared_overlay_area_device_tile_task_planner",
+      "row_id": "rayjoin_overlay_area_device_tile_planner_cdb_pair",
+      "v23_baseline_row_id": null,
+      "v23_equivalent_status": "no_equivalent_contract_in_v23_evidence_checkout",
+      "v28_metric_sec": 0.0012832609936594963,
+      "v28_metric_source": "timing_sec.device_tile_task_planning_best_repeat"
+    },
+    {
+      "claim_boundary": {
+        "app_specific_native_engine_shortcut_authorized": false,
+        "internal_investigation_only": true,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "contract": "prepared_overlay_area_tile_task_executor",
+      "row_id": "rayjoin_overlay_area_tile_executor_cdb_pair",
+      "v23_baseline_row_id": null,
+      "v23_equivalent_status": "no_equivalent_contract_in_v23_evidence_checkout",
+      "v28_metric_sec": 0.001268354244530201,
+      "v28_metric_source": "timing_sec.cupy_tile_task_executor_best_repeat"
+    }
+  ]
+}
