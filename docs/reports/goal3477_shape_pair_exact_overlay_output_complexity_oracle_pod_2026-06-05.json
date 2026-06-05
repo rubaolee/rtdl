@@ -1,0 +1,134 @@
+{
+  "claim_boundary": {
+    "full_overlay_area_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "first_run_complexity": {
+    "boundary_only_row_count": 3452,
+    "empty_row_count": 1,
+    "exception_count": 0,
+    "geometry_type_counts": {
+      "GeometryCollection": 48,
+      "MultiPolygon": 609,
+      "Point": 3452,
+      "Polygon": 434
+    },
+    "max_complexity_samples": [
+      {
+        "area": 0.40590904807070377,
+        "geometry_type": "MultiPolygon",
+        "left_ordinal": 280,
+        "polygon_components": 11,
+        "right_ordinal": 39,
+        "row": 184,
+        "total_output_vertices": 586
+      }
+    ],
+    "max_output_vertices_per_row": 586,
+    "max_polygon_components_per_row": 22,
+    "max_row_area": 1.5951731790844415,
+    "positive_area_row_count": 1090,
+    "positive_geometry_type_counts": {
+      "GeometryCollection": 48,
+      "MultiPolygon": 609,
+      "Polygon": 433
+    },
+    "row_count": 4543,
+    "total_exact_area": 26.083217662310428,
+    "total_output_vertices": 42314,
+    "total_polygon_components": 2801
+  },
+  "geometry_build_sec": 6.1018201150000095,
+  "goal": 3477,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "iterations": 1,
+  "left_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county.cdb",
+  "left_geometry_status_counts": {
+    "make_valid": 9923,
+    "valid": 5777
+  },
+  "left_shape_count": 15700,
+  "max_rows": 65536,
+  "oracle_dependency_scope": "external_cpu_output_complexity_oracle_not_rtdl_runtime_dependency",
+  "ordinal_copy_to_host_sec": {
+    "max": 0.0005538854748010635,
+    "median": 0.0005538854748010635,
+    "min": 0.0005538854748010635
+  },
+  "relation_columns_sec": {
+    "max": 0.3736177710816264,
+    "median": 0.3736177710816264,
+    "min": 0.3736177710816264
+  },
+  "right_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count1024.cdb",
+  "right_geometry_status_counts": {
+    "make_valid": 596,
+    "valid": 353
+  },
+  "right_shape_count": 949,
+  "rtdl_commit": "85ff57ff058e9130c9760d94e69434ee24f5e191",
+  "runs": [
+    {
+      "claim_boundary": {
+        "full_overlay_area_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false
+      },
+      "complexity": {
+        "boundary_only_row_count": 3452,
+        "empty_row_count": 1,
+        "exception_count": 0,
+        "geometry_type_counts": {
+          "GeometryCollection": 48,
+          "MultiPolygon": 609,
+          "Point": 3452,
+          "Polygon": 434
+        },
+        "max_complexity_samples": [
+          {
+            "area": 0.40590904807070377,
+            "geometry_type": "MultiPolygon",
+            "left_ordinal": 280,
+            "polygon_components": 11,
+            "right_ordinal": 39,
+            "row": 184,
+            "total_output_vertices": 586
+          }
+        ],
+        "max_output_vertices_per_row": 586,
+        "max_polygon_components_per_row": 22,
+        "max_row_area": 1.5951731790844415,
+        "positive_area_row_count": 1090,
+        "positive_geometry_type_counts": {
+          "GeometryCollection": 48,
+          "MultiPolygon": 609,
+          "Polygon": 433
+        },
+        "row_count": 4543,
+        "total_exact_area": 26.083217662310428,
+        "total_output_vertices": 42314,
+        "total_polygon_components": 2801
+      },
+      "iteration": 0,
+      "ordinal_copy_to_host_sec": 0.0005538854748010635,
+      "relation_columns_sec": 0.3736177710816264,
+      "shapely_output_complexity_oracle_sec": 0.6810975121334195
+    }
+  ],
+  "schema": "rtdl.goal3477.shape_pair_exact_overlay_output_complexity_oracle.v1",
+  "shapely_output_complexity_oracle_sec": {
+    "max": 0.6810975121334195,
+    "median": 0.6810975121334195,
+    "min": 0.6810975121334195
+  },
+  "shapely_version": "2.1.2"
+}
