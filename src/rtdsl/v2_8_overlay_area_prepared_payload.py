@@ -423,6 +423,14 @@ class PreparedOverlayAreaTileTask:
     def pair_stop(self) -> int:
         return self.pair_offset + self.pair_count
 
+    @property
+    def left_triangle_stop(self) -> int:
+        return self.left_triangle_start + self.left_triangle_count
+
+    @property
+    def right_triangle_stop(self) -> int:
+        return self.right_triangle_start + self.right_triangle_count
+
     def to_metadata(self) -> dict[str, int]:
         return {
             "task_ordinal": self.task_ordinal,
@@ -433,8 +441,10 @@ class PreparedOverlayAreaTileTask:
             "pair_stop": self.pair_stop,
             "left_triangle_start": self.left_triangle_start,
             "left_triangle_count": self.left_triangle_count,
+            "left_triangle_stop": self.left_triangle_stop,
             "right_triangle_start": self.right_triangle_start,
             "right_triangle_count": self.right_triangle_count,
+            "right_triangle_stop": self.right_triangle_stop,
         }
 
 

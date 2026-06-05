@@ -27,6 +27,8 @@ class Goal3490OverlayAreaTileTaskPlannerTest(unittest.TestCase):
         self.assertEqual([task.pair_count for task in tasks], [3, 3, 2])
         self.assertEqual([task.pair_offset for task in tasks], [0, 3, 6])
         self.assertEqual([task.pair_stop for task in tasks], [3, 6, 8])
+        self.assertEqual([task.left_triangle_stop for task in tasks], [4, 4, 4])
+        self.assertEqual([task.right_triangle_stop for task in tasks], [2, 2, 2])
         self.assertEqual(summary["status"], "accept", summary)
         self.assertEqual(summary["expected_triangle_pair_count"], 8)
         self.assertEqual(summary["planned_triangle_pair_count"], 8)
