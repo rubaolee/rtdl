@@ -1189,6 +1189,7 @@ def prepare_overlay_area_tile_task_cupy_inputs_from_relation_ordinals(
     task_count = int(cp.sum(task_counts).get()) if candidate_count else 0
     component_pair_count = int(cp.sum(component_pair_counts).get()) if candidate_count else 0
     planned_triangle_pair_count = int(cp.sum(triangle_pair_counts).get()) if candidate_count else 0
+    supported_relation_row_count = int(cp.count_nonzero(component_pair_counts).get()) if candidate_count else 0
     if candidate_count:
         task_offsets = cp.concatenate(
             (
@@ -1251,6 +1252,7 @@ def prepare_overlay_area_tile_task_cupy_inputs_from_relation_ordinals(
         "operation": "prepared_simple_polygon_overlay_area_device_planned_tile_task_inputs",
         "partner": "cupy",
         "candidate_relation_row_count": candidate_count,
+        "supported_relation_row_count": supported_relation_row_count,
         "relation_row_count": int(relation_row_count),
         "component_pair_row_count": component_pair_count,
         "task_count": task_count,
@@ -1266,7 +1268,8 @@ def prepare_overlay_area_tile_task_cupy_inputs_from_relation_ordinals(
             "errors": (),
             "pair_row_count": component_pair_count,
             "task_count": task_count,
-            "relation_row_count": candidate_count,
+            "candidate_relation_row_count": candidate_count,
+            "relation_row_count": supported_relation_row_count,
             "expected_triangle_pair_count": planned_triangle_pair_count,
             "planned_triangle_pair_count": planned_triangle_pair_count,
             "max_task_pair_count": int(max_triangle_pairs_per_task) if task_count else 0,
@@ -1368,7 +1371,10 @@ def evaluate_prepared_overlay_area_tile_task_cupy_inputs(
         "completed_without_truncation": bool(cp.all(task_status == 0).get()) if task_count else True,
         "input_contract": input_contract,
         "reduction": "cupy_add_at_by_relation_row_ordinal",
-        "resident_cupy_columns": input_contract == "resident_prepared_overlay_area_tile_task_cupy_inputs",
+        "resident_cupy_columns": input_contract in {
+            "resident_prepared_overlay_area_tile_task_cupy_inputs",
+            "device_planned_prepared_overlay_area_tile_task_cupy_inputs",
+        },
         "app_specific_engine_logic_allowed": False,
         "automatic_partner_selection_allowed": False,
         "release_authorized": False,
