@@ -1,0 +1,184 @@
+{
+  "boundary_event_candidate_event_count": 4836,
+  "boundary_event_device_resident": true,
+  "boundary_event_filter": "candidate_pair_has_zero_crossing_t",
+  "boundary_event_overflow": false,
+  "boundary_event_row_count": 4836,
+  "boundary_rows_from_optix_device_columns": true,
+  "candidate_extra_row_count_before_filter": 12,
+  "candidate_rows_from_optix_device_columns": true,
+  "claim_boundary": {
+    "native_default_route_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "county_cdb": "data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+  "cupy_version": "14.1.1",
+  "exact_oracle_generated_by_live_optix_run": true,
+  "exact_oracle_used_only_for_signal_evaluation": true,
+  "exact_row_count": 1417,
+  "extra_row_count": 0,
+  "extra_sample": [],
+  "filtered_row_count": 1417,
+  "goal": 3386,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "incident_rows_derived_from_cdb": true,
+  "interpretation": "Constructive bounded route probe: live OptiX candidate and boundary-event device columns plus CDB-derived generic topology select exactly the seven candidate-extra points on this slice, then the generic selective boundary-event CuPy filter drops the twelve extras and matches live exact OptiX output. This is still a bounded signal probe, not a default route or public claim.",
+  "matches_exact": true,
+  "missing_exact_row_count": 0,
+  "missing_sample": [],
+  "optix_candidate_row_count": 1429,
+  "passthrough_candidate_row_count": 1403,
+  "point_count": 512,
+  "rtdl_commit": "8f2660556ac28b37f8b9114bac930962f27720b2",
+  "schema": "rtdl.goal3386.boundary_event_signal_selective_route_probe.v1",
+  "selected_candidate_row_count": 26,
+  "selected_dropped_row_count": 12,
+  "selected_feature_rows": [
+    {
+      "candidate_count": 3,
+      "candidate_face_count": 4,
+      "candidate_shape_ids": [
+        521,
+        522,
+        523
+      ],
+      "incident_row_count": 3,
+      "point_id": 522,
+      "zero_boundary_candidate_count": 2,
+      "zero_boundary_candidate_shape_ids": [
+        522,
+        523
+      ]
+    },
+    {
+      "candidate_count": 3,
+      "candidate_face_count": 4,
+      "candidate_shape_ids": [
+        521,
+        522,
+        523
+      ],
+      "incident_row_count": 3,
+      "point_id": 523,
+      "zero_boundary_candidate_count": 2,
+      "zero_boundary_candidate_shape_ids": [
+        522,
+        523
+      ]
+    },
+    {
+      "candidate_count": 4,
+      "candidate_face_count": 4,
+      "candidate_shape_ids": [
+        418,
+        535,
+        539,
+        540
+      ],
+      "incident_row_count": 3,
+      "point_id": 538,
+      "zero_boundary_candidate_count": 2,
+      "zero_boundary_candidate_shape_ids": [
+        535,
+        539
+      ]
+    },
+    {
+      "candidate_count": 4,
+      "candidate_face_count": 4,
+      "candidate_shape_ids": [
+        418,
+        535,
+        539,
+        540
+      ],
+      "incident_row_count": 3,
+      "point_id": 539,
+      "zero_boundary_candidate_count": 2,
+      "zero_boundary_candidate_shape_ids": [
+        535,
+        539
+      ]
+    },
+    {
+      "candidate_count": 4,
+      "candidate_face_count": 4,
+      "candidate_shape_ids": [
+        418,
+        535,
+        539,
+        540
+      ],
+      "incident_row_count": 3,
+      "point_id": 540,
+      "zero_boundary_candidate_count": 2,
+      "zero_boundary_candidate_shape_ids": [
+        418,
+        540
+      ]
+    },
+    {
+      "candidate_count": 4,
+      "candidate_face_count": 4,
+      "candidate_shape_ids": [
+        437,
+        559,
+        562,
+        565
+      ],
+      "incident_row_count": 3,
+      "point_id": 564,
+      "zero_boundary_candidate_count": 2,
+      "zero_boundary_candidate_shape_ids": [
+        562,
+        565
+      ]
+    },
+    {
+      "candidate_count": 4,
+      "candidate_face_count": 4,
+      "candidate_shape_ids": [
+        437,
+        559,
+        562,
+        565
+      ],
+      "incident_row_count": 3,
+      "point_id": 565,
+      "zero_boundary_candidate_count": 2,
+      "zero_boundary_candidate_shape_ids": [
+        562,
+        565
+      ]
+    }
+  ],
+  "selected_kept_row_count": 14,
+  "selected_point_ids": [
+    522,
+    523,
+    538,
+    539,
+    540,
+    564,
+    565
+  ],
+  "selected_point_signal": "candidate_count_gt_zero_boundary_candidate_count_and_zero_count_eq2_and_incident_row_count_eq3_and_candidate_face_count_eq4",
+  "selected_points_match_true_extra_points": true,
+  "shape_count": 478,
+  "signal_inputs_exclude_exact_oracle": true,
+  "topology_rows_derived_from_cdb": true,
+  "true_extra_point_ids": [
+    522,
+    523,
+    538,
+    539,
+    540,
+    564,
+    565
+  ]
+}
