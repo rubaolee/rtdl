@@ -1,0 +1,1081 @@
+{
+  "grouped_stream": {
+    "dataset": "clustered3d",
+    "grouped_native_tail_mean_sec": 0.06721725966781378,
+    "grouped_native_tail_median_sec": 0.06721725966781378,
+    "grouped_union_direct_side_effect": false,
+    "grouped_union_query_block_size": null,
+    "grouped_union_same_root_culling": true,
+    "min_neighbors": 12,
+    "point_count": 65536,
+    "prepare_sec": 0.12995669338852167,
+    "radius": 0.055,
+    "repeat_rows": [
+      {
+        "core_flag_cache_reused": false,
+        "count_native_elapsed_sec": 0.004077562130987644,
+        "count_threshold": 12,
+        "elapsed_sec": 0.17864301800727844,
+        "grouped_direct_side_effect_enabled": false,
+        "grouped_direct_side_effect_policy": "disabled_by_default_anyhit_side_effect",
+        "grouped_native_elapsed_sec": 0.065267289057374,
+        "grouped_native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+        "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+        "grouped_predicate_mode": "all_items_true_no_fallback_candidates",
+        "grouped_query_block_count": null,
+        "grouped_query_block_size": null,
+        "grouped_query_blocked": null,
+        "grouped_query_source": "prepared_search_points_self_query_device",
+        "grouped_same_root_culling_enabled": true,
+        "grouped_same_root_culling_policy": "parent_union_same_root_before_anyhit",
+        "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_all_items_parent_workspace",
+        "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+        "repeat": 1,
+        "signature": {
+          "cluster_sizes": {
+            "1": 16384,
+            "2": 16384,
+            "3": 16384,
+            "4": 16384
+          },
+          "core_count": 65536,
+          "noise_count": 0
+        },
+        "timing_breakdown": {
+          "derived_sec": {
+            "adapter_non_native_estimated_sec": 0.07716210186481476,
+            "count_native_current_run_sec": 0.004077562130987644,
+            "elapsed_sec": 0.17864301800727844,
+            "grouped_native_sec": 0.065267289057374,
+            "known_host_phase_sec": 0.1786413248628378,
+            "known_native_current_run_sec": 0.06934485118836164,
+            "unattributed_elapsed_sec": 1.69314444065094e-06
+          },
+          "host_observed_sec": {
+            "adapter_run_sec": 0.1465069530531764,
+            "column_signature_sec": 0.03213437180966139
+          },
+          "notes": [
+            "Host-observed timings are diagnostic and may include async GPU synchronization effects.",
+            "Native elapsed fields come from RTDL native metadata where available.",
+            "This timing packet does not authorize a paper, broad RT-core, or whole-app speedup claim."
+          ],
+          "performance_claim_authorized": false,
+          "schema": "rt_dbscan_grouped_stream_host_overhead_breakdown_v1"
+        }
+      },
+      {
+        "core_flag_cache_reused": true,
+        "count_native_elapsed_sec": 0.004077562130987644,
+        "count_threshold": 12,
+        "elapsed_sec": 0.09963756985962391,
+        "grouped_direct_side_effect_enabled": false,
+        "grouped_direct_side_effect_policy": "disabled_by_default_anyhit_side_effect",
+        "grouped_native_elapsed_sec": 0.06770013086497784,
+        "grouped_native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+        "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+        "grouped_predicate_mode": "all_items_true_no_fallback_candidates",
+        "grouped_query_block_count": null,
+        "grouped_query_block_size": null,
+        "grouped_query_blocked": null,
+        "grouped_query_source": "prepared_search_points_self_query_device",
+        "grouped_same_root_culling_enabled": true,
+        "grouped_same_root_culling_policy": "parent_union_same_root_before_anyhit",
+        "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_all_items_parent_workspace",
+        "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+        "repeat": 2,
+        "signature": {
+          "cluster_sizes": {
+            "1": 16384,
+            "2": 16384,
+            "3": 16384,
+            "4": 16384
+          },
+          "core_count": 65536,
+          "noise_count": 0
+        },
+        "timing_breakdown": {
+          "derived_sec": {
+            "adapter_non_native_estimated_sec": 0.00021454039961099625,
+            "count_native_current_run_sec": 0.0,
+            "elapsed_sec": 0.09963756985962391,
+            "grouped_native_sec": 0.06770013086497784,
+            "known_host_phase_sec": 0.09963619709014893,
+            "known_native_current_run_sec": 0.06770013086497784,
+            "unattributed_elapsed_sec": 1.3727694749832153e-06
+          },
+          "host_observed_sec": {
+            "adapter_run_sec": 0.06791467126458883,
+            "column_signature_sec": 0.03172152582556009
+          },
+          "notes": [
+            "Host-observed timings are diagnostic and may include async GPU synchronization effects.",
+            "Native elapsed fields come from RTDL native metadata where available.",
+            "This timing packet does not authorize a paper, broad RT-core, or whole-app speedup claim."
+          ],
+          "performance_claim_authorized": false,
+          "schema": "rt_dbscan_grouped_stream_host_overhead_breakdown_v1"
+        }
+      },
+      {
+        "core_flag_cache_reused": true,
+        "count_native_elapsed_sec": 0.004077562130987644,
+        "count_threshold": 12,
+        "elapsed_sec": 0.0974564952775836,
+        "grouped_direct_side_effect_enabled": false,
+        "grouped_direct_side_effect_policy": "disabled_by_default_anyhit_side_effect",
+        "grouped_native_elapsed_sec": 0.06673438847064972,
+        "grouped_native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+        "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+        "grouped_predicate_mode": "all_items_true_no_fallback_candidates",
+        "grouped_query_block_count": null,
+        "grouped_query_block_size": null,
+        "grouped_query_blocked": null,
+        "grouped_query_source": "prepared_search_points_self_query_device",
+        "grouped_same_root_culling_enabled": true,
+        "grouped_same_root_culling_policy": "parent_union_same_root_before_anyhit",
+        "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_all_items_parent_workspace",
+        "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+        "repeat": 3,
+        "signature": {
+          "cluster_sizes": {
+            "1": 16384,
+            "2": 16384,
+            "3": 16384,
+            "4": 16384
+          },
+          "core_count": 65536,
+          "noise_count": 0
+        },
+        "timing_breakdown": {
+          "derived_sec": {
+            "adapter_non_native_estimated_sec": 0.00017620157450437546,
+            "count_native_current_run_sec": 0.0,
+            "elapsed_sec": 0.0974564952775836,
+            "grouped_native_sec": 0.06673438847064972,
+            "known_host_phase_sec": 0.0974553506821394,
+            "known_native_current_run_sec": 0.06673438847064972,
+            "unattributed_elapsed_sec": 1.144595444202423e-06
+          },
+          "host_observed_sec": {
+            "adapter_run_sec": 0.0669105900451541,
+            "column_signature_sec": 0.030544760636985302
+          },
+          "notes": [
+            "Host-observed timings are diagnostic and may include async GPU synchronization effects.",
+            "Native elapsed fields come from RTDL native metadata where available.",
+            "This timing packet does not authorize a paper, broad RT-core, or whole-app speedup claim."
+          ],
+          "performance_claim_authorized": false,
+          "schema": "rt_dbscan_grouped_stream_host_overhead_breakdown_v1"
+        }
+      }
+    ],
+    "signature_mode": "column",
+    "signatures_match": true,
+    "tail_mean_sec": 0.09854703256860375,
+    "tail_median_sec": 0.09854703256860375,
+    "tail_timing_breakdown_median_sec": {
+      "derived": {
+        "adapter_non_native_estimated_sec": 0.00019537098705768585,
+        "count_native_current_run_sec": 0.0,
+        "grouped_native_sec": 0.06721725966781378,
+        "known_native_current_run_sec": 0.06721725966781378,
+        "unattributed_elapsed_sec": 1.2586824595928192e-06
+      },
+      "host_observed": {
+        "adapter_run_sec": 0.06741263065487146,
+        "column_signature_sec": 0.031133143231272697
+      },
+      "schema": "rt_dbscan_grouped_stream_host_overhead_breakdown_v1"
+    }
+  },
+  "planned_rt_dbscan": {
+    "app": "rt_dbscan_benchmark",
+    "claim_boundary": {
+      "automatic_hidden_dispatcher": false,
+      "full_dbscan": true,
+      "host_bucket_index_used": false,
+      "native_dbscan_abi_added": false,
+      "paper_dataset_reproduction": false,
+      "paper_speedup_claim_authorized": false,
+      "planned_execution": true,
+      "release_claim_authorized": false,
+      "rt_core_accelerated": true
+    },
+    "dataset": "clustered3d",
+    "elapsed_sec": 0.46760842856019735,
+    "matches_reference": null,
+    "metadata": {
+      "adapter": "PreparedOptixCupyRadiusGraphComponents3D.run",
+      "automatic_hidden_dispatcher": false,
+      "caller_supplied_core_flags": true,
+      "candidate_edge_count": null,
+      "candidate_edge_count_policy": "not_reported_for_caller_supplied_threshold_capped_counts",
+      "cell_count": 200,
+      "component_label_policy": "positive_root_index_labels_noise_minus_one",
+      "component_union_policy": "monotonic_atomic_min_core_edge_union",
+      "core_flag_source": "optix_rt_fixed_radius_count_threshold_3d_device_outputs",
+      "cupy_component_continuation_sec": 0.17794930841773748,
+      "device_grid_index_used": true,
+      "direct_device_handoff_authorized": false,
+      "execution_plan": {
+        "adapter": "plan_rt_dbscan_execution",
+        "not_hidden_dispatcher": true,
+        "paper_reproduction_claim_authorized": false,
+        "policy": "explicit_benchmark_plan_from_goal2425_prepared_fairness_evidence",
+        "reason": "Goal2425 showed prepared RT-count plus prepared CuPy grid wins for this measured scale/shape",
+        "release_claim_authorized": false,
+        "selected_mode": "optix_rt_core_flags_cupy_prepared_grid_components_3d"
+      },
+      "grid_dimensions": [
+        13,
+        14,
+        13
+      ],
+      "host_bucket_index_used": false,
+      "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+      "materializes_neighbor_rows": false,
+      "materializes_neighbor_summaries": false,
+      "min_neighbors": 12,
+      "native_engine_row_contract": "not_called_partner_reference_only",
+      "native_engine_summary_contract": "generic_prepared_fixed_radius_count_threshold_3d_device_columns",
+      "native_execution_path": "prepared_rt_core_count_threshold_3d",
+      "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+      "optix_backend_used": true,
+      "optix_rt_count_threshold_sec": 0.07934579998254776,
+      "output_columns_reused": true,
+      "output_workspace_reused": true,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_prepared_optix_cupy_radius_graph_component_labels_3d",
+      "path": "optix_rt_count_threshold_cupy_prepared_grid_radius_graph_components_3d",
+      "point_count": 65536,
+      "prepared_composite_reused": false,
+      "prepared_composite_run_count": 1,
+      "prepared_cupy_grid_reused": false,
+      "prepared_grid_reused": false,
+      "prepared_optix_scene_reused": true,
+      "prepared_run_count": 1,
+      "radius": 0.055,
+      "rt_core_accelerated": true,
+      "rt_core_speedup_claim_authorized": false,
+      "threshold_metadata": {
+        "adapter": "fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns",
+        "app_count_host_materialization": false,
+        "app_count_materialization": "native_optix_rt_device_columns",
+        "direct_device_handoff_authorized": true,
+        "input_contract": "host_query_points_prepared_native_search_scene",
+        "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+        "native_metadata": {
+          "backend": "optix",
+          "direct_device_handoff_authorized": true,
+          "materializes_neighbor_rows": false,
+          "native_elapsed_sec": 0.004187950864434242,
+          "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+          "native_execution_path": "prepared_rt_core_count_threshold_3d",
+          "native_symbol": "rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_device_outputs",
+          "output_columns_true_zero_copy_authorized": true,
+          "paper_speedup_claim_authorized": false,
+          "query_count": 65536,
+          "radius": 0.055,
+          "rt_core_accelerated": true,
+          "search_count": 65536,
+          "source_devices": [
+            "cuda:0"
+          ],
+          "source_protocols": [
+            "cupy"
+          ],
+          "threshold": 12,
+          "transfer_mode": "host_query_points_to_device_threshold_columns",
+          "true_zero_copy_authorized": false,
+          "v2_0_release_authorized": false
+        },
+        "output_columns_reused": true,
+        "paper_speedup_claim_authorized": false,
+        "partner": "cupy",
+        "query_count": 65536,
+        "radius": 0.055,
+        "rt_core_accelerated": true,
+        "rt_core_speedup_claim_authorized": false,
+        "threshold": 12,
+        "true_zero_copy_authorized": false,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "v2_0_release_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "min_neighbors": 12,
+    "mode": "planned_rt_dbscan",
+    "paper": {
+      "authors": [
+        "Vani Nagarajan",
+        "Milind Kulkarni"
+      ],
+      "doi": "10.1109/IPDPS54959.2023.00100",
+      "title": "RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware",
+      "venue": "IPDPS 2023"
+    },
+    "point_count": 65536,
+    "radius": 0.055,
+    "reference_signature": null,
+    "seed": 20260519,
+    "selected_mode": "optix_rt_core_flags_cupy_prepared_grid_components_3d",
+    "signature": {
+      "cluster_sizes": {
+        "1": 16384,
+        "2": 16384,
+        "3": 16384,
+        "4": 16384
+      },
+      "core_count": 65536,
+      "noise_count": 0
+    }
+  },
+  "planned_rt_dbscan_continuation": {
+    "app": "rt_dbscan_benchmark",
+    "claim_boundary": {
+      "automatic_hidden_dispatcher": false,
+      "full_dbscan": true,
+      "host_bucket_index_used": false,
+      "native_dbscan_abi_added": false,
+      "paper_dataset_reproduction": false,
+      "paper_reproduction_claim_authorized": false,
+      "paper_speedup_claim_authorized": false,
+      "planned_continuation_execution": true,
+      "release_claim_authorized": false,
+      "rt_core_accelerated": true
+    },
+    "dataset": "clustered3d",
+    "elapsed_sec": 0.35532648395746946,
+    "matches_reference": null,
+    "metadata": {
+      "adapter": "PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D.run",
+      "adjacency_write_pass_count": 0,
+      "all_core_flags_true": true,
+      "app_specific_engine_logic_allowed": false,
+      "automatic_hidden_dispatcher": false,
+      "automatic_partner_selection_allowed": false,
+      "benchmark_timing_breakdown": {
+        "derived_sec": {
+          "adapter_non_native_estimated_sec": 0.07556143309921026,
+          "count_native_current_run_sec": 0.004039399325847626,
+          "elapsed_sec": 0.35532648395746946,
+          "grouped_native_sec": 0.06475362554192543,
+          "known_host_phase_sec": 0.35173828061670065,
+          "known_native_current_run_sec": 0.06879302486777306,
+          "unattributed_elapsed_sec": 0.003588203340768814
+        },
+        "host_observed_sec": {
+          "adapter_run_sec": 0.14435445796698332,
+          "densify_cluster_labels_sec": 0.031116771511733532,
+          "prepare_sec": 0.12647146359086037,
+          "rows_materialization_sec": 0.04979558754712343
+        },
+        "notes": [
+          "Host-observed timings are diagnostic and may include async GPU synchronization effects.",
+          "Native elapsed fields come from RTDL native metadata where available.",
+          "This timing packet does not authorize a paper, broad RT-core, or whole-app speedup claim."
+        ],
+        "performance_claim_authorized": false,
+        "schema": "rt_dbscan_grouped_stream_host_overhead_breakdown_v1"
+      },
+      "claim_boundary": "The v2.8 fixed-radius graph component front door exposes an explicit user-selected OptiX+CuPy grouped-stream contract over an existing generic runtime path. It does not add native engine app logic, choose partners automatically, authorize a release, authorize public speedup wording, authorize broad RT-core wording, authorize whole-app benchmark claims, or authorize true zero-copy wording.",
+      "component_label_policy": "positive_root_index_labels_noise_minus_one",
+      "component_threshold": 12,
+      "component_union_policy": "monotonic_atomic_min_from_rt_hit_stream_without_neighbor_index_materialization",
+      "continuation_contract": "grouped_stream_component_label_columns_3d",
+      "core_flag_cache_reused": false,
+      "core_flag_threshold": 12,
+      "count_metadata": {
+        "adapter": "fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns",
+        "app_count_host_materialization": false,
+        "app_count_materialization": "native_optix_rt_device_columns",
+        "direct_device_handoff_authorized": true,
+        "input_contract": "host_query_points_prepared_native_search_scene",
+        "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+        "native_metadata": {
+          "backend": "optix",
+          "direct_device_handoff_authorized": true,
+          "materializes_neighbor_rows": false,
+          "native_elapsed_sec": 0.004039399325847626,
+          "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+          "native_execution_path": "prepared_rt_core_count_threshold_3d",
+          "native_symbol": "rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_device_outputs",
+          "output_columns_true_zero_copy_authorized": true,
+          "paper_speedup_claim_authorized": false,
+          "query_count": 65536,
+          "radius": 0.055,
+          "rt_core_accelerated": true,
+          "search_count": 65536,
+          "source_devices": [
+            "cuda:0"
+          ],
+          "source_protocols": [
+            "cupy"
+          ],
+          "threshold": 12,
+          "transfer_mode": "host_query_points_to_device_threshold_columns",
+          "true_zero_copy_authorized": false,
+          "v2_0_release_authorized": false
+        },
+        "output_columns_reused": true,
+        "paper_speedup_claim_authorized": false,
+        "partner": "cupy",
+        "query_count": 65536,
+        "radius": 0.055,
+        "rt_core_accelerated": true,
+        "rt_core_speedup_claim_authorized": false,
+        "threshold": 12,
+        "true_zero_copy_authorized": false,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "direct_device_handoff_authorized": true,
+      "execution_plan": {
+        "adapter": "plan_rt_dbscan_continuation_execution",
+        "directed_edge_budget": 160000000,
+        "estimated_directed_edge_count": 541165879,
+        "estimated_full_adjacency_bytes": 2165187812,
+        "evidence_goals": [
+          "Goal2431",
+          "Goal2433",
+          "Goal2435",
+          "Goal2452",
+          "Goal2457",
+          "Goal2461",
+          "Goal2463",
+          "Goal2465",
+          "Goal2475",
+          "Goal2476"
+        ],
+        "full_stream_fits_budget": false,
+        "not_hidden_dispatcher": true,
+        "paper_reproduction_claim_authorized": false,
+        "planner_surface": "benchmark_app_plan_explain_not_engine_dispatch",
+        "policy": "explicit_continuation_plan_from_goal2431_2433_2435_2452_2457_2461_2463_2465_2475_2476_evidence",
+        "reason": "estimated directed adjacency stream exceeds the explicit budget; Goal2457/2461/2463/2465/2475/2476 evidence says the grouped stream avoids the giant neighbor-index table, reuses prepared device search points, reduces avoidable anyhit work, and beats chunked continuation for the measured dense branch",
+        "release_claim_authorized": false,
+        "selected_mode": "optix_rt_core_grouped_stream_cupy_components_3d"
+      },
+      "fallback_candidate_policy": "not_needed_all_items_satisfy_predicate",
+      "front_door": "v2_8_fixed_radius_graph_component_continuation_3d",
+      "front_door_operation": "fixed_radius_graph_component_labels_3d",
+      "front_door_status": "explicit_front_door_over_existing_grouped_stream_contract",
+      "grouped_stream_continuation_pass_count": 1,
+      "grouped_stream_policy": "optix_applies_all_items_grouped_union_without_predicate_or_fallback_workspace",
+      "grouped_union_direct_side_effect_enabled": false,
+      "grouped_union_query_block_count": 1,
+      "grouped_union_query_block_size": null,
+      "grouped_union_query_blocked_candidate": false,
+      "grouped_union_same_root_culling_enabled": true,
+      "hidden_dispatch_allowed": false,
+      "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+      "lower_adapter": "PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D.run",
+      "lower_partner_reference_contract": "generic_prepared_optix_cupy_grouped_stream_component_labels_3d",
+      "materializes_bounded_directed_adjacency_chunks": false,
+      "materializes_directed_adjacency_stream": false,
+      "materializes_neighbor_rows": false,
+      "materializes_neighbor_summaries": false,
+      "materializes_python_rows": true,
+      "min_neighbors": 12,
+      "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_all_items_self_device_parent_workspace",
+      "native_engine_summary_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+      "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
+      "native_grouped_stream_metadata": {
+        "backend": "optix",
+        "direct_device_handoff_authorized": true,
+        "grouped_union_direct_side_effect_enabled": false,
+        "grouped_union_direct_side_effect_policy": "disabled_by_default_anyhit_side_effect",
+        "grouped_union_intersection_culling_policy": "all_items_target_gt_source_before_anyhit",
+        "grouped_union_same_root_culling_enabled": true,
+        "grouped_union_same_root_culling_policy": "parent_union_same_root_before_anyhit",
+        "grouped_union_telemetry_contract": null,
+        "grouped_union_telemetry_requested": false,
+        "item_count": 65536,
+        "materializes_directed_adjacency_stream": false,
+        "materializes_neighbor_rows": false,
+        "native_elapsed_sec": 0.06475362554192543,
+        "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_all_items_self_device_parent_workspace",
+        "native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+        "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+        "output_columns_true_zero_copy_authorized": true,
+        "paper_speedup_claim_authorized": false,
+        "predicate_mode": "all_items_true_no_fallback_candidates",
+        "query_count": 65536,
+        "query_index_offset": 0,
+        "query_source": "prepared_search_points_self_query_device",
+        "radius": 0.055,
+        "rt_core_accelerated": true,
+        "search_count": 65536,
+        "source_devices": [
+          "cuda:0"
+        ],
+        "source_protocols": [
+          "cupy"
+        ],
+        "transfer_mode": "prepared_device_search_points_self_grouped_union_all_items_parent_workspace",
+        "true_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+      "operation": "fixed_radius_graph_component_labels_3d",
+      "optix_backend_used": true,
+      "output_columns_reused": true,
+      "output_columns_true_zero_copy_authorized": true,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_prepared_optix_cupy_grouped_stream_component_labels_3d",
+      "path": "optix_rt_grouped_stream_cupy_radius_graph_components_3d",
+      "point_count": 65536,
+      "prepared_grouped_stream_reused": false,
+      "prepared_grouped_stream_run_count": 1,
+      "prepared_optix_scene_reused": true,
+      "producer_contract": "prepared_fixed_radius_graph_hit_stream_3d",
+      "public_speedup_claim_authorized": false,
+      "query_source": "prepared_search_points_self_query_device",
+      "radius": 0.055,
+      "release_authorized": false,
+      "result_columns": [
+        "point_ids",
+        "component_labels",
+        "is_core",
+        "neighbor_counts"
+      ],
+      "rt_core_accelerated": true,
+      "rt_core_speedup_claim_authorized": false,
+      "signature_source": "python_row_dicts_after_label_densification",
+      "true_zero_copy_authorized": false,
+      "true_zero_copy_claim_authorized": false,
+      "typed_result_stream": {
+        "app_specific_engine_logic_allowed": false,
+        "automatic_partner_selection_allowed": false,
+        "claim_boundary": "v2.8 typed result streams are an internal generic contract for RTDL runtime development. They do not authorize release, public speedup wording, broad RT-core wording, true-zero-copy wording, hidden dispatch, hidden partner selection, app-specific native-engine behavior, or user-defined shader injection.",
+        "column_names": [
+          "point_ids",
+          "component_labels",
+          "is_core",
+          "neighbor_counts"
+        ],
+        "columns": [
+          {
+            "buffer": {
+              "access_mode": "read",
+              "alignment_bytes": 1,
+              "byte_offset": 0,
+              "capacity_elements": 65536,
+              "data_ptr_observed": true,
+              "device": "cuda:0",
+              "dtype": "uint32",
+              "element_count": 65536,
+              "lifetime": "session_retained",
+              "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+              "mutability": "immutable",
+              "name": "point_ids",
+              "scope": "rtdl_primitive_handoff_only",
+              "shape": [
+                65536
+              ],
+              "source_protocol": "cupy_cuda_array_interface",
+              "stream_handle": 0,
+              "strides_bytes": null
+            },
+            "device_resident": true,
+            "dtype": "uint32",
+            "name": "point_ids",
+            "nullable": false,
+            "required_for_continuation": true,
+            "role": "item_id",
+            "shape": [
+              65536
+            ]
+          },
+          {
+            "buffer": {
+              "access_mode": "read",
+              "alignment_bytes": 1,
+              "byte_offset": 0,
+              "capacity_elements": 65536,
+              "data_ptr_observed": true,
+              "device": "cuda:0",
+              "dtype": "int64",
+              "element_count": 65536,
+              "lifetime": "session_retained",
+              "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+              "mutability": "mutable",
+              "name": "component_labels",
+              "scope": "rtdl_primitive_handoff_only",
+              "shape": [
+                65536
+              ],
+              "source_protocol": "cupy_cuda_array_interface",
+              "stream_handle": 0,
+              "strides_bytes": null
+            },
+            "device_resident": true,
+            "dtype": "int64",
+            "name": "component_labels",
+            "nullable": false,
+            "required_for_continuation": true,
+            "role": "group_key",
+            "shape": [
+              65536
+            ]
+          },
+          {
+            "buffer": {
+              "access_mode": "read",
+              "alignment_bytes": 1,
+              "byte_offset": 0,
+              "capacity_elements": 65536,
+              "data_ptr_observed": true,
+              "device": "cuda:0",
+              "dtype": "uint32",
+              "element_count": 65536,
+              "lifetime": "session_retained",
+              "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+              "mutability": "mutable",
+              "name": "is_core",
+              "scope": "rtdl_primitive_handoff_only",
+              "shape": [
+                65536
+              ],
+              "source_protocol": "cupy_cuda_array_interface",
+              "stream_handle": 0,
+              "strides_bytes": null
+            },
+            "device_resident": true,
+            "dtype": "uint32",
+            "name": "is_core",
+            "nullable": false,
+            "required_for_continuation": true,
+            "role": "mask",
+            "shape": [
+              65536
+            ]
+          },
+          {
+            "buffer": {
+              "access_mode": "read",
+              "alignment_bytes": 1,
+              "byte_offset": 0,
+              "capacity_elements": 65536,
+              "data_ptr_observed": true,
+              "device": "cuda:0",
+              "dtype": "uint32",
+              "element_count": 65536,
+              "lifetime": "session_retained",
+              "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+              "mutability": "mutable",
+              "name": "neighbor_counts",
+              "scope": "rtdl_primitive_handoff_only",
+              "shape": [
+                65536
+              ],
+              "source_protocol": "cupy_cuda_array_interface",
+              "stream_handle": 0,
+              "strides_bytes": null
+            },
+            "device_resident": true,
+            "dtype": "uint32",
+            "name": "neighbor_counts",
+            "nullable": false,
+            "required_for_continuation": true,
+            "role": "payload",
+            "shape": [
+              65536
+            ]
+          }
+        ],
+        "contract_version": "rtdl.v2_8.typed_result_stream.v1",
+        "device_resident_column_count": 4,
+        "event_or_group_ordering_required": true,
+        "grouped_continuation_ready": true,
+        "hidden_dispatch_allowed": false,
+        "ordering": "stable_row_order",
+        "page_capacity": 65536,
+        "producer_primitive": "fixed_radius_graph_component_labels_3d",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "segmented_page_failure_mode": "fail_closed_overflow",
+        "status": "internal_contract_no_native_promotion",
+        "status_column_names": [
+          "row_count",
+          "capacity",
+          "overflow",
+          "complete_candidate_coverage"
+        ],
+        "status_columns": [
+          {
+            "buffer": {
+              "access_mode": "read",
+              "alignment_bytes": 1,
+              "byte_offset": 0,
+              "capacity_elements": 1,
+              "data_ptr_observed": false,
+              "device": "cuda:0",
+              "dtype": "uint64",
+              "element_count": 1,
+              "lifetime": "caller_retained",
+              "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+              "mutability": "mutable",
+              "name": "row_count",
+              "scope": "rtdl_primitive_handoff_only",
+              "shape": [
+                1
+              ],
+              "source_protocol": "cupy_cuda_array_interface",
+              "stream_handle": 0,
+              "strides_bytes": null
+            },
+            "device_resident": false,
+            "dtype": "uint64",
+            "name": "row_count",
+            "nullable": false,
+            "required_for_continuation": true,
+            "role": "status",
+            "shape": [
+              1
+            ]
+          },
+          {
+            "buffer": {
+              "access_mode": "read",
+              "alignment_bytes": 1,
+              "byte_offset": 0,
+              "capacity_elements": 1,
+              "data_ptr_observed": false,
+              "device": "cuda:0",
+              "dtype": "uint64",
+              "element_count": 1,
+              "lifetime": "caller_retained",
+              "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+              "mutability": "mutable",
+              "name": "capacity",
+              "scope": "rtdl_primitive_handoff_only",
+              "shape": [
+                1
+              ],
+              "source_protocol": "cupy_cuda_array_interface",
+              "stream_handle": 0,
+              "strides_bytes": null
+            },
+            "device_resident": false,
+            "dtype": "uint64",
+            "name": "capacity",
+            "nullable": false,
+            "required_for_continuation": true,
+            "role": "status",
+            "shape": [
+              1
+            ]
+          },
+          {
+            "buffer": {
+              "access_mode": "read",
+              "alignment_bytes": 1,
+              "byte_offset": 0,
+              "capacity_elements": 1,
+              "data_ptr_observed": false,
+              "device": "cuda:0",
+              "dtype": "uint32",
+              "element_count": 1,
+              "lifetime": "caller_retained",
+              "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+              "mutability": "mutable",
+              "name": "overflow",
+              "scope": "rtdl_primitive_handoff_only",
+              "shape": [
+                1
+              ],
+              "source_protocol": "cupy_cuda_array_interface",
+              "stream_handle": 0,
+              "strides_bytes": null
+            },
+            "device_resident": false,
+            "dtype": "uint32",
+            "name": "overflow",
+            "nullable": false,
+            "required_for_continuation": true,
+            "role": "status",
+            "shape": [
+              1
+            ]
+          },
+          {
+            "buffer": {
+              "access_mode": "read",
+              "alignment_bytes": 1,
+              "byte_offset": 0,
+              "capacity_elements": 1,
+              "data_ptr_observed": false,
+              "device": "cuda:0",
+              "dtype": "uint32",
+              "element_count": 1,
+              "lifetime": "caller_retained",
+              "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+              "mutability": "mutable",
+              "name": "complete_candidate_coverage",
+              "scope": "rtdl_primitive_handoff_only",
+              "shape": [
+                1
+              ],
+              "source_protocol": "cupy_cuda_array_interface",
+              "stream_handle": 0,
+              "strides_bytes": null
+            },
+            "device_resident": false,
+            "dtype": "uint32",
+            "name": "complete_candidate_coverage",
+            "nullable": false,
+            "required_for_continuation": true,
+            "role": "status",
+            "shape": [
+              1
+            ]
+          }
+        ],
+        "stream_id": "fixed_radius_graph_component_labels_3d_runtime",
+        "stream_kind": "adjacency_stream",
+        "target": "typed_device_resident_result_streams_and_grouped_continuation",
+        "true_zero_copy_claim_authorized": false
+      },
+      "user_selected_backend": "optix",
+      "user_selected_partner": "cupy",
+      "user_selected_strategy": "grouped_stream",
+      "v2_0_release_authorized": false,
+      "v2_8_front_door_route": true,
+      "version": "rtdl.v2_8.fixed_radius_graph_component_front_door.v1",
+      "whole_app_speedup_claim_authorized": false
+    },
+    "min_neighbors": 12,
+    "mode": "planned_rt_dbscan_continuation",
+    "paper": {
+      "authors": [
+        "Vani Nagarajan",
+        "Milind Kulkarni"
+      ],
+      "doi": "10.1109/IPDPS54959.2023.00100",
+      "title": "RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware",
+      "venue": "IPDPS 2023"
+    },
+    "point_count": 65536,
+    "radius": 0.055,
+    "reference_signature": null,
+    "seed": 20260519,
+    "selected_mode": "optix_rt_core_grouped_stream_cupy_components_3d",
+    "signature": {
+      "cluster_sizes": {
+        "1": 16384,
+        "2": 16384,
+        "3": 16384,
+        "4": 16384
+      },
+      "core_count": 65536,
+      "noise_count": 0
+    }
+  },
+  "repeat_probe": {
+    "app": "rt_dbscan_repeat_probe",
+    "claim_boundary": {
+      "broad_rt_core_speedup_claim_authorized": false,
+      "paper_dataset_reproduction": false,
+      "paper_speedup_claim_authorized": false,
+      "steady_state_probe_only": true
+    },
+    "dataset": "clustered3d",
+    "modes": [
+      "partner_cupy_prepared_grid_components_3d",
+      "optix_rt_core_flags_cupy_prepared_grid_components_3d"
+    ],
+    "point_count": 65536,
+    "repeat_count": 3,
+    "rows": [
+      {
+        "app_elapsed_sec": 0.4986197389662266,
+        "cell_graph_fast_path_active": null,
+        "cell_graph_granularity": "prepared_radius_grid",
+        "cupy_component_continuation_sec": 0.4986197389662266,
+        "fallback_reason": null,
+        "materializes_neighbor_rows": false,
+        "mode": "partner_cupy_prepared_grid_components_3d",
+        "optix_core_flag_sec": null,
+        "optix_rt_count_threshold_sec": null,
+        "outer_elapsed_sec": 0.4986197389662266,
+        "prepared_composite_reused": null,
+        "prepared_composite_run_count": null,
+        "prepared_grid_build_sec": 0.032632372342050076,
+        "prepared_grid_reused": false,
+        "prepared_optix_scene_reused": null,
+        "prepared_run_count": 1,
+        "repeat_index": 1,
+        "rt_core_accelerated": false,
+        "signature": {
+          "cluster_sizes": {
+            "1": 16384,
+            "2": 16384,
+            "3": 16384,
+            "4": 16384
+          },
+          "core_count": 65536,
+          "noise_count": 0
+        }
+      },
+      {
+        "app_elapsed_sec": 0.46752966567873955,
+        "cell_graph_fast_path_active": null,
+        "cell_graph_granularity": "prepared_radius_grid",
+        "cupy_component_continuation_sec": 0.46752966567873955,
+        "fallback_reason": null,
+        "materializes_neighbor_rows": false,
+        "mode": "partner_cupy_prepared_grid_components_3d",
+        "optix_core_flag_sec": null,
+        "optix_rt_count_threshold_sec": null,
+        "outer_elapsed_sec": 0.46752966567873955,
+        "prepared_composite_reused": null,
+        "prepared_composite_run_count": null,
+        "prepared_grid_build_sec": 0.032632372342050076,
+        "prepared_grid_reused": true,
+        "prepared_optix_scene_reused": null,
+        "prepared_run_count": 2,
+        "repeat_index": 2,
+        "rt_core_accelerated": false,
+        "signature": {
+          "cluster_sizes": {
+            "1": 16384,
+            "2": 16384,
+            "3": 16384,
+            "4": 16384
+          },
+          "core_count": 65536,
+          "noise_count": 0
+        }
+      },
+      {
+        "app_elapsed_sec": 0.4569600047543645,
+        "cell_graph_fast_path_active": null,
+        "cell_graph_granularity": "prepared_radius_grid",
+        "cupy_component_continuation_sec": 0.4569600047543645,
+        "fallback_reason": null,
+        "materializes_neighbor_rows": false,
+        "mode": "partner_cupy_prepared_grid_components_3d",
+        "optix_core_flag_sec": null,
+        "optix_rt_count_threshold_sec": null,
+        "outer_elapsed_sec": 0.4569600047543645,
+        "prepared_composite_reused": null,
+        "prepared_composite_run_count": null,
+        "prepared_grid_build_sec": 0.032632372342050076,
+        "prepared_grid_reused": true,
+        "prepared_optix_scene_reused": null,
+        "prepared_run_count": 3,
+        "repeat_index": 3,
+        "rt_core_accelerated": false,
+        "signature": {
+          "cluster_sizes": {
+            "1": 16384,
+            "2": 16384,
+            "3": 16384,
+            "4": 16384
+          },
+          "core_count": 65536,
+          "noise_count": 0
+        }
+      },
+      {
+        "app_elapsed_sec": 0.37870160676538944,
+        "cell_graph_fast_path_active": null,
+        "cell_graph_granularity": "prepared_radius_grid",
+        "cupy_component_continuation_sec": 0.17835923191159964,
+        "fallback_reason": null,
+        "materializes_neighbor_rows": false,
+        "mode": "optix_rt_core_flags_cupy_prepared_grid_components_3d",
+        "optix_core_flag_sec": null,
+        "optix_rt_count_threshold_sec": 0.09193640854209661,
+        "outer_elapsed_sec": 0.37870160676538944,
+        "prepared_composite_build_sec": 0.13932201359421015,
+        "prepared_composite_reused": false,
+        "prepared_composite_run_count": 1,
+        "prepared_grid_build_sec": 0.13932201359421015,
+        "prepared_grid_reused": false,
+        "prepared_optix_scene_reused": true,
+        "prepared_run_count": 1,
+        "repeat_index": 1,
+        "rt_core_accelerated": true,
+        "signature": {
+          "cluster_sizes": {
+            "1": 16384,
+            "2": 16384,
+            "3": 16384,
+            "4": 16384
+          },
+          "core_count": 65536,
+          "noise_count": 0
+        }
+      },
+      {
+        "app_elapsed_sec": 0.3593785809352994,
+        "cell_graph_fast_path_active": null,
+        "cell_graph_granularity": "prepared_radius_grid",
+        "cupy_component_continuation_sec": 0.17813204880803823,
+        "fallback_reason": null,
+        "materializes_neighbor_rows": false,
+        "mode": "optix_rt_core_flags_cupy_prepared_grid_components_3d",
+        "optix_core_flag_sec": null,
+        "optix_rt_count_threshold_sec": 0.10243583656847477,
+        "outer_elapsed_sec": 0.3593785809352994,
+        "prepared_composite_build_sec": 0.13932201359421015,
+        "prepared_composite_reused": true,
+        "prepared_composite_run_count": 2,
+        "prepared_grid_build_sec": 0.13932201359421015,
+        "prepared_grid_reused": true,
+        "prepared_optix_scene_reused": true,
+        "prepared_run_count": 2,
+        "repeat_index": 2,
+        "rt_core_accelerated": true,
+        "signature": {
+          "cluster_sizes": {
+            "1": 16384,
+            "2": 16384,
+            "3": 16384,
+            "4": 16384
+          },
+          "core_count": 65536,
+          "noise_count": 0
+        }
+      },
+      {
+        "app_elapsed_sec": 0.37735829409211874,
+        "cell_graph_fast_path_active": null,
+        "cell_graph_granularity": "prepared_radius_grid",
+        "cupy_component_continuation_sec": 0.1777370572090149,
+        "fallback_reason": null,
+        "materializes_neighbor_rows": false,
+        "mode": "optix_rt_core_flags_cupy_prepared_grid_components_3d",
+        "optix_core_flag_sec": null,
+        "optix_rt_count_threshold_sec": 0.1001529386267066,
+        "outer_elapsed_sec": 0.37735829409211874,
+        "prepared_composite_build_sec": 0.13932201359421015,
+        "prepared_composite_reused": true,
+        "prepared_composite_run_count": 3,
+        "prepared_grid_build_sec": 0.13932201359421015,
+        "prepared_grid_reused": true,
+        "prepared_optix_scene_reused": true,
+        "prepared_run_count": 3,
+        "repeat_index": 3,
+        "rt_core_accelerated": true,
+        "signature": {
+          "cluster_sizes": {
+            "1": 16384,
+            "2": 16384,
+            "3": 16384,
+            "4": 16384
+          },
+          "core_count": 65536,
+          "noise_count": 0
+        }
+      }
+    ],
+    "signatures_match": true
+  }
+}
