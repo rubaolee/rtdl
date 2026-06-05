@@ -21,6 +21,9 @@ V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_STATUS = "cpu_prepared_payload_prototype_no_r
 V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_CUPY_VERSION = (
     "rtdl.v2_8.simple_polygon_overlay_area_prepared_payload_cupy_tiled.v1"
 )
+V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_SERIALIZATION_VERSION = (
+    "rtdl.v2_8.simple_polygon_overlay_area_prepared_payload_serialized.v1"
+)
 
 
 _PREPARED_OVERLAY_AREA_TILED_CUPY_KERNEL = r"""
@@ -848,6 +851,79 @@ def prepare_simple_polygon_component_payload_from_triangles(
     return PreparedSimplePolygonComponentPayload(triangles=tuple(triangles), components=tuple(records))
 
 
+def prepared_simple_polygon_component_payload_to_dict(
+    payload: PreparedSimplePolygonComponentPayload,
+) -> dict[str, Any]:
+    return {
+        "schema": V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_SERIALIZATION_VERSION,
+        "payload_version": V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_VERSION,
+        "status": payload.status,
+        "triangles": [
+            [[float(x), float(y)] for x, y in triangle]
+            for triangle in payload.triangles
+        ],
+        "components": [
+            {
+                "component_ordinal": int(component.component_ordinal),
+                "source_shape_id": int(component.source_shape_id),
+                "triangle_start": int(component.triangle_start),
+                "triangle_count": int(component.triangle_count),
+                "input_vertex_count": int(component.input_vertex_count),
+                "min_x": float(component.min_x),
+                "min_y": float(component.min_y),
+                "max_x": float(component.max_x),
+                "max_y": float(component.max_y),
+                "status": component.status,
+            }
+            for component in payload.components
+        ],
+        "claim_boundary": V2_8_OVERLAY_AREA_CONTINUATION_CLAIM_BOUNDARY,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+    }
+
+
+def prepared_simple_polygon_component_payload_from_dict(
+    data: dict[str, Any],
+) -> PreparedSimplePolygonComponentPayload:
+    if data.get("schema") != V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_SERIALIZATION_VERSION:
+        raise ValueError("unexpected prepared payload serialization schema")
+    triangles: list[Triangle2] = []
+    for triangle in data.get("triangles", ()):
+        if len(triangle) != 3:
+            raise ValueError("serialized prepared payload triangles must have exactly three vertices")
+        triangles.append(
+            (
+                (float(triangle[0][0]), float(triangle[0][1])),
+                (float(triangle[1][0]), float(triangle[1][1])),
+                (float(triangle[2][0]), float(triangle[2][1])),
+            )
+        )
+    components: list[PreparedSimplePolygonComponentRecord] = []
+    for component in data.get("components", ()):
+        components.append(
+            PreparedSimplePolygonComponentRecord(
+                component_ordinal=int(component["component_ordinal"]),
+                source_shape_id=int(component["source_shape_id"]),
+                triangle_start=int(component["triangle_start"]),
+                triangle_count=int(component["triangle_count"]),
+                input_vertex_count=int(component["input_vertex_count"]),
+                min_x=float(component["min_x"]),
+                min_y=float(component["min_y"]),
+                max_x=float(component["max_x"]),
+                max_y=float(component["max_y"]),
+                status=str(component.get("status", "prepared_simple_polygon_component")),
+            )
+        )
+    return PreparedSimplePolygonComponentPayload(
+        triangles=tuple(triangles),
+        components=tuple(components),
+        status=str(data.get("status", V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_STATUS)),
+    )
+
+
 def prepare_overlay_area_pair_rows(
     left_payload: PreparedSimplePolygonComponentPayload,
     right_payload: PreparedSimplePolygonComponentPayload,
@@ -1644,6 +1720,7 @@ __all__ = [
     "PreparedSimplePolygonComponentRecord",
     "V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_STATUS",
     "V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_CUPY_VERSION",
+    "V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_SERIALIZATION_VERSION",
     "V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_VERSION",
     "evaluate_prepared_overlay_area_scalar",
     "evaluate_prepared_overlay_area_scalar_tiled",
@@ -1651,6 +1728,8 @@ __all__ = [
     "evaluate_prepared_overlay_area_tile_task_cupy_inputs",
     "evaluate_prepared_overlay_area_tile_tasks_cupy",
     "plan_prepared_overlay_area_tile_tasks",
+    "prepared_simple_polygon_component_payload_from_dict",
+    "prepared_simple_polygon_component_payload_to_dict",
     "prepared_overlay_area_component_bounds_overlap_positive",
     "prepare_overlay_area_tile_task_cupy_inputs_from_relation_ordinals",
     "prepare_overlay_area_tile_task_cupy_inputs",

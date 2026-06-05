@@ -198,6 +198,104 @@ def _prepare_geometry_payload_bundle_parallel(
     return payload, shape_to_components, prepared_status_counts, geometry_map, geometry_status_counts
 
 
+def _shape_components_to_jsonable(
+    shape_to_components: dict[int, tuple[int, ...]],
+) -> dict[str, list[int]]:
+    return {
+        str(int(shape_ordinal)): [int(component) for component in components]
+        for shape_ordinal, components in sorted(shape_to_components.items())
+    }
+
+
+def _shape_components_from_jsonable(data: dict[str, Any]) -> dict[int, tuple[int, ...]]:
+    return {
+        int(shape_ordinal): tuple(int(component) for component in components)
+        for shape_ordinal, components in data.items()
+    }
+
+
+def _cache_path(cache_dir: Path, side: str) -> Path:
+    return cache_dir / f"{side}_prepared_simple_polygon_component_payload.json"
+
+
+def _write_prepared_payload_cache(
+    cache_dir: Path,
+    side: str,
+    *,
+    source_cdb: Path,
+    selected_shape_ordinals: set[int],
+    payload: rt.PreparedSimplePolygonComponentPayload,
+    shape_to_components: dict[int, tuple[int, ...]],
+    prepared_status_counts: dict[str, int],
+    geometry_map: dict[int, Any],
+    geometry_status_counts: dict[str, int],
+) -> Path:
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    payload_data = {
+        "schema": "rtdl.goal3507.overlay_area_prepared_payload_cache.v1",
+        "side": side,
+        "source_cdb": str(source_cdb),
+        "selected_shape_ordinals": [int(value) for value in sorted(selected_shape_ordinals)],
+        "payload": rt.prepared_simple_polygon_component_payload_to_dict(payload),
+        "shape_to_components": _shape_components_to_jsonable(shape_to_components),
+        "prepared_status_counts": {str(key): int(value) for key, value in sorted(prepared_status_counts.items())},
+        "geometry_status_counts": {str(key): int(value) for key, value in sorted(geometry_status_counts.items())},
+        "geometry_wkb_hex": {
+            str(int(shape_ordinal)): bytes(geometry.wkb).hex()
+            for shape_ordinal, geometry in sorted(geometry_map.items())
+        },
+        "claim_boundary": _claim_boundary(),
+    }
+    path = _cache_path(cache_dir, side)
+    path.write_text(json.dumps(payload_data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return path
+
+
+def _read_prepared_payload_cache(
+    cache_dir: Path,
+    side: str,
+    *,
+    source_cdb: Path,
+    selected_shape_ordinals: set[int],
+) -> tuple[rt.PreparedSimplePolygonComponentPayload, dict[int, tuple[int, ...]], dict[str, int], dict[int, Any], dict[str, int], dict[str, Any]]:
+    path = _cache_path(cache_dir, side)
+    if not path.exists():
+        raise FileNotFoundError(f"missing prepared payload cache for {side}: {path}")
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if data.get("schema") != "rtdl.goal3507.overlay_area_prepared_payload_cache.v1":
+        raise ValueError(f"unexpected prepared payload cache schema for {side}")
+    if str(data.get("source_cdb")) != str(source_cdb):
+        raise ValueError(f"prepared payload cache source mismatch for {side}")
+    cached_shape_ordinals = {int(value) for value in data.get("selected_shape_ordinals", ())}
+    if cached_shape_ordinals != {int(value) for value in selected_shape_ordinals}:
+        raise ValueError(f"prepared payload cache shape ordinal set mismatch for {side}")
+    try:
+        from shapely import wkb as shapely_wkb  # type: ignore
+    except Exception:  # pragma: no cover - Shapely 1.x compatibility path
+        import shapely.wkb as shapely_wkb  # type: ignore
+
+    geometry_map = {
+        int(shape_ordinal): shapely_wkb.loads(bytes.fromhex(wkb_hex))
+        for shape_ordinal, wkb_hex in data.get("geometry_wkb_hex", {}).items()
+    }
+    payload = rt.prepared_simple_polygon_component_payload_from_dict(data["payload"])
+    return (
+        payload,
+        _shape_components_from_jsonable(data["shape_to_components"]),
+        {str(key): int(value) for key, value in data["prepared_status_counts"].items()},
+        geometry_map,
+        {str(key): int(value) for key, value in data["geometry_status_counts"].items()},
+        {
+            "cache_path": str(path),
+            "schema": data.get("schema"),
+            "side": side,
+            "selected_shape_count": len(cached_shape_ordinals),
+            "payload_triangle_count": payload.triangle_count,
+            "component_count": payload.component_count,
+        },
+    )
+
+
 def _shape_component_table(
     shape_to_components: dict[int, tuple[int, ...]],
     shape_count: int,
@@ -335,10 +433,68 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         flush=True,
     )
     payload_workers = max(1, int(args.payload_workers))
+    payload_cache_dir = Path(args.payload_cache_dir) if args.payload_cache_dir is not None else None
+    payload_cache_mode = str(args.payload_cache_mode)
+    if payload_cache_mode != "off" and payload_cache_dir is None:
+        raise ValueError("--payload-cache-mode requires --payload-cache-dir")
     build_start = time.perf_counter()
     parallel_payload_prepare_sec = 0.0
     parallel_payload_prepare_used = payload_workers > 1
-    if parallel_payload_prepare_used:
+    payload_cache_load_sec = 0.0
+    payload_cache_write_sec = 0.0
+    payload_cache_read_used = payload_cache_mode == "read"
+    payload_cache_write_used = payload_cache_mode in {"write", "refresh"}
+    payload_cache_metadata: dict[str, object] = {
+        "mode": payload_cache_mode,
+        "cache_dir": str(payload_cache_dir) if payload_cache_dir is not None else None,
+        "read_used": False,
+        "write_used": False,
+        "left": None,
+        "right": None,
+    }
+    if payload_cache_read_used:
+        if payload_cache_dir is None:
+            raise ValueError("payload cache read requires --payload-cache-dir")
+        print(f"[goal3492] read prepared payload cache from {payload_cache_dir}", flush=True)
+        cache_load_start = time.perf_counter()
+        (
+            left_payload,
+            left_shape_components,
+            left_prepared_status,
+            left_geometry_map,
+            left_geometry_status,
+            left_cache_metadata,
+        ) = _read_prepared_payload_cache(
+            payload_cache_dir,
+            "left",
+            source_cdb=args.left_cdb,
+            selected_shape_ordinals=left_shapes_to_build if args.active_shapes_only else set(range(len(left_shapes))),
+        )
+        (
+            right_payload,
+            right_shape_components,
+            right_prepared_status,
+            right_geometry_map,
+            right_geometry_status,
+            right_cache_metadata,
+        ) = _read_prepared_payload_cache(
+            payload_cache_dir,
+            "right",
+            source_cdb=args.right_cdb,
+            selected_shape_ordinals=right_shapes_to_build if args.active_shapes_only else set(range(len(right_shapes))),
+        )
+        payload_cache_load_sec = time.perf_counter() - cache_load_start
+        geometry_build_sec = 0.0
+        payload_build_sec = 0.0
+        parallel_payload_prepare_used = False
+        payload_cache_metadata.update(
+            {
+                "read_used": True,
+                "left": left_cache_metadata,
+                "right": right_cache_metadata,
+            }
+        )
+    elif parallel_payload_prepare_used:
         print(f"[goal3492] parallel geometry/payload preparation workers={payload_workers}", flush=True)
         left_payload, left_shape_components, left_prepared_status, left_geometry_map, left_geometry_status = (
             _prepare_geometry_payload_bundle_parallel(
@@ -377,6 +533,42 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         left_payload, left_shape_components, left_prepared_status = _prepare_payload_from_geometry_map(left_geometry_map)
         right_payload, right_shape_components, right_prepared_status = _prepare_payload_from_geometry_map(right_geometry_map)
         payload_build_sec = time.perf_counter() - payload_start
+
+    if payload_cache_write_used:
+        if payload_cache_dir is None:
+            raise ValueError("payload cache write requires --payload-cache-dir")
+        print(f"[goal3492] write prepared payload cache to {payload_cache_dir}", flush=True)
+        cache_write_start = time.perf_counter()
+        left_cache_path = _write_prepared_payload_cache(
+            payload_cache_dir,
+            "left",
+            source_cdb=args.left_cdb,
+            selected_shape_ordinals=left_shapes_to_build if args.active_shapes_only else set(range(len(left_shapes))),
+            payload=left_payload,
+            shape_to_components=left_shape_components,
+            prepared_status_counts=left_prepared_status,
+            geometry_map=left_geometry_map,
+            geometry_status_counts=left_geometry_status,
+        )
+        right_cache_path = _write_prepared_payload_cache(
+            payload_cache_dir,
+            "right",
+            source_cdb=args.right_cdb,
+            selected_shape_ordinals=right_shapes_to_build if args.active_shapes_only else set(range(len(right_shapes))),
+            payload=right_payload,
+            shape_to_components=right_shape_components,
+            prepared_status_counts=right_prepared_status,
+            geometry_map=right_geometry_map,
+            geometry_status_counts=right_geometry_status,
+        )
+        payload_cache_write_sec = time.perf_counter() - cache_write_start
+        payload_cache_metadata.update(
+            {
+                "write_used": True,
+                "left": {"cache_path": str(left_cache_path), "selected_shape_count": len(left_shapes_to_build)},
+                "right": {"cache_path": str(right_cache_path), "selected_shape_count": len(right_shapes_to_build)},
+            }
+        )
 
     print(
         f"[goal3492] build exact oracle areas for {len(candidate_relation_rows)}/{len(left_ordinals)} rows",
@@ -560,30 +752,34 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     )[:10]
 
     schema = (
-        "rtdl.goal3504.overlay_area_parallel_payload_prepare.v1"
-        if args.parallel_payload_prepare_evidence
+        "rtdl.goal3507.overlay_area_prepared_payload_cache.v1"
+        if args.payload_cache_evidence
         else (
-            "rtdl.goal3502.overlay_area_single_triangulation_payload_construction.v1"
-            if args.single_triangulation_payload_evidence
+            "rtdl.goal3504.overlay_area_parallel_payload_prepare.v1"
+            if args.parallel_payload_prepare_evidence
             else (
-                "rtdl.goal3497.overlay_area_bounds_positive_filtered_tile_tasks.v1"
-                if args.bounds_positive_filter and not args.device_tile_task_planner
+                "rtdl.goal3502.overlay_area_single_triangulation_payload_construction.v1"
+                if args.single_triangulation_payload_evidence
                 else (
-                    "rtdl.goal3501.overlay_area_component_bounds_filtered_tile_tasks.v1"
-                    if args.component_bounds_filter
+                    "rtdl.goal3497.overlay_area_bounds_positive_filtered_tile_tasks.v1"
+                    if args.bounds_positive_filter and not args.device_tile_task_planner
                     else (
-                        "rtdl.goal3498.overlay_area_device_tile_task_planner.v1"
-                        if args.device_tile_task_planner
+                        "rtdl.goal3501.overlay_area_component_bounds_filtered_tile_tasks.v1"
+                        if args.component_bounds_filter
                         else (
-                            "rtdl.goal3495.overlay_area_device_active_shape_ordinals.v1"
-                            if device_active_shape_ordinals_used
+                            "rtdl.goal3498.overlay_area_device_tile_task_planner.v1"
+                            if args.device_tile_task_planner
                             else (
-                                "rtdl.goal3494.overlay_area_resident_cupy_tile_task_inputs.v1"
-                                if args.resident_cupy_inputs
+                                "rtdl.goal3495.overlay_area_device_active_shape_ordinals.v1"
+                                if device_active_shape_ordinals_used
                                 else (
-                                    "rtdl.goal3493.overlay_area_active_shape_payload_construction.v1"
-                                    if args.active_shapes_only
-                                    else "rtdl.goal3492.overlay_area_public_cdb_tile_task_executor.v1"
+                                    "rtdl.goal3494.overlay_area_resident_cupy_tile_task_inputs.v1"
+                                    if args.resident_cupy_inputs
+                                    else (
+                                        "rtdl.goal3493.overlay_area_active_shape_payload_construction.v1"
+                                        if args.active_shapes_only
+                                        else "rtdl.goal3492.overlay_area_public_cdb_tile_task_executor.v1"
+                                    )
                                 )
                             )
                         )
@@ -592,13 +788,15 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             )
         )
     )
-    goal = 3504 if args.parallel_payload_prepare_evidence else (
-        3502 if args.single_triangulation_payload_evidence else (
-            3501 if args.component_bounds_filter else (3498 if args.device_tile_task_planner else (3497 if args.bounds_positive_filter else (
-                3495 if device_active_shape_ordinals_used else (
-                    3494 if args.resident_cupy_inputs else (3493 if args.active_shapes_only else 3492)
-                )
-            )))
+    goal = 3507 if args.payload_cache_evidence else (
+        3504 if args.parallel_payload_prepare_evidence else (
+            3502 if args.single_triangulation_payload_evidence else (
+                3501 if args.component_bounds_filter else (3498 if args.device_tile_task_planner else (3497 if args.bounds_positive_filter else (
+                    3495 if device_active_shape_ordinals_used else (
+                        3494 if args.resident_cupy_inputs else (3493 if args.active_shapes_only else 3492)
+                    )
+                )))
+            )
         )
     )
 
@@ -625,6 +823,9 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         "payload_workers": payload_workers,
         "parallel_payload_prepare": bool(parallel_payload_prepare_used),
         "parallel_payload_prepare_evidence": bool(args.parallel_payload_prepare_evidence),
+        "payload_cache_mode": payload_cache_mode,
+        "payload_cache_evidence": bool(args.payload_cache_evidence),
+        "payload_cache_metadata": payload_cache_metadata,
         "bounds_positive_relation_row_count": int(len(candidate_relation_rows)),
         "bounds_positive_filter_metadata": bounds_positive_filter_metadata,
         "active_shape_ordinal_metadata": active_shape_ordinal_metadata,
@@ -670,8 +871,12 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             "geometry_build": geometry_build_sec,
             "payload_build": payload_build_sec,
             "parallel_geometry_payload_prepare": parallel_payload_prepare_sec,
+            "payload_cache_load": payload_cache_load_sec,
+            "payload_cache_write": payload_cache_write_sec,
             "geometry_plus_payload_prepare": (
-                parallel_payload_prepare_sec if parallel_payload_prepare_used else geometry_build_sec + payload_build_sec
+                payload_cache_load_sec
+                if payload_cache_read_used
+                else (parallel_payload_prepare_sec if parallel_payload_prepare_used else geometry_build_sec + payload_build_sec)
             ),
             "relation_discovery": relation_discovery_sec,
             "bounds_positive_filter": bounds_positive_filter_sec,
@@ -719,6 +924,18 @@ def parse_args() -> argparse.Namespace:
             "Use multiple CPU processes for independent Shapely geometry repair and "
             "prepared component extraction. The default 1 preserves the sequential path."
         ),
+    )
+    parser.add_argument("--payload-cache-dir", type=Path, default=None)
+    parser.add_argument(
+        "--payload-cache-mode",
+        choices=("off", "read", "write", "refresh"),
+        default="off",
+        help="Prepared payload cache mode. read requires existing cache; write/refresh write cache after preparation.",
+    )
+    parser.add_argument(
+        "--payload-cache-evidence",
+        action="store_true",
+        help="Label the output as Goal3507 evidence for prepared-payload cache reuse.",
     )
     parser.add_argument(
         "--bounds-positive-filter",

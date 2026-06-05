@@ -84,6 +84,25 @@ class Goal3502OverlayAreaSingleTriangulationPayloadConstructionTest(unittest.Tes
         self.assertEqual(prepared.components[0].input_vertex_count, 4)
         self.assertEqual(prepared.components[0].to_metadata()["bounds"], (0.0, 0.0, 3.0, 2.0))
 
+    def test_prepared_payload_serialization_round_trips_contract(self) -> None:
+        payload = rt.prepare_simple_polygon_component_payload(
+            (
+                ((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0)),
+                ((3.0, 3.0), (5.0, 3.0), (4.0, 5.0)),
+            ),
+            source_shape_ids=(20, 21),
+        )
+
+        serialized = rt.prepared_simple_polygon_component_payload_to_dict(payload)
+        restored = rt.prepared_simple_polygon_component_payload_from_dict(serialized)
+
+        self.assertEqual(serialized["schema"], rt.V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_SERIALIZATION_VERSION)
+        self.assertEqual(restored.triangles, payload.triangles)
+        self.assertEqual(
+            tuple(component.to_metadata() for component in restored.components),
+            tuple(component.to_metadata() for component in payload.components),
+        )
+
     def test_runner_uses_single_triangulation_payload_path(self) -> None:
         text = SCRIPT.read_text(encoding="utf-8")
 
