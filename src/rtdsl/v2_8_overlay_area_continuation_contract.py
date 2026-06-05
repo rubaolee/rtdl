@@ -18,6 +18,15 @@ V2_8_OVERLAY_AREA_CONTINUATION_CLAIM_BOUNDARY = (
 V2_8_OVERLAY_AREA_INPUT_CONTRACT = "shape_pair_relation_flags_with_ordinals_and_geometry_payload"
 V2_8_OVERLAY_AREA_SCALAR_TARGET = "scalar_exact_area"
 V2_8_OVERLAY_GEOMETRY_STREAM_TARGET = "streamed_overlay_geometry"
+V2_8_OVERLAY_AREA_PRE_KERNEL_POLICY_VERSION = (
+    "rtdl.v2_8.simple_polygon_overlay_area_pre_kernel_policy.v1"
+)
+V2_8_OVERLAY_AREA_TOTAL_ABS_TOLERANCE = 1.0e-8
+V2_8_OVERLAY_AREA_TOTAL_REL_TOLERANCE = 1.0e-9
+V2_8_OVERLAY_AREA_ROW_ABS_TOLERANCE = 1.0e-10
+V2_8_OVERLAY_AREA_TOPOLOGY_INPUT_STATUS = "requires_prepared_simple_polygon_component_payload"
+V2_8_OVERLAY_AREA_UNSUPPORTED_TOPOLOGY_STATUS = "unsupported_topology_not_canonicalized"
+V2_8_OVERLAY_AREA_SCRATCH_POLICY = "tile_triangle_pairs_fail_closed_on_tile_or_accumulator_overflow"
 
 
 @dataclass(frozen=True)
@@ -186,15 +195,98 @@ def validate_v2_8_overlay_area_continuation_plan() -> dict[str, Any]:
     }
 
 
+def describe_v2_8_overlay_area_pre_kernel_policy() -> dict[str, Any]:
+    total_expected = 26.08321766231042
+    total_tolerance = max(
+        V2_8_OVERLAY_AREA_TOTAL_ABS_TOLERANCE,
+        V2_8_OVERLAY_AREA_TOTAL_REL_TOLERANCE * abs(total_expected),
+    )
+    return {
+        "version": V2_8_OVERLAY_AREA_PRE_KERNEL_POLICY_VERSION,
+        "status": "pre_kernel_policy_no_runtime_kernel_yet",
+        "target": V2_8_OVERLAY_AREA_SCALAR_TARGET,
+        "oracle_total_exact_area": total_expected,
+        "oracle_positive_row_count": 1090,
+        "oracle_zero_row_count": 3453,
+        "total_abs_tolerance": V2_8_OVERLAY_AREA_TOTAL_ABS_TOLERANCE,
+        "total_rel_tolerance": V2_8_OVERLAY_AREA_TOTAL_REL_TOLERANCE,
+        "effective_total_tolerance": total_tolerance,
+        "row_abs_tolerance": V2_8_OVERLAY_AREA_ROW_ABS_TOLERANCE,
+        "topology_input_status": V2_8_OVERLAY_AREA_TOPOLOGY_INPUT_STATUS,
+        "unsupported_topology_status": V2_8_OVERLAY_AREA_UNSUPPORTED_TOPOLOGY_STATUS,
+        "topology_policy": (
+            "raw invalid, self-intersecting, hole-bearing, or multipolygon inputs must be "
+            "canonicalized into prepared simple polygon component payloads before the scalar "
+            "kernel; the runtime kernel must fail closed rather than silently repair topology"
+        ),
+        "reference_algorithm": "ear_clip_triangulation_plus_triangle_pair_convex_clip",
+        "scratch_policy": V2_8_OVERLAY_AREA_SCRATCH_POLICY,
+        "scratch_policy_detail": (
+            "prepared component triangles may produce many triangle pairs; a device implementation "
+            "must process triangle pairs in bounded tiles, accumulate row-aligned float64 area, "
+            "and report fail-closed status for tile capacity, accumulator, or unsupported topology overflow"
+        ),
+        "claim_boundary": V2_8_OVERLAY_AREA_CONTINUATION_CLAIM_BOUNDARY,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "full_overlay_completion_claim_authorized": False,
+        "evidence_refs": ("Goal3474", "Goal3477", "Goal3479", "Goal3480", "Goal3481"),
+    }
+
+
+def validate_v2_8_overlay_area_pre_kernel_policy() -> dict[str, Any]:
+    policy = describe_v2_8_overlay_area_pre_kernel_policy()
+    errors: list[str] = []
+    if policy["target"] != V2_8_OVERLAY_AREA_SCALAR_TARGET:
+        errors.append("pre-kernel policy must target scalar exact area")
+    if float(policy["effective_total_tolerance"]) <= 0.0:
+        errors.append("effective total tolerance must be positive")
+    if "prepared simple polygon component payloads" not in str(policy["topology_policy"]):
+        errors.append("topology policy must require prepared simple polygon component payloads")
+    if "fail closed" not in str(policy["topology_policy"]):
+        errors.append("topology policy must fail closed for unsupported topology")
+    if "bounded tiles" not in str(policy["scratch_policy_detail"]):
+        errors.append("scratch policy must require bounded tiles")
+    for field in (
+        "release_authorized",
+        "public_speedup_claim_authorized",
+        "rt_core_speedup_claim_authorized",
+        "true_zero_copy_claim_authorized",
+        "full_overlay_completion_claim_authorized",
+    ):
+        if policy[field] is not False:
+            errors.append(f"pre-kernel policy authorizes {field}")
+    return {
+        "version": V2_8_OVERLAY_AREA_PRE_KERNEL_POLICY_VERSION,
+        "status": "accept" if not errors else "reject",
+        "errors": tuple(errors),
+        "effective_total_tolerance": policy["effective_total_tolerance"],
+        "topology_input_status": policy["topology_input_status"],
+        "scratch_policy": policy["scratch_policy"],
+        "claim_boundary": V2_8_OVERLAY_AREA_CONTINUATION_CLAIM_BOUNDARY,
+    }
+
+
 __all__ = [
     "V28OverlayAreaContinuationPlan",
     "V2_8_OVERLAY_AREA_CONTINUATION_CLAIM_BOUNDARY",
     "V2_8_OVERLAY_AREA_CONTINUATION_STATUS",
     "V2_8_OVERLAY_AREA_CONTINUATION_VERSION",
     "V2_8_OVERLAY_AREA_INPUT_CONTRACT",
+    "V2_8_OVERLAY_AREA_PRE_KERNEL_POLICY_VERSION",
+    "V2_8_OVERLAY_AREA_ROW_ABS_TOLERANCE",
     "V2_8_OVERLAY_AREA_SCALAR_TARGET",
+    "V2_8_OVERLAY_AREA_SCRATCH_POLICY",
+    "V2_8_OVERLAY_AREA_TOPOLOGY_INPUT_STATUS",
+    "V2_8_OVERLAY_AREA_TOTAL_ABS_TOLERANCE",
+    "V2_8_OVERLAY_AREA_TOTAL_REL_TOLERANCE",
+    "V2_8_OVERLAY_AREA_UNSUPPORTED_TOPOLOGY_STATUS",
     "V2_8_OVERLAY_GEOMETRY_STREAM_TARGET",
+    "describe_v2_8_overlay_area_pre_kernel_policy",
     "select_v2_8_overlay_area_continuation_target",
     "v2_8_overlay_area_continuation_plan",
     "validate_v2_8_overlay_area_continuation_plan",
+    "validate_v2_8_overlay_area_pre_kernel_policy",
 ]

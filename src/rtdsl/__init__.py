@@ -369,11 +369,20 @@ from .v2_8_overlay_area_continuation_contract import V2_8_OVERLAY_AREA_CONTINUAT
 from .v2_8_overlay_area_continuation_contract import V2_8_OVERLAY_AREA_CONTINUATION_STATUS
 from .v2_8_overlay_area_continuation_contract import V2_8_OVERLAY_AREA_CONTINUATION_VERSION
 from .v2_8_overlay_area_continuation_contract import V2_8_OVERLAY_AREA_INPUT_CONTRACT
+from .v2_8_overlay_area_continuation_contract import V2_8_OVERLAY_AREA_PRE_KERNEL_POLICY_VERSION
+from .v2_8_overlay_area_continuation_contract import V2_8_OVERLAY_AREA_ROW_ABS_TOLERANCE
 from .v2_8_overlay_area_continuation_contract import V2_8_OVERLAY_AREA_SCALAR_TARGET
+from .v2_8_overlay_area_continuation_contract import V2_8_OVERLAY_AREA_SCRATCH_POLICY
+from .v2_8_overlay_area_continuation_contract import V2_8_OVERLAY_AREA_TOPOLOGY_INPUT_STATUS
+from .v2_8_overlay_area_continuation_contract import V2_8_OVERLAY_AREA_TOTAL_ABS_TOLERANCE
+from .v2_8_overlay_area_continuation_contract import V2_8_OVERLAY_AREA_TOTAL_REL_TOLERANCE
+from .v2_8_overlay_area_continuation_contract import V2_8_OVERLAY_AREA_UNSUPPORTED_TOPOLOGY_STATUS
 from .v2_8_overlay_area_continuation_contract import V2_8_OVERLAY_GEOMETRY_STREAM_TARGET
+from .v2_8_overlay_area_continuation_contract import describe_v2_8_overlay_area_pre_kernel_policy
 from .v2_8_overlay_area_continuation_contract import select_v2_8_overlay_area_continuation_target
 from .v2_8_overlay_area_continuation_contract import v2_8_overlay_area_continuation_plan
 from .v2_8_overlay_area_continuation_contract import validate_v2_8_overlay_area_continuation_plan
+from .v2_8_overlay_area_continuation_contract import validate_v2_8_overlay_area_pre_kernel_policy
 from .geometry_relation_continuations import GEOMETRY_RELATION_BOUNDS_OVERLAP_AREA_CUPY_VERSION
 from .geometry_relation_continuations import GEOMETRY_RELATION_COMPLEXITY_CUPY_VERSION
 from .geometry_relation_continuations import GEOMETRY_RELATION_CONVEX_OVERLAY_AREA_CUPY_VERSION
@@ -2081,8 +2090,16 @@ __all__ = [
     "V2_8_OVERLAY_AREA_CONTINUATION_STATUS",
     "V2_8_OVERLAY_AREA_CONTINUATION_VERSION",
     "V2_8_OVERLAY_AREA_INPUT_CONTRACT",
+    "V2_8_OVERLAY_AREA_PRE_KERNEL_POLICY_VERSION",
+    "V2_8_OVERLAY_AREA_ROW_ABS_TOLERANCE",
     "V2_8_OVERLAY_AREA_SCALAR_TARGET",
+    "V2_8_OVERLAY_AREA_SCRATCH_POLICY",
+    "V2_8_OVERLAY_AREA_TOPOLOGY_INPUT_STATUS",
+    "V2_8_OVERLAY_AREA_TOTAL_ABS_TOLERANCE",
+    "V2_8_OVERLAY_AREA_TOTAL_REL_TOLERANCE",
+    "V2_8_OVERLAY_AREA_UNSUPPORTED_TOPOLOGY_STATUS",
     "V2_8_OVERLAY_GEOMETRY_STREAM_TARGET",
+    "describe_v2_8_overlay_area_pre_kernel_policy",
     "GEOMETRY_RELATION_BOUNDS_OVERLAP_AREA_CUPY_VERSION",
     "GEOMETRY_RELATION_COMPLEXITY_CUPY_VERSION",
     "GEOMETRY_RELATION_CONVEX_OVERLAY_AREA_CUPY_VERSION",
@@ -2092,6 +2109,7 @@ __all__ = [
     "select_v2_8_overlay_area_continuation_target",
     "v2_8_overlay_area_continuation_plan",
     "validate_v2_8_overlay_area_continuation_plan",
+    "validate_v2_8_overlay_area_pre_kernel_policy",
     "ShapePairBoundsOverlapAreaCupyResult",
     "ShapePairConvexOverlayAreaCupyResult",
     "ShapePairRelationComplexityCupyResult",
