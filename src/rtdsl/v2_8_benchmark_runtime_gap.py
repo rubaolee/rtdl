@@ -208,9 +208,10 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "of 15,700 left shapes, reducing geometry build to 1.158s, payload build to 7.864s, left "
             "payload triangles from 309,337 to 46,297, and executor time to 0.281s while preserving the "
             "same total-area error. Goal3494 adds resident CuPy tile-task inputs so repeated executor calls "
-            "can reuse partner payload/task arrays instead of repacking them. Remaining work is pod repeat "
-            "timing for that resident-input mode, integration with the device-resident relation stream, then "
-            "the native-vs-partner acceptance decision over that execution shape."
+            "reuse partner payload/task arrays instead of repacking them; pod repeat timing shows 0.101s "
+            "input preparation and a 0.0288s best repeat for the 9,653,005 triangle-pair stream. Remaining "
+            "work is integration with the device-resident relation stream and the native-vs-partner "
+            "acceptance decision over that execution shape."
         ),
         generic_runtime_target=(
             "typed hit/relation streams with compact-mask, grouped parity/count, bounded witness "

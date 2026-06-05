@@ -2,7 +2,7 @@
 
 ## Status
 
-Implemented locally. Pod repeat timing is required.
+Implemented with pod repeat timing on an NVIDIA RTX A5000.
 
 ## Purpose
 
@@ -66,3 +66,42 @@ PYTHONPATH=src:. python3 scripts/goal3492_overlay_area_public_cdb_tile_task_exec
 The expected correctness bars are unchanged: all task statuses zero, exact total
 area within tolerance, positive row count match, and all claim-boundary flags
 false.
+
+## Pod Result
+
+Artifact:
+
+- `docs/reports/goal3494_overlay_area_resident_cupy_tile_task_inputs_pod_2026-06-05.json`
+
+Source commit:
+
+- `15ed0780`
+
+Public-CDB active-shape workload:
+
+- relation rows: `4,543`
+- component-pair rows: `39,947`
+- tile tasks: `54,232`
+- triangle pairs processed per repeat: `9,653,005`
+- executor repeats: `5`
+- task status counts: `{"0": 54232}`
+
+Correctness:
+
+- observed total area: `26.083217672086707`
+- exact Shapely/GEOS total area: `26.08321766231046`
+- total absolute error: `9.776247367199176e-09`
+- max relation absolute error: about `1.0414236140121602e-09`
+- positive row count match: true
+
+Resident-input timing:
+
+- CuPy input preparation: `0.10114209912717342` seconds
+- repeat times: `0.1847483618184924`, `0.029110463336110115`,
+  `0.02901996672153473`, `0.02896842733025551`,
+  `0.028768520802259445` seconds
+- best repeat: `0.028768520802259445` seconds
+
+Interpretation: after payload/task arrays are resident in CuPy, repeated scalar
+exact-area executor calls are about `30ms` for the `9,653,005` triangle-pair
+public-CDB workload. This is still partner residency/reuse, not true zero-copy.
