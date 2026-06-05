@@ -21,6 +21,7 @@ REPORT = ROOT / "docs" / "reports" / "goal3431_spatial_rayjoin_prepared_cupy_ref
 REUSE_REPORT = ROOT / "docs" / "reports" / "goal3435_spatial_rayjoin_prepared_cupy_pip_reuse_handle_2026-06-05.md"
 ARTIFACT = ROOT / "docs" / "reports" / "goal3431_spatial_rayjoin_prepared_cupy_refined_pip_pod_2026-06-05.json"
 REUSE_ARTIFACT = ROOT / "docs" / "reports" / "goal3435_spatial_rayjoin_prepared_cupy_pip_reuse_handle_pod_2026-06-05.json"
+REUSE_SCRIPT = ROOT / "scripts" / "goal3435_spatial_rayjoin_prepared_cupy_pip_reuse_handle_probe.py"
 
 
 class Goal3431SpatialRayJoinPreparedCupyRefinedPipRouteTest(unittest.TestCase):
@@ -95,6 +96,19 @@ class Goal3431SpatialRayJoinPreparedCupyRefinedPipRouteTest(unittest.TestCase):
             "`release_authorized: False`",
         ):
             self.assertIn(phrase, report)
+
+    def test_reuse_probe_script_records_repeated_handle_schema(self) -> None:
+        script = REUSE_SCRIPT.read_text(encoding="utf-8")
+
+        for phrase in (
+            "rtdl.goal3435.spatial_rayjoin_prepared_cupy_pip_reuse.v1",
+            "prepare_rayjoin_optix_cupy_refined_pip",
+            "prepared_optix_cupy_refined_pip_reuse_handle",
+            "candidate_device_columns_sec",
+            "prepared_cupy_refine_sec",
+            "rayjoin_paper_reproduction_claim_authorized",
+        ):
+            self.assertIn(phrase, script)
 
     @unittest.skipUnless(ARTIFACT.exists(), "Goal3431 pod artifact pending")
     def test_pod_artifact_records_route_execution(self) -> None:
