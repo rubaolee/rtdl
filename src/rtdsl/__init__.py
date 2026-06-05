@@ -406,6 +406,7 @@ from .v2_8_overlay_area_prepared_payload import prepare_overlay_area_tile_task_c
 from .v2_8_overlay_area_prepared_payload import prepare_overlay_area_tile_task_cupy_inputs
 from .v2_8_overlay_area_prepared_payload import prepare_overlay_area_pair_rows
 from .v2_8_overlay_area_prepared_payload import prepare_simple_polygon_component_payload
+from .v2_8_overlay_area_prepared_payload import prepare_simple_polygon_component_payload_from_triangles
 from .v2_8_overlay_area_prepared_payload import summarize_prepared_overlay_area_tile_tasks
 from .v2_8_overlay_area_prepared_payload import validate_v2_8_overlay_area_prepared_payload_contract
 from .geometry_relation_continuations import GEOMETRY_RELATION_BOUNDS_OVERLAP_AREA_CUPY_VERSION
@@ -2162,6 +2163,7 @@ __all__ = [
     "prepare_overlay_area_tile_task_cupy_inputs",
     "prepare_overlay_area_pair_rows",
     "prepare_simple_polygon_component_payload",
+    "prepare_simple_polygon_component_payload_from_triangles",
     "summarize_prepared_overlay_area_tile_tasks",
     "validate_v2_8_overlay_area_prepared_payload_contract",
     "ShapePairBoundsOverlapAreaCupyResult",

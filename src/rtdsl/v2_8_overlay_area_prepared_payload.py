@@ -770,6 +770,75 @@ def prepare_simple_polygon_component_payload(
     return PreparedSimplePolygonComponentPayload(triangles=tuple(triangles), components=tuple(records))
 
 
+def prepare_simple_polygon_component_payload_from_triangles(
+    component_triangles: Sequence[Sequence[Triangle2]],
+    *,
+    source_shape_ids: Sequence[int] | None = None,
+    component_vertex_counts: Sequence[int] | None = None,
+    component_bounds: Sequence[tuple[float, float, float, float]] | None = None,
+) -> PreparedSimplePolygonComponentPayload:
+    if source_shape_ids is not None and len(source_shape_ids) != len(component_triangles):
+        raise ValueError("source_shape_ids length must match component_triangles length")
+    if component_vertex_counts is not None and len(component_vertex_counts) != len(component_triangles):
+        raise ValueError("component_vertex_counts length must match component_triangles length")
+    if component_bounds is not None and len(component_bounds) != len(component_triangles):
+        raise ValueError("component_bounds length must match component_triangles length")
+
+    triangles: list[Triangle2] = []
+    records: list[PreparedSimplePolygonComponentRecord] = []
+    for component_ordinal, triangle_sequence in enumerate(component_triangles):
+        start = len(triangles)
+        normalized_triangles: list[Triangle2] = []
+        for triangle in triangle_sequence:
+            if len(triangle) != 3:
+                raise ValueError("pretriangulated component triangles must have exactly three vertices")
+            normalized_triangles.append(
+                (
+                    (float(triangle[0][0]), float(triangle[0][1])),
+                    (float(triangle[1][0]), float(triangle[1][1])),
+                    (float(triangle[2][0]), float(triangle[2][1])),
+                )
+            )
+        if not normalized_triangles:
+            raise ValueError("pretriangulated component must contain at least one triangle")
+        triangles.extend(normalized_triangles)
+        source_shape_id = (
+            int(source_shape_ids[component_ordinal])
+            if source_shape_ids is not None
+            else component_ordinal
+        )
+        if component_bounds is None:
+            xs = [point[0] for triangle in normalized_triangles for point in triangle]
+            ys = [point[1] for triangle in normalized_triangles for point in triangle]
+            min_x, min_y, max_x, max_y = min(xs), min(ys), max(xs), max(ys)
+        else:
+            min_x, min_y, max_x, max_y = (
+                float(component_bounds[component_ordinal][0]),
+                float(component_bounds[component_ordinal][1]),
+                float(component_bounds[component_ordinal][2]),
+                float(component_bounds[component_ordinal][3]),
+            )
+        vertex_count = (
+            int(component_vertex_counts[component_ordinal])
+            if component_vertex_counts is not None
+            else len({point for triangle in normalized_triangles for point in triangle})
+        )
+        records.append(
+            PreparedSimplePolygonComponentRecord(
+                component_ordinal=component_ordinal,
+                source_shape_id=source_shape_id,
+                triangle_start=start,
+                triangle_count=len(normalized_triangles),
+                input_vertex_count=vertex_count,
+                min_x=min_x,
+                min_y=min_y,
+                max_x=max_x,
+                max_y=max_y,
+            )
+        )
+    return PreparedSimplePolygonComponentPayload(triangles=tuple(triangles), components=tuple(records))
+
+
 def prepare_overlay_area_pair_rows(
     left_payload: PreparedSimplePolygonComponentPayload,
     right_payload: PreparedSimplePolygonComponentPayload,
@@ -1578,6 +1647,7 @@ __all__ = [
     "prepare_overlay_area_tile_task_cupy_inputs",
     "prepare_overlay_area_pair_rows",
     "prepare_simple_polygon_component_payload",
+    "prepare_simple_polygon_component_payload_from_triangles",
     "summarize_prepared_overlay_area_tile_tasks",
     "validate_v2_8_overlay_area_prepared_payload_contract",
 ]

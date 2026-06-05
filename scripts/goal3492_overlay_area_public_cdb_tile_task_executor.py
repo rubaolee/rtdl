@@ -27,6 +27,7 @@ from examples.v2_0.research_benchmarks.spatial_rayjoin.rtdl_rayjoin_v2_spatial_j
 import rtdsl as rt  # noqa: E402
 from rtdsl.datasets import chains_to_polygons  # noqa: E402
 from rtdsl.datasets import load_cdb  # noqa: E402
+from rtdsl.simple_polygon_overlay_area_reference import Triangle2  # noqa: E402
 from rtdsl.simple_polygon_overlay_area_reference import triangulate_simple_polygon_ear_clip  # noqa: E402
 
 
@@ -44,28 +45,41 @@ def _exterior_vertices(polygon: Any) -> tuple[tuple[float, float], ...]:
     return coords
 
 
-def _component_vertices_for_prepared_geometry(geometry: Any) -> tuple[str, tuple[tuple[tuple[float, float], ...], ...]]:
+def _component_payload_parts_for_prepared_geometry(
+    geometry: Any,
+) -> tuple[
+    str,
+    tuple[tuple[tuple[float, float], ...], ...],
+    tuple[tuple[Triangle2, ...], ...],
+    tuple[tuple[float, float, float, float], ...],
+]:
     geom_type = str(getattr(geometry, "geom_type", "unknown"))
     if getattr(geometry, "is_empty", False):
-        return "unsupported_empty", ()
+        return "unsupported_empty", (), (), ()
     if geom_type == "Polygon":
         parts = (geometry,)
     elif geom_type == "MultiPolygon":
         parts = tuple(geometry.geoms)
     else:
-        return f"unsupported_geometry_type_{geom_type}", ()
+        return f"unsupported_geometry_type_{geom_type}", (), (), ()
 
     component_vertices: list[tuple[tuple[float, float], ...]] = []
+    component_triangles: list[tuple[Triangle2, ...]] = []
+    component_bounds: list[tuple[float, float, float, float]] = []
     for part in parts:
         if len(part.interiors) != 0:
-            return "unsupported_holes", tuple(component_vertices)
+            return "unsupported_holes", tuple(component_vertices), tuple(component_triangles), tuple(component_bounds)
         vertices = _exterior_vertices(part)
         try:
-            triangulate_simple_polygon_ear_clip(vertices)
+            triangles = triangulate_simple_polygon_ear_clip(vertices)
         except Exception:
-            return "unsupported_triangulation_failed", tuple(component_vertices)
+            return "unsupported_triangulation_failed", tuple(component_vertices), tuple(component_triangles), tuple(component_bounds)
         component_vertices.append(vertices)
-    return "prepared_simple_components", tuple(component_vertices)
+        component_triangles.append(triangles)
+        xs = [float(point[0]) for point in vertices]
+        ys = [float(point[1]) for point in vertices]
+        component_bounds.append((min(xs), min(ys), max(xs), max(ys)))
+    return "prepared_simple_components", tuple(component_vertices), tuple(component_triangles), tuple(component_bounds)
 
 
 def _add_count(counts: dict[str, int], key: str, value: int = 1) -> None:
@@ -81,21 +95,30 @@ def _prepare_payload_from_geometries(
 def _prepare_payload_from_geometry_map(
     geometries: dict[int, Any],
 ) -> tuple[rt.PreparedSimplePolygonComponentPayload, dict[int, tuple[int, ...]], dict[str, int]]:
-    components: list[tuple[tuple[float, float], ...]] = []
+    component_triangles: list[tuple[Triangle2, ...]] = []
+    component_vertex_counts: list[int] = []
+    component_bounds: list[tuple[float, float, float, float]] = []
     source_shape_ids: list[int] = []
     shape_to_components: dict[int, tuple[int, ...]] = {}
     status_counts: dict[str, int] = {}
     for shape_ordinal, geometry in sorted(geometries.items()):
-        status, component_vertices = _component_vertices_for_prepared_geometry(geometry)
+        status, component_vertices, triangles, bounds = _component_payload_parts_for_prepared_geometry(geometry)
         _add_count(status_counts, status)
         component_ordinals: list[int] = []
         if status == "prepared_simple_components":
-            for vertices in component_vertices:
-                component_ordinals.append(len(components))
-                components.append(vertices)
+            for vertices, component_triangle_rows, component_bound in zip(component_vertices, triangles, bounds):
+                component_ordinals.append(len(component_triangles))
+                component_triangles.append(component_triangle_rows)
+                component_vertex_counts.append(len(vertices))
+                component_bounds.append(component_bound)
                 source_shape_ids.append(shape_ordinal)
         shape_to_components[shape_ordinal] = tuple(component_ordinals)
-    payload = rt.prepare_simple_polygon_component_payload(components, source_shape_ids=source_shape_ids)
+    payload = rt.prepare_simple_polygon_component_payload_from_triangles(
+        component_triangles,
+        source_shape_ids=source_shape_ids,
+        component_vertex_counts=component_vertex_counts,
+        component_bounds=component_bounds,
+    )
     return payload, shape_to_components, status_counts
 
 
