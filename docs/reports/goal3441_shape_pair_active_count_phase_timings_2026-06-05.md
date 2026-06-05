@@ -22,6 +22,10 @@ The purpose is to distinguish:
 - total candidate pair count;
 - active pair count.
 
+The focused probe also records `measured_native_phase_sum_sec` and
+`unattributed_host_orchestration_sec`, so the timing artifact can separate
+explicitly timed native work from residual host/runtime overhead.
+
 This is diagnostic infrastructure. It is not a speedup claim.
 
 ## What Changed

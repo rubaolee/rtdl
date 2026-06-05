@@ -91,8 +91,12 @@ class Goal3441ShapePairActiveCountPhaseTimingsTest(unittest.TestCase):
             "native_phase_timings",
             "containment_sec",
             "active_scan_sec",
+            "left_prepare_sec",
+            "left_upload_sec",
             "traversal_sec",
             "flag_download_sec",
+            "measured_native_phase_sum_sec",
+            "unattributed_host_orchestration_sec",
             "[goal3441]",
             "rayjoin_paper_reproduction_claim_authorized",
         ):
@@ -124,6 +128,8 @@ class Goal3441ShapePairActiveCountPhaseTimingsTest(unittest.TestCase):
         self.assertEqual(last["mode"], "active_count")
         self.assertGreater(last["pair_count"], 0)
         self.assertEqual(last["active_count"], payload["active_counts"][-1])
+        self.assertIn("measured_native_phase_sum_sec", payload)
+        self.assertIn("unattributed_host_orchestration_sec", payload)
         for key in ("left_prepare", "left_upload", "traversal", "flag_download", "containment", "active_scan"):
             self.assertIn(key, last)
 

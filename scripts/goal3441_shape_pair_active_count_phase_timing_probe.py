@@ -54,10 +54,14 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     runs: list[dict[str, object]] = []
     active_counts: list[int] = []
     active_count_seconds: list[float] = []
+    left_prepare_seconds: list[float] = []
+    left_upload_seconds: list[float] = []
     containment_seconds: list[float] = []
     active_scan_seconds: list[float] = []
     traversal_seconds: list[float] = []
     download_seconds: list[float] = []
+    measured_phase_sum_seconds: list[float] = []
+    unattributed_seconds: list[float] = []
 
     with prepare_rayjoin_optix_shape_pair_active_count(
         right_shapes,
@@ -70,17 +74,34 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             timings = dict(payload["native_phase_timings"] or {})
             active_count = int(payload["row_count"])
             elapsed = float(payload["phases_sec"]["active_count_sec"])
+            measured_sum = sum(
+                float(timings.get(key, 0.0))
+                for key in (
+                    "left_prepare",
+                    "left_upload",
+                    "traversal",
+                    "flag_download",
+                    "containment",
+                    "active_scan",
+                )
+            )
             active_counts.append(active_count)
             active_count_seconds.append(elapsed)
+            left_prepare_seconds.append(float(timings.get("left_prepare", 0.0)))
+            left_upload_seconds.append(float(timings.get("left_upload", 0.0)))
             containment_seconds.append(float(timings.get("containment", 0.0)))
             active_scan_seconds.append(float(timings.get("active_scan", 0.0)))
             traversal_seconds.append(float(timings.get("traversal", 0.0)))
             download_seconds.append(float(timings.get("flag_download", 0.0)))
+            measured_phase_sum_seconds.append(measured_sum)
+            unattributed_seconds.append(max(0.0, elapsed - measured_sum))
             runs.append(
                 {
                     "iteration": index,
                     "active_count": active_count,
                     "active_count_sec": elapsed,
+                    "measured_native_phase_sum_sec": measured_sum,
+                    "unattributed_host_orchestration_sec": max(0.0, elapsed - measured_sum),
                     "native_phase_timings": timings,
                     "claim_boundary": payload["claim_boundary"],
                 }
@@ -91,7 +112,8 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
                 f"traversal={float(timings.get('traversal', 0.0)):.6f}s "
                 f"download={float(timings.get('flag_download', 0.0)):.6f}s "
                 f"containment={float(timings.get('containment', 0.0)):.6f}s "
-                f"active_scan={float(timings.get('active_scan', 0.0)):.6f}s",
+                f"active_scan={float(timings.get('active_scan', 0.0)):.6f}s "
+                f"residual={max(0.0, elapsed - measured_sum):.6f}s",
                 flush=True,
             )
 
@@ -107,10 +129,14 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         "iterations": int(args.iterations),
         "active_counts": active_counts,
         "active_count_sec": _stats(active_count_seconds),
+        "left_prepare_sec": _stats(left_prepare_seconds),
+        "left_upload_sec": _stats(left_upload_seconds),
         "containment_sec": _stats(containment_seconds),
         "active_scan_sec": _stats(active_scan_seconds),
         "traversal_sec": _stats(traversal_seconds),
         "flag_download_sec": _stats(download_seconds),
+        "measured_native_phase_sum_sec": _stats(measured_phase_sum_seconds),
+        "unattributed_host_orchestration_sec": _stats(unattributed_seconds),
         "last_native_phase_timings": runs[-1]["native_phase_timings"] if runs else None,
         "runs": runs,
         "claim_boundary": _claim_boundary(),
