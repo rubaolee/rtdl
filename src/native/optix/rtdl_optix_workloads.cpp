@@ -6564,12 +6564,20 @@ struct NativeShapePairRelationDeviceColumnsOwner {
     CUdeviceptr right_ids = 0;
     CUdeviceptr requires_segment_intersection = 0;
     CUdeviceptr requires_point_containment = 0;
+    CUdeviceptr left_polygon_refs = 0;
+    CUdeviceptr left_vertices_x = 0;
+    CUdeviceptr left_vertices_y = 0;
+    CUdeviceptr left_bounds = 0;
 
     ~NativeShapePairRelationDeviceColumnsOwner() {
         if (left_ids) cuMemFree(left_ids);
         if (right_ids) cuMemFree(right_ids);
         if (requires_segment_intersection) cuMemFree(requires_segment_intersection);
         if (requires_point_containment) cuMemFree(requires_point_containment);
+        if (left_polygon_refs) cuMemFree(left_polygon_refs);
+        if (left_vertices_x) cuMemFree(left_vertices_x);
+        if (left_vertices_y) cuMemFree(left_vertices_y);
+        if (left_bounds) cuMemFree(left_bounds);
     }
 };
 
@@ -9199,6 +9207,10 @@ static void run_prepared_shape_pair_relation_active_device_columns_optix(
     columns_out->active_relation_count = static_cast<uint64_t>(active_count);
     columns_out->traversal_seconds = g_optix_last_shape_pair_traversal_s;
     columns_out->continuation_seconds = g_optix_last_shape_pair_active_scan_s;
+    columns_out->left_polygon_count = static_cast<uint64_t>(left_count);
+    columns_out->right_polygon_count = static_cast<uint64_t>(prepared->right_count);
+    columns_out->left_vertex_count = static_cast<uint64_t>(lv_count);
+    columns_out->right_vertex_count = static_cast<uint64_t>(prepared->right_vert_count);
     if (overflow != 0u || active_count > static_cast<unsigned long long>(max_rows)) {
         columns_out->row_count = 0u;
         columns_out->overflow = 1u;
@@ -9211,6 +9223,24 @@ static void run_prepared_shape_pair_relation_active_device_columns_optix(
         static_cast<uint64_t>(requires_segment_intersection_output);
     columns_out->requires_point_containment_device_ptr =
         static_cast<uint64_t>(requires_point_containment_output);
+    if (owner) {
+        CU_CHECK(cuMemAlloc(&owner->left_polygon_refs, sizeof(GpuPolygonRef) * left_count));
+        CU_CHECK(cuMemAlloc(&owner->left_vertices_x, sizeof(float) * lv_count));
+        CU_CHECK(cuMemAlloc(&owner->left_vertices_y, sizeof(float) * lv_count));
+        CU_CHECK(cuMemAlloc(&owner->left_bounds, sizeof(GpuBounds2DF32) * left_count));
+        upload(owner->left_polygon_refs, gpu_lp.data(), left_count);
+        upload(owner->left_vertices_x, lvx.data(), lv_count);
+        upload(owner->left_vertices_y, lvy.data(), lv_count);
+        upload(owner->left_bounds, left_bounds.data(), left_bounds.size());
+        columns_out->left_polygon_refs_device_ptr = static_cast<uint64_t>(owner->left_polygon_refs);
+        columns_out->left_vertices_x_device_ptr = static_cast<uint64_t>(owner->left_vertices_x);
+        columns_out->left_vertices_y_device_ptr = static_cast<uint64_t>(owner->left_vertices_y);
+        columns_out->left_bounds_device_ptr = static_cast<uint64_t>(owner->left_bounds);
+    }
+    columns_out->right_polygon_refs_device_ptr = static_cast<uint64_t>(prepared->d_right_polygons.ptr);
+    columns_out->right_vertices_x_device_ptr = static_cast<uint64_t>(prepared->d_right_vx.ptr);
+    columns_out->right_vertices_y_device_ptr = static_cast<uint64_t>(prepared->d_right_vy.ptr);
+    columns_out->right_bounds_device_ptr = static_cast<uint64_t>(prepared->d_right_bounds.ptr);
     columns_out->row_count = static_cast<uint64_t>(active_count);
     columns_out->overflow = 0u;
     if (owner) {

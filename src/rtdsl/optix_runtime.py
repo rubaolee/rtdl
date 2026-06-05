@@ -955,9 +955,21 @@ class _RtdlNativeShapePairRelationDeviceColumns(ctypes.Structure):
         ("right_ids_device_ptr", ctypes.c_uint64),
         ("requires_segment_intersection_device_ptr", ctypes.c_uint64),
         ("requires_point_containment_device_ptr", ctypes.c_uint64),
+        ("left_polygon_refs_device_ptr", ctypes.c_uint64),
+        ("right_polygon_refs_device_ptr", ctypes.c_uint64),
+        ("left_vertices_x_device_ptr", ctypes.c_uint64),
+        ("left_vertices_y_device_ptr", ctypes.c_uint64),
+        ("right_vertices_x_device_ptr", ctypes.c_uint64),
+        ("right_vertices_y_device_ptr", ctypes.c_uint64),
+        ("left_bounds_device_ptr", ctypes.c_uint64),
+        ("right_bounds_device_ptr", ctypes.c_uint64),
         ("row_count", ctypes.c_uint64),
         ("capacity", ctypes.c_uint64),
         ("active_relation_count", ctypes.c_uint64),
+        ("left_polygon_count", ctypes.c_uint64),
+        ("right_polygon_count", ctypes.c_uint64),
+        ("left_vertex_count", ctypes.c_uint64),
+        ("right_vertex_count", ctypes.c_uint64),
         ("overflow", ctypes.c_uint32),
         ("device_ordinal", ctypes.c_int32),
         ("owner_handle", ctypes.c_void_p),
@@ -2262,14 +2274,27 @@ class OptixShapePairRelationDeviceColumnOutput:
     right_ids_device_ptr: int
     requires_segment_intersection_device_ptr: int
     requires_point_containment_device_ptr: int
+    left_polygon_refs_device_ptr: int
+    right_polygon_refs_device_ptr: int
+    left_vertices_x_device_ptr: int
+    left_vertices_y_device_ptr: int
+    right_vertices_x_device_ptr: int
+    right_vertices_y_device_ptr: int
+    left_bounds_device_ptr: int
+    right_bounds_device_ptr: int
     row_count: int
     capacity: int
     active_relation_count: int
+    left_polygon_count: int
+    right_polygon_count: int
+    left_vertex_count: int
+    right_vertex_count: int
     overflow: bool
     device_ordinal: int
     traversal_seconds: float
     continuation_seconds: float
     native_symbol: str
+    prepared_owner: object | None = None
     field_names: tuple[str, str, str, str] = (
         "left_id",
         "right_id",
@@ -2295,6 +2320,22 @@ class OptixShapePairRelationDeviceColumnOutput:
     @property
     def exact_relation_witness_rows_materialized(self) -> bool:
         return False
+
+    @property
+    def geometry_payload_device_resident(self) -> bool:
+        return (
+            self.left_polygon_refs_device_ptr > 0
+            and self.right_polygon_refs_device_ptr > 0
+            and self.left_vertices_x_device_ptr > 0
+            and self.left_vertices_y_device_ptr > 0
+            and self.right_vertices_x_device_ptr > 0
+            and self.right_vertices_y_device_ptr > 0
+            and self.left_bounds_device_ptr > 0
+            and self.right_bounds_device_ptr > 0
+            and self.left_polygon_count >= 0
+            and self.right_polygon_count >= 0
+            and not self.overflow
+        )
 
     @property
     def required_capacity(self) -> int:
@@ -2343,6 +2384,27 @@ class OptixShapePairRelationDeviceColumnOutput:
             "active_relation_count": int(self.active_relation_count),
             "capacity_status": capacity_status,
             "retry_capacity_hint": self.retry_capacity_hint,
+            "geometry_payload": {
+                "schema": "shape_pair_relation_geometry_payload_device_columns",
+                "left_polygon_refs_device_ptr": int(self.left_polygon_refs_device_ptr),
+                "right_polygon_refs_device_ptr": int(self.right_polygon_refs_device_ptr),
+                "left_vertices_x_device_ptr": int(self.left_vertices_x_device_ptr),
+                "left_vertices_y_device_ptr": int(self.left_vertices_y_device_ptr),
+                "right_vertices_x_device_ptr": int(self.right_vertices_x_device_ptr),
+                "right_vertices_y_device_ptr": int(self.right_vertices_y_device_ptr),
+                "left_bounds_device_ptr": int(self.left_bounds_device_ptr),
+                "right_bounds_device_ptr": int(self.right_bounds_device_ptr),
+                "left_polygon_count": int(self.left_polygon_count),
+                "right_polygon_count": int(self.right_polygon_count),
+                "left_vertex_count": int(self.left_vertex_count),
+                "right_vertex_count": int(self.right_vertex_count),
+                "device_resident": bool(self.geometry_payload_device_resident),
+                "left_payload_lifetime": "relation_column_output_owner",
+                "right_payload_lifetime": "prepared_shape_pair_relation_handle",
+                "app_specific_engine_logic_allowed": False,
+                "exact_relation_witness_rows_materialized": False,
+                "true_zero_copy_authorized": False,
+            },
         }
         metadata["capacity_status"] = capacity_status
         return metadata
@@ -2397,6 +2459,91 @@ class OptixShapePairRelationDeviceColumnOutput:
                 self.requires_point_containment_device_ptr,
                 dtype_name="uint32",
                 itemsize=ctypes.sizeof(ctypes.c_uint32),
+            ),
+        }
+
+    def _cupy_geometry_array(
+        self,
+        device_ptr: int,
+        *,
+        dtype_name: str,
+        itemsize: int,
+        shape: tuple[int, ...],
+    ):
+        if self.overflow:
+            raise RuntimeError("cannot wrap geometry payload for an overflowed shape-pair relation stream")
+        if device_ptr <= 0:
+            raise RuntimeError("shape-pair relation stream does not expose the requested geometry payload column")
+        import cupy as cp  # type: ignore
+
+        dtype = getattr(cp, dtype_name)
+        element_count = 1
+        for extent in shape:
+            element_count *= int(extent)
+        memory = cp.cuda.UnownedMemory(
+            int(device_ptr),
+            int(element_count) * int(itemsize),
+            self,
+        )
+        memory_pointer = cp.cuda.MemoryPointer(memory, 0)
+        return cp.ndarray(tuple(int(extent) for extent in shape), dtype=dtype, memptr=memory_pointer)
+
+    def as_cupy_geometry_payload_columns(self) -> dict[str, object]:
+        """Wrap generic shape-pair geometry payload columns as CuPy arrays.
+
+        The left payload is retained by this relation-column output. The right
+        payload belongs to the prepared shape-pair handle, so the prepared handle
+        must stay alive while right-side arrays are used. This helper is an
+        internal partner-continuation surface, not a true-zero-copy claim.
+        """
+        return {
+            "left_polygon_refs": self._cupy_geometry_array(
+                self.left_polygon_refs_device_ptr,
+                dtype_name="uint32",
+                itemsize=ctypes.sizeof(ctypes.c_uint32),
+                shape=(int(self.left_polygon_count), 3),
+            ),
+            "right_polygon_refs": self._cupy_geometry_array(
+                self.right_polygon_refs_device_ptr,
+                dtype_name="uint32",
+                itemsize=ctypes.sizeof(ctypes.c_uint32),
+                shape=(int(self.right_polygon_count), 3),
+            ),
+            "left_vertices_x": self._cupy_geometry_array(
+                self.left_vertices_x_device_ptr,
+                dtype_name="float32",
+                itemsize=ctypes.sizeof(ctypes.c_float),
+                shape=(int(self.left_vertex_count),),
+            ),
+            "left_vertices_y": self._cupy_geometry_array(
+                self.left_vertices_y_device_ptr,
+                dtype_name="float32",
+                itemsize=ctypes.sizeof(ctypes.c_float),
+                shape=(int(self.left_vertex_count),),
+            ),
+            "right_vertices_x": self._cupy_geometry_array(
+                self.right_vertices_x_device_ptr,
+                dtype_name="float32",
+                itemsize=ctypes.sizeof(ctypes.c_float),
+                shape=(int(self.right_vertex_count),),
+            ),
+            "right_vertices_y": self._cupy_geometry_array(
+                self.right_vertices_y_device_ptr,
+                dtype_name="float32",
+                itemsize=ctypes.sizeof(ctypes.c_float),
+                shape=(int(self.right_vertex_count),),
+            ),
+            "left_bounds": self._cupy_geometry_array(
+                self.left_bounds_device_ptr,
+                dtype_name="float32",
+                itemsize=ctypes.sizeof(ctypes.c_float),
+                shape=(int(self.left_polygon_count), 4),
+            ),
+            "right_bounds": self._cupy_geometry_array(
+                self.right_bounds_device_ptr,
+                dtype_name="float32",
+                itemsize=ctypes.sizeof(ctypes.c_float),
+                shape=(int(self.right_polygon_count), 4),
             ),
         }
 
@@ -3171,14 +3318,27 @@ class PreparedOptixShapePairRelation:
             right_ids_device_ptr=int(columns.right_ids_device_ptr),
             requires_segment_intersection_device_ptr=int(columns.requires_segment_intersection_device_ptr),
             requires_point_containment_device_ptr=int(columns.requires_point_containment_device_ptr),
+            left_polygon_refs_device_ptr=int(columns.left_polygon_refs_device_ptr),
+            right_polygon_refs_device_ptr=int(columns.right_polygon_refs_device_ptr),
+            left_vertices_x_device_ptr=int(columns.left_vertices_x_device_ptr),
+            left_vertices_y_device_ptr=int(columns.left_vertices_y_device_ptr),
+            right_vertices_x_device_ptr=int(columns.right_vertices_x_device_ptr),
+            right_vertices_y_device_ptr=int(columns.right_vertices_y_device_ptr),
+            left_bounds_device_ptr=int(columns.left_bounds_device_ptr),
+            right_bounds_device_ptr=int(columns.right_bounds_device_ptr),
             row_count=int(columns.row_count),
             capacity=int(columns.capacity),
             active_relation_count=int(columns.active_relation_count),
+            left_polygon_count=int(columns.left_polygon_count),
+            right_polygon_count=int(columns.right_polygon_count),
+            left_vertex_count=int(columns.left_vertex_count),
+            right_vertex_count=int(columns.right_vertex_count),
             overflow=bool(columns.overflow),
             device_ordinal=int(columns.device_ordinal),
             traversal_seconds=float(columns.traversal_seconds),
             continuation_seconds=float(columns.continuation_seconds),
             native_symbol=OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_COLUMNS_SYMBOL,
+            prepared_owner=self,
         )
 
     def last_phase_timings(self) -> dict[str, float | int | str] | None:
