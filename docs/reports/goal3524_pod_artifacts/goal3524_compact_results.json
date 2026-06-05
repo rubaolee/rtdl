@@ -1,0 +1,645 @@
+{
+  "claim_boundary": {
+    "internal_results_only": true,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v2_8_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "compact_inputs": {
+    "v23_standard": {
+      "case_repeat": 1,
+      "commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+      "env_subset": {
+        "CUDA_HOME": "/usr/local/cuda-12",
+        "CUDA_PREFIX": "/usr/local/cuda-12",
+        "LD_LIBRARY_PATH": "/usr/local/cuda-12/targets/x86_64-linux/lib:/usr/local/cuda-12/lib64:",
+        "OPTIX_PREFIX": "/root/vendor/optix-sdk",
+        "RTDL_OPTIX_LIBRARY": "/root/rtdl_goal3524/v23_evidence/build/librtdl_optix.so"
+      },
+      "goal": "Goal2626",
+      "gpu": "NVIDIA RTX A5000, 580.126.09, 24564 MiB",
+      "native_libraries": {
+        "embree": "/root/rtdl_goal3524/v23_evidence/build/librtdl_embree.so",
+        "embree_exists": false,
+        "optix": "/root/rtdl_goal3524/v23_evidence/build/librtdl_optix.so",
+        "optix_exists": true
+      },
+      "python": "Python 3.12.3",
+      "rows": [
+        {
+          "app_id": "hausdorff_xhd",
+          "backend": "optix",
+          "case_id": "hausdorff_optix_threshold",
+          "comparison_group": "hausdorff_threshold_decision",
+          "notes": "",
+          "primary_metric_sec": 0.042307158932089806,
+          "primary_metric_source": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+          "status": "ok",
+          "wall_median_sec": 1.5073659345507622
+        },
+        {
+          "app_id": "spatial_rayjoin",
+          "backend": "optix",
+          "case_id": "spatial_rayjoin_optix_prepared_full_route",
+          "comparison_group": "rayjoin_all_backend_query_summary",
+          "notes": "Prepared OptiX route over PIP, LSI, and overlay-seed pair-dependency flags. The native engine sees generic point/closed-shape, segment-pair, and shape-pair prepared contracts; full polygon overlay materialization is outside this benchmark.",
+          "primary_metric_sec": 0.0005292519927024841,
+          "primary_metric_source": "prepared_query_total_sec",
+          "status": "ok",
+          "wall_median_sec": 1.7248155381530523
+        },
+        {
+          "app_id": "rt_dbscan",
+          "backend": "optix",
+          "case_id": "rt_dbscan_optix_grouped_stream",
+          "comparison_group": "dbscan_cluster_signature",
+          "notes": "",
+          "primary_metric_sec": 1.5202252930030227,
+          "primary_metric_source": "elapsed_sec",
+          "status": "ok",
+          "wall_median_sec": 2.292374978773296
+        },
+        {
+          "app_id": "robot_collision",
+          "backend": "optix",
+          "case_id": "robot_collision_optix_prepared_device_buffers",
+          "comparison_group": "prepared_collision_flags",
+          "notes": "",
+          "primary_metric_sec": 0.0018863445147871971,
+          "primary_metric_source": "tail_medians.total_run_seconds",
+          "status": "ok",
+          "wall_median_sec": 284.6455674832687
+        },
+        {
+          "app_id": "raydb_style",
+          "backend": "optix",
+          "case_id": "raydb_optix_partner_resident_count",
+          "comparison_group": "raydb_grouped_count",
+          "notes": "Scaled synthetic RayDB-style grouped aggregate using the generic OptiX partner-resident grouped-i64 dispatcher. This is a warm prepared-device query timing; it avoids host table copy/materialization but is not an RT-core claim.",
+          "primary_metric_sec": 0.0006465460173785686,
+          "primary_metric_source": "metadata.timings.query_median_sec",
+          "status": "ok",
+          "wall_median_sec": 7.353679392486811
+        },
+        {
+          "app_id": "raydb_style",
+          "backend": "optix",
+          "case_id": "raydb_optix_partner_resident_sum",
+          "comparison_group": "raydb_grouped_sum",
+          "notes": "Scaled synthetic RayDB-style grouped aggregate using the generic OptiX partner-resident grouped-i64 dispatcher. This is a warm prepared-device query timing; it avoids host table copy/materialization but is not an RT-core claim.",
+          "primary_metric_sec": 0.0058975182473659515,
+          "primary_metric_source": "metadata.timings.query_median_sec",
+          "status": "ok",
+          "wall_median_sec": 7.152402363717556
+        },
+        {
+          "app_id": "barnes_hut",
+          "backend": "optix",
+          "case_id": "barnes_hut_optix_node_coverage",
+          "comparison_group": "node_coverage_prepared_threshold_decision",
+          "notes": "Same generic prepared fixed-radius threshold decision as Embree, using the OptiX RT-core backend. This is node coverage only, not full hierarchical aggregate-frontier force accumulation.",
+          "primary_metric_sec": 0.011919661425054073,
+          "primary_metric_source": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec",
+          "status": "ok",
+          "wall_median_sec": 1.3600595276802778
+        },
+        {
+          "app_id": "librts_spatial_index",
+          "backend": "optix",
+          "case_id": "librts_optix_aabb_index",
+          "comparison_group": "aabb_index_all_count_only",
+          "notes": "",
+          "primary_metric_sec": 0.45944546815007925,
+          "primary_metric_source": "elapsed_sec",
+          "status": "ok",
+          "wall_median_sec": 1.0707780113443732
+        },
+        {
+          "app_id": "rtnn",
+          "backend": "optix",
+          "case_id": "rtnn_optix_prepared_3d_ranked_summary",
+          "comparison_group": "prepared_3d_ranked_summary",
+          "notes": "",
+          "primary_metric_sec": 0.0017089610919356346,
+          "primary_metric_source": "elapsed_sec",
+          "status": "ok",
+          "wall_median_sec": 1.7459387909621
+        },
+        {
+          "app_id": "triangle_counting",
+          "backend": "optix",
+          "case_id": "triangle_counting_optix_rt_graph_2a1_partner",
+          "comparison_group": "triangle_count_rt_graph_2a1_summary",
+          "notes": "RT-Graph-style RT-2A1 mapping through generic prepared 3-D ray/triangle weighted any-hit summary with CuPy-owned graph preprocessing/device columns. This replaces the older graph-kernel host-indexed fallback row.",
+          "primary_metric_sec": 0.00043338630348443985,
+          "primary_metric_source": "timing_ms.query_median_ms converted-ms-to-sec",
+          "status": "ok",
+          "wall_median_sec": 1.927264841273427
+        },
+        {
+          "app_id": "contact_manifold",
+          "backend": "optix",
+          "case_id": "contact_manifold_optix_aabb_broadphase_collect_k",
+          "comparison_group": "generic_aabb_broadphase_collect_k",
+          "notes": "Measures generic OptiX AABB_INDEX_QUERY_2D witness discovery plus generic COLLECT_K_BOUNDED app path. Primary metric is the prepared RT broadphase row-output median; exact contact refinement remains Python-owned.",
+          "primary_metric_sec": 0.02774665830656886,
+          "primary_metric_source": "run_phases.emit_aabb_intersection_pair_rows_2d_median_sec",
+          "status": "ok",
+          "wall_median_sec": 1.667239410802722
+        }
+      ],
+      "scale": "standard"
+    },
+    "v23_weak_rerun": {
+      "case_repeat": 1,
+      "commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+      "env_subset": {
+        "CUDA_HOME": "/usr/local/cuda-12",
+        "CUDA_PREFIX": "/usr/local/cuda-12",
+        "LD_LIBRARY_PATH": "/usr/local/cuda-12/targets/x86_64-linux/lib:/usr/local/cuda-12/lib64:",
+        "OPTIX_PREFIX": "/root/vendor/optix-sdk",
+        "RTDL_OPTIX_LIBRARY": "/root/rtdl_goal3524/v23_evidence/build/librtdl_optix.so"
+      },
+      "goal": "Goal2626",
+      "gpu": "NVIDIA RTX A5000, 580.126.09, 24564 MiB",
+      "native_libraries": {
+        "embree": "/root/rtdl_goal3524/v23_evidence/build/librtdl_embree.so",
+        "embree_exists": false,
+        "optix": "/root/rtdl_goal3524/v23_evidence/build/librtdl_optix.so",
+        "optix_exists": true
+      },
+      "python": "Python 3.12.3",
+      "rows": [
+        {
+          "app_id": "robot_collision",
+          "backend": "optix",
+          "case_id": "robot_collision_optix_prepared_device_buffers",
+          "comparison_group": "prepared_collision_flags",
+          "notes": "",
+          "primary_metric_sec": 0.0018828660249710083,
+          "primary_metric_source": "tail_medians.total_run_seconds",
+          "status": "ok",
+          "wall_median_sec": 286.2896909173578
+        },
+        {
+          "app_id": "raydb_style",
+          "backend": "optix",
+          "case_id": "raydb_optix_partner_resident_count",
+          "comparison_group": "raydb_grouped_count",
+          "notes": "Scaled synthetic RayDB-style grouped aggregate using the generic OptiX partner-resident grouped-i64 dispatcher. This is a warm prepared-device query timing; it avoids host table copy/materialization but is not an RT-core claim.",
+          "primary_metric_sec": 0.0006390023045241833,
+          "primary_metric_source": "metadata.timings.query_median_sec",
+          "status": "ok",
+          "wall_median_sec": 7.228824470192194
+        },
+        {
+          "app_id": "barnes_hut",
+          "backend": "optix",
+          "case_id": "barnes_hut_optix_node_coverage",
+          "comparison_group": "node_coverage_prepared_threshold_decision",
+          "notes": "Same generic prepared fixed-radius threshold decision as Embree, using the OptiX RT-core backend. This is node coverage only, not full hierarchical aggregate-frontier force accumulation.",
+          "primary_metric_sec": 0.012506336905062199,
+          "primary_metric_source": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec",
+          "status": "ok",
+          "wall_median_sec": 1.6185929961502552
+        },
+        {
+          "app_id": "triangle_counting",
+          "backend": "optix",
+          "case_id": "triangle_counting_optix_rt_graph_2a1_partner",
+          "comparison_group": "triangle_count_rt_graph_2a1_summary",
+          "notes": "RT-Graph-style RT-2A1 mapping through generic prepared 3-D ray/triangle weighted any-hit summary with CuPy-owned graph preprocessing/device columns. This replaces the older graph-kernel host-indexed fallback row.",
+          "primary_metric_sec": 0.00044213002547621727,
+          "primary_metric_source": "timing_ms.query_median_ms converted-ms-to-sec",
+          "status": "ok",
+          "wall_median_sec": 1.9126441534608603
+        },
+        {
+          "app_id": "contact_manifold",
+          "backend": "optix",
+          "case_id": "contact_manifold_optix_aabb_broadphase_collect_k",
+          "comparison_group": "generic_aabb_broadphase_collect_k",
+          "notes": "Measures generic OptiX AABB_INDEX_QUERY_2D witness discovery plus generic COLLECT_K_BOUNDED app path. Primary metric is the prepared RT broadphase row-output median; exact contact refinement remains Python-owned.",
+          "primary_metric_sec": 0.02857341757044196,
+          "primary_metric_source": "run_phases.emit_aabb_intersection_pair_rows_2d_median_sec",
+          "status": "ok",
+          "wall_median_sec": 1.7690071295946836
+        }
+      ],
+      "scale": "standard"
+    },
+    "v28_standard": {
+      "case_repeat": 1,
+      "commit": "d266b0370bcbcd4cbc24006ce9de2dfe783c1d2e",
+      "env_subset": {
+        "CUDA_HOME": "/usr/local/cuda-12",
+        "CUDA_PREFIX": "/usr/local/cuda-12",
+        "LD_LIBRARY_PATH": "/usr/local/cuda-12/targets/x86_64-linux/lib:/usr/local/cuda-12/lib64:",
+        "OPTIX_PREFIX": "/root/vendor/optix-sdk",
+        "RTDL_OPTIX_LIBRARY": "/root/rtdl_goal3524/v28_current/build/librtdl_optix.so"
+      },
+      "goal": "Goal2626",
+      "gpu": "NVIDIA RTX A5000, 580.126.09, 24564 MiB",
+      "native_libraries": {
+        "embree": "/root/rtdl_goal3524/v28_current/build/librtdl_embree.so",
+        "embree_exists": false,
+        "optix": "/root/rtdl_goal3524/v28_current/build/librtdl_optix.so",
+        "optix_exists": true
+      },
+      "python": "Python 3.12.3",
+      "rows": [
+        {
+          "app_id": "hausdorff_xhd",
+          "backend": "optix",
+          "case_id": "hausdorff_optix_threshold",
+          "comparison_group": "hausdorff_threshold_decision",
+          "notes": "",
+          "primary_metric_sec": 0.03517886437475681,
+          "primary_metric_source": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+          "status": "ok",
+          "wall_median_sec": 1.593540484085679
+        },
+        {
+          "app_id": "spatial_rayjoin",
+          "backend": "optix",
+          "case_id": "spatial_rayjoin_optix_prepared_full_route",
+          "comparison_group": "rayjoin_all_backend_query_summary",
+          "notes": "Prepared OptiX route over PIP, LSI, and overlay-seed pair-dependency flags. The native engine sees generic point/closed-shape, segment-pair, and shape-pair prepared contracts; full polygon overlay materialization is outside this benchmark.",
+          "primary_metric_sec": 0.0004829512909054756,
+          "primary_metric_source": "prepared_query_total_sec",
+          "status": "ok",
+          "wall_median_sec": 1.8775395434349775
+        },
+        {
+          "app_id": "rt_dbscan",
+          "backend": "optix",
+          "case_id": "rt_dbscan_optix_grouped_stream",
+          "comparison_group": "dbscan_cluster_signature",
+          "notes": "",
+          "primary_metric_sec": 1.3687467593699694,
+          "primary_metric_source": "elapsed_sec",
+          "status": "ok",
+          "wall_median_sec": 2.17514606192708
+        },
+        {
+          "app_id": "robot_collision",
+          "backend": "optix",
+          "case_id": "robot_collision_optix_prepared_device_buffers",
+          "comparison_group": "prepared_collision_flags",
+          "notes": "",
+          "primary_metric_sec": 0.001905328594148159,
+          "primary_metric_source": "tail_medians.total_run_seconds",
+          "status": "ok",
+          "wall_median_sec": 283.7910851147026
+        },
+        {
+          "app_id": "raydb_style",
+          "backend": "optix",
+          "case_id": "raydb_optix_partner_resident_count",
+          "comparison_group": "raydb_grouped_count",
+          "notes": "Scaled synthetic RayDB-style grouped aggregate using the generic OptiX partner-resident grouped-i64 dispatcher. This is a warm prepared-device query timing; it avoids host table copy/materialization but is not an RT-core claim.",
+          "primary_metric_sec": 0.0006548347882926464,
+          "primary_metric_source": "metadata.timings.query_median_sec",
+          "status": "ok",
+          "wall_median_sec": 7.267784026451409
+        },
+        {
+          "app_id": "raydb_style",
+          "backend": "optix",
+          "case_id": "raydb_optix_partner_resident_sum",
+          "comparison_group": "raydb_grouped_sum",
+          "notes": "Scaled synthetic RayDB-style grouped aggregate using the generic OptiX partner-resident grouped-i64 dispatcher. This is a warm prepared-device query timing; it avoids host table copy/materialization but is not an RT-core claim.",
+          "primary_metric_sec": 0.0008189086802303791,
+          "primary_metric_source": "metadata.timings.query_median_sec",
+          "status": "ok",
+          "wall_median_sec": 7.137201930396259
+        },
+        {
+          "app_id": "barnes_hut",
+          "backend": "optix",
+          "case_id": "barnes_hut_optix_node_coverage",
+          "comparison_group": "node_coverage_prepared_threshold_decision",
+          "notes": "Same generic prepared fixed-radius threshold decision as Embree, using the OptiX RT-core backend. This is node coverage only, not full hierarchical aggregate-frontier force accumulation.",
+          "primary_metric_sec": 0.029753055423498154,
+          "primary_metric_source": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec",
+          "status": "ok",
+          "wall_median_sec": 1.5464240396395326
+        },
+        {
+          "app_id": "librts_spatial_index",
+          "backend": "optix",
+          "case_id": "librts_optix_aabb_index",
+          "comparison_group": "aabb_index_all_count_only",
+          "notes": "",
+          "primary_metric_sec": 0.45849653240293264,
+          "primary_metric_source": "elapsed_sec",
+          "status": "ok",
+          "wall_median_sec": 1.272594541311264
+        },
+        {
+          "app_id": "rtnn",
+          "backend": "optix",
+          "case_id": "rtnn_optix_prepared_3d_ranked_summary",
+          "comparison_group": "prepared_3d_ranked_summary",
+          "notes": "",
+          "primary_metric_sec": 0.0016458984464406967,
+          "primary_metric_source": "elapsed_sec",
+          "status": "ok",
+          "wall_median_sec": 2.807484954595566
+        },
+        {
+          "app_id": "triangle_counting",
+          "backend": "optix",
+          "case_id": "triangle_counting_optix_rt_graph_2a1_partner",
+          "comparison_group": "triangle_count_rt_graph_2a1_summary",
+          "notes": "RT-Graph-style RT-2A1 mapping through generic prepared 3-D ray/triangle weighted any-hit summary with CuPy-owned graph preprocessing/device columns. This replaces the older graph-kernel host-indexed fallback row.",
+          "primary_metric_sec": 0.00043702777475118637,
+          "primary_metric_source": "timing_ms.query_median_ms converted-ms-to-sec",
+          "status": "ok",
+          "wall_median_sec": 1.8876631651073694
+        },
+        {
+          "app_id": "contact_manifold",
+          "backend": "optix",
+          "case_id": "contact_manifold_optix_aabb_broadphase_collect_k",
+          "comparison_group": "generic_aabb_broadphase_collect_k",
+          "notes": "Measures generic OptiX AABB_INDEX_QUERY_2D witness discovery plus generic COLLECT_K_BOUNDED app path. Primary metric is the prepared RT broadphase row-output median; exact contact refinement remains Python-owned.",
+          "primary_metric_sec": 0.028518788516521454,
+          "primary_metric_source": "run_phases.emit_aabb_intersection_pair_rows_2d_median_sec",
+          "status": "ok",
+          "wall_median_sec": 1.8187040155753493
+        }
+      ],
+      "scale": "standard"
+    },
+    "v28_weak_rerun": {
+      "case_repeat": 1,
+      "commit": "d266b0370bcbcd4cbc24006ce9de2dfe783c1d2e",
+      "env_subset": {
+        "CUDA_HOME": "/usr/local/cuda-12",
+        "CUDA_PREFIX": "/usr/local/cuda-12",
+        "LD_LIBRARY_PATH": "/usr/local/cuda-12/targets/x86_64-linux/lib:/usr/local/cuda-12/lib64:",
+        "OPTIX_PREFIX": "/root/vendor/optix-sdk",
+        "RTDL_OPTIX_LIBRARY": "/root/rtdl_goal3524/v28_current/build/librtdl_optix.so"
+      },
+      "goal": "Goal2626",
+      "gpu": "NVIDIA RTX A5000, 580.126.09, 24564 MiB",
+      "native_libraries": {
+        "embree": "/root/rtdl_goal3524/v28_current/build/librtdl_embree.so",
+        "embree_exists": false,
+        "optix": "/root/rtdl_goal3524/v28_current/build/librtdl_optix.so",
+        "optix_exists": true
+      },
+      "python": "Python 3.12.3",
+      "rows": [
+        {
+          "app_id": "robot_collision",
+          "backend": "optix",
+          "case_id": "robot_collision_optix_prepared_device_buffers",
+          "comparison_group": "prepared_collision_flags",
+          "notes": "",
+          "primary_metric_sec": 0.0019427505321800709,
+          "primary_metric_source": "tail_medians.total_run_seconds",
+          "status": "ok",
+          "wall_median_sec": 278.76710752770305
+        },
+        {
+          "app_id": "raydb_style",
+          "backend": "optix",
+          "case_id": "raydb_optix_partner_resident_count",
+          "comparison_group": "raydb_grouped_count",
+          "notes": "Scaled synthetic RayDB-style grouped aggregate using the generic OptiX partner-resident grouped-i64 dispatcher. This is a warm prepared-device query timing; it avoids host table copy/materialization but is not an RT-core claim.",
+          "primary_metric_sec": 0.0006410037167370319,
+          "primary_metric_source": "metadata.timings.query_median_sec",
+          "status": "ok",
+          "wall_median_sec": 7.685852475464344
+        },
+        {
+          "app_id": "barnes_hut",
+          "backend": "optix",
+          "case_id": "barnes_hut_optix_node_coverage",
+          "comparison_group": "node_coverage_prepared_threshold_decision",
+          "notes": "Same generic prepared fixed-radius threshold decision as Embree, using the OptiX RT-core backend. This is node coverage only, not full hierarchical aggregate-frontier force accumulation.",
+          "primary_metric_sec": 0.024860589765012264,
+          "primary_metric_source": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec",
+          "status": "ok",
+          "wall_median_sec": 1.5105272447690368
+        },
+        {
+          "app_id": "triangle_counting",
+          "backend": "optix",
+          "case_id": "triangle_counting_optix_rt_graph_2a1_partner",
+          "comparison_group": "triangle_count_rt_graph_2a1_summary",
+          "notes": "RT-Graph-style RT-2A1 mapping through generic prepared 3-D ray/triangle weighted any-hit summary with CuPy-owned graph preprocessing/device columns. This replaces the older graph-kernel host-indexed fallback row.",
+          "primary_metric_sec": 0.0004314645193517208,
+          "primary_metric_source": "timing_ms.query_median_ms converted-ms-to-sec",
+          "status": "ok",
+          "wall_median_sec": 1.9414734588935971
+        },
+        {
+          "app_id": "contact_manifold",
+          "backend": "optix",
+          "case_id": "contact_manifold_optix_aabb_broadphase_collect_k",
+          "comparison_group": "generic_aabb_broadphase_collect_k",
+          "notes": "Measures generic OptiX AABB_INDEX_QUERY_2D witness discovery plus generic COLLECT_K_BOUNDED app path. Primary metric is the prepared RT broadphase row-output median; exact contact refinement remains Python-owned.",
+          "primary_metric_sec": 0.027752891648560762,
+          "primary_metric_source": "run_phases.emit_aabb_intersection_pair_rows_2d_median_sec",
+          "status": "ok",
+          "wall_median_sec": 1.7778584519401193
+        }
+      ],
+      "scale": "standard"
+    }
+  },
+  "comparison_scope": "OptiX-only same-runner standard scale over scripts/goal2626_benchmark_embree_optix_baseline.py cases; RayDB split into count/sum.",
+  "goal": "Goal3524",
+  "gpu": "NVIDIA RTX A5000, driver 580.126.09, 24564 MiB",
+  "pod": "root@69.30.85.203 -p 22057",
+  "rows": [
+    {
+      "app_id": "barnes_hut",
+      "case_id": "barnes_hut_optix_node_coverage",
+      "comparison_group": "node_coverage_prepared_threshold_decision",
+      "v23_metric_source": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec",
+      "v23_sec": 0.011919661425054073,
+      "v23_status": "ok",
+      "v28_metric_source": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec",
+      "v28_sec": 0.029753055423498154,
+      "v28_speedup_vs_v23": 0.4006197432630818,
+      "v28_status": "ok"
+    },
+    {
+      "app_id": "contact_manifold",
+      "case_id": "contact_manifold_optix_aabb_broadphase_collect_k",
+      "comparison_group": "generic_aabb_broadphase_collect_k",
+      "v23_metric_source": "run_phases.emit_aabb_intersection_pair_rows_2d_median_sec",
+      "v23_sec": 0.02774665830656886,
+      "v23_status": "ok",
+      "v28_metric_source": "run_phases.emit_aabb_intersection_pair_rows_2d_median_sec",
+      "v28_sec": 0.028518788516521454,
+      "v28_speedup_vs_v23": 0.9729255606525753,
+      "v28_status": "ok"
+    },
+    {
+      "app_id": "hausdorff_xhd",
+      "case_id": "hausdorff_optix_threshold",
+      "comparison_group": "hausdorff_threshold_decision",
+      "v23_metric_source": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+      "v23_sec": 0.042307158932089806,
+      "v23_status": "ok",
+      "v28_metric_source": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+      "v28_sec": 0.03517886437475681,
+      "v28_speedup_vs_v23": 1.2026300360749569,
+      "v28_status": "ok"
+    },
+    {
+      "app_id": "librts_spatial_index",
+      "case_id": "librts_optix_aabb_index",
+      "comparison_group": "aabb_index_all_count_only",
+      "v23_metric_source": "elapsed_sec",
+      "v23_sec": 0.45944546815007925,
+      "v23_status": "ok",
+      "v28_metric_source": "elapsed_sec",
+      "v28_sec": 0.45849653240293264,
+      "v28_speedup_vs_v23": 1.0020696683182604,
+      "v28_status": "ok"
+    },
+    {
+      "app_id": "raydb_style",
+      "case_id": "raydb_optix_partner_resident_count",
+      "comparison_group": "raydb_grouped_count",
+      "v23_metric_source": "metadata.timings.query_median_sec",
+      "v23_sec": 0.0006465460173785686,
+      "v23_status": "ok",
+      "v28_metric_source": "metadata.timings.query_median_sec",
+      "v28_sec": 0.0006548347882926464,
+      "v28_speedup_vs_v23": 0.9873421952189053,
+      "v28_status": "ok"
+    },
+    {
+      "app_id": "raydb_style",
+      "case_id": "raydb_optix_partner_resident_sum",
+      "comparison_group": "raydb_grouped_sum",
+      "v23_metric_source": "metadata.timings.query_median_sec",
+      "v23_sec": 0.0058975182473659515,
+      "v23_status": "ok",
+      "v28_metric_source": "metadata.timings.query_median_sec",
+      "v28_sec": 0.0008189086802303791,
+      "v28_speedup_vs_v23": 7.201679979392616,
+      "v28_status": "ok"
+    },
+    {
+      "app_id": "robot_collision",
+      "case_id": "robot_collision_optix_prepared_device_buffers",
+      "comparison_group": "prepared_collision_flags",
+      "v23_metric_source": "tail_medians.total_run_seconds",
+      "v23_sec": 0.0018863445147871971,
+      "v23_status": "ok",
+      "v28_metric_source": "tail_medians.total_run_seconds",
+      "v28_sec": 0.001905328594148159,
+      "v28_speedup_vs_v23": 0.9900363226483517,
+      "v28_status": "ok"
+    },
+    {
+      "app_id": "rt_dbscan",
+      "case_id": "rt_dbscan_optix_grouped_stream",
+      "comparison_group": "dbscan_cluster_signature",
+      "v23_metric_source": "elapsed_sec",
+      "v23_sec": 1.5202252930030227,
+      "v23_status": "ok",
+      "v28_metric_source": "elapsed_sec",
+      "v28_sec": 1.3687467593699694,
+      "v28_speedup_vs_v23": 1.1106695103357018,
+      "v28_status": "ok"
+    },
+    {
+      "app_id": "rtnn",
+      "case_id": "rtnn_optix_prepared_3d_ranked_summary",
+      "comparison_group": "prepared_3d_ranked_summary",
+      "v23_metric_source": "elapsed_sec",
+      "v23_sec": 0.0017089610919356346,
+      "v23_status": "ok",
+      "v28_metric_source": "elapsed_sec",
+      "v28_sec": 0.0016458984464406967,
+      "v28_speedup_vs_v23": 1.0383150282639324,
+      "v28_status": "ok"
+    },
+    {
+      "app_id": "spatial_rayjoin",
+      "case_id": "spatial_rayjoin_optix_prepared_full_route",
+      "comparison_group": "rayjoin_all_backend_query_summary",
+      "v23_metric_source": "prepared_query_total_sec",
+      "v23_sec": 0.0005292519927024841,
+      "v23_status": "ok",
+      "v28_metric_source": "prepared_query_total_sec",
+      "v28_sec": 0.0004829512909054756,
+      "v28_speedup_vs_v23": 1.0958703344807306,
+      "v28_status": "ok"
+    },
+    {
+      "app_id": "triangle_counting",
+      "case_id": "triangle_counting_optix_rt_graph_2a1_partner",
+      "comparison_group": "triangle_count_rt_graph_2a1_summary",
+      "v23_metric_source": "timing_ms.query_median_ms converted-ms-to-sec",
+      "v23_sec": 0.00043338630348443985,
+      "v23_status": "ok",
+      "v28_metric_source": "timing_ms.query_median_ms converted-ms-to-sec",
+      "v28_sec": 0.00043702777475118637,
+      "v28_speedup_vs_v23": 0.9916676433921855,
+      "v28_status": "ok"
+    }
+  ],
+  "schema": "rtdl.goal3524.v2_8_vs_v2_3_same_runner_optix.v1",
+  "status": "internal_same_runner_optix_results_not_public_claims",
+  "summary": {
+    "geomean_speedup": 1.1379687921762345,
+    "max_speedup": 7.201679979392616,
+    "median_speedup": 1.0020696683182604,
+    "min_speedup": 0.4006197432630818,
+    "ok_pair_count": 11,
+    "row_count": 11,
+    "v28_loss_count": 5,
+    "v28_win_count": 6
+  },
+  "v23_evidence_commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+  "v28_commit": "d266b0370bcbcd4cbc24006ce9de2dfe783c1d2e",
+  "weak_rerun_rows": [
+    {
+      "app_id": "barnes_hut",
+      "case_id": "barnes_hut_optix_node_coverage",
+      "v23_sec": 0.012506336905062199,
+      "v28_sec": 0.024860589765012264,
+      "v28_speedup_vs_v23": 0.5030587376757685
+    },
+    {
+      "app_id": "contact_manifold",
+      "case_id": "contact_manifold_optix_aabb_broadphase_collect_k",
+      "v23_sec": 0.02857341757044196,
+      "v28_sec": 0.027752891648560762,
+      "v28_speedup_vs_v23": 1.0295654208675495
+    },
+    {
+      "app_id": "raydb_style",
+      "case_id": "raydb_optix_partner_resident_count",
+      "v23_sec": 0.0006390023045241833,
+      "v28_sec": 0.0006410037167370319,
+      "v28_speedup_vs_v23": 0.9968776901590577
+    },
+    {
+      "app_id": "robot_collision",
+      "case_id": "robot_collision_optix_prepared_device_buffers",
+      "v23_sec": 0.0018828660249710083,
+      "v28_sec": 0.0019427505321800709,
+      "v28_speedup_vs_v23": 0.9691754004350406
+    },
+    {
+      "app_id": "triangle_counting",
+      "case_id": "triangle_counting_optix_rt_graph_2a1_partner",
+      "v23_sec": 0.00044213002547621727,
+      "v28_sec": 0.0004314645193517208,
+      "v28_speedup_vs_v23": 1.024719312124486
+    }
+  ]
+}
