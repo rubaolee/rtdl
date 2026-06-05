@@ -1,9 +1,11 @@
 from pathlib import Path
 import inspect
+import json
 import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
+ARTIFACT = ROOT / "docs" / "reports" / "goal3414_native_exact_page_producer_probe_2026-06-04.json"
 PRELUDE = ROOT / "src" / "native" / "optix" / "rtdl_optix_prelude.h"
 API = ROOT / "src" / "native" / "optix" / "rtdl_optix_api.cpp"
 WORKLOADS = ROOT / "src" / "native" / "optix" / "rtdl_optix_workloads.cpp"
@@ -74,6 +76,54 @@ class Goal3414NativeExactPageProducerSurfaceTest(unittest.TestCase):
         self.assertIn("release", self.report)
         self.assertIn("authorization", self.report)
         self.assertIn("host-refined bridge", self.report)
+
+    def test_pod_artifact_records_native_page_producer_evidence(self):
+        payload = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["schema"], "rtdl.goal3414.native_exact_page_producer_probe.v1")
+        self.assertEqual(payload["goal"], 3414)
+        self.assertEqual(payload["rtdl_commit"][:8], "a50494bc")
+        self.assertIn("NVIDIA RTX A5000", payload["gpu"])
+        self.assertEqual(
+            payload["native_page_symbol"],
+            "rtdl_optix_prepared_point_closed_shape_membership_exact_device_columns_page_2d",
+        )
+        self.assertEqual(payload["point_count"], 16545)
+        self.assertEqual(payload["shape_count"], 15700)
+
+        recovery = payload["recovery_summary"]
+        self.assertEqual(recovery["page_count"], 9)
+        self.assertEqual(recovery["overflow_page_count"], 9)
+        self.assertEqual(recovery["retry_page_count"], 9)
+        self.assertEqual(recovery["grouped_source_row_count"], 47262)
+        self.assertEqual(recovery["grouped_row_count"], 16541)
+        self.assertEqual(recovery["merge_rule"], "key_addition")
+        self.assertFalse(recovery["merge_requires_disjoint_keys"])
+
+        self.assertEqual(payload["host_exact_row_count"], 47262)
+        self.assertEqual(payload["device_grouped_source_row_count"], 47262)
+        self.assertEqual(payload["host_group_count"], 16476)
+        self.assertEqual(payload["device_group_count"], 16476)
+        self.assertTrue(payload["group_counts_match_host"])
+        self.assertEqual(payload["missing_group_key_count"], 0)
+        self.assertEqual(payload["extra_group_key_count"], 0)
+        self.assertEqual(payload["mismatched_group_value_count"], 0)
+
+        native_page = payload["native_page_boundary"]
+        self.assertTrue(native_page["native_page_producer_used"])
+        self.assertTrue(native_page["native_call_uses_page_start_and_page_count"])
+        self.assertFalse(native_page["python_point_slicing_for_native_producer"])
+        self.assertFalse(native_page["native_page_plan_handle_implemented"])
+        self.assertFalse(native_page["native_page_release_function_implemented"])
+        self.assertFalse(native_page["device_only_exact_predicate_produced"])
+
+        first_page = recovery["page_records"][0]
+        last_page = recovery["page_records"][-1]
+        self.assertEqual(first_page["first_capacity_status"]["required_capacity"], 5666)
+        self.assertEqual(last_page["first_capacity_status"]["required_capacity"], 352)
+
+        for key, value in payload["claim_boundary"].items():
+            self.assertFalse(value, key)
 
 
 if __name__ == "__main__":

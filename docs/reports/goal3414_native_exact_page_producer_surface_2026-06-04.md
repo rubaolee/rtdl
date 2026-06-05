@@ -43,6 +43,34 @@ The exact rows still come from the existing host-refined bridge before being
 uploaded to device pair columns. Goal3414 only moves page selection into the
 native entry point.
 
+## Pod Evidence
+
+The probe artifact is:
+
+`docs/reports/goal3414_native_exact_page_producer_probe_2026-06-04.json`
+
+It was produced on commit `a50494bc` with an NVIDIA RTX A5000 and driver
+`580.126.09`.
+
+| Measure | Value |
+| --- | ---: |
+| points | 16545 |
+| shapes | 15700 |
+| page size | 2048 |
+| pages | 9 |
+| overflowed pages | 9 |
+| retried pages | 9 |
+| host exact rows | 47262 |
+| device grouped source rows | 47262 |
+| host groups | 16476 |
+| device groups | 16476 |
+| missing/extra/mismatched groups | 0/0/0 |
+
+Every page was produced through the native page symbol with explicit
+`page_start` and `page_count`. The native page boundary still records that no
+page-plan handle, page release function, or device-only exact predicate exists
+yet.
+
 ## Next Target
 
 The remaining native graduation shape is:
