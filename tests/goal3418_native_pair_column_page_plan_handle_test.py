@@ -1,9 +1,11 @@
 from pathlib import Path
 import inspect
+import json
 import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
+ARTIFACT = ROOT / "docs" / "reports" / "goal3418_native_page_plan_handle_probe_2026-06-04.json"
 PRELUDE = ROOT / "src" / "native" / "optix" / "rtdl_optix_prelude.h"
 API = ROOT / "src" / "native" / "optix" / "rtdl_optix_api.cpp"
 WORKLOADS = ROOT / "src" / "native" / "optix" / "rtdl_optix_workloads.cpp"
@@ -70,6 +72,59 @@ class Goal3418NativePairColumnPagePlanHandleTest(unittest.TestCase):
         self.assertIn("device-only exact predicates", self.report)
         self.assertIn("true zero-copy", self.report)
         self.assertIn("release authorization", self.report)
+
+    def test_pod_artifact_records_native_page_plan_handle_evidence(self):
+        payload = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["schema"], "rtdl.goal3418.native_page_plan_handle_probe.v1")
+        self.assertEqual(payload["goal"], 3418)
+        self.assertEqual(payload["rtdl_commit"][:8], "c0bedc29")
+        self.assertIn("NVIDIA RTX A5000", payload["gpu"])
+        self.assertEqual(payload["point_count"], 16545)
+        self.assertEqual(payload["shape_count"], 15700)
+
+        native_plan = payload["native_page_plan"]
+        self.assertEqual(native_plan["schema"], "rtdl.optix.native_exact_device_pair_column_page_plan.v1")
+        self.assertTrue(native_plan["native_page_plan_handle_implemented"])
+        self.assertTrue(native_plan["native_page_release_function_implemented"])
+        self.assertTrue(native_plan["native_page_producer_used_by_plan"])
+        self.assertFalse(native_plan["automatic_retry_authorized"])
+        self.assertFalse(native_plan["hidden_dispatch_authorized"])
+        self.assertFalse(native_plan["device_only_exact_predicate_produced"])
+        self.assertEqual(native_plan["item_count"], 16545)
+        self.assertEqual(native_plan["page_size"], 2048)
+        self.assertEqual(native_plan["page_count"], 9)
+        self.assertEqual(native_plan["initial_capacity"], 100)
+
+        recovery = payload["recovery_summary"]
+        self.assertEqual(recovery["page_count"], 9)
+        self.assertEqual(recovery["overflow_page_count"], 9)
+        self.assertEqual(recovery["retry_page_count"], 9)
+        self.assertEqual(recovery["grouped_source_row_count"], 47262)
+        self.assertEqual(recovery["grouped_row_count"], 16541)
+        self.assertEqual(recovery["merge_rule"], "key_addition")
+        self.assertFalse(recovery["merge_requires_disjoint_keys"])
+
+        self.assertEqual(payload["host_exact_row_count"], 47262)
+        self.assertEqual(payload["device_grouped_source_row_count"], 47262)
+        self.assertEqual(payload["host_group_count"], 16476)
+        self.assertEqual(payload["device_group_count"], 16476)
+        self.assertTrue(payload["group_counts_match_host"])
+        self.assertEqual(payload["missing_group_key_count"], 0)
+        self.assertEqual(payload["extra_group_key_count"], 0)
+        self.assertEqual(payload["mismatched_group_value_count"], 0)
+
+        boundary = payload["native_page_plan_boundary"]
+        self.assertTrue(boundary["native_page_plan_handle_implemented"])
+        self.assertTrue(boundary["native_page_release_function_implemented"])
+        self.assertTrue(boundary["native_plan_owns_host_point_copy"])
+        self.assertTrue(boundary["produce_page_api_used"])
+        self.assertFalse(boundary["device_only_exact_predicate_produced"])
+        self.assertFalse(boundary["automatic_retry_authorized"])
+        self.assertFalse(boundary["hidden_dispatch_authorized"])
+
+        for key, value in payload["claim_boundary"].items():
+            self.assertFalse(value, key)
 
 
 if __name__ == "__main__":
