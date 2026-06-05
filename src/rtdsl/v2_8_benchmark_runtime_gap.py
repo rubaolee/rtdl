@@ -146,7 +146,8 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "a CuPy RawKernel prototype over that prepared payload matches the CPU area fixture on an RTX A5000 pod; "
             "public-CDB feasibility shows the current prepared payload covers all positive exact-area rows, "
             "but one supported row reaches 318,096 triangle pairs; workload sizing shows 39,947 component-pair "
-            "rows and 9,653,005 triangle pairs across the supported public-CDB stream"
+            "rows and 9,653,005 triangle pairs across the supported public-CDB stream; a component/tile "
+            "task planner now gives large rows explicit relation-owner tile tasks"
         ),
         partner_position=(
             "Numba is the recommended custom continuation when row-stream compaction is part of the app; "
@@ -194,9 +195,9 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "100% of total exact area, while exposing a max supported row of 318,096 triangle pairs. "
             "Goal3489 sized the supported workload at 39,947 component-pair rows and 9,653,005 triangle "
             "pairs, with p50/p90/p99 triangle pairs per relation of 294/3,450/25,530. Remaining work is "
-            "to split large relation rows into component/tile tasks, reduce by relation id, integrate with "
-            "the device-resident relation stream, then decide whether the accepted continuation is native "
-            "or partner-backed over that execution shape."
+            "to execute the Goal3490 component/tile task plan on device, reduce tile partials by relation id, "
+            "integrate with the device-resident relation stream, then decide whether the accepted continuation "
+            "is native or partner-backed over that execution shape."
         ),
         generic_runtime_target=(
             "typed hit/relation streams with compact-mask, grouped parity/count, bounded witness "
@@ -239,6 +240,7 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "Goal3486",
             "Goal3488",
             "Goal3489",
+            "Goal3490",
         ),
     ),
     V28BenchmarkRuntimeGapRow(

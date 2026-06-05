@@ -342,6 +342,37 @@ class PreparedOverlayAreaPairRow:
 
 
 @dataclass(frozen=True)
+class PreparedOverlayAreaTileTask:
+    task_ordinal: int
+    relation_row_ordinal: int
+    pair_row_ordinal: int
+    pair_offset: int
+    pair_count: int
+    left_triangle_start: int
+    left_triangle_count: int
+    right_triangle_start: int
+    right_triangle_count: int
+
+    @property
+    def pair_stop(self) -> int:
+        return self.pair_offset + self.pair_count
+
+    def to_metadata(self) -> dict[str, int]:
+        return {
+            "task_ordinal": self.task_ordinal,
+            "relation_row_ordinal": self.relation_row_ordinal,
+            "pair_row_ordinal": self.pair_row_ordinal,
+            "pair_offset": self.pair_offset,
+            "pair_count": self.pair_count,
+            "pair_stop": self.pair_stop,
+            "left_triangle_start": self.left_triangle_start,
+            "left_triangle_count": self.left_triangle_count,
+            "right_triangle_start": self.right_triangle_start,
+            "right_triangle_count": self.right_triangle_count,
+        }
+
+
+@dataclass(frozen=True)
 class PreparedOverlayAreaEvaluationResult:
     row_areas: tuple[float, ...]
     total_area: float
@@ -474,6 +505,75 @@ def prepare_overlay_area_pair_rows(
             )
         )
     return tuple(rows)
+
+
+def plan_prepared_overlay_area_tile_tasks(
+    pair_rows: Sequence[PreparedOverlayAreaPairRow],
+    *,
+    max_triangle_pairs_per_task: int,
+    relation_row_ordinals: Sequence[int] | None = None,
+) -> tuple[PreparedOverlayAreaTileTask, ...]:
+    if max_triangle_pairs_per_task <= 0:
+        raise ValueError("max_triangle_pairs_per_task must be positive; tile planning must fail closed")
+    if relation_row_ordinals is not None and len(relation_row_ordinals) != len(pair_rows):
+        raise ValueError("relation_row_ordinals length must match pair_rows length")
+
+    tasks: list[PreparedOverlayAreaTileTask] = []
+    for pair_index, pair_row in enumerate(pair_rows):
+        relation_row_ordinal = (
+            int(relation_row_ordinals[pair_index])
+            if relation_row_ordinals is not None
+            else int(pair_row.row_ordinal)
+        )
+        pair_offset = 0
+        while pair_offset < pair_row.triangle_pair_count:
+            pair_count = min(max_triangle_pairs_per_task, pair_row.triangle_pair_count - pair_offset)
+            tasks.append(
+                PreparedOverlayAreaTileTask(
+                    task_ordinal=len(tasks),
+                    relation_row_ordinal=relation_row_ordinal,
+                    pair_row_ordinal=int(pair_row.row_ordinal),
+                    pair_offset=pair_offset,
+                    pair_count=pair_count,
+                    left_triangle_start=pair_row.left_triangle_start,
+                    left_triangle_count=pair_row.left_triangle_count,
+                    right_triangle_start=pair_row.right_triangle_start,
+                    right_triangle_count=pair_row.right_triangle_count,
+                )
+            )
+            pair_offset += pair_count
+    return tuple(tasks)
+
+
+def summarize_prepared_overlay_area_tile_tasks(
+    pair_rows: Sequence[PreparedOverlayAreaPairRow],
+    tasks: Sequence[PreparedOverlayAreaTileTask],
+) -> dict[str, Any]:
+    expected_pairs = sum(int(row.triangle_pair_count) for row in pair_rows)
+    planned_pairs = sum(int(task.pair_count) for task in tasks)
+    relation_rows = {int(task.relation_row_ordinal) for task in tasks}
+    errors: list[str] = []
+    if expected_pairs != planned_pairs:
+        errors.append(f"planned pair count {planned_pairs} does not match expected {expected_pairs}")
+    if any(task.pair_count <= 0 for task in tasks):
+        errors.append("tile tasks must have positive pair counts")
+    return {
+        "version": V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_VERSION,
+        "status": "accept" if not errors else "reject",
+        "errors": tuple(errors),
+        "pair_row_count": len(pair_rows),
+        "task_count": len(tasks),
+        "relation_row_count": len(relation_rows),
+        "expected_triangle_pair_count": expected_pairs,
+        "planned_triangle_pair_count": planned_pairs,
+        "max_task_pair_count": max((int(task.pair_count) for task in tasks), default=0),
+        "claim_boundary": V2_8_OVERLAY_AREA_CONTINUATION_CLAIM_BOUNDARY,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "runtime_kernel_authorized": False,
+    }
 
 
 def evaluate_prepared_overlay_area_scalar(
@@ -733,6 +833,7 @@ __all__ = [
     "PreparedOverlayAreaPairRow",
     "PreparedOverlayAreaCupyTiledResult",
     "PreparedOverlayAreaTiledEvaluationResult",
+    "PreparedOverlayAreaTileTask",
     "PreparedSimplePolygonComponentPayload",
     "PreparedSimplePolygonComponentRecord",
     "V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_STATUS",
@@ -741,7 +842,9 @@ __all__ = [
     "evaluate_prepared_overlay_area_scalar",
     "evaluate_prepared_overlay_area_scalar_tiled",
     "evaluate_prepared_overlay_area_scalar_tiled_cupy",
+    "plan_prepared_overlay_area_tile_tasks",
     "prepare_overlay_area_pair_rows",
     "prepare_simple_polygon_component_payload",
+    "summarize_prepared_overlay_area_tile_tasks",
     "validate_v2_8_overlay_area_prepared_payload_contract",
 ]
