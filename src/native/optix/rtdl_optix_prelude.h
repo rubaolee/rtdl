@@ -258,6 +258,8 @@ struct RtdlNativeDevicePairColumns {
     uint64_t row_count_device_ptr;
     uint64_t candidate_event_count_device_ptr;
     uint64_t overflow_device_ptr;
+    uint64_t left_ordinals_device_ptr;
+    uint64_t right_ordinals_device_ptr;
 };
 
 struct RtdlNativePairColumnPagePlanInfo {

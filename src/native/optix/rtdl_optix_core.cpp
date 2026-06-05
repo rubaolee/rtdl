@@ -7810,6 +7810,12 @@ static Bounds2D bounds_for_polygon(const RtdlPolygonRef& poly, const double* ver
     return bounds;
 }
 
+static bool point_inside_bounds(const Bounds2D& bounds, double x, double y, double eps = 0.0)
+{
+    return x >= bounds.min_x - eps && x <= bounds.max_x + eps &&
+           y >= bounds.min_y - eps && y <= bounds.max_y + eps;
+}
+
 static bool bounds_overlap(const Bounds2D& left, const Bounds2D& right)
 {
     return !(left.max_x < right.min_x || right.max_x < left.min_x ||

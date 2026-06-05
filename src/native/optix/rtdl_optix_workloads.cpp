@@ -5197,6 +5197,8 @@ struct PipCandidateDeviceColumnsLaunchParams {
     uint32_t         output_capacity;
     unsigned long long* point_ids_out;
     unsigned long long* shape_ids_out;
+    unsigned long long* point_ordinals_out;
+    unsigned long long* shape_ordinals_out;
     uint32_t*        overflow;
     uint32_t         positive_only;
     uint32_t         hit_word_count;
@@ -5257,10 +5259,14 @@ struct PointClosedShapeBoundaryEventLaunchParams {
 struct NativeClosedShapeMembershipCandidateDeviceColumnsOwner {
     CUdeviceptr point_ids = 0;
     CUdeviceptr shape_ids = 0;
+    CUdeviceptr point_ordinals = 0;
+    CUdeviceptr shape_ordinals = 0;
 
     ~NativeClosedShapeMembershipCandidateDeviceColumnsOwner() {
         if (point_ids) cuMemFree(point_ids);
         if (shape_ids) cuMemFree(shape_ids);
+        if (point_ordinals) cuMemFree(point_ordinals);
+        if (shape_ordinals) cuMemFree(shape_ordinals);
     }
 };
 
@@ -5447,6 +5453,8 @@ R"CUDA(    PipRecord* output;
     uint32_t output_capacity;
     unsigned long long* point_ids_out;
     unsigned long long* shape_ids_out;
+    unsigned long long* point_ordinals_out;
+    unsigned long long* shape_ordinals_out;
     uint32_t* overflow;
     uint32_t positive_only;
 )CUDA";
@@ -5471,6 +5479,12 @@ R"CUDA(            const uint32_t slot = atomicAdd(params.output_count, 1u);
             if (slot < params.output_capacity && params.point_ids_out != nullptr && params.shape_ids_out != nullptr) {
                 params.point_ids_out[slot] = (unsigned long long)params.point_ids[pidx];
                 params.shape_ids_out[slot] = (unsigned long long)params.polygons[prim].id;
+                if (params.point_ordinals_out != nullptr) {
+                    params.point_ordinals_out[slot] = (unsigned long long)(params.point_index_offset + pidx);
+                }
+                if (params.shape_ordinals_out != nullptr) {
+                    params.shape_ordinals_out[slot] = (unsigned long long)prim;
+                }
             } else {
                 if (params.overflow != nullptr) {
                     *params.overflow = 1u;
@@ -5920,6 +5934,11 @@ static void run_pip_optix(
         const auto t_refine_start = std::chrono::steady_clock::now();
         std::vector<RtdlPipRow> rows;
         rows.reserve(gpu_rows.size());
+        std::vector<Bounds2D> polygon_bounds;
+        polygon_bounds.reserve(poly_count);
+        for (size_t i = 0; i < poly_count; ++i) {
+            polygon_bounds.push_back(bounds_for_polygon(polys[i], vertices_xy));
+        }
 #if RTDL_OPTIX_HAS_GEOS
         GeosPreparedPolygonRefs geos(polys, poly_count, vertices_xy);
 #endif
@@ -5931,6 +5950,9 @@ static void run_pip_optix(
             }
             const RtdlPoint& point = points[pi];
             const RtdlPolygonRef& polygon = polys[qi];
+            if (!point_inside_bounds(polygon_bounds[qi], point.x, point.y, 1.0e-12)) {
+                continue;
+            }
 #if RTDL_OPTIX_HAS_GEOS
             if (!geos.covers(qi, point.x, point.y)) {
                 continue;
@@ -5988,12 +6010,19 @@ static void run_pip_optix(
 
 #if RTDL_OPTIX_HAS_GEOS
     GeosPreparedPolygonRefs geos(polys, poly_count, vertices_xy);
+    std::vector<Bounds2D> polygon_bounds;
+    polygon_bounds.reserve(poly_count);
+    for (size_t i = 0; i < poly_count; ++i) {
+        polygon_bounds.push_back(bounds_for_polygon(polys[i], vertices_xy));
+    }
     for (size_t pi = 0; pi < point_count; ++pi) {
         for (size_t qi = 0; qi < poly_count; ++qi) {
             const size_t out_index = pi * poly_count + qi;
             out[out_index].point_id = points[pi].id;
             out[out_index].polygon_id = polys[qi].id;
-            out[out_index].contains = geos.covers(qi, points[pi].x, points[pi].y) ? 1u : 0u;
+            out[out_index].contains =
+                point_inside_bounds(polygon_bounds[qi], points[pi].x, points[pi].y, 1.0e-12) &&
+                geos.covers(qi, points[pi].x, points[pi].y) ? 1u : 0u;
         }
     }
 #else
@@ -6322,6 +6351,7 @@ static void ensure_shape_pair_relation_pipeline() {
 struct PreparedShapePairRelationBuild {
     std::vector<RtdlPolygonRef> host_right_polygons;
     std::vector<double> host_right_vertices_xy;
+    std::vector<Bounds2D> host_right_bounds;
     std::vector<GpuPolygonRef> right_polygons;
     std::vector<float> right_vx;
     std::vector<float> right_vy;
@@ -6346,6 +6376,7 @@ struct PreparedShapePairRelationBuild {
             size_t vert_xy_count)
         : host_right_polygons(),
           host_right_vertices_xy(),
+          host_right_bounds(),
           right_polygons(poly_count),
           right_vx(vert_xy_count / 2u),
           right_vy(vert_xy_count / 2u),
@@ -6363,6 +6394,10 @@ struct PreparedShapePairRelationBuild {
         }
         if (vert_xy_count > 0) {
             host_right_vertices_xy.assign(verts_xy, verts_xy + vert_xy_count);
+        }
+        host_right_bounds.reserve(poly_count);
+        for (size_t i = 0; i < poly_count; ++i) {
+            host_right_bounds.push_back(bounds_for_polygon(polys[i], verts_xy));
         }
         for (size_t i = 0; i < poly_count; ++i) {
             right_polygons[i] = {
@@ -7007,6 +7042,9 @@ static void run_prepared_point_closed_shape_membership_2d_optix(
         }
         const RtdlPoint& point = points[pi];
         const RtdlPolygonRef& shape = prepared->host_right_polygons[qi];
+        if (!point_inside_bounds(prepared->host_right_bounds[qi], point.x, point.y, 1.0e-12)) {
+            continue;
+        }
 #if RTDL_OPTIX_HAS_GEOS
         if (prepared->right_geos && !prepared->right_geos->covers(qi, point.x, point.y)) {
             continue;
@@ -7178,6 +7216,9 @@ static void count_prepared_point_closed_shape_membership_2d_optix(
             }
             const RtdlPoint& point = points[pi];
             const RtdlPolygonRef& shape = prepared->host_right_polygons[qi];
+            if (!point_inside_bounds(prepared->host_right_bounds[qi], point.x, point.y, 1.0e-12)) {
+                continue;
+            }
 #if RTDL_OPTIX_HAS_GEOS
             if (prepared->right_geos && !prepared->right_geos->covers(qi, point.x, point.y)) {
                 continue;
@@ -8052,12 +8093,18 @@ static void run_prepared_point_closed_shape_membership_candidate_device_columns_
     std::unique_ptr<NativeClosedShapeMembershipCandidateDeviceColumnsOwner> owner;
     CUdeviceptr point_ids_output = 0;
     CUdeviceptr shape_ids_output = 0;
+    CUdeviceptr point_ordinals_output = 0;
+    CUdeviceptr shape_ordinals_output = 0;
     if (max_rows != 0) {
         owner = std::make_unique<NativeClosedShapeMembershipCandidateDeviceColumnsOwner>();
         CU_CHECK(cuMemAlloc(&owner->point_ids, sizeof(unsigned long long) * max_rows));
         CU_CHECK(cuMemAlloc(&owner->shape_ids, sizeof(unsigned long long) * max_rows));
+        CU_CHECK(cuMemAlloc(&owner->point_ordinals, sizeof(unsigned long long) * max_rows));
+        CU_CHECK(cuMemAlloc(&owner->shape_ordinals, sizeof(unsigned long long) * max_rows));
         point_ids_output = owner->point_ids;
         shape_ids_output = owner->shape_ids;
+        point_ordinals_output = owner->point_ordinals;
+        shape_ordinals_output = owner->shape_ordinals;
     }
 
     DevPtr d_count(sizeof(uint32_t));
@@ -8083,6 +8130,8 @@ static void run_prepared_point_closed_shape_membership_candidate_device_columns_
     lp.output_capacity = static_cast<uint32_t>(max_rows);
     lp.point_ids_out  = reinterpret_cast<unsigned long long*>(point_ids_output);
     lp.shape_ids_out  = reinterpret_cast<unsigned long long*>(shape_ids_output);
+    lp.point_ordinals_out = reinterpret_cast<unsigned long long*>(point_ordinals_output);
+    lp.shape_ordinals_out = reinterpret_cast<unsigned long long*>(shape_ordinals_output);
     lp.overflow       = reinterpret_cast<uint32_t*>(d_overflow.ptr);
     lp.positive_only  = 1u;
     lp.hit_word_count = 0u;
@@ -8147,6 +8196,8 @@ static void run_prepared_point_closed_shape_membership_candidate_device_columns_
 
     columns_out->left_ids_device_ptr = static_cast<uint64_t>(point_ids_output);
     columns_out->right_ids_device_ptr = static_cast<uint64_t>(shape_ids_output);
+    columns_out->left_ordinals_device_ptr = static_cast<uint64_t>(point_ordinals_output);
+    columns_out->right_ordinals_device_ptr = static_cast<uint64_t>(shape_ordinals_output);
     columns_out->row_count = static_cast<uint64_t>(attempted_rows);
     columns_out->overflow = 0u;
     g_optix_last_closed_shape_emitted_count = static_cast<size_t>(attempted_rows);
@@ -8585,6 +8636,11 @@ static ShapePairRelationFlagComputation compute_shape_pair_relation_flags_with_p
 #if RTDL_OPTIX_HAS_GEOS
     GeosPreparedPolygonRefs left_geos(left_polys, left_count, left_verts_xy);
 #endif
+    std::vector<Bounds2D> left_bounds;
+    left_bounds.reserve(left_count);
+    for (size_t li = 0; li < left_count; ++li) {
+        left_bounds.push_back(bounds_for_polygon(left_polys[li], left_verts_xy));
+    }
 
     for (size_t li = 0; li < left_count; ++li) {
         for (size_t ri = 0; ri < right_count; ++ri) {
@@ -8595,9 +8651,12 @@ static ShapePairRelationFlagComputation compute_shape_pair_relation_flags_with_p
                 double lxv = left_verts_xy[left_polys[li].vertex_offset * 2];
                 double lyv = left_verts_xy[left_polys[li].vertex_offset * 2 + 1];
 #if RTDL_OPTIX_HAS_GEOS
-                if (prepared->right_geos && prepared->right_geos->covers(ri, lxv, lyv))
+                if (prepared->right_geos &&
+                    point_inside_bounds(prepared->host_right_bounds[ri], lxv, lyv, 1.0e-12) &&
+                    prepared->right_geos->covers(ri, lxv, lyv))
 #else
-                if (exact_point_in_polygon(
+                if (point_inside_bounds(prepared->host_right_bounds[ri], lxv, lyv, 1.0e-12) &&
+                    exact_point_in_polygon(
                         lxv, lyv,
                         prepared->host_right_polygons[ri],
                         prepared->host_right_vertices_xy.data()))
@@ -8609,9 +8668,11 @@ static ShapePairRelationFlagComputation compute_shape_pair_relation_flags_with_p
                 double rxv = prepared->host_right_vertices_xy[right_poly.vertex_offset * 2];
                 double ryv = prepared->host_right_vertices_xy[right_poly.vertex_offset * 2 + 1];
 #if RTDL_OPTIX_HAS_GEOS
-                if (left_geos.covers(li, rxv, ryv))
+                if (point_inside_bounds(left_bounds[li], rxv, ryv, 1.0e-12) &&
+                    left_geos.covers(li, rxv, ryv))
 #else
-                if (exact_point_in_polygon(rxv, ryv, left_polys[li], left_verts_xy))
+                if (point_inside_bounds(left_bounds[li], rxv, ryv, 1.0e-12) &&
+                    exact_point_in_polygon(rxv, ryv, left_polys[li], left_verts_xy))
 #endif
                     found = true;
             }

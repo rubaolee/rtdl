@@ -57,13 +57,16 @@ extern "C" __global__
 void exact_closed_shape_candidate_refine(
     const long long* candidate_point_ids,
     const long long* candidate_shape_ids,
+    const long long* candidate_point_ordinals,
+    const long long* candidate_shape_ordinals,
     const long long candidate_count,
-    const double* point_x_by_id,
-    const double* point_y_by_id,
-    const int* shape_offset_by_id,
-    const int* shape_count_by_id,
+    const double* point_x_lookup,
+    const double* point_y_lookup,
+    const int* shape_offset_lookup,
+    const int* shape_count_lookup,
     const double* vertices_x,
     const double* vertices_y,
+    const int use_instance_ordinals,
     const double point_eps,
     long long* output_point_ids,
     long long* output_shape_ids,
@@ -74,10 +77,17 @@ void exact_closed_shape_candidate_refine(
     const long long point_id = candidate_point_ids[row];
     const long long shape_id = candidate_shape_ids[row];
     if (point_id < 0 || shape_id < 0) return;
-    const double px = point_x_by_id[point_id];
-    const double py = point_y_by_id[point_id];
-    const int off = shape_offset_by_id[shape_id];
-    const int n = shape_count_by_id[shape_id];
+    long long point_lookup = point_id;
+    long long shape_lookup = shape_id;
+    if (use_instance_ordinals != 0) {
+        point_lookup = candidate_point_ordinals[row];
+        shape_lookup = candidate_shape_ordinals[row];
+    }
+    if (point_lookup < 0 || shape_lookup < 0) return;
+    const double px = point_x_lookup[point_lookup];
+    const double py = point_y_lookup[point_lookup];
+    const int off = shape_offset_lookup[shape_lookup];
+    const int n = shape_count_lookup[shape_lookup];
     if (off < 0 || n < 3) return;
 
     const double eps = point_eps;
@@ -162,9 +172,13 @@ def refine_closed_shape_membership_candidate_columns_exact_cupy(
         field_names = getattr(candidate_columns, "field_names", ("point_id", "shape_id"))
         raw_point_ids = column_map[field_names[0]]
         raw_shape_ids = column_map[field_names[1]]
+        raw_point_ordinals = column_map.get("point_ordinal", column_map.get("left_ordinal"))
+        raw_shape_ordinals = column_map.get("shape_ordinal", column_map.get("right_ordinal"))
     elif isinstance(candidate_columns, Mapping):
         raw_point_ids = candidate_columns.get("point_id", candidate_columns.get("left_id"))
         raw_shape_ids = candidate_columns.get("shape_id", candidate_columns.get("right_id"))
+        raw_point_ordinals = candidate_columns.get("point_ordinal", candidate_columns.get("left_ordinal"))
+        raw_shape_ordinals = candidate_columns.get("shape_ordinal", candidate_columns.get("right_ordinal"))
         if raw_point_ids is None or raw_shape_ids is None:
             raise KeyError("candidate column mapping must expose point_id/shape_id or left_id/right_id")
     else:
@@ -174,34 +188,50 @@ def refine_closed_shape_membership_candidate_columns_exact_cupy(
     candidate_shape_ids = cp.asarray(raw_shape_ids, dtype=cp.int64)
     if int(candidate_point_ids.size) != int(candidate_shape_ids.size):
         raise ValueError("candidate point and shape columns must have equal length")
+    use_instance_ordinals = raw_point_ordinals is not None and raw_shape_ordinals is not None
+    if use_instance_ordinals:
+        candidate_point_ordinals = cp.asarray(raw_point_ordinals, dtype=cp.int64)
+        candidate_shape_ordinals = cp.asarray(raw_shape_ordinals, dtype=cp.int64)
+        if int(candidate_point_ordinals.size) != int(candidate_point_ids.size):
+            raise ValueError("candidate point ordinal column must match candidate point id column length")
+        if int(candidate_shape_ordinals.size) != int(candidate_shape_ids.size):
+            raise ValueError("candidate shape ordinal column must match candidate shape id column length")
+    else:
+        candidate_point_ordinals = cp.zeros_like(candidate_point_ids)
+        candidate_shape_ordinals = cp.zeros_like(candidate_shape_ids)
     eps = float(point_eps)
     if eps < 0.0:
         raise ValueError("point_eps must be non-negative")
 
     point_records = tuple(points)
     shape_records = tuple(shapes)
-    max_point_id = max((int(_record_value(point, "id")) for point in point_records), default=-1)
-    max_shape_id = max((int(_record_value(shape, "id")) for shape in shape_records), default=-1)
-    if int(candidate_point_ids.size):
-        max_point_id = max(max_point_id, int(cp.max(candidate_point_ids).item()))
-        max_shape_id = max(max_shape_id, int(cp.max(candidate_shape_ids).item()))
+    if use_instance_ordinals:
+        point_x_lookup = [float(_record_value(point, "x")) for point in point_records]
+        point_y_lookup = [float(_record_value(point, "y")) for point in point_records]
+        shape_offset_lookup = [-1] * len(shape_records)
+        shape_count_lookup = [0] * len(shape_records)
+    else:
+        max_point_id = max((int(_record_value(point, "id")) for point in point_records), default=-1)
+        max_shape_id = max((int(_record_value(shape, "id")) for shape in shape_records), default=-1)
+        if int(candidate_point_ids.size):
+            max_point_id = max(max_point_id, int(cp.max(candidate_point_ids).item()))
+            max_shape_id = max(max_shape_id, int(cp.max(candidate_shape_ids).item()))
+        point_x_lookup = [0.0] * (max_point_id + 1)
+        point_y_lookup = [0.0] * (max_point_id + 1)
+        shape_offset_lookup = [-1] * (max_shape_id + 1)
+        shape_count_lookup = [0] * (max_shape_id + 1)
+        for point in point_records:
+            point_id = int(_record_value(point, "id"))
+            point_x_lookup[point_id] = float(_record_value(point, "x"))
+            point_y_lookup[point_id] = float(_record_value(point, "y"))
 
-    point_x_by_id = [0.0] * (max_point_id + 1)
-    point_y_by_id = [0.0] * (max_point_id + 1)
-    for point in point_records:
-        point_id = int(_record_value(point, "id"))
-        point_x_by_id[point_id] = float(_record_value(point, "x"))
-        point_y_by_id[point_id] = float(_record_value(point, "y"))
-
-    shape_offset_by_id = [-1] * (max_shape_id + 1)
-    shape_count_by_id = [0] * (max_shape_id + 1)
     vertices_x: list[float] = []
     vertices_y: list[float] = []
-    for shape in shape_records:
-        shape_id = int(_record_value(shape, "id"))
+    for shape_ordinal, shape in enumerate(shape_records):
+        shape_lookup = shape_ordinal if use_instance_ordinals else int(_record_value(shape, "id"))
         vertices = tuple(_record_value(shape, "vertices"))
-        shape_offset_by_id[shape_id] = len(vertices_x)
-        shape_count_by_id[shape_id] = len(vertices)
+        shape_offset_lookup[shape_lookup] = len(vertices_x)
+        shape_count_lookup[shape_lookup] = len(vertices)
         for x, y in vertices:
             vertices_x.append(float(x))
             vertices_y.append(float(y))
@@ -220,13 +250,16 @@ def refine_closed_shape_membership_candidate_columns_exact_cupy(
             (
                 candidate_point_ids,
                 candidate_shape_ids,
+                candidate_point_ordinals,
+                candidate_shape_ordinals,
                 candidate_count,
-                cp.asarray(point_x_by_id, dtype=cp.float64),
-                cp.asarray(point_y_by_id, dtype=cp.float64),
-                cp.asarray(shape_offset_by_id, dtype=cp.int32),
-                cp.asarray(shape_count_by_id, dtype=cp.int32),
+                cp.asarray(point_x_lookup, dtype=cp.float64),
+                cp.asarray(point_y_lookup, dtype=cp.float64),
+                cp.asarray(shape_offset_lookup, dtype=cp.int32),
+                cp.asarray(shape_count_lookup, dtype=cp.int32),
                 cp.asarray(vertices_x, dtype=cp.float64),
                 cp.asarray(vertices_y, dtype=cp.float64),
+                1 if use_instance_ordinals else 0,
                 eps,
                 output_point_ids,
                 output_shape_ids,
@@ -251,6 +284,7 @@ def refine_closed_shape_membership_candidate_columns_exact_cupy(
         "point_eps": eps,
         "partner": "cupy",
         "predicate": "double_simple_ring_closed_shape_membership",
+        "instance_identity_columns_used": bool(use_instance_ordinals),
         "matches_geos_topology_oracle": False,
         "output_residency": "partner_device_refined_columns",
         "host_refined_rows_materialized": False,

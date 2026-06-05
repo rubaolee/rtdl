@@ -907,6 +907,8 @@ class _RtdlNativeDevicePairColumns(ctypes.Structure):
         ("row_count_device_ptr", ctypes.c_uint64),
         ("candidate_event_count_device_ptr", ctypes.c_uint64),
         ("overflow_device_ptr", ctypes.c_uint64),
+        ("left_ordinals_device_ptr", ctypes.c_uint64),
+        ("right_ordinals_device_ptr", ctypes.c_uint64),
     ]
 
 
@@ -1843,12 +1845,24 @@ class OptixNativeDevicePairColumnOutput:
     traversal_seconds: float
     native_symbol: str
     field_names: tuple[str, str] = ("left_id", "right_id")
+    left_ordinals_device_ptr: int = 0
+    right_ordinals_device_ptr: int = 0
+    ordinal_field_names: tuple[str, str] = ("left_ordinal", "right_ordinal")
 
     @property
     def device_resident(self) -> bool:
         return (
             self.left_ids_device_ptr > 0
             and self.right_ids_device_ptr > 0
+            and self.capacity > 0
+            and not self.overflow
+        )
+
+    @property
+    def has_instance_identity_columns(self) -> bool:
+        return (
+            self.left_ordinals_device_ptr > 0
+            and self.right_ordinals_device_ptr > 0
             and self.capacity > 0
             and not self.overflow
         )
@@ -1943,6 +1957,19 @@ class OptixNativeDevicePairColumnOutput:
             "capacity_status": capacity_status,
             "retry_capacity_hint": self.retry_capacity_hint,
         }
+        instance_identity = {
+            "present": bool(self.has_instance_identity_columns),
+            "field_names": self.ordinal_field_names,
+            "data_ptrs": {
+                self.ordinal_field_names[0]: int(self.left_ordinals_device_ptr),
+                self.ordinal_field_names[1]: int(self.right_ordinals_device_ptr),
+            },
+            "meaning": "input_sequence_ordinal_and_prepared_primitive_ordinal",
+            "public_id_columns_preserved": self.field_names,
+            "release_authorized": False,
+        }
+        metadata["runtime"]["instance_identity_columns"] = instance_identity
+        metadata["v2_8_typed_producer_metadata"]["instance_identity_columns"] = instance_identity
         metadata["capacity_status"] = capacity_status
         return metadata
 
@@ -1976,10 +2003,14 @@ class OptixNativeDevicePairColumnOutput:
         pipeline, and the owning native handle must stay alive while the arrays
         are used.
         """
-        return {
+        columns = {
             self.field_names[0]: self._cupy_column(self.left_ids_device_ptr),
             self.field_names[1]: self._cupy_column(self.right_ids_device_ptr),
         }
+        if self.has_instance_identity_columns:
+            columns[self.ordinal_field_names[0]] = self._cupy_column(self.left_ordinals_device_ptr)
+            columns[self.ordinal_field_names[1]] = self._cupy_column(self.right_ordinals_device_ptr)
+        return columns
 
     def grouped_count_by_left_id(self, *, group_capacity: int) -> tuple[dict[str, int], ...]:
         """Count rows by the pair-column left_id axis using the generic device-column reduction."""
@@ -10985,6 +11016,9 @@ class PreparedOptixPointClosedShapeMembership2D:
             traversal_seconds=float(columns.traversal_seconds),
             native_symbol=OPTIX_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
             field_names=("point_id", "shape_id"),
+            left_ordinals_device_ptr=int(columns.left_ordinals_device_ptr),
+            right_ordinals_device_ptr=int(columns.right_ordinals_device_ptr),
+            ordinal_field_names=("point_ordinal", "shape_ordinal"),
         )
 
     def exact_device_columns(
