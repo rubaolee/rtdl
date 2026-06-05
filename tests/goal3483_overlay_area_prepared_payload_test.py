@@ -45,6 +45,47 @@ class Goal3483OverlayAreaPreparedPayloadTest(unittest.TestCase):
         self.assertAlmostEqual(prepared.total_area, reference.area)
         self.assertAlmostEqual(prepared.total_area, 1.75)
 
+    def test_positive_row_count_uses_policy_threshold_not_clip_epsilon(self) -> None:
+        unit_square = ((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0))
+        tiny_sliver = ((0.0, 0.0), (5.0e-11, 0.0), (5.0e-11, 1.0), (0.0, 1.0))
+        left = rt.prepare_simple_polygon_component_payload((unit_square,))
+        right = rt.prepare_simple_polygon_component_payload((tiny_sliver,))
+        rows = rt.prepare_overlay_area_pair_rows(left, right, ((0, 0),))
+
+        default_threshold = rt.evaluate_prepared_overlay_area_scalar(left, right, rows)
+        explicit_low_threshold = rt.evaluate_prepared_overlay_area_scalar(
+            left,
+            right,
+            rows,
+            row_positive_threshold=1.0e-12,
+        )
+
+        self.assertGreater(default_threshold.total_area, 1.0e-12)
+        self.assertLess(default_threshold.total_area, rt.V2_8_OVERLAY_AREA_ROW_ABS_TOLERANCE)
+        self.assertEqual(default_threshold.positive_row_count, 0)
+        self.assertEqual(explicit_low_threshold.positive_row_count, 1)
+
+    def test_multi_component_multi_row_pair_payload(self) -> None:
+        left_components = (
+            ((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0)),
+            ((10.0, 10.0), (12.0, 10.0), (12.0, 12.0), (10.0, 12.0)),
+        )
+        right_components = (
+            ((1.0, 1.0), (3.0, 1.0), (3.0, 3.0), (1.0, 3.0)),
+            ((10.5, 10.5), (11.5, 10.5), (11.5, 11.5), (10.5, 11.5)),
+        )
+        left = rt.prepare_simple_polygon_component_payload(left_components, source_shape_ids=(100, 101))
+        right = rt.prepare_simple_polygon_component_payload(right_components, source_shape_ids=(200, 201))
+        rows = rt.prepare_overlay_area_pair_rows(left, right, ((0, 0), (1, 1)))
+        prepared = rt.evaluate_prepared_overlay_area_scalar(left, right, rows)
+
+        self.assertEqual(len(rows), 2)
+        self.assertEqual([row.triangle_pair_count for row in rows], [4, 4])
+        self.assertEqual(prepared.positive_row_count, 2)
+        self.assertEqual(prepared.triangle_pair_count, 8)
+        self.assertAlmostEqual(prepared.row_areas[0], 1.0)
+        self.assertAlmostEqual(prepared.row_areas[1], 1.0)
+
     def test_invalid_or_degenerate_input_fails_closed(self) -> None:
         with self.assertRaisesRegex(ValueError, "unsupported_topology_not_canonicalized"):
             rt.prepare_simple_polygon_component_payload((((0.0, 0.0), (1.0, 0.0), (2.0, 0.0)),))

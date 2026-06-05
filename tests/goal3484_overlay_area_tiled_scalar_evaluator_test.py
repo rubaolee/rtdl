@@ -53,6 +53,32 @@ class Goal3484OverlayAreaTiledScalarEvaluatorTest(unittest.TestCase):
         self.assertEqual(tiled.max_observed_tile_pairs, 1)
         self.assertAlmostEqual(tiled.total_area, 1.75)
 
+    def test_tiled_positive_row_count_uses_policy_threshold(self) -> None:
+        unit_square = ((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0))
+        tiny_sliver = ((0.0, 0.0), (5.0e-11, 0.0), (5.0e-11, 1.0), (0.0, 1.0))
+        left = rt.prepare_simple_polygon_component_payload((unit_square,))
+        right = rt.prepare_simple_polygon_component_payload((tiny_sliver,))
+        rows = rt.prepare_overlay_area_pair_rows(left, right, ((0, 0),))
+
+        default_threshold = rt.evaluate_prepared_overlay_area_scalar_tiled(
+            left,
+            right,
+            rows,
+            max_triangle_pairs_per_tile=2,
+        )
+        explicit_low_threshold = rt.evaluate_prepared_overlay_area_scalar_tiled(
+            left,
+            right,
+            rows,
+            max_triangle_pairs_per_tile=2,
+            row_positive_threshold=1.0e-12,
+        )
+
+        self.assertGreater(default_threshold.total_area, 1.0e-12)
+        self.assertLess(default_threshold.total_area, rt.V2_8_OVERLAY_AREA_ROW_ABS_TOLERANCE)
+        self.assertEqual(default_threshold.positive_row_count, 0)
+        self.assertEqual(explicit_low_threshold.positive_row_count, 1)
+
     def test_tiled_evaluator_rejects_invalid_scratch_capacity(self) -> None:
         left, right, rows = _fixture_payloads()
 

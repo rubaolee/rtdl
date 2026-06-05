@@ -8,6 +8,7 @@ from .simple_polygon_overlay_area_reference import Triangle2
 from .simple_polygon_overlay_area_reference import convex_polygon_overlap_area
 from .simple_polygon_overlay_area_reference import triangulate_simple_polygon_ear_clip
 from .v2_8_overlay_area_continuation_contract import V2_8_OVERLAY_AREA_CONTINUATION_CLAIM_BOUNDARY
+from .v2_8_overlay_area_continuation_contract import V2_8_OVERLAY_AREA_ROW_ABS_TOLERANCE
 from .v2_8_overlay_area_continuation_contract import V2_8_OVERLAY_AREA_SCALAR_TARGET
 from .v2_8_overlay_area_continuation_contract import V2_8_OVERLAY_AREA_TOPOLOGY_INPUT_STATUS
 from .v2_8_overlay_area_continuation_contract import V2_8_OVERLAY_AREA_UNSUPPORTED_TOPOLOGY_STATUS
@@ -481,7 +482,13 @@ def evaluate_prepared_overlay_area_scalar(
     pair_rows: Sequence[PreparedOverlayAreaPairRow],
     *,
     eps: float = 1.0e-12,
+    row_positive_threshold: float | None = None,
 ) -> PreparedOverlayAreaEvaluationResult:
+    positive_threshold = (
+        V2_8_OVERLAY_AREA_ROW_ABS_TOLERANCE
+        if row_positive_threshold is None
+        else float(row_positive_threshold)
+    )
     row_areas: list[float] = []
     total_triangle_pairs = 0
     for row in pair_rows:
@@ -496,7 +503,7 @@ def evaluate_prepared_overlay_area_scalar(
     return PreparedOverlayAreaEvaluationResult(
         row_areas=tuple(row_areas),
         total_area=sum(row_areas),
-        positive_row_count=sum(1 for area in row_areas if area > eps),
+        positive_row_count=sum(1 for area in row_areas if area > positive_threshold),
         triangle_pair_count=total_triangle_pairs,
     )
 
@@ -508,9 +515,15 @@ def evaluate_prepared_overlay_area_scalar_tiled(
     *,
     max_triangle_pairs_per_tile: int,
     eps: float = 1.0e-12,
+    row_positive_threshold: float | None = None,
 ) -> PreparedOverlayAreaTiledEvaluationResult:
     if max_triangle_pairs_per_tile <= 0:
         raise ValueError("max_triangle_pairs_per_tile must be positive; scratch capacity must fail closed")
+    positive_threshold = (
+        V2_8_OVERLAY_AREA_ROW_ABS_TOLERANCE
+        if row_positive_threshold is None
+        else float(row_positive_threshold)
+    )
 
     row_areas: list[float] = []
     total_triangle_pairs = 0
@@ -541,7 +554,7 @@ def evaluate_prepared_overlay_area_scalar_tiled(
     return PreparedOverlayAreaTiledEvaluationResult(
         row_areas=tuple(row_areas),
         total_area=sum(row_areas),
-        positive_row_count=sum(1 for area in row_areas if area > eps),
+        positive_row_count=sum(1 for area in row_areas if area > positive_threshold),
         triangle_pair_count=total_triangle_pairs,
         tile_count=tile_count,
         max_triangle_pairs_per_tile=max_triangle_pairs_per_tile,
