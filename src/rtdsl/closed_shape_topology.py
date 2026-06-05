@@ -13,6 +13,8 @@ OWNER_FACE_SELECTION_STATUS_CODES = {
     "ambiguous_priority_tie": 4,
 }
 
+_CUPY_EXACT_CLOSED_SHAPE_CANDIDATE_REFINE_KERNEL = None
+
 
 def _int_set(value: int | Iterable[int]) -> frozenset[int]:
     if isinstance(value, bool):
@@ -38,6 +40,217 @@ def _candidate_ids(row: Mapping[str, Any]) -> tuple[int, int]:
         raise KeyError("candidate row must expose shape_id or right_id")
 
     return int(point_id), int(shape_id)
+
+
+def _record_value(record: object, name: str) -> object:
+    if isinstance(record, Mapping):
+        return record[name]
+    return getattr(record, name)
+
+
+def _cupy_exact_closed_shape_candidate_refine_kernel(cupy):
+    global _CUPY_EXACT_CLOSED_SHAPE_CANDIDATE_REFINE_KERNEL
+    if _CUPY_EXACT_CLOSED_SHAPE_CANDIDATE_REFINE_KERNEL is None:
+        _CUPY_EXACT_CLOSED_SHAPE_CANDIDATE_REFINE_KERNEL = cupy.RawKernel(
+            r'''
+extern "C" __global__
+void exact_closed_shape_candidate_refine(
+    const long long* candidate_point_ids,
+    const long long* candidate_shape_ids,
+    const long long candidate_count,
+    const double* point_x_by_id,
+    const double* point_y_by_id,
+    const int* shape_offset_by_id,
+    const int* shape_count_by_id,
+    const double* vertices_x,
+    const double* vertices_y,
+    long long* output_point_ids,
+    long long* output_shape_ids,
+    unsigned int* output_count)
+{
+    const long long row = (long long)blockDim.x * (long long)blockIdx.x + (long long)threadIdx.x;
+    if (row >= candidate_count) return;
+    const long long point_id = candidate_point_ids[row];
+    const long long shape_id = candidate_shape_ids[row];
+    if (point_id < 0 || shape_id < 0) return;
+    const double px = point_x_by_id[point_id];
+    const double py = point_y_by_id[point_id];
+    const int off = shape_offset_by_id[shape_id];
+    const int n = shape_count_by_id[shape_id];
+    if (off < 0 || n < 3) return;
+
+    const double eps = 1.0e-12;
+    for (int i = 0; i < n; ++i) {
+        const int j = (i + 1) % n;
+        const double ax = vertices_x[off + i];
+        const double ay = vertices_y[off + i];
+        const double bx = vertices_x[off + j];
+        const double by = vertices_y[off + j];
+        const double dx = bx - ax;
+        const double dy = by - ay;
+        const double len2 = dx * dx + dy * dy;
+        bool on_segment = false;
+        if (len2 <= eps * eps) {
+            on_segment = fabs(px - ax) <= eps && fabs(py - ay) <= eps;
+        } else {
+            const double len = sqrt(len2);
+            const double cross = (px - ax) * dy - (py - ay) * dx;
+            const double dot = (px - ax) * dx + (py - ay) * dy;
+            const double along_eps = eps * len;
+            on_segment = fabs(cross) <= eps * len && dot >= -along_eps && dot <= len2 + along_eps;
+        }
+        if (on_segment) {
+            const unsigned int slot = atomicAdd(output_count, 1u);
+            output_point_ids[slot] = point_id;
+            output_shape_ids[slot] = shape_id;
+            return;
+        }
+    }
+
+    bool inside = false;
+    for (int i = 0, j = n - 1; i < n; j = i++) {
+        const double xi = vertices_x[off + i];
+        const double yi = vertices_y[off + i];
+        const double xj = vertices_x[off + j];
+        const double yj = vertices_y[off + j];
+        if ((yi > py) != (yj > py)) {
+            const double denom = (yj - yi) != 0.0 ? (yj - yi) : 1.0e-20;
+            const double x_cross = (xj - xi) * (py - yi) / denom + xi;
+            if (px <= x_cross) {
+                inside = !inside;
+            }
+        }
+    }
+    if (inside) {
+        const unsigned int slot = atomicAdd(output_count, 1u);
+        output_point_ids[slot] = point_id;
+        output_shape_ids[slot] = shape_id;
+    }
+}
+''',
+            "exact_closed_shape_candidate_refine",
+        )
+    return _CUPY_EXACT_CLOSED_SHAPE_CANDIDATE_REFINE_KERNEL
+
+
+def refine_closed_shape_membership_candidate_columns_exact_cupy(
+    candidate_columns: object,
+    points: Sequence[object],
+    shapes: Sequence[object],
+    *,
+    sort_output: bool = True,
+) -> dict[str, object]:
+    """Filter generic point/closed-shape candidate columns with a CuPy exact predicate.
+
+    This helper is a partner proof for a future native device refinement stage.
+    RTDL still treats the native candidate stream as a broad-phase/superset
+    producer. The helper keeps the refinement on the CUDA device, but it does
+    not authorize a native exact-device predicate, default route, or release
+    claim.
+    """
+
+    try:
+        import cupy as cp  # type: ignore
+    except Exception as exc:  # pragma: no cover
+        raise RuntimeError("CuPy is required for exact closed-shape candidate refinement") from exc
+
+    if hasattr(candidate_columns, "as_cupy_columns"):
+        column_map = candidate_columns.as_cupy_columns()
+        field_names = getattr(candidate_columns, "field_names", ("point_id", "shape_id"))
+        raw_point_ids = column_map[field_names[0]]
+        raw_shape_ids = column_map[field_names[1]]
+    elif isinstance(candidate_columns, Mapping):
+        raw_point_ids = candidate_columns.get("point_id", candidate_columns.get("left_id"))
+        raw_shape_ids = candidate_columns.get("shape_id", candidate_columns.get("right_id"))
+        if raw_point_ids is None or raw_shape_ids is None:
+            raise KeyError("candidate column mapping must expose point_id/shape_id or left_id/right_id")
+    else:
+        raise TypeError("candidate_columns must be an OptixNativeDevicePairColumnOutput or a column mapping")
+
+    candidate_point_ids = cp.asarray(raw_point_ids, dtype=cp.int64)
+    candidate_shape_ids = cp.asarray(raw_shape_ids, dtype=cp.int64)
+    if int(candidate_point_ids.size) != int(candidate_shape_ids.size):
+        raise ValueError("candidate point and shape columns must have equal length")
+
+    point_records = tuple(points)
+    shape_records = tuple(shapes)
+    max_point_id = max((int(_record_value(point, "id")) for point in point_records), default=-1)
+    max_shape_id = max((int(_record_value(shape, "id")) for shape in shape_records), default=-1)
+    if int(candidate_point_ids.size):
+        max_point_id = max(max_point_id, int(cp.max(candidate_point_ids).item()))
+        max_shape_id = max(max_shape_id, int(cp.max(candidate_shape_ids).item()))
+
+    point_x_by_id = [0.0] * (max_point_id + 1)
+    point_y_by_id = [0.0] * (max_point_id + 1)
+    for point in point_records:
+        point_id = int(_record_value(point, "id"))
+        point_x_by_id[point_id] = float(_record_value(point, "x"))
+        point_y_by_id[point_id] = float(_record_value(point, "y"))
+
+    shape_offset_by_id = [-1] * (max_shape_id + 1)
+    shape_count_by_id = [0] * (max_shape_id + 1)
+    vertices_x: list[float] = []
+    vertices_y: list[float] = []
+    for shape in shape_records:
+        shape_id = int(_record_value(shape, "id"))
+        vertices = tuple(_record_value(shape, "vertices"))
+        shape_offset_by_id[shape_id] = len(vertices_x)
+        shape_count_by_id[shape_id] = len(vertices)
+        for x, y in vertices:
+            vertices_x.append(float(x))
+            vertices_y.append(float(y))
+
+    candidate_count = int(candidate_point_ids.size)
+    output_point_ids = cp.empty((candidate_count,), dtype=cp.int64)
+    output_shape_ids = cp.empty((candidate_count,), dtype=cp.int64)
+    output_count = cp.zeros((1,), dtype=cp.uint32)
+    if candidate_count:
+        kernel = _cupy_exact_closed_shape_candidate_refine_kernel(cp)
+        block = 256
+        grid = (candidate_count + block - 1) // block
+        kernel(
+            (grid,),
+            (block,),
+            (
+                candidate_point_ids,
+                candidate_shape_ids,
+                candidate_count,
+                cp.asarray(point_x_by_id, dtype=cp.float64),
+                cp.asarray(point_y_by_id, dtype=cp.float64),
+                cp.asarray(shape_offset_by_id, dtype=cp.int32),
+                cp.asarray(shape_count_by_id, dtype=cp.int32),
+                cp.asarray(vertices_x, dtype=cp.float64),
+                cp.asarray(vertices_y, dtype=cp.float64),
+                output_point_ids,
+                output_shape_ids,
+                output_count,
+            ),
+        )
+    row_count = int(output_count[0].item())
+    point_out = output_point_ids[:row_count]
+    shape_out = output_shape_ids[:row_count]
+    if sort_output and row_count > 1:
+        order = cp.lexsort(cp.stack((shape_out, point_out)))
+        point_out = point_out[order]
+        shape_out = shape_out[order]
+
+    return {
+        "point_id": point_out,
+        "shape_id": shape_out,
+        "membership": cp.ones((row_count,), dtype=cp.int64),
+        "row_count": row_count,
+        "candidate_row_count": candidate_count,
+        "dropped_candidate_row_count": candidate_count - row_count,
+        "partner": "cupy",
+        "predicate": "double_closed_shape_membership",
+        "output_residency": "partner_device_refined_columns",
+        "host_refined_rows_materialized": False,
+        "native_exact_device_row_stream_produced": False,
+        "true_zero_copy_claim_authorized": False,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+    }
 
 
 def topology_rows_by_shape_id(
