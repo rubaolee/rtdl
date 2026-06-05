@@ -50,6 +50,26 @@ The pod artifact will be:
 
 `docs/reports/goal3417_runtime_page_plan_probe_2026-06-04.json`
 
+It was produced on commit `15970d94` with an NVIDIA RTX A5000 and driver
+`580.126.09`.
+
+| Measure | Value |
+| --- | ---: |
+| points | 16545 |
+| shapes | 15700 |
+| page size | 2048 |
+| pages | 9 |
+| overflowed pages | 9 |
+| retried pages | 9 |
+| host exact rows | 47262 |
+| device grouped source rows | 47262 |
+| host groups | 16476 |
+| device groups | 16476 |
+| missing/extra/mismatched groups | 0/0/0 |
+
+The artifact confirms that the runtime page plan used one packed point buffer,
+called `produce_page(...)`, and preserved all claim boundaries as false.
+
 ## Next Target
 
 The remaining native graduation shape is still:
