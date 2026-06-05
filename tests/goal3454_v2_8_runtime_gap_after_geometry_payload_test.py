@@ -24,8 +24,9 @@ class Goal3454V28RuntimeGapAfterGeometryPayloadTest(unittest.TestCase):
 
         for phrase in (
             "Goal3453 exposed generic left/right geometry payload columns",
-            "bounded exact relation witnesses",
-            "overlay-area continuation that consume those payload columns",
+            "Goal3456 proved a generic CuPy bounds-overlap area continuation",
+            "exact polygon relation witnesses",
+            "exact overlay-area continuation",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, spatial["current_bottleneck"])

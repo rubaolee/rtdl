@@ -7,42 +7,40 @@ import rtdsl as rt
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REPORT = ROOT / "docs" / "reports" / "goal3451_v2_8_runtime_gap_after_relation_columns_content_2026-06-05.md"
+REPORT = ROOT / "docs" / "reports" / "goal3457_v2_8_runtime_gap_after_bounds_overlap_continuation_2026-06-05.md"
 
 
-class Goal3451V28RuntimeGapAfterRelationColumnsContentTest(unittest.TestCase):
-    def test_spatial_rayjoin_gap_row_records_relation_columns_and_grouped_count(self) -> None:
+class Goal3457V28RuntimeGapAfterBoundsOverlapContinuationTest(unittest.TestCase):
+    def test_spatial_rayjoin_gap_row_records_ordinals_and_bounds_area_continuation(self) -> None:
         rows = {row["benchmark_app"]: row for row in rt.v2_8_benchmark_runtime_gap_matrix()}
         spatial = rows["spatial_rayjoin"]
 
         for phrase in (
-            "generic resident active relation columns",
-            "left/right ids plus segment/containment dependency flags",
-            "generic compact grouped-count continuation by id",
+            "zero-based ordinal columns",
+            "sparse ids safe for payload indexing",
+            "CuPy bounds-overlap area continuation",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, spatial["current_best_path"])
 
         for phrase in (
-            "Goal3447/3449 added resident active relation columns plus generic grouped-count continuation",
-            "Goal3450 proved the resident relation column content",
-            "exact polygon relation witnesses",
-            "overlay-area continuation",
-            "large-scale content-reference oracles",
+            "Goal3455 added ordinal columns",
+            "Goal3456 proved a generic CuPy bounds-overlap area continuation",
+            "Remaining work is exact polygon relation witnesses",
+            "exact overlay-area continuation",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, spatial["current_bottleneck"])
 
-        for goal in ("Goal3447", "Goal3448", "Goal3449", "Goal3450"):
+        for goal in ("Goal3455", "Goal3456"):
             with self.subTest(goal=goal):
                 self.assertIn(goal, spatial["evidence_refs"])
 
-    def test_spatial_rayjoin_gap_row_keeps_boundaries_closed(self) -> None:
+    def test_gap_map_still_blocks_claims(self) -> None:
         validation = rt.validate_v2_8_benchmark_runtime_gap_map()
         spatial = {row["benchmark_app"]: row for row in rt.v2_8_benchmark_runtime_gap_matrix()}["spatial_rayjoin"]
 
         self.assertEqual(validation["status"], "accept", validation)
-        self.assertIn("bounded witness continuation", spatial["generic_runtime_target"])
         for field in (
             "app_specific_engine_logic_allowed",
             "automatic_partner_selection_allowed",
@@ -54,18 +52,16 @@ class Goal3451V28RuntimeGapAfterRelationColumnsContentTest(unittest.TestCase):
             with self.subTest(field=field):
                 self.assertFalse(spatial[field])
 
-    def test_report_records_status_correction_and_remaining_work(self) -> None:
+    def test_report_records_remaining_exact_overlay_gap(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
 
         for phrase in (
-            "Goal3451",
-            "status-map correction",
-            "generic resident active relation columns",
-            "sparse-id content correctness",
-            "exact relation witnesses",
-            "overlay-area continuation",
+            "Goal3457",
+            "real payload-consumption milestone",
+            "not exact polygon overlay area",
+            "exact polygon relation witnesses",
+            "exact overlay-area continuation",
             "does not authorize",
-            "app-specific native-engine logic",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)
