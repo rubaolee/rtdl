@@ -172,17 +172,43 @@ def _summarize_version(
     return rows
 
 
+def _promoted_equivalence(row_id: str) -> dict[str, str | None]:
+    mapping: dict[str, dict[str, str | None]] = {
+        "rayjoin_count_parity_pip_prepared_optix": {
+            "v23_equivalent_status": "common_scalar_contract_measured",
+            "v23_baseline_row_id": "rayjoin_common_pip_prepared_optix_count",
+        },
+        "rayjoin_count_parity_overlay_seed_active_count": {
+            "v23_equivalent_status": "common_scalar_output_contract_measured_but_v2_8_route_is_device_continuation_variant",
+            "v23_baseline_row_id": "rayjoin_common_overlay_seed_prepared_optix_active_count",
+        },
+        "rayjoin_count_parity_lsi_left_id_dense_count": {
+            "v23_equivalent_status": "no_same_contract_v23_has_scalar_total_lsi_count_only",
+            "v23_baseline_row_id": "rayjoin_common_lsi_prepared_optix_scalar_count",
+        },
+    }
+    return mapping.get(
+        row_id,
+        {
+            "v23_equivalent_status": "no_equivalent_contract_in_v23_evidence_checkout",
+            "v23_baseline_row_id": None,
+        },
+    )
+
+
 def _promoted_rows_from_packet(path: Path) -> list[dict[str, Any]]:
     if not path.exists():
         return []
     packet = json.loads(path.read_text(encoding="utf-8"))
     promoted = []
     for row in packet.get("rows", []):
+        equivalence = _promoted_equivalence(str(row["row_id"]))
         promoted.append(
             {
                 "row_id": row["row_id"],
                 "contract": row["contract"],
-                "v23_equivalent_status": "no_equivalent_contract_in_v23_evidence_checkout",
+                "v23_equivalent_status": equivalence["v23_equivalent_status"],
+                "v23_baseline_row_id": equivalence["v23_baseline_row_id"],
                 "v28_metric_sec": row.get("primary_metric_sec"),
                 "v28_metric_source": row.get("primary_metric_source"),
                 "claim_boundary": _claim_boundary(),

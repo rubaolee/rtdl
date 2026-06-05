@@ -47,6 +47,9 @@ class Goal3534RayJoinV23ContractBaselineProbeTest(unittest.TestCase):
         text = SCRIPT.read_text(encoding="utf-8")
         for phrase in (
             "no_equivalent_contract_in_v23_evidence_checkout",
+            "common_scalar_contract_measured",
+            "common_scalar_output_contract_measured_but_v2_8_route_is_device_continuation_variant",
+            "no_same_contract_v23_has_scalar_total_lsi_count_only",
             "prepared_optix",
             "median(phases_sec.prepared_query_sec)",
             "public_speedup_claim_authorized",
