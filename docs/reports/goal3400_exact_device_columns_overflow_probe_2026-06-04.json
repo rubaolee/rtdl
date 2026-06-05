@@ -22,7 +22,7 @@
   "point_count": 4096,
   "relation_row_count": 11316,
   "row_count": 0,
-  "rtdl_commit": "1afa859588e7660dc619f8fd2ffaf464799ffb16",
+  "rtdl_commit": "3b09c58ab9750df289f4991437803bd67f8f5a53",
   "schema": "rtdl.goal3400.exact_device_columns_overflow_probe.v1",
   "shape_count": 3762
 }

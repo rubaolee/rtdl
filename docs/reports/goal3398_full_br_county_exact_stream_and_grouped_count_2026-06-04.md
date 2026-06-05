@@ -19,7 +19,7 @@ Artifacts:
 Pod: NVIDIA RTX A5000, driver 580.126.09
 
 Source commit:
-`7ff13999c5764bf486f8488f6d93555ecc9bece9`
+`3b09c58ab9750df289f4991437803bd67f8f5a53`
 
 ## Exact Device Columns
 

@@ -31,9 +31,9 @@
       "exact_relation_witness_rows_materialized": false,
       "host_refined_exact_rows_inside_native_bridge": true,
       "output_residency": "device_resident_exact_id_columns",
-      "owner_handle": 145378464,
+      "owner_handle": 141297744,
       "relation_row_count": 47262,
-      "traversal_seconds": 0.00584341,
+      "traversal_seconds": 0.00585997,
       "true_zero_copy_authorized": false
     },
     "typed_result_stream": {
@@ -267,7 +267,7 @@
     },
     "v2_8_typed_producer_metadata": {
       "candidate_event_count": 47262,
-      "capacity": 259756500,
+      "capacity": 47262,
       "claim_boundary": "v2.8 geometry-relation typed producer metadata records generic row schemas for prepared geometry outputs. It does not authorize release, public speedup wording, RT-core speedup wording, true-zero-copy wording, hidden dispatch, hidden partner selection, paper reproduction claims, or app-specific native-engine behavior.",
       "column_names": [
         "point_id",
@@ -301,10 +301,10 @@
   "overflow": false,
   "pairs_match_exact_rows": true,
   "point_count": 16545,
-  "rtdl_commit": "7ff13999c5764bf486f8488f6d93555ecc9bece9",
+  "rtdl_commit": "3b09c58ab9750df289f4991437803bd67f8f5a53",
   "schema": "rtdl.goal3394.optix_exact_membership_device_columns_live_probe.v1",
   "shape_count": 15700,
   "source_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county.cdb",
   "start": 0,
-  "traversal_seconds": 0.00584341
+  "traversal_seconds": 0.00585997
 }
