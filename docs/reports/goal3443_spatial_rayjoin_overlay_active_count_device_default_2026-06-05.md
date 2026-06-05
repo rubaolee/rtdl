@@ -1,7 +1,7 @@
 # Goal3443 Spatial RayJoin Overlay Active-Count Device Default
 
 **Date:** 2026-06-05
-**Status:** implemented; pod artifact pending
+**Status:** implemented and pod-validated
 **Scope:** app-layer reference-route default for the prepared overlay active-count workload
 
 ## Purpose
@@ -44,3 +44,21 @@ py -3 -m py_compile examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjo
 Pod validation should rerun the Goal3438 prepared subroute probe from current
 `main` and confirm the overlay active-count route now records
 `active_count_device_continuation_sec` with stable counts.
+
+Pod artifact:
+
+- `docs/reports/goal3443_spatial_rayjoin_overlay_active_count_device_default_pod_2026-06-05.json`
+- `docs/reports/goal3443_spatial_rayjoin_overlay_active_count_device_default_pod_2026-06-05.stdout`
+
+Pod result on `NVIDIA RTX A5000, 580.126.09`, commit
+`da48c460438b09fa7ae59c7976570ccdd11738f0`:
+
+| Subroute | Stable count | Warm median seconds | Notes |
+| --- | ---: | ---: | --- |
+| PIP candidate columns | `47,570` candidates / `47,262` rows | `0.021088` candidate, `0.001277` CuPy refine | Cold first iteration recorded separately |
+| LSI dense count | `101,407` intersections | `0.002361` | Cold first iteration recorded separately |
+| Overlay active count default | `4,543` active pairs | `0.005458` | Uses `active_count_device_continuation_sec`; first iteration `0.327948s` paid cold module/first-use cost |
+
+The overlay default route now reports native timing mode
+`active_count_device_continuation`, and only the scalar active count is copied
+back. All claim-boundary flags in the artifact remain false.
