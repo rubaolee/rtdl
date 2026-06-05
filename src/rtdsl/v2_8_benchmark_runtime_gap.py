@@ -120,20 +120,36 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "primitive-first scalar count/parity and first-hit paths; direct v2.8 compact-mask "
             "typed-stream front door for explicit candidate-row filtering; generic 2-D relation-row "
             "typed producer metadata for prepared shape/segment row views; generic prepared "
-            "shape-pair active-count route for overlay-seed scalar summaries"
+            "shape-pair active-count route for overlay-seed scalar summaries; instance-aware "
+            "closed-shape candidate columns plus prepared CuPy exact refiner for PIP row/count "
+            "continuation"
         ),
-        partner_position="Numba is the recommended custom continuation when row-stream compaction is part of the app.",
+        partner_position=(
+            "Numba is the recommended custom continuation when row-stream compaction is part of the app; "
+            "CuPy is the measured prepared closed-shape refinement partner for exact PIP continuation."
+        ),
         current_bottleneck=(
             "compact-mask continuation now has a direct caller-column front door, and generic "
             "relation-row typed producer metadata now exists for host row views; overlay active-count "
-            "mode now skips final host row allocation. Remaining work is device-resident relation-row "
-            "output, parity/count grouping over resident rows, and boundary-witness ownership at "
-            "serious scale."
+            "mode now skips final host row allocation; PIP closed-shape exact continuation now has "
+            "instance-aware candidate columns and a prepared CuPy refiner with pod timing evidence. "
+            "Remaining work is device-resident relation-row output beyond PIP, parity/count grouping "
+            "over resident rows, and boundary-witness ownership at serious scale."
         ),
         generic_runtime_target="typed hit streams with grouped parity/count and compact-mask continuation",
         target_family=V2_8_FIRST_RUNTIME_TARGET,
         priority="P0",
-        evidence_refs=("Goal3003", "Goal3052", "Goal3147", "Goal3171", "Goal3181", "Goal3183"),
+        evidence_refs=(
+            "Goal3003",
+            "Goal3052",
+            "Goal3147",
+            "Goal3171",
+            "Goal3181",
+            "Goal3183",
+            "Goal3424",
+            "Goal3427",
+            "Goal3428",
+        ),
     ),
     V28BenchmarkRuntimeGapRow(
         benchmark_app="rt_dbscan",

@@ -102,6 +102,25 @@ Use `--result-mode count` when the application only needs a scalar count. Use
 `--result-mode rows` when it needs witness rows or positive membership rows.
 Rows are still omitted from JSON when `--no-rows` is supplied.
 
+For PIP rows or counts that need the v2.8 typed-stream plus partner-continuation
+path, use:
+
+```bash
+export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py --workload pip --execution-route prepared_optix_cupy_refined_pip --result-mode count --no-rows
+```
+
+This route produces generic OptiX point/closed-shape candidate columns with
+instance identity ordinals, then filters them through a prepared CuPy simple-ring
+refiner. It is useful for repeated exact PIP continuation because the point,
+shape, and vertex lookup arrays are uploaded once into the prepared CuPy
+refiner. Use `--candidate-max-rows` to set the fail-closed candidate capacity
+for large external CDB files.
+
+The route is still app-layer Python+CuPy policy over generic RTDL primitives.
+It does not make the native engine RayJoin-specific and does not authorize a
+full RayJoin paper reproduction or public speedup claim by itself.
+
 For LSI workloads that need counts per left segment instead of exact witness
 rows, use the compact grouped-count route:
 
