@@ -1219,6 +1219,70 @@ def run_selective_closed_shape_boundary_event_membership_pipeline_cupy(
     }
 
 
+def materialize_closed_shape_membership_rows_as_cupy_columns(
+    rows: Iterable[Mapping[str, Any]],
+    *,
+    source_protocol: str = "host_refined_exact_rows",
+    sort_output: bool = True,
+) -> dict[str, object]:
+    """Upload exact closed-shape membership rows into CuPy columns.
+
+    This is a bounded bridge for partner continuations that need exact
+    membership rows today. It does not claim true zero-copy or a native exact
+    device-row producer: callers have already materialized exact rows on the
+    host, typically through an RTDL backend's exact prepared run path.
+    """
+
+    try:
+        import cupy as cp  # type: ignore
+    except Exception as exc:  # pragma: no cover
+        raise RuntimeError("CuPy is required to materialize exact membership rows as partner columns") from exc
+
+    point_values: list[int] = []
+    shape_values: list[int] = []
+    membership_values: list[int] = []
+    for row in rows:
+        if "point_id" in row:
+            point_id = row["point_id"]
+        elif "left_id" in row:
+            point_id = row["left_id"]
+        else:
+            raise KeyError("membership row must expose point_id or left_id")
+        if "shape_id" in row:
+            shape_id = row["shape_id"]
+        elif "right_id" in row:
+            shape_id = row["right_id"]
+        else:
+            raise KeyError("membership row must expose shape_id or right_id")
+        point_values.append(int(point_id))
+        shape_values.append(int(shape_id))
+        membership_values.append(int(row.get("membership", 1)))
+
+    point_out = cp.asarray(point_values, dtype=cp.int64)
+    shape_out = cp.asarray(shape_values, dtype=cp.int64)
+    membership_out = cp.asarray(membership_values, dtype=cp.int64)
+    if sort_output and int(point_out.size) > 1:
+        order = cp.lexsort(cp.stack((shape_out, point_out)))
+        point_out = point_out[order]
+        shape_out = shape_out[order]
+        membership_out = membership_out[order]
+
+    return {
+        "point_id": point_out,
+        "shape_id": shape_out,
+        "membership": membership_out,
+        "row_count": int(point_out.size),
+        "source_protocol": str(source_protocol),
+        "output_residency": "partner_device_after_host_refine_upload",
+        "host_refined_rows_materialized": True,
+        "native_exact_device_row_stream_produced": False,
+        "true_zero_copy_claim_authorized": False,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+    }
+
+
 def owner_face_ids_by_point_from_selection_rows(
     selection_rows: Iterable[Mapping[str, Any]],
     *,

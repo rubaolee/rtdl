@@ -603,6 +603,7 @@ from .closed_shape_topology import derive_owner_face_priority_rows_from_rank_sig
 from .closed_shape_topology import filter_closed_shape_membership_candidate_columns_by_owner_face_columns
 from .closed_shape_topology import filter_closed_shape_membership_candidate_columns_by_owner_face_cupy
 from .closed_shape_topology import filter_closed_shape_membership_candidates_by_owner_face
+from .closed_shape_topology import materialize_closed_shape_membership_rows_as_cupy_columns
 from .closed_shape_topology import owner_face_ids_by_point_from_selection_rows
 from .closed_shape_topology import owner_face_membership_contract
 from .closed_shape_topology import owner_face_priority_pipeline_contract
@@ -2356,6 +2357,7 @@ __all__ = [
     "filter_closed_shape_membership_candidate_columns_by_owner_face_columns",
     "filter_closed_shape_membership_candidate_columns_by_owner_face_cupy",
     "filter_closed_shape_membership_candidates_by_owner_face",
+    "materialize_closed_shape_membership_rows_as_cupy_columns",
     "owner_face_ids_by_point_from_selection_rows",
     "owner_face_membership_contract",
     "owner_face_priority_pipeline_contract",
