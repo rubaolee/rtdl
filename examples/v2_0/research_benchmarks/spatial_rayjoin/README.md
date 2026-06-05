@@ -207,8 +207,11 @@ print(repeated_payload["summary"])
 ```
 
 This handle uses generic prepared shape-pair relation flags plus a generic
-active-count reduction. It is for overlay-seed scalar summaries; full overlay
-row continuation remains a separate app-layer concern.
+device-side active-count continuation by default: relation flags stay on device,
+containment and reduction run in a generic CUDA continuation, and only the scalar count is copied back.
+It is for overlay-seed scalar summaries; full overlay row continuation remains a separate app-layer concern. Use
+`prepared.run_packed_left_host_exact(...)` when you need the host exact oracle
+path for debugging or validation.
 
 For a single external two-input dataset:
 

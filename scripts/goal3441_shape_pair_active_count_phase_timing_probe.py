@@ -70,7 +70,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     ) as prepared:
         packed_left = pack_rayjoin_optix_shape_pair_active_count_left_shapes(left_shapes)
         for index in range(int(args.iterations)):
-            payload = prepared.run_packed_left(packed_left)
+            payload = prepared.run_packed_left_host_exact(packed_left)
             timings = dict(payload["native_phase_timings"] or {})
             active_count = int(payload["row_count"])
             elapsed = float(payload["phases_sec"]["active_count_sec"])

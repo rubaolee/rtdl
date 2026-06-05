@@ -61,7 +61,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     ) as prepared:
         packed_left = pack_rayjoin_optix_shape_pair_active_count_left_shapes(left_shapes)
         for index in range(int(args.iterations)):
-            host_payload = prepared.run_packed_left(packed_left)
+            host_payload = prepared.run_packed_left_host_exact(packed_left)
             device_payload = prepared.run_packed_left_device_continuation(packed_left)
             host_count = int(host_payload["row_count"])
             device_count = int(device_payload["row_count"])

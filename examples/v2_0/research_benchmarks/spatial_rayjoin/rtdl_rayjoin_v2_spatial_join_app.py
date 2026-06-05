@@ -1684,6 +1684,17 @@ class PreparedRayJoinOptixShapePairActiveCount:
         *,
         dataset_note: str | None = None,
     ) -> dict[str, object]:
+        return self.run_packed_left_device_continuation(
+            packed_left,
+            dataset_note=dataset_note,
+        )
+
+    def run_packed_left_host_exact(
+        self,
+        packed_left: RayJoinOptixShapePairActiveCountPackedLeftShapes,
+        *,
+        dataset_note: str | None = None,
+    ) -> dict[str, object]:
         if self._closed:
             raise RuntimeError("prepared RayJoin shape-pair active-count handle is closed")
         if not isinstance(packed_left, RayJoinOptixShapePairActiveCountPackedLeftShapes):

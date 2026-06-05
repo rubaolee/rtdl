@@ -56,12 +56,14 @@ class Goal3442ShapePairActiveCountDeviceContinuationTest(unittest.TestCase):
         ):
             self.assertIn(phrase, runtime)
         for phrase in (
+            "def run_packed_left_host_exact(",
             "def run_packed_left_device_continuation(",
             "active_count_device_continuation_sec",
             "prepared_optix_shape_pair_active_count_device_continuation_reuse",
             "only the scalar count is copied back",
         ):
             self.assertIn(phrase, app)
+        self.assertIn("return self.run_packed_left_device_continuation(", app)
 
     def test_probe_and_report_keep_claim_boundaries_and_oracle_comparison(self) -> None:
         script = SCRIPT.read_text(encoding="utf-8")

@@ -170,7 +170,12 @@ def _run_overlay(args: argparse.Namespace, county_dataset, soil_dataset) -> dict
         for index in range(int(args.iterations)):
             payload = prepared.run_packed_left(packed_left)
             row_count = int(payload["row_count"])
-            phase = float(payload["phases_sec"]["active_count_sec"])
+            phase = float(
+                payload["phases_sec"].get(
+                    "active_count_device_continuation_sec",
+                    payload["phases_sec"].get("active_count_sec", 0.0),
+                )
+            )
             row_counts.append(row_count)
             active_count_times.append(phase)
             runs.append(
