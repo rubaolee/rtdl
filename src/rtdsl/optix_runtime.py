@@ -217,6 +217,9 @@ OPTIX_RELEASE_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL = (
 OPTIX_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_prepared_point_closed_shape_membership_candidate_device_columns_2d"
 )
+OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL = (
+    "rtdl_optix_prepared_point_closed_shape_membership_exact_device_columns_2d"
+)
 OPTIX_CLOSED_SHAPE_MEMBERSHIP_POINT_ID_COUNT_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_prepared_point_closed_shape_membership_point_id_count_device_columns_2d"
 )
@@ -255,6 +258,9 @@ OPTIX_CLOSED_SHAPE_FIRST_BOUNDARY_CROSSING_DEVICE_COLUMNS_SYMBOL = (
 )
 OPTIX_RELEASE_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_release_point_closed_shape_membership_candidate_device_columns_2d"
+)
+OPTIX_RELEASE_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL = (
+    "rtdl_optix_release_point_closed_shape_membership_exact_device_columns_2d"
 )
 OPTIX_RELEASE_CLOSED_SHAPE_BOUNDARY_EVENT_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_release_point_closed_shape_boundary_event_device_columns_2d"
@@ -10626,6 +10632,84 @@ class PreparedOptixPointClosedShapeMembership2D:
             field_names=("point_id", "shape_id"),
         )
 
+    def exact_device_columns(
+        self,
+        points,
+        *,
+        max_rows: int | None = None,
+    ) -> OptixNativeDevicePairColumnOutput:
+        """Return exact point/shape membership columns on the CUDA device.
+
+        This bridge uses the backend's existing exact host-refined membership
+        path, then uploads the exact pair ids to device columns. It is a
+        partner-consumable exact row stream, not a true device-only exact
+        predicate and not a true-zero-copy claim.
+        """
+        if self._closed:
+            raise RuntimeError("prepared OptiX closed-shape membership handle is closed")
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        release_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_RELEASE_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL,
+        )
+        if release_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_RELEASE_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        packed_points = points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
+        if packed_points.dimension != 2:
+            raise ValueError("PreparedOptixPointClosedShapeMembership2D.exact_device_columns requires 2-D points")
+        capacity = int(
+            max_rows
+            if max_rows is not None
+            else max(1, int(packed_points.count) * int(self._packed_shapes.polygon_count))
+        )
+        if capacity < 0:
+            raise ValueError("max_rows must be non-negative")
+
+        columns = _RtdlNativeDevicePairColumns()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            packed_points.records,
+            packed_points.count,
+            ctypes.c_size_t(capacity),
+            ctypes.byref(columns),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        owner = _OptixNativeDevicePairColumnsOwner(
+            self._lib,
+            columns.owner_handle,
+            release_symbol_name=OPTIX_RELEASE_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL,
+        )
+        return OptixNativeDevicePairColumnOutput(
+            library=self._lib,
+            owner=owner,
+            left_ids_device_ptr=int(columns.left_ids_device_ptr),
+            right_ids_device_ptr=int(columns.right_ids_device_ptr),
+            row_count=int(columns.row_count),
+            capacity=int(columns.capacity),
+            candidate_event_count=int(columns.candidate_event_count),
+            overflow=bool(columns.overflow),
+            device_ordinal=int(columns.device_ordinal),
+            traversal_seconds=float(columns.traversal_seconds),
+            native_symbol=OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL,
+            field_names=("point_id", "shape_id"),
+        )
+
     def point_id_count_device_columns(
         self,
         points,
@@ -18673,6 +18757,21 @@ def _register_argtypes(lib) -> None:
         ]
         optional_closed_shape_candidate_device_columns.restype = ctypes.c_int
 
+    optional_closed_shape_exact_device_columns = _find_optional_backend_symbol(
+        lib,
+        OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL,
+    )
+    if optional_closed_shape_exact_device_columns is not None:
+        optional_closed_shape_exact_device_columns.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlNativeDevicePairColumns),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_closed_shape_exact_device_columns.restype = ctypes.c_int
+
     optional_closed_shape_point_id_count_device_columns = _find_optional_backend_symbol(
         lib,
         OPTIX_CLOSED_SHAPE_MEMBERSHIP_POINT_ID_COUNT_DEVICE_COLUMNS_SYMBOL,
@@ -18699,6 +18798,18 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_release_closed_shape_candidate_device_columns.restype = ctypes.c_int
+
+    optional_release_closed_shape_exact_device_columns = _find_optional_backend_symbol(
+        lib,
+        OPTIX_RELEASE_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL,
+    )
+    if optional_release_closed_shape_exact_device_columns is not None:
+        optional_release_closed_shape_exact_device_columns.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_release_closed_shape_exact_device_columns.restype = ctypes.c_int
 
     optional_release_closed_shape_boundary_event_device_columns = _find_optional_backend_symbol(
         lib,

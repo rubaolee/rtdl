@@ -8160,6 +8160,87 @@ static void release_point_closed_shape_membership_candidate_device_columns_2d_op
     delete reinterpret_cast<NativeClosedShapeMembershipCandidateDeviceColumnsOwner*>(owner_handle);
 }
 
+static void run_prepared_point_closed_shape_membership_exact_device_columns_2d_optix(
+        PreparedShapePairRelationBuild* prepared,
+        const RtdlPoint* points,
+        size_t point_count,
+        size_t max_rows,
+        RtdlNativeDevicePairColumns* columns_out)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared closed-shape membership handle must not be null");
+    }
+    if (!points && point_count != 0) {
+        throw std::runtime_error("point pointer must not be null when point_count is nonzero");
+    }
+    if (!columns_out) {
+        throw std::runtime_error("closed-shape exact membership device columns_out pointer must not be null");
+    }
+    if (max_rows > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("closed-shape exact membership device columns max_rows exceeds uint32 output capacity");
+    }
+
+    *columns_out = {};
+    columns_out->capacity = static_cast<uint64_t>(max_rows);
+    CUdevice current_device = 0;
+    CU_CHECK(cuCtxGetDevice(&current_device));
+    columns_out->device_ordinal = static_cast<int32_t>(current_device);
+
+    const auto bridge_start = std::chrono::steady_clock::now();
+    RtdlPointClosedShapeMembershipRow* exact_rows = nullptr;
+    size_t exact_count = 0;
+    run_prepared_point_closed_shape_membership_2d_optix(
+        prepared,
+        points,
+        point_count,
+        1u,
+        &exact_rows,
+        &exact_count);
+    std::unique_ptr<RtdlPointClosedShapeMembershipRow, decltype(&std::free)> exact_owner(exact_rows, &std::free);
+
+    columns_out->candidate_event_count = static_cast<uint64_t>(exact_count);
+    if (exact_count == 0) {
+        columns_out->row_count = 0u;
+        columns_out->overflow = 0u;
+        const auto bridge_end = std::chrono::steady_clock::now();
+        columns_out->traversal_seconds = seconds_between(bridge_start, bridge_end);
+        return;
+    }
+    if (exact_count > max_rows) {
+        columns_out->row_count = 0u;
+        columns_out->overflow = 1u;
+        const auto bridge_end = std::chrono::steady_clock::now();
+        columns_out->traversal_seconds = seconds_between(bridge_start, bridge_end);
+        return;
+    }
+
+    auto owner = std::make_unique<NativeClosedShapeMembershipCandidateDeviceColumnsOwner>();
+    CU_CHECK(cuMemAlloc(&owner->point_ids, sizeof(unsigned long long) * exact_count));
+    CU_CHECK(cuMemAlloc(&owner->shape_ids, sizeof(unsigned long long) * exact_count));
+    std::vector<unsigned long long> point_ids(exact_count);
+    std::vector<unsigned long long> shape_ids(exact_count);
+    for (size_t i = 0; i < exact_count; ++i) {
+        point_ids[i] = static_cast<unsigned long long>(exact_rows[i].point_id);
+        shape_ids[i] = static_cast<unsigned long long>(exact_rows[i].shape_id);
+    }
+    upload(owner->point_ids, point_ids.data(), exact_count);
+    upload(owner->shape_ids, shape_ids.data(), exact_count);
+
+    columns_out->left_ids_device_ptr = static_cast<uint64_t>(owner->point_ids);
+    columns_out->right_ids_device_ptr = static_cast<uint64_t>(owner->shape_ids);
+    columns_out->row_count = static_cast<uint64_t>(exact_count);
+    columns_out->overflow = 0u;
+    columns_out->owner_handle = owner.release();
+    g_optix_last_closed_shape_emitted_count = exact_count;
+    const auto bridge_end = std::chrono::steady_clock::now();
+    columns_out->traversal_seconds = seconds_between(bridge_start, bridge_end);
+}
+
+static void release_point_closed_shape_membership_exact_device_columns_2d_optix(void* owner_handle)
+{
+    delete reinterpret_cast<NativeClosedShapeMembershipCandidateDeviceColumnsOwner*>(owner_handle);
+}
+
 static void run_prepared_point_closed_shape_membership_point_id_count_device_columns_2d_optix(
         PreparedShapePairRelationBuild* prepared,
         const RtdlPoint* points,
