@@ -253,9 +253,16 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         reverse=True,
     )[:10]
 
+    schema = (
+        "rtdl.goal3493.overlay_area_active_shape_payload_construction.v1"
+        if args.active_shapes_only
+        else "rtdl.goal3492.overlay_area_public_cdb_tile_task_executor.v1"
+    )
+    goal = 3493 if args.active_shapes_only else 3492
+
     return {
-        "schema": "rtdl.goal3492.overlay_area_public_cdb_tile_task_executor.v1",
-        "goal": 3492,
+        "schema": schema,
+        "goal": goal,
         "rtdl_commit": _command_output(["git", "rev-parse", "HEAD"]),
         "gpu": _command_output(["nvidia-smi", "--query-gpu=name,driver_version", "--format=csv,noheader"]),
         "cupy_version": cp.__version__,
