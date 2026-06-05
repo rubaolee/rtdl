@@ -10,6 +10,8 @@ import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "goal3535_rayjoin_large_promoted_packet.py"
+REPORT = ROOT / "docs" / "reports" / "goal3535_rayjoin_large_promoted_packet_2026-06-05.md"
+ARTIFACT_ROOT = ROOT / "docs" / "reports" / "goal3535_rayjoin_large_promoted_packet_a5000"
 
 
 class Goal3535RayJoinLargePromotedPacketTest(unittest.TestCase):
@@ -54,6 +56,42 @@ class Goal3535RayJoinLargePromotedPacketTest(unittest.TestCase):
             "shape_count_per_side",
             "public_speedup_claim_authorized",
             "missing promoted-row metrics",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_a5000_three_scale_artifacts_are_claim_clean(self) -> None:
+        expected = {
+            32: (1024, 3969),
+            64: (4096, 16129),
+            128: (16384, 65025),
+        }
+        for grid, (shape_count, relation_rows) in expected.items():
+            payload = json.loads((ARTIFACT_ROOT / f"grid{grid}" / "summary.json").read_text(encoding="utf-8"))
+            self.assertEqual(payload["schema"], "rtdl.goal3535.rayjoin_large_promoted_packet.v1")
+            self.assertEqual(payload["generated_pair"]["shape_count_per_side"], shape_count)
+            self.assertFalse(payload["claim_boundary"]["release_authorized"])
+            self.assertFalse(payload["claim_boundary"]["rayjoin_paper_reproduction_claim_authorized"])
+            rows = {row["row_id"]: row for row in payload["promoted_rows"]}
+            self.assertEqual(rows["rayjoin_relation_columns_cdb_pair"]["row_count"], relation_rows)
+            self.assertEqual(rows["rayjoin_overlay_area_relation_stream_cdb_pair"]["relation_row_count"], relation_rows)
+            self.assertIsInstance(rows["rayjoin_overlay_area_tile_executor_cdb_pair"]["primary_metric_sec"], float)
+
+    def test_overlay_correctness_and_report_bottleneck_reading(self) -> None:
+        for grid in (32, 64, 128):
+            overlay = json.loads(
+                (ARTIFACT_ROOT / f"grid{grid}" / "packet_children" / "overlay_area_tile_tasks.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            self.assertTrue(overlay["positive_row_count_match"])
+            self.assertEqual(overlay["total_area_abs_error"], 0.0)
+            self.assertEqual(overlay["max_relation_abs_error"], 0.0)
+        text = REPORT.read_text(encoding="utf-8")
+        for phrase in (
+            "65,025 relation rows",
+            "overlay active-count",
+            "device tile-task planning",
+            "not paper-level performance",
         ):
             self.assertIn(phrase, text)
 

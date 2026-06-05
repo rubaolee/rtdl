@@ -1,0 +1,481 @@
+{
+  "active_shape_ordinal_metadata": {
+    "app_specific_engine_logic_allowed": false,
+    "automatic_partner_selection_allowed": false,
+    "full_overlay_area_claim_authorized": false,
+    "host_materialization_boundary": "callers may materialize only the unique shape ordinal lists for CPU-owned payload preparation; this does not make tile-task planning device-resident",
+    "input_contract": "shape_pair_relation_flags_with_ordinals_and_geometry_payload",
+    "left_active_fraction": 1.0,
+    "left_shape_count": 16384,
+    "left_unique_shape_count": 16384,
+    "operation": "shape_pair_relation_active_shape_ordinals",
+    "output_contract": "device_resident_unique_left_right_shape_ordinals_plus_relation_counts",
+    "partner": "cupy",
+    "public_speedup_claim_authorized": false,
+    "relation_row_ordinals_materialized": false,
+    "release_authorized": false,
+    "requires_geometry_payload_columns": false,
+    "requires_relation_ordinals": true,
+    "right_active_fraction": 1.0,
+    "right_shape_count": 16384,
+    "right_unique_shape_count": 16384,
+    "row_count": 65025,
+    "row_filter_applied": true,
+    "rt_core_speedup_claim_authorized": false,
+    "schema": "rtdl.v2_8.geometry_relation.active_shape_ordinals_cupy.v1",
+    "selected_row_count": 16384,
+    "true_zero_copy_claim_authorized": false,
+    "unique_ordinals_device_resident": true
+  },
+  "active_shapes_only": true,
+  "bounds_positive_filter": true,
+  "bounds_positive_filter_metadata": {
+    "app_specific_engine_logic_allowed": false,
+    "area_semantics": "axis_aligned_bounds_overlap_area_upper_bound",
+    "automatic_partner_selection_allowed": false,
+    "bounds_positive_relation_row_count": 16384,
+    "exact_area_for_filtered_rows": "known_zero_by_axis_aligned_bounds_disjointness",
+    "exact_polygon_overlay_area": false,
+    "full_overlay_area_claim_authorized": false,
+    "group_by": null,
+    "input_contract": "shape_pair_relation_flags_with_ordinals_and_geometry_payload",
+    "operation": "shape_pair_bounds_overlap_area",
+    "partner": "cupy",
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "requires_geometry_payload_columns": true,
+    "requires_relation_ordinals": true,
+    "row_count": 65025,
+    "row_filter": "bounds_overlap_area_gt_zero",
+    "rt_core_speedup_claim_authorized": false,
+    "schema": "rtdl.v2_8.geometry_relation.bounds_overlap_area_cupy.v1",
+    "true_zero_copy_claim_authorized": false
+  },
+  "bounds_positive_relation_row_count": 16384,
+  "candidate_relation_row_count": 16384,
+  "claim_boundary": {
+    "full_overlay_area_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "component_bounds_filter": true,
+  "component_bounds_filtered_relation_row_count": 0,
+  "component_pair_row_count": 16384,
+  "cupy_version": "14.1.1",
+  "device_active_shape_ordinals": true,
+  "device_active_shape_ordinals_used": true,
+  "device_planner_repeats": 3,
+  "device_tile_task_planner": true,
+  "exact_positive_row_count": 16384,
+  "exact_total_area": 16384.0,
+  "executor_metadata": {
+    "app_specific_engine_logic_allowed": false,
+    "automatic_partner_selection_allowed": false,
+    "claim_boundary": "v2.8 simple-polygon overlay-area continuation metadata defines generic runtime targets after exact oracle evidence. It does not authorize release, public speedup wording, RT-core speedup wording, true-zero-copy wording, paper reproduction claims, hidden partner selection, hidden dispatch, full overlay completion claims, or app-specific native-engine behavior.",
+    "completed_without_truncation": true,
+    "input_contract": "device_planned_prepared_overlay_area_tile_task_cupy_inputs",
+    "left_triangle_count": 32768,
+    "operation": "prepared_simple_polygon_overlay_area_tile_tasks",
+    "partner": "cupy",
+    "processed_triangle_pair_count": 65536,
+    "public_speedup_claim_authorized": false,
+    "reduction": "cupy_add_at_by_relation_row_ordinal",
+    "relation_row_count": 65025,
+    "release_authorized": false,
+    "resident_cupy_columns": true,
+    "right_triangle_count": 32768,
+    "rt_core_speedup_claim_authorized": false,
+    "runtime_kernel_authorized": false,
+    "schema": "rtdl.v2_8.simple_polygon_overlay_area_tile_task_cupy.v1",
+    "status_counts": {
+      "0": 16384
+    },
+    "task_count": 16384,
+    "total_area": 16384.0,
+    "true_zero_copy_claim_authorized": false
+  },
+  "executor_repeats": 3,
+  "expected_triangle_pair_count": 65536,
+  "goal": 3511,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "interpretation": "Executes the prepared simple-polygon overlay-area tile-task plan over the public-CDB active relation stream and compares scalar relation areas with the external Shapely/GEOS oracle.",
+  "largest_error_rows": [
+    {
+      "abs_error": 0.0,
+      "exact_area": 1.0,
+      "left_ordinal": 0,
+      "observed_area": 1.0,
+      "relation_row": 0,
+      "right_ordinal": 0
+    },
+    {
+      "abs_error": 0.0,
+      "exact_area": 0.0,
+      "left_ordinal": 1,
+      "observed_area": 0.0,
+      "relation_row": 1,
+      "right_ordinal": 0
+    },
+    {
+      "abs_error": 0.0,
+      "exact_area": 1.0,
+      "left_ordinal": 1,
+      "observed_area": 1.0,
+      "relation_row": 2,
+      "right_ordinal": 1
+    },
+    {
+      "abs_error": 0.0,
+      "exact_area": 0.0,
+      "left_ordinal": 3,
+      "observed_area": 0.0,
+      "relation_row": 3,
+      "right_ordinal": 2
+    },
+    {
+      "abs_error": 0.0,
+      "exact_area": 1.0,
+      "left_ordinal": 3,
+      "observed_area": 1.0,
+      "relation_row": 4,
+      "right_ordinal": 3
+    },
+    {
+      "abs_error": 0.0,
+      "exact_area": 0.0,
+      "left_ordinal": 2,
+      "observed_area": 0.0,
+      "relation_row": 5,
+      "right_ordinal": 1
+    },
+    {
+      "abs_error": 0.0,
+      "exact_area": 1.0,
+      "left_ordinal": 2,
+      "observed_area": 1.0,
+      "relation_row": 6,
+      "right_ordinal": 2
+    },
+    {
+      "abs_error": 0.0,
+      "exact_area": 0.0,
+      "left_ordinal": 4,
+      "observed_area": 0.0,
+      "relation_row": 7,
+      "right_ordinal": 3
+    },
+    {
+      "abs_error": 0.0,
+      "exact_area": 1.0,
+      "left_ordinal": 4,
+      "observed_area": 1.0,
+      "relation_row": 8,
+      "right_ordinal": 4
+    },
+    {
+      "abs_error": 0.0,
+      "exact_area": 0.0,
+      "left_ordinal": 5,
+      "observed_area": 0.0,
+      "relation_row": 9,
+      "right_ordinal": 4
+    }
+  ],
+  "left_cdb": "/root/rtdl_goal3524/artifacts/goal3535_rayjoin_large_promoted_packet_a5000_grid128/goal3535_left_grid128.cdb",
+  "left_geometry_status_counts": {
+    "valid": 16384
+  },
+  "left_payload_triangle_count": 32768,
+  "left_prepared_status_counts": {
+    "prepared_simple_components": 16384
+  },
+  "left_shape_count": 16384,
+  "max_relation_abs_error": 0.0,
+  "max_rows": 8000000,
+  "max_triangle_pairs_per_task": 512,
+  "observed_positive_row_count": 16384,
+  "observed_total_area": 16384.0,
+  "parallel_payload_prepare": true,
+  "parallel_payload_prepare_evidence": false,
+  "payload_cache_evidence": false,
+  "payload_cache_format": "json",
+  "payload_cache_metadata": {
+    "cache_dir": null,
+    "format": "json",
+    "left": null,
+    "mode": "off",
+    "read_used": false,
+    "right": null,
+    "write_used": false
+  },
+  "payload_cache_mode": "off",
+  "payload_workers": 4,
+  "planned_triangle_pair_count": 65536,
+  "positive_row_count_match": true,
+  "prepared_execution_report": {
+    "app_specific_engine_logic_allowed": false,
+    "automatic_partner_selection_allowed": false,
+    "claim_boundary": {
+      "full_overlay_area_claim_authorized": false,
+      "public_speedup_claim_authorized": false,
+      "rayjoin_paper_reproduction_claim_authorized": false,
+      "release_authorized": false,
+      "rt_core_speedup_claim_authorized": false,
+      "rtdl_beats_rayjoin_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false
+    },
+    "explicit_backend": "optix",
+    "explicit_partner": "cupy",
+    "explicit_partner_choice_required": true,
+    "notes": [
+      "Partner choice is explicit in executor_metadata.partner.",
+      "Validation oracle time is separated from the steady-state execution path."
+    ],
+    "phase_timings": [
+      {
+        "best_repeat_seconds": null,
+        "phase": "prepare",
+        "repeat_seconds": [],
+        "role": "one_time_prepare_or_rehydrate_payloads",
+        "seconds": 8.980312664061785,
+        "setup_candidate": true,
+        "source_keys": [
+          "timing_sec.geometry_plus_payload_prepare"
+        ],
+        "steady_state_candidate": false,
+        "validation_candidate": false
+      },
+      {
+        "best_repeat_seconds": null,
+        "phase": "cache_load",
+        "repeat_seconds": [],
+        "role": "load_prepared_payload_cache_when_enabled",
+        "seconds": 0.0,
+        "setup_candidate": false,
+        "source_keys": [
+          "timing_sec.payload_cache_load"
+        ],
+        "steady_state_candidate": false,
+        "validation_candidate": false
+      },
+      {
+        "best_repeat_seconds": null,
+        "phase": "cache_write",
+        "repeat_seconds": [],
+        "role": "write_prepared_payload_cache_when_enabled",
+        "seconds": 0.0,
+        "setup_candidate": false,
+        "source_keys": [
+          "timing_sec.payload_cache_write"
+        ],
+        "steady_state_candidate": false,
+        "validation_candidate": false
+      },
+      {
+        "best_repeat_seconds": 0.03800943959504366,
+        "phase": "warmup",
+        "repeat_seconds": [
+          0.3756920378655195,
+          0.03800943959504366
+        ],
+        "role": "warm_prepared_stream_before_steady_state_measurement",
+        "seconds": 0.03800943959504366,
+        "setup_candidate": false,
+        "source_keys": [
+          "timing_sec.active_relation_device_columns_warmup_secs",
+          "timing_sec.active_relation_device_columns_best_warmup"
+        ],
+        "steady_state_candidate": false,
+        "validation_candidate": false
+      },
+      {
+        "best_repeat_seconds": null,
+        "phase": "steady_state_stream",
+        "repeat_seconds": [],
+        "role": "run_prepared_relation_stream_after_warmup",
+        "seconds": 0.029843740165233612,
+        "setup_candidate": false,
+        "source_keys": [
+          "timing_sec.active_relation_device_columns"
+        ],
+        "steady_state_candidate": true,
+        "validation_candidate": false
+      },
+      {
+        "best_repeat_seconds": null,
+        "phase": "candidate_filter",
+        "repeat_seconds": [],
+        "role": "optional_device_candidate_filter",
+        "seconds": 0.050633315928280354,
+        "setup_candidate": false,
+        "source_keys": [
+          "timing_sec.bounds_positive_filter"
+        ],
+        "steady_state_candidate": true,
+        "validation_candidate": false
+      },
+      {
+        "best_repeat_seconds": 0.07887771166861057,
+        "phase": "planner",
+        "repeat_seconds": [
+          0.17519439663738012,
+          0.08486199844628572,
+          0.07887771166861057
+        ],
+        "role": "plan_continuation_work_from_prepared_columns",
+        "seconds": 0.07887771166861057,
+        "setup_candidate": false,
+        "source_keys": [
+          "timing_sec.device_tile_task_planning_best_repeat",
+          "timing_sec.device_tile_task_planning"
+        ],
+        "steady_state_candidate": true,
+        "validation_candidate": false
+      },
+      {
+        "best_repeat_seconds": 0.0010104598477482796,
+        "phase": "executor",
+        "repeat_seconds": [
+          0.017572813667356968,
+          0.001150047406554222,
+          0.0010104598477482796
+        ],
+        "role": "execute_partner_continuation_with_explicit_partner",
+        "seconds": 0.0010104598477482796,
+        "setup_candidate": false,
+        "source_keys": [
+          "timing_sec.cupy_tile_task_executor_best_repeat",
+          "timing_sec.cupy_tile_task_executor"
+        ],
+        "steady_state_candidate": true,
+        "validation_candidate": false
+      },
+      {
+        "best_repeat_seconds": null,
+        "phase": "validation",
+        "repeat_seconds": [],
+        "role": "external_oracle_validation_not_part_of_steady_state_path",
+        "seconds": 0.5608906047418714,
+        "setup_candidate": false,
+        "source_keys": [
+          "timing_sec.exact_oracle"
+        ],
+        "steady_state_candidate": false,
+        "validation_candidate": true
+      }
+    ],
+    "prepared_execution_claim_boundary": "Prepared execution separates setup, cache/load, warmup, steady-state streaming, planner, executor, and validation timings. It does not authorize release, public speedup wording, broad RT-core speedup wording, true zero-copy wording, RayJoin paper-reproduction wording, `rtdl beats RayJoin` wording, full overlay wording, hidden partner selection, or app-specific native-engine behavior.",
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "schema": "rtdl.v2_8.prepared_execution_report.v1",
+    "source_commit": "2345dd339861c0a7a69577e8b167c576b1e4d18d",
+    "source_goal": 3511,
+    "source_schema": "rtdl.goal3511.overlay_area_steady_state_relation_stream.v1",
+    "summary_sec": {
+      "setup": 8.980312664061785,
+      "steady_state": 0.16036522760987282,
+      "validation": 0.5608906047418714,
+      "warmup": 0.03800943959504366
+    },
+    "true_zero_copy_claim_authorized": false,
+    "warmup_count": 2,
+    "workflow": [
+      "prepare",
+      "pack_or_cache",
+      "warm",
+      "run_steady_state",
+      "explain_timings"
+    ],
+    "workflow_name": "simple_polygon_overlay_area_prepared_execution"
+  },
+  "prepared_left_shape_count": 16384,
+  "prepared_right_shape_count": 16384,
+  "relation_abs_error_percentiles": {
+    "p50": 0.0,
+    "p90": 0.0,
+    "p99": 0.0
+  },
+  "relation_column_warmup_repeats": 2,
+  "relation_row_count": 65025,
+  "relation_stream_steady_state_evidence": true,
+  "resident_cupy_inputs": true,
+  "right_cdb": "/root/rtdl_goal3524/artifacts/goal3535_rayjoin_large_promoted_packet_a5000_grid128/goal3535_right_grid128.cdb",
+  "right_geometry_status_counts": {
+    "valid": 16384
+  },
+  "right_payload_triangle_count": 32768,
+  "right_prepared_status_counts": {
+    "prepared_simple_components": 16384
+  },
+  "right_shape_count": 16384,
+  "rtdl_commit": "2345dd339861c0a7a69577e8b167c576b1e4d18d",
+  "schema": "rtdl.goal3511.overlay_area_steady_state_relation_stream.v1",
+  "shapely_version": "2.1.2",
+  "single_triangulation_payload_construction": true,
+  "single_triangulation_payload_evidence": false,
+  "skipped_candidate_relation_row_count": 0,
+  "supported_relation_row_count": 16384,
+  "task_summary": {
+    "candidate_relation_row_count": 16384,
+    "claim_boundary": "v2.8 simple-polygon overlay-area continuation metadata defines generic runtime targets after exact oracle evidence. It does not authorize release, public speedup wording, RT-core speedup wording, true-zero-copy wording, paper reproduction claims, hidden partner selection, hidden dispatch, full overlay completion claims, or app-specific native-engine behavior.",
+    "component_bounds_positive_filter": true,
+    "errors": [],
+    "expected_triangle_pair_count": 65536,
+    "max_task_pair_count": 512,
+    "pair_row_count": 16384,
+    "planned_triangle_pair_count": 65536,
+    "public_speedup_claim_authorized": false,
+    "relation_row_count": 16384,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "runtime_kernel_authorized": false,
+    "status": "accept",
+    "task_count": 16384,
+    "true_zero_copy_claim_authorized": false,
+    "version": "rtdl.v2_8.simple_polygon_overlay_area_prepared_payload.v1"
+  },
+  "tile_task_count": 16384,
+  "timing_sec": {
+    "active_relation_device_columns": 0.029843740165233612,
+    "active_relation_device_columns_best_warmup": 0.03800943959504366,
+    "active_relation_device_columns_warmup_secs": [
+      0.3756920378655195,
+      0.03800943959504366
+    ],
+    "bounds_positive_filter": 0.050633315928280354,
+    "cupy_tile_task_executor": 0.01973332092165947,
+    "cupy_tile_task_executor_best_repeat": 0.0010104598477482796,
+    "cupy_tile_task_executor_repeat_secs": [
+      0.017572813667356968,
+      0.001150047406554222,
+      0.0010104598477482796
+    ],
+    "cupy_tile_task_input_prepare": 0.0,
+    "device_active_shape_ordinals": 0.04090275056660175,
+    "device_tile_task_planning": 0.3389341067522764,
+    "device_tile_task_planning_best_repeat": 0.07887771166861057,
+    "device_tile_task_planning_repeat_secs": [
+      0.17519439663738012,
+      0.08486199844628572,
+      0.07887771166861057
+    ],
+    "exact_oracle": 0.5608906047418714,
+    "geometry_build": 0.0,
+    "geometry_plus_payload_prepare": 8.980312664061785,
+    "parallel_geometry_payload_prepare": 8.980312664061785,
+    "payload_build": 0.0,
+    "payload_cache_load": 0.0,
+    "payload_cache_write": 0.0,
+    "planning": 0.360822482034564,
+    "relation_discovery": 1.3650223324075341,
+    "relation_ordinal_download": 0.00025905948132276535
+  },
+  "total_area_abs_error": 0.0,
+  "unsupported_positive_relation_row_count": 0,
+  "unsupported_relation_row_count": 0
+}
