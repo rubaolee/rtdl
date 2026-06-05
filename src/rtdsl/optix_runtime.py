@@ -6818,6 +6818,7 @@ def _get_last_shape_pair_relation_phase_timings_from_library(lib) -> dict[str, f
         ctypes.POINTER(ctypes.c_double),
         ctypes.POINTER(ctypes.c_double),
         ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
         ctypes.POINTER(ctypes.c_size_t),
         ctypes.POINTER(ctypes.c_size_t),
         ctypes.POINTER(ctypes.c_uint32),
@@ -6828,6 +6829,7 @@ def _get_last_shape_pair_relation_phase_timings_from_library(lib) -> dict[str, f
     traversal = ctypes.c_double(0.0)
     flag_download = ctypes.c_double(0.0)
     containment = ctypes.c_double(0.0)
+    active_scan = ctypes.c_double(0.0)
     pair_count = ctypes.c_size_t(0)
     active_count = ctypes.c_size_t(0)
     mode = ctypes.c_uint32(0)
@@ -6837,6 +6839,7 @@ def _get_last_shape_pair_relation_phase_timings_from_library(lib) -> dict[str, f
         ctypes.byref(traversal),
         ctypes.byref(flag_download),
         ctypes.byref(containment),
+        ctypes.byref(active_scan),
         ctypes.byref(pair_count),
         ctypes.byref(active_count),
         ctypes.byref(mode),
@@ -6855,6 +6858,7 @@ def _get_last_shape_pair_relation_phase_timings_from_library(lib) -> dict[str, f
         "traversal": float(traversal.value),
         "flag_download": float(flag_download.value),
         "containment": float(containment.value),
+        "active_scan": float(active_scan.value),
         "pair_count": int(pair_count.value),
         "active_count": int(active_count.value),
     }
@@ -19585,6 +19589,7 @@ def _register_argtypes(lib) -> None:
     )
     if optional_shape_pair_timings is not None:
         optional_shape_pair_timings.argtypes = [
+            ctypes.POINTER(ctypes.c_double),
             ctypes.POINTER(ctypes.c_double),
             ctypes.POINTER(ctypes.c_double),
             ctypes.POINTER(ctypes.c_double),

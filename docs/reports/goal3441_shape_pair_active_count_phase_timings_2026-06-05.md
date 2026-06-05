@@ -18,6 +18,7 @@ The purpose is to distinguish:
 - OptiX traversal;
 - device flag download;
 - CPU containment supplement;
+- active-flag scan/reduction over the downloaded relation flags;
 - total candidate pair count;
 - active pair count.
 
@@ -27,7 +28,7 @@ This is diagnostic infrastructure. It is not a speedup claim.
 
 | File | Operation |
 | --- | --- |
-| `src/native/optix/rtdl_optix_workloads.cpp` | Added thread-local shape-pair phase timing storage, reset logic, timing instrumentation, and `rtdl_optix_shape_pair_relation_get_last_phase_timings`. |
+| `src/native/optix/rtdl_optix_workloads.cpp` | Added thread-local shape-pair phase timing storage, reset logic, timing instrumentation, active-scan timing, and `rtdl_optix_shape_pair_relation_get_last_phase_timings`. |
 | `src/native/optix/rtdl_optix_prelude.h` | Declared the new generic timing accessor. |
 | `src/rtdsl/optix_runtime.py` | Added `PreparedOptixShapePairRelation.last_phase_timings()` and `get_last_shape_pair_relation_phase_timings()`. |
 | `examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py` | Includes `native_phase_timings` in the overlay active-count prepared-handle payload. |
@@ -82,6 +83,7 @@ The probe prints one progress line per iteration beginning with `[goal3441]`.
 
 Use the phase breakdown to decide the next performance move. If containment
 dominates, the next safe generic optimization is a prepared right-side bounds
-candidate index for the CPU containment supplement. If traversal dominates, the
-next target is a device-side active-count-only relation path that avoids the
-full flag buffer.
+candidate index for the CPU containment supplement. If active scanning or flag
+download dominates, the next target is a device-side active-count-only relation
+path that avoids materializing and scanning the full flag buffer on the host. If
+traversal dominates, the next target is the OptiX relation kernel itself.

@@ -85,6 +85,7 @@ thread_local double g_optix_last_shape_pair_left_upload_s = 0.0;
 thread_local double g_optix_last_shape_pair_traversal_s = 0.0;
 thread_local double g_optix_last_shape_pair_flag_download_s = 0.0;
 thread_local double g_optix_last_shape_pair_containment_s = 0.0;
+thread_local double g_optix_last_shape_pair_active_scan_s = 0.0;
 thread_local size_t g_optix_last_shape_pair_pair_count = 0;
 thread_local size_t g_optix_last_shape_pair_active_count = 0;
 thread_local uint32_t g_optix_last_shape_pair_mode = 0;
@@ -155,6 +156,7 @@ extern "C" int rtdl_optix_shape_pair_relation_get_last_phase_timings(
         double* traversal,
         double* flag_download,
         double* containment,
+        double* active_scan,
         size_t* pair_count,
         size_t* active_count,
         uint32_t* mode)
@@ -164,6 +166,7 @@ extern "C" int rtdl_optix_shape_pair_relation_get_last_phase_timings(
     if (traversal) *traversal = g_optix_last_shape_pair_traversal_s;
     if (flag_download) *flag_download = g_optix_last_shape_pair_flag_download_s;
     if (containment) *containment = g_optix_last_shape_pair_containment_s;
+    if (active_scan) *active_scan = g_optix_last_shape_pair_active_scan_s;
     if (pair_count) *pair_count = g_optix_last_shape_pair_pair_count;
     if (active_count) *active_count = g_optix_last_shape_pair_active_count;
     if (mode) *mode = g_optix_last_shape_pair_mode;
@@ -239,6 +242,7 @@ static void reset_shape_pair_relation_phase_timings(uint32_t mode)
     g_optix_last_shape_pair_traversal_s = 0.0;
     g_optix_last_shape_pair_flag_download_s = 0.0;
     g_optix_last_shape_pair_containment_s = 0.0;
+    g_optix_last_shape_pair_active_scan_s = 0.0;
     g_optix_last_shape_pair_pair_count = 0;
     g_optix_last_shape_pair_active_count = 0;
     g_optix_last_shape_pair_mode = mode;
@@ -8778,6 +8782,7 @@ static void run_shape_pair_relation_flags_with_prepared_right_optix(
         std::malloc(sizeof(RtdlShapePairRelationRow) * out_count));
     if (!out) throw std::bad_alloc();
     size_t active_count = 0;
+    const auto active_scan_start = std::chrono::steady_clock::now();
     for (size_t i = 0; i < out_count; ++i) {
         size_t li = i / computed.right_count, ri = i % computed.right_count;
         out[i].left_polygon_id  = left_polys[li].id;
@@ -8789,6 +8794,9 @@ static void run_shape_pair_relation_flags_with_prepared_right_optix(
             ++active_count;
         }
     }
+    const auto active_scan_end = std::chrono::steady_clock::now();
+    g_optix_last_shape_pair_active_scan_s =
+        seconds_between(active_scan_start, active_scan_end);
     g_optix_last_shape_pair_active_count = active_count;
     *rows_out      = out;
     *row_count_out = out_count;
@@ -8814,11 +8822,15 @@ static void count_shape_pair_relation_flags_with_prepared_right_optix(
             left_vert_xy_count);
 
     size_t active_count = 0;
+    const auto active_scan_start = std::chrono::steady_clock::now();
     for (const auto& flag : computed.flags) {
         if (flag.requires_segment_intersection != 0u || flag.requires_point_containment != 0u) {
             ++active_count;
         }
     }
+    const auto active_scan_end = std::chrono::steady_clock::now();
+    g_optix_last_shape_pair_active_scan_s =
+        seconds_between(active_scan_start, active_scan_end);
     g_optix_last_shape_pair_active_count = active_count;
     *active_count_out = active_count;
 }

@@ -780,6 +780,7 @@ int  rtdl_optix_shape_pair_relation_get_last_phase_timings(
          double* traversal_out,
          double* flag_download_out,
          double* containment_out,
+         double* active_scan_out,
          size_t* pair_count_out,
          size_t* active_count_out,
          uint32_t* mode_out);

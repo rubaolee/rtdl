@@ -34,6 +34,7 @@ class Goal3441ShapePairActiveCountPhaseTimingsTest(unittest.TestCase):
             "g_optix_last_shape_pair_traversal_s",
             "g_optix_last_shape_pair_flag_download_s",
             "g_optix_last_shape_pair_containment_s",
+            "g_optix_last_shape_pair_active_scan_s",
             "g_optix_last_shape_pair_pair_count",
             "g_optix_last_shape_pair_active_count",
             "rtdl_optix_shape_pair_relation_get_last_phase_timings",
@@ -42,6 +43,7 @@ class Goal3441ShapePairActiveCountPhaseTimingsTest(unittest.TestCase):
             self.assertIn(phrase, workloads)
         self.assertIn("rtdl_optix_shape_pair_relation_get_last_phase_timings", prelude)
         self.assertIn("double* containment_out", prelude)
+        self.assertIn("double* active_scan_out", prelude)
         self.assertIn("size_t* active_count_out", prelude)
 
     def test_native_count_path_records_phase_breakdown_without_app_terms(self) -> None:
@@ -56,6 +58,7 @@ class Goal3441ShapePairActiveCountPhaseTimingsTest(unittest.TestCase):
             "traversal_start",
             "download_start",
             "containment_start",
+            "active_scan_start",
             "g_optix_last_shape_pair_active_count = active_count",
         ):
             self.assertIn(phrase, body)
@@ -71,6 +74,7 @@ class Goal3441ShapePairActiveCountPhaseTimingsTest(unittest.TestCase):
             "def _get_last_shape_pair_relation_phase_timings_from_library",
             "rtdl_optix_shape_pair_relation_get_last_phase_timings",
             '"containment": float(containment.value)',
+            '"active_scan": float(active_scan.value)',
             '"active_count": int(active_count.value)',
         ):
             self.assertIn(phrase, text)
@@ -86,6 +90,7 @@ class Goal3441ShapePairActiveCountPhaseTimingsTest(unittest.TestCase):
             "rtdl.goal3441.shape_pair_active_count_phase_timings.v1",
             "native_phase_timings",
             "containment_sec",
+            "active_scan_sec",
             "traversal_sec",
             "flag_download_sec",
             "[goal3441]",
@@ -119,7 +124,7 @@ class Goal3441ShapePairActiveCountPhaseTimingsTest(unittest.TestCase):
         self.assertEqual(last["mode"], "active_count")
         self.assertGreater(last["pair_count"], 0)
         self.assertEqual(last["active_count"], payload["active_counts"][-1])
-        for key in ("left_prepare", "left_upload", "traversal", "flag_download", "containment"):
+        for key in ("left_prepare", "left_upload", "traversal", "flag_download", "containment", "active_scan"):
             self.assertIn(key, last)
 
 

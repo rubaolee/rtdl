@@ -55,6 +55,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     active_counts: list[int] = []
     active_count_seconds: list[float] = []
     containment_seconds: list[float] = []
+    active_scan_seconds: list[float] = []
     traversal_seconds: list[float] = []
     download_seconds: list[float] = []
 
@@ -72,6 +73,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             active_counts.append(active_count)
             active_count_seconds.append(elapsed)
             containment_seconds.append(float(timings.get("containment", 0.0)))
+            active_scan_seconds.append(float(timings.get("active_scan", 0.0)))
             traversal_seconds.append(float(timings.get("traversal", 0.0)))
             download_seconds.append(float(timings.get("flag_download", 0.0)))
             runs.append(
@@ -88,7 +90,8 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
                 f"iteration={index} active_count={active_count} total={elapsed:.6f}s "
                 f"traversal={float(timings.get('traversal', 0.0)):.6f}s "
                 f"download={float(timings.get('flag_download', 0.0)):.6f}s "
-                f"containment={float(timings.get('containment', 0.0)):.6f}s",
+                f"containment={float(timings.get('containment', 0.0)):.6f}s "
+                f"active_scan={float(timings.get('active_scan', 0.0)):.6f}s",
                 flush=True,
             )
 
@@ -105,6 +108,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         "active_counts": active_counts,
         "active_count_sec": _stats(active_count_seconds),
         "containment_sec": _stats(containment_seconds),
+        "active_scan_sec": _stats(active_scan_seconds),
         "traversal_sec": _stats(traversal_seconds),
         "flag_download_sec": _stats(download_seconds),
         "last_native_phase_timings": runs[-1]["native_phase_timings"] if runs else None,
