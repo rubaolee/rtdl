@@ -1,0 +1,40 @@
+{
+  "bridge_metadata": {
+    "host_refined_rows_materialized": true,
+    "native_exact_device_row_stream_produced": false,
+    "output_residency": "partner_device_after_host_refine_upload",
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "source_protocol": "host_refined_optix_exact_rows",
+    "true_zero_copy_claim_authorized": false
+  },
+  "bridge_row_count": 11316,
+  "bridge_upload_seconds": 0.0670600077137351,
+  "claim_boundary": {
+    "native_default_route_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "count": 4096,
+  "county_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count4096.cdb",
+  "exact_row_count": 11316,
+  "exact_run_seconds": 0.026098943315446377,
+  "extra_pair_count": 0,
+  "extra_sample": [],
+  "goal": 3392,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "missing_exact_pair_count": 0,
+  "missing_sample": [],
+  "pairs_match_exact_rows": true,
+  "point_count": 4096,
+  "rtdl_commit": "d7c7f92d7024e8f327add0b0b61b88b9b2dfe88a",
+  "schema": "rtdl.goal3392.exact_membership_bridge_live_probe.v1",
+  "shape_count": 3762,
+  "source_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county.cdb",
+  "start": 256
+}
