@@ -125,6 +125,9 @@ def _percentile(values: list[float], q: float) -> float:
 def run_probe(args: argparse.Namespace) -> dict[str, object]:
     import cupy as cp  # type: ignore
 
+    if args.device_active_shape_ordinals and not args.active_shapes_only:
+        raise ValueError("--device-active-shape-ordinals requires --active-shapes-only")
+
     ShapelyPolygon, make_valid, shapely_version = _import_shapely()
     print("[goal3492] load CDB", flush=True)
     left_shapes = tuple(chains_to_polygons(load_cdb(args.left_cdb)))
@@ -132,6 +135,10 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
 
     print("[goal3492] discover active relation ordinals with RTDL/OptiX", flush=True)
     discovery_start = time.perf_counter()
+    active_shape_ordinals_sec = 0.0
+    relation_ordinal_download_sec = 0.0
+    active_shape_ordinal_metadata: dict[str, object] | None = None
+    device_active_shape_ordinals_used = False
     with prepare_rayjoin_optix_shape_pair_active_count(
         right_shapes,
         dataset=f"{args.left_cdb} + {args.right_cdb}",
@@ -140,15 +147,30 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         packed_left = pack_rayjoin_optix_shape_pair_active_count_left_shapes(left_shapes)
         with prepared.active_relation_device_columns(packed_left, max_rows=int(args.max_rows)) as columns:
             cp.cuda.Stream.null.synchronize()
+            if args.active_shapes_only and args.device_active_shape_ordinals:
+                active_shape_start = time.perf_counter()
+                active_ordinals = rt.shape_pair_relation_active_shape_ordinals_cupy(columns)
+                cp.cuda.Stream.null.synchronize()
+                left_shapes_to_build = set(
+                    map(int, cp.asnumpy(active_ordinals.left_unique_ordinals).tolist())
+                )
+                right_shapes_to_build = set(
+                    map(int, cp.asnumpy(active_ordinals.right_unique_ordinals).tolist())
+                )
+                active_shape_ordinal_metadata = active_ordinals.to_metadata()
+                device_active_shape_ordinals_used = True
+                active_shape_ordinals_sec = time.perf_counter() - active_shape_start
             ordinals = columns.as_cupy_ordinal_columns()
+            relation_download_start = time.perf_counter()
             left_ordinals = cp.asnumpy(ordinals["left_ordinal"]).astype("uint32", copy=False)
             right_ordinals = cp.asnumpy(ordinals["right_ordinal"]).astype("uint32", copy=False)
+            relation_ordinal_download_sec = time.perf_counter() - relation_download_start
     relation_discovery_sec = time.perf_counter() - discovery_start
 
-    if args.active_shapes_only:
+    if args.active_shapes_only and not device_active_shape_ordinals_used:
         left_shapes_to_build = set(map(int, left_ordinals))
         right_shapes_to_build = set(map(int, right_ordinals))
-    else:
+    elif not args.active_shapes_only:
         left_shapes_to_build = set(range(len(left_shapes)))
         right_shapes_to_build = set(range(len(right_shapes)))
 
@@ -278,15 +300,21 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     )[:10]
 
     schema = (
-        "rtdl.goal3494.overlay_area_resident_cupy_tile_task_inputs.v1"
-        if args.resident_cupy_inputs
+        "rtdl.goal3495.overlay_area_device_active_shape_ordinals.v1"
+        if device_active_shape_ordinals_used
         else (
-            "rtdl.goal3493.overlay_area_active_shape_payload_construction.v1"
-            if args.active_shapes_only
-            else "rtdl.goal3492.overlay_area_public_cdb_tile_task_executor.v1"
+            "rtdl.goal3494.overlay_area_resident_cupy_tile_task_inputs.v1"
+            if args.resident_cupy_inputs
+            else (
+                "rtdl.goal3493.overlay_area_active_shape_payload_construction.v1"
+                if args.active_shapes_only
+                else "rtdl.goal3492.overlay_area_public_cdb_tile_task_executor.v1"
+            )
         )
     )
-    goal = 3494 if args.resident_cupy_inputs else (3493 if args.active_shapes_only else 3492)
+    goal = 3495 if device_active_shape_ordinals_used else (
+        3494 if args.resident_cupy_inputs else (3493 if args.active_shapes_only else 3492)
+    )
 
     return {
         "schema": schema,
@@ -301,6 +329,9 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         "max_rows": int(args.max_rows),
         "max_triangle_pairs_per_task": int(args.max_triangle_pairs_per_task),
         "resident_cupy_inputs": bool(args.resident_cupy_inputs),
+        "device_active_shape_ordinals": bool(args.device_active_shape_ordinals),
+        "device_active_shape_ordinals_used": bool(device_active_shape_ordinals_used),
+        "active_shape_ordinal_metadata": active_shape_ordinal_metadata,
         "executor_repeats": executor_repeats,
         "left_shape_count": len(left_shapes),
         "right_shape_count": len(right_shapes),
@@ -339,6 +370,8 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             "geometry_build": geometry_build_sec,
             "payload_build": payload_build_sec,
             "relation_discovery": relation_discovery_sec,
+            "device_active_shape_ordinals": active_shape_ordinals_sec,
+            "relation_ordinal_download": relation_ordinal_download_sec,
             "exact_oracle": exact_oracle_sec,
             "planning": planning_sec,
             "cupy_tile_task_input_prepare": input_prepare_sec,
@@ -367,6 +400,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--progress-every", type=int, default=500)
     parser.add_argument("--resident-cupy-inputs", action="store_true")
     parser.add_argument("--executor-repeats", type=int, default=1)
+    parser.add_argument(
+        "--device-active-shape-ordinals",
+        action="store_true",
+        help=(
+            "When active-shapes-only is enabled, compute unique active shape ordinals on device "
+            "and materialize only the smaller unique ordinal lists for CPU-owned payload preparation."
+        ),
+    )
     parser.add_argument(
         "--active-shapes-only",
         action="store_true",

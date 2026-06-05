@@ -407,13 +407,16 @@ from .v2_8_overlay_area_prepared_payload import prepare_simple_polygon_component
 from .v2_8_overlay_area_prepared_payload import summarize_prepared_overlay_area_tile_tasks
 from .v2_8_overlay_area_prepared_payload import validate_v2_8_overlay_area_prepared_payload_contract
 from .geometry_relation_continuations import GEOMETRY_RELATION_BOUNDS_OVERLAP_AREA_CUPY_VERSION
+from .geometry_relation_continuations import GEOMETRY_RELATION_ACTIVE_SHAPE_ORDINALS_CUPY_VERSION
 from .geometry_relation_continuations import GEOMETRY_RELATION_COMPLEXITY_CUPY_VERSION
 from .geometry_relation_continuations import GEOMETRY_RELATION_CONVEX_OVERLAY_AREA_CUPY_VERSION
 from .geometry_relation_continuations import GEOMETRY_RELATION_WITNESS_CUPY_VERSION
+from .geometry_relation_continuations import ShapePairActiveShapeOrdinalsCupyResult
 from .geometry_relation_continuations import ShapePairBoundsOverlapAreaCupyResult
 from .geometry_relation_continuations import ShapePairConvexOverlayAreaCupyResult
 from .geometry_relation_continuations import ShapePairRelationComplexityCupyResult
 from .geometry_relation_continuations import ShapePairRelationWitnessCupyResult
+from .geometry_relation_continuations import shape_pair_relation_active_shape_ordinals_cupy
 from .geometry_relation_continuations import shape_pair_relation_bounds_overlap_area_cupy
 from .geometry_relation_continuations import shape_pair_relation_convex_overlay_area_cupy
 from .geometry_relation_continuations import shape_pair_relation_complexity_cupy
@@ -2124,6 +2127,7 @@ __all__ = [
     "V2_8_OVERLAY_GEOMETRY_STREAM_TARGET",
     "describe_v2_8_overlay_area_pre_kernel_policy",
     "GEOMETRY_RELATION_BOUNDS_OVERLAP_AREA_CUPY_VERSION",
+    "GEOMETRY_RELATION_ACTIVE_SHAPE_ORDINALS_CUPY_VERSION",
     "GEOMETRY_RELATION_COMPLEXITY_CUPY_VERSION",
     "GEOMETRY_RELATION_CONVEX_OVERLAY_AREA_CUPY_VERSION",
     "GEOMETRY_RELATION_WITNESS_CUPY_VERSION",
@@ -2157,9 +2161,11 @@ __all__ = [
     "summarize_prepared_overlay_area_tile_tasks",
     "validate_v2_8_overlay_area_prepared_payload_contract",
     "ShapePairBoundsOverlapAreaCupyResult",
+    "ShapePairActiveShapeOrdinalsCupyResult",
     "ShapePairConvexOverlayAreaCupyResult",
     "ShapePairRelationComplexityCupyResult",
     "ShapePairRelationWitnessCupyResult",
+    "shape_pair_relation_active_shape_ordinals_cupy",
     "shape_pair_relation_bounds_overlap_area_cupy",
     "shape_pair_relation_convex_overlay_area_cupy",
     "shape_pair_relation_complexity_cupy",

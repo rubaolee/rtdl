@@ -212,9 +212,12 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "payload triangles from 309,337 to 46,297, and executor time to 0.281s while preserving the "
             "same total-area error. Goal3494 adds resident CuPy tile-task inputs so repeated executor calls "
             "reuse partner payload/task arrays instead of repacking them; pod repeat timing shows 0.101s "
-            "input preparation and a 0.0288s best repeat for the 9,653,005 triangle-pair stream. Remaining "
-            "work is integration with the device-resident relation stream and the native-vs-partner "
-            "acceptance decision over that execution shape."
+            "input preparation and a 0.0288s best repeat for the 9,653,005 triangle-pair stream. Goal3495 "
+            "adds a generic CuPy continuation that computes unique active shape ordinals from resident "
+            "relation ordinal columns on device, letting the active-payload path materialize only the smaller "
+            "unique shape lists while keeping full tile-task planning honestly host-side. Remaining work is "
+            "device-resident component-pair/tile-task planning and the native-vs-partner acceptance decision "
+            "over that execution shape."
         ),
         generic_runtime_target=(
             "typed hit/relation streams with compact-mask, grouped parity/count, bounded witness "
@@ -262,6 +265,7 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "Goal3492",
             "Goal3493",
             "Goal3494",
+            "Goal3495",
         ),
     ),
     V28BenchmarkRuntimeGapRow(

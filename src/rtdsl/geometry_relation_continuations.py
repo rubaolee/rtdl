@@ -12,6 +12,9 @@ GEOMETRY_RELATION_COMPLEXITY_CUPY_VERSION = "rtdl.v2_8.geometry_relation.complex
 GEOMETRY_RELATION_CONVEX_OVERLAY_AREA_CUPY_VERSION = (
     "rtdl.v2_8.geometry_relation.convex_overlay_area_cupy.v1"
 )
+GEOMETRY_RELATION_ACTIVE_SHAPE_ORDINALS_CUPY_VERSION = (
+    "rtdl.v2_8.geometry_relation.active_shape_ordinals_cupy.v1"
+)
 
 
 _SHAPE_PAIR_CONVEXITY_KERNEL = r"""
@@ -470,6 +473,80 @@ class ShapePairConvexOverlayAreaCupyResult:
 
     def to_metadata(self) -> dict[str, Any]:
         return dict(self.metadata)
+
+
+@dataclass(frozen=True)
+class ShapePairActiveShapeOrdinalsCupyResult:
+    left_unique_ordinals: object
+    right_unique_ordinals: object
+    left_relation_counts: object
+    right_relation_counts: object
+    metadata: dict[str, Any]
+
+    def to_metadata(self) -> dict[str, Any]:
+        return dict(self.metadata)
+
+
+def shape_pair_relation_active_shape_ordinals_cupy(relation_columns) -> ShapePairActiveShapeOrdinalsCupyResult:
+    """Compute unique active shape ordinals from resident relation columns.
+
+    This is a generic partner-side continuation over shape-pair relation
+    ordinals. It keeps the unique/count work on device; callers may choose
+    whether to materialize the smaller unique ordinal lists on host for
+    CPU-owned payload preparation.
+    """
+    if getattr(relation_columns, "overflow", False):
+        raise RuntimeError("cannot consume an overflowed shape-pair relation stream")
+
+    import cupy as cp  # type: ignore
+
+    ordinals = relation_columns.as_cupy_ordinal_columns()
+    left_unique, left_counts = cp.unique(ordinals["left_ordinal"], return_counts=True)
+    right_unique, right_counts = cp.unique(ordinals["right_ordinal"], return_counts=True)
+
+    row_count = int(getattr(relation_columns, "row_count"))
+    left_shape_count = int(getattr(relation_columns, "left_polygon_count", 0))
+    right_shape_count = int(getattr(relation_columns, "right_polygon_count", 0))
+    metadata = {
+        "schema": GEOMETRY_RELATION_ACTIVE_SHAPE_ORDINALS_CUPY_VERSION,
+        "operation": "shape_pair_relation_active_shape_ordinals",
+        "partner": "cupy",
+        "input_contract": "shape_pair_relation_flags_with_ordinals_and_geometry_payload",
+        "row_count": row_count,
+        "left_unique_shape_count": int(left_unique.size),
+        "right_unique_shape_count": int(right_unique.size),
+        "left_shape_count": left_shape_count,
+        "right_shape_count": right_shape_count,
+        "left_active_fraction": (
+            float(int(left_unique.size) / left_shape_count) if left_shape_count > 0 else 0.0
+        ),
+        "right_active_fraction": (
+            float(int(right_unique.size) / right_shape_count) if right_shape_count > 0 else 0.0
+        ),
+        "output_contract": "device_resident_unique_left_right_shape_ordinals_plus_relation_counts",
+        "relation_row_ordinals_materialized": False,
+        "unique_ordinals_device_resident": True,
+        "requires_relation_ordinals": True,
+        "requires_geometry_payload_columns": False,
+        "host_materialization_boundary": (
+            "callers may materialize only the unique shape ordinal lists for CPU-owned payload "
+            "preparation; this does not make tile-task planning device-resident"
+        ),
+        "app_specific_engine_logic_allowed": False,
+        "automatic_partner_selection_allowed": False,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "full_overlay_area_claim_authorized": False,
+    }
+    return ShapePairActiveShapeOrdinalsCupyResult(
+        left_unique_ordinals=left_unique,
+        right_unique_ordinals=right_unique,
+        left_relation_counts=left_counts,
+        right_relation_counts=right_counts,
+        metadata=metadata,
+    )
 
 
 def shape_pair_relation_bounds_overlap_area_cupy(
