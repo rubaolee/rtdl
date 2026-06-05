@@ -85,7 +85,7 @@ class Goal3414NativeExactPageProducerSurfaceTest(unittest.TestCase):
 
         self.assertEqual(payload["schema"], "rtdl.goal3414.native_exact_page_producer_probe.v1")
         self.assertEqual(payload["goal"], 3414)
-        self.assertEqual(payload["rtdl_commit"][:8], "a50494bc")
+        self.assertEqual(payload["rtdl_commit"][:8], "3055e8d0")
         self.assertIn("NVIDIA RTX A5000", payload["gpu"])
         self.assertEqual(
             payload["native_page_symbol"],
@@ -116,7 +116,7 @@ class Goal3414NativeExactPageProducerSurfaceTest(unittest.TestCase):
         self.assertTrue(native_page["native_page_producer_used"])
         self.assertTrue(native_page["native_call_uses_page_start_and_page_count"])
         self.assertFalse(native_page["python_point_slicing_for_native_producer"])
-        self.assertTrue(native_page.get("single_packed_point_buffer_reused", True))
+        self.assertTrue(native_page["single_packed_point_buffer_reused"])
         self.assertFalse(native_page["native_page_plan_handle_implemented"])
         self.assertFalse(native_page["native_page_release_function_implemented"])
         self.assertFalse(native_page["device_only_exact_predicate_produced"])

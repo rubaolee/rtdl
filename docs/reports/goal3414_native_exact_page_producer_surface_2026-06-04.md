@@ -50,7 +50,7 @@ The probe artifact is:
 
 `docs/reports/goal3414_native_exact_page_producer_probe_2026-06-04.json`
 
-It was produced on commit `a50494bc` with an NVIDIA RTX A5000 and driver
+It was produced on commit `3055e8d0` with an NVIDIA RTX A5000 and driver
 `580.126.09`.
 
 | Measure | Value |
