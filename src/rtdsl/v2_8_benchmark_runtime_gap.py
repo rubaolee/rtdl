@@ -137,7 +137,9 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "general simple-polygon overlay path rather than a convex-only clip fast path; the convex "
             "overlay-area fast path is implemented and exact for the 168 supported both-convex rows; "
             "an external Shapely/GEOS exact oracle now gives the full active relation stream target "
-            "of 1,090 positive rows and total exact area 26.08321766231042"
+            "of 1,090 positive rows and total exact area 26.08321766231042; output-complexity "
+            "oracle evidence shows the full geometry path would require streamed component/vertex "
+            "output, while the current benchmark target can stay scalar exact-area first"
         ),
         partner_position=(
             "Numba is the recommended custom continuation when row-stream compaction is part of the app; "
@@ -168,9 +170,12 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "remaining 4,375 rows; Goal3474 added a Shapely/GEOS exact CPU oracle over the same RTDL/OptiX "
             "relation rows, finding 1,090 positive exact-area rows, 3,453 zero-area rows, 0 topology "
             "exceptions, and total exact area 26.08321766231042. Remaining work is GPU-resident exact "
-            "overlay-area continuation for non-integer, "
-            "non-orthogonal, mostly nonconvex polygons, plus boundary-witness ownership and exact "
-            "area/witness policy at serious scale."
+            "overlay-area continuation for non-integer, non-orthogonal, mostly nonconvex polygons; "
+            "Goal3477 characterized exact output geometry and found 609 positive MultiPolygon rows, "
+            "48 positive GeometryCollection rows, 2,801 polygon components, 42,314 output vertices, "
+            "and a max of 22 polygon components / 586 output vertices in one relation row. Near-term "
+            "v2.8 should target scalar exact-area continuation first; full overlay-geometry output needs "
+            "a later streamed component/vertex contract plus boundary-witness ownership policy."
         ),
         generic_runtime_target=(
             "typed hit/relation streams with compact-mask, grouped parity/count, bounded witness "
@@ -206,6 +211,7 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "Goal3467",
             "Goal3471",
             "Goal3474",
+            "Goal3477",
         ),
     ),
     V28BenchmarkRuntimeGapRow(
