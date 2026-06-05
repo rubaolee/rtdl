@@ -2,7 +2,7 @@
 
 ## Status
 
-Implemented locally; pod validation pending.
+Implemented and pod-validated.
 
 Goal3447 extends the Goal3442/3443 RayJoin overlay path from a scalar active-count continuation to a reusable, app-agnostic device-column stream. The new OptiX native ABI compacts active shape-pair relation dependencies into CUDA-resident columns:
 
@@ -52,7 +52,7 @@ Local validation:
 - `py -3 -m py_compile src\rtdsl\optix_runtime.py src\rtdsl\v2_8_geometry_relation_typed_stream.py src\rtdsl\__init__.py examples\v2_0\research_benchmarks\spatial_rayjoin\rtdl_rayjoin_v2_spatial_join_app.py`
 - `py -3 -m unittest tests.goal3447_shape_pair_active_relation_device_columns_test`
 
-Pod validation target:
+Pod validation:
 
 ```bash
 PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=/root/rtdl/build/librtdl_optix.so \
@@ -61,12 +61,28 @@ python scripts/goal3447_shape_pair_active_relation_device_columns_probe.py \
   --output docs/reports/goal3447_shape_pair_active_relation_device_columns_pod_2026-06-05.json
 ```
 
-Expected pod checks:
+Pod artifact:
 
-- host active count equals scalar device active count equals resident relation-column row count
-- native phase mode is `active_relation_device_columns`
-- CuPy can wrap the resident columns when available
-- all claim-boundary flags remain false
+- `docs/reports/goal3447_shape_pair_active_relation_device_columns_pod_2026-06-05.json`
+- `docs/reports/goal3447_shape_pair_active_relation_device_columns_pod_2026-06-05.stdout`
+
+Hardware/result summary:
+
+- Commit: `2b62228f`
+- GPU: NVIDIA RTX A5000, driver `580.126.09`
+- Dataset: `br_county.cdb` joined against `br_county_start256_count1024.cdb`
+- Left/right shapes: `15700 / 949`
+- Active relation count: `4543`
+- Counts matched for all four iterations:
+  - host active count: `[4543, 4543, 4543, 4543]`
+  - scalar device active count: `[4543, 4543, 4543, 4543]`
+  - resident relation-column row count: `[4543, 4543, 4543, 4543]`
+- Median host active-count time: `0.12831534119322896s`
+- Median resident relation-column time: `0.0035939733497798443s`
+- Median speedup versus host active-count route: `35.419570165171095x`
+- CuPy wrapped the resident columns and verified all emitted rows have at least one active dependency flag.
+- Native phase mode was `active_relation_device_columns`.
+- All claim-boundary flags remained false.
 
 ## Remaining Work
 
