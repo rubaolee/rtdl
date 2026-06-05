@@ -1544,6 +1544,59 @@ class OptixNativeDeviceGroupedCountI64CompactOutput:
             pass
 
 
+PAIR_COLUMN_STREAM_OVERFLOW_POLICY_FAIL_CLOSED = "fail_closed"
+
+
+@dataclass(frozen=True)
+class PairColumnStreamCapacityStatus:
+    capacity: int
+    row_count: int
+    required_capacity: int
+    overflowed: bool = False
+    overflow_policy: str = PAIR_COLUMN_STREAM_OVERFLOW_POLICY_FAIL_CLOSED
+
+    def __post_init__(self) -> None:
+        if int(self.capacity) < 0:
+            raise ValueError("pair-column stream capacity must be non-negative")
+        if int(self.row_count) < 0:
+            raise ValueError("pair-column stream row_count must be non-negative")
+        if int(self.required_capacity) < 0:
+            raise ValueError("pair-column stream required_capacity must be non-negative")
+        if self.overflow_policy != PAIR_COLUMN_STREAM_OVERFLOW_POLICY_FAIL_CLOSED:
+            raise ValueError("pair-column stream currently supports fail_closed overflow only")
+        if bool(self.overflowed):
+            if int(self.row_count) != 0:
+                raise ValueError("fail-closed pair-column overflow must not expose partial rows")
+            if int(self.required_capacity) <= int(self.capacity):
+                raise ValueError("overflowed pair-column streams must require more than capacity")
+        elif int(self.required_capacity) > int(self.capacity):
+            raise ValueError("non-overflowed pair-column streams must fit within capacity")
+
+    @property
+    def retry_capacity_hint(self) -> int | None:
+        return int(self.required_capacity) if self.overflowed else None
+
+    def raise_if_overflowed(self, *, operation: str) -> None:
+        if not self.overflowed:
+            return
+        raise RuntimeError(
+            f"{operation} overflowed pair-column capacity={int(self.capacity)}; "
+            f"required_capacity={int(self.required_capacity)}; "
+            "retry explicitly with max_rows>=required_capacity"
+        )
+
+    def to_metadata(self) -> dict[str, object]:
+        return {
+            "capacity": int(self.capacity),
+            "row_count": int(self.row_count),
+            "required_capacity": int(self.required_capacity),
+            "overflowed": bool(self.overflowed),
+            "overflow_policy": self.overflow_policy,
+            "retry_capacity_hint": self.retry_capacity_hint,
+            "partial_result_returned": bool(self.overflowed) and int(self.row_count) != 0,
+        }
+
+
 @dataclass
 class OptixNativeDevicePairColumnOutput:
     library: object
@@ -1580,7 +1633,25 @@ class OptixNativeDevicePairColumnOutput:
     def relation_row_count(self) -> int:
         return int(self.candidate_event_count)
 
+    @property
+    def required_capacity(self) -> int:
+        return int(self.relation_row_count)
+
+    @property
+    def retry_capacity_hint(self) -> int | None:
+        return int(self.required_capacity) if self.overflow else None
+
+    @property
+    def capacity_status(self) -> "PairColumnStreamCapacityStatus":
+        return PairColumnStreamCapacityStatus(
+            capacity=int(self.capacity),
+            row_count=int(self.row_count),
+            required_capacity=int(self.required_capacity),
+            overflowed=bool(self.overflow),
+        )
+
     def to_metadata(self) -> dict[str, object]:
+        capacity_status = self.capacity_status.to_metadata()
         metadata = geometry_relation_typed_stream_metadata_for_device_pair_columns(
             row_count=self.row_count,
             capacity=self.capacity,
@@ -1602,6 +1673,9 @@ class OptixNativeDevicePairColumnOutput:
             stream_metadata["producer_primitive"] = "point_closed_shape_membership_2d_exact_host_refined"
             stream_metadata["status"] = "internal_contract_host_refined_exact_device_columns"
             stream_metadata["relation_row_count"] = int(self.relation_row_count)
+            stream_metadata["capacity_status"] = capacity_status
+            stream_metadata["required_capacity"] = int(self.required_capacity)
+            stream_metadata["retry_capacity_hint"] = self.retry_capacity_hint
             producer_metadata = metadata["v2_8_typed_producer_metadata"]
             producer_metadata["schema_id"] = "point_closed_shape_membership_2d_exact_device_columns"
             producer_metadata["producer_primitive"] = "point_closed_shape_membership_2d_exact_host_refined"
@@ -1611,6 +1685,9 @@ class OptixNativeDevicePairColumnOutput:
             producer_metadata["device_only_exact_predicate_produced"] = False
             producer_metadata["exact_relation_row_count"] = int(self.relation_row_count)
             producer_metadata["legacy_pair_column_count_field"] = "candidate_event_count"
+            producer_metadata["capacity_status"] = capacity_status
+            producer_metadata["required_capacity"] = int(self.required_capacity)
+            producer_metadata["retry_capacity_hint"] = self.retry_capacity_hint
         metadata["runtime"] = {
             "backend": "optix",
             "output_residency": (
@@ -1626,12 +1703,22 @@ class OptixNativeDevicePairColumnOutput:
             "exact_relation_witness_rows_materialized": False,
             "host_refined_exact_rows_inside_native_bridge": is_exact_closed_shape_bridge,
             "relation_row_count": int(self.relation_row_count),
+            "capacity_status": capacity_status,
+            "retry_capacity_hint": self.retry_capacity_hint,
         }
+        metadata["capacity_status"] = capacity_status
         return metadata
+
+    def raise_if_overflowed(self, *, operation: str) -> None:
+        self.capacity_status.raise_if_overflowed(operation=operation)
 
     def _cupy_column(self, device_ptr: int):
         if self.overflow:
-            raise RuntimeError("cannot wrap an overflowed device pair-column stream")
+            raise RuntimeError(
+                "cannot wrap an overflowed device pair-column stream; "
+                f"capacity={int(self.capacity)} required_capacity={int(self.required_capacity)}; "
+                "overflow_policy=fail_closed; retry explicitly with max_rows>=required_capacity"
+            )
         if device_ptr <= 0 or self.capacity <= 0:
             raise RuntimeError("device pair-column stream does not own CUDA columns")
         import cupy as cp  # type: ignore
