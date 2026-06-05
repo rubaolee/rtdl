@@ -1,0 +1,195 @@
+{
+  "active_count_sec": {
+    "max": 0.15243985690176487,
+    "median": 0.1470269402489066,
+    "min": 0.1436627795919776
+  },
+  "active_counts": [
+    4543,
+    4543,
+    4543,
+    4543
+  ],
+  "active_scan_sec": {
+    "max": 0.011783203,
+    "median": 0.0116330105,
+    "min": 0.01157526
+  },
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "containment_sec": {
+    "max": 0.055425197,
+    "median": 0.055393064500000005,
+    "min": 0.055380019
+  },
+  "flag_download_sec": {
+    "max": 0.013840337,
+    "median": 0.013835835500000001,
+    "min": 0.013825793
+  },
+  "goal": 3441,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "iterations": 4,
+  "last_native_phase_timings": {
+    "active_count": 4543,
+    "active_scan": 0.01157526,
+    "containment": 0.055380019,
+    "flag_download": 0.013825793,
+    "left_prepare": 0.000767644,
+    "left_upload": 0.000646375,
+    "mode": "active_count",
+    "pair_count": 14899300,
+    "traversal": 0.000956675
+  },
+  "left_cdb": "data/rayjoin_public_cdb/br_county.cdb",
+  "left_prepare_sec": {
+    "max": 0.00087025,
+    "median": 0.000795467,
+    "min": 0.000767644
+  },
+  "left_shape_count": 15700,
+  "left_upload_sec": {
+    "max": 0.003611584,
+    "median": 0.000682174,
+    "min": 0.000646375
+  },
+  "measured_native_phase_sum_sec": {
+    "max": 0.086338598,
+    "median": 0.083365354,
+    "min": 0.083151766
+  },
+  "right_cdb": "data/rayjoin_public_cdb/br_county_start256_count1024.cdb",
+  "right_shape_count": 949,
+  "rtdl_commit": "01825de8aab0a67cf4bb925ca6bd6e51b957befc",
+  "runs": [
+    {
+      "active_count": 4543,
+      "active_count_sec": 0.15243985690176487,
+      "claim_boundary": {
+        "full_rayjoin_reproduction": false,
+        "paper_scale_perf_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "v2_8_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "iteration": 0,
+      "measured_native_phase_sum_sec": 0.083503549,
+      "native_phase_timings": {
+        "active_count": 4543,
+        "active_scan": 0.011783203,
+        "containment": 0.055425197,
+        "flag_download": 0.013840337,
+        "left_prepare": 0.000799719,
+        "left_upload": 0.000705037,
+        "mode": "active_count",
+        "pair_count": 14899300,
+        "traversal": 0.000950056
+      },
+      "unattributed_host_orchestration_sec": 0.06893630790176487
+    },
+    {
+      "active_count": 4543,
+      "active_count_sec": 0.15010572876781225,
+      "claim_boundary": {
+        "full_rayjoin_reproduction": false,
+        "paper_scale_perf_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "v2_8_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "iteration": 1,
+      "measured_native_phase_sum_sec": 0.086338598,
+      "native_phase_timings": {
+        "active_count": 4543,
+        "active_scan": 0.01166636,
+        "containment": 0.055401337,
+        "flag_download": 0.013835883,
+        "left_prepare": 0.00087025,
+        "left_upload": 0.003611584,
+        "mode": "active_count",
+        "pair_count": 14899300,
+        "traversal": 0.000953184
+      },
+      "unattributed_host_orchestration_sec": 0.06376713076781225
+    },
+    {
+      "active_count": 4543,
+      "active_count_sec": 0.14394815173000097,
+      "claim_boundary": {
+        "full_rayjoin_reproduction": false,
+        "paper_scale_perf_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "v2_8_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "iteration": 2,
+      "measured_native_phase_sum_sec": 0.08322715900000001,
+      "native_phase_timings": {
+        "active_count": 4543,
+        "active_scan": 0.011599661,
+        "containment": 0.055384792,
+        "flag_download": 0.013835788,
+        "left_prepare": 0.000791215,
+        "left_upload": 0.000659311,
+        "mode": "active_count",
+        "pair_count": 14899300,
+        "traversal": 0.000956392
+      },
+      "unattributed_host_orchestration_sec": 0.060720992730000964
+    },
+    {
+      "active_count": 4543,
+      "active_count_sec": 0.1436627795919776,
+      "claim_boundary": {
+        "full_rayjoin_reproduction": false,
+        "paper_scale_perf_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "v2_8_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "iteration": 3,
+      "measured_native_phase_sum_sec": 0.083151766,
+      "native_phase_timings": {
+        "active_count": 4543,
+        "active_scan": 0.01157526,
+        "containment": 0.055380019,
+        "flag_download": 0.013825793,
+        "left_prepare": 0.000767644,
+        "left_upload": 0.000646375,
+        "mode": "active_count",
+        "pair_count": 14899300,
+        "traversal": 0.000956675
+      },
+      "unattributed_host_orchestration_sec": 0.060511013591977594
+    }
+  ],
+  "schema": "rtdl.goal3441.shape_pair_active_count_phase_timings.v1",
+  "traversal_sec": {
+    "max": 0.000956675,
+    "median": 0.000954788,
+    "min": 0.000950056
+  },
+  "unattributed_host_orchestration_sec": {
+    "max": 0.06893630790176487,
+    "median": 0.06224406174890661,
+    "min": 0.060511013591977594
+  }
+}

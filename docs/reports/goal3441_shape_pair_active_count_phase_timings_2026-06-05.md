@@ -1,7 +1,7 @@
 # Goal3441 Shape-Pair Active-Count Phase Timings
 
 **Date:** 2026-06-05  
-**Status:** implemented; pod artifact pending  
+**Status:** implemented and pod-validated
 **Scope:** generic OptiX shape-pair active-count diagnostic telemetry
 
 ## Purpose
@@ -83,11 +83,40 @@ python3 scripts/goal3441_shape_pair_active_count_phase_timing_probe.py \
 
 The probe prints one progress line per iteration beginning with `[goal3441]`.
 
+Pod artifact:
+
+- `docs/reports/goal3441_shape_pair_active_count_phase_timings_pod_2026-06-05.json`
+- `docs/reports/goal3441_shape_pair_active_count_phase_timings_pod_2026-06-05.stdout`
+
+Pod result on `NVIDIA RTX A5000, 580.126.09`, commit
+`01825de8aab0a67cf4bb925ca6bd6e51b957befc`, using
+`br_county.cdb` as left shapes and `br_county_start256_count1024.cdb`
+as the available right-shape slice:
+
+| Measure | Median seconds | Notes |
+| --- | ---: | --- |
+| Total Python-visible active-count call | `0.147027` | 15,700 left shapes x 949 right shapes = 14,899,300 relation pairs |
+| Measured native phase sum | `0.083365` | Sum of the explicit native phase timers below |
+| Unattributed host/runtime orchestration | `0.062244` | Residual after explicit native phases; includes current full-buffer path overhead not separately decomposed here |
+| CPU containment supplement | `0.055393` | Largest explicit phase |
+| Device flag download | `0.013836` | Full relation flag buffer transfer |
+| Active-flag scan/reduction | `0.011633` | Host-side scan over relation flags |
+| OptiX traversal | `0.000955` | Not the bottleneck |
+| Left-side prepare | `0.000795` | Small |
+| Left-side upload | `0.000682` | Small median, one run had a larger upload blip |
+
+Interpretation: the relation traversal itself is already cheap. The next
+performance target should not be another RT traversal tweak. The useful targets
+are (1) moving containment and active-count reduction toward a device-side
+active-count-only relation path, and (2) avoiding or shrinking the full relation
+flag buffer download and host scan.
+
 ## Next
 
-Use the phase breakdown to decide the next performance move. If containment
-dominates, the next safe generic optimization is a prepared right-side bounds
-candidate index for the CPU containment supplement. If active scanning or flag
-download dominates, the next target is a device-side active-count-only relation
-path that avoids materializing and scanning the full flag buffer on the host. If
-traversal dominates, the next target is the OptiX relation kernel itself.
+Use the phase breakdown to decide the next performance move. On the pod result,
+containment plus full-buffer download/scan plus residual orchestration dominate.
+The next target is a device-side active-count-only relation path that avoids
+materializing and scanning the full flag buffer on the host. A prepared
+right-side bounds candidate index remains a secondary generic optimization for
+the containment supplement. The OptiX relation kernel itself is not currently
+the bottleneck.
