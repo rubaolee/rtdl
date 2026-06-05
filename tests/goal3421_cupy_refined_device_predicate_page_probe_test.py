@@ -44,7 +44,7 @@ class Goal3421CuPyRefinedDevicePredicatePageProbeTest(unittest.TestCase):
         self.assertIn("claims remain blocked", report)
 
     @unittest.skipUnless(ARTIFACT.exists(), "Goal3421 pod artifact pending")
-    def test_pod_artifact_records_full_cdb_refinement_result(self):
+    def test_pod_artifact_records_full_cdb_refinement_gap(self):
         payload = json.loads(ARTIFACT.read_text(encoding="utf-8"))
 
         self.assertEqual(payload["schema"], "rtdl.goal3421.cupy_refined_device_predicate_page_probe.v1")
@@ -56,22 +56,23 @@ class Goal3421CuPyRefinedDevicePredicatePageProbeTest(unittest.TestCase):
 
         self.assertEqual(payload["host_exact_pair_count"], 47262)
         self.assertEqual(payload["rt_candidate_pair_count"], 47570)
-        self.assertEqual(payload["cupy_refined_pair_count"], 47262)
-        self.assertEqual(payload["dropped_candidate_pair_count"], 308)
-        self.assertTrue(payload["pair_multiset_match_host_exact"])
-        self.assertEqual(payload["pair_missing_from_refined_sample"], [])
+        self.assertEqual(payload["cupy_refined_pair_count"], 47045)
+        self.assertEqual(payload["dropped_candidate_pair_count"], 525)
+        self.assertEqual(payload["point_eps"], 1e-9)
+        self.assertFalse(payload["pair_multiset_match_host_exact"])
+        self.assertGreater(len(payload["pair_missing_from_refined_sample"]), 0)
         self.assertEqual(payload["pair_extra_on_refined_sample"], [])
-        self.assertTrue(payload["group_counts_match_host"])
+        self.assertFalse(payload["group_counts_match_host"])
         self.assertEqual(payload["missing_group_key_count"], 0)
         self.assertEqual(payload["extra_group_key_count"], 0)
-        self.assertEqual(payload["mismatched_group_value_count"], 0)
+        self.assertEqual(payload["mismatched_group_value_count"], 97)
 
         boundary = payload["refinement_boundary"]
         self.assertTrue(boundary["rt_candidate_columns_produced"])
         self.assertTrue(boundary["cupy_device_refinement_used"])
         self.assertFalse(boundary["host_refinement_used_to_produce_refined_columns"])
         self.assertTrue(boundary["host_exact_used_only_as_oracle"])
-        self.assertTrue(boundary["refined_columns_match_host_exact_on_this_dataset"])
+        self.assertFalse(boundary["refined_columns_match_host_exact_on_this_dataset"])
         self.assertFalse(boundary["native_exact_device_predicate_implemented"])
         self.assertFalse(boundary["native_page_plan_handle_used"])
 

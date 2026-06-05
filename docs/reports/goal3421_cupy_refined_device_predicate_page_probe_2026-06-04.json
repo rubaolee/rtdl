@@ -1,0 +1,459 @@
+{
+  "claim_boundary": {
+    "automatic_retry_authorized": false,
+    "hidden_dispatch_authorized": false,
+    "native_default_route_authorized": false,
+    "native_exact_device_predicate_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "contract": {
+    "automatic_retry_authorized": false,
+    "hidden_dispatch_authorized": false,
+    "initial_capacity": 100,
+    "merge_requires_disjoint_keys": false,
+    "merge_rule": "key_addition",
+    "native_paged_stream_implemented": false,
+    "overflow_policy": "fail_closed_explicit_retry",
+    "page_size": 2048,
+    "schema": "rtdl.pair_column_paged_recovery.v1",
+    "windows_are_caller_visible": true
+  },
+  "county_cdb": "data/rayjoin_public_cdb/br_county.cdb",
+  "cupy_refined_pair_count": 47045,
+  "dropped_candidate_pair_count": 525,
+  "extra_group_key_count": 0,
+  "goal": 3421,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "group_counts_match_host": false,
+  "host_exact_pair_count": 47262,
+  "host_group_count": 16476,
+  "mismatched_group_value_count": 97,
+  "missing_group_key_count": 0,
+  "pair_extra_on_refined_sample": [],
+  "pair_missing_from_refined_sample": [
+    [
+      51,
+      52,
+      1
+    ],
+    [
+      52,
+      52,
+      1
+    ],
+    [
+      57,
+      58,
+      1
+    ],
+    [
+      58,
+      58,
+      1
+    ],
+    [
+      59,
+      60,
+      1
+    ],
+    [
+      60,
+      60,
+      1
+    ],
+    [
+      61,
+      60,
+      1
+    ],
+    [
+      66,
+      55,
+      1
+    ],
+    [
+      53,
+      53,
+      1
+    ],
+    [
+      57,
+      57,
+      1
+    ],
+    [
+      58,
+      57,
+      1
+    ],
+    [
+      59,
+      61,
+      1
+    ],
+    [
+      60,
+      61,
+      1
+    ],
+    [
+      61,
+      61,
+      1
+    ],
+    [
+      44,
+      44,
+      1
+    ],
+    [
+      45,
+      44,
+      1
+    ],
+    [
+      53,
+      48,
+      1
+    ],
+    [
+      65,
+      65,
+      1
+    ],
+    [
+      66,
+      40,
+      1
+    ],
+    [
+      72,
+      18,
+      1
+    ]
+  ],
+  "pair_multiset_match_host_exact": false,
+  "point_count": 16545,
+  "point_eps": 1e-09,
+  "recovery_summary": {
+    "grouped_row_count": 16476,
+    "grouped_source_row_count": 47045,
+    "merge_requires_disjoint_keys": false,
+    "merge_rule": "key_addition",
+    "overflow_page_count": 9,
+    "page_count": 9,
+    "page_records": [
+      {
+        "device_group_count": 1981,
+        "first_capacity_status": {
+          "capacity": 100,
+          "overflow_policy": "fail_closed",
+          "overflowed": true,
+          "partial_result_returned": false,
+          "required_capacity": 5720,
+          "retry_capacity_hint": 5720,
+          "row_count": 0
+        },
+        "grouped_overflow": false,
+        "grouped_row_count": 1981,
+        "grouped_source_row_count": 5463,
+        "host_exact_rows": 5666,
+        "initial_capacity": 100,
+        "item_count": 2048,
+        "page_index": 0,
+        "recovered_capacity_status": {
+          "capacity": 5720,
+          "overflow_policy": "fail_closed",
+          "overflowed": false,
+          "partial_result_returned": false,
+          "required_capacity": 5720,
+          "retry_capacity_hint": null,
+          "row_count": 5720
+        },
+        "retry_capacity_hint": 5720,
+        "retry_used": true,
+        "start": 0,
+        "stop": 2048
+      },
+      {
+        "device_group_count": 2048,
+        "first_capacity_status": {
+          "capacity": 100,
+          "overflow_policy": "fail_closed",
+          "overflowed": true,
+          "partial_result_returned": false,
+          "required_capacity": 5719,
+          "retry_capacity_hint": 5719,
+          "row_count": 0
+        },
+        "grouped_overflow": false,
+        "grouped_row_count": 2048,
+        "grouped_source_row_count": 5665,
+        "host_exact_rows": 5665,
+        "initial_capacity": 100,
+        "item_count": 2048,
+        "page_index": 1,
+        "recovered_capacity_status": {
+          "capacity": 5719,
+          "overflow_policy": "fail_closed",
+          "overflowed": false,
+          "partial_result_returned": false,
+          "required_capacity": 5719,
+          "retry_capacity_hint": null,
+          "row_count": 5719
+        },
+        "retry_capacity_hint": 5719,
+        "retry_used": true,
+        "start": 2048,
+        "stop": 4096
+      },
+      {
+        "device_group_count": 2046,
+        "first_capacity_status": {
+          "capacity": 100,
+          "overflow_policy": "fail_closed",
+          "overflowed": true,
+          "partial_result_returned": false,
+          "required_capacity": 5928,
+          "retry_capacity_hint": 5928,
+          "row_count": 0
+        },
+        "grouped_overflow": false,
+        "grouped_row_count": 2046,
+        "grouped_source_row_count": 5819,
+        "host_exact_rows": 5819,
+        "initial_capacity": 100,
+        "item_count": 2048,
+        "page_index": 2,
+        "recovered_capacity_status": {
+          "capacity": 5928,
+          "overflow_policy": "fail_closed",
+          "overflowed": false,
+          "partial_result_returned": false,
+          "required_capacity": 5928,
+          "retry_capacity_hint": null,
+          "row_count": 5928
+        },
+        "retry_capacity_hint": 5928,
+        "retry_used": true,
+        "start": 4096,
+        "stop": 6144
+      },
+      {
+        "device_group_count": 2048,
+        "first_capacity_status": {
+          "capacity": 100,
+          "overflow_policy": "fail_closed",
+          "overflowed": true,
+          "partial_result_returned": false,
+          "required_capacity": 6011,
+          "retry_capacity_hint": 6011,
+          "row_count": 0
+        },
+        "grouped_overflow": false,
+        "grouped_row_count": 2048,
+        "grouped_source_row_count": 6008,
+        "host_exact_rows": 6008,
+        "initial_capacity": 100,
+        "item_count": 2048,
+        "page_index": 3,
+        "recovered_capacity_status": {
+          "capacity": 6011,
+          "overflow_policy": "fail_closed",
+          "overflowed": false,
+          "partial_result_returned": false,
+          "required_capacity": 6011,
+          "retry_capacity_hint": null,
+          "row_count": 6011
+        },
+        "retry_capacity_hint": 6011,
+        "retry_used": true,
+        "start": 6144,
+        "stop": 8192
+      },
+      {
+        "device_group_count": 2048,
+        "first_capacity_status": {
+          "capacity": 100,
+          "overflow_policy": "fail_closed",
+          "overflowed": true,
+          "partial_result_returned": false,
+          "required_capacity": 5949,
+          "retry_capacity_hint": 5949,
+          "row_count": 0
+        },
+        "grouped_overflow": false,
+        "grouped_row_count": 2048,
+        "grouped_source_row_count": 5935,
+        "host_exact_rows": 5935,
+        "initial_capacity": 100,
+        "item_count": 2048,
+        "page_index": 4,
+        "recovered_capacity_status": {
+          "capacity": 5949,
+          "overflow_policy": "fail_closed",
+          "overflowed": false,
+          "partial_result_returned": false,
+          "required_capacity": 5949,
+          "retry_capacity_hint": null,
+          "row_count": 5949
+        },
+        "retry_capacity_hint": 5949,
+        "retry_used": true,
+        "start": 8192,
+        "stop": 10240
+      },
+      {
+        "device_group_count": 2048,
+        "first_capacity_status": {
+          "capacity": 100,
+          "overflow_policy": "fail_closed",
+          "overflowed": true,
+          "partial_result_returned": false,
+          "required_capacity": 5935,
+          "retry_capacity_hint": 5935,
+          "row_count": 0
+        },
+        "grouped_overflow": false,
+        "grouped_row_count": 2048,
+        "grouped_source_row_count": 5893,
+        "host_exact_rows": 5893,
+        "initial_capacity": 100,
+        "item_count": 2048,
+        "page_index": 5,
+        "recovered_capacity_status": {
+          "capacity": 5935,
+          "overflow_policy": "fail_closed",
+          "overflowed": false,
+          "partial_result_returned": false,
+          "required_capacity": 5935,
+          "retry_capacity_hint": null,
+          "row_count": 5935
+        },
+        "retry_capacity_hint": 5935,
+        "retry_used": true,
+        "start": 10240,
+        "stop": 12288
+      },
+      {
+        "device_group_count": 2048,
+        "first_capacity_status": {
+          "capacity": 100,
+          "overflow_policy": "fail_closed",
+          "overflowed": true,
+          "partial_result_returned": false,
+          "required_capacity": 5922,
+          "retry_capacity_hint": 5922,
+          "row_count": 0
+        },
+        "grouped_overflow": false,
+        "grouped_row_count": 2048,
+        "grouped_source_row_count": 5908,
+        "host_exact_rows": 5908,
+        "initial_capacity": 100,
+        "item_count": 2048,
+        "page_index": 6,
+        "recovered_capacity_status": {
+          "capacity": 5922,
+          "overflow_policy": "fail_closed",
+          "overflowed": false,
+          "partial_result_returned": false,
+          "required_capacity": 5922,
+          "retry_capacity_hint": null,
+          "row_count": 5922
+        },
+        "retry_capacity_hint": 5922,
+        "retry_used": true,
+        "start": 12288,
+        "stop": 14336
+      },
+      {
+        "device_group_count": 2048,
+        "first_capacity_status": {
+          "capacity": 100,
+          "overflow_policy": "fail_closed",
+          "overflowed": true,
+          "partial_result_returned": false,
+          "required_capacity": 6033,
+          "retry_capacity_hint": 6033,
+          "row_count": 0
+        },
+        "grouped_overflow": false,
+        "grouped_row_count": 2048,
+        "grouped_source_row_count": 6002,
+        "host_exact_rows": 6016,
+        "initial_capacity": 100,
+        "item_count": 2048,
+        "page_index": 7,
+        "recovered_capacity_status": {
+          "capacity": 6033,
+          "overflow_policy": "fail_closed",
+          "overflowed": false,
+          "partial_result_returned": false,
+          "required_capacity": 6033,
+          "retry_capacity_hint": null,
+          "row_count": 6033
+        },
+        "retry_capacity_hint": 6033,
+        "retry_used": true,
+        "start": 14336,
+        "stop": 16384
+      },
+      {
+        "device_group_count": 161,
+        "first_capacity_status": {
+          "capacity": 100,
+          "overflow_policy": "fail_closed",
+          "overflowed": true,
+          "partial_result_returned": false,
+          "required_capacity": 353,
+          "retry_capacity_hint": 353,
+          "row_count": 0
+        },
+        "grouped_overflow": false,
+        "grouped_row_count": 161,
+        "grouped_source_row_count": 352,
+        "host_exact_rows": 352,
+        "initial_capacity": 100,
+        "item_count": 161,
+        "page_index": 8,
+        "recovered_capacity_status": {
+          "capacity": 353,
+          "overflow_policy": "fail_closed",
+          "overflowed": false,
+          "partial_result_returned": false,
+          "required_capacity": 353,
+          "retry_capacity_hint": null,
+          "row_count": 353
+        },
+        "retry_capacity_hint": 353,
+        "retry_used": true,
+        "start": 16384,
+        "stop": 16545
+      }
+    ],
+    "retry_page_count": 9,
+    "schema": "rtdl.pair_column_paged_recovery.v1"
+  },
+  "refined_group_count": 16476,
+  "refinement_boundary": {
+    "automatic_retry_authorized": false,
+    "cupy_device_refinement_used": true,
+    "hidden_dispatch_authorized": false,
+    "host_exact_used_only_as_oracle": true,
+    "host_refinement_used_to_produce_refined_columns": false,
+    "native_exact_device_predicate_implemented": false,
+    "native_page_plan_handle_used": false,
+    "refined_columns_match_host_exact_on_this_dataset": false,
+    "rt_candidate_columns_produced": true
+  },
+  "rt_candidate_pair_count": 47570,
+  "rtdl_commit": "702173ba511603ba89654d8e5a0f6f4a323cb40f",
+  "schema": "rtdl.goal3421.cupy_refined_device_predicate_page_probe.v1",
+  "shape_count": 15700
+}
