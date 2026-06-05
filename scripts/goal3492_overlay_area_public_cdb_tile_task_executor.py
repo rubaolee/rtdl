@@ -278,11 +278,15 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     )[:10]
 
     schema = (
-        "rtdl.goal3493.overlay_area_active_shape_payload_construction.v1"
-        if args.active_shapes_only
-        else "rtdl.goal3492.overlay_area_public_cdb_tile_task_executor.v1"
+        "rtdl.goal3494.overlay_area_resident_cupy_tile_task_inputs.v1"
+        if args.resident_cupy_inputs
+        else (
+            "rtdl.goal3493.overlay_area_active_shape_payload_construction.v1"
+            if args.active_shapes_only
+            else "rtdl.goal3492.overlay_area_public_cdb_tile_task_executor.v1"
+        )
     )
-    goal = 3493 if args.active_shapes_only else 3492
+    goal = 3494 if args.resident_cupy_inputs else (3493 if args.active_shapes_only else 3492)
 
     return {
         "schema": schema,
