@@ -403,7 +403,9 @@ from .v2_8_overlay_area_prepared_payload import evaluate_prepared_overlay_area_t
 from .v2_8_overlay_area_prepared_payload import evaluate_prepared_overlay_area_tile_tasks_cupy
 from .v2_8_overlay_area_prepared_payload import plan_prepared_overlay_area_tile_tasks
 from .v2_8_overlay_area_prepared_payload import prepared_simple_polygon_component_payload_from_dict
+from .v2_8_overlay_area_prepared_payload import prepared_simple_polygon_component_payload_from_numpy_columns
 from .v2_8_overlay_area_prepared_payload import prepared_simple_polygon_component_payload_to_dict
+from .v2_8_overlay_area_prepared_payload import prepared_simple_polygon_component_payload_to_numpy_columns
 from .v2_8_overlay_area_prepared_payload import prepared_overlay_area_component_bounds_overlap_positive
 from .v2_8_overlay_area_prepared_payload import prepare_overlay_area_tile_task_cupy_inputs_from_relation_ordinals
 from .v2_8_overlay_area_prepared_payload import prepare_overlay_area_tile_task_cupy_inputs
@@ -2163,7 +2165,9 @@ __all__ = [
     "evaluate_prepared_overlay_area_tile_tasks_cupy",
     "plan_prepared_overlay_area_tile_tasks",
     "prepared_simple_polygon_component_payload_from_dict",
+    "prepared_simple_polygon_component_payload_from_numpy_columns",
     "prepared_simple_polygon_component_payload_to_dict",
+    "prepared_simple_polygon_component_payload_to_numpy_columns",
     "prepared_overlay_area_component_bounds_overlap_positive",
     "prepare_overlay_area_tile_task_cupy_inputs_from_relation_ordinals",
     "prepare_overlay_area_tile_task_cupy_inputs",

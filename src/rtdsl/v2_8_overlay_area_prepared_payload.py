@@ -924,6 +924,95 @@ def prepared_simple_polygon_component_payload_from_dict(
     )
 
 
+def prepared_simple_polygon_component_payload_to_numpy_columns(
+    payload: PreparedSimplePolygonComponentPayload,
+) -> dict[str, Any]:
+    """Return explicit column arrays for compact prepared-payload persistence."""
+
+    try:
+        import numpy as np
+    except Exception as exc:  # pragma: no cover - dependency availability guard
+        raise RuntimeError("prepared payload column serialization requires numpy") from exc
+
+    triangles = np.asarray(payload.triangles, dtype=np.float64).reshape((payload.triangle_count, 3, 2))
+    return {
+        "schema": np.asarray([V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_SERIALIZATION_VERSION]),
+        "payload_version": np.asarray([V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_VERSION]),
+        "payload_status": np.asarray([payload.status]),
+        "triangles": triangles,
+        "component_ordinal": np.asarray([record.component_ordinal for record in payload.components], dtype=np.int64),
+        "source_shape_id": np.asarray([record.source_shape_id for record in payload.components], dtype=np.int64),
+        "triangle_start": np.asarray([record.triangle_start for record in payload.components], dtype=np.int64),
+        "triangle_count": np.asarray([record.triangle_count for record in payload.components], dtype=np.int64),
+        "input_vertex_count": np.asarray([record.input_vertex_count for record in payload.components], dtype=np.int64),
+        "bounds": np.asarray(
+            [(record.min_x, record.min_y, record.max_x, record.max_y) for record in payload.components],
+            dtype=np.float64,
+        ).reshape((payload.component_count, 4)),
+        "component_status": np.asarray([record.status for record in payload.components]),
+    }
+
+
+def prepared_simple_polygon_component_payload_from_numpy_columns(
+    columns: Any,
+) -> PreparedSimplePolygonComponentPayload:
+    try:
+        import numpy as np
+    except Exception as exc:  # pragma: no cover - dependency availability guard
+        raise RuntimeError("prepared payload column deserialization requires numpy") from exc
+
+    schema_values = columns["schema"]
+    schema = str(np.asarray(schema_values).reshape(-1)[0])
+    if schema != V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_SERIALIZATION_VERSION:
+        raise ValueError("unexpected prepared payload column schema")
+
+    triangles_array = np.asarray(columns["triangles"], dtype=np.float64)
+    if triangles_array.ndim != 3 or triangles_array.shape[1:] != (3, 2):
+        raise ValueError("prepared payload triangle columns must have shape (n, 3, 2)")
+    triangles: list[Triangle2] = [
+        (
+            (float(row[0, 0]), float(row[0, 1])),
+            (float(row[1, 0]), float(row[1, 1])),
+            (float(row[2, 0]), float(row[2, 1])),
+        )
+        for row in triangles_array
+    ]
+
+    component_ordinal = np.asarray(columns["component_ordinal"], dtype=np.int64)
+    source_shape_id = np.asarray(columns["source_shape_id"], dtype=np.int64)
+    triangle_start = np.asarray(columns["triangle_start"], dtype=np.int64)
+    triangle_count = np.asarray(columns["triangle_count"], dtype=np.int64)
+    input_vertex_count = np.asarray(columns["input_vertex_count"], dtype=np.int64)
+    bounds = np.asarray(columns["bounds"], dtype=np.float64)
+    component_status = np.asarray(columns["component_status"])
+    if bounds.shape != (len(component_ordinal), 4):
+        raise ValueError("prepared payload bounds column must have shape (component_count, 4)")
+
+    components: list[PreparedSimplePolygonComponentRecord] = []
+    for index in range(len(component_ordinal)):
+        components.append(
+            PreparedSimplePolygonComponentRecord(
+                component_ordinal=int(component_ordinal[index]),
+                source_shape_id=int(source_shape_id[index]),
+                triangle_start=int(triangle_start[index]),
+                triangle_count=int(triangle_count[index]),
+                input_vertex_count=int(input_vertex_count[index]),
+                min_x=float(bounds[index, 0]),
+                min_y=float(bounds[index, 1]),
+                max_x=float(bounds[index, 2]),
+                max_y=float(bounds[index, 3]),
+                status=str(component_status[index]),
+            )
+        )
+
+    payload_status = str(np.asarray(columns["payload_status"]).reshape(-1)[0])
+    return PreparedSimplePolygonComponentPayload(
+        triangles=tuple(triangles),
+        components=tuple(components),
+        status=payload_status,
+    )
+
+
 def prepare_overlay_area_pair_rows(
     left_payload: PreparedSimplePolygonComponentPayload,
     right_payload: PreparedSimplePolygonComponentPayload,
@@ -1729,7 +1818,9 @@ __all__ = [
     "evaluate_prepared_overlay_area_tile_tasks_cupy",
     "plan_prepared_overlay_area_tile_tasks",
     "prepared_simple_polygon_component_payload_from_dict",
+    "prepared_simple_polygon_component_payload_from_numpy_columns",
     "prepared_simple_polygon_component_payload_to_dict",
+    "prepared_simple_polygon_component_payload_to_numpy_columns",
     "prepared_overlay_area_component_bounds_overlap_positive",
     "prepare_overlay_area_tile_task_cupy_inputs_from_relation_ordinals",
     "prepare_overlay_area_tile_task_cupy_inputs",

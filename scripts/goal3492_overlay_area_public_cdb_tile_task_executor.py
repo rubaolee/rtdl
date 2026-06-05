@@ -214,8 +214,111 @@ def _shape_components_from_jsonable(data: dict[str, Any]) -> dict[int, tuple[int
     }
 
 
+def _json_cache_schema() -> str:
+    return "rtdl.goal3507.overlay_area_prepared_payload_cache.v1"
+
+
+def _binary_cache_schema() -> str:
+    return "rtdl.goal3509.overlay_area_binary_prepared_payload_cache.v1"
+
+
 def _cache_path(cache_dir: Path, side: str) -> Path:
     return cache_dir / f"{side}_prepared_simple_polygon_component_payload.json"
+
+
+def _binary_cache_manifest_path(cache_dir: Path, side: str) -> Path:
+    return cache_dir / f"{side}_prepared_simple_polygon_component_payload_binary_manifest.json"
+
+
+def _binary_payload_npz_path(cache_dir: Path, side: str) -> Path:
+    return cache_dir / f"{side}_prepared_simple_polygon_component_payload_columns.npz"
+
+
+def _binary_shape_components_npz_path(cache_dir: Path, side: str) -> Path:
+    return cache_dir / f"{side}_shape_component_columns.npz"
+
+
+def _binary_geometry_wkb_npz_path(cache_dir: Path, side: str) -> Path:
+    return cache_dir / f"{side}_geometry_wkb_columns.npz"
+
+
+def _write_shape_components_npz(path: Path, shape_to_components: dict[int, tuple[int, ...]]) -> None:
+    import numpy as np  # type: ignore
+
+    shape_ordinals: list[int] = []
+    offsets: list[int] = [0]
+    component_ordinals: list[int] = []
+    for shape_ordinal, components in sorted(shape_to_components.items()):
+        shape_ordinals.append(int(shape_ordinal))
+        component_ordinals.extend(int(component) for component in components)
+        offsets.append(len(component_ordinals))
+    np.savez(
+        path,
+        schema=np.asarray([_binary_cache_schema()]),
+        shape_ordinals=np.asarray(shape_ordinals, dtype=np.int64),
+        offsets=np.asarray(offsets, dtype=np.int64),
+        component_ordinals=np.asarray(component_ordinals, dtype=np.int64),
+    )
+
+
+def _read_shape_components_npz(path: Path) -> dict[int, tuple[int, ...]]:
+    import numpy as np  # type: ignore
+
+    with np.load(path, allow_pickle=False) as data:
+        schema = str(np.asarray(data["schema"]).reshape(-1)[0])
+        if schema != _binary_cache_schema():
+            raise ValueError("unexpected shape-component cache schema")
+        shape_ordinals = np.asarray(data["shape_ordinals"], dtype=np.int64)
+        offsets = np.asarray(data["offsets"], dtype=np.int64)
+        component_ordinals = np.asarray(data["component_ordinals"], dtype=np.int64)
+        return {
+            int(shape_ordinal): tuple(
+                int(component) for component in component_ordinals[int(offsets[index]) : int(offsets[index + 1])]
+            )
+            for index, shape_ordinal in enumerate(shape_ordinals)
+        }
+
+
+def _write_geometry_wkb_npz(path: Path, geometry_map: dict[int, Any]) -> None:
+    import numpy as np  # type: ignore
+
+    shape_ordinals: list[int] = []
+    offsets: list[int] = [0]
+    chunks: list[bytes] = []
+    for shape_ordinal, geometry in sorted(geometry_map.items()):
+        blob = bytes(geometry.wkb)
+        shape_ordinals.append(int(shape_ordinal))
+        chunks.append(blob)
+        offsets.append(offsets[-1] + len(blob))
+    combined = b"".join(chunks)
+    np.savez(
+        path,
+        schema=np.asarray([_binary_cache_schema()]),
+        shape_ordinals=np.asarray(shape_ordinals, dtype=np.int64),
+        offsets=np.asarray(offsets, dtype=np.int64),
+        blob=np.frombuffer(combined, dtype=np.uint8),
+    )
+
+
+def _read_geometry_wkb_npz(path: Path) -> dict[int, Any]:
+    import numpy as np  # type: ignore
+
+    try:
+        from shapely import wkb as shapely_wkb  # type: ignore
+    except Exception:  # pragma: no cover - Shapely 1.x compatibility path
+        import shapely.wkb as shapely_wkb  # type: ignore
+
+    with np.load(path, allow_pickle=False) as data:
+        schema = str(np.asarray(data["schema"]).reshape(-1)[0])
+        if schema != _binary_cache_schema():
+            raise ValueError("unexpected geometry WKB cache schema")
+        shape_ordinals = np.asarray(data["shape_ordinals"], dtype=np.int64)
+        offsets = np.asarray(data["offsets"], dtype=np.int64)
+        blob = np.asarray(data["blob"], dtype=np.uint8).tobytes()
+        return {
+            int(shape_ordinal): shapely_wkb.loads(blob[int(offsets[index]) : int(offsets[index + 1])])
+            for index, shape_ordinal in enumerate(shape_ordinals)
+        }
 
 
 def _write_prepared_payload_cache(
@@ -229,10 +332,37 @@ def _write_prepared_payload_cache(
     prepared_status_counts: dict[str, int],
     geometry_map: dict[int, Any],
     geometry_status_counts: dict[str, int],
+    cache_format: str = "json",
 ) -> Path:
     cache_dir.mkdir(parents=True, exist_ok=True)
+    if cache_format == "binary":
+        import numpy as np  # type: ignore
+
+        payload_path = _binary_payload_npz_path(cache_dir, side)
+        shape_components_path = _binary_shape_components_npz_path(cache_dir, side)
+        geometry_wkb_path = _binary_geometry_wkb_npz_path(cache_dir, side)
+        np.savez(payload_path, **rt.prepared_simple_polygon_component_payload_to_numpy_columns(payload))
+        _write_shape_components_npz(shape_components_path, shape_to_components)
+        _write_geometry_wkb_npz(geometry_wkb_path, geometry_map)
+        manifest_data = {
+            "schema": _binary_cache_schema(),
+            "side": side,
+            "source_cdb": str(source_cdb),
+            "selected_shape_ordinals": [int(value) for value in sorted(selected_shape_ordinals)],
+            "payload_columns": payload_path.name,
+            "shape_component_columns": shape_components_path.name,
+            "geometry_wkb_columns": geometry_wkb_path.name,
+            "prepared_status_counts": {str(key): int(value) for key, value in sorted(prepared_status_counts.items())},
+            "geometry_status_counts": {str(key): int(value) for key, value in sorted(geometry_status_counts.items())},
+            "claim_boundary": _claim_boundary(),
+        }
+        path = _binary_cache_manifest_path(cache_dir, side)
+        path.write_text(json.dumps(manifest_data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        return path
+    if cache_format != "json":
+        raise ValueError(f"unsupported prepared payload cache format: {cache_format}")
     payload_data = {
-        "schema": "rtdl.goal3507.overlay_area_prepared_payload_cache.v1",
+        "schema": _json_cache_schema(),
         "side": side,
         "source_cdb": str(source_cdb),
         "selected_shape_ordinals": [int(value) for value in sorted(selected_shape_ordinals)],
@@ -257,12 +387,54 @@ def _read_prepared_payload_cache(
     *,
     source_cdb: Path,
     selected_shape_ordinals: set[int],
+    cache_format: str = "json",
 ) -> tuple[rt.PreparedSimplePolygonComponentPayload, dict[int, tuple[int, ...]], dict[str, int], dict[int, Any], dict[str, int], dict[str, Any]]:
+    if cache_format == "binary":
+        path = _binary_cache_manifest_path(cache_dir, side)
+        if not path.exists():
+            raise FileNotFoundError(f"missing prepared payload binary cache manifest for {side}: {path}")
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if data.get("schema") != _binary_cache_schema():
+            raise ValueError(f"unexpected prepared payload binary cache schema for {side}")
+        if str(data.get("source_cdb")) != str(source_cdb):
+            raise ValueError(f"prepared payload binary cache source mismatch for {side}")
+        cached_shape_ordinals = {int(value) for value in data.get("selected_shape_ordinals", ())}
+        if cached_shape_ordinals != {int(value) for value in selected_shape_ordinals}:
+            raise ValueError(f"prepared payload binary cache shape ordinal set mismatch for {side}")
+        import numpy as np  # type: ignore
+
+        payload_path = cache_dir / str(data["payload_columns"])
+        with np.load(payload_path, allow_pickle=False) as payload_columns:
+            payload = rt.prepared_simple_polygon_component_payload_from_numpy_columns(payload_columns)
+        shape_components_path = cache_dir / str(data["shape_component_columns"])
+        geometry_wkb_path = cache_dir / str(data["geometry_wkb_columns"])
+        geometry_map = _read_geometry_wkb_npz(geometry_wkb_path)
+        return (
+            payload,
+            _read_shape_components_npz(shape_components_path),
+            {str(key): int(value) for key, value in data["prepared_status_counts"].items()},
+            geometry_map,
+            {str(key): int(value) for key, value in data["geometry_status_counts"].items()},
+            {
+                "cache_path": str(path),
+                "schema": data.get("schema"),
+                "format": cache_format,
+                "side": side,
+                "selected_shape_count": len(cached_shape_ordinals),
+                "payload_triangle_count": payload.triangle_count,
+                "component_count": payload.component_count,
+                "payload_columns": str(payload_path),
+                "shape_component_columns": str(shape_components_path),
+                "geometry_wkb_columns": str(geometry_wkb_path),
+            },
+        )
+    if cache_format != "json":
+        raise ValueError(f"unsupported prepared payload cache format: {cache_format}")
     path = _cache_path(cache_dir, side)
     if not path.exists():
         raise FileNotFoundError(f"missing prepared payload cache for {side}: {path}")
     data = json.loads(path.read_text(encoding="utf-8"))
-    if data.get("schema") != "rtdl.goal3507.overlay_area_prepared_payload_cache.v1":
+    if data.get("schema") != _json_cache_schema():
         raise ValueError(f"unexpected prepared payload cache schema for {side}")
     if str(data.get("source_cdb")) != str(source_cdb):
         raise ValueError(f"prepared payload cache source mismatch for {side}")
@@ -435,6 +607,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     payload_workers = max(1, int(args.payload_workers))
     payload_cache_dir = Path(args.payload_cache_dir) if args.payload_cache_dir is not None else None
     payload_cache_mode = str(args.payload_cache_mode)
+    payload_cache_format = str(args.payload_cache_format)
     if payload_cache_mode != "off" and payload_cache_dir is None:
         raise ValueError("--payload-cache-mode requires --payload-cache-dir")
     build_start = time.perf_counter()
@@ -446,6 +619,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     payload_cache_write_used = payload_cache_mode in {"write", "refresh"}
     payload_cache_metadata: dict[str, object] = {
         "mode": payload_cache_mode,
+        "format": payload_cache_format,
         "cache_dir": str(payload_cache_dir) if payload_cache_dir is not None else None,
         "read_used": False,
         "write_used": False,
@@ -469,6 +643,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             "left",
             source_cdb=args.left_cdb,
             selected_shape_ordinals=left_shapes_to_build if args.active_shapes_only else set(range(len(left_shapes))),
+            cache_format=payload_cache_format,
         )
         (
             right_payload,
@@ -482,6 +657,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             "right",
             source_cdb=args.right_cdb,
             selected_shape_ordinals=right_shapes_to_build if args.active_shapes_only else set(range(len(right_shapes))),
+            cache_format=payload_cache_format,
         )
         payload_cache_load_sec = time.perf_counter() - cache_load_start
         geometry_build_sec = 0.0
@@ -549,6 +725,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             prepared_status_counts=left_prepared_status,
             geometry_map=left_geometry_map,
             geometry_status_counts=left_geometry_status,
+            cache_format=payload_cache_format,
         )
         right_cache_path = _write_prepared_payload_cache(
             payload_cache_dir,
@@ -560,13 +737,22 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             prepared_status_counts=right_prepared_status,
             geometry_map=right_geometry_map,
             geometry_status_counts=right_geometry_status,
+            cache_format=payload_cache_format,
         )
         payload_cache_write_sec = time.perf_counter() - cache_write_start
         payload_cache_metadata.update(
             {
                 "write_used": True,
-                "left": {"cache_path": str(left_cache_path), "selected_shape_count": len(left_shapes_to_build)},
-                "right": {"cache_path": str(right_cache_path), "selected_shape_count": len(right_shapes_to_build)},
+                "left": {
+                    "cache_path": str(left_cache_path),
+                    "format": payload_cache_format,
+                    "selected_shape_count": len(left_shapes_to_build),
+                },
+                "right": {
+                    "cache_path": str(right_cache_path),
+                    "format": payload_cache_format,
+                    "selected_shape_count": len(right_shapes_to_build),
+                },
             }
         )
 
@@ -752,7 +938,11 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     )[:10]
 
     schema = (
-        "rtdl.goal3507.overlay_area_prepared_payload_cache.v1"
+        (
+            "rtdl.goal3509.overlay_area_binary_prepared_payload_cache.v1"
+            if payload_cache_format == "binary"
+            else "rtdl.goal3507.overlay_area_prepared_payload_cache.v1"
+        )
         if args.payload_cache_evidence
         else (
             "rtdl.goal3504.overlay_area_parallel_payload_prepare.v1"
@@ -788,7 +978,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             )
         )
     )
-    goal = 3507 if args.payload_cache_evidence else (
+    goal = (3509 if payload_cache_format == "binary" else 3507) if args.payload_cache_evidence else (
         3504 if args.parallel_payload_prepare_evidence else (
             3502 if args.single_triangulation_payload_evidence else (
                 3501 if args.component_bounds_filter else (3498 if args.device_tile_task_planner else (3497 if args.bounds_positive_filter else (
@@ -824,6 +1014,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         "parallel_payload_prepare": bool(parallel_payload_prepare_used),
         "parallel_payload_prepare_evidence": bool(args.parallel_payload_prepare_evidence),
         "payload_cache_mode": payload_cache_mode,
+        "payload_cache_format": payload_cache_format,
         "payload_cache_evidence": bool(args.payload_cache_evidence),
         "payload_cache_metadata": payload_cache_metadata,
         "bounds_positive_relation_row_count": int(len(candidate_relation_rows)),
@@ -931,6 +1122,12 @@ def parse_args() -> argparse.Namespace:
         choices=("off", "read", "write", "refresh"),
         default="off",
         help="Prepared payload cache mode. read requires existing cache; write/refresh write cache after preparation.",
+    )
+    parser.add_argument(
+        "--payload-cache-format",
+        choices=("json", "binary"),
+        default="json",
+        help="Prepared payload cache storage format. json preserves Goal3507; binary labels Goal3509 evidence.",
     )
     parser.add_argument(
         "--payload-cache-evidence",
