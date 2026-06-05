@@ -99,6 +99,20 @@ def _prepare_payload_from_geometry_map(
     return payload, shape_to_components, status_counts
 
 
+def _shape_component_table(
+    shape_to_components: dict[int, tuple[int, ...]],
+    shape_count: int,
+) -> tuple[list[int], list[int]]:
+    starts = [0] * int(shape_count)
+    counts = [0] * int(shape_count)
+    for shape_ordinal, components in shape_to_components.items():
+        if not components:
+            continue
+        starts[int(shape_ordinal)] = int(components[0])
+        counts[int(shape_ordinal)] = len(components)
+    return starts, counts
+
+
 def _build_oracle_geometry_map(
     records: tuple[Any, ...],
     shape_ordinals: set[int],
@@ -142,6 +156,10 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     bounds_positive_filter_metadata: dict[str, object] | None = None
     bounds_positive_relation_rows = None
     bounds_positive_mask = None
+    bounds_positive_relation_rows_device = None
+    left_ordinals_device = None
+    right_ordinals_device = None
+    candidate_relation_rows_device = None
     device_active_shape_ordinals_used = False
     with prepare_rayjoin_optix_shape_pair_active_count(
         right_shapes,
@@ -155,10 +173,8 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
                 bounds_filter_start = time.perf_counter()
                 bounds = rt.shape_pair_relation_bounds_overlap_area_cupy(columns, group_by=None)
                 bounds_positive_mask = bounds.row_areas > 0.0
-                bounds_positive_relation_rows = cp.asnumpy(cp.nonzero(bounds_positive_mask)[0]).astype(
-                    "uint32",
-                    copy=False,
-                )
+                bounds_positive_relation_rows_device = cp.nonzero(bounds_positive_mask)[0].astype(cp.uint32, copy=True)
+                bounds_positive_relation_rows = cp.asnumpy(bounds_positive_relation_rows_device).astype("uint32", copy=False)
                 bounds_positive_filter_metadata = bounds.to_metadata()
                 bounds_positive_filter_metadata.update(
                     {
@@ -190,6 +206,15 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             left_ordinals = cp.asnumpy(ordinals["left_ordinal"]).astype("uint32", copy=False)
             right_ordinals = cp.asnumpy(ordinals["right_ordinal"]).astype("uint32", copy=False)
             relation_ordinal_download_sec = time.perf_counter() - relation_download_start
+            if args.device_tile_task_planner:
+                left_ordinals_device = cp.array(ordinals["left_ordinal"], dtype=cp.uint32, copy=True)
+                right_ordinals_device = cp.array(ordinals["right_ordinal"], dtype=cp.uint32, copy=True)
+                candidate_relation_rows_device = (
+                    cp.array(bounds_positive_relation_rows_device, dtype=cp.uint32, copy=True)
+                    if bounds_positive_relation_rows_device is not None
+                    else cp.arange(int(columns.row_count), dtype=cp.uint32)
+                )
+                cp.cuda.Stream.null.synchronize()
     relation_discovery_sec = time.perf_counter() - discovery_start
 
     candidate_relation_rows = (
@@ -253,35 +278,91 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     relation_row_ordinals: list[int] = []
     unsupported_rows = 0
     unsupported_positive_rows = 0
-    for relation_row in candidate_relation_rows:
-        left_ordinal = left_ordinals[relation_row]
-        right_ordinal = right_ordinals[relation_row]
-        left_components = left_shape_components.get(int(left_ordinal), ())
-        right_components = right_shape_components.get(int(right_ordinal), ())
-        if not left_components or not right_components:
-            unsupported_rows += 1
-            if exact_areas[relation_row] > rt.V2_8_OVERLAY_AREA_ROW_ABS_TOLERANCE:
-                unsupported_positive_rows += 1
-            continue
-        for left_component in left_components:
-            for right_component in right_components:
-                component_pairs.append((left_component, right_component))
-                relation_row_ordinals.append(relation_row)
-    pair_rows = rt.prepare_overlay_area_pair_rows(left_payload, right_payload, component_pairs)
-    tasks = rt.plan_prepared_overlay_area_tile_tasks(
-        pair_rows,
-        max_triangle_pairs_per_task=int(args.max_triangle_pairs_per_task),
-        relation_row_ordinals=relation_row_ordinals,
-    )
-    task_summary = rt.summarize_prepared_overlay_area_tile_tasks(pair_rows, tasks)
+    device_tile_task_planning_sec = 0.0
+    resident_inputs = None
+    if args.device_tile_task_planner:
+        if left_ordinals_device is None or right_ordinals_device is None or candidate_relation_rows_device is None:
+            raise RuntimeError("device tile-task planner requires copied CuPy relation ordinal columns")
+        for relation_row in candidate_relation_rows:
+            left_ordinal = left_ordinals[relation_row]
+            right_ordinal = right_ordinals[relation_row]
+            if not left_shape_components.get(int(left_ordinal), ()) or not right_shape_components.get(int(right_ordinal), ()):
+                unsupported_rows += 1
+                if exact_areas[relation_row] > rt.V2_8_OVERLAY_AREA_ROW_ABS_TOLERANCE:
+                    unsupported_positive_rows += 1
+        left_component_starts, left_component_counts = _shape_component_table(left_shape_components, len(left_shapes))
+        right_component_starts, right_component_counts = _shape_component_table(right_shape_components, len(right_shapes))
+        device_plan_start = time.perf_counter()
+        resident_inputs = rt.prepare_overlay_area_tile_task_cupy_inputs_from_relation_ordinals(
+            left_payload,
+            right_payload,
+            relation_row_ordinals=candidate_relation_rows_device,
+            left_relation_ordinals=left_ordinals_device,
+            right_relation_ordinals=right_ordinals_device,
+            left_shape_component_starts=left_component_starts,
+            left_shape_component_counts=left_component_counts,
+            right_shape_component_starts=right_component_starts,
+            right_shape_component_counts=right_component_counts,
+            relation_row_count=len(left_ordinals),
+            max_triangle_pairs_per_task=int(args.max_triangle_pairs_per_task),
+        )
+        cp.cuda.Stream.null.synchronize()
+        device_tile_task_planning_sec = time.perf_counter() - device_plan_start
+        task_summary = resident_inputs.to_metadata()["planner_summary"]
+        pair_rows = ()
+        tasks = ()
+        unsupported_rows = int(len(candidate_relation_rows) - int(task_summary["relation_row_count"]))
+        component_pair_row_count = int(task_summary["pair_row_count"])
+        tile_task_count = int(task_summary["task_count"])
+        planned_triangle_pair_count = int(task_summary["planned_triangle_pair_count"])
+        expected_triangle_pair_count = int(task_summary["expected_triangle_pair_count"])
+    else:
+        for relation_row in candidate_relation_rows:
+            left_ordinal = left_ordinals[relation_row]
+            right_ordinal = right_ordinals[relation_row]
+            left_components = left_shape_components.get(int(left_ordinal), ())
+            right_components = right_shape_components.get(int(right_ordinal), ())
+            if not left_components or not right_components:
+                unsupported_rows += 1
+                if exact_areas[relation_row] > rt.V2_8_OVERLAY_AREA_ROW_ABS_TOLERANCE:
+                    unsupported_positive_rows += 1
+                continue
+            for left_component in left_components:
+                for right_component in right_components:
+                    component_pairs.append((left_component, right_component))
+                    relation_row_ordinals.append(relation_row)
+        pair_rows = rt.prepare_overlay_area_pair_rows(left_payload, right_payload, component_pairs)
+        tasks = rt.plan_prepared_overlay_area_tile_tasks(
+            pair_rows,
+            max_triangle_pairs_per_task=int(args.max_triangle_pairs_per_task),
+            relation_row_ordinals=relation_row_ordinals,
+        )
+        task_summary = rt.summarize_prepared_overlay_area_tile_tasks(pair_rows, tasks)
+        component_pair_row_count = len(pair_rows)
+        tile_task_count = len(tasks)
+        planned_triangle_pair_count = int(task_summary["planned_triangle_pair_count"])
+        expected_triangle_pair_count = int(task_summary["expected_triangle_pair_count"])
     planning_sec = time.perf_counter() - plan_start
 
-    print(f"[goal3492] execute {len(tasks)} tile tasks over {len(pair_rows)} component-pair rows", flush=True)
+    print(f"[goal3492] execute {tile_task_count} tile tasks over {component_pair_row_count} component-pair rows", flush=True)
     cp.cuda.Stream.null.synchronize()
     input_prepare_sec = 0.0
     executor_repeats = max(1, int(args.executor_repeats))
     executor_repeat_secs: list[float] = []
-    if args.resident_cupy_inputs:
+    if resident_inputs is not None:
+        result = None
+        for repeat in range(executor_repeats):
+            print(f"[goal3492] device-planned resident executor repeat {repeat + 1}/{executor_repeats}", flush=True)
+            execute_start = time.perf_counter()
+            result = rt.evaluate_prepared_overlay_area_tile_task_cupy_inputs(
+                resident_inputs,
+                input_contract="device_planned_prepared_overlay_area_tile_task_cupy_inputs",
+            )
+            cp.cuda.Stream.null.synchronize()
+            executor_repeat_secs.append(time.perf_counter() - execute_start)
+        assert result is not None
+        executor_sec = sum(executor_repeat_secs)
+    elif args.resident_cupy_inputs:
         input_prepare_start = time.perf_counter()
         resident_inputs = rt.prepare_overlay_area_tile_task_cupy_inputs(
             left_payload,
@@ -338,9 +419,12 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     )[:10]
 
     schema = (
-        "rtdl.goal3497.overlay_area_bounds_positive_filtered_tile_tasks.v1"
-        if args.bounds_positive_filter
+            "rtdl.goal3497.overlay_area_bounds_positive_filtered_tile_tasks.v1"
+        if args.bounds_positive_filter and not args.device_tile_task_planner
         else (
+            "rtdl.goal3498.overlay_area_device_tile_task_planner.v1"
+            if args.device_tile_task_planner
+            else (
             "rtdl.goal3495.overlay_area_device_active_shape_ordinals.v1"
             if device_active_shape_ordinals_used
             else (
@@ -352,13 +436,14 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
                     else "rtdl.goal3492.overlay_area_public_cdb_tile_task_executor.v1"
                 )
             )
+            )
         )
     )
-    goal = 3497 if args.bounds_positive_filter else (
+    goal = 3498 if args.device_tile_task_planner else (3497 if args.bounds_positive_filter else (
         3495 if device_active_shape_ordinals_used else (
             3494 if args.resident_cupy_inputs else (3493 if args.active_shapes_only else 3492)
         )
-    )
+    ))
 
     return {
         "schema": schema,
@@ -372,10 +457,11 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         "active_shapes_only": bool(args.active_shapes_only),
         "max_rows": int(args.max_rows),
         "max_triangle_pairs_per_task": int(args.max_triangle_pairs_per_task),
-        "resident_cupy_inputs": bool(args.resident_cupy_inputs),
+        "resident_cupy_inputs": bool(args.resident_cupy_inputs or args.device_tile_task_planner),
         "device_active_shape_ordinals": bool(args.device_active_shape_ordinals),
         "device_active_shape_ordinals_used": bool(device_active_shape_ordinals_used),
         "bounds_positive_filter": bool(args.bounds_positive_filter),
+        "device_tile_task_planner": bool(args.device_tile_task_planner),
         "bounds_positive_relation_row_count": int(len(candidate_relation_rows)),
         "bounds_positive_filter_metadata": bounds_positive_filter_metadata,
         "active_shape_ordinal_metadata": active_shape_ordinal_metadata,
@@ -395,10 +481,10 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         "supported_relation_row_count": int(len(candidate_relation_rows) - unsupported_rows),
         "unsupported_relation_row_count": unsupported_rows,
         "unsupported_positive_relation_row_count": unsupported_positive_rows,
-        "component_pair_row_count": len(pair_rows),
-        "tile_task_count": len(tasks),
-        "planned_triangle_pair_count": int(task_summary["planned_triangle_pair_count"]),
-        "expected_triangle_pair_count": int(task_summary["expected_triangle_pair_count"]),
+        "component_pair_row_count": component_pair_row_count,
+        "tile_task_count": tile_task_count,
+        "planned_triangle_pair_count": planned_triangle_pair_count,
+        "expected_triangle_pair_count": expected_triangle_pair_count,
         "task_summary": task_summary,
         "executor_metadata": metadata,
         "observed_total_area": total_observed_area,
@@ -423,6 +509,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             "relation_ordinal_download": relation_ordinal_download_sec,
             "exact_oracle": exact_oracle_sec,
             "planning": planning_sec,
+            "device_tile_task_planning": device_tile_task_planning_sec,
             "cupy_tile_task_input_prepare": input_prepare_sec,
             "cupy_tile_task_executor": executor_sec,
             "cupy_tile_task_executor_repeat_secs": executor_repeat_secs,
@@ -455,6 +542,14 @@ def parse_args() -> argparse.Namespace:
         help=(
             "Use generic bounds-overlap area > 0 as a device-side zero-area filter before "
             "component-pair and tile-task planning."
+        ),
+    )
+    parser.add_argument(
+        "--device-tile-task-planner",
+        action="store_true",
+        help=(
+            "Plan component-pair tile tasks with a generic CuPy continuation from relation ordinal "
+            "columns and prepared component tables."
         ),
     )
     parser.add_argument(

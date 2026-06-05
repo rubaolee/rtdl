@@ -304,6 +304,135 @@ extern "C" __global__ void prepared_overlay_area_tile_task_kernel(
 """
 
 
+_PREPARED_OVERLAY_AREA_TILE_TASK_PLANNER_CUPY_KERNEL = r"""
+extern "C" __global__ void prepared_overlay_area_tile_task_count_kernel(
+        const unsigned int* relation_row_ordinals,
+        const unsigned int* left_relation_ordinals,
+        const unsigned int* right_relation_ordinals,
+        const unsigned int* left_shape_component_start,
+        const unsigned int* left_shape_component_count,
+        const unsigned int* right_shape_component_start,
+        const unsigned int* right_shape_component_count,
+        const unsigned int* left_component_triangle_start,
+        const unsigned int* left_component_triangle_count,
+        const unsigned int* right_component_triangle_start,
+        const unsigned int* right_component_triangle_count,
+        unsigned int candidate_count,
+        unsigned int relation_row_count,
+        unsigned int left_shape_count,
+        unsigned int right_shape_count,
+        unsigned int max_triangle_pairs_per_task,
+        unsigned int* task_counts,
+        unsigned int* component_pair_counts,
+        unsigned long long* triangle_pair_counts)
+{
+    const unsigned int candidate = blockIdx.x * blockDim.x + threadIdx.x;
+    if (candidate >= candidate_count) return;
+
+    task_counts[candidate] = 0u;
+    component_pair_counts[candidate] = 0u;
+    triangle_pair_counts[candidate] = 0ull;
+    if (max_triangle_pairs_per_task == 0u) return;
+
+    const unsigned int relation_row = relation_row_ordinals[candidate];
+    if (relation_row >= relation_row_count) return;
+    const unsigned int left_shape = left_relation_ordinals[relation_row];
+    const unsigned int right_shape = right_relation_ordinals[relation_row];
+    if (left_shape >= left_shape_count || right_shape >= right_shape_count) return;
+
+    const unsigned int left_start = left_shape_component_start[left_shape];
+    const unsigned int left_count = left_shape_component_count[left_shape];
+    const unsigned int right_start = right_shape_component_start[right_shape];
+    const unsigned int right_count = right_shape_component_count[right_shape];
+    unsigned int task_total = 0u;
+    unsigned int component_pair_total = 0u;
+    unsigned long long triangle_pair_total = 0ull;
+
+    for (unsigned int li = 0u; li < left_count; ++li) {
+        const unsigned int left_component = left_start + li;
+        const unsigned int left_tri_count = left_component_triangle_count[left_component];
+        for (unsigned int ri = 0u; ri < right_count; ++ri) {
+            const unsigned int right_component = right_start + ri;
+            const unsigned int right_tri_count = right_component_triangle_count[right_component];
+            const unsigned int pair_count = left_tri_count * right_tri_count;
+            if (pair_count == 0u) continue;
+            ++component_pair_total;
+            triangle_pair_total += static_cast<unsigned long long>(pair_count);
+            task_total += (pair_count + max_triangle_pairs_per_task - 1u) / max_triangle_pairs_per_task;
+        }
+    }
+    task_counts[candidate] = task_total;
+    component_pair_counts[candidate] = component_pair_total;
+    triangle_pair_counts[candidate] = triangle_pair_total;
+}
+
+extern "C" __global__ void prepared_overlay_area_tile_task_fill_kernel(
+        const unsigned int* relation_row_ordinals,
+        const unsigned int* left_relation_ordinals,
+        const unsigned int* right_relation_ordinals,
+        const unsigned int* left_shape_component_start,
+        const unsigned int* left_shape_component_count,
+        const unsigned int* right_shape_component_start,
+        const unsigned int* right_shape_component_count,
+        const unsigned int* left_component_triangle_start,
+        const unsigned int* left_component_triangle_count,
+        const unsigned int* right_component_triangle_start,
+        const unsigned int* right_component_triangle_count,
+        const unsigned int* task_offsets,
+        unsigned int candidate_count,
+        unsigned int relation_row_count,
+        unsigned int left_shape_count,
+        unsigned int right_shape_count,
+        unsigned int max_triangle_pairs_per_task,
+        unsigned int* out_relation_row_ordinal,
+        unsigned int* out_pair_offset,
+        unsigned int* out_pair_count,
+        unsigned int* out_left_start,
+        unsigned int* out_left_count,
+        unsigned int* out_right_start,
+        unsigned int* out_right_count)
+{
+    const unsigned int candidate = blockIdx.x * blockDim.x + threadIdx.x;
+    if (candidate >= candidate_count || max_triangle_pairs_per_task == 0u) return;
+
+    const unsigned int relation_row = relation_row_ordinals[candidate];
+    if (relation_row >= relation_row_count) return;
+    const unsigned int left_shape = left_relation_ordinals[relation_row];
+    const unsigned int right_shape = right_relation_ordinals[relation_row];
+    if (left_shape >= left_shape_count || right_shape >= right_shape_count) return;
+
+    const unsigned int left_start = left_shape_component_start[left_shape];
+    const unsigned int left_count = left_shape_component_count[left_shape];
+    const unsigned int right_start = right_shape_component_start[right_shape];
+    const unsigned int right_count = right_shape_component_count[right_shape];
+    unsigned int out = task_offsets[candidate];
+
+    for (unsigned int li = 0u; li < left_count; ++li) {
+        const unsigned int left_component = left_start + li;
+        const unsigned int left_tri_start = left_component_triangle_start[left_component];
+        const unsigned int left_tri_count = left_component_triangle_count[left_component];
+        for (unsigned int ri = 0u; ri < right_count; ++ri) {
+            const unsigned int right_component = right_start + ri;
+            const unsigned int right_tri_start = right_component_triangle_start[right_component];
+            const unsigned int right_tri_count = right_component_triangle_count[right_component];
+            const unsigned int pair_total = left_tri_count * right_tri_count;
+            for (unsigned int pair_offset = 0u; pair_offset < pair_total; pair_offset += max_triangle_pairs_per_task) {
+                const unsigned int remaining = pair_total - pair_offset;
+                out_relation_row_ordinal[out] = relation_row;
+                out_pair_offset[out] = pair_offset;
+                out_pair_count[out] = remaining < max_triangle_pairs_per_task ? remaining : max_triangle_pairs_per_task;
+                out_left_start[out] = left_tri_start;
+                out_left_count[out] = left_tri_count;
+                out_right_start[out] = right_tri_start;
+                out_right_count[out] = right_tri_count;
+                ++out;
+            }
+        }
+    }
+}
+"""
+
+
 @dataclass(frozen=True)
 class PreparedSimplePolygonComponentRecord:
     component_ordinal: int
@@ -809,6 +938,13 @@ def _validate_prepared_overlay_area_tile_tasks(
     return relation_ids_host, int(relation_row_count)
 
 
+def _component_triangle_columns_cupy(cp, payload: PreparedSimplePolygonComponentPayload) -> tuple[object, object]:
+    return (
+        cp.asarray([component.triangle_start for component in payload.components], dtype=cp.uint32),
+        cp.asarray([component.triangle_count for component in payload.components], dtype=cp.uint32),
+    )
+
+
 def evaluate_prepared_overlay_area_scalar_tiled_cupy(
     left_payload: PreparedSimplePolygonComponentPayload,
     right_payload: PreparedSimplePolygonComponentPayload,
@@ -942,6 +1078,205 @@ def prepare_overlay_area_tile_task_cupy_inputs(
         "right_triangle_count": right_payload.triangle_count,
         "input_contract": "prepared_overlay_area_tile_tasks",
         "resident_cupy_columns": True,
+        "app_specific_engine_logic_allowed": False,
+        "automatic_partner_selection_allowed": False,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "runtime_kernel_authorized": False,
+        "claim_boundary": V2_8_OVERLAY_AREA_CONTINUATION_CLAIM_BOUNDARY,
+    }
+    return PreparedOverlayAreaCupyTileTaskInputs(
+        left_columns=left_columns,
+        right_columns=right_columns,
+        relation_row_ordinals=relation_ids,
+        pair_offset=pair_offset,
+        pair_count=pair_count,
+        left_start=left_start,
+        left_count=left_count,
+        right_start=right_start,
+        right_count=right_count,
+        task_count=task_count,
+        relation_row_count=int(relation_row_count),
+        left_triangle_count=left_payload.triangle_count,
+        right_triangle_count=right_payload.triangle_count,
+        metadata=metadata,
+    )
+
+
+def prepare_overlay_area_tile_task_cupy_inputs_from_relation_ordinals(
+    left_payload: PreparedSimplePolygonComponentPayload,
+    right_payload: PreparedSimplePolygonComponentPayload,
+    *,
+    relation_row_ordinals,
+    left_relation_ordinals,
+    right_relation_ordinals,
+    left_shape_component_starts: Sequence[int],
+    left_shape_component_counts: Sequence[int],
+    right_shape_component_starts: Sequence[int],
+    right_shape_component_counts: Sequence[int],
+    relation_row_count: int,
+    max_triangle_pairs_per_task: int,
+) -> PreparedOverlayAreaCupyTileTaskInputs:
+    """Plan overlay tile tasks with CuPy from generic relation ordinal columns.
+
+    Prepared payload construction is still CPU-owned. This helper moves the
+    component-pair and tile-task expansion step to a generic partner
+    continuation once component tables are available.
+    """
+    if max_triangle_pairs_per_task <= 0:
+        raise ValueError("max_triangle_pairs_per_task must be positive")
+    if relation_row_count < 0:
+        raise ValueError("relation_row_count must be non-negative")
+
+    import cupy as cp  # type: ignore
+
+    relation_rows = cp.asarray(relation_row_ordinals, dtype=cp.uint32)
+    left_relation_rows = cp.asarray(left_relation_ordinals, dtype=cp.uint32)
+    right_relation_rows = cp.asarray(right_relation_ordinals, dtype=cp.uint32)
+    left_shape_start = cp.asarray(left_shape_component_starts, dtype=cp.uint32)
+    left_shape_count = cp.asarray(left_shape_component_counts, dtype=cp.uint32)
+    right_shape_start = cp.asarray(right_shape_component_starts, dtype=cp.uint32)
+    right_shape_count = cp.asarray(right_shape_component_counts, dtype=cp.uint32)
+    left_component_start, left_component_count = _component_triangle_columns_cupy(cp, left_payload)
+    right_component_start, right_component_count = _component_triangle_columns_cupy(cp, right_payload)
+
+    candidate_count = int(relation_rows.size)
+    if int(left_relation_rows.size) < int(relation_row_count) or int(right_relation_rows.size) < int(relation_row_count):
+        raise ValueError("relation ordinal columns must cover relation_row_count")
+
+    left_columns = _triangles_to_cupy_columns(cp, left_payload.triangles)
+    right_columns = _triangles_to_cupy_columns(cp, right_payload.triangles)
+    task_counts = cp.zeros((candidate_count,), dtype=cp.uint32)
+    component_pair_counts = cp.zeros((candidate_count,), dtype=cp.uint32)
+    triangle_pair_counts = cp.zeros((candidate_count,), dtype=cp.uint64)
+
+    if candidate_count:
+        block_size = 128
+        grid_size = (candidate_count + block_size - 1) // block_size
+        count_kernel = cp.RawKernel(
+            _PREPARED_OVERLAY_AREA_TILE_TASK_PLANNER_CUPY_KERNEL,
+            "prepared_overlay_area_tile_task_count_kernel",
+        )
+        count_kernel(
+            (grid_size,),
+            (block_size,),
+            (
+                relation_rows,
+                left_relation_rows,
+                right_relation_rows,
+                left_shape_start,
+                left_shape_count,
+                right_shape_start,
+                right_shape_count,
+                left_component_start,
+                left_component_count,
+                right_component_start,
+                right_component_count,
+                cp.uint32(candidate_count),
+                cp.uint32(relation_row_count),
+                cp.uint32(int(left_shape_start.size)),
+                cp.uint32(int(right_shape_start.size)),
+                cp.uint32(int(max_triangle_pairs_per_task)),
+                task_counts,
+                component_pair_counts,
+                triangle_pair_counts,
+            ),
+        )
+        cp.cuda.Stream.null.synchronize()
+
+    task_count = int(cp.sum(task_counts).get()) if candidate_count else 0
+    component_pair_count = int(cp.sum(component_pair_counts).get()) if candidate_count else 0
+    planned_triangle_pair_count = int(cp.sum(triangle_pair_counts).get()) if candidate_count else 0
+    if candidate_count:
+        task_offsets = cp.concatenate(
+            (
+                cp.zeros((1,), dtype=cp.uint32),
+                cp.cumsum(task_counts[:-1], dtype=cp.uint32),
+            )
+        )
+    else:
+        task_offsets = cp.zeros((0,), dtype=cp.uint32)
+
+    relation_ids = cp.zeros((task_count,), dtype=cp.uint32)
+    pair_offset = cp.zeros((task_count,), dtype=cp.uint32)
+    pair_count = cp.zeros((task_count,), dtype=cp.uint32)
+    left_start = cp.zeros((task_count,), dtype=cp.uint32)
+    left_count = cp.zeros((task_count,), dtype=cp.uint32)
+    right_start = cp.zeros((task_count,), dtype=cp.uint32)
+    right_count = cp.zeros((task_count,), dtype=cp.uint32)
+
+    if candidate_count and task_count:
+        block_size = 128
+        grid_size = (candidate_count + block_size - 1) // block_size
+        fill_kernel = cp.RawKernel(
+            _PREPARED_OVERLAY_AREA_TILE_TASK_PLANNER_CUPY_KERNEL,
+            "prepared_overlay_area_tile_task_fill_kernel",
+        )
+        fill_kernel(
+            (grid_size,),
+            (block_size,),
+            (
+                relation_rows,
+                left_relation_rows,
+                right_relation_rows,
+                left_shape_start,
+                left_shape_count,
+                right_shape_start,
+                right_shape_count,
+                left_component_start,
+                left_component_count,
+                right_component_start,
+                right_component_count,
+                task_offsets,
+                cp.uint32(candidate_count),
+                cp.uint32(relation_row_count),
+                cp.uint32(int(left_shape_start.size)),
+                cp.uint32(int(right_shape_start.size)),
+                cp.uint32(int(max_triangle_pairs_per_task)),
+                relation_ids,
+                pair_offset,
+                pair_count,
+                left_start,
+                left_count,
+                right_start,
+                right_count,
+            ),
+        )
+        cp.cuda.Stream.null.synchronize()
+
+    metadata = {
+        "schema": "rtdl.v2_8.simple_polygon_overlay_area_device_planned_tile_task_cupy_inputs.v1",
+        "operation": "prepared_simple_polygon_overlay_area_device_planned_tile_task_inputs",
+        "partner": "cupy",
+        "candidate_relation_row_count": candidate_count,
+        "relation_row_count": int(relation_row_count),
+        "component_pair_row_count": component_pair_count,
+        "task_count": task_count,
+        "planned_triangle_pair_count": planned_triangle_pair_count,
+        "max_triangle_pairs_per_task": int(max_triangle_pairs_per_task),
+        "left_triangle_count": left_payload.triangle_count,
+        "right_triangle_count": right_payload.triangle_count,
+        "input_contract": "relation_ordinals_plus_prepared_component_tables",
+        "resident_cupy_columns": True,
+        "planner_summary": {
+            "version": V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_VERSION,
+            "status": "accept",
+            "errors": (),
+            "pair_row_count": component_pair_count,
+            "task_count": task_count,
+            "relation_row_count": candidate_count,
+            "expected_triangle_pair_count": planned_triangle_pair_count,
+            "planned_triangle_pair_count": planned_triangle_pair_count,
+            "max_task_pair_count": int(max_triangle_pairs_per_task) if task_count else 0,
+            "claim_boundary": V2_8_OVERLAY_AREA_CONTINUATION_CLAIM_BOUNDARY,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "runtime_kernel_authorized": False,
+        },
         "app_specific_engine_logic_allowed": False,
         "automatic_partner_selection_allowed": False,
         "release_authorized": False,
@@ -1149,6 +1484,7 @@ __all__ = [
     "evaluate_prepared_overlay_area_tile_task_cupy_inputs",
     "evaluate_prepared_overlay_area_tile_tasks_cupy",
     "plan_prepared_overlay_area_tile_tasks",
+    "prepare_overlay_area_tile_task_cupy_inputs_from_relation_ordinals",
     "prepare_overlay_area_tile_task_cupy_inputs",
     "prepare_overlay_area_pair_rows",
     "prepare_simple_polygon_component_payload",
