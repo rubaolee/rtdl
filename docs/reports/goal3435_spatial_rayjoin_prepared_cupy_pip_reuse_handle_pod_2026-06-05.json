@@ -1,0 +1,231 @@
+{
+  "candidate_device_columns_sec": {
+    "max": 0.41382552590221167,
+    "median": 0.10254147788509727,
+    "min": 0.027029145509004593
+  },
+  "candidate_max_rows": 60000,
+  "candidate_row_counts": [
+    47570,
+    47570,
+    47570,
+    47570
+  ],
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "county_cdb": "data/rayjoin_public_cdb/br_county.cdb",
+  "goal": 3435,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "iterations": 4,
+  "point_count": 16545,
+  "prepare_phases_sec": {
+    "prepare_cupy_refiner_sec": 0.7577036144211888,
+    "prepare_static_scene_sec": 0.7733884947374463
+  },
+  "prepared_cupy_refine_sec": {
+    "max": 0.08263354562222958,
+    "median": 0.0018838057294487953,
+    "min": 0.0015220949426293373
+  },
+  "route": "prepared_optix_cupy_refined_pip_reuse_handle",
+  "row_counts": [
+    47262,
+    47262,
+    47262,
+    47262
+  ],
+  "rtdl_commit": "e9cfdb9b8fab6b0f11f75ef3604685e1329408b2",
+  "runs": [
+    {
+      "candidate_row_count": 47570,
+      "claim_boundary": {
+        "full_rayjoin_reproduction": false,
+        "paper_scale_perf_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "v2_8_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "iteration": 0,
+      "partner_refinement": {
+        "candidate_row_count": 47570,
+        "dropped_candidate_row_count": 308,
+        "host_refined_rows_materialized": false,
+        "instance_identity_columns_used": true,
+        "matches_geos_topology_oracle": false,
+        "native_exact_device_row_stream_produced": false,
+        "output_residency": "partner_device_refined_columns",
+        "partner": "cupy",
+        "point_eps": 1e-09,
+        "predicate": "double_simple_ring_closed_shape_membership",
+        "prepared_lookup_residency": "cupy_device_prepared_lookup_columns",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "row_count": 47262,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false
+      },
+      "phases_sec": {
+        "candidate_device_columns_sec": 0.41382552590221167,
+        "prepared_cupy_refine_sec": 0.08263354562222958
+      },
+      "prepared_reuse": {
+        "candidate_max_rows": 60000,
+        "enabled": true,
+        "point_count": 16545,
+        "prepare_cupy_refiner_sec": 0.7577036144211888,
+        "prepare_paid_once": true,
+        "prepare_static_scene_sec": 0.7733884947374463,
+        "shape_count": 15700
+      },
+      "row_count": 47262
+    },
+    {
+      "candidate_row_count": 47570,
+      "claim_boundary": {
+        "full_rayjoin_reproduction": false,
+        "paper_scale_perf_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "v2_8_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "iteration": 1,
+      "partner_refinement": {
+        "candidate_row_count": 47570,
+        "dropped_candidate_row_count": 308,
+        "host_refined_rows_materialized": false,
+        "instance_identity_columns_used": true,
+        "matches_geos_topology_oracle": false,
+        "native_exact_device_row_stream_produced": false,
+        "output_residency": "partner_device_refined_columns",
+        "partner": "cupy",
+        "point_eps": 1e-09,
+        "predicate": "double_simple_ring_closed_shape_membership",
+        "prepared_lookup_residency": "cupy_device_prepared_lookup_columns",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "row_count": 47262,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false
+      },
+      "phases_sec": {
+        "candidate_device_columns_sec": 0.02938250359147787,
+        "prepared_cupy_refine_sec": 0.0015451442450284958
+      },
+      "prepared_reuse": {
+        "candidate_max_rows": 60000,
+        "enabled": true,
+        "point_count": 16545,
+        "prepare_cupy_refiner_sec": 0.7577036144211888,
+        "prepare_paid_once": true,
+        "prepare_static_scene_sec": 0.7733884947374463,
+        "shape_count": 15700
+      },
+      "row_count": 47262
+    },
+    {
+      "candidate_row_count": 47570,
+      "claim_boundary": {
+        "full_rayjoin_reproduction": false,
+        "paper_scale_perf_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "v2_8_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "iteration": 2,
+      "partner_refinement": {
+        "candidate_row_count": 47570,
+        "dropped_candidate_row_count": 308,
+        "host_refined_rows_materialized": false,
+        "instance_identity_columns_used": true,
+        "matches_geos_topology_oracle": false,
+        "native_exact_device_row_stream_produced": false,
+        "output_residency": "partner_device_refined_columns",
+        "partner": "cupy",
+        "point_eps": 1e-09,
+        "predicate": "double_simple_ring_closed_shape_membership",
+        "prepared_lookup_residency": "cupy_device_prepared_lookup_columns",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "row_count": 47262,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false
+      },
+      "phases_sec": {
+        "candidate_device_columns_sec": 0.027029145509004593,
+        "prepared_cupy_refine_sec": 0.002222467213869095
+      },
+      "prepared_reuse": {
+        "candidate_max_rows": 60000,
+        "enabled": true,
+        "point_count": 16545,
+        "prepare_cupy_refiner_sec": 0.7577036144211888,
+        "prepare_paid_once": true,
+        "prepare_static_scene_sec": 0.7733884947374463,
+        "shape_count": 15700
+      },
+      "row_count": 47262
+    },
+    {
+      "candidate_row_count": 47570,
+      "claim_boundary": {
+        "full_rayjoin_reproduction": false,
+        "paper_scale_perf_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "v2_8_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "iteration": 3,
+      "partner_refinement": {
+        "candidate_row_count": 47570,
+        "dropped_candidate_row_count": 308,
+        "host_refined_rows_materialized": false,
+        "instance_identity_columns_used": true,
+        "matches_geos_topology_oracle": false,
+        "native_exact_device_row_stream_produced": false,
+        "output_residency": "partner_device_refined_columns",
+        "partner": "cupy",
+        "point_eps": 1e-09,
+        "predicate": "double_simple_ring_closed_shape_membership",
+        "prepared_lookup_residency": "cupy_device_prepared_lookup_columns",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "row_count": 47262,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false
+      },
+      "phases_sec": {
+        "candidate_device_columns_sec": 0.17570045217871666,
+        "prepared_cupy_refine_sec": 0.0015220949426293373
+      },
+      "prepared_reuse": {
+        "candidate_max_rows": 60000,
+        "enabled": true,
+        "point_count": 16545,
+        "prepare_cupy_refiner_sec": 0.7577036144211888,
+        "prepare_paid_once": true,
+        "prepare_static_scene_sec": 0.7733884947374463,
+        "shape_count": 15700
+      },
+      "row_count": 47262
+    }
+  ],
+  "schema": "rtdl.goal3435.spatial_rayjoin_prepared_cupy_pip_reuse.v1",
+  "shape_count": 15700
+}
