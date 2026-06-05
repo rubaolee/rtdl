@@ -365,8 +365,11 @@ from .v2_8_geometry_relation_typed_stream import geometry_relation_typed_stream_
 from .v2_8_geometry_relation_typed_stream import make_v2_8_geometry_relation_typed_producer_metadata
 from .v2_8_geometry_relation_typed_stream import make_v2_8_geometry_relation_typed_stream_contract
 from .geometry_relation_continuations import GEOMETRY_RELATION_BOUNDS_OVERLAP_AREA_CUPY_VERSION
+from .geometry_relation_continuations import GEOMETRY_RELATION_WITNESS_CUPY_VERSION
 from .geometry_relation_continuations import ShapePairBoundsOverlapAreaCupyResult
+from .geometry_relation_continuations import ShapePairRelationWitnessCupyResult
 from .geometry_relation_continuations import shape_pair_relation_bounds_overlap_area_cupy
+from .geometry_relation_continuations import shape_pair_relation_witness_cupy
 from .point_nearest_witness_typed_stream import V2_8_POINT_GROUP_NEAREST_WITNESS_CLAIM_BOUNDARY
 from .point_nearest_witness_typed_stream import V2_8_POINT_GROUP_NEAREST_WITNESS_COLUMNS
 from .point_nearest_witness_typed_stream import V2_8_POINT_GROUP_NEAREST_WITNESS_TYPED_PRODUCER_PRIMITIVE
@@ -2058,10 +2061,13 @@ __all__ = [
     "geometry_relation_typed_stream_metadata_for_relation_flag_device_columns",
     "geometry_relation_typed_stream_metadata_for_row_view",
     "GEOMETRY_RELATION_BOUNDS_OVERLAP_AREA_CUPY_VERSION",
+    "GEOMETRY_RELATION_WITNESS_CUPY_VERSION",
     "make_v2_8_geometry_relation_typed_producer_metadata",
     "make_v2_8_geometry_relation_typed_stream_contract",
     "ShapePairBoundsOverlapAreaCupyResult",
+    "ShapePairRelationWitnessCupyResult",
     "shape_pair_relation_bounds_overlap_area_cupy",
+    "shape_pair_relation_witness_cupy",
     "V2_8_POINT_GROUP_NEAREST_WITNESS_CLAIM_BOUNDARY",
     "V2_8_POINT_GROUP_NEAREST_WITNESS_COLUMNS",
     "V2_8_POINT_GROUP_NEAREST_WITNESS_TYPED_PRODUCER_PRIMITIVE",
