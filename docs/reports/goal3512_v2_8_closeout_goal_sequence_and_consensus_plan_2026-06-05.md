@@ -70,6 +70,8 @@ Tasks:
 - Commit and push Goal3511 report/artifacts/test if still uncommitted.
 - Intake Claude reviews for Goal3507 and Goal3509.
 - Request and intake review for Goal3511 steady-state relation-stream evidence.
+  Expected output path:
+  `docs/reviews/goal3516_claude_review_goal3511_steady_state_relation_stream_2026-06-05.md`.
 - Record any required fixes before the closeout packet.
 
 Acceptance bar:
@@ -138,15 +140,19 @@ Tasks:
   results mean, and what claims are not authorized.
 - For RayJoin/overlay, explain prepared execution, binary cache, and steady-state
   relation stream clearly.
+- Do not run RTX validation inside this docs goal. If docs introduce or refresh
+  runnable RTX examples, list them for Goal3521's final validation packet instead
+  of creating an unnamed pod branch here.
 
 Acceptance bar:
 
 - Normal users see one current-version story.
 - Historical details are accessible but not mixed into the main learning path.
 - Links are checked.
+- Any runnable RTX example that needs hardware proof is listed as a Goal3521
+  validation item, not treated as validated by docs alone.
 
-Pod requirement: no, except if docs include runnable examples that need RTX
-validation.
+Pod requirement: no. RTX example validation belongs in Goal3521.
 
 ### `/goal 3520: final claim-boundary and stale-doc audit`
 
@@ -159,12 +165,18 @@ Tasks:
   unsupported package-install claims.
 - Check that v2.8 docs do not claim true zero-copy, full RayJoin reproduction,
   broad RT-core speedup, or v2.8 public release.
+- Sweep stale future-version notes such as `TODO: v3.0`, `TODO: next version`,
+  or ad-hoc future-work comments. Migrate durable future work into
+  `docs/research/future_version_to_do_list.md` or remove stale notes that no
+  longer apply.
 
 Acceptance bar:
 
 - Audit report lists each inspected public doc/example group, problem found,
   action taken, and residual risk.
 - Any unresolved stale text is either fixed or explicitly quarantined.
+- If the audit finds issues that invalidate Goal3517, Goal3518, or Goal3519
+  outputs, reopen those artifacts for a targeted update before closing Goal3520.
 
 Pod requirement: no.
 
@@ -187,6 +199,8 @@ Acceptance bar:
 - Every required test command is reproducible.
 - Pod use is targeted and time-bounded.
 - Failures are not hidden; any skipped row has a reason and next step.
+- Expected pod scope is a focused single-session validation packet, not an
+  open-ended multi-hour sweep unless the user explicitly expands the scope.
 
 Pod requirement: yes, final targeted pod refresh.
 
