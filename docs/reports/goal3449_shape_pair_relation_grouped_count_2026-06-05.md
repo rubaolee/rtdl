@@ -15,6 +15,8 @@ into:
 
 The first app-facing route groups active relation rows by `left_id`, which is the useful RayJoin overlay-seed summary direction, but the runtime method supports both `left` and `right` id axes. The native engine remains app-agnostic: no RayJoin/CDB/overlay-specific native ABI was added.
 
+Because the generic grouped-count reducer uses direct-address id keys, the app wrapper records `id_capacity = max(left_id) + 1` when packing the left shapes. It deliberately does not assume `group_capacity == left_shape_count`, because public CDB ids can be sparse.
+
 ## What Changed
 
 Python runtime:

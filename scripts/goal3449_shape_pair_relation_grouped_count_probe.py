@@ -47,6 +47,12 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     right_dataset = load_cdb(args.right_cdb)
     left_shapes = tuple(chains_to_polygons(left_dataset))
     right_shapes = tuple(chains_to_polygons(right_dataset))
+    left_id_capacity = max(
+        1,
+        max(int(getattr(shape, "id", index)) for index, shape in enumerate(left_shapes)) + 1
+        if left_shapes
+        else 1,
+    )
 
     host_times: list[float] = []
     grouped_total_times: list[float] = []
@@ -67,7 +73,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             grouped_payload = prepared.run_packed_left_active_relation_grouped_count_by_left(
                 packed_left,
                 max_rows=int(args.max_rows),
-                group_capacity=int(args.group_capacity or packed_left.count),
+                group_capacity=int(args.group_capacity or packed_left.id_capacity),
             )
             host_count = int(host_payload["row_count"])
             grouped_sum = int(grouped_payload["summary"]["grouped_count_sum"])
@@ -136,10 +142,11 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         "left_cdb": str(args.left_cdb),
         "right_cdb": str(args.right_cdb),
         "left_shape_count": len(left_shapes),
+        "left_id_capacity": int(left_id_capacity),
         "right_shape_count": len(right_shapes),
         "iterations": int(args.iterations),
         "max_rows": int(args.max_rows),
-        "group_capacity": int(args.group_capacity or len(left_shapes)),
+        "group_capacity": int(args.group_capacity or left_id_capacity),
         "all_counts_match": all(h == g for h, g in zip(host_counts, grouped_sums)),
         "host_counts": host_counts,
         "grouped_count_sums": grouped_sums,

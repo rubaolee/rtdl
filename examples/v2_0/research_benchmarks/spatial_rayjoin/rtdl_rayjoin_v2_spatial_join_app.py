@@ -1612,6 +1612,16 @@ class RayJoinOptixShapePairActiveCountPackedLeftShapes:
         )
         self.pack_seconds = phases["left_shape_pack_sec"]
         self.count = int(self.packed_polygons.polygon_count)
+        self.id_capacity = max(
+            1,
+            max(
+                int(self.packed_polygons.refs[index].id)
+                for index in range(int(self.packed_polygons.polygon_count))
+            )
+            + 1
+            if int(self.packed_polygons.polygon_count)
+            else 1,
+        )
 
 
 def pack_rayjoin_optix_shape_pair_active_count_left_shapes(
@@ -1923,7 +1933,7 @@ class PreparedRayJoinOptixShapePairActiveCount:
         resolved_group_capacity = (
             int(group_capacity)
             if group_capacity is not None
-            else max(1, int(packed_left.count))
+            else max(1, int(packed_left.id_capacity))
         )
         columns = _phase_time(
             phases,
@@ -1962,6 +1972,7 @@ class PreparedRayJoinOptixShapePairActiveCount:
                     "summary": {
                         "active_seed_count": active_count,
                         "grouped_left_row_count": grouped_row_count,
+                        "group_capacity": resolved_group_capacity,
                         "grouped_count_sum": grouped_sum,
                         "grouped_count_sum_matches_active_count": (
                             grouped_sum == active_count if grouped_sum is not None else None

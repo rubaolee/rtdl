@@ -39,8 +39,10 @@ class Goal3449ShapePairRelationGroupedCountTest(unittest.TestCase):
 
         for phrase in (
             "def run_packed_left_active_relation_grouped_count_by_left(",
+            "self.id_capacity",
             "prepared_optix_shape_pair_active_relation_grouped_count_by_left_reuse",
             "active_relation_grouped_count_by_left_sec",
+            "group_capacity",
             "grouped_count_sum_matches_active_count",
             "generic active ",
             "relation columns feed the existing generic compact grouped-count",
