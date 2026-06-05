@@ -1,0 +1,53 @@
+{
+  "all_prepared_counts_match_host": true,
+  "candidate_columns_sec": {
+    "max": 0.02528075873851776,
+    "median": 0.023029073141515255,
+    "min": 0.019981032237410545
+  },
+  "candidate_row_count": 47570,
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "county_cdb": "data/rayjoin_public_cdb/br_county.cdb",
+  "goal": 3427,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "host_exact_row_count": 47262,
+  "host_exact_sec": {
+    "max": 0.19764241389930248,
+    "median": 0.10061243083328009,
+    "min": 0.08419736474752426
+  },
+  "iterations": 6,
+  "one_shot_cupy_refine_sec": {
+    "max": 0.10981341172009706,
+    "median": 0.10614921245723963,
+    "min": 0.10104930400848389
+  },
+  "one_shot_total_sec": {
+    "max": 0.1318815592676401,
+    "median": 0.12966458778828382,
+    "min": 0.12372350040823221
+  },
+  "point_count": 16545,
+  "prepared_cupy_refine_sec": {
+    "max": 0.0017743734642863274,
+    "median": 0.0014727897942066193,
+    "min": 0.0014270059764385223
+  },
+  "prepared_refine_vs_one_shot_median": 0.0138747123988311,
+  "prepared_refined_row_count": 47262,
+  "prepared_total_sec": {
+    "max": 0.02675354853272438,
+    "median": 0.02452613227069378,
+    "min": 0.021755405701696873
+  },
+  "prepared_total_vs_host_median": 0.24376840980350456,
+  "rtdl_commit": "f093d0262c3090eea92b824081f20e480c6b5446",
+  "schema": "rtdl.goal3427.prepared_cupy_refiner_timing_probe.v1",
+  "shape_count": 15700
+}

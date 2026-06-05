@@ -307,6 +307,163 @@ def refine_closed_shape_membership_candidate_columns_exact_cupy(
     }
 
 
+class PreparedClosedShapeMembershipCandidateRefinerCupy:
+    """Reusable CuPy refiner for instance-aware closed-shape candidate streams."""
+
+    def __init__(
+        self,
+        points: Sequence[object],
+        shapes: Sequence[object],
+        *,
+        point_eps: float = 1.0e-9,
+    ) -> None:
+        try:
+            import cupy as cp  # type: ignore
+        except Exception as exc:  # pragma: no cover
+            raise RuntimeError("CuPy is required for prepared closed-shape candidate refinement") from exc
+        eps = float(point_eps)
+        if eps < 0.0:
+            raise ValueError("point_eps must be non-negative")
+        point_records = tuple(points)
+        shape_records = tuple(shapes)
+        self._cp = cp
+        self._point_count = len(point_records)
+        self._shape_count = len(shape_records)
+        self._point_x_lookup = cp.asarray(
+            [float(_record_value(point, "x")) for point in point_records],
+            dtype=cp.float64,
+        )
+        self._point_y_lookup = cp.asarray(
+            [float(_record_value(point, "y")) for point in point_records],
+            dtype=cp.float64,
+        )
+        shape_offset_lookup = [-1] * len(shape_records)
+        shape_count_lookup = [0] * len(shape_records)
+        vertices_x: list[float] = []
+        vertices_y: list[float] = []
+        for shape_ordinal, shape in enumerate(shape_records):
+            vertices = tuple(_record_value(shape, "vertices"))
+            shape_offset_lookup[shape_ordinal] = len(vertices_x)
+            shape_count_lookup[shape_ordinal] = len(vertices)
+            for x, y in vertices:
+                vertices_x.append(float(x))
+                vertices_y.append(float(y))
+        self._shape_offset_lookup = cp.asarray(shape_offset_lookup, dtype=cp.int32)
+        self._shape_count_lookup = cp.asarray(shape_count_lookup, dtype=cp.int32)
+        self._vertices_x = cp.asarray(vertices_x, dtype=cp.float64)
+        self._vertices_y = cp.asarray(vertices_y, dtype=cp.float64)
+        self._point_eps = eps
+        self._kernel = _cupy_exact_closed_shape_candidate_refine_kernel(cp)
+
+    @property
+    def point_eps(self) -> float:
+        return self._point_eps
+
+    @property
+    def lookup_residency(self) -> str:
+        return "cupy_device_prepared_lookup_columns"
+
+    def refine(self, candidate_columns: object, *, sort_output: bool = True) -> dict[str, object]:
+        cp = self._cp
+        if not hasattr(candidate_columns, "as_cupy_columns"):
+            raise TypeError("prepared CuPy refiner requires an instance-aware device column stream")
+        column_map = candidate_columns.as_cupy_columns()
+        field_names = getattr(candidate_columns, "field_names", ("point_id", "shape_id"))
+        raw_point_ids = column_map[field_names[0]]
+        raw_shape_ids = column_map[field_names[1]]
+        raw_point_ordinals = column_map.get("point_ordinal", column_map.get("left_ordinal"))
+        raw_shape_ordinals = column_map.get("shape_ordinal", column_map.get("right_ordinal"))
+        if raw_point_ordinals is None or raw_shape_ordinals is None:
+            raise ValueError("prepared CuPy refiner requires point and shape ordinal columns")
+
+        candidate_point_ids = cp.asarray(raw_point_ids, dtype=cp.int64)
+        candidate_shape_ids = cp.asarray(raw_shape_ids, dtype=cp.int64)
+        candidate_point_ordinals = cp.asarray(raw_point_ordinals, dtype=cp.int64)
+        candidate_shape_ordinals = cp.asarray(raw_shape_ordinals, dtype=cp.int64)
+        candidate_count = int(candidate_point_ids.size)
+        if int(candidate_shape_ids.size) != candidate_count:
+            raise ValueError("candidate point and shape columns must have equal length")
+        if int(candidate_point_ordinals.size) != candidate_count:
+            raise ValueError("candidate point ordinal column must match candidate point id column length")
+        if int(candidate_shape_ordinals.size) != candidate_count:
+            raise ValueError("candidate shape ordinal column must match candidate shape id column length")
+        if candidate_count:
+            min_point_ordinal = int(cp.min(candidate_point_ordinals).item())
+            max_point_ordinal = int(cp.max(candidate_point_ordinals).item())
+            min_shape_ordinal = int(cp.min(candidate_shape_ordinals).item())
+            max_shape_ordinal = int(cp.max(candidate_shape_ordinals).item())
+            if min_point_ordinal < 0 or max_point_ordinal >= self._point_count:
+                raise ValueError("candidate point ordinal column contains an out-of-range input ordinal")
+            if min_shape_ordinal < 0 or max_shape_ordinal >= self._shape_count:
+                raise ValueError("candidate shape ordinal column contains an out-of-range prepared-shape ordinal")
+
+        output_point_ids = cp.empty((candidate_count,), dtype=cp.int64)
+        output_shape_ids = cp.empty((candidate_count,), dtype=cp.int64)
+        output_count = cp.zeros((1,), dtype=cp.uint32)
+        if candidate_count:
+            block = 256
+            grid = (candidate_count + block - 1) // block
+            self._kernel(
+                (grid,),
+                (block,),
+                (
+                    candidate_point_ids,
+                    candidate_shape_ids,
+                    candidate_point_ordinals,
+                    candidate_shape_ordinals,
+                    candidate_count,
+                    self._point_x_lookup,
+                    self._point_y_lookup,
+                    self._shape_offset_lookup,
+                    self._shape_count_lookup,
+                    self._vertices_x,
+                    self._vertices_y,
+                    1,
+                    self._point_eps,
+                    output_point_ids,
+                    output_shape_ids,
+                    output_count,
+                ),
+            )
+        row_count = int(output_count[0].item())
+        point_out = output_point_ids[:row_count]
+        shape_out = output_shape_ids[:row_count]
+        if sort_output and row_count > 1:
+            order = cp.lexsort(cp.stack((shape_out, point_out)))
+            point_out = point_out[order]
+            shape_out = shape_out[order]
+        return {
+            "point_id": point_out,
+            "shape_id": shape_out,
+            "membership": cp.ones((row_count,), dtype=cp.int64),
+            "row_count": row_count,
+            "candidate_row_count": candidate_count,
+            "dropped_candidate_row_count": candidate_count - row_count,
+            "point_eps": self._point_eps,
+            "partner": "cupy",
+            "predicate": "double_simple_ring_closed_shape_membership",
+            "instance_identity_columns_used": True,
+            "prepared_lookup_residency": self.lookup_residency,
+            "matches_geos_topology_oracle": False,
+            "output_residency": "partner_device_refined_columns",
+            "host_refined_rows_materialized": False,
+            "native_exact_device_row_stream_produced": False,
+            "true_zero_copy_claim_authorized": False,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+        }
+
+
+def prepare_closed_shape_membership_candidate_refiner_exact_cupy(
+    points: Sequence[object],
+    shapes: Sequence[object],
+    *,
+    point_eps: float = 1.0e-9,
+) -> PreparedClosedShapeMembershipCandidateRefinerCupy:
+    return PreparedClosedShapeMembershipCandidateRefinerCupy(points, shapes, point_eps=point_eps)
+
+
 def topology_rows_by_shape_id(
     topology_rows: Iterable[Mapping[str, Any]],
 ) -> dict[int, Mapping[str, Any]]:

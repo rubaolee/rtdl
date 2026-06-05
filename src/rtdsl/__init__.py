@@ -607,6 +607,8 @@ from .closed_shape_topology import materialize_closed_shape_membership_rows_as_c
 from .closed_shape_topology import owner_face_ids_by_point_from_selection_rows
 from .closed_shape_topology import owner_face_membership_contract
 from .closed_shape_topology import owner_face_priority_pipeline_contract
+from .closed_shape_topology import PreparedClosedShapeMembershipCandidateRefinerCupy
+from .closed_shape_topology import prepare_closed_shape_membership_candidate_refiner_exact_cupy
 from .closed_shape_topology import refine_closed_shape_membership_candidate_columns_exact_cupy
 from .closed_shape_topology import run_closed_shape_owner_face_priority_membership_pipeline_cupy
 from .closed_shape_topology import run_selective_closed_shape_boundary_event_membership_pipeline_cupy
@@ -2362,6 +2364,8 @@ __all__ = [
     "owner_face_ids_by_point_from_selection_rows",
     "owner_face_membership_contract",
     "owner_face_priority_pipeline_contract",
+    "PreparedClosedShapeMembershipCandidateRefinerCupy",
+    "prepare_closed_shape_membership_candidate_refiner_exact_cupy",
     "refine_closed_shape_membership_candidate_columns_exact_cupy",
     "run_closed_shape_owner_face_priority_membership_pipeline_cupy",
     "run_selective_closed_shape_boundary_event_membership_pipeline_cupy",
