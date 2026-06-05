@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ProcessPoolExecutor
 import json
 from pathlib import Path
 import subprocess
@@ -120,6 +121,81 @@ def _prepare_payload_from_geometry_map(
         component_bounds=component_bounds,
     )
     return payload, shape_to_components, status_counts
+
+
+def _geometry_payload_parts_worker(task: tuple[int, Any]) -> dict[str, Any]:
+    shape_ordinal, record = task
+    ShapelyPolygon, make_valid, _ = _import_shapely()
+    geometry, geometry_status = _build_oracle_polygon(record, ShapelyPolygon, make_valid)
+    payload_status, component_vertices, triangles, bounds = _component_payload_parts_for_prepared_geometry(geometry)
+    try:
+        from shapely import wkb as shapely_wkb  # type: ignore
+    except Exception:  # pragma: no cover - Shapely 1.x compatibility path
+        import shapely.wkb as shapely_wkb  # type: ignore
+
+    return {
+        "shape_ordinal": int(shape_ordinal),
+        "geometry_wkb": shapely_wkb.dumps(geometry),
+        "geometry_status": geometry_status,
+        "payload_status": payload_status,
+        "component_vertex_counts": tuple(len(vertices) for vertices in component_vertices),
+        "component_triangles": triangles,
+        "component_bounds": bounds,
+    }
+
+
+def _prepare_geometry_payload_bundle_parallel(
+    records: tuple[Any, ...],
+    shape_ordinals: set[int],
+    *,
+    workers: int,
+) -> tuple[Any, dict[int, tuple[int, ...]], dict[str, int], dict[int, Any], dict[str, int]]:
+    if workers <= 1:
+        raise ValueError("parallel payload preparation requires workers > 1")
+    tasks = [(int(shape_ordinal), records[int(shape_ordinal)]) for shape_ordinal in sorted(shape_ordinals)]
+    try:
+        from shapely import wkb as shapely_wkb  # type: ignore
+    except Exception:  # pragma: no cover - Shapely 1.x compatibility path
+        import shapely.wkb as shapely_wkb  # type: ignore
+
+    geometry_map: dict[int, Any] = {}
+    geometry_status_counts: dict[str, int] = {}
+    prepared_status_counts: dict[str, int] = {}
+    component_triangles: list[tuple[Triangle2, ...]] = []
+    component_vertex_counts: list[int] = []
+    component_bounds: list[tuple[float, float, float, float]] = []
+    source_shape_ids: list[int] = []
+    shape_to_components: dict[int, tuple[int, ...]] = {}
+
+    with ProcessPoolExecutor(max_workers=int(workers)) as executor:
+        results = executor.map(_geometry_payload_parts_worker, tasks)
+        for result in sorted(results, key=lambda item: int(item["shape_ordinal"])):
+            shape_ordinal = int(result["shape_ordinal"])
+            geometry_map[shape_ordinal] = shapely_wkb.loads(result["geometry_wkb"])
+            _add_count(geometry_status_counts, str(result["geometry_status"]))
+            payload_status = str(result["payload_status"])
+            _add_count(prepared_status_counts, payload_status)
+            component_ordinals: list[int] = []
+            if payload_status == "prepared_simple_components":
+                for triangles, vertex_count, bounds in zip(
+                    result["component_triangles"],
+                    result["component_vertex_counts"],
+                    result["component_bounds"],
+                ):
+                    component_ordinals.append(len(component_triangles))
+                    component_triangles.append(tuple(triangles))
+                    component_vertex_counts.append(int(vertex_count))
+                    component_bounds.append(tuple(float(value) for value in bounds))
+                    source_shape_ids.append(shape_ordinal)
+            shape_to_components[shape_ordinal] = tuple(component_ordinals)
+
+    payload = rt.prepare_simple_polygon_component_payload_from_triangles(
+        component_triangles,
+        source_shape_ids=source_shape_ids,
+        component_vertex_counts=component_vertex_counts,
+        component_bounds=component_bounds,
+    )
+    return payload, shape_to_components, prepared_status_counts, geometry_map, geometry_status_counts
 
 
 def _shape_component_table(
@@ -258,26 +334,49 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         f"(left={len(left_shapes_to_build)}/{len(left_shapes)}, right={len(right_shapes_to_build)}/{len(right_shapes)})",
         flush=True,
     )
+    payload_workers = max(1, int(args.payload_workers))
     build_start = time.perf_counter()
-    if args.active_shapes_only:
-        left_geometry_map, left_geometry_status = _build_oracle_geometry_map(
-            left_shapes, left_shapes_to_build, ShapelyPolygon, make_valid
+    parallel_payload_prepare_sec = 0.0
+    parallel_payload_prepare_used = payload_workers > 1
+    if parallel_payload_prepare_used:
+        print(f"[goal3492] parallel geometry/payload preparation workers={payload_workers}", flush=True)
+        left_payload, left_shape_components, left_prepared_status, left_geometry_map, left_geometry_status = (
+            _prepare_geometry_payload_bundle_parallel(
+                left_shapes,
+                left_shapes_to_build if args.active_shapes_only else set(range(len(left_shapes))),
+                workers=payload_workers,
+            )
         )
-        right_geometry_map, right_geometry_status = _build_oracle_geometry_map(
-            right_shapes, right_shapes_to_build, ShapelyPolygon, make_valid
+        right_payload, right_shape_components, right_prepared_status, right_geometry_map, right_geometry_status = (
+            _prepare_geometry_payload_bundle_parallel(
+                right_shapes,
+                right_shapes_to_build if args.active_shapes_only else set(range(len(right_shapes))),
+                workers=payload_workers,
+            )
         )
+        parallel_payload_prepare_sec = time.perf_counter() - build_start
+        geometry_build_sec = 0.0
+        payload_build_sec = 0.0
     else:
-        left_geometries, left_geometry_status = _build_oracle_polygons(left_shapes, ShapelyPolygon, make_valid)
-        right_geometries, right_geometry_status = _build_oracle_polygons(right_shapes, ShapelyPolygon, make_valid)
-        left_geometry_map = dict(enumerate(left_geometries))
-        right_geometry_map = dict(enumerate(right_geometries))
-    geometry_build_sec = time.perf_counter() - build_start
+        if args.active_shapes_only:
+            left_geometry_map, left_geometry_status = _build_oracle_geometry_map(
+                left_shapes, left_shapes_to_build, ShapelyPolygon, make_valid
+            )
+            right_geometry_map, right_geometry_status = _build_oracle_geometry_map(
+                right_shapes, right_shapes_to_build, ShapelyPolygon, make_valid
+            )
+        else:
+            left_geometries, left_geometry_status = _build_oracle_polygons(left_shapes, ShapelyPolygon, make_valid)
+            right_geometries, right_geometry_status = _build_oracle_polygons(right_shapes, ShapelyPolygon, make_valid)
+            left_geometry_map = dict(enumerate(left_geometries))
+            right_geometry_map = dict(enumerate(right_geometries))
+        geometry_build_sec = time.perf_counter() - build_start
 
-    print("[goal3492] prepare simple-polygon component payloads", flush=True)
-    payload_start = time.perf_counter()
-    left_payload, left_shape_components, left_prepared_status = _prepare_payload_from_geometry_map(left_geometry_map)
-    right_payload, right_shape_components, right_prepared_status = _prepare_payload_from_geometry_map(right_geometry_map)
-    payload_build_sec = time.perf_counter() - payload_start
+        print("[goal3492] prepare simple-polygon component payloads", flush=True)
+        payload_start = time.perf_counter()
+        left_payload, left_shape_components, left_prepared_status = _prepare_payload_from_geometry_map(left_geometry_map)
+        right_payload, right_shape_components, right_prepared_status = _prepare_payload_from_geometry_map(right_geometry_map)
+        payload_build_sec = time.perf_counter() - payload_start
 
     print(
         f"[goal3492] build exact oracle areas for {len(candidate_relation_rows)}/{len(left_ordinals)} rows",
@@ -461,27 +560,31 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     )[:10]
 
     schema = (
-        "rtdl.goal3502.overlay_area_single_triangulation_payload_construction.v1"
-        if args.single_triangulation_payload_evidence
+        "rtdl.goal3504.overlay_area_parallel_payload_prepare.v1"
+        if args.parallel_payload_prepare_evidence
         else (
-            "rtdl.goal3497.overlay_area_bounds_positive_filtered_tile_tasks.v1"
-            if args.bounds_positive_filter and not args.device_tile_task_planner
+            "rtdl.goal3502.overlay_area_single_triangulation_payload_construction.v1"
+            if args.single_triangulation_payload_evidence
             else (
-                "rtdl.goal3501.overlay_area_component_bounds_filtered_tile_tasks.v1"
-                if args.component_bounds_filter
+                "rtdl.goal3497.overlay_area_bounds_positive_filtered_tile_tasks.v1"
+                if args.bounds_positive_filter and not args.device_tile_task_planner
                 else (
-                    "rtdl.goal3498.overlay_area_device_tile_task_planner.v1"
-                    if args.device_tile_task_planner
+                    "rtdl.goal3501.overlay_area_component_bounds_filtered_tile_tasks.v1"
+                    if args.component_bounds_filter
                     else (
-                        "rtdl.goal3495.overlay_area_device_active_shape_ordinals.v1"
-                        if device_active_shape_ordinals_used
+                        "rtdl.goal3498.overlay_area_device_tile_task_planner.v1"
+                        if args.device_tile_task_planner
                         else (
-                            "rtdl.goal3494.overlay_area_resident_cupy_tile_task_inputs.v1"
-                            if args.resident_cupy_inputs
+                            "rtdl.goal3495.overlay_area_device_active_shape_ordinals.v1"
+                            if device_active_shape_ordinals_used
                             else (
-                                "rtdl.goal3493.overlay_area_active_shape_payload_construction.v1"
-                                if args.active_shapes_only
-                                else "rtdl.goal3492.overlay_area_public_cdb_tile_task_executor.v1"
+                                "rtdl.goal3494.overlay_area_resident_cupy_tile_task_inputs.v1"
+                                if args.resident_cupy_inputs
+                                else (
+                                    "rtdl.goal3493.overlay_area_active_shape_payload_construction.v1"
+                                    if args.active_shapes_only
+                                    else "rtdl.goal3492.overlay_area_public_cdb_tile_task_executor.v1"
+                                )
                             )
                         )
                     )
@@ -489,12 +592,14 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             )
         )
     )
-    goal = 3502 if args.single_triangulation_payload_evidence else (
-        3501 if args.component_bounds_filter else (3498 if args.device_tile_task_planner else (3497 if args.bounds_positive_filter else (
-            3495 if device_active_shape_ordinals_used else (
-                3494 if args.resident_cupy_inputs else (3493 if args.active_shapes_only else 3492)
-            )
-        )))
+    goal = 3504 if args.parallel_payload_prepare_evidence else (
+        3502 if args.single_triangulation_payload_evidence else (
+            3501 if args.component_bounds_filter else (3498 if args.device_tile_task_planner else (3497 if args.bounds_positive_filter else (
+                3495 if device_active_shape_ordinals_used else (
+                    3494 if args.resident_cupy_inputs else (3493 if args.active_shapes_only else 3492)
+                )
+            )))
+        )
     )
 
     return {
@@ -517,6 +622,9 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         "device_tile_task_planner": bool(args.device_tile_task_planner),
         "single_triangulation_payload_construction": True,
         "single_triangulation_payload_evidence": bool(args.single_triangulation_payload_evidence),
+        "payload_workers": payload_workers,
+        "parallel_payload_prepare": bool(parallel_payload_prepare_used),
+        "parallel_payload_prepare_evidence": bool(args.parallel_payload_prepare_evidence),
         "bounds_positive_relation_row_count": int(len(candidate_relation_rows)),
         "bounds_positive_filter_metadata": bounds_positive_filter_metadata,
         "active_shape_ordinal_metadata": active_shape_ordinal_metadata,
@@ -561,6 +669,10 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         "timing_sec": {
             "geometry_build": geometry_build_sec,
             "payload_build": payload_build_sec,
+            "parallel_geometry_payload_prepare": parallel_payload_prepare_sec,
+            "geometry_plus_payload_prepare": (
+                parallel_payload_prepare_sec if parallel_payload_prepare_used else geometry_build_sec + payload_build_sec
+            ),
             "relation_discovery": relation_discovery_sec,
             "bounds_positive_filter": bounds_positive_filter_sec,
             "device_active_shape_ordinals": active_shape_ordinals_sec,
@@ -600,6 +712,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--executor-repeats", type=int, default=1)
     parser.add_argument("--device-planner-repeats", type=int, default=1)
     parser.add_argument(
+        "--payload-workers",
+        type=int,
+        default=1,
+        help=(
+            "Use multiple CPU processes for independent Shapely geometry repair and "
+            "prepared component extraction. The default 1 preserves the sequential path."
+        ),
+    )
+    parser.add_argument(
         "--bounds-positive-filter",
         action="store_true",
         help=(
@@ -638,6 +759,11 @@ def parse_args() -> argparse.Namespace:
             "Label the output as Goal3502 evidence for the generic single-triangulation "
             "prepared-payload construction path."
         ),
+    )
+    parser.add_argument(
+        "--parallel-payload-prepare-evidence",
+        action="store_true",
+        help="Label the output as Goal3504 evidence for parallel prepared-payload preparation.",
     )
     parser.add_argument(
         "--active-shapes-only",
