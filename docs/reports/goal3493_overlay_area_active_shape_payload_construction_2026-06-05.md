@@ -2,7 +2,7 @@
 
 ## Status
 
-Implemented locally. Pod timing is required to quantify the improvement.
+Implemented with pod timing on an NVIDIA RTX A5000.
 
 ## Purpose
 
@@ -64,3 +64,40 @@ PYTHONPATH=src:. python3 scripts/goal3492_overlay_area_public_cdb_tile_task_exec
 The expected success criteria are unchanged from Goal3492: all tile tasks status
 zero, `9,653,005` triangle pairs processed, scalar total area within tolerance
 of the Shapely/GEOS oracle, and all claim-boundary flags false.
+
+## Pod Result
+
+Artifact:
+
+- `docs/reports/goal3493_overlay_area_active_shape_payload_construction_pod_2026-06-05.json`
+
+Active-shape mode prepared:
+
+- left shapes: `1,261` of `15,700`
+- right shapes: `949` of `949`
+- left payload triangles: `46,297` instead of Goal3492's full-mode `309,337`
+- right payload triangles: `32,087`
+
+Correctness:
+
+- relation rows: `4,543`
+- component-pair rows: `39,947`
+- tile tasks: `54,232`
+- processed triangle pairs: `9,653,005`
+- task status counts: `{"0": 54232}`
+- observed total area: `26.083217672086707`
+- exact Shapely/GEOS total area: `26.08321766231046`
+- total absolute error: `9.776247367199176e-09`
+- max relation absolute error: about `1.04142405810137e-09`
+- positive row count under the v2.8 row threshold: `1086` observed / `1086` exact
+
+Timing comparison against Goal3492 full-shape preparation:
+
+| Phase | Goal3492 full-shape | Goal3493 active-shape |
+| --- | ---: | ---: |
+| geometry build | `5.5599s` | `1.1583s` |
+| payload build | `22.7166s` | `7.8638s` |
+| CuPy tile-task executor | `0.4883s` | `0.2811s` |
+
+The main remaining cost is now active-shape payload construction, not the
+relation discovery or the tile-task executor.

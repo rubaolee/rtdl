@@ -203,11 +203,13 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "totals 1.75 and 2.0. Goal3492 executed the public-CDB full-stream tile-task executor over "
             "4,543 relation rows / 39,947 component-pair rows / 54,232 tile tasks / 9,653,005 triangle "
             "pairs, matching the Shapely/GEOS total 26.08321766231046 within 9.78e-9 and all task statuses "
-            "zero; the executor took 0.488s while payload construction took 22.717s. Goal3493 adds "
+            "zero; the executor took 0.488s while payload construction took 22.717s. Goal3493 added "
             "active-shape-only payload construction because the active relation stream uses only 1,261 "
-            "of 15,700 left shapes. Remaining work is pod timing for that active-shape mode, integration "
-            "with the device-resident relation stream, then the native-vs-partner acceptance decision over "
-            "that execution shape."
+            "of 15,700 left shapes, reducing geometry build to 1.158s, payload build to 7.864s, left "
+            "payload triangles from 309,337 to 46,297, and executor time to 0.281s while preserving the "
+            "same total-area error. Remaining work is integration with the device-resident relation stream, "
+            "prepared-payload residency/reuse across repeated runs, then the native-vs-partner acceptance "
+            "decision over that execution shape."
         ),
         generic_runtime_target=(
             "typed hit/relation streams with compact-mask, grouped parity/count, bounded witness "

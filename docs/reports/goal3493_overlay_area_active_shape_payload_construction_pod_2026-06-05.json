@@ -1,0 +1,196 @@
+{
+  "active_shapes_only": true,
+  "claim_boundary": {
+    "full_overlay_area_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "component_pair_row_count": 39947,
+  "cupy_version": "14.1.1",
+  "exact_positive_row_count": 1086,
+  "exact_total_area": 26.08321766231046,
+  "executor_metadata": {
+    "app_specific_engine_logic_allowed": false,
+    "automatic_partner_selection_allowed": false,
+    "claim_boundary": "v2.8 simple-polygon overlay-area continuation metadata defines generic runtime targets after exact oracle evidence. It does not authorize release, public speedup wording, RT-core speedup wording, true-zero-copy wording, paper reproduction claims, hidden partner selection, hidden dispatch, full overlay completion claims, or app-specific native-engine behavior.",
+    "completed_without_truncation": true,
+    "input_contract": "prepared_overlay_area_tile_tasks",
+    "left_triangle_count": 46297,
+    "operation": "prepared_simple_polygon_overlay_area_tile_tasks",
+    "partner": "cupy",
+    "processed_triangle_pair_count": 9653005,
+    "public_speedup_claim_authorized": false,
+    "reduction": "cupy_add_at_by_relation_row_ordinal",
+    "relation_row_count": 4543,
+    "release_authorized": false,
+    "right_triangle_count": 32087,
+    "rt_core_speedup_claim_authorized": false,
+    "runtime_kernel_authorized": false,
+    "schema": "rtdl.v2_8.simple_polygon_overlay_area_tile_task_cupy.v1",
+    "status_counts": {
+      "0": 54232
+    },
+    "task_count": 54232,
+    "total_area": 26.083217672086704,
+    "true_zero_copy_claim_authorized": false
+  },
+  "expected_triangle_pair_count": 9653005,
+  "goal": 3493,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "interpretation": "Executes the prepared simple-polygon overlay-area tile-task plan over the public-CDB active relation stream and compares scalar relation areas with the external Shapely/GEOS oracle.",
+  "largest_error_rows": [
+    {
+      "abs_error": 1.04142405810137e-09,
+      "exact_area": 1.0258328262330074,
+      "left_ordinal": 381,
+      "observed_area": 1.0258328272744315,
+      "relation_row": 4270,
+      "right_ordinal": 140
+    },
+    {
+      "abs_error": 6.414839770485514e-10,
+      "exact_area": 1.0465041608817218,
+      "left_ordinal": 384,
+      "observed_area": 1.0465041615232058,
+      "relation_row": 563,
+      "right_ordinal": 143
+    },
+    {
+      "abs_error": 6.015490328081796e-10,
+      "exact_area": 1.1955725481739141,
+      "left_ordinal": 383,
+      "observed_area": 1.1955725487754632,
+      "relation_row": 513,
+      "right_ordinal": 142
+    },
+    {
+      "abs_error": 2.1441318165393852e-10,
+      "exact_area": 0.13648197405342255,
+      "left_ordinal": 932,
+      "observed_area": 0.13648197426783573,
+      "relation_row": 2798,
+      "right_ordinal": 691
+    },
+    {
+      "abs_error": 1.9423129771212189e-10,
+      "exact_area": 1.5951731790844415,
+      "left_ordinal": 288,
+      "observed_area": 1.5951731792786727,
+      "relation_row": 78,
+      "right_ordinal": 47
+    },
+    {
+      "abs_error": 1.1078875317149794e-10,
+      "exact_area": 0.10369248586746108,
+      "left_ordinal": 556,
+      "observed_area": 0.10369248597824983,
+      "relation_row": 1356,
+      "right_ordinal": 315
+    },
+    {
+      "abs_error": 1.092551743520076e-10,
+      "exact_area": 0.05183098599933931,
+      "left_ordinal": 907,
+      "observed_area": 0.05183098610859448,
+      "relation_row": 2823,
+      "right_ordinal": 666
+    },
+    {
+      "abs_error": 1.001845273407298e-10,
+      "exact_area": 1.2522936242891871,
+      "left_ordinal": 250,
+      "observed_area": 1.2522936243893716,
+      "relation_row": 87,
+      "right_ordinal": 9
+    },
+    {
+      "abs_error": 9.898570851873956e-11,
+      "exact_area": 0.08630226559982573,
+      "left_ordinal": 977,
+      "observed_area": 0.08630226569881144,
+      "relation_row": 3150,
+      "right_ordinal": 736
+    },
+    {
+      "abs_error": 9.629447239589695e-11,
+      "exact_area": 0.31475774401324674,
+      "left_ordinal": 607,
+      "observed_area": 0.3147577441095412,
+      "relation_row": 1512,
+      "right_ordinal": 366
+    }
+  ],
+  "left_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county.cdb",
+  "left_geometry_status_counts": {
+    "make_valid": 795,
+    "valid": 466
+  },
+  "left_payload_triangle_count": 46297,
+  "left_prepared_status_counts": {
+    "prepared_simple_components": 1259,
+    "unsupported_triangulation_failed": 2
+  },
+  "left_shape_count": 15700,
+  "max_relation_abs_error": 1.04142405810137e-09,
+  "max_rows": 65536,
+  "max_triangle_pairs_per_task": 512,
+  "observed_positive_row_count": 1086,
+  "observed_total_area": 26.083217672086707,
+  "planned_triangle_pair_count": 9653005,
+  "positive_row_count_match": true,
+  "prepared_left_shape_count": 1261,
+  "prepared_right_shape_count": 949,
+  "relation_abs_error_percentiles": {
+    "p50": 4.5740914589456093e-14,
+    "p90": 1.9422304476518493e-12,
+    "p99": 4.0282790991774675e-11
+  },
+  "relation_row_count": 4543,
+  "right_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count1024.cdb",
+  "right_geometry_status_counts": {
+    "make_valid": 596,
+    "valid": 353
+  },
+  "right_payload_triangle_count": 32087,
+  "right_prepared_status_counts": {
+    "prepared_simple_components": 949
+  },
+  "right_shape_count": 949,
+  "rtdl_commit": "6193a493846c30bc7fb696cfc7ddf727abd9f208",
+  "schema": "rtdl.goal3493.overlay_area_active_shape_payload_construction.v1",
+  "shapely_version": "2.1.2",
+  "supported_relation_row_count": 4539,
+  "task_summary": {
+    "claim_boundary": "v2.8 simple-polygon overlay-area continuation metadata defines generic runtime targets after exact oracle evidence. It does not authorize release, public speedup wording, RT-core speedup wording, true-zero-copy wording, paper reproduction claims, hidden partner selection, hidden dispatch, full overlay completion claims, or app-specific native-engine behavior.",
+    "errors": [],
+    "expected_triangle_pair_count": 9653005,
+    "max_task_pair_count": 512,
+    "pair_row_count": 39947,
+    "planned_triangle_pair_count": 9653005,
+    "public_speedup_claim_authorized": false,
+    "relation_row_count": 4539,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "runtime_kernel_authorized": false,
+    "status": "accept",
+    "task_count": 54232,
+    "true_zero_copy_claim_authorized": false,
+    "version": "rtdl.v2_8.simple_polygon_overlay_area_prepared_payload.v1"
+  },
+  "tile_task_count": 54232,
+  "timing_sec": {
+    "cupy_tile_task_executor": 0.2810977753251791,
+    "exact_oracle": 0.43521987553685904,
+    "geometry_build": 1.158253469504416,
+    "payload_build": 7.8638075571507215,
+    "planning": 0.3216659128665924,
+    "relation_discovery": 1.4143317127600312
+  },
+  "total_area_abs_error": 9.776247367199176e-09,
+  "unsupported_positive_relation_row_count": 0,
+  "unsupported_relation_row_count": 4
+}
