@@ -23,6 +23,10 @@ class Goal3424ClosedShapeInstanceIdentityRefinementTest(unittest.TestCase):
         self.assertIn("point_ordinals_out", workloads)
         self.assertIn("shape_ordinals_out", workloads)
         self.assertIn("params.point_index_offset + pidx", workloads)
+        self.assertIn(
+            "(unsigned long long)params.point_index_offset + (unsigned long long)pidx",
+            workloads,
+        )
         self.assertIn("params.shape_ordinals_out[slot] = (unsigned long long)prim", workloads)
         self.assertIn(
             "lp.point_ids = reinterpret_cast<const uint32_t*>(chunk_point_ids);\n"

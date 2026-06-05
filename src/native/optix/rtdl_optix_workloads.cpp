@@ -5480,7 +5480,8 @@ R"CUDA(            const uint32_t slot = atomicAdd(params.output_count, 1u);
                 params.point_ids_out[slot] = (unsigned long long)params.point_ids[pidx];
                 params.shape_ids_out[slot] = (unsigned long long)params.polygons[prim].id;
                 if (params.point_ordinals_out != nullptr) {
-                    params.point_ordinals_out[slot] = (unsigned long long)(params.point_index_offset + pidx);
+                    params.point_ordinals_out[slot] =
+                        (unsigned long long)params.point_index_offset + (unsigned long long)pidx;
                 }
                 if (params.shape_ordinals_out != nullptr) {
                     params.shape_ordinals_out[slot] = (unsigned long long)prim;
