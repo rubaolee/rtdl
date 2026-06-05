@@ -383,6 +383,16 @@ from .v2_8_overlay_area_continuation_contract import select_v2_8_overlay_area_co
 from .v2_8_overlay_area_continuation_contract import v2_8_overlay_area_continuation_plan
 from .v2_8_overlay_area_continuation_contract import validate_v2_8_overlay_area_continuation_plan
 from .v2_8_overlay_area_continuation_contract import validate_v2_8_overlay_area_pre_kernel_policy
+from .v2_8_overlay_area_prepared_payload import PreparedOverlayAreaEvaluationResult
+from .v2_8_overlay_area_prepared_payload import PreparedOverlayAreaPairRow
+from .v2_8_overlay_area_prepared_payload import PreparedSimplePolygonComponentPayload
+from .v2_8_overlay_area_prepared_payload import PreparedSimplePolygonComponentRecord
+from .v2_8_overlay_area_prepared_payload import V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_STATUS
+from .v2_8_overlay_area_prepared_payload import V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_VERSION
+from .v2_8_overlay_area_prepared_payload import evaluate_prepared_overlay_area_scalar
+from .v2_8_overlay_area_prepared_payload import prepare_overlay_area_pair_rows
+from .v2_8_overlay_area_prepared_payload import prepare_simple_polygon_component_payload
+from .v2_8_overlay_area_prepared_payload import validate_v2_8_overlay_area_prepared_payload_contract
 from .geometry_relation_continuations import GEOMETRY_RELATION_BOUNDS_OVERLAP_AREA_CUPY_VERSION
 from .geometry_relation_continuations import GEOMETRY_RELATION_COMPLEXITY_CUPY_VERSION
 from .geometry_relation_continuations import GEOMETRY_RELATION_CONVEX_OVERLAY_AREA_CUPY_VERSION
@@ -2110,6 +2120,16 @@ __all__ = [
     "v2_8_overlay_area_continuation_plan",
     "validate_v2_8_overlay_area_continuation_plan",
     "validate_v2_8_overlay_area_pre_kernel_policy",
+    "PreparedOverlayAreaEvaluationResult",
+    "PreparedOverlayAreaPairRow",
+    "PreparedSimplePolygonComponentPayload",
+    "PreparedSimplePolygonComponentRecord",
+    "V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_STATUS",
+    "V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_VERSION",
+    "evaluate_prepared_overlay_area_scalar",
+    "prepare_overlay_area_pair_rows",
+    "prepare_simple_polygon_component_payload",
+    "validate_v2_8_overlay_area_prepared_payload_contract",
     "ShapePairBoundsOverlapAreaCupyResult",
     "ShapePairConvexOverlayAreaCupyResult",
     "ShapePairRelationComplexityCupyResult",
