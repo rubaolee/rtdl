@@ -632,6 +632,52 @@ extern "C" int rtdl_optix_prepared_point_closed_shape_membership_exact_device_co
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepare_point_closed_shape_membership_exact_device_columns_page_plan_2d(
+        void* prepared,
+        const RtdlPoint* points, size_t point_count,
+        size_t page_size, size_t initial_capacity,
+        void** page_plan_out,
+        RtdlNativePairColumnPagePlanInfo* info_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared closed-shape membership handle must not be null");
+        if (!points && point_count != 0)
+            throw std::runtime_error("point pointer must not be null when point_count is nonzero");
+        if (!page_plan_out)
+            throw std::runtime_error("closed-shape exact membership page_plan_out pointer must not be null");
+        if (!info_out)
+            throw std::runtime_error("closed-shape exact membership page plan info_out pointer must not be null");
+        *page_plan_out = prepare_point_closed_shape_membership_exact_device_columns_page_plan_2d_optix(
+            reinterpret_cast<PreparedShapePairRelationBuild*>(prepared),
+            points, point_count, page_size, initial_capacity, info_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_produce_point_closed_shape_membership_exact_device_columns_page_2d(
+        void* page_plan,
+        size_t page_index, size_t max_rows,
+        RtdlNativeDevicePairColumns* columns_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!page_plan)
+            throw std::runtime_error("closed-shape exact membership page plan handle must not be null");
+        if (!columns_out)
+            throw std::runtime_error("closed-shape exact membership page plan columns_out pointer must not be null");
+        produce_point_closed_shape_membership_exact_device_columns_page_2d_optix(
+            reinterpret_cast<NativeClosedShapeExactDeviceColumnPagePlan2D*>(page_plan),
+            page_index, max_rows, columns_out);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_point_closed_shape_membership_exact_device_columns_page_plan_2d(
+        void* page_plan)
+{
+    delete reinterpret_cast<NativeClosedShapeExactDeviceColumnPagePlan2D*>(page_plan);
+}
+
 extern "C" int rtdl_optix_prepared_point_closed_shape_first_boundary_crossing_device_columns_2d(
         void* prepared,
         const RtdlPoint* points, size_t point_count,

@@ -8262,6 +8262,85 @@ static void run_prepared_point_closed_shape_membership_exact_device_columns_page
         columns_out);
 }
 
+struct NativeClosedShapeExactDeviceColumnPagePlan2D {
+    PreparedShapePairRelationBuild* prepared = nullptr;
+    std::vector<RtdlPoint> points;
+    size_t page_size = 0;
+    size_t initial_capacity = 0;
+    size_t page_count = 0;
+};
+
+static void fill_native_pair_column_page_plan_info(
+        const NativeClosedShapeExactDeviceColumnPagePlan2D* plan,
+        RtdlNativePairColumnPagePlanInfo* info_out)
+{
+    if (!plan || !info_out) {
+        return;
+    }
+    *info_out = {};
+    info_out->item_count = static_cast<uint64_t>(plan->points.size());
+    info_out->page_size = static_cast<uint64_t>(plan->page_size);
+    info_out->page_count = static_cast<uint64_t>(plan->page_count);
+    info_out->initial_capacity = static_cast<uint64_t>(plan->initial_capacity);
+    info_out->native_page_plan_handle = 1u;
+    info_out->automatic_retry_authorized = 0u;
+}
+
+static NativeClosedShapeExactDeviceColumnPagePlan2D*
+prepare_point_closed_shape_membership_exact_device_columns_page_plan_2d_optix(
+        PreparedShapePairRelationBuild* prepared,
+        const RtdlPoint* points,
+        size_t point_count,
+        size_t page_size,
+        size_t initial_capacity,
+        RtdlNativePairColumnPagePlanInfo* info_out)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared closed-shape membership handle must not be null");
+    }
+    if (!points && point_count != 0) {
+        throw std::runtime_error("point pointer must not be null when point_count is nonzero");
+    }
+    if (page_size == 0) {
+        throw std::runtime_error("closed-shape exact membership page plan page_size must be positive");
+    }
+    auto plan = std::make_unique<NativeClosedShapeExactDeviceColumnPagePlan2D>();
+    plan->prepared = prepared;
+    if (point_count != 0) {
+        plan->points.assign(points, points + point_count);
+    }
+    plan->page_size = page_size;
+    plan->initial_capacity = initial_capacity;
+    plan->page_count = point_count == 0 ? 0 : (point_count + page_size - 1) / page_size;
+    fill_native_pair_column_page_plan_info(plan.get(), info_out);
+    return plan.release();
+}
+
+static void produce_point_closed_shape_membership_exact_device_columns_page_2d_optix(
+        NativeClosedShapeExactDeviceColumnPagePlan2D* page_plan,
+        size_t page_index,
+        size_t max_rows,
+        RtdlNativeDevicePairColumns* columns_out)
+{
+    if (!page_plan) {
+        throw std::runtime_error("closed-shape exact membership page plan handle must not be null");
+    }
+    if (page_index >= page_plan->page_count) {
+        throw std::runtime_error("closed-shape exact membership page_index out of range");
+    }
+    const size_t page_start = page_index * page_plan->page_size;
+    const size_t page_count = std::min(page_plan->page_size, page_plan->points.size() - page_start);
+    const RtdlPoint* point_ptr = page_plan->points.empty() ? nullptr : page_plan->points.data();
+    run_prepared_point_closed_shape_membership_exact_device_columns_page_2d_optix(
+        page_plan->prepared,
+        point_ptr,
+        page_plan->points.size(),
+        page_start,
+        page_count,
+        max_rows,
+        columns_out);
+}
+
 static void release_point_closed_shape_membership_exact_device_columns_2d_optix(void* owner_handle)
 {
     delete reinterpret_cast<NativeClosedShapeMembershipCandidateDeviceColumnsOwner*>(owner_handle);

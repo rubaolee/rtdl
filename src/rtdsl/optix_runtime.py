@@ -226,6 +226,15 @@ OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL = (
 OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_SYMBOL = (
     "rtdl_optix_prepared_point_closed_shape_membership_exact_device_columns_page_2d"
 )
+OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_PLAN_PREPARE_SYMBOL = (
+    "rtdl_optix_prepare_point_closed_shape_membership_exact_device_columns_page_plan_2d"
+)
+OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_PLAN_PRODUCE_SYMBOL = (
+    "rtdl_optix_produce_point_closed_shape_membership_exact_device_columns_page_2d"
+)
+OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_PLAN_DESTROY_SYMBOL = (
+    "rtdl_optix_destroy_point_closed_shape_membership_exact_device_columns_page_plan_2d"
+)
 OPTIX_CLOSED_SHAPE_MEMBERSHIP_POINT_ID_COUNT_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_prepared_point_closed_shape_membership_point_id_count_device_columns_2d"
 )
@@ -377,6 +386,122 @@ class OptixExactDevicePairColumnPagePlan:
             "release_authorized": False,
             "true_zero_copy_authorized": False,
         }
+
+
+@dataclass
+class OptixExactDevicePairColumnNativePagePlan:
+    prepared: object
+    library: object
+    owner: object
+    item_count: int
+    page_size: int
+    page_count: int
+    initial_capacity: int
+    native_page_symbol: str = OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_PLAN_PRODUCE_SYMBOL
+
+    def request(self, page_index: int) -> PairColumnPageRequest:
+        index = int(page_index)
+        if index < 0 or index >= int(self.page_count):
+            raise IndexError("page_index out of range")
+        start = index * int(self.page_size)
+        stop = min(int(self.item_count), start + int(self.page_size))
+        return PairColumnPageRequest(
+            page_index=index,
+            start=start,
+            stop=stop,
+            initial_capacity=int(self.initial_capacity),
+        )
+
+    def produce_page(self, page_index: int, *, max_rows: int | None = None):
+        request = self.request(page_index)
+        capacity = request.initial_capacity if max_rows is None else int(max_rows)
+        if capacity < 0:
+            raise ValueError("max_rows must be non-negative")
+        symbol = _find_optional_backend_symbol(
+            self.library,
+            OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_PLAN_PRODUCE_SYMBOL,
+        )
+        if symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_PLAN_PRODUCE_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        release_symbol = _find_optional_backend_symbol(
+            self.library,
+            OPTIX_RELEASE_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL,
+        )
+        if release_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_RELEASE_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        columns = _RtdlNativeDevicePairColumns()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            ctypes.c_void_p(self.owner.handle_value),
+            ctypes.c_size_t(request.page_index),
+            ctypes.c_size_t(capacity),
+            ctypes.byref(columns),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        column_owner = _OptixNativeDevicePairColumnsOwner(
+            self.library,
+            columns.owner_handle,
+            release_symbol_name=OPTIX_RELEASE_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL,
+        )
+        return OptixNativeDevicePairColumnOutput(
+            library=self.library,
+            owner=column_owner,
+            left_ids_device_ptr=int(columns.left_ids_device_ptr),
+            right_ids_device_ptr=int(columns.right_ids_device_ptr),
+            row_count=int(columns.row_count),
+            capacity=int(columns.capacity),
+            candidate_event_count=int(columns.candidate_event_count),
+            overflow=bool(columns.overflow),
+            device_ordinal=int(columns.device_ordinal),
+            traversal_seconds=float(columns.traversal_seconds),
+            native_symbol=OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_PLAN_PRODUCE_SYMBOL,
+            field_names=("point_id", "shape_id"),
+        )
+
+    def to_metadata(self) -> dict[str, object]:
+        return {
+            "schema": "rtdl.optix.native_exact_device_pair_column_page_plan.v1",
+            "runtime_page_plan_object": True,
+            "native_page_plan_handle_implemented": True,
+            "native_page_release_function_implemented": True,
+            "native_page_producer_used_by_plan": True,
+            "native_page_symbol": self.native_page_symbol,
+            "item_count": int(self.item_count),
+            "page_size": int(self.page_size),
+            "page_count": int(self.page_count),
+            "initial_capacity": int(self.initial_capacity),
+            "owner_handle": self.owner.handle_value,
+            "automatic_retry_authorized": False,
+            "hidden_dispatch_authorized": False,
+            "device_only_exact_predicate_produced": False,
+            "release_authorized": False,
+            "true_zero_copy_authorized": False,
+        }
+
+    def close(self) -> None:
+        self.owner.close()
+
+    def __enter__(self) -> "OptixExactDevicePairColumnNativePagePlan":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
 
 
 class _RtdlAabb2D(ctypes.Structure):
@@ -782,6 +907,17 @@ class _RtdlNativeDevicePairColumns(ctypes.Structure):
         ("row_count_device_ptr", ctypes.c_uint64),
         ("candidate_event_count_device_ptr", ctypes.c_uint64),
         ("overflow_device_ptr", ctypes.c_uint64),
+    ]
+
+
+class _RtdlNativePairColumnPagePlanInfo(ctypes.Structure):
+    _fields_ = [
+        ("item_count", ctypes.c_uint64),
+        ("page_size", ctypes.c_uint64),
+        ("page_count", ctypes.c_uint64),
+        ("initial_capacity", ctypes.c_uint64),
+        ("native_page_plan_handle", ctypes.c_uint32),
+        ("automatic_retry_authorized", ctypes.c_uint32),
     ]
 
 
@@ -1299,6 +1435,44 @@ class _OptixNativeDevicePairColumnsOwner:
             pass
 
 
+class _OptixNativePairColumnPagePlanOwner:
+    def __init__(self, library: ctypes.CDLL, owner_handle: int | None) -> None:
+        self._library = library
+        self._owner_handle = ctypes.c_void_p(0 if owner_handle is None else int(owner_handle))
+        self._closed = False
+
+    @property
+    def handle_value(self) -> int:
+        return 0 if self._owner_handle.value is None else int(self._owner_handle.value)
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        self._closed = True
+        handle = self._owner_handle
+        self._owner_handle = ctypes.c_void_p()
+        if not handle.value:
+            return
+        destroy_symbol = _find_optional_backend_symbol(
+            self._library,
+            OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_PLAN_DESTROY_SYMBOL,
+        )
+        if destroy_symbol is not None:
+            destroy_symbol(handle)
+
+    def __enter__(self) -> "_OptixNativePairColumnPagePlanOwner":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
 class _OptixClosedShapeBoundaryEventDeviceColumnsOwner:
     def __init__(self, library: ctypes.CDLL, owner_handle: int | None) -> None:
         self._library = library
@@ -1726,6 +1900,7 @@ class OptixNativeDevicePairColumnOutput:
             in (
                 OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL,
                 OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_SYMBOL,
+                OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_PLAN_PRODUCE_SYMBOL,
             )
         )
         if is_exact_closed_shape_bridge:
@@ -10919,6 +11094,69 @@ class PreparedOptixPointClosedShapeMembership2D:
             page_requests=page_requests,
         )
 
+    def exact_device_columns_native_page_plan(
+        self,
+        points,
+        *,
+        page_size: int,
+        initial_max_rows: int,
+    ) -> OptixExactDevicePairColumnNativePagePlan:
+        """Create a native page-plan handle for explicit exact pair-column pages."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX closed-shape membership handle is closed")
+        prepare_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_PLAN_PREPARE_SYMBOL,
+        )
+        if prepare_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_PLAN_PREPARE_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        destroy_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_PLAN_DESTROY_SYMBOL,
+        )
+        if destroy_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_PLAN_DESTROY_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        packed_points = points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
+        if packed_points.dimension != 2:
+            raise ValueError("PreparedOptixPointClosedShapeMembership2D.exact_device_columns_native_page_plan requires 2-D points")
+        if int(page_size) <= 0:
+            raise ValueError("page_size must be positive")
+        if int(initial_max_rows) < 0:
+            raise ValueError("initial_max_rows must be non-negative")
+        page_plan_handle = ctypes.c_void_p()
+        info = _RtdlNativePairColumnPagePlanInfo()
+        error = ctypes.create_string_buffer(4096)
+        status = prepare_symbol(
+            self._handle,
+            packed_points.records,
+            packed_points.count,
+            ctypes.c_size_t(int(page_size)),
+            ctypes.c_size_t(int(initial_max_rows)),
+            ctypes.byref(page_plan_handle),
+            ctypes.byref(info),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        owner = _OptixNativePairColumnPagePlanOwner(self._lib, page_plan_handle.value)
+        return OptixExactDevicePairColumnNativePagePlan(
+            prepared=self,
+            library=self._lib,
+            owner=owner,
+            item_count=int(info.item_count),
+            page_size=int(info.page_size),
+            page_count=int(info.page_count),
+            initial_capacity=int(info.initial_capacity),
+        )
+
     def exact_device_columns_page(
         self,
         points,
@@ -19083,6 +19321,46 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_closed_shape_exact_device_columns_page.restype = ctypes.c_int
+
+    optional_closed_shape_exact_device_columns_page_plan_prepare = _find_optional_backend_symbol(
+        lib,
+        OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_PLAN_PREPARE_SYMBOL,
+    )
+    if optional_closed_shape_exact_device_columns_page_plan_prepare is not None:
+        optional_closed_shape_exact_device_columns_page_plan_prepare.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.POINTER(_RtdlNativePairColumnPagePlanInfo),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_closed_shape_exact_device_columns_page_plan_prepare.restype = ctypes.c_int
+
+    optional_closed_shape_exact_device_columns_page_plan_produce = _find_optional_backend_symbol(
+        lib,
+        OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_PLAN_PRODUCE_SYMBOL,
+    )
+    if optional_closed_shape_exact_device_columns_page_plan_produce is not None:
+        optional_closed_shape_exact_device_columns_page_plan_produce.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlNativeDevicePairColumns),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_closed_shape_exact_device_columns_page_plan_produce.restype = ctypes.c_int
+
+    optional_closed_shape_exact_device_columns_page_plan_destroy = _find_optional_backend_symbol(
+        lib,
+        OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_PLAN_DESTROY_SYMBOL,
+    )
+    if optional_closed_shape_exact_device_columns_page_plan_destroy is not None:
+        optional_closed_shape_exact_device_columns_page_plan_destroy.argtypes = [ctypes.c_void_p]
+        optional_closed_shape_exact_device_columns_page_plan_destroy.restype = None
 
     optional_closed_shape_point_id_count_device_columns = _find_optional_backend_symbol(
         lib,

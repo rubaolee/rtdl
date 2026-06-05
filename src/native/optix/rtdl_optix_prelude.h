@@ -260,6 +260,15 @@ struct RtdlNativeDevicePairColumns {
     uint64_t overflow_device_ptr;
 };
 
+struct RtdlNativePairColumnPagePlanInfo {
+    uint64_t item_count;
+    uint64_t page_size;
+    uint64_t page_count;
+    uint64_t initial_capacity;
+    uint32_t native_page_plan_handle;
+    uint32_t automatic_retry_authorized;
+};
+
 struct RtdlNativeDeviceGroupedCountI64Columns {
     uint64_t counts_device_ptr;
     uint64_t group_capacity;
@@ -698,6 +707,20 @@ int  rtdl_optix_prepared_point_closed_shape_membership_exact_device_columns_page
          size_t max_rows,
          RtdlNativeDevicePairColumns* columns_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_point_closed_shape_membership_exact_device_columns_page_plan_2d(
+         void* prepared,
+         const RtdlPoint* points, size_t point_count,
+         size_t page_size, size_t initial_capacity,
+         void** page_plan_out,
+         RtdlNativePairColumnPagePlanInfo* info_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_produce_point_closed_shape_membership_exact_device_columns_page_2d(
+         void* page_plan,
+         size_t page_index, size_t max_rows,
+         RtdlNativeDevicePairColumns* columns_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_point_closed_shape_membership_exact_device_columns_page_plan_2d(
+         void* page_plan);
 int  rtdl_optix_prepared_point_closed_shape_membership_point_id_count_device_columns_2d(
          void* prepared,
          const RtdlPoint* points, size_t point_count,
