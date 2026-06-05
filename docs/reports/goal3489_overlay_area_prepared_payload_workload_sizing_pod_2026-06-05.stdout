@@ -1,0 +1,51 @@
+{
+  "claim_boundary": {
+    "full_overlay_area_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "component_pairs_per_relation_percentiles": {
+    "p50": 4,
+    "p90": 20,
+    "p99": 66
+  },
+  "geometry_build_and_classify_sec": 18.86201229225844,
+  "goal": 3489,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "interpretation": "Measures the component-pair and triangle-pair expansion that the exact scalar overlay continuation must process after public-CDB relation discovery.",
+  "max_component_pair_rows_per_relation": 484,
+  "max_triangle_pair_samples": [
+    {
+      "component_pair_count": 121,
+      "left_component_count": 11,
+      "left_ordinal": 280,
+      "left_triangle_count": 564,
+      "right_component_count": 11,
+      "right_ordinal": 39,
+      "right_triangle_count": 564,
+      "row": 208,
+      "triangle_pair_count": 318096
+    }
+  ],
+  "max_triangle_pairs_per_relation": 318096,
+  "row_count": 4543,
+  "rtdl_commit": "17b339edc7be3f8c0afe7ce89781a6afc1745beb",
+  "schema": "rtdl.goal3489.overlay_area_prepared_payload_workload_sizing.v1",
+  "shapely_version": "2.1.2",
+  "supported_row_count": 4539,
+  "total_component_pair_rows": 39947,
+  "total_triangle_pairs": 9653005,
+  "triangle_pairs_per_relation_percentiles": {
+    "p50": 294,
+    "p90": 3450,
+    "p99": 25530
+  },
+  "unsupported_reason_counts": {
+    "left=unsupported_triangulation_failed|right=prepared_simple_components": 4
+  },
+  "unsupported_row_count": 4
+}
