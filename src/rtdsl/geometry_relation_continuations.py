@@ -487,7 +487,11 @@ class ShapePairActiveShapeOrdinalsCupyResult:
         return dict(self.metadata)
 
 
-def shape_pair_relation_active_shape_ordinals_cupy(relation_columns) -> ShapePairActiveShapeOrdinalsCupyResult:
+def shape_pair_relation_active_shape_ordinals_cupy(
+    relation_columns,
+    *,
+    row_mask=None,
+) -> ShapePairActiveShapeOrdinalsCupyResult:
     """Compute unique active shape ordinals from resident relation columns.
 
     This is a generic partner-side continuation over shape-pair relation
@@ -501,8 +505,16 @@ def shape_pair_relation_active_shape_ordinals_cupy(relation_columns) -> ShapePai
     import cupy as cp  # type: ignore
 
     ordinals = relation_columns.as_cupy_ordinal_columns()
-    left_unique, left_counts = cp.unique(ordinals["left_ordinal"], return_counts=True)
-    right_unique, right_counts = cp.unique(ordinals["right_ordinal"], return_counts=True)
+    left_ordinals = ordinals["left_ordinal"]
+    right_ordinals = ordinals["right_ordinal"]
+    row_filter_applied = row_mask is not None
+    if row_filter_applied:
+        if int(row_mask.shape[0]) != int(getattr(relation_columns, "row_count")):
+            raise ValueError("row_mask length must match relation column row_count")
+        left_ordinals = left_ordinals[row_mask]
+        right_ordinals = right_ordinals[row_mask]
+    left_unique, left_counts = cp.unique(left_ordinals, return_counts=True)
+    right_unique, right_counts = cp.unique(right_ordinals, return_counts=True)
 
     row_count = int(getattr(relation_columns, "row_count"))
     left_shape_count = int(getattr(relation_columns, "left_polygon_count", 0))
@@ -513,6 +525,8 @@ def shape_pair_relation_active_shape_ordinals_cupy(relation_columns) -> ShapePai
         "partner": "cupy",
         "input_contract": "shape_pair_relation_flags_with_ordinals_and_geometry_payload",
         "row_count": row_count,
+        "selected_row_count": int(left_ordinals.size),
+        "row_filter_applied": bool(row_filter_applied),
         "left_unique_shape_count": int(left_unique.size),
         "right_unique_shape_count": int(right_unique.size),
         "left_shape_count": left_shape_count,

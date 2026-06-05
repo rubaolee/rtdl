@@ -136,8 +136,12 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     print("[goal3492] discover active relation ordinals with RTDL/OptiX", flush=True)
     discovery_start = time.perf_counter()
     active_shape_ordinals_sec = 0.0
+    bounds_positive_filter_sec = 0.0
     relation_ordinal_download_sec = 0.0
     active_shape_ordinal_metadata: dict[str, object] | None = None
+    bounds_positive_filter_metadata: dict[str, object] | None = None
+    bounds_positive_relation_rows = None
+    bounds_positive_mask = None
     device_active_shape_ordinals_used = False
     with prepare_rayjoin_optix_shape_pair_active_count(
         right_shapes,
@@ -147,9 +151,30 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         packed_left = pack_rayjoin_optix_shape_pair_active_count_left_shapes(left_shapes)
         with prepared.active_relation_device_columns(packed_left, max_rows=int(args.max_rows)) as columns:
             cp.cuda.Stream.null.synchronize()
+            if args.bounds_positive_filter:
+                bounds_filter_start = time.perf_counter()
+                bounds = rt.shape_pair_relation_bounds_overlap_area_cupy(columns, group_by=None)
+                bounds_positive_mask = bounds.row_areas > 0.0
+                bounds_positive_relation_rows = cp.asnumpy(cp.nonzero(bounds_positive_mask)[0]).astype(
+                    "uint32",
+                    copy=False,
+                )
+                bounds_positive_filter_metadata = bounds.to_metadata()
+                bounds_positive_filter_metadata.update(
+                    {
+                        "bounds_positive_relation_row_count": int(len(bounds_positive_relation_rows)),
+                        "row_filter": "bounds_overlap_area_gt_zero",
+                        "exact_area_for_filtered_rows": "known_zero_by_axis_aligned_bounds_disjointness",
+                    }
+                )
+                cp.cuda.Stream.null.synchronize()
+                bounds_positive_filter_sec = time.perf_counter() - bounds_filter_start
             if args.active_shapes_only and args.device_active_shape_ordinals:
                 active_shape_start = time.perf_counter()
-                active_ordinals = rt.shape_pair_relation_active_shape_ordinals_cupy(columns)
+                active_ordinals = rt.shape_pair_relation_active_shape_ordinals_cupy(
+                    columns,
+                    row_mask=bounds_positive_mask,
+                )
                 cp.cuda.Stream.null.synchronize()
                 left_shapes_to_build = set(
                     map(int, cp.asnumpy(active_ordinals.left_unique_ordinals).tolist())
@@ -167,9 +192,15 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             relation_ordinal_download_sec = time.perf_counter() - relation_download_start
     relation_discovery_sec = time.perf_counter() - discovery_start
 
+    candidate_relation_rows = (
+        tuple(map(int, bounds_positive_relation_rows.tolist()))
+        if bounds_positive_relation_rows is not None
+        else tuple(range(len(left_ordinals)))
+    )
+
     if args.active_shapes_only and not device_active_shape_ordinals_used:
-        left_shapes_to_build = set(map(int, left_ordinals))
-        right_shapes_to_build = set(map(int, right_ordinals))
+        left_shapes_to_build = set(map(int, left_ordinals[list(candidate_relation_rows)]))
+        right_shapes_to_build = set(map(int, right_ordinals[list(candidate_relation_rows)]))
     elif not args.active_shapes_only:
         left_shapes_to_build = set(range(len(left_shapes)))
         right_shapes_to_build = set(range(len(right_shapes)))
@@ -200,14 +231,19 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     right_payload, right_shape_components, right_prepared_status = _prepare_payload_from_geometry_map(right_geometry_map)
     payload_build_sec = time.perf_counter() - payload_start
 
-    print(f"[goal3492] build exact oracle areas for {len(left_ordinals)} rows", flush=True)
+    print(
+        f"[goal3492] build exact oracle areas for {len(candidate_relation_rows)}/{len(left_ordinals)} rows",
+        flush=True,
+    )
     exact_start = time.perf_counter()
-    exact_areas: list[float] = []
-    for index, (left_ordinal, right_ordinal) in enumerate(zip(left_ordinals, right_ordinals)):
+    exact_areas: list[float] = [0.0] * len(left_ordinals)
+    for index, relation_row in enumerate(candidate_relation_rows):
         if int(args.progress_every) > 0 and index > 0 and index % int(args.progress_every) == 0:
-            print(f"[goal3492] exact rows={index}/{len(left_ordinals)}", flush=True)
-        exact_areas.append(
-            float(left_geometry_map[int(left_ordinal)].intersection(right_geometry_map[int(right_ordinal)]).area)
+            print(f"[goal3492] exact rows={index}/{len(candidate_relation_rows)}", flush=True)
+        left_ordinal = left_ordinals[relation_row]
+        right_ordinal = right_ordinals[relation_row]
+        exact_areas[relation_row] = float(
+            left_geometry_map[int(left_ordinal)].intersection(right_geometry_map[int(right_ordinal)]).area
         )
     exact_oracle_sec = time.perf_counter() - exact_start
 
@@ -217,7 +253,9 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     relation_row_ordinals: list[int] = []
     unsupported_rows = 0
     unsupported_positive_rows = 0
-    for relation_row, (left_ordinal, right_ordinal) in enumerate(zip(left_ordinals, right_ordinals)):
+    for relation_row in candidate_relation_rows:
+        left_ordinal = left_ordinals[relation_row]
+        right_ordinal = right_ordinals[relation_row]
         left_components = left_shape_components.get(int(left_ordinal), ())
         right_components = right_shape_components.get(int(right_ordinal), ())
         if not left_components or not right_components:
@@ -300,20 +338,26 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     )[:10]
 
     schema = (
-        "rtdl.goal3495.overlay_area_device_active_shape_ordinals.v1"
-        if device_active_shape_ordinals_used
+        "rtdl.goal3497.overlay_area_bounds_positive_filtered_tile_tasks.v1"
+        if args.bounds_positive_filter
         else (
-            "rtdl.goal3494.overlay_area_resident_cupy_tile_task_inputs.v1"
-            if args.resident_cupy_inputs
+            "rtdl.goal3495.overlay_area_device_active_shape_ordinals.v1"
+            if device_active_shape_ordinals_used
             else (
-                "rtdl.goal3493.overlay_area_active_shape_payload_construction.v1"
-                if args.active_shapes_only
-                else "rtdl.goal3492.overlay_area_public_cdb_tile_task_executor.v1"
+                "rtdl.goal3494.overlay_area_resident_cupy_tile_task_inputs.v1"
+                if args.resident_cupy_inputs
+                else (
+                    "rtdl.goal3493.overlay_area_active_shape_payload_construction.v1"
+                    if args.active_shapes_only
+                    else "rtdl.goal3492.overlay_area_public_cdb_tile_task_executor.v1"
+                )
             )
         )
     )
-    goal = 3495 if device_active_shape_ordinals_used else (
-        3494 if args.resident_cupy_inputs else (3493 if args.active_shapes_only else 3492)
+    goal = 3497 if args.bounds_positive_filter else (
+        3495 if device_active_shape_ordinals_used else (
+            3494 if args.resident_cupy_inputs else (3493 if args.active_shapes_only else 3492)
+        )
     )
 
     return {
@@ -331,6 +375,9 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         "resident_cupy_inputs": bool(args.resident_cupy_inputs),
         "device_active_shape_ordinals": bool(args.device_active_shape_ordinals),
         "device_active_shape_ordinals_used": bool(device_active_shape_ordinals_used),
+        "bounds_positive_filter": bool(args.bounds_positive_filter),
+        "bounds_positive_relation_row_count": int(len(candidate_relation_rows)),
+        "bounds_positive_filter_metadata": bounds_positive_filter_metadata,
         "active_shape_ordinal_metadata": active_shape_ordinal_metadata,
         "executor_repeats": executor_repeats,
         "left_shape_count": len(left_shapes),
@@ -344,7 +391,8 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         "left_payload_triangle_count": left_payload.triangle_count,
         "right_payload_triangle_count": right_payload.triangle_count,
         "relation_row_count": int(len(left_ordinals)),
-        "supported_relation_row_count": int(len(left_ordinals) - unsupported_rows),
+        "candidate_relation_row_count": int(len(candidate_relation_rows)),
+        "supported_relation_row_count": int(len(candidate_relation_rows) - unsupported_rows),
         "unsupported_relation_row_count": unsupported_rows,
         "unsupported_positive_relation_row_count": unsupported_positive_rows,
         "component_pair_row_count": len(pair_rows),
@@ -370,6 +418,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             "geometry_build": geometry_build_sec,
             "payload_build": payload_build_sec,
             "relation_discovery": relation_discovery_sec,
+            "bounds_positive_filter": bounds_positive_filter_sec,
             "device_active_shape_ordinals": active_shape_ordinals_sec,
             "relation_ordinal_download": relation_ordinal_download_sec,
             "exact_oracle": exact_oracle_sec,
@@ -400,6 +449,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--progress-every", type=int, default=500)
     parser.add_argument("--resident-cupy-inputs", action="store_true")
     parser.add_argument("--executor-repeats", type=int, default=1)
+    parser.add_argument(
+        "--bounds-positive-filter",
+        action="store_true",
+        help=(
+            "Use generic bounds-overlap area > 0 as a device-side zero-area filter before "
+            "component-pair and tile-task planning."
+        ),
+    )
     parser.add_argument(
         "--device-active-shape-ordinals",
         action="store_true",
