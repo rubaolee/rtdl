@@ -34,6 +34,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
 
     county = rt.load_cdb(args.county_cdb)
     points = tuple(rt.chains_to_probe_points(county))
+    packed_points = rt.pack_points(records=points, dimension=2)
     shapes = rt.chains_to_polygons(county)
     contract = PairColumnPagedRecoveryContract(
         page_size=int(args.page_size),
@@ -64,7 +65,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             host_counts.update(int(row["point_id"]) for row in page_host_rows)
 
             first_columns = prepared.exact_device_columns_page(
-                points,
+                packed_points,
                 page_start=request.start,
                 page_count=request.item_count,
                 max_rows=request.initial_capacity,
@@ -77,7 +78,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
                 if retry_hint is None:
                     raise RuntimeError("native page producer expected overflow retry_capacity_hint")
                 recovered_columns = prepared.exact_device_columns_page(
-                    points,
+                    packed_points,
                     page_start=request.start,
                     page_count=request.item_count,
                     max_rows=retry_hint,
@@ -155,6 +156,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             "native_page_producer_used": True,
             "native_call_uses_page_start_and_page_count": True,
             "python_point_slicing_for_native_producer": False,
+            "single_packed_point_buffer_reused": True,
             "native_page_plan_handle_implemented": False,
             "native_page_release_function_implemented": False,
             "device_only_exact_predicate_produced": False,

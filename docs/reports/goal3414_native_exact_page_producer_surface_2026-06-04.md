@@ -28,8 +28,9 @@ prepared.exact_device_columns_page(
 ```
 
 This lets a caller pass one full packed point buffer plus an explicit page range
-into the native ABI. It is the first migration step from Python-windowed
-orchestration toward a real native paged stream contract.
+into the native ABI. The probe prepares that packed point buffer once and reuses
+it across every native page call. It is the first migration step from
+Python-windowed orchestration toward a real native paged stream contract.
 
 ## Boundary
 
@@ -67,9 +68,9 @@ It was produced on commit `a50494bc` with an NVIDIA RTX A5000 and driver
 | missing/extra/mismatched groups | 0/0/0 |
 
 Every page was produced through the native page symbol with explicit
-`page_start` and `page_count`. The native page boundary still records that no
-page-plan handle, page release function, or device-only exact predicate exists
-yet.
+`page_start` and `page_count`, using one reused packed point buffer. The native
+page boundary still records that no page-plan handle, page release function, or
+device-only exact predicate exists yet.
 
 ## Next Target
 

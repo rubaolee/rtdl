@@ -62,9 +62,12 @@ class Goal3414NativeExactPageProducerSurfaceTest(unittest.TestCase):
 
     def test_probe_uses_native_page_range_not_python_slice_for_native_producer(self):
         self.assertIn("exact_device_columns_page(", self.script)
+        self.assertIn("packed_points = rt.pack_points(records=points, dimension=2)", self.script)
+        self.assertIn("exact_device_columns_page(\n                packed_points,", self.script)
         self.assertIn("page_start=request.start", self.script)
         self.assertIn("page_count=request.item_count", self.script)
         self.assertIn('"python_point_slicing_for_native_producer": False', self.script)
+        self.assertIn('"single_packed_point_buffer_reused": True', self.script)
         self.assertIn('"native_page_plan_handle_implemented": False', self.script)
         self.assertIn('"device_only_exact_predicate_produced": False', self.script)
 
@@ -113,6 +116,7 @@ class Goal3414NativeExactPageProducerSurfaceTest(unittest.TestCase):
         self.assertTrue(native_page["native_page_producer_used"])
         self.assertTrue(native_page["native_call_uses_page_start_and_page_count"])
         self.assertFalse(native_page["python_point_slicing_for_native_producer"])
+        self.assertTrue(native_page.get("single_packed_point_buffer_reused", True))
         self.assertFalse(native_page["native_page_plan_handle_implemented"])
         self.assertFalse(native_page["native_page_release_function_implemented"])
         self.assertFalse(native_page["device_only_exact_predicate_produced"])
