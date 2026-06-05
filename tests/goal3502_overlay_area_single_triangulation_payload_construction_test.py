@@ -70,6 +70,20 @@ class Goal3502OverlayAreaSingleTriangulationPayloadConstructionTest(unittest.Tes
         self.assertEqual(prepared.components[0].input_vertex_count, 4)
         self.assertEqual(prepared.components[0].to_metadata()["bounds"], (0.0, 0.0, 2.0, 2.0))
 
+    def test_pretriangulated_payload_can_derive_fallback_bounds_and_vertex_count(self) -> None:
+        prepared = rt.prepare_simple_polygon_component_payload_from_triangles(
+            (
+                (
+                    ((0.0, 0.0), (3.0, 0.0), (1.0, 1.0)),
+                    ((0.0, 0.0), (1.0, 1.0), (0.0, 2.0)),
+                ),
+            ),
+            source_shape_ids=(12,),
+        )
+
+        self.assertEqual(prepared.components[0].input_vertex_count, 4)
+        self.assertEqual(prepared.components[0].to_metadata()["bounds"], (0.0, 0.0, 3.0, 2.0))
+
     def test_runner_uses_single_triangulation_payload_path(self) -> None:
         text = SCRIPT.read_text(encoding="utf-8")
 

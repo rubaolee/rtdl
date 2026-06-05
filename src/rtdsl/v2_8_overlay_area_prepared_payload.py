@@ -777,6 +777,15 @@ def prepare_simple_polygon_component_payload_from_triangles(
     component_vertex_counts: Sequence[int] | None = None,
     component_bounds: Sequence[tuple[float, float, float, float]] | None = None,
 ) -> PreparedSimplePolygonComponentPayload:
+    """Build a prepared component payload from caller-validated triangles.
+
+    Callers own topology validation before using this constructor. When the
+    original component vertex count or bounds are authoritative, pass
+    `component_vertex_counts` and `component_bounds`; otherwise the fallback
+    derives them from triangle vertices, which is correct for ear-clipped simple
+    polygons without inserted Steiner points.
+    """
+
     if source_shape_ids is not None and len(source_shape_ids) != len(component_triangles):
         raise ValueError("source_shape_ids length must match component_triangles length")
     if component_vertex_counts is not None and len(component_vertex_counts) != len(component_triangles):
