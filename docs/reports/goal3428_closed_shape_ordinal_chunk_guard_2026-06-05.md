@@ -1,7 +1,7 @@
 # Goal3428 Closed-Shape Ordinal Chunk Guard
 
 **Date:** 2026-06-05  
-**Status:** implemented locally; pod validation required before broad use  
+**Status:** implemented and pod-validated  
 **Scope:** follow-up hardening for Goal3424 instance-aware closed-shape candidate streams
 
 ## Purpose
@@ -51,6 +51,36 @@ OK (skipped=1)
 ```
 
 The skip is expected on the Windows host when CuPy/CUDA is unavailable.
+
+## Pod Validation
+
+Pod:
+
+```text
+NVIDIA RTX A5000, driver 580.126.09
+CuPy 14.1.1
+RTDL commit e53c919d
+```
+
+Command summary:
+
+```bash
+git reset --hard origin/main
+export OPTIX_PREFIX=/root/vendor/optix-sdk
+make build-optix
+export PYTHONPATH=src:.
+export RTDL_OPTIX_LIBRARY=/root/rtdl/build/librtdl_optix.so
+python3 -m unittest \
+  tests.goal3424_closed_shape_instance_identity_refinement_test \
+  tests.goal3427_prepared_cupy_refiner_timing_test
+```
+
+Result:
+
+```text
+Ran 9 tests in 1.153s
+OK
+```
 
 ## Claim Boundary
 
