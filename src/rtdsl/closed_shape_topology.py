@@ -142,13 +142,14 @@ def refine_closed_shape_membership_candidate_columns_exact_cupy(
     point_eps: float = 1.0e-9,
     sort_output: bool = True,
 ) -> dict[str, object]:
-    """Filter generic point/closed-shape candidate columns with a CuPy exact predicate.
+    """Filter generic point/closed-shape candidate columns with a CuPy simple-ring predicate.
 
     This helper is a partner proof for a future native device refinement stage.
     RTDL still treats the native candidate stream as a broad-phase/superset
-    producer. The helper keeps the refinement on the CUDA device, but it does
-    not authorize a native exact-device predicate, default route, or release
-    claim.
+    producer. The helper keeps the refinement on the CUDA device, but it matches
+    the simple point-in-ring fallback semantics, not the full GEOS/topology
+    closed-boundary oracle observed in Goal3421. It does not authorize a native
+    exact-device predicate, default route, or release claim.
     """
 
     try:
@@ -249,7 +250,8 @@ def refine_closed_shape_membership_candidate_columns_exact_cupy(
         "dropped_candidate_row_count": candidate_count - row_count,
         "point_eps": eps,
         "partner": "cupy",
-        "predicate": "double_closed_shape_membership",
+        "predicate": "double_simple_ring_closed_shape_membership",
+        "matches_geos_topology_oracle": False,
         "output_residency": "partner_device_refined_columns",
         "host_refined_rows_materialized": False,
         "native_exact_device_row_stream_produced": False,

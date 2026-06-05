@@ -17,6 +17,7 @@ This file catches design ideas that should not interrupt the current release or 
 - Engine boundary: this must stay generic. The native engine should expose prepared edge/range traversal and return typed boundary-event columns such as query id, shape id, boundary id, crossing parameter, and tie-break status. RayJoin-specific map ids, simulation-of-simplicity policy, polygon assignment interpretation, and output-chain logic stay in the benchmark app or partner layer.
 - Likely prerequisites: prepared edge AABB/range acceleration, deterministic tie-break policy, typed boundary-event columns, optional per-query best-event reduction, and same-contract validation against the existing exact inclusive membership path.
 - Boundary: do not merge RayJoin-specific `closest_eid` semantics into the public engine ABI. This belongs in a future v2.x/v3.x primitive design, not in the current v2.8 route-tuning evidence.
+- v2.8/v2.x closed-shape exact stream: Goal3422 shows that RT candidate columns plus a simple point-in-ring device filter do not match the current GEOS/topology oracle on the public CDB. Future work needs a generic topology-aware closed-boundary refinement contract where topology rows are caller data, not native app policy.
 
 ## RayJoin PIP Scalar-Count Lessons
 
