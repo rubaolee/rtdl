@@ -2,7 +2,7 @@
 
 ## Status
 
-Implemented locally; pod build and validation pending.
+Implemented and pod-validated on NVIDIA RTX A5000.
 
 Goal3455 adds zero-based `left_ordinal` and `right_ordinal` device columns to the generic shape-pair relation stream.
 
@@ -36,12 +36,23 @@ This is a generic continuation-enabling primitive. It does not authorize:
 
 ## Validation
 
-Local validation target:
+Pod evidence:
+
+- Artifact: `docs/reports/goal3455_shape_pair_relation_ordinal_columns_pod_2026-06-05.json`
+- Stdout: `docs/reports/goal3455_shape_pair_relation_ordinal_columns_pod_2026-06-05.stdout`
+- GPU: NVIDIA RTX A5000, driver 580.126.09
+- Commit: `fd200cca7fbbb55211bf2102bc3d1e673727abca`
+- `ordinal_rows_match: true`
+- `metadata_ordinal_columns.device_resident: true`
+- `metadata_geometry_payload.device_resident: true`
+- all claim-boundary flags remained false
+
+Local validation:
 
 - `py -3 -m py_compile scripts\goal3455_shape_pair_relation_ordinal_columns_probe.py`
 - `py -3 -m unittest tests.goal3455_shape_pair_relation_ordinal_columns_test`
 
-Pod validation target after rebuilding OptiX:
+Pod validation:
 
 ```bash
 make build-optix OPTIX_PREFIX=/root/vendor/optix-sdk
