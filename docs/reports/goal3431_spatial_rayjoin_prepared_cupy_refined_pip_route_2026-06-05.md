@@ -1,7 +1,7 @@
 # Goal3431 Spatial RayJoin Prepared CuPy-Refined PIP Route
 
 **Date:** 2026-06-05  
-**Verdict:** implemented; pod artifact pending  
+**Verdict:** implemented and pod-validated
 **Scope:** v2.8 benchmark-app adoption of Goal3427 prepared closed-shape refinement
 
 ## Purpose
@@ -76,13 +76,74 @@ This route improves the benchmark-app reference implementation and makes the v2.
 
 ## Validation
 
-Local validation planned:
+Local validation:
 
 ```powershell
 $env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal3431_spatial_rayjoin_prepared_cupy_refined_pip_route_test tests.goal3105_v2_8_benchmark_runtime_gap_map_test tests.goal3427_prepared_cupy_refiner_timing_test
 ```
 
-Pod validation is required for the executable CuPy/OptiX route and will be recorded in:
+Result:
+
+```text
+Ran 13 tests in 0.021s
+OK (skipped=1)
+```
+
+The skip is the optional CuPy artifact test before pod artifact capture.
+
+Syntax validation used temporary `.pyc` files to avoid the Windows `__pycache__` lock:
+
+```text
+syntax ok
+```
+
+Pod validation on `root@69.30.85.203:22057`, clean `origin/main` checkout at commit `5e016d19`, rebuilt with `OPTIX_PREFIX=/root/vendor/optix-sdk`:
+
+```bash
+export PYTHONPATH=src:.
+export RTDL_OPTIX_LIBRARY=/root/rtdl/build/librtdl_optix.so
+python3 examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py \
+  --workload pip \
+  --execution-route prepared_optix_cupy_refined_pip \
+  --result-mode count \
+  --candidate-max-rows 60000 \
+  --dataset data/rayjoin_public_cdb/br_county.cdb \
+  --no-rows
+```
+
+Artifact:
 
 - `docs/reports/goal3431_spatial_rayjoin_prepared_cupy_refined_pip_pod_2026-06-05.json`
 - `docs/reports/goal3431_spatial_rayjoin_prepared_cupy_refined_pip_pod_2026-06-05.stdout`
+
+Pod result summary:
+
+| Field | Value |
+| --- | ---: |
+| RT candidate rows | 47,570 |
+| Prepared CuPy refined rows | 47,262 |
+| Dropped broad-phase candidates | 308 |
+| Candidate capacity | 60,000 |
+| Candidate required capacity | 47,570 |
+
+Cold single-route phase timings in the CLI artifact:
+
+| Phase | Seconds |
+| --- | ---: |
+| `prepare_cupy_refiner_sec` | 0.654096 |
+| `prepare_static_scene_sec` | 0.675256 |
+| `candidate_device_columns_sec` | 0.395151 |
+| `prepared_cupy_refine_sec` | 0.068462 |
+
+These are cold route timings from a single app invocation. The warmed repeated-query timing evidence remains Goal3427: candidate stream median `0.018988s`, prepared CuPy refine median `0.001425s`, and candidate+prepared total median `0.020430s`.
+
+Pod test rerun after artifact capture:
+
+```bash
+python3 -m unittest \
+  tests.goal3431_spatial_rayjoin_prepared_cupy_refined_pip_route_test \
+  tests.goal3427_prepared_cupy_refiner_timing_test \
+  tests.goal3424_closed_shape_instance_identity_refinement_test
+```
+
+The first pod test attempt exposed a test expectation bug: the candidate metadata does not use a top-level `has_instance_identity_columns` field; the authoritative field is `candidate_columns.runtime.instance_identity_columns.present`. The local test has been updated accordingly and must be rerun after the artifact is committed.

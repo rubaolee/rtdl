@@ -83,7 +83,12 @@ class Goal3431SpatialRayJoinPreparedCupyRefinedPipRouteTest(unittest.TestCase):
         self.assertEqual(payload["backend"], "optix+cupy")
         self.assertEqual(payload["result_mode"], "count")
         self.assertEqual(payload["summary"]["positive_hit_row_count"], payload["row_count"])
-        self.assertTrue(payload["candidate_columns"]["has_instance_identity_columns"])
+        self.assertTrue(payload["candidate_columns"]["runtime"]["instance_identity_columns"]["present"])
+        self.assertEqual(
+            payload["candidate_columns"]["runtime"]["instance_identity_columns"]["field_names"],
+            ["point_ordinal", "shape_ordinal"],
+        )
+        self.assertEqual(payload["candidate_columns"]["capacity_status"]["row_count"], 47570)
         self.assertTrue(payload["partner_refinement"]["instance_identity_columns_used"])
         self.assertEqual(payload["partner_refinement"]["row_count"], payload["row_count"])
         for value in payload["claim_boundary"].values():
