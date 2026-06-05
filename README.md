@@ -197,8 +197,8 @@ release evidence, review records, and goal archives live separately:
 
 - [History Index](docs/history/README.md)
 - [Version Archive Notes](docs/history/version_archive_notes.md)
-- [Historical v2.6 Release Package](docs/release_reports/v2_6/README.md)
-- [Historical v2.3 Release Package](docs/release_reports/v2_3/README.md)
+- [Historical v2.6 Evidence Archive](docs/release_reports/v2_6/README.md)
+- [Historical v2.3 Evidence Archive](docs/release_reports/v2_3/README.md)
 - [Release Reports](docs/release_reports/)
 - [Benchmark And Audit Reports](docs/reports/)
 

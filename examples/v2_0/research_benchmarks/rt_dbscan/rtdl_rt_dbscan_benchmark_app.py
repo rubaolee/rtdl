@@ -1485,7 +1485,7 @@ def run_rt_dbscan_benchmark(
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="RT-DBSCAN-inspired RTDL v2.x benchmark app.")
+    parser = argparse.ArgumentParser(description="RT-DBSCAN-inspired RTDL v2.8 benchmark app.")
     parser.add_argument(
         "--mode",
         choices=(

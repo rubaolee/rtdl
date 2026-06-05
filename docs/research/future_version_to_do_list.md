@@ -2,6 +2,12 @@
 
 This file catches design ideas that should not interrupt the current release or internal-preview lane.
 
+## Legacy Versioned Helper Names
+
+- Audit and, where safe, alias or migrate compatibility helper names that still carry historical version labels in example Python code, such as selected `v2_5` Triton preview helpers and `v2_6` Numba compact-mask / neutral-handoff helpers.
+- Rationale: Goal3519 cleaned the active learner Markdown surface to v2.8, while Goal3520 confirmed that several Python source helpers retain older labels as compatibility/protocol names. They should not block the v2.8 internal closeout, but future user-facing APIs should prefer current generic names or explicit `legacy_` aliases.
+- Boundary: do not rename public or semi-public helper functions casually. Add aliases and migration tests first, preserve existing scripts, and keep historical protocol identifiers stable where artifacts or tests depend on them.
+
 ## Generic Adapter Naming
 
 - Consider introducing a generic alias for the Hausdorff adapter shape now named `directed_hausdorff_2d_partner_columns`.
@@ -16,8 +22,8 @@ This file catches design ideas that should not interrupt the current release or 
 - Rationale: RayJoin's fast PIP path traces one upward ray per point and keeps the best crossing boundary event/edge on device. RTDL's current generic point/closed-shape membership count can now use device-filtered scalar count and `z_point` traversal, but it still trails RayJoin on the same slice because it is a membership-count contract over polygon AABBs rather than an edge-range best-crossing contract.
 - Engine boundary: this must stay generic. The native engine should expose prepared edge/range traversal and return typed boundary-event columns such as query id, shape id, boundary id, crossing parameter, and tie-break status. RayJoin-specific map ids, simulation-of-simplicity policy, polygon assignment interpretation, and output-chain logic stay in the benchmark app or partner layer.
 - Likely prerequisites: prepared edge AABB/range acceleration, deterministic tie-break policy, typed boundary-event columns, optional per-query best-event reduction, and same-contract validation against the existing exact inclusive membership path.
-- Boundary: do not merge RayJoin-specific `closest_eid` semantics into the public engine ABI. This belongs in a future v2.x/v3.x primitive design, not in the current v2.8 route-tuning evidence.
-- v2.8/v2.x closed-shape exact stream: Goal3422 initially framed the public CDB miss as a topology-aware closed-boundary refinement contract gap. Goal3424 refined that diagnosis: the immediate mismatch came from duplicate public point/shape ids and a partner helper that collapsed public ids into one geometry instance. Future exact-refinement streams must carry both public ids and input/prepared instance ordinals. Topology-aware closed-boundary contracts remain future work for datasets where instance-aware simple-ring semantics still fail the chosen oracle.
+- Boundary: do not merge RayJoin-specific `closest_eid` semantics into the public engine ABI. This belongs in a future v2.8-or-later / v3.0 primitive design, not in the current v2.8 route-tuning evidence.
+- v2.8 closed-shape exact stream: Goal3422 initially framed the public CDB miss as a topology-aware closed-boundary refinement contract gap. Goal3424 refined that diagnosis: the immediate mismatch came from duplicate public point/shape ids and a partner helper that collapsed public ids into one geometry instance. Future exact-refinement streams must carry both public ids and input/prepared instance ordinals. Topology-aware closed-boundary contracts remain future work for datasets where instance-aware simple-ring semantics still fail the chosen oracle.
 
 ## RayJoin PIP Scalar-Count Lessons
 
@@ -44,4 +50,4 @@ This file catches design ideas that should not interrupt the current release or 
 - The needed generic primitive is a simple-polygon overlay-area continuation over resident relation streams and geometry payload columns. It should emit per-row intersection area plus status/ownership policy columns, and optionally grouped area reductions. It must not encode RayJoin, county, map, CDB, or GIS-app names in the engine ABI.
 - Likely implementation direction: keep RT cores responsible for candidate/relation production; keep exact overlay as a partner/native continuation over typed geometry payloads. Candidate algorithms include a generic arrangement/sweep continuation, triangulation plus triangle-polygon accumulation, or a robust polygon clipping library integration behind a generic primitive contract. A naive Sutherland-Hodgman clip is valid only for convex clip shapes and must be gated by the Goal3467-style complexity classifier.
 - Required acceptance before any public claim: exact oracle policy for non-integer/non-orthogonal polygons, deterministic boundary-witness ownership, hard fail-closed status for unsupported topology, same-contract CPU/reference comparison, large public-CDB pod evidence, and independent review.
-- Boundary: this belongs in the v2.x primitive/runtime lane if implemented as built-in generic continuation; arbitrary user-defined clipping kernels belong to the later v3.0 extension lane.
+- Boundary: this belongs in the v2.8-or-later primitive/runtime lane if implemented as built-in generic continuation; arbitrary user-defined clipping kernels belong to the later v3.0 extension lane.
