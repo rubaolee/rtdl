@@ -121,6 +121,25 @@ The route is still app-layer Python+CuPy policy over generic RTDL primitives.
 It does not make the native engine RayJoin-specific and does not authorize a
 full RayJoin paper reproduction or public speedup claim by itself.
 
+For repeated PIP calls against the same point and shape records, use the
+prepared Python handle so the OptiX scene and CuPy lookup arrays are prepared
+once:
+
+```python
+from examples.v2_0.research_benchmarks.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app import (
+    prepare_rayjoin_optix_cupy_refined_pip,
+)
+
+with prepare_rayjoin_optix_cupy_refined_pip(points, shapes, candidate_max_rows=60000) as prepared:
+    first = prepared.run(result_mode="count", include_rows=False)
+    repeated = prepared.run(result_mode="count", include_rows=False)
+
+print(repeated["summary"])
+```
+
+This is the app-facing reusable form of the v2.8 typed-stream plus prepared
+CuPy-refiner pattern measured in Goal3427.
+
 For LSI workloads that need counts per left segment instead of exact witness
 rows, use the compact grouped-count route:
 

@@ -869,36 +869,115 @@ def run_rayjoin_prepared_optix_cupy_refined_pip(
     if max_rows <= 0:
         raise ValueError("candidate_max_rows must be positive")
 
-    phases: dict[str, float] = {}
-    rows: tuple[dict[str, int], ...] = ()
-    from rtdsl.optix_runtime import prepare_point_closed_shape_membership_2d_optix
-
-    prepared_refiner = _phase_time(
-        phases,
-        "prepare_cupy_refiner_sec",
-        lambda: rt.prepare_closed_shape_membership_candidate_refiner_exact_cupy(
-            points,
-            shapes,
-            point_eps=point_eps,
-        ),
-    )
-    prepared = _phase_time(
-        phases,
-        "prepare_static_scene_sec",
-        lambda: prepare_point_closed_shape_membership_2d_optix(shapes),
+    prepared = prepare_rayjoin_optix_cupy_refined_pip(
+        points,
+        shapes,
+        dataset=resolved_dataset,
+        dataset_note=case.note,
+        candidate_max_rows=max_rows,
+        point_eps=point_eps,
     )
     try:
+        payload = prepared.run(
+            result_mode=result_mode,
+            include_rows=include_rows,
+        )
+        payload["phases_sec"] = {
+            **prepared.prepare_phases_sec,
+            **payload["phases_sec"],
+        }
+        payload["prepared_reuse"] = {
+            **payload["prepared_reuse"],
+            "enabled": False,
+            "prepare_paid_in_call": True,
+        }
+        return payload
+    finally:
+        prepared.close()
+
+
+class PreparedRayJoinOptixCupyRefinedPip:
+    """App-layer prepared handle for generic OptiX candidates plus CuPy PIP refinement."""
+
+    def __init__(
+        self,
+        points,
+        shapes,
+        *,
+        dataset: str = "direct_points_shapes",
+        dataset_note: str = "Direct point/closed-shape inputs supplied by the caller.",
+        candidate_max_rows: int | None = None,
+        point_eps: float = 1.0e-9,
+    ) -> None:
+        self._points = tuple(points)
+        self._shapes = tuple(shapes)
+        self._dataset = dataset
+        self._dataset_note = dataset_note
+        self._default_candidate_max_rows = int(
+            candidate_max_rows or max(1024, len(self._points) * 8)
+        )
+        if self._default_candidate_max_rows <= 0:
+            raise ValueError("candidate_max_rows must be positive")
+        self._closed = False
+        phases: dict[str, float] = {}
+
+        from rtdsl.optix_runtime import prepare_point_closed_shape_membership_2d_optix
+
+        self._prepared_refiner = _phase_time(
+            phases,
+            "prepare_cupy_refiner_sec",
+            lambda: rt.prepare_closed_shape_membership_candidate_refiner_exact_cupy(
+                self._points,
+                self._shapes,
+                point_eps=point_eps,
+            ),
+        )
+        self._prepared = _phase_time(
+            phases,
+            "prepare_static_scene_sec",
+            lambda: prepare_point_closed_shape_membership_2d_optix(self._shapes),
+        )
+        self.prepare_phases_sec = phases
+
+    def close(self) -> None:
+        if not self._closed:
+            self._prepared.close()
+            self._closed = True
+
+    def __enter__(self) -> "PreparedRayJoinOptixCupyRefinedPip":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def run(
+        self,
+        *,
+        result_mode: str = "count",
+        include_rows: bool = False,
+        candidate_max_rows: int | None = None,
+    ) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared RayJoin OptiX+CuPy PIP handle is closed")
+        if result_mode not in {"count", "rows"}:
+            raise ValueError("result_mode must be 'count' or 'rows'")
+        max_rows = int(candidate_max_rows or self._default_candidate_max_rows)
+        if max_rows <= 0:
+            raise ValueError("candidate_max_rows must be positive")
+
+        phases: dict[str, float] = {}
+        rows: tuple[dict[str, int], ...] = ()
         columns = _phase_time(
             phases,
             "candidate_device_columns_sec",
-            lambda: prepared.candidate_device_columns(points, max_rows=max_rows),
+            lambda: self._prepared.candidate_device_columns(self._points, max_rows=max_rows),
         )
         try:
             candidate_metadata = columns.to_metadata()
             refined = _phase_time(
                 phases,
                 "prepared_cupy_refine_sec",
-                lambda: prepared_refiner.refine(columns),
+                lambda: self._prepared_refiner.refine(columns),
             )
             row_count = int(refined["row_count"])
             if include_rows and result_mode == "rows":
@@ -918,58 +997,84 @@ def run_rayjoin_prepared_optix_cupy_refined_pip(
                 phases["host_row_materialize_sec"] = time.perf_counter() - materialize_start
         finally:
             columns.close()
-    finally:
-        prepared.close()
 
-    summary = {
-        "positive_hit_row_count": row_count,
-        "positive_assignment_count": row_count,
-        "output_contract": (
-            "point_to_shape_positive_hit_rows_prepared_optix_candidate_columns_plus_cupy_refine"
-            if result_mode == "rows"
-            else "point_to_shape_positive_hit_count_prepared_optix_candidate_columns_plus_cupy_refine"
-        ),
-    }
-    payload: dict[str, object] = {
-        "app": "rayjoin_v2_spatial_join",
-        "workload": "pip",
-        "execution_route": "prepared_optix_cupy_refined_pip",
-        "backend": "optix+cupy",
-        "dataset": resolved_dataset,
-        "dataset_note": case.note,
-        "result_mode": result_mode,
-        "row_count": row_count,
-        "summary": summary,
-        "phases_sec": phases,
-        "candidate_columns": candidate_metadata,
-        "partner_refinement": {
-            key: value
-            for key, value in refined.items()
-            if key not in {"point_id", "shape_id", "membership"}
-        },
-        "device_resident_continuation_status": (
-            "candidate_columns_and_prepared_cupy_refiner_complete: generic RT candidate "
-            "columns and prepared CuPy lookup columns stay device-side; host row materialization "
-            "is optional when include_rows is requested"
-        ),
-        "native_engine_boundary": (
-            "The engine sees generic point/closed-shape candidate columns with instance ordinals. "
-            "CuPy performs caller-side simple-ring refinement; RayJoin/CDB interpretation stays in Python."
-        ),
-        "claim_boundary": {
-            "full_rayjoin_reproduction": False,
-            "paper_scale_perf_claim_authorized": False,
-            "rtdl_beats_rayjoin_claim_authorized": False,
-            "whole_app_speedup_claim_authorized": False,
-            "v2_8_release_authorized": False,
-            "public_speedup_claim_authorized": False,
-            "rt_core_speedup_claim_authorized": False,
-            "true_zero_copy_claim_authorized": False,
-        },
-    }
-    if include_rows and result_mode == "rows":
-        payload["rows"] = rows
-    return payload
+        summary = {
+            "positive_hit_row_count": row_count,
+            "positive_assignment_count": row_count,
+            "output_contract": (
+                "point_to_shape_positive_hit_rows_prepared_optix_candidate_columns_plus_cupy_refine"
+                if result_mode == "rows"
+                else "point_to_shape_positive_hit_count_prepared_optix_candidate_columns_plus_cupy_refine"
+            ),
+        }
+        payload: dict[str, object] = {
+            "app": "rayjoin_v2_spatial_join",
+            "workload": "pip",
+            "execution_route": "prepared_optix_cupy_refined_pip",
+            "backend": "optix+cupy",
+            "dataset": self._dataset,
+            "dataset_note": self._dataset_note,
+            "result_mode": result_mode,
+            "row_count": row_count,
+            "summary": summary,
+            "phases_sec": phases,
+            "candidate_columns": candidate_metadata,
+            "partner_refinement": {
+                key: value
+                for key, value in refined.items()
+                if key not in {"point_id", "shape_id", "membership"}
+            },
+            "prepared_reuse": {
+                "enabled": True,
+                "point_count": len(self._points),
+                "shape_count": len(self._shapes),
+                "candidate_max_rows": max_rows,
+                "prepare_static_scene_sec": self.prepare_phases_sec["prepare_static_scene_sec"],
+                "prepare_cupy_refiner_sec": self.prepare_phases_sec["prepare_cupy_refiner_sec"],
+                "prepare_paid_once": True,
+            },
+            "device_resident_continuation_status": (
+                "candidate_columns_and_prepared_cupy_refiner_complete: generic RT candidate "
+                "columns and prepared CuPy lookup columns stay device-side; host row materialization "
+                "is optional when include_rows is requested"
+            ),
+            "native_engine_boundary": (
+                "The engine sees generic point/closed-shape candidate columns with instance ordinals. "
+                "CuPy performs caller-side simple-ring refinement; RayJoin/CDB interpretation stays in Python."
+            ),
+            "claim_boundary": {
+                "full_rayjoin_reproduction": False,
+                "paper_scale_perf_claim_authorized": False,
+                "rtdl_beats_rayjoin_claim_authorized": False,
+                "whole_app_speedup_claim_authorized": False,
+                "v2_8_release_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "rt_core_speedup_claim_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+            },
+        }
+        if include_rows and result_mode == "rows":
+            payload["rows"] = rows
+        return payload
+
+
+def prepare_rayjoin_optix_cupy_refined_pip(
+    points,
+    shapes,
+    *,
+    dataset: str = "direct_points_shapes",
+    dataset_note: str = "Direct point/closed-shape inputs supplied by the caller.",
+    candidate_max_rows: int | None = None,
+    point_eps: float = 1.0e-9,
+) -> PreparedRayJoinOptixCupyRefinedPip:
+    return PreparedRayJoinOptixCupyRefinedPip(
+        points,
+        shapes,
+        dataset=dataset,
+        dataset_note=dataset_note,
+        candidate_max_rows=candidate_max_rows,
+        point_eps=point_eps,
+    )
 
 
 def run_rayjoin_prepared_optix_compact_grouped_count_segments(

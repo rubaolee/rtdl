@@ -18,7 +18,9 @@ APP = (
 )
 README = ROOT / "examples" / "v2_0" / "research_benchmarks" / "spatial_rayjoin" / "README.md"
 REPORT = ROOT / "docs" / "reports" / "goal3431_spatial_rayjoin_prepared_cupy_refined_pip_route_2026-06-05.md"
+REUSE_REPORT = ROOT / "docs" / "reports" / "goal3435_spatial_rayjoin_prepared_cupy_pip_reuse_handle_2026-06-05.md"
 ARTIFACT = ROOT / "docs" / "reports" / "goal3431_spatial_rayjoin_prepared_cupy_refined_pip_pod_2026-06-05.json"
+REUSE_ARTIFACT = ROOT / "docs" / "reports" / "goal3435_spatial_rayjoin_prepared_cupy_pip_reuse_handle_pod_2026-06-05.json"
 
 
 class Goal3431SpatialRayJoinPreparedCupyRefinedPipRouteTest(unittest.TestCase):
@@ -26,11 +28,15 @@ class Goal3431SpatialRayJoinPreparedCupyRefinedPipRouteTest(unittest.TestCase):
         app = APP.read_text(encoding="utf-8")
 
         self.assertIn("def run_rayjoin_prepared_optix_cupy_refined_pip", app)
+        self.assertIn("class PreparedRayJoinOptixCupyRefinedPip", app)
+        self.assertIn("def prepare_rayjoin_optix_cupy_refined_pip", app)
         self.assertIn('"prepared_optix_cupy_refined_pip"', app)
         self.assertIn("--candidate-max-rows", app)
         self.assertIn("prepare_closed_shape_membership_candidate_refiner_exact_cupy", app)
-        self.assertIn("candidate_device_columns(points, max_rows=max_rows)", app)
-        self.assertIn("prepared_refiner.refine(columns)", app)
+        self.assertIn("candidate_device_columns(self._points, max_rows=max_rows)", app)
+        self.assertIn("self._prepared_refiner.refine(columns)", app)
+        self.assertIn('"prepare_paid_once": True', app)
+        self.assertIn('"prepare_paid_in_call": True', app)
         self.assertIn("candidate_columns_and_prepared_cupy_refiner_complete", app)
         self.assertIn('"rt_core_speedup_claim_authorized": False', app)
         self.assertIn("prepared_optix_cupy_refined_pip currently supports only --workload pip", app)
@@ -41,6 +47,8 @@ class Goal3431SpatialRayJoinPreparedCupyRefinedPipRouteTest(unittest.TestCase):
         self.assertIn("prepared_optix_cupy_refined_pip", readme)
         self.assertIn("instance identity ordinals", readme)
         self.assertIn("prepared CuPy simple-ring", readme)
+        self.assertIn("prepare_rayjoin_optix_cupy_refined_pip", readme)
+        self.assertIn("OptiX scene and CuPy lookup arrays", readme)
         self.assertIn("--candidate-max-rows", readme)
         self.assertIn("full RayJoin paper reproduction", readme)
 
@@ -74,6 +82,20 @@ class Goal3431SpatialRayJoinPreparedCupyRefinedPipRouteTest(unittest.TestCase):
         ):
             self.assertIn(phrase, report)
 
+    def test_reuse_report_records_prepared_handle_boundary(self) -> None:
+        report = REUSE_REPORT.read_text(encoding="utf-8")
+
+        for phrase in (
+            "Goal3435",
+            "PreparedRayJoinOptixCupyRefinedPip",
+            "prepare_rayjoin_optix_cupy_refined_pip",
+            "prepared OptiX point/closed-shape scene",
+            "prepared CuPy exact refiner",
+            "`enabled: true`",
+            "`release_authorized: False`",
+        ):
+            self.assertIn(phrase, report)
+
     @unittest.skipUnless(ARTIFACT.exists(), "Goal3431 pod artifact pending")
     def test_pod_artifact_records_route_execution(self) -> None:
         payload = json.loads(ARTIFACT.read_text(encoding="utf-8"))
@@ -93,6 +115,20 @@ class Goal3431SpatialRayJoinPreparedCupyRefinedPipRouteTest(unittest.TestCase):
         self.assertEqual(payload["partner_refinement"]["row_count"], payload["row_count"])
         for value in payload["claim_boundary"].values():
             self.assertFalse(value)
+
+    @unittest.skipUnless(REUSE_ARTIFACT.exists(), "Goal3435 pod artifact pending")
+    def test_reuse_pod_artifact_records_prepared_handle_execution(self) -> None:
+        payload = json.loads(REUSE_ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["schema"], "rtdl.goal3435.spatial_rayjoin_prepared_cupy_pip_reuse.v1")
+        self.assertEqual(payload["goal"], 3435)
+        self.assertEqual(payload["route"], "prepared_optix_cupy_refined_pip_reuse_handle")
+        self.assertEqual(payload["iterations"], 4)
+        self.assertEqual(payload["row_counts"], [47262, 47262, 47262, 47262])
+        self.assertTrue(all(payload["claim_boundary"][key] is False for key in payload["claim_boundary"]))
+        self.assertTrue(all(run["prepared_reuse"]["enabled"] for run in payload["runs"]))
+        self.assertTrue(all(run["prepared_reuse"]["prepare_paid_once"] for run in payload["runs"]))
+        self.assertTrue(all(run["partner_refinement"]["instance_identity_columns_used"] for run in payload["runs"]))
 
 
 if __name__ == "__main__":
