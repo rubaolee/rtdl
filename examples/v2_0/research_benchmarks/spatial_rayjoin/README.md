@@ -189,6 +189,27 @@ right-side witness IDs, `run_packed_left_dense_count(...)` uses a generic fused
 segment-pair left-id count primitive. It returns a dense count-column contract
 where `count[index]` corresponds to the remapped left segment index.
 
+For overlay-seed workloads where the app only needs the active pair-dependency
+count, use the prepared shape-pair active-count handle:
+
+```python
+from examples.v2_0.research_benchmarks.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app import (
+    pack_rayjoin_optix_shape_pair_active_count_left_shapes,
+    prepare_rayjoin_optix_shape_pair_active_count,
+)
+
+with prepare_rayjoin_optix_shape_pair_active_count(right_shapes) as prepared:
+    payload = prepared.run(left_shapes)
+    packed_left = pack_rayjoin_optix_shape_pair_active_count_left_shapes(left_shapes)
+    repeated_payload = prepared.run_packed_left(packed_left)
+
+print(repeated_payload["summary"])
+```
+
+This handle uses generic prepared shape-pair relation flags plus a generic
+active-count reduction. It is for overlay-seed scalar summaries; full overlay
+row continuation remains a separate app-layer concern.
+
 For a single external two-input dataset:
 
 ```bash

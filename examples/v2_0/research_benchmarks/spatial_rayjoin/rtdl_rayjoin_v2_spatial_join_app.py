@@ -942,6 +942,10 @@ class PreparedRayJoinOptixCupyRefinedPip:
     def close(self) -> None:
         if not self._closed:
             self._prepared.close()
+            # The CuPy refiner owns CuPy arrays and a cached raw kernel, not a
+            # custom native handle. Dropping the reference lets CuPy/Python
+            # release lookup storage promptly when callers close the app handle.
+            self._prepared_refiner = None
             self._closed = True
 
     def __enter__(self) -> "PreparedRayJoinOptixCupyRefinedPip":
@@ -1488,6 +1492,15 @@ def _reusable_segment_input(segments):
     return records, len(records)
 
 
+def _reusable_shape_input(shapes):
+    if hasattr(shapes, "polygon_count") and all(
+        hasattr(shapes, field) for field in ("refs", "vertices_xy", "vertex_xy_count")
+    ):
+        return shapes, int(shapes.polygon_count)
+    records = tuple(shapes)
+    return records, len(records)
+
+
 class RayJoinOptixCompactGroupedCountPackedLeftSegments:
     """App-layer packed left segments for repeated compact count queries."""
 
@@ -1581,6 +1594,186 @@ def run_rayjoin_prepared_optix_left_id_dense_count_workload(
         return prepared.run_packed_left_dense_count(
             packed_left,
             include_rows=include_rows,
+            dataset_note=case.note,
+        )
+
+
+class RayJoinOptixShapePairActiveCountPackedLeftShapes:
+    """App-layer packed left closed shapes for repeated active-count queries."""
+
+    def __init__(self, left_shapes) -> None:
+        phases: dict[str, float] = {}
+        from rtdsl.optix_runtime import pack_polygons
+
+        self.packed_polygons = _phase_time(
+            phases,
+            "left_shape_pack_sec",
+            lambda: pack_polygons(records=left_shapes),
+        )
+        self.pack_seconds = phases["left_shape_pack_sec"]
+        self.count = int(self.packed_polygons.polygon_count)
+
+
+def pack_rayjoin_optix_shape_pair_active_count_left_shapes(
+    left_shapes,
+) -> RayJoinOptixShapePairActiveCountPackedLeftShapes:
+    return RayJoinOptixShapePairActiveCountPackedLeftShapes(left_shapes)
+
+
+class PreparedRayJoinOptixShapePairActiveCount:
+    """Python app-layer prepared handle for repeated generic shape-pair active counts."""
+
+    def __init__(
+        self,
+        right_shapes,
+        *,
+        dataset: str = "direct_shapes",
+        dataset_note: str = "Direct closed-shape inputs supplied by the caller.",
+    ) -> None:
+        self._right_shapes, self._right_shape_count = _reusable_shape_input(right_shapes)
+        self._dataset = dataset
+        self._dataset_note = dataset_note
+        self._closed = False
+        phases: dict[str, float] = {}
+
+        from rtdsl.optix_runtime import prepare_shape_pair_relation_flags_optix
+
+        self._prepared = _phase_time(
+            phases,
+            "prepare_static_scene_sec",
+            lambda: prepare_shape_pair_relation_flags_optix(self._right_shapes),
+        )
+        self.prepare_static_scene_sec = phases["prepare_static_scene_sec"]
+
+    def close(self) -> None:
+        if not self._closed:
+            self._prepared.close()
+            self._closed = True
+
+    def __enter__(self) -> "PreparedRayJoinOptixShapePairActiveCount":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def pack_left_shapes(self, left_shapes) -> RayJoinOptixShapePairActiveCountPackedLeftShapes:
+        return pack_rayjoin_optix_shape_pair_active_count_left_shapes(left_shapes)
+
+    def run(
+        self,
+        left_shapes,
+        *,
+        dataset_note: str | None = None,
+    ) -> dict[str, object]:
+        packed_left = self.pack_left_shapes(left_shapes)
+        payload = self.run_packed_left(packed_left, dataset_note=dataset_note)
+        payload["phases_sec"] = {
+            "left_shape_pack_sec": packed_left.pack_seconds,
+            **payload["phases_sec"],
+        }
+        payload["packed_left_reuse"] = {
+            **payload["packed_left_reuse"],
+            "enabled": False,
+            "left_shape_pack_paid_in_call": True,
+        }
+        return payload
+
+    def run_packed_left(
+        self,
+        packed_left: RayJoinOptixShapePairActiveCountPackedLeftShapes,
+        *,
+        dataset_note: str | None = None,
+    ) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared RayJoin shape-pair active-count handle is closed")
+        if not isinstance(packed_left, RayJoinOptixShapePairActiveCountPackedLeftShapes):
+            raise TypeError("packed_left must be produced by pack_rayjoin_optix_shape_pair_active_count_left_shapes")
+
+        phases: dict[str, float] = {}
+        active_count = int(
+            _phase_time(
+                phases,
+                "active_count_sec",
+                lambda: self._prepared.count_active(packed_left.packed_polygons),
+            )
+        )
+        return {
+            "app": "rayjoin_v2_spatial_join",
+            "workload": "overlay_seed",
+            "execution_route": "prepared_optix_shape_pair_active_count_reuse",
+            "backend": "optix",
+            "dataset": self._dataset,
+            "dataset_note": dataset_note or self._dataset_note,
+            "row_count": active_count,
+            "summary": {
+                "active_seed_count": active_count,
+                "output_contract": "overlay_active_pair_dependency_count",
+            },
+            "phases_sec": phases,
+            "prepared_reuse": {
+                "enabled": True,
+                "right_shape_count": self._right_shape_count,
+                "prepare_static_scene_sec": self.prepare_static_scene_sec,
+                "prepare_static_scene_paid_once": True,
+            },
+            "packed_left_reuse": {
+                "enabled": True,
+                "left_shape_count": packed_left.count,
+                "pack_seconds": packed_left.pack_seconds,
+                "left_shape_pack_paid_in_call": False,
+            },
+            "device_resident_continuation_status": (
+                "shape_pair_active_count_complete: generic shape-pair relation flags are "
+                "reduced to a scalar active count without materializing full relation rows; "
+                "full overlay row continuation remains a separate route"
+            ),
+            "native_engine_boundary": (
+                "The engine sees generic prepared shape-pair relation flags and active-count reduction. "
+                "RayJoin overlay-seed interpretation and repeated-query reuse stay in Python."
+            ),
+            "claim_boundary": {
+                "full_rayjoin_reproduction": False,
+                "paper_scale_perf_claim_authorized": False,
+                "rtdl_beats_rayjoin_claim_authorized": False,
+                "whole_app_speedup_claim_authorized": False,
+                "v2_8_release_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "rt_core_speedup_claim_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+            },
+        }
+
+
+def prepare_rayjoin_optix_shape_pair_active_count(
+    right_shapes,
+    *,
+    dataset: str = "direct_shapes",
+    dataset_note: str = "Direct closed-shape inputs supplied by the caller.",
+) -> PreparedRayJoinOptixShapePairActiveCount:
+    return PreparedRayJoinOptixShapePairActiveCount(
+        right_shapes,
+        dataset=dataset,
+        dataset_note=dataset_note,
+    )
+
+
+def run_rayjoin_prepared_optix_shape_pair_active_count_workload(
+    workload: str = "overlay_seed",
+    *,
+    dataset: str | None = None,
+) -> dict[str, object]:
+    if workload != "overlay_seed":
+        raise ValueError("prepared_optix_shape_pair_active_count currently supports only the overlay_seed workload")
+    resolved_dataset = dataset or _DEFAULT_DATASETS[workload]
+    case = _load_rayjoin_case(workload, resolved_dataset)
+    with prepare_rayjoin_optix_shape_pair_active_count(
+        case.inputs["right"],
+        dataset=resolved_dataset,
+        dataset_note=case.note,
+    ) as prepared:
+        packed_left = pack_rayjoin_optix_shape_pair_active_count_left_shapes(case.inputs["left"])
+        return prepared.run_packed_left(
+            packed_left,
             dataset_note=case.note,
         )
 
@@ -1709,6 +1902,31 @@ def run_rayjoin_suite(
                 "full_rayjoin_reproduction": False,
                 "paper_scale_perf_claim_authorized": False,
                 "public_speedup_claim_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+            },
+        }
+    if execution_route == "prepared_optix_shape_pair_active_count":
+        return {
+            "app": "rayjoin_v2_spatial_join",
+            "paper": "RayJoin: Fast and Precise Spatial Join, ICS 2024",
+            "backend": "optix",
+            "execution_route": execution_route,
+            "workloads": {
+                "overlay_seed": run_rayjoin_prepared_optix_shape_pair_active_count_workload(
+                    "overlay_seed",
+                )
+            },
+            "all_match_cpu_python_reference": None,
+            "implementation_stage": "prepared_shape_pair_active_count_route",
+            "native_engine_boundary": (
+                "The engine sees a generic prepared shape-pair active-count primitive. "
+                "RayJoin overlay-seed interpretation stays in Python."
+            ),
+            "claim_boundary": {
+                "full_rayjoin_reproduction": False,
+                "paper_scale_perf_claim_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "rt_core_speedup_claim_authorized": False,
                 "true_zero_copy_claim_authorized": False,
             },
         }
@@ -1945,6 +2163,7 @@ def main(argv: list[str] | None = None) -> int:
             "prepared_optix_cupy_refined_pip",
             "prepared_optix_compact_grouped_count",
             "prepared_optix_left_id_dense_count",
+            "prepared_optix_shape_pair_active_count",
             "v2_6_numba_compact_mask_plan",
         ),
         default="generic_kernel",
@@ -2029,6 +2248,16 @@ def main(argv: list[str] | None = None) -> int:
                     )
                 },
             }
+        elif args.execution_route == "prepared_optix_shape_pair_active_count":
+            payload = {
+                "app": "rayjoin_v2_spatial_join",
+                "execution_route": args.execution_route,
+                "workloads": {
+                    "overlay_seed": run_rayjoin_prepared_optix_shape_pair_active_count_workload(
+                        "overlay_seed",
+                    )
+                },
+            }
         else:
             payload = run_rayjoin_suite(
                 backend=args.backend,
@@ -2060,6 +2289,11 @@ def main(argv: list[str] | None = None) -> int:
                 result_mode=args.result_mode,
                 include_rows=include_rows,
                 candidate_max_rows=args.candidate_max_rows,
+            )
+        elif args.execution_route == "prepared_optix_shape_pair_active_count":
+            payload = run_rayjoin_prepared_optix_shape_pair_active_count_workload(
+                args.workload,
+                dataset=args.dataset,
             )
         elif args.execution_route == "prepared_optix":
             payload = run_rayjoin_prepared_optix_workload(

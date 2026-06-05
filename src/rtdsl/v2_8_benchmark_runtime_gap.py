@@ -122,7 +122,8 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "typed producer metadata for prepared shape/segment row views; generic prepared "
             "shape-pair active-count route for overlay-seed scalar summaries; instance-aware "
             "closed-shape candidate columns plus prepared CuPy exact refiner for PIP row/count "
-            "continuation"
+            "continuation; reusable prepared handles for PIP exact continuation, LSI grouped/dense "
+            "counts, and overlay-seed active-count summaries"
         ),
         partner_position=(
             "Numba is the recommended custom continuation when row-stream compaction is part of the app; "
@@ -132,9 +133,11 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "compact-mask continuation now has a direct caller-column front door, and generic "
             "relation-row typed producer metadata now exists for host row views; overlay active-count "
             "mode now skips final host row allocation; PIP closed-shape exact continuation now has "
-            "instance-aware candidate columns and a prepared CuPy refiner with pod timing evidence. "
-            "Remaining work is device-resident relation-row output beyond PIP, parity/count grouping "
-            "over resident rows, and boundary-witness ownership at serious scale."
+            "instance-aware candidate columns and a prepared CuPy refiner with pod timing evidence; "
+            "prepared/reusable route shape now covers PIP, LSI, and overlay-seed scalar summaries. "
+            "Remaining work is device-resident relation-row output for full overlay rows, parity/count "
+            "grouping over resident row streams beyond scalar active-count, and boundary-witness "
+            "ownership at serious scale."
         ),
         generic_runtime_target="typed hit streams with grouped parity/count and compact-mask continuation",
         target_family=V2_8_FIRST_RUNTIME_TARGET,
@@ -149,6 +152,8 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "Goal3424",
             "Goal3427",
             "Goal3428",
+            "Goal3435",
+            "Goal3438",
         ),
     ),
     V28BenchmarkRuntimeGapRow(
