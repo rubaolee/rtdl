@@ -2,7 +2,7 @@
 
 ## Status
 
-Implemented locally; pod validation pending.
+Implemented and pod-validated on an NVIDIA RTX A5000 pod.
 
 Goal3459 measures the Goal3456 bounds-overlap area continuation on the public RayJoin CDB subset used by the recent relation-column probes.
 
@@ -38,15 +38,31 @@ Local validation:
 - `py -3 -m py_compile scripts\goal3459_shape_pair_bounds_overlap_area_large_probe.py`
 - `py -3 -m unittest tests.goal3459_shape_pair_bounds_overlap_area_large_probe_test`
 
-Pod validation target:
+Pod validation:
 
 ```bash
 PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=/root/rtdl/build/librtdl_optix.so \
-python scripts/goal3459_shape_pair_bounds_overlap_area_large_probe.py \
+python -u scripts/goal3459_shape_pair_bounds_overlap_area_large_probe.py \
   --iterations 4 \
   --max-rows 65536 \
   --output docs/reports/goal3459_shape_pair_bounds_overlap_area_large_probe_pod_2026-06-05.json
 ```
+
+Observed pod evidence at commit `db7f9ed4` on `NVIDIA RTX A5000, 580.126.09`:
+
+- input: `br_county.cdb` (15,700 left shapes) vs `br_county_start256_count1024.cdb` (949 right shapes)
+- stable active relation rows: 4,543 across all four iterations
+- stable grouped-left rows: 1,261 across all four iterations
+- stable bounds-overlap area sum: 150.69938331940557
+- median relation-column production time: 0.003933854401111603 seconds
+- median CuPy bounds-overlap continuation time: 0.0009836149401962757 seconds
+- all row areas were nonnegative
+- all release, public speedup, RT-core speedup, true-zero-copy, RayJoin-paper reproduction, RTDL-beats-RayJoin, and full-overlay-area claim flags remained false
+
+Artifacts:
+
+- `docs/reports/goal3459_shape_pair_bounds_overlap_area_large_probe_pod_2026-06-05.json`
+- `docs/reports/goal3459_shape_pair_bounds_overlap_area_large_probe_pod_2026-06-05.stdout`
 
 ## Remaining Work
 

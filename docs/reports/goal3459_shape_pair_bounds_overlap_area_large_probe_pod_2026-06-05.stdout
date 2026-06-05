@@ -1,0 +1,219 @@
+[goal3459] iteration=0 rows=4543 groups=1261 area_sum=150.699383 relation=0.363551s bounds_area=0.056670s nonnegative=True
+[goal3459] iteration=1 rows=4543 groups=1261 area_sum=150.699383 relation=0.004199s bounds_area=0.001111s nonnegative=True
+[goal3459] iteration=2 rows=4543 groups=1261 area_sum=150.699383 relation=0.003668s bounds_area=0.000821s nonnegative=True
+[goal3459] iteration=3 rows=4543 groups=1261 area_sum=150.699383 relation=0.003584s bounds_area=0.000857s nonnegative=True
+{
+  "all_area_sums_stable": true,
+  "all_group_counts_stable": true,
+  "all_nonnegative": true,
+  "all_row_counts_stable": true,
+  "bounds_overlap_area_continuation_sec": {
+    "max": 0.05667008459568024,
+    "median": 0.0009836149401962757,
+    "min": 0.0008212216198444366
+  },
+  "bounds_overlap_area_sums": [
+    150.69938331940557,
+    150.69938331940557,
+    150.69938331940557,
+    150.69938331940557
+  ],
+  "claim_boundary": {
+    "full_overlay_area_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "goal": 3459,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "group_counts": [
+    1261,
+    1261,
+    1261,
+    1261
+  ],
+  "iterations": 4,
+  "left_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county.cdb",
+  "left_shape_count": 15700,
+  "max_rows": 65536,
+  "relation_columns_sec": {
+    "max": 0.3635505139827728,
+    "median": 0.003933854401111603,
+    "min": 0.003584485501050949
+  },
+  "right_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count1024.cdb",
+  "right_shape_count": 949,
+  "row_counts": [
+    4543,
+    4543,
+    4543,
+    4543
+  ],
+  "rtdl_commit": "db7f9ed46570ee215d7f93a248a3a1980d9c6d44",
+  "runs": [
+    {
+      "active_relation_count": 4543,
+      "all_row_areas_nonnegative": true,
+      "bounds_overlap_area_continuation_sec": 0.05667008459568024,
+      "bounds_overlap_area_sum": 150.69938331940557,
+      "claim_boundary": {
+        "full_overlay_area_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false
+      },
+      "continuation_metadata": {
+        "app_specific_engine_logic_allowed": false,
+        "area_semantics": "axis_aligned_bounds_overlap_area_upper_bound",
+        "automatic_partner_selection_allowed": false,
+        "exact_polygon_overlay_area": false,
+        "full_overlay_area_claim_authorized": false,
+        "group_by": "left",
+        "input_contract": "shape_pair_relation_flags_with_ordinals_and_geometry_payload",
+        "operation": "shape_pair_bounds_overlap_area",
+        "partner": "cupy",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "requires_geometry_payload_columns": true,
+        "requires_relation_ordinals": true,
+        "row_count": 4543,
+        "rt_core_speedup_claim_authorized": false,
+        "schema": "rtdl.v2_8.geometry_relation.bounds_overlap_area_cupy.v1",
+        "true_zero_copy_claim_authorized": false
+      },
+      "group_count": 1261,
+      "iteration": 0,
+      "relation_columns_sec": 0.3635505139827728,
+      "relation_metadata_geometry_payload_device_resident": true,
+      "relation_metadata_ordinal_columns_device_resident": true,
+      "row_count": 4543
+    },
+    {
+      "active_relation_count": 4543,
+      "all_row_areas_nonnegative": true,
+      "bounds_overlap_area_continuation_sec": 0.0011106468737125397,
+      "bounds_overlap_area_sum": 150.69938331940557,
+      "claim_boundary": {
+        "full_overlay_area_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false
+      },
+      "continuation_metadata": {
+        "app_specific_engine_logic_allowed": false,
+        "area_semantics": "axis_aligned_bounds_overlap_area_upper_bound",
+        "automatic_partner_selection_allowed": false,
+        "exact_polygon_overlay_area": false,
+        "full_overlay_area_claim_authorized": false,
+        "group_by": "left",
+        "input_contract": "shape_pair_relation_flags_with_ordinals_and_geometry_payload",
+        "operation": "shape_pair_bounds_overlap_area",
+        "partner": "cupy",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "requires_geometry_payload_columns": true,
+        "requires_relation_ordinals": true,
+        "row_count": 4543,
+        "rt_core_speedup_claim_authorized": false,
+        "schema": "rtdl.v2_8.geometry_relation.bounds_overlap_area_cupy.v1",
+        "true_zero_copy_claim_authorized": false
+      },
+      "group_count": 1261,
+      "iteration": 1,
+      "relation_columns_sec": 0.004199258983135223,
+      "relation_metadata_geometry_payload_device_resident": true,
+      "relation_metadata_ordinal_columns_device_resident": true,
+      "row_count": 4543
+    },
+    {
+      "active_relation_count": 4543,
+      "all_row_areas_nonnegative": true,
+      "bounds_overlap_area_continuation_sec": 0.0008212216198444366,
+      "bounds_overlap_area_sum": 150.69938331940557,
+      "claim_boundary": {
+        "full_overlay_area_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false
+      },
+      "continuation_metadata": {
+        "app_specific_engine_logic_allowed": false,
+        "area_semantics": "axis_aligned_bounds_overlap_area_upper_bound",
+        "automatic_partner_selection_allowed": false,
+        "exact_polygon_overlay_area": false,
+        "full_overlay_area_claim_authorized": false,
+        "group_by": "left",
+        "input_contract": "shape_pair_relation_flags_with_ordinals_and_geometry_payload",
+        "operation": "shape_pair_bounds_overlap_area",
+        "partner": "cupy",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "requires_geometry_payload_columns": true,
+        "requires_relation_ordinals": true,
+        "row_count": 4543,
+        "rt_core_speedup_claim_authorized": false,
+        "schema": "rtdl.v2_8.geometry_relation.bounds_overlap_area_cupy.v1",
+        "true_zero_copy_claim_authorized": false
+      },
+      "group_count": 1261,
+      "iteration": 2,
+      "relation_columns_sec": 0.003668449819087982,
+      "relation_metadata_geometry_payload_device_resident": true,
+      "relation_metadata_ordinal_columns_device_resident": true,
+      "row_count": 4543
+    },
+    {
+      "active_relation_count": 4543,
+      "all_row_areas_nonnegative": true,
+      "bounds_overlap_area_continuation_sec": 0.0008565830066800117,
+      "bounds_overlap_area_sum": 150.69938331940557,
+      "claim_boundary": {
+        "full_overlay_area_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false
+      },
+      "continuation_metadata": {
+        "app_specific_engine_logic_allowed": false,
+        "area_semantics": "axis_aligned_bounds_overlap_area_upper_bound",
+        "automatic_partner_selection_allowed": false,
+        "exact_polygon_overlay_area": false,
+        "full_overlay_area_claim_authorized": false,
+        "group_by": "left",
+        "input_contract": "shape_pair_relation_flags_with_ordinals_and_geometry_payload",
+        "operation": "shape_pair_bounds_overlap_area",
+        "partner": "cupy",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "requires_geometry_payload_columns": true,
+        "requires_relation_ordinals": true,
+        "row_count": 4543,
+        "rt_core_speedup_claim_authorized": false,
+        "schema": "rtdl.v2_8.geometry_relation.bounds_overlap_area_cupy.v1",
+        "true_zero_copy_claim_authorized": false
+      },
+      "group_count": 1261,
+      "iteration": 3,
+      "relation_columns_sec": 0.003584485501050949,
+      "relation_metadata_geometry_payload_device_resident": true,
+      "relation_metadata_ordinal_columns_device_resident": true,
+      "row_count": 4543
+    }
+  ],
+  "schema": "rtdl.goal3459.shape_pair_bounds_overlap_area_large.v1"
+}
