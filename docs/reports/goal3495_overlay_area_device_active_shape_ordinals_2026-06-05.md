@@ -56,6 +56,57 @@ When both flags are present, the runner computes unique active shape ordinals
 on device and only materializes those smaller unique ordinal lists for
 CPU-owned Shapely/payload preparation.
 
+## Pod Evidence
+
+Artifact:
+`docs/reports/goal3495_overlay_area_device_active_shape_ordinals_pod_2026-06-05.json`
+
+Pod hardware/software:
+
+- GPU: NVIDIA RTX A5000
+- CuPy: 14.1.1
+- Shapely: 2.1.2
+- RTDL commit: `315a781708023ee1e0bc17e39dbf68fc314c310e`
+
+Command shape:
+
+```text
+--active-shapes-only --device-active-shape-ordinals --resident-cupy-inputs --executor-repeats 5
+```
+
+Observed public-CDB result:
+
+- Relation rows: 4,543
+- Unique active left shapes: 1,261 of 15,700
+- Unique active right shapes: 949 of 949
+- Component-pair rows: 39,947
+- Tile tasks: 54,232
+- Planned/processed triangle pairs: 9,653,005
+- Exact total area: 26.08321766231046
+- Observed total area: 26.08321767208671
+- Total absolute error: 9.776250919912854e-09
+- Max relation absolute error: 1.0414236140121602e-09
+- Positive row count match: true
+
+Timing:
+
+- Relation discovery: 1.6626s
+- Device active-shape ordinals: 0.0721s
+- Full relation ordinal download for oracle/planning: 0.000062s
+- Geometry build: 1.0248s
+- Payload build: 7.7470s
+- Planning: 0.2986s
+- CuPy tile-task input preparation: 0.0958s
+- CuPy tile-task executor best repeat: 0.0305s
+
+The important lesson is not that this goal removes the whole bridge cost. At
+this public-CDB scale, downloading 4,543 relation ordinals is already tiny.
+Goal3495 makes the active-shape discovery contract generic and device-first,
+but the remaining large cost is still CPU-owned geometry/payload construction,
+especially triangulation and component expansion. The next performance leap
+therefore needs device-resident component-pair/tile-task planning or a native
+prepared-payload path, not another host-side ordinal-set optimization.
+
 ## Boundary
 
 This goal does not make tile-task planning device-resident. It does not remove
@@ -69,4 +120,3 @@ The honest remaining work is still:
   equivalent;
 - native-vs-partner acceptance decision for the scalar overlay continuation;
 - full overlay geometry output, which is separate from scalar exact area.
-

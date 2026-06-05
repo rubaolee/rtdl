@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import unittest
 
@@ -9,6 +10,7 @@ import rtdsl as rt
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "goal3492_overlay_area_public_cdb_tile_task_executor.py"
 REPORT = ROOT / "docs" / "reports" / "goal3495_overlay_area_device_active_shape_ordinals_2026-06-05.md"
+POD_ARTIFACT = ROOT / "docs" / "reports" / "goal3495_overlay_area_device_active_shape_ordinals_pod_2026-06-05.json"
 
 
 def _cupy_available() -> tuple[bool, str]:
@@ -94,9 +96,41 @@ class Goal3495OverlayAreaDeviceActiveShapeOrdinalsTest(unittest.TestCase):
             "does not make tile-task planning device-resident",
             "does not authorize release",
             "shape_pair_relation_flags_with_ordinals_and_geometry_payload",
+            "0.0721s",
+            "7.7470s",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)
+
+    def test_pod_artifact_records_device_active_shape_ordinal_evidence(self) -> None:
+        data = json.loads(POD_ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(data["schema"], "rtdl.goal3495.overlay_area_device_active_shape_ordinals.v1")
+        self.assertEqual(data["goal"], 3495)
+        self.assertTrue(data["rtdl_commit"].startswith("315a7817"))
+        self.assertTrue(data["active_shapes_only"])
+        self.assertTrue(data["resident_cupy_inputs"])
+        self.assertTrue(data["device_active_shape_ordinals"])
+        self.assertTrue(data["device_active_shape_ordinals_used"])
+        self.assertEqual(data["relation_row_count"], 4543)
+        self.assertEqual(data["prepared_left_shape_count"], 1261)
+        self.assertEqual(data["prepared_right_shape_count"], 949)
+        self.assertEqual(data["planned_triangle_pair_count"], 9653005)
+        self.assertLess(data["total_area_abs_error"], 1.0e-8)
+        self.assertLess(data["max_relation_abs_error"], 2.0e-9)
+        self.assertTrue(data["positive_row_count_match"])
+        metadata = data["active_shape_ordinal_metadata"]
+        self.assertEqual(metadata["schema"], rt.GEOMETRY_RELATION_ACTIVE_SHAPE_ORDINALS_CUPY_VERSION)
+        self.assertEqual(metadata["left_unique_shape_count"], 1261)
+        self.assertEqual(metadata["right_unique_shape_count"], 949)
+        self.assertFalse(metadata["relation_row_ordinals_materialized"])
+        self.assertTrue(metadata["unique_ordinals_device_resident"])
+        self.assertLess(data["timing_sec"]["device_active_shape_ordinals"], 0.2)
+        self.assertLess(data["timing_sec"]["cupy_tile_task_executor_best_repeat"], 0.04)
+        self.assertGreater(data["timing_sec"]["payload_build"], 7.0)
+        for field, value in data["claim_boundary"].items():
+            with self.subTest(field=field):
+                self.assertFalse(value)
 
     def test_spatial_rayjoin_gap_row_records_device_active_ordinals(self) -> None:
         rows = {row["benchmark_app"]: row for row in rt.v2_8_benchmark_runtime_gap_matrix()}
