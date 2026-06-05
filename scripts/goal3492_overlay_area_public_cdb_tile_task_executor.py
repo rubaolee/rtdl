@@ -279,6 +279,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     unsupported_rows = 0
     unsupported_positive_rows = 0
     device_tile_task_planning_sec = 0.0
+    device_tile_task_planning_repeat_secs: list[float] = []
     resident_inputs = None
     if args.device_tile_task_planner:
         if left_ordinals_device is None or right_ordinals_device is None or candidate_relation_rows_device is None:
@@ -292,22 +293,26 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
                     unsupported_positive_rows += 1
         left_component_starts, left_component_counts = _shape_component_table(left_shape_components, len(left_shapes))
         right_component_starts, right_component_counts = _shape_component_table(right_shape_components, len(right_shapes))
-        device_plan_start = time.perf_counter()
-        resident_inputs = rt.prepare_overlay_area_tile_task_cupy_inputs_from_relation_ordinals(
-            left_payload,
-            right_payload,
-            relation_row_ordinals=candidate_relation_rows_device,
-            left_relation_ordinals=left_ordinals_device,
-            right_relation_ordinals=right_ordinals_device,
-            left_shape_component_starts=left_component_starts,
-            left_shape_component_counts=left_component_counts,
-            right_shape_component_starts=right_component_starts,
-            right_shape_component_counts=right_component_counts,
-            relation_row_count=len(left_ordinals),
-            max_triangle_pairs_per_task=int(args.max_triangle_pairs_per_task),
-        )
-        cp.cuda.Stream.null.synchronize()
-        device_tile_task_planning_sec = time.perf_counter() - device_plan_start
+        for repeat in range(max(1, int(args.device_planner_repeats))):
+            print(f"[goal3492] device tile-task planner repeat {repeat + 1}/{max(1, int(args.device_planner_repeats))}", flush=True)
+            device_plan_start = time.perf_counter()
+            resident_inputs = rt.prepare_overlay_area_tile_task_cupy_inputs_from_relation_ordinals(
+                left_payload,
+                right_payload,
+                relation_row_ordinals=candidate_relation_rows_device,
+                left_relation_ordinals=left_ordinals_device,
+                right_relation_ordinals=right_ordinals_device,
+                left_shape_component_starts=left_component_starts,
+                left_shape_component_counts=left_component_counts,
+                right_shape_component_starts=right_component_starts,
+                right_shape_component_counts=right_component_counts,
+                relation_row_count=len(left_ordinals),
+                max_triangle_pairs_per_task=int(args.max_triangle_pairs_per_task),
+            )
+            cp.cuda.Stream.null.synchronize()
+            device_tile_task_planning_repeat_secs.append(time.perf_counter() - device_plan_start)
+        device_tile_task_planning_sec = sum(device_tile_task_planning_repeat_secs)
+        assert resident_inputs is not None
         task_summary = resident_inputs.to_metadata()["planner_summary"]
         pair_rows = ()
         tasks = ()
@@ -466,6 +471,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         "bounds_positive_filter_metadata": bounds_positive_filter_metadata,
         "active_shape_ordinal_metadata": active_shape_ordinal_metadata,
         "executor_repeats": executor_repeats,
+        "device_planner_repeats": max(1, int(args.device_planner_repeats)),
         "left_shape_count": len(left_shapes),
         "right_shape_count": len(right_shapes),
         "prepared_left_shape_count": len(left_geometry_map),
@@ -510,6 +516,10 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             "exact_oracle": exact_oracle_sec,
             "planning": planning_sec,
             "device_tile_task_planning": device_tile_task_planning_sec,
+            "device_tile_task_planning_repeat_secs": device_tile_task_planning_repeat_secs,
+            "device_tile_task_planning_best_repeat": (
+                min(device_tile_task_planning_repeat_secs) if device_tile_task_planning_repeat_secs else 0.0
+            ),
             "cupy_tile_task_input_prepare": input_prepare_sec,
             "cupy_tile_task_executor": executor_sec,
             "cupy_tile_task_executor_repeat_secs": executor_repeat_secs,
@@ -536,6 +546,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--progress-every", type=int, default=500)
     parser.add_argument("--resident-cupy-inputs", action="store_true")
     parser.add_argument("--executor-repeats", type=int, default=1)
+    parser.add_argument("--device-planner-repeats", type=int, default=1)
     parser.add_argument(
         "--bounds-positive-filter",
         action="store_true",

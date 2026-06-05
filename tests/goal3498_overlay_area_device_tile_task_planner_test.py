@@ -85,8 +85,10 @@ class Goal3498OverlayAreaDeviceTileTaskPlannerTest(unittest.TestCase):
 
         for phrase in (
             "--device-tile-task-planner",
+            "--device-planner-repeats",
             "prepare_overlay_area_tile_task_cupy_inputs_from_relation_ordinals",
             "device_tile_task_planning",
+            "device_tile_task_planning_best_repeat",
             "rtdl.goal3498.overlay_area_device_tile_task_planner.v1",
         ):
             with self.subTest(phrase=phrase):
