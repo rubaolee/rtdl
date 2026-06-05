@@ -139,7 +139,8 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             "automatic_retry_authorized": False,
             "hidden_dispatch_authorized": False,
             "windows_are_caller_visible": True,
-            "window_merge_requires_disjoint_left_ids": True,
+            "window_merge_uses_key_addition": True,
+            "window_merge_requires_disjoint_left_ids": False,
         },
         "claim_boundary": {
             "release_authorized": False,
