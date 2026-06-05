@@ -18,6 +18,7 @@ class Goal3421CuPyRefinedDevicePredicatePageProbeTest(unittest.TestCase):
 
         self.assertIn("def refine_closed_shape_membership_candidate_columns_exact_cupy", source)
         self.assertIn("exact_closed_shape_candidate_refine", source)
+        self.assertIn("point_eps", source)
         self.assertIn("host_refined_rows_materialized", source)
         self.assertIn('"native_exact_device_row_stream_produced": False', source)
         self.assertIn("refine_closed_shape_membership_candidate_columns_exact_cupy", init)
@@ -28,6 +29,7 @@ class Goal3421CuPyRefinedDevicePredicatePageProbeTest(unittest.TestCase):
         self.assertIn("prepared.candidate_device_columns", script)
         self.assertIn("refine_closed_shape_membership_candidate_columns_exact_cupy", script)
         self.assertIn("host_exact_used_only_as_oracle", script)
+        self.assertIn("--point-eps", script)
         self.assertIn('"native_exact_device_predicate_claim_authorized": False', script)
         self.assertNotIn("prepared.exact_device_columns(", script)
         self.assertNotIn("exact_device_columns_native_page_plan", script)

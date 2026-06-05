@@ -116,6 +116,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
                 recovered_columns,
                 page_points,
                 shapes,
+                point_eps=float(args.point_eps),
             )
             page_refined_pairs = _pairs_from_refined_columns(cp, refined)
             refined_pair_counter.update(page_refined_pairs)
@@ -169,6 +170,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         "rt_candidate_pair_count": int(candidate_pair_count),
         "cupy_refined_pair_count": int(sum(refined_pair_counter.values())),
         "dropped_candidate_pair_count": int(dropped_candidate_count),
+        "point_eps": float(args.point_eps),
         "pair_multiset_match_host_exact": bool(pair_multiset_match),
         "pair_missing_from_refined_sample": pair_missing_sample,
         "pair_extra_on_refined_sample": pair_extra_sample,
@@ -213,6 +215,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--page-size", type=int, default=2048)
     parser.add_argument("--initial-max-rows", type=int, default=100)
+    parser.add_argument("--point-eps", type=float, default=1.0e-9)
     parser.add_argument("--output", required=True, type=Path)
     return parser.parse_args()
 

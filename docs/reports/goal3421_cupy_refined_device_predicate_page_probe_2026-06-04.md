@@ -24,6 +24,7 @@ Inputs:
 - generic candidate pair columns (`point_id`/`shape_id` or `left_id`/`right_id`)
 - point records with `id`, `x`, `y`
 - closed-shape records with `id` and `vertices`
+- `point_eps`, the explicit boundary tolerance used by the partner predicate
 
 Outputs:
 
@@ -34,6 +35,12 @@ Outputs:
 The helper is intentionally partner-layer evidence, not the final native v2.8
 page-plan producer. It is designed to give the native implementation a concrete
 target: RT broad-phase pages followed by device-resident exact/refine filtering.
+
+The first pod run with a strict `1e-12` tolerance removed all Goal3420 false
+positives, but it also dropped 217 host-exact boundary pairs under the GEOS
+`covers` oracle. The helper therefore exposes `point_eps` explicitly so the
+device predicate can be swept and documented rather than silently guessing the
+closed-boundary semantics.
 
 ## Boundary
 

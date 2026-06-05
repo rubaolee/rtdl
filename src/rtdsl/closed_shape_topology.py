@@ -64,6 +64,7 @@ void exact_closed_shape_candidate_refine(
     const int* shape_count_by_id,
     const double* vertices_x,
     const double* vertices_y,
+    const double point_eps,
     long long* output_point_ids,
     long long* output_shape_ids,
     unsigned int* output_count)
@@ -79,7 +80,7 @@ void exact_closed_shape_candidate_refine(
     const int n = shape_count_by_id[shape_id];
     if (off < 0 || n < 3) return;
 
-    const double eps = 1.0e-12;
+    const double eps = point_eps;
     for (int i = 0; i < n; ++i) {
         const int j = (i + 1) % n;
         const double ax = vertices_x[off + i];
@@ -138,6 +139,7 @@ def refine_closed_shape_membership_candidate_columns_exact_cupy(
     points: Sequence[object],
     shapes: Sequence[object],
     *,
+    point_eps: float = 1.0e-9,
     sort_output: bool = True,
 ) -> dict[str, object]:
     """Filter generic point/closed-shape candidate columns with a CuPy exact predicate.
@@ -171,6 +173,9 @@ def refine_closed_shape_membership_candidate_columns_exact_cupy(
     candidate_shape_ids = cp.asarray(raw_shape_ids, dtype=cp.int64)
     if int(candidate_point_ids.size) != int(candidate_shape_ids.size):
         raise ValueError("candidate point and shape columns must have equal length")
+    eps = float(point_eps)
+    if eps < 0.0:
+        raise ValueError("point_eps must be non-negative")
 
     point_records = tuple(points)
     shape_records = tuple(shapes)
@@ -221,6 +226,7 @@ def refine_closed_shape_membership_candidate_columns_exact_cupy(
                 cp.asarray(shape_count_by_id, dtype=cp.int32),
                 cp.asarray(vertices_x, dtype=cp.float64),
                 cp.asarray(vertices_y, dtype=cp.float64),
+                eps,
                 output_point_ids,
                 output_shape_ids,
                 output_count,
@@ -241,6 +247,7 @@ def refine_closed_shape_membership_candidate_columns_exact_cupy(
         "row_count": row_count,
         "candidate_row_count": candidate_count,
         "dropped_candidate_row_count": candidate_count - row_count,
+        "point_eps": eps,
         "partner": "cupy",
         "predicate": "double_closed_shape_membership",
         "output_residency": "partner_device_refined_columns",
