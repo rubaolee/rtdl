@@ -188,6 +188,8 @@ def refine_closed_shape_membership_candidate_columns_exact_cupy(
     candidate_shape_ids = cp.asarray(raw_shape_ids, dtype=cp.int64)
     if int(candidate_point_ids.size) != int(candidate_shape_ids.size):
         raise ValueError("candidate point and shape columns must have equal length")
+    if (raw_point_ordinals is None) != (raw_shape_ordinals is None):
+        raise ValueError("candidate ordinal columns must provide both point and shape ordinals or neither")
     use_instance_ordinals = raw_point_ordinals is not None and raw_shape_ordinals is not None
     if use_instance_ordinals:
         candidate_point_ordinals = cp.asarray(raw_point_ordinals, dtype=cp.int64)
@@ -206,6 +208,15 @@ def refine_closed_shape_membership_candidate_columns_exact_cupy(
     point_records = tuple(points)
     shape_records = tuple(shapes)
     if use_instance_ordinals:
+        if int(candidate_point_ordinals.size):
+            min_point_ordinal = int(cp.min(candidate_point_ordinals).item())
+            max_point_ordinal = int(cp.max(candidate_point_ordinals).item())
+            min_shape_ordinal = int(cp.min(candidate_shape_ordinals).item())
+            max_shape_ordinal = int(cp.max(candidate_shape_ordinals).item())
+            if min_point_ordinal < 0 or max_point_ordinal >= len(point_records):
+                raise ValueError("candidate point ordinal column contains an out-of-range input ordinal")
+            if min_shape_ordinal < 0 or max_shape_ordinal >= len(shape_records):
+                raise ValueError("candidate shape ordinal column contains an out-of-range prepared-shape ordinal")
         point_x_lookup = [float(_record_value(point, "x")) for point in point_records]
         point_y_lookup = [float(_record_value(point, "y")) for point in point_records]
         shape_offset_lookup = [-1] * len(shape_records)
