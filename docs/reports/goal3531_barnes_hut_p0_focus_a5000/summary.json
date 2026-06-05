@@ -1,0 +1,350 @@
+{
+  "claim_boundary": {
+    "internal_investigation_only": true,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v2_8_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "generated_at": "2026-06-05T21:43:01Z",
+  "goal": "Goal3531",
+  "gpu": {
+    "command": [
+      "nvidia-smi",
+      "--query-gpu=name,driver_version,memory.total",
+      "--format=csv,noheader"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "NVIDIA RTX A5000, 580.126.09, 24564 MiB"
+  },
+  "nvcc": {
+    "command": [
+      "/usr/local/cuda-12/bin/nvcc",
+      "--version"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0"
+  },
+  "optix_prefix": "/root/vendor/optix-sdk",
+  "purpose": "Focused Barnes-Hut P0 repeated A5000 same-contract investigation for Goal3527.",
+  "ratios": [
+    {
+      "body_count": 8192,
+      "goal3527_close_rule": "improved_but_open_or_honest_regression_pending_root_cause",
+      "v23_query_median_sec": 0.011747295036911964,
+      "v28_query_median_sec": 0.02568813320249319,
+      "v28_speedup_vs_v23": 0.4573043492226916
+    },
+    {
+      "body_count": 32768,
+      "goal3527_close_rule": "recovered",
+      "v23_query_median_sec": 0.04537732154130936,
+      "v28_query_median_sec": 0.04745772201567888,
+      "v28_speedup_vs_v23": 0.9561630776613717
+    }
+  ],
+  "rows": [
+    {
+      "body_count": 8192,
+      "checkout": "v23_evidence",
+      "command": [
+        "python3",
+        "examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+        "--mode",
+        "optix_node_coverage_prepared",
+        "--body-count",
+        "8192",
+        "--skip-validation",
+        "--require-rt-core"
+      ],
+      "commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+      "query_max_sec": 0.012035084888339043,
+      "query_median_sec": 0.011747295036911964,
+      "query_min_sec": 0.011729905381798744,
+      "repeats": 5,
+      "rtdl_optix_library": "/root/rtdl_goal3524/v23_evidence/build/librtdl_optix.so",
+      "samples": [
+        {
+          "body_count": 8192,
+          "covered_body_count": 8192,
+          "matches_oracle": true,
+          "node_count": 4,
+          "query_sec": 0.011747295036911964,
+          "repeat": 1,
+          "scene_prepare_sec": 0.7536312602460384,
+          "wall_sec": 1.3936379505321383
+        },
+        {
+          "body_count": 8192,
+          "covered_body_count": 8192,
+          "matches_oracle": true,
+          "node_count": 4,
+          "query_sec": 0.0119353411719203,
+          "repeat": 2,
+          "scene_prepare_sec": 0.6865035137161613,
+          "wall_sec": 1.3276074398308992
+        },
+        {
+          "body_count": 8192,
+          "covered_body_count": 8192,
+          "matches_oracle": true,
+          "node_count": 4,
+          "query_sec": 0.011729905381798744,
+          "repeat": 3,
+          "scene_prepare_sec": 0.8062104908749461,
+          "wall_sec": 1.5314162634313107
+        },
+        {
+          "body_count": 8192,
+          "covered_body_count": 8192,
+          "matches_oracle": true,
+          "node_count": 4,
+          "query_sec": 0.012035084888339043,
+          "repeat": 4,
+          "scene_prepare_sec": 0.7057425621896982,
+          "wall_sec": 1.3806715849786997
+        },
+        {
+          "body_count": 8192,
+          "covered_body_count": 8192,
+          "matches_oracle": true,
+          "node_count": 4,
+          "query_sec": 0.011743469163775444,
+          "repeat": 5,
+          "scene_prepare_sec": 0.7073935009539127,
+          "wall_sec": 1.403923014178872
+        }
+      ],
+      "scene_prepare_median_sec": 0.7073935009539127,
+      "wall_median_sec": 1.3936379505321383
+    },
+    {
+      "body_count": 8192,
+      "checkout": "v28_current",
+      "command": [
+        "python3",
+        "examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+        "--mode",
+        "optix_node_coverage_prepared",
+        "--body-count",
+        "8192",
+        "--skip-validation",
+        "--require-rt-core"
+      ],
+      "commit": "d266b0370bcbcd4cbc24006ce9de2dfe783c1d2e",
+      "query_max_sec": 0.02598029002547264,
+      "query_median_sec": 0.02568813320249319,
+      "query_min_sec": 0.025038616731762886,
+      "repeats": 5,
+      "rtdl_optix_library": "/root/rtdl_goal3524/v28_current/build/librtdl_optix.so",
+      "samples": [
+        {
+          "body_count": 8192,
+          "covered_body_count": 8192,
+          "matches_oracle": true,
+          "node_count": 4,
+          "query_sec": 0.02568813320249319,
+          "repeat": 1,
+          "scene_prepare_sec": 0.861485168337822,
+          "wall_sec": 1.6544973887503147
+        },
+        {
+          "body_count": 8192,
+          "covered_body_count": 8192,
+          "matches_oracle": true,
+          "node_count": 4,
+          "query_sec": 0.025038616731762886,
+          "repeat": 2,
+          "scene_prepare_sec": 0.709291965700686,
+          "wall_sec": 1.5534226214513183
+        },
+        {
+          "body_count": 8192,
+          "covered_body_count": 8192,
+          "matches_oracle": true,
+          "node_count": 4,
+          "query_sec": 0.025866645388305187,
+          "repeat": 3,
+          "scene_prepare_sec": 0.7956741908565164,
+          "wall_sec": 1.5891871731728315
+        },
+        {
+          "body_count": 8192,
+          "covered_body_count": 8192,
+          "matches_oracle": true,
+          "node_count": 4,
+          "query_sec": 0.02598029002547264,
+          "repeat": 4,
+          "scene_prepare_sec": 0.9160967376083136,
+          "wall_sec": 1.7405554298311472
+        },
+        {
+          "body_count": 8192,
+          "covered_body_count": 8192,
+          "matches_oracle": true,
+          "node_count": 4,
+          "query_sec": 0.025188063271343708,
+          "repeat": 5,
+          "scene_prepare_sec": 0.6894808942452073,
+          "wall_sec": 1.4564345572143793
+        }
+      ],
+      "scene_prepare_median_sec": 0.7956741908565164,
+      "wall_median_sec": 1.5891871731728315
+    },
+    {
+      "body_count": 32768,
+      "checkout": "v23_evidence",
+      "command": [
+        "python3",
+        "examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+        "--mode",
+        "optix_node_coverage_prepared",
+        "--body-count",
+        "32768",
+        "--skip-validation",
+        "--require-rt-core"
+      ],
+      "commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+      "query_max_sec": 0.048932247795164585,
+      "query_median_sec": 0.04537732154130936,
+      "query_min_sec": 0.0450576888397336,
+      "repeats": 5,
+      "rtdl_optix_library": "/root/rtdl_goal3524/v23_evidence/build/librtdl_optix.so",
+      "samples": [
+        {
+          "body_count": 32768,
+          "covered_body_count": 32768,
+          "matches_oracle": true,
+          "node_count": 4,
+          "query_sec": 0.0457045566290617,
+          "repeat": 1,
+          "scene_prepare_sec": 0.8126681726425886,
+          "wall_sec": 1.7028094055131078
+        },
+        {
+          "body_count": 32768,
+          "covered_body_count": 32768,
+          "matches_oracle": true,
+          "node_count": 4,
+          "query_sec": 0.048932247795164585,
+          "repeat": 2,
+          "scene_prepare_sec": 0.8375062858685851,
+          "wall_sec": 1.730756395496428
+        },
+        {
+          "body_count": 32768,
+          "covered_body_count": 32768,
+          "matches_oracle": true,
+          "node_count": 4,
+          "query_sec": 0.0450576888397336,
+          "repeat": 3,
+          "scene_prepare_sec": 0.7249157866463065,
+          "wall_sec": 1.6384175419807434
+        },
+        {
+          "body_count": 32768,
+          "covered_body_count": 32768,
+          "matches_oracle": true,
+          "node_count": 4,
+          "query_sec": 0.04515730123966932,
+          "repeat": 4,
+          "scene_prepare_sec": 0.6873565269634128,
+          "wall_sec": 1.5927854776382446
+        },
+        {
+          "body_count": 32768,
+          "covered_body_count": 32768,
+          "matches_oracle": true,
+          "node_count": 4,
+          "query_sec": 0.04537732154130936,
+          "repeat": 5,
+          "scene_prepare_sec": 0.6499684788286686,
+          "wall_sec": 1.5325516955927014
+        }
+      ],
+      "scene_prepare_median_sec": 0.7249157866463065,
+      "wall_median_sec": 1.6384175419807434
+    },
+    {
+      "body_count": 32768,
+      "checkout": "v28_current",
+      "command": [
+        "python3",
+        "examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+        "--mode",
+        "optix_node_coverage_prepared",
+        "--body-count",
+        "32768",
+        "--skip-validation",
+        "--require-rt-core"
+      ],
+      "commit": "d266b0370bcbcd4cbc24006ce9de2dfe783c1d2e",
+      "query_max_sec": 0.0502124298363924,
+      "query_median_sec": 0.04745772201567888,
+      "query_min_sec": 0.037993136793375015,
+      "repeats": 5,
+      "rtdl_optix_library": "/root/rtdl_goal3524/v28_current/build/librtdl_optix.so",
+      "samples": [
+        {
+          "body_count": 32768,
+          "covered_body_count": 32768,
+          "matches_oracle": true,
+          "node_count": 4,
+          "query_sec": 0.037993136793375015,
+          "repeat": 1,
+          "scene_prepare_sec": 0.6790142562240362,
+          "wall_sec": 1.6370641039684415
+        },
+        {
+          "body_count": 32768,
+          "covered_body_count": 32768,
+          "matches_oracle": true,
+          "node_count": 4,
+          "query_sec": 0.0502124298363924,
+          "repeat": 2,
+          "scene_prepare_sec": 0.8250011932104826,
+          "wall_sec": 1.8530790703371167
+        },
+        {
+          "body_count": 32768,
+          "covered_body_count": 32768,
+          "matches_oracle": true,
+          "node_count": 4,
+          "query_sec": 0.04722192604094744,
+          "repeat": 3,
+          "scene_prepare_sec": 0.7938001165166497,
+          "wall_sec": 1.7911935988813639
+        },
+        {
+          "body_count": 32768,
+          "covered_body_count": 32768,
+          "matches_oracle": true,
+          "node_count": 4,
+          "query_sec": 0.04774374235421419,
+          "repeat": 4,
+          "scene_prepare_sec": 0.89640171546489,
+          "wall_sec": 1.90626369882375
+        },
+        {
+          "body_count": 32768,
+          "covered_body_count": 32768,
+          "matches_oracle": true,
+          "node_count": 4,
+          "query_sec": 0.04745772201567888,
+          "repeat": 5,
+          "scene_prepare_sec": 0.8503890037536621,
+          "wall_sec": 1.856193570420146
+        }
+      ],
+      "scene_prepare_median_sec": 0.8250011932104826,
+      "wall_median_sec": 1.8530790703371167
+    }
+  ],
+  "ssh_endpoint": "root@69.30.85.203 -p 22057",
+  "ssh_key_used": "repo-local id_ed25519_rtdl_codex"
+}

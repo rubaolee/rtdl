@@ -1,0 +1,503 @@
+{
+  "claim_boundary": {
+    "internal_investigation_only": true,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v2_8_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "generated_at": "2026-06-05T21:44:18Z",
+  "goal": "Goal3531",
+  "purpose": "Barnes-Hut within-process warm prepared-query probe.",
+  "ratios": [
+    {
+      "body_count": 8192,
+      "v23_warm_median_sec": 0.009373441338539124,
+      "v28_speedup_vs_v23_warm": 0.9831553312015765,
+      "v28_warm_median_sec": 0.009534039068967104
+    },
+    {
+      "body_count": 32768,
+      "v23_warm_median_sec": 0.04036406194791198,
+      "v28_speedup_vs_v23_warm": 1.0146939241076487,
+      "v28_warm_median_sec": 0.039779544342309237
+    }
+  ],
+  "rows": [
+    {
+      "body_count": 8192,
+      "checkout": "v23_evidence",
+      "commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+      "measure_max_sec": 0.016842489130795002,
+      "measure_median_sec": 0.009373441338539124,
+      "measure_min_sec": 0.009269633330404758,
+      "repeats": 12,
+      "rtdl_optix_library": "/root/rtdl_goal3524/v23_evidence/build/librtdl_optix.so",
+      "samples": [
+        {
+          "count": 8192,
+          "iteration": 1,
+          "phase": "warmup",
+          "query_sec": 0.011585300788283348,
+          "wall_sec": 0.011599132791161537
+        },
+        {
+          "count": 8192,
+          "iteration": 2,
+          "phase": "warmup",
+          "query_sec": 0.021127041429281235,
+          "wall_sec": 0.02113544847816229
+        },
+        {
+          "count": 8192,
+          "iteration": 3,
+          "phase": "warmup",
+          "query_sec": 0.00988540705293417,
+          "wall_sec": 0.009890911169350147
+        },
+        {
+          "count": 8192,
+          "iteration": 4,
+          "phase": "measure",
+          "query_sec": 0.009523718617856503,
+          "wall_sec": 0.009528548456728458
+        },
+        {
+          "count": 8192,
+          "iteration": 5,
+          "phase": "measure",
+          "query_sec": 0.00960085354745388,
+          "wall_sec": 0.009605851955711842
+        },
+        {
+          "count": 8192,
+          "iteration": 6,
+          "phase": "measure",
+          "query_sec": 0.009581198915839195,
+          "wall_sec": 0.009585581719875336
+        },
+        {
+          "count": 8192,
+          "iteration": 7,
+          "phase": "measure",
+          "query_sec": 0.009638654999434948,
+          "wall_sec": 0.009642570279538631
+        },
+        {
+          "count": 8192,
+          "iteration": 8,
+          "phase": "measure",
+          "query_sec": 0.009303593076765537,
+          "wall_sec": 0.009307722561061382
+        },
+        {
+          "count": 8192,
+          "iteration": 9,
+          "phase": "measure",
+          "query_sec": 0.00932888500392437,
+          "wall_sec": 0.009332939982414246
+        },
+        {
+          "count": 8192,
+          "iteration": 10,
+          "phase": "measure",
+          "query_sec": 0.009323645383119583,
+          "wall_sec": 0.009327519685029984
+        },
+        {
+          "count": 8192,
+          "iteration": 11,
+          "phase": "measure",
+          "query_sec": 0.009269633330404758,
+          "wall_sec": 0.009273671545088291
+        },
+        {
+          "count": 8192,
+          "iteration": 12,
+          "phase": "measure",
+          "query_sec": 0.009358146227896214,
+          "wall_sec": 0.009362327866256237
+        },
+        {
+          "count": 8192,
+          "iteration": 13,
+          "phase": "measure",
+          "query_sec": 0.009388736449182034,
+          "wall_sec": 0.009392653591930866
+        },
+        {
+          "count": 8192,
+          "iteration": 14,
+          "phase": "measure",
+          "query_sec": 0.016842489130795002,
+          "wall_sec": 0.016847972758114338
+        },
+        {
+          "count": 8192,
+          "iteration": 15,
+          "phase": "measure",
+          "query_sec": 0.009348532184958458,
+          "wall_sec": 0.0093536376953125
+        }
+      ],
+      "warmup": 3
+    },
+    {
+      "body_count": 8192,
+      "checkout": "v28_current",
+      "commit": "d266b0370bcbcd4cbc24006ce9de2dfe783c1d2e",
+      "measure_max_sec": 0.018369988538324833,
+      "measure_median_sec": 0.009534039068967104,
+      "measure_min_sec": 0.009310225956141949,
+      "repeats": 12,
+      "rtdl_optix_library": "/root/rtdl_goal3524/v28_current/build/librtdl_optix.so",
+      "samples": [
+        {
+          "count": 8192,
+          "iteration": 1,
+          "phase": "warmup",
+          "query_sec": 0.02487362641841173,
+          "wall_sec": 0.024889693595468998
+        },
+        {
+          "count": 8192,
+          "iteration": 2,
+          "phase": "warmup",
+          "query_sec": 0.009894760325551033,
+          "wall_sec": 0.00990295596420765
+        },
+        {
+          "count": 8192,
+          "iteration": 3,
+          "phase": "warmup",
+          "query_sec": 0.009648121893405914,
+          "wall_sec": 0.00965387374162674
+        },
+        {
+          "count": 8192,
+          "iteration": 4,
+          "phase": "measure",
+          "query_sec": 0.00966907013207674,
+          "wall_sec": 0.009674306027591228
+        },
+        {
+          "count": 8192,
+          "iteration": 5,
+          "phase": "measure",
+          "query_sec": 0.009650709107518196,
+          "wall_sec": 0.009655945003032684
+        },
+        {
+          "count": 8192,
+          "iteration": 6,
+          "phase": "measure",
+          "query_sec": 0.009634539484977722,
+          "wall_sec": 0.009639044292271137
+        },
+        {
+          "count": 8192,
+          "iteration": 7,
+          "phase": "measure",
+          "query_sec": 0.009674105793237686,
+          "wall_sec": 0.009678210131824017
+        },
+        {
+          "count": 8192,
+          "iteration": 8,
+          "phase": "measure",
+          "query_sec": 0.009700466878712177,
+          "wall_sec": 0.009704699739813805
+        },
+        {
+          "count": 8192,
+          "iteration": 9,
+          "phase": "measure",
+          "query_sec": 0.009367247112095356,
+          "wall_sec": 0.00937158614397049
+        },
+        {
+          "count": 8192,
+          "iteration": 10,
+          "phase": "measure",
+          "query_sec": 0.009310225956141949,
+          "wall_sec": 0.009314226917922497
+        },
+        {
+          "count": 8192,
+          "iteration": 11,
+          "phase": "measure",
+          "query_sec": 0.009392684325575829,
+          "wall_sec": 0.009396440349519253
+        },
+        {
+          "count": 8192,
+          "iteration": 12,
+          "phase": "measure",
+          "query_sec": 0.009349562227725983,
+          "wall_sec": 0.009354247711598873
+        },
+        {
+          "count": 8192,
+          "iteration": 13,
+          "phase": "measure",
+          "query_sec": 0.018369988538324833,
+          "wall_sec": 0.018375595100224018
+        },
+        {
+          "count": 8192,
+          "iteration": 14,
+          "phase": "measure",
+          "query_sec": 0.00940614752471447,
+          "wall_sec": 0.009411427192389965
+        },
+        {
+          "count": 8192,
+          "iteration": 15,
+          "phase": "measure",
+          "query_sec": 0.009433538652956486,
+          "wall_sec": 0.009437994100153446
+        }
+      ],
+      "warmup": 3
+    },
+    {
+      "body_count": 32768,
+      "checkout": "v23_evidence",
+      "commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+      "measure_max_sec": 0.05969686433672905,
+      "measure_median_sec": 0.04036406194791198,
+      "measure_min_sec": 0.038059961050748825,
+      "repeats": 12,
+      "rtdl_optix_library": "/root/rtdl_goal3524/v23_evidence/build/librtdl_optix.so",
+      "samples": [
+        {
+          "count": 32768,
+          "iteration": 1,
+          "phase": "warmup",
+          "query_sec": 0.04538180027157068,
+          "wall_sec": 0.04539660271257162
+        },
+        {
+          "count": 32768,
+          "iteration": 2,
+          "phase": "warmup",
+          "query_sec": 0.059691110625863075,
+          "wall_sec": 0.059702154248952866
+        },
+        {
+          "count": 32768,
+          "iteration": 3,
+          "phase": "warmup",
+          "query_sec": 0.040413711220026016,
+          "wall_sec": 0.040421211160719395
+        },
+        {
+          "count": 32768,
+          "iteration": 4,
+          "phase": "measure",
+          "query_sec": 0.041588482446968555,
+          "wall_sec": 0.04160780180245638
+        },
+        {
+          "count": 32768,
+          "iteration": 5,
+          "phase": "measure",
+          "query_sec": 0.05969686433672905,
+          "wall_sec": 0.05970647186040878
+        },
+        {
+          "count": 32768,
+          "iteration": 6,
+          "phase": "measure",
+          "query_sec": 0.03963825199753046,
+          "wall_sec": 0.03964505437761545
+        },
+        {
+          "count": 32768,
+          "iteration": 7,
+          "phase": "measure",
+          "query_sec": 0.03896933700889349,
+          "wall_sec": 0.03897589258849621
+        },
+        {
+          "count": 32768,
+          "iteration": 8,
+          "phase": "measure",
+          "query_sec": 0.05271964333951473,
+          "wall_sec": 0.052727135829627514
+        },
+        {
+          "count": 32768,
+          "iteration": 9,
+          "phase": "measure",
+          "query_sec": 0.041089871898293495,
+          "wall_sec": 0.041097842156887054
+        },
+        {
+          "count": 32768,
+          "iteration": 10,
+          "phase": "measure",
+          "query_sec": 0.039237258955836296,
+          "wall_sec": 0.03924614284187555
+        },
+        {
+          "count": 32768,
+          "iteration": 11,
+          "phase": "measure",
+          "query_sec": 0.05317577626556158,
+          "wall_sec": 0.05318429879844189
+        },
+        {
+          "count": 32768,
+          "iteration": 12,
+          "phase": "measure",
+          "query_sec": 0.038440288975834846,
+          "wall_sec": 0.038448055274784565
+        },
+        {
+          "count": 32768,
+          "iteration": 13,
+          "phase": "measure",
+          "query_sec": 0.03810500167310238,
+          "wall_sec": 0.03811175748705864
+        },
+        {
+          "count": 32768,
+          "iteration": 14,
+          "phase": "measure",
+          "query_sec": 0.05170084536075592,
+          "wall_sec": 0.05170873738825321
+        },
+        {
+          "count": 32768,
+          "iteration": 15,
+          "phase": "measure",
+          "query_sec": 0.038059961050748825,
+          "wall_sec": 0.038067118264734745
+        }
+      ],
+      "warmup": 3
+    },
+    {
+      "body_count": 32768,
+      "checkout": "v28_current",
+      "commit": "d266b0370bcbcd4cbc24006ce9de2dfe783c1d2e",
+      "measure_max_sec": 0.05918077286332846,
+      "measure_median_sec": 0.039779544342309237,
+      "measure_min_sec": 0.038274167105555534,
+      "repeats": 12,
+      "rtdl_optix_library": "/root/rtdl_goal3524/v28_current/build/librtdl_optix.so",
+      "samples": [
+        {
+          "count": 32768,
+          "iteration": 1,
+          "phase": "warmup",
+          "query_sec": 0.04562297835946083,
+          "wall_sec": 0.04564190190285444
+        },
+        {
+          "count": 32768,
+          "iteration": 2,
+          "phase": "warmup",
+          "query_sec": 0.06256121303886175,
+          "wall_sec": 0.06257984787225723
+        },
+        {
+          "count": 32768,
+          "iteration": 3,
+          "phase": "warmup",
+          "query_sec": 0.042287152260541916,
+          "wall_sec": 0.04229502845555544
+        },
+        {
+          "count": 32768,
+          "iteration": 4,
+          "phase": "measure",
+          "query_sec": 0.03989971801638603,
+          "wall_sec": 0.039906393736600876
+        },
+        {
+          "count": 32768,
+          "iteration": 5,
+          "phase": "measure",
+          "query_sec": 0.05918077286332846,
+          "wall_sec": 0.05918854754418135
+        },
+        {
+          "count": 32768,
+          "iteration": 6,
+          "phase": "measure",
+          "query_sec": 0.039914024993777275,
+          "wall_sec": 0.039921993389725685
+        },
+        {
+          "count": 32768,
+          "iteration": 7,
+          "phase": "measure",
+          "query_sec": 0.03965937066823244,
+          "wall_sec": 0.039667028933763504
+        },
+        {
+          "count": 32768,
+          "iteration": 8,
+          "phase": "measure",
+          "query_sec": 0.05552338808774948,
+          "wall_sec": 0.05553106591105461
+        },
+        {
+          "count": 32768,
+          "iteration": 9,
+          "phase": "measure",
+          "query_sec": 0.03952786512672901,
+          "wall_sec": 0.03953712247312069
+        },
+        {
+          "count": 32768,
+          "iteration": 10,
+          "phase": "measure",
+          "query_sec": 0.038466980680823326,
+          "wall_sec": 0.03847533464431763
+        },
+        {
+          "count": 32768,
+          "iteration": 11,
+          "phase": "measure",
+          "query_sec": 0.055179777555167675,
+          "wall_sec": 0.055187925696372986
+        },
+        {
+          "count": 32768,
+          "iteration": 12,
+          "phase": "measure",
+          "query_sec": 0.03886290267109871,
+          "wall_sec": 0.03887270949780941
+        },
+        {
+          "count": 32768,
+          "iteration": 13,
+          "phase": "measure",
+          "query_sec": 0.05636407341808081,
+          "wall_sec": 0.0563715361058712
+        },
+        {
+          "count": 32768,
+          "iteration": 14,
+          "phase": "measure",
+          "query_sec": 0.038274167105555534,
+          "wall_sec": 0.03828220721334219
+        },
+        {
+          "count": 32768,
+          "iteration": 15,
+          "phase": "measure",
+          "query_sec": 0.038407097570598125,
+          "wall_sec": 0.03841378167271614
+        }
+      ],
+      "warmup": 3
+    }
+  ],
+  "ssh_endpoint": "root@69.30.85.203 -p 22057"
+}
