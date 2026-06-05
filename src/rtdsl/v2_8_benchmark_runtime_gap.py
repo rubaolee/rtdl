@@ -149,7 +149,8 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "rows and 9,653,005 triangle pairs across the supported public-CDB stream; a component/tile "
             "task planner now gives large rows explicit relation-owner tile tasks; a CuPy tile-task executor "
             "now runs those tasks on an RTX A5000 pod as one GPU thread per tile task and reduces partial "
-            "areas by relation id"
+            "areas by relation id; the public-CDB full-stream scalar exact-area executor now matches the "
+            "Shapely/GEOS total within 1e-8 while processing 9,653,005 triangle pairs"
         ),
         partner_position=(
             "Numba is the recommended custom continuation when row-stream compaction is part of the app; "
@@ -199,9 +200,11 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "pairs, with p50/p90/p99 triangle pairs per relation of 294/3,450/25,530. Goal3491 added a "
             "CuPy tile-task executor for that Goal3490 plan, using one GPU thread per tile task plus "
             "cupy_add_at_by_relation_row_ordinal reduction, with RTX A5000 fixture evidence for relation "
-            "totals 1.75 and 2.0. Goal3492 adds the public-CDB full-stream tile-task executor runner that "
-            "compares scalar relation areas against the Shapely/GEOS oracle. Remaining work is the pod run "
-            "over the full supported stream, integration with the device-resident relation stream, then the "
+            "totals 1.75 and 2.0. Goal3492 executed the public-CDB full-stream tile-task executor over "
+            "4,543 relation rows / 39,947 component-pair rows / 54,232 tile tasks / 9,653,005 triangle "
+            "pairs, matching the Shapely/GEOS total 26.08321766231046 within 9.78e-9 and all task statuses "
+            "zero; the executor took 0.488s while payload construction took 22.717s. Remaining work is "
+            "payload construction/residency, integration with the device-resident relation stream, then the "
             "native-vs-partner acceptance decision over that execution shape."
         ),
         generic_runtime_target=(
