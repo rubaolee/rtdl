@@ -17,6 +17,224 @@ V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_VERSION = (
     "rtdl.v2_8.simple_polygon_overlay_area_prepared_payload.v1"
 )
 V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_STATUS = "cpu_prepared_payload_prototype_no_runtime_kernel_yet"
+V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_CUPY_VERSION = (
+    "rtdl.v2_8.simple_polygon_overlay_area_prepared_payload_cupy_tiled.v1"
+)
+
+
+_PREPARED_OVERLAY_AREA_TILED_CUPY_KERNEL = r"""
+static __device__ double rtdl_overlay_absd(double value)
+{
+    return value < 0.0 ? -value : value;
+}
+
+static __device__ double rtdl_overlay_cross(
+        double ax, double ay,
+        double bx, double by,
+        double cx, double cy)
+{
+    return (bx - ax) * (cy - ay) - (by - ay) * (cx - ax);
+}
+
+static __device__ double rtdl_overlay_signed_area(const double* vx, const double* vy, unsigned int count)
+{
+    double area2 = 0.0;
+    for (unsigned int i = 0u; i < count; ++i) {
+        const unsigned int j = (i + 1u) % count;
+        area2 += vx[i] * vy[j] - vx[j] * vy[i];
+    }
+    return 0.5 * area2;
+}
+
+static __device__ bool rtdl_overlay_inside(
+        double px, double py,
+        double ax, double ay,
+        double bx, double by,
+        double orientation)
+{
+    const double cross = (bx - ax) * (py - ay) - (by - ay) * (px - ax);
+    return orientation * cross >= -1.0e-12;
+}
+
+static __device__ void rtdl_overlay_line_intersection(
+        double sx, double sy,
+        double ex, double ey,
+        double ax, double ay,
+        double bx, double by,
+        double* out_x,
+        double* out_y)
+{
+    const double dx = ex - sx;
+    const double dy = ey - sy;
+    const double cx = bx - ax;
+    const double cy = by - ay;
+    const double denom = dx * cy - dy * cx;
+    if (rtdl_overlay_absd(denom) <= 1.0e-20) {
+        *out_x = ex;
+        *out_y = ey;
+        return;
+    }
+    const double qx = ax - sx;
+    const double qy = ay - sy;
+    const double t = (qx * cy - qy * cx) / denom;
+    *out_x = sx + t * dx;
+    *out_y = sy + t * dy;
+}
+
+static __device__ double rtdl_triangle_overlap_area(
+        const double* left_x0,
+        const double* left_y0,
+        const double* left_x1,
+        const double* left_y1,
+        const double* left_x2,
+        const double* left_y2,
+        const double* right_x0,
+        const double* right_y0,
+        const double* right_x1,
+        const double* right_y1,
+        const double* right_x2,
+        const double* right_y2,
+        unsigned int left_index,
+        unsigned int right_index)
+{
+    double clip_x[8];
+    double clip_y[8];
+    double temp_x[8];
+    double temp_y[8];
+    clip_x[0] = left_x0[left_index];
+    clip_y[0] = left_y0[left_index];
+    clip_x[1] = left_x1[left_index];
+    clip_y[1] = left_y1[left_index];
+    clip_x[2] = left_x2[left_index];
+    clip_y[2] = left_y2[left_index];
+    unsigned int clip_count = 3u;
+
+    double rx[3];
+    double ry[3];
+    rx[0] = right_x0[right_index];
+    ry[0] = right_y0[right_index];
+    rx[1] = right_x1[right_index];
+    ry[1] = right_y1[right_index];
+    rx[2] = right_x2[right_index];
+    ry[2] = right_y2[right_index];
+    const double right_orientation = rtdl_overlay_signed_area(rx, ry, 3u) >= 0.0 ? 1.0 : -1.0;
+
+    for (unsigned int edge = 0u; edge < 3u; ++edge) {
+        const unsigned int next_edge = (edge + 1u) % 3u;
+        const double ax = rx[edge];
+        const double ay = ry[edge];
+        const double bx = rx[next_edge];
+        const double by = ry[next_edge];
+        const unsigned int input_count = clip_count;
+        if (input_count == 0u) return 0.0;
+        for (unsigned int i = 0u; i < input_count; ++i) {
+            temp_x[i] = clip_x[i];
+            temp_y[i] = clip_y[i];
+        }
+        clip_count = 0u;
+        double sx = temp_x[input_count - 1u];
+        double sy = temp_y[input_count - 1u];
+        bool s_inside = rtdl_overlay_inside(sx, sy, ax, ay, bx, by, right_orientation);
+        for (unsigned int i = 0u; i < input_count; ++i) {
+            const double ex = temp_x[i];
+            const double ey = temp_y[i];
+            const bool e_inside = rtdl_overlay_inside(ex, ey, ax, ay, bx, by, right_orientation);
+            if (e_inside != s_inside) {
+                double ix = 0.0;
+                double iy = 0.0;
+                rtdl_overlay_line_intersection(sx, sy, ex, ey, ax, ay, bx, by, &ix, &iy);
+                if (clip_count < 8u) {
+                    clip_x[clip_count] = ix;
+                    clip_y[clip_count] = iy;
+                    ++clip_count;
+                }
+            }
+            if (e_inside && clip_count < 8u) {
+                clip_x[clip_count] = ex;
+                clip_y[clip_count] = ey;
+                ++clip_count;
+            }
+            sx = ex;
+            sy = ey;
+            s_inside = e_inside;
+        }
+    }
+    if (clip_count < 3u) return 0.0;
+    const double area = rtdl_overlay_signed_area(clip_x, clip_y, clip_count);
+    return area < 0.0 ? -area : area;
+}
+
+extern "C" __global__ void prepared_overlay_area_tiled_kernel(
+        const double* left_x0,
+        const double* left_y0,
+        const double* left_x1,
+        const double* left_y1,
+        const double* left_x2,
+        const double* left_y2,
+        unsigned int left_triangle_total,
+        const double* right_x0,
+        const double* right_y0,
+        const double* right_x1,
+        const double* right_y1,
+        const double* right_x2,
+        const double* right_y2,
+        unsigned int right_triangle_total,
+        const unsigned int* left_start,
+        const unsigned int* left_count,
+        const unsigned int* right_start,
+        const unsigned int* right_count,
+        unsigned int row_count,
+        unsigned int max_pairs_per_tile,
+        double* row_area,
+        unsigned int* row_status,
+        unsigned int* processed_pairs,
+        unsigned int* tile_counts)
+{
+    const unsigned int row = blockIdx.x * blockDim.x + threadIdx.x;
+    if (row >= row_count) return;
+
+    row_area[row] = 0.0;
+    row_status[row] = 0u;
+    processed_pairs[row] = 0u;
+    tile_counts[row] = 0u;
+
+    if (max_pairs_per_tile == 0u) {
+        row_status[row] = 2u;
+        return;
+    }
+
+    const unsigned int ls = left_start[row];
+    const unsigned int lc = left_count[row];
+    const unsigned int rs = right_start[row];
+    const unsigned int rc = right_count[row];
+    if (ls + lc > left_triangle_total || rs + rc > right_triangle_total) {
+        row_status[row] = 1u;
+        return;
+    }
+
+    double area = 0.0;
+    unsigned int tile_pairs = 0u;
+    for (unsigned int li = 0u; li < lc; ++li) {
+        for (unsigned int ri = 0u; ri < rc; ++ri) {
+            area += rtdl_triangle_overlap_area(
+                left_x0, left_y0, left_x1, left_y1, left_x2, left_y2,
+                right_x0, right_y0, right_x1, right_y1, right_x2, right_y2,
+                ls + li,
+                rs + ri);
+            ++processed_pairs[row];
+            ++tile_pairs;
+            if (tile_pairs == max_pairs_per_tile) {
+                ++tile_counts[row];
+                tile_pairs = 0u;
+            }
+        }
+    }
+    if (tile_pairs != 0u) {
+        ++tile_counts[row];
+    }
+    row_area[row] = area;
+}
+"""
 
 
 @dataclass(frozen=True)
@@ -184,6 +402,18 @@ class PreparedOverlayAreaTiledEvaluationResult:
         }
 
 
+@dataclass(frozen=True)
+class PreparedOverlayAreaCupyTiledResult:
+    row_areas: object
+    row_status: object
+    processed_pairs: object
+    tile_counts: object
+    metadata: dict[str, Any]
+
+    def to_metadata(self) -> dict[str, Any]:
+        return dict(self.metadata)
+
+
 def prepare_simple_polygon_component_payload(
     components: Sequence[Sequence[Point2]],
     *,
@@ -320,6 +550,113 @@ def evaluate_prepared_overlay_area_scalar_tiled(
     )
 
 
+def _triangles_to_cupy_columns(cp, triangles: Sequence[Triangle2]) -> tuple[object, ...]:
+    return (
+        cp.asarray([triangle[0][0] for triangle in triangles], dtype=cp.float64),
+        cp.asarray([triangle[0][1] for triangle in triangles], dtype=cp.float64),
+        cp.asarray([triangle[1][0] for triangle in triangles], dtype=cp.float64),
+        cp.asarray([triangle[1][1] for triangle in triangles], dtype=cp.float64),
+        cp.asarray([triangle[2][0] for triangle in triangles], dtype=cp.float64),
+        cp.asarray([triangle[2][1] for triangle in triangles], dtype=cp.float64),
+    )
+
+
+def evaluate_prepared_overlay_area_scalar_tiled_cupy(
+    left_payload: PreparedSimplePolygonComponentPayload,
+    right_payload: PreparedSimplePolygonComponentPayload,
+    pair_rows: Sequence[PreparedOverlayAreaPairRow],
+    *,
+    max_triangle_pairs_per_tile: int,
+) -> PreparedOverlayAreaCupyTiledResult:
+    if max_triangle_pairs_per_tile <= 0:
+        raise ValueError("max_triangle_pairs_per_tile must be positive; scratch capacity must fail closed")
+
+    import cupy as cp  # type: ignore
+
+    row_count = len(pair_rows)
+    left_columns = _triangles_to_cupy_columns(cp, left_payload.triangles)
+    right_columns = _triangles_to_cupy_columns(cp, right_payload.triangles)
+    left_start = cp.asarray([row.left_triangle_start for row in pair_rows], dtype=cp.uint32)
+    left_count = cp.asarray([row.left_triangle_count for row in pair_rows], dtype=cp.uint32)
+    right_start = cp.asarray([row.right_triangle_start for row in pair_rows], dtype=cp.uint32)
+    right_count = cp.asarray([row.right_triangle_count for row in pair_rows], dtype=cp.uint32)
+    row_areas = cp.zeros((row_count,), dtype=cp.float64)
+    row_status = cp.zeros((row_count,), dtype=cp.uint32)
+    processed_pairs = cp.zeros((row_count,), dtype=cp.uint32)
+    tile_counts = cp.zeros((row_count,), dtype=cp.uint32)
+
+    if row_count:
+        kernel = cp.RawKernel(_PREPARED_OVERLAY_AREA_TILED_CUPY_KERNEL, "prepared_overlay_area_tiled_kernel")
+        block_size = 128
+        grid_size = (row_count + block_size - 1) // block_size
+        kernel(
+            (grid_size,),
+            (block_size,),
+            (
+                *left_columns,
+                cp.uint32(left_payload.triangle_count),
+                *right_columns,
+                cp.uint32(right_payload.triangle_count),
+                left_start,
+                left_count,
+                right_start,
+                right_count,
+                cp.uint32(row_count),
+                cp.uint32(max_triangle_pairs_per_tile),
+                row_areas,
+                row_status,
+                processed_pairs,
+                tile_counts,
+            ),
+        )
+        cp.cuda.Stream.null.synchronize()
+
+    status_values = {}
+    if row_count:
+        unique_status, unique_counts = cp.unique(row_status, return_counts=True)
+        status_values = {
+            str(int(status)): int(count)
+            for status, count in zip(cp.asnumpy(unique_status).tolist(), cp.asnumpy(unique_counts).tolist())
+        }
+    metadata = {
+        "schema": V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_CUPY_VERSION,
+        "operation": "prepared_simple_polygon_overlay_area_tiled",
+        "partner": "cupy",
+        "row_count": row_count,
+        "left_triangle_count": left_payload.triangle_count,
+        "right_triangle_count": right_payload.triangle_count,
+        "max_triangle_pairs_per_tile": int(max_triangle_pairs_per_tile),
+        "processed_triangle_pair_count": int(cp.sum(processed_pairs).get()) if row_count else 0,
+        "tile_count": int(cp.sum(tile_counts).get()) if row_count else 0,
+        "status_counts": status_values,
+        "status_semantics": {
+            "0": "computed",
+            "1": "invalid_triangle_range",
+            "2": "invalid_tile_capacity",
+        },
+        "total_area": float(cp.sum(row_areas).get()) if row_count else 0.0,
+        "completed_without_truncation": (
+            bool(cp.all(row_status == 0).get()) if row_count else True
+        ),
+        "input_contract": "prepared_simple_polygon_component_payload",
+        "app_specific_engine_logic_allowed": False,
+        "automatic_partner_selection_allowed": False,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "runtime_kernel_authorized": False,
+        "claim_boundary": V2_8_OVERLAY_AREA_CONTINUATION_CLAIM_BOUNDARY,
+    }
+    return PreparedOverlayAreaCupyTiledResult(
+        row_areas=row_areas,
+        row_status=row_status,
+        processed_pairs=processed_pairs,
+        tile_counts=tile_counts,
+        metadata=metadata,
+    )
+
+
 def validate_v2_8_overlay_area_prepared_payload_contract() -> dict[str, Any]:
     left = prepare_simple_polygon_component_payload(
         (
@@ -381,13 +718,16 @@ def validate_v2_8_overlay_area_prepared_payload_contract() -> dict[str, Any]:
 __all__ = [
     "PreparedOverlayAreaEvaluationResult",
     "PreparedOverlayAreaPairRow",
+    "PreparedOverlayAreaCupyTiledResult",
     "PreparedOverlayAreaTiledEvaluationResult",
     "PreparedSimplePolygonComponentPayload",
     "PreparedSimplePolygonComponentRecord",
     "V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_STATUS",
+    "V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_CUPY_VERSION",
     "V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_VERSION",
     "evaluate_prepared_overlay_area_scalar",
     "evaluate_prepared_overlay_area_scalar_tiled",
+    "evaluate_prepared_overlay_area_scalar_tiled_cupy",
     "prepare_overlay_area_pair_rows",
     "prepare_simple_polygon_component_payload",
     "validate_v2_8_overlay_area_prepared_payload_contract",
