@@ -305,10 +305,11 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
                 left_shape_component_starts=left_component_starts,
                 left_shape_component_counts=left_component_counts,
                 right_shape_component_starts=right_component_starts,
-                right_shape_component_counts=right_component_counts,
-                relation_row_count=len(left_ordinals),
-                max_triangle_pairs_per_task=int(args.max_triangle_pairs_per_task),
-            )
+            right_shape_component_counts=right_component_counts,
+            relation_row_count=len(left_ordinals),
+            max_triangle_pairs_per_task=int(args.max_triangle_pairs_per_task),
+            component_bounds_positive_filter=bool(args.component_bounds_filter),
+        )
             cp.cuda.Stream.null.synchronize()
             device_tile_task_planning_repeat_secs.append(time.perf_counter() - device_plan_start)
         device_tile_task_planning_sec = sum(device_tile_task_planning_repeat_secs)
@@ -334,6 +335,13 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
                 continue
             for left_component in left_components:
                 for right_component in right_components:
+                    if args.component_bounds_filter and not rt.prepared_overlay_area_component_bounds_overlap_positive(
+                        left_payload,
+                        right_payload,
+                        left_component,
+                        right_component,
+                    ):
+                        continue
                     component_pairs.append((left_component, right_component))
                     relation_row_ordinals.append(relation_row)
         pair_rows = rt.prepare_overlay_area_pair_rows(left_payload, right_payload, component_pairs)
@@ -424,9 +432,12 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     )[:10]
 
     schema = (
-            "rtdl.goal3497.overlay_area_bounds_positive_filtered_tile_tasks.v1"
+        "rtdl.goal3497.overlay_area_bounds_positive_filtered_tile_tasks.v1"
         if args.bounds_positive_filter and not args.device_tile_task_planner
         else (
+            "rtdl.goal3501.overlay_area_component_bounds_filtered_tile_tasks.v1"
+            if args.component_bounds_filter
+            else (
             "rtdl.goal3498.overlay_area_device_tile_task_planner.v1"
             if args.device_tile_task_planner
             else (
@@ -442,13 +453,14 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
                 )
             )
             )
+            )
         )
     )
-    goal = 3498 if args.device_tile_task_planner else (3497 if args.bounds_positive_filter else (
+    goal = 3501 if args.component_bounds_filter else (3498 if args.device_tile_task_planner else (3497 if args.bounds_positive_filter else (
         3495 if device_active_shape_ordinals_used else (
             3494 if args.resident_cupy_inputs else (3493 if args.active_shapes_only else 3492)
         )
-    ))
+    )))
 
     return {
         "schema": schema,
@@ -466,6 +478,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         "device_active_shape_ordinals": bool(args.device_active_shape_ordinals),
         "device_active_shape_ordinals_used": bool(device_active_shape_ordinals_used),
         "bounds_positive_filter": bool(args.bounds_positive_filter),
+        "component_bounds_filter": bool(args.component_bounds_filter),
         "device_tile_task_planner": bool(args.device_tile_task_planner),
         "bounds_positive_relation_row_count": int(len(candidate_relation_rows)),
         "bounds_positive_filter_metadata": bounds_positive_filter_metadata,
@@ -561,6 +574,14 @@ def parse_args() -> argparse.Namespace:
         help=(
             "Plan component-pair tile tasks with a generic CuPy continuation from relation ordinal "
             "columns and prepared component tables."
+        ),
+    )
+    parser.add_argument(
+        "--component-bounds-filter",
+        action="store_true",
+        help=(
+            "Skip prepared component pairs whose component bounding boxes have non-positive "
+            "overlap before exact triangle-pair tile execution."
         ),
     )
     parser.add_argument(

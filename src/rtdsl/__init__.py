@@ -401,6 +401,7 @@ from .v2_8_overlay_area_prepared_payload import evaluate_prepared_overlay_area_s
 from .v2_8_overlay_area_prepared_payload import evaluate_prepared_overlay_area_tile_task_cupy_inputs
 from .v2_8_overlay_area_prepared_payload import evaluate_prepared_overlay_area_tile_tasks_cupy
 from .v2_8_overlay_area_prepared_payload import plan_prepared_overlay_area_tile_tasks
+from .v2_8_overlay_area_prepared_payload import prepared_overlay_area_component_bounds_overlap_positive
 from .v2_8_overlay_area_prepared_payload import prepare_overlay_area_tile_task_cupy_inputs_from_relation_ordinals
 from .v2_8_overlay_area_prepared_payload import prepare_overlay_area_tile_task_cupy_inputs
 from .v2_8_overlay_area_prepared_payload import prepare_overlay_area_pair_rows
@@ -2156,6 +2157,7 @@ __all__ = [
     "evaluate_prepared_overlay_area_tile_task_cupy_inputs",
     "evaluate_prepared_overlay_area_tile_tasks_cupy",
     "plan_prepared_overlay_area_tile_tasks",
+    "prepared_overlay_area_component_bounds_overlap_positive",
     "prepare_overlay_area_tile_task_cupy_inputs_from_relation_ordinals",
     "prepare_overlay_area_tile_task_cupy_inputs",
     "prepare_overlay_area_pair_rows",
