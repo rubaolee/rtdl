@@ -298,6 +298,21 @@ struct RtdlNativeClosedShapeBoundaryEventDeviceColumns {
     double traversal_seconds;
 };
 
+struct RtdlNativeShapePairRelationDeviceColumns {
+    uint64_t left_ids_device_ptr;
+    uint64_t right_ids_device_ptr;
+    uint64_t requires_segment_intersection_device_ptr;
+    uint64_t requires_point_containment_device_ptr;
+    uint64_t row_count;
+    uint64_t capacity;
+    uint64_t active_relation_count;
+    uint32_t overflow;
+    int32_t device_ordinal;
+    void* owner_handle;
+    double traversal_seconds;
+    double continuation_seconds;
+};
+
 struct RtdlNativeDeviceGroupedCountI64CompactColumns {
     uint64_t group_keys_device_ptr;
     uint64_t counts_device_ptr;
@@ -779,6 +794,16 @@ int  rtdl_optix_count_prepared_shape_pair_relation_active_device(
          const RtdlPolygonRef* left_polys, size_t left_count,
          const double* left_verts_xy,      size_t left_vert_xy_count,
          size_t* active_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_prepared_shape_pair_relation_active_device_columns(
+         void* prepared,
+         const RtdlPolygonRef* left_polys, size_t left_count,
+         const double* left_verts_xy,      size_t left_vert_xy_count,
+         size_t max_rows,
+         RtdlNativeShapePairRelationDeviceColumns* columns_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_release_shape_pair_relation_active_device_columns(
+         void* owner_handle,
          char* error_out, size_t error_size);
 int  rtdl_optix_shape_pair_relation_get_last_phase_timings(
          double* left_prepare_out,

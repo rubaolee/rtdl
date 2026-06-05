@@ -18,6 +18,9 @@ V2_8_GEOMETRY_RELATION_TYPED_PRODUCER_STATUS = (
 V2_8_GEOMETRY_RELATION_DEVICE_PAIR_COLUMN_STATUS = (
     "device_resident_candidate_id_columns_no_exact_relation_witnesses"
 )
+V2_8_GEOMETRY_RELATION_DEVICE_RELATION_FLAG_COLUMN_STATUS = (
+    "device_resident_relation_flag_columns_no_exact_relation_witnesses"
+)
 V2_8_GEOMETRY_RELATION_TYPED_PRODUCER_CLAIM_BOUNDARY = (
     "v2.8 geometry-relation typed producer metadata records generic row schemas "
     "for prepared geometry outputs. It does not authorize release, public "
@@ -111,6 +114,17 @@ V2_8_GEOMETRY_RELATION_SCHEMAS: dict[tuple[str, ...], V28GeometryRelationSchema]
             V28GeometryRelationColumnSpec("requires_lsi", "mask", "uint32"),
             V28GeometryRelationColumnSpec("requires_pip", "mask", "uint32"),
         ),
+    ),
+    ("left_id", "right_id", "requires_segment_intersection", "requires_point_containment"): V28GeometryRelationSchema(
+        schema_id="shape_pair_relation_flags_2d_device_columns",
+        producer_primitive="shape_pair_relation_flags_2d",
+        columns=(
+            V28GeometryRelationColumnSpec("left_id", "group_key", "int64"),
+            V28GeometryRelationColumnSpec("right_id", "item_id", "int64"),
+            V28GeometryRelationColumnSpec("requires_segment_intersection", "mask", "uint32"),
+            V28GeometryRelationColumnSpec("requires_point_containment", "mask", "uint32"),
+        ),
+        output_residency="device_resident_relation_flag_columns",
     ),
 }
 
@@ -283,16 +297,92 @@ def geometry_relation_typed_stream_metadata_for_device_pair_columns(
     }
 
 
+def geometry_relation_typed_stream_metadata_for_relation_flag_device_columns(
+    *,
+    row_count: int,
+    capacity: int,
+    left_ids_device_ptr: int,
+    right_ids_device_ptr: int,
+    requires_segment_intersection_device_ptr: int,
+    requires_point_containment_device_ptr: int,
+    device_id: int,
+    active_relation_count: int,
+    overflow: bool,
+    native_symbol: str | None = None,
+    field_names: tuple[str, str, str, str] = (
+        "left_id",
+        "right_id",
+        "requires_segment_intersection",
+        "requires_point_containment",
+    ),
+) -> dict[str, Any]:
+    count = int(row_count)
+    cap = int(capacity)
+    fields = _normalize_field_names(field_names)
+    if len(fields) != 4:
+        raise ValueError("relation-flag device-column metadata requires exactly four field names")
+    typed_stream = make_v2_8_geometry_relation_typed_stream_contract(
+        fields,
+        count,
+        source_protocol="optix_native_shape_pair_relation_flag_device_columns",
+        device_type="cuda",
+        device_id=int(device_id),
+        data_ptrs={
+            fields[0]: int(left_ids_device_ptr),
+            fields[1]: int(right_ids_device_ptr),
+            fields[2]: int(requires_segment_intersection_device_ptr),
+            fields[3]: int(requires_point_containment_device_ptr),
+        },
+    ).to_metadata()
+    schema = geometry_relation_schema_for_fields(fields)
+    device_resident_output_stream_proven = (
+        not bool(overflow)
+        and cap > 0
+        and int(left_ids_device_ptr) > 0
+        and int(right_ids_device_ptr) > 0
+        and int(requires_segment_intersection_device_ptr) > 0
+        and int(requires_point_containment_device_ptr) > 0
+    )
+    return {
+        "typed_result_stream": typed_stream,
+        "v2_8_typed_producer_metadata": {
+            "version": V2_8_GEOMETRY_RELATION_TYPED_PRODUCER_VERSION,
+            "status": V2_8_GEOMETRY_RELATION_DEVICE_RELATION_FLAG_COLUMN_STATUS,
+            "schema_id": schema.schema_id,
+            "producer_primitive": schema.producer_primitive,
+            "row_count": count,
+            "capacity": cap,
+            "column_names": tuple(spec.name for spec in schema.columns),
+            "source_protocol": "optix_native_shape_pair_relation_flag_device_columns",
+            "producer_output_residency": schema.output_residency,
+            "native_symbol": native_symbol,
+            "active_relation_count": int(active_relation_count),
+            "overflow": bool(overflow),
+            "overflow_policy": "fail_closed_no_partial_rows_authorized",
+            "native_typed_producer_metadata_present": True,
+            "device_resident_output_stream_proven": device_resident_output_stream_proven,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "exact_relation_witness_rows_materialized": False,
+            "claim_boundary": V2_8_GEOMETRY_RELATION_TYPED_PRODUCER_CLAIM_BOUNDARY,
+        },
+    }
+
+
 __all__ = [
     "V28GeometryRelationColumnSpec",
     "V28GeometryRelationSchema",
     "V2_8_GEOMETRY_RELATION_SCHEMAS",
     "V2_8_GEOMETRY_RELATION_DEVICE_PAIR_COLUMN_STATUS",
+    "V2_8_GEOMETRY_RELATION_DEVICE_RELATION_FLAG_COLUMN_STATUS",
     "V2_8_GEOMETRY_RELATION_TYPED_PRODUCER_CLAIM_BOUNDARY",
     "V2_8_GEOMETRY_RELATION_TYPED_PRODUCER_STATUS",
     "V2_8_GEOMETRY_RELATION_TYPED_PRODUCER_VERSION",
     "geometry_relation_schema_for_fields",
     "geometry_relation_typed_stream_metadata_for_device_pair_columns",
+    "geometry_relation_typed_stream_metadata_for_relation_flag_device_columns",
     "geometry_relation_typed_stream_metadata_for_row_view",
     "make_v2_8_geometry_relation_typed_producer_metadata",
     "make_v2_8_geometry_relation_typed_stream_contract",

@@ -355,10 +355,12 @@ from .v2_8_fixed_radius_graph_component_front_door import prepare_v2_8_fixed_rad
 from .v2_8_geometry_relation_typed_stream import V28GeometryRelationColumnSpec
 from .v2_8_geometry_relation_typed_stream import V28GeometryRelationSchema
 from .v2_8_geometry_relation_typed_stream import V2_8_GEOMETRY_RELATION_SCHEMAS
+from .v2_8_geometry_relation_typed_stream import V2_8_GEOMETRY_RELATION_DEVICE_RELATION_FLAG_COLUMN_STATUS
 from .v2_8_geometry_relation_typed_stream import V2_8_GEOMETRY_RELATION_TYPED_PRODUCER_CLAIM_BOUNDARY
 from .v2_8_geometry_relation_typed_stream import V2_8_GEOMETRY_RELATION_TYPED_PRODUCER_STATUS
 from .v2_8_geometry_relation_typed_stream import V2_8_GEOMETRY_RELATION_TYPED_PRODUCER_VERSION
 from .v2_8_geometry_relation_typed_stream import geometry_relation_schema_for_fields
+from .v2_8_geometry_relation_typed_stream import geometry_relation_typed_stream_metadata_for_relation_flag_device_columns
 from .v2_8_geometry_relation_typed_stream import geometry_relation_typed_stream_metadata_for_row_view
 from .v2_8_geometry_relation_typed_stream import make_v2_8_geometry_relation_typed_producer_metadata
 from .v2_8_geometry_relation_typed_stream import make_v2_8_geometry_relation_typed_stream_contract
@@ -2045,10 +2047,12 @@ __all__ = [
     "V28GeometryRelationColumnSpec",
     "V28GeometryRelationSchema",
     "V2_8_GEOMETRY_RELATION_SCHEMAS",
+    "V2_8_GEOMETRY_RELATION_DEVICE_RELATION_FLAG_COLUMN_STATUS",
     "V2_8_GEOMETRY_RELATION_TYPED_PRODUCER_CLAIM_BOUNDARY",
     "V2_8_GEOMETRY_RELATION_TYPED_PRODUCER_STATUS",
     "V2_8_GEOMETRY_RELATION_TYPED_PRODUCER_VERSION",
     "geometry_relation_schema_for_fields",
+    "geometry_relation_typed_stream_metadata_for_relation_flag_device_columns",
     "geometry_relation_typed_stream_metadata_for_row_view",
     "make_v2_8_geometry_relation_typed_producer_metadata",
     "make_v2_8_geometry_relation_typed_stream_contract",

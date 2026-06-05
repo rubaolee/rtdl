@@ -1790,6 +1790,73 @@ extern "C" __global__ void shape_pair_relation_active_count_device_kernel(
         atomicAdd(active_count, 1ull);
     }
 }
+
+extern "C" __global__ void shape_pair_relation_active_relation_device_columns_kernel(
+        const ShapePairRelationFlags* flags,
+        const GpuPolygonRef* left_polygons,
+        const GpuPolygonRef* right_polygons,
+        const float* left_vx,
+        const float* left_vy,
+        const float* right_vx,
+        const float* right_vy,
+        const GpuBounds2D* left_bounds,
+        const GpuBounds2D* right_bounds,
+        uint32_t left_count,
+        uint32_t right_count,
+        unsigned long long* active_count,
+        unsigned long long* left_ids_out,
+        unsigned long long* right_ids_out,
+        uint32_t* requires_segment_intersection_out,
+        uint32_t* requires_point_containment_out,
+        uint32_t output_capacity,
+        uint32_t* overflow)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    const uint32_t total = left_count * right_count;
+    if (idx >= total) return;
+    const uint32_t li = idx / right_count;
+    const uint32_t ri = idx - li * right_count;
+    ShapePairRelationFlags flag = flags[idx];
+    bool active = flag.requires_segment_intersection != 0u ||
+                  flag.requires_point_containment != 0u;
+    if (!active) {
+        const GpuPolygonRef lp = left_polygons[li];
+        const GpuPolygonRef rp = right_polygons[ri];
+        bool contains = false;
+        if (lp.vertex_count > 0u) {
+            const uint32_t loff = lp.vertex_offset;
+            const float lx = left_vx[loff];
+            const float ly = left_vy[loff];
+            if (point_inside_bounds_dev(right_bounds[ri], lx, ly, 1.0e-6f) &&
+                point_in_polygon_inclusive_dev(lx, ly, rp, right_vx, right_vy)) {
+                contains = true;
+            }
+        }
+        if (!contains && rp.vertex_count > 0u) {
+            const uint32_t roff = rp.vertex_offset;
+            const float rx = right_vx[roff];
+            const float ry = right_vy[roff];
+            if (point_inside_bounds_dev(left_bounds[li], rx, ry, 1.0e-6f) &&
+                point_in_polygon_inclusive_dev(rx, ry, lp, left_vx, left_vy)) {
+                contains = true;
+            }
+        }
+        if (contains) {
+            flag.requires_point_containment = 1u;
+            active = true;
+        }
+    }
+    if (!active) return;
+    const unsigned long long slot = atomicAdd(active_count, 1ull);
+    if (slot >= static_cast<unsigned long long>(output_capacity)) {
+        if (overflow) *overflow = 1u;
+        return;
+    }
+    left_ids_out[slot] = static_cast<unsigned long long>(left_polygons[li].id);
+    right_ids_out[slot] = static_cast<unsigned long long>(right_polygons[ri].id);
+    requires_segment_intersection_out[slot] = flag.requires_segment_intersection;
+    requires_point_containment_out[slot] = flag.requires_point_containment;
+}
 )CUDA";
 
 // ---------- Ray-triangle hit count kernel ------------------------------------

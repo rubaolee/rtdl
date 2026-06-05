@@ -6392,6 +6392,7 @@ struct GpuBounds2DF32 {
 struct ShapePairRelationActiveCountDeviceFunction {
     CUmodule module = nullptr;
     CUfunction fn = nullptr;
+    CUfunction columns_fn = nullptr;
     std::once_flag init;
 };
 
@@ -6420,6 +6421,10 @@ static void ensure_shape_pair_relation_active_count_device_pipeline() {
             &g_shape_pair_relation_active_count_device.fn,
             g_shape_pair_relation_active_count_device.module,
             "shape_pair_relation_active_count_device_kernel"));
+        CU_CHECK(cuModuleGetFunction(
+            &g_shape_pair_relation_active_count_device.columns_fn,
+            g_shape_pair_relation_active_count_device.module,
+            "shape_pair_relation_active_relation_device_columns_kernel"));
     });
 }
 
@@ -6551,6 +6556,20 @@ struct PreparedShapePairRelationBuild {
                 host_right_vertices_xy.data());
         }
 #endif
+    }
+};
+
+struct NativeShapePairRelationDeviceColumnsOwner {
+    CUdeviceptr left_ids = 0;
+    CUdeviceptr right_ids = 0;
+    CUdeviceptr requires_segment_intersection = 0;
+    CUdeviceptr requires_point_containment = 0;
+
+    ~NativeShapePairRelationDeviceColumnsOwner() {
+        if (left_ids) cuMemFree(left_ids);
+        if (right_ids) cuMemFree(right_ids);
+        if (requires_segment_intersection) cuMemFree(requires_segment_intersection);
+        if (requires_point_containment) cuMemFree(requires_point_containment);
     }
 };
 
@@ -9008,6 +9027,200 @@ static void count_shape_pair_relation_active_device_with_prepared_right_optix(
         seconds_between(download_start, download_end);
     g_optix_last_shape_pair_active_count = static_cast<size_t>(active_count);
     *active_count_out = static_cast<size_t>(active_count);
+}
+
+static void run_prepared_shape_pair_relation_active_device_columns_optix(
+        PreparedShapePairRelationBuild* prepared,
+        const RtdlPolygonRef* left_polys,  size_t left_count,
+        const double* left_verts_xy,       size_t left_vert_xy_count,
+        size_t max_rows,
+        RtdlNativeShapePairRelationDeviceColumns* columns_out)
+{
+    if (!columns_out) {
+        throw std::runtime_error("shape-pair active relation device columns_out pointer must not be null");
+    }
+    *columns_out = {};
+    columns_out->capacity = static_cast<uint64_t>(max_rows);
+    CUdevice current_device = 0;
+    CU_CHECK(cuCtxGetDevice(&current_device));
+    columns_out->device_ordinal = static_cast<int32_t>(current_device);
+    reset_shape_pair_relation_phase_timings(4u);
+    ensure_shape_pair_relation_pipeline();
+    ensure_shape_pair_relation_active_count_device_pipeline();
+    if (left_count == 0 || prepared->right_count == 0) {
+        return;
+    }
+    if (left_count > std::numeric_limits<uint32_t>::max() ||
+        prepared->right_count > std::numeric_limits<uint32_t>::max()) {
+        throw std::runtime_error("shape-pair active relation device columns require 32-bit left/right counts");
+    }
+    if (max_rows > std::numeric_limits<uint32_t>::max()) {
+        throw std::runtime_error("shape-pair active relation device columns max_rows exceeds uint32 capacity");
+    }
+
+    const auto left_prepare_start = std::chrono::steady_clock::now();
+    const size_t lv_count = left_vert_xy_count / 2;
+    std::vector<GpuPolygonRef> gpu_lp(left_count);
+    for (size_t i = 0; i < left_count; ++i) {
+        gpu_lp[i] = {left_polys[i].id, left_polys[i].vertex_offset, left_polys[i].vertex_count};
+    }
+    std::vector<float> lvx(lv_count), lvy(lv_count);
+    for (size_t i = 0; i < lv_count; ++i) {
+        lvx[i] = static_cast<float>(left_verts_xy[i * 2]);
+        lvy[i] = static_cast<float>(left_verts_xy[i * 2 + 1]);
+    }
+    std::vector<GpuBounds2DF32> left_bounds(left_count);
+    uint32_t max_edges = 0;
+    for (size_t i = 0; i < left_count; ++i) {
+        left_bounds[i] = bounds_to_gpu_f32(bounds_for_polygon(left_polys[i], left_verts_xy));
+        max_edges = std::max(max_edges, left_polys[i].vertex_count);
+    }
+    const auto left_prepare_end = std::chrono::steady_clock::now();
+    g_optix_last_shape_pair_left_prepare_s =
+        seconds_between(left_prepare_start, left_prepare_end);
+
+    const auto left_upload_start = std::chrono::steady_clock::now();
+    DevPtr d_lp(sizeof(GpuPolygonRef) * left_count);
+    DevPtr d_lvx(sizeof(float) * lv_count);
+    DevPtr d_lvy(sizeof(float) * lv_count);
+    DevPtr d_left_bounds(sizeof(GpuBounds2DF32) * left_count);
+    upload(d_lp.ptr, gpu_lp.data(), left_count);
+    upload(d_lvx.ptr, lvx.data(), lv_count);
+    upload(d_lvy.ptr, lvy.data(), lv_count);
+    upload(d_left_bounds.ptr, left_bounds.data(), left_bounds.size());
+    const auto left_upload_end = std::chrono::steady_clock::now();
+    g_optix_last_shape_pair_left_upload_s =
+        seconds_between(left_upload_start, left_upload_end);
+
+    const size_t out_count = left_count * prepared->right_count;
+    if (out_count > std::numeric_limits<uint32_t>::max()) {
+        throw std::runtime_error("shape-pair active relation device columns require at most 2^32-1 relation pairs");
+    }
+    g_optix_last_shape_pair_pair_count = out_count;
+    DevPtr d_output(sizeof(GpuShapePairRelationFlags) * out_count);
+    CU_CHECK(cuMemsetD8(d_output.ptr, 0, sizeof(GpuShapePairRelationFlags) * out_count));
+
+    const uint32_t launch_count = static_cast<uint32_t>(left_count) * max_edges;
+    ShapePairRelationLaunchParams lp{};
+    lp.traversable          = prepared->accel.handle;
+    lp.left_polygons        = reinterpret_cast<GpuPolygonRef*>(d_lp.ptr);
+    lp.right_polygons       = reinterpret_cast<GpuPolygonRef*>(prepared->d_right_polygons.ptr);
+    lp.left_vx              = reinterpret_cast<float*>(d_lvx.ptr);
+    lp.left_vy              = reinterpret_cast<float*>(d_lvy.ptr);
+    lp.right_vx             = reinterpret_cast<float*>(prepared->d_right_vx.ptr);
+    lp.right_vy             = reinterpret_cast<float*>(prepared->d_right_vy.ptr);
+    lp.output               = reinterpret_cast<GpuShapePairRelationFlags*>(d_output.ptr);
+    lp.right_count          = static_cast<uint32_t>(prepared->right_count);
+    lp.left_count           = static_cast<uint32_t>(left_count);
+    lp.launch_count         = launch_count;
+    lp.max_edges_per_poly   = max_edges;
+
+    DevPtr d_params(sizeof(ShapePairRelationLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    const auto traversal_start = std::chrono::steady_clock::now();
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_shape_pair_relation.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(ShapePairRelationLaunchParams),
+                             &g_shape_pair_relation.pipe->sbt,
+                             launch_count, 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    const auto traversal_end = std::chrono::steady_clock::now();
+    g_optix_last_shape_pair_traversal_s =
+        seconds_between(traversal_start, traversal_end);
+
+    std::unique_ptr<NativeShapePairRelationDeviceColumnsOwner> owner;
+    CUdeviceptr left_ids_output = 0;
+    CUdeviceptr right_ids_output = 0;
+    CUdeviceptr requires_segment_intersection_output = 0;
+    CUdeviceptr requires_point_containment_output = 0;
+    if (max_rows != 0) {
+        owner = std::make_unique<NativeShapePairRelationDeviceColumnsOwner>();
+        CU_CHECK(cuMemAlloc(&owner->left_ids, sizeof(unsigned long long) * max_rows));
+        CU_CHECK(cuMemAlloc(&owner->right_ids, sizeof(unsigned long long) * max_rows));
+        CU_CHECK(cuMemAlloc(&owner->requires_segment_intersection, sizeof(uint32_t) * max_rows));
+        CU_CHECK(cuMemAlloc(&owner->requires_point_containment, sizeof(uint32_t) * max_rows));
+        left_ids_output = owner->left_ids;
+        right_ids_output = owner->right_ids;
+        requires_segment_intersection_output = owner->requires_segment_intersection;
+        requires_point_containment_output = owner->requires_point_containment;
+    }
+
+    DevPtr d_active_count(sizeof(unsigned long long));
+    DevPtr d_overflow(sizeof(uint32_t));
+    CU_CHECK(cuMemsetD8(d_active_count.ptr, 0, sizeof(unsigned long long)));
+    CU_CHECK(cuMemsetD8(d_overflow.ptr, 0, sizeof(uint32_t)));
+    uint32_t left_count_u32 = static_cast<uint32_t>(left_count);
+    uint32_t right_count_u32 = static_cast<uint32_t>(prepared->right_count);
+    uint32_t capacity_u32 = static_cast<uint32_t>(max_rows);
+    void* args[] = {
+        &d_output.ptr,
+        &d_lp.ptr,
+        &prepared->d_right_polygons.ptr,
+        &d_lvx.ptr,
+        &d_lvy.ptr,
+        &prepared->d_right_vx.ptr,
+        &prepared->d_right_vy.ptr,
+        &d_left_bounds.ptr,
+        &prepared->d_right_bounds.ptr,
+        &left_count_u32,
+        &right_count_u32,
+        &d_active_count.ptr,
+        &left_ids_output,
+        &right_ids_output,
+        &requires_segment_intersection_output,
+        &requires_point_containment_output,
+        &capacity_u32,
+        &d_overflow.ptr,
+    };
+    const unsigned int threads = 256;
+    const unsigned int blocks = static_cast<unsigned int>((out_count + threads - 1) / threads);
+    const auto continuation_start = std::chrono::steady_clock::now();
+    CU_CHECK(cuLaunchKernel(
+        g_shape_pair_relation_active_count_device.columns_fn,
+        blocks, 1, 1,
+        threads, 1, 1,
+        0, nullptr, args, nullptr));
+    CU_CHECK(cuStreamSynchronize(nullptr));
+    const auto continuation_end = std::chrono::steady_clock::now();
+    g_optix_last_shape_pair_active_scan_s =
+        seconds_between(continuation_start, continuation_end);
+
+    unsigned long long active_count = 0;
+    uint32_t overflow = 0u;
+    const auto download_start = std::chrono::steady_clock::now();
+    download(&active_count, d_active_count.ptr, 1);
+    download(&overflow, d_overflow.ptr, 1);
+    const auto download_end = std::chrono::steady_clock::now();
+    g_optix_last_shape_pair_flag_download_s =
+        seconds_between(download_start, download_end);
+    g_optix_last_shape_pair_active_count = static_cast<size_t>(active_count);
+
+    columns_out->active_relation_count = static_cast<uint64_t>(active_count);
+    columns_out->traversal_seconds = g_optix_last_shape_pair_traversal_s;
+    columns_out->continuation_seconds = g_optix_last_shape_pair_active_scan_s;
+    if (overflow != 0u || active_count > static_cast<unsigned long long>(max_rows)) {
+        columns_out->row_count = 0u;
+        columns_out->overflow = 1u;
+        return;
+    }
+
+    columns_out->left_ids_device_ptr = static_cast<uint64_t>(left_ids_output);
+    columns_out->right_ids_device_ptr = static_cast<uint64_t>(right_ids_output);
+    columns_out->requires_segment_intersection_device_ptr =
+        static_cast<uint64_t>(requires_segment_intersection_output);
+    columns_out->requires_point_containment_device_ptr =
+        static_cast<uint64_t>(requires_point_containment_output);
+    columns_out->row_count = static_cast<uint64_t>(active_count);
+    columns_out->overflow = 0u;
+    if (owner) {
+        columns_out->owner_handle = owner.release();
+    }
+}
+
+static void release_shape_pair_relation_active_device_columns_optix(void* owner_handle)
+{
+    delete reinterpret_cast<NativeShapePairRelationDeviceColumnsOwner*>(owner_handle);
 }
 
 static void run_shape_pair_relation_flags_optix(

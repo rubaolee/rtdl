@@ -123,6 +123,7 @@ from .graph_reference import normalize_vertex_set
 from .point_nearest_witness_typed_stream import make_v2_8_point_group_nearest_witness_typed_producer_metadata
 from .point_nearest_witness_typed_stream import make_v2_8_point_group_nearest_witness_typed_stream_contract
 from .v2_8_geometry_relation_typed_stream import geometry_relation_typed_stream_metadata_for_device_pair_columns
+from .v2_8_geometry_relation_typed_stream import geometry_relation_typed_stream_metadata_for_relation_flag_device_columns
 from .v2_8_geometry_relation_typed_stream import geometry_relation_typed_stream_metadata_for_row_view
 from .v2_8_geometry_relation_typed_stream import make_v2_8_geometry_relation_typed_producer_metadata
 from .v2_8_geometry_relation_typed_stream import make_v2_8_geometry_relation_typed_stream_contract
@@ -216,6 +217,12 @@ OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL = (
 )
 OPTIX_RELEASE_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_release_segment_pair_left_id_count_device_columns"
+)
+OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_COLUMNS_SYMBOL = (
+    "rtdl_optix_prepared_shape_pair_relation_active_device_columns"
+)
+OPTIX_RELEASE_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_COLUMNS_SYMBOL = (
+    "rtdl_optix_release_shape_pair_relation_active_device_columns"
 )
 OPTIX_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_prepared_point_closed_shape_membership_candidate_device_columns_2d"
@@ -939,6 +946,23 @@ class _RtdlNativeClosedShapeBoundaryEventDeviceColumns(ctypes.Structure):
         ("device_ordinal", ctypes.c_int32),
         ("owner_handle", ctypes.c_void_p),
         ("traversal_seconds", ctypes.c_double),
+    ]
+
+
+class _RtdlNativeShapePairRelationDeviceColumns(ctypes.Structure):
+    _fields_ = [
+        ("left_ids_device_ptr", ctypes.c_uint64),
+        ("right_ids_device_ptr", ctypes.c_uint64),
+        ("requires_segment_intersection_device_ptr", ctypes.c_uint64),
+        ("requires_point_containment_device_ptr", ctypes.c_uint64),
+        ("row_count", ctypes.c_uint64),
+        ("capacity", ctypes.c_uint64),
+        ("active_relation_count", ctypes.c_uint64),
+        ("overflow", ctypes.c_uint32),
+        ("device_ordinal", ctypes.c_int32),
+        ("owner_handle", ctypes.c_void_p),
+        ("traversal_seconds", ctypes.c_double),
+        ("continuation_seconds", ctypes.c_double),
     ]
 
 
@@ -2231,6 +2255,168 @@ class OptixNativeDevicePairColumnOutput:
 
 
 @dataclass
+class OptixShapePairRelationDeviceColumnOutput:
+    library: object
+    owner: _OptixNativeDevicePairColumnsOwner
+    left_ids_device_ptr: int
+    right_ids_device_ptr: int
+    requires_segment_intersection_device_ptr: int
+    requires_point_containment_device_ptr: int
+    row_count: int
+    capacity: int
+    active_relation_count: int
+    overflow: bool
+    device_ordinal: int
+    traversal_seconds: float
+    continuation_seconds: float
+    native_symbol: str
+    field_names: tuple[str, str, str, str] = (
+        "left_id",
+        "right_id",
+        "requires_segment_intersection",
+        "requires_point_containment",
+    )
+
+    @property
+    def device_resident(self) -> bool:
+        return (
+            self.left_ids_device_ptr > 0
+            and self.right_ids_device_ptr > 0
+            and self.requires_segment_intersection_device_ptr > 0
+            and self.requires_point_containment_device_ptr > 0
+            and self.capacity > 0
+            and not self.overflow
+        )
+
+    @property
+    def true_zero_copy_authorized(self) -> bool:
+        return False
+
+    @property
+    def exact_relation_witness_rows_materialized(self) -> bool:
+        return False
+
+    @property
+    def required_capacity(self) -> int:
+        return int(self.active_relation_count)
+
+    @property
+    def retry_capacity_hint(self) -> int | None:
+        return int(self.required_capacity) if self.overflow else None
+
+    @property
+    def capacity_status(self) -> "PairColumnStreamCapacityStatus":
+        return PairColumnStreamCapacityStatus(
+            capacity=int(self.capacity),
+            row_count=int(self.row_count),
+            required_capacity=int(self.required_capacity),
+            overflowed=bool(self.overflow),
+        )
+
+    def to_metadata(self) -> dict[str, object]:
+        capacity_status = self.capacity_status.to_metadata()
+        metadata = geometry_relation_typed_stream_metadata_for_relation_flag_device_columns(
+            row_count=self.row_count,
+            capacity=self.capacity,
+            left_ids_device_ptr=self.left_ids_device_ptr,
+            right_ids_device_ptr=self.right_ids_device_ptr,
+            requires_segment_intersection_device_ptr=self.requires_segment_intersection_device_ptr,
+            requires_point_containment_device_ptr=self.requires_point_containment_device_ptr,
+            device_id=self.device_ordinal,
+            active_relation_count=self.active_relation_count,
+            overflow=self.overflow,
+            native_symbol=self.native_symbol,
+            field_names=self.field_names,
+        )
+        metadata["runtime"] = {
+            "backend": "optix",
+            "output_residency": (
+                "device_resident_relation_flag_columns"
+                if self.device_resident
+                else "empty_or_overflow"
+            ),
+            "owner_handle": self.owner.handle_value,
+            "traversal_seconds": float(self.traversal_seconds),
+            "continuation_seconds": float(self.continuation_seconds),
+            "true_zero_copy_authorized": False,
+            "exact_relation_witness_rows_materialized": False,
+            "active_relation_count": int(self.active_relation_count),
+            "capacity_status": capacity_status,
+            "retry_capacity_hint": self.retry_capacity_hint,
+        }
+        metadata["capacity_status"] = capacity_status
+        return metadata
+
+    def raise_if_overflowed(self, *, operation: str) -> None:
+        self.capacity_status.raise_if_overflowed(operation=operation)
+
+    def _cupy_column(self, device_ptr: int, *, dtype_name: str, itemsize: int):
+        if self.overflow:
+            raise RuntimeError(
+                "cannot wrap an overflowed shape-pair relation device-column stream; "
+                f"capacity={int(self.capacity)} required_capacity={int(self.required_capacity)}; "
+                "overflow_policy=fail_closed; retry explicitly with max_rows>=required_capacity"
+            )
+        if device_ptr <= 0 or self.capacity <= 0:
+            raise RuntimeError("shape-pair relation device-column stream does not own CUDA columns")
+        import cupy as cp  # type: ignore
+
+        dtype = getattr(cp, dtype_name)
+        memory = cp.cuda.UnownedMemory(
+            int(device_ptr),
+            int(self.capacity) * int(itemsize),
+            self.owner,
+        )
+        memory_pointer = cp.cuda.MemoryPointer(memory, 0)
+        return cp.ndarray((int(self.row_count),), dtype=dtype, memptr=memory_pointer)
+
+    def as_cupy_columns(self) -> dict[str, object]:
+        """Wrap resident relation flag columns as CuPy arrays without copying.
+
+        This is a partner convenience over a generic device-column stream. It
+        does not authorize whole-pipeline true-zero-copy claims, and the owning
+        native handle must stay alive while the arrays are used.
+        """
+        return {
+            self.field_names[0]: self._cupy_column(
+                self.left_ids_device_ptr,
+                dtype_name="int64",
+                itemsize=ctypes.sizeof(ctypes.c_int64),
+            ),
+            self.field_names[1]: self._cupy_column(
+                self.right_ids_device_ptr,
+                dtype_name="int64",
+                itemsize=ctypes.sizeof(ctypes.c_int64),
+            ),
+            self.field_names[2]: self._cupy_column(
+                self.requires_segment_intersection_device_ptr,
+                dtype_name="uint32",
+                itemsize=ctypes.sizeof(ctypes.c_uint32),
+            ),
+            self.field_names[3]: self._cupy_column(
+                self.requires_point_containment_device_ptr,
+                dtype_name="uint32",
+                itemsize=ctypes.sizeof(ctypes.c_uint32),
+            ),
+        }
+
+    def close(self) -> None:
+        self.owner.close()
+
+    def __enter__(self) -> "OptixShapePairRelationDeviceColumnOutput":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+@dataclass
 class OptixClosedShapeBoundaryEventDeviceColumnOutput:
     library: object
     owner: _OptixClosedShapeBoundaryEventDeviceColumnsOwner
@@ -2732,6 +2918,7 @@ def prepare_segment_pair_intersection_optix(right_segments) -> PreparedOptixSegm
 class PreparedOptixShapePairRelation:
     library: object
     prepared_handle: ctypes.c_void_p
+    right_count: int = 0
     _closed: bool = False
 
     def run_raw(self, left_polygons) -> OptixRowView:
@@ -2826,6 +3013,77 @@ class PreparedOptixShapePairRelation:
         _check_status(status, error)
         return int(active_count.value)
 
+    def active_relation_device_columns(
+        self,
+        left_polygons,
+        *,
+        max_rows: int | None = None,
+    ) -> OptixShapePairRelationDeviceColumnOutput:
+        """Produce generic active relation flag columns that remain resident on CUDA.
+
+        The produced columns describe active shape-pair relation dependencies
+        using generic field names. App-specific interpretation, richer witness
+        expansion, and any partner continuation stay above this runtime layer.
+        """
+        if self._closed:
+            raise RuntimeError("prepared OptiX shape-pair relation handle is closed")
+        left = left_polygons if isinstance(left_polygons, PackedPolygons) else pack_polygons(records=left_polygons)
+        produce_symbol = _find_optional_backend_symbol(
+            self.library,
+            OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_COLUMNS_SYMBOL,
+        )
+        if produce_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_COLUMNS_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        _require_backend_symbol(
+            self.library,
+            OPTIX_RELEASE_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_COLUMNS_SYMBOL,
+        )
+        if max_rows is None:
+            capacity = int(left.polygon_count) * int(self.right_count)
+        else:
+            capacity = int(max_rows)
+        if capacity < 0:
+            raise ValueError("max_rows must be non-negative")
+        columns = _RtdlNativeShapePairRelationDeviceColumns()
+        error = ctypes.create_string_buffer(4096)
+        status = produce_symbol(
+            self.prepared_handle,
+            left.refs,
+            left.polygon_count,
+            left.vertices_xy,
+            left.vertex_xy_count,
+            ctypes.c_size_t(capacity),
+            ctypes.byref(columns),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        owner = _OptixNativeDevicePairColumnsOwner(
+            self.library,
+            columns.owner_handle,
+            release_symbol_name=OPTIX_RELEASE_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_COLUMNS_SYMBOL,
+        )
+        return OptixShapePairRelationDeviceColumnOutput(
+            library=self.library,
+            owner=owner,
+            left_ids_device_ptr=int(columns.left_ids_device_ptr),
+            right_ids_device_ptr=int(columns.right_ids_device_ptr),
+            requires_segment_intersection_device_ptr=int(columns.requires_segment_intersection_device_ptr),
+            requires_point_containment_device_ptr=int(columns.requires_point_containment_device_ptr),
+            row_count=int(columns.row_count),
+            capacity=int(columns.capacity),
+            active_relation_count=int(columns.active_relation_count),
+            overflow=bool(columns.overflow),
+            device_ordinal=int(columns.device_ordinal),
+            traversal_seconds=float(columns.traversal_seconds),
+            continuation_seconds=float(columns.continuation_seconds),
+            native_symbol=OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_COLUMNS_SYMBOL,
+        )
+
     def last_phase_timings(self) -> dict[str, float | int | str] | None:
         return _get_last_shape_pair_relation_phase_timings_from_library(self.library)
 
@@ -2872,6 +3130,7 @@ def prepare_shape_pair_relation_flags_optix(right_polygons) -> PreparedOptixShap
     return PreparedOptixShapePairRelation(
         library=lib,
         prepared_handle=prepared,
+        right_count=int(right.polygon_count),
     )
 
 
@@ -6880,6 +7139,7 @@ def _get_last_shape_pair_relation_phase_timings_from_library(lib) -> dict[str, f
         1: "rows",
         2: "active_count",
         3: "active_count_device_continuation",
+        4: "active_relation_device_columns",
     }.get(mode_value, "none")
     return {
         "mode": mode_name,
@@ -19629,6 +19889,34 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_count_prepared_shape_pair_relation_active_device.restype = ctypes.c_int
+    optional_shape_pair_relation_active_device_columns = _find_optional_backend_symbol(
+        lib,
+        OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_COLUMNS_SYMBOL,
+    )
+    if optional_shape_pair_relation_active_device_columns is not None:
+        optional_shape_pair_relation_active_device_columns.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPolygonRef),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlNativeShapePairRelationDeviceColumns),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_shape_pair_relation_active_device_columns.restype = ctypes.c_int
+    optional_release_shape_pair_relation_active_device_columns = _find_optional_backend_symbol(
+        lib,
+        OPTIX_RELEASE_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_COLUMNS_SYMBOL,
+    )
+    if optional_release_shape_pair_relation_active_device_columns is not None:
+        optional_release_shape_pair_relation_active_device_columns.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_release_shape_pair_relation_active_device_columns.restype = ctypes.c_int
     optional_shape_pair_timings = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_shape_pair_relation_get_last_phase_timings",
