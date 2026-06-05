@@ -1,0 +1,86 @@
+{
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "device_active_rows": [
+    {
+      "left_id": 3,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 10
+    },
+    {
+      "left_id": 3,
+      "requires_point_containment": 1,
+      "requires_segment_intersection": 0,
+      "right_id": 11
+    },
+    {
+      "left_id": 20,
+      "requires_point_containment": 1,
+      "requires_segment_intersection": 0,
+      "right_id": 13
+    }
+  ],
+  "device_row_count": 3,
+  "fixture": "sparse_id_three_left_four_right_rectangles",
+  "goal": 3450,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "host_active_rows": [
+    {
+      "left_id": 3,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 10
+    },
+    {
+      "left_id": 3,
+      "requires_point_containment": 1,
+      "requires_segment_intersection": 0,
+      "right_id": 11
+    },
+    {
+      "left_id": 20,
+      "requires_point_containment": 1,
+      "requires_segment_intersection": 0,
+      "right_id": 13
+    }
+  ],
+  "host_row_count": 3,
+  "left_ids": [
+    3,
+    20,
+    31
+  ],
+  "metadata_device_resident_output_stream_proven": true,
+  "metadata_schema_id": "shape_pair_relation_flags_2d_device_columns",
+  "overflow_capacity_probe": {
+    "active_relation_count": 3,
+    "metadata_capacity_status": {
+      "capacity": 1,
+      "overflow_policy": "fail_closed",
+      "overflowed": true,
+      "partial_result_returned": false,
+      "required_capacity": 3,
+      "retry_capacity_hint": 3,
+      "row_count": 0
+    },
+    "overflow": true,
+    "retry_capacity_hint": 3,
+    "row_count": 0
+  },
+  "right_ids": [
+    10,
+    11,
+    12,
+    13
+  ],
+  "rows_match": true,
+  "rtdl_commit": "299bbe267d0817b7ee104ec275993921606b6a61",
+  "schema": "rtdl.goal3450.shape_pair_relation_device_column_content.v1"
+}
