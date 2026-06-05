@@ -1,7 +1,7 @@
 # Goal3442 Shape-Pair Active-Count Device Continuation
 
 **Date:** 2026-06-05
-**Status:** implemented; pod artifact pending
+**Status:** implemented and pod-validated
 **Scope:** generic OptiX shape-pair active-count continuation
 
 ## Purpose
@@ -73,10 +73,37 @@ python3 scripts/goal3442_shape_pair_active_count_device_continuation_probe.py \
 
 The probe prints one `[goal3442]` line per iteration.
 
+Pod artifact:
+
+- `docs/reports/goal3442_shape_pair_active_count_device_continuation_pod_2026-06-05.json`
+- `docs/reports/goal3442_shape_pair_active_count_device_continuation_pod_2026-06-05.stdout`
+
+Pod result on `NVIDIA RTX A5000, 580.126.09`, commit
+`6d811efc56b82c07879536cb77eebcf42a15674b`, using `br_county.cdb`
+as left shapes and `br_county_start256_count1024.cdb` as the available
+right-shape slice:
+
+| Measure | Result |
+| --- | ---: |
+| Host exact counts | `[4543, 4543, 4543, 4543]` |
+| Device-continuation counts | `[4543, 4543, 4543, 4543]` |
+| `all_counts_match` | `true` |
+| Host active-count median | `0.143683s` |
+| Device active-count median | `0.006440s` |
+| Median device speedup vs host | `22.132x` |
+
+The first device iteration was cold (`0.399456s`) because it paid CUDA module
+initialization/first-use cost. The three warm device iterations were
+`0.006430s`, `0.006451s`, and `0.006423s`.
+
+The first implementation undercounted by four because the device continuation
+used a strict parity predicate. Goal3442 fixed that by adding an inclusive
+point-on-boundary check before parity, matching the host exact path on the pod
+input.
+
 ## Next
 
-If the device-continuation counts match and the timing improves, make the
-prepared Spatial RayJoin overlay active-count reference route use the new path by
-default while preserving the host exact route as the oracle/debug fallback. If
-counts diverge, keep the route experimental and use the mismatch to tighten the
-generic containment predicate before promoting it.
+The device-continuation counts match and the timing improves. The next step is
+to make the prepared Spatial RayJoin overlay active-count reference route use
+the new path by default while preserving the host exact route as the
+oracle/debug fallback.
