@@ -535,6 +535,27 @@ class PreparedOverlayAreaCupyTileTaskResult:
         return dict(self.metadata)
 
 
+@dataclass(frozen=True)
+class PreparedOverlayAreaCupyTileTaskInputs:
+    left_columns: tuple[object, ...]
+    right_columns: tuple[object, ...]
+    relation_row_ordinals: object
+    pair_offset: object
+    pair_count: object
+    left_start: object
+    left_count: object
+    right_start: object
+    right_count: object
+    task_count: int
+    relation_row_count: int
+    left_triangle_count: int
+    right_triangle_count: int
+    metadata: dict[str, Any]
+
+    def to_metadata(self) -> dict[str, Any]:
+        return dict(self.metadata)
+
+
 def prepare_simple_polygon_component_payload(
     components: Sequence[Sequence[Point2]],
     *,
@@ -763,6 +784,31 @@ def _triangles_to_cupy_columns(cp, triangles: Sequence[Triangle2]) -> tuple[obje
     )
 
 
+def _validate_prepared_overlay_area_tile_tasks(
+    left_payload: PreparedSimplePolygonComponentPayload,
+    right_payload: PreparedSimplePolygonComponentPayload,
+    tasks: Sequence[PreparedOverlayAreaTileTask],
+    relation_row_count: int | None,
+) -> tuple[list[int], int]:
+    relation_ids_host = [int(task.relation_row_ordinal) for task in tasks]
+    if relation_row_count is None:
+        relation_row_count = (max(relation_ids_host) + 1) if relation_ids_host else 0
+    if relation_row_count < 0:
+        raise ValueError("relation_row_count must be non-negative")
+    if any(relation_id < 0 or relation_id >= relation_row_count for relation_id in relation_ids_host):
+        raise ValueError("tile task relation_row_ordinal is outside relation_row_count")
+    for task in tasks:
+        if task.pair_count <= 0:
+            raise ValueError("tile task pair_count must be positive")
+        if task.pair_offset < 0 or task.pair_offset + task.pair_count > task.left_triangle_count * task.right_triangle_count:
+            raise ValueError("tile task pair range is outside component triangle product")
+        if task.left_triangle_start < 0 or task.left_triangle_stop > left_payload.triangle_count:
+            raise ValueError("tile task left triangle range is outside left payload")
+        if task.right_triangle_start < 0 or task.right_triangle_stop > right_payload.triangle_count:
+            raise ValueError("tile task right triangle range is outside right payload")
+    return relation_ids_host, int(relation_row_count)
+
+
 def evaluate_prepared_overlay_area_scalar_tiled_cupy(
     left_payload: PreparedSimplePolygonComponentPayload,
     right_payload: PreparedSimplePolygonComponentPayload,
@@ -859,30 +905,20 @@ def evaluate_prepared_overlay_area_scalar_tiled_cupy(
     )
 
 
-def evaluate_prepared_overlay_area_tile_tasks_cupy(
+def prepare_overlay_area_tile_task_cupy_inputs(
     left_payload: PreparedSimplePolygonComponentPayload,
     right_payload: PreparedSimplePolygonComponentPayload,
     tasks: Sequence[PreparedOverlayAreaTileTask],
     *,
     relation_row_count: int | None = None,
-) -> PreparedOverlayAreaCupyTileTaskResult:
+) -> PreparedOverlayAreaCupyTileTaskInputs:
     task_count = len(tasks)
-    relation_ids_host = [int(task.relation_row_ordinal) for task in tasks]
-    if relation_row_count is None:
-        relation_row_count = (max(relation_ids_host) + 1) if relation_ids_host else 0
-    if relation_row_count < 0:
-        raise ValueError("relation_row_count must be non-negative")
-    if any(relation_id < 0 or relation_id >= relation_row_count for relation_id in relation_ids_host):
-        raise ValueError("tile task relation_row_ordinal is outside relation_row_count")
-    for task in tasks:
-        if task.pair_count <= 0:
-            raise ValueError("tile task pair_count must be positive")
-        if task.pair_offset < 0 or task.pair_offset + task.pair_count > task.left_triangle_count * task.right_triangle_count:
-            raise ValueError("tile task pair range is outside component triangle product")
-        if task.left_triangle_start < 0 or task.left_triangle_stop > left_payload.triangle_count:
-            raise ValueError("tile task left triangle range is outside left payload")
-        if task.right_triangle_start < 0 or task.right_triangle_stop > right_payload.triangle_count:
-            raise ValueError("tile task right triangle range is outside right payload")
+    relation_ids_host, relation_row_count = _validate_prepared_overlay_area_tile_tasks(
+        left_payload,
+        right_payload,
+        tasks,
+        relation_row_count,
+    )
 
     import cupy as cp  # type: ignore
 
@@ -896,6 +932,51 @@ def evaluate_prepared_overlay_area_tile_tasks_cupy(
     left_count = cp.asarray([task.left_triangle_count for task in tasks], dtype=cp.uint32)
     right_start = cp.asarray([task.right_triangle_start for task in tasks], dtype=cp.uint32)
     right_count = cp.asarray([task.right_triangle_count for task in tasks], dtype=cp.uint32)
+    metadata = {
+        "schema": "rtdl.v2_8.simple_polygon_overlay_area_tile_task_cupy_inputs.v1",
+        "operation": "prepared_simple_polygon_overlay_area_tile_task_inputs",
+        "partner": "cupy",
+        "task_count": task_count,
+        "relation_row_count": int(relation_row_count),
+        "left_triangle_count": left_payload.triangle_count,
+        "right_triangle_count": right_payload.triangle_count,
+        "input_contract": "prepared_overlay_area_tile_tasks",
+        "resident_cupy_columns": True,
+        "app_specific_engine_logic_allowed": False,
+        "automatic_partner_selection_allowed": False,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "runtime_kernel_authorized": False,
+        "claim_boundary": V2_8_OVERLAY_AREA_CONTINUATION_CLAIM_BOUNDARY,
+    }
+    return PreparedOverlayAreaCupyTileTaskInputs(
+        left_columns=left_columns,
+        right_columns=right_columns,
+        relation_row_ordinals=relation_ids,
+        pair_offset=pair_offset,
+        pair_count=pair_count,
+        left_start=left_start,
+        left_count=left_count,
+        right_start=right_start,
+        right_count=right_count,
+        task_count=task_count,
+        relation_row_count=int(relation_row_count),
+        left_triangle_count=left_payload.triangle_count,
+        right_triangle_count=right_payload.triangle_count,
+        metadata=metadata,
+    )
+
+
+def evaluate_prepared_overlay_area_tile_task_cupy_inputs(
+    inputs: PreparedOverlayAreaCupyTileTaskInputs,
+    *,
+    input_contract: str = "resident_prepared_overlay_area_tile_task_cupy_inputs",
+) -> PreparedOverlayAreaCupyTileTaskResult:
+    import cupy as cp  # type: ignore
+
+    task_count = int(inputs.task_count)
     task_areas = cp.zeros((task_count,), dtype=cp.float64)
     task_status = cp.zeros((task_count,), dtype=cp.uint32)
     processed_pairs = cp.zeros((task_count,), dtype=cp.uint32)
@@ -908,17 +989,17 @@ def evaluate_prepared_overlay_area_tile_tasks_cupy(
             (grid_size,),
             (block_size,),
             (
-                *left_columns,
-                cp.uint32(left_payload.triangle_count),
-                *right_columns,
-                cp.uint32(right_payload.triangle_count),
-                relation_ids,
-                pair_offset,
-                pair_count,
-                left_start,
-                left_count,
-                right_start,
-                right_count,
+                *inputs.left_columns,
+                cp.uint32(inputs.left_triangle_count),
+                *inputs.right_columns,
+                cp.uint32(inputs.right_triangle_count),
+                inputs.relation_row_ordinals,
+                inputs.pair_offset,
+                inputs.pair_count,
+                inputs.left_start,
+                inputs.left_count,
+                inputs.right_start,
+                inputs.right_count,
                 cp.uint32(task_count),
                 task_areas,
                 task_status,
@@ -927,9 +1008,9 @@ def evaluate_prepared_overlay_area_tile_tasks_cupy(
         )
         cp.cuda.Stream.null.synchronize()
 
-    relation_areas = cp.zeros((int(relation_row_count),), dtype=cp.float64)
+    relation_areas = cp.zeros((int(inputs.relation_row_count),), dtype=cp.float64)
     if task_count:
-        cp.add.at(relation_areas, relation_ids, task_areas)
+        cp.add.at(relation_areas, inputs.relation_row_ordinals, task_areas)
         cp.cuda.Stream.null.synchronize()
     status_values = {}
     if task_count:
@@ -943,15 +1024,16 @@ def evaluate_prepared_overlay_area_tile_tasks_cupy(
         "operation": "prepared_simple_polygon_overlay_area_tile_tasks",
         "partner": "cupy",
         "task_count": task_count,
-        "relation_row_count": int(relation_row_count),
-        "left_triangle_count": left_payload.triangle_count,
-        "right_triangle_count": right_payload.triangle_count,
+        "relation_row_count": int(inputs.relation_row_count),
+        "left_triangle_count": inputs.left_triangle_count,
+        "right_triangle_count": inputs.right_triangle_count,
         "processed_triangle_pair_count": int(cp.sum(processed_pairs).get()) if task_count else 0,
         "status_counts": status_values,
-        "total_area": float(cp.sum(relation_areas).get()) if relation_row_count else 0.0,
+        "total_area": float(cp.sum(relation_areas).get()) if inputs.relation_row_count else 0.0,
         "completed_without_truncation": bool(cp.all(task_status == 0).get()) if task_count else True,
-        "input_contract": "prepared_overlay_area_tile_tasks",
+        "input_contract": input_contract,
         "reduction": "cupy_add_at_by_relation_row_ordinal",
+        "resident_cupy_columns": input_contract == "resident_prepared_overlay_area_tile_task_cupy_inputs",
         "app_specific_engine_logic_allowed": False,
         "automatic_partner_selection_allowed": False,
         "release_authorized": False,
@@ -966,8 +1048,27 @@ def evaluate_prepared_overlay_area_tile_tasks_cupy(
         relation_areas=relation_areas,
         task_status=task_status,
         processed_pairs=processed_pairs,
-        relation_row_ordinals=relation_ids,
+        relation_row_ordinals=inputs.relation_row_ordinals,
         metadata=metadata,
+    )
+
+
+def evaluate_prepared_overlay_area_tile_tasks_cupy(
+    left_payload: PreparedSimplePolygonComponentPayload,
+    right_payload: PreparedSimplePolygonComponentPayload,
+    tasks: Sequence[PreparedOverlayAreaTileTask],
+    *,
+    relation_row_count: int | None = None,
+) -> PreparedOverlayAreaCupyTileTaskResult:
+    inputs = prepare_overlay_area_tile_task_cupy_inputs(
+        left_payload,
+        right_payload,
+        tasks,
+        relation_row_count=relation_row_count,
+    )
+    return evaluate_prepared_overlay_area_tile_task_cupy_inputs(
+        inputs,
+        input_contract="prepared_overlay_area_tile_tasks",
     )
 
 
@@ -1033,6 +1134,7 @@ __all__ = [
     "PreparedOverlayAreaEvaluationResult",
     "PreparedOverlayAreaPairRow",
     "PreparedOverlayAreaCupyTiledResult",
+    "PreparedOverlayAreaCupyTileTaskInputs",
     "PreparedOverlayAreaCupyTileTaskResult",
     "PreparedOverlayAreaTiledEvaluationResult",
     "PreparedOverlayAreaTileTask",
@@ -1044,8 +1146,10 @@ __all__ = [
     "evaluate_prepared_overlay_area_scalar",
     "evaluate_prepared_overlay_area_scalar_tiled",
     "evaluate_prepared_overlay_area_scalar_tiled_cupy",
+    "evaluate_prepared_overlay_area_tile_task_cupy_inputs",
     "evaluate_prepared_overlay_area_tile_tasks_cupy",
     "plan_prepared_overlay_area_tile_tasks",
+    "prepare_overlay_area_tile_task_cupy_inputs",
     "prepare_overlay_area_pair_rows",
     "prepare_simple_polygon_component_payload",
     "summarize_prepared_overlay_area_tile_tasks",

@@ -218,15 +218,39 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
 
     print(f"[goal3492] execute {len(tasks)} tile tasks over {len(pair_rows)} component-pair rows", flush=True)
     cp.cuda.Stream.null.synchronize()
-    execute_start = time.perf_counter()
-    result = rt.evaluate_prepared_overlay_area_tile_tasks_cupy(
-        left_payload,
-        right_payload,
-        tasks,
-        relation_row_count=len(left_ordinals),
-    )
-    cp.cuda.Stream.null.synchronize()
-    executor_sec = time.perf_counter() - execute_start
+    input_prepare_sec = 0.0
+    executor_repeats = max(1, int(args.executor_repeats))
+    executor_repeat_secs: list[float] = []
+    if args.resident_cupy_inputs:
+        input_prepare_start = time.perf_counter()
+        resident_inputs = rt.prepare_overlay_area_tile_task_cupy_inputs(
+            left_payload,
+            right_payload,
+            tasks,
+            relation_row_count=len(left_ordinals),
+        )
+        cp.cuda.Stream.null.synchronize()
+        input_prepare_sec = time.perf_counter() - input_prepare_start
+        result = None
+        for repeat in range(executor_repeats):
+            print(f"[goal3492] resident executor repeat {repeat + 1}/{executor_repeats}", flush=True)
+            execute_start = time.perf_counter()
+            result = rt.evaluate_prepared_overlay_area_tile_task_cupy_inputs(resident_inputs)
+            cp.cuda.Stream.null.synchronize()
+            executor_repeat_secs.append(time.perf_counter() - execute_start)
+        assert result is not None
+        executor_sec = sum(executor_repeat_secs)
+    else:
+        execute_start = time.perf_counter()
+        result = rt.evaluate_prepared_overlay_area_tile_tasks_cupy(
+            left_payload,
+            right_payload,
+            tasks,
+            relation_row_count=len(left_ordinals),
+        )
+        cp.cuda.Stream.null.synchronize()
+        executor_sec = time.perf_counter() - execute_start
+        executor_repeat_secs.append(executor_sec)
     relation_areas = cp.asnumpy(result.relation_areas).astype("float64", copy=False)
     metadata = result.to_metadata()
 
@@ -272,6 +296,8 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         "active_shapes_only": bool(args.active_shapes_only),
         "max_rows": int(args.max_rows),
         "max_triangle_pairs_per_task": int(args.max_triangle_pairs_per_task),
+        "resident_cupy_inputs": bool(args.resident_cupy_inputs),
+        "executor_repeats": executor_repeats,
         "left_shape_count": len(left_shapes),
         "right_shape_count": len(right_shapes),
         "prepared_left_shape_count": len(left_geometry_map),
@@ -311,7 +337,10 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             "relation_discovery": relation_discovery_sec,
             "exact_oracle": exact_oracle_sec,
             "planning": planning_sec,
+            "cupy_tile_task_input_prepare": input_prepare_sec,
             "cupy_tile_task_executor": executor_sec,
+            "cupy_tile_task_executor_repeat_secs": executor_repeat_secs,
+            "cupy_tile_task_executor_best_repeat": min(executor_repeat_secs) if executor_repeat_secs else 0.0,
         },
         "claim_boundary": _claim_boundary(),
         "interpretation": (
@@ -332,6 +361,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-rows", type=int, default=65536)
     parser.add_argument("--max-triangle-pairs-per-task", type=int, default=512)
     parser.add_argument("--progress-every", type=int, default=500)
+    parser.add_argument("--resident-cupy-inputs", action="store_true")
+    parser.add_argument("--executor-repeats", type=int, default=1)
     parser.add_argument(
         "--active-shapes-only",
         action="store_true",
