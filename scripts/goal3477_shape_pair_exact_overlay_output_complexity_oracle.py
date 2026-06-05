@@ -172,6 +172,8 @@ def _compute_output_complexity(
         output_vertices = int(complexity["total_output_vertices"])
         total_polygon_components += polygon_components
         total_output_vertices += output_vertices
+        if output_vertices > max_output_vertices:
+            max_complexity_samples = []
         max_polygon_components = max(max_polygon_components, polygon_components)
         max_output_vertices = max(max_output_vertices, output_vertices)
         total_area += area
@@ -185,7 +187,7 @@ def _compute_output_complexity(
         else:
             boundary_only_rows += 1
 
-        if output_vertices == max_output_vertices and len(max_complexity_samples) < 8:
+        if output_vertices == max_output_vertices and output_vertices > 0 and len(max_complexity_samples) < 8:
             max_complexity_samples.append(
                 {
                     "row": int(index),
