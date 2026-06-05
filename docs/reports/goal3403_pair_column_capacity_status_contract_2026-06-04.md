@@ -54,8 +54,22 @@ Local tests:
 py -3 -m unittest tests.goal3403_pair_column_capacity_status_contract_test
 ```
 
-The pod overflow artifact is refreshed by `scripts/goal3400_exact_device_columns_overflow_probe.py`
-and records the same status fields at top level.
+Pod: NVIDIA RTX A5000, driver 580.126.09
+
+Source commit:
+`8bdc8a647bc4e126d43f7eeccc71d774f156a00d`
+
+The pod artifacts were refreshed from the tracked Goal3403 contract:
+
+| Probe | Capacity | Required capacity | Retry hint | Overflow |
+| --- | ---: | ---: | ---: | --- |
+| 4096-chain exact stream | 11316 | 11316 | n/a | false |
+| Full `br_county.cdb` exact stream | 47262 | 47262 | n/a | false |
+| Forced `max_rows=100` overflow | 100 | 11316 | 11316 | true |
+
+The overflow artifact is refreshed by
+`scripts/goal3400_exact_device_columns_overflow_probe.py` and records the same
+status fields at top level.
 
 ## Boundary
 

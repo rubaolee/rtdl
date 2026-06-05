@@ -34,7 +34,7 @@ Live probe artifact:
 `docs/reports/goal3394_optix_exact_membership_device_columns_live_probe_2026-06-04.json`
 
 Source commit:
-`3b09c58ab9750df289f4991437803bd67f8f5a53`
+`8bdc8a647bc4e126d43f7eeccc71d774f156a00d`
 
 ## Result
 
@@ -49,7 +49,7 @@ Source commit:
 | Extra pairs | 0 |
 | Device resident | true |
 | Overflow | false |
-| Native bridge seconds | 0.001629 |
+| Native bridge seconds | 0.001720 |
 
 The live probe compared `prepared.run(points)` against
 `prepared.exact_device_columns(points).as_cupy_columns()` and found exact pair
@@ -76,6 +76,8 @@ true_zero_copy_claim_authorized = false
 exact_relation_row_count = 11316
 legacy_pair_column_count_field = candidate_event_count
 capacity = 11316
+capacity_status.required_capacity = 11316
+capacity_status.retry_capacity_hint = None
 ```
 
 ## Boundary

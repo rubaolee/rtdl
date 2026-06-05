@@ -1,10 +1,18 @@
 import unittest
+from pathlib import Path
+import json
 
 from rtdsl.optix_runtime import (
     OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL,
     OptixNativeDevicePairColumnOutput,
     PairColumnStreamCapacityStatus,
 )
+
+
+ROOT = Path(__file__).resolve().parents[1]
+SLICE_ARTIFACT = ROOT / "docs" / "reports" / "goal3394_optix_exact_membership_device_columns_live_probe_2026-06-04.json"
+FULL_ARTIFACT = ROOT / "docs" / "reports" / "goal3398_full_br_county_exact_device_columns_2026-06-04.json"
+OVERFLOW_ARTIFACT = ROOT / "docs" / "reports" / "goal3400_exact_device_columns_overflow_probe_2026-06-04.json"
 
 
 class _DummyOwner:
@@ -109,6 +117,35 @@ class Goal3403PairColumnCapacityStatusContractTest(unittest.TestCase):
             "cannot wrap an overflowed device pair-column stream; capacity=100 required_capacity=11316",
         ):
             output.as_cupy_columns()
+
+    def test_refreshed_pod_artifacts_carry_capacity_status(self):
+        slice_payload = json.loads(SLICE_ARTIFACT.read_text(encoding="utf-8"))
+        full_payload = json.loads(FULL_ARTIFACT.read_text(encoding="utf-8"))
+        overflow_payload = json.loads(OVERFLOW_ARTIFACT.read_text(encoding="utf-8"))
+
+        for payload, expected in ((slice_payload, 11316), (full_payload, 47262)):
+            self.assertEqual(payload["rtdl_commit"][:8], "8bdc8a64")
+            for status in (
+                payload["metadata"]["capacity_status"],
+                payload["metadata"]["runtime"]["capacity_status"],
+                payload["metadata"]["typed_result_stream"]["capacity_status"],
+                payload["metadata"]["v2_8_typed_producer_metadata"]["capacity_status"],
+            ):
+                self.assertEqual(status["capacity"], expected)
+                self.assertEqual(status["row_count"], expected)
+                self.assertEqual(status["required_capacity"], expected)
+                self.assertFalse(status["overflowed"])
+                self.assertIsNone(status["retry_capacity_hint"])
+                self.assertFalse(status["partial_result_returned"])
+
+        self.assertEqual(overflow_payload["rtdl_commit"][:8], "8bdc8a64")
+        overflow_status = overflow_payload["capacity_status"]
+        self.assertEqual(overflow_status["capacity"], 100)
+        self.assertEqual(overflow_status["row_count"], 0)
+        self.assertEqual(overflow_status["required_capacity"], 11316)
+        self.assertTrue(overflow_status["overflowed"])
+        self.assertEqual(overflow_status["retry_capacity_hint"], 11316)
+        self.assertFalse(overflow_status["partial_result_returned"])
 
 
 if __name__ == "__main__":

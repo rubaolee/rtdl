@@ -31,7 +31,7 @@ class Goal3401ExactDeviceColumnsCapacityMetadataFixTest(unittest.TestCase):
         producer = self._producer_metadata(payload)
         stream = self._typed_stream(payload)
 
-        self.assertEqual(payload["rtdl_commit"][:8], "3b09c58a")
+        self.assertEqual(payload["rtdl_commit"][:8], "8bdc8a64")
         self.assertEqual(payload["exact_relation_row_count"], 11316)
         self.assertEqual(payload["device_column_row_count"], 11316)
         self.assertEqual(producer["capacity"], 11316)
@@ -47,7 +47,7 @@ class Goal3401ExactDeviceColumnsCapacityMetadataFixTest(unittest.TestCase):
         producer = self._producer_metadata(payload)
         stream = self._typed_stream(payload)
 
-        self.assertEqual(payload["rtdl_commit"][:8], "3b09c58a")
+        self.assertEqual(payload["rtdl_commit"][:8], "8bdc8a64")
         self.assertEqual(payload["point_count"], 16545)
         self.assertEqual(payload["shape_count"], 15700)
         self.assertEqual(payload["exact_relation_row_count"], 47262)
@@ -64,7 +64,7 @@ class Goal3401ExactDeviceColumnsCapacityMetadataFixTest(unittest.TestCase):
     def test_overflow_capacity_remains_the_caller_bound(self):
         payload = self.overflow_payload
 
-        self.assertEqual(payload["rtdl_commit"][:8], "3b09c58a")
+        self.assertEqual(payload["rtdl_commit"][:8], "8bdc8a64")
         self.assertEqual(payload["relation_row_count"], 11316)
         self.assertEqual(payload["max_rows"], 100)
         self.assertEqual(payload["capacity"], 100)

@@ -18,7 +18,7 @@ Artifact:
 Pod: NVIDIA RTX A5000, driver 580.126.09
 
 Source commit:
-`3b09c58ab9750df289f4991437803bd67f8f5a53`
+`8bdc8a647bc4e126d43f7eeccc71d774f156a00d`
 
 ## Result
 
@@ -28,6 +28,8 @@ Source commit:
 | Shapes | 3762 |
 | Requested max rows | 100 |
 | Exact relation row count | 11316 |
+| Required capacity | 11316 |
+| Retry capacity hint | 11316 |
 | Output row count | 0 |
 | Overflow | true |
 | Device resident | false |

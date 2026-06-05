@@ -1,8 +1,17 @@
 {
-  "as_cupy_columns_error": "cannot wrap an overflowed device pair-column stream",
+  "as_cupy_columns_error": "cannot wrap an overflowed device pair-column stream; capacity=100 required_capacity=11316; overflow_policy=fail_closed; retry explicitly with max_rows>=required_capacity",
   "as_cupy_columns_raised": true,
   "candidate_event_count": 11316,
   "capacity": 100,
+  "capacity_status": {
+    "capacity": 100,
+    "overflow_policy": "fail_closed",
+    "overflowed": true,
+    "partial_result_returned": false,
+    "required_capacity": 11316,
+    "retry_capacity_hint": 11316,
+    "row_count": 0
+  },
   "claim_boundary": {
     "native_default_route_authorized": false,
     "public_speedup_claim_authorized": false,
@@ -21,8 +30,10 @@
   "overflow": true,
   "point_count": 4096,
   "relation_row_count": 11316,
+  "required_capacity": 11316,
+  "retry_capacity_hint": 11316,
   "row_count": 0,
-  "rtdl_commit": "3b09c58ab9750df289f4991437803bd67f8f5a53",
+  "rtdl_commit": "8bdc8a647bc4e126d43f7eeccc71d774f156a00d",
   "schema": "rtdl.goal3400.exact_device_columns_overflow_probe.v1",
   "shape_count": 3762
 }

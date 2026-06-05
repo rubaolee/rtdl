@@ -26,19 +26,47 @@
     "true_zero_copy_claim_authorized": false
   },
   "metadata": {
+    "capacity_status": {
+      "capacity": 47262,
+      "overflow_policy": "fail_closed",
+      "overflowed": false,
+      "partial_result_returned": false,
+      "required_capacity": 47262,
+      "retry_capacity_hint": null,
+      "row_count": 47262
+    },
     "runtime": {
       "backend": "optix",
+      "capacity_status": {
+        "capacity": 47262,
+        "overflow_policy": "fail_closed",
+        "overflowed": false,
+        "partial_result_returned": false,
+        "required_capacity": 47262,
+        "retry_capacity_hint": null,
+        "row_count": 47262
+      },
       "exact_relation_witness_rows_materialized": false,
       "host_refined_exact_rows_inside_native_bridge": true,
       "output_residency": "device_resident_exact_id_columns",
-      "owner_handle": 141297744,
+      "owner_handle": 125609760,
       "relation_row_count": 47262,
-      "traversal_seconds": 0.00585997,
+      "retry_capacity_hint": null,
+      "traversal_seconds": 0.014089012,
       "true_zero_copy_authorized": false
     },
     "typed_result_stream": {
       "app_specific_engine_logic_allowed": false,
       "automatic_partner_selection_allowed": false,
+      "capacity_status": {
+        "capacity": 47262,
+        "overflow_policy": "fail_closed",
+        "overflowed": false,
+        "partial_result_returned": false,
+        "required_capacity": 47262,
+        "retry_capacity_hint": null,
+        "row_count": 47262
+      },
       "claim_boundary": "v2.8 typed result streams are an internal generic contract for RTDL runtime development. They do not authorize release, public speedup wording, broad RT-core wording, true-zero-copy wording, hidden dispatch, hidden partner selection, app-specific native-engine behavior, or user-defined shader injection.",
       "column_names": [
         "point_id",
@@ -121,6 +149,8 @@
       "public_speedup_claim_authorized": false,
       "relation_row_count": 47262,
       "release_authorized": false,
+      "required_capacity": 47262,
+      "retry_capacity_hint": null,
       "rt_core_speedup_claim_authorized": false,
       "segmented_page_failure_mode": "fail_closed_overflow",
       "status": "internal_contract_host_refined_exact_device_columns",
@@ -268,6 +298,15 @@
     "v2_8_typed_producer_metadata": {
       "candidate_event_count": 47262,
       "capacity": 47262,
+      "capacity_status": {
+        "capacity": 47262,
+        "overflow_policy": "fail_closed",
+        "overflowed": false,
+        "partial_result_returned": false,
+        "required_capacity": 47262,
+        "retry_capacity_hint": null,
+        "row_count": 47262
+      },
       "claim_boundary": "v2.8 geometry-relation typed producer metadata records generic row schemas for prepared geometry outputs. It does not authorize release, public speedup wording, RT-core speedup wording, true-zero-copy wording, hidden dispatch, hidden partner selection, paper reproduction claims, or app-specific native-engine behavior.",
       "column_names": [
         "point_id",
@@ -286,6 +325,8 @@
       "producer_primitive": "point_closed_shape_membership_2d_exact_host_refined",
       "public_speedup_claim_authorized": false,
       "release_authorized": false,
+      "required_capacity": 47262,
+      "retry_capacity_hint": null,
       "row_count": 47262,
       "rt_core_speedup_claim_authorized": false,
       "schema_id": "point_closed_shape_membership_2d_exact_device_columns",
@@ -301,10 +342,10 @@
   "overflow": false,
   "pairs_match_exact_rows": true,
   "point_count": 16545,
-  "rtdl_commit": "3b09c58ab9750df289f4991437803bd67f8f5a53",
+  "rtdl_commit": "8bdc8a647bc4e126d43f7eeccc71d774f156a00d",
   "schema": "rtdl.goal3394.optix_exact_membership_device_columns_live_probe.v1",
   "shape_count": 15700,
   "source_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county.cdb",
   "start": 0,
-  "traversal_seconds": 0.00585997
+  "traversal_seconds": 0.014089012
 }
