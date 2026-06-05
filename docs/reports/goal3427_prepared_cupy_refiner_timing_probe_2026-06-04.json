@@ -1,9 +1,9 @@
 {
   "all_prepared_counts_match_host": true,
   "candidate_columns_sec": {
-    "max": 0.02528075873851776,
-    "median": 0.023029073141515255,
-    "min": 0.019981032237410545
+    "max": 0.021727011539041996,
+    "median": 0.01898804772645235,
+    "min": 0.018695618957281113
   },
   "candidate_row_count": 47570,
   "claim_boundary": {
@@ -18,36 +18,36 @@
   "gpu": "NVIDIA RTX A5000, 580.126.09",
   "host_exact_row_count": 47262,
   "host_exact_sec": {
-    "max": 0.19764241389930248,
-    "median": 0.10061243083328009,
-    "min": 0.08419736474752426
+    "max": 0.1640751836821437,
+    "median": 0.0840612081810832,
+    "min": 0.08162300009280443
   },
   "iterations": 6,
   "one_shot_cupy_refine_sec": {
-    "max": 0.10981341172009706,
-    "median": 0.10614921245723963,
-    "min": 0.10104930400848389
+    "max": 0.0934221176430583,
+    "median": 0.09122168365865946,
+    "min": 0.08714869990944862
   },
   "one_shot_total_sec": {
-    "max": 0.1318815592676401,
-    "median": 0.12966458778828382,
-    "min": 0.12372350040823221
+    "max": 0.11294869519770145,
+    "median": 0.11084444914013147,
+    "min": 0.10584431886672974
   },
   "point_count": 16545,
   "prepared_cupy_refine_sec": {
-    "max": 0.0017743734642863274,
-    "median": 0.0014727897942066193,
-    "min": 0.0014270059764385223
+    "max": 0.0014416258782148361,
+    "median": 0.0014254730194807053,
+    "min": 0.0013796500861644745
   },
-  "prepared_refine_vs_one_shot_median": 0.0138747123988311,
+  "prepared_refine_vs_one_shot_median": 0.01562647127644183,
   "prepared_refined_row_count": 47262,
   "prepared_total_sec": {
-    "max": 0.02675354853272438,
-    "median": 0.02452613227069378,
-    "min": 0.021755405701696873
+    "max": 0.02310666162520647,
+    "median": 0.020429673604667187,
+    "min": 0.020100774243474007
   },
-  "prepared_total_vs_host_median": 0.24376840980350456,
-  "rtdl_commit": "f093d0262c3090eea92b824081f20e480c6b5446",
+  "prepared_total_vs_host_median": 0.24303330926029443,
+  "rtdl_commit": "7b1a9e2c5f505b04069e0402fc379490e710b82b",
   "schema": "rtdl.goal3427.prepared_cupy_refiner_timing_probe.v1",
   "shape_count": 15700
 }

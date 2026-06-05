@@ -26,15 +26,15 @@ Full public RayJoin county CDB on NVIDIA RTX A5000:
 
 | Path | Median seconds | Notes |
 | --- | ---: | --- |
-| Host exact prepared rows | 0.100612 | native RT candidates plus host exact refinement |
-| RT candidate columns | 0.023029 | 47,570 conservative candidate rows |
-| One-shot CuPy refine | 0.106149 | rebuilds/uploads lookup arrays per call |
-| Prepared CuPy refine | 0.001473 | reuses resident point/shape/vertex lookup arrays |
-| RT candidate + prepared CuPy refine | 0.024526 | 47,262 exact refined rows |
+| Host exact prepared rows | 0.084061 | native RT candidates plus host exact refinement |
+| RT candidate columns | 0.018988 | 47,570 conservative candidate rows |
+| One-shot CuPy refine | 0.091222 | rebuilds/uploads lookup arrays per call |
+| Prepared CuPy refine | 0.001425 | reuses resident point/shape/vertex lookup arrays |
+| RT candidate + prepared CuPy refine | 0.020430 | 47,262 exact refined rows |
 
-The prepared refiner made the refinement phase about `0.014x` the one-shot
+The prepared refiner made the refinement phase about `0.016x` the one-shot
 refinement time, and the full candidate-plus-prepared-refine path was about
-`0.244x` the host-exact median on this run. This is still a scoped benchmark
+`0.243x` the host-exact median on this run. This is still a scoped benchmark
 artifact, not a public speedup claim.
 
 ## Boundary
