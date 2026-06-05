@@ -115,6 +115,10 @@ def _python(args: argparse.Namespace, *parts: object) -> list[str]:
     return [str(args.python), *(str(part) for part in parts)]
 
 
+def _dataset_arg(args: argparse.Namespace) -> str:
+    return f"{args.left_cdb} + {args.right_cdb}"
+
+
 def _count_parity_specs(args: argparse.Namespace) -> tuple[dict[str, Any], ...]:
     app = "examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py"
     return (
@@ -130,6 +134,8 @@ def _count_parity_specs(args: argparse.Namespace) -> tuple[dict[str, Any], ...]:
                 "prepared_optix",
                 "--result-mode",
                 "count",
+                "--dataset",
+                _dataset_arg(args),
                 "--no-rows",
             ),
             "metric_paths": (("phases_sec", "prepared_query_sec"), ("prepared_query_total_sec",)),
@@ -144,6 +150,8 @@ def _count_parity_specs(args: argparse.Namespace) -> tuple[dict[str, Any], ...]:
                 "lsi",
                 "--execution-route",
                 "prepared_optix_left_id_dense_count",
+                "--dataset",
+                _dataset_arg(args),
                 "--no-rows",
             ),
             "metric_paths": (
@@ -163,6 +171,8 @@ def _count_parity_specs(args: argparse.Namespace) -> tuple[dict[str, Any], ...]:
                 "overlay_seed",
                 "--execution-route",
                 "prepared_optix_shape_pair_active_count",
+                "--dataset",
+                _dataset_arg(args),
                 "--no-rows",
             ),
             "metric_paths": (
@@ -175,26 +185,26 @@ def _count_parity_specs(args: argparse.Namespace) -> tuple[dict[str, Any], ...]:
 
 
 _RELATION_ROW_SPECS = (
-    ("rayjoin_relation_columns_public_cdb", "shape_pair_relation_device_columns", ("relation_columns_sec", "median")),
-    ("rayjoin_relation_grouped_count_public_cdb", "shape_pair_relation_grouped_count_by_left", ("grouped_count_sec", "median")),
-    ("rayjoin_shape_pair_payload_bounds_public_cdb", "shape_pair_relation_bounds_overlap_area_payload", ("bounds_overlap_area_sec", "median")),
-    ("rayjoin_shape_pair_payload_witness_public_cdb", "shape_pair_relation_witness_payload", ("witness_continuation_sec", "median")),
+    ("rayjoin_relation_columns_cdb_pair", "shape_pair_relation_device_columns", ("relation_columns_sec", "median")),
+    ("rayjoin_relation_grouped_count_cdb_pair", "shape_pair_relation_grouped_count_by_left", ("grouped_count_sec", "median")),
+    ("rayjoin_shape_pair_payload_bounds_cdb_pair", "shape_pair_relation_bounds_overlap_area_payload", ("bounds_overlap_area_sec", "median")),
+    ("rayjoin_shape_pair_payload_witness_cdb_pair", "shape_pair_relation_witness_payload", ("witness_continuation_sec", "median")),
 )
 
 
 _OVERLAY_ROW_SPECS = (
     (
-        "rayjoin_overlay_area_relation_stream_public_cdb",
+        "rayjoin_overlay_area_relation_stream_cdb_pair",
         "shape_pair_relation_stream_steady_state",
         ("timing_sec", "active_relation_device_columns"),
     ),
     (
-        "rayjoin_overlay_area_device_tile_planner_public_cdb",
+        "rayjoin_overlay_area_device_tile_planner_cdb_pair",
         "prepared_overlay_area_device_tile_task_planner",
         ("timing_sec", "device_tile_task_planning_best_repeat"),
     ),
     (
-        "rayjoin_overlay_area_tile_executor_public_cdb",
+        "rayjoin_overlay_area_tile_executor_cdb_pair",
         "prepared_overlay_area_tile_task_executor",
         ("timing_sec", "cupy_tile_task_executor_best_repeat"),
     ),
@@ -455,11 +465,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--artifact-dir", type=Path, default=DEFAULT_ARTIFACT_DIR)
     parser.add_argument("--python", default=sys.executable)
     parser.add_argument("--dry-run", action="store_true")
-    parser.add_argument("--left-cdb", type=Path, default=ROOT / "data" / "rayjoin_public_cdb" / "br_county.cdb")
+    parser.add_argument("--left-cdb", type=Path, default=ROOT / "tests" / "fixtures" / "rayjoin" / "br_county_subset.cdb")
     parser.add_argument(
         "--right-cdb",
         type=Path,
-        default=ROOT / "data" / "rayjoin_public_cdb" / "br_county_start256_count1024.cdb",
+        default=ROOT / "tests" / "fixtures" / "rayjoin" / "br_soil_subset.cdb",
     )
     parser.add_argument("--iterations", type=int, default=3)
     parser.add_argument("--max-rows", type=int, default=65536)
