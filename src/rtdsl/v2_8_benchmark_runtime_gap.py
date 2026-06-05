@@ -148,7 +148,8 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "but one supported row reaches 318,096 triangle pairs; workload sizing shows 39,947 component-pair "
             "rows and 9,653,005 triangle pairs across the supported public-CDB stream; a component/tile "
             "task planner now gives large rows explicit relation-owner tile tasks; a CuPy tile-task executor "
-            "now runs those tasks as one GPU thread per tile task and reduces partial areas by relation id"
+            "now runs those tasks on an RTX A5000 pod as one GPU thread per tile task and reduces partial "
+            "areas by relation id"
         ),
         partner_position=(
             "Numba is the recommended custom continuation when row-stream compaction is part of the app; "
@@ -197,7 +198,8 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "Goal3489 sized the supported workload at 39,947 component-pair rows and 9,653,005 triangle "
             "pairs, with p50/p90/p99 triangle pairs per relation of 294/3,450/25,530. Goal3491 added a "
             "CuPy tile-task executor for that Goal3490 plan, using one GPU thread per tile task plus "
-            "cupy_add_at_by_relation_row_ordinal reduction. Remaining work is a public-CDB tile-task executor "
+            "cupy_add_at_by_relation_row_ordinal reduction, with RTX A5000 fixture evidence for relation "
+            "totals 1.75 and 2.0. Remaining work is a public-CDB tile-task executor "
             "run over the full supported stream, integration with the device-resident relation stream, then "
             "the native-vs-partner acceptance decision over that execution shape."
         ),

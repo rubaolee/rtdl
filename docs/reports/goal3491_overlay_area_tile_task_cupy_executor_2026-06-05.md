@@ -2,8 +2,7 @@
 
 ## Status
 
-Implemented locally. Pod validation is required before this becomes hardware
-evidence.
+Implemented with pod validation on an NVIDIA RTX A5000.
 
 ## Purpose
 
@@ -46,13 +45,32 @@ The executor proves the task-stream execution shape on small fixtures. It does
 not yet prove the full public-CDB stream, accepted performance, or integration
 with the device-resident relation producer.
 
-## Local Validation Contract
+## Validation
 
-The unit test covers:
+Local validation:
+
+- `py -3 -m unittest tests.goal3491_overlay_area_tile_task_cupy_executor_test tests.goal3490_overlay_area_tile_task_planner_test tests.goal3486_overlay_area_cupy_tiled_prototype_test`
+- Result: `18` tests passed, `3` CUDA/CuPy tests skipped on Windows.
+
+Pod validation:
+
+- Source commit: `fee479b5`
+- GPU: NVIDIA RTX A5000
+- CuPy: `14.1.1`
+- Command: `PYTHONPATH=src:. python3 -m unittest tests.goal3491_overlay_area_tile_task_cupy_executor_test tests.goal3490_overlay_area_tile_task_planner_test tests.goal3486_overlay_area_cupy_tiled_prototype_test`
+- Result: `18` tests passed.
+
+Pod artifact:
+
+- `docs/reports/goal3491_overlay_area_tile_task_cupy_executor_pod_2026-06-05.json`
+
+The artifact records:
 
 - a concave/simple fixture whose relation total is `1.75`;
 - a two-component-pair fixture where two component rows reduce into one
   relation total of `2.0`;
+- zero absolute area error for both fixtures;
+- task status counts of `{"0": 3}` and `{"0": 4}`;
 - host-side fail-closed validation for bad relation counts and malformed task
   ranges;
 - gap-matrix wording and non-authorizing claim flags.

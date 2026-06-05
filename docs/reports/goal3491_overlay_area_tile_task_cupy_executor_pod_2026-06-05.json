@@ -1,0 +1,116 @@
+{
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "runtime_kernel_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "cuda_device_count": 1,
+  "cupy_version": "14.1.1",
+  "generated_at": "2026-06-05T11:00:05.834185+00:00",
+  "gpu_name": "NVIDIA RTX A5000",
+  "results": [
+    {
+      "area_abs_error_vs_cpu": 0.0,
+      "cpu_total_area": 1.75,
+      "fixture": "concave_l_square",
+      "metadata": {
+        "app_specific_engine_logic_allowed": false,
+        "automatic_partner_selection_allowed": false,
+        "claim_boundary": "v2.8 simple-polygon overlay-area continuation metadata defines generic runtime targets after exact oracle evidence. It does not authorize release, public speedup wording, RT-core speedup wording, true-zero-copy wording, paper reproduction claims, hidden partner selection, hidden dispatch, full overlay completion claims, or app-specific native-engine behavior.",
+        "completed_without_truncation": true,
+        "input_contract": "prepared_overlay_area_tile_tasks",
+        "left_triangle_count": 4,
+        "operation": "prepared_simple_polygon_overlay_area_tile_tasks",
+        "partner": "cupy",
+        "processed_triangle_pair_count": 8,
+        "public_speedup_claim_authorized": false,
+        "reduction": "cupy_add_at_by_relation_row_ordinal",
+        "relation_row_count": 1,
+        "release_authorized": false,
+        "right_triangle_count": 2,
+        "rt_core_speedup_claim_authorized": false,
+        "runtime_kernel_authorized": false,
+        "schema": "rtdl.v2_8.simple_polygon_overlay_area_tile_task_cupy.v1",
+        "status_counts": {
+          "0": 3
+        },
+        "task_count": 3,
+        "total_area": 1.75,
+        "true_zero_copy_claim_authorized": false
+      },
+      "processed_pairs": [
+        3,
+        3,
+        2
+      ],
+      "relation_areas": [
+        1.75
+      ],
+      "task_areas": [
+        0.7916666666666667,
+        0.4583333333333333,
+        0.5
+      ],
+      "task_status": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "area_abs_error_vs_expected": 0.0,
+      "expected_total_area": 2.0,
+      "fixture": "two_component_pairs_one_relation",
+      "metadata": {
+        "app_specific_engine_logic_allowed": false,
+        "automatic_partner_selection_allowed": false,
+        "claim_boundary": "v2.8 simple-polygon overlay-area continuation metadata defines generic runtime targets after exact oracle evidence. It does not authorize release, public speedup wording, RT-core speedup wording, true-zero-copy wording, paper reproduction claims, hidden partner selection, hidden dispatch, full overlay completion claims, or app-specific native-engine behavior.",
+        "completed_without_truncation": true,
+        "input_contract": "prepared_overlay_area_tile_tasks",
+        "left_triangle_count": 4,
+        "operation": "prepared_simple_polygon_overlay_area_tile_tasks",
+        "partner": "cupy",
+        "processed_triangle_pair_count": 8,
+        "public_speedup_claim_authorized": false,
+        "reduction": "cupy_add_at_by_relation_row_ordinal",
+        "relation_row_count": 1,
+        "release_authorized": false,
+        "right_triangle_count": 4,
+        "rt_core_speedup_claim_authorized": false,
+        "runtime_kernel_authorized": false,
+        "schema": "rtdl.v2_8.simple_polygon_overlay_area_tile_task_cupy.v1",
+        "status_counts": {
+          "0": 4
+        },
+        "task_count": 4,
+        "total_area": 2.0,
+        "true_zero_copy_claim_authorized": false
+      },
+      "processed_pairs": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "relation_areas": [
+        2.0
+      ],
+      "task_areas": [
+        0.0,
+        1.0,
+        0.5,
+        0.5
+      ],
+      "task_status": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "schema": "rtdl.goal3491.overlay_area_tile_task_cupy_pod.v1",
+  "source_commit": "fee479b5"
+}

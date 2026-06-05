@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import unittest
 
@@ -8,6 +9,7 @@ import rtdsl as rt
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs" / "reports" / "goal3491_overlay_area_tile_task_cupy_executor_2026-06-05.md"
+POD_ARTIFACT = ROOT / "docs" / "reports" / "goal3491_overlay_area_tile_task_cupy_executor_pod_2026-06-05.json"
 
 
 def _cupy_available() -> tuple[bool, str]:
@@ -126,6 +128,24 @@ class Goal3491OverlayAreaTileTaskCupyExecutorTest(unittest.TestCase):
         self.assertIn("public-CDB tile-task executor", spatial["current_bottleneck"])
         self.assertFalse(spatial["release_authorized"])
 
+    def test_pod_artifact_records_cuda_fixture_evidence(self) -> None:
+        data = json.loads(POD_ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(data["schema"], "rtdl.goal3491.overlay_area_tile_task_cupy_pod.v1")
+        self.assertEqual(data["source_commit"], "fee479b5")
+        self.assertEqual(data["gpu_name"], "NVIDIA RTX A5000")
+        self.assertEqual(data["cupy_version"], "14.1.1")
+        results = {row["fixture"]: row for row in data["results"]}
+        self.assertAlmostEqual(results["concave_l_square"]["relation_areas"][0], 1.75)
+        self.assertAlmostEqual(results["concave_l_square"]["area_abs_error_vs_cpu"], 0.0)
+        self.assertEqual(results["concave_l_square"]["metadata"]["status_counts"], {"0": 3})
+        self.assertAlmostEqual(results["two_component_pairs_one_relation"]["relation_areas"][0], 2.0)
+        self.assertAlmostEqual(results["two_component_pairs_one_relation"]["area_abs_error_vs_expected"], 0.0)
+        self.assertEqual(results["two_component_pairs_one_relation"]["metadata"]["status_counts"], {"0": 4})
+        for field, value in data["claim_boundary"].items():
+            with self.subTest(field=field):
+                self.assertFalse(value)
+
     def test_report_documents_executor_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
 
@@ -133,6 +153,7 @@ class Goal3491OverlayAreaTileTaskCupyExecutorTest(unittest.TestCase):
             "one GPU thread per tile task",
             "reduce by relation id",
             "cupy_add_at_by_relation_row_ordinal",
+            "NVIDIA RTX A5000",
             "not the final native runtime path",
             "does not authorize",
         ):
