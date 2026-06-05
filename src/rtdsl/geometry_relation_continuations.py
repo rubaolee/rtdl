@@ -8,6 +8,58 @@ GEOMETRY_RELATION_BOUNDS_OVERLAP_AREA_CUPY_VERSION = (
     "rtdl.v2_8.geometry_relation.bounds_overlap_area_cupy.v1"
 )
 GEOMETRY_RELATION_WITNESS_CUPY_VERSION = "rtdl.v2_8.geometry_relation.witness_cupy.v1"
+GEOMETRY_RELATION_COMPLEXITY_CUPY_VERSION = "rtdl.v2_8.geometry_relation.complexity_cupy.v1"
+
+
+_SHAPE_PAIR_CONVEXITY_KERNEL = r"""
+static __device__ float rtdl_relation_complexity_absf(float value)
+{
+    return value < 0.0f ? -value : value;
+}
+
+extern "C" __global__ void shape_pair_relation_convexity_kernel(
+        const unsigned int* polygon_refs,
+        const float* vertices_x,
+        const float* vertices_y,
+        unsigned int shape_count,
+        unsigned int* convex_flags)
+{
+    const unsigned int shape = blockIdx.x * blockDim.x + threadIdx.x;
+    if (shape >= shape_count) return;
+
+    const unsigned int offset = polygon_refs[shape * 3u + 1u];
+    const unsigned int count = polygon_refs[shape * 3u + 2u];
+    if (count < 3u) {
+        convex_flags[shape] = 0u;
+        return;
+    }
+
+    int sign = 0;
+    for (unsigned int i = 0u; i < count; ++i) {
+        const unsigned int ia = offset + i;
+        const unsigned int ib = offset + ((i + 1u) % count);
+        const unsigned int ic = offset + ((i + 2u) % count);
+        const float ax = vertices_x[ia];
+        const float ay = vertices_y[ia];
+        const float bx = vertices_x[ib];
+        const float by = vertices_y[ib];
+        const float cx = vertices_x[ic];
+        const float cy = vertices_y[ic];
+        const float cross = (bx - ax) * (cy - by) - (by - ay) * (cx - bx);
+        if (rtdl_relation_complexity_absf(cross) <= 1.0e-7f) {
+            continue;
+        }
+        const int this_sign = cross > 0.0f ? 1 : -1;
+        if (sign == 0) {
+            sign = this_sign;
+        } else if (sign != this_sign) {
+            convex_flags[shape] = 0u;
+            return;
+        }
+    }
+    convex_flags[shape] = 1u;
+}
+"""
 
 
 _SHAPE_PAIR_RELATION_WITNESS_KERNEL = r"""
@@ -199,6 +251,19 @@ class ShapePairRelationWitnessCupyResult:
         return dict(self.metadata)
 
 
+@dataclass(frozen=True)
+class ShapePairRelationComplexityCupyResult:
+    left_vertex_count: object
+    right_vertex_count: object
+    left_convex: object
+    right_convex: object
+    general_overlay_required: object
+    metadata: dict[str, Any]
+
+    def to_metadata(self) -> dict[str, Any]:
+        return dict(self.metadata)
+
+
 def shape_pair_relation_bounds_overlap_area_cupy(
     relation_columns,
     *,
@@ -266,6 +331,127 @@ def shape_pair_relation_bounds_overlap_area_cupy(
         row_areas=row_areas,
         group_keys=group_keys,
         group_area_sums=group_area_sums,
+        metadata=metadata,
+    )
+
+
+def _shape_convexity_flags_cupy(cp, polygon_refs, vertices_x, vertices_y):
+    shape_count = int(polygon_refs.shape[0])
+    flags = cp.zeros((shape_count,), dtype=cp.uint32)
+    if shape_count > 0:
+        kernel = cp.RawKernel(_SHAPE_PAIR_CONVEXITY_KERNEL, "shape_pair_relation_convexity_kernel")
+        block_size = 128
+        grid_size = (shape_count + block_size - 1) // block_size
+        kernel(
+            (grid_size,),
+            (block_size,),
+            (
+                polygon_refs.reshape(-1),
+                vertices_x,
+                vertices_y,
+                cp.uint32(shape_count),
+                flags,
+            ),
+        )
+    return flags
+
+
+def shape_pair_relation_complexity_cupy(
+    relation_columns,
+    *,
+    simple_vertex_threshold: int = 64,
+) -> ShapePairRelationComplexityCupyResult:
+    """Classify active shape-pair relation rows before exact overlay routing."""
+    if getattr(relation_columns, "overflow", False):
+        raise RuntimeError("cannot consume an overflowed shape-pair relation stream")
+    threshold = int(simple_vertex_threshold)
+    if threshold < 3:
+        raise ValueError("simple_vertex_threshold must be at least 3")
+
+    import cupy as cp  # type: ignore
+
+    ordinals = relation_columns.as_cupy_ordinal_columns()
+    geometry = relation_columns.as_cupy_geometry_payload_columns()
+    row_count = int(getattr(relation_columns, "row_count"))
+    left_ordinal = ordinals["left_ordinal"].astype(cp.int64, copy=False)
+    right_ordinal = ordinals["right_ordinal"].astype(cp.int64, copy=False)
+
+    left_counts_all = geometry["left_polygon_refs"][:, 2].astype(cp.uint32, copy=False)
+    right_counts_all = geometry["right_polygon_refs"][:, 2].astype(cp.uint32, copy=False)
+    left_vertex_count = left_counts_all[left_ordinal]
+    right_vertex_count = right_counts_all[right_ordinal]
+    left_convex_all = _shape_convexity_flags_cupy(
+        cp,
+        geometry["left_polygon_refs"],
+        geometry["left_vertices_x"],
+        geometry["left_vertices_y"],
+    )
+    right_convex_all = _shape_convexity_flags_cupy(
+        cp,
+        geometry["right_polygon_refs"],
+        geometry["right_vertices_x"],
+        geometry["right_vertices_y"],
+    )
+    cp.cuda.Stream.null.synchronize()
+    left_convex = left_convex_all[left_ordinal]
+    right_convex = right_convex_all[right_ordinal]
+    threshold_value = cp.asarray(threshold, dtype=cp.uint32)
+    high_vertex = (left_vertex_count > threshold_value) | (right_vertex_count > threshold_value)
+    nonconvex = (left_convex == 0) | (right_convex == 0)
+    general_overlay_required = (high_vertex | nonconvex).astype(cp.uint32)
+
+    if row_count > 0:
+        both_convex_row_count = int(cp.sum((left_convex != 0) & (right_convex != 0)).get())
+        nonconvex_row_count = int(cp.sum(nonconvex).get())
+        rows_above_threshold = int(cp.sum(high_vertex).get())
+        general_overlay_required_row_count = int(cp.sum(general_overlay_required).get())
+        max_left_vertex_count = int(cp.max(left_vertex_count).get())
+        max_right_vertex_count = int(cp.max(right_vertex_count).get())
+        max_pair_vertex_count = int(cp.max(left_vertex_count + right_vertex_count).get())
+    else:
+        both_convex_row_count = 0
+        nonconvex_row_count = 0
+        rows_above_threshold = 0
+        general_overlay_required_row_count = 0
+        max_left_vertex_count = 0
+        max_right_vertex_count = 0
+        max_pair_vertex_count = 0
+
+    metadata = {
+        "schema": GEOMETRY_RELATION_COMPLEXITY_CUPY_VERSION,
+        "operation": "shape_pair_relation_complexity_columns",
+        "partner": "cupy",
+        "input_contract": "shape_pair_relation_flags_with_ordinals_and_geometry_payload",
+        "row_count": row_count,
+        "simple_vertex_threshold": threshold,
+        "both_convex_row_count": both_convex_row_count,
+        "nonconvex_row_count": nonconvex_row_count,
+        "rows_above_simple_vertex_threshold": rows_above_threshold,
+        "general_overlay_required_row_count": general_overlay_required_row_count,
+        "max_left_vertex_count": max_left_vertex_count,
+        "max_right_vertex_count": max_right_vertex_count,
+        "max_pair_vertex_count": max_pair_vertex_count,
+        "classification_semantics": (
+            "device-resident row-complexity classifier for routing exact overlay continuation; "
+            "not an exact overlay-area computation"
+        ),
+        "exact_polygon_overlay_area": False,
+        "requires_relation_ordinals": True,
+        "requires_geometry_payload_columns": True,
+        "app_specific_engine_logic_allowed": False,
+        "automatic_partner_selection_allowed": False,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "full_overlay_area_claim_authorized": False,
+    }
+    return ShapePairRelationComplexityCupyResult(
+        left_vertex_count=left_vertex_count,
+        right_vertex_count=right_vertex_count,
+        left_convex=left_convex,
+        right_convex=right_convex,
+        general_overlay_required=general_overlay_required,
         metadata=metadata,
     )
 
