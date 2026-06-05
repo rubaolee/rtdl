@@ -83,7 +83,7 @@ class Goal3490OverlayAreaTileTaskPlannerTest(unittest.TestCase):
         spatial = rows["spatial_rayjoin"]
 
         self.assertIn("relation-owner tile tasks", spatial["current_best_path"])
-        self.assertIn("execute the Goal3490 component/tile task plan", spatial["current_bottleneck"])
+        self.assertIn("Goal3491 added a CuPy tile-task executor", spatial["current_bottleneck"])
         self.assertIn("Goal3490", spatial["evidence_refs"])
         self.assertFalse(spatial["release_authorized"])
 

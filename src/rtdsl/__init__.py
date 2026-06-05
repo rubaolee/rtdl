@@ -385,6 +385,7 @@ from .v2_8_overlay_area_continuation_contract import validate_v2_8_overlay_area_
 from .v2_8_overlay_area_continuation_contract import validate_v2_8_overlay_area_pre_kernel_policy
 from .v2_8_overlay_area_prepared_payload import PreparedOverlayAreaEvaluationResult
 from .v2_8_overlay_area_prepared_payload import PreparedOverlayAreaCupyTiledResult
+from .v2_8_overlay_area_prepared_payload import PreparedOverlayAreaCupyTileTaskResult
 from .v2_8_overlay_area_prepared_payload import PreparedOverlayAreaPairRow
 from .v2_8_overlay_area_prepared_payload import PreparedOverlayAreaTiledEvaluationResult
 from .v2_8_overlay_area_prepared_payload import PreparedOverlayAreaTileTask
@@ -396,6 +397,7 @@ from .v2_8_overlay_area_prepared_payload import V2_8_OVERLAY_AREA_PREPARED_PAYLO
 from .v2_8_overlay_area_prepared_payload import evaluate_prepared_overlay_area_scalar
 from .v2_8_overlay_area_prepared_payload import evaluate_prepared_overlay_area_scalar_tiled
 from .v2_8_overlay_area_prepared_payload import evaluate_prepared_overlay_area_scalar_tiled_cupy
+from .v2_8_overlay_area_prepared_payload import evaluate_prepared_overlay_area_tile_tasks_cupy
 from .v2_8_overlay_area_prepared_payload import plan_prepared_overlay_area_tile_tasks
 from .v2_8_overlay_area_prepared_payload import prepare_overlay_area_pair_rows
 from .v2_8_overlay_area_prepared_payload import prepare_simple_polygon_component_payload
@@ -2130,6 +2132,7 @@ __all__ = [
     "validate_v2_8_overlay_area_pre_kernel_policy",
     "PreparedOverlayAreaEvaluationResult",
     "PreparedOverlayAreaCupyTiledResult",
+    "PreparedOverlayAreaCupyTileTaskResult",
     "PreparedOverlayAreaPairRow",
     "PreparedOverlayAreaTiledEvaluationResult",
     "PreparedOverlayAreaTileTask",
@@ -2141,6 +2144,7 @@ __all__ = [
     "evaluate_prepared_overlay_area_scalar",
     "evaluate_prepared_overlay_area_scalar_tiled",
     "evaluate_prepared_overlay_area_scalar_tiled_cupy",
+    "evaluate_prepared_overlay_area_tile_tasks_cupy",
     "plan_prepared_overlay_area_tile_tasks",
     "prepare_overlay_area_pair_rows",
     "prepare_simple_polygon_component_payload",

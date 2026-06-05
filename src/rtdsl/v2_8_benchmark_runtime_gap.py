@@ -147,7 +147,8 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "public-CDB feasibility shows the current prepared payload covers all positive exact-area rows, "
             "but one supported row reaches 318,096 triangle pairs; workload sizing shows 39,947 component-pair "
             "rows and 9,653,005 triangle pairs across the supported public-CDB stream; a component/tile "
-            "task planner now gives large rows explicit relation-owner tile tasks"
+            "task planner now gives large rows explicit relation-owner tile tasks; a CuPy tile-task executor "
+            "now runs those tasks as one GPU thread per tile task and reduces partial areas by relation id"
         ),
         partner_position=(
             "Numba is the recommended custom continuation when row-stream compaction is part of the app; "
@@ -194,10 +195,11 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "payload supports 4,539 of 4,543 active public-CDB rows, all 1,090 positive-area rows, and "
             "100% of total exact area, while exposing a max supported row of 318,096 triangle pairs. "
             "Goal3489 sized the supported workload at 39,947 component-pair rows and 9,653,005 triangle "
-            "pairs, with p50/p90/p99 triangle pairs per relation of 294/3,450/25,530. Remaining work is "
-            "to execute the Goal3490 component/tile task plan on device, reduce tile partials by relation id, "
-            "integrate with the device-resident relation stream, then decide whether the accepted continuation "
-            "is native or partner-backed over that execution shape."
+            "pairs, with p50/p90/p99 triangle pairs per relation of 294/3,450/25,530. Goal3491 added a "
+            "CuPy tile-task executor for that Goal3490 plan, using one GPU thread per tile task plus "
+            "cupy_add_at_by_relation_row_ordinal reduction. Remaining work is a public-CDB tile-task executor "
+            "run over the full supported stream, integration with the device-resident relation stream, then "
+            "the native-vs-partner acceptance decision over that execution shape."
         ),
         generic_runtime_target=(
             "typed hit/relation streams with compact-mask, grouped parity/count, bounded witness "
@@ -241,6 +243,7 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "Goal3488",
             "Goal3489",
             "Goal3490",
+            "Goal3491",
         ),
     ),
     V28BenchmarkRuntimeGapRow(

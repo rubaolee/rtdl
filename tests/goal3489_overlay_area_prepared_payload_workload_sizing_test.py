@@ -65,7 +65,7 @@ class Goal3489OverlayAreaPreparedPayloadWorkloadSizingTest(unittest.TestCase):
         spatial = rows["spatial_rayjoin"]
 
         self.assertIn("9,653,005 triangle pairs", spatial["current_bottleneck"])
-        self.assertIn("execute the Goal3490 component/tile task plan", spatial["current_bottleneck"])
+        self.assertIn("Goal3491 added a CuPy tile-task executor", spatial["current_bottleneck"])
         self.assertIn("Goal3489", spatial["evidence_refs"])
         self.assertFalse(spatial["release_authorized"])
 
