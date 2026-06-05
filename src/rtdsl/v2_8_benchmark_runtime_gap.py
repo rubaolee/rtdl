@@ -143,7 +143,9 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "a concrete pre-kernel tolerance/topology/scratch policy plus prepared simple-polygon "
             "component payload prototype now define the scalar exact-area kernel input shape; "
             "a bounded tiled CPU evaluator now mirrors the scratch behavior the device continuation must preserve; "
-            "a CuPy RawKernel prototype over that prepared payload matches the CPU area fixture on an RTX A5000 pod"
+            "a CuPy RawKernel prototype over that prepared payload matches the CPU area fixture on an RTX A5000 pod; "
+            "public-CDB feasibility shows the current prepared payload covers all positive exact-area rows, "
+            "but one supported row reaches 318,096 triangle pairs"
         ),
         partner_position=(
             "Numba is the recommended custom continuation when row-stream compaction is part of the app; "
@@ -186,9 +188,11 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "Goal3484 added a bounded tiled scalar evaluator over the prepared payload, proving no "
             "silent triangle-pair truncation under explicit tile capacity. Goal3486 executed a CuPy "
             "RawKernel prototype over the prepared payload on an RTX A5000 pod, matching CPU total area "
-            "1.75 with zero absolute error on the fixture. Remaining work is integration with the "
-            "device-resident relation stream and a broader exact-overlay dataset path, then a native "
-            "or accepted partner continuation over that tiled execution shape."
+            "1.75 with zero absolute error on the fixture. Goal3488 found the current no-hole prepared "
+            "payload supports 4,539 of 4,543 active public-CDB rows, all 1,090 positive-area rows, and "
+            "100% of total exact area, while exposing a max supported row of 318,096 triangle pairs. "
+            "Remaining work is high-capacity bounded device tiling integrated with the device-resident "
+            "relation stream, then a native or accepted partner continuation over that execution shape."
         ),
         generic_runtime_target=(
             "typed hit/relation streams with compact-mask, grouped parity/count, bounded witness "
@@ -229,6 +233,7 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "Goal3483",
             "Goal3484",
             "Goal3486",
+            "Goal3488",
         ),
     ),
     V28BenchmarkRuntimeGapRow(

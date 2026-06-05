@@ -1,0 +1,128 @@
+{
+  "all_positive_area_row_count": 1090,
+  "all_total_exact_area": 26.08321766231043,
+  "claim_boundary": {
+    "full_overlay_area_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "geometry_build_and_classify_sec": 19.43695352319628,
+  "goal": 3488,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "interpretation": "Measures how much of the public-CDB active relation stream can be lowered to the current no-hole prepared simple polygon component payload before adding hole/full topology support.",
+  "left_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county.cdb",
+  "left_geometry_status_counts": {
+    "make_valid": 9923,
+    "valid": 5777
+  },
+  "left_prepared_status_counts": {
+    "prepared_simple_components": 15693,
+    "unsupported_triangulation_failed": 7
+  },
+  "left_shape_count": 15700,
+  "max_supported_triangle_pairs_per_row": 318096,
+  "right_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count1024.cdb",
+  "right_geometry_status_counts": {
+    "make_valid": 596,
+    "valid": 353
+  },
+  "right_prepared_status_counts": {
+    "prepared_simple_components": 949
+  },
+  "right_shape_count": 949,
+  "row_count": 4543,
+  "rtdl_commit": "0d56b5462bc3ef3504cbc1a4225c3e2f88fc7b67",
+  "schema": "rtdl.goal3488.overlay_area_prepared_payload_feasibility.v1",
+  "shapely_version": "2.1.2",
+  "supported_area_fraction": 1.0,
+  "supported_positive_area_row_count": 1090,
+  "supported_positive_row_fraction": 1.0,
+  "supported_prepared_payload_row_count": 4539,
+  "supported_total_exact_area": 26.08321766231043,
+  "unsupported_prepared_payload_row_count": 4,
+  "unsupported_reason_counts": {
+    "left=unsupported_triangulation_failed|right=prepared_simple_components": 4
+  },
+  "unsupported_samples": [
+    {
+      "area": 0.0,
+      "left_ordinal": 14782,
+      "left_status": {
+        "component_count": 5,
+        "geom_type": "MultiPolygon",
+        "status": "unsupported_triangulation_failed",
+        "triangle_count": 86
+      },
+      "right_ordinal": 632,
+      "right_status": {
+        "component_count": 1,
+        "geom_type": "Polygon",
+        "max_vertices_per_component": 16,
+        "status": "prepared_simple_components",
+        "triangle_count": 14
+      },
+      "row": 4291
+    },
+    {
+      "area": 0.0,
+      "left_ordinal": 15115,
+      "left_status": {
+        "component_count": 6,
+        "geom_type": "MultiPolygon",
+        "status": "unsupported_triangulation_failed",
+        "triangle_count": 23
+      },
+      "right_ordinal": 543,
+      "right_status": {
+        "component_count": 3,
+        "geom_type": "MultiPolygon",
+        "max_vertices_per_component": 9,
+        "status": "prepared_simple_components",
+        "triangle_count": 16
+      },
+      "row": 4326
+    },
+    {
+      "area": 0.0,
+      "left_ordinal": 15115,
+      "left_status": {
+        "component_count": 6,
+        "geom_type": "MultiPolygon",
+        "status": "unsupported_triangulation_failed",
+        "triangle_count": 23
+      },
+      "right_ordinal": 546,
+      "right_status": {
+        "component_count": 2,
+        "geom_type": "MultiPolygon",
+        "max_vertices_per_component": 115,
+        "status": "prepared_simple_components",
+        "triangle_count": 114
+      },
+      "row": 4327
+    },
+    {
+      "area": 0.0,
+      "left_ordinal": 15115,
+      "left_status": {
+        "component_count": 6,
+        "geom_type": "MultiPolygon",
+        "status": "unsupported_triangulation_failed",
+        "triangle_count": 23
+      },
+      "right_ordinal": 719,
+      "right_status": {
+        "component_count": 3,
+        "geom_type": "MultiPolygon",
+        "max_vertices_per_component": 25,
+        "status": "prepared_simple_components",
+        "triangle_count": 35
+      },
+      "row": 4338
+    }
+  ]
+}
