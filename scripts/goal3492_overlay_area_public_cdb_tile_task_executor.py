@@ -521,6 +521,8 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     active_shape_ordinals_sec = 0.0
     bounds_positive_filter_sec = 0.0
     relation_ordinal_download_sec = 0.0
+    active_relation_device_columns_sec = 0.0
+    relation_column_warmup_secs: list[float] = []
     active_shape_ordinal_metadata: dict[str, object] | None = None
     bounds_positive_filter_metadata: dict[str, object] | None = None
     bounds_positive_relation_rows = None
@@ -536,7 +538,21 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         dataset_note="Goal3492 public-CDB prepared tile-task executor over RTDL relation rows.",
     ) as prepared:
         packed_left = pack_rayjoin_optix_shape_pair_active_count_left_shapes(left_shapes)
+        for repeat in range(max(0, int(args.relation_column_warmup_repeats))):
+            print(
+                "[goal3492] warm active relation device columns "
+                f"{repeat + 1}/{max(0, int(args.relation_column_warmup_repeats))}",
+                flush=True,
+            )
+            warmup_start = time.perf_counter()
+            with prepared.active_relation_device_columns(packed_left, max_rows=int(args.max_rows)) as warm_columns:
+                cp.cuda.Stream.null.synchronize()
+                _ = int(warm_columns.row_count)
+            relation_column_warmup_secs.append(time.perf_counter() - warmup_start)
+        relation_column_start = time.perf_counter()
         with prepared.active_relation_device_columns(packed_left, max_rows=int(args.max_rows)) as columns:
+            cp.cuda.Stream.null.synchronize()
+            active_relation_device_columns_sec = time.perf_counter() - relation_column_start
             cp.cuda.Stream.null.synchronize()
             if args.bounds_positive_filter:
                 bounds_filter_start = time.perf_counter()
@@ -938,7 +954,9 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     )[:10]
 
     schema = (
-        (
+        "rtdl.goal3511.overlay_area_steady_state_relation_stream.v1"
+        if args.relation_stream_steady_state_evidence
+        else (
             "rtdl.goal3509.overlay_area_binary_prepared_payload_cache.v1"
             if payload_cache_format == "binary"
             else "rtdl.goal3507.overlay_area_prepared_payload_cache.v1"
@@ -978,7 +996,8 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             )
         )
     )
-    goal = (3509 if payload_cache_format == "binary" else 3507) if args.payload_cache_evidence else (
+    goal = 3511 if args.relation_stream_steady_state_evidence else (
+        (3509 if payload_cache_format == "binary" else 3507) if args.payload_cache_evidence else (
         3504 if args.parallel_payload_prepare_evidence else (
             3502 if args.single_triangulation_payload_evidence else (
                 3501 if args.component_bounds_filter else (3498 if args.device_tile_task_planner else (3497 if args.bounds_positive_filter else (
@@ -988,7 +1007,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
                 )))
             )
         )
-    )
+    ))
 
     return {
         "schema": schema,
@@ -1017,6 +1036,8 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         "payload_cache_format": payload_cache_format,
         "payload_cache_evidence": bool(args.payload_cache_evidence),
         "payload_cache_metadata": payload_cache_metadata,
+        "relation_stream_steady_state_evidence": bool(args.relation_stream_steady_state_evidence),
+        "relation_column_warmup_repeats": max(0, int(args.relation_column_warmup_repeats)),
         "bounds_positive_relation_row_count": int(len(candidate_relation_rows)),
         "bounds_positive_filter_metadata": bounds_positive_filter_metadata,
         "active_shape_ordinal_metadata": active_shape_ordinal_metadata,
@@ -1070,6 +1091,11 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
                 else (parallel_payload_prepare_sec if parallel_payload_prepare_used else geometry_build_sec + payload_build_sec)
             ),
             "relation_discovery": relation_discovery_sec,
+            "active_relation_device_columns": active_relation_device_columns_sec,
+            "active_relation_device_columns_warmup_secs": relation_column_warmup_secs,
+            "active_relation_device_columns_best_warmup": (
+                min(relation_column_warmup_secs) if relation_column_warmup_secs else 0.0
+            ),
             "bounds_positive_filter": bounds_positive_filter_sec,
             "device_active_shape_ordinals": active_shape_ordinals_sec,
             "relation_ordinal_download": relation_ordinal_download_sec,
@@ -1117,6 +1143,21 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument("--payload-cache-dir", type=Path, default=None)
+    parser.add_argument(
+        "--relation-column-warmup-repeats",
+        type=int,
+        default=0,
+        help=(
+            "Run and discard this many prepared active-relation device-column passes before "
+            "the measured pass. This exposes steady-state relation-stream timing without "
+            "hiding setup costs in the artifact."
+        ),
+    )
+    parser.add_argument(
+        "--relation-stream-steady-state-evidence",
+        action="store_true",
+        help="Label the output as Goal3511 evidence for steady-state prepared relation-stream timing.",
+    )
     parser.add_argument(
         "--payload-cache-mode",
         choices=("off", "read", "write", "refresh"),
