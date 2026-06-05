@@ -305,11 +305,11 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
                 left_shape_component_starts=left_component_starts,
                 left_shape_component_counts=left_component_counts,
                 right_shape_component_starts=right_component_starts,
-            right_shape_component_counts=right_component_counts,
-            relation_row_count=len(left_ordinals),
-            max_triangle_pairs_per_task=int(args.max_triangle_pairs_per_task),
-            component_bounds_positive_filter=bool(args.component_bounds_filter),
-        )
+                right_shape_component_counts=right_component_counts,
+                relation_row_count=len(left_ordinals),
+                max_triangle_pairs_per_task=int(args.max_triangle_pairs_per_task),
+                component_bounds_positive_filter=bool(args.component_bounds_filter),
+            )
             cp.cuda.Stream.null.synchronize()
             device_tile_task_planning_repeat_secs.append(time.perf_counter() - device_plan_start)
         device_tile_task_planning_sec = sum(device_tile_task_planning_repeat_secs)
@@ -317,7 +317,6 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         task_summary = resident_inputs.to_metadata()["planner_summary"]
         pair_rows = ()
         tasks = ()
-        unsupported_rows = int(len(candidate_relation_rows) - int(task_summary["relation_row_count"]))
         component_pair_row_count = int(task_summary["pair_row_count"])
         tile_task_count = int(task_summary["task_count"])
         planned_triangle_pair_count = int(task_summary["planned_triangle_pair_count"])
@@ -356,6 +355,13 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         planned_triangle_pair_count = int(task_summary["planned_triangle_pair_count"])
         expected_triangle_pair_count = int(task_summary["expected_triangle_pair_count"])
     planning_sec = time.perf_counter() - plan_start
+    supported_relation_row_count = int(task_summary.get("relation_row_count", len(candidate_relation_rows) - unsupported_rows))
+    skipped_candidate_relation_row_count = int(len(candidate_relation_rows) - supported_relation_row_count)
+    component_bounds_filtered_relation_row_count = (
+        max(0, skipped_candidate_relation_row_count - unsupported_rows)
+        if args.component_bounds_filter
+        else 0
+    )
 
     print(f"[goal3492] execute {tile_task_count} tile tasks over {component_pair_row_count} component-pair rows", flush=True)
     cp.cuda.Stream.null.synchronize()
@@ -438,21 +444,21 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             "rtdl.goal3501.overlay_area_component_bounds_filtered_tile_tasks.v1"
             if args.component_bounds_filter
             else (
-            "rtdl.goal3498.overlay_area_device_tile_task_planner.v1"
-            if args.device_tile_task_planner
-            else (
-            "rtdl.goal3495.overlay_area_device_active_shape_ordinals.v1"
-            if device_active_shape_ordinals_used
-            else (
-                "rtdl.goal3494.overlay_area_resident_cupy_tile_task_inputs.v1"
-                if args.resident_cupy_inputs
+                "rtdl.goal3498.overlay_area_device_tile_task_planner.v1"
+                if args.device_tile_task_planner
                 else (
-                    "rtdl.goal3493.overlay_area_active_shape_payload_construction.v1"
-                    if args.active_shapes_only
-                    else "rtdl.goal3492.overlay_area_public_cdb_tile_task_executor.v1"
+                    "rtdl.goal3495.overlay_area_device_active_shape_ordinals.v1"
+                    if device_active_shape_ordinals_used
+                    else (
+                        "rtdl.goal3494.overlay_area_resident_cupy_tile_task_inputs.v1"
+                        if args.resident_cupy_inputs
+                        else (
+                            "rtdl.goal3493.overlay_area_active_shape_payload_construction.v1"
+                            if args.active_shapes_only
+                            else "rtdl.goal3492.overlay_area_public_cdb_tile_task_executor.v1"
+                        )
+                    )
                 )
-            )
-            )
             )
         )
     )
@@ -497,7 +503,9 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         "right_payload_triangle_count": right_payload.triangle_count,
         "relation_row_count": int(len(left_ordinals)),
         "candidate_relation_row_count": int(len(candidate_relation_rows)),
-        "supported_relation_row_count": int(len(candidate_relation_rows) - unsupported_rows),
+        "supported_relation_row_count": supported_relation_row_count,
+        "skipped_candidate_relation_row_count": skipped_candidate_relation_row_count,
+        "component_bounds_filtered_relation_row_count": component_bounds_filtered_relation_row_count,
         "unsupported_relation_row_count": unsupported_rows,
         "unsupported_positive_relation_row_count": unsupported_positive_rows,
         "component_pair_row_count": component_pair_row_count,
