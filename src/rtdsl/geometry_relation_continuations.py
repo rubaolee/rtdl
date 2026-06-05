@@ -11,7 +11,10 @@ GEOMETRY_RELATION_WITNESS_CUPY_VERSION = "rtdl.v2_8.geometry_relation.witness_cu
 
 
 _SHAPE_PAIR_RELATION_WITNESS_KERNEL = r"""
-#include <math.h>
+static __device__ float rtdl_relation_absf(float value)
+{
+    return value < 0.0f ? -value : value;
+}
 
 extern "C" __global__ void shape_pair_relation_witness_kernel(
         const unsigned int* left_ordinals,
@@ -67,7 +70,7 @@ extern "C" __global__ void shape_pair_relation_witness_kernel(
                 const float sx = bx1 - bx0;
                 const float sy = by1 - by0;
                 const float denom = rx * sy - ry * sx;
-                if (fabsf(denom) < 1.0e-7f) continue;
+                if (rtdl_relation_absf(denom) < 1.0e-7f) continue;
                 const float qpx = bx0 - ax0;
                 const float qpy = by0 - ay0;
                 const float t = (qpx * sy - qpy * sx) / denom;
@@ -104,7 +107,7 @@ extern "C" __global__ void shape_pair_relation_witness_kernel(
         const float max_x = xi > xj ? xi : xj;
         const float min_y = yi < yj ? yi : yj;
         const float max_y = yi > yj ? yi : yj;
-        if (fabsf(cross) <= 1.0e-5f &&
+        if (rtdl_relation_absf(cross) <= 1.0e-5f &&
             left_px >= min_x - 1.0e-5f && left_px <= max_x + 1.0e-5f &&
             left_py >= min_y - 1.0e-5f && left_py <= max_y + 1.0e-5f) {
             left_inside_right = true;
@@ -142,7 +145,7 @@ extern "C" __global__ void shape_pair_relation_witness_kernel(
         const float max_x = xi > xj ? xi : xj;
         const float min_y = yi < yj ? yi : yj;
         const float max_y = yi > yj ? yi : yj;
-        if (fabsf(cross) <= 1.0e-5f &&
+        if (rtdl_relation_absf(cross) <= 1.0e-5f &&
             right_px >= min_x - 1.0e-5f && right_px <= max_x + 1.0e-5f &&
             right_py >= min_y - 1.0e-5f && right_py <= max_y + 1.0e-5f) {
             right_inside_left = true;
