@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import ctypes
 import json
 import subprocess
 import sys
@@ -49,6 +50,10 @@ def _claim_boundary() -> dict[str, bool]:
     }
 
 
+def _f32(value: float) -> float:
+    return ctypes.c_float(float(value)).value
+
+
 def _bounds(vertices: tuple[tuple[float, float], ...]) -> tuple[float, float, float, float]:
     xs = [point[0] for point in vertices]
     ys = [point[1] for point in vertices]
@@ -56,15 +61,18 @@ def _bounds(vertices: tuple[tuple[float, float], ...]) -> tuple[float, float, fl
 
 
 def _views(polygons: tuple[rt.Polygon, ...]) -> tuple[_PolyView, ...]:
-    return tuple(
-        _PolyView(
-            ordinal=index,
-            polygon_id=int(polygon.id),
-            vertices=tuple((float(x), float(y)) for x, y in polygon.vertices),
-            bounds=_bounds(tuple((float(x), float(y)) for x, y in polygon.vertices)),
+    views = []
+    for index, polygon in enumerate(polygons):
+        vertices = tuple((_f32(x), _f32(y)) for x, y in polygon.vertices)
+        views.append(
+            _PolyView(
+                ordinal=index,
+                polygon_id=int(polygon.id),
+                vertices=vertices,
+                bounds=_bounds(vertices),
+            )
         )
-        for index, polygon in enumerate(polygons)
-    )
+    return tuple(views)
 
 
 def _bounds_overlap(
@@ -84,17 +92,25 @@ def _segment_intersection_flag(
     bx1: float,
     by1: float,
 ) -> bool:
-    rx = ax1 - ax0
-    ry = ay1 - ay0
-    sx = bx1 - bx0
-    sy = by1 - by0
-    denom = rx * sy - ry * sx
+    ax0 = _f32(ax0)
+    ay0 = _f32(ay0)
+    ax1 = _f32(ax1)
+    ay1 = _f32(ay1)
+    bx0 = _f32(bx0)
+    by0 = _f32(by0)
+    bx1 = _f32(bx1)
+    by1 = _f32(by1)
+    rx = _f32(ax1 - ax0)
+    ry = _f32(ay1 - ay0)
+    sx = _f32(bx1 - bx0)
+    sy = _f32(by1 - by0)
+    denom = _f32(_f32(rx * sy) - _f32(ry * sx))
     if abs(denom) < 1.0e-7:
         return False
-    qpx = bx0 - ax0
-    qpy = by0 - ay0
-    t = (qpx * sy - qpy * sx) / denom
-    u = (qpx * ry - qpy * rx) / denom
+    qpx = _f32(bx0 - ax0)
+    qpy = _f32(by0 - ay0)
+    t = _f32(_f32(_f32(qpx * sy) - _f32(qpy * sx)) / denom)
+    u = _f32(_f32(_f32(qpx * ry) - _f32(qpy * rx)) / denom)
     return 0.0 <= t <= 1.0 and 0.0 <= u <= 1.0
 
 

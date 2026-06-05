@@ -17,10 +17,11 @@ The probe compares:
 - `requires_segment_intersection`
 - `requires_point_containment`
 
-The host oracle intentionally mirrors the generic native relation contract:
+The host oracle intentionally mirrors the generic native relation contract and numeric contract:
 
 - bounds prefilter
-- non-collinear segment-edge intersection using the native tolerance rule
+- float32 coordinate quantization, matching the native OptiX payload
+- non-collinear segment-edge intersection using the native float32 tolerance rule
 - if no segment-edge relation exists, first-left-vertex-in-right or first-right-vertex-in-left containment
 
 ## Boundary

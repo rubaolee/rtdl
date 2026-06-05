@@ -20,6 +20,7 @@ class Goal3460ShapePairRelationLargeContentOracleTest(unittest.TestCase):
             "_host_oracle_rows",
             "_device_rows",
             "_diff_rows",
+            "ctypes.c_float",
             "requires_segment_intersection",
             "requires_point_containment",
             "left_ordinal",
@@ -48,6 +49,7 @@ class Goal3460ShapePairRelationLargeContentOracleTest(unittest.TestCase):
         for phrase in (
             "Goal3460",
             "independent large-scale content oracle",
+            "float32 coordinate quantization",
             "non-integer and non-orthogonal",
             "does not authorize",
             "not an exact overlay-area completion",
