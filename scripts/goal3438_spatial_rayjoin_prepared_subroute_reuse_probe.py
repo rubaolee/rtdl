@@ -178,6 +178,7 @@ def _run_overlay(args: argparse.Namespace, county_dataset, soil_dataset) -> dict
                     "iteration": index,
                     "row_count": row_count,
                     "phases_sec": payload["phases_sec"],
+                    "native_phase_timings": payload["native_phase_timings"],
                     "prepared_reuse": payload["prepared_reuse"],
                     "packed_left_reuse": payload["packed_left_reuse"],
                     "claim_boundary": payload["claim_boundary"],
@@ -197,6 +198,7 @@ def _run_overlay(args: argparse.Namespace, county_dataset, soil_dataset) -> dict
             "pack_left_sec": float(packed_left.pack_seconds),
             "row_counts": row_counts,
             "active_count_sec": _stats(active_count_times),
+            "last_native_phase_timings": runs[-1]["native_phase_timings"] if runs else None,
             "runs": runs,
         }
 

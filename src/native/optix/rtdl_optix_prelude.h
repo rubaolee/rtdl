@@ -774,6 +774,15 @@ int  rtdl_optix_count_prepared_shape_pair_relation_flags(
          const double* left_verts_xy,      size_t left_vert_xy_count,
          size_t* active_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_shape_pair_relation_get_last_phase_timings(
+         double* left_prepare_out,
+         double* left_upload_out,
+         double* traversal_out,
+         double* flag_download_out,
+         double* containment_out,
+         size_t* pair_count_out,
+         size_t* active_count_out,
+         uint32_t* mode_out);
 void rtdl_optix_destroy_prepared_shape_pair_relation_flags(void* prepared);
 int  rtdl_optix_run_ray_hitcount(
          const RtdlRay2D*    rays,      size_t ray_count,

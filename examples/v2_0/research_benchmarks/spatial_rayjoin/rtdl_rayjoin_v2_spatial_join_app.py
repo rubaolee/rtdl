@@ -1697,6 +1697,7 @@ class PreparedRayJoinOptixShapePairActiveCount:
                 lambda: self._prepared.count_active(packed_left.packed_polygons),
             )
         )
+        native_phase_timings = self._prepared.last_phase_timings()
         return {
             "app": "rayjoin_v2_spatial_join",
             "workload": "overlay_seed",
@@ -1710,6 +1711,7 @@ class PreparedRayJoinOptixShapePairActiveCount:
                 "output_contract": "overlay_active_pair_dependency_count",
             },
             "phases_sec": phases,
+            "native_phase_timings": native_phase_timings,
             "prepared_reuse": {
                 "enabled": True,
                 "right_shape_count": self._right_shape_count,

@@ -2797,6 +2797,9 @@ class PreparedOptixShapePairRelation:
         _check_status(status, error)
         return int(active_count.value)
 
+    def last_phase_timings(self) -> dict[str, float | int | str] | None:
+        return _get_last_shape_pair_relation_phase_timings_from_library(self.library)
+
     def close(self) -> None:
         if not self._closed:
             destroy = _find_optional_backend_symbol(
@@ -6735,6 +6738,10 @@ def get_last_segment_pair_phase_timings() -> dict[str, float | int | str] | None
     return _get_last_segment_pair_phase_timings_from_library(_load_optix_library())
 
 
+def get_last_shape_pair_relation_phase_timings() -> dict[str, float | int | str] | None:
+    return _get_last_shape_pair_relation_phase_timings_from_library(_load_optix_library())
+
+
 def get_last_closed_shape_membership_phase_timings() -> dict[str, float | int | str] | None:
     return _get_last_closed_shape_membership_phase_timings_from_library(_load_optix_library())
 
@@ -6799,6 +6806,58 @@ def _get_last_segment_pair_phase_timings_from_library(lib) -> dict[str, float | 
     if mode_name.startswith("first_hit"):
         result["device_witness_materialize"] = float(exact_refine.value)
     return result
+
+
+def _get_last_shape_pair_relation_phase_timings_from_library(lib) -> dict[str, float | int | str] | None:
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_shape_pair_relation_get_last_phase_timings")
+    if symbol is None:
+        return None
+    symbol.argtypes = (
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(ctypes.c_uint32),
+    )
+    symbol.restype = ctypes.c_int
+    left_prepare = ctypes.c_double(0.0)
+    left_upload = ctypes.c_double(0.0)
+    traversal = ctypes.c_double(0.0)
+    flag_download = ctypes.c_double(0.0)
+    containment = ctypes.c_double(0.0)
+    pair_count = ctypes.c_size_t(0)
+    active_count = ctypes.c_size_t(0)
+    mode = ctypes.c_uint32(0)
+    status = symbol(
+        ctypes.byref(left_prepare),
+        ctypes.byref(left_upload),
+        ctypes.byref(traversal),
+        ctypes.byref(flag_download),
+        ctypes.byref(containment),
+        ctypes.byref(pair_count),
+        ctypes.byref(active_count),
+        ctypes.byref(mode),
+    )
+    if status != 0:
+        return None
+    mode_value = int(mode.value)
+    mode_name = {
+        1: "rows",
+        2: "active_count",
+    }.get(mode_value, "none")
+    return {
+        "mode": mode_name,
+        "left_prepare": float(left_prepare.value),
+        "left_upload": float(left_upload.value),
+        "traversal": float(traversal.value),
+        "flag_download": float(flag_download.value),
+        "containment": float(containment.value),
+        "pair_count": int(pair_count.value),
+        "active_count": int(active_count.value),
+    }
 
 
 def _get_last_closed_shape_membership_phase_timings_from_library(lib) -> dict[str, float | int | str] | None:
@@ -19520,6 +19579,22 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_count_prepared_shape_pair_relation.restype = ctypes.c_int
+    optional_shape_pair_timings = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_shape_pair_relation_get_last_phase_timings",
+    )
+    if optional_shape_pair_timings is not None:
+        optional_shape_pair_timings.argtypes = [
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_uint32),
+        ]
+        optional_shape_pair_timings.restype = ctypes.c_int
     optional_destroy_prepared_shape_pair_relation = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_destroy_prepared_shape_pair_relation_flags",
