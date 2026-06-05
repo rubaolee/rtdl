@@ -15,6 +15,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from goal3474_shape_pair_exact_overlay_area_shapely_oracle import (  # noqa: E402
+    _build_oracle_polygon,
     _build_oracle_polygons,
     _claim_boundary,
     _import_shapely,
@@ -74,11 +75,17 @@ def _add_count(counts: dict[str, int], key: str, value: int = 1) -> None:
 def _prepare_payload_from_geometries(
     geometries: tuple[Any, ...],
 ) -> tuple[rt.PreparedSimplePolygonComponentPayload, dict[int, tuple[int, ...]], dict[str, int]]:
+    return _prepare_payload_from_geometry_map(dict(enumerate(geometries)))
+
+
+def _prepare_payload_from_geometry_map(
+    geometries: dict[int, Any],
+) -> tuple[rt.PreparedSimplePolygonComponentPayload, dict[int, tuple[int, ...]], dict[str, int]]:
     components: list[tuple[tuple[float, float], ...]] = []
     source_shape_ids: list[int] = []
     shape_to_components: dict[int, tuple[int, ...]] = {}
     status_counts: dict[str, int] = {}
-    for shape_ordinal, geometry in enumerate(geometries):
+    for shape_ordinal, geometry in sorted(geometries.items()):
         status, component_vertices = _component_vertices_for_prepared_geometry(geometry)
         _add_count(status_counts, status)
         component_ordinals: list[int] = []
@@ -90,6 +97,21 @@ def _prepare_payload_from_geometries(
         shape_to_components[shape_ordinal] = tuple(component_ordinals)
     payload = rt.prepare_simple_polygon_component_payload(components, source_shape_ids=source_shape_ids)
     return payload, shape_to_components, status_counts
+
+
+def _build_oracle_geometry_map(
+    records: tuple[Any, ...],
+    shape_ordinals: set[int],
+    ShapelyPolygon: Any,
+    make_valid: Any,
+) -> tuple[dict[int, Any], dict[str, int]]:
+    geometries: dict[int, Any] = {}
+    status_counts: dict[str, int] = {}
+    for shape_ordinal in sorted(shape_ordinals):
+        geometry, status = _build_oracle_polygon(records[shape_ordinal], ShapelyPolygon, make_valid)
+        geometries[shape_ordinal] = geometry
+        _add_count(status_counts, status)
+    return geometries, status_counts
 
 
 def _percentile(values: list[float], q: float) -> float:
@@ -108,18 +130,6 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     left_shapes = tuple(chains_to_polygons(load_cdb(args.left_cdb)))
     right_shapes = tuple(chains_to_polygons(load_cdb(args.right_cdb)))
 
-    print("[goal3492] build Shapely oracle geometries", flush=True)
-    build_start = time.perf_counter()
-    left_geometries, left_geometry_status = _build_oracle_polygons(left_shapes, ShapelyPolygon, make_valid)
-    right_geometries, right_geometry_status = _build_oracle_polygons(right_shapes, ShapelyPolygon, make_valid)
-    geometry_build_sec = time.perf_counter() - build_start
-
-    print("[goal3492] prepare simple-polygon component payloads", flush=True)
-    payload_start = time.perf_counter()
-    left_payload, left_shape_components, left_prepared_status = _prepare_payload_from_geometries(left_geometries)
-    right_payload, right_shape_components, right_prepared_status = _prepare_payload_from_geometries(right_geometries)
-    payload_build_sec = time.perf_counter() - payload_start
-
     print("[goal3492] discover active relation ordinals with RTDL/OptiX", flush=True)
     discovery_start = time.perf_counter()
     with prepare_rayjoin_optix_shape_pair_active_count(
@@ -135,6 +145,39 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             right_ordinals = cp.asnumpy(ordinals["right_ordinal"]).astype("uint32", copy=False)
     relation_discovery_sec = time.perf_counter() - discovery_start
 
+    if args.active_shapes_only:
+        left_shapes_to_build = set(map(int, left_ordinals))
+        right_shapes_to_build = set(map(int, right_ordinals))
+    else:
+        left_shapes_to_build = set(range(len(left_shapes)))
+        right_shapes_to_build = set(range(len(right_shapes)))
+
+    print(
+        "[goal3492] build Shapely oracle geometries "
+        f"(left={len(left_shapes_to_build)}/{len(left_shapes)}, right={len(right_shapes_to_build)}/{len(right_shapes)})",
+        flush=True,
+    )
+    build_start = time.perf_counter()
+    if args.active_shapes_only:
+        left_geometry_map, left_geometry_status = _build_oracle_geometry_map(
+            left_shapes, left_shapes_to_build, ShapelyPolygon, make_valid
+        )
+        right_geometry_map, right_geometry_status = _build_oracle_geometry_map(
+            right_shapes, right_shapes_to_build, ShapelyPolygon, make_valid
+        )
+    else:
+        left_geometries, left_geometry_status = _build_oracle_polygons(left_shapes, ShapelyPolygon, make_valid)
+        right_geometries, right_geometry_status = _build_oracle_polygons(right_shapes, ShapelyPolygon, make_valid)
+        left_geometry_map = dict(enumerate(left_geometries))
+        right_geometry_map = dict(enumerate(right_geometries))
+    geometry_build_sec = time.perf_counter() - build_start
+
+    print("[goal3492] prepare simple-polygon component payloads", flush=True)
+    payload_start = time.perf_counter()
+    left_payload, left_shape_components, left_prepared_status = _prepare_payload_from_geometry_map(left_geometry_map)
+    right_payload, right_shape_components, right_prepared_status = _prepare_payload_from_geometry_map(right_geometry_map)
+    payload_build_sec = time.perf_counter() - payload_start
+
     print(f"[goal3492] build exact oracle areas for {len(left_ordinals)} rows", flush=True)
     exact_start = time.perf_counter()
     exact_areas: list[float] = []
@@ -142,7 +185,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         if int(args.progress_every) > 0 and index > 0 and index % int(args.progress_every) == 0:
             print(f"[goal3492] exact rows={index}/{len(left_ordinals)}", flush=True)
         exact_areas.append(
-            float(left_geometries[int(left_ordinal)].intersection(right_geometries[int(right_ordinal)]).area)
+            float(left_geometry_map[int(left_ordinal)].intersection(right_geometry_map[int(right_ordinal)]).area)
         )
     exact_oracle_sec = time.perf_counter() - exact_start
 
@@ -219,10 +262,13 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         "shapely_version": shapely_version,
         "left_cdb": str(args.left_cdb),
         "right_cdb": str(args.right_cdb),
+        "active_shapes_only": bool(args.active_shapes_only),
         "max_rows": int(args.max_rows),
         "max_triangle_pairs_per_task": int(args.max_triangle_pairs_per_task),
         "left_shape_count": len(left_shapes),
         "right_shape_count": len(right_shapes),
+        "prepared_left_shape_count": len(left_geometry_map),
+        "prepared_right_shape_count": len(right_geometry_map),
         "left_geometry_status_counts": left_geometry_status,
         "right_geometry_status_counts": right_geometry_status,
         "left_prepared_status_counts": left_prepared_status,
@@ -279,6 +325,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-rows", type=int, default=65536)
     parser.add_argument("--max-triangle-pairs-per-task", type=int, default=512)
     parser.add_argument("--progress-every", type=int, default=500)
+    parser.add_argument(
+        "--active-shapes-only",
+        action="store_true",
+        help="Prepare only shapes referenced by the active relation stream instead of the whole CDB.",
+    )
     parser.add_argument("--output", required=True, type=Path)
     return parser.parse_args()
 
