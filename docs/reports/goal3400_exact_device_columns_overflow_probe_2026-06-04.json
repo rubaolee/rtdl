@@ -1,0 +1,28 @@
+{
+  "as_cupy_columns_error": "cannot wrap an overflowed device pair-column stream",
+  "as_cupy_columns_raised": true,
+  "candidate_event_count": 11316,
+  "capacity": 100,
+  "claim_boundary": {
+    "native_default_route_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "county_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count4096.cdb",
+  "device_resident": false,
+  "goal": 3400,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "max_rows": 100,
+  "native_symbol": "rtdl_optix_prepared_point_closed_shape_membership_exact_device_columns_2d",
+  "overflow": true,
+  "point_count": 4096,
+  "relation_row_count": 11316,
+  "row_count": 0,
+  "rtdl_commit": "1afa859588e7660dc619f8fd2ffaf464799ffb16",
+  "schema": "rtdl.goal3400.exact_device_columns_overflow_probe.v1",
+  "shape_count": 3762
+}
