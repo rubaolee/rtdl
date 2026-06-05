@@ -26,6 +26,7 @@ class Goal3394OptixExactMembershipDeviceColumnsBridgeTest(unittest.TestCase):
         self.assertEqual(payload["exact_row_count"], 11316)
         self.assertEqual(payload["device_column_row_count"], 11316)
         self.assertEqual(payload["candidate_event_count"], 11316)
+        self.assertEqual(payload["exact_relation_row_count"], 11316)
         self.assertTrue(payload["device_resident"])
         self.assertFalse(payload["overflow"])
         self.assertTrue(payload["pairs_match_exact_rows"])
@@ -45,12 +46,16 @@ class Goal3394OptixExactMembershipDeviceColumnsBridgeTest(unittest.TestCase):
         self.assertEqual(stream["stream_id"], "point_closed_shape_membership_2d_exact_device_columns")
         self.assertEqual(stream["stream_kind"], "exact_relation_stream")
         self.assertEqual(stream["producer_primitive"], "point_closed_shape_membership_2d_exact_host_refined")
+        self.assertEqual(stream["relation_row_count"], 11316)
         self.assertEqual(producer["schema_id"], "point_closed_shape_membership_2d_exact_device_columns")
         self.assertEqual(producer["producer_output_residency"], "device_resident_exact_id_columns")
         self.assertTrue(producer["host_refined_exact_rows_inside_native_bridge"])
         self.assertFalse(producer["device_only_exact_predicate_produced"])
+        self.assertEqual(producer["exact_relation_row_count"], 11316)
+        self.assertEqual(producer["legacy_pair_column_count_field"], "candidate_event_count")
         self.assertEqual(runtime["output_residency"], "device_resident_exact_id_columns")
         self.assertTrue(runtime["host_refined_exact_rows_inside_native_bridge"])
+        self.assertEqual(runtime["relation_row_count"], 11316)
 
     def test_claim_boundaries_stay_blocked(self):
         for key, value in self.payload["claim_boundary"].items():
@@ -62,6 +67,7 @@ class Goal3394OptixExactMembershipDeviceColumnsBridgeTest(unittest.TestCase):
         self.assertFalse(boundary["true_zero_copy_claim_authorized"])
         self.assertIn("does not authorize release", self.report)
         self.assertIn("device-only", self.report)
+        self.assertIn("legacy_pair_column_count_field = candidate_event_count", self.report)
 
 
 if __name__ == "__main__":

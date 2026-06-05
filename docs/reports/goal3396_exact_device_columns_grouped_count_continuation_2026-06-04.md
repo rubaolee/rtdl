@@ -28,6 +28,7 @@ Source commit:
 | Chains | 4096 |
 | Shapes | 3762 |
 | Exact device rows | 11316 |
+| Exact relation row-count alias | 11316 |
 | Host point groups | 4094 |
 | Device point groups | 4094 |
 | Missing groups | 0 |

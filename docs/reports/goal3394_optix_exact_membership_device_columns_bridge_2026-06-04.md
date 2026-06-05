@@ -44,6 +44,7 @@ Source commit:
 | Shapes | 3762 |
 | Exact host-refined rows | 11316 |
 | Native exact device-column rows | 11316 |
+| Exact relation row-count alias | 11316 |
 | Missing exact pairs | 0 |
 | Extra pairs | 0 |
 | Device resident | true |
@@ -72,6 +73,8 @@ host_refined_exact_rows_inside_native_bridge = true
 native_exact_device_row_stream_produced = true
 device_only_exact_predicate_produced = false
 true_zero_copy_claim_authorized = false
+exact_relation_row_count = 11316
+legacy_pair_column_count_field = candidate_event_count
 ```
 
 ## Boundary

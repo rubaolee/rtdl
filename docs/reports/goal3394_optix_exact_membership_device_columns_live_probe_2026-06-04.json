@@ -13,6 +13,7 @@
   "county_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count4096.cdb",
   "device_column_row_count": 11316,
   "device_resident": true,
+  "exact_relation_row_count": 11316,
   "exact_row_count": 11316,
   "extra_pair_count": 0,
   "extra_sample": [],
@@ -30,8 +31,9 @@
       "exact_relation_witness_rows_materialized": false,
       "host_refined_exact_rows_inside_native_bridge": true,
       "output_residency": "device_resident_exact_id_columns",
-      "owner_handle": 126345568,
-      "traversal_seconds": 0.001482425,
+      "owner_handle": 109019200,
+      "relation_row_count": 11316,
+      "traversal_seconds": 0.001660014,
       "true_zero_copy_authorized": false
     },
     "typed_result_stream": {
@@ -117,6 +119,7 @@
       "page_capacity": 11316,
       "producer_primitive": "point_closed_shape_membership_2d_exact_host_refined",
       "public_speedup_claim_authorized": false,
+      "relation_row_count": 11316,
       "release_authorized": false,
       "rt_core_speedup_claim_authorized": false,
       "segmented_page_failure_mode": "fail_closed_overflow",
@@ -272,8 +275,10 @@
       ],
       "device_only_exact_predicate_produced": false,
       "device_resident_output_stream_proven": true,
+      "exact_relation_row_count": 11316,
       "exact_relation_witness_rows_materialized": false,
       "host_refined_exact_rows_inside_native_bridge": true,
+      "legacy_pair_column_count_field": "candidate_event_count",
       "native_symbol": "rtdl_optix_prepared_point_closed_shape_membership_exact_device_columns_2d",
       "native_typed_producer_metadata_present": true,
       "overflow": false,
@@ -296,10 +301,10 @@
   "overflow": false,
   "pairs_match_exact_rows": true,
   "point_count": 4096,
-  "rtdl_commit": "87a2acbb0cbd3121f727ad055d4b401739b674a8",
+  "rtdl_commit": "0c3fc5433daa7e0289c311303bd52e360f7bedab",
   "schema": "rtdl.goal3394.optix_exact_membership_device_columns_live_probe.v1",
   "shape_count": 3762,
   "source_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county.cdb",
   "start": 256,
-  "traversal_seconds": 0.001482425
+  "traversal_seconds": 0.001660014
 }

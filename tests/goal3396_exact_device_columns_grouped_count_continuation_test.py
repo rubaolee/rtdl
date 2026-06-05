@@ -25,6 +25,7 @@ class Goal3396ExactDeviceColumnsGroupedCountContinuationTest(unittest.TestCase):
         self.assertEqual(payload["shape_count"], 3762)
         self.assertEqual(payload["exact_row_count"], 11316)
         self.assertEqual(payload["exact_device_row_count"], 11316)
+        self.assertEqual(payload["exact_relation_row_count"], 11316)
         self.assertEqual(payload["group_count"], 4094)
         self.assertEqual(payload["device_group_count"], 4094)
         self.assertTrue(payload["group_counts_match_host"])
