@@ -8166,6 +8166,7 @@ static void run_prepared_point_closed_shape_membership_candidate_device_columns_
         lp.points_x = reinterpret_cast<const float*>(chunk_points_x);
         lp.points_y = reinterpret_cast<const float*>(chunk_points_y);
         lp.point_ids = reinterpret_cast<const uint32_t*>(chunk_point_ids);
+        lp.point_index_offset = static_cast<uint32_t>(point_offset);
         lp.probe_count = static_cast<uint32_t>(chunk_point_count);
         upload(d_params.ptr, &lp, 1);
 

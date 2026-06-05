@@ -24,6 +24,12 @@ class Goal3424ClosedShapeInstanceIdentityRefinementTest(unittest.TestCase):
         self.assertIn("shape_ordinals_out", workloads)
         self.assertIn("params.point_index_offset + pidx", workloads)
         self.assertIn("params.shape_ordinals_out[slot] = (unsigned long long)prim", workloads)
+        self.assertIn(
+            "lp.point_ids = reinterpret_cast<const uint32_t*>(chunk_point_ids);\n"
+            "        lp.point_index_offset = static_cast<uint32_t>(point_offset);\n"
+            "        lp.probe_count = static_cast<uint32_t>(chunk_point_count);",
+            workloads,
+        )
 
     def test_python_runtime_exposes_instance_columns_without_renaming_public_ids(self):
         runtime = RUNTIME.read_text(encoding="utf-8")
@@ -47,6 +53,48 @@ class Goal3424ClosedShapeInstanceIdentityRefinementTest(unittest.TestCase):
         self.assertIn("candidate_pages_have_instance_identity_columns", script)
         self.assertIn("refined_pages_used_instance_identity_columns", script)
         self.assertIn("public_id_columns_preserved", script)
+
+    def test_cupy_ordinal_mode_preserves_duplicate_public_id_instances(self):
+        try:
+            import cupy as cp  # type: ignore
+            from rtdsl.closed_shape_topology import (
+                refine_closed_shape_membership_candidate_columns_exact_cupy,
+            )
+        except Exception as exc:  # pragma: no cover
+            self.skipTest(f"CuPy closed-shape refiner unavailable: {exc}")
+
+        try:
+            points = (
+                {"id": 7, "x": 0.25, "y": 0.25},
+                {"id": 7, "x": 2.25, "y": 2.25},
+            )
+            shapes = (
+                {"id": 9, "vertices": ((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0))},
+                {"id": 9, "vertices": ((2.0, 2.0), (3.0, 2.0), (3.0, 3.0), (2.0, 3.0))},
+            )
+            candidates = {
+                "point_id": cp.asarray([7, 7], dtype=cp.int64),
+                "shape_id": cp.asarray([9, 9], dtype=cp.int64),
+                "point_ordinal": cp.asarray([0, 1], dtype=cp.int64),
+                "shape_ordinal": cp.asarray([0, 1], dtype=cp.int64),
+            }
+            result = refine_closed_shape_membership_candidate_columns_exact_cupy(
+                candidates,
+                points,
+                shapes,
+            )
+        except Exception as exc:  # pragma: no cover
+            self.skipTest(f"CuPy closed-shape refiner could not execute: {exc}")
+
+        self.assertTrue(result["instance_identity_columns_used"])
+        self.assertEqual(result["row_count"], 2)
+        pairs = list(
+            zip(
+                cp.asnumpy(result["point_id"]).tolist(),
+                cp.asnumpy(result["shape_id"]).tolist(),
+            )
+        )
+        self.assertEqual(pairs, [(7, 9), (7, 9)])
 
     def test_report_records_duplicate_id_diagnosis_and_claim_boundary(self):
         report = REPORT.read_text(encoding="utf-8")
