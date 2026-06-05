@@ -18,6 +18,8 @@ Witness kinds:
 
 Kinds `4` and `5` are failure sentinels. A valid run must have no unresolved witness kinds.
 
+For segment-flagged rows, witness discovery uses a small endpoint tolerance (`t/u` within `1e-5`, denominator threshold `1e-8`) because the upstream OptiX relation producer is a float32 boundary-sensitive primitive. This tolerance is recorded in continuation metadata and does not authorize exact double-precision geometric claims.
+
 ## Boundary
 
 This is a witness continuation, not an exact polygon overlay-area continuation. It does not compute intersection area, union area, polygon clipping output, or Jaccard.

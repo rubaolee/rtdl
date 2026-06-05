@@ -70,12 +70,12 @@ extern "C" __global__ void shape_pair_relation_witness_kernel(
                 const float sx = bx1 - bx0;
                 const float sy = by1 - by0;
                 const float denom = rx * sy - ry * sx;
-                if (rtdl_relation_absf(denom) < 1.0e-7f) continue;
+                if (rtdl_relation_absf(denom) < 1.0e-8f) continue;
                 const float qpx = bx0 - ax0;
                 const float qpy = by0 - ay0;
                 const float t = (qpx * sy - qpy * sx) / denom;
                 const float u = (qpx * ry - qpy * rx) / denom;
-                if (t >= 0.0f && t <= 1.0f && u >= 0.0f && u <= 1.0f) {
+                if (t >= -1.0e-5f && t <= 1.00001f && u >= -1.0e-5f && u <= 1.00001f) {
                     witness_kind[row] = 1u;
                     left_boundary_ordinal[row] = static_cast<int>(i);
                     right_boundary_ordinal[row] = static_cast<int>(j);
@@ -336,6 +336,7 @@ def shape_pair_relation_witness_cupy(relation_columns) -> ShapePairRelationWitne
         },
         "witness_kind_counts": kind_counts,
         "all_rows_have_witness": not any(kind in kind_counts for kind in ("0", "4", "5")),
+        "segment_witness_endpoint_tolerance": "denom_abs_at_least_1e-8_t_u_within_1e-5_for_native_segment_flag_rows",
         "exact_polygon_overlay_area": False,
         "requires_relation_ordinals": True,
         "requires_geometry_payload_columns": True,

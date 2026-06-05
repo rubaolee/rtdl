@@ -26,6 +26,7 @@ class Goal3463ShapePairRelationWitnessContinuationTest(unittest.TestCase):
             "segment_edge_intersection",
             "left_first_vertex_inside_right",
             "right_first_vertex_inside_left",
+            "segment_witness_endpoint_tolerance",
             '"exact_polygon_overlay_area": False',
             '"full_overlay_area_claim_authorized": False',
         ):
@@ -55,6 +56,7 @@ class Goal3463ShapePairRelationWitnessContinuationTest(unittest.TestCase):
             "generic CuPy continuation",
             "witness continuation, not an exact polygon overlay-area continuation",
             "Kinds `4` and `5` are failure sentinels",
+            "does not authorize exact double-precision geometric claims",
             "does not authorize",
         ):
             self.assertIn(phrase, report)
@@ -72,6 +74,7 @@ class Goal3463ShapePairRelationWitnessContinuationTest(unittest.TestCase):
         self.assertGreater(payload["segment_flag_count"], 0)
         self.assertGreater(payload["containment_flag_count"], 0)
         self.assertEqual(payload["witness_metadata"]["schema"], "rtdl.v2_8.geometry_relation.witness_cupy.v1")
+        self.assertIn("1e-5", payload["witness_metadata"]["segment_witness_endpoint_tolerance"])
         self.assertFalse(payload["witness_metadata"]["exact_polygon_overlay_area"])
         self.assertTrue(all(value is False for value in payload["claim_boundary"].values()))
 
