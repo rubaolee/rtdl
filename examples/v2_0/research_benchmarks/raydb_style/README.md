@@ -49,7 +49,7 @@ PYTHONPATH=src:. RTDL_OPTIX_LIB=build/librtdl_optix.so python examples/v2_0/rese
 ```
 
 Archived experimental hit-stream plus Triton continuation material remains in
-the report archive. It is not the recommended v2.6 path because same-contract
+the report archive. It is not the recommended current path because same-contract
 timing did not justify Triton as a default recommendation.
 
 This path follows the authors' `RayDB-i0` execution shape at the contract level:
@@ -71,7 +71,7 @@ The experimental hit-stream backend separates traversal from continuation:
 Embree or OptiX emits only generic `(ray_id, primitive_id)` hit rows through
 `RAY_TRIANGLE_HIT_STREAM_3D`; Python maps primitive ids to app-owned group/value
 columns; a user-chosen partner may perform grouped continuation if the same
-contract is measured and reviewed. The v2.6 recommendation is still
+contract is measured and reviewed. The current recommendation is still
 primitive-first: use fused RTDL grouped reductions when they exactly express the
 work, and use partners only for unfused continuation or explicit user choice.
 
@@ -127,7 +127,7 @@ without adding RayDB semantics to the engine.
 Goal2652 adds 10s-level prepared-query timing for Embree host rays, OptiX host
 rays, and OptiX Torch partner-owned query-ray columns.
 Goal2684 added the generic RT hit-stream handoff. It is preserved as a boundary
-and implementation milestone, but the current v2.6 recommendation is
+and implementation milestone, but the current v2.8 recommendation is
 primitive-first native RTDL unless a partner continuation wins same-contract
 timing and review.
 

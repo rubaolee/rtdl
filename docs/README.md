@@ -4,7 +4,7 @@ This directory has three doors:
 
 | Door | Audience | Purpose |
 | --- | --- | --- |
-| [Learn](learn/README.md) | Learners and app builders | Quick path to run examples, write kernels, choose backends, and understand the v2.6 release boundaries. |
+| [Learn](learn/README.md) | Learners and app builders | Quick path to run examples, write kernels, choose backends, and understand the current v2.8 boundaries. |
 | [Research](research/README.md) | Internal researchers and advanced developers | Architecture notes, backend research, RayJoin/Embree context, future ideas, and design constraints. |
 | [Audit](audit/README.md) | Release reviewers and auditors | Process docs, runbooks, release reports, evidence reports, reviews, and archived goal logs. |
 
@@ -12,10 +12,11 @@ If you are new, start in **Learn**. If you are evaluating design or extending
 the system, start in **Research**. If you are checking evidence, consensus, or
 project history, start in **Audit**.
 
-Current status: RTDL v2.6 is the released source-tree
-Python+partner+RTDL app-portfolio surface. It keeps source-tree usage,
-preserves the no-broad-speedup/no-package-install boundary, and provides the
-current partner-choice guidance for CuPy and Numba continuations.
+Current status: RTDL v2.8 is the active source-tree Python+partner+RTDL
+app-portfolio surface on this branch. It keeps source-tree usage, preserves the
+no-broad-speedup/no-package-install boundary, and provides current partner-choice
+guidance, primitive discovery, prepared execution, and the 10-app benchmark
+matrix.
 
 Short model:
 
@@ -56,7 +57,7 @@ Read these in order:
 | Runtime overhead | [Runtime Overhead Architecture](runtime_overhead_architecture.md) |
 | Public map | [Public Documentation Map](public_documentation_map.md) |
 | Release Reports | [Release Reports](release_reports/) |
-| Current release package | [v2.6 Release Package](release_reports/v2_6/README.md) |
+| Current internal matrix | [Goal3518 v2.8 Benchmark Matrix](reports/goal3518_v2_8_benchmark_matrix_refresh_2026-06-05.md) |
 | History Index | [History Index](history/README.md) |
 
 ## Directory Map
@@ -64,12 +65,12 @@ Read these in order:
 | Directory | What belongs there |
 | --- | --- |
 | `learn/` | Human learning route and curated current-doc links. |
-| `tutorials/` | Current v2.x tutorials and runnable teaching docs. |
+| `tutorials/` | Current v2.8 tutorials and runnable teaching docs. |
 | `features/` | Current feature homes and engine support contract. |
 | `rtdl/` | DSL, IR, programming model, and workload reference docs. |
 | `research/` | Advanced design, RayJoin/Embree context, technical app notes, proposals, and future research notes. |
 | `audit/` | Process docs, directive snapshots, and runbooks for reviewers. |
-| `release_reports/` | Release packages and release evidence. |
+| `release_reports/` | Release evidence and archived release records. |
 | `reports/` | Detailed benchmark, implementation, and audit reports. |
 | `reviews/` | External AI and human-style review records. |
 | `handoff/` | Handoff files used for external review and continuation. |
@@ -77,6 +78,6 @@ Read these in order:
 
 ## Rule
 
-Current learner docs should explain one coherent v2.6 surface. Previous release
-evidence, including the v2.3 package, is preserved for review, but it should not
-interrupt the normal learning path.
+Current learner docs should explain one coherent v2.8 surface. Previous release
+evidence is preserved for review in history and release-report paths, but it
+should not interrupt the normal learning path.

@@ -1,6 +1,6 @@
 # Tutorial: Nearest-Neighbor Workloads
 
-This tutorial covers the current v2.x-facing nearest-neighbor workload shapes:
+This tutorial covers the current v2.8-facing nearest-neighbor workload shapes:
 fixed-radius rows, K-closest rows, and Python-level composition for
 Hausdorff-style applications.
 
@@ -261,7 +261,7 @@ python examples\rtdl_knn_rows.py --backend embree
 ```
 
 OptiX and Vulkan availability depends on the machine and local runtime setup.
-Use the current feature docs, partner-choice guide, and release package for the exact
+Use the current feature docs, partner-choice guide, and benchmark matrix for the exact
 platform story.
 
 ---

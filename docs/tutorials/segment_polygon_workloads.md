@@ -1,6 +1,6 @@
 # Tutorial: Segment And Polygon Workloads
 
-This tutorial covers the current v2.x-facing segment and polygon workload
+This tutorial covers the current v2.8-facing segment and polygon workload
 families.
 
 These are the best place to learn RTDL through real public workloads instead of
@@ -159,7 +159,7 @@ Use when:
 
 When you repeatedly query the same segment batch against the same static scene,
 use the v2 prepared/packed pattern from
-[v2.x App Building](v2_app_building.md#reuse-prepared-and-packed-inputs).
+[v2.8 App Building](v2_app_building.md#reuse-prepared-and-packed-inputs).
 Prepare the static build-side geometry once, pack reusable probe/query geometry
 once, and then call the RTDL primitive over those objects.
 
@@ -180,7 +180,7 @@ surface is still split into three distinct states:
 | OptiX request | What it means today |
 | --- | --- |
 | `--optix-mode auto` | preserve the current app default |
-| `--optix-mode host_indexed` | force the released host-indexed fallback path |
+| `--optix-mode host_indexed` | force the host-indexed fallback path |
 | `--optix-mode native` | request the experimental native custom-AABB path |
 
 Examples:
@@ -204,7 +204,7 @@ Important boundary:
 - segment/polygon hit-count has a bounded prepared compact-summary claim path,
   not a broad default-app claim
 - `segment_polygon_anyhit_rows --output-mode rows --optix-mode native` uses the
-  bounded native pair-row emitter. The v2.x path also documents streaming
+  bounded native pair-row emitter. The v2.8 path also documents streaming
   witness-column output for larger summaries. Public wording must still stay
   limited to the reviewed output capacity; unbounded row-volume speedup remains
   outside the claim.
@@ -213,7 +213,7 @@ Important boundary:
 
 ## The overlap and Jaccard line
 
-The released package also includes two narrower polygon-overlap workloads:
+The current source tree also includes two narrower polygon-overlap workloads:
 
 ### `polygon_pair_overlap_area_rows`
 

@@ -1,6 +1,6 @@
 # Benchmark Partner Reference Matrix
 
-Status: current v2.6 released source-tree guidance.
+Status: current v2.8 source-tree guidance.
 This page is a guide for app authors choosing a custom continuation partner. It
 does not broaden release wording or authorize broad speedup claims.
 
@@ -17,12 +17,12 @@ benchmark apps; it does not define hidden auto-selection rules.
 | Spatial RayJoin | point-in-polygon parity/count, boundary proximity, row-stream filtering | scalar count/parity and first-hit/nearest-boundary style primitives where available | Numba for compact-mask row continuation; CuPy for established CUDA baselines | useful baseline and app-level exact continuation | compact-mask reference for row-stream continuation | primitive-first for scalar answers; Numba only for explicit row continuation | no paper-reproduction claim without RayJoin same-contract evidence |
 | RT-DBSCAN | fixed-radius core flags plus component labeling | fixed-radius/core-summary primitives | CuPy today for measured component continuation; Numba is future candidate | prepared grid/components reference | not promoted for component labeling yet | RTDL summaries plus CuPy component continuation for many rows | dense-stream and clustering semantics remain app code |
 | RTNN | ranked fixed-radius summaries and candidate-quality probes | prepared fixed-radius ranked summaries | CuPy for CUDA-core all-pairs baseline; Numba only after measured win | baseline rows and quality checks | no promoted default yet | RTDL prepared OptiX summaries are the main path | compare exact contract and dataset scale |
-| RayDB-style aggregates | grouped count/sum/min/max/stats | fused columnar grouped reductions when they exactly match | Numba for unfused grouped min/max style custom kernels | conformance and older partner rows | first-class v2.6 custom grouped continuation lane | use primitive-first for fused scalar summaries | do not force partner continuation onto fused primitive rows |
+| RayDB-style aggregates | grouped count/sum/min/max/stats | fused columnar grouped reductions when they exactly match | Numba for unfused grouped min/max style custom kernels | conformance and older partner rows | selected generic grouped continuation lane | use primitive-first for fused scalar summaries | do not force partner continuation onto fused primitive rows |
 | Triangle counting | scalar triangle count plus optional candidate-row interpretation | native scalar triangle-count primitive | Numba for compact-mask candidate continuation only | optional device geometry setup and baseline summaries | compact-mask continuation reference | scalar primitive remains preferred for scalar answer | app interpretation of candidate rows stays outside engine |
 | Barnes-Hut | force-vector continuation after aggregate-frontier collection | aggregate-frontier collect primitive | CuPy for exact force-vector reference | active force-vector partner reference | not promoted yet | primitive collects generic frontier rows; app computes force law | no broad N-body acceleration claim |
-| Robot collision | pose batching, collision flag reduction | any-hit/collision-style generic flags where supported | no promoted v2.6 Numba reference yet | possible flag reduction/reference path | future candidate | keep CPU/Embree/OptiX primitive parity first | robotics policy stays app code |
-| Contact manifold | bounded contact witness rows and stable witness pages | bounded collect/fail-closed witness primitives | no promoted v2.6 Numba reference yet | possible witness filtering/reference path | future candidate | preserve bounded witness contract first | no arbitrary manifold-generation claim |
-| LibRTS-style spatial index | mutable index and point/range query semantics | generic point/range query rows where supported | no promoted v2.6 Numba reference yet | possible app-owned continuation | future candidate | Tier C/no-regression style evidence, not partner-performance row | index mutation policy stays app code |
+| Robot collision | pose batching, collision flag reduction | any-hit/collision-style generic flags where supported | no promoted Numba reference yet | possible flag reduction/reference path | future candidate | keep CPU/Embree/OptiX primitive parity first | robotics policy stays app code |
+| Contact manifold | bounded contact witness rows and stable witness pages | bounded collect/fail-closed witness primitives | no promoted Numba reference yet | possible witness filtering/reference path | future candidate | preserve bounded witness contract first | no arbitrary manifold-generation claim |
+| LibRTS-style spatial index | mutable index and point/range query semantics | generic point/range query rows where supported | no promoted Numba reference yet | possible app-owned continuation | future candidate | Tier C/no-regression style evidence, not partner-performance row | index mutation policy stays app code |
 
 ## How To Use This Matrix
 
@@ -38,5 +38,6 @@ For the practical decision guide, read
 [Choosing A Partner For Custom Logic](partner_choice_for_custom_logic.md).
 
 The same benchmark recommendations are available as advisory metadata through
-`rtdsl.plan_v2_6_partner_choice(...)`. That helper is explanatory only; it does
-not auto-select a partner or authorize performance wording.
+`rtdsl.v2_8_benchmark_matrix()` and
+`rtdsl.summarize_v2_8_benchmark_matrix()`. These helpers are explanatory only;
+they do not auto-select a partner or authorize performance wording.

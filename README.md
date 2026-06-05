@@ -11,9 +11,10 @@ reference runner, Embree, or OptiX without rewriting the application.
 RTDL is not a renderer or graphics engine. It uses ray-tracing-style
 acceleration structures and traversal for application kernels.
 
-This documentation is written for the v2.6 released RTDL surface:
-Python+partner+RTDL over a generic, app-agnostic native engine. Use RTDL from
-the repository source tree with `PYTHONPATH=src:.`; do not read any current doc
+This documentation is written for the current v2.8 source-tree RTDL surface:
+Python+partner+RTDL over a generic, app-agnostic native engine, with prepared
+execution and a tested 10-app benchmark matrix. Use RTDL from the repository
+source tree with `PYTHONPATH=src:.`; do not read any current doc
 as a package-install promise, automatic partner-selection promise, general
 device-residency/zero-copy product claim, or broad speedup claim.
 
@@ -26,7 +27,7 @@ Linux/pod native smoke prerequisites:
 
 ```bash
 apt-get install -y libgeos-dev pkg-config libembree-dev
-python -m pip install numpy pillow imageio imageio-ffmpeg
+python -m pip install numpy pillow imageio imageio-ffmpeg  # Note: package-install is unsupported
 ```
 
 Use a virtual environment if your Python distribution blocks system-wide
@@ -126,24 +127,23 @@ Backend support varies by feature and platform. Start with the portable
 `cpu_python_reference` backend, then use Embree or OptiX when your host has the
 native dependencies configured.
 
-## v2.6 Release
+## v2.8 Source-Tree Surface
 
-RTDL v2.6 is the current released source-tree surface. It keeps the
-v2.x language boundary, documents the promoted benchmark-app portfolio, demotes
-non-competitive candidates such as GPU-RMQ and Continuous Frechet to
-learner/research status, and records the app-agnostic primitive lessons from
-the benchmark wave.
+RTDL v2.8 is the current source-tree surface for this branch. It keeps the
+Python+partner+RTDL language boundary, documents the promoted benchmark-app
+portfolio, adds primitive discovery and prepared-execution guidance, and records
+the app-agnostic primitive lessons from the benchmark wave.
 
-The release packet separates promoted benchmark apps from learner/example apps.
+The current matrix separates promoted benchmark apps from learner/example apps.
 Promoted benchmarks are reconstruction instruments for RTDL language/runtime
 design, not broad paper-reproduction or whole-application speedup claims.
 
-Do not read v2.6 as a package-install promise, broad RT-core claim, arbitrary
+Do not read v2.8 as a package-install promise, broad RT-core claim, arbitrary
 PyTorch/CuPy/Numba acceleration claim, arbitrary polygon overlay claim, or proof
 that every user program is faster. For the exact positive and negative rule, read
 [Partner Acceleration Boundaries](docs/partner_acceleration_boundaries.md).
 
-The v2.6 partner rule is user-chosen and evidence-gated:
+The v2.8 partner rule is user-chosen and evidence-gated:
 
 - use fused RTDL primitives first when they exactly express the work;
 - choose a partner explicitly when custom continuation logic is needed;
@@ -156,6 +156,8 @@ The v2.6 partner rule is user-chosen and evidence-gated:
 For the current partner-choice guide, read
 [Choosing A Partner For Custom Logic](docs/learn/partner_choice_for_custom_logic.md)
 and the [Benchmark Partner Reference Matrix](docs/learn/benchmark_partner_reference_matrix.md).
+For the tested internal 10-app matrix, see
+[Goal3518](docs/reports/goal3518_v2_8_benchmark_matrix_refresh_2026-06-05.md).
 
 ## Performance Boundary
 
@@ -195,8 +197,8 @@ release evidence, review records, and goal archives live separately:
 
 - [History Index](docs/history/README.md)
 - [Version Archive Notes](docs/history/version_archive_notes.md)
-- [Current v2.6 Release Package](docs/release_reports/v2_6/README.md)
-- [Previous v2.3 Release Package](docs/release_reports/v2_3/README.md)
+- [Historical v2.6 Release Package](docs/release_reports/v2_6/README.md)
+- [Historical v2.3 Release Package](docs/release_reports/v2_3/README.md)
 - [Release Reports](docs/release_reports/)
 - [Benchmark And Audit Reports](docs/reports/)
 

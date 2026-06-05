@@ -1,6 +1,6 @@
 # Hausdorff / X-HD-Style Study
 
-This directory shows how a v2.x user can implement Hausdorff distance with
+This directory shows how a v2.8 user can implement Hausdorff distance with
 RTDL plus partner code, then compare that program with CPU, CUDA, and CuPy
 baselines. The current RTDL/OptiX path is informed by
 X-HD-style ideas: threshold search, witness extraction, grouping, and reducing
@@ -65,7 +65,7 @@ PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hau
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_v2_function.py --points-a 8192 --points-b 8192 --method cupy_grouped_grid_rawkernel --compare --json-out scratch/hausdorff_cupy_grid.json
 ```
 
-Run the RTDL v2.x user CUDA continuation path:
+Run the RTDL v2.8 user CUDA continuation path:
 
 ```bash
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_v2_function.py --points-a 8192 --points-b 8192 --method rtdl_v2_user_cuda --compare --json-out scratch/hausdorff_rtdl_user_cuda.json
@@ -143,7 +143,7 @@ Check these fields before quoting a result:
 
 ## Claim Boundary
 
-- `rtdl_v2_user_cuda` is an RTDL v2.x program, but it is CUDA-core partner
+- `rtdl_v2_user_cuda` is an RTDL v2.8 program, but it is CUDA-core partner
   continuation, not RT-core acceleration.
 - `rtdl_rt_threshold_search` uses RTDL/OptiX traversal but returns a bounded
   interval, not the exact Hausdorff value.

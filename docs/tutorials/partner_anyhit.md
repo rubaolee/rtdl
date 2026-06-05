@@ -1,6 +1,6 @@
 # Python Partner Any-Hit
 
-This tutorial shows the first Python+partner+RTDL shape for the v2.x-facing
+This tutorial shows the first Python+partner+RTDL shape for the v2.8-facing
 track.
 
 Use this as the first partner tutorial before the OptiX-specific column path.

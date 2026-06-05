@@ -1,4 +1,4 @@
-# v2.x App Building
+# v2.8 App Building
 
 This tutorial explains how to build a current RTDL program as a Python app with
 an RTDL kernel boundary and optional partner-owned columns.
@@ -26,7 +26,7 @@ contracts.
 | Partner framework | NumPy, PyTorch, CuPy, or selected Numba continuations | hold columns, run array math, perform reductions or custom continuations where useful |
 | RTDL | RTDL runtime and backend | traverse, refine, and emit documented primitive outputs |
 
-In v2.x, the important upgrade is not that RTDL replaces Python or partner
+In v2.8, the important upgrade is not that RTDL replaces Python or partner
 frameworks. The upgrade is that RTDL can participate in a cleaner column-based
 program where the RT-shaped part is a reusable runtime contract.
 
@@ -39,7 +39,7 @@ PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner 
 ```
 
 That program uses NumPy-owned columns, then calls RTDL through the partner
-any-hit bridge. Embree is the CPU RT fallback, so this is the best first v2.x
+any-hit bridge. Embree is the CPU RT fallback, so this is the best first v2.8
 developer path on a local Linux or Windows machine.
 
 ## Move To GPU Partner Columns
@@ -52,14 +52,14 @@ PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner 
 PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner torch-cuda --backend optix
 ```
 
-For larger app-level examples, use the application catalog, the v2.6
-partner-choice guide, and the performance reports linked from the release
-package. Treat each measured row as a specific contract: backend, partner,
+For larger app-level examples, use the application catalog, the current
+partner-choice guide, and the Goal3518 benchmark matrix. Treat each measured row
+as a specific contract: backend, partner,
 problem size, output shape, and hardware all matter.
 
 ## Continuation Work
 
-RTDL does not need to own every operation after traversal. A v2.x program can
+RTDL does not need to own every operation after traversal. A v2.8 program can
 continue in normal Python, NumPy, PyTorch, CuPy, or selected Numba kernels.
 
 Examples:

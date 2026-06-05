@@ -1,6 +1,6 @@
 # Choosing A Partner For Custom Logic
 
-Status: current v2.x source-tree guidance, with v2.6 Numba work in progress.
+Status: current v2.8 source-tree guidance.
 This is not a release tag, package-install promise, or broad speedup claim.
 
 Use this page when the RTDL primitive is only part of your program and you need
@@ -58,7 +58,7 @@ as a reusable partner contract:
 - segmented min, max, count, or sum style continuations;
 - small custom kernels that should stay in Python source rather than CUDA C++.
 
-The current v2.6 lane makes Numba first-class for selected generic continuation
+The current v2.8 lane makes Numba first-class for selected generic continuation
 contracts. Numba is not automatically faster than CuPy. It wins only when the
 contract, launch shape, and data residency are good for that workload.
 
@@ -95,21 +95,19 @@ compatible or experimental rather than performance-ready.
 
 ## Programmatic Guidance
 
-The learner docs and benchmark matrix are mirrored by an advisory helper:
+The learner docs and benchmark matrix are mirrored by advisory metadata:
 
 ```python
 import rtdsl as rt
 
-plan = rt.plan_v2_6_partner_choice(
-    "spatial_rayjoin",
-    "row_stream_compact_mask",
-)
-print(plan["recommended_partner"])  # "numba"
+for row in rt.v2_8_benchmark_matrix():
+    if row["app"] == "spatial_rayjoin":
+        print(row["row_id"], row["classification"], row["partner"])
 ```
 
-The helper does not auto-select or run the partner. It returns current
-recommendation metadata, evidence paths, and claim boundaries so apps can show a
-clear explanation before the user chooses a partner.
+The metadata does not auto-select or run a partner. It returns current
+recommendation context, evidence paths, timing boundaries, and claim boundaries
+so apps can show a clear explanation before the user chooses a partner.
 
 ## See Also
 
