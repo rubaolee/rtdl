@@ -1,0 +1,244 @@
+[goal3474] exact_oracle_rows=500/4543 elapsed=0.056s
+[goal3474] exact_oracle_rows=1000/4543 elapsed=0.105s
+[goal3474] exact_oracle_rows=1500/4543 elapsed=0.146s
+[goal3474] exact_oracle_rows=2000/4543 elapsed=0.193s
+[goal3474] exact_oracle_rows=2500/4543 elapsed=0.237s
+[goal3474] exact_oracle_rows=3000/4543 elapsed=0.284s
+[goal3474] exact_oracle_rows=3500/4543 elapsed=0.324s
+[goal3474] exact_oracle_rows=4000/4543 elapsed=0.361s
+[goal3474] exact_oracle_rows=4500/4543 elapsed=0.413s
+[goal3474] iteration=0 rows=4543 positive=1090 exceptions=0 total_area=26.083217662310 relation=0.388182s copy=0.000934s oracle=0.416698s
+[goal3474] exact_oracle_rows=500/4543 elapsed=0.056s
+[goal3474] exact_oracle_rows=1000/4543 elapsed=0.101s
+[goal3474] exact_oracle_rows=1500/4543 elapsed=0.143s
+[goal3474] exact_oracle_rows=2000/4543 elapsed=0.188s
+[goal3474] exact_oracle_rows=2500/4543 elapsed=0.232s
+[goal3474] exact_oracle_rows=3000/4543 elapsed=0.279s
+[goal3474] exact_oracle_rows=3500/4543 elapsed=0.320s
+[goal3474] exact_oracle_rows=4000/4543 elapsed=0.357s
+[goal3474] exact_oracle_rows=4500/4543 elapsed=0.409s
+[goal3474] iteration=1 rows=4543 positive=1090 exceptions=0 total_area=26.083217662310 relation=0.004817s copy=0.000135s oracle=0.412548s
+{
+  "all_oracle_exception_counts_zero": true,
+  "all_row_counts_stable": true,
+  "all_total_exact_areas_stable": true,
+  "claim_boundary": {
+    "full_overlay_area_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "exception_counts": [
+    0,
+    0
+  ],
+  "geometry_build_sec": 5.570154648274183,
+  "goal": 3474,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "iterations": 2,
+  "left_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county.cdb",
+  "left_geometry_status_counts": {
+    "make_valid": 9923,
+    "valid": 5777
+  },
+  "left_shape_count": 15700,
+  "max_rows": 65536,
+  "oracle_dependency_scope": "external_cpu_correctness_oracle_not_rtdl_runtime_dependency",
+  "ordinal_copy_to_host_sec": {
+    "max": 0.0009342459961771965,
+    "median": 0.0005348655395209789,
+    "min": 0.00013548508286476135
+  },
+  "positive_area_row_counts": [
+    1090,
+    1090
+  ],
+  "relation_columns_sec": {
+    "max": 0.3881822107359767,
+    "median": 0.19649966806173325,
+    "min": 0.004817125387489796
+  },
+  "right_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count1024.cdb",
+  "right_geometry_status_counts": {
+    "make_valid": 596,
+    "valid": 353
+  },
+  "right_shape_count": 949,
+  "row_counts": [
+    4543,
+    4543
+  ],
+  "rtdl_commit": "a03753b302511e1c39f4f392a1e9bd0d694b6c79",
+  "runs": [
+    {
+      "claim_boundary": {
+        "full_overlay_area_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false
+      },
+      "iteration": 0,
+      "oracle": {
+        "exception_count": 0,
+        "max_row_area": 1.5951731790844415,
+        "positive_area_row_count": 1090,
+        "row_count": 4543,
+        "sample_rows": [
+          {
+            "area": 0.0036477841937494443,
+            "left_ordinal": 247,
+            "right_ordinal": 6,
+            "row": 18
+          },
+          {
+            "area": 0.0010416005276674886,
+            "left_ordinal": 252,
+            "right_ordinal": 11,
+            "row": 19
+          },
+          {
+            "area": 0.02172422175412768,
+            "left_ordinal": 277,
+            "right_ordinal": 36,
+            "row": 23
+          },
+          {
+            "area": 0.001195225834041639,
+            "left_ordinal": 246,
+            "right_ordinal": 5,
+            "row": 26
+          },
+          {
+            "area": 0.0637320794171694,
+            "left_ordinal": 253,
+            "right_ordinal": 12,
+            "row": 29
+          },
+          {
+            "area": 0.0008372750554590115,
+            "left_ordinal": 289,
+            "right_ordinal": 47,
+            "row": 31
+          },
+          {
+            "area": 0.3554364779893857,
+            "left_ordinal": 289,
+            "right_ordinal": 48,
+            "row": 32
+          },
+          {
+            "area": 1.5951731790844415,
+            "left_ordinal": 288,
+            "right_ordinal": 47,
+            "row": 34
+          }
+        ],
+        "total_exact_area": 26.08321766231042,
+        "zero_area_row_count": 3453
+      },
+      "ordinal_copy_to_host_sec": 0.0009342459961771965,
+      "relation_columns_sec": 0.3881822107359767,
+      "row_count": 4543,
+      "shapely_exact_overlay_oracle_sec": 0.416697783395648
+    },
+    {
+      "claim_boundary": {
+        "full_overlay_area_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false
+      },
+      "iteration": 1,
+      "oracle": {
+        "exception_count": 0,
+        "max_row_area": 1.5951731790844415,
+        "positive_area_row_count": 1090,
+        "row_count": 4543,
+        "sample_rows": [
+          {
+            "area": 0.0637320794171694,
+            "left_ordinal": 253,
+            "right_ordinal": 12,
+            "row": 14
+          },
+          {
+            "area": 0.0010416005276674886,
+            "left_ordinal": 252,
+            "right_ordinal": 11,
+            "row": 16
+          },
+          {
+            "area": 0.0036477841937494443,
+            "left_ordinal": 247,
+            "right_ordinal": 6,
+            "row": 19
+          },
+          {
+            "area": 0.001195225834041639,
+            "left_ordinal": 246,
+            "right_ordinal": 5,
+            "row": 20
+          },
+          {
+            "area": 0.004519537330170954,
+            "left_ordinal": 248,
+            "right_ordinal": 7,
+            "row": 22
+          },
+          {
+            "area": 1.2522936242891871,
+            "left_ordinal": 250,
+            "right_ordinal": 9,
+            "row": 25
+          },
+          {
+            "area": 0.006197011108452078,
+            "left_ordinal": 259,
+            "right_ordinal": 18,
+            "row": 27
+          },
+          {
+            "area": 0.07136286715246315,
+            "left_ordinal": 249,
+            "right_ordinal": 8,
+            "row": 31
+          }
+        ],
+        "total_exact_area": 26.08321766231042,
+        "zero_area_row_count": 3453
+      },
+      "ordinal_copy_to_host_sec": 0.00013548508286476135,
+      "relation_columns_sec": 0.004817125387489796,
+      "row_count": 4543,
+      "shapely_exact_overlay_oracle_sec": 0.41254808474332094
+    }
+  ],
+  "schema": "rtdl.goal3474.shape_pair_exact_overlay_area_shapely_oracle.v1",
+  "shapely_exact_overlay_oracle_sec": {
+    "max": 0.416697783395648,
+    "median": 0.4146229340694845,
+    "min": 0.41254808474332094
+  },
+  "shapely_version": "2.1.2",
+  "synthetic_exact_overlay_fixture": {
+    "absolute_error": 0.0,
+    "expected_area": 1.0,
+    "left_status": "valid",
+    "measured_area": 1.0,
+    "passed": true,
+    "right_status": "valid"
+  },
+  "total_exact_areas": [
+    26.08321766231042,
+    26.08321766231042
+  ]
+}
