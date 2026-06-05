@@ -146,4 +146,11 @@ python3 -m unittest \
   tests.goal3424_closed_shape_instance_identity_refinement_test
 ```
 
-The first pod test attempt exposed a test expectation bug: the candidate metadata does not use a top-level `has_instance_identity_columns` field; the authoritative field is `candidate_columns.runtime.instance_identity_columns.present`. The local test has been updated accordingly and must be rerun after the artifact is committed.
+Clean `origin/main` pod result at commit `fa17e3e5`:
+
+```text
+Ran 14 tests in 0.625s
+OK
+```
+
+The first pod test attempt exposed a test expectation bug: the candidate metadata does not use a top-level `has_instance_identity_columns` field; the authoritative field is `candidate_columns.runtime.instance_identity_columns.present`. The test was updated to check that contract, and the clean pod rerun passed.
