@@ -461,35 +461,41 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
     )[:10]
 
     schema = (
-        "rtdl.goal3497.overlay_area_bounds_positive_filtered_tile_tasks.v1"
-        if args.bounds_positive_filter and not args.device_tile_task_planner
+        "rtdl.goal3502.overlay_area_single_triangulation_payload_construction.v1"
+        if args.single_triangulation_payload_evidence
         else (
-            "rtdl.goal3501.overlay_area_component_bounds_filtered_tile_tasks.v1"
-            if args.component_bounds_filter
+            "rtdl.goal3497.overlay_area_bounds_positive_filtered_tile_tasks.v1"
+            if args.bounds_positive_filter and not args.device_tile_task_planner
             else (
-                "rtdl.goal3498.overlay_area_device_tile_task_planner.v1"
-                if args.device_tile_task_planner
+                "rtdl.goal3501.overlay_area_component_bounds_filtered_tile_tasks.v1"
+                if args.component_bounds_filter
                 else (
-                    "rtdl.goal3495.overlay_area_device_active_shape_ordinals.v1"
-                    if device_active_shape_ordinals_used
+                    "rtdl.goal3498.overlay_area_device_tile_task_planner.v1"
+                    if args.device_tile_task_planner
                     else (
-                        "rtdl.goal3494.overlay_area_resident_cupy_tile_task_inputs.v1"
-                        if args.resident_cupy_inputs
+                        "rtdl.goal3495.overlay_area_device_active_shape_ordinals.v1"
+                        if device_active_shape_ordinals_used
                         else (
-                            "rtdl.goal3493.overlay_area_active_shape_payload_construction.v1"
-                            if args.active_shapes_only
-                            else "rtdl.goal3492.overlay_area_public_cdb_tile_task_executor.v1"
+                            "rtdl.goal3494.overlay_area_resident_cupy_tile_task_inputs.v1"
+                            if args.resident_cupy_inputs
+                            else (
+                                "rtdl.goal3493.overlay_area_active_shape_payload_construction.v1"
+                                if args.active_shapes_only
+                                else "rtdl.goal3492.overlay_area_public_cdb_tile_task_executor.v1"
+                            )
                         )
                     )
                 )
             )
         )
     )
-    goal = 3501 if args.component_bounds_filter else (3498 if args.device_tile_task_planner else (3497 if args.bounds_positive_filter else (
-        3495 if device_active_shape_ordinals_used else (
-            3494 if args.resident_cupy_inputs else (3493 if args.active_shapes_only else 3492)
-        )
-    )))
+    goal = 3502 if args.single_triangulation_payload_evidence else (
+        3501 if args.component_bounds_filter else (3498 if args.device_tile_task_planner else (3497 if args.bounds_positive_filter else (
+            3495 if device_active_shape_ordinals_used else (
+                3494 if args.resident_cupy_inputs else (3493 if args.active_shapes_only else 3492)
+            )
+        )))
+    )
 
     return {
         "schema": schema,
@@ -509,6 +515,8 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         "bounds_positive_filter": bool(args.bounds_positive_filter),
         "component_bounds_filter": bool(args.component_bounds_filter),
         "device_tile_task_planner": bool(args.device_tile_task_planner),
+        "single_triangulation_payload_construction": True,
+        "single_triangulation_payload_evidence": bool(args.single_triangulation_payload_evidence),
         "bounds_positive_relation_row_count": int(len(candidate_relation_rows)),
         "bounds_positive_filter_metadata": bounds_positive_filter_metadata,
         "active_shape_ordinal_metadata": active_shape_ordinal_metadata,
@@ -621,6 +629,14 @@ def parse_args() -> argparse.Namespace:
         help=(
             "When active-shapes-only is enabled, compute unique active shape ordinals on device "
             "and materialize only the smaller unique ordinal lists for CPU-owned payload preparation."
+        ),
+    )
+    parser.add_argument(
+        "--single-triangulation-payload-evidence",
+        action="store_true",
+        help=(
+            "Label the output as Goal3502 evidence for the generic single-triangulation "
+            "prepared-payload construction path."
         ),
     )
     parser.add_argument(

@@ -72,6 +72,8 @@ class Goal3502OverlayAreaSingleTriangulationPayloadConstructionTest(unittest.Tes
 
         self.assertIn("_component_payload_parts_for_prepared_geometry", text)
         self.assertIn("prepare_simple_polygon_component_payload_from_triangles", text)
+        self.assertIn("--single-triangulation-payload-evidence", text)
+        self.assertIn("rtdl.goal3502.overlay_area_single_triangulation_payload_construction.v1", text)
         self.assertNotIn("component_vertices_for_prepared_geometry", text)
 
 
