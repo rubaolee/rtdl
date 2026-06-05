@@ -132,7 +132,9 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "a CuPy bounds-overlap area continuation consumes the resident payload, the bounds-overlap "
             "path has public-CDB scale evidence, and large public-CDB relation content now matches a "
             "native-fidelity float32 host oracle; generic CuPy witness columns now materialize segment-edge "
-            "and containment witnesses for every active public-CDB relation row"
+            "and containment witnesses for every active public-CDB relation row; generic CuPy relation "
+            "complexity columns now show 4,375 of 4,543 public-CDB active relation rows require the "
+            "general simple-polygon overlay path rather than a convex-only clip fast path"
         ),
         partner_position=(
             "Numba is the recommended custom continuation when row-stream compaction is part of the app; "
@@ -155,13 +157,15 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "area continuation over the resident payload; Goal3459 added public-CDB scale evidence for "
             "bounds-overlap continuation; Goal3460 proved large public-CDB relation id/flag/ordinal content "
             "against a native-fidelity float32 host oracle; Goal3463 emitted generic CuPy witness columns for "
-            "all public-CDB active relation rows. Remaining work is exact overlay-area continuation for "
-            "non-integer, non-orthogonal polygons, plus boundary-witness ownership and exact area/witness "
-            "policy at serious scale."
+            "all public-CDB active relation rows; Goal3467 classified active relation complexity and found "
+            "4,375 of 4,543 rows require general-overlay handling, with only 168 both-convex rows and a "
+            "max active pair vertex count of 1,132. Remaining work is exact overlay-area continuation for "
+            "non-integer, non-orthogonal, mostly nonconvex polygons, plus boundary-witness ownership and "
+            "exact area/witness policy at serious scale."
         ),
         generic_runtime_target=(
-            "typed hit/relation streams with compact-mask, grouped parity/count, and bounded witness "
-            "continuation"
+            "typed hit/relation streams with compact-mask, grouped parity/count, bounded witness "
+            "continuation, and general simple-polygon overlay-area continuation"
         ),
         target_family=V2_8_FIRST_RUNTIME_TARGET,
         priority="P0",
@@ -190,6 +194,7 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "Goal3459",
             "Goal3460",
             "Goal3463",
+            "Goal3467",
         ),
     ),
     V28BenchmarkRuntimeGapRow(
