@@ -142,7 +142,8 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "output, while the current benchmark target can stay scalar exact-area first; "
             "a concrete pre-kernel tolerance/topology/scratch policy plus prepared simple-polygon "
             "component payload prototype now define the scalar exact-area kernel input shape; "
-            "a bounded tiled CPU evaluator now mirrors the scratch behavior the device continuation must preserve"
+            "a bounded tiled CPU evaluator now mirrors the scratch behavior the device continuation must preserve; "
+            "a CuPy RawKernel prototype over that prepared payload matches the CPU area fixture on an RTX A5000 pod"
         ),
         partner_position=(
             "Numba is the recommended custom continuation when row-stream compaction is part of the app; "
@@ -183,8 +184,11 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "boundary, and bounded triangle-pair scratch policy. Goal3483 added a CPU prepared-payload "
             "prototype: simple components become flat triangle arrays plus row/component triangle ranges. "
             "Goal3484 added a bounded tiled scalar evaluator over the prepared payload, proving no "
-            "silent triangle-pair truncation under explicit tile capacity. Remaining work is the actual "
-            "bounded device continuation over that prepared payload and tiled execution shape."
+            "silent triangle-pair truncation under explicit tile capacity. Goal3486 executed a CuPy "
+            "RawKernel prototype over the prepared payload on an RTX A5000 pod, matching CPU total area "
+            "1.75 with zero absolute error on the fixture. Remaining work is integration with the "
+            "device-resident relation stream and a broader exact-overlay dataset path, then a native "
+            "or accepted partner continuation over that tiled execution shape."
         ),
         generic_runtime_target=(
             "typed hit/relation streams with compact-mask, grouped parity/count, bounded witness "
@@ -224,6 +228,7 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "Goal3482",
             "Goal3483",
             "Goal3484",
+            "Goal3486",
         ),
     ),
     V28BenchmarkRuntimeGapRow(

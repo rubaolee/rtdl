@@ -2,7 +2,7 @@
 
 ## Status
 
-Implemented locally; pod validation still required for the CUDA execution path.
+Implemented and pod-validated on an RTX A5000.
 
 Goal3486 adds the first GPU execution prototype for the v2.8 scalar exact
 overlay-area continuation. It consumes the Goal3483 `prepared simple polygon component payload`
@@ -46,6 +46,25 @@ Goals3481-3484:
 - expected scalar area: `1.75`;
 - expected tile count with `max_triangle_pairs_per_tile=3`: `3`.
 
+## Pod Evidence
+
+Artifact:
+
+- `docs/reports/goal3486_overlay_area_cupy_tiled_prototype_pod_2026-06-05.json`
+
+Pod validation:
+
+- GPU: `NVIDIA RTX A5000`;
+- CuPy: `14.1.1`;
+- source commit: `fb5266bc632396693f8f8dada9873791eb7a9431`;
+- row status: `[0]`;
+- processed triangle pairs: `[8]`;
+- tile counts: `[3]`;
+- CPU total area: `1.75`;
+- GPU total area: `1.75`;
+- absolute error versus CPU: `0.0`;
+- `completed_without_truncation`: `true`.
+
 ## Boundary
 
 This is a CuPy RawKernel prototype over a prepared simple polygon component
@@ -68,5 +87,5 @@ Local validation:
 - `py -3 -m unittest tests.goal3486_overlay_area_cupy_tiled_prototype_test`
 - `py -3 -m unittest tests.goal3484_overlay_area_tiled_scalar_evaluator_test`
 
-The CuPy test skips when CUDA/CuPy is unavailable. Pod validation should run the
-same test with CuPy and CUDA available.
+The CuPy test skips when CUDA/CuPy is unavailable locally, but it was executed
+on the RTX A5000 pod and recorded in the artifact above.

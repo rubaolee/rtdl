@@ -1,0 +1,60 @@
+{
+  "area_abs_error_vs_cpu": 0.0,
+  "claim_boundary": {
+    "full_overlay_completion_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "runtime_kernel_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "cpu_total_area": 1.75,
+  "cupy_version": "14.1.1",
+  "expected_total_area": 1.75,
+  "gpu_name": "NVIDIA RTX A5000",
+  "gpu_total_area": 1.75,
+  "metadata": {
+    "app_specific_engine_logic_allowed": false,
+    "automatic_partner_selection_allowed": false,
+    "claim_boundary": "v2.8 simple-polygon overlay-area continuation metadata defines generic runtime targets after exact oracle evidence. It does not authorize release, public speedup wording, RT-core speedup wording, true-zero-copy wording, paper reproduction claims, hidden partner selection, hidden dispatch, full overlay completion claims, or app-specific native-engine behavior.",
+    "completed_without_truncation": true,
+    "input_contract": "prepared_simple_polygon_component_payload",
+    "left_triangle_count": 4,
+    "max_triangle_pairs_per_tile": 3,
+    "operation": "prepared_simple_polygon_overlay_area_tiled",
+    "partner": "cupy",
+    "processed_triangle_pair_count": 8,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "right_triangle_count": 2,
+    "row_count": 1,
+    "rt_core_speedup_claim_authorized": false,
+    "runtime_kernel_authorized": false,
+    "schema": "rtdl.v2_8.simple_polygon_overlay_area_prepared_payload_cupy_tiled.v1",
+    "status_counts": {
+      "0": 1
+    },
+    "status_semantics": {
+      "0": "computed",
+      "1": "invalid_triangle_range",
+      "2": "invalid_tile_capacity"
+    },
+    "tile_count": 3,
+    "total_area": 1.75,
+    "true_zero_copy_claim_authorized": false
+  },
+  "processed_pairs": [
+    8
+  ],
+  "row_areas": [
+    1.75
+  ],
+  "row_status": [
+    0
+  ],
+  "schema": "rtdl.goal3486.overlay_area_cupy_tiled_prototype_pod.v1",
+  "source_commit": "fb5266bc632396693f8f8dada9873791eb7a9431",
+  "tile_counts": [
+    3
+  ]
+}

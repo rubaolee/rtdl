@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import json
 import unittest
 
 import rtdsl as rt
@@ -8,6 +9,7 @@ import rtdsl as rt
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs" / "reports" / "goal3486_overlay_area_cupy_tiled_prototype_2026-06-05.md"
+POD_ARTIFACT = ROOT / "docs" / "reports" / "goal3486_overlay_area_cupy_tiled_prototype_pod_2026-06-05.json"
 
 
 def _fixture_payloads():
@@ -99,6 +101,31 @@ class Goal3486OverlayAreaCupyTiledPrototypeTest(unittest.TestCase):
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)
+
+    def test_pod_artifact_records_successful_cupy_execution(self) -> None:
+        data = json.loads(POD_ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(data["schema"], "rtdl.goal3486.overlay_area_cupy_tiled_prototype_pod.v1")
+        self.assertEqual(data["gpu_name"], "NVIDIA RTX A5000")
+        self.assertEqual(data["row_status"], [0])
+        self.assertEqual(data["processed_pairs"], [8])
+        self.assertEqual(data["tile_counts"], [3])
+        self.assertAlmostEqual(data["gpu_total_area"], 1.75)
+        self.assertEqual(data["area_abs_error_vs_cpu"], 0.0)
+        self.assertTrue(data["metadata"]["completed_without_truncation"])
+        for field, value in data["claim_boundary"].items():
+            with self.subTest(field=field):
+                self.assertFalse(value)
+
+    def test_spatial_rayjoin_gap_row_records_cupy_prototype_and_remaining_work(self) -> None:
+        rows = {row["benchmark_app"]: row for row in rt.v2_8_benchmark_runtime_gap_matrix()}
+        spatial = rows["spatial_rayjoin"]
+
+        self.assertIn("CuPy RawKernel prototype", spatial["current_best_path"])
+        self.assertIn("RTX A5000 pod", spatial["current_bottleneck"])
+        self.assertIn("device-resident relation stream", spatial["current_bottleneck"])
+        self.assertIn("Goal3486", spatial["evidence_refs"])
+        self.assertFalse(spatial["release_authorized"])
 
 
 if __name__ == "__main__":
