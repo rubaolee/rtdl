@@ -221,7 +221,11 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "tile-task planning: candidate rows drop from 4,543 to 2,274, component-pair rows from 39,947 "
             "to 24,389, tile tasks from 54,232 to 36,414, triangle pairs from 9.65M to 7.66M, and payload "
             "build from 7.7470s to 6.8054s while preserving exact total-area agreement. The remaining "
-            "dominant cost is still CPU-owned prepared payload construction."
+            "dominant cost is still CPU-owned prepared payload construction. Goal3498 moves the component-pair "
+            "and tile-task expansion step into a generic CuPy device planner over relation ordinals and prepared "
+            "component tables; after RawKernel warmup, planning best repeat is 0.0415s versus Goal3497's "
+            "roughly 0.2113s host planner, with identical total-area agreement. This is a steady-state planning "
+            "win, not a first-use latency win, and does not remove the 6.89s CPU-owned payload construction cost."
         ),
         generic_runtime_target=(
             "typed hit/relation streams with compact-mask, grouped parity/count, bounded witness "
@@ -271,6 +275,7 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "Goal3494",
             "Goal3495",
             "Goal3497",
+            "Goal3498",
         ),
     ),
     V28BenchmarkRuntimeGapRow(
