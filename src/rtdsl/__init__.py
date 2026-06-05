@@ -322,6 +322,15 @@ from .v2_8_benchmark_runtime_gap import v2_7_internal_closeout_status
 from .v2_8_benchmark_runtime_gap import v2_8_benchmark_runtime_gap_matrix
 from .v2_8_benchmark_runtime_gap import v2_8_runtime_target_summary
 from .v2_8_benchmark_runtime_gap import validate_v2_8_benchmark_runtime_gap_map
+from .v2_8_benchmark_matrix import V28BenchmarkMatrixRow
+from .v2_8_benchmark_matrix import V2_8_BENCHMARK_MATRIX_CLAIM_BOUNDARY
+from .v2_8_benchmark_matrix import V2_8_BENCHMARK_MATRIX_CLASSIFICATIONS
+from .v2_8_benchmark_matrix import V2_8_BENCHMARK_MATRIX_STATUS
+from .v2_8_benchmark_matrix import V2_8_BENCHMARK_MATRIX_VERSION
+from .v2_8_benchmark_matrix import summarize_v2_8_benchmark_matrix
+from .v2_8_benchmark_matrix import v2_8_benchmark_matrix
+from .v2_8_benchmark_matrix import v2_8_benchmark_matrix_rows
+from .v2_8_benchmark_matrix import validate_v2_8_benchmark_matrix
 from .v2_8_segmented_typed_stream_adapter import V28SegmentedTypedStreamAdapterResult
 from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_CLAIM_BOUNDARY
 from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_MATERIALIZATION
@@ -2088,6 +2097,15 @@ __all__ = [
     "v2_8_benchmark_runtime_gap_matrix",
     "v2_8_runtime_target_summary",
     "validate_v2_8_benchmark_runtime_gap_map",
+    "V28BenchmarkMatrixRow",
+    "V2_8_BENCHMARK_MATRIX_CLAIM_BOUNDARY",
+    "V2_8_BENCHMARK_MATRIX_CLASSIFICATIONS",
+    "V2_8_BENCHMARK_MATRIX_STATUS",
+    "V2_8_BENCHMARK_MATRIX_VERSION",
+    "summarize_v2_8_benchmark_matrix",
+    "v2_8_benchmark_matrix",
+    "v2_8_benchmark_matrix_rows",
+    "validate_v2_8_benchmark_matrix",
     "V28SegmentedTypedStreamAdapterResult",
     "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_CLAIM_BOUNDARY",
     "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_MATERIALIZATION",
