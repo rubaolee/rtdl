@@ -363,7 +363,7 @@
     "rt_candidate_columns_produced": true
   },
   "rt_candidate_pair_count": 47570,
-  "rtdl_commit": "92a06d02e99be3e406771152ac13b49bee1bac3d",
+  "rtdl_commit": "1b2d0ea5b31c1bcb413494c0c8a091f9278649b9",
   "schema": "rtdl.goal3424.closed_shape_instance_identity_refinement_probe.v1",
   "shape_count": 15700,
   "shape_public_id_stats": {
