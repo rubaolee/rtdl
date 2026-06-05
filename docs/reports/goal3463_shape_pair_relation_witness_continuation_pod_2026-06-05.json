@@ -1,0 +1,247 @@
+{
+  "all_rows_have_witness": true,
+  "claim_boundary": {
+    "full_overlay_area_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "containment_flag_count": 4,
+  "containment_rows_have_containment_witness": true,
+  "goal": 3463,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "left_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county.cdb",
+  "left_shape_count": 15700,
+  "relation_columns_sec": 1.5187160652130842,
+  "relation_metadata_geometry_payload_device_resident": true,
+  "relation_metadata_ordinal_columns_device_resident": true,
+  "right_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count1024.cdb",
+  "right_shape_count": 949,
+  "row_count": 4543,
+  "rtdl_commit": "dd25ccf170cda0f1bf52f11f3560131d86376a4b",
+  "schema": "rtdl.goal3463.shape_pair_relation_witness_continuation.v1",
+  "segment_flag_count": 4539,
+  "segment_rows_have_segment_witness": true,
+  "unresolved_witness_count": 0,
+  "witness_continuation_sec": 0.2459023343399167,
+  "witness_kind_counts": {
+    "1": 4539,
+    "2": 4
+  },
+  "witness_metadata": {
+    "all_rows_have_witness": true,
+    "app_specific_engine_logic_allowed": false,
+    "automatic_partner_selection_allowed": false,
+    "exact_polygon_overlay_area": false,
+    "full_overlay_area_claim_authorized": false,
+    "input_contract": "shape_pair_relation_flags_with_ordinals_and_geometry_payload",
+    "operation": "shape_pair_relation_witness_columns",
+    "partner": "cupy",
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "requires_geometry_payload_columns": true,
+    "requires_relation_ordinals": true,
+    "row_count": 4543,
+    "rt_core_speedup_claim_authorized": false,
+    "schema": "rtdl.v2_8.geometry_relation.witness_cupy.v1",
+    "segment_witness_endpoint_tolerance": "denom_abs_at_least_1e-8_t_u_within_1e-5_for_native_segment_flag_rows",
+    "true_zero_copy_claim_authorized": false,
+    "witness_kind_counts": {
+      "1": 4539,
+      "2": 4
+    },
+    "witness_kind_semantics": {
+      "0": "unset",
+      "1": "segment_edge_intersection",
+      "2": "left_first_vertex_inside_right",
+      "3": "right_first_vertex_inside_left",
+      "4": "segment_flag_without_found_edge_witness",
+      "5": "containment_flag_without_found_vertex_witness"
+    }
+  },
+  "witness_sample": [
+    {
+      "left_boundary_ordinal": 9,
+      "left_id": 185,
+      "right_boundary_ordinal": 0,
+      "right_id": 262,
+      "segment_t": 1.0,
+      "segment_u": 5.8633165878063664e-08,
+      "witness_kind": 1
+    },
+    {
+      "left_boundary_ordinal": 9,
+      "left_id": 185,
+      "right_boundary_ordinal": 0,
+      "right_id": 263,
+      "segment_t": 1.0,
+      "segment_u": 5.695746652101263e-10,
+      "witness_kind": 1
+    },
+    {
+      "left_boundary_ordinal": 78,
+      "left_id": 189,
+      "right_boundary_ordinal": 13,
+      "right_id": 264,
+      "segment_t": 1.0,
+      "segment_u": 1.0,
+      "witness_kind": 1
+    },
+    {
+      "left_boundary_ordinal": 78,
+      "left_id": 189,
+      "right_boundary_ordinal": 0,
+      "right_id": 267,
+      "segment_t": 1.0,
+      "segment_u": 0.0,
+      "witness_kind": 1
+    },
+    {
+      "left_boundary_ordinal": 57,
+      "left_id": 213,
+      "right_boundary_ordinal": 38,
+      "right_id": 318,
+      "segment_t": 1.0,
+      "segment_u": 1.0,
+      "witness_kind": 1
+    },
+    {
+      "left_boundary_ordinal": 7,
+      "left_id": 212,
+      "right_boundary_ordinal": 0,
+      "right_id": 280,
+      "segment_t": 1.0,
+      "segment_u": 1.0423521601410357e-08,
+      "witness_kind": 1
+    },
+    {
+      "left_boundary_ordinal": 7,
+      "left_id": 212,
+      "right_boundary_ordinal": 0,
+      "right_id": 281,
+      "segment_t": 1.0,
+      "segment_u": -2.717936764540241e-09,
+      "witness_kind": 1
+    },
+    {
+      "left_boundary_ordinal": 3,
+      "left_id": 227,
+      "right_boundary_ordinal": 0,
+      "right_id": 268,
+      "segment_t": 1.0,
+      "segment_u": 0.0,
+      "witness_kind": 1
+    },
+    {
+      "left_boundary_ordinal": 3,
+      "left_id": 227,
+      "right_boundary_ordinal": 0,
+      "right_id": 269,
+      "segment_t": 1.0,
+      "segment_u": 0.0,
+      "witness_kind": 1
+    },
+    {
+      "left_boundary_ordinal": 22,
+      "left_id": 218,
+      "right_boundary_ordinal": 32,
+      "right_id": 261,
+      "segment_t": 1.0,
+      "segment_u": 1.0,
+      "witness_kind": 1
+    },
+    {
+      "left_boundary_ordinal": 57,
+      "left_id": 213,
+      "right_boundary_ordinal": 47,
+      "right_id": 278,
+      "segment_t": 1.0,
+      "segment_u": 1.0,
+      "witness_kind": 1
+    },
+    {
+      "left_boundary_ordinal": 38,
+      "left_id": 211,
+      "right_boundary_ordinal": 0,
+      "right_id": 278,
+      "segment_t": 1.0,
+      "segment_u": -0.0,
+      "witness_kind": 1
+    },
+    {
+      "left_boundary_ordinal": 38,
+      "left_id": 211,
+      "right_boundary_ordinal": 0,
+      "right_id": 279,
+      "segment_t": 1.0,
+      "segment_u": 0.0,
+      "witness_kind": 1
+    },
+    {
+      "left_boundary_ordinal": 72,
+      "left_id": 271,
+      "right_boundary_ordinal": 9,
+      "right_id": 643,
+      "segment_t": 1.0,
+      "segment_u": 1.0,
+      "witness_kind": 1
+    },
+    {
+      "left_boundary_ordinal": 0,
+      "left_id": 269,
+      "right_boundary_ordinal": 0,
+      "right_id": 268,
+      "segment_t": -0.0,
+      "segment_u": -0.0,
+      "witness_kind": 1
+    },
+    {
+      "left_boundary_ordinal": 0,
+      "left_id": 269,
+      "right_boundary_ordinal": 1,
+      "right_id": 269,
+      "segment_t": 1.0,
+      "segment_u": 1.445975215119688e-07,
+      "witness_kind": 1
+    },
+    {
+      "left_boundary_ordinal": 94,
+      "left_id": 282,
+      "right_boundary_ordinal": 7,
+      "right_id": 260,
+      "segment_t": 1.0000004768371582,
+      "segment_u": 1.000000238418579,
+      "witness_kind": 1
+    },
+    {
+      "left_boundary_ordinal": 0,
+      "left_id": 268,
+      "right_boundary_ordinal": 1,
+      "right_id": 268,
+      "segment_t": 1.0,
+      "segment_u": 1.547812331637033e-07,
+      "witness_kind": 1
+    },
+    {
+      "left_boundary_ordinal": 0,
+      "left_id": 268,
+      "right_boundary_ordinal": 0,
+      "right_id": 269,
+      "segment_t": 0.0,
+      "segment_u": 0.0,
+      "witness_kind": 1
+    },
+    {
+      "left_boundary_ordinal": 0,
+      "left_id": 262,
+      "right_boundary_ordinal": 1,
+      "right_id": 262,
+      "segment_t": 1.0,
+      "segment_u": -5.223159291745105e-07,
+      "witness_kind": 1
+    }
+  ]
+}
