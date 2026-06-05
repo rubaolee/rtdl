@@ -1806,6 +1806,8 @@ extern "C" __global__ void shape_pair_relation_active_relation_device_columns_ke
         unsigned long long* active_count,
         unsigned long long* left_ids_out,
         unsigned long long* right_ids_out,
+        uint32_t* left_ordinals_out,
+        uint32_t* right_ordinals_out,
         uint32_t* requires_segment_intersection_out,
         uint32_t* requires_point_containment_out,
         uint32_t output_capacity,
@@ -1854,6 +1856,8 @@ extern "C" __global__ void shape_pair_relation_active_relation_device_columns_ke
     }
     left_ids_out[slot] = static_cast<unsigned long long>(left_polygons[li].id);
     right_ids_out[slot] = static_cast<unsigned long long>(right_polygons[ri].id);
+    left_ordinals_out[slot] = li;
+    right_ordinals_out[slot] = ri;
     requires_segment_intersection_out[slot] = flag.requires_segment_intersection;
     requires_point_containment_out[slot] = flag.requires_point_containment;
 }

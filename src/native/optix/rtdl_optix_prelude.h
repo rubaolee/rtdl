@@ -301,6 +301,8 @@ struct RtdlNativeClosedShapeBoundaryEventDeviceColumns {
 struct RtdlNativeShapePairRelationDeviceColumns {
     uint64_t left_ids_device_ptr;
     uint64_t right_ids_device_ptr;
+    uint64_t left_ordinals_device_ptr;
+    uint64_t right_ordinals_device_ptr;
     uint64_t requires_segment_intersection_device_ptr;
     uint64_t requires_point_containment_device_ptr;
     uint64_t left_polygon_refs_device_ptr;

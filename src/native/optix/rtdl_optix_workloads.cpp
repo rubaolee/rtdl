@@ -6562,6 +6562,8 @@ struct PreparedShapePairRelationBuild {
 struct NativeShapePairRelationDeviceColumnsOwner {
     CUdeviceptr left_ids = 0;
     CUdeviceptr right_ids = 0;
+    CUdeviceptr left_ordinals = 0;
+    CUdeviceptr right_ordinals = 0;
     CUdeviceptr requires_segment_intersection = 0;
     CUdeviceptr requires_point_containment = 0;
     CUdeviceptr left_polygon_refs = 0;
@@ -6572,6 +6574,8 @@ struct NativeShapePairRelationDeviceColumnsOwner {
     ~NativeShapePairRelationDeviceColumnsOwner() {
         if (left_ids) cuMemFree(left_ids);
         if (right_ids) cuMemFree(right_ids);
+        if (left_ordinals) cuMemFree(left_ordinals);
+        if (right_ordinals) cuMemFree(right_ordinals);
         if (requires_segment_intersection) cuMemFree(requires_segment_intersection);
         if (requires_point_containment) cuMemFree(requires_point_containment);
         if (left_polygon_refs) cuMemFree(left_polygon_refs);
@@ -9140,16 +9144,22 @@ static void run_prepared_shape_pair_relation_active_device_columns_optix(
     std::unique_ptr<NativeShapePairRelationDeviceColumnsOwner> owner;
     CUdeviceptr left_ids_output = 0;
     CUdeviceptr right_ids_output = 0;
+    CUdeviceptr left_ordinals_output = 0;
+    CUdeviceptr right_ordinals_output = 0;
     CUdeviceptr requires_segment_intersection_output = 0;
     CUdeviceptr requires_point_containment_output = 0;
     if (max_rows != 0) {
         owner = std::make_unique<NativeShapePairRelationDeviceColumnsOwner>();
         CU_CHECK(cuMemAlloc(&owner->left_ids, sizeof(unsigned long long) * max_rows));
         CU_CHECK(cuMemAlloc(&owner->right_ids, sizeof(unsigned long long) * max_rows));
+        CU_CHECK(cuMemAlloc(&owner->left_ordinals, sizeof(uint32_t) * max_rows));
+        CU_CHECK(cuMemAlloc(&owner->right_ordinals, sizeof(uint32_t) * max_rows));
         CU_CHECK(cuMemAlloc(&owner->requires_segment_intersection, sizeof(uint32_t) * max_rows));
         CU_CHECK(cuMemAlloc(&owner->requires_point_containment, sizeof(uint32_t) * max_rows));
         left_ids_output = owner->left_ids;
         right_ids_output = owner->right_ids;
+        left_ordinals_output = owner->left_ordinals;
+        right_ordinals_output = owner->right_ordinals;
         requires_segment_intersection_output = owner->requires_segment_intersection;
         requires_point_containment_output = owner->requires_point_containment;
     }
@@ -9176,6 +9186,8 @@ static void run_prepared_shape_pair_relation_active_device_columns_optix(
         &d_active_count.ptr,
         &left_ids_output,
         &right_ids_output,
+        &left_ordinals_output,
+        &right_ordinals_output,
         &requires_segment_intersection_output,
         &requires_point_containment_output,
         &capacity_u32,
@@ -9219,6 +9231,8 @@ static void run_prepared_shape_pair_relation_active_device_columns_optix(
 
     columns_out->left_ids_device_ptr = static_cast<uint64_t>(left_ids_output);
     columns_out->right_ids_device_ptr = static_cast<uint64_t>(right_ids_output);
+    columns_out->left_ordinals_device_ptr = static_cast<uint64_t>(left_ordinals_output);
+    columns_out->right_ordinals_device_ptr = static_cast<uint64_t>(right_ordinals_output);
     columns_out->requires_segment_intersection_device_ptr =
         static_cast<uint64_t>(requires_segment_intersection_output);
     columns_out->requires_point_containment_device_ptr =

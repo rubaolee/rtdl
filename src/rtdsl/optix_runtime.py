@@ -953,6 +953,8 @@ class _RtdlNativeShapePairRelationDeviceColumns(ctypes.Structure):
     _fields_ = [
         ("left_ids_device_ptr", ctypes.c_uint64),
         ("right_ids_device_ptr", ctypes.c_uint64),
+        ("left_ordinals_device_ptr", ctypes.c_uint64),
+        ("right_ordinals_device_ptr", ctypes.c_uint64),
         ("requires_segment_intersection_device_ptr", ctypes.c_uint64),
         ("requires_point_containment_device_ptr", ctypes.c_uint64),
         ("left_polygon_refs_device_ptr", ctypes.c_uint64),
@@ -2272,6 +2274,8 @@ class OptixShapePairRelationDeviceColumnOutput:
     owner: _OptixNativeDevicePairColumnsOwner
     left_ids_device_ptr: int
     right_ids_device_ptr: int
+    left_ordinals_device_ptr: int
+    right_ordinals_device_ptr: int
     requires_segment_intersection_device_ptr: int
     requires_point_containment_device_ptr: int
     left_polygon_refs_device_ptr: int
@@ -2307,6 +2311,8 @@ class OptixShapePairRelationDeviceColumnOutput:
         return (
             self.left_ids_device_ptr > 0
             and self.right_ids_device_ptr > 0
+            and self.left_ordinals_device_ptr > 0
+            and self.right_ordinals_device_ptr > 0
             and self.requires_segment_intersection_device_ptr > 0
             and self.requires_point_containment_device_ptr > 0
             and self.capacity > 0
@@ -2320,6 +2326,10 @@ class OptixShapePairRelationDeviceColumnOutput:
     @property
     def exact_relation_witness_rows_materialized(self) -> bool:
         return False
+
+    @property
+    def ordinal_columns_device_resident(self) -> bool:
+        return self.left_ordinals_device_ptr > 0 and self.right_ordinals_device_ptr > 0 and not self.overflow
 
     @property
     def geometry_payload_device_resident(self) -> bool:
@@ -2384,6 +2394,14 @@ class OptixShapePairRelationDeviceColumnOutput:
             "active_relation_count": int(self.active_relation_count),
             "capacity_status": capacity_status,
             "retry_capacity_hint": self.retry_capacity_hint,
+            "ordinal_columns": {
+                "left_ordinal_device_ptr": int(self.left_ordinals_device_ptr),
+                "right_ordinal_device_ptr": int(self.right_ordinals_device_ptr),
+                "device_resident": bool(self.ordinal_columns_device_resident),
+                "ordinal_semantics": "zero_based_index_into_shape_pair_geometry_payload_arrays",
+                "sparse_user_ids_are_not_dense_geometry_indices": True,
+                "true_zero_copy_authorized": False,
+            },
             "geometry_payload": {
                 "schema": "shape_pair_relation_geometry_payload_device_columns",
                 "left_polygon_refs_device_ptr": int(self.left_polygon_refs_device_ptr),
@@ -2457,6 +2475,21 @@ class OptixShapePairRelationDeviceColumnOutput:
             ),
             self.field_names[3]: self._cupy_column(
                 self.requires_point_containment_device_ptr,
+                dtype_name="uint32",
+                itemsize=ctypes.sizeof(ctypes.c_uint32),
+            ),
+        }
+
+    def as_cupy_ordinal_columns(self) -> dict[str, object]:
+        """Wrap zero-based geometry-payload ordinals as CuPy arrays."""
+        return {
+            "left_ordinal": self._cupy_column(
+                self.left_ordinals_device_ptr,
+                dtype_name="uint32",
+                itemsize=ctypes.sizeof(ctypes.c_uint32),
+            ),
+            "right_ordinal": self._cupy_column(
+                self.right_ordinals_device_ptr,
                 dtype_name="uint32",
                 itemsize=ctypes.sizeof(ctypes.c_uint32),
             ),
@@ -3316,6 +3349,8 @@ class PreparedOptixShapePairRelation:
             owner=owner,
             left_ids_device_ptr=int(columns.left_ids_device_ptr),
             right_ids_device_ptr=int(columns.right_ids_device_ptr),
+            left_ordinals_device_ptr=int(columns.left_ordinals_device_ptr),
+            right_ordinals_device_ptr=int(columns.right_ordinals_device_ptr),
             requires_segment_intersection_device_ptr=int(columns.requires_segment_intersection_device_ptr),
             requires_point_containment_device_ptr=int(columns.requires_point_containment_device_ptr),
             left_polygon_refs_device_ptr=int(columns.left_polygon_refs_device_ptr),
