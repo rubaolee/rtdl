@@ -1576,6 +1576,10 @@ class OptixNativeDevicePairColumnOutput:
     def exact_relation_witness_rows_materialized(self) -> bool:
         return False
 
+    @property
+    def relation_row_count(self) -> int:
+        return int(self.candidate_event_count)
+
     def to_metadata(self) -> dict[str, object]:
         metadata = geometry_relation_typed_stream_metadata_for_device_pair_columns(
             row_count=self.row_count,
@@ -1597,6 +1601,7 @@ class OptixNativeDevicePairColumnOutput:
             stream_metadata["stream_kind"] = "exact_relation_stream"
             stream_metadata["producer_primitive"] = "point_closed_shape_membership_2d_exact_host_refined"
             stream_metadata["status"] = "internal_contract_host_refined_exact_device_columns"
+            stream_metadata["relation_row_count"] = int(self.relation_row_count)
             producer_metadata = metadata["v2_8_typed_producer_metadata"]
             producer_metadata["schema_id"] = "point_closed_shape_membership_2d_exact_device_columns"
             producer_metadata["producer_primitive"] = "point_closed_shape_membership_2d_exact_host_refined"
@@ -1604,6 +1609,8 @@ class OptixNativeDevicePairColumnOutput:
             producer_metadata["status"] = "device_resident_exact_id_columns_host_refined_bridge"
             producer_metadata["host_refined_exact_rows_inside_native_bridge"] = True
             producer_metadata["device_only_exact_predicate_produced"] = False
+            producer_metadata["exact_relation_row_count"] = int(self.relation_row_count)
+            producer_metadata["legacy_pair_column_count_field"] = "candidate_event_count"
         metadata["runtime"] = {
             "backend": "optix",
             "output_residency": (
@@ -1618,6 +1625,7 @@ class OptixNativeDevicePairColumnOutput:
             "true_zero_copy_authorized": False,
             "exact_relation_witness_rows_materialized": False,
             "host_refined_exact_rows_inside_native_bridge": is_exact_closed_shape_bridge,
+            "relation_row_count": int(self.relation_row_count),
         }
         return metadata
 

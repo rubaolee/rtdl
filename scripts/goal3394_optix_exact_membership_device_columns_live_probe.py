@@ -90,6 +90,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         "exact_row_count": len(exact_rows),
         "device_column_row_count": int(columns.row_count),
         "candidate_event_count": int(columns.candidate_event_count),
+        "exact_relation_row_count": int(columns.relation_row_count),
         "device_resident": bool(columns.device_resident),
         "overflow": bool(columns.overflow),
         "native_symbol": str(columns.native_symbol),

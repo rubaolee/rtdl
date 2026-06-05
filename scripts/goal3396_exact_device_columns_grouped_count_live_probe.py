@@ -93,6 +93,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         "shape_count": len(shapes),
         "exact_row_count": len(exact_rows),
         "exact_device_row_count": int(exact_columns.row_count),
+        "exact_relation_row_count": int(exact_columns.relation_row_count),
         "group_count": len(host_counts),
         "device_group_count": len(device_counts),
         "group_counts_match_host": device_counts == dict(host_counts),
