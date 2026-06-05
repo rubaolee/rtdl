@@ -129,7 +129,9 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "those columns feed a generic compact grouped-count continuation by id, and the stream "
             "now exposes generic shape-pair geometry payload columns for explicit witness/area "
             "continuations; zero-based ordinal columns now make sparse ids safe for payload indexing, "
-            "and a CuPy bounds-overlap area continuation consumes the resident payload"
+            "a CuPy bounds-overlap area continuation consumes the resident payload, the bounds-overlap "
+            "path has public-CDB scale evidence, and large public-CDB relation content now matches a "
+            "native-fidelity float32 host oracle"
         ),
         partner_position=(
             "Numba is the recommended custom continuation when row-stream compaction is part of the app; "
@@ -149,9 +151,11 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "column content against host materialized rows on a sparse-id fixture; Goal3453 exposed "
             "generic left/right geometry payload columns with pod evidence; Goal3455 added ordinal columns "
             "so sparse ids are not used as geometry indices; Goal3456 proved a generic CuPy bounds-overlap "
-            "area continuation over the resident payload. Remaining work is exact polygon relation witnesses "
-            "and exact overlay-area continuation, large-scale content-reference oracles beyond counts/grouping/"
-            "bounds-area, and boundary-witness ownership at serious scale."
+            "area continuation over the resident payload; Goal3459 added public-CDB scale evidence for "
+            "bounds-overlap continuation; Goal3460 proved large public-CDB relation id/flag/ordinal content "
+            "against a native-fidelity float32 host oracle. Remaining work is exact polygon relation witnesses "
+            "and exact overlay-area continuation for non-integer, non-orthogonal polygons, plus boundary-witness "
+            "ownership at serious scale."
         ),
         generic_runtime_target=(
             "typed hit/relation streams with compact-mask, grouped parity/count, and bounded witness "
@@ -181,6 +185,8 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "Goal3453",
             "Goal3455",
             "Goal3456",
+            "Goal3459",
+            "Goal3460",
         ),
     ),
     V28BenchmarkRuntimeGapRow(
