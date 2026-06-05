@@ -1,7 +1,7 @@
 # Goal3438 Spatial RayJoin Prepared Subroute Reuse
 
 **Date:** 2026-06-05  
-**Status:** implemented; pod artifact pending  
+**Status:** implemented and pod-validated  
 **Scope:** app-facing prepared/repeated handles for the three Spatial RayJoin subroutes
 
 ## Purpose
@@ -88,13 +88,17 @@ Local validation:
 $env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal3438_spatial_rayjoin_prepared_subroute_reuse_test tests.goal3431_spatial_rayjoin_prepared_cupy_refined_pip_route_test tests.goal3105_v2_8_benchmark_runtime_gap_map_test
 ```
 
-Expected result:
+Result:
 
 ```text
-OK
+Ran 19 tests in 0.007s
+OK (skipped=1)
 ```
 
-Pod command, once a clean checkout is ready:
+Pod validation on `root@69.30.85.203:22057`, NVIDIA RTX A5000 driver
+`580.126.09`, clean `origin/main` checkout at commit
+`6cfef0e6ef0d2f0406c2e3ff02317968b47f1637`, rebuilt with
+`OPTIX_PREFIX=/root/vendor/optix-sdk`:
 
 ```bash
 export PYTHONPATH=src:.
@@ -103,15 +107,37 @@ python3 scripts/goal3438_spatial_rayjoin_prepared_subroute_reuse_probe.py \
   --iterations 4 \
   --candidate-max-rows 60000 \
   --county-cdb data/rayjoin_public_cdb/br_county.cdb \
-  --soil-cdb data/rayjoin_public_cdb/br_soil.cdb \
+  --soil-cdb data/rayjoin_public_cdb/br_county_start256_count1024.cdb \
   --output docs/reports/goal3438_spatial_rayjoin_prepared_subroute_reuse_pod_2026-06-05.json
 ```
+
+`br_soil.cdb` was not present on this pod. The second/right input was the
+available public CDB slice `br_county_start256_count1024.cdb`; the artifact
+records the exact path.
 
 The probe prints progress lines for each subroute:
 
 - `[goal3438:pip]`
 - `[goal3438:lsi]`
 - `[goal3438:overlay]`
+
+Pod artifacts:
+
+- `docs/reports/goal3438_spatial_rayjoin_prepared_subroute_reuse_pod_2026-06-05.json`
+- `docs/reports/goal3438_spatial_rayjoin_prepared_subroute_reuse_pod_2026-06-05.stdout`
+
+Pod summary:
+
+| Subroute | Size | Stable output | Warm median phase |
+| --- | ---: | ---: | ---: |
+| PIP prepared OptiX candidate columns + prepared CuPy refiner | 16,545 points / 15,700 shapes | 47,570 candidates / 47,262 refined rows | candidate `0.025442s`; CuPy refine `0.001453s` |
+| LSI prepared dense left-id count | 326,193 left segments / 33,103 right segments | 101,407 intersections | dense count `0.002503s` |
+| Overlay-seed prepared shape-pair active count | 15,700 left shapes / 949 right shapes | 4,543 active pairs | active count `0.147904s` |
+
+The first PIP and LSI iterations include cold effects; later iterations show the
+prepared/repeated shape. Overlay active-count is stable but still around
+`0.148s`, which is useful evidence for the next optimization target rather than
+an authorized public speedup claim.
 
 ## Next
 
