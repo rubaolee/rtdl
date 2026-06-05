@@ -217,7 +217,11 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "relation ordinal columns on device, letting the active-payload path materialize only the smaller "
             "unique shape lists while keeping full tile-task planning honestly host-side. Remaining work is "
             "device-resident component-pair/tile-task planning and the native-vs-partner acceptance decision "
-            "over that execution shape."
+            "over that execution shape. Goal3497 adds a generic bounds-positive filter before exact-area "
+            "tile-task planning: candidate rows drop from 4,543 to 2,274, component-pair rows from 39,947 "
+            "to 24,389, tile tasks from 54,232 to 36,414, triangle pairs from 9.65M to 7.66M, and payload "
+            "build from 7.7470s to 6.8054s while preserving exact total-area agreement. The remaining "
+            "dominant cost is still CPU-owned prepared payload construction."
         ),
         generic_runtime_target=(
             "typed hit/relation streams with compact-mask, grouped parity/count, bounded witness "
@@ -266,6 +270,7 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "Goal3493",
             "Goal3494",
             "Goal3495",
+            "Goal3497",
         ),
     ),
     V28BenchmarkRuntimeGapRow(
