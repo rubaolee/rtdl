@@ -1,0 +1,317 @@
+[goal3471] iteration=0 rows=4543 supported=168 positive=161 area=0.057882955 status={'0': 168, '1': 4375} relation=0.361791s overlay=0.027043s
+[goal3471] iteration=1 rows=4543 supported=168 positive=161 area=0.057882955 status={'0': 168, '1': 4375} relation=0.004962s overlay=0.001897s
+[goal3471] iteration=2 rows=4543 supported=168 positive=161 area=0.057882955 status={'0': 168, '1': 4375} relation=0.003647s overlay=0.001679s
+[goal3471] iteration=3 rows=4543 supported=168 positive=161 area=0.057882955 status={'0': 168, '1': 4375} relation=0.003650s overlay=0.001686s
+{
+  "claim_boundary": {
+    "full_overlay_area_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "goal": 3471,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "iterations": 4,
+  "left_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county.cdb",
+  "max_rows": 65536,
+  "max_vertices_per_shape": 128,
+  "public_cdb": {
+    "all_status_counts_stable": true,
+    "all_supported_counts_stable": true,
+    "convex_overlay_area_sec": {
+      "max": 0.027043424546718597,
+      "median": 0.0017912602052092552,
+      "min": 0.001678873784840107
+    },
+    "left_shape_count": 15700,
+    "positive_area_row_counts": [
+      161,
+      161,
+      161,
+      161
+    ],
+    "relation_columns_sec": {
+      "max": 0.36179148219525814,
+      "median": 0.004305942915380001,
+      "min": 0.0036467555910348892
+    },
+    "right_shape_count": 949,
+    "runs": [
+      {
+        "claim_boundary": {
+          "full_overlay_area_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "rayjoin_paper_reproduction_claim_authorized": false,
+          "release_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "rtdl_beats_rayjoin_claim_authorized": false,
+          "true_zero_copy_claim_authorized": false
+        },
+        "convex_overlay_area_sec": 0.027043424546718597,
+        "iteration": 0,
+        "metadata": {
+          "app_specific_engine_logic_allowed": false,
+          "area_semantics": "exact_area_for_supported_convex_rows_only",
+          "automatic_partner_selection_allowed": false,
+          "full_exact_overlay_area_completed": false,
+          "full_overlay_area_claim_authorized": false,
+          "input_contract": "shape_pair_relation_flags_with_ordinals_and_geometry_payload",
+          "max_vertices_per_shape": 128,
+          "operation": "shape_pair_relation_convex_overlay_area",
+          "partner": "cupy",
+          "positive_area_row_count": 161,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "requires_geometry_payload_columns": true,
+          "requires_relation_ordinals": true,
+          "row_count": 4543,
+          "rt_core_speedup_claim_authorized": false,
+          "schema": "rtdl.v2_8.geometry_relation.convex_overlay_area_cupy.v1",
+          "simple_vertex_threshold": 64,
+          "status_counts": {
+            "0": 168,
+            "1": 4375
+          },
+          "status_semantics": {
+            "0": "convex_overlay_area_computed",
+            "1": "unsupported_nonconvex",
+            "2": "unsupported_vertex_budget",
+            "3": "unsupported_degenerate_shape"
+          },
+          "supported_row_count": 168,
+          "total_supported_area": 0.05788295450020087,
+          "true_zero_copy_claim_authorized": false
+        },
+        "relation_columns_sec": 0.36179148219525814,
+        "row_count": 4543
+      },
+      {
+        "claim_boundary": {
+          "full_overlay_area_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "rayjoin_paper_reproduction_claim_authorized": false,
+          "release_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "rtdl_beats_rayjoin_claim_authorized": false,
+          "true_zero_copy_claim_authorized": false
+        },
+        "convex_overlay_area_sec": 0.001896723173558712,
+        "iteration": 1,
+        "metadata": {
+          "app_specific_engine_logic_allowed": false,
+          "area_semantics": "exact_area_for_supported_convex_rows_only",
+          "automatic_partner_selection_allowed": false,
+          "full_exact_overlay_area_completed": false,
+          "full_overlay_area_claim_authorized": false,
+          "input_contract": "shape_pair_relation_flags_with_ordinals_and_geometry_payload",
+          "max_vertices_per_shape": 128,
+          "operation": "shape_pair_relation_convex_overlay_area",
+          "partner": "cupy",
+          "positive_area_row_count": 161,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "requires_geometry_payload_columns": true,
+          "requires_relation_ordinals": true,
+          "row_count": 4543,
+          "rt_core_speedup_claim_authorized": false,
+          "schema": "rtdl.v2_8.geometry_relation.convex_overlay_area_cupy.v1",
+          "simple_vertex_threshold": 64,
+          "status_counts": {
+            "0": 168,
+            "1": 4375
+          },
+          "status_semantics": {
+            "0": "convex_overlay_area_computed",
+            "1": "unsupported_nonconvex",
+            "2": "unsupported_vertex_budget",
+            "3": "unsupported_degenerate_shape"
+          },
+          "supported_row_count": 168,
+          "total_supported_area": 0.05788295450020087,
+          "true_zero_copy_claim_authorized": false
+        },
+        "relation_columns_sec": 0.004961786791682243,
+        "row_count": 4543
+      },
+      {
+        "claim_boundary": {
+          "full_overlay_area_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "rayjoin_paper_reproduction_claim_authorized": false,
+          "release_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "rtdl_beats_rayjoin_claim_authorized": false,
+          "true_zero_copy_claim_authorized": false
+        },
+        "convex_overlay_area_sec": 0.001678873784840107,
+        "iteration": 2,
+        "metadata": {
+          "app_specific_engine_logic_allowed": false,
+          "area_semantics": "exact_area_for_supported_convex_rows_only",
+          "automatic_partner_selection_allowed": false,
+          "full_exact_overlay_area_completed": false,
+          "full_overlay_area_claim_authorized": false,
+          "input_contract": "shape_pair_relation_flags_with_ordinals_and_geometry_payload",
+          "max_vertices_per_shape": 128,
+          "operation": "shape_pair_relation_convex_overlay_area",
+          "partner": "cupy",
+          "positive_area_row_count": 161,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "requires_geometry_payload_columns": true,
+          "requires_relation_ordinals": true,
+          "row_count": 4543,
+          "rt_core_speedup_claim_authorized": false,
+          "schema": "rtdl.v2_8.geometry_relation.convex_overlay_area_cupy.v1",
+          "simple_vertex_threshold": 64,
+          "status_counts": {
+            "0": 168,
+            "1": 4375
+          },
+          "status_semantics": {
+            "0": "convex_overlay_area_computed",
+            "1": "unsupported_nonconvex",
+            "2": "unsupported_vertex_budget",
+            "3": "unsupported_degenerate_shape"
+          },
+          "supported_row_count": 168,
+          "total_supported_area": 0.05788295450020087,
+          "true_zero_copy_claim_authorized": false
+        },
+        "relation_columns_sec": 0.0036467555910348892,
+        "row_count": 4543
+      },
+      {
+        "claim_boundary": {
+          "full_overlay_area_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "rayjoin_paper_reproduction_claim_authorized": false,
+          "release_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "rtdl_beats_rayjoin_claim_authorized": false,
+          "true_zero_copy_claim_authorized": false
+        },
+        "convex_overlay_area_sec": 0.0016857972368597984,
+        "iteration": 3,
+        "metadata": {
+          "app_specific_engine_logic_allowed": false,
+          "area_semantics": "exact_area_for_supported_convex_rows_only",
+          "automatic_partner_selection_allowed": false,
+          "full_exact_overlay_area_completed": false,
+          "full_overlay_area_claim_authorized": false,
+          "input_contract": "shape_pair_relation_flags_with_ordinals_and_geometry_payload",
+          "max_vertices_per_shape": 128,
+          "operation": "shape_pair_relation_convex_overlay_area",
+          "partner": "cupy",
+          "positive_area_row_count": 161,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "requires_geometry_payload_columns": true,
+          "requires_relation_ordinals": true,
+          "row_count": 4543,
+          "rt_core_speedup_claim_authorized": false,
+          "schema": "rtdl.v2_8.geometry_relation.convex_overlay_area_cupy.v1",
+          "simple_vertex_threshold": 64,
+          "status_counts": {
+            "0": 168,
+            "1": 4375
+          },
+          "status_semantics": {
+            "0": "convex_overlay_area_computed",
+            "1": "unsupported_nonconvex",
+            "2": "unsupported_vertex_budget",
+            "3": "unsupported_degenerate_shape"
+          },
+          "supported_row_count": 168,
+          "total_supported_area": 0.05788295450020087,
+          "true_zero_copy_claim_authorized": false
+        },
+        "relation_columns_sec": 0.003650099039077759,
+        "row_count": 4543
+      }
+    ],
+    "status_counts": [
+      {
+        "0": 168,
+        "1": 4375
+      },
+      {
+        "0": 168,
+        "1": 4375
+      },
+      {
+        "0": 168,
+        "1": 4375
+      },
+      {
+        "0": 168,
+        "1": 4375
+      }
+    ],
+    "supported_row_counts": [
+      168,
+      168,
+      168,
+      168
+    ],
+    "total_supported_areas": [
+      0.05788295450020087,
+      0.05788295450020087,
+      0.05788295450020087,
+      0.05788295450020087
+    ]
+  },
+  "right_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count1024.cdb",
+  "rtdl_commit": "3785e7fb2d0bf5c28bf2bae6f756febd4a05690d",
+  "schema": "rtdl.goal3471.convex_overlay_area_fast_path_probe.v1",
+  "simple_vertex_threshold": 64,
+  "synthetic_convex_fixture": {
+    "expected_first_area": 1.0,
+    "first_area_error": 0.0,
+    "metadata": {
+      "app_specific_engine_logic_allowed": false,
+      "area_semantics": "exact_area_for_supported_convex_rows_only",
+      "automatic_partner_selection_allowed": false,
+      "full_exact_overlay_area_completed": false,
+      "full_overlay_area_claim_authorized": false,
+      "input_contract": "shape_pair_relation_flags_with_ordinals_and_geometry_payload",
+      "max_vertices_per_shape": 128,
+      "operation": "shape_pair_relation_convex_overlay_area",
+      "partner": "cupy",
+      "positive_area_row_count": 1,
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "requires_geometry_payload_columns": true,
+      "requires_relation_ordinals": true,
+      "row_count": 2,
+      "rt_core_speedup_claim_authorized": false,
+      "schema": "rtdl.v2_8.geometry_relation.convex_overlay_area_cupy.v1",
+      "simple_vertex_threshold": 64,
+      "status_counts": {
+        "0": 1,
+        "1": 1
+      },
+      "status_semantics": {
+        "0": "convex_overlay_area_computed",
+        "1": "unsupported_nonconvex",
+        "2": "unsupported_vertex_budget",
+        "3": "unsupported_degenerate_shape"
+      },
+      "supported_row_count": 1,
+      "total_supported_area": 1.0,
+      "true_zero_copy_claim_authorized": false
+    },
+    "passed": true,
+    "row_areas": [
+      1.0,
+      0.0
+    ],
+    "status": [
+      0,
+      1
+    ]
+  }
+}
