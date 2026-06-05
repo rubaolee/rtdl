@@ -774,6 +774,12 @@ int  rtdl_optix_count_prepared_shape_pair_relation_flags(
          const double* left_verts_xy,      size_t left_vert_xy_count,
          size_t* active_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_count_prepared_shape_pair_relation_active_device(
+         void* prepared,
+         const RtdlPolygonRef* left_polys, size_t left_count,
+         const double* left_verts_xy,      size_t left_vert_xy_count,
+         size_t* active_count_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_shape_pair_relation_get_last_phase_timings(
          double* left_prepare_out,
          double* left_upload_out,

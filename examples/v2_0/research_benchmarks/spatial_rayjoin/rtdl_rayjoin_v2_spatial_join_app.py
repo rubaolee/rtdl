@@ -1745,6 +1745,74 @@ class PreparedRayJoinOptixShapePairActiveCount:
             },
         }
 
+    def run_packed_left_device_continuation(
+        self,
+        packed_left: RayJoinOptixShapePairActiveCountPackedLeftShapes,
+        *,
+        dataset_note: str | None = None,
+    ) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared RayJoin shape-pair active-count handle is closed")
+        if not isinstance(packed_left, RayJoinOptixShapePairActiveCountPackedLeftShapes):
+            raise TypeError("packed_left must be produced by pack_rayjoin_optix_shape_pair_active_count_left_shapes")
+
+        phases: dict[str, float] = {}
+        active_count = int(
+            _phase_time(
+                phases,
+                "active_count_device_continuation_sec",
+                lambda: self._prepared.count_active_device_continuation(packed_left.packed_polygons),
+            )
+        )
+        native_phase_timings = self._prepared.last_phase_timings()
+        return {
+            "app": "rayjoin_v2_spatial_join",
+            "workload": "overlay_seed",
+            "execution_route": "prepared_optix_shape_pair_active_count_device_continuation_reuse",
+            "backend": "optix",
+            "dataset": self._dataset,
+            "dataset_note": dataset_note or self._dataset_note,
+            "row_count": active_count,
+            "summary": {
+                "active_seed_count": active_count,
+                "output_contract": "overlay_active_pair_dependency_count",
+            },
+            "phases_sec": phases,
+            "native_phase_timings": native_phase_timings,
+            "prepared_reuse": {
+                "enabled": True,
+                "right_shape_count": self._right_shape_count,
+                "prepare_static_scene_sec": self.prepare_static_scene_sec,
+                "prepare_static_scene_paid_once": True,
+            },
+            "packed_left_reuse": {
+                "enabled": True,
+                "left_shape_count": packed_left.count,
+                "pack_seconds": packed_left.pack_seconds,
+                "left_shape_pack_paid_in_call": False,
+            },
+            "device_resident_continuation_status": (
+                "shape_pair_active_count_device_continuation_probe: generic shape-pair relation "
+                "segment flags stay on device, containment and active-count reduction run in a "
+                "generic CUDA continuation, and only the scalar count is copied back"
+            ),
+            "native_engine_boundary": (
+                "The engine sees generic prepared shape-pair relation flags and a generic "
+                "device-side active-count continuation. RayJoin overlay-seed interpretation "
+                "and repeated-query reuse stay in Python."
+            ),
+            "claim_boundary": {
+                "full_rayjoin_reproduction": False,
+                "paper_scale_perf_claim_authorized": False,
+                "rtdl_beats_rayjoin_claim_authorized": False,
+                "whole_app_speedup_claim_authorized": False,
+                "v2_8_release_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "rt_core_speedup_claim_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+            },
+        }
+
 
 def prepare_rayjoin_optix_shape_pair_active_count(
     right_shapes,

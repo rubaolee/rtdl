@@ -1662,6 +1662,109 @@ extern "C" __global__ void __anyhit__shape_pair_relation_anyhit() {
 }
 )CUDA";
 
+static const char* kShapePairRelationActiveCountDeviceKernelSrc = R"CUDA(
+#include <stdint.h>
+
+struct GpuPolygonRef {
+    uint32_t id;
+    uint32_t vertex_offset;
+    uint32_t vertex_count;
+};
+
+struct ShapePairRelationFlags {
+    uint32_t requires_segment_intersection;
+    uint32_t requires_point_containment;
+};
+
+struct GpuBounds2D {
+    float min_x;
+    float min_y;
+    float max_x;
+    float max_y;
+};
+
+static __forceinline__ __device__ bool point_inside_bounds_dev(
+        const GpuBounds2D& bounds,
+        float x,
+        float y,
+        float eps)
+{
+    return x >= bounds.min_x - eps && x <= bounds.max_x + eps &&
+           y >= bounds.min_y - eps && y <= bounds.max_y + eps;
+}
+
+static __forceinline__ __device__ bool point_in_polygon_dev(
+        float px, float py,
+        const GpuPolygonRef& poly,
+        const float* vx, const float* vy)
+{
+    const uint32_t n = poly.vertex_count;
+    if (n == 0u) return false;
+    const uint32_t off = poly.vertex_offset;
+    bool inside = false;
+    for (uint32_t i = 0, j = n - 1u; i < n; j = i++) {
+        const float xi = vx[off + i], yi = vy[off + i];
+        const float xj = vx[off + j], yj = vy[off + j];
+        if (((yi > py) != (yj > py)) &&
+            (px <= (xj - xi) * (py - yi) / ((yj - yi) != 0.0f ? (yj - yi) : 1.0e-20f) + xi)) {
+            inside = !inside;
+        }
+    }
+    return inside;
+}
+
+extern "C" __global__ void shape_pair_relation_active_count_device_kernel(
+        const ShapePairRelationFlags* flags,
+        const GpuPolygonRef* left_polygons,
+        const GpuPolygonRef* right_polygons,
+        const float* left_vx,
+        const float* left_vy,
+        const float* right_vx,
+        const float* right_vy,
+        const GpuBounds2D* left_bounds,
+        const GpuBounds2D* right_bounds,
+        uint32_t left_count,
+        uint32_t right_count,
+        unsigned long long* active_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    const uint32_t total = left_count * right_count;
+    if (idx >= total) return;
+    const uint32_t li = idx / right_count;
+    const uint32_t ri = idx - li * right_count;
+    const ShapePairRelationFlags flag = flags[idx];
+    bool active = flag.requires_segment_intersection != 0u ||
+                  flag.requires_point_containment != 0u;
+    if (!active) {
+        const GpuPolygonRef lp = left_polygons[li];
+        const GpuPolygonRef rp = right_polygons[ri];
+        bool contains = false;
+        if (lp.vertex_count > 0u) {
+            const uint32_t loff = lp.vertex_offset;
+            const float lx = left_vx[loff];
+            const float ly = left_vy[loff];
+            if (point_inside_bounds_dev(right_bounds[ri], lx, ly, 1.0e-6f) &&
+                point_in_polygon_dev(lx, ly, rp, right_vx, right_vy)) {
+                contains = true;
+            }
+        }
+        if (!contains && rp.vertex_count > 0u) {
+            const uint32_t roff = rp.vertex_offset;
+            const float rx = right_vx[roff];
+            const float ry = right_vy[roff];
+            if (point_inside_bounds_dev(left_bounds[li], rx, ry, 1.0e-6f) &&
+                point_in_polygon_dev(rx, ry, lp, left_vx, left_vy)) {
+                contains = true;
+            }
+        }
+        active = contains;
+    }
+    if (active) {
+        atomicAdd(active_count, 1ull);
+    }
+}
+)CUDA";
+
 // ---------- Ray-triangle hit count kernel ------------------------------------
 
 static const char* kRayHitCountKernelSrc = R"CUDA(

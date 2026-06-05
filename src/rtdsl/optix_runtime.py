@@ -2797,6 +2797,35 @@ class PreparedOptixShapePairRelation:
         _check_status(status, error)
         return int(active_count.value)
 
+    def count_active_device_continuation(self, left_polygons) -> int:
+        """Return active relation count using the generic device-side continuation path."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX shape-pair relation handle is closed")
+        left = left_polygons if isinstance(left_polygons, PackedPolygons) else pack_polygons(records=left_polygons)
+        count_symbol = _find_optional_backend_symbol(
+            self.library,
+            "rtdl_optix_count_prepared_shape_pair_relation_active_device",
+        )
+        if count_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_count_prepared_shape_pair_relation_active_device; rebuild the OptiX backend from current main"
+            )
+        active_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self.prepared_handle,
+            left.refs,
+            left.polygon_count,
+            left.vertices_xy,
+            left.vertex_xy_count,
+            ctypes.byref(active_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(active_count.value)
+
     def last_phase_timings(self) -> dict[str, float | int | str] | None:
         return _get_last_shape_pair_relation_phase_timings_from_library(self.library)
 
@@ -6850,6 +6879,7 @@ def _get_last_shape_pair_relation_phase_timings_from_library(lib) -> dict[str, f
     mode_name = {
         1: "rows",
         2: "active_count",
+        3: "active_count_device_continuation",
     }.get(mode_value, "none")
     return {
         "mode": mode_name,
@@ -19583,6 +19613,22 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_count_prepared_shape_pair_relation.restype = ctypes.c_int
+    optional_count_prepared_shape_pair_relation_active_device = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_count_prepared_shape_pair_relation_active_device",
+    )
+    if optional_count_prepared_shape_pair_relation_active_device is not None:
+        optional_count_prepared_shape_pair_relation_active_device.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPolygonRef),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_count_prepared_shape_pair_relation_active_device.restype = ctypes.c_int
     optional_shape_pair_timings = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_shape_pair_relation_get_last_phase_timings",
