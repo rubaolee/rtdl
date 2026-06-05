@@ -34,10 +34,33 @@ about a named application.
 
 The new probe script,
 `scripts/goal3413_pair_column_paged_recovery_probe.py`, uses the generic
-contract against the same full `br_county.cdb` workload as Goal3411. It emits a
-fresh artifact once run on an OptiX pod:
+contract against the same full `br_county.cdb` workload as Goal3411.
 
 `docs/reports/goal3413_pair_column_paged_recovery_probe_2026-06-04.json`
+
+## Pod Evidence
+
+The probe was run on the OptiX pod from commit `c142d1d3` with an NVIDIA RTX
+A5000 and driver `580.126.09`.
+
+| Measure | Value |
+| --- | ---: |
+| points | 16545 |
+| shapes | 15700 |
+| page size | 2048 |
+| pages | 9 |
+| overflowed pages | 9 |
+| retried pages | 9 |
+| host exact rows | 47262 |
+| device grouped source rows | 47262 |
+| host groups | 16476 |
+| device groups | 16476 |
+| per-page grouped row sum | 16541 |
+| missing/extra/mismatched groups | 0/0/0 |
+
+The per-page grouped row sum is larger than final unique groups because group
+keys can appear on more than one page. The generic merge rule is key addition,
+not disjoint page concatenation.
 
 ## Boundary
 

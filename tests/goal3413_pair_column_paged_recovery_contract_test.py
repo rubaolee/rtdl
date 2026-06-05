@@ -1,8 +1,10 @@
 from pathlib import Path
+import json
 import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
+ARTIFACT = ROOT / "docs" / "reports" / "goal3413_pair_column_paged_recovery_probe_2026-06-04.json"
 REPORT = ROOT / "docs" / "reports" / "goal3413_pair_column_paged_recovery_contract_2026-06-04.md"
 SCRIPT = ROOT / "scripts" / "goal3413_pair_column_paged_recovery_probe.py"
 
@@ -95,6 +97,61 @@ class Goal3413PairColumnPagedRecoveryContractTest(unittest.TestCase):
         self.assertIn("merge_grouped_count_maps", script)
         self.assertIn("page_merge_uses_key_addition", script)
         self.assertIn('"automatic_retry_authorized": False', script)
+
+    def test_pod_artifact_records_full_cdb_paged_recovery(self):
+        payload = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["schema"], "rtdl.goal3413.pair_column_paged_recovery_probe.v1")
+        self.assertEqual(payload["goal"], 3413)
+        self.assertEqual(payload["rtdl_commit"][:8], "c142d1d3")
+        self.assertIn("NVIDIA RTX A5000", payload["gpu"])
+        self.assertEqual(payload["point_count"], 16545)
+        self.assertEqual(payload["shape_count"], 15700)
+
+        contract = payload["contract"]
+        self.assertEqual(contract["schema"], "rtdl.pair_column_paged_recovery.v1")
+        self.assertEqual(contract["page_size"], 2048)
+        self.assertEqual(contract["initial_capacity"], 100)
+        self.assertEqual(contract["overflow_policy"], "fail_closed_explicit_retry")
+        self.assertEqual(contract["merge_rule"], "key_addition")
+        self.assertTrue(contract["windows_are_caller_visible"])
+        self.assertFalse(contract["native_paged_stream_implemented"])
+        self.assertFalse(contract["automatic_retry_authorized"])
+        self.assertFalse(contract["hidden_dispatch_authorized"])
+        self.assertFalse(contract["merge_requires_disjoint_keys"])
+
+        recovery = payload["recovery_summary"]
+        self.assertEqual(recovery["page_count"], 9)
+        self.assertEqual(recovery["overflow_page_count"], 9)
+        self.assertEqual(recovery["retry_page_count"], 9)
+        self.assertEqual(recovery["grouped_source_row_count"], 47262)
+        self.assertEqual(recovery["grouped_row_count"], 16541)
+        self.assertEqual(recovery["merge_rule"], "key_addition")
+        self.assertFalse(recovery["merge_requires_disjoint_keys"])
+
+        self.assertEqual(payload["host_exact_row_count"], 47262)
+        self.assertEqual(payload["device_grouped_source_row_count"], 47262)
+        self.assertEqual(payload["host_group_count"], 16476)
+        self.assertEqual(payload["device_group_count"], 16476)
+        self.assertTrue(payload["group_counts_match_host"])
+        self.assertEqual(payload["missing_group_key_count"], 0)
+        self.assertEqual(payload["extra_group_key_count"], 0)
+        self.assertEqual(payload["mismatched_group_value_count"], 0)
+
+        first_page = recovery["page_records"][0]
+        last_page = recovery["page_records"][-1]
+        self.assertEqual(first_page["first_capacity_status"]["required_capacity"], 5666)
+        self.assertEqual(last_page["first_capacity_status"]["required_capacity"], 352)
+        self.assertEqual(last_page["item_count"], 161)
+
+        boundary = payload["orchestration_boundary"]
+        self.assertTrue(boundary["generic_pair_column_paged_recovery_contract_used"])
+        self.assertTrue(boundary["page_merge_uses_key_addition"])
+        self.assertFalse(boundary["page_merge_requires_disjoint_left_ids"])
+        self.assertFalse(boundary["native_paged_stream_implemented"])
+
+        for key, value in payload["claim_boundary"].items():
+            self.assertFalse(value, key)
 
 
 if __name__ == "__main__":
