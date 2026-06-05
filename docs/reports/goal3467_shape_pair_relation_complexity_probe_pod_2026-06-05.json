@@ -1,0 +1,237 @@
+{
+  "all_general_overlay_counts_stable": true,
+  "all_row_counts_stable": true,
+  "both_convex_row_counts": [
+    168,
+    168,
+    168,
+    168
+  ],
+  "claim_boundary": {
+    "full_overlay_area_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "complexity_classification_sec": {
+    "max": 4.301190536469221,
+    "median": 0.001160759013146162,
+    "min": 0.0009254496544599533
+  },
+  "general_overlay_required_row_counts": [
+    4375,
+    4375,
+    4375,
+    4375
+  ],
+  "goal": 3467,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "iterations": 4,
+  "left_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county.cdb",
+  "left_shape_count": 15700,
+  "max_pair_vertex_counts": [
+    1132,
+    1132,
+    1132,
+    1132
+  ],
+  "max_rows": 65536,
+  "nonconvex_row_counts": [
+    4375,
+    4375,
+    4375,
+    4375
+  ],
+  "relation_columns_sec": {
+    "max": 0.3565414696931839,
+    "median": 0.0044990042224526405,
+    "min": 0.003523518331348896
+  },
+  "right_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count1024.cdb",
+  "right_shape_count": 949,
+  "row_counts": [
+    4543,
+    4543,
+    4543,
+    4543
+  ],
+  "rows_above_simple_vertex_threshold_counts": [
+    1033,
+    1033,
+    1033,
+    1033
+  ],
+  "rtdl_commit": "afbbdb35516c5cfc432a029be19206e6011d3a31",
+  "runs": [
+    {
+      "claim_boundary": {
+        "full_overlay_area_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false
+      },
+      "complexity_classification_sec": 4.301190536469221,
+      "complexity_metadata": {
+        "app_specific_engine_logic_allowed": false,
+        "automatic_partner_selection_allowed": false,
+        "both_convex_row_count": 168,
+        "classification_semantics": "device-resident row-complexity classifier for routing exact overlay continuation; not an exact overlay-area computation",
+        "exact_polygon_overlay_area": false,
+        "full_overlay_area_claim_authorized": false,
+        "general_overlay_required_row_count": 4375,
+        "input_contract": "shape_pair_relation_flags_with_ordinals_and_geometry_payload",
+        "max_left_vertex_count": 573,
+        "max_pair_vertex_count": 1132,
+        "max_right_vertex_count": 566,
+        "nonconvex_row_count": 4375,
+        "operation": "shape_pair_relation_complexity_columns",
+        "partner": "cupy",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "requires_geometry_payload_columns": true,
+        "requires_relation_ordinals": true,
+        "row_count": 4543,
+        "rows_above_simple_vertex_threshold": 1033,
+        "rt_core_speedup_claim_authorized": false,
+        "schema": "rtdl.v2_8.geometry_relation.complexity_cupy.v1",
+        "simple_vertex_threshold": 64,
+        "true_zero_copy_claim_authorized": false
+      },
+      "iteration": 0,
+      "relation_columns_sec": 0.3565414696931839,
+      "row_count": 4543
+    },
+    {
+      "claim_boundary": {
+        "full_overlay_area_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false
+      },
+      "complexity_classification_sec": 0.0013330373913049698,
+      "complexity_metadata": {
+        "app_specific_engine_logic_allowed": false,
+        "automatic_partner_selection_allowed": false,
+        "both_convex_row_count": 168,
+        "classification_semantics": "device-resident row-complexity classifier for routing exact overlay continuation; not an exact overlay-area computation",
+        "exact_polygon_overlay_area": false,
+        "full_overlay_area_claim_authorized": false,
+        "general_overlay_required_row_count": 4375,
+        "input_contract": "shape_pair_relation_flags_with_ordinals_and_geometry_payload",
+        "max_left_vertex_count": 573,
+        "max_pair_vertex_count": 1132,
+        "max_right_vertex_count": 566,
+        "nonconvex_row_count": 4375,
+        "operation": "shape_pair_relation_complexity_columns",
+        "partner": "cupy",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "requires_geometry_payload_columns": true,
+        "requires_relation_ordinals": true,
+        "row_count": 4543,
+        "rows_above_simple_vertex_threshold": 1033,
+        "rt_core_speedup_claim_authorized": false,
+        "schema": "rtdl.v2_8.geometry_relation.complexity_cupy.v1",
+        "simple_vertex_threshold": 64,
+        "true_zero_copy_claim_authorized": false
+      },
+      "iteration": 1,
+      "relation_columns_sec": 0.005338883027434349,
+      "row_count": 4543
+    },
+    {
+      "claim_boundary": {
+        "full_overlay_area_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false
+      },
+      "complexity_classification_sec": 0.0009884806349873543,
+      "complexity_metadata": {
+        "app_specific_engine_logic_allowed": false,
+        "automatic_partner_selection_allowed": false,
+        "both_convex_row_count": 168,
+        "classification_semantics": "device-resident row-complexity classifier for routing exact overlay continuation; not an exact overlay-area computation",
+        "exact_polygon_overlay_area": false,
+        "full_overlay_area_claim_authorized": false,
+        "general_overlay_required_row_count": 4375,
+        "input_contract": "shape_pair_relation_flags_with_ordinals_and_geometry_payload",
+        "max_left_vertex_count": 573,
+        "max_pair_vertex_count": 1132,
+        "max_right_vertex_count": 566,
+        "nonconvex_row_count": 4375,
+        "operation": "shape_pair_relation_complexity_columns",
+        "partner": "cupy",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "requires_geometry_payload_columns": true,
+        "requires_relation_ordinals": true,
+        "row_count": 4543,
+        "rows_above_simple_vertex_threshold": 1033,
+        "rt_core_speedup_claim_authorized": false,
+        "schema": "rtdl.v2_8.geometry_relation.complexity_cupy.v1",
+        "simple_vertex_threshold": 64,
+        "true_zero_copy_claim_authorized": false
+      },
+      "iteration": 2,
+      "relation_columns_sec": 0.003659125417470932,
+      "row_count": 4543
+    },
+    {
+      "claim_boundary": {
+        "full_overlay_area_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false
+      },
+      "complexity_classification_sec": 0.0009254496544599533,
+      "complexity_metadata": {
+        "app_specific_engine_logic_allowed": false,
+        "automatic_partner_selection_allowed": false,
+        "both_convex_row_count": 168,
+        "classification_semantics": "device-resident row-complexity classifier for routing exact overlay continuation; not an exact overlay-area computation",
+        "exact_polygon_overlay_area": false,
+        "full_overlay_area_claim_authorized": false,
+        "general_overlay_required_row_count": 4375,
+        "input_contract": "shape_pair_relation_flags_with_ordinals_and_geometry_payload",
+        "max_left_vertex_count": 573,
+        "max_pair_vertex_count": 1132,
+        "max_right_vertex_count": 566,
+        "nonconvex_row_count": 4375,
+        "operation": "shape_pair_relation_complexity_columns",
+        "partner": "cupy",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "requires_geometry_payload_columns": true,
+        "requires_relation_ordinals": true,
+        "row_count": 4543,
+        "rows_above_simple_vertex_threshold": 1033,
+        "rt_core_speedup_claim_authorized": false,
+        "schema": "rtdl.v2_8.geometry_relation.complexity_cupy.v1",
+        "simple_vertex_threshold": 64,
+        "true_zero_copy_claim_authorized": false
+      },
+      "iteration": 3,
+      "relation_columns_sec": 0.003523518331348896,
+      "row_count": 4543
+    }
+  ],
+  "schema": "rtdl.goal3467.shape_pair_relation_complexity_probe.v1",
+  "simple_clip_sufficient_for_all_rows": false,
+  "simple_vertex_threshold": 64
+}
