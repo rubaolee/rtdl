@@ -8238,6 +8238,30 @@ static void run_prepared_point_closed_shape_membership_exact_device_columns_2d_o
     columns_out->traversal_seconds = seconds_between(bridge_start, bridge_end);
 }
 
+static void run_prepared_point_closed_shape_membership_exact_device_columns_page_2d_optix(
+        PreparedShapePairRelationBuild* prepared,
+        const RtdlPoint* points,
+        size_t point_count,
+        size_t page_start,
+        size_t page_count,
+        size_t max_rows,
+        RtdlNativeDevicePairColumns* columns_out)
+{
+    if (page_start > point_count) {
+        throw std::runtime_error("closed-shape exact membership page_start exceeds point_count");
+    }
+    if (page_count > point_count - page_start) {
+        throw std::runtime_error("closed-shape exact membership page_count exceeds remaining points");
+    }
+    const RtdlPoint* page_points = page_count == 0 ? points : points + page_start;
+    run_prepared_point_closed_shape_membership_exact_device_columns_2d_optix(
+        prepared,
+        page_points,
+        page_count,
+        max_rows,
+        columns_out);
+}
+
 static void release_point_closed_shape_membership_exact_device_columns_2d_optix(void* owner_handle)
 {
     delete reinterpret_cast<NativeClosedShapeMembershipCandidateDeviceColumnsOwner*>(owner_handle);

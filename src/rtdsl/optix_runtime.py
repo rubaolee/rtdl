@@ -220,6 +220,9 @@ OPTIX_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL = (
 OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_prepared_point_closed_shape_membership_exact_device_columns_2d"
 )
+OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_SYMBOL = (
+    "rtdl_optix_prepared_point_closed_shape_membership_exact_device_columns_page_2d"
+)
 OPTIX_CLOSED_SHAPE_MEMBERSHIP_POINT_ID_COUNT_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_prepared_point_closed_shape_membership_point_id_count_device_columns_2d"
 )
@@ -1664,7 +1667,11 @@ class OptixNativeDevicePairColumnOutput:
             field_names=self.field_names,
         )
         is_exact_closed_shape_bridge = (
-            self.native_symbol == OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL
+            self.native_symbol
+            in (
+                OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL,
+                OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_SYMBOL,
+            )
         )
         if is_exact_closed_shape_bridge:
             stream_metadata = metadata["typed_result_stream"]
@@ -10828,6 +10835,92 @@ class PreparedOptixPointClosedShapeMembership2D:
             field_names=("point_id", "shape_id"),
         )
 
+    def exact_device_columns_page(
+        self,
+        points,
+        *,
+        page_start: int,
+        page_count: int,
+        max_rows: int | None = None,
+    ) -> OptixNativeDevicePairColumnOutput:
+        """Return one caller-visible page of exact point/shape membership columns."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX closed-shape membership handle is closed")
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        release_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_RELEASE_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL,
+        )
+        if release_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_RELEASE_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        packed_points = points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
+        if packed_points.dimension != 2:
+            raise ValueError("PreparedOptixPointClosedShapeMembership2D.exact_device_columns_page requires 2-D points")
+        start = int(page_start)
+        count = int(page_count)
+        if start < 0:
+            raise ValueError("page_start must be non-negative")
+        if count < 0:
+            raise ValueError("page_count must be non-negative")
+        if start > int(packed_points.count):
+            raise ValueError("page_start must be less than or equal to point count")
+        if count > int(packed_points.count) - start:
+            raise ValueError("page_count exceeds remaining points")
+        capacity = int(
+            max_rows
+            if max_rows is not None
+            else max(1, count * int(self._packed_shapes.polygon_count))
+        )
+        if capacity < 0:
+            raise ValueError("max_rows must be non-negative")
+
+        columns = _RtdlNativeDevicePairColumns()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            packed_points.records,
+            packed_points.count,
+            ctypes.c_size_t(start),
+            ctypes.c_size_t(count),
+            ctypes.c_size_t(capacity),
+            ctypes.byref(columns),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        owner = _OptixNativeDevicePairColumnsOwner(
+            self._lib,
+            columns.owner_handle,
+            release_symbol_name=OPTIX_RELEASE_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL,
+        )
+        return OptixNativeDevicePairColumnOutput(
+            library=self._lib,
+            owner=owner,
+            left_ids_device_ptr=int(columns.left_ids_device_ptr),
+            right_ids_device_ptr=int(columns.right_ids_device_ptr),
+            row_count=int(columns.row_count),
+            capacity=int(columns.capacity),
+            candidate_event_count=int(columns.candidate_event_count),
+            overflow=bool(columns.overflow),
+            device_ordinal=int(columns.device_ordinal),
+            traversal_seconds=float(columns.traversal_seconds),
+            native_symbol=OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_SYMBOL,
+            field_names=("point_id", "shape_id"),
+        )
+
     def point_id_count_device_columns(
         self,
         points,
@@ -18889,6 +18982,23 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_closed_shape_exact_device_columns.restype = ctypes.c_int
+
+    optional_closed_shape_exact_device_columns_page = _find_optional_backend_symbol(
+        lib,
+        OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_PAGE_SYMBOL,
+    )
+    if optional_closed_shape_exact_device_columns_page is not None:
+        optional_closed_shape_exact_device_columns_page.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlNativeDevicePairColumns),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_closed_shape_exact_device_columns_page.restype = ctypes.c_int
 
     optional_closed_shape_point_id_count_device_columns = _find_optional_backend_symbol(
         lib,
