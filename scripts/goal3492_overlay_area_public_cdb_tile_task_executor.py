@@ -1009,7 +1009,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
         )
     ))
 
-    return {
+    result = {
         "schema": schema,
         "goal": goal,
         "rtdl_commit": _command_output(["git", "rev-parse", "HEAD"]),
@@ -1117,6 +1117,16 @@ def run_probe(args: argparse.Namespace) -> dict[str, object]:
             "active relation stream and compares scalar relation areas with the external Shapely/GEOS oracle."
         ),
     }
+    result["prepared_execution_report"] = rt.prepared_execution_report_from_artifact(
+        result,
+        workflow_name="simple_polygon_overlay_area_prepared_execution",
+        backend="optix",
+        notes=(
+            "Partner choice is explicit in executor_metadata.partner.",
+            "Validation oracle time is separated from the steady-state execution path.",
+        ),
+    ).to_dict()
+    return result
 
 
 def parse_args() -> argparse.Namespace:

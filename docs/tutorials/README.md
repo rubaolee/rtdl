@@ -25,11 +25,12 @@ claim boundaries.
 | 4 | [OptiX Partner Column Any-Hit](partner_optix_column_anyhit.md) | The GPU partner-column shape and its claim boundary |
 | 5 | [Feature Quickstart Cookbook](feature_quickstart_cookbook.md) | Which RTDL primitive shape to choose for a workload |
 | 6 | [Primitive Discovery Workflow](../learn/primitive_discovery_workflow.md) | How to search primitives, recipes, and explain-only plans |
-| 7 | [Segment And Polygon Workloads](segment_polygon_workloads.md) | Count rows, witness rows, and streaming witness summaries |
-| 8 | [Nearest-Neighbor Workloads](nearest_neighbor_workloads.md) | Fixed-radius, K-closest, and Hausdorff-style composition |
-| 9 | [Graph Workloads](graph_workloads.md) | Frontier/edge traversal rows and graph-summary continuation |
-| 10 | [Database Workloads](db_workloads.md) | Columnar-payload scans, grouped summaries, and DB-style boundaries |
-| 11 | [RTDL Plus Python Rendering](rendering_and_visual_demos.md) | RTDL as the compute/query core inside a Python visual program |
+| 7 | [Prepared Execution Pattern](../learn/prepared_execution_pattern.md) | Setup, cache, warmup, steady-state, and validation timing |
+| 8 | [Segment And Polygon Workloads](segment_polygon_workloads.md) | Count rows, witness rows, and streaming witness summaries |
+| 9 | [Nearest-Neighbor Workloads](nearest_neighbor_workloads.md) | Fixed-radius, K-closest, and Hausdorff-style composition |
+| 10 | [Graph Workloads](graph_workloads.md) | Frontier/edge traversal rows and graph-summary continuation |
+| 11 | [Database Workloads](db_workloads.md) | Columnar-payload scans, grouped summaries, and DB-style boundaries |
+| 12 | [RTDL Plus Python Rendering](rendering_and_visual_demos.md) | RTDL as the compute/query core inside a Python visual program |
 
 ## Learning Tracks
 
@@ -38,6 +39,7 @@ claim boundaries.
 - [Quick Tutorial](../quick_tutorial.md)
 - [Hello World](hello_world.md)
 - [Primitive Discovery Workflow](../learn/primitive_discovery_workflow.md)
+- [Prepared Execution Pattern](../learn/prepared_execution_pattern.md)
 - [Sorting Demo](sorting_demo.md)
 
 ### Python+Partner+RTDL

@@ -414,6 +414,15 @@ from .v2_8_overlay_area_prepared_payload import prepare_simple_polygon_component
 from .v2_8_overlay_area_prepared_payload import prepare_simple_polygon_component_payload_from_triangles
 from .v2_8_overlay_area_prepared_payload import summarize_prepared_overlay_area_tile_tasks
 from .v2_8_overlay_area_prepared_payload import validate_v2_8_overlay_area_prepared_payload_contract
+from .prepared_execution import PREPARED_EXECUTION_CLAIM_BOUNDARY
+from .prepared_execution import PREPARED_EXECUTION_REPORT_VERSION
+from .prepared_execution import PREPARED_EXECUTION_REQUIRED_PHASES
+from .prepared_execution import PREPARED_EXECUTION_WORKFLOW
+from .prepared_execution import PreparedExecutionPhaseTiming
+from .prepared_execution import PreparedExecutionReport
+from .prepared_execution import describe_prepared_execution_user_pattern
+from .prepared_execution import prepared_execution_report_from_artifact
+from .prepared_execution import validate_prepared_execution_report
 from .geometry_relation_continuations import GEOMETRY_RELATION_BOUNDS_OVERLAP_AREA_CUPY_VERSION
 from .geometry_relation_continuations import GEOMETRY_RELATION_ACTIVE_SHAPE_ORDINALS_CUPY_VERSION
 from .geometry_relation_continuations import GEOMETRY_RELATION_COMPLEXITY_CUPY_VERSION
@@ -2176,6 +2185,15 @@ __all__ = [
     "prepare_simple_polygon_component_payload_from_triangles",
     "summarize_prepared_overlay_area_tile_tasks",
     "validate_v2_8_overlay_area_prepared_payload_contract",
+    "PREPARED_EXECUTION_CLAIM_BOUNDARY",
+    "PREPARED_EXECUTION_REPORT_VERSION",
+    "PREPARED_EXECUTION_REQUIRED_PHASES",
+    "PREPARED_EXECUTION_WORKFLOW",
+    "PreparedExecutionPhaseTiming",
+    "PreparedExecutionReport",
+    "describe_prepared_execution_user_pattern",
+    "prepared_execution_report_from_artifact",
+    "validate_prepared_execution_report",
     "ShapePairBoundsOverlapAreaCupyResult",
     "ShapePairActiveShapeOrdinalsCupyResult",
     "ShapePairConvexOverlayAreaCupyResult",
