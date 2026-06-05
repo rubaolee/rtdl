@@ -1,7 +1,6 @@
 # Goal3420 Device-Predicate Page Equivalence Probe
 
-Status: implemented locally; pod evidence required before it can be used as
-v2.8 engineering evidence.
+Status: implemented with pod evidence on NVIDIA RTX A5000.
 
 ## Purpose
 
@@ -30,6 +29,26 @@ The probe in `scripts/goal3420_device_predicate_page_equivalence_probe.py`:
 6. Downloads only audit samples/counts to compare against the existing host-exact
    oracle.
 
+## Pod Result
+
+The full public RayJoin CDB probe was run on pod commit
+`b1f25366acab845036963a06b5c7aa72fd141cd7`.
+
+| Measure | Host-exact oracle | Device predicate pages |
+| --- | ---: | ---: |
+| points | 16,545 | 16,545 |
+| closed shapes | 15,700 | 15,700 |
+| pair rows | 47,262 | 47,570 |
+| missing device pairs | 0 | n/a |
+| extra device pairs | n/a | 308 |
+| grouped point keys | 16,476 | 16,476 |
+| mismatched grouped counts | 0 | 248 |
+
+The device predicate path is therefore a strong device-resident broad-phase /
+superset producer, but not an exact predicate authority yet. It emitted no
+missing host-exact pairs on this dataset, but it emitted 308 extra pairs, which
+is enough to corrupt 248 grouped counts.
+
 ## Boundaries
 
 This is not the final v2.8 device-resident exact predicate implementation.
@@ -38,14 +57,21 @@ This is not the final v2.8 device-resident exact predicate implementation.
   not a new native exact page-plan producer.
 - The host-exact path is used as a correctness oracle, not to produce the device
   pair columns.
-- A passing full-CDB artifact proves equivalence for that dataset and backend
-  configuration only.
+- The full-CDB artifact does not prove equivalence. It proves the current device
+  predicate is conservative on this dataset: no missing pairs, but false
+  positives remain.
 - Universal exact predicate, default-route, RT-core speedup, true zero-copy, and
   release claims remain blocked.
 
-## Next Step If The Probe Passes
+## Next Step
 
-Promote the successful pattern into a native page-plan mode that can produce
-device-predicate pages from the native handle, still fail-closed and still
-audited against host-exact oracle fixtures until the exactness contract is
-broadened.
+Add a device-resident refinement/filter after the RT candidate predicate and
+before grouped continuation. The desired next shape is:
+
+```text
+native page plan -> RT broad-phase predicate pairs -> device exact/refine filter
+-> exact device pair columns -> page-local grouped continuation
+```
+
+That next stage must keep the host-exact path as an oracle in tests, but must not
+use host refinement to produce the device columns.

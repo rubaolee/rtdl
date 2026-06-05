@@ -31,7 +31,7 @@ class Goal3420DevicePredicatePageEquivalenceTest(unittest.TestCase):
         self.assertIn("release claims remain blocked", report)
 
     @unittest.skipUnless(ARTIFACT.exists(), "Goal3420 pod artifact pending")
-    def test_pod_artifact_records_full_cdb_device_predicate_equivalence(self):
+    def test_pod_artifact_records_full_cdb_device_predicate_gap(self):
         payload = json.loads(ARTIFACT.read_text(encoding="utf-8"))
 
         self.assertEqual(payload["schema"], "rtdl.goal3420.device_predicate_page_equivalence_probe.v1")
@@ -57,20 +57,20 @@ class Goal3420DevicePredicatePageEquivalenceTest(unittest.TestCase):
         self.assertEqual(recovery["merge_rule"], "key_addition")
 
         self.assertEqual(payload["host_exact_pair_count"], 47262)
-        self.assertEqual(payload["device_predicate_pair_count"], 47262)
-        self.assertTrue(payload["pair_multiset_match_host_exact"])
+        self.assertEqual(payload["device_predicate_pair_count"], 47570)
+        self.assertFalse(payload["pair_multiset_match_host_exact"])
         self.assertEqual(payload["pair_missing_from_device_sample"], [])
-        self.assertEqual(payload["pair_extra_on_device_sample"], [])
-        self.assertTrue(payload["group_counts_match_host"])
+        self.assertGreater(len(payload["pair_extra_on_device_sample"]), 0)
+        self.assertFalse(payload["group_counts_match_host"])
         self.assertEqual(payload["missing_group_key_count"], 0)
         self.assertEqual(payload["extra_group_key_count"], 0)
-        self.assertEqual(payload["mismatched_group_value_count"], 0)
+        self.assertEqual(payload["mismatched_group_value_count"], 248)
 
         boundary = payload["device_predicate_boundary"]
         self.assertTrue(boundary["device_predicate_columns_produced"])
         self.assertFalse(boundary["host_refinement_used_to_produce_device_columns"])
         self.assertTrue(boundary["host_exact_used_only_as_oracle"])
-        self.assertTrue(boundary["device_predicate_matches_host_exact_on_this_dataset"])
+        self.assertFalse(boundary["device_predicate_matches_host_exact_on_this_dataset"])
         self.assertFalse(boundary["universal_exact_predicate_claim_authorized"])
         self.assertFalse(boundary["native_page_plan_handle_used"])
         self.assertFalse(boundary["automatic_retry_authorized"])
