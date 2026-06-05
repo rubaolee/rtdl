@@ -141,7 +141,8 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "oracle evidence shows the full geometry path would require streamed component/vertex "
             "output, while the current benchmark target can stay scalar exact-area first; "
             "a concrete pre-kernel tolerance/topology/scratch policy plus prepared simple-polygon "
-            "component payload prototype now define the scalar exact-area kernel input shape"
+            "component payload prototype now define the scalar exact-area kernel input shape; "
+            "a bounded tiled CPU evaluator now mirrors the scratch behavior the device continuation must preserve"
         ),
         partner_position=(
             "Numba is the recommended custom continuation when row-stream compaction is part of the app; "
@@ -181,7 +182,9 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "Goal3482 fixed the pre-kernel policy: explicit float64 tolerance, topology fail-closed "
             "boundary, and bounded triangle-pair scratch policy. Goal3483 added a CPU prepared-payload "
             "prototype: simple components become flat triangle arrays plus row/component triangle ranges. "
-            "Remaining work is the actual bounded device continuation over that prepared payload."
+            "Goal3484 added a bounded tiled scalar evaluator over the prepared payload, proving no "
+            "silent triangle-pair truncation under explicit tile capacity. Remaining work is the actual "
+            "bounded device continuation over that prepared payload and tiled execution shape."
         ),
         generic_runtime_target=(
             "typed hit/relation streams with compact-mask, grouped parity/count, bounded witness "
@@ -220,6 +223,7 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "Goal3477",
             "Goal3482",
             "Goal3483",
+            "Goal3484",
         ),
     ),
     V28BenchmarkRuntimeGapRow(

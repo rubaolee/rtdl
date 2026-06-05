@@ -149,6 +149,41 @@ class PreparedOverlayAreaEvaluationResult:
         }
 
 
+@dataclass(frozen=True)
+class PreparedOverlayAreaTiledEvaluationResult:
+    row_areas: tuple[float, ...]
+    total_area: float
+    positive_row_count: int
+    triangle_pair_count: int
+    tile_count: int
+    max_triangle_pairs_per_tile: int
+    max_observed_tile_pairs: int
+    completed_without_truncation: bool
+    target: str = V2_8_OVERLAY_AREA_SCALAR_TARGET
+    algorithm: str = "prepared_component_triangle_pair_tiled_convex_clip"
+
+    def to_metadata(self) -> dict[str, Any]:
+        return {
+            "version": V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_VERSION,
+            "target": self.target,
+            "algorithm": self.algorithm,
+            "row_count": len(self.row_areas),
+            "total_area": self.total_area,
+            "positive_row_count": self.positive_row_count,
+            "triangle_pair_count": self.triangle_pair_count,
+            "tile_count": self.tile_count,
+            "max_triangle_pairs_per_tile": self.max_triangle_pairs_per_tile,
+            "max_observed_tile_pairs": self.max_observed_tile_pairs,
+            "completed_without_truncation": self.completed_without_truncation,
+            "claim_boundary": V2_8_OVERLAY_AREA_CONTINUATION_CLAIM_BOUNDARY,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "runtime_kernel_authorized": False,
+        }
+
+
 def prepare_simple_polygon_component_payload(
     components: Sequence[Sequence[Point2]],
     *,
@@ -236,6 +271,55 @@ def evaluate_prepared_overlay_area_scalar(
     )
 
 
+def evaluate_prepared_overlay_area_scalar_tiled(
+    left_payload: PreparedSimplePolygonComponentPayload,
+    right_payload: PreparedSimplePolygonComponentPayload,
+    pair_rows: Sequence[PreparedOverlayAreaPairRow],
+    *,
+    max_triangle_pairs_per_tile: int,
+    eps: float = 1.0e-12,
+) -> PreparedOverlayAreaTiledEvaluationResult:
+    if max_triangle_pairs_per_tile <= 0:
+        raise ValueError("max_triangle_pairs_per_tile must be positive; scratch capacity must fail closed")
+
+    row_areas: list[float] = []
+    total_triangle_pairs = 0
+    tile_count = 0
+    max_observed_tile_pairs = 0
+    for row in pair_rows:
+        row_area = 0.0
+        tile_area = 0.0
+        tile_pairs = 0
+        left_triangles = left_payload.triangles[row.left_triangle_start : row.left_triangle_stop]
+        right_triangles = right_payload.triangles[row.right_triangle_start : row.right_triangle_stop]
+        for left_triangle in left_triangles:
+            for right_triangle in right_triangles:
+                tile_area += convex_polygon_overlap_area(left_triangle, right_triangle, eps=eps)
+                tile_pairs += 1
+                total_triangle_pairs += 1
+                if tile_pairs == max_triangle_pairs_per_tile:
+                    row_area += tile_area
+                    tile_count += 1
+                    max_observed_tile_pairs = max(max_observed_tile_pairs, tile_pairs)
+                    tile_area = 0.0
+                    tile_pairs = 0
+        if tile_pairs:
+            row_area += tile_area
+            tile_count += 1
+            max_observed_tile_pairs = max(max_observed_tile_pairs, tile_pairs)
+        row_areas.append(row_area)
+    return PreparedOverlayAreaTiledEvaluationResult(
+        row_areas=tuple(row_areas),
+        total_area=sum(row_areas),
+        positive_row_count=sum(1 for area in row_areas if area > eps),
+        triangle_pair_count=total_triangle_pairs,
+        tile_count=tile_count,
+        max_triangle_pairs_per_tile=max_triangle_pairs_per_tile,
+        max_observed_tile_pairs=max_observed_tile_pairs,
+        completed_without_truncation=True,
+    )
+
+
 def validate_v2_8_overlay_area_prepared_payload_contract() -> dict[str, Any]:
     left = prepare_simple_polygon_component_payload(
         (
@@ -247,6 +331,12 @@ def validate_v2_8_overlay_area_prepared_payload_contract() -> dict[str, Any]:
     )
     rows = prepare_overlay_area_pair_rows(left, right, ((0, 0),))
     result = evaluate_prepared_overlay_area_scalar(left, right, rows)
+    tiled = evaluate_prepared_overlay_area_scalar_tiled(
+        left,
+        right,
+        rows,
+        max_triangle_pairs_per_tile=3,
+    )
     errors: list[str] = []
     if left.component_count != 1 or right.component_count != 1:
         errors.append("fixture payloads must each contain one component")
@@ -256,7 +346,15 @@ def validate_v2_8_overlay_area_prepared_payload_contract() -> dict[str, Any]:
         errors.append(f"fixture must produce 8 triangle pairs, saw {rows[0].triangle_pair_count}")
     if abs(result.total_area - 1.75) > 1.0e-10:
         errors.append(f"fixture prepared total area mismatch: {result.total_area}")
-    for metadata in (left.to_metadata(), result.to_metadata()):
+    if abs(tiled.total_area - result.total_area) > 1.0e-10:
+        errors.append(f"fixture tiled total area mismatch: {tiled.total_area}")
+    if tiled.tile_count != 3:
+        errors.append(f"fixture tiled evaluator should use 3 tiles, saw {tiled.tile_count}")
+    if tiled.max_observed_tile_pairs > tiled.max_triangle_pairs_per_tile:
+        errors.append("fixture tiled evaluator exceeded its max triangle-pair tile capacity")
+    if tiled.triangle_pair_count != result.triangle_pair_count:
+        errors.append("fixture tiled evaluator did not process all triangle pairs")
+    for metadata in (left.to_metadata(), result.to_metadata(), tiled.to_metadata()):
         for field in (
             "release_authorized",
             "public_speedup_claim_authorized",
@@ -273,6 +371,8 @@ def validate_v2_8_overlay_area_prepared_payload_contract() -> dict[str, Any]:
         "left_triangle_count": left.triangle_count,
         "right_triangle_count": right.triangle_count,
         "triangle_pair_count": rows[0].triangle_pair_count,
+        "tiled_tile_count": tiled.tile_count,
+        "tiled_max_observed_tile_pairs": tiled.max_observed_tile_pairs,
         "fixture_total_area": result.total_area,
         "claim_boundary": V2_8_OVERLAY_AREA_CONTINUATION_CLAIM_BOUNDARY,
     }
@@ -281,11 +381,13 @@ def validate_v2_8_overlay_area_prepared_payload_contract() -> dict[str, Any]:
 __all__ = [
     "PreparedOverlayAreaEvaluationResult",
     "PreparedOverlayAreaPairRow",
+    "PreparedOverlayAreaTiledEvaluationResult",
     "PreparedSimplePolygonComponentPayload",
     "PreparedSimplePolygonComponentRecord",
     "V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_STATUS",
     "V2_8_OVERLAY_AREA_PREPARED_PAYLOAD_VERSION",
     "evaluate_prepared_overlay_area_scalar",
+    "evaluate_prepared_overlay_area_scalar_tiled",
     "prepare_overlay_area_pair_rows",
     "prepare_simple_polygon_component_payload",
     "validate_v2_8_overlay_area_prepared_payload_contract",
