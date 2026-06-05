@@ -1,0 +1,381 @@
+[goal3460] host_oracle left_index=0/15700 rows=0 bbox_candidates=0
+[goal3460] host_oracle left_index=1000/15700 rows=3414 bbox_candidates=3939
+[goal3460] host_oracle left_index=2000/15700 rows=4280 bbox_candidates=4911
+[goal3460] host_oracle left_index=3000/15700 rows=4281 bbox_candidates=4912
+[goal3460] host_oracle left_index=4000/15700 rows=4281 bbox_candidates=4912
+[goal3460] host_oracle left_index=5000/15700 rows=4286 bbox_candidates=4917
+[goal3460] host_oracle left_index=6000/15700 rows=4286 bbox_candidates=4917
+[goal3460] host_oracle left_index=7000/15700 rows=4286 bbox_candidates=4917
+[goal3460] host_oracle left_index=8000/15700 rows=4286 bbox_candidates=4917
+[goal3460] host_oracle left_index=9000/15700 rows=4286 bbox_candidates=4917
+[goal3460] host_oracle left_index=10000/15700 rows=4286 bbox_candidates=4917
+[goal3460] host_oracle left_index=11000/15700 rows=4286 bbox_candidates=4917
+[goal3460] host_oracle left_index=12000/15700 rows=4286 bbox_candidates=4917
+[goal3460] host_oracle left_index=13000/15700 rows=4286 bbox_candidates=4917
+[goal3460] host_oracle left_index=14000/15700 rows=4286 bbox_candidates=4917
+[goal3460] host_oracle left_index=15000/15700 rows=4294 bbox_candidates=4928
+{
+  "claim_boundary": {
+    "full_overlay_area_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "device_relation_column_extract_sec": 1.5327195869758725,
+  "device_row_count": 4543,
+  "device_rows_sample": [
+    {
+      "left_id": 185,
+      "left_ordinal": 172,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 262,
+      "right_ordinal": 5
+    },
+    {
+      "left_id": 185,
+      "left_ordinal": 172,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 263,
+      "right_ordinal": 6
+    },
+    {
+      "left_id": 189,
+      "left_ordinal": 176,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 264,
+      "right_ordinal": 7
+    },
+    {
+      "left_id": 189,
+      "left_ordinal": 176,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 267,
+      "right_ordinal": 10
+    },
+    {
+      "left_id": 211,
+      "left_ordinal": 196,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 278,
+      "right_ordinal": 21
+    },
+    {
+      "left_id": 211,
+      "left_ordinal": 196,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 279,
+      "right_ordinal": 22
+    },
+    {
+      "left_id": 212,
+      "left_ordinal": 197,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 280,
+      "right_ordinal": 23
+    },
+    {
+      "left_id": 212,
+      "left_ordinal": 197,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 281,
+      "right_ordinal": 24
+    },
+    {
+      "left_id": 213,
+      "left_ordinal": 198,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 278,
+      "right_ordinal": 21
+    },
+    {
+      "left_id": 213,
+      "left_ordinal": 198,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 318,
+      "right_ordinal": 58
+    },
+    {
+      "left_id": 218,
+      "left_ordinal": 203,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 261,
+      "right_ordinal": 4
+    },
+    {
+      "left_id": 227,
+      "left_ordinal": 212,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 268,
+      "right_ordinal": 11
+    },
+    {
+      "left_id": 227,
+      "left_ordinal": 212,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 269,
+      "right_ordinal": 12
+    },
+    {
+      "left_id": 255,
+      "left_ordinal": 239,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 257,
+      "right_ordinal": 0
+    },
+    {
+      "left_id": 255,
+      "left_ordinal": 239,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 258,
+      "right_ordinal": 1
+    },
+    {
+      "left_id": 255,
+      "left_ordinal": 239,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 259,
+      "right_ordinal": 2
+    },
+    {
+      "left_id": 256,
+      "left_ordinal": 240,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 257,
+      "right_ordinal": 0
+    },
+    {
+      "left_id": 256,
+      "left_ordinal": 240,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 275,
+      "right_ordinal": 18
+    },
+    {
+      "left_id": 256,
+      "left_ordinal": 240,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 277,
+      "right_ordinal": 20
+    },
+    {
+      "left_id": 257,
+      "left_ordinal": 241,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 257,
+      "right_ordinal": 0
+    }
+  ],
+  "diff": {
+    "extra_pair_count": 0,
+    "extra_pairs_sample": [],
+    "flag_mismatch_count": 0,
+    "flag_mismatches_sample": [],
+    "missing_pair_count": 0,
+    "missing_pairs_sample": []
+  },
+  "goal": 3460,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "host_oracle_row_count": 4543,
+  "host_oracle_sec": 43.685401489026845,
+  "host_oracle_stats": {
+    "bbox_candidate_count": 5260,
+    "containment_relation_count": 4,
+    "segment_relation_count": 4539
+  },
+  "host_rows_sample": [
+    {
+      "left_id": 185,
+      "left_ordinal": 172,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 262,
+      "right_ordinal": 5
+    },
+    {
+      "left_id": 185,
+      "left_ordinal": 172,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 263,
+      "right_ordinal": 6
+    },
+    {
+      "left_id": 189,
+      "left_ordinal": 176,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 264,
+      "right_ordinal": 7
+    },
+    {
+      "left_id": 189,
+      "left_ordinal": 176,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 267,
+      "right_ordinal": 10
+    },
+    {
+      "left_id": 211,
+      "left_ordinal": 196,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 278,
+      "right_ordinal": 21
+    },
+    {
+      "left_id": 211,
+      "left_ordinal": 196,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 279,
+      "right_ordinal": 22
+    },
+    {
+      "left_id": 212,
+      "left_ordinal": 197,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 280,
+      "right_ordinal": 23
+    },
+    {
+      "left_id": 212,
+      "left_ordinal": 197,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 281,
+      "right_ordinal": 24
+    },
+    {
+      "left_id": 213,
+      "left_ordinal": 198,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 278,
+      "right_ordinal": 21
+    },
+    {
+      "left_id": 213,
+      "left_ordinal": 198,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 318,
+      "right_ordinal": 58
+    },
+    {
+      "left_id": 218,
+      "left_ordinal": 203,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 261,
+      "right_ordinal": 4
+    },
+    {
+      "left_id": 227,
+      "left_ordinal": 212,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 268,
+      "right_ordinal": 11
+    },
+    {
+      "left_id": 227,
+      "left_ordinal": 212,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 269,
+      "right_ordinal": 12
+    },
+    {
+      "left_id": 255,
+      "left_ordinal": 239,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 257,
+      "right_ordinal": 0
+    },
+    {
+      "left_id": 255,
+      "left_ordinal": 239,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 258,
+      "right_ordinal": 1
+    },
+    {
+      "left_id": 255,
+      "left_ordinal": 239,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 259,
+      "right_ordinal": 2
+    },
+    {
+      "left_id": 256,
+      "left_ordinal": 240,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 257,
+      "right_ordinal": 0
+    },
+    {
+      "left_id": 256,
+      "left_ordinal": 240,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 275,
+      "right_ordinal": 18
+    },
+    {
+      "left_id": 256,
+      "left_ordinal": 240,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 277,
+      "right_ordinal": 20
+    },
+    {
+      "left_id": 257,
+      "left_ordinal": 241,
+      "requires_point_containment": 0,
+      "requires_segment_intersection": 1,
+      "right_id": 257,
+      "right_ordinal": 0
+    }
+  ],
+  "left_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county.cdb",
+  "left_shape_count": 15700,
+  "max_rows": 65536,
+  "metadata_geometry_payload_device_resident": true,
+  "metadata_ordinal_columns_device_resident": true,
+  "metadata_schema_id": "shape_pair_relation_flags_2d_device_columns",
+  "right_cdb": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count1024.cdb",
+  "right_shape_count": 949,
+  "rows_match": true,
+  "rtdl_commit": "617a15886846520327124f54646ebdbc51fe8fd9",
+  "schema": "rtdl.goal3460.shape_pair_relation_large_content_oracle.v1"
+}
