@@ -1588,13 +1588,36 @@ class OptixNativeDevicePairColumnOutput:
             native_symbol=self.native_symbol,
             field_names=self.field_names,
         )
+        is_exact_closed_shape_bridge = (
+            self.native_symbol == OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL
+        )
+        if is_exact_closed_shape_bridge:
+            stream_metadata = metadata["typed_result_stream"]
+            stream_metadata["stream_id"] = "point_closed_shape_membership_2d_exact_device_columns"
+            stream_metadata["stream_kind"] = "exact_relation_stream"
+            stream_metadata["producer_primitive"] = "point_closed_shape_membership_2d_exact_host_refined"
+            stream_metadata["status"] = "internal_contract_host_refined_exact_device_columns"
+            producer_metadata = metadata["v2_8_typed_producer_metadata"]
+            producer_metadata["schema_id"] = "point_closed_shape_membership_2d_exact_device_columns"
+            producer_metadata["producer_primitive"] = "point_closed_shape_membership_2d_exact_host_refined"
+            producer_metadata["producer_output_residency"] = "device_resident_exact_id_columns"
+            producer_metadata["status"] = "device_resident_exact_id_columns_host_refined_bridge"
+            producer_metadata["host_refined_exact_rows_inside_native_bridge"] = True
+            producer_metadata["device_only_exact_predicate_produced"] = False
         metadata["runtime"] = {
             "backend": "optix",
-            "output_residency": "device_resident_candidate_id_columns" if self.device_resident else "empty_or_overflow",
+            "output_residency": (
+                "device_resident_exact_id_columns"
+                if is_exact_closed_shape_bridge and self.device_resident
+                else "device_resident_candidate_id_columns"
+                if self.device_resident
+                else "empty_or_overflow"
+            ),
             "owner_handle": self.owner.handle_value,
             "traversal_seconds": float(self.traversal_seconds),
             "true_zero_copy_authorized": False,
             "exact_relation_witness_rows_materialized": False,
+            "host_refined_exact_rows_inside_native_bridge": is_exact_closed_shape_bridge,
         }
         return metadata
 
