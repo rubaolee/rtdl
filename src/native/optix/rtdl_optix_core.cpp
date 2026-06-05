@@ -1693,7 +1693,27 @@ static __forceinline__ __device__ bool point_inside_bounds_dev(
            y >= bounds.min_y - eps && y <= bounds.max_y + eps;
 }
 
-static __forceinline__ __device__ bool point_in_polygon_dev(
+static __forceinline__ __device__ float shape_pair_absf(float x)
+{
+    return x < 0.0f ? -x : x;
+}
+
+static __forceinline__ __device__ bool point_on_segment_dev(
+        float px, float py,
+        float ax, float ay,
+        float bx, float by)
+{
+    const float cross = (px - ax) * (by - ay) - (py - ay) * (bx - ax);
+    if (shape_pair_absf(cross) > 1.0e-5f) return false;
+    const float min_x = ax < bx ? ax : bx;
+    const float max_x = ax > bx ? ax : bx;
+    const float min_y = ay < by ? ay : by;
+    const float max_y = ay > by ? ay : by;
+    return px >= min_x - 1.0e-5f && px <= max_x + 1.0e-5f &&
+           py >= min_y - 1.0e-5f && py <= max_y + 1.0e-5f;
+}
+
+static __forceinline__ __device__ bool point_in_polygon_inclusive_dev(
         float px, float py,
         const GpuPolygonRef& poly,
         const float* vx, const float* vy)
@@ -1701,6 +1721,13 @@ static __forceinline__ __device__ bool point_in_polygon_dev(
     const uint32_t n = poly.vertex_count;
     if (n == 0u) return false;
     const uint32_t off = poly.vertex_offset;
+    for (uint32_t i = 0, j = n - 1u; i < n; j = i++) {
+        const float xi = vx[off + i], yi = vy[off + i];
+        const float xj = vx[off + j], yj = vy[off + j];
+        if (point_on_segment_dev(px, py, xi, yi, xj, yj)) {
+            return true;
+        }
+    }
     bool inside = false;
     for (uint32_t i = 0, j = n - 1u; i < n; j = i++) {
         const float xi = vx[off + i], yi = vy[off + i];
@@ -1744,7 +1771,7 @@ extern "C" __global__ void shape_pair_relation_active_count_device_kernel(
             const float lx = left_vx[loff];
             const float ly = left_vy[loff];
             if (point_inside_bounds_dev(right_bounds[ri], lx, ly, 1.0e-6f) &&
-                point_in_polygon_dev(lx, ly, rp, right_vx, right_vy)) {
+                point_in_polygon_inclusive_dev(lx, ly, rp, right_vx, right_vy)) {
                 contains = true;
             }
         }
@@ -1753,7 +1780,7 @@ extern "C" __global__ void shape_pair_relation_active_count_device_kernel(
             const float rx = right_vx[roff];
             const float ry = right_vy[roff];
             if (point_inside_bounds_dev(left_bounds[li], rx, ry, 1.0e-6f) &&
-                point_in_polygon_dev(rx, ry, lp, left_vx, left_vy)) {
+                point_in_polygon_inclusive_dev(rx, ry, lp, left_vx, left_vy)) {
                 contains = true;
             }
         }
