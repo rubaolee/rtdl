@@ -131,7 +131,8 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "continuations; zero-based ordinal columns now make sparse ids safe for payload indexing, "
             "a CuPy bounds-overlap area continuation consumes the resident payload, the bounds-overlap "
             "path has public-CDB scale evidence, and large public-CDB relation content now matches a "
-            "native-fidelity float32 host oracle"
+            "native-fidelity float32 host oracle; generic CuPy witness columns now materialize segment-edge "
+            "and containment witnesses for every active public-CDB relation row"
         ),
         partner_position=(
             "Numba is the recommended custom continuation when row-stream compaction is part of the app; "
@@ -153,9 +154,10 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "so sparse ids are not used as geometry indices; Goal3456 proved a generic CuPy bounds-overlap "
             "area continuation over the resident payload; Goal3459 added public-CDB scale evidence for "
             "bounds-overlap continuation; Goal3460 proved large public-CDB relation id/flag/ordinal content "
-            "against a native-fidelity float32 host oracle. Remaining work is exact polygon relation witnesses "
-            "and exact overlay-area continuation for non-integer, non-orthogonal polygons, plus boundary-witness "
-            "ownership at serious scale."
+            "against a native-fidelity float32 host oracle; Goal3463 emitted generic CuPy witness columns for "
+            "all public-CDB active relation rows. Remaining work is exact overlay-area continuation for "
+            "non-integer, non-orthogonal polygons, plus boundary-witness ownership and exact area/witness "
+            "policy at serious scale."
         ),
         generic_runtime_target=(
             "typed hit/relation streams with compact-mask, grouped parity/count, and bounded witness "
@@ -187,6 +189,7 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
             "Goal3456",
             "Goal3459",
             "Goal3460",
+            "Goal3463",
         ),
     ),
     V28BenchmarkRuntimeGapRow(
