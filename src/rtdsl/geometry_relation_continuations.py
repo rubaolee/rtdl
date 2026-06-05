@@ -9,6 +9,9 @@ GEOMETRY_RELATION_BOUNDS_OVERLAP_AREA_CUPY_VERSION = (
 )
 GEOMETRY_RELATION_WITNESS_CUPY_VERSION = "rtdl.v2_8.geometry_relation.witness_cupy.v1"
 GEOMETRY_RELATION_COMPLEXITY_CUPY_VERSION = "rtdl.v2_8.geometry_relation.complexity_cupy.v1"
+GEOMETRY_RELATION_CONVEX_OVERLAY_AREA_CUPY_VERSION = (
+    "rtdl.v2_8.geometry_relation.convex_overlay_area_cupy.v1"
+)
 
 
 _SHAPE_PAIR_CONVEXITY_KERNEL = r"""
@@ -227,6 +230,201 @@ extern "C" __global__ void shape_pair_relation_witness_kernel(
 """
 
 
+_SHAPE_PAIR_CONVEX_OVERLAY_AREA_KERNEL = r"""
+#define RTDL_MAX_CONVEX_OVERLAY_VERTICES 128
+
+static __device__ float rtdl_convex_overlay_absf(float value)
+{
+    return value < 0.0f ? -value : value;
+}
+
+static __device__ float rtdl_convex_overlay_cross(
+        float ax, float ay,
+        float bx, float by,
+        float cx, float cy)
+{
+    return (bx - ax) * (cy - ay) - (by - ay) * (cx - ax);
+}
+
+static __device__ float rtdl_convex_overlay_signed_area(
+        const float* vx,
+        const float* vy,
+        unsigned int offset,
+        unsigned int count)
+{
+    float area2 = 0.0f;
+    for (unsigned int i = 0u; i < count; ++i) {
+        const unsigned int j = (i + 1u) % count;
+        const float ax = vx[offset + i];
+        const float ay = vy[offset + i];
+        const float bx = vx[offset + j];
+        const float by = vy[offset + j];
+        area2 += ax * by - bx * ay;
+    }
+    return 0.5f * area2;
+}
+
+static __device__ bool rtdl_convex_overlay_inside(
+        float px,
+        float py,
+        float ax,
+        float ay,
+        float bx,
+        float by,
+        float orientation)
+{
+    const float cross = (bx - ax) * (py - ay) - (by - ay) * (px - ax);
+    return orientation * cross >= -1.0e-6f;
+}
+
+static __device__ void rtdl_convex_overlay_line_intersection(
+        float sx,
+        float sy,
+        float ex,
+        float ey,
+        float ax,
+        float ay,
+        float bx,
+        float by,
+        float* out_x,
+        float* out_y)
+{
+    const float dx = ex - sx;
+    const float dy = ey - sy;
+    const float cx = bx - ax;
+    const float cy = by - ay;
+    const float denom = dx * cy - dy * cx;
+    if (rtdl_convex_overlay_absf(denom) <= 1.0e-12f) {
+        *out_x = ex;
+        *out_y = ey;
+        return;
+    }
+    const float qx = ax - sx;
+    const float qy = ay - sy;
+    const float t = (qx * cy - qy * cx) / denom;
+    *out_x = sx + t * dx;
+    *out_y = sy + t * dy;
+}
+
+extern "C" __global__ void shape_pair_relation_convex_overlay_area_kernel(
+        const unsigned int* left_ordinals,
+        const unsigned int* right_ordinals,
+        const unsigned int* left_convex,
+        const unsigned int* right_convex,
+        const unsigned int* left_polygon_refs,
+        const unsigned int* right_polygon_refs,
+        const float* left_vx,
+        const float* left_vy,
+        const float* right_vx,
+        const float* right_vy,
+        unsigned int row_count,
+        unsigned int max_vertices_per_shape,
+        double* row_area,
+        unsigned int* status)
+{
+    const unsigned int row = blockIdx.x * blockDim.x + threadIdx.x;
+    if (row >= row_count) return;
+
+    row_area[row] = 0.0;
+    status[row] = 0u;
+
+    if (left_convex[row] == 0u || right_convex[row] == 0u) {
+        status[row] = 1u;
+        return;
+    }
+
+    const unsigned int li = left_ordinals[row];
+    const unsigned int ri = right_ordinals[row];
+    const unsigned int left_offset = left_polygon_refs[li * 3u + 1u];
+    const unsigned int left_count = left_polygon_refs[li * 3u + 2u];
+    const unsigned int right_offset = right_polygon_refs[ri * 3u + 1u];
+    const unsigned int right_count = right_polygon_refs[ri * 3u + 2u];
+
+    if (left_count < 3u || right_count < 3u) {
+        status[row] = 3u;
+        return;
+    }
+    if (left_count > max_vertices_per_shape || right_count > max_vertices_per_shape ||
+        left_count > RTDL_MAX_CONVEX_OVERLAY_VERTICES ||
+        right_count > RTDL_MAX_CONVEX_OVERLAY_VERTICES) {
+        status[row] = 2u;
+        return;
+    }
+
+    float clip_x[RTDL_MAX_CONVEX_OVERLAY_VERTICES];
+    float clip_y[RTDL_MAX_CONVEX_OVERLAY_VERTICES];
+    float temp_x[RTDL_MAX_CONVEX_OVERLAY_VERTICES];
+    float temp_y[RTDL_MAX_CONVEX_OVERLAY_VERTICES];
+    unsigned int clip_count = left_count;
+    for (unsigned int i = 0u; i < left_count; ++i) {
+        clip_x[i] = left_vx[left_offset + i];
+        clip_y[i] = left_vy[left_offset + i];
+    }
+
+    const float right_area = rtdl_convex_overlay_signed_area(right_vx, right_vy, right_offset, right_count);
+    const float orientation = right_area < 0.0f ? -1.0f : 1.0f;
+    if (rtdl_convex_overlay_absf(right_area) <= 1.0e-12f) {
+        status[row] = 3u;
+        return;
+    }
+
+    for (unsigned int edge = 0u; edge < right_count && clip_count > 0u; ++edge) {
+        const unsigned int edge_next = (edge + 1u) % right_count;
+        const float ax = right_vx[right_offset + edge];
+        const float ay = right_vy[right_offset + edge];
+        const float bx = right_vx[right_offset + edge_next];
+        const float by = right_vy[right_offset + edge_next];
+        unsigned int temp_count = 0u;
+        for (unsigned int i = 0u; i < clip_count; ++i) {
+            const unsigned int prev = (i + clip_count - 1u) % clip_count;
+            const float sx = clip_x[prev];
+            const float sy = clip_y[prev];
+            const float ex = clip_x[i];
+            const float ey = clip_y[i];
+            const bool s_inside = rtdl_convex_overlay_inside(sx, sy, ax, ay, bx, by, orientation);
+            const bool e_inside = rtdl_convex_overlay_inside(ex, ey, ax, ay, bx, by, orientation);
+            if (e_inside) {
+                if (!s_inside && temp_count < RTDL_MAX_CONVEX_OVERLAY_VERTICES) {
+                    rtdl_convex_overlay_line_intersection(
+                        sx, sy, ex, ey, ax, ay, bx, by, &temp_x[temp_count], &temp_y[temp_count]);
+                    ++temp_count;
+                }
+                if (temp_count < RTDL_MAX_CONVEX_OVERLAY_VERTICES) {
+                    temp_x[temp_count] = ex;
+                    temp_y[temp_count] = ey;
+                    ++temp_count;
+                }
+            } else if (s_inside && temp_count < RTDL_MAX_CONVEX_OVERLAY_VERTICES) {
+                rtdl_convex_overlay_line_intersection(
+                    sx, sy, ex, ey, ax, ay, bx, by, &temp_x[temp_count], &temp_y[temp_count]);
+                ++temp_count;
+            }
+        }
+        if (temp_count >= RTDL_MAX_CONVEX_OVERLAY_VERTICES) {
+            status[row] = 2u;
+            return;
+        }
+        clip_count = temp_count;
+        for (unsigned int i = 0u; i < clip_count; ++i) {
+            clip_x[i] = temp_x[i];
+            clip_y[i] = temp_y[i];
+        }
+    }
+
+    if (clip_count < 3u) {
+        row_area[row] = 0.0;
+        return;
+    }
+    float area2 = 0.0f;
+    for (unsigned int i = 0u; i < clip_count; ++i) {
+        const unsigned int j = (i + 1u) % clip_count;
+        area2 += clip_x[i] * clip_y[j] - clip_x[j] * clip_y[i];
+    }
+    row_area[row] = 0.5 * (double)rtdl_convex_overlay_absf(area2);
+}
+"""
+
+
 @dataclass(frozen=True)
 class ShapePairBoundsOverlapAreaCupyResult:
     row_areas: object
@@ -258,6 +456,16 @@ class ShapePairRelationComplexityCupyResult:
     left_convex: object
     right_convex: object
     general_overlay_required: object
+    metadata: dict[str, Any]
+
+    def to_metadata(self) -> dict[str, Any]:
+        return dict(self.metadata)
+
+
+@dataclass(frozen=True)
+class ShapePairConvexOverlayAreaCupyResult:
+    row_areas: object
+    status: object
     metadata: dict[str, Any]
 
     def to_metadata(self) -> dict[str, Any]:
@@ -452,6 +660,105 @@ def shape_pair_relation_complexity_cupy(
         left_convex=left_convex,
         right_convex=right_convex,
         general_overlay_required=general_overlay_required,
+        metadata=metadata,
+    )
+
+
+def shape_pair_relation_convex_overlay_area_cupy(
+    relation_columns,
+    *,
+    simple_vertex_threshold: int = 64,
+    max_vertices_per_shape: int = 128,
+) -> ShapePairConvexOverlayAreaCupyResult:
+    """Compute exact overlay area for supported convex shape-pair relation rows."""
+    if getattr(relation_columns, "overflow", False):
+        raise RuntimeError("cannot consume an overflowed shape-pair relation stream")
+    max_vertices = int(max_vertices_per_shape)
+    if max_vertices < 3 or max_vertices > 128:
+        raise ValueError("max_vertices_per_shape must be in [3, 128]")
+
+    import cupy as cp  # type: ignore
+
+    ordinals = relation_columns.as_cupy_ordinal_columns()
+    geometry = relation_columns.as_cupy_geometry_payload_columns()
+    row_count = int(getattr(relation_columns, "row_count"))
+    complexity = shape_pair_relation_complexity_cupy(
+        relation_columns,
+        simple_vertex_threshold=int(simple_vertex_threshold),
+    )
+    row_areas = cp.zeros((row_count,), dtype=cp.float64)
+    status = cp.zeros((row_count,), dtype=cp.uint32)
+
+    if row_count > 0:
+        kernel = cp.RawKernel(
+            _SHAPE_PAIR_CONVEX_OVERLAY_AREA_KERNEL,
+            "shape_pair_relation_convex_overlay_area_kernel",
+        )
+        block_size = 128
+        grid_size = (row_count + block_size - 1) // block_size
+        kernel(
+            (grid_size,),
+            (block_size,),
+            (
+                ordinals["left_ordinal"],
+                ordinals["right_ordinal"],
+                complexity.left_convex,
+                complexity.right_convex,
+                geometry["left_polygon_refs"].reshape(-1),
+                geometry["right_polygon_refs"].reshape(-1),
+                geometry["left_vertices_x"],
+                geometry["left_vertices_y"],
+                geometry["right_vertices_x"],
+                geometry["right_vertices_y"],
+                cp.uint32(row_count),
+                cp.uint32(max_vertices),
+                row_areas,
+                status,
+            ),
+        )
+        cp.cuda.Stream.null.synchronize()
+
+    unique_status, unique_counts = cp.unique(status, return_counts=True)
+    status_counts = {
+        str(int(code)): int(count)
+        for code, count in zip(cp.asnumpy(unique_status).tolist(), cp.asnumpy(unique_counts).tolist())
+    }
+    supported_row_count = int(cp.sum(status == 0).get()) if row_count else 0
+    positive_area_row_count = int(cp.sum((status == 0) & (row_areas > 0.0)).get()) if row_count else 0
+    total_supported_area = float(cp.sum(row_areas).get()) if row_count else 0.0
+    metadata = {
+        "schema": GEOMETRY_RELATION_CONVEX_OVERLAY_AREA_CUPY_VERSION,
+        "operation": "shape_pair_relation_convex_overlay_area",
+        "partner": "cupy",
+        "input_contract": "shape_pair_relation_flags_with_ordinals_and_geometry_payload",
+        "row_count": row_count,
+        "simple_vertex_threshold": int(simple_vertex_threshold),
+        "max_vertices_per_shape": max_vertices,
+        "supported_row_count": supported_row_count,
+        "positive_area_row_count": positive_area_row_count,
+        "total_supported_area": total_supported_area,
+        "status_counts": status_counts,
+        "status_semantics": {
+            "0": "convex_overlay_area_computed",
+            "1": "unsupported_nonconvex",
+            "2": "unsupported_vertex_budget",
+            "3": "unsupported_degenerate_shape",
+        },
+        "area_semantics": "exact_area_for_supported_convex_rows_only",
+        "full_exact_overlay_area_completed": False,
+        "requires_relation_ordinals": True,
+        "requires_geometry_payload_columns": True,
+        "app_specific_engine_logic_allowed": False,
+        "automatic_partner_selection_allowed": False,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "full_overlay_area_claim_authorized": False,
+    }
+    return ShapePairConvexOverlayAreaCupyResult(
+        row_areas=row_areas,
+        status=status,
         metadata=metadata,
     )
 

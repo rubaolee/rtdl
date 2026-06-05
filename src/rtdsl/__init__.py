@@ -366,11 +366,14 @@ from .v2_8_geometry_relation_typed_stream import make_v2_8_geometry_relation_typ
 from .v2_8_geometry_relation_typed_stream import make_v2_8_geometry_relation_typed_stream_contract
 from .geometry_relation_continuations import GEOMETRY_RELATION_BOUNDS_OVERLAP_AREA_CUPY_VERSION
 from .geometry_relation_continuations import GEOMETRY_RELATION_COMPLEXITY_CUPY_VERSION
+from .geometry_relation_continuations import GEOMETRY_RELATION_CONVEX_OVERLAY_AREA_CUPY_VERSION
 from .geometry_relation_continuations import GEOMETRY_RELATION_WITNESS_CUPY_VERSION
 from .geometry_relation_continuations import ShapePairBoundsOverlapAreaCupyResult
+from .geometry_relation_continuations import ShapePairConvexOverlayAreaCupyResult
 from .geometry_relation_continuations import ShapePairRelationComplexityCupyResult
 from .geometry_relation_continuations import ShapePairRelationWitnessCupyResult
 from .geometry_relation_continuations import shape_pair_relation_bounds_overlap_area_cupy
+from .geometry_relation_continuations import shape_pair_relation_convex_overlay_area_cupy
 from .geometry_relation_continuations import shape_pair_relation_complexity_cupy
 from .geometry_relation_continuations import shape_pair_relation_witness_cupy
 from .point_nearest_witness_typed_stream import V2_8_POINT_GROUP_NEAREST_WITNESS_CLAIM_BOUNDARY
@@ -2065,13 +2068,16 @@ __all__ = [
     "geometry_relation_typed_stream_metadata_for_row_view",
     "GEOMETRY_RELATION_BOUNDS_OVERLAP_AREA_CUPY_VERSION",
     "GEOMETRY_RELATION_COMPLEXITY_CUPY_VERSION",
+    "GEOMETRY_RELATION_CONVEX_OVERLAY_AREA_CUPY_VERSION",
     "GEOMETRY_RELATION_WITNESS_CUPY_VERSION",
     "make_v2_8_geometry_relation_typed_producer_metadata",
     "make_v2_8_geometry_relation_typed_stream_contract",
     "ShapePairBoundsOverlapAreaCupyResult",
+    "ShapePairConvexOverlayAreaCupyResult",
     "ShapePairRelationComplexityCupyResult",
     "ShapePairRelationWitnessCupyResult",
     "shape_pair_relation_bounds_overlap_area_cupy",
+    "shape_pair_relation_convex_overlay_area_cupy",
     "shape_pair_relation_complexity_cupy",
     "shape_pair_relation_witness_cupy",
     "V2_8_POINT_GROUP_NEAREST_WITNESS_CLAIM_BOUNDARY",
