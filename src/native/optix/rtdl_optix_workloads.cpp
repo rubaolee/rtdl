@@ -8201,6 +8201,7 @@ static void run_prepared_point_closed_shape_membership_exact_device_columns_2d_o
     columns_out->candidate_event_count = static_cast<uint64_t>(exact_count);
     if (exact_count == 0) {
         columns_out->row_count = 0u;
+        columns_out->capacity = 0u;
         columns_out->overflow = 0u;
         const auto bridge_end = std::chrono::steady_clock::now();
         columns_out->traversal_seconds = seconds_between(bridge_start, bridge_end);
@@ -8229,6 +8230,7 @@ static void run_prepared_point_closed_shape_membership_exact_device_columns_2d_o
     columns_out->left_ids_device_ptr = static_cast<uint64_t>(owner->point_ids);
     columns_out->right_ids_device_ptr = static_cast<uint64_t>(owner->shape_ids);
     columns_out->row_count = static_cast<uint64_t>(exact_count);
+    columns_out->capacity = static_cast<uint64_t>(exact_count);
     columns_out->overflow = 0u;
     columns_out->owner_handle = owner.release();
     g_optix_last_closed_shape_emitted_count = exact_count;
