@@ -215,6 +215,9 @@ OPTIX_RELEASE_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL = (
 OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_prepared_segment_pair_left_id_count_device_columns"
 )
+OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_WITH_AMBIGUITY_STATUS_SYMBOL = (
+    "rtdl_optix_prepared_segment_pair_left_id_count_device_columns_with_ambiguity_status"
+)
 OPTIX_RELEASE_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_release_segment_pair_left_id_count_device_columns"
 )
@@ -991,6 +994,7 @@ class _RtdlNativeDeviceGroupedCountI64Columns(ctypes.Structure):
         ("reduction_seconds", ctypes.c_double),
         ("source_row_count_device_ptr", ctypes.c_uint64),
         ("overflow_device_ptr", ctypes.c_uint64),
+        ("ambiguous_count_device_ptr", ctypes.c_uint64),
     ]
 
 
@@ -1622,6 +1626,7 @@ class OptixNativeDeviceGroupedCountI64Output:
     native_symbol: str
     source_row_count_device_ptr: int = 0
     overflow_device_ptr: int = 0
+    ambiguous_count_device_ptr: int = 0
 
     @property
     def device_resident(self) -> bool:
@@ -1642,6 +1647,7 @@ class OptixNativeDeviceGroupedCountI64Output:
             "counts_device_ptr_nonzero": self.counts_device_ptr > 0,
             "source_row_count_device_ptr_nonzero": self.source_row_count_device_ptr > 0,
             "overflow_device_ptr_nonzero": self.overflow_device_ptr > 0,
+            "ambiguous_count_device_ptr_nonzero": self.ambiguous_count_device_ptr > 0,
             "group_capacity": self.group_capacity,
             "group_capacity_semantics": "direct-address key capacity",
             "group_key_semantics": "dense output uses direct-address array index as the implicit group key",
@@ -1654,6 +1660,7 @@ class OptixNativeDeviceGroupedCountI64Output:
             "count_column_materialized_on_host": False,
             "source_row_count_materialized_on_host_for_metadata": True,
             "overflow_materialized_on_host_for_metadata": True,
+            "ambiguous_count_materialized_on_host_for_metadata": False,
             "true_zero_copy_authorized": False,
             "release_authorized": False,
             "public_speedup_claim_authorized": False,
@@ -1683,6 +1690,11 @@ class OptixNativeDeviceGroupedCountI64Output:
         import cupy as cp  # type: ignore
 
         return self._cupy_status_column(self.overflow_device_ptr, dtype=cp.uint32)
+
+    def as_cupy_ambiguous_count(self):
+        import cupy as cp  # type: ignore
+
+        return self._cupy_status_column(self.ambiguous_count_device_ptr, dtype=cp.uint64)
 
     def as_cupy_counts(self):
         if self.overflow:
@@ -2218,6 +2230,7 @@ class OptixNativeDevicePairColumnOutput:
             native_symbol=OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_DEVICE_COLUMNS_WITH_CAPACITY_SYMBOL,
             source_row_count_device_ptr=int(columns.source_row_count_device_ptr),
             overflow_device_ptr=int(columns.overflow_device_ptr),
+            ambiguous_count_device_ptr=int(columns.ambiguous_count_device_ptr),
         )
 
     def grouped_count_by_left_id_compact_device_columns(
@@ -2916,6 +2929,7 @@ class OptixClosedShapeBoundaryEventDeviceColumnOutput:
             native_symbol=OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_DEVICE_COLUMNS_WITH_CAPACITY_SYMBOL,
             source_row_count_device_ptr=int(columns.source_row_count_device_ptr),
             overflow_device_ptr=int(columns.overflow_device_ptr),
+            ambiguous_count_device_ptr=int(columns.ambiguous_count_device_ptr),
         )
 
     def close(self) -> None:
@@ -3066,6 +3080,7 @@ class PreparedOptixSegmentPairIntersection:
         left_segments,
         *,
         group_capacity: int,
+        include_ambiguity_status: bool = False,
     ) -> OptixNativeDeviceGroupedCountI64Output:
         """Count segment-pair hits by pair-column left_id without materializing pair columns."""
         if self._closed:
@@ -3073,14 +3088,16 @@ class PreparedOptixSegmentPairIntersection:
         capacity = int(group_capacity)
         if capacity <= 0:
             raise ValueError("group_capacity must be positive")
-        symbol = _find_optional_backend_symbol(
-            self.library,
-            OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL,
+        native_symbol = (
+            OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_WITH_AMBIGUITY_STATUS_SYMBOL
+            if include_ambiguity_status
+            else OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL
         )
+        symbol = _find_optional_backend_symbol(self.library, native_symbol)
         if symbol is None:
             raise RuntimeError(
                 "Loaded OptiX backend library does not export "
-                f"{OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL}; rebuild the OptiX backend from current main"
+                f"{native_symbol}; rebuild the OptiX backend from current main"
             )
         left = _pack_for_geometry("segments", left_segments)
         columns = _RtdlNativeDeviceGroupedCountI64Columns()
@@ -3109,9 +3126,10 @@ class PreparedOptixSegmentPairIntersection:
             overflow=bool(columns.overflow),
             device_ordinal=int(columns.device_ordinal),
             reduction_seconds=float(columns.reduction_seconds),
-            native_symbol=OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL,
+            native_symbol=native_symbol,
             source_row_count_device_ptr=int(columns.source_row_count_device_ptr),
             overflow_device_ptr=int(columns.overflow_device_ptr),
+            ambiguous_count_device_ptr=int(columns.ambiguous_count_device_ptr),
         )
 
     def first_hit_raw(self, probe_segments) -> OptixRowView:
@@ -12010,6 +12028,7 @@ class PreparedOptixPointClosedShapeMembership2D:
             native_symbol=OPTIX_CLOSED_SHAPE_MEMBERSHIP_POINT_ID_COUNT_DEVICE_COLUMNS_SYMBOL,
             source_row_count_device_ptr=int(columns.source_row_count_device_ptr),
             overflow_device_ptr=int(columns.overflow_device_ptr),
+            ambiguous_count_device_ptr=int(columns.ambiguous_count_device_ptr),
         )
 
     def last_phase_timings(self) -> dict[str, float | int | str] | None:
@@ -19723,6 +19742,21 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_segment_pair_left_id_count_device_columns.restype = ctypes.c_int
+    optional_segment_pair_left_id_count_device_columns_with_ambiguity_status = _find_optional_backend_symbol(
+        lib,
+        OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_WITH_AMBIGUITY_STATUS_SYMBOL,
+    )
+    if optional_segment_pair_left_id_count_device_columns_with_ambiguity_status is not None:
+        optional_segment_pair_left_id_count_device_columns_with_ambiguity_status.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlSegment),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlNativeDeviceGroupedCountI64Columns),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_segment_pair_left_id_count_device_columns_with_ambiguity_status.restype = ctypes.c_int
     optional_release_segment_pair_left_id_count_device_columns = _find_optional_backend_symbol(
         lib,
         OPTIX_RELEASE_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL,

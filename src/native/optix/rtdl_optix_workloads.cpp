@@ -1375,11 +1375,13 @@ struct NativeDeviceGroupedCountI64ColumnsOwner {
     CUdeviceptr counts = 0;
     CUdeviceptr source_row_count = 0;
     CUdeviceptr overflow = 0;
+    CUdeviceptr ambiguous_count = 0;
 
     ~NativeDeviceGroupedCountI64ColumnsOwner() {
         if (counts) cuMemFree(counts);
         if (source_row_count) cuMemFree(source_row_count);
         if (overflow) cuMemFree(overflow);
+        if (ambiguous_count) cuMemFree(ambiguous_count);
     }
 };
 
@@ -3918,6 +3920,58 @@ struct NativeSegmentPairCandidateDeviceColumnsOwner {
     }
 };
 
+struct SegmentPairAmbiguityCountFunction {
+    CUmodule module = nullptr;
+    CUfunction fn = nullptr;
+    std::once_flag init;
+};
+
+static SegmentPairAmbiguityCountFunction g_segment_pair_ambiguity_count;
+
+static const char* kSegmentPairAmbiguityCountKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <math.h>
+
+struct GpuSegment {
+    float x0, y0, x1, y1;
+    unsigned int id;
+};
+
+extern "C" __global__ void segment_pair_ambiguity_count_kernel(
+    const GpuSegment* left,
+    unsigned int left_count,
+    const GpuSegment* right,
+    unsigned int right_count,
+    unsigned long long* ambiguous_count)
+{
+    const unsigned long long total =
+        (unsigned long long)left_count * (unsigned long long)right_count;
+    const unsigned long long idx =
+        (unsigned long long)blockIdx.x * (unsigned long long)blockDim.x +
+        (unsigned long long)threadIdx.x;
+    if (idx >= total) return;
+    const unsigned int li = (unsigned int)(idx / (unsigned long long)right_count);
+    const unsigned int ri = (unsigned int)(idx - (unsigned long long)li * (unsigned long long)right_count);
+    const GpuSegment a = left[li];
+    const GpuSegment b = right[ri];
+    if (!isfinite(a.x0) || !isfinite(a.y0) ||
+        !isfinite(a.x1) || !isfinite(a.y1) ||
+        !isfinite(b.x0) || !isfinite(b.y0) ||
+        !isfinite(b.x1) || !isfinite(b.y1)) {
+        atomicAdd(ambiguous_count, 1ull);
+        return;
+    }
+    const float rx = a.x1 - a.x0;
+    const float ry = a.y1 - a.y0;
+    const float sx = b.x1 - b.x0;
+    const float sy = b.y1 - b.y0;
+    const float denom = rx * sy - ry * sx;
+    if (fabsf(denom) < 1.0e-7f) {
+        atomicAdd(ambiguous_count, 1ull);
+    }
+}
+)CUDA";
+
 struct SegmentFirstHitLaunchParams {
     OptixTraversableHandle traversable;
     const GpuSegment* probes;
@@ -4168,6 +4222,58 @@ R"CUDA(    float hit_t = 0.0f;
             nullptr,
             4).release();
     });
+}
+
+static void ensure_segment_pair_ambiguity_count_kernel() {
+    std::call_once(g_segment_pair_ambiguity_count.init, [&]() {
+        std::string ptx = compile_to_ptx(
+            kSegmentPairAmbiguityCountKernelSrc,
+            "segment_pair_ambiguity_count_kernel.cu");
+        CU_CHECK(cuModuleLoadData(&g_segment_pair_ambiguity_count.module, ptx.c_str()));
+        CU_CHECK(cuModuleGetFunction(
+            &g_segment_pair_ambiguity_count.fn,
+            g_segment_pair_ambiguity_count.module,
+            "segment_pair_ambiguity_count_kernel"));
+    });
+}
+
+static void launch_segment_pair_ambiguity_count_kernel(
+        CUdeviceptr left_device,
+        size_t left_count,
+        CUdeviceptr right_device,
+        size_t right_count,
+        CUdeviceptr ambiguous_count_device,
+        CUstream stream)
+{
+    if (left_count == 0 || right_count == 0)
+        return;
+    if (left_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("segment-pair ambiguity left count exceeds uint32 capacity");
+    if (right_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("segment-pair ambiguity right count exceeds uint32 capacity");
+    const unsigned long long total =
+        static_cast<unsigned long long>(left_count) * static_cast<unsigned long long>(right_count);
+    const unsigned long long max_grid_total =
+        static_cast<unsigned long long>(std::numeric_limits<uint32_t>::max()) * 256ull;
+    if (total > max_grid_total)
+        throw std::runtime_error("segment-pair ambiguity pair count exceeds current grid capacity");
+    ensure_segment_pair_ambiguity_count_kernel();
+    const unsigned int threads = 256u;
+    const unsigned int blocks = static_cast<unsigned int>((total + threads - 1ull) / threads);
+    const unsigned int left_count32 = static_cast<unsigned int>(left_count);
+    const unsigned int right_count32 = static_cast<unsigned int>(right_count);
+    void* args[] = {
+        &left_device,
+        const_cast<unsigned int*>(&left_count32),
+        &right_device,
+        const_cast<unsigned int*>(&right_count32),
+        &ambiguous_count_device,
+    };
+    CU_CHECK(cuLaunchKernel(
+        g_segment_pair_ambiguity_count.fn,
+        blocks, 1, 1,
+        threads, 1, 1,
+        0, stream, args, nullptr));
 }
 
 static void ensure_segment_first_hit_pipeline() {
@@ -4681,7 +4787,8 @@ static void run_prepared_segment_pair_left_id_count_device_columns_optix(
         const RtdlSegment* left,
         size_t left_count,
         size_t group_capacity,
-        RtdlNativeDeviceGroupedCountI64Columns* columns_out)
+        RtdlNativeDeviceGroupedCountI64Columns* columns_out,
+        bool include_ambiguity_status = false)
 {
     if (!prepared)
         throw std::runtime_error("prepared segment-pair handle must not be null");
@@ -4728,6 +4835,10 @@ static void run_prepared_segment_pair_left_id_count_device_columns_optix(
     upload(owner->source_row_count, &zero64, 1);
     CU_CHECK(cuMemAlloc(&owner->overflow, sizeof(uint32_t)));
     upload(owner->overflow, &zero32, 1);
+    if (include_ambiguity_status) {
+        CU_CHECK(cuMemAlloc(&owner->ambiguous_count, sizeof(unsigned long long)));
+        upload(owner->ambiguous_count, &zero64, 1);
+    }
 
     const auto traversal_start = std::chrono::steady_clock::now();
     CUstream stream = 0;
@@ -4748,6 +4859,15 @@ static void run_prepared_segment_pair_left_id_count_device_columns_optix(
                              d_params.ptr, sizeof(SegmentPairLeftIdCountDeviceColumnsLaunchParams),
                              &g_segment_pair_left_id_count_device_columns.pipe->sbt,
                              static_cast<unsigned>(left_count), 1, 1));
+    if (include_ambiguity_status) {
+        launch_segment_pair_ambiguity_count_kernel(
+            d_left.ptr,
+            left_count,
+            prepared->d_right.ptr,
+            prepared->right_count,
+            owner->ambiguous_count,
+            stream);
+    }
     CU_CHECK(cuStreamSynchronize(stream));
     const auto traversal_end = std::chrono::steady_clock::now();
 
@@ -4763,6 +4883,7 @@ static void run_prepared_segment_pair_left_id_count_device_columns_optix(
     columns_out->counts_device_ptr = static_cast<uint64_t>(owner->counts);
     columns_out->source_row_count_device_ptr = static_cast<uint64_t>(owner->source_row_count);
     columns_out->overflow_device_ptr = static_cast<uint64_t>(owner->overflow);
+    columns_out->ambiguous_count_device_ptr = static_cast<uint64_t>(owner->ambiguous_count);
     columns_out->overflow = overflow != 0u ? 1u : 0u;
     columns_out->owner_handle = owner.release();
 }

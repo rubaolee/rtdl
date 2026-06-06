@@ -219,6 +219,8 @@ def _optix_case(
     right: tuple[Segment, ...],
     *,
     include_rows: bool,
+    include_ambiguity_status: bool,
+    expected_ambiguous_count: int,
 ) -> dict[str, object]:
     import cupy as cp
     from rtdsl.optix_runtime import prepare_segment_pair_intersection_optix
@@ -245,19 +247,34 @@ def _optix_case(
             scalar_count_seconds = time.perf_counter() - scalar_start
 
         dense_start = time.perf_counter()
-        dense = prepared.left_id_count_device_columns(left, group_capacity=group_capacity)
+        dense = prepared.left_id_count_device_columns(
+            left,
+            group_capacity=group_capacity,
+            include_ambiguity_status=include_ambiguity_status,
+        )
         try:
             counts_gpu = dense.as_cupy_counts()
             source_row_count_gpu = dense.as_cupy_source_row_count()
             overflow_gpu = dense.as_cupy_overflow_status()
+            ambiguous_gpu = (
+                dense.as_cupy_ambiguous_count()
+                if int(dense.ambiguous_count_device_ptr) > 0
+                else None
+            )
             cp.cuda.Stream.null.synchronize()
             counts = cp.asnumpy(counts_gpu).astype("int64")
             source_row_count_status = int(cp.asnumpy(source_row_count_gpu).astype("uint64")[0])
             overflow_status = int(cp.asnumpy(overflow_gpu).astype("uint32")[0])
+            ambiguous_status = (
+                int(cp.asnumpy(ambiguous_gpu).astype("uint64")[0])
+                if ambiguous_gpu is not None
+                else None
+            )
             dense_total = int(counts.sum())
             dense_seconds = time.perf_counter() - dense_start
             counts_device_ptr = int(dense.counts_device_ptr)
             overflow_device_ptr = int(dense.overflow_device_ptr)
+            ambiguous_count_device_ptr = int(dense.ambiguous_count_device_ptr)
             dense_metadata = dense.to_metadata()
         finally:
             dense.close()
@@ -266,6 +283,7 @@ def _optix_case(
             group_capacity=group_capacity,
             counts_device_ptr=counts_device_ptr,
             overflow_device_ptr=overflow_device_ptr,
+            ambiguous_count_device_ptr=ambiguous_count_device_ptr,
             stream_ordering="host_synchronized_before_consumer",
             device_id=int(dense_metadata["device_ordinal"]),
         )
@@ -286,9 +304,16 @@ def _optix_case(
                 "hit_pair_count": dense_total,
                 "source_row_count_from_device_status": source_row_count_status,
                 "overflow_from_device_status": overflow_status,
+                "ambiguous_count_from_device_status": ambiguous_status,
+                "include_ambiguity_status": include_ambiguity_status,
                 "status_device_columns_valid": (
                     source_row_count_status == dense_total
                     and overflow_status == int(bool(dense_metadata["overflow"]))
+                ),
+                "ambiguity_device_status_valid": (
+                    ambiguous_status == int(expected_ambiguous_count)
+                    if include_ambiguity_status
+                    else None
                 ),
                 "seconds": dense_seconds,
                 "metadata": dense_metadata,
@@ -366,7 +391,14 @@ def _compare_counts(expected: list[int], actual: list[int]) -> dict[str, object]
     }
 
 
-def _run_one_case(name: str, left: tuple[Segment, ...], right: tuple[Segment, ...], note: str) -> dict[str, object]:
+def _run_one_case(
+    name: str,
+    left: tuple[Segment, ...],
+    right: tuple[Segment, ...],
+    note: str,
+    *,
+    include_ambiguity_status: bool,
+) -> dict[str, object]:
     _print(f"case={name} left={len(left)} right={len(right)} pairs={len(left) * len(right)}")
     if name == "adversarial":
         _print("run Python strict-v0 oracle")
@@ -380,7 +412,13 @@ def _run_one_case(name: str, left: tuple[Segment, ...], right: tuple[Segment, ..
 
     include_rows = len(left) * len(right) <= 4096
     _print("run OptiX prepared dense count route")
-    optix_result = _optix_case(left, right, include_rows=include_rows)
+    optix_result = _optix_case(
+        left,
+        right,
+        include_rows=include_rows,
+        include_ambiguity_status=include_ambiguity_status,
+        expected_ambiguous_count=int(expected["ambiguous_pair_count"]),
+    )
 
     expected_counts = [int(value) for value in expected["counts"]]
     cupy_counts = [int(value) for value in cupy_result["counts"]]
@@ -421,7 +459,16 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         left, right, note = _make_crossing_grid_case(size)
         selected_cases.append((f"crossing_grid_{size}", left, right, note))
 
-    case_results = [_run_one_case(name, left, right, note) for name, left, right, note in selected_cases]
+    case_results = [
+        _run_one_case(
+            name,
+            left,
+            right,
+            note,
+            include_ambiguity_status=bool(args.include_ambiguity_status),
+        )
+        for name, left, right, note in selected_cases
+    ]
     all_match = all(bool(case["all_same_contract_counts_match"]) for case in case_results)
     return {
         "schema": SCHEMA,
@@ -434,6 +481,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         "contract_version": SEGMENT_PAIR_CONTRACT_VERSION,
         "typed_output_residency_version": SEGMENT_PAIR_TYPED_OUTPUT_RESIDENCY_VERSION,
         "denominator_epsilon": SEGMENT_PAIR_STRICT_DENOMINATOR_EPSILON,
+        "include_ambiguity_status": bool(args.include_ambiguity_status),
         "case_count": len(case_results),
         "cases": case_results,
         "all_same_contract_counts_match": all_match,
@@ -452,6 +500,11 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Goal3631 segment-pair backend conformance runner.")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--grid-sizes", type=int, nargs="*", default=(64, 256, 1024))
+    parser.add_argument(
+        "--include-ambiguity-status",
+        action="store_true",
+        help="Use the optional strict-audit route that also returns ambiguous_count as a device status pointer.",
+    )
     return parser.parse_args()
 
 
