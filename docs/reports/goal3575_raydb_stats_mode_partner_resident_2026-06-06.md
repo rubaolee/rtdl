@@ -80,6 +80,38 @@ Rows:
 | 1 | 120000 | 24000000 | 200 | 200 |
 | 2 | 120000 | 9600000 | 80 | 80 |
 
+## Full-Mode Smoke
+
+Artifact:
+
+`docs/reports/goal3575_raydb_stats_mode_partner_resident_a5000/suite_smoke.json`
+
+Run:
+
+```bash
+PYTHONPATH=src:. \
+RTDL_OPTIX_LIBRARY=/root/rtdl_goal3556_current/build/librtdl_optix.so \
+RTDL_OPTIX_LIB=/root/rtdl_goal3556_current/build/librtdl_optix.so \
+python3 examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py \
+  --mode all \
+  --backend optix_partner_resident_experimental \
+  --copies 1000 \
+  --warmup 1 \
+  --repeat 10
+```
+
+This is a bounded integration smoke, not a performance packet. It verifies that
+the partner-resident mode set remains coherent after adding `stats`.
+
+| Mode | CPU reference match | Native launch count | Median sec |
+| --- | --- | ---: | ---: |
+| `avg_as_sum_count` | `true` | 1 | 0.000399984419 |
+| `count` | `true` | 1 | 0.003861762583 |
+| `max` | `true` | 1 | 0.000400325749 |
+| `min` | `true` | 1 | 0.000396301039 |
+| `stats` | `true` | 1 | 0.000420868397 |
+| `sum` | `true` | 1 | 0.003726590425 |
+
 ## Boundary
 
 This goal proves that the app can now exercise the generic fused `stats`
