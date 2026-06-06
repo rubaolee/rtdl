@@ -1,0 +1,233 @@
+{
+  "boundary": "Goal3536 is an internal 10-second steady-state measurement protocol. It separates target-compliant rows from partial diagnostics and does not authorize public release or speedup claims.",
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "internal_results_only": true,
+    "package_install_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "comparisons": [
+    {
+      "app_id": "rtnn",
+      "case_id": "rtnn_optix_prepared_3d_ranked_summary",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "prepared_3d_ranked_summary",
+      "measurement_boundary": "Internal comparison only. Rows with target_met=false are diagnostic and must not be used as final 10s steady-state evidence.",
+      "v23_observed_measured_sec": 12.667153095826507,
+      "v23_primary_metric_sec": 0.0013286294415593147,
+      "v23_target_met_by_observed_sum": true,
+      "v23_target_met_by_plan": true,
+      "v28_observed_measured_sec": 12.35886412486434,
+      "v28_primary_metric_sec": 0.001356328371912241,
+      "v28_speedup_vs_v23": 0.9795780056463211,
+      "v28_target_met_by_observed_sum": true,
+      "v28_target_met_by_plan": true
+    }
+  ],
+  "dry_run": false,
+  "generated_at": "2026-06-06T05:56:57Z",
+  "goal": 3536,
+  "gpu": "NVIDIA RTX A5000, 580.126.09, 24564 MiB",
+  "repeat_safety_factor": 1.25,
+  "rows": [
+    {
+      "app_id": "rtnn",
+      "backend": "optix",
+      "case_id": "rtnn_optix_prepared_3d_ranked_summary",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "prepared_3d_ranked_summary",
+      "execution": {
+        "app_id": "rtnn",
+        "case_id": "rtnn_optix_prepared_3d_ranked_summary",
+        "observed_measured_sec": 12.667153095826507,
+        "observed_measured_sec_method": "median_primary_metric_times_planned_internal_repeat",
+        "primary_metric_sec": 0.0013286294415593147,
+        "runs": [
+          {
+            "primary_metric_sec": 0.0013286294415593147,
+            "primary_metric_source": "elapsed_median_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 18.55941941589117
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v23",
+      "plan": {
+        "app_id": "rtnn",
+        "backend": "optix",
+        "base_repeat": 3,
+        "case_id": "rtnn_optix_prepared_3d_ranked_summary",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 12.500845128670335,
+        "estimated_wall_sec": 14.242850362323225,
+        "lane": "v23",
+        "method": "internal_repeat_knob",
+        "planned_command": [
+          "python3",
+          "scripts/goal2348_rtnn_v2_2_external_runner.py",
+          "run-rtdl-batched-3d-neighbors",
+          "--point-file",
+          "docs/reports/goal3557_rtnn_same_scalar_median_metric_a5000/artifacts/v23/rtnn_uniform_65536.csv",
+          "--radius",
+          "0.02",
+          "--k-max",
+          "50",
+          "--query-batch-size",
+          "65536",
+          "--result-mode",
+          "ranked-summary-raw",
+          "--repeat",
+          "9534",
+          "--json-out",
+          "docs/reports/goal3557_rtnn_same_scalar_median_metric_a5000/artifacts/v23/rtnn_optix_65536.json"
+        ],
+        "planned_repeat": 9534,
+        "reason": "Existing app-level repeat knob can stretch the hot query loop.",
+        "repeat_flag": "--repeat",
+        "repeat_planning_target_sec": 12.5,
+        "seed_primary_metric_sec": 0.0013111857697367668,
+        "seed_wall_median_sec": 1.7459387909621,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true
+      },
+      "source_commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+      "source_root": "/root/rtdl_goal3556_v23_overlay"
+    },
+    {
+      "app_id": "rtnn",
+      "backend": "optix",
+      "case_id": "rtnn_optix_prepared_3d_ranked_summary",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "prepared_3d_ranked_summary",
+      "execution": {
+        "app_id": "rtnn",
+        "case_id": "rtnn_optix_prepared_3d_ranked_summary",
+        "observed_measured_sec": 12.35886412486434,
+        "observed_measured_sec_method": "median_primary_metric_times_planned_internal_repeat",
+        "primary_metric_sec": 0.001356328371912241,
+        "runs": [
+          {
+            "primary_metric_sec": 0.001356328371912241,
+            "primary_metric_source": "elapsed_median_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 18.753493911586702
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v28",
+      "plan": {
+        "app_id": "rtnn",
+        "backend": "optix",
+        "base_repeat": 3,
+        "case_id": "rtnn_optix_prepared_3d_ranked_summary",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 12.50035048276186,
+        "estimated_wall_sec": 15.303719869814813,
+        "lane": "v28",
+        "method": "internal_repeat_knob",
+        "planned_command": [
+          "python3",
+          "scripts/goal2348_rtnn_v2_2_external_runner.py",
+          "run-rtdl-batched-3d-neighbors",
+          "--point-file",
+          "docs/reports/goal3557_rtnn_same_scalar_median_metric_a5000/artifacts/v28/rtnn_uniform_65536.csv",
+          "--radius",
+          "0.02",
+          "--k-max",
+          "50",
+          "--query-batch-size",
+          "65536",
+          "--result-mode",
+          "ranked-summary-raw",
+          "--repeat",
+          "9112",
+          "--json-out",
+          "docs/reports/goal3557_rtnn_same_scalar_median_metric_a5000/artifacts/v28/rtnn_optix_65536.json"
+        ],
+        "planned_repeat": 9112,
+        "reason": "Existing app-level repeat knob can stretch the hot query loop.",
+        "repeat_flag": "--repeat",
+        "repeat_planning_target_sec": 12.5,
+        "seed_primary_metric_sec": 0.0013718558475375175,
+        "seed_wall_median_sec": 2.807484954595566,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true
+      },
+      "source_commit": "4c1e0ee3f416514c22556a4e526c617295fd0730",
+      "source_root": "/root/rtdl_goal3556_current"
+    }
+  ],
+  "scale": "standard",
+  "schema": "rtdl.goal3536.v2_8_vs_v2_3_10s_steady_state.v1",
+  "seed_artifact": "docs/reports/goal3553_v2_9_full_packet_after_rt_dbscan_a5000_cap250k/summary.json",
+  "summary": {
+    "geomean_speedup": 0.9795780056463211,
+    "max_speedup": 0.9795780056463211,
+    "median_speedup": 0.9795780056463211,
+    "min_speedup": 0.9795780056463211,
+    "observed_target_miss_count": 0,
+    "observed_target_misses": [],
+    "ratio_count": 1,
+    "row_count": 1,
+    "target_met_by_observed_pair_count": 1,
+    "target_met_by_plan_pair_count": 1
+  },
+  "target_measured_sec": 10.0,
+  "v23_root": "/root/rtdl_goal3556_v23_overlay",
+  "v28_root": "/root/rtdl_goal3556_current"
+}

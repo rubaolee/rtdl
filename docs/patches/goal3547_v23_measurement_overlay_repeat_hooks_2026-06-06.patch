@@ -1253,3 +1253,21 @@ index fdd1f108..e23d6c37 100644
              ),
              BenchmarkCase(
                  case_id="rtnn_embree_prepared_3d_ranked_summary",
+@@ -448,7 +484,7 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
+                     rtnn_embree_json,
+                 ),
+                 json_out=rtnn_embree_json,
+-                primary_metric_path=("elapsed_sec",),
++                primary_metric_path=("elapsed_median_sec",),
+                 notes="Same ranked-summary row schema, produced by generic Embree fixed-radius rows plus app-level summary folding.",
+             ),
+             BenchmarkCase(
+@@ -492,7 +528,7 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
+                     rtnn_optix_json,
+                 ),
+                 json_out=rtnn_optix_json,
+-                primary_metric_path=("elapsed_sec",),
++                primary_metric_path=("elapsed_median_sec",),
+             ),
+             BenchmarkCase(
+                 case_id="triangle_counting_embree_rt_graph_2a1",

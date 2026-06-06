@@ -48,6 +48,7 @@ class Goal3556RTNNMedianRepeatMetricHardeningTest(unittest.TestCase):
         self.assertIn('"elapsed_median_sec": elapsed_median_sec', text)
         self.assertIn('"elapsed_min_sec": min(elapsed_runs)', text)
         self.assertIn('"elapsed_max_sec": max(elapsed_runs)', text)
+        self.assertGreaterEqual(text.count('primary_metric_path=("elapsed_median_sec",)'), 2)
 
     def test_a5000_probe_shows_median_metric_narrows_but_does_not_solve_gap(self) -> None:
         payload = json.loads(SUMMARY.read_text(encoding="utf-8"))
