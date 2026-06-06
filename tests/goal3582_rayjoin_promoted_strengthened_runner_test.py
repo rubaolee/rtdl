@@ -28,21 +28,23 @@ class Goal3582RayjoinPromotedStrengthenedRunnerTest(unittest.TestCase):
         expected = {
             "rayjoin_optix_promoted_pip_tiled_x512": (
                 "prepared_optix_cupy_refined_pip",
-                ("phases_sec", "prepared_cupy_refine_sec"),
+                ("phases_sec", "prepared_query_sec"),
             ),
             "rayjoin_optix_promoted_lsi_tiled_x512": (
                 "prepared_optix_left_id_dense_count",
-                ("phases_sec", "left_id_count_device_columns_sec"),
+                ("phases_sec", "prepared_query_sec"),
             ),
             "rayjoin_optix_promoted_overlay_seed_tiled_x512": (
                 "prepared_optix_shape_pair_active_count",
-                ("phases_sec", "active_count_device_continuation_sec"),
+                ("phases_sec", "prepared_query_sec"),
             ),
         }
         for case_id, (route, metric_path) in expected.items():
             with self.subTest(case_id=case_id):
                 case = rayjoin_optix[case_id]
-                self.assertIn(route, " ".join(case.command or ()))
+                command = " ".join(case.command or ())
+                self.assertIn(route, command)
+                self.assertIn("--repeat 5 --warmup 1", command)
                 self.assertEqual(case.primary_metric_path, metric_path)
                 self.assertIn("Promoted", case.notes)
                 self.assertIn("RayJoin paper reproduction", case.notes)

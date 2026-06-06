@@ -957,6 +957,8 @@ def run_rayjoin_prepared_optix_cupy_refined_pip(
     include_rows: bool = False,
     candidate_max_rows: int | None = None,
     point_eps: float = 1.0e-9,
+    query_repeat: int = 1,
+    warmup: int = 0,
 ) -> dict[str, object]:
     """Run PIP through generic RT candidates plus a prepared CuPy exact refiner.
 
@@ -968,6 +970,10 @@ def run_rayjoin_prepared_optix_cupy_refined_pip(
 
     if result_mode not in {"count", "rows"}:
         raise ValueError("result_mode must be 'count' or 'rows'")
+    if query_repeat <= 0:
+        raise ValueError("query_repeat must be positive")
+    if warmup < 0:
+        raise ValueError("warmup must be non-negative")
     resolved_dataset = dataset or _DEFAULT_DATASETS["pip"]
     case = _load_rayjoin_case("pip", resolved_dataset)
     points = tuple(case.inputs["points"])
@@ -988,6 +994,8 @@ def run_rayjoin_prepared_optix_cupy_refined_pip(
         payload = prepared.run(
             result_mode=result_mode,
             include_rows=include_rows,
+            query_repeat=query_repeat,
+            warmup=warmup,
         )
         payload["phases_sec"] = {
             **prepared.prepare_phases_sec,
@@ -1067,47 +1075,58 @@ class PreparedRayJoinOptixCupyRefinedPip:
         result_mode: str = "count",
         include_rows: bool = False,
         candidate_max_rows: int | None = None,
+        query_repeat: int = 1,
+        warmup: int = 0,
     ) -> dict[str, object]:
         if self._closed:
             raise RuntimeError("prepared RayJoin OptiX+CuPy PIP handle is closed")
         if result_mode not in {"count", "rows"}:
             raise ValueError("result_mode must be 'count' or 'rows'")
+        if query_repeat <= 0:
+            raise ValueError("query_repeat must be positive")
+        if warmup < 0:
+            raise ValueError("warmup must be non-negative")
         max_rows = int(candidate_max_rows or self._default_candidate_max_rows)
         if max_rows <= 0:
             raise ValueError("candidate_max_rows must be positive")
 
         phases: dict[str, float] = {}
         rows: tuple[dict[str, int], ...] = ()
-        columns = _phase_time(
-            phases,
-            "candidate_device_columns_sec",
-            lambda: self._prepared.candidate_device_columns(self._points, max_rows=max_rows),
-        )
-        try:
-            candidate_metadata = columns.to_metadata()
-            refined = _phase_time(
-                phases,
-                "prepared_cupy_refine_sec",
-                lambda: self._prepared_refiner.refine(columns),
-            )
-            row_count = int(refined["row_count"])
-            if include_rows and result_mode == "rows":
-                import cupy as cp  # type: ignore
 
-                materialize_start = time.perf_counter()
-                point_ids = cp.asnumpy(refined["point_id"]).tolist()
-                shape_ids = cp.asnumpy(refined["shape_id"]).tolist()
-                rows = tuple(
-                    {
-                        "point_id": int(point_id),
-                        "polygon_id": int(shape_id),
-                        "contains": 1,
-                    }
-                    for point_id, shape_id in zip(point_ids, shape_ids)
-                )
-                phases["host_row_materialize_sec"] = time.perf_counter() - materialize_start
-        finally:
-            columns.close()
+        def run_once():
+            columns = self._prepared.candidate_device_columns(self._points, max_rows=max_rows)
+            try:
+                candidate_metadata_inner = columns.to_metadata()
+                refined_inner = self._prepared_refiner.refine(columns)
+                return candidate_metadata_inner, refined_inner
+            finally:
+                columns.close()
+
+        candidate_metadata, refined = _phase_repeat_time(
+            phases,
+            "prepared_query_sec",
+            query_repeat=query_repeat,
+            warmup=warmup,
+            fn=run_once,
+            stability_value=lambda value: int(value[1]["row_count"]),
+        )
+        phases["prepared_cupy_refine_sec"] = phases["prepared_query_sec"]
+        row_count = int(refined["row_count"])
+        if include_rows and result_mode == "rows":
+            import cupy as cp  # type: ignore
+
+            materialize_start = time.perf_counter()
+            point_ids = cp.asnumpy(refined["point_id"]).tolist()
+            shape_ids = cp.asnumpy(refined["shape_id"]).tolist()
+            rows = tuple(
+                {
+                    "point_id": int(point_id),
+                    "polygon_id": int(shape_id),
+                    "contains": 1,
+                }
+                for point_id, shape_id in zip(point_ids, shape_ids)
+            )
+            phases["host_row_materialize_sec"] = time.perf_counter() - materialize_start
 
         summary = {
             "positive_hit_row_count": row_count,
@@ -1143,6 +1162,12 @@ class PreparedRayJoinOptixCupyRefinedPip:
                 "prepare_static_scene_sec": self.prepare_phases_sec["prepare_static_scene_sec"],
                 "prepare_cupy_refiner_sec": self.prepare_phases_sec["prepare_cupy_refiner_sec"],
                 "prepare_paid_once": True,
+            },
+            "repeat_protocol": {
+                "repeat": int(query_repeat),
+                "warmup": int(warmup),
+                "measured_query_total_sec": float(phases["prepared_query_sec_total_sec"]),
+                "reported_query_metric": "prepared_query_median",
             },
             "device_resident_continuation_status": (
                 "candidate_columns_and_prepared_cupy_refiner_complete: generic RT candidate "
@@ -1491,37 +1516,53 @@ class PreparedRayJoinOptixCompactGroupedCountSegments:
         *,
         include_rows: bool = False,
         dataset_note: str | None = None,
+        query_repeat: int = 1,
+        warmup: int = 0,
     ) -> dict[str, object]:
         if self._closed:
             raise RuntimeError("prepared RayJoin compact grouped-count handle is closed")
         if not isinstance(packed_left, RayJoinOptixCompactGroupedCountPackedLeftSegments):
             raise TypeError("packed_left must be produced by pack_rayjoin_optix_compact_grouped_count_left_segments")
+        if query_repeat <= 0:
+            raise ValueError("query_repeat must be positive")
+        if warmup < 0:
+            raise ValueError("warmup must be non-negative")
 
         phases: dict[str, float] = {}
-        rows: tuple[dict[str, int], ...] = ()
-        count_start = time.perf_counter()
-        dense = self._prepared.left_id_count_device_columns(
-            packed_left.packed_segments,
-            group_capacity=max(1, packed_left.count),
-        )
-        phases["left_id_count_device_columns_sec"] = time.perf_counter() - count_start
-        try:
-            dense_metadata = dense.to_metadata()
-            if include_rows:
-                import cupy as cp  # type: ignore
+        rows: tuple[dict[str, int], ...]
 
-                copy_start = time.perf_counter()
-                counts = cp.asnumpy(dense.as_cupy_counts()).tolist()
-                phases["dense_count_validation_copy_sec"] = time.perf_counter() - copy_start
-                rows = tuple(
-                    {
-                        "left_id": packed_left.original_left_ids[index],
-                        "count": int(count),
-                    }
-                    for index, count in enumerate(counts[: packed_left.count])
-                )
-        finally:
-            dense.close()
+        def run_once():
+            dense = self._prepared.left_id_count_device_columns(
+                packed_left.packed_segments,
+                group_capacity=max(1, packed_left.count),
+            )
+            try:
+                dense_metadata_inner = dense.to_metadata()
+                rows_inner: tuple[dict[str, int], ...] = ()
+                if include_rows:
+                    import cupy as cp  # type: ignore
+
+                    counts = cp.asnumpy(dense.as_cupy_counts()).tolist()
+                    rows_inner = tuple(
+                        {
+                            "left_id": packed_left.original_left_ids[index],
+                            "count": int(count),
+                        }
+                        for index, count in enumerate(counts[: packed_left.count])
+                    )
+                return dense_metadata_inner, rows_inner
+            finally:
+                dense.close()
+
+        dense_metadata, rows = _phase_repeat_time(
+            phases,
+            "prepared_query_sec",
+            query_repeat=query_repeat,
+            warmup=warmup,
+            fn=run_once,
+            stability_value=lambda value: int(value[0]["source_row_count"]),
+        )
+        phases["left_id_count_device_columns_sec"] = phases["prepared_query_sec"]
 
         payload: dict[str, object] = {
             "app": "rayjoin_v2_spatial_join",
@@ -1550,6 +1591,12 @@ class PreparedRayJoinOptixCompactGroupedCountSegments:
                 "column_prepare_seconds": packed_left.column_prepare_seconds,
                 "pack_seconds": packed_left.pack_seconds,
                 "query_pack_paid_in_call": False,
+            },
+            "repeat_protocol": {
+                "repeat": int(query_repeat),
+                "warmup": int(warmup),
+                "measured_query_total_sec": float(phases["prepared_query_sec_total_sec"]),
+                "reported_query_metric": "prepared_query_median",
             },
             "left_id_remap": {
                 "enabled": True,
@@ -1683,6 +1730,8 @@ def run_rayjoin_prepared_optix_left_id_dense_count_workload(
     *,
     dataset: str | None = None,
     include_rows: bool = False,
+    query_repeat: int = 1,
+    warmup: int = 0,
 ) -> dict[str, object]:
     if workload != "lsi":
         raise ValueError("prepared_optix_left_id_dense_count currently supports only the lsi workload")
@@ -1702,6 +1751,8 @@ def run_rayjoin_prepared_optix_left_id_dense_count_workload(
             packed_left,
             include_rows=include_rows,
             dataset_note=case.note,
+            query_repeat=query_repeat,
+            warmup=warmup,
         )
 
 
@@ -1781,9 +1832,16 @@ class PreparedRayJoinOptixShapePairActiveCount:
         left_shapes,
         *,
         dataset_note: str | None = None,
+        query_repeat: int = 1,
+        warmup: int = 0,
     ) -> dict[str, object]:
         packed_left = self.pack_left_shapes(left_shapes)
-        payload = self.run_packed_left(packed_left, dataset_note=dataset_note)
+        payload = self.run_packed_left(
+            packed_left,
+            dataset_note=dataset_note,
+            query_repeat=query_repeat,
+            warmup=warmup,
+        )
         payload["phases_sec"] = {
             "left_shape_pack_sec": packed_left.pack_seconds,
             **payload["phases_sec"],
@@ -1800,10 +1858,14 @@ class PreparedRayJoinOptixShapePairActiveCount:
         packed_left: RayJoinOptixShapePairActiveCountPackedLeftShapes,
         *,
         dataset_note: str | None = None,
+        query_repeat: int = 1,
+        warmup: int = 0,
     ) -> dict[str, object]:
         return self.run_packed_left_device_continuation(
             packed_left,
             dataset_note=dataset_note,
+            query_repeat=query_repeat,
+            warmup=warmup,
         )
 
     def run_packed_left_host_exact(
@@ -1878,20 +1940,30 @@ class PreparedRayJoinOptixShapePairActiveCount:
         packed_left: RayJoinOptixShapePairActiveCountPackedLeftShapes,
         *,
         dataset_note: str | None = None,
+        query_repeat: int = 1,
+        warmup: int = 0,
     ) -> dict[str, object]:
         if self._closed:
             raise RuntimeError("prepared RayJoin shape-pair active-count handle is closed")
         if not isinstance(packed_left, RayJoinOptixShapePairActiveCountPackedLeftShapes):
             raise TypeError("packed_left must be produced by pack_rayjoin_optix_shape_pair_active_count_left_shapes")
+        if query_repeat <= 0:
+            raise ValueError("query_repeat must be positive")
+        if warmup < 0:
+            raise ValueError("warmup must be non-negative")
 
         phases: dict[str, float] = {}
         active_count = int(
-            _phase_time(
+            _phase_repeat_time(
                 phases,
-                "active_count_device_continuation_sec",
-                lambda: self._prepared.count_active_device_continuation(packed_left.packed_polygons),
+                "prepared_query_sec",
+                query_repeat=query_repeat,
+                warmup=warmup,
+                fn=lambda: self._prepared.count_active_device_continuation(packed_left.packed_polygons),
+                stability_value=lambda value: int(value),
             )
         )
+        phases["active_count_device_continuation_sec"] = phases["prepared_query_sec"]
         native_phase_timings = self._prepared.last_phase_timings()
         return {
             "app": "rayjoin_v2_spatial_join",
@@ -1918,6 +1990,12 @@ class PreparedRayJoinOptixShapePairActiveCount:
                 "left_shape_count": packed_left.count,
                 "pack_seconds": packed_left.pack_seconds,
                 "left_shape_pack_paid_in_call": False,
+            },
+            "repeat_protocol": {
+                "repeat": int(query_repeat),
+                "warmup": int(warmup),
+                "measured_query_total_sec": float(phases["prepared_query_sec_total_sec"]),
+                "reported_query_metric": "prepared_query_median",
             },
             "device_resident_continuation_status": (
                 "shape_pair_active_count_device_continuation_probe: generic shape-pair relation "
@@ -2147,6 +2225,8 @@ def run_rayjoin_prepared_optix_shape_pair_active_count_workload(
     workload: str = "overlay_seed",
     *,
     dataset: str | None = None,
+    query_repeat: int = 1,
+    warmup: int = 0,
 ) -> dict[str, object]:
     if workload != "overlay_seed":
         raise ValueError("prepared_optix_shape_pair_active_count currently supports only the overlay_seed workload")
@@ -2161,6 +2241,8 @@ def run_rayjoin_prepared_optix_shape_pair_active_count_workload(
         return prepared.run_packed_left(
             packed_left,
             dataset_note=case.note,
+            query_repeat=query_repeat,
+            warmup=warmup,
         )
 
 
@@ -2634,6 +2716,8 @@ def main(argv: list[str] | None = None) -> int:
                     "lsi": run_rayjoin_prepared_optix_left_id_dense_count_workload(
                         "lsi",
                         include_rows=include_rows,
+                        query_repeat=args.repeat,
+                        warmup=args.warmup,
                     )
                 },
             }
@@ -2646,6 +2730,8 @@ def main(argv: list[str] | None = None) -> int:
                         result_mode=args.result_mode,
                         include_rows=include_rows,
                         candidate_max_rows=args.candidate_max_rows,
+                        query_repeat=args.repeat,
+                        warmup=args.warmup,
                     )
                 },
             }
@@ -2656,6 +2742,8 @@ def main(argv: list[str] | None = None) -> int:
                 "workloads": {
                     "overlay_seed": run_rayjoin_prepared_optix_shape_pair_active_count_workload(
                         "overlay_seed",
+                        query_repeat=args.repeat,
+                        warmup=args.warmup,
                     )
                 },
             }
@@ -2683,6 +2771,8 @@ def main(argv: list[str] | None = None) -> int:
                 args.workload,
                 dataset=args.dataset,
                 include_rows=include_rows,
+                query_repeat=args.repeat,
+                warmup=args.warmup,
             )
         elif args.execution_route == "prepared_optix_cupy_refined_pip":
             if args.workload != "pip":
@@ -2692,11 +2782,15 @@ def main(argv: list[str] | None = None) -> int:
                 result_mode=args.result_mode,
                 include_rows=include_rows,
                 candidate_max_rows=args.candidate_max_rows,
+                query_repeat=args.repeat,
+                warmup=args.warmup,
             )
         elif args.execution_route == "prepared_optix_shape_pair_active_count":
             payload = run_rayjoin_prepared_optix_shape_pair_active_count_workload(
                 args.workload,
                 dataset=args.dataset,
+                query_repeat=args.repeat,
+                warmup=args.warmup,
             )
         elif args.execution_route == "prepared_optix":
             payload = run_rayjoin_prepared_optix_workload(

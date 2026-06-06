@@ -155,17 +155,17 @@ def _rayjoin_cases(tier: str, _artifact_dir: Path) -> list[BenchmarkCase]:
     promoted_optix_routes = {
         "pip": (
             "prepared_optix_cupy_refined_pip",
-            ("phases_sec", "prepared_cupy_refine_sec"),
+            ("phases_sec", "prepared_query_sec"),
             "Promoted PIP route: generic OptiX candidate columns plus prepared CuPy exact refinement.",
         ),
         "lsi": (
             "prepared_optix_left_id_dense_count",
-            ("phases_sec", "left_id_count_device_columns_sec"),
+            ("phases_sec", "prepared_query_sec"),
             "Promoted LSI route: generic segment-pair traversal plus dense left-id count columns.",
         ),
         "overlay_seed": (
             "prepared_optix_shape_pair_active_count",
-            ("phases_sec", "active_count_device_continuation_sec"),
+            ("phases_sec", "prepared_query_sec"),
             "Promoted overlay route: generic shape-pair relation flags plus device active-count continuation.",
         ),
     }
@@ -214,6 +214,10 @@ def _rayjoin_cases(tier: str, _artifact_dir: Path) -> list[BenchmarkCase]:
                         "--dataset",
                         dataset,
                         "--no-rows",
+                        "--repeat",
+                        5,
+                        "--warmup",
+                        1,
                     ),
                     primary_metric_path=metric_path,
                     notes=(
