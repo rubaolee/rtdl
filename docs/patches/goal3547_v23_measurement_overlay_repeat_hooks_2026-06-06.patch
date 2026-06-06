@@ -1,0 +1,957 @@
+diff --git a/examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py b/examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py
+index 38385e63..f243e11d 100644
+--- a/examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py
++++ b/examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py
+@@ -4,6 +4,7 @@ import argparse
+ from dataclasses import dataclass
+ import json
+ import math
++import statistics
+ import sys
+ from pathlib import Path
+ 
+@@ -376,20 +377,45 @@ def _run_prepared_node_coverage(
+     *,
+     backend: str,
+     radius: float,
++    query_repeat: int = 1,
++    warmup: int = 0,
+ ) -> dict[str, object]:
+     if backend not in {"embree", "optix"}:
+         raise ValueError("prepared node coverage currently supports backend='embree' or backend='optix'")
++    if query_repeat <= 0:
++        raise ValueError("query_repeat must be positive")
++    if warmup < 0:
++        raise ValueError("warmup must be non-negative")
+     kwargs: dict[str, object] = {
+         "search_points": _node_points(nodes),
+-        "query_points": _body_points(bodies),
+-        "radius": radius,
+-        "threshold": 1,
+         "backend": backend,
+     }
+     if backend == "optix":
+         kwargs["max_radius"] = radius
+-    result = rt.run_generic_prepared_fixed_radius_threshold_reached_count_2d(**kwargs)
+-    covered_count = int(result["threshold_reached_count"])
++    query_runs: list[dict[str, object]] = []
++    with rt.prepare_generic_fixed_radius_count_threshold_2d(**kwargs) as prepared:
++        for iteration in range(warmup + query_repeat):
++            result = prepared.count_threshold_reached(_body_points(bodies), radius=radius, threshold=1)
++            query_runs.append(
++                {
++                    "iteration": iteration,
++                    "is_warmup": iteration < warmup,
++                    "threshold_reached_count": int(result["threshold_reached_count"]),
++                    "query_sec": float(
++                        result["run_phases"]["query_fixed_radius_threshold_reached_count_sec"]
++                    ),
++                }
++            )
++        prepare_sec = float(prepared.scene_prepare_sec)
++    measured = [row for row in query_runs if not bool(row["is_warmup"])]
++    if not measured:
++        raise RuntimeError("prepared Barnes-Hut node-coverage repeat produced no measured rows")
++    covered_counts = {int(row["threshold_reached_count"]) for row in measured}
++    if len(covered_counts) != 1:
++        raise RuntimeError("prepared Barnes-Hut node-coverage repeat changed covered-body count")
++    covered_count = next(iter(covered_counts))
++    query_secs = [float(row["query_sec"]) for row in measured]
++    query_median_sec = float(statistics.median(query_secs))
+     return {
+         "radius": radius,
+         "backend": backend,
+@@ -400,9 +426,22 @@ def _run_prepared_node_coverage(
+         "identity_parity_available": covered_count == len(bodies),
+         "row_count": None,
+         "summary_mode": "scalar_threshold_count",
+-        "generic_primitive": result["primitive"],
+-        "summary_primitive": result["summary_primitive"],
+-        "run_phases": result["run_phases"],
++        "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
++        "summary_primitive": "REDUCE_INT(COUNT)",
++        "run_phases": {
++            "scene_prepare_sec": prepare_sec,
++            "query_fixed_radius_threshold_reached_count_sec": query_median_sec,
++            "query_fixed_radius_threshold_reached_count_total_sec": float(sum(query_secs)),
++            "query_repeat": int(query_repeat),
++            "query_warmup": int(warmup),
++        },
++        "query_repeat_protocol": {
++            "repeat": int(query_repeat),
++            "warmup": int(warmup),
++            "measured_run_count": len(measured),
++            "query_sec_median": query_median_sec,
++            "query_sec_total": float(sum(query_secs)),
++        },
+     }
+ 
+ 
+@@ -464,6 +503,8 @@ def run_app(
+     partner: str = "cupy",
+     skip_validation: bool = False,
+     require_rt_core: bool = False,
++    query_repeat: int = 1,
++    warmup: int = 0,
+ ) -> dict[str, object]:
+     if output_mode not in {"full", "candidate_summary", "force_summary"}:
+         raise ValueError("output_mode must be 'full', 'candidate_summary', or 'force_summary'")
+@@ -471,6 +512,10 @@ def run_app(
+         raise ValueError("optix_summary_mode must be 'rows' or 'node_coverage_prepared'")
+     if node_radius < 0:
+         raise ValueError("node_radius must be non-negative")
++    if query_repeat <= 0:
++        raise ValueError("query_repeat must be positive")
++    if warmup < 0:
++        raise ValueError("warmup must be non-negative")
+     _enforce_rt_core_requirement(backend, optix_summary_mode, require_rt_core)
+     bodies = make_bodies() if body_count is None else make_generated_bodies(body_count)
+     nodes = build_one_level_quadtree(bodies)
+@@ -514,7 +559,14 @@ def run_app(
+                 payload["error_rows"] = error_rows
+         return payload
+     if backend in {"embree", "optix"} and optix_summary_mode == "node_coverage_prepared":
+-        coverage = _run_prepared_node_coverage(bodies, nodes, backend=backend, radius=node_radius)
++        coverage = _run_prepared_node_coverage(
++            bodies,
++            nodes,
++            backend=backend,
++            radius=node_radius,
++            query_repeat=query_repeat,
++            warmup=warmup,
++        )
+         oracle = node_coverage_oracle(bodies, nodes, radius=node_radius)
+         oracle_decision_matches = (
+             coverage["all_bodies_have_node_candidate"] == oracle["all_bodies_have_node_candidate"]
+@@ -554,6 +606,14 @@ def run_app(
+                 "evaluation, not force-vector reduction, and not a fully native "
+                 "N-body solver."
+             ),
++            "repeat_protocol": {
++                "repeat": int(query_repeat),
++                "warmup": int(warmup),
++                "measured_query_total_sec": float(
++                    coverage["run_phases"]["query_fixed_radius_threshold_reached_count_total_sec"]
++                ),
++                "reported_query_metric": "query_median",
++            },
+         }
+ 
+     candidate_rows = _run_node_candidates(backend, bodies, nodes)
+@@ -643,6 +703,8 @@ def main(argv: list[str] | None = None) -> int:
+         action="store_true",
+         help="Skip CPU oracle validation for large partner_exact_force timing runs.",
+     )
++    parser.add_argument("--repeat", type=int, default=1, help="Repeat hot prepared-query phase.")
++    parser.add_argument("--warmup", type=int, default=0, help="Prepared-query warmup iterations to drop.")
+     args = parser.parse_args(argv)
+     print(
+         json.dumps(
+@@ -656,6 +718,8 @@ def main(argv: list[str] | None = None) -> int:
+                 partner=args.partner,
+                 skip_validation=args.skip_validation,
+                 require_rt_core=args.require_rt_core,
++                query_repeat=args.repeat,
++                warmup=args.warmup,
+             ),
+             indent=2,
+             sort_keys=True,
+diff --git a/examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py b/examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py
+index 10e2d99c..b966513e 100644
+--- a/examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py
++++ b/examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py
+@@ -1037,6 +1037,8 @@ def run_benchmark(
+     partner: str = "cupy",
+     skip_validation: bool = False,
+     require_rt_core: bool = False,
++    query_repeat: int = 1,
++    warmup: int = 0,
+ ) -> dict[str, Any]:
+     if mode not in MODES:
+         raise ValueError(f"unsupported Barnes-Hut benchmark mode: {mode}")
+@@ -1283,6 +1285,8 @@ def run_benchmark(
+                 output_mode="candidate_summary",
+                 optix_summary_mode="node_coverage_prepared",
+                 node_radius=node_radius,
++                query_repeat=query_repeat,
++                warmup=warmup,
+             ),
+             mode=mode,
+             contract="prepared_fixed_radius_node_coverage_threshold_decision_embree",
+@@ -1298,6 +1302,8 @@ def run_benchmark(
+                 optix_summary_mode="node_coverage_prepared",
+                 node_radius=node_radius,
+                 require_rt_core=require_rt_core,
++                query_repeat=query_repeat,
++                warmup=warmup,
+             ),
+             mode=mode,
+             contract="prepared_fixed_radius_node_coverage_threshold_decision_optix",
+@@ -1333,6 +1339,8 @@ def main(argv: list[str] | None = None) -> int:
+     parser.add_argument("--partner", choices=("torch", "cupy"), default="cupy")
+     parser.add_argument("--skip-validation", action="store_true")
+     parser.add_argument("--require-rt-core", action="store_true")
++    parser.add_argument("--repeat", type=int, default=1, help="Repeat hot prepared-query phase.")
++    parser.add_argument("--warmup", type=int, default=0, help="Prepared-query warmup iterations to drop.")
+     parser.add_argument("--json-out", type=Path, default=None)
+     args = parser.parse_args(argv)
+ 
+@@ -1346,6 +1354,8 @@ def main(argv: list[str] | None = None) -> int:
+         partner=args.partner,
+         skip_validation=args.skip_validation,
+         require_rt_core=args.require_rt_core,
++        query_repeat=args.repeat,
++        warmup=args.warmup,
+     )
+     text = json.dumps(payload, indent=2, sort_keys=True)
+     if args.json_out is not None:
+diff --git a/examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py b/examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py
+index 4664677c..783e28d9 100644
+--- a/examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py
++++ b/examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py
+@@ -3,6 +3,7 @@ from __future__ import annotations
+ import argparse
+ import json
+ import math
++import statistics
+ import sys
+ import time
+ from pathlib import Path
+@@ -226,19 +227,40 @@ def _run_prepared_directed_threshold(
+     backend: str,
+     radius: float,
+     label: str,
++    query_repeat: int = 1,
++    warmup: int = 0,
+ ) -> dict[str, object]:
+-    result = rt.run_generic_prepared_fixed_radius_threshold_reached_count_2d(
+-        search_points=target,
+-        query_points=source,
+-        radius=radius,
+-        threshold=1,
+-        backend=backend,
+-        max_radius=radius,
+-    )
+-    covered_count = int(result["threshold_reached_count"])
+-    run_phases = result["run_phases"]
+-    prepare_sec = float(run_phases["scene_prepare_sec"])
+-    query_sec = float(run_phases["query_fixed_radius_threshold_reached_count_sec"])
++    if query_repeat <= 0:
++        raise ValueError("query_repeat must be positive")
++    if warmup < 0:
++        raise ValueError("warmup must be non-negative")
++    kwargs: dict[str, object] = {"search_points": target, "backend": backend}
++    if backend == "optix":
++        kwargs["max_radius"] = radius
++    query_runs: list[dict[str, object]] = []
++    with rt.prepare_generic_fixed_radius_count_threshold_2d(**kwargs) as prepared:
++        for iteration in range(warmup + query_repeat):
++            result = prepared.count_threshold_reached(source, radius=radius, threshold=1)
++            query_runs.append(
++                {
++                    "iteration": iteration,
++                    "is_warmup": iteration < warmup,
++                    "threshold_reached_count": int(result["threshold_reached_count"]),
++                    "query_sec": float(
++                        result["run_phases"]["query_fixed_radius_threshold_reached_count_sec"]
++                    ),
++                }
++            )
++        prepare_sec = float(prepared.scene_prepare_sec)
++    measured = [row for row in query_runs if not bool(row["is_warmup"])]
++    if not measured:
++        raise RuntimeError("prepared Hausdorff threshold repeat produced no measured rows")
++    covered_counts = {int(row["threshold_reached_count"]) for row in measured}
++    if len(covered_counts) != 1:
++        raise RuntimeError("prepared Hausdorff threshold repeat changed covered-source count")
++    covered_count = next(iter(covered_counts))
++    query_secs = [float(row["query_sec"]) for row in measured]
++    query_sec = float(statistics.median(query_secs))
+     violating = [] if covered_count == len(source) else None
+     return {
+         "label": label,
+@@ -255,6 +277,16 @@ def _run_prepared_directed_threshold(
+         "run_phases": {
+             "scene_prepare_sec": prepare_sec,
+             "query_fixed_radius_threshold_reached_count_sec": query_sec,
++            "query_fixed_radius_threshold_reached_count_total_sec": float(sum(query_secs)),
++            "query_repeat": int(query_repeat),
++            "query_warmup": int(warmup),
++        },
++        "query_repeat_protocol": {
++            "repeat": int(query_repeat),
++            "warmup": int(warmup),
++            "measured_run_count": len(measured),
++            "query_sec_median": query_sec,
++            "query_sec_total": float(sum(query_secs)),
+         },
+     }
+ 
+@@ -357,6 +389,8 @@ def run_app(
+     hausdorff_threshold: float = 0.4,
+     require_rt_core: bool = False,
+     partner: str = "cupy",
++    query_repeat: int = 1,
++    warmup: int = 0,
+ ) -> dict[str, object]:
+     input_start = time.perf_counter()
+     case = make_authored_point_sets(copies=copies)
+@@ -373,6 +407,10 @@ def run_app(
+         raise ValueError("partner must be 'torch' or 'cupy'")
+     if hausdorff_threshold < 0:
+         raise ValueError("hausdorff_threshold must be non-negative")
++    if query_repeat <= 0:
++        raise ValueError("query_repeat must be positive")
++    if warmup < 0:
++        raise ValueError("warmup must be non-negative")
+     _enforce_rt_core_requirement(backend, optix_summary_mode, require_rt_core)
+     native_continuation_backend = _native_continuation_backend(
+         backend,
+@@ -527,6 +565,8 @@ def run_app(
+             backend=backend,
+             radius=hausdorff_threshold,
+             label="a_to_b",
++            query_repeat=query_repeat,
++            warmup=warmup,
+         )
+         directed_ba = _run_prepared_directed_threshold(
+             points_b,
+@@ -534,6 +574,8 @@ def run_app(
+             backend=backend,
+             radius=hausdorff_threshold,
+             label="b_to_a",
++            query_repeat=query_repeat,
++            warmup=warmup,
+         )
+         run_phases["scene_prepare_sec"] = float(directed_ab["run_phases"]["scene_prepare_sec"]) + float(
+             directed_ba["run_phases"]["scene_prepare_sec"]
+@@ -583,6 +625,15 @@ def run_app(
+             "native_continuation_backend": native_continuation_backend,
+             "rt_core_accelerated": backend == "optix",
+             "run_phases": run_phases,
++            "repeat_protocol": {
++                "repeat": int(query_repeat),
++                "warmup": int(warmup),
++                "measured_query_total_sec": float(
++                    directed_ab["run_phases"]["query_fixed_radius_threshold_reached_count_total_sec"]
++                )
++                + float(directed_ba["run_phases"]["query_fixed_radius_threshold_reached_count_total_sec"]),
++                "reported_query_metric": "sum_of_directed_query_medians",
++            },
+         }
+ 
+     if backend == "embree" and embree_result_mode == "directed_summary":
+@@ -703,6 +754,8 @@ def main(argv: list[str] | None = None) -> int:
+         action="store_true",
+         help="Fail if the selected path is not a true NVIDIA RT-core traversal path.",
+     )
++    parser.add_argument("--repeat", type=int, default=1, help="Repeat hot prepared-query phase.")
++    parser.add_argument("--warmup", type=int, default=0, help="Prepared-query warmup iterations to drop.")
+     args = parser.parse_args(argv)
+     print(
+         json.dumps(
+@@ -714,6 +767,8 @@ def main(argv: list[str] | None = None) -> int:
+                 hausdorff_threshold=args.hausdorff_threshold,
+                 require_rt_core=args.require_rt_core,
+                 partner=args.partner,
++                query_repeat=args.repeat,
++                warmup=args.warmup,
+             ),
+             indent=2,
+             sort_keys=True,
+diff --git a/examples/v2_0/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py b/examples/v2_0/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py
+index 0586805a..21772782 100644
+--- a/examples/v2_0/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py
++++ b/examples/v2_0/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py
+@@ -3,6 +3,7 @@ from __future__ import annotations
+ import argparse
+ import json
+ import random
++import statistics
+ import sys
+ import time
+ from dataclasses import dataclass
+@@ -323,7 +324,17 @@ def run_grid_counts(fixture: LibRTSFixture, operation: str, *, resolution: int)
+     }
+ 
+ 
+-def run_embree_aabb_counts(fixture: LibRTSFixture, operation: str) -> dict[str, object]:
++def run_embree_aabb_counts(
++    fixture: LibRTSFixture,
++    operation: str,
++    *,
++    query_repeat: int = 1,
++    warmup: int = 0,
++) -> dict[str, object]:
++    if query_repeat <= 0:
++        raise ValueError("query_repeat must be positive")
++    if warmup < 0:
++        raise ValueError("warmup must be non-negative")
+     prepared_start = time.perf_counter()
+     prepared = rt.prepare_aabb_index_2d(
+         fixture.boxes,
+@@ -332,14 +343,33 @@ def run_embree_aabb_counts(fixture: LibRTSFixture, operation: str) -> dict[str,
+         backend="embree",
+     )
+     prepare_sec = time.perf_counter() - prepared_start
++    query_runs: list[dict[str, object]] = []
+     try:
+-        primitive_result = prepared.count(
+-            point_queries=fixture.point_queries,
+-            box_queries=fixture.box_queries,
+-            operation=operation,
+-        )
++        for iteration in range(warmup + query_repeat):
++            primitive_result = prepared.count(
++                point_queries=fixture.point_queries,
++                box_queries=fixture.box_queries,
++                operation=operation,
++            )
++            query_runs.append(
++                {
++                    "iteration": iteration,
++                    "is_warmup": iteration < warmup,
++                    "counts": dict(primitive_result["counts"]),
++                    "query_sec": float(primitive_result["run_phases"]["query_aabb_index_2d_sec"]),
++                }
++            )
+     finally:
+         prepared.close()
++    measured = [row for row in query_runs if not bool(row["is_warmup"])]
++    if not measured:
++        raise RuntimeError("prepared Embree AABB repeat produced no measured rows")
++    count_signatures = {json.dumps(row["counts"], sort_keys=True) for row in measured}
++    if len(count_signatures) != 1:
++        raise RuntimeError("prepared Embree AABB repeat changed counts")
++    query_secs = [float(row["query_sec"]) for row in measured]
++    query_median_sec = float(statistics.median(query_secs))
++    query_total_sec = float(sum(query_secs))
+     cpu_counts = run_counts(fixture, operation)["counts"]
+     return {
+         "app": "librts_spatial_index",
+@@ -350,11 +380,23 @@ def run_embree_aabb_counts(fixture: LibRTSFixture, operation: str) -> dict[str,
+         "counts": primitive_result["counts"],
+         "matches_cpu_reference": primitive_result["counts"] == cpu_counts,
+         "candidate_checks": primitive_result["candidate_checks"],
+-        "elapsed_sec": prepare_sec + primitive_result["run_phases"]["query_aabb_index_2d_sec"],
++        "elapsed_sec": prepare_sec + query_median_sec,
+         "fixture": fixture.metadata(),
+         "run_phases": {
+             "scene_prepare_sec": prepare_sec,
+-            "query_sec": primitive_result["run_phases"]["query_aabb_index_2d_sec"],
++            "query_sec": query_median_sec,
++            "query_median_sec": query_median_sec,
++            "query_summed_median_sec": query_median_sec,
++            "query_total_sec": query_total_sec,
++            "query_repeat": int(query_repeat),
++            "query_warmup": int(warmup),
++        },
++        "repeat_protocol": {
++            "repeat": int(query_repeat),
++            "warmup": int(warmup),
++            "measured_run_count": len(measured),
++            "query_sec_median": query_median_sec,
++            "query_sec_total": query_total_sec,
+         },
+         "index": primitive_result["index"],
+         "paper": PAPER,
+@@ -376,7 +418,13 @@ def run_optix_aabb_counts(
+     operation: str,
+     *,
+     prepared_queries: bool = True,
++    query_repeat: int = 1,
++    warmup: int = 0,
+ ) -> dict[str, object]:
++    if query_repeat <= 0:
++        raise ValueError("query_repeat must be positive")
++    if warmup < 0:
++        raise ValueError("warmup must be non-negative")
+     operations = OPERATIONS if operation == "all" else (operation,)
+ 
+     started = time.perf_counter()
+@@ -386,6 +434,7 @@ def run_optix_aabb_counts(
+     counts: dict[str, int] = {}
+     query_prepare_sec: dict[str, float] = {}
+     query_sec: dict[str, float] = {}
++    query_total_sec: dict[str, float] = {}
+     prepared_query_cache: dict[str, object] = {}
+     try:
+         for name in operations:
+@@ -404,18 +453,52 @@ def run_optix_aabb_counts(
+                     query_prepare_sec[name] = time.perf_counter() - query_started
+                 else:
+                     query_prepare_sec[name] = 0.0
+-                run_started = time.perf_counter()
+-                counts[name] = prepared.count_prepared_queries(prepared_query_cache[query_kind], operation=name)
+-                query_sec[name] = time.perf_counter() - run_started
++                per_operation_runs = []
++                for iteration in range(warmup + query_repeat):
++                    run_started = time.perf_counter()
++                    count = prepared.count_prepared_queries(prepared_query_cache[query_kind], operation=name)
++                    per_operation_runs.append(
++                        {
++                            "iteration": iteration,
++                            "is_warmup": iteration < warmup,
++                            "count": int(count),
++                            "query_sec": time.perf_counter() - run_started,
++                        }
++                    )
++                measured = [row for row in per_operation_runs if not bool(row["is_warmup"])]
++                count_values = {int(row["count"]) for row in measured}
++                if len(count_values) != 1:
++                    raise RuntimeError(f"prepared OptiX AABB repeat changed count for {name}")
++                counts[name] = next(iter(count_values))
++                query_values = [float(row["query_sec"]) for row in measured]
++                query_sec[name] = float(statistics.median(query_values))
++                query_total_sec[name] = float(sum(query_values))
+             else:
+                 kwargs = {"operation": name}
+                 if name == "point_contains":
+                     kwargs["point_queries"] = fixture.point_queries
+                 else:
+                     kwargs["box_queries"] = fixture.box_queries
+-                run_started = time.perf_counter()
+-                counts[name] = prepared.count(**kwargs)
+-                query_sec[name] = time.perf_counter() - run_started
++                per_operation_runs = []
++                for iteration in range(warmup + query_repeat):
++                    run_started = time.perf_counter()
++                    count = prepared.count(**kwargs)
++                    per_operation_runs.append(
++                        {
++                            "iteration": iteration,
++                            "is_warmup": iteration < warmup,
++                            "count": int(count),
++                            "query_sec": time.perf_counter() - run_started,
++                        }
++                    )
++                measured = [row for row in per_operation_runs if not bool(row["is_warmup"])]
++                count_values = {int(row["count"]) for row in measured}
++                if len(count_values) != 1:
++                    raise RuntimeError(f"OptiX AABB repeat changed count for {name}")
++                counts[name] = next(iter(count_values))
++                query_values = [float(row["query_sec"]) for row in measured]
++                query_sec[name] = float(statistics.median(query_values))
++                query_total_sec[name] = float(sum(query_values))
+                 query_prepare_sec[name] = 0.0
+     finally:
+         for prepared_query in prepared_query_cache.values():
+@@ -435,6 +518,18 @@ def run_optix_aabb_counts(
+             "scene_prepare_sec": scene_prepare_sec,
+             "query_prepare_sec": query_prepare_sec,
+             "query_sec": query_sec,
++            "query_median_sec": float(sum(query_sec.values())),
++            "query_summed_median_sec": float(sum(query_sec.values())),
++            "query_total_sec": float(sum(query_total_sec.values())),
++            "query_repeat": int(query_repeat),
++            "query_warmup": int(warmup),
++        },
++        "repeat_protocol": {
++            "repeat": int(query_repeat),
++            "warmup": int(warmup),
++            "measured_run_count": int(query_repeat),
++            "query_sec_median": float(sum(query_sec.values())),
++            "query_sec_total": float(sum(query_total_sec.values())),
+         },
+         "prepared_queries": prepared_queries,
+         "paper": PAPER,
+@@ -591,6 +686,8 @@ def main(argv: list[str] | None = None) -> int:
+         action="store_true",
+         help="Use host-staged query inputs instead of prepared GPU-resident query buffers for optix_aabb_index.",
+     )
++    parser.add_argument("--repeat", type=int, default=1, help="Repeat hot prepared-query phase.")
++    parser.add_argument("--warmup", type=int, default=0, help="Prepared-query warmup iterations to drop.")
+     parser.add_argument("--output-dir", type=Path, default=Path("scratch/librts_spatial_index_fixture"))
+     parser.add_argument("--boxes-wkt", type=Path)
+     parser.add_argument("--point-queries-wkt", type=Path)
+@@ -623,12 +720,19 @@ def main(argv: list[str] | None = None) -> int:
+         elif args.mode == "partner_grid_reference":
+             payload = run_grid_counts(fixture, args.operation, resolution=args.grid_resolution)
+         elif args.mode == "embree_aabb_index":
+-            payload = run_embree_aabb_counts(fixture, args.operation)
++            payload = run_embree_aabb_counts(
++                fixture,
++                args.operation,
++                query_repeat=args.repeat,
++                warmup=args.warmup,
++            )
+         elif args.mode == "optix_aabb_index":
+             payload = run_optix_aabb_counts(
+                 fixture,
+                 args.operation,
+                 prepared_queries=not args.no_prepared_queries,
++                query_repeat=args.repeat,
++                warmup=args.warmup,
+             )
+         elif args.mode == "mutation_cpu_reference":
+             payload = run_mutation_counts(fixture, args.operation)
+diff --git a/examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py b/examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py
+index 835b4af2..83596d6d 100644
+--- a/examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py
++++ b/examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py
+@@ -2,6 +2,7 @@ from __future__ import annotations
+ 
+ import argparse
+ import json
++import statistics
+ import sys
+ import time
+ from pathlib import Path
+@@ -207,12 +208,54 @@ def _phase_time(phases: dict[str, float], label: str, fn):
+     return value
+ 
+ 
++def _phase_repeat_time(
++    phases: dict[str, float],
++    label: str,
++    *,
++    query_repeat: int,
++    warmup: int,
++    fn,
++    stability_value=None,
++):
++    if query_repeat <= 0:
++        raise ValueError("query_repeat must be positive")
++    if warmup < 0:
++        raise ValueError("warmup must be non-negative")
++    runs = []
++    for iteration in range(warmup + query_repeat):
++        start = time.perf_counter()
++        value = fn()
++        runs.append(
++            {
++                "iteration": iteration,
++                "is_warmup": iteration < warmup,
++                "elapsed_sec": time.perf_counter() - start,
++                "value": value,
++            }
++        )
++    measured = [row for row in runs if not bool(row["is_warmup"])]
++    if not measured:
++        raise RuntimeError(f"{label} repeat produced no measured rows")
++    if stability_value is not None:
++        stable_values = {stability_value(row["value"]) for row in measured}
++        if len(stable_values) != 1:
++            raise RuntimeError(f"{label} repeat changed result identity")
++    elapsed = [float(row["elapsed_sec"]) for row in measured]
++    phases[label] = float(statistics.median(elapsed))
++    phases[f"{label}_total_sec"] = float(sum(elapsed))
++    phases[f"{label}_repeat"] = int(query_repeat)
++    phases[f"{label}_warmup"] = int(warmup)
++    return measured[-1]["value"]
++
++
+ def run_rayjoin_prepared_optix_workload(
+     workload: str,
+     *,
+     dataset: str | None = None,
+     result_mode: str = "count",
+     include_rows: bool = False,
++    query_repeat: int = 1,
++    warmup: int = 0,
+ ) -> dict[str, object]:
+     """Run the RayJoin-style prepared OptiX route with phase boundaries.
+ 
+@@ -226,6 +269,10 @@ def run_rayjoin_prepared_optix_workload(
+         raise ValueError("prepared_optix route currently supports only: pip, lsi, overlay_seed")
+     if result_mode not in {"count", "rows"}:
+         raise ValueError("result_mode must be 'count' or 'rows'")
++    if query_repeat <= 0:
++        raise ValueError("query_repeat must be positive")
++    if warmup < 0:
++        raise ValueError("warmup must be non-negative")
+ 
+     resolved_dataset = dataset or _DEFAULT_DATASETS[workload]
+     case = _load_rayjoin_case(workload, resolved_dataset)
+@@ -253,13 +300,23 @@ def run_rayjoin_prepared_optix_workload(
+             lambda: prepare_shape_pair_relation_flags_optix(packed_right),
+         )
+         try:
+-            view = _phase_time(phases, "prepared_query_sec", lambda: prepared.run_raw(packed_left))
+-            try:
+-                row_count = int(view.row_count)
+-                if include_rows and result_mode == "rows":
+-                    rows = tuple(view.to_dict_rows())
+-            finally:
+-                view.close()
++            def run_raw_once():
++                view = prepared.run_raw(packed_left)
++                try:
++                    row_count_inner = int(view.row_count)
++                    rows_inner = tuple(view.to_dict_rows()) if include_rows and result_mode == "rows" else ()
++                    return row_count_inner, rows_inner
++                finally:
++                    view.close()
++
++            row_count, rows = _phase_repeat_time(
++                phases,
++                "prepared_query_sec",
++                query_repeat=query_repeat,
++                warmup=warmup,
++                fn=run_raw_once,
++                stability_value=lambda value: int(value[0]),
++            )
+             native_phase_timings = {
+                 "native_row_count": row_count,
+                 "prepared_shape_pair_relation": True,
+@@ -290,15 +347,34 @@ def run_rayjoin_prepared_optix_workload(
+         )
+         try:
+             if result_mode == "count":
+-                row_count = int(_phase_time(phases, "prepared_query_sec", lambda: prepared.count(packed_left)))
++                row_count = int(
++                    _phase_repeat_time(
++                        phases,
++                        "prepared_query_sec",
++                        query_repeat=query_repeat,
++                        warmup=warmup,
++                        fn=lambda: prepared.count(packed_left),
++                        stability_value=int,
++                    )
++                )
+             else:
+-                view = _phase_time(phases, "prepared_query_sec", lambda: prepared.run_raw(packed_left))
+-                try:
+-                    row_count = int(view.row_count)
+-                    if include_rows:
+-                        rows = tuple(view.to_dict_rows())
+-                finally:
+-                    view.close()
++                def run_raw_once():
++                    view = prepared.run_raw(packed_left)
++                    try:
++                        row_count_inner = int(view.row_count)
++                        rows_inner = tuple(view.to_dict_rows()) if include_rows else ()
++                        return row_count_inner, rows_inner
++                    finally:
++                        view.close()
++
++                row_count, rows = _phase_repeat_time(
++                    phases,
++                    "prepared_query_sec",
++                    query_repeat=query_repeat,
++                    warmup=warmup,
++                    fn=run_raw_once,
++                    stability_value=lambda value: int(value[0]),
++                )
+             native_phase_timings = prepared.last_phase_timings()
+         finally:
+             prepared.close()
+@@ -332,19 +408,34 @@ def run_rayjoin_prepared_optix_workload(
+         )
+         try:
+             if result_mode == "count":
+-                row_count = int(_phase_time(phases, "prepared_query_sec", lambda: prepared.count(packed_points)))
++                row_count = int(
++                    _phase_repeat_time(
++                        phases,
++                        "prepared_query_sec",
++                        query_repeat=query_repeat,
++                        warmup=warmup,
++                        fn=lambda: prepared.count(packed_points),
++                        stability_value=int,
++                    )
++                )
+             else:
+-                view = _phase_time(
++                def run_positive_hits_once():
++                    view = prepared.run_raw(packed_points, result_mode="positive_hits")
++                    try:
++                        row_count_inner = int(view.row_count)
++                        rows_inner = tuple(view.to_dict_rows()) if include_rows else ()
++                        return row_count_inner, rows_inner
++                    finally:
++                        view.close()
++
++                row_count, rows = _phase_repeat_time(
+                     phases,
+                     "prepared_query_sec",
+-                    lambda: prepared.run_raw(packed_points, result_mode="positive_hits"),
++                    query_repeat=query_repeat,
++                    warmup=warmup,
++                    fn=run_positive_hits_once,
++                    stability_value=lambda value: int(value[0]),
+                 )
+-                try:
+-                    row_count = int(view.row_count)
+-                    if include_rows:
+-                        rows = tuple(view.to_dict_rows())
+-                finally:
+-                    view.close()
+             native_phase_timings = prepared.last_phase_timings()
+         finally:
+             prepared.close()
+@@ -370,6 +461,12 @@ def run_rayjoin_prepared_optix_workload(
+         "summary": summary,
+         "phases_sec": phases,
+         "native_phase_timings": native_phase_timings or {},
++        "repeat_protocol": {
++            "repeat": int(query_repeat),
++            "warmup": int(warmup),
++            "measured_query_total_sec": float(phases.get("prepared_query_sec_total_sec", phases["prepared_query_sec"])),
++            "reported_query_metric": "prepared_query_median",
++        },
+         "device_resident_continuation_status": (
+             "overlay_seed_prepared_pair_dependency_flags_complete"
+             if workload == "overlay_seed"
+@@ -456,6 +553,8 @@ def run_rayjoin_suite(
+     execution_route: str = "generic_kernel",
+     result_mode: str = "rows",
+     include_rows: bool = True,
++    query_repeat: int = 1,
++    warmup: int = 0,
+ ) -> dict[str, object]:
+     if execution_route == "prepared_optix":
+         workloads = {
+@@ -463,6 +562,8 @@ def run_rayjoin_suite(
+                 workload,
+                 result_mode=result_mode,
+                 include_rows=include_rows,
++                query_repeat=query_repeat,
++                warmup=warmup,
+             )
+             for workload in _PREPARED_OPTIX_WORKLOADS
+         }
+@@ -486,8 +587,17 @@ def run_rayjoin_suite(
+             "execution_route": execution_route,
+             "workloads": workloads,
+             "prepared_query_total_sec": prepared_query_total_sec,
++            "prepared_query_total_measured_sec": sum(
++                float(result.get("phases_sec", {}).get("prepared_query_sec_total_sec", 0.0))
++                for result in workloads.values()
++            ),
+             "prepared_pack_total_sec": prepared_pack_total_sec,
+             "prepared_scene_total_sec": prepared_scene_total_sec,
++            "repeat_protocol": {
++                "repeat": int(query_repeat),
++                "warmup": int(warmup),
++                "reported_query_metric": "sum_of_workload_prepared_query_medians",
++            },
+             "all_match_cpu_python_reference": None,
+             "implementation_stage": "prepared_v2_benchmark_route",
+             "next_stage": (
+@@ -558,6 +668,8 @@ def main(argv: list[str] | None = None) -> int:
+         action="store_true",
+         help="Omit full row arrays and keep only summaries.",
+     )
++    parser.add_argument("--repeat", type=int, default=1, help="Repeat hot prepared-query phase.")
++    parser.add_argument("--warmup", type=int, default=0, help="Prepared-query warmup iterations to drop.")
+     args = parser.parse_args(argv)
+     include_rows = not args.no_rows
+     if args.workload == "all":
+@@ -568,6 +680,8 @@ def main(argv: list[str] | None = None) -> int:
+             execution_route=args.execution_route,
+             result_mode=args.result_mode,
+             include_rows=include_rows,
++            query_repeat=args.repeat,
++            warmup=args.warmup,
+         )
+     else:
+         if args.execution_route == "prepared_optix":
+@@ -576,6 +690,8 @@ def main(argv: list[str] | None = None) -> int:
+                 dataset=args.dataset,
+                 result_mode=args.result_mode,
+                 include_rows=include_rows,
++                query_repeat=args.repeat,
++                warmup=args.warmup,
+             )
+         else:
+             payload = run_rayjoin_workload(
+diff --git a/scripts/goal2626_benchmark_embree_optix_baseline.py b/scripts/goal2626_benchmark_embree_optix_baseline.py
+index fdd1f108..83c2c09d 100644
+--- a/scripts/goal2626_benchmark_embree_optix_baseline.py
++++ b/scripts/goal2626_benchmark_embree_optix_baseline.py
+@@ -109,6 +109,10 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
+                 "directed_threshold_prepared",
+                 "--hausdorff-threshold",
+                 "0.4",
++                "--repeat",
++                "1",
++                "--warmup",
++                "0",
+             ),
+             primary_metric_path=("run_phases", "query_fixed_radius_threshold_reached_count_sec"),
+             notes="Same threshold-decision contract as OptiX; despite option name, the prepared threshold path supports Embree.",
+@@ -130,6 +134,10 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
+                 "--hausdorff-threshold",
+                 "0.4",
+                 "--require-rt-core",
++                "--repeat",
++                "1",
++                "--warmup",
++                "0",
+             ),
+             primary_metric_path=("run_phases", "query_fixed_radius_threshold_reached_count_sec"),
+         ),
+@@ -146,6 +154,10 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
+                 "--backend",
+                 "embree",
+                 "--no-rows",
++                "--repeat",
++                "1",
++                "--warmup",
++                "0",
+             ),
+             notes=(
+                 "Embree same-front-door route over PIP, LSI, and overlay-seed. Primary metric "
+@@ -167,6 +179,10 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
+                 "--result-mode",
+                 "count",
+                 "--no-rows",
++                "--repeat",
++                "1",
++                "--warmup",
++                "0",
+             ),
+             primary_metric_path=("prepared_query_total_sec",),
+             notes=(
+@@ -334,6 +350,10 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
+                     "--body-count",
+                     barnes_bodies,
+                     "--skip-validation",
++                    "--repeat",
++                    "1",
++                    "--warmup",
++                    "0",
+                 ),
+                 primary_metric_path=("node_coverage", "run_phases", "query_fixed_radius_threshold_reached_count_sec"),
+                 notes=(
+@@ -355,6 +375,10 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
+                     barnes_bodies,
+                     "--skip-validation",
+                     "--require-rt-core",
++                    "--repeat",
++                    "1",
++                    "--warmup",
++                    "0",
+                 ),
+                 primary_metric_path=("node_coverage", "run_phases", "query_fixed_radius_threshold_reached_count_sec"),
+                 notes=(
+@@ -380,8 +404,12 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
+                     librts_boxes,
+                     "--query-count",
+                     librts_queries,
++                    "--repeat",
++                    "1",
++                    "--warmup",
++                    "0",
+                 ),
+-                primary_metric_path=("elapsed_sec",),
++                primary_metric_path=("run_phases", "query_median_sec"),
+                 notes="Embree path uses the generic columnar conjunctive-scan primitive for AABB predicates.",
+             ),
+             BenchmarkCase(
+@@ -402,8 +430,12 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
+                     librts_boxes,
+                     "--query-count",
+                     librts_queries,
++                    "--repeat",
++                    "1",
++                    "--warmup",
++                    "0",
+                 ),
+-                primary_metric_path=("elapsed_sec",),
++                primary_metric_path=("run_phases", "query_median_sec"),
+             ),
+             BenchmarkCase(
+                 case_id="rtnn_embree_prepared_3d_ranked_summary",
