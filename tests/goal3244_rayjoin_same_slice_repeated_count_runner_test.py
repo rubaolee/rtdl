@@ -208,6 +208,8 @@ Timing results:
         self.assertIn("-poly2=/data/custom_poly2.cdb", command)
         self.assertEqual(row["input_poly1"], "/data/custom_poly1.cdb")
         self.assertEqual(row["input_poly2"], "/data/custom_poly2.cdb")
+        self.assertEqual(row["process_wall_ms"]["count"], 1)
+        self.assertGreaterEqual(row["process_wall_ms"]["samples"][0], 0.0)
 
     def test_rayjoin_process_samples_requires_both_override_paths(self) -> None:
         with self.assertRaisesRegex(ValueError, "requires both poly1 and poly2"):

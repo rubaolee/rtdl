@@ -8,6 +8,7 @@ import re
 import statistics
 import subprocess
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -183,6 +184,7 @@ def run_rayjoin_process_samples(
     warmup_ms: list[float] = []
     build_index_ms: list[float] = []
     intersections: list[int] = []
+    process_wall_sec: list[float] = []
     parsed_samples: list[dict[str, Any]] = []
 
     for index in range(process_repeats):
@@ -199,12 +201,14 @@ def run_rayjoin_process_samples(
             "-logtostderr=true",
         ]
         print(f"[goal3244] RayJoin {workload} process {index + 1}/{process_repeats}", flush=True)
+        start = time.perf_counter()
         proc = subprocess.run(
             command,
             text=True,
             capture_output=True,
             timeout=timeout_seconds,
         )
+        process_wall_sec.append(time.perf_counter() - start)
         text = proc.stdout + proc.stderr
         log_path.write_text(text, encoding="utf-8")
         parsed = parse_rayjoin_query_log(text)
@@ -232,6 +236,7 @@ def run_rayjoin_process_samples(
         "query_ms_reported": summarize_samples(query_ms),
         "warmup_ms_reported": summarize_samples(warmup_ms),
         "build_index_ms_reported": summarize_samples(build_index_ms),
+        "process_wall_ms": summarize_samples([value * 1000.0 for value in process_wall_sec]),
         "intersection_counts": summarize_int_samples(intersections),
         "positive_assignment_count_available": False,
         "input_poly1": str(poly1),
