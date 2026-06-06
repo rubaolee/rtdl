@@ -23,12 +23,14 @@ claim full RayJoin paper reproduction.
 | Goal3650 | RayJoin `query_exec` | public 4096 county/soil LSI visible count | Short repeated same-slice check: counts match at `4977`; RTDL/RayJoin query ratio `0.569x`. |
 | Goal3654 | RayJoin `query_exec` | public 4096 county/soil LSI visible count | 10-second-class long run: counts match at `4977`; RayJoin process wall median `12.94s`; RTDL hot-loop total median `10.31s`; RTDL/RayJoin query ratio `0.284x`. |
 | Goal3658 | CuPy dense baseline plus RayJoin `query_exec` | public 512 county PIP positive assignment count | Tuned RTDL/OptiX validated device count supersedes the old CuPy recommendation for this bounded scalar count: exact `1417`, `0.283574ms`, `8.54s` total median over `30000` repeats; still `1.482x` slower than RayJoin query timing. |
+| Goal3660 | RayJoin `query_exec` plus RTDL reusable batch executor | public 512 county PIP repeated positive assignment count | Batched repeated-request throughput: exact `1417`, `0.034225ms/request`, `1.03s` total median over `30000` measured requests; `0.178x` RTDL/RayJoin reported query ratio, but not one-shot latency. |
 
 ## Current RayJoin Position
 
 | Contract | Best current route | Best current evidence | Status |
 | --- | --- | --- | --- |
-| PIP positive assignment count | RTDL/OptiX prepared-points validated device count with `eps=1e-9` | Goal3658: exact `1417`, `0.283574ms`, `8.54s` total median over `30000` repeats; prior Goal3595 CuPy dense was `0.437917ms` | Improved; RTDL now beats the prior CuPy scalar-count baseline for this bounded slice, but still trails RayJoin `query_exec` reported query timing. |
+| PIP positive assignment count, one-shot/sequential repeated | RTDL/OptiX prepared-points validated device count with `eps=1e-9` | Goal3658: exact `1417`, `0.283574ms`, `8.54s` total median over `30000` repeats; prior Goal3595 CuPy dense was `0.437917ms` | Improved; RTDL now beats the prior CuPy scalar-count baseline for this bounded slice, but still trails RayJoin `query_exec` reported query timing. |
+| PIP positive assignment count, batched repeated requests | RTDL/OptiX reusable prepared-point batch count executor with `eps=1e-9` | Goal3660: exact `1417`, `0.034225ms/request`, `1.03s` total median over `30000` measured requests, batch size `100`, stream policy `auto` | Strong RTDL throughput evidence; explicitly not one-shot latency or full RayJoin paper reproduction. |
 | LSI visible segment-pair count | RTDL/OptiX prepared-left generic segment-pair route | Goal3654: count `4977 == 4977`, RTDL query `0.100411ms`, RayJoin query `0.353115ms`, ratio `0.284x`; 10-second-class totals present on both sides | Current strongest RayJoin-positive RTDL evidence. |
 | Overlay active pair-dependency count | RTDL/OptiX prepared shape-pair active-count route | Goal3595: RTDL/OptiX vs CuPy `91.742x` on the 512 public-CDB slice | Strong contract evidence, but still not full polygon overlay materialization. |
 
@@ -53,6 +55,13 @@ still trails RayJoin `query_exec`. The next target is a first-class generic
 exact closed-shape membership/count primitive with explicit precision and
 boundary ownership semantics across more slices and a second GPU.
 
+Goal3660 adds the missing repeated-request reading. When the app has many PIP
+count requests over the same prepared point/closed-shape inputs, RTDL can use
+the generic reusable prepared-point batch executor and reaches
+`0.034225ms/request` on the same public-CDB slice. That is strong throughput
+evidence, but the timing contract is not one-shot latency and must not be
+collapsed into a whole-RayJoin speedup row.
+
 ## v2.9 Integration Decision
 
 For v2.9 internal performance tracking:
@@ -61,7 +70,9 @@ For v2.9 internal performance tracking:
   with contract-specific RayJoin rows;
 - use Goal3654 as the current LSI evidence row;
 - keep Goal3595 as historical CuPy-vs-RTDL route-selection evidence and use
-  Goal3658 as the current PIP scalar-count RTDL route evidence;
+  Goal3658 as the current PIP one-shot/sequential scalar-count RTDL route
+  evidence;
+- use Goal3660 as the current PIP batched repeated-request throughput evidence;
 - do not collapse PIP, LSI, and overlay into one RayJoin scalar speedup.
 
 This is enough RayJoin progress for the current v2.9 lane unless an external
