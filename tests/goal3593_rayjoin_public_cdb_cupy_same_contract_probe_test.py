@@ -11,6 +11,11 @@ import unittest
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "goal3593_rayjoin_public_cdb_cupy_same_contract_probe.py"
 ARTIFACT = ROOT / "docs" / "reports" / "goal3593_rayjoin_public_cdb_cupy_same_contract_a5000" / "summary.json"
+sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "src"))
+
+from scripts.goal3589_rayjoin_cupy_same_contract_baseline import _segment_array  # noqa: E402
+from rtdsl.segment_columns import SegmentColumns2D  # noqa: E402
 
 
 class Goal3593RayJoinPublicCdbCupySameContractProbeTest(unittest.TestCase):
@@ -63,6 +68,22 @@ class Goal3593RayJoinPublicCdbCupySameContractProbeTest(unittest.TestCase):
         for row in payload["rows"]:
             self.assertTrue(row["counts_match"])
             self.assertFalse(row["cupy_cuda_core_baseline"]["rt_core_accelerated"])
+
+    def test_goal3589_cupy_segment_baseline_accepts_segment_columns(self) -> None:
+        try:
+            import numpy as np
+        except Exception as exc:  # pragma: no cover - numpy is available in normal gates.
+            self.skipTest(f"numpy unavailable: {exc}")
+        columns = SegmentColumns2D(
+            ids=np.asarray([10, 11], dtype=np.int64),
+            x0=np.asarray([1.0, 2.0], dtype=np.float64),
+            y0=np.asarray([3.0, 4.0], dtype=np.float64),
+            x1=np.asarray([5.0, 6.0], dtype=np.float64),
+            y1=np.asarray([7.0, 8.0], dtype=np.float64),
+            count=2,
+        )
+        array = _segment_array(columns, np)
+        self.assertEqual(array.tolist(), [[1.0, 3.0, 5.0, 7.0], [2.0, 4.0, 6.0, 8.0]])
 
 
 if __name__ == "__main__":

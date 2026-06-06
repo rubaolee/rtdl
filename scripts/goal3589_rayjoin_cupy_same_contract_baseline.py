@@ -326,6 +326,15 @@ def _record_value(record: object, field: str) -> Any:
 
 
 def _segment_array(segments, np):
+    if all(hasattr(segments, name) for name in ("x0", "y0", "x1", "y1", "count")):
+        return np.column_stack(
+            (
+                np.asarray(segments.x0, dtype=np.float64),
+                np.asarray(segments.y0, dtype=np.float64),
+                np.asarray(segments.x1, dtype=np.float64),
+                np.asarray(segments.y1, dtype=np.float64),
+            )
+        )
     return np.asarray(
         [
             [
@@ -462,11 +471,13 @@ def run_cupy_baseline(workload: str, dataset: str, *, repeat: int, warmup: int) 
         output_contract = "point_to_shape_positive_hit_count"
         baseline_kind = "cupy_rawkernel_cuda_core_dense_pip_count"
     elif workload == "lsi":
-        left = tuple(case.inputs["left"])
-        right = tuple(case.inputs["right"])
-        left_gpu = cp.asarray(_segment_array(left, np))
-        right_gpu = cp.asarray(_segment_array(right, np))
-        candidate_pair_count = int(len(left) * len(right))
+        left_array = _segment_array(case.inputs["left"], np)
+        right_array = _segment_array(case.inputs["right"], np)
+        left_count = int(left_array.shape[0])
+        right_count = int(right_array.shape[0])
+        left_gpu = cp.asarray(left_array)
+        right_gpu = cp.asarray(right_array)
+        candidate_pair_count = int(left_count * right_count)
         flags = cp.zeros((candidate_pair_count,), dtype=cp.uint8)
         kernel = cp.RawKernel(LSI_COUNT_KERNEL, "rtdl_goal3589_lsi_count_flags")
         blocks = (candidate_pair_count + threads - 1) // threads
@@ -483,13 +494,13 @@ def run_cupy_baseline(workload: str, dataset: str, *, repeat: int, warmup: int) 
                 (
                     left_gpu,
                     right_gpu,
-                    len(left),
-                    len(right),
+                    left_count,
+                    right_count,
                     flags,
                 ),
             ),
         )
-        input_counts = {"left_segment_count": len(left), "right_segment_count": len(right)}
+        input_counts = {"left_segment_count": left_count, "right_segment_count": right_count}
         output_contract = "segment_segment_intersection_count"
         baseline_kind = "cupy_rawkernel_cuda_core_dense_lsi_count"
     else:
