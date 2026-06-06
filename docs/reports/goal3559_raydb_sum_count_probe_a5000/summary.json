@@ -1,0 +1,154 @@
+{
+  "by_mode": {
+    "count": {
+      "median_metric_sec": {
+        "v23": 0.0005890410393476486,
+        "v28": 0.0005907430313527584
+      },
+      "v28_speedup_vs_v23": 0.9971188961785764,
+      "values": {
+        "v23": [
+          0.0005890410393476486,
+          0.0006015263497829437,
+          0.0005501434206962585
+        ],
+        "v28": [
+          0.0005907430313527584,
+          0.0005559008568525314,
+          0.0005924324505031109
+        ]
+      }
+    },
+    "sum": {
+      "median_metric_sec": {
+        "v23": 0.0007480033673346043,
+        "v28": 0.0007578134536743164
+      },
+      "v28_speedup_vs_v23": 0.9870547477190499,
+      "values": {
+        "v23": [
+          0.0007871747948229313,
+          0.0007480033673346043,
+          0.0007455558516085148
+        ],
+        "v28": [
+          0.000787119846791029,
+          0.0007578134536743164,
+          0.0007448545657098293
+        ]
+      }
+    }
+  },
+  "copies": 120000,
+  "repeat": 20000,
+  "runs": [
+    {
+      "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3559_raydb_sum_count_probe_a5000/v23_count_trial1.json",
+      "lane": "v23",
+      "metric_sec": 0.0005890410393476486,
+      "mode": "count",
+      "total_sec": 11.780820786952972,
+      "trial": 1,
+      "wall_sec": 22.825520614162087
+    },
+    {
+      "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3559_raydb_sum_count_probe_a5000/v28_count_trial1.json",
+      "lane": "v28",
+      "metric_sec": 0.0005907430313527584,
+      "mode": "count",
+      "total_sec": 11.814860627055168,
+      "trial": 1,
+      "wall_sec": 23.13582383096218
+    },
+    {
+      "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3559_raydb_sum_count_probe_a5000/v23_sum_trial1.json",
+      "lane": "v23",
+      "metric_sec": 0.0007871747948229313,
+      "mode": "sum",
+      "total_sec": 15.743495896458626,
+      "trial": 1,
+      "wall_sec": 27.201501241885126
+    },
+    {
+      "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3559_raydb_sum_count_probe_a5000/v28_sum_trial1.json",
+      "lane": "v28",
+      "metric_sec": 0.000787119846791029,
+      "mode": "sum",
+      "total_sec": 15.74239693582058,
+      "trial": 1,
+      "wall_sec": 26.769485311582685
+    },
+    {
+      "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3559_raydb_sum_count_probe_a5000/v23_count_trial2.json",
+      "lane": "v23",
+      "metric_sec": 0.0006015263497829437,
+      "mode": "count",
+      "total_sec": 12.030526995658875,
+      "trial": 2,
+      "wall_sec": 23.733027913607657
+    },
+    {
+      "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3559_raydb_sum_count_probe_a5000/v28_count_trial2.json",
+      "lane": "v28",
+      "metric_sec": 0.0005559008568525314,
+      "mode": "count",
+      "total_sec": 11.118017137050629,
+      "trial": 2,
+      "wall_sec": 22.372065876610577
+    },
+    {
+      "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3559_raydb_sum_count_probe_a5000/v23_sum_trial2.json",
+      "lane": "v23",
+      "metric_sec": 0.0007480033673346043,
+      "mode": "sum",
+      "total_sec": 14.960067346692085,
+      "trial": 2,
+      "wall_sec": 25.768628881312907
+    },
+    {
+      "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3559_raydb_sum_count_probe_a5000/v28_sum_trial2.json",
+      "lane": "v28",
+      "metric_sec": 0.0007578134536743164,
+      "mode": "sum",
+      "total_sec": 15.156269073486328,
+      "trial": 2,
+      "wall_sec": 27.466276791878045
+    },
+    {
+      "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3559_raydb_sum_count_probe_a5000/v23_count_trial3.json",
+      "lane": "v23",
+      "metric_sec": 0.0005501434206962585,
+      "mode": "count",
+      "total_sec": 11.002868413925171,
+      "trial": 3,
+      "wall_sec": 21.20498714223504
+    },
+    {
+      "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3559_raydb_sum_count_probe_a5000/v28_count_trial3.json",
+      "lane": "v28",
+      "metric_sec": 0.0005924324505031109,
+      "mode": "count",
+      "total_sec": 11.848649010062218,
+      "trial": 3,
+      "wall_sec": 22.40992638282478
+    },
+    {
+      "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3559_raydb_sum_count_probe_a5000/v23_sum_trial3.json",
+      "lane": "v23",
+      "metric_sec": 0.0007455558516085148,
+      "mode": "sum",
+      "total_sec": 14.911117032170296,
+      "trial": 3,
+      "wall_sec": 26.382443248294294
+    },
+    {
+      "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3559_raydb_sum_count_probe_a5000/v28_sum_trial3.json",
+      "lane": "v28",
+      "metric_sec": 0.0007448545657098293,
+      "mode": "sum",
+      "total_sec": 14.897091314196587,
+      "trial": 3,
+      "wall_sec": 27.090302909724414
+    }
+  ]
+}
