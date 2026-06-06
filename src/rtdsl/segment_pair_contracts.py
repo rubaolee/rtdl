@@ -7,6 +7,7 @@ from typing import Iterable
 
 SEGMENT_PAIR_CONTRACT_VERSION = "rtdl.segment_pair_contract.v0.candidate"
 SEGMENT_PAIR_STRICT_DENOMINATOR_EPSILON = 1.0e-7
+SEGMENT_PAIR_TYPED_OUTPUT_RESIDENCY_VERSION = "rtdl.segment_pair_output_residency.v0.candidate"
 
 
 @dataclass(frozen=True)
@@ -210,3 +211,177 @@ def validate_segment_pair_contract_cases(
             "not release evidence, not RayJoin paper reproduction, and not public speedup wording"
         ),
     }
+
+
+def segment_pair_left_id_dense_count_output_residency_contract(
+    *,
+    group_capacity: int,
+    counts_device_ptr: int | None = None,
+    overflow_device_ptr: int | None = None,
+    ambiguous_count_device_ptr: int | None = None,
+    stream_ordering: str = "not_proven",
+    device_id: int = 0,
+    owner: object | None = None,
+) -> dict[str, object]:
+    """Describe the candidate typed output columns for left-id dense counts.
+
+    This helper intentionally reuses the generic primitive payload descriptor
+    and neutral-buffer seam machinery. It does not allocate buffers and does not
+    authorize zero-copy. It only makes the segment-pair contract's residency
+    target executable and testable.
+    """
+
+    if int(group_capacity) <= 0:
+        raise ValueError("group_capacity must be positive")
+    from .hit_stream_handoff import describe_primitive_payload_column_descriptor
+
+    columns = (
+        _segment_pair_output_column_descriptor(
+            describe_primitive_payload_column_descriptor,
+            name="segment_pair_left_id_counts",
+            dtype="int64",
+            shape=(int(group_capacity),),
+            semantic_role="partner_output",
+            data_ptr=counts_device_ptr,
+            stream_ordering=stream_ordering,
+            device_id=device_id,
+            owner=owner,
+        ),
+        _segment_pair_output_column_descriptor(
+            describe_primitive_payload_column_descriptor,
+            name="segment_pair_overflow_status",
+            dtype="uint32",
+            shape=(1,),
+            semantic_role="status_counter",
+            data_ptr=overflow_device_ptr,
+            stream_ordering=stream_ordering,
+            device_id=device_id,
+            owner=owner,
+        ),
+        _segment_pair_output_column_descriptor(
+            describe_primitive_payload_column_descriptor,
+            name="segment_pair_ambiguous_count",
+            dtype="uint64",
+            shape=(1,),
+            semantic_role="status_counter",
+            data_ptr=ambiguous_count_device_ptr,
+            stream_ordering=stream_ordering,
+            device_id=device_id,
+            owner=owner,
+        ),
+    )
+    device_resident_columns = sum(1 for column in columns if column["data_ptr_observed"])
+    any_fallback = any(bool(column["fallback_required"]) for column in columns)
+    return {
+        "version": SEGMENT_PAIR_TYPED_OUTPUT_RESIDENCY_VERSION,
+        "primitive_contract_version": SEGMENT_PAIR_CONTRACT_VERSION,
+        "primitive": "segment_pair_left_id_dense_count",
+        "schema": "dense_grouped_count_i64_plus_status_columns",
+        "group_capacity": int(group_capacity),
+        "columns": columns,
+        "device_resident_column_count": device_resident_columns,
+        "all_columns_device_resident": device_resident_columns == len(columns),
+        "fallback_required": any_fallback,
+        "ambiguous_count_required": True,
+        "overflow_status_required": True,
+        "stream_ordering": stream_ordering,
+        "true_zero_copy_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "release_authorized": False,
+        "claim_boundary": (
+            "candidate typed output residency contract only; descriptors may record "
+            "device-resident pointers, but this does not authorize true-zero-copy, "
+            "public speedup wording, release readiness, or automatic partner selection"
+        ),
+    }
+
+
+def validate_segment_pair_output_residency_contract(contract: dict[str, object]) -> dict[str, object]:
+    errors: list[str] = []
+    if contract.get("version") != SEGMENT_PAIR_TYPED_OUTPUT_RESIDENCY_VERSION:
+        errors.append("unexpected segment-pair output residency version")
+    if contract.get("primitive_contract_version") != SEGMENT_PAIR_CONTRACT_VERSION:
+        errors.append("unexpected segment-pair primitive contract version")
+    if contract.get("primitive") != "segment_pair_left_id_dense_count":
+        errors.append("unexpected segment-pair output primitive")
+    if int(contract.get("group_capacity", 0)) <= 0:
+        errors.append("group_capacity must be positive")
+    columns = tuple(contract.get("columns", ()))
+    if len(columns) != 3:
+        errors.append("segment-pair output contract must expose exactly three columns")
+    required_names = {
+        "segment_pair_left_id_counts",
+        "segment_pair_overflow_status",
+        "segment_pair_ambiguous_count",
+    }
+    names = {str(column.get("name", "")) for column in columns if isinstance(column, dict)}
+    if names != required_names:
+        errors.append("segment-pair output column set changed")
+    for column in columns:
+        if not isinstance(column, dict):
+            errors.append("segment-pair output columns must be descriptor metadata dictionaries")
+            continue
+        if column.get("true_zero_copy_authorized") is not False:
+            errors.append(f"{column.get('name')} must not authorize true zero-copy")
+        if column.get("public_speedup_claim_authorized") is not False:
+            errors.append(f"{column.get('name')} must not authorize public speedup")
+        seam = column.get("neutral_buffer_seam")
+        if not isinstance(seam, dict):
+            errors.append(f"{column.get('name')} must include neutral_buffer_seam metadata")
+        elif seam.get("zero_copy_claim_authorized") is not False:
+            errors.append(f"{column.get('name')} neutral seam must not authorize zero-copy")
+    for false_flag in ("true_zero_copy_authorized", "public_speedup_claim_authorized", "release_authorized"):
+        if contract.get(false_flag) is not False:
+            errors.append(f"{false_flag} must remain false")
+    if "not authorize true-zero-copy" not in str(contract.get("claim_boundary", "")):
+        errors.append("claim boundary must block true-zero-copy wording")
+    return {
+        "version": SEGMENT_PAIR_TYPED_OUTPUT_RESIDENCY_VERSION,
+        "valid": not errors,
+        "errors": tuple(errors),
+        "column_count": len(columns),
+        "all_columns_device_resident": bool(contract.get("all_columns_device_resident")),
+        "fallback_required": bool(contract.get("fallback_required")),
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "true_zero_copy_authorized": False,
+    }
+
+
+def _segment_pair_output_column_descriptor(
+    describe_column,
+    *,
+    name: str,
+    dtype: str,
+    shape: tuple[int, ...],
+    semantic_role: str,
+    data_ptr: int | None,
+    stream_ordering: str,
+    device_id: int,
+    owner: object | None,
+) -> dict[str, object]:
+    has_device_ptr = data_ptr is not None and int(data_ptr) > 0
+    return describe_column(
+        name=name,
+        dtype=dtype,
+        shape=shape,
+        semantic_role=semantic_role,
+        producer="segment_pair_intersection_rows_2d",
+        consumer="caller_selected_partner_or_native_reduction",
+        device_type="cuda" if has_device_ptr else "cpu",
+        device_id=int(device_id),
+        data_ptr=int(data_ptr) if has_device_ptr else None,
+        source_protocol="native_cuda_device_pointer" if has_device_ptr else "host_reference",
+        access_mode="read",
+        mutability="mutable" if has_device_ptr else "immutable",
+        stream_ordering=stream_ordering,
+        lifetime_state="producer_retained" if has_device_ptr else "caller_retained",
+        transfer_status="borrowed_device_pointer_unmeasured" if has_device_ptr else "host_reference",
+        fallback_reason="none" if has_device_ptr else "host_reference",
+        capacity_elements=int(shape[0]),
+        owner=owner,
+        host_materialized_before_handoff=not has_device_ptr,
+        native_producer=has_device_ptr,
+        measured_same_pointer=False,
+        measured_no_host_stage=False,
+    )
