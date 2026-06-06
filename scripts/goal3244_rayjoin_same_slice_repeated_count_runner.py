@@ -402,9 +402,16 @@ def ratio(numerator: float | None, denominator: float | None) -> float | None:
     return float(numerator / denominator)
 
 
-def build_comparison_rows(rayjoin_rows: dict[str, dict[str, Any]], rtdl_rows: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
+def build_comparison_rows(
+    rayjoin_rows: dict[str, dict[str, Any]],
+    rtdl_rows: dict[str, dict[str, Any]],
+    *,
+    workloads: tuple[str, ...] = ("lsi", "pip"),
+) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
-    for workload in ("lsi", "pip"):
+    for workload in workloads:
+        if workload not in {"lsi", "pip"}:
+            raise ValueError(f"unsupported comparison workload: {workload}")
         ray = rayjoin_rows[workload]
         rtdl = rtdl_rows[workload]
         ray_ms = ray["query_ms_reported"]["median"]
@@ -434,6 +441,15 @@ def build_comparison_rows(rayjoin_rows: dict[str, dict[str, Any]], rtdl_rows: di
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Goal3244 repeated RTDL/RayJoin same-slice count runner.")
+    parser.add_argument(
+        "--workloads",
+        choices=("both", "lsi", "pip"),
+        default="both",
+        help=(
+            "Select which workload rows to execute. Use lsi for long repeated "
+            "LSI-only timing without spending time on the PIP companion row."
+        ),
+    )
     parser.add_argument("--rayjoin-query-exec", type=Path, required=True)
     parser.add_argument("--rayjoin-data-dir", type=Path, required=True)
     parser.add_argument(
@@ -456,8 +472,8 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         help="Optional RayJoin PIP poly2 input. Defaults to the historical Goal3244 county slice.",
     )
-    parser.add_argument("--rtdl-lsi-dataset", required=True)
-    parser.add_argument("--rtdl-pip-dataset", required=True)
+    parser.add_argument("--rtdl-lsi-dataset")
+    parser.add_argument("--rtdl-pip-dataset")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--log-dir", type=Path)
     parser.add_argument("--rayjoin-warmup", type=int, default=3)
@@ -537,6 +553,11 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.rayjoin_process_repeats <= 0 or args.rtdl_repeat <= 0:
         raise ValueError("repeat counts must be positive")
+    selected_workloads = ("lsi", "pip") if args.workloads == "both" else (args.workloads,)
+    if "lsi" in selected_workloads and not args.rtdl_lsi_dataset:
+        raise ValueError("--rtdl-lsi-dataset is required when workloads include lsi")
+    if "pip" in selected_workloads and not args.rtdl_pip_dataset:
+        raise ValueError("--rtdl-pip-dataset is required when workloads include pip")
     log_dir = args.log_dir or args.output.with_suffix("")
     log_dir.mkdir(parents=True, exist_ok=True)
 
@@ -553,18 +574,22 @@ def main(argv: list[str] | None = None) -> int:
             timeout_seconds=args.timeout_seconds,
             log_dir=log_dir,
         )
-        for workload in ("lsi", "pip")
+        for workload in selected_workloads
     }
-    rtdl_rows = {
-        "lsi": run_rtdl_samples(
+    rtdl_rows: dict[str, dict[str, Any]] = {}
+    if "lsi" in selected_workloads:
+        assert args.rtdl_lsi_dataset is not None
+        rtdl_rows["lsi"] = run_rtdl_samples(
             workload="lsi",
             dataset=args.rtdl_lsi_dataset,
             warmup=args.rtdl_warmup,
             repeat=args.rtdl_repeat,
             lsi_count_route=args.rtdl_lsi_count_route,
             segment_order_mode=args.rtdl_lsi_segment_order,
-        ),
-        "pip": run_rtdl_samples(
+        )
+    if "pip" in selected_workloads:
+        assert args.rtdl_pip_dataset is not None
+        rtdl_rows["pip"] = run_rtdl_samples(
             workload="pip",
             dataset=args.rtdl_pip_dataset,
             warmup=args.rtdl_warmup,
@@ -574,9 +599,8 @@ def main(argv: list[str] | None = None) -> int:
             boundary_mode=args.rtdl_pip_boundary_mode,
             point_order_mode=args.rtdl_pip_point_order,
             pip_scalar_count_pipeline=args.rtdl_pip_scalar_count_pipeline,
-        ),
-    }
-    comparisons = build_comparison_rows(rayjoin_rows, rtdl_rows)
+        )
+    comparisons = build_comparison_rows(rayjoin_rows, rtdl_rows, workloads=selected_workloads)
     status = (
         "pass_with_optimization_gap"
         if all(
@@ -598,6 +622,7 @@ def main(argv: list[str] | None = None) -> int:
         "rtdl_commit": _git_commit(),
         "source_dirty": _git_dirty(),
         "gpu": _gpu_name(),
+        "selected_workloads": list(selected_workloads),
         "rayjoin": rayjoin_rows,
         "rtdl": rtdl_rows,
         "comparisons": comparisons,

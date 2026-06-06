@@ -120,10 +120,41 @@ Timing results:
         self.assertEqual(pip["count_contract_status"], "rtdl_boundary_event_count_not_pip_membership")
         self.assertFalse(pip["rayjoin_positive_assignment_count_available"])
 
+    def test_comparison_rows_can_be_lsi_only_for_long_repeated_timing(self) -> None:
+        rayjoin = {
+            "lsi": {
+                "query_ms_reported": {"median": 0.4},
+                "intersection_counts": {"last": 4977},
+            },
+            "pip": {
+                "query_ms_reported": {"median": 9.9},
+                "intersection_counts": {"last": None},
+            },
+        }
+        rtdl = {
+            "lsi": {
+                "prepared_query_ms": {"median": 0.22},
+                "counts": {"last": 4977},
+            },
+            "pip": {
+                "prepared_query_ms": {"median": 9.9},
+                "counts": {"last": 0},
+            },
+        }
+
+        rows = MODULE.build_comparison_rows(rayjoin, rtdl, workloads=("lsi",))
+
+        self.assertEqual([row["workload"] for row in rows], ["lsi"])
+        self.assertEqual(rows[0]["count_contract_status"], "matching_visible_lsi_count")
+        self.assertLess(rows[0]["rtdl_over_rayjoin_query_ratio"], 0.6)
+
     def test_runner_contains_claim_boundary_and_no_release_authorization(self) -> None:
         text = SCRIPT.read_text(encoding="utf-8")
 
         for phrase in (
+            "--workloads",
+            "long repeated",
+            "LSI-only timing",
             "--rayjoin-lsi-poly1",
             "--rayjoin-pip-poly1",
             "--rtdl-pip-point-order",
