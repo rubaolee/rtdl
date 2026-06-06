@@ -40,9 +40,11 @@ class Goal3657V29RayJoinLsi10sIntegrationTest(unittest.TestCase):
         for phrase in (
             "not a single whole-app speedup claim",
             "do not collapse PIP, LSI, and overlay into one RayJoin scalar speedup",
-            "PIP scalar membership still",
-            "belongs to CuPy",
-            "closed-shape membership-count primitive",
+            "Goal3658",
+            "PIP scalar membership no",
+            "longer belongs to CuPy",
+            "still trails RayJoin `query_exec`",
+            "first-class generic",
             "automatic partner/backend selection",
             "app-specific native-engine logic",
         ):
