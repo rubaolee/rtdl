@@ -1,0 +1,30 @@
+{
+  "v23": {
+    "broadphase_median_sec": 0.02790944278240204,
+    "collect_max_sec": 0.008402535691857338,
+    "collect_median_sec": 0.00540234986692667,
+    "collect_min_sec": 0.004440043121576309,
+    "combined_median_sec": 0.010978699661791325,
+    "lane": "v23",
+    "row0_type": "tuple",
+    "row_container_type": "tuple",
+    "row_count": 4096,
+    "validate_max_sec": 0.005699440836906433,
+    "validate_median_sec": 0.005468728952109814,
+    "validate_min_sec": 0.004494446329772472
+  },
+  "v28": {
+    "broadphase_median_sec": 0.02839982556179166,
+    "collect_max_sec": 0.005873658694326878,
+    "collect_median_sec": 0.004573330283164978,
+    "collect_min_sec": 0.004298368468880653,
+    "combined_median_sec": 0.009080293122678995,
+    "lane": "v28",
+    "row0_type": "tuple",
+    "row_container_type": "tuple",
+    "row_count": 4096,
+    "validate_max_sec": 0.006060444749891758,
+    "validate_median_sec": 0.004538194742053747,
+    "validate_min_sec": 0.004361085593700409
+  }
+}
