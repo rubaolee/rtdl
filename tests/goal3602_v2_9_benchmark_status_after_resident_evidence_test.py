@@ -11,6 +11,8 @@ GOAL3595 = ROOT / "docs/reports/goal3595_rayjoin_public_cdb_repeat200_a5000/summ
 GOAL3599 = ROOT / "docs/reports/goal3599_barnes_hut_node_coverage_resident_repeat_a5000/summary.json"
 GOAL3601_CURRENT = ROOT / "docs/reports/goal3601_librts_same_contract_resident_repeat_a5000/current_summary.json"
 GOAL3601_V23 = ROOT / "docs/reports/goal3601_librts_same_contract_resident_repeat_a5000/v23_summary.json"
+GOAL3658 = ROOT / "docs/reports/goal3658_rayjoin_pip_tuned_device_predicate_a5000/summary.json"
+GOAL3660 = ROOT / "docs/reports/goal3660_rayjoin_pip_batch_executor_throughput_a5000/summary.json"
 
 
 class Goal3602V29BenchmarkStatusAfterResidentEvidenceTest(unittest.TestCase):
@@ -51,6 +53,30 @@ class Goal3602V29BenchmarkStatusAfterResidentEvidenceTest(unittest.TestCase):
         ):
             self.assertIn(phrase, text)
 
+    def test_rayjoin_pip_updates_match_goal3658_and_goal3660_artifacts(self) -> None:
+        text = REPORT.read_text(encoding="utf-8")
+        tuned = json.loads(GOAL3658.read_text(encoding="utf-8"))
+        batched = json.loads(GOAL3660.read_text(encoding="utf-8"))
+
+        self.assertEqual(tuned["source_dirty_recorded"], [])
+        self.assertEqual(tuned["rtdl"]["count"], 1417)
+        self.assertEqual(batched["source_dirty"], [])
+        self.assertEqual(batched["rtdl"]["pip"]["counts"]["last"], 1417)
+        self.assertEqual(
+            batched["rtdl"]["pip"]["pip_timing_contract"],
+            "batched_repeated_request_throughput_not_one_shot_latency",
+        )
+        for phrase in (
+            "Goal3658",
+            "Goal3660",
+            "0.283574ms",
+            "0.034225ms/request",
+            "not one-shot latency",
+            "one-shot RTDL-vs-RayJoin latency",
+            "no longer belongs to CuPy",
+        ):
+            self.assertIn(phrase, text)
+
     def test_barnes_and_librts_numbers_match_artifacts(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
         barnes = json.loads(GOAL3599.read_text(encoding="utf-8"))
@@ -77,9 +103,9 @@ class Goal3602V29BenchmarkStatusAfterResidentEvidenceTest(unittest.TestCase):
         for phrase in (
             "not a release packet",
             "not one scalar app headline",
-            "explicit mixed routing",
+            "contract-specific",
             "cannot expose the same resident-repeat API",
-            "exact closed-shape membership count",
+            "broader cross-slice/second-GPU confirmation",
             "does not authorize",
             "public v2.9 speedup claims",
             "app-specific native-engine logic",
