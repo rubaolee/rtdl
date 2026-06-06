@@ -36,6 +36,12 @@ OptiX backend are available:
 PYTHONPATH=src:. RTDL_OPTIX_LIB=build/librtdl_optix.so python examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py --backend optix_partner_resident_experimental --mode all
 ```
 
+When the application needs `count`, `sum`, `min`, and `max` together, use
+`--mode stats` instead of running four separate modes. `stats` is the fused
+generic grouped-summary contract and returns all four fields in one native
+launch. The separate `count`, `sum`, `min`, and `max` modes remain useful for
+single-output queries and diagnostic isolation.
+
 Paper-shaped RayDB RT contract reference:
 
 ```bash
@@ -89,6 +95,8 @@ work, and use partners only for unfused continuation or explicit user choice.
 - experimental OptiX partner-resident parity for grouped `count`, `sum`, `min`,
   `max`, fused `stats`, and composite `avg_as_sum_count` using CUDA tensor
   descriptors and compact grouped output materialization;
+- fused `stats` is the recommended current path for a full grouped summary
+  requiring `count`, `sum`, `min`, and `max` together;
 - composite `avg_as_sum_count` lowers to a generic fused native `sum_count`
   grouped reduction; there is no native average ABI;
 - paper-shaped RayDB RT CPU contract reference for `count`, `sum`, `min`, `max`,
