@@ -1132,6 +1132,8 @@ def run_benchmark(
     partner: str = "cupy",
     skip_validation: bool = False,
     require_rt_core: bool = False,
+    query_repeat: int = 1,
+    warmup: int = 0,
 ) -> dict[str, Any]:
     if mode not in MODES:
         raise ValueError(f"unsupported Barnes-Hut benchmark mode: {mode}")
@@ -1385,6 +1387,8 @@ def run_benchmark(
                 output_mode="candidate_summary",
                 optix_summary_mode="node_coverage_prepared",
                 node_radius=node_radius,
+                query_repeat=query_repeat,
+                warmup=warmup,
             ),
             mode=mode,
             contract="prepared_fixed_radius_node_coverage_threshold_decision_embree",
@@ -1400,6 +1404,8 @@ def run_benchmark(
                 optix_summary_mode="node_coverage_prepared",
                 node_radius=node_radius,
                 require_rt_core=require_rt_core,
+                query_repeat=query_repeat,
+                warmup=warmup,
             ),
             mode=mode,
             contract="prepared_fixed_radius_node_coverage_threshold_decision_optix",
@@ -1435,6 +1441,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--partner", choices=("torch", "cupy"), default="cupy")
     parser.add_argument("--skip-validation", action="store_true")
     parser.add_argument("--require-rt-core", action="store_true")
+    parser.add_argument("--repeat", type=int, default=1, help="Repeat hot prepared-query phase.")
+    parser.add_argument("--warmup", type=int, default=0, help="Prepared-query warmup iterations to drop.")
     parser.add_argument("--json-out", type=Path, default=None)
     args = parser.parse_args(argv)
 
@@ -1448,6 +1456,8 @@ def main(argv: list[str] | None = None) -> int:
         partner=args.partner,
         skip_validation=args.skip_validation,
         require_rt_core=args.require_rt_core,
+        query_repeat=args.repeat,
+        warmup=args.warmup,
     )
     text = json.dumps(payload, indent=2, sort_keys=True)
     if args.json_out is not None:

@@ -4,6 +4,7 @@ import argparse
 from dataclasses import dataclass
 import json
 import math
+import statistics
 import sys
 from pathlib import Path
 
@@ -376,20 +377,45 @@ def _run_prepared_node_coverage(
     *,
     backend: str,
     radius: float,
+    query_repeat: int = 1,
+    warmup: int = 0,
 ) -> dict[str, object]:
     if backend not in {"embree", "optix"}:
         raise ValueError("prepared node coverage currently supports backend='embree' or backend='optix'")
+    if query_repeat <= 0:
+        raise ValueError("query_repeat must be positive")
+    if warmup < 0:
+        raise ValueError("warmup must be non-negative")
     kwargs: dict[str, object] = {
         "search_points": _node_points(nodes),
-        "query_points": _body_points(bodies),
-        "radius": radius,
-        "threshold": 1,
         "backend": backend,
     }
     if backend == "optix":
         kwargs["max_radius"] = radius
-    result = rt.run_generic_prepared_fixed_radius_threshold_reached_count_2d(**kwargs)
-    covered_count = int(result["threshold_reached_count"])
+    query_runs: list[dict[str, object]] = []
+    with rt.prepare_generic_fixed_radius_count_threshold_2d(**kwargs) as prepared:
+        for iteration in range(warmup + query_repeat):
+            result = prepared.count_threshold_reached(_body_points(bodies), radius=radius, threshold=1)
+            query_runs.append(
+                {
+                    "iteration": iteration,
+                    "is_warmup": iteration < warmup,
+                    "threshold_reached_count": int(result["threshold_reached_count"]),
+                    "query_sec": float(
+                        result["run_phases"]["query_fixed_radius_threshold_reached_count_sec"]
+                    ),
+                }
+            )
+        prepare_sec = float(prepared.scene_prepare_sec)
+    measured = [row for row in query_runs if not bool(row["is_warmup"])]
+    if not measured:
+        raise RuntimeError("prepared Barnes-Hut node-coverage repeat produced no measured rows")
+    covered_counts = {int(row["threshold_reached_count"]) for row in measured}
+    if len(covered_counts) != 1:
+        raise RuntimeError("prepared Barnes-Hut node-coverage repeat changed covered-body count")
+    covered_count = next(iter(covered_counts))
+    query_secs = [float(row["query_sec"]) for row in measured]
+    query_median_sec = float(statistics.median(query_secs))
     return {
         "radius": radius,
         "backend": backend,
@@ -400,9 +426,22 @@ def _run_prepared_node_coverage(
         "identity_parity_available": covered_count == len(bodies),
         "row_count": None,
         "summary_mode": "scalar_threshold_count",
-        "generic_primitive": result["primitive"],
-        "summary_primitive": result["summary_primitive"],
-        "run_phases": result["run_phases"],
+        "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+        "summary_primitive": "REDUCE_INT(COUNT)",
+        "run_phases": {
+            "scene_prepare_sec": prepare_sec,
+            "query_fixed_radius_threshold_reached_count_sec": query_median_sec,
+            "query_fixed_radius_threshold_reached_count_total_sec": float(sum(query_secs)),
+            "query_repeat": int(query_repeat),
+            "query_warmup": int(warmup),
+        },
+        "query_repeat_protocol": {
+            "repeat": int(query_repeat),
+            "warmup": int(warmup),
+            "measured_run_count": len(measured),
+            "query_sec_median": query_median_sec,
+            "query_sec_total": float(sum(query_secs)),
+        },
     }
 
 
@@ -464,6 +503,8 @@ def run_app(
     partner: str = "cupy",
     skip_validation: bool = False,
     require_rt_core: bool = False,
+    query_repeat: int = 1,
+    warmup: int = 0,
 ) -> dict[str, object]:
     if output_mode not in {"full", "candidate_summary", "force_summary"}:
         raise ValueError("output_mode must be 'full', 'candidate_summary', or 'force_summary'")
@@ -471,6 +512,10 @@ def run_app(
         raise ValueError("optix_summary_mode must be 'rows' or 'node_coverage_prepared'")
     if node_radius < 0:
         raise ValueError("node_radius must be non-negative")
+    if query_repeat <= 0:
+        raise ValueError("query_repeat must be positive")
+    if warmup < 0:
+        raise ValueError("warmup must be non-negative")
     _enforce_rt_core_requirement(backend, optix_summary_mode, require_rt_core)
     bodies = make_bodies() if body_count is None else make_generated_bodies(body_count)
     nodes = build_one_level_quadtree(bodies)
@@ -514,7 +559,14 @@ def run_app(
                 payload["error_rows"] = error_rows
         return payload
     if backend in {"embree", "optix"} and optix_summary_mode == "node_coverage_prepared":
-        coverage = _run_prepared_node_coverage(bodies, nodes, backend=backend, radius=node_radius)
+        coverage = _run_prepared_node_coverage(
+            bodies,
+            nodes,
+            backend=backend,
+            radius=node_radius,
+            query_repeat=query_repeat,
+            warmup=warmup,
+        )
         oracle = node_coverage_oracle(bodies, nodes, radius=node_radius)
         oracle_decision_matches = (
             coverage["all_bodies_have_node_candidate"] == oracle["all_bodies_have_node_candidate"]
@@ -554,6 +606,14 @@ def run_app(
                 "evaluation, not force-vector reduction, and not a fully native "
                 "N-body solver."
             ),
+            "repeat_protocol": {
+                "repeat": int(query_repeat),
+                "warmup": int(warmup),
+                "measured_query_total_sec": float(
+                    coverage["run_phases"]["query_fixed_radius_threshold_reached_count_total_sec"]
+                ),
+                "reported_query_metric": "query_median",
+            },
         }
 
     candidate_rows = _run_node_candidates(backend, bodies, nodes)
@@ -643,6 +703,8 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Skip CPU oracle validation for large partner_exact_force timing runs.",
     )
+    parser.add_argument("--repeat", type=int, default=1, help="Repeat hot prepared-query phase.")
+    parser.add_argument("--warmup", type=int, default=0, help="Prepared-query warmup iterations to drop.")
     args = parser.parse_args(argv)
     print(
         json.dumps(
@@ -656,6 +718,8 @@ def main(argv: list[str] | None = None) -> int:
                 partner=args.partner,
                 skip_validation=args.skip_validation,
                 require_rt_core=args.require_rt_core,
+                query_repeat=args.repeat,
+                warmup=args.warmup,
             ),
             indent=2,
             sort_keys=True,

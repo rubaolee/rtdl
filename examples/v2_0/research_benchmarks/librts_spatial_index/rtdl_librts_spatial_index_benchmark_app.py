@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import random
+import statistics
 import sys
 import time
 from dataclasses import dataclass
@@ -323,7 +324,17 @@ def run_grid_counts(fixture: LibRTSFixture, operation: str, *, resolution: int) 
     }
 
 
-def run_embree_aabb_counts(fixture: LibRTSFixture, operation: str) -> dict[str, object]:
+def run_embree_aabb_counts(
+    fixture: LibRTSFixture,
+    operation: str,
+    *,
+    query_repeat: int = 1,
+    warmup: int = 0,
+) -> dict[str, object]:
+    if query_repeat <= 0:
+        raise ValueError("query_repeat must be positive")
+    if warmup < 0:
+        raise ValueError("warmup must be non-negative")
     prepared_start = time.perf_counter()
     prepared = rt.prepare_aabb_index_2d(
         fixture.boxes,
@@ -332,14 +343,33 @@ def run_embree_aabb_counts(fixture: LibRTSFixture, operation: str) -> dict[str, 
         backend="embree",
     )
     prepare_sec = time.perf_counter() - prepared_start
+    query_runs: list[dict[str, object]] = []
     try:
-        primitive_result = prepared.count(
-            point_queries=fixture.point_queries,
-            box_queries=fixture.box_queries,
-            operation=operation,
-        )
+        for iteration in range(warmup + query_repeat):
+            primitive_result = prepared.count(
+                point_queries=fixture.point_queries,
+                box_queries=fixture.box_queries,
+                operation=operation,
+            )
+            query_runs.append(
+                {
+                    "iteration": iteration,
+                    "is_warmup": iteration < warmup,
+                    "counts": dict(primitive_result["counts"]),
+                    "query_sec": float(primitive_result["run_phases"]["query_aabb_index_2d_sec"]),
+                }
+            )
     finally:
         prepared.close()
+    measured = [row for row in query_runs if not bool(row["is_warmup"])]
+    if not measured:
+        raise RuntimeError("prepared Embree AABB repeat produced no measured rows")
+    count_signatures = {json.dumps(row["counts"], sort_keys=True) for row in measured}
+    if len(count_signatures) != 1:
+        raise RuntimeError("prepared Embree AABB repeat changed counts")
+    query_secs = [float(row["query_sec"]) for row in measured]
+    query_median_sec = float(statistics.median(query_secs))
+    query_total_sec = float(sum(query_secs))
     cpu_counts = run_counts(fixture, operation)["counts"]
     return {
         "app": "librts_spatial_index",
@@ -350,11 +380,23 @@ def run_embree_aabb_counts(fixture: LibRTSFixture, operation: str) -> dict[str, 
         "counts": primitive_result["counts"],
         "matches_cpu_reference": primitive_result["counts"] == cpu_counts,
         "candidate_checks": primitive_result["candidate_checks"],
-        "elapsed_sec": prepare_sec + primitive_result["run_phases"]["query_aabb_index_2d_sec"],
+        "elapsed_sec": prepare_sec + query_median_sec,
         "fixture": fixture.metadata(),
         "run_phases": {
             "scene_prepare_sec": prepare_sec,
-            "query_sec": primitive_result["run_phases"]["query_aabb_index_2d_sec"],
+            "query_sec": query_median_sec,
+            "query_median_sec": query_median_sec,
+            "query_summed_median_sec": query_median_sec,
+            "query_total_sec": query_total_sec,
+            "query_repeat": int(query_repeat),
+            "query_warmup": int(warmup),
+        },
+        "repeat_protocol": {
+            "repeat": int(query_repeat),
+            "warmup": int(warmup),
+            "measured_run_count": len(measured),
+            "query_sec_median": query_median_sec,
+            "query_sec_total": query_total_sec,
         },
         "index": primitive_result["index"],
         "paper": PAPER,
@@ -376,7 +418,13 @@ def run_optix_aabb_counts(
     operation: str,
     *,
     prepared_queries: bool = True,
+    query_repeat: int = 1,
+    warmup: int = 0,
 ) -> dict[str, object]:
+    if query_repeat <= 0:
+        raise ValueError("query_repeat must be positive")
+    if warmup < 0:
+        raise ValueError("warmup must be non-negative")
     operations = OPERATIONS if operation == "all" else (operation,)
 
     started = time.perf_counter()
@@ -386,6 +434,7 @@ def run_optix_aabb_counts(
     counts: dict[str, int] = {}
     query_prepare_sec: dict[str, float] = {}
     query_sec: dict[str, float] = {}
+    query_total_sec: dict[str, float] = {}
     prepared_query_cache: dict[str, object] = {}
     try:
         for name in operations:
@@ -404,18 +453,52 @@ def run_optix_aabb_counts(
                     query_prepare_sec[name] = time.perf_counter() - query_started
                 else:
                     query_prepare_sec[name] = 0.0
-                run_started = time.perf_counter()
-                counts[name] = prepared.count_prepared_queries(prepared_query_cache[query_kind], operation=name)
-                query_sec[name] = time.perf_counter() - run_started
+                per_operation_runs = []
+                for iteration in range(warmup + query_repeat):
+                    run_started = time.perf_counter()
+                    count = prepared.count_prepared_queries(prepared_query_cache[query_kind], operation=name)
+                    per_operation_runs.append(
+                        {
+                            "iteration": iteration,
+                            "is_warmup": iteration < warmup,
+                            "count": int(count),
+                            "query_sec": time.perf_counter() - run_started,
+                        }
+                    )
+                measured = [row for row in per_operation_runs if not bool(row["is_warmup"])]
+                count_values = {int(row["count"]) for row in measured}
+                if len(count_values) != 1:
+                    raise RuntimeError(f"prepared OptiX AABB repeat changed count for {name}")
+                counts[name] = next(iter(count_values))
+                query_values = [float(row["query_sec"]) for row in measured]
+                query_sec[name] = float(statistics.median(query_values))
+                query_total_sec[name] = float(sum(query_values))
             else:
                 kwargs = {"operation": name}
                 if name == "point_contains":
                     kwargs["point_queries"] = fixture.point_queries
                 else:
                     kwargs["box_queries"] = fixture.box_queries
-                run_started = time.perf_counter()
-                counts[name] = prepared.count(**kwargs)
-                query_sec[name] = time.perf_counter() - run_started
+                per_operation_runs = []
+                for iteration in range(warmup + query_repeat):
+                    run_started = time.perf_counter()
+                    count = prepared.count(**kwargs)
+                    per_operation_runs.append(
+                        {
+                            "iteration": iteration,
+                            "is_warmup": iteration < warmup,
+                            "count": int(count),
+                            "query_sec": time.perf_counter() - run_started,
+                        }
+                    )
+                measured = [row for row in per_operation_runs if not bool(row["is_warmup"])]
+                count_values = {int(row["count"]) for row in measured}
+                if len(count_values) != 1:
+                    raise RuntimeError(f"OptiX AABB repeat changed count for {name}")
+                counts[name] = next(iter(count_values))
+                query_values = [float(row["query_sec"]) for row in measured]
+                query_sec[name] = float(statistics.median(query_values))
+                query_total_sec[name] = float(sum(query_values))
                 query_prepare_sec[name] = 0.0
     finally:
         for prepared_query in prepared_query_cache.values():
@@ -435,6 +518,18 @@ def run_optix_aabb_counts(
             "scene_prepare_sec": scene_prepare_sec,
             "query_prepare_sec": query_prepare_sec,
             "query_sec": query_sec,
+            "query_median_sec": float(sum(query_sec.values())),
+            "query_summed_median_sec": float(sum(query_sec.values())),
+            "query_total_sec": float(sum(query_total_sec.values())),
+            "query_repeat": int(query_repeat),
+            "query_warmup": int(warmup),
+        },
+        "repeat_protocol": {
+            "repeat": int(query_repeat),
+            "warmup": int(warmup),
+            "measured_run_count": int(query_repeat),
+            "query_sec_median": float(sum(query_sec.values())),
+            "query_sec_total": float(sum(query_total_sec.values())),
         },
         "prepared_queries": prepared_queries,
         "paper": PAPER,
@@ -621,6 +716,8 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Use host-staged query inputs instead of prepared GPU-resident query buffers for optix_aabb_index.",
     )
+    parser.add_argument("--repeat", type=int, default=1, help="Repeat hot prepared-query phase.")
+    parser.add_argument("--warmup", type=int, default=0, help="Prepared-query warmup iterations to drop.")
     parser.add_argument("--output-dir", type=Path, default=Path("scratch/librts_spatial_index_fixture"))
     parser.add_argument("--boxes-wkt", type=Path)
     parser.add_argument("--point-queries-wkt", type=Path)
@@ -653,12 +750,19 @@ def main(argv: list[str] | None = None) -> int:
         elif args.mode == "partner_grid_reference":
             payload = run_grid_counts(fixture, args.operation, resolution=args.grid_resolution)
         elif args.mode == "embree_aabb_index":
-            payload = run_embree_aabb_counts(fixture, args.operation)
+            payload = run_embree_aabb_counts(
+                fixture,
+                args.operation,
+                query_repeat=args.repeat,
+                warmup=args.warmup,
+            )
         elif args.mode == "optix_aabb_index":
             payload = run_optix_aabb_counts(
                 fixture,
                 args.operation,
                 prepared_queries=not args.no_prepared_queries,
+                query_repeat=args.repeat,
+                warmup=args.warmup,
             )
         elif args.mode == "mutation_cpu_reference":
             payload = run_mutation_counts(fixture, args.operation)

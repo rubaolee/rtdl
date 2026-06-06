@@ -4,6 +4,7 @@ import argparse
 import contextlib
 import json
 import os
+import statistics
 import sys
 import time
 from pathlib import Path
@@ -250,6 +251,46 @@ def _phase_time(phases: dict[str, float], label: str, fn):
     return value
 
 
+def _phase_repeat_time(
+    phases: dict[str, float],
+    label: str,
+    *,
+    query_repeat: int,
+    warmup: int,
+    fn,
+    stability_value=None,
+):
+    if query_repeat <= 0:
+        raise ValueError("query_repeat must be positive")
+    if warmup < 0:
+        raise ValueError("warmup must be non-negative")
+    runs = []
+    for iteration in range(warmup + query_repeat):
+        start = time.perf_counter()
+        value = fn()
+        runs.append(
+            {
+                "iteration": iteration,
+                "is_warmup": iteration < warmup,
+                "elapsed_sec": time.perf_counter() - start,
+                "value": value,
+            }
+        )
+    measured = [row for row in runs if not bool(row["is_warmup"])]
+    if not measured:
+        raise RuntimeError(f"{label} repeat produced no measured rows")
+    if stability_value is not None:
+        stable_values = {stability_value(row["value"]) for row in measured}
+        if len(stable_values) != 1:
+            raise RuntimeError(f"{label} repeat changed result identity")
+    elapsed = [float(row["elapsed_sec"]) for row in measured]
+    phases[label] = float(statistics.median(elapsed))
+    phases[f"{label}_total_sec"] = float(sum(elapsed))
+    phases[f"{label}_repeat"] = int(query_repeat)
+    phases[f"{label}_warmup"] = int(warmup)
+    return measured[-1]["value"]
+
+
 @contextlib.contextmanager
 def _temporary_env(name: str, value: str | None):
     previous = os.environ.get(name)
@@ -458,6 +499,8 @@ def run_rayjoin_prepared_optix_workload(
     device_filtered_boundary_mode: str | None = None,
     point_order_mode: str = "natural",
     segment_order_mode: str = "natural",
+    query_repeat: int = 1,
+    warmup: int = 0,
 ) -> dict[str, object]:
     """Run the RayJoin-style prepared OptiX route with phase boundaries.
 
@@ -496,6 +539,10 @@ def run_rayjoin_prepared_optix_workload(
         raise ValueError("segment_order_mode must be one of: natural, x_then_y, y_then_x, morton_xy")
     if segment_order_mode != "natural" and workload != "lsi":
         raise ValueError("segment_order_mode is currently only valid for LSI segment-pair workloads")
+    if query_repeat <= 0:
+        raise ValueError("query_repeat must be positive")
+    if warmup < 0:
+        raise ValueError("warmup must be non-negative")
 
     resolved_dataset = dataset or _DEFAULT_DATASETS[workload]
     case = _load_rayjoin_case(
@@ -528,15 +575,33 @@ def run_rayjoin_prepared_optix_workload(
         )
         try:
             if result_mode == "count":
-                row_count = int(_phase_time(phases, "prepared_query_sec", lambda: prepared.count_active(packed_left)))
+                row_count = int(
+                    _phase_repeat_time(
+                        phases,
+                        "prepared_query_sec",
+                        query_repeat=query_repeat,
+                        warmup=warmup,
+                        fn=lambda: prepared.count_active(packed_left),
+                    )
+                )
             else:
-                view = _phase_time(phases, "prepared_query_sec", lambda: prepared.run_raw(packed_left))
-                try:
-                    row_count = int(view.row_count)
-                    if include_rows:
-                        rows = tuple(view.to_dict_rows())
-                finally:
-                    view.close()
+                def run_raw_once():
+                    view = prepared.run_raw(packed_left)
+                    try:
+                        row_count_inner = int(view.row_count)
+                        rows_inner = tuple(view.to_dict_rows()) if include_rows else ()
+                        return row_count_inner, rows_inner
+                    finally:
+                        view.close()
+
+                row_count, rows = _phase_repeat_time(
+                    phases,
+                    "prepared_query_sec",
+                    query_repeat=query_repeat,
+                    warmup=warmup,
+                    fn=run_raw_once,
+                    stability_value=lambda value: int(value[0]),
+                )
             native_phase_timings = {
                 "native_row_count": row_count,
                 "native_count_mode": "active_relation_flags" if result_mode == "count" else "full_pair_dependency_rows",
@@ -577,15 +642,33 @@ def run_rayjoin_prepared_optix_workload(
         )
         try:
             if result_mode == "count":
-                row_count = int(_phase_time(phases, "prepared_query_sec", lambda: prepared.count(packed_left)))
+                row_count = int(
+                    _phase_repeat_time(
+                        phases,
+                        "prepared_query_sec",
+                        query_repeat=query_repeat,
+                        warmup=warmup,
+                        fn=lambda: prepared.count(packed_left),
+                    )
+                )
             else:
-                view = _phase_time(phases, "prepared_query_sec", lambda: prepared.run_raw(packed_left))
-                try:
-                    row_count = int(view.row_count)
-                    if include_rows:
-                        rows = tuple(view.to_dict_rows())
-                finally:
-                    view.close()
+                def run_raw_once():
+                    view = prepared.run_raw(packed_left)
+                    try:
+                        row_count_inner = int(view.row_count)
+                        rows_inner = tuple(view.to_dict_rows()) if include_rows else ()
+                        return row_count_inner, rows_inner
+                    finally:
+                        view.close()
+
+                row_count, rows = _phase_repeat_time(
+                    phases,
+                    "prepared_query_sec",
+                    query_repeat=query_repeat,
+                    warmup=warmup,
+                    fn=run_raw_once,
+                    stability_value=lambda value: int(value[0]),
+                )
             native_phase_timings = prepared.last_phase_timings()
         finally:
             prepared.close()
@@ -645,10 +728,12 @@ def run_rayjoin_prepared_optix_workload(
                     )
                     if count_mode == "device_filtered_validated":
                         row_count = int(
-                            _phase_time(
+                            _phase_repeat_time(
                                 phases,
                                 "prepared_query_sec",
-                                lambda: _run_prepared_device_filtered_count_with_boundary_mode(
+                                query_repeat=query_repeat,
+                                warmup=warmup,
+                                fn=lambda: _run_prepared_device_filtered_count_with_boundary_mode(
                                     prepared,
                                     packed_points,
                                     device_filtered_boundary_mode,
@@ -663,10 +748,12 @@ def run_rayjoin_prepared_optix_workload(
                         )
                         prepared_point_columns_metadata = prepared_point_columns.to_metadata()
                         row_count = int(
-                            _phase_time(
+                            _phase_repeat_time(
                                 phases,
                                 "prepared_query_sec",
-                                lambda: _run_prepared_device_filtered_prepared_points_count_with_boundary_mode(
+                                query_repeat=query_repeat,
+                                warmup=warmup,
+                                fn=lambda: _run_prepared_device_filtered_prepared_points_count_with_boundary_mode(
                                     prepared,
                                     prepared_point_columns,
                                     device_filtered_boundary_mode,
@@ -728,20 +815,34 @@ def run_rayjoin_prepared_optix_workload(
                     }
                 else:
                     validation_exact_count = None
-                    row_count = int(_phase_time(phases, "prepared_query_sec", lambda: prepared.count(packed_points)))
+                    row_count = int(
+                        _phase_repeat_time(
+                            phases,
+                            "prepared_query_sec",
+                            query_repeat=query_repeat,
+                            warmup=warmup,
+                            fn=lambda: prepared.count(packed_points),
+                        )
+                    )
             else:
                 validation_exact_count = None
-                view = _phase_time(
+                def run_positive_hits_once():
+                    view = prepared.run_raw(packed_points, result_mode="positive_hits")
+                    try:
+                        row_count_inner = int(view.row_count)
+                        rows_inner = tuple(view.to_dict_rows()) if include_rows else ()
+                        return row_count_inner, rows_inner
+                    finally:
+                        view.close()
+
+                row_count, rows = _phase_repeat_time(
                     phases,
                     "prepared_query_sec",
-                    lambda: prepared.run_raw(packed_points, result_mode="positive_hits"),
+                    query_repeat=query_repeat,
+                    warmup=warmup,
+                    fn=run_positive_hits_once,
+                    stability_value=lambda value: int(value[0]),
                 )
-                try:
-                    row_count = int(view.row_count)
-                    if include_rows:
-                        rows = tuple(view.to_dict_rows())
-                finally:
-                    view.close()
             native_phase_timings = prepared.last_phase_timings()
         finally:
             if prepared_point_columns is not None:
@@ -810,6 +911,12 @@ def run_rayjoin_prepared_optix_workload(
         "summary": summary,
         "phases_sec": phases,
         "native_phase_timings": native_phase_timings or {},
+        "repeat_protocol": {
+            "repeat": int(query_repeat),
+            "warmup": int(warmup),
+            "measured_query_total_sec": float(phases.get("prepared_query_sec_total_sec", phases["prepared_query_sec"])),
+            "reported_query_metric": "prepared_query_median",
+        },
         "point_order_mode": point_order_mode if workload == "pip" else None,
         "segment_order_mode": segment_order_mode if workload == "lsi" else None,
         "device_resident_continuation_status": (
@@ -2118,6 +2225,8 @@ def run_rayjoin_suite(
     result_mode: str = "rows",
     include_rows: bool = True,
     pip_count_mode: str = "exact",
+    query_repeat: int = 1,
+    warmup: int = 0,
 ) -> dict[str, object]:
     if execution_route == "prepared_optix":
         workloads = {
@@ -2126,6 +2235,8 @@ def run_rayjoin_suite(
                 result_mode=result_mode,
                 include_rows=include_rows,
                 count_mode=pip_count_mode if workload == "pip" else "exact",
+                query_repeat=query_repeat,
+                warmup=warmup,
             )
             for workload in _PREPARED_OPTIX_WORKLOADS
         }
@@ -2149,8 +2260,17 @@ def run_rayjoin_suite(
             "execution_route": execution_route,
             "workloads": workloads,
             "prepared_query_total_sec": prepared_query_total_sec,
+            "prepared_query_total_measured_sec": sum(
+                float(result.get("phases_sec", {}).get("prepared_query_sec_total_sec", 0.0))
+                for result in workloads.values()
+            ),
             "prepared_pack_total_sec": prepared_pack_total_sec,
             "prepared_scene_total_sec": prepared_scene_total_sec,
+            "repeat_protocol": {
+                "repeat": int(query_repeat),
+                "warmup": int(warmup),
+                "reported_query_metric": "sum_of_workload_prepared_query_medians",
+            },
             "all_match_cpu_python_reference": None,
             "implementation_stage": "prepared_v2_benchmark_route",
             "next_stage": (
@@ -2479,6 +2599,8 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Omit full row arrays and keep only summaries.",
     )
+    parser.add_argument("--repeat", type=int, default=1, help="Repeat hot prepared-query phase.")
+    parser.add_argument("--warmup", type=int, default=0, help="Prepared-query warmup iterations to drop.")
     args = parser.parse_args(argv)
     include_rows = not args.no_rows
     if args.workload == "all":
@@ -2544,6 +2666,8 @@ def main(argv: list[str] | None = None) -> int:
                 result_mode=args.result_mode,
                 include_rows=include_rows,
                 pip_count_mode=args.pip_count_mode,
+                query_repeat=args.repeat,
+                warmup=args.warmup,
             )
     else:
         if args.execution_route == "v2_6_numba_compact_mask_plan":
@@ -2581,6 +2705,8 @@ def main(argv: list[str] | None = None) -> int:
                 result_mode=args.result_mode,
                 include_rows=include_rows,
                 count_mode=args.pip_count_mode,
+                query_repeat=args.repeat,
+                warmup=args.warmup,
             )
         else:
             payload = run_rayjoin_workload(

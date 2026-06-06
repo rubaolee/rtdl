@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import statistics
 import sys
 import time
 from pathlib import Path
@@ -226,19 +227,40 @@ def _run_prepared_directed_threshold(
     backend: str,
     radius: float,
     label: str,
+    query_repeat: int = 1,
+    warmup: int = 0,
 ) -> dict[str, object]:
-    result = rt.run_generic_prepared_fixed_radius_threshold_reached_count_2d(
-        search_points=target,
-        query_points=source,
-        radius=radius,
-        threshold=1,
-        backend=backend,
-        max_radius=radius,
-    )
-    covered_count = int(result["threshold_reached_count"])
-    run_phases = result["run_phases"]
-    prepare_sec = float(run_phases["scene_prepare_sec"])
-    query_sec = float(run_phases["query_fixed_radius_threshold_reached_count_sec"])
+    if query_repeat <= 0:
+        raise ValueError("query_repeat must be positive")
+    if warmup < 0:
+        raise ValueError("warmup must be non-negative")
+    kwargs: dict[str, object] = {"search_points": target, "backend": backend}
+    if backend == "optix":
+        kwargs["max_radius"] = radius
+    query_runs: list[dict[str, object]] = []
+    with rt.prepare_generic_fixed_radius_count_threshold_2d(**kwargs) as prepared:
+        for iteration in range(warmup + query_repeat):
+            result = prepared.count_threshold_reached(source, radius=radius, threshold=1)
+            query_runs.append(
+                {
+                    "iteration": iteration,
+                    "is_warmup": iteration < warmup,
+                    "threshold_reached_count": int(result["threshold_reached_count"]),
+                    "query_sec": float(
+                        result["run_phases"]["query_fixed_radius_threshold_reached_count_sec"]
+                    ),
+                }
+            )
+        prepare_sec = float(prepared.scene_prepare_sec)
+    measured = [row for row in query_runs if not bool(row["is_warmup"])]
+    if not measured:
+        raise RuntimeError("prepared Hausdorff threshold repeat produced no measured rows")
+    covered_counts = {int(row["threshold_reached_count"]) for row in measured}
+    if len(covered_counts) != 1:
+        raise RuntimeError("prepared Hausdorff threshold repeat changed covered-source count")
+    covered_count = next(iter(covered_counts))
+    query_secs = [float(row["query_sec"]) for row in measured]
+    query_sec = float(statistics.median(query_secs))
     violating = [] if covered_count == len(source) else None
     return {
         "label": label,
@@ -255,6 +277,16 @@ def _run_prepared_directed_threshold(
         "run_phases": {
             "scene_prepare_sec": prepare_sec,
             "query_fixed_radius_threshold_reached_count_sec": query_sec,
+            "query_fixed_radius_threshold_reached_count_total_sec": float(sum(query_secs)),
+            "query_repeat": int(query_repeat),
+            "query_warmup": int(warmup),
+        },
+        "query_repeat_protocol": {
+            "repeat": int(query_repeat),
+            "warmup": int(warmup),
+            "measured_run_count": len(measured),
+            "query_sec_median": query_sec,
+            "query_sec_total": float(sum(query_secs)),
         },
     }
 
@@ -530,6 +562,8 @@ def run_app(
     hausdorff_threshold: float = 0.4,
     require_rt_core: bool = False,
     partner: str = "cupy",
+    query_repeat: int = 1,
+    warmup: int = 0,
 ) -> dict[str, object]:
     input_start = time.perf_counter()
     case = make_authored_point_sets(copies=copies)
@@ -546,6 +580,10 @@ def run_app(
         raise ValueError("partner must be 'torch', 'cupy', or 'numba'")
     if hausdorff_threshold < 0:
         raise ValueError("hausdorff_threshold must be non-negative")
+    if query_repeat <= 0:
+        raise ValueError("query_repeat must be positive")
+    if warmup < 0:
+        raise ValueError("warmup must be non-negative")
     _enforce_rt_core_requirement(backend, optix_summary_mode, require_rt_core)
     native_continuation_backend = _native_continuation_backend(
         backend,
@@ -833,6 +871,8 @@ def run_app(
             backend=backend,
             radius=hausdorff_threshold,
             label="a_to_b",
+            query_repeat=query_repeat,
+            warmup=warmup,
         )
         directed_ba = _run_prepared_directed_threshold(
             points_b,
@@ -840,6 +880,8 @@ def run_app(
             backend=backend,
             radius=hausdorff_threshold,
             label="b_to_a",
+            query_repeat=query_repeat,
+            warmup=warmup,
         )
         run_phases["scene_prepare_sec"] = float(directed_ab["run_phases"]["scene_prepare_sec"]) + float(
             directed_ba["run_phases"]["scene_prepare_sec"]
@@ -889,6 +931,15 @@ def run_app(
             "native_continuation_backend": native_continuation_backend,
             "rt_core_accelerated": backend == "optix",
             "run_phases": run_phases,
+            "repeat_protocol": {
+                "repeat": int(query_repeat),
+                "warmup": int(warmup),
+                "measured_query_total_sec": float(
+                    directed_ab["run_phases"]["query_fixed_radius_threshold_reached_count_total_sec"]
+                )
+                + float(directed_ba["run_phases"]["query_fixed_radius_threshold_reached_count_total_sec"]),
+                "reported_query_metric": "sum_of_directed_query_medians",
+            },
         }
 
     if backend == "embree" and embree_result_mode == "directed_summary":
@@ -1011,6 +1062,8 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Fail if the selected path is not a true NVIDIA RT-core traversal path.",
     )
+    parser.add_argument("--repeat", type=int, default=1, help="Repeat hot prepared-query phase.")
+    parser.add_argument("--warmup", type=int, default=0, help="Prepared-query warmup iterations to drop.")
     args = parser.parse_args(argv)
     print(
         json.dumps(
@@ -1022,6 +1075,8 @@ def main(argv: list[str] | None = None) -> int:
                 hausdorff_threshold=args.hausdorff_threshold,
                 require_rt_core=args.require_rt_core,
                 partner=args.partner,
+                query_repeat=args.repeat,
+                warmup=args.warmup,
             ),
             indent=2,
             sort_keys=True,

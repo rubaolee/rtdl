@@ -55,7 +55,7 @@ class Goal3536V28VsV23TenSecondSteadyStateTest(unittest.TestCase):
             self.assertEqual(row["plan"]["repeat_flag"], "--repeat")
             self.assertTrue(row["plan"]["target_met_by_plan"])
 
-    def test_no_repeat_knob_rows_are_explicitly_partial_when_wall_guard_blocks_wrapper(self) -> None:
+    def test_v2_9_repeat_hooks_plan_former_partial_rows_as_internal_repeats(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             output = pathlib.Path(tmpdir) / "summary.json"
             completed = subprocess.run(
@@ -67,10 +67,18 @@ class Goal3536V28VsV23TenSecondSteadyStateTest(unittest.TestCase):
                     str(ROOT),
                     "--v28-root",
                     str(ROOT),
+                    "--seed-artifact",
+                    str(FINAL_ARTIFACT),
+                    "--only-case",
+                    "hausdorff_optix_threshold",
                     "--only-case",
                     "spatial_rayjoin_optix_prepared_full_route",
-                    "--max-estimated-wall-sec",
-                    "1",
+                    "--only-case",
+                    "robot_collision_optix_prepared_device_buffers",
+                    "--only-case",
+                    "barnes_hut_optix_node_coverage",
+                    "--only-case",
+                    "librts_optix_aabb_index",
                     "--artifact-dir",
                     str(pathlib.Path(tmpdir) / "artifacts"),
                     "--output",
@@ -84,10 +92,22 @@ class Goal3536V28VsV23TenSecondSteadyStateTest(unittest.TestCase):
             self.assertEqual(completed.returncode, 0, completed.stderr[-2000:])
             payload = json.loads(output.read_text(encoding="utf-8"))
         methods = {row["plan"]["method"] for row in payload["rows"]}
-        self.assertEqual({"partial_one_shot_no_repeat_knob"}, methods)
+        self.assertEqual({"internal_repeat_knob"}, methods)
+        case_ids = {row["case_id"] for row in payload["rows"]}
+        self.assertEqual(
+            {
+                "hausdorff_optix_threshold",
+                "spatial_rayjoin_optix_prepared_full_route",
+                "robot_collision_optix_prepared_device_buffers",
+                "barnes_hut_optix_node_coverage",
+                "librts_optix_aabb_index",
+            },
+            case_ids,
+        )
         for row in payload["rows"]:
-            self.assertFalse(row["plan"]["target_met_by_plan"])
-            self.assertIn("wall-time guard", row["plan"]["reason"])
+            self.assertTrue(row["plan"]["target_met_by_plan"])
+            self.assertIn(row["plan"]["repeat_flag"], {"--repeat", "--repeats"})
+            self.assertGreaterEqual(row["plan"]["planned_repeat"], row["plan"]["base_repeat"])
 
     def test_script_documents_boundary_and_uses_goal2626_registry(self) -> None:
         text = SCRIPT.read_text(encoding="utf-8")

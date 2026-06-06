@@ -158,10 +158,8 @@ def _planned_case(
         planned_repeat = min(max_internal_repeat, max(base_repeat, math.ceil(repeat_planning_target / seed)))
         planned_command = _replace_flag_value(command, flag, planned_repeat)
         planned_measured = seed * planned_repeat
-        repeat_expansion = planned_repeat / base_repeat
         estimated_wall = seed_wall_sec + max(0, planned_repeat - base_repeat) * seed if seed_wall_sec else None
-        high_setup_extreme_repeat = bool(seed_wall_sec and seed_wall_sec > 120.0 and repeat_expansion > 10.0)
-        if (estimated_wall is not None and estimated_wall > max_estimated_wall_sec) or high_setup_extreme_repeat:
+        if estimated_wall is not None and estimated_wall > max_estimated_wall_sec:
             return {
                 "lane": lane,
                 "case_id": case.case_id,
