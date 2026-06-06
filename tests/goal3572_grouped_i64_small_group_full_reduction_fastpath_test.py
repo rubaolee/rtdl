@@ -12,7 +12,7 @@ class Goal3572GroupedI64SmallGroupFullReductionFastPathTest(unittest.TestCase):
     def test_selector_covers_all_generic_grouped_i64_reductions(self) -> None:
         text = NATIVE.read_text(encoding="utf-8")
         selector_start = text.index("const bool use_small_group_reduction_fast_path")
-        selector = text[selector_start : selector_start + 1000]
+        selector = text[selector_start : selector_start + 1200]
 
         for operation in (
             "kDeviceColumnGroupedOpCount",
@@ -23,7 +23,8 @@ class Goal3572GroupedI64SmallGroupFullReductionFastPathTest(unittest.TestCase):
             "kDeviceColumnGroupedOpStats",
         ):
             self.assertIn(operation, selector)
-        self.assertIn("sizeof(unsigned long long) * group_capacity * 4", selector)
+        self.assertIn("shared_memory_word_arrays = operation == kDeviceColumnGroupedOpCount", selector)
+        self.assertIn("operation == kDeviceColumnGroupedOpStats ? 4u : 2u", selector)
         self.assertIn("g_device_column_grouped_i64.small_group_fn", selector)
         self.assertNotIn("raydb", selector.lower())
         self.assertNotIn("database", selector.lower())
@@ -33,8 +34,11 @@ class Goal3572GroupedI64SmallGroupFullReductionFastPathTest(unittest.TestCase):
         kernel_start = text.index("extern \"C\" __global__ void device_column_grouped_i64_small_group_kernel")
         kernel = text[kernel_start : text.index("extern \"C\" __global__ void device_column_grouped_i64_compact_count_kernel")]
 
-        self.assertIn("unsigned long long* shared_mins = shared_sums + params.group_capacity", kernel)
-        self.assertIn("unsigned long long* shared_maxs = shared_mins + params.group_capacity", kernel)
+        self.assertIn("const bool needs_sum = params.operation == RTDL_GROUPED_OP_SUM", kernel)
+        self.assertIn("const bool needs_min = params.operation == RTDL_GROUPED_OP_MIN", kernel)
+        self.assertIn("const bool needs_max = params.operation == RTDL_GROUPED_OP_MAX", kernel)
+        self.assertIn("? shared_sums + params.group_capacity", kernel)
+        self.assertIn("? shared_mins + params.group_capacity", kernel)
         self.assertIn("const long long i64_max_value = 9223372036854775807LL", kernel)
         self.assertIn("const long long i64_min_value = (-9223372036854775807LL - 1LL)", kernel)
         self.assertIn("params.operation == RTDL_GROUPED_OP_MIN", kernel)

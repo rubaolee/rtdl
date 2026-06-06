@@ -943,16 +943,27 @@ extern "C" __global__ void device_column_grouped_i64_small_group_kernel(DeviceCo
     extern __shared__ unsigned long long shared[];
     unsigned long long* shared_counts = shared;
     unsigned long long* shared_sums = shared + params.group_capacity;
-    unsigned long long* shared_mins = shared_sums + params.group_capacity;
-    unsigned long long* shared_maxs = shared_mins + params.group_capacity;
+    const bool needs_sum = params.operation == RTDL_GROUPED_OP_SUM ||
+        params.operation == RTDL_GROUPED_OP_SUM_COUNT ||
+        params.operation == RTDL_GROUPED_OP_STATS;
+    const bool needs_min = params.operation == RTDL_GROUPED_OP_MIN ||
+        params.operation == RTDL_GROUPED_OP_STATS;
+    const bool needs_max = params.operation == RTDL_GROUPED_OP_MAX ||
+        params.operation == RTDL_GROUPED_OP_STATS;
+    unsigned long long* shared_mins = params.operation == RTDL_GROUPED_OP_STATS
+        ? shared_sums + params.group_capacity
+        : shared_sums;
+    unsigned long long* shared_maxs = params.operation == RTDL_GROUPED_OP_STATS
+        ? shared_mins + params.group_capacity
+        : shared_sums;
     const long long i64_max_value = 9223372036854775807LL;
     const long long i64_min_value = (-9223372036854775807LL - 1LL);
 
     for (uint32_t group = threadIdx.x; group < params.group_capacity; group += blockDim.x) {
         shared_counts[group] = 0ull;
-        shared_sums[group] = 0ull;
-        shared_mins[group] = static_cast<unsigned long long>(i64_max_value);
-        shared_maxs[group] = static_cast<unsigned long long>(i64_min_value);
+        if (needs_sum) shared_sums[group] = 0ull;
+        if (needs_min) shared_mins[group] = static_cast<unsigned long long>(i64_max_value);
+        if (needs_max) shared_maxs[group] = static_cast<unsigned long long>(i64_min_value);
     }
     __syncthreads();
 
@@ -1444,8 +1455,14 @@ static void columnar_launch_device_column_grouped_i64(
          operation == kDeviceColumnGroupedOpSumCount ||
          operation == kDeviceColumnGroupedOpStats) &&
         group_capacity <= kDeviceColumnGroupedSmallCapacityFastPathMaxGroups;
+    unsigned int shared_memory_word_arrays = 0u;
+    if (use_small_group_reduction_fast_path) {
+        shared_memory_word_arrays = operation == kDeviceColumnGroupedOpCount
+            ? 1u
+            : (operation == kDeviceColumnGroupedOpStats ? 4u : 2u);
+    }
     const unsigned int shared_memory_bytes = use_small_group_reduction_fast_path
-        ? static_cast<unsigned int>(sizeof(unsigned long long) * group_capacity * 4)
+        ? static_cast<unsigned int>(sizeof(unsigned long long) * group_capacity * shared_memory_word_arrays)
         : 0u;
     CU_CHECK(cuLaunchKernel(
         use_small_group_reduction_fast_path ? g_device_column_grouped_i64.small_group_fn : g_device_column_grouped_i64.fn,

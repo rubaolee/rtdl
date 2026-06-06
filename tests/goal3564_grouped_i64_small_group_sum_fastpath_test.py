@@ -32,8 +32,8 @@ class Goal3564GroupedI64SmallGroupSumFastPathTest(unittest.TestCase):
         kernel = text[kernel_start : text.index("extern \"C\" __global__ void device_column_grouped_i64_compact_count_kernel")]
         self.assertIn("shared_counts[group] = 0ull", kernel)
         self.assertIn("shared_sums[group] = 0ull", kernel)
-        self.assertIn("shared_mins[group] = static_cast<unsigned long long>(i64_max_value)", kernel)
-        self.assertIn("shared_maxs[group] = static_cast<unsigned long long>(i64_min_value)", kernel)
+        self.assertIn("if (needs_min) shared_mins[group] = static_cast<unsigned long long>(i64_max_value)", kernel)
+        self.assertIn("if (needs_max) shared_maxs[group] = static_cast<unsigned long long>(i64_min_value)", kernel)
         self.assertIn("atomicAdd(shared_counts + group, 1ull)", kernel)
         self.assertIn("atomicAdd(shared_sums + group", kernel)
         self.assertIn("device_atomic_min_i64(reinterpret_cast<long long*>(shared_mins) + group, value)", kernel)
