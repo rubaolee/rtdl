@@ -428,6 +428,24 @@ def _compare_counts(expected: list[int], actual: list[int]) -> dict[str, object]
     }
 
 
+def _trim_counts_payload(payload: dict[str, object], max_counts_output: int | None) -> dict[str, object]:
+    counts = payload.get("counts")
+    if not isinstance(counts, list):
+        return payload
+    limit = None if max_counts_output is None else int(max_counts_output)
+    if limit is None or limit < 0 or len(counts) <= limit:
+        output = dict(payload)
+        output.setdefault("counts_truncated", False)
+        output.setdefault("counts_full_length", len(counts))
+        return output
+    output = dict(payload)
+    output["counts"] = counts[:limit]
+    output["counts_truncated"] = True
+    output["counts_full_length"] = len(counts)
+    output["counts_truncation_note"] = "counts truncated after comparisons; totals and diff checks used full vectors"
+    return output
+
+
 def _run_one_case(
     name: str,
     left: tuple[Segment, ...],
@@ -435,6 +453,7 @@ def _run_one_case(
     note: str,
     *,
     include_ambiguity_status: bool,
+    max_counts_output: int | None,
 ) -> dict[str, object]:
     _print(f"case={name} left={len(left)} right={len(right)} pairs={len(left) * len(right)}")
     if name == "adversarial":
@@ -475,6 +494,14 @@ def _run_one_case(
         comparisons["optix_row_vs_reference"] = _compare_counts(expected_counts, [int(value) for value in row_counts])
 
     all_match = all(bool(item["match"]) for item in comparisons.values())
+    dense_route = dict(optix_result["dense_device_count_route"])
+    dense_route = _trim_counts_payload(dense_route, max_counts_output)
+    optix_output = dict(optix_result)
+    optix_output["dense_device_count_route"] = dense_route
+    if row_counts is not None:
+        row_route = dict(optix_output["row_route"])
+        row_route = _trim_counts_payload(row_route, max_counts_output)
+        optix_output["row_route"] = row_route
     return {
         "name": name,
         "note": note,
@@ -482,9 +509,9 @@ def _run_one_case(
         "left_count": len(left),
         "right_count": len(right),
         "candidate_pair_count": len(left) * len(right),
-        "reference": expected,
-        "cupy_dense_same_contract": cupy_result,
-        "optix": optix_result,
+        "reference": _trim_counts_payload(expected, max_counts_output),
+        "cupy_dense_same_contract": _trim_counts_payload(cupy_result, max_counts_output),
+        "optix": optix_output,
         "comparisons": comparisons,
         "all_same_contract_counts_match": all_match,
     }
@@ -508,6 +535,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
             right,
             note,
             include_ambiguity_status=bool(args.include_ambiguity_status),
+            max_counts_output=args.max_counts_output,
         )
         for name, left, right, note in selected_cases
     ]
@@ -524,6 +552,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         "typed_output_residency_version": SEGMENT_PAIR_TYPED_OUTPUT_RESIDENCY_VERSION,
         "denominator_epsilon": SEGMENT_PAIR_STRICT_DENOMINATOR_EPSILON,
         "include_ambiguity_status": bool(args.include_ambiguity_status),
+        "max_counts_output": args.max_counts_output,
         "case_count": len(case_results),
         "cases": case_results,
         "all_same_contract_counts_match": all_match,
@@ -543,6 +572,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--grid-sizes", type=int, nargs="*", default=(64, 256, 1024))
     parser.add_argument("--sparse-grid-sizes", type=int, nargs="*", default=())
+    parser.add_argument(
+        "--max-counts-output",
+        type=int,
+        default=4096,
+        help="Maximum count-vector entries to store in JSON after full-vector comparisons; use -1 to keep all.",
+    )
     parser.add_argument(
         "--include-ambiguity-status",
         action="store_true",
