@@ -299,6 +299,7 @@ def run_rtdl_samples(
     prepare_sec: list[float] = []
     static_segment_pack_sec: list[float] = []
     static_shape_pack_sec: list[float] = []
+    prepared_query_total_sec: list[float] = []
     boundary_event_device_columns_sec: list[float] = []
     boundary_event_grouped_count_sec: list[float] = []
     counts: list[int] = []
@@ -357,6 +358,8 @@ def run_rtdl_samples(
         static_order_sec.append(float(phases.get("static_segment_order_sec", 0.0)))
         if "validation_exact_query_sec" in phases:
             validation_exact_query_sec.append(float(phases["validation_exact_query_sec"]))
+        if "prepared_query_sec_total_sec" in phases:
+            prepared_query_total_sec.append(float(phases["prepared_query_sec_total_sec"]))
         if "boundary_event_device_columns_sec" in phases:
             boundary_event_device_columns_sec.append(float(phases["boundary_event_device_columns_sec"]))
         if "boundary_event_grouped_count_sec" in phases:
@@ -391,6 +394,7 @@ def run_rtdl_samples(
         "internal_query_repeat": int(internal_query_repeat),
         "internal_warmup": int(internal_warmup),
         "prepared_query_ms": summarize_samples([value * 1000.0 for value in query_sec]),
+        "prepared_query_total_ms": summarize_samples([value * 1000.0 for value in prepared_query_total_sec]),
         "validation_exact_query_ms": summarize_samples([value * 1000.0 for value in validation_exact_query_sec]),
         "boundary_event_device_columns_ms": summarize_samples(
             [value * 1000.0 for value in boundary_event_device_columns_sec]

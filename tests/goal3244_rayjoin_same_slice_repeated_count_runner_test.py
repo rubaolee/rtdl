@@ -391,6 +391,7 @@ Timing results:
 
         self.assertEqual(row["internal_query_repeat"], 10000)
         self.assertEqual(row["internal_warmup"], 20)
+        self.assertEqual(row["prepared_query_total_ms"]["samples"], [2300.0])
         self.assertEqual(calls[0]["kwargs"]["query_repeat"], 10000)
         self.assertEqual(calls[0]["kwargs"]["warmup"], 20)
         self.assertEqual(row["counts"]["last"], 4977)
