@@ -437,6 +437,8 @@ def _comparisons(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 "v23_primary_metric_sec": v23_sec,
                 "v28_primary_metric_sec": v28_sec,
                 "v28_speedup_vs_v23": speedup,
+                "v23_observed_measured_sec": v23["execution"].get("observed_measured_sec"),
+                "v28_observed_measured_sec": v28["execution"].get("observed_measured_sec"),
                 "v23_target_met_by_plan": v23["plan"].get("target_met_by_plan"),
                 "v28_target_met_by_plan": v28["plan"].get("target_met_by_plan"),
                 "v23_target_met_by_observed_sum": v23["execution"].get("target_met_by_observed_sum"),
@@ -462,10 +464,29 @@ def _summary(comparisons: list[dict[str, Any]]) -> dict[str, Any]:
         for row in comparisons
         if row.get("v23_target_met_by_plan") and row.get("v28_target_met_by_plan")
     ]
+    observed_targeted = [
+        row
+        for row in comparisons
+        if row.get("v23_target_met_by_observed_sum") and row.get("v28_target_met_by_observed_sum")
+    ]
+    observed_misses = [
+        {
+            "case_id": row["case_id"],
+            "v23_target_met_by_observed_sum": row.get("v23_target_met_by_observed_sum"),
+            "v28_target_met_by_observed_sum": row.get("v28_target_met_by_observed_sum"),
+            "v23_observed_measured_sec": row.get("v23_observed_measured_sec"),
+            "v28_observed_measured_sec": row.get("v28_observed_measured_sec"),
+        }
+        for row in comparisons
+        if not (row.get("v23_target_met_by_observed_sum") and row.get("v28_target_met_by_observed_sum"))
+    ]
     return {
         "row_count": len(comparisons),
         "ratio_count": len(speedups),
         "target_met_by_plan_pair_count": len(fully_targeted),
+        "target_met_by_observed_pair_count": len(observed_targeted),
+        "observed_target_miss_count": len(observed_misses),
+        "observed_target_misses": observed_misses,
         "median_speedup": statistics.median(speedups) if speedups else None,
         "geomean_speedup": math.prod(speedups) ** (1.0 / len(speedups)) if speedups else None,
         "min_speedup": min(speedups) if speedups else None,
@@ -525,22 +546,26 @@ def render_markdown(payload: dict[str, Any]) -> str:
         "",
         "## Comparison Rows",
         "",
-        "| App | Case | v2.3 sec | v2.8 sec | v2.8/v2.3 | Target plan met? |",
-        "| --- | --- | ---: | ---: | ---: | --- |",
+        "| App | Case | v2.3 sec | v2.8 sec | v2.8/v2.3 | Target plan met? | Target observed met? |",
+        "| --- | --- | ---: | ---: | ---: | --- | --- |",
     ]
     for row in payload["comparisons"]:
         v23 = row["v23_primary_metric_sec"]
         v28 = row["v28_primary_metric_sec"]
         speedup = row["v28_speedup_vs_v23"]
-        target = f"{row['v23_target_met_by_plan']}/{row['v28_target_met_by_plan']}"
+        target_plan = f"{row['v23_target_met_by_plan']}/{row['v28_target_met_by_plan']}"
+        target_observed = (
+            f"{row['v23_target_met_by_observed_sum']}/{row['v28_target_met_by_observed_sum']}"
+        )
         lines.append(
-            "| {app} | {case} | {v23} | {v28} | {speedup} | {target} |".format(
+            "| {app} | {case} | {v23} | {v28} | {speedup} | {target_plan} | {target_observed} |".format(
                 app=row["app_id"],
                 case=row["case_id"],
                 v23=f"{float(v23):.6g}" if isinstance(v23, (int, float)) else "",
                 v28=f"{float(v28):.6g}" if isinstance(v28, (int, float)) else "",
                 speedup=f"{float(speedup):.3f}x" if isinstance(speedup, (int, float)) else "",
-                target=target,
+                target_plan=target_plan,
+                target_observed=target_observed,
             )
         )
     lines.extend(

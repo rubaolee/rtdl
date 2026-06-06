@@ -45,11 +45,18 @@ class Goal3536V28VsV23TenSecondSteadyStateTest(unittest.TestCase):
         self.assertTrue(payload["dry_run"])
         self.assertFalse(payload["claim_boundary"]["release_authorized"])
         self.assertFalse(payload["claim_boundary"]["public_speedup_claim_authorized"])
+        self.assertIn("target_met_by_observed_pair_count", payload["summary"])
+        self.assertIn("observed_target_misses", payload["summary"])
         cases = {row["case_id"] for row in payload["comparisons"]}
         self.assertEqual(
             {"raydb_optix_partner_resident_count", "raydb_optix_partner_resident_sum"},
             cases,
         )
+        for row in payload["comparisons"]:
+            self.assertIn("v23_observed_measured_sec", row)
+            self.assertIn("v28_observed_measured_sec", row)
+            self.assertIn("v23_target_met_by_observed_sum", row)
+            self.assertIn("v28_target_met_by_observed_sum", row)
         for row in payload["rows"]:
             self.assertEqual(row["plan"]["method"], "internal_repeat_knob")
             self.assertEqual(row["plan"]["repeat_flag"], "--repeat")
@@ -114,6 +121,8 @@ class Goal3536V28VsV23TenSecondSteadyStateTest(unittest.TestCase):
         for phrase in (
             "goal2626_benchmark_embree_optix_baseline.py",
             "target_met_by_plan",
+            "target_met_by_observed_pair_count",
+            "observed_target_misses",
             "repeat-safety-factor",
             "internal_repeat_knob",
             "wrapper_repeat_subprocess",
@@ -150,11 +159,47 @@ class Goal3536V28VsV23TenSecondSteadyStateTest(unittest.TestCase):
         for phrase in (
             "previous 7.2x was not stable under long run",
             "Target-compliant subset: 6 rows",
+            "10s evidence",
             "Rows without a repeat hook",
             "Barnes-Hut remains a real weak row",
             "does not authorize any public release or speedup wording",
         ):
             self.assertIn(phrase, text)
+
+    def test_markdown_rendering_separates_plan_and_observed_targets(self) -> None:
+        module = __import__(
+            "scripts.goal3536_v2_8_vs_v2_3_10s_steady_state",
+            fromlist=["render_markdown"],
+        )
+        payload = {
+            "target_measured_sec": 10.0,
+            "scale": "standard",
+            "gpu": "test gpu",
+            "summary": {
+                "row_count": 1,
+                "ratio_count": 1,
+                "target_met_by_plan_pair_count": 1,
+                "target_met_by_observed_pair_count": 0,
+                "observed_target_miss_count": 1,
+            },
+            "comparisons": [
+                {
+                    "app_id": "example",
+                    "case_id": "example_case",
+                    "v23_primary_metric_sec": 1.0,
+                    "v28_primary_metric_sec": 2.0,
+                    "v28_speedup_vs_v23": 0.5,
+                    "v23_target_met_by_plan": True,
+                    "v28_target_met_by_plan": True,
+                    "v23_target_met_by_observed_sum": True,
+                    "v28_target_met_by_observed_sum": False,
+                }
+            ],
+        }
+        text = module.render_markdown(payload)
+        self.assertIn("Target plan met?", text)
+        self.assertIn("Target observed met?", text)
+        self.assertIn("| example | example_case | 1 | 2 | 0.500x | True/True | True/False |", text)
 
 
 if __name__ == "__main__":
