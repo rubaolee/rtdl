@@ -11,8 +11,8 @@ NATIVE = ROOT / "src" / "native" / "optix" / "rtdl_optix_workloads.cpp"
 class Goal3564GroupedI64SmallGroupSumFastPathTest(unittest.TestCase):
     def test_native_fast_path_is_generic_and_sum_scoped(self) -> None:
         text = NATIVE.read_text(encoding="utf-8")
-        self.assertIn("device_column_grouped_i64_small_group_sum_count_kernel", text)
-        self.assertIn("small_group_sum_count_fn", text)
+        self.assertIn("device_column_grouped_i64_small_group_kernel", text)
+        self.assertIn("small_group_fn", text)
         self.assertIn("kDeviceColumnGroupedSmallCapacityFastPathMaxGroups = 1024u", text)
         self.assertIn("extern __shared__ unsigned long long shared[]", text)
 
@@ -28,8 +28,8 @@ class Goal3564GroupedI64SmallGroupSumFastPathTest(unittest.TestCase):
 
     def test_fast_path_reduces_global_atomic_pressure_before_compaction(self) -> None:
         text = NATIVE.read_text(encoding="utf-8")
-        kernel_start = text.index("extern \"C\" __global__ void device_column_grouped_i64_small_group_sum_count_kernel")
-        kernel = text[kernel_start : text.index("extern \"C\" __global__ void device_column_grouped_i64_small_group_kernel")]
+        kernel_start = text.index("extern \"C\" __global__ void device_column_grouped_i64_small_group_kernel")
+        kernel = text[kernel_start : text.index("extern \"C\" __global__ void device_column_grouped_i64_small_group_reduction_kernel")]
         self.assertIn("shared_counts[group] = 0ull", kernel)
         self.assertIn("shared_sums[group] = 0ull", kernel)
         self.assertIn("atomicAdd(shared_counts + group, 1ull)", kernel)

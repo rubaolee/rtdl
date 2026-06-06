@@ -21,16 +21,16 @@ class Goal3572GroupedI64SmallGroupFullReductionFastPathTest(unittest.TestCase):
         self.assertIn("shared_memory_word_arrays = 2u", selector)
         self.assertIn("shared_memory_word_arrays = operation == kDeviceColumnGroupedOpCount", selector)
         self.assertIn("operation == kDeviceColumnGroupedOpStats ? 4u : 2u", selector)
-        self.assertIn("g_device_column_grouped_i64.small_group_sum_count_fn", selector)
         self.assertIn("g_device_column_grouped_i64.small_group_fn", selector)
+        self.assertIn("g_device_column_grouped_i64.small_group_reduction_fn", selector)
         self.assertNotIn("raydb", selector.lower())
         self.assertNotIn("database", selector.lower())
 
     def test_kernel_has_shared_min_max_and_generic_flush_paths(self) -> None:
         text = NATIVE.read_text(encoding="utf-8")
-        kernel_start = text.index("extern \"C\" __global__ void device_column_grouped_i64_small_group_kernel")
+        kernel_start = text.index("extern \"C\" __global__ void device_column_grouped_i64_small_group_reduction_kernel")
         kernel = text[kernel_start : text.index("extern \"C\" __global__ void device_column_grouped_i64_compact_count_kernel")]
-        sum_kernel_start = text.index("extern \"C\" __global__ void device_column_grouped_i64_small_group_sum_count_kernel")
+        sum_kernel_start = text.index("extern \"C\" __global__ void device_column_grouped_i64_small_group_kernel")
         sum_kernel = text[sum_kernel_start:kernel_start]
 
         self.assertIn("const bool needs_sum = params.operation == RTDL_GROUPED_OP_SUM", kernel)

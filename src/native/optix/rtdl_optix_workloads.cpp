@@ -672,7 +672,7 @@ struct DeviceColumnGroupedI64Function {
     CUmodule module = nullptr;
     CUfunction fn = nullptr;
     CUfunction small_group_fn = nullptr;
-    CUfunction small_group_sum_count_fn = nullptr;
+    CUfunction small_group_reduction_fn = nullptr;
     CUfunction init_values_fn = nullptr;
     CUfunction compact_count_fn = nullptr;
     CUfunction compact_count_columns_fn = nullptr;
@@ -939,7 +939,7 @@ extern "C" __global__ void device_column_grouped_i64_kernel(DeviceColumnGroupedI
     }
 }
 
-extern "C" __global__ void device_column_grouped_i64_small_group_sum_count_kernel(DeviceColumnGroupedI64Params params)
+extern "C" __global__ void device_column_grouped_i64_small_group_kernel(DeviceColumnGroupedI64Params params)
 {
     extern __shared__ unsigned long long shared[];
     unsigned long long* shared_counts = shared;
@@ -987,7 +987,7 @@ extern "C" __global__ void device_column_grouped_i64_small_group_sum_count_kerne
     }
 }
 
-extern "C" __global__ void device_column_grouped_i64_small_group_kernel(DeviceColumnGroupedI64Params params)
+extern "C" __global__ void device_column_grouped_i64_small_group_reduction_kernel(DeviceColumnGroupedI64Params params)
 {
     extern __shared__ unsigned long long shared[];
     unsigned long long* shared_counts = shared;
@@ -1341,9 +1341,9 @@ static void ensure_device_column_grouped_i64_pipeline()
             g_device_column_grouped_i64.module,
             "device_column_grouped_i64_small_group_kernel"));
         CU_CHECK(cuModuleGetFunction(
-            &g_device_column_grouped_i64.small_group_sum_count_fn,
+            &g_device_column_grouped_i64.small_group_reduction_fn,
             g_device_column_grouped_i64.module,
-            "device_column_grouped_i64_small_group_sum_count_kernel"));
+            "device_column_grouped_i64_small_group_reduction_kernel"));
         CU_CHECK(cuModuleGetFunction(
             &g_device_column_grouped_i64.init_values_fn,
             g_device_column_grouped_i64.module,
@@ -1523,9 +1523,9 @@ static void columnar_launch_device_column_grouped_i64(
         : 0u;
     CUfunction grouped_i64_kernel = g_device_column_grouped_i64.fn;
     if (use_small_group_sum_count_fast_path) {
-        grouped_i64_kernel = g_device_column_grouped_i64.small_group_sum_count_fn;
-    } else if (use_small_group_reduction_fast_path) {
         grouped_i64_kernel = g_device_column_grouped_i64.small_group_fn;
+    } else if (use_small_group_reduction_fast_path) {
+        grouped_i64_kernel = g_device_column_grouped_i64.small_group_reduction_fn;
     }
     CU_CHECK(cuLaunchKernel(
         grouped_i64_kernel,
