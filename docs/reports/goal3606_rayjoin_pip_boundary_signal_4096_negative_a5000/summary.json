@@ -1,0 +1,261 @@
+{
+  "all_tolerances_match_exact": false,
+  "chain_count": 4096,
+  "claim_boundary": {
+    "native_default_route_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "generated_at_unix": 1780754768.5302584,
+  "git_commit": "df9c355a3f9a37c72a1b8aba1b19a2f3d3e80fd7",
+  "goal": 3606,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "interpretation": "4096-chain negative tolerance sweep: the Goal3388 boundary-event signal is not robust enough for larger public-CDB county slices under tested tolerances. This blocks default-route promotion.",
+  "rows": [
+    {
+      "crossing_tolerance": 0.0,
+      "exact_row_count": 11316,
+      "extra_row_count": 1,
+      "extra_sample": [
+        [
+          3738,
+          3829
+        ]
+      ],
+      "filtered_row_count": 11311,
+      "matches_exact": false,
+      "missing_exact_row_count": 6,
+      "missing_sample": [
+        [
+          633,
+          632
+        ],
+        [
+          634,
+          632
+        ],
+        [
+          635,
+          632
+        ],
+        [
+          4283,
+          4286
+        ],
+        [
+          4284,
+          4286
+        ],
+        [
+          4285,
+          4286
+        ]
+      ],
+      "selected_dropped_row_count": 120,
+      "selected_false_positive_point_count": 6,
+      "selected_missed_extra_point_count": 1,
+      "selected_point_count": 103,
+      "source_artifact": "/tmp/goal3606_tol_0.json"
+    },
+    {
+      "crossing_tolerance": 0.001,
+      "exact_row_count": 11316,
+      "extra_row_count": 16,
+      "extra_sample": [
+        [
+          564,
+          437
+        ],
+        [
+          565,
+          437
+        ],
+        [
+          1243,
+          1262
+        ],
+        [
+          1244,
+          1262
+        ],
+        [
+          1245,
+          1262
+        ],
+        [
+          1647,
+          1641
+        ],
+        [
+          1851,
+          1850
+        ],
+        [
+          1852,
+          1850
+        ],
+        [
+          2395,
+          2738
+        ],
+        [
+          2396,
+          2738
+        ]
+      ],
+      "filtered_row_count": 11329,
+      "matches_exact": false,
+      "missing_exact_row_count": 3,
+      "missing_sample": [
+        [
+          4283,
+          4286
+        ],
+        [
+          4284,
+          4286
+        ],
+        [
+          4285,
+          4286
+        ]
+      ],
+      "selected_dropped_row_count": 102,
+      "selected_false_positive_point_count": 6,
+      "selected_missed_extra_point_count": 1,
+      "selected_point_count": 103,
+      "source_artifact": "/tmp/goal3606_tol_1e-3.json"
+    },
+    {
+      "crossing_tolerance": 0.0001,
+      "exact_row_count": 11316,
+      "extra_row_count": 4,
+      "extra_sample": [
+        [
+          1647,
+          1641
+        ],
+        [
+          1851,
+          1850
+        ],
+        [
+          1852,
+          1850
+        ],
+        [
+          3738,
+          3829
+        ]
+      ],
+      "filtered_row_count": 11317,
+      "matches_exact": false,
+      "missing_exact_row_count": 3,
+      "missing_sample": [
+        [
+          4283,
+          4286
+        ],
+        [
+          4284,
+          4286
+        ],
+        [
+          4285,
+          4286
+        ]
+      ],
+      "selected_dropped_row_count": 114,
+      "selected_false_positive_point_count": 6,
+      "selected_missed_extra_point_count": 1,
+      "selected_point_count": 103,
+      "source_artifact": "/tmp/goal3606_tol_1e-4.json"
+    },
+    {
+      "crossing_tolerance": 1e-05,
+      "exact_row_count": 11316,
+      "extra_row_count": 1,
+      "extra_sample": [
+        [
+          3738,
+          3829
+        ]
+      ],
+      "filtered_row_count": 11314,
+      "matches_exact": false,
+      "missing_exact_row_count": 3,
+      "missing_sample": [
+        [
+          4283,
+          4286
+        ],
+        [
+          4284,
+          4286
+        ],
+        [
+          4285,
+          4286
+        ]
+      ],
+      "selected_dropped_row_count": 117,
+      "selected_false_positive_point_count": 6,
+      "selected_missed_extra_point_count": 1,
+      "selected_point_count": 103,
+      "source_artifact": "/tmp/goal3606_tol_1e-5.json"
+    },
+    {
+      "crossing_tolerance": 1e-06,
+      "exact_row_count": 11316,
+      "extra_row_count": 1,
+      "extra_sample": [
+        [
+          3738,
+          3829
+        ]
+      ],
+      "filtered_row_count": 11311,
+      "matches_exact": false,
+      "missing_exact_row_count": 6,
+      "missing_sample": [
+        [
+          633,
+          632
+        ],
+        [
+          634,
+          632
+        ],
+        [
+          635,
+          632
+        ],
+        [
+          4283,
+          4286
+        ],
+        [
+          4284,
+          4286
+        ],
+        [
+          4285,
+          4286
+        ]
+      ],
+      "selected_dropped_row_count": 120,
+      "selected_false_positive_point_count": 6,
+      "selected_missed_extra_point_count": 1,
+      "selected_point_count": 103,
+      "source_artifact": "/tmp/goal3606_tol_1e-6.json"
+    }
+  ],
+  "schema": "rtdl.goal3606.rayjoin_pip_boundary_signal_4096_negative.v1",
+  "selected_point_signal": "candidate_count_gt_strict_zero_boundary_candidate_count_and_strict_zero_count_lte_2",
+  "source_cdb": "data/rayjoin_public_cdb/br_county.cdb",
+  "start": 256
+}
