@@ -51,8 +51,11 @@ class Goal3586RayjoinCompositeScoreTest(unittest.TestCase):
         self.assertIn("145.023x", text)
         self.assertIn("757.153x", text)
         self.assertIn("full RayJoin paper reproduction", text)
+        self.assertIn("paper-scale RayJoin claim", text)
+        self.assertIn("RTDL beats the original RayJoin implementation", text)
         self.assertIn("full polygon overlay materialization", text)
         self.assertIn("true zero-copy claim", text)
+        self.assertIn("release authorization", text)
 
 
 if __name__ == "__main__":
