@@ -4,6 +4,7 @@ import argparse
 import json
 import math
 import random
+import statistics
 import sys
 import time
 from pathlib import Path
@@ -877,6 +878,8 @@ def run_rt_dbscan_benchmark(
     grouped_union_query_block_size: int | None = None,
     grouped_union_same_root_culling: bool = True,
     grouped_union_direct_side_effect: bool = False,
+    repeat: int = 1,
+    warmup: int = 0,
 ) -> dict[str, object]:
     config = DEFAULT_DATASET_CONFIG[dataset]
     resolved_point_count = int(point_count if point_count is not None else config["point_count"])
@@ -887,6 +890,10 @@ def run_rt_dbscan_benchmark(
         "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d",
     }:
         raise ValueError("column-signature mode does not materialize Python rows")
+    if repeat < 1:
+        raise ValueError("repeat must be positive")
+    if warmup < 0 or warmup >= repeat:
+        raise ValueError("warmup must be non-negative and smaller than repeat")
     if mode == "planned_rt_dbscan":
         plan = plan_rt_dbscan_execution(dataset, resolved_point_count)
         selected_mode = str(plan["selected_mode"])
@@ -907,6 +914,8 @@ def run_rt_dbscan_benchmark(
             grouped_union_query_block_size=grouped_union_query_block_size,
             grouped_union_same_root_culling=grouped_union_same_root_culling,
             grouped_union_direct_side_effect=grouped_union_direct_side_effect,
+            repeat=repeat,
+            warmup=warmup,
         )
         payload["mode"] = mode
         payload["selected_mode"] = selected_mode
@@ -943,6 +952,8 @@ def run_rt_dbscan_benchmark(
             grouped_union_query_block_size=grouped_union_query_block_size,
             grouped_union_same_root_culling=grouped_union_same_root_culling,
             grouped_union_direct_side_effect=grouped_union_direct_side_effect,
+            repeat=repeat,
+            warmup=warmup,
         )
         payload["mode"] = mode
         payload["selected_mode"] = selected_mode
@@ -961,6 +972,7 @@ def run_rt_dbscan_benchmark(
     start = time.perf_counter()
     timing_breakdown_sec: dict[str, float] | None = None
     signature_override: dict[str, object] | None = None
+    elapsed_override: float | None = None
     metadata: dict[str, object]
     if mode == "cpu_reference":
         rows, metadata = cpu_spatial_bucket_dbscan(points, radius=resolved_radius, min_neighbors=resolved_min_neighbors)
@@ -1247,8 +1259,13 @@ def run_rt_dbscan_benchmark(
             if grouped_union_query_block_size is not None
             else DEFAULT_GROUPED_UNION_QUERY_BLOCK_SIZE
         )
-        timing_breakdown_sec = {}
+        column_signature_mode = mode in {
+            "optix_rt_core_grouped_stream_cupy_column_signature_3d",
+            "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d",
+        }
         prepare_start = time.perf_counter()
+        prepared_query_runs: list[dict[str, object]] = []
+        prepare_sec = 0.0
         with rt.prepare_v2_8_fixed_radius_graph_component_continuation_3d(
             points,
             radius=resolved_radius,
@@ -1260,27 +1277,54 @@ def run_rt_dbscan_benchmark(
             grouped_union_same_root_culling=grouped_union_same_root_culling,
             grouped_union_direct_side_effect=grouped_union_direct_side_effect,
         ) as prepared:
-            timing_breakdown_sec["prepare_sec"] = time.perf_counter() - prepare_start
-            adapter_start = time.perf_counter()
-            result = rt.fixed_radius_graph_component_labels_3d_v2_8(
-                prepared,
-                component_threshold=resolved_min_neighbors,
-                return_metadata=True,
-            )
-            timing_breakdown_sec["adapter_run_sec"] = time.perf_counter() - adapter_start
-        column_signature_mode = mode in {
-            "optix_rt_core_grouped_stream_cupy_column_signature_3d",
-            "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d",
+            prepare_sec = time.perf_counter() - prepare_start
+            for iteration in range(repeat):
+                run_timing: dict[str, float] = {}
+                run_start = time.perf_counter()
+                adapter_start = time.perf_counter()
+                result = rt.fixed_radius_graph_component_labels_3d_v2_8(
+                    prepared,
+                    component_threshold=resolved_min_neighbors,
+                    return_metadata=True,
+                )
+                run_timing["adapter_run_sec"] = time.perf_counter() - adapter_start
+                if column_signature_mode:
+                    signature_start = time.perf_counter()
+                    run_signature = _cluster_signature_from_partner_columns(result["columns"], partner="cupy")
+                    run_timing["column_signature_sec"] = time.perf_counter() - signature_start
+                    run_rows = ()
+                else:
+                    rows_start = time.perf_counter()
+                    run_rows = _rows_from_partner_columns(result["columns"], partner="cupy")
+                    run_timing["rows_materialization_sec"] = time.perf_counter() - rows_start
+                    densify_start = time.perf_counter()
+                    run_rows = _densify_cluster_labels(run_rows)
+                    run_timing["densify_cluster_labels_sec"] = time.perf_counter() - densify_start
+                    run_signature = cluster_signature(run_rows)
+                prepared_query_runs.append(
+                    {
+                        "iteration": iteration,
+                        "is_warmup": iteration < warmup,
+                        "elapsed_sec": time.perf_counter() - run_start,
+                        "timing_sec": run_timing,
+                        "signature": run_signature,
+                        "rows": run_rows,
+                        "metadata": dict(result["metadata"]),
+                    }
+                )
+        measured_runs = [row for row in prepared_query_runs if not bool(row["is_warmup"])]
+        if not measured_runs:
+            raise RuntimeError("RT-DBSCAN grouped-stream repeat produced no measured rows")
+        phase_names = sorted({name for row in measured_runs for name in row["timing_sec"]})
+        timing_breakdown_sec = {
+            name: float(statistics.median(float(row["timing_sec"][name]) for row in measured_runs if name in row["timing_sec"]))
+            for name in phase_names
         }
-        if column_signature_mode:
-            signature_start = time.perf_counter()
-            signature_override = _cluster_signature_from_partner_columns(result["columns"], partner="cupy")
-            timing_breakdown_sec["column_signature_sec"] = time.perf_counter() - signature_start
-            rows = ()
-        else:
-            rows_start = time.perf_counter()
-            rows = _rows_from_partner_columns(result["columns"], partner="cupy")
-            timing_breakdown_sec["rows_materialization_sec"] = time.perf_counter() - rows_start
+        timing_breakdown_sec["prepare_sec"] = prepare_sec
+        elapsed_override = float(statistics.median(float(row["elapsed_sec"]) for row in measured_runs))
+        signature_override = dict(measured_runs[-1]["signature"])
+        rows = measured_runs[-1]["rows"]
+        result = {"metadata": dict(measured_runs[-1]["metadata"])}
         metadata = dict(result["metadata"])
         metadata.update(
             {
@@ -1331,6 +1375,17 @@ def run_rt_dbscan_benchmark(
                     else "python_row_dicts_after_label_densification"
                 ),
                 "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+                "prepared_query_repeat_protocol": {
+                    "repeat": repeat,
+                    "warmup": warmup,
+                    "measured_run_count": len(measured_runs),
+                    "elapsed_sec_median": elapsed_override,
+                    "elapsed_sec_total": float(sum(float(row["elapsed_sec"]) for row in measured_runs)),
+                    "signatures_stable": len(
+                        {json.dumps(row["signature"], sort_keys=True) for row in measured_runs}
+                    )
+                    == 1,
+                },
             }
         )
     elif mode == "optix_rt_core_flags_cupy_microcell_graph_components_3d":
@@ -1432,7 +1487,7 @@ def run_rt_dbscan_benchmark(
         rows = _densify_cluster_labels(rows)
         if timing_breakdown_sec is not None:
             timing_breakdown_sec["densify_cluster_labels_sec"] = time.perf_counter() - densify_start
-    elapsed = time.perf_counter() - start
+    elapsed = elapsed_override if elapsed_override is not None else time.perf_counter() - start
     if timing_breakdown_sec is not None:
         metadata["benchmark_timing_breakdown"] = _build_grouped_stream_timing_breakdown(
             timing_breakdown_sec,
@@ -1528,6 +1583,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--grouped-union-query-block-size", type=int, default=None)
     parser.add_argument("--disable-grouped-union-same-root-culling", action="store_true")
     parser.add_argument("--enable-grouped-union-direct-side-effect", action="store_true")
+    parser.add_argument("--repeat", type=int, default=1)
+    parser.add_argument("--warmup", type=int, default=0)
     args = parser.parse_args(argv)
     print(
         json.dumps(
@@ -1548,6 +1605,8 @@ def main(argv: list[str] | None = None) -> int:
                 grouped_union_query_block_size=args.grouped_union_query_block_size,
                 grouped_union_same_root_culling=not args.disable_grouped_union_same_root_culling,
                 grouped_union_direct_side_effect=args.enable_grouped_union_direct_side_effect,
+                repeat=args.repeat,
+                warmup=args.warmup,
             ),
             indent=2,
             sort_keys=True,
