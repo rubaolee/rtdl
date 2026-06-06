@@ -4136,6 +4136,24 @@ R"CUDA(    atomicAdd(params.candidate_event_count, 1ull);
             throw std::runtime_error("segment-pair left-id count kernel write snippet not found");
         src.replace(pos, old_write.size(), new_write);
 
+        const std::string old_candidate_predicate =
+R"CUDA(    if (!seg_intersect_conservative_candidate(
+            left.x0, left.y0, left.x1, left.y1,
+            right.x0, right.y0, right.x1, right.y1,
+            &ix, &iy)) {
+)CUDA";
+        const std::string new_exact_predicate =
+R"CUDA(    float hit_t = 0.0f;
+    if (!seg_intersect(
+            left.x0, left.y0, left.x1, left.y1,
+            right.x0, right.y0, right.x1, right.y1,
+            &hit_t, &ix, &iy)) {
+)CUDA";
+        pos = src.find(old_candidate_predicate);
+        if (pos == std::string::npos)
+            throw std::runtime_error("segment-pair left-id count kernel predicate snippet not found");
+        src.replace(pos, old_candidate_predicate.size(), new_exact_predicate);
+
         std::string ptx = compile_to_ptx(src.c_str(), "segment_pair_left_id_count_device_columns_kernel.cu");
         g_segment_pair_left_id_count_device_columns.pipe = build_pipeline(
             get_optix_context(), ptx,
