@@ -1,3 +1,15 @@
+Goal3547 overlay note, updated by Goal3563:
+
+This v2.3 measurement overlay intentionally changes several app-level timing
+fields from a last-repeat scalar to a median-of-measured-repeats scalar. The
+field name may still be `elapsed_sec` in older app JSON for compatibility, but
+inside this overlay it represents the median hot-query repeat unless a more
+specific `*_median_sec` field is present. Do not compare overlay-patched
+`elapsed_sec` values to pre-overlay historical `elapsed_sec` values without
+checking the repeat protocol. RT-DBSCAN uses `--warmup 1 --repeat 4` as the
+registry seed so at least three measured hot-loop samples exist before any
+larger 10-second planner stretch.
+
 diff --git a/examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py b/examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py
 index 38385e63..f243e11d 100644
 --- a/examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py
@@ -1199,7 +1211,7 @@ index fdd1f108..e23d6c37 100644
 +                "--warmup",
 +                "1",
 +                "--repeat",
-+                "3",
++                "4",
                  "--no-validation",
              ),
          ),

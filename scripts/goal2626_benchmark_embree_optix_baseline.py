@@ -233,7 +233,7 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
                 "--warmup",
                 "1",
                 "--repeat",
-                "3",
+                "4",
                 "--no-validation",
             ),
         ),

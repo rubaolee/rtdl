@@ -1,0 +1,303 @@
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "internal_results_only": true,
+    "package_install_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "gpu": "NVIDIA RTX A5000, 580.126.09, 24564 MiB",
+  "raydb": {
+    "by_mode": {
+      "count": {
+        "median_metric_sec": {
+          "v23": 0.0005857227370142937,
+          "v28": 0.0005841664969921112
+        },
+        "v28_speedup_vs_v23": 1.0026640350485616,
+        "values": {
+          "v23": [
+            0.0005857227370142937,
+            0.000546981580555439,
+            0.0005915258079767227,
+            0.000552634708583355,
+            0.0005875206552445889
+          ],
+          "v28": [
+            0.0005512204952538013,
+            0.00059481430798769,
+            0.0005902242846786976,
+            0.0005841664969921112,
+            0.0005471906624734402
+          ]
+        }
+      },
+      "sum": {
+        "median_metric_sec": {
+          "v23": 0.0007532201707363129,
+          "v28": 0.0007871068082749844
+        },
+        "v28_speedup_vs_v23": 0.956947853604599,
+        "values": {
+          "v23": [
+            0.0007898076437413692,
+            0.0007532201707363129,
+            0.0007994091138243675,
+            0.0007397397421300411,
+            0.000751543790102005
+          ],
+          "v28": [
+            0.0007871068082749844,
+            0.0007516150362789631,
+            0.0007944232784211636,
+            0.0007490199059247971,
+            0.0007885126397013664
+          ]
+        }
+      }
+    },
+    "copies": 120000,
+    "repeat": 20000,
+    "runs": [
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3563_raydb_5trial_and_advisory_cleanup_a5000/v23_count_trial1.json",
+        "kind": "raydb",
+        "lane": "v23",
+        "metric_sec": 0.0005857227370142937,
+        "mode": "count",
+        "total_sec": null,
+        "trial": 1,
+        "wall_sec": 22.16966008208692
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3563_raydb_5trial_and_advisory_cleanup_a5000/v28_count_trial1.json",
+        "kind": "raydb",
+        "lane": "v28",
+        "metric_sec": 0.0005512204952538013,
+        "mode": "count",
+        "total_sec": null,
+        "trial": 1,
+        "wall_sec": 22.29458444658667
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3563_raydb_5trial_and_advisory_cleanup_a5000/v23_sum_trial1.json",
+        "kind": "raydb",
+        "lane": "v23",
+        "metric_sec": 0.0007898076437413692,
+        "mode": "sum",
+        "total_sec": null,
+        "trial": 1,
+        "wall_sec": 27.364175010472536
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3563_raydb_5trial_and_advisory_cleanup_a5000/v28_sum_trial1.json",
+        "kind": "raydb",
+        "lane": "v28",
+        "metric_sec": 0.0007871068082749844,
+        "mode": "sum",
+        "total_sec": null,
+        "trial": 1,
+        "wall_sec": 27.295333459973335
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3563_raydb_5trial_and_advisory_cleanup_a5000/v23_count_trial2.json",
+        "kind": "raydb",
+        "lane": "v23",
+        "metric_sec": 0.000546981580555439,
+        "mode": "count",
+        "total_sec": null,
+        "trial": 2,
+        "wall_sec": 21.265820901840925
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3563_raydb_5trial_and_advisory_cleanup_a5000/v28_count_trial2.json",
+        "kind": "raydb",
+        "lane": "v28",
+        "metric_sec": 0.00059481430798769,
+        "mode": "count",
+        "total_sec": null,
+        "trial": 2,
+        "wall_sec": 23.48895355593413
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3563_raydb_5trial_and_advisory_cleanup_a5000/v23_sum_trial2.json",
+        "kind": "raydb",
+        "lane": "v23",
+        "metric_sec": 0.0007532201707363129,
+        "mode": "sum",
+        "total_sec": null,
+        "trial": 2,
+        "wall_sec": 26.662891869433224
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3563_raydb_5trial_and_advisory_cleanup_a5000/v28_sum_trial2.json",
+        "kind": "raydb",
+        "lane": "v28",
+        "metric_sec": 0.0007516150362789631,
+        "mode": "sum",
+        "total_sec": null,
+        "trial": 2,
+        "wall_sec": 26.292423230595887
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3563_raydb_5trial_and_advisory_cleanup_a5000/v23_count_trial3.json",
+        "kind": "raydb",
+        "lane": "v23",
+        "metric_sec": 0.0005915258079767227,
+        "mode": "count",
+        "total_sec": null,
+        "trial": 3,
+        "wall_sec": 22.616552130319178
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3563_raydb_5trial_and_advisory_cleanup_a5000/v28_count_trial3.json",
+        "kind": "raydb",
+        "lane": "v28",
+        "metric_sec": 0.0005902242846786976,
+        "mode": "count",
+        "total_sec": null,
+        "trial": 3,
+        "wall_sec": 23.334946542046964
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3563_raydb_5trial_and_advisory_cleanup_a5000/v23_sum_trial3.json",
+        "kind": "raydb",
+        "lane": "v23",
+        "metric_sec": 0.0007994091138243675,
+        "mode": "sum",
+        "total_sec": null,
+        "trial": 3,
+        "wall_sec": 35.02963185496628
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3563_raydb_5trial_and_advisory_cleanup_a5000/v28_sum_trial3.json",
+        "kind": "raydb",
+        "lane": "v28",
+        "metric_sec": 0.0007944232784211636,
+        "mode": "sum",
+        "total_sec": null,
+        "trial": 3,
+        "wall_sec": 29.045441329479218
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3563_raydb_5trial_and_advisory_cleanup_a5000/v23_count_trial4.json",
+        "kind": "raydb",
+        "lane": "v23",
+        "metric_sec": 0.000552634708583355,
+        "mode": "count",
+        "total_sec": null,
+        "trial": 4,
+        "wall_sec": 21.618175693787634
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3563_raydb_5trial_and_advisory_cleanup_a5000/v28_count_trial4.json",
+        "kind": "raydb",
+        "lane": "v28",
+        "metric_sec": 0.0005841664969921112,
+        "mode": "count",
+        "total_sec": null,
+        "trial": 4,
+        "wall_sec": 22.205570623278618
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3563_raydb_5trial_and_advisory_cleanup_a5000/v23_sum_trial4.json",
+        "kind": "raydb",
+        "lane": "v23",
+        "metric_sec": 0.0007397397421300411,
+        "mode": "sum",
+        "total_sec": null,
+        "trial": 4,
+        "wall_sec": 26.579751735553145
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3563_raydb_5trial_and_advisory_cleanup_a5000/v28_sum_trial4.json",
+        "kind": "raydb",
+        "lane": "v28",
+        "metric_sec": 0.0007490199059247971,
+        "mode": "sum",
+        "total_sec": null,
+        "trial": 4,
+        "wall_sec": 26.767225961200893
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3563_raydb_5trial_and_advisory_cleanup_a5000/v23_count_trial5.json",
+        "kind": "raydb",
+        "lane": "v23",
+        "metric_sec": 0.0005875206552445889,
+        "mode": "count",
+        "total_sec": null,
+        "trial": 5,
+        "wall_sec": 22.853597759269178
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3563_raydb_5trial_and_advisory_cleanup_a5000/v28_count_trial5.json",
+        "kind": "raydb",
+        "lane": "v28",
+        "metric_sec": 0.0005471906624734402,
+        "mode": "count",
+        "total_sec": null,
+        "trial": 5,
+        "wall_sec": 21.71546268556267
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3563_raydb_5trial_and_advisory_cleanup_a5000/v23_sum_trial5.json",
+        "kind": "raydb",
+        "lane": "v23",
+        "metric_sec": 0.000751543790102005,
+        "mode": "sum",
+        "total_sec": null,
+        "trial": 5,
+        "wall_sec": 26.086982529610395
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3563_raydb_5trial_and_advisory_cleanup_a5000/v28_sum_trial5.json",
+        "kind": "raydb",
+        "lane": "v28",
+        "metric_sec": 0.0007885126397013664,
+        "mode": "sum",
+        "total_sec": null,
+        "trial": 5,
+        "wall_sec": 28.13556854147464
+      }
+    ],
+    "trials": 5,
+    "warmup": 2
+  },
+  "rt_dbscan_seed_repeat4": {
+    "note": "Seed-command robustness probe only. Goal3558 10s packet planner already stretched RT-DBSCAN to hundreds of measured hot-loop samples.",
+    "point_count": 8192,
+    "repeat": 4,
+    "runs": [
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3563_raydb_5trial_and_advisory_cleanup_a5000/v23_rt_dbscan_repeat4.json",
+        "kind": "rt_dbscan_seed_repeat4",
+        "lane": "v23",
+        "measured_run_count": 3,
+        "metric_sec": 0.014903007075190544,
+        "repeat": 4,
+        "wall_sec": 2.1374588636681437,
+        "warmup": 1
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3563_raydb_5trial_and_advisory_cleanup_a5000/v28_rt_dbscan_repeat4.json",
+        "kind": "rt_dbscan_seed_repeat4",
+        "lane": "v28",
+        "measured_run_count": 3,
+        "metric_sec": 0.01471574604511261,
+        "repeat": 4,
+        "wall_sec": 2.2522499142214656,
+        "warmup": 1
+      }
+    ],
+    "v28_speedup_vs_v23": 1.012725214848358,
+    "warmup": 1
+  },
+  "schema": "rtdl.goal3563.raydb_5trial_and_advisory_cleanup.v1",
+  "v23_commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+  "v23_root": "/root/rtdl_goal3556_v23_overlay",
+  "v28_commit": "4c1e0ee3f416514c22556a4e526c617295fd0730",
+  "v28_root": "/root/rtdl_goal3556_current"
+}

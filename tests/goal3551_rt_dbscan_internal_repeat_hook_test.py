@@ -48,7 +48,7 @@ class Goal3551RTDBSCANInternalRepeatHookTest(unittest.TestCase):
 
         self.assertIn('"--warmup"', case)
         self.assertIn('"--repeat"', case)
-        self.assertIn('"3"', case)
+        self.assertIn('"4"', case)
         self.assertIn('"optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d"', case)
 
     def test_goal3536_dry_run_plans_rt_dbscan_as_internal_repeat(self) -> None:
@@ -90,4 +90,3 @@ class Goal3551RTDBSCANInternalRepeatHookTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
