@@ -96,6 +96,29 @@ class Goal3671SideAwareOwnerFaceFilterTest(unittest.TestCase):
         self.assertEqual(actual["shape_id"], (891, 891))
         self.assertEqual(actual["owner_side"], ("right", "right"))
 
+    def test_columnar_filter_can_key_repeated_public_ids_by_input_ordinal(self) -> None:
+        actual = rt.filter_closed_shape_membership_candidate_columns_by_owner_face_side_columns(
+            candidate_point_ids=(7, 7, 7, 7),
+            candidate_shape_ids=(891, 16312, 891, 16312),
+            candidate_point_ordinals=(0, 0, 1, 1),
+            candidate_shape_ordinals=(0, 1, 0, 1),
+            topology_shape_ids=(891, 16312),
+            topology_shape_ordinals=(0, 1),
+            topology_left_face_ids=(371, 384),
+            topology_right_face_ids=(384, 607),
+            owner_point_ids=(7, 7),
+            owner_point_ordinals=(0, 1),
+            owner_face_ids=(371, 384),
+            owner_side_codes=("left", "right"),
+        )
+
+        self.assertEqual(actual["point_id"], (7, 7))
+        self.assertEqual(actual["shape_id"], (891, 891))
+        self.assertEqual(actual["point_ordinal"], (0, 1))
+        self.assertEqual(actual["shape_ordinal"], (0, 0))
+        self.assertEqual(actual["point_lookup_key_mode"], ("input_ordinal",))
+        self.assertEqual(actual["shape_lookup_key_mode"], ("prepared_shape_ordinal",))
+
     def test_cupy_filter_matches_columnar_reference(self) -> None:
         cp = _cupy_or_skip(self)
         expected = rt.filter_closed_shape_membership_candidate_columns_by_owner_face_side_columns(
@@ -125,6 +148,30 @@ class Goal3671SideAwareOwnerFaceFilterTest(unittest.TestCase):
         self.assertEqual(_host_tuple(actual["owner_face_id"]), expected["owner_face_id"])
         self.assertEqual(_host_tuple(actual["owner_side_code"]), expected["owner_side_code"])
 
+    def test_cupy_filter_can_key_repeated_public_ids_by_input_ordinal(self) -> None:
+        cp = _cupy_or_skip(self)
+        actual = rt.filter_closed_shape_membership_candidate_columns_by_owner_face_side_cupy(
+            candidate_point_ids=cp.asarray((7, 7, 7, 7), dtype=cp.int64),
+            candidate_shape_ids=cp.asarray((891, 16312, 891, 16312), dtype=cp.int64),
+            candidate_point_ordinals=cp.asarray((0, 0, 1, 1), dtype=cp.int64),
+            candidate_shape_ordinals=cp.asarray((0, 1, 0, 1), dtype=cp.int64),
+            topology_shape_ids=cp.asarray((891, 16312), dtype=cp.int64),
+            topology_shape_ordinals=cp.asarray((0, 1), dtype=cp.int64),
+            topology_left_face_ids=cp.asarray((371, 384), dtype=cp.int64),
+            topology_right_face_ids=cp.asarray((384, 607), dtype=cp.int64),
+            owner_point_ids=cp.asarray((7, 7), dtype=cp.int64),
+            owner_point_ordinals=cp.asarray((0, 1), dtype=cp.int64),
+            owner_face_ids=cp.asarray((371, 384), dtype=cp.int64),
+            owner_side_codes=("left", "right"),
+        )
+
+        self.assertEqual(_host_tuple(actual["point_id"]), (7, 7))
+        self.assertEqual(_host_tuple(actual["shape_id"]), (891, 891))
+        self.assertEqual(_host_tuple(actual["point_ordinal"]), (0, 1))
+        self.assertEqual(_host_tuple(actual["shape_ordinal"]), (0, 0))
+        self.assertEqual(actual["point_lookup_key_mode"], "input_ordinal")
+        self.assertEqual(actual["shape_lookup_key_mode"], "prepared_shape_ordinal")
+
     def test_contract_and_report_record_major_direction_not_closeout(self) -> None:
         contract = rt.validate_owner_face_priority_pipeline_contract()
         helpers = contract["optional_columnar_pipeline_helpers"]
@@ -137,6 +184,10 @@ class Goal3671SideAwareOwnerFaceFilterTest(unittest.TestCase):
         self.assertEqual(
             policy["side_aware_filter_candidate_duplicates"],
             "preserve_row_stream_multiplicity",
+        )
+        self.assertEqual(
+            policy["side_aware_filter_owner_identity"],
+            "public_point_id_by_default_or_input_ordinal_when_supplied",
         )
         text = REPORT.read_text(encoding="utf-8")
         self.assertIn("Goal3668 is superseded", text)

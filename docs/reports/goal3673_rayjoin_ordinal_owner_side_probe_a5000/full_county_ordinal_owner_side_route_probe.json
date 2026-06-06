@@ -1,0 +1,237 @@
+{
+  "after_extra_count": 0,
+  "after_missing_count": 24623,
+  "before_extra_count": 2,
+  "before_extra_sample": [
+    [
+      893,
+      16312
+    ],
+    [
+      894,
+      16312
+    ]
+  ],
+  "before_missing_count": 0,
+  "candidate_call_sec": 0.3671574043110013,
+  "candidate_counter_row_count": 47264,
+  "candidate_native_row_count": 47264,
+  "candidate_traversal_seconds": 0.000430274,
+  "claim_boundary": {
+    "native_default_route_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "commit": "24074cd201c97962c87b2b2eb18ddad1b0dd0f2b",
+  "dataset": "/root/rtdl_goal3671_topology/data/rayjoin_public_cdb/br_county_start0_count16545.cdb",
+  "device_predicate_eps": "1e-9",
+  "exact_row_count": 47262,
+  "exact_sec": 0.10855768155306578,
+  "extra_sample": [],
+  "filter_sec": 0.1498182686045766,
+  "filtered_point_ordinal_sample": [
+    16544,
+    3141,
+    3144,
+    3145,
+    4608,
+    4610,
+    4613,
+    3320,
+    2292,
+    2296
+  ],
+  "filtered_row_count": 22639,
+  "filtered_shape_ordinal_sample": [
+    15699,
+    2760,
+    2902,
+    2710,
+    4237,
+    4239,
+    4242,
+    2589,
+    2111,
+    2115
+  ],
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "has_uncommitted_patch": true,
+  "matches_exact_multiset": false,
+  "missing_sample": [
+    [
+      1,
+      2
+    ],
+    [
+      1,
+      3
+    ],
+    [
+      2,
+      1
+    ],
+    [
+      2,
+      3
+    ],
+    [
+      3,
+      1
+    ],
+    [
+      3,
+      2
+    ],
+    [
+      4,
+      1
+    ],
+    [
+      4,
+      5
+    ],
+    [
+      5,
+      1
+    ],
+    [
+      6,
+      7
+    ],
+    [
+      6,
+      8
+    ],
+    [
+      7,
+      6
+    ],
+    [
+      7,
+      8
+    ],
+    [
+      8,
+      6
+    ],
+    [
+      8,
+      7
+    ],
+    [
+      9,
+      6
+    ],
+    [
+      9,
+      10
+    ],
+    [
+      11,
+      12
+    ],
+    [
+      12,
+      11
+    ],
+    [
+      13,
+      11
+    ]
+  ],
+  "native_engine_boundary": "RTDL/OptiX emits generic candidate id plus ordinal columns; caller supplies owner face/side policy by input ordinal; CuPy continuation filters generically.",
+  "owner_derivation_policy": "per_input_ordinal: left_face_id if nonzero else right_face_id if nonzero else drop/either",
+  "point_chain_count": 16545,
+  "point_count": 16545,
+  "point_lookup_key_mode": "input_ordinal",
+  "polygon_chain_count": 15700,
+  "removed_extra_rows": [
+    [
+      1,
+      2
+    ],
+    [
+      1,
+      3
+    ],
+    [
+      2,
+      1
+    ],
+    [
+      2,
+      3
+    ],
+    [
+      3,
+      1
+    ],
+    [
+      3,
+      2
+    ],
+    [
+      4,
+      1
+    ],
+    [
+      4,
+      5
+    ],
+    [
+      5,
+      1
+    ],
+    [
+      6,
+      7
+    ],
+    [
+      6,
+      8
+    ],
+    [
+      7,
+      6
+    ],
+    [
+      7,
+      8
+    ],
+    [
+      8,
+      6
+    ],
+    [
+      8,
+      7
+    ],
+    [
+      9,
+      6
+    ],
+    [
+      9,
+      10
+    ],
+    [
+      11,
+      12
+    ],
+    [
+      12,
+      11
+    ],
+    [
+      13,
+      11
+    ]
+  ],
+  "schema": "rtdl.goal3673.rayjoin_full_county_ordinal_owner_side_route_probe.v1",
+  "shape_count": 15700,
+  "shape_lookup_key_mode": "prepared_shape_ordinal"
+}

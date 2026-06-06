@@ -1,0 +1,92 @@
+{
+  "after_extra_count": 0,
+  "after_missing_count": 0,
+  "all_point_owner_side_probe_result": "overfiltered: 22639 rows with 24623 missing; selective repair is required",
+  "before_extra_count": 2,
+  "before_extra_sample": [
+    [
+      893,
+      16312
+    ],
+    [
+      894,
+      16312
+    ]
+  ],
+  "before_missing_count": 0,
+  "candidate_call_sec": 0.3607179597020149,
+  "candidate_counter_row_count": 47264,
+  "candidate_native_row_count": 47264,
+  "candidate_traversal_seconds": 0.000438179,
+  "claim_boundary": {
+    "native_default_route_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "commit": "24074cd201c97962c87b2b2eb18ddad1b0dd0f2b",
+  "dataset": "/root/rtdl_goal3671_topology/data/rayjoin_public_cdb/br_county_start0_count16545.cdb",
+  "device_predicate_eps": "1e-9",
+  "exact_row_count": 47262,
+  "exact_sec": 0.10719686839729548,
+  "extra_sample": [],
+  "filter_sec": 0.1656450880691409,
+  "filtered_point_ordinal_sample": [
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    2,
+    2,
+    2,
+    3
+  ],
+  "filtered_row_count": 47262,
+  "filtered_shape_ordinal_sample": [
+    0,
+    1,
+    2,
+    0,
+    1,
+    2,
+    0,
+    1,
+    2,
+    0
+  ],
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "has_uncommitted_patch": true,
+  "matches_exact_multiset": true,
+  "missing_sample": [],
+  "native_engine_boundary": "RTDL/OptiX emits generic candidate id plus ordinal columns; caller supplies selected ambiguity ordinals and owner face/side policy; CuPy continuation filters only selected rows.",
+  "owner_derivation_policy": "per_input_ordinal for selected ambiguity set: left_face_id if nonzero else right_face_id if nonzero else drop/either",
+  "passthrough_candidate_row_count": 47260,
+  "point_count": 16545,
+  "removed_extra_rows": [
+    [
+      893,
+      16312
+    ],
+    [
+      894,
+      16312
+    ]
+  ],
+  "schema": "rtdl.goal3673.rayjoin_full_county_selective_ordinal_owner_side_route_probe.v1",
+  "selected_candidate_row_count": 4,
+  "selected_filter_key_mode": "input_ordinal",
+  "selected_point_ids": [
+    893,
+    894
+  ],
+  "selected_point_ordinals": [
+    892,
+    893
+  ],
+  "shape_count": 15700
+}

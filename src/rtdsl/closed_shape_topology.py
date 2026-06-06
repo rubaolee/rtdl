@@ -588,6 +588,8 @@ def filter_closed_shape_membership_candidates_by_owner_face_side(
     owner_face_sides_by_point: Mapping[int, object],
     *,
     missing_owner_policy: str = "raise",
+    point_key_field: str = "point_id",
+    shape_key_field: str = "shape_id",
 ) -> tuple[dict[str, int | str], ...]:
     """Filter point/closed-shape candidates through caller-supplied face sides.
 
@@ -608,12 +610,14 @@ def filter_closed_shape_membership_candidates_by_owner_face_side(
     output: list[dict[str, int | str]] = []
     for row in candidate_rows:
         point_id, shape_id = _candidate_ids(row)
-        allowed = owner_sides.get(point_id)
+        point_lookup_key = int(row.get(point_key_field, point_id))
+        shape_lookup_key = int(row.get(shape_key_field, shape_id))
+        allowed = owner_sides.get(point_lookup_key)
         if allowed is None:
             if missing_owner_policy == "raise":
-                raise KeyError(f"missing owner face side for point_id={point_id}")
+                raise KeyError(f"missing owner face side for point_key={point_lookup_key}")
             continue
-        topology = topology_by_shape.get(shape_id)
+        topology = topology_by_shape.get(shape_lookup_key)
         if topology is None:
             continue
 
@@ -643,6 +647,8 @@ def filter_closed_shape_membership_candidates_by_owner_face_side(
                 "owner_face_id": owner_face,
                 "owner_side_code": owner_side,
                 "owner_side": OWNER_FACE_SIDE_LABELS[owner_side],
+                "point_lookup_key": point_lookup_key,
+                "shape_lookup_key": shape_lookup_key,
             }
         )
     return tuple(output)
@@ -1305,15 +1311,30 @@ def filter_closed_shape_membership_candidate_columns_by_owner_face_side_columns(
     owner_face_ids: Sequence[int],
     owner_side_codes: Sequence[int | str],
     *,
+    candidate_point_ordinals: Sequence[int] | None = None,
+    candidate_shape_ordinals: Sequence[int] | None = None,
+    topology_shape_ordinals: Sequence[int] | None = None,
+    owner_point_ordinals: Sequence[int] | None = None,
     topology_has_left_faces: Sequence[int] | None = None,
     topology_has_right_faces: Sequence[int] | None = None,
     missing_owner_policy: str = "raise",
 ) -> dict[str, tuple[Any, ...]]:
-    """Columnar front door for side-aware owner-face filtering."""
+    """Columnar front door for side-aware owner-face filtering.
+
+    Public ids remain the output identity. Optional ordinal columns let callers
+    distinguish repeated public ids and prepared-shape instances without moving
+    dataset-specific ownership inference into the engine.
+    """
 
     candidate_count = len(candidate_point_ids)
     if len(candidate_shape_ids) != candidate_count:
         raise ValueError("candidate point and shape columns must have the same length")
+    if candidate_point_ordinals is not None and len(candidate_point_ordinals) != candidate_count:
+        raise ValueError("candidate_point_ordinals must match candidate length")
+    if candidate_shape_ordinals is not None and len(candidate_shape_ordinals) != candidate_count:
+        raise ValueError("candidate_shape_ordinals must match candidate length")
+    if (candidate_point_ordinals is None) != (owner_point_ordinals is None):
+        raise ValueError("owner_point_ordinals require candidate_point_ordinals, and vice versa")
 
     topology_count = len(topology_shape_ids)
     if (
@@ -1321,6 +1342,8 @@ def filter_closed_shape_membership_candidate_columns_by_owner_face_side_columns(
         or len(topology_right_face_ids) != topology_count
     ):
         raise ValueError("topology shape and face columns must have the same length")
+    if topology_shape_ordinals is not None and len(topology_shape_ordinals) != topology_count:
+        raise ValueError("topology_shape_ordinals must match topology length")
     if topology_has_left_faces is not None and len(topology_has_left_faces) != topology_count:
         raise ValueError("topology_has_left_faces must match topology length")
     if topology_has_right_faces is not None and len(topology_has_right_faces) != topology_count:
@@ -1329,13 +1352,49 @@ def filter_closed_shape_membership_candidate_columns_by_owner_face_side_columns(
     owner_count = len(owner_point_ids)
     if len(owner_face_ids) != owner_count or len(owner_side_codes) != owner_count:
         raise ValueError("owner point, face, and side columns must have the same length")
+    if owner_point_ordinals is not None and len(owner_point_ordinals) != owner_count:
+        raise ValueError("owner_point_ordinals must match owner length")
 
+    point_key_mode = "input_ordinal" if candidate_point_ordinals is not None else "public_point_id"
+    shape_key_mode = "prepared_shape_ordinal" if candidate_shape_ordinals is not None else "public_shape_id"
+    candidate_point_keys = (
+        tuple(int(value) for value in candidate_point_ordinals)
+        if candidate_point_ordinals is not None
+        else tuple(int(value) for value in candidate_point_ids)
+    )
+    candidate_shape_keys = (
+        tuple(int(value) for value in candidate_shape_ordinals)
+        if candidate_shape_ordinals is not None
+        else tuple(int(value) for value in candidate_shape_ids)
+    )
+    topology_keys = (
+        tuple(int(value) for value in topology_shape_ordinals)
+        if topology_shape_ordinals is not None
+        else tuple(range(topology_count))
+        if candidate_shape_ordinals is not None
+        else tuple(int(value) for value in topology_shape_ids)
+    )
+    owner_keys = (
+        tuple(int(value) for value in owner_point_ordinals)
+        if owner_point_ordinals is not None
+        else tuple(int(value) for value in owner_point_ids)
+    )
     candidate_rows = tuple(
-        {"point_id": int(point_id), "shape_id": int(shape_id)}
-        for point_id, shape_id in zip(candidate_point_ids, candidate_shape_ids)
+        {
+            "point_id": int(point_id),
+            "shape_id": int(shape_id),
+            "point_lookup_key": int(point_key),
+            "shape_lookup_key": int(shape_key),
+        }
+        for point_id, shape_id, point_key, shape_key in zip(
+            candidate_point_ids,
+            candidate_shape_ids,
+            candidate_point_keys,
+            candidate_shape_keys,
+        )
     )
     topology_rows = []
-    for index, shape_id in enumerate(topology_shape_ids):
+    for index, shape_id in enumerate(topology_keys):
         row = {
             "shape_id": int(shape_id),
             "left_face_id": int(topology_left_face_ids[index]),
@@ -1348,23 +1407,45 @@ def filter_closed_shape_membership_candidate_columns_by_owner_face_side_columns(
         topology_rows.append(row)
 
     owner_sides: dict[int, list[tuple[int, int]]] = {}
-    for point_id, face_id, side in zip(owner_point_ids, owner_face_ids, owner_side_codes):
-        owner_sides.setdefault(int(point_id), []).append((int(face_id), _owner_face_side_code(side)))
+    for point_key, face_id, side in zip(owner_keys, owner_face_ids, owner_side_codes):
+        owner_sides.setdefault(int(point_key), []).append((int(face_id), _owner_face_side_code(side)))
 
     filtered_rows = filter_closed_shape_membership_candidates_by_owner_face_side(
-        candidate_rows,
+        (
+            {
+                "point_id": row["point_id"],
+                "shape_id": row["shape_id"],
+                "point_lookup_key": row["point_lookup_key"],
+                "shape_lookup_key": row["shape_lookup_key"],
+                "membership": 1,
+            }
+            for row in candidate_rows
+        ),
         topology_rows,
         owner_sides,
         missing_owner_policy=missing_owner_policy,
+        point_key_field="point_lookup_key",
+        shape_key_field="shape_lookup_key",
     )
-    return {
+    result = {
         "point_id": tuple(int(row["point_id"]) for row in filtered_rows),
         "shape_id": tuple(int(row["shape_id"]) for row in filtered_rows),
         "membership": tuple(int(row["membership"]) for row in filtered_rows),
         "owner_face_id": tuple(int(row["owner_face_id"]) for row in filtered_rows),
         "owner_side_code": tuple(int(row["owner_side_code"]) for row in filtered_rows),
         "owner_side": tuple(str(row["owner_side"]) for row in filtered_rows),
+        "point_lookup_key_mode": (point_key_mode,),
+        "shape_lookup_key_mode": (shape_key_mode,),
     }
+    if candidate_point_ordinals is not None:
+        result["point_ordinal"] = tuple(
+            int(row["point_lookup_key"]) for row in filtered_rows
+        )
+    if candidate_shape_ordinals is not None:
+        result["shape_ordinal"] = tuple(
+            int(row["shape_lookup_key"]) for row in filtered_rows
+        )
+    return result
 
 
 def filter_closed_shape_membership_candidate_columns_by_owner_face_cupy(
@@ -1531,6 +1612,10 @@ def filter_closed_shape_membership_candidate_columns_by_owner_face_side_cupy(
     owner_face_ids,
     owner_side_codes,
     *,
+    candidate_point_ordinals=None,
+    candidate_shape_ordinals=None,
+    topology_shape_ordinals=None,
+    owner_point_ordinals=None,
     topology_has_left_faces=None,
     topology_has_right_faces=None,
     missing_owner_policy: str = "raise",
@@ -1540,7 +1625,9 @@ def filter_closed_shape_membership_candidate_columns_by_owner_face_side_cupy(
 
     Candidate rows are not required to be unique: this continuation is meant to
     preserve row-stream multiplicity while dropping rows that fail the caller's
-    explicit topology side ownership policy.
+    explicit topology side ownership policy. Optional ordinal columns switch
+    lookup identity from public ids to input/prepared-shape ordinals, which is
+    required when public ids are repeated.
     """
 
     if missing_owner_policy not in {"raise", "drop"}:
@@ -1565,15 +1652,47 @@ def filter_closed_shape_membership_candidate_columns_by_owner_face_side_cupy(
     candidate_count = int(candidate_point_ids.size)
     if int(candidate_shape_ids.size) != candidate_count:
         raise ValueError("candidate point and shape columns must have the same length")
+    if (candidate_point_ordinals is None) != (owner_point_ordinals is None):
+        raise ValueError("owner_point_ordinals require candidate_point_ordinals, and vice versa")
+    if candidate_point_ordinals is None:
+        candidate_point_lookup_ids = candidate_point_ids
+        owner_lookup_ids = owner_point_ids
+        point_lookup_key_mode = "public_point_id"
+    else:
+        candidate_point_lookup_ids = cp.asarray(candidate_point_ordinals, dtype=cp.int64)
+        owner_lookup_ids = cp.asarray(owner_point_ordinals, dtype=cp.int64)
+        if int(candidate_point_lookup_ids.size) != candidate_count:
+            raise ValueError("candidate_point_ordinals must match candidate length")
+        point_lookup_key_mode = "input_ordinal"
+    if candidate_shape_ordinals is None:
+        candidate_shape_lookup_ids = candidate_shape_ids
+        shape_lookup_key_mode = "public_shape_id"
+    else:
+        candidate_shape_lookup_ids = cp.asarray(candidate_shape_ordinals, dtype=cp.int64)
+        if int(candidate_shape_lookup_ids.size) != candidate_count:
+            raise ValueError("candidate_shape_ordinals must match candidate length")
+        shape_lookup_key_mode = "prepared_shape_ordinal"
     topology_count = int(topology_shape_ids.size)
     if (
         int(topology_left_face_ids.size) != topology_count
         or int(topology_right_face_ids.size) != topology_count
     ):
         raise ValueError("topology shape and face columns must have the same length")
+    if topology_shape_ordinals is None:
+        topology_lookup_ids = (
+            cp.arange(topology_count, dtype=cp.int64)
+            if candidate_shape_ordinals is not None
+            else topology_shape_ids
+        )
+    else:
+        topology_lookup_ids = cp.asarray(topology_shape_ordinals, dtype=cp.int64)
+        if int(topology_lookup_ids.size) != topology_count:
+            raise ValueError("topology_shape_ordinals must match topology length")
     owner_count = int(owner_point_ids.size)
     if int(owner_face_ids.size) != owner_count or int(owner_side_codes.size) != owner_count:
         raise ValueError("owner point, face, and side columns must have the same length")
+    if int(owner_lookup_ids.size) != owner_count:
+        raise ValueError("owner_point_ordinals must match owner length")
 
     if topology_has_left_faces is None:
         topology_has_left_faces = cp.ones((topology_count,), dtype=cp.int8)
@@ -1596,6 +1715,8 @@ def filter_closed_shape_membership_candidate_columns_by_owner_face_side_cupy(
             "membership": empty,
             "owner_face_id": empty,
             "owner_side_code": empty,
+            "point_lookup_key_mode": point_lookup_key_mode,
+            "shape_lookup_key_mode": shape_lookup_key_mode,
         }
 
     if owner_count == 0:
@@ -1603,8 +1724,8 @@ def filter_closed_shape_membership_candidate_columns_by_owner_face_side_cupy(
         owner_faces = cp.zeros((candidate_count,), dtype=cp.int64)
         owner_sides = cp.zeros((candidate_count,), dtype=cp.int8)
     else:
-        owner_order = cp.argsort(owner_point_ids, kind="stable")
-        sorted_owner_points = owner_point_ids[owner_order]
+        owner_order = cp.argsort(owner_lookup_ids, kind="stable")
+        sorted_owner_points = owner_lookup_ids[owner_order]
         sorted_owner_faces = owner_face_ids[owner_order]
         sorted_owner_sides = owner_side_codes[owner_order]
         if owner_count > 1:
@@ -1613,15 +1734,15 @@ def filter_closed_shape_membership_candidate_columns_by_owner_face_side_cupy(
             )
             if duplicate_owner:
                 if require_unique_owner_point:
-                    raise ValueError("owner point ids must be unique for the side-aware CuPy filter")
+                    raise ValueError("owner lookup keys must be unique for the side-aware CuPy filter")
                 raise ValueError(
-                    "multiple owner face sides per point are not supported by the side-aware CuPy filter"
+                    "multiple owner face sides per lookup key are not supported by the side-aware CuPy filter"
                 )
-        owner_pos = cp.searchsorted(sorted_owner_points, candidate_point_ids)
+        owner_pos = cp.searchsorted(sorted_owner_points, candidate_point_lookup_ids)
         owner_safe_pos = cp.minimum(owner_pos, owner_count - 1)
         owner_found = (
             (owner_pos < owner_count)
-            & (sorted_owner_points[owner_safe_pos] == candidate_point_ids)
+            & (sorted_owner_points[owner_safe_pos] == candidate_point_lookup_ids)
         )
         owner_faces = sorted_owner_faces[owner_safe_pos]
         owner_sides = sorted_owner_sides[owner_safe_pos]
@@ -1636,17 +1757,17 @@ def filter_closed_shape_membership_candidate_columns_by_owner_face_side_cupy(
         has_left = cp.zeros((candidate_count,), dtype=cp.bool_)
         has_right = cp.zeros((candidate_count,), dtype=cp.bool_)
     else:
-        topology_order = cp.argsort(topology_shape_ids, kind="stable")
-        sorted_shape_ids = topology_shape_ids[topology_order]
+        topology_order = cp.argsort(topology_lookup_ids, kind="stable")
+        sorted_shape_ids = topology_lookup_ids[topology_order]
         sorted_left_faces = topology_left_face_ids[topology_order]
         sorted_right_faces = topology_right_face_ids[topology_order]
         sorted_has_left = topology_has_left_faces[topology_order].astype(cp.bool_, copy=False)
         sorted_has_right = topology_has_right_faces[topology_order].astype(cp.bool_, copy=False)
-        topology_pos = cp.searchsorted(sorted_shape_ids, candidate_shape_ids)
+        topology_pos = cp.searchsorted(sorted_shape_ids, candidate_shape_lookup_ids)
         topology_safe_pos = cp.minimum(topology_pos, topology_count - 1)
         topology_found = (
             (topology_pos < topology_count)
-            & (sorted_shape_ids[topology_safe_pos] == candidate_shape_ids)
+            & (sorted_shape_ids[topology_safe_pos] == candidate_shape_lookup_ids)
         )
         left_faces = sorted_left_faces[topology_safe_pos]
         right_faces = sorted_right_faces[topology_safe_pos]
@@ -1671,13 +1792,185 @@ def filter_closed_shape_membership_candidate_columns_by_owner_face_side_cupy(
     keep = owner_found & topology_found & (matches_left | matches_right)
     kept_owner_faces = cp.where(matches_left, left_faces, right_faces)[keep].astype(cp.int64, copy=False)
     kept_owner_sides = cp.where(matches_left, side_left, side_right)[keep].astype(cp.int64, copy=False)
-    return {
+    result = {
         "point_id": candidate_point_ids[keep],
         "shape_id": candidate_shape_ids[keep],
         "membership": cp.ones((int(cp.count_nonzero(keep).item()),), dtype=cp.int64),
         "owner_face_id": kept_owner_faces,
         "owner_side_code": kept_owner_sides,
+        "point_lookup_key_mode": point_lookup_key_mode,
+        "shape_lookup_key_mode": shape_lookup_key_mode,
     }
+    if candidate_point_ordinals is not None:
+        result["point_ordinal"] = candidate_point_lookup_ids[keep]
+    if candidate_shape_ordinals is not None:
+        result["shape_ordinal"] = candidate_shape_lookup_ids[keep]
+    return result
+
+
+def run_selective_closed_shape_owner_face_side_membership_pipeline_cupy(
+    candidate_point_ids,
+    candidate_shape_ids,
+    topology_shape_ids,
+    topology_left_face_ids,
+    topology_right_face_ids,
+    owner_point_ids,
+    owner_face_ids,
+    owner_side_codes,
+    *,
+    selected_point_ids=None,
+    selected_point_ordinals=None,
+    candidate_point_ordinals=None,
+    candidate_shape_ordinals=None,
+    topology_shape_ordinals=None,
+    owner_point_ordinals=None,
+    topology_has_left_faces=None,
+    topology_has_right_faces=None,
+    missing_owner_policy: str = "raise",
+) -> dict[str, object]:
+    """Apply side-aware owner filtering only to caller-selected candidate rows.
+
+    This is a generic selective-repair continuation. Non-selected candidate rows
+    pass through unchanged; selected rows are filtered by explicit owner
+    face/side policy. Callers may select rows by public point id or by input
+    point ordinal. The latter is required when public ids are repeated.
+    """
+
+    if selected_point_ids is None and selected_point_ordinals is None:
+        raise ValueError("selected_point_ids or selected_point_ordinals must be supplied")
+    if selected_point_ids is not None and selected_point_ordinals is not None:
+        raise ValueError("select rows by either selected_point_ids or selected_point_ordinals, not both")
+    try:
+        import cupy as cp  # type: ignore
+    except Exception as exc:  # pragma: no cover
+        raise RuntimeError("CuPy is required for selective side-aware owner-face filtering") from exc
+
+    candidate_point_ids = cp.asarray(candidate_point_ids, dtype=cp.int64)
+    candidate_shape_ids = cp.asarray(candidate_shape_ids, dtype=cp.int64)
+    if int(candidate_point_ids.size) != int(candidate_shape_ids.size):
+        raise ValueError("candidate point and shape columns must have the same length")
+    candidate_count = int(candidate_point_ids.size)
+    if candidate_point_ordinals is not None:
+        candidate_point_ordinals = cp.asarray(candidate_point_ordinals, dtype=cp.int64)
+        if int(candidate_point_ordinals.size) != candidate_count:
+            raise ValueError("candidate_point_ordinals must match candidate length")
+    if candidate_shape_ordinals is not None:
+        candidate_shape_ordinals = cp.asarray(candidate_shape_ordinals, dtype=cp.int64)
+        if int(candidate_shape_ordinals.size) != candidate_count:
+            raise ValueError("candidate_shape_ordinals must match candidate length")
+
+    if selected_point_ordinals is not None:
+        if candidate_point_ordinals is None:
+            raise ValueError("selected_point_ordinals require candidate_point_ordinals")
+        selected_values = cp.asarray(selected_point_ordinals, dtype=cp.int64)
+        selected_mask = cp.isin(candidate_point_ordinals, selected_values) if selected_values.size else cp.zeros(
+            candidate_count,
+            dtype=cp.bool_,
+        )
+        selected_filter_key_mode = "input_ordinal"
+    else:
+        selected_values = cp.asarray(selected_point_ids, dtype=cp.int64)
+        selected_mask = cp.isin(candidate_point_ids, selected_values) if selected_values.size else cp.zeros(
+            candidate_count,
+            dtype=cp.bool_,
+        )
+        selected_filter_key_mode = "public_point_id"
+
+    passthrough_mask = ~selected_mask
+    passthrough_point_ids = candidate_point_ids[passthrough_mask]
+    passthrough_shape_ids = candidate_shape_ids[passthrough_mask]
+    passthrough_count = int(passthrough_point_ids.size)
+    selected_count = int(cp.count_nonzero(selected_mask).item())
+    passthrough_membership = cp.ones((passthrough_count,), dtype=cp.int64)
+    passthrough_owner_faces = cp.full((passthrough_count,), -1, dtype=cp.int64)
+    passthrough_owner_sides = cp.full((passthrough_count,), -1, dtype=cp.int64)
+
+    if selected_count:
+        selected_result = filter_closed_shape_membership_candidate_columns_by_owner_face_side_cupy(
+            candidate_point_ids=candidate_point_ids[selected_mask],
+            candidate_shape_ids=candidate_shape_ids[selected_mask],
+            candidate_point_ordinals=(
+                candidate_point_ordinals[selected_mask]
+                if candidate_point_ordinals is not None
+                else None
+            ),
+            candidate_shape_ordinals=(
+                candidate_shape_ordinals[selected_mask]
+                if candidate_shape_ordinals is not None
+                else None
+            ),
+            topology_shape_ids=topology_shape_ids,
+            topology_shape_ordinals=topology_shape_ordinals,
+            topology_left_face_ids=topology_left_face_ids,
+            topology_right_face_ids=topology_right_face_ids,
+            topology_has_left_faces=topology_has_left_faces,
+            topology_has_right_faces=topology_has_right_faces,
+            owner_point_ids=owner_point_ids,
+            owner_point_ordinals=owner_point_ordinals,
+            owner_face_ids=owner_face_ids,
+            owner_side_codes=owner_side_codes,
+            missing_owner_policy=missing_owner_policy,
+        )
+        selected_point_out = selected_result["point_id"]
+        selected_shape_out = selected_result["shape_id"]
+        selected_membership = selected_result["membership"]
+        selected_owner_faces = selected_result["owner_face_id"]
+        selected_owner_sides = selected_result["owner_side_code"]
+        selected_point_ord_out = selected_result.get("point_ordinal")
+        selected_shape_ord_out = selected_result.get("shape_ordinal")
+    else:
+        empty = cp.asarray((), dtype=cp.int64)
+        selected_point_out = empty
+        selected_shape_out = empty
+        selected_membership = empty
+        selected_owner_faces = empty
+        selected_owner_sides = empty
+        selected_point_ord_out = empty if candidate_point_ordinals is not None else None
+        selected_shape_ord_out = empty if candidate_shape_ordinals is not None else None
+
+    point_out = cp.concatenate((passthrough_point_ids, selected_point_out))
+    shape_out = cp.concatenate((passthrough_shape_ids, selected_shape_out))
+    membership_out = cp.concatenate((passthrough_membership, selected_membership))
+    owner_face_out = cp.concatenate((passthrough_owner_faces, selected_owner_faces))
+    owner_side_out = cp.concatenate((passthrough_owner_sides, selected_owner_sides))
+    result: dict[str, object] = {
+        "point_id": point_out,
+        "shape_id": shape_out,
+        "membership": membership_out,
+        "owner_face_id": owner_face_out,
+        "owner_side_code": owner_side_out,
+        "selected_candidate_row_count": selected_count,
+        "passthrough_candidate_row_count": passthrough_count,
+        "selected_filter_key_mode": selected_filter_key_mode,
+        "selected_point_count": int(selected_values.size),
+    }
+    if candidate_point_ordinals is not None:
+        passthrough_point_ord = candidate_point_ordinals[passthrough_mask]
+        result["point_ordinal"] = cp.concatenate((passthrough_point_ord, selected_point_ord_out))
+    if candidate_shape_ordinals is not None:
+        passthrough_shape_ord = candidate_shape_ordinals[passthrough_mask]
+        result["shape_ordinal"] = cp.concatenate((passthrough_shape_ord, selected_shape_ord_out))
+
+    if int(point_out.size) > 1:
+        sort_columns = [shape_out, point_out]
+        if "point_ordinal" in result:
+            if "shape_ordinal" in result:
+                sort_columns.append(result["shape_ordinal"])
+            sort_columns.append(result["point_ordinal"])
+        elif "shape_ordinal" in result:
+            sort_columns.append(result["shape_ordinal"])
+        order = cp.lexsort(cp.stack(sort_columns))
+        result["point_id"] = point_out[order]
+        result["shape_id"] = shape_out[order]
+        result["membership"] = membership_out[order]
+        result["owner_face_id"] = owner_face_out[order]
+        result["owner_side_code"] = owner_side_out[order]
+        if "point_ordinal" in result:
+            result["point_ordinal"] = result["point_ordinal"][order]
+        if "shape_ordinal" in result:
+            result["shape_ordinal"] = result["shape_ordinal"][order]
+
+    return result
 
 
 def run_closed_shape_owner_face_priority_membership_pipeline_cupy(
@@ -2131,6 +2424,7 @@ def owner_face_priority_pipeline_contract() -> dict[str, object]:
             "filter_closed_shape_membership_candidate_columns_by_owner_face_cupy",
             "filter_closed_shape_membership_candidate_columns_by_owner_face_side_columns",
             "filter_closed_shape_membership_candidate_columns_by_owner_face_side_cupy",
+            "run_selective_closed_shape_owner_face_side_membership_pipeline_cupy",
             "run_closed_shape_owner_face_priority_membership_pipeline_cupy",
             "run_selective_closed_shape_owner_face_priority_membership_pipeline_cupy",
             "run_selective_closed_shape_boundary_event_membership_pipeline_cupy",
@@ -2151,6 +2445,8 @@ def owner_face_priority_pipeline_contract() -> dict[str, object]:
             "device_cupy_filter_owner_multiplicity": "single_owner_face_per_point_only",
             "side_aware_filter_candidate_duplicates": "preserve_row_stream_multiplicity",
             "side_aware_filter_sides": "left_right_or_either_caller_supplied",
+            "side_aware_filter_owner_identity": "public_point_id_by_default_or_input_ordinal_when_supplied",
+            "side_aware_filter_topology_identity": "public_shape_id_by_default_or_prepared_shape_ordinal_when_supplied",
         },
         "outputs": ("point_id", "shape_id", "membership", "owner_face_id"),
         "app_agnostic": True,
@@ -2222,6 +2518,10 @@ def validate_owner_face_priority_pipeline_contract() -> dict[str, object]:
         != "preserve_row_stream_multiplicity"
         or filter_policy.get("side_aware_filter_sides")
         != "left_right_or_either_caller_supplied"
+        or filter_policy.get("side_aware_filter_owner_identity")
+        != "public_point_id_by_default_or_input_ordinal_when_supplied"
+        or filter_policy.get("side_aware_filter_topology_identity")
+        != "public_shape_id_by_default_or_prepared_shape_ordinal_when_supplied"
     ):
         raise ValueError("owner-face priority pipeline filter policy must stay explicit")
     inputs = contract["inputs"]
@@ -2254,6 +2554,8 @@ def validate_owner_face_priority_pipeline_contract() -> dict[str, object]:
         or "filter_closed_shape_membership_candidate_columns_by_owner_face_side_columns"
         not in columnar_helpers
         or "filter_closed_shape_membership_candidate_columns_by_owner_face_side_cupy"
+        not in columnar_helpers
+        or "run_selective_closed_shape_owner_face_side_membership_pipeline_cupy"
         not in columnar_helpers
         or "run_closed_shape_owner_face_priority_membership_pipeline_cupy"
         not in columnar_helpers

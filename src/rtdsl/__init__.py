@@ -701,6 +701,7 @@ from .closed_shape_topology import PreparedClosedShapeMembershipCandidateRefiner
 from .closed_shape_topology import prepare_closed_shape_membership_candidate_refiner_exact_cupy
 from .closed_shape_topology import refine_closed_shape_membership_candidate_columns_exact_cupy
 from .closed_shape_topology import run_closed_shape_owner_face_priority_membership_pipeline_cupy
+from .closed_shape_topology import run_selective_closed_shape_owner_face_side_membership_pipeline_cupy
 from .closed_shape_topology import run_selective_closed_shape_boundary_event_membership_pipeline_cupy
 from .closed_shape_topology import run_selective_closed_shape_owner_face_priority_membership_pipeline_cupy
 from .closed_shape_topology import select_owner_faces_from_incident_candidate_columns_with_priority_columns
@@ -2548,6 +2549,7 @@ __all__ = [
     "prepare_closed_shape_membership_candidate_refiner_exact_cupy",
     "refine_closed_shape_membership_candidate_columns_exact_cupy",
     "run_closed_shape_owner_face_priority_membership_pipeline_cupy",
+    "run_selective_closed_shape_owner_face_side_membership_pipeline_cupy",
     "run_selective_closed_shape_boundary_event_membership_pipeline_cupy",
     "run_selective_closed_shape_owner_face_priority_membership_pipeline_cupy",
     "select_owner_faces_from_incident_candidate_columns_with_priority_columns",

@@ -16,6 +16,14 @@ GOAL3660 = ROOT / "docs/reports/goal3660_rayjoin_pip_batch_executor_throughput_a
 GOAL3663 = ROOT / "docs/reports/goal3663_rayjoin_pip_batch_executor_cross_slice_a5000/summary_4096.json"
 GOAL3665 = ROOT / "docs/reports/goal3665_rayjoin_pip_fast_domain_preflight_guard_a5000/summary.json"
 GOAL3671 = ROOT / "docs/reports/goal3671_rayjoin_topology_probe_a5000/full_county_side_aware_route_probe.json"
+GOAL3673_ALL_POINT = (
+    ROOT
+    / "docs/reports/goal3673_rayjoin_ordinal_owner_side_probe_a5000/full_county_ordinal_owner_side_route_probe.json"
+)
+GOAL3673_SELECTIVE = (
+    ROOT
+    / "docs/reports/goal3673_rayjoin_ordinal_owner_side_probe_a5000/full_county_selective_ordinal_owner_side_route_probe.json"
+)
 
 
 class Goal3602V29BenchmarkStatusAfterResidentEvidenceTest(unittest.TestCase):
@@ -63,6 +71,8 @@ class Goal3602V29BenchmarkStatusAfterResidentEvidenceTest(unittest.TestCase):
         batched_4096 = json.loads(GOAL3663.read_text(encoding="utf-8"))
         guard = json.loads(GOAL3665.read_text(encoding="utf-8"))
         side_aware = json.loads(GOAL3671.read_text(encoding="utf-8"))
+        all_point = json.loads(GOAL3673_ALL_POINT.read_text(encoding="utf-8"))
+        selective = json.loads(GOAL3673_SELECTIVE.read_text(encoding="utf-8"))
 
         self.assertEqual(tuned["source_dirty_recorded"], [])
         self.assertEqual(tuned["rtdl"]["count"], 1417)
@@ -83,23 +93,38 @@ class Goal3602V29BenchmarkStatusAfterResidentEvidenceTest(unittest.TestCase):
         self.assertEqual(side_aware["candidate_native_row_count"], 47264)
         self.assertEqual(side_aware["filtered_row_count"], 47262)
         self.assertTrue(side_aware["matches_exact_multiset"])
+        self.assertFalse(all_point["matches_exact_multiset"])
+        self.assertEqual(all_point["filtered_row_count"], 22639)
+        self.assertEqual(all_point["after_missing_count"], 24623)
+        self.assertEqual(selective["candidate_native_row_count"], 47264)
+        self.assertEqual(selective["filtered_row_count"], 47262)
+        self.assertEqual(selective["exact_row_count"], 47262)
+        self.assertTrue(selective["matches_exact_multiset"])
+        self.assertEqual(selective["selected_point_ordinals"], [892, 893])
+        self.assertEqual(selective["selected_candidate_row_count"], 4)
+        self.assertEqual(selective["passthrough_candidate_row_count"], 47260)
         for phrase in (
             "Goal3658",
             "Goal3660",
             "Goal3663",
             "Goal3665",
             "Goal3671",
+            "Goal3673",
             "0.283574ms",
             "0.034225ms/request",
             "0.051139ms/request",
             "47264 != 47262",
+            "22639",
+            "24623",
+            "input ordinals `892` and `893`",
+            "passes through `47260` rows",
             "side-aware",
             "multiset parity",
             "not one-shot latency",
             "one-shot RTDL-vs-RayJoin latency",
             "second-GPU confirmation",
             "topology-aware closed-shape",
-            "owner-side derivation",
+            "ambiguity-set derivation",
         ):
             self.assertIn(phrase, text)
 
