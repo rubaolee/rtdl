@@ -417,6 +417,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         "generated_at_unix": time.time(),
         "git_commit": _command_output(["git", "rev-parse", "HEAD"]),
         "git_status_short": _command_output(["git", "status", "--short"]),
+        "git_tracked_status_short": _command_output(["git", "status", "--short", "--untracked-files=no"]),
         "gpu": _command_output(["nvidia-smi", "--query-gpu=name,compute_cap,driver_version", "--format=csv,noheader"]),
         "contract_version": SEGMENT_PAIR_CONTRACT_VERSION,
         "typed_output_residency_version": SEGMENT_PAIR_TYPED_OUTPUT_RESIDENCY_VERSION,
