@@ -595,6 +595,64 @@ PRIMITIVE_HIERARCHY = (
                 ),
             ),
             PrimitiveHierarchyNode(
+                id="rows.segment_pair_intersection_rows_2d",
+                title="SEGMENT_PAIR_INTERSECTION_ROWS_2D",
+                layer="row_emission",
+                status="candidate_behavior",
+                summary=(
+                    "Emit or count generic 2-D finite segment-pair intersections under "
+                    "an explicit non-collinear, endpoint-inclusive predicate contract."
+                ),
+                outputs=("left_id", "right_id", "intersection_x", "intersection_y", "status"),
+                depends_on=("traversal.any_hit", "execution.capacity_overflow_contract"),
+                boundary=(
+                    "The primitive owns only generic segment-pair intersection semantics. "
+                    "Join interpretation, map/entity lookup, paper-system meaning, and "
+                    "caller-specific grouping remain app or partner code."
+                ),
+                capability_tags=(
+                    "intent:intersection",
+                    "intent:count",
+                    "intent:collect_rows",
+                    "shape:segment_pair",
+                    "dim:2d",
+                    "output:rows",
+                    "output:scalar",
+                    "output:columns",
+                    "exactness:exact",
+                    "keying:caller_id",
+                ),
+                aliases=(
+                    "segment_pair_intersection",
+                    "segment_pair_intersection_count",
+                    "segment_pair_left_id_dense_count",
+                    "line_segment_intersection",
+                    "finite_segment_intersection",
+                    "lsi_count",
+                ),
+                intent_phrases=(
+                    "count finite 2d segment pair intersections",
+                    "emit segment pair intersection witness rows",
+                    "reduce segment pair intersections by caller supplied left id",
+                    "find the segment pair denominator and endpoint contract",
+                ),
+                reference_path="docs/reports/goal3625_segment_pair_intersection_contract_foundation_2026-06-06.md",
+                backends=("cpu_python_reference", "embree", "optix"),
+                considered_alternatives=(
+                    "traversal.any_hit",
+                    "traversal.count_hits",
+                    "rows.generic_candidate_rows",
+                    "rows.segment_polygon_rows",
+                    "reduction.grouped",
+                ),
+                distinct_from=(
+                    "any_hit/count_hits expose only generic traversal summaries; generic_candidate_rows "
+                    "carries id rows without the finite segment predicate; segment_polygon_rows is a "
+                    "different shape family; grouped reductions aggregate explicit keys but do not own "
+                    "the denominator, endpoint, or collinearity policy."
+                ),
+            ),
+            PrimitiveHierarchyNode(
                 id="rows.segment_polygon_rows",
                 title="Segment / Polygon Rows",
                 layer="row_emission",
