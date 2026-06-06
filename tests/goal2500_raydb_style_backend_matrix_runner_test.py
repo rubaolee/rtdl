@@ -24,7 +24,7 @@ class Goal2500RaydbStyleBackendMatrixRunnerTest(unittest.TestCase):
         case = payload["cases"]["cpu_python_reference"]
         self.assertEqual(case["status"], "ok")
         self.assertTrue(case["all_match_cpu_reference"])
-        self.assertEqual(set(case["modes"]), {"count", "sum", "min", "max", "avg_as_sum_count"})
+        self.assertEqual(set(case["modes"]), {"count", "sum", "min", "max", "stats", "avg_as_sum_count"})
         self.assertIn("diagnostic", payload["claim_boundary"])
 
     def test_native_backend_unavailable_is_recorded_as_skip(self) -> None:

@@ -10,11 +10,11 @@ from .grouped_reduction import GroupedReductionSpec
 from .grouped_reduction import grouped_reduction_spec_from_columnar_plan
 
 UINT32_MAX = 0xFFFFFFFF
-SUPPORTED_AGGREGATES = ("count", "sum", "min", "max", "avg_as_sum_count")
+SUPPORTED_AGGREGATES = ("count", "sum", "min", "max", "stats", "avg_as_sum_count")
 NATIVE_COLUMNAR_COUNT_SUM_BACKENDS = ("embree", "optix")
 PARTNER_RESIDENT_COLUMNAR_I64_REDUCTION_BACKENDS = ("optix_partner_resident_experimental",)
 PARTNER_RESIDENT_COLUMNAR_COUNT_SUM_BACKENDS = PARTNER_RESIDENT_COLUMNAR_I64_REDUCTION_BACKENDS
-PARTNER_RESIDENT_COLUMNAR_I64_REDUCTIONS = ("count", "sum", "min", "max")
+PARTNER_RESIDENT_COLUMNAR_I64_REDUCTIONS = ("count", "sum", "min", "max", "stats")
 COMPOSITE_COLUMNAR_AGGREGATE_LOWERINGS = {
     "avg_as_sum_count": ("sum", "count"),
 }
@@ -297,7 +297,7 @@ def plan_columnar_aggregate_lowering(backend: str) -> ColumnarAggregateLoweringP
             requires_runtime_validation=True,
             next_engine_target="stabilize_partner_resident_columnar_payload_native_execution",
             claim_boundary=(
-                "Experimental partner-resident OptiX int64 grouped count/sum/min/max plus "
+                "Experimental partner-resident OptiX int64 grouped count/sum/min/max/stats plus "
                 "composite avg_as_sum_count lowering over count+sum. The path accepts CUDA partner "
                 "column descriptors and materializes compact grouped rows at the boundary, but it "
                 "does not authorize true zero-copy, whole-app, or public speedup wording."
@@ -393,6 +393,14 @@ def _accumulate(current: Any, value: float | None, aggregate: str) -> Any:
         current[0] += value
         current[1] += 1
         return current
+    if aggregate == "stats":
+        if current is None:
+            return [value, 1, value, value]
+        current[0] += value
+        current[1] += 1
+        current[2] = min(float(current[2]), value)
+        current[3] = max(float(current[3]), value)
+        return current
     raise ValueError(f"unsupported aggregate: {aggregate}")
 
 
@@ -403,6 +411,11 @@ def _format_result_row(key: tuple[Any, ...], value: Any, plan: ColumnarAggregate
     elif plan.aggregate == "avg_as_sum_count":
         row["sum"] = _stable_number(value[0])
         row["count"] = int(value[1])
+    elif plan.aggregate == "stats":
+        row["sum"] = _stable_number(value[0])
+        row["count"] = int(value[1])
+        row["min"] = _stable_number(value[2])
+        row["max"] = _stable_number(value[3])
     else:
         row[plan.aggregate] = _stable_number(value)
     return row

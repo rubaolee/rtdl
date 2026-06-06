@@ -54,7 +54,7 @@ class Goal2516PartnerResidentCompositeAvgSumCountTest(unittest.TestCase):
         self.assertIn("composite avg_as_sum_count", lowering.claim_boundary)
         self.assertEqual(
             app.OPTIX_PARTNER_RESIDENT_RESULT_MODES,
-            ("count", "sum", "min", "max", "avg_as_sum_count"),
+            ("count", "sum", "min", "max", "stats", "avg_as_sum_count"),
         )
 
     def test_no_native_avg_symbol_or_app_vocabulary_in_generic_lowering(self) -> None:

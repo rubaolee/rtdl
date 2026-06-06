@@ -34,6 +34,7 @@ COLUMNAR_AGGREGATE_TO_GROUPED_REDUCTION = {
     "min": "group_min_i64",
     "max": "group_max_i64",
     "avg_as_sum_count": "group_sum_count_i64",
+    "stats": "group_stats_i64",
 }
 
 

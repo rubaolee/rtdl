@@ -28,9 +28,9 @@ are available:
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py --backend optix --mode all
 ```
 
-Experimental partner-resident OptiX count/sum/min/max parity plus composite
-avg-as-sum-count lowering, when PyTorch CUDA tensors and the current OptiX
-backend are available:
+Experimental partner-resident OptiX count/sum/min/max/stats parity plus
+composite avg-as-sum-count lowering, when PyTorch CUDA tensors and the current
+OptiX backend are available:
 
 ```bash
 PYTHONPATH=src:. RTDL_OPTIX_LIB=build/librtdl_optix.so python examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py --backend optix_partner_resident_experimental --mode all
@@ -80,14 +80,15 @@ work, and use partners only for unfused continuation or explicit user choice.
 - tiny denormalized fixture;
 - deterministic generated fixture for RT-vs-Embree stress testing;
 - integer-coded group and predicate columns;
-- CPU reference grouped `count`, `sum`, `min`, `max`, and `avg_as_sum_count`;
+- CPU reference grouped `count`, `sum`, `min`, `max`, `stats`, and
+  `avg_as_sum_count`;
 - Embree parity for grouped `count` and `sum` through existing generic columnar
   payload support;
 - OptiX parity for grouped `count` and `sum` through existing generic columnar
   payload support;
 - experimental OptiX partner-resident parity for grouped `count`, `sum`, `min`,
-  `max`, and composite `avg_as_sum_count` using CUDA tensor descriptors and
-  compact grouped output materialization;
+  `max`, fused `stats`, and composite `avg_as_sum_count` using CUDA tensor
+  descriptors and compact grouped output materialization;
 - composite `avg_as_sum_count` lowers to a generic fused native `sum_count`
   grouped reduction; there is no native average ABI;
 - paper-shaped RayDB RT CPU contract reference for `count`, `sum`, `min`, `max`,

@@ -27,7 +27,7 @@ class Goal2499RaydbStyleLoweringPlanTest(unittest.TestCase):
             with self.subTest(backend=backend):
                 plan = rt.plan_columnar_aggregate_lowering(backend)
                 self.assertEqual(plan.supported_aggregates, ("count", "sum"))
-                self.assertEqual(plan.unsupported_aggregates, ("min", "max", "avg_as_sum_count"))
+                self.assertEqual(plan.unsupported_aggregates, ("min", "max", "stats", "avg_as_sum_count"))
                 self.assertEqual(plan.transfer_path, "direct_columnar_record_set_to_columnar_payload")
                 self.assertFalse(plan.uses_compatibility_wrapper)
                 self.assertFalse(plan.materializes_input_rows_for_wrapper)

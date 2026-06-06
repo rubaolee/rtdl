@@ -29,7 +29,7 @@ class Goal2512RaydbStylePartnerResidentExperimentalBackendTest(unittest.TestCase
         self.assertEqual(app.OPTIX_PARTNER_RESIDENT_EXPERIMENTAL_BACKEND, "optix_partner_resident_experimental")
         self.assertEqual(
             app.OPTIX_PARTNER_RESIDENT_RESULT_MODES,
-            ("count", "sum", "min", "max", "avg_as_sum_count"),
+            ("count", "sum", "min", "max", "stats", "avg_as_sum_count"),
         )
         self.assertIn(app.OPTIX_PARTNER_RESIDENT_EXPERIMENTAL_BACKEND, app.BACKENDS)
         matrix = _load_matrix()
@@ -38,7 +38,7 @@ class Goal2512RaydbStylePartnerResidentExperimentalBackendTest(unittest.TestCase
 
     def test_lowering_plan_records_experimental_partner_resident_boundary(self) -> None:
         plan = rt.plan_columnar_aggregate_lowering(app.OPTIX_PARTNER_RESIDENT_EXPERIMENTAL_BACKEND).to_dict()
-        self.assertEqual(plan["supported_aggregates"], ["count", "sum", "min", "max", "avg_as_sum_count"])
+        self.assertEqual(plan["supported_aggregates"], ["count", "sum", "min", "max", "stats", "avg_as_sum_count"])
         self.assertEqual(
             plan["transfer_path"],
             "partner_resident_cuda_column_descriptors_to_experimental_optix_grouped_i64",
@@ -59,7 +59,7 @@ class Goal2512RaydbStylePartnerResidentExperimentalBackendTest(unittest.TestCase
         if case["status"] == "skipped":
             self.assertRegex(case["reason"], "PyTorch|CUDA|OptiX|librtdl_optix")
         else:
-            self.assertEqual(set(case["modes"]), {"count", "sum", "min", "max", "avg_as_sum_count"})
+            self.assertEqual(set(case["modes"]), {"count", "sum", "min", "max", "stats", "avg_as_sum_count"})
             self.assertTrue(case["all_match_cpu_reference"])
 
     def test_docs_and_runner_record_claim_boundary(self) -> None:

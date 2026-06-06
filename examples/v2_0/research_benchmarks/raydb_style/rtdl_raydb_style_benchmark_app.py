@@ -15,11 +15,12 @@ sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt
 
-CPU_RESULT_MODES = ("count", "sum", "min", "max", "avg_as_sum_count")
+COLUMNAR_RESULT_MODES = ("count", "sum", "min", "max", "stats", "avg_as_sum_count")
+CPU_RESULT_MODES = COLUMNAR_RESULT_MODES
 EMBREE_RESULT_MODES = ("count", "sum")
 OPTIX_RESULT_MODES = ("count", "sum")
 OPTIX_PARTNER_RESIDENT_EXPERIMENTAL_BACKEND = "optix_partner_resident_experimental"
-OPTIX_PARTNER_RESIDENT_RESULT_MODES = ("count", "sum", "min", "max", "avg_as_sum_count")
+OPTIX_PARTNER_RESIDENT_RESULT_MODES = COLUMNAR_RESULT_MODES
 PAPER_RT_CPU_REFERENCE_BACKEND = "paper_rt_cpu_reference"
 PAPER_RT_EMBREE_BACKEND = "paper_rt_embree"
 PAPER_RT_OPTIX_BACKEND = "paper_rt_optix"
@@ -31,7 +32,7 @@ PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_BACKEND = "paper_rt_optix_device_hit_str
 PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_PREPARED_BACKEND = (
     "paper_rt_optix_device_hit_stream_triton_prepared"
 )
-PAPER_RT_RESULT_MODES = CPU_RESULT_MODES
+PAPER_RT_RESULT_MODES = ("count", "sum", "min", "max", "avg_as_sum_count")
 RAYDB_REFERENCE_REPO = "https://github.com/rubaolee/RayDB-i0"
 RAYDB_REFERENCE_BRANCH = "fin"
 RAYDB_REFERENCE_COMMIT = "a610c00d7334d8907435cc0a124f9ca8392ee456"
@@ -2784,7 +2785,7 @@ def _run_optix_partner_resident_experimental_result_mode(
     if mode not in OPTIX_PARTNER_RESIDENT_RESULT_MODES:
         raise ValueError(
             "OptiX partner-resident experimental RayDB-style slice currently supports only "
-            "count/sum/min/max/avg_as_sum_count"
+            "count/sum/min/max/avg_as_sum_count/stats"
         )
     torch = require_optix_partner_resident_experimental_backend()
     record_set = {
@@ -2871,7 +2872,7 @@ def _run_optix_partner_resident_experimental_result_mode(
             "rt_core_accelerated": False,
             "true_zero_copy_authorized": False,
             "claim_boundary": (
-                "Experimental OptiX partner-resident count/sum/min/max parity and composite "
+                "Experimental OptiX partner-resident count/sum/min/max/stats parity and composite "
                 "avg_as_sum_count=sum+count lowering through a generic fused sum_count pass for "
                 "the synthetic RayDB-style columnar aggregate contract. This demonstrates "
                 "Python+partner+RTDL descriptor execution for CUDA tensors, but it does not "
@@ -3050,7 +3051,7 @@ def run_suite(
                             PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_PREPARED_BACKEND,
                         )
                         else (
-                            "Experimental OptiX partner-resident count/sum/min/max plus composite avg_as_sum_count "
+                            "Experimental OptiX partner-resident count/sum/min/max/stats plus composite avg_as_sum_count "
                             "parity for the synthetic RayDB-style contract. "
                             "No authors-code, SQL engine, DBMS, true zero-copy, or speedup claim."
                             if backend == OPTIX_PARTNER_RESIDENT_EXPERIMENTAL_BACKEND
