@@ -6,6 +6,7 @@ import math
 import os
 import random
 import re
+import statistics
 import subprocess
 import sys
 import time
@@ -1075,6 +1076,7 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
             prepared.close()
 
     elapsed_sec = elapsed_runs[-1] if elapsed_runs else 0.0
+    elapsed_median_sec = statistics.median(elapsed_runs) if elapsed_runs else 0.0
     return {
         "runner": "goal2348_rtnn_v2_2_external_runner",
         "row": args.row_label,
@@ -1083,6 +1085,9 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
         "ok": ok,
         "backend": backend,
         "elapsed_sec": elapsed_sec,
+        "elapsed_median_sec": elapsed_median_sec,
+        "elapsed_min_sec": min(elapsed_runs) if elapsed_runs else 0.0,
+        "elapsed_max_sec": max(elapsed_runs) if elapsed_runs else 0.0,
         "elapsed_runs_sec": elapsed_runs,
         "query_count": query_count,
         "search_count": search_count,
@@ -1370,6 +1375,9 @@ def run_rtdl_adaptive_partitioned_3d_neighbors(args: argparse.Namespace) -> dict
         "mode": "current_3d_fixed_radius_neighbors_optix_adaptive_partitioned",
         "ok": ok,
         "elapsed_sec": elapsed_runs[-1] if elapsed_runs else 0.0,
+        "elapsed_median_sec": statistics.median(elapsed_runs) if elapsed_runs else 0.0,
+        "elapsed_min_sec": min(elapsed_runs) if elapsed_runs else 0.0,
+        "elapsed_max_sec": max(elapsed_runs) if elapsed_runs else 0.0,
         "elapsed_runs_sec": elapsed_runs,
         "query_count": query_count,
         "search_count": search_count,

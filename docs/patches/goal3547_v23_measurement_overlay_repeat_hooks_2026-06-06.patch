@@ -1104,6 +1104,46 @@ index 835b4af2..83596d6d 100644
              )
          else:
              payload = run_rayjoin_workload(
+diff --git a/scripts/goal2348_rtnn_v2_2_external_runner.py b/scripts/goal2348_rtnn_v2_2_external_runner.py
+index 379753aa..23fcce45 100644
+--- a/scripts/goal2348_rtnn_v2_2_external_runner.py
++++ b/scripts/goal2348_rtnn_v2_2_external_runner.py
+@@ -6,6 +6,7 @@ import math
+ import os
+ import random
+ import re
++import statistics
+ import subprocess
+ import sys
+ import time
+@@ -870,6 +871,7 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
+             prepared.close()
+ 
+     elapsed_sec = elapsed_runs[-1] if elapsed_runs else 0.0
++    elapsed_median_sec = statistics.median(elapsed_runs) if elapsed_runs else 0.0
+     return {
+         "runner": "goal2348_rtnn_v2_2_external_runner",
+         "row": args.row_label,
+@@ -878,6 +880,9 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
+         "ok": ok,
+         "backend": backend,
+         "elapsed_sec": elapsed_sec,
++        "elapsed_median_sec": elapsed_median_sec,
++        "elapsed_min_sec": min(elapsed_runs) if elapsed_runs else 0.0,
++        "elapsed_max_sec": max(elapsed_runs) if elapsed_runs else 0.0,
+         "elapsed_runs_sec": elapsed_runs,
+         "query_count": query_count,
+         "search_count": search_count,
+@@ -1136,6 +1141,9 @@ def run_rtdl_adaptive_partitioned_3d_neighbors(args: argparse.Namespace) -> dict
+         "mode": "current_3d_fixed_radius_neighbors_optix_adaptive_partitioned",
+         "ok": ok,
+         "elapsed_sec": elapsed_runs[-1] if elapsed_runs else 0.0,
++        "elapsed_median_sec": statistics.median(elapsed_runs) if elapsed_runs else 0.0,
++        "elapsed_min_sec": min(elapsed_runs) if elapsed_runs else 0.0,
++        "elapsed_max_sec": max(elapsed_runs) if elapsed_runs else 0.0,
+         "elapsed_runs_sec": elapsed_runs,
+         "query_count": query_count,
+         "search_count": search_count,
 diff --git a/scripts/goal2626_benchmark_embree_optix_baseline.py b/scripts/goal2626_benchmark_embree_optix_baseline.py
 index fdd1f108..e23d6c37 100644
 --- a/scripts/goal2626_benchmark_embree_optix_baseline.py
