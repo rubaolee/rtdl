@@ -264,6 +264,8 @@ def run_rtdl_samples(
     point_order_mode: str = "natural",
     segment_order_mode: str = "natural",
     pip_scalar_count_pipeline: bool = False,
+    internal_query_repeat: int = 1,
+    internal_warmup: int = 0,
 ) -> dict[str, Any]:
     if lsi_count_route not in {"exact", "left_id_dense_count"}:
         raise ValueError("lsi_count_route must be 'exact' or 'left_id_dense_count'")
@@ -279,6 +281,14 @@ def run_rtdl_samples(
         raise ValueError("left_id_dense_count currently requires natural LSI segment order")
     if pip_scalar_count_pipeline and workload != "pip":
         raise ValueError("pip_scalar_count_pipeline is only supported for RTDL PIP samples")
+    if internal_query_repeat <= 0:
+        raise ValueError("internal_query_repeat must be positive")
+    if internal_warmup < 0:
+        raise ValueError("internal_warmup must be non-negative")
+    if (internal_query_repeat != 1 or internal_warmup != 0) and not (
+        workload == "lsi" and lsi_count_route == "left_id_dense_count"
+    ):
+        raise ValueError("internal query repeat is currently supported only for RTDL LSI left_id_dense_count")
 
     query_sec: list[float] = []
     validation_exact_query_sec: list[float] = []
@@ -308,6 +318,8 @@ def run_rtdl_samples(
                     "lsi",
                     dataset=dataset,
                     include_rows=False,
+                    query_repeat=internal_query_repeat,
+                    warmup=internal_warmup,
                 )
             return rayjoin_app.run_rayjoin_prepared_optix_workload(
                 workload,
@@ -376,6 +388,8 @@ def run_rtdl_samples(
         "segment_order_mode": segment_order_mode if workload == "lsi" else None,
         "warmup": int(warmup),
         "repeat": int(repeat),
+        "internal_query_repeat": int(internal_query_repeat),
+        "internal_warmup": int(internal_warmup),
         "prepared_query_ms": summarize_samples([value * 1000.0 for value in query_sec]),
         "validation_exact_query_ms": summarize_samples([value * 1000.0 for value in validation_exact_query_sec]),
         "boundary_event_device_columns_ms": summarize_samples(
@@ -482,6 +496,21 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--rtdl-warmup", type=int, default=2)
     parser.add_argument("--rtdl-repeat", type=int, default=7)
     parser.add_argument(
+        "--rtdl-internal-query-repeat",
+        type=int,
+        default=1,
+        help=(
+            "For the LSI left_id_dense_count route, repeat the native prepared "
+            "query inside the app helper before returning one outer sample."
+        ),
+    )
+    parser.add_argument(
+        "--rtdl-internal-warmup",
+        type=int,
+        default=0,
+        help="Internal prepared-query warmup for --rtdl-internal-query-repeat.",
+    )
+    parser.add_argument(
         "--rtdl-pip-count-mode",
         choices=(
             "exact",
@@ -586,6 +615,8 @@ def main(argv: list[str] | None = None) -> int:
             repeat=args.rtdl_repeat,
             lsi_count_route=args.rtdl_lsi_count_route,
             segment_order_mode=args.rtdl_lsi_segment_order,
+            internal_query_repeat=args.rtdl_internal_query_repeat,
+            internal_warmup=args.rtdl_internal_warmup,
         )
     if "pip" in selected_workloads:
         assert args.rtdl_pip_dataset is not None
@@ -642,6 +673,11 @@ def main(argv: list[str] | None = None) -> int:
             "rtdl_lsi_count_route": (
                 "When --rtdl-lsi-count-route=left_id_dense_count is supplied, RTDL uses the existing generic "
                 "segment-pair left-id count device-column primitive for the LSI scalar-count lane."
+            ),
+            "rtdl_internal_query_repeat": (
+                "When --rtdl-internal-query-repeat is greater than one with the LSI left_id_dense_count "
+                "route, the app helper repeats the native prepared query inside one prepared session and "
+                "records the resulting median plus measured total as the prepared_query_ms lane."
             ),
             "rtdl_pip_query_axis": (
                 "When --rtdl-pip-query-axis is supplied, the runner exports "

@@ -155,6 +155,7 @@ Timing results:
             "--workloads",
             "long repeated",
             "LSI-only timing",
+            "--rtdl-internal-query-repeat",
             "--rayjoin-lsi-poly1",
             "--rayjoin-pip-poly1",
             "--rtdl-pip-point-order",
@@ -350,9 +351,49 @@ Timing results:
         self.assertEqual(row["prepared_query_ms"]["samples"], [0.27])
         self.assertEqual(row["query_pack_ms"]["samples"], [0.2])
         self.assertEqual(row["prepare_static_scene_ms"]["samples"], [0.8])
+        self.assertEqual(row["internal_query_repeat"], 1)
+        self.assertEqual(row["internal_warmup"], 0)
         self.assertEqual(row["counts"]["last"], 269)
         self.assertEqual(calls[0]["args"], ("lsi",))
         self.assertEqual(calls[0]["kwargs"]["dataset"], "fake.cdb + fake2.cdb")
+
+    def test_rtdl_lsi_dense_count_route_passes_internal_repeat_to_app_helper(self) -> None:
+        calls: list[dict[str, object]] = []
+
+        def fake_dense(*args, **kwargs):
+            calls.append({"args": args, "kwargs": dict(kwargs)})
+            return {
+                "phases_sec": {
+                    "prepared_query_sec": 0.00023,
+                    "prepared_query_sec_total_sec": 2.3,
+                    "query_pack_sec": 0.0002,
+                    "prepare_static_scene_sec": 0.0008,
+                },
+                "summary": {"intersection_count": 4977},
+                "row_count": 4977,
+                "native_phase_timings": {"mode": "left_id_count_device_columns"},
+            }
+
+        with mock.patch.object(
+            MODULE.rayjoin_app,
+            "run_rayjoin_prepared_optix_left_id_dense_count_workload",
+            side_effect=fake_dense,
+        ):
+            row = MODULE.run_rtdl_samples(
+                workload="lsi",
+                dataset="fake.cdb + fake2.cdb",
+                warmup=0,
+                repeat=1,
+                lsi_count_route="left_id_dense_count",
+                internal_query_repeat=10000,
+                internal_warmup=20,
+            )
+
+        self.assertEqual(row["internal_query_repeat"], 10000)
+        self.assertEqual(row["internal_warmup"], 20)
+        self.assertEqual(calls[0]["kwargs"]["query_repeat"], 10000)
+        self.assertEqual(calls[0]["kwargs"]["warmup"], 20)
+        self.assertEqual(row["counts"]["last"], 4977)
 
     def test_rtdl_pip_scalar_count_pipeline_is_scoped_and_recorded(self) -> None:
         observed_env: list[str | None] = []
@@ -496,6 +537,16 @@ Timing results:
                 repeat=1,
                 lsi_count_route="left_id_dense_count",
                 segment_order_mode="morton_xy",
+            )
+
+    def test_rtdl_internal_repeat_rejects_non_lsi_dense_route(self) -> None:
+        with self.assertRaisesRegex(ValueError, "internal query repeat"):
+            MODULE.run_rtdl_samples(
+                workload="pip",
+                dataset="fake.cdb",
+                warmup=0,
+                repeat=1,
+                internal_query_repeat=2,
             )
 
 
