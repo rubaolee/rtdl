@@ -1,0 +1,96 @@
+{
+  "all_same_contract_source_counts_match": true,
+  "cases": [
+    {
+      "all_source_counts_match_expected": true,
+      "candidate_pair_count": 67108864,
+      "cupy_dense_kernel_seconds": 0.011652867309749126,
+      "cupy_dense_total_seconds": 0.02082189079374075,
+      "cupy_kernel_over_prepared_left_mean": 109.25006773464017,
+      "cupy_kernel_over_prepared_left_mean_with_amortized_prepare": 57.58741706359689,
+      "cupy_kernel_over_prepared_left_median": 109.63903383674418,
+      "expected_hit_pair_count": 8192,
+      "left_count": 8192,
+      "name": "sparse_diagonal_grid_8192",
+      "one_time_prepare_amortized_over_repetitions_seconds": 9.568859357386828e-05,
+      "prepare_left_set_seconds": 0.009526882320642471,
+      "prepare_right_seconds": 0.009610836394131184,
+      "prepared_left_count_seconds": {
+        "count": 200,
+        "max": 0.00012844428420066833,
+        "mean": 0.00010666233487427234,
+        "median": 0.00010628392919898033,
+        "min": 9.645521640777588e-05
+      },
+      "repetitions": 200,
+      "right_count": 8192
+    },
+    {
+      "all_source_counts_match_expected": true,
+      "candidate_pair_count": 268435456,
+      "cupy_dense_kernel_seconds": 0.046339020133018494,
+      "cupy_dense_total_seconds": 0.04844742827117443,
+      "cupy_kernel_over_prepared_left_mean": 465.4869238650047,
+      "cupy_kernel_over_prepared_left_mean_with_amortized_prepare": 165.51772683037547,
+      "cupy_kernel_over_prepared_left_median": 467.2772043838807,
+      "expected_hit_pair_count": 16384,
+      "left_count": 16384,
+      "name": "sparse_diagonal_grid_16384",
+      "one_time_prepare_amortized_over_repetitions_seconds": 0.0001804145285859704,
+      "prepare_left_set_seconds": 0.017275506630539894,
+      "prepare_right_seconds": 0.018807399086654186,
+      "prepared_left_count_seconds": {
+        "count": 200,
+        "max": 0.00011008139699697495,
+        "mean": 9.954956360161304e-05,
+        "median": 9.916815906763077e-05,
+        "min": 9.725894778966904e-05
+      },
+      "repetitions": 200,
+      "right_count": 16384
+    },
+    {
+      "all_source_counts_match_expected": true,
+      "candidate_pair_count": 1073741824,
+      "cupy_dense_kernel_seconds": 0.17914563231170177,
+      "cupy_dense_total_seconds": 0.18468360975384712,
+      "cupy_kernel_over_prepared_left_mean": 1942.7431574277045,
+      "cupy_kernel_over_prepared_left_mean_with_amortized_prepare": 466.64673262222624,
+      "cupy_kernel_over_prepared_left_median": 1951.4576673548374,
+      "expected_hit_pair_count": 32768,
+      "left_count": 32768,
+      "name": "sparse_diagonal_grid_32768",
+      "one_time_prepare_amortized_over_repetitions_seconds": 0.0002916871756315231,
+      "prepare_left_set_seconds": 0.027458928525447845,
+      "prepare_right_seconds": 0.03087850660085678,
+      "prepared_left_count_seconds": {
+        "count": 200,
+        "max": 0.00010905507951974869,
+        "mean": 9.221272077411413e-05,
+        "median": 9.180093184113503e-05,
+        "min": 8.95969569683075e-05
+      },
+      "repetitions": 200,
+      "right_count": 32768
+    }
+  ],
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_claim_authorized": false
+  },
+  "generated_at_unix": 1780771956.8749216,
+  "git_commit": "6e061d8307f829ee69bc227b76d2b011680aef85",
+  "git_tracked_status_short": "",
+  "goal": 3646,
+  "gpu": "NVIDIA RTX A5000, 8.6, 580.126.09",
+  "schema": "rtdl.goal3646.segment_pair_prepared_left_amortized_probe.v2_warmed",
+  "warmup": {
+    "cupy_rawkernel_warmed": true,
+    "optix_pipeline_warmed": true,
+    "warmup_case_size": 256
+  }
+}
