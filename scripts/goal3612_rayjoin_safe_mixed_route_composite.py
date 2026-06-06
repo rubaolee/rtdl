@@ -119,6 +119,10 @@ def run_composite(args: argparse.Namespace) -> dict[str, object]:
         for workload in WORKLOADS:
             cupy = cupy_rows[workload]
             recommended = recommended_rows[workload]
+            recommended["claim_boundary"] = {
+                **_claim_boundary(),
+                **dict(recommended.get("claim_boundary", {})),
+            }
             counts_match = int(cupy["row_count"]) == int(recommended["row_count"])
             if not counts_match:
                 raise RuntimeError(
