@@ -1373,9 +1373,13 @@ static void ensure_device_column_grouped_i64_pipeline()
 
 struct NativeDeviceGroupedCountI64ColumnsOwner {
     CUdeviceptr counts = 0;
+    CUdeviceptr source_row_count = 0;
+    CUdeviceptr overflow = 0;
 
     ~NativeDeviceGroupedCountI64ColumnsOwner() {
         if (counts) cuMemFree(counts);
+        if (source_row_count) cuMemFree(source_row_count);
+        if (overflow) cuMemFree(overflow);
     }
 };
 
@@ -1724,11 +1728,13 @@ static void run_device_column_grouped_count_i64_device_columns_optix_with_capaci
     if (!runtime_clauses.empty()) {
         upload(d_clauses.ptr, runtime_clauses.data(), runtime_clauses.size());
     }
-    DevPtr d_invalid(sizeof(uint32_t));
-    uint32_t zero32 = 0u;
-    upload(d_invalid.ptr, &zero32, 1);
-
     auto owner = std::make_unique<NativeDeviceGroupedCountI64ColumnsOwner>();
+    uint64_t source_row_count64 = static_cast<uint64_t>(row_count);
+    uint32_t zero32 = 0u;
+    CU_CHECK(cuMemAlloc(&owner->source_row_count, sizeof(uint64_t)));
+    upload(owner->source_row_count, &source_row_count64, 1);
+    CU_CHECK(cuMemAlloc(&owner->overflow, sizeof(uint32_t)));
+    upload(owner->overflow, &zero32, 1);
     if (group_capacity != 0) {
         CU_CHECK(cuMemAlloc(&owner->counts, sizeof(unsigned long long) * group_capacity));
         CU_CHECK(cuMemsetD8(owner->counts, 0, sizeof(unsigned long long) * group_capacity));
@@ -1750,7 +1756,7 @@ static void run_device_column_grouped_count_i64_device_columns_optix_with_capaci
         params.group_sums = nullptr;
         params.group_mins = nullptr;
         params.group_maxs = nullptr;
-        params.invalid_group_count = reinterpret_cast<uint32_t*>(d_invalid.ptr);
+        params.invalid_group_count = reinterpret_cast<uint32_t*>(owner->overflow);
 
         void* args[] = {&params};
         const unsigned int threads = 256;
@@ -1765,16 +1771,14 @@ static void run_device_column_grouped_count_i64_device_columns_optix_with_capaci
     const auto reduction_end = std::chrono::steady_clock::now();
 
     uint32_t invalid_group_count = 0;
-    download(&invalid_group_count, d_invalid.ptr, 1);
+    download(&invalid_group_count, owner->overflow, 1);
     columns_out->reduction_seconds = std::chrono::duration<double>(
         reduction_end - reduction_start).count();
-    if (invalid_group_count != 0) {
-        columns_out->overflow = 1u;
-        return;
-    }
 
     columns_out->counts_device_ptr = static_cast<uint64_t>(owner->counts);
-    columns_out->overflow = 0u;
+    columns_out->source_row_count_device_ptr = static_cast<uint64_t>(owner->source_row_count);
+    columns_out->overflow_device_ptr = static_cast<uint64_t>(owner->overflow);
+    columns_out->overflow = invalid_group_count != 0 ? 1u : 0u;
     columns_out->owner_handle = owner.release();
 }
 
@@ -4718,13 +4722,12 @@ static void run_prepared_segment_pair_left_id_count_device_columns_optix(
     auto owner = std::make_unique<NativeDeviceGroupedCountI64ColumnsOwner>();
     CU_CHECK(cuMemAlloc(&owner->counts, sizeof(unsigned long long) * group_capacity));
     CU_CHECK(cuMemsetD8(owner->counts, 0, sizeof(unsigned long long) * group_capacity));
-
-    DevPtr d_candidate_events(sizeof(unsigned long long));
-    DevPtr d_overflow(sizeof(uint32_t));
     unsigned long long zero64 = 0ull;
     uint32_t zero32 = 0u;
-    upload(d_candidate_events.ptr, &zero64, 1);
-    upload(d_overflow.ptr, &zero32, 1);
+    CU_CHECK(cuMemAlloc(&owner->source_row_count, sizeof(unsigned long long)));
+    upload(owner->source_row_count, &zero64, 1);
+    CU_CHECK(cuMemAlloc(&owner->overflow, sizeof(uint32_t)));
+    upload(owner->overflow, &zero32, 1);
 
     const auto traversal_start = std::chrono::steady_clock::now();
     CUstream stream = 0;
@@ -4733,8 +4736,8 @@ static void run_prepared_segment_pair_left_id_count_device_columns_optix(
     lp.left_segs = reinterpret_cast<const GpuSegment*>(d_left.ptr);
     lp.right_segs = reinterpret_cast<const GpuSegment*>(prepared->d_right.ptr);
     lp.counts = reinterpret_cast<unsigned long long*>(owner->counts);
-    lp.candidate_event_count = reinterpret_cast<unsigned long long*>(d_candidate_events.ptr);
-    lp.overflow = reinterpret_cast<uint32_t*>(d_overflow.ptr);
+    lp.candidate_event_count = reinterpret_cast<unsigned long long*>(owner->source_row_count);
+    lp.overflow = reinterpret_cast<uint32_t*>(owner->overflow);
     lp.group_capacity = static_cast<uint32_t>(group_capacity);
     lp.probe_count = static_cast<uint32_t>(left_count);
 
@@ -4750,19 +4753,17 @@ static void run_prepared_segment_pair_left_id_count_device_columns_optix(
 
     unsigned long long candidate_events = 0ull;
     uint32_t overflow = 0u;
-    download(&candidate_events, d_candidate_events.ptr, 1);
-    download(&overflow, d_overflow.ptr, 1);
+    download(&candidate_events, owner->source_row_count, 1);
+    download(&overflow, owner->overflow, 1);
 
     columns_out->source_row_count = static_cast<uint64_t>(candidate_events);
     columns_out->reduction_seconds = std::chrono::duration<double>(
         traversal_end - traversal_start).count();
-    if (overflow != 0u) {
-        columns_out->overflow = 1u;
-        return;
-    }
 
     columns_out->counts_device_ptr = static_cast<uint64_t>(owner->counts);
-    columns_out->overflow = 0u;
+    columns_out->source_row_count_device_ptr = static_cast<uint64_t>(owner->source_row_count);
+    columns_out->overflow_device_ptr = static_cast<uint64_t>(owner->overflow);
+    columns_out->overflow = overflow != 0u ? 1u : 0u;
     columns_out->owner_handle = owner.release();
 }
 

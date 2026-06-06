@@ -279,6 +279,8 @@ struct RtdlNativeDeviceGroupedCountI64Columns {
     int32_t device_ordinal;
     void* owner_handle;
     double reduction_seconds;
+    uint64_t source_row_count_device_ptr;
+    uint64_t overflow_device_ptr;
 };
 
 struct RtdlNativeClosedShapeBoundaryEventDeviceColumns {

@@ -989,6 +989,8 @@ class _RtdlNativeDeviceGroupedCountI64Columns(ctypes.Structure):
         ("device_ordinal", ctypes.c_int32),
         ("owner_handle", ctypes.c_void_p),
         ("reduction_seconds", ctypes.c_double),
+        ("source_row_count_device_ptr", ctypes.c_uint64),
+        ("overflow_device_ptr", ctypes.c_uint64),
     ]
 
 
@@ -1618,6 +1620,8 @@ class OptixNativeDeviceGroupedCountI64Output:
     device_ordinal: int
     reduction_seconds: float
     native_symbol: str
+    source_row_count_device_ptr: int = 0
+    overflow_device_ptr: int = 0
 
     @property
     def device_resident(self) -> bool:
@@ -1636,6 +1640,8 @@ class OptixNativeDeviceGroupedCountI64Output:
             "device_resident": self.device_resident,
             "output_residency": "device_resident_dense_grouped_count_column",
             "counts_device_ptr_nonzero": self.counts_device_ptr > 0,
+            "source_row_count_device_ptr_nonzero": self.source_row_count_device_ptr > 0,
+            "overflow_device_ptr_nonzero": self.overflow_device_ptr > 0,
             "group_capacity": self.group_capacity,
             "group_capacity_semantics": "direct-address key capacity",
             "group_key_semantics": "dense output uses direct-address array index as the implicit group key",
@@ -1646,11 +1652,37 @@ class OptixNativeDeviceGroupedCountI64Output:
             "owner_handle": self.owner.handle_value,
             "group_key_column_materialized_on_host": False,
             "count_column_materialized_on_host": False,
+            "source_row_count_materialized_on_host_for_metadata": True,
+            "overflow_materialized_on_host_for_metadata": True,
             "true_zero_copy_authorized": False,
             "release_authorized": False,
             "public_speedup_claim_authorized": False,
             "rt_core_speedup_claim_authorized": False,
         }
+
+    def _cupy_status_column(self, device_ptr: int, *, dtype, element_count: int = 1):
+        if device_ptr <= 0:
+            raise RuntimeError("dense grouped-count output does not expose the requested device status column")
+        import cupy as cp  # type: ignore
+
+        cupy_dtype = cp.dtype(dtype)
+        memory = cp.cuda.UnownedMemory(
+            int(device_ptr),
+            int(element_count) * cupy_dtype.itemsize,
+            self.owner,
+        )
+        memory_pointer = cp.cuda.MemoryPointer(memory, 0)
+        return cp.ndarray((int(element_count),), dtype=cupy_dtype, memptr=memory_pointer)
+
+    def as_cupy_source_row_count(self):
+        import cupy as cp  # type: ignore
+
+        return self._cupy_status_column(self.source_row_count_device_ptr, dtype=cp.uint64)
+
+    def as_cupy_overflow_status(self):
+        import cupy as cp  # type: ignore
+
+        return self._cupy_status_column(self.overflow_device_ptr, dtype=cp.uint32)
 
     def as_cupy_counts(self):
         if self.overflow:
@@ -2184,6 +2216,8 @@ class OptixNativeDevicePairColumnOutput:
             device_ordinal=int(columns.device_ordinal),
             reduction_seconds=float(columns.reduction_seconds),
             native_symbol=OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_DEVICE_COLUMNS_WITH_CAPACITY_SYMBOL,
+            source_row_count_device_ptr=int(columns.source_row_count_device_ptr),
+            overflow_device_ptr=int(columns.overflow_device_ptr),
         )
 
     def grouped_count_by_left_id_compact_device_columns(
@@ -2880,6 +2914,8 @@ class OptixClosedShapeBoundaryEventDeviceColumnOutput:
             device_ordinal=int(columns.device_ordinal),
             reduction_seconds=float(columns.reduction_seconds),
             native_symbol=OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_DEVICE_COLUMNS_WITH_CAPACITY_SYMBOL,
+            source_row_count_device_ptr=int(columns.source_row_count_device_ptr),
+            overflow_device_ptr=int(columns.overflow_device_ptr),
         )
 
     def close(self) -> None:
@@ -3074,6 +3110,8 @@ class PreparedOptixSegmentPairIntersection:
             device_ordinal=int(columns.device_ordinal),
             reduction_seconds=float(columns.reduction_seconds),
             native_symbol=OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL,
+            source_row_count_device_ptr=int(columns.source_row_count_device_ptr),
+            overflow_device_ptr=int(columns.overflow_device_ptr),
         )
 
     def first_hit_raw(self, probe_segments) -> OptixRowView:
@@ -11970,6 +12008,8 @@ class PreparedOptixPointClosedShapeMembership2D:
             device_ordinal=int(columns.device_ordinal),
             reduction_seconds=float(columns.reduction_seconds),
             native_symbol=OPTIX_CLOSED_SHAPE_MEMBERSHIP_POINT_ID_COUNT_DEVICE_COLUMNS_SYMBOL,
+            source_row_count_device_ptr=int(columns.source_row_count_device_ptr),
+            overflow_device_ptr=int(columns.overflow_device_ptr),
         )
 
     def last_phase_timings(self) -> dict[str, float | int | str] | None:

@@ -248,11 +248,16 @@ def _optix_case(
         dense = prepared.left_id_count_device_columns(left, group_capacity=group_capacity)
         try:
             counts_gpu = dense.as_cupy_counts()
+            source_row_count_gpu = dense.as_cupy_source_row_count()
+            overflow_gpu = dense.as_cupy_overflow_status()
             cp.cuda.Stream.null.synchronize()
             counts = cp.asnumpy(counts_gpu).astype("int64")
+            source_row_count_status = int(cp.asnumpy(source_row_count_gpu).astype("uint64")[0])
+            overflow_status = int(cp.asnumpy(overflow_gpu).astype("uint32")[0])
             dense_total = int(counts.sum())
             dense_seconds = time.perf_counter() - dense_start
             counts_device_ptr = int(dense.counts_device_ptr)
+            overflow_device_ptr = int(dense.overflow_device_ptr)
             dense_metadata = dense.to_metadata()
         finally:
             dense.close()
@@ -260,6 +265,7 @@ def _optix_case(
         residency_contract = segment_pair_left_id_dense_count_output_residency_contract(
             group_capacity=group_capacity,
             counts_device_ptr=counts_device_ptr,
+            overflow_device_ptr=overflow_device_ptr,
             stream_ordering="host_synchronized_before_consumer",
             device_id=int(dense_metadata["device_ordinal"]),
         )
@@ -278,6 +284,12 @@ def _optix_case(
             "dense_device_count_route": {
                 "counts": [int(value) for value in counts.tolist()],
                 "hit_pair_count": dense_total,
+                "source_row_count_from_device_status": source_row_count_status,
+                "overflow_from_device_status": overflow_status,
+                "status_device_columns_valid": (
+                    source_row_count_status == dense_total
+                    and overflow_status == int(bool(dense_metadata["overflow"]))
+                ),
                 "seconds": dense_seconds,
                 "metadata": dense_metadata,
                 "residency_contract_valid": bool(residency_validation["valid"]),
