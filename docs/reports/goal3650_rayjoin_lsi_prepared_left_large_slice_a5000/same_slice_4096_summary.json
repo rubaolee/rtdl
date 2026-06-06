@@ -1,0 +1,678 @@
+{
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "comparisons": [
+    {
+      "count_contract_status": "matching_visible_lsi_count",
+      "rayjoin_positive_assignment_count_available": null,
+      "rayjoin_query_ms_reported_median": 0.393796,
+      "rayjoin_visible_count": 4977,
+      "rtdl_count": 4977,
+      "rtdl_over_rayjoin_query_ratio": 0.5687404452369792,
+      "rtdl_prepared_query_ms_median": 0.22396771237254143,
+      "workload": "lsi"
+    },
+    {
+      "count_contract_status": "rayjoin_pip_count_not_visible",
+      "rayjoin_positive_assignment_count_available": false,
+      "rayjoin_query_ms_reported_median": 0.216198,
+      "rayjoin_visible_count": null,
+      "rtdl_count": 1417,
+      "rtdl_over_rayjoin_query_ratio": 8.902500937417944,
+      "rtdl_prepared_query_ms_median": 1.9247028976678848,
+      "workload": "pip"
+    }
+  ],
+  "generated_at_utc": "2026-06-06T19:06:28Z",
+  "goal": 3244,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "interpretation": {
+    "pip_count_boundary": "RayJoin query_exec PIP still does not expose positive assignment count in this unpatched upstream binary.",
+    "rayjoin_query_timing_semantics": "RayJoin query_exec reports a query timing after its own warmup/repeat loop; Goal3244 records that reported timing directly and does not divide it by repeat.",
+    "rtdl_lsi_count_route": "When --rtdl-lsi-count-route=left_id_dense_count is supplied, RTDL uses the existing generic segment-pair left-id count device-column primitive for the LSI scalar-count lane.",
+    "rtdl_lsi_segment_order": "When --rtdl-lsi-segment-order is supplied, the app reorders only LSI segment records before packing/preparation while preserving caller segment ids; this is a generic locality probe, not a RayJoin-specific native engine path.",
+    "rtdl_pip_boundary_mode": "When --rtdl-pip-boundary-mode is supplied with device_filtered_validated, the app runs the exact validation count with inclusive boundary checks and runs only the device-filtered timing lane with the requested generic boundary mode.",
+    "rtdl_pip_count_mode": "When set to a validated device-side mode, RTDL validates each PIP sample with exact prepared count and reports the selected device-side count timing as the prepared_query_ms lane. device_filtered_prepared_points_validated additionally prepares reusable point-probe columns outside the timed prepared_query_ms lane. When set to boundary_event_point_id_count_device_columns, RTDL reports the generic first-boundary-event stream plus grouped point-id count; that route is not a positive membership-count contract.",
+    "rtdl_pip_point_order": "When --rtdl-pip-point-order is supplied, the app reorders only PIP probe points before packing while preserving caller point ids; this is a generic locality probe, not a RayJoin-specific native engine path.",
+    "rtdl_pip_query_axis": "When --rtdl-pip-query-axis is supplied, the runner exports RTDL_OPTIX_POINT_PRIMITIVE_QUERY_AXIS around RTDL PIP calls and records the chosen generic mode.",
+    "rtdl_pip_scalar_count_pipeline": "When --rtdl-pip-scalar-count-pipeline is supplied, the runner exports RTDL_OPTIX_POINT_PRIMITIVE_USE_SCALAR_COUNT_PIPELINE only around RTDL PIP calls and records the choice.",
+    "scope": "Repeated bounded same-slice query/count timing for RayJoin query_exec RT and RTDL prepared OptiX count."
+  },
+  "rayjoin": {
+    "lsi": {
+      "build_index_ms_reported": {
+        "count": 1,
+        "max": 0.645876,
+        "median": 0.645876,
+        "min": 0.645876,
+        "samples": [
+          0.645876
+        ]
+      },
+      "command_template": [
+        "/root/RayJoin/release/bin/query_exec",
+        "-poly1=/root/rtdl_goal3595_clean/data/rayjoin_public_cdb/br_county_start256_count4096.cdb",
+        "-poly2=/root/rtdl_goal3595_clean/data/rayjoin_public_cdb/br_soil_start256_count4096.cdb",
+        "-mode=rt",
+        "-query=lsi",
+        "-warmup=3",
+        "-repeat=10",
+        "-check=false",
+        "-logtostderr=true"
+      ],
+      "input_poly1": "/root/rtdl_goal3595_clean/data/rayjoin_public_cdb/br_county_start256_count4096.cdb",
+      "input_poly2": "/root/rtdl_goal3595_clean/data/rayjoin_public_cdb/br_soil_start256_count4096.cdb",
+      "internal_repeat": 10,
+      "internal_warmup": 3,
+      "intersection_counts": {
+        "consistent": true,
+        "count": 1,
+        "last": 4977,
+        "samples": [
+          4977
+        ]
+      },
+      "mode": "rt",
+      "positive_assignment_count_available": false,
+      "process_repeats": 1,
+      "query_ms_reported": {
+        "count": 1,
+        "max": 0.393796,
+        "median": 0.393796,
+        "min": 0.393796,
+        "samples": [
+          0.393796
+        ]
+      },
+      "samples": [
+        {
+          "build_index_ms": 0.645876,
+          "checker_passed": false,
+          "intersections": 4977,
+          "log": "/tmp/goal3650_rayjoin_same_slice_4096_logs/rayjoin_lsi_process_1.log",
+          "optix_launch_widths": [
+            114534,
+            114534,
+            114534,
+            114534,
+            114534,
+            114534,
+            114534,
+            114534,
+            114534,
+            114534,
+            114534,
+            114534,
+            114534
+          ],
+          "positive_assignment_count_available": false,
+          "query_ms": 0.393796,
+          "returncode": 0,
+          "timings_ms": {
+            "adaptive_grouping": 0.252008,
+            "build_index": 0.645876,
+            "cleanup": 9.35006,
+            "create_app": 183.39,
+            "init": 0.50211,
+            "load_data": 0.733852,
+            "query": 0.393796,
+            "read_map_0": 973.545,
+            "read_map_1": 1061.75,
+            "warmup": 1.32799
+          },
+          "warmup_ms": 1.32799
+        }
+      ],
+      "system": "rayjoin_upstream_query_exec",
+      "warmup_ms_reported": {
+        "count": 1,
+        "max": 1.32799,
+        "median": 1.32799,
+        "min": 1.32799,
+        "samples": [
+          1.32799
+        ]
+      },
+      "workload": "lsi"
+    },
+    "pip": {
+      "build_index_ms_reported": {
+        "count": 1,
+        "max": 0.432014,
+        "median": 0.432014,
+        "min": 0.432014,
+        "samples": [
+          0.432014
+        ]
+      },
+      "command_template": [
+        "/root/RayJoin/release/bin/query_exec",
+        "-poly1=/root/rtdl_goal3595_clean/data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+        "-poly2=/root/rtdl_goal3595_clean/data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+        "-mode=rt",
+        "-query=pip",
+        "-warmup=3",
+        "-repeat=10",
+        "-check=false",
+        "-logtostderr=true"
+      ],
+      "input_poly1": "/root/rtdl_goal3595_clean/data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+      "input_poly2": "/root/rtdl_goal3595_clean/data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+      "internal_repeat": 10,
+      "internal_warmup": 3,
+      "intersection_counts": {
+        "consistent": true,
+        "count": 0,
+        "last": null,
+        "samples": []
+      },
+      "mode": "rt",
+      "positive_assignment_count_available": false,
+      "process_repeats": 1,
+      "query_ms_reported": {
+        "count": 1,
+        "max": 0.216198,
+        "median": 0.216198,
+        "min": 0.216198,
+        "samples": [
+          0.216198
+        ]
+      },
+      "samples": [
+        {
+          "build_index_ms": 0.432014,
+          "checker_passed": false,
+          "intersections": null,
+          "log": "/tmp/goal3650_rayjoin_same_slice_4096_logs/rayjoin_pip_process_1.log",
+          "optix_launch_widths": [
+            20499,
+            20499,
+            20499,
+            20499,
+            20499,
+            20499,
+            20499,
+            20499,
+            20499,
+            20499,
+            20499,
+            20499,
+            20499
+          ],
+          "positive_assignment_count_available": false,
+          "query_ms": 0.216198,
+          "returncode": 0,
+          "timings_ms": {
+            "adaptive_grouping": 0.234842,
+            "build_index": 0.432014,
+            "cleanup": 1.7519,
+            "create_app": 158.47,
+            "init": 0.0171661,
+            "load_data": 0.679016,
+            "query": 0.216198,
+            "read_map_0": 388.515,
+            "read_map_1": 182.443,
+            "warmup": 0.723124
+          },
+          "warmup_ms": 0.723124
+        }
+      ],
+      "system": "rayjoin_upstream_query_exec",
+      "warmup_ms_reported": {
+        "count": 1,
+        "max": 0.723124,
+        "median": 0.723124,
+        "min": 0.723124,
+        "samples": [
+          0.723124
+        ]
+      },
+      "workload": "pip"
+    }
+  },
+  "rtdl": {
+    "lsi": {
+      "boundary_event_device_columns_ms": {
+        "count": 0,
+        "max": null,
+        "median": null,
+        "min": null,
+        "samples": []
+      },
+      "boundary_event_grouped_count_ms": {
+        "count": 0,
+        "max": null,
+        "median": null,
+        "min": null,
+        "samples": []
+      },
+      "count_mode": "exact",
+      "counts": {
+        "consistent": true,
+        "count": 10,
+        "last": 4977,
+        "samples": [
+          4977,
+          4977,
+          4977,
+          4977,
+          4977,
+          4977,
+          4977,
+          4977,
+          4977,
+          4977
+        ]
+      },
+      "device_filtered_boundary_mode": null,
+      "lsi_count_route": "left_id_dense_count",
+      "native_phase_samples": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "pip_scalar_count_pipeline": null,
+      "point_order_mode": null,
+      "prepare_query_points_ms": {
+        "count": 0,
+        "max": null,
+        "median": null,
+        "min": null,
+        "samples": []
+      },
+      "prepare_static_scene_ms": {
+        "count": 10,
+        "max": 84.97219532728195,
+        "median": 10.275329928845167,
+        "min": 9.209281764924526,
+        "samples": [
+          10.846784338355064,
+          10.2492431178689,
+          10.301416739821434,
+          10.336644016206264,
+          11.03648915886879,
+          9.36061516404152,
+          9.61397122591734,
+          9.7208758816123,
+          9.209281764924526,
+          84.97219532728195
+        ]
+      },
+      "prepared_query_ms": {
+        "count": 10,
+        "max": 0.23783091455698013,
+        "median": 0.22396771237254143,
+        "min": 0.20290352404117584,
+        "samples": [
+          0.23688655346632004,
+          0.22361241281032562,
+          0.2234065905213356,
+          0.22946763783693314,
+          0.22432301193475723,
+          0.21212827414274216,
+          0.2073720097541809,
+          0.22862572222948074,
+          0.20290352404117584,
+          0.23783091455698013
+        ]
+      },
+      "query_axis": null,
+      "query_order_ms": {
+        "count": 0,
+        "max": null,
+        "median": null,
+        "min": null,
+        "samples": []
+      },
+      "query_pack_ms": {
+        "count": 10,
+        "max": 1.1840751394629478,
+        "median": 1.0446663945913315,
+        "min": 0.9015994146466255,
+        "samples": [
+          1.1752648279070854,
+          1.1050021275877953,
+          1.0681981220841408,
+          1.0211346670985222,
+          1.1777039617300034,
+          0.9115720167756081,
+          1.0077795013785362,
+          0.98374392837286,
+          0.9015994146466255,
+          1.1840751394629478
+        ]
+      },
+      "repeat": 10,
+      "result_mode": "count",
+      "route": "prepared_optix",
+      "segment_order_mode": "natural",
+      "static_order_ms": {
+        "count": 0,
+        "max": null,
+        "median": null,
+        "min": null,
+        "samples": []
+      },
+      "static_segment_pack_ms": {
+        "count": 0,
+        "max": null,
+        "median": null,
+        "min": null,
+        "samples": []
+      },
+      "static_shape_pack_ms": {
+        "count": 0,
+        "max": null,
+        "median": null,
+        "min": null,
+        "samples": []
+      },
+      "system": "rtdl_prepared_optix",
+      "validation_exact_query_ms": {
+        "count": 0,
+        "max": null,
+        "median": null,
+        "min": null,
+        "samples": []
+      },
+      "warmup": 3,
+      "workload": "lsi"
+    },
+    "pip": {
+      "boundary_event_device_columns_ms": {
+        "count": 0,
+        "max": null,
+        "median": null,
+        "min": null,
+        "samples": []
+      },
+      "boundary_event_grouped_count_ms": {
+        "count": 0,
+        "max": null,
+        "median": null,
+        "min": null,
+        "samples": []
+      },
+      "count_mode": "exact",
+      "counts": {
+        "consistent": true,
+        "count": 10,
+        "last": 1417,
+        "samples": [
+          1417,
+          1417,
+          1417,
+          1417,
+          1417,
+          1417,
+          1417,
+          1417,
+          1417,
+          1417
+        ]
+      },
+      "device_filtered_boundary_mode": null,
+      "lsi_count_route": null,
+      "native_phase_samples": [
+        {
+          "candidate_count_pass": 0.0,
+          "candidate_download": 1.0705e-05,
+          "candidate_write_pass": 0.000306019,
+          "emitted_count": 1417,
+          "exact_refine": 0.001449864,
+          "mode": "count",
+          "point_pack": 2.064e-06,
+          "point_upload": 2.3937e-05,
+          "raw_candidate_count": 1429
+        },
+        {
+          "candidate_count_pass": 0.0,
+          "candidate_download": 1.1692e-05,
+          "candidate_write_pass": 0.000305251,
+          "emitted_count": 1417,
+          "exact_refine": 0.001876223,
+          "mode": "count",
+          "point_pack": 1.613e-06,
+          "point_upload": 2.6505e-05,
+          "raw_candidate_count": 1429
+        },
+        {
+          "candidate_count_pass": 0.0,
+          "candidate_download": 1.3103e-05,
+          "candidate_write_pass": 0.000310281,
+          "emitted_count": 1417,
+          "exact_refine": 0.001495987,
+          "mode": "count",
+          "point_pack": 2.415e-06,
+          "point_upload": 2.5364e-05,
+          "raw_candidate_count": 1429
+        },
+        {
+          "candidate_count_pass": 0.0,
+          "candidate_download": 1.0941e-05,
+          "candidate_write_pass": 0.000323988,
+          "emitted_count": 1417,
+          "exact_refine": 0.001502631,
+          "mode": "count",
+          "point_pack": 2.216e-06,
+          "point_upload": 2.6299e-05,
+          "raw_candidate_count": 1429
+        },
+        {
+          "candidate_count_pass": 0.0,
+          "candidate_download": 1.022e-05,
+          "candidate_write_pass": 0.000311093,
+          "emitted_count": 1417,
+          "exact_refine": 0.001501602,
+          "mode": "count",
+          "point_pack": 2.682e-06,
+          "point_upload": 2.6542e-05,
+          "raw_candidate_count": 1429
+        },
+        {
+          "candidate_count_pass": 0.0,
+          "candidate_download": 1.0894e-05,
+          "candidate_write_pass": 0.000317065,
+          "emitted_count": 1417,
+          "exact_refine": 0.001490784,
+          "mode": "count",
+          "point_pack": 2.465e-06,
+          "point_upload": 2.7595e-05,
+          "raw_candidate_count": 1429
+        },
+        {
+          "candidate_count_pass": 0.0,
+          "candidate_download": 1.0644e-05,
+          "candidate_write_pass": 0.000310835,
+          "emitted_count": 1417,
+          "exact_refine": 0.001496272,
+          "mode": "count",
+          "point_pack": 2.198e-06,
+          "point_upload": 2.9022e-05,
+          "raw_candidate_count": 1429
+        },
+        {
+          "candidate_count_pass": 0.0,
+          "candidate_download": 1.0759e-05,
+          "candidate_write_pass": 0.000308474,
+          "emitted_count": 1417,
+          "exact_refine": 0.001453769,
+          "mode": "count",
+          "point_pack": 2.122e-06,
+          "point_upload": 2.4364e-05,
+          "raw_candidate_count": 1429
+        },
+        {
+          "candidate_count_pass": 0.0,
+          "candidate_download": 1.1647e-05,
+          "candidate_write_pass": 0.000309979,
+          "emitted_count": 1417,
+          "exact_refine": 0.001474867,
+          "mode": "count",
+          "point_pack": 1.822e-06,
+          "point_upload": 2.6072e-05,
+          "raw_candidate_count": 1429
+        },
+        {
+          "candidate_count_pass": 0.0,
+          "candidate_download": 1.0758e-05,
+          "candidate_write_pass": 0.000307566,
+          "emitted_count": 1417,
+          "exact_refine": 0.001436645,
+          "mode": "count",
+          "point_pack": 1.893e-06,
+          "point_upload": 3.4439e-05,
+          "raw_candidate_count": 1429
+        }
+      ],
+      "pip_scalar_count_pipeline": false,
+      "point_order_mode": "natural",
+      "prepare_query_points_ms": {
+        "count": 0,
+        "max": null,
+        "median": null,
+        "min": null,
+        "samples": []
+      },
+      "prepare_static_scene_ms": {
+        "count": 10,
+        "max": 1.3922639191150665,
+        "median": 1.3211211189627647,
+        "min": 1.166059635579586,
+        "samples": [
+          1.1896910145878792,
+          1.166059635579586,
+          1.3655750080943108,
+          1.3691959902644157,
+          1.3778824359178543,
+          1.3307780027389526,
+          1.3922639191150665,
+          1.2358222156763077,
+          1.3114642351865768,
+          1.2235799804329872
+        ]
+      },
+      "prepared_query_ms": {
+        "count": 10,
+        "max": 2.300528809428215,
+        "median": 1.9247028976678848,
+        "min": 1.8618516623973846,
+        "samples": [
+          1.8638931214809418,
+          2.300528809428215,
+          1.9319569692015648,
+          1.9451826810836792,
+          1.9299015402793884,
+          1.923886127769947,
+          1.9255196675658226,
+          1.871471293270588,
+          1.8993858247995377,
+          1.8618516623973846
+        ]
+      },
+      "query_axis": null,
+      "query_order_ms": {
+        "count": 10,
+        "max": 0.012275762856006622,
+        "median": 0.010458286851644516,
+        "min": 0.009940005838871002,
+        "samples": [
+          0.010421499609947205,
+          0.010333023965358734,
+          0.010328367352485657,
+          0.010649673640727997,
+          0.010066665709018707,
+          0.010736286640167236,
+          0.012275762856006622,
+          0.010678544640541077,
+          0.010495074093341827,
+          0.009940005838871002
+        ]
+      },
+      "query_pack_ms": {
+        "count": 10,
+        "max": 0.5760081112384796,
+        "median": 0.4644063301384449,
+        "min": 0.45745261013507843,
+        "samples": [
+          0.46656373888254166,
+          0.46660471707582474,
+          0.45916158705949783,
+          0.461505725979805,
+          0.4598647356033325,
+          0.46224892139434814,
+          0.47076400369405746,
+          0.5760081112384796,
+          0.4670973867177963,
+          0.45745261013507843
+        ]
+      },
+      "repeat": 10,
+      "result_mode": "count",
+      "route": "prepared_optix",
+      "segment_order_mode": null,
+      "static_order_ms": {
+        "count": 0,
+        "max": null,
+        "median": null,
+        "min": null,
+        "samples": []
+      },
+      "static_segment_pack_ms": {
+        "count": 0,
+        "max": null,
+        "median": null,
+        "min": null,
+        "samples": []
+      },
+      "static_shape_pack_ms": {
+        "count": 10,
+        "max": 10.605267249047756,
+        "median": 10.119409766048193,
+        "min": 9.89675521850586,
+        "samples": [
+          9.89675521850586,
+          9.969032369554043,
+          10.011924430727959,
+          10.447388514876366,
+          10.091500356793404,
+          10.146912187337875,
+          10.09190734475851,
+          10.605267249047756,
+          10.24545170366764,
+          10.151715949177742
+        ]
+      },
+      "system": "rtdl_prepared_optix",
+      "validation_exact_query_ms": {
+        "count": 0,
+        "max": null,
+        "median": null,
+        "min": null,
+        "samples": []
+      },
+      "warmup": 3,
+      "workload": "pip"
+    }
+  },
+  "rtdl_commit": "13e4039894254bfaf477f5b27db4a81aabd3fb65",
+  "schema": "rtdl.goal3244.rayjoin_same_slice_repeated_count.v1",
+  "source_dirty": [
+    "?? data/",
+    "?? docs/reports/goal3604_rayjoin_pip_boundary_event_signal_timing_a5000/scout_512.json"
+  ],
+  "status": "pass_with_optimization_gap"
+}
