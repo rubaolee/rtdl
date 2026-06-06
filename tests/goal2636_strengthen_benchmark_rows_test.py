@@ -23,7 +23,7 @@ class Goal2636StrengthenBenchmarkRowsTest(unittest.TestCase):
         case_ids = {case.case_id for case in cases}
         expected = {
             "hausdorff_optix_exact_grouped_seeded_pruned_points_8192",
-            "rayjoin_optix_prepared_overlay_seed_tiled_x512",
+            "rayjoin_optix_promoted_overlay_seed_tiled_x512",
             "rtnn_optix_clustered_65536_ranked_summary",
             "barnes_hut_optix_node_coverage_bodies_32768",
             "triangle_counting_optix_rt_graph_2a1_cliques_20000",
@@ -42,6 +42,9 @@ class Goal2636StrengthenBenchmarkRowsTest(unittest.TestCase):
         self.assertTrue(any("derived/authored_pip_square_tiled_x512" in command for command in rayjoin_commands))
         self.assertTrue(any("derived/authored_lsi_crossing_tiled_x512" in command for command in rayjoin_commands))
         self.assertTrue(any("derived/authored_overlay_squares_tiled_x512" in command for command in rayjoin_commands))
+        self.assertTrue(any("prepared_optix_cupy_refined_pip" in command for command in rayjoin_commands))
+        self.assertTrue(any("prepared_optix_left_id_dense_count" in command for command in rayjoin_commands))
+        self.assertTrue(any("prepared_optix_shape_pair_active_count" in command for command in rayjoin_commands))
 
     def test_rayjoin_stress_uses_larger_derived_tiled_datasets(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

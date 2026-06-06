@@ -152,9 +152,27 @@ def _rayjoin_cases(tier: str, _artifact_dir: Path) -> list[BenchmarkCase]:
         ("lsi", f"derived/authored_lsi_crossing_tiled_{tile_suffix}"),
         ("overlay_seed", f"derived/authored_overlay_squares_tiled_{tile_suffix}"),
     )
+    promoted_optix_routes = {
+        "pip": (
+            "prepared_optix_cupy_refined_pip",
+            ("phases_sec", "prepared_cupy_refine_sec"),
+            "Promoted PIP route: generic OptiX candidate columns plus prepared CuPy exact refinement.",
+        ),
+        "lsi": (
+            "prepared_optix_left_id_dense_count",
+            ("phases_sec", "left_id_count_device_columns_sec"),
+            "Promoted LSI route: generic segment-pair traversal plus dense left-id count columns.",
+        ),
+        "overlay_seed": (
+            "prepared_optix_shape_pair_active_count",
+            ("phases_sec", "active_count_device_continuation_sec"),
+            "Promoted overlay route: generic shape-pair relation flags plus device active-count continuation.",
+        ),
+    }
     cases: list[BenchmarkCase] = []
     for workload, dataset in workloads:
         group = f"rayjoin_{workload}_authored_tiled_{tile_suffix}"
+        route, metric_path, route_note = promoted_optix_routes[workload]
         cases.extend(
             [
                 BenchmarkCase(
@@ -180,7 +198,7 @@ def _rayjoin_cases(tier: str, _artifact_dir: Path) -> list[BenchmarkCase]:
                     ),
                 ),
                 BenchmarkCase(
-                    case_id=f"rayjoin_optix_prepared_{workload}_tiled_{tile_suffix}",
+                    case_id=f"rayjoin_optix_promoted_{workload}_tiled_{tile_suffix}",
                     app_id="spatial_rayjoin",
                     app_name="Spatial RayJoin-style",
                     comparison_group=group,
@@ -190,17 +208,17 @@ def _rayjoin_cases(tier: str, _artifact_dir: Path) -> list[BenchmarkCase]:
                         "--workload",
                         workload,
                         "--execution-route",
-                        "prepared_optix",
+                        route,
                         "--result-mode",
                         "count",
                         "--dataset",
                         dataset,
                         "--no-rows",
                     ),
-                    primary_metric_path=("phases_sec", "prepared_query_sec"),
+                    primary_metric_path=metric_path,
                     notes=(
-                        "Prepared OptiX per-workload route over nontrivial authored tiled data. "
-                        "This is still not full polygon overlay materialization."
+                        f"{route_note} This is still not full polygon overlay materialization "
+                        "or a RayJoin paper reproduction."
                     ),
                 ),
             ]
