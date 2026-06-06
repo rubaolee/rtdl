@@ -1382,11 +1382,14 @@ class PreparedRayJoinOptixCompactGroupedCountSegments:
         dataset_note: str | None = None,
     ) -> dict[str, object]:
         packed_left = self.pack_left_segments(left_segments)
-        payload = self.run_packed_left(
-            packed_left,
-            include_rows=include_rows,
-            dataset_note=dataset_note,
-        )
+        try:
+            payload = self.run_packed_left(
+                packed_left,
+                include_rows=include_rows,
+                dataset_note=dataset_note,
+            )
+        finally:
+            packed_left.close()
         payload["phases_sec"] = {
             "query_column_prepare_sec": packed_left.column_prepare_seconds,
             "query_pack_sec": packed_left.pack_seconds,
@@ -1532,8 +1535,8 @@ class PreparedRayJoinOptixCompactGroupedCountSegments:
         rows: tuple[dict[str, int], ...]
 
         def run_once():
-            dense = self._prepared.left_id_count_device_columns(
-                packed_left.packed_segments,
+            dense = self._prepared.left_id_count_prepared_left_device_columns(
+                packed_left.prepared_left_set,
                 group_capacity=max(1, packed_left.count),
             )
             try:
@@ -1567,7 +1570,7 @@ class PreparedRayJoinOptixCompactGroupedCountSegments:
         payload: dict[str, object] = {
             "app": "rayjoin_v2_spatial_join",
             "workload": "lsi",
-            "execution_route": "prepared_optix_left_id_dense_count_reuse",
+            "execution_route": "prepared_optix_left_id_dense_count_prepared_left_reuse",
             "backend": "optix",
             "dataset": self._dataset,
             "dataset_note": dataset_note or self._dataset_note,
@@ -1590,6 +1593,9 @@ class PreparedRayJoinOptixCompactGroupedCountSegments:
                 "left_segment_count": packed_left.count,
                 "column_prepare_seconds": packed_left.column_prepare_seconds,
                 "pack_seconds": packed_left.pack_seconds,
+                "prepared_left_set_seconds": packed_left.prepared_left_set_seconds,
+                "native_prepared_left_set_enabled": True,
+                "native_prepared_left_set_paid_once": True,
                 "query_pack_paid_in_call": False,
             },
             "repeat_protocol": {
@@ -1605,11 +1611,11 @@ class PreparedRayJoinOptixCompactGroupedCountSegments:
             },
             "device_resident_continuation_status": (
                 "dense_left_id_count_device_column_complete: count[index] remains CUDA-resident during the route; "
-                "validation copy is optional"
+                "left segment-set upload is paid once by the prepared-left handle; validation copy is optional"
             ),
             "native_engine_boundary": (
                 "The engine sees generic segment-pair left-id count device columns. "
-                "RayJoin workload interpretation, prepared-handle reuse, packed-left reuse, and left-ID remapping stay in Python."
+                "RayJoin workload interpretation, prepared-handle reuse, prepared-left reuse, and left-ID remapping stay in Python."
             ),
             "claim_boundary": {
                 "full_rayjoin_reproduction": False,
@@ -1672,15 +1678,40 @@ class RayJoinOptixCompactGroupedCountPackedLeftSegments:
         remapped_left_segments = segment_columns_with_ids(left_columns, range(left_columns.count))
 
         from rtdsl.optix_runtime import pack_segments
+        from rtdsl.optix_runtime import prepare_segment_pair_left_set_optix
 
         self.packed_segments = _phase_time(
             phases,
             "query_pack_sec",
             lambda: pack_segments(records=remapped_left_segments),
         )
+        self.prepared_left_set = _phase_time(
+            phases,
+            "prepared_left_set_sec",
+            lambda: prepare_segment_pair_left_set_optix(self.packed_segments),
+        )
         self.column_prepare_seconds = phases["query_column_prepare_sec"]
         self.pack_seconds = phases["query_pack_sec"]
+        self.prepared_left_set_seconds = phases["prepared_left_set_sec"]
         self.count = len(self.original_left_ids)
+        self._closed = False
+
+    def close(self) -> None:
+        if not self._closed:
+            self.prepared_left_set.close()
+            self._closed = True
+
+    def __enter__(self) -> "RayJoinOptixCompactGroupedCountPackedLeftSegments":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
 
 
 def pack_rayjoin_optix_compact_grouped_count_left_segments(
@@ -1747,13 +1778,16 @@ def run_rayjoin_prepared_optix_left_id_dense_count_workload(
         dataset_note=case.note,
     ) as prepared:
         packed_left = pack_rayjoin_optix_compact_grouped_count_left_segments(case.inputs["left"])
-        return prepared.run_packed_left_dense_count(
-            packed_left,
-            include_rows=include_rows,
-            dataset_note=case.note,
-            query_repeat=query_repeat,
-            warmup=warmup,
-        )
+        try:
+            return prepared.run_packed_left_dense_count(
+                packed_left,
+                include_rows=include_rows,
+                dataset_note=case.note,
+                query_repeat=query_repeat,
+                warmup=warmup,
+            )
+        finally:
+            packed_left.close()
 
 
 class RayJoinOptixShapePairActiveCountPackedLeftShapes:
