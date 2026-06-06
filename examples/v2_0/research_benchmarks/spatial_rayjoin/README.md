@@ -213,6 +213,31 @@ It is for overlay-seed scalar summaries; full overlay row continuation remains a
 `prepared.run_packed_left_host_exact(...)` when you need the host exact oracle
 path for debugging or validation.
 
+## Recommended Explicit Route Choice
+
+Current v2.8 evidence says a RayJoin-style user should not blindly run every
+contract through one backend.
+
+For the simple authored tiled fixtures in the benchmark packet:
+
+| Contract | Recommended route | Reason |
+| --- | --- | --- |
+| PIP positive assignment count/refinement | CuPy dense CUDA-core count | The geometry is simple enough that a warmed dense bounds-filter kernel beats the current RT candidate-plus-refiner path |
+| LSI dense left-id count at stress scale | RTDL/OptiX dense left-id count | RT traversal plus the generic dense left-id continuation beats the dense CuPy pair test at stress scale |
+| Overlay active pair-dependency count | CuPy dense CUDA-core active count | The authored square fixture has cheap bounds rejection, so dense CUDA-core partner code wins |
+
+This is an explicit user/program decision, not automatic dispatch. The app
+should record the selected route, partner, RT-core status, count contract, and
+claim boundary in its output. See:
+
+- `scripts/goal3589_rayjoin_cupy_same_contract_baseline.py`
+- `docs/reports/goal3589_rayjoin_cupy_same_contract_baseline_2026-06-06.md`
+- `docs/reports/goal3592_rayjoin_explicit_mixed_route_reference_packet_2026-06-06.md`
+
+The lesson is practical: use RTDL/OptiX where RT traversal pays, use a partner
+where a cheap dense CUDA-core reduction is the better tool, and keep the choice
+visible rather than hiding it behind a dispatcher.
+
 For a single external two-input dataset:
 
 ```bash

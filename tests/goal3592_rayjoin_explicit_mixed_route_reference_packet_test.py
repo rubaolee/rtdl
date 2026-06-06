@@ -8,6 +8,7 @@ import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs" / "reports" / "goal3592_rayjoin_explicit_mixed_route_reference_packet_2026-06-06.md"
+README = ROOT / "examples" / "v2_0" / "research_benchmarks" / "spatial_rayjoin" / "README.md"
 GOAL3583_STANDARD = ROOT / "docs" / "reports" / "goal3583_rayjoin_hot_promoted_routes_a5000" / "summary.json"
 GOAL3583_STRESS = ROOT / "docs" / "reports" / "goal3583_rayjoin_hot_promoted_routes_stress_a5000" / "summary.json"
 GOAL3589_STANDARD = ROOT / "docs" / "reports" / "goal3589_rayjoin_cupy_same_contract_baseline_a5000" / "summary.json"
@@ -84,6 +85,18 @@ class Goal3592RayJoinExplicitMixedRouteReferencePacketTest(unittest.TestCase):
             "automatic partner/backend selection",
             "public RT-core speedup claim",
             "true zero-copy claim",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_readme_explains_explicit_route_choice(self) -> None:
+        text = README.read_text(encoding="utf-8")
+        for phrase in (
+            "Recommended Explicit Route Choice",
+            "not automatic dispatch",
+            "use RTDL/OptiX where RT traversal pays",
+            "use a partner",
+            "cheap dense CUDA-core reduction",
+            "goal3592_rayjoin_explicit_mixed_route_reference_packet",
         ):
             self.assertIn(phrase, text)
 
