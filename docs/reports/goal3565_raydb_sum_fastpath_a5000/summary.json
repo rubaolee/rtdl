@@ -1,0 +1,206 @@
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "internal_results_only": true,
+    "package_install_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "fast_path": {
+    "app_specific_native_logic": false,
+    "generic_native_fast_path": "device_column_grouped_i64_small_group_kernel",
+    "operations": [
+      "sum",
+      "sum_count"
+    ],
+    "small_group_capacity_threshold": 1024
+  },
+  "gpu": "NVIDIA RTX A5000, 580.126.09, 24564 MiB",
+  "raydb": {
+    "by_mode": {
+      "count": {
+        "median_metric_sec": {
+          "v23": 0.0005889497697353363,
+          "v29": 0.0005836472846567631
+        },
+        "v29_speedup_vs_v23": 1.0090850848071564,
+        "values": {
+          "v23": [
+            0.0005894447676837444,
+            0.0005889497697353363,
+            0.0005871523171663284
+          ],
+          "v29": [
+            0.0005529429763555527,
+            0.0005836472846567631,
+            0.0005908035673201084
+          ]
+        }
+      },
+      "sum": {
+        "median_metric_sec": {
+          "v23": 0.0007514897733926773,
+          "v29": 0.0004739384166896343
+        },
+        "v29_speedup_vs_v23": 1.585627471690698,
+        "values": {
+          "v23": [
+            0.0007388764061033726,
+            0.0007935413159430027,
+            0.0007514897733926773,
+            0.0007892949506640434,
+            0.0007460517808794975
+          ],
+          "v29": [
+            0.00045440858229994774,
+            0.0004930761642754078,
+            0.0004739384166896343,
+            0.00045394478365778923,
+            0.0004937835037708282
+          ]
+        }
+      }
+    },
+    "copies": 120000,
+    "repeat": 20000,
+    "runs": [
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3565_raydb_sum_fastpath_a5000/v23_sum_trial1.json",
+        "lane": "v23",
+        "metric_sec": 0.0007388764061033726,
+        "mode": "sum",
+        "trial": 1,
+        "wall_sec": 26.2216394841671
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3565_raydb_sum_fastpath_a5000/v29_sum_trial1.json",
+        "lane": "v29",
+        "metric_sec": 0.00045440858229994774,
+        "mode": "sum",
+        "trial": 1,
+        "wall_sec": 19.490508407354355
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3565_raydb_sum_fastpath_a5000/v23_sum_trial2.json",
+        "lane": "v23",
+        "metric_sec": 0.0007935413159430027,
+        "mode": "sum",
+        "trial": 2,
+        "wall_sec": 29.414700139313936
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3565_raydb_sum_fastpath_a5000/v29_sum_trial2.json",
+        "lane": "v29",
+        "metric_sec": 0.0004930761642754078,
+        "mode": "sum",
+        "trial": 2,
+        "wall_sec": 22.235455572605133
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3565_raydb_sum_fastpath_a5000/v23_sum_trial3.json",
+        "lane": "v23",
+        "metric_sec": 0.0007514897733926773,
+        "mode": "sum",
+        "trial": 3,
+        "wall_sec": 27.357503960840404
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3565_raydb_sum_fastpath_a5000/v29_sum_trial3.json",
+        "lane": "v29",
+        "metric_sec": 0.0004739384166896343,
+        "mode": "sum",
+        "trial": 3,
+        "wall_sec": 26.882222871296108
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3565_raydb_sum_fastpath_a5000/v23_sum_trial4.json",
+        "lane": "v23",
+        "metric_sec": 0.0007892949506640434,
+        "mode": "sum",
+        "trial": 4,
+        "wall_sec": 28.364542440511286
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3565_raydb_sum_fastpath_a5000/v29_sum_trial4.json",
+        "lane": "v29",
+        "metric_sec": 0.00045394478365778923,
+        "mode": "sum",
+        "trial": 4,
+        "wall_sec": 19.27338110189885
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3565_raydb_sum_fastpath_a5000/v23_sum_trial5.json",
+        "lane": "v23",
+        "metric_sec": 0.0007460517808794975,
+        "mode": "sum",
+        "trial": 5,
+        "wall_sec": 26.296738162636757
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3565_raydb_sum_fastpath_a5000/v29_sum_trial5.json",
+        "lane": "v29",
+        "metric_sec": 0.0004937835037708282,
+        "mode": "sum",
+        "trial": 5,
+        "wall_sec": 20.841946427710354
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3565_raydb_sum_fastpath_a5000/v23_count_trial1.json",
+        "lane": "v23",
+        "metric_sec": 0.0005894447676837444,
+        "mode": "count",
+        "trial": 1,
+        "wall_sec": 23.390717323869467
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3565_raydb_sum_fastpath_a5000/v29_count_trial1.json",
+        "lane": "v29",
+        "metric_sec": 0.0005529429763555527,
+        "mode": "count",
+        "trial": 1,
+        "wall_sec": 21.35009673424065
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3565_raydb_sum_fastpath_a5000/v23_count_trial2.json",
+        "lane": "v23",
+        "metric_sec": 0.0005889497697353363,
+        "mode": "count",
+        "trial": 2,
+        "wall_sec": 22.808556120842695
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3565_raydb_sum_fastpath_a5000/v29_count_trial2.json",
+        "lane": "v29",
+        "metric_sec": 0.0005836472846567631,
+        "mode": "count",
+        "trial": 2,
+        "wall_sec": 22.401121794246137
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3565_raydb_sum_fastpath_a5000/v23_count_trial3.json",
+        "lane": "v23",
+        "metric_sec": 0.0005871523171663284,
+        "mode": "count",
+        "trial": 3,
+        "wall_sec": 22.58758184313774
+      },
+      {
+        "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3565_raydb_sum_fastpath_a5000/v29_count_trial3.json",
+        "lane": "v29",
+        "metric_sec": 0.0005908035673201084,
+        "mode": "count",
+        "trial": 3,
+        "wall_sec": 22.310007359832525
+      }
+    ],
+    "warmup": 2
+  },
+  "schema": "rtdl.goal3565.raydb_sum_fastpath.v1",
+  "v23_commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+  "v23_root": "/root/rtdl_goal3556_v23_overlay",
+  "v29_commit": "bdcf53b313a4782bef38856703a2707d673b00e7",
+  "v29_root": "/root/rtdl_goal3556_current"
+}
