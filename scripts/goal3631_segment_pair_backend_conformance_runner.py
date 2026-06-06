@@ -363,6 +363,32 @@ def _make_crossing_grid_case(size: int) -> tuple[tuple[Segment, ...], tuple[Segm
     return left, right, f"synthetic crossing grid with {size} x {size} proper intersections"
 
 
+def _make_sparse_diagonal_grid_case(size: int) -> tuple[tuple[Segment, ...], tuple[Segment, ...], str]:
+    if size <= 0:
+        raise ValueError("size must be positive")
+    left = tuple(
+        Segment(
+            id=index,
+            x0=float(index),
+            y0=-1.0,
+            x1=float(index),
+            y1=1.0,
+        )
+        for index in range(size)
+    )
+    right = tuple(
+        Segment(
+            id=index,
+            x0=float(index) - 0.25,
+            y0=0.0,
+            x1=float(index) + 0.25,
+            y1=0.0,
+        )
+        for index in range(size)
+    )
+    return left, right, f"synthetic sparse diagonal grid with {size} isolated proper intersections"
+
+
 def _expected_grid_counts(size: int) -> dict[str, object]:
     return {
         "counts": [size for _ in range(size)],
@@ -371,6 +397,17 @@ def _expected_grid_counts(size: int) -> dict[str, object]:
         "rejected_pair_count": 0,
         "decision_reasons": ["non_collinear_endpoint_inclusive_hit"],
         "source": "analytic_crossing_grid",
+    }
+
+
+def _expected_sparse_diagonal_counts(size: int) -> dict[str, object]:
+    return {
+        "counts": [1 for _ in range(size)],
+        "hit_pair_count": size,
+        "ambiguous_pair_count": 0,
+        "rejected_pair_count": size * size - size,
+        "decision_reasons": ["non_collinear_endpoint_inclusive_hit", "outside_parametric_bounds"],
+        "source": "analytic_sparse_diagonal_grid",
     }
 
 
@@ -403,6 +440,8 @@ def _run_one_case(
     if name == "adversarial":
         _print("run Python strict-v0 oracle")
         expected = _python_reference_case(left, right)
+    elif name.startswith("sparse_diagonal_grid_"):
+        expected = _expected_sparse_diagonal_counts(len(left))
     else:
         size = len(left)
         expected = _expected_grid_counts(size)
@@ -458,6 +497,9 @@ def run(args: argparse.Namespace) -> dict[str, object]:
     for size in args.grid_sizes:
         left, right, note = _make_crossing_grid_case(size)
         selected_cases.append((f"crossing_grid_{size}", left, right, note))
+    for size in args.sparse_grid_sizes:
+        left, right, note = _make_sparse_diagonal_grid_case(size)
+        selected_cases.append((f"sparse_diagonal_grid_{size}", left, right, note))
 
     case_results = [
         _run_one_case(
@@ -500,6 +542,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Goal3631 segment-pair backend conformance runner.")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--grid-sizes", type=int, nargs="*", default=(64, 256, 1024))
+    parser.add_argument("--sparse-grid-sizes", type=int, nargs="*", default=())
     parser.add_argument(
         "--include-ambiguity-status",
         action="store_true",
