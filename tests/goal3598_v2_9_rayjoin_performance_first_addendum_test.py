@@ -35,6 +35,9 @@ class Goal3598V29RayJoinPerformanceFirstAddendumTest(unittest.TestCase):
             "use RTDL/OptiX where generic RT traversal pays",
             "use CuPy where dense CUDA-core logic is the best simple continuation",
             "generic exact point-in-closed-shape scalar count primitive",
+            "Goal3599 closes the old silent-partial diagnosis",
+            "Goal3601 closes the old same-contract repeat ambiguity",
+            "clean near-parity same-contract row",
             "does not authorize",
             "automatic partner/backend selection",
         ):

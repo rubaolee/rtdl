@@ -22,6 +22,8 @@ Goals3589-3596 now answer the first RayJoin slice of that instruction.
 | Goal3594 | Gemini review of Goal3593 | `accept-with-boundary`; flags artifact git cleanliness before larger packet inclusion. |
 | Goal3595 | Clean-checkout repeat-200 public-CDB stability packet | Addresses cleanliness and longer-timing concerns; overlay CuPy hot loop accumulates about 9.94s, counts match, LSI/overlay remain strongly RTDL/OptiX-favorable. |
 | Goal3596 | Public-CDB PIP route audit | Existing switches do not close the PIP gap; exact prepared OptiX is the best RTDL-only scalar count route, but CuPy remains fastest for simple scalar PIP count. |
+| Goal3599 | Barnes-Hut resident-repeat packet | Current main has valid app-level resident-repeat evidence for the prepared OptiX node-coverage contract; the old subprocess-repeat row should no longer be treated as silently partial. |
+| Goal3601 | LibRTS same-contract resident-repeat packet | v2.3 and current main both run the same prepared OptiX AABB hot loop from clean checkouts; current is a clean parity row at `1.005864x`. |
 
 ## Current RayJoin Public-CDB Route Table
 
@@ -46,8 +48,8 @@ This addendum improves the RayJoin part of the v2.9 plan:
 
 Goal3598 does not finish all v2.9 performance work:
 
-- Barnes-Hut node coverage still needs its P0 diagnosis/repair/classification.
-- LibRTS AABB index still needs scale and phase-split repair/classification.
+- Barnes-Hut node coverage still needs full-table integration, but Goal3599 closes the old silent-partial diagnosis for current main.
+- LibRTS AABB index still needs full-table integration, but Goal3601 closes the old same-contract repeat ambiguity and classifies it as near-parity, not a major performance blocker.
 - Hausdorff and robot collision repeat/resident hooks still need final positioning in the full v2.9 table.
 - A single v2.9 all-benchmark table must still be regenerated with same-contract and promoted-contract views.
 - External review is still required before any larger v2.9 performance conclusion.
@@ -69,4 +71,4 @@ Goal3598 does not authorize:
 
 For RayJoin specifically, the next high-value work is v2.9 primitive design and implementation for generic exact point-in-closed-shape scalar count or boundary-event selection. It must preserve exact positive-membership semantics on the public county slice where the current filtered fast modes overcount.
 
-For the overall v2.9 plan, the next P0 item remains Barnes-Hut node coverage or LibRTS AABB index, because RayJoin now has a stronger contract-level packet while those rows remain below parity.
+For the overall v2.9 plan, Barnes-Hut and LibRTS are no longer the best P0 engineering targets for fresh code. Barnes-Hut now has current-main resident-repeat evidence, and LibRTS is a clean near-parity same-contract row. The next high-value work is either a full v2.9 all-benchmark packet refresh or targeted tuning on rows with material gaps rather than parity-level noise.

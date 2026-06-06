@@ -1,0 +1,94 @@
+{
+  "all_match_cpu_reference": true,
+  "app": "librts_spatial_index",
+  "claim_boundary": {
+    "internal_evidence_only": true,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "contract": "generic_prepared_aabb_index_query_2d",
+  "expected_counts": {
+    "point_contains": 21475,
+    "range_contains": 14675,
+    "range_intersects": 32531
+  },
+  "fixture": {
+    "box_count": 1024,
+    "box_query_count": 512,
+    "dataset": "uniform",
+    "paper_equivalent_dataset": false,
+    "point_query_count": 512,
+    "seed": 2025
+  },
+  "git_status_short": "",
+  "goal": "Goal3601",
+  "gpu": "NVIDIA RTX A5000, 580.126.09, 24564 MiB",
+  "lane": "v2.3",
+  "native_engine_customization": false,
+  "operations": [
+    "point_contains",
+    "range_contains",
+    "range_intersects"
+  ],
+  "primitive": "AABB_INDEX_QUERY_2D",
+  "repeat_protocol": {
+    "measured_run_count_per_operation": 15000,
+    "query_summed_median_sec": 0.0007412433624267578,
+    "query_total_sec": 11.152972243726254,
+    "repeat": 15000,
+    "warmup": 20
+  },
+  "rows": [
+    {
+      "count": 21475,
+      "expected_count": 21475,
+      "matches_cpu_reference": true,
+      "max_sec": 0.0015012742951512337,
+      "median_sec": 0.0001922454684972763,
+      "min_sec": 0.00018231011927127838,
+      "operation": "point_contains",
+      "repeat": 15000,
+      "total_sec": 2.8857969008386135,
+      "warmup": 20
+    },
+    {
+      "count": 14675,
+      "expected_count": 14675,
+      "matches_cpu_reference": true,
+      "max_sec": 0.0004420783370733261,
+      "median_sec": 0.0001966552808880806,
+      "min_sec": 0.00019430462270975113,
+      "operation": "range_contains",
+      "repeat": 15000,
+      "total_sec": 2.964982081204653,
+      "warmup": 20
+    },
+    {
+      "count": 32531,
+      "expected_count": 32531,
+      "matches_cpu_reference": true,
+      "max_sec": 0.0007712459191679955,
+      "median_sec": 0.0003523426130414009,
+      "min_sec": 0.0003498932346701622,
+      "operation": "range_intersects",
+      "repeat": 15000,
+      "total_sec": 5.302193261682987,
+      "warmup": 20
+    }
+  ],
+  "rt_core_accelerated": true,
+  "run_phases": {
+    "box_query_prepare_sec": 0.0012344606220722198,
+    "cpu_reference_sec": 0.197710195556283,
+    "point_query_prepare_sec": 0.000538993626832962,
+    "query_summed_median_sec": 0.0007412433624267578,
+    "query_total_sec": 11.152972243726254,
+    "scene_prepare_sec": 0.5249918550252914
+  },
+  "schema": "rtdl.goal3601.librts_same_contract_resident_repeat.v1",
+  "source_commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+  "source_root": "/root/rtdl_goal3601_v23_clean"
+}
