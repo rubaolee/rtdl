@@ -943,10 +943,16 @@ extern "C" __global__ void device_column_grouped_i64_small_group_kernel(DeviceCo
     extern __shared__ unsigned long long shared[];
     unsigned long long* shared_counts = shared;
     unsigned long long* shared_sums = shared + params.group_capacity;
+    unsigned long long* shared_mins = shared_sums + params.group_capacity;
+    unsigned long long* shared_maxs = shared_mins + params.group_capacity;
+    const long long i64_max_value = 9223372036854775807LL;
+    const long long i64_min_value = (-9223372036854775807LL - 1LL);
 
     for (uint32_t group = threadIdx.x; group < params.group_capacity; group += blockDim.x) {
         shared_counts[group] = 0ull;
         shared_sums[group] = 0ull;
+        shared_mins[group] = static_cast<unsigned long long>(i64_max_value);
+        shared_maxs[group] = static_cast<unsigned long long>(i64_min_value);
     }
     __syncthreads();
 
@@ -969,10 +975,26 @@ extern "C" __global__ void device_column_grouped_i64_small_group_kernel(DeviceCo
                 atomicAdd(params.invalid_group_count, 1u);
             } else {
                 const uint32_t group = static_cast<uint32_t>(group_key);
-                const DeviceColumnRuntimeField& value_field = params.fields[params.value_field_index];
-                const long long value = device_column_read_i64_compatible(value_field, row);
                 atomicAdd(shared_counts + group, 1ull);
-                atomicAdd(shared_sums + group, static_cast<unsigned long long>(value));
+                if (params.operation == RTDL_GROUPED_OP_SUM ||
+                    params.operation == RTDL_GROUPED_OP_MIN ||
+                    params.operation == RTDL_GROUPED_OP_MAX ||
+                    params.operation == RTDL_GROUPED_OP_SUM_COUNT ||
+                    params.operation == RTDL_GROUPED_OP_STATS) {
+                    const DeviceColumnRuntimeField& value_field = params.fields[params.value_field_index];
+                    const long long value = device_column_read_i64_compatible(value_field, row);
+                    if (params.operation == RTDL_GROUPED_OP_SUM || params.operation == RTDL_GROUPED_OP_SUM_COUNT) {
+                        atomicAdd(shared_sums + group, static_cast<unsigned long long>(value));
+                    } else if (params.operation == RTDL_GROUPED_OP_MIN) {
+                        device_atomic_min_i64(reinterpret_cast<long long*>(shared_mins) + group, value);
+                    } else if (params.operation == RTDL_GROUPED_OP_MAX) {
+                        device_atomic_max_i64(reinterpret_cast<long long*>(shared_maxs) + group, value);
+                    } else {
+                        atomicAdd(shared_sums + group, static_cast<unsigned long long>(value));
+                        device_atomic_min_i64(reinterpret_cast<long long*>(shared_mins) + group, value);
+                        device_atomic_max_i64(reinterpret_cast<long long*>(shared_maxs) + group, value);
+                    }
+                }
             }
         }
     }
@@ -982,7 +1004,21 @@ extern "C" __global__ void device_column_grouped_i64_small_group_kernel(DeviceCo
         const unsigned long long count = shared_counts[group];
         if (count == 0ull) continue;
         atomicAdd(params.group_counts + group, count);
-        atomicAdd(params.group_sums + group, shared_sums[group]);
+        if (params.operation == RTDL_GROUPED_OP_SUM || params.operation == RTDL_GROUPED_OP_SUM_COUNT) {
+            atomicAdd(params.group_sums + group, shared_sums[group]);
+        } else if (params.operation == RTDL_GROUPED_OP_MIN) {
+            device_atomic_min_i64(reinterpret_cast<long long*>(params.group_sums) + group,
+                reinterpret_cast<long long*>(shared_mins)[group]);
+        } else if (params.operation == RTDL_GROUPED_OP_MAX) {
+            device_atomic_max_i64(reinterpret_cast<long long*>(params.group_sums) + group,
+                reinterpret_cast<long long*>(shared_maxs)[group]);
+        } else if (params.operation == RTDL_GROUPED_OP_STATS) {
+            atomicAdd(params.group_sums + group, shared_sums[group]);
+            device_atomic_min_i64(reinterpret_cast<long long*>(params.group_mins) + group,
+                reinterpret_cast<long long*>(shared_mins)[group]);
+            device_atomic_max_i64(reinterpret_cast<long long*>(params.group_maxs) + group,
+                reinterpret_cast<long long*>(shared_maxs)[group]);
+        }
     }
 }
 
@@ -1400,14 +1436,19 @@ static void columnar_launch_device_column_grouped_i64(
 
     void* args[] = {&params};
     const unsigned int blocks = static_cast<unsigned int>((row_count + threads - 1) / threads);
-    const bool use_small_group_sum_fast_path =
-        (operation == kDeviceColumnGroupedOpSum || operation == kDeviceColumnGroupedOpSumCount) &&
+    const bool use_small_group_reduction_fast_path =
+        (operation == kDeviceColumnGroupedOpCount ||
+         operation == kDeviceColumnGroupedOpSum ||
+         operation == kDeviceColumnGroupedOpMin ||
+         operation == kDeviceColumnGroupedOpMax ||
+         operation == kDeviceColumnGroupedOpSumCount ||
+         operation == kDeviceColumnGroupedOpStats) &&
         group_capacity <= kDeviceColumnGroupedSmallCapacityFastPathMaxGroups;
-    const unsigned int shared_memory_bytes = use_small_group_sum_fast_path
-        ? static_cast<unsigned int>(sizeof(unsigned long long) * group_capacity * 2)
+    const unsigned int shared_memory_bytes = use_small_group_reduction_fast_path
+        ? static_cast<unsigned int>(sizeof(unsigned long long) * group_capacity * 4)
         : 0u;
     CU_CHECK(cuLaunchKernel(
-        use_small_group_sum_fast_path ? g_device_column_grouped_i64.small_group_fn : g_device_column_grouped_i64.fn,
+        use_small_group_reduction_fast_path ? g_device_column_grouped_i64.small_group_fn : g_device_column_grouped_i64.fn,
         blocks, 1, 1,
         threads, 1, 1,
         shared_memory_bytes, nullptr, args, nullptr));
