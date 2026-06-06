@@ -1,0 +1,51 @@
+{
+  "after_extra_count": 0,
+  "after_missing_count": 0,
+  "before_extra_count": 2,
+  "before_missing_count": 0,
+  "candidate_call_sec": 0.39599621295928955,
+  "candidate_counter_row_count": 47264,
+  "candidate_native_row_count": 47264,
+  "candidate_traversal_seconds": 0.000434601,
+  "claim_boundary": {
+    "native_default_route_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "commit": "a0113c682434a732bf3d91da565560acb87eb098",
+  "dataset": "/root/rtdl_goal3671_topology/data/rayjoin_public_cdb/br_county_start0_count16545.cdb",
+  "device_predicate_eps": "1e-9",
+  "exact_row_count": 47262,
+  "exact_sec": 0.13256521243602037,
+  "extra_sample": [],
+  "filtered_row_count": 47262,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "interpretation": "Side-aware topology continuation can repair the full-county tuned candidate row stream when caller supplies owner face side columns for the two ambiguous points. This does not prove automatic owner-side derivation or default route selection.",
+  "matches_exact_multiset": true,
+  "missing_sample": [],
+  "passthrough_candidate_row_count": 47260,
+  "point_count": 16545,
+  "removed_extra_rows": [
+    [
+      893,
+      16312
+    ],
+    [
+      894,
+      16312
+    ]
+  ],
+  "schema": "rtdl.goal3671.rayjoin_full_county_side_aware_route_probe.v1",
+  "selected_candidate_row_count": 4,
+  "selected_filtered_row_count": 2,
+  "selected_point_ids": [
+    893,
+    894
+  ],
+  "shape_count": 15700,
+  "side_filter_sec": 0.05635887198150158
+}

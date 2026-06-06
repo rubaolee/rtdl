@@ -681,13 +681,18 @@ from .datasets import chains_to_topology_rows
 from .datasets import chains_to_incident_face_candidate_rows
 from .closed_shape_topology import OWNER_FACE_MEMBERSHIP_CONTRACT
 from .closed_shape_topology import OWNER_FACE_PRIORITY_PIPELINE_CONTRACT
+from .closed_shape_topology import OWNER_FACE_SIDE_CODES
+from .closed_shape_topology import OWNER_FACE_SIDE_LABELS
 from .closed_shape_topology import OWNER_FACE_SELECTION_STATUS_CODES
 from .closed_shape_topology import count_closed_shape_membership_candidates_by_owner_face
 from .closed_shape_topology import derive_owner_face_priority_columns_from_rank_signals
 from .closed_shape_topology import derive_owner_face_priority_rows_from_rank_signals
 from .closed_shape_topology import filter_closed_shape_membership_candidate_columns_by_owner_face_columns
 from .closed_shape_topology import filter_closed_shape_membership_candidate_columns_by_owner_face_cupy
+from .closed_shape_topology import filter_closed_shape_membership_candidate_columns_by_owner_face_side_columns
+from .closed_shape_topology import filter_closed_shape_membership_candidate_columns_by_owner_face_side_cupy
 from .closed_shape_topology import filter_closed_shape_membership_candidates_by_owner_face
+from .closed_shape_topology import filter_closed_shape_membership_candidates_by_owner_face_side
 from .closed_shape_topology import materialize_closed_shape_membership_rows_as_cupy_columns
 from .closed_shape_topology import owner_face_ids_by_point_from_selection_rows
 from .closed_shape_topology import owner_face_membership_contract
@@ -2523,13 +2528,18 @@ __all__ = [
     "chains_to_incident_face_candidate_rows",
     "OWNER_FACE_MEMBERSHIP_CONTRACT",
     "OWNER_FACE_PRIORITY_PIPELINE_CONTRACT",
+    "OWNER_FACE_SIDE_CODES",
+    "OWNER_FACE_SIDE_LABELS",
     "OWNER_FACE_SELECTION_STATUS_CODES",
     "count_closed_shape_membership_candidates_by_owner_face",
     "derive_owner_face_priority_columns_from_rank_signals",
     "derive_owner_face_priority_rows_from_rank_signals",
     "filter_closed_shape_membership_candidate_columns_by_owner_face_columns",
     "filter_closed_shape_membership_candidate_columns_by_owner_face_cupy",
+    "filter_closed_shape_membership_candidate_columns_by_owner_face_side_columns",
+    "filter_closed_shape_membership_candidate_columns_by_owner_face_side_cupy",
     "filter_closed_shape_membership_candidates_by_owner_face",
+    "filter_closed_shape_membership_candidates_by_owner_face_side",
     "materialize_closed_shape_membership_rows_as_cupy_columns",
     "owner_face_ids_by_point_from_selection_rows",
     "owner_face_membership_contract",

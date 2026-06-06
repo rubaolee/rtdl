@@ -13,6 +13,8 @@ Goal3602 refreshes the v2.9 benchmark interpretation after the post-closeout evi
 - Goal3660: reusable RTDL/OptiX PIP batch-executor throughput evidence.
 - Goal3663: cross-slice PIP batch-executor confirmation on a 4096 public-CDB slice.
 - Goal3665: optional validated-domain preflight guard for the PIP fast route.
+- Goal3671: side-aware owner-face topology continuation repairs the full-county
+  PIP fast-route mismatch when caller owner-side columns are supplied.
 
 This document is a status refresh for internal engineering triage. It is not a release packet and does not authorize public speedup wording.
 
@@ -29,7 +31,7 @@ This document is a status refresh for internal engineering triage. It is not a r
 | `robot_collision` | Goal3561 targeted: `1.001180x`; Goal3567 packet row `0.987619x` | Near parity; fresh clean v2.3 resident-repeat is not exposed without overlay-style measurement changes. |
 | `librts_spatial_index` | Goal3601 clean same-contract resident pair: `1.005864x` | Clean parity row; not a performance blocker. |
 | `barnes_hut` | Goal3599 current resident repeat: median `0.008080567s`, total measured hot query `11.637929s`; Goal3561 targeted ratio `0.997836x` | Current-main silent-partial issue closed. Do not publish a v2.9/v2.3 ratio until a truly comparable v2.3 resident baseline exists. |
-| `spatial_rayjoin` | Goal3654/3658/3660/3663/3665: LSI long-run `0.284x` vs RayJoin query timing, tuned one-shot/sequential PIP `0.283574ms`, batched PIP throughput `0.034225ms/request` on 512 and `0.051139ms/request` on 4096, and full-county PIP fast-route preflight rejection `47264 != 47262` before RayJoin timing | not one scalar app headline. Correct user story is contract-specific: RTDL/OptiX is strong for LSI, overlay active-count, and validated-domain batched PIP throughput; one-shot/sequential PIP improved over CuPy but still trails RayJoin query timing, and broad CDB PIP needs topology-aware correction/fallback. |
+| `spatial_rayjoin` | Goal3654/3658/3660/3663/3665/3671: LSI long-run `0.284x` vs RayJoin query timing, tuned one-shot/sequential PIP `0.283574ms`, batched PIP throughput `0.034225ms/request` on 512 and `0.051139ms/request` on 4096, full-county PIP fast-route preflight rejection `47264 != 47262`, and Goal3671 side-aware repair to exact `47262` multiset parity when caller owner-side columns are supplied | not one scalar app headline. Correct user story is contract-specific: RTDL/OptiX is strong for LSI, overlay active-count, and validated-domain batched PIP throughput; one-shot/sequential PIP improved over CuPy but still trails RayJoin query timing. Broad CDB PIP now has a constructive topology-aware correction path, but automatic owner-side derivation/default routing remains open. |
 
 ## RayJoin Contract Table
 
@@ -50,6 +52,11 @@ Goal3658 and Goal3660 supersede the old PIP routing conclusion:
 | One-shot/sequential repeated positive assignment count | RTDL/OptiX prepared-points validated device count with `eps=1e-9` | Goal3658: exact `1417`, `0.283574ms`, `8.54s` total median over `30000` repeats | Faster than prior project-owned CuPy dense baseline, still slower than RayJoin `query_exec` reported query timing. |
 | Batched repeated positive assignment count | RTDL/OptiX reusable prepared-point batch count executor with `eps=1e-9` | Goal3660: exact `1417`, `0.034225ms/request` on 512; Goal3663: exact `11331`, `0.051139ms/request` on 4096 | Strong RTDL throughput evidence across two public-CDB slices; explicitly not one-shot latency. |
 | Fast-route domain guard | App-level preflight over the same generic fast route | Goal3665: `br_county_start256_count512` allows `1417 == 1417`; `br_county_start0_count16545` rejects `47264 != 47262` before RayJoin timing starts | The fast route is validated-domain evidence, not broad CDB PIP evidence. Full-county PIP remains a topology/degeneracy contract gap. |
+| Side-aware topology repair | RTDL/OptiX tuned candidate row stream plus CuPy side-aware owner-face filter | Goal3671: full-county candidate rows `47264`, filtered rows `47262`, exact prepared rows `47262`, multiset parity true after dropping `(893, 16312)` and `(894, 16312)` | Constructive broad-CDB correction path when caller supplies `(owner_face_id, owner_side)` columns. Still not an automatic/default route because owner-side derivation is caller policy. |
+
+Goal3671 is the current constructive topology-aware closed-shape correction
+step for broad CDB PIP, but it remains a caller-policy continuation rather
+than a native default route.
 
 ## What Changed Since Goal3569
 
@@ -66,7 +73,7 @@ The remaining v2.9 question is not "fix every 0.99x row." The meaningful reading
 
 1. Primitive-first wins are real where the generic native primitive changed the amount of work or the reduction pattern, as in RayDB sum and RayJoin LSI/overlay.
 2. Near-parity rows are often already limited by fixed contract cost, launch overhead, or measurement variance.
-3. RayJoin PIP no longer belongs to CuPy for the measured validated-domain project-owned routes: tuned RTDL/OptiX wins over prior CuPy for the bounded scalar-count row, and the reusable batch executor wins strongly for batched repeated requests on both 512 and 4096 public-CDB slices. Goal3665 also confirms the route must fail closed on full-county topology (`47264 != 47262`) before RayJoin timing. The remaining gaps are one-shot RTDL-vs-RayJoin latency, second-GPU confirmation, and a richer topology-aware closed-shape correction/fallback for broad CDB PIP.
+3. RayJoin PIP no longer belongs to CuPy for the measured validated-domain project-owned routes: tuned RTDL/OptiX wins over prior CuPy for the bounded scalar-count row, and the reusable batch executor wins strongly for batched repeated requests on both 512 and 4096 public-CDB slices. Goal3665 also confirms the route must fail closed on full-county topology (`47264 != 47262`) before RayJoin timing; Goal3671 shows that a side-aware topology continuation can repair that full-county stream to exact multiset parity when caller owner-side columns are supplied. The remaining gaps are one-shot RTDL-vs-RayJoin latency, second-GPU confirmation, and automatic owner-side derivation/default-route policy for broad CDB PIP.
 4. Future performance work should target material semantic gaps and larger-scale contract stress, not sub-1% noise.
 
 ## Boundary

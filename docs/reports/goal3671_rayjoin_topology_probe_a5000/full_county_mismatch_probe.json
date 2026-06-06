@@ -1,0 +1,162 @@
+{
+  "candidate_call_sec": 0.5743349231779575,
+  "candidate_count": 47204,
+  "candidate_overflow": false,
+  "candidate_traversal_seconds": 0.000445781,
+  "claim_boundary": {
+    "native_default_route_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "commit": "a0113c682434a732bf3d91da565560acb87eb098",
+  "dataset": "/root/rtdl_goal3671_topology/data/rayjoin_public_cdb/br_county_start0_count16545.cdb",
+  "device_predicate_eps": "1e-9",
+  "exact_count": 47202,
+  "exact_sec": 0.12976975366473198,
+  "extra_count": 2,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "mismatch_point_count": 2,
+  "mismatch_rows": [
+    {
+      "candidate_shape_topology": [
+        {
+          "chain_id": 891,
+          "first_point_id": 5328,
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "last_point_id": 5341,
+          "left_face_id": 371,
+          "point_count": 26,
+          "right_face_id": 384
+        },
+        {
+          "chain_id": 16312,
+          "first_point_id": 320613,
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "last_point_id": 320570,
+          "left_face_id": 384,
+          "point_count": 7,
+          "right_face_id": 607
+        }
+      ],
+      "candidate_shapes": [
+        891,
+        16312
+      ],
+      "exact_shapes": [
+        891
+      ],
+      "extra_shapes": [
+        16312
+      ],
+      "incident_faces": [
+        {
+          "face_id": 371,
+          "incident_chain_count": 3,
+          "incident_face_count": 2,
+          "point_id": 893,
+          "probe_x": -47.437432072,
+          "probe_y": -5.8574819995
+        },
+        {
+          "face_id": 384,
+          "incident_chain_count": 3,
+          "incident_face_count": 2,
+          "point_id": 893,
+          "probe_x": -47.437432072,
+          "probe_y": -5.8574819995
+        },
+        {
+          "face_id": 607,
+          "incident_chain_count": 3,
+          "incident_face_count": 1,
+          "point_id": 893,
+          "probe_x": -47.437432072,
+          "probe_y": -5.8574819995
+        }
+      ],
+      "missing_shapes": [],
+      "point_chain_faces": [
+        371,
+        607
+      ],
+      "point_id": 893
+    },
+    {
+      "candidate_shape_topology": [
+        {
+          "chain_id": 891,
+          "first_point_id": 5328,
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "last_point_id": 5341,
+          "left_face_id": 371,
+          "point_count": 26,
+          "right_face_id": 384
+        },
+        {
+          "chain_id": 16312,
+          "first_point_id": 320613,
+          "has_left_face": 1,
+          "has_right_face": 1,
+          "last_point_id": 320570,
+          "left_face_id": 384,
+          "point_count": 7,
+          "right_face_id": 607
+        }
+      ],
+      "candidate_shapes": [
+        891,
+        16312
+      ],
+      "exact_shapes": [
+        891
+      ],
+      "extra_shapes": [
+        16312
+      ],
+      "incident_faces": [
+        {
+          "face_id": 371,
+          "incident_chain_count": 3,
+          "incident_face_count": 2,
+          "point_id": 894,
+          "probe_x": -47.437432072,
+          "probe_y": -5.8574819995
+        },
+        {
+          "face_id": 384,
+          "incident_chain_count": 3,
+          "incident_face_count": 2,
+          "point_id": 894,
+          "probe_x": -47.437432072,
+          "probe_y": -5.8574819995
+        },
+        {
+          "face_id": 607,
+          "incident_chain_count": 3,
+          "incident_face_count": 1,
+          "point_id": 894,
+          "probe_x": -47.437432072,
+          "probe_y": -5.8574819995
+        }
+      ],
+      "missing_shapes": [],
+      "point_chain_faces": [
+        0,
+        384
+      ],
+      "point_id": 894
+    }
+  ],
+  "missing_count": 0,
+  "native_row_count": 47264,
+  "point_count": 16545,
+  "schema": "rtdl.goal3671.rayjoin_full_county_topology_mismatch_probe.v1",
+  "shape_count": 15700
+}
