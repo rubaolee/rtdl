@@ -222,9 +222,17 @@ def _optix_case(
     include_ambiguity_status: bool,
     expected_ambiguous_count: int,
     prepack_left_for_dense_route: bool,
+    prepare_left_set_for_dense_route: bool,
 ) -> dict[str, object]:
     import cupy as cp
-    from rtdsl.optix_runtime import pack_segments, prepare_segment_pair_intersection_optix
+    from rtdsl.optix_runtime import (
+        pack_segments,
+        prepare_segment_pair_intersection_optix,
+        prepare_segment_pair_left_set_optix,
+    )
+
+    if prepare_left_set_for_dense_route and include_ambiguity_status:
+        raise ValueError("prepared-left route does not yet expose optional ambiguity status")
 
     group_capacity = len(left)
     prepare_start = time.perf_counter()
@@ -233,10 +241,16 @@ def _optix_case(
     try:
         left_for_dense = left
         left_prepack_seconds = None
+        prepared_left = None
+        prepared_left_seconds = None
         if prepack_left_for_dense_route:
             left_prepack_start = time.perf_counter()
             left_for_dense = pack_segments(records=left)
             left_prepack_seconds = time.perf_counter() - left_prepack_start
+        if prepare_left_set_for_dense_route:
+            prepared_left_start = time.perf_counter()
+            prepared_left = prepare_segment_pair_left_set_optix(left)
+            prepared_left_seconds = time.perf_counter() - prepared_left_start
 
         row_counts = None
         row_total = None
@@ -255,11 +269,17 @@ def _optix_case(
             scalar_count_seconds = time.perf_counter() - scalar_start
 
         dense_start = time.perf_counter()
-        dense = prepared.left_id_count_device_columns(
-            left_for_dense,
-            group_capacity=group_capacity,
-            include_ambiguity_status=include_ambiguity_status,
-        )
+        if prepared_left is not None:
+            dense = prepared.left_id_count_prepared_left_device_columns(
+                prepared_left,
+                group_capacity=group_capacity,
+            )
+        else:
+            dense = prepared.left_id_count_device_columns(
+                left_for_dense,
+                group_capacity=group_capacity,
+                include_ambiguity_status=include_ambiguity_status,
+            )
         try:
             counts_gpu = dense.as_cupy_counts()
             source_row_count_gpu = dense.as_cupy_source_row_count()
@@ -301,6 +321,8 @@ def _optix_case(
             "prepare_seconds": prepare_seconds,
             "left_prepacked_for_dense_route": prepack_left_for_dense_route,
             "left_prepack_seconds": left_prepack_seconds,
+            "prepared_left_set_for_dense_route": prepare_left_set_for_dense_route,
+            "prepared_left_set_seconds": prepared_left_seconds,
             "row_route": {
                 "executed": include_rows,
                 "counts": row_counts,
@@ -334,6 +356,8 @@ def _optix_case(
             "last_phase_timings": prepared.last_phase_timings(),
         }
     finally:
+        if "prepared_left" in locals() and prepared_left is not None:
+            prepared_left.close()
         prepared.close()
 
 
@@ -465,6 +489,7 @@ def _run_one_case(
     include_ambiguity_status: bool,
     max_counts_output: int | None,
     prepack_left_for_dense_route: bool,
+    prepare_left_set_for_dense_route: bool,
 ) -> dict[str, object]:
     _print(f"case={name} left={len(left)} right={len(right)} pairs={len(left) * len(right)}")
     if name == "adversarial":
@@ -488,6 +513,7 @@ def _run_one_case(
         include_ambiguity_status=include_ambiguity_status,
         expected_ambiguous_count=int(expected["ambiguous_pair_count"]),
         prepack_left_for_dense_route=prepack_left_for_dense_route,
+        prepare_left_set_for_dense_route=prepare_left_set_for_dense_route,
     )
 
     expected_counts = [int(value) for value in expected["counts"]]
@@ -549,6 +575,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
             include_ambiguity_status=bool(args.include_ambiguity_status),
             max_counts_output=args.max_counts_output,
             prepack_left_for_dense_route=bool(args.prepack_left_for_optix),
+            prepare_left_set_for_dense_route=bool(args.prepare_left_set_for_optix),
         )
         for name, left, right, note in selected_cases
     ]
@@ -566,6 +593,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         "denominator_epsilon": SEGMENT_PAIR_STRICT_DENOMINATOR_EPSILON,
         "include_ambiguity_status": bool(args.include_ambiguity_status),
         "prepack_left_for_optix": bool(args.prepack_left_for_optix),
+        "prepare_left_set_for_optix": bool(args.prepare_left_set_for_optix),
         "max_counts_output": args.max_counts_output,
         "case_count": len(case_results),
         "cases": case_results,
@@ -601,6 +629,11 @@ def parse_args() -> argparse.Namespace:
         "--prepack-left-for-optix",
         action="store_true",
         help="Pack left segments once before timing the OptiX dense count route.",
+    )
+    parser.add_argument(
+        "--prepare-left-set-for-optix",
+        action="store_true",
+        help="Prepare/upload left segments once before timing the OptiX dense count route.",
     )
     return parser.parse_args()
 

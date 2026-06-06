@@ -4024,6 +4024,34 @@ struct PreparedSegmentPairIntersectionBuild {
     }
 };
 
+struct PreparedSegmentPairLeftSet {
+    size_t left_count = 0;
+    DevPtr d_left;
+
+    PreparedSegmentPairLeftSet(const RtdlSegment* left, size_t count)
+        : left_count(count),
+          d_left(sizeof(GpuSegment) * count)
+    {
+        if (!left && count != 0) {
+            throw std::runtime_error("left pointer must not be null when left_count is nonzero");
+        }
+        if (count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+            throw std::runtime_error("segment-pair left-set count exceeds uint32 launch capacity");
+        }
+        std::vector<GpuSegment> gpu_left(count);
+        for (size_t i = 0; i < count; ++i) {
+            gpu_left[i] = {
+                static_cast<float>(left[i].x0),
+                static_cast<float>(left[i].y0),
+                static_cast<float>(left[i].x1),
+                static_cast<float>(left[i].y1),
+                left[i].id,
+            };
+        }
+        upload(d_left.ptr, gpu_left.data(), gpu_left.size());
+    }
+};
+
 static void ensure_segment_pair_intersection_pipeline() {
     std::call_once(g_segment_pair_intersection.init, [&]() {
         std::string ptx = compile_to_ptx(kSegmentPairIntersectionKernelSrc, "segment_pair_intersection_kernel.cu");
@@ -4782,9 +4810,9 @@ static void release_segment_pair_candidate_device_columns_optix(void* owner_hand
     delete reinterpret_cast<NativeSegmentPairCandidateDeviceColumnsOwner*>(owner_handle);
 }
 
-static void run_prepared_segment_pair_left_id_count_device_columns_optix(
+static void run_prepared_segment_pair_left_id_count_device_columns_from_device_left_optix(
         PreparedSegmentPairIntersectionBuild* prepared,
-        const RtdlSegment* left,
+        CUdeviceptr d_left_ptr,
         size_t left_count,
         size_t group_capacity,
         RtdlNativeDeviceGroupedCountI64Columns* columns_out,
@@ -4792,8 +4820,8 @@ static void run_prepared_segment_pair_left_id_count_device_columns_optix(
 {
     if (!prepared)
         throw std::runtime_error("prepared segment-pair handle must not be null");
-    if (!left && left_count != 0)
-        throw std::runtime_error("left pointer must not be null when left_count is nonzero");
+    if (!d_left_ptr && left_count != 0)
+        throw std::runtime_error("left device pointer must not be null when left_count is nonzero");
     if (!columns_out)
         throw std::runtime_error("segment-pair left-id count columns_out pointer must not be null");
     if (left_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
@@ -4810,21 +4838,7 @@ static void run_prepared_segment_pair_left_id_count_device_columns_optix(
     if (left_count == 0 || prepared->right_count == 0 || group_capacity == 0)
         return;
 
-    std::vector<GpuSegment> gpu_left(left_count);
-    for (size_t i = 0; i < left_count; ++i) {
-        gpu_left[i] = {
-            static_cast<float>(left[i].x0),
-            static_cast<float>(left[i].y0),
-            static_cast<float>(left[i].x1),
-            static_cast<float>(left[i].y1),
-            left[i].id,
-        };
-    }
-
     ensure_segment_pair_left_id_count_device_columns_pipeline();
-
-    DevPtr d_left(sizeof(GpuSegment) * gpu_left.size());
-    upload(d_left.ptr, gpu_left.data(), gpu_left.size());
 
     auto owner = std::make_unique<NativeDeviceGroupedCountI64ColumnsOwner>();
     CU_CHECK(cuMemAlloc(&owner->counts, sizeof(unsigned long long) * group_capacity));
@@ -4844,7 +4858,7 @@ static void run_prepared_segment_pair_left_id_count_device_columns_optix(
     CUstream stream = 0;
     SegmentPairLeftIdCountDeviceColumnsLaunchParams lp;
     lp.traversable = prepared->accel.handle;
-    lp.left_segs = reinterpret_cast<const GpuSegment*>(d_left.ptr);
+    lp.left_segs = reinterpret_cast<const GpuSegment*>(d_left_ptr);
     lp.right_segs = reinterpret_cast<const GpuSegment*>(prepared->d_right.ptr);
     lp.counts = reinterpret_cast<unsigned long long*>(owner->counts);
     lp.candidate_event_count = reinterpret_cast<unsigned long long*>(owner->source_row_count);
@@ -4861,7 +4875,7 @@ static void run_prepared_segment_pair_left_id_count_device_columns_optix(
                              static_cast<unsigned>(left_count), 1, 1));
     if (include_ambiguity_status) {
         launch_segment_pair_ambiguity_count_kernel(
-            d_left.ptr,
+            d_left_ptr,
             left_count,
             prepared->d_right.ptr,
             prepared->right_count,
@@ -4886,6 +4900,56 @@ static void run_prepared_segment_pair_left_id_count_device_columns_optix(
     columns_out->ambiguous_count_device_ptr = static_cast<uint64_t>(owner->ambiguous_count);
     columns_out->overflow = overflow != 0u ? 1u : 0u;
     columns_out->owner_handle = owner.release();
+}
+
+static void run_prepared_segment_pair_left_id_count_device_columns_optix(
+        PreparedSegmentPairIntersectionBuild* prepared,
+        const RtdlSegment* left,
+        size_t left_count,
+        size_t group_capacity,
+        RtdlNativeDeviceGroupedCountI64Columns* columns_out,
+        bool include_ambiguity_status = false)
+{
+    if (!left && left_count != 0)
+        throw std::runtime_error("left pointer must not be null when left_count is nonzero");
+    std::vector<GpuSegment> gpu_left(left_count);
+    for (size_t i = 0; i < left_count; ++i) {
+        gpu_left[i] = {
+            static_cast<float>(left[i].x0),
+            static_cast<float>(left[i].y0),
+            static_cast<float>(left[i].x1),
+            static_cast<float>(left[i].y1),
+            left[i].id,
+        };
+    }
+    DevPtr d_left(sizeof(GpuSegment) * gpu_left.size());
+    upload(d_left.ptr, gpu_left.data(), gpu_left.size());
+    run_prepared_segment_pair_left_id_count_device_columns_from_device_left_optix(
+        prepared,
+        d_left.ptr,
+        left_count,
+        group_capacity,
+        columns_out,
+        include_ambiguity_status);
+}
+
+static void run_prepared_segment_pair_left_id_count_device_columns_prepared_left_optix(
+        PreparedSegmentPairIntersectionBuild* prepared,
+        PreparedSegmentPairLeftSet* prepared_left,
+        size_t group_capacity,
+        RtdlNativeDeviceGroupedCountI64Columns* columns_out,
+        bool include_ambiguity_status = false)
+{
+    if (!prepared_left) {
+        throw std::runtime_error("prepared segment-pair left-set handle must not be null");
+    }
+    run_prepared_segment_pair_left_id_count_device_columns_from_device_left_optix(
+        prepared,
+        prepared_left->d_left.ptr,
+        prepared_left->left_count,
+        group_capacity,
+        columns_out,
+        include_ambiguity_status);
 }
 
 static void launch_segment_pair_intersection_optix(

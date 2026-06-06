@@ -218,6 +218,11 @@ OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL = (
 OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_WITH_AMBIGUITY_STATUS_SYMBOL = (
     "rtdl_optix_prepared_segment_pair_left_id_count_device_columns_with_ambiguity_status"
 )
+OPTIX_SEGMENT_PAIR_PREPARE_LEFT_SET_SYMBOL = "rtdl_optix_prepare_segment_pair_left_set"
+OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_PREPARED_LEFT_DEVICE_COLUMNS_SYMBOL = (
+    "rtdl_optix_prepared_segment_pair_left_id_count_prepared_left_device_columns"
+)
+OPTIX_SEGMENT_PAIR_DESTROY_LEFT_SET_SYMBOL = "rtdl_optix_destroy_prepared_segment_pair_left_set"
 OPTIX_RELEASE_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_release_segment_pair_left_id_count_device_columns"
 )
@@ -2949,6 +2954,36 @@ class OptixClosedShapeBoundaryEventDeviceColumnOutput:
 
 
 @dataclass
+class PreparedOptixSegmentPairLeftSet:
+    library: object
+    prepared_left_handle: ctypes.c_void_p
+    left_count: int = 0
+    _closed: bool = False
+
+    def close(self) -> None:
+        if not self._closed:
+            destroy = _find_optional_backend_symbol(
+                self.library,
+                OPTIX_SEGMENT_PAIR_DESTROY_LEFT_SET_SYMBOL,
+            )
+            if destroy is not None:
+                destroy(self.prepared_left_handle)
+            self._closed = True
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+@dataclass
 class PreparedOptixSegmentPairIntersection:
     library: object
     prepared_handle: ctypes.c_void_p
@@ -3132,6 +3167,63 @@ class PreparedOptixSegmentPairIntersection:
             ambiguous_count_device_ptr=int(columns.ambiguous_count_device_ptr),
         )
 
+    def left_id_count_prepared_left_device_columns(
+        self,
+        prepared_left: PreparedOptixSegmentPairLeftSet,
+        *,
+        group_capacity: int,
+    ) -> OptixNativeDeviceGroupedCountI64Output:
+        """Count segment-pair hits by left id using a reusable prepared-left segment set."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX segment-pair handle is closed")
+        if prepared_left._closed:
+            raise RuntimeError("prepared OptiX segment-pair left-set handle is closed")
+        if prepared_left.library is not self.library:
+            raise ValueError("prepared left-set handle must come from the same OptiX library")
+        capacity = int(group_capacity)
+        if capacity <= 0:
+            raise ValueError("group_capacity must be positive")
+        symbol = _find_optional_backend_symbol(
+            self.library,
+            OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_PREPARED_LEFT_DEVICE_COLUMNS_SYMBOL,
+        )
+        if symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_PREPARED_LEFT_DEVICE_COLUMNS_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        columns = _RtdlNativeDeviceGroupedCountI64Columns()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            self.prepared_handle,
+            prepared_left.prepared_left_handle,
+            ctypes.c_size_t(capacity),
+            ctypes.byref(columns),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        owner = _OptixNativeDeviceGroupedCountI64ColumnsOwner(
+            self.library,
+            columns.owner_handle,
+            release_symbol_name=OPTIX_RELEASE_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL,
+        )
+        return OptixNativeDeviceGroupedCountI64Output(
+            library=self.library,
+            owner=owner,
+            counts_device_ptr=int(columns.counts_device_ptr),
+            group_capacity=int(columns.group_capacity),
+            source_row_count=int(columns.source_row_count),
+            overflow=bool(columns.overflow),
+            device_ordinal=int(columns.device_ordinal),
+            reduction_seconds=float(columns.reduction_seconds),
+            native_symbol=OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_PREPARED_LEFT_DEVICE_COLUMNS_SYMBOL,
+            source_row_count_device_ptr=int(columns.source_row_count_device_ptr),
+            overflow_device_ptr=int(columns.overflow_device_ptr),
+            ambiguous_count_device_ptr=int(columns.ambiguous_count_device_ptr),
+        )
+
     def first_hit_raw(self, probe_segments) -> OptixRowView:
         if self._closed:
             raise RuntimeError("prepared OptiX segment first-hit handle is closed")
@@ -3223,6 +3315,27 @@ class PreparedOptixSegmentPairIntersection:
             self.close()
         except Exception:
             pass
+
+
+def prepare_segment_pair_left_set_optix(left_segments) -> PreparedOptixSegmentPairLeftSet:
+    lib = _load_optix_library()
+    prepare_symbol = _require_backend_symbol(lib, OPTIX_SEGMENT_PAIR_PREPARE_LEFT_SET_SYMBOL)
+    left = _pack_for_geometry("segments", left_segments)
+    prepared_left = ctypes.c_void_p()
+    error = ctypes.create_string_buffer(4096)
+    status = prepare_symbol(
+        left.records,
+        left.count,
+        ctypes.byref(prepared_left),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return PreparedOptixSegmentPairLeftSet(
+        library=lib,
+        prepared_left_handle=prepared_left,
+        left_count=int(left.count),
+    )
 
 
 def prepare_segment_pair_intersection_optix(right_segments) -> PreparedOptixSegmentPairIntersection:
@@ -19672,6 +19785,19 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_prepare_segment_pair.restype = ctypes.c_int
+    optional_prepare_segment_pair_left_set = _find_optional_backend_symbol(
+        lib,
+        OPTIX_SEGMENT_PAIR_PREPARE_LEFT_SET_SYMBOL,
+    )
+    if optional_prepare_segment_pair_left_set is not None:
+        optional_prepare_segment_pair_left_set.argtypes = [
+            ctypes.POINTER(_RtdlSegment),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_prepare_segment_pair_left_set.restype = ctypes.c_int
     optional_run_prepared_segment_pair = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_run_prepared_segment_pair_intersection",
@@ -19757,6 +19883,20 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_segment_pair_left_id_count_device_columns_with_ambiguity_status.restype = ctypes.c_int
+    optional_segment_pair_left_id_count_prepared_left_device_columns = _find_optional_backend_symbol(
+        lib,
+        OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_PREPARED_LEFT_DEVICE_COLUMNS_SYMBOL,
+    )
+    if optional_segment_pair_left_id_count_prepared_left_device_columns is not None:
+        optional_segment_pair_left_id_count_prepared_left_device_columns.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlNativeDeviceGroupedCountI64Columns),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_segment_pair_left_id_count_prepared_left_device_columns.restype = ctypes.c_int
     optional_release_segment_pair_left_id_count_device_columns = _find_optional_backend_symbol(
         lib,
         OPTIX_RELEASE_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL,
@@ -19804,6 +19944,13 @@ def _register_argtypes(lib) -> None:
     if optional_destroy_prepared_segment_pair is not None:
         optional_destroy_prepared_segment_pair.argtypes = [ctypes.c_void_p]
         optional_destroy_prepared_segment_pair.restype = None
+    optional_destroy_prepared_segment_pair_left_set = _find_optional_backend_symbol(
+        lib,
+        OPTIX_SEGMENT_PAIR_DESTROY_LEFT_SET_SYMBOL,
+    )
+    if optional_destroy_prepared_segment_pair_left_set is not None:
+        optional_destroy_prepared_segment_pair_left_set.argtypes = [ctypes.c_void_p]
+        optional_destroy_prepared_segment_pair_left_set.restype = None
 
     _require_backend_symbol(lib, "rtdl_optix_run_point_primitive_anyhit_packet").argtypes = [
         ctypes.POINTER(_RtdlPoint),      ctypes.c_size_t,

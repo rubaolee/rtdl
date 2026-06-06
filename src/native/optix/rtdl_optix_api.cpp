@@ -146,6 +146,21 @@ extern "C" int rtdl_optix_prepare_segment_pair_intersection(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepare_segment_pair_left_set(
+        const RtdlSegment* left, size_t left_count,
+        void** prepared_left_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_left_out)
+            throw std::runtime_error("prepared_left_out must not be null");
+        if (!left && left_count != 0)
+            throw std::runtime_error("left pointer must not be null when left_count is nonzero");
+        *prepared_left_out = nullptr;
+        *prepared_left_out = new PreparedSegmentPairLeftSet(left, left_count);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_run_prepared_segment_pair_intersection(
         void* prepared,
         const RtdlSegment* left, size_t left_count,
@@ -266,6 +281,28 @@ extern "C" int rtdl_optix_prepared_segment_pair_left_id_count_device_columns_wit
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepared_segment_pair_left_id_count_prepared_left_device_columns(
+        void* prepared,
+        void* prepared_left,
+        size_t group_capacity,
+        RtdlNativeDeviceGroupedCountI64Columns* columns_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared segment-pair handle must not be null");
+        if (!prepared_left)
+            throw std::runtime_error("prepared segment-pair left-set handle must not be null");
+        if (!columns_out)
+            throw std::runtime_error("segment-pair left-id count columns_out pointer must not be null");
+        run_prepared_segment_pair_left_id_count_device_columns_prepared_left_optix(
+            reinterpret_cast<PreparedSegmentPairIntersectionBuild*>(prepared),
+            reinterpret_cast<PreparedSegmentPairLeftSet*>(prepared_left),
+            group_capacity,
+            columns_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_run_prepared_segment_first_hit(
         void* prepared,
         const RtdlSegment* probes, size_t probe_count,
@@ -311,6 +348,11 @@ extern "C" int rtdl_optix_count_prepared_segment_first_hit(
 extern "C" void rtdl_optix_destroy_prepared_segment_pair_intersection(void* prepared)
 {
     delete reinterpret_cast<PreparedSegmentPairIntersectionBuild*>(prepared);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_segment_pair_left_set(void* prepared_left)
+{
+    delete reinterpret_cast<PreparedSegmentPairLeftSet*>(prepared_left);
 }
 
 extern "C" int rtdl_optix_run_point_primitive_anyhit_packet(

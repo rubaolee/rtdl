@@ -597,6 +597,10 @@ int  rtdl_optix_prepare_segment_pair_intersection(
          const RtdlSegment* right, size_t right_count,
          void** prepared_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_segment_pair_left_set(
+         const RtdlSegment* left, size_t left_count,
+         void** prepared_left_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_run_prepared_segment_pair_intersection(
          void* prepared,
          const RtdlSegment* left, size_t left_count,
@@ -628,6 +632,12 @@ int  rtdl_optix_prepared_segment_pair_left_id_count_device_columns_with_ambiguit
          size_t group_capacity,
          RtdlNativeDeviceGroupedCountI64Columns* columns_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepared_segment_pair_left_id_count_prepared_left_device_columns(
+         void* prepared,
+         void* prepared_left,
+         size_t group_capacity,
+         RtdlNativeDeviceGroupedCountI64Columns* columns_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_release_segment_pair_left_id_count_device_columns(
          void* owner_handle,
          char* error_out, size_t error_size);
@@ -642,6 +652,7 @@ int  rtdl_optix_count_prepared_segment_first_hit(
          size_t* count_out,
          char* error_out, size_t error_size);
 void rtdl_optix_destroy_prepared_segment_pair_intersection(void* prepared);
+void rtdl_optix_destroy_prepared_segment_pair_left_set(void* prepared_left);
 int  rtdl_optix_run_point_primitive_anyhit_packet(
          const RtdlPoint* points,     size_t point_count,
          const RtdlPolygonRef* polys, size_t poly_count,
