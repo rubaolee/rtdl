@@ -50,6 +50,10 @@ The v2.9 performance picture is now much cleaner than the Goal3553 packet:
 
 The packet is target-compliant and useful as internal v2.9 triage evidence. It is not a release or public speedup packet.
 
+## Post-Review Note
+
+Goal3560 Claude review correctly flagged that the RTNN row differed between the Goal3557 targeted run (`0.979578x`) and this full packet (`1.061225x`). Goal3562 subsequently ran a 5-trial alternating same-scalar RTNN probe and measured `1.010948x`. Therefore the right interpretation is that RTNN is near parity with run-to-run variance, not a stable positive row based on this single full-packet value.
+
 ## Boundaries
 
 This is internal benchmark evidence only.

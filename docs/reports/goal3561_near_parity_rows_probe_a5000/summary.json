@@ -1,0 +1,106 @@
+{
+  "median_speedup": 1.0011797777570999,
+  "min_speedup": 0.993580830750488,
+  "rows": [
+    {
+      "app_id": "barnes_hut",
+      "case_id": "barnes_hut_optix_node_coverage",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "node_coverage_prepared_threshold_decision",
+      "measurement_boundary": "Internal comparison only. Rows with target_met=false are diagnostic and must not be used as final 10s steady-state evidence.",
+      "v23_observed_measured_sec": 12.590928990393877,
+      "v23_primary_metric_sec": 0.008181240409612656,
+      "v23_target_met_by_observed_sum": true,
+      "v23_target_met_by_plan": true,
+      "v28_observed_measured_sec": 12.544445469975471,
+      "v28_primary_metric_sec": 0.00819898396730423,
+      "v28_speedup_vs_v23": 0.9978358833530677,
+      "v28_target_met_by_observed_sum": true,
+      "v28_target_met_by_plan": true
+    },
+    {
+      "app_id": "librts_spatial_index",
+      "case_id": "librts_optix_aabb_index",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "aabb_index_all_count_only",
+      "measurement_boundary": "Internal comparison only. Rows with target_met=false are diagnostic and must not be used as final 10s steady-state evidence.",
+      "v23_observed_measured_sec": 12.592394130304456,
+      "v23_primary_metric_sec": 0.0007580299861729145,
+      "v23_target_met_by_observed_sum": true,
+      "v23_target_met_by_plan": true,
+      "v28_observed_measured_sec": 12.569228024221957,
+      "v28_primary_metric_sec": 0.00076292734593153,
+      "v28_speedup_vs_v23": 0.993580830750488,
+      "v28_target_met_by_observed_sum": true,
+      "v28_target_met_by_plan": true
+    },
+    {
+      "app_id": "robot_collision",
+      "case_id": "robot_collision_optix_prepared_device_buffers",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "prepared_collision_flags",
+      "measurement_boundary": "Internal comparison only. Rows with target_met=false are diagnostic and must not be used as final 10s steady-state evidence.",
+      "v23_observed_measured_sec": 12.58872191235423,
+      "v23_primary_metric_sec": 0.0019039204344153404,
+      "v23_target_met_by_observed_sum": true,
+      "v23_target_met_by_plan": true,
+      "v28_observed_measured_sec": 12.417950015515089,
+      "v28_primary_metric_sec": 0.0019016768783330917,
+      "v28_speedup_vs_v23": 1.0011797777570999,
+      "v28_target_met_by_observed_sum": true,
+      "v28_target_met_by_plan": true
+    },
+    {
+      "app_id": "spatial_rayjoin",
+      "case_id": "spatial_rayjoin_optix_prepared_full_route",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "rayjoin_all_backend_query_summary",
+      "measurement_boundary": "Internal comparison only. Rows with target_met=false are diagnostic and must not be used as final 10s steady-state evidence.",
+      "v23_observed_measured_sec": 13.343756414949894,
+      "v23_primary_metric_sec": 0.00019134674221277237,
+      "v23_target_met_by_observed_sum": true,
+      "v23_target_met_by_plan": true,
+      "v28_observed_measured_sec": 12.639048274606466,
+      "v28_primary_metric_sec": 0.00018325960263609886,
+      "v28_speedup_vs_v23": 1.044129417833194,
+      "v28_target_met_by_observed_sum": true,
+      "v28_target_met_by_plan": true
+    }
+  ]
+}

@@ -1,0 +1,223 @@
+{
+  "boundary": "Goal3536 is an internal 10-second steady-state measurement protocol. It separates target-compliant rows from partial diagnostics and does not authorize public release or speedup claims.",
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "internal_results_only": true,
+    "package_install_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "comparisons": [
+    {
+      "app_id": "barnes_hut",
+      "case_id": "barnes_hut_optix_node_coverage",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "node_coverage_prepared_threshold_decision",
+      "measurement_boundary": "Internal comparison only. Rows with target_met=false are diagnostic and must not be used as final 10s steady-state evidence.",
+      "v23_observed_measured_sec": 12.590928990393877,
+      "v23_primary_metric_sec": 0.008181240409612656,
+      "v23_target_met_by_observed_sum": true,
+      "v23_target_met_by_plan": true,
+      "v28_observed_measured_sec": 12.544445469975471,
+      "v28_primary_metric_sec": 0.00819898396730423,
+      "v28_speedup_vs_v23": 0.9978358833530677,
+      "v28_target_met_by_observed_sum": true,
+      "v28_target_met_by_plan": true
+    }
+  ],
+  "dry_run": false,
+  "generated_at": "2026-06-06T06:30:04Z",
+  "goal": 3536,
+  "gpu": "NVIDIA RTX A5000, 580.126.09, 24564 MiB",
+  "repeat_safety_factor": 1.25,
+  "rows": [
+    {
+      "app_id": "barnes_hut",
+      "backend": "optix",
+      "case_id": "barnes_hut_optix_node_coverage",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "node_coverage_prepared_threshold_decision",
+      "execution": {
+        "app_id": "barnes_hut",
+        "case_id": "barnes_hut_optix_node_coverage",
+        "observed_measured_sec": 12.590928990393877,
+        "observed_measured_sec_method": "median_primary_metric_times_planned_internal_repeat",
+        "primary_metric_sec": 0.008181240409612656,
+        "runs": [
+          {
+            "primary_metric_sec": 0.008181240409612656,
+            "primary_metric_source": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 29.72434134967625
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v23",
+      "plan": {
+        "app_id": "barnes_hut",
+        "backend": "optix",
+        "base_repeat": 1,
+        "case_id": "barnes_hut_optix_node_coverage",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 12.502806505188346,
+        "estimated_wall_sec": 13.854742052033544,
+        "lane": "v23",
+        "method": "internal_repeat_knob",
+        "planned_command": [
+          "python3",
+          "examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+          "--mode",
+          "optix_node_coverage_prepared",
+          "--body-count",
+          "8192",
+          "--skip-validation",
+          "--require-rt-core",
+          "--repeat",
+          "1539",
+          "--warmup",
+          "0"
+        ],
+        "planned_repeat": 1539,
+        "reason": "Existing app-level repeat knob can stretch the hot query loop.",
+        "repeat_flag": "--repeat",
+        "repeat_planning_target_sec": 12.5,
+        "seed_primary_metric_sec": 0.008123980835080147,
+        "seed_wall_median_sec": 1.3600595276802778,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true
+      },
+      "source_commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+      "source_root": "/root/rtdl_goal3556_v23_overlay"
+    },
+    {
+      "app_id": "barnes_hut",
+      "backend": "optix",
+      "case_id": "barnes_hut_optix_node_coverage",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "node_coverage_prepared_threshold_decision",
+      "execution": {
+        "app_id": "barnes_hut",
+        "case_id": "barnes_hut_optix_node_coverage",
+        "observed_measured_sec": 12.544445469975471,
+        "observed_measured_sec_method": "median_primary_metric_times_planned_internal_repeat",
+        "primary_metric_sec": 0.00819898396730423,
+        "runs": [
+          {
+            "primary_metric_sec": 0.00819898396730423,
+            "primary_metric_source": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 30.32870588451624
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v28",
+      "plan": {
+        "app_id": "barnes_hut",
+        "backend": "optix",
+        "base_repeat": 1,
+        "case_id": "barnes_hut_optix_node_coverage",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 12.506961431354284,
+        "estimated_wall_sec": 14.04521098639816,
+        "lane": "v28",
+        "method": "internal_repeat_knob",
+        "planned_command": [
+          "python3",
+          "examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+          "--mode",
+          "optix_node_coverage_prepared",
+          "--body-count",
+          "8192",
+          "--skip-validation",
+          "--require-rt-core",
+          "--repeat",
+          "1530",
+          "--warmup",
+          "0"
+        ],
+        "planned_repeat": 1530,
+        "reason": "Existing app-level repeat knob can stretch the hot query loop.",
+        "repeat_flag": "--repeat",
+        "repeat_planning_target_sec": 12.5,
+        "seed_primary_metric_sec": 0.008174484595656395,
+        "seed_wall_median_sec": 1.5464240396395326,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true
+      },
+      "source_commit": "4c1e0ee3f416514c22556a4e526c617295fd0730",
+      "source_root": "/root/rtdl_goal3556_current"
+    }
+  ],
+  "scale": "standard",
+  "schema": "rtdl.goal3536.v2_8_vs_v2_3_10s_steady_state.v1",
+  "seed_artifact": "docs/reports/goal3558_v2_9_full_packet_after_rtnn_same_scalar_a5000_cap250k/summary.json",
+  "summary": {
+    "geomean_speedup": 0.9978358833530677,
+    "max_speedup": 0.9978358833530677,
+    "median_speedup": 0.9978358833530677,
+    "min_speedup": 0.9978358833530677,
+    "observed_target_miss_count": 0,
+    "observed_target_misses": [],
+    "ratio_count": 1,
+    "row_count": 1,
+    "target_met_by_observed_pair_count": 1,
+    "target_met_by_plan_pair_count": 1
+  },
+  "target_measured_sec": 10.0,
+  "v23_root": "/root/rtdl_goal3556_v23_overlay",
+  "v28_root": "/root/rtdl_goal3556_current"
+}

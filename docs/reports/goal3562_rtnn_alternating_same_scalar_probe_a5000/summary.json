@@ -1,0 +1,126 @@
+{
+  "median_metric_sec": {
+    "v23": 0.0013876250013709068,
+    "v28": 0.0013725976459681988
+  },
+  "repeat": 9000,
+  "runs": [
+    {
+      "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3562_rtnn_alternating_same_scalar_probe_a5000/v23_trial1.json",
+      "elapsed_sec": 0.0013344231992959976,
+      "lane": "v23",
+      "max_sec": 0.023791802115738392,
+      "metric_sec": 0.0013876250013709068,
+      "min_sec": 0.0012928368523716927,
+      "trial": 1,
+      "wall_sec": 18.32589181419462
+    },
+    {
+      "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3562_rtnn_alternating_same_scalar_probe_a5000/v28_trial1.json",
+      "elapsed_sec": 0.001577458344399929,
+      "lane": "v28",
+      "max_sec": 0.0550093799829483,
+      "metric_sec": 0.0015867901965975761,
+      "min_sec": 0.0014840811491012573,
+      "trial": 1,
+      "wall_sec": 21.122883760370314
+    },
+    {
+      "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3562_rtnn_alternating_same_scalar_probe_a5000/v23_trial2.json",
+      "elapsed_sec": 0.0031152181327342987,
+      "lane": "v23",
+      "max_sec": 0.0754198906943202,
+      "metric_sec": 0.0013341009616851807,
+      "min_sec": 0.0013126414269208908,
+      "trial": 2,
+      "wall_sec": 17.105037974193692
+    },
+    {
+      "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3562_rtnn_alternating_same_scalar_probe_a5000/v28_trial2.json",
+      "elapsed_sec": 0.0012605665251612663,
+      "lane": "v28",
+      "max_sec": 0.07483615819364786,
+      "metric_sec": 0.001325730700045824,
+      "min_sec": 0.0012457147240638733,
+      "trial": 2,
+      "wall_sec": 17.832444310188293
+    },
+    {
+      "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3562_rtnn_alternating_same_scalar_probe_a5000/v23_trial3.json",
+      "elapsed_sec": 0.0018910905346274376,
+      "lane": "v23",
+      "max_sec": 0.09367852378636599,
+      "metric_sec": 0.0015425030142068863,
+      "min_sec": 0.0014457069337368011,
+      "trial": 3,
+      "wall_sec": 19.97939820960164
+    },
+    {
+      "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3562_rtnn_alternating_same_scalar_probe_a5000/v28_trial3.json",
+      "elapsed_sec": 0.0020917998626828194,
+      "lane": "v28",
+      "max_sec": 0.9596485551446676,
+      "metric_sec": 0.0013725976459681988,
+      "min_sec": 0.0012851012870669365,
+      "trial": 3,
+      "wall_sec": 24.350250625051558
+    },
+    {
+      "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3562_rtnn_alternating_same_scalar_probe_a5000/v23_trial4.json",
+      "elapsed_sec": 0.0014778925105929375,
+      "lane": "v23",
+      "max_sec": 0.020040477626025677,
+      "metric_sec": 0.0014954842627048492,
+      "min_sec": 0.0014438256621360779,
+      "trial": 4,
+      "wall_sec": 20.110726452432573
+    },
+    {
+      "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3562_rtnn_alternating_same_scalar_probe_a5000/v28_trial4.json",
+      "elapsed_sec": 0.0013769082725048065,
+      "lane": "v28",
+      "max_sec": 0.020824884995818138,
+      "metric_sec": 0.0014001117087900639,
+      "min_sec": 0.0013105114921927452,
+      "trial": 4,
+      "wall_sec": 19.00366321578622
+    },
+    {
+      "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3562_rtnn_alternating_same_scalar_probe_a5000/v23_trial5.json",
+      "elapsed_sec": 0.0013396777212619781,
+      "lane": "v23",
+      "max_sec": 0.053883638232946396,
+      "metric_sec": 0.0013622487895190716,
+      "min_sec": 0.001288061961531639,
+      "trial": 5,
+      "wall_sec": 17.657179604284465
+    },
+    {
+      "artifact": "/root/rtdl_goal3556_current/docs/reports/goal3562_rtnn_alternating_same_scalar_probe_a5000/v28_trial5.json",
+      "elapsed_sec": 0.0013677049428224564,
+      "lane": "v28",
+      "max_sec": 0.07686504535377026,
+      "metric_sec": 0.0013380171731114388,
+      "min_sec": 0.0013173818588256836,
+      "trial": 5,
+      "wall_sec": 18.525557310320437
+    }
+  ],
+  "v28_speedup_vs_v23": 1.0109481139260648,
+  "values": {
+    "v23": [
+      0.0013876250013709068,
+      0.0013341009616851807,
+      0.0015425030142068863,
+      0.0014954842627048492,
+      0.0013622487895190716
+    ],
+    "v28": [
+      0.0015867901965975761,
+      0.001325730700045824,
+      0.0013725976459681988,
+      0.0014001117087900639,
+      0.0013380171731114388
+    ]
+  }
+}
