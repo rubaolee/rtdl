@@ -5821,6 +5821,26 @@ static void ensure_point_closed_shape_boundary_event_pipeline()
 
 static void specialize_closed_shape_membership_source_from_env(std::string& src)
 {
+    if (const char* raw_eps = std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_DEVICE_PREDICATE_EPS")) {
+        char* end = nullptr;
+        const double eps = std::strtod(raw_eps, &end);
+        if (end == raw_eps || (end && *end != '\0') || !std::isfinite(eps) || eps < 0.0) {
+            throw std::runtime_error(
+                "RTDL_OPTIX_POINT_PRIMITIVE_DEVICE_PREDICATE_EPS must be a finite non-negative number");
+        }
+        char replacement[96];
+        std::snprintf(
+            replacement,
+            sizeof(replacement),
+            "const float point_eps = %.9gf;",
+            eps);
+        const std::string needle = "const float point_eps = 1.0e-4f;";
+        const size_t pos = src.find(needle);
+        if (pos == std::string::npos) {
+            throw std::runtime_error("failed to specialize closed-shape membership device predicate epsilon");
+        }
+        src.replace(pos, needle.size(), replacement);
+    }
     if (const char* raw_extent = std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_QUERY_HALF_EXTENT")) {
         char* end = nullptr;
         const double extent = std::strtod(raw_extent, &end);

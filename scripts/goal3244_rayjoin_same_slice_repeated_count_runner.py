@@ -269,6 +269,7 @@ def run_rtdl_samples(
     point_order_mode: str = "natural",
     segment_order_mode: str = "natural",
     pip_scalar_count_pipeline: bool = False,
+    pip_device_predicate_eps: float | None = None,
     internal_query_repeat: int = 1,
     internal_warmup: int = 0,
 ) -> dict[str, Any]:
@@ -286,14 +287,24 @@ def run_rtdl_samples(
         raise ValueError("left_id_dense_count currently requires natural LSI segment order")
     if pip_scalar_count_pipeline and workload != "pip":
         raise ValueError("pip_scalar_count_pipeline is only supported for RTDL PIP samples")
+    if pip_device_predicate_eps is not None and workload != "pip":
+        raise ValueError("pip_device_predicate_eps is only supported for RTDL PIP samples")
+    if pip_device_predicate_eps is not None and pip_device_predicate_eps < 0.0:
+        raise ValueError("pip_device_predicate_eps must be non-negative")
     if internal_query_repeat <= 0:
         raise ValueError("internal_query_repeat must be positive")
     if internal_warmup < 0:
         raise ValueError("internal_warmup must be non-negative")
-    if (internal_query_repeat != 1 or internal_warmup != 0) and not (
+    supports_internal_repeat = (
         workload == "lsi" and lsi_count_route == "left_id_dense_count"
-    ):
-        raise ValueError("internal query repeat is currently supported only for RTDL LSI left_id_dense_count")
+    ) or (
+        workload == "pip" and count_mode != PIP_BOUNDARY_EVENT_COUNT_MODE
+    )
+    if (internal_query_repeat != 1 or internal_warmup != 0) and not supports_internal_repeat:
+        raise ValueError(
+            "internal query repeat is currently supported only for RTDL LSI left_id_dense_count "
+            "or RTDL PIP prepared count modes"
+        )
 
     query_sec: list[float] = []
     validation_exact_query_sec: list[float] = []
@@ -319,6 +330,12 @@ def run_rtdl_samples(
                     "1" if pip_scalar_count_pipeline else None,
                 )
             )
+            stack.enter_context(
+                temporary_env(
+                    "RTDL_OPTIX_POINT_PRIMITIVE_DEVICE_PREDICATE_EPS",
+                    None if pip_device_predicate_eps is None else f"{pip_device_predicate_eps:.17g}",
+                )
+            )
             if workload == "lsi" and lsi_count_route == "left_id_dense_count":
                 return rayjoin_app.run_rayjoin_prepared_optix_left_id_dense_count_workload(
                     "lsi",
@@ -336,6 +353,8 @@ def run_rtdl_samples(
                 device_filtered_boundary_mode=boundary_mode,
                 point_order_mode=point_order_mode,
                 segment_order_mode=segment_order_mode,
+                query_repeat=internal_query_repeat,
+                warmup=internal_warmup,
             )
 
     for index in range(warmup):
@@ -387,6 +406,7 @@ def run_rtdl_samples(
         "lsi_count_route": lsi_count_route if workload == "lsi" else None,
         "query_axis": query_axis,
         "pip_scalar_count_pipeline": pip_scalar_count_pipeline if workload == "pip" else None,
+        "pip_device_predicate_eps": pip_device_predicate_eps if workload == "pip" else None,
         "device_filtered_boundary_mode": (
             boundary_mode
             if count_mode in PIP_POSITIVE_DEVICE_COUNT_MODES
@@ -578,6 +598,15 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     parser.add_argument(
+        "--rtdl-pip-device-predicate-eps",
+        type=float,
+        help=(
+            "Optional generic device-predicate epsilon for RTDL PIP device-side count routes. "
+            "The runner exports RTDL_OPTIX_POINT_PRIMITIVE_DEVICE_PREDICATE_EPS around RTDL PIP "
+            "calls and records the exact value in the artifact."
+        ),
+    )
+    parser.add_argument(
         "--rtdl-lsi-segment-order",
         choices=("natural", "x_then_y", "y_then_x", "morton_xy"),
         default="natural",
@@ -639,6 +668,9 @@ def main(argv: list[str] | None = None) -> int:
             boundary_mode=args.rtdl_pip_boundary_mode,
             point_order_mode=args.rtdl_pip_point_order,
             pip_scalar_count_pipeline=args.rtdl_pip_scalar_count_pipeline,
+            pip_device_predicate_eps=args.rtdl_pip_device_predicate_eps,
+            internal_query_repeat=args.rtdl_internal_query_repeat,
+            internal_warmup=args.rtdl_internal_warmup,
         )
     comparisons = build_comparison_rows(rayjoin_rows, rtdl_rows, workloads=selected_workloads)
     status = (
@@ -685,8 +717,9 @@ def main(argv: list[str] | None = None) -> int:
             ),
             "rtdl_internal_query_repeat": (
                 "When --rtdl-internal-query-repeat is greater than one with the LSI left_id_dense_count "
-                "route, the app helper repeats the native prepared query inside one prepared session and "
-                "records the resulting median plus measured total as the prepared_query_ms lane."
+                "route or a non-boundary-event PIP prepared count mode, the app helper repeats the native "
+                "prepared query inside one prepared session and records the resulting median plus measured "
+                "total as the prepared_query_ms lane."
             ),
             "rtdl_pip_query_axis": (
                 "When --rtdl-pip-query-axis is supplied, the runner exports "
@@ -695,6 +728,12 @@ def main(argv: list[str] | None = None) -> int:
             "rtdl_pip_scalar_count_pipeline": (
                 "When --rtdl-pip-scalar-count-pipeline is supplied, the runner exports "
                 "RTDL_OPTIX_POINT_PRIMITIVE_USE_SCALAR_COUNT_PIPELINE only around RTDL PIP calls and records the choice."
+            ),
+            "rtdl_pip_device_predicate_eps": (
+                "When --rtdl-pip-device-predicate-eps is supplied, the runner exports the generic "
+                "RTDL_OPTIX_POINT_PRIMITIVE_DEVICE_PREDICATE_EPS specialization only around RTDL PIP calls. "
+                "Validated device-side modes still fail closed unless the timed device count matches the exact "
+                "prepared count for every sample."
             ),
             "rtdl_pip_boundary_mode": (
                 "When --rtdl-pip-boundary-mode is supplied with device_filtered_validated, "

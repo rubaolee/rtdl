@@ -162,11 +162,13 @@ Timing results:
             "--rtdl-lsi-segment-order",
             "--rtdl-lsi-count-route",
             "--rtdl-pip-scalar-count-pipeline",
+            "--rtdl-pip-device-predicate-eps",
             "public_speedup_claim_authorized",
             "rayjoin_paper_reproduction_claim_authorized",
             "rtdl_beats_rayjoin_claim_authorized",
             "true_zero_copy_claim_authorized",
             "generic PIP probe ordering",
+            "RTDL_OPTIX_POINT_PRIMITIVE_DEVICE_PREDICATE_EPS",
             "generic locality probe",
             "RayJoin query_exec PIP still does not expose positive assignment count",
             "does not divide it by repeat",
@@ -398,6 +400,47 @@ Timing results:
         self.assertEqual(calls[0]["kwargs"]["warmup"], 20)
         self.assertEqual(row["counts"]["last"], 4977)
 
+    def test_rtdl_pip_prepared_count_passes_internal_repeat_to_app_helper(self) -> None:
+        calls: list[dict[str, object]] = []
+
+        def fake_run(*args, **kwargs):
+            calls.append({"args": args, "kwargs": dict(kwargs)})
+            return {
+                "phases_sec": {
+                    "prepared_query_sec": 0.00036,
+                    "prepared_query_sec_total_sec": 3.6,
+                    "validation_exact_query_sec": 0.0022,
+                    "prepare_query_points_sec": 0.00005,
+                    "query_pack_sec": 0.0001,
+                    "prepare_static_scene_sec": 0.0008,
+                },
+                "summary": {
+                    "positive_assignment_count": 1417,
+                    "device_filtered_count_matches_exact": True,
+                },
+                "row_count": 1417,
+                "native_phase_timings": {"mode": "prepared_points_device_filtered_count"},
+            }
+
+        with mock.patch.object(MODULE.rayjoin_app, "run_rayjoin_prepared_optix_workload", side_effect=fake_run):
+            row = MODULE.run_rtdl_samples(
+                workload="pip",
+                dataset="fake.cdb",
+                warmup=0,
+                repeat=1,
+                count_mode="device_filtered_prepared_points_validated",
+                internal_query_repeat=10000,
+                internal_warmup=20,
+            )
+
+        self.assertEqual(row["internal_query_repeat"], 10000)
+        self.assertEqual(row["internal_warmup"], 20)
+        self.assertEqual(row["prepared_query_total_ms"]["samples"], [3600.0])
+        self.assertEqual(row["validation_exact_query_ms"]["samples"], [2.2])
+        self.assertEqual(calls[0]["kwargs"]["query_repeat"], 10000)
+        self.assertEqual(calls[0]["kwargs"]["warmup"], 20)
+        self.assertEqual(calls[0]["kwargs"]["count_mode"], "device_filtered_prepared_points_validated")
+
     def test_rtdl_pip_scalar_count_pipeline_is_scoped_and_recorded(self) -> None:
         observed_env: list[str | None] = []
 
@@ -434,6 +477,60 @@ Timing results:
         self.assertTrue(row["pip_scalar_count_pipeline"])
         self.assertEqual(row["query_axis"], "z_point")
         self.assertEqual(row["device_filtered_boundary_mode"], "inclusive")
+
+    def test_rtdl_pip_device_predicate_eps_is_scoped_and_recorded(self) -> None:
+        observed_env: list[str | None] = []
+
+        def fake_run(*args, **kwargs):
+            observed_env.append(os.environ.get("RTDL_OPTIX_POINT_PRIMITIVE_DEVICE_PREDICATE_EPS"))
+            return {
+                "phases_sec": {
+                    "prepared_query_sec": 0.00031,
+                    "validation_exact_query_sec": 0.00062,
+                    "query_pack_sec": 0.0001,
+                    "prepare_static_scene_sec": 0.0002,
+                },
+                "summary": {
+                    "positive_assignment_count": 1417,
+                    "device_filtered_count_matches_exact": True,
+                },
+                "row_count": 1417,
+                "native_phase_timings": {"mode": "device_filtered_count"},
+            }
+
+        with mock.patch.object(MODULE.rayjoin_app, "run_rayjoin_prepared_optix_workload", side_effect=fake_run):
+            row = MODULE.run_rtdl_samples(
+                workload="pip",
+                dataset="fake.cdb",
+                warmup=0,
+                repeat=1,
+                count_mode="device_filtered_validated",
+                pip_device_predicate_eps=1.0e-9,
+            )
+
+        self.assertEqual(observed_env, ["1.0000000000000001e-09"])
+        self.assertEqual(row["pip_device_predicate_eps"], 1.0e-9)
+        self.assertIsNone(os.environ.get("RTDL_OPTIX_POINT_PRIMITIVE_DEVICE_PREDICATE_EPS"))
+
+    def test_rtdl_non_pip_rejects_device_predicate_eps(self) -> None:
+        with self.assertRaisesRegex(ValueError, "pip_device_predicate_eps is only supported"):
+            MODULE.run_rtdl_samples(
+                workload="lsi",
+                dataset="fake.cdb",
+                warmup=0,
+                repeat=1,
+                pip_device_predicate_eps=1.0e-9,
+            )
+
+    def test_rtdl_pip_rejects_negative_device_predicate_eps(self) -> None:
+        with self.assertRaisesRegex(ValueError, "pip_device_predicate_eps must be non-negative"):
+            MODULE.run_rtdl_samples(
+                workload="pip",
+                dataset="fake.cdb",
+                warmup=0,
+                repeat=1,
+                pip_device_predicate_eps=-1.0,
+            )
 
     def test_rtdl_pip_boundary_event_count_route_discloses_non_membership_contract(self) -> None:
         calls: list[dict[str, object]] = []
@@ -549,6 +646,7 @@ Timing results:
                 dataset="fake.cdb",
                 warmup=0,
                 repeat=1,
+                count_mode="boundary_event_point_id_count_device_columns",
                 internal_query_repeat=2,
             )
 
