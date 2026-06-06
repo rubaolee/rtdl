@@ -226,13 +226,23 @@ For the simple authored tiled fixtures in the benchmark packet:
 | LSI dense left-id count at stress scale | RTDL/OptiX dense left-id count | RT traversal plus the generic dense left-id continuation beats the dense CuPy pair test at stress scale |
 | Overlay active pair-dependency count | CuPy dense CUDA-core active count | The authored square fixture has cheap bounds rejection, so dense CUDA-core partner code wins |
 
+For the bounded public CDB slices used in Goal3593:
+
+| Contract | Recommended route | Reason |
+| --- | --- | --- |
+| PIP positive assignment count | CuPy dense CUDA-core count | Public county PIP still favors the warmed dense CUDA-core baseline at this size |
+| LSI segment-intersection count | RTDL/OptiX prepared route | Public CDB segment columns strongly favor RT traversal over dense all-pairs CUDA-core segment tests |
+| Overlay active pair-dependency count | RTDL/OptiX prepared route | Public CDB polygon-pair dependency filtering strongly favors the prepared RTDL/OptiX route over dense CuPy active-count testing |
+
 This is an explicit user/program decision, not automatic dispatch. The app
 should record the selected route, partner, RT-core status, count contract, and
 claim boundary in its output. See:
 
 - `scripts/goal3589_rayjoin_cupy_same_contract_baseline.py`
+- `scripts/goal3593_rayjoin_public_cdb_cupy_same_contract_probe.py`
 - `docs/reports/goal3589_rayjoin_cupy_same_contract_baseline_2026-06-06.md`
 - `docs/reports/goal3592_rayjoin_explicit_mixed_route_reference_packet_2026-06-06.md`
+- `docs/reports/goal3593_rayjoin_public_cdb_cupy_same_contract_probe_2026-06-06.md`
 
 The lesson is practical: use RTDL/OptiX where RT traversal pays, use a partner
 where a cheap dense CUDA-core reduction is the better tool, and keep the choice

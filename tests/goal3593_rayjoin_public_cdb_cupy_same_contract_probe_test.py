@@ -12,6 +12,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "goal3593_rayjoin_public_cdb_cupy_same_contract_probe.py"
 ARTIFACT = ROOT / "docs" / "reports" / "goal3593_rayjoin_public_cdb_cupy_same_contract_a5000" / "summary.json"
 REPORT = ROOT / "docs" / "reports" / "goal3593_rayjoin_public_cdb_cupy_same_contract_probe_2026-06-06.md"
+README = ROOT / "examples" / "v2_0" / "research_benchmarks" / "spatial_rayjoin" / "README.md"
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 
@@ -94,6 +95,17 @@ class Goal3593RayJoinPublicCdbCupySameContractProbeTest(unittest.TestCase):
             "Overlay active-pair dependency count also strongly favors RTDL/OptiX",
             "not a RayJoin paper reproduction",
             "not automatic dispatch",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_readme_documents_public_cdb_route_choice(self) -> None:
+        text = README.read_text(encoding="utf-8")
+        for phrase in (
+            "bounded public CDB slices used in Goal3593",
+            "PIP positive assignment count | CuPy dense CUDA-core count",
+            "LSI segment-intersection count | RTDL/OptiX prepared route",
+            "Overlay active pair-dependency count | RTDL/OptiX prepared route",
+            "goal3593_rayjoin_public_cdb_cupy_same_contract_probe",
         ):
             self.assertIn(phrase, text)
 
