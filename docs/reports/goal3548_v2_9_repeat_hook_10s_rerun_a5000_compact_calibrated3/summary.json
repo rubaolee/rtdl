@@ -1,0 +1,2228 @@
+{
+  "boundary": "Goal3536 is an internal 10-second steady-state measurement protocol. It separates target-compliant rows from partial diagnostics and does not authorize public release or speedup claims.",
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "internal_results_only": true,
+    "package_install_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "comparisons": [
+    {
+      "app_id": "barnes_hut",
+      "case_id": "barnes_hut_optix_node_coverage",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "node_coverage_prepared_threshold_decision",
+      "measurement_boundary": "Internal comparison only. Rows with target_met=false are diagnostic and must not be used as final 10s steady-state evidence.",
+      "v23_primary_metric_sec": 0.008089922368526459,
+      "v23_target_met_by_observed_sum": true,
+      "v23_target_met_by_plan": true,
+      "v28_primary_metric_sec": 0.008298764936625957,
+      "v28_speedup_vs_v23": 0.9748345001100359,
+      "v28_target_met_by_observed_sum": true,
+      "v28_target_met_by_plan": true
+    },
+    {
+      "app_id": "contact_manifold",
+      "case_id": "contact_manifold_optix_aabb_broadphase_collect_k",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "generic_aabb_broadphase_collect_k",
+      "measurement_boundary": "Internal comparison only. Rows with target_met=false are diagnostic and must not be used as final 10s steady-state evidence.",
+      "v23_primary_metric_sec": 0.027590527199208736,
+      "v23_target_met_by_observed_sum": true,
+      "v23_target_met_by_plan": true,
+      "v28_primary_metric_sec": 0.02764961263164878,
+      "v28_speedup_vs_v23": 0.9978630647297962,
+      "v28_target_met_by_observed_sum": true,
+      "v28_target_met_by_plan": true
+    },
+    {
+      "app_id": "hausdorff_xhd",
+      "case_id": "hausdorff_optix_threshold",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "hausdorff_threshold_decision",
+      "measurement_boundary": "Internal comparison only. Rows with target_met=false are diagnostic and must not be used as final 10s steady-state evidence.",
+      "v23_primary_metric_sec": 0.031788513995707035,
+      "v23_target_met_by_observed_sum": true,
+      "v23_target_met_by_plan": true,
+      "v28_primary_metric_sec": 0.03187842667102814,
+      "v28_speedup_vs_v23": 0.9971795133979175,
+      "v28_target_met_by_observed_sum": true,
+      "v28_target_met_by_plan": true
+    },
+    {
+      "app_id": "librts_spatial_index",
+      "case_id": "librts_optix_aabb_index",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "aabb_index_all_count_only",
+      "measurement_boundary": "Internal comparison only. Rows with target_met=false are diagnostic and must not be used as final 10s steady-state evidence.",
+      "v23_primary_metric_sec": 0.0007602795958518982,
+      "v23_target_met_by_observed_sum": true,
+      "v23_target_met_by_plan": true,
+      "v28_primary_metric_sec": 0.0007505631074309349,
+      "v28_speedup_vs_v23": 1.0129455982112168,
+      "v28_target_met_by_observed_sum": true,
+      "v28_target_met_by_plan": true
+    },
+    {
+      "app_id": "raydb_style",
+      "case_id": "raydb_optix_partner_resident_count",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "raydb_grouped_count",
+      "measurement_boundary": "Internal comparison only. Rows with target_met=false are diagnostic and must not be used as final 10s steady-state evidence.",
+      "v23_primary_metric_sec": 0.000591503456234932,
+      "v23_target_met_by_observed_sum": true,
+      "v23_target_met_by_plan": true,
+      "v28_primary_metric_sec": 0.000590943731367588,
+      "v28_speedup_vs_v23": 1.0009471711732156,
+      "v28_target_met_by_observed_sum": true,
+      "v28_target_met_by_plan": true
+    },
+    {
+      "app_id": "raydb_style",
+      "case_id": "raydb_optix_partner_resident_sum",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "raydb_grouped_sum",
+      "measurement_boundary": "Internal comparison only. Rows with target_met=false are diagnostic and must not be used as final 10s steady-state evidence.",
+      "v23_primary_metric_sec": 0.0007897932082414627,
+      "v23_target_met_by_observed_sum": true,
+      "v23_target_met_by_plan": true,
+      "v28_primary_metric_sec": 0.0007895715534687042,
+      "v28_speedup_vs_v23": 1.0002807279109598,
+      "v28_target_met_by_observed_sum": true,
+      "v28_target_met_by_plan": true
+    },
+    {
+      "app_id": "robot_collision",
+      "case_id": "robot_collision_optix_prepared_device_buffers",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "prepared_collision_flags",
+      "measurement_boundary": "Internal comparison only. Rows with target_met=false are diagnostic and must not be used as final 10s steady-state evidence.",
+      "v23_primary_metric_sec": 0.0018889214843511581,
+      "v23_target_met_by_observed_sum": true,
+      "v23_target_met_by_plan": true,
+      "v28_primary_metric_sec": 0.0018331240862607956,
+      "v28_speedup_vs_v23": 1.0304384184947228,
+      "v28_target_met_by_observed_sum": true,
+      "v28_target_met_by_plan": true
+    },
+    {
+      "app_id": "rt_dbscan",
+      "case_id": "rt_dbscan_optix_grouped_stream",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "dbscan_cluster_signature",
+      "measurement_boundary": "Internal comparison only. Rows with target_met=false are diagnostic and must not be used as final 10s steady-state evidence.",
+      "v23_primary_metric_sec": 1.3651568870991468,
+      "v23_target_met_by_observed_sum": true,
+      "v23_target_met_by_plan": true,
+      "v28_primary_metric_sec": 1.4297579741105437,
+      "v28_speedup_vs_v23": 0.9548167674661263,
+      "v28_target_met_by_observed_sum": true,
+      "v28_target_met_by_plan": true
+    },
+    {
+      "app_id": "rtnn",
+      "case_id": "rtnn_optix_prepared_3d_ranked_summary",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "prepared_3d_ranked_summary",
+      "measurement_boundary": "Internal comparison only. Rows with target_met=false are diagnostic and must not be used as final 10s steady-state evidence.",
+      "v23_primary_metric_sec": 0.0014103883877396584,
+      "v23_target_met_by_observed_sum": false,
+      "v23_target_met_by_plan": true,
+      "v28_primary_metric_sec": 0.0013249684125185013,
+      "v28_speedup_vs_v23": 1.0644694427535752,
+      "v28_target_met_by_observed_sum": true,
+      "v28_target_met_by_plan": true
+    },
+    {
+      "app_id": "spatial_rayjoin",
+      "case_id": "spatial_rayjoin_optix_prepared_full_route",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "rayjoin_all_backend_query_summary",
+      "measurement_boundary": "Internal comparison only. Rows with target_met=false are diagnostic and must not be used as final 10s steady-state evidence.",
+      "v23_primary_metric_sec": 0.00017939461395144463,
+      "v23_target_met_by_observed_sum": true,
+      "v23_target_met_by_plan": true,
+      "v28_primary_metric_sec": 0.00017813965678215027,
+      "v28_speedup_vs_v23": 1.0070447939103704,
+      "v28_target_met_by_observed_sum": true,
+      "v28_target_met_by_plan": true
+    },
+    {
+      "app_id": "triangle_counting",
+      "case_id": "triangle_counting_optix_rt_graph_2a1_partner",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "triangle_count_rt_graph_2a1_summary",
+      "measurement_boundary": "Internal comparison only. Rows with target_met=false are diagnostic and must not be used as final 10s steady-state evidence.",
+      "v23_primary_metric_sec": 0.00035090837627649307,
+      "v23_target_met_by_observed_sum": true,
+      "v23_target_met_by_plan": true,
+      "v28_primary_metric_sec": 0.00035833660513162613,
+      "v28_speedup_vs_v23": 0.9792702482839997,
+      "v28_target_met_by_observed_sum": true,
+      "v28_target_met_by_plan": true
+    }
+  ],
+  "dry_run": false,
+  "generated_at": "2026-06-06T04:14:49Z",
+  "goal": 3536,
+  "gpu": "NVIDIA RTX A5000, 580.126.09, 24564 MiB",
+  "repeat_safety_factor": 1.5,
+  "rows": [
+    {
+      "app_id": "hausdorff_xhd",
+      "backend": "optix",
+      "case_id": "hausdorff_optix_threshold",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "hausdorff_threshold_decision",
+      "execution": {
+        "app_id": "hausdorff_xhd",
+        "case_id": "hausdorff_optix_threshold",
+        "observed_measured_sec": 15.194909689947963,
+        "observed_measured_sec_method": "median_primary_metric_times_planned_internal_repeat",
+        "primary_metric_sec": 0.031788513995707035,
+        "runs": [
+          {
+            "primary_metric_sec": 0.031788513995707035,
+            "primary_metric_source": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 18.727997140958905
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v23",
+      "plan": {
+        "app_id": "hausdorff_xhd",
+        "backend": "optix",
+        "base_repeat": 1,
+        "case_id": "hausdorff_optix_threshold",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 15.01563283894211,
+        "estimated_wall_sec": 16.491585315670818,
+        "lane": "v23",
+        "method": "internal_repeat_knob",
+        "planned_command": [
+          "python3",
+          "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+          "--backend",
+          "optix",
+          "--copies",
+          "4096",
+          "--optix-summary-mode",
+          "directed_threshold_prepared",
+          "--hausdorff-threshold",
+          "0.4",
+          "--require-rt-core",
+          "--repeat",
+          "478",
+          "--warmup",
+          "0"
+        ],
+        "planned_repeat": 478,
+        "reason": "Existing app-level repeat knob can stretch the hot query loop.",
+        "repeat_flag": "--repeat",
+        "repeat_planning_target_sec": 15.0,
+        "seed_primary_metric_sec": 0.031413457822054625,
+        "seed_wall_median_sec": 1.5073659345507622,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true
+      },
+      "source_commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+      "source_root": "/root/rtdl_goal3548_v23_overlay"
+    },
+    {
+      "app_id": "spatial_rayjoin",
+      "backend": "optix",
+      "case_id": "spatial_rayjoin_optix_prepared_full_route",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "rayjoin_all_backend_query_summary",
+      "execution": {
+        "app_id": "spatial_rayjoin",
+        "case_id": "spatial_rayjoin_optix_prepared_full_route",
+        "observed_measured_sec": 14.600927629508078,
+        "observed_measured_sec_method": "median_primary_metric_times_planned_internal_repeat",
+        "primary_metric_sec": 0.00017939461395144463,
+        "runs": [
+          {
+            "primary_metric_sec": 0.00017939461395144463,
+            "primary_metric_source": "prepared_query_total_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 16.85881376825273
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v23",
+      "plan": {
+        "app_id": "spatial_rayjoin",
+        "backend": "optix",
+        "base_repeat": 1,
+        "case_id": "spatial_rayjoin_optix_prepared_full_route",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 15.000130143016577,
+        "estimated_wall_sec": 16.72476138174534,
+        "lane": "v23",
+        "method": "internal_repeat_knob",
+        "planned_command": [
+          "python3",
+          "examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
+          "--workload",
+          "all",
+          "--execution-route",
+          "prepared_optix",
+          "--result-mode",
+          "count",
+          "--no-rows",
+          "--repeat",
+          "81390",
+          "--warmup",
+          "0"
+        ],
+        "planned_repeat": 81390,
+        "reason": "Existing app-level repeat knob can stretch the hot query loop.",
+        "repeat_flag": "--repeat",
+        "repeat_planning_target_sec": 15.0,
+        "seed_primary_metric_sec": 0.00018429942429065704,
+        "seed_wall_median_sec": 1.7248155381530523,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true
+      },
+      "source_commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+      "source_root": "/root/rtdl_goal3548_v23_overlay"
+    },
+    {
+      "app_id": "rt_dbscan",
+      "backend": "optix",
+      "case_id": "rt_dbscan_optix_grouped_stream",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "dbscan_cluster_signature",
+      "execution": {
+        "app_id": "rt_dbscan",
+        "case_id": "rt_dbscan_optix_grouped_stream",
+        "observed_measured_sec": 15.111487572081387,
+        "observed_measured_sec_method": "sum_of_wrapper_primary_metrics",
+        "primary_metric_sec": 1.3651568870991468,
+        "runs": [
+          {
+            "primary_metric_sec": 1.3324224287644029,
+            "primary_metric_source": "elapsed_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 2.0835722014307976
+          },
+          {
+            "primary_metric_sec": 1.3651568870991468,
+            "primary_metric_source": "elapsed_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 2.1332492334768176
+          },
+          {
+            "primary_metric_sec": 1.3599360333755612,
+            "primary_metric_source": "elapsed_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 2.0642831111326814
+          },
+          {
+            "primary_metric_sec": 1.397037036716938,
+            "primary_metric_source": "elapsed_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 2.127453314140439
+          },
+          {
+            "primary_metric_sec": 1.3361980700865388,
+            "primary_metric_source": "elapsed_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 2.0381190730258822
+          },
+          {
+            "primary_metric_sec": 1.4935933575034142,
+            "primary_metric_source": "elapsed_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 2.1945977797731757
+          },
+          {
+            "primary_metric_sec": 1.396541110239923,
+            "primary_metric_source": "elapsed_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 2.156372972764075
+          },
+          {
+            "primary_metric_sec": 1.4029139168560505,
+            "primary_metric_source": "elapsed_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 2.11289638094604
+          },
+          {
+            "primary_metric_sec": 1.3184647904708982,
+            "primary_metric_source": "elapsed_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 2.038876283913851
+          },
+          {
+            "primary_metric_sec": 1.3894978109747171,
+            "primary_metric_source": "elapsed_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 2.160850754007697
+          },
+          {
+            "primary_metric_sec": 1.3197261299937963,
+            "primary_metric_source": "elapsed_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 2.020169220864773
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v23",
+      "plan": {
+        "app_id": "rt_dbscan",
+        "backend": "optix",
+        "case_id": "rt_dbscan_optix_grouped_stream",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 15.107823918573558,
+        "estimated_wall_sec": 25.216124766506255,
+        "lane": "v23",
+        "method": "wrapper_repeat_subprocess",
+        "planned_command": [
+          "python3",
+          "examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
+          "--mode",
+          "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d",
+          "--dataset",
+          "clustered3d",
+          "--point-count",
+          "8192",
+          "--partner",
+          "cupy",
+          "--grouped-union-query-block-size",
+          "4096",
+          "--no-validation"
+        ],
+        "reason": "No app repeat knob exists; wrapper repeats whole subprocess while reporting setup separately.",
+        "repeat_planning_target_sec": 15.0,
+        "seed_primary_metric_sec": 1.3734385380521417,
+        "seed_wall_median_sec": 2.292374978773296,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true,
+        "wrapper_repeats": 11
+      },
+      "source_commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+      "source_root": "/root/rtdl_goal3548_v23_overlay"
+    },
+    {
+      "app_id": "robot_collision",
+      "backend": "optix",
+      "case_id": "robot_collision_optix_prepared_device_buffers",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "prepared_collision_flags",
+      "execution": {
+        "app_id": "robot_collision",
+        "case_id": "robot_collision_optix_prepared_device_buffers",
+        "observed_measured_sec": 14.53147297911346,
+        "observed_measured_sec_method": "median_primary_metric_times_planned_internal_repeat",
+        "primary_metric_sec": 0.0018889214843511581,
+        "runs": [
+          {
+            "primary_metric_sec": 0.0018889214843511581,
+            "primary_metric_source": "tail_medians.total_run_seconds",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 318.506760568358
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v23",
+      "plan": {
+        "app_id": "robot_collision",
+        "backend": "optix",
+        "base_repeat": 5,
+        "case_id": "robot_collision_optix_prepared_device_buffers",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 15.000106523744762,
+        "estimated_wall_sec": 299.63592481520027,
+        "lane": "v23",
+        "method": "internal_repeat_knob",
+        "planned_command": [
+          "python3",
+          "examples/v2_0/research_benchmarks/robot_collision/rtdl_robot_collision_benchmark_app.py",
+          "--mode",
+          "optix_prepared_device_buffers",
+          "--dataset",
+          "scaled",
+          "--pose-count",
+          "8192",
+          "--obstacle-count",
+          "1024",
+          "--link-count",
+          "2",
+          "--repeats",
+          "7693",
+          "--warmup",
+          "1"
+        ],
+        "planned_repeat": 7693,
+        "reason": "Existing app-level repeat knob can stretch the hot query loop.",
+        "repeat_flag": "--repeats",
+        "repeat_planning_target_sec": 15.0,
+        "seed_primary_metric_sec": 0.001949838362634182,
+        "seed_wall_median_sec": 284.6455674832687,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true
+      },
+      "source_commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+      "source_root": "/root/rtdl_goal3548_v23_overlay"
+    },
+    {
+      "app_id": "raydb_style",
+      "backend": "optix",
+      "case_id": "raydb_optix_partner_resident_count",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "raydb_grouped_count",
+      "execution": {
+        "app_id": "raydb_style",
+        "case_id": "raydb_optix_partner_resident_count",
+        "observed_measured_sec": 16.28349864669144,
+        "observed_measured_sec_method": "median_primary_metric_times_planned_internal_repeat",
+        "primary_metric_sec": 0.000591503456234932,
+        "runs": [
+          {
+            "primary_metric_sec": 0.000591503456234932,
+            "primary_metric_source": "metadata.timings.query_median_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 29.633589612320065
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v23",
+      "plan": {
+        "app_id": "raydb_style",
+        "backend": "optix",
+        "base_repeat": 12,
+        "case_id": "raydb_optix_partner_resident_count",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 15.000143939629197,
+        "estimated_wall_sec": 22.347284710034728,
+        "lane": "v23",
+        "method": "internal_repeat_knob",
+        "planned_command": [
+          "python3",
+          "examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+          "--mode",
+          "count",
+          "--backend",
+          "optix_partner_resident_experimental",
+          "--copies",
+          "120000",
+          "--warmup",
+          "2",
+          "--repeat",
+          "27529"
+        ],
+        "planned_repeat": 27529,
+        "reason": "Existing app-level repeat knob can stretch the hot query loop.",
+        "repeat_flag": "--repeat",
+        "repeat_planning_target_sec": 15.0,
+        "seed_primary_metric_sec": 0.0005448851734399796,
+        "seed_wall_median_sec": 7.353679392486811,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true
+      },
+      "source_commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+      "source_root": "/root/rtdl_goal3548_v23_overlay"
+    },
+    {
+      "app_id": "raydb_style",
+      "backend": "optix",
+      "case_id": "raydb_optix_partner_resident_sum",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "raydb_grouped_sum",
+      "execution": {
+        "app_id": "raydb_style",
+        "case_id": "raydb_optix_partner_resident_sum",
+        "observed_measured_sec": 15.020287234336138,
+        "observed_measured_sec_method": "median_primary_metric_times_planned_internal_repeat",
+        "primary_metric_sec": 0.0007897932082414627,
+        "runs": [
+          {
+            "primary_metric_sec": 0.0007897932082414627,
+            "primary_metric_source": "metadata.timings.query_median_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 26.05620248336345
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v23",
+      "plan": {
+        "app_id": "raydb_style",
+        "backend": "optix",
+        "base_repeat": 12,
+        "case_id": "raydb_optix_partner_resident_sum",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 15.000139956362545,
+        "estimated_wall_sec": 22.143077514134347,
+        "lane": "v23",
+        "method": "internal_repeat_knob",
+        "planned_command": [
+          "python3",
+          "examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+          "--mode",
+          "sum",
+          "--backend",
+          "optix_partner_resident_experimental",
+          "--copies",
+          "120000",
+          "--warmup",
+          "2",
+          "--repeat",
+          "19018"
+        ],
+        "planned_repeat": 19018,
+        "reason": "Existing app-level repeat knob can stretch the hot query loop.",
+        "repeat_flag": "--repeat",
+        "repeat_planning_target_sec": 15.0,
+        "seed_primary_metric_sec": 0.0007887338288128376,
+        "seed_wall_median_sec": 7.152402363717556,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true
+      },
+      "source_commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+      "source_root": "/root/rtdl_goal3548_v23_overlay"
+    },
+    {
+      "app_id": "barnes_hut",
+      "backend": "optix",
+      "case_id": "barnes_hut_optix_node_coverage",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "node_coverage_prepared_threshold_decision",
+      "execution": {
+        "app_id": "barnes_hut",
+        "case_id": "barnes_hut_optix_node_coverage",
+        "observed_measured_sec": 15.095795139670372,
+        "observed_measured_sec_method": "median_primary_metric_times_planned_internal_repeat",
+        "primary_metric_sec": 0.008089922368526459,
+        "runs": [
+          {
+            "primary_metric_sec": 0.008089922368526459,
+            "primary_metric_source": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 34.825795269571245
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v23",
+      "plan": {
+        "app_id": "barnes_hut",
+        "backend": "optix",
+        "base_repeat": 1,
+        "case_id": "barnes_hut_optix_node_coverage",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 15.001933973282576,
+        "estimated_wall_sec": 16.353953879326582,
+        "lane": "v23",
+        "method": "internal_repeat_knob",
+        "planned_command": [
+          "python3",
+          "examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+          "--mode",
+          "optix_node_coverage_prepared",
+          "--body-count",
+          "8192",
+          "--skip-validation",
+          "--require-rt-core",
+          "--repeat",
+          "1866",
+          "--warmup",
+          "0"
+        ],
+        "planned_repeat": 1866,
+        "reason": "Existing app-level repeat knob can stretch the hot query loop.",
+        "repeat_flag": "--repeat",
+        "repeat_planning_target_sec": 15.0,
+        "seed_primary_metric_sec": 0.008039621636271477,
+        "seed_wall_median_sec": 1.3600595276802778,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true
+      },
+      "source_commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+      "source_root": "/root/rtdl_goal3548_v23_overlay"
+    },
+    {
+      "app_id": "librts_spatial_index",
+      "backend": "optix",
+      "case_id": "librts_optix_aabb_index",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "aabb_index_all_count_only",
+      "execution": {
+        "app_id": "librts_spatial_index",
+        "case_id": "librts_optix_aabb_index",
+        "observed_measured_sec": 15.039090685546398,
+        "observed_measured_sec_method": "median_primary_metric_times_planned_internal_repeat",
+        "primary_metric_sec": 0.0007602795958518982,
+        "runs": [
+          {
+            "primary_metric_sec": 0.0007602795958518982,
+            "primary_metric_source": "run_phases.query_median_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 16.297380002215505
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v23",
+      "plan": {
+        "app_id": "librts_spatial_index",
+        "backend": "optix",
+        "base_repeat": 1,
+        "case_id": "librts_optix_aabb_index",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 15.000523198861629,
+        "estimated_wall_sec": 16.07054288033396,
+        "lane": "v23",
+        "method": "internal_repeat_knob",
+        "planned_command": [
+          "python3",
+          "examples/v2_0/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+          "--mode",
+          "optix_aabb_index",
+          "--dataset",
+          "uniform",
+          "--operation",
+          "all",
+          "--box-count",
+          "1024",
+          "--query-count",
+          "512",
+          "--repeat",
+          "19781",
+          "--warmup",
+          "0"
+        ],
+        "planned_repeat": 19781,
+        "reason": "Existing app-level repeat knob can stretch the hot query loop.",
+        "repeat_flag": "--repeat",
+        "repeat_planning_target_sec": 15.0,
+        "seed_primary_metric_sec": 0.0007583298720419407,
+        "seed_wall_median_sec": 1.0707780113443732,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true
+      },
+      "source_commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+      "source_root": "/root/rtdl_goal3548_v23_overlay"
+    },
+    {
+      "app_id": "rtnn",
+      "backend": "optix",
+      "case_id": "rtnn_optix_prepared_3d_ranked_summary",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "prepared_3d_ranked_summary",
+      "execution": {
+        "app_id": "rtnn",
+        "case_id": "rtnn_optix_prepared_3d_ranked_summary",
+        "observed_measured_sec": 6.394700950011611,
+        "observed_measured_sec_method": "median_primary_metric_times_planned_internal_repeat",
+        "primary_metric_sec": 0.0014103883877396584,
+        "runs": [
+          {
+            "primary_metric_sec": 0.0014103883877396584,
+            "primary_metric_source": "elapsed_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 10.047374460846186
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": false
+      },
+      "lane": "v23",
+      "plan": {
+        "app_id": "rtnn",
+        "backend": "optix",
+        "base_repeat": 3,
+        "case_id": "rtnn_optix_prepared_3d_ranked_summary",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 15.002327444031835,
+        "estimated_wall_sec": 16.7383396839723,
+        "lane": "v23",
+        "method": "internal_repeat_knob",
+        "planned_command": [
+          "python3",
+          "scripts/goal2348_rtnn_v2_2_external_runner.py",
+          "run-rtdl-batched-3d-neighbors",
+          "--point-file",
+          "docs/reports/goal3548_v2_9_repeat_hook_10s_rerun_a5000_compact_calibrated3/v23/rtnn_uniform_65536.csv",
+          "--radius",
+          "0.02",
+          "--k-max",
+          "50",
+          "--query-batch-size",
+          "65536",
+          "--result-mode",
+          "ranked-summary-raw",
+          "--repeat",
+          "4534",
+          "--json-out",
+          "docs/reports/goal3548_v2_9_repeat_hook_10s_rerun_a5000_compact_calibrated3/v23/rtnn_optix_65536.json"
+        ],
+        "planned_repeat": 4534,
+        "reason": "Existing app-level repeat knob can stretch the hot query loop.",
+        "repeat_flag": "--repeat",
+        "repeat_planning_target_sec": 15.0,
+        "seed_primary_metric_sec": 0.0033088503405451775,
+        "seed_wall_median_sec": 1.7459387909621,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true
+      },
+      "source_commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+      "source_root": "/root/rtdl_goal3548_v23_overlay"
+    },
+    {
+      "app_id": "triangle_counting",
+      "backend": "optix",
+      "case_id": "triangle_counting_optix_rt_graph_2a1_partner",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "triangle_count_rt_graph_2a1_summary",
+      "execution": {
+        "app_id": "triangle_counting",
+        "case_id": "triangle_counting_optix_rt_graph_2a1_partner",
+        "observed_measured_sec": 14.926589601673186,
+        "observed_measured_sec_method": "median_primary_metric_times_planned_internal_repeat",
+        "primary_metric_sec": 0.00035090837627649307,
+        "runs": [
+          {
+            "primary_metric_sec": 0.00035090837627649307,
+            "primary_metric_source": "timing_ms.query_median_ms converted-ms-to-sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 17.408851658925414
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v23",
+      "plan": {
+        "app_id": "triangle_counting",
+        "backend": "optix",
+        "base_repeat": 12,
+        "case_id": "triangle_counting_optix_rt_graph_2a1_partner",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 15.000037050805986,
+        "estimated_wall_sec": 16.923070271499455,
+        "lane": "v23",
+        "method": "internal_repeat_knob",
+        "planned_command": [
+          "python3",
+          "examples/v2_0/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
+          "--mode",
+          "rt_graph_2a1_generic_rt",
+          "--backend",
+          "optix",
+          "--edge-file",
+          "docs/reports/goal3548_v2_9_repeat_hook_10s_rerun_a5000_compact_calibrated3/v23/triangle_k4_cliques_5000.edge",
+          "--edge-format",
+          "binary",
+          "--detail",
+          "summary",
+          "--partner",
+          "cupy",
+          "--warmup",
+          "2",
+          "--repeat",
+          "42537"
+        ],
+        "planned_repeat": 42537,
+        "reason": "Existing app-level repeat knob can stretch the hot query loop.",
+        "repeat_flag": "--repeat",
+        "repeat_planning_target_sec": 15.0,
+        "seed_primary_metric_sec": 0.00035263504832983017,
+        "seed_wall_median_sec": 1.927264841273427,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true
+      },
+      "source_commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+      "source_root": "/root/rtdl_goal3548_v23_overlay"
+    },
+    {
+      "app_id": "contact_manifold",
+      "backend": "optix",
+      "case_id": "contact_manifold_optix_aabb_broadphase_collect_k",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "generic_aabb_broadphase_collect_k",
+      "execution": {
+        "app_id": "contact_manifold",
+        "case_id": "contact_manifold_optix_aabb_broadphase_collect_k",
+        "observed_measured_sec": 17.354441608302295,
+        "observed_measured_sec_method": "median_primary_metric_times_planned_internal_repeat",
+        "primary_metric_sec": 0.027590527199208736,
+        "runs": [
+          {
+            "primary_metric_sec": 0.027590527199208736,
+            "primary_metric_source": "run_phases.emit_aabb_intersection_pair_rows_2d_median_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 18.332693057134748
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v23",
+      "plan": {
+        "app_id": "contact_manifold",
+        "backend": "optix",
+        "base_repeat": 12,
+        "case_id": "contact_manifold_optix_aabb_broadphase_collect_k",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 15.0195541549474,
+        "estimated_wall_sec": 16.400251992046833,
+        "lane": "v23",
+        "method": "internal_repeat_knob",
+        "planned_command": [
+          "python3",
+          "examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
+          "--mode",
+          "aabb_broadphase_collect_k",
+          "--dataset",
+          "grid",
+          "--grid-count",
+          "4096",
+          "--witness-capacity",
+          "4096",
+          "--backend",
+          "optix",
+          "--discovery-backend",
+          "optix",
+          "--discovery-row-capacity",
+          "8192",
+          "--discovery-warmup",
+          "2",
+          "--discovery-repeat",
+          "629"
+        ],
+        "planned_repeat": 629,
+        "reason": "Existing app-level repeat knob can stretch the hot query loop.",
+        "repeat_flag": "--discovery-repeat",
+        "repeat_planning_target_sec": 15.0,
+        "seed_primary_metric_sec": 0.023878464475274086,
+        "seed_wall_median_sec": 1.667239410802722,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true
+      },
+      "source_commit": "2a28365d0246d51f3e3322b546f8a68c58632db4",
+      "source_root": "/root/rtdl_goal3548_v23_overlay"
+    },
+    {
+      "app_id": "hausdorff_xhd",
+      "backend": "optix",
+      "case_id": "hausdorff_optix_threshold",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "hausdorff_threshold_decision",
+      "execution": {
+        "app_id": "hausdorff_xhd",
+        "case_id": "hausdorff_optix_threshold",
+        "observed_measured_sec": 14.440927281975746,
+        "observed_measured_sec_method": "median_primary_metric_times_planned_internal_repeat",
+        "primary_metric_sec": 0.03187842667102814,
+        "runs": [
+          {
+            "primary_metric_sec": 0.03187842667102814,
+            "primary_metric_source": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 18.212064618244767
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v28",
+      "plan": {
+        "app_id": "hausdorff_xhd",
+        "backend": "optix",
+        "base_repeat": 1,
+        "case_id": "hausdorff_optix_threshold",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 15.017319378443062,
+        "estimated_wall_sec": 16.57770904712379,
+        "lane": "v28",
+        "method": "internal_repeat_knob",
+        "planned_command": [
+          "python3",
+          "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+          "--backend",
+          "optix",
+          "--copies",
+          "4096",
+          "--optix-summary-mode",
+          "directed_threshold_prepared",
+          "--hausdorff-threshold",
+          "0.4",
+          "--require-rt-core",
+          "--repeat",
+          "453",
+          "--warmup",
+          "0"
+        ],
+        "planned_repeat": 453,
+        "reason": "Existing app-level repeat knob can stretch the hot query loop.",
+        "repeat_flag": "--repeat",
+        "repeat_planning_target_sec": 15.0,
+        "seed_primary_metric_sec": 0.03315081540495157,
+        "seed_wall_median_sec": 1.593540484085679,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true
+      },
+      "source_commit": "be9a51940de4252ce785a39eef846e18903cbfb0",
+      "source_root": "/root/rtdl_goal3548_current"
+    },
+    {
+      "app_id": "spatial_rayjoin",
+      "backend": "optix",
+      "case_id": "spatial_rayjoin_optix_prepared_full_route",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "rayjoin_all_backend_query_summary",
+      "execution": {
+        "app_id": "spatial_rayjoin",
+        "case_id": "spatial_rayjoin_optix_prepared_full_route",
+        "observed_measured_sec": 14.241731140762568,
+        "observed_measured_sec_method": "median_primary_metric_times_planned_internal_repeat",
+        "primary_metric_sec": 0.00017813965678215027,
+        "runs": [
+          {
+            "primary_metric_sec": 0.00017813965678215027,
+            "primary_metric_source": "prepared_query_total_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 17.310005571693182
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v28",
+      "plan": {
+        "app_id": "spatial_rayjoin",
+        "backend": "optix",
+        "base_repeat": 1,
+        "case_id": "spatial_rayjoin_optix_prepared_full_route",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 15.000144498422742,
+        "estimated_wall_sec": 16.877496415749192,
+        "lane": "v28",
+        "method": "internal_repeat_knob",
+        "planned_command": [
+          "python3",
+          "examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
+          "--workload",
+          "all",
+          "--execution-route",
+          "prepared_optix",
+          "--result-mode",
+          "count",
+          "--no-rows",
+          "--repeat",
+          "79947",
+          "--warmup",
+          "0"
+        ],
+        "planned_repeat": 79947,
+        "reason": "Existing app-level repeat knob can stretch the hot query loop.",
+        "repeat_flag": "--repeat",
+        "repeat_planning_target_sec": 15.0,
+        "seed_primary_metric_sec": 0.00018762610852718353,
+        "seed_wall_median_sec": 1.8775395434349775,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true
+      },
+      "source_commit": "be9a51940de4252ce785a39eef846e18903cbfb0",
+      "source_root": "/root/rtdl_goal3548_current"
+    },
+    {
+      "app_id": "rt_dbscan",
+      "backend": "optix",
+      "case_id": "rt_dbscan_optix_grouped_stream",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "dbscan_cluster_signature",
+      "execution": {
+        "app_id": "rt_dbscan",
+        "case_id": "rt_dbscan_optix_grouped_stream",
+        "observed_measured_sec": 15.996186223812401,
+        "observed_measured_sec_method": "sum_of_wrapper_primary_metrics",
+        "primary_metric_sec": 1.4297579741105437,
+        "runs": [
+          {
+            "primary_metric_sec": 1.3856103457510471,
+            "primary_metric_source": "elapsed_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 2.2686621118336916
+          },
+          {
+            "primary_metric_sec": 1.3805367108434439,
+            "primary_metric_source": "elapsed_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 2.17950645647943
+          },
+          {
+            "primary_metric_sec": 1.5361913880333304,
+            "primary_metric_source": "elapsed_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 2.362385884858668
+          },
+          {
+            "primary_metric_sec": 1.5085036689415574,
+            "primary_metric_source": "elapsed_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 2.3849671045318246
+          },
+          {
+            "primary_metric_sec": 1.4195871353149414,
+            "primary_metric_source": "elapsed_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 2.3442805483937263
+          },
+          {
+            "primary_metric_sec": 1.4297579741105437,
+            "primary_metric_source": "elapsed_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 2.251609939150512
+          },
+          {
+            "primary_metric_sec": 1.6124174259603024,
+            "primary_metric_source": "elapsed_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 2.4943009754642844
+          },
+          {
+            "primary_metric_sec": 1.5013340916484594,
+            "primary_metric_source": "elapsed_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 2.4905904345214367
+          },
+          {
+            "primary_metric_sec": 1.3657537084072828,
+            "primary_metric_source": "elapsed_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 2.236646701581776
+          },
+          {
+            "primary_metric_sec": 1.3494143225252628,
+            "primary_metric_source": "elapsed_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 2.2136471327394247
+          },
+          {
+            "primary_metric_sec": 1.5070794522762299,
+            "primary_metric_source": "elapsed_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 2.410216865129769
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v28",
+      "plan": {
+        "app_id": "rt_dbscan",
+        "backend": "optix",
+        "case_id": "rt_dbscan_optix_grouped_stream",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 15.696872835978866,
+        "estimated_wall_sec": 23.92660668119788,
+        "lane": "v28",
+        "method": "wrapper_repeat_subprocess",
+        "planned_command": [
+          "python3",
+          "examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
+          "--mode",
+          "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d",
+          "--dataset",
+          "clustered3d",
+          "--point-count",
+          "8192",
+          "--partner",
+          "cupy",
+          "--grouped-union-query-block-size",
+          "4096",
+          "--no-validation"
+        ],
+        "reason": "No app repeat knob exists; wrapper repeats whole subprocess while reporting setup separately.",
+        "repeat_planning_target_sec": 15.0,
+        "seed_primary_metric_sec": 1.4269884396344423,
+        "seed_wall_median_sec": 2.17514606192708,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true,
+        "wrapper_repeats": 11
+      },
+      "source_commit": "be9a51940de4252ce785a39eef846e18903cbfb0",
+      "source_root": "/root/rtdl_goal3548_current"
+    },
+    {
+      "app_id": "robot_collision",
+      "backend": "optix",
+      "case_id": "robot_collision_optix_prepared_device_buffers",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "prepared_collision_flags",
+      "execution": {
+        "app_id": "robot_collision",
+        "case_id": "robot_collision_optix_prepared_device_buffers",
+        "observed_measured_sec": 14.175548559054732,
+        "observed_measured_sec_method": "median_primary_metric_times_planned_internal_repeat",
+        "primary_metric_sec": 0.0018331240862607956,
+        "runs": [
+          {
+            "primary_metric_sec": 0.0018331240862607956,
+            "primary_metric_source": "tail_medians.total_run_seconds",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 312.57185251731426
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v28",
+      "plan": {
+        "app_id": "robot_collision",
+        "backend": "optix",
+        "base_repeat": 5,
+        "case_id": "robot_collision_optix_prepared_device_buffers",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 15.000016869045794,
+        "estimated_wall_sec": 298.781403278932,
+        "lane": "v28",
+        "method": "internal_repeat_knob",
+        "planned_command": [
+          "python3",
+          "examples/v2_0/research_benchmarks/robot_collision/rtdl_robot_collision_benchmark_app.py",
+          "--mode",
+          "optix_prepared_device_buffers",
+          "--dataset",
+          "scaled",
+          "--pose-count",
+          "8192",
+          "--obstacle-count",
+          "1024",
+          "--link-count",
+          "2",
+          "--repeats",
+          "7733",
+          "--warmup",
+          "1"
+        ],
+        "planned_repeat": 7733,
+        "reason": "Existing app-level repeat knob can stretch the hot query loop.",
+        "repeat_flag": "--repeats",
+        "repeat_planning_target_sec": 15.0,
+        "seed_primary_metric_sec": 0.001939740963280201,
+        "seed_wall_median_sec": 283.7910851147026,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true
+      },
+      "source_commit": "be9a51940de4252ce785a39eef846e18903cbfb0",
+      "source_root": "/root/rtdl_goal3548_current"
+    },
+    {
+      "app_id": "raydb_style",
+      "backend": "optix",
+      "case_id": "raydb_optix_partner_resident_count",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "raydb_grouped_count",
+      "execution": {
+        "app_id": "raydb_style",
+        "case_id": "raydb_optix_partner_resident_count",
+        "observed_measured_sec": 14.995197183452547,
+        "observed_measured_sec_method": "median_primary_metric_times_planned_internal_repeat",
+        "primary_metric_sec": 0.000590943731367588,
+        "runs": [
+          {
+            "primary_metric_sec": 0.000590943731367588,
+            "primary_metric_source": "metadata.timings.query_median_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 27.612673047930002
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v28",
+      "plan": {
+        "app_id": "raydb_style",
+        "backend": "optix",
+        "base_repeat": 12,
+        "case_id": "raydb_optix_partner_resident_count",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 15.000419924035668,
+        "estimated_wall_sec": 22.2611101558432,
+        "lane": "v28",
+        "method": "internal_repeat_knob",
+        "planned_command": [
+          "python3",
+          "examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+          "--mode",
+          "count",
+          "--backend",
+          "optix_partner_resident_experimental",
+          "--copies",
+          "120000",
+          "--warmup",
+          "2",
+          "--repeat",
+          "25375"
+        ],
+        "planned_repeat": 25375,
+        "reason": "Existing app-level repeat knob can stretch the hot query loop.",
+        "repeat_flag": "--repeat",
+        "repeat_planning_target_sec": 15.0,
+        "seed_primary_metric_sec": 0.0005911495536565781,
+        "seed_wall_median_sec": 7.267784026451409,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true
+      },
+      "source_commit": "be9a51940de4252ce785a39eef846e18903cbfb0",
+      "source_root": "/root/rtdl_goal3548_current"
+    },
+    {
+      "app_id": "raydb_style",
+      "backend": "optix",
+      "case_id": "raydb_optix_partner_resident_sum",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "raydb_grouped_sum",
+      "execution": {
+        "app_id": "raydb_style",
+        "case_id": "raydb_optix_partner_resident_sum",
+        "observed_measured_sec": 15.05712952464819,
+        "observed_measured_sec_method": "median_primary_metric_times_planned_internal_repeat",
+        "primary_metric_sec": 0.0007895715534687042,
+        "runs": [
+          {
+            "primary_metric_sec": 0.0007895715534687042,
+            "primary_metric_source": "metadata.timings.query_median_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 27.376793805509806
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v28",
+      "plan": {
+        "app_id": "raydb_style",
+        "backend": "optix",
+        "base_repeat": 12,
+        "case_id": "raydb_optix_partner_resident_sum",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 15.000562900677323,
+        "estimated_wall_sec": 22.12832556758076,
+        "lane": "v28",
+        "method": "internal_repeat_knob",
+        "planned_command": [
+          "python3",
+          "examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+          "--mode",
+          "sum",
+          "--backend",
+          "optix_partner_resident_experimental",
+          "--copies",
+          "120000",
+          "--warmup",
+          "2",
+          "--repeat",
+          "19070"
+        ],
+        "planned_repeat": 19070,
+        "reason": "Existing app-level repeat knob can stretch the hot query loop.",
+        "repeat_flag": "--repeat",
+        "repeat_planning_target_sec": 15.0,
+        "seed_primary_metric_sec": 0.0007866052910685539,
+        "seed_wall_median_sec": 7.137201930396259,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true
+      },
+      "source_commit": "be9a51940de4252ce785a39eef846e18903cbfb0",
+      "source_root": "/root/rtdl_goal3548_current"
+    },
+    {
+      "app_id": "barnes_hut",
+      "backend": "optix",
+      "case_id": "barnes_hut_optix_node_coverage",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "node_coverage_prepared_threshold_decision",
+      "execution": {
+        "app_id": "barnes_hut",
+        "case_id": "barnes_hut_optix_node_coverage",
+        "observed_measured_sec": 15.311221308074892,
+        "observed_measured_sec_method": "median_primary_metric_times_planned_internal_repeat",
+        "primary_metric_sec": 0.008298764936625957,
+        "runs": [
+          {
+            "primary_metric_sec": 0.008298764936625957,
+            "primary_metric_source": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 34.67678091209382
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v28",
+      "plan": {
+        "app_id": "barnes_hut",
+        "backend": "optix",
+        "base_repeat": 1,
+        "case_id": "barnes_hut_optix_node_coverage",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 15.00275042373687,
+        "estimated_wall_sec": 16.541042891331017,
+        "lane": "v28",
+        "method": "internal_repeat_knob",
+        "planned_command": [
+          "python3",
+          "examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+          "--mode",
+          "optix_node_coverage_prepared",
+          "--body-count",
+          "8192",
+          "--skip-validation",
+          "--require-rt-core",
+          "--repeat",
+          "1845",
+          "--warmup",
+          "0"
+        ],
+        "planned_repeat": 1845,
+        "reason": "Existing app-level repeat knob can stretch the hot query loop.",
+        "repeat_flag": "--repeat",
+        "repeat_planning_target_sec": 15.0,
+        "seed_primary_metric_sec": 0.008131572045385838,
+        "seed_wall_median_sec": 1.5464240396395326,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true
+      },
+      "source_commit": "be9a51940de4252ce785a39eef846e18903cbfb0",
+      "source_root": "/root/rtdl_goal3548_current"
+    },
+    {
+      "app_id": "librts_spatial_index",
+      "backend": "optix",
+      "case_id": "librts_optix_aabb_index",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "aabb_index_all_count_only",
+      "execution": {
+        "app_id": "librts_spatial_index",
+        "case_id": "librts_optix_aabb_index",
+        "observed_measured_sec": 15.016516090370715,
+        "observed_measured_sec_method": "median_primary_metric_times_planned_internal_repeat",
+        "primary_metric_sec": 0.0007505631074309349,
+        "runs": [
+          {
+            "primary_metric_sec": 0.0007505631074309349,
+            "primary_metric_source": "run_phases.query_median_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 16.438956714235246
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v28",
+      "plan": {
+        "app_id": "librts_spatial_index",
+        "backend": "optix",
+        "base_repeat": 1,
+        "case_id": "librts_optix_aabb_index",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 15.000603533349931,
+        "estimated_wall_sec": 16.272448306903243,
+        "lane": "v28",
+        "method": "internal_repeat_knob",
+        "planned_command": [
+          "python3",
+          "examples/v2_0/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+          "--mode",
+          "optix_aabb_index",
+          "--dataset",
+          "uniform",
+          "--operation",
+          "all",
+          "--box-count",
+          "1024",
+          "--query-count",
+          "512",
+          "--repeat",
+          "20007",
+          "--warmup",
+          "0"
+        ],
+        "planned_repeat": 20007,
+        "reason": "Existing app-level repeat knob can stretch the hot query loop.",
+        "repeat_flag": "--repeat",
+        "repeat_planning_target_sec": 15.0,
+        "seed_primary_metric_sec": 0.0007497677579522133,
+        "seed_wall_median_sec": 1.272594541311264,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true
+      },
+      "source_commit": "be9a51940de4252ce785a39eef846e18903cbfb0",
+      "source_root": "/root/rtdl_goal3548_current"
+    },
+    {
+      "app_id": "rtnn",
+      "backend": "optix",
+      "case_id": "rtnn_optix_prepared_3d_ranked_summary",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "prepared_3d_ranked_summary",
+      "execution": {
+        "app_id": "rtnn",
+        "case_id": "rtnn_optix_prepared_3d_ranked_summary",
+        "observed_measured_sec": 14.390481928363442,
+        "observed_measured_sec_method": "median_primary_metric_times_planned_internal_repeat",
+        "primary_metric_sec": 0.0013249684125185013,
+        "runs": [
+          {
+            "primary_metric_sec": 0.0013249684125185013,
+            "primary_metric_source": "elapsed_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 21.838748758658767
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v28",
+      "plan": {
+        "app_id": "rtnn",
+        "backend": "optix",
+        "base_repeat": 3,
+        "case_id": "rtnn_optix_prepared_3d_ranked_summary",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 15.00106949172914,
+        "estimated_wall_sec": 17.80441088601947,
+        "lane": "v28",
+        "method": "internal_repeat_knob",
+        "planned_command": [
+          "python3",
+          "scripts/goal2348_rtnn_v2_2_external_runner.py",
+          "run-rtdl-batched-3d-neighbors",
+          "--point-file",
+          "docs/reports/goal3548_v2_9_repeat_hook_10s_rerun_a5000_compact_calibrated3/v28/rtnn_uniform_65536.csv",
+          "--radius",
+          "0.02",
+          "--k-max",
+          "50",
+          "--query-batch-size",
+          "65536",
+          "--result-mode",
+          "ranked-summary-raw",
+          "--repeat",
+          "10861",
+          "--json-out",
+          "docs/reports/goal3548_v2_9_repeat_hook_10s_rerun_a5000_compact_calibrated3/v28/rtnn_optix_65536.json"
+        ],
+        "planned_repeat": 10861,
+        "reason": "Existing app-level repeat knob can stretch the hot query loop.",
+        "repeat_flag": "--repeat",
+        "repeat_planning_target_sec": 15.0,
+        "seed_primary_metric_sec": 0.00138118676841259,
+        "seed_wall_median_sec": 2.807484954595566,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true
+      },
+      "source_commit": "be9a51940de4252ce785a39eef846e18903cbfb0",
+      "source_root": "/root/rtdl_goal3548_current"
+    },
+    {
+      "app_id": "triangle_counting",
+      "backend": "optix",
+      "case_id": "triangle_counting_optix_rt_graph_2a1_partner",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "triangle_count_rt_graph_2a1_summary",
+      "execution": {
+        "app_id": "triangle_counting",
+        "case_id": "triangle_counting_optix_rt_graph_2a1_partner",
+        "observed_measured_sec": 15.264781042002141,
+        "observed_measured_sec_method": "median_primary_metric_times_planned_internal_repeat",
+        "primary_metric_sec": 0.00035833660513162613,
+        "runs": [
+          {
+            "primary_metric_sec": 0.00035833660513162613,
+            "primary_metric_source": "timing_ms.query_median_ms converted-ms-to-sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 17.489363431930542
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v28",
+      "plan": {
+        "app_id": "triangle_counting",
+        "backend": "optix",
+        "base_repeat": 12,
+        "case_id": "triangle_counting_optix_rt_graph_2a1_partner",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 15.000318088568747,
+        "estimated_wall_sec": 16.883755712769926,
+        "lane": "v28",
+        "method": "internal_repeat_knob",
+        "planned_command": [
+          "python3",
+          "examples/v2_0/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
+          "--mode",
+          "rt_graph_2a1_generic_rt",
+          "--backend",
+          "optix",
+          "--edge-file",
+          "docs/reports/goal3548_v2_9_repeat_hook_10s_rerun_a5000_compact_calibrated3/v28/triangle_k4_cliques_5000.edge",
+          "--edge-format",
+          "binary",
+          "--detail",
+          "summary",
+          "--partner",
+          "cupy",
+          "--warmup",
+          "2",
+          "--repeat",
+          "42599"
+        ],
+        "planned_repeat": 42599,
+        "reason": "Existing app-level repeat knob can stretch the hot query loop.",
+        "repeat_flag": "--repeat",
+        "repeat_planning_target_sec": 15.0,
+        "seed_primary_metric_sec": 0.00035212840884923935,
+        "seed_wall_median_sec": 1.8876631651073694,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true
+      },
+      "source_commit": "be9a51940de4252ce785a39eef846e18903cbfb0",
+      "source_root": "/root/rtdl_goal3548_current"
+    },
+    {
+      "app_id": "contact_manifold",
+      "backend": "optix",
+      "case_id": "contact_manifold_optix_aabb_broadphase_collect_k",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "package_install_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "comparison_group": "generic_aabb_broadphase_collect_k",
+      "execution": {
+        "app_id": "contact_manifold",
+        "case_id": "contact_manifold_optix_aabb_broadphase_collect_k",
+        "observed_measured_sec": 17.751051309518516,
+        "observed_measured_sec_method": "median_primary_metric_times_planned_internal_repeat",
+        "primary_metric_sec": 0.02764961263164878,
+        "runs": [
+          {
+            "primary_metric_sec": 0.02764961263164878,
+            "primary_metric_source": "run_phases.emit_aabb_intersection_pair_rows_2d_median_sec",
+            "status": "ok",
+            "stderr_tail": "",
+            "wall_median_sec": 18.773950714617968
+          }
+        ],
+        "status": "ok",
+        "target_met_by_observed_sum": true
+      },
+      "lane": "v28",
+      "plan": {
+        "app_id": "contact_manifold",
+        "backend": "optix",
+        "base_repeat": 12,
+        "case_id": "contact_manifold_optix_aabb_broadphase_collect_k",
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "package_install_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "estimated_measured_sec": 15.013065034523606,
+        "estimated_wall_sec": 16.551151012070477,
+        "lane": "v28",
+        "method": "internal_repeat_knob",
+        "planned_command": [
+          "python3",
+          "examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
+          "--mode",
+          "aabb_broadphase_collect_k",
+          "--dataset",
+          "grid",
+          "--grid-count",
+          "4096",
+          "--witness-capacity",
+          "4096",
+          "--backend",
+          "optix",
+          "--discovery-backend",
+          "optix",
+          "--discovery-row-capacity",
+          "8192",
+          "--discovery-warmup",
+          "2",
+          "--discovery-repeat",
+          "642"
+        ],
+        "planned_repeat": 642,
+        "reason": "Existing app-level repeat knob can stretch the hot query loop.",
+        "repeat_flag": "--discovery-repeat",
+        "repeat_planning_target_sec": 15.0,
+        "seed_primary_metric_sec": 0.02338483650237322,
+        "seed_wall_median_sec": 1.8187040155753493,
+        "target_measured_sec": 10.0,
+        "target_met_by_plan": true
+      },
+      "source_commit": "be9a51940de4252ce785a39eef846e18903cbfb0",
+      "source_root": "/root/rtdl_goal3548_current"
+    }
+  ],
+  "scale": "standard",
+  "schema": "rtdl.goal3536.v2_8_vs_v2_3_10s_steady_state.v1",
+  "seed_artifact": "docs/reports/goal3548_v2_9_repeat_hook_10s_rerun_a5000_compact_calibrated2/summary.json",
+  "summary": {
+    "geomean_speedup": 1.0014497930916755,
+    "max_speedup": 1.0644694427535752,
+    "median_speedup": 1.0002807279109598,
+    "min_speedup": 0.9548167674661263,
+    "ratio_count": 11,
+    "row_count": 11,
+    "target_met_by_plan_pair_count": 11
+  },
+  "target_measured_sec": 10.0,
+  "v23_root": "/root/rtdl_goal3548_v23_overlay",
+  "v28_root": "/root/rtdl_goal3548_current"
+}

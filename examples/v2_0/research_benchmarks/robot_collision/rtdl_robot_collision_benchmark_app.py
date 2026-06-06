@@ -837,13 +837,18 @@ def run_prepared_reuse_probe(
                     "iteration": iteration,
                     "is_warmup": iteration < warmup,
                     "total_run_seconds": total_run_seconds,
-                    "flags": flags,
                     "flagged_group_count": flagged_group_count,
                     "flags_signature": flags_signature,
                     "matches_probe_reference": matches_probe_reference,
                     "prepared_run_index": int(result["prepared_run_index"]),
-                    "phase_timing_seconds": result["phase_timing_seconds"],
-                    "backend_result": result,
+                    "phase_timing_seconds": dict(result["phase_timing_seconds"]),
+                    "prepared_scene_used": bool(result["prepared_scene_used"]),
+                    "prepared_query_run_index": int(result.get("prepared_query_run_index", 0)),
+                    "buffer_reuse_metadata": (
+                        dict(result.get("buffer_reuse_metadata") or {})
+                        if iteration == repeats - 1 and prepared_query is not None
+                        else None
+                    ),
                 }
             )
 
@@ -860,7 +865,7 @@ def run_prepared_reuse_probe(
         "warmup_rows_dropped": warmup,
         "repeat_count": repeats,
         "measured_run_count": len(measured),
-        "prepared_scene_reused": all(bool(row["backend_result"]["prepared_scene_used"]) for row in runs),
+        "prepared_scene_reused": all(bool(row["prepared_scene_used"]) for row in runs),
         "prepared_run_indices": [int(row["prepared_run_index"]) for row in runs],
         "prepared_run_indices_strictly_increase": [int(row["prepared_run_index"]) for row in runs]
         == list(range(1, repeats + 1)),
@@ -905,15 +910,15 @@ def run_prepared_reuse_probe(
             )
         ),
         "prepared_query_descriptor": (
-            runs[-1]["backend_result"].get("buffer_reuse_metadata")
+            runs[-1].get("buffer_reuse_metadata")
             if prepared_query is not None and runs
             else None
         ),
         "prepared_query_run_indices": [
-            int(row["backend_result"].get("prepared_query_run_index", 0)) for row in runs
+            int(row.get("prepared_query_run_index", 0)) for row in runs
         ],
         "prepared_query_run_indices_strictly_increase": (
-            [int(row["backend_result"].get("prepared_query_run_index", 0)) for row in runs]
+            [int(row.get("prepared_query_run_index", 0)) for row in runs]
             == list(range(1, repeats + 1))
             if prepared_query is not None
             else False

@@ -1,0 +1,26 @@
+{
+  "point_file": "/root/rtdl_goal3548_current/docs/reports/goal3548_v2_9_repeat_hook_10s_rerun_a5000_compact_calibrated3/v28/rtnn_uniform_65536.csv",
+  "repeat": 12000,
+  "runs": [
+    {
+      "json": "/root/rtdl_goal3548_current/docs/reports/goal3548_v2_9_repeat_hook_10s_rerun_a5000_rtnn_supplement/v23/rtnn_optix_65536_repeat_12000.json",
+      "lane": "v23",
+      "observed_sec": 18.381770700216293,
+      "ok": true,
+      "primary_sec": 0.0015318142250180244,
+      "returncode": 0,
+      "wall_sec": 25.839014247059822
+    },
+    {
+      "json": "/root/rtdl_goal3548_current/docs/reports/goal3548_v2_9_repeat_hook_10s_rerun_a5000_rtnn_supplement/v28/rtnn_optix_65536_repeat_12000.json",
+      "lane": "v28",
+      "observed_sec": 16.810890287160873,
+      "ok": true,
+      "primary_sec": 0.0014009075239300728,
+      "returncode": 0,
+      "wall_sec": 23.431355305947363
+    }
+  ],
+  "schema": "rtdl.goal3548.rtnn_supplement.v1",
+  "speedup_v28_vs_v23": 1.0934442130203634
+}
