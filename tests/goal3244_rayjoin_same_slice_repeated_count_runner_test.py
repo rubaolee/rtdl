@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import os
 import tempfile
 import unittest
@@ -496,6 +497,111 @@ Timing results:
         self.assertEqual(row["prepare_batch_executor_ms"]["samples"], [0.3])
         self.assertEqual(calls[0]["kwargs"]["device_filtered_batch_request_count"], 100)
         self.assertEqual(calls[0]["kwargs"]["device_filtered_batch_stream_count"], "auto")
+
+    def test_main_can_require_pip_validated_fast_domain_before_timing(self) -> None:
+        events: list[str] = []
+
+        def fake_preflight(**kwargs):
+            events.append("preflight")
+            self.assertEqual(kwargs["dataset"], "fake.cdb")
+            self.assertEqual(kwargs["count_mode"], "device_filtered_prepared_points_validated")
+            self.assertEqual(kwargs["device_filtered_boundary_mode"], "inclusive")
+            self.assertEqual(kwargs["point_order_mode"], "morton_xy")
+            self.assertEqual(kwargs["query_axis"], "aabb_point")
+            self.assertTrue(kwargs["scalar_count_pipeline"])
+            self.assertEqual(kwargs["device_predicate_eps"], 1e-9)
+            self.assertTrue(kwargs["require_match"])
+            return {
+                "schema": "rtdl.rayjoin.pip_fast_count_domain_preflight.v1",
+                "status": "validated_fast_route_allowed",
+                "matches_exact": True,
+                "device_predicate_eps": 1e-9,
+            }
+
+        def fake_rayjoin(**kwargs):
+            events.append("rayjoin")
+            return {
+                "query_ms_reported": {"median": 1.0},
+                "intersection_counts": {"last": None},
+                "positive_assignment_count_available": False,
+            }
+
+        def fake_rtdl(**kwargs):
+            events.append("rtdl")
+            return {
+                "prepared_query_ms": {"median": 0.25},
+                "counts": {"last": 1417},
+                "count_mode": "device_filtered_prepared_points_validated",
+            }
+
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "summary.json"
+            with mock.patch.object(
+                MODULE.rayjoin_app,
+                "preflight_rayjoin_pip_fast_count_domain",
+                side_effect=fake_preflight,
+            ), mock.patch.object(
+                MODULE,
+                "run_rayjoin_process_samples",
+                side_effect=fake_rayjoin,
+            ), mock.patch.object(
+                MODULE,
+                "run_rtdl_samples",
+                side_effect=fake_rtdl,
+            ), mock.patch.object(
+                MODULE,
+                "_git_dirty",
+                return_value=[],
+            ), mock.patch.object(
+                MODULE,
+                "_git_commit",
+                return_value="deadbeef",
+            ), mock.patch.object(
+                MODULE,
+                "_gpu_name",
+                return_value="mock gpu",
+            ):
+                rc = MODULE.main(
+                    [
+                        "--workloads",
+                        "pip",
+                        "--rayjoin-query-exec",
+                        "query_exec",
+                        "--rayjoin-data-dir",
+                        ".",
+                        "--rtdl-pip-dataset",
+                        "fake.cdb",
+                        "--output",
+                        str(output),
+                        "--rtdl-pip-count-mode",
+                        "device_filtered_prepared_points_validated",
+                        "--rtdl-pip-query-axis",
+                        "aabb_point",
+                        "--rtdl-pip-boundary-mode",
+                        "inclusive",
+                        "--rtdl-pip-point-order",
+                        "morton_xy",
+                        "--rtdl-pip-scalar-count-pipeline",
+                        "--rtdl-pip-device-predicate-eps",
+                        "1e-9",
+                        "--rtdl-pip-require-validated-fast-domain",
+                    ]
+                )
+
+            self.assertEqual(rc, 0)
+            self.assertEqual(events, ["preflight", "rayjoin", "rtdl"])
+            payload = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual(
+                payload["rtdl_preflights"]["pip_fast_count_domain"]["status"],
+                "validated_fast_route_allowed",
+            )
+            self.assertEqual(
+                payload["interpretation"]["rtdl_pip_require_validated_fast_domain"],
+                "When --rtdl-pip-require-validated-fast-domain is supplied, the runner performs an "
+                "app-level preflight over generic point/closed-shape count primitives before RayJoin timing. "
+                "It fails closed if the selected fast route does not match exact prepared-count semantics "
+                "for the input domain.",
+            )
 
     def test_rtdl_pip_batch_executor_requires_matching_mode_and_divisible_repeat(self) -> None:
         with self.assertRaisesRegex(ValueError, "requires device_filtered_prepared_points_validated"):

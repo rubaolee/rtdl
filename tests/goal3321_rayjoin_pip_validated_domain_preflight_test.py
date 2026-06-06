@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import os
 from types import SimpleNamespace
 import unittest
 from unittest import mock
@@ -43,11 +44,13 @@ class _Prepared:
         self.fast_count = fast_count
         self.closed = False
         self.prepared_columns = _PreparedPointColumns()
+        self.observed_device_predicate_eps: list[str | None] = []
 
     def count(self, _packed_points) -> int:
         return self.exact_count
 
     def count_device_filtered_prepared_points(self, _prepared_point_columns) -> int:
+        self.observed_device_predicate_eps.append(os.environ.get("RTDL_OPTIX_POINT_PRIMITIVE_DEVICE_PREDICATE_EPS"))
         return self.fast_count
 
     def prepare_point_probe_columns(self, _packed_points) -> _PreparedPointColumns:
@@ -58,7 +61,14 @@ class _Prepared:
 
 
 class Goal3321RayJoinPipValidatedDomainPreflightTest(unittest.TestCase):
-    def _run_preflight(self, *, exact_count: int, fast_count: int, require_match: bool = False):
+    def _run_preflight(
+        self,
+        *,
+        exact_count: int,
+        fast_count: int,
+        require_match: bool = False,
+        device_predicate_eps: float | None = None,
+    ):
         prepared = _Prepared(exact_count=exact_count, fast_count=fast_count)
         case = SimpleNamespace(
             inputs={
@@ -87,6 +97,7 @@ class Goal3321RayJoinPipValidatedDomainPreflightTest(unittest.TestCase):
                 device_filtered_boundary_mode="inclusive",
                 query_axis="z_point",
                 scalar_count_pipeline=True,
+                device_predicate_eps=device_predicate_eps,
                 require_match=require_match,
             )
         return result, prepared
@@ -113,6 +124,17 @@ class Goal3321RayJoinPipValidatedDomainPreflightTest(unittest.TestCase):
         self.assertTrue(prepared.prepared_columns.closed)
         for authorized in result["claim_boundary"].values():
             self.assertIs(authorized, False)
+
+    def test_preflight_scopes_device_predicate_eps_to_match_measured_route(self) -> None:
+        result, prepared = self._run_preflight(
+            exact_count=1417,
+            fast_count=1417,
+            device_predicate_eps=1e-9,
+        )
+
+        self.assertEqual(result["device_predicate_eps"], 1e-9)
+        self.assertEqual(prepared.observed_device_predicate_eps, ["1.0000000000000001e-09"])
+        self.assertIsNone(os.environ.get("RTDL_OPTIX_POINT_PRIMITIVE_DEVICE_PREDICATE_EPS"))
 
     def test_preflight_records_mismatch_as_fallback_required(self) -> None:
         result, prepared = self._run_preflight(exact_count=1417, fast_count=1429)

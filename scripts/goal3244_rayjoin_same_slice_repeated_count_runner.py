@@ -664,6 +664,16 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     parser.add_argument(
+        "--rtdl-pip-require-validated-fast-domain",
+        action="store_true",
+        help=(
+            "Run the PIP fast-count domain preflight before RayJoin timing and fail closed unless "
+            "the selected generic fast route matches the exact prepared count for this dataset. "
+            "The preflight uses the same query-axis, boundary, point-order, scalar-pipeline, "
+            "and device-predicate-epsilon settings as the measured RTDL route."
+        ),
+    )
+    parser.add_argument(
         "--rtdl-lsi-segment-order",
         choices=("natural", "x_then_y", "y_then_x", "morton_xy"),
         default="natural",
@@ -684,6 +694,20 @@ def main(argv: list[str] | None = None) -> int:
         raise ValueError("--rtdl-pip-dataset is required when workloads include pip")
     log_dir = args.log_dir or args.output.with_suffix("")
     log_dir.mkdir(parents=True, exist_ok=True)
+
+    rtdl_preflights: dict[str, Any] = {}
+    if "pip" in selected_workloads and args.rtdl_pip_require_validated_fast_domain:
+        assert args.rtdl_pip_dataset is not None
+        rtdl_preflights["pip_fast_count_domain"] = rayjoin_app.preflight_rayjoin_pip_fast_count_domain(
+            dataset=str(args.rtdl_pip_dataset),
+            count_mode=args.rtdl_pip_count_mode,
+            device_filtered_boundary_mode=args.rtdl_pip_boundary_mode,
+            point_order_mode=args.rtdl_pip_point_order,
+            query_axis=args.rtdl_pip_query_axis,
+            scalar_count_pipeline=args.rtdl_pip_scalar_count_pipeline,
+            device_predicate_eps=args.rtdl_pip_device_predicate_eps,
+            require_match=True,
+        )
 
     rayjoin_rows = {
         workload: run_rayjoin_process_samples(
@@ -756,6 +780,7 @@ def main(argv: list[str] | None = None) -> int:
         "selected_workloads": list(selected_workloads),
         "rayjoin": rayjoin_rows,
         "rtdl": rtdl_rows,
+        "rtdl_preflights": rtdl_preflights,
         "comparisons": comparisons,
         "interpretation": {
             "scope": "Repeated bounded same-slice query/count timing for RayJoin query_exec RT and RTDL prepared OptiX count.",
@@ -800,6 +825,12 @@ def main(argv: list[str] | None = None) -> int:
                 "The prepared_query_ms lane is normalized per request and prepared_query_total_ms records "
                 "the full measured batch time. This is not one-shot latency and must not be read as a "
                 "drop-in replacement for RayJoin query_exec one-shot timing."
+            ),
+            "rtdl_pip_require_validated_fast_domain": (
+                "When --rtdl-pip-require-validated-fast-domain is supplied, the runner performs an "
+                "app-level preflight over generic point/closed-shape count primitives before RayJoin timing. "
+                "It fails closed if the selected fast route does not match exact prepared-count semantics "
+                "for the input domain."
             ),
             "rtdl_pip_boundary_mode": (
                 "When --rtdl-pip-boundary-mode is supplied with device_filtered_validated, "

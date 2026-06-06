@@ -432,6 +432,7 @@ def preflight_rayjoin_pip_fast_count_domain(
     point_order_mode: str = "natural",
     query_axis: str | None = None,
     scalar_count_pipeline: bool = True,
+    device_predicate_eps: float | None = None,
     require_match: bool = False,
 ) -> dict[str, Any]:
     """Check whether a PIP dataset is safe for a validated fast count route.
@@ -451,6 +452,8 @@ def preflight_rayjoin_pip_fast_count_domain(
         raise ValueError("device_filtered_boundary_mode must be 'inclusive' or 'crossing_only'")
     if point_order_mode not in _PIP_POINT_ORDER_MODES:
         raise ValueError("point_order_mode must be one of: natural, x_then_y, y_then_x, morton_xy")
+    if device_predicate_eps is not None and float(device_predicate_eps) < 0.0:
+        raise ValueError("device_predicate_eps must be non-negative")
 
     from rtdsl.optix_runtime import pack_points
     from rtdsl.optix_runtime import pack_polygons
@@ -469,6 +472,9 @@ def preflight_rayjoin_pip_fast_count_domain(
     with _temporary_env("RTDL_OPTIX_POINT_PRIMITIVE_QUERY_AXIS", query_axis), _temporary_env(
         "RTDL_OPTIX_POINT_PRIMITIVE_USE_SCALAR_COUNT_PIPELINE",
         "1" if scalar_count_pipeline else None,
+    ), _temporary_env(
+        "RTDL_OPTIX_POINT_PRIMITIVE_DEVICE_PREDICATE_EPS",
+        None if device_predicate_eps is None else f"{float(device_predicate_eps):.17g}",
     ):
         prepared = prepare_point_closed_shape_membership_2d_optix(packed_shapes)
         try:
@@ -511,6 +517,7 @@ def preflight_rayjoin_pip_fast_count_domain(
         "device_filtered_boundary_mode": device_filtered_boundary_mode,
         "query_axis": query_axis,
         "scalar_count_pipeline": bool(scalar_count_pipeline),
+        "device_predicate_eps": None if device_predicate_eps is None else float(device_predicate_eps),
         "point_order_mode": point_order_mode,
         "point_count": int(getattr(packed_points, "count", len(ordered_points))),
         "shape_count": int(getattr(packed_shapes, "polygon_count", len(case.inputs["polygons"]))),
