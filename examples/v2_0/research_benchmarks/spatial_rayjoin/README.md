@@ -234,6 +234,13 @@ For the bounded public CDB slices used in Goal3593:
 | LSI segment-intersection count | RTDL/OptiX prepared route | Public CDB segment columns strongly favor RT traversal over dense all-pairs CUDA-core segment tests |
 | Overlay active pair-dependency count | RTDL/OptiX prepared route | Public CDB polygon-pair dependency filtering strongly favors the prepared RTDL/OptiX route over dense CuPy active-count testing |
 
+For no-partner RTDL-only PIP scalar counts, use the exact prepared OptiX count
+route (`--execution-route prepared_optix --pip-count-mode exact`). Goal3596
+shows it is the best current RTDL-only PIP count route on the bounded public CDB
+slice, although the CuPy dense count is still faster there. Use
+`prepared_optix_cupy_refined_pip` when the app needs the richer candidate-plus
+prepared-refiner workflow, not as the default scalar count path.
+
 This is an explicit user/program decision, not automatic dispatch. The app
 should record the selected route, partner, RT-core status, count contract, and
 claim boundary in its output. See:
@@ -243,6 +250,7 @@ claim boundary in its output. See:
 - `docs/reports/goal3589_rayjoin_cupy_same_contract_baseline_2026-06-06.md`
 - `docs/reports/goal3592_rayjoin_explicit_mixed_route_reference_packet_2026-06-06.md`
 - `docs/reports/goal3593_rayjoin_public_cdb_cupy_same_contract_probe_2026-06-06.md`
+- `docs/reports/goal3596_rayjoin_public_cdb_pip_route_audit_2026-06-06.md`
 
 The lesson is practical: use RTDL/OptiX where RT traversal pays, use a partner
 where a cheap dense CUDA-core reduction is the better tool, and keep the choice

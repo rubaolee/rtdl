@@ -6,6 +6,7 @@ import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs" / "reports" / "goal3596_rayjoin_public_cdb_pip_route_audit_2026-06-06.md"
+README = ROOT / "examples" / "v2_0" / "research_benchmarks" / "spatial_rayjoin" / "README.md"
 
 
 class Goal3596RayJoinPublicCdbPipRouteAuditTest(unittest.TestCase):
@@ -32,6 +33,18 @@ class Goal3596RayJoinPublicCdbPipRouteAuditTest(unittest.TestCase):
             "broad RT-core speedup",
             "automatic dispatch",
             "zero-copy claims",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_readme_explains_no_partner_pip_count_route(self) -> None:
+        text = README.read_text(encoding="utf-8")
+        for phrase in (
+            "For no-partner RTDL-only PIP scalar counts",
+            "--execution-route prepared_optix --pip-count-mode exact",
+            "best current RTDL-only PIP count route",
+            "prepared_optix_cupy_refined_pip",
+            "not as the default scalar count path",
+            "goal3596_rayjoin_public_cdb_pip_route_audit",
         ):
             self.assertIn(phrase, text)
 
