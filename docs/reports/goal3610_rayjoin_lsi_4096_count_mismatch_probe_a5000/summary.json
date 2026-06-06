@@ -1,0 +1,139 @@
+{
+  "candidate_pair_count": 7884520560,
+  "claim_boundary": {
+    "native_default_route_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "cupy_total": 4977,
+  "dataset": "/root/rtdl_goal3595_clean/data/rayjoin_public_cdb/br_county_start256_count4096.cdb + /root/rtdl_goal3595_clean/data/rayjoin_public_cdb/br_soil_start256_count4096.cdb",
+  "delta_sum": 8,
+  "diagnostic_timing_sec": {
+    "cupy_dense_kernel": 1.277,
+    "cupy_per_left_reduce": 1.596,
+    "cupy_upload_alloc": 0.309,
+    "rtdl_optix_include_rows": 0.746
+  },
+  "diff_count": 8,
+  "diff_sample": [
+    {
+      "cupy": 0,
+      "delta": 1,
+      "left_id": 1050,
+      "left_index": 1049,
+      "rtdl_optix": 1,
+      "segment": [
+        -58.161307078,
+        -2.1323730298,
+        -58.174415053,
+        -2.1189082909
+      ]
+    },
+    {
+      "cupy": 1,
+      "delta": 1,
+      "left_id": 18705,
+      "left_index": 18704,
+      "rtdl_optix": 2,
+      "segment": [
+        -48.231198602,
+        -5.9457514655,
+        -48.226647372,
+        -5.9554207638
+      ]
+    },
+    {
+      "cupy": 1,
+      "delta": 1,
+      "left_id": 34424,
+      "left_index": 34423,
+      "rtdl_optix": 2,
+      "segment": [
+        -43.6914973,
+        -5.9190425659,
+        -43.696431848,
+        -5.9267038803
+      ]
+    },
+    {
+      "cupy": 0,
+      "delta": 1,
+      "left_id": 66567,
+      "left_index": 66566,
+      "rtdl_optix": 1,
+      "segment": [
+        -35.840216373,
+        -8.5977194262,
+        -35.840217381,
+        -8.5977196819
+      ]
+    },
+    {
+      "cupy": 0,
+      "delta": 1,
+      "left_id": 66820,
+      "left_index": 66819,
+      "rtdl_optix": 1,
+      "segment": [
+        -35.365436296,
+        -7.9027199683,
+        -35.365442732,
+        -7.9026910353
+      ]
+    },
+    {
+      "cupy": 0,
+      "delta": 1,
+      "left_id": 66823,
+      "left_index": 66822,
+      "rtdl_optix": 1,
+      "segment": [
+        -35.36634017,
+        -7.9020645748,
+        -35.366341488,
+        -7.9020642422
+      ]
+    },
+    {
+      "cupy": 0,
+      "delta": 1,
+      "left_id": 68473,
+      "left_index": 68472,
+      "rtdl_optix": 1,
+      "segment": [
+        -35.697824603,
+        -8.5467913442,
+        -35.697824512,
+        -8.5467941985
+      ]
+    },
+    {
+      "cupy": 0,
+      "delta": 1,
+      "left_id": 68478,
+      "left_index": 68477,
+      "rtdl_optix": 1,
+      "segment": [
+        -35.699261561,
+        -8.5528883763,
+        -35.699260816,
+        -8.5528894777
+      ]
+    }
+  ],
+  "goal": 3610,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "interpretation": "Diagnostic only: the 4096-chain mixed RayJoin composite is blocked because the dense CuPy LSI baseline and the RTDL/OptiX dense left-id count route do not yet share an exact near-degenerate segment policy.",
+  "left_segment_count": 68840,
+  "output_contract": "segment_segment_intersection_count_by_left_id_dense_device_column",
+  "pod_ssh": "root@69.30.85.203 -p 22057",
+  "right_segment_count": 114534,
+  "rtdl_optix_total": 4985,
+  "schema": "rtdl.goal3610.rayjoin_lsi_4096_count_mismatch_probe.v1",
+  "source_commit": "2838ff71bc8b0717670ae5e7172dedd9079fc393",
+  "workload": "lsi"
+}
