@@ -1,0 +1,270 @@
+{
+  "boundary": "This packet compares hot prepared RTDL/OptiX routes against dense CuPy CUDA-core same-contract baselines on derived authored tiled fixtures. It is not a RayJoin paper reproduction and does not authorize public speedup wording.",
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "internal_results_only": true,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "dry_run": false,
+  "generated_at_unix": 1780749564.8035367,
+  "git_commit": "fda11cb743b3a57eb913e9e553d206c9c2ce208b",
+  "git_status_short": "?? docs/reports/goal3556_rtnn_median_metric_a5000/\n?? docs/reports/goal3572_grouped_i64_full_reduction_fastpath_a5000/\n?? docs/reports/goal3572_grouped_i64_full_reduction_fastpath_clean_a5000/\n?? docs/reports/goal3572_grouped_i64_full_reduction_fastpath_preserve_a5000/\n?? docs/reports/goal3572_grouped_i64_full_reduction_fastpath_refined_a5000/\n?? docs/reports/goal3572_grouped_i64_full_reduction_fastpath_split_a5000/\n?? docs/reports/goal3578_raydb_grouped_i64_mode_reprobe_a5000/\n?? docs/reports/goal3582_rayjoin_promoted_strengthened_routes_a5000/\n?? docs/reports/goal3582_rayjoin_promoted_strengthened_routes_stress_a5000/",
+  "repeat": 5,
+  "rows": [
+    {
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "counts_match": true,
+      "cupy_cuda_core_baseline": {
+        "backend": "cupy",
+        "baseline_kind": "cupy_rawkernel_cuda_core_dense_pip_count",
+        "candidate_pair_count": 8388608,
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "rtdl_beats_rayjoin_claim_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "dataset": "derived/authored_pip_square_tiled_x2048",
+        "dataset_note": "Authored point-in-square fixture tiled 2048 times; one positive assignment per tile.",
+        "hot_median_sec": 0.0003026621416211128,
+        "hot_repeat_secs": [
+          0.0003209635615348816,
+          0.0003026621416211128,
+          0.00030143745243549347,
+          0.0003010975196957588,
+          0.00030714739114046097
+        ],
+        "hot_total_sec": 0.0015333080664277077,
+        "input_counts": {
+          "point_count": 4096,
+          "shape_count": 2048
+        },
+        "output_contract": "point_to_shape_positive_hit_count",
+        "partner": "cupy",
+        "partner_accelerated": true,
+        "prepare_sec": 0.3091236185282469,
+        "row_count": 2048,
+        "rt_core_accelerated": false,
+        "same_contract_baseline": true
+      },
+      "dataset": "derived/authored_pip_square_tiled_x2048",
+      "interpretation": "CuPy CUDA-core baseline faster or tied; use as optimization pressure",
+      "rtdl_optix": {
+        "backend": "optix+cupy",
+        "claim_boundary": {
+          "full_rayjoin_reproduction": false,
+          "paper_scale_perf_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "rtdl_beats_rayjoin_claim_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "v2_8_release_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "dataset": "derived/authored_pip_square_tiled_x2048",
+        "device_resident_continuation_status": "candidate_columns_and_prepared_cupy_refiner_complete: generic RT candidate columns and prepared CuPy lookup columns stay device-side; host row materialization is optional when include_rows is requested",
+        "execution_route": "prepared_optix_cupy_refined_pip",
+        "hot_median_sec": 0.005827602930366993,
+        "hot_repeat": 5,
+        "hot_total_sec": 0.02970821224153042,
+        "hot_warmup": 1,
+        "output_contract": "point_to_shape_positive_hit_count_prepared_optix_candidate_columns_plus_cupy_refine",
+        "partner_accelerated": true,
+        "prepare_sec": {
+          "prepare_cupy_refiner_sec": 0.007063796743750572,
+          "prepare_static_scene_sec": 0.5497953938320279
+        },
+        "row_count": 2048,
+        "rt_core_accelerated": true
+      },
+      "rtdl_optix_speedup_vs_cupy_cuda_core": 0.05193595810105283,
+      "workload": "pip"
+    },
+    {
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "counts_match": true,
+      "cupy_cuda_core_baseline": {
+        "backend": "cupy",
+        "baseline_kind": "cupy_rawkernel_cuda_core_dense_lsi_count",
+        "candidate_pair_count": 4194304,
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "rtdl_beats_rayjoin_claim_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "dataset": "derived/authored_lsi_crossing_tiled_x2048",
+        "dataset_note": "Authored crossing-segment fixture tiled 2048 times; one positive intersection per tile.",
+        "hot_median_sec": 0.000768234021961689,
+        "hot_repeat_secs": [
+          0.0007664775475859642,
+          0.0007668565958738327,
+          0.000768234021961689,
+          0.0007702773436903954,
+          0.0007695965468883514
+        ],
+        "hot_total_sec": 0.0038414420560002327,
+        "input_counts": {
+          "left_segment_count": 2048,
+          "right_segment_count": 2048
+        },
+        "output_contract": "segment_segment_intersection_count",
+        "partner": "cupy",
+        "partner_accelerated": true,
+        "prepare_sec": 0.004920936189591885,
+        "row_count": 2048,
+        "rt_core_accelerated": false,
+        "same_contract_baseline": true
+      },
+      "dataset": "derived/authored_lsi_crossing_tiled_x2048",
+      "interpretation": "RTDL/OptiX faster than this dense CuPy CUDA-core baseline",
+      "rtdl_optix": {
+        "backend": "optix",
+        "claim_boundary": {
+          "full_rayjoin_reproduction": false,
+          "paper_scale_perf_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "requires_pod_for_optix_perf": false,
+          "rtdl_beats_rayjoin_claim_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "v2_0_release_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "dataset": "derived/authored_lsi_crossing_tiled_x2048",
+        "device_resident_continuation_status": "dense_left_id_count_device_column_complete: count[index] remains CUDA-resident during the route; validation copy is optional",
+        "execution_route": "prepared_optix_left_id_dense_count",
+        "hot_median_sec": 0.00012269429862499237,
+        "hot_repeat": 5,
+        "hot_total_sec": 0.000633743591606617,
+        "hot_warmup": 1,
+        "output_contract": "segment_segment_intersection_count_by_left_id_dense_device_column",
+        "partner_accelerated": false,
+        "prepare_sec": {},
+        "row_count": 2048,
+        "rt_core_accelerated": true
+      },
+      "rtdl_optix_speedup_vs_cupy_cuda_core": 6.261366914120022,
+      "workload": "lsi"
+    },
+    {
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "counts_match": true,
+      "cupy_cuda_core_baseline": {
+        "backend": "cupy",
+        "baseline_kind": "cupy_rawkernel_cuda_core_dense_shape_pair_active_count",
+        "candidate_pair_count": 4194304,
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "rtdl_beats_rayjoin_claim_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "dataset": "derived/authored_overlay_squares_tiled_x2048",
+        "dataset_note": "Authored overlapping-square overlay fixture tiled 2048 times; one active dependency per tile.",
+        "hot_median_sec": 0.00011211726814508438,
+        "hot_repeat_secs": [
+          0.00011596363037824631,
+          0.00010931957513093948,
+          0.00010637287050485611,
+          0.00011242181062698364,
+          0.00011211726814508438
+        ],
+        "hot_total_sec": 0.0005561951547861099,
+        "input_counts": {
+          "left_shape_count": 2048,
+          "right_shape_count": 2048
+        },
+        "output_contract": "overlay_active_pair_dependency_count",
+        "partner": "cupy",
+        "partner_accelerated": true,
+        "prepare_sec": 0.012263494543731213,
+        "row_count": 2048,
+        "rt_core_accelerated": false,
+        "same_contract_baseline": true
+      },
+      "dataset": "derived/authored_overlay_squares_tiled_x2048",
+      "interpretation": "CuPy CUDA-core baseline faster or tied; use as optimization pressure",
+      "rtdl_optix": {
+        "backend": "optix",
+        "claim_boundary": {
+          "full_rayjoin_reproduction": false,
+          "paper_scale_perf_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "rtdl_beats_rayjoin_claim_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "v2_8_release_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "dataset": "derived/authored_overlay_squares_tiled_x2048",
+        "device_resident_continuation_status": "shape_pair_active_count_device_continuation_probe: generic shape-pair relation segment flags stay on device, containment and active-count reduction run in a generic CUDA continuation, and only the scalar count is copied back",
+        "execution_route": "prepared_optix_shape_pair_active_count",
+        "hot_median_sec": 0.0011803088709712029,
+        "hot_repeat": 5,
+        "hot_total_sec": 0.0058852871879935265,
+        "hot_warmup": 1,
+        "output_contract": "overlay_active_pair_dependency_count",
+        "partner_accelerated": false,
+        "prepare_sec": {},
+        "row_count": 2048,
+        "rt_core_accelerated": true
+      },
+      "rtdl_optix_speedup_vs_cupy_cuda_core": 0.09498976996828809,
+      "workload": "overlay_seed"
+    }
+  ],
+  "schema": "rtdl.goal3589.rayjoin_cupy_same_contract_baseline.v1",
+  "summary": {
+    "all_counts_match": true,
+    "geomean_rtdl_optix_speedup_vs_cupy_cuda_core": 0.3137651557100306,
+    "min_rtdl_optix_speedup_vs_cupy_cuda_core": 0.05193595810105283,
+    "row_count": 3,
+    "same_contract_cuda_core_baseline_complete": true
+  },
+  "tier": "stress",
+  "warmup": 1
+}
