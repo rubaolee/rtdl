@@ -11,6 +11,7 @@ import unittest
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "goal3593_rayjoin_public_cdb_cupy_same_contract_probe.py"
 ARTIFACT = ROOT / "docs" / "reports" / "goal3593_rayjoin_public_cdb_cupy_same_contract_a5000" / "summary.json"
+REPORT = ROOT / "docs" / "reports" / "goal3593_rayjoin_public_cdb_cupy_same_contract_probe_2026-06-06.md"
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 
@@ -84,6 +85,17 @@ class Goal3593RayJoinPublicCdbCupySameContractProbeTest(unittest.TestCase):
         )
         array = _segment_array(columns, np)
         self.assertEqual(array.tolist(), [[1.0, 3.0, 5.0, 7.0], [2.0, 4.0, 6.0, 8.0]])
+
+    def test_report_documents_mixed_public_cdb_outcome_and_boundaries(self) -> None:
+        text = REPORT.read_text(encoding="utf-8")
+        for phrase in (
+            "PIP remains",
+            "LSI strongly favors RTDL/OptiX",
+            "Overlay active-pair dependency count also strongly favors RTDL/OptiX",
+            "not a RayJoin paper reproduction",
+            "not automatic dispatch",
+        ):
+            self.assertIn(phrase, text)
 
 
 if __name__ == "__main__":

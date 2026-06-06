@@ -1,0 +1,272 @@
+{
+  "boundary": "Bounded public-CDB same-contract probe only. This is not a RayJoin paper reproduction, not a public RT-core speedup claim, and not release evidence.",
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "internal_results_only": true,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "data_dir": "/root/rtdl_goal3293/data/rayjoin_public_cdb",
+  "dry_run": false,
+  "generated_at_unix": 1780750495.0892653,
+  "git_commit": "9432ee19a25fa5c3509c039e95541642db6b7bf3",
+  "git_status_short": "?? docs/reports/goal3556_rtnn_median_metric_a5000/\n?? docs/reports/goal3572_grouped_i64_full_reduction_fastpath_a5000/\n?? docs/reports/goal3572_grouped_i64_full_reduction_fastpath_clean_a5000/\n?? docs/reports/goal3572_grouped_i64_full_reduction_fastpath_preserve_a5000/\n?? docs/reports/goal3572_grouped_i64_full_reduction_fastpath_refined_a5000/\n?? docs/reports/goal3572_grouped_i64_full_reduction_fastpath_split_a5000/\n?? docs/reports/goal3578_raydb_grouped_i64_mode_reprobe_a5000/\n?? docs/reports/goal3582_rayjoin_promoted_strengthened_routes_a5000/\n?? docs/reports/goal3582_rayjoin_promoted_strengthened_routes_stress_a5000/",
+  "repeat": 5,
+  "rows": [
+    {
+      "case_id": "pip_county512",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "counts_match": true,
+      "cupy_cuda_core_baseline": {
+        "backend": "cupy",
+        "baseline_kind": "cupy_rawkernel_cuda_core_dense_pip_count",
+        "candidate_pair_count": 244736,
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "rtdl_beats_rayjoin_claim_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "dataset": "/root/rtdl_goal3293/data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+        "dataset_note": "External CDB point-location case using probe points and polygons from one file.",
+        "hot_median_sec": 0.00045008305460214615,
+        "hot_repeat_secs": [
+          0.00045009516179561615,
+          0.0004751104861497879,
+          0.00045008305460214615,
+          0.0003917356953024864,
+          0.0004076911136507988
+        ],
+        "hot_total_sec": 0.0021747155115008354,
+        "input_counts": {
+          "point_count": 512,
+          "shape_count": 478
+        },
+        "output_contract": "point_to_shape_positive_hit_count",
+        "partner": "cupy",
+        "partner_accelerated": true,
+        "prepare_sec": 0.2833346761763096,
+        "row_count": 1417,
+        "rt_core_accelerated": false,
+        "same_contract_baseline": true
+      },
+      "dataset": "/root/rtdl_goal3293/data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+      "interpretation": "CuPy faster or tied on this bounded public-CDB same-contract row",
+      "rtdl_optix": {
+        "backend": "optix+cupy",
+        "claim_boundary": {
+          "full_rayjoin_reproduction": false,
+          "paper_scale_perf_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "rtdl_beats_rayjoin_claim_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "v2_8_release_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "dataset": "/root/rtdl_goal3293/data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+        "device_resident_continuation_status": "candidate_columns_and_prepared_cupy_refiner_complete: generic RT candidate columns and prepared CuPy lookup columns stay device-side; host row materialization is optional when include_rows is requested",
+        "execution_route": "prepared_optix_cupy_refined_pip",
+        "hot_median_sec": 0.0028041014447808266,
+        "hot_repeat": 5,
+        "hot_total_sec": 0.026793666183948517,
+        "hot_warmup": 1,
+        "output_contract": "point_to_shape_positive_hit_count_prepared_optix_candidate_columns_plus_cupy_refine",
+        "partner_accelerated": true,
+        "prepare_sec": {
+          "prepare_cupy_refiner_sec": 0.00441703200340271,
+          "prepare_static_scene_sec": 0.5186080373823643
+        },
+        "row_count": 1417,
+        "rt_core_accelerated": true
+      },
+      "rtdl_optix_speedup_vs_cupy_cuda_core": 0.16050883445742292,
+      "workload": "pip"
+    },
+    {
+      "case_id": "lsi_county512_soil512",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "counts_match": true,
+      "cupy_cuda_core_baseline": {
+        "backend": "cupy",
+        "baseline_kind": "cupy_rawkernel_cuda_core_dense_lsi_count",
+        "candidate_pair_count": 136411275,
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "rtdl_beats_rayjoin_claim_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "dataset": "/root/rtdl_goal3293/data/rayjoin_public_cdb/br_county_start256_count512.cdb + /root/rtdl_goal3293/data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+        "dataset_note": "External CDB line-segment intersection case using direct generic segment columns from left/right chain edges.",
+        "hot_median_sec": 0.02409262489527464,
+        "hot_repeat_secs": [
+          0.024089322425425053,
+          0.024089939892292023,
+          0.024092712439596653,
+          0.02409262489527464,
+          0.024186606518924236
+        ],
+        "hot_total_sec": 0.1205512061715126,
+        "input_counts": {
+          "left_segment_count": 19987,
+          "right_segment_count": 6825
+        },
+        "output_contract": "segment_segment_intersection_count",
+        "partner": "cupy",
+        "partner_accelerated": true,
+        "prepare_sec": 0.0009090621024370193,
+        "row_count": 269,
+        "rt_core_accelerated": false,
+        "same_contract_baseline": true
+      },
+      "dataset": "/root/rtdl_goal3293/data/rayjoin_public_cdb/br_county_start256_count512.cdb + /root/rtdl_goal3293/data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+      "interpretation": "RTDL/OptiX faster than bounded public-CDB dense CuPy baseline",
+      "rtdl_optix": {
+        "backend": "optix",
+        "claim_boundary": {
+          "full_rayjoin_reproduction": false,
+          "paper_scale_perf_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "requires_pod_for_optix_perf": false,
+          "rtdl_beats_rayjoin_claim_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "v2_0_release_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "dataset": "/root/rtdl_goal3293/data/rayjoin_public_cdb/br_county_start256_count512.cdb + /root/rtdl_goal3293/data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+        "device_resident_continuation_status": "dense_left_id_count_device_column_complete: count[index] remains CUDA-resident during the route; validation copy is optional",
+        "execution_route": "prepared_optix_left_id_dense_count",
+        "hot_median_sec": 0.00046221353113651276,
+        "hot_repeat": 5,
+        "hot_total_sec": 0.00237447302788496,
+        "hot_warmup": 1,
+        "output_contract": "segment_segment_intersection_count_by_left_id_dense_device_column",
+        "partner_accelerated": false,
+        "prepare_sec": {},
+        "row_count": 269,
+        "rt_core_accelerated": true
+      },
+      "rtdl_optix_speedup_vs_cupy_cuda_core": 52.12444740861337,
+      "workload": "lsi"
+    },
+    {
+      "case_id": "overlay_county512_soil512",
+      "claim_boundary": {
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "counts_match": true,
+      "cupy_cuda_core_baseline": {
+        "backend": "cupy",
+        "baseline_kind": "cupy_rawkernel_cuda_core_dense_shape_pair_active_count",
+        "candidate_pair_count": 239478,
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "internal_results_only": true,
+          "paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "rtdl_beats_rayjoin_claim_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "dataset": "/root/rtdl_goal3293/data/rayjoin_public_cdb/br_county_start256_count512.cdb + /root/rtdl_goal3293/data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+        "dataset_note": "External CDB overlay pair-dependency case using left/right polygon chains.",
+        "hot_median_sec": 0.04925706144422293,
+        "hot_repeat_secs": [
+          0.04916160926222801,
+          0.049590117298066616,
+          0.04953404702246189,
+          0.049082908779382706,
+          0.04925706144422293
+        ],
+        "hot_total_sec": 0.24662574380636215,
+        "input_counts": {
+          "left_shape_count": 478,
+          "right_shape_count": 501
+        },
+        "output_contract": "overlay_active_pair_dependency_count",
+        "partner": "cupy",
+        "partner_accelerated": true,
+        "prepare_sec": 0.01069956086575985,
+        "row_count": 174,
+        "rt_core_accelerated": false,
+        "same_contract_baseline": true
+      },
+      "dataset": "/root/rtdl_goal3293/data/rayjoin_public_cdb/br_county_start256_count512.cdb + /root/rtdl_goal3293/data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+      "interpretation": "RTDL/OptiX faster than bounded public-CDB dense CuPy baseline",
+      "rtdl_optix": {
+        "backend": "optix",
+        "claim_boundary": {
+          "full_rayjoin_reproduction": false,
+          "paper_scale_perf_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "rtdl_beats_rayjoin_claim_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "v2_8_release_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "dataset": "/root/rtdl_goal3293/data/rayjoin_public_cdb/br_county_start256_count512.cdb + /root/rtdl_goal3293/data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+        "device_resident_continuation_status": "shape_pair_active_count_device_continuation_probe: generic shape-pair relation segment flags stay on device, containment and active-count reduction run in a generic CUDA continuation, and only the scalar count is copied back",
+        "execution_route": "prepared_optix_shape_pair_active_count",
+        "hot_median_sec": 0.0005943030118942261,
+        "hot_repeat": 5,
+        "hot_total_sec": 0.0030646007508039474,
+        "hot_warmup": 1,
+        "output_contract": "overlay_active_pair_dependency_count",
+        "partner_accelerated": false,
+        "prepare_sec": {},
+        "row_count": 174,
+        "rt_core_accelerated": true
+      },
+      "rtdl_optix_speedup_vs_cupy_cuda_core": 82.88206598049294,
+      "workload": "overlay_seed"
+    }
+  ],
+  "schema": "rtdl.goal3593.rayjoin_public_cdb_cupy_same_contract_probe.v1",
+  "summary": {
+    "all_counts_match": true,
+    "geomean_rtdl_optix_speedup_vs_cupy_cuda_core": 8.851162708902732,
+    "min_rtdl_optix_speedup_vs_cupy_cuda_core": 0.16050883445742292,
+    "row_count": 3
+  },
+  "warmup": 1
+}
