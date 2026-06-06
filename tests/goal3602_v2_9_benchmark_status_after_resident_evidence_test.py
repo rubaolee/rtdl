@@ -14,6 +14,7 @@ GOAL3601_V23 = ROOT / "docs/reports/goal3601_librts_same_contract_resident_repea
 GOAL3658 = ROOT / "docs/reports/goal3658_rayjoin_pip_tuned_device_predicate_a5000/summary.json"
 GOAL3660 = ROOT / "docs/reports/goal3660_rayjoin_pip_batch_executor_throughput_a5000/summary.json"
 GOAL3663 = ROOT / "docs/reports/goal3663_rayjoin_pip_batch_executor_cross_slice_a5000/summary_4096.json"
+GOAL3665 = ROOT / "docs/reports/goal3665_rayjoin_pip_fast_domain_preflight_guard_a5000/summary.json"
 
 
 class Goal3602V29BenchmarkStatusAfterResidentEvidenceTest(unittest.TestCase):
@@ -59,6 +60,7 @@ class Goal3602V29BenchmarkStatusAfterResidentEvidenceTest(unittest.TestCase):
         tuned = json.loads(GOAL3658.read_text(encoding="utf-8"))
         batched = json.loads(GOAL3660.read_text(encoding="utf-8"))
         batched_4096 = json.loads(GOAL3663.read_text(encoding="utf-8"))
+        guard = json.loads(GOAL3665.read_text(encoding="utf-8"))
 
         self.assertEqual(tuned["source_dirty_recorded"], [])
         self.assertEqual(tuned["rtdl"]["count"], 1417)
@@ -71,16 +73,24 @@ class Goal3602V29BenchmarkStatusAfterResidentEvidenceTest(unittest.TestCase):
         self.assertEqual(batched_4096["source_dirty"], [])
         self.assertEqual(batched_4096["rtdl"]["pip"]["counts"]["last"], 11331)
         self.assertLess(batched_4096["comparisons"][0]["rtdl_over_rayjoin_query_ratio"], 0.12)
+        self.assertEqual(guard["validated_slice_pass_probe"]["exact_count"], 1417)
+        self.assertEqual(guard["validated_slice_pass_probe"]["fast_count"], 1417)
+        self.assertEqual(guard["full_county_fail_closed_probe"]["exact_count"], 47262)
+        self.assertEqual(guard["full_county_fail_closed_probe"]["fast_count"], 47264)
+        self.assertFalse(guard["full_county_fail_closed_probe"]["rayjoin_timing_started"])
         for phrase in (
             "Goal3658",
             "Goal3660",
             "Goal3663",
+            "Goal3665",
             "0.283574ms",
             "0.034225ms/request",
             "0.051139ms/request",
+            "47264 != 47262",
             "not one-shot latency",
             "one-shot RTDL-vs-RayJoin latency",
             "second-GPU confirmation",
+            "topology-aware closed-shape",
         ):
             self.assertIn(phrase, text)
 
