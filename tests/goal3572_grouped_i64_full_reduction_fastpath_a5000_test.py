@@ -26,6 +26,7 @@ class Goal3572GroupedI64FullReductionFastPathA5000Test(unittest.TestCase):
         self.assertIn("Goal3572 extends the v2.9 grouped-i64 small-group fast path", self.report)
         self.assertIn("device_column_grouped_i64_small_group_reduction_kernel", self.report)
         self.assertIn("no new sum speedup claim", self.report)
+        self.assertIn("not a measured stats performance claim", self.report)
         for forbidden_claim in (
             "release or tag action",
             "public speedup claims",

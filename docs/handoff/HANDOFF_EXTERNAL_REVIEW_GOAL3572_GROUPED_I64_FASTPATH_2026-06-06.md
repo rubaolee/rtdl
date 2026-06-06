@@ -36,6 +36,9 @@ The final implementation deliberately keeps the original
 `device_column_grouped_i64_small_group_kernel` path for `sum` and `sum_count`,
 and adds `device_column_grouped_i64_small_group_reduction_kernel` for the new
 operations. This avoided earlier branch-heavy generalized-kernel regressions.
+The native selector also structurally covers `stats`, but the RayDB-style probe
+does not expose a separate fused stats mode; do not treat this packet as a
+measured stats speedup claim.
 
 Final committed evidence is from an RTX A5000 pod:
 

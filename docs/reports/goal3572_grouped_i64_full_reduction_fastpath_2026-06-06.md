@@ -11,7 +11,7 @@ The design target is generic and app-agnostic:
 
 - preserve the existing dense-small-group `sum` / `sum_count` path from v2.9;
 - add small-group global-atomic-pressure reduction for `count`, `min`, `max`,
-  and `stats`;
+  and structurally for `stats`;
 - keep all RayDB/database/app semantics outside the native engine;
 - produce A5000 evidence against the v2.9 closeout commit.
 
@@ -73,6 +73,11 @@ Per-mode result:
 | `max` | `0.000562883` | `0.000445567` | `1.263298x` | New fast path win. |
 | `avg_as_sum_count` | `0.000501193` | `0.000497831` | `1.007569x` | Preserved sum-count path, parity-positive. |
 | `sum` | `0.000491094` | `0.000497161` | `0.987797x` | Preserved sum path, near parity; no new sum speedup claim. |
+
+The RayDB-style probe exposes `count`, `sum`, `min`, `max`, and
+`avg_as_sum_count`. It does not expose a separate fused `stats` mode. Therefore
+Goal3572's stats coverage is structural/native-selector coverage only; it is
+not a measured stats performance claim.
 
 ## Engineering Notes
 
