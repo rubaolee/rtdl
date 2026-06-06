@@ -13,6 +13,7 @@ GOAL3601_CURRENT = ROOT / "docs/reports/goal3601_librts_same_contract_resident_r
 GOAL3601_V23 = ROOT / "docs/reports/goal3601_librts_same_contract_resident_repeat_a5000/v23_summary.json"
 GOAL3658 = ROOT / "docs/reports/goal3658_rayjoin_pip_tuned_device_predicate_a5000/summary.json"
 GOAL3660 = ROOT / "docs/reports/goal3660_rayjoin_pip_batch_executor_throughput_a5000/summary.json"
+GOAL3663 = ROOT / "docs/reports/goal3663_rayjoin_pip_batch_executor_cross_slice_a5000/summary_4096.json"
 
 
 class Goal3602V29BenchmarkStatusAfterResidentEvidenceTest(unittest.TestCase):
@@ -57,6 +58,7 @@ class Goal3602V29BenchmarkStatusAfterResidentEvidenceTest(unittest.TestCase):
         text = REPORT.read_text(encoding="utf-8")
         tuned = json.loads(GOAL3658.read_text(encoding="utf-8"))
         batched = json.loads(GOAL3660.read_text(encoding="utf-8"))
+        batched_4096 = json.loads(GOAL3663.read_text(encoding="utf-8"))
 
         self.assertEqual(tuned["source_dirty_recorded"], [])
         self.assertEqual(tuned["rtdl"]["count"], 1417)
@@ -66,14 +68,19 @@ class Goal3602V29BenchmarkStatusAfterResidentEvidenceTest(unittest.TestCase):
             batched["rtdl"]["pip"]["pip_timing_contract"],
             "batched_repeated_request_throughput_not_one_shot_latency",
         )
+        self.assertEqual(batched_4096["source_dirty"], [])
+        self.assertEqual(batched_4096["rtdl"]["pip"]["counts"]["last"], 11331)
+        self.assertLess(batched_4096["comparisons"][0]["rtdl_over_rayjoin_query_ratio"], 0.12)
         for phrase in (
             "Goal3658",
             "Goal3660",
+            "Goal3663",
             "0.283574ms",
             "0.034225ms/request",
+            "0.051139ms/request",
             "not one-shot latency",
             "one-shot RTDL-vs-RayJoin latency",
-            "no longer belongs to CuPy",
+            "second-GPU confirmation",
         ):
             self.assertIn(phrase, text)
 
@@ -105,7 +112,7 @@ class Goal3602V29BenchmarkStatusAfterResidentEvidenceTest(unittest.TestCase):
             "not one scalar app headline",
             "contract-specific",
             "cannot expose the same resident-repeat API",
-            "broader cross-slice/second-GPU confirmation",
+            "second-GPU confirmation",
             "does not authorize",
             "public v2.9 speedup claims",
             "app-specific native-engine logic",
