@@ -924,6 +924,8 @@ class _RtdlNativeDevicePairColumns(ctypes.Structure):
         ("overflow_device_ptr", ctypes.c_uint64),
         ("left_ordinals_device_ptr", ctypes.c_uint64),
         ("right_ordinals_device_ptr", ctypes.c_uint64),
+        ("relation_status_device_ptr", ctypes.c_uint64),
+        ("relation_boundary_ordinals_device_ptr", ctypes.c_uint64),
     ]
 
 
@@ -1935,6 +1937,10 @@ class OptixNativeDevicePairColumnOutput:
     left_ordinals_device_ptr: int = 0
     right_ordinals_device_ptr: int = 0
     ordinal_field_names: tuple[str, str] = ("left_ordinal", "right_ordinal")
+    relation_status_device_ptr: int = 0
+    relation_status_field_name: str = "relation_status"
+    relation_boundary_ordinals_device_ptr: int = 0
+    relation_boundary_ordinal_field_name: str = "relation_boundary_ordinal"
 
     @property
     def device_resident(self) -> bool:
@@ -1950,6 +1956,22 @@ class OptixNativeDevicePairColumnOutput:
         return (
             self.left_ordinals_device_ptr > 0
             and self.right_ordinals_device_ptr > 0
+            and self.capacity > 0
+            and not self.overflow
+        )
+
+    @property
+    def has_relation_status_column(self) -> bool:
+        return (
+            self.relation_status_device_ptr > 0
+            and self.capacity > 0
+            and not self.overflow
+        )
+
+    @property
+    def has_relation_boundary_ordinal_column(self) -> bool:
+        return (
+            self.relation_boundary_ordinals_device_ptr > 0
             and self.capacity > 0
             and not self.overflow
         )
@@ -2057,6 +2079,32 @@ class OptixNativeDevicePairColumnOutput:
         }
         metadata["runtime"]["instance_identity_columns"] = instance_identity
         metadata["v2_8_typed_producer_metadata"]["instance_identity_columns"] = instance_identity
+        relation_status = {
+            "present": bool(self.has_relation_status_column),
+            "field_name": self.relation_status_field_name,
+            "data_ptr": int(self.relation_status_device_ptr),
+            "value_contract": {
+                "0": "unknown_or_not_classified",
+                "1": "accepted_by_closed_shape_interior_predicate",
+                "2": "accepted_by_closed_shape_boundary_predicate",
+            },
+            "meaning": "generic_closed_shape_membership_candidate_relation_status",
+            "release_authorized": False,
+        }
+        metadata["runtime"]["relation_status_column"] = relation_status
+        metadata["v2_8_typed_producer_metadata"]["relation_status_column"] = relation_status
+        boundary_ordinal = {
+            "present": bool(self.has_relation_boundary_ordinal_column),
+            "field_name": self.relation_boundary_ordinal_field_name,
+            "data_ptr": int(self.relation_boundary_ordinals_device_ptr),
+            "sentinel_value": 0xFFFFFFFF,
+            "meaning": (
+                "generic_closed_shape_membership_candidate_boundary_element_ordinal_when_status_is_boundary"
+            ),
+            "release_authorized": False,
+        }
+        metadata["runtime"]["relation_boundary_ordinal_column"] = boundary_ordinal
+        metadata["v2_8_typed_producer_metadata"]["relation_boundary_ordinal_column"] = boundary_ordinal
         metadata["capacity_status"] = capacity_status
         return metadata
 
@@ -2097,6 +2145,12 @@ class OptixNativeDevicePairColumnOutput:
         if self.has_instance_identity_columns:
             columns[self.ordinal_field_names[0]] = self._cupy_column(self.left_ordinals_device_ptr)
             columns[self.ordinal_field_names[1]] = self._cupy_column(self.right_ordinals_device_ptr)
+        if self.has_relation_status_column:
+            columns[self.relation_status_field_name] = self._cupy_column(self.relation_status_device_ptr)
+        if self.has_relation_boundary_ordinal_column:
+            columns[self.relation_boundary_ordinal_field_name] = self._cupy_column(
+                self.relation_boundary_ordinals_device_ptr
+            )
         return columns
 
     def grouped_count_by_left_id(self, *, group_capacity: int) -> tuple[dict[str, int], ...]:
@@ -11833,6 +11887,10 @@ class PreparedOptixPointClosedShapeMembership2D:
             left_ordinals_device_ptr=int(columns.left_ordinals_device_ptr),
             right_ordinals_device_ptr=int(columns.right_ordinals_device_ptr),
             ordinal_field_names=("point_ordinal", "shape_ordinal"),
+            relation_status_device_ptr=int(columns.relation_status_device_ptr),
+            relation_status_field_name="relation_status",
+            relation_boundary_ordinals_device_ptr=int(columns.relation_boundary_ordinals_device_ptr),
+            relation_boundary_ordinal_field_name="relation_boundary_ordinal",
         )
 
     def exact_device_columns(

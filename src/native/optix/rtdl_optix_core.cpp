@@ -1193,9 +1193,10 @@ extern "C" {
 __constant__ PipParams params;
 }
 
-static __forceinline__ __device__ bool point_in_polygon(
+static __forceinline__ __device__ uint32_t point_closed_shape_membership_status(
         float px, float py,
-        const GpuPolygonRef& poly)
+        const GpuPolygonRef& poly,
+        uint32_t* boundary_element_ordinal)
 {
     // The wider epsilon is useful for the non-positive-only float32 path and
     // for the opt-in positive-only device prefilter, where false negatives are
@@ -1204,6 +1205,9 @@ static __forceinline__ __device__ bool point_in_polygon(
     uint32_t n = poly.vertex_count;
     uint32_t off = poly.vertex_offset;
     bool inside = false;
+    if (boundary_element_ordinal != nullptr) {
+        *boundary_element_ordinal = 0xffffffffu;
+    }
     if (params.prepared_edges != nullptr) {
         for (uint32_t i = 0; i < n; ++i) {
             const GpuPreparedClosedShapeEdge2D edge = params.prepared_edges[off + i];
@@ -1214,14 +1218,22 @@ static __forceinline__ __device__ bool point_in_polygon(
             const float len2 = edge.len2;
             if (params.boundary_check != 0u) {
                 if (len2 <= point_eps * point_eps) {
-                    if (fabsf(px - ax) <= point_eps && fabsf(py - ay) <= point_eps)
-                        return true;
+                    if (fabsf(px - ax) <= point_eps && fabsf(py - ay) <= point_eps) {
+                        if (boundary_element_ordinal != nullptr) {
+                            *boundary_element_ordinal = off + i;
+                        }
+                        return 2u;
+                    }
                 } else {
                     float cross = (px - ax) * edge.dy - (py - ay) * edge.dx;
                     if (cross * cross <= point_eps * point_eps * len2) {
                         float dot = (px - ax) * edge.dx + (py - ay) * edge.dy;
-                        if (dot >= -point_eps && dot <= len2 + point_eps)
-                            return true;
+                        if (dot >= -point_eps && dot <= len2 + point_eps) {
+                            if (boundary_element_ordinal != nullptr) {
+                                *boundary_element_ordinal = off + i;
+                            }
+                            return 2u;
+                        }
                     }
                 }
             }
@@ -1230,7 +1242,7 @@ static __forceinline__ __device__ bool point_in_polygon(
                 (px <= edge.crossing_scale * (py - by) + bx))
                 inside = !inside;
         }
-        return inside;
+        return inside ? 1u : 0u;
     }
     for (uint32_t i = 0, j = n - 1; i < n; j = i++) {
         float ax = params.vertices_x[off + j];
@@ -1242,14 +1254,22 @@ static __forceinline__ __device__ bool point_in_polygon(
         float len2 = dx * dx + dy * dy;
         if (params.boundary_check != 0u) {
             if (len2 <= point_eps * point_eps) {
-                if (fabsf(px - ax) <= point_eps && fabsf(py - ay) <= point_eps)
-                    return true;
+                if (fabsf(px - ax) <= point_eps && fabsf(py - ay) <= point_eps) {
+                    if (boundary_element_ordinal != nullptr) {
+                        *boundary_element_ordinal = off + j;
+                    }
+                    return 2u;
+                }
             } else {
                 float cross = (px - ax) * dy - (py - ay) * dx;
                 if (cross * cross <= point_eps * point_eps * len2) {
                     float dot = (px - ax) * dx + (py - ay) * dy;
-                    if (dot >= -point_eps && dot <= len2 + point_eps)
-                        return true;
+                    if (dot >= -point_eps && dot <= len2 + point_eps) {
+                        if (boundary_element_ordinal != nullptr) {
+                            *boundary_element_ordinal = off + j;
+                        }
+                        return 2u;
+                    }
                 }
             }
         }
@@ -1258,7 +1278,15 @@ static __forceinline__ __device__ bool point_in_polygon(
             (px <= (ax - bx) * (py - by) / ((ay - by) != 0.0f ? (ay - by) : 1.0e-20f) + bx))
             inside = !inside;
     }
-    return inside;
+    return inside ? 1u : 0u;
+}
+
+static __forceinline__ __device__ bool point_in_polygon(
+        float px, float py,
+        const GpuPolygonRef& poly)
+{
+    uint32_t boundary_element_ordinal = 0xffffffffu;
+    return point_closed_shape_membership_status(px, py, poly, &boundary_element_ordinal) != 0u;
 }
 
 extern "C" __global__ void __raygen__pip_probe() {
@@ -1303,18 +1331,23 @@ extern "C" __global__ void __intersection__pip_isect() {
     const uint32_t prim = optixGetPrimitiveIndex();
     const uint32_t pidx = optixGetPayload_0();
     if (params.positive_only != 0u) {
+        uint32_t relation_status = 0u;
+        uint32_t boundary_element_ordinal = 0xffffffffu;
         if (params.device_prefilter != 0u) {
             const GpuPolygonRef poly = params.polygons[prim];
             const float px = params.points_x[pidx];
             const float py = params.points_y[pidx];
-            if (!point_in_polygon(px, py, poly)) {
+            relation_status = point_closed_shape_membership_status(px, py, poly, &boundary_element_ordinal);
+            if (relation_status == 0u) {
                 return;
             }
         }
+        optixSetPayload_3(relation_status);
         if (params.output == nullptr && params.output_capacity == 0u) {
             optixSetPayload_2(optixGetPayload_2() + 1u);
             return;
         }
+        optixSetPayload_2(boundary_element_ordinal);
         // In positive-hit mode, OptiX is only a conservative candidate
         // generator. Final inclusive truth is decided on the host. The default
         // reports every AABB candidate; the opt-in device prefilter only
@@ -1326,8 +1359,13 @@ extern "C" __global__ void __intersection__pip_isect() {
     const GpuPolygonRef poly = params.polygons[prim];
     float px = params.points_x[pidx];
     float py = params.points_y[pidx];
-    if (!point_in_polygon(px, py, poly)) return;
+    uint32_t boundary_element_ordinal = 0xffffffffu;
+    const uint32_t relation_status =
+        point_closed_shape_membership_status(px, py, poly, &boundary_element_ordinal);
+    if (relation_status == 0u) return;
     optixSetPayload_1(prim);
+    optixSetPayload_2(boundary_element_ordinal);
+    optixSetPayload_3(relation_status);
     optixReportIntersection(0.5f, 0u);
 }
 

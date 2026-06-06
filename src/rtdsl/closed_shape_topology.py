@@ -20,6 +20,8 @@ OWNER_FACE_SIDE_CODES = {
 OWNER_FACE_SIDE_LABELS = {value: key for key, value in OWNER_FACE_SIDE_CODES.items()}
 
 _CUPY_EXACT_CLOSED_SHAPE_CANDIDATE_REFINE_KERNEL = None
+_CUPY_BOUNDARY_CONTACT_CLOSED_SHAPE_CANDIDATE_REFINE_KERNEL = None
+_NUMBA_BOUNDARY_CONTACT_CLOSED_SHAPE_COUNT_KERNEL = None
 
 
 def _int_set(value: int | Iterable[int]) -> frozenset[int]:
@@ -178,6 +180,155 @@ void exact_closed_shape_candidate_refine(
             "exact_closed_shape_candidate_refine",
         )
     return _CUPY_EXACT_CLOSED_SHAPE_CANDIDATE_REFINE_KERNEL
+
+
+def _cupy_boundary_contact_closed_shape_candidate_refine_kernel(cupy):
+    global _CUPY_BOUNDARY_CONTACT_CLOSED_SHAPE_CANDIDATE_REFINE_KERNEL
+    if _CUPY_BOUNDARY_CONTACT_CLOSED_SHAPE_CANDIDATE_REFINE_KERNEL is None:
+        _CUPY_BOUNDARY_CONTACT_CLOSED_SHAPE_CANDIDATE_REFINE_KERNEL = cupy.RawKernel(
+            r'''
+extern "C" __global__
+void boundary_contact_closed_shape_candidate_refine(
+    const long long* candidate_point_ids,
+    const long long* candidate_shape_ids,
+    const long long* candidate_point_ordinals,
+    const long long* candidate_shape_ordinals,
+    const long long* relation_status,
+    const long long* relation_boundary_ordinals,
+    const long long candidate_count,
+    const double* point_x_lookup,
+    const double* point_y_lookup,
+    const int* shape_offset_lookup,
+    const int* shape_count_lookup,
+    const double* vertices_x,
+    const double* vertices_y,
+    const double point_eps,
+    long long* output_point_ids,
+    long long* output_shape_ids,
+    unsigned int* output_count)
+{
+    const long long row = (long long)blockDim.x * (long long)blockIdx.x + (long long)threadIdx.x;
+    if (row >= candidate_count) return;
+
+    const long long status = relation_status[row];
+    bool keep = false;
+    if (status == 1) {
+        keep = true;
+    } else if (status == 2) {
+        const long long point_lookup = candidate_point_ordinals[row];
+        const long long shape_lookup = candidate_shape_ordinals[row];
+        const long long boundary_ordinal = relation_boundary_ordinals[row];
+        if (point_lookup >= 0 && shape_lookup >= 0 && boundary_ordinal >= 0) {
+            const int off = shape_offset_lookup[shape_lookup];
+            const int n = shape_count_lookup[shape_lookup];
+            const long long local_edge = boundary_ordinal - (long long)off;
+            if (off >= 0 && n >= 3 && local_edge >= 0 && local_edge < (long long)n) {
+                const long long next_ordinal = (long long)off + ((local_edge + 1) % (long long)n);
+                const double px = point_x_lookup[point_lookup];
+                const double py = point_y_lookup[point_lookup];
+                const double ax = vertices_x[boundary_ordinal];
+                const double ay = vertices_y[boundary_ordinal];
+                const double bx = vertices_x[next_ordinal];
+                const double by = vertices_y[next_ordinal];
+                const double dx = bx - ax;
+                const double dy = by - ay;
+                const double len2 = dx * dx + dy * dy;
+                const double eps = point_eps;
+                if (len2 <= eps * eps) {
+                    keep = fabs(px - ax) <= eps && fabs(py - ay) <= eps;
+                } else {
+                    const double len = sqrt(len2);
+                    const double cross = (px - ax) * dy - (py - ay) * dx;
+                    const double dot = (px - ax) * dx + (py - ay) * dy;
+                    const double along_eps = eps * len;
+                    keep = fabs(cross) <= eps * len && dot >= -along_eps && dot <= len2 + along_eps;
+                }
+            }
+        }
+    }
+
+    if (keep) {
+        const unsigned int slot = atomicAdd(output_count, 1u);
+        output_point_ids[slot] = candidate_point_ids[row];
+        output_shape_ids[slot] = candidate_shape_ids[row];
+    }
+}
+''',
+            "boundary_contact_closed_shape_candidate_refine",
+        )
+    return _CUPY_BOUNDARY_CONTACT_CLOSED_SHAPE_CANDIDATE_REFINE_KERNEL
+
+
+def _numba_boundary_contact_closed_shape_count_kernel():
+    global _NUMBA_BOUNDARY_CONTACT_CLOSED_SHAPE_COUNT_KERNEL
+    if _NUMBA_BOUNDARY_CONTACT_CLOSED_SHAPE_COUNT_KERNEL is None:
+        try:
+            from numba import cuda  # type: ignore
+        except Exception as exc:  # pragma: no cover
+            raise RuntimeError("Numba CUDA is required for boundary-contact count continuation") from exc
+
+        @cuda.jit
+        def boundary_contact_closed_shape_count(
+            candidate_point_ordinals,
+            candidate_shape_ordinals,
+            relation_status,
+            relation_boundary_ordinals,
+            candidate_count,
+            point_x_lookup,
+            point_y_lookup,
+            shape_offset_lookup,
+            shape_count_lookup,
+            vertices_x,
+            vertices_y,
+            point_eps,
+            invalid_count,
+        ):
+            row = cuda.grid(1)
+            if row >= candidate_count:
+                return
+
+            status = relation_status[row]
+            invalid = False
+            if status == 1:
+                invalid = False
+            elif status == 2:
+                point_lookup = candidate_point_ordinals[row]
+                shape_lookup = candidate_shape_ordinals[row]
+                boundary_ordinal = relation_boundary_ordinals[row]
+                keep = False
+                if point_lookup >= 0 and shape_lookup >= 0 and boundary_ordinal >= 0:
+                    off = shape_offset_lookup[shape_lookup]
+                    n = shape_count_lookup[shape_lookup]
+                    local_edge = boundary_ordinal - off
+                    if off >= 0 and n >= 3 and local_edge >= 0 and local_edge < n:
+                        next_ordinal = off + ((local_edge + 1) % n)
+                        px = point_x_lookup[point_lookup]
+                        py = point_y_lookup[point_lookup]
+                        ax = vertices_x[boundary_ordinal]
+                        ay = vertices_y[boundary_ordinal]
+                        bx = vertices_x[next_ordinal]
+                        by = vertices_y[next_ordinal]
+                        dx = bx - ax
+                        dy = by - ay
+                        len2 = dx * dx + dy * dy
+                        eps = point_eps
+                        if len2 <= eps * eps:
+                            keep = abs(px - ax) <= eps and abs(py - ay) <= eps
+                        else:
+                            length = len2 ** 0.5
+                            cross = (px - ax) * dy - (py - ay) * dx
+                            dot = (px - ax) * dx + (py - ay) * dy
+                            along_eps = eps * length
+                            keep = abs(cross) <= eps * length and dot >= -along_eps and dot <= len2 + along_eps
+                invalid = not keep
+            else:
+                invalid = True
+
+            if invalid:
+                cuda.atomic.add(invalid_count, 0, 1)
+
+        _NUMBA_BOUNDARY_CONTACT_CLOSED_SHAPE_COUNT_KERNEL = boundary_contact_closed_shape_count
+    return _NUMBA_BOUNDARY_CONTACT_CLOSED_SHAPE_COUNT_KERNEL
 
 
 def refine_closed_shape_membership_candidate_columns_exact_cupy(
@@ -390,6 +541,7 @@ class PreparedClosedShapeMembershipCandidateRefinerCupy:
         self._vertices_y = cp.asarray(vertices_y, dtype=cp.float64)
         self._point_eps = eps
         self._kernel = _cupy_exact_closed_shape_candidate_refine_kernel(cp)
+        self._boundary_contact_kernel = _cupy_boundary_contact_closed_shape_candidate_refine_kernel(cp)
 
     @property
     def point_eps(self) -> float:
@@ -482,6 +634,262 @@ class PreparedClosedShapeMembershipCandidateRefinerCupy:
             "prepared_lookup_residency": self.lookup_residency,
             "matches_geos_topology_oracle": False,
             "output_residency": "partner_device_refined_columns",
+            "host_refined_rows_materialized": False,
+            "native_exact_device_row_stream_produced": False,
+            "true_zero_copy_claim_authorized": False,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+        }
+
+    def refine_boundary_contacts(
+        self,
+        candidate_columns: object,
+        *,
+        sort_output: bool = True,
+        validate_columns: bool = True,
+    ) -> dict[str, object]:
+        """Refine candidates using native relation-status and boundary-contact columns.
+
+        This is a narrower continuation than ``refine``. It assumes the native
+        producer has already classified each candidate as accepted by either the
+        interior predicate or a specific boundary element. Interior candidates
+        pass through, and boundary candidates verify only that one emitted
+        boundary element in double precision. It is exact only for streams whose
+        remaining ambiguity is boundary-contact tolerance, and it fails closed
+        when the required status/contact columns are absent or unknown.
+        """
+
+        cp = self._cp
+        if not hasattr(candidate_columns, "as_cupy_columns"):
+            raise TypeError("boundary-contact refinement requires a device column stream")
+        column_map = candidate_columns.as_cupy_columns()
+        field_names = getattr(candidate_columns, "field_names", ("point_id", "shape_id"))
+        raw_point_ids = column_map[field_names[0]]
+        raw_shape_ids = column_map[field_names[1]]
+        raw_point_ordinals = column_map.get("point_ordinal", column_map.get("left_ordinal"))
+        raw_shape_ordinals = column_map.get("shape_ordinal", column_map.get("right_ordinal"))
+        raw_relation_status = column_map.get("relation_status")
+        raw_boundary_ordinals = column_map.get("relation_boundary_ordinal")
+        if raw_point_ordinals is None or raw_shape_ordinals is None:
+            raise ValueError("boundary-contact refinement requires point and shape ordinal columns")
+        if raw_relation_status is None or raw_boundary_ordinals is None:
+            raise ValueError("boundary-contact refinement requires relation status and boundary ordinal columns")
+
+        candidate_point_ids = cp.asarray(raw_point_ids, dtype=cp.int64)
+        candidate_shape_ids = cp.asarray(raw_shape_ids, dtype=cp.int64)
+        candidate_point_ordinals = cp.asarray(raw_point_ordinals, dtype=cp.int64)
+        candidate_shape_ordinals = cp.asarray(raw_shape_ordinals, dtype=cp.int64)
+        relation_status = cp.asarray(raw_relation_status, dtype=cp.int64)
+        boundary_ordinals = cp.asarray(raw_boundary_ordinals, dtype=cp.int64)
+        candidate_count = int(candidate_point_ids.size)
+        for name, values in (
+            ("shape_id", candidate_shape_ids),
+            ("point_ordinal", candidate_point_ordinals),
+            ("shape_ordinal", candidate_shape_ordinals),
+            ("relation_status", relation_status),
+            ("relation_boundary_ordinal", boundary_ordinals),
+        ):
+            if int(values.size) != candidate_count:
+                raise ValueError(f"candidate {name} column must match candidate point id column length")
+
+        if validate_columns and candidate_count:
+            min_point_ordinal = int(cp.min(candidate_point_ordinals).item())
+            max_point_ordinal = int(cp.max(candidate_point_ordinals).item())
+            min_shape_ordinal = int(cp.min(candidate_shape_ordinals).item())
+            max_shape_ordinal = int(cp.max(candidate_shape_ordinals).item())
+            if min_point_ordinal < 0 or max_point_ordinal >= self._point_count:
+                raise ValueError("candidate point ordinal column contains an out-of-range input ordinal")
+            if min_shape_ordinal < 0 or max_shape_ordinal >= self._shape_count:
+                raise ValueError("candidate shape ordinal column contains an out-of-range prepared-shape ordinal")
+            if int(cp.count_nonzero(relation_status == 0).item()) != 0:
+                raise ValueError("boundary-contact refinement cannot consume unknown relation status rows")
+
+        if validate_columns and candidate_count:
+            boundary_mask = relation_status == 2
+            boundary_count = int(cp.count_nonzero(boundary_mask).item())
+        else:
+            boundary_mask = None
+            boundary_count = 0
+        if validate_columns and boundary_count:
+            sentinel = (1 << 32) - 1
+            if int(cp.count_nonzero(boundary_ordinals[boundary_mask] == sentinel).item()) != 0:
+                raise ValueError("boundary-contact refinement requires boundary ordinals for boundary-status rows")
+            b_shape_ordinals = candidate_shape_ordinals[boundary_mask]
+            b_boundary_ordinals = boundary_ordinals[boundary_mask]
+            off = self._shape_offset_lookup[b_shape_ordinals].astype(cp.int64, copy=False)
+            n = self._shape_count_lookup[b_shape_ordinals].astype(cp.int64, copy=False)
+            local_edge = b_boundary_ordinals - off
+            valid_edge = (n >= 3) & (local_edge >= 0) & (local_edge < n)
+            if int(cp.count_nonzero(~valid_edge).item()) != 0:
+                raise ValueError("boundary-contact refinement received an out-of-range boundary ordinal")
+
+        output_point_ids = cp.empty((candidate_count,), dtype=cp.int64)
+        output_shape_ids = cp.empty((candidate_count,), dtype=cp.int64)
+        output_count = cp.zeros((1,), dtype=cp.uint32)
+        if candidate_count:
+            block = 256
+            grid = (candidate_count + block - 1) // block
+            self._boundary_contact_kernel(
+                (grid,),
+                (block,),
+                (
+                    candidate_point_ids,
+                    candidate_shape_ids,
+                    candidate_point_ordinals,
+                    candidate_shape_ordinals,
+                    relation_status,
+                    boundary_ordinals,
+                    candidate_count,
+                    self._point_x_lookup,
+                    self._point_y_lookup,
+                    self._shape_offset_lookup,
+                    self._shape_count_lookup,
+                    self._vertices_x,
+                    self._vertices_y,
+                    self._point_eps,
+                    output_point_ids,
+                    output_shape_ids,
+                    output_count,
+                ),
+            )
+        row_count = int(output_count[0].item())
+        point_out = output_point_ids[:row_count]
+        shape_out = output_shape_ids[:row_count]
+        if sort_output and row_count > 1:
+            order = cp.lexsort(cp.stack((shape_out, point_out)))
+            point_out = point_out[order]
+            shape_out = shape_out[order]
+        return {
+            "point_id": point_out,
+            "shape_id": shape_out,
+            "membership": cp.ones((row_count,), dtype=cp.int64),
+            "row_count": row_count,
+            "candidate_row_count": candidate_count,
+            "dropped_candidate_row_count": candidate_count - row_count,
+            "point_eps": self._point_eps,
+            "partner": "cupy",
+            "predicate": "boundary_contact_single_element_closed_shape_membership",
+            "relation_status_columns_used": True,
+            "relation_boundary_ordinal_columns_used": True,
+            "full_simple_ring_scan_used": False,
+            "input_validation_performed": bool(validate_columns),
+            "trusted_native_stream_fast_path": not bool(validate_columns),
+            "prepared_lookup_residency": self.lookup_residency,
+            "matches_geos_topology_oracle": False,
+            "output_residency": "partner_device_refined_columns",
+            "host_refined_rows_materialized": False,
+            "native_exact_device_row_stream_produced": False,
+            "true_zero_copy_claim_authorized": False,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+        }
+
+    def count_boundary_contacts_numba(
+        self,
+        candidate_columns: object,
+        *,
+        validate_columns: bool = True,
+    ) -> dict[str, object]:
+        """Count accepted candidates with a Numba CUDA boundary-contact continuation.
+
+        This count-only path is for workloads that need an exact scalar count,
+        not a materialized row stream. It avoids the per-kept-row global output
+        atomic used by compacting refiners and only atomically counts rejected
+        boundary contacts. The native engine remains app-agnostic: it only
+        supplies relation-status and boundary-element ordinal columns.
+        """
+
+        cp = self._cp
+        if not hasattr(candidate_columns, "as_cupy_columns"):
+            raise TypeError("boundary-contact count requires a device column stream")
+        column_map = candidate_columns.as_cupy_columns()
+        raw_point_ordinals = column_map.get("point_ordinal", column_map.get("left_ordinal"))
+        raw_shape_ordinals = column_map.get("shape_ordinal", column_map.get("right_ordinal"))
+        raw_relation_status = column_map.get("relation_status")
+        raw_boundary_ordinals = column_map.get("relation_boundary_ordinal")
+        if raw_point_ordinals is None or raw_shape_ordinals is None:
+            raise ValueError("boundary-contact count requires point and shape ordinal columns")
+        if raw_relation_status is None or raw_boundary_ordinals is None:
+            raise ValueError("boundary-contact count requires relation status and boundary ordinal columns")
+
+        candidate_point_ordinals = cp.asarray(raw_point_ordinals, dtype=cp.int64)
+        candidate_shape_ordinals = cp.asarray(raw_shape_ordinals, dtype=cp.int64)
+        relation_status = cp.asarray(raw_relation_status, dtype=cp.int64)
+        boundary_ordinals = cp.asarray(raw_boundary_ordinals, dtype=cp.int64)
+        candidate_count = int(candidate_point_ordinals.size)
+        for name, values in (
+            ("shape_ordinal", candidate_shape_ordinals),
+            ("relation_status", relation_status),
+            ("relation_boundary_ordinal", boundary_ordinals),
+        ):
+            if int(values.size) != candidate_count:
+                raise ValueError(f"candidate {name} column must match candidate point ordinal column length")
+
+        if validate_columns and candidate_count:
+            min_point_ordinal = int(cp.min(candidate_point_ordinals).item())
+            max_point_ordinal = int(cp.max(candidate_point_ordinals).item())
+            min_shape_ordinal = int(cp.min(candidate_shape_ordinals).item())
+            max_shape_ordinal = int(cp.max(candidate_shape_ordinals).item())
+            if min_point_ordinal < 0 or max_point_ordinal >= self._point_count:
+                raise ValueError("candidate point ordinal column contains an out-of-range input ordinal")
+            if min_shape_ordinal < 0 or max_shape_ordinal >= self._shape_count:
+                raise ValueError("candidate shape ordinal column contains an out-of-range prepared-shape ordinal")
+            if int(cp.count_nonzero(relation_status == 0).item()) != 0:
+                raise ValueError("boundary-contact count cannot consume unknown relation status rows")
+            boundary_mask = relation_status == 2
+            boundary_count = int(cp.count_nonzero(boundary_mask).item())
+            if boundary_count:
+                sentinel = (1 << 32) - 1
+                if int(cp.count_nonzero(boundary_ordinals[boundary_mask] == sentinel).item()) != 0:
+                    raise ValueError("boundary-contact count requires boundary ordinals for boundary-status rows")
+                b_shape_ordinals = candidate_shape_ordinals[boundary_mask]
+                b_boundary_ordinals = boundary_ordinals[boundary_mask]
+                off = self._shape_offset_lookup[b_shape_ordinals].astype(cp.int64, copy=False)
+                n = self._shape_count_lookup[b_shape_ordinals].astype(cp.int64, copy=False)
+                local_edge = b_boundary_ordinals - off
+                valid_edge = (n >= 3) & (local_edge >= 0) & (local_edge < n)
+                if int(cp.count_nonzero(~valid_edge).item()) != 0:
+                    raise ValueError("boundary-contact count received an out-of-range boundary ordinal")
+
+        invalid_count = cp.zeros((1,), dtype=cp.int64)
+        if candidate_count:
+            kernel = _numba_boundary_contact_closed_shape_count_kernel()
+            block = 256
+            grid = (candidate_count + block - 1) // block
+            kernel[grid, block](
+                candidate_point_ordinals,
+                candidate_shape_ordinals,
+                relation_status,
+                boundary_ordinals,
+                candidate_count,
+                self._point_x_lookup,
+                self._point_y_lookup,
+                self._shape_offset_lookup,
+                self._shape_count_lookup,
+                self._vertices_x,
+                self._vertices_y,
+                self._point_eps,
+                invalid_count,
+            )
+        dropped_count = int(invalid_count[0].item())
+        row_count = candidate_count - dropped_count
+        return {
+            "row_count": row_count,
+            "candidate_row_count": candidate_count,
+            "dropped_candidate_row_count": dropped_count,
+            "point_eps": self._point_eps,
+            "partner": "numba",
+            "predicate": "boundary_contact_count_closed_shape_membership",
+            "relation_status_columns_used": True,
+            "relation_boundary_ordinal_columns_used": True,
+            "full_simple_ring_scan_used": False,
+            "row_stream_materialized": False,
+            "input_validation_performed": bool(validate_columns),
+            "trusted_native_stream_fast_path": not bool(validate_columns),
+            "prepared_lookup_residency": self.lookup_residency,
+            "output_residency": "partner_device_scalar_count",
             "host_refined_rows_materialized": False,
             "native_exact_device_row_stream_produced": False,
             "true_zero_copy_claim_authorized": False,

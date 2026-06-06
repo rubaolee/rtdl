@@ -5630,6 +5630,8 @@ struct PipCandidateDeviceColumnsLaunchParams {
     unsigned long long* shape_ids_out;
     unsigned long long* point_ordinals_out;
     unsigned long long* shape_ordinals_out;
+    unsigned long long* relation_status_out;
+    unsigned long long* relation_boundary_ordinals_out;
     uint32_t*        overflow;
     uint32_t         positive_only;
     uint32_t         hit_word_count;
@@ -5692,12 +5694,16 @@ struct NativeClosedShapeMembershipCandidateDeviceColumnsOwner {
     CUdeviceptr shape_ids = 0;
     CUdeviceptr point_ordinals = 0;
     CUdeviceptr shape_ordinals = 0;
+    CUdeviceptr relation_status = 0;
+    CUdeviceptr relation_boundary_ordinals = 0;
 
     ~NativeClosedShapeMembershipCandidateDeviceColumnsOwner() {
         if (point_ids) cuMemFree(point_ids);
         if (shape_ids) cuMemFree(shape_ids);
         if (point_ordinals) cuMemFree(point_ordinals);
         if (shape_ordinals) cuMemFree(shape_ordinals);
+        if (relation_status) cuMemFree(relation_status);
+        if (relation_boundary_ordinals) cuMemFree(relation_boundary_ordinals);
     }
 };
 
@@ -5906,6 +5912,8 @@ R"CUDA(    PipRecord* output;
     unsigned long long* shape_ids_out;
     unsigned long long* point_ordinals_out;
     unsigned long long* shape_ordinals_out;
+    unsigned long long* relation_status_out;
+    unsigned long long* relation_boundary_ordinals_out;
     uint32_t* overflow;
     uint32_t positive_only;
 )CUDA";
@@ -5936,6 +5944,13 @@ R"CUDA(            const uint32_t slot = atomicAdd(params.output_count, 1u);
                 }
                 if (params.shape_ordinals_out != nullptr) {
                     params.shape_ordinals_out[slot] = (unsigned long long)prim;
+                }
+                if (params.relation_status_out != nullptr) {
+                    params.relation_status_out[slot] = (unsigned long long)optixGetPayload_3();
+                }
+                if (params.relation_boundary_ordinals_out != nullptr) {
+                    params.relation_boundary_ordinals_out[slot] =
+                        (unsigned long long)optixGetPayload_2();
                 }
             } else {
                 if (params.overflow != nullptr) {
@@ -8621,16 +8636,22 @@ static void run_prepared_point_closed_shape_membership_candidate_device_columns_
     CUdeviceptr shape_ids_output = 0;
     CUdeviceptr point_ordinals_output = 0;
     CUdeviceptr shape_ordinals_output = 0;
+    CUdeviceptr relation_status_output = 0;
+    CUdeviceptr relation_boundary_ordinals_output = 0;
     if (max_rows != 0) {
         owner = std::make_unique<NativeClosedShapeMembershipCandidateDeviceColumnsOwner>();
         CU_CHECK(cuMemAlloc(&owner->point_ids, sizeof(unsigned long long) * max_rows));
         CU_CHECK(cuMemAlloc(&owner->shape_ids, sizeof(unsigned long long) * max_rows));
         CU_CHECK(cuMemAlloc(&owner->point_ordinals, sizeof(unsigned long long) * max_rows));
         CU_CHECK(cuMemAlloc(&owner->shape_ordinals, sizeof(unsigned long long) * max_rows));
+        CU_CHECK(cuMemAlloc(&owner->relation_status, sizeof(unsigned long long) * max_rows));
+        CU_CHECK(cuMemAlloc(&owner->relation_boundary_ordinals, sizeof(unsigned long long) * max_rows));
         point_ids_output = owner->point_ids;
         shape_ids_output = owner->shape_ids;
         point_ordinals_output = owner->point_ordinals;
         shape_ordinals_output = owner->shape_ordinals;
+        relation_status_output = owner->relation_status;
+        relation_boundary_ordinals_output = owner->relation_boundary_ordinals;
     }
 
     DevPtr d_count(sizeof(uint32_t));
@@ -8658,6 +8679,9 @@ static void run_prepared_point_closed_shape_membership_candidate_device_columns_
     lp.shape_ids_out  = reinterpret_cast<unsigned long long*>(shape_ids_output);
     lp.point_ordinals_out = reinterpret_cast<unsigned long long*>(point_ordinals_output);
     lp.shape_ordinals_out = reinterpret_cast<unsigned long long*>(shape_ordinals_output);
+    lp.relation_status_out = reinterpret_cast<unsigned long long*>(relation_status_output);
+    lp.relation_boundary_ordinals_out =
+        reinterpret_cast<unsigned long long*>(relation_boundary_ordinals_output);
     lp.overflow       = reinterpret_cast<uint32_t*>(d_overflow.ptr);
     lp.positive_only  = 1u;
     lp.hit_word_count = 0u;
@@ -8725,6 +8749,9 @@ static void run_prepared_point_closed_shape_membership_candidate_device_columns_
     columns_out->right_ids_device_ptr = static_cast<uint64_t>(shape_ids_output);
     columns_out->left_ordinals_device_ptr = static_cast<uint64_t>(point_ordinals_output);
     columns_out->right_ordinals_device_ptr = static_cast<uint64_t>(shape_ordinals_output);
+    columns_out->relation_status_device_ptr = static_cast<uint64_t>(relation_status_output);
+    columns_out->relation_boundary_ordinals_device_ptr =
+        static_cast<uint64_t>(relation_boundary_ordinals_output);
     columns_out->row_count = static_cast<uint64_t>(attempted_rows);
     columns_out->overflow = 0u;
     g_optix_last_closed_shape_emitted_count = static_cast<size_t>(attempted_rows);
