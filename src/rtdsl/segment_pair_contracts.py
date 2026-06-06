@@ -42,6 +42,35 @@ class SegmentPairContractCase:
     note: str
 
 
+@dataclass(frozen=True)
+class SegmentPairDenseCountReference:
+    group_capacity: int
+    counts: tuple[int, ...]
+    hit_pair_count: int
+    ambiguous_pair_count: int
+    rejected_pair_count: int
+    decision_reasons: tuple[str, ...]
+
+    def to_metadata(self) -> dict[str, object]:
+        return {
+            "version": SEGMENT_PAIR_CONTRACT_VERSION,
+            "contract": "segment_pair_left_id_dense_count_reference",
+            "group_capacity": self.group_capacity,
+            "counts": self.counts,
+            "hit_pair_count": self.hit_pair_count,
+            "ambiguous_pair_count": self.ambiguous_pair_count,
+            "rejected_pair_count": self.rejected_pair_count,
+            "decision_reasons": self.decision_reasons,
+            "public_api_specification": False,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "claim_boundary": (
+                "same-contract Python reference oracle only; not a backend performance path, "
+                "not public API wording, and not release evidence"
+            ),
+        }
+
+
 SEGMENT_PAIR_ALLOWED_DECISION_REASONS = (
     "non_collinear_endpoint_inclusive_hit",
     "outside_parametric_bounds",
@@ -210,6 +239,75 @@ def validate_segment_pair_contract_cases(
             "candidate executable primitive contract only; not a public API specification, "
             "not release evidence, not RayJoin paper reproduction, and not public speedup wording"
         ),
+    }
+
+
+def segment_pair_left_id_dense_counts_reference(
+    left_segments: Iterable[Segment2DContractInput],
+    right_segments: Iterable[Segment2DContractInput],
+    *,
+    group_capacity: int | None = None,
+) -> SegmentPairDenseCountReference:
+    """Return strict-v0 dense counts keyed by the left segment index."""
+
+    left = tuple(left_segments)
+    right = tuple(right_segments)
+    capacity = len(left) if group_capacity is None else int(group_capacity)
+    if capacity < len(left):
+        raise ValueError("group_capacity must cover every left segment index")
+    counts = [0 for _ in range(capacity)]
+    ambiguous = 0
+    rejected = 0
+    hit_pairs = 0
+    reasons: set[str] = set()
+    for left_index, left_segment in enumerate(left):
+        for right_segment in right:
+            decision = segment_pair_intersection_strict_v0(left_segment, right_segment)
+            reasons.add(decision.reason)
+            if decision.hit:
+                counts[left_index] += 1
+                hit_pairs += 1
+            elif decision.ambiguous:
+                ambiguous += 1
+            else:
+                rejected += 1
+    return SegmentPairDenseCountReference(
+        group_capacity=capacity,
+        counts=tuple(counts),
+        hit_pair_count=hit_pairs,
+        ambiguous_pair_count=ambiguous,
+        rejected_pair_count=rejected,
+        decision_reasons=tuple(sorted(reasons)),
+    )
+
+
+def validate_segment_pair_dense_count_reference() -> dict[str, object]:
+    """Validate the built-in dense-count reference oracle against the fixtures."""
+
+    cases = segment_pair_contract_adversarial_cases()
+    reference = segment_pair_left_id_dense_counts_reference(
+        tuple(case.left for case in cases),
+        tuple(case.right for case in cases),
+    )
+    errors: list[str] = []
+    if len(reference.counts) != len(cases):
+        errors.append("reference count length must match case count")
+    if reference.hit_pair_count < 2:
+        errors.append("reference oracle must include positive hit pairs")
+    if reference.ambiguous_pair_count < 3:
+        errors.append("reference oracle must include ambiguous/excluded pairs")
+    if "denominator_degenerate_or_collinear" not in reference.decision_reasons:
+        errors.append("reference oracle must exercise denominator-degenerate cases")
+    metadata = reference.to_metadata()
+    for false_flag in ("release_authorized", "public_speedup_claim_authorized"):
+        if metadata.get(false_flag) is not False:
+            errors.append(f"{false_flag} must remain false")
+    return {
+        "version": SEGMENT_PAIR_CONTRACT_VERSION,
+        "valid": not errors,
+        "errors": tuple(errors),
+        "reference": metadata,
+        "case_count": len(cases),
     }
 
 
