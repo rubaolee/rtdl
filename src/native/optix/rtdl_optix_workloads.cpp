@@ -671,6 +671,7 @@ static void columnar_validate_payload_fields(
 struct DeviceColumnGroupedI64Function {
     CUmodule module = nullptr;
     CUfunction fn = nullptr;
+    CUfunction small_group_fn = nullptr;
     CUfunction init_values_fn = nullptr;
     CUfunction compact_count_fn = nullptr;
     CUfunction compact_count_columns_fn = nullptr;
@@ -937,6 +938,54 @@ extern "C" __global__ void device_column_grouped_i64_kernel(DeviceColumnGroupedI
     }
 }
 
+extern "C" __global__ void device_column_grouped_i64_small_group_kernel(DeviceColumnGroupedI64Params params)
+{
+    extern __shared__ unsigned long long shared[];
+    unsigned long long* shared_counts = shared;
+    unsigned long long* shared_sums = shared + params.group_capacity;
+
+    for (uint32_t group = threadIdx.x; group < params.group_capacity; group += blockDim.x) {
+        shared_counts[group] = 0ull;
+        shared_sums[group] = 0ull;
+    }
+    __syncthreads();
+
+    const uint32_t row = blockIdx.x * blockDim.x + threadIdx.x;
+    if (row < params.row_count) {
+        bool accepted = true;
+        for (uint32_t clause_index = 0; clause_index < params.clause_count; ++clause_index) {
+            const DeviceColumnRuntimeClause& clause = params.clauses[clause_index];
+            const DeviceColumnRuntimeField& field = params.fields[clause.field_index];
+            const double candidate = device_column_read_numeric_double(field, row);
+            if (!device_clause_matches(candidate, clause)) {
+                accepted = false;
+                break;
+            }
+        }
+        if (accepted) {
+            const DeviceColumnRuntimeField& group_field = params.fields[params.group_field_index];
+            const long long group_key = device_column_read_i64_compatible(group_field, row);
+            if (group_key < 0 || group_key >= static_cast<long long>(params.group_capacity)) {
+                atomicAdd(params.invalid_group_count, 1u);
+            } else {
+                const uint32_t group = static_cast<uint32_t>(group_key);
+                const DeviceColumnRuntimeField& value_field = params.fields[params.value_field_index];
+                const long long value = device_column_read_i64_compatible(value_field, row);
+                atomicAdd(shared_counts + group, 1ull);
+                atomicAdd(shared_sums + group, static_cast<unsigned long long>(value));
+            }
+        }
+    }
+    __syncthreads();
+
+    for (uint32_t group = threadIdx.x; group < params.group_capacity; group += blockDim.x) {
+        const unsigned long long count = shared_counts[group];
+        if (count == 0ull) continue;
+        atomicAdd(params.group_counts + group, count);
+        atomicAdd(params.group_sums + group, shared_sums[group]);
+    }
+}
+
 extern "C" __global__ void device_column_grouped_i64_compact_count_kernel(
     const unsigned long long* group_counts,
     uint32_t group_capacity,
@@ -1049,6 +1098,7 @@ constexpr uint32_t kDeviceColumnGroupedOpMin = 3u;
 constexpr uint32_t kDeviceColumnGroupedOpMax = 4u;
 constexpr uint32_t kDeviceColumnGroupedOpSumCount = 5u;
 constexpr uint32_t kDeviceColumnGroupedOpStats = 6u;
+constexpr uint32_t kDeviceColumnGroupedSmallCapacityFastPathMaxGroups = 1024u;
 
 static void columnar_validate_device_payload_grouped_i64_inputs(
         const RtdlDevicePayloadField* fields,
@@ -1190,6 +1240,10 @@ static void ensure_device_column_grouped_i64_pipeline()
             &g_device_column_grouped_i64.fn,
             g_device_column_grouped_i64.module,
             "device_column_grouped_i64_kernel"));
+        CU_CHECK(cuModuleGetFunction(
+            &g_device_column_grouped_i64.small_group_fn,
+            g_device_column_grouped_i64.module,
+            "device_column_grouped_i64_small_group_kernel"));
         CU_CHECK(cuModuleGetFunction(
             &g_device_column_grouped_i64.init_values_fn,
             g_device_column_grouped_i64.module,
@@ -1346,11 +1400,17 @@ static void columnar_launch_device_column_grouped_i64(
 
     void* args[] = {&params};
     const unsigned int blocks = static_cast<unsigned int>((row_count + threads - 1) / threads);
+    const bool use_small_group_sum_fast_path =
+        (operation == kDeviceColumnGroupedOpSum || operation == kDeviceColumnGroupedOpSumCount) &&
+        group_capacity <= kDeviceColumnGroupedSmallCapacityFastPathMaxGroups;
+    const unsigned int shared_memory_bytes = use_small_group_sum_fast_path
+        ? static_cast<unsigned int>(sizeof(unsigned long long) * group_capacity * 2)
+        : 0u;
     CU_CHECK(cuLaunchKernel(
-        g_device_column_grouped_i64.fn,
+        use_small_group_sum_fast_path ? g_device_column_grouped_i64.small_group_fn : g_device_column_grouped_i64.fn,
         blocks, 1, 1,
         threads, 1, 1,
-        0, nullptr, args, nullptr));
+        shared_memory_bytes, nullptr, args, nullptr));
     CU_CHECK(cuStreamSynchronize(nullptr));
 
     uint32_t invalid_group_count = 0;
