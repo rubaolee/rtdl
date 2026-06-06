@@ -163,12 +163,16 @@ Timing results:
             "--rtdl-lsi-count-route",
             "--rtdl-pip-scalar-count-pipeline",
             "--rtdl-pip-device-predicate-eps",
+            "--rtdl-pip-batch-request-count",
+            "--rtdl-pip-batch-stream-count",
             "public_speedup_claim_authorized",
             "rayjoin_paper_reproduction_claim_authorized",
             "rtdl_beats_rayjoin_claim_authorized",
             "true_zero_copy_claim_authorized",
             "generic PIP probe ordering",
             "RTDL_OPTIX_POINT_PRIMITIVE_DEVICE_PREDICATE_EPS",
+            "batched repeated-request throughput",
+            "not one-shot latency",
             "generic locality probe",
             "RayJoin query_exec PIP still does not expose positive assignment count",
             "does not divide it by repeat",
@@ -440,6 +444,79 @@ Timing results:
         self.assertEqual(calls[0]["kwargs"]["query_repeat"], 10000)
         self.assertEqual(calls[0]["kwargs"]["warmup"], 20)
         self.assertEqual(calls[0]["kwargs"]["count_mode"], "device_filtered_prepared_points_validated")
+
+    def test_rtdl_pip_batch_executor_request_count_passes_through_and_records_contract(self) -> None:
+        calls: list[dict[str, object]] = []
+
+        def fake_run(*args, **kwargs):
+            calls.append({"args": args, "kwargs": dict(kwargs)})
+            return {
+                "phases_sec": {
+                    "prepared_query_sec": 0.000041,
+                    "prepared_query_sec_total_sec": 4.1,
+                    "prepared_query_sec_batch_request_count": 100,
+                    "prepared_query_sec_batch_count": 1000,
+                    "prepare_batch_executor_sec": 0.0003,
+                    "validation_exact_query_sec": 0.0022,
+                    "prepare_query_points_sec": 0.00005,
+                    "query_pack_sec": 0.0001,
+                    "prepare_static_scene_sec": 0.0008,
+                },
+                "summary": {
+                    "positive_assignment_count": 1417,
+                    "device_filtered_count_matches_exact": True,
+                    "prepared_point_batch_executor": {
+                        "request_count": 100,
+                        "stream_count_effective": 16,
+                        "timing_contract": "batched_repeated_request_throughput_not_one_shot_latency",
+                    },
+                },
+                "row_count": 1417,
+                "native_phase_timings": {"mode": "prepared_points_device_filtered_batch_executor_run"},
+            }
+
+        with mock.patch.object(MODULE.rayjoin_app, "run_rayjoin_prepared_optix_workload", side_effect=fake_run):
+            row = MODULE.run_rtdl_samples(
+                workload="pip",
+                dataset="fake.cdb",
+                warmup=0,
+                repeat=1,
+                count_mode="device_filtered_prepared_points_validated",
+                internal_query_repeat=100000,
+                internal_warmup=100,
+                pip_batch_request_count=100,
+                pip_batch_stream_count="auto",
+            )
+
+        self.assertEqual(row["pip_batch_request_count"], 100)
+        self.assertEqual(row["pip_batch_stream_count"], "auto")
+        self.assertEqual(row["pip_timing_contract"], "batched_repeated_request_throughput_not_one_shot_latency")
+        self.assertEqual(row["prepared_query_ms"]["samples"], [0.041])
+        self.assertEqual(row["prepared_query_total_ms"]["samples"], [4100.0])
+        self.assertEqual(row["prepare_batch_executor_ms"]["samples"], [0.3])
+        self.assertEqual(calls[0]["kwargs"]["device_filtered_batch_request_count"], 100)
+        self.assertEqual(calls[0]["kwargs"]["device_filtered_batch_stream_count"], "auto")
+
+    def test_rtdl_pip_batch_executor_requires_matching_mode_and_divisible_repeat(self) -> None:
+        with self.assertRaisesRegex(ValueError, "requires device_filtered_prepared_points_validated"):
+            MODULE.run_rtdl_samples(
+                workload="pip",
+                dataset="fake.cdb",
+                warmup=0,
+                repeat=1,
+                count_mode="device_filtered_validated",
+                pip_batch_request_count=64,
+            )
+        with self.assertRaisesRegex(ValueError, "internal_query_repeat must be divisible"):
+            MODULE.run_rtdl_samples(
+                workload="pip",
+                dataset="fake.cdb",
+                warmup=0,
+                repeat=1,
+                count_mode="device_filtered_prepared_points_validated",
+                internal_query_repeat=65,
+                pip_batch_request_count=64,
+            )
 
     def test_rtdl_pip_scalar_count_pipeline_is_scoped_and_recorded(self) -> None:
         observed_env: list[str | None] = []

@@ -41,6 +41,18 @@ PIP_POSITIVE_DEVICE_COUNT_MODES = {
 }
 
 
+def parse_optional_positive_int_or_auto(value: str) -> int | str:
+    if value == "auto":
+        return value
+    try:
+        parsed = int(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("value must be a positive integer or auto") from exc
+    if parsed <= 0:
+        raise argparse.ArgumentTypeError("value must be a positive integer or auto")
+    return parsed
+
+
 def _median(values: list[float]) -> float | None:
     return float(statistics.median(values)) if values else None
 
@@ -270,6 +282,8 @@ def run_rtdl_samples(
     segment_order_mode: str = "natural",
     pip_scalar_count_pipeline: bool = False,
     pip_device_predicate_eps: float | None = None,
+    pip_batch_request_count: int | None = None,
+    pip_batch_stream_count: int | str | None = None,
     internal_query_repeat: int = 1,
     internal_warmup: int = 0,
 ) -> dict[str, Any]:
@@ -291,6 +305,20 @@ def run_rtdl_samples(
         raise ValueError("pip_device_predicate_eps is only supported for RTDL PIP samples")
     if pip_device_predicate_eps is not None and pip_device_predicate_eps < 0.0:
         raise ValueError("pip_device_predicate_eps must be non-negative")
+    if pip_batch_request_count is not None:
+        if workload != "pip":
+            raise ValueError("pip_batch_request_count is only supported for RTDL PIP samples")
+        if count_mode != "device_filtered_prepared_points_validated":
+            raise ValueError(
+                "pip_batch_request_count requires device_filtered_prepared_points_validated count mode"
+            )
+        pip_batch_request_count = int(pip_batch_request_count)
+        if pip_batch_request_count <= 0:
+            raise ValueError("pip_batch_request_count must be positive")
+        if internal_query_repeat % pip_batch_request_count != 0:
+            raise ValueError("internal_query_repeat must be divisible by pip_batch_request_count")
+        if internal_warmup % pip_batch_request_count != 0:
+            raise ValueError("internal_warmup must be divisible by pip_batch_request_count")
     if internal_query_repeat <= 0:
         raise ValueError("internal_query_repeat must be positive")
     if internal_warmup < 0:
@@ -312,6 +340,7 @@ def run_rtdl_samples(
     static_order_sec: list[float] = []
     query_pack_sec: list[float] = []
     prepare_query_points_sec: list[float] = []
+    prepare_batch_executor_sec: list[float] = []
     prepare_sec: list[float] = []
     static_segment_pack_sec: list[float] = []
     static_shape_pack_sec: list[float] = []
@@ -355,6 +384,8 @@ def run_rtdl_samples(
                 segment_order_mode=segment_order_mode,
                 query_repeat=internal_query_repeat,
                 warmup=internal_warmup,
+                device_filtered_batch_request_count=pip_batch_request_count,
+                device_filtered_batch_stream_count=pip_batch_stream_count,
             )
 
     for index in range(warmup):
@@ -390,6 +421,8 @@ def run_rtdl_samples(
             boundary_event_grouped_count_sec.append(float(phases["boundary_event_grouped_count_sec"]))
         if "prepare_query_points_sec" in phases:
             prepare_query_points_sec.append(float(phases["prepare_query_points_sec"]))
+        if "prepare_batch_executor_sec" in phases:
+            prepare_batch_executor_sec.append(float(phases["prepare_batch_executor_sec"]))
         query_pack_sec.append(float(phases.get("query_pack_sec", packed_left_reuse.get("pack_seconds", 0.0))))
         prepare_sec.append(float(phases.get("prepare_static_scene_sec", prepared_reuse.get("prepare_static_scene_sec", 0.0))))
         static_segment_pack_sec.append(float(phases.get("static_segment_pack_sec", 0.0)))
@@ -407,6 +440,13 @@ def run_rtdl_samples(
         "query_axis": query_axis,
         "pip_scalar_count_pipeline": pip_scalar_count_pipeline if workload == "pip" else None,
         "pip_device_predicate_eps": pip_device_predicate_eps if workload == "pip" else None,
+        "pip_batch_request_count": pip_batch_request_count if workload == "pip" else None,
+        "pip_batch_stream_count": pip_batch_stream_count if workload == "pip" else None,
+        "pip_timing_contract": (
+            "batched_repeated_request_throughput_not_one_shot_latency"
+            if workload == "pip" and pip_batch_request_count is not None
+            else "one_request_latency_or_sequential_repeated_latency"
+        ),
         "device_filtered_boundary_mode": (
             boundary_mode
             if count_mode in PIP_POSITIVE_DEVICE_COUNT_MODES
@@ -431,6 +471,7 @@ def run_rtdl_samples(
         "static_order_ms": summarize_samples([value * 1000.0 for value in static_order_sec if value != 0.0]),
         "query_pack_ms": summarize_samples([value * 1000.0 for value in query_pack_sec]),
         "prepare_query_points_ms": summarize_samples([value * 1000.0 for value in prepare_query_points_sec]),
+        "prepare_batch_executor_ms": summarize_samples([value * 1000.0 for value in prepare_batch_executor_sec]),
         "prepare_static_scene_ms": summarize_samples([value * 1000.0 for value in prepare_sec]),
         "static_segment_pack_ms": summarize_samples([value * 1000.0 for value in static_segment_pack_sec if value != 0.0]),
         "static_shape_pack_ms": summarize_samples([value * 1000.0 for value in static_shape_pack_sec if value != 0.0]),
@@ -607,6 +648,22 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     parser.add_argument(
+        "--rtdl-pip-batch-request-count",
+        type=int,
+        help=(
+            "Optional batched repeated-request throughput mode for PIP "
+            "device_filtered_prepared_points_validated counts. The internal repeat and warmup "
+            "must be divisible by this batch size. This is not one-shot latency."
+        ),
+    )
+    parser.add_argument(
+        "--rtdl-pip-batch-stream-count",
+        type=parse_optional_positive_int_or_auto,
+        help=(
+            "Optional stream-count policy for --rtdl-pip-batch-request-count: positive integer or auto."
+        ),
+    )
+    parser.add_argument(
         "--rtdl-lsi-segment-order",
         choices=("natural", "x_then_y", "y_then_x", "morton_xy"),
         default="natural",
@@ -669,6 +726,8 @@ def main(argv: list[str] | None = None) -> int:
             point_order_mode=args.rtdl_pip_point_order,
             pip_scalar_count_pipeline=args.rtdl_pip_scalar_count_pipeline,
             pip_device_predicate_eps=args.rtdl_pip_device_predicate_eps,
+            pip_batch_request_count=args.rtdl_pip_batch_request_count,
+            pip_batch_stream_count=args.rtdl_pip_batch_stream_count,
             internal_query_repeat=args.rtdl_internal_query_repeat,
             internal_warmup=args.rtdl_internal_warmup,
         )
@@ -734,6 +793,13 @@ def main(argv: list[str] | None = None) -> int:
                 "RTDL_OPTIX_POINT_PRIMITIVE_DEVICE_PREDICATE_EPS specialization only around RTDL PIP calls. "
                 "Validated device-side modes still fail closed unless the timed device count matches the exact "
                 "prepared count for every sample."
+            ),
+            "rtdl_pip_batch_request_count": (
+                "When --rtdl-pip-batch-request-count is supplied, RTDL reports batched repeated-request "
+                "throughput through a reusable generic prepared point/closed-shape count executor. "
+                "The prepared_query_ms lane is normalized per request and prepared_query_total_ms records "
+                "the full measured batch time. This is not one-shot latency and must not be read as a "
+                "drop-in replacement for RayJoin query_exec one-shot timing."
             ),
             "rtdl_pip_boundary_mode": (
                 "When --rtdl-pip-boundary-mode is supplied with device_filtered_validated, "

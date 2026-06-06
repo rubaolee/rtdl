@@ -291,6 +291,60 @@ def _phase_repeat_time(
     return measured[-1]["value"]
 
 
+def _phase_batched_count_executor_repeat_time(
+    phases: dict[str, float],
+    label: str,
+    *,
+    query_repeat: int,
+    warmup: int,
+    batch_request_count: int,
+    executor,
+    exact_count: int,
+) -> int:
+    """Time a reusable count executor as a batched repeated-request contract."""
+
+    query_repeat = int(query_repeat)
+    warmup = int(warmup)
+    batch_request_count = int(batch_request_count)
+    if batch_request_count <= 0:
+        raise ValueError("batch_request_count must be positive")
+    if query_repeat <= 0:
+        raise ValueError("query_repeat must be positive")
+    if warmup < 0:
+        raise ValueError("warmup must be non-negative")
+    if query_repeat % batch_request_count != 0:
+        raise ValueError("query_repeat must be divisible by batch_request_count for batch executor timing")
+    if warmup % batch_request_count != 0:
+        raise ValueError("warmup must be divisible by batch_request_count for batch executor timing")
+
+    warmup_batches = warmup // batch_request_count
+    measured_batches = query_repeat // batch_request_count
+    per_request_elapsed = []
+    total_elapsed = 0.0
+    for iteration in range(warmup_batches + measured_batches):
+        start = time.perf_counter()
+        counts = executor.run()
+        elapsed = time.perf_counter() - start
+        if any(int(count) != int(exact_count) for count in counts):
+            raise RuntimeError(
+                "batched device-side closed-shape count did not match exact prepared count: "
+                f"{tuple(counts[:5])} != {exact_count}"
+            )
+        if iteration >= warmup_batches:
+            per_request_elapsed.append(elapsed / batch_request_count)
+            total_elapsed += elapsed
+    if not per_request_elapsed:
+        raise RuntimeError(f"{label} batch repeat produced no measured rows")
+    phases[label] = float(statistics.median(per_request_elapsed))
+    phases[f"{label}_total_sec"] = float(total_elapsed)
+    phases[f"{label}_repeat"] = int(query_repeat)
+    phases[f"{label}_warmup"] = int(warmup)
+    phases[f"{label}_batch_request_count"] = int(batch_request_count)
+    phases[f"{label}_batch_count"] = int(measured_batches)
+    phases[f"{label}_contract"] = "batched_repeated_request_throughput"
+    return int(exact_count)
+
+
 @contextlib.contextmanager
 def _temporary_env(name: str, value: str | None):
     previous = os.environ.get(name)
@@ -501,6 +555,8 @@ def run_rayjoin_prepared_optix_workload(
     segment_order_mode: str = "natural",
     query_repeat: int = 1,
     warmup: int = 0,
+    device_filtered_batch_request_count: int | None = None,
+    device_filtered_batch_stream_count: int | str | None = None,
 ) -> dict[str, object]:
     """Run the RayJoin-style prepared OptiX route with phase boundaries.
 
@@ -543,6 +599,21 @@ def run_rayjoin_prepared_optix_workload(
         raise ValueError("query_repeat must be positive")
     if warmup < 0:
         raise ValueError("warmup must be non-negative")
+    if device_filtered_batch_request_count is not None:
+        device_filtered_batch_request_count = int(device_filtered_batch_request_count)
+        if device_filtered_batch_request_count <= 0:
+            raise ValueError("device_filtered_batch_request_count must be positive")
+        if (
+            workload != "pip"
+            or result_mode != "count"
+            or count_mode != "device_filtered_prepared_points_validated"
+        ):
+            raise ValueError(
+                "device_filtered_batch_request_count is only valid for PIP "
+                "device_filtered_prepared_points_validated count workloads"
+            )
+    if isinstance(device_filtered_batch_stream_count, str) and device_filtered_batch_stream_count != "auto":
+        raise ValueError("device_filtered_batch_stream_count must be positive, None, or 'auto'")
 
     resolved_dataset = dataset or _DEFAULT_DATASETS[workload]
     case = _load_rayjoin_case(
@@ -712,10 +783,12 @@ def run_rayjoin_prepared_optix_workload(
         )
         point_id_count_metadata: dict[str, object] | None = None
         prepared_point_columns_metadata: dict[str, object] | None = None
+        prepared_point_batch_executor_metadata: dict[str, object] | None = None
         prepared_point_columns = None
         boundary_event_count_metadata: dict[str, object] | None = None
         boundary_event_columns = None
         boundary_event_count_columns = None
+        prepared_point_batch_executor = None
         try:
             if result_mode == "count":
                 if count_mode in _PIP_POSITIVE_COUNT_MODES:
@@ -747,19 +820,46 @@ def run_rayjoin_prepared_optix_workload(
                             lambda: prepared.prepare_point_probe_columns(packed_points),
                         )
                         prepared_point_columns_metadata = prepared_point_columns.to_metadata()
-                        row_count = int(
-                            _phase_repeat_time(
-                                phases,
-                                "prepared_query_sec",
-                                query_repeat=query_repeat,
-                                warmup=warmup,
-                                fn=lambda: _run_prepared_device_filtered_prepared_points_count_with_boundary_mode(
-                                    prepared,
-                                    prepared_point_columns,
-                                    device_filtered_boundary_mode,
-                                ),
+                        if device_filtered_batch_request_count is None:
+                            row_count = int(
+                                _phase_repeat_time(
+                                    phases,
+                                    "prepared_query_sec",
+                                    query_repeat=query_repeat,
+                                    warmup=warmup,
+                                    fn=lambda: _run_prepared_device_filtered_prepared_points_count_with_boundary_mode(
+                                        prepared,
+                                        prepared_point_columns,
+                                        device_filtered_boundary_mode,
+                                    ),
+                                )
                             )
-                        )
+                        else:
+                            with _temporary_env("RTDL_OPTIX_POINT_PRIMITIVE_BOUNDARY_MODE", device_filtered_boundary_mode):
+                                prepared_point_batch_executor = _phase_time(
+                                    phases,
+                                    "prepare_batch_executor_sec",
+                                    lambda: prepared.prepare_device_filtered_prepared_points_batch_executor(
+                                        prepared_point_columns,
+                                        device_filtered_batch_request_count,
+                                        stream_count=device_filtered_batch_stream_count,
+                                    ),
+                                )
+                                prepared_point_batch_executor_metadata = prepared_point_batch_executor.to_metadata()
+                                row_count = int(
+                                    _phase_batched_count_executor_repeat_time(
+                                        phases,
+                                        "prepared_query_sec",
+                                        query_repeat=query_repeat,
+                                        warmup=warmup,
+                                        batch_request_count=device_filtered_batch_request_count,
+                                        executor=prepared_point_batch_executor,
+                                        exact_count=validation_exact_count,
+                                    )
+                                )
+                            prepared_point_batch_executor_metadata["timing_contract"] = (
+                                "batched_repeated_request_throughput_not_one_shot_latency"
+                            )
                     else:
                         point_id_group_capacity = max(
                             1,
@@ -845,6 +945,8 @@ def run_rayjoin_prepared_optix_workload(
                 )
             native_phase_timings = prepared.last_phase_timings()
         finally:
+            if prepared_point_batch_executor is not None:
+                prepared_point_batch_executor.close()
             if prepared_point_columns is not None:
                 prepared_point_columns.close()
             if boundary_event_count_columns is not None:
@@ -890,6 +992,7 @@ def run_rayjoin_prepared_optix_workload(
             ),
             "point_id_count_device_columns": point_id_count_metadata,
             "prepared_point_probe_columns": prepared_point_columns_metadata,
+            "prepared_point_batch_executor": prepared_point_batch_executor_metadata,
             "boundary_event_grouped_count_device_columns": boundary_event_count_metadata,
             "boundary_event_contract_not_positive_membership": (
                 True if count_mode == _PIP_BOUNDARY_EVENT_COUNT_MODE else None
