@@ -24,10 +24,14 @@ Machine artifact:
 
 Pod source state:
 
-- source commit: `8a945020`
+- source commit: `4a537484`
 - GPU: `NVIDIA RTX A5000, 8.6, 580.126.09`
 - tracked source status: clean (`git_tracked_status_short == ""`)
 - raw pod status had unrelated untracked scratch data, disclosed in the JSON artifact.
+
+Note: the artifact was refreshed after Goal3633 so this Goal3631 conformance
+packet now also records the strengthened status-column residency evidence. The
+primitive contract and tested cases did not change.
 
 ## Results
 
@@ -48,21 +52,35 @@ These are diagnostics, not public performance claims. The OptiX dense route wall
 
 | Case | CuPy Kernel Sec | CuPy Validation Reduce/Download Sec | OptiX Dense Wall Sec | OptiX Native Reduction Sec |
 | --- | ---: | ---: | ---: | ---: |
-| adversarial | 0.031957 | 0.024860 | 0.059291 | 0.000054 |
-| crossing_grid_64 | 0.000050 | 0.000162 | 0.000385 | 0.000131 |
-| crossing_grid_256 | 0.000039 | 0.005883 | 0.000874 | 0.000432 |
-| crossing_grid_1024 | 0.000205 | 0.005910 | 0.002862 | 0.001609 |
+| adversarial | 0.031514 | 0.024725 | 0.058562 | 0.000054 |
+| crossing_grid_64 | 0.000046 | 0.000165 | 0.000434 | 0.000131 |
+| crossing_grid_256 | 0.000040 | 0.005916 | 0.000899 | 0.000438 |
+| crossing_grid_1024 | 0.000206 | 0.005952 | 0.002885 | 0.001609 |
 
 ## Residency Boundary
 
-The OptiX dense-count route returns a device-resident count column:
+The OptiX dense-count route returns a device-resident count column and now
+retains device-resident status pointers for source/candidate-event count and
+overflow:
 
 - `native_symbol`: `rtdl_optix_prepared_segment_pair_left_id_count_device_columns`
 - `device_resident`: `true`
 - `counts_device_ptr_nonzero`: `true`
+- `source_row_count_device_ptr_nonzero`: `true`
+- `overflow_device_ptr_nonzero`: `true`
 - `overflow`: `false`
+- `status_device_columns_valid`: `true`
 
-The broader typed-output residency contract remains bounded. The count column is device-resident, but the current contract descriptor still records fallback for separate overflow-status and ambiguous-count columns because this backend route does not yet expose those as independent device pointers. Therefore this goal proves count-column residency and backend conformance, not complete multi-column residency.
+The broader typed-output residency contract remains bounded. The count and
+overflow-status columns are device-resident after the Goal3633 refresh, but the
+current contract descriptor still records fallback for the separate
+ambiguous-count column. Therefore this packet proves backend conformance plus
+partial status-column residency, not complete multi-column residency.
+
+After the Goal3633 refresh, the contract records two resident columns: the dense
+count column and the overflow-status column. The ambiguity counter remains the
+explicit host-reference fallback, so this is still not complete multi-column
+residency.
 
 ## Claim Boundary
 
