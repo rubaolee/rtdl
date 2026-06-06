@@ -1,0 +1,35 @@
+{
+  "candidate_pair_count": 7884520560,
+  "claim_boundary": {
+    "native_default_route_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "cupy_total": 4977,
+  "dataset": "/root/rtdl_goal3595_clean/data/rayjoin_public_cdb/br_county_start256_count4096.cdb + /root/rtdl_goal3595_clean/data/rayjoin_public_cdb/br_soil_start256_count4096.cdb",
+  "delta_sum": 0,
+  "diagnostic_timing_sec": {
+    "cupy_dense_kernel": 1.2807175982743502,
+    "cupy_per_left_reduce": 0.04552113264799118,
+    "cupy_upload_alloc": 0.305428022518754,
+    "rtdl_optix_include_rows": 0.926154475659132
+  },
+  "diff_count": 0,
+  "diff_sample": [],
+  "generated_at_unix": 1780756555.6050239,
+  "git_commit": "223981f7bd51862b183489976ca1cc661e3fd5a0",
+  "git_status_short": "?? data/\n?? docs/reports/goal3604_rayjoin_pip_boundary_event_signal_timing_a5000/scout_512.json",
+  "goal": 3610,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "interpretation": "Diagnostic only: the 4096-chain mixed RayJoin composite is blocked because the dense CuPy LSI baseline and the RTDL/OptiX dense left-id count route do not yet share an exact near-degenerate segment policy.",
+  "left_segment_count": 68840,
+  "output_contract": "segment_segment_intersection_count_by_left_id_dense_device_column",
+  "right_segment_count": 114534,
+  "rtdl_optix_total": 4977,
+  "schema": "rtdl.goal3610.rayjoin_lsi_4096_count_mismatch_probe.v1",
+  "workload": "lsi"
+}
