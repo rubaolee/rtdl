@@ -20,9 +20,9 @@ entries needed by the parity sequence, including the current
 
 | Stage | Count | Apps |
 | --- | ---: | --- |
-| Ready for AMD functional pod | 7 | `hausdorff_xhd`, `spatial_rayjoin`, `rt_dbscan`, `robot_collision`, `contact_manifold`, `librts_spatial_index`, `rtnn` |
-| Needs generic HIPRT extension | 1 | `barnes_hut` |
-| Compatibility-only, not AMD perf ready | 2 | `raydb_style`, `triangle_counting` |
+| Ready for AMD functional pod | 10 | `hausdorff_xhd`, `spatial_rayjoin`, `rt_dbscan`, `robot_collision`, `contact_manifold`, `raydb_style`, `barnes_hut`, `librts_spatial_index`, `rtnn`, `triangle_counting` |
+| Needs generic HIPRT extension | 0 | none |
+| Compatibility-only, not AMD perf ready | 0 | none |
 
 ## Interpretation
 
@@ -47,25 +47,38 @@ contracts:
 Those are generic contracts. They should be added to HIPRT as generic
 primitive/runtime extensions, not app-specific native code.
 
-Goals3765-3777 have since moved `robot_collision`, `spatial_rayjoin`,
-`rt_dbscan`, `librts_spatial_index`, `rtnn`, and `hausdorff_xhd` beyond their
-initial row-only or missing-contract routes on the NVIDIA CUDA/Orochi HIPRT
-path. Goal3775 also makes the matrix's `ray_triangle_closest_hit_3d` HIPRT
-entry executable. Goal3776 adds the generic HIPRT `COLLECT_K_BOUNDED` i64
-host-native materializer and advances `contact_manifold` to AMD functional-pod
-readiness. Goal3777 adds the generic HIPRT `AGGREGATE_FRONTIER_COLLECT_2D`
-row collector and removes the Barnes-Hut hierarchical node-coverage summary
-gap, but leaves grouped vector-force reduction outside the native engine.
-These are still not AMD performance evidence.
+Goals3765-3782 have since moved all ten promoted benchmark apps beyond their
+initial row-only, missing-contract, or compatibility-only HIPRT routes on the
+NVIDIA CUDA/Orochi HIPRT path. In particular:
+
+- Goal3775 makes the matrix's `ray_triangle_closest_hit_3d` HIPRT entry
+  executable.
+- Goal3776 adds the generic HIPRT `COLLECT_K_BOUNDED` i64 host-native
+  materializer and advances `contact_manifold` to AMD functional-pod readiness.
+- Goal3777 adds the generic HIPRT `AGGREGATE_FRONTIER_COLLECT_2D` row
+  collector and removes the Barnes-Hut hierarchical node-coverage summary gap.
+- Goal3779 adds the generic grouped i64 count/sum materializer for the
+  RayDB-style lane.
+- Goal3780 adds the grouped f64x2 vector-sum materializer for the Barnes-Hut
+  lane.
+- Goal3781 adds the generic columnar i64 predicate-scan materializer for the
+  RayDB-style lane.
+- Goal3782 adds the generic canonical graph-cycle scalar count for the
+  triangle-counting lane.
+
+Goal3783 then records the closeout sweep: all ten rows are ready for actual AMD
+functional pod validation. These are still not AMD hardware or performance
+evidence.
 
 ## First AMD Work Order
 
-1. `barnes_hut`: add grouped vector force reductions.
-2. `raydb_style` and `triangle_counting`: promote compatibility fallback paths
-   into native HIPRT grouped/scalar summary paths before any AMD performance
-   claim.
-3. Run AMD functional pod parity for the seven ready rows when AMD hardware is
+1. Run AMD functional pod parity for all ten ready rows when AMD hardware is
    available.
+2. Save the result under the Goal3784 artifact contract:
+   `docs/reports/goal3784_amd_hiprt_functional_pod_validation.json`.
+3. Only after that functional pass should we design AMD performance comparison
+   packets. The current NVIDIA CUDA/Orochi evidence must remain implementation
+   evidence, not AMD evidence.
 
 ## Boundary
 
