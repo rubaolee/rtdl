@@ -3922,6 +3922,23 @@ struct SegmentPairExactCountLaunchParams {
     uint32_t left_offset;
 };
 
+struct SegmentPairGroupRange {
+    uint32_t begin;
+    uint32_t end;
+};
+
+struct SegmentPairGroupedRangeExactCountLaunchParams {
+    OptixTraversableHandle traversable;
+    const GpuSegment* left_segs;
+    const RtdlSegment* left_exact_segs;
+    const RtdlSegment* right_exact_segs;
+    const SegmentPairGroupRange* right_group_ranges;
+    unsigned long long* exact_count;
+    unsigned long long* group_candidate_count;
+    uint32_t probe_count;
+    uint32_t left_offset;
+};
+
 struct NativeSegmentPairCandidateDeviceColumnsOwner {
     CUdeviceptr left_ids = 0;
     CUdeviceptr right_ids = 0;
@@ -3949,6 +3966,7 @@ struct SegmentPairDeviceRefinedCountFunction {
 static SegmentPairDeviceRefinedCountFunction g_segment_pair_device_refined_count;
 static SegmentPairIntersectionPipeline g_segment_pair_exact_count;
 static SegmentPairIntersectionPipeline g_segment_pair_direct_intersection_exact_count;
+static SegmentPairIntersectionPipeline g_segment_pair_grouped_range_direct_intersection_exact_count;
 
 static const char* kSegmentPairAmbiguityCountKernelSrc = R"CUDA(
 #include <stdint.h>
@@ -4140,6 +4158,99 @@ extern "C" __global__ void __intersection__segment_pair_direct_intersection_exac
 }
 )CUDA";
 
+static const char* kSegmentPairGroupedRangeDirectIntersectionExactCountKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+#include <math.h>
+
+struct GpuSegment {
+    float x0, y0, x1, y1;
+    unsigned int id;
+};
+
+struct RtdlSegment {
+    unsigned int id;
+    double x0, y0, x1, y1;
+};
+
+struct SegmentPairGroupRange {
+    unsigned int begin;
+    unsigned int end;
+};
+
+struct SegmentPairGroupedRangeExactCountLaunchParams {
+    OptixTraversableHandle traversable;
+    const GpuSegment* left_segs;
+    const RtdlSegment* left_exact_segs;
+    const RtdlSegment* right_exact_segs;
+    const SegmentPairGroupRange* right_group_ranges;
+    unsigned long long* exact_count;
+    unsigned long long* group_candidate_count;
+    unsigned int probe_count;
+    unsigned int left_offset;
+};
+
+extern "C" {
+__constant__ SegmentPairGroupedRangeExactCountLaunchParams params;
+}
+
+static __forceinline__ __device__ bool exact_segment_intersection_device(
+    const RtdlSegment left,
+    const RtdlSegment right)
+{
+    const double px = left.x0;
+    const double py = left.y0;
+    const double rx = left.x1 - left.x0;
+    const double ry = left.y1 - left.y0;
+    const double qx = right.x0;
+    const double qy = right.y0;
+    const double sx = right.x1 - right.x0;
+    const double sy = right.y1 - right.y0;
+    const double denom = rx * sy - ry * sx;
+    const double scale = sqrt(rx * rx + ry * ry) * sqrt(sx * sx + sy * sy);
+    const double threshold = 64.0 * 2.2204460492503131e-16 * fmax(1.0, scale);
+    if (fabs(denom) <= threshold) return false;
+    const double qpx = qx - px;
+    const double qpy = qy - py;
+    const double t = (qpx * sy - qpy * sx) / denom;
+    const double u = (qpx * ry - qpy * rx) / denom;
+    return 0.0 <= t && t <= 1.0 && 0.0 <= u && u <= 1.0;
+}
+
+extern "C" __global__ void __raygen__segment_pair_grouped_range_direct_intersection_exact_count_probe() {
+    const unsigned int idx = optixGetLaunchIndex().x;
+    if (idx >= params.probe_count) return;
+    const GpuSegment p = params.left_segs[idx];
+    unsigned int p0 = idx;
+    optixTrace(params.traversable,
+               make_float3(p.x0, p.y0, 0.0f),
+               make_float3(p.x1 - p.x0, p.y1 - p.y0, 0.0f),
+               0.0f, 1.0f + 1.0e-4f, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0);
+}
+
+extern "C" __global__ void __miss__segment_pair_grouped_range_direct_intersection_exact_count_miss() {}
+
+extern "C" __global__ void __intersection__segment_pair_grouped_range_direct_intersection_exact_count_isect() {
+    const unsigned int pidx = optixGetPayload_0();
+    const unsigned int group_idx = optixGetPrimitiveIndex();
+    if (params.group_candidate_count != nullptr) {
+        atomicAdd(params.group_candidate_count, 1ull);
+    }
+    const RtdlSegment left = params.left_exact_segs[params.left_offset + pidx];
+    const SegmentPairGroupRange range = params.right_group_ranges[group_idx];
+    for (unsigned int ridx = range.begin; ridx < range.end; ++ridx) {
+        const RtdlSegment right = params.right_exact_segs[ridx];
+        if (exact_segment_intersection_device(left, right)) {
+            atomicAdd(params.exact_count, 1ull);
+        }
+    }
+}
+)CUDA";
+
 struct SegmentFirstHitLaunchParams {
     OptixTraversableHandle traversable;
     const GpuSegment* probes;
@@ -4156,6 +4267,10 @@ struct PreparedSegmentPairIntersectionBuild {
     DevPtr d_right;
     DevPtr d_right_exact;
     AccelHolder accel;
+    std::vector<SegmentPairGroupRange> right_group_ranges;
+    std::unique_ptr<DevPtr> d_right_group_ranges;
+    std::unique_ptr<AccelHolder> grouped_range_accel;
+    size_t right_group_count = 0;
 
     PreparedSegmentPairIntersectionBuild(const RtdlSegment* right, size_t count)
         : right_segments(count),
@@ -4563,6 +4678,22 @@ static void ensure_segment_pair_direct_intersection_exact_count_pipeline() {
     });
 }
 
+static void ensure_segment_pair_grouped_range_direct_intersection_exact_count_pipeline() {
+    std::call_once(g_segment_pair_grouped_range_direct_intersection_exact_count.init, [&]() {
+        std::string ptx = compile_to_ptx(
+            kSegmentPairGroupedRangeDirectIntersectionExactCountKernelSrc,
+            "segment_pair_grouped_range_direct_intersection_exact_count_kernel.cu");
+        g_segment_pair_grouped_range_direct_intersection_exact_count.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__segment_pair_grouped_range_direct_intersection_exact_count_probe",
+            "__miss__segment_pair_grouped_range_direct_intersection_exact_count_miss",
+            "__intersection__segment_pair_grouped_range_direct_intersection_exact_count_isect",
+            nullptr,
+            nullptr,
+            1).release();
+    });
+}
+
 static void ensure_segment_pair_ambiguity_count_kernel() {
     std::call_once(g_segment_pair_ambiguity_count.init, [&]() {
         std::string ptx = compile_to_ptx(
@@ -4574,6 +4705,96 @@ static void ensure_segment_pair_ambiguity_count_kernel() {
             g_segment_pair_ambiguity_count.module,
             "segment_pair_ambiguity_count_kernel"));
     });
+}
+
+static float segment_pair_aabb_area(const OptixAabb& box)
+{
+    const float width = std::max(0.0f, box.maxX - box.minX);
+    const float height = std::max(0.0f, box.maxY - box.minY);
+    return width * height;
+}
+
+static OptixAabb segment_pair_merge_aabb(const OptixAabb& left, const OptixAabb& right)
+{
+    OptixAabb merged;
+    merged.minX = std::min(left.minX, right.minX);
+    merged.minY = std::min(left.minY, right.minY);
+    merged.minZ = std::min(left.minZ, right.minZ);
+    merged.maxX = std::max(left.maxX, right.maxX);
+    merged.maxY = std::max(left.maxY, right.maxY);
+    merged.maxZ = std::max(left.maxZ, right.maxZ);
+    return merged;
+}
+
+static void ensure_segment_pair_grouped_ranges(PreparedSegmentPairIntersectionBuild* prepared)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared segment-pair handle must not be null");
+    }
+    if (prepared->grouped_range_accel) {
+        return;
+    }
+    prepared->right_group_ranges.clear();
+    prepared->right_group_count = 0;
+    if (prepared->right_segments.empty()) {
+        return;
+    }
+    constexpr size_t kMaxSegmentsPerGroup = 64;
+    constexpr float kAreaEnlargeLimit = 5.0f;
+    std::vector<OptixAabb> group_aabbs;
+    group_aabbs.reserve(prepared->right_segments.size());
+    size_t begin = 0;
+    OptixAabb current = aabb_for_segment(
+        prepared->right_segments[0].x0, prepared->right_segments[0].y0,
+        prepared->right_segments[0].x1, prepared->right_segments[0].y1);
+    for (size_t index = 1; index < prepared->right_segments.size(); ++index) {
+        const GpuSegment& segment = prepared->right_segments[index];
+        const OptixAabb next = aabb_for_segment(segment.x0, segment.y0, segment.x1, segment.y1);
+        const OptixAabb merged = segment_pair_merge_aabb(current, next);
+        const float current_area = std::max(segment_pair_aabb_area(current), 1.0e-12f);
+        const float next_area = std::max(segment_pair_aabb_area(next), 1.0e-12f);
+        const float merged_area = segment_pair_aabb_area(merged);
+        const bool max_group_reached = (index - begin) >= kMaxSegmentsPerGroup;
+        const bool merge_allowed =
+            !max_group_reached &&
+            merged_area / std::max(current_area, next_area) < kAreaEnlargeLimit;
+        if (merge_allowed) {
+            current = merged;
+            continue;
+        }
+        if (begin > static_cast<size_t>(std::numeric_limits<uint32_t>::max()) ||
+            index > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+            throw std::runtime_error("segment-pair grouped range exceeds uint32 capacity");
+        }
+        prepared->right_group_ranges.push_back(
+            SegmentPairGroupRange{
+                static_cast<uint32_t>(begin),
+                static_cast<uint32_t>(index),
+            });
+        group_aabbs.push_back(current);
+        begin = index;
+        current = next;
+    }
+    const size_t end = prepared->right_segments.size();
+    if (begin > static_cast<size_t>(std::numeric_limits<uint32_t>::max()) ||
+        end > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("segment-pair grouped range exceeds uint32 capacity");
+    }
+    prepared->right_group_ranges.push_back(
+        SegmentPairGroupRange{
+            static_cast<uint32_t>(begin),
+            static_cast<uint32_t>(end),
+        });
+    group_aabbs.push_back(current);
+    prepared->right_group_count = prepared->right_group_ranges.size();
+    prepared->d_right_group_ranges = std::make_unique<DevPtr>(
+        sizeof(SegmentPairGroupRange) * prepared->right_group_ranges.size());
+    upload(
+        prepared->d_right_group_ranges->ptr,
+        prepared->right_group_ranges.data(),
+        prepared->right_group_ranges.size());
+    prepared->grouped_range_accel = std::make_unique<AccelHolder>(
+        build_custom_accel(get_optix_context(), group_aabbs));
 }
 
 static void launch_segment_pair_ambiguity_count_kernel(
@@ -5328,6 +5549,81 @@ static size_t count_segment_pair_intersection_direct_is_exact_one_pass_optix(
     return static_cast<size_t>(exact_count);
 }
 
+static size_t count_segment_pair_intersection_grouped_range_direct_is_exact_one_pass_optix(
+        PreparedSegmentPairIntersectionBuild* prepared,
+        size_t left_count,
+        CUdeviceptr d_left_ptr,
+        CUdeviceptr d_left_exact_ptr,
+        bool record_group_candidate_events)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared segment-pair handle must not be null");
+    }
+    if (left_count == 0 || prepared->right_count == 0) {
+        return 0;
+    }
+    if (left_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("segment-pair grouped-range count left segment count exceeds uint32 launch capacity");
+    }
+    ensure_segment_pair_grouped_ranges(prepared);
+    if (prepared->right_group_count == 0) {
+        return 0;
+    }
+    if (prepared->right_group_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("segment-pair grouped-range count group count exceeds uint32 primitive capacity");
+    }
+
+    ensure_segment_pair_grouped_range_direct_intersection_exact_count_pipeline();
+
+    DevPtr d_exact_count(sizeof(unsigned long long));
+    DevPtr d_group_candidate_count(
+        record_group_candidate_events ? sizeof(unsigned long long) : 0);
+    unsigned long long zero64 = 0ull;
+    upload<unsigned long long>(d_exact_count.ptr, &zero64, 1);
+    if (record_group_candidate_events) {
+        upload<unsigned long long>(d_group_candidate_count.ptr, &zero64, 1);
+    }
+
+    SegmentPairGroupedRangeExactCountLaunchParams lp;
+    lp.traversable = prepared->grouped_range_accel->handle;
+    lp.left_segs = reinterpret_cast<const GpuSegment*>(d_left_ptr);
+    lp.left_exact_segs = reinterpret_cast<const RtdlSegment*>(d_left_exact_ptr);
+    lp.right_exact_segs = reinterpret_cast<const RtdlSegment*>(prepared->d_right_exact.ptr);
+    lp.right_group_ranges = reinterpret_cast<const SegmentPairGroupRange*>(prepared->d_right_group_ranges->ptr);
+    lp.exact_count = reinterpret_cast<unsigned long long*>(d_exact_count.ptr);
+    lp.group_candidate_count = reinterpret_cast<unsigned long long*>(d_group_candidate_count.ptr);
+    lp.probe_count = static_cast<uint32_t>(left_count);
+    lp.left_offset = 0u;
+
+    DevPtr d_params(sizeof(SegmentPairGroupedRangeExactCountLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    const auto t_start = std::chrono::steady_clock::now();
+    OPTIX_CHECK(optixLaunch(
+        g_segment_pair_grouped_range_direct_intersection_exact_count.pipe->pipeline,
+        stream,
+        d_params.ptr,
+        sizeof(SegmentPairGroupedRangeExactCountLaunchParams),
+        &g_segment_pair_grouped_range_direct_intersection_exact_count.pipe->sbt,
+        static_cast<unsigned>(left_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    const auto t_end = std::chrono::steady_clock::now();
+    g_optix_last_segment_pair_candidate_count_s +=
+        std::chrono::duration<double>(t_end - t_start).count();
+
+    unsigned long long exact_count = 0ull;
+    unsigned long long group_candidate_count = 0ull;
+    download(&exact_count, d_exact_count.ptr, 1);
+    if (record_group_candidate_events) {
+        download(&group_candidate_count, d_group_candidate_count.ptr, 1);
+        g_optix_last_segment_pair_raw_candidate_count = static_cast<size_t>(group_candidate_count);
+    } else {
+        g_optix_last_segment_pair_raw_candidate_count = 0;
+    }
+    return static_cast<size_t>(exact_count);
+}
+
 static void run_prepared_segment_pair_candidate_device_columns_optix(
         PreparedSegmentPairIntersectionBuild* prepared,
         const RtdlSegment* left,
@@ -5884,6 +6180,37 @@ static void count_prepared_segment_pair_intersection_prepared_left_direct_inters
         prepared->right_count,
         prepared->accel.handle,
         false);
+    g_optix_last_segment_pair_emitted_count = *count_out;
+}
+
+static void count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_optix(
+        PreparedSegmentPairIntersectionBuild* prepared,
+        PreparedSegmentPairLeftSet* prepared_left,
+        size_t* count_out,
+        size_t* group_count_out)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared segment-pair handle must not be null");
+    }
+    if (!prepared_left) {
+        throw std::runtime_error("prepared segment-pair left-set handle must not be null");
+    }
+    if (!count_out || !group_count_out) {
+        throw std::runtime_error("segment-pair grouped-range count output pointers must not be null");
+    }
+    *count_out = 0;
+    *group_count_out = 0;
+    reset_segment_pair_phase_timings(8u);
+    if (prepared_left->left_count == 0 || prepared->right_count == 0) {
+        return;
+    }
+    *count_out = count_segment_pair_intersection_grouped_range_direct_is_exact_one_pass_optix(
+        prepared,
+        prepared_left->left_count,
+        prepared_left->d_left.ptr,
+        prepared_left->d_left_exact.ptr,
+        false);
+    *group_count_out = prepared->right_group_count;
     g_optix_last_segment_pair_emitted_count = *count_out;
 }
 

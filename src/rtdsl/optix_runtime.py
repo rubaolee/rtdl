@@ -228,6 +228,9 @@ OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_REPEATED_SYMBOL = (
 OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_DIRECT_INTERSECTION_SYMBOL = (
     "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_direct_intersection"
 )
+OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_SYMBOL = (
+    "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection"
+)
 OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_PREPARED_LEFT_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_prepared_segment_pair_left_id_count_prepared_left_device_columns"
 )
@@ -3305,6 +3308,58 @@ class PreparedOptixSegmentPairIntersection:
             "contract": "SEGMENT_PAIR_PREPARED_LEFT_DIRECT_INTERSECTION_EXACT_COUNT_V1",
             "implementation_note": (
                 "generic direct custom-intersection-program exact count; diagnostic route, not public default"
+            ),
+            "claim_boundary": {
+                "diagnostic_only": True,
+                "public_speedup_claim_authorized": False,
+                "rayjoin_paper_reproduction_claim_authorized": False,
+                "rtdl_beats_rayjoin_claim_authorized": False,
+                "release_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+            },
+        }
+
+    def count_prepared_left_grouped_range_direct_intersection(
+        self,
+        prepared_left: PreparedOptixSegmentPairLeftSet,
+    ) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX segment-pair handle is closed")
+        if prepared_left._closed:
+            raise RuntimeError("prepared OptiX segment-pair left-set handle is closed")
+        if prepared_left.library is not self.library:
+            raise ValueError("prepared left-set handle must come from the same OptiX library")
+        count_symbol = _find_optional_backend_symbol(
+            self.library,
+            OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_SYMBOL,
+        )
+        if count_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        count = ctypes.c_size_t()
+        group_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self.prepared_handle,
+            prepared_left.prepared_left_handle,
+            ctypes.byref(count),
+            ctypes.byref(group_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return {
+            "schema": "rtdl.optix.segment_pair_prepared_left_grouped_range_direct_intersection_exact_count.v1",
+            "count": int(count.value),
+            "right_group_count": int(group_count.value),
+            "native_symbol": OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_SYMBOL,
+            "contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+            "implementation_note": (
+                "generic grouped/ranged right-primitive direct custom-intersection exact count; "
+                "diagnostic route, not public default"
             ),
             "claim_boundary": {
                 "diagnostic_only": True,
@@ -7811,6 +7866,7 @@ def _get_last_segment_pair_phase_timings_from_library(lib) -> dict[str, float | 
         5: "boundary_event_rows",
         6: "count_prepared_left",
         7: "count_prepared_left_direct_intersection",
+        8: "count_prepared_left_grouped_range_direct_intersection",
     }.get(mode_value, "none")
     result = {
         "mode": mode_name,
@@ -20429,6 +20485,20 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_count_prepared_segment_pair_prepared_left_direct_intersection.restype = ctypes.c_int
+    optional_count_prepared_segment_pair_prepared_left_grouped_range_direct_intersection = _find_optional_backend_symbol(
+        lib,
+        OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_SYMBOL,
+    )
+    if optional_count_prepared_segment_pair_prepared_left_grouped_range_direct_intersection is not None:
+        optional_count_prepared_segment_pair_prepared_left_grouped_range_direct_intersection.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_count_prepared_segment_pair_prepared_left_grouped_range_direct_intersection.restype = ctypes.c_int
     optional_segment_pair_candidate_device_columns = _find_optional_backend_symbol(
         lib,
         OPTIX_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
