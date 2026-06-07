@@ -19,12 +19,12 @@ Pod evidence:
 
 - SSH target used: `root@69.30.85.203 -p 22057`.
 - Clean checkout workdir: `/root/rtdl_goal3788_clean_1780857956`.
-- Source commit: `1078ae31`.
+- Source commit: `a7a10228`.
 - GPU/driver: `NVIDIA RTX A5000, 580.126.09`.
 - HIPRT library:
   `/root/rtdl_goal3788_clean_1780857956/build/librtdl_hiprt.so`.
 - Combined suite: 34 test modules.
-- Result: `Ran 185 tests in 13.937s`, `OK`.
+- Result: `Ran 185 tests in 14.612s`, `OK`.
 - Scoped source dirty: `false`.
 
 ## What It Covers

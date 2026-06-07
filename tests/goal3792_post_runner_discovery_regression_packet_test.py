@@ -14,7 +14,7 @@ class Goal3792PostRunnerDiscoveryRegressionPacketTest(unittest.TestCase):
     def test_artifact_records_clean_current_pod_regression(self) -> None:
         artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
         self.assertEqual(artifact["goal"], "Goal3792")
-        self.assertEqual(artifact["git_commit"], "1078ae31e2518d61407a8cec8a3526b2db390a8e")
+        self.assertEqual(artifact["git_commit"], "a7a1022861452184c79d4e50fc006ec23a2d2ff7")
         self.assertIn("NVIDIA RTX A5000", artifact["gpu"])
         self.assertIn("not AMD hardware evidence", artifact["backend_route"])
         self.assertTrue(artifact["focused_tests_passed"])
