@@ -157,6 +157,13 @@ _FEATURE_MATRIX: dict[str, dict[str, EngineFeatureSupport]] = {
         "hiprt": _support("grouped_i64_count_sum", "hiprt", NATIVE, "Goal3779 generic HIPRT dense grouped i64 count/sum materializer."),
         "apple_rt": _support("grouped_i64_count_sum", "apple_rt", COMPATIBILITY_FALLBACK, "No generic Apple RT dense grouped i64 count/sum materializer."),
     },
+    "grouped_vector_sum_f64x2": {
+        "embree": _support("grouped_vector_sum_f64x2", "embree", COMPATIBILITY_FALLBACK, "No dedicated dense grouped f64x2 vector-sum materializer; use partner reductions or app-side reference math."),
+        "optix": _support("grouped_vector_sum_f64x2", "optix", NATIVE, "OptiX paths can hand grouped f64x2 vector-sum continuations to supported partners."),
+        "vulkan": _support("grouped_vector_sum_f64x2", "vulkan", COMPATIBILITY_FALLBACK, "No generic Vulkan dense grouped f64x2 vector-sum materializer."),
+        "hiprt": _support("grouped_vector_sum_f64x2", "hiprt", NATIVE, "Goal3780 generic HIPRT dense grouped f64x2 vector-sum materializer."),
+        "apple_rt": _support("grouped_vector_sum_f64x2", "apple_rt", COMPATIBILITY_FALLBACK, "No generic Apple RT dense grouped f64x2 vector-sum materializer."),
+    },
     "visibility_rows": {
         "embree": _support("visibility_rows", "embree", NATIVE, "Dispatches to Embree any-hit and emits visibility rows."),
         "optix": _support("visibility_rows", "optix", NATIVE, "Dispatches to OptiX any-hit and emits visibility rows."),

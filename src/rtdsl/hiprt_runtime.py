@@ -455,6 +455,19 @@ def _hiprt_lib() -> ctypes.CDLL:
             ctypes.c_size_t,
         ]
         lib.rtdl_hiprt_grouped_i64_count_sum.restype = ctypes.c_int
+    if hasattr(lib, "rtdl_hiprt_grouped_vector_sum_f64x2"):
+        lib.rtdl_hiprt_grouped_vector_sum_f64x2.argtypes = [
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        lib.rtdl_hiprt_grouped_vector_sum_f64x2.restype = ctypes.c_int
     if hasattr(lib, "rtdl_hiprt_collect_aggregate_frontier_2d"):
         lib.rtdl_hiprt_collect_aggregate_frontier_2d.argtypes = [
             ctypes.POINTER(_RtdlAggregateFrontierSource2D),
@@ -1128,6 +1141,87 @@ def grouped_i64_count_sum_hiprt(group_ids, values, *, group_count: int | None = 
         "metadata": {
             "native_symbol": "rtdl_hiprt_grouped_i64_count_sum",
             "backend_route": "HIPRT generic grouped i64 count/sum materializer on the available Orochi route",
+            "not_amd_hardware_evidence": True,
+            "release_authorized": False,
+            "amd_perf_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "broad_rt_core_claim_authorized": False,
+            "paper_reproduction_claim_authorized": False,
+            "app_specific_native_engine_logic_allowed": False,
+        },
+    }
+
+
+def grouped_vector_sum_f64x2_hiprt(
+    group_ids,
+    values_x,
+    values_y,
+    *,
+    group_count: int | None = None,
+) -> dict[str, object]:
+    """Run the app-name-free HIPRT grouped f64x2 vector-sum materializer."""
+    normalized_group_ids = tuple(int(value) for value in group_ids)
+    normalized_values_x = tuple(float(value) for value in values_x)
+    normalized_values_y = tuple(float(value) for value in values_y)
+    if len(normalized_group_ids) != len(normalized_values_x) or len(normalized_group_ids) != len(normalized_values_y):
+        raise ValueError("HIPRT grouped_vector_sum_f64x2 requires group_ids, values_x, and values_y with the same length")
+    if group_count is None:
+        group_count_int = (max(normalized_group_ids) + 1) if normalized_group_ids else 0
+    else:
+        group_count_int = int(group_count)
+    if group_count_int < 0:
+        raise ValueError("HIPRT grouped_vector_sum_f64x2 group_count must be non-negative")
+
+    symbol = getattr(_hiprt_lib(), "rtdl_hiprt_grouped_vector_sum_f64x2", None)
+    if symbol is None:
+        raise RuntimeError(
+            "loaded HIPRT backend does not export rtdl_hiprt_grouped_vector_sum_f64x2; "
+            "rebuild HIPRT from current main"
+        )
+
+    GroupArray = ctypes.c_int64 * len(normalized_group_ids)
+    ValueArray = ctypes.c_double * len(normalized_group_ids)
+    OutputArray = ctypes.c_double * group_count_int
+    group_array = GroupArray(*normalized_group_ids) if normalized_group_ids else None
+    value_x_array = ValueArray(*normalized_values_x) if normalized_values_x else None
+    value_y_array = ValueArray(*normalized_values_y) if normalized_values_y else None
+    sum_x_array = OutputArray() if group_count_int else None
+    sum_y_array = OutputArray() if group_count_int else None
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        group_array,
+        value_x_array,
+        value_y_array,
+        len(normalized_group_ids),
+        group_count_int,
+        sum_x_array,
+        sum_y_array,
+        error,
+        ctypes.sizeof(error),
+    )
+    detail = error.value.decode("utf-8", errors="replace")
+    if status != 0:
+        raise RuntimeError(f"rtdl_hiprt_grouped_vector_sum_f64x2 failed with status {status}: {detail}")
+
+    sum_x = tuple(float(sum_x_array[index]) for index in range(group_count_int)) if group_count_int else ()
+    sum_y = tuple(float(sum_y_array[index]) for index in range(group_count_int)) if group_count_int else ()
+    rows = tuple(
+        {"group_id": index, "sum_x": sum_x[index], "sum_y": sum_y[index]}
+        for index in range(group_count_int)
+    )
+    return {
+        "operation": "grouped_vector_sum_f64x2",
+        "backend": "hiprt",
+        "native_generic_symbol": "rtdl_hiprt_grouped_vector_sum_f64x2",
+        "native_engine_app_specific": False,
+        "group_count": group_count_int,
+        "input_row_count": len(normalized_group_ids),
+        "sum_x": sum_x,
+        "sum_y": sum_y,
+        "rows": rows,
+        "metadata": {
+            "native_symbol": "rtdl_hiprt_grouped_vector_sum_f64x2",
+            "backend_route": "HIPRT generic grouped f64x2 vector-sum materializer on the available Orochi route",
             "not_amd_hardware_evidence": True,
             "release_authorized": False,
             "amd_perf_claim_authorized": False,

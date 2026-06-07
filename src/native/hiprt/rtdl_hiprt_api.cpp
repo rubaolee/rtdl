@@ -109,6 +109,54 @@ extern "C" int rtdl_hiprt_grouped_i64_count_sum(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_hiprt_grouped_vector_sum_f64x2(
+    const int64_t* group_ids,
+    const double* values_x,
+    const double* values_y,
+    size_t row_count,
+    size_t group_count,
+    double* sums_x_out,
+    double* sums_y_out,
+    char* error_out,
+    size_t error_size) {
+    return handle_call([&]() {
+        if (sums_x_out == nullptr && group_count != 0) {
+            throw std::runtime_error("sums_x_out must not be null when group_count is nonzero");
+        }
+        if (sums_y_out == nullptr && group_count != 0) {
+            throw std::runtime_error("sums_y_out must not be null when group_count is nonzero");
+        }
+        if (group_ids == nullptr && row_count != 0) {
+            throw std::runtime_error("group_ids must not be null when row_count is nonzero");
+        }
+        if (values_x == nullptr && row_count != 0) {
+            throw std::runtime_error("values_x must not be null when row_count is nonzero");
+        }
+        if (values_y == nullptr && row_count != 0) {
+            throw std::runtime_error("values_y must not be null when row_count is nonzero");
+        }
+        if (group_count > static_cast<size_t>(std::numeric_limits<int64_t>::max())) {
+            throw std::runtime_error("group_count exceeds dense int64 group id range");
+        }
+
+        std::vector<double> sums_x(group_count, 0.0);
+        std::vector<double> sums_y(group_count, 0.0);
+        for (size_t row_index = 0; row_index < row_count; ++row_index) {
+            const int64_t group_id = group_ids[row_index];
+            if (group_id < 0 || static_cast<size_t>(group_id) >= group_count) {
+                throw std::runtime_error("group_id out of dense group_count range");
+            }
+            const size_t group_index = static_cast<size_t>(group_id);
+            sums_x[group_index] += values_x[row_index];
+            sums_y[group_index] += values_y[row_index];
+        }
+        if (group_count != 0) {
+            std::memcpy(sums_x_out, sums_x.data(), sizeof(double) * group_count);
+            std::memcpy(sums_y_out, sums_y.data(), sizeof(double) * group_count);
+        }
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_hiprt_collect_aggregate_frontier_2d(
     const RtdlAggregateFrontierSource2D* sources,
     size_t source_count,

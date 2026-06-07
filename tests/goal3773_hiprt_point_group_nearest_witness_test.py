@@ -83,7 +83,7 @@ class Goal3773HiprtPointGroupNearestWitnessPortableTest(unittest.TestCase):
         self.assertEqual(hausdorff["missing_generic_contracts"], ())
         self.assertEqual(hausdorff["parity_stage"], "ready_for_amd_functional_pod")
         summary = summarize_v2_10_amd_hiprt_benchmark_parity()
-        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 7)
+        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 8)
         self.assertIn("hausdorff_xhd", summary["ready_for_amd_functional_pod_apps"])
 
     def test_report_records_boundary(self) -> None:

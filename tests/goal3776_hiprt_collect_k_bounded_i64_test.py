@@ -71,7 +71,7 @@ class Goal3776HiprtCollectKBoundedPortableTest(unittest.TestCase):
         self.assertEqual(rt.engine_feature_support("collect_k_bounded_i64", "hiprt").status, NATIVE)
         self.assertEqual(
             V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION,
-            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3779.v1",
+            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3780.v1",
         )
         rows = {row["app"]: row for row in v2_10_amd_hiprt_benchmark_parity()}
         contact = rows["contact_manifold"]
@@ -80,8 +80,8 @@ class Goal3776HiprtCollectKBoundedPortableTest(unittest.TestCase):
         self.assertEqual(contact["missing_generic_contracts"], ())
         self.assertEqual(contact["parity_stage"], "ready_for_amd_functional_pod")
         summary = summarize_v2_10_amd_hiprt_benchmark_parity()
-        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 7)
-        self.assertEqual(summary["stage_counts"]["needs_generic_hiprt_extension"], 1)
+        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 8)
+        self.assertEqual(summary["stage_counts"]["needs_generic_hiprt_extension"], 0)
 
         collect_node = find_primitive_hierarchy_node("materialization.collect_k_bounded")
         schema_node = find_primitive_hierarchy_node("materialization.row_schema_validation")

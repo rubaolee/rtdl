@@ -34,13 +34,13 @@ class Goal3753AmdHiprtBenchmarkParityPlanTest(unittest.TestCase):
     def test_summary_is_honest_about_amd_extension_work(self) -> None:
         self.assertEqual(
             V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION,
-            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3779.v1",
+            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3780.v1",
         )
         summary = summarize_v2_10_amd_hiprt_benchmark_parity()
         self.assertEqual(summary["app_count"], 10)
-        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 7)
+        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 8)
         self.assertEqual(summary["stage_counts"]["compatibility_only_not_amd_perf_ready"], 2)
-        self.assertEqual(summary["stage_counts"]["needs_generic_hiprt_extension"], 1)
+        self.assertEqual(summary["stage_counts"]["needs_generic_hiprt_extension"], 0)
         self.assertEqual(
             summary["ready_for_amd_functional_pod_apps"],
             (
@@ -49,6 +49,7 @@ class Goal3753AmdHiprtBenchmarkParityPlanTest(unittest.TestCase):
                 "rt_dbscan",
                 "robot_collision",
                 "contact_manifold",
+                "barnes_hut",
                 "librts_spatial_index",
                 "rtnn",
             ),
@@ -123,11 +124,15 @@ class Goal3753AmdHiprtBenchmarkParityPlanTest(unittest.TestCase):
         rows = {row["app"]: row for row in v2_10_amd_hiprt_benchmark_parity()}
         barnes = rows["barnes_hut"]
         self.assertIn("aggregate_frontier_collect_2d", barnes["required_engine_features"])
+        self.assertIn("grouped_vector_sum_f64x2", barnes["required_engine_features"])
         self.assertEqual(barnes["hiprt_feature_statuses"]["aggregate_frontier_collect_2d"], NATIVE)
+        self.assertEqual(barnes["hiprt_feature_statuses"]["grouped_vector_sum_f64x2"], NATIVE)
         self.assertNotIn("hierarchical_node_coverage_summary", barnes["missing_generic_contracts"])
-        self.assertEqual(barnes["missing_generic_contracts"], ("grouped_vector_force_reduction",))
-        self.assertEqual(barnes["parity_stage"], "needs_generic_hiprt_extension")
+        self.assertNotIn("grouped_vector_force_reduction", barnes["missing_generic_contracts"])
+        self.assertEqual(barnes["missing_generic_contracts"], ())
+        self.assertEqual(barnes["parity_stage"], "ready_for_amd_functional_pod")
         self.assertIn("Goal3777", barnes["rationale"])
+        self.assertIn("Goal3780", barnes["rationale"])
 
     def test_raydb_records_goal3779_grouped_reduction_closure_without_stage_promotion(self) -> None:
         rows = {row["app"]: row for row in v2_10_amd_hiprt_benchmark_parity()}

@@ -69,22 +69,25 @@ class Goal3777HiprtAggregateFrontierPortableTest(unittest.TestCase):
         self.assertIn("NVIDIA CUDA/Orochi", plan["claim_boundary"])
         self.assertIn("not authorize AMD", plan["claim_boundary"])
 
-    def test_barnes_hut_parity_gap_is_narrowed_not_closed(self) -> None:
+    def test_barnes_hut_parity_gap_is_closed_after_goal3780(self) -> None:
         self.assertEqual(
             V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION,
-            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3779.v1",
+            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3780.v1",
         )
         rows = {row["app"]: row for row in v2_10_amd_hiprt_benchmark_parity()}
         barnes = rows["barnes_hut"]
         self.assertIn("aggregate_frontier_collect_2d", barnes["required_engine_features"])
+        self.assertIn("grouped_vector_sum_f64x2", barnes["required_engine_features"])
         self.assertEqual(barnes["hiprt_feature_statuses"]["aggregate_frontier_collect_2d"], NATIVE)
-        self.assertEqual(barnes["missing_generic_contracts"], ("grouped_vector_force_reduction",))
-        self.assertEqual(barnes["parity_stage"], "needs_generic_hiprt_extension")
+        self.assertEqual(barnes["hiprt_feature_statuses"]["grouped_vector_sum_f64x2"], NATIVE)
+        self.assertEqual(barnes["missing_generic_contracts"], ())
+        self.assertEqual(barnes["parity_stage"], "ready_for_amd_functional_pod")
         self.assertIn("Goal3777", barnes["rationale"])
+        self.assertIn("Goal3780", barnes["rationale"])
 
         summary = summarize_v2_10_amd_hiprt_benchmark_parity()
-        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 7)
-        self.assertEqual(summary["stage_counts"]["needs_generic_hiprt_extension"], 1)
+        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 8)
+        self.assertEqual(summary["stage_counts"]["needs_generic_hiprt_extension"], 0)
 
     def test_catalog_backends_include_hiprt_without_force_claim(self) -> None:
         row_node = find_primitive_hierarchy_node("rows.aggregate_frontier_collect")

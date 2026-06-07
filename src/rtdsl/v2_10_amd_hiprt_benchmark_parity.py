@@ -10,7 +10,7 @@ from .engine_feature_matrix import engine_feature_support
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION = "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3779.v1"
+V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION = "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3780.v1"
 V2_10_AMD_HIPRT_BENCHMARK_PARITY_STATUS = "planning_gate_not_amd_hardware_evidence"
 
 PARITY_STAGES = (
@@ -202,14 +202,20 @@ V2_10_AMD_HIPRT_BENCHMARK_PARITY_ROWS: tuple[V210AmdHiprtBenchmarkParityRow, ...
     ),
     V210AmdHiprtBenchmarkParityRow(
         app="barnes_hut",
-        required_engine_features=("fixed_radius_neighbors_2d", "point_in_polygon_2d", "aggregate_frontier_collect_2d"),
-        missing_generic_contracts=("grouped_vector_force_reduction",),
-        parity_stage="needs_generic_hiprt_extension",
-        first_amd_goal="HIPRT grouped vector reduction parity",
+        required_engine_features=(
+            "fixed_radius_neighbors_2d",
+            "point_in_polygon_2d",
+            "aggregate_frontier_collect_2d",
+            "grouped_vector_sum_f64x2",
+        ),
+        missing_generic_contracts=(),
+        parity_stage="ready_for_amd_functional_pod",
+        first_amd_goal="Barnes-Hut HIPRT functional parity on AMD hardware",
         rationale=(
             "The scalar/membership pieces exist, and Goal3777 adds a generic HIPRT aggregate-frontier row "
-            "collector on the NVIDIA CUDA/Orochi route. The benchmark's grouped force-vector continuation is "
-            "still not a HIPRT primitive, so this lane is not ready for AMD functional validation yet."
+            "collector on the NVIDIA CUDA/Orochi route. Goal3780 adds the generic HIPRT grouped f64x2 "
+            "vector-sum materializer, so Barnes-Hut has the app-agnostic HIPRT contracts needed for "
+            "AMD functional validation. This still does not authorize AMD hardware or performance claims."
         ),
         needs_amd_pod=True,
     ),
