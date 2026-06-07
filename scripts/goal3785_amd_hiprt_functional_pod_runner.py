@@ -57,7 +57,8 @@ def _expand_path(value: str) -> str:
 def expand_hiprt_prefix_candidates(patterns: tuple[str, ...] | None = None) -> tuple[str, ...]:
     expanded: list[str] = []
     seen: set[str] = set()
-    for raw in patterns if patterns is not None else hiprt_prefix_candidate_patterns():
+    source_patterns = patterns if patterns is not None else hiprt_prefix_candidate_patterns()
+    for raw in source_patterns:
         if not raw:
             continue
         if any(token in raw for token in "*?["):
