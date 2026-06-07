@@ -1,0 +1,107 @@
+{
+  "backend_route": "HIPRT 2.2 CUDA/Orochi on NVIDIA RTX A5000; functional evidence, not AMD hardware evidence",
+  "claim_boundary": {
+    "amd_perf_claim_authorized": false,
+    "app_specific_native_engine_logic_allowed": false,
+    "broad_rt_core_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": 3773,
+  "hardware": {
+    "gpu_query": "NVIDIA RTX A5000, 580.126.09",
+    "route": "NVIDIA CUDA/Orochi HIPRT functional validation"
+  },
+  "hausdorff_xhd_missing_generic_contracts": [
+    "nearest_witness_output_columns"
+  ],
+  "hausdorff_xhd_parity_stage": "needs_generic_hiprt_extension",
+  "hausdorff_xhd_required_engine_features": [
+    "point_nearest_segment_2d",
+    "knn_rows_2d",
+    "point_group_nearest_witness_2d",
+    "point_group_nearest_max_distance_2d"
+  ],
+  "native_symbols": [
+    "rtdl_hiprt_prepare_point_group_nearest_witness_2d",
+    "rtdl_hiprt_run_prepared_point_group_nearest_witness_2d",
+    "rtdl_hiprt_reduce_prepared_point_group_nearest_max_distance_2d",
+    "rtdl_hiprt_destroy_prepared_point_group_nearest_witness_2d"
+  ],
+  "parity_summary": {
+    "amd_perf_claim_authorized": false,
+    "app_count": 10,
+    "claim_boundary": "This AMD/HIPRT benchmark parity map is a planning gate. It does not authorize AMD performance claims, HIPRT release claims, public speedup wording, whole-app acceleration wording, or RTDL-beats-paper wording.",
+    "compatibility_only_not_amd_perf_ready_apps": [
+      "raydb_style",
+      "triangle_counting"
+    ],
+    "needs_generic_hiprt_extension_apps": [
+      "hausdorff_xhd",
+      "contact_manifold",
+      "barnes_hut"
+    ],
+    "ready_for_amd_functional_pod_apps": [
+      "spatial_rayjoin",
+      "rt_dbscan",
+      "robot_collision",
+      "librts_spatial_index",
+      "rtnn"
+    ],
+    "release_authorized": false,
+    "row_count": 10,
+    "stage_counts": {
+      "compatibility_only_not_amd_perf_ready": 2,
+      "needs_generic_hiprt_extension": 3,
+      "ready_for_amd_functional_pod": 5
+    },
+    "status": "planning_gate_not_amd_hardware_evidence",
+    "version": "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3773.v1"
+  },
+  "sample": {
+    "expected_max_row": {
+      "distance": 2.0,
+      "neighbor_id": 12,
+      "query_id": 101
+    },
+    "expected_rows": [
+      {
+        "distance": 0.5,
+        "neighbor_id": 10,
+        "query_id": 100
+      },
+      {
+        "distance": 2.0,
+        "neighbor_id": 12,
+        "query_id": 101
+      }
+    ],
+    "max_row": {
+      "distance": 2.0,
+      "native_reduction": "point_group_nearest_max_distance",
+      "neighbor_id": 12,
+      "query_id": 101
+    },
+    "max_row_matches_reference": true,
+    "rows": [
+      {
+        "distance": 0.5,
+        "neighbor_id": 10,
+        "query_id": 100
+      },
+      {
+        "distance": 2.0,
+        "neighbor_id": 12,
+        "query_id": 101
+      }
+    ],
+    "rows_match_reference": true,
+    "tie_break_verified": true
+  },
+  "scoped_source_dirty": false,
+  "scoped_source_status": "",
+  "source_commit": "9db9debe",
+  "title": "HIPRT point-group nearest witness and max-distance reduction",
+  "validation_command": "python3 -m unittest tests.goal3773_hiprt_point_group_nearest_witness_test tests.goal3753_amd_hiprt_benchmark_parity_plan_test"
+}
