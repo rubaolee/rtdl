@@ -61,6 +61,7 @@ MODES = (
     "streamed_force_sum_bucketized_cpu",
     "materialization_pressure_bucketized_cpu",
     "fused_frontier_force_sum_bucketized_cpu",
+    "grouped_vector_sum_typed_stream_plan",
     "v2_8_grouped_vector_sum_plan",
     "embree_node_coverage_prepared",
     "optix_node_coverage_prepared",
@@ -206,6 +207,25 @@ def describe_barnes_hut_v2_8_grouped_vector_sum_typed_stream(
     }
 
 
+def describe_barnes_hut_grouped_vector_sum_typed_stream(
+    *,
+    partner: str = "cupy",
+    presegmented: bool = True,
+) -> dict[str, Any]:
+    """Current alias for the legacy v2.8 grouped-vector typed-stream descriptor."""
+
+    descriptor = describe_barnes_hut_v2_8_grouped_vector_sum_typed_stream(
+        partner=partner,
+        presegmented=presegmented,
+    )
+    return {
+        **descriptor,
+        "legacy_helper_alias": "describe_barnes_hut_v2_8_grouped_vector_sum_typed_stream",
+        "current_helper": "describe_barnes_hut_grouped_vector_sum_typed_stream",
+        "current_mode_alias": "grouped_vector_sum_typed_stream_plan",
+    }
+
+
 def run_barnes_hut_v2_8_grouped_vector_sum_typed_stream_preview(
     inputs: dict[str, Any],
     *,
@@ -243,6 +263,28 @@ def run_barnes_hut_v2_8_grouped_vector_sum_typed_stream_preview(
             "rt_core_speedup_claim_authorized": False,
             "automatic_partner_selection_allowed": False,
         },
+    }
+
+
+def run_barnes_hut_grouped_vector_sum_typed_stream_preview(
+    inputs: dict[str, Any],
+    *,
+    partner: str = "cupy",
+    dry_run: bool = False,
+    triton_offset_groups_per_program: int = 1,
+) -> dict[str, Any]:
+    """Current alias for the legacy v2.8 grouped-vector typed-stream runner."""
+
+    payload = run_barnes_hut_v2_8_grouped_vector_sum_typed_stream_preview(
+        inputs,
+        partner=partner,
+        dry_run=dry_run,
+        triton_offset_groups_per_program=triton_offset_groups_per_program,
+    )
+    return {
+        **payload,
+        "legacy_helper_alias": "run_barnes_hut_v2_8_grouped_vector_sum_typed_stream_preview",
+        "current_helper": "run_barnes_hut_grouped_vector_sum_typed_stream_preview",
     }
 
 
@@ -1371,9 +1413,14 @@ def run_benchmark(
             ),
             rt_core_accelerated=False,
         )
-    if mode == "v2_8_grouped_vector_sum_plan":
+    if mode in {"grouped_vector_sum_typed_stream_plan", "v2_8_grouped_vector_sum_plan"}:
+        descriptor = (
+            describe_barnes_hut_grouped_vector_sum_typed_stream(partner=partner)
+            if mode == "grouped_vector_sum_typed_stream_plan"
+            else describe_barnes_hut_v2_8_grouped_vector_sum_typed_stream(partner=partner)
+        )
         return _annotate(
-            describe_barnes_hut_v2_8_grouped_vector_sum_typed_stream(partner=partner),
+            descriptor,
             mode=mode,
             contract="generic_grouped_vector_sum_f64x2_typed_stream",
             rt_core_accelerated=False,

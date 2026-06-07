@@ -260,6 +260,27 @@ def describe_rtnn_v2_8_ranked_summary_typed_stream(
     }
 
 
+def describe_rtnn_ranked_summary_typed_stream(
+    *,
+    operation: str = "grouped_topk_f64",
+    partner: str = "torch",
+    k: int = 8,
+) -> dict[str, Any]:
+    """Current alias for the legacy v2.8 ranked-summary typed-stream descriptor."""
+
+    descriptor = describe_rtnn_v2_8_ranked_summary_typed_stream(
+        operation=operation,
+        partner=partner,
+        k=k,
+    )
+    return {
+        **descriptor,
+        "legacy_helper_alias": "describe_rtnn_v2_8_ranked_summary_typed_stream",
+        "current_helper": "describe_rtnn_ranked_summary_typed_stream",
+        "current_mode_alias": "ranked_summary_typed_stream_plan",
+    }
+
+
 def run_rtnn_v2_8_ranked_summary_typed_stream_preview(
     inputs: dict[str, Any],
     *,
@@ -299,6 +320,32 @@ def run_rtnn_v2_8_ranked_summary_typed_stream_preview(
     }
 
 
+def run_rtnn_ranked_summary_typed_stream_preview(
+    inputs: dict[str, Any],
+    *,
+    operation: str = "grouped_topk_f64",
+    partner: str = "torch",
+    k: int = 8,
+    block_size: int | None = None,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """Current alias for the legacy v2.8 ranked-summary typed-stream runner."""
+
+    payload = run_rtnn_v2_8_ranked_summary_typed_stream_preview(
+        inputs,
+        operation=operation,
+        partner=partner,
+        k=k,
+        block_size=block_size,
+        dry_run=dry_run,
+    )
+    return {
+        **payload,
+        "legacy_helper_alias": "run_rtnn_v2_8_ranked_summary_typed_stream_preview",
+        "current_helper": "run_rtnn_ranked_summary_typed_stream_preview",
+    }
+
+
 def run_app(
     mode: str = "scope",
     *,
@@ -317,6 +364,8 @@ def run_app(
         return rtnn_known_results_payload()
     if mode == "rtnn_command_plan":
         return rtnn_command_plan_payload()
+    if mode == "ranked_summary_typed_stream_plan":
+        return describe_rtnn_ranked_summary_typed_stream(operation=operation, partner=partner, k=k)
     if mode == "rtnn_v2_8_ranked_summary_plan":
         return describe_rtnn_v2_8_ranked_summary_typed_stream(operation=operation, partner=partner, k=k)
     raise ValueError(f"unsupported mode: {mode}")
@@ -334,6 +383,7 @@ def main(argv: list[str] | None = None) -> int:
             "ann_partner_quality",
             "rtnn_known_results",
             "rtnn_command_plan",
+            "ranked_summary_typed_stream_plan",
             "rtnn_v2_8_ranked_summary_plan",
         ),
         default="scope",
