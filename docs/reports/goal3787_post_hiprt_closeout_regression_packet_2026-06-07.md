@@ -19,12 +19,12 @@ Pod evidence:
 
 - SSH target used: `root@69.30.85.203 -p 22057`.
 - Clean checkout workdir: `/root/rtdl_goal3783_clean_1780855862`.
-- Source commit: `baf4866e6f0acb1ce22090014a71abf429b35d52`.
+- Source commit: `6660d635`.
 - GPU/driver: `NVIDIA RTX A5000, 580.126.09`.
 - HIPRT library:
   `/root/rtdl_goal3783_clean_1780855862/build/librtdl_hiprt.so`.
-- Combined suite: 31 test modules.
-- Result: `Ran 173 tests in 14.724s`, `OK`.
+- Combined suite: 32 test modules.
+- Result: `Ran 176 tests in 14.995s`, `OK`.
 - Scoped source dirty: `false`.
 
 ## What It Covers
@@ -35,7 +35,8 @@ The packet combines:
 - the Goal3740/3747/3757/3759/3760/3761 benchmark adequacy tests;
 - the Goal3784 AMD functional validation runbook test;
 - the Goal3785 fail-closed AMD pod runner test;
-- the Goal3786 current adequacy-after-HIPRT-closeout test.
+- the Goal3786 current adequacy-after-HIPRT-closeout test;
+- the Goal3787 packet test itself.
 
 The artifact records:
 

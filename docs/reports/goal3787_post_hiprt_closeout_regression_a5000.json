@@ -39,7 +39,7 @@
     "whole_app_speedup_claim_authorized": false,
     "zero_copy_claim_authorized": false
   },
-  "focused_test_module_count": 31,
+  "focused_test_module_count": 32,
   "focused_test_modules": [
     "tests.goal3753_amd_hiprt_benchmark_parity_plan_test",
     "tests.goal3755_robot_collision_hiprt_route_readiness_test",
@@ -71,10 +71,11 @@
     "tests.goal3761_rayjoin_native_pip_cross_size_current_test",
     "tests.goal3784_amd_hiprt_functional_validation_runbook_test",
     "tests.goal3785_amd_hiprt_functional_pod_runner_test",
-    "tests.goal3786_current_benchmark_adequacy_after_hiprt_closeout_test"
+    "tests.goal3786_current_benchmark_adequacy_after_hiprt_closeout_test",
+    "tests.goal3787_post_hiprt_closeout_regression_packet_test"
   ],
   "focused_tests_passed": true,
-  "git_commit": "baf4866e6f0acb1ce22090014a71abf429b35d52",
+  "git_commit": "6660d6352eebf9d212d573095862417bda4c681b",
   "goal": "Goal3787",
   "gpu": "NVIDIA RTX A5000, 580.126.09",
   "hiprt_library": "/root/rtdl_goal3783_clean_1780855862/build/librtdl_hiprt.so",
@@ -116,5 +117,5 @@
   },
   "scoped_source_dirty": false,
   "scoped_source_dirty_detail": "",
-  "test_output_tail": ".............................................................................................................................................................................\n----------------------------------------------------------------------\nRan 173 tests in 14.724s\n\nOK\n"
+  "test_output_tail": "................................................................................................................................................................................\n----------------------------------------------------------------------\nRan 176 tests in 14.995s\n\nOK\n"
 }
