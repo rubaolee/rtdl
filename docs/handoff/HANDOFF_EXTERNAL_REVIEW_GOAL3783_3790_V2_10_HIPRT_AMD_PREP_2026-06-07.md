@@ -1,20 +1,20 @@
-# External Review Handoff: Goals3783-3788 v2.10 HIPRT/AMD Prep
+# External Review Handoff: Goals3783-3790 v2.10 HIPRT/AMD Prep
 
 ## Request
 
-Please review the Goal3783-3788 chain and write a formal external review to:
+Please review the Goal3783-3790 chain and write a formal external review to:
 
 - Claude path, when Claude is available:
-  `docs/reviews/goal3789_claude_review_goal3783_3788_v2_10_hiprt_amd_prep_2026-06-07.md`
+  `docs/reviews/goal3791_claude_review_goal3783_3790_v2_10_hiprt_amd_prep_2026-06-07.md`
 - Gemini path, if Gemini is used instead or alongside Claude:
-  `docs/reviews/goal3789_gemini_review_goal3783_3788_v2_10_hiprt_amd_prep_2026-06-07.md`
+  `docs/reviews/goal3791_gemini_review_goal3783_3790_v2_10_hiprt_amd_prep_2026-06-07.md`
 
 Allowed verdicts: `accept`, `accept-with-boundary`, `needs-more-evidence`,
 or `reject`.
 
 ## Scope
 
-Review these current reports and tests:
+Review these current reports, artifacts, scripts, and tests:
 
 - `docs/reports/goal3783_v2_10_hiprt_parity_closeout_packet_2026-06-07.md`
 - `docs/reports/goal3783_v2_10_hiprt_parity_closeout_a5000.json`
@@ -25,6 +25,7 @@ Review these current reports and tests:
 - `docs/reports/goal3787_post_hiprt_closeout_regression_packet_2026-06-07.md`
 - `docs/reports/goal3787_post_hiprt_closeout_regression_a5000.json`
 - `docs/reports/goal3788_hausdorff_generic_alias_and_metadata_audit_2026-06-07.md`
+- `docs/reports/goal3790_amd_hiprt_runner_prefix_discovery_2026-06-07.md`
 - `src/rtdsl/v2_10_amd_hiprt_functional_validation.py`
 - `scripts/goal3785_amd_hiprt_functional_pod_runner.py`
 - `src/rtdsl/v2_9_benchmark_adequacy.py`
@@ -33,6 +34,7 @@ Review these current reports and tests:
 - `tests/goal3786_current_benchmark_adequacy_after_hiprt_closeout_test.py`
 - `tests/goal3787_post_hiprt_closeout_regression_packet_test.py`
 - `tests/goal3788_hausdorff_generic_alias_and_metadata_audit_test.py`
+- `tests/goal3790_amd_hiprt_runner_prefix_discovery_test.py`
 
 ## What To Verify
 
@@ -50,7 +52,11 @@ Review these current reports and tests:
    does not overclaim beyond NVIDIA CUDA/Orochi HIPRT control evidence.
 6. Goal3788 correctly closes the stale Hausdorff generic-adapter TODO and proves
    the generic alias plus executed-ops metadata are already repaired.
-7. The chain preserves the app-agnostic engine boundary and avoids automatic
+7. Goal3790 makes HIPRT SDK prefix discovery robust enough for future AMD pods:
+   explicit overrides still work, version-suffixed SDK directories are
+   auto-discovered, archive matches are ignored, the chosen prefix is recorded,
+   and the non-AMD control path remains rejected.
+8. The chain preserves the app-agnostic engine boundary and avoids automatic
    partner-selection, true-zero-copy, broad RT-core, paper-reproduction, and
    public release claims.
 
@@ -72,7 +78,8 @@ $env:PYTHONPATH='src;.'; py -3 -m unittest `
   tests.goal3785_amd_hiprt_functional_pod_runner_test `
   tests.goal3786_current_benchmark_adequacy_after_hiprt_closeout_test `
   tests.goal3787_post_hiprt_closeout_regression_packet_test `
-  tests.goal3788_hausdorff_generic_alias_and_metadata_audit_test
+  tests.goal3788_hausdorff_generic_alias_and_metadata_audit_test `
+  tests.goal3790_amd_hiprt_runner_prefix_discovery_test
 ```
 
 On Linux:
@@ -83,5 +90,6 @@ PYTHONPATH=src:. python3 -m unittest \
   tests.goal3785_amd_hiprt_functional_pod_runner_test \
   tests.goal3786_current_benchmark_adequacy_after_hiprt_closeout_test \
   tests.goal3787_post_hiprt_closeout_regression_packet_test \
-  tests.goal3788_hausdorff_generic_alias_and_metadata_audit_test
+  tests.goal3788_hausdorff_generic_alias_and_metadata_audit_test \
+  tests.goal3790_amd_hiprt_runner_prefix_discovery_test
 ```
