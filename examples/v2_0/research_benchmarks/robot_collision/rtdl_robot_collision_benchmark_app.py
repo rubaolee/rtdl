@@ -759,6 +759,7 @@ def run_prepared_reuse_probe(
     reuse_query_buffers: bool = False,
     reuse_native_device_query_buffers: bool = False,
     reuse_native_device_query_count: bool = False,
+    validate_probe_reference: bool = True,
 ) -> dict[str, object]:
     if backend not in PREPARED_BACKENDS:
         raise ValueError(f"backend must be one of: {', '.join(PREPARED_BACKENDS)}")
@@ -785,8 +786,14 @@ def run_prepared_reuse_probe(
     lowering_start = time.perf_counter()
     contract = build_segment_probe_contract(case)
     app_lowering_seconds = time.perf_counter() - lowering_start
-    probe_reference_flags = _probe_reference_flags(contract)
-    probe_reference_flagged_group_count = sum(1 for flag in probe_reference_flags if flag)
+    probe_reference_seconds = None
+    probe_reference_flags = None
+    probe_reference_flagged_group_count = None
+    if validate_probe_reference:
+        probe_reference_start = time.perf_counter()
+        probe_reference_flags = _probe_reference_flags(contract)
+        probe_reference_seconds = time.perf_counter() - probe_reference_start
+        probe_reference_flagged_group_count = sum(1 for flag in probe_reference_flags if flag)
     prepared_query = None
     if reuse_native_device_query_buffers or reuse_native_device_query_count:
         from rtdsl import prepare_optix_grouped_segment_query_3d
@@ -826,12 +833,16 @@ def run_prepared_reuse_probe(
                 flags = []
                 flagged_group_count = int(result["flagged_group_count"])
                 flags_signature = f"count:{flagged_group_count}"
-                matches_probe_reference = flagged_group_count == probe_reference_flagged_group_count
+                matches_probe_reference = (
+                    None
+                    if probe_reference_flagged_group_count is None
+                    else flagged_group_count == probe_reference_flagged_group_count
+                )
             else:
                 flags = list(result["flags"])
                 flagged_group_count = sum(1 for flag in flags if flag)
                 flags_signature = _signature(flags)
-                matches_probe_reference = flags == probe_reference_flags
+                matches_probe_reference = None if probe_reference_flags is None else flags == probe_reference_flags
             runs.append(
                 {
                     "iteration": iteration,
@@ -914,6 +925,8 @@ def run_prepared_reuse_probe(
             if prepared_query is not None and runs
             else None
         ),
+        "probe_reference_validated": bool(validate_probe_reference),
+        "probe_reference_seconds": probe_reference_seconds,
         "prepared_query_run_indices": [
             int(row.get("prepared_query_run_index", 0)) for row in runs
         ],
@@ -923,10 +936,16 @@ def run_prepared_reuse_probe(
             if prepared_query is not None
             else False
         ),
-        "all_measured_runs_match_probe_reference": all(bool(row["matches_probe_reference"]) for row in measured),
+        "all_measured_runs_match_probe_reference": (
+            None
+            if not validate_probe_reference
+            else all(bool(row["matches_probe_reference"]) for row in measured)
+        ),
         "probe_reference_flagged_group_count": probe_reference_flagged_group_count,
-        "all_measured_counts_match_probe_reference": all(
-            int(row["flagged_group_count"]) == probe_reference_flagged_group_count for row in measured
+        "all_measured_counts_match_probe_reference": (
+            None
+            if not validate_probe_reference
+            else all(int(row["flagged_group_count"]) == probe_reference_flagged_group_count for row in measured)
         ),
         "all_run_signatures_identical": len({str(row["flags_signature"]) for row in runs}) == 1,
     }
@@ -968,7 +987,7 @@ def run_prepared_reuse_probe(
             },
             "app_lowering_seconds": app_lowering_seconds,
             "probe_reference_compact_link_flags": probe_reference_flags,
-            "probe_reference_signature": _signature(probe_reference_flags),
+            "probe_reference_signature": None if probe_reference_flags is None else _signature(probe_reference_flags),
             "lowering_policy": contract.lowering_policy,
             "reuse_metadata": reuse_metadata,
             "tail_medians": {
@@ -1141,6 +1160,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--matrix", action="store_true")
     parser.add_argument("--final-matrix", action="store_true")
     parser.add_argument("--skip-optix", action="store_true")
+    parser.add_argument(
+        "--no-probe-reference",
+        action="store_true",
+        help=(
+            "Skip the CPU probe-reference pass for large performance-only prepared runs; "
+            "the output marks probe_reference_validated=false."
+        ),
+    )
     parser.add_argument("--include-rows", action="store_true")
     parser.add_argument("--json-out", default=None)
     args = parser.parse_args(argv)
@@ -1166,6 +1193,7 @@ def main(argv: list[str] | None = None) -> int:
             repeats=args.repeats,
             warmup=args.warmup,
             reuse_native_device_query_buffers=True,
+            validate_probe_reference=not args.no_probe_reference,
         )
     elif args.mode == "optix_prepared_device_count":
         payload = run_prepared_reuse_probe(
@@ -1177,6 +1205,7 @@ def main(argv: list[str] | None = None) -> int:
             repeats=args.repeats,
             warmup=args.warmup,
             reuse_native_device_query_count=True,
+            validate_probe_reference=not args.no_probe_reference,
         )
     elif args.mode.endswith("_prepared_buffers") or (args.mode.endswith("_prepared") and args.repeats != 1):
         reuse_query_buffers = args.mode.endswith("_prepared_buffers")
@@ -1189,6 +1218,7 @@ def main(argv: list[str] | None = None) -> int:
             repeats=args.repeats,
             warmup=args.warmup,
             reuse_query_buffers=reuse_query_buffers,
+            validate_probe_reference=not args.no_probe_reference,
         )
     else:
         payload = run_robot_collision_benchmark(

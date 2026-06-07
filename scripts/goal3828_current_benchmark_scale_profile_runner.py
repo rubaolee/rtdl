@@ -188,7 +188,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-json", type=Path, default=None)
     parser.add_argument("--output-dir", type=Path, default=None)
-    parser.add_argument("--only", action="append", default=(), help="App or row_id to run; repeatable.")
+    parser.add_argument("--only", action="append", default=[], help="App or row_id to run; repeatable.")
     parser.add_argument("--dry-run", action="store_true", help="Only emit the selected scale-profile rows.")
     parser.add_argument("--timeout-scale", type=float, default=1.0)
     parser.add_argument("--heartbeat-sec", type=float, default=30.0)

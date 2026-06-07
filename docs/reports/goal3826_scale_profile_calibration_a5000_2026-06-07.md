@@ -82,8 +82,10 @@ The still-useful calibration points are:
 - RT-DBSCAN: use a separate small correctness row for CPU reference validation
   and a no-validation performance row for large scale; the 65k no-validation
   row is a viable scale profile after Goal3830.
-- Robot collision: `1024` poses with 128 obstacles is a good scale profile;
-  Goal3827 shows `4096` poses is a heavy stress profile rather than a timeout.
+- Robot collision: `1024` poses originally mixed CPU probe-reference validation
+  with prepared OptiX timing; Goal3831 separates the large performance row with
+  `--no-probe-reference`. Goal3827 shows `4096` poses is a heavy stress profile
+  rather than a timeout.
 - Barnes-Hut: `8192` bodies is safe when stdout is redirected to a file.
 
 ## Next Engineering Target

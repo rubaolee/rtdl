@@ -53,8 +53,8 @@ This changes the next engineering target:
   pipe draining for future benchmark probes.
 - For scale-profile defaults, use calibrated rows rather than validation-heavy
   commands: RT-DBSCAN 65k with `--no-validation` plus a separate small
-  correctness row, robot 1024 for default and 4096 for stress, Barnes-Hut 8192
-  with file-backed stdout.
+  correctness row, robot 1024 with `--no-probe-reference` after Goal3831 and
+  robot 4096 for stress, Barnes-Hut 8192 with file-backed stdout.
 
 ## Boundary
 

@@ -172,8 +172,8 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
     ),
     CurrentBenchmarkScaleProfile(
         app="robot_collision",
-        row_id="robot_collision_optix_scale_default_1024",
-        purpose="scale-profile robot-collision prepared OptiX device-count run",
+        row_id="robot_collision_optix_scale_default_1024_no_probe_reference",
+        purpose="scale-profile robot-collision prepared OptiX device-count run with CPU probe validation separated",
         profile_kind="default_scale",
         command=(
             "python",
@@ -192,10 +192,11 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
             "5",
             "--warmup",
             "1",
+            "--no-probe-reference",
         ),
         timeout_sec=120,
-        evidence_refs=("Goal3826", "Goal3827"),
-        expected_runtime_class="default_scale_about_12s",
+        evidence_refs=("Goal3826", "Goal3827", "Goal3831"),
+        expected_runtime_class="default_scale_no_probe_reference",
     ),
     CurrentBenchmarkScaleProfile(
         app="contact_manifold",
