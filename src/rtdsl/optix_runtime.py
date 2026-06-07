@@ -222,6 +222,9 @@ OPTIX_SEGMENT_PAIR_PREPARE_LEFT_SET_SYMBOL = "rtdl_optix_prepare_segment_pair_le
 OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_SYMBOL = (
     "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left"
 )
+OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_REPEATED_SYMBOL = (
+    "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_repeated"
+)
 OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_PREPARED_LEFT_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_prepared_segment_pair_left_id_count_prepared_left_device_columns"
 )
@@ -3201,6 +3204,66 @@ class PreparedOptixSegmentPairIntersection:
         )
         _check_status(status, error)
         return int(count.value)
+
+    def count_prepared_left_repeated(
+        self,
+        prepared_left: PreparedOptixSegmentPairLeftSet,
+        repeat_count: int,
+    ) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX segment-pair handle is closed")
+        if prepared_left._closed:
+            raise RuntimeError("prepared OptiX segment-pair left-set handle is closed")
+        if prepared_left.library is not self.library:
+            raise ValueError("prepared left-set handle must come from the same OptiX library")
+        if repeat_count <= 0:
+            raise ValueError("repeat_count must be positive")
+        count_symbol = _find_optional_backend_symbol(
+            self.library,
+            OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_REPEATED_SYMBOL,
+        )
+        if count_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_REPEATED_SYMBOL}; rebuild the OptiX backend from current main"
+            )
+        count = ctypes.c_size_t()
+        total_seconds = ctypes.c_double()
+        min_seconds = ctypes.c_double()
+        max_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self.prepared_handle,
+            prepared_left.prepared_left_handle,
+            ctypes.c_size_t(repeat_count),
+            ctypes.byref(count),
+            ctypes.byref(total_seconds),
+            ctypes.byref(min_seconds),
+            ctypes.byref(max_seconds),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        total = float(total_seconds.value)
+        return {
+            "schema": "rtdl.optix.segment_pair_prepared_left_repeated_exact_count.v1",
+            "count": int(count.value),
+            "repeat_count": int(repeat_count),
+            "total_seconds": total,
+            "average_seconds": total / float(repeat_count),
+            "min_seconds": float(min_seconds.value),
+            "max_seconds": float(max_seconds.value),
+            "native_symbol": OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_REPEATED_SYMBOL,
+            "contract": "SEGMENT_PAIR_PREPARED_LEFT_REPEATED_EXACT_COUNT_V1",
+            "claim_boundary": {
+                "diagnostic_only": True,
+                "public_speedup_claim_authorized": False,
+                "rayjoin_paper_reproduction_claim_authorized": False,
+                "rtdl_beats_rayjoin_claim_authorized": False,
+                "release_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+            },
+        }
 
     def candidate_device_columns(
         self,
@@ -20284,6 +20347,23 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_count_prepared_segment_pair_prepared_left.restype = ctypes.c_int
+    optional_count_prepared_segment_pair_prepared_left_repeated = _find_optional_backend_symbol(
+        lib,
+        OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_REPEATED_SYMBOL,
+    )
+    if optional_count_prepared_segment_pair_prepared_left_repeated is not None:
+        optional_count_prepared_segment_pair_prepared_left_repeated.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_count_prepared_segment_pair_prepared_left_repeated.restype = ctypes.c_int
     optional_segment_pair_candidate_device_columns = _find_optional_backend_symbol(
         lib,
         OPTIX_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL,

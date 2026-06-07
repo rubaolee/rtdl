@@ -5617,6 +5617,62 @@ static void count_prepared_segment_pair_intersection_prepared_left_optix(
     g_optix_last_segment_pair_emitted_count = *count_out;
 }
 
+static void count_prepared_segment_pair_intersection_prepared_left_repeated_optix(
+        PreparedSegmentPairIntersectionBuild* prepared,
+        PreparedSegmentPairLeftSet* prepared_left,
+        size_t repeat_count,
+        size_t* count_out,
+        double* total_seconds_out,
+        double* min_seconds_out,
+        double* max_seconds_out)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared segment-pair handle must not be null");
+    }
+    if (!prepared_left) {
+        throw std::runtime_error("prepared segment-pair left-set handle must not be null");
+    }
+    if (!count_out || !total_seconds_out || !min_seconds_out || !max_seconds_out) {
+        throw std::runtime_error("segment-pair repeated count output pointers must not be null");
+    }
+    if (repeat_count == 0) {
+        throw std::runtime_error("segment-pair repeated count repeat_count must be positive");
+    }
+    *count_out = 0;
+    *total_seconds_out = 0.0;
+    *min_seconds_out = 0.0;
+    *max_seconds_out = 0.0;
+
+    bool have_count = false;
+    size_t stable_count = 0;
+    double total_seconds = 0.0;
+    double min_seconds = std::numeric_limits<double>::infinity();
+    double max_seconds = 0.0;
+    for (size_t index = 0; index < repeat_count; ++index) {
+        size_t current_count = 0;
+        const auto start = std::chrono::steady_clock::now();
+        count_prepared_segment_pair_intersection_prepared_left_optix(
+            prepared,
+            prepared_left,
+            &current_count);
+        const auto end = std::chrono::steady_clock::now();
+        const double elapsed = std::chrono::duration<double>(end - start).count();
+        if (!have_count) {
+            stable_count = current_count;
+            have_count = true;
+        } else if (current_count != stable_count) {
+            throw std::runtime_error("segment-pair repeated prepared-left count changed across repeats");
+        }
+        total_seconds += elapsed;
+        min_seconds = std::min(min_seconds, elapsed);
+        max_seconds = std::max(max_seconds, elapsed);
+    }
+    *count_out = stable_count;
+    *total_seconds_out = total_seconds;
+    *min_seconds_out = min_seconds;
+    *max_seconds_out = max_seconds;
+}
+
 static void run_prepared_segment_first_hit_optix(
         PreparedSegmentPairIntersectionBuild* prepared,
         const RtdlSegment* probes, size_t probe_count,

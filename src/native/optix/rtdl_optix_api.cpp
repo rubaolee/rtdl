@@ -224,6 +224,32 @@ extern "C" int rtdl_optix_count_prepared_segment_pair_intersection_prepared_left
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_repeated(
+        void* prepared,
+        void* prepared_left,
+        size_t repeat_count,
+        size_t* count_out,
+        double* total_seconds_out,
+        double* min_seconds_out,
+        double* max_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared segment-pair handle must not be null");
+        if (!prepared_left)
+            throw std::runtime_error("prepared segment-pair left-set handle must not be null");
+        count_prepared_segment_pair_intersection_prepared_left_repeated_optix(
+            reinterpret_cast<PreparedSegmentPairIntersectionBuild*>(prepared),
+            reinterpret_cast<PreparedSegmentPairLeftSet*>(prepared_left),
+            repeat_count,
+            count_out,
+            total_seconds_out,
+            min_seconds_out,
+            max_seconds_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_prepared_segment_pair_candidate_device_columns(
         void* prepared,
         const RtdlSegment* left, size_t left_count,
