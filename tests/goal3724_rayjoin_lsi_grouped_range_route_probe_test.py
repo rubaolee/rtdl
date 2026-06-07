@@ -38,6 +38,8 @@ class Goal3724RayJoinLsiGroupedRangeRouteProbeTest(unittest.TestCase):
     def test_native_route_uses_generic_segment_ranges(self):
         self.assertIn("struct SegmentPairGroupRange", self.workloads)
         self.assertIn("ensure_segment_pair_grouped_ranges", self.workloads)
+        self.assertIn("RTDL_OPTIX_SEGMENT_PAIR_GROUPED_RANGE_MAX_SIZE", self.workloads)
+        self.assertIn("RTDL_OPTIX_SEGMENT_PAIR_GROUPED_RANGE_AREA_ENLARGE", self.workloads)
         self.assertIn("kSegmentPairGroupedRangeDirectIntersectionExactCountKernelSrc", self.workloads)
         kernel = self.workloads.split(
             "kSegmentPairGroupedRangeDirectIntersectionExactCountKernelSrc",
@@ -66,6 +68,9 @@ class Goal3724RayJoinLsiGroupedRangeRouteProbeTest(unittest.TestCase):
         self.assertIn("base set is county edges", self.runner)
         self.assertIn("grouped_range_speedup_vs_existing_anyhit", self.runner)
         self.assertIn("right_group_compression_ratio", self.runner)
+        self.assertIn("--group-max-size", self.runner)
+        self.assertIn("--group-area-enlarge", self.runner)
+        self.assertIn("grouping_policy", self.runner)
         self.assertIn('"diagnostic_only": True', self.runner)
         self.assertIn('"rtdl_beats_rayjoin_claim_authorized": False', self.runner)
 

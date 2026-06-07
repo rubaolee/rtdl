@@ -4739,8 +4739,22 @@ static void ensure_segment_pair_grouped_ranges(PreparedSegmentPairIntersectionBu
     if (prepared->right_segments.empty()) {
         return;
     }
-    constexpr size_t kMaxSegmentsPerGroup = 64;
-    constexpr float kAreaEnlargeLimit = 5.0f;
+    size_t max_segments_per_group = 64;
+    if (const char* raw_max = std::getenv("RTDL_OPTIX_SEGMENT_PAIR_GROUPED_RANGE_MAX_SIZE")) {
+        char* end = nullptr;
+        const unsigned long long parsed = std::strtoull(raw_max, &end, 10);
+        if (end != raw_max && parsed != 0ull) {
+            max_segments_per_group = static_cast<size_t>(std::min<unsigned long long>(parsed, 1024ull));
+        }
+    }
+    float area_enlarge_limit = 5.0f;
+    if (const char* raw_area = std::getenv("RTDL_OPTIX_SEGMENT_PAIR_GROUPED_RANGE_AREA_ENLARGE")) {
+        char* end = nullptr;
+        const double parsed = std::strtod(raw_area, &end);
+        if (end != raw_area && std::isfinite(parsed) && parsed > 1.0) {
+            area_enlarge_limit = static_cast<float>(std::min(parsed, 1024.0));
+        }
+    }
     std::vector<OptixAabb> group_aabbs;
     group_aabbs.reserve(prepared->right_segments.size());
     size_t begin = 0;
@@ -4754,10 +4768,10 @@ static void ensure_segment_pair_grouped_ranges(PreparedSegmentPairIntersectionBu
         const float current_area = std::max(segment_pair_aabb_area(current), 1.0e-12f);
         const float next_area = std::max(segment_pair_aabb_area(next), 1.0e-12f);
         const float merged_area = segment_pair_aabb_area(merged);
-        const bool max_group_reached = (index - begin) >= kMaxSegmentsPerGroup;
+        const bool max_group_reached = (index - begin) >= max_segments_per_group;
         const bool merge_allowed =
             !max_group_reached &&
-            merged_area / std::max(current_area, next_area) < kAreaEnlargeLimit;
+            merged_area / std::max(current_area, next_area) < area_enlarge_limit;
         if (merge_allowed) {
             current = merged;
             continue;

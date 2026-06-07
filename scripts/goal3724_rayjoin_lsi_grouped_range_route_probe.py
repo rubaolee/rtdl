@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import statistics
 import subprocess
 import sys
@@ -146,7 +147,13 @@ def run_probe(args: argparse.Namespace) -> dict[str, Any]:
         flush=True,
     )
 
-    print("[goal3724] preparing RTDL/OptiX base right scene and query left set", flush=True)
+    os.environ["RTDL_OPTIX_SEGMENT_PAIR_GROUPED_RANGE_MAX_SIZE"] = str(args.group_max_size)
+    os.environ["RTDL_OPTIX_SEGMENT_PAIR_GROUPED_RANGE_AREA_ENLARGE"] = str(args.group_area_enlarge)
+    print(
+        "[goal3724] preparing RTDL/OptiX base right scene and query left set "
+        f"group_max_size={args.group_max_size} group_area_enlarge={args.group_area_enlarge}",
+        flush=True,
+    )
     prepared = _phase_time(
         phases,
         "prepare_static_scene_county_sec",
@@ -222,6 +229,12 @@ def run_probe(args: argparse.Namespace) -> dict[str, Any]:
             "query_left_soil": len(soil_segments),
             "base_right_county": len(county_segments),
         },
+        "grouping_policy": {
+            "max_size": int(args.group_max_size),
+            "area_enlarge": float(args.group_area_enlarge),
+            "env_max_size": os.environ.get("RTDL_OPTIX_SEGMENT_PAIR_GROUPED_RANGE_MAX_SIZE"),
+            "env_area_enlarge": os.environ.get("RTDL_OPTIX_SEGMENT_PAIR_GROUPED_RANGE_AREA_ENLARGE"),
+        },
         "phase_seconds": phases,
         "rayjoin_lsi": rayjoin_lsi,
         "rtdl_existing_anyhit_exact_count_same_orientation": existing,
@@ -279,6 +292,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--rayjoin-warmup", type=int, default=2)
     parser.add_argument("--repeat", type=int, default=10)
     parser.add_argument("--warmup", type=int, default=3)
+    parser.add_argument("--group-max-size", type=int, default=64)
+    parser.add_argument("--group-area-enlarge", type=float, default=5.0)
     parser.add_argument("--xsect-factor", type=float, default=0.1)
     parser.add_argument("--timeout-seconds", type=int, default=240)
     parser.add_argument("--skip-rayjoin", action="store_true")
@@ -290,6 +305,10 @@ def parse_args() -> argparse.Namespace:
     for name in ("rayjoin_warmup", "warmup"):
         if int(getattr(args, name)) < 0:
             raise ValueError(f"--{name.replace('_', '-')} must be non-negative")
+    if args.group_max_size <= 0:
+        raise ValueError("--group-max-size must be positive")
+    if args.group_area_enlarge <= 1.0:
+        raise ValueError("--group-area-enlarge must be greater than 1.0")
     return args
 
 
