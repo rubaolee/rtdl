@@ -49,7 +49,7 @@ $env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal3790_amd_hiprt_runner_prefi
 Local result:
 
 ```text
-Ran 15 tests in 0.066s
+Ran 15 tests in 0.043s
 OK
 ```
 
@@ -57,7 +57,7 @@ Non-AMD pod-control result:
 
 ```text
 Pod: root@69.30.85.203 -p 22057
-Commit: cf673800
+Commit: d838a797
 GPU route: NVIDIA RTX A5000
 Command: python3 scripts/goal3785_amd_hiprt_functional_pod_runner.py --allow-non-amd-control --non-amd-output /tmp/goal3790_non_amd_control.json
 HIPRT_PREFIX: /root/vendor/hiprt-official/hiprtSdk-2.2.0e68f54
