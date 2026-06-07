@@ -264,6 +264,19 @@ struct RtdlNativeDevicePairColumns {
     uint64_t relation_boundary_ordinals_device_ptr;
 };
 
+struct RtdlNativeClosedShapeScalarCountSummary {
+    uint64_t row_count;
+    uint64_t candidate_event_count;
+    uint64_t boundary_candidate_event_count;
+    uint64_t dropped_candidate_event_count;
+    uint32_t exact_boundary_correction_used;
+    uint32_t relation_status_correction_used;
+    uint32_t overflow;
+    int32_t device_ordinal;
+    double traversal_seconds;
+    double point_eps;
+};
+
 struct RtdlNativePairColumnPagePlanInfo {
     uint64_t item_count;
     uint64_t page_size;
@@ -704,6 +717,12 @@ int  rtdl_optix_count_prepared_point_closed_shape_membership_device_filtered_pre
          void* prepared_points,
          size_t request_count,
          size_t* counts_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_count_prepared_point_closed_shape_membership_relation_status_corrected_prepared_points_2d(
+         void* prepared,
+         void* prepared_points,
+         double point_eps,
+         RtdlNativeClosedShapeScalarCountSummary* summary_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_prepare_prepared_point_closed_shape_membership_device_filtered_prepared_points_batch_executor_2d(
          void* prepared,

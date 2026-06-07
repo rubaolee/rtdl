@@ -265,6 +265,9 @@ OPTIX_CLOSED_SHAPE_MEMBERSHIP_DEVICE_FILTERED_PREPARED_POINTS_COUNT_SYMBOL = (
 OPTIX_CLOSED_SHAPE_MEMBERSHIP_DEVICE_FILTERED_PREPARED_POINTS_BATCH_COUNT_SYMBOL = (
     "rtdl_optix_count_prepared_point_closed_shape_membership_device_filtered_prepared_points_batch_2d"
 )
+OPTIX_CLOSED_SHAPE_MEMBERSHIP_RELATION_STATUS_CORRECTED_PREPARED_POINTS_COUNT_SYMBOL = (
+    "rtdl_optix_count_prepared_point_closed_shape_membership_relation_status_corrected_prepared_points_2d"
+)
 OPTIX_PREPARED_POINTS_BATCH_EXECUTOR_PREPARE_SYMBOL = (
     "rtdl_optix_prepare_prepared_point_closed_shape_membership_device_filtered_prepared_points_batch_executor_2d"
 )
@@ -929,6 +932,21 @@ class _RtdlNativeDevicePairColumns(ctypes.Structure):
         ("right_ordinals_device_ptr", ctypes.c_uint64),
         ("relation_status_device_ptr", ctypes.c_uint64),
         ("relation_boundary_ordinals_device_ptr", ctypes.c_uint64),
+    ]
+
+
+class _RtdlNativeClosedShapeScalarCountSummary(ctypes.Structure):
+    _fields_ = [
+        ("row_count", ctypes.c_uint64),
+        ("candidate_event_count", ctypes.c_uint64),
+        ("boundary_candidate_event_count", ctypes.c_uint64),
+        ("dropped_candidate_event_count", ctypes.c_uint64),
+        ("exact_boundary_correction_used", ctypes.c_uint32),
+        ("relation_status_correction_used", ctypes.c_uint32),
+        ("overflow", ctypes.c_uint32),
+        ("device_ordinal", ctypes.c_int32),
+        ("traversal_seconds", ctypes.c_double),
+        ("point_eps", ctypes.c_double),
     ]
 
 
@@ -11625,6 +11643,96 @@ class PreparedOptixPointClosedShapeMembership2D:
         _check_status(status, error)
         return tuple(int(counts[index]) for index in range(request_count))
 
+    def count_relation_status_corrected_prepared_points_native(
+        self,
+        prepared_points: PreparedOptixPointProbeColumns2D,
+        *,
+        point_eps: float = 1.0e-9,
+    ) -> dict[str, object]:
+        """Return an exact corrected scalar count without boundary-row materialization.
+
+        The OptiX traversal keeps the generic relation-status metadata inside a
+        scalar-count kernel: interior candidates increment the count directly,
+        boundary-contact candidates are validated against double-precision
+        prepared lookup columns, and only scalar counters are downloaded.
+        """
+        if self._closed:
+            raise RuntimeError("prepared OptiX closed-shape membership handle is closed")
+        if prepared_points.closed:
+            raise RuntimeError("prepared OptiX point-probe columns handle is closed")
+        point_eps = float(point_eps)
+        if point_eps < 0.0:
+            raise ValueError("point_eps must be non-negative")
+        if prepared_points.count == 0 or self._packed_shapes.polygon_count == 0:
+            return {
+                "row_count": 0,
+                "candidate_row_count": 0,
+                "boundary_candidate_row_count": 0,
+                "dropped_candidate_row_count": 0,
+                "point_eps": point_eps,
+                "partner": "native",
+                "predicate": "relation_status_corrected_closed_shape_membership_count",
+                "row_stream_materialized": False,
+                "boundary_candidate_row_stream_materialized": False,
+                "output_residency": "native_device_scalar_count",
+                "native_exact_device_scalar_count_produced": True,
+                "true_zero_copy_claim_authorized": False,
+                "release_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "rt_core_speedup_claim_authorized": False,
+            }
+        count_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_CLOSED_SHAPE_MEMBERSHIP_RELATION_STATUS_CORRECTED_PREPARED_POINTS_COUNT_SYMBOL,
+        )
+        if count_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_CLOSED_SHAPE_MEMBERSHIP_RELATION_STATUS_CORRECTED_PREPARED_POINTS_COUNT_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        summary = _RtdlNativeClosedShapeScalarCountSummary()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self._handle,
+            prepared_points._handle,
+            ctypes.c_double(point_eps),
+            ctypes.byref(summary),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return {
+            "row_count": int(summary.row_count),
+            "candidate_row_count": int(summary.candidate_event_count),
+            "boundary_candidate_row_count": int(summary.boundary_candidate_event_count),
+            "dropped_candidate_row_count": int(summary.dropped_candidate_event_count),
+            "point_eps": float(summary.point_eps),
+            "partner": "native",
+            "predicate": "relation_status_corrected_closed_shape_membership_count",
+            "relation_status_columns_used": False,
+            "relation_boundary_ordinal_columns_used": False,
+            "row_stream_materialized": False,
+            "full_candidate_row_stream_materialized": False,
+            "boundary_candidate_row_stream_materialized": False,
+            "prepared_lookup_residency": "native_device",
+            "output_residency": "native_device_scalar_count",
+            "host_refined_rows_materialized": False,
+            "native_exact_device_row_stream_produced": False,
+            "native_exact_device_scalar_count_produced": bool(summary.exact_boundary_correction_used),
+            "relation_status_correction_used": bool(summary.relation_status_correction_used),
+            "overflow": bool(summary.overflow),
+            "device_ordinal": int(summary.device_ordinal),
+            "traversal_seconds": float(summary.traversal_seconds),
+            "native_symbol": (
+                OPTIX_CLOSED_SHAPE_MEMBERSHIP_RELATION_STATUS_CORRECTED_PREPARED_POINTS_COUNT_SYMBOL
+            ),
+            "true_zero_copy_claim_authorized": False,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+        }
+
     def relation_status_candidate_device_columns_prepared_points(
         self,
         prepared_points: PreparedOptixPointProbeColumns2D,
@@ -20225,6 +20333,23 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
     optional_count_prepared_closed_shape_membership_device_filtered_prepared_points_batch.restype = ctypes.c_int
+
+    optional_count_prepared_closed_shape_membership_relation_status_corrected_prepared_points = (
+        _find_optional_backend_symbol(
+            lib,
+            OPTIX_CLOSED_SHAPE_MEMBERSHIP_RELATION_STATUS_CORRECTED_PREPARED_POINTS_COUNT_SYMBOL,
+        )
+    )
+    if optional_count_prepared_closed_shape_membership_relation_status_corrected_prepared_points is not None:
+        optional_count_prepared_closed_shape_membership_relation_status_corrected_prepared_points.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_double,
+            ctypes.POINTER(_RtdlNativeClosedShapeScalarCountSummary),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_count_prepared_closed_shape_membership_relation_status_corrected_prepared_points.restype = ctypes.c_int
 
     optional_prepare_prepared_points_batch_executor = _find_optional_backend_symbol(
         lib,

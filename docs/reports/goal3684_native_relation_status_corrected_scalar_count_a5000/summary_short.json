@@ -1,0 +1,277 @@
+{
+  "boundary_result": {
+    "candidate_row_count": 47241,
+    "dropped_candidate_row_count": 2,
+    "full_simple_ring_scan_used": false,
+    "host_refined_rows_materialized": false,
+    "input_validation_performed": false,
+    "native_exact_device_row_stream_produced": false,
+    "output_residency": "partner_device_scalar_count",
+    "partner": "numba",
+    "point_eps": 1e-09,
+    "predicate": "boundary_contact_count_closed_shape_membership",
+    "prepared_lookup_residency": "cupy_device_prepared_lookup_columns",
+    "public_speedup_claim_authorized": false,
+    "relation_boundary_ordinal_columns_used": true,
+    "relation_status_columns_used": true,
+    "release_authorized": false,
+    "row_count": 47239,
+    "row_stream_materialized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "trusted_native_stream_fast_path": true
+  },
+  "claim_boundary": {
+    "native_default_route_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "correctness": {
+    "all_match_exact_count": true,
+    "corrected_count": 47262,
+    "exact_count": 47262,
+    "exact_pair_multiset_rows_materialized_for_oracle": 47202,
+    "native_all_match_exact_count": true,
+    "native_corrected_count": 47262
+  },
+  "dataset": "/root/rtdl/data/rayjoin_public_cdb/br_county_start0_count16545.cdb",
+  "environment": {
+    "RTDL_OPTIX_LIBRARY": "/root/rtdl/build/librtdl_optix.so",
+    "RTDL_OPTIX_POINT_PRIMITIVE_DEVICE_PREDICATE_EPS": "1e-9"
+  },
+  "exact_oracle_count": 47262,
+  "exact_oracle_sec": 0.2005954971536994,
+  "git_status_dirty": true,
+  "goal3677_scoped_source_dirty": true,
+  "notes": "This packet compares generic relation-status filtered candidate streams, the Numba boundary-contact scalar continuation, and the native relation-status corrected scalar count. It does not claim RayJoin reproduction, public speedup, true zero-copy, or default route authorization.",
+  "pod_gpu": "NVIDIA RTX A5000, 580.126.09",
+  "point_count": 16545,
+  "prepare_point_columns_sec": 0.02532977983355522,
+  "prepare_refiner_sec": 0.1002931660041213,
+  "prepare_resident_counter_sec": 0.0011200150474905968,
+  "prepare_static_scene_sec": 1.0134253446012735,
+  "schema": "rtdl.goal3677.rayjoin_pip_relation_status_exact_count_timing.v1",
+  "shape_count": 15700,
+  "source_commit": "f146fa60bf58aa5f8d908d2a3df7846979bed7bc",
+  "source_commit_short": "f146fa60",
+  "timings": {
+    "all_candidate_count_only": {
+      "hot_median_sec": 0.0005040084943175316,
+      "hot_repeat": 2,
+      "hot_repeat_secs": [
+        0.000543070025742054,
+        0.0004649469628930092
+      ],
+      "hot_total_sec": 0.0010080169886350632,
+      "hot_warmup": 1,
+      "runs": [
+        {
+          "candidate_count": 47264,
+          "elapsed_sec": 0.38497321400791407,
+          "is_warmup": true,
+          "iteration": 0,
+          "native_traversal_seconds": 0.000435096
+        },
+        {
+          "candidate_count": 47264,
+          "elapsed_sec": 0.000543070025742054,
+          "is_warmup": false,
+          "iteration": 1,
+          "native_traversal_seconds": 0.000416486
+        },
+        {
+          "candidate_count": 47264,
+          "elapsed_sec": 0.0004649469628930092,
+          "is_warmup": false,
+          "iteration": 2,
+          "native_traversal_seconds": 0.000406821
+        }
+      ],
+      "stability_key": "candidate_count",
+      "stability_value": 47264
+    },
+    "boundary_candidate_columns": {
+      "hot_median_sec": 0.0007553137838840485,
+      "hot_repeat": 2,
+      "hot_repeat_secs": [
+        0.0008036652579903603,
+        0.0007069623097777367
+      ],
+      "hot_total_sec": 0.001510627567768097,
+      "hot_warmup": 1,
+      "runs": [
+        {
+          "boundary_candidate_count": 47241,
+          "elapsed_sec": 0.0010553328320384026,
+          "is_warmup": true,
+          "iteration": 0,
+          "native_traversal_seconds": 0.000418245,
+          "required_capacity": 47241
+        },
+        {
+          "boundary_candidate_count": 47241,
+          "elapsed_sec": 0.0008036652579903603,
+          "is_warmup": false,
+          "iteration": 1,
+          "native_traversal_seconds": 0.000415646,
+          "required_capacity": 47241
+        },
+        {
+          "boundary_candidate_count": 47241,
+          "elapsed_sec": 0.0007069623097777367,
+          "is_warmup": false,
+          "iteration": 2,
+          "native_traversal_seconds": 0.000420278,
+          "required_capacity": 47241
+        }
+      ],
+      "stability_key": "boundary_candidate_count",
+      "stability_value": 47241
+    },
+    "native_relation_status_corrected_exact_scalar_count": {
+      "hot_median_sec": 0.00054582254961133,
+      "hot_repeat": 2,
+      "hot_repeat_secs": [
+        0.0005786949768662453,
+        0.0005129501223564148
+      ],
+      "hot_total_sec": 0.00109164509922266,
+      "hot_warmup": 1,
+      "runs": [
+        {
+          "boundary_candidate_row_count": 47241,
+          "boundary_candidate_row_stream_materialized": false,
+          "candidate_row_count": 47264,
+          "dropped_candidate_row_count": 2,
+          "elapsed_sec": 0.5342492312192917,
+          "is_warmup": true,
+          "iteration": 0,
+          "native_traversal_seconds": 0.00046309,
+          "row_count": 47262,
+          "row_stream_materialized": false
+        },
+        {
+          "boundary_candidate_row_count": 47241,
+          "boundary_candidate_row_stream_materialized": false,
+          "candidate_row_count": 47264,
+          "dropped_candidate_row_count": 2,
+          "elapsed_sec": 0.0005786949768662453,
+          "is_warmup": false,
+          "iteration": 1,
+          "native_traversal_seconds": 0.000433181,
+          "row_count": 47262,
+          "row_stream_materialized": false
+        },
+        {
+          "boundary_candidate_row_count": 47241,
+          "boundary_candidate_row_stream_materialized": false,
+          "candidate_row_count": 47264,
+          "dropped_candidate_row_count": 2,
+          "elapsed_sec": 0.0005129501223564148,
+          "is_warmup": false,
+          "iteration": 2,
+          "native_traversal_seconds": 0.000432429,
+          "row_count": 47262,
+          "row_stream_materialized": false
+        }
+      ],
+      "stability_key": "row_count",
+      "stability_value": 47262
+    },
+    "relation_status_corrected_exact_numba_count": {
+      "hot_median_sec": 0.003036766778677702,
+      "hot_repeat": 2,
+      "hot_repeat_secs": [
+        0.003177664242684841,
+        0.0028958693146705627
+      ],
+      "hot_total_sec": 0.006073533557355404,
+      "hot_warmup": 1,
+      "runs": [
+        {
+          "all_candidate_traversal_seconds": 0.0004134,
+          "boundary_candidate_row_count": 47241,
+          "boundary_candidate_traversal_seconds": 0.000416373,
+          "candidate_row_count": 47264,
+          "dropped_candidate_row_count": 2,
+          "elapsed_sec": 0.5623704073950648,
+          "is_warmup": true,
+          "iteration": 0,
+          "row_count": 47262
+        },
+        {
+          "all_candidate_traversal_seconds": 0.000465239,
+          "boundary_candidate_row_count": 47241,
+          "boundary_candidate_traversal_seconds": 0.000416753,
+          "candidate_row_count": 47264,
+          "dropped_candidate_row_count": 2,
+          "elapsed_sec": 0.003177664242684841,
+          "is_warmup": false,
+          "iteration": 1,
+          "row_count": 47262
+        },
+        {
+          "all_candidate_traversal_seconds": 0.00043655,
+          "boundary_candidate_row_count": 47241,
+          "boundary_candidate_traversal_seconds": 0.000415343,
+          "candidate_row_count": 47264,
+          "dropped_candidate_row_count": 2,
+          "elapsed_sec": 0.0028958693146705627,
+          "is_warmup": false,
+          "iteration": 2,
+          "row_count": 47262
+        }
+      ],
+      "stability_key": "row_count",
+      "stability_value": 47262
+    },
+    "resident_relation_status_corrected_exact_numba_count": {
+      "hot_median_sec": 0.0015335148200392723,
+      "hot_repeat": 2,
+      "hot_repeat_secs": [
+        0.001547052524983883,
+        0.0015199771150946617
+      ],
+      "hot_total_sec": 0.0030670296400785446,
+      "hot_warmup": 1,
+      "runs": [
+        {
+          "boundary_candidate_row_count": 47241,
+          "candidate_row_count": 47264,
+          "dropped_candidate_row_count": 2,
+          "elapsed_sec": 0.0016069673001766205,
+          "is_warmup": true,
+          "iteration": 0,
+          "resident_boundary_candidate_columns": true,
+          "row_count": 47262
+        },
+        {
+          "boundary_candidate_row_count": 47241,
+          "candidate_row_count": 47264,
+          "dropped_candidate_row_count": 2,
+          "elapsed_sec": 0.001547052524983883,
+          "is_warmup": false,
+          "iteration": 1,
+          "resident_boundary_candidate_columns": true,
+          "row_count": 47262
+        },
+        {
+          "boundary_candidate_row_count": 47241,
+          "candidate_row_count": 47264,
+          "dropped_candidate_row_count": 2,
+          "elapsed_sec": 0.0015199771150946617,
+          "is_warmup": false,
+          "iteration": 2,
+          "resident_boundary_candidate_columns": true,
+          "row_count": 47262
+        }
+      ],
+      "stability_key": "row_count",
+      "stability_value": 47262
+    }
+  }
+}

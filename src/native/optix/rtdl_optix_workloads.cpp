@@ -5672,6 +5672,36 @@ struct PipRelationStatusCandidateDeviceColumnsLaunchParams {
     uint32_t         boundary_check;
 };
 
+struct PipRelationStatusCorrectedScalarCountLaunchParams {
+    OptixTraversableHandle traversable;
+    const float*     points_x;
+    const float*     points_y;
+    const double*    points_x_f64;
+    const double*    points_y_f64;
+    const uint32_t*  point_ids;
+    const GpuPolygonRef* polygons;
+    const float*     vertices_x;
+    const float*     vertices_y;
+    const double*    vertices_x_f64;
+    const double*    vertices_y_f64;
+    const GpuPreparedClosedShapeEdge2D* prepared_edges;
+    uint32_t*        hit_words;
+    GpuPipRecord*    output;
+    uint32_t*        output_count;
+    uint32_t         output_capacity;
+    uint32_t*        candidate_count;
+    uint32_t*        boundary_candidate_count;
+    uint32_t*        dropped_candidate_count;
+    double           point_eps_f64;
+    uint32_t         positive_only;
+    uint32_t         hit_word_count;
+    uint32_t         polygon_count;
+    uint32_t         probe_count;
+    uint32_t         point_index_offset;
+    uint32_t         device_prefilter;
+    uint32_t         boundary_check;
+};
+
 struct PipPointIdCountDeviceColumnsLaunchParams {
     OptixTraversableHandle traversable;
     const float*     points_x;
@@ -6113,6 +6143,177 @@ R"CUDA(            const uint32_t relation_status = optixGetPayload_3();
 
         std::string ptx = compile_to_ptx(src.c_str(), "point_closed_shape_relation_status_candidate_device_columns_kernel.cu");
         g_pip_relation_status_candidate_device_columns.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__pip_probe",
+            "__miss__pip_miss",
+            "__intersection__pip_isect",
+            "__anyhit__pip_anyhit",
+            nullptr, 4).release();
+    });
+}
+
+static void ensure_pip_relation_status_corrected_scalar_count_pipeline()
+{
+    std::call_once(g_pip_relation_status_corrected_scalar_count.init, [&]() {
+        std::string src(kPipKernelSrc);
+        specialize_closed_shape_membership_source_from_env(src);
+
+        const std::string old_params_fields =
+R"CUDA(    const float* points_x;
+    const float* points_y;
+    const uint32_t* point_ids;
+    const GpuPolygonRef* polygons;
+    const float* vertices_x;
+    const float* vertices_y;
+    const GpuPreparedClosedShapeEdge2D* prepared_edges;
+    uint32_t* hit_words;
+    PipRecord* output;
+    uint32_t* output_count;
+    uint32_t output_capacity;
+    uint32_t positive_only;
+)CUDA";
+        const std::string new_params_fields =
+R"CUDA(    const float* points_x;
+    const float* points_y;
+    const double* points_x_f64;
+    const double* points_y_f64;
+    const uint32_t* point_ids;
+    const GpuPolygonRef* polygons;
+    const float* vertices_x;
+    const float* vertices_y;
+    const double* vertices_x_f64;
+    const double* vertices_y_f64;
+    const GpuPreparedClosedShapeEdge2D* prepared_edges;
+    uint32_t* hit_words;
+    PipRecord* output;
+    uint32_t* output_count;
+    uint32_t output_capacity;
+    uint32_t* candidate_count;
+    uint32_t* boundary_candidate_count;
+    uint32_t* dropped_candidate_count;
+    double point_eps_f64;
+    uint32_t positive_only;
+)CUDA";
+        size_t pos = src.find(old_params_fields);
+        if (pos == std::string::npos) {
+            throw std::runtime_error("closed-shape relation-status corrected scalar params snippet not found");
+        }
+        src.replace(pos, old_params_fields.size(), new_params_fields);
+
+        const std::string old_raygen_count =
+R"CUDA(    if (params.positive_only != 0u && params.output == nullptr && params.output_capacity == 0u && p2 != 0u) {
+        atomicAdd(params.output_count, p2);
+    }
+)CUDA";
+        pos = src.find(old_raygen_count);
+        if (pos == std::string::npos) {
+            throw std::runtime_error("closed-shape relation-status corrected scalar raygen count snippet not found");
+        }
+        src.replace(pos, old_raygen_count.size(), "");
+
+        const std::string old_intersection_count =
+R"CUDA(        if (params.output == nullptr && params.output_capacity == 0u) {
+            optixSetPayload_2(optixGetPayload_2() + 1u);
+            return;
+        }
+)CUDA";
+        pos = src.find(old_intersection_count);
+        if (pos == std::string::npos) {
+            throw std::runtime_error("closed-shape relation-status corrected scalar intersection count snippet not found");
+        }
+        src.replace(pos, old_intersection_count.size(), "");
+
+        const std::string helper_anchor =
+R"CUDA(static __forceinline__ __device__ bool point_in_polygon(
+)CUDA";
+        const std::string helper =
+R"CUDA(static __forceinline__ __device__ bool exact_boundary_contact_f64(
+        uint32_t pidx,
+        uint32_t prim,
+        uint32_t boundary_element_ordinal)
+{
+    if (boundary_element_ordinal == 0xffffffffu) {
+        return false;
+    }
+    const GpuPolygonRef poly = params.polygons[prim];
+    const uint32_t off = poly.vertex_offset;
+    const uint32_t n = poly.vertex_count;
+    if (n < 3u || boundary_element_ordinal < off || boundary_element_ordinal >= off + n) {
+        return false;
+    }
+    const uint32_t next_ordinal = off + ((boundary_element_ordinal - off + 1u) % n);
+    const double px = params.points_x_f64[pidx];
+    const double py = params.points_y_f64[pidx];
+    const double ax = params.vertices_x_f64[boundary_element_ordinal];
+    const double ay = params.vertices_y_f64[boundary_element_ordinal];
+    const double bx = params.vertices_x_f64[next_ordinal];
+    const double by = params.vertices_y_f64[next_ordinal];
+    const double dx = bx - ax;
+    const double dy = by - ay;
+    const double len2 = dx * dx + dy * dy;
+    const double eps = params.point_eps_f64;
+    const double eps2 = eps * eps;
+    if (len2 <= eps2) {
+        return fabs(px - ax) <= eps && fabs(py - ay) <= eps;
+    }
+    const double cross = (px - ax) * dy - (py - ay) * dx;
+    const double dot = (px - ax) * dx + (py - ay) * dy;
+    const double eps2_len2 = eps2 * len2;
+    const bool cross_ok = cross * cross <= eps2_len2;
+    const bool before_start_ok = dot < 0.0 && dot * dot <= eps2_len2;
+    const bool inside_segment = dot >= 0.0 && dot <= len2;
+    const double beyond_end = dot - len2;
+    const bool after_end_ok = dot > len2 && beyond_end * beyond_end <= eps2_len2;
+    return cross_ok && (before_start_ok || inside_segment || after_end_ok);
+}
+
+)CUDA";
+        pos = src.find(helper_anchor);
+        if (pos == std::string::npos) {
+            throw std::runtime_error("closed-shape relation-status corrected scalar helper anchor not found");
+        }
+        src.insert(pos, helper);
+
+        const std::string old_anyhit_positive =
+R"CUDA(            if (params.output == nullptr && params.output_capacity == 0u) {
+                optixSetPayload_2(optixGetPayload_2() + 1u);
+                optixIgnoreIntersection();
+                return;
+            }
+            const uint32_t slot = atomicAdd(params.output_count, 1u);
+            if (slot < params.output_capacity && params.output != nullptr) {
+                PipRecord r;
+                r.point_id = params.point_index_offset + pidx;
+                r.polygon_id = prim;
+                r.contains = 1u;
+                params.output[slot] = r;
+            }
+)CUDA";
+        const std::string new_anyhit_positive =
+R"CUDA(            const uint32_t relation_status = optixGetPayload_3();
+            atomicAdd(params.candidate_count, 1u);
+            bool keep = relation_status == 1u;
+            if (relation_status == 2u) {
+                atomicAdd(params.boundary_candidate_count, 1u);
+                keep = exact_boundary_contact_f64(pidx, prim, optixGetPayload_2());
+                if (!keep) {
+                    atomicAdd(params.dropped_candidate_count, 1u);
+                }
+            } else if (relation_status != 1u) {
+                keep = false;
+            }
+            if (keep) {
+                atomicAdd(params.output_count, 1u);
+            }
+)CUDA";
+        pos = src.find(old_anyhit_positive);
+        if (pos == std::string::npos) {
+            throw std::runtime_error("closed-shape relation-status corrected scalar anyhit snippet not found");
+        }
+        src.replace(pos, old_anyhit_positive.size(), new_anyhit_positive);
+
+        std::string ptx = compile_to_ptx(src.c_str(), "point_closed_shape_relation_status_corrected_scalar_count_kernel.cu");
+        g_pip_relation_status_corrected_scalar_count.pipe = build_pipeline(
             get_optix_context(), ptx,
             "__raygen__pip_probe",
             "__miss__pip_miss",
@@ -7012,6 +7213,8 @@ struct PreparedShapePairRelationBuild {
     std::vector<GpuPolygonRef> right_polygons;
     std::vector<float> right_vx;
     std::vector<float> right_vy;
+    std::vector<double> right_vx_f64;
+    std::vector<double> right_vy_f64;
     std::vector<GpuPreparedClosedShapeEdge2D> right_edges;
     size_t right_count = 0;
     size_t right_vert_xy_count = 0;
@@ -7020,6 +7223,8 @@ struct PreparedShapePairRelationBuild {
     DevPtr d_right_polygons;
     DevPtr d_right_vx;
     DevPtr d_right_vy;
+    DevPtr d_right_vx_f64;
+    DevPtr d_right_vy_f64;
     DevPtr d_right_edges;
     DevPtr d_right_bounds;
     AccelHolder accel;
@@ -7039,6 +7244,8 @@ struct PreparedShapePairRelationBuild {
           right_polygons(poly_count),
           right_vx(vert_xy_count / 2u),
           right_vy(vert_xy_count / 2u),
+          right_vx_f64(vert_xy_count / 2u),
+          right_vy_f64(vert_xy_count / 2u),
           right_edges(vert_xy_count / 2u),
           right_count(poly_count),
           right_vert_xy_count(vert_xy_count),
@@ -7046,6 +7253,8 @@ struct PreparedShapePairRelationBuild {
           d_right_polygons(sizeof(GpuPolygonRef) * poly_count),
           d_right_vx(sizeof(float) * (vert_xy_count / 2u)),
           d_right_vy(sizeof(float) * (vert_xy_count / 2u)),
+          d_right_vx_f64(sizeof(double) * (vert_xy_count / 2u)),
+          d_right_vy_f64(sizeof(double) * (vert_xy_count / 2u)),
           d_right_edges(sizeof(GpuPreparedClosedShapeEdge2D) * (vert_xy_count / 2u)),
           d_right_bounds(sizeof(GpuBounds2DF32) * poly_count)
     {
@@ -7068,6 +7277,8 @@ struct PreparedShapePairRelationBuild {
             };
         }
         for (size_t i = 0; i < right_vert_count; ++i) {
+            right_vx_f64[i] = verts_xy[i * 2u];
+            right_vy_f64[i] = verts_xy[i * 2u + 1u];
             right_vx[i] = static_cast<float>(verts_xy[i * 2u]);
             right_vy[i] = static_cast<float>(verts_xy[i * 2u + 1u]);
             if (i == 0 || right_vy[i] > right_max_y) {
@@ -7102,6 +7313,8 @@ struct PreparedShapePairRelationBuild {
         upload(d_right_polygons.ptr, right_polygons.data(), right_polygons.size());
         upload(d_right_vx.ptr, right_vx.data(), right_vx.size());
         upload(d_right_vy.ptr, right_vy.data(), right_vy.size());
+        upload(d_right_vx_f64.ptr, right_vx_f64.data(), right_vx_f64.size());
+        upload(d_right_vy_f64.ptr, right_vy_f64.data(), right_vy_f64.size());
         upload(d_right_edges.ptr, right_edges.data(), right_edges.size());
         upload(d_right_bounds.ptr, right_bounds.data(), right_bounds.size());
 
@@ -7156,9 +7369,13 @@ struct PreparedPointProbeColumns2D {
     size_t point_count = 0;
     std::vector<float> points_x;
     std::vector<float> points_y;
+    std::vector<double> points_x_f64;
+    std::vector<double> points_y_f64;
     std::vector<uint32_t> point_ids;
     DevPtr d_points_x;
     DevPtr d_points_y;
+    DevPtr d_points_x_f64;
+    DevPtr d_points_y_f64;
     DevPtr d_point_ids;
     DevPtr d_count;
     DevPtr d_params;
@@ -7167,9 +7384,13 @@ struct PreparedPointProbeColumns2D {
         : point_count(count),
           points_x(count),
           points_y(count),
+          points_x_f64(count),
+          points_y_f64(count),
           point_ids(count),
           d_points_x(sizeof(float) * count),
           d_points_y(sizeof(float) * count),
+          d_points_x_f64(sizeof(double) * count),
+          d_points_y_f64(sizeof(double) * count),
           d_point_ids(sizeof(uint32_t) * count),
           d_count(sizeof(uint32_t)),
           d_params(sizeof(PipLaunchParams))
@@ -7178,12 +7399,16 @@ struct PreparedPointProbeColumns2D {
             throw std::runtime_error("point pointer must not be null when point_count is nonzero");
         }
         for (size_t i = 0; i < count; ++i) {
+            points_x_f64[i] = points[i].x;
+            points_y_f64[i] = points[i].y;
             points_x[i] = static_cast<float>(points[i].x);
             points_y[i] = static_cast<float>(points[i].y);
             point_ids[i] = points[i].id;
         }
         upload(d_points_x.ptr, points_x.data(), points_x.size());
         upload(d_points_y.ptr, points_y.data(), points_y.size());
+        upload(d_points_x_f64.ptr, points_x_f64.data(), points_x_f64.size());
+        upload(d_points_y_f64.ptr, points_y_f64.data(), points_y_f64.size());
         upload(d_point_ids.ptr, point_ids.data(), point_ids.size());
     }
 };
@@ -8209,6 +8434,147 @@ static void count_prepared_point_closed_shape_membership_device_filtered_prepare
     g_optix_last_closed_shape_raw_candidate_count = total_count;
     g_optix_last_closed_shape_emitted_count = total_count;
     *count_out = total_count;
+}
+
+static void count_prepared_point_closed_shape_membership_relation_status_corrected_prepared_points_2d_optix(
+        PreparedShapePairRelationBuild* prepared,
+        PreparedPointProbeColumns2D* prepared_points,
+        double point_eps,
+        RtdlNativeClosedShapeScalarCountSummary* summary_out)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared closed-shape membership handle must not be null");
+    }
+    if (!prepared_points) {
+        throw std::runtime_error("prepared point-probe columns handle must not be null");
+    }
+    if (!summary_out) {
+        throw std::runtime_error("relation-status corrected scalar-count summary output pointer must not be null");
+    }
+    if (!std::isfinite(point_eps) || point_eps < 0.0) {
+        throw std::runtime_error("relation-status corrected scalar-count point_eps must be finite and non-negative");
+    }
+    *summary_out = {};
+    summary_out->exact_boundary_correction_used = 1u;
+    summary_out->relation_status_correction_used = 1u;
+    summary_out->point_eps = point_eps;
+    CUdevice current_device = 0;
+    CU_CHECK(cuCtxGetDevice(&current_device));
+    summary_out->device_ordinal = static_cast<int32_t>(current_device);
+
+    const size_t point_count = prepared_points->point_count;
+    if (point_count == 0 || prepared->right_count == 0) {
+        return;
+    }
+    if (point_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("relation-status corrected scalar-count point count exceeds uint32_t chunk offset capacity");
+    }
+    if (prepared->right_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("relation-status corrected scalar-count shape count exceeds uint32_t launch capacity");
+    }
+
+    reset_closed_shape_membership_phase_timings(4u);
+    ensure_pip_relation_status_corrected_scalar_count_pipeline();
+
+    DevPtr d_exact_count(sizeof(uint32_t));
+    DevPtr d_candidate_count(sizeof(uint32_t));
+    DevPtr d_boundary_candidate_count(sizeof(uint32_t));
+    DevPtr d_dropped_candidate_count(sizeof(uint32_t));
+    uint32_t zero = 0u;
+    upload<uint32_t>(d_exact_count.ptr, &zero, 1);
+    upload<uint32_t>(d_candidate_count.ptr, &zero, 1);
+    upload<uint32_t>(d_boundary_candidate_count.ptr, &zero, 1);
+    upload<uint32_t>(d_dropped_candidate_count.ptr, &zero, 1);
+
+    PipRelationStatusCorrectedScalarCountLaunchParams lp;
+    lp.traversable    = prepared->accel.handle;
+    lp.points_x       = reinterpret_cast<const float*>(prepared_points->d_points_x.ptr);
+    lp.points_y       = reinterpret_cast<const float*>(prepared_points->d_points_y.ptr);
+    lp.points_x_f64   = reinterpret_cast<const double*>(prepared_points->d_points_x_f64.ptr);
+    lp.points_y_f64   = reinterpret_cast<const double*>(prepared_points->d_points_y_f64.ptr);
+    lp.point_ids      = reinterpret_cast<const uint32_t*>(prepared_points->d_point_ids.ptr);
+    lp.polygons       = reinterpret_cast<const GpuPolygonRef*>(prepared->d_right_polygons.ptr);
+    lp.vertices_x     = reinterpret_cast<const float*>(prepared->d_right_vx.ptr);
+    lp.vertices_y     = reinterpret_cast<const float*>(prepared->d_right_vy.ptr);
+    lp.vertices_x_f64 = reinterpret_cast<const double*>(prepared->d_right_vx_f64.ptr);
+    lp.vertices_y_f64 = reinterpret_cast<const double*>(prepared->d_right_vy_f64.ptr);
+    lp.prepared_edges = nullptr;
+    lp.hit_words      = nullptr;
+    lp.output         = nullptr;
+    lp.output_count   = reinterpret_cast<uint32_t*>(d_exact_count.ptr);
+    lp.output_capacity = 0u;
+    lp.candidate_count = reinterpret_cast<uint32_t*>(d_candidate_count.ptr);
+    lp.boundary_candidate_count = reinterpret_cast<uint32_t*>(d_boundary_candidate_count.ptr);
+    lp.dropped_candidate_count = reinterpret_cast<uint32_t*>(d_dropped_candidate_count.ptr);
+    lp.point_eps_f64 = point_eps;
+    lp.positive_only  = 1u;
+    lp.hit_word_count = 0u;
+    lp.polygon_count  = static_cast<uint32_t>(prepared->right_count);
+    lp.probe_count    = 0u;
+    lp.point_index_offset = 0u;
+    lp.device_prefilter = 1u;
+    lp.boundary_check = closed_shape_membership_boundary_check_enabled();
+
+    DevPtr d_params(sizeof(PipRelationStatusCorrectedScalarCountLaunchParams));
+    CUstream stream = 0;
+
+    const uint64_t max_points_per_launch64 =
+        static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()) /
+        static_cast<uint64_t>(prepared->right_count);
+    if (max_points_per_launch64 == 0) {
+        throw std::runtime_error("relation-status corrected scalar-count cannot chunk shape set into uint32_t capacity");
+    }
+    const size_t max_points_per_launch = static_cast<size_t>(
+        std::min<uint64_t>(max_points_per_launch64, static_cast<uint64_t>(point_count)));
+
+    const auto traversal_start = std::chrono::steady_clock::now();
+    for (size_t point_offset = 0; point_offset < point_count; point_offset += max_points_per_launch) {
+        const size_t chunk_point_count = std::min(max_points_per_launch, point_count - point_offset);
+        const CUdeviceptr chunk_points_x =
+            prepared_points->d_points_x.ptr + static_cast<CUdeviceptr>(sizeof(float) * point_offset);
+        const CUdeviceptr chunk_points_y =
+            prepared_points->d_points_y.ptr + static_cast<CUdeviceptr>(sizeof(float) * point_offset);
+        const CUdeviceptr chunk_points_x_f64 =
+            prepared_points->d_points_x_f64.ptr + static_cast<CUdeviceptr>(sizeof(double) * point_offset);
+        const CUdeviceptr chunk_points_y_f64 =
+            prepared_points->d_points_y_f64.ptr + static_cast<CUdeviceptr>(sizeof(double) * point_offset);
+        const CUdeviceptr chunk_point_ids =
+            prepared_points->d_point_ids.ptr + static_cast<CUdeviceptr>(sizeof(uint32_t) * point_offset);
+        lp.points_x = reinterpret_cast<const float*>(chunk_points_x);
+        lp.points_y = reinterpret_cast<const float*>(chunk_points_y);
+        lp.points_x_f64 = reinterpret_cast<const double*>(chunk_points_x_f64);
+        lp.points_y_f64 = reinterpret_cast<const double*>(chunk_points_y_f64);
+        lp.point_ids = reinterpret_cast<const uint32_t*>(chunk_point_ids);
+        lp.point_index_offset = static_cast<uint32_t>(point_offset);
+        lp.probe_count = static_cast<uint32_t>(chunk_point_count);
+        upload(d_params.ptr, &lp, 1);
+
+        OPTIX_CHECK(optixLaunch(g_pip_relation_status_corrected_scalar_count.pipe->pipeline, stream,
+                                 d_params.ptr, sizeof(PipRelationStatusCorrectedScalarCountLaunchParams),
+                                 &g_pip_relation_status_corrected_scalar_count.pipe->sbt,
+                                 static_cast<unsigned>(chunk_point_count), 1, 1));
+    }
+    CU_CHECK(cuStreamSynchronize(stream));
+    const auto traversal_end = std::chrono::steady_clock::now();
+
+    uint32_t exact_count = 0u;
+    uint32_t candidate_count = 0u;
+    uint32_t boundary_candidate_count = 0u;
+    uint32_t dropped_candidate_count = 0u;
+    download(&exact_count, d_exact_count.ptr, 1);
+    download(&candidate_count, d_candidate_count.ptr, 1);
+    download(&boundary_candidate_count, d_boundary_candidate_count.ptr, 1);
+    download(&dropped_candidate_count, d_dropped_candidate_count.ptr, 1);
+
+    summary_out->row_count = static_cast<uint64_t>(exact_count);
+    summary_out->candidate_event_count = static_cast<uint64_t>(candidate_count);
+    summary_out->boundary_candidate_event_count = static_cast<uint64_t>(boundary_candidate_count);
+    summary_out->dropped_candidate_event_count = static_cast<uint64_t>(dropped_candidate_count);
+    summary_out->overflow = 0u;
+    summary_out->traversal_seconds = seconds_between(traversal_start, traversal_end);
+    g_optix_last_closed_shape_candidate_count_s = summary_out->traversal_seconds;
+    g_optix_last_closed_shape_raw_candidate_count = static_cast<size_t>(candidate_count);
+    g_optix_last_closed_shape_emitted_count = static_cast<size_t>(exact_count);
 }
 
 static void count_prepared_point_closed_shape_membership_device_filtered_prepared_points_batch_2d_optix(

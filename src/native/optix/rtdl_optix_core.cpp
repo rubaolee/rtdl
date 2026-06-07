@@ -7549,6 +7549,7 @@ static PipPipeline         g_pip;
 static PipPipeline         g_pip_scalar_count;
 static PipPipeline         g_pip_candidate_device_columns;
 static PipPipeline         g_pip_relation_status_candidate_device_columns;
+static PipPipeline         g_pip_relation_status_corrected_scalar_count;
 static PipPipeline         g_pip_point_id_count_device_columns;
 static PipPipeline         g_point_closed_shape_boundary_event;
 static ShapePairRelationPipeline     g_shape_pair_relation;

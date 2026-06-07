@@ -261,6 +261,32 @@ def run_probe(args: argparse.Namespace) -> dict[str, Any]:
         finally:
             resident_counter.close()
 
+        def native_corrected_count_once() -> dict[str, Any]:
+            result = prepared.count_relation_status_corrected_prepared_points_native(
+                prepared_points,
+                point_eps=float(args.point_eps),
+            )
+            return {
+                "row_count": int(result["row_count"]),
+                "candidate_row_count": int(result["candidate_row_count"]),
+                "boundary_candidate_row_count": int(result["boundary_candidate_row_count"]),
+                "dropped_candidate_row_count": int(result["dropped_candidate_row_count"]),
+                "native_traversal_seconds": float(result["traversal_seconds"]),
+                "row_stream_materialized": bool(result["row_stream_materialized"]),
+                "boundary_candidate_row_stream_materialized": bool(
+                    result["boundary_candidate_row_stream_materialized"]
+                ),
+            }
+
+        native_corrected_count_timing = _time_repeated(
+            label="native_relation_status_corrected_exact_scalar_count",
+            warmup=int(args.warmup),
+            repeat=int(args.repeat),
+            synchronize=sync,
+            fn=native_corrected_count_once,
+            stability_key="row_count",
+        )
+
         correctness_columns = prepared.relation_status_candidate_device_columns_prepared_points(
             prepared_points,
             relation_status_filter=2,
@@ -301,11 +327,14 @@ def run_probe(args: argparse.Namespace) -> dict[str, Any]:
                 "boundary_candidate_columns": boundary_candidate_timing,
                 "relation_status_corrected_exact_numba_count": corrected_count_timing,
                 "resident_relation_status_corrected_exact_numba_count": resident_corrected_count_timing,
+                "native_relation_status_corrected_exact_scalar_count": native_corrected_count_timing,
             },
             "correctness": {
                 "exact_count": exact_count,
                 "corrected_count": corrected_count,
+                "native_corrected_count": int(native_corrected_count_timing["stability_value"]),
                 "all_match_exact_count": corrected_count == exact_count,
+                "native_all_match_exact_count": int(native_corrected_count_timing["stability_value"]) == exact_count,
                 "exact_pair_multiset_rows_materialized_for_oracle": len(exact_pairs),
             },
             "boundary_result": {
@@ -315,9 +344,10 @@ def run_probe(args: argparse.Namespace) -> dict[str, Any]:
             },
             "claim_boundary": _claim_boundary(),
             "notes": (
-                "This packet composes generic relation-status filtered candidate streams with a Numba "
-                "boundary-contact scalar continuation. It does not claim RayJoin reproduction, public "
-                "speedup, true zero-copy, or default route authorization."
+                "This packet compares generic relation-status filtered candidate streams, the Numba "
+                "boundary-contact scalar continuation, and the native relation-status corrected scalar "
+                "count. It does not claim RayJoin reproduction, public speedup, true zero-copy, or "
+                "default route authorization."
             ),
         }
     finally:

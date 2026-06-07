@@ -530,6 +530,28 @@ extern "C" int rtdl_optix_count_prepared_point_closed_shape_membership_device_fi
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_count_prepared_point_closed_shape_membership_relation_status_corrected_prepared_points_2d(
+        void* prepared,
+        void* prepared_points,
+        double point_eps,
+        RtdlNativeClosedShapeScalarCountSummary* summary_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared closed-shape membership handle must not be null");
+        if (!prepared_points)
+            throw std::runtime_error("prepared point-probe columns handle must not be null");
+        if (!summary_out)
+            throw std::runtime_error("relation-status corrected scalar-count summary output pointer must not be null");
+        count_prepared_point_closed_shape_membership_relation_status_corrected_prepared_points_2d_optix(
+            reinterpret_cast<PreparedShapePairRelationBuild*>(prepared),
+            reinterpret_cast<PreparedPointProbeColumns2D*>(prepared_points),
+            point_eps,
+            summary_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_prepare_prepared_point_closed_shape_membership_device_filtered_prepared_points_batch_executor_2d(
         void* prepared,
         void* prepared_points,
