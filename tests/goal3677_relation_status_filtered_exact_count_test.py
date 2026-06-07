@@ -44,7 +44,9 @@ class Goal3677RelationStatusFilteredExactCountTest(unittest.TestCase):
         self.assertIn("relation_status_candidate_device_columns_prepared_points", runtime)
         self.assertIn("relation_status_filter must be 0(all), 1(interior), or 2(boundary)", runtime)
         self.assertIn("count_relation_status_corrected_prepared_points_numba", topology)
+        self.assertIn("prepare_relation_status_corrected_prepared_points_numba_counter", topology)
         self.assertIn("produce_boundary_columns(retry)", topology)
+        self.assertIn("resident_relation_status_corrected_exact_numba_count", script)
         self.assertIn('"public_speedup_claim_authorized": False', script)
         self.assertIn('"true_zero_copy_claim_authorized": False', script)
         self.assertIn('"native_default_route_authorized": False', script)
@@ -59,6 +61,10 @@ class Goal3677RelationStatusFilteredExactCountTest(unittest.TestCase):
         self.assertFalse(artifact["goal3677_scoped_source_dirty"])
         self.assertEqual(artifact["timings"]["all_candidate_count_only"]["stability_value"], 47264)
         self.assertEqual(artifact["timings"]["relation_status_corrected_exact_numba_count"]["stability_value"], 47262)
+        self.assertEqual(
+            artifact["timings"]["resident_relation_status_corrected_exact_numba_count"]["stability_value"],
+            47262,
+        )
         for value in artifact["claim_boundary"].values():
             self.assertFalse(value)
 
