@@ -1041,6 +1041,25 @@ extern "C" int rtdl_optix_prepare_shape_pair_relation_flags(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepare_shape_pair_relation_left_set(
+        const RtdlPolygonRef* left_polys, size_t left_count,
+        const double* left_verts_xy,      size_t left_vert_xy_count,
+        void** prepared_left_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_left_out)
+            throw std::runtime_error("prepared_left_out must not be null");
+        if (!left_polys && left_count != 0)
+            throw std::runtime_error("left polygon pointer must not be null when left_count is nonzero");
+        if (!left_verts_xy && left_vert_xy_count != 0)
+            throw std::runtime_error("left vertices pointer must not be null when left_vert_xy_count is nonzero");
+        *prepared_left_out = nullptr;
+        *prepared_left_out = prepare_shape_pair_relation_left_set_optix(
+            left_polys, left_count, left_verts_xy, left_vert_xy_count);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_run_prepared_shape_pair_relation_flags(
         void* prepared,
         const RtdlPolygonRef* left_polys,  size_t left_count,
@@ -1113,6 +1132,27 @@ extern "C" int rtdl_optix_count_prepared_shape_pair_relation_active_device(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_count_prepared_shape_pair_relation_active_device_prepared_left(
+        void* prepared,
+        void* prepared_left,
+        size_t* active_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared shape-pair relation handle must not be null");
+        if (!prepared_left)
+            throw std::runtime_error("prepared shape-pair left-set handle must not be null");
+        if (!active_count_out)
+            throw std::runtime_error("active_count_out must not be null");
+        *active_count_out = 0;
+        count_shape_pair_relation_active_device_with_prepared_left_optix(
+            reinterpret_cast<PreparedShapePairRelationBuild*>(prepared),
+            reinterpret_cast<PreparedShapePairRelationLeftSet*>(prepared_left),
+            active_count_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_prepared_shape_pair_relation_active_device_columns(
         void* prepared,
         const RtdlPolygonRef* left_polys,  size_t left_count,
@@ -1149,6 +1189,11 @@ extern "C" int rtdl_optix_release_shape_pair_relation_active_device_columns(
 extern "C" void rtdl_optix_destroy_prepared_shape_pair_relation_flags(void* prepared)
 {
     delete reinterpret_cast<PreparedShapePairRelationBuild*>(prepared);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_shape_pair_relation_left_set(void* prepared_left)
+{
+    delete reinterpret_cast<PreparedShapePairRelationLeftSet*>(prepared_left);
 }
 
 extern "C" int rtdl_optix_run_ray_hitcount(

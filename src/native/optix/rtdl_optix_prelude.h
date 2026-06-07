@@ -876,6 +876,11 @@ int  rtdl_optix_prepare_shape_pair_relation_flags(
          const double* right_verts_xy,      size_t right_vert_xy_count,
          void** prepared_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_shape_pair_relation_left_set(
+         const RtdlPolygonRef* left_polys, size_t left_count,
+         const double* left_verts_xy,      size_t left_vert_xy_count,
+         void** prepared_left_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_run_prepared_shape_pair_relation_flags(
          void* prepared,
          const RtdlPolygonRef* left_polys, size_t left_count,
@@ -892,6 +897,11 @@ int  rtdl_optix_count_prepared_shape_pair_relation_active_device(
          void* prepared,
          const RtdlPolygonRef* left_polys, size_t left_count,
          const double* left_verts_xy,      size_t left_vert_xy_count,
+         size_t* active_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_count_prepared_shape_pair_relation_active_device_prepared_left(
+         void* prepared,
+         void* prepared_left,
          size_t* active_count_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_prepared_shape_pair_relation_active_device_columns(
@@ -915,6 +925,7 @@ int  rtdl_optix_shape_pair_relation_get_last_phase_timings(
          size_t* active_count_out,
          uint32_t* mode_out);
 void rtdl_optix_destroy_prepared_shape_pair_relation_flags(void* prepared);
+void rtdl_optix_destroy_prepared_shape_pair_relation_left_set(void* prepared_left);
 int  rtdl_optix_run_ray_hitcount(
          const RtdlRay2D*    rays,      size_t ray_count,
          const RtdlTriangle* triangles, size_t triangle_count,

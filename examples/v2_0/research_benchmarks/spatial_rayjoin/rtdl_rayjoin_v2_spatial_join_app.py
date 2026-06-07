@@ -1951,13 +1951,20 @@ class RayJoinOptixShapePairActiveCountPackedLeftShapes:
     def __init__(self, left_shapes) -> None:
         phases: dict[str, float] = {}
         from rtdsl.optix_runtime import pack_polygons
+        from rtdsl.optix_runtime import prepare_shape_pair_relation_left_set_optix
 
         self.packed_polygons = _phase_time(
             phases,
             "left_shape_pack_sec",
             lambda: pack_polygons(records=left_shapes),
         )
+        self.prepared_left_set = _phase_time(
+            phases,
+            "prepared_left_set_sec",
+            lambda: prepare_shape_pair_relation_left_set_optix(self.packed_polygons),
+        )
         self.pack_seconds = phases["left_shape_pack_sec"]
+        self.prepared_left_set_seconds = phases["prepared_left_set_sec"]
         self.count = int(self.packed_polygons.polygon_count)
         self.id_capacity = max(
             1,
@@ -1969,6 +1976,24 @@ class RayJoinOptixShapePairActiveCountPackedLeftShapes:
             if int(self.packed_polygons.polygon_count)
             else 1,
         )
+        self._closed = False
+
+    def close(self) -> None:
+        if not self._closed:
+            self.prepared_left_set.close()
+            self._closed = True
+
+    def __enter__(self) -> "RayJoinOptixShapePairActiveCountPackedLeftShapes":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
 
 
 def pack_rayjoin_optix_shape_pair_active_count_left_shapes(
@@ -2025,20 +2050,25 @@ class PreparedRayJoinOptixShapePairActiveCount:
         warmup: int = 0,
     ) -> dict[str, object]:
         packed_left = self.pack_left_shapes(left_shapes)
-        payload = self.run_packed_left(
-            packed_left,
-            dataset_note=dataset_note,
-            query_repeat=query_repeat,
-            warmup=warmup,
-        )
+        try:
+            payload = self.run_packed_left(
+                packed_left,
+                dataset_note=dataset_note,
+                query_repeat=query_repeat,
+                warmup=warmup,
+            )
+        finally:
+            packed_left.close()
         payload["phases_sec"] = {
             "left_shape_pack_sec": packed_left.pack_seconds,
+            "prepared_left_set_sec": packed_left.prepared_left_set_seconds,
             **payload["phases_sec"],
         }
         payload["packed_left_reuse"] = {
             **payload["packed_left_reuse"],
             "enabled": False,
             "left_shape_pack_paid_in_call": True,
+            "native_prepared_left_set_paid_in_call": True,
         }
         return payload
 
@@ -2148,7 +2178,9 @@ class PreparedRayJoinOptixShapePairActiveCount:
                 "prepared_query_sec",
                 query_repeat=query_repeat,
                 warmup=warmup,
-                fn=lambda: self._prepared.count_active_device_continuation(packed_left.packed_polygons),
+                fn=lambda: self._prepared.count_active_device_continuation_prepared_left(
+                    packed_left.prepared_left_set
+                ),
                 stability_value=lambda value: int(value),
             )
         )
@@ -2178,6 +2210,9 @@ class PreparedRayJoinOptixShapePairActiveCount:
                 "enabled": True,
                 "left_shape_count": packed_left.count,
                 "pack_seconds": packed_left.pack_seconds,
+                "native_prepared_left_set_enabled": True,
+                "native_prepared_left_set_seconds": packed_left.prepared_left_set_seconds,
+                "native_prepared_left_set_paid_once": True,
                 "left_shape_pack_paid_in_call": False,
             },
             "repeat_protocol": {
@@ -2187,9 +2222,10 @@ class PreparedRayJoinOptixShapePairActiveCount:
                 "reported_query_metric": "prepared_query_median",
             },
             "device_resident_continuation_status": (
-                "shape_pair_active_count_device_continuation_probe: generic shape-pair relation "
-                "segment flags stay on device, containment and active-count reduction run in a "
-                "generic CUDA continuation, and only the scalar count is copied back"
+                "shape_pair_active_count_prepared_left_device_continuation_probe: generic "
+                "shape-pair relation segment flags stay on device, the left closed-shape "
+                "payload is reused through a prepared-left native handle, containment and "
+                "active-count reduction run in a generic CUDA continuation, and only the scalar count is copied back"
             ),
             "native_engine_boundary": (
                 "The engine sees generic prepared shape-pair relation flags and a generic "
@@ -2427,12 +2463,15 @@ def run_rayjoin_prepared_optix_shape_pair_active_count_workload(
         dataset_note=case.note,
     ) as prepared:
         packed_left = pack_rayjoin_optix_shape_pair_active_count_left_shapes(case.inputs["left"])
-        return prepared.run_packed_left(
-            packed_left,
-            dataset_note=case.note,
-            query_repeat=query_repeat,
-            warmup=warmup,
-        )
+        try:
+            return prepared.run_packed_left(
+                packed_left,
+                dataset_note=case.note,
+                query_repeat=query_repeat,
+                warmup=warmup,
+            )
+        finally:
+            packed_left.close()
 
 
 def run_rayjoin_workload(

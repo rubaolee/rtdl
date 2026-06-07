@@ -241,6 +241,15 @@ OPTIX_RELEASE_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL = (
 OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_prepared_shape_pair_relation_active_device_columns"
 )
+OPTIX_SHAPE_PAIR_RELATION_PREPARE_LEFT_SET_SYMBOL = (
+    "rtdl_optix_prepare_shape_pair_relation_left_set"
+)
+OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_PREPARED_LEFT_SYMBOL = (
+    "rtdl_optix_count_prepared_shape_pair_relation_active_device_prepared_left"
+)
+OPTIX_SHAPE_PAIR_RELATION_DESTROY_LEFT_SET_SYMBOL = (
+    "rtdl_optix_destroy_prepared_shape_pair_relation_left_set"
+)
 OPTIX_RELEASE_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_release_shape_pair_relation_active_device_columns"
 )
@@ -3720,6 +3729,36 @@ def prepare_segment_pair_intersection_optix(right_segments) -> PreparedOptixSegm
 
 
 @dataclass
+class PreparedOptixShapePairRelationLeftSet:
+    library: object
+    prepared_left_handle: ctypes.c_void_p
+    left_count: int = 0
+    _closed: bool = False
+
+    def close(self) -> None:
+        if not self._closed:
+            destroy = _find_optional_backend_symbol(
+                self.library,
+                OPTIX_SHAPE_PAIR_RELATION_DESTROY_LEFT_SET_SYMBOL,
+            )
+            if destroy is not None:
+                destroy(self.prepared_left_handle)
+            self._closed = True
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+@dataclass
 class PreparedOptixShapePairRelation:
     library: object
     prepared_handle: ctypes.c_void_p
@@ -3811,6 +3850,39 @@ class PreparedOptixShapePairRelation:
             left.polygon_count,
             left.vertices_xy,
             left.vertex_xy_count,
+            ctypes.byref(active_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(active_count.value)
+
+    def count_active_device_continuation_prepared_left(
+        self,
+        prepared_left: PreparedOptixShapePairRelationLeftSet,
+    ) -> int:
+        """Return active relation count using a reusable prepared-left shape set."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX shape-pair relation handle is closed")
+        if prepared_left._closed:
+            raise RuntimeError("prepared OptiX shape-pair left-set handle is closed")
+        if prepared_left.library is not self.library:
+            raise ValueError("prepared shape-pair left-set handle must come from the same OptiX library")
+        count_symbol = _find_optional_backend_symbol(
+            self.library,
+            OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_PREPARED_LEFT_SYMBOL,
+        )
+        if count_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_PREPARED_LEFT_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        active_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self.prepared_handle,
+            prepared_left.prepared_left_handle,
             ctypes.byref(active_count),
             error,
             len(error),
@@ -3951,6 +4023,29 @@ def prepare_shape_pair_relation_flags_optix(right_polygons) -> PreparedOptixShap
         library=lib,
         prepared_handle=prepared,
         right_count=int(right.polygon_count),
+    )
+
+
+def prepare_shape_pair_relation_left_set_optix(left_polygons) -> PreparedOptixShapePairRelationLeftSet:
+    lib = _load_optix_library()
+    prepare_symbol = _require_backend_symbol(lib, OPTIX_SHAPE_PAIR_RELATION_PREPARE_LEFT_SET_SYMBOL)
+    left = left_polygons if isinstance(left_polygons, PackedPolygons) else pack_polygons(records=left_polygons)
+    prepared_left = ctypes.c_void_p()
+    error = ctypes.create_string_buffer(4096)
+    status = prepare_symbol(
+        left.refs,
+        left.polygon_count,
+        left.vertices_xy,
+        left.vertex_xy_count,
+        ctypes.byref(prepared_left),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return PreparedOptixShapePairRelationLeftSet(
+        library=lib,
+        prepared_left_handle=prepared_left,
+        left_count=int(left.polygon_count),
     )
 
 
@@ -7963,6 +8058,7 @@ def _get_last_shape_pair_relation_phase_timings_from_library(lib) -> dict[str, f
         2: "active_count",
         3: "active_count_device_continuation",
         4: "active_relation_device_columns",
+        5: "active_count_device_continuation_prepared_left",
     }.get(mode_value, "none")
     return {
         "mode": mode_name,
@@ -21130,6 +21226,21 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_prepare_shape_pair_relation.restype = ctypes.c_int
+    optional_prepare_shape_pair_relation_left_set = _find_optional_backend_symbol(
+        lib,
+        OPTIX_SHAPE_PAIR_RELATION_PREPARE_LEFT_SET_SYMBOL,
+    )
+    if optional_prepare_shape_pair_relation_left_set is not None:
+        optional_prepare_shape_pair_relation_left_set.argtypes = [
+            ctypes.POINTER(_RtdlPolygonRef),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_prepare_shape_pair_relation_left_set.restype = ctypes.c_int
     optional_run_prepared_shape_pair_relation = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_run_prepared_shape_pair_relation_flags",
@@ -21179,6 +21290,19 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_count_prepared_shape_pair_relation_active_device.restype = ctypes.c_int
+    optional_count_prepared_shape_pair_relation_active_device_prepared_left = _find_optional_backend_symbol(
+        lib,
+        OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_PREPARED_LEFT_SYMBOL,
+    )
+    if optional_count_prepared_shape_pair_relation_active_device_prepared_left is not None:
+        optional_count_prepared_shape_pair_relation_active_device_prepared_left.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_count_prepared_shape_pair_relation_active_device_prepared_left.restype = ctypes.c_int
     optional_shape_pair_relation_active_device_columns = _find_optional_backend_symbol(
         lib,
         OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_COLUMNS_SYMBOL,
@@ -21231,6 +21355,13 @@ def _register_argtypes(lib) -> None:
     if optional_destroy_prepared_shape_pair_relation is not None:
         optional_destroy_prepared_shape_pair_relation.argtypes = [ctypes.c_void_p]
         optional_destroy_prepared_shape_pair_relation.restype = None
+    optional_destroy_prepared_shape_pair_relation_left_set = _find_optional_backend_symbol(
+        lib,
+        OPTIX_SHAPE_PAIR_RELATION_DESTROY_LEFT_SET_SYMBOL,
+    )
+    if optional_destroy_prepared_shape_pair_relation_left_set is not None:
+        optional_destroy_prepared_shape_pair_relation_left_set.argtypes = [ctypes.c_void_p]
+        optional_destroy_prepared_shape_pair_relation_left_set.restype = None
 
     _require_backend_symbol(lib, "rtdl_optix_run_ray_hitcount").argtypes = [
         ctypes.POINTER(_RtdlRay2D),      ctypes.c_size_t,
