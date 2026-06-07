@@ -58,6 +58,29 @@ The runner prints one start line and one completion line for every row, so a
 pod run does not go silent while a benchmark command is active. Each row keeps
 its own timeout from the registry.
 
+## A5000 Pod Evidence
+
+Artifact:
+
+`docs/reports/goal3823_current_benchmark_front_door_registry_a5000/summary.json`
+
+Result: all ten registered rows passed on the A5000 pod at commit `456d9c0c`.
+
+| Row | Status | Elapsed seconds |
+| --- | --- | ---: |
+| `hausdorff_xhd_current_optix_threshold` | pass | 1.457 |
+| `spatial_rayjoin_pip_count_current_prepared_optix` | pass | 1.669 |
+| `rt_dbscan_optix_numba_prepared_grid` | pass | 4.859 |
+| `robot_collision_optix_prepared_device_count` | pass | 2.829 |
+| `contact_manifold_optix_native_collect_k` | pass | 0.649 |
+| `raydb_style_optix_count_primitive_first` | pass | 1.391 |
+| `barnes_hut_numba_exact_force` | pass | 1.717 |
+| `librts_spatial_index_optix_aabb_index` | pass | 1.356 |
+| `rtnn_prepared_optix_ranked_summary` | pass | 2.531 |
+| `triangle_counting_optix_native_summary` | pass | 1.526 |
+
+This is command-front-door evidence, not a performance leaderboard.
+
 ## Boundary
 
 Goal3823 does not authorize release action, package-install wording, public
