@@ -44,7 +44,7 @@ class Goal3762BarnesHutTiledNumbaForceProbeTest(unittest.TestCase):
         self.assertTrue(payload["correctness"]["matches_oracle"])
         self.assertLess(payload["correctness"]["max_relative_error"], 1.0e-12)
         self.assertTrue(payload["summary"]["all_force_counts_match"])
-        self.assertEqual(payload["body_counts"], [1024, 2048, 4096, 8192])
+        self.assertEqual(payload["body_counts"], [1024, 2048, 4096, 8192, 16384])
         self.assertFalse(payload["claim_boundary"]["public_speedup_claim_authorized"])
         self.assertFalse(payload["claim_boundary"]["rt_core_speedup_claim_authorized"])
         self.assertFalse(payload["claim_boundary"]["hierarchical_barnes_hut_acceleration_claim_authorized"])

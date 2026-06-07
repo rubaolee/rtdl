@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-V2_9_BENCHMARK_ADEQUACY_VERSION = "rtdl.v2_9.benchmark_adequacy_after_goal3761.v1"
+V2_9_BENCHMARK_ADEQUACY_VERSION = "rtdl.v2_9.benchmark_adequacy_after_goal3762.v1"
 V2_9_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 V2_9_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal3740 records internal benchmark-app adequacy after the Goal3737 "
@@ -238,18 +238,27 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
         app="barnes_hut",
         promoted_reader_view="Barnes-Hut node membership plus grouped force-vector reduction",
         current_performance_reading=(
-            "adequate with boundary: current packet no longer has a silent partial, and Goal3746 adds "
-            "a Numba CUDA JIT exact-force reference that matches the CPU oracle and reaches 0.754x to "
-            "0.893x of the CuPy RawKernel path across 1024-8192 bodies on the A5000"
+            "adequate with boundary: current packet no longer has a silent partial, Goal3746 adds "
+            "the first Numba CUDA JIT exact-force reference, and Goal3762 replaces the serial-style "
+            "Numba force loop with a 512-thread block-per-source reduction. The clean A5000 packet "
+            "matches the CPU oracle and reaches 0.774x minimum / 0.906x geomean versus the CuPy "
+            "RawKernel path across 1024-16384 bodies; mid-scale 4096/8192 rows are near parity, "
+            "but CuPy remains faster overall."
         ),
         adequacy="adequate",
         current_recommended_path="RTDL/OptiX membership primitive plus explicit partner exact-force/vector continuation",
-        current_partner_role="CuPy remains fastest in the measured exact-force route; Numba is the no-RawKernel reference",
+        current_partner_role=(
+            "CuPy remains fastest in the measured exact-force route; Numba is the improved "
+            "no-RawKernel block-reduction reference"
+        ),
         needs_numba_reference=False,
-        numba_reference_reason="Goal3746 adds the Numba CUDA JIT exact-force reference; richer hierarchical force acceleration remains separate future work",
+        numba_reference_reason=(
+            "Goal3746 adds the Numba CUDA JIT exact-force reference; Goal3762 improves it with "
+            "a block-reduction strategy. Richer hierarchical force acceleration remains separate future work."
+        ),
         amd_hiprt_readiness="needs HIPRT membership primitive and grouped vector output contract mapping",
         next_generic_runtime_action="treat as covered for Numba-reference purposes; next major work is HIPRT membership parity or deeper hierarchical vector primitive design",
-        evidence_refs=("Goal2803", "Goal3599", "Goal3567", "Goal3746"),
+        evidence_refs=("Goal2803", "Goal3599", "Goal3567", "Goal3746", "Goal3762"),
         pod_needed_next=False,
     ),
     V29BenchmarkAdequacyRow(
