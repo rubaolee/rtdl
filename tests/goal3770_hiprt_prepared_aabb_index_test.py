@@ -1,5 +1,6 @@
 import pathlib
 import unittest
+import json
 
 import rtdsl as rt
 from rtdsl import hiprt_runtime
@@ -9,6 +10,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 HIPRT_CORE = ROOT / "src" / "native" / "hiprt" / "rtdl_hiprt_core.cpp"
 HIPRT_API = ROOT / "src" / "native" / "hiprt" / "rtdl_hiprt_api.cpp"
 REPORT = ROOT / "docs" / "reports" / "goal3770_hiprt_prepared_aabb_index_2026-06-07.md"
+ARTIFACT = ROOT / "docs" / "reports" / "goal3770_hiprt_prepared_aabb_index_a5000.json"
 
 
 def _native_prepared_aabb_index_available() -> bool:
@@ -69,6 +71,23 @@ class Goal3770HiprtPreparedAabbIndexPortableTest(unittest.TestCase):
         self.assertIn("count-only", report)
         self.assertIn("not AMD hardware evidence", report)
         self.assertIn("does not authorize", report)
+
+    def test_artifact_records_clean_pod_evidence_and_boundaries(self) -> None:
+        artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+        self.assertEqual(artifact["source_commit"], "75d19c76")
+        self.assertFalse(artifact["scoped_source_dirty"])
+        self.assertTrue(artifact["sample"]["direct_matches_cpu"])
+        self.assertTrue(artifact["sample"]["generic_matches_cpu"])
+        self.assertEqual(
+            artifact["sample"]["hiprt_generic_counts"],
+            {"point_contains": 3, "range_contains": 1, "range_intersects": 5},
+        )
+        self.assertEqual(artifact["librts_spatial_index_parity_stage"], "ready_for_amd_functional_pod")
+        self.assertEqual(artifact["librts_spatial_index_missing_generic_contracts"], [])
+        self.assertEqual(artifact["parity_summary"]["stage_counts"]["ready_for_amd_functional_pod"], 4)
+        self.assertIn("not AMD hardware evidence", artifact["backend_route"])
+        for key, value in artifact["claim_boundary"].items():
+            self.assertFalse(value, key)
 
 
 @unittest.skipUnless(_native_prepared_aabb_index_available(), "HIPRT prepared AABB index symbols unavailable")
