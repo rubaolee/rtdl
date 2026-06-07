@@ -1,6 +1,6 @@
 # Goal3788 Hausdorff Generic Alias And Metadata Audit
 
-Status: implemented locally.
+Status: implemented and pod-validated.
 
 ## Purpose
 
@@ -52,4 +52,24 @@ Focused validation:
 
 ```text
 $env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal3788_hausdorff_generic_alias_and_metadata_audit_test tests.goal3143_hausdorff_partner_exact_numba_front_door_test tests.goal3160_hausdorff_generic_max_nearest_front_door_alias_test
+```
+
+Local result:
+
+```text
+Ran 14 tests in 0.039s
+OK (skipped=4)
+```
+
+Pod result:
+
+```text
+Pod: root@69.30.85.203 -p 22057
+Workdir: /root/rtdl_goal3788_clean_1780857956
+Commit: 0d1be8e7
+GPU: NVIDIA RTX A5000
+Numba installed into checkout-local target: .pydeps_goal3788_numba
+Numba CUDA available: True
+Ran 14 tests in 0.920s
+OK
 ```

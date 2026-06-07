@@ -66,7 +66,10 @@ class Goal3788HausdorffGenericAliasAndMetadataAuditTest(unittest.TestCase):
         self.assertNotIn("## Generic Adapter Naming", todo)
         self.assertIn("Goal3788 Hausdorff Generic Alias And Metadata Audit", report)
         for phrase in (
+            "Status: implemented and pod-validated",
             "No runtime code or native code was changed",
+            "NVIDIA RTX A5000",
+            "Numba CUDA available: True",
             "does not authorize release action",
             "automatic partner selection",
             "app-specific native-engine logic",
