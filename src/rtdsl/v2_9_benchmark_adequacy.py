@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-V2_9_BENCHMARK_ADEQUACY_VERSION = "rtdl.v2_9.benchmark_adequacy_after_goal3758.v1"
+V2_9_BENCHMARK_ADEQUACY_VERSION = "rtdl.v2_9.benchmark_adequacy_after_goal3760.v1"
 V2_9_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 V2_9_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal3740 records internal benchmark-app adequacy after the Goal3737 "
@@ -129,17 +129,23 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
         app="spatial_rayjoin",
         promoted_reader_view="RayJoin-style spatial joins with PIP, LSI, and overlay active-count subcontracts",
         current_performance_reading=(
-            "strong but contract-specific: Goal3737 safe-mixed public-CDB composite reaches "
-            "324.324x geomean versus all-CuPy across 1024/2048/4096, with 4096 at 624.255x; "
-            "still not a RayJoin paper-reproduction or RTDL-beats-RayJoin claim"
+            "strong but contract-specific: Goal3737 older safe-mixed public-CDB composite reaches "
+            "324.324x geomean versus all-CuPy across 1024/2048/4096, and Goal3713 shows the "
+            "current native-PIP packet replacing the CuPy PIP leg at 4096 with 268.798x composite "
+            "speedup versus all-CuPy; still not a RayJoin paper-reproduction or RTDL-beats-RayJoin claim"
         ),
         adequacy="strong",
         current_recommended_path=(
-            "mixed explicit route: CuPy dense PIP for the conservative leg, exact RTDL/OptiX "
+            "mixed explicit route with current native-PIP evidence: RTDL/OptiX resident "
+            "relation-status corrected scalar count for PIP where measured, exact RTDL/OptiX "
             "prepared segment-pair count for LSI, and RTDL/OptiX prepared-left shape-pair "
             "active-count executor for overlay active count"
         ),
-        current_partner_role="CuPy remains in the conservative PIP leg; RTDL/OptiX owns the high-gain LSI and overlay legs",
+        current_partner_role=(
+            "CuPy remains the dense CUDA-core baseline/opponent and appears in older cross-size "
+            "safe-mixed packets; the current Goal3713 native-PIP packet does not require CuPy for "
+            "the PIP scalar-count leg. Goal3749 covers no-RawKernel Numba topology continuation."
+        ),
         needs_numba_reference=False,
         numba_reference_reason=(
             "Goal3749 adds a no-RawKernel Numba side-aware topology reference; measured A5000 same-contract "
@@ -148,9 +154,9 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
         amd_hiprt_readiness="needs HIPRT equivalents for segment-pair exact count and shape-pair active-count executor",
         next_generic_runtime_action=(
             "treat as covered for Numba-reference purposes; next major work is HIPRT segment-pair/"
-            "shape-pair parity and larger whole-RayJoin app packet refresh"
+            "shape-pair parity and larger native-PIP whole-RayJoin app packet refresh"
         ),
-        evidence_refs=("Goal3733", "Goal3734", "Goal3737", "Goal3749"),
+        evidence_refs=("Goal3688", "Goal3713", "Goal3733", "Goal3734", "Goal3737", "Goal3749"),
         pod_needed_next=False,
     ),
     V29BenchmarkAdequacyRow(

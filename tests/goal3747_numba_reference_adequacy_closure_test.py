@@ -16,7 +16,7 @@ REPORT = ROOT / "docs/reports/goal3750_numba_reference_adequacy_closure_after_go
 
 class Goal3747NumbaReferenceAdequacyClosureTest(unittest.TestCase):
     def test_version_records_goal3749_refresh(self) -> None:
-        self.assertEqual(V2_9_BENCHMARK_ADEQUACY_VERSION, "rtdl.v2_9.benchmark_adequacy_after_goal3758.v1")
+        self.assertEqual(V2_9_BENCHMARK_ADEQUACY_VERSION, "rtdl.v2_9.benchmark_adequacy_after_goal3760.v1")
 
     def test_no_promoted_benchmark_app_still_needs_numba_reference(self) -> None:
         summary = summarize_v2_9_benchmark_adequacy()

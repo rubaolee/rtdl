@@ -18,7 +18,7 @@ REPORT = ROOT / "docs" / "reports" / "goal3759_current_benchmark_adequacy_after_
 
 class Goal3759CurrentBenchmarkAdequacyAfterRtDbscanNumbaRepeatTest(unittest.TestCase):
     def test_current_matrix_version_and_counts_match_goal3758_refresh(self) -> None:
-        self.assertEqual(V2_9_BENCHMARK_ADEQUACY_VERSION, "rtdl.v2_9.benchmark_adequacy_after_goal3758.v1")
+        self.assertEqual(V2_9_BENCHMARK_ADEQUACY_VERSION, "rtdl.v2_9.benchmark_adequacy_after_goal3760.v1")
         validation = validate_v2_9_benchmark_adequacy()
         self.assertEqual(validation["status"], "accept")
         self.assertEqual(validation["errors"], ())
