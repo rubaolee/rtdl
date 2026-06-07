@@ -1,0 +1,122 @@
+[
+  {
+    "left_id": 5894,
+    "right_id": 30047,
+    "intersection_point_x": -70.99161275859906,
+    "intersection_point_y": -9.806846415726353
+  },
+  {
+    "left_id": 5896,
+    "right_id": 30047,
+    "intersection_point_x": -71.01219922143049,
+    "intersection_point_y": -9.815834871328807
+  },
+  {
+    "left_id": 5901,
+    "right_id": 30048,
+    "intersection_point_x": -71.05553396171763,
+    "intersection_point_y": -9.821049934384881
+  },
+  {
+    "left_id": 5903,
+    "right_id": 29976,
+    "intersection_point_x": -70.59984055426463,
+    "intersection_point_y": -10.04752799435128
+  },
+  {
+    "left_id": 5632,
+    "right_id": 53968,
+    "intersection_point_x": -73.66436673528526,
+    "intersection_point_y": -7.738119639927859
+  },
+  {
+    "left_id": 7397,
+    "right_id": 72886,
+    "intersection_point_x": -72.07612475427459,
+    "intersection_point_y": -9.25362421619036
+  },
+  {
+    "left_id": 7404,
+    "right_id": 51448,
+    "intersection_point_x": -72.31707558296166,
+    "intersection_point_y": -9.505344140782187
+  },
+  {
+    "left_id": 6502,
+    "right_id": 55263,
+    "intersection_point_x": -72.21401349486243,
+    "intersection_point_y": -8.700842997559302
+  },
+  {
+    "left_id": 937,
+    "right_id": 80847,
+    "intersection_point_x": -62.33035250451223,
+    "intersection_point_y": -8.940124395106444
+  },
+  {
+    "left_id": 940,
+    "right_id": 80848,
+    "intersection_point_x": -62.331201725986354,
+    "intersection_point_y": -8.978421609211997
+  },
+  {
+    "left_id": 7297,
+    "right_id": 98327,
+    "intersection_point_x": -70.0290504678933,
+    "intersection_point_y": -10.976266709618171
+  },
+  {
+    "left_id": 7298,
+    "right_id": 98327,
+    "intersection_point_x": -70.02720260148097,
+    "intersection_point_y": -10.974973833800673
+  },
+  {
+    "left_id": 7299,
+    "right_id": 98327,
+    "intersection_point_x": -70.01836594442216,
+    "intersection_point_y": -10.968791189783419
+  },
+  {
+    "left_id": 7304,
+    "right_id": 98328,
+    "intersection_point_x": -69.99593032034545,
+    "intersection_point_y": -10.956937061739664
+  },
+  {
+    "left_id": 7322,
+    "right_id": 98329,
+    "intersection_point_x": -69.86006083726726,
+    "intersection_point_y": -10.930403911850059
+  },
+  {
+    "left_id": 7323,
+    "right_id": 98329,
+    "intersection_point_x": -69.85585543529488,
+    "intersection_point_y": -10.930495732853823
+  },
+  {
+    "left_id": 7326,
+    "right_id": 98329,
+    "intersection_point_x": -69.83315829000405,
+    "intersection_point_y": -10.930991303711702
+  },
+  {
+    "left_id": 7328,
+    "right_id": 98329,
+    "intersection_point_x": -69.8195618781843,
+    "intersection_point_y": -10.931288168598595
+  },
+  {
+    "left_id": 8836,
+    "right_id": 76562,
+    "intersection_point_x": -67.28327527794171,
+    "intersection_point_y": -9.41315689828363
+  },
+  {
+    "left_id": 8837,
+    "right_id": 76562,
+    "intersection_point_x": -67.27953958553906,
+    "intersection_point_y": -9.397358970171178
+  }
+]

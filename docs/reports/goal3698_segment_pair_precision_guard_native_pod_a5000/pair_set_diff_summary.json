@@ -1,0 +1,30 @@
+{
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "extra_count": 0,
+  "extra_head": [],
+  "missing_count": 0,
+  "missing_head": [],
+  "normalization": "rtdl_left_id_minus_1_and_rtdl_right_id_minus_1",
+  "rayjoin_count": 20860,
+  "rtdl_commit": "e8e700ae3f189fd6371aeb8a267ee80b61af7f67",
+  "rtdl_commit_short": "e8e700ae",
+  "rtdl_count": 20860,
+  "rtdl_payload_row_count": 20860,
+  "rtdl_phases_sec": {
+    "prepare_static_scene_sec": 0.727009835653007,
+    "prepared_query_sec": 0.04242270719259977,
+    "prepared_query_sec_repeat": 1,
+    "prepared_query_sec_total_sec": 0.04242270719259977,
+    "prepared_query_sec_warmup": 0,
+    "query_pack_sec": 0.00831589475274086,
+    "static_segment_pack_sec": 0.005543629638850689
+  },
+  "schema": "rtdl.goal3698.segment_pair_precision_guard_native_pair_parity.v1"
+}
