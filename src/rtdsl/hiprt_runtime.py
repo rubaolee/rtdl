@@ -3117,6 +3117,40 @@ class PreparedHiprtGraphCSR:
         finally:
             _hiprt_lib().rtdl_hiprt_free_rows(rows_ptr)
 
+    def triangle_cycle_count(
+        self,
+        seeds: tuple[_CanonicalEdgeSeed, ...],
+        *,
+        order: str = "id_ascending",
+    ) -> int:
+        if order != "id_ascending":
+            raise ValueError("Prepared HIPRT triangle_cycle_count currently supports only order='id_ascending'")
+        if self._empty:
+            return 0
+        if not self._handle:
+            raise RuntimeError("prepared HIPRT graph CSR handle is closed")
+
+        seed_array, seed_count = _canonical_unique_edge_seed_array(
+            tuple(seeds),
+            vertex_count=2**32 - 1,
+            label="Prepared HIPRT triangle_cycle_count",
+        )
+        count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = _hiprt_lib().rtdl_hiprt_count_prepared_triangle_cycle_candidates(
+            self._handle,
+            seed_array,
+            seed_count,
+            1,
+            ctypes.byref(count),
+            error,
+            ctypes.sizeof(error),
+        )
+        if status != 0:
+            detail = error.value.decode("utf-8", errors="replace")
+            raise RuntimeError(f"rtdl_hiprt_count_prepared_triangle_cycle_candidates failed with status {status}: {detail}")
+        return int(count.value)
+
 
 def prepare_hiprt_graph_csr(graph: _CanonicalCSRGraph) -> PreparedHiprtGraphCSR:
     if not isinstance(graph, _CanonicalCSRGraph):
@@ -3674,40 +3708,6 @@ class PreparedHiprtRayTriangleAnyHit2D:
             )
         finally:
             _hiprt_lib().rtdl_hiprt_free_rows(rows_ptr)
-
-    def triangle_cycle_count(
-        self,
-        seeds: tuple[_CanonicalEdgeSeed, ...],
-        *,
-        order: str = "id_ascending",
-    ) -> int:
-        if order != "id_ascending":
-            raise ValueError("Prepared HIPRT triangle_cycle_count currently supports only order='id_ascending'")
-        if self._empty:
-            return 0
-        if not self._handle:
-            raise RuntimeError("prepared HIPRT graph CSR handle is closed")
-
-        seed_array, seed_count = _canonical_unique_edge_seed_array(
-            tuple(seeds),
-            vertex_count=2**32 - 1,
-            label="Prepared HIPRT triangle_cycle_count",
-        )
-        count = ctypes.c_size_t()
-        error = ctypes.create_string_buffer(4096)
-        status = _hiprt_lib().rtdl_hiprt_count_prepared_triangle_cycle_candidates(
-            self._handle,
-            seed_array,
-            seed_count,
-            1,
-            ctypes.byref(count),
-            error,
-            ctypes.sizeof(error),
-        )
-        if status != 0:
-            detail = error.value.decode("utf-8", errors="replace")
-            raise RuntimeError(f"rtdl_hiprt_count_prepared_triangle_cycle_candidates failed with status {status}: {detail}")
-        return int(count.value)
 
     def group_flags_packed(self, rays: HiprtRay2DBuffer, group_indices, *, group_count: int) -> tuple[bool, ...]:
         if self._closed:
