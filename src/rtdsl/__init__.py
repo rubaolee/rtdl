@@ -340,6 +340,11 @@ from .v2_9_benchmark_adequacy import current_benchmark_adequacy
 from .v2_9_benchmark_adequacy import current_benchmark_adequacy_rows
 from .v2_9_benchmark_adequacy import summarize_current_benchmark_adequacy
 from .v2_9_benchmark_adequacy import validate_current_benchmark_adequacy
+from .current_benchmark_front_doors import CURRENT_BENCHMARK_FRONT_DOOR_STATUS
+from .current_benchmark_front_doors import CURRENT_BENCHMARK_FRONT_DOOR_VERSION
+from .current_benchmark_front_doors import current_benchmark_front_doors
+from .current_benchmark_front_doors import summarize_current_benchmark_front_doors
+from .current_benchmark_front_doors import validate_current_benchmark_front_doors
 from .v2_8_segmented_typed_stream_adapter import V28SegmentedTypedStreamAdapterResult
 from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_CLAIM_BOUNDARY
 from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_MATERIALIZATION
@@ -2155,6 +2160,11 @@ __all__ = [
     "current_benchmark_adequacy_rows",
     "summarize_current_benchmark_adequacy",
     "validate_current_benchmark_adequacy",
+    "CURRENT_BENCHMARK_FRONT_DOOR_STATUS",
+    "CURRENT_BENCHMARK_FRONT_DOOR_VERSION",
+    "current_benchmark_front_doors",
+    "summarize_current_benchmark_front_doors",
+    "validate_current_benchmark_front_doors",
     "V28SegmentedTypedStreamAdapterResult",
     "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_CLAIM_BOUNDARY",
     "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_MATERIALIZATION",
