@@ -18,6 +18,8 @@ class Goal3691RayJoinOriginalSameSourceProbeTest(unittest.TestCase):
         self.assertIn("br_soil_ascii_odyssey_final.txt", source)
         self.assertIn("pip_query_speedup_rtdl_vs_rayjoin", source)
         self.assertIn("lsi_query_speedup_rtdl_vs_rayjoin", source)
+        self.assertIn("goal3691_scoped_source_dirty", source)
+        self.assertIn("SCOPED_SOURCE_PATHS", source)
 
     def test_probe_preserves_claim_boundaries_and_contract_caveats(self) -> None:
         source = SCRIPT.read_text(encoding="utf-8")

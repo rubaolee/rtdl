@@ -25,6 +25,16 @@ SCHEMA = "rtdl.goal3691.rayjoin_original_same_source_probe.v1"
 DEFAULT_OUTPUT = ROOT / "docs" / "reports" / "goal3691_rayjoin_original_same_source_probe_a5000" / "summary.json"
 TIME_LINE_RE = re.compile(r"^\s*-\s*([^:]+):\s*([0-9.]+)\s*ms\s*$")
 INTERSECTIONS_RE = re.compile(r"Intersections:\s*([0-9]+)")
+SCOPED_SOURCE_PATHS = (
+    "scripts/goal3691_rayjoin_original_same_source_probe.py",
+    "tests/goal3691_rayjoin_original_same_source_probe_test.py",
+    "scripts/goal3688_rayjoin_native_pip_safe_mixed_composite.py",
+    "scripts/goal3612_rayjoin_safe_mixed_route_composite.py",
+    "src/native/optix/rtdl_optix_api.cpp",
+    "src/native/optix/rtdl_optix_prelude.h",
+    "src/native/optix/rtdl_optix_workloads.cpp",
+    "src/rtdsl/optix_runtime.py",
+)
 
 
 def _command_output(args: list[str], *, cwd: Path = ROOT) -> str:
@@ -256,6 +266,13 @@ def run_probe(args: argparse.Namespace) -> dict[str, Any]:
         "rtdl_git_commit": _command_output(["git", "rev-parse", "HEAD"]),
         "rtdl_source_commit_short": _command_output(["git", "rev-parse", "--short", "HEAD"]),
         "rtdl_git_status_short": _command_output(["git", "status", "--short"]),
+        "goal3691_scoped_source_paths": list(SCOPED_SOURCE_PATHS),
+        "goal3691_scoped_source_status_short": _command_output(
+            ["git", "status", "--short", "--", *SCOPED_SOURCE_PATHS]
+        ),
+        "goal3691_scoped_source_dirty": bool(
+            _command_output(["git", "status", "--short", "--", *SCOPED_SOURCE_PATHS])
+        ),
         "rayjoin_git_commit": _command_output(["git", "rev-parse", "HEAD"], cwd=args.rayjoin_root),
         "rayjoin_source_commit_short": _command_output(["git", "rev-parse", "--short", "HEAD"], cwd=args.rayjoin_root),
         "rayjoin_git_status_short": _command_output(["git", "status", "--short"], cwd=args.rayjoin_root),
