@@ -69,19 +69,22 @@ class Goal3773HiprtPointGroupNearestWitnessPortableTest(unittest.TestCase):
         self.assertEqual(rt.engine_feature_support("point_group_nearest_witness_2d", "hiprt").status, NATIVE)
         self.assertEqual(rt.engine_feature_support("point_group_nearest_max_distance_2d", "hiprt").status, NATIVE)
 
-    def test_parity_matrix_closes_grouped_max_but_not_device_columns(self) -> None:
+    def test_parity_matrix_keeps_goal3773_contracts_current_after_device_columns(self) -> None:
         rows = {row["app"]: row for row in v2_10_amd_hiprt_benchmark_parity()}
         hausdorff = rows["hausdorff_xhd"]
         self.assertIn("point_group_nearest_witness_2d", hausdorff["required_engine_features"])
+        self.assertIn("point_group_nearest_witness_output_columns_2d", hausdorff["required_engine_features"])
         self.assertIn("point_group_nearest_max_distance_2d", hausdorff["required_engine_features"])
         self.assertEqual(hausdorff["hiprt_feature_statuses"]["point_group_nearest_witness_2d"], NATIVE)
+        self.assertEqual(hausdorff["hiprt_feature_statuses"]["point_group_nearest_witness_output_columns_2d"], NATIVE)
         self.assertEqual(hausdorff["hiprt_feature_statuses"]["point_group_nearest_max_distance_2d"], NATIVE)
         self.assertNotIn("grouped_max_distance_reduction", hausdorff["missing_generic_contracts"])
-        self.assertEqual(hausdorff["missing_generic_contracts"], ("nearest_witness_output_columns",))
-        self.assertEqual(hausdorff["parity_stage"], "needs_generic_hiprt_extension")
+        self.assertNotIn("nearest_witness_output_columns", hausdorff["missing_generic_contracts"])
+        self.assertEqual(hausdorff["missing_generic_contracts"], ())
+        self.assertEqual(hausdorff["parity_stage"], "ready_for_amd_functional_pod")
         summary = summarize_v2_10_amd_hiprt_benchmark_parity()
-        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 5)
-        self.assertIn("hausdorff_xhd", summary["needs_generic_hiprt_extension_apps"])
+        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 6)
+        self.assertIn("hausdorff_xhd", summary["ready_for_amd_functional_pod_apps"])
 
     def test_report_records_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")

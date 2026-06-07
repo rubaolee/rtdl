@@ -87,6 +87,13 @@ _FEATURE_MATRIX: dict[str, dict[str, EngineFeatureSupport]] = {
         "hiprt": _support("point_group_nearest_witness_2d", "hiprt", NATIVE, "Goal3773 prepared HIPRT point-group nearest witness rows."),
         "apple_rt": _support("point_group_nearest_witness_2d", "apple_rt", COMPATIBILITY_FALLBACK, "No prepared generic point-group nearest witness export."),
     },
+    "point_group_nearest_witness_output_columns_2d": {
+        "embree": _support("point_group_nearest_witness_output_columns_2d", "embree", COMPATIBILITY_FALLBACK, "No prepared generic point-group nearest witness device-column export."),
+        "optix": _support("point_group_nearest_witness_output_columns_2d", "optix", NATIVE, "Prepared OptiX point-group nearest witness output columns."),
+        "vulkan": _support("point_group_nearest_witness_output_columns_2d", "vulkan", COMPATIBILITY_FALLBACK, "No prepared generic point-group nearest witness device-column export."),
+        "hiprt": _support("point_group_nearest_witness_output_columns_2d", "hiprt", NATIVE, "Goal3774 prepared HIPRT point-group nearest witness output columns."),
+        "apple_rt": _support("point_group_nearest_witness_output_columns_2d", "apple_rt", COMPATIBILITY_FALLBACK, "No prepared generic point-group nearest witness device-column export."),
+    },
     "point_group_nearest_max_distance_2d": {
         "embree": _support("point_group_nearest_max_distance_2d", "embree", COMPATIBILITY_FALLBACK, "Embree has a legacy max-distance nearest-candidate helper but no generic point-group reduction contract."),
         "optix": _support("point_group_nearest_max_distance_2d", "optix", NATIVE, "Prepared OptiX point-group nearest max-distance reduction."),

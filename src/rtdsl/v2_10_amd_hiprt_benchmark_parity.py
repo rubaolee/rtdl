@@ -10,7 +10,7 @@ from .engine_feature_matrix import engine_feature_support
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION = "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3773.v1"
+V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION = "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3774.v1"
 V2_10_AMD_HIPRT_BENCHMARK_PARITY_STATUS = "planning_gate_not_amd_hardware_evidence"
 
 PARITY_STAGES = (
@@ -106,15 +106,17 @@ V2_10_AMD_HIPRT_BENCHMARK_PARITY_ROWS: tuple[V210AmdHiprtBenchmarkParityRow, ...
             "point_nearest_segment_2d",
             "knn_rows_2d",
             "point_group_nearest_witness_2d",
+            "point_group_nearest_witness_output_columns_2d",
             "point_group_nearest_max_distance_2d",
         ),
-        missing_generic_contracts=("nearest_witness_output_columns",),
-        parity_stage="needs_generic_hiprt_extension",
-        first_amd_goal="HIPRT nearest-witness device columns parity",
+        missing_generic_contracts=(),
+        parity_stage="ready_for_amd_functional_pod",
+        first_amd_goal="Hausdorff/X-HD HIPRT functional parity on AMD hardware",
         rationale=(
             "HIPRT has nearest/knn primitives, and Goal3773 adds generic prepared point-group nearest witness rows "
-            "plus max-distance reduction on the NVIDIA CUDA/Orochi route. The benchmark still needs the "
-            "device-column output contract before AMD functional pod readiness can be claimed."
+            "plus max-distance reduction on the NVIDIA CUDA/Orochi route. Goal3774 adds the generic nearest-witness "
+            "output-column contract on the same route, so the lane is ready for AMD functional pod validation but "
+            "has no AMD hardware evidence yet."
         ),
         needs_amd_pod=True,
     ),

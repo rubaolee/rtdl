@@ -34,31 +34,34 @@ class Goal3753AmdHiprtBenchmarkParityPlanTest(unittest.TestCase):
     def test_summary_is_honest_about_amd_extension_work(self) -> None:
         self.assertEqual(
             V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION,
-            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3773.v1",
+            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3774.v1",
         )
         summary = summarize_v2_10_amd_hiprt_benchmark_parity()
         self.assertEqual(summary["app_count"], 10)
-        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 5)
+        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 6)
         self.assertEqual(summary["stage_counts"]["compatibility_only_not_amd_perf_ready"], 2)
-        self.assertEqual(summary["stage_counts"]["needs_generic_hiprt_extension"], 3)
+        self.assertEqual(summary["stage_counts"]["needs_generic_hiprt_extension"], 2)
         self.assertEqual(
             summary["ready_for_amd_functional_pod_apps"],
-            ("spatial_rayjoin", "rt_dbscan", "robot_collision", "librts_spatial_index", "rtnn"),
+            ("hausdorff_xhd", "spatial_rayjoin", "rt_dbscan", "robot_collision", "librts_spatial_index", "rtnn"),
         )
         self.assertIn("raydb_style", summary["compatibility_only_not_amd_perf_ready_apps"])
         self.assertFalse(summary["release_authorized"])
         self.assertFalse(summary["amd_perf_claim_authorized"])
 
-    def test_hausdorff_records_goal3773_partial_contract_closure(self) -> None:
+    def test_hausdorff_records_goal3774_device_column_contract_closure(self) -> None:
         rows = {row["app"]: row for row in v2_10_amd_hiprt_benchmark_parity()}
         hausdorff = rows["hausdorff_xhd"]
         self.assertIn("point_group_nearest_witness_2d", hausdorff["required_engine_features"])
+        self.assertIn("point_group_nearest_witness_output_columns_2d", hausdorff["required_engine_features"])
         self.assertIn("point_group_nearest_max_distance_2d", hausdorff["required_engine_features"])
         self.assertEqual(hausdorff["hiprt_feature_statuses"]["point_group_nearest_witness_2d"], NATIVE)
+        self.assertEqual(hausdorff["hiprt_feature_statuses"]["point_group_nearest_witness_output_columns_2d"], NATIVE)
         self.assertEqual(hausdorff["hiprt_feature_statuses"]["point_group_nearest_max_distance_2d"], NATIVE)
         self.assertNotIn("grouped_max_distance_reduction", hausdorff["missing_generic_contracts"])
-        self.assertEqual(hausdorff["missing_generic_contracts"], ("nearest_witness_output_columns",))
-        self.assertEqual(hausdorff["parity_stage"], "needs_generic_hiprt_extension")
+        self.assertNotIn("nearest_witness_output_columns", hausdorff["missing_generic_contracts"])
+        self.assertEqual(hausdorff["missing_generic_contracts"], ())
+        self.assertEqual(hausdorff["parity_stage"], "ready_for_amd_functional_pod")
 
     def test_spatial_rayjoin_records_goal3766_and_goal3767_contract_closure(self) -> None:
         rows = {row["app"]: row for row in v2_10_amd_hiprt_benchmark_parity()}

@@ -15,8 +15,10 @@ import functools
 import math
 import os
 import platform
+import time
 from pathlib import Path
 
+from . import partner as _partner
 from .db_reference import PredicateClause
 from .db_reference import normalize_grouped_query
 from .db_reference import normalize_predicate_bundle
@@ -46,6 +48,8 @@ from .runtime import _normalize_records
 from .runtime import _project_rows
 from .runtime import _resolve_kernel
 from .runtime import _validate_kernel_for_cpu
+from .point_nearest_witness_typed_stream import make_v2_8_point_group_nearest_witness_typed_producer_metadata
+from .point_nearest_witness_typed_stream import make_v2_8_point_group_nearest_witness_typed_stream_contract
 
 _HIPRT_PEER_PREDICATES = {
     "segment_intersection",
@@ -108,6 +112,9 @@ HIPRT_AABB_INDEX_POINT_CONTAINS = 1
 HIPRT_AABB_INDEX_RANGE_CONTAINS = 2
 HIPRT_AABB_INDEX_RANGE_INTERSECTS = 3
 HIPRT_AABB_INDEX_SUPPORTED_OPERATIONS = ("point_contains", "range_contains", "range_intersects")
+_HIPRT_PREPARED_POINT_GROUP_NEAREST_WITNESS_2D_DEVICE_COLUMNS_SYMBOL = (
+    "rtdl_hiprt_write_prepared_point_group_nearest_witness_2d_device_columns"
+)
 _HIPRT_AABB_INDEX_OPERATION_CODES = {
     "point_contains": HIPRT_AABB_INDEX_POINT_CONTAINS,
     "range_contains": HIPRT_AABB_INDEX_RANGE_CONTAINS,
@@ -668,6 +675,19 @@ def _hiprt_lib() -> ctypes.CDLL:
             ctypes.c_size_t,
         ]
         lib.rtdl_hiprt_run_prepared_point_group_nearest_witness_2d.restype = ctypes.c_int
+    if hasattr(lib, _HIPRT_PREPARED_POINT_GROUP_NEAREST_WITNESS_2D_DEVICE_COLUMNS_SYMBOL):
+        getattr(lib, _HIPRT_PREPARED_POINT_GROUP_NEAREST_WITNESS_2D_DEVICE_COLUMNS_SYMBOL).argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint),
+            ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        getattr(lib, _HIPRT_PREPARED_POINT_GROUP_NEAREST_WITNESS_2D_DEVICE_COLUMNS_SYMBOL).restype = ctypes.c_int
     if hasattr(lib, "rtdl_hiprt_reduce_prepared_point_group_nearest_max_distance_2d"):
         lib.rtdl_hiprt_reduce_prepared_point_group_nearest_max_distance_2d.argtypes = [
             ctypes.c_void_p,
@@ -3395,6 +3415,50 @@ def prepare_hiprt_fixed_radius_neighbors_3d(
     return PreparedHiprtFixedRadiusNeighbors3D(handle, max_radius=float(radius))
 
 
+def _hiprt_partner_dtype_token(dtype) -> str:
+    token = str(dtype).lower()
+    if "." in token:
+        token = token.rsplit(".", 1)[-1]
+    return token
+
+
+def _hiprt_partner_dtype_itemsize(dtype_token: str) -> int:
+    if dtype_token in {"uint32", "int32", "float32", "float"}:
+        return 4
+    if dtype_token in {"int64", "uint64", "float64", "double"}:
+        return 8
+    raise ValueError(f"unsupported HIPRT partner dtype for stride validation: {dtype_token!r}")
+
+
+def _hiprt_partner_contiguous_column_strides(strides, *, itemsize: int) -> bool:
+    return strides in (None, (1,), (itemsize,))
+
+
+def _require_hiprt_partner_device_vector_output_layout(
+    handoff,
+    *,
+    row_count: int,
+    expected_device: tuple[str, int],
+    dtype_tokens: set[str],
+    label: str,
+) -> None:
+    dtype = _hiprt_partner_dtype_token(handoff.dtype)
+    if dtype not in dtype_tokens:
+        allowed = ", ".join(sorted(dtype_tokens))
+        raise ValueError(f"HIPRT partner device {label} output buffer must use dtype {allowed}")
+    if tuple(handoff.shape) != (row_count,):
+        raise ValueError(f"HIPRT partner device {label} output buffer must have shape (row_count,)")
+    if not _hiprt_partner_contiguous_column_strides(
+        handoff.strides,
+        itemsize=_hiprt_partner_dtype_itemsize(dtype),
+    ):
+        raise ValueError(f"HIPRT partner device {label} output buffer must be contiguous")
+    if (handoff.device_type, handoff.device_id) != expected_device:
+        raise ValueError(
+            f"HIPRT partner device {label} output buffer must live on the same CUDA device as the other output columns"
+        )
+
+
 def _hiprt_prepared_point_group_nearest_symbols_available() -> bool:
     try:
         lib = _hiprt_lib()
@@ -3409,10 +3473,20 @@ def _hiprt_prepared_point_group_nearest_symbols_available() -> bool:
 
 
 class PreparedHiprtPointGroupNearestWitness2D:
-    def __init__(self, handle: ctypes.c_void_p, *, empty: bool = False, max_radius: float | None = None) -> None:
+    def __init__(
+        self,
+        handle: ctypes.c_void_p,
+        *,
+        empty: bool = False,
+        max_radius: float | None = None,
+        search_count: int = 0,
+        group_count: int = 0,
+    ) -> None:
         self._handle = handle
         self._empty = empty
         self._max_radius = max_radius
+        self._search_count = int(search_count)
+        self._group_count = int(group_count)
 
     def close(self) -> None:
         if self._handle:
@@ -3496,6 +3570,160 @@ class PreparedHiprtPointGroupNearestWitness2D:
         finally:
             _hiprt_lib().rtdl_hiprt_free_rows(rows_ptr)
 
+    def write_device_nearest_witness_columns(
+        self,
+        query_points,
+        *,
+        radius: float,
+        query_ids_out,
+        neighbor_ids_out,
+        distances_out,
+    ) -> dict[str, object]:
+        requested = self._validate_radius(radius)
+        query_records = tuple(_normalize_hiprt_point2d(point, index) for index, point in enumerate(query_points))
+        row_count = len(query_records)
+        outputs = {}
+        expected_device = None
+        for name, value, dtype_tokens in (
+            ("query_ids", query_ids_out, {"uint32"}),
+            ("neighbor_ids", neighbor_ids_out, {"uint32"}),
+            ("distances", distances_out, {"float64", "double"}),
+        ):
+            handoff = _partner.prepare_direct_device_pointer_handoff(value, access="write")
+            if expected_device is None:
+                expected_device = (handoff.device_type, handoff.device_id)
+            _require_hiprt_partner_device_vector_output_layout(
+                handoff,
+                row_count=row_count,
+                expected_device=expected_device,
+                dtype_tokens=dtype_tokens,
+                label=name,
+            )
+            outputs[name] = handoff
+
+        source_protocols = tuple(sorted({handoff.source_protocol for handoff in outputs.values()}))
+        source_devices = tuple(
+            sorted({f"{handoff.device_type}:{handoff.device_id}" for handoff in outputs.values()})
+        )
+        device_type, device_id = expected_device if expected_device is not None else ("cuda", 0)
+        typed_stream = make_v2_8_point_group_nearest_witness_typed_stream_contract(
+            row_count,
+            stream_id="hiprt_point_group_nearest_witness_2d_device_columns",
+            device_type=str(device_type),
+            device_id=int(device_id),
+            source_protocol=(
+                source_protocols[0]
+                if len(source_protocols) == 1
+                else "mixed_partner_owned_cuda_output_columns"
+            ),
+            data_ptrs={
+                "query_id": outputs["query_ids"].data_ptr,
+                "neighbor_id": outputs["neighbor_ids"].data_ptr,
+                "distance": outputs["distances"].data_ptr,
+            },
+        ).to_metadata()
+
+        if row_count == 0 or self._empty:
+            producer_metadata = make_v2_8_point_group_nearest_witness_typed_producer_metadata(
+                typed_stream,
+                backend="hiprt",
+                native_symbol=_HIPRT_PREPARED_POINT_GROUP_NEAREST_WITNESS_2D_DEVICE_COLUMNS_SYMBOL,
+                native_execution_path="empty_shortcut_no_native_launch",
+                query_count=row_count,
+                search_count=self._search_count,
+                group_count=self._group_count,
+                radius=requested,
+                transfer_mode="host_query_points_to_device_witness_columns_empty_shortcut",
+                source_protocols=source_protocols,
+                source_devices=source_devices,
+            )
+            return {
+                "metadata": {
+                    "backend": "hiprt",
+                    "native_symbol": _HIPRT_PREPARED_POINT_GROUP_NEAREST_WITNESS_2D_DEVICE_COLUMNS_SYMBOL,
+                    "native_engine_row_contract": "generic_point_group_nearest_witness_2d_device_columns",
+                    "native_execution_path": "empty_shortcut_no_native_launch",
+                    "query_count": row_count,
+                    "radius": requested,
+                    "transfer_mode": "host_query_points_to_device_witness_columns_empty_shortcut",
+                    "rt_core_accelerated": True,
+                    "materializes_neighbor_rows": False,
+                    "direct_device_handoff_authorized": True,
+                    "output_columns_true_zero_copy_authorized": True,
+                    "true_zero_copy_authorized": False,
+                    "rt_core_speedup_claim_authorized": False,
+                    "v2_10_release_authorized": False,
+                    "typed_result_stream": typed_stream,
+                    "v2_8_typed_producer_metadata": producer_metadata,
+                }
+            }
+        if not self._handle:
+            raise RuntimeError("prepared HIPRT point_group_nearest handle is closed")
+        symbol = getattr(_hiprt_lib(), _HIPRT_PREPARED_POINT_GROUP_NEAREST_WITNESS_2D_DEVICE_COLUMNS_SYMBOL, None)
+        if symbol is None:
+            raise RuntimeError(
+                "Loaded HIPRT backend library does not export "
+                f"{_HIPRT_PREPARED_POINT_GROUP_NEAREST_WITNESS_2D_DEVICE_COLUMNS_SYMBOL}. "
+                "Rebuild it with 'make build-hiprt' from current main."
+            )
+        query_array = _encode_point2d_array(query_records)
+        error = ctypes.create_string_buffer(4096)
+        start = time.perf_counter()
+        status = symbol(
+            self._handle,
+            query_array,
+            row_count,
+            requested,
+            ctypes.c_void_p(outputs["query_ids"].data_ptr),
+            ctypes.c_void_p(outputs["neighbor_ids"].data_ptr),
+            ctypes.c_void_p(outputs["distances"].data_ptr),
+            error,
+            ctypes.sizeof(error),
+        )
+        elapsed = time.perf_counter() - start
+        if status != 0:
+            detail = error.value.decode("utf-8", errors="replace")
+            raise RuntimeError(
+                f"{_HIPRT_PREPARED_POINT_GROUP_NEAREST_WITNESS_2D_DEVICE_COLUMNS_SYMBOL} "
+                f"failed with status {status}: {detail}"
+            )
+        producer_metadata = make_v2_8_point_group_nearest_witness_typed_producer_metadata(
+            typed_stream,
+            backend="hiprt",
+            native_symbol=_HIPRT_PREPARED_POINT_GROUP_NEAREST_WITNESS_2D_DEVICE_COLUMNS_SYMBOL,
+            native_execution_path="prepared_hiprt_point_group_nearest_witness_2d_device_columns",
+            query_count=row_count,
+            search_count=self._search_count,
+            group_count=self._group_count,
+            radius=requested,
+            transfer_mode="host_query_points_to_device_witness_columns",
+            source_protocols=source_protocols,
+            source_devices=source_devices,
+        )
+        return {
+            "metadata": {
+                "backend": "hiprt",
+                "native_symbol": _HIPRT_PREPARED_POINT_GROUP_NEAREST_WITNESS_2D_DEVICE_COLUMNS_SYMBOL,
+                "native_engine_row_contract": "generic_point_group_nearest_witness_2d_device_columns",
+                "native_execution_path": "prepared_hiprt_point_group_nearest_witness_2d_device_columns",
+                "query_count": row_count,
+                "radius": requested,
+                "native_elapsed_sec": elapsed,
+                "transfer_mode": "host_query_points_to_device_witness_columns",
+                "source_protocols": source_protocols,
+                "source_devices": source_devices,
+                "rt_core_accelerated": True,
+                "materializes_neighbor_rows": False,
+                "direct_device_handoff_authorized": True,
+                "output_columns_true_zero_copy_authorized": True,
+                "true_zero_copy_authorized": False,
+                "rt_core_speedup_claim_authorized": False,
+                "v2_10_release_authorized": False,
+                "typed_result_stream": typed_stream,
+                "v2_8_typed_producer_metadata": producer_metadata,
+            }
+        }
+
     def nearest_max_distance_row(self, query_points, *, radius: float) -> dict[str, int | float]:
         requested = self._validate_radius(radius)
         query_records = tuple(_normalize_hiprt_point2d(point, index) for index, point in enumerate(query_points))
@@ -3570,6 +3798,8 @@ def prepare_hiprt_point_group_nearest_witness_2d(
             ctypes.c_void_p(),
             empty=True,
             max_radius=float(max_radius),
+            search_count=search_count,
+            group_count=len(group_records),
         )
     if not _hiprt_prepared_point_group_nearest_symbols_available():
         raise RuntimeError("current HIPRT library does not export prepared 2D point-group nearest witness symbols")
@@ -3590,7 +3820,12 @@ def prepare_hiprt_point_group_nearest_witness_2d(
     if status != 0:
         detail = error.value.decode("utf-8", errors="replace")
         raise RuntimeError(f"rtdl_hiprt_prepare_point_group_nearest_witness_2d failed with status {status}: {detail}")
-    return PreparedHiprtPointGroupNearestWitness2D(handle, max_radius=float(max_radius))
+    return PreparedHiprtPointGroupNearestWitness2D(
+        handle,
+        max_radius=float(max_radius),
+        search_count=search_count,
+        group_count=len(group_records),
+    )
 
 
 def _unsupported_hiprt_peer_workload(predicate_name: str, detail: str) -> NotImplementedError:

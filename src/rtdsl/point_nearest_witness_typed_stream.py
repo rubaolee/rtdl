@@ -117,7 +117,7 @@ def make_v2_8_point_group_nearest_witness_typed_producer_metadata(
     )
     output_columns_proven = (
         device_resident_data_columns == len(V2_8_POINT_GROUP_NEAREST_WITNESS_COLUMNS)
-        and str(backend) == "optix"
+        and str(backend) in {"optix", "hiprt"}
         and int(query_count) > 0
     )
     return {

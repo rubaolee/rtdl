@@ -1263,6 +1263,22 @@ extern "C" __global__ void RtdlPointGroupNearestMaxDistance2DKernel(
         output[0] = scratch[0];
     }
 }
+
+extern "C" __global__ void RtdlPointGroupNearestWitness2DSplitColumnsKernel(
+    const RtdlFixedRadiusNeighborRow* rows,
+    uint32_t count,
+    uint32_t* query_ids_out,
+    uint32_t* neighbor_ids_out,
+    double* distances_out) {
+    const uint32_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index >= count) {
+        return;
+    }
+    const RtdlFixedRadiusNeighborRow row = rows[index];
+    query_ids_out[index] = row.query_id;
+    neighbor_ids_out[index] = row.neighbor_id;
+    distances_out[index] = row.distance;
+}
 )KERNEL";
 }
 

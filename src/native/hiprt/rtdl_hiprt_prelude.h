@@ -367,21 +367,24 @@ constexpr uint32_t RTDL_DB_OP_BETWEEN = 6u;
 struct HiprtRuntime {
     oroDevice device{};
     oroCtx ctx{};
+    bool owns_ctx = false;
     hiprtContext context{};
 
     ~HiprtRuntime() {
         if (context != nullptr) {
             hiprtDestroyContext(context);
         }
-        if (ctx != nullptr) {
+        if (owns_ctx && ctx != nullptr) {
             oroCtxDestroy(ctx);
         }
     }
 
     HiprtRuntime(const HiprtRuntime&) = delete;
     HiprtRuntime& operator=(const HiprtRuntime&) = delete;
-    HiprtRuntime(HiprtRuntime&& other) noexcept : device(other.device), ctx(other.ctx), context(other.context) {
+    HiprtRuntime(HiprtRuntime&& other) noexcept
+        : device(other.device), ctx(other.ctx), owns_ctx(other.owns_ctx), context(other.context) {
         other.ctx = nullptr;
+        other.owns_ctx = false;
         other.context = nullptr;
     }
     HiprtRuntime& operator=(HiprtRuntime&& other) noexcept {
@@ -389,13 +392,15 @@ struct HiprtRuntime {
             if (context != nullptr) {
                 hiprtDestroyContext(context);
             }
-            if (ctx != nullptr) {
+            if (owns_ctx && ctx != nullptr) {
                 oroCtxDestroy(ctx);
             }
             device = other.device;
             ctx = other.ctx;
+            owns_ctx = other.owns_ctx;
             context = other.context;
             other.ctx = nullptr;
+            other.owns_ctx = false;
             other.context = nullptr;
         }
         return *this;
@@ -491,7 +496,15 @@ HiprtRuntime create_runtime() {
     HiprtRuntime runtime;
     check_oro("oroInit", oroInit(0));
     check_oro("oroDeviceGet(0)", oroDeviceGet(&runtime.device, 0));
-    check_oro("oroCtxCreate", oroCtxCreate(&runtime.ctx, 0, runtime.device));
+    oroCtx current_ctx{};
+    oroError current_err = oroCtxGetCurrent(&current_ctx);
+    if (current_err == oroSuccess && current_ctx != nullptr) {
+        runtime.ctx = current_ctx;
+        runtime.owns_ctx = false;
+    } else {
+        check_oro("oroCtxCreate", oroCtxCreate(&runtime.ctx, 0, runtime.device));
+        runtime.owns_ctx = true;
+    }
 
     oroDeviceProp props{};
     check_oro("oroGetDeviceProperties", oroGetDeviceProperties(&props, runtime.device));
