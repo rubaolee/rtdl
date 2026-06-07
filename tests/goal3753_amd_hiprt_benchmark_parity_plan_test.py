@@ -34,14 +34,14 @@ class Goal3753AmdHiprtBenchmarkParityPlanTest(unittest.TestCase):
     def test_summary_is_honest_about_amd_extension_work(self) -> None:
         self.assertEqual(
             V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION,
-            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3768.v1",
+            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3769.v1",
         )
         summary = summarize_v2_10_amd_hiprt_benchmark_parity()
         self.assertEqual(summary["app_count"], 10)
-        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 2)
+        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 3)
         self.assertEqual(summary["stage_counts"]["compatibility_only_not_amd_perf_ready"], 2)
-        self.assertEqual(summary["stage_counts"]["needs_generic_hiprt_extension"], 6)
-        self.assertEqual(summary["ready_for_amd_functional_pod_apps"], ("spatial_rayjoin", "robot_collision"))
+        self.assertEqual(summary["stage_counts"]["needs_generic_hiprt_extension"], 5)
+        self.assertEqual(summary["ready_for_amd_functional_pod_apps"], ("spatial_rayjoin", "rt_dbscan", "robot_collision"))
         self.assertIn("raydb_style", summary["compatibility_only_not_amd_perf_ready_apps"])
         self.assertFalse(summary["release_authorized"])
         self.assertFalse(summary["amd_perf_claim_authorized"])
@@ -55,12 +55,13 @@ class Goal3753AmdHiprtBenchmarkParityPlanTest(unittest.TestCase):
         self.assertEqual(spatial["missing_generic_contracts"], ())
         self.assertEqual(spatial["parity_stage"], "ready_for_amd_functional_pod")
 
-    def test_rt_dbscan_records_goal3768_scalar_threshold_count_but_keeps_flags_gap(self) -> None:
+    def test_rt_dbscan_records_goal3768_and_goal3769_contract_closure(self) -> None:
         rows = {row["app"]: row for row in v2_10_amd_hiprt_benchmark_parity()}
         dbscan = rows["rt_dbscan"]
         self.assertIn("fixed_radius_threshold_reached_count_3d", dbscan["required_engine_features"])
-        self.assertEqual(dbscan["missing_generic_contracts"], ("fixed_radius_grouped_stream_flags",))
-        self.assertEqual(dbscan["parity_stage"], "needs_generic_hiprt_extension")
+        self.assertIn("fixed_radius_grouped_stream_flags_3d", dbscan["required_engine_features"])
+        self.assertEqual(dbscan["missing_generic_contracts"], ())
+        self.assertEqual(dbscan["parity_stage"], "ready_for_amd_functional_pod")
 
     def test_each_row_keeps_claim_boundary_false(self) -> None:
         for row in v2_10_amd_hiprt_benchmark_parity():

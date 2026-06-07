@@ -150,6 +150,13 @@ _FEATURE_MATRIX: dict[str, dict[str, EngineFeatureSupport]] = {
         "hiprt": _support("fixed_radius_threshold_reached_count_3d", "hiprt", NATIVE, "Goal3768 prepared fixed-radius scalar threshold-reached count path."),
         "apple_rt": _support("fixed_radius_threshold_reached_count_3d", "apple_rt", COMPATIBILITY_FALLBACK, "Counts threshold-reaching queries from emitted fixed-radius rows."),
     },
+    "fixed_radius_grouped_stream_flags_3d": {
+        "embree": _support("fixed_radius_grouped_stream_flags_3d", "embree", COMPATIBILITY_FALLBACK, "Derives flags from emitted fixed-radius rows."),
+        "optix": _support("fixed_radius_grouped_stream_flags_3d", "optix", NATIVE, "Prepared fixed-radius threshold flags for downstream grouped/component continuations."),
+        "vulkan": _support("fixed_radius_grouped_stream_flags_3d", "vulkan", COMPATIBILITY_FALLBACK, "Derives flags from emitted fixed-radius rows."),
+        "hiprt": _support("fixed_radius_grouped_stream_flags_3d", "hiprt", NATIVE, "Goal3769 prepared fixed-radius threshold flags for downstream grouped/component continuations."),
+        "apple_rt": _support("fixed_radius_grouped_stream_flags_3d", "apple_rt", COMPATIBILITY_FALLBACK, "Derives flags from emitted fixed-radius rows."),
+    },
     "knn_rows_2d": {
         "embree": _support("knn_rows_2d", "embree", NATIVE, "Embree bounded nearest-neighbor rows."),
         "optix": _support("knn_rows_2d", "optix", NATIVE, "OptiX bounded nearest-neighbor rows."),

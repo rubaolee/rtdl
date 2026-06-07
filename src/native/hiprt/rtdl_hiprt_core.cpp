@@ -182,6 +182,7 @@ struct PreparedFixedRadiusNeighbors3D {
     hiprtFuncTable func_table{};
     oroFunction kernel{};
     oroFunction threshold_count_kernel{};
+    oroFunction threshold_flags_kernel{};
     size_t search_count{};
 
     PreparedFixedRadiusNeighbors3D(
@@ -1218,6 +1219,70 @@ oroFunction ensure_fixed_radius_threshold_count_kernel_3d(PreparedFixedRadiusNei
     return prepared.threshold_count_kernel;
 }
 
+std::string fixed_radius_threshold_flags_kernel_source_3d() {
+    std::string src = fixed_radius_neighbors_3d_kernel_source();
+    src += R"KERNEL(
+
+extern "C" __global__ void RtdlFixedRadiusThresholdFlags3DKernel(
+    hiprtGeometry geom,
+    const RtdlHiprtPoint3DDevice* queries,
+    uint32_t query_count,
+    uint32_t threshold,
+    uint32_t* threshold_flags,
+    RtdlHiprtFixedRadiusParams* params,
+    hiprtFuncTable table) {
+    const uint32_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index >= query_count) {
+        return;
+    }
+    threshold_flags[index] = 0u;
+    if (threshold == 0u) {
+        threshold_flags[index] = 1u;
+        return;
+    }
+    const RtdlHiprtPoint3DDevice query = queries[index];
+    hiprtRay ray;
+    ray.origin = {query.x, query.y, query.z};
+    ray.direction = {0.0f, 0.0f, 1.0f};
+    ray.minT = 0.0f;
+    ray.maxT = params->radius;
+
+    uint32_t local_count = 0u;
+    hiprtGeomCustomTraversalAnyHit traversal(geom, ray, hiprtTraversalHintDefault, params, table);
+    while (traversal.getCurrentState() != hiprtTraversalStateFinished) {
+        hiprtHit hit = traversal.getNextHit();
+        if (!hit.hasHit()) {
+            continue;
+        }
+        ++local_count;
+        if (local_count >= threshold) {
+            threshold_flags[index] = 1u;
+            return;
+        }
+    }
+}
+)KERNEL";
+    return src;
+}
+
+oroFunction ensure_fixed_radius_threshold_flags_kernel_3d(PreparedFixedRadiusNeighbors3D& prepared) {
+    if (prepared.threshold_flags_kernel != nullptr) {
+        return prepared.threshold_flags_kernel;
+    }
+    hiprtFuncNameSet func_name_set{};
+    func_name_set.intersectFuncName = "intersectRtdlPointRadius3D";
+    const std::string source = fixed_radius_threshold_flags_kernel_source_3d();
+    prepared.threshold_flags_kernel = build_trace_kernel_from_source(
+        prepared.runtime.context,
+        source.c_str(),
+        "rtdl_hiprt_fixed_radius_threshold_flags_3d.cu",
+        "RtdlFixedRadiusThresholdFlags3DKernel",
+        &func_name_set,
+        1,
+        1);
+    return prepared.threshold_flags_kernel;
+}
+
 void run_prepared_ray_hitcount_3d(
     PreparedRayHitcount3D& prepared,
     const RtdlRay3D* rays,
@@ -1703,6 +1768,66 @@ void count_prepared_fixed_radius_threshold_reached_3d(
         throw std::runtime_error("HIPRT fixed_radius threshold count overflowed size_t");
     }
     *count_out = static_cast<size_t>(total[0]);
+}
+
+void write_prepared_fixed_radius_threshold_flags_3d(
+    PreparedFixedRadiusNeighbors3D& prepared,
+    const RtdlPoint3D* queries,
+    size_t query_count,
+    uint32_t threshold,
+    uint32_t* flags_out,
+    size_t flags_count) {
+    if (flags_count != query_count) {
+        throw std::runtime_error("flags_count must match query_count");
+    }
+    if (query_count > 0 && flags_out == nullptr) {
+        throw std::runtime_error("flags_out must not be null when query_count is nonzero");
+    }
+    if (threshold == 0) {
+        throw std::runtime_error("fixed_radius threshold must be positive");
+    }
+    if (query_count > std::numeric_limits<uint32_t>::max()) {
+        throw std::runtime_error("HIPRT fixed_radius threshold flags currently support at most 2^32-1 query points");
+    }
+    if (query_count > 0 && queries == nullptr) {
+        throw std::runtime_error("query point pointer must not be null when query_count is nonzero");
+    }
+    if (query_count == 0) {
+        return;
+    }
+    if (prepared.search_count == 0) {
+        std::fill(flags_out, flags_out + flags_count, 0u);
+        return;
+    }
+
+    std::vector<RtdlHiprtPoint3DDevice> query_values = encode_points(queries, query_count);
+    std::vector<uint32_t> flags(query_count, 0u);
+    DeviceAllocation query_device(query_values.size() * sizeof(RtdlHiprtPoint3DDevice));
+    DeviceAllocation flags_device(flags.size() * sizeof(uint32_t));
+    copy_host_to_device(query_device, query_values);
+    copy_host_to_device(flags_device, flags);
+
+    void* query_device_ptr = query_device.get();
+    void* flags_device_ptr = flags_device.get();
+    void* params_device_ptr = prepared.params_device.get();
+    uint32_t query_count_u32 = static_cast<uint32_t>(query_count);
+    uint32_t block_size = 128;
+    uint32_t grid_size = static_cast<uint32_t>((query_count + block_size - 1) / block_size);
+    oroFunction kernel = ensure_fixed_radius_threshold_flags_kernel_3d(prepared);
+    void* args[] = {
+        &prepared.geometry,
+        &query_device_ptr,
+        &query_count_u32,
+        &threshold,
+        &flags_device_ptr,
+        &params_device_ptr,
+        &prepared.func_table,
+    };
+    check_oro(
+        "oroModuleLaunchKernel",
+        oroModuleLaunchKernel(kernel, grid_size, 1, 1, block_size, 1, 1, 0, 0, args, nullptr));
+    copy_device_to_host(flags, flags_device);
+    std::copy(flags.begin(), flags.end(), flags_out);
 }
 
 void run_fixed_radius_neighbors_2d(

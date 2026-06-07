@@ -10,7 +10,7 @@ from .engine_feature_matrix import engine_feature_support
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION = "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3768.v1"
+V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION = "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3769.v1"
 V2_10_AMD_HIPRT_BENCHMARK_PARITY_STATUS = "planning_gate_not_amd_hardware_evidence"
 
 PARITY_STAGES = (
@@ -131,14 +131,18 @@ V2_10_AMD_HIPRT_BENCHMARK_PARITY_ROWS: tuple[V210AmdHiprtBenchmarkParityRow, ...
     ),
     V210AmdHiprtBenchmarkParityRow(
         app="rt_dbscan",
-        required_engine_features=("fixed_radius_neighbors_3d", "fixed_radius_threshold_reached_count_3d"),
-        missing_generic_contracts=("fixed_radius_grouped_stream_flags",),
-        parity_stage="needs_generic_hiprt_extension",
-        first_amd_goal="HIPRT fixed-radius grouped stream and component-continuation handoff parity",
+        required_engine_features=(
+            "fixed_radius_neighbors_3d",
+            "fixed_radius_threshold_reached_count_3d",
+            "fixed_radius_grouped_stream_flags_3d",
+        ),
+        missing_generic_contracts=(),
+        parity_stage="ready_for_amd_functional_pod",
+        first_amd_goal="RT-DBSCAN HIPRT functional parity on AMD hardware",
         rationale=(
             "The base 3D fixed-radius path exists, and Goal3768 adds a scalar threshold-reached count path "
-            "on the NVIDIA CUDA/Orochi HIPRT route. Full RT-DBSCAN parity still needs per-query grouped/core "
-            "flags and component-continuation handoff matching the OptiX bridge."
+            "on the NVIDIA CUDA/Orochi HIPRT route. Goal3769 adds per-query threshold/core flags for downstream "
+            "grouped/component continuations. The lane is ready for AMD functional pod validation, but has no AMD hardware evidence yet."
         ),
         needs_amd_pod=True,
     ),

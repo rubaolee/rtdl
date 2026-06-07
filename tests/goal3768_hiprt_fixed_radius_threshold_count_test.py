@@ -40,13 +40,13 @@ class Goal3768HiprtFixedRadiusThresholdCountPortableTest(unittest.TestCase):
         with rt.prepare_hiprt_fixed_radius_neighbors_3d((), radius=1.0) as prepared:
             self.assertEqual(prepared.count_threshold_reached((_p(1, 0.0, 0.0, 0.0),), threshold=1), 0)
 
-    def test_parity_matrix_records_progress_but_keeps_rt_dbscan_blocked(self) -> None:
+    def test_parity_matrix_still_records_goal3768_scalar_threshold_count(self) -> None:
         from rtdsl.v2_10_amd_hiprt_benchmark_parity import v2_10_amd_hiprt_benchmark_parity
 
         rows = {row["app"]: row for row in v2_10_amd_hiprt_benchmark_parity()}
         dbscan = rows["rt_dbscan"]
         self.assertIn("fixed_radius_threshold_reached_count_3d", dbscan["required_engine_features"])
-        self.assertEqual(dbscan["missing_generic_contracts"], ("fixed_radius_grouped_stream_flags",))
+        self.assertIn(dbscan["parity_stage"], {"needs_generic_hiprt_extension", "ready_for_amd_functional_pod"})
 
     def test_report_and_artifact_record_scalar_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")
