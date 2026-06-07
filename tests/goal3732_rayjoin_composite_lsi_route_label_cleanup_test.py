@@ -20,6 +20,7 @@ class Goal3732RayJoinCompositeLsiRouteLabelCleanupTest(unittest.TestCase):
         )
         self.assertIn('"segment_pair_count_route": payload["summary"].get("segment_pair_count_route")', self.script)
         self.assertIn("inside the custom intersection program over identity-range primitive records", self.script)
+        self.assertIn('["git", "status", "--short", "--untracked-files=no"]', self.script)
         self.assertNotIn("device_double_exact_count_during_optix_anyhit", self.script)
         self.assertNotIn("inside the RT any-hit traversal", self.script)
 

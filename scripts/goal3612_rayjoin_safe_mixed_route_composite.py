@@ -176,7 +176,7 @@ def run_composite(args: argparse.Namespace) -> dict[str, object]:
         "goal": 3612,
         "generated_at_unix": time.time(),
         "git_commit": _command_output(["git", "rev-parse", "HEAD"]),
-        "git_status_short": _command_output(["git", "status", "--short"]),
+        "git_status_short": _command_output(["git", "status", "--short", "--untracked-files=no"]),
         "gpu": _command_output(["nvidia-smi", "--query-gpu=name,driver_version", "--format=csv,noheader"]),
         "start": int(args.start),
         "counts": list(counts),
