@@ -68,3 +68,9 @@ These names are intentionally not next cleanup targets:
 - Compatibility names should stay available until a separate reviewed removal
   plan proves they are no longer used by reports, tests, artifacts, or
   historical scripts.
+
+## Validation
+
+- Local Windows alias/inventory slice: 28 tests passed.
+- A5000 pod validation on clean `origin/main` at commit `7431931d`: the same
+  28-test alias/inventory slice passed.
