@@ -1,0 +1,114 @@
+{
+  "claim_boundary": {
+    "amd_perf_claim_authorized": false,
+    "broad_rt_core_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": "Goal3757",
+  "hardware": "A5000 pod",
+  "rows": [
+    {
+      "link_count": 3,
+      "mode_results": [
+        {
+          "all_measured_counts_match_probe_reference": true,
+          "all_measured_runs_match_probe_reference": true,
+          "artifact": "docs/reports/goal3757_robot_collision_scale_probe_a5000/embree_prepared_buffers_1024_128_3.json",
+          "flagged_group_count": 1069,
+          "mode": "embree_prepared_buffers",
+          "speedup_vs_embree_prepared_buffers": 1.0,
+          "tail_median_output_postprocess_seconds": 0.00043489784002304077,
+          "tail_median_prepared_query_build_seconds": 0.12261487729847431,
+          "tail_median_total_run_seconds": 0.0018759677186608315,
+          "tail_median_traversal_seconds": 0.000871051
+        },
+        {
+          "all_measured_counts_match_probe_reference": true,
+          "all_measured_runs_match_probe_reference": true,
+          "artifact": "docs/reports/goal3757_robot_collision_scale_probe_a5000/optix_device_count_1024_128_3.json",
+          "flagged_group_count": 1069,
+          "mode": "optix_prepared_device_count",
+          "speedup_vs_embree_prepared_buffers": 31.34470846365716,
+          "tail_median_output_postprocess_seconds": 3.343448042869568e-07,
+          "tail_median_prepared_query_build_seconds": 0.12560831755399704,
+          "tail_median_total_run_seconds": 5.9849582612514496e-05,
+          "tail_median_traversal_seconds": 3.9097e-05
+        },
+        {
+          "all_measured_counts_match_probe_reference": true,
+          "all_measured_runs_match_probe_reference": true,
+          "artifact": "docs/reports/goal3757_robot_collision_scale_probe_a5000/optix_prepared_buffers_1024_128_3.json",
+          "flagged_group_count": 1069,
+          "mode": "optix_prepared_buffers",
+          "speedup_vs_embree_prepared_buffers": 1.5598914591450084,
+          "tail_median_output_postprocess_seconds": 0.0004113689064979553,
+          "tail_median_prepared_query_build_seconds": 0.1532322410494089,
+          "tail_median_total_run_seconds": 0.0012026270851492882,
+          "tail_median_traversal_seconds": 0.000140513
+        },
+        {
+          "all_measured_counts_match_probe_reference": true,
+          "all_measured_runs_match_probe_reference": true,
+          "artifact": "docs/reports/goal3757_robot_collision_scale_probe_a5000/optix_prepared_device_buffers_1024_128_3.json",
+          "flagged_group_count": 1069,
+          "mode": "optix_prepared_device_buffers",
+          "speedup_vs_embree_prepared_buffers": 4.825468579313517,
+          "tail_median_output_postprocess_seconds": 0.0003120172768831253,
+          "tail_median_prepared_query_build_seconds": 0.12359499279409647,
+          "tail_median_total_run_seconds": 0.00038876384496688843,
+          "tail_median_traversal_seconds": 4.6439e-05
+        }
+      ],
+      "obstacle_count": 128,
+      "pose_count": 1024,
+      "segment_count": 27648
+    },
+    {
+      "link_count": 3,
+      "mode_results": [
+        {
+          "all_measured_counts_match_probe_reference": true,
+          "all_measured_runs_match_probe_reference": true,
+          "artifact": "docs/reports/goal3757_robot_collision_scale_probe_a5000/embree_prepared_buffers_4096_256_3.json",
+          "flagged_group_count": 4694,
+          "mode": "embree_prepared_buffers",
+          "speedup_vs_embree_prepared_buffers": 1.0,
+          "tail_median_output_postprocess_seconds": 0.0013099964708089828,
+          "tail_median_prepared_query_build_seconds": 0.5282535580918193,
+          "tail_median_total_run_seconds": 0.006223136559128761,
+          "tail_median_traversal_seconds": 0.002993844
+        },
+        {
+          "all_measured_counts_match_probe_reference": true,
+          "all_measured_runs_match_probe_reference": true,
+          "artifact": "docs/reports/goal3757_robot_collision_scale_probe_a5000/optix_prepared_device_buffers_4096_256_3.json",
+          "flagged_group_count": 4694,
+          "mode": "optix_prepared_device_buffers",
+          "speedup_vs_embree_prepared_buffers": 3.9599327491254366,
+          "tail_median_output_postprocess_seconds": 0.001421571709215641,
+          "tail_median_prepared_query_build_seconds": 0.5237450124695897,
+          "tail_median_total_run_seconds": 0.0015715258195996284,
+          "tail_median_traversal_seconds": 9.9332e-05
+        },
+        {
+          "all_measured_counts_match_probe_reference": true,
+          "all_measured_runs_match_probe_reference": true,
+          "artifact": "docs/reports/goal3757_robot_collision_scale_probe_a5000/optix_prepared_device_count_4096_256_3.json",
+          "flagged_group_count": 4694,
+          "mode": "optix_prepared_device_count",
+          "speedup_vs_embree_prepared_buffers": 66.59134577054931,
+          "tail_median_output_postprocess_seconds": 4.516914486885071e-07,
+          "tail_median_prepared_query_build_seconds": 0.6442799009382725,
+          "tail_median_total_run_seconds": 9.345263242721558e-05,
+          "tail_median_traversal_seconds": 6.8109e-05
+        }
+      ],
+      "obstacle_count": 256,
+      "pose_count": 4096,
+      "segment_count": 110592
+    }
+  ]
+}

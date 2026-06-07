@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-V2_9_BENCHMARK_ADEQUACY_VERSION = "rtdl.v2_9.benchmark_adequacy_after_goal3749.v1"
+V2_9_BENCHMARK_ADEQUACY_VERSION = "rtdl.v2_9.benchmark_adequacy_after_goal3757.v1"
 V2_9_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 V2_9_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal3740 records internal benchmark-app adequacy after the Goal3737 "
@@ -174,15 +174,20 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
     V29BenchmarkAdequacyRow(
         app="robot_collision",
         promoted_reader_view="prepared any-hit collision flags",
-        current_performance_reading="near parity: v2.9 packet row is 0.987619x versus v2.3",
-        adequacy="near_parity",
+        current_performance_reading=(
+            "strong with contract boundary: Goal3757 A5000 prepared-batch evidence shows OptiX "
+            "device-buffer compact flags at 4.825x versus Embree for 1024 poses and 3.960x for "
+            "4096 poses; scalar device-count is 31.345x and 66.591x respectively. These are "
+            "prepared repeated-query subpath results, not whole robot-planning claims."
+        ),
+        adequacy="strong",
         current_recommended_path="prepared RTDL/OptiX any-hit flag primitive",
         current_partner_role="no partner needed for the promoted path",
         needs_numba_reference=False,
         numba_reference_reason="no custom GPU continuation is required by the promoted flag contract",
-        amd_hiprt_readiness="needs HIPRT prepared any-hit parity on the same pose/shape contract",
-        next_generic_runtime_action="treat as no-regression unless a larger pose batch exposes material overhead",
-        evidence_refs=("Goal2654", "Goal3567"),
+        amd_hiprt_readiness="row HIPRT app route exists; first AMD functional pod should validate the Ray2D/Triangle2D row route before prepared summary parity",
+        next_generic_runtime_action="preserve the prepared device-buffer and scalar-count split; add HIPRT prepared-buffer/group-index parity only after AMD functional row evidence",
+        evidence_refs=("Goal2654", "Goal3567", "Goal3755", "Goal3757"),
         pod_needed_next=False,
     ),
     V29BenchmarkAdequacyRow(
