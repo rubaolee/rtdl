@@ -384,6 +384,28 @@ def _hiprt_lib() -> ctypes.CDLL:
         ctypes.c_size_t,
     ]
     lib.rtdl_hiprt_run_segment_pair_intersection.restype = ctypes.c_int
+    if hasattr(lib, "rtdl_hiprt_prepare_segment_pair_intersection"):
+        lib.rtdl_hiprt_prepare_segment_pair_intersection.argtypes = [
+            ctypes.POINTER(_RtdlSegment),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        lib.rtdl_hiprt_prepare_segment_pair_intersection.restype = ctypes.c_int
+    if hasattr(lib, "rtdl_hiprt_count_prepared_segment_pair_intersection"):
+        lib.rtdl_hiprt_count_prepared_segment_pair_intersection.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlSegment),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        lib.rtdl_hiprt_count_prepared_segment_pair_intersection.restype = ctypes.c_int
+    if hasattr(lib, "rtdl_hiprt_destroy_prepared_segment_pair_intersection"):
+        lib.rtdl_hiprt_destroy_prepared_segment_pair_intersection.argtypes = [ctypes.c_void_p]
+        lib.rtdl_hiprt_destroy_prepared_segment_pair_intersection.restype = None
     lib.rtdl_hiprt_run_point_primitive_anyhit_packet.argtypes = [
         ctypes.POINTER(_RtdlPoint),
         ctypes.c_size_t,
@@ -856,6 +878,98 @@ def segment_intersection_hiprt(
         )
     finally:
         _hiprt_lib().rtdl_hiprt_free_rows(rows_ptr)
+
+
+class PreparedHiprtSegmentPairIntersection2D:
+    def __init__(self, handle: ctypes.c_void_p, *, empty: bool = False) -> None:
+        self._handle = handle
+        self._empty = empty
+
+    def close(self) -> None:
+        if self._handle:
+            _hiprt_lib().rtdl_hiprt_destroy_prepared_segment_pair_intersection(self._handle)
+            self._handle = ctypes.c_void_p()
+
+    def __enter__(self) -> "PreparedHiprtSegmentPairIntersection2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+    def count(self, left: tuple[_CanonicalSegment, ...]) -> int:
+        left_records = tuple(left)
+        if any(not isinstance(segment, _CanonicalSegment) for segment in left_records):
+            raise TypeError("Prepared HIPRT segment-pair intersection currently supports only Segment left inputs")
+        if not left_records or self._empty:
+            return 0
+        if not self._handle:
+            raise RuntimeError("prepared HIPRT segment-pair intersection handle is closed")
+        left_array = (_RtdlSegment * len(left_records))(
+            *[_RtdlSegment(item.id, item.x0, item.y0, item.x1, item.y1) for item in left_records]
+        )
+        count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = _hiprt_lib().rtdl_hiprt_count_prepared_segment_pair_intersection(
+            self._handle,
+            left_array,
+            len(left_records),
+            ctypes.byref(count),
+            error,
+            ctypes.sizeof(error),
+        )
+        if status != 0:
+            detail = error.value.decode("utf-8", errors="replace")
+            raise RuntimeError(
+                "rtdl_hiprt_count_prepared_segment_pair_intersection "
+                f"failed with status {status}: {detail}"
+            )
+        return int(count.value)
+
+
+def _hiprt_prepared_segment_pair_intersection_symbols_available() -> bool:
+    try:
+        lib = _hiprt_lib()
+    except Exception:
+        return False
+    return (
+        getattr(lib, "rtdl_hiprt_prepare_segment_pair_intersection", None) is not None
+        and getattr(lib, "rtdl_hiprt_count_prepared_segment_pair_intersection", None) is not None
+        and getattr(lib, "rtdl_hiprt_destroy_prepared_segment_pair_intersection", None) is not None
+    )
+
+
+def prepare_hiprt_segment_pair_intersection_2d(
+    right: tuple[_CanonicalSegment, ...],
+) -> PreparedHiprtSegmentPairIntersection2D:
+    right_records = tuple(right)
+    if any(not isinstance(segment, _CanonicalSegment) for segment in right_records):
+        raise TypeError("prepare_hiprt_segment_pair_intersection_2d currently supports only Segment right inputs")
+    if not right_records and not _hiprt_prepared_segment_pair_intersection_symbols_available():
+        return PreparedHiprtSegmentPairIntersection2D(ctypes.c_void_p(), empty=True)
+    if not _hiprt_prepared_segment_pair_intersection_symbols_available():
+        raise RuntimeError("current HIPRT library does not export prepared 2D segment-pair intersection symbols")
+    right_array = (_RtdlSegment * len(right_records))(
+        *[_RtdlSegment(item.id, item.x0, item.y0, item.x1, item.y1) for item in right_records]
+    )
+    handle = ctypes.c_void_p()
+    error = ctypes.create_string_buffer(4096)
+    status = _hiprt_lib().rtdl_hiprt_prepare_segment_pair_intersection(
+        right_array,
+        len(right_records),
+        ctypes.byref(handle),
+        error,
+        ctypes.sizeof(error),
+    )
+    if status != 0:
+        detail = error.value.decode("utf-8", errors="replace")
+        raise RuntimeError(f"rtdl_hiprt_prepare_segment_pair_intersection failed with status {status}: {detail}")
+    return PreparedHiprtSegmentPairIntersection2D(handle, empty=not right_records)
 
 
 def ray_triangle_hit_count_2d_hiprt(

@@ -545,6 +545,44 @@ extern "C" int rtdl_hiprt_run_segment_pair_intersection(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_hiprt_prepare_segment_pair_intersection(
+    const RtdlSegment* right,
+    size_t right_count,
+    void** prepared_out,
+    char* error_out,
+    size_t error_size) {
+    return handle_call([&]() {
+        if (prepared_out == nullptr) {
+            throw std::runtime_error("prepared_out must not be null");
+        }
+        *prepared_out = nullptr;
+        *prepared_out = prepare_segment_pair_intersection_2d(right, right_count);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_hiprt_destroy_prepared_segment_pair_intersection(void* prepared) {
+    delete reinterpret_cast<PreparedSegmentPairIntersection2D*>(prepared);
+}
+
+extern "C" int rtdl_hiprt_count_prepared_segment_pair_intersection(
+    void* prepared,
+    const RtdlSegment* left,
+    size_t left_count,
+    size_t* count_out,
+    char* error_out,
+    size_t error_size) {
+    return handle_call([&]() {
+        if (prepared == nullptr) {
+            throw std::runtime_error("prepared HIPRT segment-pair intersection handle must not be null");
+        }
+        count_prepared_segment_pair_intersection_2d(
+            *reinterpret_cast<PreparedSegmentPairIntersection2D*>(prepared),
+            left,
+            left_count,
+            count_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_hiprt_run_ray_hitcount_2d(
     const RtdlRay2D* rays,
     size_t ray_count,

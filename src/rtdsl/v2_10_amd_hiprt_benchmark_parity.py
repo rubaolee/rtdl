@@ -10,7 +10,7 @@ from .engine_feature_matrix import engine_feature_support
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION = "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3765.v1"
+V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION = "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3766.v1"
 V2_10_AMD_HIPRT_BENCHMARK_PARITY_STATUS = "planning_gate_not_amd_hardware_evidence"
 
 PARITY_STAGES = (
@@ -111,11 +111,20 @@ V2_10_AMD_HIPRT_BENCHMARK_PARITY_ROWS: tuple[V210AmdHiprtBenchmarkParityRow, ...
     ),
     V210AmdHiprtBenchmarkParityRow(
         app="spatial_rayjoin",
-        required_engine_features=("point_in_polygon_2d", "line_segment_intersection_2d", "overlay_compose_2d"),
-        missing_generic_contracts=("prepared_segment_pair_exact_count", "prepared_shape_pair_active_count"),
+        required_engine_features=(
+            "point_in_polygon_2d",
+            "line_segment_intersection_2d",
+            "overlay_compose_2d",
+            "prepared_segment_pair_exact_count_2d",
+        ),
+        missing_generic_contracts=("prepared_shape_pair_active_count",),
         parity_stage="needs_generic_hiprt_extension",
-        first_amd_goal="HIPRT prepared segment-pair count and shape-pair active-count parity",
-        rationale="HIPRT has base PIP/LSI/overlay proof paths, but the fast RayJoin route depends on prepared scalar executors.",
+        first_amd_goal="HIPRT prepared shape-pair active-count parity",
+        rationale=(
+            "HIPRT has base PIP/LSI/overlay proof paths, and Goal3766 adds the generic prepared "
+            "segment-pair exact-count scalar executor on the NVIDIA CUDA/Orochi path. "
+            "The fast RayJoin route is still missing prepared shape-pair active-count parity and AMD hardware evidence."
+        ),
         needs_amd_pod=True,
     ),
     V210AmdHiprtBenchmarkParityRow(

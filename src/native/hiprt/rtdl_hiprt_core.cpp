@@ -89,6 +89,50 @@ struct PreparedRayAnyhit2D {
     PreparedRayAnyhit2D& operator=(PreparedRayAnyhit2D&&) = delete;
 };
 
+struct PreparedSegmentPairIntersection2D {
+    HiprtRuntime runtime;
+    DeviceAllocation right_device;
+    DeviceAllocation aabb_device;
+    hiprtGeometry geometry{};
+    hiprtFuncTable func_table{};
+    oroFunction count_kernel{};
+    size_t right_count{0};
+    bool empty_scene{false};
+
+    explicit PreparedSegmentPairIntersection2D(bool empty_scene_in) : empty_scene(empty_scene_in) {}
+
+    PreparedSegmentPairIntersection2D(
+        HiprtRuntime&& runtime_in,
+        DeviceAllocation&& right_device_in,
+        DeviceAllocation&& aabb_device_in,
+        hiprtGeometry geometry_in,
+        hiprtFuncTable func_table_in,
+        size_t right_count_in)
+        : runtime(std::move(runtime_in)),
+          right_device(std::move(right_device_in)),
+          aabb_device(std::move(aabb_device_in)),
+          geometry(geometry_in),
+          func_table(func_table_in),
+          right_count(right_count_in),
+          empty_scene(false) {}
+
+    ~PreparedSegmentPairIntersection2D() {
+        if (func_table != nullptr) {
+            hiprtDestroyFuncTable(runtime.context, func_table);
+            func_table = nullptr;
+        }
+        if (geometry != nullptr) {
+            hiprtDestroyGeometry(runtime.context, geometry);
+            geometry = nullptr;
+        }
+    }
+
+    PreparedSegmentPairIntersection2D(const PreparedSegmentPairIntersection2D&) = delete;
+    PreparedSegmentPairIntersection2D& operator=(const PreparedSegmentPairIntersection2D&) = delete;
+    PreparedSegmentPairIntersection2D(PreparedSegmentPairIntersection2D&&) = delete;
+    PreparedSegmentPairIntersection2D& operator=(PreparedSegmentPairIntersection2D&&) = delete;
+};
+
 struct PreparedFixedRadiusNeighbors3D {
     HiprtRuntime runtime;
     DeviceAllocation search_device;
@@ -904,6 +948,61 @@ oroFunction ensure_grouped_ray_anyhit_kernel_2d(PreparedRayAnyhit2D& prepared) {
     return prepared.grouped_kernel;
 }
 
+std::string segment_pair_intersection_count_kernel_source_2d() {
+    std::string src = segment_pair_intersection_2d_kernel_source();
+    src += R"KERNEL(
+
+extern "C" __global__ void RtdlSegmentPairIntersectionCount2DKernel(
+    hiprtGeometry geom,
+    const RtdlHiprtSegmentDevice* left_segments,
+    uint32_t left_count,
+    unsigned long long* total_count,
+    hiprtFuncTable table) {
+    const uint32_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index >= left_count) {
+        return;
+    }
+    const RtdlHiprtSegmentDevice left = left_segments[index];
+    hiprtRay ray;
+    ray.origin = {left.x0, left.y0, 0.0f};
+    ray.direction = {left.x1 - left.x0, left.y1 - left.y0, 0.0f};
+    ray.minT = 0.0f;
+    ray.maxT = 1.0f;
+
+    unsigned int local_count = 0u;
+    hiprtGeomCustomTraversalAnyHit traversal(geom, ray, hiprtTraversalHintDefault, nullptr, table);
+    while (traversal.getCurrentState() != hiprtTraversalStateFinished) {
+        hiprtHit hit = traversal.getNextHit();
+        if (hit.hasHit()) {
+            ++local_count;
+        }
+    }
+    if (local_count != 0u) {
+        atomicAdd(total_count, static_cast<unsigned long long>(local_count));
+    }
+}
+)KERNEL";
+    return src;
+}
+
+oroFunction ensure_segment_pair_intersection_count_kernel_2d(PreparedSegmentPairIntersection2D& prepared) {
+    if (prepared.count_kernel != nullptr) {
+        return prepared.count_kernel;
+    }
+    hiprtFuncNameSet func_name_set{};
+    func_name_set.intersectFuncName = "intersectRtdlSegment2D";
+    const std::string source = segment_pair_intersection_count_kernel_source_2d();
+    prepared.count_kernel = build_trace_kernel_from_source(
+        prepared.runtime.context,
+        source.c_str(),
+        "rtdl_hiprt_segment_pair_intersection_count_2d.cu",
+        "RtdlSegmentPairIntersectionCount2DKernel",
+        &func_name_set,
+        1,
+        1);
+    return prepared.count_kernel;
+}
+
 void run_prepared_ray_hitcount_3d(
     PreparedRayHitcount3D& prepared,
     const RtdlRay3D* rays,
@@ -1635,6 +1734,106 @@ void run_segment_pair_intersection_2d(
     if (geometry != nullptr) {
         hiprtDestroyGeometry(runtime.context, geometry);
     }
+}
+
+PreparedSegmentPairIntersection2D* prepare_segment_pair_intersection_2d(
+    const RtdlSegment* right,
+    size_t right_count) {
+    if (right_count > std::numeric_limits<uint32_t>::max()) {
+        throw std::runtime_error("HIPRT prepared segment_intersection currently supports at most 2^32-1 right segments");
+    }
+    if (right_count > 0 && right == nullptr) {
+        throw std::runtime_error("right segment pointer must not be null when right_count is nonzero");
+    }
+    if (right_count == 0) {
+        return new PreparedSegmentPairIntersection2D(true);
+    }
+
+    std::vector<RtdlHiprtSegmentDevice> right_values = encode_segments(right, right_count);
+    std::vector<RtdlHiprtAabb> aabb_values = encode_segment_aabbs(right_values.data(), right_values.size());
+    HiprtRuntime runtime = create_runtime();
+    hiprtSetLogLevel(hiprtLogLevelError);
+
+    DeviceAllocation right_device(right_values.size() * sizeof(RtdlHiprtSegmentDevice));
+    DeviceAllocation aabb_device(aabb_values.size() * sizeof(RtdlHiprtAabb));
+    copy_host_to_device(right_device, right_values);
+    copy_host_to_device(aabb_device, aabb_values);
+
+    hiprtGeometry geometry = build_aabb_geometry(runtime.context, aabb_device, aabb_values.size());
+    hiprtFuncTable func_table{};
+    try {
+        hiprtFuncDataSet func_data_set{};
+        func_data_set.intersectFuncData = right_device.get();
+        check_hiprt("hiprtCreateFuncTable", hiprtCreateFuncTable(runtime.context, 1, 1, func_table));
+        check_hiprt("hiprtSetFuncTable", hiprtSetFuncTable(runtime.context, func_table, 0, 0, func_data_set));
+        auto* prepared = new PreparedSegmentPairIntersection2D(
+            std::move(runtime),
+            std::move(right_device),
+            std::move(aabb_device),
+            geometry,
+            func_table,
+            right_count);
+        geometry = nullptr;
+        func_table = nullptr;
+        return prepared;
+    } catch (...) {
+        if (func_table != nullptr) {
+            hiprtDestroyFuncTable(runtime.context, func_table);
+        }
+        if (geometry != nullptr) {
+            hiprtDestroyGeometry(runtime.context, geometry);
+        }
+        throw;
+    }
+}
+
+void count_prepared_segment_pair_intersection_2d(
+    PreparedSegmentPairIntersection2D& prepared,
+    const RtdlSegment* left,
+    size_t left_count,
+    size_t* count_out) {
+    if (count_out == nullptr) {
+        throw std::runtime_error("count_out must not be null");
+    }
+    *count_out = 0;
+    if (left_count > std::numeric_limits<uint32_t>::max()) {
+        throw std::runtime_error("HIPRT prepared segment_intersection count currently supports at most 2^32-1 left segments");
+    }
+    if (left_count > 0 && left == nullptr) {
+        throw std::runtime_error("left segment pointer must not be null when left_count is nonzero");
+    }
+    if (left_count == 0 || prepared.empty_scene || prepared.right_count == 0) {
+        return;
+    }
+
+    std::vector<RtdlHiprtSegmentDevice> left_values = encode_segments(left, left_count);
+    std::vector<unsigned long long> total(1, 0ull);
+    DeviceAllocation left_device(left_values.size() * sizeof(RtdlHiprtSegmentDevice));
+    DeviceAllocation count_device(sizeof(unsigned long long));
+    copy_host_to_device(left_device, left_values);
+    copy_host_to_device(count_device, total);
+
+    void* left_device_ptr = left_device.get();
+    void* count_device_ptr = count_device.get();
+    uint32_t left_count_u32 = static_cast<uint32_t>(left_count);
+    uint32_t block_size = 128;
+    uint32_t grid_size = static_cast<uint32_t>((left_count + block_size - 1) / block_size);
+    oroFunction kernel = ensure_segment_pair_intersection_count_kernel_2d(prepared);
+    void* args[] = {
+        &prepared.geometry,
+        &left_device_ptr,
+        &left_count_u32,
+        &count_device_ptr,
+        &prepared.func_table,
+    };
+    check_oro(
+        "oroModuleLaunchKernel",
+        oroModuleLaunchKernel(kernel, grid_size, 1, 1, block_size, 1, 1, 0, 0, args, nullptr));
+    copy_device_to_host(total, count_device);
+    if (total[0] > static_cast<unsigned long long>(std::numeric_limits<size_t>::max())) {
+        throw std::runtime_error("HIPRT prepared segment_intersection count overflowed size_t");
+    }
+    *count_out = static_cast<size_t>(total[0]);
 }
 
 void run_segment_polygon_2d_common(

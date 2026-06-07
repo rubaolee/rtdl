@@ -34,7 +34,7 @@ class Goal3753AmdHiprtBenchmarkParityPlanTest(unittest.TestCase):
     def test_summary_is_honest_about_amd_extension_work(self) -> None:
         self.assertEqual(
             V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION,
-            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3765.v1",
+            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3766.v1",
         )
         summary = summarize_v2_10_amd_hiprt_benchmark_parity()
         self.assertEqual(summary["app_count"], 10)
@@ -46,6 +46,13 @@ class Goal3753AmdHiprtBenchmarkParityPlanTest(unittest.TestCase):
         self.assertIn("raydb_style", summary["compatibility_only_not_amd_perf_ready_apps"])
         self.assertFalse(summary["release_authorized"])
         self.assertFalse(summary["amd_perf_claim_authorized"])
+
+    def test_spatial_rayjoin_records_goal3766_segment_pair_count_closure(self) -> None:
+        rows = {row["app"]: row for row in v2_10_amd_hiprt_benchmark_parity()}
+        spatial = rows["spatial_rayjoin"]
+        self.assertIn("prepared_segment_pair_exact_count_2d", spatial["required_engine_features"])
+        self.assertNotIn("prepared_segment_pair_exact_count", spatial["missing_generic_contracts"])
+        self.assertEqual(spatial["missing_generic_contracts"], ("prepared_shape_pair_active_count",))
 
     def test_each_row_keeps_claim_boundary_false(self) -> None:
         for row in v2_10_amd_hiprt_benchmark_parity():
