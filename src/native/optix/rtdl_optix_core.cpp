@@ -979,7 +979,9 @@ static __forceinline__ __device__ bool seg_intersect_conservative_candidate(
     float qpx = bx0 - ax0, qpy = by0 - ay0;
     float t = (qpx * sy - qpy * sx) / denom;
     float u = (qpx * ry - qpy * rx) / denom;
-    const float slack = 1.0e-4f;
+    // Candidate emission may over-emit: host-side exact refinement remains the
+    // final authority. Keep a wider guard for endpoint-near float32 rounding.
+    const float slack = 1.0e-3f;
     if (t < -slack || t > 1.0f + slack || u < -slack || u > 1.0f + slack) {
         return false;
     }

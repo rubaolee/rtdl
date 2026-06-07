@@ -13,7 +13,7 @@ class Goal2169OptixLsiDeviceConservativeExactFilterTest(unittest.TestCase):
         text = OPTIX_CORE.read_text(encoding="utf-8")
 
         self.assertIn("seg_intersect_conservative_candidate", text)
-        self.assertIn("const float slack = 1.0e-4f", text)
+        self.assertIn("const float slack = 1.0e-3f", text)
         self.assertIn("if (!seg_intersect_conservative_candidate(", text)
         self.assertIn("host-side exact refine remains the final authority", text)
 
