@@ -30,7 +30,9 @@ No DBSCAN-specific native ABI is added.
 | `rtdl_cpu_rows` | Generic RTDL 3-D fixed-radius neighbor rows, then Python component labels | Same row contract without GPU |
 | `partner_spatial_bucket_3d` | Generic partner 3-D spatial-bucket radius-graph components | Current best full DBSCAN continuation |
 | `partner_cupy_grid_components_3d` | Generic CuPy device-grid radius-graph components | Strong CUDA-core baseline; no RT cores |
+| `partner_numba_grid_components_3d` | Generic Numba CUDA grid radius-graph components | Numba reference path; no user-written RawKernel; no RT cores |
 | `partner_cupy_prepared_grid_components_3d` | Prepared generic CuPy device-grid radius-graph components | Fair prepared CUDA-core baseline for repeat probes |
+| `partner_numba_prepared_grid_components_3d` | Prepared generic Numba CUDA grid radius-graph components | Reusable Numba reference path; host-prepared grid metadata, device labeling |
 | `partner_cupy_prepared_adjacency_components_3d` | Prepared generic CuPy directed radius-graph adjacency stream plus grouped union continuation | Contract prototype for avoiding repeated distance checks after adjacency materialization; no RT cores |
 | `optix_core_flags_cupy_grid_components_3d` | OptiX-backend per-query fixed-radius summaries feed CuPy device-grid component continuation | Hybrid uniform-cell CUDA summaries plus CUDA-core continuation; no neighbor-row materialization |
 | `optix_rt_core_flags_cupy_grid_components_3d` | OptiX RT count-threshold device columns feed CuPy device-grid component continuation | True RT traversal core flags plus CUDA-core continuation; no neighbor-row materialization |
@@ -73,6 +75,24 @@ PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbsc
 The current partner path returns exact labels, but its sparse bucket index is
 still host-built. Treat it as a correct transitional continuation, not as a true
 zero-copy claim.
+
+For a Numba reference implementation that does not require users to write CuPy
+RawKernel code, use:
+
+```bash
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode partner_numba_grid_components_3d --dataset clustered3d --point-count 4096 --no-validation
+```
+
+For repeated probes, prepare the Numba grid metadata once:
+
+```bash
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode partner_numba_prepared_grid_components_3d --dataset clustered3d --point-count 4096 --no-validation
+```
+
+The Numba path is a partner reference over the same generic columns
+(`point_ids`, `component_labels`, `is_core`, `neighbor_counts`). It does not
+claim RT-core acceleration: the grid metadata is host-prepared, then Numba CUDA
+kernels count, union, and label components on the device.
 
 For the fair CUDA-core baseline, use the device-grid mode:
 

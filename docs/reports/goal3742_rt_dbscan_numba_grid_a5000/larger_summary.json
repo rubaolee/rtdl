@@ -1,0 +1,409 @@
+{
+  "claim_boundary": {
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": "Goal3742_larger",
+  "hardware": "A5000 pod root@69.30.85.203:22057",
+  "ratios": [
+    {
+      "cupy_sec": 0.18308278312906623,
+      "dataset": "clustered3d",
+      "numba_sec": 0.18425373267382383,
+      "numba_vs_cupy_speedup": 0.9936449073363931,
+      "point_count": 32768
+    },
+    {
+      "cupy_sec": 0.5027731531299651,
+      "dataset": "clustered3d",
+      "numba_sec": 0.4609467536211014,
+      "numba_vs_cupy_speedup": 1.0907401976047868,
+      "point_count": 65536
+    },
+    {
+      "cupy_sec": 0.07744082482531667,
+      "dataset": "road3d",
+      "numba_sec": 0.08141623623669147,
+      "numba_vs_cupy_speedup": 0.9511717613693468,
+      "point_count": 32768
+    },
+    {
+      "cupy_sec": 0.2220341763459146,
+      "dataset": "road3d",
+      "numba_sec": 0.25315000023692846,
+      "numba_vs_cupy_speedup": 0.877085428157646,
+      "point_count": 65536
+    }
+  ],
+  "rows": [
+    {
+      "dataset": "clustered3d",
+      "median_elapsed_sec": 0.18308278312906623,
+      "metadata_last": {
+        "adapter": "PreparedCupyRadiusGraphComponents3DGrid.run",
+        "caller_supplied_core_flags": false,
+        "candidate_edge_count": 68156604,
+        "candidate_edge_count_policy": "exact_from_device_grid_neighbor_counts",
+        "cell_count": 163,
+        "component_label_policy": "positive_root_index_labels_noise_minus_one",
+        "component_union_policy": "monotonic_atomic_min_core_edge_union",
+        "core_flag_source": "device_grid_count_kernel",
+        "device_grid_index_used": true,
+        "direct_device_handoff_authorized": false,
+        "grid_dimensions": [
+          13,
+          13,
+          12
+        ],
+        "host_bucket_index_used": false,
+        "input_contract": "prepared_partner_device_point_columns_3d",
+        "materializes_neighbor_rows": false,
+        "min_neighbors": 12,
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "output_workspace_reused": true,
+        "partner": "cupy",
+        "partner_reference_contract": "generic_prepared_cupy_grid_radius_graph_component_labels_3d",
+        "path": "partner_cupy_prepared_grid_radius_graph_components_3d",
+        "point_count": 32768,
+        "prepared_grid_reused": false,
+        "prepared_run_count": 1,
+        "radius": 0.055,
+        "rt_core_accelerated": false,
+        "rt_core_speedup_claim_authorized": false,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "mode": "partner_cupy_prepared_grid_components_3d",
+      "point_count": 32768,
+      "samples_elapsed_sec": [
+        0.19162798020988703,
+        0.17453758604824543
+      ],
+      "status": "ok"
+    },
+    {
+      "dataset": "clustered3d",
+      "median_elapsed_sec": 0.18425373267382383,
+      "metadata_last": {
+        "adapter": "PreparedNumbaRadiusGraphComponents3DGrid.run",
+        "caller_supplied_core_flags": false,
+        "candidate_edge_count": 68156604,
+        "candidate_edge_count_policy": "exact_from_numba_grid_neighbor_counts",
+        "cell_count": 163,
+        "component_label_policy": "positive_root_index_labels_noise_minus_one",
+        "component_union_policy": "monotonic_atomic_min_core_edge_union",
+        "core_flag_source": "numba_grid_count_kernel",
+        "device_grid_labeling_used": true,
+        "direct_device_handoff_authorized": false,
+        "grid_dimensions": [
+          13,
+          13,
+          12
+        ],
+        "host_prepared_grid_index_used": true,
+        "input_contract": "prepared_partner_device_point_columns_3d",
+        "materializes_neighbor_rows": false,
+        "min_neighbors": 12,
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "numba_cuda_jit_used": true,
+        "output_workspace_reused": true,
+        "partner": "numba",
+        "partner_reference_contract": "generic_prepared_numba_grid_radius_graph_component_labels_3d",
+        "path": "partner_numba_prepared_grid_radius_graph_components_3d",
+        "point_count": 32768,
+        "prepared_grid_reused": false,
+        "prepared_run_count": 1,
+        "radius": 0.055,
+        "raw_cuda_kernel_required": false,
+        "rt_core_accelerated": false,
+        "rt_core_speedup_claim_authorized": false,
+        "v2_9_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "mode": "partner_numba_prepared_grid_components_3d",
+      "point_count": 32768,
+      "samples_elapsed_sec": [
+        0.16153173334896564,
+        0.20697573199868202
+      ],
+      "status": "ok"
+    },
+    {
+      "dataset": "clustered3d",
+      "median_elapsed_sec": 0.5027731531299651,
+      "metadata_last": {
+        "adapter": "PreparedCupyRadiusGraphComponents3DGrid.run",
+        "caller_supplied_core_flags": false,
+        "candidate_edge_count": 273733782,
+        "candidate_edge_count_policy": "exact_from_device_grid_neighbor_counts",
+        "cell_count": 200,
+        "component_label_policy": "positive_root_index_labels_noise_minus_one",
+        "component_union_policy": "monotonic_atomic_min_core_edge_union",
+        "core_flag_source": "device_grid_count_kernel",
+        "device_grid_index_used": true,
+        "direct_device_handoff_authorized": false,
+        "grid_dimensions": [
+          13,
+          14,
+          13
+        ],
+        "host_bucket_index_used": false,
+        "input_contract": "prepared_partner_device_point_columns_3d",
+        "materializes_neighbor_rows": false,
+        "min_neighbors": 12,
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "output_workspace_reused": true,
+        "partner": "cupy",
+        "partner_reference_contract": "generic_prepared_cupy_grid_radius_graph_component_labels_3d",
+        "path": "partner_cupy_prepared_grid_radius_graph_components_3d",
+        "point_count": 65536,
+        "prepared_grid_reused": false,
+        "prepared_run_count": 1,
+        "radius": 0.055,
+        "rt_core_accelerated": false,
+        "rt_core_speedup_claim_authorized": false,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "mode": "partner_cupy_prepared_grid_components_3d",
+      "point_count": 65536,
+      "samples_elapsed_sec": [
+        0.5296435467898846,
+        0.47590275947004557
+      ],
+      "status": "ok"
+    },
+    {
+      "dataset": "clustered3d",
+      "median_elapsed_sec": 0.4609467536211014,
+      "metadata_last": {
+        "adapter": "PreparedNumbaRadiusGraphComponents3DGrid.run",
+        "caller_supplied_core_flags": false,
+        "candidate_edge_count": 273733782,
+        "candidate_edge_count_policy": "exact_from_numba_grid_neighbor_counts",
+        "cell_count": 200,
+        "component_label_policy": "positive_root_index_labels_noise_minus_one",
+        "component_union_policy": "monotonic_atomic_min_core_edge_union",
+        "core_flag_source": "numba_grid_count_kernel",
+        "device_grid_labeling_used": true,
+        "direct_device_handoff_authorized": false,
+        "grid_dimensions": [
+          13,
+          14,
+          13
+        ],
+        "host_prepared_grid_index_used": true,
+        "input_contract": "prepared_partner_device_point_columns_3d",
+        "materializes_neighbor_rows": false,
+        "min_neighbors": 12,
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "numba_cuda_jit_used": true,
+        "output_workspace_reused": true,
+        "partner": "numba",
+        "partner_reference_contract": "generic_prepared_numba_grid_radius_graph_component_labels_3d",
+        "path": "partner_numba_prepared_grid_radius_graph_components_3d",
+        "point_count": 65536,
+        "prepared_grid_reused": false,
+        "prepared_run_count": 1,
+        "radius": 0.055,
+        "raw_cuda_kernel_required": false,
+        "rt_core_accelerated": false,
+        "rt_core_speedup_claim_authorized": false,
+        "v2_9_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "mode": "partner_numba_prepared_grid_components_3d",
+      "point_count": 65536,
+      "samples_elapsed_sec": [
+        0.4334929222241044,
+        0.48840058501809835
+      ],
+      "status": "ok"
+    },
+    {
+      "dataset": "road3d",
+      "median_elapsed_sec": 0.07744082482531667,
+      "metadata_last": {
+        "adapter": "PreparedCupyRadiusGraphComponents3DGrid.run",
+        "caller_supplied_core_flags": false,
+        "candidate_edge_count": 21378620,
+        "candidate_edge_count_policy": "exact_from_device_grid_neighbor_counts",
+        "cell_count": 190,
+        "component_label_policy": "positive_root_index_labels_noise_minus_one",
+        "component_union_policy": "monotonic_atomic_min_core_edge_union",
+        "core_flag_source": "device_grid_count_kernel",
+        "device_grid_index_used": true,
+        "direct_device_handoff_authorized": false,
+        "grid_dimensions": [
+          34,
+          4,
+          5
+        ],
+        "host_bucket_index_used": false,
+        "input_contract": "prepared_partner_device_point_columns_3d",
+        "materializes_neighbor_rows": false,
+        "min_neighbors": 8,
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "output_workspace_reused": true,
+        "partner": "cupy",
+        "partner_reference_contract": "generic_prepared_cupy_grid_radius_graph_component_labels_3d",
+        "path": "partner_cupy_prepared_grid_radius_graph_components_3d",
+        "point_count": 32768,
+        "prepared_grid_reused": false,
+        "prepared_run_count": 1,
+        "radius": 0.03,
+        "rt_core_accelerated": false,
+        "rt_core_speedup_claim_authorized": false,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "mode": "partner_cupy_prepared_grid_components_3d",
+      "point_count": 32768,
+      "samples_elapsed_sec": [
+        0.0770463515073061,
+        0.07783529814332724
+      ],
+      "status": "ok"
+    },
+    {
+      "dataset": "road3d",
+      "median_elapsed_sec": 0.08141623623669147,
+      "metadata_last": {
+        "adapter": "PreparedNumbaRadiusGraphComponents3DGrid.run",
+        "caller_supplied_core_flags": false,
+        "candidate_edge_count": 21378620,
+        "candidate_edge_count_policy": "exact_from_numba_grid_neighbor_counts",
+        "cell_count": 190,
+        "component_label_policy": "positive_root_index_labels_noise_minus_one",
+        "component_union_policy": "monotonic_atomic_min_core_edge_union",
+        "core_flag_source": "numba_grid_count_kernel",
+        "device_grid_labeling_used": true,
+        "direct_device_handoff_authorized": false,
+        "grid_dimensions": [
+          34,
+          4,
+          5
+        ],
+        "host_prepared_grid_index_used": true,
+        "input_contract": "prepared_partner_device_point_columns_3d",
+        "materializes_neighbor_rows": false,
+        "min_neighbors": 8,
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "numba_cuda_jit_used": true,
+        "output_workspace_reused": true,
+        "partner": "numba",
+        "partner_reference_contract": "generic_prepared_numba_grid_radius_graph_component_labels_3d",
+        "path": "partner_numba_prepared_grid_radius_graph_components_3d",
+        "point_count": 32768,
+        "prepared_grid_reused": false,
+        "prepared_run_count": 1,
+        "radius": 0.03,
+        "raw_cuda_kernel_required": false,
+        "rt_core_accelerated": false,
+        "rt_core_speedup_claim_authorized": false,
+        "v2_9_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "mode": "partner_numba_prepared_grid_components_3d",
+      "point_count": 32768,
+      "samples_elapsed_sec": [
+        0.08115211967378855,
+        0.0816803527995944
+      ],
+      "status": "ok"
+    },
+    {
+      "dataset": "road3d",
+      "median_elapsed_sec": 0.2220341763459146,
+      "metadata_last": {
+        "adapter": "PreparedCupyRadiusGraphComponents3DGrid.run",
+        "caller_supplied_core_flags": false,
+        "candidate_edge_count": 85448035,
+        "candidate_edge_count_policy": "exact_from_device_grid_neighbor_counts",
+        "cell_count": 206,
+        "component_label_policy": "positive_root_index_labels_noise_minus_one",
+        "component_union_policy": "monotonic_atomic_min_core_edge_union",
+        "core_flag_source": "device_grid_count_kernel",
+        "device_grid_index_used": true,
+        "direct_device_handoff_authorized": false,
+        "grid_dimensions": [
+          34,
+          4,
+          5
+        ],
+        "host_bucket_index_used": false,
+        "input_contract": "prepared_partner_device_point_columns_3d",
+        "materializes_neighbor_rows": false,
+        "min_neighbors": 8,
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "output_workspace_reused": true,
+        "partner": "cupy",
+        "partner_reference_contract": "generic_prepared_cupy_grid_radius_graph_component_labels_3d",
+        "path": "partner_cupy_prepared_grid_radius_graph_components_3d",
+        "point_count": 65536,
+        "prepared_grid_reused": false,
+        "prepared_run_count": 1,
+        "radius": 0.03,
+        "rt_core_accelerated": false,
+        "rt_core_speedup_claim_authorized": false,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "mode": "partner_cupy_prepared_grid_components_3d",
+      "point_count": 65536,
+      "samples_elapsed_sec": [
+        0.22113141883164644,
+        0.22293693386018276
+      ],
+      "status": "ok"
+    },
+    {
+      "dataset": "road3d",
+      "median_elapsed_sec": 0.25315000023692846,
+      "metadata_last": {
+        "adapter": "PreparedNumbaRadiusGraphComponents3DGrid.run",
+        "caller_supplied_core_flags": false,
+        "candidate_edge_count": 85448035,
+        "candidate_edge_count_policy": "exact_from_numba_grid_neighbor_counts",
+        "cell_count": 206,
+        "component_label_policy": "positive_root_index_labels_noise_minus_one",
+        "component_union_policy": "monotonic_atomic_min_core_edge_union",
+        "core_flag_source": "numba_grid_count_kernel",
+        "device_grid_labeling_used": true,
+        "direct_device_handoff_authorized": false,
+        "grid_dimensions": [
+          34,
+          4,
+          5
+        ],
+        "host_prepared_grid_index_used": true,
+        "input_contract": "prepared_partner_device_point_columns_3d",
+        "materializes_neighbor_rows": false,
+        "min_neighbors": 8,
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "numba_cuda_jit_used": true,
+        "output_workspace_reused": true,
+        "partner": "numba",
+        "partner_reference_contract": "generic_prepared_numba_grid_radius_graph_component_labels_3d",
+        "path": "partner_numba_prepared_grid_radius_graph_components_3d",
+        "point_count": 65536,
+        "prepared_grid_reused": false,
+        "prepared_run_count": 1,
+        "radius": 0.03,
+        "raw_cuda_kernel_required": false,
+        "rt_core_accelerated": false,
+        "rt_core_speedup_claim_authorized": false,
+        "v2_9_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "mode": "partner_numba_prepared_grid_components_3d",
+      "point_count": 65536,
+      "samples_elapsed_sec": [
+        0.2303227949887514,
+        0.2759772054851055
+      ],
+      "status": "ok"
+    }
+  ]
+}

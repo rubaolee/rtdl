@@ -33,6 +33,7 @@ _CUPY_SEGMENT_TRIANGLE_EXACT_WITNESS_FILTER_KERNEL = None
 _CUPY_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS = None
 _CUPY_RADIUS_GRAPH_COMPONENTS_3D_MICROCELL_GRAPH_KERNELS = None
 _CUPY_GROUPED_VECTOR_SUM_OFFSETS_F64X2_KERNEL = None
+_NUMBA_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS = None
 
 _AABB_PAIR_PAYLOAD_FIELDS = (
     "left_index",
@@ -4448,6 +4449,237 @@ def _cupy_radius_graph_components_3d_grid_kernels(cupy):
     return _CUPY_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS
 
 
+def _numba_radius_graph_components_3d_grid_kernels(cuda):
+    global _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS
+    if _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS is None:
+
+        @cuda.jit(device=True)
+        def lower_bound_cell_numba(values, count, key):
+            left = 0
+            right = count
+            while left < right:
+                mid = left + ((right - left) >> 1)
+                if values[mid] < key:
+                    left = mid + 1
+                else:
+                    right = mid
+            return left
+
+        @cuda.jit(device=True)
+        def find_root_readonly_numba(parent, item):
+            root = item
+            guard = 0
+            while parent[root] != root and guard < 4096:
+                root = parent[root]
+                guard += 1
+            return root
+
+        @cuda.jit(device=True)
+        def union_min_root_numba(parent, left, right):
+            while True:
+                left_root = find_root_readonly_numba(parent, left)
+                right_root = find_root_readonly_numba(parent, right)
+                if left_root == right_root:
+                    return
+                high = left_root
+                low = right_root
+                if right_root > left_root:
+                    high = right_root
+                    low = left_root
+                old = cuda.atomic.min(parent, high, low)
+                if old == high:
+                    return
+
+        @cuda.jit(device=True)
+        def make_cell_id_numba(gx, gy, gz, dim_x, dim_y):
+            return gx + gy * dim_x + gz * dim_x * dim_y
+
+        @cuda.jit
+        def radius_graph_3d_count_kernel(
+            x,
+            y,
+            z,
+            point_count,
+            unique_cells,
+            cell_starts,
+            cell_counts,
+            unique_cell_count,
+            sorted_point_indices,
+            min_x,
+            min_y,
+            min_z,
+            cell_size,
+            dim_x,
+            dim_y,
+            dim_z,
+            radius_sq,
+            min_neighbors,
+            neighbor_counts,
+            core_flags,
+        ):
+            point = cuda.grid(1)
+            if point >= point_count:
+                return
+            gx = int(math.floor((x[point] - min_x) / cell_size))
+            gy = int(math.floor((y[point] - min_y) / cell_size))
+            gz = int(math.floor((z[point] - min_z) / cell_size))
+            count = 0
+            for oz in range(-1, 2):
+                nz = gz + oz
+                if nz < 0 or nz >= dim_z:
+                    continue
+                for oy in range(-1, 2):
+                    ny = gy + oy
+                    if ny < 0 or ny >= dim_y:
+                        continue
+                    for ox in range(-1, 2):
+                        nx = gx + ox
+                        if nx < 0 or nx >= dim_x:
+                            continue
+                        cell_id = make_cell_id_numba(nx, ny, nz, dim_x, dim_y)
+                        pos = lower_bound_cell_numba(unique_cells, unique_cell_count, cell_id)
+                        if pos >= unique_cell_count or unique_cells[pos] != cell_id:
+                            continue
+                        start = cell_starts[pos]
+                        end = start + cell_counts[pos]
+                        for cursor in range(start, end):
+                            other = sorted_point_indices[cursor]
+                            dx = x[point] - x[other]
+                            dy = y[point] - y[other]
+                            dz = z[point] - z[other]
+                            if dx * dx + dy * dy + dz * dz <= radius_sq:
+                                count += 1
+            neighbor_counts[point] = count
+            core_flags[point] = 1 if count >= min_neighbors else 0
+
+        @cuda.jit
+        def radius_graph_3d_union_kernel(
+            x,
+            y,
+            z,
+            point_count,
+            unique_cells,
+            cell_starts,
+            cell_counts,
+            unique_cell_count,
+            sorted_point_indices,
+            min_x,
+            min_y,
+            min_z,
+            cell_size,
+            dim_x,
+            dim_y,
+            dim_z,
+            radius_sq,
+            core_flags,
+            parent,
+        ):
+            point = cuda.grid(1)
+            if point >= point_count or core_flags[point] == 0:
+                return
+            gx = int(math.floor((x[point] - min_x) / cell_size))
+            gy = int(math.floor((y[point] - min_y) / cell_size))
+            gz = int(math.floor((z[point] - min_z) / cell_size))
+            for oz in range(-1, 2):
+                nz = gz + oz
+                if nz < 0 or nz >= dim_z:
+                    continue
+                for oy in range(-1, 2):
+                    ny = gy + oy
+                    if ny < 0 or ny >= dim_y:
+                        continue
+                    for ox in range(-1, 2):
+                        nx = gx + ox
+                        if nx < 0 or nx >= dim_x:
+                            continue
+                        cell_id = make_cell_id_numba(nx, ny, nz, dim_x, dim_y)
+                        pos = lower_bound_cell_numba(unique_cells, unique_cell_count, cell_id)
+                        if pos >= unique_cell_count or unique_cells[pos] != cell_id:
+                            continue
+                        start = cell_starts[pos]
+                        end = start + cell_counts[pos]
+                        for cursor in range(start, end):
+                            other = sorted_point_indices[cursor]
+                            if other <= point or core_flags[other] == 0:
+                                continue
+                            dx = x[point] - x[other]
+                            dy = y[point] - y[other]
+                            dz = z[point] - z[other]
+                            if dx * dx + dy * dy + dz * dz <= radius_sq:
+                                union_min_root_numba(parent, point, other)
+
+        @cuda.jit
+        def radius_graph_3d_label_kernel(
+            x,
+            y,
+            z,
+            point_count,
+            unique_cells,
+            cell_starts,
+            cell_counts,
+            unique_cell_count,
+            sorted_point_indices,
+            min_x,
+            min_y,
+            min_z,
+            cell_size,
+            dim_x,
+            dim_y,
+            dim_z,
+            radius_sq,
+            core_flags,
+            parent,
+            labels,
+        ):
+            point = cuda.grid(1)
+            if point >= point_count:
+                return
+            if core_flags[point] != 0:
+                labels[point] = find_root_readonly_numba(parent, point) + 1
+                return
+            gx = int(math.floor((x[point] - min_x) / cell_size))
+            gy = int(math.floor((y[point] - min_y) / cell_size))
+            gz = int(math.floor((z[point] - min_z) / cell_size))
+            best_root = -1
+            for oz in range(-1, 2):
+                nz = gz + oz
+                if nz < 0 or nz >= dim_z:
+                    continue
+                for oy in range(-1, 2):
+                    ny = gy + oy
+                    if ny < 0 or ny >= dim_y:
+                        continue
+                    for ox in range(-1, 2):
+                        nx = gx + ox
+                        if nx < 0 or nx >= dim_x:
+                            continue
+                        cell_id = make_cell_id_numba(nx, ny, nz, dim_x, dim_y)
+                        pos = lower_bound_cell_numba(unique_cells, unique_cell_count, cell_id)
+                        if pos >= unique_cell_count or unique_cells[pos] != cell_id:
+                            continue
+                        start = cell_starts[pos]
+                        end = start + cell_counts[pos]
+                        for cursor in range(start, end):
+                            other = sorted_point_indices[cursor]
+                            if core_flags[other] == 0:
+                                continue
+                            dx = x[point] - x[other]
+                            dy = y[point] - y[other]
+                            dz = z[point] - z[other]
+                            if dx * dx + dy * dy + dz * dz <= radius_sq:
+                                root = find_root_readonly_numba(parent, other)
+                                if best_root < 0 or root < best_root:
+                                    best_root = root
+            labels[point] = -1 if best_root < 0 else best_root + 1
+
+        _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS = (
+            radius_graph_3d_count_kernel,
+            radius_graph_3d_union_kernel,
+            radius_graph_3d_label_kernel,
+        )
+    return _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS
+
+
 _CUPY_RADIUS_GRAPH_COMPONENTS_3D_ADJACENCY_KERNELS = None
 
 
@@ -5109,6 +5341,221 @@ class PreparedCupyRadiusGraphComponents3DGrid:
             "direct_device_handoff_authorized": False,
             "rt_core_speedup_claim_authorized": False,
             "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+
+def _numba_cuda_stack_for_radius_graph():
+    try:
+        import _numba_cuda_redirector  # noqa: F401
+    except ImportError:
+        pass
+    import numpy as np
+    from numba import cuda
+
+    if not cuda.is_available():
+        raise RuntimeError("Numba radius-graph component adapter requires numba.cuda")
+    return cuda, np
+
+
+def _as_numba_radius_graph_device_array(values, *, cuda, np, dtype, name: str):
+    if hasattr(values, "__cuda_array_interface__") and not hasattr(values, "copy_to_host"):
+        values = cuda.as_cuda_array(values)
+    elif not hasattr(values, "copy_to_host"):
+        values = cuda.to_device(np.asarray(values, dtype=dtype))
+    if not hasattr(values, "copy_to_host"):
+        raise ValueError(f"{name} must be a Numba-compatible CUDA device array")
+    dtype_name = str(getattr(values, "dtype", ""))
+    expected_name = str(np.dtype(dtype))
+    if expected_name not in dtype_name:
+        host = np.asarray(values.copy_to_host(), dtype=dtype)
+        values = cuda.to_device(host)
+    return values
+
+
+class PreparedNumbaRadiusGraphComponents3DGrid:
+    """Prepared Numba CUDA grid state for generic radius-graph labeling."""
+
+    def __init__(self, point_columns: dict[str, object], *, radius: float, partner: str = "numba"):
+        if partner != "numba":
+            raise ValueError("PreparedNumbaRadiusGraphComponents3DGrid currently requires partner='numba'")
+        radius = float(radius)
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if "z" not in point_columns:
+            raise ValueError("PreparedNumbaRadiusGraphComponents3DGrid requires z point columns")
+        cuda, np = _numba_cuda_stack_for_radius_graph()
+        point_count = _column_length(point_columns, "ids")
+        if point_count <= 0:
+            raise ValueError("radius graph components requires non-empty point columns")
+
+        self.cuda = cuda
+        self.np = np
+        self.partner = "numba"
+        self.point_columns = point_columns
+        self.point_count = point_count
+        self.radius = radius
+        self.radius_sq = radius * radius
+        self.x = _as_numba_radius_graph_device_array(point_columns["x"], cuda=cuda, np=np, dtype=np.float64, name="x")
+        self.y = _as_numba_radius_graph_device_array(point_columns["y"], cuda=cuda, np=np, dtype=np.float64, name="y")
+        self.z = _as_numba_radius_graph_device_array(point_columns["z"], cuda=cuda, np=np, dtype=np.float64, name="z")
+        self.point_ids = _as_numba_radius_graph_device_array(
+            point_columns["ids"],
+            cuda=cuda,
+            np=np,
+            dtype=np.int64,
+            name="ids",
+        )
+        self.cell_size = radius if radius > 0.0 else 1.0
+        x_host = np.asarray(self.x.copy_to_host(), dtype=np.float64)
+        y_host = np.asarray(self.y.copy_to_host(), dtype=np.float64)
+        z_host = np.asarray(self.z.copy_to_host(), dtype=np.float64)
+        self.min_x = float(np.min(x_host))
+        self.min_y = float(np.min(y_host))
+        self.min_z = float(np.min(z_host))
+        gx = np.floor((x_host - self.min_x) / self.cell_size).astype(np.int64)
+        gy = np.floor((y_host - self.min_y) / self.cell_size).astype(np.int64)
+        gz = np.floor((z_host - self.min_z) / self.cell_size).astype(np.int64)
+        self.dim_x = int(np.max(gx)) + 1
+        self.dim_y = int(np.max(gy)) + 1
+        self.dim_z = int(np.max(gz)) + 1
+        cell_ids = (gx + gy * self.dim_x + gz * self.dim_x * self.dim_y).astype(np.int64)
+        order_host = np.argsort(cell_ids).astype(np.int32)
+        sorted_cell_ids = cell_ids[order_host].astype(np.int64)
+        unique_cells, starts, counts = np.unique(
+            sorted_cell_ids,
+            return_index=True,
+            return_counts=True,
+        )
+        self.unique_cells = cuda.to_device(unique_cells.astype(np.int64))
+        self.starts = cuda.to_device(starts.astype(np.int32))
+        self.counts = cuda.to_device(counts.astype(np.int32))
+        self.order = cuda.to_device(order_host)
+        self.unique_cell_count = int(unique_cells.size)
+        self.parent_initial_host = np.arange(point_count, dtype=np.int32)
+        self.parent_workspace = cuda.device_array((point_count,), dtype=np.int32)
+        self.labels_workspace = cuda.device_array((point_count,), dtype=np.int64)
+        self.neighbor_counts_workspace = cuda.device_array((point_count,), dtype=np.uint32)
+        self.core_flags_workspace = cuda.device_array((point_count,), dtype=np.uint32)
+        self.count_kernel, self.union_kernel, self.label_kernel = _numba_radius_graph_components_3d_grid_kernels(cuda)
+        self.threads = 256
+        self.blocks = (max(1, math.ceil(point_count / self.threads)),)
+        self.run_count = 0
+        cuda.synchronize()
+
+    def _common_args(self):
+        return (
+            self.x,
+            self.y,
+            self.z,
+            self.point_count,
+            self.unique_cells,
+            self.starts,
+            self.counts,
+            self.unique_cell_count,
+            self.order,
+            self.min_x,
+            self.min_y,
+            self.min_z,
+            self.cell_size,
+            self.dim_x,
+            self.dim_y,
+            self.dim_z,
+            self.radius_sq,
+        )
+
+    def run(
+        self,
+        *,
+        min_neighbors: int,
+        core_flags=None,
+        neighbor_counts=None,
+        core_flag_source: str = "numba_grid_count_kernel",
+        return_metadata: bool = False,
+    ):
+        min_neighbors = int(min_neighbors)
+        if min_neighbors < 1:
+            raise ValueError("min_neighbors must be at least 1")
+        cuda = self.cuda
+        np = self.np
+        if (core_flags is None) != (neighbor_counts is None):
+            raise ValueError("core_flags and neighbor_counts must be supplied together")
+        caller_supplied_core_flags = core_flags is not None
+        if caller_supplied_core_flags:
+            neighbor_counts = _as_numba_radius_graph_device_array(
+                neighbor_counts,
+                cuda=cuda,
+                np=np,
+                dtype=np.uint32,
+                name="neighbor_counts",
+            )
+            core_flags = _as_numba_radius_graph_device_array(
+                core_flags,
+                cuda=cuda,
+                np=np,
+                dtype=np.uint32,
+                name="core_flags",
+            )
+            if int(neighbor_counts.shape[0]) != self.point_count or int(core_flags.shape[0]) != self.point_count:
+                raise ValueError("core_flags and neighbor_counts must match point_count")
+        else:
+            neighbor_counts = self.neighbor_counts_workspace
+            core_flags = self.core_flags_workspace
+
+        self.parent_workspace.copy_to_device(self.parent_initial_host)
+        common = self._common_args()
+        if not caller_supplied_core_flags:
+            self.count_kernel[self.blocks, self.threads](
+                *(common + (min_neighbors, neighbor_counts, core_flags))
+            )
+        self.union_kernel[self.blocks, self.threads](*(common + (core_flags, self.parent_workspace)))
+        self.label_kernel[self.blocks, self.threads](*(common + (core_flags, self.parent_workspace, self.labels_workspace)))
+        cuda.synchronize()
+
+        if caller_supplied_core_flags:
+            edge_count = None
+            edge_count_policy = "not_reported_for_caller_supplied_threshold_capped_counts"
+        else:
+            edge_count = int((int(np.asarray(neighbor_counts.copy_to_host(), dtype=np.uint32).sum()) - self.point_count) // 2)
+            edge_count_policy = "exact_from_numba_grid_neighbor_counts"
+        prepared_grid_reused = self.run_count > 0
+        self.run_count += 1
+        columns = {
+            "point_ids": self.point_ids,
+            "component_labels": self.labels_workspace,
+            "is_core": core_flags,
+            "neighbor_counts": neighbor_counts,
+        }
+        metadata = {
+            "adapter": "PreparedNumbaRadiusGraphComponents3DGrid.run",
+            "partner": self.partner,
+            "input_contract": "prepared_partner_device_point_columns_3d",
+            "partner_reference_contract": "generic_prepared_numba_grid_radius_graph_component_labels_3d",
+            "native_engine_row_contract": "not_called_partner_reference_only",
+            "point_count": self.point_count,
+            "radius": self.radius,
+            "min_neighbors": min_neighbors,
+            "cell_count": self.unique_cell_count,
+            "candidate_edge_count": edge_count,
+            "candidate_edge_count_policy": edge_count_policy,
+            "grid_dimensions": (self.dim_x, self.dim_y, self.dim_z),
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "component_union_policy": "monotonic_atomic_min_core_edge_union",
+            "core_flag_source": str(core_flag_source),
+            "caller_supplied_core_flags": caller_supplied_core_flags,
+            "prepared_grid_reused": prepared_grid_reused,
+            "prepared_run_count": self.run_count,
+            "output_workspace_reused": True,
+            "host_prepared_grid_index_used": True,
+            "device_grid_labeling_used": True,
+            "raw_cuda_kernel_required": False,
+            "numba_cuda_jit_used": True,
+            "direct_device_handoff_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_9_release_authorized": False,
             "whole_app_speedup_claim_authorized": False,
         }
         if return_metadata:
@@ -6320,6 +6767,64 @@ def radius_graph_components_3d_cupy_prepared_grid_partner_columns(
         core_flag_source=core_flag_source,
         return_metadata=return_metadata,
     )
+
+
+def prepare_radius_graph_components_3d_numba_grid_partner_columns(
+    point_columns: dict[str, object],
+    *,
+    radius: float,
+    partner: str = "numba",
+) -> PreparedNumbaRadiusGraphComponents3DGrid:
+    return PreparedNumbaRadiusGraphComponents3DGrid(point_columns, radius=radius, partner=partner)
+
+
+def radius_graph_components_3d_numba_prepared_grid_partner_columns(
+    prepared: PreparedNumbaRadiusGraphComponents3DGrid,
+    *,
+    min_neighbors: int,
+    core_flags=None,
+    neighbor_counts=None,
+    core_flag_source: str = "numba_grid_count_kernel",
+    return_metadata: bool = False,
+):
+    return prepared.run(
+        min_neighbors=min_neighbors,
+        core_flags=core_flags,
+        neighbor_counts=neighbor_counts,
+        core_flag_source=core_flag_source,
+        return_metadata=return_metadata,
+    )
+
+
+def radius_graph_components_3d_numba_grid_partner_columns(
+    point_columns: dict[str, object],
+    *,
+    radius: float,
+    min_neighbors: int,
+    partner: str = "numba",
+    core_flags=None,
+    neighbor_counts=None,
+    core_flag_source: str = "numba_grid_count_kernel",
+    return_metadata: bool = False,
+):
+    prepared = PreparedNumbaRadiusGraphComponents3DGrid(point_columns, radius=radius, partner=partner)
+    result = prepared.run(
+        min_neighbors=min_neighbors,
+        core_flags=core_flags,
+        neighbor_counts=neighbor_counts,
+        core_flag_source=core_flag_source,
+        return_metadata=True,
+    )
+    result["metadata"].update(
+        {
+            "adapter": "radius_graph_components_3d_numba_grid_partner_columns",
+            "partner_reference_contract": "generic_numba_grid_radius_graph_component_labels_3d",
+            "prepared_wrapper_used": False,
+        }
+    )
+    if return_metadata:
+        return result
+    return result["columns"]
 
 
 def prepare_radius_graph_adjacency_3d_cupy_partner_columns(

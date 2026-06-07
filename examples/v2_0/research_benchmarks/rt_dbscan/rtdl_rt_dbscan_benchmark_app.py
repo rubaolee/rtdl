@@ -661,8 +661,13 @@ def _rows_from_partner_columns(columns: dict[str, object], *, partner: str) -> t
         labels = cupy.asnumpy(columns["component_labels"]).tolist()
         core_flags = cupy.asnumpy(columns["is_core"]).tolist()
         counts = cupy.asnumpy(columns["neighbor_counts"]).tolist()
+    elif partner == "numba":
+        point_ids = columns["point_ids"].copy_to_host().tolist()
+        labels = columns["component_labels"].copy_to_host().tolist()
+        core_flags = columns["is_core"].copy_to_host().tolist()
+        counts = columns["neighbor_counts"].copy_to_host().tolist()
     else:
-        raise ValueError("partner must be torch or cupy")
+        raise ValueError("partner must be torch, cupy, or numba")
     return tuple(
         {
             "point_id": int(point_id),
@@ -717,8 +722,12 @@ def _cluster_signature_from_partner_columns(columns: dict[str, object], *, partn
         point_ids = cupy.asnumpy(columns["point_ids"]).tolist()
         labels = cupy.asnumpy(columns["component_labels"]).tolist()
         core_flags = cupy.asnumpy(columns["is_core"]).tolist()
+    elif partner == "numba":
+        point_ids = columns["point_ids"].copy_to_host().tolist()
+        labels = columns["component_labels"].copy_to_host().tolist()
+        core_flags = columns["is_core"].copy_to_host().tolist()
     else:
-        raise ValueError("partner must be torch or cupy")
+        raise ValueError("partner must be torch, cupy, or numba")
     return _cluster_signature_from_host_columns(point_ids, labels, core_flags)
 
 
@@ -1031,6 +1040,25 @@ def run_rt_dbscan_benchmark(
         )
         rows = _rows_from_partner_columns(result["columns"], partner="cupy")
         metadata = dict(result["metadata"])
+    elif mode == "partner_numba_grid_components_3d":
+        point_columns = rt.point_rows_to_partner_columns(points, partner="numba")
+        result = rt.radius_graph_components_3d_numba_grid_partner_columns(
+            point_columns,
+            radius=resolved_radius,
+            min_neighbors=resolved_min_neighbors,
+            partner="numba",
+            return_metadata=True,
+        )
+        rows = _rows_from_partner_columns(result["columns"], partner="numba")
+        metadata = dict(result["metadata"])
+        metadata.update(
+            {
+                "path": "partner_numba_grid_radius_graph_components_3d",
+                "rt_core_accelerated": False,
+                "materializes_neighbor_rows": False,
+                "raw_cuda_kernel_required": False,
+            }
+        )
     elif mode == "partner_cupy_prepared_grid_components_3d":
         point_columns = rt.point_rows_to_partner_columns(points, partner="cupy")
         prepared_grid = rt.prepare_radius_graph_components_3d_cupy_grid_partner_columns(
@@ -1050,6 +1078,28 @@ def run_rt_dbscan_benchmark(
                 "path": "partner_cupy_prepared_grid_radius_graph_components_3d",
                 "rt_core_accelerated": False,
                 "materializes_neighbor_rows": False,
+            }
+        )
+    elif mode == "partner_numba_prepared_grid_components_3d":
+        point_columns = rt.point_rows_to_partner_columns(points, partner="numba")
+        prepared_grid = rt.prepare_radius_graph_components_3d_numba_grid_partner_columns(
+            point_columns,
+            radius=resolved_radius,
+            partner="numba",
+        )
+        result = rt.radius_graph_components_3d_numba_prepared_grid_partner_columns(
+            prepared_grid,
+            min_neighbors=resolved_min_neighbors,
+            return_metadata=True,
+        )
+        rows = _rows_from_partner_columns(result["columns"], partner="numba")
+        metadata = dict(result["metadata"])
+        metadata.update(
+            {
+                "path": "partner_numba_prepared_grid_radius_graph_components_3d",
+                "rt_core_accelerated": False,
+                "materializes_neighbor_rows": False,
+                "raw_cuda_kernel_required": False,
             }
         )
     elif mode == "partner_cupy_prepared_adjacency_components_3d":
@@ -1551,7 +1601,9 @@ def main(argv: list[str] | None = None) -> int:
             "embree_prepared_rows",
             "partner_spatial_bucket_3d",
             "partner_cupy_grid_components_3d",
+            "partner_numba_grid_components_3d",
             "partner_cupy_prepared_grid_components_3d",
+            "partner_numba_prepared_grid_components_3d",
             "partner_cupy_prepared_adjacency_components_3d",
             "optix_core_flags_cupy_grid_components_3d",
             "optix_rt_core_flags_cupy_grid_components_3d",
