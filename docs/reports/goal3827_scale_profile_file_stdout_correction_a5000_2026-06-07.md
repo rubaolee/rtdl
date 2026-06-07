@@ -27,7 +27,7 @@ progress lines.
 | --- | --- | ---: | ---: | --- |
 | `hausdorff_xhd_scale` | pass | 1.752 | 4009 | safe but still short |
 | `spatial_rayjoin_pip_count_repeat` | pass | 1.502 | 3152 | safe but still short |
-| `rt_dbscan_numba_65536` | timeout | 300.145 | 0 | real heavy timeout |
+| `rt_dbscan_numba_65536` | timeout | 300.145 | 0 | validation-inclusive command; later Goal3830 no-validation row passes |
 | `robot_collision_4096` | pass | 73.591 | 139902 | heavy but valid stress profile |
 | `contact_manifold_grid64` | pass | 0.752 | 7671 | safe but short |
 | `raydb_style_count_262k` | pass | 2.252 | 40921 | safe medium profile |
@@ -39,8 +39,11 @@ progress lines.
 ## Interpretation
 
 Nine of ten larger candidates pass under the corrected file-stdout harness.
-The only real timeout is RT-DBSCAN at 65k points. Earlier Barnes-Hut and robot
-timeouts were harness artifacts caused by large stdout JSON payloads.
+The only remaining timeout in this artifact is RT-DBSCAN at 65k points, but
+that command still included CPU reference validation. Goal3830 later shows the
+same 65k performance row passes when validation is explicitly separated.
+Earlier Barnes-Hut and robot timeouts were harness artifacts caused by large
+stdout JSON payloads.
 
 This changes the next engineering target:
 
@@ -48,9 +51,10 @@ This changes the next engineering target:
   Goal3826.
 - Use file-backed stdout, `subprocess.run(..., capture_output=True)`, or active
   pipe draining for future benchmark probes.
-- For scale-profile defaults, use calibrated rows rather than largest possible
-  rows: RT-DBSCAN 8192 or 16384, robot 1024 for default and 4096 for stress,
-  Barnes-Hut 8192 with file-backed stdout.
+- For scale-profile defaults, use calibrated rows rather than validation-heavy
+  commands: RT-DBSCAN 65k with `--no-validation` plus a separate small
+  correctness row, robot 1024 for default and 4096 for stress, Barnes-Hut 8192
+  with file-backed stdout.
 
 ## Boundary
 

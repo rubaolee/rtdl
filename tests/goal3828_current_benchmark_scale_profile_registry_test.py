@@ -42,8 +42,9 @@ class Goal3828CurrentBenchmarkScaleProfileRegistryTest(unittest.TestCase):
         rows = {row["app"]: row for row in rt.current_benchmark_scale_profiles()}
 
         self.assertIn("--point-count", rows["rt_dbscan"]["command"])
-        self.assertIn("8192", rows["rt_dbscan"]["command"])
-        self.assertNotIn("65536", rows["rt_dbscan"]["command"])
+        self.assertIn("65536", rows["rt_dbscan"]["command"])
+        self.assertIn("--no-validation", rows["rt_dbscan"]["command"])
+        self.assertNotIn("8192", rows["rt_dbscan"]["command"])
 
         self.assertIn("--pose-count", rows["robot_collision"]["command"])
         self.assertIn("1024", rows["robot_collision"]["command"])
@@ -104,7 +105,7 @@ class Goal3828CurrentBenchmarkScaleProfileRegistryTest(unittest.TestCase):
             "calibrated scale-profile commands",
             "not use undrained stdout pipes",
             "file-backed runner",
-            "rt_dbscan_optix_numba_scale_default_8192",
+            "rt_dbscan_optix_numba_scale_default_65536_no_validation",
             "robot_collision_optix_scale_default_1024",
             "barnes_hut_numba_scale_default_8192",
             "Rows fail closed",
@@ -140,7 +141,9 @@ class Goal3828CurrentBenchmarkScaleProfileRegistryTest(unittest.TestCase):
         )
 
         by_id = {row["row_id"]: row for row in rows}
-        self.assertLess(by_id["rt_dbscan_optix_numba_scale_default_8192"]["elapsed_sec"], 15.0)
+        rt_dbscan = by_id["rt_dbscan_optix_numba_scale_default_65536_no_validation"]
+        self.assertLess(rt_dbscan["elapsed_sec"], 10.0)
+        self.assertIn("--no-validation", rt_dbscan["command"])
         self.assertLess(by_id["robot_collision_optix_scale_default_1024"]["elapsed_sec"], 20.0)
         barnes = by_id["barnes_hut_numba_scale_default_8192"]
         self.assertLess(barnes["stdout_bytes"], 10_000)

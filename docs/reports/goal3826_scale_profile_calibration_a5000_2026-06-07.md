@@ -37,7 +37,7 @@ Superseding corrected artifact:
 | --- | --- | ---: | --- |
 | `hausdorff_xhd_scale` | pass | 1.752 | safe but still too short for a long timing profile |
 | `spatial_rayjoin_pip_count_repeat` | pass | 1.752 | safe but still too short for a long timing profile |
-| `rt_dbscan_numba_65536` | timeout | 241.517 | still times out under the corrected Goal3827 file-stdout probe |
+| `rt_dbscan_numba_65536` | timeout | 241.517 | validation-inclusive command; later Goal3830 shows the no-validation perf row passes |
 | `robot_collision_4096` | timeout | 240.336 | superseded by Goal3827; file-stdout probe passes in 73.591s |
 | `contact_manifold_grid64` | pass | 0.751 | safe but too short |
 | `raydb_style_count_262k` | pass | 2.252 | safe medium profile candidate |
@@ -71,16 +71,17 @@ Superseding corrected artifact:
 Goal3826 originally appeared to show three heavy failures. Goal3827 corrects
 that interpretation:
 
-- RT-DBSCAN 65k is a real heavy timeout in the corrected file-stdout harness.
+- RT-DBSCAN 65k timed out only for the validation-inclusive command; later
+  Goal3830 shows the no-validation performance row passes on A5000.
 - Robot 4096 passes in the corrected file-stdout harness, but takes 73.591s.
 - Barnes-Hut 8192 passes in the corrected file-stdout harness in 2.002s and
   writes about 893 KB of JSON; the earlier timeout was harness backpressure.
 
 The still-useful calibration points are:
 
-- RT-DBSCAN: `8192` points is a good default scale profile; `16384` is a
-  heavier stress row; `32768` is too long for default smoke but useful for
-  deep performance work.
+- RT-DBSCAN: use a separate small correctness row for CPU reference validation
+  and a no-validation performance row for large scale; the 65k no-validation
+  row is a viable scale profile after Goal3830.
 - Robot collision: `1024` poses with 128 obstacles is a good scale profile;
   Goal3827 shows `4096` poses is a heavy stress profile rather than a timeout.
 - Barnes-Hut: `8192` bodies is safe when stdout is redirected to a file.

@@ -48,7 +48,7 @@ python scripts/goal3828_current_benchmark_scale_profile_runner.py \
 | --- | --- | --- |
 | `hausdorff_xhd` | `hausdorff_xhd_scale_default_optix_threshold` | safe but short OptiX threshold scale row |
 | `spatial_rayjoin` | `spatial_rayjoin_pip_count_scale_default_prepared_optix` | safe but short repeated prepared PIP count row |
-| `rt_dbscan` | `rt_dbscan_optix_numba_scale_default_8192` | default 8192-point row; 65k remains too heavy |
+| `rt_dbscan` | `rt_dbscan_optix_numba_scale_default_65536_no_validation` | default 65k performance row with CPU validation separated |
 | `robot_collision` | `robot_collision_optix_scale_default_1024` | default 1024-pose row; 4096 is stress-only |
 | `contact_manifold` | `contact_manifold_optix_scale_default_grid64` | safe grid64 bounded collect-k row |
 | `raydb_style` | `raydb_style_optix_count_scale_default_262k` | safe medium primitive-first grouped count row |
@@ -77,22 +77,22 @@ Artifact:
 
 `docs/reports/goal3828_current_benchmark_scale_profiles_a5000/summary.json`
 
-Result: all ten calibrated default scale profiles passed on the A5000 pod at
-commit `a24f2812`. Every row emitted parseable JSON and zero forbidden true
-claim flags.
+Result: all ten calibrated default scale profiles passed on the A5000 pod after
+the Goal3830 registry patch. Every row emitted parseable JSON and zero
+forbidden true claim flags.
 
 | Row | Status | Elapsed seconds | JSON bytes |
 | --- | --- | ---: | ---: |
 | `hausdorff_xhd_scale_default_optix_threshold` | pass | 1.752 | 4006 |
 | `spatial_rayjoin_pip_count_scale_default_prepared_optix` | pass | 1.502 | 3155 |
-| `rt_dbscan_optix_numba_scale_default_8192` | pass | 7.755 | 4932 |
-| `robot_collision_optix_scale_default_1024` | pass | 10.506 | 41592 |
-| `contact_manifold_optix_scale_default_grid64` | pass | 1.002 | 7672 |
-| `raydb_style_optix_count_scale_default_262k` | pass | 2.253 | 40920 |
-| `barnes_hut_numba_scale_default_8192` | pass | 1.752 | 3400 |
-| `librts_spatial_index_optix_scale_default_32768` | pass | 2.003 | 1849 |
-| `rtnn_prepared_optix_scale_default_65536` | pass | 2.753 | 4810 |
-| `triangle_counting_optix_scale_default_native_2048` | pass | 1.502 | 2258 |
+| `rt_dbscan_optix_numba_scale_default_65536_no_validation` | pass | 3.503 | 4798 |
+| `robot_collision_optix_scale_default_1024` | pass | 11.309 | 41587 |
+| `contact_manifold_optix_scale_default_grid64` | pass | 0.752 | 7671 |
+| `raydb_style_optix_count_scale_default_262k` | pass | 2.002 | 40925 |
+| `barnes_hut_numba_scale_default_8192` | pass | 2.002 | 3400 |
+| `librts_spatial_index_optix_scale_default_32768` | pass | 2.002 | 1849 |
+| `rtnn_prepared_optix_scale_default_65536` | pass | 2.753 | 4803 |
+| `triangle_counting_optix_scale_default_native_2048` | pass | 1.502 | 2255 |
 
 This is calibrated execution evidence, not a performance leaderboard. Several
 rows are still intentionally marked `safe_but_short`, so a later performance
