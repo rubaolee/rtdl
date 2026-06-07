@@ -8,13 +8,6 @@ This file catches design ideas that should not interrupt the current release or 
 - Rationale: Goal3519 cleaned the active learner Markdown surface to v2.8, while Goal3520 confirmed that several Python source helpers retain older labels as compatibility/protocol names. They should not block the v2.8 internal closeout, but future user-facing APIs should prefer current generic names or explicit `legacy_` aliases.
 - Boundary: do not rename public or semi-public helper functions casually. Add aliases and migration tests first, preserve existing scripts, and keep historical protocol identifiers stable where artifacts or tests depend on them.
 
-## Generic Adapter Naming
-
-- Consider introducing a generic alias for the Hausdorff adapter shape now named `directed_hausdorff_2d_partner_columns`.
-- Candidate generic concept: `directed_max_of_nearest_distance_2d` or `max_distance_nearest_candidate_2d`.
-- Rationale: the current native/runtime layers remain app-agnostic, but the adapter name carries algorithm vocabulary. A generic primary name plus `hausdorff` as a discovery alias would improve reuse and align with the primitive discovery duplicate gate.
-- Boundary: do not rename the public benchmark app casually; preserve user compatibility and only add aliases/migration helpers when this becomes a real versioned goal.
-
 ## Generic Closed-Shape Boundary Selection
 
 - Add a generic prepared point-to-closed-shape boundary-selection primitive inspired by the RayJoin PIP benchmark gap.
