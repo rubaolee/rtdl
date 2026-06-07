@@ -36,11 +36,15 @@ aliases.
 
 ## Validation
 
-Focused local validation should cover:
+Focused validation slice:
 
 ```text
 tests.goal3812_current_benchmark_docs_and_adequacy_aliases_test
 tests.goal3519_v2_8_learner_docs_cleanup_test
 tests.goal3050_partner_choice_docs_test
 tests.goal3786_current_benchmark_adequacy_after_hiprt_closeout_test
+tests.goal3518_v2_8_benchmark_matrix_test
 ```
+
+- Local Windows: 19 tests passed.
+- A5000 pod on clean `origin/main` at commit `fd918bd5`: 19 tests passed.
