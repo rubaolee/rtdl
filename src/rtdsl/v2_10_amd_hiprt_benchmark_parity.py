@@ -10,7 +10,7 @@ from .engine_feature_matrix import engine_feature_support
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION = "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3771.v1"
+V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION = "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3772.v1"
 V2_10_AMD_HIPRT_BENCHMARK_PARITY_STATUS = "planning_gate_not_amd_hardware_evidence"
 
 PARITY_STAGES = (
@@ -203,14 +203,20 @@ V2_10_AMD_HIPRT_BENCHMARK_PARITY_ROWS: tuple[V210AmdHiprtBenchmarkParityRow, ...
     ),
     V210AmdHiprtBenchmarkParityRow(
         app="rtnn",
-        required_engine_features=("fixed_radius_neighbors_3d", "knn_rows_3d", "fixed_radius_ranked_summary_aggregate_3d"),
-        missing_generic_contracts=("batched_prepared_query_sweep",),
-        parity_stage="needs_generic_hiprt_extension",
-        first_amd_goal="HIPRT fixed-radius ranked-summary aggregate parity",
+        required_engine_features=(
+            "fixed_radius_neighbors_3d",
+            "knn_rows_3d",
+            "fixed_radius_ranked_summary_aggregate_3d",
+            "fixed_radius_ranked_summary_batched_sweep_3d",
+        ),
+        missing_generic_contracts=(),
+        parity_stage="ready_for_amd_functional_pod",
+        first_amd_goal="RTNN HIPRT functional parity on AMD hardware",
         rationale=(
             "Base fixed-radius/KNN entries exist, and Goal3771 adds the generic prepared fixed-radius "
-            "ranked-summary aggregate on the NVIDIA CUDA/Orochi HIPRT route. The benchmark still needs "
-            "a batched prepared-query sweep before the RTNN row is ready for AMD functional validation."
+            "ranked-summary aggregate on the NVIDIA CUDA/Orochi HIPRT route. Goal3772 adds the generic "
+            "prepared ranked-summary batched sweep, so the RTNN lane is ready for AMD functional pod "
+            "validation but still has no AMD hardware evidence."
         ),
         needs_amd_pod=True,
     ),

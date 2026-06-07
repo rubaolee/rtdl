@@ -79,8 +79,8 @@ class Goal3771HiprtFixedRadiusRankedAggregatePortableTest(unittest.TestCase):
         rtnn = rows["rtnn"]
         self.assertIn("fixed_radius_ranked_summary_aggregate_3d", rtnn["required_engine_features"])
         self.assertNotIn("ranked_summary_aggregate", rtnn["missing_generic_contracts"])
-        self.assertEqual(rtnn["missing_generic_contracts"], ("batched_prepared_query_sweep",))
-        self.assertEqual(rtnn["parity_stage"], "needs_generic_hiprt_extension")
+        self.assertEqual(rtnn["missing_generic_contracts"], ())
+        self.assertEqual(rtnn["parity_stage"], "ready_for_amd_functional_pod")
 
     def test_report_records_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")

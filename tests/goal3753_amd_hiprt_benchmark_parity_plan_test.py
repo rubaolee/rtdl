@@ -34,16 +34,16 @@ class Goal3753AmdHiprtBenchmarkParityPlanTest(unittest.TestCase):
     def test_summary_is_honest_about_amd_extension_work(self) -> None:
         self.assertEqual(
             V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION,
-            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3771.v1",
+            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3772.v1",
         )
         summary = summarize_v2_10_amd_hiprt_benchmark_parity()
         self.assertEqual(summary["app_count"], 10)
-        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 4)
+        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 5)
         self.assertEqual(summary["stage_counts"]["compatibility_only_not_amd_perf_ready"], 2)
-        self.assertEqual(summary["stage_counts"]["needs_generic_hiprt_extension"], 4)
+        self.assertEqual(summary["stage_counts"]["needs_generic_hiprt_extension"], 3)
         self.assertEqual(
             summary["ready_for_amd_functional_pod_apps"],
-            ("spatial_rayjoin", "rt_dbscan", "robot_collision", "librts_spatial_index"),
+            ("spatial_rayjoin", "rt_dbscan", "robot_collision", "librts_spatial_index", "rtnn"),
         )
         self.assertIn("raydb_style", summary["compatibility_only_not_amd_perf_ready_apps"])
         self.assertFalse(summary["release_authorized"])
@@ -74,14 +74,17 @@ class Goal3753AmdHiprtBenchmarkParityPlanTest(unittest.TestCase):
         self.assertEqual(librts["missing_generic_contracts"], ())
         self.assertEqual(librts["parity_stage"], "ready_for_amd_functional_pod")
 
-    def test_rtnn_records_goal3771_ranked_aggregate_closure(self) -> None:
+    def test_rtnn_records_goal3772_batched_sweep_closure(self) -> None:
         rows = {row["app"]: row for row in v2_10_amd_hiprt_benchmark_parity()}
         rtnn = rows["rtnn"]
         self.assertIn("fixed_radius_ranked_summary_aggregate_3d", rtnn["required_engine_features"])
+        self.assertIn("fixed_radius_ranked_summary_batched_sweep_3d", rtnn["required_engine_features"])
         self.assertEqual(rtnn["hiprt_feature_statuses"]["fixed_radius_ranked_summary_aggregate_3d"], NATIVE)
+        self.assertEqual(rtnn["hiprt_feature_statuses"]["fixed_radius_ranked_summary_batched_sweep_3d"], NATIVE)
         self.assertNotIn("ranked_summary_aggregate", rtnn["missing_generic_contracts"])
-        self.assertEqual(rtnn["missing_generic_contracts"], ("batched_prepared_query_sweep",))
-        self.assertEqual(rtnn["parity_stage"], "needs_generic_hiprt_extension")
+        self.assertNotIn("batched_prepared_query_sweep", rtnn["missing_generic_contracts"])
+        self.assertEqual(rtnn["missing_generic_contracts"], ())
+        self.assertEqual(rtnn["parity_stage"], "ready_for_amd_functional_pod")
 
     def test_each_row_keeps_claim_boundary_false(self) -> None:
         for row in v2_10_amd_hiprt_benchmark_parity():

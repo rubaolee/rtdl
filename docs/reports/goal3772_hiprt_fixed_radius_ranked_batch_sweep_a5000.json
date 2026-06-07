@@ -1,0 +1,20 @@
+{
+  "goal": "Goal3772",
+  "source_commit": "pending-pod-validation",
+  "scoped_source_dirty": false,
+  "backend_route": "pending NVIDIA CUDA/Orochi HIPRT A5000 validation; not AMD hardware evidence",
+  "sample": {
+    "request_count": 0,
+    "batch_matches_repeated_single_aggregate": true
+  },
+  "rtnn_missing_generic_contracts": [],
+  "rtnn_parity_stage": "ready_for_amd_functional_pod",
+  "claim_boundary": {
+    "release_authorized": false,
+    "amd_perf_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "broad_rt_core_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "app_specific_native_engine_logic_allowed": false
+  }
+}

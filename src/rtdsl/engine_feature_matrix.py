@@ -171,6 +171,13 @@ _FEATURE_MATRIX: dict[str, dict[str, EngineFeatureSupport]] = {
         "hiprt": _support("fixed_radius_ranked_summary_aggregate_3d", "hiprt", NATIVE, "Goal3771 prepared fixed-radius ranked-summary aggregate path."),
         "apple_rt": _support("fixed_radius_ranked_summary_aggregate_3d", "apple_rt", COMPATIBILITY_FALLBACK, "Aggregates emitted fixed-radius ranked rows; no native aggregate export."),
     },
+    "fixed_radius_ranked_summary_batched_sweep_3d": {
+        "embree": _support("fixed_radius_ranked_summary_batched_sweep_3d", "embree", COMPATIBILITY_FALLBACK, "Loops emitted fixed-radius ranked rows across request sweeps; no native batch export."),
+        "optix": _support("fixed_radius_ranked_summary_batched_sweep_3d", "optix", NATIVE, "Prepared fixed-radius ranked-summary batched request sweep path."),
+        "vulkan": _support("fixed_radius_ranked_summary_batched_sweep_3d", "vulkan", COMPATIBILITY_FALLBACK, "Loops emitted fixed-radius ranked rows across request sweeps; no native batch export."),
+        "hiprt": _support("fixed_radius_ranked_summary_batched_sweep_3d", "hiprt", NATIVE, "Goal3772 prepared fixed-radius ranked-summary batched request sweep path."),
+        "apple_rt": _support("fixed_radius_ranked_summary_batched_sweep_3d", "apple_rt", COMPATIBILITY_FALLBACK, "Loops emitted fixed-radius ranked rows across request sweeps; no native batch export."),
+    },
     "knn_rows_2d": {
         "embree": _support("knn_rows_2d", "embree", NATIVE, "Embree bounded nearest-neighbor rows."),
         "optix": _support("knn_rows_2d", "optix", NATIVE, "OptiX bounded nearest-neighbor rows."),

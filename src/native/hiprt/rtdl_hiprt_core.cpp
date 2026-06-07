@@ -229,6 +229,7 @@ struct PreparedFixedRadiusNeighbors3D {
     oroFunction threshold_flags_kernel{};
     oroFunction ranked_aggregate_kernel{};
     size_t search_count{};
+    float max_radius{};
 
     PreparedFixedRadiusNeighbors3D(
         HiprtRuntime&& runtime_in,
@@ -238,7 +239,8 @@ struct PreparedFixedRadiusNeighbors3D {
         hiprtGeometry geometry_in,
         hiprtFuncTable func_table_in,
         oroFunction kernel_in,
-        size_t search_count_in)
+        size_t search_count_in,
+        float max_radius_in)
         : runtime(std::move(runtime_in)),
           search_device(std::move(search_device_in)),
           aabb_device(std::move(aabb_device_in)),
@@ -246,7 +248,8 @@ struct PreparedFixedRadiusNeighbors3D {
           geometry(geometry_in),
           func_table(func_table_in),
           kernel(kernel_in),
-          search_count(search_count_in) {}
+          search_count(search_count_in),
+          max_radius(max_radius_in) {}
 
     ~PreparedFixedRadiusNeighbors3D() {
         if (func_table != nullptr) {
@@ -2065,7 +2068,8 @@ std::unique_ptr<PreparedFixedRadiusNeighbors3D> prepare_fixed_radius_neighbors_3
             geometry,
             func_table,
             kernel,
-            search_count);
+            search_count,
+            static_cast<float>(radius));
         geometry = nullptr;
         func_table = nullptr;
         return prepared;
@@ -2078,6 +2082,23 @@ std::unique_ptr<PreparedFixedRadiusNeighbors3D> prepare_fixed_radius_neighbors_3
         }
         throw;
     }
+}
+
+void write_prepared_fixed_radius_params_3d(PreparedFixedRadiusNeighbors3D& prepared, double radius) {
+    if (!std::isfinite(radius)) {
+        throw std::runtime_error("fixed_radius request radius must be finite");
+    }
+    if (radius < 0.0) {
+        throw std::runtime_error("fixed_radius request radius must be non-negative");
+    }
+    const double epsilon = 1e-6;
+    if (radius > static_cast<double>(prepared.max_radius) + epsilon) {
+        throw std::runtime_error("fixed_radius request radius must not exceed the prepared maximum radius");
+    }
+    RtdlHiprtFixedRadiusParams params{static_cast<float>(radius)};
+    check_oro(
+        "oroMemcpyHtoD",
+        oroMemcpyHtoD(prepared.params_device.oro_ptr(), &params, sizeof(params)));
 }
 
 void run_prepared_fixed_radius_neighbors_3d(
@@ -2334,6 +2355,51 @@ void aggregate_prepared_fixed_radius_ranked_summary_3d(
     check_oro(
         "oroMemcpyDtoH",
         oroMemcpyDtoH(aggregate_out, aggregate_device.oro_ptr(), sizeof(RtdlFixedRadiusRankedNeighborAggregate)));
+}
+
+void aggregate_prepared_fixed_radius_ranked_summary_batch_3d(
+    PreparedFixedRadiusNeighbors3D& prepared,
+    const RtdlPoint3D* queries,
+    size_t query_count,
+    const double* radii,
+    const uint32_t* k_values,
+    size_t request_count,
+    RtdlFixedRadiusRankedNeighborAggregate* aggregates_out) {
+    if (request_count == 0) {
+        return;
+    }
+    if (aggregates_out == nullptr) {
+        throw std::runtime_error("aggregates_out must not be null when request_count is nonzero");
+    }
+    if (radii == nullptr || k_values == nullptr) {
+        throw std::runtime_error("radii and k_values must not be null when request_count is nonzero");
+    }
+    for (size_t request_index = 0; request_index < request_count; ++request_index) {
+        aggregates_out[request_index] = RtdlFixedRadiusRankedNeighborAggregate{0, 0, 0, 0, 0.0};
+    }
+
+    bool needs_restore = false;
+    try {
+        for (size_t request_index = 0; request_index < request_count; ++request_index) {
+            write_prepared_fixed_radius_params_3d(prepared, radii[request_index]);
+            needs_restore = true;
+            aggregate_prepared_fixed_radius_ranked_summary_3d(
+                prepared,
+                queries,
+                query_count,
+                k_values[request_index],
+                &aggregates_out[request_index]);
+        }
+    } catch (...) {
+        if (needs_restore) {
+            try {
+                write_prepared_fixed_radius_params_3d(prepared, static_cast<double>(prepared.max_radius));
+            } catch (...) {
+            }
+        }
+        throw;
+    }
+    write_prepared_fixed_radius_params_3d(prepared, static_cast<double>(prepared.max_radius));
 }
 
 void run_fixed_radius_neighbors_2d(

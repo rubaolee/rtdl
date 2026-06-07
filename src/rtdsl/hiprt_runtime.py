@@ -619,6 +619,19 @@ def _hiprt_lib() -> ctypes.CDLL:
             ctypes.c_size_t,
         ]
         lib.rtdl_hiprt_aggregate_prepared_fixed_radius_ranked_summary_3d.restype = ctypes.c_int
+    if hasattr(lib, "rtdl_hiprt_aggregate_prepared_fixed_radius_ranked_summary_batch_3d"):
+        lib.rtdl_hiprt_aggregate_prepared_fixed_radius_ranked_summary_batch_3d.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlFixedRadiusRankedNeighborAggregate),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        lib.rtdl_hiprt_aggregate_prepared_fixed_radius_ranked_summary_batch_3d.restype = ctypes.c_int
     lib.rtdl_hiprt_destroy_prepared_fixed_radius_neighbors_3d.argtypes = [ctypes.c_void_p]
     lib.rtdl_hiprt_destroy_prepared_fixed_radius_neighbors_3d.restype = None
     lib.rtdl_hiprt_run_fixed_radius_neighbors_2d.argtypes = [
@@ -2885,9 +2898,10 @@ def prepare_hiprt_ray_triangle_any_hit_2d(
 
 
 class PreparedHiprtFixedRadiusNeighbors3D:
-    def __init__(self, handle: ctypes.c_void_p, *, empty: bool = False) -> None:
+    def __init__(self, handle: ctypes.c_void_p, *, empty: bool = False, max_radius: float | None = None) -> None:
         self._handle = handle
         self._empty = empty
+        self._max_radius = max_radius
 
     def close(self) -> None:
         if self._handle:
@@ -2905,6 +2919,20 @@ class PreparedHiprtFixedRadiusNeighbors3D:
             self.close()
         except Exception:
             pass
+
+    def _validate_prepared_radius_override(self, radius: float | None, *, operation: str) -> None:
+        if radius is None:
+            return
+        if self._max_radius is None:
+            raise ValueError(f"Prepared HIPRT {operation} cannot validate a radius override on this handle")
+        requested = float(radius)
+        if requested < 0.0:
+            raise ValueError(f"Prepared HIPRT {operation} radius must be non-negative")
+        if abs(requested - self._max_radius) > 1e-6:
+            raise ValueError(
+                f"Prepared HIPRT {operation} uses the prepared radius {self._max_radius}; "
+                "use aggregate_ranked_summary_batch for explicit radius sweeps"
+            )
 
     def run(
         self,
@@ -2960,6 +2988,7 @@ class PreparedHiprtFixedRadiusNeighbors3D:
         threshold: int,
         radius: float | None = None,
     ) -> int:
+        self._validate_prepared_radius_override(radius, operation="fixed_radius threshold count")
         query_records = tuple(query_points)
         if any(not isinstance(point, _CanonicalPoint3D) for point in query_records):
             raise TypeError("Prepared HIPRT fixed_radius threshold count currently supports only Point3D query inputs")
@@ -3005,6 +3034,7 @@ class PreparedHiprtFixedRadiusNeighbors3D:
         threshold: int,
         radius: float | None = None,
     ) -> tuple[bool, ...]:
+        self._validate_prepared_radius_override(radius, operation="fixed_radius threshold flags")
         query_records = tuple(query_points)
         if any(not isinstance(point, _CanonicalPoint3D) for point in query_records):
             raise TypeError("Prepared HIPRT fixed_radius threshold flags currently support only Point3D query inputs")
@@ -3063,6 +3093,7 @@ class PreparedHiprtFixedRadiusNeighbors3D:
         k_max: int,
         radius: float | None = None,
     ) -> dict[str, int | float | str]:
+        self._validate_prepared_radius_override(radius, operation="fixed_radius ranked aggregate")
         query_records = tuple(query_points)
         if any(not isinstance(point, _CanonicalPoint3D) for point in query_records):
             raise TypeError("Prepared HIPRT fixed_radius ranked aggregate currently supports only Point3D query inputs")
@@ -3124,6 +3155,115 @@ class PreparedHiprtFixedRadiusNeighbors3D:
             "precision": "float32_distance",
         }
 
+    def aggregate_ranked_summary_batch(
+        self,
+        query_points: tuple[_CanonicalPoint3D, ...],
+        requests: tuple[dict[str, float | int], ...] | list[dict[str, float | int]],
+    ) -> tuple[dict[str, int | float | str], ...]:
+        query_records = tuple(query_points)
+        request_records = tuple(requests)
+        if any(not isinstance(point, _CanonicalPoint3D) for point in query_records):
+            raise TypeError("Prepared HIPRT fixed_radius ranked aggregate batch currently supports only Point3D query inputs")
+        if self._max_radius is None:
+            raise ValueError("Prepared HIPRT fixed_radius ranked aggregate batch requires a known prepared radius")
+        normalized_requests: list[tuple[float, int]] = []
+        for request in request_records:
+            if not isinstance(request, dict):
+                raise TypeError("Prepared HIPRT ranked aggregate batch requests must be dictionaries")
+            if "k_max" not in request:
+                raise ValueError("Prepared HIPRT ranked aggregate batch request missing k_max")
+            radius_value = float(request.get("radius", self._max_radius))
+            k_value = int(request["k_max"])
+            if radius_value < 0.0:
+                raise ValueError("Prepared HIPRT ranked aggregate batch radius must be non-negative")
+            if radius_value > self._max_radius + 1e-6:
+                raise ValueError("Prepared HIPRT ranked aggregate batch radius must not exceed the prepared radius")
+            if k_value <= 0:
+                raise ValueError("Prepared HIPRT ranked aggregate batch k_max must be positive")
+            if k_value > 64:
+                raise ValueError("Prepared HIPRT ranked aggregate batch currently supports k_max <= 64")
+            normalized_requests.append((radius_value, k_value))
+        if not normalized_requests:
+            return ()
+        if not query_records:
+            return tuple(
+                {
+                    "request_index": request_index,
+                    "radius": radius_value,
+                    "k_max": k_value,
+                    "query_count": 0,
+                    "bounded_neighbor_count": 0,
+                    "nearest_id_checksum": 0,
+                    "kth_id_checksum": 0,
+                    "sum_distance": 0.0,
+                    "precision": "float32_distance",
+                }
+                for request_index, (radius_value, k_value) in enumerate(normalized_requests)
+            )
+        if self._empty:
+            return tuple(
+                {
+                    "request_index": request_index,
+                    "radius": radius_value,
+                    "k_max": k_value,
+                    "query_count": len(query_records),
+                    "bounded_neighbor_count": 0,
+                    "nearest_id_checksum": 0,
+                    "kth_id_checksum": 0,
+                    "sum_distance": 0.0,
+                    "precision": "float32_distance",
+                }
+                for request_index, (radius_value, k_value) in enumerate(normalized_requests)
+            )
+        if not self._handle:
+            raise RuntimeError("prepared HIPRT fixed_radius_neighbors_3d handle is closed")
+        symbol = getattr(_hiprt_lib(), "rtdl_hiprt_aggregate_prepared_fixed_radius_ranked_summary_batch_3d", None)
+        if symbol is None:
+            raise RuntimeError(
+                "Loaded HIPRT backend library does not export "
+                "rtdl_hiprt_aggregate_prepared_fixed_radius_ranked_summary_batch_3d. "
+                "Rebuild it with 'make build-hiprt' from current main."
+            )
+        query_array = _encode_point3d_array(query_records)
+        RadiusArray = ctypes.c_double * len(normalized_requests)
+        KArray = ctypes.c_uint32 * len(normalized_requests)
+        AggregateArray = _RtdlFixedRadiusRankedNeighborAggregate * len(normalized_requests)
+        radii = RadiusArray(*[radius_value for radius_value, _k_value in normalized_requests])
+        k_values = KArray(*[k_value for _radius_value, k_value in normalized_requests])
+        aggregates = AggregateArray()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            self._handle,
+            query_array,
+            len(query_records),
+            radii,
+            k_values,
+            len(normalized_requests),
+            aggregates,
+            error,
+            ctypes.sizeof(error),
+        )
+        if status != 0:
+            detail = error.value.decode("utf-8", errors="replace")
+            raise RuntimeError(
+                "rtdl_hiprt_aggregate_prepared_fixed_radius_ranked_summary_batch_3d "
+                f"failed with status {status}: {detail}"
+            )
+        return tuple(
+            {
+                "request_index": request_index,
+                "radius": normalized_requests[request_index][0],
+                "k_max": normalized_requests[request_index][1],
+                "query_count": int(aggregate.query_count),
+                "bounded_neighbor_count": int(aggregate.bounded_neighbor_count),
+                "nearest_id_checksum": int(aggregate.nearest_id_checksum),
+                "kth_id_checksum": int(aggregate.kth_id_checksum),
+                "sum_distance": float(aggregate.sum_distance),
+                "precision": "float32_distance",
+            }
+            for request_index, aggregate in enumerate(aggregates)
+        )
+
 
 def prepare_hiprt_fixed_radius_neighbors_3d(
     search_points: tuple[_CanonicalPoint3D, ...],
@@ -3136,7 +3276,7 @@ def prepare_hiprt_fixed_radius_neighbors_3d(
     if radius < 0.0:
         raise ValueError("fixed_radius_neighbors radius must be non-negative")
     if not search_records:
-        return PreparedHiprtFixedRadiusNeighbors3D(ctypes.c_void_p(), empty=True)
+        return PreparedHiprtFixedRadiusNeighbors3D(ctypes.c_void_p(), empty=True, max_radius=float(radius))
     search_array = _encode_point3d_array(search_records)
     handle = ctypes.c_void_p()
     error = ctypes.create_string_buffer(4096)
@@ -3151,7 +3291,7 @@ def prepare_hiprt_fixed_radius_neighbors_3d(
     if status != 0:
         detail = error.value.decode("utf-8", errors="replace")
         raise RuntimeError(f"rtdl_hiprt_prepare_fixed_radius_neighbors_3d failed with status {status}: {detail}")
-    return PreparedHiprtFixedRadiusNeighbors3D(handle)
+    return PreparedHiprtFixedRadiusNeighbors3D(handle, max_radius=float(radius))
 
 
 def _unsupported_hiprt_peer_workload(predicate_name: str, detail: str) -> NotImplementedError:

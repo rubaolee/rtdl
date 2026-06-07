@@ -562,6 +562,31 @@ extern "C" int rtdl_hiprt_aggregate_prepared_fixed_radius_ranked_summary_3d(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_hiprt_aggregate_prepared_fixed_radius_ranked_summary_batch_3d(
+    void* prepared,
+    const RtdlPoint3D* queries,
+    size_t query_count,
+    const double* radii,
+    const uint32_t* k_values,
+    size_t request_count,
+    RtdlFixedRadiusRankedNeighborAggregate* aggregates_out,
+    char* error_out,
+    size_t error_size) {
+    return handle_call([&]() {
+        if (prepared == nullptr) {
+            throw std::runtime_error("prepared HIPRT fixed-radius-neighbors handle must not be null");
+        }
+        aggregate_prepared_fixed_radius_ranked_summary_batch_3d(
+            *reinterpret_cast<PreparedFixedRadiusNeighbors3D*>(prepared),
+            queries,
+            query_count,
+            radii,
+            k_values,
+            request_count,
+            aggregates_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_hiprt_run_fixed_radius_neighbors_2d(
     const RtdlPoint* queries,
     size_t query_count,
