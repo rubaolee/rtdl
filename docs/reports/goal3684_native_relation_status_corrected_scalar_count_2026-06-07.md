@@ -68,11 +68,11 @@ Hot medians:
 
 | Route | Median seconds | Stable count |
 | --- | ---: | ---: |
-| all relation candidates, count-only | `0.000469781` | `47264` |
-| boundary-status candidate columns | `0.000740198` | `47241` |
-| relation-status corrected exact Numba count | `0.003303390` | `47262` |
-| resident relation-status corrected exact Numba count | `0.001884510` | `47262` |
-| native relation-status corrected exact scalar count | `0.000529409` | `47262` |
+| all relation candidates, count-only | `0.000462798` | `47264` |
+| boundary-status candidate columns | `0.000723106` | `47241` |
+| relation-status corrected exact Numba count | `0.003212072` | `47262` |
+| resident relation-status corrected exact Numba count | `0.001824513` | `47262` |
+| native relation-status corrected exact scalar count | `0.000516817` | `47262` |
 
 Correctness:
 
@@ -81,7 +81,9 @@ Correctness:
 - native all-match exact count: `true`
 - dropped boundary-contact candidates: `2`
 
-Relative to the prior resident Numba path in the same packet, the native scalar route is about `3.56x` faster (`0.001884510 / 0.000529409`) and does not materialize boundary candidate rows. Relative to the one-shot Numba corrected path, it is about `6.24x` faster.
+The artifact was generated from clean scoped source at commit `eaeafde2` (`goal3677_scoped_source_dirty=false`).
+
+Relative to the prior resident Numba path in the same packet, the native scalar route is about `3.53x` faster (`0.001824513 / 0.000516817`) and does not materialize boundary candidate rows. Relative to the one-shot Numba corrected path, it is about `6.21x` faster.
 
 ## Interpretation
 
