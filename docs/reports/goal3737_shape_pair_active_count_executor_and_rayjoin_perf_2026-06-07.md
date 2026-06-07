@@ -50,17 +50,19 @@ over generic RTDL primitives.
 Source artifact:
 `docs/reports/goal3737_shape_pair_active_count_executor_direct_a5000/summary.json`
 
+Clean source commit: `15c219f87d31673dbaf2fea784b2c3c5e1f76af7`
+
 | Chain Count | Pre-Executor Direct Median Sec | Executor Direct Median Sec | Direct Speedup | Row Count |
 | ---: | ---: | ---: | ---: | ---: |
-| 1024 | 0.000713511 | 0.000380400 | 1.876x | 472 |
-| 2048 | 0.001536583 | 0.000612737 | 2.507x | 1305 |
-| 4096 | 0.003147002 | 0.001565283 | 2.010x | 4250 |
+| 1024 | 0.000713511 | 0.000379116 | 1.882x | 472 |
+| 2048 | 0.001536583 | 0.000609719 | 2.520x | 1305 |
+| 4096 | 0.003147002 | 0.001563861 | 2.012x | 4250 |
 
 The 4096 native phase breakdown after the executor:
 
-- traversal: `0.001102414s`
-- active scan: `0.000461134s`
-- scalar download: `0.000006782s`
+- traversal: `0.001074866s`
+- active scan: `0.000455949s`
+- scalar download: `0.000006368s`
 - left prepare/upload in the hot path: `0.0s / 0.0s`
 - native mode: `active_count_device_continuation_prepared_left_executor`
 
@@ -83,12 +85,12 @@ The conservative safe-mixed route is:
 
 | Chain Count | All-CuPy Median Sum Sec | Safe-Mixed Executor Sum Sec | Safe-Mixed Speedup vs All-CuPy |
 | ---: | ---: | ---: | ---: |
-| 1024 | 0.167040193 | 0.000896198 | 186.388x |
-| 2048 | 0.356131562 | 0.001219472 | 292.037x |
-| 4096 | 1.436036370 | 0.002313084 | 620.832x |
+| 1024 | 0.165072143 | 0.000900549 | 183.302x |
+| 2048 | 0.358304277 | 0.001201836 | 298.131x |
+| 4096 | 1.433508132 | 0.002296349 | 624.255x |
 
 Composite geomean speedup improved from `211.132x` before the executor to
-`323.303x` after it. Minimum speedup improved from `137.001x` to `186.388x`.
+`324.324x` after it. Minimum speedup improved from `137.001x` to `183.302x`.
 All counts match.
 
 ## 8192 Boundary
@@ -113,9 +115,9 @@ This is internal engineering evidence only. It does not authorize:
 
 For the 4096 safe-mixed composite after Goal3737:
 
-- PIP remains a safe CuPy leg at about `0.000785s`.
-- LSI is effectively tiny at about `0.000106s`.
-- overlay active count remains the dominant RTDL leg at about `0.001422s`.
+- PIP remains a safe CuPy leg at about `0.000778s`.
+- LSI is effectively tiny at about `0.000100s`.
+- overlay active count remains the dominant RTDL leg at about `0.001418s`.
 
 The next meaningful RayJoin improvement would need to reduce the native
 traversal/active-scan work itself or make the PIP native scalar path exact across
