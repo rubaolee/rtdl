@@ -4739,7 +4739,7 @@ static void ensure_segment_pair_grouped_ranges(PreparedSegmentPairIntersectionBu
     if (prepared->right_segments.empty()) {
         return;
     }
-    size_t max_segments_per_group = 64;
+    size_t max_segments_per_group = 1;
     if (const char* raw_max = std::getenv("RTDL_OPTIX_SEGMENT_PAIR_GROUPED_RANGE_MAX_SIZE")) {
         char* end = nullptr;
         const unsigned long long parsed = std::strtoull(raw_max, &end, 10);
@@ -4747,7 +4747,7 @@ static void ensure_segment_pair_grouped_ranges(PreparedSegmentPairIntersectionBu
             max_segments_per_group = static_cast<size_t>(std::min<unsigned long long>(parsed, 1024ull));
         }
     }
-    float area_enlarge_limit = 5.0f;
+    float area_enlarge_limit = 1.5f;
     if (const char* raw_area = std::getenv("RTDL_OPTIX_SEGMENT_PAIR_GROUPED_RANGE_AREA_ENLARGE")) {
         char* end = nullptr;
         const double parsed = std::strtod(raw_area, &end);

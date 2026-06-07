@@ -1,0 +1,107 @@
+{
+  "best": {
+    "compression": 0.0,
+    "counts_match": true,
+    "existing_sec": 0.0014904802665114403,
+    "file": "docs/reports/goal3724_rayjoin_lsi_grouped_range_route_confirm_a5000/max1_area1.5.json",
+    "group_count": 326193,
+    "grouped_sec": 0.00028173159807920456,
+    "policy": {
+      "area_enlarge": 1.5,
+      "env_area_enlarge": "1.5",
+      "env_max_size": "1",
+      "max_size": 1
+    },
+    "rayjoin_sec": 0.000905673,
+    "speedup_vs_existing": 5.290426337241783,
+    "speedup_vs_rayjoin": 3.2146660373728606
+  },
+  "rows": [
+    {
+      "compression": 0.0,
+      "counts_match": true,
+      "existing_sec": 0.0014904802665114403,
+      "file": "docs/reports/goal3724_rayjoin_lsi_grouped_range_route_confirm_a5000/max1_area1.5.json",
+      "group_count": 326193,
+      "grouped_sec": 0.00028173159807920456,
+      "policy": {
+        "area_enlarge": 1.5,
+        "env_area_enlarge": "1.5",
+        "env_max_size": "1",
+        "max_size": 1
+      },
+      "rayjoin_sec": 0.000905673,
+      "speedup_vs_existing": 5.290426337241783,
+      "speedup_vs_rayjoin": 3.2146660373728606
+    },
+    {
+      "compression": 0.1359808456956464,
+      "counts_match": true,
+      "existing_sec": 0.0014212429523468018,
+      "file": "docs/reports/goal3724_rayjoin_lsi_grouped_range_route_confirm_a5000/max2_area1.5.json",
+      "group_count": 281837,
+      "grouped_sec": 0.00036660395562648773,
+      "policy": {
+        "area_enlarge": 1.5,
+        "env_area_enlarge": "1.5",
+        "env_max_size": "2",
+        "max_size": 2
+      },
+      "rayjoin_sec": 0.00088199,
+      "speedup_vs_existing": 3.8767801889045264,
+      "speedup_vs_rayjoin": 2.4058387435912185
+    },
+    {
+      "compression": 0.16992087506476228,
+      "counts_match": true,
+      "existing_sec": 0.001489647664129734,
+      "file": "docs/reports/goal3724_rayjoin_lsi_grouped_range_route_confirm_a5000/max3_area1.5.json",
+      "group_count": 270766,
+      "grouped_sec": 0.00039019249379634857,
+      "policy": {
+        "area_enlarge": 1.5,
+        "env_area_enlarge": "1.5",
+        "env_max_size": "3",
+        "max_size": 3
+      },
+      "rayjoin_sec": 0.000877937,
+      "speedup_vs_existing": 3.8177250659958086,
+      "speedup_vs_rayjoin": 2.2500099667683964
+    },
+    {
+      "compression": 0.18627928864200027,
+      "counts_match": true,
+      "existing_sec": 0.0014854883775115013,
+      "file": "docs/reports/goal3724_rayjoin_lsi_grouped_range_route_confirm_a5000/max4_area1.5.json",
+      "group_count": 265430,
+      "grouped_sec": 0.0004223836585879326,
+      "policy": {
+        "area_enlarge": 1.5,
+        "env_area_enlarge": "1.5",
+        "env_max_size": "4",
+        "max_size": 4
+      },
+      "rayjoin_sec": 0.000885328,
+      "speedup_vs_existing": 3.5169172559317885,
+      "speedup_vs_rayjoin": 2.0960280588499396
+    },
+    {
+      "compression": 0.42629363597624714,
+      "counts_match": true,
+      "existing_sec": 0.0014950688928365707,
+      "file": "docs/reports/goal3724_rayjoin_lsi_grouped_range_route_confirm_a5000/max4_area2.0.json",
+      "group_count": 187139,
+      "grouped_sec": 0.0005529187619686127,
+      "policy": {
+        "area_enlarge": 2.0,
+        "env_area_enlarge": "2.0",
+        "env_max_size": "4",
+        "max_size": 4
+      },
+      "rayjoin_sec": 0.0008810360000000001,
+      "speedup_vs_existing": 2.70395760764841,
+      "speedup_vs_rayjoin": 1.5934275712821868
+    }
+  ],
+  "schema": "rtdl.goal3724.grouped_range_confirm.v1"
+}

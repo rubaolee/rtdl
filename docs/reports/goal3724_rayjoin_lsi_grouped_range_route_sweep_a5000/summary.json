@@ -1,0 +1,155 @@
+{
+  "best": {
+    "compression": 0.18627928864200027,
+    "counts_match": true,
+    "existing_sec": 0.0014605354517698288,
+    "file": "docs/reports/goal3724_rayjoin_lsi_grouped_range_route_sweep_a5000/max4_area1.5.json",
+    "group_count": 265430,
+    "grouped_sec": 0.00042762886732816696,
+    "policy": {
+      "area_enlarge": 1.5,
+      "env_area_enlarge": "1.5",
+      "env_max_size": "4",
+      "max_size": 4
+    },
+    "speedup_vs_existing": 3.415427636808715
+  },
+  "rows": [
+    {
+      "compression": 0.18627928864200027,
+      "counts_match": true,
+      "existing_sec": 0.0014605354517698288,
+      "file": "docs/reports/goal3724_rayjoin_lsi_grouped_range_route_sweep_a5000/max4_area1.5.json",
+      "group_count": 265430,
+      "grouped_sec": 0.00042762886732816696,
+      "policy": {
+        "area_enlarge": 1.5,
+        "env_area_enlarge": "1.5",
+        "env_max_size": "4",
+        "max_size": 4
+      },
+      "speedup_vs_existing": 3.415427636808715
+    },
+    {
+      "compression": 0.21295674646604923,
+      "counts_match": true,
+      "existing_sec": 0.0015373360365629196,
+      "file": "docs/reports/goal3724_rayjoin_lsi_grouped_range_route_sweep_a5000/max8_area1.5.json",
+      "group_count": 256728,
+      "grouped_sec": 0.0004875278100371361,
+      "policy": {
+        "area_enlarge": 1.5,
+        "env_area_enlarge": "1.5",
+        "env_max_size": "8",
+        "max_size": 8
+      },
+      "speedup_vs_existing": 3.1533299330059084
+    },
+    {
+      "compression": 0.42629363597624714,
+      "counts_match": true,
+      "existing_sec": 0.001437976025044918,
+      "file": "docs/reports/goal3724_rayjoin_lsi_grouped_range_route_sweep_a5000/max4_area2.0.json",
+      "group_count": 187139,
+      "grouped_sec": 0.0005440814420580864,
+      "policy": {
+        "area_enlarge": 2.0,
+        "env_area_enlarge": "2.0",
+        "env_max_size": "4",
+        "max_size": 4
+      },
+      "speedup_vs_existing": 2.642942607278634
+    },
+    {
+      "compression": 0.23356724393227324,
+      "counts_match": true,
+      "existing_sec": 0.0014420151710510254,
+      "file": "docs/reports/goal3724_rayjoin_lsi_grouped_range_route_sweep_a5000/max16_area1.5.json",
+      "group_count": 250005,
+      "grouped_sec": 0.0006155548617243767,
+      "policy": {
+        "area_enlarge": 1.5,
+        "env_area_enlarge": "1.5",
+        "env_max_size": "16",
+        "max_size": 16
+      },
+      "speedup_vs_existing": 2.3426265646110807
+    },
+    {
+      "compression": 0.5402139224324249,
+      "counts_match": true,
+      "existing_sec": 0.0014844117686152458,
+      "file": "docs/reports/goal3724_rayjoin_lsi_grouped_range_route_sweep_a5000/max8_area2.0.json",
+      "group_count": 149979,
+      "grouped_sec": 0.0007682889699935913,
+      "policy": {
+        "area_enlarge": 2.0,
+        "env_area_enlarge": "2.0",
+        "env_max_size": "8",
+        "max_size": 8
+      },
+      "speedup_vs_existing": 1.932100845633158
+    },
+    {
+      "compression": 0.253785335675505,
+      "counts_match": true,
+      "existing_sec": 0.0014978470280766487,
+      "file": "docs/reports/goal3724_rayjoin_lsi_grouped_range_route_sweep_a5000/max32_area1.5.json",
+      "group_count": 243410,
+      "grouped_sec": 0.000897478312253952,
+      "policy": {
+        "area_enlarge": 1.5,
+        "env_area_enlarge": "1.5",
+        "env_max_size": "32",
+        "max_size": 32
+      },
+      "speedup_vs_existing": 1.6689506672477845
+    },
+    {
+      "compression": 0.6381130189795612,
+      "counts_match": true,
+      "existing_sec": 0.001445678062736988,
+      "file": "docs/reports/goal3724_rayjoin_lsi_grouped_range_route_sweep_a5000/max16_area2.0.json",
+      "group_count": 118045,
+      "grouped_sec": 0.0013978881761431694,
+      "policy": {
+        "area_enlarge": 2.0,
+        "env_area_enlarge": "2.0",
+        "env_max_size": "16",
+        "max_size": 16
+      },
+      "speedup_vs_existing": 1.0341872028173762
+    },
+    {
+      "compression": 0.7208155907698817,
+      "counts_match": true,
+      "existing_sec": 0.0015640230849385262,
+      "file": "docs/reports/goal3724_rayjoin_lsi_grouped_range_route_sweep_a5000/max32_area2.0.json",
+      "group_count": 91068,
+      "grouped_sec": 0.0029327021911740303,
+      "policy": {
+        "area_enlarge": 2.0,
+        "env_area_enlarge": "2.0",
+        "env_max_size": "32",
+        "max_size": 32
+      },
+      "speedup_vs_existing": 0.533304434949261
+    },
+    {
+      "compression": 0.7797438939523533,
+      "counts_match": true,
+      "existing_sec": 0.0014430433511734009,
+      "file": "docs/reports/goal3724_rayjoin_lsi_grouped_range_route_sweep_a5000/max64_area2.0.json",
+      "group_count": 71846,
+      "grouped_sec": 0.0065190671011805534,
+      "policy": {
+        "area_enlarge": 2.0,
+        "env_area_enlarge": "2.0",
+        "env_max_size": "64",
+        "max_size": 64
+      },
+      "speedup_vs_existing": 0.22135733975066413
+    }
+  ],
+  "schema": "rtdl.goal3724.grouped_range_policy_sweep.v1"
+}
