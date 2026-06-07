@@ -1,0 +1,54 @@
+{
+  "backend_route": "HIPRT through Orochi/CUDA on NVIDIA pod; functional implementation evidence, not AMD hardware evidence",
+  "claim_boundary": {
+    "amd_perf_claim_authorized": false,
+    "app_specific_native_engine_logic_allowed": false,
+    "broad_rt_core_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "contact_manifold_missing_generic_contracts": [
+    "bounded_contact_witness_collection"
+  ],
+  "contact_manifold_parity_stage": "needs_generic_hiprt_extension",
+  "goal": "Goal3775",
+  "hiprt_probe": {
+    "api_version": 2002,
+    "device_name": "NVIDIA RTX A5000",
+    "device_type": 1,
+    "version": [
+      2,
+      2,
+      15109972
+    ]
+  },
+  "sample": {
+    "direct_rows": [
+      {
+        "ray_id": 7,
+        "t": 1.0,
+        "triangle_id": 42
+      }
+    ],
+    "generic_rows": [
+      {
+        "ray_id": 7,
+        "t": 1.0,
+        "triangle_id": 42
+      }
+    ],
+    "generic_rows_match_reference": true,
+    "reference_rows": [
+      {
+        "ray_id": 7,
+        "t": 1.0,
+        "triangle_id": 42
+      }
+    ],
+    "rows_match_reference": true
+  },
+  "scoped_source_dirty": false,
+  "scoped_source_status": [],
+  "source_commit": "220e8468"
+}
