@@ -40,6 +40,22 @@ def _claim_boundary() -> dict[str, bool]:
     }
 
 
+def _scoped_source_dirty() -> bool:
+    paths = [
+        "src/native/optix/rtdl_optix_core.cpp",
+        "src/native/optix/rtdl_optix_workloads.cpp",
+        "src/native/optix/rtdl_optix_api.cpp",
+        "src/native/optix/rtdl_optix_prelude.h",
+        "src/rtdsl/optix_runtime.py",
+        "src/rtdsl/closed_shape_topology.py",
+        "scripts/goal3677_rayjoin_pip_relation_status_exact_count_timing.py",
+        "tests/goal3677_relation_status_filtered_exact_count_test.py",
+        "docs/reports/goal3677_relation_status_filtered_exact_count_2026-06-06.md",
+        "docs/handoff/HANDOFF_GEMINI_GOAL3677_RELATION_STATUS_EXACT_COUNT_REVIEW_2026-06-06.md",
+    ]
+    return bool(_command_output(["git", "status", "--short", "--", *paths]))
+
+
 def _median(values: list[float]) -> float:
     ordered = sorted(values)
     if not ordered:
@@ -235,6 +251,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, Any]:
             "source_commit": _command_output(["git", "rev-parse", "HEAD"]),
             "source_commit_short": _command_output(["git", "rev-parse", "--short", "HEAD"]),
             "git_status_dirty": bool(_command_output(["git", "status", "--short"])),
+            "goal3677_scoped_source_dirty": _scoped_source_dirty(),
             "pod_gpu": _command_output(["nvidia-smi", "--query-gpu=name,driver_version", "--format=csv,noheader"]),
             "environment": {
                 "RTDL_OPTIX_LIBRARY": os.environ.get("RTDL_OPTIX_LIBRARY"),
