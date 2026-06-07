@@ -1,0 +1,38 @@
+{
+  "schema": "rtdl.goal3693.lsi_missing_pair_precision_probe.v1",
+  "missing_pair_rayjoin_zero_based": [
+    230119,
+    226567
+  ],
+  "exact_decimal_predicate": {
+    "den": "-0.000547856236600000",
+    "t": "0.000075687191693456757483957790542746191674912841541612561064345470663571524267284393",
+    "u": "0.080646704442924288141616457049929656673730379872433855214052335568502315375485862",
+    "hit": true,
+    "reason": "endpoint-near parametric hit"
+  },
+  "simulated_float32_device_predicate": {
+    "rounded_left_a": [
+      -53.12997817993164,
+      -28.763490676879883
+    ],
+    "rounded_left_b": [
+      -53.12362289428711,
+      -28.755029678344727
+    ],
+    "rounded_right_a": [
+      -53.13010025024414,
+      -28.75670051574707
+    ],
+    "rounded_right_b": [
+      -53.12860107421875,
+      -28.840900421142578
+    ],
+    "den": -0.0005477989325299859,
+    "t": -0.00018010620260611176,
+    "u": 0.08066143840551376,
+    "hit": false,
+    "drop_reason": "t_below_zero_after_float32_rounding"
+  },
+  "diagnosis": "The RayJoin-included pair is an endpoint-near segment intersection. Exact arithmetic classifies it as a hit, but a float32-style candidate predicate can round the left endpoint enough to make t negative. The generic RTDL issue is robust segment-pair candidate emission for near-boundary intersections, not RayJoin-specific app logic."
+}
