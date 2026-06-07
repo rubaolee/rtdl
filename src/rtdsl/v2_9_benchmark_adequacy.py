@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-V2_9_BENCHMARK_ADEQUACY_VERSION = "rtdl.v2_9.benchmark_adequacy_after_goal3737.v1"
+V2_9_BENCHMARK_ADEQUACY_VERSION = "rtdl.v2_9.benchmark_adequacy_after_goal3746.v1"
 V2_9_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 V2_9_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal3740 records internal benchmark-app adequacy after the Goal3737 "
@@ -156,16 +156,20 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
     V29BenchmarkAdequacyRow(
         app="rt_dbscan",
         promoted_reader_view="RT-DBSCAN-style fixed-radius grouped stream and component labeling",
-        current_performance_reading="near parity: v2.9 packet row is 0.997206x versus v2.3",
-        adequacy="near_parity",
+        current_performance_reading=(
+            "adequate with boundary: v2.9 packet row is 0.997206x versus v2.3; Goal3742 adds a "
+            "Numba grid component reference and Goal3744 bridges OptiX RT-core threshold flags into "
+            "Numba continuation with mixed but real A5000 evidence"
+        ),
+        adequacy="adequate",
         current_recommended_path="RTDL/OptiX fixed-radius grouped stream plus app-owned component continuation",
-        current_partner_role="CuPy currently carries the component continuation",
-        needs_numba_reference=True,
-        numba_reference_reason="component labeling is custom app continuation and should have a high-performance Numba reference",
+        current_partner_role="CuPy and Numba component continuations both exist; users choose explicitly",
+        needs_numba_reference=False,
+        numba_reference_reason="Numba grid component labeling and OptiX-to-Numba bridge now exist as measured references",
         amd_hiprt_readiness="needs HIPRT fixed-radius grouped stream parity before AMD performance work",
-        next_generic_runtime_action="add/measure Numba component continuation, then decide if a generic component primitive is warranted",
-        evidence_refs=("Goal2802", "Goal3567"),
-        pod_needed_next=True,
+        next_generic_runtime_action="treat as covered for Numba-reference purposes; next major work is HIPRT fixed-radius parity",
+        evidence_refs=("Goal2802", "Goal3567", "Goal3742", "Goal3744"),
+        pod_needed_next=False,
     ),
     V29BenchmarkAdequacyRow(
         app="robot_collision",
@@ -213,18 +217,19 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
         app="barnes_hut",
         promoted_reader_view="Barnes-Hut node membership plus grouped force-vector reduction",
         current_performance_reading=(
-            "needs major follow-up: current packet no longer has a silent partial, but the force-vector "
-            "continuation remains partner-shaped and lacks a Numba reference parity/perf packet"
+            "adequate with boundary: current packet no longer has a silent partial, and Goal3746 adds "
+            "a Numba CUDA JIT exact-force reference that matches the CPU oracle and reaches 0.754x to "
+            "0.893x of the CuPy RawKernel path across 1024-8192 bodies on the A5000"
         ),
-        adequacy="needs_major_followup",
-        current_recommended_path="RTDL/OptiX membership primitive plus grouped vector-sum partner continuation",
-        current_partner_role="CuPy currently wins the measured vector-sum partner route",
-        needs_numba_reference=True,
-        numba_reference_reason="force-vector reduction is custom continuation logic and should not require CuPy RawKernel as the only reference",
+        adequacy="adequate",
+        current_recommended_path="RTDL/OptiX membership primitive plus explicit partner exact-force/vector continuation",
+        current_partner_role="CuPy remains fastest in the measured exact-force route; Numba is the no-RawKernel reference",
+        needs_numba_reference=False,
+        numba_reference_reason="Goal3746 adds the Numba CUDA JIT exact-force reference; richer hierarchical force acceleration remains separate future work",
         amd_hiprt_readiness="needs HIPRT membership primitive and grouped vector output contract mapping",
-        next_generic_runtime_action="write a Numba grouped vector-sum reference and compare it against the CuPy continuation",
-        evidence_refs=("Goal2803", "Goal3599", "Goal3567"),
-        pod_needed_next=True,
+        next_generic_runtime_action="treat as covered for Numba-reference purposes; next major work is HIPRT membership parity or deeper hierarchical vector primitive design",
+        evidence_refs=("Goal2803", "Goal3599", "Goal3567", "Goal3746"),
+        pod_needed_next=False,
     ),
     V29BenchmarkAdequacyRow(
         app="librts_spatial_index",

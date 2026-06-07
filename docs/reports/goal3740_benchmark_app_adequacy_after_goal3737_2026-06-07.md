@@ -14,7 +14,9 @@ stop treating the benchmark suite as a pile of isolated rows and decide, app by
 app, what is already good enough and what still needs major generic
 runtime/primitive work.
 
-Goal3740 records that decision in a machine-checkable matrix:
+Goal3740 records that decision in a machine-checkable matrix. The matrix was
+then refreshed after Goals3742/3744/3746 closed the RT-DBSCAN and Barnes-Hut
+Numba-reference gaps:
 
 - `src/rtdsl/v2_9_benchmark_adequacy.py`
 - `tests/goal3740_benchmark_app_adequacy_after_goal3737_test.py`
@@ -25,11 +27,11 @@ Goal3740 records that decision in a machine-checkable matrix:
 | --- | --- | --- | --- | --- |
 | `hausdorff_xhd` | Positive v2.9 row (`1.019555x`) plus separate RTDL/OptiX X-HD evidence; not an X-HD paper win claim. | adequate | no; Numba exact reference already exists | Use as AMD nearest-witness parity target. |
 | `spatial_rayjoin` | Strong contract-specific result after Goal3737: safe-mixed geomean `324.324x`, min `183.302x`, 4096 `624.255x` versus all-CuPy. | strong | yes | Make broad-CDB closed-shape/PIP exact without CuPy-only policy, or reduce generic overlay active-scan/containment work. |
-| `rt_dbscan` | Near parity in the v2.9 packet (`0.997206x`). | near_parity | yes | Build/measure a Numba component-continuation reference, then decide whether a generic component primitive is warranted. |
+| `rt_dbscan` | Near parity in the v2.9 packet (`0.997206x`); Goal3742/3744 add Numba grid component labeling and OptiX-to-Numba bridge evidence. | adequate | no | Treat as covered for Numba-reference purposes; next major work is HIPRT fixed-radius parity. |
 | `robot_collision` | Near parity (`0.987619x`) on prepared any-hit flags. | near_parity | no | Treat as no-regression unless larger pose batches expose material overhead. |
 | `contact_manifold` | Positive row (`1.219528x`). | adequate | no | Keep as primitive-only bounded witness reference. |
 | `raydb_style` | Count is `1.009085x`; sum is `1.585627x` after generic grouped-i64 fast path. | adequate | no | Preserve primitive-first path; use for AMD grouped-reduction parity. |
-| `barnes_hut` | Resident evidence exists, but force-vector continuation remains partner-shaped. | needs_major_followup | yes | Write a Numba grouped vector-sum reference and compare it against CuPy. |
+| `barnes_hut` | Resident evidence exists, and Goal3746 adds a Numba CUDA JIT exact-force reference at `0.754x`-`0.893x` of CuPy RawKernel on A5000. | adequate | no | Treat as covered for Numba-reference purposes; deeper hierarchical vector primitives are future work. |
 | `librts_spatial_index` | Clean resident same-contract evidence is slightly positive (`1.005864x`), composite row near parity. | adequate | no | Keep as prepared-index no-regression and AMD AABB-query parity target. |
 | `rtnn` | Positive row (`1.061225x`) with prepared ranked-summary evidence. | adequate | no | Use as prepared fixed-radius aggregate parity target for AMD. |
 | `triangle_counting` | Positive row (`1.029580x`) and fastest route is primitive-only. | adequate | no | Keep as primitive-only graph-summary target. |
@@ -43,10 +45,9 @@ done:
   comparison, but still exposes the next deep runtime problem: generic
   closed-shape/topology exactness and generic scalar-count correction without
   materializing unnecessary rows.
-- `rt_dbscan` and `barnes_hut` are the clearest Numba-reference gaps. They are
-  not app-specific engine gaps; they are app-owned continuation gaps where the
-  project should give users a high-performance Python/Numba reference instead
-  of making CuPy RawKernel/CUDA string code feel mandatory.
+- `rt_dbscan` and `barnes_hut` now have measured Numba references. They are not
+  promoted as universal wins over CuPy, but users no longer need CuPy RawKernel
+  as the only high-performance reference for those continuation shapes.
 - `robot_collision` is slightly negative but close enough to treat as
   no-regression unless a larger batch exposes a material issue.
 - `raydb_style`, `contact_manifold`, `rtnn`, `triangle_counting`,
@@ -59,8 +60,6 @@ The next Numba work should be narrow and app-owned:
 
 | Priority | App | Reason |
 | --- | --- | --- |
-| P0 | `rt_dbscan` | Component labeling is custom continuation logic and currently depends on CuPy-style continuation evidence. |
-| P0 | `barnes_hut` | Grouped force-vector continuation is partner-shaped and should not require CuPy RawKernel as the only high-performance reference. |
 | P1 | `spatial_rayjoin` | Closed-shape/topology policy should have a Numba reference for app-owned continuation; native engine remains generic. |
 
 Numba reference paths do not mean hidden partner selection. Users still choose

@@ -42,20 +42,21 @@ class Goal3740BenchmarkAppAdequacyAfterGoal3737Test(unittest.TestCase):
         summary = summarize_v2_9_benchmark_adequacy()
         self.assertEqual(
             set(summary["numba_reference_needed_apps"]),
-            {"spatial_rayjoin", "rt_dbscan", "barnes_hut"},
+            {"spatial_rayjoin"},
         )
         rows = {row["app"]: row for row in v2_9_benchmark_adequacy()}
-        self.assertIn("component", rows["rt_dbscan"]["numba_reference_reason"].lower())
-        self.assertIn("vector", rows["barnes_hut"]["numba_reference_reason"].lower())
+        self.assertIn("numba grid", rows["rt_dbscan"]["numba_reference_reason"].lower())
+        self.assertIn("numba cuda jit", rows["barnes_hut"]["numba_reference_reason"].lower())
         self.assertIn("closed-shape", rows["spatial_rayjoin"]["numba_reference_reason"].lower())
 
     def test_adequacy_summary_names_remaining_major_followup(self) -> None:
         summary = summarize_v2_9_benchmark_adequacy()
         self.assertEqual(summary["app_count"], 10)
         self.assertEqual(summary["row_count"], 10)
-        self.assertEqual(summary["adequacy_counts"]["needs_major_followup"], 1)
+        self.assertEqual(summary["adequacy_counts"].get("needs_major_followup", 0), 0)
         rows = {row["app"]: row for row in v2_9_benchmark_adequacy()}
-        self.assertEqual(rows["barnes_hut"]["adequacy"], "needs_major_followup")
+        self.assertEqual(rows["barnes_hut"]["adequacy"], "adequate")
+        self.assertEqual(rows["rt_dbscan"]["adequacy"], "adequate")
         self.assertEqual(rows["spatial_rayjoin"]["adequacy"], "strong")
 
     def test_report_is_reader_facing_and_keeps_boundary(self) -> None:
