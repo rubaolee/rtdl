@@ -6,6 +6,7 @@ import unittest
 from rtdsl.engine_feature_matrix import NATIVE
 from rtdsl.engine_feature_matrix import engine_feature_support
 from rtdsl.v2_10_amd_hiprt_benchmark_parity import (
+    V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION,
     summarize_v2_10_amd_hiprt_benchmark_parity,
     validate_v2_10_amd_hiprt_benchmark_parity,
     v2_10_amd_hiprt_benchmark_parity,
@@ -31,6 +32,10 @@ class Goal3753AmdHiprtBenchmarkParityPlanTest(unittest.TestCase):
         self.assertEqual(validation["errors"], ())
 
     def test_summary_is_honest_about_amd_extension_work(self) -> None:
+        self.assertEqual(
+            V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION,
+            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3763.v1",
+        )
         summary = summarize_v2_10_amd_hiprt_benchmark_parity()
         self.assertEqual(summary["app_count"], 10)
         self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 1)

@@ -10,7 +10,7 @@ from .engine_feature_matrix import engine_feature_support
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION = "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3756.v1"
+V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION = "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3763.v1"
 V2_10_AMD_HIPRT_BENCHMARK_PARITY_STATUS = "planning_gate_not_amd_hardware_evidence"
 
 PARITY_STAGES = (
@@ -135,6 +135,8 @@ V2_10_AMD_HIPRT_BENCHMARK_PARITY_ROWS: tuple[V210AmdHiprtBenchmarkParityRow, ...
         first_amd_goal="HIPRT row any-hit functional parity on robot-collision batches",
         rationale=(
             "Goal3755 exposes the robot collision app's Ray2D/Triangle2D row route through --backend hiprt. "
+            "Goal3763 confirms the HIPRT CUDA/Orochi path builds and passes focused HIPRT tests on an NVIDIA A5000, "
+            "but that is not AMD hardware evidence. "
             "Prepared pose-flag summaries remain an OptiX-only contract until a generic HIPRT prepared "
             "ray-buffer/group-index path exists."
         ),

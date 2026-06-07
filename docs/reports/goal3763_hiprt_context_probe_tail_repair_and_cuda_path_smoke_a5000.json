@@ -1,0 +1,33 @@
+{
+  "build_status": "pass",
+  "claim_boundary": {
+    "amd_hardware_perf_claim_authorized": false,
+    "app_specific_native_engine_logic_allowed": false,
+    "broad_rt_core_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "focused_test_count": 26,
+  "focused_test_modules": [
+    "tests.goal540_hiprt_probe_test",
+    "tests.goal541_hiprt_ray_hitcount_test",
+    "tests.goal551_hiprt_ray_triangle_2d_test",
+    "tests.goal639_hiprt_native_any_hit_test",
+    "tests.goal674_hiprt_prepared_anyhit_2d_test",
+    "tests.goal3755_robot_collision_hiprt_route_readiness_test",
+    "tests.goal3756_robot_collision_amd_parity_contract_correction_test"
+  ],
+  "focused_test_status": "pass",
+  "generated_at_unix": 1780834347.031035,
+  "git_status_short": "",
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "hiprt_library": "build/librtdl_hiprt.so",
+  "hiprt_sdk_prefix": "/root/vendor/hiprt-official/hiprtSdk-2.2.0e68f54",
+  "hiprt_sdk_sha256": "72172d20b44f6e4dc72ea760b56cb73bfcab857aa5c475168cbabbc771dff66b",
+  "hiprt_sdk_url": "https://gpuopen.com/download/hiprtSdk-2.2.0e68f54.zip",
+  "interpretation": "HIPRT SDK build and CUDA/Orochi functional smoke on NVIDIA A5000. This is useful HIPRT path evidence, not AMD hardware performance evidence.",
+  "schema": "rtdl.goal3763.hiprt_context_probe_tail_repair_and_cuda_path_smoke.v1",
+  "source_commit": "db62dc81e39f051475ada6db4766d7ba2e8e6bd2",
+  "source_commit_short": "db62dc81"
+}

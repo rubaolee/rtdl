@@ -24,6 +24,8 @@ class Goal3756RobotCollisionAmdParityContractCorrectionTest(unittest.TestCase):
         self.assertEqual(row["parity_stage"], "ready_for_amd_functional_pod")
         self.assertIn("row any-hit functional parity", row["first_amd_goal"])
         self.assertIn("Ray2D/Triangle2D row route", row["rationale"])
+        self.assertIn("Goal3763", row["rationale"])
+        self.assertIn("not AMD hardware evidence", row["rationale"])
         self.assertIn("Prepared pose-flag summaries remain an OptiX-only contract", row["rationale"])
 
     def test_robot_collision_app_surface_exposes_hiprt_but_prepared_summary_stays_optix_only(self) -> None:
