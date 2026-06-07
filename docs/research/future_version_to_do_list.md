@@ -11,6 +11,7 @@ This file catches design ideas that should not interrupt the current release or 
 - Goal3802 applied the same pattern to RayDB's app-facing helper layer: current aliases now exist for the primitive-first plan, Numba grouped-reduction continuation, and grouped-reduction typed-stream continuation. Internal protocol constants, artifact keys, and implementation helpers still keep their historical labels.
 - Goal3804 added current aliases for the Barnes-Hut grouped-vector typed-stream and RTNN ranked-summary typed-stream benchmark helpers. The legacy v2.8 descriptor and runner names remain available for historical reports and tests.
 - Goal3808 cleaned the two remaining low-risk app-facing candidates from Goal3806: Contact Manifold now exposes `describe_bounded_witness_session`, and LibRTS now exposes `primitive_first_plan_payload` plus `--mode primitive_first_plan`. The RayJoin topology-reference helper remains intentionally versioned because it marks a bounded future/reference lane, not a promoted public route.
+- Goal3810 refreshed the inventory after Goal3808. Active examples still contain 32 versioned definitions, but zero remaining low-risk app-facing alias candidates: the survivors are compatibility shims, RayDB internals/protocol descriptors, an RT-Graph protocol descriptor, and the intentionally versioned RayJoin topology-reference lane.
 
 ## Generic Closed-Shape Boundary Selection
 
