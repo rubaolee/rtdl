@@ -65,4 +65,3 @@ This goal does not authorize release action, package-install wording, public
 speedup wording, broad RT-core wording, RTNN paper reproduction wording,
 whole-app acceleration wording, AMD hardware/performance wording, automatic
 partner selection, true-zero-copy wording, or app-specific native-engine logic.
-
