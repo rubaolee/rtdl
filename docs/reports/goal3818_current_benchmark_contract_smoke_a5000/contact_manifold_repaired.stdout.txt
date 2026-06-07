@@ -1,0 +1,222 @@
+{
+  "app": "bounded_collision_witness_contact_manifold",
+  "backend": "optix",
+  "candidate_id_rows": [
+    [
+      0,
+      20000,
+      10000
+    ],
+    [
+      1,
+      20001,
+      10001
+    ],
+    [
+      2,
+      20002,
+      10002
+    ],
+    [
+      3,
+      20003,
+      10003
+    ],
+    [
+      4,
+      20004,
+      10004
+    ],
+    [
+      5,
+      20005,
+      10005
+    ],
+    [
+      6,
+      20006,
+      10006
+    ],
+    [
+      7,
+      20007,
+      10007
+    ],
+    [
+      8,
+      20008,
+      10008
+    ],
+    [
+      9,
+      20009,
+      10009
+    ],
+    [
+      10,
+      20010,
+      10010
+    ],
+    [
+      11,
+      20011,
+      10011
+    ],
+    [
+      12,
+      20012,
+      10012
+    ],
+    [
+      13,
+      20013,
+      10013
+    ],
+    [
+      14,
+      20014,
+      10014
+    ],
+    [
+      15,
+      20015,
+      10015
+    ]
+  ],
+  "claim_boundary": "Native mode validates only the generic app-name-free COLLECT_K_BOUNDED i64 collector over Python oracle rows; it is not native collision/contact logic.",
+  "complete_candidate_coverage": true,
+  "cpu_reference_elapsed_sec": 0.008829807862639427,
+  "cpu_reference_valid_count": 16,
+  "dataset": "grid_16",
+  "engine_boundary": {
+    "candidate_discovery_owner": "AABB_INDEX_QUERY_2D",
+    "contact_manifold_logic_owner": "Python app/reference or partner continuation",
+    "engine_primitive_owner": "COLLECT_K_BOUNDED",
+    "native_collision_logic_allowed": false
+  },
+  "library_path": "/root/rtdl_goal3788_clean_1780857956/build/librtdl_optix.so",
+  "matches_cpu_reference": true,
+  "mode": "native_collect_k",
+  "native_collect_elapsed_sec": 0.000350121408700943,
+  "native_generic_symbol": "rtdl_optix_collect_k_bounded_i64",
+  "overflowed": false,
+  "primitive_under_test": "COLLECT_K_BOUNDED",
+  "row_schema": [
+    "query_group_id",
+    "query_triangle_id",
+    "scene_triangle_id"
+  ],
+  "v2_4_phase_timing": {
+    "phase_contract_version": "rtdl.partner.v2.4",
+    "phases_sec": {
+      "materialization": 0.000350121408700943
+    },
+    "promoted_performance_path": false,
+    "same_phase_contract_as_basis": true,
+    "source": "contact_manifold.native_collect_k",
+    "validation": {
+      "errors": [],
+      "known_phases": [
+        "materialization"
+      ],
+      "status": "accept"
+    }
+  },
+  "v2_4_prepared_session": {
+    "app_owned_interpretation": "Rows may represent contact witnesses in this benchmark, but RTDL sees only bounded int64 rows and valid_count.",
+    "app_specific_native_vocab_allowed": false,
+    "backend": "optix",
+    "descriptor_only": true,
+    "input_buffers": [
+      {
+        "access_mode": "read",
+        "alignment_bytes": 1,
+        "byte_offset": 0,
+        "capacity_elements": 48,
+        "data_ptr_observed": false,
+        "device": "cpu:0",
+        "dtype": "int64",
+        "element_count": 48,
+        "lifetime": "session_retained",
+        "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+        "mutability": "immutable",
+        "name": "candidate_id_rows",
+        "scope": "rtdl_primitive_handoff_only",
+        "shape": [
+          16,
+          3
+        ],
+        "source_protocol": "rtdl_generic_i64_rows",
+        "stream_handle": 0,
+        "strides_bytes": null
+      }
+    ],
+    "native_engine_boundary": "app_agnostic_native_engine",
+    "native_symbols": [
+      "rtdl_optix_collect_k_bounded_i64"
+    ],
+    "output_buffers": [
+      {
+        "access_mode": "write",
+        "alignment_bytes": 1,
+        "byte_offset": 0,
+        "capacity_elements": 96,
+        "data_ptr_observed": false,
+        "device": "cpu:0",
+        "dtype": "int64",
+        "element_count": 96,
+        "lifetime": "session_retained",
+        "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+        "mutability": "mutable",
+        "name": "bounded_witness_rows",
+        "scope": "rtdl_primitive_handoff_only",
+        "shape": [
+          32,
+          3
+        ],
+        "source_protocol": "rtdl_generic_i64_rows",
+        "stream_handle": 0,
+        "strides_bytes": null
+      },
+      {
+        "access_mode": "write",
+        "alignment_bytes": 1,
+        "byte_offset": 0,
+        "capacity_elements": 1,
+        "data_ptr_observed": false,
+        "device": "cpu:0",
+        "dtype": "uint64",
+        "element_count": 1,
+        "lifetime": "session_retained",
+        "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+        "mutability": "mutable",
+        "name": "valid_count",
+        "scope": "rtdl_primitive_handoff_only",
+        "shape": [
+          1
+        ],
+        "source_protocol": "rtdl_scalar_status",
+        "stream_handle": 0,
+        "strides_bytes": null
+      }
+    ],
+    "overflow_policy": "fail_closed_no_partial_rows",
+    "phase_contract": "bounded_witness_collection",
+    "primitive": "aabb_index_2d_bounded_i64_rows",
+    "requires_phase_timing": true,
+    "reusable_output_buffers": true,
+    "reusable_query_buffers": true,
+    "reusable_scene": true,
+    "row_schema": [
+      "query_group_id",
+      "query_triangle_id",
+      "scene_triangle_id"
+    ],
+    "same_phase_contract_as_basis_required": true,
+    "session_id": "generic_bounded_i64_rows_optix_16x32",
+    "status": "protocol_descriptor_only",
+    "v2_4_protocol_version": "rtdl.partner.v2.4"
+  },
+  "valid_count": 16,
+  "witness_capacity": 32
+}

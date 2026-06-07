@@ -1,0 +1,4 @@
+/root/rtdl_goal3788_clean_1780857956/.pydeps_goal3788_numba/numba/cuda/dispatcher.py:536: NumbaPerformanceWarning: Grid size 16 will likely result in GPU under-utilization due to low occupancy.
+  warn(NumbaPerformanceWarning(msg))
+/root/rtdl_goal3788_clean_1780857956/.pydeps_goal3788_numba/numba/cuda/dispatcher.py:536: NumbaPerformanceWarning: Grid size 16 will likely result in GPU under-utilization due to low occupancy.
+  warn(NumbaPerformanceWarning(msg))

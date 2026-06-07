@@ -1,6 +1,6 @@
 # Hausdorff / X-HD-Style Study
 
-This directory shows how a v2.8 user can implement Hausdorff distance with
+This directory shows how a current RTDL user can implement Hausdorff distance with
 RTDL plus partner code, then compare that program with CPU, CUDA, and CuPy
 baselines. The current RTDL/OptiX path is informed by
 X-HD-style ideas: threshold search, witness extraction, grouping, and reducing
@@ -76,6 +76,14 @@ Run an RTDL/OptiX witness path on an NVIDIA machine:
 ```bash
 export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_v2_function.py --points-a 8192 --points-b 8192 --method rtdl_rt_grouped_seeded_pruned_nearest_witness --rt-backend optix --compare --json-out scratch/hausdorff_rtdl_optix.json
+```
+
+For the small release-facing app, `--require-rt-core` is intentionally
+fail-closed unless the OptiX threshold-decision path is selected:
+
+```bash
+export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend optix --optix-summary-mode directed_threshold_prepared --hausdorff-threshold 0.25 --require-rt-core
 ```
 
 Run the native active-frontier variant when testing larger X-HD-style cases:

@@ -1,0 +1,324 @@
+{
+  "benchmark_app": "rtnn_neighbor_search",
+  "claim_boundary": {
+    "ann_index_claim_authorized": false,
+    "benchmark_app": true,
+    "broad_rt_core_speedup_claim_authorized": false,
+    "device_resident_result_stream_proven": false,
+    "full_rtnn_paper_reproduction": false,
+    "native_engine_customization": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "continuation_plan": {
+    "automatic_partner_selection_allowed": false,
+    "claim_boundary": "v2.8 typed result streams are an internal generic contract for RTDL runtime development. They do not authorize release, public speedup wording, broad RT-core wording, true-zero-copy wording, hidden dispatch, hidden partner selection, app-specific native-engine behavior, or user-defined shader injection.",
+    "continuation_semantics": "select the k lowest scores per group in ascending score then item_id order; ranks are one-based within each group",
+    "continuation_status": "contract_only",
+    "contract_version": "rtdl.v2_8.typed_result_stream.v1",
+    "group_column": "group_ids",
+    "hidden_dispatch_allowed": false,
+    "item_column": "item_ids",
+    "operation": "grouped_topk_f64",
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "stream_id": "rtnn_v2_8_ranked_summary_descriptor",
+    "stream_kind": "ranked_summary_stream",
+    "target": "typed_device_resident_result_streams_and_grouped_continuation",
+    "true_zero_copy_claim_authorized": false,
+    "user_selected_partner": "numba",
+    "value_columns": [
+      "scores"
+    ]
+  },
+  "contract_version": "rtdl.rtnn.v2_8.ranked_summary_typed_stream.v1",
+  "current_helper": "describe_rtnn_ranked_summary_typed_stream",
+  "current_mode_alias": "ranked_summary_typed_stream_plan",
+  "execution_path": "generic_ranked_summary_typed_stream_partner_columns",
+  "k": 8,
+  "legacy_helper_alias": "describe_rtnn_v2_8_ranked_summary_typed_stream",
+  "operation": "grouped_topk_f64",
+  "partner": "numba",
+  "partner_policy": {
+    "argmin_argmax_partners": [
+      "numba",
+      "torch",
+      "triton"
+    ],
+    "automatic_partner_selection_allowed": false,
+    "explicit_user_partner_choice_required": true,
+    "numba_topk_status": "not_promoted_in_current_partner_adapter",
+    "topk_partners": [
+      "torch",
+      "triton"
+    ]
+  },
+  "requires_caller_supplied_partner_columns": true,
+  "source_materialization": "caller_supplied_partner_columns_no_hidden_host_rows",
+  "typed_stream": {
+    "app_specific_engine_logic_allowed": false,
+    "automatic_partner_selection_allowed": false,
+    "claim_boundary": "v2.8 typed result streams are an internal generic contract for RTDL runtime development. They do not authorize release, public speedup wording, broad RT-core wording, true-zero-copy wording, hidden dispatch, hidden partner selection, app-specific native-engine behavior, or user-defined shader injection.",
+    "column_names": [
+      "group_ids",
+      "item_ids",
+      "scores"
+    ],
+    "columns": [
+      {
+        "buffer": {
+          "access_mode": "read",
+          "alignment_bytes": 1,
+          "byte_offset": 0,
+          "capacity_elements": 3,
+          "data_ptr_observed": false,
+          "device": "cpu:0",
+          "dtype": "int64",
+          "element_count": 3,
+          "lifetime": "caller_retained",
+          "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+          "mutability": "immutable",
+          "name": "group_ids",
+          "scope": "rtdl_primitive_handoff_only",
+          "shape": [
+            3
+          ],
+          "source_protocol": "python",
+          "stream_handle": 0,
+          "strides_bytes": null
+        },
+        "device_resident": false,
+        "dtype": "int64",
+        "name": "group_ids",
+        "nullable": false,
+        "required_for_continuation": true,
+        "role": "group_key",
+        "shape": [
+          3
+        ]
+      },
+      {
+        "buffer": {
+          "access_mode": "read",
+          "alignment_bytes": 1,
+          "byte_offset": 0,
+          "capacity_elements": 3,
+          "data_ptr_observed": false,
+          "device": "cpu:0",
+          "dtype": "int64",
+          "element_count": 3,
+          "lifetime": "caller_retained",
+          "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+          "mutability": "immutable",
+          "name": "item_ids",
+          "scope": "rtdl_primitive_handoff_only",
+          "shape": [
+            3
+          ],
+          "source_protocol": "python",
+          "stream_handle": 0,
+          "strides_bytes": null
+        },
+        "device_resident": false,
+        "dtype": "int64",
+        "name": "item_ids",
+        "nullable": false,
+        "required_for_continuation": true,
+        "role": "item_id",
+        "shape": [
+          3
+        ]
+      },
+      {
+        "buffer": {
+          "access_mode": "read",
+          "alignment_bytes": 1,
+          "byte_offset": 0,
+          "capacity_elements": 3,
+          "data_ptr_observed": false,
+          "device": "cpu:0",
+          "dtype": "float64",
+          "element_count": 3,
+          "lifetime": "caller_retained",
+          "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+          "mutability": "immutable",
+          "name": "scores",
+          "scope": "rtdl_primitive_handoff_only",
+          "shape": [
+            3
+          ],
+          "source_protocol": "python",
+          "stream_handle": 0,
+          "strides_bytes": null
+        },
+        "device_resident": false,
+        "dtype": "float64",
+        "name": "scores",
+        "nullable": false,
+        "required_for_continuation": true,
+        "role": "score",
+        "shape": [
+          3
+        ]
+      }
+    ],
+    "contract_version": "rtdl.v2_8.typed_result_stream.v1",
+    "device_resident_column_count": 0,
+    "event_or_group_ordering_required": true,
+    "grouped_continuation_ready": true,
+    "hidden_dispatch_allowed": false,
+    "ordering": "group_ordered",
+    "page_capacity": 3,
+    "producer_primitive": "fixed_radius_ranked_summary_columns_3d",
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "segmented_page_failure_mode": "fail_closed_overflow",
+    "status": "internal_contract_no_native_promotion",
+    "status_column_names": [
+      "row_count",
+      "capacity",
+      "overflow",
+      "complete_candidate_coverage"
+    ],
+    "status_columns": [
+      {
+        "buffer": {
+          "access_mode": "read",
+          "alignment_bytes": 1,
+          "byte_offset": 0,
+          "capacity_elements": 1,
+          "data_ptr_observed": false,
+          "device": "cpu:0",
+          "dtype": "uint64",
+          "element_count": 1,
+          "lifetime": "caller_retained",
+          "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+          "mutability": "mutable",
+          "name": "row_count",
+          "scope": "rtdl_primitive_handoff_only",
+          "shape": [
+            1
+          ],
+          "source_protocol": "python",
+          "stream_handle": 0,
+          "strides_bytes": null
+        },
+        "device_resident": false,
+        "dtype": "uint64",
+        "name": "row_count",
+        "nullable": false,
+        "required_for_continuation": true,
+        "role": "status",
+        "shape": [
+          1
+        ]
+      },
+      {
+        "buffer": {
+          "access_mode": "read",
+          "alignment_bytes": 1,
+          "byte_offset": 0,
+          "capacity_elements": 1,
+          "data_ptr_observed": false,
+          "device": "cpu:0",
+          "dtype": "uint64",
+          "element_count": 1,
+          "lifetime": "caller_retained",
+          "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+          "mutability": "mutable",
+          "name": "capacity",
+          "scope": "rtdl_primitive_handoff_only",
+          "shape": [
+            1
+          ],
+          "source_protocol": "python",
+          "stream_handle": 0,
+          "strides_bytes": null
+        },
+        "device_resident": false,
+        "dtype": "uint64",
+        "name": "capacity",
+        "nullable": false,
+        "required_for_continuation": true,
+        "role": "status",
+        "shape": [
+          1
+        ]
+      },
+      {
+        "buffer": {
+          "access_mode": "read",
+          "alignment_bytes": 1,
+          "byte_offset": 0,
+          "capacity_elements": 1,
+          "data_ptr_observed": false,
+          "device": "cpu:0",
+          "dtype": "uint32",
+          "element_count": 1,
+          "lifetime": "caller_retained",
+          "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+          "mutability": "mutable",
+          "name": "overflow",
+          "scope": "rtdl_primitive_handoff_only",
+          "shape": [
+            1
+          ],
+          "source_protocol": "python",
+          "stream_handle": 0,
+          "strides_bytes": null
+        },
+        "device_resident": false,
+        "dtype": "uint32",
+        "name": "overflow",
+        "nullable": false,
+        "required_for_continuation": true,
+        "role": "status",
+        "shape": [
+          1
+        ]
+      },
+      {
+        "buffer": {
+          "access_mode": "read",
+          "alignment_bytes": 1,
+          "byte_offset": 0,
+          "capacity_elements": 1,
+          "data_ptr_observed": false,
+          "device": "cpu:0",
+          "dtype": "uint32",
+          "element_count": 1,
+          "lifetime": "caller_retained",
+          "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+          "mutability": "mutable",
+          "name": "complete_candidate_coverage",
+          "scope": "rtdl_primitive_handoff_only",
+          "shape": [
+            1
+          ],
+          "source_protocol": "python",
+          "stream_handle": 0,
+          "strides_bytes": null
+        },
+        "device_resident": false,
+        "dtype": "uint32",
+        "name": "complete_candidate_coverage",
+        "nullable": false,
+        "required_for_continuation": true,
+        "role": "status",
+        "shape": [
+          1
+        ]
+      }
+    ],
+    "stream_id": "rtnn_v2_8_ranked_summary_descriptor",
+    "stream_kind": "ranked_summary_stream",
+    "target": "typed_device_resident_result_streams_and_grouped_continuation",
+    "true_zero_copy_claim_authorized": false
+  },
+  "uses_v2_8_ranked_summary_front_door": true,
+  "uses_v2_8_typed_result_stream": true
+}

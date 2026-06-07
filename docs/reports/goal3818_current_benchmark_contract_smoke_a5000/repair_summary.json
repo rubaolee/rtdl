@@ -1,0 +1,49 @@
+{
+  "rows": [
+    {
+      "name": "hausdorff_xhd_repaired",
+      "status": "pass",
+      "elapsed_sec": 1.642228038981557,
+      "returncode": 0,
+      "command": [
+        "python",
+        "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "optix",
+        "--require-rt-core",
+        "--optix-summary-mode",
+        "directed_threshold_prepared",
+        "--hausdorff-threshold",
+        "0.25",
+        "--copies",
+        "8",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ]
+    },
+    {
+      "name": "contact_manifold_repaired",
+      "status": "pass",
+      "elapsed_sec": 0.5636561922729015,
+      "returncode": 0,
+      "command": [
+        "python",
+        "examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
+        "--mode",
+        "native_collect_k",
+        "--backend",
+        "optix",
+        "--dataset",
+        "grid",
+        "--grid-count",
+        "16",
+        "--witness-capacity",
+        "32",
+        "--repeat-count",
+        "2"
+      ]
+    }
+  ]
+}

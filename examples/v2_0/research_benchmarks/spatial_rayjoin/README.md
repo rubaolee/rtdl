@@ -1,6 +1,6 @@
 # Spatial / RayJoin-Style Study
 
-This directory shows how a v2.8 user can express RayJoin-style spatial
+This directory shows how a current RTDL user can express RayJoin-style spatial
 workloads in RTDL without putting app-specific RayJoin logic inside the native
 engine. The engine sees generic point, segment, polygon, traversal, and row
 contracts. The application owns workload choice, positive-hit filtering,
@@ -102,7 +102,7 @@ Use `--result-mode count` when the application only needs a scalar count. Use
 `--result-mode rows` when it needs witness rows or positive membership rows.
 Rows are still omitted from JSON when `--no-rows` is supplied.
 
-For PIP rows or counts that need the v2.8 typed-stream plus partner-continuation
+For PIP rows or counts that need typed-stream plus partner-continuation
 path, use:
 
 ```bash
@@ -137,7 +137,7 @@ with prepare_rayjoin_optix_cupy_refined_pip(points, shapes, candidate_max_rows=6
 print(repeated["summary"])
 ```
 
-This is the app-facing reusable form of the v2.8 typed-stream plus prepared
+This is the app-facing reusable form of the typed-stream plus prepared
 CuPy-refiner pattern measured in Goal3427.
 
 For LSI workloads that need counts per left segment instead of exact witness
@@ -157,7 +157,7 @@ implementation path, not a full RayJoin reproduction or public speedup claim.
 In short: the route combines generic compact grouped-count device columns with
 Python-owned RayJoin interpretation.
 
-For app-owned side-aware topology policy, v2.9 also provides a no-RawKernel
+For app-owned side-aware topology policy, the current tree also provides a no-RawKernel
 Numba reference route:
 
 ```bash

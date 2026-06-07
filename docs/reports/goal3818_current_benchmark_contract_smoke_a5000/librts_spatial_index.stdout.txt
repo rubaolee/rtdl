@@ -1,0 +1,58 @@
+{
+  "app": "librts_spatial_index",
+  "authors_code_comparison": false,
+  "claim_boundary": "Generic RTDL OptiX AABB_INDEX_QUERY_2D count-only path for point_contains, range_contains, and range_intersects. This is not a LibRTS-specific native symbol.",
+  "counts": {
+    "point_contains": 42228,
+    "range_contains": 29257,
+    "range_intersects": 65638
+  },
+  "elapsed_sec": 0.48908800166100264,
+  "fixture": {
+    "box_count": 1024,
+    "box_query_count": 1024,
+    "dataset": "uniform",
+    "paper_equivalent_dataset": false,
+    "point_query_count": 1024,
+    "seed": 2025
+  },
+  "generic_primitive": "AABB_INDEX_QUERY_2D",
+  "mode": "optix_aabb_index",
+  "native_engine_customization": false,
+  "operation": "all",
+  "paper": {
+    "authors_code": "https://github.com/RTSpatial/RTSpatial",
+    "doi": "10.1145/3710848.3710850",
+    "title": "LibRTS: A Spatial Indexing Library by Ray Tracing",
+    "venue": "PPoPP 2025"
+  },
+  "paper_reproduction": false,
+  "prepared_queries": true,
+  "primitive_contract": "generic_prepared_aabb_index_query_2d",
+  "repeat_protocol": {
+    "measured_run_count": 2,
+    "query_sec_median": 0.0009394977241754532,
+    "query_sec_total": 0.0018789954483509064,
+    "repeat": 2,
+    "warmup": 1
+  },
+  "rt_core_accelerated": true,
+  "run_phases": {
+    "query_median_sec": 0.0009394977241754532,
+    "query_prepare_sec": {
+      "point_contains": 0.0012483643367886543,
+      "range_contains": 0.002215797081589699,
+      "range_intersects": 0.0
+    },
+    "query_repeat": 2,
+    "query_sec": {
+      "point_contains": 0.00024830643087625504,
+      "range_contains": 0.00022508203983306885,
+      "range_intersects": 0.0004661092534661293
+    },
+    "query_summed_median_sec": 0.0009394977241754532,
+    "query_total_sec": 0.0018789954483509064,
+    "query_warmup": 1,
+    "scene_prepare_sec": 0.48468434251844883
+  }
+}

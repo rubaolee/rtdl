@@ -29,6 +29,7 @@ PYTHONPATH=src:. python examples/v2_0/research_benchmarks/contact_manifold/rtdl_
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py --mode aabb_broadphase_collect_k --dataset grid --grid-count 512 --witness-capacity 512
 RTDL_OPTIX_LIBRARY=build/librtdl_optix.so PYTHONPATH=src:. python examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py --mode aabb_broadphase_collect_k --dataset grid --grid-count 512 --witness-capacity 512 --discovery-backend optix --discovery-row-capacity 1024
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py --mode native_collect_k --backend embree --dataset tiny --witness-capacity 3
+RTDL_OPTIX_LIBRARY=build/librtdl_optix.so PYTHONPATH=src:. python examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py --mode native_collect_k --backend optix --dataset grid --grid-count 16 --witness-capacity 32 --repeat-count 2
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py --mode cpp_baseline --dataset grid --grid-count 512 --repeat-count 5
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py --mode baseline_comparison --dataset grid --grid-count 512 --witness-capacity 512
 ```

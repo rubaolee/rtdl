@@ -1,0 +1,225 @@
+{
+  "commit": "b56a8927",
+  "gpu": "NVIDIA RTX A5000",
+  "rows": [
+    {
+      "name": "hausdorff_xhd",
+      "status": "fail",
+      "elapsed_sec": 0.5920198410749435,
+      "command": [
+        "python",
+        "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "optix",
+        "--require-rt-core",
+        "--copies",
+        "8",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "returncode": 1
+    },
+    {
+      "name": "spatial_rayjoin_pip_count",
+      "status": "pass",
+      "elapsed_sec": 1.7836071029305458,
+      "command": [
+        "python",
+        "examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
+        "--workload",
+        "pip",
+        "--backend",
+        "optix",
+        "--execution-route",
+        "prepared_optix",
+        "--result-mode",
+        "count",
+        "--pip-count-mode",
+        "device_filtered_prepared_points_validated",
+        "--no-rows",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "rt_dbscan_numba",
+      "status": "pass",
+      "elapsed_sec": 4.515450387261808,
+      "command": [
+        "python",
+        "examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
+        "--mode",
+        "optix_rt_core_flags_numba_prepared_grid_components_3d",
+        "--dataset",
+        "clustered3d",
+        "--point-count",
+        "4096",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "robot_collision",
+      "status": "pass",
+      "elapsed_sec": 2.860082800500095,
+      "command": [
+        "python",
+        "examples/v2_0/research_benchmarks/robot_collision/rtdl_robot_collision_benchmark_app.py",
+        "--mode",
+        "optix_prepared_device_count",
+        "--dataset",
+        "scaled",
+        "--pose-count",
+        "256",
+        "--obstacle-count",
+        "64",
+        "--link-count",
+        "4",
+        "--repeats",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "contact_manifold",
+      "status": "fail",
+      "elapsed_sec": 0.5624178452417254,
+      "command": [
+        "python",
+        "examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
+        "--mode",
+        "native_collect_k",
+        "--backend",
+        "optix",
+        "--dataset",
+        "grid",
+        "--grid-count",
+        "16",
+        "--repeat-count",
+        "2"
+      ],
+      "returncode": 1
+    },
+    {
+      "name": "raydb_style",
+      "status": "pass",
+      "elapsed_sec": 1.40766257699579,
+      "command": [
+        "python",
+        "examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+        "--mode",
+        "count",
+        "--backend",
+        "paper_rt_optix_v2_5_primitive_first",
+        "--fixture-kind",
+        "generated",
+        "--generated-rows",
+        "4096",
+        "--generated-groups",
+        "128",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "barnes_hut_numba",
+      "status": "pass",
+      "elapsed_sec": 1.7034345418214798,
+      "command": [
+        "python",
+        "examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+        "--mode",
+        "partner_exact_force",
+        "--partner",
+        "numba",
+        "--body-count",
+        "1024",
+        "--skip-validation",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "librts_spatial_index",
+      "status": "pass",
+      "elapsed_sec": 1.3304135678336024,
+      "command": [
+        "python",
+        "examples/v2_0/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--box-count",
+        "1024",
+        "--query-count",
+        "1024",
+        "--operation",
+        "all",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "rtnn_plan",
+      "status": "pass",
+      "elapsed_sec": 0.5391180524602532,
+      "command": [
+        "python",
+        "examples/v2_0/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py",
+        "--mode",
+        "ranked_summary_typed_stream_plan",
+        "--partner",
+        "numba",
+        "--operation",
+        "grouped_topk_f64",
+        "--k",
+        "8",
+        "--copies",
+        "8"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "triangle_counting",
+      "status": "pass",
+      "elapsed_sec": 6.762726734392345,
+      "command": [
+        "python",
+        "examples/v2_0/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
+        "--mode",
+        "run",
+        "--backend",
+        "optix",
+        "--output-mode",
+        "summary",
+        "--copies",
+        "128",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "returncode": 0
+    }
+  ]
+}

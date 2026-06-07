@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/root/rtdl_goal3788_clean_1780857956/examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py", line 1087, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/root/rtdl_goal3788_clean_1780857956/examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py", line 1070, in main
+    payload = run_app(
+              ^^^^^^^^
+  File "/root/rtdl_goal3788_clean_1780857956/examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py", line 1023, in run_app
+    return native_collect_k_payload(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_goal3788_clean_1780857956/examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py", line 802, in native_collect_k_payload
+    native = rt.collect_native_i64_rows_with_backend_symbol(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_goal3788_clean_1780857956/src/rtdsl/v1_5_1_collect_k_bounded.py", line 976, in collect_native_i64_rows_with_backend_symbol
+    raise RuntimeError(
+RuntimeError: COLLECT_K_BOUNDED overflowed capacity 8; emitted 16; failure_mode=fail_closed_overflow; partial_result_returned=False
