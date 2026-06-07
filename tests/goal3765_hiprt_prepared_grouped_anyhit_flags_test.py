@@ -22,6 +22,15 @@ def _hiprt_grouped_flags_available() -> bool:
 
 
 class Goal3765HiprtPreparedGroupedAnyhitFlagsPortableTest(unittest.TestCase):
+    def test_report_records_boundary_and_artifact(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        report = root / "docs/reports/goal3765_hiprt_prepared_grouped_anyhit_flags_2026-06-07.md"
+        text = report.read_text(encoding="utf-8")
+        self.assertIn("rtdl_hiprt_group_flags_prepared_ray_anyhit_2d_packed", text)
+        self.assertIn("goal3765_robot_collision_hiprt_prepared_group_flags_a5000.json", text)
+        self.assertIn("not AMD hardware evidence", text)
+        self.assertIn("does not authorize", text)
+
     def test_empty_scene_group_flags_work_without_native_grouped_symbol(self) -> None:
         rays = (
             rt.Ray2D(id=10, ox=0.0, oy=0.0, dx=1.0, dy=0.0, tmax=1.0),

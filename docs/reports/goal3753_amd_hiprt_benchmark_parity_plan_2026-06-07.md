@@ -43,10 +43,15 @@ contracts:
 Those are generic contracts. They should be added to HIPRT as generic
 primitive/runtime extensions, not app-specific native code.
 
+Goal3765 has since moved `robot_collision` beyond the row-only route by adding
+`prepared_grouped_visibility_flags_2d` for HIPRT on the NVIDIA CUDA/Orochi path.
+That makes the robot-collision AMD lane ready for functional hardware parity,
+but still not AMD performance evidence.
+
 ## First AMD Work Order
 
-1. `robot_collision`: run AMD functional pod parity first because it is closest
-   to existing HIPRT any-hit/visibility surfaces.
+1. `robot_collision`: run AMD functional pod parity first because it now has
+   HIPRT row any-hit plus prepared grouped visibility flags.
 2. `spatial_rayjoin`: add HIPRT prepared segment-pair count and shape-pair
    active-count parity.
 3. `rt_dbscan` and `rtnn`: add HIPRT fixed-radius grouped/ranked stream parity.

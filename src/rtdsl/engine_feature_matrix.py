@@ -108,6 +108,13 @@ _FEATURE_MATRIX: dict[str, dict[str, EngineFeatureSupport]] = {
         "hiprt": _support("prepared_scalar_visibility_count_2d", "hiprt", NATIVE, "Prepared 2D any-hit reuse followed by count."),
         "apple_rt": _support("prepared_scalar_visibility_count_2d", "apple_rt", NATIVE_ASSISTED, "Prepared/prepacked scalar blocked-ray count path over MPS-prism traversal."),
     },
+    "prepared_grouped_visibility_flags_2d": {
+        "embree": _support("prepared_grouped_visibility_flags_2d", "embree", COMPATIBILITY_FALLBACK, "Groups emitted prepared rows; no dedicated grouped-flag native export."),
+        "optix": _support("prepared_grouped_visibility_flags_2d", "optix", NATIVE, "Prepared ray/triangle any-hit plus native grouped flag summary."),
+        "vulkan": _support("prepared_grouped_visibility_flags_2d", "vulkan", COMPATIBILITY_FALLBACK, "Grouped flags require host grouping over prepared compact any-hit results."),
+        "hiprt": _support("prepared_grouped_visibility_flags_2d", "hiprt", NATIVE, "Goal3765 prepared ray/triangle any-hit plus native grouped flag summary."),
+        "apple_rt": _support("prepared_grouped_visibility_flags_2d", "apple_rt", NATIVE_ASSISTED, "Prepared grouped visibility flags remain native-assisted over MPS-prism traversal."),
+    },
     "fixed_radius_neighbors_2d": {
         "embree": _support("fixed_radius_neighbors_2d", "embree", NATIVE, "Embree bounded neighbor traversal."),
         "optix": _support("fixed_radius_neighbors_2d", "optix", NATIVE, "OptiX bounded neighbor traversal."),

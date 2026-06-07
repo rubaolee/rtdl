@@ -1,0 +1,602 @@
+{
+  "claim_boundary": {
+    "amd_hardware_perf_claim_authorized": false,
+    "app_specific_native_engine_logic_allowed": false,
+    "broad_rt_core_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "correctness": [
+    {
+      "claim_boundary": {
+        "amd_hardware_perf_claim_authorized": false,
+        "app_specific_native_engine_logic_allowed": false,
+        "broad_rt_core_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "pose_count": 32,
+      "prepared_group_flags_matches_oracle": true,
+      "prepared_native_continuation_backend": "hiprt_prepared_pose_flags",
+      "row_native_continuation_backend": "none",
+      "row_route_matches_oracle": true,
+      "same_pose_flags": true
+    },
+    {
+      "claim_boundary": {
+        "amd_hardware_perf_claim_authorized": false,
+        "app_specific_native_engine_logic_allowed": false,
+        "broad_rt_core_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "pose_count": 128,
+      "prepared_group_flags_matches_oracle": true,
+      "prepared_native_continuation_backend": "hiprt_prepared_pose_flags",
+      "row_native_continuation_backend": "none",
+      "row_route_matches_oracle": true,
+      "same_pose_flags": true
+    }
+  ],
+  "generated_at_unix": 1780836607.9481597,
+  "git_status_short": "",
+  "goal3765_scoped_source_dirty": false,
+  "goal3765_scoped_source_status_short": "",
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "interpretation": "HIPRT prepared grouped any-hit flags are a generic group-threshold summary over prepared ray/triangle any-hit, used by the robot-collision example to avoid per-ray Python row materialization. This is NVIDIA CUDA/Orochi path evidence, not AMD hardware evidence.",
+  "schema": "rtdl.goal3765.robot_collision_hiprt_prepared_group_flags_probe.v1",
+  "source_commit": "cfbf0d88a8938b4bcddb8de14acb860b6ffaca08",
+  "source_commit_short": "cfbf0d88",
+  "summary": {
+    "all_correctness_cases_match_oracle": true,
+    "best_prepared_vs_rows_ratio": 1.1573890698533,
+    "correctness_case_count": 2,
+    "max_timing_pose_count": 1024,
+    "timing_case_count": 5
+  },
+  "timings_by_count": [
+    {
+      "claim_boundary": {
+        "amd_hardware_perf_claim_authorized": false,
+        "app_specific_native_engine_logic_allowed": false,
+        "broad_rt_core_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "pose_count": 64,
+      "prepared_group_flags": {
+        "claim_boundary": {
+          "amd_hardware_perf_claim_authorized": false,
+          "app_specific_native_engine_logic_allowed": false,
+          "broad_rt_core_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "release_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "edge_ray_count": 256,
+        "hot_median_sec": 0.5878015598282218,
+        "hot_min_sec": 0.5827797781676054,
+        "hot_total_sec": 1.7847506823018193,
+        "mode": "prepared_group_flags",
+        "native_continuation_active": true,
+        "native_continuation_backend": "hiprt_prepared_pose_flags",
+        "obstacle_triangle_count": 128,
+        "pose_count": 64,
+        "repeat": 3,
+        "runs": [
+          {
+            "colliding_pose_count": 56,
+            "elapsed_sec": 0.6682586446404457,
+            "is_warmup": true,
+            "iteration": 0
+          },
+          {
+            "colliding_pose_count": 56,
+            "elapsed_sec": 0.6141693443059921,
+            "is_warmup": false,
+            "iteration": 1
+          },
+          {
+            "colliding_pose_count": 56,
+            "elapsed_sec": 0.5878015598282218,
+            "is_warmup": false,
+            "iteration": 2
+          },
+          {
+            "colliding_pose_count": 56,
+            "elapsed_sec": 0.5827797781676054,
+            "is_warmup": false,
+            "iteration": 3
+          }
+        ],
+        "validation_mode": "skipped",
+        "warmup": 1
+      },
+      "prepared_vs_rows_ratio": 1.1573890698533,
+      "rows": {
+        "claim_boundary": {
+          "amd_hardware_perf_claim_authorized": false,
+          "app_specific_native_engine_logic_allowed": false,
+          "broad_rt_core_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "release_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "edge_ray_count": 256,
+        "hot_median_sec": 0.6803151005879045,
+        "hot_min_sec": 0.6581381540745497,
+        "hot_total_sec": 2.036858852021396,
+        "mode": "rows",
+        "native_continuation_active": false,
+        "native_continuation_backend": "none",
+        "obstacle_triangle_count": 128,
+        "pose_count": 64,
+        "repeat": 3,
+        "runs": [
+          {
+            "colliding_pose_count": 56,
+            "elapsed_sec": 0.9832803755998611,
+            "is_warmup": true,
+            "iteration": 0
+          },
+          {
+            "colliding_pose_count": 56,
+            "elapsed_sec": 0.698405597358942,
+            "is_warmup": false,
+            "iteration": 1
+          },
+          {
+            "colliding_pose_count": 56,
+            "elapsed_sec": 0.6803151005879045,
+            "is_warmup": false,
+            "iteration": 2
+          },
+          {
+            "colliding_pose_count": 56,
+            "elapsed_sec": 0.6581381540745497,
+            "is_warmup": false,
+            "iteration": 3
+          }
+        ],
+        "validation_mode": "skipped",
+        "warmup": 1
+      }
+    },
+    {
+      "claim_boundary": {
+        "amd_hardware_perf_claim_authorized": false,
+        "app_specific_native_engine_logic_allowed": false,
+        "broad_rt_core_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "pose_count": 128,
+      "prepared_group_flags": {
+        "claim_boundary": {
+          "amd_hardware_perf_claim_authorized": false,
+          "app_specific_native_engine_logic_allowed": false,
+          "broad_rt_core_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "release_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "edge_ray_count": 512,
+        "hot_median_sec": 0.6483629941940308,
+        "hot_min_sec": 0.6092985840514302,
+        "hot_total_sec": 1.9219545312225819,
+        "mode": "prepared_group_flags",
+        "native_continuation_active": true,
+        "native_continuation_backend": "hiprt_prepared_pose_flags",
+        "obstacle_triangle_count": 256,
+        "pose_count": 128,
+        "repeat": 3,
+        "runs": [
+          {
+            "colliding_pose_count": 117,
+            "elapsed_sec": 0.6321132453158498,
+            "is_warmup": true,
+            "iteration": 0
+          },
+          {
+            "colliding_pose_count": 117,
+            "elapsed_sec": 0.6092985840514302,
+            "is_warmup": false,
+            "iteration": 1
+          },
+          {
+            "colliding_pose_count": 117,
+            "elapsed_sec": 0.6483629941940308,
+            "is_warmup": false,
+            "iteration": 2
+          },
+          {
+            "colliding_pose_count": 117,
+            "elapsed_sec": 0.6642929529771209,
+            "is_warmup": false,
+            "iteration": 3
+          }
+        ],
+        "validation_mode": "skipped",
+        "warmup": 1
+      },
+      "prepared_vs_rows_ratio": 0.9522117993112715,
+      "rows": {
+        "claim_boundary": {
+          "amd_hardware_perf_claim_authorized": false,
+          "app_specific_native_engine_logic_allowed": false,
+          "broad_rt_core_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "release_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "edge_ray_count": 512,
+        "hot_median_sec": 0.6173788933083415,
+        "hot_min_sec": 0.6119781732559204,
+        "hot_total_sec": 1.8649633089080453,
+        "mode": "rows",
+        "native_continuation_active": false,
+        "native_continuation_backend": "none",
+        "obstacle_triangle_count": 256,
+        "pose_count": 128,
+        "repeat": 3,
+        "runs": [
+          {
+            "colliding_pose_count": 117,
+            "elapsed_sec": 0.6212512394413352,
+            "is_warmup": true,
+            "iteration": 0
+          },
+          {
+            "colliding_pose_count": 117,
+            "elapsed_sec": 0.6119781732559204,
+            "is_warmup": false,
+            "iteration": 1
+          },
+          {
+            "colliding_pose_count": 117,
+            "elapsed_sec": 0.6356062423437834,
+            "is_warmup": false,
+            "iteration": 2
+          },
+          {
+            "colliding_pose_count": 117,
+            "elapsed_sec": 0.6173788933083415,
+            "is_warmup": false,
+            "iteration": 3
+          }
+        ],
+        "validation_mode": "skipped",
+        "warmup": 1
+      }
+    },
+    {
+      "claim_boundary": {
+        "amd_hardware_perf_claim_authorized": false,
+        "app_specific_native_engine_logic_allowed": false,
+        "broad_rt_core_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "pose_count": 256,
+      "prepared_group_flags": {
+        "claim_boundary": {
+          "amd_hardware_perf_claim_authorized": false,
+          "app_specific_native_engine_logic_allowed": false,
+          "broad_rt_core_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "release_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "edge_ray_count": 1024,
+        "hot_median_sec": 0.7032794365659356,
+        "hot_min_sec": 0.6780822072178125,
+        "hot_total_sec": 2.1110350703820586,
+        "mode": "prepared_group_flags",
+        "native_continuation_active": true,
+        "native_continuation_backend": "hiprt_prepared_pose_flags",
+        "obstacle_triangle_count": 512,
+        "pose_count": 256,
+        "repeat": 3,
+        "runs": [
+          {
+            "colliding_pose_count": 240,
+            "elapsed_sec": 0.7576108388602734,
+            "is_warmup": true,
+            "iteration": 0
+          },
+          {
+            "colliding_pose_count": 240,
+            "elapsed_sec": 0.7032794365659356,
+            "is_warmup": false,
+            "iteration": 1
+          },
+          {
+            "colliding_pose_count": 240,
+            "elapsed_sec": 0.7296734265983105,
+            "is_warmup": false,
+            "iteration": 2
+          },
+          {
+            "colliding_pose_count": 240,
+            "elapsed_sec": 0.6780822072178125,
+            "is_warmup": false,
+            "iteration": 3
+          }
+        ],
+        "validation_mode": "skipped",
+        "warmup": 1
+      },
+      "prepared_vs_rows_ratio": 1.0462029647739284,
+      "rows": {
+        "claim_boundary": {
+          "amd_hardware_perf_claim_authorized": false,
+          "app_specific_native_engine_logic_allowed": false,
+          "broad_rt_core_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "release_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "edge_ray_count": 1024,
+        "hot_median_sec": 0.7357730315998197,
+        "hot_min_sec": 0.6868956256657839,
+        "hot_total_sec": 2.2606901209801435,
+        "mode": "rows",
+        "native_continuation_active": false,
+        "native_continuation_backend": "none",
+        "obstacle_triangle_count": 512,
+        "pose_count": 256,
+        "repeat": 3,
+        "runs": [
+          {
+            "colliding_pose_count": 240,
+            "elapsed_sec": 0.6882718671113253,
+            "is_warmup": true,
+            "iteration": 0
+          },
+          {
+            "colliding_pose_count": 240,
+            "elapsed_sec": 0.83802146371454,
+            "is_warmup": false,
+            "iteration": 1
+          },
+          {
+            "colliding_pose_count": 240,
+            "elapsed_sec": 0.7357730315998197,
+            "is_warmup": false,
+            "iteration": 2
+          },
+          {
+            "colliding_pose_count": 240,
+            "elapsed_sec": 0.6868956256657839,
+            "is_warmup": false,
+            "iteration": 3
+          }
+        ],
+        "validation_mode": "skipped",
+        "warmup": 1
+      }
+    },
+    {
+      "claim_boundary": {
+        "amd_hardware_perf_claim_authorized": false,
+        "app_specific_native_engine_logic_allowed": false,
+        "broad_rt_core_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "pose_count": 512,
+      "prepared_group_flags": {
+        "claim_boundary": {
+          "amd_hardware_perf_claim_authorized": false,
+          "app_specific_native_engine_logic_allowed": false,
+          "broad_rt_core_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "release_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "edge_ray_count": 2048,
+        "hot_median_sec": 0.6023939251899719,
+        "hot_min_sec": 0.6000768123194575,
+        "hot_total_sec": 1.813033708371222,
+        "mode": "prepared_group_flags",
+        "native_continuation_active": true,
+        "native_continuation_backend": "hiprt_prepared_pose_flags",
+        "obstacle_triangle_count": 1024,
+        "pose_count": 512,
+        "repeat": 3,
+        "runs": [
+          {
+            "colliding_pose_count": 500,
+            "elapsed_sec": 0.6288562845438719,
+            "is_warmup": true,
+            "iteration": 0
+          },
+          {
+            "colliding_pose_count": 500,
+            "elapsed_sec": 0.6023939251899719,
+            "is_warmup": false,
+            "iteration": 1
+          },
+          {
+            "colliding_pose_count": 500,
+            "elapsed_sec": 0.6000768123194575,
+            "is_warmup": false,
+            "iteration": 2
+          },
+          {
+            "colliding_pose_count": 500,
+            "elapsed_sec": 0.6105629708617926,
+            "is_warmup": false,
+            "iteration": 3
+          }
+        ],
+        "validation_mode": "skipped",
+        "warmup": 1
+      },
+      "prepared_vs_rows_ratio": 1.0477753695075038,
+      "rows": {
+        "claim_boundary": {
+          "amd_hardware_perf_claim_authorized": false,
+          "app_specific_native_engine_logic_allowed": false,
+          "broad_rt_core_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "release_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "edge_ray_count": 2048,
+        "hot_median_sec": 0.6311735175549984,
+        "hot_min_sec": 0.6052438979968429,
+        "hot_total_sec": 1.893230433575809,
+        "mode": "rows",
+        "native_continuation_active": false,
+        "native_continuation_backend": "none",
+        "obstacle_triangle_count": 1024,
+        "pose_count": 512,
+        "repeat": 3,
+        "runs": [
+          {
+            "colliding_pose_count": 500,
+            "elapsed_sec": 0.6491651674732566,
+            "is_warmup": true,
+            "iteration": 0
+          },
+          {
+            "colliding_pose_count": 500,
+            "elapsed_sec": 0.6311735175549984,
+            "is_warmup": false,
+            "iteration": 1
+          },
+          {
+            "colliding_pose_count": 500,
+            "elapsed_sec": 0.6052438979968429,
+            "is_warmup": false,
+            "iteration": 2
+          },
+          {
+            "colliding_pose_count": 500,
+            "elapsed_sec": 0.6568130180239677,
+            "is_warmup": false,
+            "iteration": 3
+          }
+        ],
+        "validation_mode": "skipped",
+        "warmup": 1
+      }
+    },
+    {
+      "claim_boundary": {
+        "amd_hardware_perf_claim_authorized": false,
+        "app_specific_native_engine_logic_allowed": false,
+        "broad_rt_core_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "pose_count": 1024,
+      "prepared_group_flags": {
+        "claim_boundary": {
+          "amd_hardware_perf_claim_authorized": false,
+          "app_specific_native_engine_logic_allowed": false,
+          "broad_rt_core_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "release_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "edge_ray_count": 4096,
+        "hot_median_sec": 0.7341799279674888,
+        "hot_min_sec": 0.6845098612830043,
+        "hot_total_sec": 2.165649720467627,
+        "mode": "prepared_group_flags",
+        "native_continuation_active": true,
+        "native_continuation_backend": "hiprt_prepared_pose_flags",
+        "obstacle_triangle_count": 2048,
+        "pose_count": 1024,
+        "repeat": 3,
+        "runs": [
+          {
+            "colliding_pose_count": 992,
+            "elapsed_sec": 0.6540613099932671,
+            "is_warmup": true,
+            "iteration": 0
+          },
+          {
+            "colliding_pose_count": 992,
+            "elapsed_sec": 0.6845098612830043,
+            "is_warmup": false,
+            "iteration": 1
+          },
+          {
+            "colliding_pose_count": 992,
+            "elapsed_sec": 0.7341799279674888,
+            "is_warmup": false,
+            "iteration": 2
+          },
+          {
+            "colliding_pose_count": 992,
+            "elapsed_sec": 0.746959931217134,
+            "is_warmup": false,
+            "iteration": 3
+          }
+        ],
+        "validation_mode": "skipped",
+        "warmup": 1
+      },
+      "prepared_vs_rows_ratio": 0.8525598272665255,
+      "rows": {
+        "claim_boundary": {
+          "amd_hardware_perf_claim_authorized": false,
+          "app_specific_native_engine_logic_allowed": false,
+          "broad_rt_core_claim_authorized": false,
+          "paper_reproduction_claim_authorized": false,
+          "release_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "edge_ray_count": 4096,
+        "hot_median_sec": 0.6259323125705123,
+        "hot_min_sec": 0.6067674085497856,
+        "hot_total_sec": 1.8590499507263303,
+        "mode": "rows",
+        "native_continuation_active": false,
+        "native_continuation_backend": "none",
+        "obstacle_triangle_count": 2048,
+        "pose_count": 1024,
+        "repeat": 3,
+        "runs": [
+          {
+            "colliding_pose_count": 992,
+            "elapsed_sec": 0.6152043826878071,
+            "is_warmup": true,
+            "iteration": 0
+          },
+          {
+            "colliding_pose_count": 992,
+            "elapsed_sec": 0.6263502296060324,
+            "is_warmup": false,
+            "iteration": 1
+          },
+          {
+            "colliding_pose_count": 992,
+            "elapsed_sec": 0.6067674085497856,
+            "is_warmup": false,
+            "iteration": 2
+          },
+          {
+            "colliding_pose_count": 992,
+            "elapsed_sec": 0.6259323125705123,
+            "is_warmup": false,
+            "iteration": 3
+          }
+        ],
+        "validation_mode": "skipped",
+        "warmup": 1
+      }
+    }
+  ]
+}
