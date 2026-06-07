@@ -32,7 +32,33 @@ This is app-level benchmark adoption of a generic primitive front door. It does 
 
 ## Next Validation
 
-Run the RayJoin LSI count benchmark app on the A5000 pod with `prepare_left_for_count=True` and verify that:
+The RayJoin LSI count benchmark app was run on the A5000 pod with `prepare_left_for_count=True`.
+
+Artifact:
+
+`docs/reports/goal3729_rayjoin_lsi_exact_count_front_door_app_a5000/summary.json`
+
+Environment:
+
+| Field | Value |
+| --- | --- |
+| GPU | NVIDIA RTX A5000, driver 580.126.09 |
+| RTDL commit | `a546fa58` |
+| Dataset | RayJoin bundled Brazil soil + county CDB pair |
+| Result mode | `count` |
+| Repeat / warmup | 15 / 3 |
+
+Result:
+
+| Field | Value |
+| --- | ---: |
+| Intersection count | 20,860 |
+| Prepared query median | 0.000269813 s |
+| Native `candidate_count_pass` | 0.000252718 s |
+| Native phase mode | `count_prepared_left_grouped_range_direct_intersection` |
+| Right group count | 326,193 |
+
+The pod artifact verifies that:
 
 - Counts still match the CPU/reference or same-source expected count.
 - `segment_pair_count_route.front_door_schema` is present.

@@ -1,0 +1,81 @@
+{
+  "app": "rayjoin_v2_spatial_join",
+  "backend": "optix",
+  "claim_boundary": {
+    "full_rayjoin_reproduction": false,
+    "paper_scale_perf_claim_authorized": false,
+    "requires_pod_for_optix_perf": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "count_mode": "exact",
+  "dataset": "/root/RayJoin/test/dataset/br_soil_ascii_odyssey_final.txt+/root/RayJoin/test/dataset/br_county_clean_25_odyssey_final.txt",
+  "dataset_note": "External CDB line-segment intersection case using direct generic segment columns from left/right chain edges.",
+  "device_resident_continuation_status": "not_complete: prepared query can avoid Python row materialization for counts, but generic downstream row-stream continuation still needs pod/native work",
+  "execution_route": "prepared_optix",
+  "goal3729_probe": {
+    "claim_boundary": {
+      "public_speedup_claim_authorized": false,
+      "rayjoin_paper_reproduction_claim_authorized": false,
+      "release_authorized": false,
+      "rt_core_speedup_claim_authorized": false,
+      "rtdl_beats_rayjoin_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false,
+      "whole_app_acceleration_claim_authorized": false
+    },
+    "dataset": "/root/RayJoin/test/dataset/br_soil_ascii_odyssey_final.txt+/root/RayJoin/test/dataset/br_county_clean_25_odyssey_final.txt",
+    "elapsed_sec": 2.8978243730962276,
+    "git_commit": "a546fa587bcc08944a785e5149f45cabe148a87d",
+    "gpu": "NVIDIA RTX A5000, 580.126.09",
+    "schema": "rtdl.goal3729.rayjoin_lsi_exact_count_front_door_app_validation.v1"
+  },
+  "native_engine_boundary": "The engine sees generic prepared point/closed-shape, segment-pair, or shape-pair contracts. RayJoin application policy and paper-specific interpretation stay in Python.",
+  "native_phase_timings": {
+    "candidate_count_pass": 0.000252718,
+    "candidate_download": 0.0,
+    "candidate_write_pass": 0.0,
+    "emitted_count": 20860,
+    "exact_refine": 0.0,
+    "left_upload": 0.0,
+    "mode": "count_prepared_left_grouped_range_direct_intersection",
+    "raw_candidate_count": 0
+  },
+  "phases_sec": {
+    "prepare_left_set_sec": 0.002885490655899048,
+    "prepare_static_scene_sec": 0.6348355645313859,
+    "prepared_query_sec": 0.00026981253176927567,
+    "prepared_query_sec_repeat": 15,
+    "prepared_query_sec_total_sec": 0.00407237745821476,
+    "prepared_query_sec_warmup": 3,
+    "query_pack_sec": 0.005396511405706406,
+    "static_segment_pack_sec": 0.006792726926505566
+  },
+  "point_order_mode": null,
+  "repeat_protocol": {
+    "measured_query_total_sec": 0.00407237745821476,
+    "repeat": 15,
+    "reported_query_metric": "prepared_query_median",
+    "warmup": 3
+  },
+  "result_mode": "count",
+  "row_count": 20860,
+  "segment_order_mode": "natural",
+  "summary": {
+    "intersection_count": 20860,
+    "output_contract": "segment_segment_intersection_count",
+    "prepared_left_for_count": true,
+    "segment_order_execution": "natural_input_order",
+    "segment_pair_count_route": {
+      "experimental_front_door": true,
+      "front_door_schema": "rtdl.optix.segment_pair_prepared_left_exact_intersection_count.front_door.v1",
+      "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+      "output_contract": "scalar_exact_count",
+      "primitive": "SEGMENT_PAIR_INTERSECTION_ROWS_2D",
+      "public_speedup_claim_authorized": false,
+      "right_group_count": 326193,
+      "route": "intersection_program_identity_or_ranged_primitive_records"
+    }
+  },
+  "workload": "lsi"
+}
