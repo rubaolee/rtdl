@@ -56,7 +56,9 @@ class Goal3704SegmentPairPreparedLeftExactCountRouteTest(unittest.TestCase):
 
         self.assertIn("prepare_left_for_count: bool = False", app)
         self.assertIn("prepare_segment_pair_left_set_optix", app)
-        self.assertIn("prepared.count_prepared_left(prepared_left)", app)
+        self.assertIn("prepared.count_prepared_left_exact_intersections(prepared_left)", app)
+        self.assertIn('"segment_pair_count_route"', app)
+        self.assertIn('"front_door_schema"', app)
         self.assertIn('"prepared_left_for_count"', app)
         self.assertIn("prepare_left_for_count=True", composite)
         self.assertIn('"prepared_left_for_count"', composite)

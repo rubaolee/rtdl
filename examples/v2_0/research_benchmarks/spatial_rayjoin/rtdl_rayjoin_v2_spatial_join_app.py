@@ -729,21 +729,47 @@ def run_rayjoin_prepared_optix_workload(
                 "prepare_left_set_sec",
                 lambda: prepare_segment_pair_left_set_optix(packed_left),
             )
+        count_route_metadata = None
         try:
             if result_mode == "count":
-                row_count = int(
-                    _phase_repeat_time(
+                if prepared_left is not None:
+                    count_result = _phase_repeat_time(
                         phases,
                         "prepared_query_sec",
                         query_repeat=query_repeat,
                         warmup=warmup,
-                        fn=(
-                            lambda: prepared.count_prepared_left(prepared_left)
-                            if prepared_left is not None
-                            else prepared.count(packed_left)
-                        ),
+                        fn=lambda: prepared.count_prepared_left_exact_intersections(prepared_left),
+                        stability_value=lambda value: int(value["count"]),
                     )
-                )
+                    row_count = int(count_result["count"])
+                    count_route_metadata = {
+                        "front_door_schema": count_result["schema"],
+                        "primitive": count_result["primitive"],
+                        "output_contract": count_result["output_contract"],
+                        "route": count_result["route"],
+                        "native_symbol": count_result["native_symbol"],
+                        "right_group_count": int(count_result["right_group_count"]),
+                        "experimental_front_door": bool(
+                            count_result["claim_boundary"]["experimental_front_door"]
+                        ),
+                        "public_speedup_claim_authorized": bool(
+                            count_result["claim_boundary"]["public_speedup_claim_authorized"]
+                        ),
+                    }
+                else:
+                    row_count = int(
+                        _phase_repeat_time(
+                            phases,
+                            "prepared_query_sec",
+                            query_repeat=query_repeat,
+                            warmup=warmup,
+                            fn=lambda: prepared.count(packed_left),
+                        )
+                    )
+                    count_route_metadata = {
+                        "front_door_schema": None,
+                        "route": "prepared_right_host_left_exact_count",
+                    }
             else:
                 def run_raw_once():
                     view = prepared.run_raw(packed_left)
@@ -775,6 +801,7 @@ def run_rayjoin_prepared_optix_workload(
                 else "segment_segment_intersection_rows"
             ),
             "prepared_left_for_count": bool(prepared_left is not None),
+            "segment_pair_count_route": count_route_metadata,
             "segment_order_execution": (
                 "fused_into_pack_segments"
                 if segment_order_mode != "natural"
