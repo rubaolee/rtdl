@@ -152,6 +152,14 @@ struct RtdlFixedRadiusNeighborRow {
     double distance;
 };
 
+struct RtdlFixedRadiusRankedNeighborAggregate {
+    size_t query_count;
+    size_t bounded_neighbor_count;
+    uint64_t nearest_id_checksum;
+    uint64_t kth_id_checksum;
+    double sum_distance;
+};
+
 struct RtdlFrontierVertex {
     uint32_t vertex_id;
     uint32_t level;

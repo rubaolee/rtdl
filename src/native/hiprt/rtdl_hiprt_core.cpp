@@ -227,6 +227,7 @@ struct PreparedFixedRadiusNeighbors3D {
     oroFunction kernel{};
     oroFunction threshold_count_kernel{};
     oroFunction threshold_flags_kernel{};
+    oroFunction ranked_aggregate_kernel{};
     size_t search_count{};
 
     PreparedFixedRadiusNeighbors3D(
@@ -1373,6 +1374,154 @@ oroFunction ensure_fixed_radius_threshold_flags_kernel_3d(PreparedFixedRadiusNei
     return prepared.threshold_flags_kernel;
 }
 
+std::string fixed_radius_ranked_aggregate_kernel_source_3d() {
+    std::string src = fixed_radius_neighbors_3d_kernel_source();
+    src += R"KERNEL(
+
+struct RtdlFixedRadiusRankedNeighborAggregate {
+    unsigned long long query_count;
+    unsigned long long bounded_neighbor_count;
+    unsigned long long nearest_id_checksum;
+    unsigned long long kth_id_checksum;
+    double sum_distance;
+};
+
+extern "C" __global__ void RtdlFixedRadiusRankedSummaryAggregate3DKernel(
+    hiprtGeometry geom,
+    const RtdlHiprtPoint3DDevice* queries,
+    const RtdlHiprtPoint3DDevice* search_points,
+    uint32_t query_count,
+    uint32_t k_max,
+    RtdlFixedRadiusRankedNeighborAggregate* aggregate,
+    RtdlHiprtFixedRadiusParams* params,
+    hiprtFuncTable table) {
+    __shared__ unsigned long long s_query_count[128];
+    __shared__ unsigned long long s_neighbor_count[128];
+    __shared__ unsigned long long s_nearest_checksum[128];
+    __shared__ unsigned long long s_kth_checksum[128];
+    __shared__ double s_sum_distance[128];
+
+    const uint32_t tid = threadIdx.x;
+    unsigned long long local_query_count = 0ull;
+    unsigned long long local_neighbor_count = 0ull;
+    unsigned long long local_nearest_checksum = 0ull;
+    unsigned long long local_kth_checksum = 0ull;
+    double local_sum_distance = 0.0;
+
+    for (uint32_t index = blockIdx.x * blockDim.x + tid;
+         index < query_count;
+         index += blockDim.x * gridDim.x) {
+        local_query_count += 1ull;
+        if (k_max == 0u || k_max > 64u) {
+            continue;
+        }
+
+        const RtdlHiprtPoint3DDevice query = queries[index];
+        float best_dist[64];
+        uint32_t best_id[64];
+        uint32_t count = 0u;
+        for (uint32_t i = 0; i < k_max; ++i) {
+            best_dist[i] = 3.402823466e+38F;
+            best_id[i] = 0xFFFFFFFFu;
+        }
+
+        hiprtRay ray;
+        ray.origin = {query.x, query.y, query.z};
+        ray.direction = {0.0f, 0.0f, 1.0f};
+        ray.minT = 0.0f;
+        ray.maxT = 0.0f;
+
+        hiprtGeomCustomTraversalAnyHit traversal(geom, ray, hiprtTraversalHintDefault, params, table);
+        while (traversal.getCurrentState() != hiprtTraversalStateFinished) {
+            hiprtHit hit = traversal.getNextHit();
+            if (!hit.hasHit()) {
+                continue;
+            }
+            const RtdlHiprtPoint3DDevice neighbor = search_points[hit.primID];
+            const float dist = hit.t;
+            uint32_t insert_at = count < k_max ? count : k_max;
+            for (uint32_t pos = 0; pos < count && pos < k_max; ++pos) {
+                if (dist < best_dist[pos] || (dist == best_dist[pos] && neighbor.id < best_id[pos])) {
+                    insert_at = pos;
+                    break;
+                }
+            }
+            if (insert_at >= k_max) {
+                continue;
+            }
+            const uint32_t limit = count < k_max ? count : k_max - 1u;
+            for (uint32_t pos = limit; pos > insert_at; --pos) {
+                best_dist[pos] = best_dist[pos - 1u];
+                best_id[pos] = best_id[pos - 1u];
+            }
+            best_dist[insert_at] = dist;
+            best_id[insert_at] = neighbor.id;
+            if (count < k_max) {
+                ++count;
+            }
+        }
+
+        local_neighbor_count += static_cast<unsigned long long>(count);
+        if (count == 0u) {
+            local_nearest_checksum += 0xffffffffull;
+            local_kth_checksum += 0xffffffffull;
+            continue;
+        }
+        local_nearest_checksum += static_cast<unsigned long long>(best_id[0]);
+        local_kth_checksum += static_cast<unsigned long long>(best_id[count - 1u]);
+        for (uint32_t rank = 0; rank < count; ++rank) {
+            local_sum_distance += static_cast<double>(best_dist[rank]);
+        }
+    }
+
+    s_query_count[tid] = local_query_count;
+    s_neighbor_count[tid] = local_neighbor_count;
+    s_nearest_checksum[tid] = local_nearest_checksum;
+    s_kth_checksum[tid] = local_kth_checksum;
+    s_sum_distance[tid] = local_sum_distance;
+    __syncthreads();
+
+    for (uint32_t stride = blockDim.x >> 1u; stride > 0u; stride >>= 1u) {
+        if (tid < stride) {
+            s_query_count[tid] += s_query_count[tid + stride];
+            s_neighbor_count[tid] += s_neighbor_count[tid + stride];
+            s_nearest_checksum[tid] += s_nearest_checksum[tid + stride];
+            s_kth_checksum[tid] += s_kth_checksum[tid + stride];
+            s_sum_distance[tid] += s_sum_distance[tid + stride];
+        }
+        __syncthreads();
+    }
+
+    if (tid == 0u) {
+        atomicAdd(&aggregate->query_count, s_query_count[0]);
+        atomicAdd(&aggregate->bounded_neighbor_count, s_neighbor_count[0]);
+        atomicAdd(&aggregate->nearest_id_checksum, s_nearest_checksum[0]);
+        atomicAdd(&aggregate->kth_id_checksum, s_kth_checksum[0]);
+        atomicAdd(&aggregate->sum_distance, s_sum_distance[0]);
+    }
+}
+)KERNEL";
+    return src;
+}
+
+oroFunction ensure_fixed_radius_ranked_aggregate_kernel_3d(PreparedFixedRadiusNeighbors3D& prepared) {
+    if (prepared.ranked_aggregate_kernel != nullptr) {
+        return prepared.ranked_aggregate_kernel;
+    }
+    hiprtFuncNameSet func_name_set{};
+    func_name_set.intersectFuncName = "intersectRtdlPointRadius3D";
+    const std::string source = fixed_radius_ranked_aggregate_kernel_source_3d();
+    prepared.ranked_aggregate_kernel = build_trace_kernel_from_source(
+        prepared.runtime.context,
+        source.c_str(),
+        "rtdl_hiprt_fixed_radius_ranked_summary_aggregate_3d.cu",
+        "RtdlFixedRadiusRankedSummaryAggregate3DKernel",
+        &func_name_set,
+        1,
+        1);
+    return prepared.ranked_aggregate_kernel;
+}
+
 const char* aabb_index_count_kernel_source_2d() {
     return R"KERNEL(
 #include <hiprt/hiprt_device.h>
@@ -2121,6 +2270,68 @@ void write_prepared_fixed_radius_threshold_flags_3d(
         oroModuleLaunchKernel(kernel, grid_size, 1, 1, block_size, 1, 1, 0, 0, args, nullptr));
     copy_device_to_host(flags, flags_device);
     std::copy(flags.begin(), flags.end(), flags_out);
+}
+
+void aggregate_prepared_fixed_radius_ranked_summary_3d(
+    PreparedFixedRadiusNeighbors3D& prepared,
+    const RtdlPoint3D* queries,
+    size_t query_count,
+    uint32_t k_max,
+    RtdlFixedRadiusRankedNeighborAggregate* aggregate_out) {
+    if (aggregate_out == nullptr) {
+        throw std::runtime_error("aggregate_out must not be null");
+    }
+    *aggregate_out = RtdlFixedRadiusRankedNeighborAggregate{0, 0, 0, 0, 0.0};
+    if (k_max == 0) {
+        throw std::runtime_error("fixed_radius ranked summary aggregate k_max must be positive");
+    }
+    if (k_max > 64) {
+        throw std::runtime_error("HIPRT fixed_radius ranked summary aggregate currently supports k_max <= 64");
+    }
+    if (query_count > std::numeric_limits<uint32_t>::max()) {
+        throw std::runtime_error("HIPRT fixed_radius ranked summary aggregate currently supports at most 2^32-1 query points");
+    }
+    if (query_count > 0 && queries == nullptr) {
+        throw std::runtime_error("query point pointer must not be null when query_count is nonzero");
+    }
+    if (query_count == 0) {
+        return;
+    }
+    if (prepared.search_count == 0) {
+        aggregate_out->query_count = query_count;
+        return;
+    }
+
+    std::vector<RtdlHiprtPoint3DDevice> query_values = encode_points(queries, query_count);
+    DeviceAllocation query_device(query_values.size() * sizeof(RtdlHiprtPoint3DDevice));
+    DeviceAllocation aggregate_device(sizeof(RtdlFixedRadiusRankedNeighborAggregate));
+    copy_host_to_device(query_device, query_values);
+    check_oro(
+        "oroMemcpyHtoD",
+        oroMemcpyHtoD(aggregate_device.oro_ptr(), aggregate_out, sizeof(RtdlFixedRadiusRankedNeighborAggregate)));
+
+    void* query_device_ptr = query_device.get();
+    void* search_device_ptr = prepared.search_device.get();
+    void* aggregate_device_ptr = aggregate_device.get();
+    void* params_device_ptr = prepared.params_device.get();
+    uint32_t query_count_u32 = static_cast<uint32_t>(query_count);
+    uint32_t block_size = 128;
+    uint32_t grid_size = static_cast<uint32_t>(std::min<size_t>((query_count + block_size - 1) / block_size, 4096));
+    oroFunction kernel = ensure_fixed_radius_ranked_aggregate_kernel_3d(prepared);
+    void* args[] = {
+        &prepared.geometry,
+        &query_device_ptr,
+        &search_device_ptr,
+        &query_count_u32,
+        &k_max,
+        &aggregate_device_ptr,
+        &params_device_ptr,
+        &prepared.func_table,
+    };
+    check_oro(
+        "oroModuleLaunchKernel",
+        oroModuleLaunchKernel(kernel, grid_size, 1, 1, block_size, 1, 1, 0, 0, args, nullptr));
+    copy_device_to_host(*aggregate_out, aggregate_device);
 }
 
 void run_fixed_radius_neighbors_2d(

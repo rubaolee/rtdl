@@ -164,6 +164,13 @@ _FEATURE_MATRIX: dict[str, dict[str, EngineFeatureSupport]] = {
         "hiprt": _support("fixed_radius_grouped_stream_flags_3d", "hiprt", NATIVE, "Goal3769 prepared fixed-radius threshold flags for downstream grouped/component continuations."),
         "apple_rt": _support("fixed_radius_grouped_stream_flags_3d", "apple_rt", COMPATIBILITY_FALLBACK, "Derives flags from emitted fixed-radius rows."),
     },
+    "fixed_radius_ranked_summary_aggregate_3d": {
+        "embree": _support("fixed_radius_ranked_summary_aggregate_3d", "embree", COMPATIBILITY_FALLBACK, "Aggregates emitted fixed-radius ranked rows; no native aggregate export."),
+        "optix": _support("fixed_radius_ranked_summary_aggregate_3d", "optix", NATIVE, "Prepared fixed-radius ranked-summary aggregate path."),
+        "vulkan": _support("fixed_radius_ranked_summary_aggregate_3d", "vulkan", COMPATIBILITY_FALLBACK, "Aggregates emitted fixed-radius ranked rows; no native aggregate export."),
+        "hiprt": _support("fixed_radius_ranked_summary_aggregate_3d", "hiprt", NATIVE, "Goal3771 prepared fixed-radius ranked-summary aggregate path."),
+        "apple_rt": _support("fixed_radius_ranked_summary_aggregate_3d", "apple_rt", COMPATIBILITY_FALLBACK, "Aggregates emitted fixed-radius ranked rows; no native aggregate export."),
+    },
     "knn_rows_2d": {
         "embree": _support("knn_rows_2d", "embree", NATIVE, "Embree bounded nearest-neighbor rows."),
         "optix": _support("knn_rows_2d", "optix", NATIVE, "OptiX bounded nearest-neighbor rows."),

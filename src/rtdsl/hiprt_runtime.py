@@ -287,6 +287,16 @@ class _RtdlFixedRadiusNeighborRow(ctypes.Structure):
     ]
 
 
+class _RtdlFixedRadiusRankedNeighborAggregate(ctypes.Structure):
+    _fields_ = [
+        ("query_count", ctypes.c_size_t),
+        ("bounded_neighbor_count", ctypes.c_size_t),
+        ("nearest_id_checksum", ctypes.c_uint64),
+        ("kth_id_checksum", ctypes.c_uint64),
+        ("sum_distance", ctypes.c_double),
+    ]
+
+
 class _RtdlFrontierVertex(ctypes.Structure):
     _fields_ = [
         ("vertex_id", ctypes.c_uint32),
@@ -598,6 +608,17 @@ def _hiprt_lib() -> ctypes.CDLL:
             ctypes.c_size_t,
         ]
         lib.rtdl_hiprt_write_prepared_fixed_radius_threshold_flags_3d.restype = ctypes.c_int
+    if hasattr(lib, "rtdl_hiprt_aggregate_prepared_fixed_radius_ranked_summary_3d"):
+        lib.rtdl_hiprt_aggregate_prepared_fixed_radius_ranked_summary_3d.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint3D),
+            ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.POINTER(_RtdlFixedRadiusRankedNeighborAggregate),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        lib.rtdl_hiprt_aggregate_prepared_fixed_radius_ranked_summary_3d.restype = ctypes.c_int
     lib.rtdl_hiprt_destroy_prepared_fixed_radius_neighbors_3d.argtypes = [ctypes.c_void_p]
     lib.rtdl_hiprt_destroy_prepared_fixed_radius_neighbors_3d.restype = None
     lib.rtdl_hiprt_run_fixed_radius_neighbors_2d.argtypes = [
@@ -3034,6 +3055,74 @@ class PreparedHiprtFixedRadiusNeighbors3D:
         radius: float | None = None,
     ) -> tuple[bool, ...]:
         return self.threshold_flags(query_points, threshold=threshold, radius=radius)
+
+    def aggregate_ranked_summary(
+        self,
+        query_points: tuple[_CanonicalPoint3D, ...],
+        *,
+        k_max: int,
+        radius: float | None = None,
+    ) -> dict[str, int | float | str]:
+        query_records = tuple(query_points)
+        if any(not isinstance(point, _CanonicalPoint3D) for point in query_records):
+            raise TypeError("Prepared HIPRT fixed_radius ranked aggregate currently supports only Point3D query inputs")
+        if k_max <= 0:
+            raise ValueError("Prepared HIPRT fixed_radius ranked aggregate k_max must be positive")
+        if k_max > 64:
+            raise ValueError("Prepared HIPRT fixed_radius ranked aggregate currently supports k_max <= 64")
+        if not query_records:
+            return {
+                "query_count": 0,
+                "bounded_neighbor_count": 0,
+                "nearest_id_checksum": 0,
+                "kth_id_checksum": 0,
+                "sum_distance": 0.0,
+                "precision": "float32_distance",
+            }
+        if self._empty:
+            return {
+                "query_count": len(query_records),
+                "bounded_neighbor_count": 0,
+                "nearest_id_checksum": 0,
+                "kth_id_checksum": 0,
+                "sum_distance": 0.0,
+                "precision": "float32_distance",
+            }
+        if not self._handle:
+            raise RuntimeError("prepared HIPRT fixed_radius_neighbors_3d handle is closed")
+        symbol = getattr(_hiprt_lib(), "rtdl_hiprt_aggregate_prepared_fixed_radius_ranked_summary_3d", None)
+        if symbol is None:
+            raise RuntimeError(
+                "Loaded HIPRT backend library does not export "
+                "rtdl_hiprt_aggregate_prepared_fixed_radius_ranked_summary_3d. "
+                "Rebuild it with 'make build-hiprt' from current main."
+            )
+        query_array = _encode_point3d_array(query_records)
+        aggregate = _RtdlFixedRadiusRankedNeighborAggregate()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            self._handle,
+            query_array,
+            len(query_records),
+            int(k_max),
+            ctypes.byref(aggregate),
+            error,
+            ctypes.sizeof(error),
+        )
+        if status != 0:
+            detail = error.value.decode("utf-8", errors="replace")
+            raise RuntimeError(
+                "rtdl_hiprt_aggregate_prepared_fixed_radius_ranked_summary_3d "
+                f"failed with status {status}: {detail}"
+            )
+        return {
+            "query_count": int(aggregate.query_count),
+            "bounded_neighbor_count": int(aggregate.bounded_neighbor_count),
+            "nearest_id_checksum": int(aggregate.nearest_id_checksum),
+            "kth_id_checksum": int(aggregate.kth_id_checksum),
+            "sum_distance": float(aggregate.sum_distance),
+            "precision": "float32_distance",
+        }
 
 
 def prepare_hiprt_fixed_radius_neighbors_3d(
