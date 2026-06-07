@@ -42,6 +42,6 @@ lane rather than a promoted public route.
   `tests.goal3808_remaining_low_risk_alias_cleanup_test`,
   `tests.goal3806_active_example_versioned_helper_inventory_test`,
   `tests.goal2659_v2_4_benchmark_protocol_integration_test`, and
-  `tests.goal2736_tier_a_primitive_first_plan_alignment_test`.
-- A5000 pod validation should run the same focused slice from a clean
-  `origin/main` checkout after the commit lands.
+  `tests.goal2736_tier_a_primitive_first_plan_alignment_test`: 16 tests passed.
+- A5000 pod validation on clean `origin/main` at commit `01e05d81` ran the same
+  focused slice: 16 tests passed.
