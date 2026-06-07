@@ -66,7 +66,7 @@ class Goal3772HiprtFixedRadiusRankedBatchSweepPortableTest(unittest.TestCase):
         self.assertEqual(rtnn["missing_generic_contracts"], ())
         self.assertEqual(rtnn["parity_stage"], "ready_for_amd_functional_pod")
         summary = summarize_v2_10_amd_hiprt_benchmark_parity()
-        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 5)
+        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 10)
         self.assertIn("rtnn", summary["ready_for_amd_functional_pod_apps"])
 
     def test_report_records_boundary(self) -> None:

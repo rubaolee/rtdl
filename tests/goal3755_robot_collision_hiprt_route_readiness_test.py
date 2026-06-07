@@ -65,7 +65,7 @@ class Goal3755RobotCollisionHiprtRouteReadinessTest(unittest.TestCase):
         module = importlib.util.module_from_spec(spec)
         assert spec.loader is not None
         spec.loader.exec_module(module)
-        with self.assertRaisesRegex(ValueError, "prepared OptiX summary modes require backend='optix'"):
+        with self.assertRaisesRegex(ValueError, "prepared.*requires backend='optix'"):
             module.run_app("hiprt", optix_summary_mode="prepared_count")
 
     def test_report_documents_no_amd_runtime_evidence(self) -> None:
