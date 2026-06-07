@@ -1,0 +1,96 @@
+{
+  "backend_route": "NVIDIA CUDA/Orochi HIPRT functional evidence on RTX A5000; not AMD hardware evidence and not a speedup claim.",
+  "barnes_hut_missing_generic_contracts": [
+    "grouped_vector_force_reduction"
+  ],
+  "barnes_hut_parity_stage": "needs_generic_hiprt_extension",
+  "barnes_hut_required_engine_features": [
+    "fixed_radius_neighbors_2d",
+    "point_in_polygon_2d",
+    "aggregate_frontier_collect_2d"
+  ],
+  "claim_boundary": {
+    "amd_hardware_evidence_authorized": false,
+    "amd_perf_claim_authorized": false,
+    "app_specific_native_engine_logic_allowed": false,
+    "paper_reproduction_claim_authorized": false,
+    "release_action_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "zero_copy_claim_authorized": false
+  },
+  "goal": "Goal3777",
+  "native_abi_contract": "generic_aggregate_frontier_collect_2d_native_abi_v1",
+  "native_symbol": "rtdl_hiprt_collect_aggregate_frontier_2d",
+  "parity_summary": {
+    "amd_perf_claim_authorized": false,
+    "app_count": 10,
+    "claim_boundary": "This AMD/HIPRT benchmark parity map is a planning gate. It does not authorize AMD performance claims, HIPRT release claims, public speedup wording, whole-app acceleration wording, or RTDL-beats-paper wording.",
+    "compatibility_only_not_amd_perf_ready_apps": [
+      "raydb_style",
+      "triangle_counting"
+    ],
+    "needs_generic_hiprt_extension_apps": [
+      "barnes_hut"
+    ],
+    "ready_for_amd_functional_pod_apps": [
+      "hausdorff_xhd",
+      "spatial_rayjoin",
+      "rt_dbscan",
+      "robot_collision",
+      "contact_manifold",
+      "librts_spatial_index",
+      "rtnn"
+    ],
+    "release_authorized": false,
+    "row_count": 10,
+    "stage_counts": {
+      "compatibility_only_not_amd_perf_ready": 2,
+      "needs_generic_hiprt_extension": 1,
+      "ready_for_amd_functional_pod": 7
+    },
+    "status": "planning_gate_not_amd_hardware_evidence",
+    "version": "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3777.v1"
+  },
+  "pod": {
+    "gpu": "NVIDIA RTX A5000, 580.126.09",
+    "hiprt_context": {
+      "api_version": 2002,
+      "device_name": "NVIDIA RTX A5000",
+      "device_type": 1,
+      "version": [
+        2,
+        2,
+        15109972
+      ]
+    },
+    "hiprt_sdk": "/root/vendor/hiprt-official/hiprtSdk-2.2.0e68f54",
+    "ssh_host": "69.30.85.203",
+    "ssh_port": 22057
+  },
+  "primitive": "AGGREGATE_FRONTIER_COLLECT_2D",
+  "row_schema": [
+    "source_id",
+    "frontier_kind_code",
+    "item_id",
+    "owner_aggregate_id",
+    "dfs_index",
+    "resume_index",
+    "metadata_flags"
+  ],
+  "sample": {
+    "accepted_aggregate_row_count": 108,
+    "fallback_exact_row_count": 560,
+    "frontier_row_count": 668,
+    "overflow_fail_closed": true,
+    "row_offsets_match_reference": true,
+    "rows_match_reference": true,
+    "source_count": 32,
+    "source_ids_match_reference": true,
+    "tree_node_count": 13
+  },
+  "schema": "rtdl.goal3777.hiprt_aggregate_frontier_collect_2d_a5000.v1",
+  "scoped_dirty_lines": [],
+  "scoped_source_dirty": false,
+  "source_commit": "3e46c533a6e62669ee58f5054e52617726cfa60e"
+}

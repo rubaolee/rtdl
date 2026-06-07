@@ -53,13 +53,35 @@ Still open:
 
 ## Validation
 
-Local focused validation:
+Local focused validation passed:
 
 ```text
 $env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal3777_hiprt_aggregate_frontier_collect_2d_test tests.goal3753_amd_hiprt_benchmark_parity_plan_test tests.goal2639_aggregate_frontier_native_abi_contract_test tests.goal3073_v2_7_generated_primitive_catalog_test tests.goal3090_v2_7_discovery_metadata_backfill_test
 ```
 
-Pod evidence will be recorded in:
+Broader local HIPRT-parity slice also passed:
+
+```text
+$env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal3777_hiprt_aggregate_frontier_collect_2d_test tests.goal3776_hiprt_collect_k_bounded_i64_test tests.goal3775_hiprt_ray_triangle_closest_hit_3d_test tests.goal3774_hiprt_point_group_nearest_device_columns_test tests.goal3773_hiprt_point_group_nearest_witness_test tests.goal3753_amd_hiprt_benchmark_parity_plan_test tests.goal2639_aggregate_frontier_native_abi_contract_test tests.goal2638_aggregate_frontier_collect_test tests.goal3073_v2_7_generated_primitive_catalog_test tests.goal3090_v2_7_discovery_metadata_backfill_test
+```
+
+Result: 77 tests passed, 12 skipped.
+
+Clean pod validation:
+
+- SSH: `root@69.30.85.203 -p 22057`
+- GPU: `NVIDIA RTX A5000, 580.126.09`
+- HIPRT SDK: `/root/vendor/hiprt-official/hiprtSdk-2.2.0e68f54`
+- clean workdir: `/root/rtdl_goal3777_clean_1780850895`
+- commit: `3e46c533a6e62669ee58f5054e52617726cfa60e`
+- command: `make build-hiprt HIPRT_PREFIX=/root/vendor/hiprt-official/hiprtSdk-2.2.0e68f54`
+- focused pod tests: 43 passed, 3 skipped.
+- sample parity: HIPRT rows, row offsets, and source IDs match the CPU
+  aggregate-frontier reference.
+- overflow behavior: fail-closed, no partial result surfaced.
+- scoped source dirty: false.
+
+Pod evidence is recorded in:
 
 `docs/reports/goal3777_hiprt_aggregate_frontier_collect_2d_a5000.json`
 
