@@ -24,6 +24,7 @@ from rtdsl.datasets import chains_to_polygons
 from rtdsl.datasets import chains_to_probe_points
 from rtdsl.datasets import chains_to_segment_columns
 from rtdsl.datasets import chains_to_segments
+from rtdsl.datasets import chains_to_topology_rows
 from rtdsl.datasets import load_cdb
 
 
@@ -2865,6 +2866,202 @@ def run_rayjoin_v2_6_numba_compact_mask_preview(
     }
 
 
+def _side_aware_owner_face_from_topology_row(row: dict[str, int]) -> tuple[int, str]:
+    if int(row.get("has_left_face", 0)) and int(row.get("left_face_id", 0)) != 0:
+        return int(row["left_face_id"]), "left"
+    if int(row.get("has_right_face", 0)) and int(row.get("right_face_id", 0)) != 0:
+        return int(row["right_face_id"]), "right"
+    return -1, "either"
+
+
+def _device_i64_tuple(values) -> tuple[int, ...]:
+    if hasattr(values, "copy_to_host"):
+        values = values.copy_to_host()
+    elif hasattr(values, "get"):
+        values = values.get()
+    return tuple(int(value) for value in values.tolist())
+
+
+def _side_aware_topology_result_rows(result: dict[str, object]) -> tuple[dict[str, int], ...]:
+    point_ids = _device_i64_tuple(result["point_id"])
+    shape_ids = _device_i64_tuple(result["shape_id"])
+    owner_face_ids = _device_i64_tuple(result["owner_face_id"])
+    owner_side_codes = _device_i64_tuple(result["owner_side_code"])
+    return tuple(
+        {
+            "point_id": point_id,
+            "shape_id": shape_id,
+            "owner_face_id": owner_face_id,
+            "owner_side_code": owner_side_code,
+        }
+        for point_id, shape_id, owner_face_id, owner_side_code in zip(
+            point_ids,
+            shape_ids,
+            owner_face_ids,
+            owner_side_codes,
+        )
+    )
+
+
+def run_rayjoin_v2_9_numba_side_aware_topology_reference(
+    *,
+    dataset: str | None = None,
+    limit_chains: int | None = None,
+    include_rows: bool = True,
+) -> dict[str, object]:
+    """Run the app-facing Numba side-aware topology reference route.
+
+    This is an app-owned continuation route over generic topology columns. It is
+    deliberately separate from the promoted RTDL/OptiX RayJoin route.
+    """
+
+    resolved_dataset = dataset or _DEFAULT_DATASETS["pip"]
+    phases: dict[str, float] = {}
+    cdb = _phase_time(
+        phases,
+        "load_cdb_sec",
+        lambda: load_cdb(_resolve_dataset_path(resolved_dataset)),
+    )
+    topology_rows = _phase_time(
+        phases,
+        "topology_rows_sec",
+        lambda: chains_to_topology_rows(cdb, limit_chains=limit_chains),
+    )
+    if not topology_rows:
+        raise ValueError("side-aware topology reference requires at least one topology row")
+
+    candidate_point_ids: list[int] = []
+    candidate_shape_ids: list[int] = []
+    candidate_point_ordinals: list[int] = []
+    candidate_shape_ordinals: list[int] = []
+    owner_point_ids: list[int] = []
+    owner_point_ordinals: list[int] = []
+    owner_face_ids: list[int] = []
+    owner_side_codes: list[str] = []
+    topology_shape_ids: list[int] = []
+    topology_left_face_ids: list[int] = []
+    topology_right_face_ids: list[int] = []
+    topology_has_left_faces: list[int] = []
+    topology_has_right_faces: list[int] = []
+
+    for ordinal, row in enumerate(topology_rows):
+        chain_id = int(row["chain_id"])
+        point_id = int(row["first_point_id"])
+        owner_face, owner_side = _side_aware_owner_face_from_topology_row(row)
+        candidate_point_ids.append(point_id)
+        candidate_shape_ids.append(chain_id)
+        candidate_point_ordinals.append(ordinal)
+        candidate_shape_ordinals.append(ordinal)
+        owner_point_ids.append(point_id)
+        owner_point_ordinals.append(ordinal)
+        owner_face_ids.append(owner_face)
+        owner_side_codes.append(owner_side)
+        topology_shape_ids.append(chain_id)
+        topology_left_face_ids.append(int(row["left_face_id"]))
+        topology_right_face_ids.append(int(row["right_face_id"]))
+        topology_has_left_faces.append(int(row["has_left_face"]))
+        topology_has_right_faces.append(int(row["has_right_face"]))
+
+    reference = _phase_time(
+        phases,
+        "python_column_reference_sec",
+        lambda: rt.filter_closed_shape_membership_candidate_columns_by_owner_face_side_columns(
+            candidate_point_ids=tuple(candidate_point_ids),
+            candidate_shape_ids=tuple(candidate_shape_ids),
+            candidate_point_ordinals=tuple(candidate_point_ordinals),
+            candidate_shape_ordinals=tuple(candidate_shape_ordinals),
+            topology_shape_ids=tuple(topology_shape_ids),
+            topology_shape_ordinals=tuple(candidate_shape_ordinals),
+            topology_left_face_ids=tuple(topology_left_face_ids),
+            topology_right_face_ids=tuple(topology_right_face_ids),
+            topology_has_left_faces=tuple(topology_has_left_faces),
+            topology_has_right_faces=tuple(topology_has_right_faces),
+            owner_point_ids=tuple(owner_point_ids),
+            owner_point_ordinals=tuple(owner_point_ordinals),
+            owner_face_ids=tuple(owner_face_ids),
+            owner_side_codes=tuple(owner_side_codes),
+        ),
+    )
+    numba_result = _phase_time(
+        phases,
+        "numba_side_aware_topology_sec",
+        lambda: rt.filter_closed_shape_membership_candidate_columns_by_owner_face_side_numba(
+            candidate_point_ids=tuple(candidate_point_ids),
+            candidate_shape_ids=tuple(candidate_shape_ids),
+            candidate_point_ordinals=tuple(candidate_point_ordinals),
+            candidate_shape_ordinals=tuple(candidate_shape_ordinals),
+            topology_shape_ids=tuple(topology_shape_ids),
+            topology_shape_ordinals=tuple(candidate_shape_ordinals),
+            topology_left_face_ids=tuple(topology_left_face_ids),
+            topology_right_face_ids=tuple(topology_right_face_ids),
+            topology_has_left_faces=tuple(topology_has_left_faces),
+            topology_has_right_faces=tuple(topology_has_right_faces),
+            owner_point_ids=tuple(owner_point_ids),
+            owner_point_ordinals=tuple(owner_point_ordinals),
+            owner_face_ids=tuple(owner_face_ids),
+            owner_side_codes=tuple(owner_side_codes),
+        ),
+    )
+    numba_rows = _side_aware_topology_result_rows(numba_result)
+    reference_rows = tuple(
+        {
+            "point_id": int(point_id),
+            "shape_id": int(shape_id),
+            "owner_face_id": int(owner_face_id),
+            "owner_side_code": int(owner_side_code),
+        }
+        for point_id, shape_id, owner_face_id, owner_side_code in zip(
+            reference["point_id"],
+            reference["shape_id"],
+            reference["owner_face_id"],
+            reference["owner_side_code"],
+        )
+    )
+    parity = reference_rows == numba_rows
+    payload: dict[str, object] = {
+        "app": "rayjoin_v2_spatial_join",
+        "workload": "overlay_seed",
+        "execution_route": "v2_9_numba_side_aware_topology_reference",
+        "backend": "python+numba",
+        "dataset": resolved_dataset,
+        "row_count": len(numba_rows),
+        "summary": {
+            "input_topology_row_count": len(topology_rows),
+            "candidate_count": len(candidate_point_ids),
+            "python_reference_row_count": len(reference_rows),
+            "numba_row_count": len(numba_rows),
+            "parity_vs_python_columns": parity,
+            "output_contract": "side_aware_owner_face_membership_rows",
+        },
+        "phases_sec": phases,
+        "partner_reference": {
+            "partner": "numba",
+            "raw_cuda_kernel_required": False,
+            "app_owned_policy": "owner_face_side",
+            "helper": "filter_closed_shape_membership_candidate_columns_by_owner_face_side_numba",
+            "metadata": numba_result.get("_metadata", {}),
+        },
+        "native_engine_boundary": (
+            "This route uses generic topology columns and an explicit Python-owned "
+            "owner-face/side policy. It does not add RayJoin-specific native engine logic."
+        ),
+        "claim_boundary": {
+            "full_rayjoin_reproduction": False,
+            "paper_scale_perf_claim_authorized": False,
+            "rtdl_beats_rayjoin_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "release_authorized": False,
+        },
+    }
+    if include_rows:
+        payload["rows"] = numba_rows
+        payload["reference_rows"] = reference_rows
+    return payload
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Run RTDL v2 RayJoin-style PIP, LSI, and overlay-seed workloads."
@@ -2889,6 +3086,7 @@ def main(argv: list[str] | None = None) -> int:
             "prepared_optix_left_id_dense_count",
             "prepared_optix_shape_pair_active_count",
             "v2_6_numba_compact_mask_plan",
+            "v2_9_numba_side_aware_topology_reference",
         ),
         default="generic_kernel",
         help="Use the generic kernel route or the prepared OptiX benchmark route for PIP/LSI.",
@@ -2938,6 +3136,16 @@ def main(argv: list[str] | None = None) -> int:
                 "workloads": {
                     workload: v2_6_numba_compact_mask_plan_payload(workload)
                     for workload in _WORKLOADS
+                },
+            }
+        elif args.execution_route == "v2_9_numba_side_aware_topology_reference":
+            payload = {
+                "app": "rayjoin_v2_spatial_join",
+                "execution_route": args.execution_route,
+                "workloads": {
+                    "overlay_seed": run_rayjoin_v2_9_numba_side_aware_topology_reference(
+                        include_rows=include_rows,
+                    )
                 },
             }
         elif args.execution_route == "prepared_optix_compact_grouped_count":
@@ -3003,6 +3211,13 @@ def main(argv: list[str] | None = None) -> int:
     else:
         if args.execution_route == "v2_6_numba_compact_mask_plan":
             payload = v2_6_numba_compact_mask_plan_payload(args.workload)
+        elif args.execution_route == "v2_9_numba_side_aware_topology_reference":
+            if args.workload != "overlay_seed":
+                raise ValueError("v2_9_numba_side_aware_topology_reference currently supports only overlay_seed")
+            payload = run_rayjoin_v2_9_numba_side_aware_topology_reference(
+                dataset=args.dataset,
+                include_rows=include_rows,
+            )
         elif args.execution_route == "prepared_optix_compact_grouped_count":
             payload = run_rayjoin_prepared_optix_compact_grouped_count_workload(
                 args.workload,

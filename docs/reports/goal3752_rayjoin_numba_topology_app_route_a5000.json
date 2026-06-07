@@ -1,0 +1,60 @@
+{
+  "app": "rayjoin_v2_spatial_join",
+  "backend": "python+numba",
+  "claim_boundary": {
+    "full_rayjoin_reproduction": false,
+    "paper_scale_perf_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+  "execution_route": "v2_9_numba_side_aware_topology_reference",
+  "native_engine_boundary": "This route uses generic topology columns and an explicit Python-owned owner-face/side policy. It does not add RayJoin-specific native engine logic.",
+  "partner_reference": {
+    "app_owned_policy": "owner_face_side",
+    "helper": "filter_closed_shape_membership_candidate_columns_by_owner_face_side_numba",
+    "metadata": {
+      "adapter": "filter_closed_shape_membership_candidate_columns_by_owner_face_side_numba",
+      "candidate_count": 3,
+      "host_owner_duplicate_check_used": true,
+      "host_prefix_sum_used": true,
+      "host_prepared_owner_lookup_key_count": 3,
+      "host_prepared_sorted_lookup_used": true,
+      "native_engine_row_contract": "not_called_partner_reference_only",
+      "numba_cuda_jit_used": true,
+      "owner_count": 3,
+      "paper_reproduction_claim_authorized": false,
+      "partner": "numba",
+      "partner_reference_contract": "generic_side_aware_owner_face_membership_filter",
+      "public_speedup_claim_authorized": false,
+      "raw_cuda_kernel_required": false,
+      "release_authorized": false,
+      "row_count": 3,
+      "rt_core_speedup_claim_authorized": false,
+      "topology_count": 3,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "partner": "numba",
+    "raw_cuda_kernel_required": false
+  },
+  "phases_sec": {
+    "load_cdb_sec": 0.00022317934781312943,
+    "numba_side_aware_topology_sec": 1.219406553544104,
+    "python_column_reference_sec": 0.00013442803174257278,
+    "topology_rows_sec": 1.561921089887619e-05
+  },
+  "row_count": 3,
+  "summary": {
+    "candidate_count": 3,
+    "input_topology_row_count": 3,
+    "numba_row_count": 3,
+    "output_contract": "side_aware_owner_face_membership_rows",
+    "parity_vs_python_columns": true,
+    "python_reference_row_count": 3
+  },
+  "workload": "overlay_seed"
+}
