@@ -45,4 +45,3 @@ class Goal3819TriangleCountingNativeModeProbeTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

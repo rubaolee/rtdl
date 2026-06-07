@@ -61,4 +61,3 @@ This does not authorize release action, public speedup wording, broad RT-core
 wording, triangle-count RT-core wording, whole-app acceleration wording,
 paper-reproduction wording, AMD hardware/performance wording, automatic partner
 selection, true-zero-copy wording, or app-specific native-engine logic.
-
