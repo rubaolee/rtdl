@@ -133,7 +133,7 @@ _FEATURE_MATRIX: dict[str, dict[str, EngineFeatureSupport]] = {
         "embree": _support("ray_triangle_closest_hit_3d", "embree", NATIVE, "Embree closest-hit traversal."),
         "optix": _support("ray_triangle_closest_hit_3d", "optix", NATIVE, "OptiX closest-hit traversal."),
         "vulkan": _support("ray_triangle_closest_hit_3d", "vulkan", NATIVE, "Vulkan RT closest-hit traversal where the backend is built."),
-        "hiprt": _support("ray_triangle_closest_hit_3d", "hiprt", NATIVE, "HIPRT closest-hit traversal where the backend is built."),
+        "hiprt": _support("ray_triangle_closest_hit_3d", "hiprt", NATIVE, "Goal3775 HIPRT closest-hit traversal where the backend is built."),
         "apple_rt": _support("ray_triangle_closest_hit_3d", "apple_rt", NATIVE, "Apple MPS RT closest-hit traversal."),
     },
     "visibility_rows": {

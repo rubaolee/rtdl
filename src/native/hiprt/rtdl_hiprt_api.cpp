@@ -297,6 +297,105 @@ extern "C" int rtdl_hiprt_run_ray_hitcount_3d(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_hiprt_run_ray_closest_hit_3d(
+    const RtdlRay3D* rays,
+    size_t ray_count,
+    const RtdlTriangle3D* triangles,
+    size_t triangle_count,
+    RtdlRayClosestHitRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+    return handle_call([&]() {
+        if (rows_out == nullptr || row_count_out == nullptr) {
+            throw std::runtime_error("output pointers must not be null");
+        }
+        *rows_out = nullptr;
+        *row_count_out = 0;
+        if ((ray_count > 0 && rays == nullptr) || (triangle_count > 0 && triangles == nullptr)) {
+            throw std::runtime_error("input pointers must not be null when counts are nonzero");
+        }
+        if (ray_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()) ||
+            triangle_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+            throw std::runtime_error("HIPRT 3D ray closest-hit currently supports at most 2^32-1 rays/triangles");
+        }
+        if (ray_count == 0 || triangle_count == 0) {
+            std::vector<RtdlRayClosestHitRow> empty;
+            *rows_out = copy_rows_to_heap(empty);
+            *row_count_out = 0;
+            return;
+        }
+
+        std::vector<hiprtFloat3> vertices = encode_triangle_vertices(triangles, triangle_count);
+        std::vector<RtdlHiprtRay3DDevice> ray_values = encode_rays(rays, ray_count);
+        std::vector<uint32_t> triangle_ids;
+        triangle_ids.reserve(triangle_count);
+        for (size_t i = 0; i < triangle_count; ++i) {
+            triangle_ids.push_back(triangles[i].id);
+        }
+
+        HiprtRuntime runtime = create_runtime();
+        hiprtSetLogLevel(hiprtLogLevelError);
+
+        DeviceAllocation vertex_device(vertices.size() * sizeof(hiprtFloat3));
+        DeviceAllocation ray_device(ray_values.size() * sizeof(RtdlHiprtRay3DDevice));
+        DeviceAllocation triangle_id_device(triangle_ids.size() * sizeof(uint32_t));
+        std::vector<uint32_t> count_seed(1, 0u);
+        DeviceAllocation row_count_device(sizeof(uint32_t));
+        copy_host_to_device(vertex_device, vertices);
+        copy_host_to_device(ray_device, ray_values);
+        copy_host_to_device(triangle_id_device, triangle_ids);
+        copy_host_to_device(row_count_device, count_seed);
+
+        hiprtGeometry geometry = build_triangle_geometry(runtime.context, vertex_device, vertices.size(), triangle_count);
+        try {
+            std::vector<RtdlRayClosestHitRow> output(ray_count);
+            DeviceAllocation output_device(output.size() * sizeof(RtdlRayClosestHitRow));
+
+            oroFunction kernel = build_trace_kernel_from_source(
+                runtime.context,
+                ray_closest_hit_kernel_source_3d(),
+                "rtdl_hiprt_ray_closest_hit_3d.cu",
+                "RtdlRayClosestHit3DKernel");
+            uint32_t block_size = 128;
+            uint32_t grid_size = static_cast<uint32_t>((ray_count + block_size - 1) / block_size);
+            void* ray_device_ptr = ray_device.get();
+            void* triangle_id_device_ptr = triangle_id_device.get();
+            void* output_device_ptr = output_device.get();
+            void* row_count_device_ptr = row_count_device.get();
+            uint32_t ray_count_u32 = static_cast<uint32_t>(ray_count);
+            void* args[] = {
+                &geometry,
+                &ray_device_ptr,
+                &triangle_id_device_ptr,
+                &ray_count_u32,
+                &output_device_ptr,
+                &row_count_device_ptr,
+            };
+            check_oro(
+                "oroModuleLaunchKernel",
+                oroModuleLaunchKernel(kernel, grid_size, 1, 1, block_size, 1, 1, 0, 0, args, nullptr));
+
+            copy_device_to_host(count_seed, row_count_device);
+            const size_t hit_count = count_seed[0];
+            if (hit_count > output.size()) {
+                throw std::runtime_error("HIPRT 3D ray closest-hit output row count exceeded ray count");
+            }
+            copy_device_to_host(output, output_device);
+            output.resize(hit_count);
+            *rows_out = copy_rows_to_heap(output);
+            *row_count_out = output.size();
+            check_hiprt("hiprtDestroyGeometry", hiprtDestroyGeometry(runtime.context, geometry));
+            geometry = nullptr;
+        } catch (...) {
+            if (geometry != nullptr) {
+                hiprtDestroyGeometry(runtime.context, geometry);
+            }
+            throw;
+        }
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_hiprt_run_ray_anyhit_3d(
     const RtdlRay3D* rays,
     size_t ray_count,

@@ -48,6 +48,73 @@ extern "C" __global__ void RtdlRayHitcount3DKernel(
 )KERNEL";
 }
 
+const char* ray_closest_hit_kernel_source_3d() {
+    return R"KERNEL(
+#include <hiprt/hiprt_device.h>
+#include <hiprt/hiprt_vec.h>
+
+struct RtdlHiprtRay3DDevice {
+    uint32_t id;
+    float ox;
+    float oy;
+    float oz;
+    float dx;
+    float dy;
+    float dz;
+    float tmax;
+};
+
+struct RtdlRayClosestHitRow {
+    uint32_t ray_id;
+    uint32_t triangle_id;
+    double t;
+};
+
+extern "C" __global__ void RtdlRayClosestHit3DKernel(
+    hiprtGeometry geom,
+    const RtdlHiprtRay3DDevice* rays,
+    const uint32_t* triangle_ids,
+    uint32_t ray_count,
+    RtdlRayClosestHitRow* rows,
+    uint32_t* row_count) {
+    const uint32_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index >= ray_count) {
+        return;
+    }
+    const RtdlHiprtRay3DDevice in = rays[index];
+    hiprtRay ray;
+    ray.origin = {in.ox, in.oy, in.oz};
+    ray.direction = {in.dx, in.dy, in.dz};
+    ray.minT = 0.0f;
+    ray.maxT = in.tmax;
+
+    uint32_t best_triangle_id = 0xffffffffu;
+    float best_t = ray.maxT;
+    bool has_hit = false;
+    hiprtGeomTraversalAnyHit traversal(geom, ray, hiprtTraversalHintDefault);
+    while (traversal.getCurrentState() != hiprtTraversalStateFinished) {
+        hiprtHit hit = traversal.getNextHit();
+        if (!hit.hasHit()) {
+            continue;
+        }
+        const uint32_t triangle_id = triangle_ids[hit.primID];
+        if (!has_hit || hit.t < best_t || (hit.t == best_t && triangle_id < best_triangle_id)) {
+            has_hit = true;
+            best_t = hit.t;
+            best_triangle_id = triangle_id;
+        }
+    }
+    if (!has_hit) {
+        return;
+    }
+    const uint32_t out_index = atomicAdd(row_count, 1u);
+    rows[out_index].ray_id = in.id;
+    rows[out_index].triangle_id = best_triangle_id;
+    rows[out_index].t = static_cast<double>(best_t);
+}
+)KERNEL";
+}
+
 const char* segment_pair_intersection_2d_kernel_source() {
     return R"KERNEL(
 #include <hiprt/hiprt_device.h>

@@ -75,6 +75,12 @@ struct RtdlRayAnyHitRow {
     uint32_t any_hit;
 };
 
+struct RtdlRayClosestHitRow {
+    uint32_t ray_id;
+    uint32_t triangle_id;
+    double t;
+};
+
 struct RtdlSegment {
     uint32_t id;
     double x0;

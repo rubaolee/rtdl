@@ -10,7 +10,7 @@ from .engine_feature_matrix import engine_feature_support
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION = "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3774.v1"
+V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION = "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3775.v1"
 V2_10_AMD_HIPRT_BENCHMARK_PARITY_STATUS = "planning_gate_not_amd_hardware_evidence"
 
 PARITY_STAGES = (
@@ -178,7 +178,11 @@ V2_10_AMD_HIPRT_BENCHMARK_PARITY_ROWS: tuple[V210AmdHiprtBenchmarkParityRow, ...
         missing_generic_contracts=("bounded_contact_witness_collection",),
         parity_stage="needs_generic_hiprt_extension",
         first_amd_goal="HIPRT bounded witness collection parity",
-        rationale="Closest/any-hit primitives exist, but the benchmark needs the bounded contact-witness output contract.",
+        rationale=(
+            "Goal3775 makes the generic HIPRT 3D ray/triangle closest-hit primitive executable on the "
+            "NVIDIA CUDA/Orochi path, and any-hit already exists. The benchmark still needs the bounded "
+            "contact-witness output contract before AMD functional pod validation."
+        ),
         needs_amd_pod=True,
     ),
     V210AmdHiprtBenchmarkParityRow(

@@ -34,7 +34,7 @@ class Goal3753AmdHiprtBenchmarkParityPlanTest(unittest.TestCase):
     def test_summary_is_honest_about_amd_extension_work(self) -> None:
         self.assertEqual(
             V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION,
-            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3774.v1",
+            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3775.v1",
         )
         summary = summarize_v2_10_amd_hiprt_benchmark_parity()
         self.assertEqual(summary["app_count"], 10)

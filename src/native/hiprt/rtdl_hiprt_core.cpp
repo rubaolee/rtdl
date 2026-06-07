@@ -1033,6 +1033,14 @@ RtdlRayAnyHitRow* copy_rows_to_heap(const std::vector<RtdlRayAnyHitRow>& output)
     return reinterpret_cast<RtdlRayAnyHitRow*>(rows);
 }
 
+RtdlRayClosestHitRow* copy_rows_to_heap(const std::vector<RtdlRayClosestHitRow>& output) {
+    auto* rows = new unsigned char[output.size() * sizeof(RtdlRayClosestHitRow)];
+    if (!output.empty()) {
+        std::memcpy(rows, output.data(), output.size() * sizeof(RtdlRayClosestHitRow));
+    }
+    return reinterpret_cast<RtdlRayClosestHitRow*>(rows);
+}
+
 RtdlSegmentPairIntersectionRow* copy_segment_intersection_rows_to_heap(const std::vector<RtdlSegmentPairIntersectionRow>& output) {
     auto* rows = new unsigned char[output.size() * sizeof(RtdlSegmentPairIntersectionRow)];
     if (!output.empty()) {

@@ -57,6 +57,7 @@ _HIPRT_PEER_PREDICATES = {
     "point_nearest_segment",
     "overlay_compose",
     "ray_triangle_any_hit",
+    "ray_triangle_closest_hit",
     "ray_triangle_hit_count",
     "segment_polygon_hitcount",
     "segment_polygon_anyhit_rows",
@@ -73,6 +74,7 @@ _HIPRT_PEER_PREDICATES = {
 _HIPRT_IMPLEMENTED_PREDICATES = {
     "ray_triangle_hit_count",
     "ray_triangle_any_hit",
+    "ray_triangle_closest_hit",
     "segment_intersection",
     "point_in_polygon",
     "point_nearest_segment",
@@ -95,6 +97,7 @@ _HIPRT_GOAL_BY_PREDICATE = {
     "overlay_compose": "Goal 550 2D geometry expansion",
     "ray_triangle_hit_count": "Goal 550 for 2D, Goal 548/542 for 3D",
     "ray_triangle_any_hit": "Goal 636 hit-count projection for 2D/3D",
+    "ray_triangle_closest_hit": "Goal 3775 3D closest-hit expansion",
     "segment_polygon_hitcount": "Goal 550 2D geometry expansion",
     "segment_polygon_anyhit_rows": "Goal 550 2D geometry expansion",
     "point_nearest_segment": "Goal 553 2D point-nearest-segment expansion",
@@ -190,6 +193,14 @@ class _RtdlRayAnyHitRow(ctypes.Structure):
     _fields_ = [
         ("ray_id", ctypes.c_uint32),
         ("any_hit", ctypes.c_uint32),
+    ]
+
+
+class _RtdlRayClosestHitRow(ctypes.Structure):
+    _fields_ = [
+        ("ray_id", ctypes.c_uint32),
+        ("triangle_id", ctypes.c_uint32),
+        ("t", ctypes.c_double),
     ]
 
 
@@ -411,6 +422,18 @@ def _hiprt_lib() -> ctypes.CDLL:
         ctypes.c_size_t,
     ]
     lib.rtdl_hiprt_run_ray_hitcount_3d.restype = ctypes.c_int
+    if hasattr(lib, "rtdl_hiprt_run_ray_closest_hit_3d"):
+        lib.rtdl_hiprt_run_ray_closest_hit_3d.argtypes = [
+            ctypes.POINTER(_RtdlRay3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlTriangle3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlRayClosestHitRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        lib.rtdl_hiprt_run_ray_closest_hit_3d.restype = ctypes.c_int
     lib.rtdl_hiprt_run_ray_hitcount_2d.argtypes = [
         ctypes.POINTER(_RtdlRay2D),
         ctypes.c_size_t,
@@ -1025,6 +1048,75 @@ def ray_triangle_hit_count_hiprt(
     try:
         return tuple(
             {"ray_id": int(rows_ptr[index].ray_id), "hit_count": int(rows_ptr[index].hit_count)}
+            for index in range(row_count.value)
+        )
+    finally:
+        _hiprt_lib().rtdl_hiprt_free_rows(rows_ptr)
+
+
+def ray_triangle_closest_hit_hiprt(
+    rays: tuple[_CanonicalRay3D, ...],
+    triangles: tuple[_CanonicalTriangle3D, ...],
+) -> tuple[dict[str, int | float], ...]:
+    ray_records = tuple(rays)
+    triangle_records = tuple(triangles)
+    if any(not isinstance(ray, _CanonicalRay3D) for ray in ray_records):
+        raise TypeError("ray_triangle_closest_hit_hiprt currently supports only Ray3D inputs")
+    if any(not isinstance(triangle, _CanonicalTriangle3D) for triangle in triangle_records):
+        raise TypeError("ray_triangle_closest_hit_hiprt currently supports only Triangle3D inputs")
+    symbol = getattr(_hiprt_lib(), "rtdl_hiprt_run_ray_closest_hit_3d", None)
+    if symbol is None:
+        raise RuntimeError(
+            "loaded HIPRT backend library does not export rtdl_hiprt_run_ray_closest_hit_3d; "
+            "rebuild it with 'make build-hiprt' from current main"
+        )
+
+    ray_array = (_RtdlRay3D * len(ray_records))(
+        *[
+            _RtdlRay3D(item.id, item.ox, item.oy, item.oz, item.dx, item.dy, item.dz, item.tmax)
+            for item in ray_records
+        ]
+    )
+    triangle_array = (_RtdlTriangle3D * len(triangle_records))(
+        *[
+            _RtdlTriangle3D(
+                item.id,
+                item.x0,
+                item.y0,
+                item.z0,
+                item.x1,
+                item.y1,
+                item.z1,
+                item.x2,
+                item.y2,
+                item.z2,
+            )
+            for item in triangle_records
+        ]
+    )
+    rows_ptr = ctypes.POINTER(_RtdlRayClosestHitRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        ray_array,
+        len(ray_records),
+        triangle_array,
+        len(triangle_records),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        ctypes.sizeof(error),
+    )
+    if status != 0:
+        detail = error.value.decode("utf-8", errors="replace")
+        raise RuntimeError(f"rtdl_hiprt_run_ray_closest_hit_3d failed with status {status}: {detail}")
+    try:
+        return tuple(
+            {
+                "ray_id": int(rows_ptr[index].ray_id),
+                "triangle_id": int(rows_ptr[index].triangle_id),
+                "t": float(rows_ptr[index].t),
+            }
             for index in range(row_count.value)
         )
     finally:
@@ -4017,6 +4109,14 @@ def _validate_hiprt_kernel(compiled: CompiledKernel) -> tuple[str, tuple[str, st
             predicate_name,
             "only matching Ray2D/Triangle2D or Ray3D/Triangle3D layouts are implemented today",
         )
+    if predicate_name == "ray_triangle_closest_hit" and (
+        rays_input.layout.name,
+        triangles_input.layout.name,
+    ) != ("Ray3D", "Triangle3D"):
+        raise _unsupported_hiprt_peer_workload(
+            predicate_name,
+            "closest-hit is currently implemented only for Ray3D/Triangle3D",
+        )
     return predicate_name, (rays_input.name, triangles_input.name), {
         "layout_pair": (rays_input.layout.name, triangles_input.layout.name)
     }
@@ -4042,11 +4142,13 @@ def run_hiprt(kernel_fn_or_compiled, *, result_mode: str = "dict", **inputs):
     compiled = _resolve_kernel(kernel_fn_or_compiled)
     predicate_name, input_names, options = _validate_hiprt_kernel(compiled)
     normalized_inputs = _validate_inputs(compiled, inputs)
-    if predicate_name in {"ray_triangle_hit_count", "ray_triangle_any_hit"}:
+    if predicate_name in {"ray_triangle_hit_count", "ray_triangle_any_hit", "ray_triangle_closest_hit"}:
         ray_rows = normalized_inputs[input_names[0]]
         triangle_rows = normalized_inputs[input_names[1]]
         if predicate_name == "ray_triangle_any_hit":
             rows = ray_triangle_any_hit_hiprt(ray_rows, triangle_rows)
+        elif predicate_name == "ray_triangle_closest_hit":
+            rows = ray_triangle_closest_hit_hiprt(ray_rows, triangle_rows)
         elif options.get("layout_pair") == ("Ray2D", "Triangle2D"):
             rows = ray_triangle_hit_count_2d_hiprt(ray_rows, triangle_rows)
         else:

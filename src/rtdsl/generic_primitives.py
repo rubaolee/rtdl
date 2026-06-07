@@ -339,12 +339,12 @@ def run_generic_ray_triangle_closest_hit(
     hit distance. RMQ/domain interpretation stays outside the engine.
     """
     normalized_backend = _normalize_backend(backend)
-    if normalized_backend in FROZEN_BEFORE_V2_1_GENERIC_BACKENDS:
+    if normalized_backend in FROZEN_BEFORE_V2_1_GENERIC_BACKENDS and normalized_backend != "hiprt":
         raise ValueError(
             f"{normalized_backend} is frozen before v2.1; active generic primitives are Embree/OptiX focused"
         )
-    if normalized_backend not in ACTIVE_V1_5_GENERIC_PRIMITIVE_BACKENDS:
-        raise ValueError("generic ray_triangle_closest_hit backend must be one of: cpu, embree, optix")
+    if normalized_backend not in ACTIVE_V1_5_GENERIC_PRIMITIVE_BACKENDS + ("hiprt",):
+        raise ValueError("generic ray_triangle_closest_hit backend must be one of: cpu, embree, optix, hiprt")
 
     dimension = _ray_dimension(rays)
     _validate_triangle_dimension(triangles, dimension)
@@ -363,7 +363,7 @@ def run_generic_ray_triangle_closest_hit(
             rays=rays,
             triangles=triangles,
         )
-    else:
+    elif normalized_backend == "optix":
         from .optix_runtime import run_optix
 
         rows = run_optix(
@@ -371,6 +371,10 @@ def run_generic_ray_triangle_closest_hit(
             rays=rays,
             triangles=triangles,
         )
+    else:
+        from .hiprt_runtime import ray_triangle_closest_hit_hiprt
+
+        rows = ray_triangle_closest_hit_hiprt(rays, triangles)
     return tuple(
         {
             "ray_id": int(row["ray_id"]),

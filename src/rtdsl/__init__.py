@@ -1237,6 +1237,7 @@ from .hiprt_runtime import PreparedHiprtSegmentPairIntersection2D
 from .hiprt_runtime import PreparedHiprtShapePairActiveCount2D
 from .hiprt_runtime import PreparedHiprtAabbIndex2D
 from .hiprt_runtime import ray_triangle_any_hit_hiprt
+from .hiprt_runtime import ray_triangle_closest_hit_hiprt
 from .hiprt_runtime import ray_triangle_hit_count_hiprt
 from .hiprt_runtime import run_hiprt
 from .hiprt_runtime import segment_polygon_anyhit_rows_hiprt
@@ -2979,6 +2980,7 @@ __all__ = [
     "ray_triangle_hit_count_cpu",
     "ray_triangle_closest_hit_cpu",
     "ray_triangle_closest_hit_apple_rt",
+    "ray_triangle_closest_hit_hiprt",
     "ray_triangle_hit_count_apple_rt",
     "ray_triangle_hit_count_hiprt",
     "PreparedHiprtRayTriangleHitCount3D",
