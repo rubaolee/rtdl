@@ -219,6 +219,9 @@ OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_WITH_AMBIGUITY_STATUS_SYMBOL = (
     "rtdl_optix_prepared_segment_pair_left_id_count_device_columns_with_ambiguity_status"
 )
 OPTIX_SEGMENT_PAIR_PREPARE_LEFT_SET_SYMBOL = "rtdl_optix_prepare_segment_pair_left_set"
+OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_SYMBOL = (
+    "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left"
+)
 OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_PREPARED_LEFT_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_prepared_segment_pair_left_id_count_prepared_left_device_columns"
 )
@@ -3164,6 +3167,34 @@ class PreparedOptixSegmentPairIntersection:
             self.prepared_handle,
             left.records,
             left.count,
+            ctypes.byref(count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(count.value)
+
+    def count_prepared_left(self, prepared_left: PreparedOptixSegmentPairLeftSet) -> int:
+        if self._closed:
+            raise RuntimeError("prepared OptiX segment-pair handle is closed")
+        if prepared_left._closed:
+            raise RuntimeError("prepared OptiX segment-pair left-set handle is closed")
+        if prepared_left.library is not self.library:
+            raise ValueError("prepared left-set handle must come from the same OptiX library")
+        count_symbol = _find_optional_backend_symbol(
+            self.library,
+            OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_SYMBOL,
+        )
+        if count_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_SYMBOL}; rebuild the OptiX backend from current main"
+            )
+        count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self.prepared_handle,
+            prepared_left.prepared_left_handle,
             ctypes.byref(count),
             error,
             len(error),
@@ -7664,6 +7695,7 @@ def _get_last_segment_pair_phase_timings_from_library(lib) -> dict[str, float | 
         3: "first_hit_rows",
         4: "first_hit_count",
         5: "boundary_event_rows",
+        6: "count_prepared_left",
     }.get(mode_value, "none")
     result = {
         "mode": mode_name,
@@ -20239,6 +20271,19 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_count_prepared_segment_pair.restype = ctypes.c_int
+    optional_count_prepared_segment_pair_prepared_left = _find_optional_backend_symbol(
+        lib,
+        OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_SYMBOL,
+    )
+    if optional_count_prepared_segment_pair_prepared_left is not None:
+        optional_count_prepared_segment_pair_prepared_left.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_count_prepared_segment_pair_prepared_left.restype = ctypes.c_int
     optional_segment_pair_candidate_device_columns = _find_optional_backend_symbol(
         lib,
         OPTIX_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL,

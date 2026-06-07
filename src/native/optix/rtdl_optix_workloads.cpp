@@ -4112,10 +4112,12 @@ struct PreparedSegmentPairIntersectionBuild {
 struct PreparedSegmentPairLeftSet {
     size_t left_count = 0;
     DevPtr d_left;
+    DevPtr d_left_exact;
 
     PreparedSegmentPairLeftSet(const RtdlSegment* left, size_t count)
         : left_count(count),
-          d_left(sizeof(GpuSegment) * count)
+          d_left(sizeof(GpuSegment) * count),
+          d_left_exact(sizeof(RtdlSegment) * count)
     {
         if (!left && count != 0) {
             throw std::runtime_error("left pointer must not be null when left_count is nonzero");
@@ -4134,6 +4136,7 @@ struct PreparedSegmentPairLeftSet {
             };
         }
         upload(d_left.ptr, gpu_left.data(), gpu_left.size());
+        upload(d_left_exact.ptr, left, count);
     }
 };
 
@@ -5564,6 +5567,37 @@ static void count_prepared_segment_pair_intersection_optix(
         left_count,
         d_left.ptr,
         d_left_exact.ptr,
+        prepared->d_right.ptr,
+        prepared->d_right_exact.ptr,
+        prepared->right_count,
+        prepared->accel.handle);
+    g_optix_last_segment_pair_emitted_count = *count_out;
+}
+
+static void count_prepared_segment_pair_intersection_prepared_left_optix(
+        PreparedSegmentPairIntersectionBuild* prepared,
+        PreparedSegmentPairLeftSet* prepared_left,
+        size_t* count_out)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared segment-pair handle must not be null");
+    }
+    if (!prepared_left) {
+        throw std::runtime_error("prepared segment-pair left-set handle must not be null");
+    }
+    if (!count_out) {
+        throw std::runtime_error("segment-pair prepared-left count output pointer must not be null");
+    }
+    *count_out = 0;
+    reset_segment_pair_phase_timings(6u);
+    if (prepared_left->left_count == 0 || prepared->right_count == 0) {
+        return;
+    }
+    ensure_segment_pair_intersection_pipeline();
+    *count_out = count_segment_pair_intersection_exact_one_pass_optix(
+        prepared_left->left_count,
+        prepared_left->d_left.ptr,
+        prepared_left->d_left_exact.ptr,
         prepared->d_right.ptr,
         prepared->d_right_exact.ptr,
         prepared->right_count,

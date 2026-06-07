@@ -564,6 +564,7 @@ def run_rayjoin_prepared_optix_workload(
     warmup: int = 0,
     device_filtered_batch_request_count: int | None = None,
     device_filtered_batch_stream_count: int | str | None = None,
+    prepare_left_for_count: bool = False,
 ) -> dict[str, object]:
     """Run the RayJoin-style prepared OptiX route with phase boundaries.
 
@@ -602,6 +603,8 @@ def run_rayjoin_prepared_optix_workload(
         raise ValueError("segment_order_mode must be one of: natural, x_then_y, y_then_x, morton_xy")
     if segment_order_mode != "natural" and workload != "lsi":
         raise ValueError("segment_order_mode is currently only valid for LSI segment-pair workloads")
+    if prepare_left_for_count and (workload != "lsi" or result_mode != "count"):
+        raise ValueError("prepare_left_for_count is currently only valid for LSI count workloads")
     if query_repeat <= 0:
         raise ValueError("query_repeat must be positive")
     if warmup < 0:
@@ -701,6 +704,7 @@ def run_rayjoin_prepared_optix_workload(
         }
     elif workload == "lsi":
         from rtdsl.optix_runtime import pack_segments
+        from rtdsl.optix_runtime import prepare_segment_pair_left_set_optix
         from rtdsl.optix_runtime import prepare_segment_pair_intersection_optix
 
         packed_left = _phase_time(
@@ -718,6 +722,13 @@ def run_rayjoin_prepared_optix_workload(
             "prepare_static_scene_sec",
             lambda: prepare_segment_pair_intersection_optix(packed_right),
         )
+        prepared_left = None
+        if prepare_left_for_count and result_mode == "count":
+            prepared_left = _phase_time(
+                phases,
+                "prepare_left_set_sec",
+                lambda: prepare_segment_pair_left_set_optix(packed_left),
+            )
         try:
             if result_mode == "count":
                 row_count = int(
@@ -726,7 +737,11 @@ def run_rayjoin_prepared_optix_workload(
                         "prepared_query_sec",
                         query_repeat=query_repeat,
                         warmup=warmup,
-                        fn=lambda: prepared.count(packed_left),
+                        fn=(
+                            lambda: prepared.count_prepared_left(prepared_left)
+                            if prepared_left is not None
+                            else prepared.count(packed_left)
+                        ),
                     )
                 )
             else:
@@ -749,6 +764,8 @@ def run_rayjoin_prepared_optix_workload(
                 )
             native_phase_timings = prepared.last_phase_timings()
         finally:
+            if prepared_left is not None:
+                prepared_left.close()
             prepared.close()
         summary = {
             "intersection_count": row_count,
@@ -757,6 +774,7 @@ def run_rayjoin_prepared_optix_workload(
                 if result_mode == "count"
                 else "segment_segment_intersection_rows"
             ),
+            "prepared_left_for_count": bool(prepared_left is not None),
             "segment_order_execution": (
                 "fused_into_pack_segments"
                 if segment_order_mode != "natural"

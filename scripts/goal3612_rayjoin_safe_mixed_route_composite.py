@@ -45,6 +45,7 @@ def _run_exact_lsi_prepared_optix(dataset: str, *, repeat: int, warmup: int) -> 
         include_rows=False,
         query_repeat=repeat,
         warmup=warmup,
+        prepare_left_for_count=True,
     )
     phases = payload["phases_sec"]
     return {
@@ -65,6 +66,7 @@ def _run_exact_lsi_prepared_optix(dataset: str, *, repeat: int, warmup: int) -> 
         "hot_warmup": int(phases["prepared_query_sec_warmup"]),
         "row_count": int(payload["row_count"]),
         "native_phase_timings": payload.get("native_phase_timings", {}),
+        "prepared_left_for_count": bool(payload["summary"].get("prepared_left_for_count")),
         "segment_policy": "device_double_exact_count_during_optix_anyhit",
         "same_contract_repair_reason": (
             "Goal3610 showed the pure device left-id dense count route counts eight extra "
