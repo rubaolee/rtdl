@@ -8,6 +8,7 @@ from ..numba_partner_continuation import _as_numba_cuda_vector
 
 _CUPY_PAIRWISE_FORCE_2D_KERNEL = None
 _NUMBA_PAIRWISE_FORCE_2D_KERNEL = None
+_NUMBA_PAIRWISE_FORCE_2D_BLOCK_REDUCE_KERNEL = None
 
 
 def _cupy_pairwise_force_2d_kernel(cupy):
@@ -111,6 +112,72 @@ def _numba_pairwise_force_2d_kernel(cuda):
     return _NUMBA_PAIRWISE_FORCE_2D_KERNEL
 
 
+def _numba_pairwise_force_2d_block_reduce_kernel(cuda):
+    global _NUMBA_PAIRWISE_FORCE_2D_BLOCK_REDUCE_KERNEL
+    if _NUMBA_PAIRWISE_FORCE_2D_BLOCK_REDUCE_KERNEL is None:
+        import math
+        from numba import float64
+
+        @cuda.jit(fastmath=True)
+        def pairwise_force_2d_block_reduce(
+            source_ids,
+            sx,
+            sy,
+            sm,
+            source_count,
+            target_ids,
+            tx,
+            ty,
+            tm,
+            target_count,
+            softening_sq,
+            exclude_equal_ids,
+            out_fx,
+            out_fy,
+        ):
+            partial_fx = cuda.shared.array(shape=512, dtype=float64)
+            partial_fy = cuda.shared.array(shape=512, dtype=float64)
+
+            i = cuda.blockIdx.x
+            lane = cuda.threadIdx.x
+            fx = 0.0
+            fy = 0.0
+            if i < source_count:
+                source_x = sx[i]
+                source_y = sy[i]
+                source_mass = sm[i]
+                source_id = source_ids[i]
+                for j in range(lane, target_count, 512):
+                    if exclude_equal_ids != 0 and source_id == target_ids[j]:
+                        continue
+                    dx = tx[j] - source_x
+                    dy = ty[j] - source_y
+                    dist_sq = dx * dx + dy * dy + softening_sq
+                    inv_dist = 1.0 / math.sqrt(dist_sq)
+                    scale = source_mass * tm[j] * inv_dist * inv_dist * inv_dist
+                    fx += dx * scale
+                    fy += dy * scale
+
+            partial_fx[lane] = fx
+            partial_fy[lane] = fy
+            cuda.syncthreads()
+
+            stride = 256
+            while stride > 0:
+                if lane < stride:
+                    partial_fx[lane] += partial_fx[lane + stride]
+                    partial_fy[lane] += partial_fy[lane + stride]
+                cuda.syncthreads()
+                stride //= 2
+
+            if lane == 0 and i < source_count:
+                out_fx[i] = partial_fx[0]
+                out_fy[i] = partial_fy[0]
+
+        _NUMBA_PAIRWISE_FORCE_2D_BLOCK_REDUCE_KERNEL = pairwise_force_2d_block_reduce
+    return _NUMBA_PAIRWISE_FORCE_2D_BLOCK_REDUCE_KERNEL
+
+
 def pairwise_inverse_square_force_2d_partner_columns(
     source_weighted_point_columns: dict[str, object],
     target_weighted_point_columns: dict[str, object],
@@ -133,6 +200,7 @@ def pairwise_inverse_square_force_2d_partner_columns(
     target_count = _column_length(target_weighted_point_columns, "ids")
     if source_count <= 0 or target_count <= 0:
         raise ValueError("force accumulation requires non-empty source and target columns")
+    numba_force_kernel_strategy = None
 
     if runtime["name"] == "torch":
         torch = runtime["module"]
@@ -226,9 +294,18 @@ def pairwise_inverse_square_force_2d_partner_columns(
         )
         force_x = cuda.device_array((source_count,), dtype=np.float64)
         force_y = cuda.device_array((source_count,), dtype=np.float64)
-        threads = 128
-        blocks = (source_count + threads - 1) // threads
-        _numba_pairwise_force_2d_kernel(cuda)[(blocks,), threads](
+        use_block_reduce = source_count >= 512 and target_count >= 512
+        if use_block_reduce:
+            threads = 512
+            blocks = source_count
+            kernel = _numba_pairwise_force_2d_block_reduce_kernel(cuda)
+            numba_force_kernel_strategy = "block_source_target_stride_512_reduce_fastmath_true"
+        else:
+            threads = 128
+            blocks = (source_count + threads - 1) // threads
+            kernel = _numba_pairwise_force_2d_kernel(cuda)
+            numba_force_kernel_strategy = "global_target_stream_fastmath_true"
+        kernel[(blocks,), threads](
             source_ids,
             sx,
             sy,
@@ -264,6 +341,7 @@ def pairwise_inverse_square_force_2d_partner_columns(
         "softening": softening,
         "exclude_equal_ids": exclude_equal_ids,
         "app_force_materialization": "partner_gpu_pairwise_vector_sum",
+        "numba_force_kernel_strategy": numba_force_kernel_strategy,
         "numba_cuda_jit_used": runtime["name"] == "numba",
         "raw_cuda_kernel_required": False,
         "direct_device_handoff_authorized": False,
