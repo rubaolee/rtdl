@@ -1,0 +1,95 @@
+{
+  "claim_boundary": {
+    "amd_hardware_evidence_authorized": false,
+    "app_specific_native_engine_logic_allowed": false,
+    "public_speedup_claim_authorized": false,
+    "release_action_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "expected": {
+    "sum_x": [
+      4.0,
+      -1.0,
+      7.0,
+      0.0
+    ],
+    "sum_y": [
+      6.0,
+      3.0,
+      2.0,
+      0.0
+    ]
+  },
+  "goal": "Goal3778",
+  "input_contract": "caller_supplied_grouped_vector_rows_2d",
+  "metadata": {
+    "adapter": "grouped_vector_sum_2d_partner_columns",
+    "claim_boundary": "Generic grouped vector-sum adapter over caller-supplied Numba CUDA columns. It does not call native RT traversal, does not authorize true zero-copy wording, and is preview integration evidence only.",
+    "direct_device_handoff_authorized": false,
+    "group_count": 4,
+    "input_contract": "caller_supplied_grouped_vector_rows_2d",
+    "native_engine_row_contract": "not_called_partner_continuation_only",
+    "partner": "numba",
+    "partner_reference_contract": "generic_grouped_vector_sum_f64x2",
+    "row_count": 6,
+    "rt_core_speedup_claim_authorized": false,
+    "v2_5_cupy_presegmented_offsets_used": false,
+    "v2_5_cupy_rawkernel_used": false,
+    "v2_5_numba_preview_kernel_status": "preview_not_promoted",
+    "v2_5_numba_preview_kernel_used": true,
+    "v2_5_partner_continuation_operation": "grouped_vector_sum_f64x2",
+    "v2_5_release_authorized": false,
+    "v2_5_triton_preview_kernel_used": false,
+    "v2_6_neutral_handoff_validation_status": "accept",
+    "whole_app_speedup_claim_authorized": false
+  },
+  "operation": "grouped_vector_sum_f64x2",
+  "outputs": {
+    "sum_x": [
+      4.0,
+      -1.0,
+      7.0,
+      0.0
+    ],
+    "sum_y": [
+      6.0,
+      3.0,
+      2.0,
+      0.0
+    ]
+  },
+  "partner": "numba",
+  "pod": {
+    "gpu": "NVIDIA RTX A5000, 580.126.09",
+    "python": "Python 3.12.3",
+    "ssh_host": "69.30.85.203",
+    "ssh_port": 22057
+  },
+  "rows_match_reference": true,
+  "schema": "rtdl.goal3778.numba_grouped_vector_sum_front_door_a5000.v1",
+  "scoped_dirty_lines": [],
+  "scoped_source_dirty": false,
+  "source_commit": "b77a0a006fc60366abf846ab022f4b17422baaac",
+  "support_status": {
+    "claim_boundary": "v2.5 partner support rows declare conformance envelope only. They do not authorize RT traversal replacement, public speedup claims, release claims, or true zero-copy claims.",
+    "continuation_contract_version": "rtdl.partner_continuation.v2.5",
+    "execution_backend": "cuda_numba_preview",
+    "matrix_version": "rtdl.v2_5.partner_support_matrix.v1",
+    "neutral_buffer_seam_version": "rtdl.neutral_buffer_seam.v2.5",
+    "notes": "Numba fallback preview exists for explicit generic grouped/segmented continuations; benchmark promotion still requires pod evidence",
+    "operation": "grouped_vector_sum_f64x2",
+    "partner": "numba",
+    "promoted_performance_path": false,
+    "public_speedup_claim_authorized": false,
+    "requires_cuda": true,
+    "requires_neutral_buffer_seam": true,
+    "requires_sm70_plus": false,
+    "rt_traversal_replacement_allowed": false,
+    "same_contract_reference_required": true,
+    "status": "preview_not_promoted",
+    "supported": true,
+    "true_zero_copy_claim_authorized": false
+  }
+}

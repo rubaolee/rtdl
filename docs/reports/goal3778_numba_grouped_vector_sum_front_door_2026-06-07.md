@@ -60,15 +60,31 @@ but the app still owns the meaning of the vector components.
 
 ## Validation
 
-Local validation:
+Local validation passed:
 
 ```text
 $env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal3778_numba_grouped_vector_sum_front_door_test tests.goal2696_v2_5_partner_support_matrix_test tests.goal2781_grouped_vector_sum_adapter_test tests.goal3169_barnes_hut_grouped_vector_typed_stream_front_door_test
 ```
 
-Pod evidence will be recorded in:
+Result: 28 tests passed, 4 skipped.
+
+Clean pod validation:
+
+- SSH: `root@69.30.85.203 -p 22057`
+- GPU: `NVIDIA RTX A5000, 580.126.09`
+- clean workdir: `/root/rtdl_goal3778_clean_1780851741`
+- commit: `b77a0a006fc60366abf846ab022f4b17422baaac`
+- Numba installed into per-checkout target: `.pydeps_goal3778_numba`
+- Numba: `0.65.1`
+- focused tests: 28 passed, 1 skipped.
+- sample output: `sum_x=[4.0, -1.0, 7.0, 0.0]`,
+  `sum_y=[6.0, 3.0, 2.0, 0.0]`.
+- reference match: true.
+- scoped source dirty: false.
+
+Pod evidence is recorded in:
 
 `docs/reports/goal3778_numba_grouped_vector_sum_front_door_a5000.json`
 
-The pod artifact must remain scoped as Numba CUDA functional evidence on NVIDIA
+The pod artifact is scoped as Numba CUDA functional evidence on NVIDIA
 hardware. It is not AMD HIPRT evidence and not a performance claim.
