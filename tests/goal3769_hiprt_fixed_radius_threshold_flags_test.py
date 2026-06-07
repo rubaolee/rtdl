@@ -1,5 +1,6 @@
 import pathlib
 import unittest
+import json
 
 import rtdsl as rt
 from rtdsl import hiprt_runtime
@@ -8,6 +9,8 @@ from rtdsl import hiprt_runtime
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 HIPRT_CORE = ROOT / "src" / "native" / "hiprt" / "rtdl_hiprt_core.cpp"
 HIPRT_API = ROOT / "src" / "native" / "hiprt" / "rtdl_hiprt_api.cpp"
+REPORT = ROOT / "docs" / "reports" / "goal3769_hiprt_fixed_radius_threshold_flags_2026-06-07.md"
+ARTIFACT = ROOT / "docs" / "reports" / "goal3769_hiprt_fixed_radius_threshold_flags_a5000.json"
 
 
 def _native_threshold_flags_available() -> bool:
@@ -47,6 +50,21 @@ class Goal3769HiprtFixedRadiusThresholdFlagsPortableTest(unittest.TestCase):
         self.assertIn("fixed_radius_grouped_stream_flags_3d", dbscan["required_engine_features"])
         self.assertEqual(dbscan["missing_generic_contracts"], ())
         self.assertEqual(dbscan["parity_stage"], "ready_for_amd_functional_pod")
+
+    def test_report_and_artifact_record_boundary(self) -> None:
+        report = REPORT.read_text(encoding="utf-8")
+        self.assertIn("Goal3769", report)
+        self.assertIn("ready_for_amd_functional_pod", report)
+        self.assertIn("not AMD hardware evidence", report)
+        artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+        self.assertEqual(artifact["source_commit"], "a7264d39")
+        self.assertFalse(artifact["scoped_source_dirty"])
+        self.assertTrue(artifact["sample_flags_match_prepared_rows"])
+        self.assertTrue(artifact["sample_flags_sum_matches_scalar_count"])
+        self.assertEqual(artifact["rt_dbscan_parity_stage"], "ready_for_amd_functional_pod")
+        self.assertEqual(artifact["rt_dbscan_missing_generic_contracts"], [])
+        for key, value in artifact["claim_boundary"].items():
+            self.assertFalse(value, key)
 
 
 @unittest.skipUnless(_native_threshold_flags_available(), "HIPRT prepared fixed-radius threshold flags unavailable")
