@@ -136,6 +136,13 @@ _FEATURE_MATRIX: dict[str, dict[str, EngineFeatureSupport]] = {
         "hiprt": _support("ray_triangle_closest_hit_3d", "hiprt", NATIVE, "Goal3775 HIPRT closest-hit traversal where the backend is built."),
         "apple_rt": _support("ray_triangle_closest_hit_3d", "apple_rt", NATIVE, "Apple MPS RT closest-hit traversal."),
     },
+    "collect_k_bounded_i64": {
+        "embree": _support("collect_k_bounded_i64", "embree", NATIVE, "Generic Embree COLLECT_K_BOUNDED i64 host-native materializer."),
+        "optix": _support("collect_k_bounded_i64", "optix", NATIVE, "Generic OptiX COLLECT_K_BOUNDED i64 host-native materializer."),
+        "vulkan": _support("collect_k_bounded_i64", "vulkan", COMPATIBILITY_FALLBACK, "No generic Vulkan COLLECT_K_BOUNDED i64 native materializer."),
+        "hiprt": _support("collect_k_bounded_i64", "hiprt", NATIVE, "Goal3776 generic HIPRT COLLECT_K_BOUNDED i64 host-native materializer."),
+        "apple_rt": _support("collect_k_bounded_i64", "apple_rt", COMPATIBILITY_FALLBACK, "No generic Apple RT COLLECT_K_BOUNDED i64 native materializer."),
+    },
     "visibility_rows": {
         "embree": _support("visibility_rows", "embree", NATIVE, "Dispatches to Embree any-hit and emits visibility rows."),
         "optix": _support("visibility_rows", "optix", NATIVE, "Dispatches to OptiX any-hit and emits visibility rows."),

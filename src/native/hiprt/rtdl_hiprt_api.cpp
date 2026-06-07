@@ -12,6 +12,59 @@ extern "C" void rtdl_hiprt_free_rows(void* rows) {
     delete[] reinterpret_cast<unsigned char*>(rows);
 }
 
+extern "C" int rtdl_hiprt_collect_k_bounded_i64(
+    const int64_t* candidate_rows,
+    size_t candidate_count,
+    size_t row_width,
+    int64_t* rows_out,
+    size_t row_capacity,
+    size_t* emitted_count_out,
+    uint32_t* overflowed_out,
+    char* error_out,
+    size_t error_size) {
+    return handle_call([&]() {
+        if (emitted_count_out == nullptr || overflowed_out == nullptr) {
+            throw std::runtime_error("emitted_count_out and overflowed_out must not be null");
+        }
+        *emitted_count_out = 0;
+        *overflowed_out = 0;
+        if (row_width == 0) {
+            throw std::runtime_error("row_width must be positive");
+        }
+        if (candidate_rows == nullptr && candidate_count != 0) {
+            throw std::runtime_error("candidate_rows must not be null when candidate_count is nonzero");
+        }
+        if (rows_out == nullptr && row_capacity != 0) {
+            throw std::runtime_error("rows_out must not be null when row_capacity is nonzero");
+        }
+        if (candidate_count > std::numeric_limits<size_t>::max() / row_width ||
+            row_capacity > std::numeric_limits<size_t>::max() / row_width) {
+            throw std::runtime_error("COLLECT_K_BOUNDED row buffer size overflow");
+        }
+
+        std::vector<std::vector<int64_t>> rows;
+        rows.reserve(candidate_count);
+        for (size_t row_index = 0; row_index < candidate_count; ++row_index) {
+            const int64_t* row = candidate_rows + row_index * row_width;
+            rows.emplace_back(row, row + row_width);
+        }
+        std::sort(rows.begin(), rows.end());
+        rows.erase(std::unique(rows.begin(), rows.end()), rows.end());
+
+        *emitted_count_out = rows.size();
+        if (rows.size() > row_capacity) {
+            *overflowed_out = 1u;
+            return;
+        }
+        for (size_t row_index = 0; row_index < rows.size(); ++row_index) {
+            std::memcpy(
+                rows_out + row_index * row_width,
+                rows[row_index].data(),
+                sizeof(int64_t) * row_width);
+        }
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_hiprt_prepare_ray_hitcount_3d(
     const RtdlTriangle3D* triangles,
     size_t triangle_count,

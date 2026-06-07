@@ -111,18 +111,18 @@ class Goal3775HiprtRayTriangleClosestHitPortableTest(unittest.TestCase):
         self.assertEqual(rt.engine_feature_support("ray_triangle_closest_hit_3d", "hiprt").status, NATIVE)
         self.assertEqual(
             V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION,
-            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3775.v1",
+            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3776.v1",
         )
         rows = {row["app"]: row for row in v2_10_amd_hiprt_benchmark_parity()}
         contact = rows["contact_manifold"]
         self.assertIn("ray_triangle_closest_hit_3d", contact["required_engine_features"])
         self.assertEqual(contact["hiprt_feature_statuses"]["ray_triangle_closest_hit_3d"], NATIVE)
-        self.assertEqual(contact["missing_generic_contracts"], ("bounded_contact_witness_collection",))
-        self.assertEqual(contact["parity_stage"], "needs_generic_hiprt_extension")
+        self.assertEqual(contact["missing_generic_contracts"], ())
+        self.assertEqual(contact["parity_stage"], "ready_for_amd_functional_pod")
         self.assertIn("Goal3775", contact["rationale"])
         summary = summarize_v2_10_amd_hiprt_benchmark_parity()
-        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 6)
-        self.assertEqual(summary["stage_counts"]["needs_generic_hiprt_extension"], 2)
+        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 7)
+        self.assertEqual(summary["stage_counts"]["needs_generic_hiprt_extension"], 1)
         self.assertFalse(summary["release_authorized"])
         self.assertFalse(summary["amd_perf_claim_authorized"])
 

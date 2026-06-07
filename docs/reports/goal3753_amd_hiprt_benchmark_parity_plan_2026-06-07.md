@@ -11,15 +11,16 @@ The machine-readable plan is in:
 
 `src/rtdsl/v2_10_amd_hiprt_benchmark_parity.py`
 
-It is backed by the existing engine feature matrix and adds the missing
-`point_nearest_segment_2d` feature entry for HIPRT/Embree/OptiX/Vulkan/Apple.
+It is backed by the existing engine feature matrix and adds the HIPRT lane
+entries needed by the parity sequence, including the current
+`collect_k_bounded_i64` materialization contract.
 
 ## Summary
 
 | Stage | Count | Apps |
 | --- | ---: | --- |
-| Ready for AMD functional pod | 6 | `hausdorff_xhd`, `spatial_rayjoin`, `rt_dbscan`, `robot_collision`, `librts_spatial_index`, `rtnn` |
-| Needs generic HIPRT extension | 2 | `contact_manifold`, `barnes_hut` |
+| Ready for AMD functional pod | 7 | `hausdorff_xhd`, `spatial_rayjoin`, `rt_dbscan`, `robot_collision`, `contact_manifold`, `librts_spatial_index`, `rtnn` |
+| Needs generic HIPRT extension | 1 | `barnes_hut` |
 | Compatibility-only, not AMD perf ready | 2 | `raydb_style`, `triangle_counting` |
 
 ## Interpretation
@@ -36,6 +37,7 @@ contracts:
 - bounded contact witness collection,
 - grouped vector force reductions,
 - prepared AABB query,
+- generic bounded witness row materialization,
 - ranked-summary aggregate and batched prepared sweeps,
 - DB grouped count/sum fast paths,
 - graph summary fast paths.
@@ -43,21 +45,21 @@ contracts:
 Those are generic contracts. They should be added to HIPRT as generic
 primitive/runtime extensions, not app-specific native code.
 
-Goals3765-3775 have since moved `robot_collision`, `spatial_rayjoin`,
+Goals3765-3776 have since moved `robot_collision`, `spatial_rayjoin`,
 `rt_dbscan`, `librts_spatial_index`, `rtnn`, and `hausdorff_xhd` beyond their
 initial row-only or missing-contract routes on the NVIDIA CUDA/Orochi HIPRT
 path. Goal3775 also makes the matrix's `ray_triangle_closest_hit_3d` HIPRT
-entry executable. These are still not AMD performance evidence.
+entry executable. Goal3776 adds the generic HIPRT `COLLECT_K_BOUNDED` i64
+host-native materializer and advances `contact_manifold` to AMD functional-pod
+readiness. These are still not AMD performance evidence.
 
 ## First AMD Work Order
 
-1. `contact_manifold`: add the generic bounded contact-witness output contract
-   now that HIPRT closest-hit and any-hit are executable.
-2. `barnes_hut`: add grouped vector force reductions.
-3. `raydb_style` and `triangle_counting`: promote compatibility fallback paths
+1. `barnes_hut`: add grouped vector force reductions.
+2. `raydb_style` and `triangle_counting`: promote compatibility fallback paths
    into native HIPRT grouped/scalar summary paths before any AMD performance
    claim.
-4. Run AMD functional pod parity for the six ready rows when AMD hardware is
+3. Run AMD functional pod parity for the seven ready rows when AMD hardware is
    available.
 
 ## Boundary

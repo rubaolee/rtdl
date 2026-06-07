@@ -281,9 +281,9 @@ Owns bounded exact output materialization and row-schema validation.
 
 | Node | Status | Summary | Outputs | Depends on | Capabilities | Backends / partners | Boundary |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `materialization.collect_k_bounded` | `stable_primitive` | Collect up to K rows with exact fail-closed overflow semantics. | `candidate_id_rows`, `valid_count`, `overflowed` | `rows.generic_candidate_rows`, `execution.capacity_overflow_contract` | `intent:topk`, `intent:collect_rows`, `shape:generic`, `output:rows`, `output:witness`, `exactness:bounded`, `keying:none` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | - |
+| `materialization.collect_k_bounded` | `stable_primitive` | Collect up to K rows with exact fail-closed overflow semantics. | `candidate_id_rows`, `valid_count`, `overflowed` | `rows.generic_candidate_rows`, `execution.capacity_overflow_contract` | `intent:topk`, `intent:collect_rows`, `shape:generic`, `output:rows`, `output:witness`, `exactness:bounded`, `keying:none` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix`, `hiprt` | - |
 | `materialization.prepared_output_buffers` | `internal_substrate` | Reusable host/device result buffers for bounded row output. | `prepared_result_buffer` | `execution.buffer_descriptors`, `materialization.collect_k_bounded` | - | - | - |
-| `materialization.row_schema_validation` | `stable_behavior` | Validate row width, row ordering, duplicate policy, and exact-output completeness. | `validated_result` | `materialization.collect_k_bounded` | `intent:collect_rows`, `shape:generic`, `output:rows`, `exactness:bounded`, `keying:none` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | - |
+| `materialization.row_schema_validation` | `stable_behavior` | Validate row width, row ordering, duplicate policy, and exact-output completeness. | `validated_result` | `materialization.collect_k_bounded` | `intent:collect_rows`, `shape:generic`, `output:rows`, `exactness:bounded`, `keying:none` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix`, `hiprt` | - |
 
 Discovery metadata:
 

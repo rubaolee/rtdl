@@ -233,8 +233,8 @@ class RtdlPreparedSessionDescriptor:
         if not str(self.session_id):
             raise ValueError("prepared session requires a non-empty session_id")
         normalized_backend = str(self.backend).strip().lower()
-        if normalized_backend not in {"cpu", "embree", "optix"}:
-            raise ValueError("prepared session backend must be cpu, embree, or optix")
+        if normalized_backend not in {"cpu", "embree", "optix", "hiprt"}:
+            raise ValueError("prepared session backend must be cpu, embree, optix, or hiprt")
         _validate_no_app_native_vocab(self.primitive, label="primitive")
         for symbol in self.native_symbols:
             _validate_no_app_native_vocab(symbol, label="native symbol")

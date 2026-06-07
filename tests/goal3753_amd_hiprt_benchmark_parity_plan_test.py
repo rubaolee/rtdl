@@ -34,16 +34,24 @@ class Goal3753AmdHiprtBenchmarkParityPlanTest(unittest.TestCase):
     def test_summary_is_honest_about_amd_extension_work(self) -> None:
         self.assertEqual(
             V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION,
-            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3775.v1",
+            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3776.v1",
         )
         summary = summarize_v2_10_amd_hiprt_benchmark_parity()
         self.assertEqual(summary["app_count"], 10)
-        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 6)
+        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 7)
         self.assertEqual(summary["stage_counts"]["compatibility_only_not_amd_perf_ready"], 2)
-        self.assertEqual(summary["stage_counts"]["needs_generic_hiprt_extension"], 2)
+        self.assertEqual(summary["stage_counts"]["needs_generic_hiprt_extension"], 1)
         self.assertEqual(
             summary["ready_for_amd_functional_pod_apps"],
-            ("hausdorff_xhd", "spatial_rayjoin", "rt_dbscan", "robot_collision", "librts_spatial_index", "rtnn"),
+            (
+                "hausdorff_xhd",
+                "spatial_rayjoin",
+                "rt_dbscan",
+                "robot_collision",
+                "contact_manifold",
+                "librts_spatial_index",
+                "rtnn",
+            ),
         )
         self.assertIn("raydb_style", summary["compatibility_only_not_amd_perf_ready_apps"])
         self.assertFalse(summary["release_authorized"])
@@ -99,6 +107,17 @@ class Goal3753AmdHiprtBenchmarkParityPlanTest(unittest.TestCase):
         self.assertNotIn("batched_prepared_query_sweep", rtnn["missing_generic_contracts"])
         self.assertEqual(rtnn["missing_generic_contracts"], ())
         self.assertEqual(rtnn["parity_stage"], "ready_for_amd_functional_pod")
+
+    def test_contact_manifold_records_goal3776_collect_k_closure(self) -> None:
+        rows = {row["app"]: row for row in v2_10_amd_hiprt_benchmark_parity()}
+        contact = rows["contact_manifold"]
+        self.assertIn("ray_triangle_closest_hit_3d", contact["required_engine_features"])
+        self.assertIn("ray_triangle_any_hit_3d", contact["required_engine_features"])
+        self.assertIn("collect_k_bounded_i64", contact["required_engine_features"])
+        self.assertEqual(contact["hiprt_feature_statuses"]["collect_k_bounded_i64"], NATIVE)
+        self.assertEqual(contact["missing_generic_contracts"], ())
+        self.assertEqual(contact["parity_stage"], "ready_for_amd_functional_pod")
+        self.assertIn("Goal3776", contact["rationale"])
 
     def test_each_row_keeps_claim_boundary_false(self) -> None:
         for row in v2_10_amd_hiprt_benchmark_parity():

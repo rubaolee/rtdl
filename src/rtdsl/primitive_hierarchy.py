@@ -753,7 +753,7 @@ PRIMITIVE_HIERARCHY = (
             "validate exact row output ordering and overflow behavior",
         ),
         reference_path="docs/rtdl_primitive_catalog.md",
-        backends=("cpu_python_reference", "cpu", "embree", "optix"),
+        backends=("cpu_python_reference", "cpu", "embree", "optix", "hiprt"),
         children=(
             PrimitiveHierarchyNode(
                 id="materialization.collect_k_bounded",
@@ -778,7 +778,7 @@ PRIMITIVE_HIERARCHY = (
                     "fail closed when exact bounded output overflows capacity",
                 ),
                 reference_path="docs/features/knn_rows/README.md",
-                backends=("cpu_python_reference", "cpu", "embree", "optix"),
+                backends=("cpu_python_reference", "cpu", "embree", "optix", "hiprt"),
             ),
             PrimitiveHierarchyNode(
                 id="materialization.prepared_output_buffers",
@@ -810,7 +810,7 @@ PRIMITIVE_HIERARCHY = (
                     "check bounded row materialization metadata before consuming rows",
                 ),
                 reference_path="docs/rtdl_primitive_catalog.md",
-                backends=("cpu_python_reference", "cpu", "embree", "optix"),
+                backends=("cpu_python_reference", "cpu", "embree", "optix", "hiprt"),
             ),
         ),
     ),

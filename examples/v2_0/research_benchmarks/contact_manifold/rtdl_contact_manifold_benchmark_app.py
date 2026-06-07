@@ -670,10 +670,10 @@ def describe_v2_4_bounded_witness_session(
     normalized_backend = backend.strip().lower().replace("-", "_")
     if normalized_backend in {"python", "cpu_python_reference"}:
         normalized_backend = "cpu"
-    if normalized_backend not in {"cpu", "embree", "optix"}:
-        raise ValueError("v2.4 bounded witness descriptor supports cpu, embree, or optix")
+    if normalized_backend not in {"cpu", "embree", "optix", "hiprt"}:
+        raise ValueError("v2.4 bounded witness descriptor supports cpu, embree, optix, or hiprt")
     native_symbols = ()
-    if normalized_backend in {"embree", "optix"}:
+    if normalized_backend in {"embree", "optix", "hiprt"}:
         native_symbols = (f"rtdl_{normalized_backend}_collect_k_bounded_i64",)
     session = rt.RtdlPreparedSessionDescriptor(
         session_id=(
@@ -737,14 +737,20 @@ def describe_v2_4_bounded_witness_session(
 
 def _default_library_path(backend: str) -> Path | None:
     normalized = backend.strip().lower()
-    env_var = "RTDL_EMBREE_LIBRARY" if normalized == "embree" else "RTDL_OPTIX_LIBRARY"
+    env_vars = {
+        "embree": "RTDL_EMBREE_LIBRARY",
+        "optix": "RTDL_OPTIX_LIBRARY",
+        "hiprt": "RTDL_HIPRT_LIBRARY",
+    }
+    env_var = env_vars[normalized]
     if os.environ.get(env_var):
         return Path(os.environ[env_var])
-    candidates = (
-        (ROOT / "build" / "librtdl_embree.dylib", ROOT / "build" / "librtdl_embree.so")
-        if normalized == "embree"
-        else (ROOT / "build" / "librtdl_optix.dylib", ROOT / "build" / "librtdl_optix.so")
-    )
+    candidates_by_backend = {
+        "embree": (ROOT / "build" / "librtdl_embree.dylib", ROOT / "build" / "librtdl_embree.so"),
+        "optix": (ROOT / "build" / "librtdl_optix.dylib", ROOT / "build" / "librtdl_optix.so"),
+        "hiprt": (ROOT / "build" / "librtdl_hiprt.dylib", ROOT / "build" / "librtdl_hiprt.so"),
+    }
+    candidates = candidates_by_backend[normalized]
     for candidate in candidates:
         if candidate.exists():
             return candidate
@@ -760,8 +766,8 @@ def native_collect_k_payload(
     library_path: str | None = None,
 ) -> dict[str, Any]:
     normalized_backend = backend.strip().lower()
-    if normalized_backend not in {"embree", "optix"}:
-        raise ValueError("native collect backend must be embree or optix")
+    if normalized_backend not in {"embree", "optix", "hiprt"}:
+        raise ValueError("native collect backend must be embree, optix, or hiprt")
     resolved_library = Path(library_path) if library_path else _default_library_path(normalized_backend)
     if resolved_library is None:
         raise RuntimeError(
