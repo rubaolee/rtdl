@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 from ..partner_adapters import _column_length
+from ..partner_adapters import _numba_runtime_for_point_columns
 from ..partner_adapters import _partner_module
+from ..numba_partner_continuation import _as_numba_cuda_vector
 
 
 _CUPY_PAIRWISE_FORCE_2D_KERNEL = None
+_NUMBA_PAIRWISE_FORCE_2D_KERNEL = None
 
 
 def _cupy_pairwise_force_2d_kernel(cupy):
@@ -60,6 +63,54 @@ def _cupy_pairwise_force_2d_kernel(cupy):
     return _CUPY_PAIRWISE_FORCE_2D_KERNEL
 
 
+def _numba_pairwise_force_2d_kernel(cuda):
+    global _NUMBA_PAIRWISE_FORCE_2D_KERNEL
+    if _NUMBA_PAIRWISE_FORCE_2D_KERNEL is None:
+        import math
+
+        @cuda.jit(fastmath=True)
+        def pairwise_force_2d(
+            source_ids,
+            sx,
+            sy,
+            sm,
+            source_count,
+            target_ids,
+            tx,
+            ty,
+            tm,
+            target_count,
+            softening_sq,
+            exclude_equal_ids,
+            out_fx,
+            out_fy,
+        ):
+            i = cuda.grid(1)
+            if i >= source_count:
+                return
+            source_x = sx[i]
+            source_y = sy[i]
+            source_mass = sm[i]
+            source_id = source_ids[i]
+            fx = 0.0
+            fy = 0.0
+            for j in range(target_count):
+                if exclude_equal_ids != 0 and source_id == target_ids[j]:
+                    continue
+                dx = tx[j] - source_x
+                dy = ty[j] - source_y
+                dist_sq = dx * dx + dy * dy + softening_sq
+                inv_dist = 1.0 / math.sqrt(dist_sq)
+                scale = source_mass * tm[j] * inv_dist * inv_dist * inv_dist
+                fx += dx * scale
+                fy += dy * scale
+            out_fx[i] = fx
+            out_fy[i] = fy
+
+        _NUMBA_PAIRWISE_FORCE_2D_KERNEL = pairwise_force_2d
+    return _NUMBA_PAIRWISE_FORCE_2D_KERNEL
+
+
 def pairwise_inverse_square_force_2d_partner_columns(
     source_weighted_point_columns: dict[str, object],
     target_weighted_point_columns: dict[str, object],
@@ -77,7 +128,7 @@ def pairwise_inverse_square_force_2d_partner_columns(
     softening = float(softening)
     if softening < 0:
         raise ValueError("softening must be non-negative")
-    runtime = _partner_module(partner)
+    runtime = _numba_runtime_for_point_columns() if partner == "numba" else _partner_module(partner)
     source_count = _column_length(source_weighted_point_columns, "ids")
     target_count = _column_length(target_weighted_point_columns, "ids")
     if source_count <= 0 or target_count <= 0:
@@ -138,8 +189,63 @@ def pairwise_inverse_square_force_2d_partner_columns(
                 force_y,
             ),
         )
+    elif runtime["name"] == "numba":
+        cuda = runtime["module"]
+        np = runtime["numpy"]
+        source_ids = _as_numba_cuda_vector(
+            source_weighted_point_columns["ids"],
+            name="source_ids",
+            dtype=np.uint32,
+            cuda=cuda,
+            np=np,
+        )
+        target_ids = _as_numba_cuda_vector(
+            target_weighted_point_columns["ids"],
+            name="target_ids",
+            dtype=np.uint32,
+            cuda=cuda,
+            np=np,
+        )
+        sx = _as_numba_cuda_vector(source_weighted_point_columns["x"], name="sx", dtype=np.float64, cuda=cuda, np=np)
+        sy = _as_numba_cuda_vector(source_weighted_point_columns["y"], name="sy", dtype=np.float64, cuda=cuda, np=np)
+        sm = _as_numba_cuda_vector(
+            source_weighted_point_columns["weight"],
+            name="sm",
+            dtype=np.float64,
+            cuda=cuda,
+            np=np,
+        )
+        tx = _as_numba_cuda_vector(target_weighted_point_columns["x"], name="tx", dtype=np.float64, cuda=cuda, np=np)
+        ty = _as_numba_cuda_vector(target_weighted_point_columns["y"], name="ty", dtype=np.float64, cuda=cuda, np=np)
+        tm = _as_numba_cuda_vector(
+            target_weighted_point_columns["weight"],
+            name="tm",
+            dtype=np.float64,
+            cuda=cuda,
+            np=np,
+        )
+        force_x = cuda.device_array((source_count,), dtype=np.float64)
+        force_y = cuda.device_array((source_count,), dtype=np.float64)
+        threads = 128
+        blocks = (source_count + threads - 1) // threads
+        _numba_pairwise_force_2d_kernel(cuda)[(blocks,), threads](
+            source_ids,
+            sx,
+            sy,
+            sm,
+            source_count,
+            target_ids,
+            tx,
+            ty,
+            tm,
+            target_count,
+            softening * softening,
+            1 if exclude_equal_ids else 0,
+            force_x,
+            force_y,
+        )
     else:
-        raise ValueError("partner must be 'torch' or 'cupy'")
+        raise ValueError("partner must be 'torch', 'cupy', or 'numba'")
 
     runtime["sync"]()
     columns = {
@@ -158,6 +264,8 @@ def pairwise_inverse_square_force_2d_partner_columns(
         "softening": softening,
         "exclude_equal_ids": exclude_equal_ids,
         "app_force_materialization": "partner_gpu_pairwise_vector_sum",
+        "numba_cuda_jit_used": runtime["name"] == "numba",
+        "raw_cuda_kernel_required": False,
         "direct_device_handoff_authorized": False,
         "rt_core_speedup_claim_authorized": False,
         "v2_0_release_authorized": False,

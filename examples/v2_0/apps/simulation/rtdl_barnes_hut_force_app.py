@@ -460,7 +460,9 @@ def _partner_column_to_list(column, partner: str) -> list[object]:
         import cupy
 
         return cupy.asnumpy(column).tolist()
-    raise ValueError("partner must be 'torch' or 'cupy'")
+    if partner == "numba":
+        return column.copy_to_host().tolist()
+    raise ValueError("partner must be 'torch', 'cupy', or 'numba'")
 
 
 def _run_partner_exact_forces(
@@ -672,7 +674,7 @@ def main(argv: list[str] | None = None) -> int:
         choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan", "partner_exact_force"),
         default="cpu_python_reference",
     )
-    parser.add_argument("--partner", choices=("torch", "cupy"), default="cupy")
+    parser.add_argument("--partner", choices=("torch", "cupy", "numba"), default="cupy")
     parser.add_argument("--theta", type=float, default=THETA)
     parser.add_argument("--body-count", type=int, default=None, help="use a generated scalable body fixture")
     parser.add_argument(

@@ -1890,6 +1890,7 @@ def _numba_runtime_for_point_columns() -> dict[str, object]:
     return {
         "name": "numba",
         "module": cuda,
+        "numpy": np,
         "device": None,
         "uint32": np.uint32,
         "int64": np.int64,
@@ -1914,7 +1915,7 @@ def point_rows_to_partner_columns(points, *, partner: str = "torch") -> dict[str
 
 def weighted_point_rows_to_partner_columns(points, *, partner: str = "torch") -> dict[str, object]:
     """Convert rows with id/x/y/mass attributes into partner-owned weighted point columns."""
-    runtime = _partner_module(partner)
+    runtime = _numba_runtime_for_point_columns() if partner == "numba" else _partner_module(partner)
     device = runtime["device"]
     rows = tuple(points)
     return {

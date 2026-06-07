@@ -58,7 +58,7 @@ PYTHONPATH=src:. .venv-rtdl-scipy/bin/python examples/v2_0/research_benchmarks/b
 | `materialization_pressure_bucketized_cpu` | Estimate contribution-row memory pressure from the opening frontier summary | Planning guard for materialized vs streamed/native execution |
 | `fused_frontier_force_sum_bucketized_cpu` | Generic aggregate-tree opening traversal fused directly into weighted vector sums | Reference contract for native/partner fused lowering; avoids frontier and contribution rows |
 | `optix_node_coverage_prepared` | Prepared OptiX fixed-radius threshold traversal for node coverage | RT-core decision subpath |
-| `partner_exact_force` | Generic weighted-point pairwise inverse-square force via CuPy or Torch | Partner force-vector reference |
+| `partner_exact_force` | Generic weighted-point pairwise inverse-square force via CuPy, Torch, or Numba CUDA JIT | Partner force-vector reference |
 
 ## Example Commands
 
@@ -135,6 +135,7 @@ Partner exact force reference:
 
 ```bash
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py --mode partner_exact_force --partner cupy --body-count 4096 --skip-validation
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py --mode partner_exact_force --partner numba --body-count 4096 --skip-validation
 ```
 
 ## Current Scope
@@ -190,8 +191,10 @@ RT-BarnesHut reconstruction. The runtime pressure points are:
   but timing it requires an NVIDIA/OWL/OptiX-capable machine.
 - Current OptiX evidence is bounded to prepared node-coverage threshold
   traversal, not Barnes-Hut opening-rule acceleration.
-- Current partner force evidence is exact all-pairs force-vector reference, not
-  hierarchical Barnes-Hut acceleration and not an RT-core claim.
+- Current partner force evidence is exact all-pairs force-vector reference.
+  Users can choose CuPy, Torch, or Numba CUDA JIT; the Numba path is the
+  no-RawKernel reference for users who want custom CUDA logic in Python. This
+  is not hierarchical Barnes-Hut acceleration and not an RT-core claim.
 - Current aggregate-frontier collection evidence includes CPU reference,
   partner-ready row layout, app-name-free Embree native row collection, and an
   app-name-free OptiX native row collector with pod parity and host-side timing

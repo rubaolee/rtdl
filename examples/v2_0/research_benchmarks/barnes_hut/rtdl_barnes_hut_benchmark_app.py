@@ -1438,7 +1438,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--node-radius", type=float, default=app.NODE_DISCOVERY_RADIUS)
     parser.add_argument("--bucket-size", type=int, default=32)
     parser.add_argument("--max-depth", type=int, default=32)
-    parser.add_argument("--partner", choices=("torch", "cupy"), default="cupy")
+    parser.add_argument("--partner", choices=("torch", "cupy", "numba"), default="cupy")
     parser.add_argument("--skip-validation", action="store_true")
     parser.add_argument("--require-rt-core", action="store_true")
     parser.add_argument("--repeat", type=int, default=1, help="Repeat hot prepared-query phase.")
