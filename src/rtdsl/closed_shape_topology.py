@@ -396,11 +396,15 @@ def _numba_boundary_contact_closed_shape_count_kernel():
                         if len2 <= eps * eps:
                             keep = abs(px - ax) <= eps and abs(py - ay) <= eps
                         else:
-                            length = len2 ** 0.5
                             cross = (px - ax) * dy - (py - ay) * dx
                             dot = (px - ax) * dx + (py - ay) * dy
-                            along_eps = eps * length
-                            keep = abs(cross) <= eps * length and dot >= -along_eps and dot <= len2 + along_eps
+                            eps2_len2 = eps * eps * len2
+                            cross_ok = cross * cross <= eps2_len2
+                            before_start_ok = dot < 0.0 and dot * dot <= eps2_len2
+                            inside_segment = dot >= 0.0 and dot <= len2
+                            beyond_end = dot - len2
+                            after_end_ok = dot > len2 and beyond_end * beyond_end <= eps2_len2
+                            keep = cross_ok and (before_start_ok or inside_segment or after_end_ok)
                 invalid = not keep
             else:
                 invalid = True

@@ -46,6 +46,8 @@ class Goal3677RelationStatusFilteredExactCountTest(unittest.TestCase):
         self.assertIn("count_relation_status_corrected_prepared_points_numba", topology)
         self.assertIn("prepare_relation_status_corrected_prepared_points_numba_counter", topology)
         self.assertIn("produce_boundary_columns(retry)", topology)
+        self.assertIn("eps2_len2 = eps * eps * len2", topology)
+        self.assertNotIn("length = len2 ** 0.5", topology)
         self.assertIn("resident_relation_status_corrected_exact_numba_count", script)
         self.assertIn('"public_speedup_claim_authorized": False', script)
         self.assertIn('"true_zero_copy_claim_authorized": False', script)
