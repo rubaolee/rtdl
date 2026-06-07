@@ -229,7 +229,7 @@ path for debugging or validation.
 
 ## Recommended Explicit Route Choice
 
-Current v2.8 evidence says a RayJoin-style user should not blindly run every
+Current v2.10 evidence says a RayJoin-style user should not blindly run every
 contract through one backend.
 
 For the simple authored tiled fixtures in the benchmark packet:
@@ -296,7 +296,7 @@ three default workloads in one payload.
 
 ## How RTDL Maps The Paper Ideas
 
-| RayJoin-style idea | RTDL v2.8 expression |
+| RayJoin-style idea | Current RTDL expression |
 | --- | --- |
 | Point-in-polygon traversal | Generic point/polygon traversal plus inclusive positive-hit predicate |
 | Segment intersection | Generic segment/segment row contract |
@@ -311,14 +311,14 @@ Use the JSON payload conservatively:
 - `rt_core_accelerated` is true only for `--backend optix`.
 - `paper_scale_perf_claim_authorized` is false unless a separate reviewed run
   on representative hardware and datasets authorizes a specific claim.
-- `full_rayjoin_reproduction` is false because this program tests RTDL v2.8
+- `full_rayjoin_reproduction` is false because this program tests current RTDL
   expression of RayJoin-style workloads, not a full clone of the paper system.
 - `requires_pod_for_optix_perf` tells you whether the current run still needs
   NVIDIA hardware evidence before it can support OptiX performance wording.
 
 ## Claim Boundary
 
-- This directory can demonstrate that RTDL v2.8 can express useful
+- This directory can demonstrate that current RTDL can express useful
   RayJoin-style spatial workloads over generic engine primitives.
 - It should not be used to claim full RayJoin reproduction, universal speedup,
   or paper-scale superiority without a separate reviewed evidence report.

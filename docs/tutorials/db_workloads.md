@@ -1,6 +1,6 @@
 # RTDL Database Workloads
 
-This tutorial covers the current v2.8-facing database-style workload shape:
+This tutorial covers the current v2.10-facing database-style workload shape:
 bounded columnar-payload scans and grouped numeric summaries inside a Python
 program.
 
@@ -157,7 +157,7 @@ than treating those older goal-named tests as the learner path.
 PYTHONPATH=src:. python examples/v2_0/apps/analytics/rtdl_database_analytics_app.py --backend cpu_python_reference
 ```
 
-For current v2.8 learning, the unified example above is the public entry point.
+For current v2.10 learning, the unified example above is the public entry point.
 Use the current partner-choice guide when you need a measured CuPy or Numba
 continuation after an RTDL primitive.
 

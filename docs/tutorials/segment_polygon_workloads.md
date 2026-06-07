@@ -1,6 +1,6 @@
 # Tutorial: Segment And Polygon Workloads
 
-This tutorial covers the current v2.8-facing segment and polygon workload
+This tutorial covers the current v2.10-facing segment and polygon workload
 families.
 
 These are the best place to learn RTDL through real public workloads instead of

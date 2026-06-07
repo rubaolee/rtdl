@@ -323,7 +323,7 @@ def run_lab(args) -> dict[str, object]:
 
 
 def main(argv: Iterable[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="RTDL v2.8 Hausdorff language-level comparison lab.")
+    parser = argparse.ArgumentParser(description="Current RTDL Hausdorff language-level comparison lab.")
     parser.add_argument("--points-a", type=int, default=2048)
     parser.add_argument("--points-b", type=int, default=2048)
     parser.add_argument("--seed-a", type=int, default=11)

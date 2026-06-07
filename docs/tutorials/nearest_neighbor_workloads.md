@@ -1,6 +1,6 @@
 # Tutorial: Nearest-Neighbor Workloads
 
-This tutorial covers the current v2.8-facing nearest-neighbor workload shapes:
+This tutorial covers the current v2.10-facing nearest-neighbor workload shapes:
 fixed-radius rows, K-closest rows, and Python-level composition for
 Hausdorff-style applications.
 
