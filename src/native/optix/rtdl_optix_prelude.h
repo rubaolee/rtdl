@@ -640,6 +640,11 @@ int  rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_repeated(
          double* min_seconds_out,
          double* max_seconds_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_direct_intersection(
+         void* prepared,
+         void* prepared_left,
+         size_t* count_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_prepared_segment_pair_candidate_device_columns(
          void* prepared,
          const RtdlSegment* left, size_t left_count,
