@@ -24,6 +24,87 @@ _CUPY_BOUNDARY_CONTACT_CLOSED_SHAPE_CANDIDATE_REFINE_KERNEL = None
 _NUMBA_BOUNDARY_CONTACT_CLOSED_SHAPE_COUNT_KERNEL = None
 
 
+class PreparedRelationStatusCorrectedCountNumba:
+    """Resident exact scalar-count continuation over prepared relation columns."""
+
+    def __init__(
+        self,
+        *,
+        refiner: "PreparedClosedShapeMembershipCandidateRefinerCupy",
+        candidate_count: int,
+        boundary_columns: object,
+        boundary_candidate_count: int,
+        boundary_candidate_required_count: int,
+        all_candidate_traversal_seconds: float,
+        boundary_candidate_traversal_seconds: float,
+    ) -> None:
+        self._refiner = refiner
+        self._candidate_count = int(candidate_count)
+        self._boundary_columns = boundary_columns
+        self._boundary_candidate_count = int(boundary_candidate_count)
+        self._boundary_candidate_required_count = int(boundary_candidate_required_count)
+        self._all_candidate_traversal_seconds = float(all_candidate_traversal_seconds)
+        self._boundary_candidate_traversal_seconds = float(boundary_candidate_traversal_seconds)
+        self._closed = False
+
+    @property
+    def candidate_count(self) -> int:
+        return self._candidate_count
+
+    @property
+    def boundary_candidate_count(self) -> int:
+        return self._boundary_candidate_count
+
+    def run(self, *, validate_columns: bool = False) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared relation-status corrected count handle is closed")
+        boundary_result = self._refiner.count_boundary_contacts_numba(
+            self._boundary_columns,
+            validate_columns=validate_columns,
+        )
+        dropped_count = int(boundary_result["dropped_candidate_row_count"])
+        row_count = self._candidate_count - dropped_count
+        return {
+            "row_count": row_count,
+            "candidate_row_count": self._candidate_count,
+            "boundary_candidate_row_count": self._boundary_candidate_count,
+            "boundary_candidate_required_count": self._boundary_candidate_required_count,
+            "dropped_candidate_row_count": dropped_count,
+            "partner": "numba",
+            "predicate": "resident_relation_status_corrected_closed_shape_membership_count",
+            "row_stream_materialized": False,
+            "full_candidate_row_stream_materialized": False,
+            "boundary_candidate_row_stream_materialized": True,
+            "resident_boundary_candidate_columns": True,
+            "all_candidate_traversal_seconds": self._all_candidate_traversal_seconds,
+            "boundary_candidate_traversal_seconds": self._boundary_candidate_traversal_seconds,
+            "true_zero_copy_claim_authorized": False,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+        }
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        self._closed = True
+        close = getattr(self._boundary_columns, "close", None)
+        if close is not None:
+            close()
+
+    def __enter__(self) -> "PreparedRelationStatusCorrectedCountNumba":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
 def _int_set(value: int | Iterable[int]) -> frozenset[int]:
     if isinstance(value, bool):
         return frozenset((int(value),))
@@ -1004,6 +1085,74 @@ class PreparedClosedShapeMembershipCandidateRefinerCupy:
             "public_speedup_claim_authorized": False,
             "rt_core_speedup_claim_authorized": False,
         }
+
+    def prepare_relation_status_corrected_prepared_points_numba_counter(
+        self,
+        prepared_membership: object,
+        prepared_points: object,
+        *,
+        boundary_max_rows: int = 4096,
+    ) -> PreparedRelationStatusCorrectedCountNumba:
+        """Prepare a resident exact scalar-count continuation for repeated runs."""
+
+        if not hasattr(prepared_membership, "relation_status_candidate_device_columns_prepared_points"):
+            raise TypeError(
+                "resident relation-status corrected count requires a prepared membership object "
+                "with relation-status candidate columns"
+            )
+        boundary_max_rows = int(boundary_max_rows)
+        if boundary_max_rows < 0:
+            raise ValueError("boundary_max_rows must be non-negative")
+
+        all_count_columns = prepared_membership.relation_status_candidate_device_columns_prepared_points(
+            prepared_points,
+            relation_status_filter=0,
+            max_rows=0,
+        )
+        try:
+            candidate_count = int(getattr(all_count_columns, "candidate_event_count", 0))
+            all_candidate_traversal_seconds = float(getattr(all_count_columns, "traversal_seconds", 0.0))
+        finally:
+            close = getattr(all_count_columns, "close", None)
+            if close is not None:
+                close()
+
+        def produce_boundary_columns(capacity: int):
+            return prepared_membership.relation_status_candidate_device_columns_prepared_points(
+                prepared_points,
+                relation_status_filter=2,
+                max_rows=capacity,
+            )
+
+        boundary_columns = produce_boundary_columns(boundary_max_rows)
+        if bool(getattr(boundary_columns, "overflow", False)):
+            retry = int(getattr(boundary_columns, "candidate_event_count", 0))
+            close = getattr(boundary_columns, "close", None)
+            if close is not None:
+                close()
+            if retry <= boundary_max_rows:
+                raise RuntimeError(
+                    "resident boundary relation-status stream overflowed without a larger retry capacity hint"
+                )
+            boundary_columns = produce_boundary_columns(retry)
+            if bool(getattr(boundary_columns, "overflow", False)):
+                close = getattr(boundary_columns, "close", None)
+                if close is not None:
+                    close()
+                raise RuntimeError(
+                    "resident boundary relation-status stream overflowed after retrying with "
+                    f"boundary_max_rows={retry}"
+                )
+
+        return PreparedRelationStatusCorrectedCountNumba(
+            refiner=self,
+            candidate_count=candidate_count,
+            boundary_columns=boundary_columns,
+            boundary_candidate_count=int(getattr(boundary_columns, "row_count", 0)),
+            boundary_candidate_required_count=int(getattr(boundary_columns, "candidate_event_count", 0)),
+            all_candidate_traversal_seconds=all_candidate_traversal_seconds,
+            boundary_candidate_traversal_seconds=float(getattr(boundary_columns, "traversal_seconds", 0.0)),
+        )
 
 
 def prepare_closed_shape_membership_candidate_refiner_exact_cupy(

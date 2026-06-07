@@ -232,6 +232,35 @@ def run_probe(args: argparse.Namespace) -> dict[str, Any]:
             stability_key="row_count",
         )
 
+        resident_counter_start = time.perf_counter()
+        resident_counter = refiner.prepare_relation_status_corrected_prepared_points_numba_counter(
+            prepared,
+            prepared_points,
+            boundary_max_rows=int(args.boundary_max_rows),
+        )
+        prepare_resident_counter_sec = time.perf_counter() - resident_counter_start
+        try:
+            def resident_corrected_count_once() -> dict[str, Any]:
+                result = resident_counter.run(validate_columns=False)
+                return {
+                    "row_count": int(result["row_count"]),
+                    "candidate_row_count": int(result["candidate_row_count"]),
+                    "boundary_candidate_row_count": int(result["boundary_candidate_row_count"]),
+                    "dropped_candidate_row_count": int(result["dropped_candidate_row_count"]),
+                    "resident_boundary_candidate_columns": bool(result["resident_boundary_candidate_columns"]),
+                }
+
+            resident_corrected_count_timing = _time_repeated(
+                label="resident_relation_status_corrected_exact_numba_count",
+                warmup=int(args.warmup),
+                repeat=int(args.repeat),
+                synchronize=sync,
+                fn=resident_corrected_count_once,
+                stability_key="row_count",
+            )
+        finally:
+            resident_counter.close()
+
         correctness_columns = prepared.relation_status_candidate_device_columns_prepared_points(
             prepared_points,
             relation_status_filter=2,
@@ -266,10 +295,12 @@ def run_probe(args: argparse.Namespace) -> dict[str, Any]:
             "prepare_static_scene_sec": prepare_static_scene_sec,
             "prepare_point_columns_sec": prepare_point_columns_sec,
             "prepare_refiner_sec": prepare_refiner_sec,
+            "prepare_resident_counter_sec": prepare_resident_counter_sec,
             "timings": {
                 "all_candidate_count_only": all_candidate_count_timing,
                 "boundary_candidate_columns": boundary_candidate_timing,
                 "relation_status_corrected_exact_numba_count": corrected_count_timing,
+                "resident_relation_status_corrected_exact_numba_count": resident_corrected_count_timing,
             },
             "correctness": {
                 "exact_count": exact_count,
