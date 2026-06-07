@@ -67,7 +67,8 @@ def _run_exact_lsi_prepared_optix(dataset: str, *, repeat: int, warmup: int) -> 
         "row_count": int(payload["row_count"]),
         "native_phase_timings": payload.get("native_phase_timings", {}),
         "prepared_left_for_count": bool(payload["summary"].get("prepared_left_for_count")),
-        "segment_policy": "device_double_exact_count_during_optix_anyhit",
+        "segment_policy": "device_double_exact_count_during_optix_intersection_program_identity_range",
+        "segment_pair_count_route": payload["summary"].get("segment_pair_count_route"),
         "same_contract_repair_reason": (
             "Goal3610 showed the pure device left-id dense count route counts eight extra "
             "near-degenerate 4096-chain LSI candidates; this exact prepared route applies "
@@ -193,7 +194,8 @@ def run_composite(args: argparse.Namespace) -> dict[str, object]:
         "interpretation": (
             "Internal RayJoin safe mixed-route composite: PIP uses CuPy dense scalar count, "
             "LSI uses exact prepared RTDL/OptiX count with a device-side double predicate "
-            "inside the RT any-hit traversal, and overlay_seed uses RTDL/OptiX active-count. This repairs "
+            "inside the custom intersection program over identity-range primitive records, "
+            "and overlay_seed uses RTDL/OptiX active-count. This repairs "
             "the Goal3610 4096-chain LSI mismatch by choosing the exact same-contract route."
         ),
         "claim_boundary": _claim_boundary(),
