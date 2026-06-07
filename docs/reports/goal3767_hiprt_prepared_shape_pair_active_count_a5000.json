@@ -1,0 +1,68 @@
+{
+  "claim_boundary": {
+    "amd_perf_claim_authorized": false,
+    "broad_rt_core_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "clean_validation": {
+    "command": "make build-hiprt HIPRT_PREFIX=/root/vendor/hiprt-official/hiprtSdk-2.2.0e68f54 && python3 -m unittest tests.goal3767_hiprt_prepared_shape_pair_active_count_test tests.goal3766_hiprt_prepared_segment_pair_count_test tests.goal3765_hiprt_prepared_grouped_anyhit_flags_test tests.goal674_hiprt_prepared_anyhit_2d_test tests.goal3753_amd_hiprt_benchmark_parity_plan_test",
+    "result": "pass",
+    "tests_run": 28
+  },
+  "context_probe": {
+    "api_version": 2002,
+    "device_name": "NVIDIA RTX A5000",
+    "device_type": 1,
+    "version": [
+      2,
+      2,
+      15109972
+    ]
+  },
+  "goal": "Goal3767",
+  "hiprt_sdk": "/root/vendor/hiprt-official/hiprtSdk-2.2.0e68f54",
+  "rt_backend": "HIPRT via CUDA/Orochi on NVIDIA pod; not AMD hardware evidence",
+  "sample_count_elapsed_sec": 0.5630832202732563,
+  "sample_expected_active_count": 2,
+  "sample_matches_relation_flags": true,
+  "sample_prepared_active_count": 2,
+  "sample_relation_row_count": 6,
+  "schema_version": "goal3767_hiprt_prepared_shape_pair_active_count_a5000_v1",
+  "scoped_source_dirty": false,
+  "scoped_source_status": "",
+  "source_commit": "24055b49",
+  "spatial_rayjoin_missing_generic_contracts": [],
+  "spatial_rayjoin_parity_stage": "ready_for_amd_functional_pod",
+  "summary": {
+    "amd_perf_claim_authorized": false,
+    "app_count": 10,
+    "claim_boundary": "This AMD/HIPRT benchmark parity map is a planning gate. It does not authorize AMD performance claims, HIPRT release claims, public speedup wording, whole-app acceleration wording, or RTDL-beats-paper wording.",
+    "compatibility_only_not_amd_perf_ready_apps": [
+      "raydb_style",
+      "triangle_counting"
+    ],
+    "needs_generic_hiprt_extension_apps": [
+      "hausdorff_xhd",
+      "rt_dbscan",
+      "contact_manifold",
+      "barnes_hut",
+      "librts_spatial_index",
+      "rtnn"
+    ],
+    "ready_for_amd_functional_pod_apps": [
+      "spatial_rayjoin",
+      "robot_collision"
+    ],
+    "release_authorized": false,
+    "row_count": 10,
+    "stage_counts": {
+      "compatibility_only_not_amd_perf_ready": 2,
+      "needs_generic_hiprt_extension": 6,
+      "ready_for_amd_functional_pod": 2
+    },
+    "status": "planning_gate_not_amd_hardware_evidence",
+    "version": "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3767.v1"
+  }
+}

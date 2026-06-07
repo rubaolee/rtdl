@@ -1,5 +1,6 @@
 import pathlib
 import unittest
+import json
 
 import rtdsl as rt
 from rtdsl import hiprt_runtime
@@ -8,6 +9,8 @@ from rtdsl import hiprt_runtime
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 HIPRT_CORE = ROOT / "src" / "native" / "hiprt" / "rtdl_hiprt_core.cpp"
 HIPRT_API = ROOT / "src" / "native" / "hiprt" / "rtdl_hiprt_api.cpp"
+REPORT = ROOT / "docs" / "reports" / "goal3767_hiprt_prepared_shape_pair_active_count_2026-06-07.md"
+ARTIFACT = ROOT / "docs" / "reports" / "goal3767_hiprt_prepared_shape_pair_active_count_a5000.json"
 
 
 def _native_prepared_shape_pair_available() -> bool:
@@ -46,6 +49,20 @@ class Goal3767HiprtPreparedShapePairActiveCountPortableTest(unittest.TestCase):
     def test_empty_prepared_right_is_portable_without_native_symbols(self) -> None:
         with rt.prepare_hiprt_shape_pair_active_count_2d(()) as prepared:
             self.assertEqual(prepared.count((_box(1, 0.0, 0.0, 1.0, 1.0),)), 0)
+
+    def test_report_and_artifact_record_boundaries(self) -> None:
+        report = REPORT.read_text(encoding="utf-8")
+        self.assertIn("Goal3767", report)
+        self.assertIn("ready_for_amd_functional_pod", report)
+        self.assertIn("not a full reusable right-geometry scene", report)
+        artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+        self.assertEqual(artifact["source_commit"], "24055b49")
+        self.assertFalse(artifact["scoped_source_dirty"])
+        self.assertTrue(artifact["sample_matches_relation_flags"])
+        self.assertEqual(artifact["spatial_rayjoin_parity_stage"], "ready_for_amd_functional_pod")
+        self.assertEqual(artifact["spatial_rayjoin_missing_generic_contracts"], [])
+        for key, value in artifact["claim_boundary"].items():
+            self.assertFalse(value, key)
 
 
 @unittest.skipUnless(_native_prepared_shape_pair_available(), "HIPRT prepared shape-pair active-count symbols unavailable")
