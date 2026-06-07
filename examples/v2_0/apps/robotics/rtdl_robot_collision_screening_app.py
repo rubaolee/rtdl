@@ -186,6 +186,8 @@ def _run_backend(backend: str, edge_rays: tuple[rt.Ray2D, ...], obstacle_triangl
         return rt.run_embree(robot_edge_any_hit_kernel, **inputs)
     if backend == "optix":
         return rt.run_optix(robot_edge_any_hit_kernel, **inputs)
+    if backend == "hiprt":
+        return rt.run_hiprt(robot_edge_any_hit_kernel, **inputs)
     raise ValueError(f"unsupported backend `{backend}`")
 
 
@@ -511,7 +513,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--backend",
-        choices=("cpu_python_reference", "cpu", "embree", "optix"),
+        choices=("cpu_python_reference", "cpu", "embree", "optix", "hiprt"),
         default="cpu_python_reference",
     )
     parser.add_argument(

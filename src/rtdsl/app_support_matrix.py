@@ -321,9 +321,9 @@ _APP_MATRIX: dict[str, dict[str, AppEngineSupport]] = {
         embree=_NATIVE,
         optix=_NATIVE,
         vulkan=_NOCLI,
-        hiprt=_NOCLI,
+        hiprt=_NATIVE,
         apple_rt=_NOCLI,
-        note="Discrete collision app exposes CPU, Embree, and OptiX; Vulkan is intentionally not exposed until a dedicated any-hit app gate exists.",
+        note="Discrete collision app exposes CPU, Embree, OptiX, and HIPRT row backends; HIPRT is ready for AMD functional validation but is not AMD performance evidence until run on AMD hardware.",
     ),
     "barnes_hut_force_app": _row(
         "barnes_hut_force_app",
