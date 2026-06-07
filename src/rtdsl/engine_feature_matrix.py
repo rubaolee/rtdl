@@ -52,6 +52,13 @@ _FEATURE_MATRIX: dict[str, dict[str, EngineFeatureSupport]] = {
         "hiprt": _support("overlay_compose_2d", "hiprt", NATIVE, "HIPRT bounded overlay workload path when available."),
         "apple_rt": _support("overlay_compose_2d", "apple_rt", NATIVE_ASSISTED, "Apple bounded overlap path uses native-assisted traversal/refinement where available."),
     },
+    "point_nearest_segment_2d": {
+        "embree": _support("point_nearest_segment_2d", "embree", NATIVE, "Embree point-nearest-segment native helper."),
+        "optix": _support("point_nearest_segment_2d", "optix", NATIVE, "OptiX point-nearest-segment CUDA helper."),
+        "vulkan": _support("point_nearest_segment_2d", "vulkan", NATIVE, "Vulkan point-nearest-segment compute path."),
+        "hiprt": _support("point_nearest_segment_2d", "hiprt", NATIVE, "HIPRT point-nearest-segment 2D path when the library is available."),
+        "apple_rt": _support("point_nearest_segment_2d", "apple_rt", NATIVE_ASSISTED, "Apple RT point-nearest-segment native-assisted path."),
+    },
     "ray_triangle_hit_count_2d": {
         "embree": _support("ray_triangle_hit_count_2d", "embree", NATIVE, "Embree ray/triangle hit-count traversal."),
         "optix": _support("ray_triangle_hit_count_2d", "optix", NATIVE, "OptiX ray/triangle hit-count traversal."),

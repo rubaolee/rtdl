@@ -27,6 +27,7 @@ The machine-readable source of truth is
 | `line_segment_intersection_2d` | `native` | `native` | `native` | `native` | `native_assisted` |
 | `point_in_polygon_2d` | `native` | `native` | `native` | `native` | `native_assisted` |
 | `overlay_compose_2d` | `native` | `native` | `native` | `native` | `native_assisted` |
+| `point_nearest_segment_2d` | `native` | `native` | `native` | `native` | `native_assisted` |
 | `ray_triangle_hit_count_2d` | `native` | `native` | `native` | `native` | `native_assisted` |
 | `ray_triangle_hit_count_3d` | `native` | `native` | `native` | `native` | `native` |
 | `ray_triangle_any_hit_2d` | `native` | `native` | `native` | `native` | `native_assisted` |
