@@ -39,6 +39,7 @@ PYTHONPATH=src:. python examples/v2_0/research_benchmarks/triangle_counting/rtdl
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py --mode rt_graph_2a1_generic_rt --edge-file build/goal2588_rt_graph/k4_cliques_10000.edge --edge-format binary --backend optix --detail summary
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py --mode rt_graph_2a1_generic_rt --edge-file build/goal2588_rt_graph/k4_cliques_10000.edge --edge-format binary --backend optix --detail summary --partner cupy
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py --mode rt_graph_1a2_generic_rt --edge-file build/goal2588_rt_graph/k4_cliques_10000.edge --edge-format binary --backend optix --detail summary --partner cupy
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py --mode run --backend optix --output-mode summary --optix-graph-mode native --copies 128 --repeat 2 --warmup 1
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py --mode command_plan
 ```
 
@@ -80,6 +81,13 @@ construction to CuPy for binary edge-list inputs. This is the intended
 Python+partner+RTDL split: graph preprocessing remains outside the native RTDL
 engine, while the engine still sees generic rays, triangles, weights, and scalar
 summary primitives.
+
+For the synthetic app-summary route, prefer passing `--optix-graph-mode native`
+when you want the current native summary timing path. The default `auto` mode is
+conservative and may report the host-indexed fallback. Even with explicit
+`native`, the current app still reports `rt_core_accelerated=false` and
+`triangle_count_rt_core_claim_authorized=false`; use it as internal route
+evidence, not as a public RT-core triangle-count claim.
 
 Goal2593 paper-dataset evidence shows:
 

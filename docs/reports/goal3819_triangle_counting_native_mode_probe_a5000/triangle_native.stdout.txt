@@ -1,0 +1,64 @@
+{
+  "backend": "optix",
+  "benchmark_app": "triangle_counting",
+  "claim_boundary": {
+    "benchmark_app": true,
+    "bfs_in_benchmark": false,
+    "distributed_graph_claim": false,
+    "full_graph_database_claim": false,
+    "generic_ray_triangle_rt_core_subpath_authorized": true,
+    "native_engine_customization": false,
+    "paper_code_intake_complete": true,
+    "paper_reproduction": false,
+    "public_speedup_claim_authorized": false,
+    "rt_graph_1a2_generic_rt_mapping": true,
+    "rt_graph_2a1_generic_rt_mapping": true,
+    "rt_graph_id_ascending_adapter": true,
+    "rt_graph_preprocessing_oracle": true,
+    "triangle_count_rt_core_claim_authorized": false,
+    "visibility_edges_in_benchmark": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "contract": "triangle_count_only",
+  "copies": 128,
+  "excluded_operations": [
+    "bfs",
+    "visibility_edges"
+  ],
+  "mode": "run",
+  "output_mode": "summary",
+  "section": {
+    "app": "graph_triangle_count",
+    "backend": "optix",
+    "copies": 128,
+    "graph_edge_count": 768,
+    "graph_vertex_count": 512,
+    "native_continuation_active": true,
+    "native_continuation_backend": "native_graph_triangle_raw_summary",
+    "optix_graph_mode": "native",
+    "optix_performance": {
+      "class": "host_indexed_fallback",
+      "note": "OptiX triangle-count currently uses a host-indexed CSR probe correctness path; native graph-ray mode is available behind RTDL_OPTIX_GRAPH_MODE=native but is not an RTX graph acceleration claim until cloud-gated."
+    },
+    "output_mode": "summary",
+    "ray_tracing_accelerated": false,
+    "ray_tracing_note": "This backend is not currently classified as the graph triangle-count ray-tracing path.",
+    "row_count": 128,
+    "rows": [],
+    "rt_core_accelerated": false,
+    "run_phases": {
+      "input_construction_sec": 0.00046198442578315735,
+      "native_summary_postprocess_sec": 2.989545464515686e-07,
+      "query_and_materialize_sec": 0.9871935369446874,
+      "query_raw_view_sec": 0.9871935369446874,
+      "row_materialization_sec": 0.0
+    },
+    "seed_count": 384,
+    "summary": {
+      "touched_vertex_count": 384,
+      "triangle_count": 128
+    }
+  },
+  "touched_vertex_count": 384,
+  "triangle_count": 128
+}
