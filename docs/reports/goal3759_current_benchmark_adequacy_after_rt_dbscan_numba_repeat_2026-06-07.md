@@ -2,7 +2,7 @@
 
 Date: 2026-06-07
 
-Source of truth: `rtdl.v2_9.benchmark_adequacy_after_goal3760.v1`
+Source of truth: `rtdl.v2_9.benchmark_adequacy_after_goal3761.v1`
 
 ## Purpose
 
@@ -17,7 +17,7 @@ explicit.
 | Benchmark app | Current adequacy | Recommended path | Partner role | Next major direction |
 | --- | --- | --- | --- | --- |
 | `hausdorff_xhd` | adequate | RTDL/OptiX nearest-witness primitives plus grouped max continuation | Numba exact reference exists; promoted RT path is primitive-first | HIPRT nearest-witness and grouped-max parity |
-| `spatial_rayjoin` | strong | Mixed route with current native-PIP evidence: RTDL/OptiX resident scalar-count PIP where measured, RTDL/OptiX exact LSI count, RTDL/OptiX overlay active-count | CuPy is the dense CUDA-core baseline/opponent and appears in older cross-size packets; Goal3749 covers no-RawKernel topology reference | HIPRT segment-pair and shape-pair parity; larger native-PIP whole-RayJoin packet refresh |
+| `spatial_rayjoin` | strong | Mixed route with current native-PIP cross-size evidence: RTDL/OptiX resident scalar-count PIP, RTDL/OptiX exact LSI count, RTDL/OptiX overlay active-count | CuPy is the dense CUDA-core baseline/opponent; Goal3749 covers no-RawKernel topology reference | HIPRT segment-pair and shape-pair parity; non-dense baseline policy for larger sizes where dense all-CuPy OOMs |
 | `rt_dbscan` | strong | RTDL/OptiX fixed-radius threshold flags plus app-owned component continuation | Numba is now the measured high-performance no-RawKernel prepared-repeat reference | HIPRT fixed-radius grouped-stream parity |
 | `robot_collision` | strong | Prepared RTDL/OptiX any-hit flags or scalar device-count | no partner needed for the promoted prepared path | AMD functional row validation, then HIPRT prepared-buffer parity |
 | `contact_manifold` | adequate | Prepared bounded witness collection primitive | no partner needed on the accepted current path | HIPRT bounded-witness parity |

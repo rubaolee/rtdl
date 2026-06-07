@@ -19,13 +19,14 @@ CURRENT_REPORT = (
 
 class Goal3760SpatialRayjoinNativePipAdequacyCorrectionTest(unittest.TestCase):
     def test_matrix_records_native_pip_current_route_without_promoting_release_claims(self) -> None:
-        self.assertEqual(V2_9_BENCHMARK_ADEQUACY_VERSION, "rtdl.v2_9.benchmark_adequacy_after_goal3760.v1")
+        self.assertEqual(V2_9_BENCHMARK_ADEQUACY_VERSION, "rtdl.v2_9.benchmark_adequacy_after_goal3761.v1")
         validation = validate_v2_9_benchmark_adequacy()
         self.assertEqual(validation["status"], "accept")
         rows = {row["app"]: row for row in v2_9_benchmark_adequacy()}
         rayjoin = rows["spatial_rayjoin"]
         self.assertEqual(rayjoin["adequacy"], "strong")
         self.assertIn("Goal3713", rayjoin["evidence_refs"])
+        self.assertIn("Goal3761", rayjoin["evidence_refs"])
         self.assertIn("native-PIP", rayjoin["current_performance_reading"])
         self.assertIn("RTDL/OptiX resident", rayjoin["current_recommended_path"])
         self.assertIn("CuPy remains the dense CUDA-core baseline/opponent", rayjoin["current_partner_role"])

@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-V2_9_BENCHMARK_ADEQUACY_VERSION = "rtdl.v2_9.benchmark_adequacy_after_goal3760.v1"
+V2_9_BENCHMARK_ADEQUACY_VERSION = "rtdl.v2_9.benchmark_adequacy_after_goal3761.v1"
 V2_9_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 V2_9_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal3740 records internal benchmark-app adequacy after the Goal3737 "
@@ -129,10 +129,10 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
         app="spatial_rayjoin",
         promoted_reader_view="RayJoin-style spatial joins with PIP, LSI, and overlay active-count subcontracts",
         current_performance_reading=(
-            "strong but contract-specific: Goal3737 older safe-mixed public-CDB composite reaches "
-            "324.324x geomean versus all-CuPy across 1024/2048/4096, and Goal3713 shows the "
-            "current native-PIP packet replacing the CuPy PIP leg at 4096 with 268.798x composite "
-            "speedup versus all-CuPy; still not a RayJoin paper-reproduction or RTDL-beats-RayJoin claim"
+            "strong but contract-specific: Goal3761 clean current-main native-PIP cross-size "
+            "packet reaches 288.759x geomean and 118.931x minimum versus dense all-CuPy "
+            "across 512/1024/2048/4096, with 4096 at 779.090x and all counts matching; "
+            "still not a RayJoin paper-reproduction or RTDL-beats-RayJoin claim"
         ),
         adequacy="strong",
         current_recommended_path=(
@@ -142,9 +142,9 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
             "active-count executor for overlay active count"
         ),
         current_partner_role=(
-            "CuPy remains the dense CUDA-core baseline/opponent and appears in older cross-size "
-            "safe-mixed packets; the current Goal3713 native-PIP packet does not require CuPy for "
-            "the PIP scalar-count leg. Goal3749 covers no-RawKernel Numba topology continuation."
+            "CuPy remains the dense CUDA-core baseline/opponent; the current Goal3761 native-PIP "
+            "cross-size packet does not require CuPy for the PIP scalar-count leg. Goal3749 covers "
+            "no-RawKernel Numba topology continuation."
         ),
         needs_numba_reference=False,
         numba_reference_reason=(
@@ -154,9 +154,10 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
         amd_hiprt_readiness="needs HIPRT equivalents for segment-pair exact count and shape-pair active-count executor",
         next_generic_runtime_action=(
             "treat as covered for Numba-reference purposes; next major work is HIPRT segment-pair/"
-            "shape-pair parity and larger native-PIP whole-RayJoin app packet refresh"
+            "shape-pair parity, plus a non-dense baseline policy for larger RayJoin sizes where "
+            "the all-CuPy dense baseline OOMs"
         ),
-        evidence_refs=("Goal3688", "Goal3713", "Goal3733", "Goal3734", "Goal3737", "Goal3749"),
+        evidence_refs=("Goal3688", "Goal3713", "Goal3733", "Goal3734", "Goal3737", "Goal3749", "Goal3761"),
         pod_needed_next=False,
     ),
     V29BenchmarkAdequacyRow(
