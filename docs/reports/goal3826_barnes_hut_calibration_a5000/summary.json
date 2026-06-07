@@ -1,0 +1,81 @@
+{
+  "all_pass": false,
+  "commit": "b00286c5",
+  "rows": [
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+        "--mode",
+        "partner_exact_force",
+        "--partner",
+        "numba",
+        "--body-count",
+        "1152",
+        "--skip-validation",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "elapsed_sec": 90.32298685144633,
+      "json_ok": false,
+      "name": "barnes_hut_numba_1152",
+      "returncode": -9,
+      "status": "timeout",
+      "stderr_tail": "",
+      "stdout_tail": " {\n      \"body_id\": 585,\n      \"force_x\": 302.7556140363307,\n      \"force_y\": -54.34379170096794\n    },\n    {\n      \"body_id\": 586,\n      \"force_x\": 256.3225298950377,\n      \"force_y\": -66.17724662959176\n    },\n    {\n      \"body_id\": 587,\n      \"force_x\": 218.49675791314993,\n      \"force_y\": -14.087757372980215\n    },\n    {\n      \"body_id\": 588,\n      \"force_x\": 125.88924632204113,\n      \"force_y\": 47.38203111579355\n    },\n    {\n      \"body_id\": 589,\n      \"force_x\": 74.64643100686608,\n      \"force_y\": 32.41817202102377\n    },\n    {\n      \"body_id\": 590,\n      \"force_x\": 92.58876188271026,\n      \"force_y\": -5.092692949389143\n    },\n    {\n      \"body_id\": 591,\n      \"force_x\": 115.94903479699113,\n      \"force_y\": -19.854223539463394\n    },\n    {\n      \"body_id\": 592,\n      \"force_x\": 94.68143467607149,\n      \"force_y\": -40.133294894424026\n    },\n    {\n      \"body_id\": 593,\n      \"force_x\": 98.49393801271414,\n      \"force_y\": -38.77546639348532\n    },\n    {\n      \"body_id\": 594,\n      \"f",
+      "timeout_sec": 90
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+        "--mode",
+        "partner_exact_force",
+        "--partner",
+        "numba",
+        "--body-count",
+        "1280",
+        "--skip-validation",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "elapsed_sec": 120.35606870334595,
+      "json_ok": false,
+      "name": "barnes_hut_numba_1280",
+      "returncode": -9,
+      "status": "timeout",
+      "stderr_tail": "",
+      "stdout_tail": " \"force_x\": 277.37968254975294,\n      \"force_y\": 59.01997376909332\n    },\n    {\n      \"body_id\": 586,\n      \"force_x\": 232.36897050101825,\n      \"force_y\": 36.50615747698699\n    },\n    {\n      \"body_id\": 587,\n      \"force_x\": 210.89738962590633,\n      \"force_y\": 29.280403667673074\n    },\n    {\n      \"body_id\": 588,\n      \"force_x\": 91.76139452928035,\n      \"force_y\": -35.03868024338939\n    },\n    {\n      \"body_id\": 589,\n      \"force_x\": 52.13839267778658,\n      \"force_y\": -21.049032089938493\n    },\n    {\n      \"body_id\": 590,\n      \"force_x\": 69.43695613900914,\n      \"force_y\": 26.654216811514978\n    },\n    {\n      \"body_id\": 591,\n      \"force_x\": 108.18881034565042,\n      \"force_y\": 77.22282392854925\n    },\n    {\n      \"body_id\": 592,\n      \"force_x\": 78.91365756357833,\n      \"force_y\": 77.42405513069583\n    },\n    {\n      \"body_id\": 593,\n      \"force_x\": 75.86836110103783,\n      \"force_y\": 60.70216111801378\n    },\n    {\n      \"body_id\": 594,\n      \"force_x\": 14.63873875429784,\n      ",
+      "timeout_sec": 120
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+        "--mode",
+        "partner_exact_force",
+        "--partner",
+        "numba",
+        "--body-count",
+        "1536",
+        "--skip-validation",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "elapsed_sec": 150.37136730272323,
+      "json_ok": false,
+      "name": "barnes_hut_numba_1536",
+      "returncode": -9,
+      "status": "timeout",
+      "stderr_tail": "",
+      "stdout_tail": "51983713,\n      \"force_y\": 79.17586894487852\n    },\n    {\n      \"body_id\": 586,\n      \"force_x\": -151.5297859463687,\n      \"force_y\": 58.30082937300173\n    },\n    {\n      \"body_id\": 587,\n      \"force_x\": -142.98778662480115,\n      \"force_y\": 157.09707498003635\n    },\n    {\n      \"body_id\": 588,\n      \"force_x\": -283.2705756179457,\n      \"force_y\": 203.75162392613854\n    },\n    {\n      \"body_id\": 589,\n      \"force_x\": -164.33278321989997,\n      \"force_y\": 94.95121366937693\n    },\n    {\n      \"body_id\": 590,\n      \"force_x\": -209.48874231860376,\n      \"force_y\": 100.28569948947889\n    },\n    {\n      \"body_id\": 591,\n      \"force_x\": -218.28493512081022,\n      \"force_y\": 85.80136507695096\n    },\n    {\n      \"body_id\": 592,\n      \"force_x\": -297.5943971624289,\n      \"force_y\": 44.19435385832021\n    },\n    {\n      \"body_id\": 593,\n      \"force_x\": -343.9504881548403,\n      \"force_y\": 86.59623089396499\n    },\n    {\n      \"body_id\": 594,\n      \"force_x\": -457.31076623374474,\n      \"force_y\": 11",
+      "timeout_sec": 150
+    }
+  ]
+}
