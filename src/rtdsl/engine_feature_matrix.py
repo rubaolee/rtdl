@@ -143,6 +143,13 @@ _FEATURE_MATRIX: dict[str, dict[str, EngineFeatureSupport]] = {
         "hiprt": _support("fixed_radius_neighbors_3d", "hiprt", NATIVE, "HIPRT bounded 3D neighbor traversal."),
         "apple_rt": _support("fixed_radius_neighbors_3d", "apple_rt", NATIVE_ASSISTED, "Apple bounded 3D neighbor path is native-assisted where available."),
     },
+    "fixed_radius_threshold_reached_count_3d": {
+        "embree": _support("fixed_radius_threshold_reached_count_3d", "embree", COMPATIBILITY_FALLBACK, "Counts threshold-reaching queries from emitted fixed-radius rows."),
+        "optix": _support("fixed_radius_threshold_reached_count_3d", "optix", NATIVE, "Prepared fixed-radius scalar threshold-reached count path."),
+        "vulkan": _support("fixed_radius_threshold_reached_count_3d", "vulkan", COMPATIBILITY_FALLBACK, "Counts threshold-reaching queries from emitted fixed-radius rows."),
+        "hiprt": _support("fixed_radius_threshold_reached_count_3d", "hiprt", NATIVE, "Goal3768 prepared fixed-radius scalar threshold-reached count path."),
+        "apple_rt": _support("fixed_radius_threshold_reached_count_3d", "apple_rt", COMPATIBILITY_FALLBACK, "Counts threshold-reaching queries from emitted fixed-radius rows."),
+    },
     "knn_rows_2d": {
         "embree": _support("knn_rows_2d", "embree", NATIVE, "Embree bounded nearest-neighbor rows."),
         "optix": _support("knn_rows_2d", "optix", NATIVE, "OptiX bounded nearest-neighbor rows."),

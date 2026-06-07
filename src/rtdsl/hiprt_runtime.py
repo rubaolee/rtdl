@@ -530,6 +530,17 @@ def _hiprt_lib() -> ctypes.CDLL:
         ctypes.c_size_t,
     ]
     lib.rtdl_hiprt_run_prepared_fixed_radius_neighbors_3d.restype = ctypes.c_int
+    if hasattr(lib, "rtdl_hiprt_count_prepared_fixed_radius_threshold_reached_3d"):
+        lib.rtdl_hiprt_count_prepared_fixed_radius_threshold_reached_3d.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint3D),
+            ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        lib.rtdl_hiprt_count_prepared_fixed_radius_threshold_reached_3d.restype = ctypes.c_int
     lib.rtdl_hiprt_destroy_prepared_fixed_radius_neighbors_3d.argtypes = [ctypes.c_void_p]
     lib.rtdl_hiprt_destroy_prepared_fixed_radius_neighbors_3d.restype = None
     lib.rtdl_hiprt_run_fixed_radius_neighbors_2d.argtypes = [
@@ -2716,6 +2727,51 @@ class PreparedHiprtFixedRadiusNeighbors3D:
             )
         finally:
             _hiprt_lib().rtdl_hiprt_free_rows(rows_ptr)
+
+    def count_threshold_reached(
+        self,
+        query_points: tuple[_CanonicalPoint3D, ...],
+        *,
+        threshold: int,
+        radius: float | None = None,
+    ) -> int:
+        query_records = tuple(query_points)
+        if any(not isinstance(point, _CanonicalPoint3D) for point in query_records):
+            raise TypeError("Prepared HIPRT fixed_radius threshold count currently supports only Point3D query inputs")
+        if threshold <= 0:
+            raise ValueError("Prepared HIPRT fixed_radius threshold must be positive")
+        if threshold > 0xFFFFFFFF:
+            raise ValueError("Prepared HIPRT fixed_radius threshold must fit uint32")
+        if self._empty or not query_records:
+            return 0
+        if not self._handle:
+            raise RuntimeError("prepared HIPRT fixed_radius_neighbors_3d handle is closed")
+        symbol = getattr(_hiprt_lib(), "rtdl_hiprt_count_prepared_fixed_radius_threshold_reached_3d", None)
+        if symbol is None:
+            raise RuntimeError(
+                "Loaded HIPRT backend library does not export "
+                "rtdl_hiprt_count_prepared_fixed_radius_threshold_reached_3d. "
+                "Rebuild it with 'make build-hiprt' from current main."
+            )
+        query_array = _encode_point3d_array(query_records)
+        count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            self._handle,
+            query_array,
+            len(query_records),
+            int(threshold),
+            ctypes.byref(count),
+            error,
+            ctypes.sizeof(error),
+        )
+        if status != 0:
+            detail = error.value.decode("utf-8", errors="replace")
+            raise RuntimeError(
+                "rtdl_hiprt_count_prepared_fixed_radius_threshold_reached_3d "
+                f"failed with status {status}: {detail}"
+            )
+        return int(count.value)
 
 
 def prepare_hiprt_fixed_radius_neighbors_3d(
