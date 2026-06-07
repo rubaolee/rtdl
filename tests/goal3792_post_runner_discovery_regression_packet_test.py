@@ -1,0 +1,58 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+import unittest
+
+
+ROOT = Path(__file__).resolve().parents[1]
+REPORT = ROOT / "docs" / "reports" / "goal3792_post_runner_discovery_regression_packet_2026-06-07.md"
+ARTIFACT = ROOT / "docs" / "reports" / "goal3792_post_runner_discovery_regression_a5000.json"
+
+
+class Goal3792PostRunnerDiscoveryRegressionPacketTest(unittest.TestCase):
+    def test_artifact_records_clean_current_pod_regression(self) -> None:
+        artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+        self.assertEqual(artifact["goal"], "Goal3792")
+        self.assertEqual(artifact["git_commit"], "1078ae31e2518d61407a8cec8a3526b2db390a8e")
+        self.assertIn("NVIDIA RTX A5000", artifact["gpu"])
+        self.assertIn("not AMD hardware evidence", artifact["backend_route"])
+        self.assertTrue(artifact["focused_tests_passed"])
+        self.assertEqual(artifact["focused_test_module_count"], 34)
+        self.assertIn("tests.goal3788_hausdorff_generic_alias_and_metadata_audit_test", artifact["focused_test_modules"])
+        self.assertIn("tests.goal3790_amd_hiprt_runner_prefix_discovery_test", artifact["focused_test_modules"])
+        self.assertIn("Ran 185 tests", artifact["test_output_tail"])
+        self.assertIn("OK", artifact["test_output_tail"])
+        self.assertFalse(artifact["scoped_source_dirty"])
+        self.assertEqual(artifact["scoped_source_dirty_detail"], "")
+
+    def test_artifact_records_parity_and_adequacy_state(self) -> None:
+        artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+        self.assertEqual(artifact["parity_validation"]["status"], "accept")
+        self.assertEqual(artifact["parity_validation"]["errors"], [])
+        self.assertEqual(artifact["parity_summary"]["stage_counts"]["ready_for_amd_functional_pod"], 10)
+        self.assertEqual(artifact["parity_summary"]["stage_counts"]["needs_generic_hiprt_extension"], 0)
+        self.assertEqual(artifact["parity_summary"]["stage_counts"]["compatibility_only_not_amd_perf_ready"], 0)
+        self.assertEqual(artifact["adequacy_version"], "rtdl.v2_10.benchmark_adequacy_after_goal3785.v1")
+        self.assertEqual(artifact["adequacy_validation"]["status"], "accept")
+        self.assertEqual(artifact["adequacy_validation"]["errors"], [])
+        self.assertEqual(artifact["adequacy_summary"]["numba_reference_needed_apps"], [])
+        self.assertEqual(artifact["adequacy_summary"]["adequacy_counts"]["strong"], 3)
+        self.assertEqual(artifact["adequacy_summary"]["adequacy_counts"]["adequate"], 7)
+        self.assertEqual(artifact["adequacy_summary"]["adequacy_counts"]["needs_major_followup"], 0)
+
+    def test_claim_boundary_and_report_are_non_authorizing(self) -> None:
+        artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+        for key, value in artifact["claim_boundary"].items():
+            self.assertFalse(value, key)
+        report = REPORT.read_text(encoding="utf-8")
+        self.assertIn("Goal3792", report)
+        self.assertIn("Ran 185 tests", report)
+        self.assertIn("not AMD hardware evidence", report)
+        self.assertIn("does not authorize", report)
+        self.assertIn("Goal3785 runner", report)
+        self.assertIn("Goal3790 HIPRT-prefix discovery test", report)
+
+
+if __name__ == "__main__":
+    unittest.main()
