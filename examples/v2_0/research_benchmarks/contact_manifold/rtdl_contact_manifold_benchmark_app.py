@@ -735,6 +735,28 @@ def describe_v2_4_bounded_witness_session(
     }
 
 
+def describe_bounded_witness_session(
+    *,
+    backend: str,
+    candidate_row_count: int,
+    witness_capacity: int,
+    row_width: int = ROW_WIDTH,
+) -> dict[str, Any]:
+    """Current app-facing alias for the generic bounded witness descriptor."""
+
+    session = describe_v2_4_bounded_witness_session(
+        backend=backend,
+        candidate_row_count=candidate_row_count,
+        witness_capacity=witness_capacity,
+        row_width=row_width,
+    )
+    return {
+        **session,
+        "current_helper": "describe_bounded_witness_session",
+        "legacy_helper_alias": "describe_v2_4_bounded_witness_session",
+    }
+
+
 def _default_library_path(backend: str) -> Path | None:
     normalized = backend.strip().lower()
     env_vars = {

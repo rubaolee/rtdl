@@ -10,6 +10,7 @@ This file catches design ideas that should not interrupt the current release or 
 - Goal3800 started this migration for the two active benchmark compact-mask examples: RayJoin and triangle counting now expose current `primitive_first_plan` and `segmented_compact_mask_numba_plan` aliases while preserving the legacy `v2_5_plan` and `v2_6_numba_compact_mask_plan` routes as compatibility shims. Continue this pattern only where the old versioned name is app-facing; keep historical protocol constants stable.
 - Goal3802 applied the same pattern to RayDB's app-facing helper layer: current aliases now exist for the primitive-first plan, Numba grouped-reduction continuation, and grouped-reduction typed-stream continuation. Internal protocol constants, artifact keys, and implementation helpers still keep their historical labels.
 - Goal3804 added current aliases for the Barnes-Hut grouped-vector typed-stream and RTNN ranked-summary typed-stream benchmark helpers. The legacy v2.8 descriptor and runner names remain available for historical reports and tests.
+- Goal3808 cleaned the two remaining low-risk app-facing candidates from Goal3806: Contact Manifold now exposes `describe_bounded_witness_session`, and LibRTS now exposes `primitive_first_plan_payload` plus `--mode primitive_first_plan`. The RayJoin topology-reference helper remains intentionally versioned because it marks a bounded future/reference lane, not a promoted public route.
 
 ## Generic Closed-Shape Boundary Selection
 

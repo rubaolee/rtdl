@@ -685,12 +685,23 @@ def v2_5_plan_payload() -> dict[str, object]:
     }
 
 
+def primitive_first_plan_payload() -> dict[str, object]:
+    payload = v2_5_plan_payload()
+    return {
+        **payload,
+        "mode": "primitive_first_plan",
+        "current_helper": "primitive_first_plan_payload",
+        "legacy_helper_alias": "v2_5_plan_payload",
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="LibRTS-style RTDL spatial-index benchmark harness.")
     parser.add_argument(
         "--mode",
         choices=(
             "scope",
+            "primitive_first_plan",
             "cpu_reference",
             "cpu_reference_wkt",
             "partner_grid_reference",
@@ -727,6 +738,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.mode == "scope":
         payload = run_scope()
+    elif args.mode == "primitive_first_plan":
+        payload = primitive_first_plan_payload()
     elif args.mode == "cpu_reference_wkt":
         if args.boxes_wkt is None:
             raise ValueError("--boxes-wkt is required for cpu_reference_wkt")
