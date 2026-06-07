@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import pathlib
 import unittest
+import json
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+REPORT = ROOT / "docs/reports/goal3686_resident_native_scalar_count_executor_2026-06-07.md"
+ARTIFACT = ROOT / "docs/reports/goal3686_resident_native_scalar_count_executor_a5000/summary.json"
 
 
 class Goal3686ResidentNativeScalarCountExecutorTest(unittest.TestCase):
@@ -51,6 +54,24 @@ class Goal3686ResidentNativeScalarCountExecutorTest(unittest.TestCase):
         self.assertIn("prepare_resident_native_executor_sec", script)
         self.assertIn('"public_speedup_claim_authorized": False', script)
         self.assertIn('"true_zero_copy_claim_authorized": False', script)
+
+    def test_report_and_artifact_record_resident_native_executor_evidence(self) -> None:
+        report = REPORT.read_text(encoding="utf-8")
+        artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+        self.assertIn("resident native relation-status corrected exact scalar count", report)
+        self.assertIn("does not authorize", report)
+        self.assertFalse(artifact["goal3677_scoped_source_dirty"])
+        self.assertEqual(artifact["source_commit_short"], "e7f7ca88")
+        self.assertTrue(artifact["correctness"]["resident_native_all_match_exact_count"])
+        self.assertEqual(artifact["correctness"]["resident_native_corrected_count"], 47262)
+        resident_native = artifact["timings"]["resident_native_relation_status_corrected_exact_scalar_count"]
+        resident_numba = artifact["timings"]["resident_relation_status_corrected_exact_numba_count"]
+        self.assertEqual(resident_native["stability_value"], 47262)
+        self.assertLess(resident_native["hot_median_sec"], resident_numba["hot_median_sec"])
+        self.assertTrue(resident_native["runs"][-1]["reusable_native_executor_used"])
+        self.assertFalse(resident_native["runs"][-1]["boundary_candidate_row_stream_materialized"])
+        for value in artifact["claim_boundary"].values():
+            self.assertFalse(value)
 
 
 if __name__ == "__main__":
