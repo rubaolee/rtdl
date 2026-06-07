@@ -79,3 +79,21 @@ Pod validation:
    recording source commit, scoped dirty status, sample parity, overflow
    fail-closed behavior, and claim-boundary flags.
 
+## Pod Evidence
+
+Clean NVIDIA CUDA/Orochi HIPRT validation was run on an RTX A5000 pod:
+
+- source commit: `bd8faa2d31a567e178082a918017d0477375e9e2`;
+- clean checkout directory: `/root/rtdl_goal3776_clean_1780849427`;
+- HIPRT SDK: `/root/vendor/hiprt-official/hiprtSdk-2.2.0e68f54`;
+- GPU: `NVIDIA RTX A5000`, driver `580.126.09`;
+- before-artifact focused gate: 39 tests passed, 1 skipped;
+- after-artifact focused gate: 26 tests passed;
+- artifact: `docs/reports/goal3776_hiprt_collect_k_bounded_i64_a5000.json`.
+
+The artifact records `scoped_source_dirty=false`, sample rows matching the
+Python reference, fail-closed overflow behavior, and
+`contact_manifold_missing_generic_contracts=[]`.
+
+This remains NVIDIA CUDA/Orochi HIPRT functional evidence only. It is not AMD
+hardware evidence and not a performance claim.

@@ -1,0 +1,137 @@
+{
+  "backend_route": "NVIDIA CUDA/Orochi HIPRT functional evidence on RTX A5000; not AMD hardware evidence and not a speedup claim",
+  "claim_boundary": {
+    "amd_perf_claim_authorized": false,
+    "app_specific_native_engine_logic_allowed": false,
+    "broad_rt_core_claim_authorized": false,
+    "hiprt_release_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_wording_authorized": false,
+    "release_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "zero_copy_wording_authorized": false
+  },
+  "contact_manifold_missing_generic_contracts": [],
+  "contact_manifold_parity_stage": "ready_for_amd_functional_pod",
+  "contact_payload": {
+    "candidate_id_rows": [
+      [
+        0,
+        10,
+        0
+      ],
+      [
+        0,
+        11,
+        1
+      ],
+      [
+        2,
+        30,
+        2
+      ]
+    ],
+    "matches_cpu_reference": true,
+    "native_generic_symbol": "rtdl_hiprt_collect_k_bounded_i64",
+    "overflowed": false,
+    "valid_count": 3
+  },
+  "goal": "Goal3776",
+  "hiprt_library": "/root/rtdl_goal3776_clean_1780849427/build/librtdl_hiprt.so",
+  "sample": {
+    "hiprt_rows": [
+      [
+        0,
+        10,
+        1
+      ],
+      [
+        1,
+        11,
+        2
+      ],
+      [
+        2,
+        20,
+        3
+      ]
+    ],
+    "input_rows": [
+      [
+        2,
+        20,
+        3
+      ],
+      [
+        0,
+        10,
+        1
+      ],
+      [
+        0,
+        10,
+        1
+      ],
+      [
+        1,
+        11,
+        2
+      ]
+    ],
+    "overflow_error": "COLLECT_K_BOUNDED overflowed capacity 2; emitted 3; failure_mode=fail_closed_overflow; partial_result_returned=False",
+    "overflow_fail_closed": true,
+    "overflowed": false,
+    "reference_rows": [
+      [
+        0,
+        10,
+        1
+      ],
+      [
+        1,
+        11,
+        2
+      ],
+      [
+        2,
+        20,
+        3
+      ]
+    ],
+    "rows_match_reference": true,
+    "valid_count": 3
+  },
+  "scoped_source_dirty": false,
+  "scoped_source_status": "",
+  "source_commit": "bd8faa2d31a567e178082a918017d0477375e9e2",
+  "summary": {
+    "amd_perf_claim_authorized": false,
+    "app_count": 10,
+    "claim_boundary": "This AMD/HIPRT benchmark parity map is a planning gate. It does not authorize AMD performance claims, HIPRT release claims, public speedup wording, whole-app acceleration wording, or RTDL-beats-paper wording.",
+    "compatibility_only_not_amd_perf_ready_apps": [
+      "raydb_style",
+      "triangle_counting"
+    ],
+    "needs_generic_hiprt_extension_apps": [
+      "barnes_hut"
+    ],
+    "ready_for_amd_functional_pod_apps": [
+      "hausdorff_xhd",
+      "spatial_rayjoin",
+      "rt_dbscan",
+      "robot_collision",
+      "contact_manifold",
+      "librts_spatial_index",
+      "rtnn"
+    ],
+    "release_authorized": false,
+    "row_count": 10,
+    "stage_counts": {
+      "compatibility_only_not_amd_perf_ready": 2,
+      "needs_generic_hiprt_extension": 1,
+      "ready_for_amd_functional_pod": 7
+    },
+    "status": "planning_gate_not_amd_hardware_evidence",
+    "version": "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3776.v1"
+  }
+}
