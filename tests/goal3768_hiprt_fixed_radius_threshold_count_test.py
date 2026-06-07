@@ -1,5 +1,6 @@
 import pathlib
 import unittest
+import json
 
 import rtdsl as rt
 from rtdsl import hiprt_runtime
@@ -8,6 +9,8 @@ from rtdsl import hiprt_runtime
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 HIPRT_CORE = ROOT / "src" / "native" / "hiprt" / "rtdl_hiprt_core.cpp"
 HIPRT_API = ROOT / "src" / "native" / "hiprt" / "rtdl_hiprt_api.cpp"
+REPORT = ROOT / "docs" / "reports" / "goal3768_hiprt_fixed_radius_threshold_count_2026-06-07.md"
+ARTIFACT = ROOT / "docs" / "reports" / "goal3768_hiprt_fixed_radius_threshold_count_a5000.json"
 
 
 def _native_threshold_count_available() -> bool:
@@ -44,6 +47,19 @@ class Goal3768HiprtFixedRadiusThresholdCountPortableTest(unittest.TestCase):
         dbscan = rows["rt_dbscan"]
         self.assertIn("fixed_radius_threshold_reached_count_3d", dbscan["required_engine_features"])
         self.assertEqual(dbscan["missing_generic_contracts"], ("fixed_radius_grouped_stream_flags",))
+
+    def test_report_and_artifact_record_scalar_boundary(self) -> None:
+        report = REPORT.read_text(encoding="utf-8")
+        self.assertIn("Goal3768", report)
+        self.assertIn("not full RT-DBSCAN acceleration", report)
+        self.assertIn("fixed_radius_grouped_stream_flags", report)
+        artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+        self.assertEqual(artifact["source_commit"], "522d3e2a")
+        self.assertFalse(artifact["scoped_source_dirty"])
+        self.assertTrue(artifact["sample_matches_prepared_rows"])
+        self.assertEqual(artifact["rt_dbscan_missing_generic_contracts"], ["fixed_radius_grouped_stream_flags"])
+        for key, value in artifact["claim_boundary"].items():
+            self.assertFalse(value, key)
 
 
 @unittest.skipUnless(_native_threshold_count_available(), "HIPRT prepared fixed-radius threshold count unavailable")
