@@ -56,6 +56,7 @@ class Goal3677RelationStatusFilteredExactCountTest(unittest.TestCase):
         self.assertIn("does not authorize", report)
         self.assertTrue(artifact["correctness"]["all_match_exact_count"])
         self.assertEqual(artifact["correctness"]["corrected_count"], artifact["correctness"]["exact_count"])
+        self.assertFalse(artifact["goal3677_scoped_source_dirty"])
         self.assertEqual(artifact["timings"]["all_candidate_count_only"]["stability_value"], 47264)
         self.assertEqual(artifact["timings"]["relation_status_corrected_exact_numba_count"]["stability_value"], 47262)
         for value in artifact["claim_boundary"].values():

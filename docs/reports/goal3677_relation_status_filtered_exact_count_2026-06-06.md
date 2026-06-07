@@ -74,10 +74,10 @@ Hot timings:
 
 | Route | Median seconds | Stable count |
 | --- | ---: | ---: |
-| all relation candidates, count-only | `0.000455283` | `47264` |
-| boundary-status candidate columns | `0.000687113` | `47241` |
-| relation-status corrected exact Numba count | `0.002837746` | `47262` |
-| exact oracle once | `0.190835052` | `47262` |
+| all relation candidates, count-only | `0.000462027` | `47264` |
+| boundary-status candidate columns | `0.000712674` | `47241` |
+| relation-status corrected exact Numba count | `0.003199534` | `47262` |
+| exact oracle once | `0.224537700` | `47262` |
 
 Correctness:
 
@@ -95,7 +95,7 @@ Positive result:
 
 - The count-only relation-status path is correct and fast: `47264` candidates in about `0.00045s`.
 - The composed exact count is correct and avoids full candidate row materialization.
-- Compared with the Goal3675 one-shot Numba exact count path around `0.0215s`, this route is about `7.6x` faster on the same full-county dataset.
+- Compared with the Goal3675 one-shot Numba exact count path around `0.0215s`, this route is about `6.7x` faster on the same full-county dataset.
 
 Negative result:
 
