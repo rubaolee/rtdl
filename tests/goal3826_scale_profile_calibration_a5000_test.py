@@ -13,11 +13,12 @@ BARNES = ROOT / "docs" / "reports" / "goal3826_barnes_hut_calibration_a5000" / "
 
 
 class Goal3826ScaleProfileCalibrationA5000Test(unittest.TestCase):
-    def test_candidate_sweep_records_expected_passes_and_timeouts(self) -> None:
+    def test_candidate_sweep_records_raw_pipe_probe_outcomes(self) -> None:
         payload = json.loads(CANDIDATE.read_text(encoding="utf-8"))
         rows = {row["name"]: row for row in payload["rows"]}
         self.assertEqual(payload["commit"], "b00286c5")
         self.assertFalse(payload["all_pass"])
+        self.assertFalse(payload.get("stdout_to_file_probe", False))
         self.assertEqual(rows["rt_dbscan_numba_65536"]["status"], "timeout")
         self.assertEqual(rows["robot_collision_4096"]["status"], "timeout")
         self.assertEqual(rows["barnes_hut_numba_8192"]["status"], "timeout")
@@ -33,7 +34,7 @@ class Goal3826ScaleProfileCalibrationA5000Test(unittest.TestCase):
             self.assertEqual(rows[name]["status"], "pass", name)
             self.assertTrue(rows[name]["json_ok"], name)
 
-    def test_calibration_finds_rt_dbscan_and_robot_scale_candidates(self) -> None:
+    def test_calibration_keeps_only_rows_that_survived_raw_pipe_probe(self) -> None:
         payload = json.loads(CALIBRATION.read_text(encoding="utf-8"))
         rows = {row["name"]: row for row in payload["rows"]}
         self.assertEqual(rows["rt_dbscan_numba_8192"]["status"], "pass")
@@ -46,7 +47,7 @@ class Goal3826ScaleProfileCalibrationA5000Test(unittest.TestCase):
         self.assertEqual(rows["barnes_hut_numba_2048"]["status"], "timeout")
         self.assertEqual(rows["barnes_hut_numba_4096"]["status"], "timeout")
 
-    def test_barnes_hut_ladder_records_scalability_cliff(self) -> None:
+    def test_barnes_hut_ladder_is_raw_pipe_diagnosis_only(self) -> None:
         payload = json.loads(BARNES.read_text(encoding="utf-8"))
         rows = {row["name"]: row for row in payload["rows"]}
         self.assertFalse(payload["all_pass"])
@@ -57,13 +58,17 @@ class Goal3826ScaleProfileCalibrationA5000Test(unittest.TestCase):
         text = REPORT.read_text(encoding="utf-8")
         for phrase in (
             "Goal3826",
+            "superseded by Goal3827",
+            "Popen(..., stdout=PIPE)",
             "RT-DBSCAN: `8192` points is a good default scale profile",
             "Robot collision: `1024` poses",
-            "Barnes-Hut: the current no-RawKernel Numba exact-force path has a severe scaling cliff",
+            "Barnes-Hut: `8192` bodies is safe when stdout is redirected to a file",
+            "Use Goal3827's file-stdout harness",
             "Next Engineering Target",
             "does not authorize release action",
         ):
             self.assertIn(phrase, text)
+        self.assertNotIn("severe scaling cliff", text)
 
 
 if __name__ == "__main__":

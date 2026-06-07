@@ -2,16 +2,22 @@
 
 Date: 2026-06-07
 
-Status: evidence recorded; follow-up engineering required.
+Status: superseded by Goal3827 due probe-harness stdout backpressure.
 
 ## Purpose
 
 Goal3823 and Goal3825 prove the current ten benchmark front doors execute and
-keep their claim boundaries. Goal3826 asks a different question: which larger
+keep their claim boundaries. Goal3826 asked a different question: which larger
 profiles are reasonable candidates for future performance packets?
 
-This is not a release packet and not a public speedup claim. It is calibration
-for later scale-profile registries.
+Important correction: the Goal3826 probe harness used
+`Popen(..., stdout=PIPE)` and waited without draining stdout. Large JSON
+outputs can fill the pipe and block the child process. Goal3827 reruns the
+scale probe with stdout redirected to files and supersedes the timeout
+interpretation here.
+
+This is not a release packet and not a public speedup claim. Treat the raw
+Goal3826 artifacts as harness-diagnosis evidence only.
 
 ## Artifacts
 
@@ -21,17 +27,21 @@ for later scale-profile registries.
 
 All runs used the A5000 pod at commit `b00286c5`.
 
+Superseding corrected artifact:
+
+`docs/reports/goal3827_scale_profile_file_stdout_a5000/summary.json`
+
 ## First Candidate Sweep
 
 | Candidate | Status | Elapsed seconds | Reading |
 | --- | --- | ---: | --- |
 | `hausdorff_xhd_scale` | pass | 1.752 | safe but still too short for a long timing profile |
 | `spatial_rayjoin_pip_count_repeat` | pass | 1.752 | safe but still too short for a long timing profile |
-| `rt_dbscan_numba_65536` | timeout | 241.517 | too heavy for a bounded scale profile |
-| `robot_collision_4096` | timeout | 240.336 | too heavy for a bounded scale profile |
+| `rt_dbscan_numba_65536` | timeout | 241.517 | still times out under the corrected Goal3827 file-stdout probe |
+| `robot_collision_4096` | timeout | 240.336 | superseded by Goal3827; file-stdout probe passes in 73.591s |
 | `contact_manifold_grid64` | pass | 0.751 | safe but too short |
 | `raydb_style_count_262k` | pass | 2.252 | safe medium profile candidate |
-| `barnes_hut_numba_8192` | timeout | 300.350 | too heavy; exposes Barnes-Hut Numba scalability cliff |
+| `barnes_hut_numba_8192` | timeout | 300.350 | superseded by Goal3827; file-stdout probe passes in 2.002s |
 | `librts_spatial_index_32768` | pass | 2.003 | safe medium profile candidate |
 | `rtnn_prepared_optix_65536` | pass | 3.003 | safe medium profile candidate |
 | `triangle_counting_native_2048` | pass | 1.752 | safe but still short |
@@ -44,38 +54,41 @@ All runs used the A5000 pod at commit `b00286c5`.
 | `rt_dbscan_numba_16384` | pass | 23.262 | usable stress candidate |
 | `rt_dbscan_numba_32768` | pass | 88.544 | heavy stress candidate, not default |
 | `robot_collision_1024` | pass | 11.532 | good scale-profile candidate |
-| `robot_collision_2048` | timeout | 180.394 | too heavy for default scale profile |
-| `barnes_hut_numba_2048` | timeout | 180.316 | too heavy; confirms Barnes-Hut Numba cliff |
-| `barnes_hut_numba_4096` | timeout | 240.322 | too heavy |
+| `robot_collision_2048` | timeout | 180.394 | do not interpret; pipe backpressure made timeout rows unreliable |
+| `barnes_hut_numba_2048` | timeout | 180.316 | do not interpret; pipe backpressure made timeout rows unreliable |
+| `barnes_hut_numba_4096` | timeout | 240.322 | do not interpret; pipe backpressure made timeout rows unreliable |
 
 ## Barnes-Hut Ladder
 
 | Candidate | Status | Elapsed seconds | Reading |
 | --- | --- | ---: | --- |
-| `barnes_hut_numba_1152` | timeout | 90.323 | cliff appears immediately above the 1024 smoke row |
-| `barnes_hut_numba_1280` | timeout | 120.356 | still timed out |
-| `barnes_hut_numba_1536` | timeout | 150.371 | still timed out |
+| `barnes_hut_numba_1152` | timeout | 90.323 | do not interpret; later diagnosis identified stdout pipe backpressure |
+| `barnes_hut_numba_1280` | timeout | 120.356 | do not interpret; later diagnosis identified stdout pipe backpressure |
+| `barnes_hut_numba_1536` | timeout | 150.371 | do not interpret; later diagnosis identified stdout pipe backpressure |
 
 ## Interpretation
 
-Seven of the first ten larger candidates passed quickly, but the naive 65k
-RT-DBSCAN, 4096-pose robot, and 8192-body Barnes-Hut choices were too heavy.
-Calibration then found usable RT-DBSCAN and robot scale points:
+Goal3826 originally appeared to show three heavy failures. Goal3827 corrects
+that interpretation:
+
+- RT-DBSCAN 65k is a real heavy timeout in the corrected file-stdout harness.
+- Robot 4096 passes in the corrected file-stdout harness, but takes 73.591s.
+- Barnes-Hut 8192 passes in the corrected file-stdout harness in 2.002s and
+  writes about 893 KB of JSON; the earlier timeout was harness backpressure.
+
+The still-useful calibration points are:
 
 - RT-DBSCAN: `8192` points is a good default scale profile; `16384` is a
   heavier stress row; `32768` is too long for default smoke but useful for
   deep performance work.
 - Robot collision: `1024` poses with 128 obstacles is a good scale profile;
-  `2048` poses times out under the current command.
-- Barnes-Hut: the current no-RawKernel Numba exact-force path has a severe scaling cliff above 1024 bodies. This is now a P0 follow-up for the partner
-  reference lane, not a documentation problem.
+  Goal3827 shows `4096` poses is a heavy stress profile rather than a timeout.
+- Barnes-Hut: `8192` bodies is safe when stdout is redirected to a file.
 
 ## Next Engineering Target
 
-Do not promote a Barnes-Hut scale profile until the Numba exact-force path is
-fixed or replaced by a better generic partner continuation. The likely focus is
-the `pairwise_inverse_square_force_2d_partner_columns` Numba block-reduction
-path or the surrounding app materialization path.
+Use Goal3827's file-stdout harness for future scale-profile work. Do not use
+undrained stdout pipes for benchmark apps that can emit large JSON payloads.
 
 ## Boundary
 
