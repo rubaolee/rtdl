@@ -283,6 +283,17 @@ def v2_5_plan_payload() -> dict[str, Any]:
     }
 
 
+def primitive_first_plan_payload() -> dict[str, Any]:
+    """Current alias for the legacy v2.5 primitive-first planning payload."""
+
+    payload = v2_5_plan_payload()
+    return {
+        **payload,
+        "mode": "primitive_first_plan",
+        "legacy_mode_alias": "v2_5_plan",
+    }
+
+
 def describe_triangle_counting_v2_6_numba_compact_mask_continuation() -> dict[str, Any]:
     """Describe the triangle app's user-selected Numba compact-mask continuation.
 
@@ -326,6 +337,18 @@ def describe_triangle_counting_v2_6_numba_compact_mask_continuation() -> dict[st
     }
 
 
+def describe_triangle_counting_segmented_compact_mask_numba_continuation() -> dict[str, Any]:
+    """Current alias for the legacy v2.6 Numba compact-mask continuation."""
+
+    plan = describe_triangle_counting_v2_6_numba_compact_mask_continuation()
+    return {
+        **plan,
+        "mode": "segmented_compact_mask_numba_plan",
+        "legacy_mode_alias": "v2_6_numba_compact_mask_plan",
+        "legacy_helper_alias": "describe_triangle_counting_v2_6_numba_compact_mask_continuation",
+    }
+
+
 def v2_6_numba_compact_mask_plan_payload() -> dict[str, Any]:
     plan = describe_triangle_counting_v2_6_numba_compact_mask_continuation()
     return {
@@ -342,6 +365,24 @@ def v2_6_numba_compact_mask_plan_payload() -> dict[str, Any]:
             "numba_speedup_claim_authorized": False,
             "same_contract_perf_claim_authorized": False,
         },
+    }
+
+
+def segmented_compact_mask_numba_plan_payload() -> dict[str, Any]:
+    """Current alias for the legacy v2.6 Numba compact-mask plan payload."""
+
+    plan = describe_triangle_counting_segmented_compact_mask_numba_continuation()
+    return {
+        **v2_6_numba_compact_mask_plan_payload(),
+        "mode": "segmented_compact_mask_numba_plan",
+        "legacy_mode_alias": "v2_6_numba_compact_mask_plan",
+        "legacy_plan": plan,
+        "command_shape": (
+            "Use run_triangle_counting_segmented_compact_mask_numba_preview(...) "
+            "from Python with Numba CUDA device arrays for candidate_row_ids:int64 "
+            "and valid_triangle_mask:bool. The legacy v2.6 helper remains available "
+            "as a compatibility alias."
+        ),
     }
 
 
@@ -427,6 +468,24 @@ def run_triangle_counting_v2_6_numba_compact_mask_preview(
                 }
             },
         },
+    }
+
+
+def run_triangle_counting_segmented_compact_mask_numba_preview(
+    inputs: dict[str, Any],
+    *,
+    block_size: int = 256,
+) -> dict[str, Any]:
+    """Current alias for the legacy v2.6 compact-mask preview runner."""
+
+    payload = run_triangle_counting_v2_6_numba_compact_mask_preview(
+        inputs,
+        block_size=block_size,
+    )
+    return {
+        **payload,
+        "mode": "segmented_compact_mask_numba_preview",
+        "legacy_mode_alias": "v2_6_numba_compact_mask_preview",
     }
 
 
@@ -1563,10 +1622,14 @@ def run_app(
         )
     if mode == "command_plan":
         return command_plan_payload()
-    if mode == "v2_5_plan":
-        return v2_5_plan_payload()
-    if mode == "v2_6_numba_compact_mask_plan":
-        return v2_6_numba_compact_mask_plan_payload()
+    if mode in {"primitive_first_plan", "v2_5_plan"}:
+        return primitive_first_plan_payload() if mode == "primitive_first_plan" else v2_5_plan_payload()
+    if mode in {"segmented_compact_mask_numba_plan", "v2_6_numba_compact_mask_plan"}:
+        return (
+            segmented_compact_mask_numba_plan_payload()
+            if mode == "segmented_compact_mask_numba_plan"
+            else v2_6_numba_compact_mask_plan_payload()
+        )
     if mode == "rt_graph_contract":
         return rt_graph_contract_payload(
             fixture=fixture,
@@ -1617,7 +1680,9 @@ def main(argv: list[str] | None = None) -> int:
             "scope",
             "run",
             "command_plan",
+            "primitive_first_plan",
             "v2_5_plan",
+            "segmented_compact_mask_numba_plan",
             "v2_6_numba_compact_mask_plan",
             "rt_graph_contract",
             "rt_graph_rtdl_adapter",

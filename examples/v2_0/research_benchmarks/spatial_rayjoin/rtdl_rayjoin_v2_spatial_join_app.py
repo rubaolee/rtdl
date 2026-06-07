@@ -2715,6 +2715,17 @@ def v2_5_plan_payload() -> dict[str, object]:
     }
 
 
+def primitive_first_plan_payload() -> dict[str, object]:
+    """Current alias for the legacy v2.5 primitive-first planning payload."""
+
+    payload = v2_5_plan_payload()
+    return {
+        **payload,
+        "mode": "primitive_first_plan",
+        "legacy_mode_alias": "v2_5_plan",
+    }
+
+
 def describe_rayjoin_v2_6_numba_compact_mask_continuation(
     workload: str = "pip",
 ) -> dict[str, object]:
@@ -2756,6 +2767,20 @@ def describe_rayjoin_v2_6_numba_compact_mask_continuation(
     }
 
 
+def describe_rayjoin_segmented_compact_mask_numba_continuation(
+    workload: str = "pip",
+) -> dict[str, object]:
+    """Current alias for the legacy v2.6 Numba compact-mask continuation."""
+
+    plan = describe_rayjoin_v2_6_numba_compact_mask_continuation(workload)
+    return {
+        **plan,
+        "mode": "segmented_compact_mask_numba_plan",
+        "legacy_mode_alias": "v2_6_numba_compact_mask_plan",
+        "legacy_helper_alias": "describe_rayjoin_v2_6_numba_compact_mask_continuation",
+    }
+
+
 def v2_6_numba_compact_mask_plan_payload(workload: str = "pip") -> dict[str, object]:
     plan = describe_rayjoin_v2_6_numba_compact_mask_continuation(workload)
     return {
@@ -2777,6 +2802,24 @@ def v2_6_numba_compact_mask_plan_payload(workload: str = "pip") -> dict[str, obj
             "numba_speedup_claim_authorized": False,
             "v2_6_release_authorized": False,
         },
+    }
+
+
+def segmented_compact_mask_numba_plan_payload(workload: str = "pip") -> dict[str, object]:
+    """Current alias for the legacy v2.6 Numba compact-mask plan payload."""
+
+    plan = describe_rayjoin_segmented_compact_mask_numba_continuation(workload)
+    return {
+        **v2_6_numba_compact_mask_plan_payload(workload),
+        "mode": "segmented_compact_mask_numba_plan",
+        "legacy_mode_alias": "v2_6_numba_compact_mask_plan",
+        "legacy_plan": plan,
+        "command_shape": (
+            "Use run_rayjoin_segmented_compact_mask_numba_preview(...) from Python "
+            "with Numba CUDA device arrays for candidate_row_ids:int64 and "
+            "keep_mask:bool. The legacy v2.6 helper remains available as a "
+            "compatibility alias."
+        ),
     }
 
 
@@ -2863,6 +2906,26 @@ def run_rayjoin_v2_6_numba_compact_mask_preview(
                 }
             },
         },
+    }
+
+
+def run_rayjoin_segmented_compact_mask_numba_preview(
+    inputs: dict[str, object],
+    *,
+    workload: str = "pip",
+    block_size: int = 256,
+) -> dict[str, object]:
+    """Current alias for the legacy v2.6 compact-mask preview runner."""
+
+    payload = run_rayjoin_v2_6_numba_compact_mask_preview(
+        inputs,
+        workload=workload,
+        block_size=block_size,
+    )
+    return {
+        **payload,
+        "mode": "segmented_compact_mask_numba_preview",
+        "legacy_mode_alias": "v2_6_numba_compact_mask_preview",
     }
 
 
@@ -3085,6 +3148,8 @@ def main(argv: list[str] | None = None) -> int:
             "prepared_optix_compact_grouped_count",
             "prepared_optix_left_id_dense_count",
             "prepared_optix_shape_pair_active_count",
+            "primitive_first_plan",
+            "segmented_compact_mask_numba_plan",
             "v2_6_numba_compact_mask_plan",
             "v2_9_numba_side_aware_topology_reference",
         ),
@@ -3129,12 +3194,18 @@ def main(argv: list[str] | None = None) -> int:
     if args.workload == "all":
         if args.dataset is not None:
             raise ValueError("--dataset is only valid when --workload is not all")
-        if args.execution_route == "v2_6_numba_compact_mask_plan":
+        if args.execution_route == "primitive_first_plan":
+            payload = primitive_first_plan_payload()
+        elif args.execution_route in {"segmented_compact_mask_numba_plan", "v2_6_numba_compact_mask_plan"}:
             payload = {
                 "app": "rayjoin_v2_spatial_join",
                 "execution_route": args.execution_route,
                 "workloads": {
-                    workload: v2_6_numba_compact_mask_plan_payload(workload)
+                    workload: (
+                        segmented_compact_mask_numba_plan_payload(workload)
+                        if args.execution_route == "segmented_compact_mask_numba_plan"
+                        else v2_6_numba_compact_mask_plan_payload(workload)
+                    )
                     for workload in _WORKLOADS
                 },
             }
@@ -3209,8 +3280,14 @@ def main(argv: list[str] | None = None) -> int:
                 warmup=args.warmup,
             )
     else:
-        if args.execution_route == "v2_6_numba_compact_mask_plan":
-            payload = v2_6_numba_compact_mask_plan_payload(args.workload)
+        if args.execution_route == "primitive_first_plan":
+            payload = primitive_first_plan_payload()
+        elif args.execution_route in {"segmented_compact_mask_numba_plan", "v2_6_numba_compact_mask_plan"}:
+            payload = (
+                segmented_compact_mask_numba_plan_payload(args.workload)
+                if args.execution_route == "segmented_compact_mask_numba_plan"
+                else v2_6_numba_compact_mask_plan_payload(args.workload)
+            )
         elif args.execution_route == "v2_9_numba_side_aware_topology_reference":
             if args.workload != "overlay_seed":
                 raise ValueError("v2_9_numba_side_aware_topology_reference currently supports only overlay_seed")

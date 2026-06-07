@@ -7,6 +7,7 @@ This file catches design ideas that should not interrupt the current release or 
 - Audit and, where safe, alias or migrate compatibility helper names that still carry historical version labels in example Python code, such as selected `v2_5` Triton preview helpers and `v2_6` Numba compact-mask / neutral-handoff helpers.
 - Rationale: Goal3519 cleaned the active learner Markdown surface to v2.8, while Goal3520 confirmed that several Python source helpers retain older labels as compatibility/protocol names. They should not block the v2.8 internal closeout, but future user-facing APIs should prefer current generic names or explicit `legacy_` aliases.
 - Boundary: do not rename public or semi-public helper functions casually. Add aliases and migration tests first, preserve existing scripts, and keep historical protocol identifiers stable where artifacts or tests depend on them.
+- Goal3800 started this migration for the two active benchmark compact-mask examples: RayJoin and triangle counting now expose current `primitive_first_plan` and `segmented_compact_mask_numba_plan` aliases while preserving the legacy `v2_5_plan` and `v2_6_numba_compact_mask_plan` routes as compatibility shims. Continue this pattern only where the old versioned name is app-facing; keep historical protocol constants stable.
 
 ## Generic Closed-Shape Boundary Selection
 
