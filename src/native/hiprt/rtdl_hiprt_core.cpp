@@ -173,6 +173,50 @@ struct PreparedShapePairActiveCount2D {
     PreparedShapePairActiveCount2D& operator=(PreparedShapePairActiveCount2D&&) = delete;
 };
 
+struct PreparedAabbIndex2D {
+    HiprtRuntime runtime;
+    DeviceAllocation box_device;
+    DeviceAllocation aabb_device;
+    hiprtGeometry geometry{};
+    hiprtFuncTable func_table{};
+    oroFunction count_kernel{};
+    size_t box_count{0};
+    bool empty_scene{false};
+
+    explicit PreparedAabbIndex2D(bool empty_scene_in) : empty_scene(empty_scene_in) {}
+
+    PreparedAabbIndex2D(
+        HiprtRuntime&& runtime_in,
+        DeviceAllocation&& box_device_in,
+        DeviceAllocation&& aabb_device_in,
+        hiprtGeometry geometry_in,
+        hiprtFuncTable func_table_in,
+        size_t box_count_in)
+        : runtime(std::move(runtime_in)),
+          box_device(std::move(box_device_in)),
+          aabb_device(std::move(aabb_device_in)),
+          geometry(geometry_in),
+          func_table(func_table_in),
+          box_count(box_count_in),
+          empty_scene(false) {}
+
+    ~PreparedAabbIndex2D() {
+        if (func_table != nullptr) {
+            hiprtDestroyFuncTable(runtime.context, func_table);
+            func_table = nullptr;
+        }
+        if (geometry != nullptr) {
+            hiprtDestroyGeometry(runtime.context, geometry);
+            geometry = nullptr;
+        }
+    }
+
+    PreparedAabbIndex2D(const PreparedAabbIndex2D&) = delete;
+    PreparedAabbIndex2D& operator=(const PreparedAabbIndex2D&) = delete;
+    PreparedAabbIndex2D(PreparedAabbIndex2D&&) = delete;
+    PreparedAabbIndex2D& operator=(PreparedAabbIndex2D&&) = delete;
+};
+
 struct PreparedFixedRadiusNeighbors3D {
     HiprtRuntime runtime;
     DeviceAllocation search_device;
@@ -339,6 +383,39 @@ std::vector<RtdlHiprtPoint2DDevice> encode_points_2d(const RtdlPoint* points, si
     return values;
 }
 
+void validate_aabb2d_bounds(double min_x, double min_y, double max_x, double max_y) {
+    const double values[4] = {min_x, min_y, max_x, max_y};
+    for (double value : values) {
+        if (!std::isfinite(value)) {
+            throw std::runtime_error("AABB coordinates must be finite");
+        }
+    }
+    if (max_x < min_x || max_y < min_y) {
+        throw std::runtime_error("AABB max bounds must be greater than or equal to min bounds");
+    }
+}
+
+std::vector<RtdlHiprtAabb2DDevice> encode_aabbs_2d(const RtdlAabb2D* boxes, size_t box_count) {
+    std::vector<RtdlHiprtAabb2DDevice> values;
+    values.reserve(box_count);
+    for (size_t i = 0; i < box_count; ++i) {
+        validate_aabb2d_bounds(boxes[i].min_x, boxes[i].min_y, boxes[i].max_x, boxes[i].max_y);
+        RtdlHiprtAabb2DDevice packed{
+            boxes[i].id,
+            static_cast<float>(boxes[i].min_x),
+            static_cast<float>(boxes[i].min_y),
+            static_cast<float>(boxes[i].max_x),
+            static_cast<float>(boxes[i].max_y),
+        };
+        if (!std::isfinite(packed.min_x) || !std::isfinite(packed.min_y)
+                || !std::isfinite(packed.max_x) || !std::isfinite(packed.max_y)) {
+            throw std::runtime_error("AABB coordinates are outside float32 HIPRT execution range");
+        }
+        values.push_back(packed);
+    }
+    return values;
+}
+
 std::vector<RtdlHiprtTriangle2DDevice> encode_triangles_2d(const RtdlTriangle* triangles, size_t triangle_count) {
     std::vector<RtdlHiprtTriangle2DDevice> values;
     values.reserve(triangle_count);
@@ -424,6 +501,19 @@ std::vector<RtdlHiprtAabb> encode_point_2d_aabbs(const RtdlHiprtPoint2DDevice* p
         aabbs.push_back({
             {points[i].x - radius, points[i].y - radius, -z_pad, 0.0f},
             {points[i].x + radius, points[i].y + radius, z_pad, 0.0f},
+        });
+    }
+    return aabbs;
+}
+
+std::vector<RtdlHiprtAabb> encode_aabb_index_aabbs(const RtdlHiprtAabb2DDevice* boxes, size_t box_count) {
+    std::vector<RtdlHiprtAabb> aabbs;
+    aabbs.reserve(box_count);
+    constexpr float eps = 1.0e-4f;
+    for (size_t i = 0; i < box_count; ++i) {
+        aabbs.push_back({
+            {std::min(boxes[i].min_x, boxes[i].max_x) - eps, std::min(boxes[i].min_y, boxes[i].max_y) - eps, -eps, 0.0f},
+            {std::max(boxes[i].min_x, boxes[i].max_x) + eps, std::max(boxes[i].min_y, boxes[i].max_y) + eps, eps, 0.0f},
         });
     }
     return aabbs;
@@ -1281,6 +1371,209 @@ oroFunction ensure_fixed_radius_threshold_flags_kernel_3d(PreparedFixedRadiusNei
         1,
         1);
     return prepared.threshold_flags_kernel;
+}
+
+const char* aabb_index_count_kernel_source_2d() {
+    return R"KERNEL(
+#include <hiprt/hiprt_device.h>
+#include <hiprt/hiprt_vec.h>
+
+struct RtdlHiprtPoint2DDevice {
+    uint32_t id;
+    float x;
+    float y;
+};
+
+struct RtdlHiprtAabb2DDevice {
+    uint32_t id;
+    float min_x;
+    float min_y;
+    float max_x;
+    float max_y;
+};
+
+struct RtdlHiprtAabbIndexQueryPayload {
+    uint32_t operation;
+    uint32_t intersect_pass;
+    float point_x;
+    float point_y;
+    float min_x;
+    float min_y;
+    float max_x;
+    float max_y;
+};
+
+__device__ bool aabbContainsPoint2D(const RtdlHiprtAabb2DDevice& box, float x, float y) {
+    return box.min_x <= x && x <= box.max_x && box.min_y <= y && y <= box.max_y;
+}
+
+__device__ bool aabbContainsBox2D(const RtdlHiprtAabb2DDevice& outer, float min_x, float min_y, float max_x, float max_y) {
+    return outer.min_x <= min_x && outer.min_y <= min_y && outer.max_x >= max_x && outer.max_y >= max_y;
+}
+
+__device__ bool segmentIntersectsAabb2D(float ax, float ay, float bx, float by, const RtdlHiprtAabb2DDevice& box) {
+    const float eps = 1.0e-7f;
+    float tmin = 0.0f;
+    float tmax = 1.0f;
+    const float dx = bx - ax;
+    const float dy = by - ay;
+    if (fabsf(dx) < eps) {
+        if (ax < box.min_x || ax > box.max_x) return false;
+    } else {
+        const float inv = 1.0f / dx;
+        float t0 = (box.min_x - ax) * inv;
+        float t1 = (box.max_x - ax) * inv;
+        if (t0 > t1) {
+            const float tmp = t0;
+            t0 = t1;
+            t1 = tmp;
+        }
+        tmin = fmaxf(tmin, t0);
+        tmax = fminf(tmax, t1);
+        if (tmin > tmax) return false;
+    }
+    if (fabsf(dy) < eps) {
+        if (ay < box.min_y || ay > box.max_y) return false;
+    } else {
+        const float inv = 1.0f / dy;
+        float t0 = (box.min_y - ay) * inv;
+        float t1 = (box.max_y - ay) * inv;
+        if (t0 > t1) {
+            const float tmp = t0;
+            t0 = t1;
+            t1 = tmp;
+        }
+        tmin = fmaxf(tmin, t0);
+        tmax = fminf(tmax, t1);
+        if (tmin > tmax) return false;
+    }
+    return true;
+}
+
+__device__ bool intersectRtdlAabbIndex2D(const hiprtRay& ray, const void* data, void* payload, hiprtHit& hit) {
+    const RtdlHiprtAabb2DDevice* boxes = reinterpret_cast<const RtdlHiprtAabb2DDevice*>(data);
+    const RtdlHiprtAabb2DDevice target = boxes[hit.primID];
+    const RtdlHiprtAabbIndexQueryPayload* query =
+        reinterpret_cast<const RtdlHiprtAabbIndexQueryPayload*>(payload);
+    bool accept = false;
+    if (query->operation == 1u) {
+        accept = aabbContainsPoint2D(target, query->point_x, query->point_y);
+    } else if (query->operation == 2u) {
+        accept = aabbContainsBox2D(target, query->min_x, query->min_y, query->max_x, query->max_y);
+    } else if (query->operation == 3u) {
+        if (query->intersect_pass == 0u) {
+            accept = segmentIntersectsAabb2D(query->min_x, query->min_y, query->max_x, query->max_y, target);
+        } else {
+            const bool source_antidiagonal_hits_target =
+                segmentIntersectsAabb2D(query->max_x, query->min_y, query->min_x, query->max_y, target);
+            RtdlHiprtAabb2DDevice source;
+            source.id = 0u;
+            source.min_x = query->min_x;
+            source.min_y = query->min_y;
+            source.max_x = query->max_x;
+            source.max_y = query->max_y;
+            const bool target_diagonal_hits_source =
+                segmentIntersectsAabb2D(target.min_x, target.min_y, target.max_x, target.max_y, source);
+            accept = source_antidiagonal_hits_target && !target_diagonal_hits_source;
+        }
+    }
+    if (!accept) {
+        return false;
+    }
+    hit.t = 0.0f;
+    return true;
+}
+
+extern "C" __global__ void RtdlAabbIndexCount2DKernel(
+    hiprtGeometry geom,
+    const RtdlHiprtPoint2DDevice* point_queries,
+    const RtdlHiprtAabb2DDevice* box_queries,
+    uint32_t point_query_count,
+    uint32_t box_query_count,
+    uint32_t operation,
+    uint32_t intersect_pass,
+    unsigned long long* hit_count,
+    hiprtFuncTable table) {
+    const uint32_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    const uint32_t launch_count = operation == 1u ? point_query_count : box_query_count;
+    if (index >= launch_count) {
+        return;
+    }
+
+    RtdlHiprtAabbIndexQueryPayload payload;
+    payload.operation = operation;
+    payload.intersect_pass = intersect_pass;
+    payload.point_x = 0.0f;
+    payload.point_y = 0.0f;
+    payload.min_x = 0.0f;
+    payload.min_y = 0.0f;
+    payload.max_x = 0.0f;
+    payload.max_y = 0.0f;
+
+    hiprtRay ray;
+    ray.minT = 0.0f;
+    ray.maxT = 0.0f;
+    ray.origin = {0.0f, 0.0f, 0.0f};
+    ray.direction = {0.0f, 0.0f, 1.0f};
+
+    if (operation == 1u) {
+        const RtdlHiprtPoint2DDevice point = point_queries[index];
+        payload.point_x = point.x;
+        payload.point_y = point.y;
+        ray.origin = {point.x, point.y, 0.0f};
+        ray.direction = {0.0f, 0.0f, 1.0f};
+    } else {
+        const RtdlHiprtAabb2DDevice box = box_queries[index];
+        payload.min_x = box.min_x;
+        payload.min_y = box.min_y;
+        payload.max_x = box.max_x;
+        payload.max_y = box.max_y;
+        if (operation == 3u && intersect_pass == 0u) {
+            ray.origin = {box.min_x, box.min_y, 0.0f};
+            ray.direction = {box.max_x - box.min_x, box.max_y - box.min_y, 0.0f};
+            ray.maxT = 1.0f;
+        } else if (operation == 3u) {
+            ray.origin = {box.max_x, box.min_y, 0.0f};
+            ray.direction = {box.min_x - box.max_x, box.max_y - box.min_y, 0.0f};
+            ray.maxT = 1.0f;
+        } else {
+            const float center_x = 0.5f * (box.min_x + box.max_x);
+            const float center_y = 0.5f * (box.min_y + box.max_y);
+            ray.origin = {center_x, center_y, 0.0f};
+            ray.direction = {0.0f, 0.0f, 1.0f};
+        }
+    }
+
+    uint32_t local_count = 0u;
+    hiprtGeomCustomTraversalAnyHit traversal(geom, ray, hiprtTraversalHintDefault, &payload, table);
+    while (traversal.getCurrentState() != hiprtTraversalStateFinished) {
+        hiprtHit hit = traversal.getNextHit();
+        if (hit.hasHit()) {
+            ++local_count;
+        }
+    }
+    if (local_count != 0u) {
+        atomicAdd(hit_count, static_cast<unsigned long long>(local_count));
+    }
+}
+)KERNEL";
+}
+
+oroFunction ensure_aabb_index_count_kernel_2d(PreparedAabbIndex2D& prepared) {
+    if (prepared.count_kernel != nullptr) {
+        return prepared.count_kernel;
+    }
+    hiprtFuncNameSet func_name_set{};
+    func_name_set.intersectFuncName = "intersectRtdlAabbIndex2D";
+    prepared.count_kernel = build_trace_kernel_from_source(
+        prepared.runtime.context,
+        aabb_index_count_kernel_source_2d(),
+        "rtdl_hiprt_aabb_index_count_2d.cu",
+        "RtdlAabbIndexCount2DKernel",
+        &func_name_set,
+        1,
+        1);
+    return prepared.count_kernel;
 }
 
 void run_prepared_ray_hitcount_3d(
@@ -2228,6 +2521,240 @@ void count_prepared_segment_pair_intersection_2d(
     copy_device_to_host(total, count_device);
     if (total[0] > static_cast<unsigned long long>(std::numeric_limits<size_t>::max())) {
         throw std::runtime_error("HIPRT prepared segment_intersection count overflowed size_t");
+    }
+    *count_out = static_cast<size_t>(total[0]);
+}
+
+PreparedAabbIndex2D* prepare_aabb_index_2d_hiprt(
+    const RtdlAabb2D* boxes,
+    size_t box_count) {
+    if (box_count > std::numeric_limits<uint32_t>::max()) {
+        throw std::runtime_error("HIPRT prepared AABB index currently supports at most 2^32-1 boxes");
+    }
+    if (box_count > 0 && boxes == nullptr) {
+        throw std::runtime_error("AABB box pointer must not be null when box_count is nonzero");
+    }
+    if (box_count == 0) {
+        return new PreparedAabbIndex2D(true);
+    }
+
+    std::vector<RtdlHiprtAabb2DDevice> box_values = encode_aabbs_2d(boxes, box_count);
+    std::vector<RtdlHiprtAabb> aabb_values = encode_aabb_index_aabbs(box_values.data(), box_values.size());
+    HiprtRuntime runtime = create_runtime();
+    hiprtSetLogLevel(hiprtLogLevelError);
+
+    DeviceAllocation box_device(box_values.size() * sizeof(RtdlHiprtAabb2DDevice));
+    DeviceAllocation aabb_device(aabb_values.size() * sizeof(RtdlHiprtAabb));
+    copy_host_to_device(box_device, box_values);
+    copy_host_to_device(aabb_device, aabb_values);
+
+    hiprtGeometry geometry = build_aabb_geometry(runtime.context, aabb_device, aabb_values.size());
+    hiprtFuncTable func_table{};
+    try {
+        hiprtFuncDataSet func_data_set{};
+        func_data_set.intersectFuncData = box_device.get();
+        check_hiprt("hiprtCreateFuncTable", hiprtCreateFuncTable(runtime.context, 1, 1, func_table));
+        check_hiprt("hiprtSetFuncTable", hiprtSetFuncTable(runtime.context, func_table, 0, 0, func_data_set));
+        auto* prepared = new PreparedAabbIndex2D(
+            std::move(runtime),
+            std::move(box_device),
+            std::move(aabb_device),
+            geometry,
+            func_table,
+            box_count);
+        geometry = nullptr;
+        func_table = nullptr;
+        return prepared;
+    } catch (...) {
+        if (func_table != nullptr) {
+            hiprtDestroyFuncTable(runtime.context, func_table);
+        }
+        if (geometry != nullptr) {
+            hiprtDestroyGeometry(runtime.context, geometry);
+        }
+        throw;
+    }
+}
+
+uint32_t validate_aabb_index_operation_hiprt(uint32_t operation) {
+    if (operation == RTDL_AABB_INDEX_OP_POINT_CONTAINS
+            || operation == RTDL_AABB_INDEX_OP_RANGE_CONTAINS
+            || operation == RTDL_AABB_INDEX_OP_RANGE_INTERSECTS) {
+        return operation;
+    }
+    throw std::runtime_error("unsupported HIPRT AABB_INDEX_QUERY_2D operation");
+}
+
+void launch_aabb_index_count_pass_hiprt(
+    hiprtGeometry geometry,
+    hiprtFuncTable func_table,
+    oroFunction kernel,
+    const RtdlHiprtPoint2DDevice* point_queries,
+    size_t point_query_count,
+    const RtdlHiprtAabb2DDevice* box_queries,
+    size_t box_query_count,
+    uint32_t operation,
+    uint32_t intersect_pass,
+    DeviceAllocation& total_device) {
+    const size_t launch_count = operation == RTDL_AABB_INDEX_OP_POINT_CONTAINS ? point_query_count : box_query_count;
+    if (launch_count == 0) {
+        return;
+    }
+    if (launch_count > std::numeric_limits<uint32_t>::max()) {
+        throw std::runtime_error("HIPRT AABB index query count exceeds uint32 launch limit");
+    }
+
+    DeviceAllocation point_device(point_query_count * sizeof(RtdlHiprtPoint2DDevice));
+    DeviceAllocation box_device(box_query_count * sizeof(RtdlHiprtAabb2DDevice));
+    if (point_query_count != 0) {
+        std::vector<RtdlHiprtPoint2DDevice> point_values(point_queries, point_queries + point_query_count);
+        copy_host_to_device(point_device, point_values);
+    }
+    if (box_query_count != 0) {
+        std::vector<RtdlHiprtAabb2DDevice> box_values(box_queries, box_queries + box_query_count);
+        copy_host_to_device(box_device, box_values);
+    }
+
+    void* point_device_ptr = point_device.get();
+    void* box_device_ptr = box_device.get();
+    void* total_device_ptr = total_device.get();
+    uint32_t point_count_u32 = static_cast<uint32_t>(point_query_count);
+    uint32_t box_count_u32 = static_cast<uint32_t>(box_query_count);
+    uint32_t block_size = 128;
+    uint32_t grid_size = static_cast<uint32_t>((launch_count + block_size - 1) / block_size);
+    void* args[] = {
+        &geometry,
+        &point_device_ptr,
+        &box_device_ptr,
+        &point_count_u32,
+        &box_count_u32,
+        &operation,
+        &intersect_pass,
+        &total_device_ptr,
+        &func_table,
+    };
+    check_oro(
+        "oroModuleLaunchKernel",
+        oroModuleLaunchKernel(kernel, grid_size, 1, 1, block_size, 1, 1, 0, 0, args, nullptr));
+}
+
+void count_prepared_aabb_index_2d_hiprt(
+    PreparedAabbIndex2D& prepared,
+    const RtdlPoint* point_queries,
+    size_t point_query_count,
+    const RtdlAabb2D* box_queries,
+    size_t box_query_count,
+    uint32_t operation,
+    size_t* count_out) {
+    if (count_out == nullptr) {
+        throw std::runtime_error("count_out must not be null");
+    }
+    *count_out = 0;
+    operation = validate_aabb_index_operation_hiprt(operation);
+    if (prepared.empty_scene || prepared.box_count == 0) {
+        return;
+    }
+    if (point_query_count > std::numeric_limits<uint32_t>::max()
+            || box_query_count > std::numeric_limits<uint32_t>::max()) {
+        throw std::runtime_error("HIPRT AABB index query counts exceed uint32 launch limit");
+    }
+    if (point_query_count > 0 && point_queries == nullptr) {
+        throw std::runtime_error("point query pointer must not be null when point_query_count is nonzero");
+    }
+    if (box_query_count > 0 && box_queries == nullptr) {
+        throw std::runtime_error("box query pointer must not be null when box_query_count is nonzero");
+    }
+
+    std::vector<RtdlHiprtPoint2DDevice> point_values;
+    std::vector<RtdlHiprtAabb2DDevice> box_values;
+    if (operation == RTDL_AABB_INDEX_OP_POINT_CONTAINS) {
+        if (point_query_count == 0) {
+            return;
+        }
+        point_values = encode_points_2d(point_queries, point_query_count);
+    } else {
+        if (box_query_count == 0) {
+            return;
+        }
+        box_values = encode_aabbs_2d(box_queries, box_query_count);
+    }
+
+    std::vector<unsigned long long> total(1, 0ull);
+    DeviceAllocation total_device(sizeof(unsigned long long));
+    copy_host_to_device(total_device, total);
+    oroFunction kernel = ensure_aabb_index_count_kernel_2d(prepared);
+
+    if (operation == RTDL_AABB_INDEX_OP_RANGE_INTERSECTS) {
+        launch_aabb_index_count_pass_hiprt(
+            prepared.geometry,
+            prepared.func_table,
+            kernel,
+            nullptr,
+            0,
+            box_values.data(),
+            box_values.size(),
+            operation,
+            RTDL_AABB_INDEX_INTERSECT_FORWARD_PASS,
+            total_device);
+
+        std::vector<RtdlHiprtAabb> query_aabb_values = encode_aabb_index_aabbs(box_values.data(), box_values.size());
+        DeviceAllocation query_box_device(box_values.size() * sizeof(RtdlHiprtAabb2DDevice));
+        DeviceAllocation query_aabb_device(query_aabb_values.size() * sizeof(RtdlHiprtAabb));
+        copy_host_to_device(query_box_device, box_values);
+        copy_host_to_device(query_aabb_device, query_aabb_values);
+        hiprtGeometry query_geometry = build_aabb_geometry(prepared.runtime.context, query_aabb_device, query_aabb_values.size());
+        hiprtFuncTable query_func_table{};
+        try {
+            hiprtFuncDataSet func_data_set{};
+            func_data_set.intersectFuncData = query_box_device.get();
+            check_hiprt("hiprtCreateFuncTable", hiprtCreateFuncTable(prepared.runtime.context, 1, 1, query_func_table));
+            check_hiprt("hiprtSetFuncTable", hiprtSetFuncTable(prepared.runtime.context, query_func_table, 0, 0, func_data_set));
+            std::vector<RtdlHiprtAabb2DDevice> indexed_boxes(prepared.box_count);
+            copy_device_to_host(indexed_boxes, prepared.box_device);
+            launch_aabb_index_count_pass_hiprt(
+                query_geometry,
+                query_func_table,
+                kernel,
+                nullptr,
+                0,
+                indexed_boxes.data(),
+                indexed_boxes.size(),
+                operation,
+                RTDL_AABB_INDEX_INTERSECT_BACKWARD_PASS,
+                total_device);
+        } catch (...) {
+            if (query_func_table != nullptr) {
+                hiprtDestroyFuncTable(prepared.runtime.context, query_func_table);
+            }
+            if (query_geometry != nullptr) {
+                hiprtDestroyGeometry(prepared.runtime.context, query_geometry);
+            }
+            throw;
+        }
+        if (query_func_table != nullptr) {
+            hiprtDestroyFuncTable(prepared.runtime.context, query_func_table);
+        }
+        if (query_geometry != nullptr) {
+            hiprtDestroyGeometry(prepared.runtime.context, query_geometry);
+        }
+    } else {
+        launch_aabb_index_count_pass_hiprt(
+            prepared.geometry,
+            prepared.func_table,
+            kernel,
+            point_values.empty() ? nullptr : point_values.data(),
+            point_values.size(),
+            box_values.empty() ? nullptr : box_values.data(),
+            box_values.size(),
+            operation,
+            RTDL_AABB_INDEX_INTERSECT_FORWARD_PASS,
+            total_device);
+    }
+
+    check_oro("oroDeviceSynchronize", oroDeviceSynchronize());
+    copy_device_to_host(total, total_device);
+    if (total[0] > static_cast<unsigned long long>(std::numeric_limits<size_t>::max())) {
+        throw std::runtime_error("HIPRT prepared AABB index count overflowed size_t");
     }
     *count_out = static_cast<size_t>(total[0]);
 }

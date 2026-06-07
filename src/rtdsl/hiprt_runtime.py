@@ -104,6 +104,16 @@ _HIPRT_GOAL_BY_PREDICATE = {
     "grouped_sum": "Goal 551 DB expansion",
 }
 
+HIPRT_AABB_INDEX_POINT_CONTAINS = 1
+HIPRT_AABB_INDEX_RANGE_CONTAINS = 2
+HIPRT_AABB_INDEX_RANGE_INTERSECTS = 3
+HIPRT_AABB_INDEX_SUPPORTED_OPERATIONS = ("point_contains", "range_contains", "range_intersects")
+_HIPRT_AABB_INDEX_OPERATION_CODES = {
+    "point_contains": HIPRT_AABB_INDEX_POINT_CONTAINS,
+    "range_contains": HIPRT_AABB_INDEX_RANGE_CONTAINS,
+    "range_intersects": HIPRT_AABB_INDEX_RANGE_INTERSECTS,
+}
+
 
 class _RtdlTriangle3D(ctypes.Structure):
     _layout_ = "ms"
@@ -200,6 +210,16 @@ class _RtdlPoint(ctypes.Structure):
         ("id", ctypes.c_uint32),
         ("x", ctypes.c_double),
         ("y", ctypes.c_double),
+    ]
+
+
+class _RtdlAabb2D(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("min_x", ctypes.c_double),
+        ("min_y", ctypes.c_double),
+        ("max_x", ctypes.c_double),
+        ("max_y", ctypes.c_double),
     ]
 
 
@@ -406,6 +426,31 @@ def _hiprt_lib() -> ctypes.CDLL:
     if hasattr(lib, "rtdl_hiprt_destroy_prepared_segment_pair_intersection"):
         lib.rtdl_hiprt_destroy_prepared_segment_pair_intersection.argtypes = [ctypes.c_void_p]
         lib.rtdl_hiprt_destroy_prepared_segment_pair_intersection.restype = None
+    if hasattr(lib, "rtdl_hiprt_prepare_aabb_index_2d"):
+        lib.rtdl_hiprt_prepare_aabb_index_2d.argtypes = [
+            ctypes.POINTER(_RtdlAabb2D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        lib.rtdl_hiprt_prepare_aabb_index_2d.restype = ctypes.c_int
+    if hasattr(lib, "rtdl_hiprt_count_prepared_aabb_index_2d"):
+        lib.rtdl_hiprt_count_prepared_aabb_index_2d.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlAabb2D),
+            ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        lib.rtdl_hiprt_count_prepared_aabb_index_2d.restype = ctypes.c_int
+    if hasattr(lib, "rtdl_hiprt_destroy_prepared_aabb_index_2d"):
+        lib.rtdl_hiprt_destroy_prepared_aabb_index_2d.argtypes = [ctypes.c_void_p]
+        lib.rtdl_hiprt_destroy_prepared_aabb_index_2d.restype = None
     lib.rtdl_hiprt_run_point_primitive_anyhit_packet.argtypes = [
         ctypes.POINTER(_RtdlPoint),
         ctypes.c_size_t,
@@ -1019,6 +1064,153 @@ def prepare_hiprt_segment_pair_intersection_2d(
         detail = error.value.decode("utf-8", errors="replace")
         raise RuntimeError(f"rtdl_hiprt_prepare_segment_pair_intersection failed with status {status}: {detail}")
     return PreparedHiprtSegmentPairIntersection2D(handle, empty=not right_records)
+
+
+def _normalize_hiprt_point2d(point, index: int) -> _RtdlPoint:
+    point_id = getattr(point, "id", index)
+    try:
+        return _RtdlPoint(int(point_id), float(point.x), float(point.y))
+    except AttributeError:
+        try:
+            if len(point) >= 2:
+                return _RtdlPoint(int(point_id), float(point[0]), float(point[1]))
+        except TypeError:
+            pass
+    raise TypeError("HIPRT AABB_INDEX_QUERY_2D requires point-like inputs with x/y attributes or 2-tuples")
+
+
+def _normalize_hiprt_aabb2d(box, index: int) -> _RtdlAabb2D:
+    box_id = getattr(box, "id", index)
+    try:
+        min_x = float(box.min_x)
+        min_y = float(box.min_y)
+        max_x = float(box.max_x)
+        max_y = float(box.max_y)
+    except AttributeError:
+        try:
+            if len(box) >= 5:
+                box_id = int(box[0])
+                min_x = float(box[1])
+                min_y = float(box[2])
+                max_x = float(box[3])
+                max_y = float(box[4])
+            elif len(box) >= 4:
+                min_x = float(box[0])
+                min_y = float(box[1])
+                max_x = float(box[2])
+                max_y = float(box[3])
+            else:
+                raise TypeError
+        except TypeError as exc:
+            raise TypeError(
+                "HIPRT AABB_INDEX_QUERY_2D requires boxes with min_x/min_y/max_x/max_y or 4-tuples"
+            ) from exc
+    if max_x < min_x or max_y < min_y:
+        raise ValueError("AABB max bounds must be greater than or equal to min bounds")
+    return _RtdlAabb2D(int(box_id), min_x, min_y, max_x, max_y)
+
+
+class PreparedHiprtAabbIndex2D:
+    supported_operations = HIPRT_AABB_INDEX_SUPPORTED_OPERATIONS
+
+    def __init__(self, boxes) -> None:
+        box_records = tuple(_normalize_hiprt_aabb2d(box, index) for index, box in enumerate(boxes))
+        if not box_records:
+            raise ValueError("prepare_hiprt_aabb_index_2d requires at least one indexed box")
+        if not _hiprt_prepared_aabb_index_symbols_available():
+            raise RuntimeError("current HIPRT library does not export prepared 2D AABB index symbols")
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        self._box_count = len(box_records)
+        box_array = (_RtdlAabb2D * len(box_records))(*box_records)
+        error = ctypes.create_string_buffer(4096)
+        status = _hiprt_lib().rtdl_hiprt_prepare_aabb_index_2d(
+            box_array,
+            len(box_records),
+            ctypes.byref(self._handle),
+            error,
+            ctypes.sizeof(error),
+        )
+        if status != 0:
+            detail = error.value.decode("utf-8", errors="replace")
+            raise RuntimeError(f"rtdl_hiprt_prepare_aabb_index_2d failed with status {status}: {detail}")
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        handle = self._handle
+        self._handle = ctypes.c_void_p()
+        self._closed = True
+        if handle.value:
+            destroy = getattr(_hiprt_lib(), "rtdl_hiprt_destroy_prepared_aabb_index_2d", None)
+            if destroy is not None:
+                destroy(handle)
+
+    def __enter__(self) -> "PreparedHiprtAabbIndex2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+    def count(self, *, point_queries=(), box_queries=(), operation: str) -> int:
+        if self._closed:
+            raise RuntimeError("prepared HIPRT AABB index handle is closed")
+        normalized = operation.lower().replace("-", "_")
+        if normalized not in _HIPRT_AABB_INDEX_OPERATION_CODES:
+            raise ValueError(f"unsupported HIPRT AABB_INDEX_QUERY_2D operation: {operation}")
+        point_records = tuple(_normalize_hiprt_point2d(point, index) for index, point in enumerate(point_queries))
+        box_records = tuple(_normalize_hiprt_aabb2d(box, index) for index, box in enumerate(box_queries))
+        if normalized == "point_contains" and not point_records:
+            return 0
+        if normalized in {"range_contains", "range_intersects"} and not box_records:
+            return 0
+        point_array = (_RtdlPoint * len(point_records))(*point_records) if point_records else None
+        box_array = (_RtdlAabb2D * len(box_records))(*box_records) if box_records else None
+        count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        symbol = getattr(_hiprt_lib(), "rtdl_hiprt_count_prepared_aabb_index_2d", None)
+        if symbol is None:
+            raise RuntimeError(
+                "Loaded HIPRT backend library does not export rtdl_hiprt_count_prepared_aabb_index_2d. "
+                "Rebuild it with 'make build-hiprt' from current main."
+            )
+        status = symbol(
+            self._handle,
+            point_array,
+            len(point_records),
+            box_array,
+            len(box_records),
+            _HIPRT_AABB_INDEX_OPERATION_CODES[normalized],
+            ctypes.byref(count),
+            error,
+            ctypes.sizeof(error),
+        )
+        if status != 0:
+            detail = error.value.decode("utf-8", errors="replace")
+            raise RuntimeError(f"rtdl_hiprt_count_prepared_aabb_index_2d failed with status {status}: {detail}")
+        return int(count.value)
+
+
+def _hiprt_prepared_aabb_index_symbols_available() -> bool:
+    try:
+        lib = _hiprt_lib()
+    except Exception:
+        return False
+    return (
+        getattr(lib, "rtdl_hiprt_prepare_aabb_index_2d", None) is not None
+        and getattr(lib, "rtdl_hiprt_count_prepared_aabb_index_2d", None) is not None
+        and getattr(lib, "rtdl_hiprt_destroy_prepared_aabb_index_2d", None) is not None
+    )
+
+
+def prepare_hiprt_aabb_index_2d(boxes) -> PreparedHiprtAabbIndex2D:
+    return PreparedHiprtAabbIndex2D(boxes)
 
 
 def ray_triangle_hit_count_2d_hiprt(

@@ -10,7 +10,7 @@ from .engine_feature_matrix import engine_feature_support
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION = "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3769.v1"
+V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION = "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3770.v1"
 V2_10_AMD_HIPRT_BENCHMARK_PARITY_STATUS = "planning_gate_not_amd_hardware_evidence"
 
 PARITY_STAGES = (
@@ -190,11 +190,15 @@ V2_10_AMD_HIPRT_BENCHMARK_PARITY_ROWS: tuple[V210AmdHiprtBenchmarkParityRow, ...
     ),
     V210AmdHiprtBenchmarkParityRow(
         app="librts_spatial_index",
-        required_engine_features=("visibility_rows", "ray_triangle_any_hit_3d"),
-        missing_generic_contracts=("prepared_aabb_query",),
-        parity_stage="needs_generic_hiprt_extension",
-        first_amd_goal="HIPRT prepared AABB query parity",
-        rationale="The current app needs a prepared AABB/index contract rather than only generic ray-triangle any-hit rows.",
+        required_engine_features=("visibility_rows", "ray_triangle_any_hit_3d", "prepared_aabb_query_2d"),
+        missing_generic_contracts=(),
+        parity_stage="ready_for_amd_functional_pod",
+        first_amd_goal="LibRTS HIPRT prepared AABB query functional parity on AMD hardware",
+        rationale=(
+            "Goal3770 adds a generic HIPRT prepared AABB_INDEX_QUERY_2D count path for point_contains, "
+            "range_contains, and range_intersects on the NVIDIA CUDA/Orochi route. The lane is ready for "
+            "AMD functional pod validation, but has no AMD hardware or row-output evidence yet."
+        ),
         needs_amd_pod=True,
     ),
     V210AmdHiprtBenchmarkParityRow(

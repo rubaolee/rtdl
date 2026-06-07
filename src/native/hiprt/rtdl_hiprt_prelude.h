@@ -89,6 +89,14 @@ struct RtdlPoint {
     double y;
 };
 
+struct RtdlAabb2D {
+    uint32_t id;
+    double min_x;
+    double min_y;
+    double max_x;
+    double max_y;
+};
+
 struct RtdlPolygonRef {
     uint32_t id;
     uint32_t vertex_offset;
@@ -254,6 +262,14 @@ struct RtdlHiprtPoint2DDevice {
     float y;
 };
 
+struct RtdlHiprtAabb2DDevice {
+    uint32_t id;
+    float min_x;
+    float min_y;
+    float max_x;
+    float max_y;
+};
+
 struct RtdlHiprtPolygonRefDevice {
     uint32_t id;
     uint32_t vertex_offset;
@@ -297,6 +313,12 @@ struct RtdlHiprtAabb {
     hiprtFloat4 min;
     hiprtFloat4 max;
 };
+
+constexpr uint32_t RTDL_AABB_INDEX_OP_POINT_CONTAINS = 1u;
+constexpr uint32_t RTDL_AABB_INDEX_OP_RANGE_CONTAINS = 2u;
+constexpr uint32_t RTDL_AABB_INDEX_OP_RANGE_INTERSECTS = 3u;
+constexpr uint32_t RTDL_AABB_INDEX_INTERSECT_FORWARD_PASS = 0u;
+constexpr uint32_t RTDL_AABB_INDEX_INTERSECT_BACKWARD_PASS = 1u;
 
 constexpr uint32_t RTDL_DB_KIND_INT64 = 1u;
 constexpr uint32_t RTDL_DB_KIND_FLOAT64 = 2u;

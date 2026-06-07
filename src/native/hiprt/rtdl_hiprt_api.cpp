@@ -627,6 +627,50 @@ extern "C" int rtdl_hiprt_count_prepared_segment_pair_intersection(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_hiprt_prepare_aabb_index_2d(
+    const RtdlAabb2D* boxes,
+    size_t box_count,
+    void** prepared_out,
+    char* error_out,
+    size_t error_size) {
+    return handle_call([&]() {
+        if (prepared_out == nullptr) {
+            throw std::runtime_error("prepared_out must not be null");
+        }
+        *prepared_out = nullptr;
+        *prepared_out = prepare_aabb_index_2d_hiprt(boxes, box_count);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_hiprt_destroy_prepared_aabb_index_2d(void* prepared) {
+    delete reinterpret_cast<PreparedAabbIndex2D*>(prepared);
+}
+
+extern "C" int rtdl_hiprt_count_prepared_aabb_index_2d(
+    void* prepared,
+    const RtdlPoint* point_queries,
+    size_t point_query_count,
+    const RtdlAabb2D* box_queries,
+    size_t box_query_count,
+    uint32_t operation,
+    size_t* count_out,
+    char* error_out,
+    size_t error_size) {
+    return handle_call([&]() {
+        if (prepared == nullptr) {
+            throw std::runtime_error("prepared HIPRT AABB index handle must not be null");
+        }
+        count_prepared_aabb_index_2d_hiprt(
+            *reinterpret_cast<PreparedAabbIndex2D*>(prepared),
+            point_queries,
+            point_query_count,
+            box_queries,
+            box_query_count,
+            operation,
+            count_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_hiprt_run_ray_hitcount_2d(
     const RtdlRay2D* rays,
     size_t ray_count,

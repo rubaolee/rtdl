@@ -52,6 +52,13 @@ _FEATURE_MATRIX: dict[str, dict[str, EngineFeatureSupport]] = {
         "hiprt": _support("prepared_shape_pair_active_count_2d", "hiprt", NATIVE, "Goal3767 prepared right-shape payload plus scalar active-count query."),
         "apple_rt": _support("prepared_shape_pair_active_count_2d", "apple_rt", COMPATIBILITY_FALLBACK, "Counts emitted shape-pair relation rows; no prepared scalar active-count native export."),
     },
+    "prepared_aabb_query_2d": {
+        "embree": _support("prepared_aabb_query_2d", "embree", NATIVE_ASSISTED, "Generic AABB_INDEX_QUERY_2D count path lowered through columnar payload predicates."),
+        "optix": _support("prepared_aabb_query_2d", "optix", NATIVE, "Generic prepared AABB_INDEX_QUERY_2D counts and bounded row paths."),
+        "vulkan": _support("prepared_aabb_query_2d", "vulkan", COMPATIBILITY_FALLBACK, "AABB index queries require fallback/host grouping; no native prepared query contract."),
+        "hiprt": _support("prepared_aabb_query_2d", "hiprt", NATIVE, "Goal3770 prepared AABB_INDEX_QUERY_2D count path for point/range contains and range intersects."),
+        "apple_rt": _support("prepared_aabb_query_2d", "apple_rt", COMPATIBILITY_FALLBACK, "AABB index queries require fallback/host grouping; no native prepared query contract."),
+    },
     "point_in_polygon_2d": {
         "embree": _support("point_in_polygon_2d", "embree", NATIVE, "Embree ray-crossing traversal path."),
         "optix": _support("point_in_polygon_2d", "optix", NATIVE, "OptiX native PIP workload path."),

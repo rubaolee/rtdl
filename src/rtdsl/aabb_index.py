@@ -27,6 +27,7 @@ AABB_INDEX_2D_CONTRACT = {
             "generic_columnar_payload_conjunctive_scan_counts_and_range_intersection_pair_rows"
         ),
         "optix": "native_count_point_contains_range_contains_range_intersects_point_contains_rows_and_range_intersection_rows",
+        "hiprt": "native_count_point_contains_range_contains_range_intersects",
     },
     "app_boundary": "app-name-free primitive; LibRTS, spatial joins, and collision broadphases may lower to it",
 }
@@ -319,6 +320,69 @@ class OptixAabbIndex2D:
 
 
 @dataclass(frozen=True)
+class HiprtAabbIndex2D:
+    """Prepared HIPRT AABB index for supported native count queries."""
+
+    boxes: tuple[Aabb2D, ...]
+    prepared: Any
+    row_ids: tuple[int, ...]
+    backend: str = "hiprt"
+
+    def count(
+        self,
+        *,
+        point_queries: Iterable[Any] = (),
+        box_queries: Iterable[Any] = (),
+        operation: str = "all",
+    ) -> dict[str, Any]:
+        operations = _normalize_requested_operations(operation)
+        points = tuple(_normalize_point2d(point) for point in point_queries)
+        query_boxes = tuple(_normalize_aabb2d(box) for box in box_queries)
+
+        counts: dict[str, int] = {}
+        query_start = time.perf_counter()
+        for name in operations:
+            if name == "point_contains":
+                counts[name] = int(self.prepared.count(point_queries=points, operation=name))
+            elif name in {"range_contains", "range_intersects"}:
+                counts[name] = int(self.prepared.count(box_queries=query_boxes, operation=name))
+        query_sec = time.perf_counter() - query_start
+
+        return {
+            "primitive": AABB_INDEX_2D_CONTRACT["primitive"],
+            "contract": "generic_prepared_aabb_index_query_2d",
+            "backend": self.backend,
+            "prepared": True,
+            "operation": operation,
+            "counts": counts,
+            "candidate_checks": None,
+            "query_counts": {
+                "point_queries": len(points),
+                "box_queries": len(query_boxes),
+            },
+            "index": {
+                "indexed_boxes": len(self.boxes),
+                "native_index": "hiprt_custom_aabb_geometry",
+            },
+            "run_phases": {
+                "query_aabb_index_2d_sec": query_sec,
+            },
+            "rt_core_accelerated": True,
+            "native_engine_customization": False,
+            "claim_boundary": (
+                "Generic HIPRT AABB_INDEX_QUERY_2D count-only subpath for point_contains, "
+                "range_contains, and range_intersects. Evidence may be CUDA/Orochi HIPRT on NVIDIA "
+                "until separately validated on AMD hardware; not LibRTS-specific."
+            ),
+        }
+
+    def close(self) -> None:
+        close = getattr(self.prepared, "close", None)
+        if callable(close):
+            close()
+
+
+@dataclass(frozen=True)
 class EmbreeAabbIndex2D:
     """Prepared Embree AABB query path via the generic columnar predicate primitive."""
 
@@ -427,7 +491,7 @@ def prepare_aabb_index_2d(
     indexed_ids: Iterable[int] | None = None,
     resolution: int = 32,
     backend: str = "cpu",
-) -> AabbIndex2D | OptixAabbIndex2D | EmbreeAabbIndex2D:
+) -> AabbIndex2D | OptixAabbIndex2D | HiprtAabbIndex2D | EmbreeAabbIndex2D:
     """Prepare an app-name-free 2-D AABB index for point/box query predicates."""
 
     normalized_backend = _validate_backend(backend)
@@ -463,6 +527,26 @@ def prepare_aabb_index_2d(
         return OptixAabbIndex2D(
             boxes=box_tuple,
             prepared=prepare_optix_aabb_index_2d(identified_records),
+            row_ids=indexed_id_tuple,
+        )
+
+    if normalized_backend == "hiprt":
+        from .hiprt_runtime import prepare_hiprt_aabb_index_2d
+
+        _validate_u32_ids(indexed_id_tuple, label="indexed_ids")
+        identified_records = tuple(
+            _IdentifiedAabb2D(
+                int(indexed_id_tuple[index]),
+                box.min_x,
+                box.min_y,
+                box.max_x,
+                box.max_y,
+            )
+            for index, box in enumerate(box_tuple)
+        )
+        return HiprtAabbIndex2D(
+            boxes=box_tuple,
+            prepared=prepare_hiprt_aabb_index_2d(identified_records),
             row_ids=indexed_id_tuple,
         )
 
@@ -515,7 +599,7 @@ def query_aabb_index_2d(
     try:
         return prepared.count(point_queries=point_queries, box_queries=box_queries, operation=operation)
     finally:
-        if isinstance(prepared, (EmbreeAabbIndex2D, OptixAabbIndex2D)):
+        if isinstance(prepared, (EmbreeAabbIndex2D, OptixAabbIndex2D, HiprtAabbIndex2D)):
             prepared.close()
 
 
@@ -986,8 +1070,12 @@ def _validate_backend(backend: str) -> str:
         normalized = "cpu"
     if normalized in {"nvidia_rt", "cuda_optix"}:
         normalized = "optix"
-    if normalized not in {"cpu", "embree", "optix"}:
-        raise ValueError("generic AABB_INDEX_QUERY_2D supports backend='cpu', backend='embree', or backend='optix'")
+    if normalized in {"amd_hiprt", "hiprt_cuda_orochi"}:
+        normalized = "hiprt"
+    if normalized not in {"cpu", "embree", "optix", "hiprt"}:
+        raise ValueError(
+            "generic AABB_INDEX_QUERY_2D supports backend='cpu', backend='embree', backend='optix', or backend='hiprt'"
+        )
     return normalized
 
 

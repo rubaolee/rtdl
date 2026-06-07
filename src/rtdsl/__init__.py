@@ -1218,6 +1218,7 @@ from .hiprt_runtime import prepare_hiprt_ray_triangle_any_hit_2d
 from .hiprt_runtime import prepare_hiprt_ray_triangle_hit_count
 from .hiprt_runtime import prepare_hiprt_segment_pair_intersection_2d
 from .hiprt_runtime import prepare_hiprt_shape_pair_active_count_2d
+from .hiprt_runtime import prepare_hiprt_aabb_index_2d
 from .hiprt_runtime import prepare_hiprt_fixed_radius_neighbors_3d
 from .hiprt_runtime import prepare_hiprt_graph_csr
 from .hiprt_runtime import prepare_hiprt
@@ -1232,6 +1233,7 @@ from .hiprt_runtime import PreparedHiprtRayTriangleAnyHit2D
 from .hiprt_runtime import PreparedHiprtRayTriangleHitCount3D
 from .hiprt_runtime import PreparedHiprtSegmentPairIntersection2D
 from .hiprt_runtime import PreparedHiprtShapePairActiveCount2D
+from .hiprt_runtime import PreparedHiprtAabbIndex2D
 from .hiprt_runtime import ray_triangle_any_hit_hiprt
 from .hiprt_runtime import ray_triangle_hit_count_hiprt
 from .hiprt_runtime import run_hiprt
@@ -1481,6 +1483,7 @@ from .aabb_index import EXPANDED_AABB_POINT_MEMBERSHIP_2D_ROW_SCHEMA
 from .aabb_index import EXPANDED_AABB_POINT_MEMBERSHIP_METADATA_FLAGS_NONE
 from .aabb_index import ExpandedAabbPointMembershipOverflowError
 from .aabb_index import OptixAabbIndex2D
+from .aabb_index import HiprtAabbIndex2D
 from .aabb_index import aabb_intersection_pair_rows_2d
 from .aabb_index import expanded_aabb_point_membership_rows_2d
 from .aabb_index import prepare_aabb_index_2d
@@ -2290,6 +2293,7 @@ __all__ = [
     "prepare_hiprt_ray_triangle_hit_count",
     "prepare_hiprt_segment_pair_intersection_2d",
     "prepare_hiprt_shape_pair_active_count_2d",
+    "prepare_hiprt_aabb_index_2d",
     "PreparedHiprtDbKernel",
     "PreparedHiprtDbTable",
     "PreparedHiprtFixedRadiusKernel",
@@ -2299,6 +2303,7 @@ __all__ = [
     "PreparedHiprtKernel",
     "PreparedHiprtSegmentPairIntersection2D",
     "PreparedHiprtShapePairActiveCount2D",
+    "PreparedHiprtAabbIndex2D",
     "OutputRecord",
     "OverpassElementStats",
     "PaperTarget",
@@ -2340,6 +2345,7 @@ __all__ = [
     "EXPANDED_AABB_POINT_MEMBERSHIP_2D_ROW_SCHEMA",
     "EXPANDED_AABB_POINT_MEMBERSHIP_METADATA_FLAGS_NONE",
     "ExpandedAabbPointMembershipOverflowError",
+    "HiprtAabbIndex2D",
     "OptixAabbIndex2D",
     "aabb_intersection_pair_rows_2d",
     "expanded_aabb_point_membership_rows_2d",
