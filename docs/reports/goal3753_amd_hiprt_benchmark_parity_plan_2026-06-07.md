@@ -13,7 +13,8 @@ The machine-readable plan is in:
 
 It is backed by the existing engine feature matrix and adds the HIPRT lane
 entries needed by the parity sequence, including the current
-`collect_k_bounded_i64` materialization contract.
+`collect_k_bounded_i64` materialization contract and
+`aggregate_frontier_collect_2d` row-collection contract.
 
 ## Summary
 
@@ -38,6 +39,7 @@ contracts:
 - grouped vector force reductions,
 - prepared AABB query,
 - generic bounded witness row materialization,
+- aggregate-frontier row collection,
 - ranked-summary aggregate and batched prepared sweeps,
 - DB grouped count/sum fast paths,
 - graph summary fast paths.
@@ -45,13 +47,16 @@ contracts:
 Those are generic contracts. They should be added to HIPRT as generic
 primitive/runtime extensions, not app-specific native code.
 
-Goals3765-3776 have since moved `robot_collision`, `spatial_rayjoin`,
+Goals3765-3777 have since moved `robot_collision`, `spatial_rayjoin`,
 `rt_dbscan`, `librts_spatial_index`, `rtnn`, and `hausdorff_xhd` beyond their
 initial row-only or missing-contract routes on the NVIDIA CUDA/Orochi HIPRT
 path. Goal3775 also makes the matrix's `ray_triangle_closest_hit_3d` HIPRT
 entry executable. Goal3776 adds the generic HIPRT `COLLECT_K_BOUNDED` i64
 host-native materializer and advances `contact_manifold` to AMD functional-pod
-readiness. These are still not AMD performance evidence.
+readiness. Goal3777 adds the generic HIPRT `AGGREGATE_FRONTIER_COLLECT_2D`
+row collector and removes the Barnes-Hut hierarchical node-coverage summary
+gap, but leaves grouped vector-force reduction outside the native engine.
+These are still not AMD performance evidence.
 
 ## First AMD Work Order
 

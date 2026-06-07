@@ -34,7 +34,7 @@ class Goal3753AmdHiprtBenchmarkParityPlanTest(unittest.TestCase):
     def test_summary_is_honest_about_amd_extension_work(self) -> None:
         self.assertEqual(
             V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION,
-            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3776.v1",
+            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3777.v1",
         )
         summary = summarize_v2_10_amd_hiprt_benchmark_parity()
         self.assertEqual(summary["app_count"], 10)
@@ -118,6 +118,16 @@ class Goal3753AmdHiprtBenchmarkParityPlanTest(unittest.TestCase):
         self.assertEqual(contact["missing_generic_contracts"], ())
         self.assertEqual(contact["parity_stage"], "ready_for_amd_functional_pod")
         self.assertIn("Goal3776", contact["rationale"])
+
+    def test_barnes_hut_records_goal3777_aggregate_frontier_closure(self) -> None:
+        rows = {row["app"]: row for row in v2_10_amd_hiprt_benchmark_parity()}
+        barnes = rows["barnes_hut"]
+        self.assertIn("aggregate_frontier_collect_2d", barnes["required_engine_features"])
+        self.assertEqual(barnes["hiprt_feature_statuses"]["aggregate_frontier_collect_2d"], NATIVE)
+        self.assertNotIn("hierarchical_node_coverage_summary", barnes["missing_generic_contracts"])
+        self.assertEqual(barnes["missing_generic_contracts"], ("grouped_vector_force_reduction",))
+        self.assertEqual(barnes["parity_stage"], "needs_generic_hiprt_extension")
+        self.assertIn("Goal3777", barnes["rationale"])
 
     def test_each_row_keeps_claim_boundary_false(self) -> None:
         for row in v2_10_amd_hiprt_benchmark_parity():

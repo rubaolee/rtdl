@@ -7,6 +7,7 @@
 #include <limits>
 #include <map>
 #include <memory>
+#include <unordered_set>
 #include <unordered_map>
 #include <stdexcept>
 #include <string>
@@ -93,6 +94,23 @@ struct RtdlPoint {
     uint32_t id;
     double x;
     double y;
+};
+
+struct RtdlAggregateFrontierSource2D {
+    int64_t id;
+    double x;
+    double y;
+};
+
+struct RtdlAggregateFrontierNode2D {
+    int64_t id;
+    double cx;
+    double cy;
+    double half_size;
+    int32_t depth;
+    int64_t dfs_index;
+    int64_t resume_index;
+    uint8_t is_leaf;
 };
 
 struct RtdlAabb2D {

@@ -65,6 +65,248 @@ extern "C" int rtdl_hiprt_collect_k_bounded_i64(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_hiprt_collect_aggregate_frontier_2d(
+    const RtdlAggregateFrontierSource2D* sources,
+    size_t source_count,
+    const RtdlAggregateFrontierNode2D* nodes,
+    size_t node_count,
+    const uint64_t* child_offsets,
+    const int64_t* child_ids,
+    const uint64_t* member_offsets,
+    const int64_t* member_ids,
+    double theta,
+    uint64_t max_rows_per_source,
+    uint64_t row_capacity,
+    uint32_t deduplicate_fallback_targets,
+    int64_t* frontier_rows_out,
+    uint64_t* row_offsets_out,
+    uint64_t* emitted_count_out,
+    uint64_t* attempted_count_out,
+    uint32_t* overflowed_out,
+    char* error_out,
+    size_t error_size) {
+    return handle_call([&]() {
+        constexpr size_t kRowWidth = 7;
+        constexpr int64_t kKindAggregate = 1;
+        constexpr int64_t kKindExact = 2;
+        constexpr int64_t kMetadataFlagsNone = 0;
+        const uint64_t kUnbounded = std::numeric_limits<uint64_t>::max();
+
+        if (emitted_count_out == nullptr || attempted_count_out == nullptr || overflowed_out == nullptr) {
+            throw std::runtime_error("aggregate-frontier count and overflow outputs must not be null");
+        }
+        *emitted_count_out = 0;
+        *attempted_count_out = 0;
+        *overflowed_out = 0;
+        if (theta <= 0.0 || !std::isfinite(theta)) {
+            throw std::runtime_error("aggregate-frontier theta must be positive and finite");
+        }
+        if (sources == nullptr && source_count != 0) {
+            throw std::runtime_error("aggregate-frontier sources must not be null when source_count is nonzero");
+        }
+        if (nodes == nullptr && node_count != 0) {
+            throw std::runtime_error("aggregate-frontier nodes must not be null when node_count is nonzero");
+        }
+        if (node_count != 0 && (child_offsets == nullptr || member_offsets == nullptr)) {
+            throw std::runtime_error("aggregate-frontier CSR offsets must not be null when node_count is nonzero");
+        }
+        if (frontier_rows_out == nullptr && row_capacity != 0) {
+            throw std::runtime_error("frontier_rows_out must not be null when row_capacity is nonzero");
+        }
+        if (row_offsets_out == nullptr) {
+            throw std::runtime_error("row_offsets_out must not be null");
+        }
+        if (row_capacity > std::numeric_limits<uint64_t>::max() / kRowWidth) {
+            throw std::runtime_error("aggregate-frontier row buffer size overflow");
+        }
+        if (node_count == 0) {
+            for (size_t index = 0; index <= source_count; ++index) {
+                row_offsets_out[index] = 0;
+            }
+            return;
+        }
+
+        for (size_t node_index = 0; node_index < node_count; ++node_index) {
+            if (nodes[node_index].dfs_index != static_cast<int64_t>(node_index)) {
+                throw std::runtime_error("aggregate-frontier nodes must be supplied in contiguous DFS order");
+            }
+            if (nodes[node_index].half_size < 0.0) {
+                throw std::runtime_error("aggregate-frontier node half_size must be non-negative");
+            }
+            if (child_offsets[node_index] > child_offsets[node_index + 1] ||
+                member_offsets[node_index] > member_offsets[node_index + 1]) {
+                throw std::runtime_error("aggregate-frontier CSR offsets must be monotonic");
+            }
+        }
+        if (child_offsets[node_count] != 0 && child_ids == nullptr) {
+            throw std::runtime_error("aggregate-frontier child_ids must not be null when child CSR is non-empty");
+        }
+        if (member_offsets[node_count] != 0 && member_ids == nullptr) {
+            throw std::runtime_error("aggregate-frontier member_ids must not be null when member CSR is non-empty");
+        }
+
+        std::unordered_map<int64_t, size_t> node_index_by_id;
+        node_index_by_id.reserve(node_count);
+        for (size_t node_index = 0; node_index < node_count; ++node_index) {
+            const auto inserted = node_index_by_id.emplace(nodes[node_index].id, node_index);
+            if (!inserted.second) {
+                throw std::runtime_error("aggregate-frontier duplicate node id");
+            }
+        }
+
+        std::unordered_set<int64_t> child_id_set;
+        child_id_set.reserve(static_cast<size_t>(child_offsets[node_count]));
+        for (uint64_t child_index = 0; child_index < child_offsets[node_count]; ++child_index) {
+            const int64_t child_id = child_ids[child_index];
+            if (node_index_by_id.find(child_id) == node_index_by_id.end()) {
+                throw std::runtime_error("aggregate-frontier child id is not present in node array");
+            }
+            child_id_set.insert(child_id);
+        }
+
+        std::vector<size_t> root_indices;
+        for (size_t node_index = 0; node_index < node_count; ++node_index) {
+            if (child_id_set.find(nodes[node_index].id) == child_id_set.end()) {
+                root_indices.push_back(node_index);
+            }
+        }
+        if (root_indices.empty()) {
+            throw std::runtime_error("aggregate-frontier tree must contain at least one root");
+        }
+
+        std::unordered_map<int64_t, int64_t> source_leaf_dfs_by_id;
+        for (size_t node_index = 0; node_index < node_count; ++node_index) {
+            if (!nodes[node_index].is_leaf) {
+                continue;
+            }
+            for (uint64_t member_index = member_offsets[node_index]; member_index < member_offsets[node_index + 1]; ++member_index) {
+                source_leaf_dfs_by_id.emplace(member_ids[member_index], nodes[node_index].dfs_index);
+            }
+        }
+
+        auto subtree_end = [&](const RtdlAggregateFrontierNode2D& node) -> int64_t {
+            return node.resume_index >= 0 ? node.resume_index : static_cast<int64_t>(node_count);
+        };
+
+        auto node_contains_source = [&](size_t node_index, int64_t source_id) -> bool {
+            const RtdlAggregateFrontierNode2D& node = nodes[node_index];
+            const auto found_leaf = source_leaf_dfs_by_id.find(source_id);
+            if (found_leaf != source_leaf_dfs_by_id.end()) {
+                return node.dfs_index <= found_leaf->second && found_leaf->second < subtree_end(node);
+            }
+            for (uint64_t member_index = member_offsets[node_index]; member_index < member_offsets[node_index + 1]; ++member_index) {
+                if (member_ids[member_index] == source_id) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        auto mark_overflow = [&](uint64_t attempted) {
+            *overflowed_out = 1u;
+            *emitted_count_out = 0;
+            *attempted_count_out = attempted;
+        };
+
+        std::vector<int64_t> frontier_rows;
+        frontier_rows.reserve(static_cast<size_t>(std::min<uint64_t>(row_capacity, 1024)));
+        uint64_t emitted_rows = 0;
+        row_offsets_out[0] = 0;
+
+        for (size_t source_index = 0; source_index < source_count; ++source_index) {
+            const RtdlAggregateFrontierSource2D& source = sources[source_index];
+            std::vector<int64_t> source_rows;
+            std::unordered_set<int64_t> fallback_seen;
+            if (deduplicate_fallback_targets != 0) {
+                fallback_seen.reserve(16);
+            }
+
+            auto append_row = [&](int64_t kind, int64_t item_id, int64_t owner_node_id, int64_t dfs_index, int64_t resume_index) -> bool {
+                const uint64_t next_source_rows = static_cast<uint64_t>(source_rows.size() / kRowWidth + 1);
+                const uint64_t next_total_rows = emitted_rows + next_source_rows;
+                if ((max_rows_per_source != kUnbounded && next_source_rows > max_rows_per_source) ||
+                    next_total_rows > row_capacity) {
+                    mark_overflow(next_total_rows);
+                    return false;
+                }
+                source_rows.push_back(source.id);
+                source_rows.push_back(kind);
+                source_rows.push_back(item_id);
+                source_rows.push_back(owner_node_id);
+                source_rows.push_back(dfs_index);
+                source_rows.push_back(resume_index);
+                source_rows.push_back(kMetadataFlagsNone);
+                return true;
+            };
+
+            bool overflowed = false;
+            std::vector<size_t> stack;
+            stack.reserve(root_indices.size());
+            for (auto root_it = root_indices.rbegin(); root_it != root_indices.rend(); ++root_it) {
+                stack.push_back(*root_it);
+            }
+            while (!stack.empty() && !overflowed) {
+                const size_t node_index = stack.back();
+                stack.pop_back();
+                const RtdlAggregateFrontierNode2D& node = nodes[node_index];
+                const double dx = node.cx - source.x;
+                const double dy = node.cy - source.y;
+                const double distance = std::hypot(dx, dy);
+                const double opening_ratio = distance == 0.0
+                    ? std::numeric_limits<double>::infinity()
+                    : (2.0 * node.half_size) / distance;
+                const bool contains_source = node_contains_source(node_index, source.id);
+                const int64_t resume_index = node.resume_index >= 0 ? node.resume_index : -1;
+                if (!contains_source && opening_ratio < theta) {
+                    if (!append_row(kKindAggregate, node.id, node.id, node.dfs_index, resume_index)) {
+                        overflowed = true;
+                    }
+                    continue;
+                }
+                if (child_offsets[node_index] != child_offsets[node_index + 1]) {
+                    for (uint64_t child_pos = child_offsets[node_index + 1]; child_pos > child_offsets[node_index]; --child_pos) {
+                        const int64_t child_id = child_ids[child_pos - 1];
+                        stack.push_back(node_index_by_id.at(child_id));
+                    }
+                    continue;
+                }
+                for (uint64_t member_index = member_offsets[node_index]; member_index < member_offsets[node_index + 1]; ++member_index) {
+                    const int64_t target_id = member_ids[member_index];
+                    if (target_id == source.id) {
+                        continue;
+                    }
+                    if (deduplicate_fallback_targets != 0) {
+                        const auto inserted = fallback_seen.insert(target_id);
+                        if (!inserted.second) {
+                            continue;
+                        }
+                    }
+                    if (!append_row(kKindExact, target_id, node.id, node.dfs_index, resume_index)) {
+                        overflowed = true;
+                        break;
+                    }
+                }
+            }
+            if (overflowed) {
+                return;
+            }
+            frontier_rows.insert(frontier_rows.end(), source_rows.begin(), source_rows.end());
+            emitted_rows += static_cast<uint64_t>(source_rows.size() / kRowWidth);
+            row_offsets_out[source_index + 1] = emitted_rows;
+        }
+
+        if (emitted_rows > row_capacity) {
+            mark_overflow(emitted_rows);
+            return;
+        }
+        if (!frontier_rows.empty()) {
+            std::memcpy(frontier_rows_out, frontier_rows.data(), sizeof(int64_t) * frontier_rows.size());
+        }
+        *emitted_count_out = emitted_rows;
+        *attempted_count_out = emitted_rows;
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_hiprt_prepare_ray_hitcount_3d(
     const RtdlTriangle3D* triangles,
     size_t triangle_count,

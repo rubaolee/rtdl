@@ -143,6 +143,13 @@ _FEATURE_MATRIX: dict[str, dict[str, EngineFeatureSupport]] = {
         "hiprt": _support("collect_k_bounded_i64", "hiprt", NATIVE, "Goal3776 generic HIPRT COLLECT_K_BOUNDED i64 host-native materializer."),
         "apple_rt": _support("collect_k_bounded_i64", "apple_rt", COMPATIBILITY_FALLBACK, "No generic Apple RT COLLECT_K_BOUNDED i64 native materializer."),
     },
+    "aggregate_frontier_collect_2d": {
+        "embree": _support("aggregate_frontier_collect_2d", "embree", NATIVE, "Generic Embree aggregate-frontier row collector."),
+        "optix": _support("aggregate_frontier_collect_2d", "optix", NATIVE, "Generic OptiX aggregate-frontier row collector."),
+        "vulkan": _support("aggregate_frontier_collect_2d", "vulkan", COMPATIBILITY_FALLBACK, "No generic Vulkan aggregate-frontier row collector."),
+        "hiprt": _support("aggregate_frontier_collect_2d", "hiprt", NATIVE, "Goal3777 generic HIPRT aggregate-frontier row collector."),
+        "apple_rt": _support("aggregate_frontier_collect_2d", "apple_rt", COMPATIBILITY_FALLBACK, "No generic Apple RT aggregate-frontier row collector."),
+    },
     "visibility_rows": {
         "embree": _support("visibility_rows", "embree", NATIVE, "Dispatches to Embree any-hit and emits visibility rows."),
         "optix": _support("visibility_rows", "optix", NATIVE, "Dispatches to OptiX any-hit and emits visibility rows."),

@@ -16,13 +16,13 @@ import rtdsl as rt
 
 
 class Goal2639AggregateFrontierNativeAbiContractTest(unittest.TestCase):
-    def test_native_abi_contract_is_app_independent_and_non_executable(self) -> None:
+    def test_native_abi_contract_is_app_independent_and_currently_executable(self) -> None:
         contract = rt.validate_aggregate_frontier_collect_native_abi_contract()
 
         self.assertEqual(contract["primitive"], rt.AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE)
         self.assertEqual(contract["contract"], rt.AGGREGATE_FRONTIER_COLLECT_2D_NATIVE_ABI_CONTRACT)
         self.assertEqual(contract["python_reference_contract"], rt.AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT)
-        self.assertFalse(contract["executable"])
+        self.assertTrue(contract["executable"])
         self.assertTrue(contract["app_generic"])
         self.assertEqual(tuple(contract["output_row_schema"]), rt.AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA)
         self.assertEqual(contract["output_row_width"], len(rt.AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA))
@@ -49,7 +49,7 @@ class Goal2639AggregateFrontierNativeAbiContractTest(unittest.TestCase):
         self.assertIn("No partial result may be surfaced", overflow_text)
         self.assertTrue(any(str(output).startswith("attempted_count_out:") for output in contract["outputs"]))
 
-    def test_embree_and_optix_lowering_plans_reference_abi_with_correct_maturity(self) -> None:
+    def test_embree_optix_and_hiprt_lowering_plans_reference_abi_with_correct_maturity(self) -> None:
         embree_plan = rt.plan_aggregate_frontier_collect_lowering("embree")
         self.assertTrue(embree_plan["executable"])
         self.assertEqual(embree_plan["native_abi_contract"], rt.AGGREGATE_FRONTIER_COLLECT_2D_NATIVE_ABI_CONTRACT)
@@ -67,6 +67,15 @@ class Goal2639AggregateFrontierNativeAbiContractTest(unittest.TestCase):
         self.assertIn("rtdl_optix_collect_aggregate_frontier_2d", optix_plan["required_native_symbol"])
         self.assertIn("pod_parity_validated", optix_plan["status"])
         self.assertIn("timing_baseline_recorded", optix_plan["status"])
+
+        hiprt_plan = rt.plan_aggregate_frontier_collect_lowering("hiprt")
+        self.assertTrue(hiprt_plan["executable"])
+        self.assertEqual(hiprt_plan["native_abi_contract"], rt.AGGREGATE_FRONTIER_COLLECT_2D_NATIVE_ABI_CONTRACT)
+        self.assertEqual(hiprt_plan["native_abi_status"], "implemented_for_hiprt")
+        self.assertEqual(hiprt_plan["native_output_row_width"], len(rt.AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA))
+        self.assertIn("rtdl_hiprt_collect_aggregate_frontier_2d", hiprt_plan["required_native_symbol"])
+        self.assertIn("nvidia_orochi_validated", hiprt_plan["status"])
+        self.assertIn("no_amd_evidence", hiprt_plan["status"])
 
     def test_embree_native_symbol_matches_cpu_reference_when_available(self) -> None:
         points = tuple(

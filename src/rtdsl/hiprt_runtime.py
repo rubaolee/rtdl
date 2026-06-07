@@ -17,8 +17,18 @@ import os
 import platform
 import time
 from pathlib import Path
+from typing import Iterable
 
 from . import partner as _partner
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_NATIVE_ABI_CONTRACT
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_OVERFLOW_POLICY
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE
+from .aggregate_tree_reference import AggregateFrontierOverflowError
+from .aggregate_tree_reference import _tree_node_rows
+from .aggregate_tree_reference import normalize_weighted_point_rows
 from .db_reference import PredicateClause
 from .db_reference import normalize_grouped_query
 from .db_reference import normalize_predicate_bundle
@@ -123,6 +133,7 @@ _HIPRT_AABB_INDEX_OPERATION_CODES = {
     "range_contains": HIPRT_AABB_INDEX_RANGE_CONTAINS,
     "range_intersects": HIPRT_AABB_INDEX_RANGE_INTERSECTS,
 }
+_UINT64_MAX = (1 << 64) - 1
 
 
 class _RtdlTriangle3D(ctypes.Structure):
@@ -228,6 +239,27 @@ class _RtdlPoint(ctypes.Structure):
         ("id", ctypes.c_uint32),
         ("x", ctypes.c_double),
         ("y", ctypes.c_double),
+    ]
+
+
+class _RtdlAggregateFrontierSource2D(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_int64),
+        ("x", ctypes.c_double),
+        ("y", ctypes.c_double),
+    ]
+
+
+class _RtdlAggregateFrontierNode2D(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_int64),
+        ("cx", ctypes.c_double),
+        ("cy", ctypes.c_double),
+        ("half_size", ctypes.c_double),
+        ("depth", ctypes.c_int32),
+        ("dfs_index", ctypes.c_int64),
+        ("resume_index", ctypes.c_int64),
+        ("is_leaf", ctypes.c_uint8),
     ]
 
 
@@ -411,6 +443,29 @@ def _hiprt_lib() -> ctypes.CDLL:
     lib.rtdl_hiprt_context_probe.restype = ctypes.c_int
     lib.rtdl_hiprt_free_rows.argtypes = [ctypes.c_void_p]
     lib.rtdl_hiprt_free_rows.restype = None
+    if hasattr(lib, "rtdl_hiprt_collect_aggregate_frontier_2d"):
+        lib.rtdl_hiprt_collect_aggregate_frontier_2d.argtypes = [
+            ctypes.POINTER(_RtdlAggregateFrontierSource2D),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlAggregateFrontierNode2D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_double,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        lib.rtdl_hiprt_collect_aggregate_frontier_2d.restype = ctypes.c_int
     lib.rtdl_hiprt_run_ray_hitcount_3d.argtypes = [
         ctypes.POINTER(_RtdlRay3D),
         ctypes.c_size_t,
@@ -992,6 +1047,206 @@ def hiprt_context_probe() -> dict[str, object]:
         "api_version": api_version.value,
         "device_type": device_type.value,
         "device_name": device_name.value.decode("utf-8", errors="replace"),
+    }
+
+
+def _aggregate_frontier_capacity_upper_bound(source_count: int, node_count: int) -> int:
+    if source_count <= 0:
+        return 0
+    return source_count * max(1, source_count + node_count)
+
+
+def collect_aggregate_frontier_2d_hiprt(
+    source_points: Iterable[object],
+    tree_nodes: Iterable[object],
+    *,
+    theta: float,
+    max_rows_per_source: int | None = None,
+    max_total_rows: int | None = None,
+    deduplicate_fallback_targets: bool = True,
+) -> dict[str, object]:
+    """Collect aggregate-frontier rows through the app-name-free HIPRT ABI."""
+
+    if max_rows_per_source is not None and int(max_rows_per_source) < 0:
+        raise ValueError("max_rows_per_source must be non-negative when provided")
+    if max_total_rows is not None and int(max_total_rows) < 0:
+        raise ValueError("max_total_rows must be non-negative when provided")
+    theta_value = float(theta)
+    if theta_value <= 0.0:
+        raise ValueError("theta must be positive")
+
+    sources = normalize_weighted_point_rows(source_points)
+    nodes = _tree_node_rows(tree_nodes)
+    row_width = len(AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA)
+    row_capacity = (
+        _aggregate_frontier_capacity_upper_bound(len(sources), len(nodes))
+        if max_total_rows is None
+        else int(max_total_rows)
+    )
+    per_source_capacity = _UINT64_MAX if max_rows_per_source is None else int(max_rows_per_source)
+
+    source_array = (_RtdlAggregateFrontierSource2D * len(sources))(
+        *(_RtdlAggregateFrontierSource2D(int(source.id), float(source.x), float(source.y)) for source in sources)
+    )
+    node_array = (_RtdlAggregateFrontierNode2D * len(nodes))(
+        *(
+            _RtdlAggregateFrontierNode2D(
+                int(node.id),
+                float(node.cx),
+                float(node.cy),
+                float(node.half_size),
+                int(node.depth),
+                int(node.dfs_index),
+                -1 if node.resume_index is None else int(node.resume_index),
+                1 if node.is_leaf else 0,
+            )
+            for node in nodes
+        )
+    )
+    child_offsets = [0]
+    child_ids: list[int] = []
+    member_offsets = [0]
+    member_ids: list[int] = []
+    for node in nodes:
+        child_ids.extend(int(child_id) for child_id in node.child_ids)
+        child_offsets.append(len(child_ids))
+        member_ids.extend(int(member_id) for member_id in node.member_ids)
+        member_offsets.append(len(member_ids))
+
+    child_offsets_array = (ctypes.c_uint64 * len(child_offsets))(*child_offsets)
+    child_ids_array = (ctypes.c_int64 * len(child_ids))(*child_ids) if child_ids else None
+    member_offsets_array = (ctypes.c_uint64 * len(member_offsets))(*member_offsets)
+    member_ids_array = (ctypes.c_int64 * len(member_ids))(*member_ids) if member_ids else None
+    row_offsets_array = (ctypes.c_uint64 * (len(sources) + 1))()
+    frontier_array = (
+        (ctypes.c_int64 * (int(row_capacity) * row_width))()
+        if int(row_capacity) > 0
+        else None
+    )
+    emitted_count = ctypes.c_uint64()
+    attempted_count = ctypes.c_uint64()
+    overflowed = ctypes.c_uint32()
+    error = ctypes.create_string_buffer(4096)
+
+    library = _hiprt_lib()
+    symbol = getattr(library, "rtdl_hiprt_collect_aggregate_frontier_2d", None)
+    if symbol is None:
+        raise ValueError(
+            "loaded HIPRT backend does not export "
+            "rtdl_hiprt_collect_aggregate_frontier_2d; "
+            "rebuild the HIPRT backend from current main"
+        )
+    status = symbol(
+        source_array,
+        len(sources),
+        node_array,
+        len(nodes),
+        child_offsets_array,
+        child_ids_array,
+        member_offsets_array,
+        member_ids_array,
+        ctypes.c_double(theta_value),
+        ctypes.c_uint64(per_source_capacity),
+        ctypes.c_uint64(row_capacity),
+        ctypes.c_uint32(1 if deduplicate_fallback_targets else 0),
+        frontier_array,
+        row_offsets_array,
+        ctypes.byref(emitted_count),
+        ctypes.byref(attempted_count),
+        ctypes.byref(overflowed),
+        error,
+        len(error),
+    )
+    if status != 0:
+        detail = error.value.decode("utf-8", errors="replace")
+        raise RuntimeError(f"rtdl_hiprt_collect_aggregate_frontier_2d failed with status {status}: {detail}")
+    if int(overflowed.value) != 0:
+        raise AggregateFrontierOverflowError(
+            "AGGREGATE_FRONTIER_COLLECT_2D HIPRT native overflowed capacity; "
+            f"attempted {int(attempted_count.value)}; "
+            "failure_mode=fail_closed_overflow; partial_result_returned=False"
+        )
+
+    emitted = int(emitted_count.value)
+    if emitted > row_capacity:
+        raise RuntimeError("HIPRT aggregate-frontier emitted_count exceeded row capacity")
+    flat_rows = [int(frontier_array[index]) for index in range(emitted * row_width)] if emitted else []
+    frontier_i64_rows = tuple(
+        tuple(flat_rows[index:index + row_width])
+        for index in range(0, len(flat_rows), row_width)
+    )
+    row_offsets = tuple(int(row_offsets_array[index]) for index in range(len(sources) + 1))
+    frontier_rows = []
+    aggregate_count = 0
+    exact_count = 0
+    for row in frontier_i64_rows:
+        source_id, kind_code, item_id, owner_aggregate_id, dfs_index, resume_index, metadata_flags = row
+        if kind_code == 1:
+            aggregate_count += 1
+            frontier_kind = "aggregate"
+            aggregate_id = item_id
+            target_id = None
+        elif kind_code == 2:
+            exact_count += 1
+            frontier_kind = "exact"
+            aggregate_id = owner_aggregate_id
+            target_id = item_id
+        else:
+            raise RuntimeError(f"HIPRT aggregate-frontier returned unknown kind code {kind_code}")
+        frontier_rows.append(
+            {
+                "source_id": source_id,
+                "frontier_kind": frontier_kind,
+                "frontier_kind_code": kind_code,
+                "item_id": item_id,
+                "aggregate_id": aggregate_id,
+                "target_id": target_id,
+                "owner_aggregate_id": owner_aggregate_id,
+                "dfs_index": dfs_index,
+                "resume_index": None if resume_index < 0 else resume_index,
+                "metadata_flags": metadata_flags,
+            }
+        )
+    return {
+        "frontier_rows": tuple(frontier_rows),
+        "frontier_i64_rows": frontier_i64_rows,
+        "source_ids": tuple(int(source.id) for source in sources),
+        "row_offsets": row_offsets,
+        "row_schema": AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA,
+        "summary": {
+            "source_count": len(sources),
+            "tree_node_count": len(nodes),
+            "frontier_row_count": emitted,
+            "accepted_aggregate_row_count": aggregate_count,
+            "fallback_exact_row_count": exact_count,
+            "max_rows_per_source": None if max_rows_per_source is None else int(max_rows_per_source),
+            "max_total_rows": None if max_total_rows is None else int(max_total_rows),
+            "overflowed": False,
+            "partial_result_returned": False,
+            "app_math_embedded": False,
+        },
+        "metadata": {
+            "primitive": AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE,
+            "contract": AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT,
+            "native_abi_contract": AGGREGATE_FRONTIER_COLLECT_2D_NATIVE_ABI_CONTRACT,
+            "backend": "hiprt",
+            "native_symbol": "rtdl_hiprt_collect_aggregate_frontier_2d",
+            "native_execution": True,
+            "native_engine_app_specific": False,
+            "app_math_embedded": False,
+            "force_law_embedded": False,
+            "row_schema": AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA,
+            "metadata_flags_semantics": {
+                AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE: "no flags set",
+            },
+            "overflow_policy": AGGREGATE_FRONTIER_COLLECT_OVERFLOW_POLICY,
+            "claim_boundary": (
+                "HIPRT native aggregate-frontier row collection only. This is "
+                "NVIDIA CUDA/Orochi HIPRT functional evidence when validated on "
+                "NVIDIA hardware, not AMD hardware evidence, not RT-core timing "
+                "evidence, and not app math."
+            ),
+        },
     }
 
 

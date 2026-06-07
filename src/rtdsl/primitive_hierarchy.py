@@ -690,12 +690,13 @@ PRIMITIVE_HIERARCHY = (
             ),
             PrimitiveHierarchyNode(
                 id="rows.aggregate_frontier_collect",
-                title="Aggregate-Frontier Collect Rows",
+                title="AGGREGATE_FRONTIER_COLLECT_2D",
                 layer="row_emission",
                 status="candidate_behavior",
                 summary=(
-                    "Emit app-independent aggregate-frontier IDs, kind codes, "
-                    "and source offsets from prepared aggregate-tree traversal."
+                    "Emit app-independent aggregate-frontier collect rows: IDs, "
+                    "kind codes, and source offsets from prepared aggregate-tree "
+                    "traversal."
                 ),
                 outputs=(
                     "source_id",
@@ -725,7 +726,7 @@ PRIMITIVE_HIERARCHY = (
                     "collect generic aggregate tree frontier rows without app force laws",
                 ),
                 reference_path="docs/rtdl_primitive_catalog.md",
-                backends=("cpu_python_reference", "cpu", "embree", "optix"),
+                backends=("cpu_python_reference", "cpu", "embree", "optix", "hiprt"),
             ),
             PrimitiveHierarchyNode(
                 id="rows.graph_triangle_witness_rows",
@@ -1199,7 +1200,7 @@ PRIMITIVE_HIERARCHY = (
                     "future lowering for aggregate frontier rows without force law semantics",
                 ),
                 reference_path="docs/rtdl_primitive_catalog.md",
-                backends=("cpu_python_reference", "cpu", "embree", "optix"),
+                backends=("cpu_python_reference", "cpu", "embree", "optix", "hiprt"),
             ),
             PrimitiveHierarchyNode(
                 id="candidate.streamed_graph_lowering",

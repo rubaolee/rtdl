@@ -33,6 +33,7 @@ AGGREGATE_FRONTIER_COLLECT_OVERFLOW_POLICY = "fail_closed_before_result_material
 AGGREGATE_FRONTIER_COLLECT_NATIVE_REQUIRED_SYMBOLS = (
     "rtdl_embree_collect_aggregate_frontier_2d",
     "rtdl_optix_collect_aggregate_frontier_2d",
+    "rtdl_hiprt_collect_aggregate_frontier_2d",
 )
 @dataclass(frozen=True)
 class WeightedPointRow:
@@ -867,8 +868,8 @@ def aggregate_frontier_collect_native_abi_contract() -> dict[str, object]:
         "primitive": AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE,
         "contract": AGGREGATE_FRONTIER_COLLECT_2D_NATIVE_ABI_CONTRACT,
         "python_reference_contract": AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT,
-        "status": "specified_native_implementation_pending",
-        "executable": False,
+        "status": "specified_native_abi_with_embree_optix_hiprt_implementations",
+        "executable": True,
         "app_generic": True,
         "required_native_symbols": AGGREGATE_FRONTIER_COLLECT_NATIVE_REQUIRED_SYMBOLS,
         "symbol_prototype_template": prototype,
@@ -932,9 +933,9 @@ def aggregate_frontier_collect_native_abi_contract() -> dict[str, object]:
             "paper_specific_shortcuts",
         ),
         "claim_boundary": (
-            "Native ABI contract only. It specifies generic aggregate-frontier row "
-            "collection for future Embree/OptiX implementations; it does not provide "
-            "native execution, RT-core timing, speedup wording, or app math."
+            "Generic aggregate-frontier row collection ABI implemented for Embree, "
+            "OptiX, and HIPRT host-native materializers. It does not provide force "
+            "math, RT-core timing, speedup wording, AMD hardware evidence, or app math."
         ),
     }
 
@@ -974,8 +975,8 @@ def validate_aggregate_frontier_collect_native_abi_contract() -> dict[str, objec
         raise ValueError("aggregate-frontier native ABI contract mismatch")
     if contract["python_reference_contract"] != AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT:
         raise ValueError("aggregate-frontier native ABI must point to the CPU reference contract")
-    if contract["executable"] is not False:
-        raise ValueError("aggregate-frontier native ABI is not executable until backend symbols exist")
+    if contract["executable"] is not True:
+        raise ValueError("aggregate-frontier native ABI must be executable after backend symbols exist")
     if contract["app_generic"] is not True:
         raise ValueError("aggregate-frontier native ABI must remain app-generic")
     if tuple(contract["required_native_symbols"]) != AGGREGATE_FRONTIER_COLLECT_NATIVE_REQUIRED_SYMBOLS:
@@ -988,7 +989,7 @@ def validate_aggregate_frontier_collect_native_abi_contract() -> dict[str, objec
     for forbidden in ("barnes", "force law", "inverse-square", "collision"):
         if forbidden in boundary_text:
             raise ValueError(f"aggregate-frontier native ABI leaked app vocabulary: {forbidden}")
-    for phrase in ("invalid partial workspace", "no partial result", "native abi contract only"):
+    for phrase in ("invalid partial workspace", "no partial result", "generic aggregate-frontier row collection"):
         if phrase not in boundary_text:
             raise ValueError("aggregate-frontier native ABI claim boundary is incomplete")
     return contract
@@ -1024,8 +1025,13 @@ def plan_aggregate_frontier_collect_lowering(target: str) -> dict[str, object]:
                 "force math, speedup claims, or zero-copy claims."
             ),
         }
-    if normalized in {"embree", "optix", "native_embree", "native_optix"}:
-        backend = "embree" if "embree" in normalized else "optix"
+    if normalized in {"embree", "optix", "hiprt", "native_embree", "native_optix", "native_hiprt"}:
+        if "embree" in normalized:
+            backend = "embree"
+        elif "hiprt" in normalized:
+            backend = "hiprt"
+        else:
+            backend = "optix"
         symbol = next(item for item in AGGREGATE_FRONTIER_COLLECT_NATIVE_REQUIRED_SYMBOLS if backend in item)
         if backend == "embree":
             return {
@@ -1048,6 +1054,30 @@ def plan_aggregate_frontier_collect_lowering(target: str) -> dict[str, object]:
                     "and Goal2639 records OptiX parity evidence. Do not claim RT-core "
                     "acceleration, speedup, or paper reproduction from this row-collection "
                     "milestone."
+                ),
+            }
+        if backend == "hiprt":
+            return {
+                "primitive": AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE,
+                "contract": AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT,
+                "target": normalized,
+                "status": "implemented_hiprt_native_symbol_nvidia_orochi_validated_no_amd_evidence",
+                "executable": True,
+                "native_engine_app_specific": False,
+                "native_abi_contract": AGGREGATE_FRONTIER_COLLECT_2D_NATIVE_ABI_CONTRACT,
+                "native_abi_status": "implemented_for_hiprt",
+                "native_output_row_width": len(AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA),
+                "required_native_symbol": symbol,
+                "required_next_steps": (
+                    "validate same-contract parity on AMD hardware before AMD functional parity claims",
+                    "keep force math and grouped vector reductions outside this native collector",
+                    "request external review before promotion",
+                ),
+                "claim_boundary": (
+                    "HIPRT native row collection is implemented for the generic ABI. "
+                    "NVIDIA CUDA/Orochi validation is functional implementation evidence "
+                    "only; it does not authorize AMD hardware evidence, RT-core acceleration, "
+                    "speedup, app math, or paper reproduction wording."
                 ),
             }
         return {
@@ -1073,7 +1103,7 @@ def plan_aggregate_frontier_collect_lowering(target: str) -> dict[str, object]:
                 "reproduction wording."
             ),
         }
-    raise ValueError("aggregate-frontier lowering target must be cpu, partner, torch, cupy, embree, or optix")
+    raise ValueError("aggregate-frontier lowering target must be cpu, partner, torch, cupy, embree, optix, or hiprt")
 
 
 def _candidate_node_ids_by_source(

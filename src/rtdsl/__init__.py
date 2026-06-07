@@ -1205,6 +1205,7 @@ from .reduction_runtime import V1_5_GENERIC_SCALAR_REDUCTION_PRIMITIVES
 from .hiprt_runtime import fixed_radius_neighbors_2d_hiprt
 from .hiprt_runtime import fixed_radius_neighbors_3d_hiprt
 from .hiprt_runtime import bfs_expand_hiprt
+from .hiprt_runtime import collect_aggregate_frontier_2d_hiprt
 from .hiprt_runtime import conjunctive_scan_hiprt
 from .hiprt_runtime import grouped_count_hiprt
 from .hiprt_runtime import grouped_sum_hiprt
@@ -1851,6 +1852,7 @@ __all__ = [
     "segment_columns_2d",
     "segment_columns_with_ids",
     "collect_aggregate_frontier_2d_embree",
+    "collect_aggregate_frontier_2d_hiprt",
     "collect_aggregate_frontier_2d_optix",
     "evaluate_aggregate_opening_rows_2d",
     "evaluate_aggregate_tree_opening_frontier_2d",
