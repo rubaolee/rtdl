@@ -45,14 +45,27 @@ The parity stage for `raydb_style` remains
 
 ## Validation
 
-Local focused validation target:
+Local focused validation passed:
 
 ```text
 $env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal3779_hiprt_grouped_i64_count_sum_test tests.goal3753_amd_hiprt_benchmark_parity_plan_test tests.goal3776_hiprt_collect_k_bounded_i64_test tests.goal3777_hiprt_aggregate_frontier_collect_2d_test tests.goal3073_v2_7_generated_primitive_catalog_test tests.goal3090_v2_7_discovery_metadata_backfill_test
 ```
 
-Clean pod validation should build HIPRT from a clean checkout, run the focused
-test, and write:
+Result: 47 tests passed, 8 skipped.
+
+Clean pod validation:
+
+- SSH: `root@69.30.85.203 -p 22057`
+- GPU: `NVIDIA RTX A5000, 580.126.09`
+- HIPRT SDK: `/root/vendor/hiprt-official/hiprtSdk-2.2.0e68f54`
+- clean workdir: `/root/rtdl_goal3779_clean_1780852622`
+- commit: `2096656daee9765f94cecc4d506cbcc98d4ece27`
+- command: `make build-hiprt HIPRT_PREFIX=/root/vendor/hiprt-official/hiprtSdk-2.2.0e68f54`
+- focused pod tests: 36 passed, 1 skipped.
+- sample parity: HIPRT dense counts `(2, 1, 3, 0)` and sums `(13, 7, 8, 0)` match the Python reference.
+- scoped source dirty: false.
+
+Pod evidence is recorded in:
 
 `docs/reports/goal3779_hiprt_grouped_i64_count_sum_a5000.json`
 
