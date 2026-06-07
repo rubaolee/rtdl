@@ -2331,7 +2331,9 @@ void aggregate_prepared_fixed_radius_ranked_summary_3d(
     check_oro(
         "oroModuleLaunchKernel",
         oroModuleLaunchKernel(kernel, grid_size, 1, 1, block_size, 1, 1, 0, 0, args, nullptr));
-    copy_device_to_host(*aggregate_out, aggregate_device);
+    check_oro(
+        "oroMemcpyDtoH",
+        oroMemcpyDtoH(aggregate_out, aggregate_device.oro_ptr(), sizeof(RtdlFixedRadiusRankedNeighborAggregate)));
 }
 
 void run_fixed_radius_neighbors_2d(
