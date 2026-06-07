@@ -1062,6 +1062,17 @@ def describe_raydb_v2_5_primitive_first_plan(mode: str) -> dict[str, Any]:
     }
 
 
+def describe_raydb_primitive_first_plan(mode: str) -> dict[str, Any]:
+    """Current alias for the legacy v2.5 primitive-first RayDB plan."""
+
+    plan = describe_raydb_v2_5_primitive_first_plan(mode)
+    return {
+        **plan,
+        "legacy_helper_alias": "describe_raydb_v2_5_primitive_first_plan",
+        "current_helper": "describe_raydb_primitive_first_plan",
+    }
+
+
 def _run_raydb_v2_5_reference_fallback(
     mode: str,
     inputs: dict[str, Any],
@@ -1311,6 +1322,18 @@ def describe_raydb_v2_6_numba_neutral_continuation(mode: str) -> dict[str, Any]:
     }
 
 
+def describe_raydb_numba_grouped_reduction_continuation(mode: str) -> dict[str, Any]:
+    """Current alias for the legacy v2.6 Numba grouped-reduction continuation."""
+
+    plan = describe_raydb_v2_6_numba_neutral_continuation(mode)
+    return {
+        **plan,
+        "legacy_helper_alias": "describe_raydb_v2_6_numba_neutral_continuation",
+        "current_helper": "describe_raydb_numba_grouped_reduction_continuation",
+        "current_contract_name": "numba_grouped_reduction_continuation",
+    }
+
+
 def run_raydb_v2_6_numba_neutral_continuation_preview(
     mode: str,
     inputs: dict[str, Any],
@@ -1413,6 +1436,29 @@ def run_raydb_v2_6_numba_neutral_continuation_preview(
     }
 
 
+def run_raydb_numba_grouped_reduction_continuation_preview(
+    mode: str,
+    inputs: dict[str, Any],
+    *,
+    block_size: int = 256,
+) -> dict[str, Any]:
+    """Current alias for the legacy v2.6 Numba grouped-reduction preview."""
+
+    payload = run_raydb_v2_6_numba_neutral_continuation_preview(
+        mode,
+        inputs,
+        block_size=block_size,
+    )
+    return {
+        **payload,
+        "metadata": {
+            **payload["metadata"],
+            "legacy_execution_path_alias": "v2_6_numba_neutral_front_door",
+            "current_execution_path": "numba_grouped_reduction_front_door",
+        },
+    }
+
+
 def describe_raydb_v2_8_typed_stream_continuation(mode: str, *, partner: str = "numba") -> dict[str, Any]:
     """Describe RayDB's v2.8 typed-stream grouped-reduction continuation path."""
 
@@ -1431,6 +1477,22 @@ def describe_raydb_v2_8_typed_stream_continuation(mode: str, *, partner: str = "
             "RayDB query encoding remains Python app code. The v2.8 typed-stream "
             "continuation sees only generic group ids and optional numeric payload values."
         ),
+    }
+
+
+def describe_raydb_grouped_reduction_typed_stream_continuation(
+    mode: str,
+    *,
+    partner: str = "numba",
+) -> dict[str, Any]:
+    """Current alias for the legacy v2.8 grouped-reduction typed-stream continuation."""
+
+    plan = describe_raydb_v2_8_typed_stream_continuation(mode, partner=partner)
+    return {
+        **plan,
+        "legacy_helper_alias": "describe_raydb_v2_8_typed_stream_continuation",
+        "current_helper": "describe_raydb_grouped_reduction_typed_stream_continuation",
+        "current_contract_name": "grouped_reduction_typed_stream_continuation",
     }
 
 
@@ -1511,6 +1573,31 @@ def run_raydb_v2_8_typed_stream_continuation_preview(
             "true_zero_copy_claim_authorized": False,
             "uses_legacy_torch_carrier": False,
             "uses_torch_conversion": False,
+        },
+    }
+
+
+def run_raydb_grouped_reduction_typed_stream_continuation_preview(
+    mode: str,
+    inputs: dict[str, Any],
+    *,
+    partner: str = "numba",
+    block_size: int = 256,
+) -> dict[str, Any]:
+    """Current alias for the legacy v2.8 grouped-reduction typed-stream preview."""
+
+    payload = run_raydb_v2_8_typed_stream_continuation_preview(
+        mode,
+        inputs,
+        partner=partner,
+        block_size=block_size,
+    )
+    return {
+        **payload,
+        "metadata": {
+            **payload["metadata"],
+            "legacy_execution_path_alias": RAYDB_V2_8_TYPED_STREAM_EXECUTION_PATH,
+            "current_execution_path": "grouped_reduction_typed_stream_partner_front_door",
         },
     }
 
