@@ -1,6 +1,7 @@
 # Goal3784 AMD HIPRT Functional Validation Runbook
 
-Status: implemented locally; actual AMD pod evidence pending.
+Status: implemented and validated on the current NVIDIA pod as a runbook/gate;
+actual AMD pod evidence pending.
 
 ## Purpose
 
@@ -85,3 +86,17 @@ Local validation:
 ```text
 $env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal3784_amd_hiprt_functional_validation_runbook_test tests.goal3753_amd_hiprt_benchmark_parity_plan_test tests.goal3783_v2_10_hiprt_parity_closeout_packet_test
 ```
+
+Clean pod validation of the runbook/gate:
+
+- SSH target used: `root@69.30.85.203 -p 22057`.
+- Clean checkout workdir: `/root/rtdl_goal3783_clean_1780855862`.
+- Source commit: `f8b316d9`.
+- Python: `3.12.3`.
+- Command:
+  `PYTHONPATH=src:. python3 -m unittest tests.goal3784_amd_hiprt_functional_validation_runbook_test tests.goal3753_amd_hiprt_benchmark_parity_plan_test tests.goal3783_v2_10_hiprt_parity_closeout_packet_test`.
+- Result: `Ran 23 tests`, `OK`.
+
+This pod validation proves the runbook and fail-closed gate are executable. It
+does not change the AMD evidence status, because the pod is still NVIDIA
+hardware.
