@@ -1,0 +1,87 @@
+{
+  "backend_route": "HIPRT through CUDA/Orochi on NVIDIA RTX A5000; not AMD hardware evidence",
+  "build_command": "make build-hiprt HIPRT_PREFIX=/root/vendor/hiprt-official/hiprtSdk-2.2.0e68f54",
+  "claim_boundary": {
+    "amd_hardware_evidence": false,
+    "amd_perf_claim_authorized": false,
+    "batched_sweep_claim_authorized": false,
+    "broad_rt_core_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": "Goal3771",
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "hiprt_sdk": "/root/vendor/hiprt-official/hiprtSdk-2.2.0e68f54",
+  "hiprt_version": [
+    2,
+    2,
+    15109972
+  ],
+  "parity_summary": {
+    "amd_perf_claim_authorized": false,
+    "app_count": 10,
+    "claim_boundary": "This AMD/HIPRT benchmark parity map is a planning gate. It does not authorize AMD performance claims, HIPRT release claims, public speedup wording, whole-app acceleration wording, or RTDL-beats-paper wording.",
+    "compatibility_only_not_amd_perf_ready_apps": [
+      "raydb_style",
+      "triangle_counting"
+    ],
+    "needs_generic_hiprt_extension_apps": [
+      "hausdorff_xhd",
+      "contact_manifold",
+      "barnes_hut",
+      "rtnn"
+    ],
+    "ready_for_amd_functional_pod_apps": [
+      "spatial_rayjoin",
+      "rt_dbscan",
+      "robot_collision",
+      "librts_spatial_index"
+    ],
+    "release_authorized": false,
+    "row_count": 10,
+    "stage_counts": {
+      "compatibility_only_not_amd_perf_ready": 2,
+      "needs_generic_hiprt_extension": 4,
+      "ready_for_amd_functional_pod": 4
+    },
+    "status": "planning_gate_not_amd_hardware_evidence",
+    "version": "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3771.v1"
+  },
+  "rtnn_missing_generic_contracts": [
+    "batched_prepared_query_sweep"
+  ],
+  "rtnn_parity_stage": "needs_generic_hiprt_extension",
+  "sample": {
+    "hiprt_ranked_aggregate": {
+      "bounded_neighbor_count": 10,
+      "kth_id_checksum": 11,
+      "nearest_id_checksum": 10,
+      "precision": "float32_distance",
+      "query_count": 4,
+      "sum_distance": 1.600000023841858
+    },
+    "integer_fields_match_row_path": true,
+    "k_max": 3,
+    "point_count": 4,
+    "row_count": 10,
+    "row_path_aggregate": {
+      "bounded_neighbor_count": 10,
+      "kth_id_checksum": 11,
+      "nearest_id_checksum": 10,
+      "query_count": 4,
+      "sum_distance": 1.600000023841858
+    },
+    "sum_distance_abs_error": 0.0
+  },
+  "scoped_git_status": [],
+  "scoped_source_dirty": false,
+  "source_commit": "38fa119c",
+  "source_commit_full": "38fa119cd944d5701dbe253dcaa6a0872ad7288f",
+  "validation_command": "python3 -m unittest tests.goal3771_hiprt_fixed_radius_ranked_aggregate_test tests.goal3769_hiprt_fixed_radius_threshold_flags_test tests.goal3753_amd_hiprt_benchmark_parity_plan_test",
+  "validation_result": {
+    "skipped": 0,
+    "status": "pass",
+    "tests_run": 19
+  }
+}

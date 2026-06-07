@@ -45,17 +45,34 @@ not AMD hardware evidence and does not authorize release, AMD performance,
 broad RT-core, whole-app speedup, paper reproduction, or public benchmark
 claims.
 
-## Validation Plan
+## Evidence
 
-Portable local validation:
+Artifact:
+
+`docs/reports/goal3771_hiprt_fixed_radius_ranked_aggregate_a5000.json`
+
+Environment:
+
+- GPU: NVIDIA RTX A5000
+- Source commit: `38fa119c`
+- Scoped source dirty: `false`
+- HIPRT SDK: `/root/vendor/hiprt-official/hiprtSdk-2.2.0e68f54`
+- Backend route: HIPRT through CUDA/Orochi on NVIDIA hardware
+
+Portable local validation passed before pod evidence:
 
 ```text
-PYTHONPATH=src:. python -m unittest \
+$env:PYTHONPATH='src;.'; py -3 -m unittest \
   tests.goal3771_hiprt_fixed_radius_ranked_aggregate_test \
   tests.goal3753_amd_hiprt_benchmark_parity_plan_test
 ```
 
-Clean pod validation after commit:
+Result:
+
+- 14 tests passed.
+- 1 local native-HIPRT test skipped because the Windows library was not loaded.
+
+Clean pod validation from `/root/rtdl_goal3771_clean`:
 
 ```text
 make build-hiprt HIPRT_PREFIX=/root/vendor/hiprt-official/hiprtSdk-2.2.0e68f54
@@ -64,3 +81,28 @@ PYTHONPATH=src:. python3 -m unittest \
   tests.goal3769_hiprt_fixed_radius_threshold_flags_test \
   tests.goal3753_amd_hiprt_benchmark_parity_plan_test
 ```
+
+Result:
+
+- 19 tests passed.
+- 0 tests skipped.
+- The clean source commit was `38fa119c`.
+- The scoped source status was clean.
+
+Correctness sample:
+
+- Points: `4`
+- `k_max`: `3`
+- Prepared row count: `10`
+- Row-path aggregate matched HIPRT aggregate for integer fields.
+- `sum_distance` absolute error: `0.0`
+- HIPRT aggregate:
+  `query_count=4`, `bounded_neighbor_count=10`, `nearest_id_checksum=10`,
+  `kth_id_checksum=11`, `sum_distance=1.600000023841858`
+
+## Parity Position
+
+After Goal3771, the `rtnn` HIPRT row no longer lists
+`ranked_summary_aggregate` as missing. It remains in
+`needs_generic_hiprt_extension` because `batched_prepared_query_sweep` is still
+missing.

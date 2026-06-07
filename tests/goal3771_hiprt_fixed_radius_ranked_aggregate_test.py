@@ -1,5 +1,6 @@
 import pathlib
 import unittest
+import json
 
 import rtdsl as rt
 from rtdsl import hiprt_runtime
@@ -9,6 +10,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 HIPRT_CORE = ROOT / "src" / "native" / "hiprt" / "rtdl_hiprt_core.cpp"
 HIPRT_API = ROOT / "src" / "native" / "hiprt" / "rtdl_hiprt_api.cpp"
 REPORT = ROOT / "docs" / "reports" / "goal3771_hiprt_fixed_radius_ranked_aggregate_2026-06-07.md"
+ARTIFACT = ROOT / "docs" / "reports" / "goal3771_hiprt_fixed_radius_ranked_aggregate_a5000.json"
 
 
 def _native_ranked_aggregate_available() -> bool:
@@ -87,6 +89,19 @@ class Goal3771HiprtFixedRadiusRankedAggregatePortableTest(unittest.TestCase):
         self.assertIn("batched prepared-query sweep", report)
         self.assertIn("not AMD hardware evidence", report)
         self.assertIn("does not authorize", report)
+
+    def test_artifact_records_clean_pod_evidence_and_boundary(self) -> None:
+        artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+        self.assertEqual(artifact["source_commit"], "38fa119c")
+        self.assertFalse(artifact["scoped_source_dirty"])
+        self.assertTrue(artifact["sample"]["integer_fields_match_row_path"])
+        self.assertEqual(artifact["sample"]["sum_distance_abs_error"], 0.0)
+        self.assertEqual(artifact["sample"]["hiprt_ranked_aggregate"]["bounded_neighbor_count"], 10)
+        self.assertEqual(artifact["rtnn_missing_generic_contracts"], ["batched_prepared_query_sweep"])
+        self.assertEqual(artifact["rtnn_parity_stage"], "needs_generic_hiprt_extension")
+        self.assertIn("not AMD hardware evidence", artifact["backend_route"])
+        for key, value in artifact["claim_boundary"].items():
+            self.assertFalse(value, key)
 
 
 @unittest.skipUnless(_native_ranked_aggregate_available(), "HIPRT ranked-summary aggregate symbol unavailable")
