@@ -4,7 +4,8 @@ Please perform an independent review of Goal3737 on current `main`.
 
 ## Scope
 
-Review commit `5053d37a` and the Goal3737 artifacts:
+Review implementation commit `5053d37a` plus clean-evidence refresh commit
+`68b894dd`, and the Goal3737 artifacts:
 
 - `docs/reports/goal3737_shape_pair_active_count_executor_and_rayjoin_perf_2026-06-07.md`
 - `tests/goal3737_shape_pair_active_count_executor_test.py`
@@ -25,8 +26,8 @@ Review commit `5053d37a` and the Goal3737 artifacts:
 3. Are Python runtime ownership and destroy semantics safe enough for this internal benchmark route?
 4. Does the RayJoin app keep RayJoin interpretation in Python while using the generic executor?
 5. Do the A5000 artifacts support the narrow conclusion:
-   - direct 4096 overlay active-count median improves from about `0.00315s` to about `0.00157s`;
-   - safe-mixed cross-size geomean improves from about `211x` to about `323x` vs all-CuPy;
+   - direct 4096 overlay active-count median improves from about `0.00315s` to about `0.00156s`;
+   - safe-mixed cross-size geomean improves from about `211x` to about `324x` vs all-CuPy;
    - all measured counts match;
    - 8192 all-CuPy baseline OOM is correctly treated as a boundary rather than a speedup row?
 6. Do the report and artifacts avoid overclaiming public RayJoin reproduction, RTDL-beats-RayJoin, broad RT-core speedup, true zero-copy, whole-app speedup, or release claims?
