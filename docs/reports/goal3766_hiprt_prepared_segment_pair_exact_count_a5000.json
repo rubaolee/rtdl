@@ -1,0 +1,35 @@
+{
+  "claim_boundary": {
+    "amd_perf_claim_authorized": false,
+    "broad_rt_core_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "clean_validation": {
+    "command": "make build-hiprt HIPRT_PREFIX=/root/vendor/hiprt-official/hiprtSdk-2.2.0e68f54 && python3 -m unittest tests.goal3766_hiprt_prepared_segment_pair_count_test tests.goal3765_hiprt_prepared_grouped_anyhit_flags_test tests.goal674_hiprt_prepared_anyhit_2d_test tests.goal3753_amd_hiprt_benchmark_parity_plan_test",
+    "result": "pass",
+    "tests_run": 23
+  },
+  "context_probe": {
+    "api_version": 2002,
+    "device_name": "NVIDIA RTX A5000",
+    "device_type": 1,
+    "version": [
+      2,
+      2,
+      15109972
+    ]
+  },
+  "goal": "Goal3766",
+  "hiprt_sdk": "/root/vendor/hiprt-official/hiprtSdk-2.2.0e68f54",
+  "rt_backend": "HIPRT via CUDA/Orochi on NVIDIA pod; not AMD hardware evidence",
+  "sample_count_elapsed_sec": 0.10008932463824749,
+  "sample_matches_row_path": true,
+  "sample_prepared_count": 3,
+  "sample_row_count": 3,
+  "schema_version": "goal3766_hiprt_prepared_segment_pair_exact_count_a5000_v1",
+  "scoped_source_dirty": false,
+  "scoped_source_status": "",
+  "source_commit": "6968b19c"
+}

@@ -1,5 +1,6 @@
 import pathlib
 import unittest
+import json
 
 import rtdsl as rt
 from rtdsl import hiprt_runtime
@@ -8,6 +9,8 @@ from rtdsl import hiprt_runtime
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 HIPRT_CORE = ROOT / "src" / "native" / "hiprt" / "rtdl_hiprt_core.cpp"
 HIPRT_API = ROOT / "src" / "native" / "hiprt" / "rtdl_hiprt_api.cpp"
+REPORT = ROOT / "docs" / "reports" / "goal3766_hiprt_prepared_segment_pair_exact_count_2026-06-07.md"
+ARTIFACT = ROOT / "docs" / "reports" / "goal3766_hiprt_prepared_segment_pair_exact_count_a5000.json"
 
 
 def _native_prepared_segment_pair_available() -> bool:
@@ -43,6 +46,19 @@ class Goal3766HiprtPreparedSegmentPairCountPortableTest(unittest.TestCase):
         with rt.prepare_hiprt_segment_pair_intersection_2d(()) as prepared:
             left = (rt.Segment(1, 0.0, 0.0, 1.0, 1.0),)
             self.assertEqual(prepared.count(left), 0)
+
+    def test_report_and_artifact_record_boundaries(self) -> None:
+        report = REPORT.read_text(encoding="utf-8")
+        self.assertIn("Goal3766", report)
+        self.assertIn("not AMD hardware", report)
+        self.assertIn("evidence and does not authorize", report)
+        self.assertIn("prepared_shape_pair_active_count", report)
+        artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+        self.assertEqual(artifact["source_commit"], "6968b19c")
+        self.assertFalse(artifact["scoped_source_dirty"])
+        self.assertTrue(artifact["sample_matches_row_path"])
+        for key, value in artifact["claim_boundary"].items():
+            self.assertFalse(value, key)
 
 
 @unittest.skipUnless(_native_prepared_segment_pair_available(), "HIPRT prepared segment-pair count symbols unavailable")
