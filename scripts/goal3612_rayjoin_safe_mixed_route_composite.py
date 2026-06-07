@@ -64,7 +64,7 @@ def _run_exact_lsi_prepared_optix(dataset: str, *, repeat: int, warmup: int) -> 
         "hot_repeat": int(phases["prepared_query_sec_repeat"]),
         "hot_warmup": int(phases["prepared_query_sec_warmup"]),
         "row_count": int(payload["row_count"]),
-        "segment_policy": "host_double_exact_refine_after_optix_candidates",
+        "segment_policy": "device_double_exact_count_during_optix_anyhit",
         "same_contract_repair_reason": (
             "Goal3610 showed the pure device left-id dense count route counts eight extra "
             "near-degenerate 4096-chain LSI candidates; this exact prepared route applies "

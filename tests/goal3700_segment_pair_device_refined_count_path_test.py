@@ -20,19 +20,17 @@ class Goal3700SegmentPairDeviceRefinedCountPathTest(unittest.TestCase):
         self.assertNotIn("rayjoin", source.lower())
         self.assertNotIn("cdb", source.lower())
 
-    def test_prepared_count_path_uses_device_refine_instead_of_host_candidate_download(self) -> None:
+    def test_device_refine_helper_exists_as_intermediate_count_route(self) -> None:
         source = WORKLOADS.read_text(encoding="utf-8")
-        block = source.split("static void count_prepared_segment_pair_intersection_optix", 1)[1].split(
-            "static void run_prepared_segment_first_hit_optix",
+        block = source.split("static size_t count_segment_pair_intersection_candidates_device_refined_optix", 1)[1].split(
+            "static size_t count_segment_pair_intersection_exact_one_pass_optix",
             1,
         )[0]
 
-        self.assertIn("DevPtr d_left_exact(sizeof(RtdlSegment) * left_count);", block)
-        self.assertIn("upload(d_left_exact.ptr, left, left_count);", block)
-        self.assertIn("count_segment_pair_intersection_candidates_device_refined_optix", block)
-        self.assertIn("prepared->d_right_exact.ptr", block)
-        self.assertNotIn("collect_segment_pair_intersection_candidates_optix", block)
-        self.assertNotIn("count_segment_pair_intersection_rows", block)
+        self.assertIn("launch_segment_pair_device_refined_count_kernel", block)
+        self.assertIn("d_left_exact_ptr,\n            left_count,", block)
+        self.assertIn("g_optix_last_segment_pair_candidate_write_s", block)
+        self.assertNotIn("g_optix_last_segment_pair_candidate_download_s +=", block)
 
     def test_device_kernel_uses_full_left_array_for_absolute_candidate_indices(self) -> None:
         source = WORKLOADS.read_text(encoding="utf-8")

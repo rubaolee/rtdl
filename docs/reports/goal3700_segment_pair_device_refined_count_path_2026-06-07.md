@@ -72,3 +72,7 @@ The only intended claim after pod validation is narrower:
 For prepared segment-pair scalar counts, exact candidate refinement can be performed on the device without changing the app-agnostic segment-pair contract.
 ```
 
+## Supersession Note
+
+Goal3701 later replaces this route as the selected scalar-count implementation with a one-pass exact-count OptiX pipeline. Goal3700 remains useful as the intermediate implementation note and fallback concept: it proved that host exact refinement could be moved to the device, but it still retained a candidate-write pass.
+

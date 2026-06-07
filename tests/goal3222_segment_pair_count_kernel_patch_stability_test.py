@@ -96,12 +96,12 @@ class Goal3222SegmentPairCountKernelPatchStabilityTest(unittest.TestCase):
         self.assertIn("kSegmentPairIntersectionKernelSrc", core)
         self.assertIn("__anyhit__segment_pair_intersection_anyhit", core)
 
-    def test_candidate_and_count_pipelines_patch_the_same_canonical_anchors(self) -> None:
+    def test_candidate_count_and_exact_count_pipelines_patch_the_same_canonical_anchors(self) -> None:
         workloads = _read(WORKLOADS)
 
         self.assertEqual(workloads.count(OLD_RECORD_STRUCT), 2)
-        self.assertEqual(workloads.count(OLD_PARAMS), 2)
-        self.assertEqual(workloads.count(OLD_WRITE), 2)
+        self.assertEqual(workloads.count(OLD_PARAMS), 3)
+        self.assertEqual(workloads.count(OLD_WRITE), 3)
 
         for phrase in (
             "segment-pair candidate device-column kernel record snippet not found",
@@ -110,6 +110,9 @@ class Goal3222SegmentPairCountKernelPatchStabilityTest(unittest.TestCase):
             "segment-pair left-id count kernel record snippet not found",
             "segment-pair left-id count kernel params snippet not found",
             "segment-pair left-id count kernel write snippet not found",
+            "segment-pair exact-count kernel params snippet not found",
+            "segment-pair exact-count kernel anyhit snippet not found",
+            "segment-pair exact-count kernel write snippet not found",
         ):
             self.assertIn(phrase, workloads)
 
