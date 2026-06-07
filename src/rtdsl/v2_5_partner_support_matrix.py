@@ -151,7 +151,10 @@ def v2_5_partner_support_cells() -> tuple[V25PartnerSupportCell, ...]:
                     execution_backend="cuda_numba_preview",
                     requires_neutral_buffer_seam=True,
                     requires_cuda=True,
-                    notes="Numba fallback preview exists for count/sum only",
+                    notes=(
+                        "Numba fallback preview exists for explicit generic grouped/segmented "
+                        "continuations; benchmark promotion still requires pod evidence"
+                    ),
                 )
             )
         else:

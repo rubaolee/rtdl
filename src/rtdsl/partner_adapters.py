@@ -387,6 +387,29 @@ def partner_group_vector_sum_2d_by_key(keys, values_x, values_y, group_count: in
     group_count = int(group_count)
     if group_count < 0:
         raise ValueError("group_count must be non-negative")
+    if partner == "numba":
+        from .numba_partner_continuation import run_numba_grouped_vector_sum_f64x2
+        from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff
+        from .v2_6_neutral_partner_handoff import validate_v2_6_neutral_partner_handoff
+
+        try:
+            handoff = prepare_v2_6_neutral_partner_handoff(
+                {"group_ids": keys, "values_x": values_x, "values_y": values_y},
+                partner="numba",
+                access_modes={"group_ids": "read", "values_x": "read", "values_y": "read"},
+            )
+        except ValueError as exc:
+            raise RuntimeError(f"Numba neutral handoff rejected: {exc}") from exc
+        validation = validate_v2_6_neutral_partner_handoff(handoff)
+        if validation["status"] != "accept":
+            raise RuntimeError(f"Numba neutral handoff rejected: {validation['errors']}")
+        result = run_numba_grouped_vector_sum_f64x2(
+            keys,
+            values_x,
+            values_y,
+            group_count=group_count,
+        )
+        return result["outputs"]["sum_x"], result["outputs"]["sum_y"]
     runtime = _partner_module(partner)
     if runtime["name"] == "triton":
         _require_triton_float64(values_x, name="values_x")
@@ -2022,7 +2045,7 @@ def grouped_vector_sum_2d_partner_columns(
     group_count = int(group_count)
     if group_count < 0:
         raise ValueError("group_count must be non-negative")
-    runtime = _partner_module(partner)
+    normalized_partner = str(partner).strip().lower().replace("-", "_")
     group_ids = vector_columns.get("group_ids", vector_columns.get("source_ids"))
     values_x = vector_columns.get("values_x", vector_columns.get("vector_x"))
     values_y = vector_columns.get("values_y", vector_columns.get("vector_y"))
@@ -2031,6 +2054,69 @@ def grouped_vector_sum_2d_partner_columns(
         raise ValueError(
             "vector_columns must contain group_ids/source_ids and values_x/vector_x plus values_y/vector_y"
         )
+    if normalized_partner == "numba":
+        from .numba_partner_continuation import run_numba_grouped_vector_sum_f64x2
+        from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff
+        from .v2_6_neutral_partner_handoff import validate_v2_6_neutral_partner_handoff
+
+        runtime = _numba_runtime_for_point_columns()
+        row_count = _column_length({"group_ids": group_ids}, "group_ids")
+        if _column_length({"values_x": values_x}, "values_x") != row_count:
+            raise ValueError("values_x length must match group_ids length")
+        if _column_length({"values_y": values_y}, "values_y") != row_count:
+            raise ValueError("values_y length must match group_ids length")
+        try:
+            handoff = prepare_v2_6_neutral_partner_handoff(
+                {"group_ids": group_ids, "values_x": values_x, "values_y": values_y},
+                partner="numba",
+                access_modes={"group_ids": "read", "values_x": "read", "values_y": "read"},
+            )
+        except ValueError as exc:
+            raise RuntimeError(f"Numba neutral handoff rejected: {exc}") from exc
+        validation = validate_v2_6_neutral_partner_handoff(handoff)
+        if validation["status"] != "accept":
+            raise RuntimeError(f"Numba neutral handoff rejected: {validation['errors']}")
+        numba_result = run_numba_grouped_vector_sum_f64x2(
+            group_ids,
+            values_x,
+            values_y,
+            group_count=group_count,
+        )
+        columns = {
+            "group_ids": runtime["tensor"](range(group_count), runtime["int64"], runtime["device"]),
+            "sum_x": numba_result["outputs"]["sum_x"],
+            "sum_y": numba_result["outputs"]["sum_y"],
+        }
+        metadata = {
+            "adapter": "grouped_vector_sum_2d_partner_columns",
+            "partner": runtime["name"],
+            "input_contract": "caller_supplied_grouped_vector_rows_2d",
+            "partner_reference_contract": "generic_grouped_vector_sum_f64x2",
+            "v2_5_partner_continuation_operation": "grouped_vector_sum_f64x2",
+            "v2_5_numba_preview_kernel_used": True,
+            "v2_5_numba_preview_kernel_status": numba_result["status"],
+            "v2_6_neutral_handoff_validation_status": validation["status"],
+            "v2_5_triton_preview_kernel_used": False,
+            "v2_5_cupy_rawkernel_used": False,
+            "v2_5_cupy_presegmented_offsets_used": False,
+            "native_engine_row_contract": "not_called_partner_continuation_only",
+            "group_count": group_count,
+            "row_count": row_count,
+            "direct_device_handoff_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_5_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "claim_boundary": (
+                "Generic grouped vector-sum adapter over caller-supplied Numba CUDA columns. "
+                "It does not call native RT traversal, does not authorize true zero-copy wording, "
+                "and is preview integration evidence only."
+            ),
+        }
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+    runtime = _partner_module(partner)
     if runtime["name"] == "cupy":
         module = runtime["module"]
         group_ids = group_ids.astype(module.int64, copy=False)

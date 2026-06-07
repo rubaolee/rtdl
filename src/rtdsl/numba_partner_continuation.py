@@ -11,6 +11,7 @@ from .partner_protocol import v2_4_phase_timing_metadata
 
 NUMBA_SEGMENTED_COUNT_I64_OPERATION = "segmented_count_i64"
 NUMBA_SEGMENTED_SUM_F64_OPERATION = "segmented_sum_f64"
+NUMBA_GROUPED_VECTOR_SUM_F64X2_OPERATION = "grouped_vector_sum_f64x2"
 NUMBA_SEGMENTED_MIN_F64_OPERATION = "segmented_min_f64"
 NUMBA_SEGMENTED_MAX_F64_OPERATION = "segmented_max_f64"
 NUMBA_COMPACT_MASK_I64_OPERATION = "compact_mask_i64"
@@ -45,6 +46,15 @@ def describe_numba_segmented_sum_f64() -> dict[str, object]:
     descriptor = _base_numba_descriptor(NUMBA_SEGMENTED_SUM_F64_OPERATION)
     descriptor["input_columns"] = ("group_ids:int64", "values:float64")
     descriptor["output_columns"] = ("sums:float64",)
+    return descriptor
+
+
+def describe_numba_grouped_vector_sum_f64x2() -> dict[str, object]:
+    descriptor = _base_numba_descriptor(NUMBA_GROUPED_VECTOR_SUM_F64X2_OPERATION)
+    descriptor["input_columns"] = ("group_ids:int64", "values_x:float64", "values_y:float64")
+    descriptor["output_columns"] = ("sum_x:float64", "sum_y:float64")
+    descriptor["component_count"] = 2
+    descriptor["componentwise_reduction"] = "independent_float64_sum_per_group"
     return descriptor
 
 
@@ -264,6 +274,67 @@ def run_numba_segmented_sum_f64(
         outputs={"sums": output},
         elapsed=elapsed,
         source="run_numba_segmented_sum_f64",
+    )
+
+
+def run_numba_grouped_vector_sum_f64x2(
+    group_ids: Any,
+    values_x: Any,
+    values_y: Any,
+    *,
+    group_count: int,
+    block_size: int = 256,
+    validate_group_ids: bool = True,
+) -> dict[str, object]:
+    """Run grouped two-component vector sum over Numba CUDA arrays."""
+
+    cuda, np = _import_numba_stack()
+    group_ids = _as_numba_cuda_vector(group_ids, name="group_ids", dtype=np.int64, cuda=cuda, np=np)
+    values_x = _as_numba_cuda_vector(values_x, name="values_x", dtype=np.float64, cuda=cuda, np=np)
+    values_y = _as_numba_cuda_vector(values_y, name="values_y", dtype=np.float64, cuda=cuda, np=np)
+    if tuple(group_ids.shape) != tuple(values_x.shape) or tuple(group_ids.shape) != tuple(values_y.shape):
+        raise ValueError("group_ids, values_x, and values_y must have the same shape")
+    group_count, block_size, row_count = _validate_group_run_shape(
+        group_ids,
+        group_count=group_count,
+        block_size=block_size,
+        validate_group_ids=validate_group_ids,
+        cuda=cuda,
+        np=np,
+    )
+
+    cuda.synchronize()
+    started = perf_counter()
+    sum_x = cuda.device_array((group_count,), dtype=np.float64)
+    sum_y = cuda.device_array((group_count,), dtype=np.float64)
+    zeros = np.zeros((group_count,), dtype=np.float64)
+    sum_x.copy_to_device(zeros)
+    sum_y.copy_to_device(zeros)
+    if row_count:
+        grid = ((row_count + block_size - 1) // block_size,)
+        _cached_numba_kernel(cuda, _numba_grouped_vector_sum_f64x2_kernel)[grid, block_size](
+            group_ids,
+            values_x,
+            values_y,
+            sum_x,
+            sum_y,
+            row_count,
+            group_count,
+        )
+    cuda.synchronize()
+    elapsed = perf_counter() - started
+
+    return _numba_run_result(
+        operation=NUMBA_GROUPED_VECTOR_SUM_F64X2_OPERATION,
+        outputs={"sum_x": sum_x, "sum_y": sum_y},
+        elapsed=elapsed,
+        source="run_numba_grouped_vector_sum_f64x2",
+        extra_metadata={
+            "group_count": group_count,
+            "row_count": row_count,
+            "component_count": 2,
+            "componentwise_reduction": "independent_float64_sum_per_group",
+        },
     )
 
 
@@ -960,6 +1031,19 @@ def _numba_segmented_sum_f64_kernel(cuda: Any):
             group = group_ids[index]
             if 0 <= group < group_count:
                 cuda.atomic.add(output, group, values[index])
+
+    return kernel
+
+
+def _numba_grouped_vector_sum_f64x2_kernel(cuda: Any):
+    @cuda.jit
+    def kernel(group_ids, values_x, values_y, output_x, output_y, row_count, group_count):
+        index = cuda.grid(1)
+        if index < row_count:
+            group = group_ids[index]
+            if 0 <= group < group_count:
+                cuda.atomic.add(output_x, group, values_x[index])
+                cuda.atomic.add(output_y, group, values_y[index])
 
     return kernel
 
