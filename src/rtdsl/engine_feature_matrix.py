@@ -80,6 +80,20 @@ _FEATURE_MATRIX: dict[str, dict[str, EngineFeatureSupport]] = {
         "hiprt": _support("point_nearest_segment_2d", "hiprt", NATIVE, "HIPRT point-nearest-segment 2D path when the library is available."),
         "apple_rt": _support("point_nearest_segment_2d", "apple_rt", NATIVE_ASSISTED, "Apple RT point-nearest-segment native-assisted path."),
     },
+    "point_group_nearest_witness_2d": {
+        "embree": _support("point_group_nearest_witness_2d", "embree", COMPATIBILITY_FALLBACK, "Embree uses app-layer grouping over nearest-candidate helpers; no generic point-group witness export."),
+        "optix": _support("point_group_nearest_witness_2d", "optix", NATIVE, "Prepared OptiX point-group nearest witness rows."),
+        "vulkan": _support("point_group_nearest_witness_2d", "vulkan", COMPATIBILITY_FALLBACK, "No prepared generic point-group nearest witness export."),
+        "hiprt": _support("point_group_nearest_witness_2d", "hiprt", NATIVE, "Goal3773 prepared HIPRT point-group nearest witness rows."),
+        "apple_rt": _support("point_group_nearest_witness_2d", "apple_rt", COMPATIBILITY_FALLBACK, "No prepared generic point-group nearest witness export."),
+    },
+    "point_group_nearest_max_distance_2d": {
+        "embree": _support("point_group_nearest_max_distance_2d", "embree", COMPATIBILITY_FALLBACK, "Embree has a legacy max-distance nearest-candidate helper but no generic point-group reduction contract."),
+        "optix": _support("point_group_nearest_max_distance_2d", "optix", NATIVE, "Prepared OptiX point-group nearest max-distance reduction."),
+        "vulkan": _support("point_group_nearest_max_distance_2d", "vulkan", COMPATIBILITY_FALLBACK, "No prepared generic point-group max-distance reduction export."),
+        "hiprt": _support("point_group_nearest_max_distance_2d", "hiprt", NATIVE, "Goal3773 prepared HIPRT point-group nearest max-distance reduction."),
+        "apple_rt": _support("point_group_nearest_max_distance_2d", "apple_rt", COMPATIBILITY_FALLBACK, "No prepared generic point-group max-distance reduction export."),
+    },
     "ray_triangle_hit_count_2d": {
         "embree": _support("ray_triangle_hit_count_2d", "embree", NATIVE, "Embree ray/triangle hit-count traversal."),
         "optix": _support("ray_triangle_hit_count_2d", "optix", NATIVE, "OptiX ray/triangle hit-count traversal."),

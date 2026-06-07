@@ -1220,12 +1220,14 @@ from .hiprt_runtime import prepare_hiprt_segment_pair_intersection_2d
 from .hiprt_runtime import prepare_hiprt_shape_pair_active_count_2d
 from .hiprt_runtime import prepare_hiprt_aabb_index_2d
 from .hiprt_runtime import prepare_hiprt_fixed_radius_neighbors_3d
+from .hiprt_runtime import prepare_hiprt_point_group_nearest_witness_2d
 from .hiprt_runtime import prepare_hiprt_graph_csr
 from .hiprt_runtime import prepare_hiprt
 from .hiprt_runtime import PreparedHiprtDbKernel
 from .hiprt_runtime import PreparedHiprtDbTable
 from .hiprt_runtime import PreparedHiprtFixedRadiusNeighbors3D
 from .hiprt_runtime import PreparedHiprtFixedRadiusKernel
+from .hiprt_runtime import PreparedHiprtPointGroupNearestWitness2D
 from .hiprt_runtime import PreparedHiprtGraphCSR
 from .hiprt_runtime import PreparedHiprtGraphKernel
 from .hiprt_runtime import PreparedHiprtKernel
@@ -2288,6 +2290,7 @@ __all__ = [
     "prepare_hiprt",
     "prepare_hiprt_db_table",
     "prepare_hiprt_fixed_radius_neighbors_3d",
+    "prepare_hiprt_point_group_nearest_witness_2d",
     "prepare_hiprt_graph_csr",
     "prepare_hiprt_rays_2d",
     "prepare_hiprt_ray_triangle_hit_count",
@@ -2298,6 +2301,7 @@ __all__ = [
     "PreparedHiprtDbTable",
     "PreparedHiprtFixedRadiusKernel",
     "PreparedHiprtFixedRadiusNeighbors3D",
+    "PreparedHiprtPointGroupNearestWitness2D",
     "PreparedHiprtGraphCSR",
     "PreparedHiprtGraphKernel",
     "PreparedHiprtKernel",

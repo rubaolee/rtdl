@@ -1102,6 +1102,170 @@ extern "C" __global__ void RtdlFixedRadiusNeighbors2DKernel(
 )KERNEL";
 }
 
+const char* point_group_nearest_witness_2d_kernel_source() {
+    return R"KERNEL(
+#include <hiprt/hiprt_device.h>
+#include <hiprt/hiprt_vec.h>
+
+struct RtdlHiprtPoint2DDevice {
+    uint32_t id;
+    float x;
+    float y;
+};
+
+struct RtdlHiprtPointGroupBounds2DDevice {
+    float min_x;
+    float min_y;
+    float max_x;
+    float max_y;
+    uint32_t id;
+    uint32_t point_offset;
+    uint32_t point_count;
+    uint32_t pad;
+};
+
+struct RtdlFixedRadiusNeighborRow {
+    uint32_t query_id;
+    uint32_t neighbor_id;
+    double distance;
+};
+
+struct RtdlHiprtPointGroupNearestParams {
+    float radius;
+    float max_radius;
+};
+
+__device__ float minDistanceSqToPointGroup2D(float qx, float qy, const RtdlHiprtPointGroupBounds2DDevice& group) {
+    const float dx = qx < group.min_x ? (group.min_x - qx) : (qx > group.max_x ? (qx - group.max_x) : 0.0f);
+    const float dy = qy < group.min_y ? (group.min_y - qy) : (qy > group.max_y ? (qy - group.max_y) : 0.0f);
+    return dx * dx + dy * dy;
+}
+
+__device__ bool intersectRtdlPointGroupBounds2D(const hiprtRay& ray, const void* data, void* payload, hiprtHit& hit) {
+    const RtdlHiprtPointGroupBounds2DDevice* groups = reinterpret_cast<const RtdlHiprtPointGroupBounds2DDevice*>(data);
+    const RtdlHiprtPointGroupNearestParams* params = reinterpret_cast<const RtdlHiprtPointGroupNearestParams*>(payload);
+    const RtdlHiprtPointGroupBounds2DDevice group = groups[hit.primID];
+    const float radius = params->radius;
+    const float min_distance_sq = minDistanceSqToPointGroup2D(ray.origin.x, ray.origin.y, group);
+    if (min_distance_sq > radius * radius) {
+        return false;
+    }
+    hit.t = sqrtf(min_distance_sq);
+    return true;
+}
+
+extern "C" __global__ void RtdlPointGroupNearestWitness2DKernel(
+    hiprtGeometry geom,
+    const RtdlHiprtPoint2DDevice* queries,
+    const RtdlHiprtPoint2DDevice* search_points,
+    const RtdlHiprtPointGroupBounds2DDevice* groups,
+    uint32_t query_count,
+    RtdlFixedRadiusNeighborRow* rows,
+    RtdlHiprtPointGroupNearestParams* params,
+    hiprtFuncTable table) {
+    const uint32_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index >= query_count) {
+        return;
+    }
+    const RtdlHiprtPoint2DDevice query = queries[index];
+    const float radius = params->radius;
+    const float radius_sq = radius * radius;
+    float best_dist_sq = 3.402823466e+38F;
+    uint32_t best_id = 0xFFFFFFFFu;
+    bool found = false;
+
+    hiprtRay ray;
+    ray.origin = {query.x, query.y, 0.0f};
+    ray.direction = {0.0f, 0.0f, 1.0f};
+    ray.minT = 0.0f;
+    ray.maxT = 0.0f;
+
+    hiprtGeomCustomTraversalAnyHit traversal(geom, ray, hiprtTraversalHintDefault, params, table);
+    while (traversal.getCurrentState() != hiprtTraversalStateFinished) {
+        hiprtHit hit = traversal.getNextHit();
+        if (!hit.hasHit()) {
+            continue;
+        }
+        const RtdlHiprtPointGroupBounds2DDevice group = groups[hit.primID];
+        for (uint32_t point_index = 0; point_index < group.point_count; ++point_index) {
+            const RtdlHiprtPoint2DDevice target = search_points[group.point_offset + point_index];
+            const float dx = target.x - query.x;
+            const float dy = target.y - query.y;
+            const float dist_sq = dx * dx + dy * dy;
+            if (dist_sq > radius_sq) {
+                continue;
+            }
+            if (!found || dist_sq < best_dist_sq ||
+                    (dist_sq == best_dist_sq && target.id < best_id)) {
+                found = true;
+                best_dist_sq = dist_sq;
+                best_id = target.id;
+            }
+        }
+    }
+
+    rows[index].query_id = query.id;
+    rows[index].neighbor_id = best_id;
+    rows[index].distance = found ? static_cast<double>(sqrtf(best_dist_sq)) : static_cast<double>(3.402823466e+38F);
+}
+
+__device__ bool betterMaxNearestWitnessRow(const RtdlFixedRadiusNeighborRow& candidate, const RtdlFixedRadiusNeighborRow& incumbent) {
+    if (candidate.distance > incumbent.distance) {
+        return true;
+    }
+    if (candidate.distance < incumbent.distance) {
+        return false;
+    }
+    if (candidate.query_id < incumbent.query_id) {
+        return true;
+    }
+    if (candidate.query_id > incumbent.query_id) {
+        return false;
+    }
+    return candidate.neighbor_id < incumbent.neighbor_id;
+}
+
+extern "C" __global__ void RtdlPointGroupNearestMaxDistance2DKernel(
+    const RtdlFixedRadiusNeighborRow* input,
+    uint32_t count,
+    RtdlFixedRadiusNeighborRow* output) {
+    __shared__ RtdlFixedRadiusNeighborRow scratch[128];
+    const uint32_t tid = threadIdx.x;
+    RtdlFixedRadiusNeighborRow best;
+    best.query_id = 0xFFFFFFFFu;
+    best.neighbor_id = 0xFFFFFFFFu;
+    best.distance = -1.0;
+
+    for (uint32_t index = tid; index < count; index += blockDim.x) {
+        RtdlFixedRadiusNeighborRow row = input[index];
+        if (row.neighbor_id == 0xFFFFFFFFu) {
+            if (row.distance < 0.0) {
+                continue;
+            }
+            row.distance = 1.7976931348623157e308;
+        } else if (!isfinite(row.distance)) {
+            row.distance = 1.7976931348623157e308;
+        }
+        if (betterMaxNearestWitnessRow(row, best)) {
+            best = row;
+        }
+    }
+
+    scratch[tid] = best;
+    __syncthreads();
+    for (uint32_t stride = blockDim.x >> 1u; stride > 0u; stride >>= 1u) {
+        if (tid < stride && betterMaxNearestWitnessRow(scratch[tid + stride], scratch[tid])) {
+            scratch[tid] = scratch[tid + stride];
+        }
+        __syncthreads();
+    }
+    if (tid == 0u) {
+        output[0] = scratch[0];
+    }
+}
+)KERNEL";
+}
+
 const char* bfs_expand_kernel_source() {
     return R"KERNEL(
 #include <hiprt/hiprt_device.h>

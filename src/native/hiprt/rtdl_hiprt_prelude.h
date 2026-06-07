@@ -97,6 +97,16 @@ struct RtdlAabb2D {
     double max_y;
 };
 
+struct RtdlPointGroupBounds2D {
+    uint32_t id;
+    uint32_t point_offset;
+    uint32_t point_count;
+    double min_x;
+    double min_y;
+    double max_x;
+    double max_y;
+};
+
 struct RtdlPolygonRef {
     uint32_t id;
     uint32_t vertex_offset;
@@ -278,6 +288,17 @@ struct RtdlHiprtAabb2DDevice {
     float max_y;
 };
 
+struct RtdlHiprtPointGroupBounds2DDevice {
+    float min_x;
+    float min_y;
+    float max_x;
+    float max_y;
+    uint32_t id;
+    uint32_t point_offset;
+    uint32_t point_count;
+    uint32_t pad;
+};
+
 struct RtdlHiprtPolygonRefDevice {
     uint32_t id;
     uint32_t vertex_offset;
@@ -315,6 +336,11 @@ struct RtdlHiprtFixedRadiusParams {
 
 struct RtdlHiprtPointSegmentParams {
     float radius;
+};
+
+struct RtdlHiprtPointGroupNearestParams {
+    float radius;
+    float max_radius;
 };
 
 struct RtdlHiprtAabb {

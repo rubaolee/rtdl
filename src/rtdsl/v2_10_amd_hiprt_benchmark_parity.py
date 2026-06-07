@@ -10,7 +10,7 @@ from .engine_feature_matrix import engine_feature_support
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION = "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3772.v1"
+V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION = "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3773.v1"
 V2_10_AMD_HIPRT_BENCHMARK_PARITY_STATUS = "planning_gate_not_amd_hardware_evidence"
 
 PARITY_STAGES = (
@@ -102,11 +102,20 @@ class V210AmdHiprtBenchmarkParityRow:
 V2_10_AMD_HIPRT_BENCHMARK_PARITY_ROWS: tuple[V210AmdHiprtBenchmarkParityRow, ...] = (
     V210AmdHiprtBenchmarkParityRow(
         app="hausdorff_xhd",
-        required_engine_features=("point_nearest_segment_2d", "knn_rows_2d"),
-        missing_generic_contracts=("nearest_witness_output_columns", "grouped_max_distance_reduction"),
+        required_engine_features=(
+            "point_nearest_segment_2d",
+            "knn_rows_2d",
+            "point_group_nearest_witness_2d",
+            "point_group_nearest_max_distance_2d",
+        ),
+        missing_generic_contracts=("nearest_witness_output_columns",),
         parity_stage="needs_generic_hiprt_extension",
-        first_amd_goal="HIPRT nearest-witness columns plus grouped max reduction parity",
-        rationale="HIPRT has nearest/knn primitives, but the benchmark needs the v2.x witness-column and reduction contract.",
+        first_amd_goal="HIPRT nearest-witness device columns parity",
+        rationale=(
+            "HIPRT has nearest/knn primitives, and Goal3773 adds generic prepared point-group nearest witness rows "
+            "plus max-distance reduction on the NVIDIA CUDA/Orochi route. The benchmark still needs the "
+            "device-column output contract before AMD functional pod readiness can be claimed."
+        ),
         needs_amd_pod=True,
     ),
     V210AmdHiprtBenchmarkParityRow(

@@ -223,6 +223,18 @@ class _RtdlAabb2D(ctypes.Structure):
     ]
 
 
+class _RtdlPointGroupBounds2D(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("point_offset", ctypes.c_uint32),
+        ("point_count", ctypes.c_uint32),
+        ("min_x", ctypes.c_double),
+        ("min_y", ctypes.c_double),
+        ("max_x", ctypes.c_double),
+        ("max_y", ctypes.c_double),
+    ]
+
+
 class _RtdlPolygonRef(ctypes.Structure):
     _fields_ = [
         ("id", ctypes.c_uint32),
@@ -632,6 +644,44 @@ def _hiprt_lib() -> ctypes.CDLL:
             ctypes.c_size_t,
         ]
         lib.rtdl_hiprt_aggregate_prepared_fixed_radius_ranked_summary_batch_3d.restype = ctypes.c_int
+    if hasattr(lib, "rtdl_hiprt_prepare_point_group_nearest_witness_2d"):
+        lib.rtdl_hiprt_prepare_point_group_nearest_witness_2d.argtypes = [
+            ctypes.POINTER(_RtdlPoint),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlPointGroupBounds2D),
+            ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        lib.rtdl_hiprt_prepare_point_group_nearest_witness_2d.restype = ctypes.c_int
+    if hasattr(lib, "rtdl_hiprt_run_prepared_point_group_nearest_witness_2d"):
+        lib.rtdl_hiprt_run_prepared_point_group_nearest_witness_2d.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint),
+            ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.POINTER(ctypes.POINTER(_RtdlFixedRadiusNeighborRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        lib.rtdl_hiprt_run_prepared_point_group_nearest_witness_2d.restype = ctypes.c_int
+    if hasattr(lib, "rtdl_hiprt_reduce_prepared_point_group_nearest_max_distance_2d"):
+        lib.rtdl_hiprt_reduce_prepared_point_group_nearest_max_distance_2d.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint),
+            ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.POINTER(_RtdlFixedRadiusNeighborRow),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        lib.rtdl_hiprt_reduce_prepared_point_group_nearest_max_distance_2d.restype = ctypes.c_int
+    if hasattr(lib, "rtdl_hiprt_destroy_prepared_point_group_nearest_witness_2d"):
+        lib.rtdl_hiprt_destroy_prepared_point_group_nearest_witness_2d.argtypes = [ctypes.c_void_p]
+        lib.rtdl_hiprt_destroy_prepared_point_group_nearest_witness_2d.restype = None
     lib.rtdl_hiprt_destroy_prepared_fixed_radius_neighbors_3d.argtypes = [ctypes.c_void_p]
     lib.rtdl_hiprt_destroy_prepared_fixed_radius_neighbors_3d.restype = None
     lib.rtdl_hiprt_run_fixed_radius_neighbors_2d.argtypes = [
@@ -1142,6 +1192,57 @@ def _normalize_hiprt_aabb2d(box, index: int) -> _RtdlAabb2D:
     if max_x < min_x or max_y < min_y:
         raise ValueError("AABB max bounds must be greater than or equal to min bounds")
     return _RtdlAabb2D(int(box_id), min_x, min_y, max_x, max_y)
+
+
+def _normalize_hiprt_point_group_bounds2d(group, index: int) -> _RtdlPointGroupBounds2D:
+    try:
+        group_id = int(getattr(group, "id", index))
+        point_offset = int(getattr(group, "point_offset"))
+        point_count = int(getattr(group, "point_count"))
+        min_x = float(getattr(group, "min_x"))
+        min_y = float(getattr(group, "min_y"))
+        max_x = float(getattr(group, "max_x"))
+        max_y = float(getattr(group, "max_y"))
+    except AttributeError:
+        try:
+            if isinstance(group, dict):
+                group_id = int(group.get("id", index))
+                point_offset = int(group["point_offset"])
+                point_count = int(group["point_count"])
+                min_x = float(group["min_x"])
+                min_y = float(group["min_y"])
+                max_x = float(group["max_x"])
+                max_y = float(group["max_y"])
+            elif len(group) >= 7:
+                group_id = int(group[0])
+                point_offset = int(group[1])
+                point_count = int(group[2])
+                min_x = float(group[3])
+                min_y = float(group[4])
+                max_x = float(group[5])
+                max_y = float(group[6])
+            else:
+                raise TypeError
+        except (KeyError, TypeError):
+            raise TypeError(
+                "HIPRT point_group_nearest requires groups with id, point_offset, "
+                "point_count, min_x, min_y, max_x, max_y"
+            ) from None
+    if point_offset < 0:
+        raise ValueError("HIPRT point_group_nearest point_offset must be non-negative")
+    if point_count <= 0:
+        raise ValueError("HIPRT point_group_nearest point_count must be positive")
+    if max_x < min_x or max_y < min_y:
+        raise ValueError("HIPRT point_group_nearest group bounds require max_x >= min_x and max_y >= min_y")
+    return _RtdlPointGroupBounds2D(group_id, point_offset, point_count, min_x, min_y, max_x, max_y)
+
+
+def _encode_point2d_array(point_records: tuple[_RtdlPoint, ...]):
+    return (_RtdlPoint * len(point_records))(*point_records)
+
+
+def _encode_point_group_bounds2d_array(group_records: tuple[_RtdlPointGroupBounds2D, ...]):
+    return (_RtdlPointGroupBounds2D * len(group_records))(*group_records)
 
 
 class PreparedHiprtAabbIndex2D:
@@ -3292,6 +3393,204 @@ def prepare_hiprt_fixed_radius_neighbors_3d(
         detail = error.value.decode("utf-8", errors="replace")
         raise RuntimeError(f"rtdl_hiprt_prepare_fixed_radius_neighbors_3d failed with status {status}: {detail}")
     return PreparedHiprtFixedRadiusNeighbors3D(handle, max_radius=float(radius))
+
+
+def _hiprt_prepared_point_group_nearest_symbols_available() -> bool:
+    try:
+        lib = _hiprt_lib()
+    except Exception:
+        return False
+    return (
+        getattr(lib, "rtdl_hiprt_prepare_point_group_nearest_witness_2d", None) is not None
+        and getattr(lib, "rtdl_hiprt_run_prepared_point_group_nearest_witness_2d", None) is not None
+        and getattr(lib, "rtdl_hiprt_reduce_prepared_point_group_nearest_max_distance_2d", None) is not None
+        and getattr(lib, "rtdl_hiprt_destroy_prepared_point_group_nearest_witness_2d", None) is not None
+    )
+
+
+class PreparedHiprtPointGroupNearestWitness2D:
+    def __init__(self, handle: ctypes.c_void_p, *, empty: bool = False, max_radius: float | None = None) -> None:
+        self._handle = handle
+        self._empty = empty
+        self._max_radius = max_radius
+
+    def close(self) -> None:
+        if self._handle:
+            _hiprt_lib().rtdl_hiprt_destroy_prepared_point_group_nearest_witness_2d(self._handle)
+            self._handle = ctypes.c_void_p()
+
+    def __enter__(self) -> "PreparedHiprtPointGroupNearestWitness2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+    def _validate_radius(self, radius: float) -> float:
+        requested = float(radius)
+        if not math.isfinite(requested):
+            raise ValueError("Prepared HIPRT point_group_nearest radius must be finite")
+        if requested < 0.0:
+            raise ValueError("Prepared HIPRT point_group_nearest radius must be non-negative")
+        if self._max_radius is not None and requested > self._max_radius + 1e-6:
+            raise ValueError("Prepared HIPRT point_group_nearest radius must not exceed the prepared max_radius")
+        return requested
+
+    def nearest_witness_rows(self, query_points, *, radius: float) -> tuple[dict[str, int | float], ...]:
+        requested = self._validate_radius(radius)
+        query_records = tuple(_normalize_hiprt_point2d(point, index) for index, point in enumerate(query_points))
+        if not query_records:
+            return ()
+        if self._empty:
+            return tuple(
+                {
+                    "query_id": int(point.id),
+                    "neighbor_id": 0xFFFFFFFF,
+                    "distance": math.inf,
+                }
+                for point in query_records
+            )
+        if not self._handle:
+            raise RuntimeError("prepared HIPRT point_group_nearest handle is closed")
+        symbol = getattr(_hiprt_lib(), "rtdl_hiprt_run_prepared_point_group_nearest_witness_2d", None)
+        if symbol is None:
+            raise RuntimeError(
+                "Loaded HIPRT backend library does not export "
+                "rtdl_hiprt_run_prepared_point_group_nearest_witness_2d. "
+                "Rebuild it with 'make build-hiprt' from current main."
+            )
+        query_array = _encode_point2d_array(query_records)
+        rows_ptr = ctypes.POINTER(_RtdlFixedRadiusNeighborRow)()
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            self._handle,
+            query_array,
+            len(query_records),
+            requested,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            ctypes.sizeof(error),
+        )
+        if status != 0:
+            detail = error.value.decode("utf-8", errors="replace")
+            raise RuntimeError(
+                "rtdl_hiprt_run_prepared_point_group_nearest_witness_2d "
+                f"failed with status {status}: {detail}"
+            )
+        try:
+            return tuple(
+                {
+                    "query_id": int(rows_ptr[index].query_id),
+                    "neighbor_id": int(rows_ptr[index].neighbor_id),
+                    "distance": float(rows_ptr[index].distance),
+                }
+                for index in range(row_count.value)
+            )
+        finally:
+            _hiprt_lib().rtdl_hiprt_free_rows(rows_ptr)
+
+    def nearest_max_distance_row(self, query_points, *, radius: float) -> dict[str, int | float]:
+        requested = self._validate_radius(radius)
+        query_records = tuple(_normalize_hiprt_point2d(point, index) for index, point in enumerate(query_points))
+        if not query_records:
+            return {
+                "query_id": 0xFFFFFFFF,
+                "neighbor_id": 0xFFFFFFFF,
+                "distance": math.inf,
+                "native_reduction": "point_group_nearest_max_distance",
+            }
+        if self._empty:
+            first_query_id = min(int(point.id) for point in query_records)
+            return {
+                "query_id": first_query_id,
+                "neighbor_id": 0xFFFFFFFF,
+                "distance": math.inf,
+                "native_reduction": "point_group_nearest_max_distance",
+            }
+        if not self._handle:
+            raise RuntimeError("prepared HIPRT point_group_nearest handle is closed")
+        symbol = getattr(_hiprt_lib(), "rtdl_hiprt_reduce_prepared_point_group_nearest_max_distance_2d", None)
+        if symbol is None:
+            raise RuntimeError(
+                "Loaded HIPRT backend library does not export "
+                "rtdl_hiprt_reduce_prepared_point_group_nearest_max_distance_2d. "
+                "Rebuild it with 'make build-hiprt' from current main."
+            )
+        query_array = _encode_point2d_array(query_records)
+        row = _RtdlFixedRadiusNeighborRow()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            self._handle,
+            query_array,
+            len(query_records),
+            requested,
+            ctypes.byref(row),
+            error,
+            ctypes.sizeof(error),
+        )
+        if status != 0:
+            detail = error.value.decode("utf-8", errors="replace")
+            raise RuntimeError(
+                "rtdl_hiprt_reduce_prepared_point_group_nearest_max_distance_2d "
+                f"failed with status {status}: {detail}"
+            )
+        return {
+            "query_id": int(row.query_id),
+            "neighbor_id": int(row.neighbor_id),
+            "distance": float(row.distance),
+            "native_reduction": "point_group_nearest_max_distance",
+        }
+
+
+def prepare_hiprt_point_group_nearest_witness_2d(
+    search_points,
+    groups,
+    *,
+    max_radius: float,
+) -> PreparedHiprtPointGroupNearestWitness2D:
+    if not math.isfinite(float(max_radius)):
+        raise ValueError("prepare_hiprt_point_group_nearest_witness_2d max_radius must be finite")
+    if float(max_radius) < 0.0:
+        raise ValueError("prepare_hiprt_point_group_nearest_witness_2d max_radius must be non-negative")
+    search_records = tuple(_normalize_hiprt_point2d(point, index) for index, point in enumerate(search_points))
+    group_records = tuple(_normalize_hiprt_point_group_bounds2d(group, index) for index, group in enumerate(groups))
+    search_count = len(search_records)
+    for group in group_records:
+        if int(group.point_offset) + int(group.point_count) > search_count:
+            raise ValueError("HIPRT point_group_nearest group point span exceeds search point count")
+    if not search_records or not group_records:
+        return PreparedHiprtPointGroupNearestWitness2D(
+            ctypes.c_void_p(),
+            empty=True,
+            max_radius=float(max_radius),
+        )
+    if not _hiprt_prepared_point_group_nearest_symbols_available():
+        raise RuntimeError("current HIPRT library does not export prepared 2D point-group nearest witness symbols")
+    search_array = _encode_point2d_array(search_records)
+    group_array = _encode_point_group_bounds2d_array(group_records)
+    handle = ctypes.c_void_p()
+    error = ctypes.create_string_buffer(4096)
+    status = _hiprt_lib().rtdl_hiprt_prepare_point_group_nearest_witness_2d(
+        search_array,
+        len(search_records),
+        group_array,
+        len(group_records),
+        float(max_radius),
+        ctypes.byref(handle),
+        error,
+        ctypes.sizeof(error),
+    )
+    if status != 0:
+        detail = error.value.decode("utf-8", errors="replace")
+        raise RuntimeError(f"rtdl_hiprt_prepare_point_group_nearest_witness_2d failed with status {status}: {detail}")
+    return PreparedHiprtPointGroupNearestWitness2D(handle, max_radius=float(max_radius))
 
 
 def _unsupported_hiprt_peer_workload(predicate_name: str, detail: str) -> NotImplementedError:

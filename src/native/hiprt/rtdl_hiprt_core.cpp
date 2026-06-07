@@ -268,6 +268,61 @@ struct PreparedFixedRadiusNeighbors3D {
     PreparedFixedRadiusNeighbors3D& operator=(PreparedFixedRadiusNeighbors3D&&) = delete;
 };
 
+struct PreparedPointGroupNearestWitness2D {
+    HiprtRuntime runtime;
+    DeviceAllocation search_device;
+    DeviceAllocation group_device;
+    DeviceAllocation aabb_device;
+    DeviceAllocation params_device;
+    hiprtGeometry geometry{};
+    hiprtFuncTable func_table{};
+    oroFunction witness_kernel{};
+    oroFunction max_reduce_kernel{};
+    size_t search_count{};
+    size_t group_count{};
+    float max_radius{};
+
+    PreparedPointGroupNearestWitness2D(
+        HiprtRuntime&& runtime_in,
+        DeviceAllocation&& search_device_in,
+        DeviceAllocation&& group_device_in,
+        DeviceAllocation&& aabb_device_in,
+        DeviceAllocation&& params_device_in,
+        hiprtGeometry geometry_in,
+        hiprtFuncTable func_table_in,
+        oroFunction witness_kernel_in,
+        size_t search_count_in,
+        size_t group_count_in,
+        float max_radius_in)
+        : runtime(std::move(runtime_in)),
+          search_device(std::move(search_device_in)),
+          group_device(std::move(group_device_in)),
+          aabb_device(std::move(aabb_device_in)),
+          params_device(std::move(params_device_in)),
+          geometry(geometry_in),
+          func_table(func_table_in),
+          witness_kernel(witness_kernel_in),
+          search_count(search_count_in),
+          group_count(group_count_in),
+          max_radius(max_radius_in) {}
+
+    ~PreparedPointGroupNearestWitness2D() {
+        if (func_table != nullptr) {
+            hiprtDestroyFuncTable(runtime.context, func_table);
+            func_table = nullptr;
+        }
+        if (geometry != nullptr) {
+            hiprtDestroyGeometry(runtime.context, geometry);
+            geometry = nullptr;
+        }
+    }
+
+    PreparedPointGroupNearestWitness2D(const PreparedPointGroupNearestWitness2D&) = delete;
+    PreparedPointGroupNearestWitness2D& operator=(const PreparedPointGroupNearestWitness2D&) = delete;
+    PreparedPointGroupNearestWitness2D(PreparedPointGroupNearestWitness2D&&) = delete;
+    PreparedPointGroupNearestWitness2D& operator=(PreparedPointGroupNearestWitness2D&&) = delete;
+};
+
 struct PreparedGraphCSR {
     HiprtRuntime runtime;
     DeviceAllocation row_offset_device;
@@ -518,6 +573,59 @@ std::vector<RtdlHiprtAabb> encode_aabb_index_aabbs(const RtdlHiprtAabb2DDevice* 
         aabbs.push_back({
             {std::min(boxes[i].min_x, boxes[i].max_x) - eps, std::min(boxes[i].min_y, boxes[i].max_y) - eps, -eps, 0.0f},
             {std::max(boxes[i].min_x, boxes[i].max_x) + eps, std::max(boxes[i].min_y, boxes[i].max_y) + eps, eps, 0.0f},
+        });
+    }
+    return aabbs;
+}
+
+std::vector<RtdlHiprtPointGroupBounds2DDevice> encode_point_group_bounds_2d(
+    const RtdlPointGroupBounds2D* groups,
+    size_t group_count,
+    size_t search_count) {
+    std::vector<RtdlHiprtPointGroupBounds2DDevice> values;
+    values.reserve(group_count);
+    for (size_t i = 0; i < group_count; ++i) {
+        validate_aabb2d_bounds(groups[i].min_x, groups[i].min_y, groups[i].max_x, groups[i].max_y);
+        const uint64_t offset = static_cast<uint64_t>(groups[i].point_offset);
+        const uint64_t count = static_cast<uint64_t>(groups[i].point_count);
+        if (count == 0) {
+            throw std::runtime_error("point_group_nearest group point_count must be positive");
+        }
+        if (offset + count > static_cast<uint64_t>(search_count)) {
+            throw std::runtime_error("point_group_nearest group point span exceeds search point count");
+        }
+        RtdlHiprtPointGroupBounds2DDevice packed{
+            static_cast<float>(groups[i].min_x),
+            static_cast<float>(groups[i].min_y),
+            static_cast<float>(groups[i].max_x),
+            static_cast<float>(groups[i].max_y),
+            groups[i].id,
+            groups[i].point_offset,
+            groups[i].point_count,
+            0u,
+        };
+        if (!std::isfinite(packed.min_x) || !std::isfinite(packed.min_y)
+                || !std::isfinite(packed.max_x) || !std::isfinite(packed.max_y)) {
+            throw std::runtime_error("point_group_nearest group bounds are outside float32 HIPRT execution range");
+        }
+        values.push_back(packed);
+    }
+    return values;
+}
+
+std::vector<RtdlHiprtAabb> encode_point_group_bounds_aabbs_2d(
+    const RtdlHiprtPointGroupBounds2DDevice* groups,
+    size_t group_count,
+    float max_radius) {
+    std::vector<RtdlHiprtAabb> aabbs;
+    aabbs.reserve(group_count);
+    constexpr float eps = 1.0e-4f;
+    const float pad = max_radius + eps;
+    const float z_pad = std::max(max_radius, eps);
+    for (size_t i = 0; i < group_count; ++i) {
+        aabbs.push_back({
+            {groups[i].min_x - pad, groups[i].min_y - pad, -z_pad, 0.0f},
+            {groups[i].max_x + pad, groups[i].max_y + pad, z_pad, 0.0f},
         });
     }
     return aabbs;
@@ -1525,6 +1633,23 @@ oroFunction ensure_fixed_radius_ranked_aggregate_kernel_3d(PreparedFixedRadiusNe
     return prepared.ranked_aggregate_kernel;
 }
 
+oroFunction ensure_point_group_nearest_max_distance_kernel_2d(PreparedPointGroupNearestWitness2D& prepared) {
+    if (prepared.max_reduce_kernel != nullptr) {
+        return prepared.max_reduce_kernel;
+    }
+    hiprtFuncNameSet func_name_set{};
+    func_name_set.intersectFuncName = "intersectRtdlPointGroupBounds2D";
+    prepared.max_reduce_kernel = build_trace_kernel_from_source(
+        prepared.runtime.context,
+        point_group_nearest_witness_2d_kernel_source(),
+        "rtdl_hiprt_point_group_nearest_witness_2d.cu",
+        "RtdlPointGroupNearestMaxDistance2DKernel",
+        &func_name_set,
+        1,
+        1);
+    return prepared.max_reduce_kernel;
+}
+
 const char* aabb_index_count_kernel_source_2d() {
     return R"KERNEL(
 #include <hiprt/hiprt_device.h>
@@ -2400,6 +2525,240 @@ void aggregate_prepared_fixed_radius_ranked_summary_batch_3d(
         throw;
     }
     write_prepared_fixed_radius_params_3d(prepared, static_cast<double>(prepared.max_radius));
+}
+
+std::unique_ptr<PreparedPointGroupNearestWitness2D> prepare_point_group_nearest_witness_2d_hiprt(
+    const RtdlPoint* search_points,
+    size_t search_count,
+    const RtdlPointGroupBounds2D* groups,
+    size_t group_count,
+    double max_radius) {
+    if (!std::isfinite(max_radius)) {
+        throw std::runtime_error("point_group_nearest max_radius must be finite");
+    }
+    if (max_radius < 0.0) {
+        throw std::runtime_error("point_group_nearest max_radius must be non-negative");
+    }
+    if (search_count > std::numeric_limits<uint32_t>::max() || group_count > std::numeric_limits<uint32_t>::max()) {
+        throw std::runtime_error("HIPRT point_group_nearest currently supports at most 2^32-1 search points/groups");
+    }
+    if (search_count > 0 && search_points == nullptr) {
+        throw std::runtime_error("search point pointer must not be null when search_count is nonzero");
+    }
+    if (group_count > 0 && groups == nullptr) {
+        throw std::runtime_error("point group pointer must not be null when group_count is nonzero");
+    }
+    if (search_count == 0 || group_count == 0) {
+        throw std::runtime_error("prepared HIPRT point_group_nearest requires at least one search point and one group");
+    }
+
+    std::vector<RtdlHiprtPoint2DDevice> search_values = encode_points_2d(search_points, search_count);
+    std::vector<RtdlHiprtPointGroupBounds2DDevice> group_values =
+        encode_point_group_bounds_2d(groups, group_count, search_count);
+    std::vector<RtdlHiprtAabb> aabb_values = encode_point_group_bounds_aabbs_2d(
+        group_values.data(),
+        group_values.size(),
+        static_cast<float>(max_radius));
+    RtdlHiprtPointGroupNearestParams params{
+        static_cast<float>(max_radius),
+        static_cast<float>(max_radius),
+    };
+
+    HiprtRuntime runtime = create_runtime();
+    hiprtSetLogLevel(hiprtLogLevelError);
+
+    DeviceAllocation search_device(search_values.size() * sizeof(RtdlHiprtPoint2DDevice));
+    DeviceAllocation group_device(group_values.size() * sizeof(RtdlHiprtPointGroupBounds2DDevice));
+    DeviceAllocation aabb_device(aabb_values.size() * sizeof(RtdlHiprtAabb));
+    DeviceAllocation params_device(sizeof(RtdlHiprtPointGroupNearestParams));
+    copy_host_to_device(search_device, search_values);
+    copy_host_to_device(group_device, group_values);
+    copy_host_to_device(aabb_device, aabb_values);
+    check_oro("oroMemcpyHtoD", oroMemcpyHtoD(params_device.oro_ptr(), &params, sizeof(params)));
+
+    hiprtGeometry geometry = build_aabb_geometry(runtime.context, aabb_device, aabb_values.size());
+    hiprtFuncTable func_table{};
+    try {
+        hiprtFuncNameSet func_name_set{};
+        func_name_set.intersectFuncName = "intersectRtdlPointGroupBounds2D";
+        hiprtFuncDataSet func_data_set{};
+        func_data_set.intersectFuncData = group_device.get();
+        check_hiprt("hiprtCreateFuncTable", hiprtCreateFuncTable(runtime.context, 1, 1, func_table));
+        check_hiprt("hiprtSetFuncTable", hiprtSetFuncTable(runtime.context, func_table, 0, 0, func_data_set));
+        oroFunction witness_kernel = build_trace_kernel_from_source(
+            runtime.context,
+            point_group_nearest_witness_2d_kernel_source(),
+            "rtdl_hiprt_point_group_nearest_witness_2d.cu",
+            "RtdlPointGroupNearestWitness2DKernel",
+            &func_name_set,
+            1,
+            1);
+        auto prepared = std::make_unique<PreparedPointGroupNearestWitness2D>(
+            std::move(runtime),
+            std::move(search_device),
+            std::move(group_device),
+            std::move(aabb_device),
+            std::move(params_device),
+            geometry,
+            func_table,
+            witness_kernel,
+            search_count,
+            group_count,
+            static_cast<float>(max_radius));
+        geometry = nullptr;
+        func_table = nullptr;
+        return prepared;
+    } catch (...) {
+        if (func_table != nullptr) {
+            hiprtDestroyFuncTable(runtime.context, func_table);
+        }
+        if (geometry != nullptr) {
+            hiprtDestroyGeometry(runtime.context, geometry);
+        }
+        throw;
+    }
+}
+
+void write_prepared_point_group_nearest_params_2d(PreparedPointGroupNearestWitness2D& prepared, double radius) {
+    if (!std::isfinite(radius)) {
+        throw std::runtime_error("point_group_nearest request radius must be finite");
+    }
+    if (radius < 0.0) {
+        throw std::runtime_error("point_group_nearest request radius must be non-negative");
+    }
+    const double epsilon = 1e-6;
+    if (radius > static_cast<double>(prepared.max_radius) + epsilon) {
+        throw std::runtime_error("point_group_nearest request radius must not exceed the prepared maximum radius");
+    }
+    RtdlHiprtPointGroupNearestParams params{
+        static_cast<float>(radius),
+        prepared.max_radius,
+    };
+    check_oro(
+        "oroMemcpyHtoD",
+        oroMemcpyHtoD(prepared.params_device.oro_ptr(), &params, sizeof(params)));
+}
+
+void run_prepared_point_group_nearest_witness_2d_hiprt(
+    PreparedPointGroupNearestWitness2D& prepared,
+    const RtdlPoint* queries,
+    size_t query_count,
+    double radius,
+    RtdlFixedRadiusNeighborRow** rows_out,
+    size_t* row_count_out) {
+    if (query_count > std::numeric_limits<uint32_t>::max()) {
+        throw std::runtime_error("HIPRT point_group_nearest currently supports at most 2^32-1 query points");
+    }
+    if (query_count > 0 && queries == nullptr) {
+        throw std::runtime_error("query point pointer must not be null when query_count is nonzero");
+    }
+    write_prepared_point_group_nearest_params_2d(prepared, radius);
+    if (query_count == 0) {
+        std::vector<RtdlFixedRadiusNeighborRow> empty;
+        *rows_out = copy_frn_rows_to_heap(empty);
+        *row_count_out = 0;
+        return;
+    }
+
+    std::vector<RtdlHiprtPoint2DDevice> query_values = encode_points_2d(queries, query_count);
+    std::vector<RtdlFixedRadiusNeighborRow> output(query_count);
+    DeviceAllocation query_device(query_values.size() * sizeof(RtdlHiprtPoint2DDevice));
+    DeviceAllocation output_device(output.size() * sizeof(RtdlFixedRadiusNeighborRow));
+    copy_host_to_device(query_device, query_values);
+
+    void* query_device_ptr = query_device.get();
+    void* search_device_ptr = prepared.search_device.get();
+    void* group_device_ptr = prepared.group_device.get();
+    void* output_device_ptr = output_device.get();
+    void* params_device_ptr = prepared.params_device.get();
+    uint32_t query_count_u32 = static_cast<uint32_t>(query_count);
+    uint32_t block_size = 128;
+    uint32_t grid_size = static_cast<uint32_t>((query_count + block_size - 1) / block_size);
+    void* args[] = {
+        &prepared.geometry,
+        &query_device_ptr,
+        &search_device_ptr,
+        &group_device_ptr,
+        &query_count_u32,
+        &output_device_ptr,
+        &params_device_ptr,
+        &prepared.func_table,
+    };
+    check_oro(
+        "oroModuleLaunchKernel",
+        oroModuleLaunchKernel(prepared.witness_kernel, grid_size, 1, 1, block_size, 1, 1, 0, 0, args, nullptr));
+    copy_device_to_host(output, output_device);
+    *rows_out = copy_frn_rows_to_heap(output);
+    *row_count_out = output.size();
+}
+
+void reduce_prepared_point_group_nearest_max_distance_2d_hiprt(
+    PreparedPointGroupNearestWitness2D& prepared,
+    const RtdlPoint* queries,
+    size_t query_count,
+    double radius,
+    RtdlFixedRadiusNeighborRow* row_out) {
+    if (row_out == nullptr) {
+        throw std::runtime_error("row_out must not be null");
+    }
+    *row_out = RtdlFixedRadiusNeighborRow{
+        std::numeric_limits<uint32_t>::max(),
+        std::numeric_limits<uint32_t>::max(),
+        std::numeric_limits<double>::infinity(),
+    };
+    if (query_count > std::numeric_limits<uint32_t>::max()) {
+        throw std::runtime_error("HIPRT point_group_nearest max-distance reduction currently supports at most 2^32-1 query points");
+    }
+    if (query_count > 0 && queries == nullptr) {
+        throw std::runtime_error("query point pointer must not be null when query_count is nonzero");
+    }
+    write_prepared_point_group_nearest_params_2d(prepared, radius);
+    if (query_count == 0) {
+        return;
+    }
+
+    std::vector<RtdlHiprtPoint2DDevice> query_values = encode_points_2d(queries, query_count);
+    std::vector<RtdlFixedRadiusNeighborRow> output(query_count);
+    std::vector<RtdlFixedRadiusNeighborRow> reduced(1);
+    DeviceAllocation query_device(query_values.size() * sizeof(RtdlHiprtPoint2DDevice));
+    DeviceAllocation output_device(output.size() * sizeof(RtdlFixedRadiusNeighborRow));
+    DeviceAllocation reduced_device(sizeof(RtdlFixedRadiusNeighborRow));
+    copy_host_to_device(query_device, query_values);
+
+    void* query_device_ptr = query_device.get();
+    void* search_device_ptr = prepared.search_device.get();
+    void* group_device_ptr = prepared.group_device.get();
+    void* output_device_ptr = output_device.get();
+    void* params_device_ptr = prepared.params_device.get();
+    uint32_t query_count_u32 = static_cast<uint32_t>(query_count);
+    uint32_t block_size = 128;
+    uint32_t grid_size = static_cast<uint32_t>((query_count + block_size - 1) / block_size);
+    void* witness_args[] = {
+        &prepared.geometry,
+        &query_device_ptr,
+        &search_device_ptr,
+        &group_device_ptr,
+        &query_count_u32,
+        &output_device_ptr,
+        &params_device_ptr,
+        &prepared.func_table,
+    };
+    check_oro(
+        "oroModuleLaunchKernel",
+        oroModuleLaunchKernel(prepared.witness_kernel, grid_size, 1, 1, block_size, 1, 1, 0, 0, witness_args, nullptr));
+
+    void* reduced_device_ptr = reduced_device.get();
+    oroFunction reduce_kernel = ensure_point_group_nearest_max_distance_kernel_2d(prepared);
+    void* reduce_args[] = {
+        &output_device_ptr,
+        &query_count_u32,
+        &reduced_device_ptr,
+    };
+    check_oro(
+        "oroModuleLaunchKernel",
+        oroModuleLaunchKernel(reduce_kernel, 1, 1, 1, block_size, 1, 1, 0, 0, reduce_args, nullptr));
+    copy_device_to_host(reduced, reduced_device);
+    *row_out = reduced[0];
 }
 
 void run_fixed_radius_neighbors_2d(

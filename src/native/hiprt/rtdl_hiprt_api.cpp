@@ -587,6 +587,83 @@ extern "C" int rtdl_hiprt_aggregate_prepared_fixed_radius_ranked_summary_batch_3
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_hiprt_prepare_point_group_nearest_witness_2d(
+    const RtdlPoint* search_points,
+    size_t search_count,
+    const RtdlPointGroupBounds2D* groups,
+    size_t group_count,
+    double max_radius,
+    void** prepared_out,
+    char* error_out,
+    size_t error_size) {
+    return handle_call([&]() {
+        if (prepared_out == nullptr) {
+            throw std::runtime_error("prepared_out must not be null");
+        }
+        *prepared_out = nullptr;
+        auto prepared = prepare_point_group_nearest_witness_2d_hiprt(
+            search_points,
+            search_count,
+            groups,
+            group_count,
+            max_radius);
+        *prepared_out = prepared.release();
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_hiprt_destroy_prepared_point_group_nearest_witness_2d(void* prepared) {
+    delete reinterpret_cast<PreparedPointGroupNearestWitness2D*>(prepared);
+}
+
+extern "C" int rtdl_hiprt_run_prepared_point_group_nearest_witness_2d(
+    void* prepared,
+    const RtdlPoint* queries,
+    size_t query_count,
+    double radius,
+    RtdlFixedRadiusNeighborRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+    return handle_call([&]() {
+        if (prepared == nullptr) {
+            throw std::runtime_error("prepared HIPRT point_group_nearest handle must not be null");
+        }
+        if (rows_out == nullptr || row_count_out == nullptr) {
+            throw std::runtime_error("output pointers must not be null");
+        }
+        *rows_out = nullptr;
+        *row_count_out = 0;
+        run_prepared_point_group_nearest_witness_2d_hiprt(
+            *reinterpret_cast<PreparedPointGroupNearestWitness2D*>(prepared),
+            queries,
+            query_count,
+            radius,
+            rows_out,
+            row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_hiprt_reduce_prepared_point_group_nearest_max_distance_2d(
+    void* prepared,
+    const RtdlPoint* queries,
+    size_t query_count,
+    double radius,
+    RtdlFixedRadiusNeighborRow* row_out,
+    char* error_out,
+    size_t error_size) {
+    return handle_call([&]() {
+        if (prepared == nullptr) {
+            throw std::runtime_error("prepared HIPRT point_group_nearest handle must not be null");
+        }
+        reduce_prepared_point_group_nearest_max_distance_2d_hiprt(
+            *reinterpret_cast<PreparedPointGroupNearestWitness2D*>(prepared),
+            queries,
+            query_count,
+            radius,
+            row_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_hiprt_run_fixed_radius_neighbors_2d(
     const RtdlPoint* queries,
     size_t query_count,
