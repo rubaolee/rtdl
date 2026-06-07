@@ -250,6 +250,42 @@ def _run_optix_prepared_pose_flags(
     }
 
 
+def _run_hiprt_prepared_pose_flags(
+    edge_rays: tuple[rt.Ray2D, ...],
+    obstacle_triangles: tuple[rt.Triangle, ...],
+    poses: tuple[dict[str, object], ...],
+    ray_metadata: dict[int, dict[str, int]],
+) -> dict[str, object]:
+    pose_ids = tuple(int(pose["pose_id"]) for pose in poses)
+    pose_index_by_id = {pose_id: index for index, pose_id in enumerate(pose_ids)}
+    group_indices = tuple(pose_index_by_id[int(ray_metadata[int(ray.id)]["pose_id"])] for ray in edge_rays)
+    result = rt.run_generic_prepared_ray_triangle_any_hit_grouped_count_threshold_bool(
+        triangles=obstacle_triangles,
+        rays=edge_rays,
+        group_indices=group_indices,
+        group_count=len(pose_ids),
+        backend="hiprt",
+        prepare_scene=rt.prepare_hiprt_ray_triangle_any_hit_2d,
+        prepare_rays=rt.prepare_hiprt_rays_2d,
+    )
+    pose_flags = tuple(bool(flag) for flag in result["group_flags"])
+    return {
+        "mode": "hiprt_prepared_pose_flags",
+        "pose_collision_flags": tuple(
+            {"pose_id": pose_id, "collides": bool(pose_flags[index])}
+            for index, pose_id in enumerate(pose_ids)
+        ),
+        "colliding_pose_ids": tuple(pose_id for index, pose_id in enumerate(pose_ids) if pose_flags[index]),
+        "colliding_pose_count": sum(1 for flag in pose_flags if flag),
+        "edge_ray_count": len(edge_rays),
+        "obstacle_triangle_count": len(obstacle_triangles),
+        "generic_primitive": result["primitive"],
+        "summary_primitive": result["summary_primitive"],
+        "result_layout": result["result_layout"],
+        "run_phases": result["run_phases"],
+    }
+
+
 def _attach_pose_metadata(
     rows: tuple[dict[str, object], ...],
     ray_metadata: dict[int, dict[str, int]],
@@ -372,8 +408,10 @@ def run_app(
 ) -> dict[str, object]:
     if optix_summary_mode not in {"rows", "prepared_count", "prepared_pose_flags"}:
         raise ValueError("optix_summary_mode must be 'rows', 'prepared_count', or 'prepared_pose_flags'")
-    if optix_summary_mode != "rows" and backend != "optix":
-        raise ValueError("prepared OptiX summary modes require backend='optix'")
+    if optix_summary_mode == "prepared_count" and backend != "optix":
+        raise ValueError("prepared_count summary mode currently requires backend='optix'")
+    if optix_summary_mode == "prepared_pose_flags" and backend not in {"optix", "hiprt"}:
+        raise ValueError("prepared_pose_flags summary mode currently requires backend='optix' or backend='hiprt'")
     if output_mode not in {"full", "pose_flags", "hit_count"}:
         raise ValueError("output_mode must be 'full', 'pose_flags', or 'hit_count'")
 
@@ -417,8 +455,15 @@ def run_app(
             "boundary": "Prepared count mode returns only the total hit-edge count. Use optix_summary_mode='rows' when pose-level witnesses and edge rows are needed.",
         }
 
-    if backend == "optix" and optix_summary_mode == "prepared_pose_flags":
-        prepared_summary = _run_optix_prepared_pose_flags(edge_rays, obstacle_triangles, poses, ray_metadata)
+    if backend in {"optix", "hiprt"} and optix_summary_mode == "prepared_pose_flags":
+        if backend == "optix":
+            prepared_summary = _run_optix_prepared_pose_flags(edge_rays, obstacle_triangles, poses, ray_metadata)
+            native_backend = "optix_prepared_pose_flags"
+            role_backend = "OptiX"
+        else:
+            prepared_summary = _run_hiprt_prepared_pose_flags(edge_rays, obstacle_triangles, poses, ray_metadata)
+            native_backend = "hiprt_prepared_pose_flags"
+            role_backend = "HIPRT"
         expected_pose_flags = None
         expected_colliding_pose_ids = None
         validation_mode = "skipped"
@@ -444,8 +489,8 @@ def run_app(
             ),
             "validation_mode": validation_mode,
             "native_continuation_active": True,
-            "native_continuation_backend": "optix_prepared_pose_flags",
-            "rtdl_role": "RTDL uses a prepared OptiX ray/triangle any-hit scene and returns native pose collision flags, avoiding per-ray Python dict row materialization for this app summary path.",
+            "native_continuation_backend": native_backend,
+            "rtdl_role": f"RTDL uses a prepared {role_backend} ray/triangle any-hit scene and returns native pose collision flags, avoiding per-ray Python dict row materialization for this app summary path.",
             "boundary": "Prepared pose-flags mode returns one collision flag per pose. Use optix_summary_mode='rows' when edge-level witnesses or hit-ray IDs are needed.",
         }
 
@@ -520,7 +565,7 @@ def main(argv: list[str] | None = None) -> int:
         "--optix-summary-mode",
         choices=("rows", "prepared_count", "prepared_pose_flags"),
         default="rows",
-        help="For --backend optix, prepared_count returns a native scalar hit-edge count and prepared_pose_flags returns native pose flags instead of materializing per-ray rows.",
+        help="For --backend optix, prepared_count returns a native scalar hit-edge count. For --backend optix or hiprt, prepared_pose_flags returns native pose flags instead of materializing per-ray rows.",
     )
     parser.add_argument(
         "--output-mode",

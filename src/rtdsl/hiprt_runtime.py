@@ -676,6 +676,7 @@ def _hiprt_lib() -> ctypes.CDLL:
     lib.rtdl_hiprt_destroy_prepared_ray_hitcount_3d.restype = None
     prepare_anyhit_2d = getattr(lib, "rtdl_hiprt_prepare_ray_anyhit_2d", None)
     run_anyhit_2d = getattr(lib, "rtdl_hiprt_run_prepared_ray_anyhit_2d", None)
+    group_flags_anyhit_2d = getattr(lib, "rtdl_hiprt_group_flags_prepared_ray_anyhit_2d_packed", None)
     destroy_anyhit_2d = getattr(lib, "rtdl_hiprt_destroy_prepared_ray_anyhit_2d", None)
     if prepare_anyhit_2d is not None and run_anyhit_2d is not None and destroy_anyhit_2d is not None:
         prepare_anyhit_2d.argtypes = [
@@ -696,6 +697,18 @@ def _hiprt_lib() -> ctypes.CDLL:
             ctypes.c_size_t,
         ]
         run_anyhit_2d.restype = ctypes.c_int
+        if group_flags_anyhit_2d is not None:
+            group_flags_anyhit_2d.argtypes = [
+                ctypes.c_void_p,
+                ctypes.POINTER(_RtdlRay2D),
+                ctypes.POINTER(ctypes.c_uint32),
+                ctypes.c_size_t,
+                ctypes.POINTER(ctypes.c_uint32),
+                ctypes.c_size_t,
+                ctypes.c_char_p,
+                ctypes.c_size_t,
+            ]
+            group_flags_anyhit_2d.restype = ctypes.c_int
         destroy_anyhit_2d.argtypes = [ctypes.c_void_p]
         destroy_anyhit_2d.restype = None
     return lib
@@ -2218,6 +2231,29 @@ def prepare_hiprt_ray_triangle_hit_count(
     return PreparedHiprtRayTriangleHitCount3D(handle)
 
 
+class HiprtRay2DBuffer:
+    def __init__(self, rays: tuple[_CanonicalRay2D, ...]) -> None:
+        self.rays = tuple(rays)
+        self.count = len(self.rays)
+        self.closed = False
+
+    def close(self) -> None:
+        self.closed = True
+
+    def __enter__(self) -> "HiprtRay2DBuffer":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+
+def prepare_hiprt_rays_2d(rays: tuple[_CanonicalRay2D, ...]) -> HiprtRay2DBuffer:
+    ray_records = tuple(rays)
+    if any(not isinstance(ray, _CanonicalRay2D) for ray in ray_records):
+        raise TypeError("prepare_hiprt_rays_2d currently supports only Ray2D inputs")
+    return HiprtRay2DBuffer(ray_records)
+
+
 class PreparedHiprtRayTriangleAnyHit2D:
     def __init__(self, handle: ctypes.c_void_p, *, empty: bool = False) -> None:
         self._handle = handle
@@ -2278,6 +2314,61 @@ class PreparedHiprtRayTriangleAnyHit2D:
             )
         finally:
             _hiprt_lib().rtdl_hiprt_free_rows(rows_ptr)
+
+    def group_flags_packed(self, rays: HiprtRay2DBuffer, group_indices, *, group_count: int) -> tuple[bool, ...]:
+        if self._closed:
+            raise RuntimeError("prepared HIPRT ray-triangle any-hit handle is closed")
+        if not isinstance(rays, HiprtRay2DBuffer):
+            raise ValueError("group_flags_packed requires a HiprtRay2DBuffer")
+        if rays.closed:
+            raise RuntimeError("prepared HIPRT ray buffer is closed")
+        if group_count < 0:
+            raise ValueError("group_count must be non-negative")
+        normalized_group_indices = tuple(int(index) for index in group_indices)
+        if len(normalized_group_indices) != rays.count:
+            raise ValueError("group_indices length must match prepared ray count")
+        if any(index < 0 or index >= group_count for index in normalized_group_indices):
+            raise ValueError("group_indices entries must be within [0, group_count)")
+        if group_count == 0:
+            return tuple()
+        if rays.count == 0 or self._empty:
+            return tuple(False for _ in range(group_count))
+        if not self._handle:
+            raise RuntimeError("prepared HIPRT ray-triangle any-hit handle is closed")
+
+        symbol = getattr(_hiprt_lib(), "rtdl_hiprt_group_flags_prepared_ray_anyhit_2d_packed", None)
+        if symbol is None:
+            raise RuntimeError(
+                "Loaded HIPRT backend library does not export "
+                "rtdl_hiprt_group_flags_prepared_ray_anyhit_2d_packed. "
+                "Rebuild it with 'make build-hiprt' from current main."
+            )
+
+        ray_array = (_RtdlRay2D * rays.count)(
+            *[_RtdlRay2D(item.id, item.ox, item.oy, item.dx, item.dy, item.tmax) for item in rays.rays]
+        )
+        GroupIndexArray = ctypes.c_uint32 * len(normalized_group_indices)
+        group_index_array = GroupIndexArray(*normalized_group_indices)
+        GroupFlagArray = ctypes.c_uint32 * group_count
+        group_flag_array = GroupFlagArray()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            self._handle,
+            ray_array,
+            group_index_array,
+            len(normalized_group_indices),
+            group_flag_array,
+            group_count,
+            error,
+            ctypes.sizeof(error),
+        )
+        if status != 0:
+            detail = error.value.decode("utf-8", errors="replace")
+            raise RuntimeError(
+                "rtdl_hiprt_group_flags_prepared_ray_anyhit_2d_packed "
+                f"failed with status {status}: {detail}"
+            )
+        return tuple(bool(group_flag_array[index]) for index in range(group_count))
 
 
 def _hiprt_prepared_ray_anyhit_2d_symbols_available() -> bool:

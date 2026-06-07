@@ -54,6 +54,7 @@ struct PreparedRayAnyhit2D {
     hiprtGeometry geometry{};
     hiprtFuncTable func_table{};
     oroFunction kernel{};
+    oroFunction grouped_kernel{};
     bool empty_scene{false};
 
     explicit PreparedRayAnyhit2D(bool empty_scene_in) : empty_scene(empty_scene_in) {}
@@ -63,14 +64,12 @@ struct PreparedRayAnyhit2D {
         DeviceAllocation&& triangle_device_in,
         DeviceAllocation&& aabb_device_in,
         hiprtGeometry geometry_in,
-        hiprtFuncTable func_table_in,
-        oroFunction kernel_in)
+        hiprtFuncTable func_table_in)
         : runtime(std::move(runtime_in)),
           triangle_device(std::move(triangle_device_in)),
           aabb_device(std::move(aabb_device_in)),
           geometry(geometry_in),
           func_table(func_table_in),
-          kernel(kernel_in),
           empty_scene(false) {}
 
     ~PreparedRayAnyhit2D() {
@@ -828,6 +827,83 @@ std::string ray_anyhit_kernel_source_2d() {
     return src;
 }
 
+std::string grouped_ray_anyhit_kernel_source_2d() {
+    std::string src = ray_hitcount_2d_kernel_source();
+    src += R"KERNEL(
+
+extern "C" __global__ void RtdlGroupedRayAnyhit2DKernel(
+    hiprtGeometry geom,
+    const RtdlHiprtRay2DDevice* rays,
+    const uint32_t* group_indices,
+    uint32_t ray_count,
+    uint32_t group_count,
+    uint32_t* group_flags,
+    hiprtFuncTable table) {
+    const uint32_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index >= ray_count) {
+        return;
+    }
+    const uint32_t group = group_indices[index];
+    if (group >= group_count) {
+        return;
+    }
+
+    const RtdlHiprtRay2DDevice in = rays[index];
+    hiprtRay ray;
+    ray.origin = {in.ox, in.oy, 0.0f};
+    ray.direction = {in.dx * in.tmax, in.dy * in.tmax, 0.0f};
+    ray.minT = 0.0f;
+    ray.maxT = 1.0f;
+
+    hiprtGeomCustomTraversalAnyHit traversal(geom, ray, hiprtTraversalHintDefault, nullptr, table);
+    while (traversal.getCurrentState() != hiprtTraversalStateFinished) {
+        hiprtHit hit = traversal.getNextHit();
+        if (hit.hasHit()) {
+            atomicExch(&group_flags[group], 1u);
+            break;
+        }
+    }
+}
+)KERNEL";
+    return src;
+}
+
+oroFunction ensure_ray_anyhit_kernel_2d(PreparedRayAnyhit2D& prepared) {
+    if (prepared.kernel != nullptr) {
+        return prepared.kernel;
+    }
+    hiprtFuncNameSet func_name_set{};
+    func_name_set.intersectFuncName = "intersectRtdlTriangle2D";
+    const std::string source = ray_anyhit_kernel_source_2d();
+    prepared.kernel = build_trace_kernel_from_source(
+        prepared.runtime.context,
+        source.c_str(),
+        "rtdl_hiprt_ray_anyhit_2d.cu",
+        "RtdlRayAnyhit2DKernel",
+        &func_name_set,
+        1,
+        1);
+    return prepared.kernel;
+}
+
+oroFunction ensure_grouped_ray_anyhit_kernel_2d(PreparedRayAnyhit2D& prepared) {
+    if (prepared.grouped_kernel != nullptr) {
+        return prepared.grouped_kernel;
+    }
+    hiprtFuncNameSet func_name_set{};
+    func_name_set.intersectFuncName = "intersectRtdlTriangle2D";
+    const std::string source = grouped_ray_anyhit_kernel_source_2d();
+    prepared.grouped_kernel = build_trace_kernel_from_source(
+        prepared.runtime.context,
+        source.c_str(),
+        "rtdl_hiprt_grouped_ray_anyhit_2d.cu",
+        "RtdlGroupedRayAnyhit2DKernel",
+        &func_name_set,
+        1,
+        1);
+    return prepared.grouped_kernel;
+}
+
 void run_prepared_ray_hitcount_3d(
     PreparedRayHitcount3D& prepared,
     const RtdlRay3D* rays,
@@ -895,6 +971,7 @@ void run_prepared_ray_anyhit_2d(
     uint32_t ray_count_u32 = static_cast<uint32_t>(ray_count);
     uint32_t block_size = 128;
     uint32_t grid_size = static_cast<uint32_t>((ray_count + block_size - 1) / block_size);
+    oroFunction kernel = ensure_ray_anyhit_kernel_2d(prepared);
     void* args[] = {
         &prepared.geometry,
         &ray_device_ptr,
@@ -904,11 +981,81 @@ void run_prepared_ray_anyhit_2d(
     };
     check_oro(
         "oroModuleLaunchKernel",
-        oroModuleLaunchKernel(prepared.kernel, grid_size, 1, 1, block_size, 1, 1, 0, 0, args, nullptr));
+        oroModuleLaunchKernel(kernel, grid_size, 1, 1, block_size, 1, 1, 0, 0, args, nullptr));
     copy_device_to_host(output, output_device);
 
     *rows_out = copy_rows_to_heap(output);
     *row_count_out = output.size();
+}
+
+void run_group_flags_prepared_ray_anyhit_2d(
+    PreparedRayAnyhit2D& prepared,
+    const RtdlRay2D* rays,
+    size_t ray_count,
+    const uint32_t* group_indices,
+    size_t group_index_count,
+    uint32_t* group_flags_out,
+    size_t group_count) {
+    if (ray_count > std::numeric_limits<uint32_t>::max() || group_count > std::numeric_limits<uint32_t>::max()) {
+        throw std::runtime_error("HIPRT prepared 2D grouped ray_triangle_any_hit currently supports at most 2^32-1 rays/groups");
+    }
+    if (ray_count > 0 && rays == nullptr) {
+        throw std::runtime_error("ray pointer must not be null when ray_count is nonzero");
+    }
+    if (group_index_count != ray_count) {
+        throw std::runtime_error("group_index_count must match ray_count");
+    }
+    if (ray_count > 0 && group_indices == nullptr) {
+        throw std::runtime_error("group_indices pointer must not be null when ray_count is nonzero");
+    }
+    if (group_count > 0 && group_flags_out == nullptr) {
+        throw std::runtime_error("group_flags_out must not be null when group_count is nonzero");
+    }
+    if (group_count > 0) {
+        std::fill(group_flags_out, group_flags_out + group_count, 0u);
+    }
+    if (ray_count == 0 || group_count == 0 || prepared.empty_scene) {
+        return;
+    }
+
+    std::vector<uint32_t> group_values(group_indices, group_indices + group_index_count);
+    for (uint32_t group : group_values) {
+        if (group >= group_count) {
+            throw std::runtime_error("group_indices entries must be within [0, group_count)");
+        }
+    }
+
+    std::vector<RtdlHiprtRay2DDevice> ray_values = encode_rays_2d(rays, ray_count);
+    std::vector<uint32_t> output(group_count, 0u);
+    DeviceAllocation ray_device(ray_values.size() * sizeof(RtdlHiprtRay2DDevice));
+    DeviceAllocation group_index_device(group_values.size() * sizeof(uint32_t));
+    DeviceAllocation output_device(output.size() * sizeof(uint32_t));
+    copy_host_to_device(ray_device, ray_values);
+    copy_host_to_device(group_index_device, group_values);
+    copy_host_to_device(output_device, output);
+
+    void* ray_device_ptr = ray_device.get();
+    void* group_index_device_ptr = group_index_device.get();
+    void* output_device_ptr = output_device.get();
+    uint32_t ray_count_u32 = static_cast<uint32_t>(ray_count);
+    uint32_t group_count_u32 = static_cast<uint32_t>(group_count);
+    uint32_t block_size = 128;
+    uint32_t grid_size = static_cast<uint32_t>((ray_count + block_size - 1) / block_size);
+    oroFunction kernel = ensure_grouped_ray_anyhit_kernel_2d(prepared);
+    void* args[] = {
+        &prepared.geometry,
+        &ray_device_ptr,
+        &group_index_device_ptr,
+        &ray_count_u32,
+        &group_count_u32,
+        &output_device_ptr,
+        &prepared.func_table,
+    };
+    check_oro(
+        "oroModuleLaunchKernel",
+        oroModuleLaunchKernel(kernel, grid_size, 1, 1, block_size, 1, 1, 0, 0, args, nullptr));
+    copy_device_to_host(output, output_device);
+    std::copy(output.begin(), output.end(), group_flags_out);
 }
 
 void run_fixed_radius_neighbors_3d(

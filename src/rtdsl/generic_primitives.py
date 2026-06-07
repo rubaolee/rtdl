@@ -179,12 +179,12 @@ def _zero_any_hit_rows(rays: tuple[Ray2D | Ray3D, ...]) -> tuple[dict[str, int],
 
 def _validate_prepared_anyhit_count_backend(backend: str) -> str:
     normalized_backend = _normalize_backend(backend)
-    if normalized_backend in FROZEN_BEFORE_V2_1_GENERIC_BACKENDS:
+    if normalized_backend in FROZEN_BEFORE_V2_1_GENERIC_BACKENDS and normalized_backend != "hiprt":
         raise ValueError(
             f"{normalized_backend} is frozen before v2.1; v1.5 prepared generic primitives are OptiX-focused"
         )
-    if normalized_backend != "optix":
-        raise ValueError("prepared generic ray_triangle_any_hit_count currently supports backend='optix'")
+    if normalized_backend not in {"optix", "hiprt"}:
+        raise ValueError("prepared generic ray_triangle_any_hit_count currently supports backend='optix' or backend='hiprt'")
     return normalized_backend
 
 
@@ -1581,6 +1581,8 @@ class GenericPreparedRayTriangleAnyHitScene:
             raise ValueError("query_repeats must be positive")
         if prepare_rays is None:
             prepare_rays = self._prepare_rays
+        if not hasattr(self._prepared_scene, "count"):
+            raise ValueError(f"prepared ANY_HIT count is not available for backend='{self.backend}'")
 
         ray_prepare_start = time.perf_counter()
         with prepare_rays(rays) as prepared_rays:
@@ -1614,7 +1616,7 @@ class GenericPreparedRayTriangleAnyHitScene:
             },
             "claim_boundary": (
                 "Generic v1.5 reusable prepared raw ray/triangle ANY_HIT plus COUNT_HITS only; "
-                "currently OptiX-focused and not public speedup wording."
+                f"backend-scoped to {self.backend} and not public speedup wording."
             ),
         }
 

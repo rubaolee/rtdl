@@ -114,28 +114,16 @@ extern "C" int rtdl_hiprt_prepare_ray_anyhit_2d(
         hiprtGeometry geometry = build_aabb_geometry(runtime.context, aabb_device, aabb_values.size());
         hiprtFuncTable func_table{};
         try {
-            hiprtFuncNameSet func_name_set{};
-            func_name_set.intersectFuncName = "intersectRtdlTriangle2D";
             hiprtFuncDataSet func_data_set{};
             func_data_set.intersectFuncData = triangle_device.get();
             check_hiprt("hiprtCreateFuncTable", hiprtCreateFuncTable(runtime.context, 1, 1, func_table));
             check_hiprt("hiprtSetFuncTable", hiprtSetFuncTable(runtime.context, func_table, 0, 0, func_data_set));
-            const std::string source = ray_anyhit_kernel_source_2d();
-            oroFunction kernel = build_trace_kernel_from_source(
-                runtime.context,
-                source.c_str(),
-                "rtdl_hiprt_ray_anyhit_2d.cu",
-                "RtdlRayAnyhit2DKernel",
-                &func_name_set,
-                1,
-                1);
             *prepared_out = new PreparedRayAnyhit2D(
                 std::move(runtime),
                 std::move(triangle_device),
                 std::move(aabb_device),
                 geometry,
-                func_table,
-                kernel);
+                func_table);
             geometry = nullptr;
             func_table = nullptr;
         } catch (...) {
@@ -177,6 +165,30 @@ extern "C" int rtdl_hiprt_run_prepared_ray_anyhit_2d(
             ray_count,
             rows_out,
             row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_hiprt_group_flags_prepared_ray_anyhit_2d_packed(
+    void* prepared,
+    const RtdlRay2D* rays,
+    const uint32_t* group_indices,
+    size_t group_index_count,
+    uint32_t* group_flags_out,
+    size_t group_count,
+    char* error_out,
+    size_t error_size) {
+    return handle_call([&]() {
+        if (prepared == nullptr) {
+            throw std::runtime_error("prepared HIPRT ray-anyhit handle must not be null");
+        }
+        run_group_flags_prepared_ray_anyhit_2d(
+            *reinterpret_cast<PreparedRayAnyhit2D*>(prepared),
+            rays,
+            group_index_count,
+            group_indices,
+            group_index_count,
+            group_flags_out,
+            group_count);
     }, error_out, error_size);
 }
 

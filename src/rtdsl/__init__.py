@@ -1213,6 +1213,7 @@ from .hiprt_runtime import hiprt_version
 from .hiprt_runtime import knn_rows_2d_hiprt
 from .hiprt_runtime import overlay_compose_hiprt
 from .hiprt_runtime import prepare_hiprt_db_table
+from .hiprt_runtime import prepare_hiprt_rays_2d
 from .hiprt_runtime import prepare_hiprt_ray_triangle_any_hit_2d
 from .hiprt_runtime import prepare_hiprt_ray_triangle_hit_count
 from .hiprt_runtime import prepare_hiprt_fixed_radius_neighbors_3d
@@ -2281,6 +2282,7 @@ __all__ = [
     "prepare_hiprt_db_table",
     "prepare_hiprt_fixed_radius_neighbors_3d",
     "prepare_hiprt_graph_csr",
+    "prepare_hiprt_rays_2d",
     "prepare_hiprt_ray_triangle_hit_count",
     "PreparedHiprtDbKernel",
     "PreparedHiprtDbTable",
