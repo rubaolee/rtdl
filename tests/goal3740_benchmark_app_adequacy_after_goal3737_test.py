@@ -53,7 +53,7 @@ class Goal3740BenchmarkAppAdequacyAfterGoal3737Test(unittest.TestCase):
         self.assertEqual(summary["adequacy_counts"].get("needs_major_followup", 0), 0)
         rows = {row["app"]: row for row in v2_9_benchmark_adequacy()}
         self.assertEqual(rows["barnes_hut"]["adequacy"], "adequate")
-        self.assertEqual(rows["rt_dbscan"]["adequacy"], "adequate")
+        self.assertEqual(rows["rt_dbscan"]["adequacy"], "strong")
         self.assertEqual(rows["spatial_rayjoin"]["adequacy"], "strong")
 
     def test_report_is_reader_facing_and_keeps_boundary(self) -> None:

@@ -23,18 +23,22 @@ from examples.v2_0.research_benchmarks.rt_dbscan.rtdl_rt_dbscan_benchmark_app im
 
 
 PREPARED_CUPY_GRID_MODE = "partner_cupy_prepared_grid_components_3d"
+PREPARED_NUMBA_GRID_MODE = "partner_numba_prepared_grid_components_3d"
 PREPARED_CUPY_ADJACENCY_MODE = "partner_cupy_prepared_adjacency_components_3d"
 PREPARED_GRID_MODE = "optix_rt_core_flags_cupy_prepared_grid_components_3d"
+PREPARED_OPTIX_NUMBA_GRID_MODE = "optix_rt_core_flags_numba_prepared_grid_components_3d"
 PREPARED_OPTIX_ADJACENCY_MODE = "optix_rt_core_adjacency_cupy_components_3d"
 PREPARED_OPTIX_CHUNKED_ADJACENCY_MODE = "optix_rt_core_chunked_adjacency_cupy_components_3d"
 
 DEFAULT_MODES = (
     "partner_cupy_grid_components_3d",
     PREPARED_CUPY_GRID_MODE,
+    PREPARED_NUMBA_GRID_MODE,
     PREPARED_CUPY_ADJACENCY_MODE,
     "optix_core_flags_cupy_grid_components_3d",
     "optix_rt_core_flags_cupy_grid_components_3d",
     PREPARED_GRID_MODE,
+    PREPARED_OPTIX_NUMBA_GRID_MODE,
     PREPARED_OPTIX_ADJACENCY_MODE,
     PREPARED_OPTIX_CHUNKED_ADJACENCY_MODE,
     "optix_rt_core_flags_cupy_microcell_graph_components_3d",
@@ -98,6 +102,72 @@ def _run_prepared_cupy_grid_repeat_rows(
                 "fallback_reason": None,
                 "rt_core_accelerated": False,
                 "materializes_neighbor_rows": False,
+                "signature": current_signature,
+            }
+        )
+    return rows, signature
+
+
+def _run_prepared_numba_grid_repeat_rows(
+    *,
+    dataset: str,
+    point_count: int,
+    repeat_count: int,
+) -> tuple[list[dict[str, object]], object]:
+    config = DEFAULT_DATASET_CONFIG[dataset]
+    resolved_radius = float(config["radius"])
+    resolved_min_neighbors = int(config["min_neighbors"])
+    points = make_rt_dbscan_points(dataset, point_count=point_count, seed=20260519)
+
+    prepare_start = time.perf_counter()
+    point_columns = rt.point_rows_to_partner_columns(points, partner="numba")
+    prepared_grid = rt.prepare_radius_graph_components_3d_numba_grid_partner_columns(
+        point_columns,
+        radius=resolved_radius,
+        partner="numba",
+    )
+    prepared_grid_build_sec = time.perf_counter() - prepare_start
+
+    rows: list[dict[str, object]] = []
+    signature = None
+    for repeat_index in range(repeat_count):
+        outer_start = time.perf_counter()
+        result = rt.radius_graph_components_3d_numba_prepared_grid_partner_columns(
+            prepared_grid,
+            min_neighbors=resolved_min_neighbors,
+            return_metadata=True,
+        )
+        component_rows = _densify_cluster_labels(
+            _rows_from_partner_columns(result["columns"], partner="numba")
+        )
+        current_signature = cluster_signature(component_rows)
+        if signature is None:
+            signature = current_signature
+        outer_elapsed = time.perf_counter() - outer_start
+        metadata = result["metadata"]
+        rows.append(
+            {
+                "mode": PREPARED_NUMBA_GRID_MODE,
+                "repeat_index": repeat_index + 1,
+                "outer_elapsed_sec": outer_elapsed,
+                "app_elapsed_sec": outer_elapsed,
+                "optix_core_flag_sec": None,
+                "optix_rt_count_threshold_sec": None,
+                "cupy_component_continuation_sec": None,
+                "numba_component_continuation_sec": outer_elapsed,
+                "prepared_grid_build_sec": prepared_grid_build_sec,
+                "prepared_grid_reused": metadata.get("prepared_grid_reused"),
+                "prepared_run_count": metadata.get("prepared_run_count"),
+                "prepared_composite_reused": None,
+                "prepared_composite_run_count": None,
+                "prepared_optix_scene_reused": None,
+                "cell_graph_fast_path_active": None,
+                "cell_graph_granularity": "prepared_radius_grid",
+                "fallback_reason": None,
+                "rt_core_accelerated": False,
+                "materializes_neighbor_rows": False,
+                "raw_cuda_kernel_required": False,
+                "numba_cuda_jit_used": metadata.get("numba_cuda_jit_used"),
                 "signature": current_signature,
             }
         )
@@ -230,6 +300,94 @@ def _run_prepared_grid_repeat_rows(
                     "fallback_reason": None,
                     "rt_core_accelerated": True,
                     "materializes_neighbor_rows": False,
+                    "signature": current_signature,
+                }
+            )
+    return rows, signature
+
+
+def _run_prepared_optix_numba_grid_repeat_rows(
+    *,
+    dataset: str,
+    point_count: int,
+    repeat_count: int,
+) -> tuple[list[dict[str, object]], object]:
+    config = DEFAULT_DATASET_CONFIG[dataset]
+    resolved_radius = float(config["radius"])
+    resolved_min_neighbors = int(config["min_neighbors"])
+    points = make_rt_dbscan_points(dataset, point_count=point_count, seed=20260519)
+
+    prepare_start = time.perf_counter()
+    point_columns = rt.point_rows_to_partner_columns(points, partner="numba")
+    prepared_grid = rt.prepare_radius_graph_components_3d_numba_grid_partner_columns(
+        point_columns,
+        radius=resolved_radius,
+        partner="numba",
+    )
+    output_columns = rt.allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
+        len(points),
+        partner="numba",
+    )
+    prepared_graph = rt.prepare_optix_fixed_radius_count_threshold_3d(points, max_radius=resolved_radius)
+    prepared_composite_build_sec = time.perf_counter() - prepare_start
+
+    rows: list[dict[str, object]] = []
+    signature = None
+    with prepared_graph as prepared:
+        for repeat_index in range(repeat_count):
+            outer_start = time.perf_counter()
+            threshold_result = rt.fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
+                prepared,
+                points,
+                radius=resolved_radius,
+                threshold=resolved_min_neighbors,
+                partner="numba",
+                output_columns=output_columns,
+                return_metadata=True,
+            )
+            continuation_start = time.perf_counter()
+            result = rt.radius_graph_components_3d_numba_prepared_grid_partner_columns(
+                prepared_grid,
+                min_neighbors=resolved_min_neighbors,
+                core_flags=threshold_result["columns"]["threshold_flags"],
+                neighbor_counts=threshold_result["columns"]["neighbor_counts"],
+                core_flag_source="optix_rt_fixed_radius_count_threshold_3d_numba_device_outputs",
+                return_metadata=True,
+            )
+            continuation_elapsed = time.perf_counter() - continuation_start
+            component_rows = _densify_cluster_labels(
+                _rows_from_partner_columns(result["columns"], partner="numba")
+            )
+            current_signature = cluster_signature(component_rows)
+            if signature is None:
+                signature = current_signature
+            outer_elapsed = time.perf_counter() - outer_start
+            metadata = result["metadata"]
+            threshold_metadata = threshold_result["metadata"]
+            rows.append(
+                {
+                    "mode": PREPARED_OPTIX_NUMBA_GRID_MODE,
+                    "repeat_index": repeat_index + 1,
+                    "outer_elapsed_sec": outer_elapsed,
+                    "app_elapsed_sec": outer_elapsed,
+                    "optix_core_flag_sec": None,
+                    "optix_rt_count_threshold_sec": threshold_metadata.get("native_elapsed_sec"),
+                    "cupy_component_continuation_sec": None,
+                    "numba_component_continuation_sec": continuation_elapsed,
+                    "prepared_grid_build_sec": prepared_composite_build_sec,
+                    "prepared_composite_build_sec": prepared_composite_build_sec,
+                    "prepared_grid_reused": metadata.get("prepared_grid_reused"),
+                    "prepared_run_count": metadata.get("prepared_run_count"),
+                    "prepared_composite_reused": True,
+                    "prepared_composite_run_count": repeat_index + 1,
+                    "prepared_optix_scene_reused": True,
+                    "cell_graph_fast_path_active": None,
+                    "cell_graph_granularity": "prepared_radius_grid",
+                    "fallback_reason": None,
+                    "rt_core_accelerated": True,
+                    "materializes_neighbor_rows": False,
+                    "raw_cuda_kernel_required": False,
+                    "numba_cuda_jit_used": metadata.get("numba_cuda_jit_used"),
                     "signature": current_signature,
                 }
             )
@@ -414,6 +572,15 @@ def run_repeat_probe(
             rows.extend(prepared_rows)
             signatures.setdefault(mode, signature)
             continue
+        if mode == PREPARED_NUMBA_GRID_MODE:
+            prepared_rows, signature = _run_prepared_numba_grid_repeat_rows(
+                dataset=dataset,
+                point_count=point_count,
+                repeat_count=repeat_count,
+            )
+            rows.extend(prepared_rows)
+            signatures.setdefault(mode, signature)
+            continue
         if mode == PREPARED_CUPY_ADJACENCY_MODE:
             prepared_rows, signature = _run_prepared_cupy_adjacency_repeat_rows(
                 dataset=dataset,
@@ -425,6 +592,15 @@ def run_repeat_probe(
             continue
         if mode == PREPARED_GRID_MODE:
             prepared_rows, signature = _run_prepared_grid_repeat_rows(
+                dataset=dataset,
+                point_count=point_count,
+                repeat_count=repeat_count,
+            )
+            rows.extend(prepared_rows)
+            signatures.setdefault(mode, signature)
+            continue
+        if mode == PREPARED_OPTIX_NUMBA_GRID_MODE:
+            prepared_rows, signature = _run_prepared_optix_numba_grid_repeat_rows(
                 dataset=dataset,
                 point_count=point_count,
                 repeat_count=repeat_count,

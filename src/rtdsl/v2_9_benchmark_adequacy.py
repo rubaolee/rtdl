@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-V2_9_BENCHMARK_ADEQUACY_VERSION = "rtdl.v2_9.benchmark_adequacy_after_goal3757.v1"
+V2_9_BENCHMARK_ADEQUACY_VERSION = "rtdl.v2_9.benchmark_adequacy_after_goal3758.v1"
 V2_9_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 V2_9_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal3740 records internal benchmark-app adequacy after the Goal3737 "
@@ -157,18 +157,27 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
         app="rt_dbscan",
         promoted_reader_view="RT-DBSCAN-style fixed-radius grouped stream and component labeling",
         current_performance_reading=(
-            "adequate with boundary: v2.9 packet row is 0.997206x versus v2.3; Goal3742 adds a "
-            "Numba grid component reference and Goal3744 bridges OptiX RT-core threshold flags into "
-            "Numba continuation with mixed but real A5000 evidence"
+            "strong at scale with boundary: Goal3758 A5000 prepared-repeat evidence shows the "
+            "no-RawKernel Numba prepared grid continuation at 1.106x-1.153x versus the prepared "
+            "CuPy grid, and the OptiX RT-core threshold-flags plus Numba prepared continuation "
+            "reaches 1.367x at 65k points and 1.748x at 131k points versus prepared CuPy; "
+            "the 4k row remains below parity for the OptiX+Numba mixed path due launch/occupancy cost"
         ),
-        adequacy="adequate",
+        adequacy="strong",
         current_recommended_path="RTDL/OptiX fixed-radius grouped stream plus app-owned component continuation",
-        current_partner_role="CuPy and Numba component continuations both exist; users choose explicitly",
+        current_partner_role=(
+            "CuPy and Numba component continuations both exist; Numba is now the measured "
+            "high-performance no-RawKernel reference for prepared-repeat component labeling, "
+            "and users choose explicitly"
+        ),
         needs_numba_reference=False,
-        numba_reference_reason="Numba grid component labeling and OptiX-to-Numba bridge now exist as measured references",
+        numba_reference_reason=(
+            "Numba grid component labeling and OptiX-to-Numba bridge now exist as measured "
+            "prepared-repeat references with A5000 scale evidence"
+        ),
         amd_hiprt_readiness="needs HIPRT fixed-radius grouped stream parity before AMD performance work",
         next_generic_runtime_action="treat as covered for Numba-reference purposes; next major work is HIPRT fixed-radius parity",
-        evidence_refs=("Goal2802", "Goal3567", "Goal3742", "Goal3744"),
+        evidence_refs=("Goal2802", "Goal3567", "Goal3742", "Goal3744", "Goal3758"),
         pod_needed_next=False,
     ),
     V29BenchmarkAdequacyRow(
