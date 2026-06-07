@@ -1,0 +1,36 @@
+{
+  "backend_route": "NVIDIA CUDA/Orochi HIPRT functional implementation evidence; not AMD hardware evidence",
+  "claim_boundary": {
+    "amd_perf_claim_authorized": false,
+    "app_specific_native_engine_logic_allowed": false,
+    "broad_rt_core_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "zero_copy_claim_authorized": false
+  },
+  "git_commit": "8a4e3d1023fb1628e5fe57d08a52c5f29f4baa43",
+  "goal": "Goal3782",
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "hiprt_library": "/root/rtdl_goal3782_clean_1780855350/build/librtdl_hiprt.so",
+  "native_symbols": [
+    "rtdl_hiprt_count_triangle_cycle_candidates",
+    "rtdl_hiprt_count_prepared_triangle_cycle_candidates"
+  ],
+  "operation": "graph_cycle_count",
+  "sample": {
+    "counts_match_reference": true,
+    "direct_count": 1,
+    "expected_count": 1,
+    "prepared_count": 1
+  },
+  "scoped_source_dirty": false,
+  "scoped_source_dirty_detail": "",
+  "stage_counts": {
+    "compatibility_only_not_amd_perf_ready": 0,
+    "needs_generic_hiprt_extension": 0,
+    "ready_for_amd_functional_pod": 10
+  },
+  "triangle_counting_missing_generic_contracts": [],
+  "triangle_counting_parity_stage": "ready_for_amd_functional_pod"
+}
