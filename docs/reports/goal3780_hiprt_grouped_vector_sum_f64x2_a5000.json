@@ -1,0 +1,77 @@
+{
+  "backend_route": "NVIDIA CUDA/Orochi HIPRT functional implementation evidence; not AMD hardware evidence",
+  "barnes_hut_missing_generic_contracts": [],
+  "barnes_hut_parity_stage": "ready_for_amd_functional_pod",
+  "claim_boundary": {
+    "amd_perf_claim_authorized": false,
+    "app_specific_native_engine_logic_allowed": false,
+    "broad_rt_core_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "zero_copy_claim_authorized": false
+  },
+  "git_commit": "dc4e2c06f4afe3b8aa5040708f08e43454088180",
+  "goal": "Goal3780",
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "hiprt_library": "/root/rtdl_goal3780_clean_1780853338/build/librtdl_hiprt.so",
+  "native_symbol": "rtdl_hiprt_grouped_vector_sum_f64x2",
+  "operation": "grouped_vector_sum_f64x2",
+  "sample": {
+    "expected_sum_x": [
+      5.25,
+      7.0,
+      5.5,
+      0.0
+    ],
+    "expected_sum_y": [
+      3.0,
+      8.0,
+      2.0,
+      0.0
+    ],
+    "group_ids": [
+      2,
+      0,
+      2,
+      1,
+      0,
+      2
+    ],
+    "rows_match_reference": true,
+    "sum_x": [
+      5.25,
+      7.0,
+      5.5,
+      0.0
+    ],
+    "sum_y": [
+      3.0,
+      8.0,
+      2.0,
+      0.0
+    ],
+    "values_x": [
+      1.5,
+      2.0,
+      -0.5,
+      7.0,
+      3.25,
+      4.5
+    ],
+    "values_y": [
+      0.25,
+      -1.0,
+      2.5,
+      8.0,
+      4.0,
+      -0.75
+    ]
+  },
+  "scoped_source_dirty": false,
+  "stage_counts": {
+    "compatibility_only_not_amd_perf_ready": 2,
+    "needs_generic_hiprt_extension": 0,
+    "ready_for_amd_functional_pod": 8
+  }
+}

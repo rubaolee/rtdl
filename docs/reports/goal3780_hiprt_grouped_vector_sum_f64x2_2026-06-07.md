@@ -44,14 +44,28 @@ The overall AMD/HIPRT parity map still has two compatibility-only apps:
 
 ## Validation
 
-Local focused validation target:
+Local focused validation passed:
 
 ```text
 $env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal3780_hiprt_grouped_vector_sum_f64x2_test tests.goal3753_amd_hiprt_benchmark_parity_plan_test tests.goal3773_hiprt_point_group_nearest_witness_test tests.goal3774_hiprt_point_group_nearest_device_columns_test tests.goal3775_hiprt_ray_triangle_closest_hit_3d_test tests.goal3776_hiprt_collect_k_bounded_i64_test tests.goal3777_hiprt_aggregate_frontier_collect_2d_test tests.goal3779_hiprt_grouped_i64_count_sum_test
 ```
 
-Clean pod validation should build HIPRT from a clean checkout, run the focused
-test, and write:
+Result: 63 tests passed, 14 skipped.
+
+Clean pod validation:
+
+- SSH: `root@69.30.85.203 -p 22057`
+- GPU: `NVIDIA RTX A5000, 580.126.09`
+- HIPRT SDK: `/root/vendor/hiprt-official/hiprtSdk-2.2.0e68f54`
+- clean workdir: `/root/rtdl_goal3780_clean_1780853338`
+- commit: `dc4e2c06f4afe3b8aa5040708f08e43454088180`
+- command: `make build-hiprt HIPRT_PREFIX=/root/vendor/hiprt-official/hiprtSdk-2.2.0e68f54`
+- focused pod tests: 35 passed, 1 skipped.
+- sample parity: HIPRT dense `sum_x` `(5.25, 7.0, 5.5, 0.0)` and `sum_y`
+  `(3.0, 8.0, 2.0, 0.0)` match the Python reference.
+- scoped source dirty: false.
+
+Pod evidence is recorded in:
 
 `docs/reports/goal3780_hiprt_grouped_vector_sum_f64x2_a5000.json`
 
