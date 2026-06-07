@@ -1,0 +1,412 @@
+{
+  "backend_route": "HIPRT 2.2 CUDA/Orochi on NVIDIA RTX A5000; functional evidence, not AMD hardware evidence",
+  "claim_boundary": {
+    "amd_perf_claim_authorized": false,
+    "app_specific_native_engine_logic_allowed": false,
+    "broad_rt_core_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": 3774,
+  "hausdorff_xhd_missing_generic_contracts": [],
+  "hausdorff_xhd_parity_stage": "ready_for_amd_functional_pod",
+  "native_symbol": "rtdl_hiprt_write_prepared_point_group_nearest_witness_2d_device_columns",
+  "parity_summary": {
+    "amd_perf_claim_authorized": false,
+    "app_count": 10,
+    "claim_boundary": "This AMD/HIPRT benchmark parity map is a planning gate. It does not authorize AMD performance claims, HIPRT release claims, public speedup wording, whole-app acceleration wording, or RTDL-beats-paper wording.",
+    "compatibility_only_not_amd_perf_ready_apps": [
+      "raydb_style",
+      "triangle_counting"
+    ],
+    "needs_generic_hiprt_extension_apps": [
+      "contact_manifold",
+      "barnes_hut"
+    ],
+    "ready_for_amd_functional_pod_apps": [
+      "hausdorff_xhd",
+      "spatial_rayjoin",
+      "rt_dbscan",
+      "robot_collision",
+      "librts_spatial_index",
+      "rtnn"
+    ],
+    "release_authorized": false,
+    "row_count": 10,
+    "stage_counts": {
+      "compatibility_only_not_amd_perf_ready": 2,
+      "needs_generic_hiprt_extension": 2,
+      "ready_for_amd_functional_pod": 6
+    },
+    "status": "planning_gate_not_amd_hardware_evidence",
+    "version": "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3774.v1"
+  },
+  "sample": {
+    "device_columns": {
+      "distances": [
+        0.5,
+        2.0
+      ],
+      "neighbor_ids": [
+        10,
+        12
+      ],
+      "query_ids": [
+        100,
+        101
+      ]
+    },
+    "device_columns_match_reference": true,
+    "expected_columns": {
+      "distances": [
+        0.5,
+        2.0
+      ],
+      "neighbor_ids": [
+        10,
+        12
+      ],
+      "query_ids": [
+        100,
+        101
+      ]
+    },
+    "metadata": {
+      "backend": "hiprt",
+      "direct_device_handoff_authorized": true,
+      "materializes_neighbor_rows": false,
+      "native_elapsed_sec": 0.14033082034438848,
+      "native_engine_row_contract": "generic_point_group_nearest_witness_2d_device_columns",
+      "native_execution_path": "prepared_hiprt_point_group_nearest_witness_2d_device_columns",
+      "native_symbol": "rtdl_hiprt_write_prepared_point_group_nearest_witness_2d_device_columns",
+      "output_columns_true_zero_copy_authorized": true,
+      "query_count": 2,
+      "radius": 5.0,
+      "rt_core_accelerated": true,
+      "rt_core_speedup_claim_authorized": false,
+      "source_devices": [
+        "cuda:0"
+      ],
+      "source_protocols": [
+        "cupy"
+      ],
+      "transfer_mode": "host_query_points_to_device_witness_columns",
+      "true_zero_copy_authorized": false,
+      "typed_result_stream": {
+        "app_specific_engine_logic_allowed": false,
+        "automatic_partner_selection_allowed": false,
+        "claim_boundary": "v2.8 typed result streams are an internal generic contract for RTDL runtime development. They do not authorize release, public speedup wording, broad RT-core wording, true-zero-copy wording, hidden dispatch, hidden partner selection, app-specific native-engine behavior, or user-defined shader injection.",
+        "column_names": [
+          "query_id",
+          "neighbor_id",
+          "distance"
+        ],
+        "columns": [
+          {
+            "buffer": {
+              "access_mode": "write",
+              "alignment_bytes": 1,
+              "byte_offset": 0,
+              "capacity_elements": 2,
+              "data_ptr_observed": true,
+              "device": "cuda:0",
+              "dtype": "uint32",
+              "element_count": 2,
+              "lifetime": "caller_retained",
+              "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+              "mutability": "immutable",
+              "name": "query_id",
+              "scope": "rtdl_primitive_handoff_only",
+              "shape": [
+                2
+              ],
+              "source_protocol": "cupy",
+              "stream_handle": 0,
+              "strides_bytes": null
+            },
+            "device_resident": true,
+            "dtype": "uint32",
+            "name": "query_id",
+            "nullable": false,
+            "required_for_continuation": true,
+            "role": "group_key",
+            "shape": [
+              2
+            ]
+          },
+          {
+            "buffer": {
+              "access_mode": "write",
+              "alignment_bytes": 1,
+              "byte_offset": 0,
+              "capacity_elements": 2,
+              "data_ptr_observed": true,
+              "device": "cuda:0",
+              "dtype": "uint32",
+              "element_count": 2,
+              "lifetime": "caller_retained",
+              "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+              "mutability": "immutable",
+              "name": "neighbor_id",
+              "scope": "rtdl_primitive_handoff_only",
+              "shape": [
+                2
+              ],
+              "source_protocol": "cupy",
+              "stream_handle": 0,
+              "strides_bytes": null
+            },
+            "device_resident": true,
+            "dtype": "uint32",
+            "name": "neighbor_id",
+            "nullable": false,
+            "required_for_continuation": true,
+            "role": "witness",
+            "shape": [
+              2
+            ]
+          },
+          {
+            "buffer": {
+              "access_mode": "write",
+              "alignment_bytes": 1,
+              "byte_offset": 0,
+              "capacity_elements": 2,
+              "data_ptr_observed": true,
+              "device": "cuda:0",
+              "dtype": "float64",
+              "element_count": 2,
+              "lifetime": "caller_retained",
+              "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+              "mutability": "immutable",
+              "name": "distance",
+              "scope": "rtdl_primitive_handoff_only",
+              "shape": [
+                2
+              ],
+              "source_protocol": "cupy",
+              "stream_handle": 0,
+              "strides_bytes": null
+            },
+            "device_resident": true,
+            "dtype": "float64",
+            "name": "distance",
+            "nullable": false,
+            "required_for_continuation": true,
+            "role": "score",
+            "shape": [
+              2
+            ]
+          }
+        ],
+        "contract_version": "rtdl.v2_8.typed_result_stream.v1",
+        "device_resident_column_count": 3,
+        "event_or_group_ordering_required": true,
+        "grouped_continuation_ready": true,
+        "hidden_dispatch_allowed": false,
+        "ordering": "stable_row_order",
+        "page_capacity": 2,
+        "producer_primitive": "point_group_nearest_witness_2d",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "segmented_page_failure_mode": "fail_closed_overflow",
+        "status": "internal_contract_no_native_promotion",
+        "status_column_names": [
+          "row_count",
+          "capacity",
+          "overflow",
+          "complete_candidate_coverage"
+        ],
+        "status_columns": [
+          {
+            "buffer": {
+              "access_mode": "read",
+              "alignment_bytes": 1,
+              "byte_offset": 0,
+              "capacity_elements": 1,
+              "data_ptr_observed": false,
+              "device": "cpu:0",
+              "dtype": "uint64",
+              "element_count": 1,
+              "lifetime": "caller_retained",
+              "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+              "mutability": "mutable",
+              "name": "row_count",
+              "scope": "rtdl_primitive_handoff_only",
+              "shape": [
+                1
+              ],
+              "source_protocol": "metadata_status_columns_no_device_status_buffer",
+              "stream_handle": 0,
+              "strides_bytes": null
+            },
+            "device_resident": false,
+            "dtype": "uint64",
+            "name": "row_count",
+            "nullable": false,
+            "required_for_continuation": true,
+            "role": "status",
+            "shape": [
+              1
+            ]
+          },
+          {
+            "buffer": {
+              "access_mode": "read",
+              "alignment_bytes": 1,
+              "byte_offset": 0,
+              "capacity_elements": 1,
+              "data_ptr_observed": false,
+              "device": "cpu:0",
+              "dtype": "uint64",
+              "element_count": 1,
+              "lifetime": "caller_retained",
+              "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+              "mutability": "mutable",
+              "name": "capacity",
+              "scope": "rtdl_primitive_handoff_only",
+              "shape": [
+                1
+              ],
+              "source_protocol": "metadata_status_columns_no_device_status_buffer",
+              "stream_handle": 0,
+              "strides_bytes": null
+            },
+            "device_resident": false,
+            "dtype": "uint64",
+            "name": "capacity",
+            "nullable": false,
+            "required_for_continuation": true,
+            "role": "status",
+            "shape": [
+              1
+            ]
+          },
+          {
+            "buffer": {
+              "access_mode": "read",
+              "alignment_bytes": 1,
+              "byte_offset": 0,
+              "capacity_elements": 1,
+              "data_ptr_observed": false,
+              "device": "cpu:0",
+              "dtype": "uint32",
+              "element_count": 1,
+              "lifetime": "caller_retained",
+              "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+              "mutability": "mutable",
+              "name": "overflow",
+              "scope": "rtdl_primitive_handoff_only",
+              "shape": [
+                1
+              ],
+              "source_protocol": "metadata_status_columns_no_device_status_buffer",
+              "stream_handle": 0,
+              "strides_bytes": null
+            },
+            "device_resident": false,
+            "dtype": "uint32",
+            "name": "overflow",
+            "nullable": false,
+            "required_for_continuation": true,
+            "role": "status",
+            "shape": [
+              1
+            ]
+          },
+          {
+            "buffer": {
+              "access_mode": "read",
+              "alignment_bytes": 1,
+              "byte_offset": 0,
+              "capacity_elements": 1,
+              "data_ptr_observed": false,
+              "device": "cpu:0",
+              "dtype": "uint32",
+              "element_count": 1,
+              "lifetime": "caller_retained",
+              "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+              "mutability": "mutable",
+              "name": "complete_candidate_coverage",
+              "scope": "rtdl_primitive_handoff_only",
+              "shape": [
+                1
+              ],
+              "source_protocol": "metadata_status_columns_no_device_status_buffer",
+              "stream_handle": 0,
+              "strides_bytes": null
+            },
+            "device_resident": false,
+            "dtype": "uint32",
+            "name": "complete_candidate_coverage",
+            "nullable": false,
+            "required_for_continuation": true,
+            "role": "status",
+            "shape": [
+              1
+            ]
+          }
+        ],
+        "stream_id": "hiprt_point_group_nearest_witness_2d_device_columns",
+        "stream_kind": "candidate_stream",
+        "target": "typed_device_resident_result_streams_and_grouped_continuation",
+        "true_zero_copy_claim_authorized": false
+      },
+      "v2_10_release_authorized": false,
+      "v2_8_typed_producer_metadata": {
+        "backend": "hiprt",
+        "claim_boundary": "This is generic typed producer metadata for point/group nearest-witness columns. It can record partner-owned CUDA output columns without host row materialization, but it does not authorize a release, public speedup wording, broad RT-core wording, true-zero-copy wording, hidden dispatch, hidden partner selection, or app-specific native-engine behavior.",
+        "column_names": [
+          "query_id",
+          "neighbor_id",
+          "distance"
+        ],
+        "device_resident_output_columns_proven": true,
+        "device_resident_output_stream_proven": true,
+        "end_to_end_true_zero_copy_proven": false,
+        "group_count": 2,
+        "host_row_materialization_used": false,
+        "native_execution_path": "prepared_hiprt_point_group_nearest_witness_2d_device_columns",
+        "native_symbol": "rtdl_hiprt_write_prepared_point_group_nearest_witness_2d_device_columns",
+        "native_typed_producer_metadata_present": true,
+        "output_column_count": 3,
+        "producer_output_residency": "partner_owned_cuda_output_columns",
+        "producer_primitive": "point_group_nearest_witness_2d",
+        "public_speedup_claim_authorized": false,
+        "query_count": 2,
+        "radius": 5.0,
+        "release_authorized": false,
+        "row_count": 2,
+        "rt_core_speedup_claim_authorized": false,
+        "search_count": 3,
+        "source_devices": [
+          "cuda:0"
+        ],
+        "source_protocols": [
+          "cupy"
+        ],
+        "transfer_mode": "host_query_points_to_device_witness_columns",
+        "true_zero_copy_claim_authorized": false,
+        "v2_8_release_authorized": false,
+        "version": "rtdl.v2_8.point_group_nearest_witness_typed_producer.v1"
+      }
+    },
+    "reference_rows": [
+      {
+        "distance": 0.5,
+        "neighbor_id": 10,
+        "query_id": 100
+      },
+      {
+        "distance": 2.0,
+        "neighbor_id": 12,
+        "query_id": 101
+      }
+    ]
+  },
+  "scoped_source_dirty": false,
+  "source_commit": "68a5d06e"
+}
