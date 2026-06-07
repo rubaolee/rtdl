@@ -287,6 +287,39 @@ def run_probe(args: argparse.Namespace) -> dict[str, Any]:
             stability_key="row_count",
         )
 
+        resident_native_executor_start = time.perf_counter()
+        resident_native_executor = prepared.prepare_relation_status_corrected_scalar_count_executor(
+            prepared_points,
+            point_eps=float(args.point_eps),
+        )
+        prepare_resident_native_executor_sec = time.perf_counter() - resident_native_executor_start
+        try:
+            def resident_native_corrected_count_once() -> dict[str, Any]:
+                result = resident_native_executor.run()
+                return {
+                    "row_count": int(result["row_count"]),
+                    "candidate_row_count": int(result["candidate_row_count"]),
+                    "boundary_candidate_row_count": int(result["boundary_candidate_row_count"]),
+                    "dropped_candidate_row_count": int(result["dropped_candidate_row_count"]),
+                    "native_traversal_seconds": float(result["traversal_seconds"]),
+                    "row_stream_materialized": bool(result["row_stream_materialized"]),
+                    "boundary_candidate_row_stream_materialized": bool(
+                        result["boundary_candidate_row_stream_materialized"]
+                    ),
+                    "reusable_native_executor_used": bool(result["reusable_native_executor_used"]),
+                }
+
+            resident_native_corrected_count_timing = _time_repeated(
+                label="resident_native_relation_status_corrected_exact_scalar_count",
+                warmup=int(args.warmup),
+                repeat=int(args.repeat),
+                synchronize=sync,
+                fn=resident_native_corrected_count_once,
+                stability_key="row_count",
+            )
+        finally:
+            resident_native_executor.close()
+
         correctness_columns = prepared.relation_status_candidate_device_columns_prepared_points(
             prepared_points,
             relation_status_filter=2,
@@ -322,19 +355,30 @@ def run_probe(args: argparse.Namespace) -> dict[str, Any]:
             "prepare_point_columns_sec": prepare_point_columns_sec,
             "prepare_refiner_sec": prepare_refiner_sec,
             "prepare_resident_counter_sec": prepare_resident_counter_sec,
+            "prepare_resident_native_executor_sec": prepare_resident_native_executor_sec,
             "timings": {
                 "all_candidate_count_only": all_candidate_count_timing,
                 "boundary_candidate_columns": boundary_candidate_timing,
                 "relation_status_corrected_exact_numba_count": corrected_count_timing,
                 "resident_relation_status_corrected_exact_numba_count": resident_corrected_count_timing,
                 "native_relation_status_corrected_exact_scalar_count": native_corrected_count_timing,
+                "resident_native_relation_status_corrected_exact_scalar_count": (
+                    resident_native_corrected_count_timing
+                ),
             },
             "correctness": {
                 "exact_count": exact_count,
                 "corrected_count": corrected_count,
                 "native_corrected_count": int(native_corrected_count_timing["stability_value"]),
+                "resident_native_corrected_count": int(
+                    resident_native_corrected_count_timing["stability_value"]
+                ),
                 "all_match_exact_count": corrected_count == exact_count,
                 "native_all_match_exact_count": int(native_corrected_count_timing["stability_value"]) == exact_count,
+                "resident_native_all_match_exact_count": int(
+                    resident_native_corrected_count_timing["stability_value"]
+                )
+                == exact_count,
                 "exact_pair_multiset_rows_materialized_for_oracle": len(exact_pairs),
             },
             "boundary_result": {

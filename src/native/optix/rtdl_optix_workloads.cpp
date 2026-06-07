@@ -8577,6 +8577,182 @@ static void count_prepared_point_closed_shape_membership_relation_status_correct
     g_optix_last_closed_shape_emitted_count = static_cast<size_t>(exact_count);
 }
 
+struct PreparedPointClosedShapeRelationStatusCorrectedScalarCountExecutor2D {
+    PreparedShapePairRelationBuild* prepared = nullptr;
+    PreparedPointProbeColumns2D* prepared_points = nullptr;
+    double point_eps = 1.0e-9;
+    DevPtr d_exact_count;
+    DevPtr d_candidate_count;
+    DevPtr d_boundary_candidate_count;
+    DevPtr d_dropped_candidate_count;
+    DevPtr d_params;
+
+    PreparedPointClosedShapeRelationStatusCorrectedScalarCountExecutor2D(
+            PreparedShapePairRelationBuild* prepared_in,
+            PreparedPointProbeColumns2D* prepared_points_in,
+            double point_eps_in)
+        : prepared(prepared_in),
+          prepared_points(prepared_points_in),
+          point_eps(point_eps_in),
+          d_exact_count(sizeof(uint32_t)),
+          d_candidate_count(sizeof(uint32_t)),
+          d_boundary_candidate_count(sizeof(uint32_t)),
+          d_dropped_candidate_count(sizeof(uint32_t)),
+          d_params(sizeof(PipRelationStatusCorrectedScalarCountLaunchParams))
+    {
+        if (!prepared) {
+            throw std::runtime_error("prepared closed-shape membership handle must not be null");
+        }
+        if (!prepared_points) {
+            throw std::runtime_error("prepared point-probe columns handle must not be null");
+        }
+        if (!std::isfinite(point_eps) || point_eps < 0.0) {
+            throw std::runtime_error("relation-status corrected scalar-count executor point_eps must be finite and non-negative");
+        }
+        if (prepared_points->point_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+            throw std::runtime_error("relation-status corrected scalar-count executor point count exceeds uint32_t chunk offset capacity");
+        }
+        if (prepared->right_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+            throw std::runtime_error("relation-status corrected scalar-count executor shape count exceeds uint32_t launch capacity");
+        }
+        ensure_pip_relation_status_corrected_scalar_count_pipeline();
+    }
+
+    void run(RtdlNativeClosedShapeScalarCountSummary* summary_out)
+    {
+        if (!summary_out) {
+            throw std::runtime_error("relation-status corrected scalar-count executor summary output pointer must not be null");
+        }
+        *summary_out = {};
+        summary_out->exact_boundary_correction_used = 1u;
+        summary_out->relation_status_correction_used = 1u;
+        summary_out->point_eps = point_eps;
+        CUdevice current_device = 0;
+        CU_CHECK(cuCtxGetDevice(&current_device));
+        summary_out->device_ordinal = static_cast<int32_t>(current_device);
+
+        const size_t point_count = prepared_points->point_count;
+        if (point_count == 0 || prepared->right_count == 0) {
+            return;
+        }
+
+        CUstream stream = 0;
+        CU_CHECK(cuMemsetD32Async(d_exact_count.ptr, 0u, 1u, stream));
+        CU_CHECK(cuMemsetD32Async(d_candidate_count.ptr, 0u, 1u, stream));
+        CU_CHECK(cuMemsetD32Async(d_boundary_candidate_count.ptr, 0u, 1u, stream));
+        CU_CHECK(cuMemsetD32Async(d_dropped_candidate_count.ptr, 0u, 1u, stream));
+
+        PipRelationStatusCorrectedScalarCountLaunchParams lp;
+        lp.traversable    = prepared->accel.handle;
+        lp.points_x       = reinterpret_cast<const float*>(prepared_points->d_points_x.ptr);
+        lp.points_y       = reinterpret_cast<const float*>(prepared_points->d_points_y.ptr);
+        lp.points_x_f64   = reinterpret_cast<const double*>(prepared_points->d_points_x_f64.ptr);
+        lp.points_y_f64   = reinterpret_cast<const double*>(prepared_points->d_points_y_f64.ptr);
+        lp.point_ids      = reinterpret_cast<const uint32_t*>(prepared_points->d_point_ids.ptr);
+        lp.polygons       = reinterpret_cast<const GpuPolygonRef*>(prepared->d_right_polygons.ptr);
+        lp.vertices_x     = reinterpret_cast<const float*>(prepared->d_right_vx.ptr);
+        lp.vertices_y     = reinterpret_cast<const float*>(prepared->d_right_vy.ptr);
+        lp.vertices_x_f64 = reinterpret_cast<const double*>(prepared->d_right_vx_f64.ptr);
+        lp.vertices_y_f64 = reinterpret_cast<const double*>(prepared->d_right_vy_f64.ptr);
+        lp.prepared_edges = nullptr;
+        lp.hit_words      = nullptr;
+        lp.output         = nullptr;
+        lp.output_count   = reinterpret_cast<uint32_t*>(d_exact_count.ptr);
+        lp.output_capacity = 0u;
+        lp.candidate_count = reinterpret_cast<uint32_t*>(d_candidate_count.ptr);
+        lp.boundary_candidate_count = reinterpret_cast<uint32_t*>(d_boundary_candidate_count.ptr);
+        lp.dropped_candidate_count = reinterpret_cast<uint32_t*>(d_dropped_candidate_count.ptr);
+        lp.point_eps_f64 = point_eps;
+        lp.positive_only  = 1u;
+        lp.hit_word_count = 0u;
+        lp.polygon_count  = static_cast<uint32_t>(prepared->right_count);
+        lp.probe_count    = 0u;
+        lp.point_index_offset = 0u;
+        lp.device_prefilter = 1u;
+        lp.boundary_check = closed_shape_membership_boundary_check_enabled();
+
+        const uint64_t max_points_per_launch64 =
+            static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()) /
+            static_cast<uint64_t>(prepared->right_count);
+        if (max_points_per_launch64 == 0) {
+            throw std::runtime_error("relation-status corrected scalar-count executor cannot chunk shape set into uint32_t capacity");
+        }
+        const size_t max_points_per_launch = static_cast<size_t>(
+            std::min<uint64_t>(max_points_per_launch64, static_cast<uint64_t>(point_count)));
+
+        const auto traversal_start = std::chrono::steady_clock::now();
+        for (size_t point_offset = 0; point_offset < point_count; point_offset += max_points_per_launch) {
+            const size_t chunk_point_count = std::min(max_points_per_launch, point_count - point_offset);
+            const CUdeviceptr chunk_points_x =
+                prepared_points->d_points_x.ptr + static_cast<CUdeviceptr>(sizeof(float) * point_offset);
+            const CUdeviceptr chunk_points_y =
+                prepared_points->d_points_y.ptr + static_cast<CUdeviceptr>(sizeof(float) * point_offset);
+            const CUdeviceptr chunk_points_x_f64 =
+                prepared_points->d_points_x_f64.ptr + static_cast<CUdeviceptr>(sizeof(double) * point_offset);
+            const CUdeviceptr chunk_points_y_f64 =
+                prepared_points->d_points_y_f64.ptr + static_cast<CUdeviceptr>(sizeof(double) * point_offset);
+            const CUdeviceptr chunk_point_ids =
+                prepared_points->d_point_ids.ptr + static_cast<CUdeviceptr>(sizeof(uint32_t) * point_offset);
+            lp.points_x = reinterpret_cast<const float*>(chunk_points_x);
+            lp.points_y = reinterpret_cast<const float*>(chunk_points_y);
+            lp.points_x_f64 = reinterpret_cast<const double*>(chunk_points_x_f64);
+            lp.points_y_f64 = reinterpret_cast<const double*>(chunk_points_y_f64);
+            lp.point_ids = reinterpret_cast<const uint32_t*>(chunk_point_ids);
+            lp.point_index_offset = static_cast<uint32_t>(point_offset);
+            lp.probe_count = static_cast<uint32_t>(chunk_point_count);
+            upload(d_params.ptr, &lp, 1);
+
+            OPTIX_CHECK(optixLaunch(g_pip_relation_status_corrected_scalar_count.pipe->pipeline, stream,
+                                     d_params.ptr, sizeof(PipRelationStatusCorrectedScalarCountLaunchParams),
+                                     &g_pip_relation_status_corrected_scalar_count.pipe->sbt,
+                                     static_cast<unsigned>(chunk_point_count), 1, 1));
+        }
+        CU_CHECK(cuStreamSynchronize(stream));
+        const auto traversal_end = std::chrono::steady_clock::now();
+
+        uint32_t exact_count = 0u;
+        uint32_t candidate_count = 0u;
+        uint32_t boundary_candidate_count = 0u;
+        uint32_t dropped_candidate_count = 0u;
+        download(&exact_count, d_exact_count.ptr, 1);
+        download(&candidate_count, d_candidate_count.ptr, 1);
+        download(&boundary_candidate_count, d_boundary_candidate_count.ptr, 1);
+        download(&dropped_candidate_count, d_dropped_candidate_count.ptr, 1);
+
+        summary_out->row_count = static_cast<uint64_t>(exact_count);
+        summary_out->candidate_event_count = static_cast<uint64_t>(candidate_count);
+        summary_out->boundary_candidate_event_count = static_cast<uint64_t>(boundary_candidate_count);
+        summary_out->dropped_candidate_event_count = static_cast<uint64_t>(dropped_candidate_count);
+        summary_out->overflow = 0u;
+        summary_out->traversal_seconds = seconds_between(traversal_start, traversal_end);
+        g_optix_last_closed_shape_candidate_count_s = summary_out->traversal_seconds;
+        g_optix_last_closed_shape_raw_candidate_count = static_cast<size_t>(candidate_count);
+        g_optix_last_closed_shape_emitted_count = static_cast<size_t>(exact_count);
+    }
+};
+
+static PreparedPointClosedShapeRelationStatusCorrectedScalarCountExecutor2D*
+prepare_point_closed_shape_membership_relation_status_corrected_scalar_count_executor_2d_optix(
+        PreparedShapePairRelationBuild* prepared,
+        PreparedPointProbeColumns2D* prepared_points,
+        double point_eps)
+{
+    return new PreparedPointClosedShapeRelationStatusCorrectedScalarCountExecutor2D(
+        prepared,
+        prepared_points,
+        point_eps);
+}
+
+static void run_point_closed_shape_membership_relation_status_corrected_scalar_count_executor_2d_optix(
+        PreparedPointClosedShapeRelationStatusCorrectedScalarCountExecutor2D* executor,
+        RtdlNativeClosedShapeScalarCountSummary* summary_out)
+{
+    if (!executor) {
+        throw std::runtime_error("relation-status corrected scalar-count executor handle must not be null");
+    }
+    executor->run(summary_out);
+}
+
 static void count_prepared_point_closed_shape_membership_device_filtered_prepared_points_batch_2d_optix(
         PreparedShapePairRelationBuild* prepared,
         PreparedPointProbeColumns2D* prepared_points,

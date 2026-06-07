@@ -552,6 +552,50 @@ extern "C" int rtdl_optix_count_prepared_point_closed_shape_membership_relation_
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepare_point_closed_shape_membership_relation_status_corrected_scalar_count_executor_2d(
+        void* prepared,
+        void* prepared_points,
+        double point_eps,
+        void** executor_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared closed-shape membership handle must not be null");
+        if (!prepared_points)
+            throw std::runtime_error("prepared point-probe columns handle must not be null");
+        if (!executor_out)
+            throw std::runtime_error("relation-status corrected scalar-count executor output pointer must not be null");
+        *executor_out = nullptr;
+        *executor_out = prepare_point_closed_shape_membership_relation_status_corrected_scalar_count_executor_2d_optix(
+            reinterpret_cast<PreparedShapePairRelationBuild*>(prepared),
+            reinterpret_cast<PreparedPointProbeColumns2D*>(prepared_points),
+            point_eps);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_point_closed_shape_membership_relation_status_corrected_scalar_count_executor_2d(
+        void* executor,
+        RtdlNativeClosedShapeScalarCountSummary* summary_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!executor)
+            throw std::runtime_error("relation-status corrected scalar-count executor handle must not be null");
+        if (!summary_out)
+            throw std::runtime_error("relation-status corrected scalar-count executor summary output pointer must not be null");
+        run_point_closed_shape_membership_relation_status_corrected_scalar_count_executor_2d_optix(
+            reinterpret_cast<PreparedPointClosedShapeRelationStatusCorrectedScalarCountExecutor2D*>(executor),
+            summary_out);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_point_closed_shape_membership_relation_status_corrected_scalar_count_executor_2d(
+        void* executor)
+{
+    delete reinterpret_cast<PreparedPointClosedShapeRelationStatusCorrectedScalarCountExecutor2D*>(executor);
+}
+
 extern "C" int rtdl_optix_prepare_prepared_point_closed_shape_membership_device_filtered_prepared_points_batch_executor_2d(
         void* prepared,
         void* prepared_points,

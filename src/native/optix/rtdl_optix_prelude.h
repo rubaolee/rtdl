@@ -724,6 +724,18 @@ int  rtdl_optix_count_prepared_point_closed_shape_membership_relation_status_cor
          double point_eps,
          RtdlNativeClosedShapeScalarCountSummary* summary_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_point_closed_shape_membership_relation_status_corrected_scalar_count_executor_2d(
+         void* prepared,
+         void* prepared_points,
+         double point_eps,
+         void** executor_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_point_closed_shape_membership_relation_status_corrected_scalar_count_executor_2d(
+         void* executor,
+         RtdlNativeClosedShapeScalarCountSummary* summary_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_point_closed_shape_membership_relation_status_corrected_scalar_count_executor_2d(
+         void* executor);
 int  rtdl_optix_prepare_prepared_point_closed_shape_membership_device_filtered_prepared_points_batch_executor_2d(
          void* prepared,
          void* prepared_points,
