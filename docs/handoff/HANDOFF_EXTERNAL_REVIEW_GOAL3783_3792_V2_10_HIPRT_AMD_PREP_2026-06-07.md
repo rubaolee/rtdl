@@ -9,6 +9,12 @@ Please review the Goal3783-3792 chain and write a formal external review to:
 - Gemini path, if Gemini is used instead or alongside Claude:
   `docs/reviews/goal3793_gemini_review_goal3783_3792_v2_10_hiprt_amd_prep_2026-06-07.md`
 
+Existing Gemini review:
+`docs/reviews/goal3793_gemini_review_goal3783_3792_v2_10_hiprt_amd_prep_2026-06-07.md`
+
+Claude should independently verify the source files and artifacts rather than
+rubber-stamping the Gemini review.
+
 Allowed verdicts: `accept`, `accept-with-boundary`, `needs-more-evidence`,
 or `reject`.
 
