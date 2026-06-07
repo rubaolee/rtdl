@@ -8498,6 +8498,133 @@ struct PreparedShapePairRelationLeftSet {
     }
 };
 
+struct PreparedShapePairRelationActiveCountPreparedLeftExecutor {
+    PreparedShapePairRelationBuild* prepared = nullptr;
+    PreparedShapePairRelationLeftSet* prepared_left = nullptr;
+    size_t out_count = 0;
+    uint32_t launch_count = 0;
+    uint32_t left_count_u32 = 0;
+    uint32_t right_count_u32 = 0;
+    DevPtr d_output;
+    DevPtr d_active_count;
+    DevPtr d_params;
+    ShapePairRelationLaunchParams params{};
+
+    PreparedShapePairRelationActiveCountPreparedLeftExecutor(
+            PreparedShapePairRelationBuild* prepared_in,
+            PreparedShapePairRelationLeftSet* prepared_left_in)
+        : prepared(prepared_in),
+          prepared_left(prepared_left_in),
+          out_count(
+              (!prepared_in || !prepared_left_in) ? 0 :
+              prepared_left_in->left_count * prepared_in->right_count),
+          launch_count(
+              (!prepared_in || !prepared_left_in) ? 0 :
+              static_cast<uint32_t>(prepared_left_in->left_count) * prepared_left_in->max_edges),
+          left_count_u32(
+              (!prepared_left_in) ? 0 : static_cast<uint32_t>(prepared_left_in->left_count)),
+          right_count_u32(
+              (!prepared_in) ? 0 : static_cast<uint32_t>(prepared_in->right_count)),
+          d_output(sizeof(GpuShapePairRelationFlags) * out_count),
+          d_active_count(sizeof(unsigned long long)),
+          d_params(sizeof(ShapePairRelationLaunchParams))
+    {
+        ensure_shape_pair_relation_pipeline();
+        ensure_shape_pair_relation_active_count_device_pipeline();
+        if (!prepared) {
+            throw std::runtime_error("prepared shape-pair relation handle must not be null");
+        }
+        if (!prepared_left) {
+            throw std::runtime_error("prepared shape-pair left-set handle must not be null");
+        }
+        if (prepared_left->left_count > std::numeric_limits<uint32_t>::max() ||
+            prepared->right_count > std::numeric_limits<uint32_t>::max()) {
+            throw std::runtime_error("prepared-left shape-pair executor requires 32-bit left/right counts");
+        }
+        if (out_count > std::numeric_limits<uint32_t>::max()) {
+            throw std::runtime_error("prepared-left shape-pair executor requires at most 2^32-1 relation pairs");
+        }
+        if (prepared_left->left_count == 0 || prepared->right_count == 0 || prepared_left->max_edges == 0) {
+            return;
+        }
+        params.traversable          = prepared->accel.handle;
+        params.left_polygons        = reinterpret_cast<GpuPolygonRef*>(prepared_left->d_left_polygons.ptr);
+        params.right_polygons       = reinterpret_cast<GpuPolygonRef*>(prepared->d_right_polygons.ptr);
+        params.left_vx              = reinterpret_cast<float*>(prepared_left->d_left_vx.ptr);
+        params.left_vy              = reinterpret_cast<float*>(prepared_left->d_left_vy.ptr);
+        params.right_vx             = reinterpret_cast<float*>(prepared->d_right_vx.ptr);
+        params.right_vy             = reinterpret_cast<float*>(prepared->d_right_vy.ptr);
+        params.output               = reinterpret_cast<GpuShapePairRelationFlags*>(d_output.ptr);
+        params.right_count          = right_count_u32;
+        params.left_count           = left_count_u32;
+        params.launch_count         = launch_count;
+        params.max_edges_per_poly   = prepared_left->max_edges;
+        upload(d_params.ptr, &params, 1);
+    }
+
+    void run(size_t* active_count_out) {
+        if (!active_count_out) {
+            throw std::runtime_error("active count output pointer must not be null");
+        }
+        *active_count_out = 0;
+        reset_shape_pair_relation_phase_timings(6u);
+        if (prepared_left->left_count == 0 || prepared->right_count == 0 || prepared_left->max_edges == 0) {
+            return;
+        }
+
+        g_optix_last_shape_pair_pair_count = out_count;
+        CU_CHECK(cuMemsetD8(d_output.ptr, 0, sizeof(GpuShapePairRelationFlags) * out_count));
+
+        const auto traversal_start = std::chrono::steady_clock::now();
+        CUstream stream = 0;
+        OPTIX_CHECK(optixLaunch(g_shape_pair_relation.pipe->pipeline, stream,
+                                 d_params.ptr, sizeof(ShapePairRelationLaunchParams),
+                                 &g_shape_pair_relation.pipe->sbt,
+                                 launch_count, 1, 1));
+        CU_CHECK(cuStreamSynchronize(stream));
+        const auto traversal_end = std::chrono::steady_clock::now();
+        g_optix_last_shape_pair_traversal_s =
+            seconds_between(traversal_start, traversal_end);
+
+        CU_CHECK(cuMemsetD8(d_active_count.ptr, 0, sizeof(unsigned long long)));
+        void* args[] = {
+            &d_output.ptr,
+            &prepared_left->d_left_polygons.ptr,
+            &prepared->d_right_polygons.ptr,
+            &prepared_left->d_left_vx.ptr,
+            &prepared_left->d_left_vy.ptr,
+            &prepared->d_right_vx.ptr,
+            &prepared->d_right_vy.ptr,
+            &prepared_left->d_left_bounds.ptr,
+            &prepared->d_right_bounds.ptr,
+            &left_count_u32,
+            &right_count_u32,
+            &d_active_count.ptr,
+        };
+        const unsigned int threads = 256;
+        const unsigned int blocks = static_cast<unsigned int>((out_count + threads - 1) / threads);
+        const auto active_scan_start = std::chrono::steady_clock::now();
+        CU_CHECK(cuLaunchKernel(
+            g_shape_pair_relation_active_count_device.fn,
+            blocks, 1, 1,
+            threads, 1, 1,
+            0, nullptr, args, nullptr));
+        CU_CHECK(cuStreamSynchronize(nullptr));
+        const auto active_scan_end = std::chrono::steady_clock::now();
+        g_optix_last_shape_pair_active_scan_s =
+            seconds_between(active_scan_start, active_scan_end);
+
+        unsigned long long active_count = 0;
+        const auto download_start = std::chrono::steady_clock::now();
+        download(&active_count, d_active_count.ptr, 1);
+        const auto download_end = std::chrono::steady_clock::now();
+        g_optix_last_shape_pair_flag_download_s =
+            seconds_between(download_start, download_end);
+        g_optix_last_shape_pair_active_count = static_cast<size_t>(active_count);
+        *active_count_out = static_cast<size_t>(active_count);
+    }
+};
+
 struct NativeShapePairRelationDeviceColumnsOwner {
     CUdeviceptr left_ids = 0;
     CUdeviceptr right_ids = 0;
@@ -11601,6 +11728,24 @@ static void count_shape_pair_relation_active_device_with_prepared_left_optix(
         seconds_between(download_start, download_end);
     g_optix_last_shape_pair_active_count = static_cast<size_t>(active_count);
     *active_count_out = static_cast<size_t>(active_count);
+}
+
+static PreparedShapePairRelationActiveCountPreparedLeftExecutor*
+prepare_shape_pair_relation_active_count_prepared_left_executor_optix(
+        PreparedShapePairRelationBuild* prepared,
+        PreparedShapePairRelationLeftSet* prepared_left)
+{
+    return new PreparedShapePairRelationActiveCountPreparedLeftExecutor(prepared, prepared_left);
+}
+
+static void run_shape_pair_relation_active_count_prepared_left_executor_optix(
+        PreparedShapePairRelationActiveCountPreparedLeftExecutor* executor,
+        size_t* active_count_out)
+{
+    if (!executor) {
+        throw std::runtime_error("prepared-left shape-pair active-count executor must not be null");
+    }
+    executor->run(active_count_out);
 }
 
 static void run_prepared_shape_pair_relation_active_device_columns_optix(

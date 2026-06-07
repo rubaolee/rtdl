@@ -1,0 +1,209 @@
+{
+  "claim_boundary": {
+    "paper_scale_perf_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "generated_at_unix": 1780818793.257441,
+  "git_commit": "55223e9d6c73ecec601a6c38bb6332f2b0474ef8",
+  "git_status_short": "M examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py\n M src/native/optix/rtdl_optix_api.cpp\n M src/native/optix/rtdl_optix_prelude.h\n M src/native/optix/rtdl_optix_workloads.cpp\n M src/rtdsl/optix_runtime.py\n M tests/goal3734_shape_pair_prepared_left_active_count_test.py",
+  "rows": [
+    {
+      "claim_boundary": {
+        "full_rayjoin_reproduction": false,
+        "paper_scale_perf_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "v2_8_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "count": 1024,
+      "dataset": "data/rayjoin_public_cdb/br_county_start256_count1024.cdb + data/rayjoin_public_cdb/br_soil_start256_count1024.cdb",
+      "native_phase_timings": {
+        "active_count": 472,
+        "active_scan": 0.000119153,
+        "containment": 0.0,
+        "flag_download": 6.846e-06,
+        "left_prepare": 0.0,
+        "left_upload": 0.0,
+        "mode": "active_count_device_continuation_prepared_left_executor",
+        "pair_count": 933816,
+        "traversal": 0.000251027
+      },
+      "packed_left_reuse": {
+        "enabled": true,
+        "left_shape_count": 949,
+        "left_shape_pack_paid_in_call": false,
+        "native_prepared_left_set_enabled": true,
+        "native_prepared_left_set_paid_once": true,
+        "native_prepared_left_set_seconds": 0.33741570822894573,
+        "pack_seconds": 0.022699116729199886
+      },
+      "phases_sec": {
+        "active_count_device_continuation_sec": 0.0003803996369242668,
+        "prepare_active_count_executor_sec": 0.001874561421573162,
+        "prepared_query_sec": 0.0003803996369242668,
+        "prepared_query_sec_repeat": 40,
+        "prepared_query_sec_total_sec": 0.015295359306037426,
+        "prepared_query_sec_warmup": 5
+      },
+      "prepared_active_count_executor": {
+        "left_count": 949,
+        "native_prepare_symbol": "rtdl_optix_prepare_shape_pair_relation_active_device_prepared_left_executor",
+        "native_run_symbol": "rtdl_optix_run_shape_pair_relation_active_device_prepared_left_executor",
+        "prepare_seconds": 0.001874561421573162,
+        "prepared_left_owner_closed": false,
+        "prepared_relation_owner_closed": false,
+        "release_authorized": false,
+        "reusable_native_executor": true,
+        "right_count": 984,
+        "row_stream_materialized": false,
+        "schema": "rtdl.optix.shape_pair_relation_active_count_prepared_left_executor.v1",
+        "timed_query_uses_executor_run": true,
+        "true_zero_copy_claim_authorized": false
+      },
+      "prepared_reuse": {
+        "enabled": true,
+        "prepare_static_scene_paid_once": true,
+        "prepare_static_scene_sec": 0.7701039556413889,
+        "right_shape_count": 984
+      },
+      "row_count": 472
+    },
+    {
+      "claim_boundary": {
+        "full_rayjoin_reproduction": false,
+        "paper_scale_perf_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "v2_8_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "count": 2048,
+      "dataset": "data/rayjoin_public_cdb/br_county_start256_count2048.cdb + data/rayjoin_public_cdb/br_soil_start256_count2048.cdb",
+      "native_phase_timings": {
+        "active_count": 1305,
+        "active_scan": 0.000154715,
+        "containment": 0.0,
+        "flag_download": 6.686e-06,
+        "left_prepare": 0.0,
+        "left_upload": 0.0,
+        "mode": "active_count_device_continuation_prepared_left_executor",
+        "pair_count": 3730023,
+        "traversal": 0.000446134
+      },
+      "packed_left_reuse": {
+        "enabled": true,
+        "left_shape_count": 1881,
+        "left_shape_pack_paid_in_call": false,
+        "native_prepared_left_set_enabled": true,
+        "native_prepared_left_set_paid_once": true,
+        "native_prepared_left_set_seconds": 0.0003388170152902603,
+        "pack_seconds": 0.03233364690095186
+      },
+      "phases_sec": {
+        "active_count_device_continuation_sec": 0.0006127371452748775,
+        "prepare_active_count_executor_sec": 0.0002752002328634262,
+        "prepared_query_sec": 0.0006127371452748775,
+        "prepared_query_sec_repeat": 40,
+        "prepared_query_sec_total_sec": 0.024507025256752968,
+        "prepared_query_sec_warmup": 5
+      },
+      "prepared_active_count_executor": {
+        "left_count": 1881,
+        "native_prepare_symbol": "rtdl_optix_prepare_shape_pair_relation_active_device_prepared_left_executor",
+        "native_run_symbol": "rtdl_optix_run_shape_pair_relation_active_device_prepared_left_executor",
+        "prepare_seconds": 0.0002752002328634262,
+        "prepared_left_owner_closed": false,
+        "prepared_relation_owner_closed": false,
+        "release_authorized": false,
+        "reusable_native_executor": true,
+        "right_count": 1983,
+        "row_stream_materialized": false,
+        "schema": "rtdl.optix.shape_pair_relation_active_count_prepared_left_executor.v1",
+        "timed_query_uses_executor_run": true,
+        "true_zero_copy_claim_authorized": false
+      },
+      "prepared_reuse": {
+        "enabled": true,
+        "prepare_static_scene_paid_once": true,
+        "prepare_static_scene_sec": 0.02773264143615961,
+        "right_shape_count": 1983
+      },
+      "row_count": 1305
+    },
+    {
+      "claim_boundary": {
+        "full_rayjoin_reproduction": false,
+        "paper_scale_perf_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "v2_8_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "count": 4096,
+      "dataset": "data/rayjoin_public_cdb/br_county_start256_count4096.cdb + data/rayjoin_public_cdb/br_soil_start256_count4096.cdb",
+      "native_phase_timings": {
+        "active_count": 4250,
+        "active_scan": 0.000461134,
+        "containment": 0.0,
+        "flag_download": 6.782e-06,
+        "left_prepare": 0.0,
+        "left_upload": 0.0,
+        "mode": "active_count_device_continuation_prepared_left_executor",
+        "pair_count": 15006618,
+        "traversal": 0.001102414
+      },
+      "packed_left_reuse": {
+        "enabled": true,
+        "left_shape_count": 3762,
+        "left_shape_pack_paid_in_call": false,
+        "native_prepared_left_set_enabled": true,
+        "native_prepared_left_set_paid_once": true,
+        "native_prepared_left_set_seconds": 0.00048110727220773697,
+        "pack_seconds": 0.04710476193577051
+      },
+      "phases_sec": {
+        "active_count_device_continuation_sec": 0.001565283164381981,
+        "prepare_active_count_executor_sec": 0.0018853116780519485,
+        "prepared_query_sec": 0.001565283164381981,
+        "prepared_query_sec_repeat": 40,
+        "prepared_query_sec_total_sec": 0.0625825235620141,
+        "prepared_query_sec_warmup": 5
+      },
+      "prepared_active_count_executor": {
+        "left_count": 3762,
+        "native_prepare_symbol": "rtdl_optix_prepare_shape_pair_relation_active_device_prepared_left_executor",
+        "native_run_symbol": "rtdl_optix_run_shape_pair_relation_active_device_prepared_left_executor",
+        "prepare_seconds": 0.0018853116780519485,
+        "prepared_left_owner_closed": false,
+        "prepared_relation_owner_closed": false,
+        "release_authorized": false,
+        "reusable_native_executor": true,
+        "right_count": 3989,
+        "row_stream_materialized": false,
+        "schema": "rtdl.optix.shape_pair_relation_active_count_prepared_left_executor.v1",
+        "timed_query_uses_executor_run": true,
+        "true_zero_copy_claim_authorized": false
+      },
+      "prepared_reuse": {
+        "enabled": true,
+        "prepare_static_scene_paid_once": true,
+        "prepare_static_scene_sec": 0.08429739996790886,
+        "right_shape_count": 3989
+      },
+      "row_count": 4250
+    }
+  ],
+  "schema": "rtdl.goal3737.shape_pair_active_count_executor_direct.v1"
+}

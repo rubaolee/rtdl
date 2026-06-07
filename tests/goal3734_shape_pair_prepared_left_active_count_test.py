@@ -89,7 +89,9 @@ class Goal3734ShapePairPreparedLeftActiveCountTest(unittest.TestCase):
             "def active_relation_device_columns",
             1,
         )[0]
-        self.assertIn("count_active_device_continuation_prepared_left", run_block)
+        self.assertIn("prepare_active_count_prepared_left_executor", run_block)
+        self.assertIn("executor.run", run_block)
+        self.assertIn("timed_query_uses_executor_run", run_block)
         self.assertIn("native_prepared_left_set_enabled", run_block)
         self.assertIn("shape-pair relation", run_block)
         self.assertIn("RayJoin overlay-seed interpretation", run_block)

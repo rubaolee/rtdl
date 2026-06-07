@@ -247,6 +247,15 @@ OPTIX_SHAPE_PAIR_RELATION_PREPARE_LEFT_SET_SYMBOL = (
 OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_PREPARED_LEFT_SYMBOL = (
     "rtdl_optix_count_prepared_shape_pair_relation_active_device_prepared_left"
 )
+OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_PREPARED_LEFT_EXECUTOR_PREPARE_SYMBOL = (
+    "rtdl_optix_prepare_shape_pair_relation_active_device_prepared_left_executor"
+)
+OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_PREPARED_LEFT_EXECUTOR_RUN_SYMBOL = (
+    "rtdl_optix_run_shape_pair_relation_active_device_prepared_left_executor"
+)
+OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_PREPARED_LEFT_EXECUTOR_DESTROY_SYMBOL = (
+    "rtdl_optix_destroy_shape_pair_relation_active_device_prepared_left_executor"
+)
 OPTIX_SHAPE_PAIR_RELATION_DESTROY_LEFT_SET_SYMBOL = (
     "rtdl_optix_destroy_prepared_shape_pair_relation_left_set"
 )
@@ -3758,6 +3767,115 @@ class PreparedOptixShapePairRelationLeftSet:
             pass
 
 
+class PreparedOptixShapePairRelationActiveCountPreparedLeftExecutor:
+    """Reusable generic executor for prepared-left shape-pair active counts."""
+
+    def __init__(
+        self,
+        prepared: "PreparedOptixShapePairRelation",
+        prepared_left: PreparedOptixShapePairRelationLeftSet,
+    ) -> None:
+        if prepared._closed:
+            raise RuntimeError("prepared OptiX shape-pair relation handle is closed")
+        if prepared_left._closed:
+            raise RuntimeError("prepared OptiX shape-pair left-set handle is closed")
+        if prepared_left.library is not prepared.library:
+            raise ValueError("prepared shape-pair left-set handle must come from the same OptiX library")
+        self._prepared_owner = prepared
+        self._prepared_left_owner = prepared_left
+        self._lib = prepared.library
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        prepare_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_PREPARED_LEFT_EXECUTOR_PREPARE_SYMBOL,
+        )
+        if prepare_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_PREPARED_LEFT_EXECUTOR_PREPARE_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = prepare_symbol(
+            prepared.prepared_handle,
+            prepared_left.prepared_left_handle,
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+    @property
+    def closed(self) -> bool:
+        return self._closed
+
+    def run(self) -> int:
+        if self._closed:
+            raise RuntimeError("prepared-left shape-pair active-count executor is closed")
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_PREPARED_LEFT_EXECUTOR_RUN_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_PREPARED_LEFT_EXECUTOR_RUN_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        active_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            ctypes.byref(active_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(active_count.value)
+
+    def to_metadata(self) -> dict[str, object]:
+        return {
+            "schema": "rtdl.optix.shape_pair_relation_active_count_prepared_left_executor.v1",
+            "prepared_relation_owner_closed": self._prepared_owner._closed,
+            "prepared_left_owner_closed": self._prepared_left_owner._closed,
+            "left_count": self._prepared_left_owner.left_count,
+            "right_count": self._prepared_owner.right_count,
+            "native_prepare_symbol": (
+                OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_PREPARED_LEFT_EXECUTOR_PREPARE_SYMBOL
+            ),
+            "native_run_symbol": (
+                OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_PREPARED_LEFT_EXECUTOR_RUN_SYMBOL
+            ),
+            "reusable_native_executor": True,
+            "row_stream_materialized": False,
+            "true_zero_copy_claim_authorized": False,
+            "release_authorized": False,
+        }
+
+    def close(self) -> None:
+        if not self._closed:
+            destroy_symbol = _find_optional_backend_symbol(
+                self._lib,
+                OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_PREPARED_LEFT_EXECUTOR_DESTROY_SYMBOL,
+            )
+            if destroy_symbol is not None and self._handle:
+                destroy_symbol(self._handle)
+            self._closed = True
+
+    def __enter__(self) -> "PreparedOptixShapePairRelationActiveCountPreparedLeftExecutor":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
 @dataclass
 class PreparedOptixShapePairRelation:
     library: object
@@ -3889,6 +4007,13 @@ class PreparedOptixShapePairRelation:
         )
         _check_status(status, error)
         return int(active_count.value)
+
+    def prepare_active_count_prepared_left_executor(
+        self,
+        prepared_left: PreparedOptixShapePairRelationLeftSet,
+    ) -> PreparedOptixShapePairRelationActiveCountPreparedLeftExecutor:
+        """Prepare a reusable executor for repeated generic prepared-left active counts."""
+        return PreparedOptixShapePairRelationActiveCountPreparedLeftExecutor(self, prepared_left)
 
     def active_relation_device_columns(
         self,
@@ -8059,6 +8184,7 @@ def _get_last_shape_pair_relation_phase_timings_from_library(lib) -> dict[str, f
         3: "active_count_device_continuation",
         4: "active_relation_device_columns",
         5: "active_count_device_continuation_prepared_left",
+        6: "active_count_device_continuation_prepared_left_executor",
     }.get(mode_value, "none")
     return {
         "mode": mode_name,
@@ -21303,6 +21429,41 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_count_prepared_shape_pair_relation_active_device_prepared_left.restype = ctypes.c_int
+
+    optional_prepare_shape_pair_relation_active_device_prepared_left_executor = _find_optional_backend_symbol(
+        lib,
+        OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_PREPARED_LEFT_EXECUTOR_PREPARE_SYMBOL,
+    )
+    if optional_prepare_shape_pair_relation_active_device_prepared_left_executor is not None:
+        optional_prepare_shape_pair_relation_active_device_prepared_left_executor.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_prepare_shape_pair_relation_active_device_prepared_left_executor.restype = ctypes.c_int
+
+    optional_run_shape_pair_relation_active_device_prepared_left_executor = _find_optional_backend_symbol(
+        lib,
+        OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_PREPARED_LEFT_EXECUTOR_RUN_SYMBOL,
+    )
+    if optional_run_shape_pair_relation_active_device_prepared_left_executor is not None:
+        optional_run_shape_pair_relation_active_device_prepared_left_executor.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_run_shape_pair_relation_active_device_prepared_left_executor.restype = ctypes.c_int
+
+    optional_destroy_shape_pair_relation_active_device_prepared_left_executor = _find_optional_backend_symbol(
+        lib,
+        OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_PREPARED_LEFT_EXECUTOR_DESTROY_SYMBOL,
+    )
+    if optional_destroy_shape_pair_relation_active_device_prepared_left_executor is not None:
+        optional_destroy_shape_pair_relation_active_device_prepared_left_executor.argtypes = [ctypes.c_void_p]
+        optional_destroy_shape_pair_relation_active_device_prepared_left_executor.restype = None
     optional_shape_pair_relation_active_device_columns = _find_optional_backend_symbol(
         lib,
         OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_COLUMNS_SYMBOL,

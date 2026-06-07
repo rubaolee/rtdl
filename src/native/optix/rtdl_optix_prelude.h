@@ -904,6 +904,17 @@ int  rtdl_optix_count_prepared_shape_pair_relation_active_device_prepared_left(
          void* prepared_left,
          size_t* active_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_shape_pair_relation_active_device_prepared_left_executor(
+         void* prepared,
+         void* prepared_left,
+         void** executor_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_shape_pair_relation_active_device_prepared_left_executor(
+         void* executor,
+         size_t* active_count_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_shape_pair_relation_active_device_prepared_left_executor(
+         void* executor);
 int  rtdl_optix_prepared_shape_pair_relation_active_device_columns(
          void* prepared,
          const RtdlPolygonRef* left_polys, size_t left_count,

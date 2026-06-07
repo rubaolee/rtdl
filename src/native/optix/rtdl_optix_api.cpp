@@ -1153,6 +1153,42 @@ extern "C" int rtdl_optix_count_prepared_shape_pair_relation_active_device_prepa
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepare_shape_pair_relation_active_device_prepared_left_executor(
+        void* prepared,
+        void* prepared_left,
+        void** executor_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared shape-pair relation handle must not be null");
+        if (!prepared_left)
+            throw std::runtime_error("prepared shape-pair left-set handle must not be null");
+        if (!executor_out)
+            throw std::runtime_error("executor_out must not be null");
+        *executor_out = prepare_shape_pair_relation_active_count_prepared_left_executor_optix(
+            reinterpret_cast<PreparedShapePairRelationBuild*>(prepared),
+            reinterpret_cast<PreparedShapePairRelationLeftSet*>(prepared_left));
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_shape_pair_relation_active_device_prepared_left_executor(
+        void* executor,
+        size_t* active_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!executor)
+            throw std::runtime_error("prepared-left shape-pair active-count executor must not be null");
+        if (!active_count_out)
+            throw std::runtime_error("active_count_out must not be null");
+        *active_count_out = 0;
+        run_shape_pair_relation_active_count_prepared_left_executor_optix(
+            reinterpret_cast<PreparedShapePairRelationActiveCountPreparedLeftExecutor*>(executor),
+            active_count_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_prepared_shape_pair_relation_active_device_columns(
         void* prepared,
         const RtdlPolygonRef* left_polys,  size_t left_count,
@@ -1194,6 +1230,11 @@ extern "C" void rtdl_optix_destroy_prepared_shape_pair_relation_flags(void* prep
 extern "C" void rtdl_optix_destroy_prepared_shape_pair_relation_left_set(void* prepared_left)
 {
     delete reinterpret_cast<PreparedShapePairRelationLeftSet*>(prepared_left);
+}
+
+extern "C" void rtdl_optix_destroy_shape_pair_relation_active_device_prepared_left_executor(void* executor)
+{
+    delete reinterpret_cast<PreparedShapePairRelationActiveCountPreparedLeftExecutor*>(executor);
 }
 
 extern "C" int rtdl_optix_run_ray_hitcount(

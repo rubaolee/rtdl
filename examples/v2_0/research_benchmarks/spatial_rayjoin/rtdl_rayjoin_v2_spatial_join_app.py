@@ -2172,18 +2172,27 @@ class PreparedRayJoinOptixShapePairActiveCount:
             raise ValueError("warmup must be non-negative")
 
         phases: dict[str, float] = {}
-        active_count = int(
-            _phase_repeat_time(
-                phases,
-                "prepared_query_sec",
-                query_repeat=query_repeat,
-                warmup=warmup,
-                fn=lambda: self._prepared.count_active_device_continuation_prepared_left(
-                    packed_left.prepared_left_set
-                ),
-                stability_value=lambda value: int(value),
-            )
+        executor = _phase_time(
+            phases,
+            "prepare_active_count_executor_sec",
+            lambda: self._prepared.prepare_active_count_prepared_left_executor(
+                packed_left.prepared_left_set
+            ),
         )
+        try:
+            active_count = int(
+                _phase_repeat_time(
+                    phases,
+                    "prepared_query_sec",
+                    query_repeat=query_repeat,
+                    warmup=warmup,
+                    fn=executor.run,
+                    stability_value=lambda value: int(value),
+                )
+            )
+            executor_metadata = executor.to_metadata()
+        finally:
+            executor.close()
         phases["active_count_device_continuation_sec"] = phases["prepared_query_sec"]
         native_phase_timings = self._prepared.last_phase_timings()
         return {
@@ -2221,11 +2230,17 @@ class PreparedRayJoinOptixShapePairActiveCount:
                 "measured_query_total_sec": float(phases["prepared_query_sec_total_sec"]),
                 "reported_query_metric": "prepared_query_median",
             },
+            "prepared_active_count_executor": {
+                **executor_metadata,
+                "prepare_seconds": phases["prepare_active_count_executor_sec"],
+                "timed_query_uses_executor_run": True,
+            },
             "device_resident_continuation_status": (
-                "shape_pair_active_count_prepared_left_device_continuation_probe: generic "
+                "shape_pair_active_count_prepared_left_executor_device_continuation_probe: generic "
                 "shape-pair relation segment flags stay on device, the left closed-shape "
-                "payload is reused through a prepared-left native handle, containment and "
-                "active-count reduction run in a generic CUDA continuation, and only the scalar count is copied back"
+                "payload is reused through a prepared-left native handle, reusable native "
+                "buffers/params back repeated active-count runs, containment and active-count "
+                "reduction run in a generic CUDA continuation, and only the scalar count is copied back"
             ),
             "native_engine_boundary": (
                 "The engine sees generic prepared shape-pair relation flags and a generic "
