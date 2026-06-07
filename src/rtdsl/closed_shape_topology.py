@@ -898,6 +898,113 @@ class PreparedClosedShapeMembershipCandidateRefinerCupy:
             "rt_core_speedup_claim_authorized": False,
         }
 
+    def count_relation_status_corrected_prepared_points_numba(
+        self,
+        prepared_membership: object,
+        prepared_points: object,
+        *,
+        boundary_max_rows: int = 4096,
+        validate_columns: bool = False,
+    ) -> dict[str, object]:
+        """Count exact closed-shape memberships without materializing full rows.
+
+        The native side supplies a fast all-candidate scalar count and a filtered
+        boundary-contact candidate stream. The partner continuation only checks
+        the boundary-contact rows that can differ between float device predicate
+        acceptance and the exact double-precision topology contract.
+        """
+
+        if not hasattr(prepared_membership, "relation_status_candidate_device_columns_prepared_points"):
+            raise TypeError(
+                "relation-status corrected count requires a prepared membership object "
+                "with relation-status candidate columns"
+            )
+        boundary_max_rows = int(boundary_max_rows)
+        if boundary_max_rows < 0:
+            raise ValueError("boundary_max_rows must be non-negative")
+
+        all_count_columns = prepared_membership.relation_status_candidate_device_columns_prepared_points(
+            prepared_points,
+            relation_status_filter=0,
+            max_rows=0,
+        )
+        try:
+            candidate_count = int(getattr(all_count_columns, "candidate_event_count", 0))
+            all_candidate_traversal_seconds = float(getattr(all_count_columns, "traversal_seconds", 0.0))
+        finally:
+            close = getattr(all_count_columns, "close", None)
+            if close is not None:
+                close()
+
+        def produce_boundary_columns(capacity: int):
+            return prepared_membership.relation_status_candidate_device_columns_prepared_points(
+                prepared_points,
+                relation_status_filter=2,
+                max_rows=capacity,
+            )
+
+        boundary_columns = produce_boundary_columns(boundary_max_rows)
+        try:
+            if bool(getattr(boundary_columns, "overflow", False)):
+                retry = int(getattr(boundary_columns, "candidate_event_count", 0))
+                if retry <= boundary_max_rows:
+                    raise RuntimeError(
+                        "boundary relation-status stream overflowed without a larger retry capacity hint"
+                    )
+                close = getattr(boundary_columns, "close", None)
+                if close is not None:
+                    close()
+                boundary_columns = produce_boundary_columns(retry)
+                if bool(getattr(boundary_columns, "overflow", False)):
+                    raise RuntimeError(
+                        "boundary relation-status stream overflowed after retrying with "
+                        f"boundary_max_rows={retry}"
+                    )
+            boundary_candidate_count = int(getattr(boundary_columns, "row_count", 0))
+            boundary_candidate_required_count = int(getattr(boundary_columns, "candidate_event_count", 0))
+            boundary_traversal_seconds = float(getattr(boundary_columns, "traversal_seconds", 0.0))
+            boundary_result = self.count_boundary_contacts_numba(
+                boundary_columns,
+                validate_columns=validate_columns,
+            )
+        finally:
+            close = getattr(boundary_columns, "close", None)
+            if close is not None:
+                close()
+
+        dropped_count = int(boundary_result["dropped_candidate_row_count"])
+        row_count = int(candidate_count - dropped_count)
+        return {
+            "row_count": row_count,
+            "candidate_row_count": candidate_count,
+            "boundary_candidate_row_count": boundary_candidate_count,
+            "boundary_candidate_required_count": boundary_candidate_required_count,
+            "dropped_candidate_row_count": dropped_count,
+            "point_eps": self._point_eps,
+            "partner": "numba",
+            "predicate": "relation_status_corrected_closed_shape_membership_count",
+            "all_candidate_relation_status_filter": 0,
+            "boundary_relation_status_filter": 2,
+            "relation_status_columns_used": True,
+            "relation_boundary_ordinal_columns_used": True,
+            "full_simple_ring_scan_used": False,
+            "row_stream_materialized": False,
+            "full_candidate_row_stream_materialized": False,
+            "boundary_candidate_row_stream_materialized": True,
+            "input_validation_performed": bool(validate_columns),
+            "trusted_native_stream_fast_path": not bool(validate_columns),
+            "prepared_lookup_residency": self.lookup_residency,
+            "output_residency": "partner_device_scalar_count",
+            "host_refined_rows_materialized": False,
+            "native_exact_device_row_stream_produced": False,
+            "all_candidate_traversal_seconds": all_candidate_traversal_seconds,
+            "boundary_candidate_traversal_seconds": boundary_traversal_seconds,
+            "true_zero_copy_claim_authorized": False,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+        }
+
 
 def prepare_closed_shape_membership_candidate_refiner_exact_cupy(
     points: Sequence[object],

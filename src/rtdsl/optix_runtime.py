@@ -235,6 +235,9 @@ OPTIX_RELEASE_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_COLUMNS_SYMBOL = (
 OPTIX_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_prepared_point_closed_shape_membership_candidate_device_columns_2d"
 )
+OPTIX_CLOSED_SHAPE_MEMBERSHIP_RELATION_STATUS_CANDIDATE_DEVICE_COLUMNS_PREPARED_POINTS_SYMBOL = (
+    "rtdl_optix_prepared_point_closed_shape_membership_relation_status_candidate_device_columns_prepared_points_2d"
+)
 OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_prepared_point_closed_shape_membership_exact_device_columns_2d"
 )
@@ -1941,6 +1944,7 @@ class OptixNativeDevicePairColumnOutput:
     relation_status_field_name: str = "relation_status"
     relation_boundary_ordinals_device_ptr: int = 0
     relation_boundary_ordinal_field_name: str = "relation_boundary_ordinal"
+    relation_status_filter: int | None = None
 
     @property
     def device_resident(self) -> bool:
@@ -2083,6 +2087,7 @@ class OptixNativeDevicePairColumnOutput:
             "present": bool(self.has_relation_status_column),
             "field_name": self.relation_status_field_name,
             "data_ptr": int(self.relation_status_device_ptr),
+            "filter": None if self.relation_status_filter is None else int(self.relation_status_filter),
             "value_contract": {
                 "0": "unknown_or_not_classified",
                 "1": "accepted_by_closed_shape_interior_predicate",
@@ -11620,6 +11625,93 @@ class PreparedOptixPointClosedShapeMembership2D:
         _check_status(status, error)
         return tuple(int(counts[index]) for index in range(request_count))
 
+    def relation_status_candidate_device_columns_prepared_points(
+        self,
+        prepared_points: PreparedOptixPointProbeColumns2D,
+        *,
+        relation_status_filter: int = 0,
+        max_rows: int = 0,
+    ) -> OptixNativeDevicePairColumnOutput:
+        """Return a relation-status filtered candidate stream over prepared points.
+
+        ``relation_status_filter`` is generic closed-shape relation metadata:
+        0 means all accepted candidates, 1 means interior accepted candidates,
+        and 2 means boundary-contact candidates. ``max_rows=0`` is a count-only
+        launch; the returned object's ``candidate_event_count`` is the filtered
+        count and no device row columns are exposed.
+        """
+        if self._closed:
+            raise RuntimeError("prepared OptiX closed-shape membership handle is closed")
+        if prepared_points.closed:
+            raise RuntimeError("prepared OptiX point-probe columns handle is closed")
+        relation_status_filter = int(relation_status_filter)
+        if relation_status_filter not in (0, 1, 2):
+            raise ValueError("relation_status_filter must be 0(all), 1(interior), or 2(boundary)")
+        max_rows = int(max_rows)
+        if max_rows < 0:
+            raise ValueError("max_rows must be non-negative")
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_CLOSED_SHAPE_MEMBERSHIP_RELATION_STATUS_CANDIDATE_DEVICE_COLUMNS_PREPARED_POINTS_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_CLOSED_SHAPE_MEMBERSHIP_RELATION_STATUS_CANDIDATE_DEVICE_COLUMNS_PREPARED_POINTS_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        release_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_RELEASE_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
+        )
+        if release_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_RELEASE_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        columns = _RtdlNativeDevicePairColumns()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            prepared_points._handle,
+            ctypes.c_uint32(relation_status_filter),
+            ctypes.c_size_t(max_rows),
+            ctypes.byref(columns),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        owner = _OptixNativeDevicePairColumnsOwner(
+            self._lib,
+            columns.owner_handle,
+            release_symbol_name=OPTIX_RELEASE_CLOSED_SHAPE_MEMBERSHIP_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
+        )
+        return OptixNativeDevicePairColumnOutput(
+            library=self._lib,
+            owner=owner,
+            left_ids_device_ptr=int(columns.left_ids_device_ptr),
+            right_ids_device_ptr=int(columns.right_ids_device_ptr),
+            row_count=int(columns.row_count),
+            capacity=int(columns.capacity),
+            candidate_event_count=int(columns.candidate_event_count),
+            overflow=bool(columns.overflow),
+            device_ordinal=int(columns.device_ordinal),
+            traversal_seconds=float(columns.traversal_seconds),
+            native_symbol=(
+                OPTIX_CLOSED_SHAPE_MEMBERSHIP_RELATION_STATUS_CANDIDATE_DEVICE_COLUMNS_PREPARED_POINTS_SYMBOL
+            ),
+            field_names=("point_id", "shape_id"),
+            left_ordinals_device_ptr=int(columns.left_ordinals_device_ptr),
+            right_ordinals_device_ptr=int(columns.right_ordinals_device_ptr),
+            ordinal_field_names=("point_ordinal", "shape_ordinal"),
+            relation_status_device_ptr=int(columns.relation_status_device_ptr),
+            relation_status_field_name="relation_status",
+            relation_boundary_ordinals_device_ptr=int(columns.relation_boundary_ordinals_device_ptr),
+            relation_boundary_ordinal_field_name="relation_boundary_ordinal",
+            relation_status_filter=relation_status_filter,
+        )
+
     def prepare_device_filtered_prepared_points_batch_executor(
         self,
         prepared_points: PreparedOptixPointProbeColumns2D,
@@ -20247,6 +20339,22 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_closed_shape_candidate_device_columns.restype = ctypes.c_int
+
+    optional_closed_shape_relation_status_candidate_device_columns = _find_optional_backend_symbol(
+        lib,
+        OPTIX_CLOSED_SHAPE_MEMBERSHIP_RELATION_STATUS_CANDIDATE_DEVICE_COLUMNS_PREPARED_POINTS_SYMBOL,
+    )
+    if optional_closed_shape_relation_status_candidate_device_columns is not None:
+        optional_closed_shape_relation_status_candidate_device_columns.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_uint32,
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlNativeDevicePairColumns),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_closed_shape_relation_status_candidate_device_columns.restype = ctypes.c_int
 
     optional_closed_shape_exact_device_columns = _find_optional_backend_symbol(
         lib,

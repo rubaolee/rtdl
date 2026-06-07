@@ -5642,6 +5642,36 @@ struct PipCandidateDeviceColumnsLaunchParams {
     uint32_t         boundary_check;
 };
 
+struct PipRelationStatusCandidateDeviceColumnsLaunchParams {
+    OptixTraversableHandle traversable;
+    const float*     points_x;
+    const float*     points_y;
+    const uint32_t*  point_ids;
+    const GpuPolygonRef* polygons;
+    const float*     vertices_x;
+    const float*     vertices_y;
+    const GpuPreparedClosedShapeEdge2D* prepared_edges;
+    uint32_t*        hit_words;
+    GpuPipRecord*    output;
+    uint32_t*        output_count;
+    uint32_t         output_capacity;
+    unsigned long long* point_ids_out;
+    unsigned long long* shape_ids_out;
+    unsigned long long* point_ordinals_out;
+    unsigned long long* shape_ordinals_out;
+    unsigned long long* relation_status_out;
+    unsigned long long* relation_boundary_ordinals_out;
+    uint32_t*        overflow;
+    uint32_t         relation_status_filter;
+    uint32_t         positive_only;
+    uint32_t         hit_word_count;
+    uint32_t         polygon_count;
+    uint32_t         probe_count;
+    uint32_t         point_index_offset;
+    uint32_t         device_prefilter;
+    uint32_t         boundary_check;
+};
+
 struct PipPointIdCountDeviceColumnsLaunchParams {
     OptixTraversableHandle traversable;
     const float*     points_x;
@@ -5966,6 +5996,123 @@ R"CUDA(            const uint32_t slot = atomicAdd(params.output_count, 1u);
 
         std::string ptx = compile_to_ptx(src.c_str(), "point_closed_shape_candidate_device_columns_kernel.cu");
         g_pip_candidate_device_columns.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__pip_probe",
+            "__miss__pip_miss",
+            "__intersection__pip_isect",
+            "__anyhit__pip_anyhit",
+            nullptr, 4).release();
+    });
+}
+
+static void ensure_pip_relation_status_candidate_device_columns_pipeline()
+{
+    std::call_once(g_pip_relation_status_candidate_device_columns.init, [&]() {
+        std::string src(kPipKernelSrc);
+        specialize_closed_shape_membership_source_from_env(src);
+
+        const std::string old_params_fields =
+R"CUDA(    PipRecord* output;
+    uint32_t* output_count;
+    uint32_t output_capacity;
+    uint32_t positive_only;
+)CUDA";
+        const std::string new_params_fields =
+R"CUDA(    PipRecord* output;
+    uint32_t* output_count;
+    uint32_t output_capacity;
+    unsigned long long* point_ids_out;
+    unsigned long long* shape_ids_out;
+    unsigned long long* point_ordinals_out;
+    unsigned long long* shape_ordinals_out;
+    unsigned long long* relation_status_out;
+    unsigned long long* relation_boundary_ordinals_out;
+    uint32_t* overflow;
+    uint32_t relation_status_filter;
+    uint32_t positive_only;
+)CUDA";
+        size_t pos = src.find(old_params_fields);
+        if (pos == std::string::npos) {
+            throw std::runtime_error("closed-shape relation-status candidate params snippet not found");
+        }
+        src.replace(pos, old_params_fields.size(), new_params_fields);
+
+        const std::string old_raygen_count =
+R"CUDA(    if (params.positive_only != 0u && params.output == nullptr && params.output_capacity == 0u && p2 != 0u) {
+        atomicAdd(params.output_count, p2);
+    }
+)CUDA";
+        pos = src.find(old_raygen_count);
+        if (pos == std::string::npos) {
+            throw std::runtime_error("closed-shape relation-status candidate raygen count snippet not found");
+        }
+        src.replace(pos, old_raygen_count.size(), "");
+
+        const std::string old_intersection_count =
+R"CUDA(        if (params.output == nullptr && params.output_capacity == 0u) {
+            optixSetPayload_2(optixGetPayload_2() + 1u);
+            return;
+        }
+)CUDA";
+        pos = src.find(old_intersection_count);
+        if (pos == std::string::npos) {
+            throw std::runtime_error("closed-shape relation-status candidate intersection count snippet not found");
+        }
+        src.replace(pos, old_intersection_count.size(), "");
+
+        const std::string old_anyhit_positive =
+R"CUDA(            if (params.output == nullptr && params.output_capacity == 0u) {
+                optixSetPayload_2(optixGetPayload_2() + 1u);
+                optixIgnoreIntersection();
+                return;
+            }
+            const uint32_t slot = atomicAdd(params.output_count, 1u);
+            if (slot < params.output_capacity && params.output != nullptr) {
+                PipRecord r;
+                r.point_id = params.point_index_offset + pidx;
+                r.polygon_id = prim;
+                r.contains = 1u;
+                params.output[slot] = r;
+            }
+)CUDA";
+        const std::string new_anyhit_positive =
+R"CUDA(            const uint32_t relation_status = optixGetPayload_3();
+            if (params.relation_status_filter == 0u || relation_status == params.relation_status_filter) {
+                const uint32_t slot = atomicAdd(params.output_count, 1u);
+                if (params.output_capacity != 0u) {
+                    if (slot < params.output_capacity &&
+                        params.point_ids_out != nullptr &&
+                        params.shape_ids_out != nullptr) {
+                        params.point_ids_out[slot] = (unsigned long long)params.point_ids[pidx];
+                        params.shape_ids_out[slot] = (unsigned long long)params.polygons[prim].id;
+                        if (params.point_ordinals_out != nullptr) {
+                            params.point_ordinals_out[slot] =
+                                (unsigned long long)params.point_index_offset + (unsigned long long)pidx;
+                        }
+                        if (params.shape_ordinals_out != nullptr) {
+                            params.shape_ordinals_out[slot] = (unsigned long long)prim;
+                        }
+                        if (params.relation_status_out != nullptr) {
+                            params.relation_status_out[slot] = (unsigned long long)relation_status;
+                        }
+                        if (params.relation_boundary_ordinals_out != nullptr) {
+                            params.relation_boundary_ordinals_out[slot] =
+                                (unsigned long long)optixGetPayload_2();
+                        }
+                    } else if (params.overflow != nullptr) {
+                        *params.overflow = 1u;
+                    }
+                }
+            }
+)CUDA";
+        pos = src.find(old_anyhit_positive);
+        if (pos == std::string::npos) {
+            throw std::runtime_error("closed-shape relation-status candidate anyhit snippet not found");
+        }
+        src.replace(pos, old_anyhit_positive.size(), new_anyhit_positive);
+
+        std::string ptx = compile_to_ptx(src.c_str(), "point_closed_shape_relation_status_candidate_device_columns_kernel.cu");
+        g_pip_relation_status_candidate_device_columns.pipe = build_pipeline(
             get_optix_context(), ptx,
             "__raygen__pip_probe",
             "__miss__pip_miss",
@@ -8763,6 +8910,183 @@ static void run_prepared_point_closed_shape_membership_candidate_device_columns_
 static void release_point_closed_shape_membership_candidate_device_columns_2d_optix(void* owner_handle)
 {
     delete reinterpret_cast<NativeClosedShapeMembershipCandidateDeviceColumnsOwner*>(owner_handle);
+}
+
+static void run_prepared_point_closed_shape_membership_relation_status_candidate_device_columns_prepared_points_2d_optix(
+        PreparedShapePairRelationBuild* prepared,
+        PreparedPointProbeColumns2D* prepared_points,
+        uint32_t relation_status_filter,
+        size_t max_rows,
+        RtdlNativeDevicePairColumns* columns_out)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared closed-shape membership handle must not be null");
+    }
+    if (!prepared_points) {
+        throw std::runtime_error("prepared point-probe columns handle must not be null");
+    }
+    if (!columns_out) {
+        throw std::runtime_error("relation-status candidate device columns_out pointer must not be null");
+    }
+    if (relation_status_filter > 2u) {
+        throw std::runtime_error("relation-status candidate filter must be 0(all), 1(interior), or 2(boundary)");
+    }
+    const size_t point_count = prepared_points->point_count;
+    if (point_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("relation-status candidate device columns point count exceeds uint32_t launch capacity");
+    }
+    if (prepared->right_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("relation-status candidate device columns shape count exceeds uint32_t launch capacity");
+    }
+    if (max_rows > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("relation-status candidate device columns max_rows exceeds uint32 output capacity");
+    }
+
+    *columns_out = {};
+    columns_out->capacity = static_cast<uint64_t>(max_rows);
+    CUdevice current_device = 0;
+    CU_CHECK(cuCtxGetDevice(&current_device));
+    columns_out->device_ordinal = static_cast<int32_t>(current_device);
+    if (point_count == 0 || prepared->right_count == 0) {
+        return;
+    }
+
+    reset_closed_shape_membership_phase_timings(4u);
+    ensure_pip_relation_status_candidate_device_columns_pipeline();
+
+    std::unique_ptr<NativeClosedShapeMembershipCandidateDeviceColumnsOwner> owner;
+    CUdeviceptr point_ids_output = 0;
+    CUdeviceptr shape_ids_output = 0;
+    CUdeviceptr point_ordinals_output = 0;
+    CUdeviceptr shape_ordinals_output = 0;
+    CUdeviceptr relation_status_output = 0;
+    CUdeviceptr relation_boundary_ordinals_output = 0;
+    if (max_rows != 0u) {
+        owner = std::make_unique<NativeClosedShapeMembershipCandidateDeviceColumnsOwner>();
+        CU_CHECK(cuMemAlloc(&owner->point_ids, sizeof(unsigned long long) * max_rows));
+        CU_CHECK(cuMemAlloc(&owner->shape_ids, sizeof(unsigned long long) * max_rows));
+        CU_CHECK(cuMemAlloc(&owner->point_ordinals, sizeof(unsigned long long) * max_rows));
+        CU_CHECK(cuMemAlloc(&owner->shape_ordinals, sizeof(unsigned long long) * max_rows));
+        CU_CHECK(cuMemAlloc(&owner->relation_status, sizeof(unsigned long long) * max_rows));
+        CU_CHECK(cuMemAlloc(&owner->relation_boundary_ordinals, sizeof(unsigned long long) * max_rows));
+        point_ids_output = owner->point_ids;
+        shape_ids_output = owner->shape_ids;
+        point_ordinals_output = owner->point_ordinals;
+        shape_ordinals_output = owner->shape_ordinals;
+        relation_status_output = owner->relation_status;
+        relation_boundary_ordinals_output = owner->relation_boundary_ordinals;
+    }
+
+    DevPtr d_count(sizeof(uint32_t));
+    DevPtr d_overflow(sizeof(uint32_t));
+    uint32_t zero = 0u;
+    upload<uint32_t>(d_count.ptr, &zero, 1);
+    upload<uint32_t>(d_overflow.ptr, &zero, 1);
+
+    PipRelationStatusCandidateDeviceColumnsLaunchParams lp;
+    lp.traversable    = prepared->accel.handle;
+    lp.points_x       = reinterpret_cast<const float*>(prepared_points->d_points_x.ptr);
+    lp.points_y       = reinterpret_cast<const float*>(prepared_points->d_points_y.ptr);
+    lp.point_ids      = reinterpret_cast<const uint32_t*>(prepared_points->d_point_ids.ptr);
+    lp.polygons       = reinterpret_cast<const GpuPolygonRef*>(prepared->d_right_polygons.ptr);
+    lp.vertices_x     = reinterpret_cast<const float*>(prepared->d_right_vx.ptr);
+    lp.vertices_y     = reinterpret_cast<const float*>(prepared->d_right_vy.ptr);
+    lp.prepared_edges = use_prepared_closed_shape_edge_layout()
+        ? reinterpret_cast<const GpuPreparedClosedShapeEdge2D*>(prepared->d_right_edges.ptr)
+        : nullptr;
+    lp.hit_words      = nullptr;
+    lp.output         = nullptr;
+    lp.output_count   = reinterpret_cast<uint32_t*>(d_count.ptr);
+    lp.output_capacity = static_cast<uint32_t>(max_rows);
+    lp.point_ids_out  = reinterpret_cast<unsigned long long*>(point_ids_output);
+    lp.shape_ids_out  = reinterpret_cast<unsigned long long*>(shape_ids_output);
+    lp.point_ordinals_out = reinterpret_cast<unsigned long long*>(point_ordinals_output);
+    lp.shape_ordinals_out = reinterpret_cast<unsigned long long*>(shape_ordinals_output);
+    lp.relation_status_out = reinterpret_cast<unsigned long long*>(relation_status_output);
+    lp.relation_boundary_ordinals_out =
+        reinterpret_cast<unsigned long long*>(relation_boundary_ordinals_output);
+    lp.overflow       = reinterpret_cast<uint32_t*>(d_overflow.ptr);
+    lp.relation_status_filter = relation_status_filter;
+    lp.positive_only  = 1u;
+    lp.hit_word_count = 0u;
+    lp.polygon_count  = static_cast<uint32_t>(prepared->right_count);
+    lp.probe_count    = 0u;
+    lp.point_index_offset = 0u;
+    lp.device_prefilter = 1u;
+    lp.boundary_check = closed_shape_membership_boundary_check_enabled();
+
+    DevPtr d_params(sizeof(PipRelationStatusCandidateDeviceColumnsLaunchParams));
+    CUstream stream = 0;
+
+    const uint64_t max_points_per_launch64 =
+        static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()) /
+        static_cast<uint64_t>(prepared->right_count);
+    if (max_points_per_launch64 == 0) {
+        throw std::runtime_error("relation-status candidate device columns cannot chunk shape set into uint32_t capacity");
+    }
+    const size_t max_points_per_launch = static_cast<size_t>(
+        std::min<uint64_t>(max_points_per_launch64, static_cast<uint64_t>(point_count)));
+
+    const auto traversal_start = std::chrono::steady_clock::now();
+    for (size_t point_offset = 0; point_offset < point_count; point_offset += max_points_per_launch) {
+        const size_t chunk_point_count = std::min(max_points_per_launch, point_count - point_offset);
+        const CUdeviceptr chunk_points_x =
+            prepared_points->d_points_x.ptr + static_cast<CUdeviceptr>(sizeof(float) * point_offset);
+        const CUdeviceptr chunk_points_y =
+            prepared_points->d_points_y.ptr + static_cast<CUdeviceptr>(sizeof(float) * point_offset);
+        const CUdeviceptr chunk_point_ids =
+            prepared_points->d_point_ids.ptr + static_cast<CUdeviceptr>(sizeof(uint32_t) * point_offset);
+        lp.points_x = reinterpret_cast<const float*>(chunk_points_x);
+        lp.points_y = reinterpret_cast<const float*>(chunk_points_y);
+        lp.point_ids = reinterpret_cast<const uint32_t*>(chunk_point_ids);
+        lp.point_index_offset = static_cast<uint32_t>(point_offset);
+        lp.probe_count = static_cast<uint32_t>(chunk_point_count);
+        upload(d_params.ptr, &lp, 1);
+
+        OPTIX_CHECK(optixLaunch(g_pip_relation_status_candidate_device_columns.pipe->pipeline, stream,
+                                 d_params.ptr, sizeof(PipRelationStatusCandidateDeviceColumnsLaunchParams),
+                                 &g_pip_relation_status_candidate_device_columns.pipe->sbt,
+                                 static_cast<unsigned>(chunk_point_count), 1, 1));
+    }
+    CU_CHECK(cuStreamSynchronize(stream));
+    const auto traversal_end = std::chrono::steady_clock::now();
+
+    uint32_t attempted_rows = 0u;
+    uint32_t overflow = 0u;
+    download(&attempted_rows, d_count.ptr, 1);
+    download(&overflow, d_overflow.ptr, 1);
+
+    columns_out->candidate_event_count = static_cast<uint64_t>(attempted_rows);
+    columns_out->traversal_seconds = seconds_between(traversal_start, traversal_end);
+    g_optix_last_closed_shape_candidate_write_s = columns_out->traversal_seconds;
+    g_optix_last_closed_shape_raw_candidate_count = static_cast<size_t>(attempted_rows);
+
+    if (max_rows == 0u) {
+        columns_out->row_count = 0u;
+        columns_out->overflow = 0u;
+        g_optix_last_closed_shape_emitted_count = 0u;
+        return;
+    }
+
+    if (overflow != 0u || attempted_rows > static_cast<uint32_t>(max_rows)) {
+        columns_out->row_count = 0u;
+        columns_out->overflow = 1u;
+        return;
+    }
+
+    columns_out->left_ids_device_ptr = static_cast<uint64_t>(point_ids_output);
+    columns_out->right_ids_device_ptr = static_cast<uint64_t>(shape_ids_output);
+    columns_out->left_ordinals_device_ptr = static_cast<uint64_t>(point_ordinals_output);
+    columns_out->right_ordinals_device_ptr = static_cast<uint64_t>(shape_ordinals_output);
+    columns_out->relation_status_device_ptr = static_cast<uint64_t>(relation_status_output);
+    columns_out->relation_boundary_ordinals_device_ptr =
+        static_cast<uint64_t>(relation_boundary_ordinals_output);
+    columns_out->row_count = static_cast<uint64_t>(attempted_rows);
+    columns_out->overflow = 0u;
+    g_optix_last_closed_shape_emitted_count = static_cast<size_t>(attempted_rows);
+    if (owner) {
+        columns_out->owner_handle = owner.release();
+    }
 }
 
 static void run_prepared_point_closed_shape_membership_exact_device_columns_2d_optix(

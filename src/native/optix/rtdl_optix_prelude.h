@@ -747,6 +747,13 @@ int  rtdl_optix_prepared_point_closed_shape_membership_candidate_device_columns_
          size_t max_rows,
          RtdlNativeDevicePairColumns* columns_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepared_point_closed_shape_membership_relation_status_candidate_device_columns_prepared_points_2d(
+         void* prepared,
+         void* prepared_points,
+         uint32_t relation_status_filter,
+         size_t max_rows,
+         RtdlNativeDevicePairColumns* columns_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_prepared_point_closed_shape_membership_exact_device_columns_2d(
          void* prepared,
          const RtdlPoint* points, size_t point_count,

@@ -657,6 +657,28 @@ extern "C" int rtdl_optix_prepared_point_closed_shape_membership_candidate_devic
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepared_point_closed_shape_membership_relation_status_candidate_device_columns_prepared_points_2d(
+        void* prepared,
+        void* prepared_points,
+        uint32_t relation_status_filter,
+        size_t max_rows,
+        RtdlNativeDevicePairColumns* columns_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared closed-shape membership handle must not be null");
+        if (!prepared_points)
+            throw std::runtime_error("prepared point-probe columns handle must not be null");
+        if (!columns_out)
+            throw std::runtime_error("relation-status candidate device columns_out pointer must not be null");
+        run_prepared_point_closed_shape_membership_relation_status_candidate_device_columns_prepared_points_2d_optix(
+            reinterpret_cast<PreparedShapePairRelationBuild*>(prepared),
+            reinterpret_cast<PreparedPointProbeColumns2D*>(prepared_points),
+            relation_status_filter, max_rows, columns_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_prepared_point_closed_shape_membership_exact_device_columns_2d(
         void* prepared,
         const RtdlPoint* points, size_t point_count,
