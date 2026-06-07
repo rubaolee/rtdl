@@ -1,6 +1,6 @@
 # Goal3785 AMD HIPRT Functional Pod Runner
 
-Status: implemented locally; non-AMD negative-control pod run pending.
+Status: implemented and non-AMD negative-control pod validated.
 
 ## Purpose
 
@@ -38,6 +38,28 @@ That writes:
 
 The non-AMD control artifact is useful for proving the runner cannot mint AMD
 evidence on NVIDIA. It is not AMD hardware evidence.
+
+## Negative-Control Pod Evidence
+
+The runner was validated on the current NVIDIA pod:
+
+- SSH target used: `root@69.30.85.203 -p 22057`.
+- Clean checkout workdir: `/root/rtdl_goal3783_clean_1780855862`.
+- Source commit: `e014c5f6b4da6544fae19a73ce3ac02e0e861b0d`.
+- GPU/driver: `NVIDIA RTX A5000, 580.126.09`.
+- Test command:
+  `PYTHONPATH=src:. python3 -m unittest tests.goal3785_amd_hiprt_functional_pod_runner_test tests.goal3784_amd_hiprt_functional_validation_runbook_test`.
+- Test result: `Ran 9 tests`, `OK`.
+- Runner command:
+  `PYTHONPATH=src:. python3 scripts/goal3785_amd_hiprt_functional_pod_runner.py --allow-non-amd-control`.
+- Runner result: wrote
+  `docs/reports/goal3785_non_amd_hiprt_functional_runner_control.json` with
+  `hardware_vendor: nvidia`, `status: reject_non_amd_hardware`, and
+  `focused_tests_passed: false`.
+- AMD validator status for the control artifact: `reject`.
+
+This proves only the fail-closed behavior of the runner. It is not AMD hardware
+evidence.
 
 ## Boundary
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
 import unittest
 
@@ -13,6 +14,7 @@ from rtdsl.v2_10_amd_hiprt_functional_validation import (
 ROOT = Path(__file__).resolve().parents[1]
 RUNNER = ROOT / "scripts" / "goal3785_amd_hiprt_functional_pod_runner.py"
 REPORT = ROOT / "docs" / "reports" / "goal3785_amd_hiprt_functional_pod_runner_2026-06-07.md"
+CONTROL_ARTIFACT = ROOT / "docs" / "reports" / "goal3785_non_amd_hiprt_functional_runner_control.json"
 
 
 def _runner_module():
@@ -72,6 +74,22 @@ class Goal3785AmdHiprtFunctionalPodRunnerTest(unittest.TestCase):
         self.assertIn("--allow-non-amd-control", text)
         self.assertIn("not AMD hardware evidence", text)
         self.assertIn("does not authorize AMD performance", text)
+        self.assertIn("AMD validator status for the control artifact: `reject`", text)
+
+    def test_tracked_non_amd_control_artifact_rejects_when_present(self) -> None:
+        if not CONTROL_ARTIFACT.exists():
+            self.skipTest("Goal3785 non-AMD control artifact not generated yet")
+        artifact = json.loads(CONTROL_ARTIFACT.read_text(encoding="utf-8"))
+        self.assertEqual(artifact["goal"], "Goal3785")
+        self.assertEqual(artifact["hardware_vendor"], "nvidia")
+        self.assertEqual(artifact["status"], "reject_non_amd_hardware")
+        self.assertFalse(artifact["focused_tests_passed"])
+        self.assertEqual(artifact["stage_counts"]["ready_for_amd_functional_pod"], 10)
+        self.assertEqual(len(artifact["ready_for_amd_functional_pod_apps"]), 10)
+        for value in artifact["claim_boundary"].values():
+            self.assertFalse(value)
+        verdict = validate_v2_10_amd_hiprt_functional_artifact(artifact)
+        self.assertEqual(verdict["status"], "reject")
 
 
 if __name__ == "__main__":
