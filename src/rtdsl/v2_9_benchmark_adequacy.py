@@ -16,6 +16,8 @@ V2_9_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "wording, automatic partner selection, AMD performance wording, or "
     "app-specific native-engine logic."
 )
+CURRENT_BENCHMARK_ADEQUACY_VERSION = V2_9_BENCHMARK_ADEQUACY_VERSION
+CURRENT_BENCHMARK_ADEQUACY_STATUS = V2_9_BENCHMARK_ADEQUACY_STATUS
 
 ADEQUACY_LEVELS = (
     "strong",
@@ -415,3 +417,23 @@ def validate_v2_9_benchmark_adequacy(rows: tuple[dict[str, Any], ...] | None = N
         "row_count": len(matrix),
         "claim_boundary": V2_9_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY,
     }
+
+
+def current_benchmark_adequacy_rows() -> tuple[V29BenchmarkAdequacyRow, ...]:
+    return v2_9_benchmark_adequacy_rows()
+
+
+def current_benchmark_adequacy() -> tuple[dict[str, Any], ...]:
+    return v2_9_benchmark_adequacy()
+
+
+def summarize_current_benchmark_adequacy(
+    rows: tuple[dict[str, Any], ...] | None = None,
+) -> dict[str, Any]:
+    return summarize_v2_9_benchmark_adequacy(rows)
+
+
+def validate_current_benchmark_adequacy(
+    rows: tuple[dict[str, Any], ...] | None = None,
+) -> dict[str, Any]:
+    return validate_v2_9_benchmark_adequacy(rows)

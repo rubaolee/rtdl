@@ -1,7 +1,7 @@
-# RTDL v2.8 Research Benchmarks
+# RTDL v2.10 Research Benchmarks
 
 This directory is for serious application studies, not first-run examples. Each
-subdirectory shows how a user can write a real RTDL v2.8 program, compare it
+subdirectory shows how a user can write a real RTDL v2.10 program, compare it
 with external baselines, and keep the performance claim boundary precise.
 
 The benchmark apps are reconstruction instruments. A study can intentionally
@@ -14,10 +14,10 @@ For custom continuation choices, use the current learner guide:
 [Choosing A Partner For Custom Logic](../../../docs/learn/partner_choice_for_custom_logic.md)
 and the
 [Benchmark Partner Reference Matrix](../../../docs/learn/benchmark_partner_reference_matrix.md).
-The short rule is primitive first, explicit partner second: CuPy remains the
-recommended CUDA-array/baseline partner for several rows, while Numba is the
-custom-kernel lane for selected generic continuations such as compaction and
-grouped arg reducers. Prepared-execution rows should report setup, cache load,
+The short rule is primitive first, explicit partner second: the benchmark apps
+recommend a current path per contract, CuPy remains useful as a CUDA-array
+baseline/opponent, and Numba is the no-RawKernel custom-kernel lane for selected
+generic continuations. Prepared-execution rows should report setup, cache load,
 warmup, steady-state, and validation separately.
 
 Run commands from the repository root with source-tree usage:

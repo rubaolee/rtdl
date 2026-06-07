@@ -54,7 +54,8 @@ class Goal3050PartnerChoiceDocsTest(unittest.TestCase):
             self.assertIn(header, text)
 
         self.assertIn("Users choose partners explicitly", text)
-        self.assertIn("future candidate", text)
+        self.assertIn("current_benchmark_adequacy", text)
+        self.assertIn("measured prepared-repeat component continuation", text)
 
     def test_learner_and_benchmark_doors_link_guidance(self) -> None:
         learner = self._read("docs/learn/README.md")

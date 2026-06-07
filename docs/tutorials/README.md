@@ -1,16 +1,16 @@
-# RTDL v2.8 Tutorials
+# RTDL v2.10 Tutorials
 
-Start here if you want to write RTDL programs with the current v2.8-facing
+Start here if you want to write RTDL programs with the current v2.10-facing
 Python+partner+RTDL surface.
 
 RTDL is a Python eDSL. You write the surrounding Python application, describe
 the traversal-heavy kernel in RTDL, and choose a backend such as the portable
-CPU reference path, Embree, or OptiX. In the v2.8 track, partner frameworks such
+CPU reference path, Embree, or OptiX. In the v2.10 track, partner frameworks such
 as NumPy, PyTorch, CuPy, and selected Numba continuations can own or continue
 columns around supported RTDL primitives.
 
 This page is intentionally single-surface. Runtime examples teach the current
-v2.8 source-tree surface; primitive discovery and prepared execution are current
+v2.10 source-tree surface; primitive discovery and prepared execution are current
 source-tree guidance and do not change release or performance claim boundaries.
 
 ## Start Here
@@ -19,7 +19,7 @@ source-tree guidance and do not change release or performance claim boundaries.
 | --- | --- | --- |
 | 0 | [Quick Tutorial](../quick_tutorial.md) | First run, kernel anatomy, and the `input -> traverse -> refine -> emit` pattern |
 | 1 | [Hello World](hello_world.md) | The smallest complete RTDL program |
-| 2 | [v2.8 App Building](v2_app_building.md) | How Python, RTDL, and partner arrays divide work |
+| 2 | [Python+Partner+RTDL App Building](v2_app_building.md) | How Python, RTDL, and partner arrays divide work |
 | 3 | [Python Partner Any-Hit](partner_anyhit.md) | Partner-owned columns with Embree as the CPU RT fallback |
 | 4 | [OptiX Partner Column Any-Hit](partner_optix_column_anyhit.md) | The GPU partner-column shape and its claim boundary |
 | 5 | [Feature Quickstart Cookbook](feature_quickstart_cookbook.md) | Which RTDL primitive shape to choose for a workload |
@@ -43,7 +43,7 @@ source-tree guidance and do not change release or performance claim boundaries.
 
 ### Python+Partner+RTDL
 
-- [v2.8 App Building](v2_app_building.md)
+- [Python+Partner+RTDL App Building](v2_app_building.md)
 - [Python Partner Any-Hit](partner_anyhit.md)
 - [OptiX Partner Column Any-Hit](partner_optix_column_anyhit.md)
 - [Choosing A Partner For Custom Logic](../learn/partner_choice_for_custom_logic.md)
@@ -60,14 +60,14 @@ source-tree guidance and do not change release or performance claim boundaries.
 
 ## Current Claim Boundary
 
-The v2.8 tutorial path teaches the source-tree Python+partner+RTDL surface.
+The v2.10 tutorial path teaches the source-tree Python+partner+RTDL surface.
 Use it from the source tree with `PYTHONPATH=src:.`.
 
 Allowed tutorial wording:
 
 - RTDL can run the documented Python+RTDL examples from source.
-- v2.8 has partner-column paths for documented primitives.
-- v2.8 has explicit CuPy/Numba partner-choice guidance.
+- v2.10 has partner-column paths for documented primitives.
+- v2.10 has explicit CuPy/Numba partner-choice guidance.
 - OptiX evidence exists for specific measured contracts.
 - Python or partner frameworks own app continuation outside the RTDL primitive.
 

@@ -334,6 +334,12 @@ from .v2_8_benchmark_matrix import summarize_v2_8_benchmark_matrix
 from .v2_8_benchmark_matrix import v2_8_benchmark_matrix
 from .v2_8_benchmark_matrix import v2_8_benchmark_matrix_rows
 from .v2_8_benchmark_matrix import validate_v2_8_benchmark_matrix
+from .v2_9_benchmark_adequacy import CURRENT_BENCHMARK_ADEQUACY_STATUS
+from .v2_9_benchmark_adequacy import CURRENT_BENCHMARK_ADEQUACY_VERSION
+from .v2_9_benchmark_adequacy import current_benchmark_adequacy
+from .v2_9_benchmark_adequacy import current_benchmark_adequacy_rows
+from .v2_9_benchmark_adequacy import summarize_current_benchmark_adequacy
+from .v2_9_benchmark_adequacy import validate_current_benchmark_adequacy
 from .v2_8_segmented_typed_stream_adapter import V28SegmentedTypedStreamAdapterResult
 from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_CLAIM_BOUNDARY
 from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_MATERIALIZATION
@@ -2143,6 +2149,12 @@ __all__ = [
     "v2_8_benchmark_matrix",
     "v2_8_benchmark_matrix_rows",
     "validate_v2_8_benchmark_matrix",
+    "CURRENT_BENCHMARK_ADEQUACY_STATUS",
+    "CURRENT_BENCHMARK_ADEQUACY_VERSION",
+    "current_benchmark_adequacy",
+    "current_benchmark_adequacy_rows",
+    "summarize_current_benchmark_adequacy",
+    "validate_current_benchmark_adequacy",
     "V28SegmentedTypedStreamAdapterResult",
     "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_CLAIM_BOUNDARY",
     "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_MATERIALIZATION",

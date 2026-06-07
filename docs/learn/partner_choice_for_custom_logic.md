@@ -1,6 +1,6 @@
 # Choosing A Partner For Custom Logic
 
-Status: current v2.8 source-tree guidance.
+Status: current v2.10 source-tree guidance.
 This is not a release tag, package-install promise, or broad speedup claim.
 
 Use this page when the RTDL primitive is only part of your program and you need
@@ -58,9 +58,10 @@ as a reusable partner contract:
 - segmented min, max, count, or sum style continuations;
 - small custom kernels that should stay in Python source rather than CUDA C++.
 
-The current v2.8 lane makes Numba first-class for selected generic continuation
-contracts. Numba is not automatically faster than CuPy. It wins only when the
-contract, launch shape, and data residency are good for that workload.
+The current v2.10 lane makes Numba first-class for selected generic continuation
+contracts and records Numba/reference coverage for all promoted benchmark apps.
+Numba is not automatically faster than CuPy. It wins only when the contract,
+launch shape, and data residency are good for that workload.
 
 ## Benchmark Lessons
 
@@ -70,9 +71,9 @@ contract, launch shape, and data residency are good for that workload.
 | Spatial RayJoin-style joins | Prefer RTDL scalar count/parity or first-hit/nearest-boundary primitives when they express the answer; use Numba compact-mask only for explicit row-stream continuation. |
 | Triangle counting | Prefer the native scalar count path for the scalar answer; Numba compact-mask is useful for candidate-row continuation, not a replacement for the scalar primitive. |
 | Hausdorff distance | The current performance winner is the RTDL/OptiX active-frontier path; CuPy grouped-grid remains a strong CUDA-core baseline; Numba paths are correctness and contract evidence, not the default performance recommendation. |
-| Barnes-Hut-style force studies | CuPy remains the active force-vector partner reference; Numba is not promoted for this row yet. |
-| RTNN-style nearest-neighbor studies | RTDL fixed-radius ranked summaries and prepared OptiX paths are the current focus; use CuPy for CUDA-core baseline rows; promote Numba only when same-contract timing wins. |
-| RT-DBSCAN-style clustering | RTDL provides fixed-radius/core-summary primitives; CuPy remains the measured component-continuation reference for many rows; Numba is a candidate for future custom component logic. |
+| Barnes-Hut-style force studies | CuPy remains the faster measured force-vector partner path overall; Numba now provides a no-RawKernel block-reduction reference for the exact-force continuation. |
+| RTNN-style nearest-neighbor studies | RTDL fixed-radius ranked summaries and prepared OptiX paths are the current focus; use CuPy for CUDA-core baseline rows and treat partners as explicit experiments unless same-contract timing wins. |
+| RT-DBSCAN-style clustering | RTDL provides fixed-radius/core-summary primitives; Numba now has measured prepared-repeat component-continuation coverage, while CuPy remains a useful baseline/opponent. |
 
 ## Claim Boundary
 
@@ -100,14 +101,15 @@ The learner docs and benchmark matrix are mirrored by advisory metadata:
 ```python
 import rtdsl as rt
 
-for row in rt.v2_8_benchmark_matrix():
+for row in rt.current_benchmark_adequacy():
     if row["app"] == "spatial_rayjoin":
-        print(row["row_id"], row["classification"], row["partner"])
+        print(row["current_recommended_path"], row["current_partner_role"])
 ```
 
 The metadata does not auto-select or run a partner. It returns current
-recommendation context, evidence paths, timing boundaries, and claim boundaries
-so apps can show a clear explanation before the user chooses a partner.
+recommendation context, adequacy status, evidence paths, AMD/HIPRT readiness,
+and claim boundaries so apps can show a clear explanation before the user
+chooses a partner.
 
 ## See Also
 

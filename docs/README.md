@@ -4,7 +4,7 @@ This directory has three doors:
 
 | Door | Audience | Purpose |
 | --- | --- | --- |
-| [Learn](learn/README.md) | Learners and app builders | Quick path to run examples, write kernels, choose backends, and understand the current v2.8 boundaries. |
+| [Learn](learn/README.md) | Learners and app builders | Quick path to run examples, write kernels, choose backends, and understand the current v2.10 boundaries. |
 | [Research](research/README.md) | Internal researchers and advanced developers | Architecture notes, backend research, RayJoin/Embree context, future ideas, and design constraints. |
 | [Audit](audit/README.md) | Release reviewers and auditors | Process docs, runbooks, release reports, evidence reports, reviews, and archived goal logs. |
 
@@ -12,11 +12,11 @@ If you are new, start in **Learn**. If you are evaluating design or extending
 the system, start in **Research**. If you are checking evidence, consensus, or
 project history, start in **Audit**.
 
-Current status: RTDL v2.8 is the active source-tree Python+partner+RTDL
+Current status: RTDL v2.10 is the active source-tree Python+partner+RTDL
 app-portfolio surface on this branch. It keeps source-tree usage, preserves the
 no-broad-speedup/no-package-install boundary, and provides current partner-choice
 guidance, primitive discovery, prepared execution, and the 10-app benchmark
-matrix.
+adequacy matrix.
 
 Short model:
 
@@ -57,7 +57,8 @@ Read these in order:
 | Runtime overhead | [Runtime Overhead Architecture](runtime_overhead_architecture.md) |
 | Public map | [Public Documentation Map](public_documentation_map.md) |
 | Release Reports | [Release Reports](release_reports/) |
-| Current internal matrix | [Goal3518 v2.8 Benchmark Matrix](reports/goal3518_v2_8_benchmark_matrix_refresh_2026-06-05.md) |
+| Historical internal matrix | [Goal3518 v2.8 Benchmark Matrix](reports/goal3518_v2_8_benchmark_matrix_refresh_2026-06-05.md) |
+| Current benchmark adequacy | [Goal3786 v2.10 Benchmark Adequacy](reports/goal3786_current_benchmark_adequacy_after_hiprt_closeout_2026-06-07.md) |
 | History Index | [History Index](history/README.md) |
 
 ## Directory Map
@@ -65,7 +66,7 @@ Read these in order:
 | Directory | What belongs there |
 | --- | --- |
 | `learn/` | Human learning route and curated current-doc links. |
-| `tutorials/` | Current v2.8 tutorials and runnable teaching docs. |
+| `tutorials/` | Current v2.10 tutorials and runnable teaching docs. |
 | `features/` | Current feature homes and engine support contract. |
 | `rtdl/` | DSL, IR, programming model, and workload reference docs. |
 | `research/` | Advanced design, RayJoin/Embree context, technical app notes, proposals, and future research notes. |
@@ -78,6 +79,6 @@ Read these in order:
 
 ## Rule
 
-Current learner docs should explain one coherent v2.8 surface. Previous release
+Current learner docs should explain one coherent v2.10 surface. Previous release
 evidence is preserved for review in history and release-report paths, but it
 should not interrupt the normal learning path.

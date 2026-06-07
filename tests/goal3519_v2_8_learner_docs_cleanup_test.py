@@ -43,11 +43,11 @@ class Goal3519V28LearnerDocsCleanupTest(unittest.TestCase):
 
         self.assertEqual(offenders, [])
 
-    def test_main_doors_are_v2_8_facing(self):
+    def test_main_doors_are_v2_10_facing(self):
         checks = {
-            ROOT / "docs" / "README.md": ("RTDL v2.8", "10-app benchmark"),
-            ROOT / "docs" / "tutorials" / "README.md": ("RTDL v2.8 Tutorials", "Prepared Execution Pattern"),
-            ROOT / "examples" / "v2_0" / "research_benchmarks" / "README.md": ("RTDL v2.8 Research Benchmarks", "primitive first"),
+            ROOT / "docs" / "README.md": ("RTDL v2.10", "10-app benchmark"),
+            ROOT / "docs" / "tutorials" / "README.md": ("RTDL v2.10 Tutorials", "Prepared Execution Pattern"),
+            ROOT / "examples" / "v2_0" / "research_benchmarks" / "README.md": ("RTDL v2.10 Research Benchmarks", "primitive first"),
         }
         for path, required in checks.items():
             text = path.read_text(encoding="utf-8")

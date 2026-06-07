@@ -11,7 +11,7 @@ reference runner, Embree, or OptiX without rewriting the application.
 RTDL is not a renderer or graphics engine. It uses ray-tracing-style
 acceleration structures and traversal for application kernels.
 
-This documentation is written for the current v2.8 source-tree RTDL surface:
+This documentation is written for the current v2.10 source-tree RTDL surface:
 Python+partner+RTDL over a generic, app-agnostic native engine, with prepared
 execution and a tested 10-app benchmark matrix. Use RTDL from the repository
 source tree with `PYTHONPATH=src:.`; do not read any current doc
@@ -127,9 +127,9 @@ Backend support varies by feature and platform. Start with the portable
 `cpu_python_reference` backend, then use Embree or OptiX when your host has the
 native dependencies configured.
 
-## v2.8 Source-Tree Surface
+## v2.10 Source-Tree Surface
 
-RTDL v2.8 is the current source-tree surface for this branch. It keeps the
+RTDL v2.10 is the current source-tree surface for this branch. It keeps the
 Python+partner+RTDL language boundary, documents the promoted benchmark-app
 portfolio, adds primitive discovery and prepared-execution guidance, and records
 the app-agnostic primitive lessons from the benchmark wave.
@@ -138,12 +138,12 @@ The current matrix separates promoted benchmark apps from learner/example apps.
 Promoted benchmarks are reconstruction instruments for RTDL language/runtime
 design, not broad paper-reproduction or whole-application speedup claims.
 
-Do not read v2.8 as a package-install promise, broad RT-core claim, arbitrary
+Do not read v2.10 as a package-install promise, broad RT-core claim, arbitrary
 PyTorch/CuPy/Numba acceleration claim, arbitrary polygon overlay claim, or proof
 that every user program is faster. For the exact positive and negative rule, read
 [Partner Acceleration Boundaries](docs/partner_acceleration_boundaries.md).
 
-The v2.8 partner rule is user-chosen and evidence-gated:
+The v2.10 partner rule is user-chosen and evidence-gated:
 
 - use fused RTDL primitives first when they exactly express the work;
 - choose a partner explicitly when custom continuation logic is needed;
@@ -156,8 +156,10 @@ The v2.8 partner rule is user-chosen and evidence-gated:
 For the current partner-choice guide, read
 [Choosing A Partner For Custom Logic](docs/learn/partner_choice_for_custom_logic.md)
 and the [Benchmark Partner Reference Matrix](docs/learn/benchmark_partner_reference_matrix.md).
-For the tested internal 10-app matrix, see
+For the historical v2.8 10-app matrix, see
 [Goal3518](docs/reports/goal3518_v2_8_benchmark_matrix_refresh_2026-06-05.md).
+For the current v2.10 benchmark adequacy and AMD/HIPRT readiness position, see
+[Goal3786](docs/reports/goal3786_current_benchmark_adequacy_after_hiprt_closeout_2026-06-07.md).
 
 ## Performance Boundary
 

@@ -1,6 +1,6 @@
 # Prepared Execution Pattern
 
-RTDL v2.8 uses a prepared-execution pattern for workloads where setup is large
+RTDL v2.10 uses a prepared-execution pattern for workloads where setup is large
 but repeated queries are small and fast.
 
 The shape is:
@@ -47,7 +47,7 @@ The report keeps the source artifact's claim flags and refuses to validate if a
 source artifact authorizes release, public speedup wording, true zero-copy
 wording, hidden partner selection, or app-specific native-engine behavior.
 
-## Current v2.8 Example
+## Current Prepared Example
 
 For the public-CDB overlay-area route, the current evidence separates:
 
