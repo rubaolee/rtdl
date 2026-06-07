@@ -1098,3 +1098,32 @@ extern "C" int rtdl_hiprt_context_probe(
     }
 
     oroDeviceProp props{};
+    oro_err = oroGetDeviceProperties(&props, device);
+    if (oro_err != oroSuccess) {
+        oroCtxDestroy(ctx);
+        set_message(error, error_size, oro_error_message("oroGetDeviceProperties", oro_err));
+        return 6;
+    }
+    set_message(device_name, device_name_size, props.name);
+
+    hiprtContextCreationInput input{};
+    input.ctxt = oroGetRawCtx(ctx);
+    input.device = oroGetRawDevice(device);
+    input.deviceType = std::strstr(props.name, "NVIDIA") != nullptr ? hiprtDeviceNVIDIA : hiprtDeviceAMD;
+    *device_type = static_cast<int>(input.deviceType);
+
+    hiprtContext hiprt_ctx{};
+    hiprtError hiprt_err = hiprtCreateContext(HIPRT_API_VERSION, input, hiprt_ctx);
+    if (hiprt_err != hiprtSuccess) {
+        oroCtxDestroy(ctx);
+        set_message(error, error_size, hiprt_error_message("hiprtCreateContext", hiprt_err));
+        return 7;
+    }
+    hiprt_err = hiprtDestroyContext(hiprt_ctx);
+    oroCtxDestroy(ctx);
+    if (hiprt_err != hiprtSuccess) {
+        set_message(error, error_size, hiprt_error_message("hiprtDestroyContext", hiprt_err));
+        return 8;
+    }
+    return 0;
+}
