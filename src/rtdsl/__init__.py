@@ -1250,6 +1250,7 @@ from .hiprt_runtime import run_hiprt
 from .hiprt_runtime import segment_polygon_anyhit_rows_hiprt
 from .hiprt_runtime import segment_polygon_hitcount_hiprt
 from .hiprt_runtime import triangle_match_hiprt
+from .hiprt_runtime import triangle_cycle_count_hiprt
 from .vulkan_runtime import vulkan_version
 from .vulkan_runtime import VulkanRowView
 from .vulkan_runtime import prepare_vulkan
@@ -2854,6 +2855,7 @@ __all__ = [
     "event_hotspot_flags_optix_prepared_partner_device_columns",
     "triangle_match_apple_rt",
     "triangle_match_hiprt",
+    "triangle_cycle_count_hiprt",
     "VulkanRowView",
     "vulkan_version",
     "prepare_vulkan",

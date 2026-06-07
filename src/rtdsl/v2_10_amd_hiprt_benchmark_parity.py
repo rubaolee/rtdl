@@ -10,7 +10,7 @@ from .engine_feature_matrix import engine_feature_support
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION = "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3781.v1"
+V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION = "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3782.v1"
 V2_10_AMD_HIPRT_BENCHMARK_PARITY_STATUS = "planning_gate_not_amd_hardware_evidence"
 
 PARITY_STAGES = (
@@ -255,10 +255,14 @@ V2_10_AMD_HIPRT_BENCHMARK_PARITY_ROWS: tuple[V210AmdHiprtBenchmarkParityRow, ...
     V210AmdHiprtBenchmarkParityRow(
         app="triangle_counting",
         required_engine_features=("graph_triangle_count",),
-        missing_generic_contracts=("native_hiprt_graph_summary_fastpath",),
-        parity_stage="compatibility_only_not_amd_perf_ready",
-        first_amd_goal="HIPRT graph-summary primitive promotion beyond compatibility fallback",
-        rationale="The current HIPRT graph triangle-count surface is compatibility fallback with known scaling limits.",
+        missing_generic_contracts=(),
+        parity_stage="ready_for_amd_functional_pod",
+        first_amd_goal="Triangle-counting HIPRT functional parity on AMD hardware",
+        rationale=(
+            "Goal3782 adds a generic HIPRT canonical graph-cycle scalar count path, avoiding the old "
+            "row-materialization-only compatibility path for triangle-count summaries. The lane is ready "
+            "for AMD functional pod validation, but has no AMD hardware evidence yet."
+        ),
         needs_amd_pod=True,
     ),
 )

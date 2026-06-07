@@ -280,7 +280,7 @@ _FEATURE_MATRIX: dict[str, dict[str, EngineFeatureSupport]] = {
         "embree": _support("graph_triangle_count", "embree", NATIVE, "Embree bounded graph triangle-probe mapping."),
         "optix": _support("graph_triangle_count", "optix", NATIVE, "OptiX bounded graph triangle-probe mapping."),
         "vulkan": _support("graph_triangle_count", "vulkan", NATIVE, "Vulkan bounded graph triangle-probe mapping."),
-        "hiprt": _support("graph_triangle_count", "hiprt", COMPATIBILITY_FALLBACK, "HIPRT graph surface exists but has known memory-scaling limits; no large-graph claim."),
+        "hiprt": _support("graph_triangle_count", "hiprt", NATIVE, "Goal3782 generic HIPRT canonical graph-cycle scalar count path."),
         "apple_rt": _support("graph_triangle_count", "apple_rt", NATIVE_ASSISTED, "Apple graph path is Metal compute/native-assisted, not Apple MPS RT traversal."),
     },
     "reduce_rows": {

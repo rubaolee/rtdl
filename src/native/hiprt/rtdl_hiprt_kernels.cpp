@@ -1569,6 +1569,59 @@ extern "C" __global__ void RtdlTriangleProbeKernel(
         rows[out_index].w = w;
     }
 }
+
+extern "C" __global__ void RtdlTriangleProbeCountKernel(
+    hiprtGeometry geom,
+    const RtdlEdgeSeed* seeds,
+    uint32_t seed_count,
+    const uint32_t* row_offsets,
+    const uint32_t* column_indices,
+    const RtdlHiprtGraphEdgeDevice* edges,
+    uint32_t edge_count,
+    uint32_t vertex_count,
+    uint32_t enforce_id_ascending,
+    uint32_t* row_count,
+    hiprtFuncTable table) {
+    const uint32_t seed_index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (seed_index >= seed_count) {
+        return;
+    }
+    const RtdlEdgeSeed seed = seeds[seed_index];
+    const uint32_t u = seed.u;
+    const uint32_t v = seed.v;
+    if (u >= vertex_count || v >= vertex_count || u == v) {
+        return;
+    }
+    if (enforce_id_ascending != 0u && !(u < v)) {
+        return;
+    }
+
+    hiprtRay ray;
+    ray.origin = {static_cast<float>(u), 0.0f, -1.0f};
+    ray.direction = {0.0f, 0.0f, 1.0f};
+    ray.minT = 0.0f;
+    ray.maxT = 2.0f;
+
+    hiprtGeomCustomTraversalAnyHit traversal(geom, ray, hiprtTraversalHintDefault, nullptr, table);
+    while (traversal.getCurrentState() != hiprtTraversalStateFinished) {
+        hiprtHit hit = traversal.getNextHit();
+        if (!hit.hasHit() || hit.primID >= edge_count) {
+            continue;
+        }
+        const RtdlHiprtGraphEdgeDevice edge = edges[hit.primID];
+        if (edge.src != u) {
+            continue;
+        }
+        const uint32_t w = edge.dst;
+        if (enforce_id_ascending != 0u && !(v < w)) {
+            continue;
+        }
+        if (!hasGraphEdge(row_offsets, column_indices, v, w)) {
+            continue;
+        }
+        atomicAdd(row_count, 1u);
+    }
+}
 )KERNEL";
 }
 

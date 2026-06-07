@@ -111,7 +111,7 @@ class Goal3775HiprtRayTriangleClosestHitPortableTest(unittest.TestCase):
         self.assertEqual(rt.engine_feature_support("ray_triangle_closest_hit_3d", "hiprt").status, NATIVE)
         self.assertEqual(
             V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION,
-            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3781.v1",
+            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3782.v1",
         )
         rows = {row["app"]: row for row in v2_10_amd_hiprt_benchmark_parity()}
         contact = rows["contact_manifold"]
@@ -121,7 +121,7 @@ class Goal3775HiprtRayTriangleClosestHitPortableTest(unittest.TestCase):
         self.assertEqual(contact["parity_stage"], "ready_for_amd_functional_pod")
         self.assertIn("Goal3775", contact["rationale"])
         summary = summarize_v2_10_amd_hiprt_benchmark_parity()
-        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 9)
+        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 10)
         self.assertEqual(summary["stage_counts"]["needs_generic_hiprt_extension"], 0)
         self.assertFalse(summary["release_authorized"])
         self.assertFalse(summary["amd_perf_claim_authorized"])

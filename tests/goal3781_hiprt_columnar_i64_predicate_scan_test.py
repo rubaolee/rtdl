@@ -54,7 +54,7 @@ class Goal3781HiprtColumnarI64PredicateScanPortableTest(unittest.TestCase):
     def test_raydb_parity_gap_is_closed_for_functional_amd_pod(self) -> None:
         self.assertEqual(
             V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION,
-            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3781.v1",
+            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3782.v1",
         )
         rows = {row["app"]: row for row in v2_10_amd_hiprt_benchmark_parity()}
         raydb = rows["raydb_style"]
@@ -67,10 +67,10 @@ class Goal3781HiprtColumnarI64PredicateScanPortableTest(unittest.TestCase):
         self.assertIn("Goal3781", raydb["rationale"])
 
         summary = summarize_v2_10_amd_hiprt_benchmark_parity()
-        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 9)
-        self.assertEqual(summary["stage_counts"]["compatibility_only_not_amd_perf_ready"], 1)
+        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 10)
+        self.assertEqual(summary["stage_counts"]["compatibility_only_not_amd_perf_ready"], 0)
         self.assertEqual(summary["stage_counts"]["needs_generic_hiprt_extension"], 0)
-        self.assertIn("triangle_counting", summary["compatibility_only_not_amd_perf_ready_apps"])
+        self.assertEqual(summary["compatibility_only_not_amd_perf_ready_apps"], ())
 
     def test_report_records_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")

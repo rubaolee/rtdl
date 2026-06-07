@@ -34,12 +34,12 @@ class Goal3753AmdHiprtBenchmarkParityPlanTest(unittest.TestCase):
     def test_summary_is_honest_about_amd_extension_work(self) -> None:
         self.assertEqual(
             V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION,
-            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3781.v1",
+            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3782.v1",
         )
         summary = summarize_v2_10_amd_hiprt_benchmark_parity()
         self.assertEqual(summary["app_count"], 10)
-        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 9)
-        self.assertEqual(summary["stage_counts"]["compatibility_only_not_amd_perf_ready"], 1)
+        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 10)
+        self.assertEqual(summary["stage_counts"]["compatibility_only_not_amd_perf_ready"], 0)
         self.assertEqual(summary["stage_counts"]["needs_generic_hiprt_extension"], 0)
         self.assertEqual(
             summary["ready_for_amd_functional_pod_apps"],
@@ -53,9 +53,10 @@ class Goal3753AmdHiprtBenchmarkParityPlanTest(unittest.TestCase):
                 "barnes_hut",
                 "librts_spatial_index",
                 "rtnn",
+                "triangle_counting",
             ),
         )
-        self.assertIn("triangle_counting", summary["compatibility_only_not_amd_perf_ready_apps"])
+        self.assertEqual(summary["compatibility_only_not_amd_perf_ready_apps"], ())
         self.assertFalse(summary["release_authorized"])
         self.assertFalse(summary["amd_perf_claim_authorized"])
 
@@ -151,6 +152,16 @@ class Goal3753AmdHiprtBenchmarkParityPlanTest(unittest.TestCase):
         self.assertEqual(raydb["parity_stage"], "ready_for_amd_functional_pod")
         self.assertIn("Goal3779", raydb["rationale"])
         self.assertIn("Goal3781", raydb["rationale"])
+
+    def test_triangle_counting_records_goal3782_graph_cycle_count_closure(self) -> None:
+        rows = {row["app"]: row for row in v2_10_amd_hiprt_benchmark_parity()}
+        triangle = rows["triangle_counting"]
+        self.assertIn("graph_triangle_count", triangle["required_engine_features"])
+        self.assertEqual(triangle["hiprt_feature_statuses"]["graph_triangle_count"], NATIVE)
+        self.assertNotIn("native_hiprt_graph_summary_fastpath", triangle["missing_generic_contracts"])
+        self.assertEqual(triangle["missing_generic_contracts"], ())
+        self.assertEqual(triangle["parity_stage"], "ready_for_amd_functional_pod")
+        self.assertIn("Goal3782", triangle["rationale"])
 
     def test_each_row_keeps_claim_boundary_false(self) -> None:
         for row in v2_10_amd_hiprt_benchmark_parity():

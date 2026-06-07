@@ -104,7 +104,7 @@ app/partner code unless it is redesigned as an app-independent behavior.
 
 - Generator version: `rtdl.primitive_catalog.generated.v1`
 - Hierarchy validation valid: `True`
-- Node count: `56`
+- Node count: `57`
 - Unknown capability tags: `-`
 - Missing dependencies: `-`
 - Backward dependencies: `-`
@@ -159,6 +159,7 @@ Bounded Materialization Layer (layer.bounded_materialization)
 Reduction Layer (layer.reduction)
   Scalar Reductions (reduction.scalar)
     COUNT_HITS (reduction.count_hits)
+    Canonical Graph-Cycle Count (reduction.graph_cycle_count)
     REDUCE_INT(COUNT|SUM) (reduction.reduce_int)
     REDUCE_FLOAT(MIN|MAX|SUM) (reduction.reduce_float)
   Grouped / Keyed Reductions (reduction.grouped)
@@ -298,8 +299,9 @@ Owns compact summaries over traversal hits, rows, or partner-resident columns.
 
 | Node | Status | Summary | Outputs | Depends on | Capabilities | Backends / partners | Boundary |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `reduction.scalar` | `stable_primitive` | Reduce primitive outputs to scalar counts, sums, minima, or maxima. | `scalar_count`, `scalar_sum`, `scalar_min`, `scalar_max` | `layer.traversal` | `intent:reduce`, `shape:generic`, `output:scalar`, `exactness:exact`, `keying:none` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | - |
+| `reduction.scalar` | `stable_primitive` | Reduce primitive outputs to scalar counts, sums, minima, or maxima. | `scalar_count`, `scalar_sum`, `scalar_min`, `scalar_max` | `layer.traversal` | `intent:reduce`, `shape:generic`, `output:scalar`, `exactness:exact`, `keying:none` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix`, `hiprt` | - |
 | `reduction.count_hits` | `stable_primitive` | Scalar count over hit flags or emitted positive rows. | `count` | `traversal.any_hit` | `intent:count`, `shape:generic`, `output:scalar`, `exactness:exact`, `keying:none` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | - |
+| `reduction.graph_cycle_count` | `stable_primitive` | Scalar count over canonical ascending graph-cycle witness candidates without returning each witness row. | `count` | `rows.graph_triangle_witness_rows`, `reduction.scalar` | `intent:count`, `intent:reduce`, `shape:generic`, `output:scalar`, `exactness:exact`, `keying:none` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix`, `hiprt` | The primitive counts generic canonical graph-cycle witnesses; graph analytics meaning and app interpretation remain outside the engine. |
 | `reduction.reduce_int` | `stable_primitive` | Integer count and sum reductions. | `int64_result` | `rows.generic_candidate_rows` | `intent:reduce`, `shape:generic`, `output:scalar`, `exactness:exact`, `keying:none` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | - |
 | `reduction.reduce_float` | `stable_primitive` | Floating min, max, and sum with explicit tolerance policy. | `float64_result` | `rows.generic_candidate_rows` | `intent:reduce`, `shape:generic`, `output:scalar`, `exactness:exact`, `keying:none` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | - |
 | `reduction.grouped` | `internal_substrate` | Per-group flags, counts, sums, minima, maxima, and fused stats. | `grouped_rows` | `rows.generic_candidate_rows` | `intent:reduce`, `intent:count`, `shape:generic`, `output:grouped`, `output:scalar`, `exactness:exact`, `keying:by_group_id` | backends: `cpu_python_reference`, `cpu`, `optix`, `hiprt`<br>partner ops: `segmented_count_i64`, `segmented_sum_f64`, `grouped_argmin_f64` | - |
@@ -317,6 +319,7 @@ Discovery metadata:
 | --- | --- | --- | --- | --- |
 | `reduction.scalar` | `scalar_reduction`, `reduce_scalar`, `count_sum_min_max`, `compact_scalar_summary` | `reduce primitive outputs to scalar counts sums minima or maxima`, `compute compact scalar summaries without returning rows` | docs/features/reduce_rows/README.md | - |
 | `reduction.count_hits` | `count_hits_reduction`, `positive_row_count`, `hit_flag_count` | `count hit flags or emitted positive rows`, `compute scalar hit count as a reduction` | docs/features/ray_tri_hitcount/README.md | - |
+| `reduction.graph_cycle_count` | `graph_cycle_count`, `canonical_cycle_count`, `triangle_witness_count` | `count canonical graph cycle witnesses without materializing rows`, `compute a scalar count from graph witness candidates` | docs/rtdl_primitive_catalog.md | rows.graph_triangle_witness_rows emits witnesses for downstream interpretation; reduction.count_hits counts generic hit flags and does not own graph-cycle canonical seed validation. |
 | `reduction.reduce_int` | `reduce_int`, `integer_reduction`, `integer count sum reductions`, `int_count_sum`, `i64_reduce` | `reduce integer rows to count or sum`, `compute int64 scalar reductions over generic rows` | docs/features/reduce_rows/README.md | - |
 | `reduction.reduce_float` | `reduce_float`, `floating_reduction`, `float_min_max_sum`, `f64_reduce` | `reduce floating rows to min max or sum`, `compute float64 scalar reductions with tolerance policy` | docs/features/reduce_rows/README.md | - |
 | `reduction.grouped` | `grouped_reduction`, `group_by`, `group_count`, `group_sum`, `segmented_reduction` | `reduce rows per group id`, `compute grouped count sum min max or stats` | docs/features/reduce_rows/README.md | - |

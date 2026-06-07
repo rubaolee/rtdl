@@ -72,7 +72,7 @@ class Goal3777HiprtAggregateFrontierPortableTest(unittest.TestCase):
     def test_barnes_hut_parity_gap_is_closed_after_goal3780(self) -> None:
         self.assertEqual(
             V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION,
-            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3781.v1",
+            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3782.v1",
         )
         rows = {row["app"]: row for row in v2_10_amd_hiprt_benchmark_parity()}
         barnes = rows["barnes_hut"]
@@ -86,7 +86,7 @@ class Goal3777HiprtAggregateFrontierPortableTest(unittest.TestCase):
         self.assertIn("Goal3780", barnes["rationale"])
 
         summary = summarize_v2_10_amd_hiprt_benchmark_parity()
-        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 9)
+        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 10)
         self.assertEqual(summary["stage_counts"]["needs_generic_hiprt_extension"], 0)
 
     def test_catalog_backends_include_hiprt_without_force_claim(self) -> None:

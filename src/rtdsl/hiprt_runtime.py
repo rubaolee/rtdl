@@ -905,6 +905,29 @@ def _hiprt_lib() -> ctypes.CDLL:
         ctypes.c_size_t,
     ]
     lib.rtdl_hiprt_run_prepared_triangle_cycle_candidates.restype = ctypes.c_int
+    lib.rtdl_hiprt_count_triangle_cycle_candidates.argtypes = [
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlEdgeSeed),
+        ctypes.c_size_t,
+        ctypes.c_uint32,
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    lib.rtdl_hiprt_count_triangle_cycle_candidates.restype = ctypes.c_int
+    lib.rtdl_hiprt_count_prepared_triangle_cycle_candidates.argtypes = [
+        ctypes.c_void_p,
+        ctypes.POINTER(_RtdlEdgeSeed),
+        ctypes.c_size_t,
+        ctypes.c_int,
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    lib.rtdl_hiprt_count_prepared_triangle_cycle_candidates.restype = ctypes.c_int
     lib.rtdl_hiprt_destroy_prepared_graph_csr.argtypes = [ctypes.c_void_p]
     lib.rtdl_hiprt_destroy_prepared_graph_csr.restype = None
     lib.rtdl_hiprt_run_conjunctive_scan.argtypes = [
@@ -2909,6 +2932,72 @@ def triangle_match_hiprt(
         _hiprt_lib().rtdl_hiprt_free_rows(rows_ptr)
 
 
+def _canonical_unique_edge_seed_array(
+    seeds: tuple[_CanonicalEdgeSeed, ...],
+    *,
+    vertex_count: int,
+    label: str,
+) -> tuple[ctypes.Array, int]:
+    seed_records = tuple(seeds)
+    if any(not isinstance(item, _CanonicalEdgeSeed) for item in seed_records):
+        raise TypeError(f"{label} currently supports only EdgeSeed probe inputs")
+    seen: set[tuple[int, int]] = set()
+    for item in seed_records:
+        if item.u < 0 or item.v < 0 or item.u >= vertex_count or item.v >= vertex_count:
+            raise ValueError(f"{label} seed vertices must be valid graph vertex IDs")
+        if not item.u < item.v:
+            raise ValueError(f"{label} scalar count requires canonical ascending edge seeds")
+        pair = (int(item.u), int(item.v))
+        if pair in seen:
+            raise ValueError(f"{label} scalar count requires unique edge seeds")
+        seen.add(pair)
+    return (_RtdlEdgeSeed * len(seed_records))(*[_RtdlEdgeSeed(item.u, item.v) for item in seed_records]), len(seed_records)
+
+
+def triangle_cycle_count_hiprt(
+    graph: _CanonicalCSRGraph,
+    seeds: tuple[_CanonicalEdgeSeed, ...],
+    *,
+    order: str = "id_ascending",
+) -> int:
+    if order != "id_ascending":
+        raise ValueError("triangle_cycle_count_hiprt currently supports only order='id_ascending'")
+    if not isinstance(graph, _CanonicalCSRGraph):
+        raise TypeError("triangle_cycle_count_hiprt currently supports only CSRGraph build inputs")
+    if graph.vertex_count < 0:
+        raise ValueError("triangle_cycle_count_hiprt graph vertex_count must be non-negative")
+    if graph.vertex_count > (2**32 - 1):
+        raise ValueError("HIPRT triangle_cycle_count_hiprt currently supports vertex IDs <= 2^32-1")
+
+    row_offsets_array = (ctypes.c_uint32 * len(graph.row_offsets))(*[int(value) for value in graph.row_offsets])
+    column_indices_array = (ctypes.c_uint32 * len(graph.column_indices))(
+        *[int(value) for value in graph.column_indices]
+    )
+    seed_array, seed_count = _canonical_unique_edge_seed_array(
+        tuple(seeds),
+        vertex_count=int(graph.vertex_count),
+        label="triangle_cycle_count_hiprt",
+    )
+    count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = _hiprt_lib().rtdl_hiprt_count_triangle_cycle_candidates(
+        row_offsets_array,
+        len(graph.row_offsets),
+        column_indices_array,
+        len(graph.column_indices),
+        seed_array,
+        seed_count,
+        1,
+        ctypes.byref(count),
+        error,
+        ctypes.sizeof(error),
+    )
+    if status != 0:
+        detail = error.value.decode("utf-8", errors="replace")
+        raise RuntimeError(f"rtdl_hiprt_count_triangle_cycle_candidates failed with status {status}: {detail}")
+    return int(count.value)
+
+
 class PreparedHiprtGraphCSR:
     def __init__(self, handle: ctypes.c_void_p, *, empty: bool = False) -> None:
         self._handle = handle
@@ -3585,6 +3674,40 @@ class PreparedHiprtRayTriangleAnyHit2D:
             )
         finally:
             _hiprt_lib().rtdl_hiprt_free_rows(rows_ptr)
+
+    def triangle_cycle_count(
+        self,
+        seeds: tuple[_CanonicalEdgeSeed, ...],
+        *,
+        order: str = "id_ascending",
+    ) -> int:
+        if order != "id_ascending":
+            raise ValueError("Prepared HIPRT triangle_cycle_count currently supports only order='id_ascending'")
+        if self._empty:
+            return 0
+        if not self._handle:
+            raise RuntimeError("prepared HIPRT graph CSR handle is closed")
+
+        seed_array, seed_count = _canonical_unique_edge_seed_array(
+            tuple(seeds),
+            vertex_count=2**32 - 1,
+            label="Prepared HIPRT triangle_cycle_count",
+        )
+        count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = _hiprt_lib().rtdl_hiprt_count_prepared_triangle_cycle_candidates(
+            self._handle,
+            seed_array,
+            seed_count,
+            1,
+            ctypes.byref(count),
+            error,
+            ctypes.sizeof(error),
+        )
+        if status != 0:
+            detail = error.value.decode("utf-8", errors="replace")
+            raise RuntimeError(f"rtdl_hiprt_count_prepared_triangle_cycle_candidates failed with status {status}: {detail}")
+        return int(count.value)
 
     def group_flags_packed(self, rays: HiprtRay2DBuffer, group_indices, *, group_count: int) -> tuple[bool, ...]:
         if self._closed:

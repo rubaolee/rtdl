@@ -1759,6 +1759,51 @@ extern "C" int rtdl_hiprt_run_prepared_triangle_cycle_candidates(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_hiprt_count_triangle_cycle_candidates(
+    const uint32_t* row_offsets,
+    size_t row_offset_count,
+    const uint32_t* column_indices,
+    size_t edge_index_count,
+    const RtdlEdgeSeed* seeds,
+    size_t seed_count,
+    uint32_t enforce_id_ascending,
+    size_t* count_out,
+    char* error_out,
+    size_t error_size) {
+    return handle_call([&]() {
+        count_triangle_cycle_candidates(
+            row_offsets,
+            row_offset_count,
+            column_indices,
+            edge_index_count,
+            seeds,
+            seed_count,
+            enforce_id_ascending != 0u,
+            count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_hiprt_count_prepared_triangle_cycle_candidates(
+    void* prepared,
+    const RtdlEdgeSeed* seeds,
+    size_t seed_count,
+    int enforce_id_ascending,
+    size_t* count_out,
+    char* error_out,
+    size_t error_size) {
+    return handle_call([&]() {
+        if (prepared == nullptr) {
+            throw std::runtime_error("prepared HIPRT graph CSR handle must not be null");
+        }
+        count_prepared_triangle_cycle_candidates(
+            *reinterpret_cast<PreparedGraphCSR*>(prepared),
+            seeds,
+            seed_count,
+            enforce_id_ascending != 0,
+            count_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_hiprt_run_conjunctive_scan(
     const RtdlDbField* fields,
     size_t field_count,

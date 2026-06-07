@@ -340,7 +340,7 @@ PRIMITIVE_HIERARCHY = (
             "choose any hit count hits or fixed radius traversal behavior",
         ),
         reference_path="docs/features/README.md",
-        backends=("cpu_python_reference", "cpu", "embree", "optix"),
+        backends=("cpu_python_reference", "cpu", "embree", "optix", "hiprt"),
         children=(
             PrimitiveHierarchyNode(
                 id="traversal.any_hit",
@@ -846,7 +846,7 @@ PRIMITIVE_HIERARCHY = (
                     "compute compact scalar summaries without returning rows",
                 ),
                 reference_path="docs/features/reduce_rows/README.md",
-                backends=("cpu_python_reference", "cpu", "embree", "optix"),
+                backends=("cpu_python_reference", "cpu", "embree", "optix", "hiprt"),
                 children=(
                     PrimitiveHierarchyNode(
                         id="reduction.count_hits",
@@ -864,6 +864,43 @@ PRIMITIVE_HIERARCHY = (
                         ),
                         reference_path="docs/features/ray_tri_hitcount/README.md",
                         backends=("cpu_python_reference", "cpu", "embree", "optix"),
+                    ),
+                    PrimitiveHierarchyNode(
+                        id="reduction.graph_cycle_count",
+                        title="Canonical Graph-Cycle Count",
+                        layer="reduction",
+                        status="stable_primitive",
+                        summary=(
+                            "Scalar count over canonical ascending graph-cycle witness candidates without "
+                            "returning each witness row."
+                        ),
+                        outputs=("count",),
+                        depends_on=("rows.graph_triangle_witness_rows", "reduction.scalar"),
+                        boundary=(
+                            "The primitive counts generic canonical graph-cycle witnesses; graph analytics "
+                            "meaning and app interpretation remain outside the engine."
+                        ),
+                        capability_tags=(
+                            "intent:count",
+                            "intent:reduce",
+                            "shape:generic",
+                            "output:scalar",
+                            "exactness:exact",
+                            "keying:none",
+                        ),
+                        aliases=("graph_cycle_count", "canonical_cycle_count", "triangle_witness_count"),
+                        intent_phrases=(
+                            "count canonical graph cycle witnesses without materializing rows",
+                            "compute a scalar count from graph witness candidates",
+                        ),
+                        reference_path="docs/rtdl_primitive_catalog.md",
+                        backends=("cpu_python_reference", "cpu", "embree", "optix", "hiprt"),
+                        considered_alternatives=("rows.graph_triangle_witness_rows", "reduction.count_hits"),
+                        distinct_from=(
+                            "rows.graph_triangle_witness_rows emits witnesses for downstream interpretation; "
+                            "reduction.count_hits counts generic hit flags and does not own graph-cycle "
+                            "canonical seed validation."
+                        ),
                     ),
                     PrimitiveHierarchyNode(
                         id="reduction.reduce_int",

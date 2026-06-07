@@ -335,6 +335,7 @@ struct PreparedGraphCSR {
     hiprtFuncTable triangle_func_table{};
     oroFunction bfs_kernel{};
     oroFunction triangle_kernel{};
+    oroFunction triangle_count_kernel{};
     uint32_t vertex_count{};
     uint32_t edge_count{};
 
@@ -349,6 +350,7 @@ struct PreparedGraphCSR {
         hiprtFuncTable triangle_func_table_in,
         oroFunction bfs_kernel_in,
         oroFunction triangle_kernel_in,
+        oroFunction triangle_count_kernel_in,
         uint32_t vertex_count_in,
         uint32_t edge_count_in)
         : runtime(std::move(runtime_in)),
@@ -361,6 +363,7 @@ struct PreparedGraphCSR {
           triangle_func_table(triangle_func_table_in),
           bfs_kernel(bfs_kernel_in),
           triangle_kernel(triangle_kernel_in),
+          triangle_count_kernel(triangle_count_kernel_in),
           vertex_count(vertex_count_in),
           edge_count(edge_count_in) {}
 
@@ -1113,6 +1116,33 @@ RtdlTriangleRow* copy_triangle_rows_to_heap(const std::vector<RtdlTriangleRow>& 
         std::memcpy(rows, output.data(), output.size() * sizeof(RtdlTriangleRow));
     }
     return reinterpret_cast<RtdlTriangleRow*>(rows);
+}
+
+void validate_canonical_unique_edge_seeds(
+    const RtdlEdgeSeed* seeds,
+    size_t seed_count,
+    uint32_t vertex_count,
+    const char* label) {
+    if (seed_count > 0 && seeds == nullptr) {
+        throw std::runtime_error(std::string(label) + " seed pointer must not be null when seed_count is nonzero");
+    }
+    std::vector<std::pair<uint32_t, uint32_t>> pairs;
+    pairs.reserve(seed_count);
+    for (size_t i = 0; i < seed_count; ++i) {
+        const uint32_t u = seeds[i].u;
+        const uint32_t v = seeds[i].v;
+        if (u >= vertex_count || v >= vertex_count) {
+            throw std::runtime_error(std::string(label) + " seed vertices must be valid graph vertex IDs");
+        }
+        if (!(u < v)) {
+            throw std::runtime_error(std::string(label) + " scalar count requires canonical ascending edge seeds");
+        }
+        pairs.emplace_back(u, v);
+    }
+    std::sort(pairs.begin(), pairs.end());
+    if (std::adjacent_find(pairs.begin(), pairs.end()) != pairs.end()) {
+        throw std::runtime_error(std::string(label) + " scalar count requires unique edge seeds");
+    }
 }
 
 RtdlDbRowIdRow* copy_db_row_id_rows_to_heap(const std::vector<RtdlDbRowIdRow>& output) {
@@ -4654,6 +4684,14 @@ std::unique_ptr<PreparedGraphCSR> prepare_graph_csr(
             &triangle_func_name_set,
             1,
             1);
+        oroFunction triangle_count_kernel = build_trace_kernel_from_source(
+            runtime.context,
+            triangle_cycle_candidates_kernel_source(),
+            "rtdl_hiprt_triangle_cycle_count.cu",
+            "RtdlTriangleProbeCountKernel",
+            &triangle_func_name_set,
+            1,
+            1);
 
         auto prepared = std::make_unique<PreparedGraphCSR>(
             std::move(runtime),
@@ -4666,6 +4704,7 @@ std::unique_ptr<PreparedGraphCSR> prepare_graph_csr(
             triangle_func_table,
             bfs_kernel,
             triangle_kernel,
+            triangle_count_kernel,
             vertex_count,
             static_cast<uint32_t>(edge_values.size()));
         geometry = nullptr;
@@ -5049,6 +5088,96 @@ void run_prepared_triangle_cycle_candidates(
     }
     *rows_out = copy_triangle_rows_to_heap(output);
     *row_count_out = output.size();
+}
+
+void count_prepared_triangle_cycle_candidates(
+    PreparedGraphCSR& prepared,
+    const RtdlEdgeSeed* seeds,
+    size_t seed_count,
+    bool enforce_id_ascending,
+    size_t* count_out) {
+    if (count_out == nullptr) {
+        throw std::runtime_error("HIPRT prepared graph-cycle count output pointer must not be null");
+    }
+    *count_out = 0;
+    if (!enforce_id_ascending) {
+        throw std::runtime_error("HIPRT prepared graph-cycle scalar count requires id-ascending canonical seeds");
+    }
+    if (seed_count > std::numeric_limits<uint32_t>::max()) {
+        throw std::runtime_error("HIPRT prepared graph-cycle scalar count currently supports at most 2^32-1 seeds");
+    }
+    validate_canonical_unique_edge_seeds(seeds, seed_count, prepared.vertex_count, "HIPRT prepared graph-cycle");
+    if (seed_count == 0 || prepared.edge_count == 0) {
+        return;
+    }
+
+    std::vector<RtdlEdgeSeed> seed_values(seeds, seeds + seed_count);
+    std::vector<uint32_t> row_count_device_host(1, 0u);
+    DeviceAllocation seed_device(seed_values.size() * sizeof(RtdlEdgeSeed));
+    DeviceAllocation row_count_device(sizeof(uint32_t));
+    copy_host_to_device(seed_device, seed_values);
+    copy_host_to_device(row_count_device, row_count_device_host);
+
+    void* seed_device_ptr = seed_device.get();
+    void* row_offset_device_ptr = prepared.row_offset_device.get();
+    void* column_device_ptr = prepared.column_device.get();
+    void* edge_device_ptr = prepared.edge_device.get();
+    void* row_count_device_ptr = row_count_device.get();
+    uint32_t seed_count_u32 = static_cast<uint32_t>(seed_count);
+    uint32_t enforce_u32 = 1u;
+    uint32_t block_size = 128;
+    uint32_t grid_size = static_cast<uint32_t>((seed_count + block_size - 1) / block_size);
+    void* args[] = {
+        &prepared.geometry,
+        &seed_device_ptr,
+        &seed_count_u32,
+        &row_offset_device_ptr,
+        &column_device_ptr,
+        &edge_device_ptr,
+        &prepared.edge_count,
+        &prepared.vertex_count,
+        &enforce_u32,
+        &row_count_device_ptr,
+        &prepared.triangle_func_table,
+    };
+    check_oro(
+        "oroModuleLaunchKernel",
+        oroModuleLaunchKernel(prepared.triangle_count_kernel, grid_size, 1, 1, block_size, 1, 1, 0, 0, args, nullptr));
+    copy_device_to_host(row_count_device_host, row_count_device);
+    *count_out = static_cast<size_t>(row_count_device_host[0]);
+}
+
+void count_triangle_cycle_candidates(
+    const uint32_t* row_offsets,
+    size_t row_offset_count,
+    const uint32_t* column_indices,
+    size_t edge_count,
+    const RtdlEdgeSeed* seeds,
+    size_t seed_count,
+    bool enforce_id_ascending,
+    size_t* count_out) {
+    if (row_offset_count == 0 || row_offsets == nullptr) {
+        throw std::runtime_error("HIPRT graph-cycle count CSR row_offsets must not be empty");
+    }
+    if (edge_count > 0 && column_indices == nullptr) {
+        throw std::runtime_error("HIPRT graph-cycle count column_indices pointer must not be null when edge_count is nonzero");
+    }
+    if (row_offset_count - 1u > std::numeric_limits<uint32_t>::max() ||
+        edge_count > std::numeric_limits<uint32_t>::max() ||
+        seed_count > std::numeric_limits<uint32_t>::max()) {
+        throw std::runtime_error("HIPRT graph-cycle count currently supports at most 2^32-1 vertices/edges/seeds");
+    }
+    const uint32_t vertex_count = static_cast<uint32_t>(row_offset_count - 1u);
+    validate_canonical_unique_edge_seeds(seeds, seed_count, vertex_count, "HIPRT graph-cycle");
+    if (count_out == nullptr) {
+        throw std::runtime_error("HIPRT graph-cycle count output pointer must not be null");
+    }
+    if (seed_count == 0 || edge_count == 0) {
+        *count_out = 0;
+        return;
+    }
+    auto prepared = prepare_graph_csr(row_offsets, row_offset_count, column_indices, edge_count, vertex_count);
+    count_prepared_triangle_cycle_candidates(*prepared, seeds, seed_count, enforce_id_ascending, count_out);
 }
 
 struct PreparedDbTable {
