@@ -78,21 +78,21 @@ Artifact:
 `docs/reports/goal3828_current_benchmark_scale_profiles_a5000/summary.json`
 
 Result: all ten calibrated default scale profiles passed on the A5000 pod at
-commit `da69b6cc`. Every row emitted parseable JSON and zero forbidden true
+commit `a24f2812`. Every row emitted parseable JSON and zero forbidden true
 claim flags.
 
 | Row | Status | Elapsed seconds | JSON bytes |
 | --- | --- | ---: | ---: |
-| `hausdorff_xhd_scale_default_optix_threshold` | pass | 1.752 | 4009 |
-| `spatial_rayjoin_pip_count_scale_default_prepared_optix` | pass | 1.502 | 3157 |
-| `rt_dbscan_optix_numba_scale_default_8192` | pass | 7.755 | 4933 |
-| `robot_collision_optix_scale_default_1024` | pass | 11.508 | 41580 |
-| `contact_manifold_optix_scale_default_grid64` | pass | 1.001 | 7670 |
-| `raydb_style_optix_count_scale_default_262k` | pass | 2.002 | 40927 |
-| `barnes_hut_numba_scale_default_8192` | pass | 2.002 | 893215 |
-| `librts_spatial_index_optix_scale_default_32768` | pass | 1.752 | 1852 |
-| `rtnn_prepared_optix_scale_default_65536` | pass | 3.003 | 4812 |
-| `triangle_counting_optix_scale_default_native_2048` | pass | 1.502 | 2259 |
+| `hausdorff_xhd_scale_default_optix_threshold` | pass | 1.752 | 4006 |
+| `spatial_rayjoin_pip_count_scale_default_prepared_optix` | pass | 1.502 | 3155 |
+| `rt_dbscan_optix_numba_scale_default_8192` | pass | 7.755 | 4932 |
+| `robot_collision_optix_scale_default_1024` | pass | 10.506 | 41592 |
+| `contact_manifold_optix_scale_default_grid64` | pass | 1.002 | 7672 |
+| `raydb_style_optix_count_scale_default_262k` | pass | 2.253 | 40920 |
+| `barnes_hut_numba_scale_default_8192` | pass | 1.752 | 3400 |
+| `librts_spatial_index_optix_scale_default_32768` | pass | 2.003 | 1849 |
+| `rtnn_prepared_optix_scale_default_65536` | pass | 2.753 | 4810 |
+| `triangle_counting_optix_scale_default_native_2048` | pass | 1.502 | 2258 |
 
 This is calibrated execution evidence, not a performance leaderboard. Several
 rows are still intentionally marked `safe_but_short`, so a later performance

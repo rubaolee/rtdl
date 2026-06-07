@@ -142,7 +142,11 @@ class Goal3828CurrentBenchmarkScaleProfileRegistryTest(unittest.TestCase):
         by_id = {row["row_id"]: row for row in rows}
         self.assertLess(by_id["rt_dbscan_optix_numba_scale_default_8192"]["elapsed_sec"], 15.0)
         self.assertLess(by_id["robot_collision_optix_scale_default_1024"]["elapsed_sec"], 20.0)
-        self.assertGreater(by_id["barnes_hut_numba_scale_default_8192"]["stdout_bytes"], 800_000)
+        barnes = by_id["barnes_hut_numba_scale_default_8192"]
+        self.assertLess(barnes["stdout_bytes"], 10_000)
+        self.assertIn("--force-output-mode", barnes["command"])
+        self.assertIn("force_summary", barnes["command"])
+        self.assertIn('"output_mode": "force_summary"', barnes["stdout_tail"])
 
 
 if __name__ == "__main__":

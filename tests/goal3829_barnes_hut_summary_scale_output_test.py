@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import unittest
 
@@ -17,6 +18,7 @@ BENCHMARK = (
     / "rtdl_barnes_hut_benchmark_app.py"
 )
 REPORT = ROOT / "docs" / "reports" / "goal3829_barnes_hut_summary_scale_output_2026-06-07.md"
+POD_ARTIFACT = ROOT / "docs" / "reports" / "goal3828_current_benchmark_scale_profiles_a5000" / "summary.json"
 
 
 class Goal3829BarnesHutSummaryScaleOutputTest(unittest.TestCase):
@@ -49,10 +51,23 @@ class Goal3829BarnesHutSummaryScaleOutputTest(unittest.TestCase):
             "bounded summary output",
             "does not authorize release action",
             "A5000 scale-profile artifact",
+            "3400 bytes",
         ):
             self.assertIn(phrase, text)
         self.assertIn("does not change the numba force kernel", lower_text)
         self.assertIn("does not add rt-core acceleration", lower_text)
+
+    def test_a5000_artifact_uses_summary_output_for_barnes_hut(self) -> None:
+        payload = json.loads(POD_ARTIFACT.read_text(encoding="utf-8"))
+        row = next(row for row in payload["rows"] if row["row_id"] == "barnes_hut_numba_scale_default_8192")
+
+        self.assertEqual(row["status"], "pass")
+        self.assertLess(row["stdout_bytes"], 10_000)
+        self.assertIn("--force-output-mode", row["command"])
+        self.assertIn("force_summary", row["command"])
+        self.assertIn('"output_mode": "force_summary"', row["stdout_tail"])
+        self.assertIn('"checksum_force_x"', row["stdout_tail"])
+        self.assertFalse(row["semantic_stdout_check"]["claim_flag_violations"])
 
 
 if __name__ == "__main__":

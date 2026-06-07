@@ -2,7 +2,7 @@
 
 Date: 2026-06-07
 
-Status: implemented locally; A5000 scale-profile refresh pending.
+Status: implemented and A5000-validated.
 
 ## Purpose
 
@@ -29,6 +29,10 @@ native-engine logic.
 
 ## Next Validation
 
-Refresh the Goal3828 A5000 scale-profile artifact at the current commit and
-verify that `barnes_hut_numba_scale_default_8192` still passes while emitting a
-small summary payload instead of full per-body force rows.
+Completed in the refreshed Goal3828 A5000 scale-profile artifact:
+
+`docs/reports/goal3828_current_benchmark_scale_profiles_a5000/summary.json`
+
+At commit `a24f2812`, `barnes_hut_numba_scale_default_8192` still passed and
+emitted 3400 bytes of JSON with `output_mode="force_summary"`, down from about
+893 KB in the pre-Goal3829 full-output run.
