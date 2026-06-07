@@ -5613,7 +5613,7 @@ static void count_prepared_segment_pair_intersection_prepared_left_optix(
         prepared->d_right_exact.ptr,
         prepared->right_count,
         prepared->accel.handle,
-        false);
+        true);
     g_optix_last_segment_pair_emitted_count = *count_out;
 }
 

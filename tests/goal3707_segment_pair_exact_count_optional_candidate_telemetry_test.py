@@ -33,7 +33,7 @@ class Goal3707SegmentPairExactCountOptionalCandidateTelemetryTest(unittest.TestC
         self.assertIn("if (record_candidate_events)", block)
         self.assertIn("g_optix_last_segment_pair_raw_candidate_count = 0;", block)
 
-    def test_prepared_left_route_disables_candidate_telemetry(self) -> None:
+    def test_selected_routes_keep_candidate_telemetry_enabled_after_negative_probe(self) -> None:
         source = WORKLOADS.read_text(encoding="utf-8")
         count_block = source.split("static void count_prepared_segment_pair_intersection_optix", 1)[1].split(
             "static void count_prepared_segment_pair_intersection_prepared_left_optix",
@@ -45,13 +45,14 @@ class Goal3707SegmentPairExactCountOptionalCandidateTelemetryTest(unittest.TestC
         )[1].split("static void run_prepared_segment_first_hit_optix", 1)[0]
 
         self.assertIn("prepared->accel.handle,\n        true)", count_block)
-        self.assertIn("prepared->accel.handle,\n        false)", prepared_left_block)
+        self.assertIn("prepared->accel.handle,\n        true)", prepared_left_block)
 
     def test_report_keeps_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")
 
         self.assertIn("candidate-event telemetry optional", report)
-        self.assertIn("prepared-left scalar count route disables candidate-event telemetry", report)
+        self.assertIn("optional no-telemetry path remains available", report)
+        self.assertIn("Goal3708 negative pod probe", report)
         self.assertIn("not an app-specific shortcut", report)
         self.assertIn("does not authorize", report)
 

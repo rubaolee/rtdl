@@ -6,7 +6,7 @@ Date: 2026-06-07
 
 Goal3705 brought same-source RayJoin LSI timing close to RayJoin by preparing both segment sets and using one-pass exact count. The remaining native hot path still performed an atomic candidate-event count for diagnostics.
 
-Goal3707 makes that candidate-event telemetry optional for the exact-count pipeline.
+Goal3707 makes that candidate-event telemetry optional for the exact-count pipeline so a future route can choose the lean form when evidence supports it.
 
 ## Change
 
@@ -22,7 +22,7 @@ if (params.candidate_event_count != nullptr)
 
 before incrementing the candidate-event counter.
 
-The generic non-prepared-left scalar count route keeps telemetry enabled. The prepared-left scalar count route disables candidate-event telemetry for the hot path and records `raw_candidate_count = 0` as an explicit "not collected" value.
+The generic non-prepared-left scalar count route keeps telemetry enabled. After the Goal3708 negative pod probe, the selected prepared-left scalar-count route also keeps telemetry enabled because disabling it did not improve timing and removed useful diagnostics. The optional no-telemetry path remains available as a controlled implementation hook, not the selected route.
 
 ## Boundary
 
@@ -33,7 +33,6 @@ This is not an app-specific shortcut. It is a generic performance/telemetry trad
 - row/witness mode remains unchanged,
 - no RayJoin/CDB branch or vocabulary is added.
 
-This report requires pod evidence before the telemetry-disabled route is accepted.
+This report requires pod evidence before any telemetry-disabled route is accepted as a selected performance path. Goal3708 records that the first prepared-left telemetry-disabled probe was negative and is not selected.
 
 It does not authorize release, public speedup claims, RTDL-beats-RayJoin claims, RayJoin paper reproduction claims, broad RT-core claims, or true-zero-copy claims.
-
