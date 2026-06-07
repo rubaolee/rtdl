@@ -19,6 +19,14 @@ count that output as AMD evidence.
 On an actual AMD pod:
 
 ```text
+PYTHONPATH=src:. python3 scripts/goal3785_amd_hiprt_functional_pod_runner.py
+```
+
+The runner auto-discovers common HIPRT SDK locations, including version-suffixed
+`hiprtSdk-*` directories under `$HOME/vendor/hiprt-official`. If auto-discovery
+does not match the pod layout, pass the SDK root explicitly:
+
+```text
 PYTHONPATH=src:. python3 scripts/goal3785_amd_hiprt_functional_pod_runner.py --hiprt-prefix /path/to/hiprtSdk
 ```
 

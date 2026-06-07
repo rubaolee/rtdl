@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import glob
 import json
 import os
 from pathlib import Path
@@ -29,6 +30,82 @@ from rtdsl.v2_10_amd_hiprt_functional_validation import (  # noqa: E402
 
 DEFAULT_OUTPUT = ROOT / AMD_FUNCTIONAL_ARTIFACT
 DEFAULT_NON_AMD_OUTPUT = ROOT / "docs" / "reports" / "goal3785_non_amd_hiprt_functional_runner_control.json"
+FALLBACK_HIPRT_PREFIX = "~/vendor/hiprt-official/hiprtSdk-2.2.0e68f54"
+
+
+def hiprt_prefix_candidate_patterns() -> tuple[str, ...]:
+    home = str(Path.home())
+    return (
+        os.environ.get("HIPRT_PREFIX", ""),
+        f"{home}/vendor/hiprt-official/hiprtSdk-2.2.0e68f54",
+        f"{home}/vendor/hiprt-official/hiprtSdk-*",
+        f"{home}/vendor/hiprtsdk",
+        f"{home}/vendor/HIPRT",
+        "/root/vendor/hiprt-official/hiprtSdk-2.2.0e68f54",
+        "/root/vendor/hiprt-official/hiprtSdk-*",
+        "/opt/hiprt",
+        "/opt/hiprtSdk",
+        "/usr/local/hiprt",
+        "/usr/local/hiprtSdk",
+    )
+
+
+def _expand_path(value: str) -> str:
+    return os.path.abspath(os.path.expandvars(os.path.expanduser(value)))
+
+
+def expand_hiprt_prefix_candidates(patterns: tuple[str, ...] | None = None) -> tuple[str, ...]:
+    expanded: list[str] = []
+    seen: set[str] = set()
+    for raw in patterns if patterns is not None else hiprt_prefix_candidate_patterns():
+        if not raw:
+            continue
+        matches = sorted(glob.glob(_expand_path(raw))) if any(token in raw for token in "*?[") else [_expand_path(raw)]
+        for candidate in matches:
+            if candidate not in seen:
+                expanded.append(candidate)
+                seen.add(candidate)
+    return tuple(expanded)
+
+
+def hiprt_header_exists(prefix: str) -> bool:
+    return (Path(prefix) / "hiprt" / "hiprt.h").is_file()
+
+
+def find_valid_hiprt_prefix(candidates: tuple[str, ...]) -> str | None:
+    for candidate in candidates:
+        if hiprt_header_exists(candidate):
+            return candidate
+    return None
+
+
+def resolve_hiprt_prefix(requested: str | None = None) -> dict[str, Any]:
+    if requested:
+        prefix = _expand_path(requested)
+        return {
+            "hiprt_prefix": prefix,
+            "source": "explicit_or_environment",
+            "valid_header": hiprt_header_exists(prefix),
+            "candidates": (),
+        }
+
+    candidates = expand_hiprt_prefix_candidates()
+    discovered = find_valid_hiprt_prefix(candidates)
+    if discovered is not None:
+        return {
+            "hiprt_prefix": discovered,
+            "source": "auto_discovered",
+            "valid_header": True,
+            "candidates": candidates,
+        }
+
+    fallback = _expand_path(FALLBACK_HIPRT_PREFIX)
+    return {
+        "hiprt_prefix": fallback,
+        "source": "fallback_default_missing_header",
+        "valid_header": False,
+        "candidates": candidates,
+    }
 
 
 def _run(command: list[str], *, env: dict[str, str] | None = None, timeout: int = 300) -> dict[str, Any]:
@@ -163,12 +240,20 @@ def build_amd_functional_artifact(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run the Goal3784 AMD HIPRT functional validation gate.")
-    parser.add_argument("--hiprt-prefix", default=os.environ.get("HIPRT_PREFIX", "/root/vendor/hiprt-official/hiprtSdk"))
+    parser.add_argument("--hiprt-prefix", default=os.environ.get("HIPRT_PREFIX"))
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT))
     parser.add_argument("--non-amd-output", default=str(DEFAULT_NON_AMD_OUTPUT))
     parser.add_argument("--allow-non-amd-control", action="store_true")
     parser.add_argument("--timeout-seconds", type=int, default=900)
     args = parser.parse_args(argv)
+
+    hiprt_resolution = resolve_hiprt_prefix(args.hiprt_prefix)
+    hiprt_prefix = str(hiprt_resolution["hiprt_prefix"])
+    print(
+        f"[goal3785] HIPRT_PREFIX={hiprt_prefix} "
+        f"source={hiprt_resolution['source']} valid_header={hiprt_resolution['valid_header']}",
+        flush=True,
+    )
 
     print("[goal3785] probe hardware", flush=True)
     hardware = probe_hardware()
@@ -180,6 +265,7 @@ def main(argv: list[str] | None = None) -> int:
             git_commit=git_commit,
             reason="actual AMD hardware is required before Goal3784 can produce an accepted artifact",
         )
+        artifact["hiprt_prefix_resolution"] = hiprt_resolution
         output = Path(args.non_amd_output)
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -189,9 +275,9 @@ def main(argv: list[str] | None = None) -> int:
         return 0 if args.allow_non_amd_control else 2
 
     runbook = build_v2_10_amd_hiprt_functional_validation_runbook()
-    build_command = f"make build-hiprt HIPRT_PREFIX={args.hiprt_prefix}"
+    build_command = f"make build-hiprt HIPRT_PREFIX={hiprt_prefix}"
     commands: list[dict[str, Any]] = []
-    commands.append(_run(["make", "build-hiprt", f"HIPRT_PREFIX={args.hiprt_prefix}"], timeout=args.timeout_seconds))
+    commands.append(_run(["make", "build-hiprt", f"HIPRT_PREFIX={hiprt_prefix}"], timeout=args.timeout_seconds))
 
     hiprt_library = str(ROOT / "build" / "librtdl_hiprt.so")
     env = os.environ.copy()
@@ -204,7 +290,7 @@ def main(argv: list[str] | None = None) -> int:
     artifact = build_amd_functional_artifact(
         gpu=hardware["gpu"],
         driver=hardware["rocm_smi"] or "recorded-by-rocm-probe",
-        hiprt_sdk=args.hiprt_prefix,
+        hiprt_sdk=hiprt_prefix,
         hiprt_library=hiprt_library,
         git_commit=git_commit,
         build_command=build_command,
@@ -212,6 +298,7 @@ def main(argv: list[str] | None = None) -> int:
         command_results=commands,
         scoped_source_dirty=bool(_command_stdout(["git", "status", "--short"])),
     )
+    artifact["hiprt_prefix_resolution"] = hiprt_resolution
     artifact["validation"] = validate_v2_10_amd_hiprt_functional_artifact(artifact)
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
