@@ -10,7 +10,7 @@ from .engine_feature_matrix import engine_feature_support
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION = "rtdl.v2_10.amd_hiprt_benchmark_parity_plan.v1"
+V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION = "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3756.v1"
 V2_10_AMD_HIPRT_BENCHMARK_PARITY_STATUS = "planning_gate_not_amd_hardware_evidence"
 
 PARITY_STAGES = (
@@ -129,11 +129,15 @@ V2_10_AMD_HIPRT_BENCHMARK_PARITY_ROWS: tuple[V210AmdHiprtBenchmarkParityRow, ...
     ),
     V210AmdHiprtBenchmarkParityRow(
         app="robot_collision",
-        required_engine_features=("ray_triangle_any_hit_3d", "visibility_rows"),
+        required_engine_features=("ray_triangle_any_hit_2d", "visibility_rows"),
         missing_generic_contracts=(),
         parity_stage="ready_for_amd_functional_pod",
-        first_amd_goal="HIPRT prepared any-hit functional parity on robot-collision batches",
-        rationale="The benchmark is closest to existing HIPRT any-hit/visibility surfaces.",
+        first_amd_goal="HIPRT row any-hit functional parity on robot-collision batches",
+        rationale=(
+            "Goal3755 exposes the robot collision app's Ray2D/Triangle2D row route through --backend hiprt. "
+            "Prepared pose-flag summaries remain an OptiX-only contract until a generic HIPRT prepared "
+            "ray-buffer/group-index path exists."
+        ),
         needs_amd_pod=True,
     ),
     V210AmdHiprtBenchmarkParityRow(
