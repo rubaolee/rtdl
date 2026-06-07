@@ -1,0 +1,155 @@
+{
+  "goal": "Goal3749",
+  "hardware": "A5000 pod root@69.30.85.203:22057",
+  "contract": "generic_side_aware_owner_face_membership_filter",
+  "timing_scope": "same-contract partner continuation only; includes host preparation in each adapter call",
+  "rows": [
+    {
+      "candidate_count": 16384,
+      "topology_count": 4096,
+      "owner_count": 4096,
+      "cupy_best_sec": 0.06609343364834785,
+      "numba_best_sec": 0.006676685996353626,
+      "numba_vs_cupy_ratio": 9.899137638709355,
+      "cupy_keep_count": 8192,
+      "numba_keep_count": 8192,
+      "keep_count_parity": true,
+      "cupy_times_sec": [
+        0.06623517256230116,
+        0.06629627291113138,
+        0.0661959582939744,
+        0.06646023504436016,
+        0.06609343364834785,
+        0.06614375580102205
+      ],
+      "numba_times_sec": [
+        0.007191987708210945,
+        0.006817101500928402,
+        0.007420080713927746,
+        0.006676685996353626,
+        0.0068584345281124115,
+        0.006922108121216297
+      ],
+      "numba_path": "filter_closed_shape_membership_candidate_columns_by_owner_face_side_numba",
+      "cupy_path": "filter_closed_shape_membership_candidate_columns_by_owner_face_side_cupy",
+      "claim_boundary": {
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false,
+        "release_authorized": false
+      }
+    },
+    {
+      "candidate_count": 65536,
+      "topology_count": 8192,
+      "owner_count": 8192,
+      "cupy_best_sec": 0.11289084888994694,
+      "numba_best_sec": 0.010790172033011913,
+      "numba_vs_cupy_ratio": 10.462377109888873,
+      "cupy_keep_count": 32768,
+      "numba_keep_count": 32768,
+      "keep_count_parity": true,
+      "cupy_times_sec": [
+        0.11501340474933386,
+        0.11394420266151428,
+        0.11289084888994694,
+        0.11569006368517876,
+        0.11800801567733288,
+        0.11711423750966787
+      ],
+      "numba_times_sec": [
+        0.018064050935208797,
+        0.014978443272411823,
+        0.01611768826842308,
+        0.012373946607112885,
+        0.012301077134907246,
+        0.010790172033011913
+      ],
+      "numba_path": "filter_closed_shape_membership_candidate_columns_by_owner_face_side_numba",
+      "cupy_path": "filter_closed_shape_membership_candidate_columns_by_owner_face_side_cupy",
+      "claim_boundary": {
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false,
+        "release_authorized": false
+      }
+    },
+    {
+      "candidate_count": 262144,
+      "topology_count": 16384,
+      "owner_count": 16384,
+      "cupy_best_sec": 0.22896891552954912,
+      "numba_best_sec": 0.013859030790627003,
+      "numba_vs_cupy_ratio": 16.521279084277886,
+      "cupy_keep_count": 131072,
+      "numba_keep_count": 131072,
+      "keep_count_parity": true,
+      "cupy_times_sec": [
+        0.24149008095264435,
+        0.2322780080139637,
+        0.22896891552954912,
+        0.22994807921350002,
+        0.22957254014909267,
+        0.2300430703908205
+      ],
+      "numba_times_sec": [
+        0.027583508752286434,
+        0.02764193434268236,
+        0.036274838261306286,
+        0.014451555907726288,
+        0.014672603458166122,
+        0.013859030790627003
+      ],
+      "numba_path": "filter_closed_shape_membership_candidate_columns_by_owner_face_side_numba",
+      "cupy_path": "filter_closed_shape_membership_candidate_columns_by_owner_face_side_cupy",
+      "claim_boundary": {
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false,
+        "release_authorized": false
+      }
+    },
+    {
+      "candidate_count": 1048576,
+      "topology_count": 32768,
+      "owner_count": 32768,
+      "cupy_best_sec": 0.44160501938313246,
+      "numba_best_sec": 0.024822589941322803,
+      "numba_vs_cupy_ratio": 17.79044895907422,
+      "cupy_keep_count": 524288,
+      "numba_keep_count": 524288,
+      "keep_count_parity": true,
+      "cupy_times_sec": [
+        0.46961077209562063,
+        0.4539785161614418,
+        0.44160501938313246,
+        0.4490094603970647,
+        0.4537592027336359,
+        0.44563913717865944
+      ],
+      "numba_times_sec": [
+        0.026999905705451965,
+        0.024822589941322803,
+        0.025677314959466457,
+        0.07163797970861197,
+        0.07607127167284489,
+        0.03480086475610733
+      ],
+      "numba_path": "filter_closed_shape_membership_candidate_columns_by_owner_face_side_numba",
+      "cupy_path": "filter_closed_shape_membership_candidate_columns_by_owner_face_side_cupy",
+      "claim_boundary": {
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false,
+        "release_authorized": false
+      }
+    }
+  ],
+  "all_keep_count_parity": true,
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "release_authorized": false
+  }
+}

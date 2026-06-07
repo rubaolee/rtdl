@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-V2_9_BENCHMARK_ADEQUACY_VERSION = "rtdl.v2_9.benchmark_adequacy_after_goal3746.v1"
+V2_9_BENCHMARK_ADEQUACY_VERSION = "rtdl.v2_9.benchmark_adequacy_after_goal3749.v1"
 V2_9_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 V2_9_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal3740 records internal benchmark-app adequacy after the Goal3737 "
@@ -140,18 +140,18 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
             "active-count executor for overlay active count"
         ),
         current_partner_role="CuPy remains in the conservative PIP leg; RTDL/OptiX owns the high-gain LSI and overlay legs",
-        needs_numba_reference=True,
+        needs_numba_reference=False,
         numba_reference_reason=(
-            "the user-facing reference should not require CuPy RawKernel-style custom logic for closed-shape "
-            "membership/topology continuation when Numba can express the app-owned policy"
+            "Goal3749 adds a no-RawKernel Numba side-aware topology reference; measured A5000 same-contract "
+            "rows show 9.899x-17.790x versus the existing CuPy continuation with keep-count parity"
         ),
         amd_hiprt_readiness="needs HIPRT equivalents for segment-pair exact count and shape-pair active-count executor",
         next_generic_runtime_action=(
-            "either make native closed-shape/PIP exact across broad CDB slices or reduce overlay active-scan/"
-            "containment work with a generic scalar-count/correction executor"
+            "treat as covered for Numba-reference purposes; next major work is HIPRT segment-pair/"
+            "shape-pair parity and larger whole-RayJoin app packet refresh"
         ),
-        evidence_refs=("Goal3733", "Goal3734", "Goal3737"),
-        pod_needed_next=True,
+        evidence_refs=("Goal3733", "Goal3734", "Goal3737", "Goal3749"),
+        pod_needed_next=False,
     ),
     V29BenchmarkAdequacyRow(
         app="rt_dbscan",

@@ -22,6 +22,8 @@ OWNER_FACE_SIDE_LABELS = {value: key for key, value in OWNER_FACE_SIDE_CODES.ite
 _CUPY_EXACT_CLOSED_SHAPE_CANDIDATE_REFINE_KERNEL = None
 _CUPY_BOUNDARY_CONTACT_CLOSED_SHAPE_CANDIDATE_REFINE_KERNEL = None
 _NUMBA_BOUNDARY_CONTACT_CLOSED_SHAPE_COUNT_KERNEL = None
+_NUMBA_OWNER_FACE_SIDE_FILTER_KERNEL = None
+_NUMBA_OWNER_FACE_SIDE_GATHER_KERNEL = None
 
 
 class PreparedRelationStatusCorrectedCountNumba:
@@ -2476,6 +2478,448 @@ def filter_closed_shape_membership_candidate_columns_by_owner_face_side_cupy(
     return result
 
 
+def _numba_i64_device_array(values, *, cuda, np, name: str, transform=None):
+    if transform is None and hasattr(values, "copy_to_host") and getattr(values, "dtype", None) == np.int64:
+        return values
+    if transform is None and hasattr(values, "__cuda_array_interface__"):
+        array = cuda.as_cuda_array(values)
+        if getattr(array, "dtype", None) == np.int64:
+            return array
+        values = array.copy_to_host()
+    elif hasattr(values, "copy_to_host"):
+        values = values.copy_to_host()
+    elif hasattr(values, "get"):
+        values = values.get()
+    if transform is None:
+        host = np.asarray(values, dtype=np.int64)
+    else:
+        host = np.asarray([transform(value) for value in values], dtype=np.int64)
+    if len(tuple(host.shape)) != 1:
+        raise ValueError(f"{name} must be a 1-D array")
+    return cuda.to_device(host)
+
+
+def _numba_i64_presence_array(values, *, cuda, np, name: str, count: int):
+    if values is None:
+        return cuda.to_device(np.ones((count,), dtype=np.int64))
+    return _numba_i64_device_array(values, cuda=cuda, np=np, name=name)
+
+
+def _numba_sorted_lookup_payloads(lookup, payloads: tuple[object, ...], *, cuda, np):
+    lookup_host = np.asarray(lookup.copy_to_host(), dtype=np.int64)
+    order = np.argsort(lookup_host, kind="stable")
+    sorted_lookup = cuda.to_device(lookup_host[order])
+    sorted_payloads = tuple(
+        cuda.to_device(np.asarray(payload.copy_to_host(), dtype=np.int64)[order])
+        for payload in payloads
+    )
+    return sorted_lookup, sorted_payloads, lookup_host[order]
+
+
+def _numba_owner_face_side_filter_kernel(cuda):
+    global _NUMBA_OWNER_FACE_SIDE_FILTER_KERNEL
+    if _NUMBA_OWNER_FACE_SIDE_FILTER_KERNEL is None:
+
+        @cuda.jit
+        def kernel(
+            candidate_point_lookup_ids,
+            candidate_shape_lookup_ids,
+            topology_lookup_ids,
+            topology_left_face_ids,
+            topology_right_face_ids,
+            topology_has_left_faces,
+            topology_has_right_faces,
+            owner_lookup_ids,
+            owner_face_ids,
+            owner_side_codes,
+            candidate_count,
+            topology_count,
+            owner_count,
+            missing_owner_policy_raise,
+            keep_mask,
+            owner_face_tmp,
+            owner_side_tmp,
+            missing_owner_flag,
+        ):
+            row = cuda.grid(1)
+            if row >= candidate_count:
+                return
+            point_key = candidate_point_lookup_ids[row]
+            shape_key = candidate_shape_lookup_ids[row]
+
+            owner_left = 0
+            owner_right = owner_count
+            while owner_left < owner_right:
+                owner_mid = (owner_left + owner_right) // 2
+                if owner_lookup_ids[owner_mid] < point_key:
+                    owner_left = owner_mid + 1
+                else:
+                    owner_right = owner_mid
+            owner_found = owner_left < owner_count and owner_lookup_ids[owner_left] == point_key
+            if not owner_found:
+                if missing_owner_policy_raise != 0:
+                    cuda.atomic.max(missing_owner_flag, 0, 1)
+                return
+            owner_face = owner_face_ids[owner_left]
+            owner_side = owner_side_codes[owner_left]
+
+            topology_left = 0
+            topology_right = topology_count
+            while topology_left < topology_right:
+                topology_mid = (topology_left + topology_right) // 2
+                if topology_lookup_ids[topology_mid] < shape_key:
+                    topology_left = topology_mid + 1
+                else:
+                    topology_right = topology_mid
+            topology_found = topology_left < topology_count and topology_lookup_ids[topology_left] == shape_key
+            if not topology_found:
+                return
+            left_face = topology_left_face_ids[topology_left]
+            right_face = topology_right_face_ids[topology_left]
+            has_left = topology_has_left_faces[topology_left]
+            has_right = topology_has_right_faces[topology_left]
+
+            side_left = 0
+            side_right = 1
+            side_either = 2
+            matches_left = (
+                has_left != 0
+                and left_face >= 0
+                and left_face == owner_face
+                and (owner_side == side_left or owner_side == side_either)
+            )
+            matches_right = (
+                has_right != 0
+                and right_face >= 0
+                and right_face == owner_face
+                and (owner_side == side_right or owner_side == side_either)
+            )
+            if matches_left or matches_right:
+                keep_mask[row] = True
+                if matches_left:
+                    owner_face_tmp[row] = left_face
+                    owner_side_tmp[row] = side_left
+                else:
+                    owner_face_tmp[row] = right_face
+                    owner_side_tmp[row] = side_right
+
+        _NUMBA_OWNER_FACE_SIDE_FILTER_KERNEL = kernel
+    return _NUMBA_OWNER_FACE_SIDE_FILTER_KERNEL
+
+
+def _numba_owner_face_side_gather_kernel(cuda):
+    global _NUMBA_OWNER_FACE_SIDE_GATHER_KERNEL
+    if _NUMBA_OWNER_FACE_SIDE_GATHER_KERNEL is None:
+
+        @cuda.jit
+        def kernel(
+            kept_indices,
+            candidate_point_ids,
+            candidate_shape_ids,
+            candidate_point_lookup_ids,
+            candidate_shape_lookup_ids,
+            owner_face_tmp,
+            owner_side_tmp,
+            row_count,
+            output_point_ids,
+            output_shape_ids,
+            output_membership,
+            output_owner_face_ids,
+            output_owner_side_codes,
+            output_point_ordinals,
+            output_shape_ordinals,
+        ):
+            row = cuda.grid(1)
+            if row >= row_count:
+                return
+            source = kept_indices[row]
+            output_point_ids[row] = candidate_point_ids[source]
+            output_shape_ids[row] = candidate_shape_ids[source]
+            output_membership[row] = 1
+            output_owner_face_ids[row] = owner_face_tmp[source]
+            output_owner_side_codes[row] = owner_side_tmp[source]
+            output_point_ordinals[row] = candidate_point_lookup_ids[source]
+            output_shape_ordinals[row] = candidate_shape_lookup_ids[source]
+
+        _NUMBA_OWNER_FACE_SIDE_GATHER_KERNEL = kernel
+    return _NUMBA_OWNER_FACE_SIDE_GATHER_KERNEL
+
+
+def filter_closed_shape_membership_candidate_columns_by_owner_face_side_numba(
+    candidate_point_ids,
+    candidate_shape_ids,
+    topology_shape_ids,
+    topology_left_face_ids,
+    topology_right_face_ids,
+    owner_point_ids,
+    owner_face_ids,
+    owner_side_codes,
+    *,
+    candidate_point_ordinals=None,
+    candidate_shape_ordinals=None,
+    topology_shape_ordinals=None,
+    owner_point_ordinals=None,
+    topology_has_left_faces=None,
+    topology_has_right_faces=None,
+    missing_owner_policy: str = "raise",
+    require_unique_owner_point: bool = True,
+    block_size: int = 256,
+) -> dict[str, object]:
+    """Numba device-column continuation for side-aware owner-face filtering."""
+
+    if missing_owner_policy not in {"raise", "drop"}:
+        raise ValueError("missing_owner_policy must be 'raise' or 'drop'")
+    if (candidate_point_ordinals is None) != (owner_point_ordinals is None):
+        raise ValueError("owner_point_ordinals require candidate_point_ordinals, and vice versa")
+
+    from .numba_partner_continuation import _import_numba_stack
+    from .numba_partner_continuation import run_numba_mask_indices_i64
+
+    cuda, np = _import_numba_stack()
+    candidate_point_ids = _numba_i64_device_array(candidate_point_ids, cuda=cuda, np=np, name="candidate_point_ids")
+    candidate_shape_ids = _numba_i64_device_array(candidate_shape_ids, cuda=cuda, np=np, name="candidate_shape_ids")
+    topology_shape_ids = _numba_i64_device_array(topology_shape_ids, cuda=cuda, np=np, name="topology_shape_ids")
+    topology_left_face_ids = _numba_i64_device_array(
+        topology_left_face_ids,
+        cuda=cuda,
+        np=np,
+        name="topology_left_face_ids",
+    )
+    topology_right_face_ids = _numba_i64_device_array(
+        topology_right_face_ids,
+        cuda=cuda,
+        np=np,
+        name="topology_right_face_ids",
+    )
+    owner_point_ids = _numba_i64_device_array(owner_point_ids, cuda=cuda, np=np, name="owner_point_ids")
+    owner_face_ids = _numba_i64_device_array(owner_face_ids, cuda=cuda, np=np, name="owner_face_ids")
+    owner_side_codes = _numba_i64_device_array(
+        owner_side_codes,
+        cuda=cuda,
+        np=np,
+        name="owner_side_codes",
+        transform=_owner_face_side_code,
+    )
+
+    candidate_count = int(candidate_point_ids.shape[0])
+    if int(candidate_shape_ids.shape[0]) != candidate_count:
+        raise ValueError("candidate point and shape columns must have the same length")
+    topology_count = int(topology_shape_ids.shape[0])
+    if int(topology_left_face_ids.shape[0]) != topology_count or int(topology_right_face_ids.shape[0]) != topology_count:
+        raise ValueError("topology shape and face columns must have the same length")
+    owner_count = int(owner_point_ids.shape[0])
+    if int(owner_face_ids.shape[0]) != owner_count or int(owner_side_codes.shape[0]) != owner_count:
+        raise ValueError("owner point, face, and side columns must have the same length")
+
+    if candidate_point_ordinals is None:
+        candidate_point_lookup_ids = candidate_point_ids
+        owner_lookup_ids = owner_point_ids
+        point_lookup_key_mode = "public_point_id"
+        emit_point_ordinal = False
+    else:
+        candidate_point_lookup_ids = _numba_i64_device_array(
+            candidate_point_ordinals,
+            cuda=cuda,
+            np=np,
+            name="candidate_point_ordinals",
+        )
+        owner_lookup_ids = _numba_i64_device_array(
+            owner_point_ordinals,
+            cuda=cuda,
+            np=np,
+            name="owner_point_ordinals",
+        )
+        if int(candidate_point_lookup_ids.shape[0]) != candidate_count:
+            raise ValueError("candidate_point_ordinals must match candidate length")
+        if int(owner_lookup_ids.shape[0]) != owner_count:
+            raise ValueError("owner_point_ordinals must match owner length")
+        point_lookup_key_mode = "input_ordinal"
+        emit_point_ordinal = True
+
+    if candidate_shape_ordinals is None:
+        candidate_shape_lookup_ids = candidate_shape_ids
+        shape_lookup_key_mode = "public_shape_id"
+        emit_shape_ordinal = False
+    else:
+        candidate_shape_lookup_ids = _numba_i64_device_array(
+            candidate_shape_ordinals,
+            cuda=cuda,
+            np=np,
+            name="candidate_shape_ordinals",
+        )
+        if int(candidate_shape_lookup_ids.shape[0]) != candidate_count:
+            raise ValueError("candidate_shape_ordinals must match candidate length")
+        shape_lookup_key_mode = "prepared_shape_ordinal"
+        emit_shape_ordinal = True
+
+    if topology_shape_ordinals is None:
+        if candidate_shape_ordinals is not None:
+            topology_lookup_ids = cuda.to_device(np.arange(topology_count, dtype=np.int64))
+        else:
+            topology_lookup_ids = topology_shape_ids
+    else:
+        topology_lookup_ids = _numba_i64_device_array(
+            topology_shape_ordinals,
+            cuda=cuda,
+            np=np,
+            name="topology_shape_ordinals",
+        )
+        if int(topology_lookup_ids.shape[0]) != topology_count:
+            raise ValueError("topology_shape_ordinals must match topology length")
+
+    topology_has_left_faces = _numba_i64_presence_array(
+        topology_has_left_faces,
+        cuda=cuda,
+        np=np,
+        name="topology_has_left_faces",
+        count=topology_count,
+    )
+    topology_has_right_faces = _numba_i64_presence_array(
+        topology_has_right_faces,
+        cuda=cuda,
+        np=np,
+        name="topology_has_right_faces",
+        count=topology_count,
+    )
+    if int(topology_has_left_faces.shape[0]) != topology_count:
+        raise ValueError("topology_has_left_faces must match topology length")
+    if int(topology_has_right_faces.shape[0]) != topology_count:
+        raise ValueError("topology_has_right_faces must match topology length")
+
+    if owner_count > 1:
+        owner_keys_host = tuple(int(value) for value in owner_lookup_ids.copy_to_host().tolist())
+        if len(set(owner_keys_host)) != len(owner_keys_host):
+            if require_unique_owner_point:
+                raise ValueError("owner lookup keys must be unique for the side-aware Numba filter")
+            raise ValueError(
+                "multiple owner face sides per lookup key are not supported by the side-aware Numba filter"
+            )
+
+    sorted_owner_lookup_ids, sorted_owner_payloads, owner_keys_sorted = _numba_sorted_lookup_payloads(
+        owner_lookup_ids,
+        (owner_face_ids, owner_side_codes),
+        cuda=cuda,
+        np=np,
+    )
+    sorted_owner_face_ids, sorted_owner_side_codes = sorted_owner_payloads
+    sorted_topology_lookup_ids, sorted_topology_payloads, _topology_keys_sorted = _numba_sorted_lookup_payloads(
+        topology_lookup_ids,
+        (
+            topology_left_face_ids,
+            topology_right_face_ids,
+            topology_has_left_faces,
+            topology_has_right_faces,
+        ),
+        cuda=cuda,
+        np=np,
+    )
+    (
+        sorted_topology_left_face_ids,
+        sorted_topology_right_face_ids,
+        sorted_topology_has_left_faces,
+        sorted_topology_has_right_faces,
+    ) = sorted_topology_payloads
+
+    keep_mask = cuda.to_device(np.zeros((candidate_count,), dtype=np.bool_))
+    owner_face_tmp = cuda.to_device(np.full((candidate_count,), -1, dtype=np.int64))
+    owner_side_tmp = cuda.to_device(np.full((candidate_count,), -1, dtype=np.int64))
+    missing_owner_flag = cuda.to_device(np.zeros((1,), dtype=np.int32))
+    block_size = int(block_size)
+    if block_size <= 0:
+        raise ValueError("block_size must be positive")
+    grid = ((candidate_count + block_size - 1) // block_size,) if candidate_count else (1,)
+    _numba_owner_face_side_filter_kernel(cuda)[grid, block_size](
+        candidate_point_lookup_ids,
+        candidate_shape_lookup_ids,
+        sorted_topology_lookup_ids,
+        sorted_topology_left_face_ids,
+        sorted_topology_right_face_ids,
+        sorted_topology_has_left_faces,
+        sorted_topology_has_right_faces,
+        sorted_owner_lookup_ids,
+        sorted_owner_face_ids,
+        sorted_owner_side_codes,
+        candidate_count,
+        topology_count,
+        owner_count,
+        1 if missing_owner_policy == "raise" else 0,
+        keep_mask,
+        owner_face_tmp,
+        owner_side_tmp,
+        missing_owner_flag,
+    )
+    cuda.synchronize()
+    if missing_owner_policy == "raise" and int(missing_owner_flag.copy_to_host()[0]) != 0:
+        raise KeyError("missing owner face side for one or more point ids")
+
+    compact = run_numba_mask_indices_i64(keep_mask, block_size=block_size)
+    kept_indices = compact["outputs"]["original_indices"]
+    row_count = int(kept_indices.shape[0])
+    output_point_ids = cuda.device_array((row_count,), dtype=np.int64)
+    output_shape_ids = cuda.device_array((row_count,), dtype=np.int64)
+    output_membership = cuda.device_array((row_count,), dtype=np.int64)
+    output_owner_face_ids = cuda.device_array((row_count,), dtype=np.int64)
+    output_owner_side_codes = cuda.device_array((row_count,), dtype=np.int64)
+    output_point_ordinals = cuda.device_array((row_count,), dtype=np.int64)
+    output_shape_ordinals = cuda.device_array((row_count,), dtype=np.int64)
+    if row_count:
+        gather_grid = ((row_count + block_size - 1) // block_size,)
+        _numba_owner_face_side_gather_kernel(cuda)[gather_grid, block_size](
+            kept_indices,
+            candidate_point_ids,
+            candidate_shape_ids,
+            candidate_point_lookup_ids,
+            candidate_shape_lookup_ids,
+            owner_face_tmp,
+            owner_side_tmp,
+            row_count,
+            output_point_ids,
+            output_shape_ids,
+            output_membership,
+            output_owner_face_ids,
+            output_owner_side_codes,
+            output_point_ordinals,
+            output_shape_ordinals,
+        )
+        cuda.synchronize()
+
+    result = {
+        "point_id": output_point_ids,
+        "shape_id": output_shape_ids,
+        "membership": output_membership,
+        "owner_face_id": output_owner_face_ids,
+        "owner_side_code": output_owner_side_codes,
+        "point_lookup_key_mode": point_lookup_key_mode,
+        "shape_lookup_key_mode": shape_lookup_key_mode,
+        "_metadata": {
+            "adapter": "filter_closed_shape_membership_candidate_columns_by_owner_face_side_numba",
+            "partner": "numba",
+            "row_count": row_count,
+            "candidate_count": candidate_count,
+            "topology_count": topology_count,
+            "owner_count": owner_count,
+            "partner_reference_contract": "generic_side_aware_owner_face_membership_filter",
+            "native_engine_row_contract": "not_called_partner_reference_only",
+            "numba_cuda_jit_used": True,
+            "raw_cuda_kernel_required": False,
+            "host_owner_duplicate_check_used": owner_count > 1,
+            "host_prepared_sorted_lookup_used": True,
+            "host_prepared_owner_lookup_key_count": int(len(owner_keys_sorted)),
+            "host_prefix_sum_used": bool(compact.get("host_prefix_sum_used")),
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "paper_reproduction_claim_authorized": False,
+            "release_authorized": False,
+        },
+    }
+    if emit_point_ordinal:
+        result["point_ordinal"] = output_point_ordinals
+    if emit_shape_ordinal:
+        result["shape_ordinal"] = output_shape_ordinals
+    return result
+
+
 def run_selective_closed_shape_owner_face_side_membership_pipeline_cupy(
     candidate_point_ids,
     candidate_shape_ids,
@@ -3092,6 +3536,7 @@ def owner_face_priority_pipeline_contract() -> dict[str, object]:
             "filter_closed_shape_membership_candidate_columns_by_owner_face_cupy",
             "filter_closed_shape_membership_candidate_columns_by_owner_face_side_columns",
             "filter_closed_shape_membership_candidate_columns_by_owner_face_side_cupy",
+            "filter_closed_shape_membership_candidate_columns_by_owner_face_side_numba",
             "run_selective_closed_shape_owner_face_side_membership_pipeline_cupy",
             "run_closed_shape_owner_face_priority_membership_pipeline_cupy",
             "run_selective_closed_shape_owner_face_priority_membership_pipeline_cupy",
@@ -3222,6 +3667,8 @@ def validate_owner_face_priority_pipeline_contract() -> dict[str, object]:
         or "filter_closed_shape_membership_candidate_columns_by_owner_face_side_columns"
         not in columnar_helpers
         or "filter_closed_shape_membership_candidate_columns_by_owner_face_side_cupy"
+        not in columnar_helpers
+        or "filter_closed_shape_membership_candidate_columns_by_owner_face_side_numba"
         not in columnar_helpers
         or "run_selective_closed_shape_owner_face_side_membership_pipeline_cupy"
         not in columnar_helpers

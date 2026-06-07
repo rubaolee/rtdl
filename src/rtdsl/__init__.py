@@ -691,6 +691,7 @@ from .closed_shape_topology import filter_closed_shape_membership_candidate_colu
 from .closed_shape_topology import filter_closed_shape_membership_candidate_columns_by_owner_face_cupy
 from .closed_shape_topology import filter_closed_shape_membership_candidate_columns_by_owner_face_side_columns
 from .closed_shape_topology import filter_closed_shape_membership_candidate_columns_by_owner_face_side_cupy
+from .closed_shape_topology import filter_closed_shape_membership_candidate_columns_by_owner_face_side_numba
 from .closed_shape_topology import filter_closed_shape_membership_candidates_by_owner_face
 from .closed_shape_topology import filter_closed_shape_membership_candidates_by_owner_face_side
 from .closed_shape_topology import materialize_closed_shape_membership_rows_as_cupy_columns
@@ -2543,6 +2544,7 @@ __all__ = [
     "filter_closed_shape_membership_candidate_columns_by_owner_face_cupy",
     "filter_closed_shape_membership_candidate_columns_by_owner_face_side_columns",
     "filter_closed_shape_membership_candidate_columns_by_owner_face_side_cupy",
+    "filter_closed_shape_membership_candidate_columns_by_owner_face_side_numba",
     "filter_closed_shape_membership_candidates_by_owner_face",
     "filter_closed_shape_membership_candidates_by_owner_face_side",
     "materialize_closed_shape_membership_rows_as_cupy_columns",

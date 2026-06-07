@@ -40,14 +40,11 @@ class Goal3740BenchmarkAppAdequacyAfterGoal3737Test(unittest.TestCase):
 
     def test_numba_reference_pressure_points_are_explicit(self) -> None:
         summary = summarize_v2_9_benchmark_adequacy()
-        self.assertEqual(
-            set(summary["numba_reference_needed_apps"]),
-            {"spatial_rayjoin"},
-        )
+        self.assertEqual(set(summary["numba_reference_needed_apps"]), set())
         rows = {row["app"]: row for row in v2_9_benchmark_adequacy()}
         self.assertIn("numba grid", rows["rt_dbscan"]["numba_reference_reason"].lower())
         self.assertIn("numba cuda jit", rows["barnes_hut"]["numba_reference_reason"].lower())
-        self.assertIn("closed-shape", rows["spatial_rayjoin"]["numba_reference_reason"].lower())
+        self.assertIn("goal3749", rows["spatial_rayjoin"]["numba_reference_reason"].lower())
 
     def test_adequacy_summary_names_remaining_major_followup(self) -> None:
         summary = summarize_v2_9_benchmark_adequacy()
