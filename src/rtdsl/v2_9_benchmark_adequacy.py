@@ -6,14 +6,15 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-V2_9_BENCHMARK_ADEQUACY_VERSION = "rtdl.v2_9.benchmark_adequacy_after_goal3762.v1"
+V2_9_BENCHMARK_ADEQUACY_VERSION = "rtdl.v2_10.benchmark_adequacy_after_goal3785.v1"
 V2_9_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 V2_9_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
-    "Goal3740 records internal benchmark-app adequacy after the Goal3737 "
-    "RayJoin executor packet. It does not authorize release action, public "
-    "speedup wording, whole-app acceleration wording, broad RT-core wording, "
-    "RayJoin paper reproduction wording, true-zero-copy wording, automatic "
-    "partner selection, or app-specific native-engine logic."
+    "Goal3786 records internal benchmark-app adequacy after the v2.9 Numba "
+    "coverage work and the v2.10 HIPRT parity closeout. It does not authorize "
+    "release action, public speedup wording, whole-app acceleration wording, "
+    "broad RT-core wording, RayJoin paper reproduction wording, true-zero-copy "
+    "wording, automatic partner selection, AMD performance wording, or "
+    "app-specific native-engine logic."
 )
 
 ADEQUACY_LEVELS = (
@@ -120,9 +121,12 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
         current_partner_role="Numba exists as an exact partner/front-door reference; promoted RT path is primitive-first",
         needs_numba_reference=False,
         numba_reference_reason="already has a Numba exact continuation reference and a primitive-first promoted path",
-        amd_hiprt_readiness="needs HIPRT mapping for nearest-witness output columns and grouped max reduction",
-        next_generic_runtime_action="keep as reference; use for AMD parity once HIPRT nearest-witness columns exist",
-        evidence_refs=("Goal2801", "Goal3143", "Goal3567"),
+        amd_hiprt_readiness=(
+            "ready for AMD functional pod after Goals3773-3774 add HIPRT nearest-witness "
+            "rows, output columns, and max-distance reduction; AMD hardware evidence still pending Goal3784 artifact"
+        ),
+        next_generic_runtime_action="run Goal3784/3785 AMD functional pod validation when actual AMD hardware is available",
+        evidence_refs=("Goal2801", "Goal3143", "Goal3567", "Goal3773", "Goal3774", "Goal3784", "Goal3785"),
         pod_needed_next=False,
     ),
     V29BenchmarkAdequacyRow(
@@ -151,13 +155,16 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
             "Goal3749 adds a no-RawKernel Numba side-aware topology reference; measured A5000 same-contract "
             "rows show 9.899x-17.790x versus the existing CuPy continuation with keep-count parity"
         ),
-        amd_hiprt_readiness="needs HIPRT equivalents for segment-pair exact count and shape-pair active-count executor",
+        amd_hiprt_readiness=(
+            "ready for AMD functional pod after Goals3766-3767 add HIPRT prepared segment-pair "
+            "exact count and prepared shape-pair active count; AMD hardware evidence still pending Goal3784 artifact"
+        ),
         next_generic_runtime_action=(
-            "treat as covered for Numba-reference purposes; next major work is HIPRT segment-pair/"
-            "shape-pair parity, plus a non-dense baseline policy for larger RayJoin sizes where "
+            "treat as covered for Numba-reference and HIPRT-contract purposes; next major work is "
+            "actual AMD functional validation plus a non-dense baseline policy for larger RayJoin sizes where "
             "the all-CuPy dense baseline OOMs"
         ),
-        evidence_refs=("Goal3688", "Goal3713", "Goal3733", "Goal3734", "Goal3737", "Goal3749", "Goal3761"),
+        evidence_refs=("Goal3688", "Goal3713", "Goal3733", "Goal3734", "Goal3737", "Goal3749", "Goal3761", "Goal3766", "Goal3767", "Goal3784", "Goal3785"),
         pod_needed_next=False,
     ),
     V29BenchmarkAdequacyRow(
@@ -182,9 +189,12 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
             "Numba grid component labeling and OptiX-to-Numba bridge now exist as measured "
             "prepared-repeat references with A5000 scale evidence"
         ),
-        amd_hiprt_readiness="needs HIPRT fixed-radius grouped stream parity before AMD performance work",
-        next_generic_runtime_action="treat as covered for Numba-reference purposes; next major work is HIPRT fixed-radius parity",
-        evidence_refs=("Goal2802", "Goal3567", "Goal3742", "Goal3744", "Goal3758"),
+        amd_hiprt_readiness=(
+            "ready for AMD functional pod after Goals3768-3769 add HIPRT fixed-radius threshold "
+            "counts and grouped stream flags; AMD hardware evidence still pending Goal3784 artifact"
+        ),
+        next_generic_runtime_action="treat as covered for Numba-reference and HIPRT-contract purposes; next major work is actual AMD functional validation",
+        evidence_refs=("Goal2802", "Goal3567", "Goal3742", "Goal3744", "Goal3758", "Goal3768", "Goal3769", "Goal3784", "Goal3785"),
         pod_needed_next=False,
     ),
     V29BenchmarkAdequacyRow(
@@ -201,9 +211,12 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
         current_partner_role="no partner needed for the promoted path",
         needs_numba_reference=False,
         numba_reference_reason="no custom GPU continuation is required by the promoted flag contract",
-        amd_hiprt_readiness="row HIPRT app route exists; first AMD functional pod should validate the Ray2D/Triangle2D row route before prepared summary parity",
-        next_generic_runtime_action="preserve the prepared device-buffer and scalar-count split; add HIPRT prepared-buffer/group-index parity only after AMD functional row evidence",
-        evidence_refs=("Goal2654", "Goal3567", "Goal3755", "Goal3757"),
+        amd_hiprt_readiness=(
+            "ready for AMD functional pod after Goal3765 adds HIPRT prepared grouped visibility "
+            "flags on the generic Ray2D/Triangle2D route; AMD hardware evidence still pending Goal3784 artifact"
+        ),
+        next_generic_runtime_action="preserve the prepared device-buffer and scalar-count split; run actual AMD functional validation before AMD performance work",
+        evidence_refs=("Goal2654", "Goal3567", "Goal3755", "Goal3757", "Goal3765", "Goal3784", "Goal3785"),
         pod_needed_next=False,
     ),
     V29BenchmarkAdequacyRow(
@@ -215,9 +228,12 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
         current_partner_role="no partner needed on the accepted current path",
         needs_numba_reference=False,
         numba_reference_reason="the promoted path is primitive-only; richer exact refinement can stay future work",
-        amd_hiprt_readiness="needs HIPRT bounded witness collection parity",
-        next_generic_runtime_action="keep as a primitive-only reference row; retest after HIPRT mapping",
-        evidence_refs=("Goal2654", "Goal3567"),
+        amd_hiprt_readiness=(
+            "ready for AMD functional pod after Goals3775-3776 add HIPRT closest-hit and "
+            "generic collect-k bounded i64 materialization; AMD hardware evidence still pending Goal3784 artifact"
+        ),
+        next_generic_runtime_action="keep as a primitive-only reference row; run actual AMD functional validation before AMD performance work",
+        evidence_refs=("Goal2654", "Goal3567", "Goal3775", "Goal3776", "Goal3784", "Goal3785"),
         pod_needed_next=False,
     ),
     V29BenchmarkAdequacyRow(
@@ -229,9 +245,12 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
         current_partner_role="no partner is recommended for fused scalar reductions; Triton/CuPy are not promoted here",
         needs_numba_reference=False,
         numba_reference_reason="the generic primitive outperforms partner continuation for this fused reduction shape",
-        amd_hiprt_readiness="needs HIPRT grouped i64 count/sum primitive mapping",
-        next_generic_runtime_action="preserve primitive-first path; use as AMD grouped-reduction parity target",
-        evidence_refs=("Goal3565", "Goal3567"),
+        amd_hiprt_readiness=(
+            "ready for AMD functional pod after Goals3779 and 3781 add HIPRT grouped i64 count/sum "
+            "and columnar i64 predicate scan; AMD hardware evidence still pending Goal3784 artifact"
+        ),
+        next_generic_runtime_action="preserve primitive-first path; run actual AMD functional validation before AMD performance work",
+        evidence_refs=("Goal3565", "Goal3567", "Goal3779", "Goal3781", "Goal3784", "Goal3785"),
         pod_needed_next=False,
     ),
     V29BenchmarkAdequacyRow(
@@ -256,9 +275,12 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
             "Goal3746 adds the Numba CUDA JIT exact-force reference; Goal3762 improves it with "
             "a block-reduction strategy. Richer hierarchical force acceleration remains separate future work."
         ),
-        amd_hiprt_readiness="needs HIPRT membership primitive and grouped vector output contract mapping",
-        next_generic_runtime_action="treat as covered for Numba-reference purposes; next major work is HIPRT membership parity or deeper hierarchical vector primitive design",
-        evidence_refs=("Goal2803", "Goal3599", "Goal3567", "Goal3746", "Goal3762"),
+        amd_hiprt_readiness=(
+            "ready for AMD functional pod after Goals3777 and 3780 add HIPRT aggregate-frontier "
+            "collect and grouped f64x2 vector sum; AMD hardware evidence still pending Goal3784 artifact"
+        ),
+        next_generic_runtime_action="treat as covered for Numba-reference and HIPRT-contract purposes; deeper hierarchical vector primitive design remains future performance work",
+        evidence_refs=("Goal2803", "Goal3599", "Goal3567", "Goal3746", "Goal3762", "Goal3777", "Goal3780", "Goal3784", "Goal3785"),
         pod_needed_next=False,
     ),
     V29BenchmarkAdequacyRow(
@@ -270,9 +292,12 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
         current_partner_role="no partner needed",
         needs_numba_reference=False,
         numba_reference_reason="the promoted path is prepared primitive-only",
-        amd_hiprt_readiness="needs HIPRT AABB query parity",
-        next_generic_runtime_action="keep as no-regression prepared-index row; retest on AMD functional pass",
-        evidence_refs=("Goal2798", "Goal3601"),
+        amd_hiprt_readiness=(
+            "ready for AMD functional pod after Goal3770 adds HIPRT prepared AABB index query; "
+            "AMD hardware evidence still pending Goal3784 artifact"
+        ),
+        next_generic_runtime_action="keep as no-regression prepared-index row; run actual AMD functional validation before AMD performance work",
+        evidence_refs=("Goal2798", "Goal3601", "Goal3770", "Goal3784", "Goal3785"),
         pod_needed_next=False,
     ),
     V29BenchmarkAdequacyRow(
@@ -284,9 +309,12 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
         current_partner_role="no partner on the promoted RTDL path; CuPy grid remains the opponent/reference",
         needs_numba_reference=False,
         numba_reference_reason="current promoted path is a generic prepared primitive/aggregate path",
-        amd_hiprt_readiness="needs HIPRT fixed-radius ranked-summary mapping and conformance",
-        next_generic_runtime_action="keep as a prepared-input residency reference; use for AMD fixed-radius aggregate parity",
-        evidence_refs=("Goal2800", "Goal2822", "Goal3567"),
+        amd_hiprt_readiness=(
+            "ready for AMD functional pod after Goals3771-3772 add HIPRT ranked aggregate and "
+            "batched sweep paths; AMD hardware evidence still pending Goal3784 artifact"
+        ),
+        next_generic_runtime_action="keep as a prepared-input residency reference; run actual AMD functional validation before AMD performance work",
+        evidence_refs=("Goal2800", "Goal2822", "Goal3567", "Goal3771", "Goal3772", "Goal3784", "Goal3785"),
         pod_needed_next=False,
     ),
     V29BenchmarkAdequacyRow(
@@ -298,9 +326,12 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
         current_partner_role="no partner needed on the fastest primitive row",
         needs_numba_reference=False,
         numba_reference_reason="the fastest path is primitive-only; Numba alternate is not required for the reference story",
-        amd_hiprt_readiness="needs HIPRT graph-summary primitive parity",
-        next_generic_runtime_action="keep as primitive-only; use as AMD graph-summary smoke after HIPRT work starts",
-        evidence_refs=("Goal2797", "Goal3567"),
+        amd_hiprt_readiness=(
+            "ready for AMD functional pod after Goal3782 adds HIPRT canonical graph-cycle scalar count; "
+            "AMD hardware evidence still pending Goal3784 artifact"
+        ),
+        next_generic_runtime_action="keep as primitive-only; run actual AMD functional validation before AMD performance work",
+        evidence_refs=("Goal2797", "Goal3567", "Goal3782", "Goal3784", "Goal3785"),
         pod_needed_next=False,
     ),
 )

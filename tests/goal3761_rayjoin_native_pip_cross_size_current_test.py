@@ -57,7 +57,7 @@ class Goal3761RayjoinNativePipCrossSizeCurrentTest(unittest.TestCase):
                 self.assertGreater(float(workload["candidate_speedup_vs_cupy"]), 1.0)
 
     def test_matrix_promotes_goal3761_as_current_spatial_rayjoin_evidence(self) -> None:
-        self.assertEqual(V2_9_BENCHMARK_ADEQUACY_VERSION, "rtdl.v2_9.benchmark_adequacy_after_goal3761.v1")
+        self.assertEqual(V2_9_BENCHMARK_ADEQUACY_VERSION, "rtdl.v2_10.benchmark_adequacy_after_goal3785.v1")
         summary = summarize_v2_9_benchmark_adequacy()
         self.assertEqual(summary["adequacy_counts"]["strong"], 3)
         rows = {row["app"]: row for row in v2_9_benchmark_adequacy()}

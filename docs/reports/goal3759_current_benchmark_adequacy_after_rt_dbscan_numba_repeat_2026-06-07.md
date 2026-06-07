@@ -2,7 +2,13 @@
 
 Date: 2026-06-07
 
-Source of truth: `rtdl.v2_9.benchmark_adequacy_after_goal3762.v1`
+Source of truth: `rtdl.v2_10.benchmark_adequacy_after_goal3785.v1`
+
+Current AMD/HIPRT note: Goal3786 supersedes the older "next major direction"
+wording below for the AMD column. After Goals3763-3785 all ten benchmark apps
+are ready for actual AMD functional pod validation; the missing item is the
+Goal3784 AMD hardware artifact, not more NVIDIA/Orochi HIPRT implementation
+work.
 
 ## Purpose
 

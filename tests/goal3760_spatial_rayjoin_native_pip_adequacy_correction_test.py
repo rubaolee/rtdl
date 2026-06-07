@@ -19,7 +19,7 @@ CURRENT_REPORT = (
 
 class Goal3760SpatialRayjoinNativePipAdequacyCorrectionTest(unittest.TestCase):
     def test_matrix_records_native_pip_current_route_without_promoting_release_claims(self) -> None:
-        self.assertEqual(V2_9_BENCHMARK_ADEQUACY_VERSION, "rtdl.v2_9.benchmark_adequacy_after_goal3761.v1")
+        self.assertEqual(V2_9_BENCHMARK_ADEQUACY_VERSION, "rtdl.v2_10.benchmark_adequacy_after_goal3785.v1")
         validation = validate_v2_9_benchmark_adequacy()
         self.assertEqual(validation["status"], "accept")
         rows = {row["app"]: row for row in v2_9_benchmark_adequacy()}
