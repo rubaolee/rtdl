@@ -10,7 +10,7 @@ from .engine_feature_matrix import engine_feature_support
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION = "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3780.v1"
+V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION = "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3781.v1"
 V2_10_AMD_HIPRT_BENCHMARK_PARITY_STATUS = "planning_gate_not_amd_hardware_evidence"
 
 PARITY_STAGES = (
@@ -188,15 +188,16 @@ V2_10_AMD_HIPRT_BENCHMARK_PARITY_ROWS: tuple[V210AmdHiprtBenchmarkParityRow, ...
     ),
     V210AmdHiprtBenchmarkParityRow(
         app="raydb_style",
-        required_engine_features=("bounded_db_conjunctive_scan", "grouped_i64_count_sum"),
-        missing_generic_contracts=("native_hiprt_columnar_predicate_scan_fastpath",),
-        parity_stage="compatibility_only_not_amd_perf_ready",
-        first_amd_goal="HIPRT columnar predicate-scan primitive promotion beyond compatibility fallback",
+        required_engine_features=("columnar_i64_predicate_scan", "grouped_i64_count_sum"),
+        missing_generic_contracts=(),
+        parity_stage="ready_for_amd_functional_pod",
+        first_amd_goal="RayDB-style HIPRT functional parity on AMD hardware",
         rationale=(
             "Goal3779 adds the generic HIPRT dense grouped i64 count/sum materializer, so the grouped "
             "aggregation piece no longer depends on the historical DB-shaped grouped_count/grouped_sum "
-            "surface. RayDB-style remains compatibility-only because columnar predicate scan is still "
-            "a bounded compatibility path and no AMD performance evidence exists."
+            "surface. Goal3781 adds the generic HIPRT columnar i64 predicate-scan materializer, so the "
+            "RayDB-style route has app-agnostic HIPRT contracts for AMD functional validation. This still "
+            "does not authorize AMD hardware or performance claims."
         ),
         needs_amd_pod=True,
     ),

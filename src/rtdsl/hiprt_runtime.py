@@ -468,6 +468,23 @@ def _hiprt_lib() -> ctypes.CDLL:
             ctypes.c_size_t,
         ]
         lib.rtdl_hiprt_grouped_vector_sum_f64x2.restype = ctypes.c_int
+    if hasattr(lib, "rtdl_hiprt_columnar_i64_predicate_scan"):
+        lib.rtdl_hiprt_columnar_i64_predicate_scan.argtypes = [
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        lib.rtdl_hiprt_columnar_i64_predicate_scan.restype = ctypes.c_int
     if hasattr(lib, "rtdl_hiprt_collect_aggregate_frontier_2d"):
         lib.rtdl_hiprt_collect_aggregate_frontier_2d.argtypes = [
             ctypes.POINTER(_RtdlAggregateFrontierSource2D),
@@ -1222,6 +1239,132 @@ def grouped_vector_sum_f64x2_hiprt(
         "metadata": {
             "native_symbol": "rtdl_hiprt_grouped_vector_sum_f64x2",
             "backend_route": "HIPRT generic grouped f64x2 vector-sum materializer on the available Orochi route",
+            "not_amd_hardware_evidence": True,
+            "release_authorized": False,
+            "amd_perf_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "broad_rt_core_claim_authorized": False,
+            "paper_reproduction_claim_authorized": False,
+            "app_specific_native_engine_logic_allowed": False,
+        },
+    }
+
+
+_COLUMNAR_I64_PREDICATE_OPS = {
+    "eq": 0,
+    "==": 0,
+    "ne": 1,
+    "!=": 1,
+    "lt": 2,
+    "<": 2,
+    "le": 3,
+    "<=": 3,
+    "gt": 4,
+    ">": 4,
+    "ge": 5,
+    ">=": 5,
+}
+
+
+def _normalize_columnar_i64_predicate(predicate) -> tuple[int, int, int]:
+    if isinstance(predicate, dict):
+        column = predicate.get("column", predicate.get("column_index"))
+        op = predicate.get("op", predicate.get("operator", "eq"))
+        value = predicate.get("value")
+    else:
+        column, op, value = predicate
+    if isinstance(op, str):
+        op_key = op.lower()
+        if op_key not in _COLUMNAR_I64_PREDICATE_OPS:
+            raise ValueError(f"unsupported HIPRT columnar i64 predicate op {op!r}")
+        op_code = _COLUMNAR_I64_PREDICATE_OPS[op_key]
+    else:
+        op_code = int(op)
+    if op_code < 0 or op_code > 5:
+        raise ValueError("HIPRT columnar i64 predicate op code must be 0:eq 1:ne 2:lt 3:le 4:gt 5:ge")
+    return int(column), int(op_code), int(value)
+
+
+def columnar_i64_predicate_scan_hiprt(
+    columns,
+    predicates,
+    *,
+    row_capacity: int | None = None,
+) -> dict[str, object]:
+    """Run the app-name-free HIPRT columnar i64 predicate scan materializer."""
+    normalized_columns = tuple(tuple(int(value) for value in column) for column in columns)
+    column_count = len(normalized_columns)
+    row_count = len(normalized_columns[0]) if normalized_columns else 0
+    for column in normalized_columns:
+        if len(column) != row_count:
+            raise ValueError("HIPRT columnar_i64_predicate_scan requires equal-length columns")
+    normalized_predicates = tuple(_normalize_columnar_i64_predicate(predicate) for predicate in predicates)
+    for column_index, _op, _value in normalized_predicates:
+        if column_index < 0 or column_index >= column_count:
+            raise ValueError("HIPRT columnar_i64_predicate_scan predicate column out of range")
+    capacity = row_count if row_capacity is None else int(row_capacity)
+    if capacity < 0:
+        raise ValueError("HIPRT columnar_i64_predicate_scan row_capacity must be non-negative")
+
+    symbol = getattr(_hiprt_lib(), "rtdl_hiprt_columnar_i64_predicate_scan", None)
+    if symbol is None:
+        raise RuntimeError(
+            "loaded HIPRT backend does not export rtdl_hiprt_columnar_i64_predicate_scan; "
+            "rebuild HIPRT from current main"
+        )
+
+    flat_columns = [value for column in normalized_columns for value in column]
+    ColumnArray = ctypes.c_int64 * len(flat_columns)
+    PredIndexArray = ctypes.c_uint32 * len(normalized_predicates)
+    PredOpArray = ctypes.c_uint32 * len(normalized_predicates)
+    PredValueArray = ctypes.c_int64 * len(normalized_predicates)
+    RowIdArray = ctypes.c_int64 * capacity
+    column_array = ColumnArray(*flat_columns) if flat_columns else None
+    pred_index_array = PredIndexArray(*[column for column, _op, _value in normalized_predicates]) if normalized_predicates else None
+    pred_op_array = PredOpArray(*[op for _column, op, _value in normalized_predicates]) if normalized_predicates else None
+    pred_value_array = PredValueArray(*[value for _column, _op, value in normalized_predicates]) if normalized_predicates else None
+    row_id_array = RowIdArray() if capacity else None
+    matched_count = ctypes.c_size_t()
+    overflowed = ctypes.c_uint32()
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        column_array,
+        row_count,
+        column_count,
+        pred_index_array,
+        pred_op_array,
+        pred_value_array,
+        len(normalized_predicates),
+        row_id_array,
+        capacity,
+        ctypes.byref(matched_count),
+        ctypes.byref(overflowed),
+        error,
+        ctypes.sizeof(error),
+    )
+    detail = error.value.decode("utf-8", errors="replace")
+    if status != 0:
+        raise RuntimeError(f"rtdl_hiprt_columnar_i64_predicate_scan failed with status {status}: {detail}")
+    matched = int(matched_count.value)
+    if int(overflowed.value) != 0 or matched > capacity:
+        raise RuntimeError(
+            "HIPRT columnar_i64_predicate_scan overflowed row_capacity "
+            f"{capacity}; matched {matched}; "
+            "failure_mode=fail_closed_overflow; partial_result_returned=False"
+        )
+    row_ids = tuple(int(row_id_array[index]) for index in range(matched)) if matched else ()
+    return {
+        "operation": "columnar_i64_predicate_scan",
+        "backend": "hiprt",
+        "native_generic_symbol": "rtdl_hiprt_columnar_i64_predicate_scan",
+        "native_engine_app_specific": False,
+        "row_count": row_count,
+        "column_count": column_count,
+        "predicate_count": len(normalized_predicates),
+        "row_ids": row_ids,
+        "metadata": {
+            "native_symbol": "rtdl_hiprt_columnar_i64_predicate_scan",
+            "backend_route": "HIPRT generic columnar i64 predicate scan materializer on the available Orochi route",
             "not_amd_hardware_evidence": True,
             "release_authorized": False,
             "amd_perf_claim_authorized": False,

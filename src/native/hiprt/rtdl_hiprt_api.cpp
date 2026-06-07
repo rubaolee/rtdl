@@ -157,6 +157,88 @@ extern "C" int rtdl_hiprt_grouped_vector_sum_f64x2(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_hiprt_columnar_i64_predicate_scan(
+    const int64_t* column_values,
+    size_t row_count,
+    size_t column_count,
+    const uint32_t* predicate_column_indices,
+    const uint32_t* predicate_ops,
+    const int64_t* predicate_values,
+    size_t predicate_count,
+    int64_t* row_ids_out,
+    size_t row_capacity,
+    size_t* matched_count_out,
+    uint32_t* overflowed_out,
+    char* error_out,
+    size_t error_size) {
+    return handle_call([&]() {
+        if (matched_count_out == nullptr || overflowed_out == nullptr) {
+            throw std::runtime_error("matched_count_out and overflowed_out must not be null");
+        }
+        *matched_count_out = 0;
+        *overflowed_out = 0;
+        if (column_values == nullptr && row_count != 0 && column_count != 0) {
+            throw std::runtime_error("column_values must not be null when row_count and column_count are nonzero");
+        }
+        if (predicate_count != 0 &&
+            (predicate_column_indices == nullptr || predicate_ops == nullptr || predicate_values == nullptr)) {
+            throw std::runtime_error("predicate arrays must not be null when predicate_count is nonzero");
+        }
+        if (row_ids_out == nullptr && row_capacity != 0) {
+            throw std::runtime_error("row_ids_out must not be null when row_capacity is nonzero");
+        }
+        if (row_count != 0 && column_count > std::numeric_limits<size_t>::max() / row_count) {
+            throw std::runtime_error("columnar i64 value buffer size overflow");
+        }
+        if (row_count > static_cast<size_t>(std::numeric_limits<int64_t>::max())) {
+            throw std::runtime_error("row_count exceeds int64 row id range");
+        }
+        for (size_t predicate_index = 0; predicate_index < predicate_count; ++predicate_index) {
+            if (predicate_column_indices[predicate_index] >= column_count) {
+                throw std::runtime_error("predicate column index out of column_count range");
+            }
+            if (predicate_ops[predicate_index] > 5u) {
+                throw std::runtime_error("predicate op code must be 0:eq 1:ne 2:lt 3:le 4:gt 5:ge");
+            }
+        }
+
+        auto compare = [](int64_t left, uint32_t op, int64_t right) -> bool {
+            switch (op) {
+                case 0u: return left == right;
+                case 1u: return left != right;
+                case 2u: return left < right;
+                case 3u: return left <= right;
+                case 4u: return left > right;
+                case 5u: return left >= right;
+                default: return false;
+            }
+        };
+
+        size_t matched = 0;
+        for (size_t row_index = 0; row_index < row_count; ++row_index) {
+            bool keep = true;
+            for (size_t predicate_index = 0; predicate_index < predicate_count; ++predicate_index) {
+                const size_t column_index = static_cast<size_t>(predicate_column_indices[predicate_index]);
+                const int64_t value = column_values[column_index * row_count + row_index];
+                if (!compare(value, predicate_ops[predicate_index], predicate_values[predicate_index])) {
+                    keep = false;
+                    break;
+                }
+            }
+            if (!keep) {
+                continue;
+            }
+            if (matched < row_capacity) {
+                row_ids_out[matched] = static_cast<int64_t>(row_index);
+            } else {
+                *overflowed_out = 1u;
+            }
+            ++matched;
+        }
+        *matched_count_out = matched;
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_hiprt_collect_aggregate_frontier_2d(
     const RtdlAggregateFrontierSource2D* sources,
     size_t source_count,

@@ -1208,6 +1208,7 @@ from .reduction_runtime import V1_5_GENERIC_SCALAR_REDUCTION_PRIMITIVES
 from .hiprt_runtime import fixed_radius_neighbors_2d_hiprt
 from .hiprt_runtime import fixed_radius_neighbors_3d_hiprt
 from .hiprt_runtime import bfs_expand_hiprt
+from .hiprt_runtime import columnar_i64_predicate_scan_hiprt
 from .hiprt_runtime import collect_aggregate_frontier_2d_hiprt
 from .hiprt_runtime import conjunctive_scan_hiprt
 from .hiprt_runtime import grouped_i64_count_sum_hiprt
@@ -1856,6 +1857,7 @@ __all__ = [
     "SegmentColumns2D",
     "segment_columns_2d",
     "segment_columns_with_ids",
+    "columnar_i64_predicate_scan_hiprt",
     "collect_aggregate_frontier_2d_embree",
     "collect_aggregate_frontier_2d_hiprt",
     "collect_aggregate_frontier_2d_optix",
