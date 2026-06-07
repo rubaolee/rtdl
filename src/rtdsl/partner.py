@@ -293,6 +293,44 @@ class NumPyAdapter(GenericDLPackAdapter):
         return numpy.empty(spec.shape, dtype=spec.dtype)
 
 
+class CudaArrayInterfaceAdapter:
+    name = "cuda_array_interface"
+
+    def can_export(self, obj: Any) -> bool:
+        return isinstance(getattr(obj, "__cuda_array_interface__", None), dict)
+
+    def export_tensor(
+        self,
+        obj: Any,
+        *,
+        access: str = "read",
+        stream: int | None = None,
+    ) -> RtdlTensorDescriptor:
+        _validate_access_mode(access)
+        if stream not in (None, 0):
+            raise ValueError("v1.7 partner descriptors reserve stream_handle; expected 0")
+        if not self.can_export(obj):
+            raise TypeError("object does not implement __cuda_array_interface__")
+        return RtdlTensorDescriptor(
+            data_ptr=_data_ptr(obj),
+            device_type="cuda",
+            device_id=0,
+            dtype=_dtype_name(obj),
+            shape=_shape_tuple(obj),
+            strides=_strides_tuple(obj),
+            access_mode=access,
+            stream_handle=0,
+            owner=obj,
+            source_protocol="cuda_array_interface",
+        )
+
+    def allocate_output(self, spec: RtdlOutputSpec, *, stream: int | None = None) -> Any:
+        raise NotImplementedError("CUDA Array Interface adapter cannot allocate framework-owned outputs")
+
+    def import_output(self, descriptor: RtdlTensorDescriptor) -> Any:
+        raise NotImplementedError("CUDA Array Interface adapter cannot import outputs without a framework")
+
+
 class PartnerContext:
     def __init__(self, adapter: PartnerAdapter | None, *, fallback: str = "error") -> None:
         _validate_fallback_policy(fallback)
@@ -560,4 +598,5 @@ _ADAPTERS: dict[str, PartnerAdapter] = {}
 register(PyTorchAdapter())
 register(CuPyAdapter())
 register(NumPyAdapter())
+register(CudaArrayInterfaceAdapter())
 _GENERIC_DLPACK = register(GenericDLPackAdapter())

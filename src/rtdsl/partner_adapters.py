@@ -5361,8 +5361,34 @@ def _numba_cuda_stack_for_radius_graph():
     return cuda, np
 
 
+class _NumbaDeviceColumnView:
+    """Small view that exposes Numba device arrays to native pointer writers."""
+
+    def __init__(self, array):
+        self.array = array
+
+    @property
+    def data_ptr(self) -> int:
+        return int(self.array.device_ctypes_pointer.value)
+
+    @property
+    def shape(self):
+        return self.array.shape
+
+    @property
+    def dtype(self):
+        return self.array.dtype
+
+    @property
+    def __cuda_array_interface__(self):
+        return self.array.__cuda_array_interface__
+
+    def copy_to_host(self):
+        return self.array.copy_to_host()
+
+
 def _as_numba_radius_graph_device_array(values, *, cuda, np, dtype, name: str):
-    if hasattr(values, "__cuda_array_interface__") and not hasattr(values, "copy_to_host"):
+    if hasattr(values, "__cuda_array_interface__"):
         values = cuda.as_cuda_array(values)
     elif not hasattr(values, "copy_to_host"):
         values = cuda.to_device(np.asarray(values, dtype=dtype))
@@ -8791,6 +8817,13 @@ def allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
     query_count = int(query_count)
     if query_count < 0:
         raise ValueError("query_count must be non-negative")
+    if partner == "numba":
+        cuda, np = _numba_cuda_stack_for_radius_graph()
+        return {
+            "query_ids": _NumbaDeviceColumnView(cuda.device_array((query_count,), dtype=np.uint32)),
+            "neighbor_counts": _NumbaDeviceColumnView(cuda.device_array((query_count,), dtype=np.uint32)),
+            "threshold_flags": _NumbaDeviceColumnView(cuda.device_array((query_count,), dtype=np.uint32)),
+        }
     runtime = _partner_module(partner)
     return {
         "query_ids": runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"]),
@@ -8824,7 +8857,7 @@ def fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
         raise ValueError("radius must be non-negative")
     if threshold < 0:
         raise ValueError("threshold must be non-negative")
-    runtime = _partner_module(partner)
+    runtime = _numba_runtime_for_point_columns() if partner == "numba" else _partner_module(partner)
     packed_count = getattr(query_points, "count", None)
     query_count = int(packed_count) if packed_count is not None and not callable(packed_count) else int(len(query_points))
     output_reuse_authorized = output_columns is not None

@@ -37,6 +37,7 @@ No DBSCAN-specific native ABI is added.
 | `optix_core_flags_cupy_grid_components_3d` | OptiX-backend per-query fixed-radius summaries feed CuPy device-grid component continuation | Hybrid uniform-cell CUDA summaries plus CUDA-core continuation; no neighbor-row materialization |
 | `optix_rt_core_flags_cupy_grid_components_3d` | OptiX RT count-threshold device columns feed CuPy device-grid component continuation | True RT traversal core flags plus CUDA-core continuation; no neighbor-row materialization |
 | `optix_rt_core_flags_cupy_prepared_grid_components_3d` | OptiX RT count-threshold device columns feed a prepared CuPy device-grid component continuation | Same generic contract with reusable grid/order/workspace state for steady-state probes |
+| `optix_rt_core_flags_numba_prepared_grid_components_3d` | OptiX RT count-threshold device columns feed a prepared Numba grid component continuation | Same generic core-flag contract with user-selected Numba continuation |
 | `optix_rt_core_adjacency_cupy_components_3d` | OptiX RT writes a generic directed fixed-radius adjacency stream, then CuPy labels components | First generic RT-produced continuation stream; no DBSCAN-native engine code |
 | `optix_rt_core_chunked_adjacency_cupy_components_3d` | OptiX RT writes bounded generic directed fixed-radius adjacency chunks, then CuPy labels components | Memory-bounded stream variant; does not hold the whole edge table at once |
 | `optix_rt_core_grouped_stream_cupy_components_3d` | OptiX RT applies generic predicate-grouped union and fallback-candidate capture during traversal, then CuPy labels components | Over-budget dense-stream variant; avoids materializing a full neighbor-index table |
@@ -164,6 +165,19 @@ elapsed time is not a pure steady-state speedup. The repeat probe
 it prepares the OptiX scene, CuPy point columns, cell ids, sorted order,
 unique-cell ranges, and output workspaces once, then repeats only the generic
 RT count-threshold pass and component-label continuation.
+
+For the same RT core-flag contract with a Numba continuation, use:
+
+```bash
+export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode optix_rt_core_flags_numba_prepared_grid_components_3d --dataset clustered3d --point-count 4096 --no-validation
+```
+
+This path asks OptiX to write threshold-capped counts and core flags into
+Numba-compatible device columns, then uses the prepared Numba grid continuation
+for component labeling. It is an RTDL/OptiX + Numba composition path, still over
+generic fixed-radius graph columns and still not a DBSCAN-specific native
+engine.
 
 Programmatic users can prepare the same generic composite directly:
 
