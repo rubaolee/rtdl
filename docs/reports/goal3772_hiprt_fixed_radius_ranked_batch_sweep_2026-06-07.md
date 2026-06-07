@@ -2,7 +2,7 @@
 
 Date: 2026-06-07
 
-Status: implemented locally; NVIDIA CUDA/Orochi HIPRT pod validation pending at first write.
+Status: implemented and validated on a clean NVIDIA RTX A5000 CUDA/Orochi HIPRT pod clone.
 
 ## Purpose
 
@@ -29,9 +29,10 @@ This is still not AMD hardware evidence. The local and A5000 CUDA/Orochi HIPRT r
   - `tests.goal3771_hiprt_fixed_radius_ranked_aggregate_test`
   - `tests.goal3753_amd_hiprt_benchmark_parity_plan_test`
 - Pod validation:
-  - clean clone at the implementation commit
-  - `make build-hiprt`
-  - same focused test slice on the NVIDIA A5000 CUDA/Orochi HIPRT route
+  - clean clone at implementation commit `aa3eda9e`
+  - `make build-hiprt` passed
+  - focused test slice passed: `Ran 22 tests OK`
+  - artifact: `docs/reports/goal3772_hiprt_fixed_radius_ranked_batch_sweep_a5000.json`
 
 ## Claim Boundary
 

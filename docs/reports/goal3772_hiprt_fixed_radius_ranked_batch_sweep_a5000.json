@@ -1,20 +1,153 @@
 {
+  "backend_route": "NVIDIA RTX A5000 CUDA/Orochi HIPRT clean-clone validation; not AMD hardware evidence",
+  "claim_boundary": {
+    "amd_perf_claim_authorized": false,
+    "app_specific_native_engine_logic_allowed": false,
+    "broad_rt_core_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "focused_validation": {
+    "clean_clone_build_hiprt": "pass",
+    "unit_test_result": "Ran 22 tests OK on A5000",
+    "unit_tests": "tests.goal3772_hiprt_fixed_radius_ranked_batch_sweep_test tests.goal3771_hiprt_fixed_radius_ranked_aggregate_test tests.goal3753_amd_hiprt_benchmark_parity_plan_test"
+  },
   "goal": "Goal3772",
-  "source_commit": "pending-pod-validation",
-  "scoped_source_dirty": false,
-  "backend_route": "pending NVIDIA CUDA/Orochi HIPRT A5000 validation; not AMD hardware evidence",
-  "sample": {
-    "request_count": 0,
-    "batch_matches_repeated_single_aggregate": true
+  "gpu": "NVIDIA RTX A5000",
+  "hiprt_sdk_root": "/root/vendor/hiprt-official/hiprtSdk-2.2.0e68f54",
+  "parity_summary": {
+    "amd_perf_claim_authorized": false,
+    "app_count": 10,
+    "claim_boundary": "This AMD/HIPRT benchmark parity map is a planning gate. It does not authorize AMD performance claims, HIPRT release claims, public speedup wording, whole-app acceleration wording, or RTDL-beats-paper wording.",
+    "compatibility_only_not_amd_perf_ready_apps": [
+      "raydb_style",
+      "triangle_counting"
+    ],
+    "needs_generic_hiprt_extension_apps": [
+      "hausdorff_xhd",
+      "contact_manifold",
+      "barnes_hut"
+    ],
+    "ready_for_amd_functional_pod_apps": [
+      "spatial_rayjoin",
+      "rt_dbscan",
+      "robot_collision",
+      "librts_spatial_index",
+      "rtnn"
+    ],
+    "release_authorized": false,
+    "row_count": 10,
+    "stage_counts": {
+      "compatibility_only_not_amd_perf_ready": 2,
+      "needs_generic_hiprt_extension": 3,
+      "ready_for_amd_functional_pod": 5
+    },
+    "status": "planning_gate_not_amd_hardware_evidence",
+    "version": "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3772.v1"
+  },
+  "parity_validation": {
+    "app_count": 10,
+    "claim_boundary": "This AMD/HIPRT benchmark parity map is a planning gate. It does not authorize AMD performance claims, HIPRT release claims, public speedup wording, whole-app acceleration wording, or RTDL-beats-paper wording.",
+    "errors": [],
+    "row_count": 10,
+    "status": "accept",
+    "version": "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3772.v1"
   },
   "rtnn_missing_generic_contracts": [],
   "rtnn_parity_stage": "ready_for_amd_functional_pod",
-  "claim_boundary": {
-    "release_authorized": false,
-    "amd_perf_claim_authorized": false,
-    "whole_app_speedup_claim_authorized": false,
-    "broad_rt_core_claim_authorized": false,
-    "paper_reproduction_claim_authorized": false,
-    "app_specific_native_engine_logic_allowed": false
-  }
+  "rtnn_required_engine_features": [
+    "fixed_radius_neighbors_3d",
+    "knn_rows_3d",
+    "fixed_radius_ranked_summary_aggregate_3d",
+    "fixed_radius_ranked_summary_batched_sweep_3d"
+  ],
+  "sample": {
+    "batch": [
+      {
+        "bounded_neighbor_count": 10,
+        "k_max": 3,
+        "kth_id_checksum": 11,
+        "nearest_id_checksum": 10,
+        "precision": "float32_distance",
+        "query_count": 4,
+        "radius": 0.5,
+        "request_index": 0,
+        "sum_distance": 1.600000023841858
+      },
+      {
+        "bounded_neighbor_count": 7,
+        "k_max": 2,
+        "kth_id_checksum": 9,
+        "nearest_id_checksum": 10,
+        "precision": "float32_distance",
+        "query_count": 4,
+        "radius": 0.5,
+        "request_index": 1,
+        "sum_distance": 0.6000000089406967
+      },
+      {
+        "bounded_neighbor_count": 7,
+        "k_max": 2,
+        "kth_id_checksum": 9,
+        "nearest_id_checksum": 10,
+        "precision": "float32_distance",
+        "query_count": 4,
+        "radius": 0.25,
+        "request_index": 2,
+        "sum_distance": 0.6000000089406967
+      }
+    ],
+    "batch_matches_repeated_single_aggregate": true,
+    "expected_repeated_single_or_smaller_reference": [
+      {
+        "bounded_neighbor_count": 10,
+        "kth_id_checksum": 11,
+        "nearest_id_checksum": 10,
+        "precision": "float32_distance",
+        "query_count": 4,
+        "sum_distance": 1.600000023841858
+      },
+      {
+        "bounded_neighbor_count": 7,
+        "kth_id_checksum": 9,
+        "nearest_id_checksum": 10,
+        "precision": "float32_distance",
+        "query_count": 4,
+        "sum_distance": 0.6000000089406967
+      },
+      {
+        "bounded_neighbor_count": 7,
+        "kth_id_checksum": 9,
+        "nearest_id_checksum": 10,
+        "precision": "float32_distance",
+        "query_count": 4,
+        "sum_distance": 0.6000000089406967
+      }
+    ],
+    "query_count": 4,
+    "request_count": 3,
+    "requests": [
+      {
+        "k_max": 3,
+        "radius": 0.5
+      },
+      {
+        "k_max": 2,
+        "radius": 0.5
+      },
+      {
+        "k_max": 2,
+        "radius": 0.25
+      }
+    ],
+    "sum_distance_abs_errors": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "scoped_source_dirty": false,
+  "source_commit": "aa3eda9e",
+  "source_commit_full": "aa3eda9e34193ee1721bbec2c1cbad948d380739"
 }
