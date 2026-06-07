@@ -14,6 +14,7 @@ from rtdsl.v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 ROOT = Path(__file__).resolve().parents[1]
 RUNNER = ROOT / "scripts" / "goal3828_current_benchmark_scale_profile_runner.py"
 REPORT = ROOT / "docs" / "reports" / "goal3828_current_benchmark_scale_profile_registry_2026-06-07.md"
+POD_ARTIFACT = ROOT / "docs" / "reports" / "goal3828_current_benchmark_scale_profiles_a5000" / "summary.json"
 
 
 class Goal3828CurrentBenchmarkScaleProfileRegistryTest(unittest.TestCase):
@@ -107,9 +108,41 @@ class Goal3828CurrentBenchmarkScaleProfileRegistryTest(unittest.TestCase):
             "robot_collision_optix_scale_default_1024",
             "barnes_hut_numba_scale_default_8192",
             "Rows fail closed",
+            "A5000 Pod Evidence",
+            "all ten calibrated default scale profiles passed",
             "does not authorize release action",
         ):
             self.assertIn(phrase, text)
+
+    def test_a5000_artifact_records_all_scale_profiles_passed(self) -> None:
+        payload = json.loads(POD_ARTIFACT.read_text(encoding="utf-8"))
+        self.assertEqual(payload["version"], rt.CURRENT_BENCHMARK_SCALE_PROFILE_VERSION)
+        self.assertTrue(payload["all_pass"])
+        self.assertFalse(payload["dry_run"])
+        self.assertTrue(payload["file_backed_stdout_probe"])
+        self.assertEqual(payload["json_pass_count"], 10)
+        self.assertFalse(payload["release_authorized"])
+        self.assertFalse(payload["public_speedup_claim_authorized"])
+        self.assertFalse(payload["broad_rt_core_claim_authorized"])
+        self.assertFalse(payload["paper_reproduction_claim_authorized"])
+        self.assertEqual(payload["validation"]["status"], "accept")
+        self.assertEqual(payload["validation"]["errors"], [])
+
+        rows = payload["rows"]
+        self.assertEqual(len(rows), 10)
+        self.assertEqual({row["app"] for row in rows}, set(V2_8_PROMOTED_BENCHMARK_APPS))
+        self.assertTrue(all(row["status"] == "pass" for row in rows))
+        self.assertTrue(
+            all(row["semantic_stdout_check"]["stdout_json_parseable"] for row in rows)
+        )
+        self.assertTrue(
+            all(not row["semantic_stdout_check"]["claim_flag_violations"] for row in rows)
+        )
+
+        by_id = {row["row_id"]: row for row in rows}
+        self.assertLess(by_id["rt_dbscan_optix_numba_scale_default_8192"]["elapsed_sec"], 15.0)
+        self.assertLess(by_id["robot_collision_optix_scale_default_1024"]["elapsed_sec"], 20.0)
+        self.assertGreater(by_id["barnes_hut_numba_scale_default_8192"]["stdout_bytes"], 800_000)
 
 
 if __name__ == "__main__":
