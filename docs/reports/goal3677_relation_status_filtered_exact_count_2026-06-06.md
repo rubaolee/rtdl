@@ -74,11 +74,11 @@ Hot timings:
 
 | Route | Median seconds | Stable count |
 | --- | ---: | ---: |
-| all relation candidates, count-only | `0.000462975` | `47264` |
-| boundary-status candidate columns | `0.000718679` | `47241` |
-| relation-status corrected exact Numba count | `0.003239898` | `47262` |
-| resident relation-status corrected exact Numba count | `0.001874327` | `47262` |
-| exact oracle once | `0.252895473` | `47262` |
+| all relation candidates, count-only | `0.000459798` | `47264` |
+| boundary-status candidate columns | `0.000711272` | `47241` |
+| relation-status corrected exact Numba count | `0.002809492` | `47262` |
+| resident relation-status corrected exact Numba count | `0.001527618` | `47262` |
+| exact oracle once | `0.224998501` | `47262` |
 
 Correctness:
 
@@ -97,8 +97,8 @@ Positive result:
 
 - The count-only relation-status path is correct and fast: `47264` candidates in about `0.00045s`.
 - The composed exact count is correct and avoids full candidate row materialization.
-- Compared with the Goal3675 one-shot Numba exact count path around `0.0215s`, this route is about `6.7x` faster on the same full-county dataset.
-- The prepared/resident counter path runs the repeated exact scalar count in about `0.00187s`, about `11.5x` faster than the Goal3675 one-shot Numba exact count path.
+- Compared with the Goal3675 one-shot Numba exact count path around `0.0215s`, this route is about `7.7x` faster on the same full-county dataset.
+- The prepared/resident counter path runs the repeated exact scalar count in about `0.00153s`, about `14.1x` faster than the Goal3675 one-shot Numba exact count path.
 
 Negative result:
 
