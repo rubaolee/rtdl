@@ -345,6 +345,11 @@ from .current_benchmark_front_doors import CURRENT_BENCHMARK_FRONT_DOOR_VERSION
 from .current_benchmark_front_doors import current_benchmark_front_doors
 from .current_benchmark_front_doors import summarize_current_benchmark_front_doors
 from .current_benchmark_front_doors import validate_current_benchmark_front_doors
+from .current_benchmark_scale_profiles import CURRENT_BENCHMARK_SCALE_PROFILE_STATUS
+from .current_benchmark_scale_profiles import CURRENT_BENCHMARK_SCALE_PROFILE_VERSION
+from .current_benchmark_scale_profiles import current_benchmark_scale_profiles
+from .current_benchmark_scale_profiles import summarize_current_benchmark_scale_profiles
+from .current_benchmark_scale_profiles import validate_current_benchmark_scale_profiles
 from .v2_8_segmented_typed_stream_adapter import V28SegmentedTypedStreamAdapterResult
 from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_CLAIM_BOUNDARY
 from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_MATERIALIZATION
@@ -2165,6 +2170,11 @@ __all__ = [
     "current_benchmark_front_doors",
     "summarize_current_benchmark_front_doors",
     "validate_current_benchmark_front_doors",
+    "CURRENT_BENCHMARK_SCALE_PROFILE_STATUS",
+    "CURRENT_BENCHMARK_SCALE_PROFILE_VERSION",
+    "current_benchmark_scale_profiles",
+    "summarize_current_benchmark_scale_profiles",
+    "validate_current_benchmark_scale_profiles",
     "V28SegmentedTypedStreamAdapterResult",
     "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_CLAIM_BOUNDARY",
     "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_MATERIALIZATION",
