@@ -60,7 +60,7 @@ Review these current reports, artifacts, scripts, and tests:
    auto-discovered, archive matches are ignored, the chosen prefix is recorded,
    and the non-AMD control path remains rejected.
 8. Goal3792 records the current post-discovery A5000 control regression at
-   commit `1078ae31`: 34 modules, 185 tests, scoped source clean, parity and
+   commit `a7a10228`: 34 modules, 185 tests, scoped source clean, parity and
    adequacy accepted, and all claim-boundary flags false.
 9. The chain preserves the app-agnostic engine boundary and avoids automatic
    partner-selection, true-zero-copy, broad RT-core, paper-reproduction, and
