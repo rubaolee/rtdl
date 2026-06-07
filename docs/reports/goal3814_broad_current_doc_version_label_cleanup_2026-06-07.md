@@ -35,3 +35,8 @@ method names and artifact keys such as `rtdl_v2_user_cuda`.
 Focused validation checks that broad learner/tutorial/benchmark Markdown and
 changed benchmark CLI strings no longer contain stale current-facing v2.8/v2.9
 phrases while preserving historical method names.
+
+- Local Windows: 13 focused tests passed, and the changed benchmark Python files
+  compiled successfully.
+- A5000 pod on clean `origin/main` at commit `d1d78e23`: the same 13 focused
+  tests passed, and the changed benchmark Python files compiled successfully.
