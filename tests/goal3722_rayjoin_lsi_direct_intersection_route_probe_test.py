@@ -58,6 +58,7 @@ class Goal3722RayJoinLsiDirectIntersectionRouteProbeTest(unittest.TestCase):
         self.assertIn('"rtdl_beats_rayjoin_claim_authorized": False', method)
         self.assertIn('"release_authorized": False', method)
         self.assertNotIn("RayJoin", method)
+        self.assertIn("count_prepared_left_direct_intersection", self.runtime)
 
     def test_runner_compares_direct_intersection_existing_route_and_rayjoin(self):
         self.assertIn("SCHEMA = \"rtdl.goal3722.rayjoin_lsi_direct_intersection_route_probe.v1\"", self.runner)

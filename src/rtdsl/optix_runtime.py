@@ -7810,6 +7810,7 @@ def _get_last_segment_pair_phase_timings_from_library(lib) -> dict[str, float | 
         4: "first_hit_count",
         5: "boundary_event_rows",
         6: "count_prepared_left",
+        7: "count_prepared_left_direct_intersection",
     }.get(mode_value, "none")
     result = {
         "mode": mode_name,
