@@ -8,6 +8,7 @@ REPORT = ROOT / "docs" / "reports" / "goal3725_rayjoin_lsi_grouped_range_policy_
 CONFIRM = ROOT / "docs" / "reports" / "goal3724_rayjoin_lsi_grouped_range_route_confirm_a5000" / "summary.json"
 BEST = ROOT / "docs" / "reports" / "goal3724_rayjoin_lsi_grouped_range_route_confirm_a5000" / "max1_area1.5.json"
 SWEEP = ROOT / "docs" / "reports" / "goal3724_rayjoin_lsi_grouped_range_route_sweep_a5000" / "summary.json"
+DEFAULT = ROOT / "docs" / "reports" / "goal3725_rayjoin_lsi_grouped_range_default_a5000" / "summary.json"
 WORKLOADS = ROOT / "src" / "native" / "optix" / "rtdl_optix_workloads.cpp"
 
 
@@ -18,6 +19,7 @@ class Goal3725RayJoinLsiGroupedRangePolicySweepTest(unittest.TestCase):
         cls.confirm = json.loads(CONFIRM.read_text(encoding="utf-8"))
         cls.best_artifact = json.loads(BEST.read_text(encoding="utf-8"))
         cls.sweep = json.loads(SWEEP.read_text(encoding="utf-8"))
+        cls.default_artifact = json.loads(DEFAULT.read_text(encoding="utf-8"))
         cls.workloads = WORKLOADS.read_text(encoding="utf-8")
 
     def test_best_confirmed_policy_is_identity_range_and_correct(self):
@@ -55,6 +57,14 @@ class Goal3725RayJoinLsiGroupedRangePolicySweepTest(unittest.TestCase):
     def test_diagnostic_route_default_matches_measured_safe_policy(self):
         self.assertIn("size_t max_segments_per_group = 1;", self.workloads)
         self.assertIn("float area_enlarge_limit = 1.5f;", self.workloads)
+        default_policy = self.default_artifact["grouping_policy"]
+        default_comparison = self.default_artifact["comparison"]
+        self.assertEqual(1, int(default_policy["max_size"]))
+        self.assertEqual(1.5, float(default_policy["area_enlarge"]))
+        self.assertTrue(default_comparison["counts_match"])
+        self.assertGreater(float(default_comparison["grouped_range_speedup_vs_rayjoin"]), 3.0)
+        self.assertIn("Default-Policy Validation", self.report)
+        self.assertIn("no `--group-max-size` or `--group-area-enlarge` override", self.report)
         self.assertIn("environment overrides", self.report)
         self.assertIn("does not promote this diagnostic route as a public default route", self.report)
 

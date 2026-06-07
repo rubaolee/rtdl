@@ -17,6 +17,7 @@ Artifacts:
 - `docs/reports/goal3724_rayjoin_lsi_grouped_range_route_sweep_a5000/summary.json`
 - `docs/reports/goal3724_rayjoin_lsi_grouped_range_route_confirm_a5000/summary.json`
 - `docs/reports/goal3724_rayjoin_lsi_grouped_range_route_confirm_a5000/max1_area1.5.json`
+- `docs/reports/goal3725_rayjoin_lsi_grouped_range_default_a5000/summary.json`
 
 Environment:
 
@@ -43,6 +44,17 @@ The confirmation run used 3 warmups and 15 measured repeats for RTDL, and the Ra
 | RTDL grouped-range direct exact count, `max_size=1` | 0.000281732 | 20,860 | 5.290x vs existing RTDL any-hit |
 
 This is a same-contract count result for one RayJoin LSI dataset and one GPU. It is strong engineering evidence for the primitive route, but it is not a public RayJoin reproduction claim.
+
+## Default-Policy Validation
+
+After changing the diagnostic route's native and runner defaults, a clean pod run reset to `origin/main` at commit `aa1f6cfb`, rebuilt `librtdl_optix.so`, and ran the same probe with no `--group-max-size` or `--group-area-enlarge` override. The runner selected `max_size=1, area_enlarge=1.5` by default and reproduced the result:
+
+| Route | Median/query seconds | Count | Relative |
+| --- | ---: | ---: | ---: |
+| RayJoin LSI query | 0.000897725 | 20,860 | 1.000x RayJoin |
+| RTDL existing any-hit exact count | 0.001428726 | 20,860 | 0.628x vs RayJoin |
+| RTDL grouped-range direct exact count, default policy | 0.000272803 | 20,860 | 3.291x vs RayJoin |
+| RTDL grouped-range direct exact count, default policy | 0.000272803 | 20,860 | 5.237x vs existing RTDL any-hit |
 
 ## Policy Sweep
 

@@ -1,0 +1,1091 @@
+{
+  "claim_boundary": {
+    "diagnostic_only": true,
+    "native_default_route_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "comparison": {
+    "counts_match": true,
+    "existing_anyhit_median_sec": 0.0014287261292338371,
+    "existing_anyhit_speedup_vs_rayjoin": 0.6283394568288678,
+    "grouped_range_median_sec": 0.00027280300855636597,
+    "grouped_range_speedup_vs_existing_anyhit": 5.237208111429742,
+    "grouped_range_speedup_vs_rayjoin": 3.2907445000355047,
+    "rayjoin_lsi_intersections": 20860,
+    "rayjoin_query_sec": 0.000897725,
+    "right_group_compression_ratio": 0.0,
+    "right_group_count": 326193,
+    "right_segment_count": 326193,
+    "rtdl_count": 20860
+  },
+  "county": "/root/RayJoin/test/dataset/br_county_clean_25_odyssey_final.txt",
+  "generated_at_unix": 1780814199.6358278,
+  "goal": 3724,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "grouping_policy": {
+    "area_enlarge": 1.5,
+    "env_area_enlarge": "1.5",
+    "env_max_size": "1",
+    "max_size": 1
+  },
+  "interpretation_boundary": "This probe tests generic grouped/ranged right-primitive exact counting. It is diagnostic only, not a RayJoin reproduction and not a public default-route claim.",
+  "phase_seconds": {
+    "county_chains_to_segments_sec": 0.9040568303316832,
+    "load_county_sec": 0.8184804106131196,
+    "load_soil_sec": 0.7055306965485215,
+    "pack_left_query_soil_sec": 0.21925529185682535,
+    "pack_right_base_county_sec": 0.2839359315112233,
+    "prepare_left_query_soil_set_sec": 0.0031083254143595695,
+    "prepare_static_scene_county_sec": 0.6491925986483693,
+    "soil_chains_to_segments_sec": 0.6583044463768601
+  },
+  "rayjoin_git_commit": "02bf6220d6d20b04af77ee20364eced75cc029c9",
+  "rayjoin_lsi": {
+    "check": false,
+    "command": [
+      "/root/RayJoin/release/bin/query_exec",
+      "-poly1",
+      "/root/RayJoin/test/dataset/br_county_clean_25_odyssey_final.txt",
+      "-poly2",
+      "/root/RayJoin/test/dataset/br_soil_ascii_odyssey_final.txt",
+      "-mode=rt",
+      "-query=lsi",
+      "-check=false",
+      "-xsect_factor=0.1",
+      "-warmup=2",
+      "-repeat=3",
+      "-v=1"
+    ],
+    "intersections": 20860,
+    "query": "lsi",
+    "query_sec": 0.000897725,
+    "raw_tail": "I20260607 06:36:39.506829 397191 lsi_rt.h:50] queries: 251011\nI20260607 06:36:39.506923 397191 rt_engine.h:159] Parm size: 176\nI20260607 06:36:39.506958 397191 rt_engine.cu:554] optixLaunch, [w,h,d] = 251011,1,1\nI20260607 06:36:39.507961 397191 lsi_rt.h:50] queries: 251011\nI20260607 06:36:39.507983 397191 rt_engine.h:159] Parm size: 176\nI20260607 06:36:39.507999 397191 rt_engine.cu:554] optixLaunch, [w,h,d] = 251011,1,1\nI20260607 06:36:39.508854 397191 run_query.cu:303] Iter: 0\nI20260607 06:36:39.508862 397191 lsi_rt.h:50] queries: 251011\nI20260607 06:36:39.508876 397191 rt_engine.h:159] Parm size: 176\nI20260607 06:36:39.508891 397191 rt_engine.cu:554] optixLaunch, [w,h,d] = 251011,1,1\nI20260607 06:36:39.509747 397191 run_query.cu:303] Iter: 1\nI20260607 06:36:39.509753 397191 lsi_rt.h:50] queries: 251011\nI20260607 06:36:39.509768 397191 rt_engine.h:159] Parm size: 176\nI20260607 06:36:39.509781 397191 rt_engine.cu:554] optixLaunch, [w,h,d] = 251011,1,1\nI20260607 06:36:39.510627 397191 run_query.cu:303] Iter: 2\nI20260607 06:36:39.510633 397191 lsi_rt.h:50] queries: 251011\nI20260607 06:36:39.510648 397191 rt_engine.h:159] Parm size: 176\nI20260607 06:36:39.510663 397191 rt_engine.cu:554] optixLaunch, [w,h,d] = 251011,1,1\nI20260607 06:36:39.511536 397191 run_query.cu:308] Intersections: 20860 Queue Load Factor: 0.3614\nTiming results:\n - Read map 0: 3635.04 ms\n\n - Read map 1: 2527.24 ms\n\n - Create App: 159.779 ms\n\n - Load Data: 1.5049 ms\n\n - Init: 0.792027 ms\n\n - Adaptive Grouping: 0.543118 ms\n\n - Build Index: 0.828028 ms\n\n - Warmup: 2.0268 ms\n\n - Query: 0.897725 ms\n\n - Cleanup: 11.9228 ms\n",
+    "returncode": 0,
+    "timings_ms": {
+      "Adaptive Grouping": 0.543118,
+      "Build Index": 0.828028,
+      "Cleanup": 11.9228,
+      "Create App": 159.779,
+      "Init": 0.792027,
+      "Load Data": 1.5049,
+      "Query": 0.897725,
+      "Read map 0": 3635.04,
+      "Read map 1": 2527.24,
+      "Warmup": 2.0268
+    }
+  },
+  "rtdl_existing_anyhit_exact_count_same_orientation": {
+    "claim_boundary": {
+      "diagnostic_only": true,
+      "native_default_route_authorized": false,
+      "public_speedup_claim_authorized": false,
+      "rayjoin_paper_reproduction_claim_authorized": false,
+      "release_authorized": false,
+      "rt_core_speedup_claim_authorized": false,
+      "rtdl_beats_rayjoin_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false
+    },
+    "count": 20860,
+    "max_sec": 0.0014633666723966599,
+    "median_sec": 0.0014287261292338371,
+    "min_sec": 0.001424761489033699,
+    "repeat": 15,
+    "right_group_count": null,
+    "route": "existing_anyhit_exact_count",
+    "runs": [
+      {
+        "count": 20860,
+        "elapsed_sec": 0.3274482497945428,
+        "is_warmup": true,
+        "iteration": 0,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.001397033,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left",
+          "raw_candidate_count": 20961
+        },
+        "result": {
+          "count": 20860
+        },
+        "right_group_count": 0
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.0015649469569325447,
+        "is_warmup": true,
+        "iteration": 1,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.0013860070000000003,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left",
+          "raw_candidate_count": 20961
+        },
+        "result": {
+          "count": 20860
+        },
+        "right_group_count": 0
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.0015538381412625313,
+        "is_warmup": true,
+        "iteration": 2,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.0013894690000000002,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left",
+          "raw_candidate_count": 20961
+        },
+        "result": {
+          "count": 20860
+        },
+        "right_group_count": 0
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.0014633666723966599,
+        "is_warmup": false,
+        "iteration": 3,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.001313671,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left",
+          "raw_candidate_count": 20961
+        },
+        "result": {
+          "count": 20860
+        },
+        "right_group_count": 0
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.0014378242194652557,
+        "is_warmup": false,
+        "iteration": 4,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.0012909589999999997,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left",
+          "raw_candidate_count": 20961
+        },
+        "result": {
+          "count": 20860
+        },
+        "right_group_count": 0
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.0014501865953207016,
+        "is_warmup": false,
+        "iteration": 5,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.001298441,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left",
+          "raw_candidate_count": 20961
+        },
+        "result": {
+          "count": 20860
+        },
+        "right_group_count": 0
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.0014275740832090378,
+        "is_warmup": false,
+        "iteration": 6,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.0012840590000000002,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left",
+          "raw_candidate_count": 20961
+        },
+        "result": {
+          "count": 20860
+        },
+        "right_group_count": 0
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.001428176648914814,
+        "is_warmup": false,
+        "iteration": 7,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.0012861830000000002,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left",
+          "raw_candidate_count": 20961
+        },
+        "result": {
+          "count": 20860
+        },
+        "right_group_count": 0
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.0014322958886623383,
+        "is_warmup": false,
+        "iteration": 8,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.00129006,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left",
+          "raw_candidate_count": 20961
+        },
+        "result": {
+          "count": 20860
+        },
+        "right_group_count": 0
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.0014287261292338371,
+        "is_warmup": false,
+        "iteration": 9,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.001284826,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left",
+          "raw_candidate_count": 20961
+        },
+        "result": {
+          "count": 20860
+        },
+        "right_group_count": 0
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.0014266474172472954,
+        "is_warmup": false,
+        "iteration": 10,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.001283651,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left",
+          "raw_candidate_count": 20961
+        },
+        "result": {
+          "count": 20860
+        },
+        "right_group_count": 0
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.0014297394081950188,
+        "is_warmup": false,
+        "iteration": 11,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.0012830069999999999,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left",
+          "raw_candidate_count": 20961
+        },
+        "result": {
+          "count": 20860
+        },
+        "right_group_count": 0
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.001429906114935875,
+        "is_warmup": false,
+        "iteration": 12,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.001282454,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left",
+          "raw_candidate_count": 20961
+        },
+        "result": {
+          "count": 20860
+        },
+        "right_group_count": 0
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.0014279140159487724,
+        "is_warmup": false,
+        "iteration": 13,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.0012847009999999999,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left",
+          "raw_candidate_count": 20961
+        },
+        "result": {
+          "count": 20860
+        },
+        "right_group_count": 0
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.0014268569648265839,
+        "is_warmup": false,
+        "iteration": 14,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.001283531,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left",
+          "raw_candidate_count": 20961
+        },
+        "result": {
+          "count": 20860
+        },
+        "right_group_count": 0
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.001424761489033699,
+        "is_warmup": false,
+        "iteration": 15,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.0012826030000000002,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left",
+          "raw_candidate_count": 20961
+        },
+        "result": {
+          "count": 20860
+        },
+        "right_group_count": 0
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.0014330949634313583,
+        "is_warmup": false,
+        "iteration": 16,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.001283754,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left",
+          "raw_candidate_count": 20961
+        },
+        "result": {
+          "count": 20860
+        },
+        "right_group_count": 0
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.0014276159927248955,
+        "is_warmup": false,
+        "iteration": 17,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.0012839379999999999,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left",
+          "raw_candidate_count": 20961
+        },
+        "result": {
+          "count": 20860
+        },
+        "right_group_count": 0
+      }
+    ],
+    "total_sec": 0.021494686603546143,
+    "warmup": 3
+  },
+  "rtdl_git_commit": "aa1f6cfb0cc89d0e17b6bcacd1550dcc2dcf03c3",
+  "rtdl_git_status_short": "?? .venv_goal3474/\n?? .venv_numba/\n?? data/\n?? docs/reports/goal3421_cupy_refined_device_predicate_page_probe_eps_1e-10_2026-06-04.json\n?? docs/reports/goal3421_cupy_refined_device_predicate_page_probe_eps_1e-12_2026-06-04.json\n?? docs/reports/goal3421_cupy_refined_device_predicate_page_probe_eps_1e-6_2026-06-04.json\n?? docs/reports/goal3421_cupy_refined_device_predicate_page_probe_eps_1e-7_2026-06-04.json\n?? docs/reports/goal3421_cupy_refined_device_predicate_page_probe_eps_1e-8_2026-06-04.json\n?? docs/reports/goal3421_cupy_refined_device_predicate_page_probe_eps_1e-9_2026-06-04.json\n?? docs/reports/goal3675_rayjoin_pip_full_county_candidate_refine_timing_a5000/summary.json\n?? docs/reports/goal3675_rayjoin_pip_full_county_candidate_refine_timing_a5000/summary_boundary_contact_fused_cupy_device_timed.json\n?? docs/reports/goal3675_rayjoin_pip_full_county_candidate_refine_timing_a5000/summary_boundary_contact_fused_cupy_refine.json\n?? docs/reports/goal3675_rayjoin_pip_full_county_candidate_refine_timing_a5000/summary_boundary_contact_numba_count_device_timed.json\n?? docs/reports/goal3675_rayjoin_pip_full_county_candidate_refine_timing_a5000/summary_boundary_contact_refine.json\n?? docs/reports/goal3675_rayjoin_pip_full_county_candidate_refine_timing_a5000/summary_boundary_contact_trusted_fast_path_cupy_device_timed.json\n?? docs/reports/goal3675_rayjoin_pip_full_county_candidate_refine_timing_a5000/summary_with_relation_boundary_ordinal.json\n?? docs/reports/goal3675_rayjoin_pip_full_county_candidate_refine_timing_a5000/summary_with_relation_status.json\n?? docs/reports/goal3675_rayjoin_pip_full_county_candidate_refine_timing_a5000/summary_with_relation_status_v2.json\n?? docs/reports/goal3675_rayjoin_pip_full_county_candidate_refine_timing_a5000/summary_with_relation_status_v3.json\n?? docs/reports/goal3677_relation_status_exact_count_a5000/summary_sqrt_free_probe.json\n?? docs/reports/goal3677_scalar_count_diagnostic_a5000/\n?? docs/reports/goal3684_native_relation_status_corrected_scalar_count_a5000/summary_clean.json\n?? docs/reports/goal3688_rayjoin_native_pip_safe_mixed_composite_a5000/summary_short.json\n?? docs/reports/goal3688_rayjoin_native_pip_safe_mixed_composite_a5000/summary_short_clean.json\n?? docs/reports/goal3693_lsi_mismatch_localizer_a5000/rayjoin_lsi_pairs.json\n?? docs/reports/goal3693_lsi_mismatch_localizer_a5000/rtdl_lsi_rows.json\n?? docs/reports/goal3698_segment_pair_precision_guard_native_pod_a5000/rayjoin_lsi_pairs.json\n?? docs/reports/goal3701_segment_pair_device_refined_count_pod_a5000/\n?? docs/reports/goal3708_segment_pair_optional_candidate_telemetry_pod_a5000/\n?? docs/reports/goal3724_rayjoin_lsi_grouped_range_route_a5000/\n?? docs/reports/goal3724_rayjoin_lsi_grouped_range_sweep_a5000/\n?? tmp_goal3675_sync_placeholder/",
+  "rtdl_grouped_range_direct_intersection_exact_count": {
+    "claim_boundary": {
+      "diagnostic_only": true,
+      "native_default_route_authorized": false,
+      "public_speedup_claim_authorized": false,
+      "rayjoin_paper_reproduction_claim_authorized": false,
+      "release_authorized": false,
+      "rt_core_speedup_claim_authorized": false,
+      "rtdl_beats_rayjoin_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false
+    },
+    "count": 20860,
+    "max_sec": 0.00028852280229330063,
+    "median_sec": 0.00027280300855636597,
+    "min_sec": 0.0002682441845536232,
+    "repeat": 15,
+    "right_group_count": 326193,
+    "route": "grouped_range_direct_intersection_exact_count",
+    "runs": [
+      {
+        "count": 20860,
+        "elapsed_sec": 0.35445867385715246,
+        "is_warmup": true,
+        "iteration": 0,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.000266786,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left_grouped_range_direct_intersection",
+          "raw_candidate_count": 0
+        },
+        "result": {
+          "claim_boundary": {
+            "diagnostic_only": true,
+            "public_speedup_claim_authorized": false,
+            "rayjoin_paper_reproduction_claim_authorized": false,
+            "release_authorized": false,
+            "rtdl_beats_rayjoin_claim_authorized": false,
+            "true_zero_copy_claim_authorized": false
+          },
+          "contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+          "count": 20860,
+          "implementation_note": "generic grouped/ranged right-primitive direct custom-intersection exact count; diagnostic route, not public default",
+          "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+          "right_group_count": 326193,
+          "schema": "rtdl.optix.segment_pair_prepared_left_grouped_range_direct_intersection_exact_count.v1"
+        },
+        "right_group_count": 326193
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.0003074565902352333,
+        "is_warmup": true,
+        "iteration": 1,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.000253452,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left_grouped_range_direct_intersection",
+          "raw_candidate_count": 0
+        },
+        "result": {
+          "claim_boundary": {
+            "diagnostic_only": true,
+            "public_speedup_claim_authorized": false,
+            "rayjoin_paper_reproduction_claim_authorized": false,
+            "release_authorized": false,
+            "rtdl_beats_rayjoin_claim_authorized": false,
+            "true_zero_copy_claim_authorized": false
+          },
+          "contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+          "count": 20860,
+          "implementation_note": "generic grouped/ranged right-primitive direct custom-intersection exact count; diagnostic route, not public default",
+          "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+          "right_group_count": 326193,
+          "schema": "rtdl.optix.segment_pair_prepared_left_grouped_range_direct_intersection_exact_count.v1"
+        },
+        "right_group_count": 326193
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.00027822889387607574,
+        "is_warmup": true,
+        "iteration": 2,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.000248408,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left_grouped_range_direct_intersection",
+          "raw_candidate_count": 0
+        },
+        "result": {
+          "claim_boundary": {
+            "diagnostic_only": true,
+            "public_speedup_claim_authorized": false,
+            "rayjoin_paper_reproduction_claim_authorized": false,
+            "release_authorized": false,
+            "rtdl_beats_rayjoin_claim_authorized": false,
+            "true_zero_copy_claim_authorized": false
+          },
+          "contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+          "count": 20860,
+          "implementation_note": "generic grouped/ranged right-primitive direct custom-intersection exact count; diagnostic route, not public default",
+          "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+          "right_group_count": 326193,
+          "schema": "rtdl.optix.segment_pair_prepared_left_grouped_range_direct_intersection_exact_count.v1"
+        },
+        "right_group_count": 326193
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.00027374736964702606,
+        "is_warmup": false,
+        "iteration": 3,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.000247425,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left_grouped_range_direct_intersection",
+          "raw_candidate_count": 0
+        },
+        "result": {
+          "claim_boundary": {
+            "diagnostic_only": true,
+            "public_speedup_claim_authorized": false,
+            "rayjoin_paper_reproduction_claim_authorized": false,
+            "release_authorized": false,
+            "rtdl_beats_rayjoin_claim_authorized": false,
+            "true_zero_copy_claim_authorized": false
+          },
+          "contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+          "count": 20860,
+          "implementation_note": "generic grouped/ranged right-primitive direct custom-intersection exact count; diagnostic route, not public default",
+          "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+          "right_group_count": 326193,
+          "schema": "rtdl.optix.segment_pair_prepared_left_grouped_range_direct_intersection_exact_count.v1"
+        },
+        "right_group_count": 326193
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.00027887430042028427,
+        "is_warmup": false,
+        "iteration": 4,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.000252193,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left_grouped_range_direct_intersection",
+          "raw_candidate_count": 0
+        },
+        "result": {
+          "claim_boundary": {
+            "diagnostic_only": true,
+            "public_speedup_claim_authorized": false,
+            "rayjoin_paper_reproduction_claim_authorized": false,
+            "release_authorized": false,
+            "rtdl_beats_rayjoin_claim_authorized": false,
+            "true_zero_copy_claim_authorized": false
+          },
+          "contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+          "count": 20860,
+          "implementation_note": "generic grouped/ranged right-primitive direct custom-intersection exact count; diagnostic route, not public default",
+          "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+          "right_group_count": 326193,
+          "schema": "rtdl.optix.segment_pair_prepared_left_grouped_range_direct_intersection_exact_count.v1"
+        },
+        "right_group_count": 326193
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.00028852280229330063,
+        "is_warmup": false,
+        "iteration": 5,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.000262973,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left_grouped_range_direct_intersection",
+          "raw_candidate_count": 0
+        },
+        "result": {
+          "claim_boundary": {
+            "diagnostic_only": true,
+            "public_speedup_claim_authorized": false,
+            "rayjoin_paper_reproduction_claim_authorized": false,
+            "release_authorized": false,
+            "rtdl_beats_rayjoin_claim_authorized": false,
+            "true_zero_copy_claim_authorized": false
+          },
+          "contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+          "count": 20860,
+          "implementation_note": "generic grouped/ranged right-primitive direct custom-intersection exact count; diagnostic route, not public default",
+          "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+          "right_group_count": 326193,
+          "schema": "rtdl.optix.segment_pair_prepared_left_grouped_range_direct_intersection_exact_count.v1"
+        },
+        "right_group_count": 326193
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.00028198864310979843,
+        "is_warmup": false,
+        "iteration": 6,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.00025506,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left_grouped_range_direct_intersection",
+          "raw_candidate_count": 0
+        },
+        "result": {
+          "claim_boundary": {
+            "diagnostic_only": true,
+            "public_speedup_claim_authorized": false,
+            "rayjoin_paper_reproduction_claim_authorized": false,
+            "release_authorized": false,
+            "rtdl_beats_rayjoin_claim_authorized": false,
+            "true_zero_copy_claim_authorized": false
+          },
+          "contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+          "count": 20860,
+          "implementation_note": "generic grouped/ranged right-primitive direct custom-intersection exact count; diagnostic route, not public default",
+          "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+          "right_group_count": 326193,
+          "schema": "rtdl.optix.segment_pair_prepared_left_grouped_range_direct_intersection_exact_count.v1"
+        },
+        "right_group_count": 326193
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.0002803802490234375,
+        "is_warmup": false,
+        "iteration": 7,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.000255357,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left_grouped_range_direct_intersection",
+          "raw_candidate_count": 0
+        },
+        "result": {
+          "claim_boundary": {
+            "diagnostic_only": true,
+            "public_speedup_claim_authorized": false,
+            "rayjoin_paper_reproduction_claim_authorized": false,
+            "release_authorized": false,
+            "rtdl_beats_rayjoin_claim_authorized": false,
+            "true_zero_copy_claim_authorized": false
+          },
+          "contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+          "count": 20860,
+          "implementation_note": "generic grouped/ranged right-primitive direct custom-intersection exact count; diagnostic route, not public default",
+          "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+          "right_group_count": 326193,
+          "schema": "rtdl.optix.segment_pair_prepared_left_grouped_range_direct_intersection_exact_count.v1"
+        },
+        "right_group_count": 326193
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.00026974454522132874,
+        "is_warmup": false,
+        "iteration": 8,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.000243883,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left_grouped_range_direct_intersection",
+          "raw_candidate_count": 0
+        },
+        "result": {
+          "claim_boundary": {
+            "diagnostic_only": true,
+            "public_speedup_claim_authorized": false,
+            "rayjoin_paper_reproduction_claim_authorized": false,
+            "release_authorized": false,
+            "rtdl_beats_rayjoin_claim_authorized": false,
+            "true_zero_copy_claim_authorized": false
+          },
+          "contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+          "count": 20860,
+          "implementation_note": "generic grouped/ranged right-primitive direct custom-intersection exact count; diagnostic route, not public default",
+          "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+          "right_group_count": 326193,
+          "schema": "rtdl.optix.segment_pair_prepared_left_grouped_range_direct_intersection_exact_count.v1"
+        },
+        "right_group_count": 326193
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.00028058700263500214,
+        "is_warmup": false,
+        "iteration": 9,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.000255308,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left_grouped_range_direct_intersection",
+          "raw_candidate_count": 0
+        },
+        "result": {
+          "claim_boundary": {
+            "diagnostic_only": true,
+            "public_speedup_claim_authorized": false,
+            "rayjoin_paper_reproduction_claim_authorized": false,
+            "release_authorized": false,
+            "rtdl_beats_rayjoin_claim_authorized": false,
+            "true_zero_copy_claim_authorized": false
+          },
+          "contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+          "count": 20860,
+          "implementation_note": "generic grouped/ranged right-primitive direct custom-intersection exact count; diagnostic route, not public default",
+          "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+          "right_group_count": 326193,
+          "schema": "rtdl.optix.segment_pair_prepared_left_grouped_range_direct_intersection_exact_count.v1"
+        },
+        "right_group_count": 326193
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.0002800431102514267,
+        "is_warmup": false,
+        "iteration": 10,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.000253845,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left_grouped_range_direct_intersection",
+          "raw_candidate_count": 0
+        },
+        "result": {
+          "claim_boundary": {
+            "diagnostic_only": true,
+            "public_speedup_claim_authorized": false,
+            "rayjoin_paper_reproduction_claim_authorized": false,
+            "release_authorized": false,
+            "rtdl_beats_rayjoin_claim_authorized": false,
+            "true_zero_copy_claim_authorized": false
+          },
+          "contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+          "count": 20860,
+          "implementation_note": "generic grouped/ranged right-primitive direct custom-intersection exact count; diagnostic route, not public default",
+          "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+          "right_group_count": 326193,
+          "schema": "rtdl.optix.segment_pair_prepared_left_grouped_range_direct_intersection_exact_count.v1"
+        },
+        "right_group_count": 326193
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.00027121976017951965,
+        "is_warmup": false,
+        "iteration": 11,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.000244895,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left_grouped_range_direct_intersection",
+          "raw_candidate_count": 0
+        },
+        "result": {
+          "claim_boundary": {
+            "diagnostic_only": true,
+            "public_speedup_claim_authorized": false,
+            "rayjoin_paper_reproduction_claim_authorized": false,
+            "release_authorized": false,
+            "rtdl_beats_rayjoin_claim_authorized": false,
+            "true_zero_copy_claim_authorized": false
+          },
+          "contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+          "count": 20860,
+          "implementation_note": "generic grouped/ranged right-primitive direct custom-intersection exact count; diagnostic route, not public default",
+          "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+          "right_group_count": 326193,
+          "schema": "rtdl.optix.segment_pair_prepared_left_grouped_range_direct_intersection_exact_count.v1"
+        },
+        "right_group_count": 326193
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.00027109961956739426,
+        "is_warmup": false,
+        "iteration": 12,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.000245349,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left_grouped_range_direct_intersection",
+          "raw_candidate_count": 0
+        },
+        "result": {
+          "claim_boundary": {
+            "diagnostic_only": true,
+            "public_speedup_claim_authorized": false,
+            "rayjoin_paper_reproduction_claim_authorized": false,
+            "release_authorized": false,
+            "rtdl_beats_rayjoin_claim_authorized": false,
+            "true_zero_copy_claim_authorized": false
+          },
+          "contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+          "count": 20860,
+          "implementation_note": "generic grouped/ranged right-primitive direct custom-intersection exact count; diagnostic route, not public default",
+          "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+          "right_group_count": 326193,
+          "schema": "rtdl.optix.segment_pair_prepared_left_grouped_range_direct_intersection_exact_count.v1"
+        },
+        "right_group_count": 326193
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.0002719014883041382,
+        "is_warmup": false,
+        "iteration": 13,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.000246553,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left_grouped_range_direct_intersection",
+          "raw_candidate_count": 0
+        },
+        "result": {
+          "claim_boundary": {
+            "diagnostic_only": true,
+            "public_speedup_claim_authorized": false,
+            "rayjoin_paper_reproduction_claim_authorized": false,
+            "release_authorized": false,
+            "rtdl_beats_rayjoin_claim_authorized": false,
+            "true_zero_copy_claim_authorized": false
+          },
+          "contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+          "count": 20860,
+          "implementation_note": "generic grouped/ranged right-primitive direct custom-intersection exact count; diagnostic route, not public default",
+          "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+          "right_group_count": 326193,
+          "schema": "rtdl.optix.segment_pair_prepared_left_grouped_range_direct_intersection_exact_count.v1"
+        },
+        "right_group_count": 326193
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.00027280300855636597,
+        "is_warmup": false,
+        "iteration": 14,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.000246532,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left_grouped_range_direct_intersection",
+          "raw_candidate_count": 0
+        },
+        "result": {
+          "claim_boundary": {
+            "diagnostic_only": true,
+            "public_speedup_claim_authorized": false,
+            "rayjoin_paper_reproduction_claim_authorized": false,
+            "release_authorized": false,
+            "rtdl_beats_rayjoin_claim_authorized": false,
+            "true_zero_copy_claim_authorized": false
+          },
+          "contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+          "count": 20860,
+          "implementation_note": "generic grouped/ranged right-primitive direct custom-intersection exact count; diagnostic route, not public default",
+          "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+          "right_group_count": 326193,
+          "schema": "rtdl.optix.segment_pair_prepared_left_grouped_range_direct_intersection_exact_count.v1"
+        },
+        "right_group_count": 326193
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.000271419994533062,
+        "is_warmup": false,
+        "iteration": 15,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.000246057,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left_grouped_range_direct_intersection",
+          "raw_candidate_count": 0
+        },
+        "result": {
+          "claim_boundary": {
+            "diagnostic_only": true,
+            "public_speedup_claim_authorized": false,
+            "rayjoin_paper_reproduction_claim_authorized": false,
+            "release_authorized": false,
+            "rtdl_beats_rayjoin_claim_authorized": false,
+            "true_zero_copy_claim_authorized": false
+          },
+          "contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+          "count": 20860,
+          "implementation_note": "generic grouped/ranged right-primitive direct custom-intersection exact count; diagnostic route, not public default",
+          "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+          "right_group_count": 326193,
+          "schema": "rtdl.optix.segment_pair_prepared_left_grouped_range_direct_intersection_exact_count.v1"
+        },
+        "right_group_count": 326193
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.0002720840275287628,
+        "is_warmup": false,
+        "iteration": 16,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.000246634,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left_grouped_range_direct_intersection",
+          "raw_candidate_count": 0
+        },
+        "result": {
+          "claim_boundary": {
+            "diagnostic_only": true,
+            "public_speedup_claim_authorized": false,
+            "rayjoin_paper_reproduction_claim_authorized": false,
+            "release_authorized": false,
+            "rtdl_beats_rayjoin_claim_authorized": false,
+            "true_zero_copy_claim_authorized": false
+          },
+          "contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+          "count": 20860,
+          "implementation_note": "generic grouped/ranged right-primitive direct custom-intersection exact count; diagnostic route, not public default",
+          "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+          "right_group_count": 326193,
+          "schema": "rtdl.optix.segment_pair_prepared_left_grouped_range_direct_intersection_exact_count.v1"
+        },
+        "right_group_count": 326193
+      },
+      {
+        "count": 20860,
+        "elapsed_sec": 0.0002682441845536232,
+        "is_warmup": false,
+        "iteration": 17,
+        "native_phase_timings": {
+          "candidate_count_pass": 0.000243778,
+          "candidate_download": 0.0,
+          "candidate_write_pass": 0.0,
+          "emitted_count": 20860,
+          "exact_refine": 0.0,
+          "left_upload": 0.0,
+          "mode": "count_prepared_left_grouped_range_direct_intersection",
+          "raw_candidate_count": 0
+        },
+        "result": {
+          "claim_boundary": {
+            "diagnostic_only": true,
+            "public_speedup_claim_authorized": false,
+            "rayjoin_paper_reproduction_claim_authorized": false,
+            "release_authorized": false,
+            "rtdl_beats_rayjoin_claim_authorized": false,
+            "true_zero_copy_claim_authorized": false
+          },
+          "contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+          "count": 20860,
+          "implementation_note": "generic grouped/ranged right-primitive direct custom-intersection exact count; diagnostic route, not public default",
+          "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+          "right_group_count": 326193,
+          "schema": "rtdl.optix.segment_pair_prepared_left_grouped_range_direct_intersection_exact_count.v1"
+        },
+        "right_group_count": 326193
+      }
+    ],
+    "total_sec": 0.0041326601058244705,
+    "warmup": 3
+  },
+  "rtdl_source_commit_short": "aa1f6cfb",
+  "schema": "rtdl.goal3724.rayjoin_lsi_grouped_range_route_probe.v1",
+  "segment_counts": {
+    "base_right_county": 326193,
+    "query_left_soil": 251011
+  },
+  "soil": "/root/RayJoin/test/dataset/br_soil_ascii_odyssey_final.txt"
+}
