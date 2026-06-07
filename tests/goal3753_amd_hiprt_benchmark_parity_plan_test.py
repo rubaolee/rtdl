@@ -34,7 +34,7 @@ class Goal3753AmdHiprtBenchmarkParityPlanTest(unittest.TestCase):
     def test_summary_is_honest_about_amd_extension_work(self) -> None:
         self.assertEqual(
             V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION,
-            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3777.v1",
+            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3779.v1",
         )
         summary = summarize_v2_10_amd_hiprt_benchmark_parity()
         self.assertEqual(summary["app_count"], 10)
@@ -128,6 +128,19 @@ class Goal3753AmdHiprtBenchmarkParityPlanTest(unittest.TestCase):
         self.assertEqual(barnes["missing_generic_contracts"], ("grouped_vector_force_reduction",))
         self.assertEqual(barnes["parity_stage"], "needs_generic_hiprt_extension")
         self.assertIn("Goal3777", barnes["rationale"])
+
+    def test_raydb_records_goal3779_grouped_reduction_closure_without_stage_promotion(self) -> None:
+        rows = {row["app"]: row for row in v2_10_amd_hiprt_benchmark_parity()}
+        raydb = rows["raydb_style"]
+        self.assertIn("grouped_i64_count_sum", raydb["required_engine_features"])
+        self.assertEqual(raydb["hiprt_feature_statuses"]["grouped_i64_count_sum"], NATIVE)
+        self.assertNotIn("bounded_db_grouped_count", raydb["required_engine_features"])
+        self.assertNotIn("bounded_db_grouped_sum", raydb["required_engine_features"])
+        self.assertNotIn("native_hiprt_grouped_i64_count_sum_fastpath", raydb["missing_generic_contracts"])
+        self.assertEqual(raydb["missing_generic_contracts"], ("native_hiprt_columnar_predicate_scan_fastpath",))
+        self.assertEqual(raydb["parity_stage"], "compatibility_only_not_amd_perf_ready")
+        self.assertIn("bounded_db_conjunctive_scan", raydb["required_engine_features"])
+        self.assertIn("Goal3779", raydb["rationale"])
 
     def test_each_row_keeps_claim_boundary_false(self) -> None:
         for row in v2_10_amd_hiprt_benchmark_parity():

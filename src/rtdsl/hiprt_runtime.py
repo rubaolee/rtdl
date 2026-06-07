@@ -443,6 +443,18 @@ def _hiprt_lib() -> ctypes.CDLL:
     lib.rtdl_hiprt_context_probe.restype = ctypes.c_int
     lib.rtdl_hiprt_free_rows.argtypes = [ctypes.c_void_p]
     lib.rtdl_hiprt_free_rows.restype = None
+    if hasattr(lib, "rtdl_hiprt_grouped_i64_count_sum"):
+        lib.rtdl_hiprt_grouped_i64_count_sum.argtypes = [
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        lib.rtdl_hiprt_grouped_i64_count_sum.restype = ctypes.c_int
     if hasattr(lib, "rtdl_hiprt_collect_aggregate_frontier_2d"):
         lib.rtdl_hiprt_collect_aggregate_frontier_2d.argtypes = [
             ctypes.POINTER(_RtdlAggregateFrontierSource2D),
@@ -1054,6 +1066,77 @@ def _aggregate_frontier_capacity_upper_bound(source_count: int, node_count: int)
     if source_count <= 0:
         return 0
     return source_count * max(1, source_count + node_count)
+
+
+def grouped_i64_count_sum_hiprt(group_ids, values, *, group_count: int | None = None) -> dict[str, object]:
+    """Run the app-name-free HIPRT grouped i64 count/sum materializer."""
+    normalized_group_ids = tuple(int(value) for value in group_ids)
+    normalized_values = tuple(int(value) for value in values)
+    if len(normalized_group_ids) != len(normalized_values):
+        raise ValueError("HIPRT grouped_i64_count_sum requires group_ids and values with the same length")
+    if group_count is None:
+        group_count_int = (max(normalized_group_ids) + 1) if normalized_group_ids else 0
+    else:
+        group_count_int = int(group_count)
+    if group_count_int < 0:
+        raise ValueError("HIPRT grouped_i64_count_sum group_count must be non-negative")
+
+    symbol = getattr(_hiprt_lib(), "rtdl_hiprt_grouped_i64_count_sum", None)
+    if symbol is None:
+        raise RuntimeError(
+            "loaded HIPRT backend does not export rtdl_hiprt_grouped_i64_count_sum; "
+            "rebuild HIPRT from current main"
+        )
+
+    GroupArray = ctypes.c_int64 * len(normalized_group_ids)
+    OutputArray = ctypes.c_int64 * group_count_int
+    group_array = GroupArray(*normalized_group_ids) if normalized_group_ids else None
+    value_array = GroupArray(*normalized_values) if normalized_values else None
+    count_array = OutputArray() if group_count_int else None
+    sum_array = OutputArray() if group_count_int else None
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        group_array,
+        value_array,
+        len(normalized_group_ids),
+        group_count_int,
+        count_array,
+        sum_array,
+        error,
+        ctypes.sizeof(error),
+    )
+    detail = error.value.decode("utf-8", errors="replace")
+    if status != 0:
+        raise RuntimeError(f"rtdl_hiprt_grouped_i64_count_sum failed with status {status}: {detail}")
+
+    counts = tuple(int(count_array[index]) for index in range(group_count_int)) if group_count_int else ()
+    sums = tuple(int(sum_array[index]) for index in range(group_count_int)) if group_count_int else ()
+    rows = tuple(
+        {"group_id": index, "count": counts[index], "sum": sums[index]}
+        for index in range(group_count_int)
+    )
+    return {
+        "operation": "grouped_i64_count_sum",
+        "backend": "hiprt",
+        "native_generic_symbol": "rtdl_hiprt_grouped_i64_count_sum",
+        "native_engine_app_specific": False,
+        "group_count": group_count_int,
+        "input_row_count": len(normalized_group_ids),
+        "counts": counts,
+        "sums": sums,
+        "rows": rows,
+        "metadata": {
+            "native_symbol": "rtdl_hiprt_grouped_i64_count_sum",
+            "backend_route": "HIPRT generic grouped i64 count/sum materializer on the available Orochi route",
+            "not_amd_hardware_evidence": True,
+            "release_authorized": False,
+            "amd_perf_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "broad_rt_core_claim_authorized": False,
+            "paper_reproduction_claim_authorized": False,
+            "app_specific_native_engine_logic_allowed": False,
+        },
+    }
 
 
 def collect_aggregate_frontier_2d_hiprt(

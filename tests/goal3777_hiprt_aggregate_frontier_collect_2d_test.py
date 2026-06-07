@@ -72,7 +72,7 @@ class Goal3777HiprtAggregateFrontierPortableTest(unittest.TestCase):
     def test_barnes_hut_parity_gap_is_narrowed_not_closed(self) -> None:
         self.assertEqual(
             V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION,
-            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3777.v1",
+            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3779.v1",
         )
         rows = {row["app"]: row for row in v2_10_amd_hiprt_benchmark_parity()}
         barnes = rows["barnes_hut"]

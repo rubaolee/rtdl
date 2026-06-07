@@ -1210,6 +1210,7 @@ from .hiprt_runtime import fixed_radius_neighbors_3d_hiprt
 from .hiprt_runtime import bfs_expand_hiprt
 from .hiprt_runtime import collect_aggregate_frontier_2d_hiprt
 from .hiprt_runtime import conjunctive_scan_hiprt
+from .hiprt_runtime import grouped_i64_count_sum_hiprt
 from .hiprt_runtime import grouped_count_hiprt
 from .hiprt_runtime import grouped_sum_hiprt
 from .hiprt_runtime import hiprt_context_probe
@@ -1885,6 +1886,7 @@ __all__ = [
     "grouped_sum_cpu",
     "grouped_sum_apple_rt",
     "grouped_sum_hiprt",
+    "grouped_i64_count_sum_hiprt",
     "hiprt_context_probe",
     "hiprt_version",
     "InputContract",

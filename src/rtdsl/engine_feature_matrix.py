@@ -150,6 +150,13 @@ _FEATURE_MATRIX: dict[str, dict[str, EngineFeatureSupport]] = {
         "hiprt": _support("aggregate_frontier_collect_2d", "hiprt", NATIVE, "Goal3777 generic HIPRT aggregate-frontier row collector."),
         "apple_rt": _support("aggregate_frontier_collect_2d", "apple_rt", COMPATIBILITY_FALLBACK, "No generic Apple RT aggregate-frontier row collector."),
     },
+    "grouped_i64_count_sum": {
+        "embree": _support("grouped_i64_count_sum", "embree", COMPATIBILITY_FALLBACK, "No dedicated dense grouped i64 count/sum materializer; use existing grouped rows or partner reductions."),
+        "optix": _support("grouped_i64_count_sum", "optix", NATIVE, "OptiX partner-resident columnar grouped i64 count/sum reductions."),
+        "vulkan": _support("grouped_i64_count_sum", "vulkan", COMPATIBILITY_FALLBACK, "No generic Vulkan dense grouped i64 count/sum materializer."),
+        "hiprt": _support("grouped_i64_count_sum", "hiprt", NATIVE, "Goal3779 generic HIPRT dense grouped i64 count/sum materializer."),
+        "apple_rt": _support("grouped_i64_count_sum", "apple_rt", COMPATIBILITY_FALLBACK, "No generic Apple RT dense grouped i64 count/sum materializer."),
+    },
     "visibility_rows": {
         "embree": _support("visibility_rows", "embree", NATIVE, "Dispatches to Embree any-hit and emits visibility rows."),
         "optix": _support("visibility_rows", "optix", NATIVE, "Dispatches to OptiX any-hit and emits visibility rows."),

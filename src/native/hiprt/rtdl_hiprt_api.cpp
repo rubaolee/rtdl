@@ -65,6 +65,50 @@ extern "C" int rtdl_hiprt_collect_k_bounded_i64(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_hiprt_grouped_i64_count_sum(
+    const int64_t* group_ids,
+    const int64_t* values,
+    size_t row_count,
+    size_t group_count,
+    int64_t* counts_out,
+    int64_t* sums_out,
+    char* error_out,
+    size_t error_size) {
+    return handle_call([&]() {
+        if (counts_out == nullptr && group_count != 0) {
+            throw std::runtime_error("counts_out must not be null when group_count is nonzero");
+        }
+        if (sums_out == nullptr && group_count != 0) {
+            throw std::runtime_error("sums_out must not be null when group_count is nonzero");
+        }
+        if (group_ids == nullptr && row_count != 0) {
+            throw std::runtime_error("group_ids must not be null when row_count is nonzero");
+        }
+        if (values == nullptr && row_count != 0) {
+            throw std::runtime_error("values must not be null when row_count is nonzero");
+        }
+        if (group_count > static_cast<size_t>(std::numeric_limits<int64_t>::max())) {
+            throw std::runtime_error("group_count exceeds dense int64 group id range");
+        }
+
+        std::vector<int64_t> counts(group_count, 0);
+        std::vector<int64_t> sums(group_count, 0);
+        for (size_t row_index = 0; row_index < row_count; ++row_index) {
+            const int64_t group_id = group_ids[row_index];
+            if (group_id < 0 || static_cast<size_t>(group_id) >= group_count) {
+                throw std::runtime_error("group_id out of dense group_count range");
+            }
+            const size_t group_index = static_cast<size_t>(group_id);
+            ++counts[group_index];
+            sums[group_index] += values[row_index];
+        }
+        if (group_count != 0) {
+            std::memcpy(counts_out, counts.data(), sizeof(int64_t) * group_count);
+            std::memcpy(sums_out, sums.data(), sizeof(int64_t) * group_count);
+        }
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_hiprt_collect_aggregate_frontier_2d(
     const RtdlAggregateFrontierSource2D* sources,
     size_t source_count,

@@ -924,7 +924,7 @@ PRIMITIVE_HIERARCHY = (
                     "compute grouped count sum min max or stats",
                 ),
                 reference_path="docs/features/reduce_rows/README.md",
-                backends=("cpu_python_reference", "cpu", "optix"),
+                backends=("cpu_python_reference", "cpu", "optix", "hiprt"),
                 partner_ops=("segmented_count_i64", "segmented_sum_f64", "grouped_argmin_f64"),
                 children=(
                     PrimitiveHierarchyNode(
