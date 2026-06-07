@@ -3928,6 +3928,14 @@ struct SegmentPairAmbiguityCountFunction {
 
 static SegmentPairAmbiguityCountFunction g_segment_pair_ambiguity_count;
 
+struct SegmentPairDeviceRefinedCountFunction {
+    CUmodule module = nullptr;
+    CUfunction fn = nullptr;
+    std::once_flag init;
+};
+
+static SegmentPairDeviceRefinedCountFunction g_segment_pair_device_refined_count;
+
 static const char* kSegmentPairAmbiguityCountKernelSrc = R"CUDA(
 #include <stdint.h>
 #include <math.h>
@@ -3972,6 +3980,67 @@ extern "C" __global__ void segment_pair_ambiguity_count_kernel(
 }
 )CUDA";
 
+static const char* kSegmentPairDeviceRefinedCountKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <math.h>
+
+struct RtdlSegment {
+    unsigned int id;
+    double x0, y0, x1, y1;
+};
+
+struct GpuSegmentPairIntersectionRecord {
+    unsigned int left_id, right_id;
+    unsigned int left_index, right_index;
+};
+
+static __forceinline__ __device__ bool exact_segment_intersection_device(
+    const RtdlSegment left,
+    const RtdlSegment right)
+{
+    const double px = left.x0;
+    const double py = left.y0;
+    const double rx = left.x1 - left.x0;
+    const double ry = left.y1 - left.y0;
+    const double qx = right.x0;
+    const double qy = right.y0;
+    const double sx = right.x1 - right.x0;
+    const double sy = right.y1 - right.y0;
+    const double denom = rx * sy - ry * sx;
+    const double scale = sqrt(rx * rx + ry * ry) * sqrt(sx * sx + sy * sy);
+    const double threshold = 64.0 * 2.2204460492503131e-16 * fmax(1.0, scale);
+    if (fabs(denom) <= threshold) return false;
+    const double qpx = qx - px;
+    const double qpy = qy - py;
+    const double t = (qpx * sy - qpy * sx) / denom;
+    const double u = (qpx * ry - qpy * rx) / denom;
+    return 0.0 <= t && t <= 1.0 && 0.0 <= u && u <= 1.0;
+}
+
+extern "C" __global__ void segment_pair_device_refined_count_kernel(
+    const RtdlSegment* left,
+    unsigned long long left_count,
+    const RtdlSegment* right,
+    unsigned long long right_count,
+    const GpuSegmentPairIntersectionRecord* candidates,
+    unsigned int candidate_count,
+    unsigned long long* exact_count)
+{
+    const unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= candidate_count) return;
+    const GpuSegmentPairIntersectionRecord candidate = candidates[idx];
+    if ((unsigned long long)candidate.left_index >= left_count ||
+        (unsigned long long)candidate.right_index >= right_count) {
+        return;
+    }
+    if (exact_segment_intersection_device(
+            left[candidate.left_index],
+            right[candidate.right_index])) {
+        atomicAdd(exact_count, 1ull);
+    }
+}
+)CUDA";
+
 struct SegmentFirstHitLaunchParams {
     OptixTraversableHandle traversable;
     const GpuSegment* probes;
@@ -3986,13 +4055,15 @@ struct PreparedSegmentPairIntersectionBuild {
     std::unordered_map<uint32_t, const RtdlSegment*> right_by_id;
     size_t right_count = 0;
     DevPtr d_right;
+    DevPtr d_right_exact;
     AccelHolder accel;
 
     PreparedSegmentPairIntersectionBuild(const RtdlSegment* right, size_t count)
         : right_segments(count),
           host_right_segments(),
           right_count(count),
-          d_right(sizeof(GpuSegment) * count)
+          d_right(sizeof(GpuSegment) * count),
+          d_right_exact(sizeof(RtdlSegment) * count)
     {
         if (count > 0) {
             host_right_segments.assign(right, right + count);
@@ -4011,6 +4082,7 @@ struct PreparedSegmentPairIntersectionBuild {
             };
         }
         upload(d_right.ptr, right_segments.data(), right_segments.size());
+        upload(d_right_exact.ptr, right, count);
 
         if (!right_segments.empty()) {
             std::vector<OptixAabb> aabbs(right_segments.size());
@@ -4299,6 +4371,52 @@ static void launch_segment_pair_ambiguity_count_kernel(
     };
     CU_CHECK(cuLaunchKernel(
         g_segment_pair_ambiguity_count.fn,
+        blocks, 1, 1,
+        threads, 1, 1,
+        0, stream, args, nullptr));
+}
+
+static void ensure_segment_pair_device_refined_count_kernel() {
+    std::call_once(g_segment_pair_device_refined_count.init, [&]() {
+        std::string ptx = compile_to_ptx(
+            kSegmentPairDeviceRefinedCountKernelSrc,
+            "segment_pair_device_refined_count_kernel.cu");
+        CU_CHECK(cuModuleLoadData(&g_segment_pair_device_refined_count.module, ptx.c_str()));
+        CU_CHECK(cuModuleGetFunction(
+            &g_segment_pair_device_refined_count.fn,
+            g_segment_pair_device_refined_count.module,
+            "segment_pair_device_refined_count_kernel"));
+    });
+}
+
+static void launch_segment_pair_device_refined_count_kernel(
+        CUdeviceptr left_exact_device,
+        size_t left_count,
+        CUdeviceptr right_exact_device,
+        size_t right_count,
+        CUdeviceptr candidates_device,
+        uint32_t candidate_count,
+        CUdeviceptr exact_count_device,
+        CUstream stream)
+{
+    if (candidate_count == 0)
+        return;
+    ensure_segment_pair_device_refined_count_kernel();
+    const unsigned int threads = 256u;
+    const unsigned int blocks = (candidate_count + threads - 1u) / threads;
+    const unsigned long long left_count64 = static_cast<unsigned long long>(left_count);
+    const unsigned long long right_count64 = static_cast<unsigned long long>(right_count);
+    void* args[] = {
+        &left_exact_device,
+        const_cast<unsigned long long*>(&left_count64),
+        &right_exact_device,
+        const_cast<unsigned long long*>(&right_count64),
+        &candidates_device,
+        &candidate_count,
+        &exact_count_device,
+    };
+    CU_CHECK(cuLaunchKernel(
+        g_segment_pair_device_refined_count.fn,
         blocks, 1, 1,
         threads, 1, 1,
         0, stream, args, nullptr));
@@ -4679,6 +4797,131 @@ static std::vector<GpuSegmentPairIntersectionRecord> collect_segment_pair_inters
     }
 
     return gpu_rows;
+}
+
+static size_t count_segment_pair_intersection_candidates_device_refined_optix(
+        size_t left_count,
+        CUdeviceptr d_left_ptr,
+        CUdeviceptr d_left_exact_ptr,
+        CUdeviceptr d_right_ptr,
+        CUdeviceptr d_right_exact_ptr,
+        size_t right_count,
+        OptixTraversableHandle traversable)
+{
+    if (left_count == 0 || right_count == 0) {
+        return 0;
+    }
+    if (right_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("segment-pair device-refined count right segment count exceeds uint32_t launch capacity");
+    }
+    const uint64_t max_left_per_launch64 =
+        static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()) /
+        static_cast<uint64_t>(right_count);
+    if (max_left_per_launch64 == 0) {
+        throw std::runtime_error("segment-pair device-refined count cannot chunk right segment set into uint32_t launch capacity");
+    }
+    const size_t max_left_per_launch = static_cast<size_t>(
+        std::min<uint64_t>(max_left_per_launch64, static_cast<uint64_t>(left_count)));
+    DevPtr d_candidate_count(sizeof(uint32_t));
+    DevPtr d_exact_count(sizeof(unsigned long long));
+    unsigned long long zero64 = 0ull;
+    upload<unsigned long long>(d_exact_count.ptr, &zero64, 1);
+
+    auto launch_candidate_pass = [&](
+            size_t left_offset,
+            size_t chunk_left_count,
+            CUdeviceptr output_ptr,
+            uint32_t output_capacity) -> uint32_t {
+        uint32_t zero = 0;
+        upload<uint32_t>(d_candidate_count.ptr, &zero, 1);
+        const uint64_t chunk_capacity64 =
+            static_cast<uint64_t>(chunk_left_count) * static_cast<uint64_t>(right_count);
+        if (chunk_capacity64 > static_cast<uint64_t>(std::numeric_limits<uint32_t>::max())) {
+            throw std::runtime_error("segment-pair device-refined count chunk output capacity exceeds uint32_t");
+        }
+        const uint32_t max_candidate_count = static_cast<uint32_t>(chunk_capacity64);
+        const CUdeviceptr chunk_left_ptr =
+            d_left_ptr + static_cast<CUdeviceptr>(sizeof(GpuSegment) * left_offset);
+
+        SegmentPairIntersectionLaunchParams lp;
+        lp.traversable = traversable;
+        lp.left_segs = reinterpret_cast<const GpuSegment*>(chunk_left_ptr);
+        lp.right_segs = reinterpret_cast<const GpuSegment*>(d_right_ptr);
+        lp.output = output_capacity == 0
+            ? nullptr
+            : reinterpret_cast<GpuSegmentPairIntersectionRecord*>(output_ptr);
+        lp.output_count = reinterpret_cast<uint32_t*>(d_candidate_count.ptr);
+        lp.output_capacity = output_capacity;
+        lp.probe_count = static_cast<uint32_t>(chunk_left_count);
+        if (left_offset > static_cast<size_t>(std::numeric_limits<uint32_t>::max()) ||
+            chunk_left_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()) - left_offset) {
+            throw std::runtime_error("segment-pair device-refined count direct candidate index exceeds uint32_t");
+        }
+        lp.left_offset = static_cast<uint32_t>(left_offset);
+
+        DevPtr d_params(sizeof(SegmentPairIntersectionLaunchParams));
+        upload(d_params.ptr, &lp, 1);
+
+        CUstream stream = 0;
+        OPTIX_CHECK(optixLaunch(g_segment_pair_intersection.pipe->pipeline, stream,
+                                 d_params.ptr, sizeof(SegmentPairIntersectionLaunchParams),
+                                 &g_segment_pair_intersection.pipe->sbt,
+                                 static_cast<unsigned>(chunk_left_count), 1, 1));
+        CU_CHECK(cuStreamSynchronize(stream));
+
+        uint32_t emitted = 0;
+        download(&emitted, d_candidate_count.ptr, 1);
+        if (emitted > max_candidate_count) {
+            throw std::runtime_error("segment-pair device-refined count candidate count exceeded pair limit");
+        }
+        if (emitted > output_capacity && output_capacity != 0) {
+            throw std::runtime_error("segment-pair device-refined count output overflowed capacity");
+        }
+        return emitted;
+    };
+
+    for (size_t left_offset = 0; left_offset < left_count; left_offset += max_left_per_launch) {
+        const size_t chunk_left_count = std::min(max_left_per_launch, left_count - left_offset);
+        const auto t_count_start = std::chrono::steady_clock::now();
+        const uint32_t gpu_count = launch_candidate_pass(left_offset, chunk_left_count, 0, 0);
+        const auto t_count_end = std::chrono::steady_clock::now();
+        g_optix_last_segment_pair_candidate_count_s +=
+            std::chrono::duration<double>(t_count_end - t_count_start).count();
+        g_optix_last_segment_pair_raw_candidate_count += static_cast<size_t>(gpu_count);
+        if (gpu_count == 0) {
+            continue;
+        }
+
+        DevPtr d_output(sizeof(GpuSegmentPairIntersectionRecord) * gpu_count);
+        const auto t_write_start = std::chrono::steady_clock::now();
+        const uint32_t written_count =
+            launch_candidate_pass(left_offset, chunk_left_count, d_output.ptr, gpu_count);
+        const auto t_write_end = std::chrono::steady_clock::now();
+        g_optix_last_segment_pair_candidate_write_s +=
+            std::chrono::duration<double>(t_write_end - t_write_start).count();
+        if (written_count != gpu_count) {
+            throw std::runtime_error("segment-pair device-refined count candidate count changed between count and write passes");
+        }
+
+        const auto t_refine_start = std::chrono::steady_clock::now();
+        launch_segment_pair_device_refined_count_kernel(
+            d_left_exact_ptr,
+            left_count,
+            d_right_exact_ptr,
+            right_count,
+            d_output.ptr,
+            written_count,
+            d_exact_count.ptr,
+            0);
+        CU_CHECK(cuStreamSynchronize(0));
+        const auto t_refine_end = std::chrono::steady_clock::now();
+        g_optix_last_segment_pair_exact_refine_s +=
+            std::chrono::duration<double>(t_refine_end - t_refine_start).count();
+    }
+
+    unsigned long long exact_count = 0ull;
+    download(&exact_count, d_exact_count.ptr, 1);
+    return static_cast<size_t>(exact_count);
 }
 
 static void run_prepared_segment_pair_candidate_device_columns_optix(
@@ -5102,30 +5345,22 @@ static void count_prepared_segment_pair_intersection_optix(
         };
     }
     DevPtr d_left(sizeof(GpuSegment) * left_count);
+    DevPtr d_left_exact(sizeof(RtdlSegment) * left_count);
     const auto t_upload_start = std::chrono::steady_clock::now();
     upload(d_left.ptr, gpu_left.data(), gpu_left.size());
+    upload(d_left_exact.ptr, left, left_count);
     const auto t_upload_end = std::chrono::steady_clock::now();
     g_optix_last_segment_pair_left_upload_s =
         std::chrono::duration<double>(t_upload_end - t_upload_start).count();
 
-    const std::vector<GpuSegmentPairIntersectionRecord> gpu_rows =
-        collect_segment_pair_intersection_candidates_optix(
-            left_count,
-            d_left.ptr,
-            prepared->d_right.ptr,
-            prepared->right_count,
-            prepared->accel.handle);
-    const auto t_refine_start = std::chrono::steady_clock::now();
-    *count_out = count_segment_pair_intersection_rows(
-        left,
+    *count_out = count_segment_pair_intersection_candidates_device_refined_optix(
         left_count,
-        prepared->host_right_segments.data(),
+        d_left.ptr,
+        d_left_exact.ptr,
+        prepared->d_right.ptr,
+        prepared->d_right_exact.ptr,
         prepared->right_count,
-        gpu_rows,
-        &prepared->right_by_id);
-    const auto t_refine_end = std::chrono::steady_clock::now();
-    g_optix_last_segment_pair_exact_refine_s =
-        std::chrono::duration<double>(t_refine_end - t_refine_start).count();
+        prepared->accel.handle);
     g_optix_last_segment_pair_emitted_count = *count_out;
 }
 
