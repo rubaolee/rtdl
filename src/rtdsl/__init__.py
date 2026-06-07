@@ -1217,6 +1217,7 @@ from .hiprt_runtime import prepare_hiprt_rays_2d
 from .hiprt_runtime import prepare_hiprt_ray_triangle_any_hit_2d
 from .hiprt_runtime import prepare_hiprt_ray_triangle_hit_count
 from .hiprt_runtime import prepare_hiprt_segment_pair_intersection_2d
+from .hiprt_runtime import prepare_hiprt_shape_pair_active_count_2d
 from .hiprt_runtime import prepare_hiprt_fixed_radius_neighbors_3d
 from .hiprt_runtime import prepare_hiprt_graph_csr
 from .hiprt_runtime import prepare_hiprt
@@ -1230,6 +1231,7 @@ from .hiprt_runtime import PreparedHiprtKernel
 from .hiprt_runtime import PreparedHiprtRayTriangleAnyHit2D
 from .hiprt_runtime import PreparedHiprtRayTriangleHitCount3D
 from .hiprt_runtime import PreparedHiprtSegmentPairIntersection2D
+from .hiprt_runtime import PreparedHiprtShapePairActiveCount2D
 from .hiprt_runtime import ray_triangle_any_hit_hiprt
 from .hiprt_runtime import ray_triangle_hit_count_hiprt
 from .hiprt_runtime import run_hiprt
@@ -2287,6 +2289,7 @@ __all__ = [
     "prepare_hiprt_rays_2d",
     "prepare_hiprt_ray_triangle_hit_count",
     "prepare_hiprt_segment_pair_intersection_2d",
+    "prepare_hiprt_shape_pair_active_count_2d",
     "PreparedHiprtDbKernel",
     "PreparedHiprtDbTable",
     "PreparedHiprtFixedRadiusKernel",
@@ -2295,6 +2298,7 @@ __all__ = [
     "PreparedHiprtGraphKernel",
     "PreparedHiprtKernel",
     "PreparedHiprtSegmentPairIntersection2D",
+    "PreparedHiprtShapePairActiveCount2D",
     "OutputRecord",
     "OverpassElementStats",
     "PaperTarget",

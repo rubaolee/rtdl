@@ -34,25 +34,26 @@ class Goal3753AmdHiprtBenchmarkParityPlanTest(unittest.TestCase):
     def test_summary_is_honest_about_amd_extension_work(self) -> None:
         self.assertEqual(
             V2_10_AMD_HIPRT_BENCHMARK_PARITY_VERSION,
-            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3766.v1",
+            "rtdl.v2_10.amd_hiprt_benchmark_parity_after_goal3767.v1",
         )
         summary = summarize_v2_10_amd_hiprt_benchmark_parity()
         self.assertEqual(summary["app_count"], 10)
-        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 1)
+        self.assertEqual(summary["stage_counts"]["ready_for_amd_functional_pod"], 2)
         self.assertEqual(summary["stage_counts"]["compatibility_only_not_amd_perf_ready"], 2)
-        self.assertEqual(summary["stage_counts"]["needs_generic_hiprt_extension"], 7)
-        self.assertEqual(summary["ready_for_amd_functional_pod_apps"], ("robot_collision",))
-        self.assertIn("spatial_rayjoin", summary["needs_generic_hiprt_extension_apps"])
+        self.assertEqual(summary["stage_counts"]["needs_generic_hiprt_extension"], 6)
+        self.assertEqual(summary["ready_for_amd_functional_pod_apps"], ("spatial_rayjoin", "robot_collision"))
         self.assertIn("raydb_style", summary["compatibility_only_not_amd_perf_ready_apps"])
         self.assertFalse(summary["release_authorized"])
         self.assertFalse(summary["amd_perf_claim_authorized"])
 
-    def test_spatial_rayjoin_records_goal3766_segment_pair_count_closure(self) -> None:
+    def test_spatial_rayjoin_records_goal3766_and_goal3767_contract_closure(self) -> None:
         rows = {row["app"]: row for row in v2_10_amd_hiprt_benchmark_parity()}
         spatial = rows["spatial_rayjoin"]
         self.assertIn("prepared_segment_pair_exact_count_2d", spatial["required_engine_features"])
+        self.assertIn("prepared_shape_pair_active_count_2d", spatial["required_engine_features"])
         self.assertNotIn("prepared_segment_pair_exact_count", spatial["missing_generic_contracts"])
-        self.assertEqual(spatial["missing_generic_contracts"], ("prepared_shape_pair_active_count",))
+        self.assertEqual(spatial["missing_generic_contracts"], ())
+        self.assertEqual(spatial["parity_stage"], "ready_for_amd_functional_pod")
 
     def test_each_row_keeps_claim_boundary_false(self) -> None:
         for row in v2_10_amd_hiprt_benchmark_parity():

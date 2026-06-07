@@ -675,6 +675,54 @@ extern "C" int rtdl_hiprt_run_shape_pair_relation_flags(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_hiprt_prepare_shape_pair_relation_active_count(
+    const RtdlPolygonRef* right_polygons,
+    size_t right_count,
+    const double* right_vertices_xy,
+    size_t right_vertex_xy_count,
+    void** prepared_out,
+    char* error_out,
+    size_t error_size) {
+    return handle_call([&]() {
+        if (prepared_out == nullptr) {
+            throw std::runtime_error("prepared_out must not be null");
+        }
+        *prepared_out = nullptr;
+        *prepared_out = prepare_shape_pair_active_count_2d(
+            right_polygons,
+            right_count,
+            right_vertices_xy,
+            right_vertex_xy_count);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_hiprt_destroy_prepared_shape_pair_relation_active_count(void* prepared) {
+    delete reinterpret_cast<PreparedShapePairActiveCount2D*>(prepared);
+}
+
+extern "C" int rtdl_hiprt_count_prepared_shape_pair_relation_active(
+    void* prepared,
+    const RtdlPolygonRef* left_polygons,
+    size_t left_count,
+    const double* left_vertices_xy,
+    size_t left_vertex_xy_count,
+    size_t* count_out,
+    char* error_out,
+    size_t error_size) {
+    return handle_call([&]() {
+        if (prepared == nullptr) {
+            throw std::runtime_error("prepared HIPRT shape-pair active-count handle must not be null");
+        }
+        count_prepared_shape_pair_active_2d(
+            *reinterpret_cast<PreparedShapePairActiveCount2D*>(prepared),
+            left_polygons,
+            left_count,
+            left_vertices_xy,
+            left_vertex_xy_count,
+            count_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_hiprt_run_point_nearest_segment(
     const RtdlPoint* points,
     size_t point_count,

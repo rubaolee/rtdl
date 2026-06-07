@@ -434,6 +434,32 @@ def _hiprt_lib() -> ctypes.CDLL:
         ctypes.c_size_t,
     ]
     lib.rtdl_hiprt_run_shape_pair_relation_flags.restype = ctypes.c_int
+    if hasattr(lib, "rtdl_hiprt_prepare_shape_pair_relation_active_count"):
+        lib.rtdl_hiprt_prepare_shape_pair_relation_active_count.argtypes = [
+            ctypes.POINTER(_RtdlPolygonRef),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        lib.rtdl_hiprt_prepare_shape_pair_relation_active_count.restype = ctypes.c_int
+    if hasattr(lib, "rtdl_hiprt_count_prepared_shape_pair_relation_active"):
+        lib.rtdl_hiprt_count_prepared_shape_pair_relation_active.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPolygonRef),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        lib.rtdl_hiprt_count_prepared_shape_pair_relation_active.restype = ctypes.c_int
+    if hasattr(lib, "rtdl_hiprt_destroy_prepared_shape_pair_relation_active_count"):
+        lib.rtdl_hiprt_destroy_prepared_shape_pair_relation_active_count.argtypes = [ctypes.c_void_p]
+        lib.rtdl_hiprt_destroy_prepared_shape_pair_relation_active_count.restype = None
     lib.rtdl_hiprt_run_point_nearest_segment.argtypes = [
         ctypes.POINTER(_RtdlPoint),
         ctypes.c_size_t,
@@ -1324,6 +1350,100 @@ def overlay_compose_hiprt(
         )
     finally:
         _hiprt_lib().rtdl_hiprt_free_rows(rows_ptr)
+
+
+class PreparedHiprtShapePairActiveCount2D:
+    def __init__(self, handle: ctypes.c_void_p, *, empty: bool = False) -> None:
+        self._handle = handle
+        self._empty = empty
+
+    def close(self) -> None:
+        if self._handle:
+            _hiprt_lib().rtdl_hiprt_destroy_prepared_shape_pair_relation_active_count(self._handle)
+            self._handle = ctypes.c_void_p()
+
+    def __enter__(self) -> "PreparedHiprtShapePairActiveCount2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+    def count(self, left_polygons: tuple[_CanonicalPolygon, ...]) -> int:
+        left_records = tuple(left_polygons)
+        if any(not isinstance(polygon, _CanonicalPolygon) for polygon in left_records):
+            raise TypeError("Prepared HIPRT shape-pair active count currently supports only Polygon left inputs")
+        if not left_records or self._empty:
+            return 0
+        if not self._handle:
+            raise RuntimeError("prepared HIPRT shape-pair active-count handle is closed")
+        left_refs, left_vertices = _encode_polygon_arrays(left_records)
+        count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = _hiprt_lib().rtdl_hiprt_count_prepared_shape_pair_relation_active(
+            self._handle,
+            left_refs,
+            len(left_records),
+            left_vertices,
+            len(left_vertices),
+            ctypes.byref(count),
+            error,
+            ctypes.sizeof(error),
+        )
+        if status != 0:
+            detail = error.value.decode("utf-8", errors="replace")
+            raise RuntimeError(
+                "rtdl_hiprt_count_prepared_shape_pair_relation_active "
+                f"failed with status {status}: {detail}"
+            )
+        return int(count.value)
+
+
+def _hiprt_prepared_shape_pair_active_count_symbols_available() -> bool:
+    try:
+        lib = _hiprt_lib()
+    except Exception:
+        return False
+    return (
+        getattr(lib, "rtdl_hiprt_prepare_shape_pair_relation_active_count", None) is not None
+        and getattr(lib, "rtdl_hiprt_count_prepared_shape_pair_relation_active", None) is not None
+        and getattr(lib, "rtdl_hiprt_destroy_prepared_shape_pair_relation_active_count", None) is not None
+    )
+
+
+def prepare_hiprt_shape_pair_active_count_2d(
+    right_polygons: tuple[_CanonicalPolygon, ...],
+) -> PreparedHiprtShapePairActiveCount2D:
+    right_records = tuple(right_polygons)
+    if any(not isinstance(polygon, _CanonicalPolygon) for polygon in right_records):
+        raise TypeError("prepare_hiprt_shape_pair_active_count_2d currently supports only Polygon right inputs")
+    if not right_records and not _hiprt_prepared_shape_pair_active_count_symbols_available():
+        return PreparedHiprtShapePairActiveCount2D(ctypes.c_void_p(), empty=True)
+    if not _hiprt_prepared_shape_pair_active_count_symbols_available():
+        raise RuntimeError("current HIPRT library does not export prepared 2D shape-pair active-count symbols")
+    right_refs, right_vertices = _encode_polygon_arrays(right_records)
+    handle = ctypes.c_void_p()
+    error = ctypes.create_string_buffer(4096)
+    status = _hiprt_lib().rtdl_hiprt_prepare_shape_pair_relation_active_count(
+        right_refs,
+        len(right_records),
+        right_vertices,
+        len(right_vertices),
+        ctypes.byref(handle),
+        error,
+        ctypes.sizeof(error),
+    )
+    if status != 0:
+        detail = error.value.decode("utf-8", errors="replace")
+        raise RuntimeError(
+            f"rtdl_hiprt_prepare_shape_pair_relation_active_count failed with status {status}: {detail}"
+        )
+    return PreparedHiprtShapePairActiveCount2D(handle, empty=not right_records)
 
 
 def _encode_segment_array(segments: tuple[_CanonicalSegment, ...]):

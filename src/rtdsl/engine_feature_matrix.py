@@ -45,6 +45,13 @@ _FEATURE_MATRIX: dict[str, dict[str, EngineFeatureSupport]] = {
         "hiprt": _support("prepared_segment_pair_exact_count_2d", "hiprt", NATIVE, "Goal3766 prepared segment-pair scene plus scalar exact-count native export."),
         "apple_rt": _support("prepared_segment_pair_exact_count_2d", "apple_rt", COMPATIBILITY_FALLBACK, "Counts emitted segment-pair rows; no prepared scalar-count native export."),
     },
+    "prepared_shape_pair_active_count_2d": {
+        "embree": _support("prepared_shape_pair_active_count_2d", "embree", COMPATIBILITY_FALLBACK, "Counts emitted shape-pair relation rows; no dedicated scalar active-count native export."),
+        "optix": _support("prepared_shape_pair_active_count_2d", "optix", NATIVE, "Prepared shape-pair relation path plus scalar active-count native route."),
+        "vulkan": _support("prepared_shape_pair_active_count_2d", "vulkan", COMPATIBILITY_FALLBACK, "Counts emitted shape-pair relation rows; no prepared scalar active-count native export."),
+        "hiprt": _support("prepared_shape_pair_active_count_2d", "hiprt", NATIVE, "Goal3767 prepared right-shape payload plus scalar active-count query."),
+        "apple_rt": _support("prepared_shape_pair_active_count_2d", "apple_rt", COMPATIBILITY_FALLBACK, "Counts emitted shape-pair relation rows; no prepared scalar active-count native export."),
+    },
     "point_in_polygon_2d": {
         "embree": _support("point_in_polygon_2d", "embree", NATIVE, "Embree ray-crossing traversal path."),
         "optix": _support("point_in_polygon_2d", "optix", NATIVE, "OptiX native PIP workload path."),

@@ -133,6 +133,46 @@ struct PreparedSegmentPairIntersection2D {
     PreparedSegmentPairIntersection2D& operator=(PreparedSegmentPairIntersection2D&&) = delete;
 };
 
+struct PreparedShapePairActiveCount2D {
+    HiprtRuntime runtime;
+    DeviceAllocation right_device;
+    DeviceAllocation right_vertex_device;
+    hiprtFuncTable func_table{};
+    oroFunction count_kernel{};
+    size_t right_count{0};
+    size_t right_vertex_count{0};
+    bool empty_scene{false};
+
+    explicit PreparedShapePairActiveCount2D(bool empty_scene_in) : empty_scene(empty_scene_in) {}
+
+    PreparedShapePairActiveCount2D(
+        HiprtRuntime&& runtime_in,
+        DeviceAllocation&& right_device_in,
+        DeviceAllocation&& right_vertex_device_in,
+        hiprtFuncTable func_table_in,
+        size_t right_count_in,
+        size_t right_vertex_count_in)
+        : runtime(std::move(runtime_in)),
+          right_device(std::move(right_device_in)),
+          right_vertex_device(std::move(right_vertex_device_in)),
+          func_table(func_table_in),
+          right_count(right_count_in),
+          right_vertex_count(right_vertex_count_in),
+          empty_scene(false) {}
+
+    ~PreparedShapePairActiveCount2D() {
+        if (func_table != nullptr) {
+            hiprtDestroyFuncTable(runtime.context, func_table);
+            func_table = nullptr;
+        }
+    }
+
+    PreparedShapePairActiveCount2D(const PreparedShapePairActiveCount2D&) = delete;
+    PreparedShapePairActiveCount2D& operator=(const PreparedShapePairActiveCount2D&) = delete;
+    PreparedShapePairActiveCount2D(PreparedShapePairActiveCount2D&&) = delete;
+    PreparedShapePairActiveCount2D& operator=(PreparedShapePairActiveCount2D&&) = delete;
+};
+
 struct PreparedFixedRadiusNeighbors3D {
     HiprtRuntime runtime;
     DeviceAllocation search_device;
@@ -545,6 +585,48 @@ std::vector<RtdlHiprtAabb> encode_shape_pair_candidate_aabbs(
         if (right_polygons[i].vertex_count == 0) {
             throw std::runtime_error("right polygon vertex range is invalid");
         }
+        aabbs.push_back({
+            {min_x - eps, min_y - eps, -eps, 0.0f},
+            {max_x + eps, max_y + eps, eps, 0.0f},
+        });
+    }
+    return aabbs;
+}
+
+std::vector<RtdlHiprtAabb> encode_shape_pair_left_envelope_aabbs(
+    size_t right_count,
+    const RtdlHiprtPolygonRefDevice* left_polygons,
+    size_t left_count,
+    const RtdlHiprtVertex2DDevice* left_vertices,
+    size_t left_vertex_count) {
+    if (left_count == 0) {
+        return {};
+    }
+    constexpr float eps = 1.0e-4f;
+    float min_x = 0.0f;
+    float max_x = 0.0f;
+    float min_y = 0.0f;
+    float max_y = 0.0f;
+    bool initialized = false;
+    for (size_t i = 0; i < left_count; ++i) {
+        if (left_polygons[i].vertex_count == 0 || left_polygons[i].vertex_offset >= left_vertex_count) {
+            throw std::runtime_error("left polygon vertex range is invalid");
+        }
+        const RtdlHiprtVertex2DDevice vertex = left_vertices[left_polygons[i].vertex_offset];
+        if (!initialized) {
+            min_x = max_x = vertex.x;
+            min_y = max_y = vertex.y;
+            initialized = true;
+        } else {
+            min_x = std::min(min_x, vertex.x);
+            max_x = std::max(max_x, vertex.x);
+            min_y = std::min(min_y, vertex.y);
+            max_y = std::max(max_y, vertex.y);
+        }
+    }
+    std::vector<RtdlHiprtAabb> aabbs;
+    aabbs.reserve(right_count);
+    for (size_t i = 0; i < right_count; ++i) {
         aabbs.push_back({
             {min_x - eps, min_y - eps, -eps, 0.0f},
             {max_x + eps, max_y + eps, eps, 0.0f},
@@ -997,6 +1079,79 @@ oroFunction ensure_segment_pair_intersection_count_kernel_2d(PreparedSegmentPair
         source.c_str(),
         "rtdl_hiprt_segment_pair_intersection_count_2d.cu",
         "RtdlSegmentPairIntersectionCount2DKernel",
+        &func_name_set,
+        1,
+        1);
+    return prepared.count_kernel;
+}
+
+std::string shape_pair_active_count_kernel_source_2d() {
+    std::string src = shape_pair_relation_flags_2d_kernel_source();
+    src += R"KERNEL(
+
+extern "C" __global__ void RtdlShapePairActiveCount2DKernel(
+    hiprtGeometry geom,
+    const RtdlHiprtPolygonRefDevice* left_polygons,
+    const RtdlHiprtVertex2DDevice* left_vertices,
+    const RtdlHiprtPolygonRefDevice* right_polygons,
+    const RtdlHiprtVertex2DDevice* right_vertices,
+    uint32_t left_count,
+    uint32_t right_count,
+    unsigned long long* active_count,
+    hiprtFuncTable table) {
+    const uint32_t left_index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (left_index >= left_count) {
+        return;
+    }
+    const RtdlHiprtPolygonRefDevice left = left_polygons[left_index];
+    const RtdlHiprtVertex2DDevice left_first = left_vertices[left.vertex_offset];
+
+    hiprtRay ray;
+    ray.origin = {left_first.x, left_first.y, 0.0f};
+    ray.direction = {0.0f, 0.0f, 1.0f};
+    ray.minT = 0.0f;
+    ray.maxT = 0.0f;
+
+    unsigned int local_count = 0u;
+    hiprtGeomCustomTraversalAnyHit traversal(geom, ray, hiprtTraversalHintDefault, nullptr, table);
+    while (traversal.getCurrentState() != hiprtTraversalStateFinished) {
+        hiprtHit hit = traversal.getNextHit();
+        if (!hit.hasHit()) {
+            continue;
+        }
+        const uint32_t right_index = hit.primID;
+        if (right_index >= right_count) {
+            continue;
+        }
+        const RtdlHiprtPolygonRefDevice right = right_polygons[right_index];
+        const RtdlHiprtVertex2DDevice right_first = right_vertices[right.vertex_offset];
+        const bool segment_intersection = polygonsHaveSegmentIntersection2D(left, left_vertices, right, right_vertices);
+        const bool left_in_right = pointInPolygon2D(left_first.x, left_first.y, right, right_vertices);
+        const bool right_in_left = pointInPolygon2D(right_first.x, right_first.y, left, left_vertices);
+        if (segment_intersection || left_in_right || right_in_left) {
+            ++local_count;
+        }
+    }
+    if (local_count != 0u) {
+        atomicAdd(active_count, static_cast<unsigned long long>(local_count));
+    }
+}
+)KERNEL";
+    return src;
+}
+
+oroFunction ensure_shape_pair_active_count_kernel_2d(PreparedShapePairActiveCount2D& prepared) {
+    if (prepared.count_kernel != nullptr) {
+        return prepared.count_kernel;
+    }
+    hiprtFuncNameSet func_name_set{};
+    func_name_set.intersectFuncName = "intersectRtdlShapePairCandidate2D";
+    const std::string source = shape_pair_active_count_kernel_source_2d();
+    prepared.count_kernel = build_trace_kernel_from_source(
+        prepared.runtime.context,
+        source.c_str(),
+        "rtdl_hiprt_shape_pair_active_count_2d.cu",
+        "RtdlShapePairActiveCount2DKernel",
         &func_name_set,
         1,
         1);
@@ -2514,6 +2669,153 @@ void run_shape_pair_relation_flags_2d(
     if (geometry != nullptr) {
         hiprtDestroyGeometry(runtime.context, geometry);
     }
+}
+
+PreparedShapePairActiveCount2D* prepare_shape_pair_active_count_2d(
+    const RtdlPolygonRef* right_polygons,
+    size_t right_count,
+    const double* right_vertices_xy,
+    size_t right_vertex_xy_count) {
+    if (right_count > std::numeric_limits<uint32_t>::max()) {
+        throw std::runtime_error("HIPRT prepared shape_pair_active_count currently supports at most 2^32-1 right polygons");
+    }
+    if (right_count > 0 && right_polygons == nullptr) {
+        throw std::runtime_error("right polygon pointer must not be null when right_count is nonzero");
+    }
+    if (right_vertex_xy_count % 2 != 0) {
+        throw std::runtime_error("right polygon vertex_xy_count must be even");
+    }
+    if (right_vertex_xy_count > 0 && right_vertices_xy == nullptr) {
+        throw std::runtime_error("right polygon vertices pointer must not be null when vertex count is nonzero");
+    }
+    if (right_count == 0) {
+        return new PreparedShapePairActiveCount2D(true);
+    }
+
+    std::vector<RtdlHiprtPolygonRefDevice> right_values = encode_polygon_refs_2d(right_polygons, right_count);
+    std::vector<RtdlHiprtVertex2DDevice> right_vertex_values = encode_vertices_2d(right_vertices_xy, right_vertex_xy_count);
+    for (const auto& polygon : right_values) {
+        if (polygon.vertex_count == 0 || polygon.vertex_offset + polygon.vertex_count > right_vertex_values.size()) {
+            throw std::runtime_error("right polygon vertex range is invalid");
+        }
+    }
+
+    HiprtRuntime runtime = create_runtime();
+    hiprtSetLogLevel(hiprtLogLevelError);
+    DeviceAllocation right_device(right_values.size() * sizeof(RtdlHiprtPolygonRefDevice));
+    DeviceAllocation right_vertex_device(right_vertex_values.size() * sizeof(RtdlHiprtVertex2DDevice));
+    copy_host_to_device(right_device, right_values);
+    copy_host_to_device(right_vertex_device, right_vertex_values);
+
+    hiprtFuncTable func_table{};
+    try {
+        hiprtFuncDataSet func_data_set{};
+        func_data_set.intersectFuncData = nullptr;
+        check_hiprt("hiprtCreateFuncTable", hiprtCreateFuncTable(runtime.context, 1, 1, func_table));
+        check_hiprt("hiprtSetFuncTable", hiprtSetFuncTable(runtime.context, func_table, 0, 0, func_data_set));
+        auto* prepared = new PreparedShapePairActiveCount2D(
+            std::move(runtime),
+            std::move(right_device),
+            std::move(right_vertex_device),
+            func_table,
+            right_count,
+            right_vertex_values.size());
+        func_table = nullptr;
+        return prepared;
+    } catch (...) {
+        if (func_table != nullptr) {
+            hiprtDestroyFuncTable(runtime.context, func_table);
+        }
+        throw;
+    }
+}
+
+void count_prepared_shape_pair_active_2d(
+    PreparedShapePairActiveCount2D& prepared,
+    const RtdlPolygonRef* left_polygons,
+    size_t left_count,
+    const double* left_vertices_xy,
+    size_t left_vertex_xy_count,
+    size_t* count_out) {
+    if (count_out == nullptr) {
+        throw std::runtime_error("count_out must not be null");
+    }
+    *count_out = 0;
+    if (left_count > std::numeric_limits<uint32_t>::max()) {
+        throw std::runtime_error("HIPRT prepared shape_pair_active_count currently supports at most 2^32-1 left polygons");
+    }
+    if (left_count > 0 && left_polygons == nullptr) {
+        throw std::runtime_error("left polygon pointer must not be null when left_count is nonzero");
+    }
+    if (left_vertex_xy_count % 2 != 0) {
+        throw std::runtime_error("left polygon vertex_xy_count must be even");
+    }
+    if (left_vertex_xy_count > 0 && left_vertices_xy == nullptr) {
+        throw std::runtime_error("left polygon vertices pointer must not be null when vertex count is nonzero");
+    }
+    if (left_count == 0 || prepared.empty_scene || prepared.right_count == 0) {
+        return;
+    }
+
+    std::vector<RtdlHiprtPolygonRefDevice> left_values = encode_polygon_refs_2d(left_polygons, left_count);
+    std::vector<RtdlHiprtVertex2DDevice> left_vertex_values = encode_vertices_2d(left_vertices_xy, left_vertex_xy_count);
+    std::vector<RtdlHiprtAabb> aabb_values = encode_shape_pair_left_envelope_aabbs(
+        prepared.right_count,
+        left_values.data(),
+        left_values.size(),
+        left_vertex_values.data(),
+        left_vertex_values.size());
+
+    DeviceAllocation left_device(left_values.size() * sizeof(RtdlHiprtPolygonRefDevice));
+    DeviceAllocation left_vertex_device(left_vertex_values.size() * sizeof(RtdlHiprtVertex2DDevice));
+    DeviceAllocation aabb_device(aabb_values.size() * sizeof(RtdlHiprtAabb));
+    std::vector<unsigned long long> total(1, 0ull);
+    DeviceAllocation count_device(sizeof(unsigned long long));
+    copy_host_to_device(left_device, left_values);
+    copy_host_to_device(left_vertex_device, left_vertex_values);
+    copy_host_to_device(aabb_device, aabb_values);
+    copy_host_to_device(count_device, total);
+
+    hiprtGeometry geometry = build_aabb_geometry(prepared.runtime.context, aabb_device, aabb_values.size());
+    try {
+        void* left_device_ptr = left_device.get();
+        void* left_vertex_device_ptr = left_vertex_device.get();
+        void* right_device_ptr = prepared.right_device.get();
+        void* right_vertex_device_ptr = prepared.right_vertex_device.get();
+        void* count_device_ptr = count_device.get();
+        uint32_t left_count_u32 = static_cast<uint32_t>(left_count);
+        uint32_t right_count_u32 = static_cast<uint32_t>(prepared.right_count);
+        uint32_t block_size = 128;
+        uint32_t grid_size = static_cast<uint32_t>((left_count + block_size - 1) / block_size);
+        oroFunction kernel = ensure_shape_pair_active_count_kernel_2d(prepared);
+        void* args[] = {
+            &geometry,
+            &left_device_ptr,
+            &left_vertex_device_ptr,
+            &right_device_ptr,
+            &right_vertex_device_ptr,
+            &left_count_u32,
+            &right_count_u32,
+            &count_device_ptr,
+            &prepared.func_table,
+        };
+        check_oro(
+            "oroModuleLaunchKernel",
+            oroModuleLaunchKernel(kernel, grid_size, 1, 1, block_size, 1, 1, 0, 0, args, nullptr));
+        copy_device_to_host(total, count_device);
+    } catch (...) {
+        if (geometry != nullptr) {
+            hiprtDestroyGeometry(prepared.runtime.context, geometry);
+        }
+        throw;
+    }
+    if (geometry != nullptr) {
+        hiprtDestroyGeometry(prepared.runtime.context, geometry);
+    }
+    if (total[0] > static_cast<unsigned long long>(std::numeric_limits<size_t>::max())) {
+        throw std::runtime_error("HIPRT prepared shape_pair_active_count overflowed size_t");
+    }
+    *count_out = static_cast<size_t>(total[0]);
 }
 
 void run_point_nearest_segment_2d(
