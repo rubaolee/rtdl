@@ -4433,8 +4433,10 @@ R"CUDA(    const unsigned int slot = atomicAdd(params.output_count, 1u);
     }
     optixIgnoreIntersection();
 )CUDA";
-        const std::string new_write =
-R"CUDA(    atomicAdd(params.candidate_event_count, 1ull);
+        const std::string new_write_without_mandatory_candidate_counter =
+R"CUDA(    if (params.candidate_event_count != nullptr) {
+        atomicAdd(params.candidate_event_count, 1ull);
+    }
     const RtdlSegmentExact left_exact = params.left_exact_segs[params.left_offset + pidx];
     const RtdlSegmentExact right_exact = params.right_exact_segs[bidx];
     if (exact_segment_intersection_device(left_exact, right_exact)) {
@@ -4445,7 +4447,7 @@ R"CUDA(    atomicAdd(params.candidate_event_count, 1ull);
         pos = src.find(old_write);
         if (pos == std::string::npos)
             throw std::runtime_error("segment-pair exact-count kernel write snippet not found");
-        src.replace(pos, old_write.size(), new_write);
+        src.replace(pos, old_write.size(), new_write_without_mandatory_candidate_counter);
 
         std::string ptx = compile_to_ptx(src.c_str(), "segment_pair_exact_count_kernel.cu");
         g_segment_pair_exact_count.pipe = build_pipeline(
@@ -5066,7 +5068,8 @@ static size_t count_segment_pair_intersection_exact_one_pass_optix(
         CUdeviceptr d_right_ptr,
         CUdeviceptr d_right_exact_ptr,
         size_t right_count,
-        OptixTraversableHandle traversable)
+        OptixTraversableHandle traversable,
+        bool record_candidate_events)
 {
     if (left_count == 0 || right_count == 0) {
         return 0;
@@ -5086,10 +5089,13 @@ static size_t count_segment_pair_intersection_exact_one_pass_optix(
     ensure_segment_pair_exact_count_pipeline();
 
     DevPtr d_exact_count(sizeof(unsigned long long));
-    DevPtr d_candidate_event_count(sizeof(unsigned long long));
+    DevPtr d_candidate_event_count(
+        record_candidate_events ? sizeof(unsigned long long) : 0);
     unsigned long long zero64 = 0ull;
     upload<unsigned long long>(d_exact_count.ptr, &zero64, 1);
-    upload<unsigned long long>(d_candidate_event_count.ptr, &zero64, 1);
+    if (record_candidate_events) {
+        upload<unsigned long long>(d_candidate_event_count.ptr, &zero64, 1);
+    }
 
     for (size_t left_offset = 0; left_offset < left_count; left_offset += max_left_per_launch) {
         const size_t chunk_left_count = std::min(max_left_per_launch, left_count - left_offset);
@@ -5129,8 +5135,12 @@ static size_t count_segment_pair_intersection_exact_one_pass_optix(
     unsigned long long exact_count = 0ull;
     unsigned long long candidate_event_count = 0ull;
     download(&exact_count, d_exact_count.ptr, 1);
-    download(&candidate_event_count, d_candidate_event_count.ptr, 1);
-    g_optix_last_segment_pair_raw_candidate_count = static_cast<size_t>(candidate_event_count);
+    if (record_candidate_events) {
+        download(&candidate_event_count, d_candidate_event_count.ptr, 1);
+        g_optix_last_segment_pair_raw_candidate_count = static_cast<size_t>(candidate_event_count);
+    } else {
+        g_optix_last_segment_pair_raw_candidate_count = 0;
+    }
     return static_cast<size_t>(exact_count);
 }
 
@@ -5570,7 +5580,8 @@ static void count_prepared_segment_pair_intersection_optix(
         prepared->d_right.ptr,
         prepared->d_right_exact.ptr,
         prepared->right_count,
-        prepared->accel.handle);
+        prepared->accel.handle,
+        true);
     g_optix_last_segment_pair_emitted_count = *count_out;
 }
 
@@ -5601,7 +5612,8 @@ static void count_prepared_segment_pair_intersection_prepared_left_optix(
         prepared->d_right.ptr,
         prepared->d_right_exact.ptr,
         prepared->right_count,
-        prepared->accel.handle);
+        prepared->accel.handle,
+        false);
     g_optix_last_segment_pair_emitted_count = *count_out;
 }
 
