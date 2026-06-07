@@ -1,6 +1,6 @@
 # Goal3734 Shape-Pair Prepared-Left Active Count
 
-Status: implemented locally; pod validation pending.
+Status: implemented and validated on NVIDIA RTX A5000 pod.
 
 ## Purpose
 
@@ -71,3 +71,54 @@ The validation should check:
 - `native_phase_timings.left_upload == 0.0`.
 - `packed_left_reuse.native_prepared_left_set_enabled == true`.
 - All claim-boundary flags remain false.
+
+## Pod Validation Result
+
+Artifacts:
+
+- `docs/reports/goal3734_shape_pair_prepared_left_active_count_a5000_overlay_direct_summary.json`
+- `docs/reports/goal3734_shape_pair_prepared_left_active_count_a5000_safe_mixed_summary.json`
+
+Environment:
+
+- GPU: NVIDIA RTX A5000
+- Commit: `c8f3a67c7e770e1e9a7d684ce4521d6b37c9273b`
+- `make build-optix` completed successfully with `OPTIX_PREFIX=/root/vendor/optix-sdk`.
+- Focused pod tests passed:
+  - `tests.goal3734_shape_pair_prepared_left_active_count_test`
+  - `tests.goal3442_shape_pair_active_count_device_continuation_test`
+  - `tests.goal3443_spatial_rayjoin_overlay_active_count_device_default_test`
+
+Direct overlay active-count result over the materialized public-CDB 4096-chain
+county/soil slice:
+
+| Metric | Value |
+| --- | ---: |
+| Active relation count | `4,250` |
+| Pair count | `15,006,618` |
+| Hot median query | `0.0031651603s` |
+| Native mode | `active_count_device_continuation_prepared_left` |
+| Native left prepare | `0.0s` |
+| Native left upload | `0.0s` |
+| Native traversal | `0.000959525s` |
+| Native active scan | `0.000460326s` |
+| Prepared-left set build | `0.3430343568s` |
+
+Safe mixed composite over the same 4096-chain slice:
+
+| Workload | All-CuPy Baseline | Recommended Route | Speedup |
+| --- | ---: | ---: | ---: |
+| PIP | `0.000885301s` | `0.000885301s` | `1.000x` |
+| LSI | `1.266489321s` | `0.000097052s` | `13049.632x` |
+| Overlay active-count | `0.165980307s` | `0.003160997s` | `52.509x` |
+| Composite sum | `1.433354628s` | `0.004143349s` | `345.941x` |
+
+The overlay route improved from the Goal3733 measured `0.004832825s` class to
+`0.003160997s` by removing repeated left-side upload from the hot query. The
+remaining overlay cost is traversal plus active scan; this goal does not solve
+those parts.
+
+All claim-boundary flags in the direct and composite artifacts remain false.
+These measurements are internal engineering evidence and do not authorize a
+public RayJoin, paper-reproduction, release, broad RT-core, true-zero-copy, or
+whole-app speedup claim.

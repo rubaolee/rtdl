@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import pathlib
 import unittest
 
@@ -11,6 +12,12 @@ PRELUDE = ROOT / "src/native/optix/rtdl_optix_prelude.h"
 RUNTIME = ROOT / "src/rtdsl/optix_runtime.py"
 APP = ROOT / "examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py"
 REPORT = ROOT / "docs/reports/goal3734_shape_pair_prepared_left_active_count_2026-06-07.md"
+DIRECT_ARTIFACT = (
+    ROOT / "docs/reports/goal3734_shape_pair_prepared_left_active_count_a5000_overlay_direct_summary.json"
+)
+COMPOSITE_ARTIFACT = (
+    ROOT / "docs/reports/goal3734_shape_pair_prepared_left_active_count_a5000_safe_mixed_summary.json"
+)
 
 
 class Goal3734ShapePairPreparedLeftActiveCountTest(unittest.TestCase):
@@ -93,6 +100,36 @@ class Goal3734ShapePairPreparedLeftActiveCountTest(unittest.TestCase):
         self.assertIn("left upload out of the hot repeated query path", self.report)
         self.assertIn("does not authorize", self.report)
         self.assertIn("Pod Validation Plan", self.report)
+
+    def test_a5000_direct_overlay_artifact_proves_left_upload_removed(self) -> None:
+        payload = json.loads(DIRECT_ARTIFACT.read_text(encoding="utf-8"))
+        timings = payload["native_phase_timings"]
+        reuse = payload["packed_left_reuse"]
+
+        self.assertEqual(payload["row_count"], 4250)
+        self.assertEqual(timings["mode"], "active_count_device_continuation_prepared_left")
+        self.assertEqual(timings["active_count"], 4250)
+        self.assertEqual(timings["pair_count"], 15006618)
+        self.assertEqual(timings["left_prepare"], 0.0)
+        self.assertEqual(timings["left_upload"], 0.0)
+        self.assertLess(payload["phases_sec"]["prepared_query_sec"], 0.0035)
+        self.assertTrue(reuse["native_prepared_left_set_enabled"])
+        for key, value in payload["claim_boundary"].items():
+            if key.endswith("_authorized"):
+                self.assertFalse(value, key)
+
+    def test_a5000_safe_mixed_composite_records_overlay_speedup(self) -> None:
+        payload = json.loads(COMPOSITE_ARTIFACT.read_text(encoding="utf-8"))
+        row = payload["rows"][0]
+        self.assertEqual(payload["git_commit"], "c8f3a67c7e770e1e9a7d684ce4521d6b37c9273b")
+        self.assertTrue(row["all_counts_match"])
+        self.assertGreater(row["recommended_safe_mixed_speedup_vs_all_cupy"], 300.0)
+        by_workload = {entry["workload"]: entry for entry in row["workloads"]}
+        self.assertGreater(by_workload["overlay_seed"]["recommended_speedup_vs_cupy"], 50.0)
+        self.assertLess(
+            by_workload["overlay_seed"]["recommended_route"]["hot_median_sec"],
+            0.0035,
+        )
 
 
 if __name__ == "__main__":
