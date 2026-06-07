@@ -251,9 +251,16 @@ Optional native/backend build commands:
 make build-embree
 make build-optix
 make build-vulkan
+make build-hiprt  # auto-discovers common HIPRT SDK locations
+# If auto-discovery does not match your SDK layout:
 make build-hiprt HIPRT_PREFIX=/path/to/hiprtSdk
 make build-apple-rt
 ```
+
+HIPRT can run through Orochi on NVIDIA development hosts, but that is not AMD
+GPU validation. AMD HIPRT evidence requires an actual AMD host and the
+fail-closed AMD functional runner described in the internal Goal3784/3785
+reports.
 
 NVIDIA RT-core claim note:
 
