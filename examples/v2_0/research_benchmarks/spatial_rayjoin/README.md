@@ -157,6 +157,20 @@ implementation path, not a full RayJoin reproduction or public speedup claim.
 In short: the route combines generic compact grouped-count device columns with
 Python-owned RayJoin interpretation.
 
+For app-owned side-aware topology policy, v2.9 also provides a no-RawKernel
+Numba reference route:
+
+```bash
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py --workload overlay_seed --execution-route v2_9_numba_side_aware_topology_reference --no-rows
+```
+
+This route loads CDB chain topology rows, builds explicit owner-face/side policy
+columns in Python, and runs
+`filter_closed_shape_membership_candidate_columns_by_owner_face_side_numba`.
+It is a user-facing reference for custom topology continuation, not the
+promoted RTDL/OptiX RayJoin performance route and not a RayJoin paper
+reproduction claim.
+
 For repeated count queries against the same right-side segment set, use the
 prepared Python handle so the OptiX right-side scene is built once:
 

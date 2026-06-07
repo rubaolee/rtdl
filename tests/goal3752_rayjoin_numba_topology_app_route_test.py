@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / "examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py"
 REPORT = ROOT / "docs/reports/goal3752_rayjoin_numba_topology_app_route_2026-06-07.md"
 A5000_ARTIFACT = ROOT / "docs/reports/goal3752_rayjoin_numba_topology_app_route_a5000.json"
+README = ROOT / "examples/v2_0/research_benchmarks/spatial_rayjoin/README.md"
 
 
 class Goal3752RayjoinNumbaTopologyAppRouteTest(unittest.TestCase):
@@ -28,6 +29,12 @@ class Goal3752RayjoinNumbaTopologyAppRouteTest(unittest.TestCase):
         self.assertIn("app-facing route", text)
         self.assertIn("no-RawKernel", text)
         self.assertIn("does not authorize", text)
+
+    def test_spatial_rayjoin_readme_documents_numba_topology_route(self) -> None:
+        text = README.read_text(encoding="utf-8")
+        self.assertIn("v2_9_numba_side_aware_topology_reference", text)
+        self.assertIn("filter_closed_shape_membership_candidate_columns_by_owner_face_side_numba", text)
+        self.assertIn("not a RayJoin paper", text)
 
     def test_a5000_artifact_records_fixture_execution_boundary(self) -> None:
         payload = json.loads(A5000_ARTIFACT.read_text(encoding="utf-8"))
