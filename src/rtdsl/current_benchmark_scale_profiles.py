@@ -260,6 +260,8 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
             "partner_exact_force",
             "--partner",
             "numba",
+            "--force-output-mode",
+            "force_summary",
             "--body-count",
             "8192",
             "--skip-validation",
@@ -270,7 +272,7 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
         ),
         timeout_sec=300,
         evidence_refs=("Goal3827",),
-        expected_runtime_class="safe_with_large_json_stdout",
+        expected_runtime_class="safe_summary_output",
         requires_numba=True,
     ),
     CurrentBenchmarkScaleProfile(

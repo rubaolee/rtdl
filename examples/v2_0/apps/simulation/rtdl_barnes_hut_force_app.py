@@ -548,6 +548,8 @@ def run_app(
                 "Barnes-Hut tree opening acceleration and not an RT-core claim."
             ),
         }
+        payload["checksum_force_x"] = sum(float(row["force_x"]) for row in force_rows)
+        payload["checksum_force_y"] = sum(float(row["force_y"]) for row in force_rows)
         if exact_forces is not None:
             payload["max_relative_error"] = max((row["relative_error"] for row in error_rows), default=0.0)
             payload["matches_oracle"] = payload["max_relative_error"] < 1.0e-12

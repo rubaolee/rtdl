@@ -1176,6 +1176,7 @@ def run_benchmark(
     require_rt_core: bool = False,
     query_repeat: int = 1,
     warmup: int = 0,
+    force_output_mode: str = "full",
 ) -> dict[str, Any]:
     if mode not in MODES:
         raise ValueError(f"unsupported Barnes-Hut benchmark mode: {mode}")
@@ -1459,12 +1460,14 @@ def run_benchmark(
             rt_core_accelerated=True,
         )
     if mode == "partner_exact_force":
+        if force_output_mode not in {"full", "force_summary"}:
+            raise ValueError("force_output_mode must be 'full' or 'force_summary'")
         return _annotate(
             app.run_app(
                 "partner_exact_force",
                 theta=theta,
                 body_count=body_count,
-                output_mode="full",
+                output_mode=force_output_mode,
                 partner=partner,
                 skip_validation=skip_validation,
             ),
@@ -1490,6 +1493,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--require-rt-core", action="store_true")
     parser.add_argument("--repeat", type=int, default=1, help="Repeat hot prepared-query phase.")
     parser.add_argument("--warmup", type=int, default=0, help="Prepared-query warmup iterations to drop.")
+    parser.add_argument(
+        "--force-output-mode",
+        choices=("full", "force_summary"),
+        default="full",
+        help="Output mode for partner_exact_force; force_summary suppresses per-body force rows.",
+    )
     parser.add_argument("--json-out", type=Path, default=None)
     args = parser.parse_args(argv)
 
@@ -1505,6 +1514,7 @@ def main(argv: list[str] | None = None) -> int:
         require_rt_core=args.require_rt_core,
         query_repeat=args.repeat,
         warmup=args.warmup,
+        force_output_mode=args.force_output_mode,
     )
     text = json.dumps(payload, indent=2, sort_keys=True)
     if args.json_out is not None:
