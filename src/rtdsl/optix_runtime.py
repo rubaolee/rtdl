@@ -3371,6 +3371,42 @@ class PreparedOptixSegmentPairIntersection:
             },
         }
 
+    def count_prepared_left_exact_intersections(
+        self,
+        prepared_left: PreparedOptixSegmentPairLeftSet,
+    ) -> dict[str, object]:
+        """Count exact 2-D segment-pair intersections through the fastest measured generic route."""
+        result = self.count_prepared_left_grouped_range_direct_intersection(prepared_left)
+        return {
+            "schema": "rtdl.optix.segment_pair_prepared_left_exact_intersection_count.front_door.v1",
+            "primitive": "SEGMENT_PAIR_INTERSECTION_ROWS_2D",
+            "output_contract": "scalar_exact_count",
+            "backend": "optix",
+            "route": "intersection_program_identity_or_ranged_primitive_records",
+            "route_selection": {
+                "default_right_range_policy": "identity_range",
+                "native_policy_env": {
+                    "max_size": "RTDL_OPTIX_SEGMENT_PAIR_GROUPED_RANGE_MAX_SIZE",
+                    "area_enlarge": "RTDL_OPTIX_SEGMENT_PAIR_GROUPED_RANGE_AREA_ENLARGE",
+                },
+                "fallback_route": "count_prepared_left",
+            },
+            "count": int(result["count"]),
+            "right_group_count": int(result["right_group_count"]),
+            "native_symbol": result["native_symbol"],
+            "implementation_contract": result["contract"],
+            "claim_boundary": {
+                "experimental_front_door": True,
+                "public_speedup_claim_authorized": False,
+                "rayjoin_paper_reproduction_claim_authorized": False,
+                "rtdl_beats_rayjoin_claim_authorized": False,
+                "release_authorized": False,
+                "rt_core_speedup_claim_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+                "whole_app_acceleration_claim_authorized": False,
+            },
+        }
+
     def candidate_device_columns(
         self,
         left_segments,
