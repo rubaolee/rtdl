@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
+import io
+from argparse import Namespace
 import json
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -210,6 +214,90 @@ def rtnn_command_plan_payload() -> dict[str, Any]:
     }
 
 
+def rtnn_prepared_optix_ranked_summary_payload(
+    *,
+    point_count: int,
+    radius: float,
+    k: int,
+    repeat: int,
+    query_batch_size: int | None,
+    distribution: str,
+    seed: int,
+) -> dict[str, Any]:
+    """Run the current prepared OptiX ranked-summary aggregate front door.
+
+    This wraps the existing generic Goal2348 RTNN runner so benchmark users can
+    execute the promoted RTDL/OptiX ranked-summary contract from this app
+    directory instead of jumping to a historical goal script.
+    """
+
+    if point_count <= 0:
+        raise ValueError("point_count must be positive")
+    if radius <= 0.0:
+        raise ValueError("radius must be positive")
+    if k <= 0:
+        raise ValueError("k must be positive")
+    if repeat <= 0:
+        raise ValueError("repeat must be positive")
+    batch_size = query_batch_size or point_count
+    if batch_size <= 0:
+        raise ValueError("query_batch_size must be positive")
+
+    from scripts import goal2348_rtnn_v2_2_external_runner as rtnn_runner
+
+    with tempfile.TemporaryDirectory(prefix="rtdl_rtnn_current_") as tmp:
+        point_file = Path(tmp) / f"rtnn_{distribution}_{point_count}.csv"
+        generated = rtnn_runner.generate_point_file(
+            point_file,
+            point_count=point_count,
+            dimension=3,
+            seed=seed,
+            distribution=distribution,
+        )
+        runner_stdout = io.StringIO()
+        with contextlib.redirect_stdout(runner_stdout):
+            payload = rtnn_runner.run_rtdl_batched_3d_neighbors(
+                Namespace(
+                    point_file=point_file,
+                    query_file=None,
+                    radius=radius,
+                    k_max=k,
+                    backend="optix",
+                    query_batch_size=batch_size,
+                    result_mode="ranked-summary-aggregate-prepared-query-batch-float32",
+                    aggregate_request_count=1,
+                    aggregate_radius_multipliers=None,
+                    aggregate_k_values=None,
+                    repeat=repeat,
+                    row_label="rtnn_current_prepared_optix_ranked_summary",
+                )
+            )
+    return {
+        "benchmark_app": BENCHMARK_NAME,
+        "mode": "prepared_optix_ranked_summary",
+        "contract": "prepared 3-D fixed-radius bounded ranked-summary aggregate",
+        "generated_input": generated,
+        "point_count": point_count,
+        "radius": radius,
+        "k": k,
+        "repeat": repeat,
+        "query_batch_size": batch_size,
+        "distribution": distribution,
+        "seed": seed,
+        "runner_progress": tuple(line for line in runner_stdout.getvalue().splitlines() if line.strip()),
+        "runner_payload": payload,
+        "claim_boundary": {
+            **CLAIM_BOUNDARY,
+            "native_engine_customization": False,
+            "full_rtnn_paper_reproduction": False,
+            "public_speedup_claim_authorized": False,
+            "broad_rt_core_speedup_claim_authorized": False,
+            "automatic_partner_selection_authorized": False,
+            "amd_performance_claim_authorized": False,
+        },
+    }
+
+
 def describe_rtnn_v2_8_ranked_summary_typed_stream(
     *,
     operation: str = "grouped_topk_f64",
@@ -364,6 +452,16 @@ def run_app(
         return rtnn_known_results_payload()
     if mode == "rtnn_command_plan":
         return rtnn_command_plan_payload()
+    if mode == "prepared_optix_ranked_summary":
+        return rtnn_prepared_optix_ranked_summary_payload(
+            point_count=copies,
+            radius=0.02,
+            k=k,
+            repeat=1,
+            query_batch_size=copies,
+            distribution="uniform",
+            seed=20260519,
+        )
     if mode == "ranked_summary_typed_stream_plan":
         return describe_rtnn_ranked_summary_typed_stream(operation=operation, partner=partner, k=k)
     if mode == "rtnn_v2_8_ranked_summary_plan":
@@ -383,12 +481,19 @@ def main(argv: list[str] | None = None) -> int:
             "ann_partner_quality",
             "rtnn_known_results",
             "rtnn_command_plan",
+            "prepared_optix_ranked_summary",
             "ranked_summary_typed_stream_plan",
             "rtnn_v2_8_ranked_summary_plan",
         ),
         default="scope",
     )
     parser.add_argument("--copies", type=int, default=1)
+    parser.add_argument("--point-count", type=int, default=None)
+    parser.add_argument("--radius", type=float, default=0.02)
+    parser.add_argument("--repeat", type=int, default=1)
+    parser.add_argument("--query-batch-size", type=int, default=None)
+    parser.add_argument("--distribution", choices=("uniform", "clustered", "shell"), default="uniform")
+    parser.add_argument("--seed", type=int, default=20260519)
     parser.add_argument("--partner", choices=("torch", "cupy", "numba", "triton"), default="torch")
     parser.add_argument(
         "--operation",
@@ -397,13 +502,20 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--k", type=int, default=8)
     args = parser.parse_args(argv)
-    print(
-        json.dumps(
-            run_app(args.mode, copies=args.copies, partner=args.partner, operation=args.operation, k=args.k),
-            indent=2,
-            sort_keys=True,
+    payload = (
+        rtnn_prepared_optix_ranked_summary_payload(
+            point_count=args.point_count or args.copies,
+            radius=args.radius,
+            k=args.k,
+            repeat=args.repeat,
+            query_batch_size=args.query_batch_size,
+            distribution=args.distribution,
+            seed=args.seed,
         )
+        if args.mode == "prepared_optix_ranked_summary"
+        else run_app(args.mode, copies=args.copies, partner=args.partner, operation=args.operation, k=args.k)
     )
+    print(json.dumps(payload, indent=2, sort_keys=True))
     return 0
 
 
