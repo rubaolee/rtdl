@@ -60,7 +60,10 @@ def expand_hiprt_prefix_candidates(patterns: tuple[str, ...] | None = None) -> t
     for raw in patterns if patterns is not None else hiprt_prefix_candidate_patterns():
         if not raw:
             continue
-        matches = sorted(glob.glob(_expand_path(raw))) if any(token in raw for token in "*?[") else [_expand_path(raw)]
+        if any(token in raw for token in "*?["):
+            matches = [match for match in sorted(glob.glob(_expand_path(raw))) if Path(match).is_dir()]
+        else:
+            matches = [_expand_path(raw)]
         for candidate in matches:
             if candidate not in seen:
                 expanded.append(candidate)

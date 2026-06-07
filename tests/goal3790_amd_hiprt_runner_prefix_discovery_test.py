@@ -34,6 +34,18 @@ class Goal3790AmdHiprtRunnerPrefixDiscoveryTest(unittest.TestCase):
             discovered = runner.find_valid_hiprt_prefix((str(invalid), str(valid)))
             self.assertEqual(discovered, str(valid))
 
+    def test_glob_candidate_expansion_ignores_archives(self) -> None:
+        runner = _runner_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            valid = root / "hiprtSdk-2.2.synthetic"
+            valid.mkdir()
+            archive = root / "hiprtSdk-2.2.synthetic.zip"
+            archive.write_text("archive placeholder\n", encoding="utf-8")
+
+            candidates = runner.expand_hiprt_prefix_candidates((str(root / "hiprtSdk-*"),))
+            self.assertEqual(candidates, (str(valid),))
+
     def test_resolve_explicit_prefix_is_recorded_even_when_invalid(self) -> None:
         runner = _runner_module()
         with tempfile.TemporaryDirectory() as tmp:
