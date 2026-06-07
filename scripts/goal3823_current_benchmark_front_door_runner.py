@@ -18,6 +18,25 @@ from rtdsl.current_benchmark_front_doors import (
 )
 
 
+FORBIDDEN_TRUE_FLAGS = (
+    "release_authorized",
+    "v2_0_release_authorized",
+    "v2_6_release_authorized",
+    "v2_8_release_authorized",
+    "v2_9_release_authorized",
+    "public_speedup_claim_authorized",
+    "whole_app_speedup_claim_authorized",
+    "broad_rt_core_claim_authorized",
+    "broad_rt_core_speedup_claim_authorized",
+    "paper_reproduction_claim_authorized",
+    "true_zero_copy_claim_authorized",
+    "true_zero_copy_authorized",
+    "automatic_partner_selection_authorized",
+    "app_specific_native_engine_logic_allowed",
+    "amd_performance_claim_authorized",
+)
+
+
 def _tail(text: str, limit: int) -> str:
     if len(text) <= limit:
         return text
@@ -29,6 +48,36 @@ def _row_command(row: dict[str, Any], *, use_current_python: bool) -> list[str]:
     if use_current_python and command and command[0] == "python":
         command[0] = sys.executable
     return command
+
+
+def _find_forbidden_true_flags(value: Any, *, path: str = "$") -> list[str]:
+    hits: list[str] = []
+    if isinstance(value, dict):
+        for key, child in value.items():
+            child_path = f"{path}.{key}"
+            if key in FORBIDDEN_TRUE_FLAGS and child is True:
+                hits.append(child_path)
+            hits.extend(_find_forbidden_true_flags(child, path=child_path))
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            hits.extend(_find_forbidden_true_flags(child, path=f"{path}[{index}]"))
+    return hits
+
+
+def _semantic_stdout_check(stdout: str) -> dict[str, Any]:
+    try:
+        payload = json.loads(stdout)
+    except json.JSONDecodeError as exc:
+        return {
+            "stdout_json_parseable": False,
+            "stdout_json_error": str(exc),
+            "claim_flag_violations": (),
+        }
+    return {
+        "stdout_json_parseable": True,
+        "stdout_json_error": None,
+        "claim_flag_violations": tuple(_find_forbidden_true_flags(payload)),
+    }
 
 
 def _run_row(
@@ -53,7 +102,10 @@ def _run_row(
             check=False,
         )
         elapsed = time.perf_counter() - start
+        semantic = _semantic_stdout_check(completed.stdout)
         status = "pass" if completed.returncode == 0 else "fail"
+        if not semantic["stdout_json_parseable"] or semantic["claim_flag_violations"]:
+            status = "fail"
         return {
             "app": row["app"],
             "row_id": row["row_id"],
@@ -62,6 +114,7 @@ def _run_row(
             "elapsed_sec": elapsed,
             "timeout_sec": timeout_sec,
             "command": command,
+            "semantic_stdout_check": semantic,
             "stdout_tail": _tail(completed.stdout, stdout_tail),
             "stderr_tail": _tail(completed.stderr, stderr_tail),
         }
@@ -75,6 +128,11 @@ def _run_row(
             "elapsed_sec": elapsed,
             "timeout_sec": timeout_sec,
             "command": command,
+            "semantic_stdout_check": {
+                "stdout_json_parseable": False,
+                "stdout_json_error": "timeout before complete stdout was available",
+                "claim_flag_violations": (),
+            },
             "stdout_tail": _tail(exc.stdout or "", stdout_tail),
             "stderr_tail": _tail(exc.stderr or "", stderr_tail),
         }
