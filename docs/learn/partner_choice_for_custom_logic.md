@@ -69,10 +69,10 @@ launch shape, and data residency are good for that workload.
 | --- | --- |
 | RayDB-style grouped summaries | Prefer fused RTDL primitive summaries when available; use Numba for custom grouped min/max style continuations that are not already fused. |
 | Spatial RayJoin-style joins | Prefer RTDL scalar count/parity or first-hit/nearest-boundary primitives when they express the answer; use Numba compact-mask only for explicit row-stream continuation. |
-| Triangle counting | Prefer the native scalar count path for the scalar answer; Numba compact-mask is useful for candidate-row continuation, not a replacement for the scalar primitive. |
+| Triangle counting | Prefer the native scalar count path for the scalar answer; use explicit `--optix-graph-mode native` for current native timing probes; Numba compact-mask is useful for candidate-row continuation, not a replacement for the scalar primitive. |
 | Hausdorff distance | The current performance winner is the RTDL/OptiX active-frontier path; CuPy grouped-grid remains a strong CUDA-core baseline; Numba paths are correctness and contract evidence, not the default performance recommendation. |
 | Barnes-Hut-style force studies | CuPy remains the faster measured force-vector partner path overall; Numba now provides a no-RawKernel block-reduction reference for the exact-force continuation. |
-| RTNN-style nearest-neighbor studies | RTDL fixed-radius ranked summaries and prepared OptiX paths are the current focus; use CuPy for CUDA-core baseline rows and treat partners as explicit experiments unless same-contract timing wins. |
+| RTNN-style nearest-neighbor studies | RTDL fixed-radius ranked summaries and the `prepared_optix_ranked_summary` app mode are the current executable front door; use CuPy for CUDA-core baseline rows and treat partners as explicit experiments unless same-contract timing wins. |
 | RT-DBSCAN-style clustering | RTDL provides fixed-radius/core-summary primitives; Numba now has measured prepared-repeat component-continuation coverage, while CuPy remains a useful baseline/opponent. |
 
 ## Claim Boundary

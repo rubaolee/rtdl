@@ -20,7 +20,7 @@ class Goal3786CurrentBenchmarkAdequacyAfterHiprtCloseoutTest(unittest.TestCase):
     def test_current_adequacy_version_and_counts(self) -> None:
         self.assertEqual(
             V2_9_BENCHMARK_ADEQUACY_VERSION,
-            "rtdl.v2_10.benchmark_adequacy_after_goal3785.v1",
+            "rtdl.v2_10.benchmark_adequacy_after_goal3820.v2",
         )
         validation = validate_v2_9_benchmark_adequacy()
         self.assertEqual(validation["status"], "accept")
@@ -52,6 +52,8 @@ class Goal3786CurrentBenchmarkAdequacyAfterHiprtCloseoutTest(unittest.TestCase):
             self.assertIn(f"`{app}`", text)
         self.assertIn("ready for AMD functional pod", text)
         self.assertIn("Goal3785 runner", text)
+        self.assertIn("Goal3822", text)
+        self.assertIn("front-door hardening", text)
         self.assertIn("does not authorize", text)
         self.assertNotIn("needs HIPRT mapping", text)
         self.assertNotIn("HIPRT nearest-witness and grouped-max parity", text)

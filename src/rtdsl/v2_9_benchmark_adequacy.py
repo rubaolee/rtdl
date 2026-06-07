@@ -6,11 +6,12 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-V2_9_BENCHMARK_ADEQUACY_VERSION = "rtdl.v2_10.benchmark_adequacy_after_goal3785.v1"
+V2_9_BENCHMARK_ADEQUACY_VERSION = "rtdl.v2_10.benchmark_adequacy_after_goal3820.v2"
 V2_9_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 V2_9_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
-    "Goal3786 records internal benchmark-app adequacy after the v2.9 Numba "
-    "coverage work and the v2.10 HIPRT parity closeout. It does not authorize "
+    "Goal3822 records internal benchmark-app adequacy after the v2.9 Numba "
+    "coverage work, the v2.10 HIPRT parity closeout, and the Goal3818-3820 "
+    "benchmark front-door hardening. It does not authorize "
     "release action, public speedup wording, whole-app acceleration wording, "
     "broad RT-core wording, RayJoin paper reproduction wording, true-zero-copy "
     "wording, automatic partner selection, AMD performance wording, or "
@@ -305,9 +306,17 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
     V29BenchmarkAdequacyRow(
         app="rtnn",
         promoted_reader_view="RTNN-style prepared 3D ranked nearest summary",
-        current_performance_reading="adequate: v2.9 packet row is 1.061225x versus v2.3",
+        current_performance_reading=(
+            "adequate with current front door: v2.9 packet row is 1.061225x versus v2.3, "
+            "and Goal3820 adds an executable prepared OptiX ranked-summary app mode with "
+            "pure JSON A5000 evidence at 4096 and 65536 points; this is not an RTNN "
+            "paper-reproduction claim"
+        ),
         adequacy="adequate",
-        current_recommended_path="prepared RTDL/OptiX fixed-radius ranked-summary aggregate with graph replay evidence",
+        current_recommended_path=(
+            "prepared RTDL/OptiX fixed-radius ranked-summary aggregate through the "
+            "`prepared_optix_ranked_summary` benchmark app mode"
+        ),
         current_partner_role="no partner on the promoted RTDL path; CuPy grid remains the opponent/reference",
         needs_numba_reference=False,
         numba_reference_reason="current promoted path is a generic prepared primitive/aggregate path",
@@ -315,16 +324,24 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
             "ready for AMD functional pod after Goals3771-3772 add HIPRT ranked aggregate and "
             "batched sweep paths; AMD hardware evidence still pending Goal3784 artifact"
         ),
-        next_generic_runtime_action="keep as a prepared-input residency reference; run actual AMD functional validation before AMD performance work",
-        evidence_refs=("Goal2800", "Goal2822", "Goal3567", "Goal3771", "Goal3772", "Goal3784", "Goal3785"),
+        next_generic_runtime_action=(
+            "keep the prepared OptiX app mode as the runnable front door; run actual AMD "
+            "functional validation before AMD performance work"
+        ),
+        evidence_refs=("Goal2800", "Goal2822", "Goal3567", "Goal3771", "Goal3772", "Goal3784", "Goal3785", "Goal3820"),
         pod_needed_next=False,
     ),
     V29BenchmarkAdequacyRow(
         app="triangle_counting",
         promoted_reader_view="triangle-counting generic RT graph summary",
-        current_performance_reading="adequate: v2.9 packet row is 1.029580x versus v2.3",
+        current_performance_reading=(
+            "adequate with route-selection boundary: v2.9 packet row is 1.029580x versus "
+            "v2.3, and Goal3819 shows the explicit `--optix-graph-mode native` route on "
+            "the current app fixture is faster than the auto fallback (0.9871935369446874s "
+            "versus 6.018893013708293s) while still reporting no RT-core triangle-count claim"
+        ),
         adequacy="adequate",
-        current_recommended_path="generic RT graph summary primitive",
+        current_recommended_path="generic RT graph summary primitive with explicit `--optix-graph-mode native` for the current native timing route",
         current_partner_role="no partner needed on the fastest primitive row",
         needs_numba_reference=False,
         numba_reference_reason="the fastest path is primitive-only; Numba alternate is not required for the reference story",
@@ -332,8 +349,8 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
             "ready for AMD functional pod after Goal3782 adds HIPRT canonical graph-cycle scalar count; "
             "AMD hardware evidence still pending Goal3784 artifact"
         ),
-        next_generic_runtime_action="keep as primitive-only; run actual AMD functional validation before AMD performance work",
-        evidence_refs=("Goal2797", "Goal3567", "Goal3782", "Goal3784", "Goal3785"),
+        next_generic_runtime_action="keep as primitive-only with explicit native mode when measuring; run actual AMD functional validation before AMD performance work",
+        evidence_refs=("Goal2797", "Goal3567", "Goal3782", "Goal3784", "Goal3785", "Goal3819"),
         pod_needed_next=False,
     ),
 )
