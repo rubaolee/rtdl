@@ -13697,19 +13697,16 @@ extern "C" __global__ void __intersection__aabb_index_exact() {
         }
     }
     if (!accept) return;
+    if (params.collect_rows == 0u) {
+        atomicAdd(params.query_hit_counts + qidx, 1u);
+        return;
+    }
     float hit_t = optixGetRayTmin() + 1.0e-6f;
     if (hit_t > optixGetRayTmax()) hit_t = optixGetRayTmax();
     optixReportIntersection(hit_t, 0u);
 }
 
 extern "C" __global__ void __anyhit__aabb_index_count() {
-    if (params.collect_rows == 0u) {
-        const uint32_t qidx = optixGetPayload_0();
-        atomicAdd(params.query_hit_counts + qidx, 1u);
-        optixIgnoreIntersection();
-        return;
-    }
-
     const unsigned long long row_index = atomicAdd(params.hit_count, 1ULL);
     if (row_index < params.row_capacity) {
         const uint32_t prim = optixGetPrimitiveIndex();

@@ -15,6 +15,7 @@ class Goal3848AabbCountPerRayDeviceAccumulationTest(unittest.TestCase):
 
         self.assertIn("uint32_t* query_hit_counts;", text)
         self.assertIn("atomicAdd(params.query_hit_counts + qidx, 1u)", text)
+        self.assertIn("if (params.collect_rows == 0u)", text)
         self.assertIn("sum_device_u32_counts", text)
         self.assertIn("nullptr, 1).release();", text)
 
@@ -34,6 +35,7 @@ class Goal3848AabbCountPerRayDeviceAccumulationTest(unittest.TestCase):
             "AABB_INDEX_QUERY_2D",
             "one global `atomicAdd` per accepted hit",
             "one device counter per launched ray",
+            "custom intersection program",
             "not LibRTS-specific",
             "does not authorize release action",
         ):

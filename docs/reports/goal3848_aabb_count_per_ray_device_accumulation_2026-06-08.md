@@ -15,13 +15,16 @@ of contended global atomics even when the caller only wants aggregate counts.
 The first attempted implementation used an OptiX payload register as a per-ray
 hit accumulator. Pod validation rejected that version because it undercounted
 the dense 131k stress case, so the final Goal3848 design is more conservative:
-use one device counter per launched ray and sum those counters after traversal.
+use one device counter per launched ray and update those counters directly from
+the custom intersection program before summing them after traversal.
 
 This goal changes the generic count-only kernel behavior:
 
 - count-only launches accumulate accepted hits into a distributed
   `query_hit_counts[payload_idx]` device array instead of one contended global
   counter;
+- count-only launches update those counters inside the custom intersection
+  program and skip `optixReportIntersection`, avoiding any-hit row-slot logic;
 - the host downloads the compact per-ray `uint32` count array and sums it into
   the existing aggregate `size_t` result;
 - row-output launches keep the existing row-index atomic path because row
@@ -38,11 +41,12 @@ Touched file:
 Key changes:
 
 - `AabbIndexQueryLaunchParams` now includes `query_hit_counts`.
-- `__anyhit__aabb_index_count` increments `query_hit_counts + payload_idx`
-  when `collect_rows == 0`.
+- `__intersection__aabb_index_exact` increments `query_hit_counts + payload_idx`
+  when `collect_rows == 0` and returns without reporting an intersection.
 - `sum_device_u32_counts` downloads and sums the compact per-ray counts.
-- Row collection still uses `atomicAdd(params.hit_count, 1ULL)` to reserve row
-  slots and preserve overflow detection.
+- Row collection still reports intersections into `__anyhit__aabb_index_count`,
+  where `atomicAdd(params.hit_count, 1ULL)` reserves row slots and preserves
+  overflow detection.
 - The AABB pipeline payload count stays at `1`.
 
 ## App-Agnostic Boundary
