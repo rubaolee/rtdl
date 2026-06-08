@@ -379,6 +379,12 @@ from .current_benchmark_scale_profiles import CURRENT_BENCHMARK_SCALE_PROFILE_VE
 from .current_benchmark_scale_profiles import current_benchmark_scale_profiles
 from .current_benchmark_scale_profiles import summarize_current_benchmark_scale_profiles
 from .current_benchmark_scale_profiles import validate_current_benchmark_scale_profiles
+from .current_benchmark_route_decisions import CURRENT_BENCHMARK_ROUTE_DECISION_STATUS
+from .current_benchmark_route_decisions import CURRENT_BENCHMARK_ROUTE_DECISION_VERSION
+from .current_benchmark_route_decisions import current_benchmark_route_decisions
+from .current_benchmark_route_decisions import explain_current_benchmark_route
+from .current_benchmark_route_decisions import summarize_current_benchmark_route_decisions
+from .current_benchmark_route_decisions import validate_current_benchmark_route_decisions
 from .v2_8_segmented_typed_stream_adapter import V28SegmentedTypedStreamAdapterResult
 from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_CLAIM_BOUNDARY
 from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_MATERIALIZATION
@@ -2207,6 +2213,12 @@ __all__ = [
     "current_benchmark_scale_profiles",
     "summarize_current_benchmark_scale_profiles",
     "validate_current_benchmark_scale_profiles",
+    "CURRENT_BENCHMARK_ROUTE_DECISION_STATUS",
+    "CURRENT_BENCHMARK_ROUTE_DECISION_VERSION",
+    "current_benchmark_route_decisions",
+    "explain_current_benchmark_route",
+    "summarize_current_benchmark_route_decisions",
+    "validate_current_benchmark_route_decisions",
     "V28SegmentedTypedStreamAdapterResult",
     "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_CLAIM_BOUNDARY",
     "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_MATERIALIZATION",
