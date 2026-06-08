@@ -14,6 +14,11 @@ OUTPUTS = (
     / "goal3976_fresh_helper_current_scale_validation_2026-06-08"
     / "outputs"
 )
+GOAL3984_REPORT = ROOT / "docs" / "reports" / "goal3984_resident_hot_query_summary_contract_2026-06-08.md"
+GOAL3984_SUPERSEDED_ROWS = {
+    "raydb_style_optix_count_scale_default_262k",
+    "robot_collision_optix_scale_default_1024_no_probe_reference",
+}
 
 
 def _lookup_path(payload: object, dotted_path: str) -> object:
@@ -39,6 +44,14 @@ class Goal3981CurrentScaleConcreteHotPathMetricPathsTest(unittest.TestCase):
             metric = row["representative_hot_path_metric"]
             payload_path = OUTPUTS / f"{row['row_id']}.stdout.json"
             with self.subTest(row=row["row_id"]):
+                if row["row_id"] in GOAL3984_SUPERSEDED_ROWS:
+                    report_text = GOAL3984_REPORT.read_text(encoding="utf-8")
+                    self.assertIn(metric, report_text)
+                    self.assertEqual(
+                        row["scale_calibration_status"],
+                        "resident_high_repeat_summary_contract_goal3984",
+                    )
+                    continue
                 payload = json.loads(payload_path.read_text(encoding="utf-8"))
                 value = _lookup_path(payload, metric)
                 self.assertIsNotNone(value)
@@ -55,7 +68,7 @@ class Goal3981CurrentScaleConcreteHotPathMetricPathsTest(unittest.TestCase):
         for fragment in [
             "concrete payload paths",
             "representative_hot_path_summary",
-            "metadata.timings.native_call_wall",
+            "metadata.prepared_phase_timing_summary.native_call_wall.total_sec",
             "runner_payload.elapsed_median_sec",
             "does not authorize release",
         ]:

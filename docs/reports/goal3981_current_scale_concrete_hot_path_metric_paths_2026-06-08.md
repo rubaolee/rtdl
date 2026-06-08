@@ -20,11 +20,11 @@ as:
 - RT-DBSCAN:
   `metadata.prepared_query_repeat_protocol.elapsed_sec_median`
 - Robot collision:
-  `benchmark_timing_sec.tail_phase_traversal_sec`
+  `run_summary.phase_timing_seconds.traversal.total_sec`
 - Contact manifold:
   `native_collect_elapsed_sec`
 - RayDB:
-  `metadata.timings.native_call_wall`
+  `metadata.prepared_phase_timing_summary.native_call_wall.total_sec`
 - Barnes-Hut:
   `partner_metadata.prepared_force_repeat_protocol.median_force_kernel_sec`
 - LibRTS:
@@ -40,7 +40,10 @@ scalar because that benchmark row contains several contract-level hot paths.
 ## Validation
 
 `tests.goal3981_current_scale_concrete_hot_path_metric_paths_test` checks that
-every declared path exists in the Goal3976 fresh-helper current-scale artifact.
+the eight unchanged declared paths exist in the Goal3976 fresh-helper
+current-scale artifact. The two short-row paths for Robot collision and RayDB
+are superseded by the Goal3984 resident high-repeat summary contract because
+the Goal3976 artifact predates those summary fields.
 
 ## Boundary
 

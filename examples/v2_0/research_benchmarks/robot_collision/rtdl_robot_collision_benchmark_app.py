@@ -743,6 +743,30 @@ def _median(values: list[float]) -> float | None:
     return float(statistics.median(values)) if values else None
 
 
+def _numeric_series_summary(values: list[float]) -> dict[str, float | int | None]:
+    if not values:
+        return {
+            "count": 0,
+            "min_sec": None,
+            "median_sec": None,
+            "max_sec": None,
+            "total_sec": 0.0,
+        }
+    return {
+        "count": len(values),
+        "min_sec": float(min(values)),
+        "median_sec": float(statistics.median(values)),
+        "max_sec": float(max(values)),
+        "total_sec": float(sum(values)),
+    }
+
+
+def _index_series_summary(values: list[int]) -> dict[str, int | None]:
+    if not values:
+        return {"count": 0, "first": None, "last": None}
+    return {"count": len(values), "first": int(values[0]), "last": int(values[-1])}
+
+
 def _signature(flags: list[int]) -> str:
     return "".join(str(int(value)) for value in flags)
 
@@ -760,6 +784,7 @@ def run_prepared_reuse_probe(
     reuse_native_device_query_buffers: bool = False,
     reuse_native_device_query_count: bool = False,
     validate_probe_reference: bool = True,
+    summary_only_runs: bool = False,
 ) -> dict[str, object]:
     if backend not in PREPARED_BACKENDS:
         raise ValueError(f"backend must be one of: {', '.join(PREPARED_BACKENDS)}")
@@ -872,6 +897,7 @@ def run_prepared_reuse_probe(
         for name in phase_names
     }
     tail_total_run_seconds = _median([float(row["total_run_seconds"]) for row in measured])
+    measured_total_run_values = [float(row["total_run_seconds"]) for row in measured]
     benchmark_timing_sec = {
         "app_lowering_sec": app_lowering_seconds,
         "tail_total_run_sec": tail_total_run_seconds,
@@ -881,14 +907,22 @@ def run_prepared_reuse_probe(
     for name, value in tail_phase_medians.items():
         benchmark_timing_sec[f"tail_phase_{name}_sec"] = value
     first_prepare = float(runs[0]["phase_timing_seconds"]["prepare_build"])
+    prepared_run_indices = [int(row["prepared_run_index"]) for row in runs]
+    prepared_query_run_indices = [int(row.get("prepared_query_run_index", 0)) for row in runs]
+    phase_timing_summaries = {
+        name: _numeric_series_summary(
+            [float(row["phase_timing_seconds"][name]) for row in measured]
+        )
+        for name in phase_names
+    }
     reuse_metadata = {
         "warmup_rows_dropped": warmup,
         "repeat_count": repeats,
         "measured_run_count": len(measured),
         "prepared_scene_reused": all(bool(row["prepared_scene_used"]) for row in runs),
-        "prepared_run_indices": [int(row["prepared_run_index"]) for row in runs],
-        "prepared_run_indices_strictly_increase": [int(row["prepared_run_index"]) for row in runs]
-        == list(range(1, repeats + 1)),
+        "prepared_run_indices": [] if summary_only_runs else prepared_run_indices,
+        "prepared_run_index_summary": _index_series_summary(prepared_run_indices),
+        "prepared_run_indices_strictly_increase": prepared_run_indices == list(range(1, repeats + 1)),
         "prepare_build_seconds_constant": all(
             float(row["phase_timing_seconds"]["prepare_build"]) == first_prepare for row in runs
         ),
@@ -936,12 +970,10 @@ def run_prepared_reuse_probe(
         ),
         "probe_reference_validated": bool(validate_probe_reference),
         "probe_reference_seconds": probe_reference_seconds,
-        "prepared_query_run_indices": [
-            int(row.get("prepared_query_run_index", 0)) for row in runs
-        ],
+        "prepared_query_run_indices": [] if summary_only_runs else prepared_query_run_indices,
+        "prepared_query_run_index_summary": _index_series_summary(prepared_query_run_indices),
         "prepared_query_run_indices_strictly_increase": (
-            [int(row.get("prepared_query_run_index", 0)) for row in runs]
-            == list(range(1, repeats + 1))
+            prepared_query_run_indices == list(range(1, repeats + 1))
             if prepared_query is not None
             else False
         ),
@@ -1000,11 +1032,16 @@ def run_prepared_reuse_probe(
             "lowering_policy": contract.lowering_policy,
             "reuse_metadata": reuse_metadata,
             "benchmark_timing_sec": benchmark_timing_sec,
+            "run_details_suppressed": bool(summary_only_runs),
+            "run_summary": {
+                "total_run_seconds": _numeric_series_summary(measured_total_run_values),
+                "phase_timing_seconds": phase_timing_summaries,
+            },
             "tail_medians": {
                 "total_run_seconds": tail_total_run_seconds,
                 "phase_timing_seconds": tail_phase_medians,
             },
-            "runs": runs,
+            "runs": [] if summary_only_runs else runs,
             "claim_boundary": _claim_boundary(mode=mode_name),
         }
     )
@@ -1179,6 +1216,14 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     parser.add_argument("--include-rows", action="store_true")
+    parser.add_argument(
+        "--summary-only-runs",
+        action="store_true",
+        help=(
+            "Suppress per-repeat prepared run details for high-repeat hot-path probes; "
+            "run_summary and tail_medians remain populated."
+        ),
+    )
     parser.add_argument("--json-out", default=None)
     args = parser.parse_args(argv)
     if args.matrix:
@@ -1204,6 +1249,7 @@ def main(argv: list[str] | None = None) -> int:
             warmup=args.warmup,
             reuse_native_device_query_buffers=True,
             validate_probe_reference=not args.no_probe_reference,
+            summary_only_runs=args.summary_only_runs,
         )
     elif args.mode == "optix_prepared_device_count":
         payload = run_prepared_reuse_probe(
@@ -1216,6 +1262,7 @@ def main(argv: list[str] | None = None) -> int:
             warmup=args.warmup,
             reuse_native_device_query_count=True,
             validate_probe_reference=not args.no_probe_reference,
+            summary_only_runs=args.summary_only_runs,
         )
     elif args.mode.endswith("_prepared_buffers") or (args.mode.endswith("_prepared") and args.repeats != 1):
         reuse_query_buffers = args.mode.endswith("_prepared_buffers")
@@ -1229,6 +1276,7 @@ def main(argv: list[str] | None = None) -> int:
             warmup=args.warmup,
             reuse_query_buffers=reuse_query_buffers,
             validate_probe_reference=not args.no_probe_reference,
+            summary_only_runs=args.summary_only_runs,
         )
     else:
         payload = run_robot_collision_benchmark(

@@ -226,6 +226,7 @@ def run_result_mode(
     generated_rows: int = DEFAULT_GENERATED_ROW_COUNT,
     generated_groups: int = DEFAULT_GENERATED_GROUP_COUNT,
     generated_revenue_mod: int = DEFAULT_GENERATED_REVENUE_MOD,
+    summary_only_iterations: bool = False,
 ) -> dict[str, Any]:
     if repeat <= 0:
         raise ValueError("repeat must be positive")
@@ -272,6 +273,7 @@ def run_result_mode(
             copies=copies,
             repeat=repeat,
             warmup=warmup,
+            summary_only_iterations=summary_only_iterations,
         )
     if backend == PAPER_RT_OPTIX_V2_5_PRIMITIVE_FIRST_BACKEND:
         return _run_paper_rt_v2_5_primitive_first_result_mode(
@@ -281,6 +283,7 @@ def run_result_mode(
             copies=copies,
             repeat=repeat,
             warmup=warmup,
+            summary_only_iterations=summary_only_iterations,
         )
     if backend == PAPER_RT_EMBREE_HIT_STREAM_TRITON_BACKEND:
         return _run_paper_rt_hit_stream_triton_result_mode(
@@ -317,6 +320,7 @@ def run_result_mode(
             copies=copies,
             repeat=repeat,
             warmup=warmup,
+            summary_only_iterations=summary_only_iterations,
         )
     if backend == "embree":
         return _run_native_result_mode(
@@ -1957,6 +1961,7 @@ def _run_paper_rt_prepared_grouped_reduction_result_mode(
     copies: int,
     repeat: int,
     warmup: int,
+    summary_only_iterations: bool = False,
 ) -> dict[str, Any]:
     if mode not in PAPER_RT_RESULT_MODES:
         raise ValueError(f"unsupported paper RT result mode: {mode}")
@@ -2032,6 +2037,12 @@ def _run_paper_rt_prepared_grouped_reduction_result_mode(
         timing_medians[key] = _median_float(
             [float(timing[key]) for timing in measured_phase_timings if key in timing]
         )
+    phase_timing_summaries = {
+        key: _numeric_series_summary(
+            [float(timing[key]) for timing in measured_phase_timings if key in timing]
+        )
+        for key in phase_keys
+    }
 
     rt_traversal_sec = float(timing_medians.get("traversal", 0.0))
     materialization_sec = max(0.0, elapsed_sec - rt_traversal_sec)
@@ -2066,7 +2077,10 @@ def _run_paper_rt_prepared_grouped_reduction_result_mode(
             "prepared_steady_state": True,
             "prepared_internal_repeat": int(repeat),
             "prepared_internal_warmup": int(warmup),
-            "prepared_iteration_wall_sec": measured_wall,
+            "prepared_iteration_wall_sec": [] if summary_only_iterations else measured_wall,
+            "prepared_iteration_wall_sec_suppressed": bool(summary_only_iterations),
+            "prepared_iteration_wall_summary": _numeric_series_summary(measured_wall),
+            "prepared_phase_timing_summary": phase_timing_summaries,
             "prepared_table_descriptor_used": bool(workload.get("prepared_table_descriptor_used", False)),
             "prepared_payload_columns_reused": False,
             "prepared_primitive_payload_reused": True,
@@ -2125,6 +2139,7 @@ def _run_paper_rt_v2_5_primitive_first_result_mode(
     copies: int,
     repeat: int,
     warmup: int,
+    summary_only_iterations: bool = False,
 ) -> dict[str, Any]:
     primitive_plan = describe_raydb_v2_5_primitive_first_plan(mode)
     result = _run_paper_rt_prepared_grouped_reduction_result_mode(
@@ -2134,6 +2149,7 @@ def _run_paper_rt_v2_5_primitive_first_result_mode(
         copies=copies,
         repeat=repeat,
         warmup=warmup,
+        summary_only_iterations=summary_only_iterations,
     )
     metadata = dict(result["metadata"])
     metadata.update(
@@ -2601,6 +2617,24 @@ def _median_float(values: list[float]) -> float:
     return float(statistics.median(values)) if values else 0.0
 
 
+def _numeric_series_summary(values: list[float]) -> dict[str, float | int | None]:
+    if not values:
+        return {
+            "count": 0,
+            "min_sec": None,
+            "median_sec": None,
+            "max_sec": None,
+            "total_sec": 0.0,
+        }
+    return {
+        "count": len(values),
+        "min_sec": float(min(values)),
+        "median_sec": _median_float(values),
+        "max_sec": float(max(values)),
+        "total_sec": float(sum(values)),
+    }
+
+
 def _run_paper_rt_prepared_device_hit_stream_triton_result_mode(
     *,
     fixture: dict[str, Any],
@@ -2609,6 +2643,7 @@ def _run_paper_rt_prepared_device_hit_stream_triton_result_mode(
     copies: int,
     repeat: int,
     warmup: int,
+    summary_only_iterations: bool = False,
 ) -> dict[str, Any]:
     if mode not in PAPER_RT_RESULT_MODES:
         raise ValueError(f"unsupported paper RT result mode: {mode}")
@@ -2749,6 +2784,18 @@ def _run_paper_rt_prepared_device_hit_stream_triton_result_mode(
         timing_medians[f"hit_stream_{key}"] = _median_float(
             [float(timing[key]) for timing in measured_hit_phase_timings if key in timing]
         )
+    phase_timing_summaries = {
+        key: _numeric_series_summary(
+            [float(timing[key]) for timing in measured_phase_timings if key in timing]
+        )
+        for key in sorted({key for timing in measured_phase_timings for key in timing})
+    }
+    hit_phase_timing_summaries = {
+        key: _numeric_series_summary(
+            [float(timing[key]) for timing in measured_hit_phase_timings if key in timing]
+        )
+        for key in hit_phase_keys
+    }
 
     hit_phase_timing = {
         key: timing_medians[f"hit_stream_{key}"]
@@ -2791,7 +2838,11 @@ def _run_paper_rt_prepared_device_hit_stream_triton_result_mode(
             "prepared_steady_state": True,
             "prepared_internal_repeat": int(repeat),
             "prepared_internal_warmup": int(warmup),
-            "prepared_iteration_wall_sec": measured_wall,
+            "prepared_iteration_wall_sec": [] if summary_only_iterations else measured_wall,
+            "prepared_iteration_wall_sec_suppressed": bool(summary_only_iterations),
+            "prepared_iteration_wall_summary": _numeric_series_summary(measured_wall),
+            "prepared_phase_timing_summary": phase_timing_summaries,
+            "prepared_hit_phase_timing_summary": hit_phase_timing_summaries,
             "prepared_table_descriptor_used": bool(workload.get("prepared_table_descriptor_used", False)),
             "prepared_payload_columns_reused": True,
             "prepared_optix_scene_reused": True,
@@ -3058,6 +3109,7 @@ def run_suite(
     generated_rows: int = DEFAULT_GENERATED_ROW_COUNT,
     generated_groups: int = DEFAULT_GENERATED_GROUP_COUNT,
     generated_revenue_mod: int = DEFAULT_GENERATED_REVENUE_MOD,
+    summary_only_iterations: bool = False,
 ) -> dict[str, Any]:
     if backend == "cpu_python_reference":
         modes = CPU_RESULT_MODES
@@ -3090,6 +3142,7 @@ def run_suite(
             generated_rows=generated_rows,
             generated_groups=generated_groups,
             generated_revenue_mod=generated_revenue_mod,
+            summary_only_iterations=summary_only_iterations,
         )
         for mode in modes
     }
@@ -3163,6 +3216,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--generated-revenue-mod", type=int, default=DEFAULT_GENERATED_REVENUE_MOD)
     parser.add_argument("--repeat", type=int, default=1)
     parser.add_argument("--warmup", type=int, default=0)
+    parser.add_argument(
+        "--summary-only-iterations",
+        action="store_true",
+        help=(
+            "Suppress per-iteration wall-time arrays in prepared high-repeat payloads; "
+            "metadata.prepared_iteration_wall_summary remains populated."
+        ),
+    )
     args = parser.parse_args(argv)
     payload = (
         run_suite(
@@ -3174,6 +3235,7 @@ def main(argv: list[str] | None = None) -> int:
             generated_rows=args.generated_rows,
             generated_groups=args.generated_groups,
             generated_revenue_mod=args.generated_revenue_mod,
+            summary_only_iterations=args.summary_only_iterations,
         )
         if args.mode == "all"
         else run_result_mode(
@@ -3186,6 +3248,7 @@ def main(argv: list[str] | None = None) -> int:
             generated_rows=args.generated_rows,
             generated_groups=args.generated_groups,
             generated_revenue_mod=args.generated_revenue_mod,
+            summary_only_iterations=args.summary_only_iterations,
         )
     )
     print(json.dumps(payload, indent=2, sort_keys=True))

@@ -14,30 +14,34 @@ class Goal3980CurrentScaleHotPathMetricContractTest(unittest.TestCase):
                     "wrapper_elapsed_sec_is_pod_budget_not_hot_path_metric",
                 )
                 self.assertTrue(row["representative_hot_path_metric"])
-                self.assertIsNone(row["hot_path_duration_target_sec"])
+                target = row["hot_path_duration_target_sec"]
+                if row["scale_calibration_status"] == "resident_high_repeat_summary_contract_goal3984":
+                    self.assertEqual(target, 1.0)
+                else:
+                    self.assertIsNone(target)
                 self.assertTrue(row["scale_calibration_status"])
 
-    def test_goal3979_short_rows_are_marked_as_repeat_calibration_rejected(self) -> None:
+    def test_goal3979_short_rows_are_superseded_by_goal3984_summary_contract(self) -> None:
         rows = {row["row_id"]: row for row in rt.current_benchmark_scale_profiles()}
         self.assertEqual(
             rows["robot_collision_optix_scale_default_1024_no_probe_reference"][
                 "scale_calibration_status"
             ],
-            "short_row_repeat_calibration_rejected_goal3979",
+            "resident_high_repeat_summary_contract_goal3984",
         )
         self.assertEqual(
             rows["robot_collision_optix_scale_default_1024_no_probe_reference"][
                 "representative_hot_path_metric"
             ],
-            "benchmark_timing_sec.tail_phase_traversal_sec",
+            "run_summary.phase_timing_seconds.traversal.total_sec",
         )
         self.assertEqual(
             rows["raydb_style_optix_count_scale_default_262k"]["scale_calibration_status"],
-            "short_row_repeat_calibration_rejected_goal3979",
+            "resident_high_repeat_summary_contract_goal3984",
         )
         self.assertEqual(
             rows["raydb_style_optix_count_scale_default_262k"]["representative_hot_path_metric"],
-            "metadata.timings.native_call_wall",
+            "metadata.prepared_phase_timing_summary.native_call_wall.total_sec",
         )
 
     def test_summary_and_validator_expose_contract(self) -> None:
@@ -47,7 +51,7 @@ class Goal3980CurrentScaleHotPathMetricContractTest(unittest.TestCase):
             "wrapper_elapsed_sec_is_pod_budget_not_hot_path_metric",
         )
         self.assertIn(
-            "short_row_repeat_calibration_rejected_goal3979",
+            "resident_high_repeat_summary_contract_goal3984",
             summary["scale_calibration_statuses"],
         )
         validation = rt.validate_current_benchmark_scale_profiles()
