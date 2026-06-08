@@ -1,0 +1,35 @@
+WORK=/root/goal3971_current_head_scale.71XR3W
+[setup] clone rtdl
+Cloning into 'repo'...
+Updating files:  34% (6842/19739)Updating files:  35% (6909/19739)Updating files:  36% (7107/19739)Updating files:  37% (7304/19739)Updating files:  38% (7501/19739)Updating files:  39% (7699/19739)Updating files:  40% (7896/19739)Updating files:  41% (8093/19739)Updating files:  42% (8291/19739)Updating files:  43% (8488/19739)Updating files:  44% (8686/19739)Updating files:  45% (8883/19739)Updating files:  46% (9080/19739)Updating files:  47% (9278/19739)Updating files:  48% (9475/19739)Updating files:  49% (9673/19739)Updating files:  50% (9870/19739)Updating files:  51% (10067/19739)Updating files:  52% (10265/19739)Updating files:  53% (10462/19739)Updating files:  54% (10660/19739)Updating files:  55% (10857/19739)Updating files:  56% (11054/19739)Updating files:  57% (11252/19739)Updating files:  58% (11449/19739)Updating files:  59% (11647/19739)Updating files:  60% (11844/19739)Updating files:  61% (12041/19739)Updating files:  62% (12239/19739)Updating files:  63% (12436/19739)Updating files:  64% (12633/19739)Updating files:  65% (12831/19739)Updating files:  66% (13028/19739)Updating files:  67% (13226/19739)Updating files:  68% (13423/19739)Updating files:  69% (13620/19739)Updating files:  69% (13749/19739)Updating files:  70% (13818/19739)Updating files:  71% (14015/19739)Updating files:  72% (14213/19739)Updating files:  73% (14410/19739)Updating files:  74% (14607/19739)Updating files:  75% (14805/19739)Updating files:  76% (15002/19739)Updating files:  77% (15200/19739)Updating files:  78% (15397/19739)Updating files:  79% (15594/19739)Updating files:  80% (15792/19739)Updating files:  81% (15989/19739)Updating files:  82% (16186/19739)Updating files:  83% (16384/19739)Updating files:  84% (16581/19739)Updating files:  85% (16779/19739)Updating files:  86% (16976/19739)Updating files:  87% (17173/19739)Updating files:  88% (17371/19739)Updating files:  89% (17568/19739)Updating files:  90% (17766/19739)Updating files:  91% (17963/19739)Updating files:  92% (18160/19739)Updating files:  93% (18358/19739)Updating files:  94% (18555/19739)Updating files:  95% (18753/19739)Updating files:  96% (18950/19739)Updating files:  97% (19147/19739)Updating files:  98% (19345/19739)Updating files:  99% (19542/19739)Updating files: 100% (19739/19739)Updating files: 100% (19739/19739), done.
+[setup] commit e383c4e4
+[setup] nvidia NVIDIA RTX 4000 Ada Generation, 550.127.05
+[setup] clone optix-sdk v8.0.0
+Cloning into '/root/vendor/optix-sdk'...
+Note: switching to 'bef93afb12dbd00e5b8311bc9b320dd487d8cc1f'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+[setup] CUDA_PREFIX=/usr/local/cuda-12
+[build] start 2026-06-08T14:01:54+00:00
+mkdir -p build
+/usr/local/cuda-12/bin/nvcc -std=c++17 -O3 -shared -I/root/vendor/optix-sdk/include -I/usr/local/cuda-12/include  -DRTDL_OPTIX_INCLUDE_DIR=\"/root/vendor/optix-sdk/include\" -DRTDL_CUDA_INCLUDE_DIR=\"/usr/local/cuda-12/include\" -DRTDL_CUDA_SYSTEM_INCLUDE_DIR=\"/usr/include/x86_64-linux-gnu\" -Xcompiler -fPIC  \
+	src/native/rtdl_optix.cpp \
+	src/native/optix/rtdl_optix_cuda_helpers.cu \
+	-L/usr/local/cuda-12/lib64 -lcuda -lnvrtc -lgeos_c  \
+	-o build/librtdl_optix.so
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[run] start 2026-06-08T14:02:28+00:00

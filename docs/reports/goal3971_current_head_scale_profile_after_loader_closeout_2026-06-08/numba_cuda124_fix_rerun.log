@@ -1,0 +1,3 @@
+[rerun-cuda124] start 2026-06-08T14:11:43+00:00
+numba 0.60.0 numpy 2.0.2
+cuda_paths {'nvvm': _env_path_tuple(by='CUDA_HOME', info=None), 'libdevice': _env_path_tuple(by='CUDA_HOME', info='/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc/nvvm/libdevice/libdevice.10.bc'), 'cudalib_dir': _env_path_tuple(by='CUDA_HOME', info='/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc/lib64'), 'static_cudalib_dir': _env_path_tuple(by='CUDA_HOME', info='/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc/lib64')}
