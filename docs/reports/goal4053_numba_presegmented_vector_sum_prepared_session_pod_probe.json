@@ -1,0 +1,235 @@
+{
+  "goal": "Goal4053",
+  "commit": "b2fa45d3",
+  "device": "b'NVIDIA RTX 4000 Ada Generation'",
+  "status": "pass",
+  "rows": [
+    {
+      "group_count": 1024,
+      "rows_per_group": 16,
+      "row_count": 16384,
+      "prepare_seconds": 0.0010233819484710693,
+      "atomic_seconds_min": 0.000965602695941925,
+      "one_shot_adapter_seconds_min_no_validation": 0.0009414330124855042,
+      "prepared_replay_seconds_min": 0.00024800747632980347,
+      "prepared_vs_atomic_min_speedup": 3.8934418842190643,
+      "prepared_vs_one_shot_adapter_min_speedup": 3.7959864211253644,
+      "matches_atomic": true,
+      "metadata": {
+        "adapter": "run_grouped_vector_sum_2d_partner_columns_session",
+        "partner": "numba",
+        "session_version": "rtdl.v2_9.numba_grouped_vector_sum_offsets_session.v1",
+        "input_contract": "caller_supplied_presegmented_grouped_vector_rows_2d",
+        "partner_reference_contract": "generic_grouped_vector_sum_f64x2",
+        "v2_5_partner_continuation_operation": "grouped_vector_sum_f64x2",
+        "v2_6_neutral_handoff_validation_status": "accept",
+        "v2_6_neutral_handoff_column_count": 4,
+        "v2_5_numba_presegmented_offsets_used": true,
+        "v2_5_numba_adapter_kernel": "numba_grouped_vector_sum_offsets_f64x2_kernel",
+        "v2_5_numba_global_atomic_add_used": false,
+        "row_offset_validation_performed_at_prepare": false,
+        "per_run_neutral_handoff_validation_used": false,
+        "output_columns_reused": true,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "group_count": 1024,
+        "row_count": 16384,
+        "direct_device_handoff_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "v2_5_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "claim_boundary": "Prepared generic grouped vector-sum session over caller-supplied Numba CUDA columns. It validates the neutral handoff once, reuses output columns, does not call native RT traversal, and does not authorize true zero-copy, release, or speedup claims.",
+        "prepared_session_reused": true,
+        "phase_timing": {
+          "source": "run_numba_prepared_grouped_vector_sum_f64x2_by_offsets",
+          "phases_sec": {
+            "partner_continuation": 8.410215377807617e-05
+          },
+          "promoted_performance_path": false,
+          "same_phase_contract_as_basis": false,
+          "phase_contract_version": "rtdl.partner.v2.4",
+          "validation": {
+            "status": "accept",
+            "known_phases": [
+              "partner_continuation"
+            ],
+            "errors": []
+          }
+        },
+        "v2_5_numba_preview_kernel_status": "preview_not_promoted"
+      }
+    },
+    {
+      "group_count": 8192,
+      "rows_per_group": 16,
+      "row_count": 131072,
+      "prepare_seconds": 0.001157619059085846,
+      "atomic_seconds_min": 0.0009534582495689392,
+      "one_shot_adapter_seconds_min_no_validation": 0.001263745129108429,
+      "prepared_replay_seconds_min": 0.00025247037410736084,
+      "prepared_vs_atomic_min_speedup": 3.7765153750811544,
+      "prepared_vs_one_shot_adapter_min_speedup": 5.005518503216668,
+      "matches_atomic": true,
+      "metadata": {
+        "adapter": "run_grouped_vector_sum_2d_partner_columns_session",
+        "partner": "numba",
+        "session_version": "rtdl.v2_9.numba_grouped_vector_sum_offsets_session.v1",
+        "input_contract": "caller_supplied_presegmented_grouped_vector_rows_2d",
+        "partner_reference_contract": "generic_grouped_vector_sum_f64x2",
+        "v2_5_partner_continuation_operation": "grouped_vector_sum_f64x2",
+        "v2_6_neutral_handoff_validation_status": "accept",
+        "v2_6_neutral_handoff_column_count": 4,
+        "v2_5_numba_presegmented_offsets_used": true,
+        "v2_5_numba_adapter_kernel": "numba_grouped_vector_sum_offsets_f64x2_kernel",
+        "v2_5_numba_global_atomic_add_used": false,
+        "row_offset_validation_performed_at_prepare": false,
+        "per_run_neutral_handoff_validation_used": false,
+        "output_columns_reused": true,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "group_count": 8192,
+        "row_count": 131072,
+        "direct_device_handoff_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "v2_5_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "claim_boundary": "Prepared generic grouped vector-sum session over caller-supplied Numba CUDA columns. It validates the neutral handoff once, reuses output columns, does not call native RT traversal, and does not authorize true zero-copy, release, or speedup claims.",
+        "prepared_session_reused": true,
+        "phase_timing": {
+          "source": "run_numba_prepared_grouped_vector_sum_f64x2_by_offsets",
+          "phases_sec": {
+            "partner_continuation": 8.510053157806396e-05
+          },
+          "promoted_performance_path": false,
+          "same_phase_contract_as_basis": false,
+          "phase_contract_version": "rtdl.partner.v2.4",
+          "validation": {
+            "status": "accept",
+            "known_phases": [
+              "partner_continuation"
+            ],
+            "errors": []
+          }
+        },
+        "v2_5_numba_preview_kernel_status": "preview_not_promoted"
+      }
+    },
+    {
+      "group_count": 8192,
+      "rows_per_group": 64,
+      "row_count": 524288,
+      "prepare_seconds": 0.00115126371383667,
+      "atomic_seconds_min": 0.0009736567735671997,
+      "one_shot_adapter_seconds_min_no_validation": 0.001261301338672638,
+      "prepared_replay_seconds_min": 0.0002528727054595947,
+      "prepared_vs_atomic_min_speedup": 3.8503830288744845,
+      "prepared_vs_one_shot_adapter_min_speedup": 4.987890394814379,
+      "matches_atomic": true,
+      "metadata": {
+        "adapter": "run_grouped_vector_sum_2d_partner_columns_session",
+        "partner": "numba",
+        "session_version": "rtdl.v2_9.numba_grouped_vector_sum_offsets_session.v1",
+        "input_contract": "caller_supplied_presegmented_grouped_vector_rows_2d",
+        "partner_reference_contract": "generic_grouped_vector_sum_f64x2",
+        "v2_5_partner_continuation_operation": "grouped_vector_sum_f64x2",
+        "v2_6_neutral_handoff_validation_status": "accept",
+        "v2_6_neutral_handoff_column_count": 4,
+        "v2_5_numba_presegmented_offsets_used": true,
+        "v2_5_numba_adapter_kernel": "numba_grouped_vector_sum_offsets_f64x2_kernel",
+        "v2_5_numba_global_atomic_add_used": false,
+        "row_offset_validation_performed_at_prepare": false,
+        "per_run_neutral_handoff_validation_used": false,
+        "output_columns_reused": true,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "group_count": 8192,
+        "row_count": 524288,
+        "direct_device_handoff_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "v2_5_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "claim_boundary": "Prepared generic grouped vector-sum session over caller-supplied Numba CUDA columns. It validates the neutral handoff once, reuses output columns, does not call native RT traversal, and does not authorize true zero-copy, release, or speedup claims.",
+        "prepared_session_reused": true,
+        "phase_timing": {
+          "source": "run_numba_prepared_grouped_vector_sum_f64x2_by_offsets",
+          "phases_sec": {
+            "partner_continuation": 8.826702833175659e-05
+          },
+          "promoted_performance_path": false,
+          "same_phase_contract_as_basis": false,
+          "phase_contract_version": "rtdl.partner.v2.4",
+          "validation": {
+            "status": "accept",
+            "known_phases": [
+              "partner_continuation"
+            ],
+            "errors": []
+          }
+        },
+        "v2_5_numba_preview_kernel_status": "preview_not_promoted"
+      }
+    },
+    {
+      "group_count": 32768,
+      "rows_per_group": 8,
+      "row_count": 262144,
+      "prepare_seconds": 0.0022111088037490845,
+      "atomic_seconds_min": 0.0009732171893119812,
+      "one_shot_adapter_seconds_min_no_validation": 0.002297520637512207,
+      "prepared_replay_seconds_min": 0.00025265663862228394,
+      "prepared_vs_atomic_min_speedup": 3.85193594998673,
+      "prepared_vs_one_shot_adapter_min_speedup": 9.093450502786707,
+      "matches_atomic": true,
+      "metadata": {
+        "adapter": "run_grouped_vector_sum_2d_partner_columns_session",
+        "partner": "numba",
+        "session_version": "rtdl.v2_9.numba_grouped_vector_sum_offsets_session.v1",
+        "input_contract": "caller_supplied_presegmented_grouped_vector_rows_2d",
+        "partner_reference_contract": "generic_grouped_vector_sum_f64x2",
+        "v2_5_partner_continuation_operation": "grouped_vector_sum_f64x2",
+        "v2_6_neutral_handoff_validation_status": "accept",
+        "v2_6_neutral_handoff_column_count": 4,
+        "v2_5_numba_presegmented_offsets_used": true,
+        "v2_5_numba_adapter_kernel": "numba_grouped_vector_sum_offsets_f64x2_kernel",
+        "v2_5_numba_global_atomic_add_used": false,
+        "row_offset_validation_performed_at_prepare": false,
+        "per_run_neutral_handoff_validation_used": false,
+        "output_columns_reused": true,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "group_count": 32768,
+        "row_count": 262144,
+        "direct_device_handoff_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "v2_5_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "claim_boundary": "Prepared generic grouped vector-sum session over caller-supplied Numba CUDA columns. It validates the neutral handoff once, reuses output columns, does not call native RT traversal, and does not authorize true zero-copy, release, or speedup claims.",
+        "prepared_session_reused": true,
+        "phase_timing": {
+          "source": "run_numba_prepared_grouped_vector_sum_f64x2_by_offsets",
+          "phases_sec": {
+            "partner_continuation": 8.475035429000854e-05
+          },
+          "promoted_performance_path": false,
+          "same_phase_contract_as_basis": false,
+          "phase_contract_version": "rtdl.partner.v2.4",
+          "validation": {
+            "status": "accept",
+            "known_phases": [
+              "partner_continuation"
+            ],
+            "errors": []
+          }
+        },
+        "v2_5_numba_preview_kernel_status": "preview_not_promoted"
+      }
+    }
+  ],
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "release_authorized": false
+  }
+}

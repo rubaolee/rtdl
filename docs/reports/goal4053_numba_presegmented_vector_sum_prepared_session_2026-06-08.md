@@ -46,3 +46,14 @@ support.
   `per_run_neutral_handoff_validation_used: False`;
 - claim-boundary flags remain false.
 
+Pod validation on RTX 4000 Ada at commit `b2fa45d3` passed the focused
+30-test gate. The pod probe
+`goal4053_numba_presegmented_vector_sum_prepared_session_pod_probe.json`
+records four presegmented shapes. Prepared replay matched the old atomic result
+and measured:
+
+- `3.77x` to `3.89x` faster than the older atomic Numba path;
+- `3.79x` to `9.09x` faster than the one-shot Numba front-door path.
+
+This is still internal benchmark evidence for a generic continuation. It does
+not by itself authorize public whole-app speedup wording.

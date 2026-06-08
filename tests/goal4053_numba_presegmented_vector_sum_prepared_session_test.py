@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import unittest
 from pathlib import Path
 
@@ -12,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 NUMBA_RUNTIME = ROOT / "src" / "rtdsl" / "numba_partner_continuation.py"
 PARTNER_ADAPTERS = ROOT / "src" / "rtdsl" / "partner_adapters.py"
 REPORT = ROOT / "docs" / "reports" / "goal4053_numba_presegmented_vector_sum_prepared_session_2026-06-08.md"
+ARTIFACT = ROOT / "docs" / "reports" / "goal4053_numba_presegmented_vector_sum_prepared_session_pod_probe.json"
 
 
 def _numba_cuda_available() -> bool:
@@ -101,6 +103,26 @@ class Goal4053NumbaPresegmentedVectorSumPreparedSessionTest(unittest.TestCase):
         self.assertIn("run_grouped_vector_sum_2d_partner_columns_session", text)
         self.assertIn("per-call neutral-handoff", text)
         self.assertIn("not authorize true zero-copy", text)
+
+    def test_pod_probe_records_prepared_session_win_and_boundary(self) -> None:
+        artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(artifact["status"], "pass")
+        self.assertEqual(artifact["commit"], "b2fa45d3")
+        self.assertGreaterEqual(len(artifact["rows"]), 4)
+        for row in artifact["rows"]:
+            self.assertTrue(row["matches_atomic"])
+            self.assertGreater(row["prepared_vs_atomic_min_speedup"], 3.0)
+            self.assertGreater(row["prepared_vs_one_shot_adapter_min_speedup"], 3.0)
+            metadata = row["metadata"]
+            self.assertTrue(metadata["prepared_session_reused"])
+            self.assertTrue(metadata["output_columns_reused"])
+            self.assertFalse(metadata["per_run_neutral_handoff_validation_used"])
+            self.assertFalse(metadata["v2_5_numba_global_atomic_add_used"])
+            self.assertFalse(metadata["rt_core_speedup_claim_authorized"])
+            self.assertFalse(metadata["true_zero_copy_claim_authorized"])
+        for flag, value in artifact["claim_boundary"].items():
+            self.assertFalse(value, flag)
 
 
 if __name__ == "__main__":
