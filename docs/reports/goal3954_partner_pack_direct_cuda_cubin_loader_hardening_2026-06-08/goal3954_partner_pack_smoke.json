@@ -1,0 +1,777 @@
+{
+  "all_pass": true,
+  "broad_rt_core_claim_authorized": false,
+  "claim_boundary": "Goal3828 records calibrated scale-profile commands for the ten benchmark apps after the Goal3827 file-stdout correction. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.",
+  "dry_run": false,
+  "file_backed_stdout_probe": true,
+  "json_pass_count": 4,
+  "paper_reproduction_claim_authorized": false,
+  "prepared_session_residency_summary": {
+    "app_count": 1,
+    "automatic_partner_selection_authorized": false,
+    "broad_rt_core_claim_authorized": false,
+    "claim_boundary": "Goal3874 records current prepared-session residency profiles for measured scene-heavy benchmark rows. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+    "geomean_prepare_to_hot_query_ratio": 2605.9200262615127,
+    "max_prepare_to_hot_query_ratio": 2605.9200262615127,
+    "prepared_session_contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "reuse_recommended_rows": [
+      "triangle_counting_weighted_sum_residency"
+    ],
+    "row_count": 1,
+    "status": "internal_profile_registry_not_release_authorization",
+    "true_zero_copy_claim_authorized": false,
+    "version": "rtdl.v2_10.current_prepared_session_residency_profiles.goal3874.v1"
+  },
+  "prepared_session_residency_validation": {
+    "claim_boundary": "Goal3874 records current prepared-session residency profiles for measured scene-heavy benchmark rows. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+    "errors": [],
+    "prepared_session_claim_boundary": "Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+    "row_count": 4,
+    "status": "accept",
+    "version": "rtdl.v2_10.current_prepared_session_residency_profiles.goal3874.v1"
+  },
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "rows": [
+    {
+      "app": "spatial_rayjoin",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/goal3866_rayjoin_representative_scale_profile.py",
+        "--repeat",
+        "50",
+        "--warmup",
+        "5",
+        "--pip-batch-single-repeat",
+        "12",
+        "--pip-batch-repeat",
+        "8",
+        "--pip-batch-request-counts",
+        "1",
+        "100"
+      ],
+      "elapsed_sec": 10.005669012665749,
+      "expected_runtime_class": "representative_mixed_route_public_cdb",
+      "prepared_session_residency_profile": null,
+      "prepared_session_residency_profiled": false,
+      "profile_kind": "default_scale",
+      "returncode": 0,
+      "row_id": "spatial_rayjoin_public_cdb_representative_mixed_route_scale_default",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "parsed_keys": [
+          "all_counts_match",
+          "block_size",
+          "boundary",
+          "cases",
+          "claim_boundary",
+          "cupy_required_for_reference_route",
+          "data_dir",
+          "dry_run",
+          "generated_at_unix",
+          "git_commit",
+          "git_status_short",
+          "gpu",
+          "numba_reference_available_for_custom_logic",
+          "pip_batch_device_predicate_eps",
+          "pip_batch_executor",
+          "raw_cuda_kernel_required_for_reference_route",
+          "recommended_route_summary",
+          "repeat",
+          "representative_hot_path_summary",
+          "representative_scale_profile",
+          "schema",
+          "warmup",
+          "wrapper_elapsed_sec",
+          "wrapper_phase_timing_sec"
+        ],
+        "payload_timing_summary": {
+          "payload_json_object": true,
+          "representative_hot_path_metric_scope": "per_contract_hot_medians_not_wrapper_wall_time",
+          "scale_runner_elapsed_sec_is_not_hot_path_metric": true,
+          "timing_scalar_count": 44,
+          "timing_scalars_sample": [
+            {
+              "path": "$.cases[0].numba_hot_median_sec",
+              "value": 0.00043762847781181335
+            },
+            {
+              "path": "$.cases[0].rtdl_optix_hot_median_sec",
+              "value": 0.0019532255828380585
+            },
+            {
+              "path": "$.cases[1].numba_hot_median_sec",
+              "value": 0.02299448475241661
+            },
+            {
+              "path": "$.cases[1].rtdl_optix_hot_median_sec",
+              "value": 8.511170744895935e-05
+            },
+            {
+              "path": "$.cases[1].subprobe_wrapper_phase_timing_sec.case_total_sec",
+              "value": 1.6527663543820381
+            },
+            {
+              "path": "$.cases[1].subprobe_wrapper_phase_timing_sec.dataset_file_check_sec",
+              "value": 0.00011179596185684204
+            },
+            {
+              "path": "$.cases[1].subprobe_wrapper_phase_timing_sec.numba_baseline_call_sec",
+              "value": 1.3799164518713951
+            },
+            {
+              "path": "$.cases[1].subprobe_wrapper_phase_timing_sec.numba_hot_total_sec",
+              "value": 1.1548317968845367
+            },
+            {
+              "path": "$.cases[1].subprobe_wrapper_phase_timing_sec.numba_load_case_sec",
+              "value": 0.14530523866415024
+            },
+            {
+              "path": "$.cases[1].subprobe_wrapper_phase_timing_sec.numba_prepare_sec",
+              "value": 0.0012017786502838135
+            },
+            {
+              "path": "$.cases[1].subprobe_wrapper_phase_timing_sec.rtdl_optix_call_sec",
+              "value": 0.1272078901529312
+            },
+            {
+              "path": "$.cases[1].subprobe_wrapper_phase_timing_sec.rtdl_optix_hot_total_sec",
+              "value": 0.004313163459300995
+            },
+            {
+              "path": "$.cases[1].subprobe_wrapper_phase_timing_sec.rtdl_optix_prepare_total_sec",
+              "value": 0.06165047734975815
+            },
+            {
+              "path": "$.cases[1].subprobe_wrapper_phase_timing_sec.shared_load_case_sec",
+              "value": 0.14530523866415024
+            },
+            {
+              "path": "$.cases[2].numba_hot_median_sec",
+              "value": 0.039650097489356995
+            },
+            {
+              "path": "$.cases[2].rtdl_optix_hot_median_sec",
+              "value": 0.00018997490406036377
+            },
+            {
+              "path": "$.cases[2].subprobe_wrapper_phase_timing_sec.case_total_sec",
+              "value": 3.804257445037365
+            },
+            {
+              "path": "$.cases[2].subprobe_wrapper_phase_timing_sec.dataset_file_check_sec",
+              "value": 6.051361560821533e-05
+            },
+            {
+              "path": "$.cases[2].subprobe_wrapper_phase_timing_sec.numba_baseline_call_sec",
+              "value": 2.741745911538601
+            },
+            {
+              "path": "$.cases[2].subprobe_wrapper_phase_timing_sec.numba_hot_total_sec",
+              "value": 1.9947235211730003
+            },
+            {
+              "path": "$.cases[2].subprobe_wrapper_phase_timing_sec.numba_load_case_sec",
+              "value": 0.13712382316589355
+            },
+            {
+              "path": "$.cases[2].subprobe_wrapper_phase_timing_sec.numba_prepare_sec",
+              "value": 0.009208589792251587
+            },
+            {
+              "path": "$.cases[2].subprobe_wrapper_phase_timing_sec.rtdl_optix_call_sec",
+              "value": 0.9251655712723732
+            },
+            {
+              "path": "$.cases[2].subprobe_wrapper_phase_timing_sec.rtdl_optix_hot_total_sec",
+              "value": 0.009585529565811157
+            },
+            {
+              "path": "$.cases[2].subprobe_wrapper_phase_timing_sec.rtdl_optix_prepare_total_sec",
+              "value": 0.9122964069247246
+            },
+            {
+              "path": "$.cases[2].subprobe_wrapper_phase_timing_sec.shared_load_case_sec",
+              "value": 0.13712382316589355
+            },
+            {
+              "path": "$.pip_batch_executor.largest_request_per_request_ms_median",
+              "value": 0.14549046754837036
+            },
+            {
+              "path": "$.pip_batch_executor.largest_request_total_ms_median",
+              "value": 14.549046754837036
+            },
+            {
+              "path": "$.pip_batch_executor.single_ms_median",
+              "value": 0.1785866916179657
+            },
+            {
+              "path": "$.representative_hot_path_summary.lsi_scalar_count.numba_hot_median_sec",
+              "value": 0.02299448475241661
+            },
+            {
+              "path": "$.representative_hot_path_summary.lsi_scalar_count.rtdl_optix_hot_median_sec",
+              "value": 8.511170744895935e-05
+            },
+            {
+              "path": "$.representative_hot_path_summary.overlay_active_count.numba_hot_median_sec",
+              "value": 0.039650097489356995
+            },
+            {
+              "path": "$.representative_hot_path_summary.overlay_active_count.rtdl_optix_hot_median_sec",
+              "value": 0.00018997490406036377
+            },
+            {
+              "path": "$.representative_hot_path_summary.pip_one_shot.numba_hot_median_sec",
+              "value": 0.00043762847781181335
+            },
+            {
+              "path": "$.representative_hot_path_summary.pip_one_shot.rtdl_optix_hot_median_sec",
+              "value": 0.0019532255828380585
+            },
+            {
+              "path": "$.representative_hot_path_summary.pip_repeated_requests.batched_per_request_ms_median",
+              "value": 0.14549046754837036
+            },
+            {
+              "path": "$.representative_hot_path_summary.pip_repeated_requests.single_request_ms_median",
+              "value": 0.1785866916179657
+            },
+            {
+              "path": "$.representative_hot_path_summary.wrapper_elapsed_sec",
+              "value": 8.704689756035805
+            },
+            {
+              "path": "$.wrapper_elapsed_sec",
+              "value": 8.704689756035805
+            },
+            {
+              "path": "$.wrapper_phase_timing_sec.data_dir_resolve_sec",
+              "value": 8.866935968399048e-05
+            },
+            {
+              "path": "$.wrapper_phase_timing_sec.lsi_overlay_probe_sec",
+              "value": 5.558830879628658
+            },
+            {
+              "path": "$.wrapper_phase_timing_sec.pip_batch_probe_sec",
+              "value": 0.740381509065628
+            },
+            {
+              "path": "$.wrapper_phase_timing_sec.pip_one_shot_probe_sec",
+              "value": 2.405195027589798
+            },
+            {
+              "path": "$.wrapper_phase_timing_sec.profile_total_sec",
+              "value": 8.704689756035805
+            }
+          ],
+          "top_level_elapsed_sec": null,
+          "top_level_wrapper_elapsed_sec": 8.704689756035805
+        },
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_bytes": 17881,
+      "stderr_path": "/root/goal3954_partner_pack_cubin_smoke/outputs/spatial_rayjoin_public_cdb_representative_mixed_route_scale_default.stderr.txt",
+      "stderr_tail": "l3310] batch 1 repeat 1/8 total=0.176899 ms per=0.176899 ms\n[goal3310] batch 1 repeat 2/8 total=0.184298 ms per=0.184298 ms\n[goal3310] batch 1 repeat 3/8 total=0.179924 ms per=0.179924 ms\n[goal3310] batch 1 repeat 4/8 total=0.172667 ms per=0.172667 ms\n[goal3310] batch 1 repeat 5/8 total=0.171006 ms per=0.171006 ms\n[goal3310] batch 1 repeat 6/8 total=0.182286 ms per=0.182286 ms\n[goal3310] batch 1 repeat 7/8 total=0.176601 ms per=0.176601 ms\n[goal3310] batch 1 repeat 8/8 total=0.177570 ms per=0.177570 ms\n[goal3310] batch 100 executor prepared effective_streams=16\n[goal3310] batch 100 warmup 1/3\n[goal3310] batch 100 warmup 2/3\n[goal3310] batch 100 warmup 3/3\n[goal3310] batch 100 repeat 1/8 total=14.550999 ms per=0.145510 ms\n[goal3310] batch 100 repeat 2/8 total=14.548898 ms per=0.145489 ms\n[goal3310] batch 100 repeat 3/8 total=14.536172 ms per=0.145362 ms\n[goal3310] batch 100 repeat 4/8 total=14.551245 ms per=0.145512 ms\n[goal3310] batch 100 repeat 5/8 total=14.553577 ms per=0.145536 ms\n[goal3310] batch 100 repeat 6/8 total=14.548980 ms per=0.145490 ms\n[goal3310] batch 100 repeat 7/8 total=14.542468 ms per=0.145425 ms\n[goal3310] batch 100 repeat 8/8 total=14.549114 ms per=0.145491 ms\n",
+      "stdout_bytes": 8227,
+      "stdout_path": "/root/goal3954_partner_pack_cubin_smoke/outputs/spatial_rayjoin_public_cdb_representative_mixed_route_scale_default.stdout.json",
+      "stdout_policy": "file_backed_stdout_required",
+      "stdout_tail": "d requests amortize traversal setup\",\n      \"recommended_route\": \"rtdl_optix_prepared_batch_executor\",\n      \"single_request_ms_median\": 0.1785866916179657\n    },\n    \"public_speedup_claim_authorized\": false,\n    \"recommended_route_summary\": {\n      \"automatic_dispatch\": false,\n      \"numba_contracts\": [\n        \"pip_one_shot\"\n      ],\n      \"rtdl_optix_contracts\": [\n        \"pip_repeated_requests\",\n        \"lsi_scalar_count\",\n        \"overlay_active_count\"\n      ],\n      \"user_route_choice_visible\": true\n    },\n    \"release_authorized\": false,\n    \"scale_runner_elapsed_sec_is_not_hot_path_metric\": true,\n    \"true_zero_copy_claim_authorized\": false,\n    \"whole_app_speedup_claim_authorized\": false,\n    \"wrapper_elapsed_sec\": 8.704689756035805\n  },\n  \"representative_scale_profile\": true,\n  \"schema\": \"rtdl.goal3866.rayjoin_representative_scale_profile.v1\",\n  \"warmup\": 5,\n  \"wrapper_elapsed_sec\": 8.704689756035805,\n  \"wrapper_phase_timing_sec\": {\n    \"data_dir_resolve_sec\": 8.866935968399048e-05,\n    \"lsi_overlay_probe_sec\": 5.558830879628658,\n    \"pip_batch_probe_sec\": 0.740381509065628,\n    \"pip_one_shot_probe_sec\": 2.405195027589798,\n    \"profile_total_sec\": 8.704689756035805\n  }\n}\n",
+      "timeout_sec": 360
+    },
+    {
+      "app": "robot_collision",
+      "command": [
+        "/usr/bin/python3",
+        "examples/v2_0/research_benchmarks/robot_collision/rtdl_robot_collision_benchmark_app.py",
+        "--mode",
+        "optix_prepared_device_count",
+        "--dataset",
+        "scaled",
+        "--pose-count",
+        "1024",
+        "--obstacle-count",
+        "128",
+        "--link-count",
+        "4",
+        "--repeats",
+        "5",
+        "--warmup",
+        "1",
+        "--no-probe-reference"
+      ],
+      "elapsed_sec": 1.2517212927341461,
+      "expected_runtime_class": "default_scale_no_probe_reference",
+      "prepared_session_residency_profile": null,
+      "prepared_session_residency_profiled": false,
+      "profile_kind": "default_scale",
+      "returncode": 0,
+      "row_id": "robot_collision_optix_scale_default_1024_no_probe_reference",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "parsed_keys": [
+          "app",
+          "app_lowering_seconds",
+          "backend",
+          "benchmark_timing_sec",
+          "case_shape",
+          "claim_boundary",
+          "contract",
+          "dataset",
+          "goal",
+          "lowering_policy",
+          "mode",
+          "probe_reference_compact_link_flags",
+          "probe_reference_signature",
+          "reuse_metadata",
+          "runs",
+          "tail_medians",
+          "warmup_protocol"
+        ],
+        "payload_timing_summary": {
+          "payload_json_object": true,
+          "representative_hot_path_metric_scope": null,
+          "scale_runner_elapsed_sec_is_not_hot_path_metric": false,
+          "timing_scalar_count": 7,
+          "timing_scalars_sample": [
+            {
+              "path": "$.benchmark_timing_sec.app_lowering_sec",
+              "value": 0.4777107983827591
+            },
+            {
+              "path": "$.benchmark_timing_sec.tail_phase_output_postprocess_sec",
+              "value": 6.593763828277588e-07
+            },
+            {
+              "path": "$.benchmark_timing_sec.tail_phase_prepare_build_sec",
+              "value": 0.11177937686443329
+            },
+            {
+              "path": "$.benchmark_timing_sec.tail_phase_prepared_query_build_sec",
+              "value": 0.17375605553388596
+            },
+            {
+              "path": "$.benchmark_timing_sec.tail_phase_query_pack_sec",
+              "value": 0.0
+            },
+            {
+              "path": "$.benchmark_timing_sec.tail_phase_traversal_sec",
+              "value": 4.2256500000000004e-05
+            },
+            {
+              "path": "$.benchmark_timing_sec.tail_total_run_sec",
+              "value": 6.948411464691162e-05
+            }
+          ],
+          "top_level_elapsed_sec": null,
+          "top_level_wrapper_elapsed_sec": null
+        },
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_bytes": 0,
+      "stderr_path": "/root/goal3954_partner_pack_cubin_smoke/outputs/robot_collision_optix_scale_default_1024_no_probe_reference.stderr.txt",
+      "stderr_tail": "",
+      "stdout_bytes": 9308,
+      "stdout_path": "/root/goal3954_partner_pack_cubin_smoke/outputs/robot_collision_optix_scale_default_1024_no_probe_reference.stdout.json",
+      "stdout_policy": "file_backed_stdout_required",
+      "stdout_tail": "terialized\",\n        \"true_zero_copy_authorized\": false\n      },\n      \"flagged_group_count\": 1219,\n      \"flags_signature\": \"count:1219\",\n      \"is_warmup\": false,\n      \"iteration\": 4,\n      \"matches_probe_reference\": null,\n      \"phase_timing_seconds\": {\n        \"output_postprocess\": 6.631016731262207e-07,\n        \"prepare_build\": 0.11177937686443329,\n        \"prepared_query_build\": 0.17375605553388596,\n        \"query_pack\": 0.0,\n        \"traversal\": 4.1141e-05\n      },\n      \"prepared_query_run_index\": 5,\n      \"prepared_run_index\": 5,\n      \"prepared_scene_used\": true,\n      \"total_run_seconds\": 6.607919931411743e-05\n    }\n  ],\n  \"tail_medians\": {\n    \"phase_timing_seconds\": {\n      \"output_postprocess\": 6.593763828277588e-07,\n      \"prepare_build\": 0.11177937686443329,\n      \"prepared_query_build\": 0.17375605553388596,\n      \"query_pack\": 0.0,\n      \"traversal\": 4.2256500000000004e-05\n    },\n    \"total_run_seconds\": 6.948411464691162e-05\n  },\n  \"warmup_protocol\": {\n    \"minimum_default\": \"7 repeats with 2 warmup rows for local evidence\",\n    \"repeat_count\": 5,\n    \"rule\": \"drop the first warmup_count rows; report medians over remaining tail rows\",\n    \"warmup_count\": 1\n  }\n}\n",
+      "timeout_sec": 120
+    },
+    {
+      "app": "contact_manifold",
+      "command": [
+        "/usr/bin/python3",
+        "examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
+        "--mode",
+        "native_collect_k",
+        "--backend",
+        "optix",
+        "--dataset",
+        "grid",
+        "--grid-count",
+        "64",
+        "--witness-capacity",
+        "128",
+        "--repeat-count",
+        "3"
+      ],
+      "elapsed_sec": 0.7512759491801262,
+      "expected_runtime_class": "safe_but_short",
+      "prepared_session_residency_profile": null,
+      "prepared_session_residency_profiled": false,
+      "profile_kind": "default_scale",
+      "returncode": 0,
+      "row_id": "contact_manifold_optix_scale_default_grid64",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "parsed_keys": [
+          "app",
+          "backend",
+          "candidate_id_rows",
+          "claim_boundary",
+          "complete_candidate_coverage",
+          "cpu_reference_elapsed_sec",
+          "cpu_reference_valid_count",
+          "dataset",
+          "engine_boundary",
+          "library_path",
+          "matches_cpu_reference",
+          "mode",
+          "native_collect_elapsed_sec",
+          "native_generic_symbol",
+          "overflowed",
+          "primitive_under_test",
+          "row_schema",
+          "v2_4_phase_timing",
+          "v2_4_prepared_session",
+          "valid_count",
+          "witness_capacity"
+        ],
+        "payload_timing_summary": {
+          "payload_json_object": true,
+          "representative_hot_path_metric_scope": null,
+          "scale_runner_elapsed_sec_is_not_hot_path_metric": false,
+          "timing_scalar_count": 2,
+          "timing_scalars_sample": [
+            {
+              "path": "$.cpu_reference_elapsed_sec",
+              "value": 0.08356322348117828
+            },
+            {
+              "path": "$.native_collect_elapsed_sec",
+              "value": 0.00044905394315719604
+            }
+          ],
+          "top_level_elapsed_sec": null,
+          "top_level_wrapper_elapsed_sec": null
+        },
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_bytes": 0,
+      "stderr_path": "/root/goal3954_partner_pack_cubin_smoke/outputs/contact_manifold_optix_scale_default_grid64.stderr.txt",
+      "stderr_tail": "",
+      "stdout_bytes": 7692,
+      "stdout_path": "/root/goal3954_partner_pack_cubin_smoke/outputs/contact_manifold_optix_scale_default_grid64.stdout.json",
+      "stdout_policy": "file_backed_stdout_required",
+      "stdout_tail": "t\": 0,\n        \"capacity_elements\": 1,\n        \"data_ptr_observed\": false,\n        \"device\": \"cpu:0\",\n        \"dtype\": \"uint64\",\n        \"element_count\": 1,\n        \"lifetime\": \"session_retained\",\n        \"memory_manager_boundary\": \"not_a_general_purpose_memory_manager\",\n        \"mutability\": \"mutable\",\n        \"name\": \"valid_count\",\n        \"scope\": \"rtdl_primitive_handoff_only\",\n        \"shape\": [\n          1\n        ],\n        \"source_protocol\": \"rtdl_scalar_status\",\n        \"stream_handle\": 0,\n        \"strides_bytes\": null\n      }\n    ],\n    \"overflow_policy\": \"fail_closed_no_partial_rows\",\n    \"phase_contract\": \"bounded_witness_collection\",\n    \"primitive\": \"aabb_index_2d_bounded_i64_rows\",\n    \"requires_phase_timing\": true,\n    \"reusable_output_buffers\": true,\n    \"reusable_query_buffers\": true,\n    \"reusable_scene\": true,\n    \"row_schema\": [\n      \"query_group_id\",\n      \"query_triangle_id\",\n      \"scene_triangle_id\"\n    ],\n    \"same_phase_contract_as_basis_required\": true,\n    \"session_id\": \"generic_bounded_i64_rows_optix_64x128\",\n    \"status\": \"protocol_descriptor_only\",\n    \"v2_4_protocol_version\": \"rtdl.partner.v2.4\"\n  },\n  \"valid_count\": 64,\n  \"witness_capacity\": 128\n}\n",
+      "timeout_sec": 180
+    },
+    {
+      "app": "triangle_counting",
+      "command": [
+        "/usr/bin/python3",
+        "examples/v2_0/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
+        "--mode",
+        "rt_graph_2a1_generic_rt",
+        "--backend",
+        "optix",
+        "--fixture",
+        "degree_oriented_two_triangles",
+        "--rt-graph-copies",
+        "2048",
+        "--detail",
+        "summary",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1"
+      ],
+      "elapsed_sec": 1.251658909022808,
+      "expected_runtime_class": "safe_but_short",
+      "prepared_session_residency_profile": {
+        "app": "triangle_counting",
+        "app_specific_native_engine_logic_allowed": false,
+        "automatic_partner_selection_authorized": false,
+        "backend": "optix",
+        "broad_rt_core_claim_authorized": false,
+        "cache_enabled_by_default": false,
+        "cache_key": {
+          "app_specific_native_engine_logic_allowed": false,
+          "automatic_partner_selection_authorized": false,
+          "backend": "optix",
+          "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+          "device": "cuda:0",
+          "explicit_key_required": true,
+          "input_fingerprints": [
+            [
+              "triangle_scene",
+              "bd2be091b08336c7f5334817"
+            ]
+          ],
+          "parameter_fingerprint": [
+            [
+              "detail",
+              "fa7209f7c1fdc81517fd09d6"
+            ]
+          ],
+          "partner": "none",
+          "primitive": "ray_triangle_weighted_any_hit_sum_3d",
+          "stable_id": "9288c0f5258c6b38655939c5"
+        },
+        "claim_boundary": "Goal3874 records current prepared-session residency profiles for measured scene-heavy benchmark rows. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+        "device": "cuda:0",
+        "evidence_refs": [
+          "Goal3872"
+        ],
+        "partner": "none",
+        "policy": {
+          "app_specific_native_engine_logic_allowed": false,
+          "automatic_partner_selection_authorized": false,
+          "broad_rt_core_claim_authorized": false,
+          "cache_enabled": false,
+          "cache_key": {
+            "app_specific_native_engine_logic_allowed": false,
+            "automatic_partner_selection_authorized": false,
+            "backend": "optix",
+            "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+            "device": "cuda:0",
+            "explicit_key_required": true,
+            "input_fingerprints": [
+              [
+                "triangle_scene",
+                "bd2be091b08336c7f5334817"
+              ]
+            ],
+            "parameter_fingerprint": [
+              [
+                "detail",
+                "fa7209f7c1fdc81517fd09d6"
+              ]
+            ],
+            "partner": "none",
+            "primitive": "ray_triangle_weighted_any_hit_sum_3d",
+            "stable_id": "9288c0f5258c6b38655939c5"
+          },
+          "claim_boundary": "Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+          "cold_prepare_phase": "prepare_scene_or_payload",
+          "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+          "hot_query_phase": "prepared_query",
+          "invalidation_events": [
+            "explicit_invalidate",
+            "backend_context_reset",
+            "close"
+          ],
+          "lifetime_state": "session_retained",
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "reuse_scope": "explicit_user_session",
+          "status": "internal_contract_not_release_authorization",
+          "true_zero_copy_claim_authorized": false
+        },
+        "prepared_session_contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+        "prepared_session_reuse_recommended": true,
+        "primitive": "ray_triangle_weighted_any_hit_sum_3d",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "row_id": "triangle_counting_weighted_sum_residency",
+        "scale_profile_row_id": "triangle_counting_optix_rt_graph_2a1_scale_default_2048",
+        "scale_profile_version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1",
+        "status": "internal_profile_registry_not_release_authorization",
+        "timing": {
+          "claim_boundary": "Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+          "cold_hot_split_required": true,
+          "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+          "hot_query_sec": 0.00015036482363939285,
+          "prepare_sec": 0.39183870516717434,
+          "prepare_to_hot_query_ratio": 2605.9200262615127,
+          "prepared_session_policy": {
+            "app_specific_native_engine_logic_allowed": false,
+            "automatic_partner_selection_authorized": false,
+            "broad_rt_core_claim_authorized": false,
+            "cache_enabled": false,
+            "cache_key": {
+              "app_specific_native_engine_logic_allowed": false,
+              "automatic_partner_selection_authorized": false,
+              "backend": "optix",
+              "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+              "device": "cuda:0",
+              "explicit_key_required": true,
+              "input_fingerprints": [
+                [
+                  "triangle_scene",
+                  "bd2be091b08336c7f5334817"
+                ]
+              ],
+              "parameter_fingerprint": [
+                [
+                  "detail",
+                  "fa7209f7c1fdc81517fd09d6"
+                ]
+              ],
+              "partner": "none",
+              "primitive": "ray_triangle_weighted_any_hit_sum_3d",
+              "stable_id": "9288c0f5258c6b38655939c5"
+            },
+            "claim_boundary": "Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+            "cold_prepare_phase": "prepare_scene_or_payload",
+            "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+            "hot_query_phase": "prepared_query",
+            "invalidation_events": [
+              "explicit_invalidate",
+              "backend_context_reset",
+              "close"
+            ],
+            "lifetime_state": "session_retained",
+            "public_speedup_claim_authorized": false,
+            "release_authorized": false,
+            "reuse_scope": "explicit_user_session",
+            "status": "internal_contract_not_release_authorization",
+            "true_zero_copy_claim_authorized": false
+          },
+          "public_speedup_claim_authorized": false,
+          "repeat": 50,
+          "request_count": 1,
+          "row_id": "triangle_counting_weighted_sum_residency",
+          "true_zero_copy_claim_authorized": false,
+          "warmup": 5
+        },
+        "true_zero_copy_claim_authorized": false,
+        "version": "rtdl.v2_10.current_prepared_session_residency_profiles.goal3874.v1"
+      },
+      "prepared_session_residency_profiled": true,
+      "profile_kind": "default_scale",
+      "returncode": 0,
+      "row_id": "triangle_counting_optix_rt_graph_2a1_scale_default_2048",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "parsed_keys": [
+          "app",
+          "authors_code_reproduction",
+          "backend",
+          "claim_boundary",
+          "contract",
+          "generic_rt_summary",
+          "generic_rt_weighted_triangle_count",
+          "hit_rows",
+          "input_source",
+          "mode",
+          "oracle_triangle_count",
+          "partner",
+          "partner_summary_contract_used",
+          "partner_timing_ms",
+          "prepared_session_residency",
+          "primitive_count",
+          "primitive_layout",
+          "ray_count",
+          "ray_tracing_accelerated",
+          "ray_weights",
+          "rt_core_accelerated",
+          "rt_core_path",
+          "rt_graph_contract",
+          "rt_graph_fixture_copies",
+          "same_contract_native_timing",
+          "timing_ms",
+          "triangle_count_matches_oracle",
+          "v2_4_phase_timing",
+          "v2_4_prepared_session"
+        ],
+        "payload_timing_summary": {
+          "payload_json_object": true,
+          "representative_hot_path_metric_scope": null,
+          "scale_runner_elapsed_sec_is_not_hot_path_metric": false,
+          "timing_scalar_count": 4,
+          "timing_scalars_sample": [
+            {
+              "path": "$.timing_ms.prepare_scene_ms",
+              "value": 236.04850471019745
+            },
+            {
+              "path": "$.timing_ms.query_max_ms",
+              "value": 0.2302229404449463
+            },
+            {
+              "path": "$.timing_ms.query_median_ms",
+              "value": 0.15828758478164673
+            },
+            {
+              "path": "$.timing_ms.query_min_ms",
+              "value": 0.1528039574623108
+            }
+          ],
+          "top_level_elapsed_sec": null,
+          "top_level_wrapper_elapsed_sec": null
+        },
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_bytes": 0,
+      "stderr_path": "/root/goal3954_partner_pack_cubin_smoke/outputs/triangle_counting_optix_rt_graph_2a1_scale_default_2048.stderr.txt",
+      "stderr_tail": "",
+      "stdout_bytes": 11858,
+      "stdout_path": "/root/goal3954_partner_pack_cubin_smoke/outputs/triangle_counting_optix_rt_graph_2a1_scale_default_2048.stdout.json",
+      "stdout_policy": "file_backed_stdout_required",
+      "stdout_tail": "um\"\n    ],\n    \"output_buffers\": [\n      {\n        \"access_mode\": \"write\",\n        \"alignment_bytes\": 1,\n        \"byte_offset\": 0,\n        \"capacity_elements\": 1,\n        \"data_ptr_observed\": false,\n        \"device\": \"cpu:0\",\n        \"dtype\": \"uint64\",\n        \"element_count\": 1,\n        \"lifetime\": \"session_retained\",\n        \"memory_manager_boundary\": \"not_a_general_purpose_memory_manager\",\n        \"mutability\": \"mutable\",\n        \"name\": \"weighted_hit_sum\",\n        \"scope\": \"rtdl_primitive_handoff_only\",\n        \"shape\": [\n          1\n        ],\n        \"source_protocol\": \"rtdl_scalar_summary\",\n        \"stream_handle\": 0,\n        \"strides_bytes\": null\n      }\n    ],\n    \"paper_method\": \"RT-2A1\",\n    \"partner\": \"none\",\n    \"phase_contract\": \"prepared_ray_triangle_summary\",\n    \"primitive\": \"ray_triangle_weighted_any_hit_sum_3d\",\n    \"requires_phase_timing\": true,\n    \"reusable_output_buffers\": true,\n    \"reusable_query_buffers\": true,\n    \"reusable_scene\": true,\n    \"same_phase_contract_as_basis_required\": true,\n    \"session_id\": \"generic_ray_triangle_summary_rt2a1_optix_10240x4096\",\n    \"status\": \"protocol_descriptor_only\",\n    \"v2_4_protocol_version\": \"rtdl.partner.v2.4\"\n  }\n}\n",
+      "timeout_sec": 240
+    }
+  ],
+  "runtime_environment": {
+    "cwd": "/root/goal3953_current_scale_clean_latest_9c13d1c6/repo",
+    "git_status_short": [
+      "M src/native/optix/rtdl_optix_workloads.cpp"
+    ],
+    "nvidia_smi": "NVIDIA RTX 4000 Ada Generation, 550.127.05, 20475 MiB",
+    "python_executable": "/usr/bin/python3",
+    "python_version": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]",
+    "rt_library_env": {
+      "CUDA_VISIBLE_DEVICES": null,
+      "RTDL_EMBREE_LIBRARY": null,
+      "RTDL_HIPRT_LIBRARY": null,
+      "RTDL_OPTIX_LIB": "/root/goal3953_current_scale_clean_latest_9c13d1c6/repo/build/librtdl_optix.so",
+      "RTDL_OPTIX_LIBRARY": "/root/goal3953_current_scale_clean_latest_9c13d1c6/repo/build/librtdl_optix.so"
+    },
+    "source_commit": "9c13d1c68e57687c378d7fc241257fa4a59ebae6",
+    "source_commit_short": "9c13d1c6",
+    "working_tree_clean": false
+  },
+  "selected_prepared_session_residency_profile_count": 1,
+  "summary": {
+    "app_count": 4,
+    "broad_rt_core_claim_authorized": false,
+    "claim_boundary": "Goal3828 records calibrated scale-profile commands for the ten benchmark apps after the Goal3827 file-stdout correction. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.",
+    "file_backed_stdout_rows": [
+      "spatial_rayjoin_public_cdb_representative_mixed_route_scale_default",
+      "robot_collision_optix_scale_default_1024_no_probe_reference",
+      "contact_manifold_optix_scale_default_grid64",
+      "triangle_counting_optix_rt_graph_2a1_scale_default_2048"
+    ],
+    "numba_required_rows": [
+      "spatial_rayjoin_public_cdb_representative_mixed_route_scale_default"
+    ],
+    "optix_required_rows": [
+      "spatial_rayjoin_public_cdb_representative_mixed_route_scale_default",
+      "robot_collision_optix_scale_default_1024_no_probe_reference",
+      "contact_manifold_optix_scale_default_grid64",
+      "triangle_counting_optix_rt_graph_2a1_scale_default_2048"
+    ],
+    "paper_reproduction_claim_authorized": false,
+    "profile_kinds": [
+      "default_scale"
+    ],
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "row_count": 4,
+    "status": "internal_scale_profile_registry_not_release_authorization",
+    "version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1"
+  },
+  "validation": {
+    "app_count": 10,
+    "claim_boundary": "Goal3828 records calibrated scale-profile commands for the ten benchmark apps after the Goal3827 file-stdout correction. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.",
+    "errors": [],
+    "row_count": 10,
+    "status": "accept",
+    "version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1"
+  },
+  "version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1"
+}

@@ -12867,10 +12867,10 @@ static void ensure_pack_triangle3d_device_columns_kernel()
 {
     (void)get_optix_context();
     std::call_once(g_partner_triangle3d_pack.init, [&]() {
-        const std::string ptx = compile_to_ptx(
+        const std::string cubin = compile_to_cubin(
             kPackTriangle3DDeviceColumnsKernelSrc,
             "partner_triangle3d_device_columns_pack_kernel.cu");
-        CU_CHECK(cuModuleLoadData(&g_partner_triangle3d_pack.module, ptx.c_str()));
+        CU_CHECK(cuModuleLoadData(&g_partner_triangle3d_pack.module, cubin.data()));
         CU_CHECK(cuModuleGetFunction(
             &g_partner_triangle3d_pack.fn,
             g_partner_triangle3d_pack.module,
@@ -12882,10 +12882,10 @@ static void ensure_pack_ray3d_device_columns_kernel()
 {
     (void)get_optix_context();
     std::call_once(g_partner_ray3d_pack.init, [&]() {
-        const std::string ptx = compile_to_ptx(
+        const std::string cubin = compile_to_cubin(
             kPackRay3DDeviceColumnsKernelSrc,
             "partner_ray3d_device_columns_pack_kernel.cu");
-        CU_CHECK(cuModuleLoadData(&g_partner_ray3d_pack.module, ptx.c_str()));
+        CU_CHECK(cuModuleLoadData(&g_partner_ray3d_pack.module, cubin.data()));
         CU_CHECK(cuModuleGetFunction(
             &g_partner_ray3d_pack.fn,
             g_partner_ray3d_pack.module,
@@ -14534,10 +14534,10 @@ static void ensure_pack_triangle2d_device_columns_kernel()
 {
     (void)get_optix_context();
     std::call_once(g_partner_triangle2d_pack.init, [&]() {
-        const std::string ptx = compile_to_ptx(
+        const std::string cubin = compile_to_cubin(
             kPackTriangle2DDeviceColumnsKernelSrc,
             "partner_triangle2d_device_columns_pack_kernel.cu");
-        CU_CHECK(cuModuleLoadData(&g_partner_triangle2d_pack.module, ptx.c_str()));
+        CU_CHECK(cuModuleLoadData(&g_partner_triangle2d_pack.module, cubin.data()));
         CU_CHECK(cuModuleGetFunction(
             &g_partner_triangle2d_pack.fn,
             g_partner_triangle2d_pack.module,
@@ -14777,10 +14777,10 @@ static void ensure_pack_ray2d_device_columns_kernel()
 {
     (void)get_optix_context();
     std::call_once(g_partner_ray2d_pack.init, [&]() {
-        const std::string ptx = compile_to_ptx(
+        const std::string cubin = compile_to_cubin(
             kPackRay2DDeviceColumnsKernelSrc,
             "partner_ray2d_device_columns_pack_kernel.cu");
-        CU_CHECK(cuModuleLoadData(&g_partner_ray2d_pack.module, ptx.c_str()));
+        CU_CHECK(cuModuleLoadData(&g_partner_ray2d_pack.module, cubin.data()));
         CU_CHECK(cuModuleGetFunction(
             &g_partner_ray2d_pack.fn,
             g_partner_ray2d_pack.module,

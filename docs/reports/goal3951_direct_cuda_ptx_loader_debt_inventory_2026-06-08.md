@@ -24,21 +24,15 @@ This is an inventory only. It does not convert the remaining sites.
 | `src/native/optix/rtdl_optix_api.cpp` | 3635 | `g_collect_k_i64_row_width2_final_materialize.module` | `collect_k_bounded_i64_row_width2_final_compact_kernel.cu` |
 | `src/native/optix/rtdl_optix_api.cpp` | 4822 | `g_collect_k_i64.module` | `collect_k_bounded_i64_kernel.cu` |
 | `src/native/optix/rtdl_optix_api.cpp` | 6664 | `g_collect_k_i64_row_width2_final_materialize.module` | `collect_k_bounded_i64_row_width2_final_compact_kernel.cu` |
-| `src/native/optix/rtdl_optix_workloads.cpp` | 12873 | `g_partner_triangle3d_pack.module` | `partner_triangle3d_device_columns_pack_kernel.cu` |
-| `src/native/optix/rtdl_optix_workloads.cpp` | 12888 | `g_partner_ray3d_pack.module` | `partner_ray3d_device_columns_pack_kernel.cu` |
-| `src/native/optix/rtdl_optix_workloads.cpp` | 14540 | `g_partner_triangle2d_pack.module` | `partner_triangle2d_device_columns_pack_kernel.cu` |
-| `src/native/optix/rtdl_optix_workloads.cpp` | 14783 | `g_partner_ray2d_pack.module` | `partner_ray2d_device_columns_pack_kernel.cu` |
 | `src/native/optix/rtdl_optix_workloads.cpp` | 20347 | `g_point_group_nearest_split_columns.module` | `point_group_nearest_split_columns_kernel.cu` |
 | `src/native/optix/rtdl_optix_workloads.cpp` | 20446 | `g_point_group_nearest_reduce.module` | `point_group_nearest_max_reduce_kernel.cu` |
 | `src/native/optix/rtdl_optix_workloads.cpp` | 20567 | `g_point_group_nearest_reduce.module` | `point_group_nearest_max_reduce_kernel.cu` |
 
 ## Recommended Migration Order
 
-1. Convert partner triangle/ray pack helpers, because they are reusable
-   bridge-building blocks for RTDL+partner workflows.
-2. Convert point-group-nearest split/reduce helpers, because they sit near the
+1. Convert point-group-nearest split/reduce helpers, because they sit near the
    Hausdorff and nearest-neighbor family.
-3. Convert collect-k helpers last, because that older path has more historical
+2. Convert collect-k helpers last, because that older path has more historical
    tuning branches and should be tested as a cluster.
 
 ## Follow-Up
@@ -46,6 +40,9 @@ This is an inventory only. It does not convert the remaining sites.
 Goal3952 migrated the device-column grouped reduction and segment-pair count
 helpers out of this debt list. The current remaining driver-loaded PTX count is
 `16`.
+
+Goal3954 migrated the partner triangle/ray device-column pack helpers out of
+this debt list. The current remaining driver-loaded PTX count is `12`.
 
 ## Boundary
 
