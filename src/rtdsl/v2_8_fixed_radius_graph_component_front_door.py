@@ -1138,23 +1138,26 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
         local_z = rem % dim_z
         key_rows.append((local_x + min_kx, local_y + min_ky, local_z + min_kz))
     key_to_ordinal = {key: ordinal for ordinal, key in enumerate(key_rows)}
-    min_x_host = tuple(float(value) for value in cupy.asnumpy(aabb_min_x64).tolist())
-    min_y_host = tuple(float(value) for value in cupy.asnumpy(aabb_min_y64).tolist())
-    min_z_host = tuple(float(value) for value in cupy.asnumpy(aabb_min_z64).tolist())
-    max_x_host = tuple(float(value) for value in cupy.asnumpy(aabb_max_x64).tolist())
-    max_y_host = tuple(float(value) for value in cupy.asnumpy(aabb_max_y64).tolist())
-    max_z_host = tuple(float(value) for value in cupy.asnumpy(aabb_max_z64).tolist())
     aabbs = [
         {
-            "min_x": min_x_host[index],
-            "min_y": min_y_host[index],
-            "min_z": min_z_host[index],
-            "max_x": max_x_host[index],
-            "max_y": max_y_host[index],
-            "max_z": max_z_host[index],
+            "min_x": math.inf,
+            "min_y": math.inf,
+            "min_z": math.inf,
+            "max_x": -math.inf,
+            "max_y": -math.inf,
+            "max_z": -math.inf,
         }
         for index in range(partition_count)
     ]
+    for ordinal, partition_id in enumerate(cupy.asnumpy(point_partition_ids).tolist()):
+        partition = aabbs[int(partition_id)]
+        px, py, pz = points[ordinal]
+        partition["min_x"] = min(partition["min_x"], px)
+        partition["min_y"] = min(partition["min_y"], py)
+        partition["min_z"] = min(partition["min_z"], pz)
+        partition["max_x"] = max(partition["max_x"], px)
+        partition["max_y"] = max(partition["max_y"], py)
+        partition["max_z"] = max(partition["max_z"], pz)
     max_offset = int(math.ceil(radius / cell_size)) + 1
     classification_tol = 1.0e-12 * max(1.0, radius_sq)
     pair_rows: list[tuple[int, int, int]] = []
