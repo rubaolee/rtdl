@@ -24,9 +24,6 @@ This is an inventory only. It does not convert the remaining sites.
 | `src/native/optix/rtdl_optix_api.cpp` | 3635 | `g_collect_k_i64_row_width2_final_materialize.module` | `collect_k_bounded_i64_row_width2_final_compact_kernel.cu` |
 | `src/native/optix/rtdl_optix_api.cpp` | 4822 | `g_collect_k_i64.module` | `collect_k_bounded_i64_kernel.cu` |
 | `src/native/optix/rtdl_optix_api.cpp` | 6664 | `g_collect_k_i64_row_width2_final_materialize.module` | `collect_k_bounded_i64_row_width2_final_compact_kernel.cu` |
-| `src/native/optix/rtdl_optix_workloads.cpp` | 1334 | `g_device_column_grouped_i64.module` | `device_column_grouped_i64_kernel.cu` |
-| `src/native/optix/rtdl_optix_workloads.cpp` | 4702 | `g_segment_pair_ambiguity_count.module` | `segment_pair_ambiguity_count_kernel.cu` |
-| `src/native/optix/rtdl_optix_workloads.cpp` | 4858 | `g_segment_pair_device_refined_count.module` | `segment_pair_device_refined_count_kernel.cu` |
 | `src/native/optix/rtdl_optix_workloads.cpp` | 12873 | `g_partner_triangle3d_pack.module` | `partner_triangle3d_device_columns_pack_kernel.cu` |
 | `src/native/optix/rtdl_optix_workloads.cpp` | 12888 | `g_partner_ray3d_pack.module` | `partner_ray3d_device_columns_pack_kernel.cu` |
 | `src/native/optix/rtdl_optix_workloads.cpp` | 14540 | `g_partner_triangle2d_pack.module` | `partner_triangle2d_device_columns_pack_kernel.cu` |
@@ -37,15 +34,18 @@ This is an inventory only. It does not convert the remaining sites.
 
 ## Recommended Migration Order
 
-1. Convert the device-column grouped reduction and segment-pair count helpers,
-   because they are close to the current RayDB/RayJoin performance-critical
-   surfaces.
-2. Convert partner triangle/ray pack helpers, because they are reusable
+1. Convert partner triangle/ray pack helpers, because they are reusable
    bridge-building blocks for RTDL+partner workflows.
-3. Convert point-group-nearest split/reduce helpers, because they sit near the
+2. Convert point-group-nearest split/reduce helpers, because they sit near the
    Hausdorff and nearest-neighbor family.
-4. Convert collect-k helpers last, because that older path has more historical
+3. Convert collect-k helpers last, because that older path has more historical
    tuning branches and should be tested as a cluster.
+
+## Follow-Up
+
+Goal3952 migrated the device-column grouped reduction and segment-pair count
+helpers out of this debt list. The current remaining driver-loaded PTX count is
+`16`.
 
 ## Boundary
 

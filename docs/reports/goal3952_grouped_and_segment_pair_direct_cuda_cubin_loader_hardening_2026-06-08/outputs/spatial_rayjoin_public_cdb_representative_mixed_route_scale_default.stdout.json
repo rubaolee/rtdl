@@ -1,0 +1,180 @@
+{
+  "all_counts_match": true,
+  "block_size": 128,
+  "boundary": "Representative RayJoin current-route scale profile over bounded public-CDB slices. This is not a RayJoin paper reproduction, not automatic dispatch, not a public speedup claim, and not release evidence.",
+  "cases": [
+    {
+      "counts_match": true,
+      "dataset": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+      "numba_hot_median_sec": 0.0004368983209133148,
+      "numba_rawkernel_required": false,
+      "numba_speedup_vs_rtdl_optix": 4.154025869934089,
+      "recommended_route": "numba_cuda_jit_scalar_count",
+      "rtdl_optix_execution_route": "prepared_optix_cupy_refined_pip",
+      "rtdl_optix_hot_median_sec": 0.0018148869276046753,
+      "rtdl_optix_speedup_vs_numba": 0.24073032554702575,
+      "workload": "pip"
+    },
+    {
+      "counts_match": true,
+      "dataset": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count512.cdb + /root/rtdl/data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+      "loaded_case_reuse_enabled": true,
+      "numba_hot_median_sec": 0.023103531450033188,
+      "numba_rawkernel_required": false,
+      "numba_speedup_vs_rtdl_optix": 0.0036936009134112043,
+      "recommended_route": "rtdl_optix_prepared_scalar_count",
+      "rtdl_optix_execution_route": "prepared_optix_left_id_dense_count_loaded_case_reuse",
+      "rtdl_optix_hot_median_sec": 8.533522486686707e-05,
+      "rtdl_optix_speedup_vs_numba": 270.7385078796874,
+      "subprobe_wrapper_phase_timing_sec": {
+        "case_total_sec": 1.6509272381663322,
+        "dataset_file_check_sec": 0.00012286752462387085,
+        "numba_baseline_call_sec": 1.3788181617856026,
+        "numba_hot_total_sec": 1.1531630158424377,
+        "numba_load_case_sec": 0.14393828809261322,
+        "numba_prepare_sec": 0.0012986958026885986,
+        "rtdl_optix_call_sec": 0.12784413993358612,
+        "rtdl_optix_hot_total_sec": 0.0043729692697525024,
+        "rtdl_optix_prepare_total_sec": 0.061850033700466156,
+        "shared_load_case_sec": 0.14393828809261322
+      },
+      "workload": "lsi"
+    },
+    {
+      "counts_match": true,
+      "dataset": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count512.cdb + /root/rtdl/data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+      "loaded_case_reuse_enabled": true,
+      "numba_hot_median_sec": 0.03957066312432289,
+      "numba_rawkernel_required": false,
+      "numba_speedup_vs_rtdl_optix": 0.00472549438819887,
+      "recommended_route": "rtdl_optix_prepared_scalar_count",
+      "rtdl_optix_execution_route": "prepared_optix_shape_pair_active_count_loaded_case_reuse",
+      "rtdl_optix_hot_median_sec": 0.00018699094653129578,
+      "rtdl_optix_speedup_vs_numba": 211.61806952883754,
+      "subprobe_wrapper_phase_timing_sec": {
+        "case_total_sec": 3.833267666399479,
+        "dataset_file_check_sec": 6.955862045288086e-05,
+        "numba_baseline_call_sec": 2.7397651001811028,
+        "numba_hot_total_sec": 1.9927950277924538,
+        "numba_load_case_sec": 0.13720324635505676,
+        "numba_prepare_sec": 0.009151458740234375,
+        "rtdl_optix_call_sec": 0.9560802057385445,
+        "rtdl_optix_hot_total_sec": 0.009372957050800323,
+        "rtdl_optix_prepare_total_sec": 0.9434133693575859,
+        "shared_load_case_sec": 0.13720324635505676
+      },
+      "workload": "overlay_seed"
+    }
+  ],
+  "claim_boundary": {
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "broad_rt_core_speedup_claim_authorized": false,
+    "internal_results_only": true,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "cupy_required_for_reference_route": false,
+  "data_dir": "/root/rtdl/data/rayjoin_public_cdb",
+  "dry_run": false,
+  "generated_at_unix": 1780923084.7346156,
+  "git_commit": "52218d793e237d0ee67479890d8138461e6b9ad3",
+  "git_status_short": "M src/native/optix/rtdl_optix_workloads.cpp",
+  "gpu": "NVIDIA RTX 4000 Ada Generation, 550.127.05",
+  "numba_reference_available_for_custom_logic": true,
+  "pip_batch_device_predicate_eps": "1e-9",
+  "pip_batch_executor": {
+    "dataset": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+    "exact_count": 1417,
+    "largest_request_count": 100,
+    "largest_request_effective_streams": 16,
+    "largest_request_per_request_ms_median": 0.14537882059812546,
+    "largest_request_total_ms_median": 14.537882059812546,
+    "point_count": 512,
+    "recommended_route": "rtdl_optix_prepared_pip_batch_executor",
+    "shape_count": 478,
+    "single_ms_median": 0.18397346138954163,
+    "throughput_evidence_not_one_shot_latency": true
+  },
+  "raw_cuda_kernel_required_for_reference_route": false,
+  "recommended_route_summary": {
+    "automatic_dispatch": false,
+    "lsi_scalar_count": "rtdl_optix_prepared_segment_pair_count",
+    "overlay_active_count": "rtdl_optix_prepared_shape_pair_active_count",
+    "pip_one_shot": "numba_cuda_jit_scalar_count_no_rawkernel",
+    "pip_repeated_requests": "rtdl_optix_prepared_batch_executor",
+    "user_route_choice_visible": true
+  },
+  "repeat": 50,
+  "representative_hot_path_summary": {
+    "all_contract_counts_match": true,
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "broad_rt_core_claim_authorized": false,
+    "contract_count": 4,
+    "lsi_scalar_count": {
+      "numba_hot_median_sec": 0.023103531450033188,
+      "reason": "fused generic segment-pair scalar count avoids dense partner looping",
+      "recommended_route": "rtdl_optix_prepared_segment_pair_count",
+      "rtdl_optix_hot_median_sec": 8.533522486686707e-05,
+      "rtdl_optix_speedup_vs_numba": 270.7385078796874
+    },
+    "metric_scope": "per_contract_hot_medians_not_wrapper_wall_time",
+    "overlay_active_count": {
+      "numba_hot_median_sec": 0.03957066312432289,
+      "reason": "fused generic shape-pair active count avoids dense partner looping",
+      "recommended_route": "rtdl_optix_prepared_shape_pair_active_count",
+      "rtdl_optix_hot_median_sec": 0.00018699094653129578,
+      "rtdl_optix_speedup_vs_numba": 211.61806952883754
+    },
+    "paper_reproduction_claim_authorized": false,
+    "pip_one_shot": {
+      "numba_hot_median_sec": 0.0004368983209133148,
+      "reason": "bounded one-shot scalar count favors simple partner code at this slice",
+      "recommended_route": "numba_cuda_jit_scalar_count_no_rawkernel",
+      "rtdl_optix_hot_median_sec": 0.0018148869276046753,
+      "rtdl_optix_speedup_vs_numba": 0.24073032554702575
+    },
+    "pip_repeated_requests": {
+      "batch_request_count": 100,
+      "batched_per_request_ms_median": 0.14537882059812546,
+      "per_request_speedup_vs_single_request": 1.2654763646632157,
+      "reason": "prepared scene and batched requests amortize traversal setup",
+      "recommended_route": "rtdl_optix_prepared_batch_executor",
+      "single_request_ms_median": 0.18397346138954163
+    },
+    "public_speedup_claim_authorized": false,
+    "recommended_route_summary": {
+      "automatic_dispatch": false,
+      "numba_contracts": [
+        "pip_one_shot"
+      ],
+      "rtdl_optix_contracts": [
+        "pip_repeated_requests",
+        "lsi_scalar_count",
+        "overlay_active_count"
+      ],
+      "user_route_choice_visible": true
+    },
+    "release_authorized": false,
+    "scale_runner_elapsed_sec_is_not_hot_path_metric": true,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "wrapper_elapsed_sec": 8.702077962458134
+  },
+  "representative_scale_profile": true,
+  "schema": "rtdl.goal3866.rayjoin_representative_scale_profile.v1",
+  "warmup": 5,
+  "wrapper_elapsed_sec": 8.702077962458134,
+  "wrapper_phase_timing_sec": {
+    "data_dir_resolve_sec": 8.992105722427368e-05,
+    "lsi_overlay_probe_sec": 5.598786287009716,
+    "pip_batch_probe_sec": 0.7137357145547867,
+    "pip_one_shot_probe_sec": 2.389265589416027,
+    "profile_total_sec": 8.702077962458134
+  }
+}

@@ -1328,10 +1328,10 @@ static std::vector<DeviceColumnRuntimeClause> columnar_make_device_runtime_claus
 static void ensure_device_column_grouped_i64_pipeline()
 {
     std::call_once(g_device_column_grouped_i64.init, [&]() {
-        const std::string ptx = compile_to_ptx(
+        const std::string cubin = compile_to_cubin(
             kDeviceColumnGroupedI64KernelSrc,
             "device_column_grouped_i64_kernel.cu");
-        CU_CHECK(cuModuleLoadData(&g_device_column_grouped_i64.module, ptx.c_str()));
+        CU_CHECK(cuModuleLoadData(&g_device_column_grouped_i64.module, cubin.data()));
         CU_CHECK(cuModuleGetFunction(
             &g_device_column_grouped_i64.fn,
             g_device_column_grouped_i64.module,
@@ -4696,10 +4696,10 @@ static void ensure_segment_pair_grouped_range_direct_intersection_exact_count_pi
 
 static void ensure_segment_pair_ambiguity_count_kernel() {
     std::call_once(g_segment_pair_ambiguity_count.init, [&]() {
-        std::string ptx = compile_to_ptx(
+        std::string cubin = compile_to_cubin(
             kSegmentPairAmbiguityCountKernelSrc,
             "segment_pair_ambiguity_count_kernel.cu");
-        CU_CHECK(cuModuleLoadData(&g_segment_pair_ambiguity_count.module, ptx.c_str()));
+        CU_CHECK(cuModuleLoadData(&g_segment_pair_ambiguity_count.module, cubin.data()));
         CU_CHECK(cuModuleGetFunction(
             &g_segment_pair_ambiguity_count.fn,
             g_segment_pair_ambiguity_count.module,
@@ -4852,10 +4852,10 @@ static void launch_segment_pair_ambiguity_count_kernel(
 
 static void ensure_segment_pair_device_refined_count_kernel() {
     std::call_once(g_segment_pair_device_refined_count.init, [&]() {
-        std::string ptx = compile_to_ptx(
+        std::string cubin = compile_to_cubin(
             kSegmentPairDeviceRefinedCountKernelSrc,
             "segment_pair_device_refined_count_kernel.cu");
-        CU_CHECK(cuModuleLoadData(&g_segment_pair_device_refined_count.module, ptx.c_str()));
+        CU_CHECK(cuModuleLoadData(&g_segment_pair_device_refined_count.module, cubin.data()));
         CU_CHECK(cuModuleGetFunction(
             &g_segment_pair_device_refined_count.fn,
             g_segment_pair_device_refined_count.module,

@@ -15,9 +15,6 @@ EXPECTED_DRIVER_LOADED_PTX_KERNELS = (
     "collect_k_bounded_i64_row_width2_final_compact_kernel.cu",
     "collect_k_bounded_i64_kernel.cu",
     "collect_k_bounded_i64_row_width2_final_compact_kernel.cu",
-    "device_column_grouped_i64_kernel.cu",
-    "segment_pair_ambiguity_count_kernel.cu",
-    "segment_pair_device_refined_count_kernel.cu",
     "partner_triangle3d_device_columns_pack_kernel.cu",
     "partner_ray3d_device_columns_pack_kernel.cu",
     "partner_triangle2d_device_columns_pack_kernel.cu",
@@ -62,6 +59,9 @@ class Goal3951DirectCudaPtxLoaderDebtInventoryTest(unittest.TestCase):
             "partner_point2d_fixed_radius_aabb_pack_kernel.cu",
             "k_closest_hits_kernel.cu",
             "knn3d_kernel.cu",
+            "device_column_grouped_i64_kernel.cu",
+            "segment_pair_ambiguity_count_kernel.cu",
+            "segment_pair_device_refined_count_kernel.cu",
         ):
             self.assertNotIn(kernel, remaining)
 
