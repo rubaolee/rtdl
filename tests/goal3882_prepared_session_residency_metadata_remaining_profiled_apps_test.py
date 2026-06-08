@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import unittest
 from unittest import mock
@@ -20,6 +21,7 @@ REPORT = (
     / "reports"
     / "goal3882_prepared_session_residency_metadata_remaining_profiled_apps_2026-06-08.md"
 )
+POD_ARTIFACT = ROOT / "docs" / "reports" / "goal3882_profiled_apps_residency_metadata_a5000" / "summary.json"
 
 
 class _FakePreparedAabb:
@@ -151,8 +153,31 @@ class Goal3882PreparedSessionResidencyMetadataRemainingProfiledAppsTest(unittest
             "aabb_index_query_2d",
             "ray_triangle_weighted_any_hit_sum_3d",
             "not a true-zero-copy or public speedup claim",
+            "A5000 Evidence",
         ):
             self.assertIn(phrase, text)
+
+    def test_a5000_artifact_confirms_all_profiled_apps_emit_metadata(self) -> None:
+        payload = json.loads(POD_ARTIFACT.read_text(encoding="utf-8"))
+        self.assertTrue(payload["all_pass"])
+        self.assertEqual(payload["selected_prepared_session_residency_profile_count"], 4)
+        expected_primitives = {
+            "hausdorff_xhd_scale_default_optix_threshold": "fixed_radius_threshold_2d",
+            "librts_spatial_index_optix_scale_default_32768": "aabb_index_query_2d",
+            "rtnn_prepared_optix_scale_default_65536": "fixed_radius_neighbors_3d_ranked_summary",
+            "triangle_counting_optix_rt_graph_2a1_scale_default_2048": "ray_triangle_weighted_any_hit_sum_3d",
+        }
+        self.assertEqual({row["row_id"] for row in payload["rows"]}, set(expected_primitives))
+        for row in payload["rows"]:
+            self.assertTrue(row["prepared_session_residency_profiled"], row["row_id"])
+            stdout_path = POD_ARTIFACT.parent / "outputs" / f"{row['row_id']}.stdout.json"
+            app_payload = json.loads(stdout_path.read_text(encoding="utf-8"))
+            metadata = app_payload["prepared_session_residency"]
+            self.assertEqual(metadata["cache_key"]["primitive"], expected_primitives[row["row_id"]])
+            self.assertEqual(metadata["explicit_reuse_helper"], "get_or_prepare_explicit_session")
+            self.assertFalse(metadata["automatic_partner_selection_authorized"])
+            self.assertFalse(metadata["true_zero_copy_claim_authorized"])
+            self.assertFalse(metadata["public_speedup_claim_authorized"])
 
 
 if __name__ == "__main__":

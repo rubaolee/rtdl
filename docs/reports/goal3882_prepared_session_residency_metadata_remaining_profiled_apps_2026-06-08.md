@@ -52,3 +52,27 @@ Added `tests/goal3882_prepared_session_residency_metadata_remaining_profiled_app
 The test uses mocks for native/expensive calls and verifies that each app
 payload includes the prepared-session residency metadata without enabling
 claims or altering the existing high-level payload contract.
+
+## A5000 Evidence
+
+Ran the current scale-profile runner on the four profiled rows after this
+change.
+
+Artifact:
+
+`docs/reports/goal3882_profiled_apps_residency_metadata_a5000/summary.json`
+
+Result:
+
+- source commit: `8fcbd352`
+- `all_pass`: `true`
+- selected prepared-session profile count: `4`
+
+Each live app payload emitted `prepared_session_residency`:
+
+| Row | Primitive | Automatic partner/backend? | True zero-copy claim? |
+| --- | --- | --- | --- |
+| `hausdorff_xhd_scale_default_optix_threshold` | `fixed_radius_threshold_2d` | `false` | `false` |
+| `librts_spatial_index_optix_scale_default_32768` | `aabb_index_query_2d` | `false` | `false` |
+| `rtnn_prepared_optix_scale_default_65536` | `fixed_radius_neighbors_3d_ranked_summary` | `false` | `false` |
+| `triangle_counting_optix_rt_graph_2a1_scale_default_2048` | `ray_triangle_weighted_any_hit_sum_3d` | `false` | `false` |
