@@ -103,6 +103,13 @@ This file catches design ideas that should not interrupt the current release or 
   than disabling it, and atomics are not the sole bottleneck. The expensive
   work is the combined fixed-radius candidate traversal, repeated root reads for
   same-root culling, and remaining atomic unions.
+- Goal3996 used the Goal3992 extended counters to sweep same-root and
+  direct-side-effect grouped-union modes at `4096`, `16384`, and `65536`
+  clustered3d points. At `65536` points, the current default saw about
+  `892.8M` radius-qualified candidates for only `65,535` successful unions.
+  Disabling same-root culling was slower, and direct side effects were only
+  roughly neutral at the large size. Do not spend more time on these simple
+  toggles as the main optimization path.
 - The next generic runtime primitive should be a dense fixed-radius
   grouped-union continuation, not another app-specific RT-DBSCAN trick. Candidate
   designs include component-aware root-cache snapshots with explicit staleness
