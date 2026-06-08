@@ -46,6 +46,8 @@ class Goal3841RayJoinPipContractBoundaryCorrectionTest(unittest.TestCase):
         self.assertIn("bounded public-CDB PIP scalar-count row", matrix)
         self.assertIn("bounded public-CDB PIP scalar-count row", partner)
         self.assertIn("LSI/overlay scalar-count rows", partner)
+        self.assertIn("260x", matrix)
+        self.assertIn("260x", partner)
 
 
 if __name__ == "__main__":
