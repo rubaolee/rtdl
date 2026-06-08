@@ -1211,8 +1211,9 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
         }
     else:
         if pair_capacity is None:
-            raise ValueError("pair_capacity is required for device_bounded_offsets")
-        requested_capacity = int(pair_capacity)
+            requested_capacity = int(partition_count) * int((2 * max_offset + 1) ** 3)
+        else:
+            requested_capacity = int(pair_capacity)
         if requested_capacity <= 0:
             raise ValueError("pair_capacity must be positive when provided")
         left_ids, right_ids, statuses, pair_count, visible_pair_count, overflow = (
@@ -1294,6 +1295,13 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
             "host_pair_enumeration_used": pair_enumeration == "host",
             "device_pair_enumeration_used": pair_enumeration == "device_bounded_offsets",
             "pair_enumeration": pair_enumeration,
+            "pair_capacity_source": (
+                "caller_provided"
+                if pair_capacity is not None
+                else "device_upper_bound"
+                if pair_enumeration == "device_bounded_offsets"
+                else "host_exact_pair_count"
+            ),
             "native_abi_added": False,
             "runtime_executable": True,
             "release_authorized": False,
@@ -1377,6 +1385,178 @@ def build_v2_8_fixed_radius_partition_convergence_summary_numba_preview_3d(
         }
     )
     return {"columns": columns, "metadata": metadata}
+
+
+def build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_3d(
+    point_rows,
+    *,
+    radius: float,
+    cell_factor: float = 0.125,
+    pair_capacity: int | None = None,
+    pair_enumeration: str = "device_bounded_offsets",
+    validate_against_all_pairs: bool = False,
+) -> dict[str, Any]:
+    """Executable CuPy preview for partition-level component labels."""
+
+    raw_rows = tuple(point_rows)
+    points = tuple(_point_xyz(row) for row in raw_rows)
+    if not points:
+        raise ValueError("point_rows must contain at least one point")
+    radius = float(radius)
+    if radius <= 0.0:
+        raise ValueError("radius must be positive")
+    summary = build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
+        raw_rows,
+        radius=radius,
+        cell_factor=cell_factor,
+        pair_capacity=pair_capacity,
+        pair_enumeration=pair_enumeration,
+    )
+    summary_validation = validate_v2_8_fixed_radius_partition_convergence_summary_same_contract_3d(
+        raw_rows,
+        radius=radius,
+        cell_factor=cell_factor,
+        candidate=summary,
+        float_abs_tol=1.0e-5,
+    )
+    base_metadata = {
+        "reference": "fixed_radius_partition_convergence_component_labels_3d_cupy_preview",
+        "partition_summary_validation": summary_validation,
+        "partition_summary_pair_enumeration": summary["metadata"]["pair_enumeration"],
+        "partition_summary_pair_capacity_source": summary["metadata"]["pair_capacity_source"],
+        "native_abi_added": False,
+        "runtime_executable": True,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "app_specific_engine_logic_allowed": False,
+        "automatic_partner_selection_allowed": False,
+        "hidden_dispatch_allowed": False,
+        "claim_boundary": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY,
+    }
+    if summary_validation["status"] != "accept":
+        return {
+            "columns": {"point_ids": (), "component_labels": ()},
+            "metadata": {
+                **base_metadata,
+                "status": "reject_partition_summary_mismatch",
+                "errors": summary_validation["errors"],
+            },
+        }
+    if bool(summary["metadata"].get("overflow", False)):
+        return {
+            "columns": {"point_ids": (), "component_labels": ()},
+            "metadata": {
+                **base_metadata,
+                "status": "reject_partition_summary_overflow",
+                "overflow": True,
+                "complete_candidate_coverage": False,
+                "errors": ("partition summary overflow prevents complete component labels",),
+            },
+        }
+
+    summary_columns = dict(summary["columns"])
+    point_partition_ids = tuple(int(value) for value in _column_tuple(summary_columns["point_partition_ids"]))
+    partition_count = int(summary_validation["partition_count"])
+    partitions: list[list[int]] = [[] for _ in range(partition_count)]
+    errors: list[str] = []
+    for ordinal, partition_id in enumerate(point_partition_ids):
+        if partition_id < 0 or partition_id >= partition_count:
+            errors.append("point_partition_ids contains an out-of-range partition id")
+            continue
+        partitions[partition_id].append(ordinal)
+
+    partition_parents = list(range(partition_count))
+    radius_sq = radius * radius
+    safe_skip_pairs = 0
+    safe_full_pairs = 0
+    ambiguous_pairs = 0
+    ambiguous_point_comparisons = 0
+    ambiguous_positive_edges = 0
+    for left, right, status in zip(
+        _column_tuple(summary_columns["near_pair_left_partition_ids"]),
+        _column_tuple(summary_columns["near_pair_right_partition_ids"]),
+        _column_tuple(summary_columns["near_pair_status"]),
+    ):
+        left_id = int(left)
+        right_id = int(right)
+        status_id = int(status)
+        if left_id < 0 or right_id < 0 or left_id >= partition_count or right_id >= partition_count:
+            errors.append("near partition pair contains an out-of-range partition id")
+            continue
+        if status_id == 0:
+            safe_skip_pairs += 1
+            continue
+        if status_id == 1:
+            safe_full_pairs += 1
+            _union_parent(partition_parents, left_id, right_id)
+            continue
+        if status_id != 2:
+            errors.append("near_pair_status must be 0, 1, or 2")
+            continue
+        ambiguous_pairs += 1
+        left_members = partitions[left_id]
+        right_members = partitions[right_id]
+        connected = False
+        for left_point in left_members:
+            for right_point in right_members:
+                if left_id == right_id and right_point <= left_point:
+                    continue
+                ambiguous_point_comparisons += 1
+                if _distance_sq_3d(points[left_point], points[right_point]) <= radius_sq:
+                    connected = True
+                    ambiguous_positive_edges += 1
+                    break
+            if connected:
+                break
+        if connected:
+            _union_parent(partition_parents, left_id, right_id)
+
+    if errors:
+        return {
+            "columns": {"point_ids": (), "component_labels": ()},
+            "metadata": {
+                **base_metadata,
+                "status": "reject_partition_summary_consumer_error",
+                "errors": tuple(errors),
+            },
+        }
+
+    partition_labels = _compact_component_labels(partition_parents)
+    point_labels = tuple(partition_labels[partition_id] for partition_id in point_partition_ids)
+    point_ids = tuple(_point_id(row, ordinal) for ordinal, row in enumerate(raw_rows))
+    all_pairs_labels = None
+    same_contract = None
+    if validate_against_all_pairs:
+        all_pairs_labels = _fixed_radius_component_labels_all_pairs_3d(points, radius)
+        same_contract = point_labels == all_pairs_labels
+    return {
+        "columns": {
+            "point_ids": point_ids,
+            "component_labels": point_labels,
+        },
+        "metadata": {
+            **base_metadata,
+            "status": (
+                "accept"
+                if same_contract is None or same_contract
+                else "reject_all_pairs_mismatch"
+            ),
+            "point_count": len(points),
+            "partition_count": partition_count,
+            "component_count": len(set(point_labels)),
+            "same_contract_against_all_pairs": same_contract,
+            "complete_candidate_coverage": True,
+            "safe_skip_partition_pairs": safe_skip_pairs,
+            "safe_full_partition_pairs": safe_full_pairs,
+            "ambiguous_partition_pairs": ambiguous_pairs,
+            "ambiguous_point_comparisons": ambiguous_point_comparisons,
+            "ambiguous_positive_edges": ambiguous_positive_edges,
+            "all_pairs_component_labels": all_pairs_labels,
+        },
+    }
 
 
 def _cupy_partition_pair_status_device_bounded_offsets(
@@ -1777,6 +1957,7 @@ __all__ = [
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_REJECTED_DEFAULT_STRATEGIES",
     "V28FixedRadiusGraphComponentPlan",
     "V28PreparedFixedRadiusGraphComponentContinuation3D",
+    "build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_3d",
     "build_v2_8_fixed_radius_partition_convergence_component_labels_reference_3d",
     "build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d",
     "build_v2_8_fixed_radius_partition_convergence_summary_numba_preview_3d",

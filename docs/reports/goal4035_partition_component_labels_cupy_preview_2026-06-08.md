@@ -1,0 +1,22 @@
+# Goal4035 Partition Component-Label CuPy Preview
+
+Date: 2026-06-08
+
+## Purpose
+
+Goal4035 adds `build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_3d(...)`.
+
+The preview consumes the generic fixed-radius partition-summary stream:
+
+- `safe_skip` partition pairs do no work;
+- `safe_full` partition pairs union partition components;
+- `ambiguous` partition pairs use exact point checks before unioning components.
+
+The default summary producer is the Goal4032 CuPy `device_bounded_offsets` mode. If no pair capacity is supplied, that mode allocates a conservative bounded-offset upper capacity rather than requiring a host pair-count warmup.
+
+## Boundary
+
+This is still an executable preview, not a promoted release route. It does not add a native ABI, does not add app-specific engine logic, does not choose partners automatically, and does not authorize public speedup, broad RT-core, whole-app benchmark, release, or true-zero-copy wording.
+
+The next performance step is timing this full component-label preview against the current grouped-stream route on pod-scale inputs.
+
