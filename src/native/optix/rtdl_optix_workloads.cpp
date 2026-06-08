@@ -20341,10 +20341,10 @@ static void write_prepared_point_group_nearest_witness_2d_device_columns_optix(
             nullptr, 4).release();
     });
     std::call_once(g_point_group_nearest_split_columns.init, [&]() {
-        std::string ptx = compile_to_ptx(
+        std::string cubin = compile_to_cubin(
             kPointGroupNearestMaxReduceKernelSrc,
             "point_group_nearest_split_columns_kernel.cu");
-        CU_CHECK(cuModuleLoadData(&g_point_group_nearest_split_columns.module, ptx.c_str()));
+        CU_CHECK(cuModuleLoadData(&g_point_group_nearest_split_columns.module, cubin.data()));
         CU_CHECK(cuModuleGetFunction(
             &g_point_group_nearest_split_columns.fn,
             g_point_group_nearest_split_columns.module,
@@ -20440,10 +20440,10 @@ static void reduce_prepared_point_group_nearest_max_distance_2d_optix(
             nullptr, 4).release();
     });
     std::call_once(g_point_group_nearest_reduce.init, [&]() {
-        std::string ptx = compile_to_ptx(
+        std::string cubin = compile_to_cubin(
             kPointGroupNearestMaxReduceKernelSrc,
             "point_group_nearest_max_reduce_kernel.cu");
-        CU_CHECK(cuModuleLoadData(&g_point_group_nearest_reduce.module, ptx.c_str()));
+        CU_CHECK(cuModuleLoadData(&g_point_group_nearest_reduce.module, cubin.data()));
         CU_CHECK(cuModuleGetFunction(
             &g_point_group_nearest_reduce.fn,
             g_point_group_nearest_reduce.module,
@@ -20561,10 +20561,10 @@ static void reduce_prepared_point_group_nearest_max_distance_active_frontier_2d_
             nullptr, 4).release();
     });
     std::call_once(g_point_group_nearest_reduce.init, [&]() {
-        std::string ptx = compile_to_ptx(
+        std::string cubin = compile_to_cubin(
             kPointGroupNearestMaxReduceKernelSrc,
             "point_group_nearest_max_reduce_kernel.cu");
-        CU_CHECK(cuModuleLoadData(&g_point_group_nearest_reduce.module, ptx.c_str()));
+        CU_CHECK(cuModuleLoadData(&g_point_group_nearest_reduce.module, cubin.data()));
         CU_CHECK(cuModuleGetFunction(
             &g_point_group_nearest_reduce.fn,
             g_point_group_nearest_reduce.module,
