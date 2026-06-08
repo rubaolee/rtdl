@@ -1170,7 +1170,7 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
         partition["max_y"] = max(partition["max_y"], py)
         partition["max_z"] = max(partition["max_z"], pz)
     max_offset = int(math.ceil(radius / cell_size)) + 1
-    classification_tol = 1.0e-12 * max(1.0, radius_sq)
+    classification_tol = 1.0e-5 * max(1.0, radius_sq)
     if pair_enumeration == "host":
         pair_rows: list[tuple[int, int, int]] = []
         for left_ordinal, left_key in enumerate(key_rows):
@@ -1493,7 +1493,7 @@ def _cupy_partition_pair_status_device_bounded_offsets(
             const double max_dz = mdz1 > mdz2 ? mdz1 : mdz2;
             const double max_dist = max_dx * max_dx + max_dy * max_dy + max_dz * max_dz;
             unsigned int status = 2u;
-            if (max_dist <= radius_sq + classification_tol) status = 1u;
+            if (max_dist <= radius_sq - classification_tol) status = 1u;
             else if (min_dist > radius_sq + classification_tol) status = 0u;
             const unsigned int row = atomicAdd(row_count, 1u);
             if (row < capacity) {
