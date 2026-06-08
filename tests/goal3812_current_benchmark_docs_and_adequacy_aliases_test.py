@@ -29,7 +29,7 @@ class Goal3812CurrentBenchmarkDocsAndAdequacyAliasesTest(unittest.TestCase):
     def test_current_adequacy_aliases_match_versioned_source(self) -> None:
         self.assertEqual(
             rt.CURRENT_BENCHMARK_ADEQUACY_VERSION,
-            "rtdl.v2_10.benchmark_adequacy_after_goal3820.v2",
+            "rtdl.v2_10.benchmark_adequacy_after_goal3838.v1",
         )
         self.assertEqual(rt.current_benchmark_adequacy(), v2_9_benchmark_adequacy())
         self.assertEqual(
@@ -64,8 +64,8 @@ class Goal3812CurrentBenchmarkDocsAndAdequacyAliasesTest(unittest.TestCase):
         self.assertNotIn("v2_8_benchmark_matrix()", partner)
         self.assertNotIn("v2_8_benchmark_matrix()", matrix)
         self.assertIn("Numba now has measured prepared-repeat component-continuation coverage", partner)
-        self.assertIn("no-RawKernel topology and compact-mask references exist", matrix)
-        self.assertIn("measured prepared-repeat component continuation", matrix)
+        self.assertIn("Goal3834/3838 no-RawKernel scalar-count coverage", matrix)
+        self.assertIn("Goal3835 current-head prepared-repeat evidence", matrix)
         self.assertIn("prepared_optix_ranked_summary", matrix)
         self.assertIn("--optix-graph-mode native", matrix)
 
