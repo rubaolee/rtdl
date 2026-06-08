@@ -63,7 +63,8 @@ timeout 900 python3 scripts/goal3866_rayjoin_representative_scale_profile.py \
   --pip-batch-single-repeat 12 \
   --pip-batch-repeat 8 \
   --pip-batch-request-counts 1 100 \
-  --output /root/goal3913_rayjoin_subprobe_artifacts/summary.json
+  > /root/goal3913_rayjoin_subprobe_artifacts/summary.json \
+  2> /root/goal3913_rayjoin_subprobe_artifacts/run.log
 
 python3 - <<'PY'
 import json
