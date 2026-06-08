@@ -257,7 +257,7 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
     CurrentBenchmarkScaleProfile(
         app="barnes_hut",
         row_id="barnes_hut_numba_scale_default_8192",
-        purpose="scale-profile Barnes-Hut no-RawKernel Numba exact-force run",
+        purpose="scale-profile Barnes-Hut no-RawKernel Numba exact-force run with resident output reuse",
         profile_kind="default_scale",
         command=(
             "python",
@@ -277,7 +277,7 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
             "1",
         ),
         timeout_sec=300,
-        evidence_refs=("Goal3827",),
+        evidence_refs=("Goal3827", "Goal3853", "Goal3869"),
         expected_runtime_class="safe_summary_output",
         requires_numba=True,
     ),
