@@ -13622,6 +13622,62 @@ class PreparedOptixAabbIndex2D:
         _check_status(status, error)
         return int(hit_count.value)
 
+    def count_prepared_query_set(
+        self,
+        *,
+        point_queries: PreparedOptixAabbQueries2D | None = None,
+        box_queries: PreparedOptixAabbQueries2D | None = None,
+    ) -> dict[str, int]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX AABB index handle is closed")
+        if point_queries is None and box_queries is None:
+            return {"point_contains": 0, "range_contains": 0, "range_intersects": 0}
+        if point_queries is not None:
+            if not isinstance(point_queries, PreparedOptixAabbQueries2D):
+                raise ValueError("point_queries must be a PreparedOptixAabbQueries2D")
+            if point_queries._closed:
+                raise RuntimeError("prepared OptiX AABB point query handle is closed")
+            if point_queries.operation != "point_contains":
+                raise ValueError("point_queries handle must contain point queries")
+        if box_queries is not None:
+            if not isinstance(box_queries, PreparedOptixAabbQueries2D):
+                raise ValueError("box_queries must be a PreparedOptixAabbQueries2D")
+            if box_queries._closed:
+                raise RuntimeError("prepared OptiX AABB box query handle is closed")
+            if box_queries.operation != "range_contains":
+                raise ValueError("box_queries handle must contain box queries")
+        lib = _load_optix_library()
+        count_symbol = _find_optional_backend_symbol(
+            lib,
+            "rtdl_optix_count_prepared_aabb_index_2d_multi_operation_packed_queries",
+        )
+        if count_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_count_prepared_aabb_index_2d_multi_operation_packed_queries. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        point_contains = ctypes.c_size_t()
+        range_contains = ctypes.c_size_t()
+        range_intersects = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self._handle,
+            point_queries._handle if point_queries is not None else None,
+            box_queries._handle if box_queries is not None else None,
+            ctypes.byref(point_contains),
+            ctypes.byref(range_contains),
+            ctypes.byref(range_intersects),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return {
+            "point_contains": int(point_contains.value),
+            "range_contains": int(range_contains.value),
+            "range_intersects": int(range_intersects.value),
+        }
+
     def collect_range_intersection_rows(self, box_queries, *, row_capacity: int) -> dict[str, object]:
         if self._closed:
             raise RuntimeError("prepared OptiX AABB index handle is closed")
@@ -22449,6 +22505,22 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_count_aabb_index2d_packed_queries.restype = ctypes.c_int
+    optional_count_aabb_index2d_multi_operation_packed_queries = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_count_prepared_aabb_index_2d_multi_operation_packed_queries",
+    )
+    if optional_count_aabb_index2d_multi_operation_packed_queries is not None:
+        optional_count_aabb_index2d_multi_operation_packed_queries.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_count_aabb_index2d_multi_operation_packed_queries.restype = ctypes.c_int
     optional_collect_aabb_index2d_rows = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_collect_prepared_aabb_index_2d_range_intersection_rows",

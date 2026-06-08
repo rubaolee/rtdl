@@ -1328,6 +1328,14 @@ int  rtdl_optix_count_prepared_aabb_index_2d_packed_queries(
          uint32_t operation,
          size_t* hit_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_count_prepared_aabb_index_2d_multi_operation_packed_queries(
+         void* prepared,
+         void* prepared_point_queries,
+         void* prepared_box_queries,
+         size_t* point_contains_out,
+         size_t* range_contains_out,
+         size_t* range_intersects_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_collect_prepared_aabb_index_2d_range_intersection_rows(
          void* prepared,
          const RtdlAabb2D* box_queries, size_t box_query_count,

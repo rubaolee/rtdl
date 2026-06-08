@@ -436,70 +436,112 @@ def run_optix_aabb_counts(
     query_sec: dict[str, float] = {}
     query_total_sec: dict[str, float] = {}
     prepared_query_cache: dict[str, object] = {}
+    multi_operation_native_used = False
     try:
-        for name in operations:
-            if prepared_queries:
-                query_kind = "point" if name == "point_contains" else "box"
-                if query_kind not in prepared_query_cache:
-                    query_started = time.perf_counter()
-                    if query_kind == "point":
-                        prepared_query_cache[query_kind] = rt.prepare_optix_aabb_point_queries_2d(
-                            fixture.point_queries
-                        )
+        if prepared_queries and operation == "all":
+            for query_kind in ("point", "box"):
+                query_started = time.perf_counter()
+                if query_kind == "point":
+                    prepared_query_cache[query_kind] = rt.prepare_optix_aabb_point_queries_2d(
+                        fixture.point_queries
+                    )
+                    query_prepare_sec["point_contains"] = time.perf_counter() - query_started
+                else:
+                    prepared_query_cache[query_kind] = rt.prepare_optix_aabb_box_queries_2d(
+                        fixture.box_queries
+                    )
+                    elapsed = time.perf_counter() - query_started
+                    query_prepare_sec["range_contains"] = elapsed
+                    query_prepare_sec["range_intersects"] = 0.0
+            per_operation_runs = []
+            for iteration in range(warmup + query_repeat):
+                run_started = time.perf_counter()
+                count_set = prepared.count_prepared_query_set(
+                    point_queries=prepared_query_cache["point"],
+                    box_queries=prepared_query_cache["box"],
+                )
+                per_operation_runs.append(
+                    {
+                        "iteration": iteration,
+                        "is_warmup": iteration < warmup,
+                        "counts": {name: int(count_set[name]) for name in operations},
+                        "query_sec": time.perf_counter() - run_started,
+                    }
+                )
+            measured = [row for row in per_operation_runs if not bool(row["is_warmup"])]
+            count_signatures = {json.dumps(row["counts"], sort_keys=True) for row in measured}
+            if len(count_signatures) != 1:
+                raise RuntimeError("prepared OptiX AABB multi-operation repeat changed counts")
+            counts = dict(measured[0]["counts"])
+            query_values = [float(row["query_sec"]) for row in measured]
+            multi_sec = float(statistics.median(query_values))
+            query_sec["multi_operation_packed_queries"] = multi_sec
+            query_total_sec["multi_operation_packed_queries"] = float(sum(query_values))
+            multi_operation_native_used = True
+        else:
+            for name in operations:
+                if prepared_queries:
+                    query_kind = "point" if name == "point_contains" else "box"
+                    if query_kind not in prepared_query_cache:
+                        query_started = time.perf_counter()
+                        if query_kind == "point":
+                            prepared_query_cache[query_kind] = rt.prepare_optix_aabb_point_queries_2d(
+                                fixture.point_queries
+                            )
+                        else:
+                            prepared_query_cache[query_kind] = rt.prepare_optix_aabb_box_queries_2d(
+                                fixture.box_queries
+                            )
+                        query_prepare_sec[name] = time.perf_counter() - query_started
                     else:
-                        prepared_query_cache[query_kind] = rt.prepare_optix_aabb_box_queries_2d(
-                            fixture.box_queries
+                        query_prepare_sec[name] = 0.0
+                    per_operation_runs = []
+                    for iteration in range(warmup + query_repeat):
+                        run_started = time.perf_counter()
+                        count = prepared.count_prepared_queries(prepared_query_cache[query_kind], operation=name)
+                        per_operation_runs.append(
+                            {
+                                "iteration": iteration,
+                                "is_warmup": iteration < warmup,
+                                "count": int(count),
+                                "query_sec": time.perf_counter() - run_started,
+                            }
                         )
-                    query_prepare_sec[name] = time.perf_counter() - query_started
+                    measured = [row for row in per_operation_runs if not bool(row["is_warmup"])]
+                    count_values = {int(row["count"]) for row in measured}
+                    if len(count_values) != 1:
+                        raise RuntimeError(f"prepared OptiX AABB repeat changed count for {name}")
+                    counts[name] = next(iter(count_values))
+                    query_values = [float(row["query_sec"]) for row in measured]
+                    query_sec[name] = float(statistics.median(query_values))
+                    query_total_sec[name] = float(sum(query_values))
                 else:
+                    kwargs = {"operation": name}
+                    if name == "point_contains":
+                        kwargs["point_queries"] = fixture.point_queries
+                    else:
+                        kwargs["box_queries"] = fixture.box_queries
+                    per_operation_runs = []
+                    for iteration in range(warmup + query_repeat):
+                        run_started = time.perf_counter()
+                        count = prepared.count(**kwargs)
+                        per_operation_runs.append(
+                            {
+                                "iteration": iteration,
+                                "is_warmup": iteration < warmup,
+                                "count": int(count),
+                                "query_sec": time.perf_counter() - run_started,
+                            }
+                        )
+                    measured = [row for row in per_operation_runs if not bool(row["is_warmup"])]
+                    count_values = {int(row["count"]) for row in measured}
+                    if len(count_values) != 1:
+                        raise RuntimeError(f"OptiX AABB repeat changed count for {name}")
+                    counts[name] = next(iter(count_values))
+                    query_values = [float(row["query_sec"]) for row in measured]
+                    query_sec[name] = float(statistics.median(query_values))
+                    query_total_sec[name] = float(sum(query_values))
                     query_prepare_sec[name] = 0.0
-                per_operation_runs = []
-                for iteration in range(warmup + query_repeat):
-                    run_started = time.perf_counter()
-                    count = prepared.count_prepared_queries(prepared_query_cache[query_kind], operation=name)
-                    per_operation_runs.append(
-                        {
-                            "iteration": iteration,
-                            "is_warmup": iteration < warmup,
-                            "count": int(count),
-                            "query_sec": time.perf_counter() - run_started,
-                        }
-                    )
-                measured = [row for row in per_operation_runs if not bool(row["is_warmup"])]
-                count_values = {int(row["count"]) for row in measured}
-                if len(count_values) != 1:
-                    raise RuntimeError(f"prepared OptiX AABB repeat changed count for {name}")
-                counts[name] = next(iter(count_values))
-                query_values = [float(row["query_sec"]) for row in measured]
-                query_sec[name] = float(statistics.median(query_values))
-                query_total_sec[name] = float(sum(query_values))
-            else:
-                kwargs = {"operation": name}
-                if name == "point_contains":
-                    kwargs["point_queries"] = fixture.point_queries
-                else:
-                    kwargs["box_queries"] = fixture.box_queries
-                per_operation_runs = []
-                for iteration in range(warmup + query_repeat):
-                    run_started = time.perf_counter()
-                    count = prepared.count(**kwargs)
-                    per_operation_runs.append(
-                        {
-                            "iteration": iteration,
-                            "is_warmup": iteration < warmup,
-                            "count": int(count),
-                            "query_sec": time.perf_counter() - run_started,
-                        }
-                    )
-                measured = [row for row in per_operation_runs if not bool(row["is_warmup"])]
-                count_values = {int(row["count"]) for row in measured}
-                if len(count_values) != 1:
-                    raise RuntimeError(f"OptiX AABB repeat changed count for {name}")
-                counts[name] = next(iter(count_values))
-                query_values = [float(row["query_sec"]) for row in measured]
-                query_sec[name] = float(statistics.median(query_values))
-                query_total_sec[name] = float(sum(query_values))
-                query_prepare_sec[name] = 0.0
     finally:
         for prepared_query in prepared_query_cache.values():
             prepared_query.close()
@@ -532,6 +574,7 @@ def run_optix_aabb_counts(
             "query_sec_total": float(sum(query_total_sec.values())),
         },
         "prepared_queries": prepared_queries,
+        "multi_operation_native_used": multi_operation_native_used,
         "paper": PAPER,
         "claim_boundary": (
             "Generic RTDL OptiX AABB_INDEX_QUERY_2D count-only path for point_contains, "

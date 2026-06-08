@@ -2333,6 +2333,26 @@ extern "C" int rtdl_optix_count_prepared_aabb_index_2d_packed_queries(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_count_prepared_aabb_index_2d_multi_operation_packed_queries(
+        void* prepared,
+        void* prepared_point_queries,
+        void* prepared_box_queries,
+        size_t* point_contains_out,
+        size_t* range_contains_out,
+        size_t* range_intersects_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        count_prepared_aabb_index_2d_multi_operation_packed_queries_optix(
+            reinterpret_cast<PreparedAabbIndex2DOptix*>(prepared),
+            reinterpret_cast<PreparedAabbIndexQueries2DOptix*>(prepared_point_queries),
+            reinterpret_cast<PreparedAabbIndexQueries2DOptix*>(prepared_box_queries),
+            point_contains_out,
+            range_contains_out,
+            range_intersects_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_collect_prepared_aabb_index_2d_range_intersection_rows(
         void* prepared,
         const RtdlAabb2D* box_queries, size_t box_query_count,

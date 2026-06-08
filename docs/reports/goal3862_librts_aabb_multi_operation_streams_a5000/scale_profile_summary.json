@@ -1,0 +1,104 @@
+{
+  "all_pass": true,
+  "broad_rt_core_claim_authorized": false,
+  "claim_boundary": "Goal3828 records calibrated scale-profile commands for the ten benchmark apps after the Goal3827 file-stdout correction. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.",
+  "dry_run": false,
+  "file_backed_stdout_probe": true,
+  "json_pass_count": 1,
+  "paper_reproduction_claim_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "rows": [
+    {
+      "app": "librts_spatial_index",
+      "command": [
+        "/usr/local/bin/python",
+        "examples/v2_0/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "32768",
+        "--operation",
+        "all",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--skip-counts"
+      ],
+      "elapsed_sec": 1.751902705989778,
+      "expected_runtime_class": "safe_medium",
+      "profile_kind": "default_scale",
+      "returncode": 0,
+      "row_id": "librts_spatial_index_optix_scale_default_32768",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "parsed_keys": [
+          "app",
+          "authors_code_comparison",
+          "claim_boundary",
+          "counts",
+          "elapsed_sec",
+          "fixture",
+          "generic_primitive",
+          "mode",
+          "multi_operation_native_used",
+          "native_engine_customization",
+          "operation",
+          "paper",
+          "paper_reproduction",
+          "prepared_queries",
+          "primitive_contract",
+          "repeat_protocol",
+          "rt_core_accelerated",
+          "run_phases"
+        ],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_bytes": 0,
+      "stderr_path": "docs/reports/goal3862_librts_aabb_multi_operation_streams_a5000/scale_outputs/librts_spatial_index_optix_scale_default_32768.stderr.txt",
+      "stderr_tail": "",
+      "stdout_bytes": 1813,
+      "stdout_path": "docs/reports/goal3862_librts_aabb_multi_operation_streams_a5000/scale_outputs/librts_spatial_index_optix_scale_default_32768.stdout.json",
+      "stdout_policy": "file_backed_stdout_required",
+      "stdout_tail": "{\n  \"app\": \"librts_spatial_index\",\n  \"authors_code_comparison\": false,\n  \"claim_boundary\": \"Generic RTDL OptiX AABB_INDEX_QUERY_2D count-only path for point_contains, range_contains, and range_intersects. This is not a LibRTS-specific native symbol.\",\n  \"counts\": {\n    \"point_contains\": 46343760,\n    \"range_contains\": 32302908,\n    \"range_intersects\": 70429254\n  },\n  \"elapsed_sec\": 0.6787773007526994,\n  \"fixture\": {\n    \"box_count\": 32768,\n    \"box_query_count\": 32768,\n    \"dataset\": \"uniform\",\n    \"paper_equivalent_dataset\": false,\n    \"point_query_count\": 32768,\n    \"seed\": 2025\n  },\n  \"generic_primitive\": \"AABB_INDEX_QUERY_2D\",\n  \"mode\": \"optix_aabb_index\",\n  \"multi_operation_native_used\": true,\n  \"native_engine_customization\": false,\n  \"operation\": \"all\",\n  \"paper\": {\n    \"authors_code\": \"https://github.com/RTSpatial/RTSpatial\",\n    \"doi\": \"10.1145/3710848.3710850\",\n    \"title\": \"LibRTS: A Spatial Indexing Library by Ray Tracing\",\n    \"venue\": \"PPoPP 2025\"\n  },\n  \"paper_reproduction\": false,\n  \"prepared_queries\": true,\n  \"primitive_contract\": \"generic_prepared_aabb_index_query_2d\",\n  \"repeat_protocol\": {\n    \"measured_run_count\": 3,\n    \"query_sec_median\": 0.030448592267930508,\n    \"query_sec_total\": 0.09092691447585821,\n    \"repeat\": 3,\n    \"warmup\": 1\n  },\n  \"rt_core_accelerated\": true,\n  \"run_phases\": {\n    \"query_median_sec\": 0.030448592267930508,\n    \"query_prepare_sec\": {\n      \"point_contains\": 0.018603552132844925,\n      \"range_contains\": 0.08573997486382723,\n      \"range_intersects\": 0.0\n    },\n    \"query_repeat\": 3,\n    \"query_sec\": {\n      \"multi_operation_packed_queries\": 0.030448592267930508\n    },\n    \"query_summed_median_sec\": 0.030448592267930508,\n    \"query_total_sec\": 0.09092691447585821,\n    \"query_warmup\": 1,\n    \"scene_prepare_sec\": 0.5439851814880967\n  }\n}\n",
+      "timeout_sec": 240
+    }
+  ],
+  "summary": {
+    "app_count": 1,
+    "broad_rt_core_claim_authorized": false,
+    "claim_boundary": "Goal3828 records calibrated scale-profile commands for the ten benchmark apps after the Goal3827 file-stdout correction. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.",
+    "file_backed_stdout_rows": [
+      "librts_spatial_index_optix_scale_default_32768"
+    ],
+    "numba_required_rows": [],
+    "optix_required_rows": [
+      "librts_spatial_index_optix_scale_default_32768"
+    ],
+    "paper_reproduction_claim_authorized": false,
+    "profile_kinds": [
+      "default_scale"
+    ],
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "row_count": 1,
+    "status": "internal_scale_profile_registry_not_release_authorization",
+    "version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1"
+  },
+  "validation": {
+    "app_count": 10,
+    "claim_boundary": "Goal3828 records calibrated scale-profile commands for the ten benchmark apps after the Goal3827 file-stdout correction. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.",
+    "errors": [],
+    "row_count": 10,
+    "status": "accept",
+    "version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1"
+  },
+  "version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1"
+}

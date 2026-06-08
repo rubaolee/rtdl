@@ -13919,6 +13919,51 @@ static void launch_aabb_index_count_pass_optix(
     CU_CHECK(cuStreamSynchronize(stream));
 }
 
+static void launch_aabb_index_count_pass_optix_async(
+        OptixTraversableHandle traversable,
+        CUdeviceptr d_point_queries,
+        size_t point_query_count,
+        CUdeviceptr d_box_queries,
+        size_t box_query_count,
+        CUdeviceptr d_indexed_boxes,
+        size_t indexed_box_count,
+        uint32_t operation,
+        uint32_t intersect_pass,
+        size_t launch_count,
+        CUdeviceptr d_hit_count,
+        CUdeviceptr d_query_hit_counts,
+        CUstream stream,
+        std::vector<std::unique_ptr<DevPtr>>& live_params)
+{
+    ensure_aabb_index_count_2d_pipeline();
+    if (launch_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("AABB async launch count exceeds uint32 limit");
+
+    AabbIndexQueryLaunchParams lp = {};
+    lp.traversable = traversable;
+    lp.point_queries = reinterpret_cast<const GpuPoint*>(d_point_queries);
+    lp.box_queries = reinterpret_cast<const GpuAabb2D*>(d_box_queries);
+    lp.indexed_boxes = reinterpret_cast<const GpuAabb2D*>(d_indexed_boxes);
+    lp.hit_count = reinterpret_cast<unsigned long long*>(d_hit_count);
+    lp.query_hit_counts = reinterpret_cast<uint32_t*>(d_query_hit_counts);
+    lp.rows_out = nullptr;
+    lp.point_query_count = static_cast<uint32_t>(point_query_count);
+    lp.box_query_count = static_cast<uint32_t>(box_query_count);
+    lp.indexed_box_count = static_cast<uint32_t>(indexed_box_count);
+    lp.row_capacity = 0u;
+    lp.operation = operation;
+    lp.intersect_pass = intersect_pass;
+    lp.collect_rows = 0u;
+
+    auto d_params = std::make_unique<DevPtr>(sizeof(AabbIndexQueryLaunchParams));
+    upload(d_params->ptr, &lp, 1);
+    OPTIX_CHECK(optixLaunch(g_aabb_index_count.pipe->pipeline, stream,
+                            d_params->ptr, sizeof(AabbIndexQueryLaunchParams),
+                            &g_aabb_index_count.pipe->sbt,
+                            static_cast<unsigned>(launch_count), 1, 1));
+    live_params.push_back(std::move(d_params));
+}
+
 static unsigned long long sum_device_u32_counts(CUdeviceptr d_counts, size_t count)
 {
     if (count == 0) return 0ULL;
@@ -14128,6 +14173,184 @@ static void count_prepared_aabb_index_2d_packed_queries_optix(
         operation == kAabbIndexOpRangeContains ? prepared_queries->query_count : 0,
         operation,
         hit_count_out);
+}
+
+static unsigned long long count_prepared_aabb_index_2d_with_scratch_optix(
+        OptixTraversableHandle traversable,
+        CUdeviceptr d_point_queries,
+        size_t point_query_count,
+        CUdeviceptr d_box_queries,
+        size_t box_query_count,
+        CUdeviceptr d_indexed_boxes,
+        size_t indexed_box_count,
+        uint32_t operation,
+        uint32_t intersect_pass,
+        size_t launch_count,
+        DevPtr& d_query_hit_counts)
+{
+    if (launch_count == 0) return 0ULL;
+    if (launch_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("AABB multi-operation launch count exceeds uint32 limit");
+    CU_CHECK(cuMemsetD8(d_query_hit_counts.ptr, 0, sizeof(uint32_t) * launch_count));
+    launch_aabb_index_count_pass_optix(
+        traversable,
+        d_point_queries,
+        point_query_count,
+        d_box_queries,
+        box_query_count,
+        d_indexed_boxes,
+        indexed_box_count,
+        operation,
+        intersect_pass,
+        launch_count,
+        0,
+        d_query_hit_counts.ptr);
+    return sum_device_u32_counts(d_query_hit_counts.ptr, launch_count);
+}
+
+static void count_prepared_aabb_index_2d_multi_operation_packed_queries_optix(
+        PreparedAabbIndex2DOptix* prepared,
+        PreparedAabbIndexQueries2DOptix* prepared_point_queries,
+        PreparedAabbIndexQueries2DOptix* prepared_box_queries,
+        size_t* point_contains_out,
+        size_t* range_contains_out,
+        size_t* range_intersects_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX AABB index handle must not be null");
+    if (!point_contains_out || !range_contains_out || !range_intersects_out)
+        throw std::runtime_error("multi-operation count outputs must not be null");
+    *point_contains_out = 0;
+    *range_contains_out = 0;
+    *range_intersects_out = 0;
+    if (prepared_point_queries && prepared_point_queries->operation != kAabbIndexOpPointContains)
+        throw std::runtime_error("multi-operation point query handle must contain point queries");
+    if (prepared_box_queries && prepared_box_queries->operation != kAabbIndexOpRangeContains)
+        throw std::runtime_error("multi-operation box query handle must contain box queries");
+    if (prepared->box_count == 0) return;
+
+    const size_t point_query_count = prepared_point_queries ? prepared_point_queries->query_count : 0;
+    const size_t box_query_count = prepared_box_queries ? prepared_box_queries->query_count : 0;
+    unsigned long long point_contains = 0ULL;
+    unsigned long long range_contains = 0ULL;
+    unsigned long long range_intersects = 0ULL;
+
+    std::vector<CUstream> streams;
+    std::vector<std::unique_ptr<DevPtr>> live_params;
+    std::unique_ptr<DevPtr> d_point_counts;
+    std::unique_ptr<DevPtr> d_range_contains_counts;
+    std::unique_ptr<DevPtr> d_range_intersects_forward_counts;
+    std::unique_ptr<DevPtr> d_range_intersects_backward_counts;
+
+    auto make_stream = [&]() -> CUstream {
+        CUstream stream = 0;
+        CU_CHECK(cuStreamCreate(&stream, CU_STREAM_NON_BLOCKING));
+        streams.push_back(stream);
+        return stream;
+    };
+
+    try {
+        if (prepared_point_queries && point_query_count != 0) {
+            CUstream stream = make_stream();
+            d_point_counts = std::make_unique<DevPtr>(sizeof(uint32_t) * point_query_count);
+            CU_CHECK(cuMemsetD8Async(d_point_counts->ptr, 0, sizeof(uint32_t) * point_query_count, stream));
+            launch_aabb_index_count_pass_optix_async(
+                prepared->accel.handle,
+                prepared_point_queries->d_point_queries.ptr,
+                point_query_count,
+                0,
+                0,
+                prepared->d_boxes.ptr,
+                prepared->box_count,
+                kAabbIndexOpPointContains,
+                0u,
+                point_query_count,
+                0,
+                d_point_counts->ptr,
+                stream,
+                live_params);
+        }
+
+        if (prepared_box_queries && box_query_count != 0) {
+            CUstream range_contains_stream = make_stream();
+            d_range_contains_counts = std::make_unique<DevPtr>(sizeof(uint32_t) * box_query_count);
+            CU_CHECK(cuMemsetD8Async(d_range_contains_counts->ptr, 0, sizeof(uint32_t) * box_query_count, range_contains_stream));
+            launch_aabb_index_count_pass_optix_async(
+                prepared->accel.handle,
+                0,
+                0,
+                prepared_box_queries->d_box_queries.ptr,
+                box_query_count,
+                prepared->d_boxes.ptr,
+                prepared->box_count,
+                kAabbIndexOpRangeContains,
+                0u,
+                box_query_count,
+                0,
+                d_range_contains_counts->ptr,
+                range_contains_stream,
+                live_params);
+
+            CUstream forward_stream = make_stream();
+            d_range_intersects_forward_counts = std::make_unique<DevPtr>(sizeof(uint32_t) * box_query_count);
+            CU_CHECK(cuMemsetD8Async(d_range_intersects_forward_counts->ptr, 0, sizeof(uint32_t) * box_query_count, forward_stream));
+            launch_aabb_index_count_pass_optix_async(
+                prepared->accel.handle,
+                0,
+                0,
+                prepared_box_queries->d_box_queries.ptr,
+                box_query_count,
+                prepared->d_boxes.ptr,
+                prepared->box_count,
+                kAabbIndexOpRangeIntersects,
+                kAabbIndexIntersectForwardPass,
+                box_query_count,
+                0,
+                d_range_intersects_forward_counts->ptr,
+                forward_stream,
+                live_params);
+
+            CUstream backward_stream = make_stream();
+            d_range_intersects_backward_counts = std::make_unique<DevPtr>(sizeof(uint32_t) * prepared->box_count);
+            CU_CHECK(cuMemsetD8Async(d_range_intersects_backward_counts->ptr, 0, sizeof(uint32_t) * prepared->box_count, backward_stream));
+            launch_aabb_index_count_pass_optix_async(
+                prepared_box_queries->accel.handle,
+                0,
+                0,
+                prepared_box_queries->d_box_queries.ptr,
+                box_query_count,
+                prepared->d_boxes.ptr,
+                prepared->box_count,
+                kAabbIndexOpRangeIntersects,
+                kAabbIndexIntersectBackwardPass,
+                prepared->box_count,
+                0,
+                d_range_intersects_backward_counts->ptr,
+                backward_stream,
+                live_params);
+        }
+
+        for (CUstream stream : streams)
+            CU_CHECK(cuStreamSynchronize(stream));
+    } catch (...) {
+        for (CUstream stream : streams)
+            cuStreamDestroy(stream);
+        throw;
+    }
+    for (CUstream stream : streams)
+        CU_CHECK(cuStreamDestroy(stream));
+
+    if (d_point_counts)
+        point_contains = sum_device_u32_counts(d_point_counts->ptr, point_query_count);
+    if (d_range_contains_counts)
+        range_contains = sum_device_u32_counts(d_range_contains_counts->ptr, box_query_count);
+    if (d_range_intersects_forward_counts)
+        range_intersects += sum_device_u32_counts(d_range_intersects_forward_counts->ptr, box_query_count);
+    if (d_range_intersects_backward_counts)
+        range_intersects += sum_device_u32_counts(d_range_intersects_backward_counts->ptr, prepared->box_count);
+
+    *point_contains_out = static_cast<size_t>(point_contains);
+    *range_contains_out = static_cast<size_t>(range_contains);
+    *range_intersects_out = static_cast<size_t>(range_intersects);
 }
 
 static void collect_prepared_aabb_index_2d_range_intersection_rows_optix(
