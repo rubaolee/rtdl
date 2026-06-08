@@ -41,3 +41,9 @@ The current benchmark adequacy recommendations are available as advisory
 metadata through `rtdsl.current_benchmark_adequacy()` and
 `rtdsl.summarize_current_benchmark_adequacy()`. These helpers are explanatory
 only; they do not auto-select a partner or authorize performance wording.
+
+For a direct Numba-reference lookup, use
+`rtdsl.v2_6_numba_reference_index()`. It returns one row per benchmark app with
+the current Numba role, whether a custom partner is required for the reference
+path, and whether any CuPy-only custom-continuation gap remains. This helper is
+also advisory only; it never selects a partner for the user.

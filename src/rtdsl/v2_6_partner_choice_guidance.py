@@ -6,6 +6,7 @@ from typing import Any
 
 
 V2_6_PARTNER_CHOICE_GUIDANCE_VERSION = "rtdl.v2_6.partner_choice_guidance.v1"
+V2_6_NUMBA_REFERENCE_INDEX_VERSION = "rtdl.v2_6.numba_reference_index.v1"
 V2_6_PARTNER_CHOICE_GUIDANCE_STATUS = "internal_guidance_not_release_authorization"
 V2_6_ALLOWED_RECOMMENDED_PARTNERS = ("rtdl_primitive", "cupy", "numba", "none")
 V2_6_PARTNER_CHOICE_STATUSES = (
@@ -117,7 +118,7 @@ V2_6_PARTNER_CHOICE_ROWS: tuple[V26PartnerChoiceGuidanceRow, ...] = (
         recommended_partner="rtdl_primitive",
         recommendation_status="recommended_reference_path",
         cupy_role="CuPy grouped-grid CUDA-core baseline and fairness reference",
-        numba_role="contract evidence for score rows and global argmax; not the current default",
+        numba_role="Numba contract evidence for score rows and global argmax; not the current default",
         evidence_goal="Goal3046/Goal3048/Goal3052",
         evidence_artifact=(
             "docs/reports/goal3052_partner_choice_pod_refresh_2026-06-02/"
@@ -168,7 +169,7 @@ V2_6_PARTNER_CHOICE_ROWS: tuple[V26PartnerChoiceGuidanceRow, ...] = (
         recommended_partner="none",
         recommendation_status="no_promoted_partner",
         cupy_role="possible app-owned flag reduction path, not promoted",
-        numba_role="future candidate, not promoted",
+        numba_role="Numba future candidate, not promoted",
         evidence_goal="Goal2480 lineage",
         evidence_artifact="examples/v2_0/research_benchmarks/robot_collision/README.md",
         user_advice="Keep primitive parity first; do not claim a promoted custom partner path yet.",
@@ -180,7 +181,7 @@ V2_6_PARTNER_CHOICE_ROWS: tuple[V26PartnerChoiceGuidanceRow, ...] = (
         recommended_partner="none",
         recommendation_status="no_promoted_partner",
         cupy_role="possible witness filtering reference, not promoted",
-        numba_role="future candidate, not promoted",
+        numba_role="Numba future candidate, not promoted",
         evidence_goal="Goal2510 lineage",
         evidence_artifact="examples/v2_0/research_benchmarks/contact_manifold/README.md",
         user_advice="Preserve the bounded witness contract first; custom partner filtering needs new same-contract evidence.",
@@ -224,7 +225,7 @@ V2_6_PARTNER_CHOICE_ROWS: tuple[V26PartnerChoiceGuidanceRow, ...] = (
         recommended_partner="none",
         recommendation_status="no_promoted_partner",
         cupy_role="possible app-owned continuation, not promoted",
-        numba_role="future candidate, not promoted",
+        numba_role="Numba future candidate, not promoted",
         evidence_goal="Goal2570 lineage",
         evidence_artifact="examples/v2_0/research_benchmarks/librts_spatial_index/README.md",
         user_advice="Treat this as a no-regression/index-policy study until a custom partner continuation is measured.",
@@ -236,7 +237,7 @@ V2_6_PARTNER_CHOICE_ROWS: tuple[V26PartnerChoiceGuidanceRow, ...] = (
         recommended_partner="rtdl_primitive",
         recommendation_status="recommended_reference_path",
         cupy_role="CUDA-core all-pairs baseline and quality reference",
-        numba_role="future candidate for custom ranking reductions, not promoted",
+        numba_role="Numba future candidate for custom ranking reductions, not promoted",
         evidence_goal="Goal2821/Goal2822 lineage",
         evidence_artifact="examples/v2_0/research_benchmarks/rtnn/README.md",
         user_advice="Use prepared RTDL ranked summaries first; keep CuPy for all-pairs baseline comparisons.",
@@ -284,6 +285,83 @@ def v2_6_partner_choice_guidance() -> dict[str, Any]:
         "release_authorized": False,
         "app_specific_native_engine_logic_authorized": False,
         "claim_boundary": V2_6_PARTNER_CHOICE_CLAIM_BOUNDARY,
+    }
+
+
+def v2_6_numba_reference_index() -> dict[str, Any]:
+    """Return a narrow advisory index for benchmark Numba reference paths."""
+
+    rows = tuple(row.to_metadata() for row in V2_6_PARTNER_CHOICE_ROWS)
+    index_rows = tuple(_numba_reference_index_row(row) for row in rows)
+    custom_rows = tuple(row for row in index_rows if row["custom_partner_required"])
+    gap_rows = tuple(
+        row
+        for row in custom_rows
+        if row["recommended_partner"] == "cupy" and not row["numba_reference_available"]
+    )
+    return {
+        "index_version": V2_6_NUMBA_REFERENCE_INDEX_VERSION,
+        "guidance_version": V2_6_PARTNER_CHOICE_GUIDANCE_VERSION,
+        "status": "advisory_numba_reference_discovery_not_partner_selection",
+        "rows": index_rows,
+        "row_count": len(index_rows),
+        "app_count": len({row["benchmark_app"] for row in index_rows}),
+        "apps_requiring_custom_partner": tuple(row["benchmark_app"] for row in custom_rows),
+        "apps_with_numba_reference": tuple(
+            row["benchmark_app"] for row in index_rows if row["numba_reference_available"]
+        ),
+        "cupy_only_custom_partner_gaps": tuple(row["benchmark_app"] for row in gap_rows),
+        "all_custom_partner_apps_have_numba_reference": not gap_rows,
+        "automatic_partner_selection_allowed": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "broad_partner_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "release_authorized": False,
+        "claim_boundary": V2_6_PARTNER_CHOICE_CLAIM_BOUNDARY,
+    }
+
+
+def _numba_reference_index_row(row: dict[str, Any]) -> dict[str, Any]:
+    recommended = str(row["recommended_partner"])
+    role = str(row["numba_role"])
+    role_lower = role.lower()
+    custom_partner_required = recommended in {"numba", "cupy"}
+    future_only = "future candidate" in role_lower
+    numba_reference_available = not future_only and (
+        recommended == "numba"
+        or "numba" in role_lower
+        or "contract evidence" in role_lower
+        or "reference" in role_lower
+    )
+    if recommended == "numba":
+        status = "recommended_numba_reference"
+    elif recommended == "cupy" and numba_reference_available:
+        status = "measured_numba_reference_not_default"
+    elif numba_reference_available:
+        status = "numba_contract_evidence_not_default"
+    elif future_only:
+        status = "future_optional_not_required"
+    else:
+        status = "not_required"
+    return {
+        "benchmark_app": row["benchmark_app"],
+        "continuation_shape": row["continuation_shape"],
+        "recommended_partner": recommended,
+        "numba_reference_status": status,
+        "numba_reference_available": bool(numba_reference_available),
+        "custom_partner_required": bool(custom_partner_required),
+        "numba_role": role,
+        "primitive_first_path": row["primitive_first_path"],
+        "evidence_goal": row["evidence_goal"],
+        "evidence_artifact": row["evidence_artifact"],
+        "user_advice": row["user_advice"],
+        "automatic_partner_selection_allowed": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "broad_partner_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "release_authorized": False,
     }
 
 
