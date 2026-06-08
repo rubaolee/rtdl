@@ -1,0 +1,76 @@
+{
+  "app": "rayjoin_v2_spatial_join",
+  "backend": "optix",
+  "claim_boundary": {
+    "full_rayjoin_reproduction": false,
+    "paper_scale_perf_claim_authorized": false,
+    "requires_pod_for_optix_perf": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "count_mode": "device_filtered_prepared_points_validated",
+  "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+  "dataset_note": "County subset probe points against deterministic chain-derived polygons.",
+  "device_resident_continuation_status": "not_complete: prepared query can avoid Python row materialization for counts, but generic downstream row-stream continuation still needs pod/native work",
+  "execution_route": "prepared_optix",
+  "native_engine_boundary": "The engine sees generic prepared point/closed-shape, segment-pair, or shape-pair contracts. RayJoin application policy and paper-specific interpretation stay in Python.",
+  "native_phase_timings": {
+    "candidate_count_pass": 3.0087e-05,
+    "candidate_download": 0.0,
+    "candidate_write_pass": 0.0,
+    "emitted_count": 6,
+    "exact_refine": 0.0,
+    "mode": "prepared_points_device_filtered_count",
+    "point_pack": 0.0,
+    "point_upload": 0.0,
+    "raw_candidate_count": 6
+  },
+  "phases_sec": {
+    "prepare_query_points_sec": 8.283182978630066e-05,
+    "prepare_static_scene_sec": 0.6993812695145607,
+    "prepared_query_sec": 5.6636519730091095e-05,
+    "prepared_query_sec_repeat": 50,
+    "prepared_query_sec_total_sec": 0.0027767838910222054,
+    "prepared_query_sec_warmup": 5,
+    "query_pack_sec": 1.712050288915634e-05,
+    "query_point_order_sec": 4.4852495193481445e-06,
+    "static_shape_pack_sec": 6.844289600849152e-05,
+    "validation_exact_query_sec": 0.00039594247937202454
+  },
+  "point_order_mode": "natural",
+  "repeat_protocol": {
+    "measured_query_total_sec": 0.0027767838910222054,
+    "repeat": 50,
+    "reported_query_metric": "prepared_query_median",
+    "warmup": 5
+  },
+  "result_mode": "count",
+  "row_count": 6,
+  "segment_order_mode": null,
+  "summary": {
+    "boundary_event_contract_not_positive_membership": null,
+    "boundary_event_grouped_count_device_columns": null,
+    "boundary_event_row_count": null,
+    "count_mode": "device_filtered_prepared_points_validated",
+    "device_filtered_boundary_mode": null,
+    "device_filtered_count_matches_exact": true,
+    "device_filtered_is_exact_authority": false,
+    "output_contract": "point_to_shape_positive_hit_count_device_filtered_prepared_points_validated",
+    "point_id_count_device_columns": null,
+    "point_order_mode": "natural",
+    "positive_assignment_count": 6,
+    "positive_hit_row_count": 6,
+    "prepared_point_batch_executor": null,
+    "prepared_point_probe_columns": {
+      "device_resident_after_prepare": true,
+      "dimension": 2,
+      "native_symbol": "rtdl_optix_prepare_point_probe_columns_2d",
+      "point_count": 3,
+      "schema": "rtdl.optix.prepared_point_probe_columns_2d.v1",
+      "true_zero_copy_claim_authorized": false
+    },
+    "validation_exact_count": 6
+  },
+  "workload": "pip"
+}
