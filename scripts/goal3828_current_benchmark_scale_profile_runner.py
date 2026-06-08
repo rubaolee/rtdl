@@ -17,6 +17,11 @@ from rtdsl.current_benchmark_scale_profiles import (
     summarize_current_benchmark_scale_profiles,
     validate_current_benchmark_scale_profiles,
 )
+from rtdsl.current_prepared_session_residency_profiles import (
+    current_prepared_session_residency_profiles,
+    summarize_current_prepared_session_residency_profiles,
+    validate_current_prepared_session_residency_profiles,
+)
 
 
 FORBIDDEN_TRUE_FLAGS = (
@@ -184,6 +189,26 @@ def _run_row(
     }
 
 
+def _prepared_session_profile_map(rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    selected_row_ids = {str(row["row_id"]) for row in rows}
+    return {
+        str(profile["scale_profile_row_id"]): profile
+        for profile in current_prepared_session_residency_profiles()
+        if str(profile["scale_profile_row_id"]) in selected_row_ids
+    }
+
+
+def _attach_prepared_session_profile(
+    row_result: dict[str, Any],
+    *,
+    profile_by_scale_row: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    profile = profile_by_scale_row.get(str(row_result["row_id"]))
+    row_result["prepared_session_residency_profile"] = profile
+    row_result["prepared_session_residency_profiled"] = profile is not None
+    return row_result
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-json", type=Path, default=None)
@@ -217,12 +242,19 @@ def main() -> int:
         else:
             output_dir = Path("docs/reports/goal3828_current_benchmark_scale_profiles_a5000/outputs")
     output_dir.mkdir(parents=True, exist_ok=True)
+    prepared_profile_by_scale_row = _prepared_session_profile_map(rows)
+    prepared_profile_rows = tuple(prepared_profile_by_scale_row.values())
 
     result: dict[str, Any] = {
         "version": CURRENT_BENCHMARK_SCALE_PROFILE_VERSION,
         "claim_boundary": CURRENT_BENCHMARK_SCALE_PROFILE_CLAIM_BOUNDARY,
         "validation": validation,
         "summary": summarize_current_benchmark_scale_profiles(tuple(rows)),
+        "prepared_session_residency_validation": validate_current_prepared_session_residency_profiles(),
+        "prepared_session_residency_summary": summarize_current_prepared_session_residency_profiles(
+            prepared_profile_rows
+        ),
+        "selected_prepared_session_residency_profile_count": len(prepared_profile_rows),
         "dry_run": bool(args.dry_run),
         "file_backed_stdout_probe": True,
         "release_authorized": False,
@@ -247,6 +279,10 @@ def main() -> int:
             }
             for row in rows
         ]
+        result["rows"] = [
+            _attach_prepared_session_profile(row_result, profile_by_scale_row=prepared_profile_by_scale_row)
+            for row_result in result["rows"]
+        ]
     else:
         for index, row in enumerate(rows, start=1):
             print(
@@ -269,7 +305,12 @@ def main() -> int:
                 f"stdout_bytes={row_result['stdout_bytes']}",
                 flush=True,
             )
-            result["rows"].append(row_result)
+            result["rows"].append(
+                _attach_prepared_session_profile(
+                    row_result,
+                    profile_by_scale_row=prepared_profile_by_scale_row,
+                )
+            )
 
     statuses = [row.get("status") for row in result["rows"]]
     result["all_pass"] = None if args.dry_run else all(status == "pass" for status in statuses)
