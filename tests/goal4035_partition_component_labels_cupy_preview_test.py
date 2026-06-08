@@ -34,6 +34,7 @@ class Goal4035PartitionComponentLabelsCupyPreviewRuntimeTest(unittest.TestCase):
         )
         self.assertEqual(result["metadata"]["status"], "accept")
         self.assertTrue(result["metadata"]["same_contract_against_all_pairs"])
+        self.assertTrue(result["metadata"]["summary_same_contract_validation_enabled"])
         self.assertEqual(result["metadata"]["partition_summary_pair_enumeration"], "device_bounded_offsets")
         self.assertEqual(result["metadata"]["partition_summary_pair_capacity_source"], "device_upper_bound")
         self.assertGreater(result["metadata"]["ambiguous_partition_pairs"], 0)
@@ -51,6 +52,7 @@ class Goal4035PartitionComponentLabelsCupyPreviewSourceTest(unittest.TestCase):
             "ambiguous",
             "device_bounded_offsets",
             "device_upper_bound",
+            "validate_summary_same_contract",
             "not a promoted release route",
             "does not choose partners automatically",
         ):
@@ -59,4 +61,3 @@ class Goal4035PartitionComponentLabelsCupyPreviewSourceTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

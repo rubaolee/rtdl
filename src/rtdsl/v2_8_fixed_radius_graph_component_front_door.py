@@ -1394,6 +1394,7 @@ def build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_
     cell_factor: float = 0.125,
     pair_capacity: int | None = None,
     pair_enumeration: str = "device_bounded_offsets",
+    validate_summary_same_contract: bool = True,
     validate_against_all_pairs: bool = False,
 ) -> dict[str, Any]:
     """Executable CuPy preview for partition-level component labels."""
@@ -1412,16 +1413,36 @@ def build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_
         pair_capacity=pair_capacity,
         pair_enumeration=pair_enumeration,
     )
-    summary_validation = validate_v2_8_fixed_radius_partition_convergence_summary_same_contract_3d(
-        raw_rows,
-        radius=radius,
-        cell_factor=cell_factor,
-        candidate=summary,
-        float_abs_tol=1.0e-5,
-    )
+    if validate_summary_same_contract:
+        summary_validation = validate_v2_8_fixed_radius_partition_convergence_summary_same_contract_3d(
+            raw_rows,
+            radius=radius,
+            cell_factor=cell_factor,
+            candidate=summary,
+            float_abs_tol=1.0e-5,
+        )
+    else:
+        summary_metadata = summary["metadata"]
+        summary_validation = {
+            "status": "accept",
+            "reference": "fixed_radius_partition_convergence_summary_3d_timing_trusted_preview",
+            "candidate_reference_contract": "fixed_radius_partition_convergence_summary_3d_same_contract_skipped_for_timing",
+            "errors": (),
+            "point_count": int(summary_metadata["point_count"]),
+            "partition_count": int(summary_metadata["partition_count"]),
+            "pair_count": int(summary_metadata["pair_count"]),
+            "visible_pair_count": int(summary_metadata["visible_pair_count"]),
+            "pair_capacity": int(summary_metadata["pair_capacity"]),
+            "overflow": bool(summary_metadata["overflow"]),
+            "complete_candidate_coverage": bool(summary_metadata["complete_candidate_coverage"]),
+            "status_column_values": dict(summary_metadata["status_column_values"]),
+            "status_counts": dict(summary_metadata["status_counts"]),
+            "summary_same_contract_validation_skipped_for_timing": True,
+        }
     base_metadata = {
         "reference": "fixed_radius_partition_convergence_component_labels_3d_cupy_preview",
         "partition_summary_validation": summary_validation,
+        "summary_same_contract_validation_enabled": validate_summary_same_contract,
         "partition_summary_pair_enumeration": summary["metadata"]["pair_enumeration"],
         "partition_summary_pair_capacity_source": summary["metadata"]["pair_capacity_source"],
         "native_abi_added": False,
