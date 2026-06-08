@@ -1,0 +1,213 @@
+[goal3834] Numba PIP baseline start
+[goal3834] pip/numba_dense_all_pairs_scalar_count warmup 1/55 elapsed=0.388063s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count warmup 2/55 elapsed=0.000467s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count warmup 3/55 elapsed=0.000467s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count warmup 4/55 elapsed=0.000430s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count warmup 5/55 elapsed=0.000502s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 6/55 elapsed=0.000430s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 7/55 elapsed=0.000436s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 8/55 elapsed=0.000442s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 9/55 elapsed=0.000491s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 10/55 elapsed=0.000450s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 11/55 elapsed=0.000431s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 12/55 elapsed=0.000410s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 13/55 elapsed=0.000442s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 14/55 elapsed=0.000432s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 15/55 elapsed=0.000467s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 16/55 elapsed=0.000444s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 17/55 elapsed=0.000430s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 18/55 elapsed=0.000433s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 19/55 elapsed=0.000422s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 20/55 elapsed=0.000470s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 21/55 elapsed=0.000414s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 22/55 elapsed=0.000479s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 23/55 elapsed=0.000431s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 24/55 elapsed=0.000454s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 25/55 elapsed=0.000455s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 26/55 elapsed=0.000419s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 27/55 elapsed=0.000488s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 28/55 elapsed=0.000467s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 29/55 elapsed=0.000447s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 30/55 elapsed=0.000512s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 31/55 elapsed=0.000415s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 32/55 elapsed=0.000456s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 33/55 elapsed=0.000422s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 34/55 elapsed=0.000405s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 35/55 elapsed=0.000488s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 36/55 elapsed=0.000421s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 37/55 elapsed=0.000421s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 38/55 elapsed=0.000413s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 39/55 elapsed=0.000414s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 40/55 elapsed=0.000504s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 41/55 elapsed=0.000461s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 42/55 elapsed=0.000438s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 43/55 elapsed=0.000431s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 44/55 elapsed=0.000454s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 45/55 elapsed=0.000422s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 46/55 elapsed=0.000473s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 47/55 elapsed=0.000435s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 48/55 elapsed=0.000440s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 49/55 elapsed=0.000421s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 50/55 elapsed=0.000430s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 51/55 elapsed=0.000447s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 52/55 elapsed=0.000529s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 53/55 elapsed=0.000449s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 54/55 elapsed=0.000464s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 55/55 elapsed=0.000448s count=1417
+[goal3834] RTDL/OptiX PIP route start
+[goal3838] lsi_county512_soil512 Numba baseline start
+[goal3838] lsi/numba_dense_all_pairs_scalar_count warmup 1/55 elapsed=0.122647s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count warmup 2/55 elapsed=0.024682s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count warmup 3/55 elapsed=0.024625s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count warmup 4/55 elapsed=0.024424s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count warmup 5/55 elapsed=0.023089s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 6/55 elapsed=0.023032s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 7/55 elapsed=0.022993s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 8/55 elapsed=0.022955s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 9/55 elapsed=0.022955s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 10/55 elapsed=0.023022s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 11/55 elapsed=0.023114s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 12/55 elapsed=0.023094s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 13/55 elapsed=0.023150s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 14/55 elapsed=0.023142s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 15/55 elapsed=0.023111s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 16/55 elapsed=0.023100s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 17/55 elapsed=0.023101s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 18/55 elapsed=0.023192s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 19/55 elapsed=0.023146s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 20/55 elapsed=0.023129s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 21/55 elapsed=0.023101s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 22/55 elapsed=0.023125s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 23/55 elapsed=0.023103s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 24/55 elapsed=0.023103s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 25/55 elapsed=0.023101s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 26/55 elapsed=0.023123s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 27/55 elapsed=0.023117s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 28/55 elapsed=0.023118s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 29/55 elapsed=0.023087s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 30/55 elapsed=0.023131s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 31/55 elapsed=0.023141s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 32/55 elapsed=0.023141s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 33/55 elapsed=0.023110s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 34/55 elapsed=0.023127s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 35/55 elapsed=0.023145s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 36/55 elapsed=0.023141s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 37/55 elapsed=0.023110s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 38/55 elapsed=0.023128s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 39/55 elapsed=0.023110s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 40/55 elapsed=0.023114s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 41/55 elapsed=0.023221s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 42/55 elapsed=0.023218s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 43/55 elapsed=0.023159s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 44/55 elapsed=0.023113s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 45/55 elapsed=0.023091s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 46/55 elapsed=0.023120s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 47/55 elapsed=0.023105s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 48/55 elapsed=0.023106s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 49/55 elapsed=0.023127s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 50/55 elapsed=0.023108s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 51/55 elapsed=0.023114s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 52/55 elapsed=0.023113s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 53/55 elapsed=0.023099s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 54/55 elapsed=0.023147s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 55/55 elapsed=0.023159s count=269
+[goal3838] lsi_county512_soil512 RTDL/OptiX route start
+[goal3838] overlay_county512_soil512 Numba baseline start
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count warmup 1/55 elapsed=0.690691s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count warmup 2/55 elapsed=0.039671s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count warmup 3/55 elapsed=0.039861s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count warmup 4/55 elapsed=0.039809s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count warmup 5/55 elapsed=0.039687s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 6/55 elapsed=0.040141s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 7/55 elapsed=0.039885s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 8/55 elapsed=0.039590s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 9/55 elapsed=0.039588s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 10/55 elapsed=0.043001s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 11/55 elapsed=0.042276s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 12/55 elapsed=0.039960s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 13/55 elapsed=0.040135s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 14/55 elapsed=0.039597s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 15/55 elapsed=0.040160s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 16/55 elapsed=0.040901s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 17/55 elapsed=0.039742s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 18/55 elapsed=0.040251s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 19/55 elapsed=0.040108s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 20/55 elapsed=0.039731s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 21/55 elapsed=0.039934s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 22/55 elapsed=0.042331s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 23/55 elapsed=0.039468s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 24/55 elapsed=0.040120s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 25/55 elapsed=0.039467s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 26/55 elapsed=0.040153s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 27/55 elapsed=0.039529s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 28/55 elapsed=0.042827s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 29/55 elapsed=0.039545s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 30/55 elapsed=0.040929s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 31/55 elapsed=0.039768s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 32/55 elapsed=0.039665s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 33/55 elapsed=0.039643s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 34/55 elapsed=0.039559s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 35/55 elapsed=0.040372s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 36/55 elapsed=0.040380s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 37/55 elapsed=0.039776s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 38/55 elapsed=0.039496s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 39/55 elapsed=0.039478s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 40/55 elapsed=0.041181s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 41/55 elapsed=0.039968s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 42/55 elapsed=0.041034s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 43/55 elapsed=0.040792s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 44/55 elapsed=0.039866s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 45/55 elapsed=0.039580s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 46/55 elapsed=0.039747s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 47/55 elapsed=0.042307s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 48/55 elapsed=0.039761s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 49/55 elapsed=0.039683s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 50/55 elapsed=0.039940s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 51/55 elapsed=0.039756s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 52/55 elapsed=0.039671s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 53/55 elapsed=0.039519s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 54/55 elapsed=0.040661s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 55/55 elapsed=0.040002s count=174
+[goal3838] overlay_county512_soil512 RTDL/OptiX route start
+[goal3310] load RayJoin PIP case
+[goal3310] points=512 polygons=478
+[goal3310] exact_count=1417
+[goal3310] single warmup 1/3
+[goal3310] single warmup 2/3
+[goal3310] single warmup 3/3
+[goal3310] single repeat 1/12 0.277653 ms
+[goal3310] single repeat 2/12 0.186533 ms
+[goal3310] single repeat 3/12 0.182629 ms
+[goal3310] single repeat 4/12 0.180602 ms
+[goal3310] single repeat 5/12 0.182770 ms
+[goal3310] single repeat 6/12 0.182942 ms
+[goal3310] single repeat 7/12 0.180349 ms
+[goal3310] single repeat 8/12 0.180587 ms
+[goal3310] single repeat 9/12 0.180192 ms
+[goal3310] single repeat 10/12 0.182837 ms
+[goal3310] single repeat 11/12 0.183001 ms
+[goal3310] single repeat 12/12 0.182308 ms
+[goal3310] batch 1 executor prepared effective_streams=1
+[goal3310] batch 1 warmup 1/3
+[goal3310] batch 1 warmup 2/3
+[goal3310] batch 1 warmup 3/3
+[goal3310] batch 1 repeat 1/8 total=0.172608 ms per=0.172608 ms
+[goal3310] batch 1 repeat 2/8 total=0.176586 ms per=0.176586 ms
+[goal3310] batch 1 repeat 3/8 total=0.175267 ms per=0.175267 ms
+[goal3310] batch 1 repeat 4/8 total=0.173777 ms per=0.173777 ms
+[goal3310] batch 1 repeat 5/8 total=0.174239 ms per=0.174239 ms
+[goal3310] batch 1 repeat 6/8 total=0.174537 ms per=0.174537 ms
+[goal3310] batch 1 repeat 7/8 total=0.171937 ms per=0.171937 ms
+[goal3310] batch 1 repeat 8/8 total=0.172593 ms per=0.172593 ms
+[goal3310] batch 100 executor prepared effective_streams=16
+[goal3310] batch 100 warmup 1/3
+[goal3310] batch 100 warmup 2/3
+[goal3310] batch 100 warmup 3/3
+[goal3310] batch 100 repeat 1/8 total=14.541082 ms per=0.145411 ms
+[goal3310] batch 100 repeat 2/8 total=14.556117 ms per=0.145561 ms
+[goal3310] batch 100 repeat 3/8 total=14.533289 ms per=0.145333 ms
+[goal3310] batch 100 repeat 4/8 total=14.550097 ms per=0.145501 ms
+[goal3310] batch 100 repeat 5/8 total=14.536314 ms per=0.145363 ms
+[goal3310] batch 100 repeat 6/8 total=14.561377 ms per=0.145614 ms
+[goal3310] batch 100 repeat 7/8 total=14.537461 ms per=0.145375 ms
+[goal3310] batch 100 repeat 8/8 total=14.557123 ms per=0.145571 ms
