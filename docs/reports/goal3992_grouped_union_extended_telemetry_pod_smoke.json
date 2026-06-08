@@ -1,0 +1,122 @@
+{
+  "claim_boundary": {
+    "dbscan_native_abi_added": false,
+    "performance_claim_authorized": false,
+    "release_authorized": false,
+    "telemetry_is_instrumentation": true
+  },
+  "goal": "Goal3992",
+  "gpu": "NVIDIA RTX 4000 Ada Generation, 550.127.05",
+  "host": "d062c10cfc84",
+  "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.39",
+  "smoke": {
+    "extended_eight_counter": {
+      "elapsed_sec": 0.0053464993834495544,
+      "metadata": {
+        "backend": "optix",
+        "direct_device_handoff_authorized": true,
+        "grouped_union_direct_side_effect_enabled": false,
+        "grouped_union_direct_side_effect_policy": "disabled_by_default_anyhit_side_effect",
+        "grouped_union_extended_telemetry_enabled": true,
+        "grouped_union_intersection_culling_policy": "all_items_target_gt_source_before_anyhit",
+        "grouped_union_same_root_culling_enabled": true,
+        "grouped_union_same_root_culling_policy": "parent_union_same_root_before_anyhit",
+        "grouped_union_telemetry_contract": "uint64[0]=parent_atomic_attempts,uint64[1]=parent_atomic_successes,uint64[2]=fallback_atomic_attempts,uint64[3]=fallback_atomic_successes,uint64[4]=radius_candidate_hits_after_predicate,uint64[5]=same_root_culled_candidate_hits,uint64[6]=direct_side_effect_candidate_hits,uint64[7]=reported_intersection_candidates",
+        "grouped_union_telemetry_counter_count": 8,
+        "grouped_union_telemetry_requested": true,
+        "item_count": 4096,
+        "materializes_directed_adjacency_stream": false,
+        "materializes_neighbor_rows": false,
+        "native_elapsed_sec": 0.005075462162494659,
+        "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_all_items_self_device_parent_workspace",
+        "native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+        "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_extended_telemetry_and_execution_options",
+        "output_columns_true_zero_copy_authorized": true,
+        "paper_speedup_claim_authorized": false,
+        "predicate_mode": "all_items_true_no_fallback_candidates",
+        "query_count": 4096,
+        "query_index_offset": 0,
+        "query_source": "prepared_search_points_self_query_device",
+        "radius": 0.5,
+        "rt_core_accelerated": true,
+        "search_count": 4096,
+        "source_devices": [
+          "cuda:0"
+        ],
+        "source_protocols": [
+          "cupy"
+        ],
+        "transfer_mode": "prepared_device_search_points_self_grouped_union_all_items_parent_workspace",
+        "true_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "telemetry": [
+        10964,
+        4095,
+        0,
+        0,
+        3483897,
+        3473787,
+        0,
+        10110
+      ]
+    },
+    "extended_parent_atomic_attempts_positive": true,
+    "extended_radius_candidate_hits_positive": true,
+    "extended_reported_intersection_candidates_positive": true,
+    "old_four_counter": {
+      "elapsed_sec": 0.42314544320106506,
+      "metadata": {
+        "backend": "optix",
+        "direct_device_handoff_authorized": true,
+        "grouped_union_direct_side_effect_enabled": false,
+        "grouped_union_direct_side_effect_policy": "disabled_by_default_anyhit_side_effect",
+        "grouped_union_extended_telemetry_enabled": false,
+        "grouped_union_intersection_culling_policy": "all_items_target_gt_source_before_anyhit",
+        "grouped_union_same_root_culling_enabled": true,
+        "grouped_union_same_root_culling_policy": "parent_union_same_root_before_anyhit",
+        "grouped_union_telemetry_contract": "uint64[0]=parent_atomic_attempts,uint64[1]=parent_atomic_successes,uint64[2]=fallback_atomic_attempts,uint64[3]=fallback_atomic_successes",
+        "grouped_union_telemetry_counter_count": 4,
+        "grouped_union_telemetry_requested": true,
+        "item_count": 4096,
+        "materializes_directed_adjacency_stream": false,
+        "materializes_neighbor_rows": false,
+        "native_elapsed_sec": 0.42278341948986053,
+        "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_all_items_self_device_parent_workspace",
+        "native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+        "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_telemetry",
+        "output_columns_true_zero_copy_authorized": true,
+        "paper_speedup_claim_authorized": false,
+        "predicate_mode": "all_items_true_no_fallback_candidates",
+        "query_count": 4096,
+        "query_index_offset": 0,
+        "query_source": "prepared_search_points_self_query_device",
+        "radius": 0.5,
+        "rt_core_accelerated": true,
+        "search_count": 4096,
+        "source_devices": [
+          "cuda:0"
+        ],
+        "source_protocols": [
+          "cupy"
+        ],
+        "transfer_mode": "prepared_device_search_points_self_grouped_union_all_items_parent_workspace",
+        "true_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "telemetry": [
+        11311,
+        4095,
+        0,
+        0
+      ]
+    },
+    "old_parent_atomic_attempts_positive": true,
+    "point_count": 4096,
+    "radius": 0.5,
+    "same_parent_atomic_successes": true,
+    "seed": 20260608
+  },
+  "source_commit": "4ea593744b4f64ef8acec52aef64daa67b7194b8",
+  "status": "pass"
+}

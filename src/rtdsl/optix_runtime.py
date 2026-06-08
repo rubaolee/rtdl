@@ -6395,6 +6395,24 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                 raise ValueError("grouped-union telemetry_out must contain at least four counters")
             if not _partner_contiguous_column_strides(telemetry_handoff.strides, itemsize=8):
                 raise ValueError("grouped-union telemetry_out must be contiguous")
+        telemetry_counter_count = (
+            0 if telemetry_handoff is None else int(telemetry_handoff.shape[0])
+        )
+        use_extended_telemetry = telemetry_counter_count >= 8
+        telemetry_contract = None
+        if telemetry_handoff is not None:
+            telemetry_contract = (
+                "uint64[0]=parent_atomic_attempts,uint64[1]=parent_atomic_successes,"
+                "uint64[2]=fallback_atomic_attempts,uint64[3]=fallback_atomic_successes,"
+                "uint64[4]=radius_candidate_hits_after_predicate,"
+                "uint64[5]=same_root_culled_candidate_hits,"
+                "uint64[6]=direct_side_effect_candidate_hits,"
+                "uint64[7]=reported_intersection_candidates"
+                if use_extended_telemetry
+                else
+                "uint64[0]=parent_atomic_attempts,uint64[1]=parent_atomic_successes,"
+                "uint64[2]=fallback_atomic_attempts,uint64[3]=fallback_atomic_successes"
+            )
 
         query_count = self._packed_search.count
         if query_count == 0:
@@ -6402,7 +6420,9 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                 "metadata": {
                     "backend": "optix",
                     "native_symbol": (
-                        _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_EXECUTION_OPTIONS_SYMBOL
+                        _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_EXTENDED_TELEMETRY_EXECUTION_OPTIONS_SYMBOL
+                        if use_extended_telemetry
+                        else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_EXECUTION_OPTIONS_SYMBOL
                         if telemetry_handoff is not None and direct_side_effect
                         else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_EXECUTION_OPTIONS_SYMBOL
                         if direct_side_effect
@@ -6437,12 +6457,17 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                     "direct_device_handoff_authorized": True,
                     "true_zero_copy_authorized": False,
                     "grouped_union_telemetry_requested": telemetry_handoff is not None,
+                    "grouped_union_telemetry_counter_count": telemetry_counter_count,
+                    "grouped_union_extended_telemetry_enabled": use_extended_telemetry,
+                    "grouped_union_telemetry_contract": telemetry_contract,
                 }
             }
 
         lib = _load_optix_library()
         symbol_name = (
-            _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_EXECUTION_OPTIONS_SYMBOL
+            _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_EXTENDED_TELEMETRY_EXECUTION_OPTIONS_SYMBOL
+            if use_extended_telemetry
+            else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_EXECUTION_OPTIONS_SYMBOL
             if telemetry_handoff is not None and direct_side_effect
             else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_EXECUTION_OPTIONS_SYMBOL
             if direct_side_effect
@@ -6464,7 +6489,22 @@ class PreparedOptixFixedRadiusCountThreshold3D:
             )
         error = ctypes.create_string_buffer(4096)
         start = time.perf_counter()
-        if telemetry_handoff is not None and direct_side_effect:
+        if use_extended_telemetry:
+            status = apply_symbol(
+                self._handle,
+                ctypes.c_double(float(radius)),
+                ctypes.c_void_p(0),
+                ctypes.c_void_p(parent_handoff.data_ptr),
+                ctypes.c_void_p(0),
+                ctypes.c_void_p(telemetry_handoff.data_ptr),
+                ctypes.c_size_t(telemetry_counter_count),
+                ctypes.c_uint32(1 if same_root_culling else 0),
+                ctypes.c_uint32(1 if direct_side_effect else 0),
+                ctypes.c_size_t(int(parent_handoff.shape[0])),
+                error,
+                len(error),
+            )
+        elif telemetry_handoff is not None and direct_side_effect:
             status = apply_symbol(
                 self._handle,
                 ctypes.c_double(float(radius)),
@@ -6578,12 +6618,9 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                     _grouped_union_direct_side_effect_policy(direct_side_effect)
                 ),
                 "grouped_union_telemetry_requested": telemetry_handoff is not None,
-                "grouped_union_telemetry_contract": (
-                    "uint64[0]=parent_atomic_attempts,uint64[1]=parent_atomic_successes,"
-                    "uint64[2]=fallback_atomic_attempts,uint64[3]=fallback_atomic_successes"
-                    if telemetry_handoff is not None
-                    else None
-                ),
+                "grouped_union_telemetry_counter_count": telemetry_counter_count,
+                "grouped_union_extended_telemetry_enabled": use_extended_telemetry,
+                "grouped_union_telemetry_contract": telemetry_contract,
                 "direct_device_handoff_authorized": True,
                 "output_columns_true_zero_copy_authorized": True,
                 "true_zero_copy_authorized": False,
@@ -6635,6 +6672,24 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                 raise ValueError("grouped-union telemetry_out must contain at least four counters")
             if not _partner_contiguous_column_strides(telemetry_handoff.strides, itemsize=8):
                 raise ValueError("grouped-union telemetry_out must be contiguous")
+        telemetry_counter_count = (
+            0 if telemetry_handoff is None else int(telemetry_handoff.shape[0])
+        )
+        use_extended_telemetry = telemetry_counter_count >= 8
+        telemetry_contract = None
+        if telemetry_handoff is not None:
+            telemetry_contract = (
+                "uint64[0]=parent_atomic_attempts,uint64[1]=parent_atomic_successes,"
+                "uint64[2]=fallback_atomic_attempts,uint64[3]=fallback_atomic_successes,"
+                "uint64[4]=radius_candidate_hits_after_predicate,"
+                "uint64[5]=same_root_culled_candidate_hits,"
+                "uint64[6]=direct_side_effect_candidate_hits,"
+                "uint64[7]=reported_intersection_candidates"
+                if use_extended_telemetry
+                else
+                "uint64[0]=parent_atomic_attempts,uint64[1]=parent_atomic_successes,"
+                "uint64[2]=fallback_atomic_attempts,uint64[3]=fallback_atomic_successes"
+            )
 
         query_count = self._packed_search.count
         if query_count == 0:
@@ -6642,7 +6697,9 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                 "metadata": {
                     "backend": "optix",
                     "native_symbol": (
-                        _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_EXECUTION_OPTIONS_SYMBOL
+                        _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_EXTENDED_TELEMETRY_EXECUTION_OPTIONS_SYMBOL
+                        if use_extended_telemetry
+                        else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_EXECUTION_OPTIONS_SYMBOL
                         if telemetry_handoff is not None and direct_side_effect
                         else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_EXECUTION_OPTIONS_SYMBOL
                         if direct_side_effect
@@ -6678,12 +6735,17 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                     "direct_device_handoff_authorized": True,
                     "true_zero_copy_authorized": False,
                     "grouped_union_telemetry_requested": telemetry_handoff is not None,
+                    "grouped_union_telemetry_counter_count": telemetry_counter_count,
+                    "grouped_union_extended_telemetry_enabled": use_extended_telemetry,
+                    "grouped_union_telemetry_contract": telemetry_contract,
                 }
             }
 
         lib = _load_optix_library()
         symbol_name = (
-            _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_EXECUTION_OPTIONS_SYMBOL
+            _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_EXTENDED_TELEMETRY_EXECUTION_OPTIONS_SYMBOL
+            if use_extended_telemetry
+            else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_EXECUTION_OPTIONS_SYMBOL
             if telemetry_handoff is not None and direct_side_effect
             else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_EXECUTION_OPTIONS_SYMBOL
             if direct_side_effect
@@ -6705,7 +6767,22 @@ class PreparedOptixFixedRadiusCountThreshold3D:
             )
         error = ctypes.create_string_buffer(4096)
         start = time.perf_counter()
-        if telemetry_handoff is not None and direct_side_effect:
+        if use_extended_telemetry:
+            status = apply_symbol(
+                self._handle,
+                ctypes.c_double(float(radius)),
+                ctypes.c_void_p(0),
+                ctypes.c_void_p(parent_handoff.data_ptr),
+                ctypes.c_void_p(0),
+                ctypes.c_void_p(telemetry_handoff.data_ptr),
+                ctypes.c_size_t(telemetry_counter_count),
+                ctypes.c_uint32(1 if same_root_culling else 0),
+                ctypes.c_uint32(1 if direct_side_effect else 0),
+                ctypes.c_size_t(int(parent_handoff.shape[0])),
+                error,
+                len(error),
+            )
+        elif telemetry_handoff is not None and direct_side_effect:
             status = apply_symbol(
                 self._handle,
                 ctypes.c_double(float(radius)),
@@ -6814,12 +6891,9 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                     _grouped_union_direct_side_effect_policy(direct_side_effect)
                 ),
                 "grouped_union_telemetry_requested": telemetry_handoff is not None,
-                "grouped_union_telemetry_contract": (
-                    "uint64[0]=parent_atomic_attempts,uint64[1]=parent_atomic_successes,"
-                    "uint64[2]=fallback_atomic_attempts,uint64[3]=fallback_atomic_successes"
-                    if telemetry_handoff is not None
-                    else None
-                ),
+                "grouped_union_telemetry_counter_count": telemetry_counter_count,
+                "grouped_union_extended_telemetry_enabled": use_extended_telemetry,
+                "grouped_union_telemetry_contract": telemetry_contract,
                 "direct_device_handoff_authorized": True,
                 "output_columns_true_zero_copy_authorized": True,
                 "true_zero_copy_authorized": False,
@@ -10436,6 +10510,9 @@ _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_OPTIO
 )
 _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_EXECUTION_OPTIONS_SYMBOL = (
     "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_telemetry_and_execution_options"
+)
+_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_EXTENDED_TELEMETRY_EXECUTION_OPTIONS_SYMBOL = (
+    "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_extended_telemetry_and_execution_options"
 )
 _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_RANGE_DEVICE_OUTPUT_SYMBOL = (
     "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs"
@@ -23221,6 +23298,26 @@ def _register_argtypes(lib) -> None:
                 ctypes.c_char_p, ctypes.c_size_t,
             ]
             symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(
+        lib,
+        _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_EXTENDED_TELEMETRY_EXECUTION_OPTIONS_SYMBOL,
+    )
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_double,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.c_uint32,
+            ctypes.c_size_t,
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
 
     symbol = _find_optional_backend_symbol(
         lib,

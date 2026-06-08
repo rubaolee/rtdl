@@ -27,17 +27,17 @@ class Goal2471GroupedUnionAtomicTelemetryTest(unittest.TestCase):
         self.assertIn("union_grouped_min_root_with_telemetry", core)
         self.assertIn("atomicAdd(telemetry_out + 0", core)
         self.assertIn("atomicAdd(telemetry_out + 1", core)
-        self.assertIn("atomicAdd(params.telemetry_out + 2", core)
-        self.assertIn("atomicAdd(params.telemetry_out + 3", core)
+        self.assertIn("grouped_union_telemetry_add(2u, 1ull)", core)
+        self.assertIn("grouped_union_telemetry_add(3u, 1ull)", core)
         self.assertIn("rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs(", api)
         self.assertIn(
             "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_telemetry",
             api + prelude + workloads,
         )
         self.assertTrue(
-            "nullptr, item_count" in api
-            or "nullptr, true, item_count" in api
-            or "nullptr, true, false, item_count" in api,
+            "nullptr, 0, true, false, item_count" in api
+            or "nullptr, 0, same_root_culling != 0u, false, item_count" in api
+            or "nullptr, 0, same_root_culling != 0u, direct_side_effect != 0u, item_count" in api,
             "default grouped-union symbol must keep telemetry disabled",
         )
 

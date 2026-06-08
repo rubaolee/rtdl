@@ -4813,6 +4813,7 @@ struct FixedRadiusGroupedUnion3DRtParams {
     int* parent_out;
     int* fallback_candidate_out;
     unsigned long long* telemetry_out;
+    uint32_t telemetry_count;
     uint32_t query_count;
     uint32_t query_index_offset;
     uint32_t item_count;
@@ -4825,6 +4826,13 @@ struct FixedRadiusGroupedUnion3DRtParams {
 
 extern "C" {
 __constant__ FixedRadiusGroupedUnion3DRtParams params;
+}
+
+extern "C" __device__
+void grouped_union_telemetry_add(uint32_t index, unsigned long long value) {
+    if (params.telemetry_out && index < params.telemetry_count) {
+        atomicAdd(params.telemetry_out + index, value);
+    }
 }
 
 extern "C" __device__
@@ -4869,12 +4877,12 @@ void union_grouped_min_root_with_telemetry(
         }
         const int high = left_root > right_root ? left_root : right_root;
         const int low = left_root > right_root ? right_root : left_root;
-        if (telemetry_out) {
+        if (telemetry_out && 0u < params.telemetry_count) {
             atomicAdd(telemetry_out + 0, 1ull);
         }
         const int old = atomicMin(parent + high, low);
         if (old == high) {
-            if (telemetry_out) {
+            if (telemetry_out && 1u < params.telemetry_count) {
                 atomicAdd(telemetry_out + 1, 1ull);
             }
             return;
@@ -4896,12 +4904,10 @@ void apply_grouped_union_side_effect(uint32_t source, uint32_t target, bool pare
             union_grouped_min_root(params.parent_out, (int)source, (int)target);
         }
     } else if (params.all_predicate == 0u && params.fallback_candidate_out) {
-        if (params.telemetry_out) {
-            atomicAdd(params.telemetry_out + 2, 1ull);
-        }
+        grouped_union_telemetry_add(2u, 1ull);
         const int old = atomicMin(params.fallback_candidate_out + source, (int)target);
-        if (params.telemetry_out && (int)target < old) {
-            atomicAdd(params.telemetry_out + 3, 1ull);
+        if ((int)target < old) {
+            grouped_union_telemetry_add(3u, 1ull);
         }
     }
 }
@@ -4954,17 +4960,21 @@ extern "C" __global__ void __intersection__frn3d_grouped_union_isect() {
     const float d2 = dx * dx + dy * dy + dz * dz;
     const float radius_sq = params.radius * params.radius;
     if (d2 <= radius_sq) {
+        grouped_union_telemetry_add(4u, 1ull);
         if (parent_union_candidate && params.same_root_culling != 0u) {
             const int source_root = find_grouped_union_root_readonly(params.parent_out, (int)source);
             const int target_root = find_grouped_union_root_readonly(params.parent_out, (int)prim);
             if (source_root == target_root) {
+                grouped_union_telemetry_add(5u, 1ull);
                 return;
             }
         }
         if (params.direct_side_effect != 0u) {
+            grouped_union_telemetry_add(6u, 1ull);
             apply_grouped_union_side_effect(source, prim, parent_union_candidate);
             return;
         }
+        grouped_union_telemetry_add(7u, 1ull);
         optixReportIntersection(params.radius, 0u);
     }
 }
@@ -5003,12 +5013,10 @@ extern "C" __global__ void __anyhit__frn3d_grouped_union_anyhit() {
             }
         }
     } else if (target_predicate) {
-        if (params.telemetry_out) {
-            atomicAdd(params.telemetry_out + 2, 1ull);
-        }
+        grouped_union_telemetry_add(2u, 1ull);
         const int old = atomicMin(params.fallback_candidate_out + source, (int)target);
-        if (params.telemetry_out && (int)target < old) {
-            atomicAdd(params.telemetry_out + 3, 1ull);
+        if ((int)target < old) {
+            grouped_union_telemetry_add(3u, 1ull);
         }
     }
     optixIgnoreIntersection();

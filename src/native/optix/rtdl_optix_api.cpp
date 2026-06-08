@@ -5359,7 +5359,7 @@ extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_device_ou
         apply_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
             reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
             query_points, query_count, query_index_offset, radius,
-            predicate_flags, parent_out, fallback_candidate_out, nullptr, true, false, item_count);
+            predicate_flags, parent_out, fallback_candidate_out, nullptr, 0, true, false, item_count);
     }, error_out, error_size);
 }
 
@@ -5380,7 +5380,7 @@ extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_device_ou
             reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
             query_points, query_count, query_index_offset, radius,
             predicate_flags, parent_out, fallback_candidate_out, nullptr,
-            same_root_culling != 0u, false, item_count);
+            0, same_root_culling != 0u, false, item_count);
     }, error_out, error_size);
 }
 
@@ -5402,7 +5402,7 @@ extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_device_ou
             reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
             query_points, query_count, query_index_offset, radius,
             predicate_flags, parent_out, fallback_candidate_out, nullptr,
-            same_root_culling != 0u, direct_side_effect != 0u, item_count);
+            0, same_root_culling != 0u, direct_side_effect != 0u, item_count);
     }, error_out, error_size);
 }
 
@@ -5418,7 +5418,7 @@ extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_devi
     return handle_native_call([&]() {
         apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_optix(
             reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
-            radius, predicate_flags, parent_out, fallback_candidate_out, nullptr, true, false, item_count);
+            radius, predicate_flags, parent_out, fallback_candidate_out, nullptr, 0, true, false, item_count);
     }, error_out, error_size);
 }
 
@@ -5436,7 +5436,7 @@ extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_devi
         apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_optix(
             reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
             radius, predicate_flags, parent_out, fallback_candidate_out, nullptr,
-            same_root_culling != 0u, false, item_count);
+            0, same_root_culling != 0u, false, item_count);
     }, error_out, error_size);
 }
 
@@ -5455,7 +5455,7 @@ extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_devi
         apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_optix(
             reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
             radius, predicate_flags, parent_out, fallback_candidate_out, nullptr,
-            same_root_culling != 0u, direct_side_effect != 0u, item_count);
+            0, same_root_culling != 0u, direct_side_effect != 0u, item_count);
     }, error_out, error_size);
 }
 
@@ -5472,7 +5472,7 @@ extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_devi
     return handle_native_call([&]() {
         apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_optix(
             reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
-            radius, predicate_flags, parent_out, fallback_candidate_out, telemetry_out, true, false, item_count);
+            radius, predicate_flags, parent_out, fallback_candidate_out, telemetry_out, 4, true, false, item_count);
     }, error_out, error_size);
 }
 
@@ -5491,7 +5491,7 @@ extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_devi
         apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_optix(
             reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
             radius, predicate_flags, parent_out, fallback_candidate_out, telemetry_out,
-            same_root_culling != 0u, false, item_count);
+            4, same_root_culling != 0u, false, item_count);
     }, error_out, error_size);
 }
 
@@ -5511,7 +5511,28 @@ extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_devi
         apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_optix(
             reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
             radius, predicate_flags, parent_out, fallback_candidate_out, telemetry_out,
-            same_root_culling != 0u, direct_side_effect != 0u, item_count);
+            4, same_root_culling != 0u, direct_side_effect != 0u, item_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_extended_telemetry_and_execution_options(
+        void* prepared,
+        double radius,
+        const uint32_t* predicate_flags,
+        int32_t* parent_out,
+        int32_t* fallback_candidate_out,
+        uint64_t* telemetry_out,
+        size_t telemetry_count,
+        uint32_t same_root_culling,
+        uint32_t direct_side_effect,
+        size_t item_count,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_optix(
+            reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
+            radius, predicate_flags, parent_out, fallback_candidate_out, telemetry_out,
+            telemetry_count, same_root_culling != 0u, direct_side_effect != 0u, item_count);
     }, error_out, error_size);
 }
 
@@ -5531,7 +5552,7 @@ extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_rang
         apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs_optix(
             reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
             query_start, query_count, radius, predicate_flags, parent_out,
-            fallback_candidate_out, telemetry_out, true, false, item_count);
+            fallback_candidate_out, telemetry_out, 4, true, false, item_count);
     }, error_out, error_size);
 }
 
@@ -5552,7 +5573,7 @@ extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_rang
         apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs_optix(
             reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
             query_start, query_count, radius, predicate_flags, parent_out,
-            fallback_candidate_out, telemetry_out, same_root_culling != 0u, false, item_count);
+            fallback_candidate_out, telemetry_out, 4, same_root_culling != 0u, false, item_count);
     }, error_out, error_size);
 }
 
@@ -5575,7 +5596,7 @@ extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_rang
             reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
             query_start, query_count, radius, predicate_flags, parent_out,
             fallback_candidate_out, telemetry_out,
-            same_root_culling != 0u, direct_side_effect != 0u, item_count);
+            4, same_root_culling != 0u, direct_side_effect != 0u, item_count);
     }, error_out, error_size);
 }
 

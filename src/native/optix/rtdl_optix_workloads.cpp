@@ -19330,6 +19330,7 @@ struct FixedRadiusGroupedUnion3DRtLaunchParams {
     int32_t* parent_out;
     int32_t* fallback_candidate_out;
     uint64_t* telemetry_out;
+    uint32_t telemetry_count;
     uint32_t query_count;
     uint32_t query_index_offset;
     uint32_t item_count;
@@ -23424,6 +23425,7 @@ static void launch_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
         int32_t* parent_out,
         int32_t* fallback_candidate_out,
         uint64_t* telemetry_out,
+        size_t telemetry_count,
         bool same_root_culling,
         bool direct_side_effect,
         size_t item_count);
@@ -23438,6 +23440,7 @@ static void apply_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
         int32_t* parent_out,
         int32_t* fallback_candidate_out,
         uint64_t* telemetry_out,
+        size_t telemetry_count,
         bool same_root_culling,
         bool direct_side_effect,
         size_t item_count)
@@ -23489,6 +23492,7 @@ static void apply_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
         parent_out,
         fallback_candidate_out,
         telemetry_out,
+        telemetry_count,
         same_root_culling,
         direct_side_effect,
         item_count);
@@ -23503,6 +23507,7 @@ static void apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outpu
         int32_t* parent_out,
         int32_t* fallback_candidate_out,
         uint64_t* telemetry_out,
+        size_t telemetry_count,
         bool same_root_culling,
         bool direct_side_effect,
         size_t item_count)
@@ -23546,6 +23551,7 @@ static void apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outpu
         parent_out,
         fallback_candidate_out,
         telemetry_out,
+        telemetry_count,
         same_root_culling,
         direct_side_effect,
         item_count);
@@ -23561,6 +23567,7 @@ static void launch_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
         int32_t* parent_out,
         int32_t* fallback_candidate_out,
         uint64_t* telemetry_out,
+        size_t telemetry_count,
         bool same_root_culling,
         bool direct_side_effect,
         size_t item_count)
@@ -23588,6 +23595,8 @@ static void launch_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
     lp.parent_out = parent_out;
     lp.fallback_candidate_out = fallback_candidate_out;
     lp.telemetry_out = telemetry_out;
+    lp.telemetry_count = static_cast<uint32_t>((std::min)(
+        telemetry_count, static_cast<size_t>(UINT32_MAX)));
     lp.query_count = static_cast<uint32_t>(query_count);
     lp.query_index_offset = static_cast<uint32_t>(query_index_offset);
     lp.item_count = static_cast<uint32_t>(item_count);
@@ -23620,6 +23629,7 @@ static void apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_opt
         int32_t* parent_out,
         int32_t* fallback_candidate_out,
         uint64_t* telemetry_out,
+        size_t telemetry_count,
         bool same_root_culling,
         bool direct_side_effect,
         size_t item_count)
@@ -23658,6 +23668,7 @@ static void apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_opt
         parent_out,
         fallback_candidate_out,
         telemetry_out,
+        telemetry_count,
         same_root_culling,
         direct_side_effect,
         item_count);

@@ -41,8 +41,8 @@ class Goal2476GroupedUnionSameRootToggleTest(unittest.TestCase):
             "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs_with_options",
             api,
         )
-        self.assertIn("telemetry_out, true, false, item_count", api)
-        self.assertIn("same_root_culling != 0u, false, item_count", api)
+        self.assertIn("telemetry_out, 4, true, false, item_count", api)
+        self.assertIn("4, same_root_culling != 0u, false, item_count", api)
         kernel_start = core.index("kFixedRadiusGroupedUnion3DRtKernelSrc")
         kernel_end = core.index(')CUDA";', kernel_start)
         kernel = core[kernel_start:kernel_end].lower()
