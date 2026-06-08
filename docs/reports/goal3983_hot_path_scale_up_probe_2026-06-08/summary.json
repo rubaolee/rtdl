@@ -1,0 +1,59 @@
+{
+  "rows": [
+    {
+      "cold_prepare_total": 1.0568441972136497,
+      "elapsed_sec": 0.0035513564944267273,
+      "exit_code": 0,
+      "matches_cpu_reference": true,
+      "native_call_wall": 0.0019321590662002563,
+      "probe": "raydb_rows1m",
+      "row_count": 1048576,
+      "traversal": 0.000762958
+    },
+    {
+      "cold_prepare_total": 10.039344802498817,
+      "elapsed_sec": 0.004781834781169891,
+      "exit_code": 0,
+      "matches_cpu_reference": true,
+      "native_call_wall": 0.0021876245737075806,
+      "probe": "raydb_rows4m",
+      "row_count": 4194304,
+      "traversal": 0.000837211
+    },
+    {
+      "app_lowering_sec": 1.4194690734148026,
+      "case_shape": {
+        "group_count": 65536,
+        "link_count": 4,
+        "pose_count": 16384,
+        "probe_points_per_group": 9,
+        "segment_count": 589824,
+        "static_obstacle_triangle_count": 2048
+      },
+      "exit_code": 0,
+      "probe": "robot_pose16384_obs1024",
+      "tail_prepare_build_sec": 0.09911146759986877,
+      "tail_prepared_query_build_sec": 3.0147140994668007,
+      "tail_total_run_sec": 0.00023853778839111328,
+      "tail_traversal_sec": 0.00020528750000000002
+    },
+    {
+      "app_lowering_sec": 0.9418351650238037,
+      "case_shape": {
+        "group_count": 32768,
+        "link_count": 4,
+        "pose_count": 8192,
+        "probe_points_per_group": 9,
+        "segment_count": 294912,
+        "static_obstacle_triangle_count": 1024
+      },
+      "exit_code": 0,
+      "probe": "robot_pose8192_obs512",
+      "tail_prepare_build_sec": 0.10740165412425995,
+      "tail_prepared_query_build_sec": 1.4297705292701721,
+      "tail_total_run_sec": 0.00014165043830871582,
+      "tail_traversal_sec": 0.00011483899999999999
+    }
+  ],
+  "source_commit": "62f005d90caca8eeea0d40cbbab430fe890a4fa3"
+}
