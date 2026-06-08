@@ -147,6 +147,24 @@ This file catches design ideas that should not interrupt the current release or 
   partner microcell route as the dense grouped-union solution. The next route
   must be a native/device-resident partition assist or convergence-aware
   primitive that preserves the current grouped-stream strengths.
+- Goal4007 added root-read telemetry to the accepted grouped-stream route. At
+  actual `65536`-point benchmark radii, the default path performs about two
+  readonly root finds per candidate and large parent-link traffic
+  (`708.9M`, `304.9M`, and `33.2M` parent-link steps for clustered3d, road3d,
+  and ngsim_dense respectively). The next primitive must reduce candidate and
+  root-read work together.
+- Goal4009 rejected hidden root path halving as a default. The temporary
+  candidate reduced raw root-link telemetry and native micro-path time, but it
+  failed the clustered3d app-level column signature and had mixed app timing.
+  Root convergence changes must be explicit and deterministic, not hidden
+  mutation inside readonly root checks.
+- Goal4011 showed the partition-convergence direction is stronger when tested
+  beyond the original radius/4 cell factor. Radius/8 partitions cut ambiguous
+  pair upper bounds versus radius/4 by about `60.27%` on clustered3d, `60.90%`
+  on road3d, and `91.93%` on ngsim_dense. However, radius/8 creates `16,675`,
+  `18,031`, and `60,070` occupied cells, so the next primitive must use a
+  compressed occupied-cell structure plus bounded near-offset enumeration, not
+  a dense cell-pair matrix.
 - The next generic runtime primitive should be a dense fixed-radius
   grouped-union continuation, not another app-specific RT-DBSCAN trick. Candidate
   designs include component-aware root-cache snapshots with explicit staleness
