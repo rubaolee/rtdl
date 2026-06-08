@@ -10,6 +10,7 @@ from .partner_protocol import v2_4_phase_timing_metadata
 
 
 NUMBA_SEGMENTED_COUNT_I64_OPERATION = "segmented_count_i64"
+NUMBA_LABEL_COUNT_AND_FLAG_COUNT_I64_OPERATION = "label_count_and_flag_count_i64"
 NUMBA_SEGMENTED_SUM_F64_OPERATION = "segmented_sum_f64"
 NUMBA_GROUPED_VECTOR_SUM_F64X2_OPERATION = "grouped_vector_sum_f64x2"
 NUMBA_SEGMENTED_MIN_F64_OPERATION = "segmented_min_f64"
@@ -40,6 +41,15 @@ def describe_numba_segmented_count_i64() -> dict[str, object]:
     descriptor = _base_numba_descriptor(NUMBA_SEGMENTED_COUNT_I64_OPERATION)
     descriptor["input_columns"] = ("group_ids:int64",)
     descriptor["output_columns"] = ("counts:int64",)
+    return descriptor
+
+
+def describe_numba_label_count_and_flag_count_i64() -> dict[str, object]:
+    descriptor = _base_numba_descriptor(NUMBA_LABEL_COUNT_AND_FLAG_COUNT_I64_OPERATION)
+    descriptor["input_columns"] = ("labels:int64", "flags:uint32")
+    descriptor["output_columns"] = ("label_counts:int64", "flag_true_count:int64", "negative_label_count:int64")
+    descriptor["negative_label_policy"] = "counted_separately_not_used_as_label_index"
+    descriptor["host_column_materialization_used"] = False
     return descriptor
 
 
@@ -229,6 +239,70 @@ def run_numba_segmented_count_i64(
         outputs={"counts": output},
         elapsed=elapsed,
         source="run_numba_segmented_count_i64",
+    )
+
+
+def run_numba_label_count_and_flag_count_i64(
+    labels: Any,
+    flags: Any,
+    *,
+    label_count: int,
+    block_size: int = 256,
+    validate_labels: bool = False,
+) -> dict[str, object]:
+    """Count signed int64 labels and uint32 true flags in one Numba CUDA pass."""
+
+    cuda, np = _import_numba_stack()
+    labels = _as_numba_cuda_vector(labels, name="labels", dtype=np.int64, cuda=cuda, np=np)
+    flags = _as_numba_cuda_vector(flags, name="flags", dtype=np.uint32, cuda=cuda, np=np)
+    if tuple(labels.shape) != tuple(flags.shape):
+        raise ValueError("labels and flags must have the same shape")
+    label_count, block_size, row_count = _validate_label_count_run_shape(
+        labels,
+        label_count=label_count,
+        block_size=block_size,
+        validate_labels=validate_labels,
+        cuda=cuda,
+        np=np,
+    )
+
+    cuda.synchronize()
+    started = perf_counter()
+    label_counts = cuda.device_array((label_count,), dtype=np.int64)
+    flag_true_count = cuda.device_array((1,), dtype=np.int64)
+    negative_label_count = cuda.device_array((1,), dtype=np.int64)
+    label_counts.copy_to_device(np.zeros((label_count,), dtype=np.int64))
+    flag_true_count.copy_to_device(np.zeros((1,), dtype=np.int64))
+    negative_label_count.copy_to_device(np.zeros((1,), dtype=np.int64))
+    if row_count:
+        grid = ((row_count + block_size - 1) // block_size,)
+        _cached_numba_kernel(cuda, _numba_label_count_and_flag_count_i64_kernel)[grid, block_size](
+            labels,
+            flags,
+            label_counts,
+            flag_true_count,
+            negative_label_count,
+            row_count,
+            label_count,
+        )
+    cuda.synchronize()
+    elapsed = perf_counter() - started
+
+    return _numba_run_result(
+        operation=NUMBA_LABEL_COUNT_AND_FLAG_COUNT_I64_OPERATION,
+        outputs={
+            "label_counts": label_counts,
+            "flag_true_count": flag_true_count,
+            "negative_label_count": negative_label_count,
+        },
+        elapsed=elapsed,
+        source="run_numba_label_count_and_flag_count_i64",
+        extra_metadata={
+            "label_count": label_count,
+            "row_count": row_count,
+            "label_validation_host_sync_used": validate_labels,
+            "host_column_materialization_used": False,
+        },
     )
 
 
@@ -1196,6 +1270,22 @@ def _numba_segmented_count_i64_kernel(cuda: Any):
     return kernel
 
 
+def _numba_label_count_and_flag_count_i64_kernel(cuda: Any):
+    @cuda.jit
+    def kernel(labels, flags, label_counts, flag_true_count, negative_label_count, row_count, label_count):
+        index = cuda.grid(1)
+        if index < row_count:
+            label = labels[index]
+            if 0 <= label < label_count:
+                cuda.atomic.add(label_counts, label, 1)
+            elif label < 0:
+                cuda.atomic.add(negative_label_count, 0, 1)
+            if flags[index] != 0:
+                cuda.atomic.add(flag_true_count, 0, 1)
+
+    return kernel
+
+
 def _numba_segmented_sum_f64_kernel(cuda: Any):
     @cuda.jit
     def kernel(group_ids, values, output, row_count, group_count):
@@ -1631,6 +1721,18 @@ def _numba_group_id_validation_kernel(cuda: Any):
     return kernel
 
 
+def _numba_label_validation_kernel(cuda: Any):
+    @cuda.jit
+    def kernel(labels, error_flag, row_count, label_count):
+        index = cuda.grid(1)
+        if index < row_count:
+            label = labels[index]
+            if label >= label_count:
+                cuda.atomic.max(error_flag, 0, 1)
+
+    return kernel
+
+
 def _import_numba_stack() -> tuple[Any, Any]:
     try:
         import numpy as np
@@ -1691,6 +1793,37 @@ def _validate_group_run_shape(
         if int(error_flag.copy_to_host()[0]) != 0:
             raise ValueError("group_ids must be in [0, group_count)")
     return group_count, block_size, row_count
+
+
+def _validate_label_count_run_shape(
+    labels: Any,
+    *,
+    label_count: int,
+    block_size: int,
+    validate_labels: bool,
+    cuda: Any,
+    np: Any,
+) -> tuple[int, int, int]:
+    label_count = int(label_count)
+    if label_count < 0:
+        raise ValueError("label_count must be non-negative")
+    block_size = int(block_size)
+    if block_size <= 0:
+        raise ValueError("block_size must be positive")
+    row_count = int(labels.shape[0])
+    if validate_labels and row_count:
+        error_flag = cuda.to_device(np.zeros((1,), dtype=np.int32))
+        grid = ((row_count + block_size - 1) // block_size,)
+        _cached_numba_kernel(cuda, _numba_label_validation_kernel)[grid, block_size](
+            labels,
+            error_flag,
+            row_count,
+            label_count,
+        )
+        cuda.synchronize()
+        if int(error_flag.copy_to_host()[0]) != 0:
+            raise ValueError("labels must be negative or in [0, label_count)")
+    return label_count, block_size, row_count
 
 
 def _validate_numba_cuda_vector(array: Any, *, name: str, dtype: Any) -> None:

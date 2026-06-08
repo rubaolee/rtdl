@@ -43,8 +43,9 @@ class Goal3859RtDbscanNumbaGroupedStreamTest(unittest.TestCase):
 
         source = FRONT_DOOR.read_text(encoding="utf-8").lower()
         self.assertIn('("cupy", "numba")', source)
-        self.assertNotIn("dbscan", source)
-        self.assertNotIn("cluster", source)
+        self.assertIn("app_specific_dbscan_or_clustering_native_abi", source)
+        self.assertNotIn('"native_dbscan_abi_added": true', source)
+        self.assertNotIn('"app_specific_engine_logic_allowed": true', source)
 
     def test_rt_dbscan_app_exposes_numba_grouped_stream_modes(self) -> None:
         source = APP.read_text(encoding="utf-8")

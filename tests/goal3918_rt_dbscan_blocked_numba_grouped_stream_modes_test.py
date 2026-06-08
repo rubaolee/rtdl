@@ -22,7 +22,7 @@ class Goal3918RtDbscanBlockedNumbaGroupedStreamModesTest(unittest.TestCase):
         self.assertIn("grouped_union_query_block_size=resolved_query_block_size if blocked_grouped_stream else None", source)
         self.assertIn('"generic_prepared_fixed_radius_grouped_union_3d_self_range_device_workspaces"', source)
         self.assertIn('"prepared_rt_core_grouped_union_3d_self_query_blocked_ranges"', source)
-        self.assertIn("numba_segmented_count_all_core_labels", source)
+        self.assertIn("numba_label_count_and_flag_count_label_columns", source)
 
 
 if __name__ == "__main__":

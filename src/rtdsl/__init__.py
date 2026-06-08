@@ -100,6 +100,7 @@ from .numba_partner_continuation import NUMBA_GROUPED_ARGMAX_F64_OPERATION
 from .numba_partner_continuation import NUMBA_GROUPED_ARGMIN_F64_OPERATION
 from .numba_partner_continuation import NUMBA_GROUPED_VECTOR_SUM_F64X2_OPERATION
 from .numba_partner_continuation import NUMBA_GROUPED_VECTOR_SUM_OFFSETS_SESSION_VERSION
+from .numba_partner_continuation import NUMBA_LABEL_COUNT_AND_FLAG_COUNT_I64_OPERATION
 from .numba_partner_continuation import NUMBA_PAIRWISE_L2_SQ_BLOCK_NEAREST_ROWS_2D_OPERATION
 from .numba_partner_continuation import NUMBA_PAIRWISE_L2_SQ_SCORE_ROWS_2D_OPERATION
 from .numba_partner_continuation import NUMBA_SEGMENTED_COUNT_I64_OPERATION
@@ -112,6 +113,7 @@ from .numba_partner_continuation import describe_numba_global_argmax_u32_f64
 from .numba_partner_continuation import describe_numba_grouped_argmax_f64
 from .numba_partner_continuation import describe_numba_grouped_argmin_f64
 from .numba_partner_continuation import describe_numba_grouped_vector_sum_f64x2
+from .numba_partner_continuation import describe_numba_label_count_and_flag_count_i64
 from .numba_partner_continuation import describe_numba_pairwise_l2_sq_block_nearest_rows_2d
 from .numba_partner_continuation import describe_numba_pairwise_l2_sq_score_rows_2d
 from .numba_partner_continuation import describe_numba_segmented_count_i64
@@ -125,6 +127,7 @@ from .numba_partner_continuation import run_numba_grouped_argmax_f64
 from .numba_partner_continuation import run_numba_grouped_argmin_f64
 from .numba_partner_continuation import run_numba_grouped_vector_sum_f64x2
 from .numba_partner_continuation import run_numba_grouped_vector_sum_f64x2_by_offsets
+from .numba_partner_continuation import run_numba_label_count_and_flag_count_i64
 from .numba_partner_continuation import prepare_numba_grouped_vector_sum_f64x2_offsets_session
 from .numba_partner_continuation import run_numba_prepared_grouped_vector_sum_f64x2_by_offsets
 from .numba_partner_continuation import run_numba_pairwise_l2_sq_block_nearest_rows_2d
@@ -2107,6 +2110,7 @@ __all__ = [
     "NUMBA_GROUPED_ARGMIN_F64_OPERATION",
     "NUMBA_GROUPED_VECTOR_SUM_F64X2_OPERATION",
     "NUMBA_GROUPED_VECTOR_SUM_OFFSETS_SESSION_VERSION",
+    "NUMBA_LABEL_COUNT_AND_FLAG_COUNT_I64_OPERATION",
     "NUMBA_PAIRWISE_L2_SQ_BLOCK_NEAREST_ROWS_2D_OPERATION",
     "NUMBA_PAIRWISE_L2_SQ_SCORE_ROWS_2D_OPERATION",
     "NUMBA_SEGMENTED_COUNT_I64_OPERATION",
@@ -2119,6 +2123,7 @@ __all__ = [
     "describe_numba_grouped_argmax_f64",
     "describe_numba_grouped_argmin_f64",
     "describe_numba_grouped_vector_sum_f64x2",
+    "describe_numba_label_count_and_flag_count_i64",
     "describe_numba_pairwise_l2_sq_block_nearest_rows_2d",
     "describe_numba_pairwise_l2_sq_score_rows_2d",
     "describe_numba_segmented_count_i64",
@@ -2132,6 +2137,7 @@ __all__ = [
     "run_numba_grouped_argmin_f64",
     "run_numba_grouped_vector_sum_f64x2",
     "run_numba_grouped_vector_sum_f64x2_by_offsets",
+    "run_numba_label_count_and_flag_count_i64",
     "prepare_numba_grouped_vector_sum_f64x2_offsets_session",
     "run_numba_prepared_grouped_vector_sum_f64x2_by_offsets",
     "run_numba_pairwise_l2_sq_block_nearest_rows_2d",

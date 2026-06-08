@@ -762,24 +762,31 @@ def _component_size_signature_payload(component_sizes: Iterable[int]) -> dict[st
     }
 
 
-def _cluster_signature_from_numba_all_core_labels(
+def _cluster_signature_from_numba_label_columns(
     columns: dict[str, object],
     *,
     point_count: int,
 ) -> dict[str, object]:
-    """Build a DBSCAN signature from device labels for the all-core fast path.
+    """Build a DBSCAN signature from generic Numba label and flag columns.
 
-    This stays in the app layer and uses the generic Numba segmented-count
+    This stays in the app layer and uses a generic Numba label-count/flag-count
     partner primitive. It does not add a native DBSCAN continuation.
     """
 
-    result = rt.run_numba_segmented_count_i64(
+    result = rt.run_numba_label_count_and_flag_count_i64(
         columns["component_labels"],
-        group_count=int(point_count) + 1,
-        validate_group_ids=False,
+        columns["is_core"],
+        label_count=int(point_count) + 1,
+        validate_labels=False,
     )
-    label_counts = result["outputs"]["counts"].copy_to_host().tolist()
-    return _cluster_signature_from_nonnegative_label_counts(label_counts, core_count=int(point_count))
+    label_counts = result["outputs"]["label_counts"].copy_to_host().tolist()
+    core_count = int(result["outputs"]["flag_true_count"].copy_to_host()[0])
+    noise_count = int(result["outputs"]["negative_label_count"].copy_to_host()[0])
+    return _cluster_signature_from_nonnegative_label_counts(
+        label_counts,
+        core_count=core_count,
+        noise_count=noise_count,
+    )
 
 
 def _optix_ranked_summaries_to_cupy_core_columns(
@@ -1571,12 +1578,12 @@ def run_rt_dbscan_benchmark(
                 signature_strategy = None
                 if column_signature_mode:
                     signature_start = time.perf_counter()
-                    if grouped_stream_partner == "numba" and bool(result["metadata"].get("all_core_flags_true")):
-                        run_signature = _cluster_signature_from_numba_all_core_labels(
+                    if grouped_stream_partner == "numba":
+                        run_signature = _cluster_signature_from_numba_label_columns(
                             result["columns"],
                             point_count=len(points),
                         )
-                        signature_strategy = "numba_segmented_count_all_core_labels"
+                        signature_strategy = "numba_label_count_and_flag_count_label_columns"
                     else:
                         run_signature = _cluster_signature_from_partner_columns(
                             result["columns"],
@@ -1686,13 +1693,27 @@ def run_rt_dbscan_benchmark(
                     if column_signature_mode
                     else False
                 ),
+                "column_signature_uses_numba_label_count_and_flag_count": (
+                    measured_runs[-1].get("signature_strategy")
+                    == "numba_label_count_and_flag_count_label_columns"
+                    if column_signature_mode
+                    else False
+                ),
                 "column_signature_materializes_point_ids": (
-                    measured_runs[-1].get("signature_strategy") != "numba_segmented_count_all_core_labels"
+                    measured_runs[-1].get("signature_strategy")
+                    not in {
+                        "numba_segmented_count_all_core_labels",
+                        "numba_label_count_and_flag_count_label_columns",
+                    }
                     if column_signature_mode
                     else None
                 ),
                 "column_signature_materializes_core_flags": (
-                    measured_runs[-1].get("signature_strategy") != "numba_segmented_count_all_core_labels"
+                    measured_runs[-1].get("signature_strategy")
+                    not in {
+                        "numba_segmented_count_all_core_labels",
+                        "numba_label_count_and_flag_count_label_columns",
+                    }
                     if column_signature_mode
                     else None
                 ),

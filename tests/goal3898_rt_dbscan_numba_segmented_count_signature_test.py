@@ -28,13 +28,13 @@ class Goal3898RtDbscanNumbaSegmentedCountSignatureTest(unittest.TestCase):
             },
         )
 
-    def test_app_uses_generic_numba_segmented_count_for_all_core_signature_fast_path(self) -> None:
+    def test_app_uses_generic_numba_label_count_for_column_signature_fast_path(self) -> None:
         source = APP.read_text(encoding="utf-8")
 
-        self.assertIn("_cluster_signature_from_numba_all_core_labels", source)
-        self.assertIn("rt.run_numba_segmented_count_i64", source)
-        self.assertIn("numba_segmented_count_all_core_labels", source)
-        self.assertIn("all_core_flags_true", source)
+        self.assertIn("_cluster_signature_from_numba_label_columns", source)
+        self.assertIn("rt.run_numba_label_count_and_flag_count_i64", source)
+        self.assertIn("numba_label_count_and_flag_count_label_columns", source)
+        self.assertIn("column_signature_uses_numba_label_count_and_flag_count", source)
         self.assertIn("column_signature_uses_numba_segmented_count", source)
         self.assertIn("column_signature_materializes_point_ids", source)
         self.assertIn("column_signature_materializes_core_flags", source)
