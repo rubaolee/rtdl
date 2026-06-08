@@ -6,13 +6,13 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-V2_9_BENCHMARK_ADEQUACY_VERSION = "rtdl.v2_10.benchmark_adequacy_after_goal3842.v1"
+V2_9_BENCHMARK_ADEQUACY_VERSION = "rtdl.v2_10.benchmark_adequacy_after_goal3936.v1"
 V2_9_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 V2_9_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
-    "Goal3842 records internal benchmark-app adequacy after the v2.9 Numba "
+    "Goal3936 records internal benchmark-app adequacy after the v2.9 Numba "
     "coverage work, the v2.10 HIPRT parity closeout, the Goal3818-3820 "
-    "benchmark front-door hardening, and Goal3834/3838 RayJoin scalar-count "
-    "Numba coverage. It does not authorize "
+    "benchmark front-door hardening, Goal3834/3838 RayJoin scalar-count "
+    "Numba coverage, and the clean post-Goal3933 CUBIN pod rerun. It does not authorize "
     "release action, public speedup wording, whole-app acceleration wording, "
     "broad RT-core wording, RayJoin paper reproduction wording, true-zero-copy "
     "wording, automatic partner selection, AMD performance wording, or "
@@ -148,11 +148,13 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
             "adds no-RawKernel Numba LSI and overlay active-count references, with LSI/overlay "
             "Numba slightly faster than the dense CuPy baselines while RTDL/OptiX remains about "
             "260x faster than Numba for those scalar contracts. Goal3866/3867 promote this "
-            "into the current all-app scale row: one-shot PIP is explicit Numba, repeated PIP "
-            "is the RTDL/OptiX batch executor at 0.024185ms/request, LSI/overlay are "
-            "RTDL/OptiX-favorable at 228.822x/234.734x versus Numba, and the full ten-app "
-            "packet passes with RayJoin at 10.256s. This is still not a RayJoin "
-            "paper-reproduction, universal PIP-dominance, or RTDL-beats-RayJoin claim."
+            "into the current all-app scale row. Goal3936 then reruns the combined queue from "
+            "a clean pushed `main` checkout after the Goal3933 CUBIN toolchain repair: "
+            "source_dirty is empty, one-shot PIP is explicit Numba at 0.247x for RTDL/OptiX "
+            "versus Numba, repeated PIP is the RTDL/OptiX batch executor at 0.155315ms/request "
+            "for 100 requests, and LSI/overlay are RTDL/OptiX-favorable at 252.436x/202.372x "
+            "versus Numba. This is still not a RayJoin paper-reproduction, universal "
+            "PIP-dominance, or RTDL-beats-RayJoin claim."
         ),
         adequacy="strong",
         current_recommended_path=(
@@ -160,8 +162,8 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
             "relation-status corrected scalar count for one-shot PIP where measured, RTDL/OptiX "
             "prepared point/closed-shape batch executor for repeated PIP requests, exact RTDL/OptiX "
             "prepared segment-pair count for LSI, and RTDL/OptiX prepared-left shape-pair "
-            "active-count executor for overlay active count; Goal3866 is the current representative "
-            "scale-profile row for this mixed route"
+            "active-count executor for overlay active count; Goal3936 is the clean current "
+            "representative confirmation for this mixed route"
         ),
         current_partner_role=(
             "CuPy remains the dense CUDA-core baseline/opponent; Goal3834 and Goal3838 now cover "
@@ -181,11 +183,11 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
         next_generic_runtime_action=(
             "treat as covered for Numba-reference and HIPRT-contract purposes; next major work is "
             "actual AMD functional validation plus a non-dense baseline policy for larger RayJoin sizes where "
-            "the all-CuPy dense baseline OOMs; the current all-app scale packet now uses Goal3866's "
-            "representative mixed route; keep the prepared-points CUDA graph replay path blocked "
+            "the all-CuPy dense baseline OOMs; the current mixed-route evidence is cleanly "
+            "confirmed by Goal3936; keep the prepared-points CUDA graph replay path blocked "
             "until the zero-count replay failure is fixed"
         ),
-        evidence_refs=("Goal3688", "Goal3713", "Goal3733", "Goal3734", "Goal3737", "Goal3749", "Goal3761", "Goal3766", "Goal3767", "Goal3784", "Goal3785", "Goal3834", "Goal3838", "Goal3842", "Goal3866", "Goal3867"),
+        evidence_refs=("Goal3688", "Goal3713", "Goal3733", "Goal3734", "Goal3737", "Goal3749", "Goal3761", "Goal3766", "Goal3767", "Goal3784", "Goal3785", "Goal3834", "Goal3838", "Goal3842", "Goal3866", "Goal3867", "Goal3933", "Goal3934", "Goal3935", "Goal3936"),
         pod_needed_next=False,
     ),
     V29BenchmarkAdequacyRow(

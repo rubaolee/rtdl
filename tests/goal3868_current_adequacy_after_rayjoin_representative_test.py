@@ -10,12 +10,13 @@ class Goal3868CurrentAdequacyAfterRayJoinRepresentativeTest(unittest.TestCase):
         spatial = {row["app"]: row for row in rt.current_benchmark_adequacy()}["spatial_rayjoin"]
         self.assertIn("Goal3866", spatial["evidence_refs"])
         self.assertIn("Goal3867", spatial["evidence_refs"])
+        self.assertIn("Goal3936", spatial["evidence_refs"])
         self.assertIn("current all-app scale row", spatial["current_performance_reading"])
-        self.assertIn("0.024185ms/request", spatial["current_performance_reading"])
-        self.assertIn("228.822x/234.734x", spatial["current_performance_reading"])
-        self.assertIn("10.256s", spatial["current_performance_reading"])
-        self.assertIn("representative scale-profile row", spatial["current_recommended_path"])
-        self.assertIn("representative mixed route", spatial["next_generic_runtime_action"])
+        self.assertIn("source_dirty is empty", spatial["current_performance_reading"])
+        self.assertIn("0.155315ms/request", spatial["current_performance_reading"])
+        self.assertIn("252.436x/202.372x", spatial["current_performance_reading"])
+        self.assertIn("clean current", spatial["current_recommended_path"])
+        self.assertIn("confirmed by Goal3936", spatial["next_generic_runtime_action"])
         self.assertFalse(spatial["public_speedup_claim_authorized"])
         self.assertFalse(spatial["paper_reproduction_claim_authorized"])
 

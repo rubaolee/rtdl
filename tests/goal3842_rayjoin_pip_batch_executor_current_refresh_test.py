@@ -31,7 +31,7 @@ class Goal3842RayJoinPipBatchExecutorCurrentRefreshTest(unittest.TestCase):
     def test_current_adequacy_records_pip_batch_lane_without_overclaim(self) -> None:
         self.assertEqual(
             rt.CURRENT_BENCHMARK_ADEQUACY_VERSION,
-            "rtdl.v2_10.benchmark_adequacy_after_goal3842.v1",
+            "rtdl.v2_10.benchmark_adequacy_after_goal3936.v1",
         )
         spatial = {row["app"]: row for row in rt.current_benchmark_adequacy()}["spatial_rayjoin"]
         self.assertIn("Goal3842", spatial["evidence_refs"])
