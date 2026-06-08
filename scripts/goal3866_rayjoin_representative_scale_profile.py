@@ -140,6 +140,78 @@ def _pip_batch_summary(payload: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _hot_path_summary(
+    *,
+    cases: list[dict[str, Any]],
+    pip_batch: dict[str, Any],
+    wrapper_elapsed_sec: float,
+) -> dict[str, Any]:
+    cases_by_workload = {str(row["workload"]): row for row in cases}
+    pip_one_shot = cases_by_workload.get("pip", {})
+    lsi = cases_by_workload.get("lsi", {})
+    overlay = cases_by_workload.get("overlay_seed", {})
+    pip_single_ms = pip_batch.get("single_ms_median")
+    pip_batched_ms = pip_batch.get("largest_request_per_request_ms_median")
+    pip_batch_speedup = _ratio(
+        float(pip_single_ms) if pip_single_ms is not None else None,
+        float(pip_batched_ms) if pip_batched_ms is not None else None,
+    )
+    return {
+        "metric_scope": "per_contract_hot_medians_not_wrapper_wall_time",
+        "scale_runner_elapsed_sec_is_not_hot_path_metric": True,
+        "wrapper_elapsed_sec": float(wrapper_elapsed_sec),
+        "contract_count": 4,
+        "all_contract_counts_match": all(bool(row["counts_match"]) for row in cases),
+        "pip_one_shot": {
+            "recommended_route": "numba_cuda_jit_scalar_count_no_rawkernel",
+            "numba_hot_median_sec": pip_one_shot.get("numba_hot_median_sec"),
+            "rtdl_optix_hot_median_sec": pip_one_shot.get("rtdl_optix_hot_median_sec"),
+            "rtdl_optix_speedup_vs_numba": pip_one_shot.get("rtdl_optix_speedup_vs_numba"),
+            "reason": "bounded one-shot scalar count favors simple partner code at this slice",
+        },
+        "pip_repeated_requests": {
+            "recommended_route": "rtdl_optix_prepared_batch_executor",
+            "single_request_ms_median": pip_single_ms,
+            "batched_per_request_ms_median": pip_batched_ms,
+            "batch_request_count": pip_batch.get("largest_request_count"),
+            "per_request_speedup_vs_single_request": pip_batch_speedup,
+            "reason": "prepared scene and batched requests amortize traversal setup",
+        },
+        "lsi_scalar_count": {
+            "recommended_route": "rtdl_optix_prepared_segment_pair_count",
+            "numba_hot_median_sec": lsi.get("numba_hot_median_sec"),
+            "rtdl_optix_hot_median_sec": lsi.get("rtdl_optix_hot_median_sec"),
+            "rtdl_optix_speedup_vs_numba": lsi.get("rtdl_optix_speedup_vs_numba"),
+            "reason": "fused generic segment-pair scalar count avoids dense partner looping",
+        },
+        "overlay_active_count": {
+            "recommended_route": "rtdl_optix_prepared_shape_pair_active_count",
+            "numba_hot_median_sec": overlay.get("numba_hot_median_sec"),
+            "rtdl_optix_hot_median_sec": overlay.get("rtdl_optix_hot_median_sec"),
+            "rtdl_optix_speedup_vs_numba": overlay.get("rtdl_optix_speedup_vs_numba"),
+            "reason": "fused generic shape-pair active count avoids dense partner looping",
+        },
+        "recommended_route_summary": {
+            "rtdl_optix_contracts": (
+                "pip_repeated_requests",
+                "lsi_scalar_count",
+                "overlay_active_count",
+            ),
+            "numba_contracts": ("pip_one_shot",),
+            "automatic_dispatch": False,
+            "user_route_choice_visible": True,
+        },
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "broad_rt_core_claim_authorized": False,
+        "paper_reproduction_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "automatic_partner_selection_authorized": False,
+        "app_specific_native_engine_logic_allowed": False,
+    }
+
+
 def build_dry_run(args: argparse.Namespace) -> dict[str, Any]:
     data_dir = Path(args.data_dir) if args.data_dir else Path("<auto>")
     return {
@@ -161,6 +233,7 @@ def build_dry_run(args: argparse.Namespace) -> dict[str, Any]:
 
 
 def run_representative_profile(args: argparse.Namespace) -> dict[str, Any]:
+    profile_started = time.perf_counter()
     data_dir = _resolve_data_dir(args.data_dir)
     pip_dataset = data_dir / PIP_DATASET_NAME
 
@@ -207,6 +280,12 @@ def run_representative_profile(args: argparse.Namespace) -> dict[str, Any]:
         *(_case_summary(row) for row in lsi_overlay_payload["rows"]),
     ]
     pip_batch = _pip_batch_summary(pip_batch_payload)
+    wrapper_elapsed_sec = time.perf_counter() - profile_started
+    hot_path_summary = _hot_path_summary(
+        cases=cases,
+        pip_batch=pip_batch,
+        wrapper_elapsed_sec=wrapper_elapsed_sec,
+    )
     all_counts_match = (
         bool(pip_payload["counts_match"])
         and bool(lsi_overlay_payload["summary"]["all_counts_match"])
@@ -226,6 +305,8 @@ def run_representative_profile(args: argparse.Namespace) -> dict[str, Any]:
         "block_size": args.block_size,
         "cases": cases,
         "pip_batch_executor": pip_batch,
+        "representative_hot_path_summary": hot_path_summary,
+        "wrapper_elapsed_sec": wrapper_elapsed_sec,
         "pip_batch_device_predicate_eps": args.pip_batch_device_predicate_eps,
         "recommended_route_summary": {
             "pip_one_shot": "numba_cuda_jit_scalar_count_no_rawkernel",
