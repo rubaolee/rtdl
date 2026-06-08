@@ -21,7 +21,7 @@ class Goal4028PartitionConvergencePreviewMetadataTest(unittest.TestCase):
         guidance = description["candidate_strategy_partition_guidance"]["partition_convergence_hybrid"]
         self.assertEqual(
             guidance["executable_preview"],
-            "cupy_and_numba_partition_summary_previews_pass_same_contract_but_are_not_final_fast_native_producers",
+            "cupy_device_bounded_pair_preview_and_numba_device_column_preview_pass_same_contract_but_are_not_final_fast_native_producers",
         )
 
     def test_candidate_plan_still_requires_native_implementation(self) -> None:

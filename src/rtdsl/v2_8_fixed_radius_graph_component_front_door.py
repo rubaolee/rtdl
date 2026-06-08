@@ -57,6 +57,7 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_REQUIREMENTS = (
     "complete_candidate_coverage_status_invariant",
     "edge_case_status_and_float_tolerance_tests",
     "cupy_preview_producer_same_contract_pod_execution",
+    "cupy_device_bounded_pair_enumeration_same_contract_pod_execution",
     "numba_preview_device_columns_same_contract_pod_execution",
 )
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_EVIDENCE_GOALS = (
@@ -78,6 +79,7 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_EVIDENCE_GOALS = (
     "Goal4024",
     "Goal4027",
     "Goal4029",
+    "Goal4032",
 )
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PARTITION_GUIDANCE = MappingProxyType({
     "recommended_tested_cell_factor": "radius_x_0.125",
@@ -119,7 +121,7 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PARTITION_GUIDANCE = MappingProxyType({
         "candidate_device_producer_must_pass_goal4019_goal4021_goal4023_goal4024_before_timing"
     ),
     "executable_preview": (
-        "cupy_and_numba_partition_summary_previews_pass_same_contract_but_are_not_final_fast_native_producers"
+        "cupy_device_bounded_pair_preview_and_numba_device_column_preview_pass_same_contract_but_are_not_final_fast_native_producers"
     ),
 })
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY = (

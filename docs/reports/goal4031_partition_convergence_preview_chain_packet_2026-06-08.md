@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 ## Scope
 
-This packet summarizes the v2.8 fixed-radius partition-convergence work from Goal4019 through Goal4030.
+This packet summarizes the v2.8 fixed-radius partition-convergence work from Goal4019 through Goal4032.
 
 ## What Is Proven
 
@@ -15,6 +15,7 @@ This packet summarizes the v2.8 fixed-radius partition-convergence work from Goa
 - Goal4027 adds a CuPy executable preview that passed pod validation.
 - Goal4029 adds a Numba CUDA device-column preview that passed pod validation.
 - Goal4030 records both previews in candidate metadata while keeping the strategy unpromoted.
+- Goal4032 strengthens the CuPy preview with a `device_bounded_offsets` pair-enumeration mode that passed pod same-contract validation.
 
 ## Diagnostic Root-Work Opportunity
 
@@ -35,6 +36,7 @@ The model charges two root reads per safe-full partition pair and ambiguous root
 - No fast native partition-summary producer exists yet.
 - `partition_convergence_hybrid` remains `candidate_requires_native_implementation`.
 - CuPy and Numba previews are executable bridges, not final fast native producers.
+- The CuPy device-bounded pair preview removes host pair enumeration for the small same-contract preview path, but it is not a timed large-scale producer and does not promote the strategy.
 - No speedup, release, broad RT-core, whole-app benchmark, or true-zero-copy wording is authorized.
 
 ## Next Engineering Target
@@ -48,4 +50,3 @@ The next real performance step is a native or fully device-resident producer tha
 - pod execution on CuPy and Numba preview-compatible device columns.
 
 Only after that should large timing runs compare it against the current grouped-stream route.
-

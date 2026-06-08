@@ -19,7 +19,9 @@ class Goal4031PartitionConvergencePreviewChainPacketTest(unittest.TestCase):
             "Goal4021",
             "Goal4027",
             "Goal4029",
+            "Goal4032",
             "CuPy executable preview",
+            "device_bounded_offsets",
             "Numba CUDA device-column preview",
             "No fast native partition-summary producer exists yet",
             "candidate_requires_native_implementation",
@@ -32,7 +34,7 @@ class Goal4031PartitionConvergencePreviewChainPacketTest(unittest.TestCase):
         self.assertTrue(ESTIMATE.exists())
         description = rt.describe_v2_8_fixed_radius_graph_component_front_door()
         goals = description["candidate_strategy_evidence_goals"]["partition_convergence_hybrid"]
-        for goal in ("Goal4019", "Goal4021", "Goal4023", "Goal4024", "Goal4027", "Goal4029"):
+        for goal in ("Goal4019", "Goal4021", "Goal4023", "Goal4024", "Goal4027", "Goal4029", "Goal4032"):
             self.assertIn(goal, goals)
         guidance = description["candidate_strategy_partition_guidance"]["partition_convergence_hybrid"]
         self.assertEqual(
