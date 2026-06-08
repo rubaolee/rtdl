@@ -939,6 +939,7 @@ def run_rt_dbscan_benchmark(
         "optix_rt_core_grouped_stream_cupy_column_signature_3d",
         "optix_rt_core_grouped_stream_numba_column_signature_3d",
         "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d",
+        "optix_rt_core_grouped_stream_blocked_numba_column_signature_3d",
         "optix_rt_core_flags_numba_prepared_grid_column_signature_3d",
     }:
         raise ValueError("column-signature mode does not materialize Python rows")
@@ -1462,6 +1463,8 @@ def run_rt_dbscan_benchmark(
         "optix_rt_core_grouped_stream_numba_column_signature_3d",
         "optix_rt_core_grouped_stream_blocked_cupy_components_3d",
         "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d",
+        "optix_rt_core_grouped_stream_blocked_numba_components_3d",
+        "optix_rt_core_grouped_stream_blocked_numba_column_signature_3d",
     }:
         blocked_grouped_stream = mode.startswith("optix_rt_core_grouped_stream_blocked")
         grouped_stream_partner = "numba" if "_numba_" in mode else "cupy"
@@ -1474,6 +1477,7 @@ def run_rt_dbscan_benchmark(
             "optix_rt_core_grouped_stream_cupy_column_signature_3d",
             "optix_rt_core_grouped_stream_numba_column_signature_3d",
             "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d",
+            "optix_rt_core_grouped_stream_blocked_numba_column_signature_3d",
         }
         prepare_start = time.perf_counter()
         prepared_query_runs: list[dict[str, object]] = []
@@ -1556,8 +1560,12 @@ def run_rt_dbscan_benchmark(
                 "path": (
                     "optix_rt_grouped_stream_blocked_cupy_radius_graph_column_signature_3d"
                     if mode == "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d"
+                    else "optix_rt_grouped_stream_blocked_numba_radius_graph_column_signature_3d"
+                    if mode == "optix_rt_core_grouped_stream_blocked_numba_column_signature_3d"
                     else "optix_rt_grouped_stream_blocked_cupy_radius_graph_components_3d"
                     if mode == "optix_rt_core_grouped_stream_blocked_cupy_components_3d"
+                    else "optix_rt_grouped_stream_blocked_numba_radius_graph_components_3d"
+                    if mode == "optix_rt_core_grouped_stream_blocked_numba_components_3d"
                     else "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
                     if mode == "optix_rt_core_grouped_stream_numba_column_signature_3d"
                     else "optix_rt_grouped_stream_numba_radius_graph_components_3d"
@@ -1599,6 +1607,7 @@ def run_rt_dbscan_benchmark(
                     "optix_rt_core_grouped_stream_cupy_components_3d",
                     "optix_rt_core_grouped_stream_numba_components_3d",
                     "optix_rt_core_grouped_stream_blocked_cupy_components_3d",
+                    "optix_rt_core_grouped_stream_blocked_numba_components_3d",
                 },
                 "signature_source": (
                     "partner_column_arrays_no_python_row_dicts"
@@ -1817,6 +1826,8 @@ def main(argv: list[str] | None = None) -> int:
             "optix_rt_core_grouped_stream_numba_column_signature_3d",
             "optix_rt_core_grouped_stream_blocked_cupy_components_3d",
             "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d",
+            "optix_rt_core_grouped_stream_blocked_numba_components_3d",
+            "optix_rt_core_grouped_stream_blocked_numba_column_signature_3d",
             "optix_rt_core_flags_cupy_microcell_graph_components_3d",
             "partner_core_flags_3d",
             "optix_prepared_rows",
