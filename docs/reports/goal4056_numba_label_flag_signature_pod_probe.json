@@ -1,0 +1,68 @@
+{
+  "status": "pass",
+  "goal": "Goal4056",
+  "commit": "c36f7575",
+  "pod": "root@213.173.108.27:15138",
+  "device_class": "RTX 4000 Ada pod",
+  "test_command": "python3 -m unittest tests.goal4056_numba_label_flag_signature_continuation_test tests.goal3859_rt_dbscan_numba_grouped_stream_test tests.goal3898_rt_dbscan_numba_segmented_count_signature_test tests.goal3918_rt_dbscan_blocked_numba_grouped_stream_modes_test",
+  "test_result": {
+    "status": "ok",
+    "tests": 14,
+    "skipped": 1
+  },
+  "probe_command": "python3 examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode optix_rt_core_grouped_stream_numba_column_signature_3d --dataset road3d --point-count 4096 --min-neighbors <threshold> --repeat 3 --warmup 1 --no-validation",
+  "rows": [
+    {
+      "threshold": 16,
+      "all_core_flags_true": true,
+      "column_signature_strategy": "numba_label_count_and_flag_count_label_columns",
+      "column_signature_materializes_point_ids": false,
+      "column_signature_materializes_core_flags": false,
+      "core_count": 4096,
+      "noise_count": 0,
+      "elapsed_sec": 0.002728339284658432
+    },
+    {
+      "threshold": 32,
+      "all_core_flags_true": true,
+      "column_signature_strategy": "numba_label_count_and_flag_count_label_columns",
+      "column_signature_materializes_point_ids": false,
+      "column_signature_materializes_core_flags": false,
+      "core_count": 4096,
+      "noise_count": 0,
+      "elapsed_sec": 0.0027184970676898956
+    },
+    {
+      "threshold": 64,
+      "all_core_flags_true": false,
+      "column_signature_strategy": "numba_label_count_and_flag_count_label_columns",
+      "column_signature_materializes_point_ids": false,
+      "column_signature_materializes_core_flags": false,
+      "core_count": 4089,
+      "noise_count": 0,
+      "elapsed_sec": 0.002953849732875824
+    },
+    {
+      "threshold": 128,
+      "all_core_flags_true": false,
+      "column_signature_strategy": "numba_label_count_and_flag_count_label_columns",
+      "column_signature_materializes_point_ids": false,
+      "column_signature_materializes_core_flags": false,
+      "core_count": 3749,
+      "noise_count": 0,
+      "elapsed_sec": 0.0030523203313350677
+    }
+  ],
+  "mixed_label_case_observed": true,
+  "all_mixed_label_rows_avoid_host_point_id_materialization": true,
+  "all_mixed_label_rows_avoid_host_core_flag_materialization": true,
+  "claim_boundary": {
+    "release_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "native_dbscan_abi_added": false,
+    "app_specific_native_engine_logic_added": false
+  }
+}

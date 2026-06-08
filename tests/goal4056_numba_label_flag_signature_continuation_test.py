@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 NUMBA_RUNTIME = ROOT / "src" / "rtdsl" / "numba_partner_continuation.py"
 APP = ROOT / "examples" / "v2_0" / "research_benchmarks" / "rt_dbscan" / "rtdl_rt_dbscan_benchmark_app.py"
 REPORT = ROOT / "docs" / "reports" / "goal4056_numba_label_flag_signature_continuation_2026-06-08.md"
+ARTIFACT = ROOT / "docs" / "reports" / "goal4056_numba_label_flag_signature_pod_probe.json"
 
 
 def _numba_cuda_available() -> bool:
@@ -84,6 +85,23 @@ class Goal4056NumbaLabelFlagSignatureContinuationTest(unittest.TestCase):
             "does not authorize true-zero-copy claims",
         ):
             self.assertIn(phrase, text)
+
+    def test_pod_probe_records_mixed_label_materialization_win_and_boundary(self) -> None:
+        import json
+
+        artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(artifact["status"], "pass")
+        self.assertEqual(artifact["commit"], "c36f7575")
+        self.assertTrue(artifact["mixed_label_case_observed"])
+        mixed_rows = [row for row in artifact["rows"] if not row["all_core_flags_true"]]
+        self.assertGreaterEqual(len(mixed_rows), 2)
+        for row in mixed_rows:
+            self.assertEqual(row["column_signature_strategy"], "numba_label_count_and_flag_count_label_columns")
+            self.assertFalse(row["column_signature_materializes_point_ids"])
+            self.assertFalse(row["column_signature_materializes_core_flags"])
+        for flag, value in artifact["claim_boundary"].items():
+            self.assertFalse(value, flag)
 
 
 if __name__ == "__main__":

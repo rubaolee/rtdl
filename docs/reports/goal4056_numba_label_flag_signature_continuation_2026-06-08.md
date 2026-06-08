@@ -1,6 +1,6 @@
 # Goal4056 Numba Label/Flag Signature Continuation
 
-Status: local implementation, pod performance evidence pending.
+Status: implemented and pod-smoked on an RTX 4000 Ada pod.
 
 Goal4056 adds a generic Numba CUDA partner continuation:
 
@@ -39,3 +39,24 @@ does not authorize public speedup claims, and does not authorize release action.
 The primitive is a partner continuation only. RT-core work remains in the
 existing app-agnostic OptiX fixed-radius grouped-union path.
 
+## Pod Evidence
+
+The pod probe at commit `c36f7575` ran the CUDA-capable unit slice and a
+threshold sweep over:
+
+```text
+optix_rt_core_grouped_stream_numba_column_signature_3d
+dataset=road3d, point_count=4096, repeat=3, warmup=1, no_validation
+```
+
+The CUDA unit slice reported 14 tests OK with 1 skip. The threshold sweep
+observed mixed-label rows at thresholds 64 and 128
+(`all_core_flags_true: false`) while preserving:
+
+- `column_signature_strategy:
+  numba_label_count_and_flag_count_label_columns`;
+- `column_signature_materializes_point_ids: false`;
+- `column_signature_materializes_core_flags: false`.
+
+The bounded artifact is
+`docs/reports/goal4056_numba_label_flag_signature_pod_probe.json`.
