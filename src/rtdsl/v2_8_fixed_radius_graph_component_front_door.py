@@ -1057,6 +1057,194 @@ def build_v2_8_fixed_radius_partition_convergence_component_labels_reference_3d(
     }
 
 
+def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
+    point_rows,
+    *,
+    radius: float,
+    cell_factor: float = 0.125,
+    pair_capacity: int | None = None,
+) -> dict[str, Any]:
+    """Executable CuPy preview for partition-summary columns."""
+
+    import cupy
+
+    points = tuple(_point_xyz(row) for row in point_rows)
+    if not points:
+        raise ValueError("point_rows must contain at least one point")
+    radius = float(radius)
+    cell_factor = float(cell_factor)
+    if radius <= 0.0:
+        raise ValueError("radius must be positive")
+    if cell_factor <= 0.0:
+        raise ValueError("cell_factor must be positive")
+    cell_size = radius * cell_factor
+    radius_sq = radius * radius
+
+    point_count = len(points)
+    x = cupy.asarray([point[0] for point in points], dtype=cupy.float64)
+    y = cupy.asarray([point[1] for point in points], dtype=cupy.float64)
+    z = cupy.asarray([point[2] for point in points], dtype=cupy.float64)
+    kx = cupy.floor(x / cell_size).astype(cupy.int64, copy=False)
+    ky = cupy.floor(y / cell_size).astype(cupy.int64, copy=False)
+    kz = cupy.floor(z / cell_size).astype(cupy.int64, copy=False)
+    min_kx = int(cupy.min(kx).item())
+    min_ky = int(cupy.min(ky).item())
+    min_kz = int(cupy.min(kz).item())
+    local_kx = kx - min_kx
+    local_ky = ky - min_ky
+    local_kz = kz - min_kz
+    dim_y = int(cupy.max(local_ky).item()) + 1
+    dim_z = int(cupy.max(local_kz).item()) + 1
+    cell_ids = (local_kx * dim_y * dim_z + local_ky * dim_z + local_kz).astype(cupy.int64)
+    order = cupy.argsort(cell_ids).astype(cupy.int32, copy=False)
+    sorted_cell_ids = cell_ids[order]
+    unique_cells, starts, counts = cupy.unique(
+        sorted_cell_ids,
+        return_index=True,
+        return_counts=True,
+    )
+    partition_count = int(unique_cells.size)
+    point_partition_ids = cupy.searchsorted(unique_cells, cell_ids).astype(cupy.uint32, copy=False)
+    counts_u32 = counts.astype(cupy.uint32, copy=False)
+    offsets = cupy.concatenate((
+        cupy.zeros((1,), dtype=cupy.uint32),
+        cupy.cumsum(counts_u32, dtype=cupy.uint32),
+    ))
+    sorted_x = x[order]
+    sorted_y = y[order]
+    sorted_z = z[order]
+    aabb_min_x = cupy.minimum.reduceat(sorted_x, starts).astype(cupy.float32, copy=False)
+    aabb_min_y = cupy.minimum.reduceat(sorted_y, starts).astype(cupy.float32, copy=False)
+    aabb_min_z = cupy.minimum.reduceat(sorted_z, starts).astype(cupy.float32, copy=False)
+    aabb_max_x = cupy.maximum.reduceat(sorted_x, starts).astype(cupy.float32, copy=False)
+    aabb_max_y = cupy.maximum.reduceat(sorted_y, starts).astype(cupy.float32, copy=False)
+    aabb_max_z = cupy.maximum.reduceat(sorted_z, starts).astype(cupy.float32, copy=False)
+
+    unique_host = tuple(int(value) for value in cupy.asnumpy(unique_cells).tolist())
+    key_rows = []
+    for encoded in unique_host:
+        local_x = encoded // (dim_y * dim_z)
+        rem = encoded % (dim_y * dim_z)
+        local_y = rem // dim_z
+        local_z = rem % dim_z
+        key_rows.append((local_x + min_kx, local_y + min_ky, local_z + min_kz))
+    key_to_ordinal = {key: ordinal for ordinal, key in enumerate(key_rows)}
+    min_x_host = tuple(float(value) for value in cupy.asnumpy(aabb_min_x).tolist())
+    min_y_host = tuple(float(value) for value in cupy.asnumpy(aabb_min_y).tolist())
+    min_z_host = tuple(float(value) for value in cupy.asnumpy(aabb_min_z).tolist())
+    max_x_host = tuple(float(value) for value in cupy.asnumpy(aabb_max_x).tolist())
+    max_y_host = tuple(float(value) for value in cupy.asnumpy(aabb_max_y).tolist())
+    max_z_host = tuple(float(value) for value in cupy.asnumpy(aabb_max_z).tolist())
+    aabbs = [
+        {
+            "min_x": min_x_host[index],
+            "min_y": min_y_host[index],
+            "min_z": min_z_host[index],
+            "max_x": max_x_host[index],
+            "max_y": max_y_host[index],
+            "max_z": max_z_host[index],
+        }
+        for index in range(partition_count)
+    ]
+    max_offset = int(math.ceil(radius / cell_size)) + 1
+    pair_rows: list[tuple[int, int, int]] = []
+    for left_ordinal, left_key in enumerate(key_rows):
+        lx, ly, lz = left_key
+        left = aabbs[left_ordinal]
+        for dx in range(-max_offset, max_offset + 1):
+            for dy in range(-max_offset, max_offset + 1):
+                for dz in range(-max_offset, max_offset + 1):
+                    right_key = (lx + dx, ly + dy, lz + dz)
+                    right_ordinal = key_to_ordinal.get(right_key)
+                    if right_ordinal is None or right_ordinal < left_ordinal:
+                        continue
+                    right = aabbs[right_ordinal]
+                    if _partition_aabb_max_distance_sq(left, right) <= radius_sq:
+                        status = 1
+                    elif _partition_aabb_min_distance_sq(left, right) > radius_sq:
+                        status = 0
+                    else:
+                        status = 2
+                    pair_rows.append((left_ordinal, right_ordinal, status))
+
+    requested_capacity = len(pair_rows) if pair_capacity is None else int(pair_capacity)
+    if requested_capacity <= 0:
+        raise ValueError("pair_capacity must be positive when provided")
+    overflow = len(pair_rows) > requested_capacity
+    visible_pairs = tuple(pair_rows[:requested_capacity])
+    left_ids = cupy.asarray([row[0] for row in visible_pairs], dtype=cupy.uint32)
+    right_ids = cupy.asarray([row[1] for row in visible_pairs], dtype=cupy.uint32)
+    statuses = cupy.asarray([row[2] for row in visible_pairs], dtype=cupy.uint32)
+    status_counts = {
+        "safe_skip_partition_pairs": sum(1 for _, _, status in visible_pairs if status == 0),
+        "safe_full_partition_pairs": sum(1 for _, _, status in visible_pairs if status == 1),
+        "ambiguous_partition_pairs": sum(1 for _, _, status in visible_pairs if status == 2),
+    }
+    columns = {
+        "point_partition_ids": point_partition_ids,
+        "occupied_partition_keys_x": cupy.asarray([key[0] for key in key_rows], dtype=cupy.int32),
+        "occupied_partition_keys_y": cupy.asarray([key[1] for key in key_rows], dtype=cupy.int32),
+        "occupied_partition_keys_z": cupy.asarray([key[2] for key in key_rows], dtype=cupy.int32),
+        "partition_offsets": offsets,
+        "partition_counts": counts_u32,
+        "partition_aabb_min_x": aabb_min_x,
+        "partition_aabb_min_y": aabb_min_y,
+        "partition_aabb_min_z": aabb_min_z,
+        "partition_aabb_max_x": aabb_max_x,
+        "partition_aabb_max_y": aabb_max_y,
+        "partition_aabb_max_z": aabb_max_z,
+        "near_pair_left_partition_ids": left_ids,
+        "near_pair_right_partition_ids": right_ids,
+        "near_pair_status": statuses,
+    }
+    contract = make_v2_8_fixed_radius_partition_convergence_summary_typed_stream_contract(
+        point_count,
+        partition_count,
+        max(1, requested_capacity),
+        stream_id="fixed_radius_partition_convergence_summary_3d_cupy_preview",
+        data_ptrs=_column_data_ptrs(columns),
+        source_protocol="cupy_cuda_array_interface",
+    )
+    return {
+        "columns": columns,
+        "metadata": {
+            "adapter": "fixed_radius_partition_convergence_summary_cupy_preview_3d",
+            "reference": "fixed_radius_partition_convergence_summary_3d_cupy_preview",
+            "point_count": point_count,
+            "partition_count": partition_count,
+            "cell_factor": cell_factor,
+            "cell_size": cell_size,
+            "max_neighbor_offset": max_offset,
+            "pair_count": len(pair_rows),
+            "visible_pair_count": len(visible_pairs),
+            "pair_capacity": requested_capacity,
+            "overflow": overflow,
+            "complete_candidate_coverage": not overflow,
+            "status_column_values": {
+                "row_count": len(visible_pairs),
+                "capacity": requested_capacity,
+                "overflow": overflow,
+                "complete_candidate_coverage": not overflow,
+            },
+            "status_counts": status_counts,
+            "typed_result_stream": contract.to_metadata(),
+            "device_partition_columns_used": True,
+            "host_pair_enumeration_used": True,
+            "native_abi_added": False,
+            "runtime_executable": True,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "app_specific_engine_logic_allowed": False,
+            "automatic_partner_selection_allowed": False,
+            "hidden_dispatch_allowed": False,
+            "claim_boundary": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY,
+        },
+    }
+
+
 def _unsupported_reason(*, backend: str, partner: str, strategy: str) -> str:
     if backend not in V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_BACKENDS:
         return f"unsupported backend {backend!r}; supported backends are {V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_BACKENDS}"
@@ -1267,6 +1455,7 @@ __all__ = [
     "V28FixedRadiusGraphComponentPlan",
     "V28PreparedFixedRadiusGraphComponentContinuation3D",
     "build_v2_8_fixed_radius_partition_convergence_component_labels_reference_3d",
+    "build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d",
     "build_v2_8_fixed_radius_partition_convergence_summary_reference_3d",
     "describe_v2_8_fixed_radius_graph_component_front_door",
     "fixed_radius_graph_component_labels_3d_v2_8",
