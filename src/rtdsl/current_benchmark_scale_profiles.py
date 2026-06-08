@@ -285,7 +285,10 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
     CurrentBenchmarkScaleProfile(
         app="barnes_hut",
         row_id="barnes_hut_numba_scale_default_8192",
-        purpose="scale-profile Barnes-Hut no-RawKernel Numba exact-force run with resident output reuse",
+        purpose=(
+            "scale-profile Barnes-Hut no-RawKernel Numba exact-force run with resident output reuse; "
+            "Goal4053 separately covers prepared grouped-vector stream reductions"
+        ),
         profile_kind="default_scale",
         command=(
             "python",
@@ -305,7 +308,7 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
             "1",
         ),
         timeout_sec=300,
-        evidence_refs=("Goal3827", "Goal3853", "Goal3869"),
+        evidence_refs=("Goal3827", "Goal3853", "Goal3869", "Goal4052", "Goal4053"),
         expected_runtime_class="safe_summary_output",
         requires_numba=True,
         representative_hot_path_metric="partner_metadata.prepared_force_repeat_protocol.median_force_kernel_sec",

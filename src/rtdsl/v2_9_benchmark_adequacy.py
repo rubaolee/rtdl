@@ -318,7 +318,10 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
             "RawKernel path across 1024-16384 bodies; mid-scale 4096/8192 rows are near parity, "
             "but CuPy remains faster overall. Goal3869 adds resident output-column reuse for the "
             "force-summary path, improving the current 8192-body Numba repeated-output row by "
-            "1.162x while confirming that 16384 remains compute-dominated."
+            "1.162x while confirming that 16384 remains compute-dominated. Goal4052 then adds "
+            "a generic no-atomic Numba offset kernel for presegmented grouped-vector streams, and "
+            "Goal4053 wraps it in a prepared session that is 3.77x-3.89x faster than the old "
+            "atomic Numba path on the tested generic shapes."
         ),
         adequacy="adequate",
         current_recommended_path="RTDL/OptiX membership primitive plus explicit partner exact-force/vector continuation",
@@ -330,14 +333,20 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
         numba_reference_reason=(
             "Goal3746 adds the Numba CUDA JIT exact-force reference; Goal3762 improves it with "
             "a block-reduction strategy; Goal3869 reuses resident output columns for repeated "
-            "force-summary runs. Richer hierarchical force acceleration remains separate future work."
+            "force-summary runs; Goals4052-4053 add a prepared no-atomic Numba grouped-vector "
+            "continuation for presegmented streams. Richer hierarchical force acceleration remains "
+            "separate future work."
         ),
         amd_hiprt_readiness=(
             "ready for AMD functional pod after Goals3777 and 3780 add HIPRT aggregate-frontier "
             "collect and grouped f64x2 vector sum; AMD hardware evidence still pending Goal3784 artifact"
         ),
-        next_generic_runtime_action="treat as covered for Numba-reference and HIPRT-contract purposes; deeper hierarchical vector primitive design remains future performance work",
-        evidence_refs=("Goal2803", "Goal3599", "Goal3567", "Goal3746", "Goal3762", "Goal3777", "Goal3780", "Goal3784", "Goal3785", "Goal3869"),
+        next_generic_runtime_action=(
+            "treat as covered for Numba-reference, presegmented grouped-vector continuation, and "
+            "HIPRT-contract purposes; deeper hierarchical vector primitive design remains future "
+            "performance work"
+        ),
+        evidence_refs=("Goal2803", "Goal3599", "Goal3567", "Goal3746", "Goal3762", "Goal3777", "Goal3780", "Goal3784", "Goal3785", "Goal3869", "Goal4052", "Goal4053"),
         pod_needed_next=False,
     ),
     V29BenchmarkAdequacyRow(

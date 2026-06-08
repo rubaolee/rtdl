@@ -245,15 +245,24 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
         decision_kind="fastest_partner_with_numba_reference",
         current_reader_decision=(
             "Use RTDL/OptiX for membership/frontier work; CuPy remains fastest measured force continuation, "
-            "with Numba available as the no-RawKernel reference."
+            "with Numba available as the no-RawKernel reference. Goal4053 adds a prepared Numba "
+            "grouped-vector continuation session for presegmented typed streams, but it is not a "
+            "full force-law route promotion."
         ),
         primary_route="RTDL/OptiX membership primitive plus explicit force-vector partner continuation",
         partner_policy="cupy_fastest_numba_reference",
         primitive_contract="aggregate-frontier membership plus grouped vector continuation",
-        user_choice_guidance="Choose CuPy for fastest measured force continuation or Numba for no-RawKernel Python JIT custom logic.",
+        user_choice_guidance=(
+            "Choose CuPy for fastest measured force continuation or Numba for no-RawKernel Python JIT "
+            "custom logic; use the Goal4053 prepared grouped-vector session when the user already has "
+            "presegmented vector streams and wants repeated resident reductions."
+        ),
         rejected_or_unpromoted_candidates=("Numba-as-fastest-force-route", "whole Barnes-Hut speedup claim"),
-        next_runtime_action="future major work is deeper hierarchical vector primitive design, not app-only tuning",
-        evidence_refs=("Goal2803", "Goal3599", "Goal3746", "Goal3762", "Goal3869"),
+        next_runtime_action=(
+            "prepared Numba grouped-vector session is available for presegmented streams; future major "
+            "work is deeper hierarchical vector primitive design, not app-only tuning"
+        ),
+        evidence_refs=("Goal2803", "Goal3599", "Goal3746", "Goal3762", "Goal3869", "Goal4052", "Goal4053"),
         pod_needed_next=False,
     ),
     CurrentBenchmarkRouteDecision(
