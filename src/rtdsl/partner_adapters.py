@@ -2252,6 +2252,140 @@ def grouped_vector_sum_2d_partner_columns(
     return columns
 
 
+def prepare_grouped_vector_sum_2d_partner_columns_session(
+    vector_columns: dict[str, object],
+    *,
+    group_count: int,
+    partner: str = "numba",
+    validate_row_offsets: bool = True,
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Prepare a reusable grouped-vector sum session over presegmented columns."""
+
+    if str(partner).strip().lower().replace("-", "_") != "numba":
+        raise ValueError("prepared grouped vector-sum sessions currently require partner='numba'")
+    if not isinstance(vector_columns, dict):
+        raise ValueError("vector_columns must be a mapping")
+    group_count = int(group_count)
+    if group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    group_ids = vector_columns.get("group_ids", vector_columns.get("source_ids"))
+    values_x = vector_columns.get("values_x", vector_columns.get("vector_x"))
+    values_y = vector_columns.get("values_y", vector_columns.get("vector_y"))
+    row_offsets = vector_columns.get("row_offsets")
+    if group_ids is None or values_x is None or values_y is None or row_offsets is None:
+        raise ValueError("prepared grouped vector-sum sessions require group_ids, row_offsets, values_x, and values_y")
+    row_count = _column_length({"group_ids": group_ids}, "group_ids")
+    if _column_length({"values_x": values_x}, "values_x") != row_count:
+        raise ValueError("values_x length must match group_ids length")
+    if _column_length({"values_y": values_y}, "values_y") != row_count:
+        raise ValueError("values_y length must match group_ids length")
+    if _column_length({"row_offsets": row_offsets}, "row_offsets") != group_count + 1:
+        raise ValueError("row_offsets length must equal group_count + 1")
+
+    from .numba_partner_continuation import prepare_numba_grouped_vector_sum_f64x2_offsets_session
+    from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff
+    from .v2_6_neutral_partner_handoff import validate_v2_6_neutral_partner_handoff
+
+    runtime = _numba_runtime_for_point_columns()
+    try:
+        handoff = prepare_v2_6_neutral_partner_handoff(
+            {"group_ids": group_ids, "row_offsets": row_offsets, "values_x": values_x, "values_y": values_y},
+            partner="numba",
+            access_modes={"group_ids": "read", "row_offsets": "read", "values_x": "read", "values_y": "read"},
+        )
+    except ValueError as exc:
+        raise RuntimeError(f"Numba neutral handoff rejected: {exc}") from exc
+    validation = validate_v2_6_neutral_partner_handoff(handoff)
+    if validation["status"] != "accept":
+        raise RuntimeError(f"Numba neutral handoff rejected: {validation['errors']}")
+
+    numba_session = prepare_numba_grouped_vector_sum_f64x2_offsets_session(
+        row_offsets,
+        values_x,
+        values_y,
+        validate_row_offsets=bool(validate_row_offsets),
+    )
+    columns = {
+        "group_ids": runtime["tensor"](range(group_count), runtime["int64"], runtime["device"]),
+        "sum_x": numba_session["outputs"]["sum_x"],
+        "sum_y": numba_session["outputs"]["sum_y"],
+    }
+    metadata = {
+        "adapter": "prepare_grouped_vector_sum_2d_partner_columns_session",
+        "partner": "numba",
+        "session_version": numba_session["session_version"],
+        "input_contract": "caller_supplied_presegmented_grouped_vector_rows_2d",
+        "partner_reference_contract": "generic_grouped_vector_sum_f64x2",
+        "v2_5_partner_continuation_operation": "grouped_vector_sum_f64x2",
+        "v2_6_neutral_handoff_validation_status": validation["status"],
+        "v2_6_neutral_handoff_column_count": handoff["column_count"],
+        "v2_5_numba_presegmented_offsets_used": True,
+        "v2_5_numba_adapter_kernel": "numba_grouped_vector_sum_offsets_f64x2_kernel",
+        "v2_5_numba_global_atomic_add_used": False,
+        "row_offset_validation_performed_at_prepare": bool(validate_row_offsets),
+        "per_run_neutral_handoff_validation_used": False,
+        "output_columns_reused": True,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "group_count": group_count,
+        "row_count": row_count,
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_5_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "claim_boundary": (
+            "Prepared generic grouped vector-sum session over caller-supplied Numba CUDA columns. "
+            "It validates the neutral handoff once, reuses output columns, does not call native RT traversal, "
+            "and does not authorize true zero-copy, release, or speedup claims."
+        ),
+    }
+    session = {
+        "adapter": "grouped_vector_sum_2d_partner_columns_session",
+        "partner": "numba",
+        "numba_session": numba_session,
+        "columns": columns,
+        "metadata": metadata,
+    }
+    if return_metadata:
+        return {"session": session, "columns": columns, "metadata": metadata}
+    return session
+
+
+def run_grouped_vector_sum_2d_partner_columns_session(
+    prepared_session: dict[str, object],
+    *,
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Replay a prepared grouped-vector sum partner session."""
+
+    if not isinstance(prepared_session, dict):
+        raise ValueError("prepared_session must be a mapping")
+    if prepared_session.get("partner") != "numba":
+        raise ValueError("prepared grouped vector-sum sessions currently require partner='numba'")
+    if prepared_session.get("adapter") != "grouped_vector_sum_2d_partner_columns_session":
+        raise ValueError("unexpected prepared grouped vector-sum session adapter")
+
+    from .numba_partner_continuation import run_numba_prepared_grouped_vector_sum_f64x2_by_offsets
+
+    numba_result = run_numba_prepared_grouped_vector_sum_f64x2_by_offsets(prepared_session["numba_session"])
+    columns = dict(prepared_session["columns"])
+    metadata = dict(prepared_session["metadata"])
+    metadata.update(
+        {
+            "adapter": "run_grouped_vector_sum_2d_partner_columns_session",
+            "prepared_session_reused": True,
+            "output_columns_reused": True,
+            "per_run_neutral_handoff_validation_used": False,
+            "phase_timing": numba_result["phase_timing"],
+            "v2_5_numba_preview_kernel_status": numba_result["status"],
+        }
+    )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
 def _host_float_list(values) -> list[float]:
     if hasattr(values, "detach"):
         return [float(item) for item in values.detach().cpu().tolist()]

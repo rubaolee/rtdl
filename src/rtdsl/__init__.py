@@ -99,6 +99,7 @@ from .numba_partner_continuation import NUMBA_GLOBAL_ARGMAX_U32_F64_OPERATION
 from .numba_partner_continuation import NUMBA_GROUPED_ARGMAX_F64_OPERATION
 from .numba_partner_continuation import NUMBA_GROUPED_ARGMIN_F64_OPERATION
 from .numba_partner_continuation import NUMBA_GROUPED_VECTOR_SUM_F64X2_OPERATION
+from .numba_partner_continuation import NUMBA_GROUPED_VECTOR_SUM_OFFSETS_SESSION_VERSION
 from .numba_partner_continuation import NUMBA_PAIRWISE_L2_SQ_BLOCK_NEAREST_ROWS_2D_OPERATION
 from .numba_partner_continuation import NUMBA_PAIRWISE_L2_SQ_SCORE_ROWS_2D_OPERATION
 from .numba_partner_continuation import NUMBA_SEGMENTED_COUNT_I64_OPERATION
@@ -124,6 +125,8 @@ from .numba_partner_continuation import run_numba_grouped_argmax_f64
 from .numba_partner_continuation import run_numba_grouped_argmin_f64
 from .numba_partner_continuation import run_numba_grouped_vector_sum_f64x2
 from .numba_partner_continuation import run_numba_grouped_vector_sum_f64x2_by_offsets
+from .numba_partner_continuation import prepare_numba_grouped_vector_sum_f64x2_offsets_session
+from .numba_partner_continuation import run_numba_prepared_grouped_vector_sum_f64x2_by_offsets
 from .numba_partner_continuation import run_numba_pairwise_l2_sq_block_nearest_rows_2d
 from .numba_partner_continuation import run_numba_pairwise_l2_sq_score_rows_2d
 from .numba_partner_continuation import run_numba_segmented_count_i64
@@ -1209,6 +1212,8 @@ from .partner_adapters import grouped_argmax_f64_partner_columns
 from .partner_adapters import grouped_argmin_f64_partner_columns
 from .partner_adapters import grouped_topk_f64_partner_columns
 from .partner_adapters import grouped_vector_sum_2d_partner_columns
+from .partner_adapters import prepare_grouped_vector_sum_2d_partner_columns_session
+from .partner_adapters import run_grouped_vector_sum_2d_partner_columns_session
 from .partner_adapters import measured_grouped_vector_sum_2d_partner_selection
 from .partner_adapters import group_argmin_then_global_argmax_partner_columns
 from .partner_adapters import pairwise_l2_sq_block_nearest_rows_2d_partner_columns
@@ -2101,6 +2106,7 @@ __all__ = [
     "NUMBA_GROUPED_ARGMAX_F64_OPERATION",
     "NUMBA_GROUPED_ARGMIN_F64_OPERATION",
     "NUMBA_GROUPED_VECTOR_SUM_F64X2_OPERATION",
+    "NUMBA_GROUPED_VECTOR_SUM_OFFSETS_SESSION_VERSION",
     "NUMBA_PAIRWISE_L2_SQ_BLOCK_NEAREST_ROWS_2D_OPERATION",
     "NUMBA_PAIRWISE_L2_SQ_SCORE_ROWS_2D_OPERATION",
     "NUMBA_SEGMENTED_COUNT_I64_OPERATION",
@@ -2126,6 +2132,8 @@ __all__ = [
     "run_numba_grouped_argmin_f64",
     "run_numba_grouped_vector_sum_f64x2",
     "run_numba_grouped_vector_sum_f64x2_by_offsets",
+    "prepare_numba_grouped_vector_sum_f64x2_offsets_session",
+    "run_numba_prepared_grouped_vector_sum_f64x2_by_offsets",
     "run_numba_pairwise_l2_sq_block_nearest_rows_2d",
     "run_numba_pairwise_l2_sq_score_rows_2d",
     "run_numba_segmented_count_i64",
@@ -2898,6 +2906,8 @@ __all__ = [
     "grouped_argmin_f64_partner_columns",
     "grouped_topk_f64_partner_columns",
     "grouped_vector_sum_2d_partner_columns",
+    "prepare_grouped_vector_sum_2d_partner_columns_session",
+    "run_grouped_vector_sum_2d_partner_columns_session",
     "measured_grouped_vector_sum_2d_partner_selection",
     "group_argmin_then_global_argmax_partner_columns",
     "pairwise_l2_sq_block_nearest_rows_2d_partner_columns",

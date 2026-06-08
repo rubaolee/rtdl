@@ -23,6 +23,7 @@ NUMBA_PAIRWISE_L2_SQ_BLOCK_NEAREST_ROWS_2D_OPERATION = "pairwise_l2_sq_block_nea
 NUMBA_SQRT_F64_OPERATION = "sqrt_f64"
 NUMBA_PARTNER_CONTINUATION_STATUS = V2_5_STATUS_PREVIEW_NOT_PROMOTED
 NUMBA_GROUP_ID_VALIDATION_MODE = "device_resident_error_flag"
+NUMBA_GROUPED_VECTOR_SUM_OFFSETS_SESSION_VERSION = "rtdl.v2_9.numba_grouped_vector_sum_offsets_session.v1"
 _NUMBA_KERNEL_CACHE: dict[tuple[int, str], Any] = {}
 
 
@@ -354,21 +355,15 @@ def run_numba_grouped_vector_sum_f64x2_by_offsets(
     row_offsets = _as_numba_cuda_vector(row_offsets, name="row_offsets", dtype=np.int64, cuda=cuda, np=np)
     values_x = _as_numba_cuda_vector(values_x, name="values_x", dtype=np.float64, cuda=cuda, np=np)
     values_y = _as_numba_cuda_vector(values_y, name="values_y", dtype=np.float64, cuda=cuda, np=np)
-    if tuple(values_x.shape) != tuple(values_y.shape):
-        raise ValueError("values_x and values_y must have the same shape")
-    group_count = int(row_offsets.shape[0]) - 1
-    row_count = int(values_x.shape[0])
-    if group_count < 0:
-        raise ValueError("row_offsets must contain at least one element")
-    block_size = int(block_size)
-    if block_size <= 0:
-        raise ValueError("block_size must be positive")
-    if validate_row_offsets and int(row_offsets.shape[0]):
-        host_offsets = row_offsets.copy_to_host()
-        if int(host_offsets[0]) != 0 or int(host_offsets[-1]) != row_count:
-            raise ValueError("row_offsets must start at 0 and end at the row count")
-        if bool(np.any(host_offsets[1:] < host_offsets[:-1])):
-            raise ValueError("row_offsets must be monotonically nondecreasing")
+    group_count, block_size, row_count = _validate_numba_grouped_vector_offsets_shape(
+        row_offsets,
+        values_x,
+        values_y,
+        block_size=block_size,
+        validate_row_offsets=validate_row_offsets,
+        cuda=cuda,
+        np=np,
+    )
 
     cuda.synchronize()
     started = perf_counter()
@@ -403,6 +398,115 @@ def run_numba_grouped_vector_sum_f64x2_by_offsets(
             "threads_per_block": block_size,
             "global_atomic_add_used": False,
             "row_offset_validation_host_sync_used": validate_row_offsets,
+        },
+    )
+
+
+def prepare_numba_grouped_vector_sum_f64x2_offsets_session(
+    row_offsets: Any,
+    values_x: Any,
+    values_y: Any,
+    *,
+    block_size: int = 256,
+    validate_row_offsets: bool = True,
+) -> dict[str, object]:
+    """Prepare reusable output buffers for presegmented grouped vector sums."""
+
+    cuda, np = _import_numba_stack()
+    row_offsets = _as_numba_cuda_vector(row_offsets, name="row_offsets", dtype=np.int64, cuda=cuda, np=np)
+    values_x = _as_numba_cuda_vector(values_x, name="values_x", dtype=np.float64, cuda=cuda, np=np)
+    values_y = _as_numba_cuda_vector(values_y, name="values_y", dtype=np.float64, cuda=cuda, np=np)
+    group_count, block_size, row_count = _validate_numba_grouped_vector_offsets_shape(
+        row_offsets,
+        values_x,
+        values_y,
+        block_size=block_size,
+        validate_row_offsets=validate_row_offsets,
+        cuda=cuda,
+        np=np,
+    )
+    sum_x = cuda.device_array((group_count,), dtype=np.float64)
+    sum_y = cuda.device_array((group_count,), dtype=np.float64)
+    return {
+        "session_version": NUMBA_GROUPED_VECTOR_SUM_OFFSETS_SESSION_VERSION,
+        "contract_version": V2_5_PARTNER_CONTINUATION_VERSION,
+        "operation": NUMBA_GROUPED_VECTOR_SUM_F64X2_OPERATION,
+        "partner": "numba",
+        "status": NUMBA_PARTNER_CONTINUATION_STATUS,
+        "row_offsets": row_offsets,
+        "values_x": values_x,
+        "values_y": values_y,
+        "outputs": {"sum_x": sum_x, "sum_y": sum_y},
+        "group_count": group_count,
+        "row_count": row_count,
+        "block_size": block_size,
+        "presegmented_row_offsets": True,
+        "row_offset_validation_performed_at_prepare": bool(validate_row_offsets),
+        "output_columns_reused": True,
+        "global_atomic_add_used": False,
+        "raw_kernel_required": False,
+        "replaces_rt_traversal": False,
+        "promoted_performance_path": False,
+        "rt_core_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "release_authorized": False,
+    }
+
+
+def run_numba_prepared_grouped_vector_sum_f64x2_by_offsets(
+    session: dict[str, object],
+) -> dict[str, object]:
+    """Replay a prepared presegmented grouped vector-sum session."""
+
+    if session.get("session_version") != NUMBA_GROUPED_VECTOR_SUM_OFFSETS_SESSION_VERSION:
+        raise ValueError("unexpected Numba grouped-vector offset session version")
+    cuda, _np = _import_numba_stack()
+    row_offsets = session["row_offsets"]
+    values_x = session["values_x"]
+    values_y = session["values_y"]
+    outputs = session["outputs"]
+    sum_x = outputs["sum_x"]
+    sum_y = outputs["sum_y"]
+    group_count = int(session["group_count"])
+    block_size = int(session["block_size"])
+    cuda.synchronize()
+    started = perf_counter()
+    if group_count:
+        grid = ((group_count + block_size - 1) // block_size,)
+        _cached_numba_kernel(cuda, _numba_grouped_vector_sum_f64x2_offsets_kernel)[grid, block_size](
+            row_offsets,
+            values_x,
+            values_y,
+            sum_x,
+            sum_y,
+            group_count,
+        )
+    cuda.synchronize()
+    elapsed = perf_counter() - started
+    return _numba_run_result(
+        operation=NUMBA_GROUPED_VECTOR_SUM_F64X2_OPERATION,
+        outputs={"sum_x": sum_x, "sum_y": sum_y},
+        elapsed=elapsed,
+        source="run_numba_prepared_grouped_vector_sum_f64x2_by_offsets",
+        extra_metadata={
+            "session_version": NUMBA_GROUPED_VECTOR_SUM_OFFSETS_SESSION_VERSION,
+            "group_count": group_count,
+            "row_count": int(session["row_count"]),
+            "component_count": 2,
+            "componentwise_reduction": "independent_float64_sum_per_group_by_offsets",
+            "presegmented_row_offsets": True,
+            "adapter_kernel": "numba_grouped_vector_sum_offsets_f64x2_kernel",
+            "program_count": (group_count + block_size - 1) // block_size if group_count else 0,
+            "threads_per_block": block_size,
+            "global_atomic_add_used": False,
+            "prepared_session_reused": True,
+            "output_columns_reused": True,
+            "row_offset_validation_performed_at_prepare": bool(
+                session["row_offset_validation_performed_at_prepare"]
+            ),
+            "row_offset_validation_host_sync_used": False,
         },
     )
 
@@ -1135,6 +1239,34 @@ def _numba_grouped_vector_sum_f64x2_offsets_kernel(cuda: Any):
             output_y[group] = local_y
 
     return kernel
+
+
+def _validate_numba_grouped_vector_offsets_shape(
+    row_offsets: Any,
+    values_x: Any,
+    values_y: Any,
+    *,
+    block_size: int,
+    validate_row_offsets: bool,
+    cuda: Any,
+    np: Any,
+) -> tuple[int, int, int]:
+    if tuple(values_x.shape) != tuple(values_y.shape):
+        raise ValueError("values_x and values_y must have the same shape")
+    group_count = int(row_offsets.shape[0]) - 1
+    row_count = int(values_x.shape[0])
+    if group_count < 0:
+        raise ValueError("row_offsets must contain at least one element")
+    block_size = int(block_size)
+    if block_size <= 0:
+        raise ValueError("block_size must be positive")
+    if validate_row_offsets and int(row_offsets.shape[0]):
+        host_offsets = row_offsets.copy_to_host()
+        if int(host_offsets[0]) != 0 or int(host_offsets[-1]) != row_count:
+            raise ValueError("row_offsets must start at 0 and end at the row count")
+        if bool(np.any(host_offsets[1:] < host_offsets[:-1])):
+            raise ValueError("row_offsets must be monotonically nondecreasing")
+    return group_count, block_size, row_count
 
 
 def _numba_segmented_min_f64_kernel(cuda: Any):
