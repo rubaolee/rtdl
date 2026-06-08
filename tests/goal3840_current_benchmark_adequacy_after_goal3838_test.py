@@ -14,7 +14,7 @@ class Goal3840CurrentBenchmarkAdequacyAfterGoal3838Test(unittest.TestCase):
     def test_current_adequacy_version_and_summary_remain_fail_closed(self) -> None:
         self.assertEqual(
             rt.CURRENT_BENCHMARK_ADEQUACY_VERSION,
-            "rtdl.v2_10.benchmark_adequacy_after_goal3838.v1",
+            "rtdl.v2_10.benchmark_adequacy_after_goal3841.v1",
         )
         validation = rt.validate_current_benchmark_adequacy()
         self.assertEqual(validation["status"], "accept")
@@ -32,6 +32,8 @@ class Goal3840CurrentBenchmarkAdequacyAfterGoal3838Test(unittest.TestCase):
         self.assertIn("Goal3838", spatial["evidence_refs"])
         self.assertIn("PIP, LSI, and overlay", spatial["current_partner_role"])
         self.assertIn("RTDL/OptiX remains about 260x faster", spatial["current_performance_reading"])
+        self.assertIn("bounded 512 public-CDB PIP row", spatial["current_performance_reading"])
+        self.assertIn("universal PIP-dominance", spatial["current_performance_reading"])
         self.assertIn("count parity with CuPy and RTDL/OptiX", spatial["numba_reference_reason"])
         self.assertFalse(spatial["paper_reproduction_claim_authorized"])
         self.assertFalse(spatial["automatic_partner_selection_authorized"])
@@ -39,7 +41,7 @@ class Goal3840CurrentBenchmarkAdequacyAfterGoal3838Test(unittest.TestCase):
     def test_report_documents_metadata_cleanup_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
         self.assertIn("Goal3840 Current Benchmark Adequacy", text)
-        self.assertIn("rtdl.v2_10.benchmark_adequacy_after_goal3838.v1", text)
+        self.assertIn("Goal3841 narrows", text)
         self.assertIn("Goal3834 no-RawKernel Numba PIP", text)
         self.assertIn("Goal3838 no-RawKernel Numba LSI", text)
         self.assertIn("does not authorize", text)

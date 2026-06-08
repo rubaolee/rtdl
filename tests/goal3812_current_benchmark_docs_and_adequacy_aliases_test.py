@@ -29,7 +29,7 @@ class Goal3812CurrentBenchmarkDocsAndAdequacyAliasesTest(unittest.TestCase):
     def test_current_adequacy_aliases_match_versioned_source(self) -> None:
         self.assertEqual(
             rt.CURRENT_BENCHMARK_ADEQUACY_VERSION,
-            "rtdl.v2_10.benchmark_adequacy_after_goal3838.v1",
+            "rtdl.v2_10.benchmark_adequacy_after_goal3841.v1",
         )
         self.assertEqual(rt.current_benchmark_adequacy(), v2_9_benchmark_adequacy())
         self.assertEqual(

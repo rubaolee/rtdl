@@ -33,6 +33,10 @@ The spatial RayJoin row now records:
   scalar contracts because it is about `260x` faster than the Numba/CuPy dense
   partner baselines on the bounded public-CDB packet.
 
+Follow-up correction: Goal3841 narrows the spatial RayJoin wording further so
+readers do not confuse Goal3761 native-PIP cross-size evidence with the bounded
+512 public-CDB PIP row, which remains CuPy-favorable in Goals3833/3834.
+
 ## Claim Boundary
 
 This cleanup does not authorize:

@@ -6,10 +6,10 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-V2_9_BENCHMARK_ADEQUACY_VERSION = "rtdl.v2_10.benchmark_adequacy_after_goal3838.v1"
+V2_9_BENCHMARK_ADEQUACY_VERSION = "rtdl.v2_10.benchmark_adequacy_after_goal3841.v1"
 V2_9_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 V2_9_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
-    "Goal3840 records internal benchmark-app adequacy after the v2.9 Numba "
+    "Goal3841 records internal benchmark-app adequacy after the v2.9 Numba "
     "coverage work, the v2.10 HIPRT parity closeout, the Goal3818-3820 "
     "benchmark front-door hardening, and Goal3834/3838 RayJoin scalar-count "
     "Numba coverage. It does not authorize "
@@ -139,11 +139,13 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
         current_performance_reading=(
             "strong but contract-specific: Goal3761 clean current-main native-PIP cross-size "
             "packet reaches 288.759x geomean and 118.931x minimum versus dense all-CuPy; "
-            "Goal3834 adds a no-RawKernel Numba PIP scalar-count reference; Goal3838 adds "
-            "no-RawKernel Numba LSI and overlay active-count references, with LSI/overlay Numba "
-            "slightly faster than the dense CuPy baselines while RTDL/OptiX remains about 260x "
-            "faster than Numba for those scalar contracts. This is still not a RayJoin "
-            "paper-reproduction or RTDL-beats-RayJoin claim."
+            "that evidence is not the bounded 512 public-CDB PIP row, where Goal3833/3834 "
+            "still show CuPy faster than RTDL/OptiX and Numba. Goal3834 adds a no-RawKernel "
+            "Numba PIP scalar-count reference for that bounded row; Goal3838 adds no-RawKernel "
+            "Numba LSI and overlay active-count references, with LSI/overlay Numba slightly "
+            "faster than the dense CuPy baselines while RTDL/OptiX remains about 260x faster "
+            "than Numba for those scalar contracts. This is still not a RayJoin paper-reproduction, "
+            "universal PIP-dominance, or RTDL-beats-RayJoin claim."
         ),
         adequacy="strong",
         current_recommended_path=(
