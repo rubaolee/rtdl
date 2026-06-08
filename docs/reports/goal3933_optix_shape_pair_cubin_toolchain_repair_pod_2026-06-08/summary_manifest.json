@@ -1,0 +1,112 @@
+{
+  "artifact_root": "/root/goal3933_combined_pod_artifacts_sourcefix_cubin",
+  "claim_boundary": {
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "broad_rt_core_speedup_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_dbscan_paper_reproduction_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "dry_run": false,
+  "elapsed_sec": 18.800006344914436,
+  "goal": "Goal3927",
+  "planned_commands": [],
+  "rayjoin": {
+    "cases": [
+      {
+        "loaded_case_reuse_enabled": null,
+        "rtdl_optix_execution_route": "prepared_optix_cupy_refined_pip",
+        "subprobe_wrapper_phase_timing_sec": null,
+        "workload": "pip"
+      },
+      {
+        "loaded_case_reuse_enabled": true,
+        "rtdl_optix_execution_route": "prepared_optix_left_id_dense_count_loaded_case_reuse",
+        "subprobe_wrapper_phase_timing_sec": {
+          "case_total_sec": 1.6534091085195541,
+          "dataset_file_check_sec": 0.00011096149682998657,
+          "numba_baseline_call_sec": 1.384870857000351,
+          "numba_hot_total_sec": 1.1598087549209595,
+          "numba_load_case_sec": 0.1420682817697525,
+          "numba_prepare_sec": 0.0012249648571014404,
+          "rtdl_optix_call_sec": 0.126180998980999,
+          "rtdl_optix_hot_total_sec": 0.004393436014652252,
+          "rtdl_optix_prepare_total_sec": 0.06178276240825653,
+          "shared_load_case_sec": 0.1420682817697525
+        },
+        "workload": "lsi"
+      },
+      {
+        "loaded_case_reuse_enabled": true,
+        "rtdl_optix_execution_route": "prepared_optix_shape_pair_active_count_loaded_case_reuse",
+        "subprobe_wrapper_phase_timing_sec": {
+          "case_total_sec": 3.825081057846546,
+          "dataset_file_check_sec": 6.0714781284332275e-05,
+          "numba_baseline_call_sec": 2.7319170609116554,
+          "numba_hot_total_sec": 1.9879614785313606,
+          "numba_load_case_sec": 0.13709396868944168,
+          "numba_prepare_sec": 0.009228050708770752,
+          "rtdl_optix_call_sec": 0.9558886885643005,
+          "rtdl_optix_hot_total_sec": 0.009325988590717316,
+          "rtdl_optix_prepare_total_sec": 0.9437278360128403,
+          "shared_load_case_sec": 0.13709396868944168
+        },
+        "workload": "overlay_seed"
+      }
+    ],
+    "gpu": "NVIDIA RTX 4000 Ada Generation, 550.127.05",
+    "path": "/root/goal3933_combined_pod_artifacts_sourcefix_cubin/rayjoin/summary.json",
+    "wrapper_phase_timing_sec": {
+      "data_dir_resolve_sec": 7.43567943572998e-05,
+      "lsi_overlay_probe_sec": 5.576007939875126,
+      "pip_batch_probe_sec": 0.7298424988985062,
+      "pip_one_shot_probe_sec": 2.3836597204208374,
+      "profile_total_sec": 8.689753651618958
+    }
+  },
+  "rtdbscan": [
+    {
+      "block_size": null,
+      "blocked": false,
+      "claim_boundary": {
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "elapsed_sec": 0.09049195423722267,
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "partner": "numba",
+      "path": "/root/goal3933_combined_pod_artifacts_sourcefix_cubin/rtdbscan/optix_rt_core_grouped_stream_numba_column_signature_3d.json",
+      "path_label": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "signature": "numba_segmented_count_all_core_labels"
+    },
+    {
+      "block_size": 4096,
+      "blocked": true,
+      "claim_boundary": {
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "elapsed_sec": 0.39404694363474846,
+      "mode": "optix_rt_core_grouped_stream_blocked_numba_column_signature_3d",
+      "partner": "numba",
+      "path": "/root/goal3933_combined_pod_artifacts_sourcefix_cubin/rtdbscan/optix_rt_core_grouped_stream_blocked_numba_column_signature_3d.json",
+      "path_label": "optix_rt_grouped_stream_blocked_numba_radius_graph_column_signature_3d",
+      "signature": "numba_segmented_count_all_core_labels"
+    }
+  ],
+  "source_commit": "edc90516",
+  "source_commit_label": "edc90516+goal3933_cubin_sourcefix",
+  "source_dirty": [
+    "M src/native/optix/rtdl_optix_core.cpp",
+    " M src/native/optix/rtdl_optix_workloads.cpp"
+  ],
+  "status": "pass"
+}

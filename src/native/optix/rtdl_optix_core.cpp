@@ -1049,7 +1049,6 @@ extern "C" __global__ void __anyhit__segment_pair_intersection_anyhit() {
 static const char* kSegmentFirstHitKernelSrc = R"CUDA(
 #include <optix_device.h>
 #include <stdint.h>
-#include <math.h>
 
 struct GpuSegment {
     float x0, y0, x1, y1;
@@ -1072,6 +1071,10 @@ static __forceinline__ __device__ float dabsf(float x) {
     return x < 0.0f ? -x : x;
 }
 
+static __forceinline__ __device__ float dclampf(float x, float lo, float hi) {
+    return x < lo ? lo : (x > hi ? hi : x);
+}
+
 static __forceinline__ __device__ bool seg_intersect_t(
         float ax0, float ay0, float ax1, float ay1,
         float bx0, float by0, float bx1, float by1,
@@ -1088,7 +1091,7 @@ static __forceinline__ __device__ bool seg_intersect_t(
     if (t < -slack || t > 1.0f + slack || u < -slack || u > 1.0f + slack) {
         return false;
     }
-    *t_out = fminf(fmaxf(t, 0.0f), 1.0f);
+    *t_out = dclampf(t, 0.0f, 1.0f);
     return true;
 }
 
@@ -1128,7 +1131,7 @@ extern "C" __global__ void __anyhit__segment_first_hit_anyhit() {
         return;
     }
     const unsigned int t_key =
-        ((unsigned int)(fminf(fmaxf(t, 0.0f), 1.0f) * 4294967294.0f)) + 1u;
+        ((unsigned int)(dclampf(t, 0.0f, 1.0f) * 4294967294.0f)) + 1u;
     const unsigned long long candidate =
         (((unsigned long long)t_key) << 32) | ((unsigned long long)bidx);
     unsigned long long* slot = params.best_pair + pidx;
@@ -1149,7 +1152,6 @@ extern "C" __global__ void __anyhit__segment_first_hit_anyhit() {
 static const char* kPipKernelSrc = R"CUDA(
 #include <optix_device.h>
 #include <stdint.h>
-#include <math.h>
 
 struct GpuPolygonRef {
     uint32_t id;
@@ -1195,6 +1197,10 @@ extern "C" {
 __constant__ PipParams params;
 }
 
+static __forceinline__ __device__ float pip_absf(float x) {
+    return x < 0.0f ? -x : x;
+}
+
 static __forceinline__ __device__ uint32_t point_closed_shape_membership_status(
         float px, float py,
         const GpuPolygonRef& poly,
@@ -1220,7 +1226,7 @@ static __forceinline__ __device__ uint32_t point_closed_shape_membership_status(
             const float len2 = edge.len2;
             if (params.boundary_check != 0u) {
                 if (len2 <= point_eps * point_eps) {
-                    if (fabsf(px - ax) <= point_eps && fabsf(py - ay) <= point_eps) {
+                    if (pip_absf(px - ax) <= point_eps && pip_absf(py - ay) <= point_eps) {
                         if (boundary_element_ordinal != nullptr) {
                             *boundary_element_ordinal = off + i;
                         }
@@ -1256,7 +1262,7 @@ static __forceinline__ __device__ uint32_t point_closed_shape_membership_status(
         float len2 = dx * dx + dy * dy;
         if (params.boundary_check != 0u) {
             if (len2 <= point_eps * point_eps) {
-                if (fabsf(px - ax) <= point_eps && fabsf(py - ay) <= point_eps) {
+                if (pip_absf(px - ax) <= point_eps && pip_absf(py - ay) <= point_eps) {
                     if (boundary_element_ordinal != nullptr) {
                         *boundary_element_ordinal = off + j;
                     }
@@ -1402,7 +1408,6 @@ extern "C" __global__ void __intersection__pip_isect() {
 static const char* kPointClosedShapeBoundaryEventKernelSrc = R"CUDA(
 #include <optix_device.h>
 #include <stdint.h>
-#include <math.h>
 
 struct GpuPolygonRef {
     uint32_t id;
@@ -1454,6 +1459,10 @@ extern "C" {
 __constant__ BoundaryEventParams params;
 }
 
+static __forceinline__ __device__ float boundary_event_absf(float x) {
+    return x < 0.0f ? -x : x;
+}
+
 static __forceinline__ __device__ bool first_boundary_crossing(
         const float px,
         const float py,
@@ -1470,7 +1479,7 @@ static __forceinline__ __device__ bool first_boundary_crossing(
     for (uint32_t i = 0; i < poly.vertex_count; ++i) {
         const GpuPreparedClosedShapeEdge2D edge = params.prepared_edges[off + i];
         const float ex = edge.bx - edge.ax;
-        if (fabsf(ex) <= eps) {
+        if (boundary_event_absf(ex) <= eps) {
             continue;
         }
         const float u = (px - edge.ax) / ex;
@@ -1482,10 +1491,10 @@ static __forceinline__ __device__ bool first_boundary_crossing(
         if (t < -eps) {
             continue;
         }
-        if (fabsf(t) <= eps) {
+        if (boundary_event_absf(t) <= eps) {
             t = 0.0f;
         }
-        if (!found || t < local_best_t || (fabsf(t - local_best_t) <= eps && i < local_best_boundary)) {
+        if (!found || t < local_best_t || (boundary_event_absf(t - local_best_t) <= eps && i < local_best_boundary)) {
             found = true;
             local_best_t = t;
             local_best_boundary = i;
@@ -1570,7 +1579,6 @@ extern "C" __global__ void __anyhit__point_closed_shape_boundary_event_anyhit() 
 static const char* kShapePairRelationKernelSrc = R"CUDA(
 #include <optix_device.h>
 #include <stdint.h>
-#include <math.h>
 
 struct GpuPolygonRef {
     uint32_t id;
@@ -1602,6 +1610,10 @@ extern "C" {
 __constant__ ShapePairRelationParams params;
 }
 
+static __forceinline__ __device__ float shape_pair_relation_absf(float x) {
+    return x < 0.0f ? -x : x;
+}
+
 static __forceinline__ __device__ bool seg_intersect_flag(
         float ax0, float ay0, float ax1, float ay1,
         float bx0, float by0, float bx1, float by1)
@@ -1609,7 +1621,7 @@ static __forceinline__ __device__ bool seg_intersect_flag(
     float rx = ax1 - ax0, ry = ay1 - ay0;
     float sx = bx1 - bx0, sy = by1 - by0;
     float denom = rx * sy - ry * sx;
-    if (fabsf(denom) < 1.0e-7f) return false;
+    if (shape_pair_relation_absf(denom) < 1.0e-7f) return false;
     float qpx = bx0 - ax0, qpy = by0 - ay0;
     float t = (qpx * sy - qpy * sx) / denom;
     float u = (qpx * ry - qpy * rx) / denom;

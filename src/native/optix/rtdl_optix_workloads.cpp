@@ -8280,10 +8280,10 @@ static void ensure_shape_pair_relation_pipeline() {
 
 static void ensure_shape_pair_relation_active_count_device_pipeline() {
     std::call_once(g_shape_pair_relation_active_count_device.init, [&]() {
-        std::string ptx = compile_to_ptx(
+        std::string cubin = compile_to_cubin(
             kShapePairRelationActiveCountDeviceKernelSrc,
             "shape_pair_relation_active_count_device_kernel.cu");
-        CU_CHECK(cuModuleLoadData(&g_shape_pair_relation_active_count_device.module, ptx.c_str()));
+        CU_CHECK(cuModuleLoadData(&g_shape_pair_relation_active_count_device.module, cubin.data()));
         CU_CHECK(cuModuleGetFunction(
             &g_shape_pair_relation_active_count_device.fn,
             g_shape_pair_relation_active_count_device.module,
