@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 from types import MappingProxyType
 from typing import Any
 
@@ -604,6 +605,143 @@ def make_v2_8_fixed_radius_partition_convergence_summary_typed_stream_contract(
     )
 
 
+def build_v2_8_fixed_radius_partition_convergence_summary_reference_3d(
+    point_rows,
+    *,
+    radius: float,
+    cell_factor: float = 0.125,
+    pair_capacity: int | None = None,
+) -> dict[str, Any]:
+    points = tuple(_point_xyz(row) for row in point_rows)
+    if not points:
+        raise ValueError("point_rows must contain at least one point")
+    radius = float(radius)
+    cell_factor = float(cell_factor)
+    if radius <= 0.0:
+        raise ValueError("radius must be positive")
+    if cell_factor <= 0.0:
+        raise ValueError("cell_factor must be positive")
+    cell_size = radius * cell_factor
+    radius_sq = radius * radius
+
+    cells: dict[tuple[int, int, int], dict[str, Any]] = {}
+    point_partition_keys = []
+    for ordinal, (x, y, z) in enumerate(points):
+        key = _partition_key_3d(x, y, z, cell_size)
+        point_partition_keys.append(key)
+        entry = cells.get(key)
+        if entry is None:
+            cells[key] = {
+                "indices": [ordinal],
+                "min_x": x,
+                "min_y": y,
+                "min_z": z,
+                "max_x": x,
+                "max_y": y,
+                "max_z": z,
+            }
+        else:
+            entry["indices"].append(ordinal)
+            entry["min_x"] = min(entry["min_x"], x)
+            entry["min_y"] = min(entry["min_y"], y)
+            entry["min_z"] = min(entry["min_z"], z)
+            entry["max_x"] = max(entry["max_x"], x)
+            entry["max_y"] = max(entry["max_y"], y)
+            entry["max_z"] = max(entry["max_z"], z)
+
+    ordered_keys = tuple(sorted(cells))
+    partition_ordinals = {key: ordinal for ordinal, key in enumerate(ordered_keys)}
+    point_partition_ids = tuple(partition_ordinals[key] for key in point_partition_keys)
+    partition_counts = tuple(len(cells[key]["indices"]) for key in ordered_keys)
+    offsets = [0]
+    for count in partition_counts:
+        offsets.append(offsets[-1] + count)
+
+    pair_rows: list[tuple[int, int, int]] = []
+    max_offset = int(math.ceil(radius / cell_size)) + 1
+    for left_ordinal, left_key in enumerate(ordered_keys):
+        lx, ly, lz = left_key
+        left = cells[left_key]
+        for dx in range(-max_offset, max_offset + 1):
+            for dy in range(-max_offset, max_offset + 1):
+                for dz in range(-max_offset, max_offset + 1):
+                    right_key = (lx + dx, ly + dy, lz + dz)
+                    right_ordinal = partition_ordinals.get(right_key)
+                    if right_ordinal is None or right_ordinal < left_ordinal:
+                        continue
+                    right = cells[right_key]
+                    if _partition_aabb_max_distance_sq(left, right) <= radius_sq:
+                        status = 1
+                    elif _partition_aabb_min_distance_sq(left, right) > radius_sq:
+                        status = 0
+                    else:
+                        status = 2
+                    pair_rows.append((left_ordinal, right_ordinal, status))
+
+    requested_capacity = len(pair_rows) if pair_capacity is None else int(pair_capacity)
+    if requested_capacity <= 0:
+        raise ValueError("pair_capacity must be positive when provided")
+    overflow = len(pair_rows) > requested_capacity
+    visible_pairs = tuple(pair_rows[:requested_capacity])
+    status_counts = {
+        "safe_skip_partition_pairs": sum(1 for _, _, status in visible_pairs if status == 0),
+        "safe_full_partition_pairs": sum(1 for _, _, status in visible_pairs if status == 1),
+        "ambiguous_partition_pairs": sum(1 for _, _, status in visible_pairs if status == 2),
+    }
+    contract = make_v2_8_fixed_radius_partition_convergence_summary_typed_stream_contract(
+        len(points),
+        len(ordered_keys),
+        max(1, requested_capacity),
+        stream_id="fixed_radius_partition_convergence_summary_3d_reference",
+        device_type="cpu",
+        source_protocol="python_reference",
+    )
+    return {
+        "columns": {
+            "point_partition_ids": point_partition_ids,
+            "occupied_partition_keys_x": tuple(key[0] for key in ordered_keys),
+            "occupied_partition_keys_y": tuple(key[1] for key in ordered_keys),
+            "occupied_partition_keys_z": tuple(key[2] for key in ordered_keys),
+            "partition_offsets": tuple(offsets),
+            "partition_counts": partition_counts,
+            "partition_aabb_min_x": tuple(cells[key]["min_x"] for key in ordered_keys),
+            "partition_aabb_min_y": tuple(cells[key]["min_y"] for key in ordered_keys),
+            "partition_aabb_min_z": tuple(cells[key]["min_z"] for key in ordered_keys),
+            "partition_aabb_max_x": tuple(cells[key]["max_x"] for key in ordered_keys),
+            "partition_aabb_max_y": tuple(cells[key]["max_y"] for key in ordered_keys),
+            "partition_aabb_max_z": tuple(cells[key]["max_z"] for key in ordered_keys),
+            "near_pair_left_partition_ids": tuple(left for left, _, _ in visible_pairs),
+            "near_pair_right_partition_ids": tuple(right for _, right, _ in visible_pairs),
+            "near_pair_status": tuple(status for _, _, status in visible_pairs),
+        },
+        "metadata": {
+            "reference": "fixed_radius_partition_convergence_summary_3d_python_reference",
+            "point_count": len(points),
+            "partition_count": len(ordered_keys),
+            "cell_factor": cell_factor,
+            "cell_size": cell_size,
+            "max_neighbor_offset": max_offset,
+            "pair_count": len(pair_rows),
+            "visible_pair_count": len(visible_pairs),
+            "pair_capacity": requested_capacity,
+            "overflow": overflow,
+            "status_counts": status_counts,
+            "typed_result_stream": contract.to_metadata(),
+            "native_abi_added": False,
+            "runtime_executable": False,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "app_specific_engine_logic_allowed": False,
+            "automatic_partner_selection_allowed": False,
+            "hidden_dispatch_allowed": False,
+            "claim_boundary": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY,
+        },
+    }
+
+
 def _unsupported_reason(*, backend: str, partner: str, strategy: str) -> str:
     if backend not in V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_BACKENDS:
         return f"unsupported backend {backend!r}; supported backends are {V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_BACKENDS}"
@@ -615,6 +753,51 @@ def _unsupported_reason(*, backend: str, partner: str, strategy: str) -> str:
     ):
         return f"unsupported strategy {strategy!r}; supported strategies are {V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_STRATEGIES}"
     return ""
+
+
+def _point_xyz(row) -> tuple[float, float, float]:
+    if hasattr(row, "x") and hasattr(row, "y") and hasattr(row, "z"):
+        return float(row.x), float(row.y), float(row.z)
+    if isinstance(row, dict):
+        return float(row["x"]), float(row["y"]), float(row["z"])
+    values = tuple(row)
+    if len(values) == 3:
+        return float(values[0]), float(values[1]), float(values[2])
+    if len(values) >= 4:
+        return float(values[1]), float(values[2]), float(values[3])
+    raise TypeError("point row must expose x/y/z fields or a 3/4-item sequence")
+
+
+def _partition_key_3d(x: float, y: float, z: float, cell_size: float) -> tuple[int, int, int]:
+    return (
+        math.floor(x / cell_size),
+        math.floor(y / cell_size),
+        math.floor(z / cell_size),
+    )
+
+
+def _partition_aabb_min_distance_sq(left: dict[str, Any], right: dict[str, Any]) -> float:
+    total = 0.0
+    for min_left, max_left, min_right, max_right in (
+        (left["min_x"], left["max_x"], right["min_x"], right["max_x"]),
+        (left["min_y"], left["max_y"], right["min_y"], right["max_y"]),
+        (left["min_z"], left["max_z"], right["min_z"], right["max_z"]),
+    ):
+        if max_left < min_right:
+            delta = min_right - max_left
+        elif max_right < min_left:
+            delta = min_left - max_right
+        else:
+            delta = 0.0
+        total += delta * delta
+    return total
+
+
+def _partition_aabb_max_distance_sq(left: dict[str, Any], right: dict[str, Any]) -> float:
+    dx = max(abs(left["max_x"] - right["min_x"]), abs(right["max_x"] - left["min_x"]))
+    dy = max(abs(left["max_y"] - right["min_y"]), abs(right["max_y"] - left["min_y"]))
+    dz = max(abs(left["max_z"] - right["min_z"]), abs(right["max_z"] - left["min_z"]))
+    return dx * dx + dy * dy + dz * dz
 
 
 def _hybrid_partition_guidance_metadata() -> dict[str, Any]:
@@ -695,6 +878,7 @@ __all__ = [
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_REJECTED_DEFAULT_STRATEGIES",
     "V28FixedRadiusGraphComponentPlan",
     "V28PreparedFixedRadiusGraphComponentContinuation3D",
+    "build_v2_8_fixed_radius_partition_convergence_summary_reference_3d",
     "describe_v2_8_fixed_radius_graph_component_front_door",
     "fixed_radius_graph_component_labels_3d_v2_8",
     "make_v2_8_fixed_radius_graph_component_typed_stream_contract",

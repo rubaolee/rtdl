@@ -413,6 +413,7 @@ from .v2_8_fixed_radius_graph_component_front_door import V2_8_FIXED_RADIUS_GRAP
 from .v2_8_fixed_radius_graph_component_front_door import V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PARTITION_GUIDANCE
 from .v2_8_fixed_radius_graph_component_front_door import V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_REQUIREMENTS
 from .v2_8_fixed_radius_graph_component_front_door import V2_8_FIXED_RADIUS_GRAPH_COMPONENT_OPERATION
+from .v2_8_fixed_radius_graph_component_front_door import build_v2_8_fixed_radius_partition_convergence_summary_reference_3d
 from .v2_8_fixed_radius_graph_component_front_door import describe_v2_8_fixed_radius_graph_component_front_door
 from .v2_8_fixed_radius_graph_component_front_door import fixed_radius_graph_component_labels_3d_v2_8
 from .v2_8_fixed_radius_graph_component_front_door import make_v2_8_fixed_radius_graph_component_typed_stream_contract
@@ -2251,6 +2252,7 @@ __all__ = [
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PARTITION_GUIDANCE",
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_REQUIREMENTS",
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_OPERATION",
+    "build_v2_8_fixed_radius_partition_convergence_summary_reference_3d",
     "describe_v2_8_fixed_radius_graph_component_front_door",
     "fixed_radius_graph_component_labels_3d_v2_8",
     "make_v2_8_fixed_radius_graph_component_typed_stream_contract",
