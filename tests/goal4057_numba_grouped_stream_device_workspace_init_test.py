@@ -7,6 +7,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 PARTNER_ADAPTERS = ROOT / "src" / "rtdsl" / "partner_adapters.py"
 REPORT = ROOT / "docs" / "reports" / "goal4057_numba_grouped_stream_device_workspace_init_2026-06-08.md"
+ARTIFACT = ROOT / "docs" / "reports" / "goal4057_numba_grouped_stream_device_workspace_init_pod_probe.json"
 
 
 def _numba_grouped_stream_class_source() -> str:
@@ -45,6 +46,23 @@ class Goal4057NumbaGroupedStreamDeviceWorkspaceInitTest(unittest.TestCase):
             "does not authorize speedup",
         ):
             self.assertIn(phrase, text)
+
+    def test_pod_probe_records_device_init_metadata_and_boundary(self) -> None:
+        import json
+
+        artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(artifact["status"], "pass")
+        self.assertEqual(artifact["commit"], "a60509b8")
+        self.assertTrue(artifact["all_rows_avoid_host_workspace_reset_copy"])
+        self.assertTrue(artifact["mixed_label_rows_observed"])
+        self.assertGreaterEqual(len(artifact["rows"]), 3)
+        for row in artifact["rows"]:
+            self.assertFalse(row["numba_workspace_host_reset_copy_used"])
+            self.assertEqual(row["numba_workspace_init_policy"], "device_parent_iota_optional_border_fill")
+            self.assertGreater(row["vs_goal4056_speedup"], 1.0)
+        for flag, value in artifact["claim_boundary"].items():
+            self.assertFalse(value, flag)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # Goal4057 Numba Grouped-Stream Device Workspace Init
 
-Status: local implementation, pod timing pending.
+Status: implemented and pod-smoked on an RTX 4000 Ada pod.
 
 Goal4057 removes per-run host-to-device workspace reset copies from the
 generic OptiX+Numba fixed-radius grouped-stream continuation.
@@ -26,3 +26,18 @@ Expected metadata for new Numba grouped-stream runs:
 
 - `numba_workspace_init_policy: device_parent_iota_optional_border_fill`;
 - `numba_workspace_host_reset_copy_used: false`.
+
+## Pod Evidence
+
+At commit `a60509b8`, the pod CUDA slice reported 15 tests OK with 1 skip.
+A threshold sweep over the same `road3d` 4096-point RT-DBSCAN Numba
+column-signature probe used for Goal4056 confirmed:
+
+- every row reported `numba_workspace_host_reset_copy_used: false`;
+- mixed-label thresholds 64 and 128 still used
+  `numba_label_count_and_flag_count_label_columns`;
+- elapsed time improved versus the Goal4056 same-pod baseline by about
+  1.13x to 1.17x on this small diagnostic probe.
+
+The bounded artifact is
+`docs/reports/goal4057_numba_grouped_stream_device_workspace_init_pod_probe.json`.

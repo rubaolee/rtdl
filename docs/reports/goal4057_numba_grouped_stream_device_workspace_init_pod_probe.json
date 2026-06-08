@@ -1,0 +1,65 @@
+{
+  "status": "pass",
+  "goal": "Goal4057",
+  "commit": "a60509b8",
+  "pod": "root@213.173.108.27:15138",
+  "device_class": "RTX 4000 Ada pod",
+  "test_command": "python3 -m unittest tests.goal4057_numba_grouped_stream_device_workspace_init_test tests.goal4056_numba_label_flag_signature_continuation_test tests.goal3859_rt_dbscan_numba_grouped_stream_test tests.goal3918_rt_dbscan_blocked_numba_grouped_stream_modes_test",
+  "test_result": {
+    "status": "ok",
+    "tests": 15,
+    "skipped": 1
+  },
+  "probe_command": "python3 examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode optix_rt_core_grouped_stream_numba_column_signature_3d --dataset road3d --point-count 4096 --min-neighbors <threshold> --repeat 5 --warmup 2 --no-validation",
+  "baseline_commit": "c36f7575",
+  "baseline_source": "Goal4056 threshold sweep over the same pod and app mode",
+  "rows": [
+    {
+      "threshold": 16,
+      "all_core_flags_true": true,
+      "column_signature_strategy": "numba_label_count_and_flag_count_label_columns",
+      "numba_workspace_init_policy": "device_parent_iota_optional_border_fill",
+      "numba_workspace_host_reset_copy_used": false,
+      "elapsed_sec": 0.002416864037513733,
+      "adapter_run_sec": 0.0010615140199661255,
+      "column_signature_sec": 0.0013433396816253662,
+      "goal4056_elapsed_sec": 0.002728339284658432,
+      "vs_goal4056_speedup": 1.1288773715314713
+    },
+    {
+      "threshold": 64,
+      "all_core_flags_true": false,
+      "column_signature_strategy": "numba_label_count_and_flag_count_label_columns",
+      "numba_workspace_init_policy": "device_parent_iota_optional_border_fill",
+      "numba_workspace_host_reset_copy_used": false,
+      "elapsed_sec": 0.0025475919246673584,
+      "adapter_run_sec": 0.001161813735961914,
+      "column_signature_sec": 0.0013551265001296997,
+      "goal4056_elapsed_sec": 0.002953849732875824,
+      "vs_goal4056_speedup": 1.159470722568467
+    },
+    {
+      "threshold": 128,
+      "all_core_flags_true": false,
+      "column_signature_strategy": "numba_label_count_and_flag_count_label_columns",
+      "numba_workspace_init_policy": "device_parent_iota_optional_border_fill",
+      "numba_workspace_host_reset_copy_used": false,
+      "elapsed_sec": 0.002614744007587433,
+      "adapter_run_sec": 0.0012476369738578796,
+      "column_signature_sec": 0.0013272911310195923,
+      "goal4056_elapsed_sec": 0.0030523203313350677,
+      "vs_goal4056_speedup": 1.1673466918846094
+    }
+  ],
+  "all_rows_avoid_host_workspace_reset_copy": true,
+  "mixed_label_rows_observed": true,
+  "claim_boundary": {
+    "release_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "native_dbscan_abi_added": false,
+    "app_specific_native_engine_logic_added": false
+  }
+}
