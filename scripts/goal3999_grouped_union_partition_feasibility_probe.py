@@ -272,6 +272,7 @@ def main() -> int:
     parser.add_argument("--point-count", type=int, default=65536)
     parser.add_argument("--seed", type=int, default=20260608)
     parser.add_argument("--cell-factors", default="1.0,0.5,0.25")
+    parser.add_argument("--goal", default="Goal3999")
     parser.add_argument("--include-stress", action="store_true")
     parser.add_argument("--stress-profile", default="clustered3d")
     parser.add_argument("--stress-radius", type=float, default=0.5)
@@ -319,7 +320,7 @@ def main() -> int:
         )
 
     payload = {
-        "goal": "Goal3999",
+        "goal": args.goal,
         "status": "pass",
         "source_commit": _git_head(),
         "host": platform.node(),
