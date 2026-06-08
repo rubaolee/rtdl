@@ -80,6 +80,37 @@ class Goal4027PartitionSummaryCupyPreviewTest(unittest.TestCase):
         )
         self.assertEqual(component["metadata"]["status"], "reject_partition_summary_overflow")
 
+    def test_cupy_device_pair_preview_matches_reference(self) -> None:
+        reference = rt.build_v2_8_fixed_radius_partition_convergence_summary_reference_3d(
+            self._points(),
+            radius=1.0,
+            cell_factor=0.5,
+        )
+        candidate = rt.build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
+            self._points(),
+            radius=1.0,
+            cell_factor=0.5,
+            pair_capacity=reference["metadata"]["pair_count"],
+            pair_enumeration="device_bounded_offsets",
+        )
+        validation = rt.validate_v2_8_fixed_radius_partition_convergence_summary_same_contract_3d(
+            self._points(),
+            radius=1.0,
+            cell_factor=0.5,
+            candidate=candidate,
+            float_abs_tol=1.0e-5,
+        )
+        self.assertEqual(validation["status"], "accept")
+        self.assertTrue(candidate["metadata"]["device_pair_enumeration_used"])
+        self.assertFalse(candidate["metadata"]["host_pair_enumeration_used"])
+        component = rt.build_v2_8_fixed_radius_partition_convergence_component_labels_reference_3d(
+            self._points(),
+            radius=1.0,
+            cell_factor=0.5,
+            partition_summary=candidate,
+        )
+        self.assertEqual(component["metadata"]["status"], "accept")
+
 
 class Goal4027PartitionSummaryCupyPreviewSourceTest(unittest.TestCase):
     def test_source_and_report_record_preview_boundary(self) -> None:
@@ -89,6 +120,8 @@ class Goal4027PartitionSummaryCupyPreviewSourceTest(unittest.TestCase):
             "build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d",
             "device_partition_columns_used",
             "host_pair_enumeration_used",
+            "device_pair_enumeration_used",
+            "device_bounded_offsets",
             "not the final fast native producer",
             "does not add a native ABI",
             "does not authorize public speedup wording",

@@ -1070,6 +1070,7 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
     radius: float,
     cell_factor: float = 0.125,
     pair_capacity: int | None = None,
+    pair_enumeration: str = "host",
 ) -> dict[str, Any]:
     """Executable CuPy preview for partition-summary columns."""
 
@@ -1084,6 +1085,9 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
         raise ValueError("radius must be positive")
     if cell_factor <= 0.0:
         raise ValueError("cell_factor must be positive")
+    pair_enumeration = str(pair_enumeration)
+    if pair_enumeration not in {"host", "device_bounded_offsets"}:
+        raise ValueError("pair_enumeration must be 'host' or 'device_bounded_offsets'")
     cell_size = radius * cell_factor
     radius_sq = radius * radius
 
@@ -1167,39 +1171,75 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
         partition["max_z"] = max(partition["max_z"], pz)
     max_offset = int(math.ceil(radius / cell_size)) + 1
     classification_tol = 1.0e-12 * max(1.0, radius_sq)
-    pair_rows: list[tuple[int, int, int]] = []
-    for left_ordinal, left_key in enumerate(key_rows):
-        lx, ly, lz = left_key
-        left = aabbs[left_ordinal]
-        for dx in range(-max_offset, max_offset + 1):
-            for dy in range(-max_offset, max_offset + 1):
-                for dz in range(-max_offset, max_offset + 1):
-                    right_key = (lx + dx, ly + dy, lz + dz)
-                    right_ordinal = key_to_ordinal.get(right_key)
-                    if right_ordinal is None or right_ordinal < left_ordinal:
-                        continue
-                    right = aabbs[right_ordinal]
-                    if _partition_aabb_max_distance_sq(left, right) <= radius_sq + classification_tol:
-                        status = 1
-                    elif _partition_aabb_min_distance_sq(left, right) > radius_sq + classification_tol:
-                        status = 0
-                    else:
-                        status = 2
-                    pair_rows.append((left_ordinal, right_ordinal, status))
+    if pair_enumeration == "host":
+        pair_rows: list[tuple[int, int, int]] = []
+        for left_ordinal, left_key in enumerate(key_rows):
+            lx, ly, lz = left_key
+            left = aabbs[left_ordinal]
+            for dx in range(-max_offset, max_offset + 1):
+                for dy in range(-max_offset, max_offset + 1):
+                    for dz in range(-max_offset, max_offset + 1):
+                        right_key = (lx + dx, ly + dy, lz + dz)
+                        right_ordinal = key_to_ordinal.get(right_key)
+                        if right_ordinal is None or right_ordinal < left_ordinal:
+                            continue
+                        right = aabbs[right_ordinal]
+                        if _partition_aabb_max_distance_sq(left, right) <= radius_sq + classification_tol:
+                            status = 1
+                        elif _partition_aabb_min_distance_sq(left, right) > radius_sq + classification_tol:
+                            status = 0
+                        else:
+                            status = 2
+                        pair_rows.append((left_ordinal, right_ordinal, status))
 
-    requested_capacity = len(pair_rows) if pair_capacity is None else int(pair_capacity)
-    if requested_capacity <= 0:
-        raise ValueError("pair_capacity must be positive when provided")
-    overflow = len(pair_rows) > requested_capacity
-    visible_pairs = tuple(pair_rows[:requested_capacity])
-    left_ids = cupy.asarray([row[0] for row in visible_pairs], dtype=cupy.uint32)
-    right_ids = cupy.asarray([row[1] for row in visible_pairs], dtype=cupy.uint32)
-    statuses = cupy.asarray([row[2] for row in visible_pairs], dtype=cupy.uint32)
-    status_counts = {
-        "safe_skip_partition_pairs": sum(1 for _, _, status in visible_pairs if status == 0),
-        "safe_full_partition_pairs": sum(1 for _, _, status in visible_pairs if status == 1),
-        "ambiguous_partition_pairs": sum(1 for _, _, status in visible_pairs if status == 2),
-    }
+        requested_capacity = len(pair_rows) if pair_capacity is None else int(pair_capacity)
+        if requested_capacity <= 0:
+            raise ValueError("pair_capacity must be positive when provided")
+        overflow = len(pair_rows) > requested_capacity
+        visible_pairs = tuple(pair_rows[:requested_capacity])
+        left_ids = cupy.asarray([row[0] for row in visible_pairs], dtype=cupy.uint32)
+        right_ids = cupy.asarray([row[1] for row in visible_pairs], dtype=cupy.uint32)
+        statuses = cupy.asarray([row[2] for row in visible_pairs], dtype=cupy.uint32)
+        pair_count = len(pair_rows)
+        visible_pair_count = len(visible_pairs)
+        status_counts = {
+            "safe_skip_partition_pairs": sum(1 for _, _, status in visible_pairs if status == 0),
+            "safe_full_partition_pairs": sum(1 for _, _, status in visible_pairs if status == 1),
+            "ambiguous_partition_pairs": sum(1 for _, _, status in visible_pairs if status == 2),
+        }
+    else:
+        if pair_capacity is None:
+            raise ValueError("pair_capacity is required for device_bounded_offsets")
+        requested_capacity = int(pair_capacity)
+        if requested_capacity <= 0:
+            raise ValueError("pair_capacity must be positive when provided")
+        left_ids, right_ids, statuses, pair_count, visible_pair_count, overflow = (
+            _cupy_partition_pair_status_device_bounded_offsets(
+                cupy,
+                key_rows=key_rows,
+                unique_cells=unique_cells,
+                min_kx=min_kx,
+                min_ky=min_ky,
+                min_kz=min_kz,
+                dim_y=dim_y,
+                dim_z=dim_z,
+                aabb_min_x64=aabb_min_x64,
+                aabb_min_y64=aabb_min_y64,
+                aabb_min_z64=aabb_min_z64,
+                aabb_max_x64=aabb_max_x64,
+                aabb_max_y64=aabb_max_y64,
+                aabb_max_z64=aabb_max_z64,
+                max_offset=max_offset,
+                radius_sq=radius_sq,
+                classification_tol=classification_tol,
+                pair_capacity=requested_capacity,
+            )
+        )
+        status_counts = {
+            "safe_skip_partition_pairs": int(cupy.sum(statuses == 0).item()),
+            "safe_full_partition_pairs": int(cupy.sum(statuses == 1).item()),
+            "ambiguous_partition_pairs": int(cupy.sum(statuses == 2).item()),
+        }
     columns = {
         "point_partition_ids": point_partition_ids,
         "occupied_partition_keys_x": cupy.asarray([key[0] for key in key_rows], dtype=cupy.int32),
@@ -1235,8 +1275,8 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
             "cell_factor": cell_factor,
             "cell_size": cell_size,
             "max_neighbor_offset": max_offset,
-            "pair_count": len(pair_rows),
-            "visible_pair_count": len(visible_pairs),
+            "pair_count": pair_count,
+            "visible_pair_count": visible_pair_count,
             "pair_capacity": requested_capacity,
             "overflow": overflow,
             "complete_candidate_coverage": not overflow,
@@ -1249,7 +1289,9 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
             "status_counts": status_counts,
             "typed_result_stream": contract.to_metadata(),
             "device_partition_columns_used": True,
-            "host_pair_enumeration_used": True,
+            "host_pair_enumeration_used": pair_enumeration == "host",
+            "device_pair_enumeration_used": pair_enumeration == "device_bounded_offsets",
+            "pair_enumeration": pair_enumeration,
             "native_abi_added": False,
             "runtime_executable": True,
             "release_authorized": False,
@@ -1333,6 +1375,190 @@ def build_v2_8_fixed_radius_partition_convergence_summary_numba_preview_3d(
         }
     )
     return {"columns": columns, "metadata": metadata}
+
+
+def _cupy_partition_pair_status_device_bounded_offsets(
+    cupy,
+    *,
+    key_rows: list[tuple[int, int, int]],
+    unique_cells,
+    min_kx: int,
+    min_ky: int,
+    min_kz: int,
+    dim_y: int,
+    dim_z: int,
+    aabb_min_x64,
+    aabb_min_y64,
+    aabb_min_z64,
+    aabb_max_x64,
+    aabb_max_y64,
+    aabb_max_z64,
+    max_offset: int,
+    radius_sq: float,
+    classification_tol: float,
+    pair_capacity: int,
+):
+    kernel = cupy.RawKernel(
+        r'''
+        #include <math.h>
+        extern "C" __global__
+        void partition_pair_status_kernel(
+            const int* key_x,
+            const int* key_y,
+            const int* key_z,
+            const long long* unique_cells,
+            const double* min_x,
+            const double* min_y,
+            const double* min_z,
+            const double* max_x,
+            const double* max_y,
+            const double* max_z,
+            unsigned int partition_count,
+            int min_kx,
+            int min_ky,
+            int min_kz,
+            int dim_y,
+            int dim_z,
+            int max_offset,
+            double radius_sq,
+            double classification_tol,
+            unsigned int capacity,
+            unsigned int* left_out,
+            unsigned int* right_out,
+            unsigned int* status_out,
+            unsigned int* row_count,
+            unsigned int* overflow)
+        {
+            const unsigned long long offset_count =
+                (unsigned long long)(2 * max_offset + 1)
+                * (unsigned long long)(2 * max_offset + 1)
+                * (unsigned long long)(2 * max_offset + 1);
+            const unsigned long long total =
+                (unsigned long long)partition_count * offset_count;
+            unsigned long long linear =
+                (unsigned long long)blockIdx.x * (unsigned long long)blockDim.x
+                + (unsigned long long)threadIdx.x;
+            if (linear >= total) return;
+            const unsigned int left = (unsigned int)(linear / offset_count);
+            unsigned long long rem = linear - (unsigned long long)left * offset_count;
+            const int span = 2 * max_offset + 1;
+            const int dx = (int)(rem / (unsigned long long)(span * span)) - max_offset;
+            rem = rem % (unsigned long long)(span * span);
+            const int dy = (int)(rem / (unsigned long long)span) - max_offset;
+            const int dz = (int)(rem % (unsigned long long)span) - max_offset;
+            const int tx = key_x[left] + dx;
+            const int ty = key_y[left] + dy;
+            const int tz = key_z[left] + dz;
+            const long long lx = (long long)tx - (long long)min_kx;
+            const long long ly = (long long)ty - (long long)min_ky;
+            const long long lz = (long long)tz - (long long)min_kz;
+            if (lx < 0 || ly < 0 || lz < 0 || ly >= dim_y || lz >= dim_z) return;
+            const long long target = (lx * (long long)dim_y + ly) * (long long)dim_z + lz;
+            int lo = 0;
+            int hi = (int)partition_count;
+            while (lo < hi) {
+                const int mid = lo + ((hi - lo) >> 1);
+                if (unique_cells[mid] < target) lo = mid + 1;
+                else hi = mid;
+            }
+            if (lo >= (int)partition_count || unique_cells[lo] != target) return;
+            const unsigned int right = (unsigned int)lo;
+            if (right < left) return;
+            double min_dist = 0.0;
+            double delta = 0.0;
+            if (max_x[left] < min_x[right]) delta = min_x[right] - max_x[left];
+            else if (max_x[right] < min_x[left]) delta = min_x[left] - max_x[right];
+            min_dist += delta * delta;
+            delta = 0.0;
+            if (max_y[left] < min_y[right]) delta = min_y[right] - max_y[left];
+            else if (max_y[right] < min_y[left]) delta = min_y[left] - max_y[right];
+            min_dist += delta * delta;
+            delta = 0.0;
+            if (max_z[left] < min_z[right]) delta = min_z[right] - max_z[left];
+            else if (max_z[right] < min_z[left]) delta = min_z[left] - max_z[right];
+            min_dist += delta * delta;
+            const double mdx1 = fabs(max_x[left] - min_x[right]);
+            const double mdx2 = fabs(max_x[right] - min_x[left]);
+            const double mdy1 = fabs(max_y[left] - min_y[right]);
+            const double mdy2 = fabs(max_y[right] - min_y[left]);
+            const double mdz1 = fabs(max_z[left] - min_z[right]);
+            const double mdz2 = fabs(max_z[right] - min_z[left]);
+            const double max_dx = mdx1 > mdx2 ? mdx1 : mdx2;
+            const double max_dy = mdy1 > mdy2 ? mdy1 : mdy2;
+            const double max_dz = mdz1 > mdz2 ? mdz1 : mdz2;
+            const double max_dist = max_dx * max_dx + max_dy * max_dy + max_dz * max_dz;
+            unsigned int status = 2u;
+            if (max_dist <= radius_sq + classification_tol) status = 1u;
+            else if (min_dist > radius_sq + classification_tol) status = 0u;
+            const unsigned int row = atomicAdd(row_count, 1u);
+            if (row < capacity) {
+                left_out[row] = left;
+                right_out[row] = right;
+                status_out[row] = status;
+            } else {
+                *overflow = 1u;
+            }
+        }
+        ''',
+        "partition_pair_status_kernel",
+    )
+    partition_count = len(key_rows)
+    key_x = cupy.asarray([key[0] for key in key_rows], dtype=cupy.int32)
+    key_y = cupy.asarray([key[1] for key in key_rows], dtype=cupy.int32)
+    key_z = cupy.asarray([key[2] for key in key_rows], dtype=cupy.int32)
+    left_out = cupy.zeros((pair_capacity,), dtype=cupy.uint32)
+    right_out = cupy.zeros((pair_capacity,), dtype=cupy.uint32)
+    status_out = cupy.zeros((pair_capacity,), dtype=cupy.uint32)
+    row_count = cupy.zeros((1,), dtype=cupy.uint32)
+    overflow = cupy.zeros((1,), dtype=cupy.uint32)
+    offset_count = (2 * int(max_offset) + 1) ** 3
+    total = max(1, int(partition_count) * int(offset_count))
+    threads = 256
+    blocks = ((total + threads - 1) // threads,)
+    kernel(
+        blocks,
+        (threads,),
+        (
+            key_x,
+            key_y,
+            key_z,
+            unique_cells,
+            aabb_min_x64,
+            aabb_min_y64,
+            aabb_min_z64,
+            aabb_max_x64,
+            aabb_max_y64,
+            aabb_max_z64,
+            cupy.uint32(partition_count),
+            int(min_kx),
+            int(min_ky),
+            int(min_kz),
+            int(dim_y),
+            int(dim_z),
+            int(max_offset),
+            float(radius_sq),
+            float(classification_tol),
+            cupy.uint32(pair_capacity),
+            left_out,
+            right_out,
+            status_out,
+            row_count,
+            overflow,
+        ),
+    )
+    cupy.cuda.get_current_stream().synchronize()
+    attempted = int(row_count[0].item())
+    visible = min(attempted, int(pair_capacity))
+    left = left_out[:visible]
+    right = right_out[:visible]
+    status = status_out[:visible]
+    if visible > 0:
+        sort_key = left.astype(cupy.uint64) * cupy.uint64(max(1, partition_count)) + right.astype(cupy.uint64)
+        order = cupy.argsort(sort_key)
+        left = left[order]
+        right = right[order]
+        status = status[order]
+    return left, right, status, attempted, visible, bool(int(overflow[0].item()))
 
 
 def _unsupported_reason(*, backend: str, partner: str, strategy: str) -> str:
