@@ -1,0 +1,294 @@
+{
+  "claim_boundary": "This artifact compares internal v2.8 candidate routes. It does not promote partition_convergence_hybrid or authorize release, public speedup, broad RT-core, whole-app, hidden-dispatch, automatic-partner-selection, app-specific-engine, or true-zero-copy claims.",
+  "goal": "Goal4036",
+  "native_abi_added": false,
+  "partition_convergence_hybrid_promoted": false,
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "rows": [
+    {
+      "cell_factor": 0.125,
+      "component_signature_match": true,
+      "grouped_metadata": {
+        "front_door": "v2_8_fixed_radius_graph_component_continuation_3d",
+        "rt_core_accelerated": true,
+        "user_selected_partner": "cupy"
+      },
+      "grouped_prepare_run_over_preview_one_shot": 129.13763080706238,
+      "grouped_prepare_run_sec": 1.097899153828621,
+      "grouped_prepared_repeated_over_preview_repeated": 0.059532737236804155,
+      "grouped_prepared_repeated_run": {
+        "mean_sec": 0.0005815103650093079,
+        "median_sec": 0.0005148798227310181,
+        "min_sec": 0.0005074739456176758
+      },
+      "point_count": 1024,
+      "preview_metadata": {
+        "ambiguous_partition_pairs": 16,
+        "component_count": 5,
+        "partition_summary_pair_capacity_source": "device_upper_bound",
+        "partition_summary_pair_enumeration": "device_bounded_offsets",
+        "partition_union_execution": "cupy_safe_full",
+        "safe_full_partition_union_iterations": 2,
+        "summary_same_contract_validation_enabled": false
+      },
+      "preview_one_shot_warmed_sec": 0.008501775562763214,
+      "preview_repeated_run": {
+        "mean_sec": 0.009137503802776337,
+        "median_sec": 0.008914202451705933,
+        "min_sec": 0.008524283766746521
+      },
+      "profile": "clustered3d_1024",
+      "radius": 0.055
+    },
+    {
+      "cell_factor": 0.125,
+      "component_signature_match": true,
+      "grouped_metadata": {
+        "front_door": "v2_8_fixed_radius_graph_component_continuation_3d",
+        "rt_core_accelerated": true,
+        "user_selected_partner": "cupy"
+      },
+      "grouped_prepare_run_over_preview_one_shot": 0.39061017056961034,
+      "grouped_prepare_run_sec": 0.012170553207397461,
+      "grouped_prepared_repeated_over_preview_repeated": 0.041669004369946666,
+      "grouped_prepared_repeated_run": {
+        "mean_sec": 0.0003787428140640259,
+        "median_sec": 0.0003511756658554077,
+        "min_sec": 0.0003486126661300659
+      },
+      "point_count": 1024,
+      "preview_metadata": {
+        "ambiguous_partition_pairs": 132,
+        "component_count": 1,
+        "partition_summary_pair_capacity_source": "device_upper_bound",
+        "partition_summary_pair_enumeration": "device_bounded_offsets",
+        "partition_union_execution": "cupy_safe_full",
+        "safe_full_partition_union_iterations": 2,
+        "summary_same_contract_validation_enabled": false
+      },
+      "preview_one_shot_warmed_sec": 0.031157799065113068,
+      "preview_repeated_run": {
+        "mean_sec": 0.008475586771965027,
+        "median_sec": 0.008452944457530975,
+        "min_sec": 0.008366234600543976
+      },
+      "profile": "road3d_1024",
+      "radius": 0.055
+    },
+    {
+      "cell_factor": 0.125,
+      "component_signature_match": true,
+      "grouped_metadata": {
+        "front_door": "v2_8_fixed_radius_graph_component_continuation_3d",
+        "rt_core_accelerated": true,
+        "user_selected_partner": "cupy"
+      },
+      "grouped_prepare_run_over_preview_one_shot": 2.4390784103966086,
+      "grouped_prepare_run_sec": 0.041279129683971405,
+      "grouped_prepared_repeated_over_preview_repeated": 0.048541611722029275,
+      "grouped_prepared_repeated_run": {
+        "mean_sec": 0.0007677699128786722,
+        "median_sec": 0.0007176846265792847,
+        "min_sec": 0.0006980001926422119
+      },
+      "point_count": 2048,
+      "preview_metadata": {
+        "ambiguous_partition_pairs": 0,
+        "component_count": 4,
+        "partition_summary_pair_capacity_source": "device_upper_bound",
+        "partition_summary_pair_enumeration": "device_bounded_offsets",
+        "partition_union_execution": "cupy_safe_full",
+        "safe_full_partition_union_iterations": 2,
+        "summary_same_contract_validation_enabled": false
+      },
+      "preview_one_shot_warmed_sec": 0.016924068331718445,
+      "preview_repeated_run": {
+        "mean_sec": 0.01475577304760615,
+        "median_sec": 0.014527127146720886,
+        "min_sec": 0.014379419386386871
+      },
+      "profile": "clustered3d_2048",
+      "radius": 0.055
+    },
+    {
+      "cell_factor": 0.125,
+      "component_signature_match": true,
+      "grouped_metadata": {
+        "front_door": "v2_8_fixed_radius_graph_component_continuation_3d",
+        "rt_core_accelerated": true,
+        "user_selected_partner": "cupy"
+      },
+      "grouped_prepare_run_over_preview_one_shot": 1.6035251835732178,
+      "grouped_prepare_run_sec": 0.021504506468772888,
+      "grouped_prepared_repeated_over_preview_repeated": 0.0258333663143918,
+      "grouped_prepared_repeated_run": {
+        "mean_sec": 0.00039135416348775226,
+        "median_sec": 0.0003539472818374634,
+        "min_sec": 0.0003452897071838379
+      },
+      "point_count": 2048,
+      "preview_metadata": {
+        "ambiguous_partition_pairs": 257,
+        "component_count": 1,
+        "partition_summary_pair_capacity_source": "device_upper_bound",
+        "partition_summary_pair_enumeration": "device_bounded_offsets",
+        "partition_union_execution": "cupy_safe_full",
+        "safe_full_partition_union_iterations": 2,
+        "summary_same_contract_validation_enabled": false
+      },
+      "preview_one_shot_warmed_sec": 0.013410769402980804,
+      "preview_repeated_run": {
+        "mean_sec": 0.013664208352565765,
+        "median_sec": 0.013416402041912079,
+        "min_sec": 0.013366036117076874
+      },
+      "profile": "road3d_2048",
+      "radius": 0.055
+    },
+    {
+      "cell_factor": 0.125,
+      "component_signature_match": true,
+      "grouped_metadata": {
+        "front_door": "v2_8_fixed_radius_graph_component_continuation_3d",
+        "rt_core_accelerated": true,
+        "user_selected_partner": "cupy"
+      },
+      "grouped_prepare_run_over_preview_one_shot": 2.546348535238566,
+      "grouped_prepare_run_sec": 0.0607474148273468,
+      "grouped_prepared_repeated_over_preview_repeated": 0.037265909006588285,
+      "grouped_prepared_repeated_run": {
+        "mean_sec": 0.0009239142139752706,
+        "median_sec": 0.0008901506662368774,
+        "min_sec": 0.0008830726146697998
+      },
+      "point_count": 4096,
+      "preview_metadata": {
+        "ambiguous_partition_pairs": 7,
+        "component_count": 5,
+        "partition_summary_pair_capacity_source": "device_upper_bound",
+        "partition_summary_pair_enumeration": "device_bounded_offsets",
+        "partition_union_execution": "cupy_safe_full",
+        "safe_full_partition_union_iterations": 2,
+        "summary_same_contract_validation_enabled": false
+      },
+      "preview_one_shot_warmed_sec": 0.02385667711496353,
+      "preview_repeated_run": {
+        "mean_sec": 0.023919381201267242,
+        "median_sec": 0.023841440677642822,
+        "min_sec": 0.023696526885032654
+      },
+      "profile": "clustered3d_4096",
+      "radius": 0.055
+    },
+    {
+      "cell_factor": 0.125,
+      "component_signature_match": true,
+      "grouped_metadata": {
+        "front_door": "v2_8_fixed_radius_graph_component_continuation_3d",
+        "rt_core_accelerated": true,
+        "user_selected_partner": "cupy"
+      },
+      "grouped_prepare_run_over_preview_one_shot": 1.750434243752808,
+      "grouped_prepare_run_sec": 0.042091600596904755,
+      "grouped_prepared_repeated_over_preview_repeated": 0.014820055711361727,
+      "grouped_prepared_repeated_run": {
+        "mean_sec": 0.00039853652318318683,
+        "median_sec": 0.0003643110394477844,
+        "min_sec": 0.0003497377038002014
+      },
+      "point_count": 4096,
+      "preview_metadata": {
+        "ambiguous_partition_pairs": 497,
+        "component_count": 1,
+        "partition_summary_pair_capacity_source": "device_upper_bound",
+        "partition_summary_pair_enumeration": "device_bounded_offsets",
+        "partition_union_execution": "cupy_safe_full",
+        "safe_full_partition_union_iterations": 2,
+        "summary_same_contract_validation_enabled": false
+      },
+      "preview_one_shot_warmed_sec": 0.02404637634754181,
+      "preview_repeated_run": {
+        "mean_sec": 0.023791424930095673,
+        "median_sec": 0.023777812719345093,
+        "min_sec": 0.023598946630954742
+      },
+      "profile": "road3d_4096",
+      "radius": 0.055
+    },
+    {
+      "cell_factor": 0.125,
+      "component_signature_match": true,
+      "grouped_metadata": {
+        "front_door": "v2_8_fixed_radius_graph_component_continuation_3d",
+        "rt_core_accelerated": true,
+        "user_selected_partner": "cupy"
+      },
+      "grouped_prepare_run_over_preview_one_shot": 2.2863143488603064,
+      "grouped_prepare_run_sec": 0.10649415850639343,
+      "grouped_prepared_repeated_over_preview_repeated": 0.023651382925588518,
+      "grouped_prepared_repeated_run": {
+        "mean_sec": 0.0011292224129041035,
+        "median_sec": 0.0010743960738182068,
+        "min_sec": 0.0010679513216018677
+      },
+      "point_count": 8192,
+      "preview_metadata": {
+        "ambiguous_partition_pairs": 0,
+        "component_count": 4,
+        "partition_summary_pair_capacity_source": "device_upper_bound",
+        "partition_summary_pair_enumeration": "device_bounded_offsets",
+        "partition_union_execution": "cupy_safe_full",
+        "safe_full_partition_union_iterations": 2,
+        "summary_same_contract_validation_enabled": false
+      },
+      "preview_one_shot_warmed_sec": 0.046578966081142426,
+      "preview_repeated_run": {
+        "mean_sec": 0.05095260590314865,
+        "median_sec": 0.04544486850500107,
+        "min_sec": 0.04515386372804642
+      },
+      "profile": "clustered3d_8192",
+      "radius": 0.055
+    },
+    {
+      "cell_factor": 0.125,
+      "component_signature_match": true,
+      "grouped_metadata": {
+        "front_door": "v2_8_fixed_radius_graph_component_continuation_3d",
+        "rt_core_accelerated": true,
+        "user_selected_partner": "cupy"
+      },
+      "grouped_prepare_run_over_preview_one_shot": 2.3695396934336097,
+      "grouped_prepare_run_sec": 0.10430856049060822,
+      "grouped_prepared_repeated_over_preview_repeated": 0.008138688356325738,
+      "grouped_prepared_repeated_run": {
+        "mean_sec": 0.0004292502999305725,
+        "median_sec": 0.00037275999784469604,
+        "min_sec": 0.00035907328128814697
+      },
+      "point_count": 8192,
+      "preview_metadata": {
+        "ambiguous_partition_pairs": 1017,
+        "component_count": 1,
+        "partition_summary_pair_capacity_source": "device_upper_bound",
+        "partition_summary_pair_enumeration": "device_bounded_offsets",
+        "partition_union_execution": "cupy_safe_full",
+        "safe_full_partition_union_iterations": 2,
+        "summary_same_contract_validation_enabled": false
+      },
+      "preview_one_shot_warmed_sec": 0.044020600616931915,
+      "preview_repeated_run": {
+        "mean_sec": 0.05011333028475443,
+        "median_sec": 0.04431916028261185,
+        "min_sec": 0.04411930590867996
+      },
+      "profile": "road3d_8192",
+      "radius": 0.055
+    }
+  ],
+  "rt_core_speedup_claim_authorized": false,
+  "schema": "rtdl.goal4036.partition_component_preview_vs_grouped_stream_timing.v1",
+  "true_zero_copy_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}
