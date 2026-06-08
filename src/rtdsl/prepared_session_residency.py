@@ -42,13 +42,26 @@ PREPARED_SESSION_INVALIDATION_EVENTS = (
 )
 PREPARED_SESSION_APP_SPECIFIC_FORBIDDEN_TERMS = (
     "hausdorff",
+    "hausdorff_xhd",
+    "xhd",
     "rayjoin",
+    "spatial_rayjoin",
     "dbscan",
+    "rt_dbscan",
     "barnes",
+    "barnes_hut",
     "database",
+    "raydb",
+    "raydb_style",
     "pip",
     "polygon",
     "knn",
+    "robot_collision",
+    "contact_manifold",
+    "librts",
+    "librts_spatial_index",
+    "rtnn",
+    "triangle_counting",
 )
 
 

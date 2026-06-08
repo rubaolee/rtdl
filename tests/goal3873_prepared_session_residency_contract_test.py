@@ -4,6 +4,7 @@ from pathlib import Path
 import unittest
 
 import rtdsl as rt
+from rtdsl.v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -67,6 +68,15 @@ class Goal3873PreparedSessionResidencyContractTest(unittest.TestCase):
                 backend="optix",
                 input_fingerprints={"points": 3},
             )
+
+        for app_handle in V2_8_PROMOTED_BENCHMARK_APPS:
+            with self.subTest(app_handle=app_handle):
+                with self.assertRaises(ValueError):
+                    rt.make_prepared_session_cache_key(
+                        primitive=f"{app_handle}_prepared_path",
+                        backend="optix",
+                        input_fingerprints={"payload": "fixture"},
+                    )
 
     def test_policy_and_explicit_cache_record_hits_misses_and_invalidation(self) -> None:
         key = rt.make_prepared_session_cache_key(
