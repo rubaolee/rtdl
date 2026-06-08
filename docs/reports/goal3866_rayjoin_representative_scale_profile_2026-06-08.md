@@ -70,19 +70,27 @@ GPU:
 
 `NVIDIA RTX A5000, 580.126.09`
 
+Commit:
+
+`d598ed59`
+
+Git status inside the measured clean checkout:
+
+empty.
+
 All counted contracts matched: `all_counts_match: true`.
 
 | Contract | Numba median sec | RTDL/OptiX median sec | RTDL/OptiX vs Numba | Recommended route |
 | --- | ---: | ---: | ---: | --- |
-| PIP one-shot scalar count | `0.000519425` | `0.001938205` | `0.268x` | Numba CUDA JIT scalar count |
-| LSI scalar count | `0.020622553` | `0.000100629` | `204.936x` | RTDL/OptiX prepared segment-pair count |
-| Overlay active count | `0.048830782` | `0.000207837` | `234.948x` | RTDL/OptiX prepared shape-pair active count |
+| PIP one-shot scalar count | `0.000513652` | `0.002453625` | `0.209x` | Numba CUDA JIT scalar count |
+| LSI scalar count | `0.020609465` | `0.000090068` | `228.822x` | RTDL/OptiX prepared segment-pair count |
+| Overlay active count | `0.048837483` | `0.000208054` | `234.734x` | RTDL/OptiX prepared shape-pair active count |
 
 PIP repeated-request throughput through the RTDL/OptiX prepared batch executor:
 
 | Request count | Median ms/request |
 | ---: | ---: |
-| `100` | `0.024296` |
+| `100` | `0.024185` |
 
 ## Interpretation
 
