@@ -35,6 +35,7 @@ _CUPY_RADIUS_GRAPH_COMPONENTS_3D_MICROCELL_GRAPH_KERNELS = None
 _CUPY_GROUPED_VECTOR_SUM_OFFSETS_F64X2_KERNEL = None
 _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS = None
 _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_BORDER_CANDIDATE_LABEL_KERNEL = None
+_NUMBA_I32_PARENT_BORDER_INIT_KERNEL = None
 
 _AABB_PAIR_PAYLOAD_FIELDS = (
     "left_index",
@@ -4974,6 +4975,23 @@ def _numba_radius_graph_components_3d_border_candidate_label_kernel(cuda):
     return _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_BORDER_CANDIDATE_LABEL_KERNEL
 
 
+def _numba_i32_parent_border_init_kernel(cuda):
+    global _NUMBA_I32_PARENT_BORDER_INIT_KERNEL
+    if _NUMBA_I32_PARENT_BORDER_INIT_KERNEL is None:
+
+        @cuda.jit
+        def init_kernel(parent, border, point_count, border_value, write_border):
+            point = cuda.grid(1)
+            if point >= point_count:
+                return
+            parent[point] = point
+            if write_border:
+                border[point] = border_value
+
+        _NUMBA_I32_PARENT_BORDER_INIT_KERNEL = init_kernel
+    return _NUMBA_I32_PARENT_BORDER_INIT_KERNEL
+
+
 _CUPY_RADIUS_GRAPH_COMPONENTS_3D_ADJACENCY_KERNELS = None
 
 
@@ -7017,11 +7035,10 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
         self._cached_neighbor_counts = None
         self._cached_count_metadata: dict[str, object] | None = None
         self._cached_all_core_flags_true: bool | None = None
-        self.parent_initial_host = np.arange(self.point_count, dtype=np.int32)
-        self.border_initial_host = np.full((self.point_count,), self.point_count, dtype=np.int32)
         self.parent_workspace = cuda.device_array((self.point_count,), dtype=np.int32)
         self.border_core_candidate_workspace = cuda.device_array((self.point_count,), dtype=np.int32)
         self.labels_workspace = cuda.device_array((self.point_count,), dtype=np.int64)
+        self.parent_border_init_kernel = _numba_i32_parent_border_init_kernel(cuda)
         self.border_candidate_label_kernel = _numba_radius_graph_components_3d_border_candidate_label_kernel(cuda)
         self.threads = 256
         self.label_blocks = (max(1, math.ceil(self.point_count / self.threads)),)
@@ -7072,7 +7089,14 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
         core_flags = self._cached_core_flags
         neighbor_counts = self._cached_neighbor_counts
         all_core_flags_true = bool(self._cached_all_core_flags_true)
-        self.parent_workspace.copy_to_device(self.parent_initial_host)
+        self.parent_border_init_kernel[self.label_blocks, self.threads](
+            self.parent_workspace,
+            self.border_core_candidate_workspace,
+            self.point_count,
+            self.point_count,
+            not all_core_flags_true,
+        )
+        self.cuda.synchronize()
         query_block_size = self.grouped_union_query_block_size
         use_query_blocks = query_block_size is not None and query_block_size < self.point_count
         continuation_pass_count = 1
@@ -7093,7 +7117,6 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
                 grouped_stream_policy = "optix_applies_query_blocked_all_items_grouped_union_without_predicate_or_fallback_workspace"
                 fallback_candidate_policy = "not_needed_all_items_satisfy_predicate"
             else:
-                self.border_core_candidate_workspace.copy_to_device(self.border_initial_host)
                 for query_start in range(0, self.point_count, query_block_size):
                     query_count = min(query_block_size, self.point_count - query_start)
                     range_result = self.prepared_native.apply_device_grouped_union_self_range(
@@ -7137,7 +7160,6 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
             grouped_stream_policy = "optix_applies_all_items_grouped_union_without_predicate_or_fallback_workspace"
             fallback_candidate_policy = "not_needed_all_items_satisfy_predicate"
         else:
-            self.border_core_candidate_workspace.copy_to_device(self.border_initial_host)
             native_result = self.prepared_native.apply_device_grouped_union_self(
                 radius=self.radius,
                 predicate_flags=core_flags,
@@ -7198,6 +7220,8 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
             "grouped_union_query_blocked_candidate": bool(use_query_blocks),
             "grouped_union_same_root_culling_enabled": self.grouped_union_same_root_culling,
             "grouped_union_direct_side_effect_enabled": self.grouped_union_direct_side_effect,
+            "numba_workspace_init_policy": "device_parent_iota_optional_border_fill",
+            "numba_workspace_host_reset_copy_used": False,
             "optix_backend_used": True,
             "rt_core_accelerated": True,
             "materializes_neighbor_summaries": False,
