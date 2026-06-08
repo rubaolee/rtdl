@@ -356,7 +356,9 @@ def run_numba_baseline(
     if block_size <= 0:
         raise ValueError("block_size must be positive")
 
+    load_start = time.perf_counter()
     case = _load_rayjoin_case(workload, dataset, segment_column_inputs=workload == "lsi")
+    load_case_sec = time.perf_counter() - load_start
     prepare_start = time.perf_counter()
     count_gpu = cuda.device_array((1,), dtype=np.int64)
     zero = np.zeros((1,), dtype=np.int64)
@@ -442,6 +444,7 @@ def run_numba_baseline(
         "dataset": dataset,
         "dataset_note": case.note,
         "output_contract": output_contract,
+        "load_case_sec": load_case_sec,
         "prepare_sec": prepare_sec,
         "hot_median_sec": timed["hot_median_sec"],
         "hot_total_sec": timed["hot_total_sec"],
@@ -453,6 +456,12 @@ def run_numba_baseline(
         "block_size": int(block_size),
         "numba_version": numba.__version__,
         "numba_cuda_module": str(getattr(cuda, "__file__", "")),
+        "benchmark_timing_sec": {
+            "load_case_sec": load_case_sec,
+            "prepare_sec": prepare_sec,
+            "hot_total_sec": timed["hot_total_sec"],
+            "hot_median_sec": timed["hot_median_sec"],
+        },
         "runs": timed["runs"],
         "claim_boundary": _claim_boundary(),
     }
@@ -495,18 +504,31 @@ def run_probe(
 ) -> dict[str, object]:
     rows = []
     for case_id in cases:
+        case_started = time.perf_counter()
+        phase_timing_sec: dict[str, float] = {}
         workload = WORKLOAD_BY_CASE[case_id]
         dataset = _case_dataset(case_id, data_dir)
+        dataset_check_started = time.perf_counter()
         for part in (piece.strip() for piece in dataset.split("+")):
             if part and not Path(part).exists():
                 raise FileNotFoundError(part)
+        phase_timing_sec["dataset_file_check_sec"] = time.perf_counter() - dataset_check_started
         print(f"[goal3838] {case_id} Numba baseline start", flush=True)
+        numba_started = time.perf_counter()
         numba_row = run_numba_baseline(workload, dataset, repeat=repeat, warmup=warmup, block_size=block_size)
+        phase_timing_sec["numba_baseline_call_sec"] = time.perf_counter() - numba_started
+        phase_timing_sec["numba_load_case_sec"] = float(numba_row.get("load_case_sec", 0.0))
+        phase_timing_sec["numba_prepare_sec"] = float(numba_row.get("prepare_sec", 0.0))
+        phase_timing_sec["numba_hot_total_sec"] = float(numba_row.get("hot_total_sec", 0.0))
 
         cupy_row = None
         if not skip_cupy:
             print(f"[goal3838] {case_id} CuPy baseline start", flush=True)
+            cupy_started = time.perf_counter()
             cupy_row = run_cupy_baseline(workload, dataset, repeat=repeat, warmup=warmup)
+            phase_timing_sec["cupy_baseline_call_sec"] = time.perf_counter() - cupy_started
+            phase_timing_sec["cupy_prepare_sec"] = float(cupy_row.get("prepare_sec", 0.0))
+            phase_timing_sec["cupy_hot_total_sec"] = float(cupy_row.get("hot_total_sec", 0.0))
             if int(cupy_row["row_count"]) != int(numba_row["row_count"]):
                 raise RuntimeError(
                     f"Numba/CuPy {workload} count mismatch: "
@@ -516,7 +538,15 @@ def run_probe(
         rtdl_optix = None
         if not skip_optix:
             print(f"[goal3838] {case_id} RTDL/OptiX route start", flush=True)
+            rtdl_started = time.perf_counter()
             rtdl_optix = run_rtdl_optix(workload, dataset, repeat=repeat, warmup=warmup)
+            phase_timing_sec["rtdl_optix_call_sec"] = time.perf_counter() - rtdl_started
+            rtdl_prepare = rtdl_optix.get("prepare_sec")
+            if isinstance(rtdl_prepare, dict):
+                phase_timing_sec["rtdl_optix_prepare_total_sec"] = float(
+                    sum(float(value) for value in rtdl_prepare.values())
+                )
+            phase_timing_sec["rtdl_optix_hot_total_sec"] = float(rtdl_optix.get("hot_total_sec", 0.0))
             if int(rtdl_optix["row_count"]) != int(numba_row["row_count"]):
                 raise RuntimeError(
                     f"Numba/RTDL {workload} count mismatch: "
@@ -529,6 +559,7 @@ def run_probe(
         numba_speedup_vs_rtdl_optix = None
         if rtdl_optix is not None and float(rtdl_optix["hot_median_sec"]) > 0.0:
             numba_speedup_vs_rtdl_optix = float(rtdl_optix["hot_median_sec"]) / float(numba_row["hot_median_sec"])
+        phase_timing_sec["case_total_sec"] = time.perf_counter() - case_started
 
         rows.append(
             {
@@ -542,6 +573,7 @@ def run_probe(
                     (cupy_row is None or int(cupy_row["row_count"]) == int(numba_row["row_count"]))
                     and (rtdl_optix is None or int(rtdl_optix["row_count"]) == int(numba_row["row_count"]))
                 ),
+                "wrapper_phase_timing_sec": phase_timing_sec,
                 "cupy_speedup_vs_numba": cupy_speedup_vs_numba,
                 "numba_speedup_vs_rtdl_optix": numba_speedup_vs_rtdl_optix,
                 "claim_boundary": _claim_boundary(),
@@ -565,6 +597,7 @@ def run_probe(
             "row_count": len(rows),
             "all_counts_match": all(bool(row["counts_match"]) for row in rows),
             "numba_no_rawkernel_route_available_for_all_cases": True,
+            "wrapper_phase_timing_available": True,
         },
         "boundary": (
             "This is a RayJoin LSI/overlay partner-coverage probe. It validates "
