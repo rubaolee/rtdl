@@ -1263,6 +1263,76 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
     }
 
 
+def build_v2_8_fixed_radius_partition_convergence_summary_numba_preview_3d(
+    point_rows,
+    *,
+    radius: float,
+    cell_factor: float = 0.125,
+    pair_capacity: int | None = None,
+) -> dict[str, Any]:
+    """Executable Numba device-column preview for partition-summary columns."""
+
+    import numpy as np
+    from numba import cuda
+
+    reference = build_v2_8_fixed_radius_partition_convergence_summary_reference_3d(
+        point_rows,
+        radius=radius,
+        cell_factor=cell_factor,
+        pair_capacity=pair_capacity,
+    )
+    dtype_map = {
+        "point_partition_ids": np.uint32,
+        "occupied_partition_keys_x": np.int32,
+        "occupied_partition_keys_y": np.int32,
+        "occupied_partition_keys_z": np.int32,
+        "partition_offsets": np.uint32,
+        "partition_counts": np.uint32,
+        "partition_aabb_min_x": np.float32,
+        "partition_aabb_min_y": np.float32,
+        "partition_aabb_min_z": np.float32,
+        "partition_aabb_max_x": np.float32,
+        "partition_aabb_max_y": np.float32,
+        "partition_aabb_max_z": np.float32,
+        "near_pair_left_partition_ids": np.uint32,
+        "near_pair_right_partition_ids": np.uint32,
+        "near_pair_status": np.uint32,
+    }
+    columns = {
+        name: cuda.to_device(np.asarray(values, dtype=dtype_map[name]))
+        for name, values in reference["columns"].items()
+    }
+    metadata = dict(reference["metadata"])
+    metadata.update(
+        {
+            "adapter": "fixed_radius_partition_convergence_summary_numba_preview_3d",
+            "reference": "fixed_radius_partition_convergence_summary_3d_numba_preview",
+            "typed_result_stream": make_v2_8_fixed_radius_partition_convergence_summary_typed_stream_contract(
+                int(metadata["point_count"]),
+                int(metadata["partition_count"]),
+                max(1, int(metadata["pair_capacity"])),
+                stream_id="fixed_radius_partition_convergence_summary_3d_numba_preview",
+                data_ptrs=_column_data_ptrs(columns),
+                source_protocol="numba_cuda_array_interface",
+            ).to_metadata(),
+            "device_partition_columns_used": True,
+            "host_partition_summary_used": True,
+            "native_abi_added": False,
+            "runtime_executable": True,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "app_specific_engine_logic_allowed": False,
+            "automatic_partner_selection_allowed": False,
+            "hidden_dispatch_allowed": False,
+            "claim_boundary": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY,
+        }
+    )
+    return {"columns": columns, "metadata": metadata}
+
+
 def _unsupported_reason(*, backend: str, partner: str, strategy: str) -> str:
     if backend not in V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_BACKENDS:
         return f"unsupported backend {backend!r}; supported backends are {V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_BACKENDS}"
@@ -1474,6 +1544,7 @@ __all__ = [
     "V28PreparedFixedRadiusGraphComponentContinuation3D",
     "build_v2_8_fixed_radius_partition_convergence_component_labels_reference_3d",
     "build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d",
+    "build_v2_8_fixed_radius_partition_convergence_summary_numba_preview_3d",
     "build_v2_8_fixed_radius_partition_convergence_summary_reference_3d",
     "describe_v2_8_fixed_radius_graph_component_front_door",
     "fixed_radius_graph_component_labels_3d_v2_8",
