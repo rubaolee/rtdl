@@ -48,6 +48,11 @@ python scripts/goal2403_rt_dbscan_repeat_probe.py \
 
 The same command was repeated at `--point-count 131072 --repeat-count 5`.
 
+The repeat probe intentionally reports warm/steady behavior without a separate
+warm-up phase. The 65,536-point Numba prepared-grid route includes a visible
+first-use CUDA JIT cost before settling into the reported median; users should
+expect that one-time compile cost on first execution.
+
 Artifacts:
 
 - `docs/reports/goal3835_rt_dbscan_numba_partner_refresh_a5000/summary.json`
