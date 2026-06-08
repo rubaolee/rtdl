@@ -872,6 +872,144 @@ def validate_v2_8_fixed_radius_partition_convergence_summary_same_contract_3d(
     }
 
 
+def build_v2_8_fixed_radius_partition_convergence_component_labels_reference_3d(
+    point_rows,
+    *,
+    radius: float,
+    cell_factor: float = 0.125,
+    partition_summary: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Reference component labels from a partition-convergence summary."""
+
+    raw_rows = tuple(point_rows)
+    points = tuple(_point_xyz(row) for row in raw_rows)
+    if not points:
+        raise ValueError("point_rows must contain at least one point")
+    radius = float(radius)
+    if radius <= 0.0:
+        raise ValueError("radius must be positive")
+    if partition_summary is None:
+        partition_summary = build_v2_8_fixed_radius_partition_convergence_summary_reference_3d(
+            raw_rows,
+            radius=radius,
+            cell_factor=cell_factor,
+        )
+    summary_validation = validate_v2_8_fixed_radius_partition_convergence_summary_same_contract_3d(
+        raw_rows,
+        radius=radius,
+        candidate=partition_summary,
+        cell_factor=cell_factor,
+    )
+    base_metadata = {
+        "reference": "fixed_radius_partition_convergence_component_labels_3d_python_reference",
+        "partition_summary_validation": summary_validation,
+        "native_abi_added": False,
+        "runtime_executable": False,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "app_specific_engine_logic_allowed": False,
+        "automatic_partner_selection_allowed": False,
+        "hidden_dispatch_allowed": False,
+        "claim_boundary": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY,
+    }
+    if summary_validation["status"] != "accept":
+        return {
+            "columns": {"point_ids": (), "component_labels": ()},
+            "metadata": {
+                **base_metadata,
+                "status": "reject_partition_summary_mismatch",
+                "errors": summary_validation["errors"],
+            },
+        }
+    if bool(partition_summary["metadata"].get("overflow", False)):
+        return {
+            "columns": {"point_ids": (), "component_labels": ()},
+            "metadata": {
+                **base_metadata,
+                "status": "reject_partition_summary_overflow",
+                "overflow": True,
+                "errors": ("partition summary overflow prevents complete component labels",),
+            },
+        }
+
+    summary_columns = dict(partition_summary["columns"])
+    point_partition_ids = tuple(int(value) for value in _column_tuple(summary_columns["point_partition_ids"]))
+    partition_count = int(summary_validation["partition_count"])
+    partitions: list[list[int]] = [[] for _ in range(partition_count)]
+    errors: list[str] = []
+    for ordinal, partition_id in enumerate(point_partition_ids):
+        if partition_id < 0 or partition_id >= partition_count:
+            errors.append("point_partition_ids contains an out-of-range partition id")
+            continue
+        partitions[partition_id].append(ordinal)
+    parents = list(range(len(points)))
+    radius_sq = radius * radius
+    for left, right, status in zip(
+        _column_tuple(summary_columns["near_pair_left_partition_ids"]),
+        _column_tuple(summary_columns["near_pair_right_partition_ids"]),
+        _column_tuple(summary_columns["near_pair_status"]),
+    ):
+        left_id = int(left)
+        right_id = int(right)
+        status_id = int(status)
+        if left_id < 0 or right_id < 0 or left_id >= partition_count or right_id >= partition_count:
+            errors.append("near partition pair contains an out-of-range partition id")
+            continue
+        left_members = partitions[left_id]
+        right_members = partitions[right_id]
+        if status_id == 0:
+            continue
+        if status_id == 1:
+            combined = tuple(left_members) + tuple(right_members)
+            if combined:
+                root = combined[0]
+                for member in combined[1:]:
+                    _union_parent(parents, root, member)
+            continue
+        if status_id != 2:
+            errors.append("near_pair_status must be 0, 1, or 2")
+            continue
+        for left_point in left_members:
+            for right_point in right_members:
+                if left_id == right_id and right_point <= left_point:
+                    continue
+                if _distance_sq_3d(points[left_point], points[right_point]) <= radius_sq:
+                    _union_parent(parents, left_point, right_point)
+
+    if errors:
+        return {
+            "columns": {"point_ids": (), "component_labels": ()},
+            "metadata": {
+                **base_metadata,
+                "status": "reject_partition_summary_consumer_error",
+                "errors": tuple(errors),
+            },
+        }
+
+    labels = _compact_component_labels(parents)
+    all_pairs_labels = _fixed_radius_component_labels_all_pairs_3d(points, radius)
+    same_contract = labels == all_pairs_labels
+    point_ids = tuple(_point_id(row, ordinal) for ordinal, row in enumerate(raw_rows))
+    return {
+        "columns": {
+            "point_ids": point_ids,
+            "component_labels": labels,
+        },
+        "metadata": {
+            **base_metadata,
+            "status": "accept" if same_contract else "reject_all_pairs_mismatch",
+            "point_count": len(points),
+            "component_count": len(set(labels)),
+            "same_contract_against_all_pairs": same_contract,
+            "all_pairs_component_labels": all_pairs_labels,
+            "partition_pair_status_counts": dict(summary_validation["status_counts"]),
+        },
+    }
+
+
 def _unsupported_reason(*, backend: str, partner: str, strategy: str) -> str:
     if backend not in V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_BACKENDS:
         return f"unsupported backend {backend!r}; supported backends are {V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_BACKENDS}"
@@ -898,6 +1036,20 @@ def _point_xyz(row) -> tuple[float, float, float]:
     raise TypeError("point row must expose x/y/z fields or a 3/4-item sequence")
 
 
+def _point_id(row, ordinal: int) -> int:
+    if hasattr(row, "id"):
+        return int(row.id)
+    if isinstance(row, dict) and "id" in row:
+        return int(row["id"])
+    try:
+        values = tuple(row)
+    except TypeError:
+        return int(ordinal)
+    if len(values) >= 4:
+        return int(values[0])
+    return int(ordinal)
+
+
 def _column_tuple(values) -> tuple[Any, ...]:
     if hasattr(values, "tolist"):
         values = values.tolist()
@@ -906,6 +1058,55 @@ def _column_tuple(values) -> tuple[Any, ...]:
     if isinstance(values, tuple):
         return values
     return tuple(values)
+
+
+def _find_parent(parents: list[int], index: int) -> int:
+    while parents[index] != index:
+        index = parents[index]
+    return index
+
+
+def _union_parent(parents: list[int], left: int, right: int) -> None:
+    left_root = _find_parent(parents, left)
+    right_root = _find_parent(parents, right)
+    if left_root == right_root:
+        return
+    if right_root < left_root:
+        left_root, right_root = right_root, left_root
+    parents[right_root] = left_root
+
+
+def _compact_component_labels(parents: list[int]) -> tuple[int, ...]:
+    root_to_label: dict[int, int] = {}
+    labels: list[int] = []
+    for ordinal in range(len(parents)):
+        root = _find_parent(parents, ordinal)
+        label = root_to_label.get(root)
+        if label is None:
+            label = len(root_to_label)
+            root_to_label[root] = label
+        labels.append(label)
+    return tuple(labels)
+
+
+def _fixed_radius_component_labels_all_pairs_3d(
+    points: tuple[tuple[float, float, float], ...],
+    radius: float,
+) -> tuple[int, ...]:
+    parents = list(range(len(points)))
+    radius_sq = radius * radius
+    for left in range(len(points)):
+        for right in range(left + 1, len(points)):
+            if _distance_sq_3d(points[left], points[right]) <= radius_sq:
+                _union_parent(parents, left, right)
+    return _compact_component_labels(parents)
+
+
+def _distance_sq_3d(left: tuple[float, float, float], right: tuple[float, float, float]) -> float:
+    dx = left[0] - right[0]
+    dy = left[1] - right[1]
+    dz = left[2] - right[2]
+    return dx * dx + dy * dy + dz * dz
 
 
 def _partition_key_3d(x: float, y: float, z: float, cell_size: float) -> tuple[int, int, int]:
@@ -1018,6 +1219,7 @@ __all__ = [
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_REJECTED_DEFAULT_STRATEGIES",
     "V28FixedRadiusGraphComponentPlan",
     "V28PreparedFixedRadiusGraphComponentContinuation3D",
+    "build_v2_8_fixed_radius_partition_convergence_component_labels_reference_3d",
     "build_v2_8_fixed_radius_partition_convergence_summary_reference_3d",
     "describe_v2_8_fixed_radius_graph_component_front_door",
     "fixed_radius_graph_component_labels_3d_v2_8",
