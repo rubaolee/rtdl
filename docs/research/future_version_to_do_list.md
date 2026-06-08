@@ -125,6 +125,15 @@ This file catches design ideas that should not interrupt the current release or 
   `70.05%` for road3d, and `53.50%` for ngsim_dense. Treat this as evidence for
   a hybrid device-resident partition plus RT boundary traversal primitive, not a
   plain grid rewrite.
+- Goal4001 reran extended grouped-union telemetry at those actual radii on an
+  RTX 4000 Ada. Same-root culling remains mandatory: disabling it slowed all
+  three profiles. At `65536` points, default same-root culling reduced reported
+  candidates to `80,719 / 273,911,978` for clustered3d, `167,285 / 85,627,372`
+  for road3d, and `75,119 / 12,299,418` for ngsim_dense. Direct side effects
+  avoided any-hit reports and were small-positive/neutral (`0.956x`, `0.938x`,
+  `1.004x` versus default), but they do not remove traversal/root-read cost.
+  The next primitive should reduce candidate/root-read work, not just move
+  union side effects from any-hit to intersection.
 - The next generic runtime primitive should be a dense fixed-radius
   grouped-union continuation, not another app-specific RT-DBSCAN trick. Candidate
   designs include component-aware root-cache snapshots with explicit staleness
