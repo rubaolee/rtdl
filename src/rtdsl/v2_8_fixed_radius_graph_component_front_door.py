@@ -1110,15 +1110,24 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
         cupy.zeros((1,), dtype=cupy.uint32),
         cupy.cumsum(counts_u32, dtype=cupy.uint32),
     ))
-    sorted_x = x[order]
-    sorted_y = y[order]
-    sorted_z = z[order]
-    aabb_min_x = cupy.minimum.reduceat(sorted_x, starts).astype(cupy.float32, copy=False)
-    aabb_min_y = cupy.minimum.reduceat(sorted_y, starts).astype(cupy.float32, copy=False)
-    aabb_min_z = cupy.minimum.reduceat(sorted_z, starts).astype(cupy.float32, copy=False)
-    aabb_max_x = cupy.maximum.reduceat(sorted_x, starts).astype(cupy.float32, copy=False)
-    aabb_max_y = cupy.maximum.reduceat(sorted_y, starts).astype(cupy.float32, copy=False)
-    aabb_max_z = cupy.maximum.reduceat(sorted_z, starts).astype(cupy.float32, copy=False)
+    aabb_min_x64 = cupy.full((partition_count,), cupy.inf, dtype=cupy.float64)
+    aabb_min_y64 = cupy.full((partition_count,), cupy.inf, dtype=cupy.float64)
+    aabb_min_z64 = cupy.full((partition_count,), cupy.inf, dtype=cupy.float64)
+    aabb_max_x64 = cupy.full((partition_count,), -cupy.inf, dtype=cupy.float64)
+    aabb_max_y64 = cupy.full((partition_count,), -cupy.inf, dtype=cupy.float64)
+    aabb_max_z64 = cupy.full((partition_count,), -cupy.inf, dtype=cupy.float64)
+    cupy.minimum.at(aabb_min_x64, point_partition_ids, x)
+    cupy.minimum.at(aabb_min_y64, point_partition_ids, y)
+    cupy.minimum.at(aabb_min_z64, point_partition_ids, z)
+    cupy.maximum.at(aabb_max_x64, point_partition_ids, x)
+    cupy.maximum.at(aabb_max_y64, point_partition_ids, y)
+    cupy.maximum.at(aabb_max_z64, point_partition_ids, z)
+    aabb_min_x = aabb_min_x64.astype(cupy.float32, copy=False)
+    aabb_min_y = aabb_min_y64.astype(cupy.float32, copy=False)
+    aabb_min_z = aabb_min_z64.astype(cupy.float32, copy=False)
+    aabb_max_x = aabb_max_x64.astype(cupy.float32, copy=False)
+    aabb_max_y = aabb_max_y64.astype(cupy.float32, copy=False)
+    aabb_max_z = aabb_max_z64.astype(cupy.float32, copy=False)
 
     unique_host = tuple(int(value) for value in cupy.asnumpy(unique_cells).tolist())
     key_rows = []
