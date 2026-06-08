@@ -75,6 +75,68 @@ def _find_forbidden_true_flags(value: Any, *, path: str = "$") -> list[str]:
     return hits
 
 
+def _looks_like_timing_key(key: str) -> bool:
+    lower = key.lower()
+    if lower in {"elapsed_sec", "wrapper_elapsed_sec"}:
+        return True
+    return (
+        lower.endswith("_sec")
+        or lower.endswith("_ms")
+        or lower.endswith("_ms_median")
+        or lower.endswith("_sec_median")
+        or lower.endswith("_median_sec")
+        or lower.endswith("_total_sec")
+    )
+
+
+def _collect_timing_scalars(value: Any, *, path: str = "$", limit: int = 80) -> list[dict[str, Any]]:
+    scalars: list[dict[str, Any]] = []
+
+    def visit(child: Any, child_path: str, key: str | None = None) -> None:
+        if len(scalars) >= limit:
+            return
+        if isinstance(child, dict):
+            for item_key, item_value in child.items():
+                visit(item_value, f"{child_path}.{item_key}", str(item_key))
+                if len(scalars) >= limit:
+                    break
+        elif isinstance(child, list):
+            for index, item_value in enumerate(child[:8]):
+                visit(item_value, f"{child_path}[{index}]", key)
+                if len(scalars) >= limit:
+                    break
+        elif key is not None and _looks_like_timing_key(key) and isinstance(child, (int, float)):
+            scalars.append({"path": child_path, "value": float(child)})
+
+    visit(value, path)
+    return scalars
+
+
+def _payload_timing_summary(payload: Any) -> dict[str, Any]:
+    if not isinstance(payload, dict):
+        return {
+            "payload_json_object": False,
+            "timing_scalar_count": 0,
+            "timing_scalars_sample": (),
+        }
+    timing_scalars = _collect_timing_scalars(payload)
+    hot_summary = payload.get("representative_hot_path_summary")
+    hot_scope = hot_summary.get("metric_scope") if isinstance(hot_summary, dict) else None
+    return {
+        "payload_json_object": True,
+        "top_level_elapsed_sec": payload.get("elapsed_sec"),
+        "top_level_wrapper_elapsed_sec": payload.get("wrapper_elapsed_sec"),
+        "representative_hot_path_metric_scope": hot_scope,
+        "scale_runner_elapsed_sec_is_not_hot_path_metric": (
+            bool(hot_summary.get("scale_runner_elapsed_sec_is_not_hot_path_metric"))
+            if isinstance(hot_summary, dict)
+            else False
+        ),
+        "timing_scalar_count": len(timing_scalars),
+        "timing_scalars_sample": tuple(timing_scalars),
+    }
+
+
 def _semantic_file_check(stdout_path: Path) -> dict[str, Any]:
     try:
         stdout = stdout_path.read_text(encoding="utf-8")
@@ -84,6 +146,11 @@ def _semantic_file_check(stdout_path: Path) -> dict[str, Any]:
             "stdout_json_error": "stdout file missing",
             "claim_flag_violations": (),
             "parsed_keys": (),
+            "payload_timing_summary": {
+                "payload_json_object": False,
+                "timing_scalar_count": 0,
+                "timing_scalars_sample": (),
+            },
         }
     try:
         payload = json.loads(stdout)
@@ -93,12 +160,18 @@ def _semantic_file_check(stdout_path: Path) -> dict[str, Any]:
             "stdout_json_error": str(exc),
             "claim_flag_violations": (),
             "parsed_keys": (),
+            "payload_timing_summary": {
+                "payload_json_object": False,
+                "timing_scalar_count": 0,
+                "timing_scalars_sample": (),
+            },
         }
     return {
         "stdout_json_parseable": True,
         "stdout_json_error": None,
         "claim_flag_violations": tuple(_find_forbidden_true_flags(payload)),
         "parsed_keys": tuple(sorted(payload)) if isinstance(payload, dict) else (),
+        "payload_timing_summary": _payload_timing_summary(payload),
     }
 
 
