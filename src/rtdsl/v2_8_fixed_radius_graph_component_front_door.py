@@ -1522,34 +1522,48 @@ def build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_
     summary_left = summary_columns["near_pair_left_partition_ids"]
     summary_right = summary_columns["near_pair_right_partition_ids"]
     summary_status = summary_columns["near_pair_status"]
+    ambiguous_union_skipped_reason = None
     if partition_union_execution == "cupy_safe_full" and ambiguous_union_execution == "cupy_partition_points":
         import cupy
 
-        x_dev = cupy.asarray([point[0] for point in points], dtype=cupy.float64)
-        y_dev = cupy.asarray([point[1] for point in points], dtype=cupy.float64)
-        z_dev = cupy.asarray([point[2] for point in points], dtype=cupy.float64)
-        (
-            partition_parents_device,
-            union_iterations,
-            ambiguous_point_comparisons,
-            ambiguous_positive_edges,
-        ) = _cupy_union_partition_pairs_with_ambiguous_points(
-            cupy,
-            partition_count=partition_count,
-            left_ids=summary_left,
-            right_ids=summary_right,
-            statuses=summary_status,
-            partition_offsets=summary_columns["partition_offsets"],
-            partition_point_ordinals=summary_columns["partition_point_ordinals"],
-            x=x_dev,
-            y=y_dev,
-            z=z_dev,
-            radius_sq=radius * radius,
-        )
-        partition_parents = [int(value) for value in cupy.asnumpy(partition_parents_device).tolist()]
-        safe_skip_pairs = int(summary["metadata"]["status_counts"]["safe_skip_partition_pairs"])
-        safe_full_pairs = int(summary["metadata"]["status_counts"]["safe_full_partition_pairs"])
-        ambiguous_pairs = int(summary["metadata"]["status_counts"]["ambiguous_partition_pairs"])
+        status_counts = dict(summary["metadata"]["status_counts"])
+        safe_skip_pairs = int(status_counts["safe_skip_partition_pairs"])
+        safe_full_pairs = int(status_counts["safe_full_partition_pairs"])
+        ambiguous_pairs = int(status_counts["ambiguous_partition_pairs"])
+        if ambiguous_pairs == 0:
+            partition_parents, union_iterations = _cupy_union_safe_full_partition_pairs(
+                cupy,
+                partition_count=partition_count,
+                left_ids=summary_left,
+                right_ids=summary_right,
+                statuses=summary_status,
+            )
+            ambiguous_point_comparisons = 0
+            ambiguous_positive_edges = 0
+            ambiguous_union_skipped_reason = "no_ambiguous_partition_pairs"
+        else:
+            x_dev = cupy.asarray([point[0] for point in points], dtype=cupy.float64)
+            y_dev = cupy.asarray([point[1] for point in points], dtype=cupy.float64)
+            z_dev = cupy.asarray([point[2] for point in points], dtype=cupy.float64)
+            (
+                partition_parents_device,
+                union_iterations,
+                ambiguous_point_comparisons,
+                ambiguous_positive_edges,
+            ) = _cupy_union_partition_pairs_with_ambiguous_points(
+                cupy,
+                partition_count=partition_count,
+                left_ids=summary_left,
+                right_ids=summary_right,
+                statuses=summary_status,
+                partition_offsets=summary_columns["partition_offsets"],
+                partition_point_ordinals=summary_columns["partition_point_ordinals"],
+                x=x_dev,
+                y=y_dev,
+                z=z_dev,
+                radius_sq=radius * radius,
+            )
+            partition_parents = [int(value) for value in cupy.asnumpy(partition_parents_device).tolist()]
         ambiguous_left_values = ()
         ambiguous_right_values = ()
         ambiguous_status_values = ()
@@ -1662,7 +1676,11 @@ def build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_
             "ambiguous_point_comparisons": ambiguous_point_comparisons,
             "ambiguous_positive_edges": ambiguous_positive_edges,
             "safe_full_partition_union_iterations": union_iterations,
-            "device_ambiguous_union_used": ambiguous_union_execution == "cupy_partition_points",
+            "device_ambiguous_union_used": (
+                ambiguous_union_execution == "cupy_partition_points"
+                and ambiguous_union_skipped_reason is None
+            ),
+            "ambiguous_union_skipped_reason": ambiguous_union_skipped_reason,
             "all_pairs_component_labels": all_pairs_labels,
         },
     }
