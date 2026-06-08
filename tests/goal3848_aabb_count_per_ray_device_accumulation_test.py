@@ -6,18 +6,17 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKLOADS = ROOT / "src" / "native" / "optix" / "rtdl_optix_workloads.cpp"
-REPORT = ROOT / "docs" / "reports" / "goal3848_aabb_count_payload_local_accumulation_2026-06-08.md"
+REPORT = ROOT / "docs" / "reports" / "goal3848_aabb_count_per_ray_device_accumulation_2026-06-08.md"
 
 
-class Goal3848AabbCountPayloadLocalAccumulationTest(unittest.TestCase):
-    def test_count_only_aabb_path_uses_second_payload_register(self) -> None:
+class Goal3848AabbCountPerRayDeviceAccumulationTest(unittest.TestCase):
+    def test_count_only_aabb_path_uses_per_ray_device_counters(self) -> None:
         text = WORKLOADS.read_text(encoding="utf-8")
 
-        self.assertIn("unsigned int p1 = 0u;", text)
-        self.assertIn("optixGetPayload_1", text)
-        self.assertIn("optixSetPayload_1(count + 1u)", text)
-        self.assertIn("p0, p1);", text)
-        self.assertIn("nullptr, 2).release();", text)
+        self.assertIn("uint32_t* query_hit_counts;", text)
+        self.assertIn("atomicAdd(params.query_hit_counts + qidx, 1u)", text)
+        self.assertIn("sum_device_u32_counts", text)
+        self.assertIn("nullptr, 1).release();", text)
 
     def test_row_collection_still_reserves_rows_with_atomic_counter(self) -> None:
         text = WORKLOADS.read_text(encoding="utf-8")
@@ -34,7 +33,7 @@ class Goal3848AabbCountPayloadLocalAccumulationTest(unittest.TestCase):
             "Goal3848",
             "AABB_INDEX_QUERY_2D",
             "one global `atomicAdd` per accepted hit",
-            "one aggregate add per ray",
+            "one device counter per launched ray",
             "not LibRTS-specific",
             "does not authorize release action",
         ):
