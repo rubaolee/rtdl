@@ -1,0 +1,116 @@
+{
+  "batch": {
+    "counts": [
+      6,
+      6,
+      6,
+      6,
+      6
+    ],
+    "sec": 0.00023595988750457764,
+    "timings": {
+      "candidate_count_pass": 9.2173e-05,
+      "candidate_download": 0.0,
+      "candidate_write_pass": 0.0,
+      "emitted_count": 30,
+      "exact_refine": 0.0,
+      "mode": "prepared_points_device_filtered_batch_count",
+      "point_pack": 0.0,
+      "point_upload": 0.0,
+      "raw_candidate_count": 30
+    }
+  },
+  "batch_executor": {
+    "counts": [
+      6,
+      6,
+      6,
+      6,
+      6
+    ],
+    "metadata": {
+      "native_prepare_symbol": "rtdl_optix_prepare_prepared_point_closed_shape_membership_device_filtered_prepared_points_batch_executor_2d",
+      "native_run_symbol": "rtdl_optix_run_prepared_point_closed_shape_membership_device_filtered_prepared_points_batch_executor_2d",
+      "prepared_points_owner_closed": false,
+      "prepared_scene_owner_closed": false,
+      "release_authorized": false,
+      "request_count": 5,
+      "reusable_launch_executor": true,
+      "schema": "rtdl.optix.prepared_point_closed_shape_batch_count_executor_2d.v1",
+      "stream_count_effective": 1,
+      "stream_count_requested": "auto",
+      "true_zero_copy_claim_authorized": false
+    },
+    "sec": 0.00011897832155227661,
+    "timings": {
+      "candidate_count_pass": 9.0704e-05,
+      "candidate_download": 0.0,
+      "candidate_write_pass": 0.0,
+      "emitted_count": 30,
+      "exact_refine": 0.0,
+      "mode": "prepared_points_device_filtered_batch_executor_run",
+      "point_pack": 0.0,
+      "point_upload": 0.0,
+      "raw_candidate_count": 30
+    }
+  },
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+  "goal": 4050,
+  "graph_raw": {
+    "error": "OptiX error: CUDA error",
+    "status": "prepare_or_replay_failed",
+    "timings": {
+      "candidate_count_pass": 9.0704e-05,
+      "candidate_download": 0.0,
+      "candidate_write_pass": 0.0,
+      "emitted_count": 30,
+      "exact_refine": 0.0,
+      "mode": "prepared_points_device_filtered_batch_executor_run",
+      "point_pack": 0.0,
+      "point_upload": 0.0,
+      "raw_candidate_count": 30
+    },
+    "trace": "Traceback (most recent call last):\n  File \"<stdin>\", line 27, in <module>\n  File \"/root/goal3992_exttelemetry.nANovw/repo/src/rtdsl/optix_runtime.py\", line 12559, in prepare_device_filtered_prepared_points_batch_graph\n    return PreparedOptixPointClosedShapeBatchCountGraph2D(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/goal3992_exttelemetry.nANovw/repo/src/rtdsl/optix_runtime.py\", line 12037, in __init__\n    _check_status(status, error)\n  File \"/root/goal3992_exttelemetry.nANovw/repo/src/rtdsl/optix_runtime.py\", line 24073, in _check_status\n    raise RuntimeError(msg)\nRuntimeError: OptiX error: CUDA error\n"
+  },
+  "graph_validated": {
+    "error": "OptiX error: CUDA error",
+    "status": "failed_closed",
+    "timings": {
+      "candidate_count_pass": 9.0704e-05,
+      "candidate_download": 0.0,
+      "candidate_write_pass": 0.0,
+      "emitted_count": 30,
+      "exact_refine": 0.0,
+      "mode": "prepared_points_device_filtered_batch_executor_run",
+      "point_pack": 0.0,
+      "point_upload": 0.0,
+      "raw_candidate_count": 30
+    }
+  },
+  "point_count": 3,
+  "probe": "fixture",
+  "shape_count": 2,
+  "single": {
+    "count": 6,
+    "sec": 0.5034008100628853,
+    "timings": {
+      "candidate_count_pass": 5.7042e-05,
+      "candidate_download": 0.0,
+      "candidate_write_pass": 0.0,
+      "emitted_count": 6,
+      "exact_refine": 0.0,
+      "mode": "prepared_points_device_filtered_count",
+      "point_pack": 0.0,
+      "point_upload": 0.0,
+      "raw_candidate_count": 6
+    }
+  }
+}

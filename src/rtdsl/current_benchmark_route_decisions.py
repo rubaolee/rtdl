@@ -153,9 +153,13 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "universal PIP dominance",
             "RayJoin paper reproduction",
             "RTDL-beats-RayJoin whole-app claim",
+            "prepared-points CUDA graph replay after Goal4050 OptiX/CUDA prepare failure",
         ),
-        next_runtime_action="next major work is larger generic route evidence, not more one-off RayJoin tuning",
-        evidence_refs=("Goal3866", "Goal3867", "Goal3933", "Goal3934", "Goal3935", "Goal3936", "Goal3937", "Goal4039"),
+        next_runtime_action=(
+            "next major work is larger generic route evidence, not more one-off RayJoin tuning; "
+            "treat prepared-points CUDA graph replay as quarantined until a real OptiX-capture fix exists"
+        ),
+        evidence_refs=("Goal3866", "Goal3867", "Goal3933", "Goal3934", "Goal3935", "Goal3936", "Goal3937", "Goal4039", "Goal4050"),
         pod_needed_next=False,
     ),
     CurrentBenchmarkRouteDecision(
