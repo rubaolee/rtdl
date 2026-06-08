@@ -2,7 +2,7 @@
 
 Date: 2026-06-08
 
-Status: implemented; pod validation pending final artifact sync
+Status: implemented and A5000-validated
 
 ## Purpose
 
@@ -53,8 +53,44 @@ wide fixture. That produced much smaller counts:
 
 Rerunning the restored global path with those same narrow widths produced the
 same smaller counts, proving the mismatch was the command, not the optimization.
-The final validation must compare against the true Goal3846 default-width
-fixture.
+The final validation compared against the true Goal3846 default-width fixture.
+
+## A5000 Validation
+
+Artifact:
+
+- `docs/reports/goal3848_aabb_per_ray_device_a5000/librts_131k_repeat10_per_ray_device_defaults.json`
+
+Validation command used Goal3846's default widths:
+
+```bash
+PYTHONPATH=.pydeps_goal3788_numba:src:. \
+RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so \
+RTDL_OPTIX_LIB=$PWD/build/librtdl_optix.so \
+python examples/v2_0/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py \
+  --mode optix_aabb_index --dataset uniform --box-count 131072 \
+  --query-count 131072 --seed 2025 --operation all --repeat 10 --warmup 2
+```
+
+Results:
+
+| Metric | Goal3846 baseline | Goal3848 per-ray counters | Ratio |
+| --- | ---: | ---: | ---: |
+| `point_contains` count | 743946470 | 743946470 | exact |
+| `range_contains` count | 520904982 | 520904982 | exact |
+| `range_intersects` count | 1133035386 | 1133035386 | exact |
+| `repeat_protocol.query_sec_median` | 0.646092751 | 0.563984715 | 1.1456x |
+| `repeat_protocol.query_sec_total` | 6.463141921 | 5.642192487 | 1.1455x |
+
+Per-operation medians changed as follows:
+
+| Operation | Goal3846 baseline | Goal3848 per-ray counters | Ratio |
+| --- | ---: | ---: | ---: |
+| `point_contains` | 0.155771718 | 0.133414827 | 1.1676x |
+| `range_contains` | 0.165047798 | 0.143535357 | 1.1499x |
+| `range_intersects` | 0.325273235 | 0.287034532 | 1.1332x |
+
+The stderr artifact is empty.
 
 ## App-Agnostic Boundary
 
@@ -66,5 +102,4 @@ LibRTS-specific and does not encode a spatial-library API.
 
 This does not authorize release action, public speedup wording, paper
 reproduction claims, or broad RT-core claims. It is internal primitive evidence
-pending a committed A5000 artifact and external review.
-
+pending external review.
