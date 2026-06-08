@@ -19055,8 +19055,8 @@ static void run_point_nearest_segment_cuda(
 {
     (void)get_optix_context();
     std::call_once(g_pns.init, [&]() {
-        std::string ptx = compile_to_ptx(kPointNearestKernelSrc, "pns_kernel.cu");
-        CU_CHECK(cuModuleLoadData(&g_pns.module, ptx.c_str()));
+        std::string cubin = compile_to_cubin(kPointNearestKernelSrc, "pns_kernel.cu");
+        CU_CHECK(cuModuleLoadData(&g_pns.module, cubin.data()));
         CU_CHECK(cuModuleGetFunction(&g_pns.fn, g_pns.module, "point_nearest_segment"));
     });
 
@@ -19112,8 +19112,8 @@ static void run_fixed_radius_neighbors_cuda(
 {
     (void)get_optix_context();
     std::call_once(g_frn.init, [&]() {
-        std::string ptx = compile_to_ptx(kFixedRadiusNeighborsKernelSrc, "frn_kernel.cu");
-        CU_CHECK(cuModuleLoadData(&g_frn.module, ptx.c_str()));
+        std::string cubin = compile_to_cubin(kFixedRadiusNeighborsKernelSrc, "frn_kernel.cu");
+        CU_CHECK(cuModuleLoadData(&g_frn.module, cubin.data()));
         CU_CHECK(cuModuleGetFunction(&g_frn.fn, g_frn.module, "fixed_radius_neighbors"));
     });
 
@@ -19681,10 +19681,10 @@ static void ensure_pack_point2d_fixed_radius_aabbs_kernel()
 {
     (void)get_optix_context();
     std::call_once(g_partner_point2d_aabb_pack.init, [&]() {
-        const std::string ptx = compile_to_ptx(
+        const std::string cubin = compile_to_cubin(
             kPackPoint2DDeviceAabbsKernelSrc,
             "partner_point2d_fixed_radius_aabb_pack_kernel.cu");
-        CU_CHECK(cuModuleLoadData(&g_partner_point2d_aabb_pack.module, ptx.c_str()));
+        CU_CHECK(cuModuleLoadData(&g_partner_point2d_aabb_pack.module, cubin.data()));
         CU_CHECK(cuModuleGetFunction(
             &g_partner_point2d_aabb_pack.fn,
             g_partner_point2d_aabb_pack.module,
@@ -23671,8 +23671,8 @@ static void run_k_closest_hits_cuda(
 {
     (void)get_optix_context();
     std::call_once(g_knn.init, [&]() {
-        std::string ptx = compile_to_ptx(kKnnRowsKernelSrc, "k_closest_hits_kernel.cu");
-        CU_CHECK(cuModuleLoadData(&g_knn.module, ptx.c_str()));
+        std::string cubin = compile_to_cubin(kKnnRowsKernelSrc, "k_closest_hits_kernel.cu");
+        CU_CHECK(cuModuleLoadData(&g_knn.module, cubin.data()));
         CU_CHECK(cuModuleGetFunction(&g_knn.fn, g_knn.module, "knn_rows"));
     });
 
@@ -23753,8 +23753,8 @@ static void run_k_closest_hits_cuda_3d(
 {
     (void)get_optix_context();
     std::call_once(g_knn3d.init, [&]() {
-        std::string ptx = compile_to_ptx(kKnnRows3DKernelSrc, "knn3d_kernel.cu");
-        CU_CHECK(cuModuleLoadData(&g_knn3d.module, ptx.c_str()));
+        std::string cubin = compile_to_cubin(kKnnRows3DKernelSrc, "knn3d_kernel.cu");
+        CU_CHECK(cuModuleLoadData(&g_knn3d.module, cubin.data()));
         CU_CHECK(cuModuleGetFunction(&g_knn3d.fn, g_knn3d.module, "knn_rows_3d"));
     });
 

@@ -1,0 +1,52 @@
+{
+  "app": "fixed_radius_neighbors",
+  "backend": "optix",
+  "k_max": 3,
+  "neighbors_by_query": {
+    "100": [
+      {
+        "distance": 0.0,
+        "neighbor_id": 1
+      },
+      {
+        "distance": 0.3,
+        "neighbor_id": 2
+      },
+      {
+        "distance": 0.3,
+        "neighbor_id": 3
+      }
+    ],
+    "101": [
+      {
+        "distance": 0.20000000000000018,
+        "neighbor_id": 4
+      }
+    ]
+  },
+  "query_count": 2,
+  "radius": 0.5,
+  "rows": [
+    {
+      "distance": 0.0,
+      "neighbor_id": 1,
+      "query_id": 100
+    },
+    {
+      "distance": 0.3,
+      "neighbor_id": 2,
+      "query_id": 100
+    },
+    {
+      "distance": 0.3,
+      "neighbor_id": 3,
+      "query_id": 100
+    },
+    {
+      "distance": 0.20000000000000018,
+      "neighbor_id": 4,
+      "query_id": 101
+    }
+  ],
+  "search_count": 5
+}

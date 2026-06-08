@@ -1,0 +1,81 @@
+{
+  "app": "knn_rows",
+  "backend": "optix",
+  "k": 3,
+  "neighbors_by_query": {
+    "100": [
+      {
+        "distance": 0.0,
+        "neighbor_id": 1,
+        "neighbor_rank": 1
+      },
+      {
+        "distance": 0.30000001192092896,
+        "neighbor_id": 2,
+        "neighbor_rank": 2
+      },
+      {
+        "distance": 0.30000001192092896,
+        "neighbor_id": 3,
+        "neighbor_rank": 3
+      }
+    ],
+    "101": [
+      {
+        "distance": 0.20000004768371582,
+        "neighbor_id": 4,
+        "neighbor_rank": 1
+      },
+      {
+        "distance": 1.0,
+        "neighbor_id": 5,
+        "neighbor_rank": 2
+      },
+      {
+        "distance": 2.700000047683716,
+        "neighbor_id": 2,
+        "neighbor_rank": 3
+      }
+    ]
+  },
+  "query_count": 2,
+  "rows": [
+    {
+      "distance": 0.0,
+      "neighbor_id": 1,
+      "neighbor_rank": 1,
+      "query_id": 100
+    },
+    {
+      "distance": 0.30000001192092896,
+      "neighbor_id": 2,
+      "neighbor_rank": 2,
+      "query_id": 100
+    },
+    {
+      "distance": 0.30000001192092896,
+      "neighbor_id": 3,
+      "neighbor_rank": 3,
+      "query_id": 100
+    },
+    {
+      "distance": 0.20000004768371582,
+      "neighbor_id": 4,
+      "neighbor_rank": 1,
+      "query_id": 101
+    },
+    {
+      "distance": 1.0,
+      "neighbor_id": 5,
+      "neighbor_rank": 2,
+      "query_id": 101
+    },
+    {
+      "distance": 2.700000047683716,
+      "neighbor_id": 2,
+      "neighbor_rank": 3,
+      "query_id": 101
+    }
+  ],
+  "search_count": 5
+}

@@ -1,0 +1,19 @@
+{
+  "app": "point_nearest_segment",
+  "backend": "optix",
+  "point_count": 2,
+  "row_count": 2,
+  "rows": [
+    {
+      "distance": 0.5,
+      "point_id": 100,
+      "segment_id": 1
+    },
+    {
+      "distance": 1.0,
+      "point_id": 0,
+      "segment_id": 1
+    }
+  ],
+  "segment_count": 2
+}
