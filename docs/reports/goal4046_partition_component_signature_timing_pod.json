@@ -1,0 +1,295 @@
+{
+  "claim_boundary": "Internal subpath timing for component-size signature versus full component-label materialization over the partition-convergence candidate. It does not promote partition_convergence_hybrid or authorize release, public speedup, broad RT-core, whole-app, hidden-dispatch, automatic partner selection, app-specific engine logic, native ABI addition, or true-zero-copy claims.",
+  "goal": "Goal4046",
+  "native_abi_added": false,
+  "partition_convergence_hybrid_promoted": false,
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "rows": [
+    {
+      "component_signature_match": true,
+      "label_over_signature_median": 1.2557815078606793,
+      "label_over_signature_min": 1.2513299250877068,
+      "label_repeated_run": {
+        "mean_sec": 0.0017785951495170593,
+        "median_sec": 0.0017235055565834045,
+        "min_sec": 0.0017087534070014954
+      },
+      "point_count": 1024,
+      "profile": "clustered3d_1024",
+      "signature_metadata": {
+        "ambiguous_union_execution": "cupy_partition_points",
+        "ambiguous_union_skipped_reason": null,
+        "component_count": 5,
+        "device_ambiguous_union_used": true,
+        "label_materialization": "component_size_signature_only"
+      },
+      "signature_repeated_run": {
+        "mean_sec": 0.00137844979763031,
+        "median_sec": 0.0013724565505981445,
+        "min_sec": 0.0013655498623847961
+      },
+      "summary_metadata": {
+        "pair_capacity_source": "device_upper_bound",
+        "pair_count": 54627,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_count": 888,
+        "status_counts": {
+          "ambiguous_partition_pairs": 16,
+          "safe_full_partition_pairs": 28516,
+          "safe_skip_partition_pairs": 26095
+        }
+      }
+    },
+    {
+      "component_signature_match": true,
+      "label_over_signature_median": 1.263348134214095,
+      "label_over_signature_min": 1.2721970867358199,
+      "label_repeated_run": {
+        "mean_sec": 0.0017219960689544677,
+        "median_sec": 0.001721315085887909,
+        "min_sec": 0.0017179027199745178
+      },
+      "point_count": 1024,
+      "profile": "road3d_1024",
+      "signature_metadata": {
+        "ambiguous_union_execution": "cupy_partition_points",
+        "ambiguous_union_skipped_reason": null,
+        "component_count": 1,
+        "device_ambiguous_union_used": true,
+        "label_materialization": "component_size_signature_only"
+      },
+      "signature_repeated_run": {
+        "mean_sec": 0.0013636916875839234,
+        "median_sec": 0.0013625025749206543,
+        "min_sec": 0.0013503432273864746
+      },
+      "summary_metadata": {
+        "pair_capacity_source": "device_upper_bound",
+        "pair_count": 9773,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_count": 937,
+        "status_counts": {
+          "ambiguous_partition_pairs": 132,
+          "safe_full_partition_pairs": 7681,
+          "safe_skip_partition_pairs": 1960
+        }
+      }
+    },
+    {
+      "component_signature_match": true,
+      "label_over_signature_median": 1.8771452765782872,
+      "label_over_signature_min": 1.8789034036306802,
+      "label_repeated_run": {
+        "mean_sec": 0.005840277671813965,
+        "median_sec": 0.0026590824127197266,
+        "min_sec": 0.002651199698448181
+      },
+      "point_count": 2048,
+      "profile": "clustered3d_2048",
+      "signature_metadata": {
+        "ambiguous_union_execution": "cupy_partition_points",
+        "ambiguous_union_skipped_reason": "no_ambiguous_partition_pairs",
+        "component_count": 4,
+        "device_ambiguous_union_used": false,
+        "label_materialization": "component_size_signature_only"
+      },
+      "signature_repeated_run": {
+        "mean_sec": 0.001438392698764801,
+        "median_sec": 0.0014165565371513367,
+        "min_sec": 0.0014110356569290161
+      },
+      "summary_metadata": {
+        "pair_capacity_source": "device_upper_bound",
+        "pair_count": 171392,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_count": 2048,
+        "status_counts": {
+          "ambiguous_partition_pairs": 0,
+          "safe_full_partition_pairs": 80016,
+          "safe_skip_partition_pairs": 91376
+        }
+      }
+    },
+    {
+      "component_signature_match": true,
+      "label_over_signature_median": 1.6136043437653353,
+      "label_over_signature_min": 1.6157494879570677,
+      "label_repeated_run": {
+        "mean_sec": 0.0030388787388801576,
+        "median_sec": 0.0030378401279449463,
+        "min_sec": 0.0030328258872032166
+      },
+      "point_count": 2048,
+      "profile": "road3d_2048",
+      "signature_metadata": {
+        "ambiguous_union_execution": "cupy_partition_points",
+        "ambiguous_union_skipped_reason": null,
+        "component_count": 1,
+        "device_ambiguous_union_used": true,
+        "label_materialization": "component_size_signature_only"
+      },
+      "signature_repeated_run": {
+        "mean_sec": 0.0018824756145477295,
+        "median_sec": 0.0018826425075531006,
+        "min_sec": 0.0018770396709442139
+      },
+      "summary_metadata": {
+        "pair_capacity_source": "device_upper_bound",
+        "pair_count": 19728,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_count": 1881,
+        "status_counts": {
+          "ambiguous_partition_pairs": 257,
+          "safe_full_partition_pairs": 15498,
+          "safe_skip_partition_pairs": 3973
+        }
+      }
+    },
+    {
+      "component_signature_match": true,
+      "label_over_signature_median": 1.840502346096529,
+      "label_over_signature_min": 1.8263307796933308,
+      "label_repeated_run": {
+        "mean_sec": 0.00594799667596817,
+        "median_sec": 0.005944311618804932,
+        "min_sec": 0.005852535367012024
+      },
+      "point_count": 4096,
+      "profile": "clustered3d_4096",
+      "signature_metadata": {
+        "ambiguous_union_execution": "cupy_partition_points",
+        "ambiguous_union_skipped_reason": null,
+        "component_count": 5,
+        "device_ambiguous_union_used": true,
+        "label_materialization": "component_size_signature_only"
+      },
+      "signature_repeated_run": {
+        "mean_sec": 0.003235025703907013,
+        "median_sec": 0.0032297223806381226,
+        "min_sec": 0.003204531967639923
+      },
+      "summary_metadata": {
+        "pair_capacity_source": "device_upper_bound",
+        "pair_count": 392329,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_count": 4015,
+        "status_counts": {
+          "ambiguous_partition_pairs": 7,
+          "safe_full_partition_pairs": 172668,
+          "safe_skip_partition_pairs": 219654
+        }
+      }
+    },
+    {
+      "component_signature_match": true,
+      "label_over_signature_median": 1.817354250955921,
+      "label_over_signature_min": 1.7942708575358508,
+      "label_repeated_run": {
+        "mean_sec": 0.005852831900119782,
+        "median_sec": 0.005850024521350861,
+        "min_sec": 0.0057536885142326355
+      },
+      "point_count": 4096,
+      "profile": "road3d_4096",
+      "signature_metadata": {
+        "ambiguous_union_execution": "cupy_partition_points",
+        "ambiguous_union_skipped_reason": null,
+        "component_count": 1,
+        "device_ambiguous_union_used": true,
+        "label_materialization": "component_size_signature_only"
+      },
+      "signature_repeated_run": {
+        "mean_sec": 0.0032343953847885133,
+        "median_sec": 0.0032189786434173584,
+        "min_sec": 0.003206700086593628
+      },
+      "summary_metadata": {
+        "pair_capacity_source": "device_upper_bound",
+        "pair_count": 39790,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_count": 3776,
+        "status_counts": {
+          "ambiguous_partition_pairs": 497,
+          "safe_full_partition_pairs": 31258,
+          "safe_skip_partition_pairs": 8035
+        }
+      }
+    },
+    {
+      "component_signature_match": true,
+      "label_over_signature_median": 2.3561399511687533,
+      "label_over_signature_min": 2.403743510876675,
+      "label_repeated_run": {
+        "mean_sec": 0.010347227752208709,
+        "median_sec": 0.010324709117412567,
+        "min_sec": 0.010294400155544281
+      },
+      "point_count": 8192,
+      "profile": "clustered3d_8192",
+      "signature_metadata": {
+        "ambiguous_union_execution": "cupy_partition_points",
+        "ambiguous_union_skipped_reason": "no_ambiguous_partition_pairs",
+        "component_count": 4,
+        "device_ambiguous_union_used": false,
+        "label_materialization": "component_size_signature_only"
+      },
+      "signature_repeated_run": {
+        "mean_sec": 0.004375322163105011,
+        "median_sec": 0.004382044076919556,
+        "min_sec": 0.004282653331756592
+      },
+      "summary_metadata": {
+        "pair_capacity_source": "device_upper_bound",
+        "pair_count": 912735,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_count": 8192,
+        "status_counts": {
+          "ambiguous_partition_pairs": 0,
+          "safe_full_partition_pairs": 383185,
+          "safe_skip_partition_pairs": 529550
+        }
+      }
+    },
+    {
+      "component_signature_match": true,
+      "label_over_signature_median": 2.0094027561878143,
+      "label_over_signature_min": 2.0010504229508803,
+      "label_repeated_run": {
+        "mean_sec": 0.011439406871795654,
+        "median_sec": 0.011441662907600403,
+        "min_sec": 0.011255301535129547
+      },
+      "point_count": 8192,
+      "profile": "road3d_8192",
+      "signature_metadata": {
+        "ambiguous_union_execution": "cupy_partition_points",
+        "ambiguous_union_skipped_reason": null,
+        "component_count": 1,
+        "device_ambiguous_union_used": true,
+        "label_materialization": "component_size_signature_only"
+      },
+      "signature_repeated_run": {
+        "mean_sec": 0.005697177350521087,
+        "median_sec": 0.005694061517715454,
+        "min_sec": 0.005624696612358093
+      },
+      "summary_metadata": {
+        "pair_capacity_source": "device_upper_bound",
+        "pair_count": 79245,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_count": 7534,
+        "status_counts": {
+          "ambiguous_partition_pairs": 1017,
+          "safe_full_partition_pairs": 62236,
+          "safe_skip_partition_pairs": 15992
+        }
+      }
+    }
+  ],
+  "rt_core_speedup_claim_authorized": false,
+  "schema": "rtdl.goal4046.partition_component_signature_timing.v1",
+  "source_commit": "0c2da426",
+  "true_zero_copy_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}
