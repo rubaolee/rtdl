@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import unittest
+import json
 
 import numpy as np
 
@@ -14,6 +15,7 @@ PARTNER_ADAPTERS = ROOT / "src" / "rtdsl" / "partner_adapters.py"
 TYPED_STREAM_ADAPTER = ROOT / "src" / "rtdsl" / "v2_8_segmented_typed_stream_adapter.py"
 BH_APP = ROOT / "examples" / "v2_0" / "research_benchmarks" / "barnes_hut" / "rtdl_barnes_hut_benchmark_app.py"
 REPORT = ROOT / "docs" / "reports" / "goal4052_numba_presegmented_vector_sum_2026-06-08.md"
+ARTIFACT = ROOT / "docs" / "reports" / "goal4052_numba_presegmented_vector_sum_pod_probe.json"
 
 
 def _numba_cuda_available() -> bool:
@@ -136,8 +138,25 @@ class Goal4052NumbaPresegmentedVectorSumTest(unittest.TestCase):
         self.assertIn("run_numba_grouped_vector_sum_f64x2_by_offsets", text)
         self.assertIn("presegmented row_offsets", text)
         self.assertIn("validate_row_offsets", text)
+        self.assertIn("prepared", text)
+        self.assertIn("Numba grouped-vector continuation session", text)
         self.assertIn("does not add Barnes-Hut", text)
         self.assertIn("does not authorize", text)
+
+    def test_pod_probe_records_direct_kernel_win_and_front_door_boundary(self) -> None:
+        artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(artifact["status"], "pass")
+        self.assertEqual(artifact["commit"], "5bd6295d")
+        self.assertGreaterEqual(len(artifact["rows"]), 4)
+        for row in artifact["rows"]:
+            self.assertTrue(row["matches_atomic"])
+            self.assertGreater(row["offset_vs_atomic_min_speedup"], 2.0)
+            self.assertFalse(row["metadata_fast"]["v2_5_numba_global_atomic_add_used"])
+            self.assertFalse(row["metadata_fast"]["v2_5_numba_row_offset_validation_host_sync_used"])
+            self.assertFalse(row["metadata_safe"]["rt_core_speedup_claim_authorized"])
+        for flag, value in artifact["claim_boundary"].items():
+            self.assertFalse(value, flag)
 
 
 if __name__ == "__main__":

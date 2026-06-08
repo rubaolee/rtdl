@@ -63,3 +63,17 @@ evidence at representative scale.
 - the adapter preserves the older unsegmented Numba path;
 - the CUDA path matches reference values when Numba CUDA is available;
 - the metadata keeps the claim boundary locked down.
+
+Pod validation on RTX 4000 Ada at commit `5bd6295d` passed the focused
+25-test grouped-vector gate. The pod probe
+`goal4052_numba_presegmented_vector_sum_pod_probe.json` shows the direct Numba
+offset kernel is about `2.55x` to `2.65x` faster than the older Numba
+atomic-by-group kernel on the tested presegmented shapes, while matching the
+atomic result.
+
+The same probe also exposes the next engineering blocker: the full
+`grouped_vector_sum_2d_partner_columns(...)` front door can lose that kernel
+win at larger group counts because it still pays per-call neutral-handoff and
+output-column setup costs. The next useful generic runtime target is a prepared
+Numba grouped-vector continuation session that validates and allocates stable
+columns once, then replays the offset kernel over resident input/output columns.
