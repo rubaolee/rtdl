@@ -42,8 +42,18 @@ def evaluate_manifest(path: Path) -> dict[str, Any]:
         if claim_boundary.get(field) is not False:
             errors.append(f"claim boundary does not keep {field}=False")
 
-    rayjoin = _evaluate_rayjoin(manifest.get("rayjoin", {}), warnings)
-    rtdbscan = _evaluate_rtdbscan(tuple(manifest.get("rtdbscan", ())), errors, warnings)
+    dry_run = bool(manifest.get("dry_run"))
+    planned_commands = _evaluate_planned_commands(tuple(manifest.get("planned_commands", ())), errors) if dry_run else {}
+    rayjoin = (
+        {"dry_run": True, "case_count": 0, "wrapper_phase_timing_present": False}
+        if dry_run
+        else _evaluate_rayjoin(manifest.get("rayjoin", {}), warnings)
+    )
+    rtdbscan = (
+        {"dry_run": True, "row_count": 0, "recommendation": "dry_run_planned_commands_only"}
+        if dry_run
+        else _evaluate_rtdbscan(tuple(manifest.get("rtdbscan", ())), errors, warnings)
+    )
     if manifest.get("status") not in {"pass", "dry_run"}:
         errors.append(f"unexpected manifest status: {manifest.get('status')}")
 
@@ -56,6 +66,7 @@ def evaluate_manifest(path: Path) -> dict[str, Any]:
         "status": status,
         "errors": tuple(errors),
         "warnings": tuple(warnings),
+        "planned_commands": planned_commands,
         "rayjoin": rayjoin,
         "rtdbscan": rtdbscan,
         "claim_boundary": {
@@ -94,6 +105,28 @@ def _evaluate_rayjoin(rayjoin: dict[str, Any], warnings: list[str]) -> dict[str,
         "all_cases_use_loaded_case_reuse": not missing_reuse,
         "missing_nested_subprobe_timing": missing_nested,
         "missing_loaded_case_reuse": missing_reuse,
+    }
+
+
+def _evaluate_planned_commands(
+    planned: tuple[dict[str, Any], ...],
+    errors: list[str],
+) -> dict[str, Any]:
+    names = tuple(str(row.get("name", "")) for row in planned)
+    required = (
+        "rayjoin_subprobe",
+        "rtdbscan_optix_rt_core_grouped_stream_numba_column_signature_3d",
+        "rtdbscan_optix_rt_core_grouped_stream_blocked_numba_column_signature_3d",
+    )
+    missing = tuple(name for name in required if name not in names)
+    if missing:
+        errors.append(f"dry-run manifest missing planned commands: {missing}")
+    return {
+        "dry_run": True,
+        "planned_command_count": len(planned),
+        "required_commands_present": not missing,
+        "missing_commands": missing,
+        "names": names,
     }
 
 

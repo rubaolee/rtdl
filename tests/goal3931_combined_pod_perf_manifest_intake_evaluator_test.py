@@ -10,6 +10,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "goal3931_evaluate_combined_pod_perf_manifest.py"
+RUNNER = ROOT / "scripts" / "goal3927_combined_pod_perf_queue.py"
 REPORT = ROOT / "docs" / "reports" / "goal3931_combined_pod_perf_manifest_intake_evaluator_2026-06-08.md"
 SCRATCH = ROOT / "scratch" / "goal3931_manifest_test"
 
@@ -66,6 +67,44 @@ class Goal3931CombinedPodPerfManifestIntakeEvaluatorTest(unittest.TestCase):
         self.assertEqual("reject", intake["status"])
         self.assertTrue(any("release_authorized" in error for error in intake["errors"]))
         self.assertTrue(any("both blocked and unblocked" in error for error in intake["errors"]))
+
+    def test_evaluator_accepts_goal3927_dry_run_manifest_shape(self) -> None:
+        runner_dir = SCRATCH / "runner"
+        subprocess.run(
+            [
+                sys.executable,
+                str(RUNNER),
+                "--dry-run",
+                "--output-dir",
+                str(runner_dir),
+                "--rtdl-optix-library",
+                str(ROOT / "build" / "librtdl_optix.so"),
+            ],
+            cwd=ROOT,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT),
+                str(runner_dir / "summary_manifest.json"),
+            ],
+            cwd=ROOT,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+        intake = json.loads(completed.stdout)
+
+        self.assertEqual("accept_with_boundary", intake["status"])
+        self.assertTrue(intake["planned_commands"]["required_commands_present"])
+        self.assertTrue(intake["rayjoin"]["dry_run"])
+        self.assertEqual("dry_run_planned_commands_only", intake["rtdbscan"]["recommendation"])
 
     def test_report_records_non_authorizing_intake_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
