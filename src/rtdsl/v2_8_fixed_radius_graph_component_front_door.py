@@ -62,6 +62,13 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_REQUIREMENTS = (
     "cupy_device_ambiguous_partition_union_same_contract_pod_execution",
     "numba_preview_device_columns_same_contract_pod_execution",
 )
+V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PROMOTION_BLOCKERS = (
+    "Goal4041_mixed_timing_not_universal_speed_win",
+    "prepared_front_door_still_grouped_stream_only",
+    "host_compact_label_materialization_breaks_resident_output",
+    "separate_ambiguous_classifier_kernel_not_fused",
+    "no_prepared_native_or_partner_partition_handle",
+)
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_EVIDENCE_GOALS = (
     "Goal3999",
     "Goal4001",
@@ -83,6 +90,7 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_EVIDENCE_GOALS = (
     "Goal4029",
     "Goal4032",
     "Goal4040",
+    "Goal4041",
 )
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PARTITION_GUIDANCE = MappingProxyType({
     "recommended_tested_cell_factor": "radius_x_0.125",
@@ -296,6 +304,9 @@ def describe_v2_8_fixed_radius_graph_component_front_door() -> dict[str, Any]:
         "candidate_strategy_partition_guidance": {
             "partition_convergence_hybrid": _hybrid_partition_guidance_metadata(),
         },
+        "candidate_strategy_runtime_status": {
+            "partition_convergence_hybrid": _hybrid_runtime_status_metadata(),
+        },
         "user_selected_partner_required": True,
         "typed_result_stream_contract": make_v2_8_fixed_radius_graph_component_typed_stream_contract(
             1,
@@ -383,6 +394,7 @@ def plan_v2_8_fixed_radius_graph_component_continuation(
             "candidate_strategy_requirements": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_REQUIREMENTS,
             "candidate_strategy_evidence_goals": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_EVIDENCE_GOALS,
             "candidate_strategy_partition_guidance": _hybrid_partition_guidance_metadata(),
+            "candidate_strategy_runtime_status": _hybrid_runtime_status_metadata(),
             "rejected_default_strategies": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_REJECTED_DEFAULT_STRATEGIES,
             "claim_boundary": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY,
         }
@@ -2280,6 +2292,25 @@ def _hybrid_partition_guidance_metadata() -> dict[str, Any]:
     return dict(V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PARTITION_GUIDANCE)
 
 
+def _hybrid_runtime_status_metadata() -> dict[str, Any]:
+    return {
+        "planner_status": "candidate_requires_native_implementation",
+        "planner_status_meaning": (
+            "No promoted prepared/native/default route exists for partition_convergence_hybrid. "
+            "Executable CuPy and Numba previews exist separately and remain candidate evidence only."
+        ),
+        "executable_preview_available": True,
+        "prepared_front_door_runtime_executable": False,
+        "default_route_promoted": False,
+        "partition_convergence_hybrid_promoted": False,
+        "latest_preview_evidence_goals": ("Goal4040", "Goal4041"),
+        "promotion_blockers": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PROMOTION_BLOCKERS,
+        "next_engineering_target": (
+            "fused resident component-label continuation or prepared/native partition handle"
+        ),
+    }
+
+
 def _front_door_metadata(
     plan: V28FixedRadiusGraphComponentPlan,
     *,
@@ -2349,6 +2380,7 @@ __all__ = [
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_FRONT_DOOR_VERSION",
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_EVIDENCE_GOALS",
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PARTITION_GUIDANCE",
+    "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PROMOTION_BLOCKERS",
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_REQUIREMENTS",
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_OPERATION",
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_REJECTED_DEFAULT_STRATEGIES",
