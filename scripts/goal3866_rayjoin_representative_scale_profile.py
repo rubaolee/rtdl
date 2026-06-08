@@ -96,7 +96,7 @@ def _case_summary(row: dict[str, Any]) -> dict[str, Any]:
     optix = row.get("rtdl_optix")
     numba_hot = _hot(numba if isinstance(numba, dict) else None)
     optix_hot = _hot(optix if isinstance(optix, dict) else None)
-    return {
+    summary = {
         "workload": row["workload"],
         "dataset": row["dataset"],
         "counts_match": bool(row["counts_match"]),
@@ -111,6 +111,15 @@ def _case_summary(row: dict[str, Any]) -> dict[str, Any]:
             else "rtdl_optix_prepared_scalar_count"
         ),
     }
+    if isinstance(optix, dict):
+        if optix.get("execution_route") is not None:
+            summary["rtdl_optix_execution_route"] = optix["execution_route"]
+        if optix.get("loaded_case_reuse_enabled") is not None:
+            summary["loaded_case_reuse_enabled"] = bool(optix["loaded_case_reuse_enabled"])
+    timing = row.get("wrapper_phase_timing_sec")
+    if isinstance(timing, dict):
+        summary["subprobe_wrapper_phase_timing_sec"] = timing
+    return summary
 
 
 def _pip_batch_summary(payload: dict[str, Any]) -> dict[str, Any]:
