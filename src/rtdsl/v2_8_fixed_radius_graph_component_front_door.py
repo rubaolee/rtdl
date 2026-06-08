@@ -521,6 +521,89 @@ def make_v2_8_fixed_radius_graph_component_typed_stream_contract(
     )
 
 
+def make_v2_8_fixed_radius_partition_convergence_summary_typed_stream_contract(
+    point_count: int,
+    partition_count: int,
+    pair_capacity: int,
+    *,
+    stream_id: str = "fixed_radius_partition_convergence_summary_3d",
+    device_type: str = "cuda",
+    device_id: int = 0,
+    data_ptrs: dict[str, int] | None = None,
+    source_protocol: str = "planned_cuda_device_columns",
+) -> V28TypedResultStreamContract:
+    point_count = int(point_count)
+    partition_count = int(partition_count)
+    pair_capacity = int(pair_capacity)
+    if point_count <= 0:
+        raise ValueError("point_count must be positive")
+    if partition_count <= 0:
+        raise ValueError("partition_count must be positive")
+    if pair_capacity <= 0:
+        raise ValueError("pair_capacity must be positive")
+    pointer_map = {str(key): int(value) for key, value in dict(data_ptrs or {}).items()}
+
+    def column(
+        name: str,
+        role: str,
+        dtype: str,
+        shape: tuple[int, ...],
+        *,
+        mutability: str = "immutable",
+    ):
+        return typed_result_column(
+            name,
+            role,
+            dtype,
+            shape,
+            device_type=device_type,
+            device_id=device_id,
+            data_ptr=pointer_map.get(name),
+            source_protocol=source_protocol,
+            lifetime="session_retained",
+            mutability=mutability,
+            capacity_elements=shape[0],
+        )
+
+    partition_shape = (partition_count,)
+    pair_shape = (pair_capacity,)
+    columns = (
+        column("point_partition_ids", "group_key", "uint32", (point_count,), mutability="mutable"),
+        column("occupied_partition_keys_x", "payload", "int32", partition_shape),
+        column("occupied_partition_keys_y", "payload", "int32", partition_shape),
+        column("occupied_partition_keys_z", "payload", "int32", partition_shape),
+        column("partition_offsets", "row_offset", "uint32", (partition_count + 1,)),
+        column("partition_counts", "payload", "uint32", partition_shape),
+        column("partition_aabb_min_x", "payload", "float32", partition_shape),
+        column("partition_aabb_min_y", "payload", "float32", partition_shape),
+        column("partition_aabb_min_z", "payload", "float32", partition_shape),
+        column("partition_aabb_max_x", "payload", "float32", partition_shape),
+        column("partition_aabb_max_y", "payload", "float32", partition_shape),
+        column("partition_aabb_max_z", "payload", "float32", partition_shape),
+        column("near_pair_left_partition_ids", "group_key", "uint32", pair_shape),
+        column("near_pair_right_partition_ids", "item_id", "uint32", pair_shape),
+        column("near_pair_status", "mask", "uint32", pair_shape, mutability="mutable"),
+    )
+    status_columns = typed_result_status_columns(
+        device_type=device_type,
+        device_id=device_id,
+        row_count_ptr=pointer_map.get("row_count"),
+        capacity_ptr=pointer_map.get("capacity"),
+        overflow_ptr=pointer_map.get("overflow"),
+        complete_ptr=pointer_map.get("complete_candidate_coverage"),
+        source_protocol=source_protocol,
+    )
+    return make_typed_result_stream_contract(
+        stream_id=stream_id,
+        stream_kind="candidate_stream",
+        producer_primitive="fixed_radius_partition_convergence_summary_3d",
+        columns=columns,
+        status_columns=status_columns,
+        ordering="group_ordered",
+        page_capacity=pair_capacity,
+    )
+
+
 def _unsupported_reason(*, backend: str, partner: str, strategy: str) -> str:
     if backend not in V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_BACKENDS:
         return f"unsupported backend {backend!r}; supported backends are {V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_BACKENDS}"
@@ -615,6 +698,7 @@ __all__ = [
     "describe_v2_8_fixed_radius_graph_component_front_door",
     "fixed_radius_graph_component_labels_3d_v2_8",
     "make_v2_8_fixed_radius_graph_component_typed_stream_contract",
+    "make_v2_8_fixed_radius_partition_convergence_summary_typed_stream_contract",
     "plan_v2_8_fixed_radius_graph_component_continuation",
     "prepare_v2_8_fixed_radius_graph_component_continuation_3d",
 ]
