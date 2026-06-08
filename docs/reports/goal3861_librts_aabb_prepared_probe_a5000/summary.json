@@ -1,0 +1,92 @@
+{
+  "rows": [
+    {
+      "counts": {
+        "point_contains": 46343760,
+        "range_contains": 32302908,
+        "range_intersects": 70429254
+      },
+      "name": "all_32768_repeat20",
+      "payload_elapsed_sec": 0.7450663414783776,
+      "process_sec": 2.5532096549868584,
+      "query_median_sec": 0.03025532281026244,
+      "query_prepare_sec": {
+        "point_contains": 0.020463282242417336,
+        "range_contains": 0.08456198684871197,
+        "range_intersects": 0.0
+      },
+      "query_total_sec": 0.6064109848812222,
+      "returncode": 0,
+      "scene_prepare_sec": 0.6097857495769858,
+      "stderr_tail": ""
+    },
+    {
+      "counts": {
+        "point_contains": 46343760
+      },
+      "name": "point_32768_repeat20",
+      "payload_elapsed_sec": 0.46226655319333076,
+      "process_sec": 1.643504529260099,
+      "query_median_sec": 0.007175545208156109,
+      "query_prepare_sec": {
+        "point_contains": 0.01992375496774912
+      },
+      "query_total_sec": 0.14342393912374973,
+      "returncode": 0,
+      "scene_prepare_sec": 0.43516725301742554,
+      "stderr_tail": ""
+    },
+    {
+      "counts": {
+        "range_contains": 32302908
+      },
+      "name": "range_contains_32768_repeat20",
+      "payload_elapsed_sec": 0.555894379504025,
+      "process_sec": 1.7945200903341174,
+      "query_median_sec": 0.007440623827278614,
+      "query_prepare_sec": {
+        "range_contains": 0.08730879426002502
+      },
+      "query_total_sec": 0.1487892447039485,
+      "returncode": 0,
+      "scene_prepare_sec": 0.46114496141672134,
+      "stderr_tail": ""
+    },
+    {
+      "counts": {
+        "range_intersects": 70429254
+      },
+      "name": "range_intersects_32768_repeat20",
+      "payload_elapsed_sec": 0.6558696143329144,
+      "process_sec": 2.0977947004139423,
+      "query_median_sec": 0.015772764571011066,
+      "query_prepare_sec": {
+        "range_intersects": 0.08757640514522791
+      },
+      "query_total_sec": 0.31306033954024315,
+      "returncode": 0,
+      "scene_prepare_sec": 0.5525204446166754,
+      "stderr_tail": ""
+    },
+    {
+      "counts": {
+        "point_contains": 186017866,
+        "range_contains": 130123886,
+        "range_intersects": 283113863
+      },
+      "name": "all_65536_repeat10",
+      "payload_elapsed_sec": 1.002598537132144,
+      "process_sec": 3.799974543042481,
+      "query_median_sec": 0.12526837084442377,
+      "query_prepare_sec": {
+        "point_contains": 0.03916116897016764,
+        "range_contains": 0.15211516432464123,
+        "range_intersects": 0.0
+      },
+      "query_total_sec": 1.2522816369310021,
+      "returncode": 0,
+      "scene_prepare_sec": 0.6860538329929113,
+      "stderr_tail": ""
+    }
+  ]
+}
