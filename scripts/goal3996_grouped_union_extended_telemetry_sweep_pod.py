@@ -66,12 +66,13 @@ def _run_variant(
     same_root_culling: bool,
     direct_side_effect: bool,
     repeats: int,
+    telemetry_counters: int,
 ) -> dict[str, Any]:
     cp = prepared.cupy
     samples: list[dict[str, Any]] = []
     for repeat in range(repeats):
         parent = cp.arange(prepared.point_count, dtype=cp.int32)
-        telemetry = cp.zeros((8,), dtype=cp.uint64)
+        telemetry = cp.zeros((telemetry_counters,), dtype=cp.uint64)
         elapsed_sec, result = _timed(
             cp,
             lambda: prepared.prepared_native.apply_device_grouped_union_all_self(
@@ -93,10 +94,11 @@ def _run_variant(
         )
     elapsed = [float(sample["elapsed_sec"]) for sample in samples]
     native = [float(sample["native_elapsed_sec"]) for sample in samples]
-    telemetry_ref = samples[-1]["telemetry"] if samples else [0] * 8
+    telemetry_ref = samples[-1]["telemetry"] if samples else [0] * telemetry_counters
     return {
         "same_root_culling": same_root_culling,
         "direct_side_effect": direct_side_effect,
+        "telemetry_counter_capacity": telemetry_counters,
         "repeats": repeats,
         "median_elapsed_sec": _median(elapsed),
         "median_native_elapsed_sec": _median(native),
@@ -113,6 +115,7 @@ def _run_point_count(
     seed: int,
     repeats: int,
     profile: str,
+    telemetry_counters: int,
 ) -> dict[str, Any]:
     points = make_rt_dbscan_points(profile, point_count=point_count, seed=seed)
     with rt.prepare_optix_cupy_radius_graph_grouped_stream_continuation_3d(
@@ -151,6 +154,7 @@ def _run_point_count(
                 same_root_culling=same_root_culling,
                 direct_side_effect=direct_side_effect,
                 repeats=repeats,
+                telemetry_counters=telemetry_counters,
             )
             variant["label"] = label
             variants.append(variant)
@@ -159,6 +163,7 @@ def _run_point_count(
         "radius": radius,
         "seed": seed,
         "profile": profile,
+        "telemetry_counter_capacity": telemetry_counters,
         "variants": variants,
     }
 
@@ -172,6 +177,7 @@ def main() -> int:
     parser.add_argument("--seed", type=int, default=20260608)
     parser.add_argument("--profile", default="clustered3d")
     parser.add_argument("--repeats", type=int, default=3)
+    parser.add_argument("--telemetry-counters", type=int, default=8)
     parser.add_argument("--goal", default="Goal3996")
     parser.add_argument(
         "--output",
@@ -185,6 +191,8 @@ def main() -> int:
         raise ValueError("--point-counts must contain at least one count")
     if args.repeats <= 0:
         raise ValueError("--repeats must be positive")
+    if args.telemetry_counters < 4:
+        raise ValueError("--telemetry-counters must be at least 4")
 
     started = time.perf_counter()
     rows = []
@@ -197,6 +205,7 @@ def main() -> int:
                 seed=args.seed,
                 repeats=args.repeats,
                 profile=args.profile,
+                telemetry_counters=args.telemetry_counters,
             )
         )
         print(f"[goal3996] done point_count={point_count}", flush=True)
@@ -213,6 +222,7 @@ def main() -> int:
         "radius": args.radius,
         "profile": args.profile,
         "repeats": args.repeats,
+        "telemetry_counter_capacity": args.telemetry_counters,
         "rows": rows,
         "claim_boundary": {
             "performance_claim_authorized": False,

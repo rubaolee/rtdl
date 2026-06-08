@@ -6399,23 +6399,11 @@ class PreparedOptixFixedRadiusCountThreshold3D:
             0 if telemetry_handoff is None else int(telemetry_handoff.shape[0])
         )
         use_extended_telemetry = telemetry_buffer_length >= 8
+        use_root_read_telemetry = telemetry_buffer_length >= 10
         telemetry_counter_count = (
-            8 if use_extended_telemetry else (4 if telemetry_handoff is not None else 0)
+            10 if use_root_read_telemetry else 8 if use_extended_telemetry else (4 if telemetry_handoff is not None else 0)
         )
-        telemetry_contract = None
-        if telemetry_handoff is not None:
-            telemetry_contract = (
-                "uint64[0]=parent_atomic_attempts,uint64[1]=parent_atomic_successes,"
-                "uint64[2]=fallback_atomic_attempts,uint64[3]=fallback_atomic_successes,"
-                "uint64[4]=radius_candidate_hits_after_predicate,"
-                "uint64[5]=same_root_culled_candidate_hits,"
-                "uint64[6]=direct_side_effect_candidate_hits,"
-                "uint64[7]=reported_intersection_candidates"
-                if use_extended_telemetry
-                else
-                "uint64[0]=parent_atomic_attempts,uint64[1]=parent_atomic_successes,"
-                "uint64[2]=fallback_atomic_attempts,uint64[3]=fallback_atomic_successes"
-            )
+        telemetry_contract = _grouped_union_telemetry_contract(telemetry_counter_count)
 
         query_count = self._packed_search.count
         if query_count == 0:
@@ -6463,6 +6451,7 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                     "grouped_union_telemetry_buffer_length": telemetry_buffer_length,
                     "grouped_union_telemetry_counter_count": telemetry_counter_count,
                     "grouped_union_extended_telemetry_enabled": use_extended_telemetry,
+                    "grouped_union_root_read_telemetry_enabled": use_root_read_telemetry,
                     "grouped_union_telemetry_contract": telemetry_contract,
                 }
             }
@@ -6625,6 +6614,7 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                 "grouped_union_telemetry_buffer_length": telemetry_buffer_length,
                 "grouped_union_telemetry_counter_count": telemetry_counter_count,
                 "grouped_union_extended_telemetry_enabled": use_extended_telemetry,
+                "grouped_union_root_read_telemetry_enabled": use_root_read_telemetry,
                 "grouped_union_telemetry_contract": telemetry_contract,
                 "direct_device_handoff_authorized": True,
                 "output_columns_true_zero_copy_authorized": True,
@@ -6681,23 +6671,11 @@ class PreparedOptixFixedRadiusCountThreshold3D:
             0 if telemetry_handoff is None else int(telemetry_handoff.shape[0])
         )
         use_extended_telemetry = telemetry_buffer_length >= 8
+        use_root_read_telemetry = telemetry_buffer_length >= 10
         telemetry_counter_count = (
-            8 if use_extended_telemetry else (4 if telemetry_handoff is not None else 0)
+            10 if use_root_read_telemetry else 8 if use_extended_telemetry else (4 if telemetry_handoff is not None else 0)
         )
-        telemetry_contract = None
-        if telemetry_handoff is not None:
-            telemetry_contract = (
-                "uint64[0]=parent_atomic_attempts,uint64[1]=parent_atomic_successes,"
-                "uint64[2]=fallback_atomic_attempts,uint64[3]=fallback_atomic_successes,"
-                "uint64[4]=radius_candidate_hits_after_predicate,"
-                "uint64[5]=same_root_culled_candidate_hits,"
-                "uint64[6]=direct_side_effect_candidate_hits,"
-                "uint64[7]=reported_intersection_candidates"
-                if use_extended_telemetry
-                else
-                "uint64[0]=parent_atomic_attempts,uint64[1]=parent_atomic_successes,"
-                "uint64[2]=fallback_atomic_attempts,uint64[3]=fallback_atomic_successes"
-            )
+        telemetry_contract = _grouped_union_telemetry_contract(telemetry_counter_count)
 
         query_count = self._packed_search.count
         if query_count == 0:
@@ -6746,6 +6724,7 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                     "grouped_union_telemetry_buffer_length": telemetry_buffer_length,
                     "grouped_union_telemetry_counter_count": telemetry_counter_count,
                     "grouped_union_extended_telemetry_enabled": use_extended_telemetry,
+                    "grouped_union_root_read_telemetry_enabled": use_root_read_telemetry,
                     "grouped_union_telemetry_contract": telemetry_contract,
                 }
             }
@@ -6903,6 +6882,7 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                 "grouped_union_telemetry_buffer_length": telemetry_buffer_length,
                 "grouped_union_telemetry_counter_count": telemetry_counter_count,
                 "grouped_union_extended_telemetry_enabled": use_extended_telemetry,
+                "grouped_union_root_read_telemetry_enabled": use_root_read_telemetry,
                 "grouped_union_telemetry_contract": telemetry_contract,
                 "direct_device_handoff_authorized": True,
                 "output_columns_true_zero_copy_authorized": True,
@@ -10540,6 +10520,31 @@ def _grouped_union_direct_side_effect_policy(enabled: bool) -> str:
         "intersection_program_side_effect_no_anyhit_report"
         if enabled
         else "disabled_by_default_anyhit_side_effect"
+    )
+
+
+def _grouped_union_telemetry_contract(counter_count: int) -> str | None:
+    if counter_count <= 0:
+        return None
+    base = (
+        "uint64[0]=parent_atomic_attempts,uint64[1]=parent_atomic_successes,"
+        "uint64[2]=fallback_atomic_attempts,uint64[3]=fallback_atomic_successes"
+    )
+    if counter_count < 8:
+        return base
+    extended = (
+        base
+        + ",uint64[4]=radius_candidate_hits_after_predicate,"
+        "uint64[5]=same_root_culled_candidate_hits,"
+        "uint64[6]=direct_side_effect_candidate_hits,"
+        "uint64[7]=reported_intersection_candidates"
+    )
+    if counter_count < 10:
+        return extended
+    return (
+        extended
+        + ",uint64[8]=root_find_invocations,"
+        "uint64[9]=root_find_parent_link_steps"
     )
 
 

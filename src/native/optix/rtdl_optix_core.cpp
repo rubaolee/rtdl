@@ -4837,9 +4837,11 @@ void grouped_union_telemetry_add(uint32_t index, unsigned long long value) {
 
 extern "C" __device__
 int find_grouped_union_root_readonly(int* parent, int item) {
+    grouped_union_telemetry_add(8u, 1ull);
     int root = item;
     int guard = 0;
     while (parent[root] != root && guard < 4096) {
+        grouped_union_telemetry_add(9u, 1ull);
         root = parent[root];
         ++guard;
     }
