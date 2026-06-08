@@ -33,6 +33,14 @@ offset-path shape, avoids cross-group global atomic adds, and records:
 - `v2_5_numba_adapter_kernel: numba_grouped_vector_sum_offsets_f64x2_kernel`
 - `v2_5_numba_global_atomic_add_used: False`
 - `v2_6_neutral_handoff_validation_status: accept`
+- `v2_5_numba_row_offset_validation_host_sync_used: True|False`
+
+The public default is `validate_row_offsets=True`. Hot resident loops may pass
+`validate_row_offsets=False` only after validating or constructing a stable
+`row_offsets` layout elsewhere. The switch is explicit in both
+`grouped_vector_sum_2d_partner_columns(...)` and
+`execute_grouped_vector_sum_typed_stream_partner_columns(...)`; it is not hidden
+dispatch and does not change partner selection.
 
 ## Boundary
 

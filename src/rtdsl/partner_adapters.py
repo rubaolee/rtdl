@@ -2037,6 +2037,7 @@ def grouped_vector_sum_2d_partner_columns(
     group_count: int,
     partner: str = "triton",
     triton_offset_groups_per_program: int = 1,
+    validate_row_offsets: bool = True,
     return_metadata: bool = False,
 ) -> dict[str, object]:
     """Reduce generic grouped 2D vector rows into dense per-group vector sums."""
@@ -2098,6 +2099,7 @@ def grouped_vector_sum_2d_partner_columns(
                 row_offsets,
                 values_x,
                 values_y,
+                validate_row_offsets=bool(validate_row_offsets),
             )
             numba_offset_result = numba_result
         columns = {
@@ -2124,6 +2126,9 @@ def grouped_vector_sum_2d_partner_columns(
             ),
             "v2_5_numba_offset_program_count": (
                 numba_offset_result["program_count"] if numba_offset_result is not None else None
+            ),
+            "v2_5_numba_row_offset_validation_host_sync_used": (
+                numba_offset_result["row_offset_validation_host_sync_used"] if numba_offset_result is not None else None
             ),
             "v2_5_triton_preview_kernel_used": False,
             "v2_5_cupy_rawkernel_used": False,

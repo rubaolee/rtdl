@@ -737,6 +737,7 @@ def execute_grouped_vector_sum_typed_stream_partner_columns(
     ordering: str = "group_ordered",
     row_offsets: Any | None = None,
     triton_offset_groups_per_program: int = 1,
+    validate_row_offsets: bool = True,
     dry_run: bool = False,
 ) -> dict[str, Any]:
     """Execute a generic grouped vector-sum typed stream over caller columns."""
@@ -846,6 +847,7 @@ def execute_grouped_vector_sum_typed_stream_partner_columns(
         "group_count": resolved_group_count,
         "row_count": row_count,
         "row_offsets_provided": row_offsets is not None,
+        "row_offset_validation_requested": bool(validate_row_offsets) if row_offsets is not None else None,
         "typed_stream": typed_stream.to_metadata(),
         "continuation_plan": plan.to_metadata(),
         "requires_caller_supplied_partner_columns": True,
@@ -875,6 +877,7 @@ def execute_grouped_vector_sum_typed_stream_partner_columns(
         group_count=resolved_group_count,
         partner=str(partner),
         triton_offset_groups_per_program=int(triton_offset_groups_per_program),
+        validate_row_offsets=bool(validate_row_offsets),
         return_metadata=True,
     )
     columns_out = dict(result["columns"])

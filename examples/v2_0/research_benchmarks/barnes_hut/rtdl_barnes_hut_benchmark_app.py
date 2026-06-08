@@ -232,6 +232,7 @@ def run_barnes_hut_v2_8_grouped_vector_sum_typed_stream_preview(
     partner: str = "cupy",
     dry_run: bool = False,
     triton_offset_groups_per_program: int = 1,
+    validate_row_offsets: bool = True,
 ) -> dict[str, Any]:
     request = rt.execute_grouped_vector_sum_typed_stream_partner_columns(
         group_ids=inputs["group_ids"],
@@ -243,6 +244,7 @@ def run_barnes_hut_v2_8_grouped_vector_sum_typed_stream_preview(
         producer_primitive=str(inputs.get("producer_primitive", "aggregate_frontier_weighted_vector_columns_2d")),
         row_offsets=inputs.get("row_offsets"),
         triton_offset_groups_per_program=triton_offset_groups_per_program,
+        validate_row_offsets=bool(validate_row_offsets),
         dry_run=dry_run,
     )
     return {
@@ -272,6 +274,7 @@ def run_barnes_hut_grouped_vector_sum_typed_stream_preview(
     partner: str = "cupy",
     dry_run: bool = False,
     triton_offset_groups_per_program: int = 1,
+    validate_row_offsets: bool = True,
 ) -> dict[str, Any]:
     """Current alias for the legacy v2.8 grouped-vector typed-stream runner."""
 
@@ -280,6 +283,7 @@ def run_barnes_hut_grouped_vector_sum_typed_stream_preview(
         partner=partner,
         dry_run=dry_run,
         triton_offset_groups_per_program=triton_offset_groups_per_program,
+        validate_row_offsets=bool(validate_row_offsets),
     )
     return {
         **payload,

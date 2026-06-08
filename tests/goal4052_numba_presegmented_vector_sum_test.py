@@ -11,6 +11,8 @@ import rtdsl as rt
 ROOT = Path(__file__).resolve().parents[1]
 NUMBA_RUNTIME = ROOT / "src" / "rtdsl" / "numba_partner_continuation.py"
 PARTNER_ADAPTERS = ROOT / "src" / "rtdsl" / "partner_adapters.py"
+TYPED_STREAM_ADAPTER = ROOT / "src" / "rtdsl" / "v2_8_segmented_typed_stream_adapter.py"
+BH_APP = ROOT / "examples" / "v2_0" / "research_benchmarks" / "barnes_hut" / "rtdl_barnes_hut_benchmark_app.py"
 REPORT = ROOT / "docs" / "reports" / "goal4052_numba_presegmented_vector_sum_2026-06-08.md"
 
 
@@ -41,6 +43,17 @@ class Goal4052NumbaPresegmentedVectorSumTest(unittest.TestCase):
         self.assertIn("run_numba_grouped_vector_sum_f64x2_by_offsets", adapter_source)
         self.assertIn('"v2_5_numba_presegmented_offsets_used"', adapter_source)
         self.assertIn('"v2_5_numba_global_atomic_add_used"', adapter_source)
+        self.assertIn("validate_row_offsets: bool = True", adapter_source)
+
+    def test_typed_stream_and_benchmark_helpers_expose_explicit_validation_switch(self) -> None:
+        typed_stream_source = TYPED_STREAM_ADAPTER.read_text(encoding="utf-8")
+        app_source = BH_APP.read_text(encoding="utf-8")
+
+        self.assertIn("validate_row_offsets: bool = True", typed_stream_source)
+        self.assertIn('"row_offset_validation_requested"', typed_stream_source)
+        self.assertIn("validate_row_offsets=bool(validate_row_offsets)", typed_stream_source)
+        self.assertIn("validate_row_offsets: bool = True", app_source)
+        self.assertIn("validate_row_offsets=bool(validate_row_offsets)", app_source)
 
     def test_numba_offset_path_keeps_old_unsegmented_path_available(self) -> None:
         adapter_source = PARTNER_ADAPTERS.read_text(encoding="utf-8")
@@ -75,10 +88,34 @@ class Goal4052NumbaPresegmentedVectorSumTest(unittest.TestCase):
         self.assertTrue(metadata["v2_5_numba_presegmented_offsets_used"])
         self.assertEqual("numba_grouped_vector_sum_offsets_f64x2_kernel", metadata["v2_5_numba_adapter_kernel"])
         self.assertFalse(metadata["v2_5_numba_global_atomic_add_used"])
+        self.assertTrue(metadata["v2_5_numba_row_offset_validation_host_sync_used"])
         self.assertEqual(metadata["v2_6_neutral_handoff_validation_status"], "accept")
         self.assertEqual(metadata["v2_6_neutral_handoff_column_count"], 4)
         self.assertFalse(metadata["rt_core_speedup_claim_authorized"])
         self.assertFalse(metadata["v2_5_release_authorized"])
+
+    def test_numba_cuda_offset_path_can_skip_repeated_offset_validation_when_available(self) -> None:
+        if not _numba_cuda_available():
+            self.skipTest("Numba CUDA is not available")
+        from numba import cuda
+
+        columns = {
+            "group_ids": cuda.to_device(np.asarray([0, 0, 1, 1], dtype=np.int64)),
+            "row_offsets": cuda.to_device(np.asarray([0, 2, 4], dtype=np.int64)),
+            "values_x": cuda.to_device(np.asarray([1.0, 3.0, -2.0, 5.0], dtype=np.float64)),
+            "values_y": cuda.to_device(np.asarray([0.5, 1.5, 10.0, -3.0], dtype=np.float64)),
+        }
+        result = rt.grouped_vector_sum_2d_partner_columns(
+            columns,
+            group_count=2,
+            partner="numba",
+            validate_row_offsets=False,
+            return_metadata=True,
+        )
+
+        self.assertTrue(np.allclose(result["columns"]["sum_x"].copy_to_host(), [4.0, 3.0]))
+        self.assertTrue(np.allclose(result["columns"]["sum_y"].copy_to_host(), [2.0, 7.0]))
+        self.assertFalse(result["metadata"]["v2_5_numba_row_offset_validation_host_sync_used"])
 
     def test_offset_path_rejects_bad_offsets_when_cuda_available(self) -> None:
         if not _numba_cuda_available():
@@ -98,6 +135,7 @@ class Goal4052NumbaPresegmentedVectorSumTest(unittest.TestCase):
         self.assertIn("Goal4052", text)
         self.assertIn("run_numba_grouped_vector_sum_f64x2_by_offsets", text)
         self.assertIn("presegmented row_offsets", text)
+        self.assertIn("validate_row_offsets", text)
         self.assertIn("does not add Barnes-Hut", text)
         self.assertIn("does not authorize", text)
 
