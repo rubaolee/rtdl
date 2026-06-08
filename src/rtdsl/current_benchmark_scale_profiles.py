@@ -30,6 +30,10 @@ class CurrentBenchmarkScaleProfile:
     stdout_policy: str = "file_backed_stdout_required"
     requires_optix_library: bool = True
     requires_numba: bool = False
+    timing_metric_scope: str = "wrapper_elapsed_sec_is_pod_budget_not_hot_path_metric"
+    representative_hot_path_metric: str = "payload_timing_summary_or_app_phase_timing"
+    hot_path_duration_target_sec: float | None = None
+    scale_calibration_status: str = "internal_current_scale_not_claim_grade"
     release_authorized: bool = False
     public_speedup_claim_authorized: bool = False
     broad_rt_core_claim_authorized: bool = False
@@ -54,6 +58,14 @@ class CurrentBenchmarkScaleProfile:
             raise ValueError(f"{self.app}: evidence_refs must not be empty")
         if not self.expected_runtime_class:
             raise ValueError(f"{self.app}: expected_runtime_class must be explicit")
+        if self.timing_metric_scope != "wrapper_elapsed_sec_is_pod_budget_not_hot_path_metric":
+            raise ValueError(f"{self.app}: timing_metric_scope must keep wrapper elapsed out of hot-path claims")
+        if not self.representative_hot_path_metric:
+            raise ValueError(f"{self.app}: representative_hot_path_metric must be explicit")
+        if self.hot_path_duration_target_sec is not None and self.hot_path_duration_target_sec <= 0:
+            raise ValueError(f"{self.app}: hot_path_duration_target_sec must be positive when set")
+        if not self.scale_calibration_status:
+            raise ValueError(f"{self.app}: scale_calibration_status must be explicit")
         for flag in (
             "release_authorized",
             "public_speedup_claim_authorized",
@@ -80,6 +92,10 @@ class CurrentBenchmarkScaleProfile:
             "stdout_policy": self.stdout_policy,
             "requires_optix_library": self.requires_optix_library,
             "requires_numba": self.requires_numba,
+            "timing_metric_scope": self.timing_metric_scope,
+            "representative_hot_path_metric": self.representative_hot_path_metric,
+            "hot_path_duration_target_sec": self.hot_path_duration_target_sec,
+            "scale_calibration_status": self.scale_calibration_status,
             "release_authorized": self.release_authorized,
             "public_speedup_claim_authorized": self.public_speedup_claim_authorized,
             "broad_rt_core_claim_authorized": self.broad_rt_core_claim_authorized,
@@ -201,6 +217,8 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
         timeout_sec=120,
         evidence_refs=("Goal3826", "Goal3827", "Goal3831"),
         expected_runtime_class="default_scale_no_probe_reference",
+        representative_hot_path_metric="benchmark_timing_sec.tail_phase_traversal_sec",
+        scale_calibration_status="short_row_repeat_calibration_rejected_goal3979",
     ),
     CurrentBenchmarkScaleProfile(
         app="contact_manifold",
@@ -253,6 +271,8 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
         timeout_sec=240,
         evidence_refs=("Goal3827",),
         expected_runtime_class="safe_medium",
+        representative_hot_path_metric="metadata.timings.native_call_wall",
+        scale_calibration_status="short_row_repeat_calibration_rejected_goal3979",
     ),
     CurrentBenchmarkScaleProfile(
         app="barnes_hut",
@@ -385,6 +405,8 @@ def summarize_current_benchmark_scale_profiles(
         ),
         "numba_required_rows": tuple(row["row_id"] for row in matrix if row["requires_numba"]),
         "optix_required_rows": tuple(row["row_id"] for row in matrix if row["requires_optix_library"]),
+        "timing_metric_scope": "wrapper_elapsed_sec_is_pod_budget_not_hot_path_metric",
+        "scale_calibration_statuses": tuple(sorted({row["scale_calibration_status"] for row in matrix})),
         "claim_boundary": CURRENT_BENCHMARK_SCALE_PROFILE_CLAIM_BOUNDARY,
         "release_authorized": False,
         "public_speedup_claim_authorized": False,
@@ -422,6 +444,15 @@ def validate_current_benchmark_scale_profiles(
             errors.append(f"{app}: expected_runtime_class must be explicit")
         if not isinstance(row.get("timeout_sec"), int) or int(row.get("timeout_sec", 0)) <= 0:
             errors.append(f"{app}: timeout_sec must be positive")
+        if row.get("timing_metric_scope") != "wrapper_elapsed_sec_is_pod_budget_not_hot_path_metric":
+            errors.append(f"{app}: timing_metric_scope must keep wrapper elapsed out of hot-path claims")
+        if not row.get("representative_hot_path_metric"):
+            errors.append(f"{app}: representative_hot_path_metric must be explicit")
+        target = row.get("hot_path_duration_target_sec")
+        if target is not None and (not isinstance(target, (int, float)) or float(target) <= 0.0):
+            errors.append(f"{app}: hot_path_duration_target_sec must be positive when set")
+        if not row.get("scale_calibration_status"):
+            errors.append(f"{app}: scale_calibration_status must be explicit")
         for flag in (
             "release_authorized",
             "public_speedup_claim_authorized",
