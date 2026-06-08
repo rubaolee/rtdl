@@ -1,0 +1,87 @@
+{
+  "all_counts_match": true,
+  "block_size": 128,
+  "boundary": "Representative RayJoin current-route scale profile over bounded public-CDB slices. This is not a RayJoin paper reproduction, not automatic dispatch, not a public speedup claim, and not release evidence.",
+  "cases": [
+    {
+      "counts_match": true,
+      "dataset": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+      "numba_hot_median_sec": 0.000521486159414053,
+      "numba_rawkernel_required": false,
+      "numba_speedup_vs_rtdl_optix": 4.32287033556184,
+      "recommended_route": "numba_cuda_jit_scalar_count",
+      "rtdl_optix_hot_median_sec": 0.0022543170489370823,
+      "rtdl_optix_speedup_vs_numba": 0.2313277804734411,
+      "workload": "pip"
+    },
+    {
+      "counts_match": true,
+      "dataset": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count512.cdb + /root/rtdl/data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+      "numba_hot_median_sec": 0.020652829203754663,
+      "numba_rawkernel_required": false,
+      "numba_speedup_vs_rtdl_optix": 0.005061529554742462,
+      "recommended_route": "rtdl_optix_prepared_scalar_count",
+      "rtdl_optix_hot_median_sec": 0.00010453490540385246,
+      "rtdl_optix_speedup_vs_numba": 197.56873671972096,
+      "workload": "lsi"
+    },
+    {
+      "counts_match": true,
+      "dataset": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count512.cdb + /root/rtdl/data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+      "numba_hot_median_sec": 0.04875110974535346,
+      "numba_rawkernel_required": false,
+      "numba_speedup_vs_rtdl_optix": 0.004164378570627379,
+      "recommended_route": "rtdl_optix_prepared_scalar_count",
+      "rtdl_optix_hot_median_sec": 0.00020301807671785355,
+      "rtdl_optix_speedup_vs_numba": 240.13186674556974,
+      "workload": "overlay_seed"
+    }
+  ],
+  "claim_boundary": {
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "broad_rt_core_speedup_claim_authorized": false,
+    "internal_results_only": true,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "cupy_required_for_reference_route": false,
+  "data_dir": "/root/rtdl/data/rayjoin_public_cdb",
+  "dry_run": false,
+  "generated_at_unix": 1780899538.8254726,
+  "git_commit": "506bdf3cd8a14ecc603df47f03d2be5e59fc1afa",
+  "git_status_short": "?? docs/reports/goal3894_current_scale_with_runtime_provenance_a5000/",
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "numba_reference_available_for_custom_logic": true,
+  "pip_batch_device_predicate_eps": "1e-9",
+  "pip_batch_executor": {
+    "dataset": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+    "exact_count": 1417,
+    "largest_request_count": 100,
+    "largest_request_effective_streams": 16,
+    "largest_request_per_request_ms_median": 0.02425042912364006,
+    "largest_request_total_ms_median": 2.425042912364006,
+    "point_count": 512,
+    "recommended_route": "rtdl_optix_prepared_pip_batch_executor",
+    "shape_count": 478,
+    "single_ms_median": 0.21157320588827133,
+    "throughput_evidence_not_one_shot_latency": true
+  },
+  "raw_cuda_kernel_required_for_reference_route": false,
+  "recommended_route_summary": {
+    "automatic_dispatch": false,
+    "lsi_scalar_count": "rtdl_optix_prepared_segment_pair_count",
+    "overlay_active_count": "rtdl_optix_prepared_shape_pair_active_count",
+    "pip_one_shot": "numba_cuda_jit_scalar_count_no_rawkernel",
+    "pip_repeated_requests": "rtdl_optix_prepared_batch_executor",
+    "user_route_choice_visible": true
+  },
+  "repeat": 50,
+  "representative_scale_profile": true,
+  "schema": "rtdl.goal3866.rayjoin_representative_scale_profile.v1",
+  "warmup": 5
+}
