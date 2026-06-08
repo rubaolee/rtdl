@@ -7,6 +7,7 @@ from typing import Any
 
 V2_6_PARTNER_CHOICE_GUIDANCE_VERSION = "rtdl.v2_6.partner_choice_guidance.v1"
 V2_6_NUMBA_REFERENCE_INDEX_VERSION = "rtdl.v2_6.numba_reference_index.v1"
+V2_6_NUMBA_PARITY_EXPECTATIONS_VERSION = "rtdl.v2_6.numba_parity_expectations.v1"
 V2_6_PARTNER_CHOICE_GUIDANCE_STATUS = "internal_guidance_not_release_authorization"
 V2_6_ALLOWED_RECOMMENDED_PARTNERS = ("rtdl_primitive", "cupy", "numba", "none")
 V2_6_PARTNER_CHOICE_STATUSES = (
@@ -43,6 +44,39 @@ V2_6_PARTNER_CHOICE_CLAIM_BOUNDARY = (
     "speedup wording, authorize RT-core wording, authorize true-zero-copy "
     "wording, or authorize app-specific native-engine behavior."
 )
+
+V2_6_NUMBA_PARITY_EXPECTATIONS: dict[str, dict[str, str]] = {
+    "hausdorff_xhd": {
+        "parity_requirement": "directed max-of-nearest distance and witness tolerance must match the exact app oracle",
+        "parity_status": "contract_evidence_not_default",
+        "parity_evidence": "Goal3046/Goal3048/Goal3052",
+    },
+    "spatial_rayjoin": {
+        "parity_requirement": "row-stream compaction must preserve same-contract PIP, LSI, and overlay-seed selected row ids",
+        "parity_status": "covered_for_current_numba_reference",
+        "parity_evidence": "Goal3003/Goal3052/Goal3838",
+    },
+    "rt_dbscan": {
+        "parity_requirement": "component/signature columns must match the DBSCAN reference signature for the chosen dataset contract",
+        "parity_status": "covered_for_unblocked_reference_blocked_modes_pending_goal3920",
+        "parity_evidence": "Goal3859/Goal3918/Goal3920",
+    },
+    "raydb_style": {
+        "parity_requirement": "grouped count/sum/min/max/avg continuations must match scalar grouped-reduction oracle values",
+        "parity_status": "covered_for_current_numba_reference",
+        "parity_evidence": "Goal2995/Goal3052",
+    },
+    "barnes_hut": {
+        "parity_requirement": "force-vector continuation must match the exact force-vector tolerance envelope",
+        "parity_status": "covered_for_measured_no_rawkernel_reference",
+        "parity_evidence": "Goal3837/Goal3869",
+    },
+    "triangle_counting": {
+        "parity_requirement": "compacted candidate row ids and original indices must match the CPU mask oracle",
+        "parity_status": "covered_for_current_numba_reference",
+        "parity_evidence": "Goal3000/Goal3925",
+    },
+}
 
 
 @dataclass(frozen=True)
@@ -312,6 +346,55 @@ def v2_6_numba_reference_index() -> dict[str, Any]:
         ),
         "cupy_only_custom_partner_gaps": tuple(row["benchmark_app"] for row in gap_rows),
         "all_custom_partner_apps_have_numba_reference": not gap_rows,
+        "automatic_partner_selection_allowed": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "broad_partner_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "release_authorized": False,
+        "claim_boundary": V2_6_PARTNER_CHOICE_CLAIM_BOUNDARY,
+    }
+
+
+def v2_6_numba_parity_expectations() -> dict[str, Any]:
+    """Return parity requirements for current benchmark Numba reference rows."""
+
+    index = v2_6_numba_reference_index()
+    rows = []
+    missing_expectation_apps: list[str] = []
+    for row in index["rows"]:
+        app = str(row["benchmark_app"])
+        if not row["numba_reference_available"]:
+            continue
+        expectation = V2_6_NUMBA_PARITY_EXPECTATIONS.get(app)
+        if expectation is None:
+            missing_expectation_apps.append(app)
+            continue
+        rows.append(
+            {
+                "benchmark_app": app,
+                "continuation_shape": row["continuation_shape"],
+                "recommended_partner": row["recommended_partner"],
+                "numba_reference_status": row["numba_reference_status"],
+                "custom_partner_required": row["custom_partner_required"],
+                "parity_requirement": expectation["parity_requirement"],
+                "parity_status": expectation["parity_status"],
+                "parity_evidence": expectation["parity_evidence"],
+                "release_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "broad_partner_speedup_claim_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+                "automatic_partner_selection_allowed": False,
+            }
+        )
+    return {
+        "expectations_version": V2_6_NUMBA_PARITY_EXPECTATIONS_VERSION,
+        "index_version": V2_6_NUMBA_REFERENCE_INDEX_VERSION,
+        "status": "advisory_parity_requirements_not_release_authorization",
+        "rows": tuple(rows),
+        "row_count": len(rows),
+        "missing_expectation_apps": tuple(missing_expectation_apps),
+        "all_available_numba_references_have_parity_expectations": not missing_expectation_apps,
         "automatic_partner_selection_allowed": False,
         "public_speedup_claim_authorized": False,
         "rt_core_speedup_claim_authorized": False,

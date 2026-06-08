@@ -47,3 +47,8 @@ For a direct Numba-reference lookup, use
 the current Numba role, whether a custom partner is required for the reference
 path, and whether any CuPy-only custom-continuation gap remains. This helper is
 also advisory only; it never selects a partner for the user.
+
+For parity expectations behind those Numba references, use
+`rtdsl.v2_6_numba_parity_expectations()`. It names the oracle or tolerance that
+must be checked for each current Numba reference row and keeps pending items,
+such as RT-DBSCAN blocked-mode A5000 timing, explicit.
