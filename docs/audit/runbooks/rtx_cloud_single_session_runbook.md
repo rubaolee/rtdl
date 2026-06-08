@@ -161,6 +161,80 @@ PYTHONPATH=src:. python3 scripts/goal763_rtx_cloud_bootstrap_check.py \
   --output-json docs/reports/goal763_rtx_cloud_bootstrap_check.json
 ```
 
+## Current v2.x Partner Toolchain On Driver 550 Pods
+
+Goal3971 found that the current ten-app scale-profile packet needs two partner
+dependencies in addition to the RTDL OptiX build:
+
+- Numba for the no-RawKernel reference/custom-continuation rows.
+- CuPy for the RayJoin prepared exact-refiner subpath.
+
+On driver `550.127.05`, do not install latest Numba and immediately run the
+current scale packet. Latest Numba on Python 3.12 can emit PTX `.version 8.7`,
+while the driver-side linker reports support only up to PTX `8.4`. The working
+Goal3971 setup was:
+
+```bash
+python3 -m pip install --break-system-packages --no-input --force-reinstall \
+  'numba==0.60.0' \
+  nvidia-cuda-nvcc-cu12==12.4.131 \
+  cupy-cuda12x
+
+export RTDL_CUDA_PREFIX=/usr/local/cuda-12
+export NUMBA_CUDA_PREFIX=/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc
+export CUDA_HOME="$NUMBA_CUDA_PREFIX"
+export PATH="$NUMBA_CUDA_PREFIX/bin:$RTDL_CUDA_PREFIX/bin:$PATH"
+export LD_LIBRARY_PATH="$NUMBA_CUDA_PREFIX/nvvm/lib64:$RTDL_CUDA_PREFIX/targets/x86_64-linux/lib:$RTDL_CUDA_PREFIX/lib64:${LD_LIBRARY_PATH:-}"
+```
+
+Keep RTDL OptiX build variables separate from the Numba compiler package:
+
+```bash
+make build-optix OPTIX_PREFIX=/root/vendor/optix-sdk CUDA_PREFIX="$RTDL_CUDA_PREFIX"
+
+export PYTHONPATH=src:.
+export RTDL_OPTIX_LIBRARY="$PWD/build/librtdl_optix.so"
+export RTDL_OPTIX_LIB="$PWD/build/librtdl_optix.so"
+export RTDL_OPTIX_PTX_COMPILER=nvcc
+export RTDL_NVCC="$RTDL_CUDA_PREFIX/bin/nvcc"
+export RTDL_OPTIX_PTX_ARCH=compute_89
+export RTDL_OPTIX_CUBIN_ARCH=sm_89
+```
+
+Before running a long packet, smoke-test both partners:
+
+```bash
+python3 - <<'PY'
+import cupy as cp
+from numba import cuda
+import numpy as np
+
+@cuda.jit
+def add1(x):
+    i = cuda.grid(1)
+    if i < x.size:
+        x[i] += 1
+
+d = cuda.to_device(np.arange(8, dtype=np.int32))
+add1[1, 32](d)
+assert d.copy_to_host().tolist() == [1, 2, 3, 4, 5, 6, 7, 8]
+assert int(cp.sum(cp.arange(8, dtype=cp.int32)).get()) == 28
+PY
+```
+
+Then run the current scale-profile packet with file-backed stdout:
+
+```bash
+python3 scripts/goal3828_current_benchmark_scale_profile_runner.py \
+  --output-json docs/reports/<goal>/summary.json \
+  --output-dir docs/reports/<goal>/outputs \
+  --heartbeat-sec 20 \
+  --timeout-scale 1.0
+```
+
+Goal3971 is the reference artifact for this setup:
+`docs/reports/goal3971_current_head_scale_profile_after_loader_closeout_2026-06-08/summary.json`.
+
 Do not continue if bootstrap status is not `ok`. The bootstrap preflight now
 records GEOS/pkg-config state and reports missing `libgeos_c` as a blocker,
 because strict correctness gates require the native CPU/oracle reference path.
