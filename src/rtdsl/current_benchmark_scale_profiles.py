@@ -132,6 +132,7 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
         timeout_sec=180,
         evidence_refs=("Goal3827",),
         expected_runtime_class="safe_but_short",
+        representative_hot_path_metric="run_phases.query_fixed_radius_threshold_reached_count_sec",
     ),
     CurrentBenchmarkScaleProfile(
         app="spatial_rayjoin",
@@ -161,6 +162,7 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
         evidence_refs=("Goal3834", "Goal3838", "Goal3842", "Goal3866", "Goal3936"),
         expected_runtime_class="representative_mixed_route_public_cdb",
         requires_numba=True,
+        representative_hot_path_metric="representative_hot_path_summary",
     ),
     CurrentBenchmarkScaleProfile(
         app="rt_dbscan",
@@ -189,6 +191,7 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
         evidence_refs=("Goal3826", "Goal3827", "Goal3830", "Goal3851", "Goal3859"),
         expected_runtime_class="default_scale_prepared_repeat_no_validation",
         requires_numba=True,
+        representative_hot_path_metric="metadata.prepared_query_repeat_protocol.elapsed_sec_median",
     ),
     CurrentBenchmarkScaleProfile(
         app="robot_collision",
@@ -244,6 +247,7 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
         timeout_sec=180,
         evidence_refs=("Goal3827",),
         expected_runtime_class="safe_but_short",
+        representative_hot_path_metric="native_collect_elapsed_sec",
     ),
     CurrentBenchmarkScaleProfile(
         app="raydb_style",
@@ -300,6 +304,7 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
         evidence_refs=("Goal3827", "Goal3853", "Goal3869"),
         expected_runtime_class="safe_summary_output",
         requires_numba=True,
+        representative_hot_path_metric="partner_metadata.prepared_force_repeat_protocol.median_force_kernel_sec",
     ),
     CurrentBenchmarkScaleProfile(
         app="librts_spatial_index",
@@ -328,6 +333,7 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
         timeout_sec=240,
         evidence_refs=("Goal3827",),
         expected_runtime_class="safe_medium",
+        representative_hot_path_metric="run_phases.query_median_sec",
     ),
     CurrentBenchmarkScaleProfile(
         app="rtnn",
@@ -355,6 +361,7 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
         timeout_sec=180,
         evidence_refs=("Goal3827",),
         expected_runtime_class="safe_medium",
+        representative_hot_path_metric="runner_payload.elapsed_median_sec",
     ),
     CurrentBenchmarkScaleProfile(
         app="triangle_counting",
@@ -382,6 +389,7 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
         timeout_sec=240,
         evidence_refs=("Goal3827", "Goal3856"),
         expected_runtime_class="safe_but_short",
+        representative_hot_path_metric="timing_ms.query_median_ms",
     ),
 )
 
