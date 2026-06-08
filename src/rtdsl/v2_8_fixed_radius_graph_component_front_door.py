@@ -15,6 +15,7 @@ from .v2_8_typed_result_stream import V28TypedResultStreamContract
 from .v2_8_typed_result_stream import make_typed_result_stream_contract
 from .v2_8_typed_result_stream import typed_result_column
 from .v2_8_typed_result_stream import typed_result_status_columns
+from .v2_8_typed_result_stream import validate_typed_result_stream_contract
 
 
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_FRONT_DOOR_VERSION = (
@@ -742,6 +743,135 @@ def build_v2_8_fixed_radius_partition_convergence_summary_reference_3d(
     }
 
 
+def validate_v2_8_fixed_radius_partition_convergence_summary_same_contract_3d(
+    point_rows,
+    *,
+    radius: float,
+    candidate: dict[str, Any],
+    cell_factor: float = 0.125,
+    pair_capacity: int | None = None,
+    float_abs_tol: float = 1.0e-6,
+) -> dict[str, Any]:
+    """Validate a candidate partition-summary producer against the reference."""
+
+    if not isinstance(candidate, dict):
+        raise TypeError("candidate must be a dict with columns and metadata")
+    candidate_columns = dict(candidate.get("columns", {}))
+    candidate_metadata = dict(candidate.get("metadata", {}))
+    if pair_capacity is None:
+        pair_capacity = candidate_metadata.get("pair_capacity")
+    reference = build_v2_8_fixed_radius_partition_convergence_summary_reference_3d(
+        point_rows,
+        radius=radius,
+        cell_factor=cell_factor,
+        pair_capacity=None if pair_capacity is None else int(pair_capacity),
+    )
+    reference_columns = reference["columns"]
+    reference_metadata = reference["metadata"]
+    float_abs_tol = float(float_abs_tol)
+    if float_abs_tol < 0.0:
+        raise ValueError("float_abs_tol must be non-negative")
+
+    errors: list[str] = []
+    mismatch_columns: list[str] = []
+    required_columns = tuple(reference_columns.keys())
+    float_columns = {
+        "partition_aabb_min_x",
+        "partition_aabb_min_y",
+        "partition_aabb_min_z",
+        "partition_aabb_max_x",
+        "partition_aabb_max_y",
+        "partition_aabb_max_z",
+    }
+    for name in required_columns:
+        if name not in candidate_columns:
+            errors.append(f"missing candidate column: {name}")
+            mismatch_columns.append(name)
+            continue
+        expected = _column_tuple(reference_columns[name])
+        actual = _column_tuple(candidate_columns[name])
+        if name in float_columns:
+            if len(expected) != len(actual) or any(
+                abs(float(left) - float(right)) > float_abs_tol
+                for left, right in zip(expected, actual)
+            ):
+                errors.append(f"candidate column mismatch: {name}")
+                mismatch_columns.append(name)
+        elif expected != actual:
+            errors.append(f"candidate column mismatch: {name}")
+            mismatch_columns.append(name)
+
+    candidate_pair_count = candidate_metadata.get("pair_count")
+    if candidate_pair_count is not None and int(candidate_pair_count) != int(reference_metadata["pair_count"]):
+        errors.append("candidate pair_count mismatch")
+    candidate_visible_pair_count = candidate_metadata.get("visible_pair_count")
+    if (
+        candidate_visible_pair_count is not None
+        and int(candidate_visible_pair_count) != int(reference_metadata["visible_pair_count"])
+    ):
+        errors.append("candidate visible_pair_count mismatch")
+    candidate_partition_count = candidate_metadata.get("partition_count")
+    if (
+        candidate_partition_count is not None
+        and int(candidate_partition_count) != int(reference_metadata["partition_count"])
+    ):
+        errors.append("candidate partition_count mismatch")
+    if candidate_metadata.get("overflow") is not None and bool(candidate_metadata["overflow"]) != bool(
+        reference_metadata["overflow"]
+    ):
+        errors.append("candidate overflow mismatch")
+
+    expected_status_counts = reference_metadata["status_counts"]
+    candidate_status_counts = candidate_metadata.get("status_counts")
+    if candidate_status_counts is not None and dict(candidate_status_counts) != dict(expected_status_counts):
+        errors.append("candidate status_counts mismatch")
+
+    typed_stream = candidate_metadata.get("typed_result_stream")
+    if typed_stream is not None:
+        typed_validation = validate_typed_result_stream_contract(typed_stream)
+        if typed_validation["status"] != "accept":
+            errors.append("candidate typed_result_stream rejected")
+    else:
+        typed_validation = {"status": "not_provided", "errors": ()}
+
+    for flag in (
+        "release_authorized",
+        "public_speedup_claim_authorized",
+        "rt_core_speedup_claim_authorized",
+        "whole_app_speedup_claim_authorized",
+        "true_zero_copy_claim_authorized",
+        "app_specific_engine_logic_allowed",
+        "automatic_partner_selection_allowed",
+        "hidden_dispatch_allowed",
+    ):
+        if candidate_metadata.get(flag, False) is not False:
+            errors.append(f"candidate metadata must not authorize {flag}")
+
+    return {
+        "status": "accept" if not errors else "reject",
+        "reference": reference_metadata["reference"],
+        "candidate_reference_contract": "fixed_radius_partition_convergence_summary_3d_same_contract",
+        "errors": tuple(errors),
+        "mismatch_columns": tuple(dict.fromkeys(mismatch_columns)),
+        "point_count": reference_metadata["point_count"],
+        "partition_count": reference_metadata["partition_count"],
+        "pair_count": reference_metadata["pair_count"],
+        "visible_pair_count": reference_metadata["visible_pair_count"],
+        "pair_capacity": reference_metadata["pair_capacity"],
+        "overflow": reference_metadata["overflow"],
+        "status_counts": dict(expected_status_counts),
+        "typed_result_stream_validation": typed_validation,
+        "native_abi_added": False,
+        "runtime_executable": False,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "claim_boundary": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY,
+    }
+
+
 def _unsupported_reason(*, backend: str, partner: str, strategy: str) -> str:
     if backend not in V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_BACKENDS:
         return f"unsupported backend {backend!r}; supported backends are {V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_BACKENDS}"
@@ -766,6 +896,16 @@ def _point_xyz(row) -> tuple[float, float, float]:
     if len(values) >= 4:
         return float(values[1]), float(values[2]), float(values[3])
     raise TypeError("point row must expose x/y/z fields or a 3/4-item sequence")
+
+
+def _column_tuple(values) -> tuple[Any, ...]:
+    if hasattr(values, "tolist"):
+        values = values.tolist()
+    if isinstance(values, list):
+        return tuple(values)
+    if isinstance(values, tuple):
+        return values
+    return tuple(values)
 
 
 def _partition_key_3d(x: float, y: float, z: float, cell_size: float) -> tuple[int, int, int]:
@@ -885,4 +1025,5 @@ __all__ = [
     "make_v2_8_fixed_radius_partition_convergence_summary_typed_stream_contract",
     "plan_v2_8_fixed_radius_graph_component_continuation",
     "prepare_v2_8_fixed_radius_graph_component_continuation_3d",
+    "validate_v2_8_fixed_radius_partition_convergence_summary_same_contract_3d",
 ]

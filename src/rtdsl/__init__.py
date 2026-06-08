@@ -420,6 +420,7 @@ from .v2_8_fixed_radius_graph_component_front_door import make_v2_8_fixed_radius
 from .v2_8_fixed_radius_graph_component_front_door import make_v2_8_fixed_radius_partition_convergence_summary_typed_stream_contract
 from .v2_8_fixed_radius_graph_component_front_door import plan_v2_8_fixed_radius_graph_component_continuation
 from .v2_8_fixed_radius_graph_component_front_door import prepare_v2_8_fixed_radius_graph_component_continuation_3d
+from .v2_8_fixed_radius_graph_component_front_door import validate_v2_8_fixed_radius_partition_convergence_summary_same_contract_3d
 from .v2_8_geometry_relation_typed_stream import V28GeometryRelationColumnSpec
 from .v2_8_geometry_relation_typed_stream import V28GeometryRelationSchema
 from .v2_8_geometry_relation_typed_stream import V2_8_GEOMETRY_RELATION_SCHEMAS
@@ -2259,6 +2260,7 @@ __all__ = [
     "make_v2_8_fixed_radius_partition_convergence_summary_typed_stream_contract",
     "plan_v2_8_fixed_radius_graph_component_continuation",
     "prepare_v2_8_fixed_radius_graph_component_continuation_3d",
+    "validate_v2_8_fixed_radius_partition_convergence_summary_same_contract_3d",
     "V28GeometryRelationColumnSpec",
     "V28GeometryRelationSchema",
     "V2_8_GEOMETRY_RELATION_SCHEMAS",
