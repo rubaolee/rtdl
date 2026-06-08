@@ -1156,6 +1156,7 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
         for index in range(partition_count)
     ]
     max_offset = int(math.ceil(radius / cell_size)) + 1
+    classification_tol = 1.0e-12 * max(1.0, radius_sq)
     pair_rows: list[tuple[int, int, int]] = []
     for left_ordinal, left_key in enumerate(key_rows):
         lx, ly, lz = left_key
@@ -1168,9 +1169,9 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
                     if right_ordinal is None or right_ordinal < left_ordinal:
                         continue
                     right = aabbs[right_ordinal]
-                    if _partition_aabb_max_distance_sq(left, right) <= radius_sq:
+                    if _partition_aabb_max_distance_sq(left, right) <= radius_sq + classification_tol:
                         status = 1
-                    elif _partition_aabb_min_distance_sq(left, right) > radius_sq:
+                    elif _partition_aabb_min_distance_sq(left, right) > radius_sq + classification_tol:
                         status = 0
                     else:
                         status = 2
