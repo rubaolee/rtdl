@@ -11,6 +11,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 RUNNER = ROOT / "scripts" / "goal3828_current_benchmark_scale_profile_runner.py"
 REPORT = ROOT / "docs" / "reports" / "goal3876_scale_runner_prepared_session_profile_integration_2026-06-08.md"
+POD_ARTIFACT = ROOT / "docs" / "reports" / "goal3876_scale_runner_profile_integration_a5000" / "summary.json"
 
 
 class Goal3876ScaleRunnerPreparedSessionProfileIntegrationTest(unittest.TestCase):
@@ -85,8 +86,34 @@ class Goal3876ScaleRunnerPreparedSessionProfileIntegrationTest(unittest.TestCase
             "prepared_session_residency_summary",
             "automatic partner/backend selection",
             "not a hidden cache",
+            "A5000 Evidence",
+            "selected_prepared_session_residency_profile_count",
         ):
             self.assertIn(phrase, text)
+
+    def test_a5000_artifact_carries_profiles_without_claim_leaks(self) -> None:
+        payload = json.loads(POD_ARTIFACT.read_text(encoding="utf-8"))
+        self.assertTrue(payload["all_pass"])
+        self.assertEqual(payload["json_pass_count"], 10)
+        self.assertEqual(payload["selected_prepared_session_residency_profile_count"], 4)
+        self.assertEqual(payload["prepared_session_residency_validation"]["status"], "accept")
+        self.assertGreater(
+            payload["prepared_session_residency_summary"]["geomean_prepare_to_hot_query_ratio"],
+            400.0,
+        )
+        self.assertFalse(payload["release_authorized"])
+        self.assertFalse(payload["public_speedup_claim_authorized"])
+        self.assertFalse(payload["broad_rt_core_claim_authorized"])
+        self.assertFalse(payload["paper_reproduction_claim_authorized"])
+
+        profiled = [row for row in payload["rows"] if row["prepared_session_residency_profiled"]]
+        self.assertEqual(len(profiled), 4)
+        for row in profiled:
+            profile = row["prepared_session_residency_profile"]
+            self.assertEqual(profile["scale_profile_row_id"], row["row_id"])
+            self.assertFalse(profile["automatic_partner_selection_authorized"])
+            self.assertFalse(profile["true_zero_copy_claim_authorized"])
+            self.assertFalse(profile["app_specific_native_engine_logic_allowed"])
 
 
 if __name__ == "__main__":
