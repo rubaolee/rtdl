@@ -140,6 +140,13 @@ This file catches design ideas that should not interrupt the current release or 
   direct/default). Do not promote direct side effects as the default grouped
   union route. Keep it as an explicit option and focus the next primitive on
   reducing candidate/root-read work.
+- Goal4004 refreshed the older corrected microcell route against the current
+  grouped-stream baseline. It matched output signatures but was much slower:
+  about `50.19x` slower on clustered3d, `23.60x` slower on road3d, and
+  `28.90x` slower on ngsim_dense at `65536` points. Do not promote the old
+  partner microcell route as the dense grouped-union solution. The next route
+  must be a native/device-resident partition assist or convergence-aware
+  primitive that preserves the current grouped-stream strengths.
 - The next generic runtime primitive should be a dense fixed-radius
   grouped-union continuation, not another app-specific RT-DBSCAN trick. Candidate
   designs include component-aware root-cache snapshots with explicit staleness
