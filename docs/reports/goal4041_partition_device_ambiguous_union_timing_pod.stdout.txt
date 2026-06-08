@@ -1,0 +1,455 @@
+PROFILE_START clustered3d_1024 points 1024
+RUN_HOST_AMBIG clustered3d_1024 0 0.001768
+RUN_HOST_AMBIG clustered3d_1024 1 0.002014
+RUN_HOST_AMBIG clustered3d_1024 2 0.001718
+RUN_HOST_AMBIG clustered3d_1024 3 0.001690
+RUN_HOST_AMBIG clustered3d_1024 4 0.001799
+RUN_DEVICE_AMBIG clustered3d_1024 0 0.001841
+RUN_DEVICE_AMBIG clustered3d_1024 1 0.001751
+RUN_DEVICE_AMBIG clustered3d_1024 2 0.001755
+RUN_DEVICE_AMBIG clustered3d_1024 3 0.001742
+RUN_DEVICE_AMBIG clustered3d_1024 4 0.001746
+PROFILE_DONE clustered3d_1024 {"component_signature_match": true, "device_ambiguous_repeated_run": {"mean_sec": 0.0017667561769485474, "median_sec": 0.001750744879245758, "min_sec": 0.0017417147755622864}, "device_metadata": {"ambiguous_partition_pairs": 16, "ambiguous_point_comparisons": 43, "ambiguous_positive_edges": 16, "ambiguous_union_execution": "cupy_partition_points", "ambiguous_union_skipped_reason": null, "device_ambiguous_union_used": true}, "device_over_host_median": 1.0098007924044923, "device_over_host_min": 0.9705906257887059, "host_ambiguous_repeated_run": {"mean_sec": 0.001798003911972046, "median_sec": 0.0017679035663604736, "min_sec": 0.001690492033958435}, "host_metadata": {"ambiguous_partition_pairs": 16, "ambiguous_point_comparisons": 43, "ambiguous_positive_edges": 16, "ambiguous_union_execution": "host", "device_ambiguous_union_used": false}, "point_count": 1024, "profile": "clustered3d_1024", "summary_metadata": {"pair_capacity_source": "device_upper_bound", "pair_count": 54627, "pair_enumeration": "device_bounded_offsets", "partition_count": 888, "status_counts": {"ambiguous_partition_pairs": 16, "safe_full_partition_pairs": 28516, "safe_skip_partition_pairs": 26095}}}
+PROFILE_START road3d_1024 points 1024
+RUN_HOST_AMBIG road3d_1024 0 0.001924
+RUN_HOST_AMBIG road3d_1024 1 0.001845
+RUN_HOST_AMBIG road3d_1024 2 0.001846
+RUN_HOST_AMBIG road3d_1024 3 0.001875
+RUN_HOST_AMBIG road3d_1024 4 0.001875
+RUN_DEVICE_AMBIG road3d_1024 0 0.001843
+RUN_DEVICE_AMBIG road3d_1024 1 0.001771
+RUN_DEVICE_AMBIG road3d_1024 2 0.001766
+RUN_DEVICE_AMBIG road3d_1024 3 0.001801
+RUN_DEVICE_AMBIG road3d_1024 4 0.001746
+PROFILE_DONE road3d_1024 {"component_signature_match": true, "device_ambiguous_repeated_run": {"mean_sec": 0.001785328984260559, "median_sec": 0.0017710328102111816, "min_sec": 0.001745760440826416}, "device_metadata": {"ambiguous_partition_pairs": 132, "ambiguous_point_comparisons": 179, "ambiguous_positive_edges": 132, "ambiguous_union_execution": "cupy_partition_points", "ambiguous_union_skipped_reason": null, "device_ambiguous_union_used": true}, "device_over_host_median": 1.0587663648907886, "device_over_host_min": 1.0566381576701152, "host_ambiguous_repeated_run": {"mean_sec": 0.001872982084751129, "median_sec": 0.0018751099705696106, "min_sec": 0.0018446370959281921}, "host_metadata": {"ambiguous_partition_pairs": 132, "ambiguous_point_comparisons": 179, "ambiguous_positive_edges": 132, "ambiguous_union_execution": "host", "device_ambiguous_union_used": false}, "point_count": 1024, "profile": "road3d_1024", "summary_metadata": {"pair_capacity_source": "device_upper_bound", "pair_count": 9773, "pair_enumeration": "device_bounded_offsets", "partition_count": 937, "status_counts": {"ambiguous_partition_pairs": 132, "safe_full_partition_pairs": 7681, "safe_skip_partition_pairs": 1960}}}
+PROFILE_START clustered3d_2048 points 2048
+RUN_HOST_AMBIG clustered3d_2048 0 0.003012
+RUN_HOST_AMBIG clustered3d_2048 1 0.002914
+RUN_HOST_AMBIG clustered3d_2048 2 0.002934
+RUN_HOST_AMBIG clustered3d_2048 3 0.002928
+RUN_HOST_AMBIG clustered3d_2048 4 0.002864
+RUN_DEVICE_AMBIG clustered3d_2048 0 0.002673
+RUN_DEVICE_AMBIG clustered3d_2048 1 0.002688
+RUN_DEVICE_AMBIG clustered3d_2048 2 0.002680
+RUN_DEVICE_AMBIG clustered3d_2048 3 0.002683
+RUN_DEVICE_AMBIG clustered3d_2048 4 0.002700
+PROFILE_DONE clustered3d_2048 {"component_signature_match": true, "device_ambiguous_repeated_run": {"mean_sec": 0.002685108780860901, "median_sec": 0.0026833340525627136, "min_sec": 0.0026734694838523865}, "device_metadata": {"ambiguous_partition_pairs": 0, "ambiguous_point_comparisons": 0, "ambiguous_positive_edges": 0, "ambiguous_union_execution": "cupy_partition_points", "ambiguous_union_skipped_reason": "no_ambiguous_partition_pairs", "device_ambiguous_union_used": false}, "device_over_host_median": 1.0912978167490859, "device_over_host_min": 1.0711457053120306, "host_ambiguous_repeated_run": {"mean_sec": 0.0029304370284080504, "median_sec": 0.002928316593170166, "min_sec": 0.002863675355911255}, "host_metadata": {"ambiguous_partition_pairs": 0, "ambiguous_point_comparisons": 0, "ambiguous_positive_edges": 0, "ambiguous_union_execution": "host", "device_ambiguous_union_used": false}, "point_count": 2048, "profile": "clustered3d_2048", "summary_metadata": {"pair_capacity_source": "device_upper_bound", "pair_count": 171392, "pair_enumeration": "device_bounded_offsets", "partition_count": 2048, "status_counts": {"ambiguous_partition_pairs": 0, "safe_full_partition_pairs": 80016, "safe_skip_partition_pairs": 91376}}}
+PROFILE_START road3d_2048 points 2048
+RUN_HOST_AMBIG road3d_2048 0 0.003243
+RUN_HOST_AMBIG road3d_2048 1 0.003195
+RUN_HOST_AMBIG road3d_2048 2 0.003184
+RUN_HOST_AMBIG road3d_2048 3 0.003175
+RUN_HOST_AMBIG road3d_2048 4 0.003182
+RUN_DEVICE_AMBIG road3d_2048 0 0.003257
+RUN_DEVICE_AMBIG road3d_2048 1 0.003149
+RUN_DEVICE_AMBIG road3d_2048 2 0.003170
+RUN_DEVICE_AMBIG road3d_2048 3 0.003173
+RUN_DEVICE_AMBIG road3d_2048 4 0.003173
+PROFILE_DONE road3d_2048 {"component_signature_match": true, "device_ambiguous_repeated_run": {"mean_sec": 0.0031845852732658385, "median_sec": 0.0031730830669403076, "min_sec": 0.0031493976712226868}, "device_metadata": {"ambiguous_partition_pairs": 257, "ambiguous_point_comparisons": 349, "ambiguous_positive_edges": 257, "ambiguous_union_execution": "cupy_partition_points", "ambiguous_union_skipped_reason": null, "device_ambiguous_union_used": true}, "device_over_host_median": 1.003597223657146, "device_over_host_min": 1.0081759146449651, "host_ambiguous_repeated_run": {"mean_sec": 0.003195883333683014, "median_sec": 0.003184497356414795, "min_sec": 0.0031751468777656555}, "host_metadata": {"ambiguous_partition_pairs": 257, "ambiguous_point_comparisons": 349, "ambiguous_positive_edges": 257, "ambiguous_union_execution": "host", "device_ambiguous_union_used": false}, "point_count": 2048, "profile": "road3d_2048", "summary_metadata": {"pair_capacity_source": "device_upper_bound", "pair_count": 19728, "pair_enumeration": "device_bounded_offsets", "partition_count": 1881, "status_counts": {"ambiguous_partition_pairs": 257, "safe_full_partition_pairs": 15498, "safe_skip_partition_pairs": 3973}}}
+PROFILE_START clustered3d_4096 points 4096
+RUN_HOST_AMBIG clustered3d_4096 0 0.005683
+RUN_HOST_AMBIG clustered3d_4096 1 0.005673
+RUN_HOST_AMBIG clustered3d_4096 2 0.005810
+RUN_HOST_AMBIG clustered3d_4096 3 0.005672
+RUN_HOST_AMBIG clustered3d_4096 4 0.005652
+RUN_DEVICE_AMBIG clustered3d_4096 0 0.006269
+RUN_DEVICE_AMBIG clustered3d_4096 1 0.006281
+RUN_DEVICE_AMBIG clustered3d_4096 2 0.006225
+RUN_DEVICE_AMBIG clustered3d_4096 3 0.006436
+RUN_DEVICE_AMBIG clustered3d_4096 4 0.006381
+PROFILE_DONE clustered3d_4096 {"component_signature_match": true, "device_ambiguous_repeated_run": {"mean_sec": 0.006318476796150207, "median_sec": 0.006281323730945587, "min_sec": 0.006224989891052246}, "device_metadata": {"ambiguous_partition_pairs": 7, "ambiguous_point_comparisons": 21, "ambiguous_positive_edges": 7, "ambiguous_union_execution": "cupy_partition_points", "ambiguous_union_skipped_reason": null, "device_ambiguous_union_used": true}, "device_over_host_median": 0.9031462579990867, "device_over_host_min": 0.9079382025699458, "host_ambiguous_repeated_run": {"mean_sec": 0.0056979358196258545, "median_sec": 0.005672954022884369, "min_sec": 0.005651906132698059}, "host_metadata": {"ambiguous_partition_pairs": 7, "ambiguous_point_comparisons": 21, "ambiguous_positive_edges": 7, "ambiguous_union_execution": "host", "device_ambiguous_union_used": false}, "point_count": 4096, "profile": "clustered3d_4096", "summary_metadata": {"pair_capacity_source": "device_upper_bound", "pair_count": 392329, "pair_enumeration": "device_bounded_offsets", "partition_count": 4015, "status_counts": {"ambiguous_partition_pairs": 7, "safe_full_partition_pairs": 172668, "safe_skip_partition_pairs": 219654}}}
+PROFILE_START road3d_4096 points 4096
+RUN_HOST_AMBIG road3d_4096 0 0.006383
+RUN_HOST_AMBIG road3d_4096 1 0.006197
+RUN_HOST_AMBIG road3d_4096 2 0.006254
+RUN_HOST_AMBIG road3d_4096 3 0.006333
+RUN_HOST_AMBIG road3d_4096 4 0.027581
+RUN_DEVICE_AMBIG road3d_4096 0 0.006135
+RUN_DEVICE_AMBIG road3d_4096 1 0.006115
+RUN_DEVICE_AMBIG road3d_4096 2 0.005985
+RUN_DEVICE_AMBIG road3d_4096 3 0.006052
+RUN_DEVICE_AMBIG road3d_4096 4 0.006016
+PROFILE_DONE road3d_4096 {"component_signature_match": true, "device_ambiguous_repeated_run": {"mean_sec": 0.006060835719108581, "median_sec": 0.006051763892173767, "min_sec": 0.00598549097776413}, "device_metadata": {"ambiguous_partition_pairs": 497, "ambiguous_point_comparisons": 676, "ambiguous_positive_edges": 497, "ambiguous_union_execution": "cupy_partition_points", "ambiguous_union_skipped_reason": null, "device_ambiguous_union_used": true}, "device_over_host_median": 1.0464866901240253, "device_over_host_min": 1.0353926451312552, "host_ambiguous_repeated_run": {"mean_sec": 0.010549810528755189, "median_sec": 0.006333090364933014, "min_sec": 0.006197333335876465}, "host_metadata": {"ambiguous_partition_pairs": 497, "ambiguous_point_comparisons": 676, "ambiguous_positive_edges": 497, "ambiguous_union_execution": "host", "device_ambiguous_union_used": false}, "point_count": 4096, "profile": "road3d_4096", "summary_metadata": {"pair_capacity_source": "device_upper_bound", "pair_count": 39790, "pair_enumeration": "device_bounded_offsets", "partition_count": 3776, "status_counts": {"ambiguous_partition_pairs": 497, "safe_full_partition_pairs": 31258, "safe_skip_partition_pairs": 8035}}}
+PROFILE_START clustered3d_8192 points 8192
+RUN_HOST_AMBIG clustered3d_8192 0 0.010988
+RUN_HOST_AMBIG clustered3d_8192 1 0.010855
+RUN_HOST_AMBIG clustered3d_8192 2 0.010908
+RUN_HOST_AMBIG clustered3d_8192 3 0.010864
+RUN_HOST_AMBIG clustered3d_8192 4 0.030029
+RUN_DEVICE_AMBIG clustered3d_8192 0 0.010603
+RUN_DEVICE_AMBIG clustered3d_8192 1 0.010533
+RUN_DEVICE_AMBIG clustered3d_8192 2 0.010755
+RUN_DEVICE_AMBIG clustered3d_8192 3 0.010473
+RUN_DEVICE_AMBIG clustered3d_8192 4 0.012771
+PROFILE_DONE clustered3d_8192 {"component_signature_match": true, "device_ambiguous_repeated_run": {"mean_sec": 0.011026905477046966, "median_sec": 0.010603025555610657, "min_sec": 0.010472990572452545}, "device_metadata": {"ambiguous_partition_pairs": 0, "ambiguous_point_comparisons": 0, "ambiguous_positive_edges": 0, "ambiguous_union_execution": "cupy_partition_points", "ambiguous_union_skipped_reason": "no_ambiguous_partition_pairs", "device_ambiguous_union_used": false}, "device_over_host_median": 1.0287531427559562, "device_over_host_min": 1.0364753663934618, "host_ambiguous_repeated_run": {"mean_sec": 0.014728796482086182, "median_sec": 0.010907895863056183, "min_sec": 0.010854996740818024}, "host_metadata": {"ambiguous_partition_pairs": 0, "ambiguous_point_comparisons": 0, "ambiguous_positive_edges": 0, "ambiguous_union_execution": "host", "device_ambiguous_union_used": false}, "point_count": 8192, "profile": "clustered3d_8192", "summary_metadata": {"pair_capacity_source": "device_upper_bound", "pair_count": 912735, "pair_enumeration": "device_bounded_offsets", "partition_count": 8192, "status_counts": {"ambiguous_partition_pairs": 0, "safe_full_partition_pairs": 383185, "safe_skip_partition_pairs": 529550}}}
+PROFILE_START road3d_8192 points 8192
+RUN_HOST_AMBIG road3d_8192 0 0.011638
+RUN_HOST_AMBIG road3d_8192 1 0.011621
+RUN_HOST_AMBIG road3d_8192 2 0.011485
+RUN_HOST_AMBIG road3d_8192 3 0.011707
+RUN_HOST_AMBIG road3d_8192 4 0.011591
+RUN_DEVICE_AMBIG road3d_8192 0 0.011429
+RUN_DEVICE_AMBIG road3d_8192 1 0.028189
+RUN_DEVICE_AMBIG road3d_8192 2 0.011449
+RUN_DEVICE_AMBIG road3d_8192 3 0.011732
+RUN_DEVICE_AMBIG road3d_8192 4 0.011372
+PROFILE_DONE road3d_8192 {"component_signature_match": true, "device_ambiguous_repeated_run": {"mean_sec": 0.014834286272525787, "median_sec": 0.011449486017227173, "min_sec": 0.011372312903404236}, "device_metadata": {"ambiguous_partition_pairs": 1017, "ambiguous_point_comparisons": 1378, "ambiguous_positive_edges": 1017, "ambiguous_union_execution": "cupy_partition_points", "ambiguous_union_skipped_reason": null, "device_ambiguous_union_used": true}, "device_over_host_median": 1.014945429367928, "device_over_host_min": 1.0098809852944837, "host_ambiguous_repeated_run": {"mean_sec": 0.01160825341939926, "median_sec": 0.011620603501796722, "min_sec": 0.011484682559967041}, "host_metadata": {"ambiguous_partition_pairs": 1017, "ambiguous_point_comparisons": 1378, "ambiguous_positive_edges": 1017, "ambiguous_union_execution": "host", "device_ambiguous_union_used": false}, "point_count": 8192, "profile": "road3d_8192", "summary_metadata": {"pair_capacity_source": "device_upper_bound", "pair_count": 79245, "pair_enumeration": "device_bounded_offsets", "partition_count": 7534, "status_counts": {"ambiguous_partition_pairs": 1017, "safe_full_partition_pairs": 62236, "safe_skip_partition_pairs": 15992}}}
+{
+  "claim_boundary": "Internal subpath timing for host versus device ambiguous partition-union continuation. It does not promote partition_convergence_hybrid or authorize release, public speedup, broad RT-core, whole-app, hidden-dispatch, automatic partner selection, app-specific engine logic, or true-zero-copy claims.",
+  "goal": "Goal4041",
+  "native_abi_added": false,
+  "partition_convergence_hybrid_promoted": false,
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "rows": [
+    {
+      "component_signature_match": true,
+      "device_ambiguous_repeated_run": {
+        "mean_sec": 0.0017667561769485474,
+        "median_sec": 0.001750744879245758,
+        "min_sec": 0.0017417147755622864
+      },
+      "device_metadata": {
+        "ambiguous_partition_pairs": 16,
+        "ambiguous_point_comparisons": 43,
+        "ambiguous_positive_edges": 16,
+        "ambiguous_union_execution": "cupy_partition_points",
+        "ambiguous_union_skipped_reason": null,
+        "device_ambiguous_union_used": true
+      },
+      "device_over_host_median": 1.0098007924044923,
+      "device_over_host_min": 0.9705906257887059,
+      "host_ambiguous_repeated_run": {
+        "mean_sec": 0.001798003911972046,
+        "median_sec": 0.0017679035663604736,
+        "min_sec": 0.001690492033958435
+      },
+      "host_metadata": {
+        "ambiguous_partition_pairs": 16,
+        "ambiguous_point_comparisons": 43,
+        "ambiguous_positive_edges": 16,
+        "ambiguous_union_execution": "host",
+        "device_ambiguous_union_used": false
+      },
+      "point_count": 1024,
+      "profile": "clustered3d_1024",
+      "summary_metadata": {
+        "pair_capacity_source": "device_upper_bound",
+        "pair_count": 54627,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_count": 888,
+        "status_counts": {
+          "ambiguous_partition_pairs": 16,
+          "safe_full_partition_pairs": 28516,
+          "safe_skip_partition_pairs": 26095
+        }
+      }
+    },
+    {
+      "component_signature_match": true,
+      "device_ambiguous_repeated_run": {
+        "mean_sec": 0.001785328984260559,
+        "median_sec": 0.0017710328102111816,
+        "min_sec": 0.001745760440826416
+      },
+      "device_metadata": {
+        "ambiguous_partition_pairs": 132,
+        "ambiguous_point_comparisons": 179,
+        "ambiguous_positive_edges": 132,
+        "ambiguous_union_execution": "cupy_partition_points",
+        "ambiguous_union_skipped_reason": null,
+        "device_ambiguous_union_used": true
+      },
+      "device_over_host_median": 1.0587663648907886,
+      "device_over_host_min": 1.0566381576701152,
+      "host_ambiguous_repeated_run": {
+        "mean_sec": 0.001872982084751129,
+        "median_sec": 0.0018751099705696106,
+        "min_sec": 0.0018446370959281921
+      },
+      "host_metadata": {
+        "ambiguous_partition_pairs": 132,
+        "ambiguous_point_comparisons": 179,
+        "ambiguous_positive_edges": 132,
+        "ambiguous_union_execution": "host",
+        "device_ambiguous_union_used": false
+      },
+      "point_count": 1024,
+      "profile": "road3d_1024",
+      "summary_metadata": {
+        "pair_capacity_source": "device_upper_bound",
+        "pair_count": 9773,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_count": 937,
+        "status_counts": {
+          "ambiguous_partition_pairs": 132,
+          "safe_full_partition_pairs": 7681,
+          "safe_skip_partition_pairs": 1960
+        }
+      }
+    },
+    {
+      "component_signature_match": true,
+      "device_ambiguous_repeated_run": {
+        "mean_sec": 0.002685108780860901,
+        "median_sec": 0.0026833340525627136,
+        "min_sec": 0.0026734694838523865
+      },
+      "device_metadata": {
+        "ambiguous_partition_pairs": 0,
+        "ambiguous_point_comparisons": 0,
+        "ambiguous_positive_edges": 0,
+        "ambiguous_union_execution": "cupy_partition_points",
+        "ambiguous_union_skipped_reason": "no_ambiguous_partition_pairs",
+        "device_ambiguous_union_used": false
+      },
+      "device_over_host_median": 1.0912978167490859,
+      "device_over_host_min": 1.0711457053120306,
+      "host_ambiguous_repeated_run": {
+        "mean_sec": 0.0029304370284080504,
+        "median_sec": 0.002928316593170166,
+        "min_sec": 0.002863675355911255
+      },
+      "host_metadata": {
+        "ambiguous_partition_pairs": 0,
+        "ambiguous_point_comparisons": 0,
+        "ambiguous_positive_edges": 0,
+        "ambiguous_union_execution": "host",
+        "device_ambiguous_union_used": false
+      },
+      "point_count": 2048,
+      "profile": "clustered3d_2048",
+      "summary_metadata": {
+        "pair_capacity_source": "device_upper_bound",
+        "pair_count": 171392,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_count": 2048,
+        "status_counts": {
+          "ambiguous_partition_pairs": 0,
+          "safe_full_partition_pairs": 80016,
+          "safe_skip_partition_pairs": 91376
+        }
+      }
+    },
+    {
+      "component_signature_match": true,
+      "device_ambiguous_repeated_run": {
+        "mean_sec": 0.0031845852732658385,
+        "median_sec": 0.0031730830669403076,
+        "min_sec": 0.0031493976712226868
+      },
+      "device_metadata": {
+        "ambiguous_partition_pairs": 257,
+        "ambiguous_point_comparisons": 349,
+        "ambiguous_positive_edges": 257,
+        "ambiguous_union_execution": "cupy_partition_points",
+        "ambiguous_union_skipped_reason": null,
+        "device_ambiguous_union_used": true
+      },
+      "device_over_host_median": 1.003597223657146,
+      "device_over_host_min": 1.0081759146449651,
+      "host_ambiguous_repeated_run": {
+        "mean_sec": 0.003195883333683014,
+        "median_sec": 0.003184497356414795,
+        "min_sec": 0.0031751468777656555
+      },
+      "host_metadata": {
+        "ambiguous_partition_pairs": 257,
+        "ambiguous_point_comparisons": 349,
+        "ambiguous_positive_edges": 257,
+        "ambiguous_union_execution": "host",
+        "device_ambiguous_union_used": false
+      },
+      "point_count": 2048,
+      "profile": "road3d_2048",
+      "summary_metadata": {
+        "pair_capacity_source": "device_upper_bound",
+        "pair_count": 19728,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_count": 1881,
+        "status_counts": {
+          "ambiguous_partition_pairs": 257,
+          "safe_full_partition_pairs": 15498,
+          "safe_skip_partition_pairs": 3973
+        }
+      }
+    },
+    {
+      "component_signature_match": true,
+      "device_ambiguous_repeated_run": {
+        "mean_sec": 0.006318476796150207,
+        "median_sec": 0.006281323730945587,
+        "min_sec": 0.006224989891052246
+      },
+      "device_metadata": {
+        "ambiguous_partition_pairs": 7,
+        "ambiguous_point_comparisons": 21,
+        "ambiguous_positive_edges": 7,
+        "ambiguous_union_execution": "cupy_partition_points",
+        "ambiguous_union_skipped_reason": null,
+        "device_ambiguous_union_used": true
+      },
+      "device_over_host_median": 0.9031462579990867,
+      "device_over_host_min": 0.9079382025699458,
+      "host_ambiguous_repeated_run": {
+        "mean_sec": 0.0056979358196258545,
+        "median_sec": 0.005672954022884369,
+        "min_sec": 0.005651906132698059
+      },
+      "host_metadata": {
+        "ambiguous_partition_pairs": 7,
+        "ambiguous_point_comparisons": 21,
+        "ambiguous_positive_edges": 7,
+        "ambiguous_union_execution": "host",
+        "device_ambiguous_union_used": false
+      },
+      "point_count": 4096,
+      "profile": "clustered3d_4096",
+      "summary_metadata": {
+        "pair_capacity_source": "device_upper_bound",
+        "pair_count": 392329,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_count": 4015,
+        "status_counts": {
+          "ambiguous_partition_pairs": 7,
+          "safe_full_partition_pairs": 172668,
+          "safe_skip_partition_pairs": 219654
+        }
+      }
+    },
+    {
+      "component_signature_match": true,
+      "device_ambiguous_repeated_run": {
+        "mean_sec": 0.006060835719108581,
+        "median_sec": 0.006051763892173767,
+        "min_sec": 0.00598549097776413
+      },
+      "device_metadata": {
+        "ambiguous_partition_pairs": 497,
+        "ambiguous_point_comparisons": 676,
+        "ambiguous_positive_edges": 497,
+        "ambiguous_union_execution": "cupy_partition_points",
+        "ambiguous_union_skipped_reason": null,
+        "device_ambiguous_union_used": true
+      },
+      "device_over_host_median": 1.0464866901240253,
+      "device_over_host_min": 1.0353926451312552,
+      "host_ambiguous_repeated_run": {
+        "mean_sec": 0.010549810528755189,
+        "median_sec": 0.006333090364933014,
+        "min_sec": 0.006197333335876465
+      },
+      "host_metadata": {
+        "ambiguous_partition_pairs": 497,
+        "ambiguous_point_comparisons": 676,
+        "ambiguous_positive_edges": 497,
+        "ambiguous_union_execution": "host",
+        "device_ambiguous_union_used": false
+      },
+      "point_count": 4096,
+      "profile": "road3d_4096",
+      "summary_metadata": {
+        "pair_capacity_source": "device_upper_bound",
+        "pair_count": 39790,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_count": 3776,
+        "status_counts": {
+          "ambiguous_partition_pairs": 497,
+          "safe_full_partition_pairs": 31258,
+          "safe_skip_partition_pairs": 8035
+        }
+      }
+    },
+    {
+      "component_signature_match": true,
+      "device_ambiguous_repeated_run": {
+        "mean_sec": 0.011026905477046966,
+        "median_sec": 0.010603025555610657,
+        "min_sec": 0.010472990572452545
+      },
+      "device_metadata": {
+        "ambiguous_partition_pairs": 0,
+        "ambiguous_point_comparisons": 0,
+        "ambiguous_positive_edges": 0,
+        "ambiguous_union_execution": "cupy_partition_points",
+        "ambiguous_union_skipped_reason": "no_ambiguous_partition_pairs",
+        "device_ambiguous_union_used": false
+      },
+      "device_over_host_median": 1.0287531427559562,
+      "device_over_host_min": 1.0364753663934618,
+      "host_ambiguous_repeated_run": {
+        "mean_sec": 0.014728796482086182,
+        "median_sec": 0.010907895863056183,
+        "min_sec": 0.010854996740818024
+      },
+      "host_metadata": {
+        "ambiguous_partition_pairs": 0,
+        "ambiguous_point_comparisons": 0,
+        "ambiguous_positive_edges": 0,
+        "ambiguous_union_execution": "host",
+        "device_ambiguous_union_used": false
+      },
+      "point_count": 8192,
+      "profile": "clustered3d_8192",
+      "summary_metadata": {
+        "pair_capacity_source": "device_upper_bound",
+        "pair_count": 912735,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_count": 8192,
+        "status_counts": {
+          "ambiguous_partition_pairs": 0,
+          "safe_full_partition_pairs": 383185,
+          "safe_skip_partition_pairs": 529550
+        }
+      }
+    },
+    {
+      "component_signature_match": true,
+      "device_ambiguous_repeated_run": {
+        "mean_sec": 0.014834286272525787,
+        "median_sec": 0.011449486017227173,
+        "min_sec": 0.011372312903404236
+      },
+      "device_metadata": {
+        "ambiguous_partition_pairs": 1017,
+        "ambiguous_point_comparisons": 1378,
+        "ambiguous_positive_edges": 1017,
+        "ambiguous_union_execution": "cupy_partition_points",
+        "ambiguous_union_skipped_reason": null,
+        "device_ambiguous_union_used": true
+      },
+      "device_over_host_median": 1.014945429367928,
+      "device_over_host_min": 1.0098809852944837,
+      "host_ambiguous_repeated_run": {
+        "mean_sec": 0.01160825341939926,
+        "median_sec": 0.011620603501796722,
+        "min_sec": 0.011484682559967041
+      },
+      "host_metadata": {
+        "ambiguous_partition_pairs": 1017,
+        "ambiguous_point_comparisons": 1378,
+        "ambiguous_positive_edges": 1017,
+        "ambiguous_union_execution": "host",
+        "device_ambiguous_union_used": false
+      },
+      "point_count": 8192,
+      "profile": "road3d_8192",
+      "summary_metadata": {
+        "pair_capacity_source": "device_upper_bound",
+        "pair_count": 79245,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_count": 7534,
+        "status_counts": {
+          "ambiguous_partition_pairs": 1017,
+          "safe_full_partition_pairs": 62236,
+          "safe_skip_partition_pairs": 15992
+        }
+      }
+    }
+  ],
+  "rt_core_speedup_claim_authorized": false,
+  "schema": "rtdl.goal4041.partition_device_ambiguous_union_timing.v1",
+  "source_commit": "42462c3e",
+  "true_zero_copy_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}
