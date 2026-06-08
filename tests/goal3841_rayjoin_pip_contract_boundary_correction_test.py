@@ -16,7 +16,7 @@ class Goal3841RayJoinPipContractBoundaryCorrectionTest(unittest.TestCase):
     def test_current_version_and_claim_boundary_are_updated(self) -> None:
         self.assertEqual(
             rt.CURRENT_BENCHMARK_ADEQUACY_VERSION,
-            "rtdl.v2_10.benchmark_adequacy_after_goal3841.v1",
+            "rtdl.v2_10.benchmark_adequacy_after_goal3842.v1",
         )
         validation = rt.validate_current_benchmark_adequacy()
         self.assertEqual(validation["status"], "accept")

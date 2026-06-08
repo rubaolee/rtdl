@@ -1,0 +1,125 @@
+{
+  "batch_executor": true,
+  "batch_rows": [
+    {
+      "batch_executor": true,
+      "batch_stream_count_effective": 1,
+      "count_first": 1417,
+      "count_last": 1417,
+      "native_candidate_per_request_ms_median": 0.2054805,
+      "native_candidate_total_ms_median": 0.2054805,
+      "native_modes": [
+        "prepared_points_device_filtered_batch_executor_run"
+      ],
+      "per_request_ms_median": 0.21861260756850243,
+      "request_count": 1,
+      "total_ms_median": 0.21861260756850243
+    },
+    {
+      "batch_executor": true,
+      "batch_stream_count_effective": 1,
+      "count_first": 1417,
+      "count_last": 1417,
+      "native_candidate_per_request_ms_median": 0.19658425000000002,
+      "native_candidate_total_ms_median": 0.7863370000000001,
+      "native_modes": [
+        "prepared_points_device_filtered_batch_executor_run"
+      ],
+      "per_request_ms_median": 0.20011176820844412,
+      "request_count": 4,
+      "total_ms_median": 0.8004470728337765
+    },
+    {
+      "batch_executor": true,
+      "batch_stream_count_effective": 4,
+      "count_first": 1417,
+      "count_last": 1417,
+      "native_candidate_per_request_ms_median": 0.0550475,
+      "native_candidate_total_ms_median": 0.44038,
+      "native_modes": [
+        "prepared_points_device_filtered_batch_executor_run"
+      ],
+      "per_request_ms_median": 0.05684915231540799,
+      "request_count": 8,
+      "total_ms_median": 0.45479321852326393
+    },
+    {
+      "batch_executor": true,
+      "batch_stream_count_effective": 8,
+      "count_first": 1417,
+      "count_last": 1417,
+      "native_candidate_per_request_ms_median": 0.030992593750000002,
+      "native_candidate_total_ms_median": 0.49588150000000003,
+      "native_modes": [
+        "prepared_points_device_filtered_batch_executor_run"
+      ],
+      "per_request_ms_median": 0.032043084502220154,
+      "request_count": 16,
+      "total_ms_median": 0.5126893520355225
+    },
+    {
+      "batch_executor": true,
+      "batch_stream_count_effective": 8,
+      "count_first": 1417,
+      "count_last": 1417,
+      "native_candidate_per_request_ms_median": 0.028070390624999997,
+      "native_candidate_total_ms_median": 0.8982524999999999,
+      "native_modes": [
+        "prepared_points_device_filtered_batch_executor_run"
+      ],
+      "per_request_ms_median": 0.02872856566682458,
+      "request_count": 32,
+      "total_ms_median": 0.9193141013383865
+    },
+    {
+      "batch_executor": true,
+      "batch_stream_count_effective": 16,
+      "count_first": 1417,
+      "count_last": 1417,
+      "native_candidate_per_request_ms_median": 0.0264595703125,
+      "native_candidate_total_ms_median": 1.6934125,
+      "native_modes": [
+        "prepared_points_device_filtered_batch_executor_run"
+      ],
+      "per_request_ms_median": 0.026915098715107888,
+      "request_count": 64,
+      "total_ms_median": 1.7225663177669048
+    },
+    {
+      "batch_executor": true,
+      "batch_stream_count_effective": 16,
+      "count_first": 1417,
+      "count_last": 1417,
+      "native_candidate_per_request_ms_median": 0.023838054999999997,
+      "native_candidate_total_ms_median": 2.3838055,
+      "native_modes": [
+        "prepared_points_device_filtered_batch_executor_run"
+      ],
+      "per_request_ms_median": 0.02418306190520525,
+      "request_count": 100,
+      "total_ms_median": 2.418306190520525
+    }
+  ],
+  "batch_stream_count": "auto",
+  "boundary_mode": "inclusive",
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "dataset": "/root/rtdl_goal3293/data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+  "exact_count": 1417,
+  "goal": 3310,
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "interpretation": "Batch rows are repeated-query throughput evidence only; they do not replace one-shot RayJoin latency comparisons.",
+  "point_count": 512,
+  "query_axis": "z_point",
+  "rtdl_commit": "09a31f30717ce53624df6bc4b73b1b80a81d4eb7",
+  "scalar_count_pipeline": true,
+  "schema": "rtdl.goal3310.rayjoin_pip_batch_scalar_count_probe.v1",
+  "shape_count": 478,
+  "single_ms_median": 0.23147976025938988
+}

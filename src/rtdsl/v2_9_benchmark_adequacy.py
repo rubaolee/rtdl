@@ -6,10 +6,10 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-V2_9_BENCHMARK_ADEQUACY_VERSION = "rtdl.v2_10.benchmark_adequacy_after_goal3841.v1"
+V2_9_BENCHMARK_ADEQUACY_VERSION = "rtdl.v2_10.benchmark_adequacy_after_goal3842.v1"
 V2_9_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 V2_9_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
-    "Goal3841 records internal benchmark-app adequacy after the v2.9 Numba "
+    "Goal3842 records internal benchmark-app adequacy after the v2.9 Numba "
     "coverage work, the v2.10 HIPRT parity closeout, the Goal3818-3820 "
     "benchmark front-door hardening, and Goal3834/3838 RayJoin scalar-count "
     "Numba coverage. It does not authorize "
@@ -140,17 +140,21 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
             "strong but contract-specific: Goal3761 clean current-main native-PIP cross-size "
             "packet reaches 288.759x geomean and 118.931x minimum versus dense all-CuPy; "
             "that evidence is not the bounded 512 public-CDB PIP row, where Goal3833/3834 "
-            "still show CuPy faster than RTDL/OptiX and Numba. Goal3834 adds a no-RawKernel "
-            "Numba PIP scalar-count reference for that bounded row; Goal3838 adds no-RawKernel "
-            "Numba LSI and overlay active-count references, with LSI/overlay Numba slightly "
-            "faster than the dense CuPy baselines while RTDL/OptiX remains about 260x faster "
-            "than Numba for those scalar contracts. This is still not a RayJoin paper-reproduction, "
-            "universal PIP-dominance, or RTDL-beats-RayJoin claim."
+            "still show CuPy faster than RTDL/OptiX and Numba. Goal3842 refreshes the "
+            "same public-CDB PIP slice under the resident prepared batch executor: exact count "
+            "1417, one-request median 0.218613ms, and 100-request median 0.024183ms/request. "
+            "That is strong repeated-request throughput evidence, not one-shot latency. Goal3834 "
+            "adds a no-RawKernel Numba PIP scalar-count reference for that bounded row; Goal3838 "
+            "adds no-RawKernel Numba LSI and overlay active-count references, with LSI/overlay "
+            "Numba slightly faster than the dense CuPy baselines while RTDL/OptiX remains about "
+            "260x faster than Numba for those scalar contracts. This is still not a RayJoin "
+            "paper-reproduction, universal PIP-dominance, or RTDL-beats-RayJoin claim."
         ),
         adequacy="strong",
         current_recommended_path=(
             "mixed explicit route with current native-PIP evidence: RTDL/OptiX resident "
-            "relation-status corrected scalar count for PIP where measured, exact RTDL/OptiX "
+            "relation-status corrected scalar count for one-shot PIP where measured, RTDL/OptiX "
+            "prepared point/closed-shape batch executor for repeated PIP requests, exact RTDL/OptiX "
             "prepared segment-pair count for LSI, and RTDL/OptiX prepared-left shape-pair "
             "active-count executor for overlay active count"
         ),
@@ -172,9 +176,10 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
         next_generic_runtime_action=(
             "treat as covered for Numba-reference and HIPRT-contract purposes; next major work is "
             "actual AMD functional validation plus a non-dense baseline policy for larger RayJoin sizes where "
-            "the all-CuPy dense baseline OOMs"
+            "the all-CuPy dense baseline OOMs; keep the prepared-points CUDA graph replay path blocked "
+            "until the zero-count replay failure is fixed"
         ),
-        evidence_refs=("Goal3688", "Goal3713", "Goal3733", "Goal3734", "Goal3737", "Goal3749", "Goal3761", "Goal3766", "Goal3767", "Goal3784", "Goal3785", "Goal3834", "Goal3838"),
+        evidence_refs=("Goal3688", "Goal3713", "Goal3733", "Goal3734", "Goal3737", "Goal3749", "Goal3761", "Goal3766", "Goal3767", "Goal3784", "Goal3785", "Goal3834", "Goal3838", "Goal3842"),
         pod_needed_next=False,
     ),
     V29BenchmarkAdequacyRow(
