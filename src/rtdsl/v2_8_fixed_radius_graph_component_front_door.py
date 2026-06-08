@@ -1698,6 +1698,203 @@ def build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_
     }
 
 
+def build_v2_8_fixed_radius_partition_convergence_component_signature_cupy_preview_3d(
+    point_rows,
+    *,
+    radius: float,
+    cell_factor: float = 0.125,
+    pair_capacity: int | None = None,
+    pair_enumeration: str = "device_bounded_offsets",
+    partition_summary: dict[str, Any] | None = None,
+    ambiguous_union_execution: str = "cupy_partition_points",
+    validate_summary_same_contract: bool = True,
+    validate_against_component_labels: bool = False,
+) -> dict[str, Any]:
+    """Executable CuPy preview for component-size signatures without host labels."""
+
+    raw_rows = tuple(point_rows)
+    points = tuple(_point_xyz(row) for row in raw_rows)
+    if not points:
+        raise ValueError("point_rows must contain at least one point")
+    radius = float(radius)
+    if radius <= 0.0:
+        raise ValueError("radius must be positive")
+    ambiguous_union_execution = str(ambiguous_union_execution)
+    if ambiguous_union_execution != "cupy_partition_points":
+        raise ValueError("component signature preview currently requires cupy_partition_points")
+    if partition_summary is None:
+        summary = build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
+            raw_rows,
+            radius=radius,
+            cell_factor=cell_factor,
+            pair_capacity=pair_capacity,
+            pair_enumeration=pair_enumeration,
+        )
+        partition_summary_reused = False
+    else:
+        summary = partition_summary
+        partition_summary_reused = True
+    if validate_summary_same_contract:
+        summary_validation = validate_v2_8_fixed_radius_partition_convergence_summary_same_contract_3d(
+            raw_rows,
+            radius=radius,
+            cell_factor=cell_factor,
+            candidate=summary,
+            float_abs_tol=1.0e-5,
+        )
+    else:
+        summary_metadata = summary["metadata"]
+        summary_validation = {
+            "status": "accept",
+            "reference": "fixed_radius_partition_convergence_summary_3d_timing_trusted_preview",
+            "candidate_reference_contract": "fixed_radius_partition_convergence_summary_3d_same_contract_skipped_for_timing",
+            "errors": (),
+            "point_count": int(summary_metadata["point_count"]),
+            "partition_count": int(summary_metadata["partition_count"]),
+            "pair_count": int(summary_metadata["pair_count"]),
+            "visible_pair_count": int(summary_metadata["visible_pair_count"]),
+            "pair_capacity": int(summary_metadata["pair_capacity"]),
+            "overflow": bool(summary_metadata["overflow"]),
+            "complete_candidate_coverage": bool(summary_metadata["complete_candidate_coverage"]),
+            "status_column_values": dict(summary_metadata["status_column_values"]),
+            "status_counts": dict(summary_metadata["status_counts"]),
+            "summary_same_contract_validation_skipped_for_timing": True,
+        }
+    base_metadata = {
+        "reference": "fixed_radius_partition_convergence_component_signature_3d_cupy_preview",
+        "partition_summary_validation": summary_validation,
+        "summary_same_contract_validation_enabled": validate_summary_same_contract,
+        "partition_summary_reused": partition_summary_reused,
+        "partition_summary_pair_enumeration": summary["metadata"]["pair_enumeration"],
+        "partition_summary_pair_capacity_source": summary["metadata"]["pair_capacity_source"],
+        "partition_union_execution": "cupy_safe_full",
+        "ambiguous_union_execution": ambiguous_union_execution,
+        "label_materialization": "component_size_signature_only",
+        "native_abi_added": False,
+        "runtime_executable": True,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "app_specific_engine_logic_allowed": False,
+        "automatic_partner_selection_allowed": False,
+        "hidden_dispatch_allowed": False,
+        "claim_boundary": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY,
+    }
+    if summary_validation["status"] != "accept":
+        return {
+            "columns": {"component_size_signature": ()},
+            "metadata": {
+                **base_metadata,
+                "status": "reject_partition_summary_mismatch",
+                "errors": summary_validation["errors"],
+            },
+        }
+    if bool(summary["metadata"].get("overflow", False)):
+        return {
+            "columns": {"component_size_signature": ()},
+            "metadata": {
+                **base_metadata,
+                "status": "reject_partition_summary_overflow",
+                "overflow": True,
+                "complete_candidate_coverage": False,
+                "errors": ("partition summary overflow prevents complete component signature",),
+            },
+        }
+
+    import cupy
+
+    summary_columns = dict(summary["columns"])
+    partition_count = int(summary_validation["partition_count"])
+    status_counts = dict(summary["metadata"]["status_counts"])
+    ambiguous_pairs = int(status_counts["ambiguous_partition_pairs"])
+    safe_skip_pairs = int(status_counts["safe_skip_partition_pairs"])
+    safe_full_pairs = int(status_counts["safe_full_partition_pairs"])
+    ambiguous_union_skipped_reason = None
+    if ambiguous_pairs == 0:
+        partition_parents_device, union_iterations = _cupy_union_safe_full_partition_pairs(
+            cupy,
+            partition_count=partition_count,
+            left_ids=summary_columns["near_pair_left_partition_ids"],
+            right_ids=summary_columns["near_pair_right_partition_ids"],
+            statuses=summary_columns["near_pair_status"],
+            return_device=True,
+        )
+        ambiguous_point_comparisons = 0
+        ambiguous_positive_edges = 0
+        ambiguous_union_skipped_reason = "no_ambiguous_partition_pairs"
+    else:
+        x_dev = cupy.asarray([point[0] for point in points], dtype=cupy.float64)
+        y_dev = cupy.asarray([point[1] for point in points], dtype=cupy.float64)
+        z_dev = cupy.asarray([point[2] for point in points], dtype=cupy.float64)
+        (
+            partition_parents_device,
+            union_iterations,
+            ambiguous_point_comparisons,
+            ambiguous_positive_edges,
+        ) = _cupy_union_partition_pairs_with_ambiguous_points(
+            cupy,
+            partition_count=partition_count,
+            left_ids=summary_columns["near_pair_left_partition_ids"],
+            right_ids=summary_columns["near_pair_right_partition_ids"],
+            statuses=summary_columns["near_pair_status"],
+            partition_offsets=summary_columns["partition_offsets"],
+            partition_point_ordinals=summary_columns["partition_point_ordinals"],
+            x=x_dev,
+            y=y_dev,
+            z=z_dev,
+            radius_sq=radius * radius,
+        )
+    point_partition_ids = cupy.asarray(summary_columns["point_partition_ids"], dtype=cupy.uint32)
+    component_roots = partition_parents_device[point_partition_ids]
+    _, component_counts = cupy.unique(component_roots, return_counts=True)
+    signature = tuple(
+        int(value)
+        for value in cupy.asnumpy(cupy.sort(component_counts.astype(cupy.uint32, copy=False))).tolist()
+    )
+    same_contract = None
+    if validate_against_component_labels:
+        labels = build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_3d(
+            raw_rows,
+            radius=radius,
+            cell_factor=cell_factor,
+            partition_summary=summary,
+            partition_union_execution="cupy_safe_full",
+            ambiguous_union_execution=ambiguous_union_execution,
+            validate_summary_same_contract=False,
+        )
+        label_values = tuple(int(value) for value in labels["columns"]["component_labels"])
+        expected = tuple(sorted(label_values.count(label) for label in set(label_values)))
+        same_contract = signature == expected
+    return {
+        "columns": {
+            "component_size_signature": signature,
+        },
+        "metadata": {
+            **base_metadata,
+            "status": (
+                "accept"
+                if same_contract is None or same_contract
+                else "reject_component_label_signature_mismatch"
+            ),
+            "point_count": len(points),
+            "partition_count": partition_count,
+            "component_count": len(signature),
+            "same_contract_against_component_labels": same_contract,
+            "complete_candidate_coverage": True,
+            "safe_skip_partition_pairs": safe_skip_pairs,
+            "safe_full_partition_pairs": safe_full_pairs,
+            "ambiguous_partition_pairs": ambiguous_pairs,
+            "ambiguous_point_comparisons": ambiguous_point_comparisons,
+            "ambiguous_positive_edges": ambiguous_positive_edges,
+            "safe_full_partition_union_iterations": union_iterations,
+            "device_ambiguous_union_used": ambiguous_union_skipped_reason is None,
+            "ambiguous_union_skipped_reason": ambiguous_union_skipped_reason,
+        },
+    }
+
+
 def _cupy_union_partition_pairs_with_ambiguous_points(
     cupy,
     *,
@@ -1883,7 +2080,8 @@ def _cupy_union_safe_full_partition_pairs(
     right_ids,
     statuses,
     max_iterations: int = 64,
-) -> tuple[list[int], int]:
+    return_device: bool = False,
+):
     kernel = cupy.RawKernel(
         r'''
         extern "C" __global__
@@ -1965,6 +2163,8 @@ def _cupy_union_safe_full_partition_pairs(
             break
     else:
         raise RuntimeError("safe-full partition union did not converge")
+    if return_device:
+        return parents, iterations
     return [int(value) for value in cupy.asnumpy(parents).tolist()], iterations
 
 
@@ -2388,6 +2588,7 @@ __all__ = [
     "V28PreparedFixedRadiusGraphComponentContinuation3D",
     "build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_3d",
     "build_v2_8_fixed_radius_partition_convergence_component_labels_reference_3d",
+    "build_v2_8_fixed_radius_partition_convergence_component_signature_cupy_preview_3d",
     "build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d",
     "build_v2_8_fixed_radius_partition_convergence_summary_numba_preview_3d",
     "build_v2_8_fixed_radius_partition_convergence_summary_reference_3d",
