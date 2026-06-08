@@ -351,6 +351,88 @@ class ExplicitPreparedSessionCache:
             close()
 
 
+@dataclass(frozen=True)
+class RtdlPreparedSessionReuseResult:
+    value: Any = field(compare=False, repr=False)
+    cache_key: RtdlPreparedSessionCacheKey
+    policy: RtdlPreparedSessionResidencyPolicy
+    cache_hit: bool
+    cache_event_log: tuple[dict[str, Any], ...] = ()
+
+    @property
+    def release_authorized(self) -> bool:
+        return False
+
+    @property
+    def public_speedup_claim_authorized(self) -> bool:
+        return False
+
+    @property
+    def true_zero_copy_claim_authorized(self) -> bool:
+        return False
+
+    @property
+    def automatic_partner_selection_authorized(self) -> bool:
+        return False
+
+    def to_metadata(self) -> dict[str, Any]:
+        return {
+            "contract_version": PREPARED_SESSION_RESIDENCY_VERSION,
+            "stable_id": self.cache_key.stable_id,
+            "cache_hit": bool(self.cache_hit),
+            "cache_key": self.cache_key.to_metadata(),
+            "policy": self.policy.to_metadata(),
+            "cache_event_log": self.cache_event_log,
+            "explicit_cache_lookup": True,
+            "release_authorized": self.release_authorized,
+            "public_speedup_claim_authorized": self.public_speedup_claim_authorized,
+            "true_zero_copy_claim_authorized": self.true_zero_copy_claim_authorized,
+            "automatic_partner_selection_authorized": self.automatic_partner_selection_authorized,
+            "claim_boundary": PREPARED_SESSION_RESIDENCY_CLAIM_BOUNDARY,
+        }
+
+
+def get_or_prepare_explicit_session(
+    cache: ExplicitPreparedSessionCache,
+    key: RtdlPreparedSessionCacheKey,
+    prepare_session: Any,
+    *,
+    policy: RtdlPreparedSessionResidencyPolicy | None = None,
+) -> RtdlPreparedSessionReuseResult:
+    """Get a prepared session from an explicit cache or call the caller's prepare function.
+
+    The helper deliberately requires the cache, key, and prepare function from
+    the caller. It never chooses a backend, partner, primitive, or device.
+    """
+
+    if not isinstance(cache, ExplicitPreparedSessionCache):
+        raise TypeError("cache must be an ExplicitPreparedSessionCache")
+    if policy is None:
+        policy = RtdlPreparedSessionResidencyPolicy(cache_key=key, cache_enabled=True)
+    if policy.cache_key != key:
+        raise ValueError("prepared-session reuse policy key must match the lookup key")
+    cached = cache.get(key)
+    if cached is not None:
+        return RtdlPreparedSessionReuseResult(
+            value=cached,
+            cache_key=key,
+            policy=policy,
+            cache_hit=True,
+            cache_event_log=cache.event_log,
+        )
+    if not callable(prepare_session):
+        raise TypeError("prepare_session must be callable on a cache miss")
+    value = prepare_session()
+    cache.put(key, value)
+    return RtdlPreparedSessionReuseResult(
+        value=value,
+        cache_key=key,
+        policy=policy,
+        cache_hit=False,
+        cache_event_log=cache.event_log,
+    )
+
+
 def make_prepared_session_cache_key(
     *,
     primitive: str,
@@ -459,8 +541,10 @@ __all__ = [
     "PREPARED_SESSION_RESIDENCY_VERSION",
     "RtdlPreparedSessionCacheKey",
     "RtdlPreparedSessionResidencyPolicy",
+    "RtdlPreparedSessionReuseResult",
     "RtdlPreparedSessionTimingRecord",
     "describe_prepared_session_residency_contract",
+    "get_or_prepare_explicit_session",
     "make_prepared_session_cache_key",
     "summarize_prepared_session_timing_records",
     "validate_prepared_session_residency_contract",
