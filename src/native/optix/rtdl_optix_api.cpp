@@ -83,11 +83,10 @@ extern "C" int rtdl_optix_collect_k_cooperative_launch_smoke(
         (void)get_optix_context();
 
         std::call_once(g_collect_k_cooperative_launch_smoke.init, [&]() {
-            const std::string ptx = compile_to_ptx(
+            const std::string cubin = compile_to_cubin(
                 kCollectKCooperativeLaunchSmokeKernelSrc,
-                "collect_k_cooperative_launch_smoke_kernel.cu",
-                {"--relocatable-device-code=true"});
-            CU_CHECK(cuModuleLoadData(&g_collect_k_cooperative_launch_smoke.module, ptx.c_str()));
+                "collect_k_cooperative_launch_smoke_kernel.cu");
+            CU_CHECK(cuModuleLoadData(&g_collect_k_cooperative_launch_smoke.module, cubin.data()));
             CU_CHECK(cuModuleGetFunction(
                 &g_collect_k_cooperative_launch_smoke.fn,
                 g_collect_k_cooperative_launch_smoke.module,
@@ -3494,10 +3493,10 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             profile.native_path = "row_width2_parallel_bitonic_sort";
             auto module_start = CollectKStageProfile::Clock::now();
             std::call_once(g_collect_k_i64_row_width2_sort.init, [&]() {
-                std::string ptx = compile_to_ptx(
+                std::string cubin = compile_to_cubin(
                     kCollectKBoundedI64RowWidth2SortKernelSrc,
                     "collect_k_bounded_i64_row_width2_sort_kernel.cu");
-                CU_CHECK(cuModuleLoadData(&g_collect_k_i64_row_width2_sort.module, ptx.c_str()));
+                CU_CHECK(cuModuleLoadData(&g_collect_k_i64_row_width2_sort.module, cubin.data()));
                 CU_CHECK(cuModuleGetFunction(
                     &g_collect_k_i64_row_width2_sort.fn,
                     g_collect_k_i64_row_width2_sort.module,
@@ -3583,10 +3582,10 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 use_gated_or_candidate_bundle || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT");
             auto module_start = CollectKStageProfile::Clock::now();
             std::call_once(g_collect_k_i64_row_width2_sort.init, [&]() {
-                std::string ptx = compile_to_ptx(
+                std::string cubin = compile_to_cubin(
                     kCollectKBoundedI64RowWidth2SortKernelSrc,
                     "collect_k_bounded_i64_row_width2_sort_kernel.cu");
-                CU_CHECK(cuModuleLoadData(&g_collect_k_i64_row_width2_sort.module, ptx.c_str()));
+                CU_CHECK(cuModuleLoadData(&g_collect_k_i64_row_width2_sort.module, cubin.data()));
                 CU_CHECK(cuModuleGetFunction(
                     &g_collect_k_i64_row_width2_sort.fn,
                     g_collect_k_i64_row_width2_sort.module,
@@ -3594,10 +3593,10 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             });
             if (use_cub_tile_sort) {
                 std::call_once(g_collect_k_i64_row_width2_cub_sort.init, [&]() {
-                    std::string ptx = compile_to_ptx(
+                    std::string cubin = compile_to_cubin(
                         kCollectKBoundedI64RowWidth2CubSortKernelSrc,
                         "collect_k_bounded_i64_row_width2_cub_sort_kernel.cu");
-                    CU_CHECK(cuModuleLoadData(&g_collect_k_i64_row_width2_cub_sort.module, ptx.c_str()));
+                    CU_CHECK(cuModuleLoadData(&g_collect_k_i64_row_width2_cub_sort.module, cubin.data()));
                     CU_CHECK(cuModuleGetFunction(
                         &g_collect_k_i64_row_width2_cub_sort.fn,
                         g_collect_k_i64_row_width2_cub_sort.module,
@@ -3609,30 +3608,30 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 });
             }
             std::call_once(g_collect_k_i64_row_width2_merge_two.init, [&]() {
-                std::string ptx = compile_to_ptx(
+                std::string cubin = compile_to_cubin(
                     kCollectKBoundedI64RowWidth2MergeTwoKernelSrc,
                     "collect_k_bounded_i64_row_width2_merge_two_kernel.cu");
-                CU_CHECK(cuModuleLoadData(&g_collect_k_i64_row_width2_merge_two.module, ptx.c_str()));
+                CU_CHECK(cuModuleLoadData(&g_collect_k_i64_row_width2_merge_two.module, cubin.data()));
                 CU_CHECK(cuModuleGetFunction(
                     &g_collect_k_i64_row_width2_merge_two.fn,
                     g_collect_k_i64_row_width2_merge_two.module,
                     "collect_k_bounded_i64_row_width2_merge_two"));
             });
             std::call_once(g_collect_k_i64_row_width2_merge_level.init, [&]() {
-                std::string ptx = compile_to_ptx(
+                std::string cubin = compile_to_cubin(
                     kCollectKBoundedI64RowWidth2MergeLevelKernelSrc,
                     "collect_k_bounded_i64_row_width2_merge_level_kernel.cu");
-                CU_CHECK(cuModuleLoadData(&g_collect_k_i64_row_width2_merge_level.module, ptx.c_str()));
+                CU_CHECK(cuModuleLoadData(&g_collect_k_i64_row_width2_merge_level.module, cubin.data()));
                 CU_CHECK(cuModuleGetFunction(
                     &g_collect_k_i64_row_width2_merge_level.fn,
                     g_collect_k_i64_row_width2_merge_level.module,
                     "collect_k_bounded_i64_row_width2_merge_level"));
             });
             std::call_once(g_collect_k_i64_row_width2_final_materialize.init, [&]() {
-                std::string ptx = compile_to_ptx(
+                std::string cubin = compile_to_cubin(
                     kCollectKBoundedI64RowWidth2FinalCompactKernelSrc,
                     "collect_k_bounded_i64_row_width2_final_compact_kernel.cu");
-                CU_CHECK(cuModuleLoadData(&g_collect_k_i64_row_width2_final_materialize.module, ptx.c_str()));
+                CU_CHECK(cuModuleLoadData(&g_collect_k_i64_row_width2_final_materialize.module, cubin.data()));
                 CU_CHECK(cuModuleGetFunction(
                     &g_collect_k_i64_row_width2_final_materialize.fn,
                     g_collect_k_i64_row_width2_final_materialize.module,
@@ -4816,10 +4815,10 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
         profile.native_path = "dynamic_row_width_single_thread_fallback";
         auto module_start = CollectKStageProfile::Clock::now();
         std::call_once(g_collect_k_i64.init, [&]() {
-            std::string ptx = compile_to_ptx(
+            std::string cubin = compile_to_cubin(
                 kCollectKBoundedI64KernelSrc,
                 "collect_k_bounded_i64_kernel.cu");
-            CU_CHECK(cuModuleLoadData(&g_collect_k_i64.module, ptx.c_str()));
+            CU_CHECK(cuModuleLoadData(&g_collect_k_i64.module, cubin.data()));
             CU_CHECK(cuModuleGetFunction(
                 &g_collect_k_i64.fn,
                 g_collect_k_i64.module,
@@ -6658,10 +6657,10 @@ extern "C" void rtdl_optix_free_rows(void* rows) {
 static void ensure_collect_k_row_width2_final_compact_kernels()
 {
     std::call_once(g_collect_k_i64_row_width2_final_materialize.init, [&]() {
-        std::string ptx = compile_to_ptx(
+        std::string cubin = compile_to_cubin(
             kCollectKBoundedI64RowWidth2FinalCompactKernelSrc,
             "collect_k_bounded_i64_row_width2_final_compact_kernel.cu");
-        CU_CHECK(cuModuleLoadData(&g_collect_k_i64_row_width2_final_materialize.module, ptx.c_str()));
+        CU_CHECK(cuModuleLoadData(&g_collect_k_i64_row_width2_final_materialize.module, cubin.data()));
         CU_CHECK(cuModuleGetFunction(
             &g_collect_k_i64_row_width2_final_materialize.fn,
             g_collect_k_i64_row_width2_final_materialize.module,

@@ -15,20 +15,13 @@ This is an inventory only. It does not convert the remaining sites.
 
 | File | Line | Module | Kernel file |
 | --- | ---: | --- | --- |
-| `src/native/optix/rtdl_optix_api.cpp` | 90 | `g_collect_k_cooperative_launch_smoke.module` | `collect_k_cooperative_launch_smoke_kernel.cu` |
-| `src/native/optix/rtdl_optix_api.cpp` | 3500 | `g_collect_k_i64_row_width2_sort.module` | `collect_k_bounded_i64_row_width2_sort_kernel.cu` |
-| `src/native/optix/rtdl_optix_api.cpp` | 3589 | `g_collect_k_i64_row_width2_sort.module` | `collect_k_bounded_i64_row_width2_sort_kernel.cu` |
-| `src/native/optix/rtdl_optix_api.cpp` | 3600 | `g_collect_k_i64_row_width2_cub_sort.module` | `collect_k_bounded_i64_row_width2_cub_sort_kernel.cu` |
-| `src/native/optix/rtdl_optix_api.cpp` | 3615 | `g_collect_k_i64_row_width2_merge_two.module` | `collect_k_bounded_i64_row_width2_merge_two_kernel.cu` |
-| `src/native/optix/rtdl_optix_api.cpp` | 3625 | `g_collect_k_i64_row_width2_merge_level.module` | `collect_k_bounded_i64_row_width2_merge_level_kernel.cu` |
-| `src/native/optix/rtdl_optix_api.cpp` | 3635 | `g_collect_k_i64_row_width2_final_materialize.module` | `collect_k_bounded_i64_row_width2_final_compact_kernel.cu` |
-| `src/native/optix/rtdl_optix_api.cpp` | 4822 | `g_collect_k_i64.module` | `collect_k_bounded_i64_kernel.cu` |
-| `src/native/optix/rtdl_optix_api.cpp` | 6664 | `g_collect_k_i64_row_width2_final_materialize.module` | `collect_k_bounded_i64_row_width2_final_compact_kernel.cu` |
+| none | - | - | - |
 
 ## Recommended Migration Order
 
-1. Convert collect-k helpers last, because that older path has more historical
-   tuning branches and should be tested as a cluster.
+No remaining direct `cuModuleLoadData(..., ptx.c_str())` debt is currently
+tracked by this inventory. OptiX pipeline PTX remains out of scope and should not
+be counted as direct driver-loaded CUDA-module PTX debt.
 
 ## Follow-Up
 
@@ -41,6 +34,9 @@ this debt list. The current remaining driver-loaded PTX count is `12`.
 
 Goal3958 migrated the point-group-nearest split/reduce helpers out of this debt
 list. The current remaining driver-loaded PTX count is `9`.
+
+Goal3962 migrated the collect-k helpers out of this debt list. The current
+remaining driver-loaded PTX count is `0`.
 
 ## Boundary
 

@@ -5,17 +5,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-EXPECTED_DRIVER_LOADED_PTX_KERNELS = (
-    "collect_k_cooperative_launch_smoke_kernel.cu",
-    "collect_k_bounded_i64_row_width2_sort_kernel.cu",
-    "collect_k_bounded_i64_row_width2_sort_kernel.cu",
-    "collect_k_bounded_i64_row_width2_cub_sort_kernel.cu",
-    "collect_k_bounded_i64_row_width2_merge_two_kernel.cu",
-    "collect_k_bounded_i64_row_width2_merge_level_kernel.cu",
-    "collect_k_bounded_i64_row_width2_final_compact_kernel.cu",
-    "collect_k_bounded_i64_kernel.cu",
-    "collect_k_bounded_i64_row_width2_final_compact_kernel.cu",
-)
+EXPECTED_DRIVER_LOADED_PTX_KERNELS: tuple[str, ...] = ()
 
 
 def _driver_loaded_ptx_kernel_names() -> tuple[str, ...]:
@@ -61,6 +51,13 @@ class Goal3951DirectCudaPtxLoaderDebtInventoryTest(unittest.TestCase):
             "partner_ray2d_device_columns_pack_kernel.cu",
             "point_group_nearest_split_columns_kernel.cu",
             "point_group_nearest_max_reduce_kernel.cu",
+            "collect_k_cooperative_launch_smoke_kernel.cu",
+            "collect_k_bounded_i64_row_width2_sort_kernel.cu",
+            "collect_k_bounded_i64_row_width2_cub_sort_kernel.cu",
+            "collect_k_bounded_i64_row_width2_merge_two_kernel.cu",
+            "collect_k_bounded_i64_row_width2_merge_level_kernel.cu",
+            "collect_k_bounded_i64_row_width2_final_compact_kernel.cu",
+            "collect_k_bounded_i64_kernel.cu",
         ):
             self.assertNotIn(kernel, remaining)
 

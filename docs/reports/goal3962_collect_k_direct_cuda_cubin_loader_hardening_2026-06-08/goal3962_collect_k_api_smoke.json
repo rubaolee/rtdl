@@ -1,0 +1,183 @@
+{
+  "all_checks_pass": true,
+  "broad_rt_core_claim_authorized": false,
+  "collect_cases": [
+    {
+      "all_checks_pass": true,
+      "candidate_count": 1024,
+      "case": "row_width2_small_bitonic",
+      "checks": {
+        "claim_flags_false": true,
+        "not_overflowed": true,
+        "rows_match_expected_lexicographic_unique": true,
+        "valid_count_matches_unique_input": true
+      },
+      "claim_flags": {
+        "partner_tensor_handoff_authorized": false,
+        "public_speedup_wording_authorized": false,
+        "release_action_authorized": false,
+        "stable_public_primitive_authorized": false,
+        "true_zero_copy_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "row_capacity": 1024,
+      "row_width": 2,
+      "sample_rows": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          4,
+          4
+        ]
+      ],
+      "transfer_accounting": {
+        "allocation_only_transfers_distinguished_from_content_transfers": true,
+        "device_to_host_transfers_after_backend_execution": 2,
+        "host_to_device_transfers_before_backend_execution": 0,
+        "internal_device_transfers_if_any": 0
+      },
+      "valid_count": 1024
+    },
+    {
+      "all_checks_pass": true,
+      "candidate_count": 8192,
+      "case": "row_width2_tiled_cub_merge_final",
+      "checks": {
+        "claim_flags_false": true,
+        "not_overflowed": true,
+        "rows_match_expected_lexicographic_unique": true,
+        "valid_count_matches_unique_input": true
+      },
+      "claim_flags": {
+        "partner_tensor_handoff_authorized": false,
+        "public_speedup_wording_authorized": false,
+        "release_action_authorized": false,
+        "stable_public_primitive_authorized": false,
+        "true_zero_copy_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "row_capacity": 8192,
+      "row_width": 2,
+      "sample_rows": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          4096
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          4097
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "transfer_accounting": {
+        "allocation_only_transfers_distinguished_from_content_transfers": true,
+        "device_to_host_transfers_after_backend_execution": 5,
+        "host_to_device_transfers_before_backend_execution": 1,
+        "internal_device_transfers_if_any": 7
+      },
+      "valid_count": 8192
+    },
+    {
+      "all_checks_pass": true,
+      "candidate_count": 257,
+      "case": "dynamic_row_width3_fallback",
+      "checks": {
+        "claim_flags_false": true,
+        "not_overflowed": true,
+        "rows_match_expected_lexicographic_unique": true,
+        "valid_count_matches_unique_input": true
+      },
+      "claim_flags": {
+        "partner_tensor_handoff_authorized": false,
+        "public_speedup_wording_authorized": false,
+        "release_action_authorized": false,
+        "stable_public_primitive_authorized": false,
+        "true_zero_copy_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "row_capacity": 257,
+      "row_width": 3,
+      "sample_rows": [
+        [
+          0,
+          0,
+          2
+        ],
+        [
+          1,
+          1,
+          5
+        ],
+        [
+          2,
+          2,
+          8
+        ],
+        [
+          3,
+          3,
+          11
+        ],
+        [
+          4,
+          4,
+          14
+        ]
+      ],
+      "transfer_accounting": {
+        "allocation_only_transfers_distinguished_from_content_transfers": true,
+        "device_to_host_transfers_after_backend_execution": 2,
+        "host_to_device_transfers_before_backend_execution": 0,
+        "internal_device_transfers_if_any": 0
+      },
+      "valid_count": 257
+    }
+  ],
+  "cooperative_smoke": {
+    "all_checks_pass": true,
+    "error": "",
+    "observed_blocks": 2,
+    "status": 0,
+    "sync_observed_blocks": 2
+  },
+  "elapsed_sec": 5.173351459205151,
+  "env": {
+    "RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT": "1",
+    "RTDL_OPTIX_COLLECT_K_FASTEST_CANDIDATE": "1"
+  },
+  "git_status_short": [
+    " M src/native/optix/rtdl_optix_api.cpp"
+  ],
+  "goal": "Goal3962",
+  "gpu": "NVIDIA RTX 4000 Ada Generation, 550.127.05, 20475 MiB",
+  "paper_reproduction_claim_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "source_commit_short": "e704d1d8",
+  "true_zero_copy_claim_authorized": false
+}
