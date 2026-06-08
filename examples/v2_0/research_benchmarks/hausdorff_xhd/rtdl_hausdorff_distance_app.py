@@ -898,6 +898,24 @@ def run_app(
         oracle = expected_tiled_hausdorff(copies=copies)
         oracle_within_threshold = float(oracle["hausdorff_distance"]) <= hausdorff_threshold + 1e-12
         run_phases["validation_sec"] = time.perf_counter() - validation_start
+        session_key = rt.make_prepared_session_cache_key(
+            primitive="fixed_radius_threshold_2d",
+            backend=backend,
+            input_fingerprints={
+                "source_points": {"count": len(points_a), "copies": copies},
+                "target_points": {"count": len(points_b), "copies": copies},
+            },
+            parameters={"threshold": hausdorff_threshold},
+            partner="none",
+            device="cuda:0" if backend == "optix" else "cpu",
+        )
+        session_policy = rt.RtdlPreparedSessionResidencyPolicy(
+            cache_key=session_key,
+            cache_enabled=False,
+            lifetime_state="session_retained",
+            reuse_scope="explicit_user_session",
+            invalidation_events=("explicit_invalidate", "backend_context_reset", "close"),
+        )
         return {
             "app": "hausdorff_distance",
             "backend": backend,
@@ -939,6 +957,25 @@ def run_app(
                 )
                 + float(directed_ba["run_phases"]["query_fixed_radius_threshold_reached_count_total_sec"]),
                 "reported_query_metric": "sum_of_directed_query_medians",
+            },
+            "prepared_session_residency": {
+                "cache_key": session_key.to_metadata(),
+                "policy": session_policy.to_metadata(),
+                "explicit_reuse_helper": "get_or_prepare_explicit_session",
+                "cache_enabled_by_default": False,
+                "cold_hot_phase_split_required": True,
+                "prepare_once_query_many_pattern": True,
+                "automatic_partner_selection_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+                "public_speedup_claim_authorized": False,
+            },
+            "claim_boundary": {
+                "public_speedup_claim_authorized": False,
+                "broad_rt_core_speedup_claim_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+                "automatic_partner_selection_authorized": False,
+                "app_specific_native_engine_logic_allowed": False,
+                "full_paper_reproduction_claim_authorized": False,
             },
         }
 

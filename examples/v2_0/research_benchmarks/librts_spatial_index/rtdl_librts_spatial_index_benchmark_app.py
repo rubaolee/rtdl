@@ -547,6 +547,26 @@ def run_optix_aabb_counts(
             prepared_query.close()
         prepared.close()
 
+    session_key = rt.make_prepared_session_cache_key(
+        primitive="aabb_index_query_2d",
+        backend="optix",
+        input_fingerprints={
+            "boxes": {"count": len(fixture.boxes)},
+            "point_queries": {"count": len(fixture.point_queries)},
+            "box_queries": {"count": len(fixture.box_queries)},
+        },
+        parameters={"operation": operation, "prepared_queries": prepared_queries},
+        partner="none",
+        device="cuda:0",
+    )
+    session_policy = rt.RtdlPreparedSessionResidencyPolicy(
+        cache_key=session_key,
+        cache_enabled=False,
+        lifetime_state="session_retained",
+        reuse_scope="explicit_user_session",
+        invalidation_events=("explicit_invalidate", "backend_context_reset", "close"),
+    )
+
     return {
         "app": "librts_spatial_index",
         "mode": "optix_aabb_index",
@@ -573,6 +593,17 @@ def run_optix_aabb_counts(
             "query_sec_median": float(sum(query_sec.values())),
             "query_sec_total": float(sum(query_total_sec.values())),
         },
+        "prepared_session_residency": {
+            "cache_key": session_key.to_metadata(),
+            "policy": session_policy.to_metadata(),
+            "explicit_reuse_helper": "get_or_prepare_explicit_session",
+            "cache_enabled_by_default": False,
+            "cold_hot_phase_split_required": True,
+            "prepare_once_query_many_pattern": True,
+            "automatic_partner_selection_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+        },
         "prepared_queries": prepared_queries,
         "multi_operation_native_used": multi_operation_native_used,
         "paper": PAPER,
@@ -582,6 +613,9 @@ def run_optix_aabb_counts(
         ),
         "native_engine_customization": False,
         "rt_core_accelerated": True,
+        "automatic_partner_selection_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "public_speedup_claim_authorized": False,
         "authors_code_comparison": False,
         "paper_reproduction": False,
     }

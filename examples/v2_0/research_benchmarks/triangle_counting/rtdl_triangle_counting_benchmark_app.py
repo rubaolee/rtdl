@@ -60,6 +60,9 @@ CLAIM_BOUNDARY = {
     "triangle_count_rt_core_claim_authorized": False,
     "whole_app_speedup_claim_authorized": False,
     "public_speedup_claim_authorized": False,
+    "true_zero_copy_claim_authorized": False,
+    "automatic_partner_selection_authorized": False,
+    "app_specific_native_engine_logic_allowed": False,
 }
 
 
@@ -812,6 +815,24 @@ def rt_graph_2a1_generic_rt_payload(
         same_phase_contract_as_basis=True,
         source="triangle_counting.rt_graph_2a1_generic_rt",
     )
+    session_key = rt.make_prepared_session_cache_key(
+        primitive="ray_triangle_weighted_any_hit_sum_3d",
+        backend=normalized_backend,
+        input_fingerprints={
+            "triangles": {"count": primitive_count, "fixture": fixture, "copies": rt_graph_copies},
+            "rays": {"count": ray_count, "fixture": fixture, "copies": rt_graph_copies},
+        },
+        parameters={"detail": detail, "summary": summary_result is not None},
+        partner="none",
+        device="cuda:0" if normalized_backend == "optix" else "cpu",
+    )
+    session_policy = rt.RtdlPreparedSessionResidencyPolicy(
+        cache_key=session_key,
+        cache_enabled=False,
+        lifetime_state="session_retained",
+        reuse_scope="explicit_user_session",
+        invalidation_events=("explicit_invalidate", "backend_context_reset", "close"),
+    )
     return {
         "app": BENCHMARK_NAME,
         "mode": "rt_graph_2a1_generic_rt",
@@ -871,6 +892,17 @@ def rt_graph_2a1_generic_rt_payload(
         "ray_weights": _ray_weight_payload(ray_weights, detail=detail),
         "generic_rt_summary": summary_result,
         "v2_4_prepared_session": v2_4_session,
+        "prepared_session_residency": {
+            "cache_key": session_key.to_metadata(),
+            "policy": session_policy.to_metadata(),
+            "explicit_reuse_helper": "get_or_prepare_explicit_session",
+            "cache_enabled_by_default": False,
+            "cold_hot_phase_split_required": True,
+            "prepare_once_query_many_pattern": True,
+            "automatic_partner_selection_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+        },
         "v2_4_phase_timing": v2_4_phase_timing,
         "rt_graph_contract": _contract_payload(contract, detail=detail),
         "claim_boundary": CLAIM_BOUNDARY,
