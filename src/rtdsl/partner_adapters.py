@@ -2057,6 +2057,7 @@ def grouped_vector_sum_2d_partner_columns(
         )
     if normalized_partner == "numba":
         from .numba_partner_continuation import run_numba_grouped_vector_sum_f64x2
+        from .numba_partner_continuation import run_numba_grouped_vector_sum_f64x2_by_offsets
         from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff
         from .v2_6_neutral_partner_handoff import validate_v2_6_neutral_partner_handoff
 
@@ -2066,23 +2067,39 @@ def grouped_vector_sum_2d_partner_columns(
             raise ValueError("values_x length must match group_ids length")
         if _column_length({"values_y": values_y}, "values_y") != row_count:
             raise ValueError("values_y length must match group_ids length")
+        handoff_columns = {"group_ids": group_ids, "values_x": values_x, "values_y": values_y}
+        access_modes = {"group_ids": "read", "values_x": "read", "values_y": "read"}
+        if row_offsets is not None:
+            if _column_length({"row_offsets": row_offsets}, "row_offsets") != group_count + 1:
+                raise ValueError("row_offsets length must equal group_count + 1")
+            handoff_columns["row_offsets"] = row_offsets
+            access_modes["row_offsets"] = "read"
         try:
             handoff = prepare_v2_6_neutral_partner_handoff(
-                {"group_ids": group_ids, "values_x": values_x, "values_y": values_y},
+                handoff_columns,
                 partner="numba",
-                access_modes={"group_ids": "read", "values_x": "read", "values_y": "read"},
+                access_modes=access_modes,
             )
         except ValueError as exc:
             raise RuntimeError(f"Numba neutral handoff rejected: {exc}") from exc
         validation = validate_v2_6_neutral_partner_handoff(handoff)
         if validation["status"] != "accept":
             raise RuntimeError(f"Numba neutral handoff rejected: {validation['errors']}")
-        numba_result = run_numba_grouped_vector_sum_f64x2(
-            group_ids,
-            values_x,
-            values_y,
-            group_count=group_count,
-        )
+        if row_offsets is None:
+            numba_result = run_numba_grouped_vector_sum_f64x2(
+                group_ids,
+                values_x,
+                values_y,
+                group_count=group_count,
+            )
+            numba_offset_result = None
+        else:
+            numba_result = run_numba_grouped_vector_sum_f64x2_by_offsets(
+                row_offsets,
+                values_x,
+                values_y,
+            )
+            numba_offset_result = numba_result
         columns = {
             "group_ids": runtime["tensor"](range(group_count), runtime["int64"], runtime["device"]),
             "sum_x": numba_result["outputs"]["sum_x"],
@@ -2097,6 +2114,17 @@ def grouped_vector_sum_2d_partner_columns(
             "v2_5_numba_preview_kernel_used": True,
             "v2_5_numba_preview_kernel_status": numba_result["status"],
             "v2_6_neutral_handoff_validation_status": validation["status"],
+            "v2_6_neutral_handoff_column_count": handoff["column_count"],
+            "v2_5_numba_presegmented_offsets_used": numba_offset_result is not None,
+            "v2_5_numba_adapter_kernel": (
+                numba_offset_result["adapter_kernel"] if numba_offset_result is not None else None
+            ),
+            "v2_5_numba_global_atomic_add_used": (
+                numba_offset_result["global_atomic_add_used"] if numba_offset_result is not None else True
+            ),
+            "v2_5_numba_offset_program_count": (
+                numba_offset_result["program_count"] if numba_offset_result is not None else None
+            ),
             "v2_5_triton_preview_kernel_used": False,
             "v2_5_cupy_rawkernel_used": False,
             "v2_5_cupy_presegmented_offsets_used": False,

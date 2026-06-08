@@ -123,6 +123,7 @@ from .numba_partner_continuation import run_numba_global_argmax_u32_f64
 from .numba_partner_continuation import run_numba_grouped_argmax_f64
 from .numba_partner_continuation import run_numba_grouped_argmin_f64
 from .numba_partner_continuation import run_numba_grouped_vector_sum_f64x2
+from .numba_partner_continuation import run_numba_grouped_vector_sum_f64x2_by_offsets
 from .numba_partner_continuation import run_numba_pairwise_l2_sq_block_nearest_rows_2d
 from .numba_partner_continuation import run_numba_pairwise_l2_sq_score_rows_2d
 from .numba_partner_continuation import run_numba_segmented_count_i64
@@ -2124,6 +2125,7 @@ __all__ = [
     "run_numba_grouped_argmax_f64",
     "run_numba_grouped_argmin_f64",
     "run_numba_grouped_vector_sum_f64x2",
+    "run_numba_grouped_vector_sum_f64x2_by_offsets",
     "run_numba_pairwise_l2_sq_block_nearest_rows_2d",
     "run_numba_pairwise_l2_sq_score_rows_2d",
     "run_numba_segmented_count_i64",

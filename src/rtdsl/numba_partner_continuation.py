@@ -52,9 +52,11 @@ def describe_numba_segmented_sum_f64() -> dict[str, object]:
 def describe_numba_grouped_vector_sum_f64x2() -> dict[str, object]:
     descriptor = _base_numba_descriptor(NUMBA_GROUPED_VECTOR_SUM_F64X2_OPERATION)
     descriptor["input_columns"] = ("group_ids:int64", "values_x:float64", "values_y:float64")
+    descriptor["optional_input_columns"] = ("row_offsets:int64",)
     descriptor["output_columns"] = ("sum_x:float64", "sum_y:float64")
     descriptor["component_count"] = 2
     descriptor["componentwise_reduction"] = "independent_float64_sum_per_group"
+    descriptor["presegmented_row_offsets_supported"] = True
     return descriptor
 
 
@@ -334,6 +336,72 @@ def run_numba_grouped_vector_sum_f64x2(
             "row_count": row_count,
             "component_count": 2,
             "componentwise_reduction": "independent_float64_sum_per_group",
+        },
+    )
+
+
+def run_numba_grouped_vector_sum_f64x2_by_offsets(
+    row_offsets: Any,
+    values_x: Any,
+    values_y: Any,
+    *,
+    block_size: int = 256,
+    validate_row_offsets: bool = True,
+) -> dict[str, object]:
+    """Run grouped vector sum for presegmented rows over Numba CUDA arrays."""
+
+    cuda, np = _import_numba_stack()
+    row_offsets = _as_numba_cuda_vector(row_offsets, name="row_offsets", dtype=np.int64, cuda=cuda, np=np)
+    values_x = _as_numba_cuda_vector(values_x, name="values_x", dtype=np.float64, cuda=cuda, np=np)
+    values_y = _as_numba_cuda_vector(values_y, name="values_y", dtype=np.float64, cuda=cuda, np=np)
+    if tuple(values_x.shape) != tuple(values_y.shape):
+        raise ValueError("values_x and values_y must have the same shape")
+    group_count = int(row_offsets.shape[0]) - 1
+    row_count = int(values_x.shape[0])
+    if group_count < 0:
+        raise ValueError("row_offsets must contain at least one element")
+    block_size = int(block_size)
+    if block_size != 256:
+        raise ValueError("Numba offset grouped vector sum currently requires block_size=256")
+    if validate_row_offsets and int(row_offsets.shape[0]):
+        host_offsets = row_offsets.copy_to_host()
+        if int(host_offsets[0]) != 0 or int(host_offsets[-1]) != row_count:
+            raise ValueError("row_offsets must start at 0 and end at the row count")
+        if bool(np.any(host_offsets[1:] < host_offsets[:-1])):
+            raise ValueError("row_offsets must be monotonically nondecreasing")
+
+    cuda.synchronize()
+    started = perf_counter()
+    sum_x = cuda.device_array((group_count,), dtype=np.float64)
+    sum_y = cuda.device_array((group_count,), dtype=np.float64)
+    if group_count:
+        _cached_numba_kernel(cuda, _numba_grouped_vector_sum_f64x2_offsets_kernel)[(group_count,), block_size](
+            row_offsets,
+            values_x,
+            values_y,
+            sum_x,
+            sum_y,
+            group_count,
+        )
+    cuda.synchronize()
+    elapsed = perf_counter() - started
+
+    return _numba_run_result(
+        operation=NUMBA_GROUPED_VECTOR_SUM_F64X2_OPERATION,
+        outputs={"sum_x": sum_x, "sum_y": sum_y},
+        elapsed=elapsed,
+        source="run_numba_grouped_vector_sum_f64x2_by_offsets",
+        extra_metadata={
+            "group_count": group_count,
+            "row_count": row_count,
+            "component_count": 2,
+            "componentwise_reduction": "independent_float64_sum_per_group_by_offsets",
+            "presegmented_row_offsets": True,
+            "adapter_kernel": "numba_grouped_vector_sum_offsets_f64x2_kernel",
+            "program_count": group_count,
+            "threads_per_block": block_size,
+            "global_atomic_add_used": False,
+            "row_offset_validation_host_sync_used": validate_row_offsets,
         },
     )
 
@@ -1044,6 +1112,42 @@ def _numba_grouped_vector_sum_f64x2_kernel(cuda: Any):
             if 0 <= group < group_count:
                 cuda.atomic.add(output_x, group, values_x[index])
                 cuda.atomic.add(output_y, group, values_y[index])
+
+    return kernel
+
+
+def _numba_grouped_vector_sum_f64x2_offsets_kernel(cuda: Any):
+    from numba import float64
+
+    @cuda.jit
+    def kernel(row_offsets, values_x, values_y, output_x, output_y, group_count):
+        partial_x = cuda.shared.array(256, dtype=float64)
+        partial_y = cuda.shared.array(256, dtype=float64)
+        group = cuda.blockIdx.x
+        lane = cuda.threadIdx.x
+        local_x = 0.0
+        local_y = 0.0
+        if group < group_count:
+            start = row_offsets[group]
+            end = row_offsets[group + 1]
+            index = start + lane
+            while index < end:
+                local_x += values_x[index]
+                local_y += values_y[index]
+                index += 256
+        partial_x[lane] = local_x
+        partial_y[lane] = local_y
+        cuda.syncthreads()
+        stride = 128
+        while stride > 0:
+            if lane < stride:
+                partial_x[lane] += partial_x[lane + stride]
+                partial_y[lane] += partial_y[lane + stride]
+            cuda.syncthreads()
+            stride //= 2
+        if lane == 0 and group < group_count:
+            output_x[group] = partial_x[0]
+            output_y[group] = partial_y[0]
 
     return kernel
 
