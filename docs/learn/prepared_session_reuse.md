@@ -73,6 +73,24 @@ The important parts are visible in user code:
 - the prepare function is passed by the caller;
 - cache hits, misses, and invalidations are recorded in metadata.
 
+## Try A Live App Idiom
+
+The RTNN benchmark front door includes a non-performance teaching mode that
+invokes the same helper twice and prints the visible `miss`, `put`, `hit`
+event log:
+
+```bash
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py \
+  --mode prepared_session_reuse_idiom \
+  --point-count 16 \
+  --radius 0.02 \
+  --k 8
+```
+
+This mode is intentionally not the promoted OptiX benchmark path. It is a
+small app-level idiom check for `get_or_prepare_explicit_session`, and its
+payload sets `native_runner_invoked = false` and `performance_evidence = false`.
+
 ## Invalidation
 
 Invalidate when the prepared handle is no longer valid:

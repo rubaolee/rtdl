@@ -16,6 +16,7 @@ Updated:
 
 - `examples/v2_0/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py`
 - `examples/v2_0/research_benchmarks/rtnn/README.md`
+- `docs/learn/prepared_session_reuse.md`
 
 Added mode:
 

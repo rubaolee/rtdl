@@ -10,6 +10,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / "examples" / "v2_0" / "research_benchmarks" / "rtnn" / "rtdl_rtnn_benchmark_app.py"
 README = ROOT / "examples" / "v2_0" / "research_benchmarks" / "rtnn" / "README.md"
+TUTORIAL = ROOT / "docs" / "learn" / "prepared_session_reuse.md"
 REPORT = ROOT / "docs" / "reports" / "goal3886_rtnn_prepared_session_reuse_idiom_2026-06-08.md"
 
 
@@ -82,8 +83,9 @@ class Goal3886RtnnPreparedSessionReuseIdiomTest(unittest.TestCase):
 
     def test_readme_and_report_document_non_performance_boundary(self) -> None:
         readme = README.read_text(encoding="utf-8")
+        tutorial = TUTORIAL.read_text(encoding="utf-8")
         report = REPORT.read_text(encoding="utf-8")
-        for text in (readme, report):
+        for text in (readme, tutorial, report):
             self.assertIn("prepared_session_reuse_idiom", text)
             self.assertIn("get_or_prepare_explicit_session", text)
             self.assertIn("miss", text)
