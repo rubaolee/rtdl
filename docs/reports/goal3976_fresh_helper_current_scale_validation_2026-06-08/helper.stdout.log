@@ -1,0 +1,19 @@
+Requirement already satisfied: numba==0.60.0 in /usr/local/lib/python3.12/dist-packages (0.60.0)
+Requirement already satisfied: numpy==2.0.2 in /usr/local/lib/python3.12/dist-packages (2.0.2)
+Requirement already satisfied: nvidia-cuda-nvcc-cu12==12.4.131 in /usr/local/lib/python3.12/dist-packages (12.4.131)
+Requirement already satisfied: cupy-cuda12x==14.1.1 in /usr/local/lib/python3.12/dist-packages (14.1.1)
+Requirement already satisfied: llvmlite<0.44,>=0.43.0dev0 in /usr/local/lib/python3.12/dist-packages (from numba==0.60.0) (0.43.0)
+Requirement already satisfied: cuda-pathfinder==1.*,>=1.3.4 in /usr/local/lib/python3.12/dist-packages (from cupy-cuda12x==14.1.1) (1.5.5)
+partner_smoke_ok
+export RTDL_CUDA_PREFIX="/usr/local/cuda-12"
+export NUMBA_CUDA_PREFIX="/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc"
+export CUDA_HOME="/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc"
+export PATH="/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc/bin:/usr/local/cuda-12/bin:$PATH"
+export LD_LIBRARY_PATH="/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc/nvvm/lib64:/usr/local/cuda-12/targets/x86_64-linux/lib:/usr/local/cuda-12/lib64:${LD_LIBRARY_PATH:-}"
+export PYTHONPATH=src:.
+export RTDL_OPTIX_LIBRARY="$PWD/build/librtdl_optix.so"
+export RTDL_OPTIX_LIB="$PWD/build/librtdl_optix.so"
+export RTDL_OPTIX_PTX_COMPILER=nvcc
+export RTDL_NVCC="/usr/local/cuda-12/bin/nvcc"
+export RTDL_OPTIX_PTX_ARCH=compute_89
+export RTDL_OPTIX_CUBIN_ARCH=sm_89
