@@ -153,7 +153,10 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
             "source_dirty is empty, one-shot PIP is explicit Numba at 0.247x for RTDL/OptiX "
             "versus Numba, repeated PIP is the RTDL/OptiX batch executor at 0.155315ms/request "
             "for 100 requests, and LSI/overlay are RTDL/OptiX-favorable at 252.436x/202.372x "
-            "versus Numba. This is still not a RayJoin paper-reproduction, universal "
+            "versus Numba. Goal4039 repeats the representative profile on RTX 4000 Ada "
+            "after forcing Numba through the CUDA 12.4 nvcc/NVVM package: one-shot PIP "
+            "still favors Numba, while LSI/overlay remain RTDL/OptiX-favorable at "
+            "262.393x/210.183x versus Numba. This is still not a RayJoin paper-reproduction, universal "
             "PIP-dominance, or RTDL-beats-RayJoin claim."
         ),
         adequacy="strong",
@@ -184,10 +187,10 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
             "treat as covered for Numba-reference and HIPRT-contract purposes; next major work is "
             "actual AMD functional validation plus a non-dense baseline policy for larger RayJoin sizes where "
             "the all-CuPy dense baseline OOMs; the current mixed-route evidence is cleanly "
-            "confirmed by Goal3936; keep the prepared-points CUDA graph replay path blocked "
+            "confirmed by Goal3936 and Goal4039; keep the prepared-points CUDA graph replay path blocked "
             "until the zero-count replay failure is fixed"
         ),
-        evidence_refs=("Goal3688", "Goal3713", "Goal3733", "Goal3734", "Goal3737", "Goal3749", "Goal3761", "Goal3766", "Goal3767", "Goal3784", "Goal3785", "Goal3834", "Goal3838", "Goal3842", "Goal3866", "Goal3867", "Goal3933", "Goal3934", "Goal3935", "Goal3936"),
+        evidence_refs=("Goal3688", "Goal3713", "Goal3733", "Goal3734", "Goal3737", "Goal3749", "Goal3761", "Goal3766", "Goal3767", "Goal3784", "Goal3785", "Goal3834", "Goal3838", "Goal3842", "Goal3866", "Goal3867", "Goal3933", "Goal3934", "Goal3935", "Goal3936", "Goal4039"),
         pod_needed_next=False,
     ),
     V29BenchmarkAdequacyRow(

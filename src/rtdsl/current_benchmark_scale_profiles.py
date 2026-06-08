@@ -159,7 +159,7 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
             "100",
         ),
         timeout_sec=360,
-        evidence_refs=("Goal3834", "Goal3838", "Goal3842", "Goal3866", "Goal3936"),
+        evidence_refs=("Goal3834", "Goal3838", "Goal3842", "Goal3866", "Goal3936", "Goal4039"),
         expected_runtime_class="representative_mixed_route_public_cdb",
         requires_numba=True,
         representative_hot_path_metric="representative_hot_path_summary",

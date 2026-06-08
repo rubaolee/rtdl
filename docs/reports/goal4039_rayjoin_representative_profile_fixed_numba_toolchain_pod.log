@@ -1,0 +1,69 @@
+[goal3834] Numba PIP baseline start
+[goal3834] pip/numba_dense_all_pairs_scalar_count warmup 1/12 elapsed=0.382012s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count warmup 2/12 elapsed=0.000505s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 3/12 elapsed=0.000425s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 4/12 elapsed=0.000471s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 5/12 elapsed=0.000412s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 6/12 elapsed=0.000452s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 7/12 elapsed=0.000424s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 8/12 elapsed=0.000419s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 9/12 elapsed=0.000433s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 10/12 elapsed=0.000435s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 11/12 elapsed=0.000417s count=1417
+[goal3834] pip/numba_dense_all_pairs_scalar_count repeat 12/12 elapsed=0.000536s count=1417
+[goal3834] RTDL/OptiX PIP route start
+[goal3838] lsi_county512_soil512 Numba baseline start
+[goal3838] lsi/numba_dense_all_pairs_scalar_count warmup 1/12 elapsed=0.117001s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count warmup 2/12 elapsed=0.024620s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 3/12 elapsed=0.024764s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 4/12 elapsed=0.024599s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 5/12 elapsed=0.024575s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 6/12 elapsed=0.024596s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 7/12 elapsed=0.024587s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 8/12 elapsed=0.023926s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 9/12 elapsed=0.023165s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 10/12 elapsed=0.023176s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 11/12 elapsed=0.023133s count=269
+[goal3838] lsi/numba_dense_all_pairs_scalar_count repeat 12/12 elapsed=0.023108s count=269
+[goal3838] lsi_county512_soil512 RTDL/OptiX route start
+[goal3838] overlay_county512_soil512 Numba baseline start
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count warmup 1/12 elapsed=0.620886s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count warmup 2/12 elapsed=0.040574s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 3/12 elapsed=0.040156s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 4/12 elapsed=0.040487s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 5/12 elapsed=0.039606s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 6/12 elapsed=0.039511s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 7/12 elapsed=0.039453s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 8/12 elapsed=0.039507s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 9/12 elapsed=0.039731s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 10/12 elapsed=0.039454s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 11/12 elapsed=0.039477s count=174
+[goal3838] overlay_seed/numba_dense_all_pairs_scalar_count repeat 12/12 elapsed=0.039877s count=174
+[goal3838] overlay_county512_soil512 RTDL/OptiX route start
+[goal3310] load RayJoin PIP case
+[goal3310] points=512 polygons=478
+[goal3310] exact_count=1417
+[goal3310] single warmup 1/3
+[goal3310] single warmup 2/3
+[goal3310] single warmup 3/3
+[goal3310] single repeat 1/5 0.183880 ms
+[goal3310] single repeat 2/5 0.183523 ms
+[goal3310] single repeat 3/5 0.270776 ms
+[goal3310] single repeat 4/5 0.187784 ms
+[goal3310] single repeat 5/5 0.181131 ms
+[goal3310] batch 1 executor prepared effective_streams=1
+[goal3310] batch 1 warmup 1/3
+[goal3310] batch 1 warmup 2/3
+[goal3310] batch 1 warmup 3/3
+[goal3310] batch 1 repeat 1/4 total=0.173561 ms per=0.173561 ms
+[goal3310] batch 1 repeat 2/4 total=0.176579 ms per=0.176579 ms
+[goal3310] batch 1 repeat 3/4 total=0.175335 ms per=0.175335 ms
+[goal3310] batch 1 repeat 4/4 total=0.174016 ms per=0.174016 ms
+[goal3310] batch 100 executor prepared effective_streams=16
+[goal3310] batch 100 warmup 1/3
+[goal3310] batch 100 warmup 2/3
+[goal3310] batch 100 warmup 3/3
+[goal3310] batch 100 repeat 1/4 total=14.528945 ms per=0.145289 ms
+[goal3310] batch 100 repeat 2/4 total=14.524005 ms per=0.145240 ms
+[goal3310] batch 100 repeat 3/4 total=14.534116 ms per=0.145341 ms
+[goal3310] batch 100 repeat 4/4 total=14.521740 ms per=0.145217 ms

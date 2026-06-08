@@ -142,7 +142,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Use Numba for bounded PIP one-shot; use RTDL/OptiX prepared primitives for "
             "repeated PIP, LSI scalar count, and overlay active count."
         ),
-        primary_route="mixed explicit RayJoin route from Goal3936 clean pod evidence",
+        primary_route="mixed explicit RayJoin route from Goal4039 RTX 4000 Ada fixed-Numba-toolchain evidence",
         partner_policy="mixed_explicit_user_choice",
         primitive_contract="prepared point/closed-shape batch count, segment-pair exact count, shape-pair active count",
         user_choice_guidance=(
@@ -155,7 +155,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "RTDL-beats-RayJoin whole-app claim",
         ),
         next_runtime_action="next major work is larger generic route evidence, not more one-off RayJoin tuning",
-        evidence_refs=("Goal3866", "Goal3867", "Goal3933", "Goal3934", "Goal3935", "Goal3936", "Goal3937"),
+        evidence_refs=("Goal3866", "Goal3867", "Goal3933", "Goal3934", "Goal3935", "Goal3936", "Goal3937", "Goal4039"),
         pod_needed_next=False,
     ),
     CurrentBenchmarkRouteDecision(
