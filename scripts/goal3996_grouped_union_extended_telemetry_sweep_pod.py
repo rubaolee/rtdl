@@ -172,6 +172,7 @@ def main() -> int:
     parser.add_argument("--seed", type=int, default=20260608)
     parser.add_argument("--profile", default="clustered3d")
     parser.add_argument("--repeats", type=int, default=3)
+    parser.add_argument("--goal", default="Goal3996")
     parser.add_argument(
         "--output",
         type=pathlib.Path,
@@ -201,7 +202,7 @@ def main() -> int:
         print(f"[goal3996] done point_count={point_count}", flush=True)
 
     payload = {
-        "goal": "Goal3996",
+        "goal": args.goal,
         "status": "pass",
         "source_commit": _git_head(),
         "host": platform.node(),

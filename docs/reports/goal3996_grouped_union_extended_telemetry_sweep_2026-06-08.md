@@ -42,7 +42,7 @@ All timings below are diagnostic telemetry timings. They include extended teleme
 
 ## Interpretation
 
-The simple mode switches are exhausted:
+The simple mode switches are exhausted on this `clustered3d` profile/scale:
 
 - Same-root culling is still the right default. Disabling it reports every radius candidate and is slower at all measured sizes.
 - Direct side effects are not a durable large win. They are roughly neutral at `65,536` points under instrumentation and remain only a mode-level variant, not a new primitive.

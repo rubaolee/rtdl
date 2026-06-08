@@ -110,6 +110,12 @@ This file catches design ideas that should not interrupt the current release or 
   Disabling same-root culling was slower, and direct side effects were only
   roughly neutral at the large size. Do not spend more time on these simple
   toggles as the main optimization path.
+- Goal3998 rejected a per-ray source-root payload snapshot. It was app-agnostic
+  and compile-fixable by increasing the grouped-union payload count, but the
+  source root became too stale during concurrent union-find. On the same
+  `65536` clustered3d profile, reported candidates jumped from about `1.84M` to
+  `543.65M` and the default telemetry path slowed by about `1.079x`. Do not use
+  stale per-ray root snapshots as the dense grouped-union solution.
 - The next generic runtime primitive should be a dense fixed-radius
   grouped-union continuation, not another app-specific RT-DBSCAN trick. Candidate
   designs include component-aware root-cache snapshots with explicit staleness
