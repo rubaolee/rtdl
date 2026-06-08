@@ -87,3 +87,34 @@ This file catches design ideas that should not interrupt the current release or 
 - Likely implementation direction: keep RT cores responsible for candidate/relation production; keep exact overlay as a partner/native continuation over typed geometry payloads. Candidate algorithms include a generic arrangement/sweep continuation, triangulation plus triangle-polygon accumulation, or a robust polygon clipping library integration behind a generic primitive contract. A naive Sutherland-Hodgman clip is valid only for convex clip shapes and must be gated by the Goal3467-style complexity classifier.
 - Required acceptance before any public claim: exact oracle policy for non-integer/non-orthogonal polygons, deterministic boundary-witness ownership, hard fail-closed status for unsupported topology, same-contract CPU/reference comparison, large public-CDB pod evidence, and independent review.
 - Boundary: this belongs in the v2.8-or-later primitive/runtime lane if implemented as built-in generic continuation; arbitrary user-defined clipping kernels belong to the later v3.0 extension lane.
+
+## Dense Fixed-Radius Grouped Union
+
+- Goal3987 ruled out simple RT-DBSCAN grouped-stream route switches on the
+  current `clustered3d` scale profile: blocked query ranges, direct side
+  effects, and disabling same-root culling did not beat the current grouped
+  stream route.
+- Goal3988 showed that the existing RTDL/OptiX grouped stream is still the
+  correct primitive-first route for this profile: it is about `20x` faster than
+  the Numba-only prepared-grid opponent and about `86x` faster than the
+  CuPy-only prepared-grid opponent at `65536` points.
+- Goal3989 added atomic telemetry and same-root A/B evidence. Parent atomic
+  attempts are only about `1.24` per point, same-root culling is already faster
+  than disabling it, and atomics are not the sole bottleneck. The expensive
+  work is the combined fixed-radius candidate traversal, repeated root reads for
+  same-root culling, and remaining atomic unions.
+- The next generic runtime primitive should be a dense fixed-radius
+  grouped-union continuation, not another app-specific RT-DBSCAN trick. Candidate
+  designs include component-aware root-cache snapshots with explicit staleness
+  policy, multi-pass contraction, candidate compaction before union, or
+  cell/partition-assisted grouped union when a prepared search structure exposes
+  safe partitions.
+- Engine boundary: keep the native vocabulary generic. The primitive may talk
+  about fixed-radius pairs, groups, component roots, union events, partitions,
+  and convergence/status counters. It must not encode DBSCAN, clustering,
+  epsilon/min-points policy, or application-specific labels in native ABI names.
+- Required acceptance before promotion: same-contract parity against the
+  existing grouped-stream route, deterministic component-root policy, explicit
+  staleness/convergence metadata when root snapshots are used, dense and sparse
+  pod profiles, and external review. Treat performance results as profile-bound
+  until broader datasets are measured.
