@@ -1,81 +1,70 @@
-# Goal3848: AABB Count Per-Ray Device Accumulation
+# Goal3848: AABB Count Atomic Optimization Negative Probe
 
 Date: 2026-06-08
 
-Status: local implementation pending pod timing
+Status: reverted; negative probe preserved
 
 ## Purpose
 
-Goal3846 identified the generic OptiX `AABB_INDEX_QUERY_2D` count path as the
-next plausible large-scale performance target for the LibRTS-style benchmark.
-At dense scales the existing count-only path used one global `atomicAdd` per
-accepted hit. For large AABB query batches this can mean hundreds of millions
-of contended global atomics even when the caller only wants aggregate counts.
+Goal3846 identified the generic OptiX `AABB_INDEX_QUERY_2D` count path as a
+real large-scale performance target for the LibRTS-style benchmark. At dense
+scale the current count-only implementation uses one global
+`atomicAdd(params.hit_count, 1ULL)` per accepted hit. That is correct, but the
+131k stress probe shows it can become seconds-level hot work:
 
-The first attempted implementation used an OptiX payload register as a per-ray
-hit accumulator. Pod validation rejected that version because it undercounted
-the dense 131k stress case, so the final Goal3848 design is more conservative:
-use one device counter per launched ray and update those counters directly from
-the custom intersection program before summing them after traversal.
+- baseline counts: `point_contains=743946470`,
+  `range_contains=520904982`, `range_intersects=1133035386`;
+- baseline `repeat_protocol.query_sec_median`: `0.6460927510634065`;
+- baseline `repeat_protocol.query_sec_total`: `6.463141920976341`.
 
-This goal changes the generic count-only kernel behavior:
+Goal3848 tested whether the global hot counter could be replaced by a cheaper
+per-ray count path.
 
-- count-only launches accumulate accepted hits into a distributed
-  `query_hit_counts[payload_idx]` device array instead of one contended global
-  counter;
-- count-only launches update those counters inside the custom intersection
-  program and skip `optixReportIntersection`, avoiding any-hit row-slot logic;
-- the host downloads the compact per-ray `uint32` count array and sums it into
-  the existing aggregate `size_t` result;
-- row-output launches keep the existing row-index atomic path because row
-  collection needs stable output slots;
-- the native symbol surface remains generic and app-agnostic;
-- no LibRTS-specific native symbol or app term is introduced.
+## What Was Tried
 
-## Implementation
+Two generic alternatives were implemented and tested on the A5000 pod:
 
-Touched file:
+1. Payload-local accumulation: use an OptiX payload register as a per-ray hit
+   accumulator and aggregate once after traversal.
+2. Distributed per-ray device counters: write accepted hits into
+   `query_hit_counts[payload_idx]` either from any-hit or directly from the
+   custom intersection program, then sum the compact per-ray array.
 
-- `src/native/optix/rtdl_optix_workloads.cpp`
+Both variants were fast but wrong. On the same 131k fixture they returned:
 
-Key changes:
+- `point_contains=107557`
+- `range_contains=11870`
+- `range_intersects=428116`
 
-- `AabbIndexQueryLaunchParams` now includes `query_hit_counts`.
-- `__intersection__aabb_index_exact` increments `query_hit_counts + payload_idx`
-  when `collect_rows == 0` and returns without reporting an intersection.
-- `sum_device_u32_counts` downloads and sums the compact per-ray counts.
-- Row collection still reports intersections into `__anyhit__aabb_index_count`,
-  where `atomicAdd(params.hit_count, 1ULL)` reserves row slots and preserves
-  overflow detection.
-- The AABB pipeline payload count stays at `1`.
+Those values are first-hit-like and do not match the known-correct Goal3846
+baseline counts. The optimization was therefore rejected.
 
-## App-Agnostic Boundary
+## Current State
 
-This is a generic primitive improvement for `AABB_INDEX_QUERY_2D`. The benchmark
-beneficiary is LibRTS-style spatial indexing, but the engine change is not
-LibRTS-specific and does not encode a spatial-library API.
+The native source is restored to the known-correct count path:
 
-## Claim Boundary
+- `__intersection__aabb_index_exact` reports exact intersections;
+- `__anyhit__aabb_index_count` reserves count/row slots with
+  `atomicAdd(params.hit_count, 1ULL)`;
+- the AABB pipeline uses one payload register;
+- row collection and count-only paths remain semantically aligned.
 
-This does not authorize release action, public speedup wording, paper
-reproduction claims, or broad RT-core claims. It is an internal primitive
-optimization pending A5000 timing and correctness evidence.
+No public speedup, release, or RT-core broad-claim wording is authorized by
+this negative probe.
 
-## Next Validation
+## Lesson
 
-Run on the A5000 pod after rebuilding `librtdl_optix.so`:
+For this custom AABB traversal, merely replacing the global count atomic with a
+per-ray accumulator changes semantics. The engine needs a stronger generic
+design before this row can be accelerated further, such as:
 
-```bash
-make build-optix
-PYTHONPATH=.pydeps_goal3788_numba:src:. \
-RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so \
-python examples/v2_0/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py \
-  --mode optix_aabb_index --dataset uniform --box-count 131072 \
-  --query-count 131072 --seed 2025 --operation all \
-  --repeat 10 --warmup 2
-```
+- a verified count-only traversal variant that enumerates all exact accepted
+  primitive/query pairs without row-slot atomics;
+- a bounded row-stream plus device-resident grouped continuation that can count
+  rows after traversal without materializing host rows;
+- or a new RTSpatial-style generic primitive for high-density AABB join/count
+  workloads, with CPU parity and large-scale pod validation.
 
-Compare the result with Goal3846's `librts_131k_repeat10` baseline:
+This is a major primitive/runtime design problem, not a LibRTS-specific native
+customization request.
 
-- `repeat_protocol.query_sec_median`: `0.6460927510634065`
-- `repeat_protocol.query_sec_total`: `6.463141920976341`

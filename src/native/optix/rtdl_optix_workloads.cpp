@@ -13458,7 +13458,6 @@ struct AabbIndexQueryLaunchParams {
     const GpuAabb2D* box_queries;
     const GpuAabb2D* indexed_boxes;
     unsigned long long* hit_count;
-    uint32_t* query_hit_counts;
     RtdlAabbPairRow* rows_out;
     uint32_t point_query_count;
     uint32_t box_query_count;
@@ -13539,7 +13538,6 @@ struct AabbIndexQueryLaunchParams {
     const GpuAabb2D* box_queries;
     const GpuAabb2D* indexed_boxes;
     unsigned long long* hit_count;
-    uint32_t* query_hit_counts;
     RtdlAabbPairRow* rows_out;
     uint32_t point_query_count;
     uint32_t box_query_count;
@@ -13697,10 +13695,6 @@ extern "C" __global__ void __intersection__aabb_index_exact() {
         }
     }
     if (!accept) return;
-    if (params.collect_rows == 0u) {
-        atomicAdd(params.query_hit_counts + qidx, 1u);
-        return;
-    }
     float hit_t = optixGetRayTmin() + 1.0e-6f;
     if (hit_t > optixGetRayTmax()) hit_t = optixGetRayTmax();
     optixReportIntersection(hit_t, 0u);
@@ -13708,7 +13702,7 @@ extern "C" __global__ void __intersection__aabb_index_exact() {
 
 extern "C" __global__ void __anyhit__aabb_index_count() {
     const unsigned long long row_index = atomicAdd(params.hit_count, 1ULL);
-    if (row_index < params.row_capacity) {
+    if (params.collect_rows != 0u && row_index < params.row_capacity) {
         const uint32_t prim = optixGetPrimitiveIndex();
         const uint32_t qidx = optixGetPayload_0();
         RtdlAabbPairRow row;
@@ -13883,7 +13877,6 @@ static void launch_aabb_index_count_pass_optix(
         uint32_t intersect_pass,
         size_t launch_count,
         CUdeviceptr d_hit_count,
-        CUdeviceptr d_query_hit_counts = 0,
         CUdeviceptr d_rows_out = 0,
         size_t row_capacity = 0,
         bool collect_rows = false)
@@ -13898,7 +13891,6 @@ static void launch_aabb_index_count_pass_optix(
     lp.box_queries = reinterpret_cast<const GpuAabb2D*>(d_box_queries);
     lp.indexed_boxes = reinterpret_cast<const GpuAabb2D*>(d_indexed_boxes);
     lp.hit_count = reinterpret_cast<unsigned long long*>(d_hit_count);
-    lp.query_hit_counts = reinterpret_cast<uint32_t*>(d_query_hit_counts);
     lp.rows_out = reinterpret_cast<RtdlAabbPairRow*>(d_rows_out);
     lp.point_query_count = static_cast<uint32_t>(point_query_count);
     lp.box_query_count = static_cast<uint32_t>(box_query_count);
@@ -13917,18 +13909,6 @@ static void launch_aabb_index_count_pass_optix(
                             &g_aabb_index_count.pipe->sbt,
                             static_cast<unsigned>(launch_count), 1, 1));
     CU_CHECK(cuStreamSynchronize(stream));
-}
-
-static unsigned long long sum_device_u32_counts(CUdeviceptr d_counts, size_t count)
-{
-    if (count == 0) return 0ULL;
-    std::vector<uint32_t> host_counts(count);
-    download(host_counts.data(), d_counts, count);
-    unsigned long long total = 0ULL;
-    for (uint32_t value : host_counts) {
-        total += static_cast<unsigned long long>(value);
-    }
-    return total;
 }
 
 static void count_prepared_aabb_index_2d_device_optix(
@@ -13964,8 +13944,9 @@ static void count_prepared_aabb_index_2d_device_optix(
 
     const size_t launch_count =
         operation == kAabbIndexOpPointContains ? point_query_count : box_query_count;
-    DevPtr d_query_hit_counts(sizeof(uint32_t) * launch_count);
-    CU_CHECK(cuMemsetD8(d_query_hit_counts.ptr, 0, sizeof(uint32_t) * launch_count));
+    DevPtr d_hit_count(sizeof(unsigned long long));
+    unsigned long long zero = 0ULL;
+    upload(d_hit_count.ptr, &zero, 1);
 
     launch_aabb_index_count_pass_optix(
         prepared->accel.handle,
@@ -13978,10 +13959,10 @@ static void count_prepared_aabb_index_2d_device_optix(
         operation,
         0u,
         launch_count,
-        0,
-        d_query_hit_counts.ptr);
+        d_hit_count.ptr);
 
-    unsigned long long count = sum_device_u32_counts(d_query_hit_counts.ptr, launch_count);
+    unsigned long long count = 0ULL;
+    download(&count, d_hit_count.ptr, 1);
     *hit_count_out = static_cast<size_t>(count);
 }
 
@@ -14002,10 +13983,10 @@ static void count_prepared_aabb_index_2d_range_intersects_optix(
     if (prepared_queries->query_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
         throw std::runtime_error("box query count exceeds uint32 launch limit");
 
-    const size_t max_launch_count = std::max(prepared_queries->query_count, prepared->box_count);
-    DevPtr d_query_hit_counts(sizeof(uint32_t) * max_launch_count);
+    DevPtr d_hit_count(sizeof(unsigned long long));
+    unsigned long long zero = 0ULL;
+    upload(d_hit_count.ptr, &zero, 1);
 
-    CU_CHECK(cuMemsetD8(d_query_hit_counts.ptr, 0, sizeof(uint32_t) * max_launch_count));
     launch_aabb_index_count_pass_optix(
         prepared->accel.handle,
         0,
@@ -14017,11 +13998,7 @@ static void count_prepared_aabb_index_2d_range_intersects_optix(
         kAabbIndexOpRangeIntersects,
         kAabbIndexIntersectForwardPass,
         prepared_queries->query_count,
-        0,
-        d_query_hit_counts.ptr);
-    unsigned long long count = sum_device_u32_counts(d_query_hit_counts.ptr, prepared_queries->query_count);
-
-    CU_CHECK(cuMemsetD8(d_query_hit_counts.ptr, 0, sizeof(uint32_t) * max_launch_count));
+        d_hit_count.ptr);
     launch_aabb_index_count_pass_optix(
         prepared_queries->accel.handle,
         0,
@@ -14033,10 +14010,10 @@ static void count_prepared_aabb_index_2d_range_intersects_optix(
         kAabbIndexOpRangeIntersects,
         kAabbIndexIntersectBackwardPass,
         prepared->box_count,
-        0,
-        d_query_hit_counts.ptr);
-    count += sum_device_u32_counts(d_query_hit_counts.ptr, prepared->box_count);
+        d_hit_count.ptr);
 
+    unsigned long long count = 0ULL;
+    download(&count, d_hit_count.ptr, 1);
     *hit_count_out = static_cast<size_t>(count);
 }
 
@@ -14176,7 +14153,6 @@ static void collect_prepared_aabb_index_2d_range_intersection_rows_optix(
         kAabbIndexIntersectForwardPass,
         prepared_queries.query_count,
         d_hit_count.ptr,
-        0,
         d_rows.ptr,
         row_capacity,
         true);
@@ -14192,7 +14168,6 @@ static void collect_prepared_aabb_index_2d_range_intersection_rows_optix(
         kAabbIndexIntersectBackwardPass,
         prepared->box_count,
         d_hit_count.ptr,
-        0,
         d_rows.ptr,
         row_capacity,
         true);
@@ -14275,7 +14250,6 @@ static void collect_prepared_aabb_index_2d_point_contains_rows_optix(
         0u,
         point_query_count,
         d_hit_count.ptr,
-        0,
         d_rows.ptr,
         row_capacity,
         true);
