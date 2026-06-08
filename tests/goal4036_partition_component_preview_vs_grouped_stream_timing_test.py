@@ -33,7 +33,15 @@ class Goal4036PartitionComponentPreviewVsGroupedStreamTimingTest(unittest.TestCa
             if row["grouped_prepare_run_over_preview_one_shot"] > 1.0:
                 one_shot_wins += 1
             self.assertLess(
+                row["partition_summary_reuse_repeated_run"]["min_sec"],
+                row["preview_repeated_run"]["min_sec"],
+            )
+            self.assertLess(
                 row["grouped_prepared_repeated_over_preview_repeated"],
+                1.0,
+            )
+            self.assertLess(
+                row["grouped_prepared_repeated_over_reuse_repeated"],
                 1.0,
             )
         self.assertGreaterEqual(one_shot_wins, 6)
@@ -43,6 +51,7 @@ class Goal4036PartitionComponentPreviewVsGroupedStreamTimingTest(unittest.TestCa
         for fragment in (
             "not as a universal replacement",
             "remain a candidate route",
+            "partition_summary=",
             "does not promote",
             "partition_convergence_hybrid_promoted",
             "cupy_safe_full",
@@ -54,4 +63,3 @@ class Goal4036PartitionComponentPreviewVsGroupedStreamTimingTest(unittest.TestCa
 
 if __name__ == "__main__":
     unittest.main()
-
