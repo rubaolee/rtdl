@@ -242,6 +242,32 @@ def rtnn_prepared_optix_ranked_summary_payload(
     batch_size = query_batch_size or point_count
     if batch_size <= 0:
         raise ValueError("query_batch_size must be positive")
+    session_key = rt.make_prepared_session_cache_key(
+        primitive="fixed_radius_neighbors_3d_ranked_summary",
+        backend="optix",
+        input_fingerprints={
+            "points": {
+                "point_count": point_count,
+                "distribution": distribution,
+                "seed": seed,
+            },
+            "queries": {
+                "query_batch_size": batch_size,
+                "distribution": distribution,
+                "seed": seed,
+            },
+        },
+        parameters={"radius": radius, "k": k},
+        partner="none",
+        device="cuda:0",
+    )
+    session_policy = rt.RtdlPreparedSessionResidencyPolicy(
+        cache_key=session_key,
+        cache_enabled=False,
+        lifetime_state="session_retained",
+        reuse_scope="explicit_user_session",
+        invalidation_events=("explicit_invalidate", "backend_context_reset", "close"),
+    )
 
     from scripts import goal2348_rtnn_v2_2_external_runner as rtnn_runner
 
@@ -286,12 +312,24 @@ def rtnn_prepared_optix_ranked_summary_payload(
         "seed": seed,
         "runner_progress": tuple(line for line in runner_stdout.getvalue().splitlines() if line.strip()),
         "runner_payload": payload,
+        "prepared_session_residency": {
+            "cache_key": session_key.to_metadata(),
+            "policy": session_policy.to_metadata(),
+            "explicit_reuse_helper": "get_or_prepare_explicit_session",
+            "cache_enabled_by_default": False,
+            "cold_hot_phase_split_required": True,
+            "prepare_once_query_many_pattern": True,
+            "automatic_partner_selection_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+        },
         "claim_boundary": {
             **CLAIM_BOUNDARY,
             "native_engine_customization": False,
             "full_rtnn_paper_reproduction": False,
             "public_speedup_claim_authorized": False,
             "broad_rt_core_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
             "automatic_partner_selection_authorized": False,
             "amd_performance_claim_authorized": False,
         },
