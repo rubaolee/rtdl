@@ -33,14 +33,59 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_REJECTED_DEFAULT_STRATEGIES = (
     "microcell_graph",
 )
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_REQUIREMENTS = (
+    "compressed_occupied_partition_key_structure",
+    "bounded_near_partition_enumeration",
     "device_resident_partition_aabb_and_count_columns",
+    "no_dense_cell_pair_matrix",
     "safe_full_partition_pair_summary_without_pair_materialization",
     "ambiguous_boundary_pair_rt_traversal",
     "same_contract_parity_against_grouped_stream",
     "deterministic_component_root_policy",
+    "readonly_root_find_default_preserved",
+    "explicit_root_convergence_changes_only",
     "explicit_convergence_and_staleness_counters",
+    "root_read_telemetry_reduction_required",
+    "radius_x_0_125_partition_factor_evidence",
     "actual_benchmark_radius_pod_evidence",
 )
+V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_EVIDENCE_GOALS = (
+    "Goal3999",
+    "Goal4001",
+    "Goal4002",
+    "Goal4004",
+    "Goal4007",
+    "Goal4009",
+    "Goal4011",
+)
+V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PARTITION_GUIDANCE = {
+    "recommended_tested_cell_factor": "radius_x_0.125",
+    "dense_cell_pair_matrix_allowed": False,
+    "required_partition_pair_enumeration": (
+        "compressed_occupied_partition_keys_with_bounded_near_offsets"
+    ),
+    "required_device_resident_columns": (
+        "point_partition_ids",
+        "occupied_partition_keys",
+        "partition_offsets",
+        "partition_counts",
+        "partition_aabbs",
+    ),
+    "required_status_counters": (
+        "safe_full_partition_pairs",
+        "safe_skip_partition_pairs",
+        "ambiguous_partition_pairs",
+        "root_find_invocations",
+        "root_find_parent_link_steps",
+        "component_root_convergence_iterations",
+        "component_root_staleness_events",
+    ),
+    "default_root_policy": "readonly_root_find_until_explicit_convergence_policy_exists",
+    "rejected_shortcuts": (
+        "dense_all_cell_pair_matrix",
+        "hidden_root_path_halving_inside_readonly_find",
+        "app_specific_dbscan_or_clustering_native_abi",
+    ),
+}
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY = (
     "The v2.8 fixed-radius graph component front door exposes an explicit "
     "user-selected OptiX+partner grouped-stream contract over an existing generic "
@@ -204,7 +249,10 @@ def describe_v2_8_fixed_radius_graph_component_front_door() -> dict[str, Any]:
             "partition_convergence_hybrid": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_REQUIREMENTS,
         },
         "candidate_strategy_evidence_goals": {
-            "partition_convergence_hybrid": ("Goal3999", "Goal4001", "Goal4002", "Goal4004"),
+            "partition_convergence_hybrid": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_EVIDENCE_GOALS,
+        },
+        "candidate_strategy_partition_guidance": {
+            "partition_convergence_hybrid": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PARTITION_GUIDANCE,
         },
         "user_selected_partner_required": True,
         "typed_result_stream_contract": make_v2_8_fixed_radius_graph_component_typed_stream_contract(
@@ -291,7 +339,8 @@ def plan_v2_8_fixed_radius_graph_component_continuation(
                 "device_resident_partition_convergence_grouped_union_component_labels_3d"
             ),
             "candidate_strategy_requirements": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_REQUIREMENTS,
-            "candidate_strategy_evidence_goals": ("Goal3999", "Goal4001", "Goal4002", "Goal4004"),
+            "candidate_strategy_evidence_goals": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_EVIDENCE_GOALS,
+            "candidate_strategy_partition_guidance": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PARTITION_GUIDANCE,
             "rejected_default_strategies": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_REJECTED_DEFAULT_STRATEGIES,
             "claim_boundary": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY,
         }
@@ -551,6 +600,8 @@ __all__ = [
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CANDIDATE_STRATEGIES",
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_FRONT_DOOR_STATUS",
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_FRONT_DOOR_VERSION",
+    "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_EVIDENCE_GOALS",
+    "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PARTITION_GUIDANCE",
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_REQUIREMENTS",
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_OPERATION",
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_REJECTED_DEFAULT_STRATEGIES",

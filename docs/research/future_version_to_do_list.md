@@ -165,6 +165,12 @@ This file catches design ideas that should not interrupt the current release or 
   `18,031`, and `60,070` occupied cells, so the next primitive must use a
   compressed occupied-cell structure plus bounded near-offset enumeration, not
   a dense cell-pair matrix.
+- Goal4012 hardened that lesson into the fixed-radius graph component
+  front-door contract. The `partition_convergence_hybrid` candidate now
+  explicitly requires compressed occupied partition keys, bounded near-partition
+  enumeration, radius/8 evidence, root-read telemetry reduction, and deterministic
+  convergence/staleness metadata. It also explicitly rejects dense all-cell-pair
+  matrices and hidden root path halving inside readonly root checks.
 - The next generic runtime primitive should be a dense fixed-radius
   grouped-union continuation, not another app-specific RT-DBSCAN trick. Candidate
   designs include component-aware root-cache snapshots with explicit staleness
