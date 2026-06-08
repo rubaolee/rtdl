@@ -1400,7 +1400,6 @@ def _cupy_partition_pair_status_device_bounded_offsets(
 ):
     kernel = cupy.RawKernel(
         r'''
-        #include <math.h>
         extern "C" __global__
         void partition_pair_status_kernel(
             const int* key_x,
@@ -1477,12 +1476,18 @@ def _cupy_partition_pair_status_device_bounded_offsets(
             if (max_z[left] < min_z[right]) delta = min_z[right] - max_z[left];
             else if (max_z[right] < min_z[left]) delta = min_z[left] - max_z[right];
             min_dist += delta * delta;
-            const double mdx1 = fabs(max_x[left] - min_x[right]);
-            const double mdx2 = fabs(max_x[right] - min_x[left]);
-            const double mdy1 = fabs(max_y[left] - min_y[right]);
-            const double mdy2 = fabs(max_y[right] - min_y[left]);
-            const double mdz1 = fabs(max_z[left] - min_z[right]);
-            const double mdz2 = fabs(max_z[right] - min_z[left]);
+            double mdx1 = max_x[left] - min_x[right];
+            if (mdx1 < 0.0) mdx1 = -mdx1;
+            double mdx2 = max_x[right] - min_x[left];
+            if (mdx2 < 0.0) mdx2 = -mdx2;
+            double mdy1 = max_y[left] - min_y[right];
+            if (mdy1 < 0.0) mdy1 = -mdy1;
+            double mdy2 = max_y[right] - min_y[left];
+            if (mdy2 < 0.0) mdy2 = -mdy2;
+            double mdz1 = max_z[left] - min_z[right];
+            if (mdz1 < 0.0) mdz1 = -mdz1;
+            double mdz2 = max_z[right] - min_z[left];
+            if (mdz2 < 0.0) mdz2 = -mdz2;
             const double max_dx = mdx1 > mdx2 ? mdx1 : mdx2;
             const double max_dy = mdy1 > mdy2 ? mdy1 : mdy2;
             const double max_dz = mdz1 > mdz2 ? mdz1 : mdz2;
