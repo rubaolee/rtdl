@@ -27,6 +27,15 @@ class Goal3901ScaleRunnerPayloadTimingSummaryTest(unittest.TestCase):
                     "derived_sec": {"grouped_native_sec": 0.073},
                 }
             },
+            "cases": [
+                {
+                    "workload": "lsi",
+                    "subprobe_wrapper_phase_timing_sec": {
+                        "shared_load_case_sec": 0.12,
+                        "rtdl_optix_call_sec": 0.34,
+                    },
+                }
+            ],
         }
 
         summary = _payload_timing_summary(payload)
@@ -48,6 +57,14 @@ class Goal3901ScaleRunnerPayloadTimingSummaryTest(unittest.TestCase):
         )
         self.assertIn(
             "$.metadata.benchmark_timing_breakdown.derived_sec.grouped_native_sec",
+            scalar_paths,
+        )
+        self.assertIn(
+            "$.cases[0].subprobe_wrapper_phase_timing_sec.shared_load_case_sec",
+            scalar_paths,
+        )
+        self.assertIn(
+            "$.cases[0].subprobe_wrapper_phase_timing_sec.rtdl_optix_call_sec",
             scalar_paths,
         )
 
