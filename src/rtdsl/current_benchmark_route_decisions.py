@@ -161,14 +161,25 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
     CurrentBenchmarkRouteDecision(
         app="rt_dbscan",
         decision_kind="numba_continuation",
-        current_reader_decision="Use the unblocked RTDL/OptiX grouped stream plus Numba column-signature continuation.",
+        current_reader_decision=(
+            "Use the unblocked RTDL/OptiX grouped stream plus Numba column-signature continuation. "
+            "Keep partition_convergence_hybrid as an explicit resident candidate only; Goal4041 shows "
+            "device ambiguous union is correct and useful for residency, but not a default speed win."
+        ),
         primary_route="RTDL/OptiX fixed-radius grouped stream with Numba component/signature continuation",
         partner_policy="numba",
         primitive_contract="fixed-radius count-threshold device columns plus grouped stream component labels",
         user_choice_guidance="Use Numba for no-RawKernel custom labeling; keep blocked mode off until it wins.",
-        rejected_or_unpromoted_candidates=("blocked grouped stream candidate from Goal3936",),
-        next_runtime_action="improve generic grouped-stream efficiency before reconsidering blocked scheduling",
-        evidence_refs=("Goal3758", "Goal3859", "Goal3918", "Goal3920", "Goal3936", "Goal3937"),
+        rejected_or_unpromoted_candidates=(
+            "blocked grouped stream candidate from Goal3936",
+            "partition_convergence_hybrid default promotion after Goal4041 mixed timing",
+        ),
+        next_runtime_action=(
+            "improve generic grouped-stream efficiency before reconsidering blocked scheduling; "
+            "for the partition candidate, the next real work is fused resident component-label "
+            "continuation or a prepared/native partition handle, not another Python-side toggle"
+        ),
+        evidence_refs=("Goal3758", "Goal3859", "Goal3918", "Goal3920", "Goal3936", "Goal3937", "Goal4040", "Goal4041"),
         pod_needed_next=False,
     ),
     CurrentBenchmarkRouteDecision(

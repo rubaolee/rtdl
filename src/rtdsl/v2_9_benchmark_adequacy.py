@@ -201,7 +201,10 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
             "no-RawKernel Numba prepared grid continuation at 1.106x-1.153x versus the prepared "
             "CuPy grid, and the OptiX RT-core threshold-flags plus Numba prepared continuation "
             "reaches 1.367x at 65k points and 1.748x at 131k points versus prepared CuPy; "
-            "the 4k row remains below parity for the OptiX+Numba mixed path due launch/occupancy cost"
+            "the 4k row remains below parity for the OptiX+Numba mixed path due launch/occupancy cost. "
+            "Goal4040/4041 add and time a partition_convergence_hybrid resident ambiguous-union "
+            "candidate; it preserves component signatures and removes zero-ambiguous overhead, but "
+            "the timing is mixed, so it is not promoted over the grouped-stream route."
         ),
         adequacy="strong",
         current_recommended_path="RTDL/OptiX fixed-radius grouped stream plus app-owned component continuation",
@@ -219,8 +222,12 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
             "ready for AMD functional pod after Goals3768-3769 add HIPRT fixed-radius threshold "
             "counts and grouped stream flags; AMD hardware evidence still pending Goal3784 artifact"
         ),
-        next_generic_runtime_action="treat as covered for Numba-reference and HIPRT-contract purposes; next major work is actual AMD functional validation",
-        evidence_refs=("Goal2802", "Goal3567", "Goal3742", "Goal3744", "Goal3758", "Goal3768", "Goal3769", "Goal3784", "Goal3785"),
+        next_generic_runtime_action=(
+            "treat as covered for Numba-reference and HIPRT-contract purposes; next major work is "
+            "actual AMD functional validation plus, if partition_convergence_hybrid is revisited, "
+            "a fused resident component-label continuation or prepared/native partition handle"
+        ),
+        evidence_refs=("Goal2802", "Goal3567", "Goal3742", "Goal3744", "Goal3758", "Goal3768", "Goal3769", "Goal3784", "Goal3785", "Goal4040", "Goal4041"),
         pod_needed_next=False,
     ),
     V29BenchmarkAdequacyRow(
