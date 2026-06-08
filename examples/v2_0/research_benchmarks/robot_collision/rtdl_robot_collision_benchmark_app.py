@@ -871,6 +871,15 @@ def run_prepared_reuse_probe(
         name: _median([float(row["phase_timing_seconds"][name]) for row in measured])
         for name in phase_names
     }
+    tail_total_run_seconds = _median([float(row["total_run_seconds"]) for row in measured])
+    benchmark_timing_sec = {
+        "app_lowering_sec": app_lowering_seconds,
+        "tail_total_run_sec": tail_total_run_seconds,
+    }
+    if probe_reference_seconds is not None:
+        benchmark_timing_sec["probe_reference_sec"] = probe_reference_seconds
+    for name, value in tail_phase_medians.items():
+        benchmark_timing_sec[f"tail_phase_{name}_sec"] = value
     first_prepare = float(runs[0]["phase_timing_seconds"]["prepare_build"])
     reuse_metadata = {
         "warmup_rows_dropped": warmup,
@@ -990,8 +999,9 @@ def run_prepared_reuse_probe(
             "probe_reference_signature": None if probe_reference_flags is None else _signature(probe_reference_flags),
             "lowering_policy": contract.lowering_policy,
             "reuse_metadata": reuse_metadata,
+            "benchmark_timing_sec": benchmark_timing_sec,
             "tail_medians": {
-                "total_run_seconds": _median([float(row["total_run_seconds"]) for row in measured]),
+                "total_run_seconds": tail_total_run_seconds,
                 "phase_timing_seconds": tail_phase_medians,
             },
             "runs": runs,
