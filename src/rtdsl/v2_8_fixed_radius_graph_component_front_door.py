@@ -1138,12 +1138,12 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
         local_z = rem % dim_z
         key_rows.append((local_x + min_kx, local_y + min_ky, local_z + min_kz))
     key_to_ordinal = {key: ordinal for ordinal, key in enumerate(key_rows)}
-    min_x_host = tuple(float(value) for value in cupy.asnumpy(aabb_min_x).tolist())
-    min_y_host = tuple(float(value) for value in cupy.asnumpy(aabb_min_y).tolist())
-    min_z_host = tuple(float(value) for value in cupy.asnumpy(aabb_min_z).tolist())
-    max_x_host = tuple(float(value) for value in cupy.asnumpy(aabb_max_x).tolist())
-    max_y_host = tuple(float(value) for value in cupy.asnumpy(aabb_max_y).tolist())
-    max_z_host = tuple(float(value) for value in cupy.asnumpy(aabb_max_z).tolist())
+    min_x_host = tuple(float(value) for value in cupy.asnumpy(aabb_min_x64).tolist())
+    min_y_host = tuple(float(value) for value in cupy.asnumpy(aabb_min_y64).tolist())
+    min_z_host = tuple(float(value) for value in cupy.asnumpy(aabb_min_z64).tolist())
+    max_x_host = tuple(float(value) for value in cupy.asnumpy(aabb_max_x64).tolist())
+    max_y_host = tuple(float(value) for value in cupy.asnumpy(aabb_max_y64).tolist())
+    max_z_host = tuple(float(value) for value in cupy.asnumpy(aabb_max_z64).tolist())
     aabbs = [
         {
             "min_x": min_x_host[index],
