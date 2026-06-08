@@ -204,7 +204,9 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
             "the 4k row remains below parity for the OptiX+Numba mixed path due launch/occupancy cost. "
             "Goal4040/4041 add and time a partition_convergence_hybrid resident ambiguous-union "
             "candidate; it preserves component signatures and removes zero-ambiguous overhead, but "
-            "the timing is mixed, so it is not promoted over the grouped-stream route."
+            "the timing is mixed, so it is not promoted over the grouped-stream route. Goal4046/4047 "
+            "show the partition line is useful for a narrower component-size-signature contract, "
+            "not for full DBSCAN core/border/noise promotion."
         ),
         adequacy="strong",
         current_recommended_path="RTDL/OptiX fixed-radius grouped stream plus app-owned component continuation",
@@ -225,9 +227,25 @@ V2_9_BENCHMARK_ADEQUACY_ROWS: tuple[V29BenchmarkAdequacyRow, ...] = (
         next_generic_runtime_action=(
             "treat as covered for Numba-reference and HIPRT-contract purposes; next major work is "
             "actual AMD functional validation plus, if partition_convergence_hybrid is revisited, "
-            "a fused resident component-label continuation or prepared/native partition handle"
+            "a fused resident component-label continuation or prepared/native partition handle; "
+            "use the explicit component-size signature mode only when that narrower graph-component "
+            "summary is the requested output"
         ),
-        evidence_refs=("Goal2802", "Goal3567", "Goal3742", "Goal3744", "Goal3758", "Goal3768", "Goal3769", "Goal3784", "Goal3785", "Goal4040", "Goal4041"),
+        evidence_refs=(
+            "Goal2802",
+            "Goal3567",
+            "Goal3742",
+            "Goal3744",
+            "Goal3758",
+            "Goal3768",
+            "Goal3769",
+            "Goal3784",
+            "Goal3785",
+            "Goal4040",
+            "Goal4041",
+            "Goal4046",
+            "Goal4047",
+        ),
         pod_needed_next=False,
     ),
     V29BenchmarkAdequacyRow(
