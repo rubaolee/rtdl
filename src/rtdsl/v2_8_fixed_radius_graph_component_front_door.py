@@ -726,6 +726,13 @@ def build_v2_8_fixed_radius_partition_convergence_summary_reference_3d(
             "visible_pair_count": len(visible_pairs),
             "pair_capacity": requested_capacity,
             "overflow": overflow,
+            "complete_candidate_coverage": not overflow,
+            "status_column_values": {
+                "row_count": len(visible_pairs),
+                "capacity": requested_capacity,
+                "overflow": overflow,
+                "complete_candidate_coverage": not overflow,
+            },
             "status_counts": status_counts,
             "typed_result_stream": contract.to_metadata(),
             "native_abi_added": False,
@@ -820,11 +827,21 @@ def validate_v2_8_fixed_radius_partition_convergence_summary_same_contract_3d(
         reference_metadata["overflow"]
     ):
         errors.append("candidate overflow mismatch")
+    candidate_complete_coverage = candidate_metadata.get("complete_candidate_coverage")
+    if candidate_complete_coverage is not None and bool(candidate_complete_coverage) != bool(
+        reference_metadata["complete_candidate_coverage"]
+    ):
+        errors.append("candidate complete_candidate_coverage mismatch")
+    if bool(candidate_metadata.get("overflow", False)) and bool(candidate_metadata.get("complete_candidate_coverage", False)):
+        errors.append("candidate overflow cannot claim complete_candidate_coverage")
 
     expected_status_counts = reference_metadata["status_counts"]
     candidate_status_counts = candidate_metadata.get("status_counts")
     if candidate_status_counts is not None and dict(candidate_status_counts) != dict(expected_status_counts):
         errors.append("candidate status_counts mismatch")
+    candidate_status_values = candidate_metadata.get("status_column_values")
+    if candidate_status_values is not None and dict(candidate_status_values) != dict(reference_metadata["status_column_values"]):
+        errors.append("candidate status_column_values mismatch")
 
     typed_stream = candidate_metadata.get("typed_result_stream")
     if typed_stream is not None:
@@ -859,6 +876,8 @@ def validate_v2_8_fixed_radius_partition_convergence_summary_same_contract_3d(
         "visible_pair_count": reference_metadata["visible_pair_count"],
         "pair_capacity": reference_metadata["pair_capacity"],
         "overflow": reference_metadata["overflow"],
+        "complete_candidate_coverage": reference_metadata["complete_candidate_coverage"],
+        "status_column_values": dict(reference_metadata["status_column_values"]),
         "status_counts": dict(expected_status_counts),
         "typed_result_stream_validation": typed_validation,
         "native_abi_added": False,
@@ -931,6 +950,7 @@ def build_v2_8_fixed_radius_partition_convergence_component_labels_reference_3d(
                 **base_metadata,
                 "status": "reject_partition_summary_overflow",
                 "overflow": True,
+                "complete_candidate_coverage": False,
                 "errors": ("partition summary overflow prevents complete component labels",),
             },
         }
@@ -1004,6 +1024,7 @@ def build_v2_8_fixed_radius_partition_convergence_component_labels_reference_3d(
             "point_count": len(points),
             "component_count": len(set(labels)),
             "same_contract_against_all_pairs": same_contract,
+            "complete_candidate_coverage": True,
             "all_pairs_component_labels": all_pairs_labels,
             "partition_pair_status_counts": dict(summary_validation["status_counts"]),
         },
