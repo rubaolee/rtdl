@@ -116,6 +116,15 @@ This file catches design ideas that should not interrupt the current release or 
   `65536` clustered3d profile, reported candidates jumped from about `1.84M` to
   `543.65M` and the default telemetry path slowed by about `1.079x`. Do not use
   stale per-ray root snapshots as the dense grouped-union solution.
+- Goal3999 separated the current RT-DBSCAN benchmark radii from the Goal3996
+  stress radius. At `65536` points, the current defaults are `clustered3d`
+  radius `0.055`, `road3d` radius `0.030`, and `ngsim_dense` radius `0.012`,
+  while the earlier `0.5` row is stress-only. A CPU partition feasibility probe
+  found useful but insufficient uniform-grid signal: with radius/4 cells,
+  ambiguous near-pair upper bounds still remain about `76.67%` for clustered3d,
+  `70.05%` for road3d, and `53.50%` for ngsim_dense. Treat this as evidence for
+  a hybrid device-resident partition plus RT boundary traversal primitive, not a
+  plain grid rewrite.
 - The next generic runtime primitive should be a dense fixed-radius
   grouped-union continuation, not another app-specific RT-DBSCAN trick. Candidate
   designs include component-aware root-cache snapshots with explicit staleness
