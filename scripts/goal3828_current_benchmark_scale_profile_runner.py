@@ -109,6 +109,53 @@ def _read_tail(path: Path, limit: int) -> str:
         return ""
 
 
+def _run_metadata_command(command: list[str]) -> str | None:
+    try:
+        completed = subprocess.run(
+            command,
+            cwd=Path.cwd(),
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=10,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    text = completed.stdout.strip()
+    if text:
+        return text
+    err = completed.stderr.strip()
+    return err or None
+
+
+def _runtime_environment_metadata() -> dict[str, Any]:
+    git_status = _run_metadata_command(["git", "status", "--short"]) or ""
+    source_commit = _run_metadata_command(["git", "rev-parse", "HEAD"])
+    return {
+        "source_commit": source_commit,
+        "source_commit_short": source_commit[:8] if source_commit else None,
+        "git_status_short": tuple(line for line in git_status.splitlines() if line.strip()),
+        "working_tree_clean": not bool(git_status.strip()),
+        "python_executable": sys.executable,
+        "python_version": sys.version.replace("\n", " "),
+        "cwd": str(Path.cwd()),
+        "rt_library_env": {
+            "RTDL_OPTIX_LIBRARY": os.environ.get("RTDL_OPTIX_LIBRARY"),
+            "RTDL_OPTIX_LIB": os.environ.get("RTDL_OPTIX_LIB"),
+            "RTDL_EMBREE_LIBRARY": os.environ.get("RTDL_EMBREE_LIBRARY"),
+            "RTDL_HIPRT_LIBRARY": os.environ.get("RTDL_HIPRT_LIBRARY"),
+            "CUDA_VISIBLE_DEVICES": os.environ.get("CUDA_VISIBLE_DEVICES"),
+        },
+        "nvidia_smi": _run_metadata_command(
+            [
+                "nvidia-smi",
+                "--query-gpu=name,driver_version,memory.total",
+                "--format=csv,noheader",
+            ]
+        ),
+    }
+
+
 def _run_row(
     row: dict[str, Any],
     *,
@@ -250,6 +297,7 @@ def main() -> int:
         "claim_boundary": CURRENT_BENCHMARK_SCALE_PROFILE_CLAIM_BOUNDARY,
         "validation": validation,
         "summary": summarize_current_benchmark_scale_profiles(tuple(rows)),
+        "runtime_environment": _runtime_environment_metadata(),
         "prepared_session_residency_validation": validate_current_prepared_session_residency_profiles(),
         "prepared_session_residency_summary": summarize_current_prepared_session_residency_profiles(
             prepared_profile_rows
