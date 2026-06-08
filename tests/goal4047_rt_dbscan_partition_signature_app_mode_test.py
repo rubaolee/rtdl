@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
 import unittest
 
@@ -14,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / "examples" / "v2_0" / "research_benchmarks" / "rt_dbscan" / "rtdl_rt_dbscan_benchmark_app.py"
 README = ROOT / "examples" / "v2_0" / "research_benchmarks" / "rt_dbscan" / "README.md"
 REPORT = ROOT / "docs" / "reports" / "goal4047_rt_dbscan_partition_signature_app_mode_2026-06-08.md"
+POD_SMOKE = ROOT / "docs" / "reports" / "goal4047_rt_dbscan_partition_signature_app_mode_pod_smoke.json"
 
 
 def _cupy_available() -> bool:
@@ -56,6 +58,22 @@ class Goal4047RtDbscanPartitionSignatureSourceTest(unittest.TestCase):
                 include_rows=True,
                 validate=False,
             )
+
+    def test_pod_smoke_artifact_records_boundary(self) -> None:
+        payload = json.loads(POD_SMOKE.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["mode"], "partner_cupy_partition_convergence_component_signature_3d")
+        self.assertTrue(payload["matches_reference"])
+        self.assertEqual(payload["signature"]["contract"], "fixed_radius_graph_component_size_signature_3d")
+        self.assertFalse(payload["claim_boundary"]["full_dbscan"])
+        self.assertFalse(payload["claim_boundary"]["rt_core_accelerated"])
+        metadata = payload["metadata"]
+        self.assertFalse(metadata["partition_convergence_hybrid_promoted"])
+        self.assertFalse(metadata["current_default_route"])
+        self.assertTrue(metadata["graph_component_contract_only"])
+        self.assertFalse(metadata["full_dbscan_semantics"])
+        self.assertFalse(metadata["release_authorized"])
+        self.assertFalse(metadata["public_speedup_claim_authorized"])
 
 
 @unittest.skipUnless(_cupy_available(), "CuPy is not available in this environment")

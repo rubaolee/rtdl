@@ -35,6 +35,33 @@ The RT-DBSCAN benchmark app now has a no-row mode that:
 The app README now lists the mode beside the other RT-DBSCAN research
 benchmark modes.
 
+## Pod Validation
+
+After committing the app mode, the pod was synced from `origin/main`:
+
+`b7db6406`
+
+The CUDA/CuPy smoke artifact is:
+
+- `docs/reports/goal4047_rt_dbscan_partition_signature_app_mode_pod_smoke.json`
+
+The smoke ran:
+
+```bash
+PYTHONPATH=$PYDEPS124:src:. python3 examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode partner_cupy_partition_convergence_component_signature_3d --dataset tiny
+```
+
+The artifact records:
+
+- `matches_reference: true`;
+- `signature.contract: fixed_radius_graph_component_size_signature_3d`;
+- `claim_boundary.full_dbscan: false`;
+- `claim_boundary.rt_core_accelerated: false`;
+- `metadata.partition_convergence_hybrid_promoted: false`;
+- `metadata.graph_component_contract_only: true`.
+
+A focused pod test gate also ran 16 tests across Goals 4043-4047 and passed.
+
 ## Why This Matters
 
 Goal4046 proved a language/runtime lesson: expose the smallest generic output
@@ -54,4 +81,3 @@ DBSCAN semantics, does not claim RT-core acceleration, does not authorize public
 speedup wording, does not authorize release action, does not authorize hidden
 dispatch or automatic partner selection, and does not add any native DBSCAN ABI
 or app-specific engine logic.
-
