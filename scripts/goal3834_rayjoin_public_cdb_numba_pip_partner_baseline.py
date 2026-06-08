@@ -135,7 +135,7 @@ def run_numba_pip_baseline(
     *,
     repeat: int,
     warmup: int,
-    block_size: int = 256,
+    block_size: int = 128,
 ) -> dict[str, object]:
     _activate_numba_cuda_redirector()
     import numpy as np
@@ -346,7 +346,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--data-dir", type=Path, required=True)
     parser.add_argument("--repeat", type=int, default=20)
     parser.add_argument("--warmup", type=int, default=3)
-    parser.add_argument("--block-size", type=int, default=256)
+    parser.add_argument("--block-size", type=int, default=128)
     parser.add_argument("--skip-cupy", action="store_true")
     parser.add_argument("--skip-optix", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
