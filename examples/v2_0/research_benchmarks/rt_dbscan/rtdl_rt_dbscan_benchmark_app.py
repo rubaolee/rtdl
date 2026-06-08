@@ -731,6 +731,47 @@ def _cluster_signature_from_partner_columns(columns: dict[str, object], *, partn
     return _cluster_signature_from_host_columns(point_ids, labels, core_flags)
 
 
+def _cluster_signature_from_nonnegative_label_counts(
+    label_counts: Iterable[int],
+    *,
+    core_count: int,
+    noise_count: int = 0,
+) -> dict[str, object]:
+    cluster_sizes: dict[int, int] = {}
+    dense_label = 1
+    for count_value in label_counts:
+        count = int(count_value)
+        if count <= 0:
+            continue
+        cluster_sizes[dense_label] = count
+        dense_label += 1
+    return {
+        "cluster_sizes": dict(sorted(cluster_sizes.items())),
+        "core_count": int(core_count),
+        "noise_count": int(noise_count),
+    }
+
+
+def _cluster_signature_from_numba_all_core_labels(
+    columns: dict[str, object],
+    *,
+    point_count: int,
+) -> dict[str, object]:
+    """Build a DBSCAN signature from device labels for the all-core fast path.
+
+    This stays in the app layer and uses the generic Numba segmented-count
+    partner primitive. It does not add a native DBSCAN continuation.
+    """
+
+    result = rt.run_numba_segmented_count_i64(
+        columns["component_labels"],
+        group_count=int(point_count) + 1,
+        validate_group_ids=False,
+    )
+    label_counts = result["outputs"]["counts"].copy_to_host().tolist()
+    return _cluster_signature_from_nonnegative_label_counts(label_counts, core_count=int(point_count))
+
+
 def _optix_ranked_summaries_to_cupy_core_columns(
     points: tuple[rt.Point3D, ...],
     summaries: Iterable[dict[str, object]],
@@ -1459,12 +1500,21 @@ def run_rt_dbscan_benchmark(
                     return_metadata=True,
                 )
                 run_timing["adapter_run_sec"] = time.perf_counter() - adapter_start
+                signature_strategy = None
                 if column_signature_mode:
                     signature_start = time.perf_counter()
-                    run_signature = _cluster_signature_from_partner_columns(
-                        result["columns"],
-                        partner=grouped_stream_partner,
-                    )
+                    if grouped_stream_partner == "numba" and bool(result["metadata"].get("all_core_flags_true")):
+                        run_signature = _cluster_signature_from_numba_all_core_labels(
+                            result["columns"],
+                            point_count=len(points),
+                        )
+                        signature_strategy = "numba_segmented_count_all_core_labels"
+                    else:
+                        run_signature = _cluster_signature_from_partner_columns(
+                            result["columns"],
+                            partner=grouped_stream_partner,
+                        )
+                        signature_strategy = "host_column_materialized_signature"
                     run_timing["column_signature_sec"] = time.perf_counter() - signature_start
                     run_rows = ()
                 else:
@@ -1482,6 +1532,7 @@ def run_rt_dbscan_benchmark(
                         "elapsed_sec": time.perf_counter() - run_start,
                         "timing_sec": run_timing,
                         "signature": run_signature,
+                        "signature_strategy": signature_strategy,
                         "rows": run_rows,
                         "metadata": dict(result["metadata"]),
                     }
@@ -1553,6 +1604,24 @@ def run_rt_dbscan_benchmark(
                     "partner_column_arrays_no_python_row_dicts"
                     if column_signature_mode
                     else "python_row_dicts_after_label_densification"
+                ),
+                "column_signature_strategy": (
+                    measured_runs[-1].get("signature_strategy") if column_signature_mode else None
+                ),
+                "column_signature_uses_numba_segmented_count": (
+                    measured_runs[-1].get("signature_strategy") == "numba_segmented_count_all_core_labels"
+                    if column_signature_mode
+                    else False
+                ),
+                "column_signature_materializes_point_ids": (
+                    measured_runs[-1].get("signature_strategy") != "numba_segmented_count_all_core_labels"
+                    if column_signature_mode
+                    else None
+                ),
+                "column_signature_materializes_core_flags": (
+                    measured_runs[-1].get("signature_strategy") != "numba_segmented_count_all_core_labels"
+                    if column_signature_mode
+                    else None
                 ),
                 "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
                 "prepared_query_repeat_protocol": {
