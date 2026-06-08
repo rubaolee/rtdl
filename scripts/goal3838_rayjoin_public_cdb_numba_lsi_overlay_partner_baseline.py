@@ -17,6 +17,10 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from examples.v2_0.research_benchmarks.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app import (  # noqa: E402
     _load_rayjoin_case,
+    pack_rayjoin_optix_compact_grouped_count_left_segments,
+    pack_rayjoin_optix_shape_pair_active_count_left_shapes,
+    prepare_rayjoin_optix_compact_grouped_count_segments,
+    prepare_rayjoin_optix_shape_pair_active_count,
 )
 from scripts.goal3589_rayjoin_cupy_same_contract_baseline import _claim_boundary  # noqa: E402
 from scripts.goal3589_rayjoin_cupy_same_contract_baseline import _polygon_arrays  # noqa: E402
@@ -340,6 +344,32 @@ def run_numba_baseline(
     warmup: int,
     block_size: int = 128,
 ) -> dict[str, object]:
+    load_start = time.perf_counter()
+    case = _load_rayjoin_case(workload, dataset, segment_column_inputs=workload == "lsi")
+    load_case_sec = time.perf_counter() - load_start
+    return run_numba_baseline_loaded_case(
+        workload,
+        dataset,
+        case=case,
+        repeat=repeat,
+        warmup=warmup,
+        block_size=block_size,
+        load_case_sec=load_case_sec,
+        case_loaded_by_caller=False,
+    )
+
+
+def run_numba_baseline_loaded_case(
+    workload: str,
+    dataset: str,
+    *,
+    case,
+    repeat: int,
+    warmup: int,
+    block_size: int = 128,
+    load_case_sec: float = 0.0,
+    case_loaded_by_caller: bool = True,
+) -> dict[str, object]:
     _activate_numba_cuda_redirector()
     import numpy as np
     import numba
@@ -356,9 +386,6 @@ def run_numba_baseline(
     if block_size <= 0:
         raise ValueError("block_size must be positive")
 
-    load_start = time.perf_counter()
-    case = _load_rayjoin_case(workload, dataset, segment_column_inputs=workload == "lsi")
-    load_case_sec = time.perf_counter() - load_start
     prepare_start = time.perf_counter()
     count_gpu = cuda.device_array((1,), dtype=np.int64)
     zero = np.zeros((1,), dtype=np.int64)
@@ -445,6 +472,7 @@ def run_numba_baseline(
         "dataset_note": case.note,
         "output_contract": output_contract,
         "load_case_sec": load_case_sec,
+        "case_loaded_by_caller": bool(case_loaded_by_caller),
         "prepare_sec": prepare_sec,
         "hot_median_sec": timed["hot_median_sec"],
         "hot_total_sec": timed["hot_total_sec"],
@@ -458,6 +486,7 @@ def run_numba_baseline(
         "numba_cuda_module": str(getattr(cuda, "__file__", "")),
         "benchmark_timing_sec": {
             "load_case_sec": load_case_sec,
+            "case_loaded_by_caller": bool(case_loaded_by_caller),
             "prepare_sec": prepare_sec,
             "hot_total_sec": timed["hot_total_sec"],
             "hot_median_sec": timed["hot_median_sec"],
@@ -465,6 +494,119 @@ def run_numba_baseline(
         "runs": timed["runs"],
         "claim_boundary": _claim_boundary(),
     }
+
+
+def _rtdl_prepare_timing(payload: dict[str, object]) -> dict[str, float]:
+    phases = payload.get("phases_sec", {})
+    prepare: dict[str, float] = {}
+    if isinstance(phases, dict):
+        prepare.update(
+            {
+                str(key): float(value)
+                for key, value in phases.items()
+                if str(key).startswith("prepare_")
+                or str(key).endswith("_pack_sec")
+                or str(key).endswith("_refiner_sec")
+            }
+        )
+    prepared_reuse = payload.get("prepared_reuse", {})
+    if isinstance(prepared_reuse, dict) and "prepare_static_scene_sec" in prepared_reuse:
+        prepare["prepare_static_scene_sec"] = float(prepared_reuse["prepare_static_scene_sec"])
+    packed_left = payload.get("packed_left_reuse", {})
+    if isinstance(packed_left, dict):
+        if "column_prepare_seconds" in packed_left:
+            prepare["query_column_prepare_sec"] = float(packed_left["column_prepare_seconds"])
+        if "pack_seconds" in packed_left:
+            prepare["query_pack_sec"] = float(packed_left["pack_seconds"])
+        if "prepared_left_set_seconds" in packed_left:
+            prepare["prepared_left_set_sec"] = float(packed_left["prepared_left_set_seconds"])
+        if "native_prepared_left_set_seconds" in packed_left:
+            prepare["prepared_left_set_sec"] = float(packed_left["native_prepared_left_set_seconds"])
+    return prepare
+
+
+def _rtdl_payload_to_probe_row(
+    payload: dict[str, object],
+    *,
+    workload: str,
+    dataset: str,
+    route: str,
+) -> dict[str, object]:
+    phases = payload["phases_sec"]
+    return {
+        "backend": payload.get("backend", "optix"),
+        "execution_route": route,
+        "rt_core_accelerated": True,
+        "partner_accelerated": False,
+        "dataset": dataset,
+        "output_contract": payload["summary"]["output_contract"],
+        "prepare_sec": _rtdl_prepare_timing(payload),
+        "hot_median_sec": float(phases["prepared_query_sec"]),
+        "hot_total_sec": float(phases["prepared_query_sec_total_sec"]),
+        "hot_repeat": int(phases["prepared_query_sec_repeat"]),
+        "hot_warmup": int(phases["prepared_query_sec_warmup"]),
+        "row_count": int(payload["row_count"]),
+        "device_resident_continuation_status": payload.get("device_resident_continuation_status"),
+        "case_loaded_by_caller": True,
+        "loaded_case_reuse_enabled": True,
+        "claim_boundary": payload.get("claim_boundary", _claim_boundary()),
+    }
+
+
+def run_rtdl_optix_loaded_case(
+    workload: str,
+    dataset: str,
+    *,
+    case,
+    repeat: int,
+    warmup: int,
+) -> dict[str, object]:
+    if workload == "lsi":
+        with prepare_rayjoin_optix_compact_grouped_count_segments(
+            case.inputs["right"],
+            dataset=dataset,
+            dataset_note=case.note,
+        ) as prepared:
+            packed_left = pack_rayjoin_optix_compact_grouped_count_left_segments(case.inputs["left"])
+            try:
+                payload = prepared.run_packed_left_dense_count(
+                    packed_left,
+                    include_rows=False,
+                    dataset_note=case.note,
+                    query_repeat=repeat,
+                    warmup=warmup,
+                )
+            finally:
+                packed_left.close()
+        return _rtdl_payload_to_probe_row(
+            payload,
+            workload=workload,
+            dataset=dataset,
+            route="prepared_optix_left_id_dense_count_loaded_case_reuse",
+        )
+    if workload == "overlay_seed":
+        with prepare_rayjoin_optix_shape_pair_active_count(
+            case.inputs["right"],
+            dataset=dataset,
+            dataset_note=case.note,
+        ) as prepared:
+            packed_left = pack_rayjoin_optix_shape_pair_active_count_left_shapes(case.inputs["left"])
+            try:
+                payload = prepared.run_packed_left(
+                    packed_left,
+                    dataset_note=case.note,
+                    query_repeat=repeat,
+                    warmup=warmup,
+                )
+            finally:
+                packed_left.close()
+        return _rtdl_payload_to_probe_row(
+            payload,
+            workload=workload,
+            dataset=dataset,
+            route="prepared_optix_shape_pair_active_count_loaded_case_reuse",
+        )
+    return run_rtdl_optix(workload, dataset, repeat=repeat, warmup=warmup)
 
 
 def build_dry_run(*, data_dir: Path, cases: tuple[str, ...], repeat: int, warmup: int, block_size: int) -> dict[str, object]:
@@ -513,9 +655,21 @@ def run_probe(
             if part and not Path(part).exists():
                 raise FileNotFoundError(part)
         phase_timing_sec["dataset_file_check_sec"] = time.perf_counter() - dataset_check_started
+        load_started = time.perf_counter()
+        loaded_case = _load_rayjoin_case(workload, dataset, segment_column_inputs=workload == "lsi")
+        phase_timing_sec["shared_load_case_sec"] = time.perf_counter() - load_started
         print(f"[goal3838] {case_id} Numba baseline start", flush=True)
         numba_started = time.perf_counter()
-        numba_row = run_numba_baseline(workload, dataset, repeat=repeat, warmup=warmup, block_size=block_size)
+        numba_row = run_numba_baseline_loaded_case(
+            workload,
+            dataset,
+            case=loaded_case,
+            repeat=repeat,
+            warmup=warmup,
+            block_size=block_size,
+            load_case_sec=phase_timing_sec["shared_load_case_sec"],
+            case_loaded_by_caller=True,
+        )
         phase_timing_sec["numba_baseline_call_sec"] = time.perf_counter() - numba_started
         phase_timing_sec["numba_load_case_sec"] = float(numba_row.get("load_case_sec", 0.0))
         phase_timing_sec["numba_prepare_sec"] = float(numba_row.get("prepare_sec", 0.0))
@@ -539,7 +693,13 @@ def run_probe(
         if not skip_optix:
             print(f"[goal3838] {case_id} RTDL/OptiX route start", flush=True)
             rtdl_started = time.perf_counter()
-            rtdl_optix = run_rtdl_optix(workload, dataset, repeat=repeat, warmup=warmup)
+            rtdl_optix = run_rtdl_optix_loaded_case(
+                workload,
+                dataset,
+                case=loaded_case,
+                repeat=repeat,
+                warmup=warmup,
+            )
             phase_timing_sec["rtdl_optix_call_sec"] = time.perf_counter() - rtdl_started
             rtdl_prepare = rtdl_optix.get("prepare_sec")
             if isinstance(rtdl_prepare, dict):
@@ -598,6 +758,7 @@ def run_probe(
             "all_counts_match": all(bool(row["counts_match"]) for row in rows),
             "numba_no_rawkernel_route_available_for_all_cases": True,
             "wrapper_phase_timing_available": True,
+            "shared_loaded_case_reuse_enabled": True,
         },
         "boundary": (
             "This is a RayJoin LSI/overlay partner-coverage probe. It validates "

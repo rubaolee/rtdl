@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from types import SimpleNamespace
 import tempfile
 import unittest
 
@@ -40,13 +41,20 @@ class Goal3909RayJoinLsiOverlaySubprobePhaseTimingTest(unittest.TestCase):
                 "claim_boundary": {"release_authorized": False},
             }
 
+        def fake_load_case(*args, **kwargs):
+            return SimpleNamespace(note="fake loaded case", inputs={"left": (), "right": ()})
+
+        old_load_case = probe._load_rayjoin_case
         old_numba = probe.run_numba_baseline
+        old_numba_loaded = probe.run_numba_baseline_loaded_case
         old_cupy = probe.run_cupy_baseline
-        old_rtdl = probe.run_rtdl_optix
+        old_rtdl_loaded = probe.run_rtdl_optix_loaded_case
         try:
+            probe._load_rayjoin_case = fake_load_case
             probe.run_numba_baseline = fake_numba_baseline
+            probe.run_numba_baseline_loaded_case = fake_numba_baseline
             probe.run_cupy_baseline = fake_cupy_baseline
-            probe.run_rtdl_optix = fake_rtdl_optix
+            probe.run_rtdl_optix_loaded_case = fake_rtdl_optix
             with tempfile.TemporaryDirectory() as tmpdir:
                 data_dir = Path(tmpdir)
                 (data_dir / "br_county_start256_count512.cdb").write_text("fake", encoding="utf-8")
@@ -61,11 +69,14 @@ class Goal3909RayJoinLsiOverlaySubprobePhaseTimingTest(unittest.TestCase):
                     skip_optix=False,
                 )
         finally:
+            probe._load_rayjoin_case = old_load_case
             probe.run_numba_baseline = old_numba
+            probe.run_numba_baseline_loaded_case = old_numba_loaded
             probe.run_cupy_baseline = old_cupy
-            probe.run_rtdl_optix = old_rtdl
+            probe.run_rtdl_optix_loaded_case = old_rtdl_loaded
 
         self.assertTrue(payload["summary"]["wrapper_phase_timing_available"])
+        self.assertTrue(payload["summary"]["shared_loaded_case_reuse_enabled"])
         row = payload["rows"][0]
         timing = row["wrapper_phase_timing_sec"]
         self.assertGreaterEqual(timing["case_total_sec"], 0.0)
