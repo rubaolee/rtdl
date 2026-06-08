@@ -52,3 +52,28 @@ The test runs the runner in dry-run mode and checks that the artifact includes
 source commit fields, git-status fields, Python runtime fields, RTDL library
 environment fields, and optional `nvidia_smi`, while leaving all claim
 authorization flags false.
+
+## A5000 Dry-Run Evidence
+
+After pushing the runner change, ran a one-row dry-run on the A5000 pod:
+
+Artifact:
+
+`docs/reports/goal3890_scale_runner_runtime_provenance_a5000_dry_run/summary.json`
+
+Result:
+
+- `exit_code`: `0`
+- `dry_run`: `true`
+- selected row count: `1`
+- `runtime_environment.source_commit_short`: `8618467b`
+- `runtime_environment.nvidia_smi`: `NVIDIA RTX A5000, 580.126.09, 24564 MiB`
+- `runtime_environment.cwd`: `/root/rtdl_goal3876_runner_1780895523`
+- `runtime_environment.working_tree_clean`: `false`
+
+The dirty-tree value is expected for this command because the artifact was
+written under `docs/reports/goal3890_scale_runner_runtime_provenance_a5000_dry_run`
+before metadata collection. The field is still useful: future callers can
+choose an external output directory when they require a clean-tree proof, or
+can inspect `git_status_short` to see that the only dirtiness came from the
+artifact directory itself.
