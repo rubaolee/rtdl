@@ -17,6 +17,9 @@ ARTIFACT = (
     / "goal3838_rayjoin_public_cdb_numba_lsi_overlay_partner_a5000"
     / "summary.json"
 )
+REPORT = ROOT / "docs" / "reports" / "goal3838_rayjoin_public_cdb_numba_lsi_overlay_partner_baseline_2026-06-08.md"
+MATRIX = ROOT / "docs" / "learn" / "benchmark_partner_reference_matrix.md"
+PARTNER_GUIDE = ROOT / "docs" / "learn" / "partner_choice_for_custom_logic.md"
 
 
 class Goal3838RayJoinNumbaLsiOverlayPartnerBaselineTest(unittest.TestCase):
@@ -65,8 +68,11 @@ class Goal3838RayJoinNumbaLsiOverlayPartnerBaselineTest(unittest.TestCase):
             self.skipTest("Goal3838 A5000 artifact not generated yet")
         payload = json.loads(ARTIFACT.read_text(encoding="utf-8"))
         self.assertEqual(payload["schema"], "rtdl.goal3838.rayjoin_public_cdb_numba_lsi_overlay_partner_baseline.v1")
+        self.assertEqual(payload["git_commit"][:8], "ae8d19c3")
         self.assertIn("NVIDIA RTX A5000", payload["gpu"])
         self.assertEqual(payload["cases"], ["lsi_county512_soil512", "overlay_county512_soil512"])
+        self.assertEqual(payload["repeat"], 200)
+        self.assertEqual(payload["warmup"], 5)
         self.assertTrue(payload["summary"]["all_counts_match"])
         for row in payload["rows"]:
             self.assertTrue(row["counts_match"])
@@ -77,6 +83,19 @@ class Goal3838RayJoinNumbaLsiOverlayPartnerBaselineTest(unittest.TestCase):
             self.assertFalse(numba["raw_kernel_required"])
             self.assertEqual(numba["row_count"], row["cupy_cuda_core_baseline"]["row_count"])
             self.assertEqual(numba["row_count"], row["rtdl_optix"]["row_count"])
+            self.assertGreater(row["cupy_speedup_vs_numba"], 1.0)
+            self.assertLess(row["numba_speedup_vs_rtdl_optix"], 0.01)
+
+    def test_report_and_learner_docs_state_primitive_first_boundary(self) -> None:
+        report = REPORT.read_text(encoding="utf-8")
+        self.assertIn("RayJoin Numba LSI/Overlay Partner Baseline", report)
+        self.assertIn("Goal3834/3838", MATRIX.read_text(encoding="utf-8"))
+        self.assertIn("PIP/LSI/overlay scalar-count reference rows", PARTNER_GUIDE.read_text(encoding="utf-8"))
+        self.assertIn("RTDL/OptiX vs Numba", report)
+        self.assertIn("262.643x", report)
+        self.assertIn("258.081x", report)
+        self.assertIn("not a native engine change", report)
+        self.assertIn("does not authorize", report)
 
 
 if __name__ == "__main__":
