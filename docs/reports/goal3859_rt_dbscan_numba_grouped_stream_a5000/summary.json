@@ -1,0 +1,9 @@
+{
+  "all_match": true,
+  "claim_boundary": "diagnostic only; no release, broad speedup, paper reproduction, automatic partner selection, or true zero-copy claim authorized",
+  "cupy_grouped_stream_elapsed_sec": 0.10569242620840669,
+  "new_numba_grouped_stream_elapsed_sec": 0.10749744903296232,
+  "new_vs_cupy_ratio": 1.0170780716207275,
+  "new_vs_old_speedup": 2.44941805122893,
+  "old_numba_threshold_elapsed_sec": 0.2633061921223998
+}

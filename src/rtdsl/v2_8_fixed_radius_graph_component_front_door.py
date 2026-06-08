@@ -4,8 +4,11 @@ from dataclasses import dataclass
 from typing import Any
 
 from .partner_adapters import PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D
+from .partner_adapters import PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D
 from .partner_adapters import prepare_optix_cupy_radius_graph_grouped_stream_continuation_3d
+from .partner_adapters import prepare_optix_numba_radius_graph_grouped_stream_continuation_3d
 from .partner_adapters import radius_graph_components_3d_optix_cupy_prepared_grouped_stream_partner_columns
+from .partner_adapters import radius_graph_components_3d_optix_numba_prepared_grouped_stream_partner_columns
 from .v2_8_typed_result_stream import V28TypedResultStreamContract
 from .v2_8_typed_result_stream import make_typed_result_stream_contract
 from .v2_8_typed_result_stream import typed_result_column
@@ -20,11 +23,11 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_FRONT_DOOR_STATUS = (
 )
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_OPERATION = "fixed_radius_graph_component_labels_3d"
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_BACKENDS = ("optix",)
-V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_PARTNERS = ("cupy",)
+V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_PARTNERS = ("cupy", "numba")
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_STRATEGIES = ("grouped_stream",)
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY = (
     "The v2.8 fixed-radius graph component front door exposes an explicit "
-    "user-selected OptiX+CuPy grouped-stream contract over an existing generic "
+    "user-selected OptiX+partner grouped-stream contract over an existing generic "
     "runtime path. It does not add native engine app logic, choose partners "
     "automatically, authorize a release, authorize public speedup wording, "
     "authorize broad RT-core wording, authorize whole-app benchmark claims, "
@@ -104,7 +107,7 @@ class V28FixedRadiusGraphComponentPlan:
                 source_protocol="planned_cuda_device_columns",
             ).to_metadata(),
             "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
-            "partner_reference_contract": "generic_prepared_optix_cupy_grouped_stream_component_labels_3d",
+            "partner_reference_contract": f"generic_prepared_optix_{self.partner}_grouped_stream_component_labels_3d",
             "fallback_selected": self.fallback_selected,
             "hidden_dispatch_allowed": self.hidden_dispatch_allowed,
             "automatic_partner_selection_allowed": self.automatic_partner_selection_allowed,
@@ -120,7 +123,10 @@ class V28FixedRadiusGraphComponentPlan:
 
 @dataclass
 class V28PreparedFixedRadiusGraphComponentContinuation3D:
-    lower_prepared: PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D
+    lower_prepared: (
+        PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D
+        | PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D
+    )
     plan: V28FixedRadiusGraphComponentPlan
     closed: bool = False
 
@@ -130,10 +136,18 @@ class V28PreparedFixedRadiusGraphComponentContinuation3D:
         component_threshold = int(component_threshold)
         if component_threshold < 1:
             raise ValueError("component_threshold must be at least 1")
-        lower_result = radius_graph_components_3d_optix_cupy_prepared_grouped_stream_partner_columns(
-            self.lower_prepared,
-            **{"min" + "_neighbors": component_threshold, "return_metadata": True},
-        )
+        if self.plan.partner == "cupy":
+            lower_result = radius_graph_components_3d_optix_cupy_prepared_grouped_stream_partner_columns(
+                self.lower_prepared,
+                **{"min" + "_neighbors": component_threshold, "return_metadata": True},
+            )
+        elif self.plan.partner == "numba":
+            lower_result = radius_graph_components_3d_optix_numba_prepared_grouped_stream_partner_columns(
+                self.lower_prepared,
+                **{"min" + "_neighbors": component_threshold, "return_metadata": True},
+            )
+        else:  # pragma: no cover - plan validation should prevent this.
+            raise ValueError(f"unsupported partner {self.plan.partner!r}")
         columns = lower_result["columns"]
         metadata = _front_door_metadata(
             self.plan,
@@ -270,14 +284,26 @@ def prepare_v2_8_fixed_radius_graph_component_continuation_3d(
         grouped_union_same_root_culling=bool(metadata["grouped_union_same_root_culling"]),
         grouped_union_direct_side_effect=bool(metadata["grouped_union_direct_side_effect"]),
     )
-    lower_prepared = prepare_optix_cupy_radius_graph_grouped_stream_continuation_3d(
-        point_rows,
-        radius=plan.radius,
-        partner=plan.partner,
-        grouped_union_query_block_size=plan.grouped_union_query_block_size,
-        grouped_union_same_root_culling=plan.grouped_union_same_root_culling,
-        grouped_union_direct_side_effect=plan.grouped_union_direct_side_effect,
-    )
+    if plan.partner == "cupy":
+        lower_prepared = prepare_optix_cupy_radius_graph_grouped_stream_continuation_3d(
+            point_rows,
+            radius=plan.radius,
+            partner=plan.partner,
+            grouped_union_query_block_size=plan.grouped_union_query_block_size,
+            grouped_union_same_root_culling=plan.grouped_union_same_root_culling,
+            grouped_union_direct_side_effect=plan.grouped_union_direct_side_effect,
+        )
+    elif plan.partner == "numba":
+        lower_prepared = prepare_optix_numba_radius_graph_grouped_stream_continuation_3d(
+            point_rows,
+            radius=plan.radius,
+            partner=plan.partner,
+            grouped_union_query_block_size=plan.grouped_union_query_block_size,
+            grouped_union_same_root_culling=plan.grouped_union_same_root_culling,
+            grouped_union_direct_side_effect=plan.grouped_union_direct_side_effect,
+        )
+    else:  # pragma: no cover - plan validation should prevent this.
+        raise ValueError(f"unsupported partner {plan.partner!r}")
     return V28PreparedFixedRadiusGraphComponentContinuation3D(
         lower_prepared=lower_prepared,
         plan=plan,
@@ -416,7 +442,7 @@ def _front_door_metadata(
                 int(plan.point_count),
                 stream_id="fixed_radius_graph_component_labels_3d_runtime",
                 data_ptrs=_column_data_ptrs(columns),
-                source_protocol="cupy_cuda_array_interface",
+                source_protocol=f"{plan.partner}_cuda_array_interface",
             ).to_metadata(),
             "lower_adapter": lower_metadata.get("adapter"),
             "lower_partner_reference_contract": lower_metadata.get("partner_reference_contract"),
@@ -441,6 +467,15 @@ def _column_data_ptrs(columns: dict[str, Any]) -> dict[str, int]:
         ptr = getattr(data, "ptr", None)
         if ptr is not None:
             pointers[str(name)] = int(ptr)
+            continue
+        device_ptr = getattr(column, "device_ctypes_pointer", None)
+        value = getattr(device_ptr, "value", None)
+        if value is not None:
+            pointers[str(name)] = int(value)
+            continue
+        data_ptr = getattr(column, "data_ptr", None)
+        if data_ptr is not None:
+            pointers[str(name)] = int(data_ptr)
     return pointers
 
 

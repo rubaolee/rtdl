@@ -1,0 +1,2303 @@
+{
+  "app": "raydb_style_columnar_aggregate",
+  "backend": "paper_rt_optix_v2_5_primitive_first",
+  "copies": 1,
+  "elapsed_sec": 0.001070837490260601,
+  "matches_cpu_reference": true,
+  "metadata": {
+    "authors_code_comparison": false,
+    "claim_boundary": "This is a v2.5 planner policy result, not a public speedup claim. The typed hit-stream handoff remains available for continuations that cannot be expressed by existing fused generic RTDL primitives.",
+    "contract": "raydb_v2_5_primitive_first_optix",
+    "copies": 1,
+    "cpu_reference_match_policy": {
+      "abs_tol": 1e-09,
+      "numeric_policy": "exact_for_integral_values_otherwise_isclose",
+      "rel_tol": 1e-09,
+      "row_order": "ordered"
+    },
+    "engine_boundary": "The v2.5 primitive-first planner selects the cheapest matching app-agnostic RTDL primitive. For RayDB grouped count/sum/min/max, that is the prepared fused grouped-reduction primitive, not the typed hit-stream handoff path.",
+    "fixture": "generated_deterministic",
+    "fixture_generation": {
+      "discount_mod": 16,
+      "group_count": 1024,
+      "quantity_mod": 64,
+      "revenue_mod": 64,
+      "row_count": 262144,
+      "ship_year_mod": 64
+    },
+    "generic_primitive_reduction": "count",
+    "generic_primitive_used": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+    "group_keys": [
+      "region_id"
+    ],
+    "hit_event_count_before_dedup": 3693,
+    "host_row_bridge_bypassed": false,
+    "native_device_column_path_used": false,
+    "native_device_hit_stream_columns_ready": false,
+    "native_rt_core_lowering_path_present": true,
+    "native_rt_core_lowering_ready": false,
+    "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction",
+    "packed_host_buffers": true,
+    "paper_reproduction": "paper_shaped_rt_prepared_grouped_reduction_optix",
+    "partner_continuation_required": false,
+    "prepared_internal_repeat": 5,
+    "prepared_internal_warmup": 1,
+    "prepared_iteration_wall_sec": [
+      0.0011956971138715744,
+      0.0010768389329314232,
+      0.0010690176859498024,
+      0.001070837490260601,
+      0.0010453136637806892
+    ],
+    "prepared_optix_scene_reused": true,
+    "prepared_payload_columns_reused": false,
+    "prepared_primitive_payload_reused": true,
+    "prepared_ray_batch_reused": true,
+    "prepared_steady_state": true,
+    "prepared_table_descriptor_used": true,
+    "primitive_contract_required_for_native": "generic_ray_triangle_primitive_grouped_i64_reduction_3d",
+    "query_scan_value_count": 144,
+    "ray_count": 884736,
+    "raydb_reference_branch": "fin",
+    "raydb_reference_commit": "a610c00d7334d8907435cc0a124f9ca8392ee456",
+    "raydb_reference_repo": "https://github.com/rubaolee/RayDB-i0",
+    "row_count": 262144,
+    "rt_core_accelerated": true,
+    "rt_core_claim_authorized": false,
+    "scan_fields": [
+      "ship_year",
+      "discount",
+      "quantity"
+    ],
+    "timings": {
+      "cold_prepare_total": 0.4717414518818259,
+      "elapsed_sec": 0.001070837490260601,
+      "generic_payload_prepare": 0.0012401919811964035,
+      "generic_scene_prepare": 0.33982746209949255,
+      "native_call_wall": 0.0006644995883107185,
+      "prepare_build": 0.13675694167613983,
+      "prepared_native_total": 0.3411005148664117,
+      "prepared_ray_batch": 0.022330922074615955,
+      "prepared_ray_batch_prepare": 0.022298386320471764,
+      "primitive_payload_prepare": 0.0011168615892529488,
+      "query_pack": 0.0,
+      "row_presentation": 0.0004063379019498825,
+      "traversal": 0.000227207,
+      "workload_build": 0.10830766055732965
+    },
+    "transfer_metadata": {
+      "group_rows_downloaded_to_host": true,
+      "per_ray_records_downloaded_to_host": false,
+      "prepared_primitive_payload_on_device": true,
+      "prepared_rays_resident_on_device": true,
+      "primitive_group_ids_uploaded_each_run": false,
+      "primitive_values_uploaded_each_run": false,
+      "query_rays_uploaded_each_run": false,
+      "ray_batch_created_from": "host_packed_rays",
+      "ray_columns_partner_owned": false,
+      "static_scene_prepared_on_device": true,
+      "true_zero_copy_authorized": false
+    },
+    "triangle_count": 262144,
+    "true_zero_copy_authorized": false,
+    "typed_hit_stream_forced": false,
+    "v2_4_phase_timing": {
+      "phase_contract_version": "rtdl.partner.v2.4",
+      "phases_sec": {
+        "materialization": 0.000843630490260601,
+        "query_preparation": 0.0,
+        "rt_traversal": 0.000227207,
+        "scene_build": 0.0
+      },
+      "promoted_performance_path": false,
+      "same_phase_contract_as_basis": true,
+      "source": "raydb_style.paper_rt_prepared_grouped_reduction.optix.count",
+      "validation": {
+        "errors": [],
+        "known_phases": [
+          "scene_build",
+          "query_preparation",
+          "rt_traversal",
+          "materialization"
+        ],
+        "status": "accept"
+      }
+    },
+    "v2_4_prepared_session": {
+      "app_owned_lowering": "RayDB predicate/group encoding remains Python app code. RTDL sees only generic rays, triangles, primitive group ids, primitive values, and a reduction.",
+      "app_specific_native_vocab_allowed": false,
+      "backend": "optix",
+      "descriptor_only": true,
+      "input_buffers": [
+        {
+          "access_mode": "read",
+          "alignment_bytes": 1,
+          "byte_offset": 0,
+          "capacity_elements": 884736,
+          "data_ptr_observed": true,
+          "device": "cpu:0",
+          "dtype": "rtdl_packed_ray_3d",
+          "element_count": 884736,
+          "lifetime": "session_retained",
+          "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+          "mutability": "immutable",
+          "name": "rays",
+          "scope": "rtdl_primitive_handoff_only",
+          "shape": [
+            884736
+          ],
+          "source_protocol": "rtdl_packed_host_buffer",
+          "stream_handle": 0,
+          "strides_bytes": [
+            60
+          ]
+        },
+        {
+          "access_mode": "read",
+          "alignment_bytes": 1,
+          "byte_offset": 0,
+          "capacity_elements": 262144,
+          "data_ptr_observed": true,
+          "device": "cpu:0",
+          "dtype": "rtdl_packed_triangle_3d",
+          "element_count": 262144,
+          "lifetime": "session_retained",
+          "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+          "mutability": "immutable",
+          "name": "triangles",
+          "scope": "rtdl_primitive_handoff_only",
+          "shape": [
+            262144
+          ],
+          "source_protocol": "rtdl_packed_host_buffer",
+          "stream_handle": 0,
+          "strides_bytes": [
+            76
+          ]
+        },
+        {
+          "access_mode": "read",
+          "alignment_bytes": 1,
+          "byte_offset": 0,
+          "capacity_elements": 262144,
+          "data_ptr_observed": true,
+          "device": "cpu:0",
+          "dtype": "uint32",
+          "element_count": 262144,
+          "lifetime": "session_retained",
+          "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+          "mutability": "immutable",
+          "name": "primitive_group_ids",
+          "scope": "rtdl_primitive_handoff_only",
+          "shape": [
+            262144
+          ],
+          "source_protocol": "numpy_or_python_host",
+          "stream_handle": 0,
+          "strides_bytes": [
+            4
+          ]
+        },
+        {
+          "access_mode": "read",
+          "alignment_bytes": 1,
+          "byte_offset": 0,
+          "capacity_elements": 262144,
+          "data_ptr_observed": true,
+          "device": "cpu:0",
+          "dtype": "uint64",
+          "element_count": 262144,
+          "lifetime": "session_retained",
+          "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+          "mutability": "immutable",
+          "name": "primitive_values",
+          "scope": "rtdl_primitive_handoff_only",
+          "shape": [
+            262144
+          ],
+          "source_protocol": "numpy_or_python_host",
+          "stream_handle": 0,
+          "strides_bytes": [
+            8
+          ]
+        }
+      ],
+      "native_engine_boundary": "app_agnostic_native_engine",
+      "native_symbols": [
+        "rtdl_optix_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction"
+      ],
+      "output_buffers": [],
+      "performance_basis_hardware": "NVIDIA RTX A5000 pod evidence",
+      "phase_contract": "prepared_query",
+      "primitive": "ray_triangle_grouped_i64_reduction_3d",
+      "protocol_overhead_audit_required": false,
+      "requires_phase_timing": true,
+      "reusable_output_buffers": false,
+      "reusable_query_buffers": true,
+      "reusable_scene": true,
+      "same_phase_contract_as_basis_required": true,
+      "session_id": "generic_ray_triangle_grouped_i64_reduction_3d_optix_count",
+      "status": "protocol_descriptor_only",
+      "v2_4_protocol_version": "rtdl.partner.v2.4"
+    },
+    "v2_5_alternative_backend": "paper_rt_optix_device_hit_stream_triton_prepared",
+    "v2_5_alternative_reserved_for": "continuations_not_expressible_as_fused_generic_rtdl_reductions",
+    "v2_5_partner_continuation": {
+      "adapter_front_door_integrated": true,
+      "app_owned_lowering": "RayDB predicate encoding and result interpretation remain app code. The v2.5 partner continuation sees only group ids and numeric values.",
+      "benchmark_path_integrated": true,
+      "blocked_reason": null,
+      "continuation_phase": "partner_continuation",
+      "contract_version": "rtdl.partner_continuation.v2.5",
+      "descriptor_only": false,
+      "fallback_partner": "numba",
+      "front_door_api": [
+        "partner_group_count_by_key",
+        "partner_group_sum_by_key",
+        "partner_group_min_by_key",
+        "partner_group_max_by_key"
+      ],
+      "mode": "count",
+      "numba_descriptors": [
+        {
+          "claim_boundary": "Numba executes only generic grouped continuation over device arrays; RTDL/OptiX traversal remains separate",
+          "contract_version": "rtdl.partner_continuation.v2.5",
+          "group_id_validation_mode": "device_resident_error_flag",
+          "input_columns": [
+            "group_ids:int64"
+          ],
+          "operation": "segmented_count_i64",
+          "output_columns": [
+            "counts:int64"
+          ],
+          "partner": "numba",
+          "phase": "partner_continuation",
+          "promoted_performance_path": false,
+          "raw_kernel_required": false,
+          "replaces_rt_traversal": false,
+          "requires_cuda": true,
+          "requires_numba_cuda_device_arrays": true,
+          "rt_traversal_contract_version": "rtdl.partner.v2.4",
+          "status": "preview_not_promoted"
+        }
+      ],
+      "operations": [
+        "segmented_count_i64"
+      ],
+      "post_rt_continuation_only": true,
+      "preferred_partner": "triton",
+      "promoted_performance_path": false,
+      "raw_kernel_required": false,
+      "replaces_rt_traversal": false,
+      "rt_core_speedup_claim_authorized": false,
+      "status": "adapter_front_door_preview_not_promoted",
+      "tensor_carrier": "torch_cuda_tensor_for_triton_launch",
+      "tensor_carrier_is_partner": false,
+      "triton_descriptors": [
+        {
+          "claim_boundary": "Triton executes only a generic post-RT continuation over tensor carriers used for launch; Torch is a carrier here, not the v2.5 partner. RTDL/OptiX traversal remains separate.",
+          "contract_version": "rtdl.partner_continuation.v2.5",
+          "cupy_required": false,
+          "group_id_bounds_validation": {
+            "checked_before_kernel_launch": true,
+            "claim_boundary": "v2.5 Triton preview kernels reject out-of-range group ids before launch via a Torch CUDA predicate and host scalar sync. A separate device-error-flag helper is available, but the default strict Python exception path still reads a host scalar.",
+            "device_error_flag_available": true,
+            "device_error_flag_mode": "triton_device_error_flag_no_host_read",
+            "device_error_flag_used_by_default": false,
+            "mode": "torch_cuda_precheck_host_scalar_sync",
+            "true_zero_copy_claim_authorized": false,
+            "uses_host_scalar_sync": true
+          },
+          "input_columns": [
+            "group_ids:int64"
+          ],
+          "operation": "segmented_count_i64",
+          "output_columns": [
+            "counts:int64"
+          ],
+          "partner": "triton",
+          "phase": "partner_continuation",
+          "promoted_performance_path": false,
+          "pytorch_partner_required": false,
+          "raw_kernel_required": false,
+          "replaces_rt_traversal": false,
+          "requires_cuda": true,
+          "requires_torch_tensor_inputs": true,
+          "rt_traversal_contract_version": "rtdl.partner.v2.4",
+          "status": "preview_not_promoted",
+          "tensor_carrier": "torch_cuda_tensor_for_triton_launch",
+          "tensor_carrier_is_partner": false,
+          "triton_kernel_available": true
+        }
+      ],
+      "triton_executable_preview_available": true,
+      "uses_cupy_partner": false,
+      "uses_pytorch_partner": false
+    },
+    "v2_5_primitive_first_plan": {
+      "alternative_backend": "paper_rt_optix_device_hit_stream_triton_prepared",
+      "alternative_path": "prepared_typed_hit_stream_plus_partner_continuation",
+      "alternative_reserved_for": "continuations_not_expressible_as_fused_generic_rtdl_reductions",
+      "contract_version": "rtdl.raydb.v2_5.primitive_first_plan.v1",
+      "explain": "v2.5 plans are primitive-first: use the cheapest matching app-agnostic RTDL primitive before exposing an intermediate hit stream to a partner.",
+      "mode": "count",
+      "partner_continuation_available": true,
+      "partner_continuation_required": false,
+      "partner_operations": [
+        "segmented_count_i64"
+      ],
+      "public_speedup_claim_authorized": false,
+      "selected_backend": "paper_rt_optix_prepared_grouped_reduction",
+      "selected_generic_primitive": "generic_ray_triangle_primitive_grouped_i64_reduction_3d",
+      "selected_path": "prepared_fused_generic_grouped_reduction",
+      "selected_reduction": "count",
+      "selection_reason": "continuation_matches_existing_fused_app_agnostic_rtdl_primitive",
+      "true_zero_copy_authorized": false,
+      "typed_hit_stream_forced": false
+    },
+    "v2_5_selected_backend": "paper_rt_optix_prepared_grouped_reduction",
+    "v2_5_selected_generic_primitive": "generic_ray_triangle_primitive_grouped_i64_reduction_3d",
+    "v2_5_selected_path": "prepared_fused_generic_grouped_reduction",
+    "v2_5_selected_reduction": "count"
+  },
+  "mode": "count",
+  "row_count": 262144,
+  "rows": [
+    {
+      "count": 1,
+      "region_id": 0
+    },
+    {
+      "count": 2,
+      "region_id": 1
+    },
+    {
+      "count": 1,
+      "region_id": 2
+    },
+    {
+      "count": 1,
+      "region_id": 8
+    },
+    {
+      "count": 1,
+      "region_id": 9
+    },
+    {
+      "count": 1,
+      "region_id": 10
+    },
+    {
+      "count": 1,
+      "region_id": 13
+    },
+    {
+      "count": 1,
+      "region_id": 15
+    },
+    {
+      "count": 1,
+      "region_id": 16
+    },
+    {
+      "count": 2,
+      "region_id": 17
+    },
+    {
+      "count": 1,
+      "region_id": 18
+    },
+    {
+      "count": 3,
+      "region_id": 20
+    },
+    {
+      "count": 1,
+      "region_id": 24
+    },
+    {
+      "count": 1,
+      "region_id": 29
+    },
+    {
+      "count": 1,
+      "region_id": 32
+    },
+    {
+      "count": 1,
+      "region_id": 37
+    },
+    {
+      "count": 1,
+      "region_id": 38
+    },
+    {
+      "count": 3,
+      "region_id": 39
+    },
+    {
+      "count": 1,
+      "region_id": 45
+    },
+    {
+      "count": 2,
+      "region_id": 46
+    },
+    {
+      "count": 1,
+      "region_id": 48
+    },
+    {
+      "count": 2,
+      "region_id": 53
+    },
+    {
+      "count": 1,
+      "region_id": 54
+    },
+    {
+      "count": 1,
+      "region_id": 55
+    },
+    {
+      "count": 1,
+      "region_id": 56
+    },
+    {
+      "count": 1,
+      "region_id": 58
+    },
+    {
+      "count": 1,
+      "region_id": 61
+    },
+    {
+      "count": 1,
+      "region_id": 62
+    },
+    {
+      "count": 1,
+      "region_id": 64
+    },
+    {
+      "count": 1,
+      "region_id": 68
+    },
+    {
+      "count": 1,
+      "region_id": 72
+    },
+    {
+      "count": 2,
+      "region_id": 75
+    },
+    {
+      "count": 1,
+      "region_id": 76
+    },
+    {
+      "count": 1,
+      "region_id": 77
+    },
+    {
+      "count": 1,
+      "region_id": 80
+    },
+    {
+      "count": 1,
+      "region_id": 82
+    },
+    {
+      "count": 1,
+      "region_id": 83
+    },
+    {
+      "count": 2,
+      "region_id": 84
+    },
+    {
+      "count": 1,
+      "region_id": 89
+    },
+    {
+      "count": 2,
+      "region_id": 91
+    },
+    {
+      "count": 1,
+      "region_id": 92
+    },
+    {
+      "count": 1,
+      "region_id": 94
+    },
+    {
+      "count": 2,
+      "region_id": 98
+    },
+    {
+      "count": 1,
+      "region_id": 99
+    },
+    {
+      "count": 1,
+      "region_id": 101
+    },
+    {
+      "count": 1,
+      "region_id": 102
+    },
+    {
+      "count": 1,
+      "region_id": 108
+    },
+    {
+      "count": 2,
+      "region_id": 110
+    },
+    {
+      "count": 1,
+      "region_id": 112
+    },
+    {
+      "count": 2,
+      "region_id": 113
+    },
+    {
+      "count": 1,
+      "region_id": 114
+    },
+    {
+      "count": 2,
+      "region_id": 117
+    },
+    {
+      "count": 1,
+      "region_id": 118
+    },
+    {
+      "count": 1,
+      "region_id": 119
+    },
+    {
+      "count": 2,
+      "region_id": 120
+    },
+    {
+      "count": 1,
+      "region_id": 121
+    },
+    {
+      "count": 1,
+      "region_id": 122
+    },
+    {
+      "count": 1,
+      "region_id": 127
+    },
+    {
+      "count": 1,
+      "region_id": 128
+    },
+    {
+      "count": 1,
+      "region_id": 129
+    },
+    {
+      "count": 1,
+      "region_id": 131
+    },
+    {
+      "count": 1,
+      "region_id": 132
+    },
+    {
+      "count": 1,
+      "region_id": 135
+    },
+    {
+      "count": 1,
+      "region_id": 136
+    },
+    {
+      "count": 1,
+      "region_id": 137
+    },
+    {
+      "count": 1,
+      "region_id": 138
+    },
+    {
+      "count": 2,
+      "region_id": 139
+    },
+    {
+      "count": 1,
+      "region_id": 140
+    },
+    {
+      "count": 1,
+      "region_id": 146
+    },
+    {
+      "count": 1,
+      "region_id": 147
+    },
+    {
+      "count": 1,
+      "region_id": 148
+    },
+    {
+      "count": 1,
+      "region_id": 150
+    },
+    {
+      "count": 2,
+      "region_id": 151
+    },
+    {
+      "count": 1,
+      "region_id": 153
+    },
+    {
+      "count": 1,
+      "region_id": 154
+    },
+    {
+      "count": 2,
+      "region_id": 155
+    },
+    {
+      "count": 1,
+      "region_id": 156
+    },
+    {
+      "count": 1,
+      "region_id": 157
+    },
+    {
+      "count": 1,
+      "region_id": 158
+    },
+    {
+      "count": 1,
+      "region_id": 166
+    },
+    {
+      "count": 1,
+      "region_id": 168
+    },
+    {
+      "count": 1,
+      "region_id": 169
+    },
+    {
+      "count": 2,
+      "region_id": 170
+    },
+    {
+      "count": 1,
+      "region_id": 173
+    },
+    {
+      "count": 1,
+      "region_id": 175
+    },
+    {
+      "count": 1,
+      "region_id": 176
+    },
+    {
+      "count": 2,
+      "region_id": 177
+    },
+    {
+      "count": 2,
+      "region_id": 184
+    },
+    {
+      "count": 1,
+      "region_id": 185
+    },
+    {
+      "count": 1,
+      "region_id": 188
+    },
+    {
+      "count": 3,
+      "region_id": 191
+    },
+    {
+      "count": 1,
+      "region_id": 192
+    },
+    {
+      "count": 1,
+      "region_id": 193
+    },
+    {
+      "count": 1,
+      "region_id": 195
+    },
+    {
+      "count": 1,
+      "region_id": 204
+    },
+    {
+      "count": 1,
+      "region_id": 206
+    },
+    {
+      "count": 1,
+      "region_id": 207
+    },
+    {
+      "count": 1,
+      "region_id": 210
+    },
+    {
+      "count": 1,
+      "region_id": 212
+    },
+    {
+      "count": 1,
+      "region_id": 213
+    },
+    {
+      "count": 1,
+      "region_id": 214
+    },
+    {
+      "count": 1,
+      "region_id": 215
+    },
+    {
+      "count": 1,
+      "region_id": 220
+    },
+    {
+      "count": 2,
+      "region_id": 221
+    },
+    {
+      "count": 1,
+      "region_id": 222
+    },
+    {
+      "count": 1,
+      "region_id": 223
+    },
+    {
+      "count": 1,
+      "region_id": 227
+    },
+    {
+      "count": 2,
+      "region_id": 228
+    },
+    {
+      "count": 1,
+      "region_id": 229
+    },
+    {
+      "count": 1,
+      "region_id": 230
+    },
+    {
+      "count": 1,
+      "region_id": 231
+    },
+    {
+      "count": 1,
+      "region_id": 233
+    },
+    {
+      "count": 1,
+      "region_id": 236
+    },
+    {
+      "count": 1,
+      "region_id": 239
+    },
+    {
+      "count": 1,
+      "region_id": 240
+    },
+    {
+      "count": 1,
+      "region_id": 244
+    },
+    {
+      "count": 1,
+      "region_id": 246
+    },
+    {
+      "count": 1,
+      "region_id": 247
+    },
+    {
+      "count": 2,
+      "region_id": 248
+    },
+    {
+      "count": 2,
+      "region_id": 250
+    },
+    {
+      "count": 1,
+      "region_id": 251
+    },
+    {
+      "count": 1,
+      "region_id": 252
+    },
+    {
+      "count": 1,
+      "region_id": 255
+    },
+    {
+      "count": 2,
+      "region_id": 257
+    },
+    {
+      "count": 1,
+      "region_id": 258
+    },
+    {
+      "count": 2,
+      "region_id": 259
+    },
+    {
+      "count": 1,
+      "region_id": 265
+    },
+    {
+      "count": 2,
+      "region_id": 266
+    },
+    {
+      "count": 1,
+      "region_id": 269
+    },
+    {
+      "count": 1,
+      "region_id": 270
+    },
+    {
+      "count": 1,
+      "region_id": 273
+    },
+    {
+      "count": 1,
+      "region_id": 274
+    },
+    {
+      "count": 1,
+      "region_id": 276
+    },
+    {
+      "count": 2,
+      "region_id": 277
+    },
+    {
+      "count": 2,
+      "region_id": 284
+    },
+    {
+      "count": 1,
+      "region_id": 285
+    },
+    {
+      "count": 1,
+      "region_id": 286
+    },
+    {
+      "count": 1,
+      "region_id": 287
+    },
+    {
+      "count": 2,
+      "region_id": 288
+    },
+    {
+      "count": 1,
+      "region_id": 289
+    },
+    {
+      "count": 1,
+      "region_id": 292
+    },
+    {
+      "count": 1,
+      "region_id": 293
+    },
+    {
+      "count": 2,
+      "region_id": 295
+    },
+    {
+      "count": 1,
+      "region_id": 296
+    },
+    {
+      "count": 1,
+      "region_id": 303
+    },
+    {
+      "count": 1,
+      "region_id": 304
+    },
+    {
+      "count": 1,
+      "region_id": 306
+    },
+    {
+      "count": 1,
+      "region_id": 307
+    },
+    {
+      "count": 1,
+      "region_id": 308
+    },
+    {
+      "count": 1,
+      "region_id": 312
+    },
+    {
+      "count": 1,
+      "region_id": 313
+    },
+    {
+      "count": 2,
+      "region_id": 314
+    },
+    {
+      "count": 2,
+      "region_id": 315
+    },
+    {
+      "count": 1,
+      "region_id": 320
+    },
+    {
+      "count": 2,
+      "region_id": 322
+    },
+    {
+      "count": 1,
+      "region_id": 323
+    },
+    {
+      "count": 1,
+      "region_id": 325
+    },
+    {
+      "count": 2,
+      "region_id": 326
+    },
+    {
+      "count": 1,
+      "region_id": 328
+    },
+    {
+      "count": 1,
+      "region_id": 329
+    },
+    {
+      "count": 1,
+      "region_id": 330
+    },
+    {
+      "count": 1,
+      "region_id": 331
+    },
+    {
+      "count": 2,
+      "region_id": 333
+    },
+    {
+      "count": 1,
+      "region_id": 339
+    },
+    {
+      "count": 1,
+      "region_id": 343
+    },
+    {
+      "count": 2,
+      "region_id": 344
+    },
+    {
+      "count": 1,
+      "region_id": 345
+    },
+    {
+      "count": 1,
+      "region_id": 346
+    },
+    {
+      "count": 1,
+      "region_id": 348
+    },
+    {
+      "count": 2,
+      "region_id": 350
+    },
+    {
+      "count": 1,
+      "region_id": 351
+    },
+    {
+      "count": 3,
+      "region_id": 352
+    },
+    {
+      "count": 1,
+      "region_id": 358
+    },
+    {
+      "count": 2,
+      "region_id": 359
+    },
+    {
+      "count": 1,
+      "region_id": 363
+    },
+    {
+      "count": 2,
+      "region_id": 366
+    },
+    {
+      "count": 1,
+      "region_id": 367
+    },
+    {
+      "count": 1,
+      "region_id": 368
+    },
+    {
+      "count": 1,
+      "region_id": 369
+    },
+    {
+      "count": 1,
+      "region_id": 377
+    },
+    {
+      "count": 2,
+      "region_id": 381
+    },
+    {
+      "count": 1,
+      "region_id": 382
+    },
+    {
+      "count": 1,
+      "region_id": 385
+    },
+    {
+      "count": 1,
+      "region_id": 386
+    },
+    {
+      "count": 1,
+      "region_id": 387
+    },
+    {
+      "count": 2,
+      "region_id": 388
+    },
+    {
+      "count": 1,
+      "region_id": 389
+    },
+    {
+      "count": 1,
+      "region_id": 395
+    },
+    {
+      "count": 1,
+      "region_id": 396
+    },
+    {
+      "count": 1,
+      "region_id": 397
+    },
+    {
+      "count": 1,
+      "region_id": 403
+    },
+    {
+      "count": 2,
+      "region_id": 404
+    },
+    {
+      "count": 1,
+      "region_id": 405
+    },
+    {
+      "count": 1,
+      "region_id": 406
+    },
+    {
+      "count": 1,
+      "region_id": 407
+    },
+    {
+      "count": 1,
+      "region_id": 411
+    },
+    {
+      "count": 2,
+      "region_id": 415
+    },
+    {
+      "count": 1,
+      "region_id": 417
+    },
+    {
+      "count": 1,
+      "region_id": 419
+    },
+    {
+      "count": 1,
+      "region_id": 421
+    },
+    {
+      "count": 1,
+      "region_id": 422
+    },
+    {
+      "count": 2,
+      "region_id": 423
+    },
+    {
+      "count": 1,
+      "region_id": 425
+    },
+    {
+      "count": 2,
+      "region_id": 426
+    },
+    {
+      "count": 1,
+      "region_id": 430
+    },
+    {
+      "count": 2,
+      "region_id": 433
+    },
+    {
+      "count": 1,
+      "region_id": 435
+    },
+    {
+      "count": 1,
+      "region_id": 437
+    },
+    {
+      "count": 2,
+      "region_id": 441
+    },
+    {
+      "count": 1,
+      "region_id": 442
+    },
+    {
+      "count": 1,
+      "region_id": 443
+    },
+    {
+      "count": 1,
+      "region_id": 444
+    },
+    {
+      "count": 2,
+      "region_id": 445
+    },
+    {
+      "count": 1,
+      "region_id": 451
+    },
+    {
+      "count": 2,
+      "region_id": 452
+    },
+    {
+      "count": 1,
+      "region_id": 454
+    },
+    {
+      "count": 1,
+      "region_id": 455
+    },
+    {
+      "count": 2,
+      "region_id": 459
+    },
+    {
+      "count": 2,
+      "region_id": 460
+    },
+    {
+      "count": 1,
+      "region_id": 461
+    },
+    {
+      "count": 1,
+      "region_id": 462
+    },
+    {
+      "count": 1,
+      "region_id": 463
+    },
+    {
+      "count": 1,
+      "region_id": 464
+    },
+    {
+      "count": 1,
+      "region_id": 467
+    },
+    {
+      "count": 2,
+      "region_id": 471
+    },
+    {
+      "count": 1,
+      "region_id": 474
+    },
+    {
+      "count": 1,
+      "region_id": 479
+    },
+    {
+      "count": 2,
+      "region_id": 481
+    },
+    {
+      "count": 1,
+      "region_id": 482
+    },
+    {
+      "count": 1,
+      "region_id": 483
+    },
+    {
+      "count": 1,
+      "region_id": 488
+    },
+    {
+      "count": 1,
+      "region_id": 489
+    },
+    {
+      "count": 2,
+      "region_id": 490
+    },
+    {
+      "count": 1,
+      "region_id": 495
+    },
+    {
+      "count": 2,
+      "region_id": 497
+    },
+    {
+      "count": 1,
+      "region_id": 498
+    },
+    {
+      "count": 1,
+      "region_id": 501
+    },
+    {
+      "count": 2,
+      "region_id": 504
+    },
+    {
+      "count": 1,
+      "region_id": 505
+    },
+    {
+      "count": 1,
+      "region_id": 514
+    },
+    {
+      "count": 1,
+      "region_id": 518
+    },
+    {
+      "count": 2,
+      "region_id": 519
+    },
+    {
+      "count": 1,
+      "region_id": 520
+    },
+    {
+      "count": 1,
+      "region_id": 523
+    },
+    {
+      "count": 1,
+      "region_id": 525
+    },
+    {
+      "count": 2,
+      "region_id": 526
+    },
+    {
+      "count": 1,
+      "region_id": 527
+    },
+    {
+      "count": 1,
+      "region_id": 528
+    },
+    {
+      "count": 1,
+      "region_id": 533
+    },
+    {
+      "count": 2,
+      "region_id": 534
+    },
+    {
+      "count": 1,
+      "region_id": 535
+    },
+    {
+      "count": 1,
+      "region_id": 537
+    },
+    {
+      "count": 1,
+      "region_id": 540
+    },
+    {
+      "count": 1,
+      "region_id": 541
+    },
+    {
+      "count": 1,
+      "region_id": 542
+    },
+    {
+      "count": 1,
+      "region_id": 543
+    },
+    {
+      "count": 1,
+      "region_id": 544
+    },
+    {
+      "count": 1,
+      "region_id": 545
+    },
+    {
+      "count": 1,
+      "region_id": 552
+    },
+    {
+      "count": 2,
+      "region_id": 553
+    },
+    {
+      "count": 1,
+      "region_id": 555
+    },
+    {
+      "count": 1,
+      "region_id": 556
+    },
+    {
+      "count": 2,
+      "region_id": 557
+    },
+    {
+      "count": 1,
+      "region_id": 559
+    },
+    {
+      "count": 1,
+      "region_id": 560
+    },
+    {
+      "count": 1,
+      "region_id": 561
+    },
+    {
+      "count": 1,
+      "region_id": 562
+    },
+    {
+      "count": 1,
+      "region_id": 563
+    },
+    {
+      "count": 3,
+      "region_id": 564
+    },
+    {
+      "count": 2,
+      "region_id": 571
+    },
+    {
+      "count": 1,
+      "region_id": 572
+    },
+    {
+      "count": 1,
+      "region_id": 574
+    },
+    {
+      "count": 1,
+      "region_id": 575
+    },
+    {
+      "count": 1,
+      "region_id": 579
+    },
+    {
+      "count": 1,
+      "region_id": 580
+    },
+    {
+      "count": 1,
+      "region_id": 581
+    },
+    {
+      "count": 1,
+      "region_id": 582
+    },
+    {
+      "count": 3,
+      "region_id": 583
+    },
+    {
+      "count": 1,
+      "region_id": 589
+    },
+    {
+      "count": 2,
+      "region_id": 590
+    },
+    {
+      "count": 1,
+      "region_id": 591
+    },
+    {
+      "count": 1,
+      "region_id": 593
+    },
+    {
+      "count": 1,
+      "region_id": 594
+    },
+    {
+      "count": 2,
+      "region_id": 597
+    },
+    {
+      "count": 1,
+      "region_id": 598
+    },
+    {
+      "count": 1,
+      "region_id": 599
+    },
+    {
+      "count": 1,
+      "region_id": 600
+    },
+    {
+      "count": 1,
+      "region_id": 601
+    },
+    {
+      "count": 1,
+      "region_id": 602
+    },
+    {
+      "count": 1,
+      "region_id": 608
+    },
+    {
+      "count": 1,
+      "region_id": 612
+    },
+    {
+      "count": 1,
+      "region_id": 613
+    },
+    {
+      "count": 1,
+      "region_id": 617
+    },
+    {
+      "count": 1,
+      "region_id": 618
+    },
+    {
+      "count": 1,
+      "region_id": 619
+    },
+    {
+      "count": 1,
+      "region_id": 620
+    },
+    {
+      "count": 1,
+      "region_id": 621
+    },
+    {
+      "count": 1,
+      "region_id": 626
+    },
+    {
+      "count": 2,
+      "region_id": 627
+    },
+    {
+      "count": 1,
+      "region_id": 628
+    },
+    {
+      "count": 1,
+      "region_id": 631
+    },
+    {
+      "count": 1,
+      "region_id": 633
+    },
+    {
+      "count": 1,
+      "region_id": 634
+    },
+    {
+      "count": 2,
+      "region_id": 635
+    },
+    {
+      "count": 1,
+      "region_id": 636
+    },
+    {
+      "count": 1,
+      "region_id": 639
+    },
+    {
+      "count": 1,
+      "region_id": 642
+    },
+    {
+      "count": 1,
+      "region_id": 646
+    },
+    {
+      "count": 1,
+      "region_id": 650
+    },
+    {
+      "count": 1,
+      "region_id": 652
+    },
+    {
+      "count": 1,
+      "region_id": 656
+    },
+    {
+      "count": 3,
+      "region_id": 657
+    },
+    {
+      "count": 1,
+      "region_id": 659
+    },
+    {
+      "count": 1,
+      "region_id": 663
+    },
+    {
+      "count": 2,
+      "region_id": 664
+    },
+    {
+      "count": 1,
+      "region_id": 666
+    },
+    {
+      "count": 2,
+      "region_id": 671
+    },
+    {
+      "count": 1,
+      "region_id": 672
+    },
+    {
+      "count": 1,
+      "region_id": 673
+    },
+    {
+      "count": 1,
+      "region_id": 679
+    },
+    {
+      "count": 1,
+      "region_id": 680
+    },
+    {
+      "count": 1,
+      "region_id": 682
+    },
+    {
+      "count": 1,
+      "region_id": 683
+    },
+    {
+      "count": 2,
+      "region_id": 690
+    },
+    {
+      "count": 1,
+      "region_id": 691
+    },
+    {
+      "count": 2,
+      "region_id": 693
+    },
+    {
+      "count": 1,
+      "region_id": 694
+    },
+    {
+      "count": 2,
+      "region_id": 695
+    },
+    {
+      "count": 1,
+      "region_id": 698
+    },
+    {
+      "count": 1,
+      "region_id": 700
+    },
+    {
+      "count": 2,
+      "region_id": 701
+    },
+    {
+      "count": 2,
+      "region_id": 702
+    },
+    {
+      "count": 1,
+      "region_id": 708
+    },
+    {
+      "count": 1,
+      "region_id": 709
+    },
+    {
+      "count": 1,
+      "region_id": 710
+    },
+    {
+      "count": 2,
+      "region_id": 712
+    },
+    {
+      "count": 1,
+      "region_id": 713
+    },
+    {
+      "count": 1,
+      "region_id": 716
+    },
+    {
+      "count": 1,
+      "region_id": 717
+    },
+    {
+      "count": 1,
+      "region_id": 718
+    },
+    {
+      "count": 1,
+      "region_id": 719
+    },
+    {
+      "count": 2,
+      "region_id": 720
+    },
+    {
+      "count": 2,
+      "region_id": 721
+    },
+    {
+      "count": 1,
+      "region_id": 726
+    },
+    {
+      "count": 2,
+      "region_id": 728
+    },
+    {
+      "count": 1,
+      "region_id": 729
+    },
+    {
+      "count": 1,
+      "region_id": 730
+    },
+    {
+      "count": 2,
+      "region_id": 731
+    },
+    {
+      "count": 1,
+      "region_id": 732
+    },
+    {
+      "count": 2,
+      "region_id": 735
+    },
+    {
+      "count": 1,
+      "region_id": 736
+    },
+    {
+      "count": 1,
+      "region_id": 737
+    },
+    {
+      "count": 1,
+      "region_id": 738
+    },
+    {
+      "count": 2,
+      "region_id": 739
+    },
+    {
+      "count": 2,
+      "region_id": 746
+    },
+    {
+      "count": 1,
+      "region_id": 749
+    },
+    {
+      "count": 2,
+      "region_id": 750
+    },
+    {
+      "count": 1,
+      "region_id": 751
+    },
+    {
+      "count": 1,
+      "region_id": 754
+    },
+    {
+      "count": 1,
+      "region_id": 755
+    },
+    {
+      "count": 1,
+      "region_id": 756
+    },
+    {
+      "count": 2,
+      "region_id": 757
+    },
+    {
+      "count": 1,
+      "region_id": 758
+    },
+    {
+      "count": 1,
+      "region_id": 759
+    },
+    {
+      "count": 1,
+      "region_id": 764
+    },
+    {
+      "count": 1,
+      "region_id": 765
+    },
+    {
+      "count": 1,
+      "region_id": 766
+    },
+    {
+      "count": 1,
+      "region_id": 768
+    },
+    {
+      "count": 1,
+      "region_id": 769
+    },
+    {
+      "count": 1,
+      "region_id": 772
+    },
+    {
+      "count": 2,
+      "region_id": 773
+    },
+    {
+      "count": 1,
+      "region_id": 774
+    },
+    {
+      "count": 1,
+      "region_id": 776
+    },
+    {
+      "count": 1,
+      "region_id": 786
+    },
+    {
+      "count": 1,
+      "region_id": 787
+    },
+    {
+      "count": 2,
+      "region_id": 788
+    },
+    {
+      "count": 1,
+      "region_id": 793
+    },
+    {
+      "count": 1,
+      "region_id": 794
+    },
+    {
+      "count": 2,
+      "region_id": 795
+    },
+    {
+      "count": 1,
+      "region_id": 801
+    },
+    {
+      "count": 1,
+      "region_id": 802
+    },
+    {
+      "count": 1,
+      "region_id": 803
+    },
+    {
+      "count": 1,
+      "region_id": 808
+    },
+    {
+      "count": 2,
+      "region_id": 809
+    },
+    {
+      "count": 2,
+      "region_id": 810
+    },
+    {
+      "count": 1,
+      "region_id": 811
+    },
+    {
+      "count": 1,
+      "region_id": 812
+    },
+    {
+      "count": 1,
+      "region_id": 821
+    },
+    {
+      "count": 1,
+      "region_id": 824
+    },
+    {
+      "count": 1,
+      "region_id": 825
+    },
+    {
+      "count": 3,
+      "region_id": 828
+    },
+    {
+      "count": 1,
+      "region_id": 830
+    },
+    {
+      "count": 1,
+      "region_id": 831
+    },
+    {
+      "count": 2,
+      "region_id": 832
+    },
+    {
+      "count": 1,
+      "region_id": 838
+    },
+    {
+      "count": 2,
+      "region_id": 839
+    },
+    {
+      "count": 1,
+      "region_id": 841
+    },
+    {
+      "count": 1,
+      "region_id": 843
+    },
+    {
+      "count": 2,
+      "region_id": 846
+    },
+    {
+      "count": 2,
+      "region_id": 847
+    },
+    {
+      "count": 1,
+      "region_id": 848
+    },
+    {
+      "count": 1,
+      "region_id": 849
+    },
+    {
+      "count": 1,
+      "region_id": 850
+    },
+    {
+      "count": 1,
+      "region_id": 851
+    },
+    {
+      "count": 1,
+      "region_id": 854
+    },
+    {
+      "count": 1,
+      "region_id": 857
+    },
+    {
+      "count": 1,
+      "region_id": 858
+    },
+    {
+      "count": 1,
+      "region_id": 859
+    },
+    {
+      "count": 1,
+      "region_id": 861
+    },
+    {
+      "count": 1,
+      "region_id": 865
+    },
+    {
+      "count": 3,
+      "region_id": 866
+    },
+    {
+      "count": 1,
+      "region_id": 867
+    },
+    {
+      "count": 2,
+      "region_id": 868
+    },
+    {
+      "count": 1,
+      "region_id": 869
+    },
+    {
+      "count": 1,
+      "region_id": 870
+    },
+    {
+      "count": 1,
+      "region_id": 873
+    },
+    {
+      "count": 1,
+      "region_id": 876
+    },
+    {
+      "count": 2,
+      "region_id": 877
+    },
+    {
+      "count": 1,
+      "region_id": 881
+    },
+    {
+      "count": 2,
+      "region_id": 884
+    },
+    {
+      "count": 1,
+      "region_id": 887
+    },
+    {
+      "count": 2,
+      "region_id": 888
+    },
+    {
+      "count": 1,
+      "region_id": 892
+    },
+    {
+      "count": 1,
+      "region_id": 894
+    },
+    {
+      "count": 1,
+      "region_id": 895
+    },
+    {
+      "count": 2,
+      "region_id": 896
+    },
+    {
+      "count": 1,
+      "region_id": 901
+    },
+    {
+      "count": 1,
+      "region_id": 902
+    },
+    {
+      "count": 2,
+      "region_id": 903
+    },
+    {
+      "count": 2,
+      "region_id": 906
+    },
+    {
+      "count": 1,
+      "region_id": 907
+    },
+    {
+      "count": 1,
+      "region_id": 910
+    },
+    {
+      "count": 1,
+      "region_id": 911
+    },
+    {
+      "count": 1,
+      "region_id": 914
+    },
+    {
+      "count": 1,
+      "region_id": 915
+    },
+    {
+      "count": 1,
+      "region_id": 924
+    },
+    {
+      "count": 2,
+      "region_id": 925
+    },
+    {
+      "count": 1,
+      "region_id": 926
+    },
+    {
+      "count": 1,
+      "region_id": 931
+    },
+    {
+      "count": 3,
+      "region_id": 932
+    },
+    {
+      "count": 1,
+      "region_id": 933
+    },
+    {
+      "count": 1,
+      "region_id": 934
+    },
+    {
+      "count": 1,
+      "region_id": 938
+    },
+    {
+      "count": 1,
+      "region_id": 939
+    },
+    {
+      "count": 2,
+      "region_id": 940
+    },
+    {
+      "count": 1,
+      "region_id": 941
+    },
+    {
+      "count": 1,
+      "region_id": 944
+    },
+    {
+      "count": 1,
+      "region_id": 946
+    },
+    {
+      "count": 1,
+      "region_id": 947
+    },
+    {
+      "count": 1,
+      "region_id": 948
+    },
+    {
+      "count": 1,
+      "region_id": 949
+    },
+    {
+      "count": 1,
+      "region_id": 950
+    },
+    {
+      "count": 1,
+      "region_id": 957
+    },
+    {
+      "count": 1,
+      "region_id": 961
+    },
+    {
+      "count": 1,
+      "region_id": 962
+    },
+    {
+      "count": 2,
+      "region_id": 963
+    },
+    {
+      "count": 2,
+      "region_id": 966
+    },
+    {
+      "count": 1,
+      "region_id": 968
+    },
+    {
+      "count": 1,
+      "region_id": 969
+    },
+    {
+      "count": 3,
+      "region_id": 970
+    },
+    {
+      "count": 1,
+      "region_id": 976
+    },
+    {
+      "count": 2,
+      "region_id": 977
+    },
+    {
+      "count": 1,
+      "region_id": 980
+    },
+    {
+      "count": 2,
+      "region_id": 984
+    },
+    {
+      "count": 1,
+      "region_id": 985
+    },
+    {
+      "count": 1,
+      "region_id": 986
+    },
+    {
+      "count": 2,
+      "region_id": 988
+    },
+    {
+      "count": 1,
+      "region_id": 995
+    },
+    {
+      "count": 2,
+      "region_id": 996
+    },
+    {
+      "count": 2,
+      "region_id": 999
+    },
+    {
+      "count": 1,
+      "region_id": 1000
+    },
+    {
+      "count": 2,
+      "region_id": 1003
+    },
+    {
+      "count": 1,
+      "region_id": 1004
+    },
+    {
+      "count": 1,
+      "region_id": 1005
+    },
+    {
+      "count": 2,
+      "region_id": 1006
+    },
+    {
+      "count": 1,
+      "region_id": 1007
+    },
+    {
+      "count": 1,
+      "region_id": 1008
+    },
+    {
+      "count": 1,
+      "region_id": 1013
+    },
+    {
+      "count": 1,
+      "region_id": 1014
+    },
+    {
+      "count": 1,
+      "region_id": 1015
+    },
+    {
+      "count": 1,
+      "region_id": 1018
+    },
+    {
+      "count": 1,
+      "region_id": 1019
+    },
+    {
+      "count": 2,
+      "region_id": 1022
+    },
+    {
+      "count": 1,
+      "region_id": 1023
+    }
+  ]
+}

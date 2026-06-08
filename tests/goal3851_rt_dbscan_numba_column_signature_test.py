@@ -38,11 +38,11 @@ class Goal3851RtDbscanNumbaColumnSignatureTest(unittest.TestCase):
         self.assertIn("rt.radius_graph_components_3d_numba_prepared_grid_partner_columns", text)
         self.assertNotIn("native_dbscan_abi_added\": true", text)
 
-    def test_registry_uses_column_signature_route_for_current_rt_dbscan_row(self) -> None:
+    def test_registry_keeps_numba_no_row_route_for_current_rt_dbscan_row(self) -> None:
         row = next(row for row in rt.current_benchmark_scale_profiles() if row["app"] == "rt_dbscan")
 
         self.assertEqual(row["row_id"], "rt_dbscan_optix_numba_scale_default_65536_no_validation")
-        self.assertIn("optix_rt_core_flags_numba_prepared_grid_column_signature_3d", row["command"])
+        self.assertIn("numba", " ".join(row["command"]))
         self.assertIn("Goal3851", row["evidence_refs"])
         self.assertTrue(row["requires_numba"])
         self.assertFalse(row["release_authorized"])

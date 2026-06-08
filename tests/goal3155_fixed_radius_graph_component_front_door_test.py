@@ -47,7 +47,7 @@ class Goal3155FixedRadiusGraphComponentFrontDoorTest(unittest.TestCase):
         self.assertFalse(plan["rt_core_speedup_claim_authorized"])
         self.assertFalse(plan["true_zero_copy_claim_authorized"])
 
-    def test_unsupported_partner_does_not_auto_fallback(self) -> None:
+    def test_numba_partner_is_explicitly_supported_without_auto_fallback(self) -> None:
         plan = rt.plan_v2_8_fixed_radius_graph_component_continuation(
             point_count=1024,
             radius=0.25,
@@ -57,8 +57,8 @@ class Goal3155FixedRadiusGraphComponentFrontDoorTest(unittest.TestCase):
             strategy="grouped_stream",
         )
 
-        self.assertEqual(plan["status"], "unsupported_explicit_user_choice")
-        self.assertIn("unsupported partner", plan["unsupported_reason"])
+        self.assertEqual(plan["status"], "accepted_preview")
+        self.assertEqual(plan["user_selected_partner"], "numba")
         self.assertFalse(plan["fallback_selected"])
         self.assertFalse(plan["automatic_partner_selection_allowed"])
 

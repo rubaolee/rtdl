@@ -34,6 +34,7 @@ _CUPY_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS = None
 _CUPY_RADIUS_GRAPH_COMPONENTS_3D_MICROCELL_GRAPH_KERNELS = None
 _CUPY_GROUPED_VECTOR_SUM_OFFSETS_F64X2_KERNEL = None
 _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS = None
+_NUMBA_RADIUS_GRAPH_COMPONENTS_3D_BORDER_CANDIDATE_LABEL_KERNEL = None
 
 _AABB_PAIR_PAYLOAD_FIELDS = (
     "left_index",
@@ -4767,6 +4768,45 @@ def _numba_radius_graph_components_3d_grid_kernels(cuda):
     return _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS
 
 
+def _numba_radius_graph_components_3d_border_candidate_label_kernel(cuda):
+    global _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_BORDER_CANDIDATE_LABEL_KERNEL
+    if _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_BORDER_CANDIDATE_LABEL_KERNEL is None:
+
+        @cuda.jit(device=True)
+        def find_grouped_stream_root_readonly(parent, item):
+            root = item
+            guard = 0
+            while parent[root] != root and guard < 4096:
+                root = parent[root]
+                guard += 1
+            return root
+
+        @cuda.jit
+        def radius_graph_3d_grouped_stream_border_candidate_label_kernel(
+            point_count,
+            core_flags,
+            parent,
+            border_core_candidate,
+            labels,
+        ):
+            point = cuda.grid(1)
+            if point >= point_count:
+                return
+            if core_flags[point] != 0:
+                labels[point] = find_grouped_stream_root_readonly(parent, point) + 1
+                return
+            candidate = border_core_candidate[point]
+            if candidate < 0 or candidate >= point_count or core_flags[candidate] == 0:
+                labels[point] = -1
+                return
+            labels[point] = find_grouped_stream_root_readonly(parent, candidate) + 1
+
+        _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_BORDER_CANDIDATE_LABEL_KERNEL = (
+            radius_graph_3d_grouped_stream_border_candidate_label_kernel
+        )
+    return _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_BORDER_CANDIDATE_LABEL_KERNEL
+
+
 _CUPY_RADIUS_GRAPH_COMPONENTS_3D_ADJACENCY_KERNELS = None
 
 
@@ -6755,6 +6795,288 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
             pass
 
 
+class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
+    """Prepared generic OptiX RT grouped stream continuation plus Numba labels."""
+
+    def __init__(
+        self,
+        point_rows,
+        *,
+        radius: float,
+        partner: str = "numba",
+        grouped_union_query_block_size: int | None = None,
+        grouped_union_same_root_culling: bool = True,
+        grouped_union_direct_side_effect: bool = False,
+    ):
+        if partner != "numba":
+            raise ValueError("PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D currently requires partner='numba'")
+        radius = float(radius)
+        if radius <= 0.0:
+            raise ValueError("radius must be positive")
+        if not isinstance(grouped_union_same_root_culling, bool):
+            raise TypeError("grouped_union_same_root_culling must be a bool")
+        if not isinstance(grouped_union_direct_side_effect, bool):
+            raise TypeError("grouped_union_direct_side_effect must be a bool")
+        if grouped_union_query_block_size is not None:
+            grouped_union_query_block_size = int(grouped_union_query_block_size)
+            if grouped_union_query_block_size <= 0:
+                raise ValueError("grouped_union_query_block_size must be positive when provided")
+        cuda, np = _numba_cuda_stack_for_radius_graph()
+        self.cuda = cuda
+        self.np = np
+        self.point_rows = tuple(point_rows)
+        if not self.point_rows:
+            raise ValueError("prepared OptiX+Numba grouped stream radius graph requires non-empty point rows")
+        self.radius = radius
+        self.partner = partner
+        self.grouped_union_query_block_size = grouped_union_query_block_size
+        self.grouped_union_same_root_culling = grouped_union_same_root_culling
+        self.grouped_union_direct_side_effect = grouped_union_direct_side_effect
+        self.point_count = len(self.point_rows)
+        self.point_columns = point_rows_to_partner_columns(self.point_rows, partner=partner)
+        if "z" not in self.point_columns:
+            raise ValueError("PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D requires 3-D point rows")
+
+        self.prepared_native = _optix.prepare_optix_fixed_radius_count_threshold_3d(
+            self.point_rows,
+            max_radius=radius,
+        )
+        self.count_columns = allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
+            self.point_count,
+            partner=partner,
+        )
+        self._cached_core_threshold: int | None = None
+        self._cached_core_flags = None
+        self._cached_neighbor_counts = None
+        self._cached_count_metadata: dict[str, object] | None = None
+        self._cached_all_core_flags_true: bool | None = None
+        self.parent_initial_host = np.arange(self.point_count, dtype=np.int32)
+        self.border_initial_host = np.full((self.point_count,), self.point_count, dtype=np.int32)
+        self.parent_workspace = cuda.device_array((self.point_count,), dtype=np.int32)
+        self.border_core_candidate_workspace = cuda.device_array((self.point_count,), dtype=np.int32)
+        self.labels_workspace = cuda.device_array((self.point_count,), dtype=np.int64)
+        self.border_candidate_label_kernel = _numba_radius_graph_components_3d_border_candidate_label_kernel(cuda)
+        self.threads = 256
+        self.label_blocks = (max(1, math.ceil(self.point_count / self.threads)),)
+        self.run_count = 0
+        self.closed = False
+        cuda.synchronize()
+
+    def _refresh_core_flags(self, min_neighbors: int) -> bool:
+        core_flag_cache_reused = self._cached_core_threshold == min_neighbors
+        if core_flag_cache_reused:
+            return True
+        threshold_result = fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
+            self.prepared_native,
+            self.point_rows,
+            radius=self.radius,
+            threshold=min_neighbors,
+            partner=self.partner,
+            output_columns=self.count_columns,
+            return_metadata=True,
+        )
+        self._cached_core_threshold = min_neighbors
+        self._cached_core_flags = _as_numba_radius_graph_device_array(
+            threshold_result["columns"]["threshold_flags"],
+            cuda=self.cuda,
+            np=self.np,
+            dtype=self.np.uint32,
+            name="threshold_flags",
+        )
+        self._cached_neighbor_counts = _as_numba_radius_graph_device_array(
+            threshold_result["columns"]["neighbor_counts"],
+            cuda=self.cuda,
+            np=self.np,
+            dtype=self.np.uint32,
+            name="neighbor_counts",
+        )
+        self._cached_count_metadata = dict(threshold_result["metadata"])
+        flags_host = self.np.asarray(self._cached_core_flags.copy_to_host(), dtype=self.np.uint32)
+        self._cached_all_core_flags_true = bool(flags_host.all())
+        return False
+
+    def run(self, *, min_neighbors: int, return_metadata: bool = False):
+        if self.closed:
+            raise RuntimeError("prepared OptiX+Numba grouped stream radius graph handle is closed")
+        min_neighbors = int(min_neighbors)
+        if min_neighbors < 1:
+            raise ValueError("min_neighbors must be at least 1")
+        core_flag_cache_reused = self._refresh_core_flags(min_neighbors)
+        core_flags = self._cached_core_flags
+        neighbor_counts = self._cached_neighbor_counts
+        all_core_flags_true = bool(self._cached_all_core_flags_true)
+        self.parent_workspace.copy_to_device(self.parent_initial_host)
+        query_block_size = self.grouped_union_query_block_size
+        use_query_blocks = query_block_size is not None and query_block_size < self.point_count
+        continuation_pass_count = 1
+        if use_query_blocks:
+            native_range_metadata = []
+            if all_core_flags_true:
+                for query_start in range(0, self.point_count, query_block_size):
+                    query_count = min(query_block_size, self.point_count - query_start)
+                    range_result = self.prepared_native.apply_device_grouped_union_self_range(
+                        query_start=query_start,
+                        query_count=query_count,
+                        radius=self.radius,
+                        parent_out=self.parent_workspace,
+                        same_root_culling=self.grouped_union_same_root_culling,
+                        direct_side_effect=self.grouped_union_direct_side_effect,
+                    )
+                    native_range_metadata.append(dict(range_result["metadata"]))
+                grouped_stream_policy = "optix_applies_query_blocked_all_items_grouped_union_without_predicate_or_fallback_workspace"
+                fallback_candidate_policy = "not_needed_all_items_satisfy_predicate"
+            else:
+                self.border_core_candidate_workspace.copy_to_device(self.border_initial_host)
+                for query_start in range(0, self.point_count, query_block_size):
+                    query_count = min(query_block_size, self.point_count - query_start)
+                    range_result = self.prepared_native.apply_device_grouped_union_self_range(
+                        query_start=query_start,
+                        query_count=query_count,
+                        radius=self.radius,
+                        predicate_flags=core_flags,
+                        parent_out=self.parent_workspace,
+                        fallback_candidate_out=self.border_core_candidate_workspace,
+                        same_root_culling=self.grouped_union_same_root_culling,
+                        direct_side_effect=self.grouped_union_direct_side_effect,
+                    )
+                    native_range_metadata.append(dict(range_result["metadata"]))
+                grouped_stream_policy = "optix_applies_query_blocked_predicated_union_and_border_candidate_during_traversal"
+                fallback_candidate_policy = "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass"
+            continuation_pass_count = len(native_range_metadata)
+            native_elapsed_total = sum(float(row.get("native_elapsed_sec", 0.0)) for row in native_range_metadata)
+            native_metadata = dict(native_range_metadata[-1]) if native_range_metadata else {}
+            native_metadata.update(
+                {
+                    "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query_blocked_ranges",
+                    "query_source": "prepared_search_points_self_query_device_range",
+                    "query_block_size": query_block_size,
+                    "query_block_count": continuation_pass_count,
+                    "query_block_policy": "explicit_contiguous_prepared_search_ranges",
+                    "native_elapsed_sec": native_elapsed_total,
+                    "range_native_metadata_sample": native_range_metadata[:1] + native_range_metadata[-1:],
+                    "grouped_union_query_blocked": True,
+                    "grouped_union_blocked_candidate": True,
+                    "performance_claim_authorized": False,
+                }
+            )
+            native_result = {"metadata": native_metadata}
+        elif all_core_flags_true:
+            native_result = self.prepared_native.apply_device_grouped_union_all_self(
+                radius=self.radius,
+                parent_out=self.parent_workspace,
+                same_root_culling=self.grouped_union_same_root_culling,
+                direct_side_effect=self.grouped_union_direct_side_effect,
+            )
+            grouped_stream_policy = "optix_applies_all_items_grouped_union_without_predicate_or_fallback_workspace"
+            fallback_candidate_policy = "not_needed_all_items_satisfy_predicate"
+        else:
+            self.border_core_candidate_workspace.copy_to_device(self.border_initial_host)
+            native_result = self.prepared_native.apply_device_grouped_union_self(
+                radius=self.radius,
+                predicate_flags=core_flags,
+                parent_out=self.parent_workspace,
+                fallback_candidate_out=self.border_core_candidate_workspace,
+                same_root_culling=self.grouped_union_same_root_culling,
+                direct_side_effect=self.grouped_union_direct_side_effect,
+            )
+            grouped_stream_policy = "optix_applies_predicated_union_and_border_candidate_during_traversal"
+            fallback_candidate_policy = "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass"
+        self.border_candidate_label_kernel[self.label_blocks, self.threads](
+            self.point_count,
+            core_flags,
+            self.parent_workspace,
+            self.border_core_candidate_workspace,
+            self.labels_workspace,
+        )
+        self.cuda.synchronize()
+        grouped_reused = self.run_count > 0
+        self.run_count += 1
+        columns = {
+            "point_ids": self.point_columns["ids"],
+            "component_labels": self.labels_workspace,
+            "is_core": core_flags,
+            "neighbor_counts": neighbor_counts,
+        }
+        native_metadata = dict(native_result["metadata"])
+        metadata = {
+            "adapter": "PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D.run",
+            "partner": self.partner,
+            "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+            "partner_reference_contract": "generic_prepared_optix_numba_grouped_stream_component_labels_3d",
+            "native_engine_row_contract": native_metadata.get(
+                "native_engine_row_contract",
+                "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+            ),
+            "native_execution_path": native_metadata.get(
+                "native_execution_path",
+                "prepared_rt_core_grouped_union_3d_self_query",
+            ),
+            "query_source": "prepared_search_points_self_query_device",
+            "point_count": self.point_count,
+            "radius": self.radius,
+            "min_neighbors": min_neighbors,
+            "prepared_grouped_stream_run_count": self.run_count,
+            "prepared_grouped_stream_reused": grouped_reused,
+            "grouped_stream_policy": grouped_stream_policy,
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "component_union_policy": "monotonic_atomic_min_from_rt_hit_stream_without_neighbor_index_materialization",
+            "fallback_candidate_policy": fallback_candidate_policy,
+            "prepared_optix_scene_reused": True,
+            "output_columns_reused": True,
+            "core_flag_threshold": min_neighbors,
+            "core_flag_cache_reused": core_flag_cache_reused,
+            "all_core_flags_true": all_core_flags_true,
+            "grouped_union_query_block_size": query_block_size,
+            "grouped_union_query_block_count": continuation_pass_count,
+            "grouped_union_query_blocked_candidate": bool(use_query_blocks),
+            "grouped_union_same_root_culling_enabled": self.grouped_union_same_root_culling,
+            "grouped_union_direct_side_effect_enabled": self.grouped_union_direct_side_effect,
+            "optix_backend_used": True,
+            "rt_core_accelerated": True,
+            "materializes_neighbor_summaries": False,
+            "materializes_neighbor_rows": False,
+            "materializes_directed_adjacency_stream": False,
+            "materializes_bounded_directed_adjacency_chunks": False,
+            "adjacency_write_pass_count": 0,
+            "grouped_stream_continuation_pass_count": continuation_pass_count,
+            "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+            "count_metadata": self._cached_count_metadata,
+            "native_grouped_stream_metadata": native_metadata,
+            "automatic_hidden_dispatcher": False,
+            "direct_device_handoff_authorized": True,
+            "output_columns_true_zero_copy_authorized": True,
+            "true_zero_copy_authorized": False,
+            "raw_cuda_kernel_required": False,
+            "numba_cuda_jit_used": True,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+    def close(self) -> None:
+        if self.closed:
+            return
+        close = getattr(self.prepared_native, "close", None)
+        if close is not None:
+            close()
+        self.closed = True
+
+    def __enter__(self) -> "PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):  # pragma: no cover - best-effort cleanup
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
 def prepare_optix_cupy_radius_graph_components_3d(
     point_rows,
     *,
@@ -6848,6 +7170,34 @@ def prepare_optix_cupy_radius_graph_grouped_stream_continuation_3d(
 
 def radius_graph_components_3d_optix_cupy_prepared_grouped_stream_partner_columns(
     prepared: PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D,
+    *,
+    min_neighbors: int,
+    return_metadata: bool = False,
+):
+    return prepared.run(min_neighbors=min_neighbors, return_metadata=return_metadata)
+
+
+def prepare_optix_numba_radius_graph_grouped_stream_continuation_3d(
+    point_rows,
+    *,
+    radius: float,
+    partner: str = "numba",
+    grouped_union_query_block_size: int | None = None,
+    grouped_union_same_root_culling: bool = True,
+    grouped_union_direct_side_effect: bool = False,
+) -> PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
+    return PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D(
+        point_rows,
+        radius=radius,
+        partner=partner,
+        grouped_union_query_block_size=grouped_union_query_block_size,
+        grouped_union_same_root_culling=grouped_union_same_root_culling,
+        grouped_union_direct_side_effect=grouped_union_direct_side_effect,
+    )
+
+
+def radius_graph_components_3d_optix_numba_prepared_grouped_stream_partner_columns(
+    prepared: PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D,
     *,
     min_neighbors: int,
     return_metadata: bool = False,

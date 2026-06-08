@@ -896,6 +896,7 @@ def run_rt_dbscan_benchmark(
     resolved_min_neighbors = int(min_neighbors if min_neighbors is not None else config["min_neighbors"])
     if include_rows and mode in {
         "optix_rt_core_grouped_stream_cupy_column_signature_3d",
+        "optix_rt_core_grouped_stream_numba_column_signature_3d",
         "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d",
         "optix_rt_core_flags_numba_prepared_grid_column_signature_3d",
     }:
@@ -1416,10 +1417,13 @@ def run_rt_dbscan_benchmark(
         )
     elif mode == "optix_rt_core_grouped_stream_cupy_components_3d" or mode in {
         "optix_rt_core_grouped_stream_cupy_column_signature_3d",
+        "optix_rt_core_grouped_stream_numba_components_3d",
+        "optix_rt_core_grouped_stream_numba_column_signature_3d",
         "optix_rt_core_grouped_stream_blocked_cupy_components_3d",
         "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d",
     }:
         blocked_grouped_stream = mode.startswith("optix_rt_core_grouped_stream_blocked")
+        grouped_stream_partner = "numba" if "_numba_" in mode else "cupy"
         resolved_query_block_size = (
             int(grouped_union_query_block_size)
             if grouped_union_query_block_size is not None
@@ -1427,6 +1431,7 @@ def run_rt_dbscan_benchmark(
         )
         column_signature_mode = mode in {
             "optix_rt_core_grouped_stream_cupy_column_signature_3d",
+            "optix_rt_core_grouped_stream_numba_column_signature_3d",
             "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d",
         }
         prepare_start = time.perf_counter()
@@ -1437,7 +1442,7 @@ def run_rt_dbscan_benchmark(
             radius=resolved_radius,
             component_threshold=resolved_min_neighbors,
             backend="optix",
-            partner="cupy",
+            partner=grouped_stream_partner,
             strategy="grouped_stream",
             grouped_union_query_block_size=resolved_query_block_size if blocked_grouped_stream else None,
             grouped_union_same_root_culling=grouped_union_same_root_culling,
@@ -1456,12 +1461,15 @@ def run_rt_dbscan_benchmark(
                 run_timing["adapter_run_sec"] = time.perf_counter() - adapter_start
                 if column_signature_mode:
                     signature_start = time.perf_counter()
-                    run_signature = _cluster_signature_from_partner_columns(result["columns"], partner="cupy")
+                    run_signature = _cluster_signature_from_partner_columns(
+                        result["columns"],
+                        partner=grouped_stream_partner,
+                    )
                     run_timing["column_signature_sec"] = time.perf_counter() - signature_start
                     run_rows = ()
                 else:
                     rows_start = time.perf_counter()
-                    run_rows = _rows_from_partner_columns(result["columns"], partner="cupy")
+                    run_rows = _rows_from_partner_columns(result["columns"], partner=grouped_stream_partner)
                     run_timing["rows_materialization_sec"] = time.perf_counter() - rows_start
                     densify_start = time.perf_counter()
                     run_rows = _densify_cluster_labels(run_rows)
@@ -1499,6 +1507,10 @@ def run_rt_dbscan_benchmark(
                     if mode == "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d"
                     else "optix_rt_grouped_stream_blocked_cupy_radius_graph_components_3d"
                     if mode == "optix_rt_core_grouped_stream_blocked_cupy_components_3d"
+                    else "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+                    if mode == "optix_rt_core_grouped_stream_numba_column_signature_3d"
+                    else "optix_rt_grouped_stream_numba_radius_graph_components_3d"
+                    if mode == "optix_rt_core_grouped_stream_numba_components_3d"
                     else "optix_rt_grouped_stream_cupy_radius_graph_column_signature_3d"
                     if mode == "optix_rt_core_grouped_stream_cupy_column_signature_3d"
                     else "optix_rt_grouped_stream_cupy_radius_graph_components_3d"
@@ -1526,6 +1538,7 @@ def run_rt_dbscan_benchmark(
                 "grouped_union_same_root_culling_enabled": grouped_union_same_root_culling,
                 "grouped_union_direct_side_effect_enabled": grouped_union_direct_side_effect,
                 "optix_backend_used": True,
+                "partner": grouped_stream_partner,
                 "rt_core_accelerated": True,
                 "materializes_neighbor_summaries": False,
                 "materializes_neighbor_rows": False,
@@ -1533,6 +1546,7 @@ def run_rt_dbscan_benchmark(
                 "materializes_bounded_directed_adjacency_chunks": False,
                 "materializes_python_rows": mode in {
                     "optix_rt_core_grouped_stream_cupy_components_3d",
+                    "optix_rt_core_grouped_stream_numba_components_3d",
                     "optix_rt_core_grouped_stream_blocked_cupy_components_3d",
                 },
                 "signature_source": (
@@ -1730,6 +1744,8 @@ def main(argv: list[str] | None = None) -> int:
             "optix_rt_core_chunked_adjacency_cupy_components_3d",
             "optix_rt_core_grouped_stream_cupy_components_3d",
             "optix_rt_core_grouped_stream_cupy_column_signature_3d",
+            "optix_rt_core_grouped_stream_numba_components_3d",
+            "optix_rt_core_grouped_stream_numba_column_signature_3d",
             "optix_rt_core_grouped_stream_blocked_cupy_components_3d",
             "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d",
             "optix_rt_core_flags_cupy_microcell_graph_components_3d",
@@ -1743,7 +1759,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--radius", type=float, default=None)
     parser.add_argument("--min-neighbors", type=int, default=None)
     parser.add_argument("--seed", type=int, default=20260519)
-    parser.add_argument("--partner", choices=("torch", "cupy"), default="cupy")
+    parser.add_argument("--partner", choices=("torch", "cupy", "numba"), default="cupy")
     parser.add_argument("--include-rows", action="store_true")
     parser.add_argument("--no-validation", action="store_true")
     parser.add_argument("--adjacency-edge-budget", type=int, default=None)

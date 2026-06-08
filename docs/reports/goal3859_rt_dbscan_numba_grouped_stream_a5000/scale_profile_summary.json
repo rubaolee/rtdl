@@ -1,0 +1,98 @@
+{
+  "all_pass": true,
+  "broad_rt_core_claim_authorized": false,
+  "claim_boundary": "Goal3828 records calibrated scale-profile commands for the ten benchmark apps after the Goal3827 file-stdout correction. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.",
+  "dry_run": false,
+  "file_backed_stdout_probe": true,
+  "json_pass_count": 1,
+  "paper_reproduction_claim_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "rows": [
+    {
+      "app": "rt_dbscan",
+      "command": [
+        "/usr/local/bin/python",
+        "examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
+        "--mode",
+        "optix_rt_core_grouped_stream_numba_column_signature_3d",
+        "--dataset",
+        "clustered3d",
+        "--point-count",
+        "65536",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--no-validation"
+      ],
+      "elapsed_sec": 3.752652513794601,
+      "expected_runtime_class": "default_scale_prepared_repeat_no_validation",
+      "profile_kind": "default_scale",
+      "returncode": 0,
+      "row_id": "rt_dbscan_optix_numba_scale_default_65536_no_validation",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "parsed_keys": [
+          "app",
+          "claim_boundary",
+          "dataset",
+          "elapsed_sec",
+          "matches_reference",
+          "metadata",
+          "min_neighbors",
+          "mode",
+          "paper",
+          "point_count",
+          "radius",
+          "reference_signature",
+          "seed",
+          "signature"
+        ],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_bytes": 0,
+      "stderr_path": "docs/reports/goal3859_rt_dbscan_numba_grouped_stream_a5000/scale_outputs/rt_dbscan_optix_numba_scale_default_65536_no_validation.stderr.txt",
+      "stderr_tail": "",
+      "stdout_bytes": 19959,
+      "stdout_path": "docs/reports/goal3859_rt_dbscan_numba_grouped_stream_a5000/scale_outputs/rt_dbscan_optix_numba_scale_default_65536_no_validation.stdout.json",
+      "stdout_policy": "file_backed_stdout_required",
+      "stdout_tail": "a_ptr_observed\": false,\n            \"device\": \"cuda:0\",\n            \"dtype\": \"uint64\",\n            \"element_count\": 1,\n            \"lifetime\": \"caller_retained\",\n            \"memory_manager_boundary\": \"not_a_general_purpose_memory_manager\",\n            \"mutability\": \"mutable\",\n            \"name\": \"capacity\",\n            \"scope\": \"rtdl_primitive_handoff_only\",\n            \"shape\": [\n              1\n            ],\n            \"source_protocol\": \"numba_cuda_array_interface\",\n            \"stream_handle\": 0,\n            \"strides_bytes\": null\n          },\n          \"device_resident\": false,\n          \"dtype\": \"uint64\",\n          \"name\": \"capacity\",\n          \"nullable\": false,\n          \"required_for_continuation\": true,\n          \"role\": \"status\",\n          \"shape\": [\n            1\n          ]\n        },\n        {\n          \"buffer\": {\n            \"access_mode\": \"read\",\n            \"alignment_bytes\": 1,\n            \"byte_offset\": 0,\n            \"capacity_elements\": 1,\n            \"data_ptr_observed\": false,\n            \"device\": \"cuda:0\",\n            \"dtype\": \"uint32\",\n            \"element_count\": 1,\n            \"lifetime\": \"caller_retained\",\n            \"memory_manager_boundary\": \"not_a_general_purpose_memory_manager\",\n            \"mutability\": \"mutable\",\n            \"name\": \"overflow\",\n            \"scope\": \"rtdl_primitive_handoff_only\",\n            \"shape\": [\n              1\n            ],\n            \"source_protocol\": \"numba_cuda_array_interface\",\n            \"stream_handle\": 0,\n            \"strides_bytes\": null\n          },\n          \"device_resident\": false,\n          \"dtype\": \"uint32\",\n          \"name\": \"overflow\",\n          \"nullable\": false,\n          \"required_for_continuation\": true,\n          \"role\": \"status\",\n          \"shape\": [\n            1\n          ]\n        },\n        {\n          \"buffer\": {\n            \"access_mode\": \"read\",\n            \"alignment_bytes\": 1,\n            \"byte_offset\": 0,\n            \"capacity_elements\": 1,\n            \"data_ptr_observed\": false,\n            \"device\": \"cuda:0\",\n            \"dtype\": \"uint32\",\n            \"element_count\": 1,\n            \"lifetime\": \"caller_retained\",\n            \"memory_manager_boundary\": \"not_a_general_purpose_memory_manager\",\n            \"mutability\": \"mutable\",\n            \"name\": \"complete_candidate_coverage\",\n            \"scope\": \"rtdl_primitive_handoff_only\",\n            \"shape\": [\n              1\n            ],\n            \"source_protocol\": \"numba_cuda_array_interface\",\n            \"stream_handle\": 0,\n            \"strides_bytes\": null\n          },\n          \"device_resident\": false,\n          \"dtype\": \"uint32\",\n          \"name\": \"complete_candidate_coverage\",\n          \"nullable\": false,\n          \"required_for_continuation\": true,\n          \"role\": \"status\",\n          \"shape\": [\n            1\n          ]\n        }\n      ],\n      \"stream_id\": \"fixed_radius_graph_component_labels_3d_runtime\",\n      \"stream_kind\": \"adjacency_stream\",\n      \"target\": \"typed_device_resident_result_streams_and_grouped_continuation\",\n      \"true_zero_copy_claim_authorized\": false\n    },\n    \"user_selected_backend\": \"optix\",\n    \"user_selected_partner\": \"numba\",\n    \"user_selected_strategy\": \"grouped_stream\",\n    \"v2_0_release_authorized\": false,\n    \"v2_8_front_door_route\": true,\n    \"version\": \"rtdl.v2_8.fixed_radius_graph_component_front_door.v1\",\n    \"whole_app_speedup_claim_authorized\": false\n  },\n  \"min_neighbors\": 12,\n  \"mode\": \"optix_rt_core_grouped_stream_numba_column_signature_3d\",\n  \"paper\": {\n    \"authors\": [\n      \"Vani Nagarajan\",\n      \"Milind Kulkarni\"\n    ],\n    \"doi\": \"10.1109/IPDPS54959.2023.00100\",\n    \"title\": \"RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware\",\n    \"venue\": \"IPDPS 2023\"\n  },\n  \"point_count\": 65536,\n  \"radius\": 0.055,\n  \"reference_signature\": null,\n  \"seed\": 20260519,\n  \"signature\": {\n    \"cluster_sizes\": {\n      \"1\": 16384,\n      \"2\": 16384,\n      \"3\": 16384,\n      \"4\": 16384\n    },\n    \"core_count\": 65536,\n    \"noise_count\": 0\n  }\n}\n",
+      "timeout_sec": 120
+    }
+  ],
+  "summary": {
+    "app_count": 1,
+    "broad_rt_core_claim_authorized": false,
+    "claim_boundary": "Goal3828 records calibrated scale-profile commands for the ten benchmark apps after the Goal3827 file-stdout correction. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.",
+    "file_backed_stdout_rows": [
+      "rt_dbscan_optix_numba_scale_default_65536_no_validation"
+    ],
+    "numba_required_rows": [
+      "rt_dbscan_optix_numba_scale_default_65536_no_validation"
+    ],
+    "optix_required_rows": [
+      "rt_dbscan_optix_numba_scale_default_65536_no_validation"
+    ],
+    "paper_reproduction_claim_authorized": false,
+    "profile_kinds": [
+      "default_scale"
+    ],
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "row_count": 1,
+    "status": "internal_scale_profile_registry_not_release_authorization",
+    "version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1"
+  },
+  "validation": {
+    "app_count": 10,
+    "claim_boundary": "Goal3828 records calibrated scale-profile commands for the ten benchmark apps after the Goal3827 file-stdout correction. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.",
+    "errors": [],
+    "row_count": 10,
+    "status": "accept",
+    "version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1"
+  },
+  "version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1"
+}
