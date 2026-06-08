@@ -11,12 +11,13 @@ Use this door if you want to understand RTDL quickly and write programs.
 5. [App And Example Quickstart](../app_example_quickstart.md)
 6. [Primitive Discovery Workflow](primitive_discovery_workflow.md)
 7. [Prepared Execution Pattern](prepared_execution_pattern.md)
-8. [Application Catalog](../application_catalog.md)
-9. [Choosing A Partner For Custom Logic](partner_choice_for_custom_logic.md)
-10. [Benchmark Partner Reference Matrix](benchmark_partner_reference_matrix.md)
-11. [Feature Guide](../rtdl_feature_guide.md)
-12. [Programming Guide](../rtdl/programming_guide.md)
-13. [DSL Reference](../rtdl/dsl_reference.md)
+8. [Prepared Session Reuse](prepared_session_reuse.md)
+9. [Application Catalog](../application_catalog.md)
+10. [Choosing A Partner For Custom Logic](partner_choice_for_custom_logic.md)
+11. [Benchmark Partner Reference Matrix](benchmark_partner_reference_matrix.md)
+12. [Feature Guide](../rtdl_feature_guide.md)
+13. [Programming Guide](../rtdl/programming_guide.md)
+14. [DSL Reference](../rtdl/dsl_reference.md)
 
 ## Keep In Mind
 
