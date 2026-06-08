@@ -1,0 +1,166 @@
+{
+  "claim_boundary": "This artifact compares CuPy preview pair-enumeration modes only. It does not promote partition_convergence_hybrid, authorize release wording, or authorize public speedup, broad RT-core, whole-app, hidden-dispatch, automatic-partner-selection, app-specific-engine, or true-zero-copy claims.",
+  "goal": "Goal4034",
+  "native_abi_added": false,
+  "partition_convergence_hybrid_promoted": false,
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "rows": [
+    {
+      "cell_factor": 0.125,
+      "device_bounded_offsets": {
+        "mean_sec": 0.011065560082594553,
+        "median_sec": 0.011184066534042358,
+        "min_sec": 0.010707192122936249
+      },
+      "device_median_vs_host_median_speedup": 230.09640663513423,
+      "device_min_vs_host_min_speedup": 239.0753255699867,
+      "device_mode_metadata": {
+        "complete_candidate_coverage": true,
+        "pair_count": 171392,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_count": 2048,
+        "status_counts": {
+          "ambiguous_partition_pairs": 0,
+          "safe_full_partition_pairs": 80016,
+          "safe_skip_partition_pairs": 91376
+        }
+      },
+      "host_pair_enumeration": {
+        "mean_sec": 2.56934001048406,
+        "median_sec": 2.573413521051407,
+        "min_sec": 2.5598254427313805
+      },
+      "pair_capacity_source": "host_preview_warmup_not_counted",
+      "pair_count": 171392,
+      "partition_count": 2048,
+      "point_count": 2048,
+      "profile": "clustered3d_2048",
+      "radius": 0.055,
+      "same_contract_status": "accept",
+      "status_counts": {
+        "ambiguous_partition_pairs": 0,
+        "safe_full_partition_pairs": 80016,
+        "safe_skip_partition_pairs": 91376
+      }
+    },
+    {
+      "cell_factor": 0.125,
+      "device_bounded_offsets": {
+        "mean_sec": 0.010085071126619974,
+        "median_sec": 0.00997723639011383,
+        "min_sec": 0.009709618985652924
+      },
+      "device_median_vs_host_median_speedup": 210.21552031853707,
+      "device_min_vs_host_min_speedup": 215.30008832085255,
+      "device_mode_metadata": {
+        "complete_candidate_coverage": true,
+        "pair_count": 19728,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_count": 1881,
+        "status_counts": {
+          "ambiguous_partition_pairs": 257,
+          "safe_full_partition_pairs": 15498,
+          "safe_skip_partition_pairs": 3973
+        }
+      },
+      "host_pair_enumeration": {
+        "mean_sec": 2.112294619282087,
+        "median_sec": 2.0973699390888214,
+        "min_sec": 2.090481825172901
+      },
+      "pair_capacity_source": "host_preview_warmup_not_counted",
+      "pair_count": 19728,
+      "partition_count": 1881,
+      "point_count": 2048,
+      "profile": "road3d_2048",
+      "radius": 0.055,
+      "same_contract_status": "accept",
+      "status_counts": {
+        "ambiguous_partition_pairs": 257,
+        "safe_full_partition_pairs": 15498,
+        "safe_skip_partition_pairs": 3973
+      }
+    },
+    {
+      "cell_factor": 0.125,
+      "device_bounded_offsets": {
+        "mean_sec": 0.017971622447172802,
+        "median_sec": 0.017939269542694092,
+        "min_sec": 0.017679788172245026
+      },
+      "device_median_vs_host_median_speedup": 289.99964531466486,
+      "device_min_vs_host_min_speedup": 291.1828410398741,
+      "device_mode_metadata": {
+        "complete_candidate_coverage": true,
+        "pair_count": 392329,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_count": 4015,
+        "status_counts": {
+          "ambiguous_partition_pairs": 7,
+          "safe_full_partition_pairs": 172668,
+          "safe_skip_partition_pairs": 219654
+        }
+      },
+      "host_pair_enumeration": {
+        "mean_sec": 5.190751242140929,
+        "median_sec": 5.202381804585457,
+        "min_sec": 5.14805094897747
+      },
+      "pair_capacity_source": "host_preview_warmup_not_counted",
+      "pair_count": 392329,
+      "partition_count": 4015,
+      "point_count": 4096,
+      "profile": "clustered3d_4096",
+      "radius": 0.055,
+      "same_contract_status": "accept",
+      "status_counts": {
+        "ambiguous_partition_pairs": 7,
+        "safe_full_partition_pairs": 172668,
+        "safe_skip_partition_pairs": 219654
+      }
+    },
+    {
+      "cell_factor": 0.125,
+      "device_bounded_offsets": {
+        "mean_sec": 0.016717565556367237,
+        "median_sec": 0.016722671687602997,
+        "min_sec": 0.01659553498029709
+      },
+      "device_median_vs_host_median_speedup": 255.71042010194793,
+      "device_min_vs_host_min_speedup": 256.8514892824193,
+      "device_mode_metadata": {
+        "complete_candidate_coverage": true,
+        "pair_count": 39790,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_count": 3776,
+        "status_counts": {
+          "ambiguous_partition_pairs": 497,
+          "safe_full_partition_pairs": 31258,
+          "safe_skip_partition_pairs": 8035
+        }
+      },
+      "host_pair_enumeration": {
+        "mean_sec": 4.276134093602498,
+        "median_sec": 4.276161402463913,
+        "min_sec": 4.262587875127792
+      },
+      "pair_capacity_source": "host_preview_warmup_not_counted",
+      "pair_count": 39790,
+      "partition_count": 3776,
+      "point_count": 4096,
+      "profile": "road3d_4096",
+      "radius": 0.055,
+      "same_contract_status": "accept",
+      "status_counts": {
+        "ambiguous_partition_pairs": 497,
+        "safe_full_partition_pairs": 31258,
+        "safe_skip_partition_pairs": 8035
+      }
+    }
+  ],
+  "rt_core_speedup_claim_authorized": false,
+  "schema": "rtdl.goal4034.partition_device_pair_preview_timing.v1",
+  "true_zero_copy_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}
