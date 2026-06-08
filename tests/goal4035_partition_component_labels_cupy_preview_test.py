@@ -18,14 +18,17 @@ def _cupy_available() -> bool:
 
 @unittest.skipUnless(_cupy_available(), "CuPy is not available in this environment")
 class Goal4035PartitionComponentLabelsCupyPreviewRuntimeTest(unittest.TestCase):
-    def test_component_preview_matches_all_pairs_with_ambiguous_pair(self) -> None:
-        points = (
+    def _points(self):
+        return (
             (0.0, 0.0, 0.0),
             (0.2, 0.0, 0.0),
             (1.2, 0.0, 0.0),
             (1.5, 0.0, 0.0),
             (4.0, 0.0, 0.0),
         )
+
+    def test_component_preview_matches_all_pairs_with_ambiguous_pair(self) -> None:
+        points = self._points()
         result = rt.build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_3d(
             points,
             radius=1.0,
@@ -45,6 +48,26 @@ class Goal4035PartitionComponentLabelsCupyPreviewRuntimeTest(unittest.TestCase):
         self.assertFalse(result["metadata"]["public_speedup_claim_authorized"])
         self.assertFalse(result["metadata"]["automatic_partner_selection_allowed"])
 
+    def test_component_preview_accepts_reused_partition_summary(self) -> None:
+        points = self._points()
+        summary = rt.build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
+            points,
+            radius=1.0,
+            cell_factor=0.5,
+            pair_enumeration="device_bounded_offsets",
+        )
+        result = rt.build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_3d(
+            points,
+            radius=1.0,
+            cell_factor=0.5,
+            partition_summary=summary,
+            partition_union_execution="cupy_safe_full",
+            validate_against_all_pairs=True,
+        )
+        self.assertEqual(result["metadata"]["status"], "accept")
+        self.assertTrue(result["metadata"]["partition_summary_reused"])
+        self.assertTrue(result["metadata"]["same_contract_against_all_pairs"])
+
 
 class Goal4035PartitionComponentLabelsCupyPreviewSourceTest(unittest.TestCase):
     def test_source_and_report_record_component_preview_boundary(self) -> None:
@@ -58,6 +81,7 @@ class Goal4035PartitionComponentLabelsCupyPreviewSourceTest(unittest.TestCase):
             "device_upper_bound",
             "partition_union_execution",
             "validate_summary_same_contract",
+            "partition_summary_reused",
             "not a promoted release route",
             "does not choose partners automatically",
         ):

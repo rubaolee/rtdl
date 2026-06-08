@@ -1394,6 +1394,7 @@ def build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_
     cell_factor: float = 0.125,
     pair_capacity: int | None = None,
     pair_enumeration: str = "device_bounded_offsets",
+    partition_summary: dict[str, Any] | None = None,
     partition_union_execution: str = "host",
     validate_summary_same_contract: bool = True,
     validate_against_all_pairs: bool = False,
@@ -1410,13 +1411,18 @@ def build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_
     partition_union_execution = str(partition_union_execution)
     if partition_union_execution not in {"host", "cupy_safe_full"}:
         raise ValueError("partition_union_execution must be 'host' or 'cupy_safe_full'")
-    summary = build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
-        raw_rows,
-        radius=radius,
-        cell_factor=cell_factor,
-        pair_capacity=pair_capacity,
-        pair_enumeration=pair_enumeration,
-    )
+    if partition_summary is None:
+        summary = build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
+            raw_rows,
+            radius=radius,
+            cell_factor=cell_factor,
+            pair_capacity=pair_capacity,
+            pair_enumeration=pair_enumeration,
+        )
+        partition_summary_reused = False
+    else:
+        summary = partition_summary
+        partition_summary_reused = True
     if validate_summary_same_contract:
         summary_validation = validate_v2_8_fixed_radius_partition_convergence_summary_same_contract_3d(
             raw_rows,
@@ -1447,6 +1453,7 @@ def build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_
         "reference": "fixed_radius_partition_convergence_component_labels_3d_cupy_preview",
         "partition_summary_validation": summary_validation,
         "summary_same_contract_validation_enabled": validate_summary_same_contract,
+        "partition_summary_reused": partition_summary_reused,
         "partition_summary_pair_enumeration": summary["metadata"]["pair_enumeration"],
         "partition_summary_pair_capacity_source": summary["metadata"]["pair_capacity_source"],
         "partition_union_execution": partition_union_execution,
