@@ -134,6 +134,12 @@ This file catches design ideas that should not interrupt the current release or 
   `1.004x` versus default), but they do not remove traversal/root-read cost.
   The next primitive should reduce candidate/root-read work, not just move
   union side effects from any-hit to intersection.
+- Goal4002 checked that direct-side-effect mode at the app column-signature
+  level. Signatures matched on clustered3d, road3d, and ngsim_dense at `65536`
+  points, but end-to-end ratios were mixed (`0.974x`, `1.001x`, `1.044x`
+  direct/default). Do not promote direct side effects as the default grouped
+  union route. Keep it as an explicit option and focus the next primitive on
+  reducing candidate/root-read work.
 - The next generic runtime primitive should be a dense fixed-radius
   grouped-union continuation, not another app-specific RT-DBSCAN trick. Candidate
   designs include component-aware root-cache snapshots with explicit staleness
