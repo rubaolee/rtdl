@@ -185,6 +185,7 @@ def pairwise_inverse_square_force_2d_partner_columns(
     softening: float = 0.0,
     partner: str = "torch",
     exclude_equal_ids: bool = True,
+    output_columns: dict[str, object] | None = None,
     return_metadata: bool = False,
 ):
     """Compute pairwise softened inverse-square force vectors over weighted points.
@@ -201,6 +202,7 @@ def pairwise_inverse_square_force_2d_partner_columns(
     if source_count <= 0 or target_count <= 0:
         raise ValueError("force accumulation requires non-empty source and target columns")
     numba_force_kernel_strategy = None
+    output_columns_reused = False
 
     if runtime["name"] == "torch":
         torch = runtime["module"]
@@ -232,8 +234,19 @@ def pairwise_inverse_square_force_2d_partner_columns(
         tx = target_weighted_point_columns["x"].astype(cupy.float64, copy=False)
         ty = target_weighted_point_columns["y"].astype(cupy.float64, copy=False)
         tm = target_weighted_point_columns["weight"].astype(cupy.float64, copy=False)
-        force_x = cupy.zeros((source_count,), dtype=cupy.float64)
-        force_y = cupy.zeros((source_count,), dtype=cupy.float64)
+        if output_columns is None:
+            force_x = cupy.zeros((source_count,), dtype=cupy.float64)
+            force_y = cupy.zeros((source_count,), dtype=cupy.float64)
+        else:
+            force_x = output_columns["force_x"]
+            force_y = output_columns["force_y"]
+            if _column_length({"force_x": force_x}, "force_x") != source_count:
+                raise ValueError("output_columns['force_x'] must match source_count")
+            if _column_length({"force_y": force_y}, "force_y") != source_count:
+                raise ValueError("output_columns['force_y'] must match source_count")
+            force_x = force_x.astype(cupy.float64, copy=False)
+            force_y = force_y.astype(cupy.float64, copy=False)
+            output_columns_reused = True
         threads = 128
         blocks = (source_count + threads - 1) // threads
         kernel = _cupy_pairwise_force_2d_kernel(cupy)
@@ -292,8 +305,29 @@ def pairwise_inverse_square_force_2d_partner_columns(
             cuda=cuda,
             np=np,
         )
-        force_x = cuda.device_array((source_count,), dtype=np.float64)
-        force_y = cuda.device_array((source_count,), dtype=np.float64)
+        if output_columns is None:
+            force_x = cuda.device_array((source_count,), dtype=np.float64)
+            force_y = cuda.device_array((source_count,), dtype=np.float64)
+        else:
+            force_x = _as_numba_cuda_vector(
+                output_columns["force_x"],
+                name="output_force_x",
+                dtype=np.float64,
+                cuda=cuda,
+                np=np,
+            )
+            force_y = _as_numba_cuda_vector(
+                output_columns["force_y"],
+                name="output_force_y",
+                dtype=np.float64,
+                cuda=cuda,
+                np=np,
+            )
+            if int(force_x.shape[0]) != source_count:
+                raise ValueError("output_columns['force_x'] must match source_count")
+            if int(force_y.shape[0]) != source_count:
+                raise ValueError("output_columns['force_y'] must match source_count")
+            output_columns_reused = True
         use_block_reduce = source_count >= 512 and target_count >= 512
         if use_block_reduce:
             threads = 512
@@ -343,6 +377,7 @@ def pairwise_inverse_square_force_2d_partner_columns(
         "app_force_materialization": "partner_gpu_pairwise_vector_sum",
         "numba_force_kernel_strategy": numba_force_kernel_strategy,
         "numba_cuda_jit_used": runtime["name"] == "numba",
+        "output_columns_reused": output_columns_reused,
         "raw_cuda_kernel_required": False,
         "direct_device_handoff_authorized": False,
         "rt_core_speedup_claim_authorized": False,

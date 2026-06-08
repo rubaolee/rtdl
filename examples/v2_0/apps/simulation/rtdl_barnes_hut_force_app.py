@@ -518,6 +518,7 @@ def _run_partner_exact_force_summary(
     columns = rt.weighted_point_rows_to_partner_columns(bodies, partner=partner)
     runs: list[dict[str, object]] = []
     final_result: dict[str, object] | None = None
+    reusable_force_columns: dict[str, object] | None = None
     for iteration in range(warmup + query_repeat):
         start = time.perf_counter()
         result = rt.pairwise_inverse_square_force_2d_partner_columns(
@@ -526,10 +527,15 @@ def _run_partner_exact_force_summary(
             softening=SOFTENING,
             partner=partner,
             exclude_equal_ids=True,
+            output_columns=reusable_force_columns,
             return_metadata=True,
         )
         elapsed = time.perf_counter() - start
         final_result = result
+        reusable_force_columns = {
+            "force_x": result["columns"]["force_x"],
+            "force_y": result["columns"]["force_y"],
+        }
         runs.append(
             {
                 "iteration": iteration,
@@ -550,6 +556,7 @@ def _run_partner_exact_force_summary(
     metadata.update(
         {
             "prepared_partner_columns_reused": True,
+            "prepared_force_output_columns_reused": True,
             "materializes_python_force_rows": False,
             "force_summary_materialization_sec": summary_sec,
             "prepared_force_repeat_protocol": {
