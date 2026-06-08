@@ -138,7 +138,22 @@ def _bench_profile(cupy, name: str, points: list[SimpleNamespace], *, reps: int)
             return_metadata=True,
         )
         grouped_signature = _component_size_signature(grouped_warm["columns"]["component_labels"])
+        reused_summary = rt.build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
+            points,
+            radius=radius,
+            cell_factor=cell_factor,
+            pair_enumeration="device_bounded_offsets",
+        )
+        rt.build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_3d(
+            points,
+            radius=radius,
+            cell_factor=cell_factor,
+            partition_summary=reused_summary,
+            partition_union_execution="cupy_safe_full",
+            validate_summary_same_contract=False,
+        )
         preview_times: list[float] = []
+        reuse_times: list[float] = []
         grouped_times: list[float] = []
         for rep in range(reps):
             elapsed, preview = _preview_once(cupy, points, radius=radius, cell_factor=cell_factor)
@@ -146,6 +161,23 @@ def _bench_profile(cupy, name: str, points: list[SimpleNamespace], *, reps: int)
             if _component_size_signature(preview["columns"]["component_labels"]) != grouped_signature:
                 raise RuntimeError(f"preview repeated signature mismatch for {name}")
             print("RUN_PREVIEW", name, rep, f"{elapsed:.6f}", flush=True)
+        for rep in range(reps):
+            cupy.cuda.Stream.null.synchronize()
+            start = time.perf_counter()
+            reused = rt.build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_3d(
+                points,
+                radius=radius,
+                cell_factor=cell_factor,
+                partition_summary=reused_summary,
+                partition_union_execution="cupy_safe_full",
+                validate_summary_same_contract=False,
+            )
+            cupy.cuda.Stream.null.synchronize()
+            elapsed = time.perf_counter() - start
+            reuse_times.append(elapsed)
+            if _component_size_signature(reused["columns"]["component_labels"]) != grouped_signature:
+                raise RuntimeError(f"reused preview signature mismatch for {name}")
+            print("RUN_REUSE", name, rep, f"{elapsed:.6f}", flush=True)
         for rep in range(reps):
             cupy.cuda.Stream.null.synchronize()
             start = time.perf_counter()
@@ -171,8 +203,10 @@ def _bench_profile(cupy, name: str, points: list[SimpleNamespace], *, reps: int)
         "grouped_prepare_run_sec": grouped_one_shot_sec,
         "grouped_prepare_run_over_preview_one_shot": grouped_one_shot_sec / preview_one_shot_sec,
         "preview_repeated_run": _summary(preview_times),
+        "partition_summary_reuse_repeated_run": _summary(reuse_times),
         "grouped_prepared_repeated_run": _summary(grouped_times),
         "grouped_prepared_repeated_over_preview_repeated": min(grouped_times) / min(preview_times),
+        "grouped_prepared_repeated_over_reuse_repeated": min(grouped_times) / min(reuse_times),
         "preview_metadata": {
             "partition_union_execution": preview_one_shot["metadata"]["partition_union_execution"],
             "partition_summary_pair_enumeration": preview_one_shot["metadata"]["partition_summary_pair_enumeration"],
@@ -242,4 +276,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
