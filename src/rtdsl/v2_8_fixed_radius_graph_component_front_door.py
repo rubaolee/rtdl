@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from types import MappingProxyType
 from typing import Any
 
 from .partner_adapters import PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D
@@ -57,7 +58,7 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_EVIDENCE_GOALS = (
     "Goal4009",
     "Goal4011",
 )
-V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PARTITION_GUIDANCE = {
+V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PARTITION_GUIDANCE = MappingProxyType({
     "recommended_tested_cell_factor": "radius_x_0.125",
     "dense_cell_pair_matrix_allowed": False,
     "required_partition_pair_enumeration": (
@@ -85,7 +86,7 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PARTITION_GUIDANCE = {
         "hidden_root_path_halving_inside_readonly_find",
         "app_specific_dbscan_or_clustering_native_abi",
     ),
-}
+})
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY = (
     "The v2.8 fixed-radius graph component front door exposes an explicit "
     "user-selected OptiX+partner grouped-stream contract over an existing generic "
@@ -252,7 +253,7 @@ def describe_v2_8_fixed_radius_graph_component_front_door() -> dict[str, Any]:
             "partition_convergence_hybrid": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_EVIDENCE_GOALS,
         },
         "candidate_strategy_partition_guidance": {
-            "partition_convergence_hybrid": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PARTITION_GUIDANCE,
+            "partition_convergence_hybrid": _hybrid_partition_guidance_metadata(),
         },
         "user_selected_partner_required": True,
         "typed_result_stream_contract": make_v2_8_fixed_radius_graph_component_typed_stream_contract(
@@ -340,7 +341,7 @@ def plan_v2_8_fixed_radius_graph_component_continuation(
             ),
             "candidate_strategy_requirements": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_REQUIREMENTS,
             "candidate_strategy_evidence_goals": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_EVIDENCE_GOALS,
-            "candidate_strategy_partition_guidance": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PARTITION_GUIDANCE,
+            "candidate_strategy_partition_guidance": _hybrid_partition_guidance_metadata(),
             "rejected_default_strategies": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_REJECTED_DEFAULT_STRATEGIES,
             "claim_boundary": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY,
         }
@@ -531,6 +532,10 @@ def _unsupported_reason(*, backend: str, partner: str, strategy: str) -> str:
     ):
         return f"unsupported strategy {strategy!r}; supported strategies are {V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_STRATEGIES}"
     return ""
+
+
+def _hybrid_partition_guidance_metadata() -> dict[str, Any]:
+    return dict(V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PARTITION_GUIDANCE)
 
 
 def _front_door_metadata(
