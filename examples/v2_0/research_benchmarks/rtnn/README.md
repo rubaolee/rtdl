@@ -26,6 +26,7 @@ its materialization pipeline is not the same as RTDL's ranked-summary contract.
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode scope
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode ann_cpu_quality --copies 1
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode rtnn_known_results
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_session_reuse_idiom --point-count 16 --radius 0.02 --k 8
 RTDL_OPTIX_LIBRARY=build/librtdl_optix.so PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_optix_ranked_summary --point-count 65536 --radius 0.02 --k 50 --repeat 3 --query-batch-size 65536 --distribution uniform
 ```
 
@@ -44,6 +45,12 @@ It generates a deterministic synthetic point set and returns pure JSON with the
 runner progress captured in `runner_progress`. This is the command to use when
 you want an executable current RTDL/OptiX ranked-summary app route, not just the
 historical evidence summary.
+
+The `--mode prepared_session_reuse_idiom` command is a non-performance teaching
+path. It invokes `get_or_prepare_explicit_session` twice against a caller-owned
+`ExplicitPreparedSessionCache` and returns the visible `miss`/`put`/`hit` event
+log. It does not run the OptiX benchmark path and does not authorize speedup,
+true-zero-copy, or automatic partner/backend-selection claims.
 
 The important boundary is that the RTDL-vs-CuPy rows are same-contract; the
 official RTNN rows are diagnostic unless a future goal proves output-contract

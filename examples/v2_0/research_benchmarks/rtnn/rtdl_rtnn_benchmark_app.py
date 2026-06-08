@@ -336,6 +336,122 @@ def rtnn_prepared_optix_ranked_summary_payload(
     }
 
 
+def rtnn_prepared_session_reuse_idiom_payload(
+    *,
+    point_count: int,
+    radius: float,
+    k: int,
+    distribution: str,
+    seed: int,
+) -> dict[str, Any]:
+    """Demonstrate the explicit prepared-session cache idiom without timing claims."""
+
+    if point_count <= 0:
+        raise ValueError("point_count must be positive")
+    if radius <= 0.0:
+        raise ValueError("radius must be positive")
+    if k <= 0:
+        raise ValueError("k must be positive")
+
+    session_key = rt.make_prepared_session_cache_key(
+        primitive="fixed_radius_neighbors_3d_ranked_summary",
+        backend="optix",
+        input_fingerprints={
+            "points": {
+                "point_count": point_count,
+                "distribution": distribution,
+                "seed": seed,
+            },
+            "queries": {
+                "query_batch_size": point_count,
+                "distribution": distribution,
+                "seed": seed,
+            },
+        },
+        parameters={"radius": radius, "k": k},
+        partner="none",
+        device="cuda:0",
+    )
+    session_policy = rt.RtdlPreparedSessionResidencyPolicy(
+        cache_key=session_key,
+        cache_enabled=True,
+        lifetime_state="session_retained",
+        reuse_scope="explicit_user_session",
+        invalidation_events=("explicit_invalidate", "backend_context_reset", "close"),
+    )
+    cache = rt.ExplicitPreparedSessionCache(max_entries=1)
+    prepare_calls: list[str] = []
+
+    def prepare_session_descriptor() -> dict[str, Any]:
+        prepare_calls.append("prepare")
+        return {
+            "primitive": session_key.primitive,
+            "backend": session_key.backend,
+            "partner": session_key.partner,
+            "device": session_key.device,
+            "point_count": point_count,
+            "radius": radius,
+            "k": k,
+            "distribution": distribution,
+            "seed": seed,
+            "descriptor_only": True,
+        }
+
+    first = rt.get_or_prepare_explicit_session(
+        cache,
+        session_key,
+        prepare_session_descriptor,
+        policy=session_policy,
+    )
+    second = rt.get_or_prepare_explicit_session(
+        cache,
+        session_key,
+        prepare_session_descriptor,
+        policy=session_policy,
+    )
+
+    return {
+        "benchmark_app": BENCHMARK_NAME,
+        "mode": "prepared_session_reuse_idiom",
+        "contract": "explicit prepared-session cache miss/hit idiom for a generic ranked-neighbor primitive",
+        "point_count": point_count,
+        "radius": radius,
+        "k": k,
+        "distribution": distribution,
+        "seed": seed,
+        "live_helper_invoked": True,
+        "native_runner_invoked": False,
+        "performance_evidence": False,
+        "prepared_call_count": len(prepare_calls),
+        "cache_hit_sequence": (first.cache_hit, second.cache_hit),
+        "cache_event_log": second.cache_event_log,
+        "prepared_descriptor": second.value,
+        "prepared_session_residency": {
+            "cache_key": session_key.to_metadata(),
+            "policy": session_policy.to_metadata(),
+            "explicit_reuse_helper": "get_or_prepare_explicit_session",
+            "explicit_cache_enabled_for_this_demo": True,
+            "cache_enabled_by_default": False,
+            "cold_hot_phase_split_required": True,
+            "prepare_once_query_many_pattern": True,
+            "automatic_partner_selection_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+        },
+        "claim_boundary": {
+            **CLAIM_BOUNDARY,
+            "native_engine_customization": False,
+            "full_rtnn_paper_reproduction": False,
+            "public_speedup_claim_authorized": False,
+            "broad_rt_core_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "automatic_partner_selection_authorized": False,
+            "amd_performance_claim_authorized": False,
+            "not_performance_evidence": True,
+        },
+    }
+
+
 def describe_rtnn_v2_8_ranked_summary_typed_stream(
     *,
     operation: str = "grouped_topk_f64",
@@ -500,6 +616,14 @@ def run_app(
             distribution="uniform",
             seed=20260519,
         )
+    if mode == "prepared_session_reuse_idiom":
+        return rtnn_prepared_session_reuse_idiom_payload(
+            point_count=copies,
+            radius=0.02,
+            k=k,
+            distribution="uniform",
+            seed=20260519,
+        )
     if mode == "ranked_summary_typed_stream_plan":
         return describe_rtnn_ranked_summary_typed_stream(operation=operation, partner=partner, k=k)
     if mode == "rtnn_v2_8_ranked_summary_plan":
@@ -520,6 +644,7 @@ def main(argv: list[str] | None = None) -> int:
             "rtnn_known_results",
             "rtnn_command_plan",
             "prepared_optix_ranked_summary",
+            "prepared_session_reuse_idiom",
             "ranked_summary_typed_stream_plan",
             "rtnn_v2_8_ranked_summary_plan",
         ),
@@ -540,8 +665,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--k", type=int, default=8)
     args = parser.parse_args(argv)
-    payload = (
-        rtnn_prepared_optix_ranked_summary_payload(
+    if args.mode == "prepared_optix_ranked_summary":
+        payload = rtnn_prepared_optix_ranked_summary_payload(
             point_count=args.point_count or args.copies,
             radius=args.radius,
             k=args.k,
@@ -550,9 +675,16 @@ def main(argv: list[str] | None = None) -> int:
             distribution=args.distribution,
             seed=args.seed,
         )
-        if args.mode == "prepared_optix_ranked_summary"
-        else run_app(args.mode, copies=args.copies, partner=args.partner, operation=args.operation, k=args.k)
-    )
+    elif args.mode == "prepared_session_reuse_idiom":
+        payload = rtnn_prepared_session_reuse_idiom_payload(
+            point_count=args.point_count or args.copies,
+            radius=args.radius,
+            k=args.k,
+            distribution=args.distribution,
+            seed=args.seed,
+        )
+    else:
+        payload = run_app(args.mode, copies=args.copies, partner=args.partner, operation=args.operation, k=args.k)
     print(json.dumps(payload, indent=2, sort_keys=True))
     return 0
 
