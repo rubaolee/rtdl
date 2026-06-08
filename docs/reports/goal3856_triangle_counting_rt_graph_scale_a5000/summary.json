@@ -1,0 +1,113 @@
+{
+  "all_pass": true,
+  "broad_rt_core_claim_authorized": false,
+  "claim_boundary": "Goal3828 records calibrated scale-profile commands for the ten benchmark apps after the Goal3827 file-stdout correction. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.",
+  "dry_run": false,
+  "file_backed_stdout_probe": true,
+  "json_pass_count": 1,
+  "paper_reproduction_claim_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "rows": [
+    {
+      "app": "triangle_counting",
+      "command": [
+        "/usr/local/bin/python",
+        "examples/v2_0/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
+        "--mode",
+        "rt_graph_2a1_generic_rt",
+        "--backend",
+        "optix",
+        "--fixture",
+        "degree_oriented_two_triangles",
+        "--rt-graph-copies",
+        "2048",
+        "--detail",
+        "summary",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1"
+      ],
+      "elapsed_sec": 1.5017991848289967,
+      "expected_runtime_class": "safe_but_short",
+      "profile_kind": "default_scale",
+      "returncode": 0,
+      "row_id": "triangle_counting_optix_rt_graph_2a1_scale_default_2048",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "parsed_keys": [
+          "app",
+          "authors_code_reproduction",
+          "backend",
+          "claim_boundary",
+          "contract",
+          "generic_rt_summary",
+          "generic_rt_weighted_triangle_count",
+          "hit_rows",
+          "input_source",
+          "mode",
+          "oracle_triangle_count",
+          "partner",
+          "partner_summary_contract_used",
+          "partner_timing_ms",
+          "primitive_count",
+          "primitive_layout",
+          "ray_count",
+          "ray_tracing_accelerated",
+          "ray_weights",
+          "rt_core_accelerated",
+          "rt_core_path",
+          "rt_graph_contract",
+          "rt_graph_fixture_copies",
+          "same_contract_native_timing",
+          "timing_ms",
+          "triangle_count_matches_oracle",
+          "v2_4_phase_timing",
+          "v2_4_prepared_session"
+        ],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_bytes": 0,
+      "stderr_path": "docs/reports/goal3856_triangle_counting_rt_graph_scale_a5000/outputs/triangle_counting_optix_rt_graph_2a1_scale_default_2048.stderr.txt",
+      "stderr_tail": "",
+      "stdout_bytes": 8487,
+      "stdout_path": "docs/reports/goal3856_triangle_counting_rt_graph_scale_a5000/outputs/triangle_counting_optix_rt_graph_2a1_scale_default_2048.stdout.json",
+      "stdout_policy": "file_backed_stdout_required",
+      "stdout_tail": "sis\": true,\n    \"source\": \"triangle_counting.rt_graph_2a1_generic_rt\",\n    \"validation\": {\n      \"errors\": [],\n      \"known_phases\": [\n        \"scene_build\",\n        \"query_preparation\",\n        \"rt_traversal\",\n        \"materialization\"\n      ],\n      \"status\": \"accept\"\n    }\n  },\n  \"v2_4_prepared_session\": {\n    \"app_owned_preprocessing\": \"Graph orientation, two-hop relation construction, and RT-Graph interpretation remain benchmark/app code. RTDL sees generic rays, triangles, optional weights, and a scalar summary.\",\n    \"app_specific_native_vocab_allowed\": false,\n    \"backend\": \"optix\",\n    \"descriptor_only\": true,\n    \"device_column_lowering\": false,\n    \"input_buffers\": [\n      {\n        \"access_mode\": \"read\",\n        \"alignment_bytes\": 1,\n        \"byte_offset\": 0,\n        \"capacity_elements\": 10240,\n        \"data_ptr_observed\": false,\n        \"device\": \"cpu:0\",\n        \"dtype\": \"rtdl_packed_triangle3d\",\n        \"element_count\": 10240,\n        \"lifetime\": \"session_retained\",\n        \"memory_manager_boundary\": \"not_a_general_purpose_memory_manager\",\n        \"mutability\": \"immutable\",\n        \"name\": \"triangles\",\n        \"scope\": \"rtdl_primitive_handoff_only\",\n        \"shape\": [\n          10240\n        ],\n        \"source_protocol\": \"rtdl_packed_host_buffer\",\n        \"stream_handle\": 0,\n        \"strides_bytes\": null\n      },\n      {\n        \"access_mode\": \"read\",\n        \"alignment_bytes\": 1,\n        \"byte_offset\": 0,\n        \"capacity_elements\": 4096,\n        \"data_ptr_observed\": false,\n        \"device\": \"cpu:0\",\n        \"dtype\": \"rtdl_packed_ray3d\",\n        \"element_count\": 4096,\n        \"lifetime\": \"session_retained\",\n        \"memory_manager_boundary\": \"not_a_general_purpose_memory_manager\",\n        \"mutability\": \"immutable\",\n        \"name\": \"rays\",\n        \"scope\": \"rtdl_primitive_handoff_only\",\n        \"shape\": [\n          4096\n        ],\n        \"source_protocol\": \"rtdl_packed_host_buffer\",\n        \"stream_handle\": 0,\n        \"strides_bytes\": null\n      },\n      {\n        \"access_mode\": \"read\",\n        \"alignment_bytes\": 1,\n        \"byte_offset\": 0,\n        \"capacity_elements\": 4096,\n        \"data_ptr_observed\": false,\n        \"device\": \"cpu:0\",\n        \"dtype\": \"uint64\",\n        \"element_count\": 4096,\n        \"lifetime\": \"session_retained\",\n        \"memory_manager_boundary\": \"not_a_general_purpose_memory_manager\",\n        \"mutability\": \"immutable\",\n        \"name\": \"ray_weights\",\n        \"scope\": \"rtdl_primitive_handoff_only\",\n        \"shape\": [\n          4096\n        ],\n        \"source_protocol\": \"rtdl_packed_host_buffer\",\n        \"stream_handle\": 0,\n        \"strides_bytes\": null\n      }\n    ],\n    \"native_engine_boundary\": \"app_agnostic_native_engine\",\n    \"native_symbols\": [\n      \"rtdl_optix_static_triangle_scene_3d_ray_any_hit_weighted_sum\"\n    ],\n    \"output_buffers\": [\n      {\n        \"access_mode\": \"write\",\n        \"alignment_bytes\": 1,\n        \"byte_offset\": 0,\n        \"capacity_elements\": 1,\n        \"data_ptr_observed\": false,\n        \"device\": \"cpu:0\",\n        \"dtype\": \"uint64\",\n        \"element_count\": 1,\n        \"lifetime\": \"session_retained\",\n        \"memory_manager_boundary\": \"not_a_general_purpose_memory_manager\",\n        \"mutability\": \"mutable\",\n        \"name\": \"weighted_hit_sum\",\n        \"scope\": \"rtdl_primitive_handoff_only\",\n        \"shape\": [\n          1\n        ],\n        \"source_protocol\": \"rtdl_scalar_summary\",\n        \"stream_handle\": 0,\n        \"strides_bytes\": null\n      }\n    ],\n    \"paper_method\": \"RT-2A1\",\n    \"partner\": \"none\",\n    \"phase_contract\": \"prepared_ray_triangle_summary\",\n    \"primitive\": \"ray_triangle_weighted_any_hit_sum_3d\",\n    \"requires_phase_timing\": true,\n    \"reusable_output_buffers\": true,\n    \"reusable_query_buffers\": true,\n    \"reusable_scene\": true,\n    \"same_phase_contract_as_basis_required\": true,\n    \"session_id\": \"generic_ray_triangle_summary_rt2a1_optix_10240x4096\",\n    \"status\": \"protocol_descriptor_only\",\n    \"v2_4_protocol_version\": \"rtdl.partner.v2.4\"\n  }\n}\n",
+      "timeout_sec": 240
+    }
+  ],
+  "summary": {
+    "app_count": 1,
+    "broad_rt_core_claim_authorized": false,
+    "claim_boundary": "Goal3828 records calibrated scale-profile commands for the ten benchmark apps after the Goal3827 file-stdout correction. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.",
+    "file_backed_stdout_rows": [
+      "triangle_counting_optix_rt_graph_2a1_scale_default_2048"
+    ],
+    "numba_required_rows": [],
+    "optix_required_rows": [
+      "triangle_counting_optix_rt_graph_2a1_scale_default_2048"
+    ],
+    "paper_reproduction_claim_authorized": false,
+    "profile_kinds": [
+      "default_scale"
+    ],
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "row_count": 1,
+    "status": "internal_scale_profile_registry_not_release_authorization",
+    "version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1"
+  },
+  "validation": {
+    "app_count": 10,
+    "claim_boundary": "Goal3828 records calibrated scale-profile commands for the ten benchmark apps after the Goal3827 file-stdout correction. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.",
+    "errors": [],
+    "row_count": 10,
+    "status": "accept",
+    "version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1"
+  },
+  "version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1"
+}

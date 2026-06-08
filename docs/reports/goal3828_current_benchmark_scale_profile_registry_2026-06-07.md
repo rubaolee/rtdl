@@ -55,7 +55,7 @@ python scripts/goal3828_current_benchmark_scale_profile_runner.py \
 | `barnes_hut` | `barnes_hut_numba_scale_default_8192` | safe when stdout is file-backed |
 | `librts_spatial_index` | `librts_spatial_index_optix_scale_default_32768` | safe medium prepared AABB-index row |
 | `rtnn` | `rtnn_prepared_optix_scale_default_65536` | safe medium prepared ranked-summary row |
-| `triangle_counting` | `triangle_counting_optix_scale_default_native_2048` | safe but short explicit native timing row |
+| `triangle_counting` | `triangle_counting_optix_rt_graph_2a1_scale_default_2048` | safe but short RT-Graph 2A1 prepared generic ray/triangle summary row; supersedes the older host-indexed fallback row in Goal3856 |
 
 ## Runner Discipline
 
@@ -93,6 +93,12 @@ and zero forbidden true claim flags.
 | `librts_spatial_index_optix_scale_default_32768` | pass | 1.752 | 1847 |
 | `rtnn_prepared_optix_scale_default_65536` | pass | 2.752 | 4810 |
 | `triangle_counting_optix_scale_default_native_2048` | pass | 1.752 | 2257 |
+
+Goal3856 supersedes the triangle-counting scale row with
+`triangle_counting_optix_rt_graph_2a1_scale_default_2048`, because the original
+row timed the older `mode=run` host-indexed fallback rather than the benchmark's
+RT-Graph generic prepared ray/triangle summary route. The focused Goal3856 A5000
+artifact records the corrected row as pass with no claim-flag violations.
 
 This is calibrated execution evidence, not a performance leaderboard. Several
 rows are still intentionally marked `safe_but_short`, so a later performance

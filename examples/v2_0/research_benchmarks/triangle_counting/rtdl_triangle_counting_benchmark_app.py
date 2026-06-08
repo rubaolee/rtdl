@@ -171,7 +171,7 @@ def command_plan_payload() -> dict[str, Any]:
             "PYTHONPATH=src:. python3 examples/v2_0/research_benchmarks/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
             "--mode rt_graph_2a1_generic_rt --fixture degree_oriented_two_triangles "
-            "--backend optix --detail summary"
+            "--rt-graph-copies 2048 --backend optix --detail summary --warmup 1 --repeat 3"
         ),
         "rt_graph_2a1_generic_rt_optix_cupy_partner": (
             "PYTHONPATH=src:. python3 examples/v2_0/research_benchmarks/"
@@ -183,7 +183,7 @@ def command_plan_payload() -> dict[str, Any]:
             "PYTHONPATH=src:. python3 examples/v2_0/research_benchmarks/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
             "--mode rt_graph_1a2_generic_rt --fixture degree_oriented_two_triangles "
-            "--backend optix --detail summary"
+            "--rt-graph-copies 2048 --backend optix --detail summary --warmup 1 --repeat 3"
         ),
         "rt_graph_1a2_generic_rt_optix_cupy_partner": (
             "PYTHONPATH=src:. python3 examples/v2_0/research_benchmarks/"
@@ -608,12 +608,14 @@ def rt_graph_contract_payload(
     edge_file: str | None,
     edge_format: str,
     detail: str,
+    rt_graph_copies: int,
 ) -> dict[str, Any]:
     started = time.perf_counter()
     edges, input_source = _load_rt_graph_edges(
         fixture=fixture,
         edge_file=edge_file,
         edge_format=edge_format,
+        fixture_copies=rt_graph_copies,
     )
     loaded = time.perf_counter()
     contract = build_rt_graph_triangle_contract(edges)
@@ -648,12 +650,14 @@ def rt_graph_rtdl_adapter_payload(
     edge_format: str,
     backend: str,
     detail: str,
+    rt_graph_copies: int,
 ) -> dict[str, Any]:
     started = time.perf_counter()
     edges, input_source = _load_rt_graph_edges(
         fixture=fixture,
         edge_file=edge_file,
         edge_format=edge_format,
+        fixture_copies=rt_graph_copies,
     )
     loaded = time.perf_counter()
     contract = build_rt_graph_triangle_contract(edges)
@@ -707,6 +711,7 @@ def rt_graph_2a1_generic_rt_payload(
     partner: str,
     warmup: int,
     repeat: int,
+    rt_graph_copies: int,
 ) -> dict[str, Any]:
     _validate_repetition(warmup=warmup, repeat=repeat)
     started = time.perf_counter()
@@ -718,6 +723,8 @@ def rt_graph_2a1_generic_rt_payload(
         edge_format=edge_format,
     )
     if use_cupy_summary:
+        if rt_graph_copies != 1:
+            raise ValueError("--rt-graph-copies applies only to fixture inputs")
         edges = None
         input_source = {"kind": "edge_file", "format": "binary", "path": edge_file}
     else:
@@ -725,6 +732,7 @@ def rt_graph_2a1_generic_rt_payload(
             fixture=fixture,
             edge_file=edge_file,
             edge_format=edge_format,
+            fixture_copies=rt_graph_copies,
         )
     loaded = time.perf_counter()
     if use_cupy_summary:
@@ -833,6 +841,7 @@ def rt_graph_2a1_generic_rt_payload(
         },
         "primitive_count": primitive_count,
         "ray_count": ray_count,
+        "rt_graph_fixture_copies": rt_graph_copies,
         "oracle_triangle_count": contract.triangle_count,
         "generic_rt_weighted_triangle_count": int(hit_weight_sum),
         "triangle_count_matches_oracle": int(hit_weight_sum) == contract.triangle_count,
@@ -878,6 +887,7 @@ def rt_graph_1a2_generic_rt_payload(
     partner: str,
     warmup: int,
     repeat: int,
+    rt_graph_copies: int,
 ) -> dict[str, Any]:
     _validate_repetition(warmup=warmup, repeat=repeat)
     started = time.perf_counter()
@@ -889,6 +899,8 @@ def rt_graph_1a2_generic_rt_payload(
         edge_format=edge_format,
     )
     if use_cupy_summary:
+        if rt_graph_copies != 1:
+            raise ValueError("--rt-graph-copies applies only to fixture inputs")
         edges = None
         input_source = {"kind": "edge_file", "format": "binary", "path": edge_file}
     else:
@@ -896,6 +908,7 @@ def rt_graph_1a2_generic_rt_payload(
             fixture=fixture,
             edge_file=edge_file,
             edge_format=edge_format,
+            fixture_copies=rt_graph_copies,
         )
     loaded = time.perf_counter()
     if use_cupy_summary:
@@ -1004,6 +1017,7 @@ def rt_graph_1a2_generic_rt_payload(
         },
         "primitive_count": primitive_count,
         "ray_count": ray_count,
+        "rt_graph_fixture_copies": rt_graph_copies,
         "oracle_triangle_count": contract.triangle_count,
         "generic_rt_triangle_count": int(hit_count_sum),
         "triangle_count_matches_oracle": int(hit_count_sum) == contract.triangle_count,
@@ -1581,19 +1595,43 @@ def _load_rt_graph_edges(
     fixture: str,
     edge_file: str | None,
     edge_format: str,
+    fixture_copies: int = 1,
 ) -> tuple[tuple[tuple[int, int], ...], dict[str, str]]:
+    if fixture_copies <= 0:
+        raise ValueError("rt_graph_copies must be positive")
     if edge_file is None:
-        edges = fixture_edges(fixture)
-        input_source = {"kind": "fixture", "name": fixture}
+        edges = _repeat_fixture_edges(fixture_edges(fixture), fixture_copies)
+        input_source = {
+            "kind": "fixture",
+            "name": fixture,
+            "rt_graph_copies": str(fixture_copies),
+        }
     elif edge_format == "text":
+        if fixture_copies != 1:
+            raise ValueError("--rt-graph-copies applies only when --edge-file is omitted")
         edges = read_text_edges(edge_file)
         input_source = {"kind": "edge_file", "format": "text", "path": edge_file}
     elif edge_format == "binary":
+        if fixture_copies != 1:
+            raise ValueError("--rt-graph-copies applies only when --edge-file is omitted")
         edges = read_binary_edges(edge_file)
         input_source = {"kind": "edge_file", "format": "binary", "path": edge_file}
     else:
         raise ValueError(f"unsupported edge format: {edge_format}")
     return edges, input_source
+
+
+def _repeat_fixture_edges(edges: tuple[tuple[int, int], ...], copies: int) -> tuple[tuple[int, int], ...]:
+    if copies == 1:
+        return edges
+    if not edges:
+        return ()
+    vertex_span = max(max(src, dst) for src, dst in edges) + 1
+    repeated: list[tuple[int, int]] = []
+    for copy_index in range(copies):
+        offset = copy_index * vertex_span
+        repeated.extend((src + offset, dst + offset) for src, dst in edges)
+    return tuple(repeated)
 
 
 def run_app(
@@ -1610,6 +1648,7 @@ def run_app(
     partner: str = "none",
     warmup: int = 0,
     repeat: int = 1,
+    rt_graph_copies: int = 1,
 ) -> dict[str, Any]:
     if mode == "scope":
         return scope_payload()
@@ -1636,6 +1675,7 @@ def run_app(
             edge_file=edge_file,
             edge_format=edge_format,
             detail=detail,
+            rt_graph_copies=rt_graph_copies,
         )
     if mode == "rt_graph_rtdl_adapter":
         return rt_graph_rtdl_adapter_payload(
@@ -1644,6 +1684,7 @@ def run_app(
             edge_format=edge_format,
             backend=backend,
             detail=detail,
+            rt_graph_copies=rt_graph_copies,
         )
     if mode == "rt_graph_2a1_generic_rt":
         return rt_graph_2a1_generic_rt_payload(
@@ -1655,6 +1696,7 @@ def run_app(
             partner=partner,
             warmup=warmup,
             repeat=repeat,
+            rt_graph_copies=rt_graph_copies,
         )
     if mode == "rt_graph_1a2_generic_rt":
         return rt_graph_1a2_generic_rt_payload(
@@ -1666,6 +1708,7 @@ def run_app(
             partner=partner,
             warmup=warmup,
             repeat=repeat,
+            rt_graph_copies=rt_graph_copies,
         )
     raise ValueError(f"unsupported mode: {mode}")
 
@@ -1710,6 +1753,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--partner", choices=("none", "cupy", "numba"), default="none")
     parser.add_argument("--warmup", type=int, default=0)
     parser.add_argument("--repeat", type=int, default=1)
+    parser.add_argument(
+        "--rt-graph-copies",
+        type=int,
+        default=1,
+        help="Repeat a fixture as disjoint graph copies for RT-Graph generic modes.",
+    )
     args = parser.parse_args(argv)
     print(
         json.dumps(
@@ -1726,6 +1775,7 @@ def main(argv: list[str] | None = None) -> int:
             partner=args.partner,
             warmup=args.warmup,
             repeat=args.repeat,
+            rt_graph_copies=args.rt_graph_copies,
         ),
             indent=2,
             sort_keys=True,
