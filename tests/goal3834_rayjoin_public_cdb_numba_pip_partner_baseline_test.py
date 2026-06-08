@@ -75,6 +75,7 @@ class Goal3834RayJoinPublicCdbNumbaPipPartnerBaselineTest(unittest.TestCase):
         self.assertFalse(payload["numba_cuda_jit_baseline"]["rt_core_accelerated"])
         self.assertTrue(payload["numba_cuda_jit_baseline"]["partner_accelerated"])
         self.assertFalse(payload["numba_cuda_jit_baseline"]["raw_kernel_required"])
+        self.assertEqual(payload["numba_cuda_jit_baseline"]["block_size"], 128)
         self.assertFalse(payload["claim_boundary"]["public_speedup_claim_authorized"])
 
     def test_report_documents_user_partner_boundary_when_present(self) -> None:
