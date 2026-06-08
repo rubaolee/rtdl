@@ -59,7 +59,7 @@ class Goal3054V26PartnerChoiceGuidanceTest(unittest.TestCase):
         self.assertIn("rayjoin_numba_compact_mask_1m.json", rayjoin["matches"][0]["evidence_artifact"])
         self.assertIn("triangle_numba_compact_mask_1m.json", triangle["matches"][0]["evidence_artifact"])
 
-    def test_cupy_and_primitive_rows_remain_recommended_where_evidence_says_so(self) -> None:
+    def test_cupy_numba_and_primitive_rows_remain_recommended_where_evidence_says_so(self) -> None:
         hausdorff = rt.plan_v2_6_partner_choice("hausdorff_xhd", "active_frontier_exact_distance")
         dbscan = rt.plan_v2_6_partner_choice("rt_dbscan", "component_labeling")
         barnes_hut = rt.plan_v2_6_partner_choice("barnes_hut", "force_vector_continuation")
@@ -68,8 +68,13 @@ class Goal3054V26PartnerChoiceGuidanceTest(unittest.TestCase):
         self.assertEqual("rtdl_primitive", hausdorff["recommended_partner"])
         self.assertIn("CuPy", hausdorff["matches"][0]["cupy_role"])
         self.assertIn("not the current default", hausdorff["matches"][0]["numba_role"])
-        self.assertEqual("cupy", dbscan["recommended_partner"])
+        self.assertEqual("numba", dbscan["recommended_partner"])
+        self.assertIn("grouped-stream", dbscan["matches"][0]["numba_role"])
+        self.assertIn("Goal3918", dbscan["matches"][0]["evidence_goal"])
+        self.assertIn("goal3859_rt_dbscan_numba_grouped_stream_a5000", dbscan["matches"][0]["evidence_artifact"])
         self.assertEqual("cupy", barnes_hut["recommended_partner"])
+        self.assertIn("no-RawKernel", barnes_hut["matches"][0]["numba_role"])
+        self.assertIn("Goal3837", barnes_hut["matches"][0]["evidence_goal"])
         self.assertEqual("rtdl_primitive", rtnn["recommended_partner"])
 
     def test_no_promoted_partner_and_unknown_rows_fail_closed(self) -> None:
@@ -113,8 +118,8 @@ class Goal3054V26PartnerChoiceGuidanceTest(unittest.TestCase):
         roadmap_validation = rt.validate_v2_6_roadmap(roadmap, repo_root=ROOT)
 
         self.assertIn("Goal3054", report)
-        self.assertIn("plan_v2_6_partner_choice", docs)
-        self.assertIn("plan_v2_6_partner_choice", matrix)
+        self.assertIn("current_benchmark_adequacy", docs)
+        self.assertIn("current_benchmark_adequacy", matrix)
         self.assertEqual("Goal3054", roadmap["partner_choice_guidance_goal"])
         self.assertEqual("accept", roadmap_validation["status"], roadmap_validation["errors"])
         for name in (

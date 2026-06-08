@@ -144,13 +144,22 @@ V2_6_PARTNER_CHOICE_ROWS: tuple[V26PartnerChoiceGuidanceRow, ...] = (
         benchmark_app="rt_dbscan",
         continuation_shape="component_labeling",
         primitive_first_path="fixed-radius/core-summary primitive for neighbor/core flags",
-        recommended_partner="cupy",
+        recommended_partner="numba",
         recommendation_status="measured_reference_path",
-        cupy_role="measured component-continuation reference for current clustering rows",
-        numba_role="future candidate for custom component logic; not promoted yet",
-        evidence_goal="Goal2425 lineage",
-        evidence_artifact="examples/v2_0/research_benchmarks/rt_dbscan/README.md",
-        user_advice="Use RTDL for fixed-radius/core summaries and CuPy for the current measured component continuation.",
+        cupy_role="established prepared-grid/components baseline and same-contract opponent",
+        numba_role=(
+            "Numba prepared grouped-stream/component continuation; blocked "
+            "column-signature modes are added but await A5000 timing before "
+            "default promotion"
+        ),
+        evidence_goal="Goal3835/Goal3859/Goal3898/Goal3918",
+        evidence_artifact="docs/reports/goal3859_rt_dbscan_numba_grouped_stream_a5000/summary.json",
+        user_advice=(
+            "Use RTDL for fixed-radius/core summaries and Numba for the "
+            "current no-RawKernel component/signature continuation reference; "
+            "treat blocked variants as timing candidates until Goal3920 pod "
+            "evidence lands."
+        ),
     ),
     V26PartnerChoiceGuidanceRow(
         benchmark_app="robot_collision",
@@ -198,10 +207,15 @@ V2_6_PARTNER_CHOICE_ROWS: tuple[V26PartnerChoiceGuidanceRow, ...] = (
         recommended_partner="cupy",
         recommendation_status="measured_reference_path",
         cupy_role="active exact force-vector partner reference",
-        numba_role="future candidate, not promoted",
-        evidence_goal="Goal2905 lineage",
-        evidence_artifact="examples/v2_0/research_benchmarks/barnes_hut/README.md",
-        user_advice="Use RTDL for frontier collection and CuPy for the current force-vector reference continuation.",
+        numba_role="measured no-RawKernel exact-force reference; near-CuPy but not the default winner",
+        evidence_goal="Goal2905/Goal3837/Goal3869",
+        evidence_artifact="docs/reports/goal3837_barnes_hut_numba_exact_force_refresh_a5000/summary.json",
+        user_advice=(
+            "Use RTDL for frontier collection. CuPy remains the fastest "
+            "measured exact force-vector continuation, while Numba is the "
+            "recommended no-RawKernel reference for users who prefer Python "
+            "JIT custom logic."
+        ),
     ),
     V26PartnerChoiceGuidanceRow(
         benchmark_app="librts_spatial_index",
