@@ -1,0 +1,147 @@
+{
+  "all_runs_pass": true,
+  "rows": [
+    {
+      "elapsed_sec_values": [
+        1.501681886613369,
+        1.5018517822027206,
+        1.501887984573841
+      ],
+      "max_sec": 1.501887984573841,
+      "mean_sec": 1.5018072177966435,
+      "min_sec": 1.501681886613369,
+      "range_sec": 0.00020609796047210693,
+      "relative_range": 0.00013723330000669514,
+      "row_id": "barnes_hut_numba_scale_default_8192",
+      "stdev_sec": 8.984646921069236e-05
+    },
+    {
+      "elapsed_sec_values": [
+        0.7514762356877327,
+        0.7515322715044022,
+        0.7515342682600021
+      ],
+      "max_sec": 0.7515342682600021,
+      "mean_sec": 0.7515142584840456,
+      "min_sec": 0.7514762356877327,
+      "range_sec": 5.80325722694397e-05,
+      "relative_range": 7.72208532496815e-05,
+      "row_id": "contact_manifold_optix_scale_default_grid64",
+      "stdev_sec": 2.6898532027164537e-05
+    },
+    {
+      "elapsed_sec_values": [
+        1.5017309784889221,
+        1.5015576407313347,
+        1.5019137263298035
+      ],
+      "max_sec": 1.5019137263298035,
+      "mean_sec": 1.5017341151833534,
+      "min_sec": 1.5015576407313347,
+      "range_sec": 0.0003560855984687805,
+      "relative_range": 0.00023711627435813059,
+      "row_id": "hausdorff_xhd_scale_default_optix_threshold",
+      "stdev_sec": 0.0001453882560552581
+    },
+    {
+      "elapsed_sec_values": [
+        2.0019926726818085,
+        2.0019864290952682,
+        2.0021334812045097
+      ],
+      "max_sec": 2.0021334812045097,
+      "mean_sec": 2.0020375276605287,
+      "min_sec": 2.0019864290952682,
+      "range_sec": 0.0001470521092414856,
+      "relative_range": 7.345122516925176e-05,
+      "row_id": "librts_spatial_index_optix_scale_default_32768",
+      "stdev_sec": 6.789726329828297e-05
+    },
+    {
+      "elapsed_sec_values": [
+        2.252064563333988,
+        2.0024418011307716,
+        2.2522297501564026
+      ],
+      "max_sec": 2.2522297501564026,
+      "mean_sec": 2.168912038207054,
+      "min_sec": 2.0024418011307716,
+      "range_sec": 0.24978794902563095,
+      "relative_range": 0.11516739481612166,
+      "row_id": "raydb_style_optix_count_scale_default_262k",
+      "stdev_sec": 0.11771225281973793
+    },
+    {
+      "elapsed_sec_values": [
+        1.8270046189427376,
+        1.514954835176468,
+        1.8126256689429283
+      ],
+      "max_sec": 1.8270046189427376,
+      "mean_sec": 1.7181950410207112,
+      "min_sec": 1.514954835176468,
+      "range_sec": 0.3120497837662697,
+      "relative_range": 0.1816148785884595,
+      "row_id": "robot_collision_optix_scale_default_1024_no_probe_reference",
+      "stdev_sec": 0.14383236655792989
+    },
+    {
+      "elapsed_sec_values": [
+        3.252790704369545,
+        3.2526695653796196,
+        3.2526102364063263
+      ],
+      "max_sec": 3.252790704369545,
+      "mean_sec": 3.252690168718497,
+      "min_sec": 3.2526102364063263,
+      "range_sec": 0.00018046796321868896,
+      "relative_range": 5.548267860070736e-05,
+      "row_id": "rt_dbscan_optix_numba_scale_default_65536_no_validation",
+      "stdev_sec": 7.510235068112945e-05
+    },
+    {
+      "elapsed_sec_values": [
+        3.2527490630745888,
+        3.2529970929026604,
+        3.252677835524082
+      ],
+      "max_sec": 3.2529970929026604,
+      "mean_sec": 3.2528079971671104,
+      "min_sec": 3.252677835524082,
+      "range_sec": 0.00031925737857818604,
+      "relative_range": 9.814823956908282e-05,
+      "row_id": "rtnn_prepared_optix_scale_default_65536",
+      "stdev_sec": 0.0001368362498028651
+    },
+    {
+      "elapsed_sec_values": [
+        10.50597245246172,
+        10.505702443420887,
+        10.506648868322372
+      ],
+      "max_sec": 10.506648868322372,
+      "mean_sec": 10.506107921401659,
+      "min_sec": 10.505702443420887,
+      "range_sec": 0.0009464249014854431,
+      "relative_range": 9.008330283353658e-05,
+      "row_id": "spatial_rayjoin_public_cdb_representative_mixed_route_scale_default",
+      "stdev_sec": 0.0003980736102819097
+    },
+    {
+      "elapsed_sec_values": [
+        1.5016116425395012,
+        1.5020013079047203,
+        1.5019966959953308
+      ],
+      "max_sec": 1.5020013079047203,
+      "mean_sec": 1.5018698821465175,
+      "min_sec": 1.5016116425395012,
+      "range_sec": 0.0003896653652191162,
+      "relative_range": 0.0002594534785278434,
+      "row_id": "triangle_counting_optix_rt_graph_2a1_scale_default_2048",
+      "stdev_sec": 0.0001826126837525859
+    }
+  ],
+  "run_count": 3,
+  "source_commit": "62f005d90caca8eeea0d40cbbab430fe890a4fa3"
+}
