@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 import subprocess
 import sys
@@ -57,6 +58,39 @@ class Goal3890ScaleRunnerRuntimeProvenanceTest(unittest.TestCase):
         self.assertFalse(payload["public_speedup_claim_authorized"])
         self.assertFalse(payload["broad_rt_core_claim_authorized"])
         self.assertFalse(payload["paper_reproduction_claim_authorized"])
+
+    def test_runtime_environment_is_captured_before_output_directory_creation(self) -> None:
+        artifact_dir = ROOT / "docs" / "reports" / "_goal3892_pre_output_provenance_test"
+        if artifact_dir.exists():
+            shutil.rmtree(artifact_dir)
+        try:
+            output = artifact_dir / "summary.json"
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--dry-run",
+                    "--only",
+                    "rtnn",
+                    "--output-json",
+                    str(output),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=True,
+            )
+            payload = json.loads(output.read_text(encoding="utf-8"))
+            self.assertTrue(payload["dry_run"])
+            self.assertEqual(len(payload["rows"]), 1)
+            git_status = payload["runtime_environment"]["git_status_short"]
+            self.assertNotIn(
+                "?? docs/reports/_goal3892_pre_output_provenance_test/",
+                git_status,
+            )
+        finally:
+            if artifact_dir.exists():
+                shutil.rmtree(artifact_dir)
 
     def test_report_documents_provenance_only_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")

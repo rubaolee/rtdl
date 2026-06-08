@@ -282,6 +282,7 @@ def main() -> int:
     if not rows:
         raise SystemExit("no benchmark scale-profile rows selected")
 
+    runtime_environment = _runtime_environment_metadata()
     output_dir = args.output_dir
     if output_dir is None:
         if args.output_json is not None:
@@ -297,7 +298,7 @@ def main() -> int:
         "claim_boundary": CURRENT_BENCHMARK_SCALE_PROFILE_CLAIM_BOUNDARY,
         "validation": validation,
         "summary": summarize_current_benchmark_scale_profiles(tuple(rows)),
-        "runtime_environment": _runtime_environment_metadata(),
+        "runtime_environment": runtime_environment,
         "prepared_session_residency_validation": validate_current_prepared_session_residency_profiles(),
         "prepared_session_residency_summary": summarize_current_prepared_session_residency_profiles(
             prepared_profile_rows
