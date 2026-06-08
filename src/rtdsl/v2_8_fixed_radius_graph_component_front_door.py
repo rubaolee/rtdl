@@ -1281,7 +1281,7 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
             "overflow": overflow,
             "complete_candidate_coverage": not overflow,
             "status_column_values": {
-                "row_count": len(visible_pairs),
+                "row_count": visible_pair_count,
                 "capacity": requested_capacity,
                 "overflow": overflow,
                 "complete_candidate_coverage": not overflow,
