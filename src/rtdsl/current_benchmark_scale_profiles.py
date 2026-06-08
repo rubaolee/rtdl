@@ -148,13 +148,16 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
     CurrentBenchmarkScaleProfile(
         app="rt_dbscan",
         row_id="rt_dbscan_optix_numba_scale_default_65536_no_validation",
-        purpose="scale-profile RT-DBSCAN OptiX threshold flags plus Numba components without CPU validation",
+        purpose=(
+            "scale-profile RT-DBSCAN OptiX threshold flags plus Numba component signature "
+            "without CPU validation or Python row materialization"
+        ),
         profile_kind="default_scale",
         command=(
             "python",
             "examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
             "--mode",
-            "optix_rt_core_flags_numba_prepared_grid_components_3d",
+            "optix_rt_core_flags_numba_prepared_grid_column_signature_3d",
             "--dataset",
             "clustered3d",
             "--point-count",
@@ -166,8 +169,8 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
             "--no-validation",
         ),
         timeout_sec=120,
-        evidence_refs=("Goal3826", "Goal3827", "Goal3830"),
-        expected_runtime_class="default_scale_about_3s_no_validation",
+        evidence_refs=("Goal3826", "Goal3827", "Goal3830", "Goal3851"),
+        expected_runtime_class="default_scale_prepared_repeat_no_validation",
         requires_numba=True,
     ),
     CurrentBenchmarkScaleProfile(

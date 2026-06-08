@@ -179,6 +179,18 @@ for component labeling. It is an RTDL/OptiX + Numba composition path, still over
 generic fixed-radius graph columns and still not a DBSCAN-specific native
 engine.
 
+For performance profiling when you only need the cluster signature rather than
+Python row dictionaries, use the no-row column-signature variant:
+
+```bash
+export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode optix_rt_core_flags_numba_prepared_grid_column_signature_3d --dataset clustered3d --point-count 65536 --repeat 3 --warmup 1 --no-validation
+```
+
+That route keeps the same generic OptiX threshold-count and Numba component
+contracts, but avoids materializing Python row dictionaries for the scale
+profile.
+
 Programmatic users can prepare the same generic composite directly:
 
 ```python
