@@ -43,3 +43,23 @@ Added `tests/goal3880_rtnn_prepared_session_residency_metadata_test.py`.
 The test mocks the historical RTNN runner so it can validate the payload locally
 without requiring OptiX. It checks the cache key, policy, helper name, false
 claim flags, and unchanged runner contract.
+
+## A5000 Evidence
+
+Ran the current scale-profile runner on only the RTNN row after this change.
+
+Artifact:
+
+`docs/reports/goal3880_rtnn_prepared_session_residency_a5000/summary.json`
+
+Result:
+
+- source commit: `325916fa`
+- `all_pass`: `true`
+- selected prepared-session profile count: `1`
+- row: `rtnn_prepared_optix_scale_default_65536`
+- app payload emitted `prepared_session_residency`
+- helper: `get_or_prepare_explicit_session`
+- cache enabled by default: `false`
+- primitive: `fixed_radius_neighbors_3d_ranked_summary`
+- automatic partner selection and true-zero-copy claim flags stayed `false`

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import json
 import unittest
 from unittest import mock
 
@@ -9,6 +10,7 @@ from examples.v2_0.research_benchmarks.rtnn import rtdl_rtnn_benchmark_app as rt
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs" / "reports" / "goal3880_rtnn_prepared_session_residency_metadata_2026-06-08.md"
+POD_ARTIFACT = ROOT / "docs" / "reports" / "goal3880_rtnn_prepared_session_residency_a5000" / "summary.json"
 
 
 class Goal3880RtnnPreparedSessionResidencyMetadataTest(unittest.TestCase):
@@ -73,8 +75,27 @@ class Goal3880RtnnPreparedSessionResidencyMetadataTest(unittest.TestCase):
             "cache_enabled_by_default = false",
             "not a hidden cache",
             "fixed_radius_neighbors_3d_ranked_summary",
+            "A5000 Evidence",
         ):
             self.assertIn(phrase, text)
+
+    def test_a5000_artifact_confirms_live_payload_metadata(self) -> None:
+        payload = json.loads(POD_ARTIFACT.read_text(encoding="utf-8"))
+        self.assertTrue(payload["all_pass"])
+        self.assertEqual(payload["selected_prepared_session_residency_profile_count"], 1)
+        self.assertEqual(len(payload["rows"]), 1)
+        row = payload["rows"][0]
+        self.assertEqual(row["row_id"], "rtnn_prepared_optix_scale_default_65536")
+        self.assertTrue(row["prepared_session_residency_profiled"])
+
+        stdout_path = POD_ARTIFACT.parent / "outputs" / "rtnn_prepared_optix_scale_default_65536.stdout.json"
+        app_payload = json.loads(stdout_path.read_text(encoding="utf-8"))
+        metadata = app_payload["prepared_session_residency"]
+        self.assertEqual(metadata["explicit_reuse_helper"], "get_or_prepare_explicit_session")
+        self.assertFalse(metadata["cache_enabled_by_default"])
+        self.assertEqual(metadata["cache_key"]["primitive"], "fixed_radius_neighbors_3d_ranked_summary")
+        self.assertFalse(app_payload["claim_boundary"]["automatic_partner_selection_authorized"])
+        self.assertFalse(app_payload["claim_boundary"]["true_zero_copy_claim_authorized"])
 
 
 if __name__ == "__main__":
