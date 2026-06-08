@@ -26,6 +26,7 @@ class Goal3938CurrentBenchmarkRouteDecisionRegistryTest(unittest.TestCase):
         self.assertFalse(summary["release_authorized"])
         self.assertFalse(summary["public_speedup_claim_authorized"])
         self.assertFalse(summary["true_zero_copy_claim_authorized"])
+        self.assertFalse(summary["amd_performance_claim_authorized"])
 
     def test_rayjoin_route_is_explicit_mixed_not_auto_dispatch(self) -> None:
         route = rt.explain_current_benchmark_route("spatial_rayjoin")
@@ -42,6 +43,7 @@ class Goal3938CurrentBenchmarkRouteDecisionRegistryTest(unittest.TestCase):
         self.assertTrue(route["user_choice_remains_authority"])
         self.assertFalse(route["automatic_partner_selection_authorized"])
         self.assertFalse(route["paper_reproduction_claim_authorized"])
+        self.assertFalse(route["amd_performance_claim_authorized"])
 
     def test_rtdbscan_blocked_mode_is_explicitly_unpromoted(self) -> None:
         route = rt.explain_current_benchmark_route("rt_dbscan")

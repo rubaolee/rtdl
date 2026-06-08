@@ -54,6 +54,7 @@ class CurrentBenchmarkRouteDecision:
     broad_rt_core_claim_authorized: bool = False
     true_zero_copy_claim_authorized: bool = False
     paper_reproduction_claim_authorized: bool = False
+    amd_performance_claim_authorized: bool = False
     app_specific_native_engine_logic_allowed: bool = False
 
     def __post_init__(self) -> None:
@@ -85,6 +86,7 @@ class CurrentBenchmarkRouteDecision:
             "broad_rt_core_claim_authorized",
             "true_zero_copy_claim_authorized",
             "paper_reproduction_claim_authorized",
+            "amd_performance_claim_authorized",
             "app_specific_native_engine_logic_allowed",
         ):
             if getattr(self, flag):
@@ -113,6 +115,7 @@ class CurrentBenchmarkRouteDecision:
             "broad_rt_core_claim_authorized": self.broad_rt_core_claim_authorized,
             "true_zero_copy_claim_authorized": self.true_zero_copy_claim_authorized,
             "paper_reproduction_claim_authorized": self.paper_reproduction_claim_authorized,
+            "amd_performance_claim_authorized": self.amd_performance_claim_authorized,
             "app_specific_native_engine_logic_allowed": self.app_specific_native_engine_logic_allowed,
             "claim_boundary": CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY,
         }
@@ -294,6 +297,7 @@ def summarize_current_benchmark_route_decisions(
         "broad_rt_core_claim_authorized": False,
         "true_zero_copy_claim_authorized": False,
         "paper_reproduction_claim_authorized": False,
+        "amd_performance_claim_authorized": False,
     }
 
 
@@ -358,6 +362,7 @@ def validate_current_benchmark_route_decisions(
             "broad_rt_core_claim_authorized",
             "true_zero_copy_claim_authorized",
             "paper_reproduction_claim_authorized",
+            "amd_performance_claim_authorized",
             "app_specific_native_engine_logic_allowed",
         ):
             if row.get(flag):

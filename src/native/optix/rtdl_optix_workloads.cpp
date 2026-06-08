@@ -20672,8 +20672,8 @@ static void run_fixed_radius_neighbors_cuda_3d(
     reset_fixed_radius_3d_phase_timings(1u);
     (void)get_optix_context();
     std::call_once(g_frn3d.init, [&]() {
-        std::string ptx = compile_to_ptx(kFixedRadiusNeighbors3DKernelSrc, "frn3d_kernel.cu");
-        CU_CHECK(cuModuleLoadData(&g_frn3d.module, ptx.c_str()));
+        std::string cubin = compile_to_cubin(kFixedRadiusNeighbors3DKernelSrc, "frn3d_kernel.cu");
+        CU_CHECK(cuModuleLoadData(&g_frn3d.module, cubin.data()));
         CU_CHECK(cuModuleGetFunction(&g_frn3d.fn, g_frn3d.module, "fixed_radius_neighbors_3d"));
     });
 
@@ -20821,8 +20821,8 @@ static void run_fixed_radius_neighbors_cuda_3d(
 static void ensure_fixed_radius_neighbors_grid_cuda_3d_kernel()
 {
     std::call_once(g_frn3d_grid.init, [&]() {
-        std::string ptx = compile_to_ptx(kFixedRadiusNeighbors3DGridKernelSrc, "frn3d_grid_kernel.cu");
-        CU_CHECK(cuModuleLoadData(&g_frn3d_grid.module, ptx.c_str()));
+        std::string cubin = compile_to_cubin(kFixedRadiusNeighbors3DGridKernelSrc, "frn3d_grid_kernel.cu");
+        CU_CHECK(cuModuleLoadData(&g_frn3d_grid.module, cubin.data()));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid"));
         g_frn3d_grid_count.module = g_frn3d_grid.module;
         g_frn3d_grid_exact_count.module = g_frn3d_grid.module;

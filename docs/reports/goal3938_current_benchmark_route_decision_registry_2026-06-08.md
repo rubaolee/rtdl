@@ -55,3 +55,7 @@ print(rt.explain_current_benchmark_route("spatial_rayjoin")["current_reader_deci
 This goal does not authorize release action, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, automatic partner selection, AMD performance wording, or app-specific native-engine logic.
 
 It is a routing explanation and governance surface. It does not run new performance tests and does not change native engine behavior.
+
+## External Review Follow-Up
+
+Goal3940's Claude review accepted the registry with a boundary: AMD performance wording was guarded by the boundary text, but not by a typed per-row flag. The registry now includes `amd_performance_claim_authorized: False` in the same machine-checked path as the release, public-speedup, broad-RT-core, true-zero-copy, paper-reproduction, automatic-selection, and app-specific-engine flags.
