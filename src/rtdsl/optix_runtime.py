@@ -6395,10 +6395,13 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                 raise ValueError("grouped-union telemetry_out must contain at least four counters")
             if not _partner_contiguous_column_strides(telemetry_handoff.strides, itemsize=8):
                 raise ValueError("grouped-union telemetry_out must be contiguous")
-        telemetry_counter_count = (
+        telemetry_buffer_length = (
             0 if telemetry_handoff is None else int(telemetry_handoff.shape[0])
         )
-        use_extended_telemetry = telemetry_counter_count >= 8
+        use_extended_telemetry = telemetry_buffer_length >= 8
+        telemetry_counter_count = (
+            8 if use_extended_telemetry else (4 if telemetry_handoff is not None else 0)
+        )
         telemetry_contract = None
         if telemetry_handoff is not None:
             telemetry_contract = (
@@ -6457,6 +6460,7 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                     "direct_device_handoff_authorized": True,
                     "true_zero_copy_authorized": False,
                     "grouped_union_telemetry_requested": telemetry_handoff is not None,
+                    "grouped_union_telemetry_buffer_length": telemetry_buffer_length,
                     "grouped_union_telemetry_counter_count": telemetry_counter_count,
                     "grouped_union_extended_telemetry_enabled": use_extended_telemetry,
                     "grouped_union_telemetry_contract": telemetry_contract,
@@ -6497,7 +6501,7 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                 ctypes.c_void_p(parent_handoff.data_ptr),
                 ctypes.c_void_p(0),
                 ctypes.c_void_p(telemetry_handoff.data_ptr),
-                ctypes.c_size_t(telemetry_counter_count),
+                ctypes.c_size_t(telemetry_buffer_length),
                 ctypes.c_uint32(1 if same_root_culling else 0),
                 ctypes.c_uint32(1 if direct_side_effect else 0),
                 ctypes.c_size_t(int(parent_handoff.shape[0])),
@@ -6618,6 +6622,7 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                     _grouped_union_direct_side_effect_policy(direct_side_effect)
                 ),
                 "grouped_union_telemetry_requested": telemetry_handoff is not None,
+                "grouped_union_telemetry_buffer_length": telemetry_buffer_length,
                 "grouped_union_telemetry_counter_count": telemetry_counter_count,
                 "grouped_union_extended_telemetry_enabled": use_extended_telemetry,
                 "grouped_union_telemetry_contract": telemetry_contract,
@@ -6672,10 +6677,13 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                 raise ValueError("grouped-union telemetry_out must contain at least four counters")
             if not _partner_contiguous_column_strides(telemetry_handoff.strides, itemsize=8):
                 raise ValueError("grouped-union telemetry_out must be contiguous")
-        telemetry_counter_count = (
+        telemetry_buffer_length = (
             0 if telemetry_handoff is None else int(telemetry_handoff.shape[0])
         )
-        use_extended_telemetry = telemetry_counter_count >= 8
+        use_extended_telemetry = telemetry_buffer_length >= 8
+        telemetry_counter_count = (
+            8 if use_extended_telemetry else (4 if telemetry_handoff is not None else 0)
+        )
         telemetry_contract = None
         if telemetry_handoff is not None:
             telemetry_contract = (
@@ -6735,6 +6743,7 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                     "direct_device_handoff_authorized": True,
                     "true_zero_copy_authorized": False,
                     "grouped_union_telemetry_requested": telemetry_handoff is not None,
+                    "grouped_union_telemetry_buffer_length": telemetry_buffer_length,
                     "grouped_union_telemetry_counter_count": telemetry_counter_count,
                     "grouped_union_extended_telemetry_enabled": use_extended_telemetry,
                     "grouped_union_telemetry_contract": telemetry_contract,
@@ -6775,7 +6784,7 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                 ctypes.c_void_p(parent_handoff.data_ptr),
                 ctypes.c_void_p(0),
                 ctypes.c_void_p(telemetry_handoff.data_ptr),
-                ctypes.c_size_t(telemetry_counter_count),
+                ctypes.c_size_t(telemetry_buffer_length),
                 ctypes.c_uint32(1 if same_root_culling else 0),
                 ctypes.c_uint32(1 if direct_side_effect else 0),
                 ctypes.c_size_t(int(parent_handoff.shape[0])),
@@ -6891,6 +6900,7 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                     _grouped_union_direct_side_effect_policy(direct_side_effect)
                 ),
                 "grouped_union_telemetry_requested": telemetry_handoff is not None,
+                "grouped_union_telemetry_buffer_length": telemetry_buffer_length,
                 "grouped_union_telemetry_counter_count": telemetry_counter_count,
                 "grouped_union_extended_telemetry_enabled": use_extended_telemetry,
                 "grouped_union_telemetry_contract": telemetry_contract,

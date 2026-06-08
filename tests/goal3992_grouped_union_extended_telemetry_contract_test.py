@@ -59,10 +59,11 @@ class Goal3992GroupedUnionExtendedTelemetryContractTest(unittest.TestCase):
 
     def test_runtime_selects_extended_symbol_only_with_eight_counters(self) -> None:
         runtime = RUNTIME.read_text(encoding="utf-8")
-        self.assertIn("telemetry_counter_count >= 8", runtime)
+        self.assertIn("telemetry_buffer_length >= 8", runtime)
+        self.assertIn("grouped_union_telemetry_buffer_length", runtime)
         self.assertIn("grouped_union_extended_telemetry_enabled", runtime)
         self.assertIn("grouped_union_telemetry_counter_count", runtime)
-        self.assertIn("ctypes.c_size_t(telemetry_counter_count)", runtime)
+        self.assertIn("ctypes.c_size_t(telemetry_buffer_length)", runtime)
 
     def test_pod_smoke_checks_old_and_extended_paths(self) -> None:
         script = SMOKE.read_text(encoding="utf-8")
