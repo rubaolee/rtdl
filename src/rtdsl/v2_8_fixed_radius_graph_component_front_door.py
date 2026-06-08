@@ -25,6 +25,22 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_OPERATION = "fixed_radius_graph_component_labe
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_BACKENDS = ("optix",)
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_PARTNERS = ("cupy", "numba")
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_STRATEGIES = ("grouped_stream",)
+V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CANDIDATE_STRATEGIES = (
+    "partition_convergence_hybrid",
+)
+V2_8_FIXED_RADIUS_GRAPH_COMPONENT_REJECTED_DEFAULT_STRATEGIES = (
+    "direct_side_effect_default",
+    "microcell_graph",
+)
+V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_REQUIREMENTS = (
+    "device_resident_partition_aabb_and_count_columns",
+    "safe_full_partition_pair_summary_without_pair_materialization",
+    "ambiguous_boundary_pair_rt_traversal",
+    "same_contract_parity_against_grouped_stream",
+    "deterministic_component_root_policy",
+    "explicit_convergence_and_staleness_counters",
+    "actual_benchmark_radius_pod_evidence",
+)
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY = (
     "The v2.8 fixed-radius graph component front door exposes an explicit "
     "user-selected OptiX+partner grouped-stream contract over an existing generic "
@@ -182,6 +198,14 @@ def describe_v2_8_fixed_radius_graph_component_front_door() -> dict[str, Any]:
         "supported_backends": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_BACKENDS,
         "supported_partners": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_PARTNERS,
         "supported_strategies": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_STRATEGIES,
+        "candidate_strategies": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CANDIDATE_STRATEGIES,
+        "rejected_default_strategies": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_REJECTED_DEFAULT_STRATEGIES,
+        "candidate_strategy_requirements": {
+            "partition_convergence_hybrid": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_REQUIREMENTS,
+        },
+        "candidate_strategy_evidence_goals": {
+            "partition_convergence_hybrid": ("Goal3999", "Goal4001", "Goal4002", "Goal4004"),
+        },
         "user_selected_partner_required": True,
         "typed_result_stream_contract": make_v2_8_fixed_radius_graph_component_typed_stream_contract(
             1,
@@ -231,6 +255,46 @@ def plan_v2_8_fixed_radius_graph_component_continuation(
             "true_zero_copy_claim_authorized": False,
             "claim_boundary": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY,
         }
+    if strategy in V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CANDIDATE_STRATEGIES:
+        point_count = int(point_count)
+        radius = float(radius)
+        component_threshold = int(component_threshold)
+        if point_count <= 0:
+            raise ValueError("point_count must be positive")
+        if radius <= 0.0:
+            raise ValueError("radius must be positive")
+        if component_threshold < 1:
+            raise ValueError("component_threshold must be at least 1")
+        return {
+            "version": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_FRONT_DOOR_VERSION,
+            "status": "candidate_requires_native_implementation",
+            "operation": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_OPERATION,
+            "point_count": point_count,
+            "radius": radius,
+            "component_threshold": component_threshold,
+            "user_selected_backend": backend,
+            "user_selected_partner": partner,
+            "user_selected_strategy": strategy,
+            "runtime_executable": False,
+            "native_abi_added": False,
+            "fallback_selected": False,
+            "hidden_dispatch_allowed": False,
+            "automatic_partner_selection_allowed": False,
+            "app_specific_engine_logic_allowed": False,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "producer_contract": "prepared_fixed_radius_graph_hit_stream_3d",
+            "candidate_continuation_contract": (
+                "device_resident_partition_convergence_grouped_union_component_labels_3d"
+            ),
+            "candidate_strategy_requirements": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_REQUIREMENTS,
+            "candidate_strategy_evidence_goals": ("Goal3999", "Goal4001", "Goal4002", "Goal4004"),
+            "rejected_default_strategies": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_REJECTED_DEFAULT_STRATEGIES,
+            "claim_boundary": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY,
+        }
     plan = V28FixedRadiusGraphComponentPlan(
         point_count=int(point_count),
         radius=float(radius),
@@ -272,7 +336,7 @@ def prepare_v2_8_fixed_radius_graph_component_continuation_3d(
         grouped_union_direct_side_effect=grouped_union_direct_side_effect,
     )
     if metadata["status"] != "accepted_preview":
-        raise ValueError(str(metadata["unsupported_reason"]))
+        raise ValueError(str(metadata.get("unsupported_reason", metadata["status"])))
     plan = V28FixedRadiusGraphComponentPlan(
         point_count=int(metadata["point_count"]),
         radius=float(metadata["radius"]),
@@ -412,7 +476,10 @@ def _unsupported_reason(*, backend: str, partner: str, strategy: str) -> str:
         return f"unsupported backend {backend!r}; supported backends are {V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_BACKENDS}"
     if partner not in V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_PARTNERS:
         return f"unsupported partner {partner!r}; supported partners are {V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_PARTNERS}"
-    if strategy not in V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_STRATEGIES:
+    if (
+        strategy not in V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_STRATEGIES
+        and strategy not in V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CANDIDATE_STRATEGIES
+    ):
         return f"unsupported strategy {strategy!r}; supported strategies are {V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_STRATEGIES}"
     return ""
 
@@ -481,9 +548,12 @@ def _column_data_ptrs(columns: dict[str, Any]) -> dict[str, int]:
 
 __all__ = [
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY",
+    "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CANDIDATE_STRATEGIES",
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_FRONT_DOOR_STATUS",
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_FRONT_DOOR_VERSION",
+    "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_REQUIREMENTS",
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_OPERATION",
+    "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_REJECTED_DEFAULT_STRATEGIES",
     "V28FixedRadiusGraphComponentPlan",
     "V28PreparedFixedRadiusGraphComponentContinuation3D",
     "describe_v2_8_fixed_radius_graph_component_front_door",
