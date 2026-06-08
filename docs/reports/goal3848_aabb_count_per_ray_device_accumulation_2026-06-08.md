@@ -52,8 +52,12 @@ wide fixture. That produced much smaller counts:
 - `range_intersects=428116`
 
 Rerunning the restored global path with those same narrow widths produced the
-same smaller counts, proving the mismatch was the command, not the optimization.
-The final validation compared against the true Goal3846 default-width fixture.
+same smaller counts in-session, supporting the interpretation that the mismatch
+was a command/fixture-width mismatch rather than the optimization. The exact
+bad-run command transcript was not preserved, so this note is explanatory
+rather than release evidence. The accepted validation evidence is the committed
+default-width A5000 artifact below, which compares directly against the true
+Goal3846 fixture.
 
 ## A5000 Validation
 
