@@ -234,10 +234,14 @@ def build_dry_run(args: argparse.Namespace) -> dict[str, Any]:
 
 def run_representative_profile(args: argparse.Namespace) -> dict[str, Any]:
     profile_started = time.perf_counter()
+    phase_timing_sec: dict[str, float] = {}
+    resolve_started = time.perf_counter()
     data_dir = _resolve_data_dir(args.data_dir)
+    phase_timing_sec["data_dir_resolve_sec"] = time.perf_counter() - resolve_started
     pip_dataset = data_dir / PIP_DATASET_NAME
 
     with contextlib.redirect_stdout(sys.stderr):
+        pip_started = time.perf_counter()
         pip_payload = run_pip_probe(
             data_dir=data_dir,
             repeat=args.repeat,
@@ -246,6 +250,8 @@ def run_representative_profile(args: argparse.Namespace) -> dict[str, Any]:
             skip_cupy=True,
             skip_optix=False,
         )
+        phase_timing_sec["pip_one_shot_probe_sec"] = time.perf_counter() - pip_started
+        lsi_overlay_started = time.perf_counter()
         lsi_overlay_payload = run_lsi_overlay_probe(
             data_dir=data_dir,
             cases=("lsi_county512_soil512", "overlay_county512_soil512"),
@@ -255,10 +261,12 @@ def run_representative_profile(args: argparse.Namespace) -> dict[str, Any]:
             skip_cupy=True,
             skip_optix=False,
         )
+        phase_timing_sec["lsi_overlay_probe_sec"] = time.perf_counter() - lsi_overlay_started
         with _temporary_env(
             "RTDL_OPTIX_POINT_PRIMITIVE_DEVICE_PREDICATE_EPS",
             args.pip_batch_device_predicate_eps,
         ):
+            pip_batch_started = time.perf_counter()
             pip_batch_payload = run_pip_batch_probe(
                 SimpleNamespace(
                     dataset=pip_dataset,
@@ -274,6 +282,7 @@ def run_representative_profile(args: argparse.Namespace) -> dict[str, Any]:
                     request_counts=args.pip_batch_request_counts,
                 )
             )
+            phase_timing_sec["pip_batch_probe_sec"] = time.perf_counter() - pip_batch_started
 
     cases = [
         _case_summary(pip_payload),
@@ -281,6 +290,7 @@ def run_representative_profile(args: argparse.Namespace) -> dict[str, Any]:
     ]
     pip_batch = _pip_batch_summary(pip_batch_payload)
     wrapper_elapsed_sec = time.perf_counter() - profile_started
+    phase_timing_sec["profile_total_sec"] = wrapper_elapsed_sec
     hot_path_summary = _hot_path_summary(
         cases=cases,
         pip_batch=pip_batch,
@@ -306,6 +316,7 @@ def run_representative_profile(args: argparse.Namespace) -> dict[str, Any]:
         "cases": cases,
         "pip_batch_executor": pip_batch,
         "representative_hot_path_summary": hot_path_summary,
+        "wrapper_phase_timing_sec": phase_timing_sec,
         "wrapper_elapsed_sec": wrapper_elapsed_sec,
         "pip_batch_device_predicate_eps": args.pip_batch_device_predicate_eps,
         "recommended_route_summary": {
