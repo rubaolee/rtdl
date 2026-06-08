@@ -6,6 +6,7 @@ import json
 import math
 import statistics
 import sys
+import time
 from pathlib import Path
 
 ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "src" / "rtdsl").exists())
@@ -494,6 +495,81 @@ def _run_partner_exact_forces(
     return rows, result["metadata"]
 
 
+def _sum_partner_column(column, partner: str) -> float:
+    if partner == "torch":
+        return float(column.detach().sum().cpu().item())
+    if partner == "cupy":
+        import cupy
+
+        return float(cupy.sum(column).item())
+    if partner == "numba":
+        values = column.copy_to_host()
+        return float(values.sum())
+    raise ValueError("partner must be 'torch', 'cupy', or 'numba'")
+
+
+def _run_partner_exact_force_summary(
+    bodies: tuple[Body, ...],
+    *,
+    partner: str,
+    query_repeat: int,
+    warmup: int,
+) -> tuple[dict[str, object], dict[str, object]]:
+    columns = rt.weighted_point_rows_to_partner_columns(bodies, partner=partner)
+    runs: list[dict[str, object]] = []
+    final_result: dict[str, object] | None = None
+    for iteration in range(warmup + query_repeat):
+        start = time.perf_counter()
+        result = rt.pairwise_inverse_square_force_2d_partner_columns(
+            columns,
+            columns,
+            softening=SOFTENING,
+            partner=partner,
+            exclude_equal_ids=True,
+            return_metadata=True,
+        )
+        elapsed = time.perf_counter() - start
+        final_result = result
+        runs.append(
+            {
+                "iteration": iteration,
+                "is_warmup": iteration < warmup,
+                "elapsed_sec": elapsed,
+            }
+        )
+    measured = [row for row in runs if not bool(row["is_warmup"])]
+    if not measured:
+        raise RuntimeError("partner exact-force repeat produced no measured rows")
+    assert final_result is not None
+    summary_start = time.perf_counter()
+    force_columns = final_result["columns"]
+    checksum_force_x = _sum_partner_column(force_columns["force_x"], partner)
+    checksum_force_y = _sum_partner_column(force_columns["force_y"], partner)
+    summary_sec = time.perf_counter() - summary_start
+    metadata = dict(final_result["metadata"])
+    metadata.update(
+        {
+            "prepared_partner_columns_reused": True,
+            "materializes_python_force_rows": False,
+            "force_summary_materialization_sec": summary_sec,
+            "prepared_force_repeat_protocol": {
+                "repeat": int(query_repeat),
+                "warmup": int(warmup),
+                "measured_iterations": len(measured),
+                "median_force_kernel_sec": float(statistics.median(float(row["elapsed_sec"]) for row in measured)),
+            },
+        }
+    )
+    return (
+        {
+            "force_row_count": int(metadata["source_count"]),
+            "checksum_force_x": checksum_force_x,
+            "checksum_force_y": checksum_force_y,
+        },
+        metadata,
+    )
+
+
 def run_app(
     backend: str = "cpu_python_reference",
     *,
@@ -522,6 +598,36 @@ def run_app(
     bodies = make_bodies() if body_count is None else make_generated_bodies(body_count)
     nodes = build_one_level_quadtree(bodies)
     if backend == "partner_exact_force":
+        if output_mode == "force_summary" and skip_validation:
+            force_summary, partner_metadata = _run_partner_exact_force_summary(
+                bodies,
+                partner=partner,
+                query_repeat=query_repeat,
+                warmup=warmup,
+            )
+            return {
+                "app": "barnes_hut_force_app",
+                "backend": backend,
+                "partner": partner,
+                "theta": theta,
+                "body_count": len(bodies),
+                "node_count": len(nodes),
+                "output_mode": output_mode,
+                "optix_summary_mode": None,
+                "node_radius": None,
+                **force_summary,
+                "partner_reference_contract": partner_metadata["partner_reference_contract"],
+                "partner_metadata": partner_metadata,
+                "validation_skipped": skip_validation,
+                "native_continuation_active": False,
+                "native_continuation_backend": "none",
+                "rtdl_role": "Partner exact-force mode computes generic weighted-point pairwise inverse-square force vectors outside the native engine.",
+                "rt_core_accelerated": False,
+                "boundary": (
+                    "Exact all-pairs force-vector reference path only; this is not "
+                    "Barnes-Hut tree opening acceleration and not an RT-core claim."
+                ),
+            }
         force_rows, partner_metadata = _run_partner_exact_forces(bodies, partner=partner)
         exact_forces = None if skip_validation else brute_force_forces(bodies)
         error_rows = _force_error_rows(force_rows, exact_forces) if exact_forces is not None else ()

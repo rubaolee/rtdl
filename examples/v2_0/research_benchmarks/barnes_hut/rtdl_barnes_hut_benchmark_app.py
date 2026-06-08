@@ -1470,6 +1470,8 @@ def run_benchmark(
                 output_mode=force_output_mode,
                 partner=partner,
                 skip_validation=skip_validation,
+                query_repeat=query_repeat,
+                warmup=warmup,
             ),
             mode=mode,
             contract="generic_weighted_point_pairwise_inverse_square_force_partner_reference",

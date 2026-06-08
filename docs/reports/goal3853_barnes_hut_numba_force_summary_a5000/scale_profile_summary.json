@@ -1,0 +1,109 @@
+{
+  "all_pass": true,
+  "broad_rt_core_claim_authorized": false,
+  "claim_boundary": "Goal3828 records calibrated scale-profile commands for the ten benchmark apps after the Goal3827 file-stdout correction. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.",
+  "dry_run": false,
+  "file_backed_stdout_probe": true,
+  "json_pass_count": 1,
+  "paper_reproduction_claim_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "rows": [
+    {
+      "app": "barnes_hut",
+      "command": [
+        "/usr/local/bin/python",
+        "examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+        "--mode",
+        "partner_exact_force",
+        "--partner",
+        "numba",
+        "--force-output-mode",
+        "force_summary",
+        "--body-count",
+        "8192",
+        "--skip-validation",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1"
+      ],
+      "elapsed_sec": 1.751682193018496,
+      "expected_runtime_class": "safe_summary_output",
+      "profile_kind": "default_scale",
+      "returncode": 0,
+      "row_id": "barnes_hut_numba_scale_default_8192",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "parsed_keys": [
+          "app",
+          "app_boundary",
+          "backend",
+          "benchmark_metadata",
+          "body_count",
+          "boundary",
+          "checksum_force_x",
+          "checksum_force_y",
+          "claim_boundary",
+          "force_row_count",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "node_count",
+          "node_radius",
+          "optix_summary_mode",
+          "output_mode",
+          "partner",
+          "partner_metadata",
+          "partner_reference_contract",
+          "rt_core_accelerated",
+          "rtdl_role",
+          "theta",
+          "validation_skipped"
+        ],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_bytes": 0,
+      "stderr_path": "docs/reports/goal3853_barnes_hut_numba_force_summary_a5000/outputs/barnes_hut_numba_scale_default_8192.stderr.txt",
+      "stderr_tail": "",
+      "stdout_bytes": 3725,
+      "stdout_path": "docs/reports/goal3853_barnes_hut_numba_force_summary_a5000/outputs/barnes_hut_numba_scale_default_8192.stdout.json",
+      "stdout_policy": "file_backed_stdout_required",
+      "stdout_tail": "90698486566544,\n    \"input_contract\": \"caller_supplied_partner_device_weighted_point_columns\",\n    \"materializes_python_force_rows\": false,\n    \"native_engine_row_contract\": \"not_called_partner_reference_only\",\n    \"numba_cuda_jit_used\": true,\n    \"numba_force_kernel_strategy\": \"block_source_target_stride_512_reduce_fastmath_true\",\n    \"partner\": \"numba\",\n    \"partner_reference_contract\": \"generic_pairwise_inverse_square_force_2d\",\n    \"prepared_force_repeat_protocol\": {\n      \"measured_iterations\": 3,\n      \"median_force_kernel_sec\": 0.008946348913013935,\n      \"repeat\": 3,\n      \"warmup\": 1\n    },\n    \"prepared_partner_columns_reused\": true,\n    \"raw_cuda_kernel_required\": false,\n    \"rt_core_speedup_claim_authorized\": false,\n    \"softening\": 0.05,\n    \"source_count\": 8192,\n    \"target_count\": 8192,\n    \"v2_0_release_authorized\": false,\n    \"whole_app_speedup_claim_authorized\": false\n  },\n  \"partner_reference_contract\": \"generic_pairwise_inverse_square_force_2d\",\n  \"rt_core_accelerated\": false,\n  \"rtdl_role\": \"Partner exact-force mode computes generic weighted-point pairwise inverse-square force vectors outside the native engine.\",\n  \"theta\": 0.75,\n  \"validation_skipped\": true\n}\n",
+      "timeout_sec": 375
+    }
+  ],
+  "summary": {
+    "app_count": 1,
+    "broad_rt_core_claim_authorized": false,
+    "claim_boundary": "Goal3828 records calibrated scale-profile commands for the ten benchmark apps after the Goal3827 file-stdout correction. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.",
+    "file_backed_stdout_rows": [
+      "barnes_hut_numba_scale_default_8192"
+    ],
+    "numba_required_rows": [
+      "barnes_hut_numba_scale_default_8192"
+    ],
+    "optix_required_rows": [
+      "barnes_hut_numba_scale_default_8192"
+    ],
+    "paper_reproduction_claim_authorized": false,
+    "profile_kinds": [
+      "default_scale"
+    ],
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "row_count": 1,
+    "status": "internal_scale_profile_registry_not_release_authorization",
+    "version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1"
+  },
+  "validation": {
+    "app_count": 10,
+    "claim_boundary": "Goal3828 records calibrated scale-profile commands for the ten benchmark apps after the Goal3827 file-stdout correction. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.",
+    "errors": [],
+    "row_count": 10,
+    "status": "accept",
+    "version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1"
+  },
+  "version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1"
+}
