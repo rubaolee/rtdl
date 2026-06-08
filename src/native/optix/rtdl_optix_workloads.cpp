@@ -13616,6 +13616,7 @@ static __forceinline__ __device__ void trace_aabb_index_segment(
         origin = make_float3(ax, ay, -1.0f);
     }
     unsigned int p0 = payload_idx;
+    unsigned int p1 = 0u;
     optixTrace(params.traversable,
                origin,
                direction,
@@ -13623,7 +13624,10 @@ static __forceinline__ __device__ void trace_aabb_index_segment(
                OptixVisibilityMask(255),
                OPTIX_RAY_FLAG_NONE,
                0, 1, 0,
-               p0);
+               p0, p1);
+    if (params.collect_rows == 0u && p1 != 0u) {
+        atomicAdd(params.hit_count, (unsigned long long)p1);
+    }
 }
 
 extern "C" __global__ void __raygen__aabb_index_query() {
@@ -13655,6 +13659,7 @@ extern "C" __global__ void __raygen__aabb_index_query() {
         return;
     }
     unsigned int p0 = idx;
+    unsigned int p1 = 0u;
     optixTrace(params.traversable,
                make_float3(x, y, -1.0f),
                make_float3(0.0f, 0.0f, 1.0f),
@@ -13662,7 +13667,10 @@ extern "C" __global__ void __raygen__aabb_index_query() {
                OptixVisibilityMask(255),
                OPTIX_RAY_FLAG_NONE,
                0, 1, 0,
-               p0);
+               p0, p1);
+    if (params.collect_rows == 0u && p1 != 0u) {
+        atomicAdd(params.hit_count, (unsigned long long)p1);
+    }
 }
 
 extern "C" __global__ void __miss__aabb_index_miss() {}
@@ -13701,8 +13709,15 @@ extern "C" __global__ void __intersection__aabb_index_exact() {
 }
 
 extern "C" __global__ void __anyhit__aabb_index_count() {
+    if (params.collect_rows == 0u) {
+        const unsigned int count = optixGetPayload_1();
+        optixSetPayload_1(count + 1u);
+        optixIgnoreIntersection();
+        return;
+    }
+
     const unsigned long long row_index = atomicAdd(params.hit_count, 1ULL);
-    if (params.collect_rows != 0u && row_index < params.row_capacity) {
+    if (row_index < params.row_capacity) {
         const uint32_t prim = optixGetPrimitiveIndex();
         const uint32_t qidx = optixGetPayload_0();
         RtdlAabbPairRow row;
@@ -13735,7 +13750,7 @@ static void ensure_aabb_index_count_2d_pipeline()
             "__miss__aabb_index_miss",
             "__intersection__aabb_index_exact",
             "__anyhit__aabb_index_count",
-            nullptr, 1).release();
+            nullptr, 2).release();
     });
 }
 
