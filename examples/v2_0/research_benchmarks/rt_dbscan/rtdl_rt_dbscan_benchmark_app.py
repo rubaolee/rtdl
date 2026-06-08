@@ -752,6 +752,16 @@ def _cluster_signature_from_nonnegative_label_counts(
     }
 
 
+def _component_size_signature_payload(component_sizes: Iterable[int]) -> dict[str, object]:
+    sizes = tuple(sorted(int(size) for size in component_sizes if int(size) > 0))
+    return {
+        "component_sizes": sizes,
+        "component_count": len(sizes),
+        "point_count": sum(sizes),
+        "contract": "fixed_radius_graph_component_size_signature_3d",
+    }
+
+
 def _cluster_signature_from_numba_all_core_labels(
     columns: dict[str, object],
     *,
@@ -941,8 +951,9 @@ def run_rt_dbscan_benchmark(
         "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d",
         "optix_rt_core_grouped_stream_blocked_numba_column_signature_3d",
         "optix_rt_core_flags_numba_prepared_grid_column_signature_3d",
+        "partner_cupy_partition_convergence_component_signature_3d",
     }:
-        raise ValueError("column-signature mode does not materialize Python rows")
+        raise ValueError("signature mode does not materialize Python rows; column-signature mode does not materialize Python rows")
     if repeat < 1:
         raise ValueError("repeat must be positive")
     if warmup < 0 or warmup >= repeat:
@@ -1025,6 +1036,7 @@ def run_rt_dbscan_benchmark(
     start = time.perf_counter()
     timing_breakdown_sec: dict[str, float] | None = None
     signature_override: dict[str, object] | None = None
+    reference_signature_override: dict[str, object] | None = None
     elapsed_override: float | None = None
     metadata: dict[str, object]
     if mode == "cpu_reference":
@@ -1168,6 +1180,58 @@ def run_rt_dbscan_benchmark(
                 "materializes_directed_adjacency_stream": True,
             }
         )
+    elif mode == "partner_cupy_partition_convergence_component_signature_3d":
+        signature_start = time.perf_counter()
+        result = rt.build_v2_8_fixed_radius_partition_convergence_component_signature_cupy_preview_3d(
+            points,
+            radius=resolved_radius,
+            validate_summary_same_contract=validate,
+            validate_against_component_labels=validate,
+        )
+        component_signature_sec = time.perf_counter() - signature_start
+        rows = ()
+        component_sizes = result["columns"]["component_size_signature"]
+        signature_override = _component_size_signature_payload(component_sizes)
+        metadata = dict(result["metadata"])
+        metadata.update(
+            {
+                "path": "partner_cupy_partition_convergence_component_signature_3d",
+                "front_door": "v2_8_fixed_radius_graph_component_continuation_3d",
+                "front_door_operation": "fixed_radius_graph_component_size_signature_3d",
+                "v2_8_front_door_route": True,
+                "partition_convergence_hybrid_candidate": True,
+                "partition_convergence_hybrid_promoted": False,
+                "explicit_candidate_preview": True,
+                "current_default_route": False,
+                "native_engine_summary_contract": "generic_fixed_radius_partition_convergence_summary_3d",
+                "native_execution_path": "partner_cupy_fixed_radius_partition_convergence_preview_3d",
+                "partner": "cupy",
+                "optix_backend_used": False,
+                "rt_core_accelerated": False,
+                "materializes_neighbor_summaries": False,
+                "materializes_neighbor_rows": False,
+                "materializes_python_rows": False,
+                "materializes_full_component_labels": False,
+                "signature_source": "component_size_signature_column_no_python_row_dicts",
+                "validation_reference_kind": "fixed_radius_graph_component_labels_reference_3d",
+                "component_signature_sec": component_signature_sec,
+                "full_dbscan_semantics": False,
+                "dbscan_core_border_noise_semantics": False,
+                "graph_component_contract_only": True,
+                "public_speedup_claim_authorized": False,
+                "release_authorized": False,
+            }
+        )
+        if validate:
+            reference = rt.build_v2_8_fixed_radius_partition_convergence_component_labels_reference_3d(
+                points,
+                radius=resolved_radius,
+                cell_factor=float(metadata.get("cell_factor", 0.125)),
+                partition_summary=None,
+            )
+            label_values = tuple(int(value) for value in reference["columns"]["component_labels"])
+            reference_sizes = sorted(label_values.count(label) for label in set(label_values))
+            reference_signature_override = _component_size_signature_payload(reference_sizes)
     elif mode == "optix_core_flags_cupy_grid_components_3d":
         if resolved_min_neighbors > 64:
             raise ValueError("optix_core_flags_cupy_grid_components_3d currently requires min_neighbors <= 64")
@@ -1756,7 +1820,10 @@ def run_rt_dbscan_benchmark(
     signature = signature_override if signature_override is not None else cluster_signature(rows)
     reference_signature = None
     matches_reference = None
-    if validate and mode != "cpu_reference":
+    if validate and reference_signature_override is not None:
+        reference_signature = reference_signature_override
+        matches_reference = signature == reference_signature
+    elif validate and mode != "cpu_reference":
         reference_rows, _ = cpu_spatial_bucket_dbscan(points, radius=resolved_radius, min_neighbors=resolved_min_neighbors)
         reference_signature = cluster_signature(reference_rows)
         matches_reference = signature == reference_signature
@@ -1788,7 +1855,7 @@ def run_rt_dbscan_benchmark(
             "paper_speedup_claim_authorized": False,
             "native_dbscan_abi_added": False,
             "rt_core_accelerated": bool(metadata.get("rt_core_accelerated", False)),
-            "full_dbscan": mode != "partner_core_flags_3d",
+            "full_dbscan": bool(metadata.get("full_dbscan_semantics", mode != "partner_core_flags_3d")),
             "host_bucket_index_used": bool(metadata.get("host_bucket_index_used", False)),
         },
     }
@@ -1813,6 +1880,7 @@ def main(argv: list[str] | None = None) -> int:
             "partner_cupy_prepared_grid_components_3d",
             "partner_numba_prepared_grid_components_3d",
             "partner_cupy_prepared_adjacency_components_3d",
+            "partner_cupy_partition_convergence_component_signature_3d",
             "optix_core_flags_cupy_grid_components_3d",
             "optix_rt_core_flags_cupy_grid_components_3d",
             "optix_rt_core_flags_cupy_prepared_grid_components_3d",
