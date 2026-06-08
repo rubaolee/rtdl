@@ -1,0 +1,47 @@
+{
+  "rows": [
+    {
+      "all_match": null,
+      "elapsed_sec": null,
+      "probe": "robot_collision_repeats30",
+      "top_keys": [
+        "app",
+        "app_lowering_seconds",
+        "backend",
+        "benchmark_timing_sec",
+        "case_shape",
+        "claim_boundary",
+        "contract",
+        "dataset",
+        "goal",
+        "lowering_policy",
+        "mode",
+        "probe_reference_compact_link_flags",
+        "probe_reference_signature",
+        "reuse_metadata",
+        "runs",
+        "tail_medians",
+        "warmup_protocol"
+      ],
+      "wrapper_elapsed_sec": null
+    },
+    {
+      "all_match": null,
+      "elapsed_sec": 0.0009211599826812744,
+      "probe": "raydb_repeat25",
+      "top_keys": [
+        "app",
+        "backend",
+        "copies",
+        "elapsed_sec",
+        "matches_cpu_reference",
+        "metadata",
+        "mode",
+        "row_count",
+        "rows"
+      ],
+      "wrapper_elapsed_sec": null
+    }
+  ],
+  "source_commit": null
+}
