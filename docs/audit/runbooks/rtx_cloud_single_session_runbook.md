@@ -222,6 +222,12 @@ assert int(cp.sum(cp.arange(8, dtype=cp.int32)).get()) == 28
 PY
 ```
 
+The same setup is also available as a reusable helper:
+
+```bash
+bash scripts/goal3975_current_scale_partner_pod_setup.sh
+```
+
 Then run the current scale-profile packet with file-backed stdout:
 
 ```bash
