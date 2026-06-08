@@ -56,6 +56,7 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_REQUIREMENTS = (
     "component_label_oracle_against_all_pairs",
     "complete_candidate_coverage_status_invariant",
     "edge_case_status_and_float_tolerance_tests",
+    "cupy_preview_producer_same_contract_pod_execution",
 )
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_EVIDENCE_GOALS = (
     "Goal3999",
@@ -74,6 +75,7 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_EVIDENCE_GOALS = (
     "Goal4021",
     "Goal4023",
     "Goal4024",
+    "Goal4027",
 )
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PARTITION_GUIDANCE = MappingProxyType({
     "recommended_tested_cell_factor": "radius_x_0.125",
@@ -113,6 +115,9 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PARTITION_GUIDANCE = MappingProxyType({
     ),
     "native_promotion_gate": (
         "candidate_device_producer_must_pass_goal4019_goal4021_goal4023_goal4024_before_timing"
+    ),
+    "executable_preview": (
+        "cupy_partition_summary_preview_passes_same_contract_but_uses_host_pair_enumeration"
     ),
 })
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY = (
