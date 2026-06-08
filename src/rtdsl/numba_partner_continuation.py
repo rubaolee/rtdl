@@ -361,8 +361,8 @@ def run_numba_grouped_vector_sum_f64x2_by_offsets(
     if group_count < 0:
         raise ValueError("row_offsets must contain at least one element")
     block_size = int(block_size)
-    if block_size != 256:
-        raise ValueError("Numba offset grouped vector sum currently requires block_size=256")
+    if block_size <= 0:
+        raise ValueError("block_size must be positive")
     if validate_row_offsets and int(row_offsets.shape[0]):
         host_offsets = row_offsets.copy_to_host()
         if int(host_offsets[0]) != 0 or int(host_offsets[-1]) != row_count:
@@ -375,7 +375,8 @@ def run_numba_grouped_vector_sum_f64x2_by_offsets(
     sum_x = cuda.device_array((group_count,), dtype=np.float64)
     sum_y = cuda.device_array((group_count,), dtype=np.float64)
     if group_count:
-        _cached_numba_kernel(cuda, _numba_grouped_vector_sum_f64x2_offsets_kernel)[(group_count,), block_size](
+        grid = ((group_count + block_size - 1) // block_size,)
+        _cached_numba_kernel(cuda, _numba_grouped_vector_sum_f64x2_offsets_kernel)[grid, block_size](
             row_offsets,
             values_x,
             values_y,
@@ -398,7 +399,7 @@ def run_numba_grouped_vector_sum_f64x2_by_offsets(
             "componentwise_reduction": "independent_float64_sum_per_group_by_offsets",
             "presegmented_row_offsets": True,
             "adapter_kernel": "numba_grouped_vector_sum_offsets_f64x2_kernel",
-            "program_count": group_count,
+            "program_count": (group_count + block_size - 1) // block_size if group_count else 0,
             "threads_per_block": block_size,
             "global_atomic_add_used": False,
             "row_offset_validation_host_sync_used": validate_row_offsets,
@@ -1117,37 +1118,21 @@ def _numba_grouped_vector_sum_f64x2_kernel(cuda: Any):
 
 
 def _numba_grouped_vector_sum_f64x2_offsets_kernel(cuda: Any):
-    from numba import float64
-
     @cuda.jit
     def kernel(row_offsets, values_x, values_y, output_x, output_y, group_count):
-        partial_x = cuda.shared.array(256, dtype=float64)
-        partial_y = cuda.shared.array(256, dtype=float64)
-        group = cuda.blockIdx.x
-        lane = cuda.threadIdx.x
+        group = cuda.grid(1)
         local_x = 0.0
         local_y = 0.0
         if group < group_count:
             start = row_offsets[group]
             end = row_offsets[group + 1]
-            index = start + lane
+            index = start
             while index < end:
                 local_x += values_x[index]
                 local_y += values_y[index]
-                index += 256
-        partial_x[lane] = local_x
-        partial_y[lane] = local_y
-        cuda.syncthreads()
-        stride = 128
-        while stride > 0:
-            if lane < stride:
-                partial_x[lane] += partial_x[lane + stride]
-                partial_y[lane] += partial_y[lane + stride]
-            cuda.syncthreads()
-            stride //= 2
-        if lane == 0 and group < group_count:
-            output_x[group] = partial_x[0]
-            output_y[group] = partial_y[0]
+                index += 1
+            output_x[group] = local_x
+            output_y[group] = local_y
 
     return kernel
 

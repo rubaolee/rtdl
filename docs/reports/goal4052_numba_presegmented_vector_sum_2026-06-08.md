@@ -25,9 +25,9 @@ The partner front door `grouped_vector_sum_2d_partner_columns(...)` keeps the
 existing atomic-by-`group_ids` Numba path for unsegmented inputs, but switches
 to the new offset path when `row_offsets` is provided.
 
-The offset kernel launches one CUDA block per group and reduces rows in
-`row_offsets[group]:row_offsets[group + 1]`. It avoids cross-group global
-atomic adds and records:
+The offset kernel launches one CUDA thread per group and reduces rows in
+`row_offsets[group]:row_offsets[group + 1]`. This mirrors the existing CuPy
+offset-path shape, avoids cross-group global atomic adds, and records:
 
 - `v2_5_numba_presegmented_offsets_used: True`
 - `v2_5_numba_adapter_kernel: numba_grouped_vector_sum_offsets_f64x2_kernel`
@@ -55,4 +55,3 @@ evidence at representative scale.
 - the adapter preserves the older unsegmented Numba path;
 - the CUDA path matches reference values when Numba CUDA is available;
 - the metadata keeps the claim boundary locked down.
-
