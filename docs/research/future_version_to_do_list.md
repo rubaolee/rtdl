@@ -2,6 +2,28 @@
 
 This file catches design ideas that should not interrupt the current release or internal-preview lane.
 
+## Prepared-Session Residency And Amortization
+
+- Goal3872 measured four scene-heavy prepared rows on an A5000 with `repeat=50`:
+  Hausdorff/X-HD, LibRTS spatial index, RTNN, and triangle counting. Hot
+  prepared queries are tiny relative to one-time prepare/setup work, especially
+  RTNN (`~12757x` prepare/query ratio) and triangle counting (`~2606x`).
+- Future user-facing work should make prepared-session residency clearer:
+  prepare once, issue many queries, and report hot query timing separately from
+  cold scene construction/import/JIT. This is a language/runtime ergonomics
+  issue as much as a raw kernel issue.
+- If persistent prepared-session caches are added, they must be explicit:
+  stable cache keys, visible lifetime/invalidation policy, backend/partner
+  ownership, memory-pressure behavior, and no hidden automatic partner/backend
+  selection. A cache hit may be a resident-session optimization, but it is not a
+  true-zero-copy or public speedup claim by itself.
+- Guardrail phrase for future audits: no hidden automatic partner/backend selection.
+- Guardrail phrase for future audits: not a true-zero-copy or public speedup claim.
+- Keep the primitive boundary generic. Prepared session concepts are things
+  like fixed-radius threshold, AABB index query, ranked neighbor summary, and
+  ray/triangle weighted sum. App-specific interpretation remains in Python
+  examples or benchmark adapters.
+
 ## Legacy Versioned Helper Names
 
 - Audit and, where safe, alias or migrate compatibility helper names that still carry historical version labels in example Python code, such as selected `v2_5` Triton preview helpers and `v2_6` Numba compact-mask / neutral-handoff helpers.

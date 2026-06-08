@@ -1,0 +1,238 @@
+{
+  "claim_boundary": {
+    "amd_performance_claim_authorized": false,
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "broad_rt_core_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "generated_at_unix": 1780894178.2677968,
+  "git_status_short": "",
+  "gpu": "NVIDIA RTX A5000, 580.126.09",
+  "interpretation": "Prepared-session amortization probe for scene-heavy benchmark rows. It measures how much one-time scene/prepared setup dominates the file-backed CLI row versus warmed repeated query work. This is not release evidence and not a public speedup claim.",
+  "repeat": 50,
+  "rows": [
+    {
+      "app": "hausdorff_xhd",
+      "claim_boundary": {
+        "amd_performance_claim_authorized": false,
+        "app_specific_native_engine_logic_allowed": false,
+        "automatic_partner_selection_authorized": false,
+        "broad_rt_core_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "claim_flag_violations": [],
+      "metrics": {
+        "hot_query_per_request_sec": 0.010264009535312653,
+        "hot_query_total_sec": 0.5132004767656326,
+        "prepare_sec": 0.7434872528538108,
+        "prepare_to_single_query_ratio": 72.43633692037128,
+        "prepared_family": "fixed_radius_threshold_2d",
+        "repeat": 50,
+        "rt_core_accelerated": true
+      },
+      "payload_git_status_short": null,
+      "process": {
+        "command": [
+          "/usr/local/bin/python",
+          "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+          "--backend",
+          "optix",
+          "--require-rt-core",
+          "--optix-summary-mode",
+          "directed_threshold_prepared",
+          "--hausdorff-threshold",
+          "0.25",
+          "--copies",
+          "1024",
+          "--repeat",
+          "50",
+          "--warmup",
+          "5"
+        ],
+        "elapsed_sec": 2.829423342831433,
+        "returncode": 0,
+        "stderr_bytes": 0,
+        "stderr_tail": "",
+        "stdout_bytes": 4006,
+        "stdout_json_parse_error": null
+      },
+      "status": "pass"
+    },
+    {
+      "app": "librts_spatial_index",
+      "claim_boundary": {
+        "amd_performance_claim_authorized": false,
+        "app_specific_native_engine_logic_allowed": false,
+        "automatic_partner_selection_authorized": false,
+        "broad_rt_core_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "claim_flag_violations": [],
+      "metrics": {
+        "hot_query_per_request_sec": 0.02966476557776332,
+        "hot_query_total_sec": 1.497714575380087,
+        "prepare_sec": 0.40261318255215883,
+        "prepare_to_single_query_ratio": 13.57210059512344,
+        "prepared_family": "aabb_index_query_2d",
+        "repeat": 50,
+        "rt_core_accelerated": true
+      },
+      "payload_git_status_short": null,
+      "process": {
+        "command": [
+          "/usr/local/bin/python",
+          "examples/v2_0/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+          "--mode",
+          "optix_aabb_index",
+          "--dataset",
+          "uniform",
+          "--box-count",
+          "32768",
+          "--query-count",
+          "32768",
+          "--operation",
+          "all",
+          "--repeat",
+          "50",
+          "--warmup",
+          "5"
+        ],
+        "elapsed_sec": 3.2056244742125273,
+        "returncode": 0,
+        "stderr_bytes": 0,
+        "stderr_tail": "",
+        "stdout_bytes": 1807,
+        "stdout_json_parse_error": null
+      },
+      "status": "pass"
+    },
+    {
+      "app": "rtnn",
+      "claim_boundary": {
+        "amd_performance_claim_authorized": false,
+        "app_specific_native_engine_logic_allowed": false,
+        "automatic_partner_selection_authorized": false,
+        "broad_rt_core_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "claim_flag_violations": [],
+      "metrics": {
+        "hot_query_per_request_sec": 0.00013345852494239807,
+        "hot_query_total_sec": 0.007126373238861561,
+        "prepare_sec": 1.7026465376839042,
+        "prepare_to_single_query_ratio": 12757.870195394278,
+        "prepared_family": "fixed_radius_neighbors_3d_ranked_summary",
+        "repeat": 50,
+        "rt_core_accelerated": true
+      },
+      "payload_git_status_short": null,
+      "process": {
+        "command": [
+          "/usr/local/bin/python",
+          "examples/v2_0/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py",
+          "--mode",
+          "prepared_optix_ranked_summary",
+          "--point-count",
+          "65536",
+          "--radius",
+          "0.02",
+          "--k",
+          "50",
+          "--repeat",
+          "50",
+          "--query-batch-size",
+          "65536",
+          "--distribution",
+          "uniform"
+        ],
+        "elapsed_sec": 2.588817259296775,
+        "returncode": 0,
+        "stderr_bytes": 0,
+        "stderr_tail": "",
+        "stdout_bytes": 9397,
+        "stdout_json_parse_error": null
+      },
+      "status": "pass"
+    },
+    {
+      "app": "triangle_counting",
+      "claim_boundary": {
+        "amd_performance_claim_authorized": false,
+        "app_specific_native_engine_logic_allowed": false,
+        "automatic_partner_selection_authorized": false,
+        "broad_rt_core_claim_authorized": false,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "claim_flag_violations": [],
+      "metrics": {
+        "hot_query_per_request_sec": 0.00015036482363939285,
+        "hot_query_total_sec": 0.007518241181969643,
+        "prepare_sec": 0.39183870516717434,
+        "prepare_to_single_query_ratio": 2605.9200262615127,
+        "prepared_family": "ray_triangle_weighted_any_hit_sum_3d",
+        "repeat": 50,
+        "rt_core_accelerated": true
+      },
+      "payload_git_status_short": null,
+      "process": {
+        "command": [
+          "/usr/local/bin/python",
+          "examples/v2_0/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
+          "--mode",
+          "rt_graph_2a1_generic_rt",
+          "--backend",
+          "optix",
+          "--fixture",
+          "degree_oriented_two_triangles",
+          "--rt-graph-copies",
+          "2048",
+          "--detail",
+          "summary",
+          "--repeat",
+          "50",
+          "--warmup",
+          "5"
+        ],
+        "elapsed_sec": 1.2875341232866049,
+        "returncode": 0,
+        "stderr_bytes": 0,
+        "stderr_tail": "",
+        "stdout_bytes": 8490,
+        "stdout_json_parse_error": null
+      },
+      "status": "pass"
+    }
+  ],
+  "schema": "rtdl.goal3872.prepared_session_amortization_probe.v1",
+  "source_commit": "391b96483de66e862cce0cba0f0019100f470028",
+  "source_commit_short": "391b9648",
+  "summary": {
+    "all_claim_boundaries_clean": true,
+    "all_pass": true,
+    "geomean_prepare_to_single_query_ratio": 425.19260550877135,
+    "max_prepare_to_single_query_ratio": 12757.870195394278,
+    "row_count": 4
+  },
+  "warmup": 5
+}
