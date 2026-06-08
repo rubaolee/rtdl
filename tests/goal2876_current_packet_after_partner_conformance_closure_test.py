@@ -46,7 +46,7 @@ class Goal2876CurrentPacketAfterPartnerConformanceClosureTest(unittest.TestCase)
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual(
-            "docs/reports/goal2880_current_packet_after_seam_provenance_pod/goal2855_summary.json",
+            "docs/reports/goal2973_current_packet_with_toolchain_scope_pod/goal2855_summary.json",
             packet["current_canonical_runner"]["summary_path"],
         )
         self.assertEqual("pass", packet["current_canonical_runner"]["status"])

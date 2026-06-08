@@ -1,10 +1,10 @@
 {
   "accepted_negative_occurrences": [
     {
-      "line": 41,
+      "line": 43,
       "path": "docs/partner_acceleration_boundaries.md",
       "phrase": "broad RT-core acceleration",
-      "snippet": "arbitrary PyTorch code. - RTDL accelerates arbitrary CuPy code. - RTDL optimizes partner programs automatically. - RTDL makes whole applications faster by default. - RTDL provides broad RT-core acceleration for all partner workloads.  ## Partner-Owned Columns Are Not Whole-Program Acceleration  Partner-owned columns mean the input or output arrays are owned by a partner runtime such"
+      "snippet": "s arbitrary CuPy code. - RTDL accelerates arbitrary Numba code. - RTDL optimizes partner programs automatically. - RTDL makes whole applications faster by default. - RTDL provides broad RT-core acceleration for all partner workloads.  ## Partner-Owned Columns Are Not Whole-Program Acceleration  Partner-owned columns mean the input or output arrays are owned by a partner runtime such"
     },
     {
       "line": 220,
@@ -14,39 +14,33 @@
     },
     {
       "line": 46,
-      "path": "docs/tutorials/partner_optix_zero_copy_anyhit.md",
-      "phrase": "broad RT-core acceleration",
-      "snippet": "or the supported path; - continuation with normal PyTorch or CuPy code after RTDL returns.  Not allowed:  - final v2.0 release wording; - arbitrary PyTorch or CuPy acceleration; - broad RT-core acceleration; - package-install support; - claims that every app phase is faster.  For the current release status, read [v2.0 Release Package](../release_reports/v2_0/README.md).  ## Practical"
+      "path": "docs/tutorials/partner_optix_column_anyhit.md",
+      "phrase": "broad RT-core speedup",
+      "snippet": "th; - continuation with normal PyTorch or CuPy code after RTDL returns.  Not allowed:  - arbitrary PyTorch, CuPy, or Numba acceleration; - a general zero-copy product guarantee; - broad RT-core speedup or acceleration; - package-install support; - claims that every app phase is faster.  For the current partner-choice rule, read [Choosing A Partner For Custom Logic](../learn/part"
     },
     {
       "line": 47,
-      "path": "docs/tutorials/partner_optix_zero_copy_anyhit.md",
+      "path": "docs/tutorials/partner_optix_column_anyhit.md",
       "phrase": "package-install support",
-      "snippet": "nuation with normal PyTorch or CuPy code after RTDL returns.  Not allowed:  - final v2.0 release wording; - arbitrary PyTorch or CuPy acceleration; - broad RT-core acceleration; - package-install support; - claims that every app phase is faster.  For the current release status, read [v2.0 Release Package](../release_reports/v2_0/README.md).  ## Practical Starting Point  Start with"
+      "snippet": "CuPy code after RTDL returns.  Not allowed:  - arbitrary PyTorch, CuPy, or Numba acceleration; - a general zero-copy product guarantee; - broad RT-core speedup or acceleration; - package-install support; - claims that every app phase is faster.  For the current partner-choice rule, read [Choosing A Partner For Custom Logic](../learn/partner_choice_for_custom_logic.md).  ## Practi"
     },
     {
-      "line": 68,
+      "line": 77,
       "path": "docs/tutorials/README.md",
       "phrase": "broad RT-core speedup",
-      "snippet": "OptiX evidence exists for specific measured contracts. - Python or partner frameworks own app continuation outside the RTDL primitive.  Not allowed:  - package-install promises; - broad RT-core speedup claims; - arbitrary PyTorch/CuPy acceleration claims; - arbitrary polygon overlay, graph analytics, or database acceleration claims; - universal speedup wording beyond reviewed ev"
-    },
-    {
-      "line": 69,
-      "path": "docs/tutorials/README.md",
-      "phrase": "arbitrary PyTorch/CuPy acceleration",
-      "snippet": "ic measured contracts. - Python or partner frameworks own app continuation outside the RTDL primitive.  Not allowed:  - package-install promises; - broad RT-core speedup claims; - arbitrary PyTorch/CuPy acceleration claims; - arbitrary polygon overlay, graph analytics, or database acceleration claims; - universal speedup wording beyond reviewed evidence.  For the exact boundary, read [Partner"
+      "snippet": "OptiX evidence exists for specific measured contracts. - Python or partner frameworks own app continuation outside the RTDL primitive.  Not allowed:  - package-install promises; - broad RT-core speedup claims; - arbitrary PyTorch/CuPy/Numba acceleration claims; - arbitrary polygon overlay, graph analytics, or database acceleration claims; - universal speedup wording beyond revie"
     },
     {
       "line": 301,
       "path": "docs/tutorials/segment_polygon_workloads.md",
       "phrase": "whole-app speedup",
-      "snippet": "at chunk `1024`, but no positive public Jaccard speedup wording is authorized because current evidence still has OptiX slower than Embree. This is not a monolithic GPU Jaccard or whole-app speedup claim. For claim-sensitive runs:  ```bash PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend optix --require-rt-core ```  ---  ## Recommended learning order  1"
+      "snippet": "at chunk `1024`, but no positive public Jaccard speedup wording is authorized because current evidence still has OptiX slower than Embree. This is not a monolithic GPU Jaccard or whole-app speedup claim. For claim-sensitive runs:  ```bash PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py --backend optix --require-rt-core ```  ---  ## Recomme"
     },
     {
-      "line": 133,
+      "line": 30,
       "path": "README.md",
-      "phrase": "arbitrary PyTorch/CuPy acceleration",
-      "snippet": "elease passed the project 3-AI consensus redline: Codex plus independent Claude and Gemini reviews. Do not read the v2.0 release as a package-install promise, broad RT-core claim, arbitrary PyTorch/CuPy acceleration claim, arbitrary polygon overlay claim, or proof that every user program is faster. For the exact positive and negative rule, read [Partner Acceleration Boundaries](docs/partner_a"
+      "phrase": "pip install",
+      "snippet": "m the source tree, so set `PYTHONPATH` before examples and tests.  Linux/pod native smoke prerequisites:  ```bash apt-get install -y libgeos-dev pkg-config libembree-dev python -m pip install numpy pillow imageio imageio-ffmpeg  # Note: package-install is unsupported ```  Use a virtual environment if your Python distribution blocks system-wide `pip`. The portable `cpu_"
     }
   ],
   "claim_boundary": {
@@ -67,7 +61,7 @@
     "docs/tutorials/hello_world.md",
     "docs/tutorials/nearest_neighbor_workloads.md",
     "docs/tutorials/partner_anyhit.md",
-    "docs/tutorials/partner_optix_zero_copy_anyhit.md",
+    "docs/tutorials/partner_optix_column_anyhit.md",
     "docs/tutorials/README.md",
     "docs/tutorials/rendering_and_visual_demos.md",
     "docs/tutorials/segment_polygon_workloads.md",
