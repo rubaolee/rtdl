@@ -34,6 +34,7 @@ class Goal4035PartitionComponentLabelsCupyPreviewRuntimeTest(unittest.TestCase):
             radius=1.0,
             cell_factor=0.5,
             partition_union_execution="cupy_safe_full",
+            ambiguous_union_execution="cupy_partition_points",
             validate_against_all_pairs=True,
         )
         self.assertEqual(result["metadata"]["status"], "accept")
@@ -41,6 +42,8 @@ class Goal4035PartitionComponentLabelsCupyPreviewRuntimeTest(unittest.TestCase):
         self.assertTrue(result["metadata"]["summary_same_contract_validation_enabled"])
         self.assertEqual(result["metadata"]["partition_summary_pair_enumeration"], "device_bounded_offsets")
         self.assertEqual(result["metadata"]["partition_union_execution"], "cupy_safe_full")
+        self.assertEqual(result["metadata"]["ambiguous_union_execution"], "cupy_partition_points")
+        self.assertTrue(result["metadata"]["device_ambiguous_union_used"])
         self.assertEqual(result["metadata"]["partition_summary_pair_capacity_source"], "device_upper_bound")
         self.assertGreaterEqual(result["metadata"]["safe_full_partition_union_iterations"], 1)
         self.assertGreater(result["metadata"]["ambiguous_partition_pairs"], 0)
@@ -62,6 +65,7 @@ class Goal4035PartitionComponentLabelsCupyPreviewRuntimeTest(unittest.TestCase):
             cell_factor=0.5,
             partition_summary=summary,
             partition_union_execution="cupy_safe_full",
+            ambiguous_union_execution="cupy_partition_points",
             validate_against_all_pairs=True,
         )
         self.assertEqual(result["metadata"]["status"], "accept")
@@ -80,6 +84,8 @@ class Goal4035PartitionComponentLabelsCupyPreviewSourceTest(unittest.TestCase):
             "cupy_safe_full",
             "device_upper_bound",
             "partition_union_execution",
+            "ambiguous_union_execution",
+            "cupy_partition_points",
             "validate_summary_same_contract",
             "partition_summary_reused",
             "not a promoted release route",

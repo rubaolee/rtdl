@@ -39,6 +39,7 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_REQUIREMENTS = (
     "compressed_occupied_partition_key_structure",
     "bounded_near_partition_enumeration",
     "device_resident_partition_aabb_and_count_columns",
+    "partition_point_ordinals_for_device_ambiguous_continuation",
     "no_dense_cell_pair_matrix",
     "safe_full_partition_pair_summary_without_pair_materialization",
     "ambiguous_boundary_pair_rt_traversal",
@@ -58,6 +59,7 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_REQUIREMENTS = (
     "edge_case_status_and_float_tolerance_tests",
     "cupy_preview_producer_same_contract_pod_execution",
     "cupy_device_bounded_pair_enumeration_same_contract_pod_execution",
+    "cupy_device_ambiguous_partition_union_same_contract_pod_execution",
     "numba_preview_device_columns_same_contract_pod_execution",
 )
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_EVIDENCE_GOALS = (
@@ -80,6 +82,7 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_EVIDENCE_GOALS = (
     "Goal4027",
     "Goal4029",
     "Goal4032",
+    "Goal4040",
 )
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PARTITION_GUIDANCE = MappingProxyType({
     "recommended_tested_cell_factor": "radius_x_0.125",
@@ -89,6 +92,7 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PARTITION_GUIDANCE = MappingProxyType({
     ),
     "required_device_resident_columns": (
         "point_partition_ids",
+        "partition_point_ordinals",
         "occupied_partition_keys",
         "partition_offsets",
         "partition_counts",
@@ -606,6 +610,7 @@ def make_v2_8_fixed_radius_partition_convergence_summary_typed_stream_contract(
     pair_shape = (pair_capacity,)
     columns = (
         column("point_partition_ids", "group_key", "uint32", (point_count,), mutability="mutable"),
+        column("partition_point_ordinals", "item_id", "uint32", (point_count,)),
         column("occupied_partition_keys_x", "payload", "int32", partition_shape),
         column("occupied_partition_keys_y", "payload", "int32", partition_shape),
         column("occupied_partition_keys_z", "payload", "int32", partition_shape),
@@ -689,6 +694,9 @@ def build_v2_8_fixed_radius_partition_convergence_summary_reference_3d(
     partition_ordinals = {key: ordinal for ordinal, key in enumerate(ordered_keys)}
     point_partition_ids = tuple(partition_ordinals[key] for key in point_partition_keys)
     partition_counts = tuple(len(cells[key]["indices"]) for key in ordered_keys)
+    partition_point_ordinals = tuple(
+        ordinal for key in ordered_keys for ordinal in cells[key]["indices"]
+    )
     offsets = [0]
     for count in partition_counts:
         offsets.append(offsets[-1] + count)
@@ -735,6 +743,7 @@ def build_v2_8_fixed_radius_partition_convergence_summary_reference_3d(
     return {
         "columns": {
             "point_partition_ids": point_partition_ids,
+            "partition_point_ordinals": partition_point_ordinals,
             "occupied_partition_keys_x": tuple(key[0] for key in ordered_keys),
             "occupied_partition_keys_y": tuple(key[1] for key in ordered_keys),
             "occupied_partition_keys_z": tuple(key[2] for key in ordered_keys),
@@ -1245,6 +1254,7 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
         }
     columns = {
         "point_partition_ids": point_partition_ids,
+        "partition_point_ordinals": order.astype(cupy.uint32, copy=False),
         "occupied_partition_keys_x": cupy.asarray([key[0] for key in key_rows], dtype=cupy.int32),
         "occupied_partition_keys_y": cupy.asarray([key[1] for key in key_rows], dtype=cupy.int32),
         "occupied_partition_keys_z": cupy.asarray([key[2] for key in key_rows], dtype=cupy.int32),
@@ -1337,6 +1347,7 @@ def build_v2_8_fixed_radius_partition_convergence_summary_numba_preview_3d(
     )
     dtype_map = {
         "point_partition_ids": np.uint32,
+        "partition_point_ordinals": np.uint32,
         "occupied_partition_keys_x": np.int32,
         "occupied_partition_keys_y": np.int32,
         "occupied_partition_keys_z": np.int32,
@@ -1396,6 +1407,7 @@ def build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_
     pair_enumeration: str = "device_bounded_offsets",
     partition_summary: dict[str, Any] | None = None,
     partition_union_execution: str = "host",
+    ambiguous_union_execution: str = "host",
     validate_summary_same_contract: bool = True,
     validate_against_all_pairs: bool = False,
 ) -> dict[str, Any]:
@@ -1411,6 +1423,11 @@ def build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_
     partition_union_execution = str(partition_union_execution)
     if partition_union_execution not in {"host", "cupy_safe_full"}:
         raise ValueError("partition_union_execution must be 'host' or 'cupy_safe_full'")
+    ambiguous_union_execution = str(ambiguous_union_execution)
+    if ambiguous_union_execution not in {"host", "cupy_partition_points"}:
+        raise ValueError("ambiguous_union_execution must be 'host' or 'cupy_partition_points'")
+    if ambiguous_union_execution == "cupy_partition_points" and partition_union_execution != "cupy_safe_full":
+        raise ValueError("cupy_partition_points ambiguous union requires cupy_safe_full partition union")
     if partition_summary is None:
         summary = build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
             raw_rows,
@@ -1457,6 +1474,7 @@ def build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_
         "partition_summary_pair_enumeration": summary["metadata"]["pair_enumeration"],
         "partition_summary_pair_capacity_source": summary["metadata"]["pair_capacity_source"],
         "partition_union_execution": partition_union_execution,
+        "ambiguous_union_execution": ambiguous_union_execution,
         "native_abi_added": False,
         "runtime_executable": True,
         "release_authorized": False,
@@ -1504,7 +1522,38 @@ def build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_
     summary_left = summary_columns["near_pair_left_partition_ids"]
     summary_right = summary_columns["near_pair_right_partition_ids"]
     summary_status = summary_columns["near_pair_status"]
-    if partition_union_execution == "cupy_safe_full":
+    if partition_union_execution == "cupy_safe_full" and ambiguous_union_execution == "cupy_partition_points":
+        import cupy
+
+        x_dev = cupy.asarray([point[0] for point in points], dtype=cupy.float64)
+        y_dev = cupy.asarray([point[1] for point in points], dtype=cupy.float64)
+        z_dev = cupy.asarray([point[2] for point in points], dtype=cupy.float64)
+        (
+            partition_parents_device,
+            union_iterations,
+            ambiguous_point_comparisons,
+            ambiguous_positive_edges,
+        ) = _cupy_union_partition_pairs_with_ambiguous_points(
+            cupy,
+            partition_count=partition_count,
+            left_ids=summary_left,
+            right_ids=summary_right,
+            statuses=summary_status,
+            partition_offsets=summary_columns["partition_offsets"],
+            partition_point_ordinals=summary_columns["partition_point_ordinals"],
+            x=x_dev,
+            y=y_dev,
+            z=z_dev,
+            radius_sq=radius * radius,
+        )
+        partition_parents = [int(value) for value in cupy.asnumpy(partition_parents_device).tolist()]
+        safe_skip_pairs = int(summary["metadata"]["status_counts"]["safe_skip_partition_pairs"])
+        safe_full_pairs = int(summary["metadata"]["status_counts"]["safe_full_partition_pairs"])
+        ambiguous_pairs = int(summary["metadata"]["status_counts"]["ambiguous_partition_pairs"])
+        ambiguous_left_values = ()
+        ambiguous_right_values = ()
+        ambiguous_status_values = ()
+    elif partition_union_execution == "cupy_safe_full":
         import cupy
 
         partition_parents, union_iterations = _cupy_union_safe_full_partition_pairs(
@@ -1529,9 +1578,10 @@ def build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_
     radius_sq = radius * radius
     safe_skip_pairs = int(safe_skip_pairs) if partition_union_execution == "cupy_safe_full" else 0
     safe_full_pairs = int(safe_full_pairs) if partition_union_execution == "cupy_safe_full" else 0
-    ambiguous_pairs = 0
-    ambiguous_point_comparisons = 0
-    ambiguous_positive_edges = 0
+    if not (partition_union_execution == "cupy_safe_full" and ambiguous_union_execution == "cupy_partition_points"):
+        ambiguous_pairs = 0
+        ambiguous_point_comparisons = 0
+        ambiguous_positive_edges = 0
     for left, right, status in zip(
         ambiguous_left_values,
         ambiguous_right_values,
@@ -1612,9 +1662,187 @@ def build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_
             "ambiguous_point_comparisons": ambiguous_point_comparisons,
             "ambiguous_positive_edges": ambiguous_positive_edges,
             "safe_full_partition_union_iterations": union_iterations,
+            "device_ambiguous_union_used": ambiguous_union_execution == "cupy_partition_points",
             "all_pairs_component_labels": all_pairs_labels,
         },
     }
+
+
+def _cupy_union_partition_pairs_with_ambiguous_points(
+    cupy,
+    *,
+    partition_count: int,
+    left_ids,
+    right_ids,
+    statuses,
+    partition_offsets,
+    partition_point_ordinals,
+    x,
+    y,
+    z,
+    radius_sq: float,
+    max_iterations: int = 64,
+):
+    classify_kernel = cupy.RawKernel(
+        r'''
+        extern "C" __global__
+        void classify_ambiguous_partition_pairs_kernel(
+            const unsigned int* left_ids,
+            const unsigned int* right_ids,
+            const unsigned int* statuses,
+            unsigned int pair_count,
+            const unsigned int* partition_offsets,
+            const unsigned int* partition_point_ordinals,
+            const double* x,
+            const double* y,
+            const double* z,
+            double radius_sq,
+            unsigned int* ambiguous_connected,
+            unsigned int* comparison_count,
+            unsigned int* positive_count)
+        {
+            unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
+            if (idx >= pair_count || statuses[idx] != 2u) return;
+            unsigned int left = left_ids[idx];
+            unsigned int right = right_ids[idx];
+            unsigned int left_begin = partition_offsets[left];
+            unsigned int left_end = partition_offsets[left + 1u];
+            unsigned int right_begin = partition_offsets[right];
+            unsigned int right_end = partition_offsets[right + 1u];
+            unsigned int connected = 0u;
+            for (unsigned int li = left_begin; li < left_end && connected == 0u; ++li) {
+                unsigned int left_point = partition_point_ordinals[li];
+                for (unsigned int ri = right_begin; ri < right_end; ++ri) {
+                    unsigned int right_point = partition_point_ordinals[ri];
+                    if (left == right && right_point <= left_point) continue;
+                    atomicAdd(comparison_count, 1u);
+                    double dx = x[left_point] - x[right_point];
+                    double dy = y[left_point] - y[right_point];
+                    double dz = z[left_point] - z[right_point];
+                    double dist = dx * dx + dy * dy + dz * dz;
+                    if (dist <= radius_sq) {
+                        connected = 1u;
+                        break;
+                    }
+                }
+            }
+            if (connected != 0u) {
+                ambiguous_connected[idx] = 1u;
+                atomicAdd(positive_count, 1u);
+            }
+        }
+        ''',
+        "classify_ambiguous_partition_pairs_kernel",
+    )
+    union_kernel = cupy.RawKernel(
+        r'''
+        extern "C" __global__
+        void union_partition_pairs_kernel(
+            const unsigned int* left_ids,
+            const unsigned int* right_ids,
+            const unsigned int* statuses,
+            const unsigned int* ambiguous_connected,
+            unsigned int pair_count,
+            unsigned int* parents,
+            unsigned int* changed)
+        {
+            unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
+            if (idx >= pair_count) return;
+            unsigned int status = statuses[idx];
+            if (status != 1u && !(status == 2u && ambiguous_connected[idx] != 0u)) return;
+            unsigned int left_root = left_ids[idx];
+            unsigned int right_root = right_ids[idx];
+            while (parents[left_root] != left_root) left_root = parents[left_root];
+            while (parents[right_root] != right_root) right_root = parents[right_root];
+            while (left_root != right_root) {
+                unsigned int low = left_root < right_root ? left_root : right_root;
+                unsigned int high = left_root < right_root ? right_root : left_root;
+                unsigned int old = atomicMin(&parents[high], low);
+                if (old == high) {
+                    *changed = 1u;
+                    break;
+                }
+                left_root = low;
+                right_root = old;
+                while (parents[left_root] != left_root) left_root = parents[left_root];
+                while (parents[right_root] != right_root) right_root = parents[right_root];
+            }
+        }
+        ''',
+        "union_partition_pairs_kernel",
+    )
+    compress_kernel = cupy.RawKernel(
+        r'''
+        extern "C" __global__
+        void compress_partition_parents_kernel(unsigned int* parents, unsigned int partition_count)
+        {
+            unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
+            if (idx >= partition_count) return;
+            unsigned int root = idx;
+            while (parents[root] != root) root = parents[root];
+            parents[idx] = root;
+        }
+        ''',
+        "compress_partition_parents_kernel",
+    )
+    partition_count = int(partition_count)
+    pair_count = int(statuses.size)
+    parents = cupy.arange(partition_count, dtype=cupy.uint32)
+    ambiguous_connected = cupy.zeros((pair_count,), dtype=cupy.uint32)
+    comparison_count = cupy.zeros((1,), dtype=cupy.uint32)
+    positive_count = cupy.zeros((1,), dtype=cupy.uint32)
+    changed = cupy.zeros((1,), dtype=cupy.uint32)
+    threads = 256
+    pair_blocks = (max(1, (pair_count + threads - 1) // threads),)
+    parent_blocks = (max(1, (partition_count + threads - 1) // threads),)
+    classify_kernel(
+        pair_blocks,
+        (threads,),
+        (
+            left_ids,
+            right_ids,
+            statuses,
+            cupy.uint32(pair_count),
+            partition_offsets,
+            partition_point_ordinals,
+            x,
+            y,
+            z,
+            float(radius_sq),
+            ambiguous_connected,
+            comparison_count,
+            positive_count,
+        ),
+    )
+    iterations = 0
+    for iteration in range(int(max_iterations)):
+        changed.fill(0)
+        union_kernel(
+            pair_blocks,
+            (threads,),
+            (
+                left_ids,
+                right_ids,
+                statuses,
+                ambiguous_connected,
+                cupy.uint32(pair_count),
+                parents,
+                changed,
+            ),
+        )
+        compress_kernel(parent_blocks, (threads,), (parents, cupy.uint32(partition_count)))
+        cupy.cuda.get_current_stream().synchronize()
+        iterations = iteration + 1
+        if int(changed[0].item()) == 0:
+            break
+    else:
+        raise RuntimeError("partition union did not converge")
+    return (
+        parents,
+        iterations,
+        int(comparison_count[0].item()),
+        int(positive_count[0].item()),
+    )
 
 
 def _cupy_union_safe_full_partition_pairs(

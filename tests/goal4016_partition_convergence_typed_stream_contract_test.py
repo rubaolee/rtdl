@@ -19,6 +19,7 @@ class Goal4016PartitionConvergenceTypedStreamContractTest(unittest.TestCase):
             512,
             data_ptrs={
                 "point_partition_ids": 1000,
+                "partition_point_ordinals": 1500,
                 "near_pair_left_partition_ids": 2000,
                 "near_pair_right_partition_ids": 3000,
                 "near_pair_status": 4000,
@@ -35,6 +36,7 @@ class Goal4016PartitionConvergenceTypedStreamContractTest(unittest.TestCase):
         self.assertEqual(metadata["page_capacity"], 512)
         for name in (
             "point_partition_ids",
+            "partition_point_ordinals",
             "occupied_partition_keys_x",
             "occupied_partition_keys_y",
             "occupied_partition_keys_z",
@@ -52,6 +54,7 @@ class Goal4016PartitionConvergenceTypedStreamContractTest(unittest.TestCase):
         ):
             self.assertIn(name, metadata["column_names"])
         self.assertEqual(contract.column("partition_offsets").buffer.shape, (65,))
+        self.assertEqual(contract.column("partition_point_ordinals").buffer.shape, (1024,))
         self.assertEqual(contract.column("near_pair_status").buffer.shape, (512,))
         self.assertGreaterEqual(metadata["device_resident_column_count"], 4)
 
@@ -90,6 +93,7 @@ class Goal4016PartitionConvergenceTypedStreamContractTest(unittest.TestCase):
             "make_v2_8_fixed_radius_partition_convergence_summary_typed_stream_contract",
             "fixed_radius_partition_convergence_summary_3d",
             "point_partition_ids",
+            "partition_point_ordinals",
             "occupied_partition_keys",
             "near_pair_status",
             "does not add a native ABI",

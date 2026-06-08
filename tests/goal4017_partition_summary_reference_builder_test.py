@@ -28,6 +28,7 @@ class Goal4017PartitionSummaryReferenceBuilderTest(unittest.TestCase):
         metadata = result["metadata"]
 
         self.assertEqual(columns["point_partition_ids"], (0, 0, 1, 2))
+        self.assertEqual(columns["partition_point_ordinals"], (0, 1, 2, 3))
         self.assertEqual(columns["occupied_partition_keys_x"], (0, 2, 6))
         self.assertEqual(columns["occupied_partition_keys_y"], (0, 0, 0))
         self.assertEqual(columns["occupied_partition_keys_z"], (0, 0, 0))
