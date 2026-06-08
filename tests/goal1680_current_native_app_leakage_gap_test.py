@@ -16,7 +16,7 @@ LEAKAGE_RE = re.compile(
     r"\brtdl_[A-Za-z0-9_]*(db|pip|bfs|robot|pose|polygon|knn|hausdorff|jaccard)[A-Za-z0-9_]*\b",
     re.IGNORECASE,
 )
-FALSE_POSITIVE_CONSTANT_RE = re.compile(r"\bRTDL_DB_[A-Z0-9_]+\b|\bRTDL_OPTIX_POINT_PRIMITIVE_USE_SCALAR_COUNT_PIPELINE\b")
+FALSE_POSITIVE_CONSTANT_RE = re.compile(r"\bRTDL_DB_[A-Z0-9_]+\b")
 
 
 def _text(path: Path) -> str:
@@ -51,10 +51,10 @@ class Goal1680CurrentNativeAppLeakageGapTest(unittest.TestCase):
         # Post-Goal1681/1682/1688/1690/1695/1697/1699/1704 strict cleanup
         # complete; all 9 remaining strict hits are uppercase RTDL_DB_*
         # constant false positives.
-        self.assertEqual(len(strict_symbols), 10)
-        self.assertEqual(len(strict_occurrences), 15)
-        self.assertEqual(len(false_positive_symbols), 10)
-        self.assertEqual(len(false_positive_occurrences), 15)
+        self.assertEqual(len(strict_symbols), 9)
+        self.assertEqual(len(strict_occurrences), 14)
+        self.assertEqual(len(false_positive_symbols), 9)
+        self.assertEqual(len(false_positive_occurrences), 14)
         self.assertEqual(len(real_symbols), 0)
 
         by_family = Counter(_first_family(symbol) for symbol in real_symbols)
