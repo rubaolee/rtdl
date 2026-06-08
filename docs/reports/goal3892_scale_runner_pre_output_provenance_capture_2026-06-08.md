@@ -34,3 +34,26 @@ Updated `tests/goal3890_scale_runner_runtime_provenance_test.py` with a
 regression check that writes the runner output under a new in-repo artifact path
 and verifies that the newly created output path does not appear in
 `runtime_environment.git_status_short`.
+
+## A5000 Clean-Tree Dry-Run Evidence
+
+Ran from a fresh clone on the A5000 pod without pre-creating the in-repo output
+directory:
+
+Artifact:
+
+`docs/reports/goal3892_pre_output_provenance_a5000_dry_run/summary.json`
+
+Result:
+
+- `exit_code`: `0`
+- `dry_run`: `true`
+- selected row count: `1`
+- `runtime_environment.source_commit_short`: `682533e3`
+- `runtime_environment.working_tree_clean`: `true`
+- `runtime_environment.git_status_short`: `[]`
+- `runtime_environment.nvidia_smi`: `NVIDIA RTX A5000, 580.126.09, 24564 MiB`
+
+This proves the runner now captures Git provenance before creating its own
+output path. If a caller pre-creates or dirties the output path before invoking
+the runner, that dirtiness will still be honestly recorded.

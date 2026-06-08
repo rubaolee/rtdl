@@ -12,7 +12,9 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 RUNNER = ROOT / "scripts" / "goal3828_current_benchmark_scale_profile_runner.py"
 REPORT = ROOT / "docs" / "reports" / "goal3890_scale_runner_runtime_provenance_2026-06-08.md"
+GOAL3892_REPORT = ROOT / "docs" / "reports" / "goal3892_scale_runner_pre_output_provenance_capture_2026-06-08.md"
 A5000_ARTIFACT = ROOT / "docs" / "reports" / "goal3890_scale_runner_runtime_provenance_a5000_dry_run"
+GOAL3892_A5000_ARTIFACT = ROOT / "docs" / "reports" / "goal3892_pre_output_provenance_a5000_dry_run"
 
 
 class Goal3890ScaleRunnerRuntimeProvenanceTest(unittest.TestCase):
@@ -109,6 +111,19 @@ class Goal3890ScaleRunnerRuntimeProvenanceTest(unittest.TestCase):
         ):
             self.assertIn(phrase, text)
 
+    def test_goal3892_report_documents_pre_output_capture(self) -> None:
+        text = GOAL3892_REPORT.read_text(encoding="utf-8")
+        for phrase in (
+            "Goal3892",
+            "creating output directories",
+            "A5000 Clean-Tree Dry-Run Evidence",
+            "682533e3",
+            "working_tree_clean",
+            "git_status_short",
+            "does not authorize release action",
+        ):
+            self.assertIn(phrase, text)
+
     def test_a5000_dry_run_artifact_records_runtime_environment(self) -> None:
         payload = json.loads((A5000_ARTIFACT / "summary.json").read_text(encoding="utf-8"))
         self.assertEqual((A5000_ARTIFACT / "exit_code").read_text(encoding="utf-8").strip(), "0")
@@ -123,6 +138,20 @@ class Goal3890ScaleRunnerRuntimeProvenanceTest(unittest.TestCase):
             "?? docs/reports/goal3890_scale_runner_runtime_provenance_a5000_dry_run/",
             env["git_status_short"],
         )
+
+    def test_goal3892_a5000_artifact_records_clean_tree_when_runner_creates_output_path(self) -> None:
+        payload = json.loads((GOAL3892_A5000_ARTIFACT / "summary.json").read_text(encoding="utf-8"))
+        self.assertEqual(
+            (GOAL3892_A5000_ARTIFACT / "exit_code").read_text(encoding="utf-8").strip(),
+            "0",
+        )
+        self.assertTrue(payload["dry_run"])
+        self.assertEqual(len(payload["rows"]), 1)
+        env = payload["runtime_environment"]
+        self.assertEqual(env["source_commit_short"], "682533e3")
+        self.assertTrue(env["working_tree_clean"])
+        self.assertEqual(env["git_status_short"], [])
+        self.assertIn("NVIDIA RTX A5000", env["nvidia_smi"])
 
 
 if __name__ == "__main__":
