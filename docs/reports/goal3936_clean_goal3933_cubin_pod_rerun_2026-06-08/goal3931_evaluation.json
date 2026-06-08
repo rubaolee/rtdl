@@ -1,0 +1,46 @@
+{
+  "claim_boundary": {
+    "automatic_partner_selection_authorized": false,
+    "broad_rt_core_speedup_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "route_promotion_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "errors": [],
+  "goal": "Goal3931",
+  "planned_commands": {},
+  "rayjoin": {
+    "all_cases_have_nested_subprobe_timing": false,
+    "all_cases_use_loaded_case_reuse": false,
+    "case_count": 3,
+    "gpu": "NVIDIA RTX 4000 Ada Generation, 550.127.05",
+    "missing_loaded_case_reuse": [
+      "pip"
+    ],
+    "missing_nested_subprobe_timing": [
+      "pip"
+    ],
+    "wrapper_phase_timing_present": true
+  },
+  "rtdbscan": {
+    "blocked_elapsed_sec": 0.3937402702867985,
+    "blocked_vs_unblocked_speedup": 0.22763847875385823,
+    "has_blocked": true,
+    "has_unblocked": true,
+    "recommendation": "blocked_candidate_slower_keep_unblocked_default",
+    "review_threshold_speedup": 1.05,
+    "row_count": 2,
+    "unblocked_elapsed_sec": 0.08963043615221977
+  },
+  "source_commit": "cd7fa65f",
+  "source_commit_label": "cd7fa65f",
+  "source_manifest": "/root/goal3936_combined_pod_artifacts_clean_cubin/summary_manifest.json",
+  "status": "accept_with_boundary",
+  "warnings": [
+    "RayJoin cases missing nested subprobe timing: ('pip',)",
+    "RayJoin cases without loaded-case reuse flag true: ('pip',)",
+    "RTDBSCAN blocked mode did not clear the 1.05x review threshold"
+  ]
+}
