@@ -50,6 +50,12 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_REQUIREMENTS = (
     "root_read_telemetry_reduction_required",
     "radius_x_0_125_partition_factor_evidence",
     "actual_benchmark_radius_pod_evidence",
+    "compressed_partition_enumeration_accounting",
+    "typed_partition_summary_stream_contract",
+    "same_contract_validator_against_python_reference",
+    "component_label_oracle_against_all_pairs",
+    "complete_candidate_coverage_status_invariant",
+    "edge_case_status_and_float_tolerance_tests",
 )
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_EVIDENCE_GOALS = (
     "Goal3999",
@@ -59,6 +65,15 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_EVIDENCE_GOALS = (
     "Goal4007",
     "Goal4009",
     "Goal4011",
+    "Goal4012",
+    "Goal4014",
+    "Goal4015",
+    "Goal4016",
+    "Goal4017",
+    "Goal4019",
+    "Goal4021",
+    "Goal4023",
+    "Goal4024",
 )
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PARTITION_GUIDANCE = MappingProxyType({
     "recommended_tested_cell_factor": "radius_x_0.125",
@@ -87,6 +102,17 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PARTITION_GUIDANCE = MappingProxyType({
         "dense_all_cell_pair_matrix",
         "hidden_root_path_halving_inside_readonly_find",
         "app_specific_dbscan_or_clustering_native_abi",
+        "incomplete_partition_pair_prefix_marked_complete",
+    ),
+    "required_validation_chain": (
+        "typed_partition_summary_stream_contract",
+        "same_contract_validator_against_python_reference",
+        "component_label_oracle_against_all_pairs",
+        "complete_candidate_coverage_status_invariant",
+        "single_point_status_float_tolerance_edge_cases",
+    ),
+    "native_promotion_gate": (
+        "candidate_device_producer_must_pass_goal4019_goal4021_goal4023_goal4024_before_timing"
     ),
 })
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY = (
