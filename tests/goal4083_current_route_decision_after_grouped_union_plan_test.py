@@ -16,7 +16,7 @@ class Goal4083CurrentRouteDecisionAfterGroupedUnionPlanTest(unittest.TestCase):
 
         self.assertEqual("numba_continuation", route["decision_kind"])
         self.assertEqual("numba", route["partner_policy"])
-        self.assertIn("Goal4079-4096", route["current_reader_decision"])
+        self.assertIn("Goal4079-4100", route["current_reader_decision"])
         self.assertIn("candidate enumeration", route["current_reader_decision"])
         self.assertIn("root-read", route["current_reader_decision"])
         self.assertIn("Goal4080/4086 generic fixed-radius grouped-union work-reduction", route["next_runtime_action"])
