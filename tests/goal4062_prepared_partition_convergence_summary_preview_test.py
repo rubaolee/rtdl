@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
 import unittest
 
@@ -10,6 +11,7 @@ import rtdsl as rt
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "src" / "rtdsl" / "v2_8_fixed_radius_graph_component_front_door.py"
 REPORT = ROOT / "docs" / "reports" / "goal4062_prepared_partition_convergence_summary_preview_2026-06-09.md"
+ARTIFACT = ROOT / "docs" / "reports" / "goal4062_prepared_partition_summary_timing_pod.json"
 
 
 def _cupy_available() -> bool:
@@ -110,6 +112,33 @@ class Goal4062PreparedPartitionSummarySourceTest(unittest.TestCase):
             "true-zero-copy",
         ):
             self.assertIn(fragment, text)
+
+
+class Goal4062PreparedPartitionSummaryPodArtifactTest(unittest.TestCase):
+    def test_pod_artifact_records_replay_speedup_without_claim_leakage(self) -> None:
+        payload = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+        self.assertEqual(payload["goal"], "Goal4062")
+        self.assertEqual(payload["schema"], "rtdl.goal4062.prepared_partition_summary_timing.v1")
+        self.assertEqual(payload["source_commit"], "ddcc0680")
+        self.assertFalse(payload["release_authorized"])
+        self.assertFalse(payload["public_speedup_claim_authorized"])
+        self.assertFalse(payload["rt_core_speedup_claim_authorized"])
+        self.assertFalse(payload["whole_app_speedup_claim_authorized"])
+        self.assertFalse(payload["true_zero_copy_claim_authorized"])
+        self.assertFalse(payload["partition_convergence_hybrid_promoted"])
+        self.assertFalse(payload["native_abi_added"])
+        self.assertEqual(len(payload["rows"]), 6)
+        for row in payload["rows"]:
+            self.assertTrue(row["component_signature_match"])
+            self.assertGreater(row["prepared_replay_speedup_min"], 3.0)
+            self.assertGreater(row["prepared_three_run_amortized_speedup_median"], 1.5)
+            self.assertTrue(row["prepared_signature_metadata"]["prepared_partition_summary_reused"])
+            self.assertEqual(
+                row["prepared_signature_metadata"]["prepared_partition_summary_handle_status"],
+                "explicit_cupy_preview_not_promoted",
+            )
+            self.assertFalse(row["prepared_handle_metadata"]["release_authorized"])
+            self.assertFalse(row["prepared_handle_metadata"]["automatic_partner_selection_allowed"])
 
 
 if __name__ == "__main__":

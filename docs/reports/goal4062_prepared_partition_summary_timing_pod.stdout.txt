@@ -1,0 +1,717 @@
+PROFILE_START clustered3d_1024 points 1024
+RUN_ONE_SHOT_SIGNATURE clustered3d_1024 0 0.008158
+RUN_ONE_SHOT_SIGNATURE clustered3d_1024 1 0.007694
+RUN_ONE_SHOT_SIGNATURE clustered3d_1024 2 0.007637
+RUN_ONE_SHOT_SIGNATURE clustered3d_1024 3 0.007665
+RUN_ONE_SHOT_SIGNATURE clustered3d_1024 4 0.007615
+RUN_PREPARED_SIGNATURE clustered3d_1024 0 0.001382
+RUN_PREPARED_SIGNATURE clustered3d_1024 1 0.001393
+RUN_PREPARED_SIGNATURE clustered3d_1024 2 0.001366
+RUN_PREPARED_SIGNATURE clustered3d_1024 3 0.001370
+RUN_PREPARED_SIGNATURE clustered3d_1024 4 0.001366
+PROFILE_DONE clustered3d_1024 {"component_signature_match": true, "one_shot_signature": {"mean_sec": 0.007753938436508179, "median_sec": 0.007664963603019714, "min_sec": 0.007614664733409882}, "point_count": 1024, "prepare_sec": 0.006475329399108887, "prepared_handle_metadata": {"app_specific_engine_logic_allowed": false, "automatic_partner_selection_allowed": false, "cell_factor": 0.125, "claim_boundary": "The v2.8 fixed-radius graph component front door exposes an explicit user-selected OptiX+partner grouped-stream contract over an existing generic runtime path. It does not add native engine app logic, choose partners automatically, authorize a release, authorize public speedup wording, authorize broad RT-core wording, authorize whole-app benchmark claims, or authorize true zero-copy wording.", "closed": false, "component_label_runs": 0, "component_signature_runs": 6, "default_route_promoted": false, "hidden_dispatch_allowed": false, "native_abi_added": false, "operation": "fixed_radius_partition_convergence_summary_3d", "pair_capacity": 6090792, "pair_enumeration": "device_bounded_offsets", "partition_convergence_hybrid_promoted": false, "partition_summary_digest": {"adapter": "fixed_radius_partition_convergence_summary_cupy_preview_3d", "complete_candidate_coverage": true, "device_pair_enumeration_used": true, "device_partition_columns_used": true, "overflow": false, "pair_capacity": 6090792, "pair_capacity_source": "device_upper_bound", "pair_count": 54627, "pair_enumeration": "device_bounded_offsets", "partition_count": 888, "point_count": 1024, "reference": "fixed_radius_partition_convergence_summary_3d_cupy_preview", "status_counts": {"ambiguous_partition_pairs": 16, "safe_full_partition_pairs": 28516, "safe_skip_partition_pairs": 26095}, "visible_pair_count": 54627}, "point_count": 1024, "prepare_validation": {"candidate_reference_contract": "fixed_radius_partition_convergence_summary_3d_same_contract_skipped_for_prepared_timing", "complete_candidate_coverage": true, "errors": [], "overflow": false, "pair_capacity": 6090792, "pair_count": 54627, "partition_count": 888, "point_count": 1024, "reference": "fixed_radius_partition_convergence_summary_3d_prepare_trusted_preview", "status": "accept", "status_column_values": {"capacity": 6090792, "complete_candidate_coverage": true, "overflow": false, "row_count": 54627}, "status_counts": {"ambiguous_partition_pairs": 16, "safe_full_partition_pairs": 28516, "safe_skip_partition_pairs": 26095}, "summary_same_contract_validation_skipped_for_prepared_timing": true, "visible_pair_count": 54627}, "prepared_partition_summary_handle": true, "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted", "prepared_partition_summary_partner": "cupy", "prepared_partition_summary_runtime_executable": true, "public_speedup_claim_authorized": false, "radius": 0.055, "release_authorized": false, "rt_core_speedup_claim_authorized": false, "runtime_executable": true, "status": "explicit_cupy_prepared_partition_summary_preview", "true_zero_copy_claim_authorized": false, "version": "rtdl.v2_8.fixed_radius_graph_component_front_door.v1", "whole_app_speedup_claim_authorized": false}, "prepared_replay_speedup_median": 5.593503803222, "prepared_replay_speedup_min": 5.576232254122063, "prepared_signature_metadata": {"ambiguous_partition_pairs": 16, "component_count": 5, "device_ambiguous_union_used": true, "label_materialization": "component_size_signature_only", "partition_summary_reused": true, "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted", "prepared_partition_summary_reused": true}, "prepared_signature_replay": {"mean_sec": 0.0013753771781921387, "median_sec": 0.0013703331351280212, "min_sec": 0.001365557312965393}, "prepared_three_run_amortized_speedup_median": 2.1721307956446494, "profile": "clustered3d_1024", "warm_one_shot_sec": 0.21181470900774002, "warm_prepared_sec": 0.0014195814728736877}
+PROFILE_START road3d_1024 points 1024
+RUN_ONE_SHOT_SIGNATURE road3d_1024 0 0.007674
+RUN_ONE_SHOT_SIGNATURE road3d_1024 1 0.007639
+RUN_ONE_SHOT_SIGNATURE road3d_1024 2 0.007684
+RUN_ONE_SHOT_SIGNATURE road3d_1024 3 0.007727
+RUN_ONE_SHOT_SIGNATURE road3d_1024 4 0.007591
+RUN_PREPARED_SIGNATURE road3d_1024 0 0.001364
+RUN_PREPARED_SIGNATURE road3d_1024 1 0.001357
+RUN_PREPARED_SIGNATURE road3d_1024 2 0.001367
+RUN_PREPARED_SIGNATURE road3d_1024 3 0.001362
+RUN_PREPARED_SIGNATURE road3d_1024 4 0.001351
+PROFILE_DONE road3d_1024 {"component_signature_match": true, "one_shot_signature": {"mean_sec": 0.0076629981398582455, "median_sec": 0.007674090564250946, "min_sec": 0.007590577006340027}, "point_count": 1024, "prepare_sec": 0.00623466819524765, "prepared_handle_metadata": {"app_specific_engine_logic_allowed": false, "automatic_partner_selection_allowed": false, "cell_factor": 0.125, "claim_boundary": "The v2.8 fixed-radius graph component front door exposes an explicit user-selected OptiX+partner grouped-stream contract over an existing generic runtime path. It does not add native engine app logic, choose partners automatically, authorize a release, authorize public speedup wording, authorize broad RT-core wording, authorize whole-app benchmark claims, or authorize true zero-copy wording.", "closed": false, "component_label_runs": 0, "component_signature_runs": 6, "default_route_promoted": false, "hidden_dispatch_allowed": false, "native_abi_added": false, "operation": "fixed_radius_partition_convergence_summary_3d", "pair_capacity": 6426883, "pair_enumeration": "device_bounded_offsets", "partition_convergence_hybrid_promoted": false, "partition_summary_digest": {"adapter": "fixed_radius_partition_convergence_summary_cupy_preview_3d", "complete_candidate_coverage": true, "device_pair_enumeration_used": true, "device_partition_columns_used": true, "overflow": false, "pair_capacity": 6426883, "pair_capacity_source": "device_upper_bound", "pair_count": 9773, "pair_enumeration": "device_bounded_offsets", "partition_count": 937, "point_count": 1024, "reference": "fixed_radius_partition_convergence_summary_3d_cupy_preview", "status_counts": {"ambiguous_partition_pairs": 132, "safe_full_partition_pairs": 7681, "safe_skip_partition_pairs": 1960}, "visible_pair_count": 9773}, "point_count": 1024, "prepare_validation": {"candidate_reference_contract": "fixed_radius_partition_convergence_summary_3d_same_contract_skipped_for_prepared_timing", "complete_candidate_coverage": true, "errors": [], "overflow": false, "pair_capacity": 6426883, "pair_count": 9773, "partition_count": 937, "point_count": 1024, "reference": "fixed_radius_partition_convergence_summary_3d_prepare_trusted_preview", "status": "accept", "status_column_values": {"capacity": 6426883, "complete_candidate_coverage": true, "overflow": false, "row_count": 9773}, "status_counts": {"ambiguous_partition_pairs": 132, "safe_full_partition_pairs": 7681, "safe_skip_partition_pairs": 1960}, "summary_same_contract_validation_skipped_for_prepared_timing": true, "visible_pair_count": 9773}, "prepared_partition_summary_handle": true, "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted", "prepared_partition_summary_partner": "cupy", "prepared_partition_summary_runtime_executable": true, "public_speedup_claim_authorized": false, "radius": 0.055, "release_authorized": false, "rt_core_speedup_claim_authorized": false, "runtime_executable": true, "status": "explicit_cupy_prepared_partition_summary_preview", "true_zero_copy_claim_authorized": false, "version": "rtdl.v2_8.fixed_radius_graph_component_front_door.v1", "whole_app_speedup_claim_authorized": false}, "prepared_replay_speedup_median": 5.6328114318839315, "prepared_replay_speedup_min": 5.618585412932579, "prepared_signature_metadata": {"ambiguous_partition_pairs": 132, "component_count": 1, "device_ambiguous_union_used": true, "label_materialization": "component_size_signature_only", "partition_summary_reused": true, "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted", "prepared_partition_summary_reused": true}, "prepared_signature_replay": {"mean_sec": 0.0013602986931800843, "median_sec": 0.0013623908162117004, "min_sec": 0.0013509765267372131}, "prepared_three_run_amortized_speedup_median": 2.2304424653559254, "profile": "road3d_1024", "warm_one_shot_sec": 0.008351214230060577, "warm_prepared_sec": 0.0013714879751205444}
+PROFILE_START clustered3d_4096 points 4096
+RUN_ONE_SHOT_SIGNATURE clustered3d_4096 0 0.020986
+RUN_ONE_SHOT_SIGNATURE clustered3d_4096 1 0.021057
+RUN_ONE_SHOT_SIGNATURE clustered3d_4096 2 0.020546
+RUN_ONE_SHOT_SIGNATURE clustered3d_4096 3 0.020581
+RUN_ONE_SHOT_SIGNATURE clustered3d_4096 4 0.020687
+RUN_PREPARED_SIGNATURE clustered3d_4096 0 0.003239
+RUN_PREPARED_SIGNATURE clustered3d_4096 1 0.003204
+RUN_PREPARED_SIGNATURE clustered3d_4096 2 0.003238
+RUN_PREPARED_SIGNATURE clustered3d_4096 3 0.003188
+RUN_PREPARED_SIGNATURE clustered3d_4096 4 0.003193
+PROFILE_DONE clustered3d_4096 {"component_signature_match": true, "one_shot_signature": {"mean_sec": 0.020771145820617676, "median_sec": 0.020686618983745575, "min_sec": 0.0205458402633667}, "point_count": 4096, "prepare_sec": 0.017548225820064545, "prepared_handle_metadata": {"app_specific_engine_logic_allowed": false, "automatic_partner_selection_allowed": false, "cell_factor": 0.125, "claim_boundary": "The v2.8 fixed-radius graph component front door exposes an explicit user-selected OptiX+partner grouped-stream contract over an existing generic runtime path. It does not add native engine app logic, choose partners automatically, authorize a release, authorize public speedup wording, authorize broad RT-core wording, authorize whole-app benchmark claims, or authorize true zero-copy wording.", "closed": false, "component_label_runs": 0, "component_signature_runs": 6, "default_route_promoted": false, "hidden_dispatch_allowed": false, "native_abi_added": false, "operation": "fixed_radius_partition_convergence_summary_3d", "pair_capacity": 27538885, "pair_enumeration": "device_bounded_offsets", "partition_convergence_hybrid_promoted": false, "partition_summary_digest": {"adapter": "fixed_radius_partition_convergence_summary_cupy_preview_3d", "complete_candidate_coverage": true, "device_pair_enumeration_used": true, "device_partition_columns_used": true, "overflow": false, "pair_capacity": 27538885, "pair_capacity_source": "device_upper_bound", "pair_count": 392329, "pair_enumeration": "device_bounded_offsets", "partition_count": 4015, "point_count": 4096, "reference": "fixed_radius_partition_convergence_summary_3d_cupy_preview", "status_counts": {"ambiguous_partition_pairs": 7, "safe_full_partition_pairs": 172668, "safe_skip_partition_pairs": 219654}, "visible_pair_count": 392329}, "point_count": 4096, "prepare_validation": {"candidate_reference_contract": "fixed_radius_partition_convergence_summary_3d_same_contract_skipped_for_prepared_timing", "complete_candidate_coverage": true, "errors": [], "overflow": false, "pair_capacity": 27538885, "pair_count": 392329, "partition_count": 4015, "point_count": 4096, "reference": "fixed_radius_partition_convergence_summary_3d_prepare_trusted_preview", "status": "accept", "status_column_values": {"capacity": 27538885, "complete_candidate_coverage": true, "overflow": false, "row_count": 392329}, "status_counts": {"ambiguous_partition_pairs": 7, "safe_full_partition_pairs": 172668, "safe_skip_partition_pairs": 219654}, "summary_same_contract_validation_skipped_for_prepared_timing": true, "visible_pair_count": 392329}, "prepared_partition_summary_handle": true, "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted", "prepared_partition_summary_partner": "cupy", "prepared_partition_summary_runtime_executable": true, "public_speedup_claim_authorized": false, "radius": 0.055, "release_authorized": false, "rt_core_speedup_claim_authorized": false, "runtime_executable": true, "status": "explicit_cupy_prepared_partition_summary_preview", "true_zero_copy_claim_authorized": false, "version": "rtdl.v2_8.fixed_radius_graph_component_front_door.v1", "whole_app_speedup_claim_authorized": false}, "prepared_replay_speedup_median": 6.456446770859252, "prepared_replay_speedup_min": 6.445181450811837, "prepared_signature_metadata": {"ambiguous_partition_pairs": 7, "component_count": 5, "device_ambiguous_union_used": true, "label_materialization": "component_size_signature_only", "partition_summary_reused": true, "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted", "prepared_partition_summary_reused": true}, "prepared_signature_replay": {"mean_sec": 0.0032122477889060972, "median_sec": 0.0032040253281593323, "min_sec": 0.0031877830624580383}, "prepared_three_run_amortized_speedup_median": 2.284947251243624, "profile": "clustered3d_4096", "warm_one_shot_sec": 0.038795486092567444, "warm_prepared_sec": 0.0032749399542808533}
+PROFILE_START road3d_4096 points 4096
+RUN_ONE_SHOT_SIGNATURE road3d_4096 0 0.020074
+RUN_ONE_SHOT_SIGNATURE road3d_4096 1 0.020064
+RUN_ONE_SHOT_SIGNATURE road3d_4096 2 0.019977
+RUN_ONE_SHOT_SIGNATURE road3d_4096 3 0.019904
+RUN_ONE_SHOT_SIGNATURE road3d_4096 4 0.019948
+RUN_PREPARED_SIGNATURE road3d_4096 0 0.003351
+RUN_PREPARED_SIGNATURE road3d_4096 1 0.003258
+RUN_PREPARED_SIGNATURE road3d_4096 2 0.003218
+RUN_PREPARED_SIGNATURE road3d_4096 3 0.003259
+RUN_PREPARED_SIGNATURE road3d_4096 4 0.003172
+PROFILE_DONE road3d_4096 {"component_signature_match": true, "one_shot_signature": {"mean_sec": 0.01999315172433853, "median_sec": 0.01997716724872589, "min_sec": 0.019903644919395447}, "point_count": 4096, "prepare_sec": 0.01667056232690811, "prepared_handle_metadata": {"app_specific_engine_logic_allowed": false, "automatic_partner_selection_allowed": false, "cell_factor": 0.125, "claim_boundary": "The v2.8 fixed-radius graph component front door exposes an explicit user-selected OptiX+partner grouped-stream contract over an existing generic runtime path. It does not add native engine app logic, choose partners automatically, authorize a release, authorize public speedup wording, authorize broad RT-core wording, authorize whole-app benchmark claims, or authorize true zero-copy wording.", "closed": false, "component_label_runs": 0, "component_signature_runs": 6, "default_route_promoted": false, "hidden_dispatch_allowed": false, "native_abi_added": false, "operation": "fixed_radius_partition_convergence_summary_3d", "pair_capacity": 25899584, "pair_enumeration": "device_bounded_offsets", "partition_convergence_hybrid_promoted": false, "partition_summary_digest": {"adapter": "fixed_radius_partition_convergence_summary_cupy_preview_3d", "complete_candidate_coverage": true, "device_pair_enumeration_used": true, "device_partition_columns_used": true, "overflow": false, "pair_capacity": 25899584, "pair_capacity_source": "device_upper_bound", "pair_count": 39790, "pair_enumeration": "device_bounded_offsets", "partition_count": 3776, "point_count": 4096, "reference": "fixed_radius_partition_convergence_summary_3d_cupy_preview", "status_counts": {"ambiguous_partition_pairs": 497, "safe_full_partition_pairs": 31258, "safe_skip_partition_pairs": 8035}, "visible_pair_count": 39790}, "point_count": 4096, "prepare_validation": {"candidate_reference_contract": "fixed_radius_partition_convergence_summary_3d_same_contract_skipped_for_prepared_timing", "complete_candidate_coverage": true, "errors": [], "overflow": false, "pair_capacity": 25899584, "pair_count": 39790, "partition_count": 3776, "point_count": 4096, "reference": "fixed_radius_partition_convergence_summary_3d_prepare_trusted_preview", "status": "accept", "status_column_values": {"capacity": 25899584, "complete_candidate_coverage": true, "overflow": false, "row_count": 39790}, "status_counts": {"ambiguous_partition_pairs": 497, "safe_full_partition_pairs": 31258, "safe_skip_partition_pairs": 8035}, "summary_same_contract_validation_skipped_for_prepared_timing": true, "visible_pair_count": 39790}, "prepared_partition_summary_handle": true, "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted", "prepared_partition_summary_partner": "cupy", "prepared_partition_summary_runtime_executable": true, "public_speedup_claim_authorized": false, "radius": 0.055, "release_authorized": false, "rt_core_speedup_claim_authorized": false, "runtime_executable": true, "status": "explicit_cupy_prepared_partition_summary_preview", "true_zero_copy_claim_authorized": false, "version": "rtdl.v2_8.fixed_radius_graph_component_front_door.v1", "whole_app_speedup_claim_authorized": false}, "prepared_replay_speedup_median": 6.130933054068021, "prepared_replay_speedup_min": 6.275451380569141, "prepared_signature_metadata": {"ambiguous_partition_pairs": 497, "component_count": 1, "device_ambiguous_union_used": true, "label_materialization": "component_size_signature_only", "partition_summary_reused": true, "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted", "prepared_partition_summary_reused": true}, "prepared_signature_replay": {"mean_sec": 0.0032515153288841248, "median_sec": 0.003258422017097473, "min_sec": 0.003171667456626892}, "prepared_three_run_amortized_speedup_median": 2.266198694519987, "profile": "road3d_4096", "warm_one_shot_sec": 0.019982807338237762, "warm_prepared_sec": 0.0032094642519950867}
+PROFILE_START clustered3d_8192 points 8192
+RUN_ONE_SHOT_SIGNATURE clustered3d_8192 0 0.037151
+RUN_ONE_SHOT_SIGNATURE clustered3d_8192 1 0.037293
+RUN_ONE_SHOT_SIGNATURE clustered3d_8192 2 0.036767
+RUN_ONE_SHOT_SIGNATURE clustered3d_8192 3 0.037107
+RUN_ONE_SHOT_SIGNATURE clustered3d_8192 4 0.036976
+RUN_PREPARED_SIGNATURE clustered3d_8192 0 0.004294
+RUN_PREPARED_SIGNATURE clustered3d_8192 1 0.004322
+RUN_PREPARED_SIGNATURE clustered3d_8192 2 0.004278
+RUN_PREPARED_SIGNATURE clustered3d_8192 3 0.004166
+RUN_PREPARED_SIGNATURE clustered3d_8192 4 0.004239
+PROFILE_DONE clustered3d_8192 {"component_signature_match": true, "one_shot_signature": {"mean_sec": 0.03705852031707764, "median_sec": 0.03710659593343735, "min_sec": 0.03676687926054001}, "point_count": 8192, "prepare_sec": 0.032842330634593964, "prepared_handle_metadata": {"app_specific_engine_logic_allowed": false, "automatic_partner_selection_allowed": false, "cell_factor": 0.125, "claim_boundary": "The v2.8 fixed-radius graph component front door exposes an explicit user-selected OptiX+partner grouped-stream contract over an existing generic runtime path. It does not add native engine app logic, choose partners automatically, authorize a release, authorize public speedup wording, authorize broad RT-core wording, authorize whole-app benchmark claims, or authorize true zero-copy wording.", "closed": false, "component_label_runs": 0, "component_signature_runs": 6, "default_route_promoted": false, "hidden_dispatch_allowed": false, "native_abi_added": false, "operation": "fixed_radius_partition_convergence_summary_3d", "pair_capacity": 56188928, "pair_enumeration": "device_bounded_offsets", "partition_convergence_hybrid_promoted": false, "partition_summary_digest": {"adapter": "fixed_radius_partition_convergence_summary_cupy_preview_3d", "complete_candidate_coverage": true, "device_pair_enumeration_used": true, "device_partition_columns_used": true, "overflow": false, "pair_capacity": 56188928, "pair_capacity_source": "device_upper_bound", "pair_count": 912735, "pair_enumeration": "device_bounded_offsets", "partition_count": 8192, "point_count": 8192, "reference": "fixed_radius_partition_convergence_summary_3d_cupy_preview", "status_counts": {"ambiguous_partition_pairs": 0, "safe_full_partition_pairs": 383185, "safe_skip_partition_pairs": 529550}, "visible_pair_count": 912735}, "point_count": 8192, "prepare_validation": {"candidate_reference_contract": "fixed_radius_partition_convergence_summary_3d_same_contract_skipped_for_prepared_timing", "complete_candidate_coverage": true, "errors": [], "overflow": false, "pair_capacity": 56188928, "pair_count": 912735, "partition_count": 8192, "point_count": 8192, "reference": "fixed_radius_partition_convergence_summary_3d_prepare_trusted_preview", "status": "accept", "status_column_values": {"capacity": 56188928, "complete_candidate_coverage": true, "overflow": false, "row_count": 912735}, "status_counts": {"ambiguous_partition_pairs": 0, "safe_full_partition_pairs": 383185, "safe_skip_partition_pairs": 529550}, "summary_same_contract_validation_skipped_for_prepared_timing": true, "visible_pair_count": 912735}, "prepared_partition_summary_handle": true, "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted", "prepared_partition_summary_partner": "cupy", "prepared_partition_summary_runtime_executable": true, "public_speedup_claim_authorized": false, "radius": 0.055, "release_authorized": false, "rt_core_speedup_claim_authorized": false, "runtime_executable": true, "status": "explicit_cupy_prepared_partition_summary_preview", "true_zero_copy_claim_authorized": false, "version": "rtdl.v2_8.fixed_radius_graph_component_front_door.v1", "whole_app_speedup_claim_authorized": false}, "prepared_replay_speedup_median": 8.672828337533021, "prepared_replay_speedup_min": 8.825542881465664, "prepared_signature_metadata": {"ambiguous_partition_pairs": 0, "component_count": 4, "device_ambiguous_union_used": false, "label_materialization": "component_size_signature_only", "partition_summary_reused": true, "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted", "prepared_partition_summary_reused": true}, "prepared_signature_replay": {"mean_sec": 0.004259918630123138, "median_sec": 0.004278488457202911, "min_sec": 0.004165962338447571}, "prepared_three_run_amortized_speedup_median": 2.437065654069554, "profile": "clustered3d_8192", "warm_one_shot_sec": 0.04040522128343582, "warm_prepared_sec": 0.004355251789093018}
+PROFILE_START road3d_8192 points 8192
+RUN_ONE_SHOT_SIGNATURE road3d_8192 0 0.036382
+RUN_ONE_SHOT_SIGNATURE road3d_8192 1 0.036278
+RUN_ONE_SHOT_SIGNATURE road3d_8192 2 0.039465
+RUN_ONE_SHOT_SIGNATURE road3d_8192 3 0.036479
+RUN_ONE_SHOT_SIGNATURE road3d_8192 4 0.036654
+RUN_PREPARED_SIGNATURE road3d_8192 0 0.005712
+RUN_PREPARED_SIGNATURE road3d_8192 1 0.005655
+RUN_PREPARED_SIGNATURE road3d_8192 2 0.005598
+RUN_PREPARED_SIGNATURE road3d_8192 3 0.005653
+RUN_PREPARED_SIGNATURE road3d_8192 4 0.005631
+PROFILE_DONE road3d_8192 {"component_signature_match": true, "one_shot_signature": {"mean_sec": 0.03705173283815384, "median_sec": 0.03647942841053009, "min_sec": 0.03627824783325195}, "point_count": 8192, "prepare_sec": 0.030378513038158417, "prepared_handle_metadata": {"app_specific_engine_logic_allowed": false, "automatic_partner_selection_allowed": false, "cell_factor": 0.125, "claim_boundary": "The v2.8 fixed-radius graph component front door exposes an explicit user-selected OptiX+partner grouped-stream contract over an existing generic runtime path. It does not add native engine app logic, choose partners automatically, authorize a release, authorize public speedup wording, authorize broad RT-core wording, authorize whole-app benchmark claims, or authorize true zero-copy wording.", "closed": false, "component_label_runs": 0, "component_signature_runs": 6, "default_route_promoted": false, "hidden_dispatch_allowed": false, "native_abi_added": false, "operation": "fixed_radius_partition_convergence_summary_3d", "pair_capacity": 51675706, "pair_enumeration": "device_bounded_offsets", "partition_convergence_hybrid_promoted": false, "partition_summary_digest": {"adapter": "fixed_radius_partition_convergence_summary_cupy_preview_3d", "complete_candidate_coverage": true, "device_pair_enumeration_used": true, "device_partition_columns_used": true, "overflow": false, "pair_capacity": 51675706, "pair_capacity_source": "device_upper_bound", "pair_count": 79245, "pair_enumeration": "device_bounded_offsets", "partition_count": 7534, "point_count": 8192, "reference": "fixed_radius_partition_convergence_summary_3d_cupy_preview", "status_counts": {"ambiguous_partition_pairs": 1017, "safe_full_partition_pairs": 62236, "safe_skip_partition_pairs": 15992}, "visible_pair_count": 79245}, "point_count": 8192, "prepare_validation": {"candidate_reference_contract": "fixed_radius_partition_convergence_summary_3d_same_contract_skipped_for_prepared_timing", "complete_candidate_coverage": true, "errors": [], "overflow": false, "pair_capacity": 51675706, "pair_count": 79245, "partition_count": 7534, "point_count": 8192, "reference": "fixed_radius_partition_convergence_summary_3d_prepare_trusted_preview", "status": "accept", "status_column_values": {"capacity": 51675706, "complete_candidate_coverage": true, "overflow": false, "row_count": 79245}, "status_counts": {"ambiguous_partition_pairs": 1017, "safe_full_partition_pairs": 62236, "safe_skip_partition_pairs": 15992}, "summary_same_contract_validation_skipped_for_prepared_timing": true, "visible_pair_count": 79245}, "prepared_partition_summary_handle": true, "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted", "prepared_partition_summary_partner": "cupy", "prepared_partition_summary_runtime_executable": true, "public_speedup_claim_authorized": false, "radius": 0.055, "release_authorized": false, "rt_core_speedup_claim_authorized": false, "runtime_executable": true, "status": "explicit_cupy_prepared_partition_summary_preview", "true_zero_copy_claim_authorized": false, "version": "rtdl.v2_8.fixed_radius_graph_component_front_door.v1", "whole_app_speedup_claim_authorized": false}, "prepared_replay_speedup_median": 6.452937912601334, "prepared_replay_speedup_min": 6.480105934881988, "prepared_signature_metadata": {"ambiguous_partition_pairs": 1017, "component_count": 1, "device_ambiguous_union_used": true, "label_materialization": "component_size_signature_only", "partition_summary_reused": true, "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted", "prepared_partition_summary_reused": true}, "prepared_signature_replay": {"mean_sec": 0.005649915337562561, "median_sec": 0.005653150379657745, "min_sec": 0.005598403513431549}, "prepared_three_run_amortized_speedup_median": 2.3118502693121403, "profile": "road3d_8192", "warm_one_shot_sec": 0.036263905465602875, "warm_prepared_sec": 0.005752004683017731}
+{
+  "claim_boundary": "Internal preview timing for explicit prepared partition-summary reuse. It does not promote partition_convergence_hybrid, authorize release, public speedup, broad RT-core, whole-app, hidden-dispatch, automatic partner selection, app-specific engine logic, native ABI addition, or true-zero-copy claims.",
+  "goal": "Goal4062",
+  "native_abi_added": false,
+  "partition_convergence_hybrid_promoted": false,
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "rows": [
+    {
+      "component_signature_match": true,
+      "one_shot_signature": {
+        "mean_sec": 0.007753938436508179,
+        "median_sec": 0.007664963603019714,
+        "min_sec": 0.007614664733409882
+      },
+      "point_count": 1024,
+      "prepare_sec": 0.006475329399108887,
+      "prepared_handle_metadata": {
+        "app_specific_engine_logic_allowed": false,
+        "automatic_partner_selection_allowed": false,
+        "cell_factor": 0.125,
+        "claim_boundary": "The v2.8 fixed-radius graph component front door exposes an explicit user-selected OptiX+partner grouped-stream contract over an existing generic runtime path. It does not add native engine app logic, choose partners automatically, authorize a release, authorize public speedup wording, authorize broad RT-core wording, authorize whole-app benchmark claims, or authorize true zero-copy wording.",
+        "closed": false,
+        "component_label_runs": 0,
+        "component_signature_runs": 6,
+        "default_route_promoted": false,
+        "hidden_dispatch_allowed": false,
+        "native_abi_added": false,
+        "operation": "fixed_radius_partition_convergence_summary_3d",
+        "pair_capacity": 6090792,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_convergence_hybrid_promoted": false,
+        "partition_summary_digest": {
+          "adapter": "fixed_radius_partition_convergence_summary_cupy_preview_3d",
+          "complete_candidate_coverage": true,
+          "device_pair_enumeration_used": true,
+          "device_partition_columns_used": true,
+          "overflow": false,
+          "pair_capacity": 6090792,
+          "pair_capacity_source": "device_upper_bound",
+          "pair_count": 54627,
+          "pair_enumeration": "device_bounded_offsets",
+          "partition_count": 888,
+          "point_count": 1024,
+          "reference": "fixed_radius_partition_convergence_summary_3d_cupy_preview",
+          "status_counts": {
+            "ambiguous_partition_pairs": 16,
+            "safe_full_partition_pairs": 28516,
+            "safe_skip_partition_pairs": 26095
+          },
+          "visible_pair_count": 54627
+        },
+        "point_count": 1024,
+        "prepare_validation": {
+          "candidate_reference_contract": "fixed_radius_partition_convergence_summary_3d_same_contract_skipped_for_prepared_timing",
+          "complete_candidate_coverage": true,
+          "errors": [],
+          "overflow": false,
+          "pair_capacity": 6090792,
+          "pair_count": 54627,
+          "partition_count": 888,
+          "point_count": 1024,
+          "reference": "fixed_radius_partition_convergence_summary_3d_prepare_trusted_preview",
+          "status": "accept",
+          "status_column_values": {
+            "capacity": 6090792,
+            "complete_candidate_coverage": true,
+            "overflow": false,
+            "row_count": 54627
+          },
+          "status_counts": {
+            "ambiguous_partition_pairs": 16,
+            "safe_full_partition_pairs": 28516,
+            "safe_skip_partition_pairs": 26095
+          },
+          "summary_same_contract_validation_skipped_for_prepared_timing": true,
+          "visible_pair_count": 54627
+        },
+        "prepared_partition_summary_handle": true,
+        "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted",
+        "prepared_partition_summary_partner": "cupy",
+        "prepared_partition_summary_runtime_executable": true,
+        "public_speedup_claim_authorized": false,
+        "radius": 0.055,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "runtime_executable": true,
+        "status": "explicit_cupy_prepared_partition_summary_preview",
+        "true_zero_copy_claim_authorized": false,
+        "version": "rtdl.v2_8.fixed_radius_graph_component_front_door.v1",
+        "whole_app_speedup_claim_authorized": false
+      },
+      "prepared_replay_speedup_median": 5.593503803222,
+      "prepared_replay_speedup_min": 5.576232254122063,
+      "prepared_signature_metadata": {
+        "ambiguous_partition_pairs": 16,
+        "component_count": 5,
+        "device_ambiguous_union_used": true,
+        "label_materialization": "component_size_signature_only",
+        "partition_summary_reused": true,
+        "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted",
+        "prepared_partition_summary_reused": true
+      },
+      "prepared_signature_replay": {
+        "mean_sec": 0.0013753771781921387,
+        "median_sec": 0.0013703331351280212,
+        "min_sec": 0.001365557312965393
+      },
+      "prepared_three_run_amortized_speedup_median": 2.1721307956446494,
+      "profile": "clustered3d_1024",
+      "warm_one_shot_sec": 0.21181470900774002,
+      "warm_prepared_sec": 0.0014195814728736877
+    },
+    {
+      "component_signature_match": true,
+      "one_shot_signature": {
+        "mean_sec": 0.0076629981398582455,
+        "median_sec": 0.007674090564250946,
+        "min_sec": 0.007590577006340027
+      },
+      "point_count": 1024,
+      "prepare_sec": 0.00623466819524765,
+      "prepared_handle_metadata": {
+        "app_specific_engine_logic_allowed": false,
+        "automatic_partner_selection_allowed": false,
+        "cell_factor": 0.125,
+        "claim_boundary": "The v2.8 fixed-radius graph component front door exposes an explicit user-selected OptiX+partner grouped-stream contract over an existing generic runtime path. It does not add native engine app logic, choose partners automatically, authorize a release, authorize public speedup wording, authorize broad RT-core wording, authorize whole-app benchmark claims, or authorize true zero-copy wording.",
+        "closed": false,
+        "component_label_runs": 0,
+        "component_signature_runs": 6,
+        "default_route_promoted": false,
+        "hidden_dispatch_allowed": false,
+        "native_abi_added": false,
+        "operation": "fixed_radius_partition_convergence_summary_3d",
+        "pair_capacity": 6426883,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_convergence_hybrid_promoted": false,
+        "partition_summary_digest": {
+          "adapter": "fixed_radius_partition_convergence_summary_cupy_preview_3d",
+          "complete_candidate_coverage": true,
+          "device_pair_enumeration_used": true,
+          "device_partition_columns_used": true,
+          "overflow": false,
+          "pair_capacity": 6426883,
+          "pair_capacity_source": "device_upper_bound",
+          "pair_count": 9773,
+          "pair_enumeration": "device_bounded_offsets",
+          "partition_count": 937,
+          "point_count": 1024,
+          "reference": "fixed_radius_partition_convergence_summary_3d_cupy_preview",
+          "status_counts": {
+            "ambiguous_partition_pairs": 132,
+            "safe_full_partition_pairs": 7681,
+            "safe_skip_partition_pairs": 1960
+          },
+          "visible_pair_count": 9773
+        },
+        "point_count": 1024,
+        "prepare_validation": {
+          "candidate_reference_contract": "fixed_radius_partition_convergence_summary_3d_same_contract_skipped_for_prepared_timing",
+          "complete_candidate_coverage": true,
+          "errors": [],
+          "overflow": false,
+          "pair_capacity": 6426883,
+          "pair_count": 9773,
+          "partition_count": 937,
+          "point_count": 1024,
+          "reference": "fixed_radius_partition_convergence_summary_3d_prepare_trusted_preview",
+          "status": "accept",
+          "status_column_values": {
+            "capacity": 6426883,
+            "complete_candidate_coverage": true,
+            "overflow": false,
+            "row_count": 9773
+          },
+          "status_counts": {
+            "ambiguous_partition_pairs": 132,
+            "safe_full_partition_pairs": 7681,
+            "safe_skip_partition_pairs": 1960
+          },
+          "summary_same_contract_validation_skipped_for_prepared_timing": true,
+          "visible_pair_count": 9773
+        },
+        "prepared_partition_summary_handle": true,
+        "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted",
+        "prepared_partition_summary_partner": "cupy",
+        "prepared_partition_summary_runtime_executable": true,
+        "public_speedup_claim_authorized": false,
+        "radius": 0.055,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "runtime_executable": true,
+        "status": "explicit_cupy_prepared_partition_summary_preview",
+        "true_zero_copy_claim_authorized": false,
+        "version": "rtdl.v2_8.fixed_radius_graph_component_front_door.v1",
+        "whole_app_speedup_claim_authorized": false
+      },
+      "prepared_replay_speedup_median": 5.6328114318839315,
+      "prepared_replay_speedup_min": 5.618585412932579,
+      "prepared_signature_metadata": {
+        "ambiguous_partition_pairs": 132,
+        "component_count": 1,
+        "device_ambiguous_union_used": true,
+        "label_materialization": "component_size_signature_only",
+        "partition_summary_reused": true,
+        "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted",
+        "prepared_partition_summary_reused": true
+      },
+      "prepared_signature_replay": {
+        "mean_sec": 0.0013602986931800843,
+        "median_sec": 0.0013623908162117004,
+        "min_sec": 0.0013509765267372131
+      },
+      "prepared_three_run_amortized_speedup_median": 2.2304424653559254,
+      "profile": "road3d_1024",
+      "warm_one_shot_sec": 0.008351214230060577,
+      "warm_prepared_sec": 0.0013714879751205444
+    },
+    {
+      "component_signature_match": true,
+      "one_shot_signature": {
+        "mean_sec": 0.020771145820617676,
+        "median_sec": 0.020686618983745575,
+        "min_sec": 0.0205458402633667
+      },
+      "point_count": 4096,
+      "prepare_sec": 0.017548225820064545,
+      "prepared_handle_metadata": {
+        "app_specific_engine_logic_allowed": false,
+        "automatic_partner_selection_allowed": false,
+        "cell_factor": 0.125,
+        "claim_boundary": "The v2.8 fixed-radius graph component front door exposes an explicit user-selected OptiX+partner grouped-stream contract over an existing generic runtime path. It does not add native engine app logic, choose partners automatically, authorize a release, authorize public speedup wording, authorize broad RT-core wording, authorize whole-app benchmark claims, or authorize true zero-copy wording.",
+        "closed": false,
+        "component_label_runs": 0,
+        "component_signature_runs": 6,
+        "default_route_promoted": false,
+        "hidden_dispatch_allowed": false,
+        "native_abi_added": false,
+        "operation": "fixed_radius_partition_convergence_summary_3d",
+        "pair_capacity": 27538885,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_convergence_hybrid_promoted": false,
+        "partition_summary_digest": {
+          "adapter": "fixed_radius_partition_convergence_summary_cupy_preview_3d",
+          "complete_candidate_coverage": true,
+          "device_pair_enumeration_used": true,
+          "device_partition_columns_used": true,
+          "overflow": false,
+          "pair_capacity": 27538885,
+          "pair_capacity_source": "device_upper_bound",
+          "pair_count": 392329,
+          "pair_enumeration": "device_bounded_offsets",
+          "partition_count": 4015,
+          "point_count": 4096,
+          "reference": "fixed_radius_partition_convergence_summary_3d_cupy_preview",
+          "status_counts": {
+            "ambiguous_partition_pairs": 7,
+            "safe_full_partition_pairs": 172668,
+            "safe_skip_partition_pairs": 219654
+          },
+          "visible_pair_count": 392329
+        },
+        "point_count": 4096,
+        "prepare_validation": {
+          "candidate_reference_contract": "fixed_radius_partition_convergence_summary_3d_same_contract_skipped_for_prepared_timing",
+          "complete_candidate_coverage": true,
+          "errors": [],
+          "overflow": false,
+          "pair_capacity": 27538885,
+          "pair_count": 392329,
+          "partition_count": 4015,
+          "point_count": 4096,
+          "reference": "fixed_radius_partition_convergence_summary_3d_prepare_trusted_preview",
+          "status": "accept",
+          "status_column_values": {
+            "capacity": 27538885,
+            "complete_candidate_coverage": true,
+            "overflow": false,
+            "row_count": 392329
+          },
+          "status_counts": {
+            "ambiguous_partition_pairs": 7,
+            "safe_full_partition_pairs": 172668,
+            "safe_skip_partition_pairs": 219654
+          },
+          "summary_same_contract_validation_skipped_for_prepared_timing": true,
+          "visible_pair_count": 392329
+        },
+        "prepared_partition_summary_handle": true,
+        "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted",
+        "prepared_partition_summary_partner": "cupy",
+        "prepared_partition_summary_runtime_executable": true,
+        "public_speedup_claim_authorized": false,
+        "radius": 0.055,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "runtime_executable": true,
+        "status": "explicit_cupy_prepared_partition_summary_preview",
+        "true_zero_copy_claim_authorized": false,
+        "version": "rtdl.v2_8.fixed_radius_graph_component_front_door.v1",
+        "whole_app_speedup_claim_authorized": false
+      },
+      "prepared_replay_speedup_median": 6.456446770859252,
+      "prepared_replay_speedup_min": 6.445181450811837,
+      "prepared_signature_metadata": {
+        "ambiguous_partition_pairs": 7,
+        "component_count": 5,
+        "device_ambiguous_union_used": true,
+        "label_materialization": "component_size_signature_only",
+        "partition_summary_reused": true,
+        "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted",
+        "prepared_partition_summary_reused": true
+      },
+      "prepared_signature_replay": {
+        "mean_sec": 0.0032122477889060972,
+        "median_sec": 0.0032040253281593323,
+        "min_sec": 0.0031877830624580383
+      },
+      "prepared_three_run_amortized_speedup_median": 2.284947251243624,
+      "profile": "clustered3d_4096",
+      "warm_one_shot_sec": 0.038795486092567444,
+      "warm_prepared_sec": 0.0032749399542808533
+    },
+    {
+      "component_signature_match": true,
+      "one_shot_signature": {
+        "mean_sec": 0.01999315172433853,
+        "median_sec": 0.01997716724872589,
+        "min_sec": 0.019903644919395447
+      },
+      "point_count": 4096,
+      "prepare_sec": 0.01667056232690811,
+      "prepared_handle_metadata": {
+        "app_specific_engine_logic_allowed": false,
+        "automatic_partner_selection_allowed": false,
+        "cell_factor": 0.125,
+        "claim_boundary": "The v2.8 fixed-radius graph component front door exposes an explicit user-selected OptiX+partner grouped-stream contract over an existing generic runtime path. It does not add native engine app logic, choose partners automatically, authorize a release, authorize public speedup wording, authorize broad RT-core wording, authorize whole-app benchmark claims, or authorize true zero-copy wording.",
+        "closed": false,
+        "component_label_runs": 0,
+        "component_signature_runs": 6,
+        "default_route_promoted": false,
+        "hidden_dispatch_allowed": false,
+        "native_abi_added": false,
+        "operation": "fixed_radius_partition_convergence_summary_3d",
+        "pair_capacity": 25899584,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_convergence_hybrid_promoted": false,
+        "partition_summary_digest": {
+          "adapter": "fixed_radius_partition_convergence_summary_cupy_preview_3d",
+          "complete_candidate_coverage": true,
+          "device_pair_enumeration_used": true,
+          "device_partition_columns_used": true,
+          "overflow": false,
+          "pair_capacity": 25899584,
+          "pair_capacity_source": "device_upper_bound",
+          "pair_count": 39790,
+          "pair_enumeration": "device_bounded_offsets",
+          "partition_count": 3776,
+          "point_count": 4096,
+          "reference": "fixed_radius_partition_convergence_summary_3d_cupy_preview",
+          "status_counts": {
+            "ambiguous_partition_pairs": 497,
+            "safe_full_partition_pairs": 31258,
+            "safe_skip_partition_pairs": 8035
+          },
+          "visible_pair_count": 39790
+        },
+        "point_count": 4096,
+        "prepare_validation": {
+          "candidate_reference_contract": "fixed_radius_partition_convergence_summary_3d_same_contract_skipped_for_prepared_timing",
+          "complete_candidate_coverage": true,
+          "errors": [],
+          "overflow": false,
+          "pair_capacity": 25899584,
+          "pair_count": 39790,
+          "partition_count": 3776,
+          "point_count": 4096,
+          "reference": "fixed_radius_partition_convergence_summary_3d_prepare_trusted_preview",
+          "status": "accept",
+          "status_column_values": {
+            "capacity": 25899584,
+            "complete_candidate_coverage": true,
+            "overflow": false,
+            "row_count": 39790
+          },
+          "status_counts": {
+            "ambiguous_partition_pairs": 497,
+            "safe_full_partition_pairs": 31258,
+            "safe_skip_partition_pairs": 8035
+          },
+          "summary_same_contract_validation_skipped_for_prepared_timing": true,
+          "visible_pair_count": 39790
+        },
+        "prepared_partition_summary_handle": true,
+        "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted",
+        "prepared_partition_summary_partner": "cupy",
+        "prepared_partition_summary_runtime_executable": true,
+        "public_speedup_claim_authorized": false,
+        "radius": 0.055,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "runtime_executable": true,
+        "status": "explicit_cupy_prepared_partition_summary_preview",
+        "true_zero_copy_claim_authorized": false,
+        "version": "rtdl.v2_8.fixed_radius_graph_component_front_door.v1",
+        "whole_app_speedup_claim_authorized": false
+      },
+      "prepared_replay_speedup_median": 6.130933054068021,
+      "prepared_replay_speedup_min": 6.275451380569141,
+      "prepared_signature_metadata": {
+        "ambiguous_partition_pairs": 497,
+        "component_count": 1,
+        "device_ambiguous_union_used": true,
+        "label_materialization": "component_size_signature_only",
+        "partition_summary_reused": true,
+        "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted",
+        "prepared_partition_summary_reused": true
+      },
+      "prepared_signature_replay": {
+        "mean_sec": 0.0032515153288841248,
+        "median_sec": 0.003258422017097473,
+        "min_sec": 0.003171667456626892
+      },
+      "prepared_three_run_amortized_speedup_median": 2.266198694519987,
+      "profile": "road3d_4096",
+      "warm_one_shot_sec": 0.019982807338237762,
+      "warm_prepared_sec": 0.0032094642519950867
+    },
+    {
+      "component_signature_match": true,
+      "one_shot_signature": {
+        "mean_sec": 0.03705852031707764,
+        "median_sec": 0.03710659593343735,
+        "min_sec": 0.03676687926054001
+      },
+      "point_count": 8192,
+      "prepare_sec": 0.032842330634593964,
+      "prepared_handle_metadata": {
+        "app_specific_engine_logic_allowed": false,
+        "automatic_partner_selection_allowed": false,
+        "cell_factor": 0.125,
+        "claim_boundary": "The v2.8 fixed-radius graph component front door exposes an explicit user-selected OptiX+partner grouped-stream contract over an existing generic runtime path. It does not add native engine app logic, choose partners automatically, authorize a release, authorize public speedup wording, authorize broad RT-core wording, authorize whole-app benchmark claims, or authorize true zero-copy wording.",
+        "closed": false,
+        "component_label_runs": 0,
+        "component_signature_runs": 6,
+        "default_route_promoted": false,
+        "hidden_dispatch_allowed": false,
+        "native_abi_added": false,
+        "operation": "fixed_radius_partition_convergence_summary_3d",
+        "pair_capacity": 56188928,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_convergence_hybrid_promoted": false,
+        "partition_summary_digest": {
+          "adapter": "fixed_radius_partition_convergence_summary_cupy_preview_3d",
+          "complete_candidate_coverage": true,
+          "device_pair_enumeration_used": true,
+          "device_partition_columns_used": true,
+          "overflow": false,
+          "pair_capacity": 56188928,
+          "pair_capacity_source": "device_upper_bound",
+          "pair_count": 912735,
+          "pair_enumeration": "device_bounded_offsets",
+          "partition_count": 8192,
+          "point_count": 8192,
+          "reference": "fixed_radius_partition_convergence_summary_3d_cupy_preview",
+          "status_counts": {
+            "ambiguous_partition_pairs": 0,
+            "safe_full_partition_pairs": 383185,
+            "safe_skip_partition_pairs": 529550
+          },
+          "visible_pair_count": 912735
+        },
+        "point_count": 8192,
+        "prepare_validation": {
+          "candidate_reference_contract": "fixed_radius_partition_convergence_summary_3d_same_contract_skipped_for_prepared_timing",
+          "complete_candidate_coverage": true,
+          "errors": [],
+          "overflow": false,
+          "pair_capacity": 56188928,
+          "pair_count": 912735,
+          "partition_count": 8192,
+          "point_count": 8192,
+          "reference": "fixed_radius_partition_convergence_summary_3d_prepare_trusted_preview",
+          "status": "accept",
+          "status_column_values": {
+            "capacity": 56188928,
+            "complete_candidate_coverage": true,
+            "overflow": false,
+            "row_count": 912735
+          },
+          "status_counts": {
+            "ambiguous_partition_pairs": 0,
+            "safe_full_partition_pairs": 383185,
+            "safe_skip_partition_pairs": 529550
+          },
+          "summary_same_contract_validation_skipped_for_prepared_timing": true,
+          "visible_pair_count": 912735
+        },
+        "prepared_partition_summary_handle": true,
+        "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted",
+        "prepared_partition_summary_partner": "cupy",
+        "prepared_partition_summary_runtime_executable": true,
+        "public_speedup_claim_authorized": false,
+        "radius": 0.055,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "runtime_executable": true,
+        "status": "explicit_cupy_prepared_partition_summary_preview",
+        "true_zero_copy_claim_authorized": false,
+        "version": "rtdl.v2_8.fixed_radius_graph_component_front_door.v1",
+        "whole_app_speedup_claim_authorized": false
+      },
+      "prepared_replay_speedup_median": 8.672828337533021,
+      "prepared_replay_speedup_min": 8.825542881465664,
+      "prepared_signature_metadata": {
+        "ambiguous_partition_pairs": 0,
+        "component_count": 4,
+        "device_ambiguous_union_used": false,
+        "label_materialization": "component_size_signature_only",
+        "partition_summary_reused": true,
+        "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted",
+        "prepared_partition_summary_reused": true
+      },
+      "prepared_signature_replay": {
+        "mean_sec": 0.004259918630123138,
+        "median_sec": 0.004278488457202911,
+        "min_sec": 0.004165962338447571
+      },
+      "prepared_three_run_amortized_speedup_median": 2.437065654069554,
+      "profile": "clustered3d_8192",
+      "warm_one_shot_sec": 0.04040522128343582,
+      "warm_prepared_sec": 0.004355251789093018
+    },
+    {
+      "component_signature_match": true,
+      "one_shot_signature": {
+        "mean_sec": 0.03705173283815384,
+        "median_sec": 0.03647942841053009,
+        "min_sec": 0.03627824783325195
+      },
+      "point_count": 8192,
+      "prepare_sec": 0.030378513038158417,
+      "prepared_handle_metadata": {
+        "app_specific_engine_logic_allowed": false,
+        "automatic_partner_selection_allowed": false,
+        "cell_factor": 0.125,
+        "claim_boundary": "The v2.8 fixed-radius graph component front door exposes an explicit user-selected OptiX+partner grouped-stream contract over an existing generic runtime path. It does not add native engine app logic, choose partners automatically, authorize a release, authorize public speedup wording, authorize broad RT-core wording, authorize whole-app benchmark claims, or authorize true zero-copy wording.",
+        "closed": false,
+        "component_label_runs": 0,
+        "component_signature_runs": 6,
+        "default_route_promoted": false,
+        "hidden_dispatch_allowed": false,
+        "native_abi_added": false,
+        "operation": "fixed_radius_partition_convergence_summary_3d",
+        "pair_capacity": 51675706,
+        "pair_enumeration": "device_bounded_offsets",
+        "partition_convergence_hybrid_promoted": false,
+        "partition_summary_digest": {
+          "adapter": "fixed_radius_partition_convergence_summary_cupy_preview_3d",
+          "complete_candidate_coverage": true,
+          "device_pair_enumeration_used": true,
+          "device_partition_columns_used": true,
+          "overflow": false,
+          "pair_capacity": 51675706,
+          "pair_capacity_source": "device_upper_bound",
+          "pair_count": 79245,
+          "pair_enumeration": "device_bounded_offsets",
+          "partition_count": 7534,
+          "point_count": 8192,
+          "reference": "fixed_radius_partition_convergence_summary_3d_cupy_preview",
+          "status_counts": {
+            "ambiguous_partition_pairs": 1017,
+            "safe_full_partition_pairs": 62236,
+            "safe_skip_partition_pairs": 15992
+          },
+          "visible_pair_count": 79245
+        },
+        "point_count": 8192,
+        "prepare_validation": {
+          "candidate_reference_contract": "fixed_radius_partition_convergence_summary_3d_same_contract_skipped_for_prepared_timing",
+          "complete_candidate_coverage": true,
+          "errors": [],
+          "overflow": false,
+          "pair_capacity": 51675706,
+          "pair_count": 79245,
+          "partition_count": 7534,
+          "point_count": 8192,
+          "reference": "fixed_radius_partition_convergence_summary_3d_prepare_trusted_preview",
+          "status": "accept",
+          "status_column_values": {
+            "capacity": 51675706,
+            "complete_candidate_coverage": true,
+            "overflow": false,
+            "row_count": 79245
+          },
+          "status_counts": {
+            "ambiguous_partition_pairs": 1017,
+            "safe_full_partition_pairs": 62236,
+            "safe_skip_partition_pairs": 15992
+          },
+          "summary_same_contract_validation_skipped_for_prepared_timing": true,
+          "visible_pair_count": 79245
+        },
+        "prepared_partition_summary_handle": true,
+        "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted",
+        "prepared_partition_summary_partner": "cupy",
+        "prepared_partition_summary_runtime_executable": true,
+        "public_speedup_claim_authorized": false,
+        "radius": 0.055,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "runtime_executable": true,
+        "status": "explicit_cupy_prepared_partition_summary_preview",
+        "true_zero_copy_claim_authorized": false,
+        "version": "rtdl.v2_8.fixed_radius_graph_component_front_door.v1",
+        "whole_app_speedup_claim_authorized": false
+      },
+      "prepared_replay_speedup_median": 6.452937912601334,
+      "prepared_replay_speedup_min": 6.480105934881988,
+      "prepared_signature_metadata": {
+        "ambiguous_partition_pairs": 1017,
+        "component_count": 1,
+        "device_ambiguous_union_used": true,
+        "label_materialization": "component_size_signature_only",
+        "partition_summary_reused": true,
+        "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted",
+        "prepared_partition_summary_reused": true
+      },
+      "prepared_signature_replay": {
+        "mean_sec": 0.005649915337562561,
+        "median_sec": 0.005653150379657745,
+        "min_sec": 0.005598403513431549
+      },
+      "prepared_three_run_amortized_speedup_median": 2.3118502693121403,
+      "profile": "road3d_8192",
+      "warm_one_shot_sec": 0.036263905465602875,
+      "warm_prepared_sec": 0.005752004683017731
+    }
+  ],
+  "rt_core_speedup_claim_authorized": false,
+  "schema": "rtdl.goal4062.prepared_partition_summary_timing.v1",
+  "source_commit": "ddcc0680",
+  "true_zero_copy_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}

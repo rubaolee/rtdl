@@ -66,6 +66,8 @@ Added:
 
 - `tests/goal4062_prepared_partition_convergence_summary_preview_test.py`.
 - `scripts/goal4062_prepared_partition_summary_timing.py`.
+- `docs/reports/goal4062_prepared_partition_summary_timing_pod.json`.
+- `docs/reports/goal4062_prepared_partition_summary_timing_pod.stdout.txt`.
 
 The test verifies:
 
@@ -82,3 +84,18 @@ prepared-summary replay on representative clustered and road-like point clouds.
 It records replay-only speedups and three-run amortized speedups separately so a
 reader can see whether the prepared handle is useful for repeated workloads
 without confusing that with a single-call speedup claim.
+
+Pod evidence at source commit `ddcc0680` on RTX 4000 Ada:
+
+| Profile | Points | Replay Speedup Min | Three-Run Amortized Median |
+| --- | ---: | ---: | ---: |
+| clustered3d_1024 | 1024 | 5.576x | 2.172x |
+| road3d_1024 | 1024 | 5.619x | 2.230x |
+| clustered3d_4096 | 4096 | 6.445x | 2.285x |
+| road3d_4096 | 4096 | 6.275x | 2.266x |
+| clustered3d_8192 | 8192 | 8.826x | 2.437x |
+| road3d_8192 | 8192 | 6.480x | 2.312x |
+
+This is positive prepared-replay evidence for a generic runtime pattern. It is
+not a whole-app result, not a release result, and not a broad RT-core speedup
+claim.
