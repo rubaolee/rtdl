@@ -1745,6 +1745,370 @@ def run_v2_8_fixed_radius_partition_convergence_component_signature_cupy_prepare
     )
 
 
+def _prepare_direct_status_union_runtime_columns_cupy_3d(
+    raw_rows: tuple[Any, ...],
+    *,
+    radius: float,
+    cell_factor: float,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    import cupy
+
+    points = tuple(_point_xyz(row) for row in raw_rows)
+    if not points:
+        raise ValueError("point_rows must contain at least one point")
+    radius = float(radius)
+    cell_factor = float(cell_factor)
+    if radius <= 0.0:
+        raise ValueError("radius must be positive")
+    if cell_factor <= 0.0:
+        raise ValueError("cell_factor must be positive")
+
+    cell_size = radius * cell_factor
+    point_count = len(points)
+    x = cupy.asarray([point[0] for point in points], dtype=cupy.float64)
+    y = cupy.asarray([point[1] for point in points], dtype=cupy.float64)
+    z = cupy.asarray([point[2] for point in points], dtype=cupy.float64)
+    kx = cupy.floor(x / cell_size).astype(cupy.int64, copy=False)
+    ky = cupy.floor(y / cell_size).astype(cupy.int64, copy=False)
+    kz = cupy.floor(z / cell_size).astype(cupy.int64, copy=False)
+    min_kx = int(cupy.min(kx).item())
+    min_ky = int(cupy.min(ky).item())
+    min_kz = int(cupy.min(kz).item())
+    local_kx = kx - min_kx
+    local_ky = ky - min_ky
+    local_kz = kz - min_kz
+    dim_y = int(cupy.max(local_ky).item()) + 1
+    dim_z = int(cupy.max(local_kz).item()) + 1
+    cell_ids = (local_kx * dim_y * dim_z + local_ky * dim_z + local_kz).astype(cupy.int64)
+    order = cupy.argsort(cell_ids).astype(cupy.int32, copy=False)
+    sorted_cell_ids = cell_ids[order]
+    unique_cells, _starts, counts = cupy.unique(
+        sorted_cell_ids,
+        return_index=True,
+        return_counts=True,
+    )
+    partition_count = int(unique_cells.size)
+    point_partition_ids = cupy.searchsorted(unique_cells, cell_ids).astype(cupy.uint32, copy=False)
+    counts_u32 = counts.astype(cupy.uint32, copy=False)
+    offsets = cupy.concatenate((
+        cupy.zeros((1,), dtype=cupy.uint32),
+        cupy.cumsum(counts_u32, dtype=cupy.uint32),
+    ))
+    aabb_min_x64 = cupy.full((partition_count,), cupy.inf, dtype=cupy.float64)
+    aabb_min_y64 = cupy.full((partition_count,), cupy.inf, dtype=cupy.float64)
+    aabb_min_z64 = cupy.full((partition_count,), cupy.inf, dtype=cupy.float64)
+    aabb_max_x64 = cupy.full((partition_count,), -cupy.inf, dtype=cupy.float64)
+    aabb_max_y64 = cupy.full((partition_count,), -cupy.inf, dtype=cupy.float64)
+    aabb_max_z64 = cupy.full((partition_count,), -cupy.inf, dtype=cupy.float64)
+    cupy.minimum.at(aabb_min_x64, point_partition_ids, x)
+    cupy.minimum.at(aabb_min_y64, point_partition_ids, y)
+    cupy.minimum.at(aabb_min_z64, point_partition_ids, z)
+    cupy.maximum.at(aabb_max_x64, point_partition_ids, x)
+    cupy.maximum.at(aabb_max_y64, point_partition_ids, y)
+    cupy.maximum.at(aabb_max_z64, point_partition_ids, z)
+
+    max_offset = int(math.ceil(radius / cell_size)) + 1
+    columns = {
+        "x": x,
+        "y": y,
+        "z": z,
+        "unique_cells": unique_cells,
+        "point_partition_ids": point_partition_ids,
+        "partition_offsets": offsets,
+        "partition_counts": counts_u32,
+        "partition_point_ordinals": order.astype(cupy.uint32, copy=False),
+        "partition_aabb_min_x64": aabb_min_x64,
+        "partition_aabb_min_y64": aabb_min_y64,
+        "partition_aabb_min_z64": aabb_min_z64,
+        "partition_aabb_max_x64": aabb_max_x64,
+        "partition_aabb_max_y64": aabb_max_y64,
+        "partition_aabb_max_z64": aabb_max_z64,
+    }
+    metadata = {
+        "reference": "fixed_radius_partition_convergence_direct_status_union_runtime_columns_cupy_preview_3d",
+        "adapter": "prepare_fixed_radius_partition_convergence_direct_status_union_cupy_preview_3d",
+        "status": "accept",
+        "point_count": point_count,
+        "partition_count": partition_count,
+        "cell_factor": cell_factor,
+        "cell_size": cell_size,
+        "max_neighbor_offset": max_offset,
+        "dim_y": dim_y,
+        "dim_z": dim_z,
+        "min_key_x": min_kx,
+        "min_key_y": min_ky,
+        "min_key_z": min_kz,
+        "prepared_direct_status_runtime_columns": True,
+        "prepared_point_coordinate_columns": True,
+        "prepared_partition_key_columns": True,
+        "prepared_partition_aabb_columns": True,
+        "near_pair_columns_materialized": False,
+        "partition_pair_rows_materialized": False,
+        "pair_materialization_avoided": True,
+        "runtime_executable": True,
+        "native_abi_added": False,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "app_specific_engine_logic_allowed": False,
+        "automatic_partner_selection_allowed": False,
+        "hidden_dispatch_allowed": False,
+        "data_ptrs": _column_data_ptrs(columns),
+        "claim_boundary": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY,
+    }
+    return columns, metadata
+
+
+def _run_direct_status_union_signature_from_prepared_columns_cupy_3d(
+    runtime_columns: dict[str, Any],
+    prepare_metadata: dict[str, Any],
+    *,
+    radius: float,
+    cell_factor: float,
+    max_iterations: int,
+) -> tuple[tuple[int, ...], dict[str, Any]]:
+    import cupy
+
+    radius = float(radius)
+    cell_factor = float(cell_factor)
+    radius_sq = radius * radius
+    classification_tol = 1.0e-5 * max(1.0, radius_sq)
+    partition_count = int(prepare_metadata["partition_count"])
+    (
+        partition_parents_device,
+        union_iterations,
+        safe_skip_pairs,
+        safe_full_pairs,
+        ambiguous_pairs,
+        ambiguous_point_comparisons,
+        ambiguous_positive_edges,
+    ) = _cupy_direct_partition_status_union_component_roots(
+        cupy,
+        partition_count=partition_count,
+        unique_cells=runtime_columns["unique_cells"],
+        dim_y=int(prepare_metadata["dim_y"]),
+        dim_z=int(prepare_metadata["dim_z"]),
+        aabb_min_x64=runtime_columns["partition_aabb_min_x64"],
+        aabb_min_y64=runtime_columns["partition_aabb_min_y64"],
+        aabb_min_z64=runtime_columns["partition_aabb_min_z64"],
+        aabb_max_x64=runtime_columns["partition_aabb_max_x64"],
+        aabb_max_y64=runtime_columns["partition_aabb_max_y64"],
+        aabb_max_z64=runtime_columns["partition_aabb_max_z64"],
+        partition_offsets=runtime_columns["partition_offsets"],
+        partition_point_ordinals=runtime_columns["partition_point_ordinals"],
+        x=runtime_columns["x"],
+        y=runtime_columns["y"],
+        z=runtime_columns["z"],
+        max_offset=int(prepare_metadata["max_neighbor_offset"]),
+        radius_sq=radius_sq,
+        classification_tol=classification_tol,
+        max_iterations=int(max_iterations),
+    )
+    point_partition_ids = runtime_columns["point_partition_ids"]
+    component_roots = partition_parents_device[point_partition_ids]
+    _, component_counts = cupy.unique(component_roots, return_counts=True)
+    signature = tuple(
+        int(value)
+        for value in cupy.asnumpy(cupy.sort(component_counts.astype(cupy.uint32, copy=False))).tolist()
+    )
+    non_skip_pairs = int(safe_full_pairs) + int(ambiguous_pairs)
+    metadata = {
+        "status": "accept",
+        "point_count": int(prepare_metadata["point_count"]),
+        "partition_count": partition_count,
+        "component_count": len(signature),
+        "cell_factor": cell_factor,
+        "cell_size": float(prepare_metadata["cell_size"]),
+        "max_neighbor_offset": int(prepare_metadata["max_neighbor_offset"]),
+        "pair_enumeration": "device_direct_status_union",
+        "pair_stream_filter": "non_skip_actionable_pairs",
+        "pair_order": "not_materialized_direct_status_scan",
+        "partition_summary_materialized": False,
+        "partition_structure_reused": True,
+        "prepared_direct_status_runtime_columns_reused": True,
+        "point_coordinate_columns_reused": True,
+        "near_pair_columns_materialized": False,
+        "partition_pair_rows_materialized": False,
+        "pair_materialization_avoided": True,
+        "direct_status_union_used": True,
+        "safe_skip_pairs_elided": True,
+        "safe_skip_partition_pairs": int(safe_skip_pairs),
+        "safe_full_partition_pairs": int(safe_full_pairs),
+        "ambiguous_partition_pairs": int(ambiguous_pairs),
+        "pair_count": non_skip_pairs,
+        "visible_pair_count": 0,
+        "status_counts": {
+            "safe_skip_partition_pairs": int(safe_skip_pairs),
+            "safe_full_partition_pairs": int(safe_full_pairs),
+            "ambiguous_partition_pairs": int(ambiguous_pairs),
+        },
+        "ambiguous_point_comparisons": int(ambiguous_point_comparisons),
+        "ambiguous_positive_edges": int(ambiguous_positive_edges),
+        "union_iterations": int(union_iterations),
+        "complete_candidate_coverage": True,
+        "label_materialization": "component_size_signature_only",
+        "native_abi_added": False,
+        "runtime_executable": True,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "app_specific_engine_logic_allowed": False,
+        "automatic_partner_selection_allowed": False,
+        "hidden_dispatch_allowed": False,
+        "claim_boundary": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY,
+    }
+    return signature, metadata
+
+
+@dataclass
+class V28PreparedFixedRadiusPartitionConvergenceDirectStatusUnionCupyPreview3D:
+    point_rows: tuple[Any, ...]
+    radius: float
+    cell_factor: float
+    runtime_columns: dict[str, Any]
+    prepare_metadata: dict[str, Any]
+    closed: bool = False
+    component_signature_runs: int = 0
+
+    def _ensure_open(self) -> None:
+        if self.closed:
+            raise RuntimeError("prepared direct-status partition-convergence handle is closed")
+
+    def to_metadata(self) -> dict[str, Any]:
+        return {
+            "version": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_FRONT_DOOR_VERSION,
+            "status": "explicit_cupy_prepared_direct_status_union_preview_not_promoted",
+            "operation": "fixed_radius_partition_convergence_direct_status_union_signature_3d",
+            "prepared_direct_status_union_handle": True,
+            "prepared_direct_status_union_partner": "cupy",
+            "prepared_direct_status_union_runtime_executable": True,
+            "point_count": int(self.prepare_metadata["point_count"]),
+            "partition_count": int(self.prepare_metadata["partition_count"]),
+            "radius": self.radius,
+            "cell_factor": self.cell_factor,
+            "max_neighbor_offset": int(self.prepare_metadata["max_neighbor_offset"]),
+            "prepare_metadata": dict(self.prepare_metadata),
+            "component_signature_runs": self.component_signature_runs,
+            "closed": self.closed,
+            "near_pair_columns_materialized": False,
+            "partition_pair_rows_materialized": False,
+            "pair_materialization_avoided": True,
+            "native_abi_added": False,
+            "runtime_executable": True,
+            "default_route_promoted": False,
+            "partition_convergence_hybrid_promoted": False,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "app_specific_engine_logic_allowed": False,
+            "automatic_partner_selection_allowed": False,
+            "hidden_dispatch_allowed": False,
+            "claim_boundary": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY,
+        }
+
+    def run_component_signature(
+        self,
+        *,
+        max_iterations: int = 64,
+        validate_against_materialized_signature: bool = False,
+    ) -> dict[str, Any]:
+        self._ensure_open()
+        self.component_signature_runs += 1
+        signature, run_metadata = _run_direct_status_union_signature_from_prepared_columns_cupy_3d(
+            self.runtime_columns,
+            self.prepare_metadata,
+            radius=self.radius,
+            cell_factor=self.cell_factor,
+            max_iterations=max_iterations,
+        )
+        same_contract = None
+        materialized_signature = None
+        if validate_against_materialized_signature:
+            reference = build_v2_8_fixed_radius_partition_convergence_component_signature_cupy_preview_3d(
+                self.point_rows,
+                radius=self.radius,
+                cell_factor=self.cell_factor,
+                pair_enumeration="device_count_then_emit_non_skip_unordered",
+                validate_summary_same_contract=False,
+                validate_against_component_labels=False,
+            )
+            materialized_signature = tuple(
+                int(value) for value in reference["columns"]["component_size_signature"]
+            )
+            same_contract = signature == materialized_signature
+        metadata = {
+            "reference": "fixed_radius_partition_convergence_component_signature_3d_cupy_prepared_direct_status_union_preview",
+            "adapter": "run_fixed_radius_partition_convergence_component_signature_cupy_prepared_direct_status_union_preview_3d",
+            **run_metadata,
+            "status": (
+                "accept"
+                if same_contract is None or same_contract
+                else "reject_materialized_signature_mismatch"
+            ),
+            "prepared_direct_status_union_handle": True,
+            "prepared_direct_status_union_handle_status": "explicit_cupy_preview_not_promoted",
+            "prepared_direct_status_union_partner": "cupy",
+            "prepared_direct_status_union_reused": True,
+            "prepared_direct_status_union_run_index": int(self.component_signature_runs),
+            "prepared_direct_status_union_prepare_metadata": dict(self.prepare_metadata),
+            "same_contract_against_materialized_signature": same_contract,
+            "materialized_reference_signature": materialized_signature,
+            "default_route_promoted": False,
+            "partition_convergence_hybrid_promoted": False,
+        }
+        return {"columns": {"component_size_signature": signature}, "metadata": metadata}
+
+    def close(self) -> None:
+        self.closed = True
+
+    def __enter__(self) -> "V28PreparedFixedRadiusPartitionConvergenceDirectStatusUnionCupyPreview3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+
+def prepare_v2_8_fixed_radius_partition_convergence_direct_status_union_cupy_preview_3d(
+    point_rows,
+    *,
+    radius: float,
+    cell_factor: float = 0.125,
+) -> V28PreparedFixedRadiusPartitionConvergenceDirectStatusUnionCupyPreview3D:
+    """Prepare reusable device columns for direct-status grouped union signatures."""
+
+    raw_rows = tuple(point_rows)
+    runtime_columns, prepare_metadata = _prepare_direct_status_union_runtime_columns_cupy_3d(
+        raw_rows,
+        radius=radius,
+        cell_factor=cell_factor,
+    )
+    return V28PreparedFixedRadiusPartitionConvergenceDirectStatusUnionCupyPreview3D(
+        point_rows=raw_rows,
+        radius=float(radius),
+        cell_factor=float(cell_factor),
+        runtime_columns=runtime_columns,
+        prepare_metadata=prepare_metadata,
+    )
+
+
+def run_v2_8_fixed_radius_partition_convergence_component_signature_cupy_prepared_direct_status_union_preview_3d(
+    prepared: V28PreparedFixedRadiusPartitionConvergenceDirectStatusUnionCupyPreview3D,
+    *,
+    max_iterations: int = 64,
+    validate_against_materialized_signature: bool = False,
+) -> dict[str, Any]:
+    return prepared.run_component_signature(
+        max_iterations=max_iterations,
+        validate_against_materialized_signature=validate_against_materialized_signature,
+    )
+
+
 def build_v2_8_fixed_radius_partition_convergence_summary_numba_preview_3d(
     point_rows,
     *,
@@ -3511,6 +3875,7 @@ __all__ = [
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_REJECTED_DEFAULT_STRATEGIES",
     "V28FixedRadiusGraphComponentPlan",
     "V28PreparedFixedRadiusGraphComponentContinuation3D",
+    "V28PreparedFixedRadiusPartitionConvergenceDirectStatusUnionCupyPreview3D",
     "V28PreparedFixedRadiusPartitionConvergenceSummaryCupyPreview3D",
     "build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_3d",
     "build_v2_8_fixed_radius_partition_convergence_component_labels_reference_3d",
@@ -3526,8 +3891,10 @@ __all__ = [
     "make_v2_8_fixed_radius_partition_convergence_summary_typed_stream_contract",
     "plan_v2_8_fixed_radius_graph_component_continuation",
     "prepare_v2_8_fixed_radius_graph_component_continuation_3d",
+    "prepare_v2_8_fixed_radius_partition_convergence_direct_status_union_cupy_preview_3d",
     "prepare_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d",
     "run_v2_8_fixed_radius_partition_convergence_component_labels_cupy_prepared_preview_3d",
+    "run_v2_8_fixed_radius_partition_convergence_component_signature_cupy_prepared_direct_status_union_preview_3d",
     "run_v2_8_fixed_radius_partition_convergence_component_signature_cupy_prepared_preview_3d",
     "validate_v2_8_fixed_radius_partition_convergence_summary_same_contract_3d",
 ]
