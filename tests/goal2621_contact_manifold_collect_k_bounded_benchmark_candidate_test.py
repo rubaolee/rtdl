@@ -52,11 +52,16 @@ class Goal2621ContactManifoldCollectKBoundedBenchmarkTest(unittest.TestCase):
         if library_path is None:
             self.skipTest("local Embree library unavailable")
 
-        payload = app.native_collect_k_payload(dataset="tiny", witness_capacity=3, backend="embree")
+        payload = app.native_collect_k_payload(dataset="tiny", witness_capacity=3, backend="embree", repeat_count=3)
 
         self.assertTrue(payload["matches_cpu_reference"])
         self.assertEqual(payload["native_generic_symbol"], "rtdl_embree_collect_k_bounded_i64")
         self.assertEqual(payload["candidate_id_rows"], ((0, 10, 0), (0, 11, 1), (2, 30, 2)))
+        self.assertEqual(payload["repeat_count"], 3)
+        self.assertEqual(payload["native_collect_repeat_count"], 3)
+        self.assertEqual(len(payload["native_collect_runs_sec"]), 3)
+        self.assertAlmostEqual(payload["native_collect_total_sec"], sum(payload["native_collect_runs_sec"]))
+        self.assertEqual(payload["native_collect_elapsed_sec"], app.statistics.median(payload["native_collect_runs_sec"]))
         self.assertFalse(payload["engine_boundary"]["native_collision_logic_allowed"])
 
     def test_standalone_cpp_baseline_matches_reference_if_compiler_exists(self) -> None:
@@ -107,9 +112,11 @@ class Goal2621ContactManifoldCollectKBoundedBenchmarkTest(unittest.TestCase):
         self.assertIn("contact_manifold/", catalog)
         self.assertIn("Promoted benchmark for generic bounded witness collection", catalog)
         self.assertIn("no native contact/collision ABI and no speedup claim", catalog)
-        self.assertIn("`COLLECT_K_BOUNDED` | Stable primitive", primitive_catalog)
-        self.assertIn("bounded witness-row collection", primitive_catalog)
-        self.assertIn("collision/contact semantics stay in Python app code", primitive_catalog)
+        self.assertIn("COLLECT_K_BOUNDED (materialization.collect_k_bounded)", primitive_catalog)
+        self.assertIn("stable_primitive", primitive_catalog)
+        self.assertIn("Bounded Materialization Layer", primitive_catalog)
+        self.assertIn("contact manifold interpretation", primitive_catalog)
+        self.assertIn("collision/contact physics semantics", primitive_catalog)
         self.assertIn("promoted the app to", report)
         self.assertIn("does not authorize public speedup claims", report)
         self.assertIn("Pod OptiX Evidence", report)

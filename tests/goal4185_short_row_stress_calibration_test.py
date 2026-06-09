@@ -46,9 +46,11 @@ class Goal4185ShortRowStressCalibrationTest(unittest.TestCase):
         self.assertGreater(librts["run_phases"]["query_total_sec"], 1.0)
         self.assertGreater(triangle["timing_ms"]["run_backend"] / 1000.0, 1.0)
 
-        self.assertLess(hausdorff["run_phases"]["query_fixed_radius_threshold_reached_count_sec"], 0.1)
+        self.assertGreater(hausdorff["repeat_protocol"]["measured_query_total_sec"], 1.0)
         self.assertLess(contact["native_collect_elapsed_sec"], 0.01)
         self.assertEqual(rtnn["runner_payload"]["repeat"], 5000)
+        self.assertGreater(sum(rtnn["runner_payload"]["elapsed_runs_sec"]), 0.8)
+        self.assertLess(sum(rtnn["runner_payload"]["elapsed_runs_sec"]), 1.0)
         self.assertLess(rtnn["runner_payload"]["elapsed_median_sec"], 0.001)
 
     def test_report_does_not_overclaim(self) -> None:

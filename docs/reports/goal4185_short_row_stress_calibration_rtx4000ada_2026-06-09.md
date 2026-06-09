@@ -28,10 +28,10 @@ second-level hot-path evidence and which need better aggregate timing fields.
 
 | Row | Stress setting | Wrapper sec | Reported hot-path signal | Adequacy reading |
 | --- | --- | ---: | --- | --- |
-| Hausdorff/X-HD | `copies=8192`, `repeat=200`, `warmup=5` | 18.997 | threshold query `0.066711s` | Not claim-grade yet: wrapper is long, but the app reports a short per-query threshold phase rather than an aggregate repeated-query total. |
+| Hausdorff/X-HD | `copies=8192`, `repeat=200`, `warmup=5` | 18.997 | measured query total `17.036169s`; median-style legacy key `0.066711s` | Adequate second-level repeated-query evidence, but consumers must use `repeat_protocol.measured_query_total_sec`, not the legacy median-style `run_phases` key. |
 | Contact manifold | `grid=64`, `repeat-count=10000` | 0.630 | native collect `0.000459s` | Not claim-grade yet: the front door does not expose repeat-aware aggregate timing or repeat metadata for this mode. |
 | LibRTS spatial index | `repeat=40`, `warmup=2` | 3.512 | query total `1.749403s`, median `0.043698s` | Adequate second-level repeated-query evidence. |
-| RTNN | `repeat=5000` | 4.061 | elapsed median `0.000170s`, repeat `5000` | Needs aggregate timing field: the repeat count is present, but the primary reported value remains per-query median. |
+| RTNN | `repeat=5000` | 4.061 | elapsed-run aggregate `0.853672s`; median `0.000170s`, repeat `5000` | Aggregate data exists, but this setting is just under the one-second hot-path target; increase repeat before claim-grade timing. |
 | Triangle counting | `repeat=10000`, `warmup=10` | 2.837 | backend run total `2.063972s`, query median `0.140332ms` | Adequate second-level repeated-query evidence. |
 
 ## Engineering Meaning
@@ -39,12 +39,15 @@ second-level hot-path evidence and which need better aggregate timing fields.
 The next major work is not another isolated app tweak. It is benchmark/runtime
 measurement hardening:
 
-- Add aggregate repeated-query timing fields to Hausdorff/X-HD and RTNN so
-  long stress settings produce claim-auditable hot-path totals.
+- Teach current packet consumers to read Hausdorff/X-HD aggregate timing from
+  `repeat_protocol.measured_query_total_sec` rather than the legacy median-style
+  `run_phases` key.
+- Raise the RTNN stress repeat beyond `5000` when claim-grade second-level
+  aggregate timing is required.
 - Fix or clarify `contact_manifold` native-collect repeat semantics so the
   public front door can report repeat count and aggregate native-collect time.
-- Keep LibRTS and triangle counting in the second-level evidence lane; their
-  stress rows already expose aggregate totals.
+- Keep LibRTS, triangle counting, and Hausdorff/X-HD in the second-level evidence
+  lane; their stress rows already expose aggregate totals.
 
 This keeps the project aligned with the language/runtime goal: build generic
 RTDL primitives and partner contracts with transparent measurement, rather than

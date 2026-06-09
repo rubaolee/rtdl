@@ -786,10 +786,13 @@ def native_collect_k_payload(
     grid_count: int = 64,
     backend: str = "embree",
     library_path: str | None = None,
+    repeat_count: int = 1,
 ) -> dict[str, Any]:
     normalized_backend = backend.strip().lower()
     if normalized_backend not in {"embree", "optix", "hiprt"}:
         raise ValueError("native collect backend must be embree, optix, or hiprt")
+    if repeat_count <= 0:
+        raise ValueError("repeat_count must be positive")
     resolved_library = Path(library_path) if library_path else _default_library_path(normalized_backend)
     if resolved_library is None:
         raise RuntimeError(
@@ -798,17 +801,27 @@ def native_collect_k_payload(
     reference = cpu_reference_payload(dataset=dataset, grid_count=grid_count)
     library = ctypes.CDLL(str(resolved_library))
     symbol_name = f"rtdl_{normalized_backend}_collect_k_bounded_i64"
-    started = time.perf_counter()
-    native = rt.collect_native_i64_rows_with_backend_symbol(
-        reference["candidate_id_rows"],
-        capacity=int(witness_capacity),
-        row_width=ROW_WIDTH,
-        backend=normalized_backend,
-        library=library,
-        symbol_name=symbol_name,
-        candidate_source_symbol="python_exact_triangle_intersection_oracle",
-    )
-    native_elapsed_sec = time.perf_counter() - started
+    native_runs_sec: list[float] = []
+    native: dict[str, Any] | None = None
+    for _ in range(repeat_count):
+        started = time.perf_counter()
+        current = rt.collect_native_i64_rows_with_backend_symbol(
+            reference["candidate_id_rows"],
+            capacity=int(witness_capacity),
+            row_width=ROW_WIDTH,
+            backend=normalized_backend,
+            library=library,
+            symbol_name=symbol_name,
+            candidate_source_symbol="python_exact_triangle_intersection_oracle",
+        )
+        native_runs_sec.append(time.perf_counter() - started)
+        if native is not None and current["candidate_id_rows"] != native["candidate_id_rows"]:
+            raise RuntimeError("native collect repeat changed emitted candidate rows")
+        native = current
+    if native is None:
+        raise RuntimeError("native collect repeat produced no measured runs")
+    native_elapsed_sec = float(statistics.median(native_runs_sec))
+    native_total_sec = float(sum(native_runs_sec))
     v2_4_session = describe_v2_4_bounded_witness_session(
         backend=normalized_backend,
         candidate_row_count=len(reference["candidate_id_rows"]),
@@ -838,6 +851,13 @@ def native_collect_k_payload(
         "cpu_reference_valid_count": reference["valid_count"],
         "cpu_reference_elapsed_sec": reference["elapsed_sec"],
         "native_collect_elapsed_sec": native_elapsed_sec,
+        "repeat_count": int(repeat_count),
+        "native_collect_repeat_count": int(repeat_count),
+        "native_collect_runs_sec": tuple(native_runs_sec),
+        "native_collect_total_sec": native_total_sec,
+        "native_collect_min_sec": float(min(native_runs_sec)),
+        "native_collect_max_sec": float(max(native_runs_sec)),
+        "native_collect_timing_scope": "median_preserves_legacy_field_total_records_repeat_aggregate",
         "v2_4_prepared_session": v2_4_session,
         "v2_4_phase_timing": v2_4_phase_timing,
         "engine_boundary": scope_payload()["engine_boundary"],
@@ -1025,6 +1045,7 @@ def run_app(
             witness_capacity=witness_capacity,
             grid_count=grid_count,
             backend=backend,
+            repeat_count=repeat_count,
         )
     if mode == "baseline_comparison":
         return baseline_comparison_payload(
