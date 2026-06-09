@@ -1877,6 +1877,44 @@ def _run_direct_status_union_signature_from_prepared_columns_cupy_3d(
     convergence_mode = str(convergence_mode)
     if convergence_mode not in {"until_stable", "single_pass_candidate"}:
         raise ValueError("convergence_mode must be 'until_stable' or 'single_pass_candidate'")
+    all_predicate_fast_path = bool(cupy.all(predicate_flags != 0).item())
+    if all_predicate_fast_path:
+        signature, base_metadata = _run_direct_status_union_signature_from_prepared_columns_cupy_3d(
+            runtime_columns,
+            prepare_metadata,
+            radius=radius,
+            cell_factor=cell_factor,
+            max_iterations=max_iterations,
+            convergence_mode=convergence_mode,
+        )
+        label_counts = cupy.zeros((len(signature) + 1,), dtype=cupy.uint64)
+        if signature:
+            label_counts[1:] = cupy.asarray(signature, dtype=cupy.uint64)
+        flag_true_count = cupy.asarray((point_count,), dtype=cupy.uint64)
+        negative_label_count = cupy.zeros((1,), dtype=cupy.uint64)
+        columns = {
+            "label_counts": label_counts,
+            "flag_true_count": flag_true_count,
+            "negative_label_count": negative_label_count,
+            "neighbor_counts": neighbor_counts,
+        }
+        metadata = dict(base_metadata)
+        metadata.update(
+            {
+                "pair_enumeration": "device_direct_status_predicate_union_all_predicate_fast_path",
+                "pair_stream_filter": "all_predicate_reuses_component_status_scan",
+                "predicate_flags_consumed": True,
+                "all_predicate_fast_path": True,
+                "predicate_positive_edges": metadata.get("ambiguous_positive_edges"),
+                "border_candidate_updates": 0,
+                "component_signature_policy": "all_predicate_component_size_signature_wrapped_as_predicate_signature_counts",
+                "component_label_policy": "not_materialized_signature_counts_only",
+                "deterministic_neighbor_candidate_policy": "not_needed_all_vertices_predicate_true",
+                "label_materialization": "component_size_signature_counts_only",
+                "data_ptrs": _column_data_ptrs(columns),
+            }
+        )
+        return columns, metadata
     radius_sq = radius * radius
     classification_tol = 1.0e-5 * max(1.0, radius_sq)
     partition_count = int(prepare_metadata["partition_count"])
