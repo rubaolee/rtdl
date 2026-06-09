@@ -1075,6 +1075,23 @@ def cluster_signature(rows: Iterable[dict[str, object]]) -> dict[str, object]:
     }
 
 
+def canonical_component_size_signature(signature: dict[str, object]) -> dict[str, object]:
+    """Normalize a cluster signature when component label ids are arbitrary."""
+
+    cluster_sizes = signature.get("cluster_sizes", {})
+    if not isinstance(cluster_sizes, dict):
+        raise TypeError("signature['cluster_sizes'] must be a dict")
+    return {
+        "cluster_sizes": tuple(sorted(int(value) for value in cluster_sizes.values() if int(value) > 0)),
+        "core_count": int(signature["core_count"]),
+        "noise_count": int(signature["noise_count"]),
+    }
+
+
+def same_canonical_component_size_signature(left: dict[str, object], right: dict[str, object]) -> bool:
+    return canonical_component_size_signature(left) == canonical_component_size_signature(right)
+
+
 def _densify_cluster_labels(rows: Iterable[dict[str, object]]) -> tuple[dict[str, object], ...]:
     dense_by_original: dict[int, int] = {}
     next_label = 1
