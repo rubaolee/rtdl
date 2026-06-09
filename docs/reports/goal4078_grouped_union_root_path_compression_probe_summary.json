@@ -1,0 +1,43 @@
+{
+  "baseline_commit": "d30ab7b3",
+  "baseline_goal": "Goal4075",
+  "claim_boundary": {
+    "native_abi_added": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "decision": "revert_probe_no_material_win",
+  "goal": "Goal4078",
+  "interpretation": "Path compression is correctness-stable but performance-neutral/noisy at this scale; extra native atomics are not justified as a default.",
+  "probe_commit": "93c73e3a",
+  "rows": [
+    {
+      "baseline_commit": "d30ab7b3",
+      "baseline_elapsed_sec": 0.09361211210489273,
+      "baseline_native_sec": 0.08797638863325119,
+      "probe_commit": "93c73e3a",
+      "probe_elapsed_sec": 0.09329142048954964,
+      "probe_native_sec": 0.08801911771297455,
+      "probe_over_baseline_elapsed_ratio": 0.9965742508300234,
+      "probe_over_baseline_native_ratio": 1.0004856880395658,
+      "profile": "clustered3d_65536",
+      "same_component_size_signature": true
+    },
+    {
+      "baseline_commit": "d30ab7b3",
+      "baseline_elapsed_sec": 0.03512256219983101,
+      "baseline_native_sec": 0.029681295156478882,
+      "probe_commit": "93c73e3a",
+      "probe_elapsed_sec": 0.035556212067604065,
+      "probe_native_sec": 0.02981947362422943,
+      "probe_over_baseline_elapsed_ratio": 1.0123467606180263,
+      "probe_over_baseline_native_ratio": 1.0046554056021504,
+      "profile": "road3d_65536",
+      "same_component_size_signature": true
+    }
+  ],
+  "schema": "rtdl.goal4078.grouped_union_root_path_compression_probe_summary.v1"
+}

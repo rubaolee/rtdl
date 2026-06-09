@@ -6322,7 +6322,6 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                     if same_root_culling
                     else "disabled_by_caller"
                 ),
-                "grouped_union_root_path_compression_policy": "monotonic_atomic_min_path_halving_default",
                 "grouped_union_direct_side_effect_enabled": direct_side_effect,
                 "grouped_union_direct_side_effect_policy": (
                     _grouped_union_direct_side_effect_policy(direct_side_effect)
@@ -6607,7 +6606,6 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                     if same_root_culling
                     else "disabled_by_caller"
                 ),
-                "grouped_union_root_path_compression_policy": "monotonic_atomic_min_path_halving_default",
                 "grouped_union_direct_side_effect_enabled": direct_side_effect,
                 "grouped_union_direct_side_effect_policy": (
                     _grouped_union_direct_side_effect_policy(direct_side_effect)
@@ -6876,7 +6874,6 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                     if same_root_culling
                     else "disabled_by_caller"
                 ),
-                "grouped_union_root_path_compression_policy": "monotonic_atomic_min_path_halving_default",
                 "grouped_union_direct_side_effect_enabled": direct_side_effect,
                 "grouped_union_direct_side_effect_policy": (
                     _grouped_union_direct_side_effect_policy(direct_side_effect)
@@ -7137,7 +7134,6 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                     if same_root_culling
                     else "disabled_by_caller"
                 ),
-                "grouped_union_root_path_compression_policy": "monotonic_atomic_min_path_halving_default",
                 "grouped_union_direct_side_effect_enabled": direct_side_effect,
                 "grouped_union_direct_side_effect_policy": (
                     _grouped_union_direct_side_effect_policy(direct_side_effect)
