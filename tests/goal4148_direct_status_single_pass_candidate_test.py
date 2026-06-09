@@ -33,7 +33,7 @@ class Goal4148DirectStatusSinglePassCandidateTest(unittest.TestCase):
         report = REPORT.read_text(encoding="utf-8")
 
         for fragment in (
-            "implementation-complete-pod-needed",
+            "implementation-complete-pod-measured-in-goal4149",
             "default remains `until_stable`",
             "not a route promotion",
             "single-pass candidate",

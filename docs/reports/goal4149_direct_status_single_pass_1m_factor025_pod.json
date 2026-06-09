@@ -1,0 +1,137 @@
+{
+  "all_signatures_match_until_stable": true,
+  "automatic_partition_cell_factor_selection_authorized": false,
+  "automatic_partner_selection_authorized": false,
+  "elapsed_total_sec": 70.63127366453409,
+  "goal": "Goal4149",
+  "hidden_dispatch_authorized": false,
+  "partition_cell_factor": 0.25,
+  "point_count": 1048576,
+  "profiles": [
+    "clustered3d",
+    "road3d",
+    "ngsim_dense"
+  ],
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "repeat": 2,
+  "rows": [
+    {
+      "candidate_component_signature_sec": 2.8556654304265976,
+      "candidate_convergence_proven": false,
+      "candidate_elapsed_sec": 2.855666972696781,
+      "candidate_final_changed_flag": 1,
+      "candidate_prepare_sec": 1.0131295323371887,
+      "candidate_signature": {
+        "component_count": 4,
+        "component_sizes": [
+          262144,
+          262144,
+          262144,
+          262144
+        ],
+        "contract": "fixed_radius_graph_component_size_signature_3d",
+        "point_count": 1048576
+      },
+      "candidate_single_pass_promoted": false,
+      "candidate_total_sec": 3.8687949627637863,
+      "candidate_union_iterations": 1,
+      "component_signature_speedup": 1.9870685816491687,
+      "elapsed_speedup": 1.9870682364112089,
+      "profile": "clustered3d",
+      "same_signature_vs_until_stable": true,
+      "stable_component_signature_sec": 5.674403056502342,
+      "stable_elapsed_sec": 5.674405135214329,
+      "stable_prepare_sec": 1.5113359615206718,
+      "stable_signature": {
+        "component_count": 4,
+        "component_sizes": [
+          262144,
+          262144,
+          262144,
+          262144
+        ],
+        "contract": "fixed_radius_graph_component_size_signature_3d",
+        "point_count": 1048576
+      },
+      "stable_total_sec": 7.185739018023014,
+      "stable_union_iterations": 2,
+      "total_speedup": 1.8573584506762468
+    },
+    {
+      "candidate_component_signature_sec": 2.47152116894722,
+      "candidate_convergence_proven": false,
+      "candidate_elapsed_sec": 2.471522644162178,
+      "candidate_final_changed_flag": 1,
+      "candidate_prepare_sec": 0.8100325241684914,
+      "candidate_signature": {
+        "component_count": 1,
+        "component_sizes": [
+          1048576
+        ],
+        "contract": "fixed_radius_graph_component_size_signature_3d",
+        "point_count": 1048576
+      },
+      "candidate_single_pass_promoted": false,
+      "candidate_total_sec": 3.281553693115711,
+      "candidate_union_iterations": 1,
+      "component_signature_speedup": 2.0795692582977536,
+      "elapsed_speedup": 2.079568565685848,
+      "profile": "road3d",
+      "same_signature_vs_until_stable": true,
+      "stable_component_signature_sec": 5.1396994441747665,
+      "stable_elapsed_sec": 5.139700800180435,
+      "stable_prepare_sec": 0.8230060040950775,
+      "stable_signature": {
+        "component_count": 1,
+        "component_sizes": [
+          1048576
+        ],
+        "contract": "fixed_radius_graph_component_size_signature_3d",
+        "point_count": 1048576
+      },
+      "stable_total_sec": 5.962705448269844,
+      "stable_union_iterations": 2,
+      "total_speedup": 1.8170372957111303
+    },
+    {
+      "candidate_component_signature_sec": 0.6195529103279114,
+      "candidate_convergence_proven": false,
+      "candidate_elapsed_sec": 0.6195537820458412,
+      "candidate_final_changed_flag": 1,
+      "candidate_prepare_sec": 1.0263144224882126,
+      "candidate_signature": {
+        "component_count": 1,
+        "component_sizes": [
+          1048576
+        ],
+        "contract": "fixed_radius_graph_component_size_signature_3d",
+        "point_count": 1048576
+      },
+      "candidate_single_pass_promoted": false,
+      "candidate_total_sec": 1.645867332816124,
+      "candidate_union_iterations": 1,
+      "component_signature_speedup": 2.0095168198216475,
+      "elapsed_speedup": 2.009515856399477,
+      "profile": "ngsim_dense",
+      "same_signature_vs_until_stable": true,
+      "stable_component_signature_sec": 1.245001994073391,
+      "stable_elapsed_sec": 1.2450031489133835,
+      "stable_prepare_sec": 1.0276391878724098,
+      "stable_signature": {
+        "component_count": 1,
+        "component_sizes": [
+          1048576
+        ],
+        "contract": "fixed_radius_graph_component_size_signature_3d",
+        "point_count": 1048576
+      },
+      "stable_total_sec": 2.272641181945801,
+      "stable_union_iterations": 2,
+      "total_speedup": 1.3808167503131918
+    }
+  ],
+  "single_pass_promoted": false,
+  "source_commit": "771704fa",
+  "warmup": 1
+}

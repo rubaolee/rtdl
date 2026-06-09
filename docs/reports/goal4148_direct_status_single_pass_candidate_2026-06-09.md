@@ -2,7 +2,7 @@
 
 Date: 2026-06-09
 
-Verdict: implementation-complete-pod-needed
+Verdict: implementation-complete-pod-measured-in-goal4149
 
 ## Purpose
 
@@ -28,9 +28,10 @@ single-pass candidate was used.
 ## Boundary
 
 This is not a route promotion. The default remains `until_stable`; the app
-metadata keeps `direct_status_single_pass_promoted` false. A pod run must compare
-component-size signatures against the stable/materialized reference before any
-performance conclusion is considered.
+metadata keeps `direct_status_single_pass_promoted` false. Goal4149 compares
+component-size signatures against the stable route on the 1M factor-0.25 pod
+packet and keeps the result bounded as same-signature evidence, not a universal
+convergence proof.
 
 This goal does not authorize release, public speedup wording, broad RT-core
 wording, whole-app benchmark claims, paper reproduction, hidden dispatch,
