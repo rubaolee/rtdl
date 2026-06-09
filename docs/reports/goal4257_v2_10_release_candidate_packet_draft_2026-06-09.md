@@ -31,13 +31,15 @@ user release decision.
 | Short-row long-repeat refresh | Goal4243 |
 | Short-row external reviews | Goal4246 and Goal4247 |
 | Public-doc claim-boundary scan | Goal4248 |
-| Current target map | Goal4249 |
+| Public-doc target-map integration | Goal4249 |
 | Post-docs pod validation | Goal4250 |
 | Internal release-prep packet | Goal4251 |
 | Internal release-prep external reviews | Goal4252 and Goal4253 |
 | Public claim wording candidate | Goal4254 |
 | Public claim wording external reviews | Goal4255 and Goal4256 |
 | Public claim wording repair closure | Goal4258, Goal4259, and Goal4260 |
+| Target map after claim-wording closure | Goal4261 |
+| Exact-head release-prep pod validation | Goal4262 |
 
 ## Candidate Release Claims
 
