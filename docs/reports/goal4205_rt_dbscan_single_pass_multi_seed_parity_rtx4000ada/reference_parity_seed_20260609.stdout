@@ -1,0 +1,189 @@
+[goal4202] running tiny
+[goal4202] running clustered3d_512
+[goal4202] running road3d_1024
+[goal4202] running ngsim_dense_1024
+{
+  "cases": [
+    {
+      "all_policies_match_reference": true,
+      "candidate_pair_count": 8,
+      "component_threshold": 3,
+      "dataset": "tiny",
+      "default_matches_two_pass_labels": true,
+      "point_count": 9,
+      "policies": {
+        "lowest_candidate_then_root": {
+          "matches_reference_labels": true,
+          "metadata": {
+            "public_speedup_claim_authorized": false,
+            "rt_core_accelerated": true,
+            "true_zero_copy_claim_authorized": false
+          },
+          "mismatch_count": 0,
+          "native_boundary_assignment_pass_count": 1,
+          "native_boundary_assignment_policy": "lowest_candidate_then_root",
+          "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs"
+        },
+        "lowest_component_root_two_pass": {
+          "matches_reference_labels": true,
+          "metadata": {
+            "public_speedup_claim_authorized": false,
+            "rt_core_accelerated": true,
+            "true_zero_copy_claim_authorized": false
+          },
+          "mismatch_count": 0,
+          "native_boundary_assignment_pass_count": 2,
+          "native_boundary_assignment_policy": "lowest_component_root_two_pass",
+          "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs"
+        }
+      },
+      "predicate_true_count": 6,
+      "public_speedup_claim_authorized": false,
+      "radius": 0.13,
+      "reference_component_count": 2,
+      "reference_component_sizes": [
+        4,
+        4
+      ],
+      "route_promotion_authorized": false,
+      "true_zero_copy_claim_authorized": false
+    },
+    {
+      "all_policies_match_reference": true,
+      "candidate_pair_count": 6385,
+      "component_threshold": 16,
+      "dataset": "clustered3d",
+      "default_matches_two_pass_labels": true,
+      "point_count": 512,
+      "policies": {
+        "lowest_candidate_then_root": {
+          "matches_reference_labels": true,
+          "metadata": {
+            "public_speedup_claim_authorized": false,
+            "rt_core_accelerated": true,
+            "true_zero_copy_claim_authorized": false
+          },
+          "mismatch_count": 0,
+          "native_boundary_assignment_pass_count": 1,
+          "native_boundary_assignment_policy": "lowest_candidate_then_root",
+          "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs"
+        },
+        "lowest_component_root_two_pass": {
+          "matches_reference_labels": true,
+          "metadata": {
+            "public_speedup_claim_authorized": false,
+            "rt_core_accelerated": true,
+            "true_zero_copy_claim_authorized": false
+          },
+          "mismatch_count": 0,
+          "native_boundary_assignment_pass_count": 2,
+          "native_boundary_assignment_policy": "lowest_component_root_two_pass",
+          "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs"
+        }
+      },
+      "predicate_true_count": 361,
+      "public_speedup_claim_authorized": false,
+      "radius": 0.035,
+      "reference_component_count": 4,
+      "reference_component_sizes": [
+        121,
+        122,
+        122,
+        124
+      ],
+      "route_promotion_authorized": false,
+      "true_zero_copy_claim_authorized": false
+    },
+    {
+      "all_policies_match_reference": true,
+      "candidate_pair_count": 8716,
+      "component_threshold": 16,
+      "dataset": "road3d",
+      "default_matches_two_pass_labels": true,
+      "point_count": 1024,
+      "policies": {
+        "lowest_candidate_then_root": {
+          "matches_reference_labels": true,
+          "metadata": {
+            "public_speedup_claim_authorized": false,
+            "rt_core_accelerated": true,
+            "true_zero_copy_claim_authorized": false
+          },
+          "mismatch_count": 0,
+          "native_boundary_assignment_pass_count": 1,
+          "native_boundary_assignment_policy": "lowest_candidate_then_root",
+          "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs"
+        },
+        "lowest_component_root_two_pass": {
+          "matches_reference_labels": true,
+          "metadata": {
+            "public_speedup_claim_authorized": false,
+            "rt_core_accelerated": true,
+            "true_zero_copy_claim_authorized": false
+          },
+          "mismatch_count": 0,
+          "native_boundary_assignment_pass_count": 2,
+          "native_boundary_assignment_policy": "lowest_component_root_two_pass",
+          "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs"
+        }
+      },
+      "predicate_true_count": 781,
+      "public_speedup_claim_authorized": false,
+      "radius": 0.02,
+      "reference_component_count": 1,
+      "reference_component_sizes": [
+        1022
+      ],
+      "route_promotion_authorized": false,
+      "true_zero_copy_claim_authorized": false
+    },
+    {
+      "all_policies_match_reference": true,
+      "candidate_pair_count": 1837,
+      "component_threshold": 16,
+      "dataset": "ngsim_dense",
+      "default_matches_two_pass_labels": true,
+      "point_count": 1024,
+      "policies": {
+        "lowest_candidate_then_root": {
+          "matches_reference_labels": true,
+          "metadata": {
+            "public_speedup_claim_authorized": false,
+            "rt_core_accelerated": true,
+            "true_zero_copy_claim_authorized": false
+          },
+          "mismatch_count": 0,
+          "native_boundary_assignment_pass_count": 1,
+          "native_boundary_assignment_policy": "lowest_candidate_then_root",
+          "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs"
+        },
+        "lowest_component_root_two_pass": {
+          "matches_reference_labels": true,
+          "metadata": {
+            "public_speedup_claim_authorized": false,
+            "rt_core_accelerated": true,
+            "true_zero_copy_claim_authorized": false
+          },
+          "mismatch_count": 0,
+          "native_boundary_assignment_pass_count": 2,
+          "native_boundary_assignment_policy": "lowest_component_root_two_pass",
+          "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs"
+        }
+      },
+      "predicate_true_count": 0,
+      "public_speedup_claim_authorized": false,
+      "radius": 0.012,
+      "reference_component_count": 0,
+      "reference_component_sizes": [],
+      "route_promotion_authorized": false,
+      "true_zero_copy_claim_authorized": false
+    }
+  ],
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "route_promotion_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "commit": "64941904",
+  "schema": "rtdl.goal4202.rt_dbscan_single_pass_reference_parity.v1"
+}
