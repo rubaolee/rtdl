@@ -54,6 +54,23 @@ RT_DBSCAN_TESTED_DIRECT_STATUS_PARTITION_CELL_FACTOR_OPTIONS = {
         {"point_count": 1048576, "factor": 0.25, "replay_speedup": 1.790, "one_shot_total_speedup": 2.432, "evidence_refs": ("Goal4138",)},
     ),
 }
+RT_DBSCAN_TESTED_DIRECT_STATUS_SINGLE_PASS_CONVERGENCE_OPTIONS = {
+    ("clustered3d", 65536, 0.25): {"replay_speedup_vs_until_stable": 1.945, "total_speedup_vs_until_stable": 8.851, "evidence_refs": ("Goal4150",)},
+    ("road3d", 65536, 0.25): {"replay_speedup_vs_until_stable": 2.017, "total_speedup_vs_until_stable": 1.654, "evidence_refs": ("Goal4150",)},
+    ("ngsim_dense", 65536, 0.25): {"replay_speedup_vs_until_stable": 1.944, "total_speedup_vs_until_stable": 1.111, "evidence_refs": ("Goal4150",)},
+    ("clustered3d", 131072, 0.25): {"replay_speedup_vs_until_stable": 2.121, "total_speedup_vs_until_stable": 1.308, "evidence_refs": ("Goal4150",)},
+    ("road3d", 131072, 0.25): {"replay_speedup_vs_until_stable": 2.069, "total_speedup_vs_until_stable": 1.255, "evidence_refs": ("Goal4150",)},
+    ("ngsim_dense", 131072, 0.25): {"replay_speedup_vs_until_stable": 1.849, "total_speedup_vs_until_stable": 1.117, "evidence_refs": ("Goal4150",)},
+    ("clustered3d", 262144, 0.25): {"replay_speedup_vs_until_stable": 2.046, "total_speedup_vs_until_stable": 1.506, "evidence_refs": ("Goal4150",)},
+    ("road3d", 262144, 0.25): {"replay_speedup_vs_until_stable": 2.102, "total_speedup_vs_until_stable": 1.502, "evidence_refs": ("Goal4150",)},
+    ("ngsim_dense", 262144, 0.25): {"replay_speedup_vs_until_stable": 1.996, "total_speedup_vs_until_stable": 1.176, "evidence_refs": ("Goal4150",)},
+    ("clustered3d", 524288, 0.25): {"replay_speedup_vs_until_stable": 2.076, "total_speedup_vs_until_stable": 1.659, "evidence_refs": ("Goal4150",)},
+    ("road3d", 524288, 0.25): {"replay_speedup_vs_until_stable": 2.086, "total_speedup_vs_until_stable": 1.681, "evidence_refs": ("Goal4150",)},
+    ("ngsim_dense", 524288, 0.25): {"replay_speedup_vs_until_stable": 2.010, "total_speedup_vs_until_stable": 1.218, "evidence_refs": ("Goal4150",)},
+    ("clustered3d", 1048576, 0.25): {"replay_speedup_vs_until_stable": 1.987, "total_speedup_vs_until_stable": 1.857, "evidence_refs": ("Goal4149",)},
+    ("road3d", 1048576, 0.25): {"replay_speedup_vs_until_stable": 2.080, "total_speedup_vs_until_stable": 1.817, "evidence_refs": ("Goal4149",)},
+    ("ngsim_dense", 1048576, 0.25): {"replay_speedup_vs_until_stable": 2.010, "total_speedup_vs_until_stable": 1.381, "evidence_refs": ("Goal4149",)},
+}
 RT_DBSCAN_DIRECT_STATUS_APP_MODE = "partner_cupy_prepared_direct_status_union_component_signature_3d"
 RT_DBSCAN_GROUPED_STREAM_NUMBA_APP_MODE = "optix_rt_core_grouped_stream_numba_column_signature_3d"
 
@@ -129,7 +146,7 @@ def plan_rt_dbscan_execution(dataset: str, point_count: int) -> dict[str, object
         "reason": reason,
         "policy": "explicit_benchmark_plan_from_goal2425_prepared_fairness_evidence",
         "legacy_plan_compatibility_mode": True,
-        "current_route_guidance_source": "explain_rt_dbscan_explicit_route_choice_goal4139",
+        "current_route_guidance_source": "explain_rt_dbscan_explicit_route_choice_goal4151",
         "current_route_advisor": current_route_advisor,
         "current_route_first_option": current_route_first_option,
         "selected_mode_boundary": (
@@ -183,22 +200,44 @@ def explain_rt_dbscan_explicit_route_choice(
             tested_options.sort(key=lambda row: (int(row["point_count"]), -float(row[metric_key]), float(row["factor"])))
         direct_options = []
         for tested in tested_options:
-            direct_options.append(
-                {
-                    "mode": RT_DBSCAN_DIRECT_STATUS_APP_MODE,
-                    "partner": "cupy",
-                    "partition_cell_factor": float(tested["factor"]),
-                    "tested_point_count": int(tested["point_count"]),
-                    "replay_speedup_vs_current": float(tested["replay_speedup"]),
-                    "one_shot_total_speedup_vs_current": float(tested["one_shot_total_speedup"]),
-                    "when": (
-                        "explicit repeated component-signature route over reused point/partition columns"
-                        if repeated
-                        else "explicit warmed one-shot component-signature route with prepare paid once"
-                    ),
-                    "evidence_refs": ("Goal4116", "Goal4118", *tuple(tested["evidence_refs"])),
-                }
+            direct_option = {
+                "mode": RT_DBSCAN_DIRECT_STATUS_APP_MODE,
+                "partner": "cupy",
+                "partition_cell_factor": float(tested["factor"]),
+                "tested_point_count": int(tested["point_count"]),
+                "replay_speedup_vs_current": float(tested["replay_speedup"]),
+                "one_shot_total_speedup_vs_current": float(tested["one_shot_total_speedup"]),
+                "direct_status_convergence_mode": "until_stable",
+                "direct_status_convergence_mode_status": "stable_convergence_proven_default",
+                "when": (
+                    "explicit repeated component-signature route over reused point/partition columns"
+                    if repeated
+                    else "explicit warmed one-shot component-signature route with prepare paid once"
+                ),
+                "evidence_refs": ("Goal4116", "Goal4118", *tuple(tested["evidence_refs"])),
+            }
+            single_pass = RT_DBSCAN_TESTED_DIRECT_STATUS_SINGLE_PASS_CONVERGENCE_OPTIONS.get(
+                (dataset, int(tested["point_count"]), float(tested["factor"]))
             )
+            if single_pass is not None:
+                direct_option.update(
+                    {
+                        "direct_status_convergence_mode": "single_pass_candidate",
+                        "direct_status_convergence_mode_status": (
+                            "explicit_user_selected_same_signature_candidate_not_default"
+                        ),
+                        "single_pass_same_signature_vs_until_stable": True,
+                        "single_pass_replay_speedup_vs_until_stable": float(
+                            single_pass["replay_speedup_vs_until_stable"]
+                        ),
+                        "single_pass_total_speedup_vs_until_stable": float(
+                            single_pass["total_speedup_vs_until_stable"]
+                        ),
+                        "single_pass_promoted_default": False,
+                        "single_pass_evidence_refs": tuple(single_pass["evidence_refs"]),
+                    }
+                )
+            direct_options.append(direct_option)
         options = direct_options + options
     elif repeated:
         options.append(
@@ -220,6 +259,7 @@ def explain_rt_dbscan_explicit_route_choice(
         "automatic_dispatch_authorized": False,
         "automatic_partner_selection_authorized": False,
         "automatic_partition_cell_factor_selection_authorized": False,
+        "automatic_convergence_mode_selection_authorized": False,
         "hidden_dispatch_allowed": False,
         "release_authorized": False,
         "public_speedup_claim_authorized": False,
@@ -231,8 +271,8 @@ def explain_rt_dbscan_explicit_route_choice(
         "claim_boundary": (
             "Advisory RT-DBSCAN route explanation only. It does not execute a route, "
             "choose a partner automatically, choose a partition cell factor automatically, "
-            "authorize release, authorize public speedup wording, authorize broad RT-core "
-            "wording, or add app-specific engine logic."
+            "choose a convergence mode automatically, authorize release, authorize public "
+            "speedup wording, authorize broad RT-core wording, or add app-specific engine logic."
         ),
         "options": tuple(options),
     }

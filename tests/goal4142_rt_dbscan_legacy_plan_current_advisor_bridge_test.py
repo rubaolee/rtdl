@@ -20,7 +20,7 @@ class Goal4142RtDbscanLegacyPlanCurrentAdvisorBridgeTest(unittest.TestCase):
 
         self.assertEqual("plan_rt_dbscan_execution", plan["adapter"])
         self.assertTrue(plan["legacy_plan_compatibility_mode"])
-        self.assertEqual("explain_rt_dbscan_explicit_route_choice_goal4139", plan["current_route_guidance_source"])
+        self.assertEqual("explain_rt_dbscan_explicit_route_choice_goal4151", plan["current_route_guidance_source"])
         self.assertEqual(RT_DBSCAN_DIRECT_STATUS_APP_MODE, first["mode"])
         self.assertEqual(1048576, first["tested_point_count"])
         self.assertEqual(0.25, first["partition_cell_factor"])
