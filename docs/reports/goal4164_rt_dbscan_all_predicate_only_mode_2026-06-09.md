@@ -1,6 +1,6 @@
 # Goal4164: RT-DBSCAN All-Predicate-Only Candidate Mode
 
-Status: accepted locally; pod validation pending.
+Status: accepted with pod evidence.
 
 ## Purpose
 
@@ -55,7 +55,35 @@ For mixed predicate rows, users should use:
 until a `reference_grouped_stream_compatible` generic border-assignment policy is
 implemented and remeasured.
 
-## Validation
+## Pod Validation
+
+Artifact:
+
+`docs/reports/goal4164_all_predicate_only_mode_pod.json`
+
+Environment:
+
+- Commit: `d25eff118d8590068c5aa0ead9c557240ae3a06c`
+- GPU: `NVIDIA RTX 4000 Ada Generation, 550.127.05`
+- Mode: `optix_rt_core_flags_cupy_predicate_direct_status_all_true_column_signature_3d`
+
+Results:
+
+| Case | Status | Evidence |
+| --- | --- | --- |
+| `clustered_all_true_min_neighbors_1` | success | `all_predicate_fast_path_observed = true`; `border_assignment_policy = not_needed_all_predicate_true` |
+| `road_sparse_many_noise_fail_closed` | expected `ValueError` | error message points users to `optix_rt_core_grouped_stream_numba_column_signature_3d` for mixed predicate rows |
+
+The artifact marks all three acceptance checks true:
+
+- `all_true_success`
+- `all_true_observed_fast_path`
+- `mixed_failed_closed`
+
+The artifact also keeps release, public speedup, route-promotion, and whole-app
+claim authorization false.
+
+## Local Validation
 
 Local validation:
 
@@ -67,10 +95,3 @@ PYTHONPATH=src;. py -3 -m unittest \
   tests.goal4161_rt_dbscan_canonical_signature_contract_test \
   tests.goal4159_mixed_predicate_direct_status_gap_test
 ```
-
-Pod validation remains the next step:
-
-1. Run an all-predicate row and confirm success with
-   `all_predicate_fast_path_observed = True`.
-2. Run a mixed-predicate row and confirm the new mode fails closed with the
-   documented fallback message.

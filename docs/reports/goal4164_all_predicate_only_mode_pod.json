@@ -1,0 +1,71 @@
+{
+  "acceptance": {
+    "all_true_observed_fast_path": true,
+    "all_true_success": true,
+    "mixed_failed_closed": true
+  },
+  "accepted": true,
+  "cases": [
+    {
+      "case": "clustered_all_true_min_neighbors_1",
+      "dataset": "clustered3d",
+      "elapsed_sec": 0.034461624920368195,
+      "metadata": {
+        "all_predicate_fast_path": true,
+        "all_predicate_fast_path_observed": true,
+        "all_predicate_fast_path_required": true,
+        "all_predicate_only_mode": true,
+        "border_assignment_policy": "not_needed_all_predicate_true",
+        "hidden_dispatch_allowed": false,
+        "mixed_predicate_fail_closed": true,
+        "mixed_predicate_fallback_route": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+        "path": "optix_rt_count_threshold_cupy_predicate_direct_status_all_true_column_signature_3d",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "route_promotion_authorized": false
+      },
+      "min_neighbors": 1,
+      "point_count": 65536,
+      "radius": 0.055,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "status": "success"
+    },
+    {
+      "case": "road_sparse_many_noise_fail_closed",
+      "dataset": "road3d",
+      "error_message": "optix_rt_core_flags_cupy_predicate_direct_status_all_true_column_signature_3d requires all_predicate_fast_path; use optix_rt_core_grouped_stream_numba_column_signature_3d for mixed predicate rows",
+      "error_type": "ValueError",
+      "min_neighbors": 16,
+      "point_count": 65536,
+      "radius": 0.003,
+      "status": "error",
+      "traceback_tail": [
+        "  File \"/root/goal3992_exttelemetry.nANovw/repo/scratch/goal4164_pod_validate.py\", line 23, in run_case",
+        "    result = app.run_rt_dbscan_benchmark(",
+        "             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/root/goal3992_exttelemetry.nANovw/repo/examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py\", line 1820, in run_rt_dbscan_benchmark",
+        "    raise ValueError(",
+        "ValueError: optix_rt_core_flags_cupy_predicate_direct_status_all_true_column_signature_3d requires all_predicate_fast_path; use optix_rt_core_grouped_stream_numba_column_signature_3d for mixed predicate rows"
+      ]
+    }
+  ],
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "route_promotion_authorized": false,
+    "whole_app_claim_authorized": false
+  },
+  "commit": "d25eff118d8590068c5aa0ead9c557240ae3a06c",
+  "goal": "Goal4164",
+  "gpu": "NVIDIA RTX 4000 Ada Generation, 550.127.05",
+  "mode": "optix_rt_core_flags_cupy_predicate_direct_status_all_true_column_signature_3d"
+}
