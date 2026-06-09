@@ -377,6 +377,25 @@ The plan mode is a learner-visible pattern for choosing between generic RTDL
 contracts and partner continuations. It is not a release claim and not a
 paper-reproduction claim.
 
+## Current Boundary Policy
+
+For the OptiX+Numba grouped-stream fixed-radius component front door, the
+reader-facing default boundary policy is:
+
+`single_pass_candidate_root_rebased`
+
+This means RTDL uses one prepared RT traversal to collect predicate-aware
+candidate roots and the partner continuation resolves those candidates through
+final component roots before producing labels or component-size signatures. The
+older name `lowest_candidate_then_root` is still accepted as a compatibility
+alias, but new examples and probes should use the canonical name.
+
+The explicit `lowest_component_root_two_pass` policy is available for
+reference/debug validation. It is not the performance default because pod timing
+showed the extra traversal is slower on clustered and road-shaped fixtures while
+the one-pass route matched the deterministic reference on multi-seed and
+root-shadow parity checks.
+
 ## Explicit Continuation Plan Mode
 
 The benchmark also exposes a second explicit plan for the adjacency-continuation

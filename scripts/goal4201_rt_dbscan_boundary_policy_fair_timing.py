@@ -20,7 +20,7 @@ import rtdsl as rt
 from examples.v2_0.research_benchmarks.rt_dbscan import rtdl_rt_dbscan_benchmark_app as app
 
 
-POLICIES = ("lowest_candidate_then_root", "lowest_component_root_two_pass")
+POLICIES = ("single_pass_candidate_root_rebased", "lowest_component_root_two_pass")
 SCHEMA = "rtdl.goal4201.rt_dbscan_boundary_policy_fair_timing.v1"
 DEFAULT_OUTPUT = (
     Path("docs")
@@ -170,9 +170,9 @@ def run_case(
                 "true_zero_copy_claim_authorized": metadata.get("true_zero_copy_claim_authorized"),
             }
 
-        default_signature = policies["lowest_candidate_then_root"]["signature"]
+        default_signature = policies["single_pass_candidate_root_rebased"]["signature"]
         two_pass_signature = policies["lowest_component_root_two_pass"]["signature"]
-        default_median = policies["lowest_candidate_then_root"]["run_median_sec"]
+        default_median = policies["single_pass_candidate_root_rebased"]["run_median_sec"]
         two_pass_median = policies["lowest_component_root_two_pass"]["run_median_sec"]
         return {
             "dataset": dataset,

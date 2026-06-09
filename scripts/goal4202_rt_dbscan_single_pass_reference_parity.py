@@ -19,7 +19,7 @@ DEFAULT_OUTPUT = (
     / "reports"
     / "goal4202_rt_dbscan_single_pass_reference_parity_pod.json"
 )
-POLICIES = ("lowest_candidate_then_root", "lowest_component_root_two_pass")
+POLICIES = ("single_pass_candidate_root_rebased", "lowest_component_root_two_pass")
 PRESETS: dict[str, dict[str, object]] = {
     "adversarial_root_shadow_1d": {
         "dataset": "adversarial_root_shadow_1d",
@@ -138,7 +138,7 @@ def run_case(case: dict[str, object], *, seed: int) -> dict[str, object]:
         policy: _run_policy(points, radius=radius, component_threshold=component_threshold, policy=policy)
         for policy in POLICIES
     }
-    predicate_flags = policy_results["lowest_candidate_then_root"]["predicate_flags"]
+    predicate_flags = policy_results["single_pass_candidate_root_rebased"]["predicate_flags"]
     reference = rt.predicate_aware_boundary_union_reference(
         point_count=point_count,
         candidate_pairs=pairs,
@@ -157,7 +157,7 @@ def run_case(case: dict[str, object], *, seed: int) -> dict[str, object]:
             "native_symbol": result["native_symbol"],
             "metadata": result["metadata"],
         }
-    default_labels = policy_results["lowest_candidate_then_root"]["component_labels"]
+    default_labels = policy_results["single_pass_candidate_root_rebased"]["component_labels"]
     two_pass_labels = policy_results["lowest_component_root_two_pass"]["component_labels"]
     return {
         "dataset": dataset,

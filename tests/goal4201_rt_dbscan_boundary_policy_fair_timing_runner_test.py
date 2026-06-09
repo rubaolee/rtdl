@@ -14,7 +14,7 @@ class Goal4201RtDbscanBoundaryPolicyFairTimingRunnerTest(unittest.TestCase):
         self.assertIn("clustered3d_64k", text)
         self.assertIn("road3d_64k", text)
         self.assertIn("ngsim_dense_64k", text)
-        self.assertIn("lowest_candidate_then_root", text)
+        self.assertIn("single_pass_candidate_root_rebased", text)
         self.assertIn("lowest_component_root_two_pass", text)
 
     def test_runner_is_fair_order_and_claim_boundary_aware(self) -> None:

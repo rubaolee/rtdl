@@ -12,7 +12,7 @@ class Goal4202RtDbscanSinglePassReferenceParityRunnerTest(unittest.TestCase):
     def test_runner_mentions_reference_contract_and_both_policies(self) -> None:
         text = SCRIPT.read_text(encoding="utf-8")
         self.assertIn("predicate_aware_boundary_union_reference", text)
-        self.assertIn("lowest_candidate_then_root", text)
+        self.assertIn("single_pass_candidate_root_rebased", text)
         self.assertIn("lowest_component_root_two_pass", text)
         self.assertIn("matches_reference_labels", text)
         self.assertIn("default_matches_two_pass_labels", text)

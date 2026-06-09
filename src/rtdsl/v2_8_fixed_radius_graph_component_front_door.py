@@ -173,7 +173,7 @@ class V28FixedRadiusGraphComponentPlan:
     grouped_union_query_block_size: int | None = None
     grouped_union_same_root_culling: bool = True
     grouped_union_direct_side_effect: bool = False
-    boundary_assignment_policy: str = "lowest_candidate_then_root"
+    boundary_assignment_policy: str = "single_pass_candidate_root_rebased"
     status: str = "accepted_preview"
     fallback_selected: bool = False
     hidden_dispatch_allowed: bool = False
@@ -364,7 +364,7 @@ def plan_v2_8_fixed_radius_graph_component_continuation(
     grouped_union_query_block_size: int | None = None,
     grouped_union_same_root_culling: bool = True,
     grouped_union_direct_side_effect: bool = False,
-    boundary_assignment_policy: str = "lowest_candidate_then_root",
+    boundary_assignment_policy: str = "single_pass_candidate_root_rebased",
 ) -> dict[str, Any]:
     backend = str(backend)
     partner = str(partner)
@@ -460,7 +460,7 @@ def prepare_v2_8_fixed_radius_graph_component_continuation_3d(
     grouped_union_query_block_size: int | None = None,
     grouped_union_same_root_culling: bool = True,
     grouped_union_direct_side_effect: bool = False,
-    boundary_assignment_policy: str = "lowest_candidate_then_root",
+    boundary_assignment_policy: str = "single_pass_candidate_root_rebased",
 ) -> V28PreparedFixedRadiusGraphComponentContinuation3D:
     point_rows = tuple(point_rows)
     metadata = plan_v2_8_fixed_radius_graph_component_continuation(

@@ -7106,7 +7106,7 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
         grouped_union_query_block_size: int | None = None,
         grouped_union_same_root_culling: bool = True,
         grouped_union_direct_side_effect: bool = False,
-        boundary_assignment_policy: str = "lowest_candidate_then_root",
+        boundary_assignment_policy: str = "single_pass_candidate_root_rebased",
     ):
         if partner != "numba":
             raise ValueError("PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D currently requires partner='numba'")
@@ -7740,7 +7740,7 @@ def prepare_optix_numba_radius_graph_grouped_stream_continuation_3d(
     grouped_union_query_block_size: int | None = None,
     grouped_union_same_root_culling: bool = True,
     grouped_union_direct_side_effect: bool = False,
-    boundary_assignment_policy: str = "lowest_candidate_then_root",
+    boundary_assignment_policy: str = "single_pass_candidate_root_rebased",
 ) -> PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
     return PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D(
         point_rows,
