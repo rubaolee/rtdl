@@ -6,10 +6,10 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4169.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4175.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
-    "Goal4169 refreshes current benchmark route decisions after the Goal4074-4169 "
+    "Goal4175 refreshes current benchmark route decisions after the Goal4074-4175 "
     "RT-DBSCAN grouped-union bottleneck, partition-summary feasibility, host-work "
     "skip, non-skip active pair stream, device partition-key decode, and unordered "
     "non-skip stream chain, plus direct device status union and route-level direct-status "
@@ -18,7 +18,8 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "advisor, 131k plus 262k scale probes, a warmed one-shot route probe, and a "
     "524k and 1M factor-0.25 extension probes, all-predicate-only mode, mixed "
     "predicate policy probe, policy-aware semantic signature, advisor refresh, and a "
-    "road3d 2M all-predicate scale probe. It is "
+    "road3d 2M all-predicate scale probe, and the Goal4172-4174 declared "
+    "external-proof route evidence. It is "
     "advisory guidance only: users choose partners "
     "explicitly. It does not authorize release action, public speedup wording, "
     "whole-app acceleration wording, broad RT-core wording, paper-reproduction "
@@ -236,7 +237,12 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "signature; Goal4167 updates the advisor so counts-only semantics can be "
             "compared without promoting mixed predicate direct-status. Goal4169 extends "
             "the road-like all-predicate wrapper evidence to 2,097,152 points, where it "
-            "preserves the RT-DBSCAN app signature and remains above parity."
+            "preserves the RT-DBSCAN app signature and remains above parity. Goal4173 "
+            "then measures the caller-declared external-proof all-predicate route at "
+            "2,097,152 points: it preserves the same signature, skips RT count-threshold "
+            "execution, records no RT-core claim for the declared subpath, and improves "
+            "elapsed time by 1.662x over the current grouped-stream route and 1.211x over "
+            "the measured all-true wrapper under warmed-runtime timing."
         ),
         primary_route=(
             "mixed explicit RT-DBSCAN route: grouped-stream Numba for conservative mixed "
@@ -255,9 +261,13 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "65k/131k/262k/524k/1M packets. For dense NGSIM-like profiles, use the route advisor "
             "because the 65k best factor depends on intent: one-shot total timing ranks 0.25 "
             "first, while repeated replay ranks 0.5 first; 131k/262k/524k/1M rank 0.25 first "
-            "for the tested evidence. For all-predicate rows, the explicit all-true mode "
-            "fails closed if the runtime does not observe the fast path; Goal4169 records "
-            "road3d 2M evidence for that wrapper but still does not promote hidden selection. "
+            "for the tested evidence. For all-predicate rows, the explicit measured "
+            "all-true mode fails closed if the runtime does not observe the fast path; "
+            "Goal4169 records road3d 2M evidence for that wrapper. If the caller already "
+            "has an external proof that all predicate flags are true, Goal4173 records "
+            "a declared route that skips predicate measurement and improves the 2M "
+            "elapsed time, but it still requires explicit user selection and external "
+            "proof and does not promote hidden selection. "
             "For mixed predicate "
             "rows, choose a policy-aware semantic contract explicitly; counts-only semantics "
             "can pass, but Goal4165 does not justify broad mixed direct-status promotion. "
@@ -288,7 +298,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "or a generic border-assignment policy primitive if mixed-predicate component-size distributions must be contractual. "
             "Goal4088, Goal4093, Goal4096, Goal4100, Goal4104, Goal4105, Goal4108, Goal4109, "
             "Goal4114, Goal4116, Goal4117, Goal4121, Goal4122, Goal4126, Goal4130, Goal4134, Goal4138, "
-            "Goal4158, Goal4159, Goal4164, Goal4165, Goal4166, and Goal4167 prove "
+            "Goal4158, Goal4159, Goal4164, Goal4165, Goal4166, Goal4167, and Goal4173 prove "
             "producer-side cleanup, active-pair materialization reduction, device-resident "
             "key decoding, explicit unordered set-stream contracts, and direct status "
             "consumption matter, but hidden factor selection, hidden border-policy selection, "
@@ -340,6 +350,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4166",
             "Goal4167",
             "Goal4169",
+            "Goal4172",
+            "Goal4173",
+            "Goal4174",
         ),
         pod_needed_next=False,
     ),
