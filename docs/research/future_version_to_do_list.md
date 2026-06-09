@@ -198,3 +198,12 @@ This file catches design ideas that should not interrupt the current release or 
   points through a deterministic neighbor-root policy. Keep the contract generic
   (`vertex predicate`, `candidate pair`, `component root`, `border assignment`);
   do not encode DBSCAN/min-points semantics in the engine ABI.
+- Goal4190 tested the lighter counts-only mixed-predicate route at
+  `262k/1M/2M/4M` road3d points with radius `0.003` and `min_neighbors=16`.
+  Counts-only semantic signatures matched the grouped-stream reference at all
+  scales, but policy-bound component-size signatures did not. Performance was
+  not a major win: until-stable direct-status was slower at every scale, and
+  single-pass direct-status reached only `1.056x` at 4M. Keep counts-only as an
+  explicit semantic option, not a default promotion. The major runtime target
+  remains the full generic predicate-aware direct-status grouped-union primitive
+  with deterministic border assignment.
