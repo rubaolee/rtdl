@@ -2,12 +2,17 @@ from __future__ import annotations
 
 import pathlib
 import unittest
+import json
 
 import rtdsl as rt
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "src" / "rtdsl" / "v2_8_fixed_radius_graph_component_front_door.py"
+REPORT = ROOT / "docs" / "reports" / "goal4096_device_partition_key_decode_2026-06-09.md"
+BASELINE = ROOT / "docs" / "reports" / "goal4095_partition_convergence_phase_breakdown_pod.json"
+ARTIFACT = ROOT / "docs" / "reports" / "goal4096_device_partition_key_decode_phase_breakdown_pod.json"
+STDOUT = ROOT / "docs" / "reports" / "goal4096_device_partition_key_decode_phase_breakdown_pod.stdout.txt"
 
 
 class Goal4096DevicePartitionKeyDecodeTest(unittest.TestCase):
@@ -47,6 +52,43 @@ class Goal4096DevicePartitionKeyDecodeTest(unittest.TestCase):
         self.assertEqual(result["metadata"]["status"], "accept")
         self.assertTrue(result["metadata"]["same_contract_against_component_labels"])
         self.assertEqual(tuple(result["columns"]["component_size_signature"]), (1, 2, 3))
+
+    def test_pod_artifact_records_build_speedup_against_goal4095(self) -> None:
+        baseline = json.loads(BASELINE.read_text(encoding="utf-8"))
+        artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(artifact["source_commit"][:8], "0619c6e3")
+        self.assertFalse(artifact["release_authorized"])
+        self.assertFalse(artifact["native_abi_added"])
+        old_rows = {row["profile"]: row for row in baseline["rows"]}
+        new_rows = {row["profile"]: row for row in artifact["rows"]}
+        for profile in ("clustered3d", "road3d", "ngsim_dense"):
+            old_build = old_rows[profile]["phase_summary"]["build_total_sec"]["median_sec"]
+            new_build = new_rows[profile]["phase_summary"]["build_total_sec"]["median_sec"]
+            old_other = old_rows[profile]["phase_summary"]["build_uninstrumented_sec"]["median_sec"]
+            new_other = new_rows[profile]["phase_summary"]["build_uninstrumented_sec"]["median_sec"]
+            self.assertLess(new_build, old_build, profile)
+            self.assertLess(new_other, old_other, profile)
+            self.assertEqual(new_rows[profile]["pair_stream_filter"], "non_skip_actionable_pairs")
+            self.assertTrue(new_rows[profile]["safe_skip_pairs_elided"])
+        ngsim_old = old_rows["ngsim_dense"]["phase_summary"]["build_total_sec"]["median_sec"]
+        ngsim_new = new_rows["ngsim_dense"]["phase_summary"]["build_total_sec"]["median_sec"]
+        self.assertGreater(ngsim_old / ngsim_new, 1.4)
+
+    def test_stdout_and_report_document_boundary(self) -> None:
+        stdout = STDOUT.read_text(encoding="utf-8")
+        report = REPORT.read_text(encoding="utf-8")
+        self.assertIn("PROFILE_PHASE_WARMUP_START clustered3d", stdout)
+        self.assertIn("PROFILE_PHASE_SAMPLE", stdout)
+        for fragment in [
+            "decode",
+            "1.479x",
+            "2.026x",
+            "generic fused/native fixed-radius",
+            "does not promote",
+            "authorize release",
+        ]:
+            self.assertIn(fragment, report)
 
 
 if __name__ == "__main__":

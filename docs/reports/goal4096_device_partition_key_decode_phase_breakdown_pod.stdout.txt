@@ -1,0 +1,619 @@
+PROFILE_PHASE_WARMUP_START clustered3d point_count=65536 run=0
+PROFILE_PHASE_SAMPLE {"ambiguous_partition_point_union_sec": 0.012668237090110779, "build_total_sec": 0.7048506736755371, "component_count": 4, "measured": false, "pair_count": 10960581, "pair_status_count_probe_sec": 0.10077955573797226, "pair_status_emit_sec": 0.025930941104888916, "profile": "clustered3d", "run_index": 0, "signature_total_sec": 0.05443847179412842}
+PROFILE_PHASE_MEASURE_START clustered3d point_count=65536 run=1
+PROFILE_PHASE_SAMPLE {"ambiguous_partition_point_union_sec": 0.011799372732639313, "build_total_sec": 0.0777088850736618, "component_count": 4, "measured": true, "pair_count": 10960581, "pair_status_count_probe_sec": 0.01080678403377533, "pair_status_emit_sec": 0.025103546679019928, "profile": "clustered3d", "run_index": 1, "signature_total_sec": 0.05000019818544388}
+PROFILE_PHASE_MEASURE_START clustered3d point_count=65536 run=2
+PROFILE_PHASE_SAMPLE {"ambiguous_partition_point_union_sec": 0.011826783418655396, "build_total_sec": 0.07531286776065826, "component_count": 4, "measured": true, "pair_count": 10960581, "pair_status_count_probe_sec": 0.010761648416519165, "pair_status_emit_sec": 0.025021091103553772, "profile": "clustered3d", "run_index": 2, "signature_total_sec": 0.050018928945064545}
+PROFILE_PHASE_MEASURE_START clustered3d point_count=65536 run=3
+PROFILE_PHASE_SAMPLE {"ambiguous_partition_point_union_sec": 0.011807277798652649, "build_total_sec": 0.07567664980888367, "component_count": 4, "measured": true, "pair_count": 10960581, "pair_status_count_probe_sec": 0.01075008511543274, "pair_status_emit_sec": 0.0251903235912323, "profile": "clustered3d", "run_index": 3, "signature_total_sec": 0.049954913556575775}
+PROFILE_PHASE_WARMUP_START road3d point_count=65536 run=0
+PROFILE_PHASE_SAMPLE {"ambiguous_partition_point_union_sec": 0.004390127956867218, "build_total_sec": 0.10003188997507095, "component_count": 1, "measured": false, "pair_count": 6830362, "pair_status_count_probe_sec": 0.009432800114154816, "pair_status_emit_sec": 0.01828986406326294, "profile": "road3d", "run_index": 0, "signature_total_sec": 0.0420529767870903}
+PROFILE_PHASE_MEASURE_START road3d point_count=65536 run=1
+PROFILE_PHASE_SAMPLE {"ambiguous_partition_point_union_sec": 0.004388988018035889, "build_total_sec": 0.0677994042634964, "component_count": 1, "measured": true, "pair_count": 6830362, "pair_status_count_probe_sec": 0.009391821920871735, "pair_status_emit_sec": 0.018274061381816864, "profile": "road3d", "run_index": 1, "signature_total_sec": 0.04250136762857437}
+PROFILE_PHASE_MEASURE_START road3d point_count=65536 run=2
+PROFILE_PHASE_SAMPLE {"ambiguous_partition_point_union_sec": 0.004350043833255768, "build_total_sec": 0.06625889986753464, "component_count": 1, "measured": true, "pair_count": 6830362, "pair_status_count_probe_sec": 0.009407632052898407, "pair_status_emit_sec": 0.018276341259479523, "profile": "road3d", "run_index": 2, "signature_total_sec": 0.04173442721366882}
+PROFILE_PHASE_MEASURE_START road3d point_count=65536 run=3
+PROFILE_PHASE_SAMPLE {"ambiguous_partition_point_union_sec": 0.004375874996185303, "build_total_sec": 0.0655936673283577, "component_count": 1, "measured": true, "pair_count": 6830362, "pair_status_count_probe_sec": 0.009378708899021149, "pair_status_emit_sec": 0.018175221979618073, "profile": "road3d", "run_index": 3, "signature_total_sec": 0.04152180254459381}
+PROFILE_PHASE_WARMUP_START ngsim_dense point_count=65536 run=0
+PROFILE_PHASE_SAMPLE {"ambiguous_partition_point_union_sec": 0.002271324396133423, "build_total_sec": 0.1710933819413185, "component_count": 1, "measured": false, "pair_count": 11585223, "pair_status_count_probe_sec": 0.04270053654909134, "pair_status_emit_sec": 0.05782990902662277, "profile": "ngsim_dense", "run_index": 0, "signature_total_sec": 0.04118318855762482}
+PROFILE_PHASE_MEASURE_START ngsim_dense point_count=65536 run=1
+PROFILE_PHASE_SAMPLE {"ambiguous_partition_point_union_sec": 0.002262122929096222, "build_total_sec": 0.13707443326711655, "component_count": 1, "measured": true, "pair_count": 11585223, "pair_status_count_probe_sec": 0.03998009115457535, "pair_status_emit_sec": 0.055140599608421326, "profile": "ngsim_dense", "run_index": 1, "signature_total_sec": 0.04249709099531174}
+PROFILE_PHASE_MEASURE_START ngsim_dense point_count=65536 run=2
+PROFILE_PHASE_SAMPLE {"ambiguous_partition_point_union_sec": 0.0022515133023262024, "build_total_sec": 0.1361084207892418, "component_count": 1, "measured": true, "pair_count": 11585223, "pair_status_count_probe_sec": 0.04016344994306564, "pair_status_emit_sec": 0.055306337773799896, "profile": "ngsim_dense", "run_index": 2, "signature_total_sec": 0.04106684774160385}
+PROFILE_PHASE_MEASURE_START ngsim_dense point_count=65536 run=3
+PROFILE_PHASE_SAMPLE {"ambiguous_partition_point_union_sec": 0.002268761396408081, "build_total_sec": 0.13566036522388458, "component_count": 1, "measured": true, "pair_count": 11585223, "pair_status_count_probe_sec": 0.04018094390630722, "pair_status_emit_sec": 0.05528676509857178, "profile": "ngsim_dense", "run_index": 3, "signature_total_sec": 0.04096546024084091}
+{
+  "cell_factor": 0.125,
+  "claim_boundary": "Internal RT-DBSCAN partition-convergence phase-breakdown evidence only. It does not promote partition_convergence_hybrid, authorize release, public speedup, broad RT-core, whole-app, paper-reproduction, hidden-dispatch, automatic partner selection, app-specific engine logic, native ABI addition, or true-zero-copy claims.",
+  "goal": "Goal4095",
+  "gpu": "NVIDIA RTX 4000 Ada Generation, 550.127.05",
+  "host": "d062c10cfc84",
+  "native_abi_added": false,
+  "pair_enumeration": "device_count_then_emit_non_skip",
+  "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.39",
+  "point_count": 65536,
+  "profiles": [
+    "clustered3d",
+    "road3d",
+    "ngsim_dense"
+  ],
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "repeat": 3,
+  "rows": [
+    {
+      "cell_factor": 0.125,
+      "component_count": 4,
+      "native_abi_added": false,
+      "pair_count": 10960581,
+      "pair_enumeration": "device_count_then_emit_non_skip",
+      "pair_stream_filter": "non_skip_actionable_pairs",
+      "partition_count": 16772,
+      "phase_summary": {
+        "ambiguous_partition_point_union_sec": {
+          "max_sec": 0.011826783418655396,
+          "mean_sec": 0.011811144649982452,
+          "median_sec": 0.011807277798652649,
+          "min_sec": 0.011799372732639313
+        },
+        "build_total_sec": {
+          "max_sec": 0.0777088850736618,
+          "mean_sec": 0.07623280088106792,
+          "median_sec": 0.07567664980888367,
+          "min_sec": 0.07531286776065826
+        },
+        "build_uninstrumented_sec": {
+          "max_sec": 0.04179855436086655,
+          "mean_sec": 0.04035497456789017,
+          "median_sec": 0.03973624110221863,
+          "min_sec": 0.03953012824058533
+        },
+        "pair_status_count_probe_sec": {
+          "max_sec": 0.01080678403377533,
+          "mean_sec": 0.010772839188575745,
+          "median_sec": 0.010761648416519165,
+          "min_sec": 0.01075008511543274
+        },
+        "pair_status_emit_sec": {
+          "max_sec": 0.0251903235912323,
+          "mean_sec": 0.025104987124602,
+          "median_sec": 0.025103546679019928,
+          "min_sec": 0.025021091103553772
+        },
+        "safe_full_partition_union_sec": {
+          "max_sec": 0.0,
+          "mean_sec": 0.0,
+          "median_sec": 0.0,
+          "min_sec": 0.0
+        },
+        "signature_total_sec": {
+          "max_sec": 0.050018928945064545,
+          "mean_sec": 0.04999134689569473,
+          "median_sec": 0.05000019818544388,
+          "min_sec": 0.049954913556575775
+        },
+        "signature_uninstrumented_sec": {
+          "max_sec": 0.038200825452804565,
+          "mean_sec": 0.03818020224571228,
+          "median_sec": 0.03819214552640915,
+          "min_sec": 0.038147635757923126
+        }
+      },
+      "point_count": 65536,
+      "profile": "clustered3d",
+      "public_speedup_claim_authorized": false,
+      "radius": 0.055,
+      "release_authorized": false,
+      "safe_skip_pairs_elided": true,
+      "samples": [
+        {
+          "ambiguous_partition_point_union_sec": 0.012668237090110779,
+          "ambiguous_point_comparisons": 25899658,
+          "ambiguous_positive_edges": 3048027,
+          "build_total_sec": 0.7048506736755371,
+          "build_uninstrumented_sec": 0.5781401768326759,
+          "component_count": 4,
+          "measured": false,
+          "native_abi_added": false,
+          "pair_count": 10960581,
+          "pair_enumeration": "device_count_then_emit_non_skip",
+          "pair_status_count_probe_sec": 0.10077955573797226,
+          "pair_status_emit_sec": 0.025930941104888916,
+          "pair_stream_filter": "non_skip_actionable_pairs",
+          "partition_count": 16772,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "run_index": 0,
+          "safe_full_partition_union_sec": 0,
+          "safe_skip_pairs_elided": true,
+          "signature_total_sec": 0.05443847179412842,
+          "signature_uninstrumented_sec": 0.04177023470401764,
+          "status_counts": {
+            "ambiguous_partition_pairs": 3622448,
+            "safe_full_partition_pairs": 7338133,
+            "safe_skip_partition_pairs": 0
+          },
+          "whole_app_speedup_claim_authorized": false
+        },
+        {
+          "ambiguous_partition_point_union_sec": 0.011799372732639313,
+          "ambiguous_point_comparisons": 25899658,
+          "ambiguous_positive_edges": 3048027,
+          "build_total_sec": 0.0777088850736618,
+          "build_uninstrumented_sec": 0.04179855436086655,
+          "component_count": 4,
+          "measured": true,
+          "native_abi_added": false,
+          "pair_count": 10960581,
+          "pair_enumeration": "device_count_then_emit_non_skip",
+          "pair_status_count_probe_sec": 0.01080678403377533,
+          "pair_status_emit_sec": 0.025103546679019928,
+          "pair_stream_filter": "non_skip_actionable_pairs",
+          "partition_count": 16772,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "run_index": 1,
+          "safe_full_partition_union_sec": 0,
+          "safe_skip_pairs_elided": true,
+          "signature_total_sec": 0.05000019818544388,
+          "signature_uninstrumented_sec": 0.038200825452804565,
+          "status_counts": {
+            "ambiguous_partition_pairs": 3622448,
+            "safe_full_partition_pairs": 7338133,
+            "safe_skip_partition_pairs": 0
+          },
+          "whole_app_speedup_claim_authorized": false
+        },
+        {
+          "ambiguous_partition_point_union_sec": 0.011826783418655396,
+          "ambiguous_point_comparisons": 25899658,
+          "ambiguous_positive_edges": 3048027,
+          "build_total_sec": 0.07531286776065826,
+          "build_uninstrumented_sec": 0.03953012824058533,
+          "component_count": 4,
+          "measured": true,
+          "native_abi_added": false,
+          "pair_count": 10960581,
+          "pair_enumeration": "device_count_then_emit_non_skip",
+          "pair_status_count_probe_sec": 0.010761648416519165,
+          "pair_status_emit_sec": 0.025021091103553772,
+          "pair_stream_filter": "non_skip_actionable_pairs",
+          "partition_count": 16772,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "run_index": 2,
+          "safe_full_partition_union_sec": 0,
+          "safe_skip_pairs_elided": true,
+          "signature_total_sec": 0.050018928945064545,
+          "signature_uninstrumented_sec": 0.03819214552640915,
+          "status_counts": {
+            "ambiguous_partition_pairs": 3622448,
+            "safe_full_partition_pairs": 7338133,
+            "safe_skip_partition_pairs": 0
+          },
+          "whole_app_speedup_claim_authorized": false
+        },
+        {
+          "ambiguous_partition_point_union_sec": 0.011807277798652649,
+          "ambiguous_point_comparisons": 25899658,
+          "ambiguous_positive_edges": 3048027,
+          "build_total_sec": 0.07567664980888367,
+          "build_uninstrumented_sec": 0.03973624110221863,
+          "component_count": 4,
+          "measured": true,
+          "native_abi_added": false,
+          "pair_count": 10960581,
+          "pair_enumeration": "device_count_then_emit_non_skip",
+          "pair_status_count_probe_sec": 0.01075008511543274,
+          "pair_status_emit_sec": 0.0251903235912323,
+          "pair_stream_filter": "non_skip_actionable_pairs",
+          "partition_count": 16772,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "run_index": 3,
+          "safe_full_partition_union_sec": 0,
+          "safe_skip_pairs_elided": true,
+          "signature_total_sec": 0.049954913556575775,
+          "signature_uninstrumented_sec": 0.038147635757923126,
+          "status_counts": {
+            "ambiguous_partition_pairs": 3622448,
+            "safe_full_partition_pairs": 7338133,
+            "safe_skip_partition_pairs": 0
+          },
+          "whole_app_speedup_claim_authorized": false
+        }
+      ],
+      "status_counts": {
+        "ambiguous_partition_pairs": 3622448,
+        "safe_full_partition_pairs": 7338133,
+        "safe_skip_partition_pairs": 0
+      },
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "cell_factor": 0.125,
+      "component_count": 1,
+      "native_abi_added": false,
+      "pair_count": 6830362,
+      "pair_enumeration": "device_count_then_emit_non_skip",
+      "pair_stream_filter": "non_skip_actionable_pairs",
+      "partition_count": 18028,
+      "phase_summary": {
+        "ambiguous_partition_point_union_sec": {
+          "max_sec": 0.004388988018035889,
+          "mean_sec": 0.004371635615825653,
+          "median_sec": 0.004375874996185303,
+          "min_sec": 0.004350043833255768
+        },
+        "build_total_sec": {
+          "max_sec": 0.0677994042634964,
+          "mean_sec": 0.06655065715312958,
+          "median_sec": 0.06625889986753464,
+          "min_sec": 0.0655936673283577
+        },
+        "build_uninstrumented_sec": {
+          "max_sec": 0.0401335209608078,
+          "mean_sec": 0.038916061321894325,
+          "median_sec": 0.03857492655515671,
+          "min_sec": 0.038039736449718475
+        },
+        "pair_status_count_probe_sec": {
+          "max_sec": 0.009407632052898407,
+          "mean_sec": 0.009392720957597097,
+          "median_sec": 0.009391821920871735,
+          "min_sec": 0.009378708899021149
+        },
+        "pair_status_emit_sec": {
+          "max_sec": 0.018276341259479523,
+          "mean_sec": 0.018241874873638153,
+          "median_sec": 0.018274061381816864,
+          "min_sec": 0.018175221979618073
+        },
+        "safe_full_partition_union_sec": {
+          "max_sec": 0.0,
+          "mean_sec": 0.0,
+          "median_sec": 0.0,
+          "min_sec": 0.0
+        },
+        "signature_total_sec": {
+          "max_sec": 0.04250136762857437,
+          "mean_sec": 0.04191919912894567,
+          "median_sec": 0.04173442721366882,
+          "min_sec": 0.04152180254459381
+        },
+        "signature_uninstrumented_sec": {
+          "max_sec": 0.03811237961053848,
+          "mean_sec": 0.03754756351312002,
+          "median_sec": 0.037384383380413055,
+          "min_sec": 0.03714592754840851
+        }
+      },
+      "point_count": 65536,
+      "profile": "road3d",
+      "public_speedup_claim_authorized": false,
+      "radius": 0.03,
+      "release_authorized": false,
+      "safe_skip_pairs_elided": true,
+      "samples": [
+        {
+          "ambiguous_partition_point_union_sec": 0.004390127956867218,
+          "ambiguous_point_comparisons": 10675451,
+          "ambiguous_positive_edges": 1450797,
+          "build_total_sec": 0.10003188997507095,
+          "build_uninstrumented_sec": 0.0723092257976532,
+          "component_count": 1,
+          "measured": false,
+          "native_abi_added": false,
+          "pair_count": 6830362,
+          "pair_enumeration": "device_count_then_emit_non_skip",
+          "pair_status_count_probe_sec": 0.009432800114154816,
+          "pair_status_emit_sec": 0.01828986406326294,
+          "pair_stream_filter": "non_skip_actionable_pairs",
+          "partition_count": 18028,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "run_index": 0,
+          "safe_full_partition_union_sec": 0,
+          "safe_skip_pairs_elided": true,
+          "signature_total_sec": 0.0420529767870903,
+          "signature_uninstrumented_sec": 0.037662848830223083,
+          "status_counts": {
+            "ambiguous_partition_pairs": 1737708,
+            "safe_full_partition_pairs": 5092654,
+            "safe_skip_partition_pairs": 0
+          },
+          "whole_app_speedup_claim_authorized": false
+        },
+        {
+          "ambiguous_partition_point_union_sec": 0.004388988018035889,
+          "ambiguous_point_comparisons": 10675451,
+          "ambiguous_positive_edges": 1450797,
+          "build_total_sec": 0.0677994042634964,
+          "build_uninstrumented_sec": 0.0401335209608078,
+          "component_count": 1,
+          "measured": true,
+          "native_abi_added": false,
+          "pair_count": 6830362,
+          "pair_enumeration": "device_count_then_emit_non_skip",
+          "pair_status_count_probe_sec": 0.009391821920871735,
+          "pair_status_emit_sec": 0.018274061381816864,
+          "pair_stream_filter": "non_skip_actionable_pairs",
+          "partition_count": 18028,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "run_index": 1,
+          "safe_full_partition_union_sec": 0,
+          "safe_skip_pairs_elided": true,
+          "signature_total_sec": 0.04250136762857437,
+          "signature_uninstrumented_sec": 0.03811237961053848,
+          "status_counts": {
+            "ambiguous_partition_pairs": 1737708,
+            "safe_full_partition_pairs": 5092654,
+            "safe_skip_partition_pairs": 0
+          },
+          "whole_app_speedup_claim_authorized": false
+        },
+        {
+          "ambiguous_partition_point_union_sec": 0.004350043833255768,
+          "ambiguous_point_comparisons": 10675451,
+          "ambiguous_positive_edges": 1450797,
+          "build_total_sec": 0.06625889986753464,
+          "build_uninstrumented_sec": 0.03857492655515671,
+          "component_count": 1,
+          "measured": true,
+          "native_abi_added": false,
+          "pair_count": 6830362,
+          "pair_enumeration": "device_count_then_emit_non_skip",
+          "pair_status_count_probe_sec": 0.009407632052898407,
+          "pair_status_emit_sec": 0.018276341259479523,
+          "pair_stream_filter": "non_skip_actionable_pairs",
+          "partition_count": 18028,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "run_index": 2,
+          "safe_full_partition_union_sec": 0,
+          "safe_skip_pairs_elided": true,
+          "signature_total_sec": 0.04173442721366882,
+          "signature_uninstrumented_sec": 0.037384383380413055,
+          "status_counts": {
+            "ambiguous_partition_pairs": 1737708,
+            "safe_full_partition_pairs": 5092654,
+            "safe_skip_partition_pairs": 0
+          },
+          "whole_app_speedup_claim_authorized": false
+        },
+        {
+          "ambiguous_partition_point_union_sec": 0.004375874996185303,
+          "ambiguous_point_comparisons": 10675451,
+          "ambiguous_positive_edges": 1450797,
+          "build_total_sec": 0.0655936673283577,
+          "build_uninstrumented_sec": 0.038039736449718475,
+          "component_count": 1,
+          "measured": true,
+          "native_abi_added": false,
+          "pair_count": 6830362,
+          "pair_enumeration": "device_count_then_emit_non_skip",
+          "pair_status_count_probe_sec": 0.009378708899021149,
+          "pair_status_emit_sec": 0.018175221979618073,
+          "pair_stream_filter": "non_skip_actionable_pairs",
+          "partition_count": 18028,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "run_index": 3,
+          "safe_full_partition_union_sec": 0,
+          "safe_skip_pairs_elided": true,
+          "signature_total_sec": 0.04152180254459381,
+          "signature_uninstrumented_sec": 0.03714592754840851,
+          "status_counts": {
+            "ambiguous_partition_pairs": 1737708,
+            "safe_full_partition_pairs": 5092654,
+            "safe_skip_partition_pairs": 0
+          },
+          "whole_app_speedup_claim_authorized": false
+        }
+      ],
+      "status_counts": {
+        "ambiguous_partition_pairs": 1737708,
+        "safe_full_partition_pairs": 5092654,
+        "safe_skip_partition_pairs": 0
+      },
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "cell_factor": 0.125,
+      "component_count": 1,
+      "native_abi_added": false,
+      "pair_count": 11585223,
+      "pair_enumeration": "device_count_then_emit_non_skip",
+      "pair_stream_filter": "non_skip_actionable_pairs",
+      "partition_count": 60094,
+      "phase_summary": {
+        "ambiguous_partition_point_union_sec": {
+          "max_sec": 0.002268761396408081,
+          "mean_sec": 0.002260799209276835,
+          "median_sec": 0.002262122929096222,
+          "min_sec": 0.0022515133023262024
+        },
+        "build_total_sec": {
+          "max_sec": 0.13707443326711655,
+          "mean_sec": 0.1362810730934143,
+          "median_sec": 0.1361084207892418,
+          "min_sec": 0.13566036522388458
+        },
+        "build_uninstrumented_sec": {
+          "max_sec": 0.04195374250411987,
+          "mean_sec": 0.0409283439318339,
+          "median_sec": 0.04063863307237625,
+          "min_sec": 0.040192656219005585
+        },
+        "pair_status_count_probe_sec": {
+          "max_sec": 0.04018094390630722,
+          "mean_sec": 0.040108161667982735,
+          "median_sec": 0.04016344994306564,
+          "min_sec": 0.03998009115457535
+        },
+        "pair_status_emit_sec": {
+          "max_sec": 0.055306337773799896,
+          "mean_sec": 0.055244567493597664,
+          "median_sec": 0.05528676509857178,
+          "min_sec": 0.055140599608421326
+        },
+        "safe_full_partition_union_sec": {
+          "max_sec": 0.0,
+          "mean_sec": 0.0,
+          "median_sec": 0.0,
+          "min_sec": 0.0
+        },
+        "signature_total_sec": {
+          "max_sec": 0.04249709099531174,
+          "mean_sec": 0.04150979965925217,
+          "median_sec": 0.04106684774160385,
+          "min_sec": 0.04096546024084091
+        },
+        "signature_uninstrumented_sec": {
+          "max_sec": 0.040234968066215515,
+          "mean_sec": 0.039249000449975334,
+          "median_sec": 0.03881533443927765,
+          "min_sec": 0.03869669884443283
+        }
+      },
+      "point_count": 65536,
+      "profile": "ngsim_dense",
+      "public_speedup_claim_authorized": false,
+      "radius": 0.012,
+      "release_authorized": false,
+      "safe_skip_pairs_elided": true,
+      "samples": [
+        {
+          "ambiguous_partition_point_union_sec": 0.002271324396133423,
+          "ambiguous_point_comparisons": 2793417,
+          "ambiguous_positive_edges": 1271179,
+          "build_total_sec": 0.1710933819413185,
+          "build_uninstrumented_sec": 0.0705629363656044,
+          "component_count": 1,
+          "measured": false,
+          "native_abi_added": false,
+          "pair_count": 11585223,
+          "pair_enumeration": "device_count_then_emit_non_skip",
+          "pair_status_count_probe_sec": 0.04270053654909134,
+          "pair_status_emit_sec": 0.05782990902662277,
+          "pair_stream_filter": "non_skip_actionable_pairs",
+          "partition_count": 60094,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "run_index": 0,
+          "safe_full_partition_union_sec": 0,
+          "safe_skip_pairs_elided": true,
+          "signature_total_sec": 0.04118318855762482,
+          "signature_uninstrumented_sec": 0.038911864161491394,
+          "status_counts": {
+            "ambiguous_partition_pairs": 2382110,
+            "safe_full_partition_pairs": 9203113,
+            "safe_skip_partition_pairs": 0
+          },
+          "whole_app_speedup_claim_authorized": false
+        },
+        {
+          "ambiguous_partition_point_union_sec": 0.002262122929096222,
+          "ambiguous_point_comparisons": 2793417,
+          "ambiguous_positive_edges": 1271179,
+          "build_total_sec": 0.13707443326711655,
+          "build_uninstrumented_sec": 0.04195374250411987,
+          "component_count": 1,
+          "measured": true,
+          "native_abi_added": false,
+          "pair_count": 11585223,
+          "pair_enumeration": "device_count_then_emit_non_skip",
+          "pair_status_count_probe_sec": 0.03998009115457535,
+          "pair_status_emit_sec": 0.055140599608421326,
+          "pair_stream_filter": "non_skip_actionable_pairs",
+          "partition_count": 60094,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "run_index": 1,
+          "safe_full_partition_union_sec": 0,
+          "safe_skip_pairs_elided": true,
+          "signature_total_sec": 0.04249709099531174,
+          "signature_uninstrumented_sec": 0.040234968066215515,
+          "status_counts": {
+            "ambiguous_partition_pairs": 2382110,
+            "safe_full_partition_pairs": 9203113,
+            "safe_skip_partition_pairs": 0
+          },
+          "whole_app_speedup_claim_authorized": false
+        },
+        {
+          "ambiguous_partition_point_union_sec": 0.0022515133023262024,
+          "ambiguous_point_comparisons": 2793417,
+          "ambiguous_positive_edges": 1271179,
+          "build_total_sec": 0.1361084207892418,
+          "build_uninstrumented_sec": 0.04063863307237625,
+          "component_count": 1,
+          "measured": true,
+          "native_abi_added": false,
+          "pair_count": 11585223,
+          "pair_enumeration": "device_count_then_emit_non_skip",
+          "pair_status_count_probe_sec": 0.04016344994306564,
+          "pair_status_emit_sec": 0.055306337773799896,
+          "pair_stream_filter": "non_skip_actionable_pairs",
+          "partition_count": 60094,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "run_index": 2,
+          "safe_full_partition_union_sec": 0,
+          "safe_skip_pairs_elided": true,
+          "signature_total_sec": 0.04106684774160385,
+          "signature_uninstrumented_sec": 0.03881533443927765,
+          "status_counts": {
+            "ambiguous_partition_pairs": 2382110,
+            "safe_full_partition_pairs": 9203113,
+            "safe_skip_partition_pairs": 0
+          },
+          "whole_app_speedup_claim_authorized": false
+        },
+        {
+          "ambiguous_partition_point_union_sec": 0.002268761396408081,
+          "ambiguous_point_comparisons": 2793417,
+          "ambiguous_positive_edges": 1271179,
+          "build_total_sec": 0.13566036522388458,
+          "build_uninstrumented_sec": 0.040192656219005585,
+          "component_count": 1,
+          "measured": true,
+          "native_abi_added": false,
+          "pair_count": 11585223,
+          "pair_enumeration": "device_count_then_emit_non_skip",
+          "pair_status_count_probe_sec": 0.04018094390630722,
+          "pair_status_emit_sec": 0.05528676509857178,
+          "pair_stream_filter": "non_skip_actionable_pairs",
+          "partition_count": 60094,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "run_index": 3,
+          "safe_full_partition_union_sec": 0,
+          "safe_skip_pairs_elided": true,
+          "signature_total_sec": 0.04096546024084091,
+          "signature_uninstrumented_sec": 0.03869669884443283,
+          "status_counts": {
+            "ambiguous_partition_pairs": 2382110,
+            "safe_full_partition_pairs": 9203113,
+            "safe_skip_partition_pairs": 0
+          },
+          "whole_app_speedup_claim_authorized": false
+        }
+      ],
+      "status_counts": {
+        "ambiguous_partition_pairs": 2382110,
+        "safe_full_partition_pairs": 9203113,
+        "safe_skip_partition_pairs": 0
+      },
+      "whole_app_speedup_claim_authorized": false
+    }
+  ],
+  "rt_core_speedup_claim_authorized": false,
+  "schema": "rtdl.goal4095.partition_convergence_phase_breakdown.v1",
+  "seed": 20260519,
+  "source_commit": "0619c6e30cc94f04e9f6b17b2a7bafbf5db33783",
+  "true_zero_copy_claim_authorized": false,
+  "warmup": 1,
+  "whole_app_speedup_claim_authorized": false
+}
