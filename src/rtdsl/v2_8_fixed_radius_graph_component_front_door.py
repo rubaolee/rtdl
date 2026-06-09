@@ -3746,27 +3746,27 @@ def _cupy_direct_partition_status_union_predicate_signature_columns(
             const unsigned int* predicate_flags,
             const unsigned int* parents,
             const int* border_candidate_out,
-            long long* label_counts,
-            long long* flag_true_count,
-            long long* negative_label_count)
+            unsigned long long* label_counts,
+            unsigned long long* flag_true_count,
+            unsigned long long* negative_label_count)
         {
             const unsigned int point = blockIdx.x * blockDim.x + threadIdx.x;
             if (point >= point_count) return;
             if (predicate_flags[point] != 0u) {
                 const unsigned int root = rtdl_find_signature_partition_root(
                     parents, point_partition_ids[point]);
-                atomicAdd(label_counts + root + 1u, 1ll);
-                atomicAdd(flag_true_count, 1ll);
+                atomicAdd(label_counts + root + 1u, 1ull);
+                atomicAdd(flag_true_count, 1ull);
                 return;
             }
             const int candidate = border_candidate_out[point];
             if (candidate < 0 || (unsigned int)candidate >= point_count || predicate_flags[candidate] == 0u) {
-                atomicAdd(negative_label_count, 1ll);
+                atomicAdd(negative_label_count, 1ull);
                 return;
             }
             const unsigned int root = rtdl_find_signature_partition_root(
                 parents, point_partition_ids[(unsigned int)candidate]);
-            atomicAdd(label_counts + root + 1u, 1ll);
+            atomicAdd(label_counts + root + 1u, 1ull);
         }
         ''',
         "predicate_partition_signature_kernel",
@@ -3856,9 +3856,9 @@ def _cupy_direct_partition_status_union_predicate_signature_columns(
             break
     else:
         raise RuntimeError("predicate direct partition status union did not converge")
-    label_counts = cupy.zeros((partition_count + 1,), dtype=cupy.int64)
-    flag_true_count = cupy.zeros((1,), dtype=cupy.int64)
-    negative_label_count = cupy.zeros((1,), dtype=cupy.int64)
+    label_counts = cupy.zeros((partition_count + 1,), dtype=cupy.uint64)
+    flag_true_count = cupy.zeros((1,), dtype=cupy.uint64)
+    negative_label_count = cupy.zeros((1,), dtype=cupy.uint64)
     signature_kernel(
         point_blocks,
         (threads,),
