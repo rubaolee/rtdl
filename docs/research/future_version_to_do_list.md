@@ -186,3 +186,15 @@ This file catches design ideas that should not interrupt the current release or 
   staleness/convergence metadata when root snapshots are used, dense and sparse
   pod profiles, and external review. Treat performance results as profile-bound
   until broader datasets are measured.
+- Goal4149/4150 found a strong direct-status single-pass replay win for the
+  generic fixed-radius component-signature contract: same signatures versus the
+  stable direct-status loop across tested `65k/131k/262k/524k/1M` factor-0.25
+  packets, with roughly `~2x` replay improvement. Goal4153 then proved this
+  cannot be compared directly with the conservative RT-DBSCAN current route:
+  all `15/15` current-route versus single-pass rows had mismatched signatures.
+  The next same-contract primitive is therefore **predicate-aware direct-status
+  grouped union**: accept caller-supplied vertex predicate/core flags, union only
+  predicate-compatible fixed-radius pairs, and assign non-predicate border
+  points through a deterministic neighbor-root policy. Keep the contract generic
+  (`vertex predicate`, `candidate pair`, `component root`, `border assignment`);
+  do not encode DBSCAN/min-points semantics in the engine ABI.
