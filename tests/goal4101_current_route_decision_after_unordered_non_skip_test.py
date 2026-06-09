@@ -14,7 +14,7 @@ class Goal4101CurrentRouteDecisionAfterUnorderedNonSkipTest(unittest.TestCase):
     def test_rtdbscan_route_records_goal4100_without_promoting_it(self) -> None:
         route = rt.explain_current_benchmark_route("rt_dbscan")
 
-        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4168.v1", route["version"])
+        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4169.v1", route["version"])
         self.assertIn("Goal4100", route["current_reader_decision"])
         self.assertIn("1.13x-1.17x", route["current_reader_decision"])
         self.assertIn("1.38x-2.32x", route["current_reader_decision"])

@@ -14,11 +14,11 @@ class Goal4168CurrentRouteDecisionAfterPolicyAwareRtDbscanTest(unittest.TestCase
     def test_registry_version_and_summary_refresh(self) -> None:
         self.assertEqual(
             rt.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION,
-            "rtdl.v2_10.current_benchmark_route_decisions.goal4168.v1",
+            "rtdl.v2_10.current_benchmark_route_decisions.goal4169.v1",
         )
         summary = rt.summarize_current_benchmark_route_decisions()
         validation = rt.validate_current_benchmark_route_decisions()
-        self.assertEqual(summary["version"], "rtdl.v2_10.current_benchmark_route_decisions.goal4168.v1")
+        self.assertEqual(summary["version"], "rtdl.v2_10.current_benchmark_route_decisions.goal4169.v1")
         self.assertEqual(validation["status"], "accept")
         self.assertEqual(validation["errors"], ())
         self.assertFalse(summary["automatic_partner_selection_authorized"])
@@ -27,7 +27,7 @@ class Goal4168CurrentRouteDecisionAfterPolicyAwareRtDbscanTest(unittest.TestCase
 
     def test_rtdbscan_route_records_policy_aware_status_without_promotion(self) -> None:
         route = rt.explain_current_benchmark_route("rt_dbscan")
-        self.assertEqual(route["version"], "rtdl.v2_10.current_benchmark_route_decisions.goal4168.v1")
+        self.assertEqual(route["version"], "rtdl.v2_10.current_benchmark_route_decisions.goal4169.v1")
         self.assertIn("Goal4164 exposes the all-predicate path", route["current_reader_decision"])
         self.assertIn("Goal4166 adds a policy-aware semantic", route["current_reader_decision"])
         self.assertIn("grouped-stream Numba for conservative mixed predicate rows", route["primary_route"])

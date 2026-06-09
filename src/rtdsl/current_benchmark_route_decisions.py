@@ -6,10 +6,10 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4168.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4169.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
-    "Goal4168 refreshes current benchmark route decisions after the Goal4074-4167 "
+    "Goal4169 refreshes current benchmark route decisions after the Goal4074-4169 "
     "RT-DBSCAN grouped-union bottleneck, partition-summary feasibility, host-work "
     "skip, non-skip active pair stream, device partition-key decode, and unordered "
     "non-skip stream chain, plus direct device status union and route-level direct-status "
@@ -17,7 +17,8 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "repeated app-route timing, explicit partition-cell-factor route sweeps, a route-choice "
     "advisor, 131k plus 262k scale probes, a warmed one-shot route probe, and a "
     "524k and 1M factor-0.25 extension probes, all-predicate-only mode, mixed "
-    "predicate policy probe, policy-aware semantic signature, and advisor refresh. It is "
+    "predicate policy probe, policy-aware semantic signature, advisor refresh, and a "
+    "road3d 2M all-predicate scale probe. It is "
     "advisory guidance only: users choose partners "
     "explicitly. It does not authorize release action, public speedup wording, "
     "whole-app acceleration wording, broad RT-core wording, paper-reproduction "
@@ -233,7 +234,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4165 shows no single grouped-stream variant universally explains mixed "
             "predicate component-size drift; Goal4166 adds a policy-aware semantic "
             "signature; Goal4167 updates the advisor so counts-only semantics can be "
-            "compared without promoting mixed predicate direct-status."
+            "compared without promoting mixed predicate direct-status. Goal4169 extends "
+            "the road-like all-predicate wrapper evidence to 2,097,152 points, where it "
+            "preserves the RT-DBSCAN app signature and remains above parity."
         ),
         primary_route=(
             "mixed explicit RT-DBSCAN route: grouped-stream Numba for conservative mixed "
@@ -253,7 +256,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "because the 65k best factor depends on intent: one-shot total timing ranks 0.25 "
             "first, while repeated replay ranks 0.5 first; 131k/262k/524k/1M rank 0.25 first "
             "for the tested evidence. For all-predicate rows, the explicit all-true mode "
-            "fails closed if the runtime does not observe the fast path. For mixed predicate "
+            "fails closed if the runtime does not observe the fast path; Goal4169 records "
+            "road3d 2M evidence for that wrapper but still does not promote hidden selection. "
+            "For mixed predicate "
             "rows, choose a policy-aware semantic contract explicitly; counts-only semantics "
             "can pass, but Goal4165 does not justify broad mixed direct-status promotion. "
             "Do not auto-select the partner, route, factor, or border policy."
@@ -334,6 +339,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4165",
             "Goal4166",
             "Goal4167",
+            "Goal4169",
         ),
         pod_needed_next=False,
     ),
