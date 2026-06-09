@@ -6,16 +6,16 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4123.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4127.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
-    "Goal4123 refreshes current benchmark route decisions after the Goal4074-4122 "
+    "Goal4127 refreshes current benchmark route decisions after the Goal4074-4126 "
     "RT-DBSCAN grouped-union bottleneck, partition-summary feasibility, host-work "
     "skip, non-skip active pair stream, device partition-key decode, and unordered "
     "non-skip stream chain, plus direct device status union and route-level direct-status "
     "comparison, prepared direct-status replay, explicit app-mode smoke, shape-dependent "
     "repeated app-route timing, explicit partition-cell-factor route sweeps, a route-choice "
-    "advisor, and a 131k scale probe. It is "
+    "advisor, and 131k plus 262k scale probes. It is "
     "advisory guidance only: users choose partners "
     "explicitly. It does not authorize release action, public speedup wording, "
     "whole-app acceleration wording, broad RT-core wording, paper-reproduction "
@@ -209,7 +209,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "for 1.312x. Goal4121 adds an advisory-only route explainer. Goal4122 then "
             "checks 131k scale and shows clustered3d remains best at 0.25 for 3.211x, "
             "road3d remains best at 0.25 for 1.545x, and ngsim_dense becomes best at "
-            "0.25 for 1.399x. This is still an explicit route choice, not automatic tuning."
+            "0.25 for 1.399x. Goal4126 extends the scale evidence to 262k and keeps "
+            "0.25 best on clustered3d, road3d, and ngsim_dense with 3.118x, 1.428x, "
+            "and 1.642x replay speedups. This is still an explicit route choice, "
+            "not automatic tuning."
         ),
         primary_route=(
             "mixed explicit RT-DBSCAN route: grouped-stream Numba for one-shot/default, "
@@ -223,7 +226,8 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "point/partition columns for repeated component-signature queries, and set "
             "`partition_cell_factor` explicitly from tested evidence. Use 0.25 for clustered/road-like "
             "profiles in the tested 65k and 131k packets. For dense NGSIM-like profiles, use "
-            "the route advisor or scale-specific evidence: 0.5 at 65k and 0.25 at 131k. "
+            "the route advisor or scale-specific evidence: 0.5 at 65k and 0.25 at "
+            "131k/262k. "
             "Do not auto-select the factor."
         ),
         rejected_or_unpromoted_candidates=(
@@ -242,9 +246,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
         ),
         next_runtime_action=(
             "keep the user-visible profile/reuse advisor scale-aware and continue with either one-shot "
-            "prepare-cost reduction or a larger representative-scale packet beyond 131k. "
+            "prepare-cost reduction or broader profile coverage beyond the current 65k/131k/262k packet. "
             "Goal4088, Goal4093, Goal4096, Goal4100, Goal4104, Goal4105, Goal4108, Goal4109, "
-            "Goal4114, Goal4116, Goal4117, Goal4121, and Goal4122 prove "
+            "Goal4114, Goal4116, Goal4117, Goal4121, Goal4122, and Goal4126 prove "
             "producer-side cleanup, active-pair materialization reduction, device-resident "
             "key decoding, explicit unordered set-stream contracts, and direct status "
             "consumption matter, but hidden factor selection and universal default promotion remain blocked"
@@ -283,6 +287,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4117",
             "Goal4121",
             "Goal4122",
+            "Goal4126",
         ),
         pod_needed_next=False,
     ),

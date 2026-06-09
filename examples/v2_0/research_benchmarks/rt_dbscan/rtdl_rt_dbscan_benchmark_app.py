@@ -34,14 +34,17 @@ RT_DBSCAN_TESTED_DIRECT_STATUS_PARTITION_CELL_FACTOR_OPTIONS = {
     "clustered3d": (
         {"point_count": 65536, "factor": 0.25, "replay_speedup": 2.961, "evidence_refs": ("Goal4117",)},
         {"point_count": 131072, "factor": 0.25, "replay_speedup": 3.211, "evidence_refs": ("Goal4122",)},
+        {"point_count": 262144, "factor": 0.25, "replay_speedup": 3.118, "evidence_refs": ("Goal4126",)},
     ),
     "road3d": (
         {"point_count": 65536, "factor": 0.25, "replay_speedup": 1.866, "evidence_refs": ("Goal4117",)},
         {"point_count": 131072, "factor": 0.25, "replay_speedup": 1.545, "evidence_refs": ("Goal4122",)},
+        {"point_count": 262144, "factor": 0.25, "replay_speedup": 1.428, "evidence_refs": ("Goal4126",)},
     ),
     "ngsim_dense": (
         {"point_count": 65536, "factor": 0.5, "replay_speedup": 1.312, "evidence_refs": ("Goal4117",)},
         {"point_count": 131072, "factor": 0.25, "replay_speedup": 1.399, "evidence_refs": ("Goal4122",)},
+        {"point_count": 262144, "factor": 0.25, "replay_speedup": 1.642, "evidence_refs": ("Goal4126",)},
     ),
 }
 RT_DBSCAN_DIRECT_STATUS_APP_MODE = "partner_cupy_prepared_direct_status_union_component_signature_3d"
