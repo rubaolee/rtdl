@@ -1,0 +1,1367 @@
+{
+  "cases": [
+    {
+      "case": "clustered_half_radius_high_threshold",
+      "dataset": "clustered3d",
+      "min_neighbors": 96,
+      "point_count": 65536,
+      "radius": 0.0275
+    },
+    {
+      "case": "clustered_half_radius_high_threshold",
+      "dataset": "clustered3d",
+      "min_neighbors": 96,
+      "point_count": 131072,
+      "radius": 0.0275
+    },
+    {
+      "case": "road_sparse_many_noise",
+      "dataset": "road3d",
+      "min_neighbors": 16,
+      "point_count": 65536,
+      "radius": 0.003
+    },
+    {
+      "case": "road_mid_sparse_mixed_clusters",
+      "dataset": "road3d",
+      "min_neighbors": 32,
+      "point_count": 65536,
+      "radius": 0.0045
+    },
+    {
+      "case": "ngsim_sparse_many_noise",
+      "dataset": "ngsim_dense",
+      "min_neighbors": 40,
+      "point_count": 65536,
+      "radius": 0.006
+    },
+    {
+      "case": "ngsim_mid_sparse_multicluster",
+      "dataset": "ngsim_dense",
+      "min_neighbors": 80,
+      "point_count": 65536,
+      "radius": 0.0084
+    },
+    {
+      "case": "ngsim_mid_sparse_multicluster",
+      "dataset": "ngsim_dense",
+      "min_neighbors": 80,
+      "point_count": 131072,
+      "radius": 0.0084
+    }
+  ],
+  "claim_boundary": {
+    "broad_rt_core_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "route_promotion_authorized": false,
+    "whole_app_claim_authorized": false
+  },
+  "comparisons": [
+    {
+      "candidate": "predicate_direct_status_until_stable",
+      "candidate_all_predicate_fast_path": null,
+      "candidate_border_candidate_updates": 5731,
+      "candidate_convergence_proven": true,
+      "candidate_elapsed_sec": 0.04210376739501953,
+      "candidate_final_changed_flag": 0,
+      "candidate_signature": {
+        "cluster_sizes": {
+          "1": 16362,
+          "2": 16366,
+          "3": 16368,
+          "4": 16362
+        },
+        "core_count": 63981,
+        "noise_count": 78
+      },
+      "case": "clustered_half_radius_high_threshold",
+      "current_elapsed_sec": 0.056713834404945374,
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 16362,
+          "2": 16362,
+          "3": 16368,
+          "4": 16366
+        },
+        "core_count": 63981,
+        "noise_count": 78
+      },
+      "dataset": "clustered3d",
+      "min_neighbors": 96,
+      "point_count": 65536,
+      "radius": 0.0275,
+      "same_signature": false,
+      "speedup_current_over_candidate": 1.347001418491925
+    },
+    {
+      "candidate": "predicate_direct_status_single_pass",
+      "candidate_all_predicate_fast_path": null,
+      "candidate_border_candidate_updates": 5706,
+      "candidate_convergence_proven": false,
+      "candidate_elapsed_sec": 0.02406127005815506,
+      "candidate_final_changed_flag": 1,
+      "candidate_signature": {
+        "cluster_sizes": {
+          "1": 16362,
+          "2": 16366,
+          "3": 16368,
+          "4": 16362
+        },
+        "core_count": 63981,
+        "noise_count": 78
+      },
+      "case": "clustered_half_radius_high_threshold",
+      "current_elapsed_sec": 0.056713834404945374,
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 16362,
+          "2": 16362,
+          "3": 16368,
+          "4": 16366
+        },
+        "core_count": 63981,
+        "noise_count": 78
+      },
+      "dataset": "clustered3d",
+      "min_neighbors": 96,
+      "point_count": 65536,
+      "radius": 0.0275,
+      "same_signature": false,
+      "speedup_current_over_candidate": 2.3570590524885207
+    },
+    {
+      "candidate": "predicate_direct_status_until_stable",
+      "candidate_all_predicate_fast_path": null,
+      "candidate_border_candidate_updates": 5685,
+      "candidate_convergence_proven": true,
+      "candidate_elapsed_sec": 0.1348913013935089,
+      "candidate_final_changed_flag": 0,
+      "candidate_signature": {
+        "cluster_sizes": {
+          "1": 32756,
+          "2": 32752,
+          "3": 32758,
+          "4": 32751
+        },
+        "core_count": 129547,
+        "noise_count": 55
+      },
+      "case": "clustered_half_radius_high_threshold",
+      "current_elapsed_sec": 0.18750353157520294,
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 32756,
+          "2": 32751,
+          "3": 32758,
+          "4": 32752
+        },
+        "core_count": 129547,
+        "noise_count": 55
+      },
+      "dataset": "clustered3d",
+      "min_neighbors": 96,
+      "point_count": 131072,
+      "radius": 0.0275,
+      "same_signature": false,
+      "speedup_current_over_candidate": 1.390034269357459
+    },
+    {
+      "candidate": "predicate_direct_status_single_pass",
+      "candidate_all_predicate_fast_path": null,
+      "candidate_border_candidate_updates": 5640,
+      "candidate_convergence_proven": false,
+      "candidate_elapsed_sec": 0.07352147996425629,
+      "candidate_final_changed_flag": 1,
+      "candidate_signature": {
+        "cluster_sizes": {
+          "1": 32756,
+          "2": 32752,
+          "3": 32758,
+          "4": 32751
+        },
+        "core_count": 129547,
+        "noise_count": 55
+      },
+      "case": "clustered_half_radius_high_threshold",
+      "current_elapsed_sec": 0.18750353157520294,
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 32756,
+          "2": 32751,
+          "3": 32758,
+          "4": 32752
+        },
+        "core_count": 129547,
+        "noise_count": 55
+      },
+      "dataset": "clustered3d",
+      "min_neighbors": 96,
+      "point_count": 131072,
+      "radius": 0.0275,
+      "same_signature": false,
+      "speedup_current_over_candidate": 2.5503231391201724
+    },
+    {
+      "candidate": "predicate_direct_status_until_stable",
+      "candidate_all_predicate_fast_path": null,
+      "candidate_border_candidate_updates": 13863,
+      "candidate_convergence_proven": true,
+      "candidate_elapsed_sec": 0.024772629141807556,
+      "candidate_final_changed_flag": 0,
+      "candidate_signature": {
+        "cluster_sizes": {
+          "1": 65535
+        },
+        "core_count": 62299,
+        "noise_count": 1
+      },
+      "case": "ngsim_mid_sparse_multicluster",
+      "current_elapsed_sec": 0.010414958000183105,
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 65535
+        },
+        "core_count": 62299,
+        "noise_count": 1
+      },
+      "dataset": "ngsim_dense",
+      "min_neighbors": 80,
+      "point_count": 65536,
+      "radius": 0.0084,
+      "same_signature": true,
+      "speedup_current_over_candidate": 0.4204219883389886
+    },
+    {
+      "candidate": "predicate_direct_status_single_pass",
+      "candidate_all_predicate_fast_path": null,
+      "candidate_border_candidate_updates": 13934,
+      "candidate_convergence_proven": false,
+      "candidate_elapsed_sec": 0.013898573815822601,
+      "candidate_final_changed_flag": 1,
+      "candidate_signature": {
+        "cluster_sizes": {
+          "1": 65535
+        },
+        "core_count": 62299,
+        "noise_count": 1
+      },
+      "case": "ngsim_mid_sparse_multicluster",
+      "current_elapsed_sec": 0.010414958000183105,
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 65535
+        },
+        "core_count": 62299,
+        "noise_count": 1
+      },
+      "dataset": "ngsim_dense",
+      "min_neighbors": 80,
+      "point_count": 65536,
+      "radius": 0.0084,
+      "same_signature": true,
+      "speedup_current_over_candidate": 0.7493544401171844
+    },
+    {
+      "candidate": "predicate_direct_status_until_stable",
+      "candidate_all_predicate_fast_path": null,
+      "candidate_border_candidate_updates": 1228,
+      "candidate_convergence_proven": true,
+      "candidate_elapsed_sec": 0.04780788719654083,
+      "candidate_final_changed_flag": 0,
+      "candidate_signature": {
+        "cluster_sizes": {
+          "1": 131072
+        },
+        "core_count": 130779,
+        "noise_count": 0
+      },
+      "case": "ngsim_mid_sparse_multicluster",
+      "current_elapsed_sec": 0.02861855924129486,
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 131072
+        },
+        "core_count": 130779,
+        "noise_count": 0
+      },
+      "dataset": "ngsim_dense",
+      "min_neighbors": 80,
+      "point_count": 131072,
+      "radius": 0.0084,
+      "same_signature": true,
+      "speedup_current_over_candidate": 0.5986158544016472
+    },
+    {
+      "candidate": "predicate_direct_status_single_pass",
+      "candidate_all_predicate_fast_path": null,
+      "candidate_border_candidate_updates": 1246,
+      "candidate_convergence_proven": false,
+      "candidate_elapsed_sec": 0.02588392049074173,
+      "candidate_final_changed_flag": 1,
+      "candidate_signature": {
+        "cluster_sizes": {
+          "1": 131072
+        },
+        "core_count": 130779,
+        "noise_count": 0
+      },
+      "case": "ngsim_mid_sparse_multicluster",
+      "current_elapsed_sec": 0.02861855924129486,
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 131072
+        },
+        "core_count": 130779,
+        "noise_count": 0
+      },
+      "dataset": "ngsim_dense",
+      "min_neighbors": 80,
+      "point_count": 131072,
+      "radius": 0.0084,
+      "same_signature": true,
+      "speedup_current_over_candidate": 1.1056500985440467
+    },
+    {
+      "candidate": "predicate_direct_status_until_stable",
+      "candidate_all_predicate_fast_path": null,
+      "candidate_border_candidate_updates": 22539,
+      "candidate_convergence_proven": true,
+      "candidate_elapsed_sec": 0.02565760165452957,
+      "candidate_final_changed_flag": 0,
+      "candidate_signature": {
+        "cluster_sizes": {
+          "1": 65438
+        },
+        "core_count": 58207,
+        "noise_count": 98
+      },
+      "case": "ngsim_sparse_many_noise",
+      "current_elapsed_sec": 0.007929891347885132,
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 65438
+        },
+        "core_count": 58207,
+        "noise_count": 98
+      },
+      "dataset": "ngsim_dense",
+      "min_neighbors": 40,
+      "point_count": 65536,
+      "radius": 0.006,
+      "same_signature": true,
+      "speedup_current_over_candidate": 0.30906596238644135
+    },
+    {
+      "candidate": "predicate_direct_status_single_pass",
+      "candidate_all_predicate_fast_path": null,
+      "candidate_border_candidate_updates": 22489,
+      "candidate_convergence_proven": false,
+      "candidate_elapsed_sec": 0.014960482716560364,
+      "candidate_final_changed_flag": 1,
+      "candidate_signature": {
+        "cluster_sizes": {
+          "1": 65438
+        },
+        "core_count": 58207,
+        "noise_count": 98
+      },
+      "case": "ngsim_sparse_many_noise",
+      "current_elapsed_sec": 0.007929891347885132,
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 65438
+        },
+        "core_count": 58207,
+        "noise_count": 98
+      },
+      "dataset": "ngsim_dense",
+      "min_neighbors": 40,
+      "point_count": 65536,
+      "radius": 0.006,
+      "same_signature": true,
+      "speedup_current_over_candidate": 0.530055847670424
+    },
+    {
+      "candidate": "predicate_direct_status_until_stable",
+      "candidate_all_predicate_fast_path": null,
+      "candidate_border_candidate_updates": 24969,
+      "candidate_convergence_proven": true,
+      "candidate_elapsed_sec": 0.023245498538017273,
+      "candidate_final_changed_flag": 0,
+      "candidate_signature": {
+        "cluster_sizes": {
+          "1": 29565,
+          "2": 29458
+        },
+        "core_count": 40227,
+        "noise_count": 6513
+      },
+      "case": "road_mid_sparse_mixed_clusters",
+      "current_elapsed_sec": 0.007387764751911163,
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 29565,
+          "2": 29458
+        },
+        "core_count": 40227,
+        "noise_count": 6513
+      },
+      "dataset": "road3d",
+      "min_neighbors": 32,
+      "point_count": 65536,
+      "radius": 0.0045,
+      "same_signature": true,
+      "speedup_current_over_candidate": 0.3178148551999738
+    },
+    {
+      "candidate": "predicate_direct_status_single_pass",
+      "candidate_all_predicate_fast_path": null,
+      "candidate_border_candidate_updates": 25064,
+      "candidate_convergence_proven": false,
+      "candidate_elapsed_sec": 0.014578334987163544,
+      "candidate_final_changed_flag": 1,
+      "candidate_signature": {
+        "cluster_sizes": {
+          "1": 29565,
+          "2": 29458
+        },
+        "core_count": 40227,
+        "noise_count": 6513
+      },
+      "case": "road_mid_sparse_mixed_clusters",
+      "current_elapsed_sec": 0.007387764751911163,
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 29565,
+          "2": 29458
+        },
+        "core_count": 40227,
+        "noise_count": 6513
+      },
+      "dataset": "road3d",
+      "min_neighbors": 32,
+      "point_count": 65536,
+      "radius": 0.0045,
+      "same_signature": true,
+      "speedup_current_over_candidate": 0.5067632729263121
+    },
+    {
+      "candidate": "predicate_direct_status_until_stable",
+      "candidate_all_predicate_fast_path": null,
+      "candidate_border_candidate_updates": 25907,
+      "candidate_convergence_proven": true,
+      "candidate_elapsed_sec": 0.018755264580249786,
+      "candidate_final_changed_flag": 0,
+      "candidate_signature": {
+        "cluster_sizes": {
+          "1": 21952,
+          "2": 17,
+          "3": 21527,
+          "4": 16,
+          "5": 11,
+          "6": 15,
+          "7": 15,
+          "8": 16,
+          "9": 16,
+          "10": 11,
+          "11": 9,
+          "12": 11,
+          "13": 15,
+          "14": 33,
+          "15": 12,
+          "16": 16,
+          "17": 15,
+          "18": 14,
+          "19": 13,
+          "20": 10,
+          "21": 14
+        },
+        "core_count": 23252,
+        "noise_count": 21778
+      },
+      "case": "road_sparse_many_noise",
+      "current_elapsed_sec": 0.006394512951374054,
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 21941,
+          "2": 17,
+          "3": 21527,
+          "4": 16,
+          "5": 11,
+          "6": 15,
+          "7": 15,
+          "8": 16,
+          "9": 16,
+          "10": 11,
+          "11": 9,
+          "12": 11,
+          "13": 15,
+          "14": 33,
+          "15": 12,
+          "16": 16,
+          "17": 15,
+          "18": 14,
+          "19": 13,
+          "20": 10,
+          "21": 11,
+          "22": 14
+        },
+        "core_count": 23252,
+        "noise_count": 21778
+      },
+      "dataset": "road3d",
+      "min_neighbors": 16,
+      "point_count": 65536,
+      "radius": 0.003,
+      "same_signature": false,
+      "speedup_current_over_candidate": 0.3409449610275181
+    },
+    {
+      "candidate": "predicate_direct_status_single_pass",
+      "candidate_all_predicate_fast_path": null,
+      "candidate_border_candidate_updates": 25917,
+      "candidate_convergence_proven": false,
+      "candidate_elapsed_sec": 0.012382909655570984,
+      "candidate_final_changed_flag": 1,
+      "candidate_signature": {
+        "cluster_sizes": {
+          "1": 21952,
+          "2": 17,
+          "3": 21527,
+          "4": 16,
+          "5": 11,
+          "6": 15,
+          "7": 15,
+          "8": 16,
+          "9": 16,
+          "10": 11,
+          "11": 9,
+          "12": 11,
+          "13": 15,
+          "14": 33,
+          "15": 12,
+          "16": 16,
+          "17": 15,
+          "18": 14,
+          "19": 13,
+          "20": 10,
+          "21": 14
+        },
+        "core_count": 23252,
+        "noise_count": 21778
+      },
+      "case": "road_sparse_many_noise",
+      "current_elapsed_sec": 0.006394512951374054,
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 21941,
+          "2": 17,
+          "3": 21527,
+          "4": 16,
+          "5": 11,
+          "6": 15,
+          "7": 15,
+          "8": 16,
+          "9": 16,
+          "10": 11,
+          "11": 9,
+          "12": 11,
+          "13": 15,
+          "14": 33,
+          "15": 12,
+          "16": 16,
+          "17": 15,
+          "18": 14,
+          "19": 13,
+          "20": 10,
+          "21": 11,
+          "22": 14
+        },
+        "core_count": 23252,
+        "noise_count": 21778
+      },
+      "dataset": "road3d",
+      "min_neighbors": 16,
+      "point_count": 65536,
+      "radius": 0.003,
+      "same_signature": false,
+      "speedup_current_over_candidate": 0.5163982560833114
+    }
+  ],
+  "elapsed_wall_sec": 22.372937619686127,
+  "git_commit": "63cfbc9a",
+  "goal": "Goal4159",
+  "repeat": 4,
+  "rows": [
+    {
+      "all_predicate_fast_path": null,
+      "border_candidate_updates": null,
+      "case": "clustered_half_radius_high_threshold",
+      "component_signature_policy": "direct_root_count_from_parent_workspace_and_border_candidates",
+      "dataset": "clustered3d",
+      "dbscan_core_border_noise_semantics": null,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": null,
+      "direct_status_final_changed_flag": null,
+      "elapsed_sec": 0.056713834404945374,
+      "label": "current_grouped_stream_numba",
+      "metadata_path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "min_neighbors": 96,
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "pair_stream_filter": null,
+      "point_count": 65536,
+      "predicate_direct_status_candidate": null,
+      "predicate_direct_status_promoted": null,
+      "radius": 0.0275,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16362,
+          "2": 16362,
+          "3": 16368,
+          "4": 16366
+        },
+        "core_count": 63981,
+        "noise_count": 78
+      },
+      "status": "ok",
+      "timing_breakdown_sec": null
+    },
+    {
+      "all_predicate_fast_path": null,
+      "border_candidate_updates": 5731,
+      "case": "clustered_half_radius_high_threshold",
+      "component_signature_policy": "predicate_true_partition_root_count_plus_lowest_predicate_neighbor_candidate",
+      "dataset": "clustered3d",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": true,
+      "direct_status_final_changed_flag": 0,
+      "elapsed_sec": 0.04210376739501953,
+      "label": "predicate_direct_status_until_stable",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "min_neighbors": 96,
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "pair_stream_filter": "predicate_compatible_non_skip_actionable_pairs",
+      "point_count": 65536,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "radius": 0.0275,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16362,
+          "2": 16366,
+          "3": 16368,
+          "4": 16362
+        },
+        "core_count": 63981,
+        "noise_count": 78
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.04085847735404968,
+        "prepare_predicate_direct_status_sec": 0.39529357105493546
+      }
+    },
+    {
+      "all_predicate_fast_path": null,
+      "border_candidate_updates": 5706,
+      "case": "clustered_half_radius_high_threshold",
+      "component_signature_policy": "predicate_true_partition_root_count_plus_lowest_predicate_neighbor_candidate",
+      "dataset": "clustered3d",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "single_pass_candidate",
+      "direct_status_convergence_proven": false,
+      "direct_status_final_changed_flag": 1,
+      "elapsed_sec": 0.02406127005815506,
+      "label": "predicate_direct_status_single_pass",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "min_neighbors": 96,
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "pair_stream_filter": "predicate_compatible_non_skip_actionable_pairs",
+      "point_count": 65536,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "radius": 0.0275,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16362,
+          "2": 16366,
+          "3": 16368,
+          "4": 16362
+        },
+        "core_count": 63981,
+        "noise_count": 78
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.022679582238197327,
+        "prepare_predicate_direct_status_sec": 0.04395376145839691
+      }
+    },
+    {
+      "all_predicate_fast_path": null,
+      "border_candidate_updates": null,
+      "case": "clustered_half_radius_high_threshold",
+      "component_signature_policy": "direct_root_count_from_parent_workspace_and_border_candidates",
+      "dataset": "clustered3d",
+      "dbscan_core_border_noise_semantics": null,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": null,
+      "direct_status_final_changed_flag": null,
+      "elapsed_sec": 0.18750353157520294,
+      "label": "current_grouped_stream_numba",
+      "metadata_path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "min_neighbors": 96,
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "pair_stream_filter": null,
+      "point_count": 131072,
+      "predicate_direct_status_candidate": null,
+      "predicate_direct_status_promoted": null,
+      "radius": 0.0275,
+      "signature": {
+        "cluster_sizes": {
+          "1": 32756,
+          "2": 32751,
+          "3": 32758,
+          "4": 32752
+        },
+        "core_count": 129547,
+        "noise_count": 55
+      },
+      "status": "ok",
+      "timing_breakdown_sec": null
+    },
+    {
+      "all_predicate_fast_path": null,
+      "border_candidate_updates": 5685,
+      "case": "clustered_half_radius_high_threshold",
+      "component_signature_policy": "predicate_true_partition_root_count_plus_lowest_predicate_neighbor_candidate",
+      "dataset": "clustered3d",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": true,
+      "direct_status_final_changed_flag": 0,
+      "elapsed_sec": 0.1348913013935089,
+      "label": "predicate_direct_status_until_stable",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "min_neighbors": 96,
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "pair_stream_filter": "predicate_compatible_non_skip_actionable_pairs",
+      "point_count": 131072,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "radius": 0.0275,
+      "signature": {
+        "cluster_sizes": {
+          "1": 32756,
+          "2": 32752,
+          "3": 32758,
+          "4": 32751
+        },
+        "core_count": 129547,
+        "noise_count": 55
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.13338100910186768,
+        "prepare_predicate_direct_status_sec": 0.1067284420132637
+      }
+    },
+    {
+      "all_predicate_fast_path": null,
+      "border_candidate_updates": 5640,
+      "case": "clustered_half_radius_high_threshold",
+      "component_signature_policy": "predicate_true_partition_root_count_plus_lowest_predicate_neighbor_candidate",
+      "dataset": "clustered3d",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "single_pass_candidate",
+      "direct_status_convergence_proven": false,
+      "direct_status_final_changed_flag": 1,
+      "elapsed_sec": 0.07352147996425629,
+      "label": "predicate_direct_status_single_pass",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "min_neighbors": 96,
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "pair_stream_filter": "predicate_compatible_non_skip_actionable_pairs",
+      "point_count": 131072,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "radius": 0.0275,
+      "signature": {
+        "cluster_sizes": {
+          "1": 32756,
+          "2": 32752,
+          "3": 32758,
+          "4": 32751
+        },
+        "core_count": 129547,
+        "noise_count": 55
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.07196349650621414,
+        "prepare_predicate_direct_status_sec": 0.10636819899082184
+      }
+    },
+    {
+      "all_predicate_fast_path": null,
+      "border_candidate_updates": null,
+      "case": "road_sparse_many_noise",
+      "component_signature_policy": "direct_root_count_from_parent_workspace_and_border_candidates",
+      "dataset": "road3d",
+      "dbscan_core_border_noise_semantics": null,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": null,
+      "direct_status_final_changed_flag": null,
+      "elapsed_sec": 0.006394512951374054,
+      "label": "current_grouped_stream_numba",
+      "metadata_path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "min_neighbors": 16,
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "pair_stream_filter": null,
+      "point_count": 65536,
+      "predicate_direct_status_candidate": null,
+      "predicate_direct_status_promoted": null,
+      "radius": 0.003,
+      "signature": {
+        "cluster_sizes": {
+          "1": 21941,
+          "2": 17,
+          "3": 21527,
+          "4": 16,
+          "5": 11,
+          "6": 15,
+          "7": 15,
+          "8": 16,
+          "9": 16,
+          "10": 11,
+          "11": 9,
+          "12": 11,
+          "13": 15,
+          "14": 33,
+          "15": 12,
+          "16": 16,
+          "17": 15,
+          "18": 14,
+          "19": 13,
+          "20": 10,
+          "21": 11,
+          "22": 14
+        },
+        "core_count": 23252,
+        "noise_count": 21778
+      },
+      "status": "ok",
+      "timing_breakdown_sec": null
+    },
+    {
+      "all_predicate_fast_path": null,
+      "border_candidate_updates": 25907,
+      "case": "road_sparse_many_noise",
+      "component_signature_policy": "predicate_true_partition_root_count_plus_lowest_predicate_neighbor_candidate",
+      "dataset": "road3d",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": true,
+      "direct_status_final_changed_flag": 0,
+      "elapsed_sec": 0.018755264580249786,
+      "label": "predicate_direct_status_until_stable",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "min_neighbors": 16,
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "pair_stream_filter": "predicate_compatible_non_skip_actionable_pairs",
+      "point_count": 65536,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "radius": 0.003,
+      "signature": {
+        "cluster_sizes": {
+          "1": 21952,
+          "2": 17,
+          "3": 21527,
+          "4": 16,
+          "5": 11,
+          "6": 15,
+          "7": 15,
+          "8": 16,
+          "9": 16,
+          "10": 11,
+          "11": 9,
+          "12": 11,
+          "13": 15,
+          "14": 33,
+          "15": 12,
+          "16": 16,
+          "17": 15,
+          "18": 14,
+          "19": 13,
+          "20": 10,
+          "21": 14
+        },
+        "core_count": 23252,
+        "noise_count": 21778
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.014165952801704407,
+        "prepare_predicate_direct_status_sec": 0.11784687638282776
+      }
+    },
+    {
+      "all_predicate_fast_path": null,
+      "border_candidate_updates": 25917,
+      "case": "road_sparse_many_noise",
+      "component_signature_policy": "predicate_true_partition_root_count_plus_lowest_predicate_neighbor_candidate",
+      "dataset": "road3d",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "single_pass_candidate",
+      "direct_status_convergence_proven": false,
+      "direct_status_final_changed_flag": 1,
+      "elapsed_sec": 0.012382909655570984,
+      "label": "predicate_direct_status_single_pass",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "min_neighbors": 16,
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "pair_stream_filter": "predicate_compatible_non_skip_actionable_pairs",
+      "point_count": 65536,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "radius": 0.003,
+      "signature": {
+        "cluster_sizes": {
+          "1": 21952,
+          "2": 17,
+          "3": 21527,
+          "4": 16,
+          "5": 11,
+          "6": 15,
+          "7": 15,
+          "8": 16,
+          "9": 16,
+          "10": 11,
+          "11": 9,
+          "12": 11,
+          "13": 15,
+          "14": 33,
+          "15": 12,
+          "16": 16,
+          "17": 15,
+          "18": 14,
+          "19": 13,
+          "20": 10,
+          "21": 14
+        },
+        "core_count": 23252,
+        "noise_count": 21778
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.007795020937919617,
+        "prepare_predicate_direct_status_sec": 0.04138261079788208
+      }
+    },
+    {
+      "all_predicate_fast_path": null,
+      "border_candidate_updates": null,
+      "case": "road_mid_sparse_mixed_clusters",
+      "component_signature_policy": "direct_root_count_from_parent_workspace_and_border_candidates",
+      "dataset": "road3d",
+      "dbscan_core_border_noise_semantics": null,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": null,
+      "direct_status_final_changed_flag": null,
+      "elapsed_sec": 0.007387764751911163,
+      "label": "current_grouped_stream_numba",
+      "metadata_path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "min_neighbors": 32,
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "pair_stream_filter": null,
+      "point_count": 65536,
+      "predicate_direct_status_candidate": null,
+      "predicate_direct_status_promoted": null,
+      "radius": 0.0045,
+      "signature": {
+        "cluster_sizes": {
+          "1": 29565,
+          "2": 29458
+        },
+        "core_count": 40227,
+        "noise_count": 6513
+      },
+      "status": "ok",
+      "timing_breakdown_sec": null
+    },
+    {
+      "all_predicate_fast_path": null,
+      "border_candidate_updates": 24969,
+      "case": "road_mid_sparse_mixed_clusters",
+      "component_signature_policy": "predicate_true_partition_root_count_plus_lowest_predicate_neighbor_candidate",
+      "dataset": "road3d",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": true,
+      "direct_status_final_changed_flag": 0,
+      "elapsed_sec": 0.023245498538017273,
+      "label": "predicate_direct_status_until_stable",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "min_neighbors": 32,
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "pair_stream_filter": "predicate_compatible_non_skip_actionable_pairs",
+      "point_count": 65536,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "radius": 0.0045,
+      "signature": {
+        "cluster_sizes": {
+          "1": 29565,
+          "2": 29458
+        },
+        "core_count": 40227,
+        "noise_count": 6513
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.018965162336826324,
+        "prepare_predicate_direct_status_sec": 0.04043726623058319
+      }
+    },
+    {
+      "all_predicate_fast_path": null,
+      "border_candidate_updates": 25064,
+      "case": "road_mid_sparse_mixed_clusters",
+      "component_signature_policy": "predicate_true_partition_root_count_plus_lowest_predicate_neighbor_candidate",
+      "dataset": "road3d",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "single_pass_candidate",
+      "direct_status_convergence_proven": false,
+      "direct_status_final_changed_flag": 1,
+      "elapsed_sec": 0.014578334987163544,
+      "label": "predicate_direct_status_single_pass",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "min_neighbors": 32,
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "pair_stream_filter": "predicate_compatible_non_skip_actionable_pairs",
+      "point_count": 65536,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "radius": 0.0045,
+      "signature": {
+        "cluster_sizes": {
+          "1": 29565,
+          "2": 29458
+        },
+        "core_count": 40227,
+        "noise_count": 6513
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.009729169309139252,
+        "prepare_predicate_direct_status_sec": 0.09847649186849594
+      }
+    },
+    {
+      "all_predicate_fast_path": null,
+      "border_candidate_updates": null,
+      "case": "ngsim_sparse_many_noise",
+      "component_signature_policy": "direct_root_count_from_parent_workspace_and_border_candidates",
+      "dataset": "ngsim_dense",
+      "dbscan_core_border_noise_semantics": null,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": null,
+      "direct_status_final_changed_flag": null,
+      "elapsed_sec": 0.007929891347885132,
+      "label": "current_grouped_stream_numba",
+      "metadata_path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "min_neighbors": 40,
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "pair_stream_filter": null,
+      "point_count": 65536,
+      "predicate_direct_status_candidate": null,
+      "predicate_direct_status_promoted": null,
+      "radius": 0.006,
+      "signature": {
+        "cluster_sizes": {
+          "1": 65438
+        },
+        "core_count": 58207,
+        "noise_count": 98
+      },
+      "status": "ok",
+      "timing_breakdown_sec": null
+    },
+    {
+      "all_predicate_fast_path": null,
+      "border_candidate_updates": 22539,
+      "case": "ngsim_sparse_many_noise",
+      "component_signature_policy": "predicate_true_partition_root_count_plus_lowest_predicate_neighbor_candidate",
+      "dataset": "ngsim_dense",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": true,
+      "direct_status_final_changed_flag": 0,
+      "elapsed_sec": 0.02565760165452957,
+      "label": "predicate_direct_status_until_stable",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "min_neighbors": 40,
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "pair_stream_filter": "predicate_compatible_non_skip_actionable_pairs",
+      "point_count": 65536,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "radius": 0.006,
+      "signature": {
+        "cluster_sizes": {
+          "1": 65438
+        },
+        "core_count": 58207,
+        "noise_count": 98
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.02134590595960617,
+        "prepare_predicate_direct_status_sec": 0.042901329696178436
+      }
+    },
+    {
+      "all_predicate_fast_path": null,
+      "border_candidate_updates": 22489,
+      "case": "ngsim_sparse_many_noise",
+      "component_signature_policy": "predicate_true_partition_root_count_plus_lowest_predicate_neighbor_candidate",
+      "dataset": "ngsim_dense",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "single_pass_candidate",
+      "direct_status_convergence_proven": false,
+      "direct_status_final_changed_flag": 1,
+      "elapsed_sec": 0.014960482716560364,
+      "label": "predicate_direct_status_single_pass",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "min_neighbors": 40,
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "pair_stream_filter": "predicate_compatible_non_skip_actionable_pairs",
+      "point_count": 65536,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "radius": 0.006,
+      "signature": {
+        "cluster_sizes": {
+          "1": 65438
+        },
+        "core_count": 58207,
+        "noise_count": 98
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.010535776615142822,
+        "prepare_predicate_direct_status_sec": 0.04139724373817444
+      }
+    },
+    {
+      "all_predicate_fast_path": null,
+      "border_candidate_updates": null,
+      "case": "ngsim_mid_sparse_multicluster",
+      "component_signature_policy": "direct_root_count_from_parent_workspace_and_border_candidates",
+      "dataset": "ngsim_dense",
+      "dbscan_core_border_noise_semantics": null,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": null,
+      "direct_status_final_changed_flag": null,
+      "elapsed_sec": 0.010414958000183105,
+      "label": "current_grouped_stream_numba",
+      "metadata_path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "min_neighbors": 80,
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "pair_stream_filter": null,
+      "point_count": 65536,
+      "predicate_direct_status_candidate": null,
+      "predicate_direct_status_promoted": null,
+      "radius": 0.0084,
+      "signature": {
+        "cluster_sizes": {
+          "1": 65535
+        },
+        "core_count": 62299,
+        "noise_count": 1
+      },
+      "status": "ok",
+      "timing_breakdown_sec": null
+    },
+    {
+      "all_predicate_fast_path": null,
+      "border_candidate_updates": 13863,
+      "case": "ngsim_mid_sparse_multicluster",
+      "component_signature_policy": "predicate_true_partition_root_count_plus_lowest_predicate_neighbor_candidate",
+      "dataset": "ngsim_dense",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": true,
+      "direct_status_final_changed_flag": 0,
+      "elapsed_sec": 0.024772629141807556,
+      "label": "predicate_direct_status_until_stable",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "min_neighbors": 80,
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "pair_stream_filter": "predicate_compatible_non_skip_actionable_pairs",
+      "point_count": 65536,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "radius": 0.0084,
+      "signature": {
+        "cluster_sizes": {
+          "1": 65535
+        },
+        "core_count": 62299,
+        "noise_count": 1
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.021106667816638947,
+        "prepare_predicate_direct_status_sec": 0.04058896750211716
+      }
+    },
+    {
+      "all_predicate_fast_path": null,
+      "border_candidate_updates": 13934,
+      "case": "ngsim_mid_sparse_multicluster",
+      "component_signature_policy": "predicate_true_partition_root_count_plus_lowest_predicate_neighbor_candidate",
+      "dataset": "ngsim_dense",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "single_pass_candidate",
+      "direct_status_convergence_proven": false,
+      "direct_status_final_changed_flag": 1,
+      "elapsed_sec": 0.013898573815822601,
+      "label": "predicate_direct_status_single_pass",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "min_neighbors": 80,
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "pair_stream_filter": "predicate_compatible_non_skip_actionable_pairs",
+      "point_count": 65536,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "radius": 0.0084,
+      "signature": {
+        "cluster_sizes": {
+          "1": 65535
+        },
+        "core_count": 62299,
+        "noise_count": 1
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.01027321070432663,
+        "prepare_predicate_direct_status_sec": 0.042958877980709076
+      }
+    },
+    {
+      "all_predicate_fast_path": null,
+      "border_candidate_updates": null,
+      "case": "ngsim_mid_sparse_multicluster",
+      "component_signature_policy": "direct_root_count_from_parent_workspace_and_border_candidates",
+      "dataset": "ngsim_dense",
+      "dbscan_core_border_noise_semantics": null,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": null,
+      "direct_status_final_changed_flag": null,
+      "elapsed_sec": 0.02861855924129486,
+      "label": "current_grouped_stream_numba",
+      "metadata_path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "min_neighbors": 80,
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "pair_stream_filter": null,
+      "point_count": 131072,
+      "predicate_direct_status_candidate": null,
+      "predicate_direct_status_promoted": null,
+      "radius": 0.0084,
+      "signature": {
+        "cluster_sizes": {
+          "1": 131072
+        },
+        "core_count": 130779,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": null
+    },
+    {
+      "all_predicate_fast_path": null,
+      "border_candidate_updates": 1228,
+      "case": "ngsim_mid_sparse_multicluster",
+      "component_signature_policy": "predicate_true_partition_root_count_plus_lowest_predicate_neighbor_candidate",
+      "dataset": "ngsim_dense",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": true,
+      "direct_status_final_changed_flag": 0,
+      "elapsed_sec": 0.04780788719654083,
+      "label": "predicate_direct_status_until_stable",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "min_neighbors": 80,
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "pair_stream_filter": "predicate_compatible_non_skip_actionable_pairs",
+      "point_count": 131072,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "radius": 0.0084,
+      "signature": {
+        "cluster_sizes": {
+          "1": 131072
+        },
+        "core_count": 130779,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.04199071228504181,
+        "prepare_predicate_direct_status_sec": 0.10036751627922058
+      }
+    },
+    {
+      "all_predicate_fast_path": null,
+      "border_candidate_updates": 1246,
+      "case": "ngsim_mid_sparse_multicluster",
+      "component_signature_policy": "predicate_true_partition_root_count_plus_lowest_predicate_neighbor_candidate",
+      "dataset": "ngsim_dense",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "single_pass_candidate",
+      "direct_status_convergence_proven": false,
+      "direct_status_final_changed_flag": 1,
+      "elapsed_sec": 0.02588392049074173,
+      "label": "predicate_direct_status_single_pass",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "min_neighbors": 80,
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "pair_stream_filter": "predicate_compatible_non_skip_actionable_pairs",
+      "point_count": 131072,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "radius": 0.0084,
+      "signature": {
+        "cluster_sizes": {
+          "1": 131072
+        },
+        "core_count": 130779,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.02005314826965332,
+        "prepare_predicate_direct_status_sec": 0.09855211526155472
+      }
+    }
+  ],
+  "warmup": 1
+}
