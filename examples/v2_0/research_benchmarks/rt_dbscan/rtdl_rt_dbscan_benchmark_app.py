@@ -959,6 +959,7 @@ def run_rt_dbscan_benchmark(
     grouped_union_same_root_culling: bool = True,
     grouped_union_direct_side_effect: bool = False,
     partition_pair_enumeration: str = "mode_default",
+    partition_cell_factor: float = 0.125,
     repeat: int = 1,
     warmup: int = 0,
 ) -> dict[str, object]:
@@ -981,6 +982,9 @@ def run_rt_dbscan_benchmark(
         raise ValueError("repeat must be positive")
     if warmup < 0 or warmup >= repeat:
         raise ValueError("warmup must be non-negative and smaller than repeat")
+    resolved_partition_cell_factor = float(partition_cell_factor)
+    if resolved_partition_cell_factor <= 0.0:
+        raise ValueError("partition_cell_factor must be positive")
     if partition_pair_enumeration not in {
         "mode_default",
         "host",
@@ -1229,6 +1233,7 @@ def run_rt_dbscan_benchmark(
         result = rt.build_v2_8_fixed_radius_partition_convergence_component_signature_cupy_preview_3d(
             points,
             radius=resolved_radius,
+            cell_factor=resolved_partition_cell_factor,
             validate_summary_same_contract=validate,
             validate_against_component_labels=validate,
             **partition_pair_enumeration_kwargs,
@@ -1251,6 +1256,7 @@ def run_rt_dbscan_benchmark(
                 "native_engine_summary_contract": "generic_fixed_radius_partition_convergence_summary_3d",
                 "native_execution_path": "partner_cupy_fixed_radius_partition_convergence_preview_3d",
                 "partner": "cupy",
+                "partition_cell_factor_user_selection": resolved_partition_cell_factor,
                 "partition_pair_enumeration_user_selection": partition_pair_enumeration,
                 "partition_pair_enumeration_effective": metadata.get("partition_summary_pair_enumeration"),
                 "partition_pair_enumeration_explicit_override": partition_pair_enumeration != "mode_default",
@@ -1287,6 +1293,7 @@ def run_rt_dbscan_benchmark(
             rt.prepare_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
                 points,
                 radius=resolved_radius,
+                cell_factor=resolved_partition_cell_factor,
                 validate_summary_same_contract=validate,
                 **partition_pair_enumeration_kwargs,
             )
@@ -1318,6 +1325,7 @@ def run_rt_dbscan_benchmark(
                 "native_engine_summary_contract": "generic_fixed_radius_partition_convergence_summary_3d",
                 "native_execution_path": "partner_cupy_prepared_fixed_radius_partition_convergence_preview_3d",
                 "partner": "cupy",
+                "partition_cell_factor_user_selection": resolved_partition_cell_factor,
                 "partition_pair_enumeration_user_selection": partition_pair_enumeration,
                 "partition_pair_enumeration_effective": metadata.get("partition_summary_pair_enumeration"),
                 "partition_pair_enumeration_explicit_override": partition_pair_enumeration != "mode_default",
@@ -1356,6 +1364,7 @@ def run_rt_dbscan_benchmark(
             rt.prepare_v2_8_fixed_radius_partition_convergence_direct_status_union_cupy_preview_3d(
                 points,
                 radius=resolved_radius,
+                cell_factor=resolved_partition_cell_factor,
             )
         )
         prepared_direct_status_sec = time.perf_counter() - prepare_start
@@ -1407,6 +1416,7 @@ def run_rt_dbscan_benchmark(
                 "native_engine_summary_contract": "generic_fixed_radius_partition_convergence_direct_status_union_3d",
                 "native_execution_path": "partner_cupy_prepared_fixed_radius_direct_status_union_preview_3d",
                 "partner": "cupy",
+                "partition_cell_factor_user_selection": resolved_partition_cell_factor,
                 "partition_pair_enumeration_user_selection": partition_pair_enumeration,
                 "partition_pair_enumeration_effective": "device_direct_status_union",
                 "partition_pair_enumeration_explicit_override": partition_pair_enumeration != "mode_default",
@@ -2193,6 +2203,15 @@ def main(argv: list[str] | None = None) -> int:
             "device count-then-emit pair enumeration."
         ),
     )
+    parser.add_argument(
+        "--partition-cell-factor",
+        type=float,
+        default=0.125,
+        help=(
+            "Explicit user-selected partition cell factor for partition-convergence preview modes. "
+            "This is advisory/user-controlled and does not authorize hidden auto-tuning."
+        ),
+    )
     parser.add_argument("--repeat", type=int, default=1)
     parser.add_argument("--warmup", type=int, default=0)
     args = parser.parse_args(argv)
@@ -2216,6 +2235,7 @@ def main(argv: list[str] | None = None) -> int:
                 grouped_union_same_root_culling=not args.disable_grouped_union_same_root_culling,
                 grouped_union_direct_side_effect=args.enable_grouped_union_direct_side_effect,
                 partition_pair_enumeration=args.partition_pair_enumeration,
+                partition_cell_factor=args.partition_cell_factor,
                 repeat=args.repeat,
                 warmup=args.warmup,
             ),
