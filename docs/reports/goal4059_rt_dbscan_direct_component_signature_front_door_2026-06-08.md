@@ -1,6 +1,6 @@
 # Goal4059 Direct Component-Size Signature Front Door
 
-Status: local implementation, pod timing pending.
+Status: implemented, local tests pass, RTX 4000 Ada pod probe recorded.
 
 Goal4059 adds a generic signature-only continuation for prepared fixed-radius
 graph components:
@@ -40,3 +40,29 @@ Expected app metadata for Numba column-signature mode:
 - `column_signature_strategy: numba_direct_component_signature_counts`;
 - `column_signature_uses_numba_direct_component_signature: true`;
 - `materializes_component_labels: false`.
+
+## Pod Evidence
+
+Artifact:
+`docs/reports/goal4059_direct_numba_component_signature_front_door_pod_probe.json`.
+
+Environment: RTX 4000 Ada pod, commit `16be56b7`.
+
+Validation:
+
+- `road3d`, 1024 points, threshold 64: `matches_reference: true`;
+- strategy: `numba_direct_component_signature_counts`;
+- `materializes_component_labels: false`;
+- `rt_core_accelerated: true`.
+
+Timing rows:
+
+| Dataset | Points | Threshold | Elapsed sec | Adapter sec | Signature sec | All core | Labels materialized |
+| --- | ---: | ---: | ---: | ---: | ---: | --- | --- |
+| `road3d` | 4,096 | 64 | 0.001565 | 0.001108 | 0.000456 | false | false |
+| `clustered3d` | 65,536 | 12 | 0.093696 | 0.088825 | 0.004870 | true | false |
+
+The 65,536-point row is a diagnostic comparison against the prior same-pod
+Goal4056/4057 label-count route (`0.100937s`), giving `1.077x`. That is useful
+engineering evidence that avoiding label materialization helps this path, but
+it is not a release, paper, whole-app, broad RT-core, or true-zero-copy claim.

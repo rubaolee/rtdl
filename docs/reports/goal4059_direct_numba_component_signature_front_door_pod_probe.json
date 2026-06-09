@@ -1,0 +1,60 @@
+{
+  "goal": "Goal4059",
+  "title": "Direct Numba component-size signature front door pod probe",
+  "commit": "16be56b7",
+  "pod": "root@213.173.108.27:15138",
+  "gpu": "NVIDIA RTX 4000 Ada Generation",
+  "validation": {
+    "dataset": "road3d",
+    "point_count": 1024,
+    "matches_reference": true,
+    "strategy": "numba_direct_component_signature_counts",
+    "materializes_component_labels": false,
+    "rt_core_accelerated": true,
+    "release_authorized": false
+  },
+  "timing_rows": [
+    {
+      "name": "road3d_4096_t64_direct_signature",
+      "dataset": "road3d",
+      "point_count": 4096,
+      "min_neighbors": 64,
+      "elapsed_sec": 0.001564614474773407,
+      "adapter_run_sec": 0.001108318567276001,
+      "signature_sec": 0.00045556575059890747,
+      "strategy": "numba_direct_component_signature_counts",
+      "all_core_flags_true": false,
+      "materializes_component_labels": false,
+      "materializes_point_ids": false,
+      "materializes_core_flags": false
+    },
+    {
+      "name": "clustered3d_65536_direct_signature",
+      "dataset": "clustered3d",
+      "point_count": 65536,
+      "min_neighbors": 12,
+      "elapsed_sec": 0.09369562193751335,
+      "adapter_run_sec": 0.088824812322855,
+      "signature_sec": 0.004869680851697922,
+      "strategy": "numba_direct_component_signature_counts",
+      "all_core_flags_true": true,
+      "materializes_component_labels": false,
+      "materializes_point_ids": false,
+      "materializes_core_flags": false
+    }
+  ],
+  "prior_comparison": {
+    "baseline_goal": "Goal4056/4057 prior label-count route on same RTX 4000 Ada pod",
+    "baseline_elapsed_sec": 0.10093682259321213,
+    "goal4059_elapsed_sec": 0.09369562193751335,
+    "speedup_vs_prior_baseline": 1.077284301,
+    "boundary": "diagnostic same-app route comparison, not a release or paper speedup claim"
+  },
+  "claim_boundary": {
+    "release_authorized": false,
+    "paper_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_authorized": false
+  }
+}

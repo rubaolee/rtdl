@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import unittest
 
@@ -11,6 +12,7 @@ PARTNER_ADAPTERS = ROOT / "src" / "rtdsl" / "partner_adapters.py"
 FRONT_DOOR = ROOT / "src" / "rtdsl" / "v2_8_fixed_radius_graph_component_front_door.py"
 APP = ROOT / "examples" / "v2_0" / "research_benchmarks" / "rt_dbscan" / "rtdl_rt_dbscan_benchmark_app.py"
 REPORT = ROOT / "docs" / "reports" / "goal4059_rt_dbscan_direct_component_signature_front_door_2026-06-08.md"
+POD_PROBE = ROOT / "docs" / "reports" / "goal4059_direct_numba_component_signature_front_door_pod_probe.json"
 
 
 class Goal4059RtDbscanDirectComponentSignatureFrontDoorTest(unittest.TestCase):
@@ -72,6 +74,30 @@ class Goal4059RtDbscanDirectComponentSignatureFrontDoorTest(unittest.TestCase):
             "materializes_component_labels: false",
         ):
             self.assertIn(phrase, text)
+
+    def test_pod_probe_records_direct_signature_evidence_without_release_claims(self) -> None:
+        data = json.loads(POD_PROBE.read_text(encoding="utf-8"))
+
+        self.assertEqual(data["goal"], "Goal4059")
+        self.assertEqual(data["commit"], "16be56b7")
+        self.assertTrue(data["validation"]["matches_reference"])
+        self.assertEqual(
+            data["validation"]["strategy"],
+            "numba_direct_component_signature_counts",
+        )
+        self.assertFalse(data["validation"]["materializes_component_labels"])
+        self.assertGreater(
+            data["prior_comparison"]["speedup_vs_prior_baseline"],
+            1.0,
+        )
+        self.assertIn("not a release or paper speedup claim", data["prior_comparison"]["boundary"])
+        for value in data["claim_boundary"].values():
+            self.assertFalse(value)
+        for row in data["timing_rows"]:
+            self.assertEqual(row["strategy"], "numba_direct_component_signature_counts")
+            self.assertFalse(row["materializes_component_labels"])
+            self.assertFalse(row["materializes_point_ids"])
+            self.assertFalse(row["materializes_core_flags"])
 
 
 if __name__ == "__main__":
