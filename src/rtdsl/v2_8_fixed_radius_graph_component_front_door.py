@@ -68,7 +68,7 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PROMOTION_BLOCKERS = (
     "prepared_front_door_still_grouped_stream_only",
     "host_compact_label_materialization_breaks_resident_output",
     "separate_ambiguous_classifier_kernel_not_fused",
-    "no_prepared_native_or_partner_partition_handle",
+    "no_promoted_prepared_native_partition_handle",
 )
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_EVIDENCE_GOALS = (
     "Goal3999",
@@ -92,6 +92,7 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_EVIDENCE_GOALS = (
     "Goal4032",
     "Goal4040",
     "Goal4041",
+    "Goal4062",
 )
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PARTITION_GUIDANCE = MappingProxyType({
     "recommended_tested_cell_factor": "radius_x_0.125",
@@ -1388,6 +1389,269 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
     }
 
 
+def _skipped_partition_summary_prepare_validation(summary: dict[str, Any]) -> dict[str, Any]:
+    summary_metadata = summary["metadata"]
+    return {
+        "status": "accept",
+        "reference": "fixed_radius_partition_convergence_summary_3d_prepare_trusted_preview",
+        "candidate_reference_contract": (
+            "fixed_radius_partition_convergence_summary_3d_same_contract_skipped_for_prepared_timing"
+        ),
+        "errors": (),
+        "point_count": int(summary_metadata["point_count"]),
+        "partition_count": int(summary_metadata["partition_count"]),
+        "pair_count": int(summary_metadata["pair_count"]),
+        "visible_pair_count": int(summary_metadata["visible_pair_count"]),
+        "pair_capacity": int(summary_metadata["pair_capacity"]),
+        "overflow": bool(summary_metadata["overflow"]),
+        "complete_candidate_coverage": bool(summary_metadata["complete_candidate_coverage"]),
+        "status_column_values": dict(summary_metadata["status_column_values"]),
+        "status_counts": dict(summary_metadata["status_counts"]),
+        "summary_same_contract_validation_skipped_for_prepared_timing": True,
+    }
+
+
+def _partition_summary_digest(summary: dict[str, Any]) -> dict[str, Any]:
+    metadata = summary["metadata"]
+    return {
+        "adapter": metadata["adapter"],
+        "reference": metadata["reference"],
+        "point_count": int(metadata["point_count"]),
+        "partition_count": int(metadata["partition_count"]),
+        "pair_count": int(metadata["pair_count"]),
+        "visible_pair_count": int(metadata["visible_pair_count"]),
+        "pair_capacity": int(metadata["pair_capacity"]),
+        "overflow": bool(metadata["overflow"]),
+        "complete_candidate_coverage": bool(metadata["complete_candidate_coverage"]),
+        "status_counts": dict(metadata["status_counts"]),
+        "pair_enumeration": metadata["pair_enumeration"],
+        "pair_capacity_source": metadata["pair_capacity_source"],
+        "device_partition_columns_used": bool(metadata["device_partition_columns_used"]),
+        "device_pair_enumeration_used": bool(metadata["device_pair_enumeration_used"]),
+    }
+
+
+@dataclass
+class V28PreparedFixedRadiusPartitionConvergenceSummaryCupyPreview3D:
+    point_rows: tuple[Any, ...]
+    radius: float
+    cell_factor: float
+    pair_capacity: int | None
+    pair_enumeration: str
+    partition_summary: dict[str, Any]
+    prepare_validation: dict[str, Any]
+    closed: bool = False
+    component_label_runs: int = 0
+    component_signature_runs: int = 0
+
+    def _ensure_open(self) -> None:
+        if self.closed:
+            raise RuntimeError("prepared partition-convergence summary handle is closed")
+
+    def to_metadata(self) -> dict[str, Any]:
+        summary_digest = _partition_summary_digest(self.partition_summary)
+        return {
+            "version": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_FRONT_DOOR_VERSION,
+            "status": "explicit_cupy_prepared_partition_summary_preview",
+            "operation": "fixed_radius_partition_convergence_summary_3d",
+            "prepared_partition_summary_handle": True,
+            "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted",
+            "prepared_partition_summary_partner": "cupy",
+            "prepared_partition_summary_runtime_executable": True,
+            "point_count": summary_digest["point_count"],
+            "radius": self.radius,
+            "cell_factor": self.cell_factor,
+            "pair_enumeration": self.pair_enumeration,
+            "pair_capacity": summary_digest["pair_capacity"],
+            "partition_summary_digest": summary_digest,
+            "prepare_validation": dict(self.prepare_validation),
+            "component_label_runs": self.component_label_runs,
+            "component_signature_runs": self.component_signature_runs,
+            "closed": self.closed,
+            "native_abi_added": False,
+            "runtime_executable": True,
+            "default_route_promoted": False,
+            "partition_convergence_hybrid_promoted": False,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "app_specific_engine_logic_allowed": False,
+            "automatic_partner_selection_allowed": False,
+            "hidden_dispatch_allowed": False,
+            "claim_boundary": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY,
+        }
+
+    def run_component_labels(
+        self,
+        *,
+        partition_union_execution: str = "cupy_safe_full",
+        ambiguous_union_execution: str = "cupy_partition_points",
+        validate_summary_same_contract: bool = False,
+        validate_against_all_pairs: bool = False,
+    ) -> dict[str, Any]:
+        self._ensure_open()
+        self.component_label_runs += 1
+        result = build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_3d(
+            self.point_rows,
+            radius=self.radius,
+            cell_factor=self.cell_factor,
+            partition_summary=self.partition_summary,
+            partition_union_execution=partition_union_execution,
+            ambiguous_union_execution=ambiguous_union_execution,
+            validate_summary_same_contract=validate_summary_same_contract,
+            validate_against_all_pairs=validate_against_all_pairs,
+        )
+        return _decorate_prepared_partition_summary_result(
+            result,
+            prepared=self,
+            operation="fixed_radius_partition_convergence_component_labels_3d",
+            run_index=self.component_label_runs,
+        )
+
+    def run_component_signature(
+        self,
+        *,
+        ambiguous_union_execution: str = "cupy_partition_points",
+        validate_summary_same_contract: bool = False,
+        validate_against_component_labels: bool = False,
+    ) -> dict[str, Any]:
+        self._ensure_open()
+        self.component_signature_runs += 1
+        result = build_v2_8_fixed_radius_partition_convergence_component_signature_cupy_preview_3d(
+            self.point_rows,
+            radius=self.radius,
+            cell_factor=self.cell_factor,
+            partition_summary=self.partition_summary,
+            ambiguous_union_execution=ambiguous_union_execution,
+            validate_summary_same_contract=validate_summary_same_contract,
+            validate_against_component_labels=validate_against_component_labels,
+        )
+        return _decorate_prepared_partition_summary_result(
+            result,
+            prepared=self,
+            operation="fixed_radius_partition_convergence_component_signature_3d",
+            run_index=self.component_signature_runs,
+        )
+
+    def close(self) -> None:
+        self.closed = True
+
+    def __enter__(self) -> "V28PreparedFixedRadiusPartitionConvergenceSummaryCupyPreview3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+
+def _decorate_prepared_partition_summary_result(
+    result: dict[str, Any],
+    *,
+    prepared: V28PreparedFixedRadiusPartitionConvergenceSummaryCupyPreview3D,
+    operation: str,
+    run_index: int,
+) -> dict[str, Any]:
+    metadata = dict(result["metadata"])
+    metadata.update(
+        {
+            "prepared_partition_summary_handle": True,
+            "prepared_partition_summary_handle_status": "explicit_cupy_preview_not_promoted",
+            "prepared_partition_summary_partner": "cupy",
+            "prepared_partition_summary_reused": True,
+            "prepared_partition_summary_operation": operation,
+            "prepared_partition_summary_run_index": int(run_index),
+            "prepared_partition_summary_digest": _partition_summary_digest(prepared.partition_summary),
+            "prepared_partition_summary_prepare_validation": dict(prepared.prepare_validation),
+            "prepared_partition_summary_default_route_promoted": False,
+            "partition_convergence_hybrid_promoted": False,
+            "native_abi_added": False,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "app_specific_engine_logic_allowed": False,
+            "automatic_partner_selection_allowed": False,
+            "hidden_dispatch_allowed": False,
+            "claim_boundary": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY,
+        }
+    )
+    return {"columns": result["columns"], "metadata": metadata}
+
+
+def prepare_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
+    point_rows,
+    *,
+    radius: float,
+    cell_factor: float = 0.125,
+    pair_capacity: int | None = None,
+    pair_enumeration: str = "device_bounded_offsets",
+    validate_summary_same_contract: bool = False,
+) -> V28PreparedFixedRadiusPartitionConvergenceSummaryCupyPreview3D:
+    """Build a reusable explicit CuPy preview handle for partition-summary columns."""
+
+    raw_rows = tuple(point_rows)
+    summary = build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
+        raw_rows,
+        radius=radius,
+        cell_factor=cell_factor,
+        pair_capacity=pair_capacity,
+        pair_enumeration=pair_enumeration,
+    )
+    if validate_summary_same_contract:
+        prepare_validation = validate_v2_8_fixed_radius_partition_convergence_summary_same_contract_3d(
+            raw_rows,
+            radius=radius,
+            cell_factor=cell_factor,
+            candidate=summary,
+            float_abs_tol=1.0e-5,
+        )
+        if prepare_validation["status"] != "accept":
+            raise ValueError(f"partition summary validation failed: {prepare_validation['errors']}")
+    else:
+        prepare_validation = _skipped_partition_summary_prepare_validation(summary)
+    return V28PreparedFixedRadiusPartitionConvergenceSummaryCupyPreview3D(
+        point_rows=raw_rows,
+        radius=float(radius),
+        cell_factor=float(cell_factor),
+        pair_capacity=pair_capacity,
+        pair_enumeration=str(pair_enumeration),
+        partition_summary=summary,
+        prepare_validation=prepare_validation,
+    )
+
+
+def run_v2_8_fixed_radius_partition_convergence_component_labels_cupy_prepared_preview_3d(
+    prepared: V28PreparedFixedRadiusPartitionConvergenceSummaryCupyPreview3D,
+    *,
+    partition_union_execution: str = "cupy_safe_full",
+    ambiguous_union_execution: str = "cupy_partition_points",
+    validate_summary_same_contract: bool = False,
+    validate_against_all_pairs: bool = False,
+) -> dict[str, Any]:
+    return prepared.run_component_labels(
+        partition_union_execution=partition_union_execution,
+        ambiguous_union_execution=ambiguous_union_execution,
+        validate_summary_same_contract=validate_summary_same_contract,
+        validate_against_all_pairs=validate_against_all_pairs,
+    )
+
+
+def run_v2_8_fixed_radius_partition_convergence_component_signature_cupy_prepared_preview_3d(
+    prepared: V28PreparedFixedRadiusPartitionConvergenceSummaryCupyPreview3D,
+    *,
+    ambiguous_union_execution: str = "cupy_partition_points",
+    validate_summary_same_contract: bool = False,
+    validate_against_component_labels: bool = False,
+) -> dict[str, Any]:
+    return prepared.run_component_signature(
+        ambiguous_union_execution=ambiguous_union_execution,
+        validate_summary_same_contract=validate_summary_same_contract,
+        validate_against_component_labels=validate_against_component_labels,
+    )
+
+
 def build_v2_8_fixed_radius_partition_convergence_summary_numba_preview_3d(
     point_rows,
     *,
@@ -2546,16 +2810,18 @@ def _hybrid_runtime_status_metadata() -> dict[str, Any]:
         "planner_status": "candidate_requires_native_implementation",
         "planner_status_meaning": (
             "No promoted prepared/native/default route exists for partition_convergence_hybrid. "
-            "Executable CuPy and Numba previews exist separately and remain candidate evidence only."
+            "Executable CuPy and Numba previews exist separately, and the CuPy prepared-summary "
+            "preview remains candidate evidence only."
         ),
         "executable_preview_available": True,
-        "prepared_front_door_runtime_executable": False,
+        "prepared_front_door_runtime_executable": True,
+        "prepared_front_door_runtime_status": "explicit_cupy_preview_not_promoted",
         "default_route_promoted": False,
         "partition_convergence_hybrid_promoted": False,
-        "latest_preview_evidence_goals": ("Goal4040", "Goal4041"),
+        "latest_preview_evidence_goals": ("Goal4040", "Goal4041", "Goal4062"),
         "promotion_blockers": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_HYBRID_PROMOTION_BLOCKERS,
         "next_engineering_target": (
-            "fused resident component-label continuation or prepared/native partition handle"
+            "fused resident component-label continuation or promoted native partition handle"
         ),
     }
 
@@ -2635,6 +2901,7 @@ __all__ = [
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_REJECTED_DEFAULT_STRATEGIES",
     "V28FixedRadiusGraphComponentPlan",
     "V28PreparedFixedRadiusGraphComponentContinuation3D",
+    "V28PreparedFixedRadiusPartitionConvergenceSummaryCupyPreview3D",
     "build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_3d",
     "build_v2_8_fixed_radius_partition_convergence_component_labels_reference_3d",
     "build_v2_8_fixed_radius_partition_convergence_component_signature_cupy_preview_3d",
@@ -2648,5 +2915,8 @@ __all__ = [
     "make_v2_8_fixed_radius_partition_convergence_summary_typed_stream_contract",
     "plan_v2_8_fixed_radius_graph_component_continuation",
     "prepare_v2_8_fixed_radius_graph_component_continuation_3d",
+    "prepare_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d",
+    "run_v2_8_fixed_radius_partition_convergence_component_labels_cupy_prepared_preview_3d",
+    "run_v2_8_fixed_radius_partition_convergence_component_signature_cupy_prepared_preview_3d",
     "validate_v2_8_fixed_radius_partition_convergence_summary_same_contract_3d",
 ]

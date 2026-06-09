@@ -17,13 +17,14 @@ class Goal4044PartitionCandidateRuntimeStatusMetadataTest(unittest.TestCase):
 
         self.assertEqual(status["planner_status"], "candidate_requires_native_implementation")
         self.assertTrue(status["executable_preview_available"])
-        self.assertFalse(status["prepared_front_door_runtime_executable"])
+        self.assertTrue(status["prepared_front_door_runtime_executable"])
+        self.assertEqual(status["prepared_front_door_runtime_status"], "explicit_cupy_preview_not_promoted")
         self.assertFalse(status["default_route_promoted"])
         self.assertFalse(status["partition_convergence_hybrid_promoted"])
-        self.assertEqual(status["latest_preview_evidence_goals"], ("Goal4040", "Goal4041"))
+        self.assertEqual(status["latest_preview_evidence_goals"], ("Goal4040", "Goal4041", "Goal4062"))
         self.assertIn("Goal4041_mixed_timing_not_universal_speed_win", status["promotion_blockers"])
         self.assertIn("host_compact_label_materialization_breaks_resident_output", status["promotion_blockers"])
-        self.assertIn("prepared/native partition handle", status["next_engineering_target"])
+        self.assertIn("promoted native partition handle", status["next_engineering_target"])
 
     def test_candidate_plan_carries_same_runtime_status(self) -> None:
         plan = rt.plan_v2_8_fixed_radius_graph_component_continuation(
@@ -50,11 +51,12 @@ class Goal4044PartitionCandidateRuntimeStatusMetadataTest(unittest.TestCase):
         text = REPORT.read_text(encoding="utf-8")
         for fragment in (
             "executable_preview_available: true",
-            "prepared_front_door_runtime_executable: false",
+            "prepared_front_door_runtime_executable: true",
+            "prepared_front_door_runtime_status: explicit_cupy_preview_not_promoted",
             "default_route_promoted: false",
             "Goal4041_mixed_timing_not_universal_speed_win",
             "host_compact_label_materialization_breaks_resident_output",
-            "prepared/native partition handle",
+            "promoted native partition handle",
             "does not promote",
             "automatic partner selection",
             "true-zero-copy",
