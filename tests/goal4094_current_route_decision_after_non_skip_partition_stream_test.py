@@ -14,7 +14,7 @@ class Goal4094CurrentRouteDecisionAfterNonSkipPartitionStreamTest(unittest.TestC
     def test_rtdbscan_route_records_goal4093_without_promoting_it(self) -> None:
         route = rt.explain_current_benchmark_route("rt_dbscan")
 
-        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4106.v1", route["version"])
+        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4110.v1", route["version"])
         self.assertIn("unblocked RTDL/OptiX grouped stream plus Numba", route["current_reader_decision"])
         self.assertIn("Goal4093", route["current_reader_decision"])
         self.assertIn("1.5x-2.6x fewer rows", route["current_reader_decision"])
@@ -30,6 +30,7 @@ class Goal4094CurrentRouteDecisionAfterNonSkipPartitionStreamTest(unittest.TestC
         self.assertIn("Goal4093", route["evidence_refs"])
         self.assertIn("Goal4096", route["evidence_refs"])
         self.assertIn("Goal4105", route["evidence_refs"])
+        self.assertIn("Goal4109", route["evidence_refs"])
         self.assertEqual("numba", route["partner_policy"])
         self.assertFalse(route["automatic_partner_selection_authorized"])
         self.assertFalse(route["release_authorized"])
@@ -41,7 +42,7 @@ class Goal4094CurrentRouteDecisionAfterNonSkipPartitionStreamTest(unittest.TestC
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual((), validation["errors"])
-        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4106.v1", summary["version"])
+        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4110.v1", summary["version"])
         self.assertFalse(summary["automatic_partner_selection_authorized"])
         self.assertFalse(summary["public_speedup_claim_authorized"])
         self.assertFalse(summary["true_zero_copy_claim_authorized"])

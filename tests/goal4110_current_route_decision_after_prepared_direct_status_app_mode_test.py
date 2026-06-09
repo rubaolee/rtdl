@@ -7,31 +7,29 @@ import rtdsl as rt
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-REPORT = ROOT / "docs" / "reports" / "goal4106_current_route_decision_after_direct_status_comparison_2026-06-09.md"
+REPORT = ROOT / "docs" / "reports" / "goal4110_current_route_decision_after_prepared_direct_status_app_mode_2026-06-09.md"
 
 
-class Goal4106CurrentRouteDecisionAfterDirectStatusComparisonTest(unittest.TestCase):
-    def test_rtdbscan_route_records_direct_status_without_promoting_it(self) -> None:
+class Goal4110CurrentRouteDecisionAfterPreparedDirectStatusAppModeTest(unittest.TestCase):
+    def test_rtdbscan_route_records_prepared_direct_status_without_universal_promotion(self) -> None:
         route = rt.explain_current_benchmark_route("rt_dbscan")
 
         self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4110.v1", route["version"])
-        self.assertIn("Goal4104", route["current_reader_decision"])
-        self.assertIn("1.239x", route["current_reader_decision"])
-        self.assertIn("1.508x", route["current_reader_decision"])
-        self.assertIn("1.311x", route["current_reader_decision"])
-        self.assertIn("Goal4105", route["current_reader_decision"])
-        self.assertIn("not route-promotable", route["current_reader_decision"])
-        self.assertIn("0.475x", route["current_reader_decision"])
-        self.assertIn("0.380x", route["current_reader_decision"])
-        self.assertIn("0.206x", route["current_reader_decision"])
+        self.assertIn("Goal4108", route["current_reader_decision"])
+        self.assertIn("1.802x", route["current_reader_decision"])
+        self.assertIn("2.465x", route["current_reader_decision"])
+        self.assertIn("1.488x", route["current_reader_decision"])
+        self.assertIn("Goal4109", route["current_reader_decision"])
+        self.assertIn("partner_cupy_prepared_direct_status_union_component_signature_3d", route["current_reader_decision"])
+        self.assertIn("one-shot default-route promotion blocked", route["current_reader_decision"])
+        self.assertIn("one-shot default", route["user_choice_guidance"])
+        self.assertIn("repeated component-signature queries", route["user_choice_guidance"])
         self.assertIn(
-            "partition_convergence_hybrid direct-status app-level promotion after Goal4105 setup-boundary comparison",
+            "partition_convergence_hybrid universal default promotion after Goal4108 prepared replay and Goal4109 app smoke",
             route["rejected_or_unpromoted_candidates"],
         )
         self.assertIn("route-level repeated prepared direct-status app packet", route["next_runtime_action"])
         self.assertIn("explicit reuse threshold", route["next_runtime_action"])
-        self.assertIn("Goal4104", route["evidence_refs"])
-        self.assertIn("Goal4105", route["evidence_refs"])
         self.assertIn("Goal4108", route["evidence_refs"])
         self.assertIn("Goal4109", route["evidence_refs"])
         self.assertFalse(route["automatic_partner_selection_authorized"])
@@ -53,20 +51,19 @@ class Goal4106CurrentRouteDecisionAfterDirectStatusComparisonTest(unittest.TestC
         self.assertFalse(summary["broad_rt_core_claim_authorized"])
         self.assertFalse(summary["paper_reproduction_claim_authorized"])
 
-    def test_report_documents_goal4104_goal4105_route_boundary(self) -> None:
+    def test_report_documents_split_guidance_and_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")
         for fragment in [
-            "rtdl.v2_10.current_benchmark_route_decisions.goal4106.v1",
-            "current route remains",
-            "1.239x",
-            "1.508x",
-            "1.311x",
-            "0.475x",
-            "0.380x",
-            "0.206x",
-            "not route-promotable",
-            "prepared/resident direct-status fixed-radius grouped-union handle",
+            "rtdl.v2_10.current_benchmark_route_decisions.goal4110.v1",
+            "one-shot default route",
+            "repeated component-signature route",
+            "1.802x",
+            "2.465x",
+            "1.488x",
+            "0.560136",
+            "route-level repeated prepared direct-status app packet",
             "does not promote",
+            "does not promote `partition_convergence_hybrid`",
             "does not authorize release action",
         ]:
             self.assertIn(fragment, report)

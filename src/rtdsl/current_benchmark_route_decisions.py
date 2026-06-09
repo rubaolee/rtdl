@@ -6,14 +6,15 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4106.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4110.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
-    "Goal4106 refreshes current benchmark route decisions after the Goal4074-4105 "
+    "Goal4110 refreshes current benchmark route decisions after the Goal4074-4109 "
     "RT-DBSCAN grouped-union bottleneck, partition-summary feasibility, host-work "
     "skip, non-skip active pair stream, device partition-key decode, and unordered "
     "non-skip stream chain, plus direct device status union and route-level direct-status "
-    "comparison. It is advisory guidance only: users choose partners "
+    "comparison, prepared direct-status replay, and explicit app-mode smoke. It is "
+    "advisory guidance only: users choose partners "
     "explicitly. It does not authorize release action, public speedup wording, "
     "whole-app acceleration wording, broad RT-core wording, paper-reproduction "
     "wording, true-zero-copy wording, automatic partner selection, AMD performance "
@@ -187,12 +188,22 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "therefore identify the next serious target as a prepared/resident direct-status "
             "fixed-radius grouped-union primitive that reduces candidate enumeration, root-read "
             "traffic, repeated scan work, setup/packing work, and full partition-pair "
-            "materialization together."
+            "materialization together. Goal4108 adds that prepared direct-status handle and "
+            "records prepared replay wins of 1.802x, 2.465x, and 1.488x over one-shot direct "
+            "status, plus 3.752x, 4.648x, and 1.207x over the current route under a resident "
+            "reuse boundary. Goal4109 exposes the path as the explicit app mode "
+            "partner_cupy_prepared_direct_status_union_component_signature_3d, while keeping "
+            "one-shot default-route promotion blocked because the app CLI smoke is still "
+            "prepare-dominated."
         ),
         primary_route="RTDL/OptiX fixed-radius grouped stream with Numba component/signature continuation",
         partner_policy="numba",
         primitive_contract="fixed-radius count-threshold device columns plus grouped stream component labels",
-        user_choice_guidance="Use Numba for no-RawKernel custom labeling; keep blocked mode off until it wins.",
+        user_choice_guidance=(
+            "Use Numba grouped-stream for the current one-shot default. Choose the explicit "
+            "CuPy prepared direct-status app mode only when the workload reuses the same "
+            "point/partition columns for repeated component-signature queries."
+        ),
         rejected_or_unpromoted_candidates=(
             "blocked grouped stream candidate from Goal3936",
             "partition_convergence_hybrid default promotion after Goal4041 mixed timing",
@@ -203,16 +214,17 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "partition_convergence_hybrid default promotion after Goal4096 device key decode improvement",
             "partition_convergence_hybrid unordered non-skip default promotion after Goal4100 order-insensitive stream evidence",
             "partition_convergence_hybrid direct-status app-level promotion after Goal4105 setup-boundary comparison",
+            "partition_convergence_hybrid universal default promotion after Goal4108 prepared replay and Goal4109 app smoke",
         ),
         next_runtime_action=(
-            "pursue a prepared/resident direct-status fixed-radius grouped-union handle; "
-            "Goal4088, Goal4093, Goal4096, Goal4100, Goal4104, and Goal4105 prove "
+            "measure a route-level repeated prepared direct-status app packet and define an explicit reuse threshold; "
+            "Goal4088, Goal4093, Goal4096, Goal4100, Goal4104, Goal4105, Goal4108, and Goal4109 prove "
             "producer-side cleanup, active-pair materialization reduction, device-resident "
             "key decoding, explicit unordered set-stream contracts, and direct status "
-            "consumption matter, but app-level success now requires resident column preparation, "
-            "same-contract correctness, lower candidate/root/repeated-scan work, no ngsim_dense "
-            "regression, and production timing that beats the current grouped-stream Numba route "
-            "before any default-route reconsideration"
+            "consumption matter, but one-shot default promotion still requires an app-level route "
+            "packet with same-contract correctness, lower candidate/root/repeated-scan work, "
+            "no ngsim_dense regression, and production timing that beats the current grouped-stream "
+            "Numba route outside a prepared-reuse-only boundary"
         ),
         evidence_refs=(
             "Goal3758",
@@ -241,6 +253,8 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4100",
             "Goal4104",
             "Goal4105",
+            "Goal4108",
+            "Goal4109",
         ),
         pod_needed_next=False,
     ),

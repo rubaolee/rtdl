@@ -19,7 +19,7 @@ class Goal4083CurrentRouteDecisionAfterGroupedUnionPlanTest(unittest.TestCase):
         self.assertIn("Goal4079-4105", route["current_reader_decision"])
         self.assertIn("candidate enumeration", route["current_reader_decision"])
         self.assertIn("root-read", route["current_reader_decision"])
-        self.assertIn("prepared/resident direct-status fixed-radius grouped-union handle", route["next_runtime_action"])
+        self.assertIn("route-level repeated prepared direct-status app packet", route["next_runtime_action"])
         self.assertIn("production timing that beats the current grouped-stream Numba route", route["next_runtime_action"])
         self.assertIn("Goal4071", route["evidence_refs"])
         self.assertIn("Goal4079", route["evidence_refs"])
@@ -28,6 +28,7 @@ class Goal4083CurrentRouteDecisionAfterGroupedUnionPlanTest(unittest.TestCase):
         self.assertIn("Goal4093", route["evidence_refs"])
         self.assertIn("Goal4096", route["evidence_refs"])
         self.assertIn("Goal4105", route["evidence_refs"])
+        self.assertIn("Goal4109", route["evidence_refs"])
         self.assertFalse(route["automatic_partner_selection_authorized"])
         self.assertFalse(route["release_authorized"])
 
