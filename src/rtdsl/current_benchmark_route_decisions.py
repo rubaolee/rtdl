@@ -6,16 +6,16 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4127.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4131.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
-    "Goal4127 refreshes current benchmark route decisions after the Goal4074-4126 "
+    "Goal4131 refreshes current benchmark route decisions after the Goal4074-4130 "
     "RT-DBSCAN grouped-union bottleneck, partition-summary feasibility, host-work "
     "skip, non-skip active pair stream, device partition-key decode, and unordered "
     "non-skip stream chain, plus direct device status union and route-level direct-status "
     "comparison, prepared direct-status replay, explicit app-mode smoke, shape-dependent "
     "repeated app-route timing, explicit partition-cell-factor route sweeps, a route-choice "
-    "advisor, and 131k plus 262k scale probes. It is "
+    "advisor, 131k plus 262k scale probes, and a warmed one-shot route probe. It is "
     "advisory guidance only: users choose partners "
     "explicitly. It does not authorize release action, public speedup wording, "
     "whole-app acceleration wording, broad RT-core wording, paper-reproduction "
@@ -211,24 +211,28 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "road3d remains best at 0.25 for 1.545x, and ngsim_dense becomes best at "
             "0.25 for 1.399x. Goal4126 extends the scale evidence to 262k and keeps "
             "0.25 best on clustered3d, road3d, and ngsim_dense with 3.118x, 1.428x, "
-            "and 1.642x replay speedups. This is still an explicit route choice, "
-            "not automatic tuning."
+            "and 1.642x replay speedups. Goal4130 then checks the warmed one-shot "
+            "prepare-plus-one-measured-run boundary and shows the tuned direct-status "
+            "route also wins all tested profiles/scales, with one-shot total speedups "
+            "from 1.819x to 3.410x. This is still an explicit route choice, not "
+            "automatic tuning."
         ),
         primary_route=(
-            "mixed explicit RT-DBSCAN route: grouped-stream Numba for one-shot/default, "
-            "prepared direct-status CuPy with user-selected partition cell factor for repeated component signatures"
+            "mixed explicit RT-DBSCAN route: prepared direct-status CuPy with user-selected "
+            "partition cell factor for tested one-shot and repeated component signatures; "
+            "grouped-stream Numba remains the conservative fallback/reference route"
         ),
         partner_policy="mixed_explicit_user_choice",
         primitive_contract="fixed-radius count-threshold device columns plus grouped stream component labels",
         user_choice_guidance=(
-            "Use Numba grouped-stream for the current one-shot default. Choose the explicit "
-            "CuPy prepared direct-status app mode when the workload reuses the same "
-            "point/partition columns for repeated component-signature queries, and set "
-            "`partition_cell_factor` explicitly from tested evidence. Use 0.25 for clustered/road-like "
-            "profiles in the tested 65k and 131k packets. For dense NGSIM-like profiles, use "
-            "the route advisor or scale-specific evidence: 0.5 at 65k and 0.25 at "
-            "131k/262k. "
-            "Do not auto-select the factor."
+            "Use the advisory route explainer before choosing. For tested one-shot and repeated "
+            "component-signature workloads, choose the explicit CuPy prepared direct-status app "
+            "mode when the user accepts that partner and factor choice; use grouped-stream Numba "
+            "as the conservative fallback/reference path. Set `partition_cell_factor` explicitly "
+            "from tested evidence. Use 0.25 for clustered/road-like profiles in the tested "
+            "65k/131k/262k packets. For dense NGSIM-like profiles, use the route advisor or "
+            "scale-specific evidence: 0.5 at 65k and 0.25 at 131k/262k. Do not auto-select "
+            "the partner, route, or factor."
         ),
         rejected_or_unpromoted_candidates=(
             "blocked grouped stream candidate from Goal3936",
@@ -243,12 +247,13 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "partition_convergence_hybrid universal default promotion after Goal4108 prepared replay and Goal4109 app smoke",
             "partition_convergence_hybrid universal default promotion after Goal4114 shape-dependent repeated app-route timing",
             "automatic partition-cell-factor tuning after Goal4117 explicit factor sweep",
+            "automatic one-shot route promotion after Goal4130 warmed one-shot evidence",
         ),
         next_runtime_action=(
             "keep the user-visible profile/reuse advisor scale-aware and continue with either one-shot "
             "prepare-cost reduction or broader profile coverage beyond the current 65k/131k/262k packet. "
             "Goal4088, Goal4093, Goal4096, Goal4100, Goal4104, Goal4105, Goal4108, Goal4109, "
-            "Goal4114, Goal4116, Goal4117, Goal4121, Goal4122, and Goal4126 prove "
+            "Goal4114, Goal4116, Goal4117, Goal4121, Goal4122, Goal4126, and Goal4130 prove "
             "producer-side cleanup, active-pair materialization reduction, device-resident "
             "key decoding, explicit unordered set-stream contracts, and direct status "
             "consumption matter, but hidden factor selection and universal default promotion remain blocked"
@@ -288,6 +293,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4121",
             "Goal4122",
             "Goal4126",
+            "Goal4130",
         ),
         pod_needed_next=False,
     ),

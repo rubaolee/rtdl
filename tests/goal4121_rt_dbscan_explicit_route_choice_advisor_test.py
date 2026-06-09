@@ -47,7 +47,7 @@ class Goal4121RtDbscanExplicitRouteChoiceAdvisorTest(unittest.TestCase):
                 self.assertFalse(packet["release_authorized"])
                 self.assertFalse(packet["public_speedup_claim_authorized"])
 
-    def test_one_shot_keeps_grouped_stream_numba_without_direct_factor(self) -> None:
+    def test_one_shot_exposes_direct_status_option_without_dispatch(self) -> None:
         packet = explain_rt_dbscan_explicit_route_choice(
             "ngsim_dense",
             repeated_component_signature=False,
@@ -55,9 +55,12 @@ class Goal4121RtDbscanExplicitRouteChoiceAdvisorTest(unittest.TestCase):
         )
         first = packet["options"][0]
 
-        self.assertEqual(RT_DBSCAN_GROUPED_STREAM_NUMBA_APP_MODE, first["mode"])
-        self.assertEqual("numba", first["partner"])
-        self.assertIsNone(first["partition_cell_factor"])
+        self.assertEqual(RT_DBSCAN_DIRECT_STATUS_APP_MODE, first["mode"])
+        self.assertEqual("cupy", first["partner"])
+        self.assertEqual(0.5, first["partition_cell_factor"])
+        self.assertGreater(first["one_shot_total_speedup_vs_current"], 1.8)
+        self.assertIn("Goal4130", first["evidence_refs"])
+        self.assertEqual(RT_DBSCAN_GROUPED_STREAM_NUMBA_APP_MODE, packet["options"][-1]["mode"])
         self.assertFalse(packet["automatic_dispatch_authorized"])
         self.assertFalse(packet["automatic_partition_cell_factor_selection_authorized"])
 
