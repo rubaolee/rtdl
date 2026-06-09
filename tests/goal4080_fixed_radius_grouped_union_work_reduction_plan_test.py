@@ -24,7 +24,7 @@ class Goal4080FixedRadiusGroupedUnionWorkReductionPlanTest(unittest.TestCase):
         for fragment in [
             "Same component-size signature as the current grouped-stream route",
             "Beat the current recommended route",
-            "Demonstrate lower candidate/root work than Goal4079",
+            "Demonstrate at least 50% lower candidate hits or root calls than Goal4079",
             "Fail closed on overflow",
             "production timing, not telemetry timing",
         ]:

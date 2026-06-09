@@ -74,8 +74,9 @@ bars pass:
 | App-agnostic boundary | No app-shaped native ABI, no DBSCAN vocabulary in native/core runtime symbols, no hidden dispatch, no automatic partner selection. |
 | Correctness | Same component-size signature as the current grouped-stream route on `clustered3d`, `road3d`, and `ngsim_dense`; label equivalence where label materialization is requested. |
 | Completeness | Fail closed on overflow, incomplete candidate coverage, unsupported partner/device, or stale partition metadata. |
-| Performance | Beat the current recommended route on at least `clustered3d_65536` and `road3d_65536` in production timing, not telemetry timing. |
-| Work reduction | Demonstrate lower candidate/root work than Goal4079 for the rows it claims to improve. |
+| Performance | Beat the current recommended route on at least `clustered3d_65536` and `road3d_65536` in production timing, not telemetry timing; record `ngsim_dense_65536` and block promotion on a material regression there. |
+| Partition overhead | Record partition-build elapsed time separately as `partition_summary_build_sec` and include it in net production-route timing. |
+| Work reduction | Demonstrate at least 50% lower candidate hits or root calls than Goal4079 on every row it claims to improve. Smaller reductions may remain diagnostic but cannot promote the candidate. |
 | Traceability | Artifact must include source commit, GPU, OptiX library path, route flags, counters, stdout, and all claim-boundary booleans. |
 | Claim discipline | No release, public speedup, paper reproduction, broad RT-core, whole-app acceleration, true-zero-copy, or default-route claim until external consensus. |
 
@@ -93,8 +94,9 @@ bars pass:
 4. **Goal4084 ambiguous RT traversal route:** restrict RT traversal to
    ambiguous partition ranges while preserving exactness.
 5. **Goal4085 current-route comparison:** compare against the accepted
-   grouped-stream Numba route at 65K and larger profiles, with correctness and
-   work counters.
+   grouped-stream Numba route at 65K and larger profiles, including
+   `ngsim_dense_65536`, with correctness, partition-build timing, and work
+   counters.
 
 If any step cannot preserve exactness or app-agnostic symbols, the candidate
 must stay rejected or deferred.
