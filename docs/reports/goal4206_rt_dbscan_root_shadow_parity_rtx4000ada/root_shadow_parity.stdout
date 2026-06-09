@@ -1,0 +1,55 @@
+[goal4202] running adversarial_root_shadow_1d
+{
+  "cases": [
+    {
+      "all_policies_match_reference": true,
+      "candidate_pair_count": 6,
+      "component_threshold": 3,
+      "dataset": "adversarial_root_shadow_1d",
+      "default_matches_two_pass_labels": true,
+      "point_count": 5,
+      "policies": {
+        "lowest_candidate_then_root": {
+          "matches_reference_labels": true,
+          "metadata": {
+            "public_speedup_claim_authorized": false,
+            "rt_core_accelerated": true,
+            "true_zero_copy_claim_authorized": false
+          },
+          "mismatch_count": 0,
+          "native_boundary_assignment_pass_count": 1,
+          "native_boundary_assignment_policy": "lowest_candidate_then_root",
+          "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs"
+        },
+        "lowest_component_root_two_pass": {
+          "matches_reference_labels": true,
+          "metadata": {
+            "public_speedup_claim_authorized": false,
+            "rt_core_accelerated": true,
+            "true_zero_copy_claim_authorized": false
+          },
+          "mismatch_count": 0,
+          "native_boundary_assignment_pass_count": 2,
+          "native_boundary_assignment_policy": "lowest_component_root_two_pass",
+          "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs"
+        }
+      },
+      "predicate_true_count": 4,
+      "public_speedup_claim_authorized": false,
+      "radius": 1.01,
+      "reference_component_count": 1,
+      "reference_component_sizes": [
+        5
+      ],
+      "route_promotion_authorized": false,
+      "true_zero_copy_claim_authorized": false
+    }
+  ],
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "route_promotion_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "commit": "ff072bbf",
+  "schema": "rtdl.goal4202.rt_dbscan_single_pass_reference_parity.v1"
+}
