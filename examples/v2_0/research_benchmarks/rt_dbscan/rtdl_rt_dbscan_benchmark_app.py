@@ -272,6 +272,7 @@ def explain_rt_dbscan_explicit_route_choice(
                 "route_promotion_authorized": False,
                 "evidence_refs": (
                     "Goal4172",
+                    "Goal4173",
                 ),
             }
             direct_option = {
