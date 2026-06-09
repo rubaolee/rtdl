@@ -84,27 +84,63 @@ def _estimated_directed_adjacency_bytes(point_count: int, directed_edges: int) -
 def plan_rt_dbscan_execution(dataset: str, point_count: int) -> dict[str, object]:
     """Return an explicit benchmark-app plan from the current reviewed evidence."""
     point_count = int(point_count)
+    current_route_advisor = None
     if dataset == "tiny":
         selected_mode = "cpu_reference"
         reason = "tiny correctness fixture; no GPU performance claim"
     elif dataset == "ngsim_dense":
         selected_mode = "partner_cupy_prepared_grid_components_3d"
         reason = "Goal2425 showed compact ngsim_dense rows favor the prepared pure-CuPy continuation through 262k"
+        current_route_advisor = explain_rt_dbscan_explicit_route_choice(
+            dataset,
+            repeated_component_signature=False,
+            point_count=point_count,
+        )
     elif dataset == "road3d" and point_count < 524288:
         selected_mode = "partner_cupy_prepared_grid_components_3d"
         reason = "Goal2425 showed road3d favors the prepared pure-CuPy continuation below the 524k crossover"
+        current_route_advisor = explain_rt_dbscan_explicit_route_choice(
+            dataset,
+            repeated_component_signature=False,
+            point_count=point_count,
+        )
     elif dataset == "clustered3d" and point_count < 65536:
         selected_mode = "partner_cupy_prepared_grid_components_3d"
         reason = "Goal2425 showed clustered3d needs at least the 65k scale before prepared RT wins over prepared pure CuPy"
+        current_route_advisor = explain_rt_dbscan_explicit_route_choice(
+            dataset,
+            repeated_component_signature=False,
+            point_count=point_count,
+        )
     else:
         selected_mode = "optix_rt_core_flags_cupy_prepared_grid_components_3d"
         reason = "Goal2425 showed prepared RT-count plus prepared CuPy grid wins for this measured scale/shape"
+        current_route_advisor = explain_rt_dbscan_explicit_route_choice(
+            dataset,
+            repeated_component_signature=False,
+            point_count=point_count,
+        )
+    current_route_first_option = None
+    if current_route_advisor is not None and current_route_advisor["options"]:
+        current_route_first_option = current_route_advisor["options"][0]
     return {
         "adapter": "plan_rt_dbscan_execution",
         "selected_mode": selected_mode,
         "reason": reason,
         "policy": "explicit_benchmark_plan_from_goal2425_prepared_fairness_evidence",
+        "legacy_plan_compatibility_mode": True,
+        "current_route_guidance_source": "explain_rt_dbscan_explicit_route_choice_goal4139",
+        "current_route_advisor": current_route_advisor,
+        "current_route_first_option": current_route_first_option,
+        "selected_mode_boundary": (
+            "planned_rt_dbscan remains a legacy compatibility execution mode from Goal2425. "
+            "Use current_route_advisor for current explicit user-selected route and factor guidance; "
+            "the legacy plan does not auto-select partition-cell factors from the advisor."
+        ),
         "not_hidden_dispatcher": True,
+        "hidden_dispatch_allowed": False,
+        "automatic_partner_selection_authorized": False,
+        "automatic_partition_cell_factor_selection_authorized": False,
         "release_claim_authorized": False,
         "paper_reproduction_claim_authorized": False,
     }
