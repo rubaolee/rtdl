@@ -986,11 +986,13 @@ def run_rt_dbscan_benchmark(
         "device_bounded_offsets",
         "device_count_then_emit",
         "device_count_then_emit_non_skip",
+        "device_count_then_emit_non_skip_unordered",
     }:
         raise ValueError(
             "partition_pair_enumeration must be 'mode_default', 'host', "
-            "'device_bounded_offsets', 'device_count_then_emit', or "
-            "'device_count_then_emit_non_skip'"
+            "'device_bounded_offsets', 'device_count_then_emit', "
+            "'device_count_then_emit_non_skip', or "
+            "'device_count_then_emit_non_skip_unordered'"
         )
     partition_pair_enumeration_kwargs = (
         {}
@@ -2075,6 +2077,7 @@ def main(argv: list[str] | None = None) -> int:
             "device_bounded_offsets",
             "device_count_then_emit",
             "device_count_then_emit_non_skip",
+            "device_count_then_emit_non_skip_unordered",
         ),
         default="mode_default",
         help=(

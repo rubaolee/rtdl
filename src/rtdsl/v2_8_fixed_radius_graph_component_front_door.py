@@ -1164,10 +1164,12 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
         "device_bounded_offsets",
         "device_count_then_emit",
         "device_count_then_emit_non_skip",
+        "device_count_then_emit_non_skip_unordered",
     }:
         raise ValueError(
             "pair_enumeration must be 'host', 'device_bounded_offsets', "
-            "'device_count_then_emit', or 'device_count_then_emit_non_skip'"
+            "'device_count_then_emit', 'device_count_then_emit_non_skip', "
+            "or 'device_count_then_emit_non_skip_unordered'"
         )
     cell_size = radius * cell_factor
     radius_sq = radius * radius
@@ -1295,7 +1297,11 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
             requested_capacity = int(pair_capacity)
         if requested_capacity <= 0:
             raise ValueError("pair_capacity must be positive when provided")
-        if pair_enumeration in {"device_count_then_emit", "device_count_then_emit_non_skip"}:
+        if pair_enumeration in {
+            "device_count_then_emit",
+            "device_count_then_emit_non_skip",
+            "device_count_then_emit_non_skip_unordered",
+        }:
             if pair_capacity is not None:
                 raise ValueError("pair_capacity is not supported for device count-then-emit modes")
             (
@@ -1322,8 +1328,12 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
                 radius_sq=radius_sq,
                 classification_tol=classification_tol,
                 emit_status_filter="non_skip"
-                if pair_enumeration == "device_count_then_emit_non_skip"
+                if pair_enumeration in {
+                    "device_count_then_emit_non_skip",
+                    "device_count_then_emit_non_skip_unordered",
+                }
                 else "all",
+                sort_pairs=pair_enumeration != "device_count_then_emit_non_skip_unordered",
             )
         else:
             left_ids, right_ids, statuses, pair_count, visible_pair_count, overflow = (
@@ -1412,23 +1422,39 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
                 "device_bounded_offsets",
                 "device_count_then_emit",
                 "device_count_then_emit_non_skip",
+                "device_count_then_emit_non_skip_unordered",
             },
             "device_pair_count_probe_used": pair_enumeration in {
                 "device_count_then_emit",
                 "device_count_then_emit_non_skip",
+                "device_count_then_emit_non_skip_unordered",
             },
             "pair_stream_filter": (
                 "non_skip_actionable_pairs"
-                if pair_enumeration == "device_count_then_emit_non_skip"
+                if pair_enumeration in {
+                    "device_count_then_emit_non_skip",
+                    "device_count_then_emit_non_skip_unordered",
+                }
                 else "all_partition_pairs"
             ),
-            "safe_skip_pairs_elided": pair_enumeration == "device_count_then_emit_non_skip",
+            "safe_skip_pairs_elided": pair_enumeration in {
+                "device_count_then_emit_non_skip",
+                "device_count_then_emit_non_skip_unordered",
+            },
+            "pair_order": (
+                "device_atomic_append_unordered"
+                if pair_enumeration == "device_count_then_emit_non_skip_unordered"
+                else "left_right_sorted"
+            ),
             "pair_enumeration": pair_enumeration,
             "pair_capacity_source": (
                 "caller_provided"
                 if pair_capacity is not None
                 else "device_exact_active_count"
-                if pair_enumeration == "device_count_then_emit_non_skip"
+                if pair_enumeration in {
+                    "device_count_then_emit_non_skip",
+                    "device_count_then_emit_non_skip_unordered",
+                }
                 else "device_exact_count"
                 if pair_enumeration == "device_count_then_emit"
                 else "device_upper_bound"
@@ -1470,6 +1496,7 @@ def _skipped_partition_summary_prepare_validation(summary: dict[str, Any]) -> di
         "status_counts": dict(summary_metadata["status_counts"]),
         "pair_stream_filter": summary_metadata.get("pair_stream_filter", "all_partition_pairs"),
         "safe_skip_pairs_elided": bool(summary_metadata.get("safe_skip_pairs_elided", False)),
+        "pair_order": summary_metadata.get("pair_order", "left_right_sorted"),
         "summary_same_contract_validation_skipped_for_prepared_timing": True,
     }
 
@@ -1491,6 +1518,7 @@ def _partition_summary_digest(summary: dict[str, Any]) -> dict[str, Any]:
         "pair_capacity_source": metadata["pair_capacity_source"],
         "pair_stream_filter": metadata.get("pair_stream_filter", "all_partition_pairs"),
         "safe_skip_pairs_elided": bool(metadata.get("safe_skip_pairs_elided", False)),
+        "pair_order": metadata.get("pair_order", "left_right_sorted"),
         "device_partition_columns_used": bool(metadata["device_partition_columns_used"]),
         "device_pair_enumeration_used": bool(metadata["device_pair_enumeration_used"]),
     }
@@ -1865,6 +1893,7 @@ def build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_
         "partition_summary_pair_capacity_source": summary["metadata"]["pair_capacity_source"],
         "partition_summary_pair_stream_filter": summary["metadata"].get("pair_stream_filter", "all_partition_pairs"),
         "partition_summary_safe_skip_pairs_elided": bool(summary["metadata"].get("safe_skip_pairs_elided", False)),
+        "partition_summary_pair_order": summary["metadata"].get("pair_order", "left_right_sorted"),
         "partition_union_execution": partition_union_execution,
         "ambiguous_union_execution": ambiguous_union_execution,
         "native_abi_added": False,
@@ -2149,6 +2178,7 @@ def build_v2_8_fixed_radius_partition_convergence_component_signature_cupy_previ
         "partition_summary_pair_capacity_source": summary["metadata"]["pair_capacity_source"],
         "partition_summary_pair_stream_filter": summary["metadata"].get("pair_stream_filter", "all_partition_pairs"),
         "partition_summary_safe_skip_pairs_elided": bool(summary["metadata"].get("safe_skip_pairs_elided", False)),
+        "partition_summary_pair_order": summary["metadata"].get("pair_order", "left_right_sorted"),
         "partition_union_execution": "cupy_safe_full",
         "ambiguous_union_execution": ambiguous_union_execution,
         "label_materialization": "component_size_signature_only",
@@ -2568,6 +2598,7 @@ def _cupy_partition_pair_status_device_bounded_offsets(
     classification_tol: float,
     pair_capacity: int,
     emit_status_filter: str = "all",
+    sort_pairs: bool = True,
 ):
     if emit_status_filter not in {"all", "non_skip"}:
         raise ValueError("emit_status_filter must be 'all' or 'non_skip'")
@@ -2721,7 +2752,7 @@ def _cupy_partition_pair_status_device_bounded_offsets(
     left = left_out[:visible]
     right = right_out[:visible]
     status = status_out[:visible]
-    if visible > 0:
+    if sort_pairs and visible > 0:
         sort_key = left.astype(cupy.uint64) * cupy.uint64(max(1, partition_count)) + right.astype(cupy.uint64)
         order = cupy.argsort(sort_key)
         left = left[order]
@@ -2747,6 +2778,7 @@ def _cupy_partition_pair_status_device_count_then_emit(
     radius_sq: float,
     classification_tol: float,
     emit_status_filter: str = "all",
+    sort_pairs: bool = True,
 ):
     _left, _right, _status, attempted, _visible, _overflow = (
         _cupy_partition_pair_status_device_bounded_offsets(
@@ -2766,6 +2798,7 @@ def _cupy_partition_pair_status_device_count_then_emit(
             classification_tol=classification_tol,
             pair_capacity=1,
             emit_status_filter=emit_status_filter,
+            sort_pairs=False,
         )
     )
     exact_capacity = max(1, int(attempted))
@@ -2787,6 +2820,7 @@ def _cupy_partition_pair_status_device_count_then_emit(
             classification_tol=classification_tol,
             pair_capacity=exact_capacity,
             emit_status_filter=emit_status_filter,
+            sort_pairs=sort_pairs,
         )
     )
     return left, right, status, pair_count, visible, overflow, exact_capacity
