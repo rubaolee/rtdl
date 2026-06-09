@@ -22,7 +22,7 @@ front doors, install the native/runtime prerequisites first:
 
 ```bash
 apt-get install -y libgeos-dev pkg-config libembree-dev
-python -m pip install numpy pillow imageio imageio-ffmpeg
+python -m pip install numpy pillow imageio imageio-ffmpeg  # Dependency install only; this does not install RTDL
 ```
 
 If system Python is externally managed, create a virtual environment and run

@@ -27,7 +27,7 @@ Linux/pod native smoke prerequisites:
 
 ```bash
 apt-get install -y libgeos-dev pkg-config libembree-dev
-python -m pip install numpy pillow imageio imageio-ffmpeg  # Note: package-install is unsupported
+python -m pip install numpy pillow imageio imageio-ffmpeg  # Dependency install only; this does not install RTDL
 ```
 
 Use a virtual environment if your Python distribution blocks system-wide

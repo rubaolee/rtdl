@@ -240,7 +240,7 @@ python examples\rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
 python examples\rtdl_knn_rows.py --backend cpu_python_reference
 ```
 
-Then move to the native CPU and accelerated backends that your machine
+Then move to the native CPU and configured RT backends that your machine
 supports:
 
 ```bash
