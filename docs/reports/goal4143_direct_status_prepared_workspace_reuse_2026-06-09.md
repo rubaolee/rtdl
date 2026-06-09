@@ -2,11 +2,11 @@
 
 Date: 2026-06-09
 
-Verdict: implementation-complete-pod-needed
+Verdict: superseded-by-goal4144-negative-pod-result
 
 ## Purpose
 
-Goal4143 attacks the remaining RT-DBSCAN direct-status replay overhead without
+Goal4143 tested an attack on the remaining RT-DBSCAN direct-status replay overhead without
 adding DBSCAN-specific engine logic.
 
 The prepared direct-status component-signature path already reuses point,
@@ -14,9 +14,9 @@ partition, and AABB columns. The replay helper still allocated parent and
 counter arrays for every component-signature run. Goal4143 moves those temporary
 arrays into the prepared handle and resets them with a generic device kernel.
 
-## Change
+## Candidate Change
 
-The prepared direct-status handle now owns reusable device workspaces:
+The candidate prepared direct-status handle owned reusable device workspaces:
 
 - `parents`
 - `changed`
@@ -30,8 +30,16 @@ The direct-status union helper accepts optional workspaces and uses
 `reset_direct_partition_status_workspaces_kernel` to reset parent identity and
 counters before each replay.
 
-The non-prepared direct-status helper remains available and uses the same reset
+The non-prepared direct-status helper remained available and used the same reset
 path with newly allocated arrays.
+
+## Supersession
+
+Goal4144 measured this candidate on the pod and rejected it as a performance
+default. Replay timing was essentially neutral and one-shot total timing got
+worse because workspace allocation moved into the prepare phase. The active
+runtime is therefore restored to the pre-Goal4143 allocation path while keeping
+the Goal4143/Goal4144 evidence as a documented negative probe.
 
 ## Boundary
 
@@ -41,4 +49,5 @@ ABI, hidden dispatch, automatic partner selection, automatic factor selection,
 release authorization, public speedup authorization, broad RT-core wording,
 paper-reproduction claims, AMD claims, or true-zero-copy claims.
 
-Pod timing is required before making any performance conclusion.
+Goal4144 provides the required pod timing. Do not promote prepared workspace
+reuse as the default direct-status route.

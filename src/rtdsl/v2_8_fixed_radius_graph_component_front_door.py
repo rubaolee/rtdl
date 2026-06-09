@@ -1750,7 +1750,7 @@ def _prepare_direct_status_union_runtime_columns_cupy_3d(
     *,
     radius: float,
     cell_factor: float,
-) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+) -> tuple[dict[str, Any], dict[str, Any]]:
     import cupy
 
     points = tuple(_point_xyz(row) for row in raw_rows)
@@ -1824,15 +1824,6 @@ def _prepare_direct_status_union_runtime_columns_cupy_3d(
         "partition_aabb_max_y64": aabb_max_y64,
         "partition_aabb_max_z64": aabb_max_z64,
     }
-    workspaces = {
-        "parents": cupy.empty((partition_count,), dtype=cupy.uint32),
-        "changed": cupy.zeros((1,), dtype=cupy.uint32),
-        "safe_skip_count": cupy.zeros((1,), dtype=cupy.uint32),
-        "safe_full_count": cupy.zeros((1,), dtype=cupy.uint32),
-        "ambiguous_count": cupy.zeros((1,), dtype=cupy.uint32),
-        "comparison_count": cupy.zeros((1,), dtype=cupy.uint32),
-        "positive_count": cupy.zeros((1,), dtype=cupy.uint32),
-    }
     metadata = {
         "reference": "fixed_radius_partition_convergence_direct_status_union_runtime_columns_cupy_preview_3d",
         "adapter": "prepare_fixed_radius_partition_convergence_direct_status_union_cupy_preview_3d",
@@ -1854,8 +1845,6 @@ def _prepare_direct_status_union_runtime_columns_cupy_3d(
         "near_pair_columns_materialized": False,
         "partition_pair_rows_materialized": False,
         "pair_materialization_avoided": True,
-        "prepared_direct_status_union_workspaces_preallocated": True,
-        "prepared_direct_status_union_workspace_columns": tuple(sorted(workspaces)),
         "runtime_executable": True,
         "native_abi_added": False,
         "release_authorized": False,
@@ -1869,7 +1858,7 @@ def _prepare_direct_status_union_runtime_columns_cupy_3d(
         "data_ptrs": _column_data_ptrs(columns),
         "claim_boundary": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY,
     }
-    return columns, workspaces, metadata
+    return columns, metadata
 
 
 def _run_direct_status_union_signature_from_prepared_columns_cupy_3d(
@@ -1879,7 +1868,6 @@ def _run_direct_status_union_signature_from_prepared_columns_cupy_3d(
     radius: float,
     cell_factor: float,
     max_iterations: int,
-    workspaces: dict[str, Any] | None = None,
 ) -> tuple[tuple[int, ...], dict[str, Any]]:
     import cupy
 
@@ -1917,7 +1905,6 @@ def _run_direct_status_union_signature_from_prepared_columns_cupy_3d(
         radius_sq=radius_sq,
         classification_tol=classification_tol,
         max_iterations=int(max_iterations),
-        workspaces=workspaces,
     )
     point_partition_ids = runtime_columns["point_partition_ids"]
     component_roots = partition_parents_device[point_partition_ids]
@@ -1941,7 +1928,6 @@ def _run_direct_status_union_signature_from_prepared_columns_cupy_3d(
         "partition_summary_materialized": False,
         "partition_structure_reused": True,
         "prepared_direct_status_runtime_columns_reused": True,
-        "prepared_direct_status_union_workspaces_reused": workspaces is not None,
         "point_coordinate_columns_reused": True,
         "near_pair_columns_materialized": False,
         "partition_pair_rows_materialized": False,
@@ -1984,7 +1970,6 @@ class V28PreparedFixedRadiusPartitionConvergenceDirectStatusUnionCupyPreview3D:
     radius: float
     cell_factor: float
     runtime_columns: dict[str, Any]
-    workspaces: dict[str, Any]
     prepare_metadata: dict[str, Any]
     closed: bool = False
     component_signature_runs: int = 0
@@ -2001,14 +1986,11 @@ class V28PreparedFixedRadiusPartitionConvergenceDirectStatusUnionCupyPreview3D:
             "prepared_direct_status_union_handle": True,
             "prepared_direct_status_union_partner": "cupy",
             "prepared_direct_status_union_runtime_executable": True,
-            "prepared_direct_status_union_workspaces_preallocated": True,
             "point_count": int(self.prepare_metadata["point_count"]),
             "partition_count": int(self.prepare_metadata["partition_count"]),
             "radius": self.radius,
             "cell_factor": self.cell_factor,
             "max_neighbor_offset": int(self.prepare_metadata["max_neighbor_offset"]),
-            "runtime_column_count": len(self.runtime_columns),
-            "workspace_column_count": len(self.workspaces),
             "prepare_metadata": dict(self.prepare_metadata),
             "component_signature_runs": self.component_signature_runs,
             "closed": self.closed,
@@ -2044,7 +2026,6 @@ class V28PreparedFixedRadiusPartitionConvergenceDirectStatusUnionCupyPreview3D:
             radius=self.radius,
             cell_factor=self.cell_factor,
             max_iterations=max_iterations,
-            workspaces=self.workspaces,
         )
         same_contract = None
         materialized_signature = None
@@ -2102,7 +2083,7 @@ def prepare_v2_8_fixed_radius_partition_convergence_direct_status_union_cupy_pre
     """Prepare reusable device columns for direct-status grouped union signatures."""
 
     raw_rows = tuple(point_rows)
-    runtime_columns, workspaces, prepare_metadata = _prepare_direct_status_union_runtime_columns_cupy_3d(
+    runtime_columns, prepare_metadata = _prepare_direct_status_union_runtime_columns_cupy_3d(
         raw_rows,
         radius=radius,
         cell_factor=cell_factor,
@@ -2112,7 +2093,6 @@ def prepare_v2_8_fixed_radius_partition_convergence_direct_status_union_cupy_pre
         radius=float(radius),
         cell_factor=float(cell_factor),
         runtime_columns=runtime_columns,
-        workspaces=workspaces,
         prepare_metadata=prepare_metadata,
     )
 
@@ -2894,7 +2874,6 @@ def _cupy_direct_partition_status_union_component_roots(
     radius_sq: float,
     classification_tol: float,
     max_iterations: int = 64,
-    workspaces: dict[str, Any] | None = None,
 ):
     union_kernel = cupy.RawKernel(
         r'''
@@ -3078,71 +3057,21 @@ def _cupy_direct_partition_status_union_component_roots(
         ''',
         "compress_direct_partition_parents_kernel",
     )
-    reset_kernel = cupy.RawKernel(
-        r'''
-        extern "C" __global__
-        void reset_direct_partition_status_workspaces_kernel(
-            unsigned int* parents,
-            unsigned int* changed,
-            unsigned int* safe_skip_count,
-            unsigned int* safe_full_count,
-            unsigned int* ambiguous_count,
-            unsigned int* comparison_count,
-            unsigned int* positive_count,
-            unsigned int partition_count)
-        {
-            const unsigned int idx = (unsigned int)(blockIdx.x * blockDim.x + threadIdx.x);
-            if (idx < partition_count) parents[idx] = idx;
-            if (idx == 0u) {
-                changed[0] = 0u;
-                safe_skip_count[0] = 0u;
-                safe_full_count[0] = 0u;
-                ambiguous_count[0] = 0u;
-                comparison_count[0] = 0u;
-                positive_count[0] = 0u;
-            }
-        }
-        ''',
-        "reset_direct_partition_status_workspaces_kernel",
-    )
     partition_count = int(partition_count)
     if partition_count <= 0:
         raise ValueError("partition_count must be positive")
-    if workspaces is None:
-        parents = cupy.empty((partition_count,), dtype=cupy.uint32)
-        changed = cupy.zeros((1,), dtype=cupy.uint32)
-        safe_skip_count = cupy.zeros((1,), dtype=cupy.uint32)
-        safe_full_count = cupy.zeros((1,), dtype=cupy.uint32)
-        ambiguous_count = cupy.zeros((1,), dtype=cupy.uint32)
-        comparison_count = cupy.zeros((1,), dtype=cupy.uint32)
-        positive_count = cupy.zeros((1,), dtype=cupy.uint32)
-    else:
-        parents = workspaces["parents"]
-        changed = workspaces["changed"]
-        safe_skip_count = workspaces["safe_skip_count"]
-        safe_full_count = workspaces["safe_full_count"]
-        ambiguous_count = workspaces["ambiguous_count"]
-        comparison_count = workspaces["comparison_count"]
-        positive_count = workspaces["positive_count"]
+    parents = cupy.arange(partition_count, dtype=cupy.uint32)
+    changed = cupy.zeros((1,), dtype=cupy.uint32)
+    safe_skip_count = cupy.zeros((1,), dtype=cupy.uint32)
+    safe_full_count = cupy.zeros((1,), dtype=cupy.uint32)
+    ambiguous_count = cupy.zeros((1,), dtype=cupy.uint32)
+    comparison_count = cupy.zeros((1,), dtype=cupy.uint32)
+    positive_count = cupy.zeros((1,), dtype=cupy.uint32)
     offset_count = (2 * int(max_offset) + 1) ** 3
     total = max(1, int(partition_count) * int(offset_count))
     threads = 256
     pair_blocks = ((total + threads - 1) // threads,)
     parent_blocks = (max(1, (partition_count + threads - 1) // threads),)
-    reset_kernel(
-        parent_blocks,
-        (threads,),
-        (
-            parents,
-            changed,
-            safe_skip_count,
-            safe_full_count,
-            ambiguous_count,
-            comparison_count,
-            positive_count,
-            cupy.uint32(partition_count),
-        ),
-    )
     iterations = 0
     for iteration in range(int(max_iterations)):
         changed.fill(0)
