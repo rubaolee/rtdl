@@ -1,0 +1,2372 @@
+{
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "route_promotion_authorized": false,
+    "whole_app_claim_authorized": false
+  },
+  "commit": "d25eff118d8590068c5aa0ead9c557240ae3a06c",
+  "goal": "Goal4165",
+  "gpu": "NVIDIA RTX 4000 Ada Generation, 550.127.05",
+  "purpose": "Probe whether grouped-stream policy variants explain mixed predicate direct-status signature gaps.",
+  "rows": [
+    {
+      "candidate_canonical_matches": {
+        "grouped_stream_numba_direct_side_effect": false,
+        "grouped_stream_numba_same_root_false": true,
+        "grouped_stream_numba_same_root_true": true
+      },
+      "candidate_matches": {
+        "grouped_stream_numba_direct_side_effect": false,
+        "grouped_stream_numba_same_root_false": true,
+        "grouped_stream_numba_same_root_true": true
+      },
+      "case": "road_sparse_many_noise",
+      "dataset": "road3d",
+      "min_neighbors": 16,
+      "point_count": 65536,
+      "radius": 0.003,
+      "runs": [
+        {
+          "canonical": [
+            23390,
+            21539,
+            [
+              11,
+              12,
+              14,
+              14,
+              14,
+              15,
+              15,
+              15,
+              15,
+              15,
+              16,
+              21,
+              24,
+              34,
+              21783,
+              21979
+            ]
+          ],
+          "elapsed_sec": 0.006657406687736511,
+          "label": "grouped_stream_numba_same_root_true",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_same_root_culling_enabled": true,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 17,
+          "signature": {
+            "cluster_sizes": {
+              "1": 21783,
+              "2": 21979,
+              "3": 24,
+              "4": 21,
+              "5": 14,
+              "6": 15,
+              "7": 15,
+              "8": 14,
+              "9": 11,
+              "10": 15,
+              "11": 34,
+              "12": 15,
+              "13": 15,
+              "14": 16,
+              "15": 12,
+              "16": 14
+            },
+            "core_count": 23390,
+            "noise_count": 21539
+          }
+        },
+        {
+          "canonical": [
+            23390,
+            21539,
+            [
+              11,
+              12,
+              14,
+              14,
+              14,
+              15,
+              15,
+              15,
+              15,
+              15,
+              16,
+              21,
+              24,
+              34,
+              21783,
+              21979
+            ]
+          ],
+          "elapsed_sec": 0.006520301103591919,
+          "label": "grouped_stream_numba_same_root_false",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_same_root_culling_enabled": false,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 17,
+          "signature": {
+            "cluster_sizes": {
+              "1": 21783,
+              "2": 21979,
+              "3": 24,
+              "4": 21,
+              "5": 14,
+              "6": 15,
+              "7": 15,
+              "8": 14,
+              "9": 11,
+              "10": 15,
+              "11": 34,
+              "12": 15,
+              "13": 15,
+              "14": 16,
+              "15": 12,
+              "16": 14
+            },
+            "core_count": 23390,
+            "noise_count": 21539
+          }
+        },
+        {
+          "canonical": [
+            23390,
+            21539,
+            [
+              11,
+              12,
+              14,
+              14,
+              14,
+              15,
+              15,
+              15,
+              15,
+              15,
+              16,
+              16,
+              21,
+              24,
+              34,
+              21767,
+              21979
+            ]
+          ],
+          "elapsed_sec": 0.006199374794960022,
+          "label": "grouped_stream_numba_direct_side_effect",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": true,
+            "grouped_union_same_root_culling_enabled": false,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 17,
+          "signature": {
+            "cluster_sizes": {
+              "1": 21767,
+              "2": 21979,
+              "3": 24,
+              "4": 21,
+              "5": 14,
+              "6": 15,
+              "7": 15,
+              "8": 14,
+              "9": 11,
+              "10": 15,
+              "11": 34,
+              "12": 15,
+              "13": 15,
+              "14": 16,
+              "15": 12,
+              "16": 16,
+              "17": 14
+            },
+            "core_count": 23390,
+            "noise_count": 21539
+          }
+        },
+        {
+          "canonical": [
+            23390,
+            21539,
+            [
+              11,
+              12,
+              14,
+              14,
+              14,
+              15,
+              15,
+              15,
+              15,
+              15,
+              16,
+              21,
+              24,
+              34,
+              21783,
+              21979
+            ]
+          ],
+          "elapsed_sec": 0.019511550664901733,
+          "label": "predicate_direct_status_until_stable",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": "lowest_predicate_true_point_id_within_radius",
+            "border_candidate_updates": 25948,
+            "deterministic_neighbor_candidate_policy": "lowest_predicate_true_point_id_within_radius",
+            "direct_status_convergence_proven": true,
+            "fallback_candidate_policy": null,
+            "grouped_stream_policy": null,
+            "grouped_union_direct_side_effect_enabled": null,
+            "grouped_union_same_root_culling_enabled": null,
+            "partner": "cupy",
+            "path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d"
+          },
+          "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+          "seed": 17,
+          "signature": {
+            "cluster_sizes": {
+              "1": 21783,
+              "2": 21979,
+              "3": 24,
+              "4": 21,
+              "5": 14,
+              "6": 15,
+              "7": 15,
+              "8": 14,
+              "9": 11,
+              "10": 15,
+              "11": 34,
+              "12": 15,
+              "13": 15,
+              "14": 16,
+              "15": 12,
+              "16": 14
+            },
+            "core_count": 23390,
+            "noise_count": 21539
+          }
+        }
+      ],
+      "seed": 17
+    },
+    {
+      "candidate_canonical_matches": {
+        "grouped_stream_numba_direct_side_effect": true,
+        "grouped_stream_numba_same_root_false": false,
+        "grouped_stream_numba_same_root_true": false
+      },
+      "candidate_matches": {
+        "grouped_stream_numba_direct_side_effect": true,
+        "grouped_stream_numba_same_root_false": false,
+        "grouped_stream_numba_same_root_true": false
+      },
+      "case": "road_sparse_many_noise",
+      "dataset": "road3d",
+      "min_neighbors": 16,
+      "point_count": 65536,
+      "radius": 0.003,
+      "runs": [
+        {
+          "canonical": [
+            23252,
+            21778,
+            [
+              9,
+              10,
+              11,
+              11,
+              11,
+              11,
+              12,
+              13,
+              14,
+              14,
+              15,
+              15,
+              15,
+              15,
+              16,
+              16,
+              16,
+              16,
+              17,
+              33,
+              21527,
+              21941
+            ]
+          ],
+          "elapsed_sec": 0.006524622440338135,
+          "label": "grouped_stream_numba_same_root_true",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_same_root_culling_enabled": true,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 123,
+          "signature": {
+            "cluster_sizes": {
+              "1": 21941,
+              "2": 17,
+              "3": 21527,
+              "4": 16,
+              "5": 11,
+              "6": 15,
+              "7": 15,
+              "8": 16,
+              "9": 16,
+              "10": 11,
+              "11": 9,
+              "12": 11,
+              "13": 15,
+              "14": 33,
+              "15": 12,
+              "16": 16,
+              "17": 15,
+              "18": 14,
+              "19": 13,
+              "20": 10,
+              "21": 11,
+              "22": 14
+            },
+            "core_count": 23252,
+            "noise_count": 21778
+          }
+        },
+        {
+          "canonical": [
+            23252,
+            21778,
+            [
+              9,
+              10,
+              10,
+              11,
+              11,
+              11,
+              12,
+              13,
+              14,
+              14,
+              15,
+              15,
+              15,
+              15,
+              16,
+              16,
+              16,
+              16,
+              17,
+              33,
+              21517,
+              21952
+            ]
+          ],
+          "elapsed_sec": 0.006336130201816559,
+          "label": "grouped_stream_numba_same_root_false",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_same_root_culling_enabled": false,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 123,
+          "signature": {
+            "cluster_sizes": {
+              "1": 21952,
+              "2": 17,
+              "3": 21517,
+              "4": 16,
+              "5": 11,
+              "6": 15,
+              "7": 15,
+              "8": 16,
+              "9": 10,
+              "10": 16,
+              "11": 11,
+              "12": 9,
+              "13": 11,
+              "14": 15,
+              "15": 33,
+              "16": 12,
+              "17": 16,
+              "18": 15,
+              "19": 14,
+              "20": 13,
+              "21": 10,
+              "22": 14
+            },
+            "core_count": 23252,
+            "noise_count": 21778
+          }
+        },
+        {
+          "canonical": [
+            23252,
+            21778,
+            [
+              9,
+              10,
+              11,
+              11,
+              11,
+              12,
+              13,
+              14,
+              14,
+              15,
+              15,
+              15,
+              15,
+              16,
+              16,
+              16,
+              16,
+              17,
+              33,
+              21527,
+              21952
+            ]
+          ],
+          "elapsed_sec": 0.00644432008266449,
+          "label": "grouped_stream_numba_direct_side_effect",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": true,
+            "grouped_union_same_root_culling_enabled": false,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 123,
+          "signature": {
+            "cluster_sizes": {
+              "1": 21952,
+              "2": 17,
+              "3": 21527,
+              "4": 16,
+              "5": 11,
+              "6": 15,
+              "7": 15,
+              "8": 16,
+              "9": 16,
+              "10": 11,
+              "11": 9,
+              "12": 11,
+              "13": 15,
+              "14": 33,
+              "15": 12,
+              "16": 16,
+              "17": 15,
+              "18": 14,
+              "19": 13,
+              "20": 10,
+              "21": 14
+            },
+            "core_count": 23252,
+            "noise_count": 21778
+          }
+        },
+        {
+          "canonical": [
+            23252,
+            21778,
+            [
+              9,
+              10,
+              11,
+              11,
+              11,
+              12,
+              13,
+              14,
+              14,
+              15,
+              15,
+              15,
+              15,
+              16,
+              16,
+              16,
+              16,
+              17,
+              33,
+              21527,
+              21952
+            ]
+          ],
+          "elapsed_sec": 0.019544780254364014,
+          "label": "predicate_direct_status_until_stable",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": "lowest_predicate_true_point_id_within_radius",
+            "border_candidate_updates": 25846,
+            "deterministic_neighbor_candidate_policy": "lowest_predicate_true_point_id_within_radius",
+            "direct_status_convergence_proven": true,
+            "fallback_candidate_policy": null,
+            "grouped_stream_policy": null,
+            "grouped_union_direct_side_effect_enabled": null,
+            "grouped_union_same_root_culling_enabled": null,
+            "partner": "cupy",
+            "path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d"
+          },
+          "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+          "seed": 123,
+          "signature": {
+            "cluster_sizes": {
+              "1": 21952,
+              "2": 17,
+              "3": 21527,
+              "4": 16,
+              "5": 11,
+              "6": 15,
+              "7": 15,
+              "8": 16,
+              "9": 16,
+              "10": 11,
+              "11": 9,
+              "12": 11,
+              "13": 15,
+              "14": 33,
+              "15": 12,
+              "16": 16,
+              "17": 15,
+              "18": 14,
+              "19": 13,
+              "20": 10,
+              "21": 14
+            },
+            "core_count": 23252,
+            "noise_count": 21778
+          }
+        }
+      ],
+      "seed": 123
+    },
+    {
+      "candidate_canonical_matches": {
+        "grouped_stream_numba_direct_side_effect": true,
+        "grouped_stream_numba_same_root_false": true,
+        "grouped_stream_numba_same_root_true": true
+      },
+      "candidate_matches": {
+        "grouped_stream_numba_direct_side_effect": true,
+        "grouped_stream_numba_same_root_false": true,
+        "grouped_stream_numba_same_root_true": true
+      },
+      "case": "road_sparse_many_noise",
+      "dataset": "road3d",
+      "min_neighbors": 16,
+      "point_count": 65536,
+      "radius": 0.003,
+      "runs": [
+        {
+          "canonical": [
+            23245,
+            21691,
+            [
+              12,
+              13,
+              13,
+              14,
+              14,
+              14,
+              14,
+              15,
+              15,
+              15,
+              16,
+              16,
+              16,
+              16,
+              18,
+              23,
+              28,
+              45,
+              21560,
+              21968
+            ]
+          ],
+          "elapsed_sec": 0.005851045250892639,
+          "label": "grouped_stream_numba_same_root_true",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_same_root_culling_enabled": true,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 20260519,
+          "signature": {
+            "cluster_sizes": {
+              "1": 21968,
+              "2": 21560,
+              "3": 45,
+              "4": 15,
+              "5": 12,
+              "6": 28,
+              "7": 14,
+              "8": 18,
+              "9": 14,
+              "10": 14,
+              "11": 16,
+              "12": 13,
+              "13": 14,
+              "14": 16,
+              "15": 15,
+              "16": 15,
+              "17": 23,
+              "18": 16,
+              "19": 16,
+              "20": 13
+            },
+            "core_count": 23245,
+            "noise_count": 21691
+          }
+        },
+        {
+          "canonical": [
+            23245,
+            21691,
+            [
+              12,
+              13,
+              13,
+              14,
+              14,
+              14,
+              14,
+              15,
+              15,
+              15,
+              16,
+              16,
+              16,
+              16,
+              18,
+              23,
+              28,
+              45,
+              21560,
+              21968
+            ]
+          ],
+          "elapsed_sec": 0.006537765264511108,
+          "label": "grouped_stream_numba_same_root_false",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_same_root_culling_enabled": false,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 20260519,
+          "signature": {
+            "cluster_sizes": {
+              "1": 21968,
+              "2": 21560,
+              "3": 45,
+              "4": 15,
+              "5": 12,
+              "6": 28,
+              "7": 14,
+              "8": 18,
+              "9": 14,
+              "10": 14,
+              "11": 16,
+              "12": 13,
+              "13": 14,
+              "14": 16,
+              "15": 15,
+              "16": 15,
+              "17": 23,
+              "18": 16,
+              "19": 16,
+              "20": 13
+            },
+            "core_count": 23245,
+            "noise_count": 21691
+          }
+        },
+        {
+          "canonical": [
+            23245,
+            21691,
+            [
+              12,
+              13,
+              13,
+              14,
+              14,
+              14,
+              14,
+              15,
+              15,
+              15,
+              16,
+              16,
+              16,
+              16,
+              18,
+              23,
+              28,
+              45,
+              21560,
+              21968
+            ]
+          ],
+          "elapsed_sec": 0.005870111286640167,
+          "label": "grouped_stream_numba_direct_side_effect",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": true,
+            "grouped_union_same_root_culling_enabled": false,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 20260519,
+          "signature": {
+            "cluster_sizes": {
+              "1": 21968,
+              "2": 21560,
+              "3": 45,
+              "4": 15,
+              "5": 12,
+              "6": 28,
+              "7": 14,
+              "8": 18,
+              "9": 14,
+              "10": 14,
+              "11": 16,
+              "12": 13,
+              "13": 14,
+              "14": 16,
+              "15": 15,
+              "16": 15,
+              "17": 23,
+              "18": 16,
+              "19": 16,
+              "20": 13
+            },
+            "core_count": 23245,
+            "noise_count": 21691
+          }
+        },
+        {
+          "canonical": [
+            23245,
+            21691,
+            [
+              12,
+              13,
+              13,
+              14,
+              14,
+              14,
+              14,
+              15,
+              15,
+              15,
+              16,
+              16,
+              16,
+              16,
+              18,
+              23,
+              28,
+              45,
+              21560,
+              21968
+            ]
+          ],
+          "elapsed_sec": 0.0197196826338768,
+          "label": "predicate_direct_status_until_stable",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": "lowest_predicate_true_point_id_within_radius",
+            "border_candidate_updates": 26087,
+            "deterministic_neighbor_candidate_policy": "lowest_predicate_true_point_id_within_radius",
+            "direct_status_convergence_proven": true,
+            "fallback_candidate_policy": null,
+            "grouped_stream_policy": null,
+            "grouped_union_direct_side_effect_enabled": null,
+            "grouped_union_same_root_culling_enabled": null,
+            "partner": "cupy",
+            "path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d"
+          },
+          "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+          "seed": 20260519,
+          "signature": {
+            "cluster_sizes": {
+              "1": 21968,
+              "2": 21560,
+              "3": 45,
+              "4": 15,
+              "5": 12,
+              "6": 28,
+              "7": 14,
+              "8": 18,
+              "9": 14,
+              "10": 14,
+              "11": 16,
+              "12": 13,
+              "13": 14,
+              "14": 16,
+              "15": 15,
+              "16": 15,
+              "17": 23,
+              "18": 16,
+              "19": 16,
+              "20": 13
+            },
+            "core_count": 23245,
+            "noise_count": 21691
+          }
+        }
+      ],
+      "seed": 20260519
+    },
+    {
+      "candidate_canonical_matches": {
+        "grouped_stream_numba_direct_side_effect": true,
+        "grouped_stream_numba_same_root_false": true,
+        "grouped_stream_numba_same_root_true": true
+      },
+      "candidate_matches": {
+        "grouped_stream_numba_direct_side_effect": true,
+        "grouped_stream_numba_same_root_false": true,
+        "grouped_stream_numba_same_root_true": true
+      },
+      "case": "road_mid_sparse_mixed_clusters",
+      "dataset": "road3d",
+      "min_neighbors": 32,
+      "point_count": 65536,
+      "radius": 0.0045,
+      "runs": [
+        {
+          "canonical": [
+            40338,
+            6497,
+            [
+              29517,
+              29522
+            ]
+          ],
+          "elapsed_sec": 0.006967686116695404,
+          "label": "grouped_stream_numba_same_root_true",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_same_root_culling_enabled": true,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 17,
+          "signature": {
+            "cluster_sizes": {
+              "1": 29522,
+              "2": 29517
+            },
+            "core_count": 40338,
+            "noise_count": 6497
+          }
+        },
+        {
+          "canonical": [
+            40338,
+            6497,
+            [
+              29517,
+              29522
+            ]
+          ],
+          "elapsed_sec": 0.007607810199260712,
+          "label": "grouped_stream_numba_same_root_false",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_same_root_culling_enabled": false,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 17,
+          "signature": {
+            "cluster_sizes": {
+              "1": 29522,
+              "2": 29517
+            },
+            "core_count": 40338,
+            "noise_count": 6497
+          }
+        },
+        {
+          "canonical": [
+            40338,
+            6497,
+            [
+              29517,
+              29522
+            ]
+          ],
+          "elapsed_sec": 0.006631374359130859,
+          "label": "grouped_stream_numba_direct_side_effect",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": true,
+            "grouped_union_same_root_culling_enabled": false,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 17,
+          "signature": {
+            "cluster_sizes": {
+              "1": 29522,
+              "2": 29517
+            },
+            "core_count": 40338,
+            "noise_count": 6497
+          }
+        },
+        {
+          "canonical": [
+            40338,
+            6497,
+            [
+              29517,
+              29522
+            ]
+          ],
+          "elapsed_sec": 0.023335546255111694,
+          "label": "predicate_direct_status_until_stable",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": "lowest_predicate_true_point_id_within_radius",
+            "border_candidate_updates": 24949,
+            "deterministic_neighbor_candidate_policy": "lowest_predicate_true_point_id_within_radius",
+            "direct_status_convergence_proven": true,
+            "fallback_candidate_policy": null,
+            "grouped_stream_policy": null,
+            "grouped_union_direct_side_effect_enabled": null,
+            "grouped_union_same_root_culling_enabled": null,
+            "partner": "cupy",
+            "path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d"
+          },
+          "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+          "seed": 17,
+          "signature": {
+            "cluster_sizes": {
+              "1": 29522,
+              "2": 29517
+            },
+            "core_count": 40338,
+            "noise_count": 6497
+          }
+        }
+      ],
+      "seed": 17
+    },
+    {
+      "candidate_canonical_matches": {
+        "grouped_stream_numba_direct_side_effect": true,
+        "grouped_stream_numba_same_root_false": true,
+        "grouped_stream_numba_same_root_true": true
+      },
+      "candidate_matches": {
+        "grouped_stream_numba_direct_side_effect": true,
+        "grouped_stream_numba_same_root_false": true,
+        "grouped_stream_numba_same_root_true": true
+      },
+      "case": "road_mid_sparse_mixed_clusters",
+      "dataset": "road3d",
+      "min_neighbors": 32,
+      "point_count": 65536,
+      "radius": 0.0045,
+      "runs": [
+        {
+          "canonical": [
+            40227,
+            6513,
+            [
+              29458,
+              29565
+            ]
+          ],
+          "elapsed_sec": 0.007516108453273773,
+          "label": "grouped_stream_numba_same_root_true",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_same_root_culling_enabled": true,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 123,
+          "signature": {
+            "cluster_sizes": {
+              "1": 29565,
+              "2": 29458
+            },
+            "core_count": 40227,
+            "noise_count": 6513
+          }
+        },
+        {
+          "canonical": [
+            40227,
+            6513,
+            [
+              29458,
+              29565
+            ]
+          ],
+          "elapsed_sec": 0.007543832063674927,
+          "label": "grouped_stream_numba_same_root_false",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_same_root_culling_enabled": false,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 123,
+          "signature": {
+            "cluster_sizes": {
+              "1": 29565,
+              "2": 29458
+            },
+            "core_count": 40227,
+            "noise_count": 6513
+          }
+        },
+        {
+          "canonical": [
+            40227,
+            6513,
+            [
+              29458,
+              29565
+            ]
+          ],
+          "elapsed_sec": 0.006813511252403259,
+          "label": "grouped_stream_numba_direct_side_effect",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": true,
+            "grouped_union_same_root_culling_enabled": false,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 123,
+          "signature": {
+            "cluster_sizes": {
+              "1": 29565,
+              "2": 29458
+            },
+            "core_count": 40227,
+            "noise_count": 6513
+          }
+        },
+        {
+          "canonical": [
+            40227,
+            6513,
+            [
+              29458,
+              29565
+            ]
+          ],
+          "elapsed_sec": 0.023468315601348877,
+          "label": "predicate_direct_status_until_stable",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": "lowest_predicate_true_point_id_within_radius",
+            "border_candidate_updates": 25048,
+            "deterministic_neighbor_candidate_policy": "lowest_predicate_true_point_id_within_radius",
+            "direct_status_convergence_proven": true,
+            "fallback_candidate_policy": null,
+            "grouped_stream_policy": null,
+            "grouped_union_direct_side_effect_enabled": null,
+            "grouped_union_same_root_culling_enabled": null,
+            "partner": "cupy",
+            "path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d"
+          },
+          "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+          "seed": 123,
+          "signature": {
+            "cluster_sizes": {
+              "1": 29565,
+              "2": 29458
+            },
+            "core_count": 40227,
+            "noise_count": 6513
+          }
+        }
+      ],
+      "seed": 123
+    },
+    {
+      "candidate_canonical_matches": {
+        "grouped_stream_numba_direct_side_effect": true,
+        "grouped_stream_numba_same_root_false": true,
+        "grouped_stream_numba_same_root_true": true
+      },
+      "candidate_matches": {
+        "grouped_stream_numba_direct_side_effect": false,
+        "grouped_stream_numba_same_root_false": false,
+        "grouped_stream_numba_same_root_true": false
+      },
+      "case": "road_mid_sparse_mixed_clusters",
+      "dataset": "road3d",
+      "min_neighbors": 32,
+      "point_count": 65536,
+      "radius": 0.0045,
+      "runs": [
+        {
+          "canonical": [
+            40144,
+            6534,
+            [
+              29467,
+              29535
+            ]
+          ],
+          "elapsed_sec": 0.007340773940086365,
+          "label": "grouped_stream_numba_same_root_true",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_same_root_culling_enabled": true,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 20260519,
+          "signature": {
+            "cluster_sizes": {
+              "1": 29535,
+              "2": 29467
+            },
+            "core_count": 40144,
+            "noise_count": 6534
+          }
+        },
+        {
+          "canonical": [
+            40144,
+            6534,
+            [
+              29467,
+              29535
+            ]
+          ],
+          "elapsed_sec": 0.008231736719608307,
+          "label": "grouped_stream_numba_same_root_false",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_same_root_culling_enabled": false,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 20260519,
+          "signature": {
+            "cluster_sizes": {
+              "1": 29535,
+              "2": 29467
+            },
+            "core_count": 40144,
+            "noise_count": 6534
+          }
+        },
+        {
+          "canonical": [
+            40144,
+            6534,
+            [
+              29467,
+              29535
+            ]
+          ],
+          "elapsed_sec": 0.006917200982570648,
+          "label": "grouped_stream_numba_direct_side_effect",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": true,
+            "grouped_union_same_root_culling_enabled": false,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 20260519,
+          "signature": {
+            "cluster_sizes": {
+              "1": 29535,
+              "2": 29467
+            },
+            "core_count": 40144,
+            "noise_count": 6534
+          }
+        },
+        {
+          "canonical": [
+            40144,
+            6534,
+            [
+              29467,
+              29535
+            ]
+          ],
+          "elapsed_sec": 0.023305930197238922,
+          "label": "predicate_direct_status_until_stable",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": "lowest_predicate_true_point_id_within_radius",
+            "border_candidate_updates": 25058,
+            "deterministic_neighbor_candidate_policy": "lowest_predicate_true_point_id_within_radius",
+            "direct_status_convergence_proven": true,
+            "fallback_candidate_policy": null,
+            "grouped_stream_policy": null,
+            "grouped_union_direct_side_effect_enabled": null,
+            "grouped_union_same_root_culling_enabled": null,
+            "partner": "cupy",
+            "path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d"
+          },
+          "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+          "seed": 20260519,
+          "signature": {
+            "cluster_sizes": {
+              "1": 29467,
+              "2": 29535
+            },
+            "core_count": 40144,
+            "noise_count": 6534
+          }
+        }
+      ],
+      "seed": 20260519
+    },
+    {
+      "candidate_canonical_matches": {
+        "grouped_stream_numba_direct_side_effect": true,
+        "grouped_stream_numba_same_root_false": true,
+        "grouped_stream_numba_same_root_true": true
+      },
+      "candidate_matches": {
+        "grouped_stream_numba_direct_side_effect": false,
+        "grouped_stream_numba_same_root_false": false,
+        "grouped_stream_numba_same_root_true": false
+      },
+      "case": "clustered_half_radius_high_threshold",
+      "dataset": "clustered3d",
+      "min_neighbors": 96,
+      "point_count": 65536,
+      "radius": 0.0275,
+      "runs": [
+        {
+          "canonical": [
+            63955,
+            77,
+            [
+              16357,
+              16364,
+              16366,
+              16372
+            ]
+          ],
+          "elapsed_sec": 0.057427242398262024,
+          "label": "grouped_stream_numba_same_root_true",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_same_root_culling_enabled": true,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 17,
+          "signature": {
+            "cluster_sizes": {
+              "1": 16366,
+              "2": 16364,
+              "3": 16357,
+              "4": 16372
+            },
+            "core_count": 63955,
+            "noise_count": 77
+          }
+        },
+        {
+          "canonical": [
+            63955,
+            77,
+            [
+              16357,
+              16364,
+              16366,
+              16372
+            ]
+          ],
+          "elapsed_sec": 0.06294006109237671,
+          "label": "grouped_stream_numba_same_root_false",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_same_root_culling_enabled": false,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 17,
+          "signature": {
+            "cluster_sizes": {
+              "1": 16366,
+              "2": 16364,
+              "3": 16357,
+              "4": 16372
+            },
+            "core_count": 63955,
+            "noise_count": 77
+          }
+        },
+        {
+          "canonical": [
+            63955,
+            77,
+            [
+              16357,
+              16364,
+              16366,
+              16372
+            ]
+          ],
+          "elapsed_sec": 0.05284568667411804,
+          "label": "grouped_stream_numba_direct_side_effect",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": true,
+            "grouped_union_same_root_culling_enabled": false,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 17,
+          "signature": {
+            "cluster_sizes": {
+              "1": 16366,
+              "2": 16364,
+              "3": 16357,
+              "4": 16372
+            },
+            "core_count": 63955,
+            "noise_count": 77
+          }
+        },
+        {
+          "canonical": [
+            63955,
+            77,
+            [
+              16357,
+              16364,
+              16366,
+              16372
+            ]
+          ],
+          "elapsed_sec": 0.042000651359558105,
+          "label": "predicate_direct_status_until_stable",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": "lowest_predicate_true_point_id_within_radius",
+            "border_candidate_updates": 5853,
+            "deterministic_neighbor_candidate_policy": "lowest_predicate_true_point_id_within_radius",
+            "direct_status_convergence_proven": true,
+            "fallback_candidate_policy": null,
+            "grouped_stream_policy": null,
+            "grouped_union_direct_side_effect_enabled": null,
+            "grouped_union_same_root_culling_enabled": null,
+            "partner": "cupy",
+            "path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d"
+          },
+          "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+          "seed": 17,
+          "signature": {
+            "cluster_sizes": {
+              "1": 16366,
+              "2": 16372,
+              "3": 16357,
+              "4": 16364
+            },
+            "core_count": 63955,
+            "noise_count": 77
+          }
+        }
+      ],
+      "seed": 17
+    },
+    {
+      "candidate_canonical_matches": {
+        "grouped_stream_numba_direct_side_effect": true,
+        "grouped_stream_numba_same_root_false": true,
+        "grouped_stream_numba_same_root_true": true
+      },
+      "candidate_matches": {
+        "grouped_stream_numba_direct_side_effect": false,
+        "grouped_stream_numba_same_root_false": false,
+        "grouped_stream_numba_same_root_true": false
+      },
+      "case": "clustered_half_radius_high_threshold",
+      "dataset": "clustered3d",
+      "min_neighbors": 96,
+      "point_count": 65536,
+      "radius": 0.0275,
+      "runs": [
+        {
+          "canonical": [
+            63981,
+            78,
+            [
+              16362,
+              16362,
+              16366,
+              16368
+            ]
+          ],
+          "elapsed_sec": 0.054391488432884216,
+          "label": "grouped_stream_numba_same_root_true",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_same_root_culling_enabled": true,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 123,
+          "signature": {
+            "cluster_sizes": {
+              "1": 16362,
+              "2": 16362,
+              "3": 16368,
+              "4": 16366
+            },
+            "core_count": 63981,
+            "noise_count": 78
+          }
+        },
+        {
+          "canonical": [
+            63981,
+            78,
+            [
+              16362,
+              16362,
+              16366,
+              16368
+            ]
+          ],
+          "elapsed_sec": 0.06137041747570038,
+          "label": "grouped_stream_numba_same_root_false",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_same_root_culling_enabled": false,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 123,
+          "signature": {
+            "cluster_sizes": {
+              "1": 16362,
+              "2": 16362,
+              "3": 16368,
+              "4": 16366
+            },
+            "core_count": 63981,
+            "noise_count": 78
+          }
+        },
+        {
+          "canonical": [
+            63981,
+            78,
+            [
+              16362,
+              16362,
+              16366,
+              16368
+            ]
+          ],
+          "elapsed_sec": 0.05330967158079147,
+          "label": "grouped_stream_numba_direct_side_effect",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": true,
+            "grouped_union_same_root_culling_enabled": false,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 123,
+          "signature": {
+            "cluster_sizes": {
+              "1": 16362,
+              "2": 16362,
+              "3": 16368,
+              "4": 16366
+            },
+            "core_count": 63981,
+            "noise_count": 78
+          }
+        },
+        {
+          "canonical": [
+            63981,
+            78,
+            [
+              16362,
+              16362,
+              16366,
+              16368
+            ]
+          ],
+          "elapsed_sec": 0.04223284125328064,
+          "label": "predicate_direct_status_until_stable",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": "lowest_predicate_true_point_id_within_radius",
+            "border_candidate_updates": 5708,
+            "deterministic_neighbor_candidate_policy": "lowest_predicate_true_point_id_within_radius",
+            "direct_status_convergence_proven": true,
+            "fallback_candidate_policy": null,
+            "grouped_stream_policy": null,
+            "grouped_union_direct_side_effect_enabled": null,
+            "grouped_union_same_root_culling_enabled": null,
+            "partner": "cupy",
+            "path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d"
+          },
+          "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+          "seed": 123,
+          "signature": {
+            "cluster_sizes": {
+              "1": 16362,
+              "2": 16366,
+              "3": 16368,
+              "4": 16362
+            },
+            "core_count": 63981,
+            "noise_count": 78
+          }
+        }
+      ],
+      "seed": 123
+    },
+    {
+      "candidate_canonical_matches": {
+        "grouped_stream_numba_direct_side_effect": true,
+        "grouped_stream_numba_same_root_false": true,
+        "grouped_stream_numba_same_root_true": true
+      },
+      "candidate_matches": {
+        "grouped_stream_numba_direct_side_effect": false,
+        "grouped_stream_numba_same_root_false": false,
+        "grouped_stream_numba_same_root_true": false
+      },
+      "case": "clustered_half_radius_high_threshold",
+      "dataset": "clustered3d",
+      "min_neighbors": 96,
+      "point_count": 65536,
+      "radius": 0.0275,
+      "runs": [
+        {
+          "canonical": [
+            63922,
+            76,
+            [
+              16364,
+              16364,
+              16366,
+              16366
+            ]
+          ],
+          "elapsed_sec": 0.05264037102460861,
+          "label": "grouped_stream_numba_same_root_true",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_same_root_culling_enabled": true,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 20260519,
+          "signature": {
+            "cluster_sizes": {
+              "1": 16366,
+              "2": 16366,
+              "3": 16364,
+              "4": 16364
+            },
+            "core_count": 63922,
+            "noise_count": 76
+          }
+        },
+        {
+          "canonical": [
+            63922,
+            76,
+            [
+              16364,
+              16364,
+              16366,
+              16366
+            ]
+          ],
+          "elapsed_sec": 0.061128683388233185,
+          "label": "grouped_stream_numba_same_root_false",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_same_root_culling_enabled": false,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 20260519,
+          "signature": {
+            "cluster_sizes": {
+              "1": 16366,
+              "2": 16366,
+              "3": 16364,
+              "4": 16364
+            },
+            "core_count": 63922,
+            "noise_count": 76
+          }
+        },
+        {
+          "canonical": [
+            63922,
+            76,
+            [
+              16364,
+              16364,
+              16366,
+              16366
+            ]
+          ],
+          "elapsed_sec": 0.05248859524726868,
+          "label": "grouped_stream_numba_direct_side_effect",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": true,
+            "grouped_union_same_root_culling_enabled": false,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 20260519,
+          "signature": {
+            "cluster_sizes": {
+              "1": 16366,
+              "2": 16366,
+              "3": 16364,
+              "4": 16364
+            },
+            "core_count": 63922,
+            "noise_count": 76
+          }
+        },
+        {
+          "canonical": [
+            63922,
+            76,
+            [
+              16364,
+              16364,
+              16366,
+              16366
+            ]
+          ],
+          "elapsed_sec": 0.0415559783577919,
+          "label": "predicate_direct_status_until_stable",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": "lowest_predicate_true_point_id_within_radius",
+            "border_candidate_updates": 6027,
+            "deterministic_neighbor_candidate_policy": "lowest_predicate_true_point_id_within_radius",
+            "direct_status_convergence_proven": true,
+            "fallback_candidate_policy": null,
+            "grouped_stream_policy": null,
+            "grouped_union_direct_side_effect_enabled": null,
+            "grouped_union_same_root_culling_enabled": null,
+            "partner": "cupy",
+            "path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d"
+          },
+          "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+          "seed": 20260519,
+          "signature": {
+            "cluster_sizes": {
+              "1": 16366,
+              "2": 16364,
+              "3": 16364,
+              "4": 16366
+            },
+            "core_count": 63922,
+            "noise_count": 76
+          }
+        }
+      ],
+      "seed": 20260519
+    },
+    {
+      "candidate_canonical_matches": {
+        "grouped_stream_numba_direct_side_effect": true,
+        "grouped_stream_numba_same_root_false": true,
+        "grouped_stream_numba_same_root_true": true
+      },
+      "candidate_matches": {
+        "grouped_stream_numba_direct_side_effect": true,
+        "grouped_stream_numba_same_root_false": true,
+        "grouped_stream_numba_same_root_true": true
+      },
+      "case": "ngsim_sparse_many_noise",
+      "dataset": "ngsim_dense",
+      "min_neighbors": 40,
+      "point_count": 65536,
+      "radius": 0.006,
+      "runs": [
+        {
+          "canonical": [
+            58036,
+            120,
+            [
+              65416
+            ]
+          ],
+          "elapsed_sec": 0.007856085896492004,
+          "label": "grouped_stream_numba_same_root_true",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_same_root_culling_enabled": true,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 17,
+          "signature": {
+            "cluster_sizes": {
+              "1": 65416
+            },
+            "core_count": 58036,
+            "noise_count": 120
+          }
+        },
+        {
+          "canonical": [
+            58036,
+            120,
+            [
+              65416
+            ]
+          ],
+          "elapsed_sec": 0.007731884717941284,
+          "label": "grouped_stream_numba_same_root_false",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_same_root_culling_enabled": false,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 17,
+          "signature": {
+            "cluster_sizes": {
+              "1": 65416
+            },
+            "core_count": 58036,
+            "noise_count": 120
+          }
+        },
+        {
+          "canonical": [
+            58036,
+            120,
+            [
+              65416
+            ]
+          ],
+          "elapsed_sec": 0.007148556411266327,
+          "label": "grouped_stream_numba_direct_side_effect",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": true,
+            "grouped_union_same_root_culling_enabled": false,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 17,
+          "signature": {
+            "cluster_sizes": {
+              "1": 65416
+            },
+            "core_count": 58036,
+            "noise_count": 120
+          }
+        },
+        {
+          "canonical": [
+            58036,
+            120,
+            [
+              65416
+            ]
+          ],
+          "elapsed_sec": 0.0256999209523201,
+          "label": "predicate_direct_status_until_stable",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": "lowest_predicate_true_point_id_within_radius",
+            "border_candidate_updates": 23002,
+            "deterministic_neighbor_candidate_policy": "lowest_predicate_true_point_id_within_radius",
+            "direct_status_convergence_proven": true,
+            "fallback_candidate_policy": null,
+            "grouped_stream_policy": null,
+            "grouped_union_direct_side_effect_enabled": null,
+            "grouped_union_same_root_culling_enabled": null,
+            "partner": "cupy",
+            "path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d"
+          },
+          "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+          "seed": 17,
+          "signature": {
+            "cluster_sizes": {
+              "1": 65416
+            },
+            "core_count": 58036,
+            "noise_count": 120
+          }
+        }
+      ],
+      "seed": 17
+    },
+    {
+      "candidate_canonical_matches": {
+        "grouped_stream_numba_direct_side_effect": true,
+        "grouped_stream_numba_same_root_false": true,
+        "grouped_stream_numba_same_root_true": true
+      },
+      "candidate_matches": {
+        "grouped_stream_numba_direct_side_effect": true,
+        "grouped_stream_numba_same_root_false": true,
+        "grouped_stream_numba_same_root_true": true
+      },
+      "case": "ngsim_sparse_many_noise",
+      "dataset": "ngsim_dense",
+      "min_neighbors": 40,
+      "point_count": 65536,
+      "radius": 0.006,
+      "runs": [
+        {
+          "canonical": [
+            58207,
+            98,
+            [
+              65438
+            ]
+          ],
+          "elapsed_sec": 0.00791836529970169,
+          "label": "grouped_stream_numba_same_root_true",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_same_root_culling_enabled": true,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 123,
+          "signature": {
+            "cluster_sizes": {
+              "1": 65438
+            },
+            "core_count": 58207,
+            "noise_count": 98
+          }
+        },
+        {
+          "canonical": [
+            58207,
+            98,
+            [
+              65438
+            ]
+          ],
+          "elapsed_sec": 0.007948540151119232,
+          "label": "grouped_stream_numba_same_root_false",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_same_root_culling_enabled": false,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 123,
+          "signature": {
+            "cluster_sizes": {
+              "1": 65438
+            },
+            "core_count": 58207,
+            "noise_count": 98
+          }
+        },
+        {
+          "canonical": [
+            58207,
+            98,
+            [
+              65438
+            ]
+          ],
+          "elapsed_sec": 0.00789991021156311,
+          "label": "grouped_stream_numba_direct_side_effect",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": true,
+            "grouped_union_same_root_culling_enabled": false,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 123,
+          "signature": {
+            "cluster_sizes": {
+              "1": 65438
+            },
+            "core_count": 58207,
+            "noise_count": 98
+          }
+        },
+        {
+          "canonical": [
+            58207,
+            98,
+            [
+              65438
+            ]
+          ],
+          "elapsed_sec": 0.025931455194950104,
+          "label": "predicate_direct_status_until_stable",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": "lowest_predicate_true_point_id_within_radius",
+            "border_candidate_updates": 22527,
+            "deterministic_neighbor_candidate_policy": "lowest_predicate_true_point_id_within_radius",
+            "direct_status_convergence_proven": true,
+            "fallback_candidate_policy": null,
+            "grouped_stream_policy": null,
+            "grouped_union_direct_side_effect_enabled": null,
+            "grouped_union_same_root_culling_enabled": null,
+            "partner": "cupy",
+            "path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d"
+          },
+          "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+          "seed": 123,
+          "signature": {
+            "cluster_sizes": {
+              "1": 65438
+            },
+            "core_count": 58207,
+            "noise_count": 98
+          }
+        }
+      ],
+      "seed": 123
+    },
+    {
+      "candidate_canonical_matches": {
+        "grouped_stream_numba_direct_side_effect": true,
+        "grouped_stream_numba_same_root_false": true,
+        "grouped_stream_numba_same_root_true": true
+      },
+      "candidate_matches": {
+        "grouped_stream_numba_direct_side_effect": true,
+        "grouped_stream_numba_same_root_false": true,
+        "grouped_stream_numba_same_root_true": true
+      },
+      "case": "ngsim_sparse_many_noise",
+      "dataset": "ngsim_dense",
+      "min_neighbors": 40,
+      "point_count": 65536,
+      "radius": 0.006,
+      "runs": [
+        {
+          "canonical": [
+            58111,
+            91,
+            [
+              65445
+            ]
+          ],
+          "elapsed_sec": 0.007393635809421539,
+          "label": "grouped_stream_numba_same_root_true",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_same_root_culling_enabled": true,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 20260519,
+          "signature": {
+            "cluster_sizes": {
+              "1": 65445
+            },
+            "core_count": 58111,
+            "noise_count": 91
+          }
+        },
+        {
+          "canonical": [
+            58111,
+            91,
+            [
+              65445
+            ]
+          ],
+          "elapsed_sec": 0.007906660437583923,
+          "label": "grouped_stream_numba_same_root_false",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_same_root_culling_enabled": false,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 20260519,
+          "signature": {
+            "cluster_sizes": {
+              "1": 65445
+            },
+            "core_count": 58111,
+            "noise_count": 91
+          }
+        },
+        {
+          "canonical": [
+            58111,
+            91,
+            [
+              65445
+            ]
+          ],
+          "elapsed_sec": 0.007631771266460419,
+          "label": "grouped_stream_numba_direct_side_effect",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": null,
+            "border_candidate_updates": null,
+            "deterministic_neighbor_candidate_policy": null,
+            "direct_status_convergence_proven": null,
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_direct_side_effect_enabled": true,
+            "grouped_union_same_root_culling_enabled": false,
+            "partner": "numba",
+            "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d"
+          },
+          "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+          "seed": 20260519,
+          "signature": {
+            "cluster_sizes": {
+              "1": 65445
+            },
+            "core_count": 58111,
+            "noise_count": 91
+          }
+        },
+        {
+          "canonical": [
+            58111,
+            91,
+            [
+              65445
+            ]
+          ],
+          "elapsed_sec": 0.0258428156375885,
+          "label": "predicate_direct_status_until_stable",
+          "metadata": {
+            "all_predicate_fast_path": null,
+            "border_assignment_policy": "lowest_predicate_true_point_id_within_radius",
+            "border_candidate_updates": 22961,
+            "deterministic_neighbor_candidate_policy": "lowest_predicate_true_point_id_within_radius",
+            "direct_status_convergence_proven": true,
+            "fallback_candidate_policy": null,
+            "grouped_stream_policy": null,
+            "grouped_union_direct_side_effect_enabled": null,
+            "grouped_union_same_root_culling_enabled": null,
+            "partner": "cupy",
+            "path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d"
+          },
+          "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+          "seed": 20260519,
+          "signature": {
+            "cluster_sizes": {
+              "1": 65445
+            },
+            "core_count": 58111,
+            "noise_count": 91
+          }
+        }
+      ],
+      "seed": 20260519
+    }
+  ]
+}
