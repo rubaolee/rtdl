@@ -47,6 +47,7 @@ semantics and they still do not materialize Python row dictionaries.
 Added:
 
 - `tests/goal4067_rt_dbscan_partition_pair_enumeration_option_test.py`.
+- `docs/reports/goal4067_rt_dbscan_partition_pair_enumeration_option_pod_smoke.json`.
 
 The test verifies:
 
@@ -56,3 +57,13 @@ The test verifies:
 - when CuPy is available, the prepared signature mode can request
   `device_count_then_emit`, matches the graph-component reference signature, and
   keeps all claim boundaries closed.
+
+Pod smoke on RTX 4000 Ada at commit `3faaca41`:
+
+- mode: `partner_cupy_prepared_partition_convergence_component_signature_3d`;
+- dataset: `tiny`;
+- `matches_reference: true`;
+- `partition_pair_enumeration_effective: device_count_then_emit`;
+- `partition_summary_pair_capacity_source: device_exact_count`;
+- `claim_boundary.full_dbscan: false`;
+- `claim_boundary.rt_core_accelerated: false`.
