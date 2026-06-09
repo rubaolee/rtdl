@@ -72,6 +72,11 @@ An earlier un-warmed declared 2M probe was killed after several minutes, and a
 report therefore uses a tiny warmup before each 2M route timing. The cold-run
 behavior is recorded as a deployment concern, not as accepted route timing.
 
+Timing-breakdown fields in the artifact are diagnostic. Some
+`known_host_phase_sec` values include one-time prepare phases measured outside
+the per-iteration `elapsed_sec`, so they are not intended to sum exactly to the
+route elapsed value.
+
 ## Boundary
 
 Goal4173 does not promote this route as the default. The route remains an

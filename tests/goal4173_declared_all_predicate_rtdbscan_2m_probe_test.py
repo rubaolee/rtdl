@@ -23,6 +23,8 @@ class Goal4173DeclaredAllPredicateRtDbscan2MProbeTest(unittest.TestCase):
             "`rt_core_accelerated` is false",
             "does not promote this route as the default",
             "mixed-predicate",
+            "known_host_phase_sec",
+            "not intended to sum exactly",
         ):
             self.assertIn(fragment, report)
 
