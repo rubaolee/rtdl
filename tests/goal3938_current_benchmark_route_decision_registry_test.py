@@ -16,7 +16,7 @@ class Goal3938CurrentBenchmarkRouteDecisionRegistryTest(unittest.TestCase):
         validation = rt.validate_current_benchmark_route_decisions()
         summary = rt.summarize_current_benchmark_route_decisions()
 
-        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4110.v1", rt.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION)
+        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4115.v1", rt.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION)
         self.assertEqual("accept", validation["status"])
         self.assertEqual((), validation["errors"])
         self.assertEqual(10, summary["app_count"])
@@ -53,7 +53,7 @@ class Goal3938CurrentBenchmarkRouteDecisionRegistryTest(unittest.TestCase):
         self.assertIn("unblocked", route["current_reader_decision"])
         self.assertIn("one-shot default", route["user_choice_guidance"])
         self.assertIn("blocked grouped stream candidate from Goal3936", route["rejected_or_unpromoted_candidates"])
-        self.assertIn("route-level repeated prepared direct-status app packet", route["next_runtime_action"])
+        self.assertIn("shape-aware", route["next_runtime_action"])
         self.assertIn("Goal4079", route["evidence_refs"])
         self.assertIn("Goal4080", route["evidence_refs"])
         self.assertIn("Goal4088", route["evidence_refs"])
@@ -64,8 +64,11 @@ class Goal3938CurrentBenchmarkRouteDecisionRegistryTest(unittest.TestCase):
         self.assertIn("Goal4105", route["evidence_refs"])
         self.assertIn("Goal4108", route["evidence_refs"])
         self.assertIn("Goal4109", route["evidence_refs"])
-        self.assertIn("Goal4108 prepared replay", route["rejected_or_unpromoted_candidates"][-1])
-        self.assertIn("explicit reuse threshold", route["next_runtime_action"])
+        self.assertIn(
+            "partition_convergence_hybrid universal default promotion after Goal4108 prepared replay and Goal4109 app smoke",
+            route["rejected_or_unpromoted_candidates"],
+        )
+        self.assertIn("universal default promotion is blocked", route["next_runtime_action"])
         self.assertFalse(route["automatic_partner_selection_authorized"])
 
     def test_barnes_hut_is_honest_about_fastest_partner_and_numba_reference(self) -> None:

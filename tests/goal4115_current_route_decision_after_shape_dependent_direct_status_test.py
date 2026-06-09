@@ -7,31 +7,30 @@ import rtdsl as rt
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-REPORT = ROOT / "docs" / "reports" / "goal4110_current_route_decision_after_prepared_direct_status_app_mode_2026-06-09.md"
+REPORT = ROOT / "docs" / "reports" / "goal4115_current_route_decision_after_shape_dependent_direct_status_2026-06-09.md"
 
 
-class Goal4110CurrentRouteDecisionAfterPreparedDirectStatusAppModeTest(unittest.TestCase):
-    def test_rtdbscan_route_records_prepared_direct_status_without_universal_promotion(self) -> None:
+class Goal4115CurrentRouteDecisionAfterShapeDependentDirectStatusTest(unittest.TestCase):
+    def test_rtdbscan_route_records_shape_dependent_direct_status_guidance(self) -> None:
         route = rt.explain_current_benchmark_route("rt_dbscan")
 
         self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4115.v1", route["version"])
-        self.assertIn("Goal4108", route["current_reader_decision"])
-        self.assertIn("1.802x", route["current_reader_decision"])
-        self.assertIn("2.465x", route["current_reader_decision"])
-        self.assertIn("1.488x", route["current_reader_decision"])
-        self.assertIn("Goal4109", route["current_reader_decision"])
-        self.assertIn("partner_cupy_prepared_direct_status_union_component_signature_3d", route["current_reader_decision"])
-        self.assertIn("one-shot default-route promotion blocked", route["current_reader_decision"])
-        self.assertIn("one-shot default", route["user_choice_guidance"])
-        self.assertIn("repeated component-signature queries", route["user_choice_guidance"])
+        self.assertIn("Goal4114", route["current_reader_decision"])
+        self.assertIn("1.796x", route["current_reader_decision"])
+        self.assertIn("1.439x", route["current_reader_decision"])
+        self.assertIn("0.178x", route["current_reader_decision"])
+        self.assertIn("explicit profile-aware choice", route["current_reader_decision"])
+        self.assertIn("clustered/road-like", route["user_choice_guidance"])
+        self.assertIn("dense NGSIM-like", route["user_choice_guidance"])
+        self.assertIn("grouped-stream route", route["user_choice_guidance"])
         self.assertIn(
-            "partition_convergence_hybrid universal default promotion after Goal4108 prepared replay and Goal4109 app smoke",
+            "partition_convergence_hybrid universal default promotion after Goal4114 shape-dependent repeated app-route timing",
             route["rejected_or_unpromoted_candidates"],
         )
         self.assertIn("shape-aware", route["next_runtime_action"])
         self.assertIn("ngsim_dense regression", route["next_runtime_action"])
-        self.assertIn("Goal4108", route["evidence_refs"])
-        self.assertIn("Goal4109", route["evidence_refs"])
+        self.assertIn("universal default promotion is blocked", route["next_runtime_action"])
+        self.assertIn("Goal4114", route["evidence_refs"])
         self.assertFalse(route["automatic_partner_selection_authorized"])
         self.assertFalse(route["release_authorized"])
         self.assertFalse(route["public_speedup_claim_authorized"])
@@ -50,21 +49,21 @@ class Goal4110CurrentRouteDecisionAfterPreparedDirectStatusAppModeTest(unittest.
         self.assertFalse(summary["public_speedup_claim_authorized"])
         self.assertFalse(summary["broad_rt_core_claim_authorized"])
         self.assertFalse(summary["paper_reproduction_claim_authorized"])
+        self.assertFalse(summary["amd_performance_claim_authorized"])
 
-    def test_report_documents_split_guidance_and_boundary(self) -> None:
+    def test_report_documents_mixed_guidance_and_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")
         for fragment in [
-            "rtdl.v2_10.current_benchmark_route_decisions.goal4110.v1",
-            "one-shot default route",
-            "repeated component-signature route",
-            "1.802x",
-            "2.465x",
-            "1.488x",
-            "0.560136",
-            "route-level repeated prepared direct-status app packet",
+            "rtdl.v2_10.current_benchmark_route_decisions.goal4115.v1",
+            "clustered/road-like repeated component-signature workloads",
+            "dense NGSIM-like repeated component-signature workloads",
+            "1.796x",
+            "1.439x",
+            "0.178x",
+            "universal `partition_convergence_hybrid` promotion remains rejected",
             "does not promote",
-            "does not promote `partition_convergence_hybrid`",
-            "does not authorize release action",
+            "does not authorize release",
+            "No automatic partner selection",
         ]:
             self.assertIn(fragment, report)
 
