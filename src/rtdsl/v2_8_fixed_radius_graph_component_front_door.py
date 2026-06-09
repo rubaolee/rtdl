@@ -2134,9 +2134,13 @@ def _run_predicate_direct_status_union_signature_from_prepared_columns_cupy_3d(
     cell_factor: float,
     max_iterations: int,
     convergence_mode: str = "until_stable",
+    border_assignment_policy: str = "lowest_predicate_true_point_id_within_radius",
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     import cupy
 
+    border_assignment_policy = str(border_assignment_policy)
+    if border_assignment_policy != "lowest_predicate_true_point_id_within_radius":
+        raise ValueError("border_assignment_policy must be 'lowest_predicate_true_point_id_within_radius'")
     point_count = int(prepare_metadata["point_count"])
     partition_count = int(prepare_metadata["partition_count"])
     predicate_flags = cupy.asarray(predicate_flags, dtype=cupy.uint32)
@@ -2185,6 +2189,7 @@ def _run_predicate_direct_status_union_signature_from_prepared_columns_cupy_3d(
                 "border_candidate_updates": 0,
                 "component_signature_policy": "all_predicate_component_size_signature_wrapped_as_predicate_signature_counts",
                 "component_label_policy": "not_materialized_signature_counts_only",
+                "border_assignment_policy": "not_needed_all_predicate_true",
                 "deterministic_neighbor_candidate_policy": "not_needed_all_vertices_predicate_true",
                 "label_materialization": "component_size_signature_counts_only",
                 "data_ptrs": _column_data_ptrs(columns),
@@ -2275,6 +2280,7 @@ def _run_predicate_direct_status_union_signature_from_prepared_columns_cupy_3d(
         "direct_status_single_pass_candidate": convergence_mode == "single_pass_candidate",
         "component_signature_policy": "predicate_true_partition_root_count_plus_lowest_predicate_neighbor_candidate",
         "component_label_policy": "not_materialized_signature_counts_only",
+        "border_assignment_policy": border_assignment_policy,
         "deterministic_neighbor_candidate_policy": "lowest_predicate_true_point_id_within_radius",
         "complete_candidate_coverage": True,
         "label_materialization": "component_size_signature_counts_only",
@@ -2364,6 +2370,7 @@ class V28PreparedFixedRadiusPartitionConvergencePredicateDirectStatusUnionCupyPr
         neighbor_counts=None,
         max_iterations: int = 64,
         convergence_mode: str = "until_stable",
+        border_assignment_policy: str = "lowest_predicate_true_point_id_within_radius",
     ) -> dict[str, Any]:
         self._ensure_open()
         self.component_signature_runs += 1
@@ -2376,6 +2383,7 @@ class V28PreparedFixedRadiusPartitionConvergencePredicateDirectStatusUnionCupyPr
             cell_factor=self.cell_factor,
             max_iterations=max_iterations,
             convergence_mode=convergence_mode,
+            border_assignment_policy=border_assignment_policy,
         )
         metadata = {
             "reference": "fixed_radius_partition_convergence_predicate_signature_3d_cupy_prepared_direct_status_union_preview",
@@ -2432,12 +2440,14 @@ def run_v2_8_fixed_radius_partition_convergence_predicate_signature_cupy_prepare
     neighbor_counts=None,
     max_iterations: int = 64,
     convergence_mode: str = "until_stable",
+    border_assignment_policy: str = "lowest_predicate_true_point_id_within_radius",
 ) -> dict[str, Any]:
     return prepared.run_component_signature(
         predicate_flags=predicate_flags,
         neighbor_counts=neighbor_counts,
         max_iterations=max_iterations,
         convergence_mode=convergence_mode,
+        border_assignment_policy=border_assignment_policy,
     )
 
 
