@@ -35,6 +35,7 @@ No DBSCAN-specific native ABI is added.
 | `partner_numba_prepared_grid_components_3d` | Prepared generic Numba CUDA grid radius-graph components | Reusable Numba reference path; host-prepared grid metadata, device labeling |
 | `partner_cupy_prepared_adjacency_components_3d` | Prepared generic CuPy directed radius-graph adjacency stream plus grouped union continuation | Contract prototype for avoiding repeated distance checks after adjacency materialization; no RT cores |
 | `partner_cupy_partition_convergence_component_signature_3d` | Generic CuPy partition-convergence component-size signature | Candidate graph-component summary contract; no Python rows, no full DBSCAN semantics, no RT cores |
+| `partner_cupy_prepared_partition_convergence_component_signature_3d` | Prepared generic CuPy partition-convergence component-size signature | Reuses one partition-summary stream for repeated signature probes; candidate only, no full DBSCAN semantics, no RT cores |
 | `optix_core_flags_cupy_grid_components_3d` | OptiX-backend per-query fixed-radius summaries feed CuPy device-grid component continuation | Hybrid uniform-cell CUDA summaries plus CUDA-core continuation; no neighbor-row materialization |
 | `optix_rt_core_flags_cupy_grid_components_3d` | OptiX RT count-threshold device columns feed CuPy device-grid component continuation | True RT traversal core flags plus CUDA-core continuation; no neighbor-row materialization |
 | `optix_rt_core_flags_cupy_prepared_grid_components_3d` | OptiX RT count-threshold device columns feed a prepared CuPy device-grid component continuation | Same generic contract with reusable grid/order/workspace state for steady-state probes |
@@ -138,6 +139,20 @@ instead of one component label per point. It is useful when the consumer only
 needs component sizes. It is not full DBSCAN core/border/noise semantics, does
 not use RT cores, and remains an explicit candidate preview rather than the
 recommended RT-DBSCAN route.
+
+For repeated component-size signature probes over the same point/radius inputs,
+use the prepared partition-summary variant:
+
+```bash
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode partner_cupy_prepared_partition_convergence_component_signature_3d --dataset clustered3d --point-count 4096 --no-validation
+```
+
+This prepares the generic partition-summary stream once, then reuses it for the
+component-size signature continuation. The metadata separates
+`prepared_partition_summary_sec` from `component_signature_sec`, which makes it
+clear whether a workload is benefiting from replay. It still returns only the
+graph-component size signature and still is not the recommended full DBSCAN
+route.
 
 ## Hybrid OptiX + Partner Run
 

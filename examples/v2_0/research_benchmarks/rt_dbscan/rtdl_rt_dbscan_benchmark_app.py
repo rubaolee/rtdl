@@ -972,6 +972,7 @@ def run_rt_dbscan_benchmark(
         "optix_rt_core_grouped_stream_blocked_numba_column_signature_3d",
         "optix_rt_core_flags_numba_prepared_grid_column_signature_3d",
         "partner_cupy_partition_convergence_component_signature_3d",
+        "partner_cupy_prepared_partition_convergence_component_signature_3d",
     }:
         raise ValueError("signature mode does not materialize Python rows; column-signature mode does not materialize Python rows")
     if repeat < 1:
@@ -1235,6 +1236,70 @@ def run_rt_dbscan_benchmark(
                 "signature_source": "component_size_signature_column_no_python_row_dicts",
                 "validation_reference_kind": "fixed_radius_graph_component_labels_reference_3d",
                 "component_signature_sec": component_signature_sec,
+                "full_dbscan_semantics": False,
+                "dbscan_core_border_noise_semantics": False,
+                "graph_component_contract_only": True,
+                "public_speedup_claim_authorized": False,
+                "release_authorized": False,
+            }
+        )
+        if validate:
+            reference = rt.build_v2_8_fixed_radius_partition_convergence_component_labels_reference_3d(
+                points,
+                radius=resolved_radius,
+                cell_factor=float(metadata.get("cell_factor", 0.125)),
+                partition_summary=None,
+            )
+            label_values = tuple(int(value) for value in reference["columns"]["component_labels"])
+            reference_sizes = sorted(label_values.count(label) for label in set(label_values))
+            reference_signature_override = _component_size_signature_payload(reference_sizes)
+    elif mode == "partner_cupy_prepared_partition_convergence_component_signature_3d":
+        prepare_start = time.perf_counter()
+        prepared_partition_summary = (
+            rt.prepare_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
+                points,
+                radius=resolved_radius,
+                validate_summary_same_contract=validate,
+            )
+        )
+        prepared_partition_summary_sec = time.perf_counter() - prepare_start
+        signature_start = time.perf_counter()
+        result = rt.run_v2_8_fixed_radius_partition_convergence_component_signature_cupy_prepared_preview_3d(
+            prepared_partition_summary,
+            validate_summary_same_contract=False,
+            validate_against_component_labels=validate,
+        )
+        component_signature_sec = time.perf_counter() - signature_start
+        rows = ()
+        component_sizes = result["columns"]["component_size_signature"]
+        signature_override = _component_size_signature_payload(component_sizes)
+        metadata = dict(result["metadata"])
+        metadata.update(
+            {
+                "path": "partner_cupy_prepared_partition_convergence_component_signature_3d",
+                "front_door": "v2_8_fixed_radius_graph_component_continuation_3d",
+                "front_door_operation": "fixed_radius_graph_component_size_signature_3d",
+                "v2_8_front_door_route": True,
+                "partition_convergence_hybrid_candidate": True,
+                "partition_convergence_hybrid_promoted": False,
+                "explicit_candidate_preview": True,
+                "current_default_route": False,
+                "prepared_partition_summary_app_mode": True,
+                "prepared_partition_summary_reused": True,
+                "native_engine_summary_contract": "generic_fixed_radius_partition_convergence_summary_3d",
+                "native_execution_path": "partner_cupy_prepared_fixed_radius_partition_convergence_preview_3d",
+                "partner": "cupy",
+                "optix_backend_used": False,
+                "rt_core_accelerated": False,
+                "materializes_neighbor_summaries": False,
+                "materializes_neighbor_rows": False,
+                "materializes_python_rows": False,
+                "materializes_full_component_labels": False,
+                "signature_source": "prepared_component_size_signature_column_no_python_row_dicts",
+                "validation_reference_kind": "fixed_radius_graph_component_labels_reference_3d",
+                "prepared_partition_summary_sec": prepared_partition_summary_sec,
+                "component_signature_sec": component_signature_sec,
+                "prepared_partition_total_sec": prepared_partition_summary_sec + component_signature_sec,
                 "full_dbscan_semantics": False,
                 "dbscan_core_border_noise_semantics": False,
                 "graph_component_contract_only": True,
@@ -1935,6 +2000,7 @@ def main(argv: list[str] | None = None) -> int:
             "partner_numba_prepared_grid_components_3d",
             "partner_cupy_prepared_adjacency_components_3d",
             "partner_cupy_partition_convergence_component_signature_3d",
+            "partner_cupy_prepared_partition_convergence_component_signature_3d",
             "optix_core_flags_cupy_grid_components_3d",
             "optix_rt_core_flags_cupy_grid_components_3d",
             "optix_rt_core_flags_cupy_prepared_grid_components_3d",
