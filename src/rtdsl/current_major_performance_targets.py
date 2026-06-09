@@ -4,11 +4,12 @@ from dataclasses import dataclass
 from typing import Any
 
 
-CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION = "rtdl.v2_10.current_major_performance_targets.goal4244.v1"
+CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION = "rtdl.v2_10.current_major_performance_targets.goal4249.v1"
 CURRENT_MAJOR_PERFORMANCE_TARGET_STATUS = "internal_direction_map_not_release_authorization"
 CURRENT_MAJOR_PERFORMANCE_TARGET_CLAIM_BOUNDARY = (
-    "Goal4244 summarizes the major performance direction after Goal4215, "
-    "Goal4218, Goal4222, Goal4223, Goal4230, Goal4235, Goal4239, and Goal4243. It is a route/runtime planning map, not "
+    "Goal4249 summarizes the major performance direction after Goal4215, "
+    "Goal4218, Goal4222, Goal4223, Goal4230, Goal4235, Goal4239, Goal4243, "
+    "and the Goal4248 public-doc claim-boundary scan. It is a route/runtime planning map, not "
     "a release packet, not "
     "a public speedup claim, not a whole-app acceleration claim, not a broad "
     "RT-core claim, not a paper-reproduction claim, not a true-zero-copy claim, "
@@ -189,16 +190,17 @@ CURRENT_MAJOR_PERFORMANCE_TARGETS: tuple[CurrentMajorPerformanceTarget, ...] = (
             "Goal4235 proves the current clean head still runs all ten front doors, "
             "Goal4239 adds a dedicated RayJoin long-repeat profile, and Goal4243 "
             "refreshes the former short current-head rows with dedicated long-repeat "
-            "evidence. This is still not a formal public release matrix across claim "
-            "wording, docs, consensus, and hardware classes."
+            "evidence. Goal4248 scans the current public learner/user docs and leaves "
+            "zero hard claim-boundary blockers. This is still not a formal public "
+            "release matrix across exact release wording, consensus, and hardware classes."
         ),
         next_action=(
             "Before any formal major release, assemble an explicit release packet with "
-            "exact artifact provenance, docs audit, and fresh multi-AI consensus over the "
-            "exact public claims; run additional long timing only if the release claim "
+            "exact artifact provenance and fresh multi-AI consensus over the exact public "
+            "claims; run additional long timing only if the release claim "
             "requires a public performance table."
         ),
-        evidence_refs=("Goal4215", "Goal4222", "Goal4223", "Goal4230", "Goal4235", "Goal4239", "Goal4243"),
+        evidence_refs=("Goal4215", "Goal4222", "Goal4223", "Goal4230", "Goal4235", "Goal4239", "Goal4243", "Goal4248"),
         pod_needed_next=True,
     ),
     CurrentMajorPerformanceTarget(
@@ -223,13 +225,14 @@ CURRENT_MAJOR_PERFORMANCE_TARGETS: tuple[CurrentMajorPerformanceTarget, ...] = (
         status="pending_user_release_decision",
         current_reading=(
             "The project has current NVIDIA internal evidence and strict claim boundaries, "
-            "but this map does not authorize a release."
+            "and Goal4248 confirms the current public docs scan has zero hard claim-boundary "
+            "blockers, but this map does not authorize a release."
         ),
         next_action=(
-            "A formal major release needs a user-requested release packet, cleaned docs, "
-            "and the required multi-AI consensus over the exact release claims."
+            "A formal major release needs a user-requested release packet and the required "
+            "multi-AI consensus over the exact release claims."
         ),
-        evidence_refs=("Goal4215", "Goal4216", "Goal4217", "Goal4218", "Goal4235"),
+        evidence_refs=("Goal4215", "Goal4216", "Goal4217", "Goal4218", "Goal4235", "Goal4248"),
         pod_needed_next=False,
     ),
 )
