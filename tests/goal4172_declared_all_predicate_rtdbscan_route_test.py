@@ -32,7 +32,9 @@ class Goal4172DeclaredAllPredicateRtDbscanRouteTest(unittest.TestCase):
         self.assertIn('"rt_count_threshold_executed": False', source)
         self.assertIn('"optix_backend_used_for_threshold": False', source)
         self.assertIn('"caller_declared_predicate_columns_require_external_proof": use_declared_all_predicate', source)
-        self.assertIn('"neighbor_count_policy": "threshold_satisfying_sentinel_not_exact_degree"', source)
+        self.assertIn('"neighbor_count_policy": "not_materialized_all_items_declared_predicate_true"', source)
+        self.assertIn('"predicate_columns_materialized": False', source)
+        self.assertIn('"uses_generic_all_items_direct_status_signature": True', source)
 
     def test_declared_route_does_not_claim_rt_core_acceleration_or_promotion(self) -> None:
         source = APP.read_text(encoding="utf-8")

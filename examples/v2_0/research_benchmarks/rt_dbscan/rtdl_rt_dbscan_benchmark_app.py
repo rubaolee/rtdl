@@ -1907,7 +1907,13 @@ def run_rt_dbscan_benchmark(
                 partner="cupy",
             )
         prepared_predicate_direct_status = (
-            rt.prepare_v2_8_fixed_radius_partition_convergence_predicate_direct_status_union_cupy_preview_3d(
+            rt.prepare_v2_8_fixed_radius_partition_convergence_direct_status_union_cupy_preview_3d(
+                points,
+                radius=resolved_radius,
+                cell_factor=resolved_partition_cell_factor,
+            )
+            if use_declared_all_predicate
+            else rt.prepare_v2_8_fixed_radius_partition_convergence_predicate_direct_status_union_cupy_preview_3d(
                 points,
                 radius=resolved_radius,
                 cell_factor=resolved_partition_cell_factor,
@@ -1925,26 +1931,19 @@ def run_rt_dbscan_benchmark(
         )
         with prepared_predicate_direct_status, count_context as prepared_count:
             if use_declared_all_predicate:
-                import cupy
-
                 threshold_result = {
-                    "columns": {
-                        "threshold_flags": cupy.ones((len(points),), dtype=cupy.uint32),
-                        "neighbor_counts": cupy.full(
-                            (len(points),),
-                            resolved_min_neighbors,
-                            dtype=cupy.uint32,
-                        ),
-                    },
+                    "columns": {},
                     "metadata": {
-                        "path": "partner_cupy_declared_all_true_predicate_columns_3d",
+                        "path": "caller_declared_all_true_predicate_no_columns_3d",
                         "predicate_flags_source": "caller_declared_all_true",
                         "predicate_flags_exactness": "caller_asserted_not_rt_count_threshold_verified",
-                        "neighbor_count_policy": "threshold_satisfying_sentinel_not_exact_degree",
+                        "neighbor_count_policy": "not_materialized_all_items_declared_predicate_true",
                         "rt_count_threshold_executed": False,
                         "optix_backend_used_for_threshold": False,
                         "all_predicate_declared": True,
                         "all_predicate_fast_path_expected": True,
+                        "predicate_columns_materialized": False,
+                        "uses_generic_all_items_direct_status_signature": True,
                         "release_authorized": False,
                         "public_speedup_claim_authorized": False,
                         "route_promotion_authorized": False,
@@ -1970,15 +1969,31 @@ def run_rt_dbscan_benchmark(
                     threshold_elapsed = time.perf_counter() - threshold_start
                 run_timing["optix_rt_count_threshold_sec"] = threshold_elapsed if iteration == 0 else 0.0
                 signature_start = time.perf_counter()
-                result = (
-                    rt.run_v2_8_fixed_radius_partition_convergence_predicate_signature_cupy_prepared_direct_status_union_preview_3d(
-                        prepared_predicate_direct_status,
-                        predicate_flags=threshold_result["columns"]["threshold_flags"],
-                        neighbor_counts=threshold_result["columns"]["neighbor_counts"],
-                        convergence_mode=direct_status_convergence_mode,
+                if use_declared_all_predicate:
+                    result = (
+                        rt.run_v2_8_fixed_radius_partition_convergence_component_signature_cupy_prepared_direct_status_union_preview_3d(
+                            prepared_predicate_direct_status,
+                            convergence_mode=direct_status_convergence_mode,
+                        )
                     )
-                )
-                result_metadata = dict(result["metadata"])
+                    result_metadata = dict(result["metadata"])
+                    result_metadata["all_predicate_fast_path"] = True
+                    run_signature = _cluster_signature_from_nonnegative_label_counts(
+                        result["columns"]["component_size_signature"],
+                        core_count=len(points),
+                        noise_count=0,
+                    )
+                else:
+                    result = (
+                        rt.run_v2_8_fixed_radius_partition_convergence_predicate_signature_cupy_prepared_direct_status_union_preview_3d(
+                            prepared_predicate_direct_status,
+                            predicate_flags=threshold_result["columns"]["threshold_flags"],
+                            neighbor_counts=threshold_result["columns"]["neighbor_counts"],
+                            convergence_mode=direct_status_convergence_mode,
+                        )
+                    )
+                    result_metadata = dict(result["metadata"])
+                    run_signature = _cluster_signature_from_cupy_signature_count_columns(result["columns"])
                 if require_all_predicate_fast_path and not bool(result_metadata.get("all_predicate_fast_path", False)):
                     raise ValueError(
                         f"{mode} "
@@ -1986,7 +2001,6 @@ def run_rt_dbscan_benchmark(
                         "optix_rt_core_grouped_stream_numba_column_signature_3d for mixed predicate rows"
                     )
                 run_timing["predicate_direct_status_signature_sec"] = time.perf_counter() - signature_start
-                run_signature = _cluster_signature_from_cupy_signature_count_columns(result["columns"])
                 prepared_runs.append(
                     {
                         "iteration": iteration,
@@ -2026,12 +2040,12 @@ def run_rt_dbscan_benchmark(
                 ),
                 "front_door_operation": "fixed_radius_graph_predicate_component_size_signature_3d",
                 "native_engine_summary_contract": (
-                    "generic_caller_declared_predicate_columns_plus_predicate_direct_status_union"
+                    "generic_all_items_direct_status_component_signature_wrapped_as_all_predicate_signature"
                     if use_declared_all_predicate
                     else "generic_prepared_fixed_radius_count_threshold_3d_device_columns_plus_predicate_direct_status_union"
                 ),
                 "native_execution_path": (
-                    "caller_declared_predicate_columns_then_partner_predicate_direct_status_union_preview"
+                    "prepared_direct_status_union_component_signature_wrapped_as_all_predicate_signature"
                     if use_declared_all_predicate
                     else "prepared_rt_core_count_threshold_3d_then_partner_predicate_direct_status_union_preview"
                 ),
@@ -2042,7 +2056,9 @@ def run_rt_dbscan_benchmark(
                     "caller_declared_all_true" if use_declared_all_predicate else "optix_rt_count_threshold"
                 ),
                 "rt_count_threshold_executed": not use_declared_all_predicate,
-                "caller_declared_predicate_columns": use_declared_all_predicate,
+                "caller_declared_predicate_columns": False,
+                "predicate_columns_materialized": not use_declared_all_predicate,
+                "uses_generic_all_items_direct_status_signature": use_declared_all_predicate,
                 "caller_declared_predicate_columns_require_external_proof": use_declared_all_predicate,
                 "materializes_neighbor_summaries": False,
                 "materializes_neighbor_rows": False,
