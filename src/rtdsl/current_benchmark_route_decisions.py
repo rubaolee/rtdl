@@ -6,10 +6,10 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4179.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4180.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
-    "Goal4179 refreshes current benchmark route decisions after the Goal4074-4177 "
+    "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
     "RT-DBSCAN grouped-union bottleneck, partition-summary feasibility, host-work "
     "skip, non-skip active pair stream, device partition-key decode, and unordered "
     "non-skip stream chain, plus direct device status union and route-level direct-status "
@@ -20,7 +20,7 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "predicate policy probe, policy-aware semantic signature, advisor refresh, and a "
     "road3d 2M all-predicate scale probe, Goal4172-4174 declared "
     "external-proof route evidence, the Goal4176 all-items direct-status "
-    "refactor, and the Goal4177 pending large-scale timing harness. It is "
+    "refactor, and the Goal4177 post-refactor large-scale timing evidence. It is "
     "advisory guidance only: users choose partners "
     "explicitly. It does not authorize release action, public speedup wording, "
     "whole-app acceleration wording, broad RT-core wording, paper-reproduction "
@@ -247,8 +247,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "removes the synthetic predicate-column layer from that declared route: it now "
             "uses the generic all-items direct-status component-signature primitive and "
             "wraps the result at the RT-DBSCAN app boundary. Goal4177 adds the timing "
-            "harness that must run on pod hardware before replacing the Goal4173 timing "
-            "numbers with post-refactor pod timing evidence."
+            "post-refactor pod timing: the declared all-items route preserves the same "
+            "signature, materializes no predicate columns, executes no RT count-threshold, "
+            "and improves elapsed time by 1.704x over the current grouped-stream route "
+            "and 1.269x over the measured all-true predicate direct-status route."
         ),
         primary_route=(
             "mixed explicit RT-DBSCAN route: grouped-stream Numba for conservative mixed "
@@ -276,10 +278,11 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "a declared route that skips predicate measurement and improves the 2M "
             "elapsed time. Goal4176 refactors that route to use a generic all-items "
             "direct-status component signature instead of synthetic predicate columns, "
-            "and Goal4177 provides the post-refactor pod timing harness. Until Goal4177 "
-            "pod timing exists, keep the Goal4173 timing numbers bounded to the older "
-            "implementation. The declared route still requires explicit user selection "
-            "and external proof and does not promote hidden selection. "
+            "and Goal4177 provides post-refactor pod timing: 1.704x elapsed speedup over "
+            "the current grouped-stream route and 1.269x over the measured all-true "
+            "predicate direct-status route on the 2M road3d row. The declared route "
+            "still requires explicit user selection and external proof and does not "
+            "promote hidden selection. "
             "For mixed predicate "
             "rows, choose a policy-aware semantic contract explicitly; counts-only semantics "
             "can pass, but Goal4165 does not justify broad mixed direct-status promotion. "
@@ -306,7 +309,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
         ),
         next_runtime_action=(
             "keep the user-visible profile/reuse advisor scale-aware and policy-aware; next serious runtime work is "
-            "either Goal4177 post-refactor declared-route pod timing, one-shot prepare-cost reduction, broader profile coverage beyond the current 65k/131k/262k/524k/1M packet, "
+            "either one-shot prepare-cost reduction, broader profile coverage beyond the current 65k/131k/262k/524k/1M/2M packet, "
             "or a generic border-assignment policy primitive if mixed-predicate component-size distributions must be contractual. "
             "Goal4088, Goal4093, Goal4096, Goal4100, Goal4104, Goal4105, Goal4108, Goal4109, "
             "Goal4114, Goal4116, Goal4117, Goal4121, Goal4122, Goal4126, Goal4130, Goal4134, Goal4138, "

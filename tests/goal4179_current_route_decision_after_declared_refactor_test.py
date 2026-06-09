@@ -7,20 +7,20 @@ import rtdsl as rt
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REPORT = ROOT / "docs" / "reports" / "goal4179_current_route_decision_after_declared_refactor_2026-06-09.md"
+REPORT = ROOT / "docs" / "reports" / "goal4180_current_route_decision_after_goal4177_timing_2026-06-09.md"
 
 
 class Goal4179CurrentRouteDecisionAfterDeclaredRefactorTest(unittest.TestCase):
     def test_registry_version_tracks_declared_refactor_without_timing_promotion(self) -> None:
         self.assertEqual(
             rt.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION,
-            "rtdl.v2_10.current_benchmark_route_decisions.goal4179.v1",
+            "rtdl.v2_10.current_benchmark_route_decisions.goal4180.v1",
         )
         validation = rt.validate_current_benchmark_route_decisions()
         self.assertEqual(validation["status"], "accept")
         self.assertEqual(validation["errors"], ())
 
-    def test_rtdbscan_route_records_generic_all_items_contract_and_pending_pod_timing(self) -> None:
+    def test_rtdbscan_route_records_generic_all_items_contract_and_pod_timing(self) -> None:
         route = rt.explain_current_benchmark_route("rt_dbscan")
         self.assertIn("Goal4176", route["current_reader_decision"])
         self.assertIn("Goal4177", route["current_reader_decision"])
@@ -28,8 +28,9 @@ class Goal4179CurrentRouteDecisionAfterDeclaredRefactorTest(unittest.TestCase):
         self.assertIn("post-refactor pod timing", route["current_reader_decision"])
         self.assertIn("caller-declared all-items direct-status", route["primary_route"])
         self.assertIn("synthetic predicate columns", route["user_choice_guidance"])
-        self.assertIn("Goal4173 timing numbers bounded to the older implementation", route["user_choice_guidance"])
-        self.assertIn("Goal4177 post-refactor declared-route pod timing", route["next_runtime_action"])
+        self.assertIn("1.704x elapsed speedup", route["user_choice_guidance"])
+        self.assertIn("1.269x over the measured all-true", route["user_choice_guidance"])
+        self.assertNotIn("Goal4177 post-refactor declared-route pod timing", route["next_runtime_action"])
         for ref in ("Goal4173", "Goal4176", "Goal4177"):
             self.assertIn(ref, route["evidence_refs"])
 
@@ -49,12 +50,10 @@ class Goal4179CurrentRouteDecisionAfterDeclaredRefactorTest(unittest.TestCase):
     def test_report_records_next_major_runtime_direction(self) -> None:
         report = REPORT.read_text(encoding="utf-8")
         for fragment in (
-            "accepted registry consistency refresh; no route promotion",
-            "rtdl.v2_10.current_benchmark_route_decisions.goal4179.v1",
-            "generic all-items direct-status",
-            "not synthetic predicate columns",
-            "Goal4173 timing remains the bounded timing evidence",
-            "Run Goal4177 pod timing",
+            "accepted registry refresh; no automatic route promotion",
+            "rtdl.v2_10.current_benchmark_route_decisions.goal4180.v1",
+            "`1.704x` elapsed speedup",
+            "`1.269x` over measured all-true",
             "generic border-assignment policy primitive",
             "does not authorize release",
         ):
