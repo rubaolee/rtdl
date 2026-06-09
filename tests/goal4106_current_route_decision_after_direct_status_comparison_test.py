@@ -14,7 +14,7 @@ class Goal4106CurrentRouteDecisionAfterDirectStatusComparisonTest(unittest.TestC
     def test_rtdbscan_route_records_direct_status_without_promoting_it(self) -> None:
         route = rt.explain_current_benchmark_route("rt_dbscan")
 
-        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4115.v1", route["version"])
+        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4118.v1", route["version"])
         self.assertIn("Goal4104", route["current_reader_decision"])
         self.assertIn("1.239x", route["current_reader_decision"])
         self.assertIn("1.508x", route["current_reader_decision"])
@@ -28,8 +28,8 @@ class Goal4106CurrentRouteDecisionAfterDirectStatusComparisonTest(unittest.TestC
             "partition_convergence_hybrid direct-status app-level promotion after Goal4105 setup-boundary comparison",
             route["rejected_or_unpromoted_candidates"],
         )
-        self.assertIn("shape-aware", route["next_runtime_action"])
-        self.assertIn("ngsim_dense regression", route["next_runtime_action"])
+        self.assertIn("profile/reuse advisor", route["next_runtime_action"])
+        self.assertIn("hidden factor selection", route["next_runtime_action"])
         self.assertIn("Goal4104", route["evidence_refs"])
         self.assertIn("Goal4105", route["evidence_refs"])
         self.assertIn("Goal4108", route["evidence_refs"])
@@ -45,7 +45,7 @@ class Goal4106CurrentRouteDecisionAfterDirectStatusComparisonTest(unittest.TestC
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual((), validation["errors"])
-        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4115.v1", summary["version"])
+        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4118.v1", summary["version"])
         self.assertEqual(10, summary["row_count"])
         self.assertFalse(summary["automatic_partner_selection_authorized"])
         self.assertFalse(summary["release_authorized"])

@@ -14,17 +14,17 @@ class Goal4043RtdbscanRouteRefreshAfterPartitionCandidateTest(unittest.TestCase)
     def test_rtdbscan_route_records_partition_candidate_without_promoting_it(self) -> None:
         route = rt.explain_current_benchmark_route("rt_dbscan")
 
-        self.assertEqual("numba_continuation", route["decision_kind"])
-        self.assertEqual("numba", route["partner_policy"])
+        self.assertEqual("mixed_explicit", route["decision_kind"])
+        self.assertEqual("mixed_explicit_user_choice", route["partner_policy"])
         self.assertIn("unblocked RTDL/OptiX grouped stream", route["current_reader_decision"])
         self.assertIn("partition_convergence_hybrid", route["current_reader_decision"])
-        self.assertIn("not a default speed win", route["current_reader_decision"])
+        self.assertIn("explicit route choice", route["current_reader_decision"])
         self.assertIn(
             "partition_convergence_hybrid default promotion after Goal4041 mixed timing",
             route["rejected_or_unpromoted_candidates"],
         )
-        self.assertIn("fused resident component-label continuation", route["next_runtime_action"])
-        self.assertIn("prepared/native partition handle", route["next_runtime_action"])
+        self.assertIn("profile/reuse advisor", route["next_runtime_action"])
+        self.assertIn("hidden factor selection", route["next_runtime_action"])
         self.assertIn("Goal4040", route["evidence_refs"])
         self.assertIn("Goal4041", route["evidence_refs"])
         self.assertFalse(route["automatic_partner_selection_authorized"])

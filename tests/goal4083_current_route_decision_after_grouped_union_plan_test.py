@@ -14,13 +14,13 @@ class Goal4083CurrentRouteDecisionAfterGroupedUnionPlanTest(unittest.TestCase):
     def test_rtdbscan_route_points_to_grouped_union_work_reduction_plan(self) -> None:
         route = rt.explain_current_benchmark_route("rt_dbscan")
 
-        self.assertEqual("numba_continuation", route["decision_kind"])
-        self.assertEqual("numba", route["partner_policy"])
+        self.assertEqual("mixed_explicit", route["decision_kind"])
+        self.assertEqual("mixed_explicit_user_choice", route["partner_policy"])
         self.assertIn("Goal4079-4105", route["current_reader_decision"])
         self.assertIn("candidate enumeration", route["current_reader_decision"])
         self.assertIn("root-read", route["current_reader_decision"])
-        self.assertIn("shape-aware", route["next_runtime_action"])
-        self.assertIn("universal default promotion is blocked", route["next_runtime_action"])
+        self.assertIn("profile/reuse advisor", route["next_runtime_action"])
+        self.assertIn("hidden factor selection", route["next_runtime_action"])
         self.assertIn("Goal4071", route["evidence_refs"])
         self.assertIn("Goal4079", route["evidence_refs"])
         self.assertIn("Goal4080", route["evidence_refs"])

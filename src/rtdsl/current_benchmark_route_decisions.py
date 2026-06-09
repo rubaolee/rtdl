@@ -6,15 +6,15 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4115.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4118.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
-    "Goal4115 refreshes current benchmark route decisions after the Goal4074-4114 "
+    "Goal4118 refreshes current benchmark route decisions after the Goal4074-4117 "
     "RT-DBSCAN grouped-union bottleneck, partition-summary feasibility, host-work "
     "skip, non-skip active pair stream, device partition-key decode, and unordered "
     "non-skip stream chain, plus direct device status union and route-level direct-status "
-    "comparison, prepared direct-status replay, explicit app-mode smoke, and shape-dependent "
-    "repeated app-route timing. It is "
+    "comparison, prepared direct-status replay, explicit app-mode smoke, shape-dependent "
+    "repeated app-route timing, and explicit partition-cell-factor route sweeps. It is "
     "advisory guidance only: users choose partners "
     "explicitly. It does not authorize release action, public speedup wording, "
     "whole-app acceleration wording, broad RT-core wording, paper-reproduction "
@@ -169,9 +169,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
     ),
     CurrentBenchmarkRouteDecision(
         app="rt_dbscan",
-        decision_kind="numba_continuation",
+        decision_kind="mixed_explicit",
         current_reader_decision=(
-            "Use the unblocked RTDL/OptiX grouped stream plus Numba column-signature continuation. "
+            "Use the unblocked RTDL/OptiX grouped stream plus Numba column-signature continuation "
+            "for the conservative one-shot/default route. "
             "Keep existing partition_convergence_hybrid previews explicit and unpromoted. Goal4088 "
             "cuts device partition-summary build time by 1.6x-2.3x. Goal4093 adds an explicit "
             "non-skip active pair stream that emits 1.5x-2.6x fewer rows and improves build time "
@@ -199,17 +200,25 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "shows the direct-status path is shape-dependent: it wins clustered3d and road3d "
             "repeated component-signature replay by 1.796x and 1.439x, but loses on "
             "ngsim_dense at 0.178x replay speedup, so it must remain an explicit profile-aware "
-            "choice rather than a universal default."
+            "choice rather than a universal default. Goal4116 exposes the partition cell factor "
+            "as an explicit user-selected app parameter. Goal4117 then shows tuned explicit "
+            "partition-cell-factor choices make the prepared direct-status route faster than the "
+            "current repeated route on all three tested profiles: clustered3d uses 0.25 for "
+            "2.961x replay speedup, road3d uses 0.25 for 1.866x, and ngsim_dense uses 0.5 "
+            "for 1.312x. This is still an explicit route choice, not automatic tuning."
         ),
-        primary_route="RTDL/OptiX fixed-radius grouped stream with Numba component/signature continuation",
-        partner_policy="numba",
+        primary_route=(
+            "mixed explicit RT-DBSCAN route: grouped-stream Numba for one-shot/default, "
+            "prepared direct-status CuPy with user-selected partition cell factor for repeated component signatures"
+        ),
+        partner_policy="mixed_explicit_user_choice",
         primitive_contract="fixed-radius count-threshold device columns plus grouped stream component labels",
         user_choice_guidance=(
             "Use Numba grouped-stream for the current one-shot default. Choose the explicit "
             "CuPy prepared direct-status app mode when the workload reuses the same "
-            "point/partition columns for clustered/road-like repeated component-signature "
-            "queries. Keep the Numba grouped-stream route for dense NGSIM-like repeated "
-            "component signatures unless new same-contract evidence beats it."
+            "point/partition columns for repeated component-signature queries, and set "
+            "`partition_cell_factor` explicitly from tested evidence: 0.25 for clustered/road-like "
+            "profiles and 0.5 for dense NGSIM-like profiles. Do not auto-select the factor."
         ),
         rejected_or_unpromoted_candidates=(
             "blocked grouped stream candidate from Goal3936",
@@ -223,17 +232,17 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "partition_convergence_hybrid direct-status app-level promotion after Goal4105 setup-boundary comparison",
             "partition_convergence_hybrid universal default promotion after Goal4108 prepared replay and Goal4109 app smoke",
             "partition_convergence_hybrid universal default promotion after Goal4114 shape-dependent repeated app-route timing",
+            "automatic partition-cell-factor tuning after Goal4117 explicit factor sweep",
         ),
         next_runtime_action=(
-            "keep route selection explicit and shape-aware; next serious work is either a user-visible "
-            "profile/reuse advisor that explains why clustered/road-like profiles favor prepared direct-status "
-            "while dense NGSIM-like profiles favor grouped-stream Numba, or a new dense-profile direct-status "
-            "runtime improvement that removes the ngsim_dense regression. Goal4088, Goal4093, Goal4096, "
-            "Goal4100, Goal4104, Goal4105, Goal4108, Goal4109, and Goal4114 prove "
+            "add a user-visible profile/reuse advisor that explains the explicit repeated-route "
+            "cell-factor choice without hidden dispatch, then decide whether the next performance "
+            "target is one-shot prepare-cost reduction or a larger representative-scale packet. "
+            "Goal4088, Goal4093, Goal4096, Goal4100, Goal4104, Goal4105, Goal4108, Goal4109, "
+            "Goal4114, Goal4116, and Goal4117 prove "
             "producer-side cleanup, active-pair materialization reduction, device-resident "
             "key decoding, explicit unordered set-stream contracts, and direct status "
-            "consumption matter, but universal default promotion is blocked by the ngsim_dense "
-            "loss in the repeated app-route packet"
+            "consumption matter, but hidden factor selection and universal default promotion remain blocked"
         ),
         evidence_refs=(
             "Goal3758",
@@ -265,6 +274,8 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4108",
             "Goal4109",
             "Goal4114",
+            "Goal4116",
+            "Goal4117",
         ),
         pod_needed_next=False,
     ),

@@ -14,7 +14,7 @@ class Goal4110CurrentRouteDecisionAfterPreparedDirectStatusAppModeTest(unittest.
     def test_rtdbscan_route_records_prepared_direct_status_without_universal_promotion(self) -> None:
         route = rt.explain_current_benchmark_route("rt_dbscan")
 
-        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4115.v1", route["version"])
+        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4118.v1", route["version"])
         self.assertIn("Goal4108", route["current_reader_decision"])
         self.assertIn("1.802x", route["current_reader_decision"])
         self.assertIn("2.465x", route["current_reader_decision"])
@@ -28,8 +28,8 @@ class Goal4110CurrentRouteDecisionAfterPreparedDirectStatusAppModeTest(unittest.
             "partition_convergence_hybrid universal default promotion after Goal4108 prepared replay and Goal4109 app smoke",
             route["rejected_or_unpromoted_candidates"],
         )
-        self.assertIn("shape-aware", route["next_runtime_action"])
-        self.assertIn("ngsim_dense regression", route["next_runtime_action"])
+        self.assertIn("profile/reuse advisor", route["next_runtime_action"])
+        self.assertIn("hidden factor selection", route["next_runtime_action"])
         self.assertIn("Goal4108", route["evidence_refs"])
         self.assertIn("Goal4109", route["evidence_refs"])
         self.assertFalse(route["automatic_partner_selection_authorized"])
@@ -43,7 +43,7 @@ class Goal4110CurrentRouteDecisionAfterPreparedDirectStatusAppModeTest(unittest.
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual((), validation["errors"])
-        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4115.v1", summary["version"])
+        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4118.v1", summary["version"])
         self.assertEqual(10, summary["row_count"])
         self.assertFalse(summary["automatic_partner_selection_authorized"])
         self.assertFalse(summary["release_authorized"])
