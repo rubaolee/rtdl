@@ -6,13 +6,14 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4101.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4106.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
-    "Goal4101 refreshes current benchmark route decisions after the Goal4074-4100 "
+    "Goal4106 refreshes current benchmark route decisions after the Goal4074-4105 "
     "RT-DBSCAN grouped-union bottleneck, partition-summary feasibility, host-work "
     "skip, non-skip active pair stream, device partition-key decode, and unordered "
-    "non-skip stream chain. It is advisory guidance only: users choose partners "
+    "non-skip stream chain, plus direct device status union and route-level direct-status "
+    "comparison. It is advisory guidance only: users choose partners "
     "explicitly. It does not authorize release action, public speedup wording, "
     "whole-app acceleration wording, broad RT-core wording, paper-reproduction "
     "wording, true-zero-copy wording, automatic partner selection, AMD performance "
@@ -178,10 +179,15 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "continuations, improving build medians by 1.13x-1.17x over the Goal4096 sorted "
             "non-skip path and pair emit medians by 1.38x-2.32x. Five-run prepared reuse "
             "still does not beat the recommended route on clustered or road profiles. "
-            "Goal4079-4100 therefore identify the next serious "
-            "target as a generic fused/native fixed-radius grouped-union work-reduction primitive "
-            "that reduces candidate enumeration, root-read traffic, repeated scan work, and "
-            "full partition-pair materialization together."
+            "Goal4104 shows that direct device status consumption beats materialized unordered "
+            "partition-pair rows inside the resident runtime shape by 1.239x, 1.508x, and "
+            "1.311x. Goal4105 then shows the naive app-level direct-status route is not "
+            "route-promotable because repeated point generation and column packing make it "
+            "slower than the current route at 0.475x, 0.380x, and 0.206x. Goal4079-4105 "
+            "therefore identify the next serious target as a prepared/resident direct-status "
+            "fixed-radius grouped-union primitive that reduces candidate enumeration, root-read "
+            "traffic, repeated scan work, setup/packing work, and full partition-pair "
+            "materialization together."
         ),
         primary_route="RTDL/OptiX fixed-radius grouped stream with Numba component/signature continuation",
         partner_policy="numba",
@@ -196,14 +202,17 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "partition_convergence_hybrid non-skip default promotion after Goal4093 active-pair stream evidence",
             "partition_convergence_hybrid default promotion after Goal4096 device key decode improvement",
             "partition_convergence_hybrid unordered non-skip default promotion after Goal4100 order-insensitive stream evidence",
+            "partition_convergence_hybrid direct-status app-level promotion after Goal4105 setup-boundary comparison",
         ),
         next_runtime_action=(
-            "pursue the Goal4080/4086 generic fixed-radius grouped-union work-reduction candidate; "
-            "Goal4088, Goal4093, Goal4096, and Goal4100 prove producer-side cleanup, active-pair "
-            "materialization reduction, device-resident key decoding, and explicit unordered set-stream "
-            "contracts matter, but success still requires same-contract correctness, lower "
-            "candidate/root/repeated-scan work than Goal4079, no ngsim_dense regression, and production "
-            "timing that beats the current grouped-stream Numba route before any default-route reconsideration"
+            "pursue a prepared/resident direct-status fixed-radius grouped-union handle; "
+            "Goal4088, Goal4093, Goal4096, Goal4100, Goal4104, and Goal4105 prove "
+            "producer-side cleanup, active-pair materialization reduction, device-resident "
+            "key decoding, explicit unordered set-stream contracts, and direct status "
+            "consumption matter, but app-level success now requires resident column preparation, "
+            "same-contract correctness, lower candidate/root/repeated-scan work, no ngsim_dense "
+            "regression, and production timing that beats the current grouped-stream Numba route "
+            "before any default-route reconsideration"
         ),
         evidence_refs=(
             "Goal3758",
@@ -230,6 +239,8 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4093",
             "Goal4096",
             "Goal4100",
+            "Goal4104",
+            "Goal4105",
         ),
         pod_needed_next=False,
     ),

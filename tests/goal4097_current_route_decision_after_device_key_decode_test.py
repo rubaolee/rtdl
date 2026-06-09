@@ -14,7 +14,7 @@ class Goal4097CurrentRouteDecisionAfterDeviceKeyDecodeTest(unittest.TestCase):
     def test_rtdbscan_route_records_goal4096_without_promoting_it(self) -> None:
         route = rt.explain_current_benchmark_route("rt_dbscan")
 
-        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4101.v1", route["version"])
+        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4106.v1", route["version"])
         self.assertIn("Goal4096", route["current_reader_decision"])
         self.assertIn("1.18x-1.47x", route["current_reader_decision"])
         self.assertIn("still does not beat the recommended route", route["current_reader_decision"])
@@ -23,6 +23,7 @@ class Goal4097CurrentRouteDecisionAfterDeviceKeyDecodeTest(unittest.TestCase):
             route["rejected_or_unpromoted_candidates"],
         )
         self.assertIn("Goal4096", route["evidence_refs"])
+        self.assertIn("Goal4105", route["evidence_refs"])
         self.assertIn("device-resident key decoding", route["next_runtime_action"])
         self.assertFalse(route["automatic_partner_selection_authorized"])
         self.assertFalse(route["release_authorized"])
