@@ -104,7 +104,7 @@ app/partner code unless it is redesigned as an app-independent behavior.
 
 - Generator version: `rtdl.primitive_catalog.generated.v1`
 - Hierarchy validation valid: `True`
-- Node count: `57`
+- Node count: `58`
 - Unknown capability tags: `-`
 - Missing dependencies: `-`
 - Backward dependencies: `-`
@@ -172,6 +172,7 @@ Reduction Layer (layer.reduction)
   Columnar Compact Summary (reduction.columnar_compact_summary)
 Continuation Layer (layer.continuation)
   Fixed-Radius Graph Continuation (continuation.fixed_radius_graph)
+  Predicate-Aware Boundary Union (continuation.predicate_aware_boundary_union)
   Explicit Partner Continuation (continuation.partner_resident)
   Segmented / Chunked Row Continuation (continuation.segmented_chunked_rows)
   Candidate-Quality / Ranked Summary Continuation (continuation.ranked_summary)
@@ -333,6 +334,7 @@ Owns reusable post-traversal continuations that remain app-independent.
 | Node | Status | Summary | Outputs | Depends on | Capabilities | Backends / partners | Boundary |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `continuation.fixed_radius_graph` | `internal_substrate` | Generic continuation over fixed-radius candidate streams and group/component pressure. | `component_or_group_rows` | `rows.fixed_radius_neighbor_rows`, `reduction.grouped` | `intent:components`, `intent:reduce`, `shape:fixed_radius`, `dim:3d`, `output:columns`, `output:grouped`, `exactness:exact`, `keying:by_query_id` | backends: `optix`<br>partner ops: `cupy_grouped_stream_component_labels` | Cluster semantics remain app code. |
+| `continuation.predicate_aware_boundary_union` | `candidate_behavior` | Candidate continuation for fixed-radius component grouping with caller-supplied vertex predicates and deterministic boundary-item assignment policy. | `component_signature`, `boundary_assignment_summary`, `policy_metadata` | `rows.fixed_radius_neighbor_rows`, `continuation.fixed_radius_graph` | `intent:components`, `intent:reduce`, `shape:fixed_radius`, `dim:3d`, `output:columns`, `output:grouped`, `exactness:exact`, `keying:by_query_id` | backends: `optix`<br>partner ops: `numba_grouped_stream_component_labels`, `cupy_direct_status_union_preview` | Caller owns predicate meaning and app semantics; RTDL owns only generic predicate flags, component roots, boundary items, and deterministic assignment policy metadata. |
 | `continuation.partner_resident` | `internal_substrate` | Partner-selected post-traversal continuation over RTDL buffer descriptors. Partner roles are explicit metadata, not hidden routing or native-engine policy. | `partner_owned_result` | `execution.partner_resident_handoff` | - | - | - |
 | `continuation.segmented_chunked_rows` | `internal_substrate` | Page generic row streams with deterministic continuation tokens to avoid unbounded materialization and device-memory pressure. | `row_pages`, `continuation_state` | `rows.generic_candidate_rows`, `execution.capacity_overflow_contract` | `intent:collect_rows`, `shape:generic`, `output:rows`, `output:columns`, `exactness:bounded`, `keying:by_query_id` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix` | - |
 | `continuation.ranked_summary` | `internal_substrate` | Summarize candidate quality or bounded nearest/ranked rows without owning app policy. | `ranked_summary` | `rows.fixed_radius_neighbor_rows`, `reduction.scalar` | `intent:nearest`, `intent:topk`, `intent:reduce`, `shape:fixed_radius`, `dim:2d`, `dim:3d`, `output:grouped`, `output:scalar`, `exactness:bounded`, `keying:by_query_id` | backends: `cpu_python_reference`, `cpu`, `embree`, `optix`<br>partner ops: `grouped_argmin_f64`, `grouped_topk_f64` | - |
@@ -342,6 +344,7 @@ Discovery metadata:
 | Node | Aliases | Intent phrases | Reference | Distinction |
 | --- | --- | --- | --- | --- |
 | `continuation.fixed_radius_graph` | `fixed_radius_graph_components`, `radius_graph_component_labels`, `grouped_stream_component_labels`, `fixed_radius_component_continuation` | `compute component labels over a fixed radius graph`, `avoid dense adjacency row materialization for fixed radius graph components`, `run grouped stream continuation for fixed radius graph component labels` | docs/reports/goal3155_fixed_radius_graph_component_front_door_2026-06-03.md | Consumes fixed-radius traversal pressure into component-label columns; it does not emit full neighbor rows like rows.fixed_radius_neighbor_rows, page arbitrary row streams like continuation.segmented_chunked_rows, or own app policy beyond the generic component threshold. |
+| `continuation.predicate_aware_boundary_union` | `predicate_aware_boundary_union`, `predicate_component_union`, `fixed_radius_boundary_assignment`, `border_assignment_policy`, `predicate_direct_status_grouped_union` | `assign boundary items to deterministic component roots from caller supplied predicate flags`, `compute predicate aware fixed radius component signatures without app specific clustering logic`, `compare counts only and policy bound component size contracts for fixed radius components` | docs/reports/goal4190_rt_dbscan_counts_only_mixed_route_probe_rtx4000ada_2026-06-09.md | Extends fixed_radius_graph with caller-supplied predicate flags and an explicit deterministic boundary assignment policy. It is not plain grouped reduction, not arbitrary row paging, and not an app-specific clustering or DBSCAN primitive. |
 | `continuation.segmented_chunked_rows` | `segmented_rows`, `chunked_rows`, `paged_rows`, `streaming_rows` | `page large row streams with deterministic continuation tokens`, `avoid all at once materialization of large generic row outputs` | docs/rtdl_primitive_catalog.md | - |
 | `continuation.ranked_summary` | `ranked_summary`, `top_k_summary`, `nearest_ranked`, `candidate_quality` | `summarize nearest candidate quality by query id`, `compute bounded ranked nearest summaries from fixed radius rows` | docs/features/knn_rows/README.md | Summarizes already emitted fixed-radius rows; it does not own traversal or materialize full witness rows like collect_k_bounded. |
 

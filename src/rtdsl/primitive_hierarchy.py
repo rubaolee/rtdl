@@ -1119,6 +1119,59 @@ PRIMITIVE_HIERARCHY = (
                 ),
             ),
             PrimitiveHierarchyNode(
+                id="continuation.predicate_aware_boundary_union",
+                title="Predicate-Aware Boundary Union",
+                layer="continuation",
+                status="candidate_behavior",
+                summary=(
+                    "Candidate continuation for fixed-radius component grouping with caller-supplied "
+                    "vertex predicates and deterministic boundary-item assignment policy."
+                ),
+                outputs=("component_signature", "boundary_assignment_summary", "policy_metadata"),
+                depends_on=("rows.fixed_radius_neighbor_rows", "continuation.fixed_radius_graph"),
+                boundary=(
+                    "Caller owns predicate meaning and app semantics; RTDL owns only generic predicate flags, "
+                    "component roots, boundary items, and deterministic assignment policy metadata."
+                ),
+                capability_tags=(
+                    "intent:components",
+                    "intent:reduce",
+                    "shape:fixed_radius",
+                    "dim:3d",
+                    "output:columns",
+                    "output:grouped",
+                    "exactness:exact",
+                    "keying:by_query_id",
+                ),
+                aliases=(
+                    "predicate_aware_boundary_union",
+                    "predicate_component_union",
+                    "fixed_radius_boundary_assignment",
+                    "border_assignment_policy",
+                    "predicate_direct_status_grouped_union",
+                ),
+                intent_phrases=(
+                    "assign boundary items to deterministic component roots from caller supplied predicate flags",
+                    "compute predicate aware fixed radius component signatures without app specific clustering logic",
+                    "compare counts only and policy bound component size contracts for fixed radius components",
+                ),
+                reference_path=(
+                    "docs/reports/goal4190_rt_dbscan_counts_only_mixed_route_probe_rtx4000ada_2026-06-09.md"
+                ),
+                backends=("optix",),
+                partner_ops=("numba_grouped_stream_component_labels", "cupy_direct_status_union_preview"),
+                considered_alternatives=(
+                    "continuation.fixed_radius_graph",
+                    "continuation.segmented_chunked_rows",
+                    "reduction.grouped",
+                ),
+                distinct_from=(
+                    "Extends fixed_radius_graph with caller-supplied predicate flags and an explicit "
+                    "deterministic boundary assignment policy. It is not plain grouped reduction, "
+                    "not arbitrary row paging, and not an app-specific clustering or DBSCAN primitive."
+                ),
+            ),
+            PrimitiveHierarchyNode(
                 id="continuation.partner_resident",
                 title="Explicit Partner Continuation",
                 layer="continuation",
