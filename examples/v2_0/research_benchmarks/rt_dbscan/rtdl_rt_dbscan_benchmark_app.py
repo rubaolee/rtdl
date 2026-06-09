@@ -35,16 +35,20 @@ RT_DBSCAN_TESTED_DIRECT_STATUS_PARTITION_CELL_FACTOR_OPTIONS = {
         {"point_count": 65536, "factor": 0.25, "replay_speedup": 2.961, "one_shot_total_speedup": 2.506, "evidence_refs": ("Goal4117", "Goal4130")},
         {"point_count": 131072, "factor": 0.25, "replay_speedup": 3.211, "one_shot_total_speedup": 3.110, "evidence_refs": ("Goal4122", "Goal4130")},
         {"point_count": 262144, "factor": 0.25, "replay_speedup": 3.118, "one_shot_total_speedup": 3.192, "evidence_refs": ("Goal4126", "Goal4130")},
+        {"point_count": 524288, "factor": 0.25, "replay_speedup": 3.291, "one_shot_total_speedup": 3.250, "evidence_refs": ("Goal4134",)},
     ),
     "road3d": (
         {"point_count": 65536, "factor": 0.25, "replay_speedup": 1.866, "one_shot_total_speedup": 2.609, "evidence_refs": ("Goal4117", "Goal4130")},
         {"point_count": 131072, "factor": 0.25, "replay_speedup": 1.545, "one_shot_total_speedup": 2.606, "evidence_refs": ("Goal4122", "Goal4130")},
         {"point_count": 262144, "factor": 0.25, "replay_speedup": 1.428, "one_shot_total_speedup": 2.272, "evidence_refs": ("Goal4126", "Goal4130")},
+        {"point_count": 524288, "factor": 0.25, "replay_speedup": 1.367, "one_shot_total_speedup": 1.910, "evidence_refs": ("Goal4134",)},
     ),
     "ngsim_dense": (
+        {"point_count": 65536, "factor": 0.25, "replay_speedup": 0.969, "one_shot_total_speedup": 3.679, "evidence_refs": ("Goal4130",)},
         {"point_count": 65536, "factor": 0.5, "replay_speedup": 1.312, "one_shot_total_speedup": 1.819, "evidence_refs": ("Goal4117", "Goal4130")},
         {"point_count": 131072, "factor": 0.25, "replay_speedup": 1.399, "one_shot_total_speedup": 3.410, "evidence_refs": ("Goal4122", "Goal4130")},
         {"point_count": 262144, "factor": 0.25, "replay_speedup": 1.642, "one_shot_total_speedup": 2.939, "evidence_refs": ("Goal4126", "Goal4130")},
+        {"point_count": 524288, "factor": 0.25, "replay_speedup": 1.769, "one_shot_total_speedup": 2.489, "evidence_refs": ("Goal4134",)},
     ),
 }
 RT_DBSCAN_DIRECT_STATUS_APP_MODE = "partner_cupy_prepared_direct_status_union_component_signature_3d"
@@ -127,10 +131,17 @@ def explain_rt_dbscan_explicit_route_choice(
     options: list[dict[str, object]] = [default_option]
     if dataset in RT_DBSCAN_TESTED_DIRECT_STATUS_PARTITION_CELL_FACTOR_OPTIONS:
         tested_options = list(RT_DBSCAN_TESTED_DIRECT_STATUS_PARTITION_CELL_FACTOR_OPTIONS[dataset])
+        metric_key = "replay_speedup" if repeated else "one_shot_total_speedup"
         if resolved_point_count is not None:
-            tested_options.sort(key=lambda row: abs(int(row["point_count"]) - resolved_point_count))
+            tested_options.sort(
+                key=lambda row: (
+                    abs(int(row["point_count"]) - resolved_point_count),
+                    -float(row[metric_key]),
+                    float(row["factor"]),
+                )
+            )
         else:
-            tested_options.sort(key=lambda row: int(row["point_count"]))
+            tested_options.sort(key=lambda row: (int(row["point_count"]), -float(row[metric_key]), float(row["factor"])))
         direct_options = []
         for tested in tested_options:
             direct_options.append(

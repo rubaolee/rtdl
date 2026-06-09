@@ -14,7 +14,7 @@ class Goal4118CurrentRouteDecisionAfterTunedDirectStatusTest(unittest.TestCase):
     def test_rtdbscan_route_is_mixed_explicit_after_tuned_factor_sweep(self) -> None:
         route = rt.explain_current_benchmark_route("rt_dbscan")
 
-        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4131.v1", route["version"])
+        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4135.v1", route["version"])
         self.assertEqual("mixed_explicit", route["decision_kind"])
         self.assertEqual("mixed_explicit_user_choice", route["partner_policy"])
         self.assertIn("conservative one-shot/default route", route["current_reader_decision"])
@@ -26,8 +26,8 @@ class Goal4118CurrentRouteDecisionAfterTunedDirectStatusTest(unittest.TestCase):
         self.assertIn("not automatic tuning", route["current_reader_decision"])
         self.assertIn("partition_cell_factor", route["user_choice_guidance"])
         self.assertIn("0.25 for clustered/road-like", route["user_choice_guidance"])
-        self.assertIn("0.5 at 65k", route["user_choice_guidance"])
-        self.assertIn("0.25 at 131k", route["user_choice_guidance"])
+        self.assertIn("repeated replay ranks 0.5", route["user_choice_guidance"])
+        self.assertIn("131k/262k/524k rank 0.25", route["user_choice_guidance"])
         self.assertIn("Do not auto-select", route["user_choice_guidance"])
         self.assertIn(
             "automatic partition-cell-factor tuning after Goal4117 explicit factor sweep",
@@ -48,7 +48,7 @@ class Goal4118CurrentRouteDecisionAfterTunedDirectStatusTest(unittest.TestCase):
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual((), validation["errors"])
-        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4131.v1", summary["version"])
+        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4135.v1", summary["version"])
         self.assertEqual(10, summary["row_count"])
         self.assertFalse(summary["automatic_partner_selection_authorized"])
         self.assertFalse(summary["release_authorized"])

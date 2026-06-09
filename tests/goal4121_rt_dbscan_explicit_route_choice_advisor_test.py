@@ -57,8 +57,8 @@ class Goal4121RtDbscanExplicitRouteChoiceAdvisorTest(unittest.TestCase):
 
         self.assertEqual(RT_DBSCAN_DIRECT_STATUS_APP_MODE, first["mode"])
         self.assertEqual("cupy", first["partner"])
-        self.assertEqual(0.5, first["partition_cell_factor"])
-        self.assertGreater(first["one_shot_total_speedup_vs_current"], 1.8)
+        self.assertEqual(0.25, first["partition_cell_factor"])
+        self.assertGreater(first["one_shot_total_speedup_vs_current"], 3.6)
         self.assertIn("Goal4130", first["evidence_refs"])
         self.assertEqual(RT_DBSCAN_GROUPED_STREAM_NUMBA_APP_MODE, packet["options"][-1]["mode"])
         self.assertFalse(packet["automatic_dispatch_authorized"])
