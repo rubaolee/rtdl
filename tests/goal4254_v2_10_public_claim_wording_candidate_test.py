@@ -16,7 +16,10 @@ class Goal4254V210PublicClaimWordingCandidateTest(unittest.TestCase):
         self.assertIn("ten promoted benchmark front doors pass on an RTX 4000 Ada pod", text)
         self.assertIn("second-level timing for all ten promoted", text)
         self.assertIn("selected RT-heavy contracts", text)
+        self.assertIn("measured OptiX", text)
         self.assertIn("RayJoin-style evidence is contract-split", text)
+        self.assertNotIn("strong OptiX", text)
+        self.assertNotIn("where a benchmark needs custom continuation logic", text)
 
     def test_candidate_forbidden_claims_are_explicit(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
@@ -40,6 +43,10 @@ class Goal4254V210PublicClaimWordingCandidateTest(unittest.TestCase):
 
         self.assertIn("Candidate Front-Page Paragraph", text)
         self.assertIn("used from the source tree", text)
+        self.assertIn("see the README for platform-specific", text)
+        self.assertIn("setup", text)
+        self.assertNotIn("used from the source tree with `PYTHONPATH=src:.`", text)
+        self.assertIn("specific workload contracts and reviewed timing artifacts", text)
         self.assertIn("Do not read v2.10 as", text)
         self.assertIn("universal speedup promise", text)
         self.assertIn("paper-reproduction claim", text)

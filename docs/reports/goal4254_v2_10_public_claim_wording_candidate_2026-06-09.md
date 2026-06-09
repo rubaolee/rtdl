@@ -16,7 +16,7 @@ RTDL v2.10 is a Python-hosted ray-tracing DSL/runtime for non-graphical
 workloads. It lets users express traversal-heavy work through generic RTDL
 primitives, choose an explicit backend such as the Python reference runner,
 Embree, or OptiX, and compose the result with user-chosen Python partners such
-as Numba or CuPy where a benchmark needs custom continuation logic.
+as Numba or CuPy where custom continuation logic is needed.
 
 The native engine is a generic, app-agnostic native engine. Application
 semantics live in Python examples, benchmark front doors, partner continuations,
@@ -55,8 +55,8 @@ The following claims are candidates for release wording after review:
    doors pass on an RTX 4000 Ada pod.
 5. Current internal evidence includes second-level timing for all ten promoted
    benchmark apps.
-6. For selected RT-heavy contracts, reviewed artifacts show strong OptiX
-   benefits over same-contract CPU or partner baselines.
+6. For selected RT-heavy contracts, reviewed artifacts show measured OptiX
+   speedups over same-contract CPU or partner baselines.
 7. RayJoin-style evidence is contract-split: one-shot bounded PIP, repeated
    PIP, LSI, and overlay active-count are reported separately rather than
    collapsed into one whole-app RayJoin number.
@@ -85,12 +85,13 @@ The following wording remains blocked:
 
 ## Candidate Front-Page Paragraph
 
-RTDL v2.10 is used from the source tree with `PYTHONPATH=src:.`. It is a
-Python-hosted RT DSL/runtime for non-graphical workloads, built around generic
-ray-tracing primitives and explicit user-chosen backends/partners. Current
-internal evidence covers ten promoted benchmark front doors on NVIDIA/OptiX and
-keeps public claims scoped by contract and artifact. Do not read v2.10 as a
-package-install promise, universal speedup promise, whole-app acceleration
+RTDL v2.10 is used from the source tree; see the README for platform-specific
+setup. It is a Python-hosted RT DSL/runtime for non-graphical workloads, built
+around generic ray-tracing primitives and explicit user-chosen
+backends/partners. Current internal evidence covers ten promoted benchmark
+front doors on NVIDIA/OptiX and keeps public performance claims scoped to
+specific workload contracts and reviewed timing artifacts. Do not read v2.10 as
+a package-install promise, universal speedup promise, whole-app acceleration
 promise, paper-reproduction claim, automatic partner-selection claim,
 true-zero-copy product guarantee, or AMD/HIPRT performance claim.
 

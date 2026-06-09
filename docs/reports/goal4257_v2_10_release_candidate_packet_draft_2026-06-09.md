@@ -36,7 +36,7 @@ user release decision.
 | Internal release-prep packet | Goal4251 |
 | Internal release-prep external reviews | Goal4252 and Goal4253 |
 | Public claim wording candidate | Goal4254 |
-| Public claim wording external review so far | Goal4256 |
+| Public claim wording external reviews | Goal4255 and Goal4256 |
 
 ## Candidate Release Claims
 
@@ -71,7 +71,7 @@ This draft excludes:
 
 | Step | Status | Notes |
 | --- | --- | --- |
-| Final Claude review of Goal4254 wording | pending | Goal4255 job was launched; result pending at packet-draft time. |
+| Final Claude review of Goal4254 wording | done-with-boundary | Goal4255 accepted with three required wording fixes; those fixes are applied in Goal4254. |
 | Final 3-AI release consensus over this exact packet | pending | Must include Codex plus two distinct external AI systems, not Codex+Codex. |
 | User release decision | pending | Required before tag/publish. |
 | Final pod validation at the exact release commit | pending | Should rerun the Goal4250-style release-prep slice after any final packet edits. |
