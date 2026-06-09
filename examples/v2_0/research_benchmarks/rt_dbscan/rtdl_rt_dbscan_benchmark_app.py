@@ -190,11 +190,22 @@ def explain_rt_dbscan_explicit_route_choice(
         "when": "conservative one-shot/default component-signature route",
         "predicate_mix_boundary": (
             "recommended for custom radius/min-neighbor settings that produce mixed predicate flags "
-            "until a reference_grouped_stream_compatible border-assignment policy is proven"
+            "unless the caller explicitly accepts a different policy-aware semantic contract"
         ),
         "border_assignment_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
         "canonical_component_size_signature_comparison": True,
-        "evidence_refs": ("Goal3859", "Goal3936", "Goal4100", "Goal4115", "Goal4118", "Goal4159", "Goal4160"),
+        "policy_aware_semantic_signature_comparison": True,
+        "evidence_refs": (
+            "Goal3859",
+            "Goal3936",
+            "Goal4100",
+            "Goal4115",
+            "Goal4118",
+            "Goal4159",
+            "Goal4160",
+            "Goal4165",
+            "Goal4166",
+        ),
     }
     options: list[dict[str, object]] = [default_option]
     if dataset in RT_DBSCAN_TESTED_DIRECT_STATUS_PARTITION_CELL_FACTOR_OPTIONS:
@@ -249,7 +260,8 @@ def explain_rt_dbscan_explicit_route_choice(
                 "direct_status_convergence_mode_status": "stable_convergence_proven_default",
                 "predicate_scope": (
                     "proven for the default benchmark predicate shape; custom mixed-predicate overrides "
-                    "remain blocked by Goal4159 unless canonical parity is remeasured"
+                    "remain blocked unless the caller chooses a policy-aware semantic contract; "
+                    "they are not broadly faster in Goal4165"
                 ),
                 "all_predicate_fast_path_evidence": "Goal4158",
                 "border_assignment_policy": "lowest_predicate_true_point_id_within_radius",
@@ -257,6 +269,10 @@ def explain_rt_dbscan_explicit_route_choice(
                     "explicit metadata only; reference_grouped_stream_compatible policy not implemented"
                 ),
                 "canonical_component_size_signature_comparison": True,
+                "policy_aware_semantic_signature_comparison": True,
+                "mixed_predicate_performance_status": (
+                    "Goal4165 shows the candidate is not broadly faster on sparse mixed rows"
+                ),
                 "when": (
                     "explicit repeated component-signature route over reused point/partition columns"
                     if repeated
@@ -270,6 +286,8 @@ def explain_rt_dbscan_explicit_route_choice(
                     "Goal4160",
                     "Goal4161",
                     "Goal4162",
+                    "Goal4165",
+                    "Goal4166",
                     *tuple(tested["evidence_refs"]),
                 ),
             }
@@ -330,6 +348,13 @@ def explain_rt_dbscan_explicit_route_choice(
         "mixed_predicate_comparison_contracts": (
             "policy_bound_component_sizes",
             "core_noise_assigned_counts_only",
+        ),
+        "mixed_predicate_policy_probe": "Goal4165",
+        "mixed_predicate_policy_aware_contract": "Goal4166",
+        "mixed_predicate_performance_status": (
+            "policy-aware counts-only semantics can pass even when component-size policy differs, "
+            "but predicate direct-status is not promoted for mixed rows because Goal4165 does not "
+            "show broad performance advantage"
         ),
         "mixed_predicate_route_promotion_blocked_by": ("Goal4159", "Goal4160"),
         "current_predicate_border_assignment_policy": "lowest_predicate_true_point_id_within_radius",
