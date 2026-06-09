@@ -789,6 +789,19 @@ def _cluster_signature_from_numba_label_columns(
     )
 
 
+def _cluster_signature_from_numba_signature_count_columns(
+    columns: dict[str, object],
+) -> dict[str, object]:
+    label_counts = columns["label_counts"].copy_to_host().tolist()
+    core_count = int(columns["flag_true_count"].copy_to_host()[0])
+    noise_count = int(columns["negative_label_count"].copy_to_host()[0])
+    return _cluster_signature_from_nonnegative_label_counts(
+        label_counts,
+        core_count=core_count,
+        noise_count=noise_count,
+    )
+
+
 def _optix_ranked_summaries_to_cupy_core_columns(
     points: tuple[rt.Point3D, ...],
     summaries: Iterable[dict[str, object]],
@@ -1569,16 +1582,28 @@ def run_rt_dbscan_benchmark(
                 run_timing: dict[str, float] = {}
                 run_start = time.perf_counter()
                 adapter_start = time.perf_counter()
-                result = rt.fixed_radius_graph_component_labels_3d_v2_8(
-                    prepared,
-                    component_threshold=resolved_min_neighbors,
-                    return_metadata=True,
-                )
+                if column_signature_mode and grouped_stream_partner == "numba":
+                    result = rt.fixed_radius_graph_component_size_signature_3d_v2_8(
+                        prepared,
+                        component_threshold=resolved_min_neighbors,
+                        return_metadata=True,
+                    )
+                else:
+                    result = rt.fixed_radius_graph_component_labels_3d_v2_8(
+                        prepared,
+                        component_threshold=resolved_min_neighbors,
+                        return_metadata=True,
+                    )
                 run_timing["adapter_run_sec"] = time.perf_counter() - adapter_start
                 signature_strategy = None
                 if column_signature_mode:
                     signature_start = time.perf_counter()
-                    if grouped_stream_partner == "numba":
+                    if grouped_stream_partner == "numba" and "label_counts" in result["columns"]:
+                        run_signature = _cluster_signature_from_numba_signature_count_columns(
+                            result["columns"],
+                        )
+                        signature_strategy = "numba_direct_component_signature_counts"
+                    elif grouped_stream_partner == "numba":
                         run_signature = _cluster_signature_from_numba_label_columns(
                             result["columns"],
                             point_count=len(points),
@@ -1699,11 +1724,18 @@ def run_rt_dbscan_benchmark(
                     if column_signature_mode
                     else False
                 ),
+                "column_signature_uses_numba_direct_component_signature": (
+                    measured_runs[-1].get("signature_strategy")
+                    == "numba_direct_component_signature_counts"
+                    if column_signature_mode
+                    else False
+                ),
                 "column_signature_materializes_point_ids": (
                     measured_runs[-1].get("signature_strategy")
                     not in {
                         "numba_segmented_count_all_core_labels",
                         "numba_label_count_and_flag_count_label_columns",
+                        "numba_direct_component_signature_counts",
                     }
                     if column_signature_mode
                     else None
@@ -1713,6 +1745,7 @@ def run_rt_dbscan_benchmark(
                     not in {
                         "numba_segmented_count_all_core_labels",
                         "numba_label_count_and_flag_count_label_columns",
+                        "numba_direct_component_signature_counts",
                     }
                     if column_signature_mode
                     else None

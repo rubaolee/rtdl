@@ -429,6 +429,7 @@ from .v2_8_fixed_radius_graph_component_front_door import build_v2_8_fixed_radiu
 from .v2_8_fixed_radius_graph_component_front_door import build_v2_8_fixed_radius_partition_convergence_summary_reference_3d
 from .v2_8_fixed_radius_graph_component_front_door import describe_v2_8_fixed_radius_graph_component_front_door
 from .v2_8_fixed_radius_graph_component_front_door import fixed_radius_graph_component_labels_3d_v2_8
+from .v2_8_fixed_radius_graph_component_front_door import fixed_radius_graph_component_size_signature_3d_v2_8
 from .v2_8_fixed_radius_graph_component_front_door import make_v2_8_fixed_radius_graph_component_typed_stream_contract
 from .v2_8_fixed_radius_graph_component_front_door import make_v2_8_fixed_radius_partition_convergence_summary_typed_stream_contract
 from .v2_8_fixed_radius_graph_component_front_door import plan_v2_8_fixed_radius_graph_component_continuation
@@ -1265,6 +1266,7 @@ from .partner_adapters import prepare_optix_cupy_radius_graph_grouped_stream_con
 from .partner_adapters import radius_graph_components_3d_optix_cupy_prepared_grouped_stream_partner_columns
 from .partner_adapters import prepare_optix_numba_radius_graph_grouped_stream_continuation_3d
 from .partner_adapters import radius_graph_components_3d_optix_numba_prepared_grouped_stream_partner_columns
+from .partner_adapters import radius_graph_component_signature_3d_optix_numba_prepared_grouped_stream_partner_columns
 from .partner_adapters import radius_graph_components_3d_cupy_microcell_graph_partner_columns
 from .partner_adapters import columnar_rows_to_partner_columns
 from .partner_adapters import columnar_payload_to_partner_columns
@@ -2284,6 +2286,7 @@ __all__ = [
     "build_v2_8_fixed_radius_partition_convergence_summary_reference_3d",
     "describe_v2_8_fixed_radius_graph_component_front_door",
     "fixed_radius_graph_component_labels_3d_v2_8",
+    "fixed_radius_graph_component_size_signature_3d_v2_8",
     "make_v2_8_fixed_radius_graph_component_typed_stream_contract",
     "make_v2_8_fixed_radius_partition_convergence_summary_typed_stream_contract",
     "plan_v2_8_fixed_radius_graph_component_continuation",
@@ -2962,6 +2965,7 @@ __all__ = [
     "radius_graph_components_3d_optix_cupy_prepared_grouped_stream_partner_columns",
     "prepare_optix_numba_radius_graph_grouped_stream_continuation_3d",
     "radius_graph_components_3d_optix_numba_prepared_grouped_stream_partner_columns",
+    "radius_graph_component_signature_3d_optix_numba_prepared_grouped_stream_partner_columns",
     "radius_graph_components_3d_cupy_microcell_graph_partner_columns",
     "columnar_rows_to_partner_columns",
     "columnar_payload_to_partner_columns",

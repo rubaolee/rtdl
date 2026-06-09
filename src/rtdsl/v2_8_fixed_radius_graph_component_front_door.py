@@ -11,6 +11,7 @@ from .partner_adapters import prepare_optix_cupy_radius_graph_grouped_stream_con
 from .partner_adapters import prepare_optix_numba_radius_graph_grouped_stream_continuation_3d
 from .partner_adapters import radius_graph_components_3d_optix_cupy_prepared_grouped_stream_partner_columns
 from .partner_adapters import radius_graph_components_3d_optix_numba_prepared_grouped_stream_partner_columns
+from .partner_adapters import radius_graph_component_signature_3d_optix_numba_prepared_grouped_stream_partner_columns
 from .v2_8_typed_result_stream import V28TypedResultStreamContract
 from .v2_8_typed_result_stream import make_typed_result_stream_contract
 from .v2_8_typed_result_stream import typed_result_column
@@ -484,6 +485,54 @@ def fixed_radius_graph_component_labels_3d_v2_8(
     return_metadata: bool = False,
 ):
     return prepared.run(component_threshold=component_threshold, return_metadata=return_metadata)
+
+
+def fixed_radius_graph_component_size_signature_3d_v2_8(
+    prepared: V28PreparedFixedRadiusGraphComponentContinuation3D,
+    *,
+    component_threshold: int,
+    return_metadata: bool = False,
+):
+    if prepared.closed:
+        raise RuntimeError("fixed-radius graph component front-door handle is closed")
+    component_threshold = int(component_threshold)
+    if component_threshold < 1:
+        raise ValueError("component_threshold must be at least 1")
+    if prepared.plan.partner != "numba":
+        raise ValueError("component-size signature front door currently requires partner='numba'")
+    lower_result = radius_graph_component_signature_3d_optix_numba_prepared_grouped_stream_partner_columns(
+        prepared.lower_prepared,
+        min_neighbors=component_threshold,
+        return_metadata=True,
+    )
+    metadata = dict(lower_result["metadata"])
+    metadata.update(
+        {
+            "front_door": "v2_8_fixed_radius_graph_component_continuation_3d",
+            "version": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_FRONT_DOOR_VERSION,
+            "front_door_status": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_FRONT_DOOR_STATUS,
+            "operation": "fixed_radius_graph_component_size_signature_3d",
+            "component_threshold": component_threshold,
+            "user_selected_backend": prepared.plan.backend,
+            "user_selected_partner": prepared.plan.partner,
+            "user_selected_strategy": prepared.plan.strategy,
+            "producer_contract": "prepared_fixed_radius_graph_hit_stream_3d",
+            "continuation_contract": "grouped_stream_component_size_signature_3d",
+            "result_columns": ("label_counts", "flag_true_count", "negative_label_count", "neighbor_counts"),
+            "hidden_dispatch_allowed": False,
+            "automatic_partner_selection_allowed": False,
+            "app_specific_engine_logic_allowed": False,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "claim_boundary": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY,
+        }
+    )
+    if return_metadata:
+        return {"columns": lower_result["columns"], "metadata": metadata}
+    return lower_result["columns"]
 
 
 def make_v2_8_fixed_radius_graph_component_typed_stream_contract(
@@ -2594,6 +2643,7 @@ __all__ = [
     "build_v2_8_fixed_radius_partition_convergence_summary_reference_3d",
     "describe_v2_8_fixed_radius_graph_component_front_door",
     "fixed_radius_graph_component_labels_3d_v2_8",
+    "fixed_radius_graph_component_size_signature_3d_v2_8",
     "make_v2_8_fixed_radius_graph_component_typed_stream_contract",
     "make_v2_8_fixed_radius_partition_convergence_summary_typed_stream_contract",
     "plan_v2_8_fixed_radius_graph_component_continuation",

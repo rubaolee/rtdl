@@ -36,6 +36,8 @@ _CUPY_GROUPED_VECTOR_SUM_OFFSETS_F64X2_KERNEL = None
 _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS = None
 _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_BORDER_CANDIDATE_LABEL_KERNEL = None
 _NUMBA_I32_PARENT_BORDER_INIT_KERNEL = None
+_NUMBA_I64_ZERO_KERNEL = None
+_NUMBA_RADIUS_GRAPH_COMPONENT_SIGNATURE_KERNEL = None
 
 _AABB_PAIR_PAYLOAD_FIELDS = (
     "left_index",
@@ -4992,6 +4994,62 @@ def _numba_i32_parent_border_init_kernel(cuda):
     return _NUMBA_I32_PARENT_BORDER_INIT_KERNEL
 
 
+def _numba_i64_zero_kernel(cuda):
+    global _NUMBA_I64_ZERO_KERNEL
+    if _NUMBA_I64_ZERO_KERNEL is None:
+
+        @cuda.jit
+        def zero_kernel(values, value_count):
+            index = cuda.grid(1)
+            if index < value_count:
+                values[index] = 0
+
+        _NUMBA_I64_ZERO_KERNEL = zero_kernel
+    return _NUMBA_I64_ZERO_KERNEL
+
+
+def _numba_radius_graph_component_signature_kernel(cuda):
+    global _NUMBA_RADIUS_GRAPH_COMPONENT_SIGNATURE_KERNEL
+    if _NUMBA_RADIUS_GRAPH_COMPONENT_SIGNATURE_KERNEL is None:
+
+        @cuda.jit(device=True)
+        def find_signature_root(parent, item):
+            root = item
+            guard = 0
+            while parent[root] != root and guard < 4096:
+                root = parent[root]
+                guard += 1
+            return root
+
+        @cuda.jit
+        def signature_kernel(
+            point_count,
+            core_flags,
+            parent,
+            border_core_candidate,
+            label_counts,
+            flag_true_count,
+            negative_label_count,
+        ):
+            point = cuda.grid(1)
+            if point >= point_count:
+                return
+            if core_flags[point] != 0:
+                root = find_signature_root(parent, point)
+                cuda.atomic.add(label_counts, root + 1, 1)
+                cuda.atomic.add(flag_true_count, 0, 1)
+                return
+            candidate = border_core_candidate[point]
+            if candidate < 0 or candidate >= point_count or core_flags[candidate] == 0:
+                cuda.atomic.add(negative_label_count, 0, 1)
+                return
+            root = find_signature_root(parent, candidate)
+            cuda.atomic.add(label_counts, root + 1, 1)
+
+        _NUMBA_RADIUS_GRAPH_COMPONENT_SIGNATURE_KERNEL = signature_kernel
+    return _NUMBA_RADIUS_GRAPH_COMPONENT_SIGNATURE_KERNEL
+
+
 _CUPY_RADIUS_GRAPH_COMPONENTS_3D_ADJACENCY_KERNELS = None
 
 
@@ -7040,8 +7098,14 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
         self.labels_workspace = cuda.device_array((self.point_count,), dtype=np.int64)
         self.parent_border_init_kernel = _numba_i32_parent_border_init_kernel(cuda)
         self.border_candidate_label_kernel = _numba_radius_graph_components_3d_border_candidate_label_kernel(cuda)
+        self.i64_zero_kernel = _numba_i64_zero_kernel(cuda)
+        self.component_signature_kernel = _numba_radius_graph_component_signature_kernel(cuda)
+        self.signature_label_counts = cuda.device_array((self.point_count + 1,), dtype=np.int64)
+        self.signature_flag_true_count = cuda.device_array((1,), dtype=np.int64)
+        self.signature_negative_label_count = cuda.device_array((1,), dtype=np.int64)
         self.threads = 256
         self.label_blocks = (max(1, math.ceil(self.point_count / self.threads)),)
+        self.signature_count_blocks = (max(1, math.ceil((self.point_count + 1) / self.threads)),)
         self.run_count = 0
         self.closed = False
         cuda.synchronize()
@@ -7247,6 +7311,184 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
             return {"columns": columns, "metadata": metadata}
         return columns
 
+    def run_component_signature(self, *, min_neighbors: int, return_metadata: bool = False):
+        if self.closed:
+            raise RuntimeError("prepared OptiX+Numba grouped stream radius graph handle is closed")
+        min_neighbors = int(min_neighbors)
+        if min_neighbors < 1:
+            raise ValueError("min_neighbors must be at least 1")
+        core_flag_cache_reused = self._refresh_core_flags(min_neighbors)
+        core_flags = self._cached_core_flags
+        neighbor_counts = self._cached_neighbor_counts
+        all_core_flags_true = bool(self._cached_all_core_flags_true)
+        self.parent_border_init_kernel[self.label_blocks, self.threads](
+            self.parent_workspace,
+            self.border_core_candidate_workspace,
+            self.point_count,
+            self.point_count,
+            not all_core_flags_true,
+        )
+        self.cuda.synchronize()
+        query_block_size = self.grouped_union_query_block_size
+        use_query_blocks = query_block_size is not None and query_block_size < self.point_count
+        continuation_pass_count = 1
+        if use_query_blocks:
+            native_range_metadata = []
+            if all_core_flags_true:
+                for query_start in range(0, self.point_count, query_block_size):
+                    query_count = min(query_block_size, self.point_count - query_start)
+                    range_result = self.prepared_native.apply_device_grouped_union_self_range(
+                        query_start=query_start,
+                        query_count=query_count,
+                        radius=self.radius,
+                        parent_out=self.parent_workspace,
+                        same_root_culling=self.grouped_union_same_root_culling,
+                        direct_side_effect=self.grouped_union_direct_side_effect,
+                    )
+                    native_range_metadata.append(dict(range_result["metadata"]))
+                grouped_stream_policy = "optix_applies_query_blocked_all_items_grouped_union_without_predicate_or_fallback_workspace"
+                fallback_candidate_policy = "not_needed_all_items_satisfy_predicate"
+            else:
+                for query_start in range(0, self.point_count, query_block_size):
+                    query_count = min(query_block_size, self.point_count - query_start)
+                    range_result = self.prepared_native.apply_device_grouped_union_self_range(
+                        query_start=query_start,
+                        query_count=query_count,
+                        radius=self.radius,
+                        predicate_flags=core_flags,
+                        parent_out=self.parent_workspace,
+                        fallback_candidate_out=self.border_core_candidate_workspace,
+                        same_root_culling=self.grouped_union_same_root_culling,
+                        direct_side_effect=self.grouped_union_direct_side_effect,
+                    )
+                    native_range_metadata.append(dict(range_result["metadata"]))
+                grouped_stream_policy = "optix_applies_query_blocked_predicated_union_and_border_candidate_during_traversal"
+                fallback_candidate_policy = "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass"
+            continuation_pass_count = len(native_range_metadata)
+            native_elapsed_total = sum(float(row.get("native_elapsed_sec", 0.0)) for row in native_range_metadata)
+            native_metadata = dict(native_range_metadata[-1]) if native_range_metadata else {}
+            native_metadata.update(
+                {
+                    "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query_blocked_ranges",
+                    "query_source": "prepared_search_points_self_query_device_range",
+                    "query_block_size": query_block_size,
+                    "query_block_count": continuation_pass_count,
+                    "query_block_policy": "explicit_contiguous_prepared_search_ranges",
+                    "native_elapsed_sec": native_elapsed_total,
+                    "range_native_metadata_sample": native_range_metadata[:1] + native_range_metadata[-1:],
+                    "grouped_union_query_blocked": True,
+                    "grouped_union_blocked_candidate": True,
+                    "performance_claim_authorized": False,
+                }
+            )
+            native_result = {"metadata": native_metadata}
+        elif all_core_flags_true:
+            native_result = self.prepared_native.apply_device_grouped_union_all_self(
+                radius=self.radius,
+                parent_out=self.parent_workspace,
+                same_root_culling=self.grouped_union_same_root_culling,
+                direct_side_effect=self.grouped_union_direct_side_effect,
+            )
+            grouped_stream_policy = "optix_applies_all_items_grouped_union_without_predicate_or_fallback_workspace"
+            fallback_candidate_policy = "not_needed_all_items_satisfy_predicate"
+        else:
+            native_result = self.prepared_native.apply_device_grouped_union_self(
+                radius=self.radius,
+                predicate_flags=core_flags,
+                parent_out=self.parent_workspace,
+                fallback_candidate_out=self.border_core_candidate_workspace,
+                same_root_culling=self.grouped_union_same_root_culling,
+                direct_side_effect=self.grouped_union_direct_side_effect,
+            )
+            grouped_stream_policy = "optix_applies_predicated_union_and_border_candidate_during_traversal"
+            fallback_candidate_policy = "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass"
+        self.i64_zero_kernel[self.signature_count_blocks, self.threads](
+            self.signature_label_counts,
+            self.point_count + 1,
+        )
+        self.i64_zero_kernel[(1,), self.threads](self.signature_flag_true_count, 1)
+        self.i64_zero_kernel[(1,), self.threads](self.signature_negative_label_count, 1)
+        self.component_signature_kernel[self.label_blocks, self.threads](
+            self.point_count,
+            core_flags,
+            self.parent_workspace,
+            self.border_core_candidate_workspace,
+            self.signature_label_counts,
+            self.signature_flag_true_count,
+            self.signature_negative_label_count,
+        )
+        self.cuda.synchronize()
+        grouped_reused = self.run_count > 0
+        self.run_count += 1
+        columns = {
+            "label_counts": self.signature_label_counts,
+            "flag_true_count": self.signature_flag_true_count,
+            "negative_label_count": self.signature_negative_label_count,
+            "neighbor_counts": neighbor_counts,
+        }
+        native_metadata = dict(native_result["metadata"])
+        metadata = {
+            "adapter": "PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D.run_component_signature",
+            "partner": self.partner,
+            "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+            "partner_reference_contract": "generic_prepared_optix_numba_grouped_stream_component_size_signature_3d",
+            "native_engine_row_contract": native_metadata.get(
+                "native_engine_row_contract",
+                "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+            ),
+            "native_execution_path": native_metadata.get(
+                "native_execution_path",
+                "prepared_rt_core_grouped_union_3d_self_query",
+            ),
+            "query_source": "prepared_search_points_self_query_device",
+            "point_count": self.point_count,
+            "radius": self.radius,
+            "min_neighbors": min_neighbors,
+            "prepared_grouped_stream_run_count": self.run_count,
+            "prepared_grouped_stream_reused": grouped_reused,
+            "grouped_stream_policy": grouped_stream_policy,
+            "component_signature_policy": "direct_root_count_from_parent_workspace_and_border_candidates",
+            "component_label_policy": "not_materialized_signature_counts_only",
+            "component_union_policy": "monotonic_atomic_min_from_rt_hit_stream_without_neighbor_index_materialization",
+            "fallback_candidate_policy": fallback_candidate_policy,
+            "prepared_optix_scene_reused": True,
+            "output_columns_reused": True,
+            "core_flag_threshold": min_neighbors,
+            "core_flag_cache_reused": core_flag_cache_reused,
+            "all_core_flags_true": all_core_flags_true,
+            "grouped_union_query_block_size": query_block_size,
+            "grouped_union_query_block_count": continuation_pass_count,
+            "grouped_union_query_blocked_candidate": bool(use_query_blocks),
+            "grouped_union_same_root_culling_enabled": self.grouped_union_same_root_culling,
+            "grouped_union_direct_side_effect_enabled": self.grouped_union_direct_side_effect,
+            "numba_workspace_init_policy": "device_parent_iota_optional_border_fill",
+            "numba_workspace_host_reset_copy_used": False,
+            "optix_backend_used": True,
+            "rt_core_accelerated": True,
+            "materializes_component_labels": False,
+            "materializes_neighbor_summaries": False,
+            "materializes_neighbor_rows": False,
+            "materializes_directed_adjacency_stream": False,
+            "materializes_bounded_directed_adjacency_chunks": False,
+            "adjacency_write_pass_count": 0,
+            "grouped_stream_continuation_pass_count": continuation_pass_count,
+            "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+            "count_metadata": self._cached_count_metadata,
+            "native_grouped_stream_metadata": native_metadata,
+            "automatic_hidden_dispatcher": False,
+            "direct_device_handoff_authorized": True,
+            "output_columns_true_zero_copy_authorized": True,
+            "true_zero_copy_authorized": False,
+            "raw_cuda_kernel_required": False,
+            "numba_cuda_jit_used": True,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
     def close(self) -> None:
         if self.closed:
             return
@@ -7394,6 +7636,15 @@ def radius_graph_components_3d_optix_numba_prepared_grouped_stream_partner_colum
     return_metadata: bool = False,
 ):
     return prepared.run(min_neighbors=min_neighbors, return_metadata=return_metadata)
+
+
+def radius_graph_component_signature_3d_optix_numba_prepared_grouped_stream_partner_columns(
+    prepared: PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D,
+    *,
+    min_neighbors: int,
+    return_metadata: bool = False,
+):
+    return prepared.run_component_signature(min_neighbors=min_neighbors, return_metadata=return_metadata)
 
 
 def prepare_radius_graph_components_3d_cupy_grid_partner_columns(
