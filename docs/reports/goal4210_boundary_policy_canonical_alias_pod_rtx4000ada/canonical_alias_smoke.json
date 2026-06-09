@@ -1,0 +1,20 @@
+{
+  "commit": "4cb13dc4",
+  "labels": [
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "metadata_boundary_assignment_canonical_policy": "single_pass_candidate_root_rebased",
+  "metadata_boundary_assignment_policy": "single_pass_candidate_root_rebased",
+  "native_boundary_assignment_canonical_policy": "single_pass_candidate_root_rebased",
+  "native_boundary_assignment_pass_count": 1,
+  "native_boundary_assignment_policy": "single_pass_candidate_root_rebased",
+  "plan_boundary_assignment_canonical_policy": "single_pass_candidate_root_rebased",
+  "plan_boundary_assignment_policy": "single_pass_candidate_root_rebased",
+  "public_speedup_claim_authorized": false,
+  "schema": "rtdl.goal4210.boundary_policy_canonical_alias_pod_smoke.v1",
+  "true_zero_copy_claim_authorized": false
+}
