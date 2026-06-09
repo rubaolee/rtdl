@@ -425,9 +425,9 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
         display_name="Triangle counting",
         benchmark_path="examples/v2_0/research_benchmarks/triangle_counting/",
         current_best_path=(
-            "native scalar triangle-count primitive for scalar answers; direct v2.8 compact-mask "
-            "typed-stream front door for explicit candidate-row interpretation; generic ray/triangle "
-            "hit-stream typed producer metadata"
+            "generic RT graph relationship-count composition for scalar answers; direct v2.8 "
+            "compact-mask typed-stream front door for explicit candidate-row interpretation; "
+            "generic ray/triangle hit-stream typed producer metadata"
         ),
         partner_position="Numba compact-mask continuation is only for explicit candidate-row interpretation.",
         current_bottleneck=(

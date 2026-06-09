@@ -279,17 +279,24 @@ V2_6_PARTNER_CHOICE_ROWS: tuple[V26PartnerChoiceGuidanceRow, ...] = (
     V26PartnerChoiceGuidanceRow(
         benchmark_app="triangle_counting",
         continuation_shape="candidate_row_compact_mask",
-        primitive_first_path="native scalar triangle-count primitive for scalar answer",
+        primitive_first_path="generic RT graph relationship-count composition for scalar answer",
         recommended_partner="numba",
         recommendation_status="recommended_reference_path",
-        cupy_role="optional device geometry setup and baseline summary role",
+        cupy_role=(
+            "optional device geometry setup and baseline summary role; no current "
+            "same-contract CuPy compact-mask timing row"
+        ),
         numba_role="Numba compact-mask candidate-row continuation",
         evidence_goal="Goal3000/Goal3052",
         evidence_artifact=(
             "docs/reports/goal3052_partner_choice_pod_refresh_2026-06-02/"
             "triangle_numba_compact_mask_1m.json"
         ),
-        user_advice="Keep the scalar primitive as the scalar answer; choose Numba only for explicit candidate-row compaction.",
+        user_advice=(
+            "Keep the scalar answer primitive-first through a generic graph "
+            "relationship-count composition; choose Numba only for explicit "
+            "candidate-row compaction."
+        ),
     ),
 )
 

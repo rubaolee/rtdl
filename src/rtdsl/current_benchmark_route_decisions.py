@@ -466,13 +466,19 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
     CurrentBenchmarkRouteDecision(
         app="triangle_counting",
         decision_kind="primitive_first",
-        current_reader_decision="Use explicit native RT graph summary mode for the scalar triangle-count route.",
-        primary_route="generic RT graph scalar summary primitive",
+        current_reader_decision=(
+            "Use the generic RT graph relationship-count composition for the "
+            "scalar answer."
+        ),
+        primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
         primitive_contract="canonical graph-cycle scalar count",
         user_choice_guidance="Choose Numba only if the user explicitly needs candidate-row compaction, not for the scalar answer.",
         rejected_or_unpromoted_candidates=("auto fallback timing route", "RT-core triangle-count paper claim"),
-        next_runtime_action="preserve explicit native mode and avoid claiming RT-core triangle-count acceleration",
+        next_runtime_action=(
+            "preserve the generic graph relationship-count route and avoid "
+            "claiming RT-core triangle-count acceleration"
+        ),
         evidence_refs=("Goal2797", "Goal3567", "Goal3782", "Goal3819", "Goal3856"),
         pod_needed_next=False,
     ),

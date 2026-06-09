@@ -33,8 +33,10 @@ class Goal3050PartnerChoiceDocsTest(unittest.TestCase):
             "Spatial RayJoin",
             "RT-DBSCAN",
             "RTNN",
-            "RayDB-style aggregates",
-            "Triangle counting",
+            "RayDB-style unfused grouped continuation",
+            "RayDB fused count/sum",
+            "Triangle candidate-row compaction",
+            "Triangle scalar answer",
             "Barnes-Hut",
             "Robot collision",
             "Contact manifold",
@@ -54,8 +56,12 @@ class Goal3050PartnerChoiceDocsTest(unittest.TestCase):
             self.assertIn(header, text)
 
         self.assertIn("Users choose partners explicitly", text)
+        self.assertIn("Partner-Needed Continuations", text)
+        self.assertIn("Primitive-First Paths", text)
         self.assertIn("current_benchmark_adequacy", text)
         self.assertIn("measured prepared-repeat component continuation", text)
+        self.assertNotIn("native scalar triangle-count primitive", text)
+        self.assertNotIn("native triangle-count primitive", text)
 
     def test_learner_and_benchmark_doors_link_guidance(self) -> None:
         learner = self._read("docs/learn/README.md")

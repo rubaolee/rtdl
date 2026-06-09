@@ -58,6 +58,8 @@ class Goal3054V26PartnerChoiceGuidanceTest(unittest.TestCase):
         self.assertIn("raydb_numba_minmax_1m.json", raydb["matches"][0]["evidence_artifact"])
         self.assertIn("rayjoin_numba_compact_mask_1m.json", rayjoin["matches"][0]["evidence_artifact"])
         self.assertIn("triangle_numba_compact_mask_1m.json", triangle["matches"][0]["evidence_artifact"])
+        self.assertIn("generic RT graph relationship-count composition", triangle["matches"][0]["primitive_first_path"])
+        self.assertNotIn("native scalar triangle-count primitive", triangle["matches"][0]["primitive_first_path"])
 
     def test_cupy_numba_and_primitive_rows_remain_recommended_where_evidence_says_so(self) -> None:
         hausdorff = rt.plan_v2_6_partner_choice("hausdorff_xhd", "active_frontier_exact_distance")
@@ -120,6 +122,10 @@ class Goal3054V26PartnerChoiceGuidanceTest(unittest.TestCase):
         self.assertIn("Goal3054", report)
         self.assertIn("current_benchmark_adequacy", docs)
         self.assertIn("current_benchmark_adequacy", matrix)
+        self.assertIn("Partner-Needed Continuations", matrix)
+        self.assertIn("Primitive-First Paths", matrix)
+        self.assertNotIn("native scalar triangle-count primitive", docs)
+        self.assertNotIn("native scalar triangle-count primitive", matrix)
         self.assertEqual("Goal3054", roadmap["partner_choice_guidance_goal"])
         self.assertEqual("accept", roadmap_validation["status"], roadmap_validation["errors"])
         for name in (

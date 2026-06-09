@@ -8,21 +8,42 @@ The first choice is always the same: if a fused generic RTDL primitive exactly
 expresses the answer, use that primitive. Partner code is for the work that is
 not fused, not a hidden replacement for the RTDL engine.
 
-Users choose partners explicitly. The matrix recommends reference paths for
-benchmark apps; it does not define hidden auto-selection rules.
+Users choose partners explicitly. The tables below separate two cases:
 
-| Benchmark app | Custom logic pressure | Current RTDL primitive-first path | Recommended custom partner when needed | CuPy role | Numba role | Current best path summary | Evidence boundary |
+- **Partner-needed continuations**: the app still has custom work after RTDL
+  emits generic outputs.
+- **Primitive-first paths**: the current recommended app path does not need a
+  CuPy-vs-Numba decision.
+
+## Partner-Needed Continuations
+
+Use this table only when your program really has custom continuation logic after
+the RTDL primitive. If a row says that the primitive answers the query, skip this
+table and use the primitive-first table instead.
+
+| Benchmark app / contract | Custom logic pressure | Current RTDL primitive-first path | Recommended custom partner when needed | CuPy role | Numba role | Current best path summary | Evidence boundary |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Hausdorff / X-HD style | exact directed distance from nearest-candidate summaries | OptiX active-frontier exact path for the current app contract | CuPy for CUDA-core baseline; Numba for exact continuation/reference experiments | strong grouped-grid and RawKernel baseline | exact continuation reference exists; not default winner | active-frontier RTDL/OptiX is the promoted path for the reviewed app contract | cite Goal3046/3048/3143 artifacts before publishing |
 | Spatial RayJoin | point-in-polygon parity/count, boundary proximity, row-stream filtering | scalar count/parity and first-hit/nearest-boundary style primitives where available | Numba for scalar-count and topology-reference continuation; CuPy for dense CUDA baselines | useful dense opponent and app-level exact continuation; still fastest on the one-shot bounded public-CDB PIP scalar-count row | Goal3834/3838 no-RawKernel scalar-count coverage for PIP, LSI, and overlay; compact-mask/topology references also exist | primitive-first for LSI/overlay scalar answers, where RTDL/OptiX is about `260x` faster than dense partners; resident repeated PIP uses the prepared batch executor at about `0.024ms/request` for batch 100; one-shot bounded public-CDB PIP remains contract-specific | no paper-reproduction claim without RayJoin same-contract evidence |
-| RT-DBSCAN | fixed-radius core flags plus component labeling | fixed-radius/core-summary primitives | Numba prepared grid/component continuation for the current reference path; CuPy remains a baseline | prepared grid/components baseline and opponent | Goal3835 current-head prepared-repeat evidence; no RawKernel required | RTDL/OptiX threshold flags plus Numba prepared component continuation for scale rows | dense-stream and clustering semantics remain app code; cite Goal3835 before publishing |
-| RTNN | ranked fixed-radius summaries and candidate-quality probes | prepared fixed-radius ranked summaries | no custom partner on the promoted path; CuPy remains the CUDA-core opponent/reference | baseline rows and quality checks | no promoted default because the current path is primitive/aggregate-first | run `--mode prepared_optix_ranked_summary` for the current executable prepared OptiX app front door | compare exact contract and dataset scale; Goal3820 is front-door evidence, not paper reproduction |
-| RayDB-style aggregates | grouped count/sum/min/max/stats | fused columnar grouped reductions when they exactly match | Numba for unfused grouped min/max style custom kernels | conformance and older partner rows | selected generic grouped continuation lane | use primitive-first for fused scalar summaries | do not force partner continuation onto fused primitive rows |
-| Triangle counting | scalar triangle count plus optional candidate-row interpretation | native scalar triangle-count primitive | Numba for compact-mask candidate continuation only | optional device geometry setup and baseline summaries | compact-mask continuation reference | scalar primitive remains preferred for scalar answer; use explicit `--optix-graph-mode native` for current native timing probes | app interpretation of candidate rows stays outside engine; no RT-core triangle-count claim |
+| RT-DBSCAN | fixed-radius core flags plus component labeling | fixed-radius/core-summary primitives | Numba prepared grid/component continuation for the current reference path; CuPy remains a baseline | prepared grid/components baseline and opponent | measured prepared-repeat component continuation evidence; no RawKernel required | RTDL/OptiX threshold flags plus Numba prepared component continuation for scale rows | dense-stream and clustering semantics remain app code; cite Goal3835 before publishing |
+| RayDB-style unfused grouped continuation | grouped min/max/count/sum/avg when not already fused | fused columnar grouped reductions when they exactly match | Numba for unfused grouped min/max style custom kernels | conformance and older partner rows; no current same-contract CuPy timing row for this unfused table | selected generic grouped continuation lane | use primitive-first for fused scalar summaries; use Numba only for the unfused continuation shapes currently demonstrated | do not force partner continuation onto fused primitive rows |
+| Triangle candidate-row compaction | candidate-row interpretation after the scalar answer | generic RT graph relationship-count composition for the scalar answer | Numba for compact-mask candidate continuation only | optional device geometry setup and baseline summaries; no current same-contract CuPy compact-mask timing row | compact-mask continuation reference | scalar answer stays primitive-first; Numba is only for explicit candidate-row compaction | app interpretation of candidate rows stays outside engine; no RT-core triangle-count claim |
 | Barnes-Hut | force-vector continuation after aggregate-frontier collection | aggregate-frontier collect primitive | CuPy for fastest measured exact force-vector path; Numba for no-RawKernel block-reduction reference | active force-vector partner reference, faster overall in current evidence | Goal3837 current-head no-RawKernel exact-force evidence; near-CuPy but not default winner | primitive collects generic frontier rows; app computes force law; CuPy remains the faster measured continuation | no broad N-body acceleration claim |
-| Robot collision | pose batching, collision flag reduction | any-hit/collision-style generic flags where supported | no partner needed on the promoted path | possible optional flag-reference path | not required for the promoted primitive contract | keep CPU/Embree/OptiX primitive parity first | robotics policy stays app code |
-| Contact manifold | bounded contact witness rows and stable witness pages | bounded collect/fail-closed witness primitives | no partner needed on the accepted current path | possible optional witness filtering/reference path | not required for the promoted primitive contract | preserve bounded witness contract first | no arbitrary manifold-generation claim |
-| LibRTS-style spatial index | mutable index and point/range query semantics | generic point/range query rows where supported | no partner needed on the prepared AABB index path | possible app-owned continuation | not required for the promoted primitive contract | Tier C/no-regression style evidence, not partner-performance row | index mutation policy stays app code |
+
+## Primitive-First Paths
+
+These rows are not CuPy-vs-Numba decisions. Start with the generic RTDL
+primitive or composition; add partner code only if your own app needs extra
+continuation work not covered by the primitive.
+
+| Benchmark app / contract | Current user path | Partner guidance | Evidence boundary |
+| --- | --- | --- | --- |
+| Hausdorff / X-HD style | OptiX active-frontier exact path for the current app contract | CuPy remains a CUDA-core baseline; Numba is contract evidence, not the default winner | cite Goal3046/3048/3143 artifacts before publishing |
+| RTNN | prepared fixed-radius ranked summaries | no custom partner on the promoted path; CuPy remains the CUDA-core opponent/reference | compare exact contract and dataset scale; Goal3820 is front-door evidence, not paper reproduction |
+| RayDB fused count/sum | fused columnar grouped reductions | no partner needed when the fused primitive exactly answers the query | do not force partner continuation onto fused primitive rows |
+| Triangle scalar answer | generic RT graph relationship-count composition | no partner needed for the scalar answer; use Numba only for candidate-row compaction | app interpretation of candidate rows stays outside engine; no RT-core triangle-count claim |
+| Robot collision | generic any-hit/collision flag primitive where supported | no partner needed on the promoted path | robotics policy stays app code |
+| Contact manifold | bounded collect and fail-closed witness primitives | no partner needed on the accepted current path | no arbitrary manifold-generation claim |
+| LibRTS-style spatial index | generic point/range query rows where supported | no partner needed on the prepared AABB index path | index mutation policy stays app code |
 
 ## How To Use This Matrix
 

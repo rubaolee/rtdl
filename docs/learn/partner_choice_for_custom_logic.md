@@ -65,15 +65,29 @@ launch shape, and data residency are good for that workload.
 
 ## Benchmark Lessons
 
-| Benchmark family | Current lesson |
+These rows are only for the part of an app that really needs custom partner
+logic. If the primitive already returns the answer, do not choose CuPy or Numba
+for that row.
+
+| Partner-needed contract | Current lesson |
 | --- | --- |
-| RayDB-style grouped summaries | Prefer fused RTDL primitive summaries when available; use Numba for custom grouped min/max style continuations that are not already fused. |
+| RayDB-style unfused grouped continuation | Prefer fused RTDL primitive summaries when available; use Numba only for custom grouped min/max/count/sum/avg continuations that are not already fused. There is no current same-contract CuPy timing row for this unfused table, so do not publish a CuPy-vs-Numba speedup for it. |
 | Spatial RayJoin-style joins | Prefer RTDL scalar count/parity or first-hit/nearest-boundary primitives when they express the answer; Numba now covers the PIP/LSI/overlay scalar-count reference rows for users who need Python-source custom CUDA logic. On the one-shot bounded public-CDB PIP scalar-count row, CuPy is still the faster current partner baseline; resident repeated PIP uses the RTDL/OptiX prepared batch executor, and RTDL/OptiX is about `260x` faster than dense partners for the LSI/overlay scalar-count rows. |
-| Triangle counting | Prefer the native scalar count path for the scalar answer; use explicit `--optix-graph-mode native` for current native timing probes; Numba compact-mask is useful for candidate-row continuation, not a replacement for the scalar primitive. |
-| Hausdorff distance | The current performance winner is the RTDL/OptiX active-frontier path; CuPy grouped-grid remains a strong CUDA-core baseline; Numba paths are correctness and contract evidence, not the default performance recommendation. |
+| Triangle candidate-row compaction | The scalar answer is a primitive-first graph relationship-count composition. Numba compact-mask is useful only when the user explicitly wants candidate rows for app-owned interpretation. There is no current same-contract CuPy compact-mask timing row, so do not publish a CuPy-vs-Numba speedup for it. |
 | Barnes-Hut-style force studies | CuPy remains the faster measured force-vector partner path overall; Numba now provides a no-RawKernel block-reduction reference for the exact-force continuation. |
-| RTNN-style nearest-neighbor studies | RTDL fixed-radius ranked summaries and the `prepared_optix_ranked_summary` app mode are the current executable front door; use CuPy for CUDA-core baseline rows and treat partners as explicit experiments unless same-contract timing wins. |
 | RT-DBSCAN-style clustering | RTDL provides fixed-radius/core-summary primitives; Numba now has measured prepared-repeat component-continuation coverage, while CuPy remains a useful baseline/opponent. |
+
+## Primitive-First Rows
+
+These are not partner-choice examples:
+
+| App row | Current lesson |
+| --- | --- |
+| Hausdorff distance | The current performance winner is the RTDL/OptiX active-frontier path; CuPy grouped-grid remains a strong CUDA-core baseline; Numba paths are correctness and contract evidence, not the default performance recommendation. |
+| RTNN-style nearest-neighbor studies | RTDL fixed-radius ranked summaries and the `prepared_optix_ranked_summary` app mode are the current executable front door; use CuPy for CUDA-core baseline rows and treat partners as explicit experiments unless same-contract timing wins. |
+| RayDB fused count/sum | Use the fused generic grouped-reduction primitive when it exactly answers the query. |
+| Triangle scalar answer | Use the generic graph relationship-count composition; do not turn it into a CuPy-vs-Numba choice. |
+| Robot collision, contact manifold, LibRTS-style spatial index | Current promoted paths are primitive-first or no-promoted-partner rows. Add partner code only as app-owned continuation with new same-contract evidence. |
 
 ## Claim Boundary
 
