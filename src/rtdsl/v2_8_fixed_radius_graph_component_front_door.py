@@ -2124,6 +2124,285 @@ def run_v2_8_fixed_radius_partition_convergence_component_signature_cupy_prepare
     )
 
 
+def _run_predicate_direct_status_union_signature_from_prepared_columns_cupy_3d(
+    runtime_columns: dict[str, Any],
+    prepare_metadata: dict[str, Any],
+    *,
+    predicate_flags,
+    neighbor_counts=None,
+    radius: float,
+    cell_factor: float,
+    max_iterations: int,
+    convergence_mode: str = "until_stable",
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    import cupy
+
+    point_count = int(prepare_metadata["point_count"])
+    partition_count = int(prepare_metadata["partition_count"])
+    predicate_flags = cupy.asarray(predicate_flags, dtype=cupy.uint32)
+    if int(predicate_flags.size) != point_count:
+        raise ValueError("predicate_flags must match point_count")
+    if neighbor_counts is None:
+        neighbor_counts = cupy.zeros((point_count,), dtype=cupy.uint32)
+    else:
+        neighbor_counts = cupy.asarray(neighbor_counts, dtype=cupy.uint32)
+        if int(neighbor_counts.size) != point_count:
+            raise ValueError("neighbor_counts must match point_count")
+    radius = float(radius)
+    cell_factor = float(cell_factor)
+    convergence_mode = str(convergence_mode)
+    if convergence_mode not in {"until_stable", "single_pass_candidate"}:
+        raise ValueError("convergence_mode must be 'until_stable' or 'single_pass_candidate'")
+    radius_sq = radius * radius
+    classification_tol = 1.0e-5 * max(1.0, radius_sq)
+    (
+        partition_parents_device,
+        border_candidate_device,
+        label_counts,
+        flag_true_count,
+        negative_label_count,
+        union_iterations,
+        safe_skip_pairs,
+        safe_full_pairs,
+        ambiguous_pairs,
+        ambiguous_point_comparisons,
+        predicate_positive_edges,
+        border_candidate_updates,
+        final_changed_flag,
+        convergence_proven,
+    ) = _cupy_direct_partition_status_union_predicate_signature_columns(
+        cupy,
+        partition_count=partition_count,
+        point_count=point_count,
+        unique_cells=runtime_columns["unique_cells"],
+        dim_y=int(prepare_metadata["dim_y"]),
+        dim_z=int(prepare_metadata["dim_z"]),
+        aabb_min_x64=runtime_columns["partition_aabb_min_x64"],
+        aabb_min_y64=runtime_columns["partition_aabb_min_y64"],
+        aabb_min_z64=runtime_columns["partition_aabb_min_z64"],
+        aabb_max_x64=runtime_columns["partition_aabb_max_x64"],
+        aabb_max_y64=runtime_columns["partition_aabb_max_y64"],
+        aabb_max_z64=runtime_columns["partition_aabb_max_z64"],
+        partition_offsets=runtime_columns["partition_offsets"],
+        partition_point_ordinals=runtime_columns["partition_point_ordinals"],
+        point_partition_ids=runtime_columns["point_partition_ids"],
+        predicate_flags=predicate_flags,
+        x=runtime_columns["x"],
+        y=runtime_columns["y"],
+        z=runtime_columns["z"],
+        max_offset=int(prepare_metadata["max_neighbor_offset"]),
+        radius_sq=radius_sq,
+        classification_tol=classification_tol,
+        max_iterations=int(max_iterations),
+        convergence_mode=convergence_mode,
+    )
+    non_skip_pairs = int(safe_full_pairs) + int(ambiguous_pairs)
+    metadata = {
+        "status": "accept",
+        "point_count": point_count,
+        "partition_count": partition_count,
+        "cell_factor": cell_factor,
+        "cell_size": float(prepare_metadata["cell_size"]),
+        "max_neighbor_offset": int(prepare_metadata["max_neighbor_offset"]),
+        "pair_enumeration": "device_direct_status_predicate_union",
+        "pair_stream_filter": "predicate_compatible_non_skip_actionable_pairs",
+        "pair_order": "not_materialized_direct_status_scan",
+        "partition_summary_materialized": False,
+        "partition_structure_reused": True,
+        "prepared_direct_status_runtime_columns_reused": True,
+        "point_coordinate_columns_reused": True,
+        "near_pair_columns_materialized": False,
+        "partition_pair_rows_materialized": False,
+        "pair_materialization_avoided": True,
+        "direct_status_union_used": True,
+        "predicate_flags_consumed": True,
+        "safe_skip_pairs_elided": True,
+        "safe_skip_partition_pairs": int(safe_skip_pairs),
+        "safe_full_partition_pairs": int(safe_full_pairs),
+        "ambiguous_partition_pairs": int(ambiguous_pairs),
+        "pair_count": non_skip_pairs,
+        "visible_pair_count": 0,
+        "status_counts": {
+            "safe_skip_partition_pairs": int(safe_skip_pairs),
+            "safe_full_partition_pairs": int(safe_full_pairs),
+            "ambiguous_partition_pairs": int(ambiguous_pairs),
+        },
+        "ambiguous_point_comparisons": int(ambiguous_point_comparisons),
+        "predicate_positive_edges": int(predicate_positive_edges),
+        "border_candidate_updates": int(border_candidate_updates),
+        "union_iterations": int(union_iterations),
+        "direct_status_convergence_mode": convergence_mode,
+        "direct_status_final_changed_flag": int(final_changed_flag),
+        "direct_status_convergence_proven": bool(convergence_proven),
+        "direct_status_single_pass_candidate": convergence_mode == "single_pass_candidate",
+        "component_signature_policy": "predicate_true_partition_root_count_plus_lowest_predicate_neighbor_candidate",
+        "component_label_policy": "not_materialized_signature_counts_only",
+        "deterministic_neighbor_candidate_policy": "lowest_predicate_true_point_id_within_radius",
+        "complete_candidate_coverage": True,
+        "label_materialization": "component_size_signature_counts_only",
+        "native_abi_added": False,
+        "runtime_executable": True,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "app_specific_engine_logic_allowed": False,
+        "automatic_partner_selection_allowed": False,
+        "hidden_dispatch_allowed": False,
+        "data_ptrs": _column_data_ptrs(
+            {
+                "partition_parents": partition_parents_device,
+                "border_candidate": border_candidate_device,
+                "label_counts": label_counts,
+                "flag_true_count": flag_true_count,
+                "negative_label_count": negative_label_count,
+                "neighbor_counts": neighbor_counts,
+            }
+        ),
+        "claim_boundary": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY,
+    }
+    columns = {
+        "label_counts": label_counts,
+        "flag_true_count": flag_true_count,
+        "negative_label_count": negative_label_count,
+        "neighbor_counts": neighbor_counts,
+    }
+    return columns, metadata
+
+
+@dataclass
+class V28PreparedFixedRadiusPartitionConvergencePredicateDirectStatusUnionCupyPreview3D:
+    point_rows: tuple[Any, ...]
+    radius: float
+    cell_factor: float
+    runtime_columns: dict[str, Any]
+    prepare_metadata: dict[str, Any]
+    closed: bool = False
+    component_signature_runs: int = 0
+
+    def _ensure_open(self) -> None:
+        if self.closed:
+            raise RuntimeError("prepared predicate direct-status partition-convergence handle is closed")
+
+    def to_metadata(self) -> dict[str, Any]:
+        return {
+            "version": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_FRONT_DOOR_VERSION,
+            "status": "explicit_cupy_prepared_predicate_direct_status_union_preview_not_promoted",
+            "operation": "fixed_radius_partition_convergence_predicate_direct_status_signature_3d",
+            "prepared_predicate_direct_status_union_handle": True,
+            "prepared_predicate_direct_status_union_partner": "cupy",
+            "prepared_predicate_direct_status_union_runtime_executable": True,
+            "point_count": int(self.prepare_metadata["point_count"]),
+            "partition_count": int(self.prepare_metadata["partition_count"]),
+            "radius": self.radius,
+            "cell_factor": self.cell_factor,
+            "max_neighbor_offset": int(self.prepare_metadata["max_neighbor_offset"]),
+            "prepare_metadata": dict(self.prepare_metadata),
+            "component_signature_runs": self.component_signature_runs,
+            "closed": self.closed,
+            "near_pair_columns_materialized": False,
+            "partition_pair_rows_materialized": False,
+            "pair_materialization_avoided": True,
+            "native_abi_added": False,
+            "runtime_executable": True,
+            "default_route_promoted": False,
+            "predicate_direct_status_promoted": False,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "app_specific_engine_logic_allowed": False,
+            "automatic_partner_selection_allowed": False,
+            "hidden_dispatch_allowed": False,
+            "claim_boundary": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY,
+        }
+
+    def run_component_signature(
+        self,
+        *,
+        predicate_flags,
+        neighbor_counts=None,
+        max_iterations: int = 64,
+        convergence_mode: str = "until_stable",
+    ) -> dict[str, Any]:
+        self._ensure_open()
+        self.component_signature_runs += 1
+        columns, run_metadata = _run_predicate_direct_status_union_signature_from_prepared_columns_cupy_3d(
+            self.runtime_columns,
+            self.prepare_metadata,
+            predicate_flags=predicate_flags,
+            neighbor_counts=neighbor_counts,
+            radius=self.radius,
+            cell_factor=self.cell_factor,
+            max_iterations=max_iterations,
+            convergence_mode=convergence_mode,
+        )
+        metadata = {
+            "reference": "fixed_radius_partition_convergence_predicate_signature_3d_cupy_prepared_direct_status_union_preview",
+            "adapter": "run_fixed_radius_partition_convergence_predicate_signature_cupy_prepared_direct_status_union_preview_3d",
+            **run_metadata,
+            "prepared_predicate_direct_status_union_handle": True,
+            "prepared_predicate_direct_status_union_handle_status": "explicit_cupy_preview_not_promoted",
+            "prepared_predicate_direct_status_union_partner": "cupy",
+            "prepared_predicate_direct_status_union_reused": True,
+            "prepared_predicate_direct_status_union_run_index": int(self.component_signature_runs),
+            "prepared_predicate_direct_status_union_prepare_metadata": dict(self.prepare_metadata),
+            "default_route_promoted": False,
+            "predicate_direct_status_promoted": False,
+        }
+        return {"columns": columns, "metadata": metadata}
+
+    def close(self) -> None:
+        self.closed = True
+
+    def __enter__(self) -> "V28PreparedFixedRadiusPartitionConvergencePredicateDirectStatusUnionCupyPreview3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+
+def prepare_v2_8_fixed_radius_partition_convergence_predicate_direct_status_union_cupy_preview_3d(
+    point_rows,
+    *,
+    radius: float,
+    cell_factor: float = 0.125,
+) -> V28PreparedFixedRadiusPartitionConvergencePredicateDirectStatusUnionCupyPreview3D:
+    """Prepare reusable device columns for predicate-aware direct-status grouped-union signatures."""
+
+    raw_rows = tuple(point_rows)
+    runtime_columns, prepare_metadata = _prepare_direct_status_union_runtime_columns_cupy_3d(
+        raw_rows,
+        radius=radius,
+        cell_factor=cell_factor,
+    )
+    return V28PreparedFixedRadiusPartitionConvergencePredicateDirectStatusUnionCupyPreview3D(
+        point_rows=raw_rows,
+        radius=float(radius),
+        cell_factor=float(cell_factor),
+        runtime_columns=runtime_columns,
+        prepare_metadata=prepare_metadata,
+    )
+
+
+def run_v2_8_fixed_radius_partition_convergence_predicate_signature_cupy_prepared_direct_status_union_preview_3d(
+    prepared: V28PreparedFixedRadiusPartitionConvergencePredicateDirectStatusUnionCupyPreview3D,
+    *,
+    predicate_flags,
+    neighbor_counts=None,
+    max_iterations: int = 64,
+    convergence_mode: str = "until_stable",
+) -> dict[str, Any]:
+    return prepared.run_component_signature(
+        predicate_flags=predicate_flags,
+        neighbor_counts=neighbor_counts,
+        max_iterations=max_iterations,
+        convergence_mode=convergence_mode,
+    )
+
+
 def build_v2_8_fixed_radius_partition_convergence_summary_numba_preview_3d(
     point_rows,
     *,
@@ -3162,6 +3441,457 @@ def _cupy_direct_partition_status_union_component_roots(
     )
 
 
+def _cupy_direct_partition_status_union_predicate_signature_columns(
+    cupy,
+    *,
+    partition_count: int,
+    point_count: int,
+    unique_cells,
+    dim_y: int,
+    dim_z: int,
+    aabb_min_x64,
+    aabb_min_y64,
+    aabb_min_z64,
+    aabb_max_x64,
+    aabb_max_y64,
+    aabb_max_z64,
+    partition_offsets,
+    partition_point_ordinals,
+    point_partition_ids,
+    predicate_flags,
+    x,
+    y,
+    z,
+    max_offset: int,
+    radius_sq: float,
+    classification_tol: float,
+    max_iterations: int = 64,
+    convergence_mode: str = "until_stable",
+):
+    convergence_mode = str(convergence_mode)
+    if convergence_mode not in {"until_stable", "single_pass_candidate"}:
+        raise ValueError("convergence_mode must be 'until_stable' or 'single_pass_candidate'")
+    predicate_summary_kernel = cupy.RawKernel(
+        r'''
+        extern "C" __global__
+        void predicate_partition_summary_kernel(
+            const unsigned int point_count,
+            const unsigned int* point_partition_ids,
+            const unsigned int* predicate_flags,
+            unsigned int* partition_predicate_counts,
+            int* partition_min_predicate_point)
+        {
+            const unsigned int point = blockIdx.x * blockDim.x + threadIdx.x;
+            if (point >= point_count || predicate_flags[point] == 0u) return;
+            const unsigned int part = point_partition_ids[point];
+            atomicAdd(partition_predicate_counts + part, 1u);
+            atomicMin(partition_min_predicate_point + part, (int)point);
+        }
+        ''',
+        "predicate_partition_summary_kernel",
+    )
+    union_kernel = cupy.RawKernel(
+        r'''
+        extern "C" __device__
+        unsigned int rtdl_find_partition_root(unsigned int* parents, unsigned int value)
+        {
+            unsigned int root = value;
+            while (parents[root] != root) root = parents[root];
+            return root;
+        }
+
+        extern "C" __device__
+        void rtdl_union_partition_roots(unsigned int* parents, unsigned int left, unsigned int right, unsigned int* changed)
+        {
+            unsigned int left_root = rtdl_find_partition_root(parents, left);
+            unsigned int right_root = rtdl_find_partition_root(parents, right);
+            while (left_root != right_root) {
+                const unsigned int low = left_root < right_root ? left_root : right_root;
+                const unsigned int high = left_root < right_root ? right_root : left_root;
+                const unsigned int old = atomicMin(&parents[high], low);
+                if (old == high) {
+                    *changed = 1u;
+                    break;
+                }
+                left_root = low;
+                right_root = old;
+                left_root = rtdl_find_partition_root(parents, left_root);
+                right_root = rtdl_find_partition_root(parents, right_root);
+            }
+        }
+
+        extern "C" __device__
+        void rtdl_assign_partition_candidate(
+            unsigned int partition,
+            int candidate,
+            const unsigned int* partition_offsets,
+            const unsigned int* partition_point_ordinals,
+            const unsigned int* predicate_flags,
+            int* border_candidate_out,
+            unsigned int* border_update_count)
+        {
+            if (candidate < 0) return;
+            const unsigned int begin = partition_offsets[partition];
+            const unsigned int end = partition_offsets[partition + 1u];
+            for (unsigned int cursor = begin; cursor < end; ++cursor) {
+                const unsigned int point = partition_point_ordinals[cursor];
+                if (predicate_flags[point] == 0u) {
+                    const int old = atomicMin(border_candidate_out + point, candidate);
+                    if (candidate < old) atomicAdd(border_update_count, 1u);
+                }
+            }
+        }
+
+        extern "C" __global__
+        void direct_partition_status_predicate_union_kernel(
+            const long long* unique_cells,
+            const double* min_x,
+            const double* min_y,
+            const double* min_z,
+            const double* max_x,
+            const double* max_y,
+            const double* max_z,
+            const unsigned int* partition_offsets,
+            const unsigned int* partition_point_ordinals,
+            const unsigned int* partition_predicate_counts,
+            const int* partition_min_predicate_point,
+            const unsigned int* predicate_flags,
+            const double* x,
+            const double* y,
+            const double* z,
+            unsigned int partition_count,
+            int dim_y,
+            int dim_z,
+            int max_offset,
+            double radius_sq,
+            double classification_tol,
+            unsigned int collect_counts,
+            unsigned int* parents,
+            int* border_candidate_out,
+            unsigned int* changed,
+            unsigned int* safe_skip_count,
+            unsigned int* safe_full_count,
+            unsigned int* ambiguous_count,
+            unsigned int* comparison_count,
+            unsigned int* positive_count,
+            unsigned int* border_update_count)
+        {
+            const unsigned long long offset_count =
+                (unsigned long long)(2 * max_offset + 1)
+                * (unsigned long long)(2 * max_offset + 1)
+                * (unsigned long long)(2 * max_offset + 1);
+            const unsigned long long total =
+                (unsigned long long)partition_count * offset_count;
+            unsigned long long linear =
+                (unsigned long long)blockIdx.x * (unsigned long long)blockDim.x
+                + (unsigned long long)threadIdx.x;
+            if (linear >= total) return;
+            const unsigned int left = (unsigned int)(linear / offset_count);
+            unsigned long long rem = linear - (unsigned long long)left * offset_count;
+            const int span = 2 * max_offset + 1;
+            const int dx = (int)(rem / (unsigned long long)(span * span)) - max_offset;
+            rem = rem % (unsigned long long)(span * span);
+            const int dy = (int)(rem / (unsigned long long)span) - max_offset;
+            const int dz = (int)(rem % (unsigned long long)span) - max_offset;
+            const long long encoded = unique_cells[left];
+            const long long plane = (long long)dim_y * (long long)dim_z;
+            const long long base_x = encoded / plane;
+            const long long base_rem = encoded - base_x * plane;
+            const long long base_y = base_rem / (long long)dim_z;
+            const long long base_z = base_rem - base_y * (long long)dim_z;
+            const long long tx = base_x + (long long)dx;
+            const long long ty = base_y + (long long)dy;
+            const long long tz = base_z + (long long)dz;
+            if (tx < 0 || ty < 0 || tz < 0 || ty >= dim_y || tz >= dim_z) return;
+            const long long target = (tx * (long long)dim_y + ty) * (long long)dim_z + tz;
+            int lo = 0;
+            int hi = (int)partition_count;
+            while (lo < hi) {
+                const int mid = lo + ((hi - lo) >> 1);
+                if (unique_cells[mid] < target) lo = mid + 1;
+                else hi = mid;
+            }
+            if (lo >= (int)partition_count || unique_cells[lo] != target) return;
+            const unsigned int right = (unsigned int)lo;
+            if (right < left) return;
+
+            double min_dist = 0.0;
+            double delta = 0.0;
+            if (max_x[left] < min_x[right]) delta = min_x[right] - max_x[left];
+            else if (max_x[right] < min_x[left]) delta = min_x[left] - max_x[right];
+            min_dist += delta * delta;
+            delta = 0.0;
+            if (max_y[left] < min_y[right]) delta = min_y[right] - max_y[left];
+            else if (max_y[right] < min_y[left]) delta = min_y[left] - max_y[right];
+            min_dist += delta * delta;
+            delta = 0.0;
+            if (max_z[left] < min_z[right]) delta = min_z[right] - max_z[left];
+            else if (max_z[right] < min_z[left]) delta = min_z[left] - max_z[right];
+            min_dist += delta * delta;
+            double mdx1 = max_x[left] - min_x[right];
+            if (mdx1 < 0.0) mdx1 = -mdx1;
+            double mdx2 = max_x[right] - min_x[left];
+            if (mdx2 < 0.0) mdx2 = -mdx2;
+            double mdy1 = max_y[left] - min_y[right];
+            if (mdy1 < 0.0) mdy1 = -mdy1;
+            double mdy2 = max_y[right] - min_y[left];
+            if (mdy2 < 0.0) mdy2 = -mdy2;
+            double mdz1 = max_z[left] - min_z[right];
+            if (mdz1 < 0.0) mdz1 = -mdz1;
+            double mdz2 = max_z[right] - min_z[left];
+            if (mdz2 < 0.0) mdz2 = -mdz2;
+            const double max_dx = mdx1 > mdx2 ? mdx1 : mdx2;
+            const double max_dy = mdy1 > mdy2 ? mdy1 : mdy2;
+            const double max_dz = mdz1 > mdz2 ? mdz1 : mdz2;
+            const double max_dist = max_dx * max_dx + max_dy * max_dy + max_dz * max_dz;
+
+            const unsigned int left_has_predicate = partition_predicate_counts[left] != 0u;
+            const unsigned int right_has_predicate = partition_predicate_counts[right] != 0u;
+            if (max_dist <= radius_sq - classification_tol) {
+                if (collect_counts != 0u) atomicAdd(safe_full_count, 1u);
+                if (left_has_predicate && right_has_predicate) {
+                    rtdl_union_partition_roots(parents, left, right, changed);
+                }
+                if (right_has_predicate) {
+                    rtdl_assign_partition_candidate(
+                        left, partition_min_predicate_point[right], partition_offsets,
+                        partition_point_ordinals, predicate_flags, border_candidate_out,
+                        border_update_count);
+                }
+                if (left_has_predicate && right != left) {
+                    rtdl_assign_partition_candidate(
+                        right, partition_min_predicate_point[left], partition_offsets,
+                        partition_point_ordinals, predicate_flags, border_candidate_out,
+                        border_update_count);
+                }
+                return;
+            }
+            if (min_dist > radius_sq + classification_tol) {
+                if (collect_counts != 0u) atomicAdd(safe_skip_count, 1u);
+                return;
+            }
+
+            if (collect_counts != 0u) atomicAdd(ambiguous_count, 1u);
+            unsigned int predicate_connected = 0u;
+            const unsigned int left_begin = partition_offsets[left];
+            const unsigned int left_end = partition_offsets[left + 1u];
+            const unsigned int right_begin = partition_offsets[right];
+            const unsigned int right_end = partition_offsets[right + 1u];
+            for (unsigned int li = left_begin; li < left_end; ++li) {
+                const unsigned int left_point = partition_point_ordinals[li];
+                const unsigned int left_predicate = predicate_flags[left_point] != 0u;
+                for (unsigned int ri = right_begin; ri < right_end; ++ri) {
+                    const unsigned int right_point = partition_point_ordinals[ri];
+                    if (left == right && right_point <= left_point) continue;
+                    const unsigned int right_predicate = predicate_flags[right_point] != 0u;
+                    if (!left_predicate && !right_predicate) continue;
+                    if (collect_counts != 0u) atomicAdd(comparison_count, 1u);
+                    const double px = x[left_point] - x[right_point];
+                    const double py = y[left_point] - y[right_point];
+                    const double pz = z[left_point] - z[right_point];
+                    const double dist = px * px + py * py + pz * pz;
+                    if (dist <= radius_sq) {
+                        if (left_predicate && right_predicate) {
+                            predicate_connected = 1u;
+                            if (collect_counts != 0u) atomicAdd(positive_count, 1u);
+                        } else if (!left_predicate && right_predicate) {
+                            const int old = atomicMin(border_candidate_out + left_point, (int)right_point);
+                            if ((int)right_point < old) atomicAdd(border_update_count, 1u);
+                        } else if (left_predicate && !right_predicate) {
+                            const int old = atomicMin(border_candidate_out + right_point, (int)left_point);
+                            if ((int)left_point < old) atomicAdd(border_update_count, 1u);
+                        }
+                    }
+                }
+            }
+            if (predicate_connected != 0u) {
+                rtdl_union_partition_roots(parents, left, right, changed);
+            }
+        }
+        ''',
+        "direct_partition_status_predicate_union_kernel",
+    )
+    compress_kernel = cupy.RawKernel(
+        r'''
+        extern "C" __global__
+        void compress_direct_partition_parents_kernel(unsigned int* parents, unsigned int partition_count)
+        {
+            unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
+            if (idx >= partition_count) return;
+            unsigned int root = idx;
+            while (parents[root] != root) root = parents[root];
+            parents[idx] = root;
+        }
+        ''',
+        "compress_direct_partition_parents_kernel",
+    )
+    signature_kernel = cupy.RawKernel(
+        r'''
+        extern "C" __device__
+        unsigned int rtdl_find_signature_partition_root(const unsigned int* parents, unsigned int value)
+        {
+            unsigned int root = value;
+            unsigned int guard = 0u;
+            while (parents[root] != root && guard < 8192u) {
+                root = parents[root];
+                ++guard;
+            }
+            return root;
+        }
+
+        extern "C" __global__
+        void predicate_partition_signature_kernel(
+            const unsigned int point_count,
+            const unsigned int* point_partition_ids,
+            const unsigned int* predicate_flags,
+            const unsigned int* parents,
+            const int* border_candidate_out,
+            long long* label_counts,
+            long long* flag_true_count,
+            long long* negative_label_count)
+        {
+            const unsigned int point = blockIdx.x * blockDim.x + threadIdx.x;
+            if (point >= point_count) return;
+            if (predicate_flags[point] != 0u) {
+                const unsigned int root = rtdl_find_signature_partition_root(
+                    parents, point_partition_ids[point]);
+                atomicAdd(label_counts + root + 1u, 1ll);
+                atomicAdd(flag_true_count, 1ll);
+                return;
+            }
+            const int candidate = border_candidate_out[point];
+            if (candidate < 0 || (unsigned int)candidate >= point_count || predicate_flags[candidate] == 0u) {
+                atomicAdd(negative_label_count, 1ll);
+                return;
+            }
+            const unsigned int root = rtdl_find_signature_partition_root(
+                parents, point_partition_ids[(unsigned int)candidate]);
+            atomicAdd(label_counts + root + 1u, 1ll);
+        }
+        ''',
+        "predicate_partition_signature_kernel",
+    )
+    partition_count = int(partition_count)
+    point_count = int(point_count)
+    if partition_count <= 0:
+        raise ValueError("partition_count must be positive")
+    if point_count <= 0:
+        raise ValueError("point_count must be positive")
+    threads = 256
+    point_blocks = (max(1, (point_count + threads - 1) // threads),)
+    parent_blocks = (max(1, (partition_count + threads - 1) // threads),)
+    partition_predicate_counts = cupy.zeros((partition_count,), dtype=cupy.uint32)
+    partition_min_predicate_point = cupy.full((partition_count,), point_count, dtype=cupy.int32)
+    predicate_summary_kernel(
+        point_blocks,
+        (threads,),
+        (
+            cupy.uint32(point_count),
+            point_partition_ids,
+            predicate_flags,
+            partition_predicate_counts,
+            partition_min_predicate_point,
+        ),
+    )
+    parents = cupy.arange(partition_count, dtype=cupy.uint32)
+    border_candidate = cupy.full((point_count,), point_count, dtype=cupy.int32)
+    changed = cupy.zeros((1,), dtype=cupy.uint32)
+    safe_skip_count = cupy.zeros((1,), dtype=cupy.uint32)
+    safe_full_count = cupy.zeros((1,), dtype=cupy.uint32)
+    ambiguous_count = cupy.zeros((1,), dtype=cupy.uint32)
+    comparison_count = cupy.zeros((1,), dtype=cupy.uint32)
+    positive_count = cupy.zeros((1,), dtype=cupy.uint32)
+    border_update_count = cupy.zeros((1,), dtype=cupy.uint32)
+    offset_count = (2 * int(max_offset) + 1) ** 3
+    total = max(1, int(partition_count) * int(offset_count))
+    pair_blocks = ((total + threads - 1) // threads,)
+    iterations = 0
+    final_changed_flag = 0
+    iteration_limit = 1 if convergence_mode == "single_pass_candidate" else int(max_iterations)
+    for iteration in range(iteration_limit):
+        changed.fill(0)
+        union_kernel(
+            pair_blocks,
+            (threads,),
+            (
+                unique_cells,
+                aabb_min_x64,
+                aabb_min_y64,
+                aabb_min_z64,
+                aabb_max_x64,
+                aabb_max_y64,
+                aabb_max_z64,
+                partition_offsets,
+                partition_point_ordinals,
+                partition_predicate_counts,
+                partition_min_predicate_point,
+                predicate_flags,
+                x,
+                y,
+                z,
+                cupy.uint32(partition_count),
+                int(dim_y),
+                int(dim_z),
+                int(max_offset),
+                float(radius_sq),
+                float(classification_tol),
+                cupy.uint32(1 if iteration == 0 else 0),
+                parents,
+                border_candidate,
+                changed,
+                safe_skip_count,
+                safe_full_count,
+                ambiguous_count,
+                comparison_count,
+                positive_count,
+                border_update_count,
+            ),
+        )
+        compress_kernel(parent_blocks, (threads,), (parents, cupy.uint32(partition_count)))
+        iterations = iteration + 1
+        final_changed_flag = int(changed[0].item())
+        if convergence_mode == "single_pass_candidate":
+            break
+        if final_changed_flag == 0:
+            break
+    else:
+        raise RuntimeError("predicate direct partition status union did not converge")
+    label_counts = cupy.zeros((partition_count + 1,), dtype=cupy.int64)
+    flag_true_count = cupy.zeros((1,), dtype=cupy.int64)
+    negative_label_count = cupy.zeros((1,), dtype=cupy.int64)
+    signature_kernel(
+        point_blocks,
+        (threads,),
+        (
+            cupy.uint32(point_count),
+            point_partition_ids,
+            predicate_flags,
+            parents,
+            border_candidate,
+            label_counts,
+            flag_true_count,
+            negative_label_count,
+        ),
+    )
+    convergence_proven = convergence_mode == "until_stable" and final_changed_flag == 0
+    return (
+        parents,
+        border_candidate,
+        label_counts,
+        flag_true_count,
+        negative_label_count,
+        iterations,
+        int(safe_skip_count[0].item()),
+        int(safe_full_count[0].item()),
+        int(ambiguous_count[0].item()),
+        int(comparison_count[0].item()),
+        int(positive_count[0].item()),
+        int(border_update_count[0].item()),
+        final_changed_flag,
+        convergence_proven,
+    )
+
+
 def _cupy_union_partition_pairs_with_ambiguous_points(
     cupy,
     *,
@@ -3913,6 +4643,7 @@ __all__ = [
     "V28FixedRadiusGraphComponentPlan",
     "V28PreparedFixedRadiusGraphComponentContinuation3D",
     "V28PreparedFixedRadiusPartitionConvergenceDirectStatusUnionCupyPreview3D",
+    "V28PreparedFixedRadiusPartitionConvergencePredicateDirectStatusUnionCupyPreview3D",
     "V28PreparedFixedRadiusPartitionConvergenceSummaryCupyPreview3D",
     "build_v2_8_fixed_radius_partition_convergence_component_labels_cupy_preview_3d",
     "build_v2_8_fixed_radius_partition_convergence_component_labels_reference_3d",
@@ -3929,9 +4660,11 @@ __all__ = [
     "plan_v2_8_fixed_radius_graph_component_continuation",
     "prepare_v2_8_fixed_radius_graph_component_continuation_3d",
     "prepare_v2_8_fixed_radius_partition_convergence_direct_status_union_cupy_preview_3d",
+    "prepare_v2_8_fixed_radius_partition_convergence_predicate_direct_status_union_cupy_preview_3d",
     "prepare_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d",
     "run_v2_8_fixed_radius_partition_convergence_component_labels_cupy_prepared_preview_3d",
     "run_v2_8_fixed_radius_partition_convergence_component_signature_cupy_prepared_direct_status_union_preview_3d",
     "run_v2_8_fixed_radius_partition_convergence_component_signature_cupy_prepared_preview_3d",
+    "run_v2_8_fixed_radius_partition_convergence_predicate_signature_cupy_prepared_direct_status_union_preview_3d",
     "validate_v2_8_fixed_radius_partition_convergence_summary_same_contract_3d",
 ]

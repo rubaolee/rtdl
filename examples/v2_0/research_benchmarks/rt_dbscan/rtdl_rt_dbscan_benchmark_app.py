@@ -996,6 +996,21 @@ def _cluster_signature_from_numba_signature_count_columns(
     )
 
 
+def _cluster_signature_from_cupy_signature_count_columns(
+    columns: dict[str, object],
+) -> dict[str, object]:
+    import cupy
+
+    label_counts = cupy.asnumpy(columns["label_counts"]).tolist()
+    core_count = int(cupy.asnumpy(columns["flag_true_count"])[0])
+    noise_count = int(cupy.asnumpy(columns["negative_label_count"])[0])
+    return _cluster_signature_from_nonnegative_label_counts(
+        label_counts,
+        core_count=core_count,
+        noise_count=noise_count,
+    )
+
+
 def _optix_ranked_summaries_to_cupy_core_columns(
     points: tuple[rt.Point3D, ...],
     summaries: Iterable[dict[str, object]],
@@ -1171,6 +1186,7 @@ def run_rt_dbscan_benchmark(
         "partner_cupy_partition_convergence_component_signature_3d",
         "partner_cupy_prepared_partition_convergence_component_signature_3d",
         "partner_cupy_prepared_direct_status_union_component_signature_3d",
+        "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
     }:
         raise ValueError("signature mode does not materialize Python rows; column-signature mode does not materialize Python rows")
     if repeat < 1:
@@ -1670,6 +1686,126 @@ def run_rt_dbscan_benchmark(
             label_values = tuple(int(value) for value in reference["columns"]["component_labels"])
             reference_sizes = sorted(label_values.count(label) for label in set(label_values))
             reference_signature_override = _component_size_signature_payload(reference_sizes)
+    elif mode == "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d":
+        prepare_start = time.perf_counter()
+        output_columns = rt.allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
+            len(points),
+            partner="cupy",
+        )
+        prepared_predicate_direct_status = (
+            rt.prepare_v2_8_fixed_radius_partition_convergence_predicate_direct_status_union_cupy_preview_3d(
+                points,
+                radius=resolved_radius,
+                cell_factor=resolved_partition_cell_factor,
+            )
+        )
+        prepared_predicate_direct_status_sec = time.perf_counter() - prepare_start
+        prepared_runs: list[dict[str, object]] = []
+        with prepared_predicate_direct_status, rt.prepare_optix_fixed_radius_count_threshold_3d(
+            points,
+            max_radius=resolved_radius,
+        ) as prepared_count:
+            threshold_result = None
+            threshold_elapsed = 0.0
+            for iteration in range(repeat):
+                run_timing: dict[str, float] = {}
+                run_start = time.perf_counter()
+                if threshold_result is None:
+                    threshold_start = time.perf_counter()
+                    threshold_result = rt.fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
+                        prepared_count,
+                        points,
+                        radius=resolved_radius,
+                        threshold=resolved_min_neighbors,
+                        partner="cupy",
+                        output_columns=output_columns,
+                        return_metadata=True,
+                    )
+                    threshold_elapsed = time.perf_counter() - threshold_start
+                run_timing["optix_rt_count_threshold_sec"] = threshold_elapsed if iteration == 0 else 0.0
+                signature_start = time.perf_counter()
+                result = (
+                    rt.run_v2_8_fixed_radius_partition_convergence_predicate_signature_cupy_prepared_direct_status_union_preview_3d(
+                        prepared_predicate_direct_status,
+                        predicate_flags=threshold_result["columns"]["threshold_flags"],
+                        neighbor_counts=threshold_result["columns"]["neighbor_counts"],
+                        convergence_mode=direct_status_convergence_mode,
+                    )
+                )
+                run_timing["predicate_direct_status_signature_sec"] = time.perf_counter() - signature_start
+                run_signature = _cluster_signature_from_cupy_signature_count_columns(result["columns"])
+                prepared_runs.append(
+                    {
+                        "iteration": iteration,
+                        "is_warmup": iteration < warmup,
+                        "elapsed_sec": time.perf_counter() - run_start,
+                        "timing_sec": run_timing,
+                        "signature": run_signature,
+                        "rows": (),
+                        "metadata": dict(result["metadata"]),
+                        "threshold_metadata": dict(threshold_result["metadata"]),
+                    }
+                )
+        measured_runs = [row for row in prepared_runs if not bool(row["is_warmup"])]
+        if not measured_runs:
+            raise RuntimeError("RT-DBSCAN predicate direct-status repeat produced no measured rows")
+        phase_names = sorted({name for row in measured_runs for name in row["timing_sec"]})
+        timing_breakdown_sec = {
+            name: float(statistics.median(float(row["timing_sec"][name]) for row in measured_runs if name in row["timing_sec"]))
+            for name in phase_names
+        }
+        timing_breakdown_sec["prepare_predicate_direct_status_sec"] = prepared_predicate_direct_status_sec
+        elapsed_override = float(statistics.median(float(row["elapsed_sec"]) for row in measured_runs))
+        signature_override = dict(measured_runs[-1]["signature"])
+        rows = measured_runs[-1]["rows"]
+        metadata = dict(measured_runs[-1]["metadata"])
+        threshold_metadata = dict(measured_runs[-1]["threshold_metadata"])
+        metadata.update(
+            {
+                "path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+                "front_door_operation": "fixed_radius_graph_predicate_component_size_signature_3d",
+                "native_engine_summary_contract": "generic_prepared_fixed_radius_count_threshold_3d_device_columns_plus_predicate_direct_status_union",
+                "native_execution_path": "prepared_rt_core_count_threshold_3d_then_partner_predicate_direct_status_union_preview",
+                "optix_backend_used": True,
+                "partner": "cupy",
+                "rt_core_accelerated": True,
+                "materializes_neighbor_summaries": False,
+                "materializes_neighbor_rows": False,
+                "materializes_python_rows": False,
+                "signature_source": "partner_column_signature_counts_no_python_row_dicts",
+                "predicate_direct_status_candidate": True,
+                "predicate_direct_status_promoted": False,
+                "direct_status_convergence_mode_user_selection": direct_status_convergence_mode,
+                "direct_status_convergence_mode_default_route_changed": False,
+                "automatic_convergence_mode_selection_authorized": False,
+                "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+                "threshold_metadata": threshold_metadata,
+                "prepared_predicate_direct_status_sec": prepared_predicate_direct_status_sec,
+                "predicate_direct_status_signature_sec": timing_breakdown_sec["predicate_direct_status_signature_sec"],
+                "prepared_predicate_direct_status_total_sec": (
+                    prepared_predicate_direct_status_sec
+                    + timing_breakdown_sec["predicate_direct_status_signature_sec"]
+                ),
+                "prepared_query_repeat_protocol": {
+                    "repeat": repeat,
+                    "warmup": warmup,
+                    "measured_iterations": len(measured_runs),
+                    "prepare_sec": prepared_predicate_direct_status_sec,
+                    "median_elapsed_sec": elapsed_override,
+                    "signatures_stable": len(
+                        {json.dumps(row["signature"], sort_keys=True) for row in measured_runs}
+                    )
+                    == 1,
+                },
+                "timing_breakdown_sec": timing_breakdown_sec,
+                "dbscan_core_border_noise_semantics": True,
+                "native_dbscan_abi_added": False,
+                "release_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "rt_core_speedup_claim_authorized": False,
+                "whole_app_speedup_claim_authorized": False,
+            }
+        )
     elif mode == "optix_core_flags_cupy_grid_components_3d":
         if resolved_min_neighbors > 64:
             raise ValueError("optix_core_flags_cupy_grid_components_3d currently requires min_neighbors <= 64")
@@ -2355,6 +2491,7 @@ def main(argv: list[str] | None = None) -> int:
             "partner_cupy_partition_convergence_component_signature_3d",
             "partner_cupy_prepared_partition_convergence_component_signature_3d",
             "partner_cupy_prepared_direct_status_union_component_signature_3d",
+            "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
             "optix_core_flags_cupy_grid_components_3d",
             "optix_rt_core_flags_cupy_grid_components_3d",
             "optix_rt_core_flags_cupy_prepared_grid_components_3d",
