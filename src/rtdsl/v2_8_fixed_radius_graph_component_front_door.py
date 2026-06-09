@@ -3108,7 +3108,6 @@ def _cupy_direct_partition_status_union_component_roots(
             ),
         )
         compress_kernel(parent_blocks, (threads,), (parents, cupy.uint32(partition_count)))
-        cupy.cuda.get_current_stream().synchronize()
         iterations = iteration + 1
         if int(changed[0].item()) == 0:
             break
