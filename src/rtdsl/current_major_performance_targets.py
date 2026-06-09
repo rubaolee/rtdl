@@ -4,12 +4,13 @@ from dataclasses import dataclass
 from typing import Any
 
 
-CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION = "rtdl.v2_10.current_major_performance_targets.goal4249.v1"
+CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION = "rtdl.v2_10.current_major_performance_targets.goal4261.v1"
 CURRENT_MAJOR_PERFORMANCE_TARGET_STATUS = "internal_direction_map_not_release_authorization"
 CURRENT_MAJOR_PERFORMANCE_TARGET_CLAIM_BOUNDARY = (
     "Goal4249 summarizes the major performance direction after Goal4215, "
     "Goal4218, Goal4222, Goal4223, Goal4230, Goal4235, Goal4239, Goal4243, "
-    "and the Goal4248 public-doc claim-boundary scan. It is a route/runtime planning map, not "
+    "the Goal4248 public-doc claim-boundary scan, and the Goal4254/4258 "
+    "public-claim wording repair closure. It is a route/runtime planning map, not "
     "a release packet, not "
     "a public speedup claim, not a whole-app acceleration claim, not a broad "
     "RT-core claim, not a paper-reproduction claim, not a true-zero-copy claim, "
@@ -191,16 +192,31 @@ CURRENT_MAJOR_PERFORMANCE_TARGETS: tuple[CurrentMajorPerformanceTarget, ...] = (
             "Goal4239 adds a dedicated RayJoin long-repeat profile, and Goal4243 "
             "refreshes the former short current-head rows with dedicated long-repeat "
             "evidence. Goal4248 scans the current public learner/user docs and leaves "
-            "zero hard claim-boundary blockers. This is still not a formal public "
-            "release matrix across exact release wording, consensus, and hardware classes."
+            "zero hard claim-boundary blockers. Goal4254 drafts exact public claim "
+            "wording, and Goal4258 closes the Goal4255 repair items with focused "
+            "Claude/Gemini acceptance. This is still not a formal public release "
+            "matrix across consensus, final release commit validation, and hardware classes."
         ),
         next_action=(
             "Before any formal major release, assemble an explicit release packet with "
-            "exact artifact provenance and fresh multi-AI consensus over the exact public "
-            "claims; run additional long timing only if the release claim "
-            "requires a public performance table."
+            "exact artifact provenance and fresh multi-AI consensus over the final packet; "
+            "rerun a final pod validation at the exact release commit, and run additional "
+            "long timing only if the release claim requires a public performance table."
         ),
-        evidence_refs=("Goal4215", "Goal4222", "Goal4223", "Goal4230", "Goal4235", "Goal4239", "Goal4243", "Goal4248"),
+        evidence_refs=(
+            "Goal4215",
+            "Goal4222",
+            "Goal4223",
+            "Goal4230",
+            "Goal4235",
+            "Goal4239",
+            "Goal4243",
+            "Goal4248",
+            "Goal4254",
+            "Goal4258",
+            "Goal4259",
+            "Goal4260",
+        ),
         pod_needed_next=True,
     ),
     CurrentMajorPerformanceTarget(
@@ -226,13 +242,27 @@ CURRENT_MAJOR_PERFORMANCE_TARGETS: tuple[CurrentMajorPerformanceTarget, ...] = (
         current_reading=(
             "The project has current NVIDIA internal evidence and strict claim boundaries, "
             "and Goal4248 confirms the current public docs scan has zero hard claim-boundary "
-            "blockers, but this map does not authorize a release."
+            "blockers. Goal4257 drafts the release-candidate packet and Goal4258/4259/4260 "
+            "close the public claim-wording repair loop, but this map does not authorize a release."
         ),
         next_action=(
-            "A formal major release needs a user-requested release packet and the required "
-            "multi-AI consensus over the exact release claims."
+            "A formal major release needs explicit user release decision, final pod validation "
+            "at the release commit, and the required multi-AI consensus over the exact release packet."
         ),
-        evidence_refs=("Goal4215", "Goal4216", "Goal4217", "Goal4218", "Goal4235", "Goal4248"),
+        evidence_refs=(
+            "Goal4215",
+            "Goal4216",
+            "Goal4217",
+            "Goal4218",
+            "Goal4235",
+            "Goal4248",
+            "Goal4251",
+            "Goal4254",
+            "Goal4257",
+            "Goal4258",
+            "Goal4259",
+            "Goal4260",
+        ),
         pod_needed_next=False,
     ),
 )

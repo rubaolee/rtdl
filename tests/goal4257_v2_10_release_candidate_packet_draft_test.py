@@ -31,6 +31,9 @@ class Goal4257V210ReleaseCandidatePacketDraftTest(unittest.TestCase):
             "Goal4254",
             "Goal4255",
             "Goal4256",
+            "Goal4258",
+            "Goal4259",
+            "Goal4260",
         ):
             self.assertIn(goal, text)
 

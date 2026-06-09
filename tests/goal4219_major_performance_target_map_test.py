@@ -9,15 +9,17 @@ import rtdsl as rt
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs" / "reports" / "goal4244_major_performance_target_map_after_short_row_refresh_2026-06-09.md"
 GOAL4249_REPORT = ROOT / "docs" / "reports" / "goal4249_major_performance_target_map_after_public_docs_scan_2026-06-09.md"
+GOAL4261_REPORT = ROOT / "docs" / "reports" / "goal4261_major_performance_target_map_after_claim_wording_closure_2026-06-09.md"
 
 
 class Goal4219MajorPerformanceTargetMapTest(unittest.TestCase):
     def test_report_and_exported_api_exist(self) -> None:
         self.assertTrue(REPORT.is_file())
         self.assertTrue(GOAL4249_REPORT.is_file())
+        self.assertTrue(GOAL4261_REPORT.is_file())
         self.assertEqual(
             rt.CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION,
-            "rtdl.v2_10.current_major_performance_targets.goal4249.v1",
+            "rtdl.v2_10.current_major_performance_targets.goal4261.v1",
         )
         self.assertTrue(callable(rt.current_major_performance_targets))
         self.assertTrue(callable(rt.summarize_current_major_performance_targets))
@@ -53,7 +55,14 @@ class Goal4219MajorPerformanceTargetMapTest(unittest.TestCase):
         self.assertIn("Goal4243", rows["release_grade_long_run_packet"]["evidence_refs"])
         self.assertIn("Goal4248", rows["release_grade_long_run_packet"]["evidence_refs"])
         self.assertIn("Goal4248", rows["major_release_candidate_packet"]["evidence_refs"])
+        self.assertIn("Goal4254", rows["release_grade_long_run_packet"]["evidence_refs"])
+        self.assertIn("Goal4258", rows["release_grade_long_run_packet"]["evidence_refs"])
+        self.assertIn("Goal4259", rows["release_grade_long_run_packet"]["evidence_refs"])
+        self.assertIn("Goal4260", rows["release_grade_long_run_packet"]["evidence_refs"])
+        self.assertIn("Goal4257", rows["major_release_candidate_packet"]["evidence_refs"])
+        self.assertIn("Goal4260", rows["major_release_candidate_packet"]["evidence_refs"])
         self.assertIn("public docs scan", rows["major_release_candidate_packet"]["current_reading"])
+        self.assertIn("claim-wording repair loop", rows["major_release_candidate_packet"]["current_reading"])
         self.assertEqual(rows["rtdbscan_profile_aware_boundary_policy"]["target_status"], "done_internal_evidence")
         self.assertIn("contract", rows["rayjoin_contract_split_route_policy"]["theme"])
         self.assertIn("profile-aware", rows["rtdbscan_profile_aware_boundary_policy"]["theme"])
