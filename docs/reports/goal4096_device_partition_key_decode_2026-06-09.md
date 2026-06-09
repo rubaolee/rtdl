@@ -36,6 +36,10 @@ After Goal4096:
 - Output:
   - `docs/reports/goal4096_device_partition_key_decode_phase_breakdown_pod.json`
   - `docs/reports/goal4096_device_partition_key_decode_phase_breakdown_pod.stdout.txt`
+  - `docs/reports/goal4096_partition_summary_build_after_device_key_decode_pod.json`
+  - `docs/reports/goal4096_partition_summary_build_after_device_key_decode_pod.stdout.txt`
+  - `docs/reports/goal4096_partition_reuse_after_device_key_decode_pod.json`
+  - `docs/reports/goal4096_partition_reuse_after_device_key_decode_pod.stdout.txt`
 
 ## Before/After
 
@@ -50,6 +54,26 @@ using `device_count_then_emit_non_skip`.
 
 The optimization materially reduces the producer bottleneck, especially for
 `ngsim_dense`, where the uninstrumented build phase is cut about in half.
+
+## Build And Reuse Rerun
+
+The actual build-feasibility runner confirms the phase evidence:
+
+| Profile | Goal4093 build median | Goal4096 build median | Speedup |
+| --- | ---: | ---: | ---: |
+| `clustered3d` | 0.090940 | 0.076903 | 1.183x |
+| `road3d` | 0.082980 | 0.067624 | 1.227x |
+| `ngsim_dense` | 0.201882 | 0.136991 | 1.474x |
+
+Prepared reuse also improves, but not enough to promote the route:
+
+| Profile | Goal4093 prepare sec | Goal4096 prepare sec | Prepare speedup | Goal4096 5-run speedup vs current route | Goal4096 break-even |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `clustered3d` | 0.326070 | 0.304351 | 1.071x | 0.849x | 6.87 runs |
+| `road3d` | 0.112484 | 0.097043 | 1.159x | 0.602x | never |
+
+So Goal4096 is a good runtime cleanup and a real performance win, but the
+current grouped-stream Numba route remains the recommended RT-DBSCAN route.
 
 ## Remaining Bottleneck
 
