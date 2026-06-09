@@ -68,11 +68,12 @@ def _component_size_signature(signature: dict[str, Any]) -> tuple[int, ...]:
     raise ValueError(f"unsupported signature shape: {signature!r}")
 
 
-def _timed_direct(points, *, radius: float, cell_factor: float):
+def _timed_direct(*, profile: str, point_count: int, seed: int, radius: float, cell_factor: float):
     import cupy
 
     cupy.cuda.Stream.null.synchronize()
     start = time.perf_counter()
+    points = make_rt_dbscan_points(profile, point_count=point_count, seed=seed)
     result = rt.build_v2_8_fixed_radius_partition_convergence_component_signature_cupy_direct_status_union_preview_3d(
         points,
         radius=radius,
@@ -93,14 +94,19 @@ def _run_profile(
     warmup: int,
 ) -> dict[str, Any]:
     radius = PROFILE_RADII[profile]
-    points = make_rt_dbscan_points(profile, point_count=point_count, seed=seed)
     samples: list[dict[str, Any]] = []
     for run_index in range(warmup + repeat):
         measured = run_index >= warmup
         label = "MEASURE" if measured else "WARMUP"
         print(f"STRICT_ROUTE_{label}_START {profile} point_count={point_count} run={run_index}", flush=True)
 
-        direct_sec, direct = _timed_direct(points, radius=radius, cell_factor=cell_factor)
+        direct_sec, direct = _timed_direct(
+            profile=profile,
+            point_count=point_count,
+            seed=seed,
+            radius=radius,
+            cell_factor=cell_factor,
+        )
         current = run_rt_dbscan_benchmark(
             mode="optix_rt_core_grouped_stream_numba_column_signature_3d",
             dataset=profile,
