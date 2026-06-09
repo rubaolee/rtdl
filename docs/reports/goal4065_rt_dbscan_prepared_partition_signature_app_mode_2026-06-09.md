@@ -44,6 +44,7 @@ true-zero-copy wording.
 Added:
 
 - `tests/goal4065_rt_dbscan_prepared_partition_signature_app_mode_test.py`.
+- `docs/reports/goal4065_rt_dbscan_prepared_partition_signature_app_mode_pod_smoke.json`.
 
 The test verifies:
 
@@ -52,4 +53,13 @@ The test verifies:
 - when CuPy is available, the tiny prepared candidate output matches the
   existing graph-component reference signature while preserving all claim
   boundaries.
+
+Pod smoke on RTX 4000 Ada at commit `bd4cd2e5`:
+
+- mode: `partner_cupy_prepared_partition_convergence_component_signature_3d`;
+- `matches_reference: true`;
+- signature contract: `fixed_radius_graph_component_size_signature_3d`;
+- `prepared_partition_summary_sec: 0.5018737092614174`;
+- `component_signature_sec: 0.003626585006713867`;
+- `claim_boundary.full_dbscan: false`.
 
