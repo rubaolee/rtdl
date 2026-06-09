@@ -4,11 +4,11 @@ from dataclasses import dataclass
 from typing import Any
 
 
-CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION = "rtdl.v2_10.current_major_performance_targets.goal4236.v1"
+CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION = "rtdl.v2_10.current_major_performance_targets.goal4240.v1"
 CURRENT_MAJOR_PERFORMANCE_TARGET_STATUS = "internal_direction_map_not_release_authorization"
 CURRENT_MAJOR_PERFORMANCE_TARGET_CLAIM_BOUNDARY = (
-    "Goal4236 summarizes the major performance direction after Goal4215, "
-    "Goal4218, Goal4222, Goal4223, Goal4230, and Goal4235. It is a route/runtime planning map, not "
+    "Goal4240 summarizes the major performance direction after Goal4215, "
+    "Goal4218, Goal4222, Goal4223, Goal4230, Goal4235, and Goal4239. It is a route/runtime planning map, not "
     "a release packet, not "
     "a public speedup claim, not a whole-app acceleration claim, not a broad "
     "RT-core claim, not a paper-reproduction claim, not a true-zero-copy claim, "
@@ -128,17 +128,18 @@ CURRENT_MAJOR_PERFORMANCE_TARGETS: tuple[CurrentMajorPerformanceTarget, ...] = (
         theme="explicit mixed-route policy for RayJoin-style contracts",
         status="done_internal_evidence",
         current_reading=(
-            "Goal4218 confirms the route split, and Goal4223 broadens it across "
-            "seven public-CDB contract/scale rows: bounded PIP one-shot favors "
-            "Numba, while LSI and overlay scalar-count contracts favor prepared "
-            "RTDL/OptiX primitives by large margins."
+            "Goal4218 confirms the route split, Goal4223 broadens it across "
+            "seven public-CDB contract/scale rows, and Goal4239 reruns the "
+            "representative mixed route as a 20.76s dedicated long-repeat profile: "
+            "bounded PIP one-shot favors Numba, while repeated PIP, LSI, and overlay "
+            "active-count contracts favor prepared RTDL/OptiX primitives."
         ),
         next_action=(
             "Use the split as internal route-policy evidence only. Future work should "
             "improve generic primitives or run a formal release packet; do not collapse "
             "the contracts into one RayJoin paper-reproduction number."
         ),
-        evidence_refs=("Goal4218", "Goal4220", "Goal4221", "Goal4223"),
+        evidence_refs=("Goal4218", "Goal4220", "Goal4221", "Goal4223", "Goal4239"),
         pod_needed_next=False,
     ),
     CurrentMajorPerformanceTarget(
@@ -180,9 +181,10 @@ CURRENT_MAJOR_PERFORMANCE_TARGETS: tuple[CurrentMajorPerformanceTarget, ...] = (
         status="needs_broader_evidence",
         current_reading=(
             "Goal4230 closes the basic ten-app measurement-adequacy floor on RTX 4000 Ada, "
-            "and Goal4235 proves the current clean head still runs all ten front doors. "
-            "This is still not a formal public release matrix across claim wording, docs, "
-            "consensus, and hardware classes."
+            "Goal4235 proves the current clean head still runs all ten front doors, "
+            "and Goal4239 adds a dedicated RayJoin long-repeat profile. This is still "
+            "not a formal public release matrix across claim wording, docs, consensus, "
+            "and hardware classes."
         ),
         next_action=(
             "Before any formal major release, assemble an explicit release packet with "
@@ -190,7 +192,7 @@ CURRENT_MAJOR_PERFORMANCE_TARGETS: tuple[CurrentMajorPerformanceTarget, ...] = (
             "exact public claims; run additional long timing only if the release claim "
             "requires a public performance table."
         ),
-        evidence_refs=("Goal4215", "Goal4222", "Goal4223", "Goal4230", "Goal4235"),
+        evidence_refs=("Goal4215", "Goal4222", "Goal4223", "Goal4230", "Goal4235", "Goal4239"),
         pod_needed_next=True,
     ),
     CurrentMajorPerformanceTarget(
