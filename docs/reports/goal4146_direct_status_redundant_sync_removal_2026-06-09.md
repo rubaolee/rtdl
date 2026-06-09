@@ -2,7 +2,7 @@
 
 Date: 2026-06-09
 
-Verdict: implementation-complete-pod-needed
+Verdict: implementation-complete-pod-measured-in-goal4147
 
 ## Purpose
 
@@ -28,4 +28,6 @@ not alter convergence semantics, component labels, route selection, partner
 selection, partition-cell-factor selection, native ABI, or app-specific engine
 logic.
 
-Pod timing is required before making any performance conclusion.
+Goal4147 provides the pod timing. The measured result keeps this as a bounded
+replay-path cleanup only, not a one-shot route promotion or public speedup
+claim.

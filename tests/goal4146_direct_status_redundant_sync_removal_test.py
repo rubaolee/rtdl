@@ -24,10 +24,11 @@ class Goal4146DirectStatusRedundantSyncRemovalTest(unittest.TestCase):
         report = REPORT.read_text(encoding="utf-8")
 
         for fragment in (
-            "implementation-complete-pod-needed",
+            "implementation-complete-pod-measured-in-goal4147",
             "scalar `.item()` read already",
             "not alter convergence semantics",
-            "Pod timing is required before making any performance conclusion.",
+            "bounded",
+            "replay-path cleanup",
         ):
             self.assertIn(fragment, report)
 
