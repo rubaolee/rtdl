@@ -30,6 +30,7 @@ class Goal4109RtDbscanPreparedDirectStatusAppModeSourceTest(unittest.TestCase):
             "prepare_v2_8_fixed_radius_partition_convergence_direct_status_union_cupy_preview_3d",
             "run_v2_8_fixed_radius_partition_convergence_component_signature_cupy_prepared_direct_status_union_preview_3d",
             "prepared_direct_status_union_app_mode",
+            "prepared_direct_status_repeat_protocol",
             "prepared_direct_status_sec",
             "component_signature_sec",
             "graph_component_contract_only",
@@ -125,6 +126,9 @@ class Goal4109RtDbscanPreparedDirectStatusAppModeRuntimeTest(unittest.TestCase):
         self.assertFalse(metadata["materializes_partition_pair_rows"])
         self.assertFalse(metadata["materializes_near_pair_columns"])
         self.assertTrue(metadata["pair_materialization_avoided"])
+        self.assertEqual(metadata["prepared_direct_status_repeat_protocol"]["repeat"], 1)
+        self.assertEqual(metadata["prepared_direct_status_repeat_protocol"]["measured_run_count"], 1)
+        self.assertTrue(metadata["prepared_direct_status_repeat_protocol"]["signatures_stable"])
         self.assertFalse(metadata["rt_core_accelerated"])
         self.assertFalse(metadata["release_authorized"])
         self.assertFalse(metadata["public_speedup_claim_authorized"])

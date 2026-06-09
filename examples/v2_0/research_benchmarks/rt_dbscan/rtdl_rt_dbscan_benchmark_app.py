@@ -1359,16 +1359,38 @@ def run_rt_dbscan_benchmark(
             )
         )
         prepared_direct_status_sec = time.perf_counter() - prepare_start
-        signature_start = time.perf_counter()
-        result = rt.run_v2_8_fixed_radius_partition_convergence_component_signature_cupy_prepared_direct_status_union_preview_3d(
-            prepared_direct_status,
-            validate_against_materialized_signature=validate,
+        prepared_direct_status_runs: list[dict[str, object]] = []
+        for iteration in range(repeat):
+            run_start = time.perf_counter()
+            signature_start = time.perf_counter()
+            result = rt.run_v2_8_fixed_radius_partition_convergence_component_signature_cupy_prepared_direct_status_union_preview_3d(
+                prepared_direct_status,
+                validate_against_materialized_signature=validate,
+            )
+            component_signature_sec = time.perf_counter() - signature_start
+            component_sizes = result["columns"]["component_size_signature"]
+            prepared_direct_status_runs.append(
+                {
+                    "iteration": iteration,
+                    "is_warmup": iteration < warmup,
+                    "elapsed_sec": time.perf_counter() - run_start,
+                    "timing_sec": {
+                        "component_signature_sec": component_signature_sec,
+                    },
+                    "signature": _component_size_signature_payload(component_sizes),
+                    "metadata": dict(result["metadata"]),
+                }
+            )
+        measured_runs = [row for row in prepared_direct_status_runs if not bool(row["is_warmup"])]
+        if not measured_runs:
+            raise RuntimeError("prepared direct-status repeat produced no measured rows")
+        component_signature_sec = float(
+            statistics.median(float(row["timing_sec"]["component_signature_sec"]) for row in measured_runs)
         )
-        component_signature_sec = time.perf_counter() - signature_start
+        elapsed_override = float(statistics.median(float(row["elapsed_sec"]) for row in measured_runs))
         rows = ()
-        component_sizes = result["columns"]["component_size_signature"]
-        signature_override = _component_size_signature_payload(component_sizes)
-        metadata = dict(result["metadata"])
+        signature_override = dict(measured_runs[-1]["signature"])
+        metadata = dict(measured_runs[-1]["metadata"])
         metadata.update(
             {
                 "path": "partner_cupy_prepared_direct_status_union_component_signature_3d",
@@ -1404,6 +1426,18 @@ def run_rt_dbscan_benchmark(
                 "prepared_direct_status_sec": prepared_direct_status_sec,
                 "component_signature_sec": component_signature_sec,
                 "prepared_direct_status_total_sec": prepared_direct_status_sec + component_signature_sec,
+                "prepared_direct_status_repeat_protocol": {
+                    "repeat": repeat,
+                    "warmup": warmup,
+                    "measured_run_count": len(measured_runs),
+                    "prepare_sec": prepared_direct_status_sec,
+                    "elapsed_sec_median": elapsed_override,
+                    "elapsed_sec_total": float(sum(float(row["elapsed_sec"]) for row in measured_runs)),
+                    "signatures_stable": len(
+                        {json.dumps(row["signature"], sort_keys=True) for row in measured_runs}
+                    )
+                    == 1,
+                },
                 "full_dbscan_semantics": False,
                 "dbscan_core_border_noise_semantics": False,
                 "graph_component_contract_only": True,
