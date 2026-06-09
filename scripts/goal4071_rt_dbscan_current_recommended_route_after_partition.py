@@ -23,6 +23,15 @@ def _source_commit() -> str:
     ).strip()
 
 
+def _component_size_signature(signature: dict[str, Any]) -> list[int]:
+    if "component_sizes" in signature:
+        return sorted(int(value) for value in signature["component_sizes"])
+    cluster_sizes = signature.get("cluster_sizes")
+    if isinstance(cluster_sizes, dict):
+        return sorted(int(value) for value in cluster_sizes.values())
+    raise ValueError(f"unsupported signature shape: {signature!r}")
+
+
 def _run_route(name: str, *, mode: str, point_count: int, extra: dict[str, Any]) -> dict[str, Any]:
     print("ROUTE_START", name, mode, flush=True)
     payload = run_rt_dbscan_benchmark(
@@ -43,6 +52,7 @@ def _run_route(name: str, *, mode: str, point_count: int, extra: dict[str, Any])
         "mode": mode,
         "elapsed_sec": float(payload["elapsed_sec"]),
         "signature": payload["signature"],
+        "component_size_signature": _component_size_signature(payload["signature"]),
         "rt_core_accelerated": bool(metadata.get("rt_core_accelerated", False)),
         "partner": metadata.get("partner"),
         "path": metadata.get("path"),
@@ -92,8 +102,12 @@ def run(output: pathlib.Path, point_count: int) -> dict[str, Any]:
         for name, mode, extra in routes
     ]
     reference_signature = rows[0]["signature"]
+    reference_component_size_signature = rows[0]["component_size_signature"]
     for row in rows:
         row["same_signature_as_recommended"] = row["signature"] == reference_signature
+        row["same_component_size_signature_as_recommended"] = (
+            row["component_size_signature"] == reference_component_size_signature
+        )
         row["speedup_of_recommended_over_row"] = (
             float(row["elapsed_sec"]) / max(1.0e-12, float(rows[0]["elapsed_sec"]))
         )

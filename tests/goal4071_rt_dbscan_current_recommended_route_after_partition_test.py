@@ -21,6 +21,7 @@ class Goal4071RtDbscanCurrentRecommendedRouteSourceTest(unittest.TestCase):
             "partner_numba_prepared_grid_components",
             "partner_cupy_prepared_grid_components",
             "same_signature_as_recommended",
+            "same_component_size_signature_as_recommended",
             "speedup_of_recommended_over_row",
             "does not authorize release",
             "true-zero-copy",
@@ -49,7 +50,7 @@ class Goal4071RtDbscanCurrentRecommendedRoutePodArtifactTest(unittest.TestCase):
         self.assertEqual(recommended["name"], "recommended_rt_core_grouped_stream_numba_signature")
         self.assertEqual(recommended["column_signature_strategy"], "numba_direct_component_signature_counts")
         for row in payload["rows"]:
-            self.assertTrue(row["same_signature_as_recommended"])
+            self.assertTrue(row["same_component_size_signature_as_recommended"])
             self.assertFalse(row["release_authorized"])
             self.assertFalse(row["public_speedup_claim_authorized"])
             self.assertFalse(row["rt_core_speedup_claim_authorized"])

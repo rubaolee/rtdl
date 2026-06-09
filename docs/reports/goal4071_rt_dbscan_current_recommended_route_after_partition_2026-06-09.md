@@ -33,6 +33,9 @@ Added:
 - `scripts/goal4071_rt_dbscan_current_recommended_route_after_partition.py`.
 - `tests/goal4071_rt_dbscan_current_recommended_route_after_partition_test.py`.
 
-The runner records whether each candidate returns the same component-size
-signature as the recommended route, and how much faster the recommended route is
-than each candidate on the same profile.
+The runner records both raw signature equality and normalized component-size
+signature equality. This matters because the recommended full RT-DBSCAN route
+reports `cluster_sizes`, while the graph-component-only partition route reports
+`component_sizes`; they can agree on the component-size contract while retaining
+different app-level signature schemas. The runner also records how much faster
+the recommended route is than each candidate on the same profile.
