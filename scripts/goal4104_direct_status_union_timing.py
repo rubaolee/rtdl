@@ -28,10 +28,10 @@ def _source_commit() -> str:
     ).strip()
 
 
-def _source_worktree_dirty() -> bool:
+def _source_tracked_worktree_dirty() -> bool:
     return bool(
         subprocess.check_output(
-            ["git", "status", "--short"],
+            ["git", "status", "--short", "--untracked-files=no"],
             cwd=ROOT,
             text=True,
         ).strip()
@@ -218,7 +218,7 @@ def run(
         "schema": "rtdl.goal4104.direct_status_union_timing.v1",
         "goal": "Goal4104",
         "source_commit": _source_commit(),
-        "source_worktree_dirty": _source_worktree_dirty(),
+        "source_tracked_worktree_dirty": _source_tracked_worktree_dirty(),
         "platform": platform.platform(),
         "gpu": _nvidia_smi(),
         "point_count": point_count,
