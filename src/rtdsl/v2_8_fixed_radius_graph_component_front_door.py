@@ -29,6 +29,10 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_OPERATION = "fixed_radius_graph_component_labe
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_BACKENDS = ("optix",)
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_PARTNERS = ("cupy", "numba")
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_STRATEGIES = ("grouped_stream",)
+V2_8_FIXED_RADIUS_GRAPH_COMPONENT_BOUNDARY_ASSIGNMENT_POLICIES = (
+    "lowest_candidate_then_root",
+    "lowest_component_root_two_pass",
+)
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CANDIDATE_STRATEGIES = (
     "partition_convergence_hybrid",
 )
@@ -159,6 +163,7 @@ class V28FixedRadiusGraphComponentPlan:
     grouped_union_query_block_size: int | None = None
     grouped_union_same_root_culling: bool = True
     grouped_union_direct_side_effect: bool = False
+    boundary_assignment_policy: str = "lowest_candidate_then_root"
     status: str = "accepted_preview"
     fallback_selected: bool = False
     hidden_dispatch_allowed: bool = False
@@ -181,6 +186,13 @@ class V28FixedRadiusGraphComponentPlan:
             raise TypeError("grouped_union_same_root_culling must be a bool")
         if not isinstance(self.grouped_union_direct_side_effect, bool):
             raise TypeError("grouped_union_direct_side_effect must be a bool")
+        if self.boundary_assignment_policy not in V2_8_FIXED_RADIUS_GRAPH_COMPONENT_BOUNDARY_ASSIGNMENT_POLICIES:
+            raise ValueError(
+                "boundary_assignment_policy must be one of "
+                f"{V2_8_FIXED_RADIUS_GRAPH_COMPONENT_BOUNDARY_ASSIGNMENT_POLICIES!r}"
+            )
+        if self.boundary_assignment_policy == "lowest_component_root_two_pass" and self.partner != "numba":
+            raise ValueError("lowest_component_root_two_pass currently requires partner='numba'")
         if self.grouped_union_query_block_size is not None and self.grouped_union_query_block_size <= 0:
             raise ValueError("grouped_union_query_block_size must be positive when provided")
         for field in (
@@ -211,6 +223,7 @@ class V28FixedRadiusGraphComponentPlan:
             "grouped_union_query_block_size": self.grouped_union_query_block_size,
             "grouped_union_same_root_culling": self.grouped_union_same_root_culling,
             "grouped_union_direct_side_effect": self.grouped_union_direct_side_effect,
+            "boundary_assignment_policy": self.boundary_assignment_policy,
             "producer_contract": "prepared_fixed_radius_graph_hit_stream_3d",
             "continuation_contract": "grouped_stream_component_label_columns_3d",
             "result_columns": ("point_ids", "component_labels", "is_core", "neighbor_counts"),
@@ -295,6 +308,7 @@ def describe_v2_8_fixed_radius_graph_component_front_door() -> dict[str, Any]:
         "supported_backends": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_BACKENDS,
         "supported_partners": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_PARTNERS,
         "supported_strategies": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_STRATEGIES,
+        "supported_boundary_assignment_policies": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_BOUNDARY_ASSIGNMENT_POLICIES,
         "candidate_strategies": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CANDIDATE_STRATEGIES,
         "rejected_default_strategies": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_REJECTED_DEFAULT_STRATEGIES,
         "candidate_strategy_requirements": {
@@ -333,6 +347,7 @@ def plan_v2_8_fixed_radius_graph_component_continuation(
     grouped_union_query_block_size: int | None = None,
     grouped_union_same_root_culling: bool = True,
     grouped_union_direct_side_effect: bool = False,
+    boundary_assignment_policy: str = "lowest_candidate_then_root",
 ) -> dict[str, Any]:
     backend = str(backend)
     partner = str(partner)
@@ -412,6 +427,7 @@ def plan_v2_8_fixed_radius_graph_component_continuation(
         else int(grouped_union_query_block_size),
         grouped_union_same_root_culling=grouped_union_same_root_culling,
         grouped_union_direct_side_effect=grouped_union_direct_side_effect,
+        boundary_assignment_policy=str(boundary_assignment_policy),
     )
     return plan.to_metadata()
 
@@ -427,6 +443,7 @@ def prepare_v2_8_fixed_radius_graph_component_continuation_3d(
     grouped_union_query_block_size: int | None = None,
     grouped_union_same_root_culling: bool = True,
     grouped_union_direct_side_effect: bool = False,
+    boundary_assignment_policy: str = "lowest_candidate_then_root",
 ) -> V28PreparedFixedRadiusGraphComponentContinuation3D:
     point_rows = tuple(point_rows)
     metadata = plan_v2_8_fixed_radius_graph_component_continuation(
@@ -439,6 +456,7 @@ def prepare_v2_8_fixed_radius_graph_component_continuation_3d(
         grouped_union_query_block_size=grouped_union_query_block_size,
         grouped_union_same_root_culling=grouped_union_same_root_culling,
         grouped_union_direct_side_effect=grouped_union_direct_side_effect,
+        boundary_assignment_policy=boundary_assignment_policy,
     )
     if metadata["status"] != "accepted_preview":
         raise ValueError(str(metadata.get("unsupported_reason", metadata["status"])))
@@ -452,6 +470,7 @@ def prepare_v2_8_fixed_radius_graph_component_continuation_3d(
         grouped_union_query_block_size=metadata["grouped_union_query_block_size"],
         grouped_union_same_root_culling=bool(metadata["grouped_union_same_root_culling"]),
         grouped_union_direct_side_effect=bool(metadata["grouped_union_direct_side_effect"]),
+        boundary_assignment_policy=str(metadata["boundary_assignment_policy"]),
     )
     if plan.partner == "cupy":
         lower_prepared = prepare_optix_cupy_radius_graph_grouped_stream_continuation_3d(
@@ -470,6 +489,7 @@ def prepare_v2_8_fixed_radius_graph_component_continuation_3d(
             grouped_union_query_block_size=plan.grouped_union_query_block_size,
             grouped_union_same_root_culling=plan.grouped_union_same_root_culling,
             grouped_union_direct_side_effect=plan.grouped_union_direct_side_effect,
+            boundary_assignment_policy=plan.boundary_assignment_policy,
         )
     else:  # pragma: no cover - plan validation should prevent this.
         raise ValueError(f"unsupported partner {plan.partner!r}")
@@ -4678,6 +4698,7 @@ def _column_data_ptrs(columns: dict[str, Any]) -> dict[str, int]:
 
 
 __all__ = [
+    "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_BOUNDARY_ASSIGNMENT_POLICIES",
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY",
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CANDIDATE_STRATEGIES",
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_FRONT_DOOR_STATUS",

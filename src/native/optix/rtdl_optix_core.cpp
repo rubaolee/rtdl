@@ -4907,8 +4907,9 @@ void apply_grouped_union_side_effect(uint32_t source, uint32_t target, bool pare
         }
     } else if (params.all_predicate == 0u && params.fallback_candidate_out) {
         grouped_union_telemetry_add(2u, 1ull);
-        const int old = atomicMin(params.fallback_candidate_out + source, (int)target);
-        if ((int)target < old) {
+        const int target_root = find_grouped_union_root_readonly(params.parent_out, (int)target);
+        const int old = atomicMin(params.fallback_candidate_out + source, target_root);
+        if (target_root < old) {
             grouped_union_telemetry_add(3u, 1ull);
         }
     }
@@ -5016,8 +5017,9 @@ extern "C" __global__ void __anyhit__frn3d_grouped_union_anyhit() {
         }
     } else if (target_predicate) {
         grouped_union_telemetry_add(2u, 1ull);
-        const int old = atomicMin(params.fallback_candidate_out + source, (int)target);
-        if ((int)target < old) {
+        const int target_root = find_grouped_union_root_readonly(params.parent_out, (int)target);
+        const int old = atomicMin(params.fallback_candidate_out + source, target_root);
+        if (target_root < old) {
             grouped_union_telemetry_add(3u, 1ull);
         }
     }
