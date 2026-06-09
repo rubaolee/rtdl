@@ -49,12 +49,15 @@ def _digest(payload: dict[str, Any]) -> dict[str, Any]:
     prepared_digest = metadata.get("prepared_partition_summary_digest")
     if not isinstance(prepared_digest, dict):
         prepared_digest = {}
+    validation_digest = metadata.get("partition_summary_validation")
+    if not isinstance(validation_digest, dict):
+        validation_digest = {}
     return {
         "signature": payload["signature"],
         "effective_pair_enumeration": metadata.get("partition_pair_enumeration_effective"),
         "pair_capacity_source": metadata.get("partition_summary_pair_capacity_source"),
-        "pair_capacity": prepared_digest.get("pair_capacity"),
-        "pair_count": prepared_digest.get("pair_count"),
+        "pair_capacity": prepared_digest.get("pair_capacity", validation_digest.get("pair_capacity")),
+        "pair_count": prepared_digest.get("pair_count", validation_digest.get("pair_count")),
         "release_authorized": metadata.get("release_authorized"),
         "public_speedup_claim_authorized": metadata.get("public_speedup_claim_authorized"),
         "partition_convergence_hybrid_promoted": metadata.get("partition_convergence_hybrid_promoted"),

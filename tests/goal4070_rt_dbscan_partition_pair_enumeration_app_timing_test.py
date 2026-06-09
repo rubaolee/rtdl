@@ -45,6 +45,8 @@ class Goal4070RtDbscanPartitionPairEnumerationAppTimingPodArtifactTest(unittest.
         self.assertEqual(len(payload["rows"]), 12)
         for row in payload["rows"]:
             self.assertTrue(row["same_signature"])
+            self.assertIsNotNone(row["pair_capacity_reduction"])
+            self.assertGreater(row["pair_capacity_reduction"], 10.0)
             self.assertFalse(row["release_authorized"])
             self.assertFalse(row["public_speedup_claim_authorized"])
             self.assertFalse(row["rt_core_speedup_claim_authorized"])
