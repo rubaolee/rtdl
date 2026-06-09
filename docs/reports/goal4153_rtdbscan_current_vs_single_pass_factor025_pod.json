@@ -1,0 +1,559 @@
+{
+  "all_signatures_match_current": false,
+  "automatic_convergence_mode_selection_authorized": false,
+  "automatic_partition_cell_factor_selection_authorized": false,
+  "automatic_partner_selection_authorized": false,
+  "current_mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+  "elapsed_total_sec": 193.83951088786125,
+  "goal": "Goal4153",
+  "hidden_dispatch_authorized": false,
+  "maximum_total_speedup": 5.32094562721377,
+  "minimum_total_speedup": 0.22987928867659224,
+  "partition_cell_factor": 0.25,
+  "point_counts": [
+    65536,
+    131072,
+    262144,
+    524288,
+    1048576
+  ],
+  "profiles": [
+    "clustered3d",
+    "road3d",
+    "ngsim_dense"
+  ],
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "repeat": 2,
+  "rows": [
+    {
+      "current_elapsed_sec": 0.09632410109043121,
+      "current_mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "current_total_sec": 0.09632410109043121,
+      "elapsed_speedup": 5.889111586266334,
+      "point_count": 65536,
+      "profile": "clustered3d",
+      "same_signature_vs_current": false,
+      "single_pass_convergence_proven": false,
+      "single_pass_elapsed_sec": 0.01635630428791046,
+      "single_pass_final_changed_flag": 1,
+      "single_pass_mode": "partner_cupy_prepared_direct_status_union_component_signature_3d",
+      "single_pass_prepare_sec": 0.40266571193933487,
+      "single_pass_replay_sec": 0.016354642808437347,
+      "single_pass_signature": {
+        "component_count": 4,
+        "component_sizes": [
+          16384,
+          16384,
+          16384,
+          16384
+        ],
+        "contract": "fixed_radius_graph_component_size_signature_3d",
+        "point_count": 65536
+      },
+      "single_pass_total_sec": 0.4190203547477722,
+      "single_pass_union_iterations": 1,
+      "total_speedup": 0.22987928867659224
+    },
+    {
+      "current_elapsed_sec": 0.0385945588350296,
+      "current_mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 65536
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "current_total_sec": 0.0385945588350296,
+      "elapsed_speedup": 3.6803263081312734,
+      "point_count": 65536,
+      "profile": "road3d",
+      "same_signature_vs_current": false,
+      "single_pass_convergence_proven": false,
+      "single_pass_elapsed_sec": 0.010486721992492676,
+      "single_pass_final_changed_flag": 1,
+      "single_pass_mode": "partner_cupy_prepared_direct_status_union_component_signature_3d",
+      "single_pass_prepare_sec": 0.043666742742061615,
+      "single_pass_replay_sec": 0.010486006736755371,
+      "single_pass_signature": {
+        "component_count": 1,
+        "component_sizes": [
+          65536
+        ],
+        "contract": "fixed_radius_graph_component_size_signature_3d",
+        "point_count": 65536
+      },
+      "single_pass_total_sec": 0.054152749478816986,
+      "single_pass_union_iterations": 1,
+      "total_speedup": 0.7126980477718254
+    },
+    {
+      "current_elapsed_sec": 0.016555465757846832,
+      "current_mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 65536
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "current_total_sec": 0.016555465757846832,
+      "elapsed_speedup": 1.8855045974319549,
+      "point_count": 65536,
+      "profile": "ngsim_dense",
+      "same_signature_vs_current": false,
+      "single_pass_convergence_proven": false,
+      "single_pass_elapsed_sec": 0.00878039002418518,
+      "single_pass_final_changed_flag": 1,
+      "single_pass_mode": "partner_cupy_prepared_direct_status_union_component_signature_3d",
+      "single_pass_prepare_sec": 0.05233337730169296,
+      "single_pass_replay_sec": 0.008779779076576233,
+      "single_pass_signature": {
+        "component_count": 1,
+        "component_sizes": [
+          65536
+        ],
+        "contract": "fixed_radius_graph_component_size_signature_3d",
+        "point_count": 65536
+      },
+      "single_pass_total_sec": 0.061113156378269196,
+      "single_pass_union_iterations": 1,
+      "total_speedup": 0.27089855505702004
+    },
+    {
+      "current_elapsed_sec": 0.3451736196875572,
+      "current_mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 32768,
+          "2": 32768,
+          "3": 32768,
+          "4": 32768
+        },
+        "core_count": 131072,
+        "noise_count": 0
+      },
+      "current_total_sec": 0.3451736196875572,
+      "elapsed_speedup": 6.428040672446227,
+      "point_count": 131072,
+      "profile": "clustered3d",
+      "same_signature_vs_current": false,
+      "single_pass_convergence_proven": false,
+      "single_pass_elapsed_sec": 0.0536981076002121,
+      "single_pass_final_changed_flag": 1,
+      "single_pass_mode": "partner_cupy_prepared_direct_status_union_component_signature_3d",
+      "single_pass_prepare_sec": 0.11213282495737076,
+      "single_pass_replay_sec": 0.05369739234447479,
+      "single_pass_signature": {
+        "component_count": 4,
+        "component_sizes": [
+          32768,
+          32768,
+          32768,
+          32768
+        ],
+        "contract": "fixed_radius_graph_component_size_signature_3d",
+        "point_count": 131072
+      },
+      "single_pass_total_sec": 0.16583021730184555,
+      "single_pass_union_iterations": 1,
+      "total_speedup": 2.0814880743915887
+    },
+    {
+      "current_elapsed_sec": 0.12863413244485855,
+      "current_mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 131072
+        },
+        "core_count": 131072,
+        "noise_count": 0
+      },
+      "current_total_sec": 0.12863413244485855,
+      "elapsed_speedup": 3.2493313597050473,
+      "point_count": 131072,
+      "profile": "road3d",
+      "same_signature_vs_current": false,
+      "single_pass_convergence_proven": false,
+      "single_pass_elapsed_sec": 0.039587877690792084,
+      "single_pass_final_changed_flag": 1,
+      "single_pass_mode": "partner_cupy_prepared_direct_status_union_component_signature_3d",
+      "single_pass_prepare_sec": 0.10872600227594376,
+      "single_pass_replay_sec": 0.03958713263273239,
+      "single_pass_signature": {
+        "component_count": 1,
+        "component_sizes": [
+          131072
+        ],
+        "contract": "fixed_radius_graph_component_size_signature_3d",
+        "point_count": 131072
+      },
+      "single_pass_total_sec": 0.14831313490867615,
+      "single_pass_union_iterations": 1,
+      "total_speedup": 0.8673144999872402
+    },
+    {
+      "current_elapsed_sec": 0.049499206244945526,
+      "current_mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 131072
+        },
+        "core_count": 131072,
+        "noise_count": 0
+      },
+      "current_total_sec": 0.049499206244945526,
+      "elapsed_speedup": 2.7646459837824926,
+      "point_count": 131072,
+      "profile": "ngsim_dense",
+      "same_signature_vs_current": false,
+      "single_pass_convergence_proven": false,
+      "single_pass_elapsed_sec": 0.017904356122016907,
+      "single_pass_final_changed_flag": 1,
+      "single_pass_mode": "partner_cupy_prepared_direct_status_union_component_signature_3d",
+      "single_pass_prepare_sec": 0.11244355142116547,
+      "single_pass_replay_sec": 0.0179034024477005,
+      "single_pass_signature": {
+        "component_count": 1,
+        "component_sizes": [
+          131072
+        ],
+        "contract": "fixed_radius_graph_component_size_signature_3d",
+        "point_count": 131072
+      },
+      "single_pass_total_sec": 0.13034695386886597,
+      "single_pass_union_iterations": 1,
+      "total_speedup": 0.3797496203458934
+    },
+    {
+      "current_elapsed_sec": 1.2841429486870766,
+      "current_mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 65536,
+          "2": 65536,
+          "3": 65536,
+          "4": 65536
+        },
+        "core_count": 262144,
+        "noise_count": 0
+      },
+      "current_total_sec": 1.2841429486870766,
+      "elapsed_speedup": 6.340428126578166,
+      "point_count": 262144,
+      "profile": "clustered3d",
+      "same_signature_vs_current": false,
+      "single_pass_convergence_proven": false,
+      "single_pass_elapsed_sec": 0.20253252983093262,
+      "single_pass_final_changed_flag": 1,
+      "single_pass_mode": "partner_cupy_prepared_direct_status_union_component_signature_3d",
+      "single_pass_prepare_sec": 0.23032472282648087,
+      "single_pass_replay_sec": 0.20253141224384308,
+      "single_pass_signature": {
+        "component_count": 4,
+        "component_sizes": [
+          65536,
+          65536,
+          65536,
+          65536
+        ],
+        "contract": "fixed_radius_graph_component_size_signature_3d",
+        "point_count": 262144
+      },
+      "single_pass_total_sec": 0.43285613507032394,
+      "single_pass_union_iterations": 1,
+      "total_speedup": 2.966673785225311
+    },
+    {
+      "current_elapsed_sec": 0.4659406542778015,
+      "current_mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 262144
+        },
+        "core_count": 262144,
+        "noise_count": 0
+      },
+      "current_total_sec": 0.4659406542778015,
+      "elapsed_speedup": 2.971965553473523,
+      "point_count": 262144,
+      "profile": "road3d",
+      "same_signature_vs_current": false,
+      "single_pass_convergence_proven": false,
+      "single_pass_elapsed_sec": 0.15677861869335175,
+      "single_pass_final_changed_flag": 1,
+      "single_pass_mode": "partner_cupy_prepared_direct_status_union_component_signature_3d",
+      "single_pass_prepare_sec": 0.18840570747852325,
+      "single_pass_replay_sec": 0.15677735209465027,
+      "single_pass_signature": {
+        "component_count": 1,
+        "component_sizes": [
+          262144
+        ],
+        "contract": "fixed_radius_graph_component_size_signature_3d",
+        "point_count": 262144
+      },
+      "single_pass_total_sec": 0.3451830595731735,
+      "single_pass_union_iterations": 1,
+      "total_speedup": 1.3498363878399693
+    },
+    {
+      "current_elapsed_sec": 0.15675032883882523,
+      "current_mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 262144
+        },
+        "core_count": 262144,
+        "noise_count": 0
+      },
+      "current_total_sec": 0.15675032883882523,
+      "elapsed_speedup": 3.293221484053009,
+      "point_count": 262144,
+      "profile": "ngsim_dense",
+      "same_signature_vs_current": false,
+      "single_pass_convergence_proven": false,
+      "single_pass_elapsed_sec": 0.047597870230674744,
+      "single_pass_final_changed_flag": 1,
+      "single_pass_mode": "partner_cupy_prepared_direct_status_union_component_signature_3d",
+      "single_pass_prepare_sec": 0.21891847252845764,
+      "single_pass_replay_sec": 0.0475972443819046,
+      "single_pass_signature": {
+        "component_count": 1,
+        "component_sizes": [
+          262144
+        ],
+        "contract": "fixed_radius_graph_component_size_signature_3d",
+        "point_count": 262144
+      },
+      "single_pass_total_sec": 0.26651571691036224,
+      "single_pass_union_iterations": 1,
+      "total_speedup": 0.5881466603770515
+    },
+    {
+      "current_elapsed_sec": 5.929941177368164,
+      "current_mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 131072,
+          "2": 131072,
+          "3": 131072,
+          "4": 131072
+        },
+        "core_count": 524287,
+        "noise_count": 0
+      },
+      "current_total_sec": 5.929941177368164,
+      "elapsed_speedup": 7.598160063226669,
+      "point_count": 524288,
+      "profile": "clustered3d",
+      "same_signature_vs_current": false,
+      "single_pass_convergence_proven": false,
+      "single_pass_elapsed_sec": 0.780444361269474,
+      "single_pass_final_changed_flag": 1,
+      "single_pass_mode": "partner_cupy_prepared_direct_status_union_component_signature_3d",
+      "single_pass_prepare_sec": 0.458841510117054,
+      "single_pass_replay_sec": 0.7804433330893517,
+      "single_pass_signature": {
+        "component_count": 4,
+        "component_sizes": [
+          131072,
+          131072,
+          131072,
+          131072
+        ],
+        "contract": "fixed_radius_graph_component_size_signature_3d",
+        "point_count": 524288
+      },
+      "single_pass_total_sec": 1.2392848432064056,
+      "single_pass_union_iterations": 1,
+      "total_speedup": 4.784970307573204
+    },
+    {
+      "current_elapsed_sec": 1.856551505625248,
+      "current_mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 524288
+        },
+        "core_count": 524288,
+        "noise_count": 0
+      },
+      "current_total_sec": 1.856551505625248,
+      "elapsed_speedup": 2.925175704795166,
+      "point_count": 524288,
+      "profile": "road3d",
+      "same_signature_vs_current": false,
+      "single_pass_convergence_proven": false,
+      "single_pass_elapsed_sec": 0.634680338203907,
+      "single_pass_final_changed_flag": 1,
+      "single_pass_mode": "partner_cupy_prepared_direct_status_union_component_signature_3d",
+      "single_pass_prepare_sec": 1.9949612244963646,
+      "single_pass_replay_sec": 0.6346791163086891,
+      "single_pass_signature": {
+        "component_count": 1,
+        "component_sizes": [
+          524288
+        ],
+        "contract": "fixed_radius_graph_component_size_signature_3d",
+        "point_count": 524288
+      },
+      "single_pass_total_sec": 2.6296403408050537,
+      "single_pass_union_iterations": 1,
+      "total_speedup": 0.7060096686290082
+    },
+    {
+      "current_elapsed_sec": 0.5881839171051979,
+      "current_mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 524288
+        },
+        "core_count": 524288,
+        "noise_count": 0
+      },
+      "current_total_sec": 0.5881839171051979,
+      "elapsed_speedup": 3.4366712039281064,
+      "point_count": 524288,
+      "profile": "ngsim_dense",
+      "same_signature_vs_current": false,
+      "single_pass_convergence_proven": false,
+      "single_pass_elapsed_sec": 0.17114931344985962,
+      "single_pass_final_changed_flag": 1,
+      "single_pass_mode": "partner_cupy_prepared_direct_status_union_component_signature_3d",
+      "single_pass_prepare_sec": 0.49605002999305725,
+      "single_pass_replay_sec": 0.1711486652493477,
+      "single_pass_signature": {
+        "component_count": 1,
+        "component_sizes": [
+          524288
+        ],
+        "contract": "fixed_radius_graph_component_size_signature_3d",
+        "point_count": 524288
+      },
+      "single_pass_total_sec": 0.6671986952424049,
+      "single_pass_union_iterations": 1,
+      "total_speedup": 0.8815723431405998
+    },
+    {
+      "current_elapsed_sec": 19.879062861204147,
+      "current_mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 262144,
+          "2": 262144,
+          "3": 262144,
+          "4": 262144
+        },
+        "core_count": 1048576,
+        "noise_count": 0
+      },
+      "current_total_sec": 19.879062861204147,
+      "elapsed_speedup": 7.026012827319135,
+      "point_count": 1048576,
+      "profile": "clustered3d",
+      "same_signature_vs_current": false,
+      "single_pass_convergence_proven": false,
+      "single_pass_elapsed_sec": 2.829351916909218,
+      "single_pass_final_changed_flag": 1,
+      "single_pass_mode": "partner_cupy_prepared_direct_status_union_component_signature_3d",
+      "single_pass_prepare_sec": 0.9066515639424324,
+      "single_pass_replay_sec": 2.8293503150343895,
+      "single_pass_signature": {
+        "component_count": 4,
+        "component_sizes": [
+          262144,
+          262144,
+          262144,
+          262144
+        ],
+        "contract": "fixed_radius_graph_component_size_signature_3d",
+        "point_count": 1048576
+      },
+      "single_pass_total_sec": 3.736001878976822,
+      "single_pass_union_iterations": 1,
+      "total_speedup": 5.32094562721377
+    },
+    {
+      "current_elapsed_sec": 7.275632306933403,
+      "current_mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 1048576
+        },
+        "core_count": 1048576,
+        "noise_count": 0
+      },
+      "current_total_sec": 7.275632306933403,
+      "elapsed_speedup": 2.9038867216386253,
+      "point_count": 1048576,
+      "profile": "road3d",
+      "same_signature_vs_current": false,
+      "single_pass_convergence_proven": false,
+      "single_pass_elapsed_sec": 2.505480758845806,
+      "single_pass_final_changed_flag": 1,
+      "single_pass_mode": "partner_cupy_prepared_direct_status_union_component_signature_3d",
+      "single_pass_prepare_sec": 0.8752925992012024,
+      "single_pass_replay_sec": 2.505479298532009,
+      "single_pass_signature": {
+        "component_count": 1,
+        "component_sizes": [
+          1048576
+        ],
+        "contract": "fixed_radius_graph_component_size_signature_3d",
+        "point_count": 1048576
+      },
+      "single_pass_total_sec": 3.3807718977332115,
+      "single_pass_union_iterations": 1,
+      "total_speedup": 2.1520624659154537
+    },
+    {
+      "current_elapsed_sec": 2.2719856947660446,
+      "current_mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "current_signature": {
+        "cluster_sizes": {
+          "1": 1048576
+        },
+        "core_count": 1048576,
+        "noise_count": 0
+      },
+      "current_total_sec": 2.2719856947660446,
+      "elapsed_speedup": 3.6440321891498235,
+      "point_count": 1048576,
+      "profile": "ngsim_dense",
+      "same_signature_vs_current": false,
+      "single_pass_convergence_proven": false,
+      "single_pass_elapsed_sec": 0.6234812363982201,
+      "single_pass_final_changed_flag": 1,
+      "single_pass_mode": "partner_cupy_prepared_direct_status_union_component_signature_3d",
+      "single_pass_prepare_sec": 1.221194565296173,
+      "single_pass_replay_sec": 0.6234802976250648,
+      "single_pass_signature": {
+        "component_count": 1,
+        "component_sizes": [
+          1048576
+        ],
+        "contract": "fixed_radius_graph_component_size_signature_3d",
+        "point_count": 1048576
+      },
+      "single_pass_total_sec": 1.844674862921238,
+      "single_pass_union_iterations": 1,
+      "total_speedup": 1.231645608900484
+    }
+  ],
+  "single_pass_mode": "partner_cupy_prepared_direct_status_union_component_signature_3d",
+  "single_pass_promoted_default": false,
+  "source_commit": "a94f87c6",
+  "warmup": 1
+}
