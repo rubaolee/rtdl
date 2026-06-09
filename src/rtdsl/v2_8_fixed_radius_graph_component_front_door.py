@@ -1159,8 +1159,10 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
     if cell_factor <= 0.0:
         raise ValueError("cell_factor must be positive")
     pair_enumeration = str(pair_enumeration)
-    if pair_enumeration not in {"host", "device_bounded_offsets"}:
-        raise ValueError("pair_enumeration must be 'host' or 'device_bounded_offsets'")
+    if pair_enumeration not in {"host", "device_bounded_offsets", "device_count_then_emit"}:
+        raise ValueError(
+            "pair_enumeration must be 'host', 'device_bounded_offsets', or 'device_count_then_emit'"
+        )
     cell_size = radius * cell_factor
     radius_sq = radius * radius
 
@@ -1287,8 +1289,18 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
             requested_capacity = int(pair_capacity)
         if requested_capacity <= 0:
             raise ValueError("pair_capacity must be positive when provided")
-        left_ids, right_ids, statuses, pair_count, visible_pair_count, overflow = (
-            _cupy_partition_pair_status_device_bounded_offsets(
+        if pair_enumeration == "device_count_then_emit":
+            if pair_capacity is not None:
+                raise ValueError("pair_capacity is not supported for device_count_then_emit")
+            (
+                left_ids,
+                right_ids,
+                statuses,
+                pair_count,
+                visible_pair_count,
+                overflow,
+                requested_capacity,
+            ) = _cupy_partition_pair_status_device_count_then_emit(
                 cupy,
                 key_rows=key_rows,
                 unique_cells=unique_cells,
@@ -1306,9 +1318,30 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
                 max_offset=max_offset,
                 radius_sq=radius_sq,
                 classification_tol=classification_tol,
-                pair_capacity=requested_capacity,
             )
-        )
+        else:
+            left_ids, right_ids, statuses, pair_count, visible_pair_count, overflow = (
+                _cupy_partition_pair_status_device_bounded_offsets(
+                    cupy,
+                    key_rows=key_rows,
+                    unique_cells=unique_cells,
+                    min_kx=min_kx,
+                    min_ky=min_ky,
+                    min_kz=min_kz,
+                    dim_y=dim_y,
+                    dim_z=dim_z,
+                    aabb_min_x64=aabb_min_x64,
+                    aabb_min_y64=aabb_min_y64,
+                    aabb_min_z64=aabb_min_z64,
+                    aabb_max_x64=aabb_max_x64,
+                    aabb_max_y64=aabb_max_y64,
+                    aabb_max_z64=aabb_max_z64,
+                    max_offset=max_offset,
+                    radius_sq=radius_sq,
+                    classification_tol=classification_tol,
+                    pair_capacity=requested_capacity,
+                )
+            )
         status_counts = {
             "safe_skip_partition_pairs": int(cupy.sum(statuses == 0).item()),
             "safe_full_partition_pairs": int(cupy.sum(statuses == 1).item()),
@@ -1365,11 +1398,14 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
             "typed_result_stream": contract.to_metadata(),
             "device_partition_columns_used": True,
             "host_pair_enumeration_used": pair_enumeration == "host",
-            "device_pair_enumeration_used": pair_enumeration == "device_bounded_offsets",
+            "device_pair_enumeration_used": pair_enumeration in {"device_bounded_offsets", "device_count_then_emit"},
+            "device_pair_count_probe_used": pair_enumeration == "device_count_then_emit",
             "pair_enumeration": pair_enumeration,
             "pair_capacity_source": (
                 "caller_provided"
                 if pair_capacity is not None
+                else "device_exact_count"
+                if pair_enumeration == "device_count_then_emit"
                 else "device_upper_bound"
                 if pair_enumeration == "device_bounded_offsets"
                 else "host_exact_pair_count"
@@ -2668,6 +2704,74 @@ def _cupy_partition_pair_status_device_bounded_offsets(
         right = right[order]
         status = status[order]
     return left, right, status, attempted, visible, bool(int(overflow[0].item()))
+
+
+def _cupy_partition_pair_status_device_count_then_emit(
+    cupy,
+    *,
+    key_rows: list[tuple[int, int, int]],
+    unique_cells,
+    min_kx: int,
+    min_ky: int,
+    min_kz: int,
+    dim_y: int,
+    dim_z: int,
+    aabb_min_x64,
+    aabb_min_y64,
+    aabb_min_z64,
+    aabb_max_x64,
+    aabb_max_y64,
+    aabb_max_z64,
+    max_offset: int,
+    radius_sq: float,
+    classification_tol: float,
+):
+    _left, _right, _status, attempted, _visible, _overflow = (
+        _cupy_partition_pair_status_device_bounded_offsets(
+            cupy,
+            key_rows=key_rows,
+            unique_cells=unique_cells,
+            min_kx=min_kx,
+            min_ky=min_ky,
+            min_kz=min_kz,
+            dim_y=dim_y,
+            dim_z=dim_z,
+            aabb_min_x64=aabb_min_x64,
+            aabb_min_y64=aabb_min_y64,
+            aabb_min_z64=aabb_min_z64,
+            aabb_max_x64=aabb_max_x64,
+            aabb_max_y64=aabb_max_y64,
+            aabb_max_z64=aabb_max_z64,
+            max_offset=max_offset,
+            radius_sq=radius_sq,
+            classification_tol=classification_tol,
+            pair_capacity=1,
+        )
+    )
+    exact_capacity = max(1, int(attempted))
+    left, right, status, pair_count, visible, overflow = (
+        _cupy_partition_pair_status_device_bounded_offsets(
+            cupy,
+            key_rows=key_rows,
+            unique_cells=unique_cells,
+            min_kx=min_kx,
+            min_ky=min_ky,
+            min_kz=min_kz,
+            dim_y=dim_y,
+            dim_z=dim_z,
+            aabb_min_x64=aabb_min_x64,
+            aabb_min_y64=aabb_min_y64,
+            aabb_min_z64=aabb_min_z64,
+            aabb_max_x64=aabb_max_x64,
+            aabb_max_y64=aabb_max_y64,
+            aabb_max_z64=aabb_max_z64,
+            max_offset=max_offset,
+            radius_sq=radius_sq,
+            classification_tol=classification_tol,
+            pair_capacity=exact_capacity,
+        )
+    )
+    return left, right, status, pair_count, visible, overflow, exact_capacity
 
 
 def _unsupported_reason(*, backend: str, partner: str, strategy: str) -> str:
