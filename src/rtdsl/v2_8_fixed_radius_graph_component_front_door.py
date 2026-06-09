@@ -30,9 +30,15 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_BACKENDS = ("optix",)
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_PARTNERS = ("cupy", "numba")
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_STRATEGIES = ("grouped_stream",)
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_BOUNDARY_ASSIGNMENT_POLICIES = (
+    "single_pass_candidate_root_rebased",
     "lowest_candidate_then_root",
     "lowest_component_root_two_pass",
 )
+V2_8_FIXED_RADIUS_GRAPH_COMPONENT_BOUNDARY_ASSIGNMENT_CANONICAL_POLICY = MappingProxyType({
+    "single_pass_candidate_root_rebased": "single_pass_candidate_root_rebased",
+    "lowest_candidate_then_root": "single_pass_candidate_root_rebased",
+    "lowest_component_root_two_pass": "lowest_component_root_two_pass",
+})
 V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CANDIDATE_STRATEGIES = (
     "partition_convergence_hybrid",
 )
@@ -152,6 +158,10 @@ V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY = (
 )
 
 
+def _boundary_assignment_canonical_policy(policy: str) -> str:
+    return V2_8_FIXED_RADIUS_GRAPH_COMPONENT_BOUNDARY_ASSIGNMENT_CANONICAL_POLICY[str(policy)]
+
+
 @dataclass(frozen=True)
 class V28FixedRadiusGraphComponentPlan:
     point_count: int
@@ -224,6 +234,9 @@ class V28FixedRadiusGraphComponentPlan:
             "grouped_union_same_root_culling": self.grouped_union_same_root_culling,
             "grouped_union_direct_side_effect": self.grouped_union_direct_side_effect,
             "boundary_assignment_policy": self.boundary_assignment_policy,
+            "boundary_assignment_canonical_policy": _boundary_assignment_canonical_policy(
+                self.boundary_assignment_policy
+            ),
             "producer_contract": "prepared_fixed_radius_graph_hit_stream_3d",
             "continuation_contract": "grouped_stream_component_label_columns_3d",
             "result_columns": ("point_ids", "component_labels", "is_core", "neighbor_counts"),
@@ -309,6 +322,10 @@ def describe_v2_8_fixed_radius_graph_component_front_door() -> dict[str, Any]:
         "supported_partners": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_PARTNERS,
         "supported_strategies": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_STRATEGIES,
         "supported_boundary_assignment_policies": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_BOUNDARY_ASSIGNMENT_POLICIES,
+        "boundary_assignment_policy_aliases": dict(
+            V2_8_FIXED_RADIUS_GRAPH_COMPONENT_BOUNDARY_ASSIGNMENT_CANONICAL_POLICY
+        ),
+        "recommended_boundary_assignment_policy": "single_pass_candidate_root_rebased",
         "candidate_strategies": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CANDIDATE_STRATEGIES,
         "rejected_default_strategies": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_REJECTED_DEFAULT_STRATEGIES,
         "candidate_strategy_requirements": {

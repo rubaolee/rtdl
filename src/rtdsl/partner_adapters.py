@@ -7079,9 +7079,19 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
 
 
 _RADIUS_GRAPH_BOUNDARY_ASSIGNMENT_POLICIES = (
+    "single_pass_candidate_root_rebased",
     "lowest_candidate_then_root",
     "lowest_component_root_two_pass",
 )
+_RADIUS_GRAPH_BOUNDARY_ASSIGNMENT_CANONICAL_POLICY = {
+    "single_pass_candidate_root_rebased": "single_pass_candidate_root_rebased",
+    "lowest_candidate_then_root": "single_pass_candidate_root_rebased",
+    "lowest_component_root_two_pass": "lowest_component_root_two_pass",
+}
+
+
+def _radius_graph_boundary_assignment_canonical_policy(policy: str) -> str:
+    return _RADIUS_GRAPH_BOUNDARY_ASSIGNMENT_CANONICAL_POLICY[str(policy)]
 
 
 class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
@@ -7129,6 +7139,9 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
         self.grouped_union_same_root_culling = grouped_union_same_root_culling
         self.grouped_union_direct_side_effect = grouped_union_direct_side_effect
         self.boundary_assignment_policy = boundary_assignment_policy
+        self.boundary_assignment_canonical_policy = _radius_graph_boundary_assignment_canonical_policy(
+            boundary_assignment_policy
+        )
         self.point_count = len(self.point_rows)
         self.point_columns = point_rows_to_partner_columns(self.point_rows, partner=partner)
         if "z" not in self.point_columns:
@@ -7284,6 +7297,7 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
                     "grouped_union_query_blocked": True,
                     "grouped_union_blocked_candidate": True,
                     "boundary_assignment_policy": self.boundary_assignment_policy,
+                    "boundary_assignment_canonical_policy": self.boundary_assignment_canonical_policy,
                     "boundary_assignment_pass_count": boundary_assignment_pass_count,
                     "performance_claim_authorized": False,
                 }
@@ -7301,6 +7315,7 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
             native_metadata.update(
                 {
                     "boundary_assignment_policy": self.boundary_assignment_policy,
+                    "boundary_assignment_canonical_policy": self.boundary_assignment_canonical_policy,
                     "boundary_assignment_pass_count": 1,
                     "fallback_candidate_policy": "not_needed_all_items_satisfy_predicate",
                     "performance_claim_authorized": False,
@@ -7337,6 +7352,7 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
                     "native_elapsed_sec": float(first_pass["metadata"].get("native_elapsed_sec", 0.0))
                     + float(second_pass["metadata"].get("native_elapsed_sec", 0.0)),
                     "boundary_assignment_policy": self.boundary_assignment_policy,
+                    "boundary_assignment_canonical_policy": self.boundary_assignment_canonical_policy,
                     "boundary_assignment_pass_count": 2,
                     "boundary_assignment_first_pass_metadata": dict(first_pass["metadata"]),
                     "boundary_assignment_second_pass_metadata": dict(second_pass["metadata"]),
@@ -7360,6 +7376,7 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
         )
         native_metadata = dict(native_result["metadata"])
         native_metadata["boundary_assignment_policy"] = self.boundary_assignment_policy
+        native_metadata["boundary_assignment_canonical_policy"] = self.boundary_assignment_canonical_policy
         native_metadata["boundary_assignment_pass_count"] = 1
         return (
             {"metadata": native_metadata},
@@ -7438,6 +7455,7 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
             "component_union_policy": "monotonic_atomic_min_from_rt_hit_stream_without_neighbor_index_materialization",
             "fallback_candidate_policy": fallback_candidate_policy,
             "boundary_assignment_policy": self.boundary_assignment_policy,
+            "boundary_assignment_canonical_policy": self.boundary_assignment_canonical_policy,
             "prepared_optix_scene_reused": True,
             "output_columns_reused": True,
             "core_flag_threshold": min_neighbors,
@@ -7554,6 +7572,7 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
             "component_union_policy": "monotonic_atomic_min_from_rt_hit_stream_without_neighbor_index_materialization",
             "fallback_candidate_policy": fallback_candidate_policy,
             "boundary_assignment_policy": self.boundary_assignment_policy,
+            "boundary_assignment_canonical_policy": self.boundary_assignment_canonical_policy,
             "prepared_optix_scene_reused": True,
             "output_columns_reused": True,
             "core_flag_threshold": min_neighbors,
