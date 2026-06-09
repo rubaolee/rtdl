@@ -16,13 +16,15 @@ class Goal4083CurrentRouteDecisionAfterGroupedUnionPlanTest(unittest.TestCase):
 
         self.assertEqual("numba_continuation", route["decision_kind"])
         self.assertEqual("numba", route["partner_policy"])
-        self.assertIn("Goal4079/4080", route["current_reader_decision"])
-        self.assertIn("candidate enumeration and root-read traffic", route["current_reader_decision"])
-        self.assertIn("Goal4080 generic fixed-radius grouped-union work-reduction", route["next_runtime_action"])
+        self.assertIn("Goal4079-4088", route["current_reader_decision"])
+        self.assertIn("candidate enumeration", route["current_reader_decision"])
+        self.assertIn("root-read", route["current_reader_decision"])
+        self.assertIn("Goal4080/4086 generic fixed-radius grouped-union work-reduction", route["next_runtime_action"])
         self.assertIn("production timing that beats the current grouped-stream Numba route", route["next_runtime_action"])
         self.assertIn("Goal4071", route["evidence_refs"])
         self.assertIn("Goal4079", route["evidence_refs"])
         self.assertIn("Goal4080", route["evidence_refs"])
+        self.assertIn("Goal4088", route["evidence_refs"])
         self.assertFalse(route["automatic_partner_selection_authorized"])
         self.assertFalse(route["release_authorized"])
 

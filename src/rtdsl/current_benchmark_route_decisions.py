@@ -6,11 +6,12 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4083.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4091.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
-    "Goal4083 refreshes current benchmark route decisions after the Goal4074-4080 "
-    "RT-DBSCAN grouped-union bottleneck and work-reduction plan. It is advisory "
+    "Goal4091 refreshes current benchmark route decisions after the Goal4074-4088 "
+    "RT-DBSCAN grouped-union bottleneck, partition-summary feasibility, and host-work "
+    "skip chain. It is advisory "
     "guidance only: users choose partners explicitly. It does not authorize release "
     "action, public speedup wording, whole-app acceleration wording, broad RT-core "
     "wording, paper-reproduction wording, true-zero-copy wording, automatic partner "
@@ -167,10 +168,12 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
         decision_kind="numba_continuation",
         current_reader_decision=(
             "Use the unblocked RTDL/OptiX grouped stream plus Numba column-signature continuation. "
-            "Keep existing partition_convergence_hybrid previews explicit and unpromoted; Goal4071 "
-            "shows those previews do not beat the recommended route. Goal4079/4080 now identify the "
-            "next serious target as a generic fixed-radius grouped-union work-reduction primitive "
-            "that reduces candidate enumeration and root-read traffic together."
+            "Keep existing partition_convergence_hybrid previews explicit and unpromoted. Goal4088 "
+            "cuts device partition-summary build time by 1.6x-2.3x, but five-run prepared reuse "
+            "still does not beat the recommended route on clustered or road profiles. Goal4079-4088 "
+            "therefore identify the next serious target as a generic fused/native fixed-radius "
+            "grouped-union work-reduction primitive that reduces candidate enumeration, root-read "
+            "traffic, and full partition-pair materialization together."
         ),
         primary_route="RTDL/OptiX fixed-radius grouped stream with Numba component/signature continuation",
         partner_policy="numba",
@@ -181,11 +184,13 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "partition_convergence_hybrid default promotion after Goal4041 mixed timing",
             "partition_convergence_hybrid full-DBSCAN promotion after Goal4047 graph-component-only app mode",
             "partition_convergence_hybrid default promotion after Goal4071 same-profile route comparison",
+            "partition_convergence_hybrid default promotion after Goal4088 host-AABB skip improvement",
         ),
         next_runtime_action=(
-            "pursue the Goal4080 generic fixed-radius grouped-union work-reduction candidate; "
-            "success requires same-contract correctness, lower candidate/root work than Goal4079, "
-            "and production timing that beats the current grouped-stream Numba route before any "
+            "pursue the Goal4080/4086 generic fixed-radius grouped-union work-reduction candidate; "
+            "Goal4088 proves producer-side cleanup matters, but success still requires same-contract "
+            "correctness, lower candidate/root work than Goal4079, no ngsim_dense regression, and "
+            "production timing that beats the current grouped-stream Numba route before any "
             "default-route reconsideration"
         ),
         evidence_refs=(
@@ -205,6 +210,11 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4078",
             "Goal4079",
             "Goal4080",
+            "Goal4084",
+            "Goal4085",
+            "Goal4086",
+            "Goal4087",
+            "Goal4088",
         ),
         pod_needed_next=False,
     ),

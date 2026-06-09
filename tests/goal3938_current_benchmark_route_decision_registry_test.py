@@ -16,7 +16,7 @@ class Goal3938CurrentBenchmarkRouteDecisionRegistryTest(unittest.TestCase):
         validation = rt.validate_current_benchmark_route_decisions()
         summary = rt.summarize_current_benchmark_route_decisions()
 
-        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4083.v1", rt.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION)
+        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4091.v1", rt.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION)
         self.assertEqual("accept", validation["status"])
         self.assertEqual((), validation["errors"])
         self.assertEqual(10, summary["app_count"])
@@ -53,9 +53,10 @@ class Goal3938CurrentBenchmarkRouteDecisionRegistryTest(unittest.TestCase):
         self.assertIn("unblocked", route["current_reader_decision"])
         self.assertIn("blocked mode off until it wins", route["user_choice_guidance"])
         self.assertIn("blocked grouped stream candidate from Goal3936", route["rejected_or_unpromoted_candidates"])
-        self.assertIn("Goal4080 generic fixed-radius grouped-union work-reduction", route["next_runtime_action"])
+        self.assertIn("Goal4080/4086 generic fixed-radius grouped-union work-reduction", route["next_runtime_action"])
         self.assertIn("Goal4079", route["evidence_refs"])
         self.assertIn("Goal4080", route["evidence_refs"])
+        self.assertIn("Goal4088", route["evidence_refs"])
         self.assertFalse(route["automatic_partner_selection_authorized"])
 
     def test_barnes_hut_is_honest_about_fastest_partner_and_numba_reference(self) -> None:
