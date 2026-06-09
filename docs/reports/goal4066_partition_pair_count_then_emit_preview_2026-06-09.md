@@ -48,8 +48,15 @@ true-zero-copy wording.
 Added:
 
 - `tests/goal4066_partition_pair_count_then_emit_preview_test.py`.
+- `scripts/goal4066_pair_count_then_emit_timing.py`.
 
 When CuPy is available, the test compares `device_count_then_emit` with
 `device_bounded_offsets` on the same tiny point cloud, validates the summary
 against the Python same-contract oracle, and verifies exact capacity plus closed
 claim flags.
+
+The timing script compares the existing upper-bound allocation mode with the new
+count-then-emit mode. The expected success criterion is not necessarily lower
+runtime, because the new path intentionally performs two device passes. The key
+runtime-design question is whether exact capacity substantially reduces memory
+pressure while preserving the same pair stream.
