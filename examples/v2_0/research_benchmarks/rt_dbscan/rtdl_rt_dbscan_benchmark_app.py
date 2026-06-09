@@ -326,6 +326,11 @@ def explain_rt_dbscan_explicit_route_choice(
         "native_dbscan_abi_added": False,
         "app_specific_engine_logic_allowed": False,
         "canonical_component_size_signature_helper": "canonical_component_size_signature",
+        "policy_aware_semantic_signature_helper": "policy_aware_rt_dbscan_semantic_signature",
+        "mixed_predicate_comparison_contracts": (
+            "policy_bound_component_sizes",
+            "core_noise_assigned_counts_only",
+        ),
         "mixed_predicate_route_promotion_blocked_by": ("Goal4159", "Goal4160"),
         "current_predicate_border_assignment_policy": "lowest_predicate_true_point_id_within_radius",
         "target_predicate_border_assignment_policy": "reference_grouped_stream_compatible",
@@ -1151,6 +1156,69 @@ def canonical_component_size_signature(signature: dict[str, object]) -> dict[str
 
 def same_canonical_component_size_signature(left: dict[str, object], right: dict[str, object]) -> bool:
     return canonical_component_size_signature(left) == canonical_component_size_signature(right)
+
+
+def policy_aware_rt_dbscan_semantic_signature(
+    signature: dict[str, object],
+    *,
+    border_assignment_policy: str,
+    component_size_contract: str = "policy_bound_component_sizes",
+) -> dict[str, object]:
+    """Return a policy-aware app-layer semantic signature for DBSCAN-like outputs.
+
+    Border items can legally touch multiple predicate-true components. When a
+    caller treats a concrete border assignment policy as part of the contract,
+    component-size distribution belongs in the signature. When the caller only
+    contracts core/noise/assigned counts, border tie-break differences should not
+    masquerade as semantic failures.
+    """
+
+    component_size_contract = str(component_size_contract)
+    if component_size_contract not in {
+        "policy_bound_component_sizes",
+        "core_noise_assigned_counts_only",
+    }:
+        raise ValueError(
+            "component_size_contract must be 'policy_bound_component_sizes' "
+            "or 'core_noise_assigned_counts_only'"
+        )
+    canonical = canonical_component_size_signature(signature)
+    cluster_sizes = tuple(int(value) for value in canonical["cluster_sizes"])
+    assigned_count = int(sum(cluster_sizes))
+    core_count = int(canonical["core_count"])
+    noise_count = int(canonical["noise_count"])
+    payload: dict[str, object] = {
+        "contract": "rt_dbscan_policy_aware_semantic_signature_v1",
+        "component_size_contract": component_size_contract,
+        "border_assignment_policy": str(border_assignment_policy),
+        "core_count": core_count,
+        "noise_count": noise_count,
+        "assigned_count": assigned_count,
+        "border_count": max(0, assigned_count - core_count),
+        "point_count": assigned_count + noise_count,
+    }
+    if component_size_contract == "policy_bound_component_sizes":
+        payload["cluster_sizes"] = cluster_sizes
+        payload["component_count"] = len(cluster_sizes)
+    return payload
+
+
+def same_policy_aware_rt_dbscan_semantic_signature(
+    left: dict[str, object],
+    right: dict[str, object],
+    *,
+    border_assignment_policy: str,
+    component_size_contract: str = "policy_bound_component_sizes",
+) -> bool:
+    return policy_aware_rt_dbscan_semantic_signature(
+        left,
+        border_assignment_policy=border_assignment_policy,
+        component_size_contract=component_size_contract,
+    ) == policy_aware_rt_dbscan_semantic_signature(
+        right,
+        border_assignment_policy=border_assignment_policy,
+        component_size_contract=component_size_contract,
+    )
 
 
 def _densify_cluster_labels(rows: Iterable[dict[str, object]]) -> tuple[dict[str, object], ...]:
