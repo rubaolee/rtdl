@@ -38,7 +38,9 @@ class Goal4164RtDbscanAllPredicateOnlyModeTest(unittest.TestCase):
     def test_runtime_branch_requires_runtime_fast_path_metadata(self) -> None:
         source = inspect.getsource(app.run_rt_dbscan_benchmark)
         self.assertIn("RT_DBSCAN_PREDICATE_DIRECT_STATUS_ALL_TRUE_APP_MODE", source)
-        self.assertIn("require_all_predicate_fast_path = mode == RT_DBSCAN_PREDICATE_DIRECT_STATUS_ALL_TRUE_APP_MODE", source)
+        self.assertIn("require_all_predicate_fast_path = mode in {", source)
+        self.assertIn("RT_DBSCAN_PREDICATE_DIRECT_STATUS_ALL_TRUE_APP_MODE", source)
+        self.assertIn("RT_DBSCAN_DECLARED_ALL_TRUE_DIRECT_STATUS_APP_MODE", source)
         self.assertIn("requires all_predicate_fast_path", source)
         self.assertIn("optix_rt_core_grouped_stream_numba_column_signature_3d for mixed predicate rows", source)
         self.assertIn('"all_predicate_only_mode": require_all_predicate_fast_path', source)
@@ -52,7 +54,7 @@ class Goal4164RtDbscanAllPredicateOnlyModeTest(unittest.TestCase):
         source = (ROOT / "examples" / "v2_0" / "research_benchmarks" / "rt_dbscan" / "rtdl_rt_dbscan_benchmark_app.py").read_text(encoding="utf-8")
         self.assertGreaterEqual(
             source.count("optix_rt_core_flags_cupy_predicate_direct_status_all_true_column_signature_3d"),
-            4,
+            3,
         )
         self.assertIn("signature mode does not materialize Python rows", source)
 

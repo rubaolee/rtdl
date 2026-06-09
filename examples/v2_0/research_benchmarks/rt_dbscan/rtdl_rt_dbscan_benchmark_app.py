@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import nullcontext
 import argparse
 import json
 import math
@@ -78,6 +79,9 @@ RT_DBSCAN_PREDICATE_DIRECT_STATUS_APP_MODE = (
 )
 RT_DBSCAN_PREDICATE_DIRECT_STATUS_ALL_TRUE_APP_MODE = (
     "optix_rt_core_flags_cupy_predicate_direct_status_all_true_column_signature_3d"
+)
+RT_DBSCAN_DECLARED_ALL_TRUE_DIRECT_STATUS_APP_MODE = (
+    "partner_cupy_declared_all_true_predicate_direct_status_column_signature_3d"
 )
 
 
@@ -223,6 +227,7 @@ def explain_rt_dbscan_explicit_route_choice(
             tested_options.sort(key=lambda row: (int(row["point_count"]), -float(row[metric_key]), float(row["factor"])))
         direct_options = []
         all_true_options = []
+        declared_all_true_options = []
         for tested in tested_options:
             all_true_option = {
                 "mode": RT_DBSCAN_PREDICATE_DIRECT_STATUS_ALL_TRUE_APP_MODE,
@@ -245,6 +250,28 @@ def explain_rt_dbscan_explicit_route_choice(
                     "Goal4159",
                     "Goal4160",
                     "Goal4162",
+                ),
+            }
+            declared_all_true_option = {
+                "mode": RT_DBSCAN_DECLARED_ALL_TRUE_DIRECT_STATUS_APP_MODE,
+                "partner": "cupy",
+                "partition_cell_factor": float(tested["factor"]),
+                "tested_point_count": int(tested["point_count"]),
+                "when": (
+                    "explicit caller-declared all-predicate route for rows whose predicate flags "
+                    "are externally proven all true"
+                ),
+                "predicate_flags_source": "caller_declared_all_true",
+                "caller_declared_predicate_columns_require_external_proof": True,
+                "rt_count_threshold_executed": False,
+                "rt_core_acceleration_claim_authorized": False,
+                "mixed_predicate_fail_closed": True,
+                "mixed_predicate_fallback_route": RT_DBSCAN_GROUPED_STREAM_NUMBA_APP_MODE,
+                "border_assignment_policy": "not_needed_all_predicate_true",
+                "automatic_route_selection_authorized": False,
+                "route_promotion_authorized": False,
+                "evidence_refs": (
+                    "Goal4172",
                 ),
             }
             direct_option = {
@@ -313,7 +340,9 @@ def explain_rt_dbscan_explicit_route_choice(
                 )
             direct_options.append(direct_option)
             all_true_options.append(all_true_option)
+            declared_all_true_options.append(declared_all_true_option)
         options = direct_options + all_true_options + options
+        options.extend(declared_all_true_options)
     elif repeated:
         options.append(
             {
@@ -1359,6 +1388,7 @@ def run_rt_dbscan_benchmark(
         "partner_cupy_prepared_direct_status_union_component_signature_3d",
         "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
         "optix_rt_core_flags_cupy_predicate_direct_status_all_true_column_signature_3d",
+        "partner_cupy_declared_all_true_predicate_direct_status_column_signature_3d",
     }:
         raise ValueError("signature mode does not materialize Python rows; column-signature mode does not materialize Python rows")
     if repeat < 1:
@@ -1861,13 +1891,20 @@ def run_rt_dbscan_benchmark(
     elif mode in {
         RT_DBSCAN_PREDICATE_DIRECT_STATUS_APP_MODE,
         RT_DBSCAN_PREDICATE_DIRECT_STATUS_ALL_TRUE_APP_MODE,
+        RT_DBSCAN_DECLARED_ALL_TRUE_DIRECT_STATUS_APP_MODE,
     }:
-        require_all_predicate_fast_path = mode == RT_DBSCAN_PREDICATE_DIRECT_STATUS_ALL_TRUE_APP_MODE
+        use_declared_all_predicate = mode == RT_DBSCAN_DECLARED_ALL_TRUE_DIRECT_STATUS_APP_MODE
+        require_all_predicate_fast_path = mode in {
+            RT_DBSCAN_PREDICATE_DIRECT_STATUS_ALL_TRUE_APP_MODE,
+            RT_DBSCAN_DECLARED_ALL_TRUE_DIRECT_STATUS_APP_MODE,
+        }
         prepare_start = time.perf_counter()
-        output_columns = rt.allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
-            len(points),
-            partner="cupy",
-        )
+        output_columns = None
+        if not use_declared_all_predicate:
+            output_columns = rt.allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
+                len(points),
+                partner="cupy",
+            )
         prepared_predicate_direct_status = (
             rt.prepare_v2_8_fixed_radius_partition_convergence_predicate_direct_status_union_cupy_preview_3d(
                 points,
@@ -1877,11 +1914,43 @@ def run_rt_dbscan_benchmark(
         )
         prepared_predicate_direct_status_sec = time.perf_counter() - prepare_start
         prepared_runs: list[dict[str, object]] = []
-        with prepared_predicate_direct_status, rt.prepare_optix_fixed_radius_count_threshold_3d(
-            points,
-            max_radius=resolved_radius,
-        ) as prepared_count:
-            threshold_result = None
+        count_context = (
+            nullcontext(None)
+            if use_declared_all_predicate
+            else rt.prepare_optix_fixed_radius_count_threshold_3d(
+                points,
+                max_radius=resolved_radius,
+            )
+        )
+        with prepared_predicate_direct_status, count_context as prepared_count:
+            if use_declared_all_predicate:
+                import cupy
+
+                threshold_result = {
+                    "columns": {
+                        "threshold_flags": cupy.ones((len(points),), dtype=cupy.uint32),
+                        "neighbor_counts": cupy.full(
+                            (len(points),),
+                            resolved_min_neighbors,
+                            dtype=cupy.uint32,
+                        ),
+                    },
+                    "metadata": {
+                        "path": "partner_cupy_declared_all_true_predicate_columns_3d",
+                        "predicate_flags_source": "caller_declared_all_true",
+                        "predicate_flags_exactness": "caller_asserted_not_rt_count_threshold_verified",
+                        "neighbor_count_policy": "threshold_satisfying_sentinel_not_exact_degree",
+                        "rt_count_threshold_executed": False,
+                        "optix_backend_used_for_threshold": False,
+                        "all_predicate_declared": True,
+                        "all_predicate_fast_path_expected": True,
+                        "release_authorized": False,
+                        "public_speedup_claim_authorized": False,
+                        "route_promotion_authorized": False,
+                    },
+                }
+            else:
+                threshold_result = None
             threshold_elapsed = 0.0
             for iteration in range(repeat):
                 run_timing: dict[str, float] = {}
@@ -1911,7 +1980,7 @@ def run_rt_dbscan_benchmark(
                 result_metadata = dict(result["metadata"])
                 if require_all_predicate_fast_path and not bool(result_metadata.get("all_predicate_fast_path", False)):
                     raise ValueError(
-                        "optix_rt_core_flags_cupy_predicate_direct_status_all_true_column_signature_3d "
+                        f"{mode} "
                         "requires all_predicate_fast_path; use "
                         "optix_rt_core_grouped_stream_numba_column_signature_3d for mixed predicate rows"
                     )
@@ -1946,16 +2015,34 @@ def run_rt_dbscan_benchmark(
         metadata.update(
             {
                 "path": (
-                    "optix_rt_count_threshold_cupy_predicate_direct_status_all_true_column_signature_3d"
-                    if require_all_predicate_fast_path
-                    else "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d"
+                    "partner_cupy_declared_all_true_predicate_direct_status_column_signature_3d"
+                    if use_declared_all_predicate
+                    else (
+                        "optix_rt_count_threshold_cupy_predicate_direct_status_all_true_column_signature_3d"
+                        if require_all_predicate_fast_path
+                        else "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d"
+                    )
                 ),
                 "front_door_operation": "fixed_radius_graph_predicate_component_size_signature_3d",
-                "native_engine_summary_contract": "generic_prepared_fixed_radius_count_threshold_3d_device_columns_plus_predicate_direct_status_union",
-                "native_execution_path": "prepared_rt_core_count_threshold_3d_then_partner_predicate_direct_status_union_preview",
-                "optix_backend_used": True,
+                "native_engine_summary_contract": (
+                    "generic_caller_declared_predicate_columns_plus_predicate_direct_status_union"
+                    if use_declared_all_predicate
+                    else "generic_prepared_fixed_radius_count_threshold_3d_device_columns_plus_predicate_direct_status_union"
+                ),
+                "native_execution_path": (
+                    "caller_declared_predicate_columns_then_partner_predicate_direct_status_union_preview"
+                    if use_declared_all_predicate
+                    else "prepared_rt_core_count_threshold_3d_then_partner_predicate_direct_status_union_preview"
+                ),
+                "optix_backend_used": not use_declared_all_predicate,
                 "partner": "cupy",
-                "rt_core_accelerated": True,
+                "rt_core_accelerated": not use_declared_all_predicate,
+                "predicate_flags_source": (
+                    "caller_declared_all_true" if use_declared_all_predicate else "optix_rt_count_threshold"
+                ),
+                "rt_count_threshold_executed": not use_declared_all_predicate,
+                "caller_declared_predicate_columns": use_declared_all_predicate,
+                "caller_declared_predicate_columns_require_external_proof": use_declared_all_predicate,
                 "materializes_neighbor_summaries": False,
                 "materializes_neighbor_rows": False,
                 "materializes_python_rows": False,
@@ -2687,6 +2774,7 @@ def main(argv: list[str] | None = None) -> int:
             "partner_cupy_prepared_direct_status_union_component_signature_3d",
             "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
             "optix_rt_core_flags_cupy_predicate_direct_status_all_true_column_signature_3d",
+            "partner_cupy_declared_all_true_predicate_direct_status_column_signature_3d",
             "optix_core_flags_cupy_grid_components_3d",
             "optix_rt_core_flags_cupy_grid_components_3d",
             "optix_rt_core_flags_cupy_prepared_grid_components_3d",
