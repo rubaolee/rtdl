@@ -14,7 +14,7 @@ class Goal4091CurrentRouteDecisionAfterPartitionSummaryHostSkipTest(unittest.Tes
     def test_rtdbscan_route_keeps_current_default_after_goal4088(self) -> None:
         route = rt.explain_current_benchmark_route("rt_dbscan")
 
-        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4094.v1", route["version"])
+        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4097.v1", route["version"])
         self.assertIn("unblocked RTDL/OptiX grouped stream plus Numba", route["current_reader_decision"])
         self.assertIn("Goal4088", route["current_reader_decision"])
         self.assertIn("1.6x-2.3x", route["current_reader_decision"])
@@ -25,6 +25,7 @@ class Goal4091CurrentRouteDecisionAfterPartitionSummaryHostSkipTest(unittest.Tes
         self.assertIn("no ngsim_dense regression", route["next_runtime_action"])
         self.assertIn("Goal4088", route["evidence_refs"])
         self.assertIn("Goal4093", route["evidence_refs"])
+        self.assertIn("Goal4096", route["evidence_refs"])
         self.assertFalse(route["automatic_partner_selection_authorized"])
         self.assertFalse(route["public_speedup_claim_authorized"])
 
