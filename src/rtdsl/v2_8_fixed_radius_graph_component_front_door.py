@@ -1467,6 +1467,8 @@ def _skipped_partition_summary_prepare_validation(summary: dict[str, Any]) -> di
         "complete_candidate_coverage": bool(summary_metadata["complete_candidate_coverage"]),
         "status_column_values": dict(summary_metadata["status_column_values"]),
         "status_counts": dict(summary_metadata["status_counts"]),
+        "pair_stream_filter": summary_metadata.get("pair_stream_filter", "all_partition_pairs"),
+        "safe_skip_pairs_elided": bool(summary_metadata.get("safe_skip_pairs_elided", False)),
         "summary_same_contract_validation_skipped_for_prepared_timing": True,
     }
 
@@ -1486,6 +1488,8 @@ def _partition_summary_digest(summary: dict[str, Any]) -> dict[str, Any]:
         "status_counts": dict(metadata["status_counts"]),
         "pair_enumeration": metadata["pair_enumeration"],
         "pair_capacity_source": metadata["pair_capacity_source"],
+        "pair_stream_filter": metadata.get("pair_stream_filter", "all_partition_pairs"),
+        "safe_skip_pairs_elided": bool(metadata.get("safe_skip_pairs_elided", False)),
         "device_partition_columns_used": bool(metadata["device_partition_columns_used"]),
         "device_pair_enumeration_used": bool(metadata["device_pair_enumeration_used"]),
     }

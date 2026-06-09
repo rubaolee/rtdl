@@ -102,6 +102,8 @@ def _run_profile(
             "pair_capacity": int(metadata["pair_capacity"]),
             "pair_capacity_source": metadata.get("pair_capacity_source"),
             "pair_enumeration": metadata.get("pair_enumeration"),
+            "pair_stream_filter": metadata.get("pair_stream_filter", "all_partition_pairs"),
+            "safe_skip_pairs_elided": bool(metadata.get("safe_skip_pairs_elided", False)),
             "overflow": bool(metadata["overflow"]),
             "complete_candidate_coverage": bool(metadata["complete_candidate_coverage"]),
             "status_counts": _status_counts(metadata),
