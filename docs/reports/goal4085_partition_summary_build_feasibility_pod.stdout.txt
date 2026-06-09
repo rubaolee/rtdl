@@ -1,0 +1,487 @@
+PROFILE_WARMUP clustered3d point_count=65536 run=0
+PROFILE_SAMPLE {"measured": false, "pair_capacity": 19668778, "pair_count": 19668778, "partition_count": 16772, "partition_summary_build_sec": 0.45064835995435715, "profile": "clustered3d", "run_index": 0, "status_counts": {"ambiguous_partition_pairs": 3622448, "safe_full_partition_pairs": 7338133, "safe_skip_partition_pairs": 8708197}}
+PROFILE_MEASURE clustered3d point_count=65536 run=1
+PROFILE_SAMPLE {"measured": true, "pair_capacity": 19668778, "pair_count": 19668778, "partition_count": 16772, "partition_summary_build_sec": 0.24042383581399918, "profile": "clustered3d", "run_index": 1, "status_counts": {"ambiguous_partition_pairs": 3622448, "safe_full_partition_pairs": 7338133, "safe_skip_partition_pairs": 8708197}}
+PROFILE_MEASURE clustered3d point_count=65536 run=2
+PROFILE_SAMPLE {"measured": true, "pair_capacity": 19668778, "pair_count": 19668778, "partition_count": 16772, "partition_summary_build_sec": 0.21986068040132523, "profile": "clustered3d", "run_index": 2, "status_counts": {"ambiguous_partition_pairs": 3622448, "safe_full_partition_pairs": 7338133, "safe_skip_partition_pairs": 8708197}}
+PROFILE_MEASURE clustered3d point_count=65536 run=3
+PROFILE_SAMPLE {"measured": true, "pair_capacity": 19668778, "pair_count": 19668778, "partition_count": 16772, "partition_summary_build_sec": 0.2165272757411003, "profile": "clustered3d", "run_index": 3, "status_counts": {"ambiguous_partition_pairs": 3622448, "safe_full_partition_pairs": 7338133, "safe_skip_partition_pairs": 8708197}}
+PROFILE_WARMUP road3d point_count=65536 run=0
+PROFILE_SAMPLE {"measured": false, "pair_capacity": 10271711, "pair_count": 10271711, "partition_count": 18028, "partition_summary_build_sec": 0.23638539761304855, "profile": "road3d", "run_index": 0, "status_counts": {"ambiguous_partition_pairs": 1737708, "safe_full_partition_pairs": 5092654, "safe_skip_partition_pairs": 3441349}}
+PROFILE_MEASURE road3d point_count=65536 run=1
+PROFILE_SAMPLE {"measured": true, "pair_capacity": 10271711, "pair_count": 10271711, "partition_count": 18028, "partition_summary_build_sec": 0.20335014909505844, "profile": "road3d", "run_index": 1, "status_counts": {"ambiguous_partition_pairs": 1737708, "safe_full_partition_pairs": 5092654, "safe_skip_partition_pairs": 3441349}}
+PROFILE_MEASURE road3d point_count=65536 run=2
+PROFILE_SAMPLE {"measured": true, "pair_capacity": 10271711, "pair_count": 10271711, "partition_count": 18028, "partition_summary_build_sec": 0.20151033997535706, "profile": "road3d", "run_index": 2, "status_counts": {"ambiguous_partition_pairs": 1737708, "safe_full_partition_pairs": 5092654, "safe_skip_partition_pairs": 3441349}}
+PROFILE_MEASURE road3d point_count=65536 run=3
+PROFILE_SAMPLE {"measured": true, "pair_capacity": 10271711, "pair_count": 10271711, "partition_count": 18028, "partition_summary_build_sec": 0.20074812322854996, "profile": "road3d", "run_index": 3, "status_counts": {"ambiguous_partition_pairs": 1737708, "safe_full_partition_pairs": 5092654, "safe_skip_partition_pairs": 3441349}}
+PROFILE_WARMUP ngsim_dense point_count=65536 run=0
+PROFILE_SAMPLE {"measured": false, "pair_capacity": 30525629, "pair_count": 30525629, "partition_count": 60094, "partition_summary_build_sec": 0.4134095087647438, "profile": "ngsim_dense", "run_index": 0, "status_counts": {"ambiguous_partition_pairs": 2382110, "safe_full_partition_pairs": 9203113, "safe_skip_partition_pairs": 18940406}}
+PROFILE_MEASURE ngsim_dense point_count=65536 run=1
+PROFILE_SAMPLE {"measured": true, "pair_capacity": 30525629, "pair_count": 30525629, "partition_count": 60094, "partition_summary_build_sec": 0.3676365464925766, "profile": "ngsim_dense", "run_index": 1, "status_counts": {"ambiguous_partition_pairs": 2382110, "safe_full_partition_pairs": 9203113, "safe_skip_partition_pairs": 18940406}}
+PROFILE_MEASURE ngsim_dense point_count=65536 run=2
+PROFILE_SAMPLE {"measured": true, "pair_capacity": 30525629, "pair_count": 30525629, "partition_count": 60094, "partition_summary_build_sec": 0.3692193776369095, "profile": "ngsim_dense", "run_index": 2, "status_counts": {"ambiguous_partition_pairs": 2382110, "safe_full_partition_pairs": 9203113, "safe_skip_partition_pairs": 18940406}}
+PROFILE_MEASURE ngsim_dense point_count=65536 run=3
+PROFILE_SAMPLE {"measured": true, "pair_capacity": 30525629, "pair_count": 30525629, "partition_count": 60094, "partition_summary_build_sec": 0.3598589524626732, "profile": "ngsim_dense", "run_index": 3, "status_counts": {"ambiguous_partition_pairs": 2382110, "safe_full_partition_pairs": 9203113, "safe_skip_partition_pairs": 18940406}}
+{
+  "cell_factor": 0.125,
+  "claim_boundary": "Internal partition-summary build feasibility evidence only. It does not promote partition_convergence_hybrid, authorize release, public speedup, broad RT-core, whole-app, paper-reproduction, hidden-dispatch, automatic partner selection, app-specific engine logic, native ABI addition, or true-zero-copy claims.",
+  "goal": "Goal4085",
+  "gpu": "NVIDIA RTX 4000 Ada Generation, 550.127.05",
+  "host": "d062c10cfc84",
+  "native_abi_added": false,
+  "pair_enumeration": "device_count_then_emit",
+  "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.39",
+  "point_count": 65536,
+  "profiles": [
+    "clustered3d",
+    "road3d",
+    "ngsim_dense"
+  ],
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "repeat": 3,
+  "rows": [
+    {
+      "cell_factor": 0.125,
+      "complete_candidate_coverage": true,
+      "device_pair_count_probe_used": true,
+      "device_pair_enumeration_used": true,
+      "native_abi_added": false,
+      "overflow": false,
+      "pair_capacity": 19668778,
+      "pair_capacity_source": "device_exact_count",
+      "pair_count": 19668778,
+      "pair_enumeration": "device_count_then_emit",
+      "partition_count": 16772,
+      "partition_summary_build_sec": {
+        "max_sec": 0.24042383581399918,
+        "mean_sec": 0.22560393065214157,
+        "median_sec": 0.21986068040132523,
+        "min_sec": 0.2165272757411003
+      },
+      "point_count": 65536,
+      "profile": "clustered3d",
+      "public_speedup_claim_authorized": false,
+      "radius": 0.055,
+      "release_authorized": false,
+      "repeat": 3,
+      "rt_core_speedup_claim_authorized": false,
+      "samples": [
+        {
+          "complete_candidate_coverage": true,
+          "device_pair_count_probe_used": true,
+          "device_pair_enumeration_used": true,
+          "measured": false,
+          "native_abi_added": false,
+          "overflow": false,
+          "pair_capacity": 19668778,
+          "pair_capacity_source": "device_exact_count",
+          "pair_count": 19668778,
+          "pair_enumeration": "device_count_then_emit",
+          "partition_count": 16772,
+          "partition_summary_build_sec": 0.45064835995435715,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "run_index": 0,
+          "status": "fixed_radius_partition_convergence_summary_3d_cupy_preview",
+          "status_counts": {
+            "ambiguous_partition_pairs": 3622448,
+            "safe_full_partition_pairs": 7338133,
+            "safe_skip_partition_pairs": 8708197
+          },
+          "true_zero_copy_claim_authorized": false,
+          "visible_pair_count": 19668778,
+          "whole_app_speedup_claim_authorized": false
+        },
+        {
+          "complete_candidate_coverage": true,
+          "device_pair_count_probe_used": true,
+          "device_pair_enumeration_used": true,
+          "measured": true,
+          "native_abi_added": false,
+          "overflow": false,
+          "pair_capacity": 19668778,
+          "pair_capacity_source": "device_exact_count",
+          "pair_count": 19668778,
+          "pair_enumeration": "device_count_then_emit",
+          "partition_count": 16772,
+          "partition_summary_build_sec": 0.24042383581399918,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "run_index": 1,
+          "status": "fixed_radius_partition_convergence_summary_3d_cupy_preview",
+          "status_counts": {
+            "ambiguous_partition_pairs": 3622448,
+            "safe_full_partition_pairs": 7338133,
+            "safe_skip_partition_pairs": 8708197
+          },
+          "true_zero_copy_claim_authorized": false,
+          "visible_pair_count": 19668778,
+          "whole_app_speedup_claim_authorized": false
+        },
+        {
+          "complete_candidate_coverage": true,
+          "device_pair_count_probe_used": true,
+          "device_pair_enumeration_used": true,
+          "measured": true,
+          "native_abi_added": false,
+          "overflow": false,
+          "pair_capacity": 19668778,
+          "pair_capacity_source": "device_exact_count",
+          "pair_count": 19668778,
+          "pair_enumeration": "device_count_then_emit",
+          "partition_count": 16772,
+          "partition_summary_build_sec": 0.21986068040132523,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "run_index": 2,
+          "status": "fixed_radius_partition_convergence_summary_3d_cupy_preview",
+          "status_counts": {
+            "ambiguous_partition_pairs": 3622448,
+            "safe_full_partition_pairs": 7338133,
+            "safe_skip_partition_pairs": 8708197
+          },
+          "true_zero_copy_claim_authorized": false,
+          "visible_pair_count": 19668778,
+          "whole_app_speedup_claim_authorized": false
+        },
+        {
+          "complete_candidate_coverage": true,
+          "device_pair_count_probe_used": true,
+          "device_pair_enumeration_used": true,
+          "measured": true,
+          "native_abi_added": false,
+          "overflow": false,
+          "pair_capacity": 19668778,
+          "pair_capacity_source": "device_exact_count",
+          "pair_count": 19668778,
+          "pair_enumeration": "device_count_then_emit",
+          "partition_count": 16772,
+          "partition_summary_build_sec": 0.2165272757411003,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "run_index": 3,
+          "status": "fixed_radius_partition_convergence_summary_3d_cupy_preview",
+          "status_counts": {
+            "ambiguous_partition_pairs": 3622448,
+            "safe_full_partition_pairs": 7338133,
+            "safe_skip_partition_pairs": 8708197
+          },
+          "true_zero_copy_claim_authorized": false,
+          "visible_pair_count": 19668778,
+          "whole_app_speedup_claim_authorized": false
+        }
+      ],
+      "status_counts": {
+        "ambiguous_partition_pairs": 3622448,
+        "safe_full_partition_pairs": 7338133,
+        "safe_skip_partition_pairs": 8708197
+      },
+      "true_zero_copy_claim_authorized": false,
+      "visible_pair_count": 19668778,
+      "warmup": 1,
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "cell_factor": 0.125,
+      "complete_candidate_coverage": true,
+      "device_pair_count_probe_used": true,
+      "device_pair_enumeration_used": true,
+      "native_abi_added": false,
+      "overflow": false,
+      "pair_capacity": 10271711,
+      "pair_capacity_source": "device_exact_count",
+      "pair_count": 10271711,
+      "pair_enumeration": "device_count_then_emit",
+      "partition_count": 18028,
+      "partition_summary_build_sec": {
+        "max_sec": 0.20335014909505844,
+        "mean_sec": 0.2018695374329885,
+        "median_sec": 0.20151033997535706,
+        "min_sec": 0.20074812322854996
+      },
+      "point_count": 65536,
+      "profile": "road3d",
+      "public_speedup_claim_authorized": false,
+      "radius": 0.03,
+      "release_authorized": false,
+      "repeat": 3,
+      "rt_core_speedup_claim_authorized": false,
+      "samples": [
+        {
+          "complete_candidate_coverage": true,
+          "device_pair_count_probe_used": true,
+          "device_pair_enumeration_used": true,
+          "measured": false,
+          "native_abi_added": false,
+          "overflow": false,
+          "pair_capacity": 10271711,
+          "pair_capacity_source": "device_exact_count",
+          "pair_count": 10271711,
+          "pair_enumeration": "device_count_then_emit",
+          "partition_count": 18028,
+          "partition_summary_build_sec": 0.23638539761304855,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "run_index": 0,
+          "status": "fixed_radius_partition_convergence_summary_3d_cupy_preview",
+          "status_counts": {
+            "ambiguous_partition_pairs": 1737708,
+            "safe_full_partition_pairs": 5092654,
+            "safe_skip_partition_pairs": 3441349
+          },
+          "true_zero_copy_claim_authorized": false,
+          "visible_pair_count": 10271711,
+          "whole_app_speedup_claim_authorized": false
+        },
+        {
+          "complete_candidate_coverage": true,
+          "device_pair_count_probe_used": true,
+          "device_pair_enumeration_used": true,
+          "measured": true,
+          "native_abi_added": false,
+          "overflow": false,
+          "pair_capacity": 10271711,
+          "pair_capacity_source": "device_exact_count",
+          "pair_count": 10271711,
+          "pair_enumeration": "device_count_then_emit",
+          "partition_count": 18028,
+          "partition_summary_build_sec": 0.20335014909505844,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "run_index": 1,
+          "status": "fixed_radius_partition_convergence_summary_3d_cupy_preview",
+          "status_counts": {
+            "ambiguous_partition_pairs": 1737708,
+            "safe_full_partition_pairs": 5092654,
+            "safe_skip_partition_pairs": 3441349
+          },
+          "true_zero_copy_claim_authorized": false,
+          "visible_pair_count": 10271711,
+          "whole_app_speedup_claim_authorized": false
+        },
+        {
+          "complete_candidate_coverage": true,
+          "device_pair_count_probe_used": true,
+          "device_pair_enumeration_used": true,
+          "measured": true,
+          "native_abi_added": false,
+          "overflow": false,
+          "pair_capacity": 10271711,
+          "pair_capacity_source": "device_exact_count",
+          "pair_count": 10271711,
+          "pair_enumeration": "device_count_then_emit",
+          "partition_count": 18028,
+          "partition_summary_build_sec": 0.20151033997535706,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "run_index": 2,
+          "status": "fixed_radius_partition_convergence_summary_3d_cupy_preview",
+          "status_counts": {
+            "ambiguous_partition_pairs": 1737708,
+            "safe_full_partition_pairs": 5092654,
+            "safe_skip_partition_pairs": 3441349
+          },
+          "true_zero_copy_claim_authorized": false,
+          "visible_pair_count": 10271711,
+          "whole_app_speedup_claim_authorized": false
+        },
+        {
+          "complete_candidate_coverage": true,
+          "device_pair_count_probe_used": true,
+          "device_pair_enumeration_used": true,
+          "measured": true,
+          "native_abi_added": false,
+          "overflow": false,
+          "pair_capacity": 10271711,
+          "pair_capacity_source": "device_exact_count",
+          "pair_count": 10271711,
+          "pair_enumeration": "device_count_then_emit",
+          "partition_count": 18028,
+          "partition_summary_build_sec": 0.20074812322854996,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "run_index": 3,
+          "status": "fixed_radius_partition_convergence_summary_3d_cupy_preview",
+          "status_counts": {
+            "ambiguous_partition_pairs": 1737708,
+            "safe_full_partition_pairs": 5092654,
+            "safe_skip_partition_pairs": 3441349
+          },
+          "true_zero_copy_claim_authorized": false,
+          "visible_pair_count": 10271711,
+          "whole_app_speedup_claim_authorized": false
+        }
+      ],
+      "status_counts": {
+        "ambiguous_partition_pairs": 1737708,
+        "safe_full_partition_pairs": 5092654,
+        "safe_skip_partition_pairs": 3441349
+      },
+      "true_zero_copy_claim_authorized": false,
+      "visible_pair_count": 10271711,
+      "warmup": 1,
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "cell_factor": 0.125,
+      "complete_candidate_coverage": true,
+      "device_pair_count_probe_used": true,
+      "device_pair_enumeration_used": true,
+      "native_abi_added": false,
+      "overflow": false,
+      "pair_capacity": 30525629,
+      "pair_capacity_source": "device_exact_count",
+      "pair_count": 30525629,
+      "pair_enumeration": "device_count_then_emit",
+      "partition_count": 60094,
+      "partition_summary_build_sec": {
+        "max_sec": 0.3692193776369095,
+        "mean_sec": 0.36557162553071976,
+        "median_sec": 0.3676365464925766,
+        "min_sec": 0.3598589524626732
+      },
+      "point_count": 65536,
+      "profile": "ngsim_dense",
+      "public_speedup_claim_authorized": false,
+      "radius": 0.012,
+      "release_authorized": false,
+      "repeat": 3,
+      "rt_core_speedup_claim_authorized": false,
+      "samples": [
+        {
+          "complete_candidate_coverage": true,
+          "device_pair_count_probe_used": true,
+          "device_pair_enumeration_used": true,
+          "measured": false,
+          "native_abi_added": false,
+          "overflow": false,
+          "pair_capacity": 30525629,
+          "pair_capacity_source": "device_exact_count",
+          "pair_count": 30525629,
+          "pair_enumeration": "device_count_then_emit",
+          "partition_count": 60094,
+          "partition_summary_build_sec": 0.4134095087647438,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "run_index": 0,
+          "status": "fixed_radius_partition_convergence_summary_3d_cupy_preview",
+          "status_counts": {
+            "ambiguous_partition_pairs": 2382110,
+            "safe_full_partition_pairs": 9203113,
+            "safe_skip_partition_pairs": 18940406
+          },
+          "true_zero_copy_claim_authorized": false,
+          "visible_pair_count": 30525629,
+          "whole_app_speedup_claim_authorized": false
+        },
+        {
+          "complete_candidate_coverage": true,
+          "device_pair_count_probe_used": true,
+          "device_pair_enumeration_used": true,
+          "measured": true,
+          "native_abi_added": false,
+          "overflow": false,
+          "pair_capacity": 30525629,
+          "pair_capacity_source": "device_exact_count",
+          "pair_count": 30525629,
+          "pair_enumeration": "device_count_then_emit",
+          "partition_count": 60094,
+          "partition_summary_build_sec": 0.3676365464925766,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "run_index": 1,
+          "status": "fixed_radius_partition_convergence_summary_3d_cupy_preview",
+          "status_counts": {
+            "ambiguous_partition_pairs": 2382110,
+            "safe_full_partition_pairs": 9203113,
+            "safe_skip_partition_pairs": 18940406
+          },
+          "true_zero_copy_claim_authorized": false,
+          "visible_pair_count": 30525629,
+          "whole_app_speedup_claim_authorized": false
+        },
+        {
+          "complete_candidate_coverage": true,
+          "device_pair_count_probe_used": true,
+          "device_pair_enumeration_used": true,
+          "measured": true,
+          "native_abi_added": false,
+          "overflow": false,
+          "pair_capacity": 30525629,
+          "pair_capacity_source": "device_exact_count",
+          "pair_count": 30525629,
+          "pair_enumeration": "device_count_then_emit",
+          "partition_count": 60094,
+          "partition_summary_build_sec": 0.3692193776369095,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "run_index": 2,
+          "status": "fixed_radius_partition_convergence_summary_3d_cupy_preview",
+          "status_counts": {
+            "ambiguous_partition_pairs": 2382110,
+            "safe_full_partition_pairs": 9203113,
+            "safe_skip_partition_pairs": 18940406
+          },
+          "true_zero_copy_claim_authorized": false,
+          "visible_pair_count": 30525629,
+          "whole_app_speedup_claim_authorized": false
+        },
+        {
+          "complete_candidate_coverage": true,
+          "device_pair_count_probe_used": true,
+          "device_pair_enumeration_used": true,
+          "measured": true,
+          "native_abi_added": false,
+          "overflow": false,
+          "pair_capacity": 30525629,
+          "pair_capacity_source": "device_exact_count",
+          "pair_count": 30525629,
+          "pair_enumeration": "device_count_then_emit",
+          "partition_count": 60094,
+          "partition_summary_build_sec": 0.3598589524626732,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "run_index": 3,
+          "status": "fixed_radius_partition_convergence_summary_3d_cupy_preview",
+          "status_counts": {
+            "ambiguous_partition_pairs": 2382110,
+            "safe_full_partition_pairs": 9203113,
+            "safe_skip_partition_pairs": 18940406
+          },
+          "true_zero_copy_claim_authorized": false,
+          "visible_pair_count": 30525629,
+          "whole_app_speedup_claim_authorized": false
+        }
+      ],
+      "status_counts": {
+        "ambiguous_partition_pairs": 2382110,
+        "safe_full_partition_pairs": 9203113,
+        "safe_skip_partition_pairs": 18940406
+      },
+      "true_zero_copy_claim_authorized": false,
+      "visible_pair_count": 30525629,
+      "warmup": 1,
+      "whole_app_speedup_claim_authorized": false
+    }
+  ],
+  "rt_core_speedup_claim_authorized": false,
+  "schema": "rtdl.goal4085.partition_summary_build_feasibility.v1",
+  "seed": 20260519,
+  "source_commit": "0c1a717f1645c29e7377f9e07a951c2c1ee24113",
+  "true_zero_copy_claim_authorized": false,
+  "warmup": 1,
+  "whole_app_speedup_claim_authorized": false
+}
