@@ -182,7 +182,13 @@ def explain_rt_dbscan_explicit_route_choice(
         "partner": "numba",
         "partition_cell_factor": None,
         "when": "conservative one-shot/default component-signature route",
-        "evidence_refs": ("Goal3859", "Goal3936", "Goal4100", "Goal4115", "Goal4118"),
+        "predicate_mix_boundary": (
+            "recommended for custom radius/min-neighbor settings that produce mixed predicate flags "
+            "until a reference_grouped_stream_compatible border-assignment policy is proven"
+        ),
+        "border_assignment_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+        "canonical_component_size_signature_comparison": True,
+        "evidence_refs": ("Goal3859", "Goal3936", "Goal4100", "Goal4115", "Goal4118", "Goal4159", "Goal4160"),
     }
     options: list[dict[str, object]] = [default_option]
     if dataset in RT_DBSCAN_TESTED_DIRECT_STATUS_PARTITION_CELL_FACTOR_OPTIONS:
@@ -209,12 +215,31 @@ def explain_rt_dbscan_explicit_route_choice(
                 "one_shot_total_speedup_vs_current": float(tested["one_shot_total_speedup"]),
                 "direct_status_convergence_mode": "until_stable",
                 "direct_status_convergence_mode_status": "stable_convergence_proven_default",
+                "predicate_scope": (
+                    "proven for the default benchmark predicate shape; custom mixed-predicate overrides "
+                    "remain blocked by Goal4159 unless canonical parity is remeasured"
+                ),
+                "all_predicate_fast_path_evidence": "Goal4158",
+                "border_assignment_policy": "lowest_predicate_true_point_id_within_radius",
+                "border_assignment_policy_status": (
+                    "explicit metadata only; reference_grouped_stream_compatible policy not implemented"
+                ),
+                "canonical_component_size_signature_comparison": True,
                 "when": (
                     "explicit repeated component-signature route over reused point/partition columns"
                     if repeated
                     else "explicit warmed one-shot component-signature route with prepare paid once"
                 ),
-                "evidence_refs": ("Goal4116", "Goal4118", *tuple(tested["evidence_refs"])),
+                "evidence_refs": (
+                    "Goal4116",
+                    "Goal4118",
+                    "Goal4158",
+                    "Goal4159",
+                    "Goal4160",
+                    "Goal4161",
+                    "Goal4162",
+                    *tuple(tested["evidence_refs"]),
+                ),
             }
             single_pass = RT_DBSCAN_TESTED_DIRECT_STATUS_SINGLE_PASS_CONVERGENCE_OPTIONS.get(
                 (dataset, int(tested["point_count"]), float(tested["factor"]))
@@ -268,6 +293,10 @@ def explain_rt_dbscan_explicit_route_choice(
         "true_zero_copy_claim_authorized": False,
         "native_dbscan_abi_added": False,
         "app_specific_engine_logic_allowed": False,
+        "canonical_component_size_signature_helper": "canonical_component_size_signature",
+        "mixed_predicate_route_promotion_blocked_by": ("Goal4159", "Goal4160"),
+        "current_predicate_border_assignment_policy": "lowest_predicate_true_point_id_within_radius",
+        "target_predicate_border_assignment_policy": "reference_grouped_stream_compatible",
         "claim_boundary": (
             "Advisory RT-DBSCAN route explanation only. It does not execute a route, "
             "choose a partner automatically, choose a partition cell factor automatically, "
