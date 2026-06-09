@@ -34,7 +34,7 @@ class Goal4135CurrentRouteDecisionAfter524kFactor025ProbeTest(unittest.TestCase)
     def test_route_registry_records_limited_524k_extension(self) -> None:
         route = rt.explain_current_benchmark_route("rt_dbscan")
 
-        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4139.v1", route["version"])
+        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4168.v1", route["version"])
         self.assertIn("Goal4134", route["current_reader_decision"])
         self.assertIn("524k", route["user_choice_guidance"])
         self.assertIn("one-shot total timing ranks 0.25", route["user_choice_guidance"])
@@ -52,7 +52,7 @@ class Goal4135CurrentRouteDecisionAfter524kFactor025ProbeTest(unittest.TestCase)
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual((), validation["errors"])
-        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4139.v1", summary["version"])
+        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4168.v1", summary["version"])
         self.assertFalse(summary["automatic_partner_selection_authorized"])
         self.assertFalse(summary["release_authorized"])
         self.assertFalse(summary["public_speedup_claim_authorized"])

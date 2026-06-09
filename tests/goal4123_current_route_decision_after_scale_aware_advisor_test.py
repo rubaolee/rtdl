@@ -17,7 +17,7 @@ class Goal4123CurrentRouteDecisionAfterScaleAwareAdvisorTest(unittest.TestCase):
     def test_route_registry_records_scale_aware_tuned_direct_status_guidance(self) -> None:
         route = rt.explain_current_benchmark_route("rt_dbscan")
 
-        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4139.v1", route["version"])
+        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4168.v1", route["version"])
         self.assertEqual("mixed_explicit", route["decision_kind"])
         self.assertEqual("mixed_explicit_user_choice", route["partner_policy"])
         self.assertIn("Goal4121", route["current_reader_decision"])
@@ -63,7 +63,7 @@ class Goal4123CurrentRouteDecisionAfterScaleAwareAdvisorTest(unittest.TestCase):
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual((), validation["errors"])
-        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4139.v1", summary["version"])
+        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4168.v1", summary["version"])
         self.assertFalse(summary["automatic_partner_selection_authorized"])
         self.assertFalse(summary["release_authorized"])
         self.assertFalse(summary["public_speedup_claim_authorized"])

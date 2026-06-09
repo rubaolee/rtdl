@@ -222,32 +222,31 @@ def explain_rt_dbscan_explicit_route_choice(
         else:
             tested_options.sort(key=lambda row: (int(row["point_count"]), -float(row[metric_key]), float(row["factor"])))
         direct_options = []
+        all_true_options = []
         for tested in tested_options:
-            direct_options.append(
-                {
-                    "mode": RT_DBSCAN_PREDICATE_DIRECT_STATUS_ALL_TRUE_APP_MODE,
-                    "partner": "cupy",
-                    "partition_cell_factor": float(tested["factor"]),
-                    "tested_point_count": int(tested["point_count"]),
-                    "when": (
-                        "explicit all-predicate fast path for rows whose threshold predicate is known "
-                        "or measured to be all true"
-                    ),
-                    "all_predicate_fast_path_required": True,
-                    "mixed_predicate_fail_closed": True,
-                    "mixed_predicate_fallback_route": RT_DBSCAN_GROUPED_STREAM_NUMBA_APP_MODE,
-                    "border_assignment_policy": "not_needed_all_predicate_true",
-                    "border_assignment_policy_status": (
-                        "mixed predicates are rejected instead of using the current lowest-id border policy"
-                    ),
-                    "evidence_refs": (
-                        "Goal4158",
-                        "Goal4159",
-                        "Goal4160",
-                        "Goal4162",
-                    ),
-                }
-            )
+            all_true_option = {
+                "mode": RT_DBSCAN_PREDICATE_DIRECT_STATUS_ALL_TRUE_APP_MODE,
+                "partner": "cupy",
+                "partition_cell_factor": float(tested["factor"]),
+                "tested_point_count": int(tested["point_count"]),
+                "when": (
+                    "explicit all-predicate fast path for rows whose threshold predicate is known "
+                    "or measured to be all true"
+                ),
+                "all_predicate_fast_path_required": True,
+                "mixed_predicate_fail_closed": True,
+                "mixed_predicate_fallback_route": RT_DBSCAN_GROUPED_STREAM_NUMBA_APP_MODE,
+                "border_assignment_policy": "not_needed_all_predicate_true",
+                "border_assignment_policy_status": (
+                    "mixed predicates are rejected instead of using the current lowest-id border policy"
+                ),
+                "evidence_refs": (
+                    "Goal4158",
+                    "Goal4159",
+                    "Goal4160",
+                    "Goal4162",
+                ),
+            }
             direct_option = {
                 "mode": RT_DBSCAN_DIRECT_STATUS_APP_MODE,
                 "predicate_direct_status_candidate_mode": RT_DBSCAN_PREDICATE_DIRECT_STATUS_APP_MODE,
@@ -313,7 +312,8 @@ def explain_rt_dbscan_explicit_route_choice(
                     }
                 )
             direct_options.append(direct_option)
-        options = direct_options + options
+            all_true_options.append(all_true_option)
+        options = direct_options + all_true_options + options
     elif repeated:
         options.append(
             {

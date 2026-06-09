@@ -6,17 +6,18 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4139.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4168.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
-    "Goal4139 refreshes current benchmark route decisions after the Goal4074-4138 "
+    "Goal4168 refreshes current benchmark route decisions after the Goal4074-4167 "
     "RT-DBSCAN grouped-union bottleneck, partition-summary feasibility, host-work "
     "skip, non-skip active pair stream, device partition-key decode, and unordered "
     "non-skip stream chain, plus direct device status union and route-level direct-status "
     "comparison, prepared direct-status replay, explicit app-mode smoke, shape-dependent "
     "repeated app-route timing, explicit partition-cell-factor route sweeps, a route-choice "
     "advisor, 131k plus 262k scale probes, a warmed one-shot route probe, and a "
-    "524k and 1M factor-0.25 extension probes. It is "
+    "524k and 1M factor-0.25 extension probes, all-predicate-only mode, mixed "
+    "predicate policy probe, policy-aware semantic signature, and advisor refresh. It is "
     "advisory guidance only: users choose partners "
     "explicitly. It does not authorize release action, public speedup wording, "
     "whole-app acceleration wording, broad RT-core wording, paper-reproduction "
@@ -226,12 +227,19 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "clustered3d 3.430x replay / 3.383x one-shot total, road3d 1.396x / "
             "1.705x, and ngsim_dense 1.790x / 2.432x. This is still "
             "an explicit route choice, not "
-            "automatic tuning."
+            "automatic tuning. Goals4158-4160 then split predicate direct-status into "
+            "a proven all-predicate fast path and a blocked mixed-predicate path. "
+            "Goal4164 exposes the all-predicate path as an explicit fail-closed mode. "
+            "Goal4165 shows no single grouped-stream variant universally explains mixed "
+            "predicate component-size drift; Goal4166 adds a policy-aware semantic "
+            "signature; Goal4167 updates the advisor so counts-only semantics can be "
+            "compared without promoting mixed predicate direct-status."
         ),
         primary_route=(
-            "mixed explicit RT-DBSCAN route: prepared direct-status CuPy with user-selected "
-            "partition cell factor for tested one-shot and repeated component signatures; "
-            "grouped-stream Numba remains the conservative fallback/reference route"
+            "mixed explicit RT-DBSCAN route: grouped-stream Numba for conservative mixed "
+            "predicate rows; explicit all-predicate-only predicate direct-status CuPy mode "
+            "when all predicate flags are known or measured true; prepared direct-status "
+            "CuPy remains an explicit profile-aware candidate under policy-aware contracts"
         ),
         partner_policy="mixed_explicit_user_choice",
         primitive_contract="fixed-radius count-threshold device columns plus grouped stream component labels",
@@ -244,7 +252,11 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "65k/131k/262k/524k/1M packets. For dense NGSIM-like profiles, use the route advisor "
             "because the 65k best factor depends on intent: one-shot total timing ranks 0.25 "
             "first, while repeated replay ranks 0.5 first; 131k/262k/524k/1M rank 0.25 first "
-            "for the tested evidence. Do not auto-select the partner, route, or factor."
+            "for the tested evidence. For all-predicate rows, the explicit all-true mode "
+            "fails closed if the runtime does not observe the fast path. For mixed predicate "
+            "rows, choose a policy-aware semantic contract explicitly; counts-only semantics "
+            "can pass, but Goal4165 does not justify broad mixed direct-status promotion. "
+            "Do not auto-select the partner, route, factor, or border policy."
         ),
         rejected_or_unpromoted_candidates=(
             "blocked grouped stream candidate from Goal3936",
@@ -262,15 +274,20 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "automatic one-shot route promotion after Goal4130 warmed one-shot evidence",
             "universal factor sweep claim after Goal4134 factor-0.25-only 524k extension",
             "universal factor sweep claim after Goal4138 factor-0.25-only 1M extension",
+            "mixed predicate direct-status broad promotion after Goal4165 policy-variant probe",
+            "component-size signature as the only mixed-predicate semantic contract after Goal4166",
         ),
         next_runtime_action=(
-            "keep the user-visible profile/reuse advisor scale-aware and continue with either one-shot "
-            "prepare-cost reduction or broader profile coverage beyond the current 65k/131k/262k/524k/1M packet. "
+            "keep the user-visible profile/reuse advisor scale-aware and policy-aware; next serious runtime work is "
+            "either one-shot prepare-cost reduction, broader profile coverage beyond the current 65k/131k/262k/524k/1M packet, "
+            "or a generic border-assignment policy primitive if mixed-predicate component-size distributions must be contractual. "
             "Goal4088, Goal4093, Goal4096, Goal4100, Goal4104, Goal4105, Goal4108, Goal4109, "
-            "Goal4114, Goal4116, Goal4117, Goal4121, Goal4122, Goal4126, Goal4130, Goal4134, and Goal4138 prove "
+            "Goal4114, Goal4116, Goal4117, Goal4121, Goal4122, Goal4126, Goal4130, Goal4134, Goal4138, "
+            "Goal4158, Goal4159, Goal4164, Goal4165, Goal4166, and Goal4167 prove "
             "producer-side cleanup, active-pair materialization reduction, device-resident "
             "key decoding, explicit unordered set-stream contracts, and direct status "
-            "consumption matter, but hidden factor selection and universal default promotion remain blocked"
+            "consumption matter, but hidden factor selection, hidden border-policy selection, "
+            "and universal default promotion remain blocked"
         ),
         evidence_refs=(
             "Goal3758",
@@ -310,6 +327,13 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4130",
             "Goal4134",
             "Goal4138",
+            "Goal4158",
+            "Goal4159",
+            "Goal4160",
+            "Goal4164",
+            "Goal4165",
+            "Goal4166",
+            "Goal4167",
         ),
         pod_needed_next=False,
     ),
