@@ -34,6 +34,11 @@ class Goal4176DeclaredRtDbscanAllItemsDirectStatusRefactorTest(unittest.TestCase
         self.assertIn('"uses_generic_all_items_direct_status_signature": True', source)
         self.assertIn('"neighbor_count_policy": "not_materialized_all_items_declared_predicate_true"', source)
         self.assertIn(
+            '"not_materialized_all_items_declared_predicate_true"\n'
+            "                    if use_declared_all_predicate",
+            source,
+        )
+        self.assertIn(
             '"generic_all_items_direct_status_component_signature_wrapped_as_all_predicate_signature"',
             source,
         )

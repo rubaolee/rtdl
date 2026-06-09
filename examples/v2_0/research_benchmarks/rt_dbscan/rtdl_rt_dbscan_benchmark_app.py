@@ -2076,7 +2076,11 @@ def run_rt_dbscan_benchmark(
                 "direct_status_convergence_mode_user_selection": direct_status_convergence_mode,
                 "direct_status_convergence_mode_default_route_changed": False,
                 "automatic_convergence_mode_selection_authorized": False,
-                "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+                "neighbor_count_policy": (
+                    "not_materialized_all_items_declared_predicate_true"
+                    if use_declared_all_predicate
+                    else "threshold_capped_at_min_neighbors_not_exact_full_degree"
+                ),
                 "threshold_metadata": threshold_metadata,
                 "prepared_predicate_direct_status_sec": prepared_predicate_direct_status_sec,
                 "predicate_direct_status_signature_sec": timing_breakdown_sec["predicate_direct_status_signature_sec"],

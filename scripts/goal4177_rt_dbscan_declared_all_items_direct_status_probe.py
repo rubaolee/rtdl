@@ -165,47 +165,45 @@ def run(
     seed: int,
 ) -> dict[str, Any]:
     print("GOAL4177_PROBE_START", time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), flush=True)
-    warmup_row = _run_route(
-        label="warmup_declared_all_items_direct_status",
-        mode=RT_DBSCAN_DECLARED_ALL_TRUE_DIRECT_STATUS_APP_MODE,
-        dataset=dataset,
-        point_count=warmup_point_count,
-        partition_cell_factor=partition_cell_factor,
-        repeat=1,
-        warmup=0,
-        seed=seed,
-    )
+    route_specs = [
+        (
+            "current_grouped_stream_numba",
+            RT_DBSCAN_GROUPED_STREAM_NUMBA_APP_MODE,
+        ),
+        (
+            "measured_alltrue_predicate_direct_status",
+            RT_DBSCAN_PREDICATE_DIRECT_STATUS_ALL_TRUE_APP_MODE,
+        ),
+        (
+            "declared_all_items_direct_status",
+            RT_DBSCAN_DECLARED_ALL_TRUE_DIRECT_STATUS_APP_MODE,
+        ),
+    ]
+    warmup_rows = [
+        _run_route(
+            label=f"warmup_{label}",
+            mode=mode,
+            dataset=dataset,
+            point_count=warmup_point_count,
+            partition_cell_factor=partition_cell_factor,
+            repeat=1,
+            warmup=0,
+            seed=seed,
+        )
+        for label, mode in route_specs
+    ]
     rows = [
         _run_route(
-            label="current_grouped_stream_numba",
-            mode=RT_DBSCAN_GROUPED_STREAM_NUMBA_APP_MODE,
+            label=label,
+            mode=mode,
             dataset=dataset,
             point_count=point_count,
             partition_cell_factor=partition_cell_factor,
             repeat=repeat,
             warmup=warmup,
             seed=seed,
-        ),
-        _run_route(
-            label="measured_alltrue_predicate_direct_status",
-            mode=RT_DBSCAN_PREDICATE_DIRECT_STATUS_ALL_TRUE_APP_MODE,
-            dataset=dataset,
-            point_count=point_count,
-            partition_cell_factor=partition_cell_factor,
-            repeat=repeat,
-            warmup=warmup,
-            seed=seed,
-        ),
-        _run_route(
-            label="declared_all_items_direct_status",
-            mode=RT_DBSCAN_DECLARED_ALL_TRUE_DIRECT_STATUS_APP_MODE,
-            dataset=dataset,
-            point_count=point_count,
-            partition_cell_factor=partition_cell_factor,
-            repeat=repeat,
-            warmup=warmup,
-            seed=seed,
-        ),
+        )
+        for label, mode in route_specs
     ]
     reference = rows[0]["signature"]
     current_elapsed = float(rows[0]["elapsed_sec"])
@@ -228,6 +226,7 @@ def run(
         "partition_cell_factor": float(partition_cell_factor),
         "repeat": int(repeat),
         "warmup": int(warmup),
+        "warmup_policy": "per_route_small_input_warmup_before_large_measurement",
         "seed": int(seed),
         "declared_speedup_vs_current_elapsed": current_elapsed / max(declared_elapsed, 1.0e-12),
         "declared_route_uses_generic_all_items_direct_status_signature": bool(
@@ -248,7 +247,7 @@ def run(
         "whole_app_speedup_claim_authorized": False,
         "true_zero_copy_claim_authorized": False,
         "native_abi_added": False,
-        "warmup_row": warmup_row,
+        "warmup_rows": warmup_rows,
         "rows": rows,
     }
     output.parent.mkdir(parents=True, exist_ok=True)

@@ -14,30 +14,38 @@ class Goal4175CurrentRouteDecisionAfterDeclaredRtDbscanTest(unittest.TestCase):
     def test_route_registry_version_and_summary_include_declared_evidence(self) -> None:
         self.assertEqual(
             rt.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION,
-            "rtdl.v2_10.current_benchmark_route_decisions.goal4175.v1",
+            "rtdl.v2_10.current_benchmark_route_decisions.goal4179.v1",
         )
         summary = rt.summarize_current_benchmark_route_decisions()
         validation = rt.validate_current_benchmark_route_decisions()
-        self.assertEqual(summary["version"], "rtdl.v2_10.current_benchmark_route_decisions.goal4175.v1")
-        self.assertEqual(validation["version"], "rtdl.v2_10.current_benchmark_route_decisions.goal4175.v1")
+        self.assertEqual(summary["version"], "rtdl.v2_10.current_benchmark_route_decisions.goal4179.v1")
+        self.assertEqual(validation["version"], "rtdl.v2_10.current_benchmark_route_decisions.goal4179.v1")
         self.assertEqual(validation["status"], "accept")
         self.assertEqual(validation["errors"], ())
 
     def test_rtdbscan_decision_preserves_explicit_declared_route_boundary(self) -> None:
         route = rt.explain_current_benchmark_route("rt_dbscan")
-        self.assertEqual(route["version"], "rtdl.v2_10.current_benchmark_route_decisions.goal4175.v1")
+        self.assertEqual(route["version"], "rtdl.v2_10.current_benchmark_route_decisions.goal4179.v1")
         self.assertIn("Goal4173", route["current_reader_decision"])
+        self.assertIn("Goal4176", route["current_reader_decision"])
+        self.assertIn("Goal4177", route["current_reader_decision"])
         self.assertIn("caller-declared external-proof", route["current_reader_decision"])
+        self.assertIn("generic all-items direct-status", route["current_reader_decision"])
+        self.assertIn("post-refactor pod timing", route["current_reader_decision"])
         self.assertIn("external proof", route["user_choice_guidance"])
+        self.assertIn("generic all-items", route["user_choice_guidance"])
+        self.assertIn("synthetic predicate columns", route["user_choice_guidance"])
+        self.assertIn("Until Goal4177", route["user_choice_guidance"])
         self.assertIn("does not promote hidden selection", route["user_choice_guidance"])
         self.assertIn("mixed explicit RT-DBSCAN route", route["primary_route"])
+        self.assertIn("caller-declared all-items", route["primary_route"])
         self.assertTrue(
             any(
                 "mixed predicate direct-status broad promotion after Goal4165" in candidate
                 for candidate in route["rejected_or_unpromoted_candidates"]
             )
         )
-        for ref in ("Goal4169", "Goal4172", "Goal4173", "Goal4174"):
+        for ref in ("Goal4169", "Goal4172", "Goal4173", "Goal4174", "Goal4176", "Goal4177"):
             self.assertIn(ref, route["evidence_refs"])
         self.assertFalse(route["automatic_partner_selection_authorized"])
         self.assertFalse(route["release_authorized"])

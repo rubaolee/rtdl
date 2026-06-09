@@ -31,6 +31,10 @@ class Goal4177RtDbscanDeclaredAllItemsDirectStatusProbeRunnerTest(unittest.TestC
         ):
             self.assertIn(marker, source)
         self.assertGreaterEqual(source.count("flush=True"), 4)
+        self.assertIn('"warmup_policy": "per_route_small_input_warmup_before_large_measurement"', source)
+        self.assertIn('"warmup_rows": warmup_rows', source)
+        self.assertIn('label=f"warmup_{label}"', source)
+        self.assertIn("for label, mode in route_specs", source)
 
     def test_runner_records_refactor_boundaries_and_claim_blocks(self) -> None:
         source = RUNNER.read_text(encoding="utf-8")

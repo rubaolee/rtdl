@@ -6,10 +6,10 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4175.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4179.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
-    "Goal4175 refreshes current benchmark route decisions after the Goal4074-4175 "
+    "Goal4179 refreshes current benchmark route decisions after the Goal4074-4177 "
     "RT-DBSCAN grouped-union bottleneck, partition-summary feasibility, host-work "
     "skip, non-skip active pair stream, device partition-key decode, and unordered "
     "non-skip stream chain, plus direct device status union and route-level direct-status "
@@ -18,8 +18,9 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "advisor, 131k plus 262k scale probes, a warmed one-shot route probe, and a "
     "524k and 1M factor-0.25 extension probes, all-predicate-only mode, mixed "
     "predicate policy probe, policy-aware semantic signature, advisor refresh, and a "
-    "road3d 2M all-predicate scale probe, and the Goal4172-4174 declared "
-    "external-proof route evidence. It is "
+    "road3d 2M all-predicate scale probe, Goal4172-4174 declared "
+    "external-proof route evidence, the Goal4176 all-items direct-status "
+    "refactor, and the Goal4177 pending large-scale timing harness. It is "
     "advisory guidance only: users choose partners "
     "explicitly. It does not authorize release action, public speedup wording, "
     "whole-app acceleration wording, broad RT-core wording, paper-reproduction "
@@ -242,13 +243,20 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "2,097,152 points: it preserves the same signature, skips RT count-threshold "
             "execution, records no RT-core claim for the declared subpath, and improves "
             "elapsed time by 1.662x over the current grouped-stream route and 1.211x over "
-            "the measured all-true wrapper under warmed-runtime timing."
+            "the measured all-true wrapper under warmed-runtime timing. Goal4176 then "
+            "removes the synthetic predicate-column layer from that declared route: it now "
+            "uses the generic all-items direct-status component-signature primitive and "
+            "wraps the result at the RT-DBSCAN app boundary. Goal4177 adds the timing "
+            "harness that must run on pod hardware before replacing the Goal4173 timing "
+            "numbers with post-refactor pod timing evidence."
         ),
         primary_route=(
             "mixed explicit RT-DBSCAN route: grouped-stream Numba for conservative mixed "
             "predicate rows; explicit all-predicate-only predicate direct-status CuPy mode "
-            "when all predicate flags are known or measured true; prepared direct-status "
-            "CuPy remains an explicit profile-aware candidate under policy-aware contracts"
+            "when all predicate flags are measured true; explicit caller-declared all-items "
+            "direct-status CuPy mode when all predicate flags are externally proven true; "
+            "prepared direct-status CuPy remains an explicit profile-aware candidate under "
+            "policy-aware contracts"
         ),
         partner_policy="mixed_explicit_user_choice",
         primitive_contract="fixed-radius count-threshold device columns plus grouped stream component labels",
@@ -266,8 +274,12 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4169 records road3d 2M evidence for that wrapper. If the caller already "
             "has an external proof that all predicate flags are true, Goal4173 records "
             "a declared route that skips predicate measurement and improves the 2M "
-            "elapsed time, but it still requires explicit user selection and external "
-            "proof and does not promote hidden selection. "
+            "elapsed time. Goal4176 refactors that route to use a generic all-items "
+            "direct-status component signature instead of synthetic predicate columns, "
+            "and Goal4177 provides the post-refactor pod timing harness. Until Goal4177 "
+            "pod timing exists, keep the Goal4173 timing numbers bounded to the older "
+            "implementation. The declared route still requires explicit user selection "
+            "and external proof and does not promote hidden selection. "
             "For mixed predicate "
             "rows, choose a policy-aware semantic contract explicitly; counts-only semantics "
             "can pass, but Goal4165 does not justify broad mixed direct-status promotion. "
@@ -294,11 +306,11 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
         ),
         next_runtime_action=(
             "keep the user-visible profile/reuse advisor scale-aware and policy-aware; next serious runtime work is "
-            "either one-shot prepare-cost reduction, broader profile coverage beyond the current 65k/131k/262k/524k/1M packet, "
+            "either Goal4177 post-refactor declared-route pod timing, one-shot prepare-cost reduction, broader profile coverage beyond the current 65k/131k/262k/524k/1M packet, "
             "or a generic border-assignment policy primitive if mixed-predicate component-size distributions must be contractual. "
             "Goal4088, Goal4093, Goal4096, Goal4100, Goal4104, Goal4105, Goal4108, Goal4109, "
             "Goal4114, Goal4116, Goal4117, Goal4121, Goal4122, Goal4126, Goal4130, Goal4134, Goal4138, "
-            "Goal4158, Goal4159, Goal4164, Goal4165, Goal4166, Goal4167, and Goal4173 prove "
+            "Goal4158, Goal4159, Goal4164, Goal4165, Goal4166, Goal4167, Goal4173, Goal4176, and Goal4177 prove "
             "producer-side cleanup, active-pair materialization reduction, device-resident "
             "key decoding, explicit unordered set-stream contracts, and direct status "
             "consumption matter, but hidden factor selection, hidden border-policy selection, "
@@ -353,6 +365,8 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4172",
             "Goal4173",
             "Goal4174",
+            "Goal4176",
+            "Goal4177",
         ),
         pod_needed_next=False,
     ),
