@@ -546,6 +546,7 @@ def _run_partner_exact_force_summary(
     measured = [row for row in runs if not bool(row["is_warmup"])]
     if not measured:
         raise RuntimeError("partner exact-force repeat produced no measured rows")
+    measured_elapsed_sec = tuple(float(row["elapsed_sec"]) for row in measured)
     assert final_result is not None
     summary_start = time.perf_counter()
     force_columns = final_result["columns"]
@@ -563,7 +564,9 @@ def _run_partner_exact_force_summary(
                 "repeat": int(query_repeat),
                 "warmup": int(warmup),
                 "measured_iterations": len(measured),
-                "median_force_kernel_sec": float(statistics.median(float(row["elapsed_sec"]) for row in measured)),
+                "force_kernel_runs_sec": measured_elapsed_sec,
+                "force_kernel_total_sec": float(sum(measured_elapsed_sec)),
+                "median_force_kernel_sec": float(statistics.median(measured_elapsed_sec)),
             },
         }
     )
