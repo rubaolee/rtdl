@@ -4,11 +4,11 @@ from dataclasses import dataclass
 from typing import Any
 
 
-CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION = "rtdl.v2_10.current_major_performance_targets.goal4224.v1"
+CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION = "rtdl.v2_10.current_major_performance_targets.goal4231.v1"
 CURRENT_MAJOR_PERFORMANCE_TARGET_STATUS = "internal_direction_map_not_release_authorization"
 CURRENT_MAJOR_PERFORMANCE_TARGET_CLAIM_BOUNDARY = (
-    "Goal4224 summarizes the major performance direction after Goal4215, "
-    "Goal4218, Goal4222, and Goal4223. It is a route/runtime planning map, not "
+    "Goal4231 summarizes the major performance direction after Goal4215, "
+    "Goal4218, Goal4222, Goal4223, and Goal4230. It is a route/runtime planning map, not "
     "a release packet, not "
     "a public speedup claim, not a whole-app acceleration claim, not a broad "
     "RT-core claim, not a paper-reproduction claim, not a true-zero-copy claim, "
@@ -108,6 +108,22 @@ CURRENT_MAJOR_PERFORMANCE_TARGETS: tuple[CurrentMajorPerformanceTarget, ...] = (
         pod_needed_next=False,
     ),
     CurrentMajorPerformanceTarget(
+        target_id="ten_app_measurement_adequacy_closure",
+        theme="second-level timing evidence for all promoted benchmark apps",
+        status="done_internal_evidence",
+        current_reading=(
+            "Goal4230 reconciles Goal4185/4186/4189/4225/4228/4229 and shows every "
+            "promoted benchmark app has at least one second-level measurement source "
+            "above the one-second hot-path or representative-profile floor."
+        ),
+        next_action=(
+            "Use this as internal measurement-readiness evidence only. A public release "
+            "still needs exact claim wording, docs audit, and multi-AI release consensus."
+        ),
+        evidence_refs=("Goal4185", "Goal4186", "Goal4189", "Goal4225", "Goal4228", "Goal4229", "Goal4230"),
+        pod_needed_next=False,
+    ),
+    CurrentMajorPerformanceTarget(
         target_id="rayjoin_contract_split_route_policy",
         theme="explicit mixed-route policy for RayJoin-style contracts",
         status="done_internal_evidence",
@@ -163,16 +179,17 @@ CURRENT_MAJOR_PERFORMANCE_TARGETS: tuple[CurrentMajorPerformanceTarget, ...] = (
         theme="release-grade long-run and cross-profile evidence",
         status="needs_broader_evidence",
         current_reading=(
-            "The current RTX 4000 Ada evidence is strong internal route-policy evidence, "
-            "but it is not a formal long-run release matrix across all benchmark apps, "
-            "hardware classes, and claim wording."
+            "Goal4230 closes the basic ten-app measurement-adequacy floor on RTX 4000 Ada, "
+            "but it is still not a formal public release matrix across claim wording, "
+            "docs, consensus, and hardware classes."
         ),
         next_action=(
-            "Before any formal major release, run an explicit release-grade packet with "
-            "longer per-row timing, exact artifact provenance, docs audit, and fresh "
-            "multi-AI consensus over the exact public claims."
+            "Before any formal major release, assemble an explicit release packet with "
+            "exact artifact provenance, docs audit, and fresh multi-AI consensus over the "
+            "exact public claims; run additional long timing only if the release claim "
+            "requires a public performance table."
         ),
-        evidence_refs=("Goal4215", "Goal4222", "Goal4223"),
+        evidence_refs=("Goal4215", "Goal4222", "Goal4223", "Goal4230"),
         pod_needed_next=True,
     ),
     CurrentMajorPerformanceTarget(
