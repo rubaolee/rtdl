@@ -51,6 +51,10 @@ Artifact:
 Stdout/progress log:
 `docs/reports/goal4074_rt_dbscan_grouped_stream_bottleneck_refresh_pod.stdout.txt`
 
+Traceability note: the stdout file records a failed pre-probe on the same
+harness, not the successful run that emitted the JSON artifact. The successful
+stdout was not retained; the JSON artifact remains the measured pod evidence.
+
 Environment:
 
 - GPU: NVIDIA RTX 4000 Ada Generation

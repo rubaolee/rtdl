@@ -1,3 +1,10 @@
+TRACEABILITY NOTE (2026-06-09): this file records a failed pre-probe stdout log, not
+the successful run that produced
+`docs/reports/goal4074_rt_dbscan_grouped_stream_bottleneck_refresh_pod.json`.
+The successful stdout was not retained. Use the JSON artifact as the measured
+pod evidence for source commit `183c80d3`; do not cite this stdout file as a
+successful execution transcript.
+
 BOTTLENECK_START clustered3d_65536 recommended_unblocked optix_rt_core_grouped_stream_numba_column_signature_3d {}
 Traceback (most recent call last):
   File "/root/goal3992_exttelemetry.nANovw/repo/scripts/goal4074_rt_dbscan_grouped_stream_bottleneck_refresh.py", line 220, in <module>

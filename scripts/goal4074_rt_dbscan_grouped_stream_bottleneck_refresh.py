@@ -95,7 +95,7 @@ def _run_variant(
         radius=None,
         min_neighbors=None,
         seed=20260519,
-        partner="cupy",
+        partner="numba",
         include_rows=False,
         validate=False,
         repeat=repeat,
