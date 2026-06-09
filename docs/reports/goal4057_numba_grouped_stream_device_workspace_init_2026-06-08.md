@@ -36,8 +36,9 @@ column-signature probe used for Goal4056 confirmed:
 - every row reported `numba_workspace_host_reset_copy_used: false`;
 - mixed-label thresholds 64 and 128 still used
   `numba_label_count_and_flag_count_label_columns`;
-- elapsed time improved versus the Goal4056 same-pod baseline by about
-  1.13x to 1.17x on this small diagnostic probe.
+- after a same-protocol baseline rerun requested by external review, elapsed
+  time improved versus the Goal4056 same-pod baseline by about 1.07x to 1.09x
+  on this small diagnostic probe.
 
 The bounded artifact is
 `docs/reports/goal4057_numba_grouped_stream_device_workspace_init_pod_probe.json`.

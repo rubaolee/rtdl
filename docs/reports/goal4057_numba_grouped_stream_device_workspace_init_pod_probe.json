@@ -12,7 +12,7 @@
   },
   "probe_command": "python3 examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode optix_rt_core_grouped_stream_numba_column_signature_3d --dataset road3d --point-count 4096 --min-neighbors <threshold> --repeat 5 --warmup 2 --no-validation",
   "baseline_commit": "c36f7575",
-  "baseline_source": "Goal4056 threshold sweep over the same pod and app mode",
+  "baseline_source": "Goal4056 commit c36f7575 rerun on the same pod with the same repeat=5/warmup=2 protocol after Claude review flagged the original uneven comparison",
   "rows": [
     {
       "threshold": 16,
@@ -23,8 +23,8 @@
       "elapsed_sec": 0.002416864037513733,
       "adapter_run_sec": 0.0010615140199661255,
       "column_signature_sec": 0.0013433396816253662,
-      "goal4056_elapsed_sec": 0.002728339284658432,
-      "vs_goal4056_speedup": 1.1288773715314713
+      "goal4056_elapsed_sec": 0.0026018917560577393,
+      "vs_goal4056_speedup": 1.076555836229957
     },
     {
       "threshold": 64,
@@ -35,8 +35,8 @@
       "elapsed_sec": 0.0025475919246673584,
       "adapter_run_sec": 0.001161813735961914,
       "column_signature_sec": 0.0013551265001296997,
-      "goal4056_elapsed_sec": 0.002953849732875824,
-      "vs_goal4056_speedup": 1.159470722568467
+      "goal4056_elapsed_sec": 0.0027379319071769714,
+      "vs_goal4056_speedup": 1.0747101843395918
     },
     {
       "threshold": 128,
@@ -47,8 +47,8 @@
       "elapsed_sec": 0.002614744007587433,
       "adapter_run_sec": 0.0012476369738578796,
       "column_signature_sec": 0.0013272911310195923,
-      "goal4056_elapsed_sec": 0.0030523203313350677,
-      "vs_goal4056_speedup": 1.1673466918846094
+      "goal4056_elapsed_sec": 0.002853669226169586,
+      "vs_goal4056_speedup": 1.0913778444812056
     }
   ],
   "all_rows_avoid_host_workspace_reset_copy": true,
