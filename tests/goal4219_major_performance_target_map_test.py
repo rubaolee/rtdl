@@ -7,7 +7,7 @@ import rtdsl as rt
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REPORT = ROOT / "docs" / "reports" / "goal4231_major_performance_target_map_after_measurement_closure_2026-06-09.md"
+REPORT = ROOT / "docs" / "reports" / "goal4236_major_performance_target_map_after_current_head_rehearsal_2026-06-09.md"
 
 
 class Goal4219MajorPerformanceTargetMapTest(unittest.TestCase):
@@ -15,7 +15,7 @@ class Goal4219MajorPerformanceTargetMapTest(unittest.TestCase):
         self.assertTrue(REPORT.is_file())
         self.assertEqual(
             rt.CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION,
-            "rtdl.v2_10.current_major_performance_targets.goal4231.v1",
+            "rtdl.v2_10.current_major_performance_targets.goal4236.v1",
         )
         self.assertTrue(callable(rt.current_major_performance_targets))
         self.assertTrue(callable(rt.summarize_current_major_performance_targets))
@@ -40,7 +40,7 @@ class Goal4219MajorPerformanceTargetMapTest(unittest.TestCase):
         rows = {row["target_id"]: row for row in rt.current_major_performance_targets()}
         self.assertEqual(
             rows["ten_app_current_route_health"]["evidence_refs"],
-            ("Goal4215", "Goal4216", "Goal4217"),
+            ("Goal4215", "Goal4216", "Goal4217", "Goal4225", "Goal4235"),
         )
         self.assertEqual(rows["ten_app_measurement_adequacy_closure"]["target_status"], "done_internal_evidence")
         self.assertIn("Goal4230", rows["ten_app_measurement_adequacy_closure"]["evidence_refs"])
