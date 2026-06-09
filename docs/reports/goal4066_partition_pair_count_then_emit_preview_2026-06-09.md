@@ -49,6 +49,8 @@ Added:
 
 - `tests/goal4066_partition_pair_count_then_emit_preview_test.py`.
 - `scripts/goal4066_pair_count_then_emit_timing.py`.
+- `docs/reports/goal4066_pair_count_then_emit_timing_pod.json`.
+- `docs/reports/goal4066_pair_count_then_emit_timing_pod.stdout.txt`.
 
 When CuPy is available, the test compares `device_count_then_emit` with
 `device_bounded_offsets` on the same tiny point cloud, validates the summary
@@ -60,3 +62,18 @@ count-then-emit mode. The expected success criterion is not necessarily lower
 runtime, because the new path intentionally performs two device passes. The key
 runtime-design question is whether exact capacity substantially reduces memory
 pressure while preserving the same pair stream.
+
+Pod evidence at source commit `1f86bcd1` on RTX 4000 Ada:
+
+| Profile | Points | Capacity Reduction | Time Ratio Count/Bounded Median |
+| --- | ---: | ---: | ---: |
+| clustered3d_1024 | 1024 | 111.50x | 1.035x |
+| road3d_1024 | 1024 | 657.62x | 1.059x |
+| clustered3d_4096 | 4096 | 70.19x | 1.027x |
+| road3d_4096 | 4096 | 650.91x | 1.041x |
+| clustered3d_8192 | 8192 | 61.56x | 0.999x |
+| road3d_8192 | 8192 | 652.10x | 0.983x |
+
+All six rows preserve the same pair stream and closed claim flags. The result is
+therefore a memory-pressure win with near-parity timing, not a broad speedup
+claim.
