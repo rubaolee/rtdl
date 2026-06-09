@@ -985,10 +985,12 @@ def run_rt_dbscan_benchmark(
         "host",
         "device_bounded_offsets",
         "device_count_then_emit",
+        "device_count_then_emit_non_skip",
     }:
         raise ValueError(
             "partition_pair_enumeration must be 'mode_default', 'host', "
-            "'device_bounded_offsets', or 'device_count_then_emit'"
+            "'device_bounded_offsets', 'device_count_then_emit', or "
+            "'device_count_then_emit_non_skip'"
         )
     partition_pair_enumeration_kwargs = (
         {}
@@ -2067,11 +2069,18 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--enable-grouped-union-direct-side-effect", action="store_true")
     parser.add_argument(
         "--partition-pair-enumeration",
-        choices=("mode_default", "host", "device_bounded_offsets", "device_count_then_emit"),
+        choices=(
+            "mode_default",
+            "host",
+            "device_bounded_offsets",
+            "device_count_then_emit",
+            "device_count_then_emit_non_skip",
+        ),
         default="mode_default",
         help=(
             "Only for partition-convergence preview modes: keep the mode default or explicitly "
-            "select host, device bounded-offsets, or device count-then-emit pair enumeration."
+            "select host, device bounded-offsets, device count-then-emit, or non-skip "
+            "device count-then-emit pair enumeration."
         ),
     )
     parser.add_argument("--repeat", type=int, default=1)
