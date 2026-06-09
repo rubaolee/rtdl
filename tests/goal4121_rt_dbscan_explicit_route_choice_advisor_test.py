@@ -30,6 +30,7 @@ class Goal4121RtDbscanExplicitRouteChoiceAdvisorTest(unittest.TestCase):
                 packet = explain_rt_dbscan_explicit_route_choice(
                     dataset,
                     repeated_component_signature=True,
+                    point_count=65536,
                 )
                 first = packet["options"][0]
 
@@ -41,6 +42,7 @@ class Goal4121RtDbscanExplicitRouteChoiceAdvisorTest(unittest.TestCase):
                 self.assertEqual(RT_DBSCAN_DIRECT_STATUS_APP_MODE, first["mode"])
                 self.assertEqual("cupy", first["partner"])
                 self.assertEqual(factor, first["partition_cell_factor"])
+                self.assertEqual(65536, first["tested_point_count"])
                 self.assertIn("Goal4117", first["evidence_refs"])
                 self.assertFalse(packet["release_authorized"])
                 self.assertFalse(packet["public_speedup_claim_authorized"])
@@ -49,6 +51,7 @@ class Goal4121RtDbscanExplicitRouteChoiceAdvisorTest(unittest.TestCase):
         packet = explain_rt_dbscan_explicit_route_choice(
             "ngsim_dense",
             repeated_component_signature=False,
+            point_count=65536,
         )
         first = packet["options"][0]
 
@@ -63,7 +66,25 @@ class Goal4121RtDbscanExplicitRouteChoiceAdvisorTest(unittest.TestCase):
             explain_rt_dbscan_explicit_route_choice(
                 "new_profile",
                 repeated_component_signature=True,
+                point_count=65536,
             )
+
+    def test_ngsim_scale_aware_options_rank_closest_evidence_first(self) -> None:
+        packet = explain_rt_dbscan_explicit_route_choice(
+            "ngsim_dense",
+            repeated_component_signature=True,
+            point_count=131072,
+        )
+        first = packet["options"][0]
+        second = packet["options"][1]
+
+        self.assertEqual(RT_DBSCAN_DIRECT_STATUS_APP_MODE, first["mode"])
+        self.assertEqual(0.25, first["partition_cell_factor"])
+        self.assertEqual(131072, first["tested_point_count"])
+        self.assertIn("Goal4122", first["evidence_refs"])
+        self.assertEqual(0.5, second["partition_cell_factor"])
+        self.assertEqual(65536, second["tested_point_count"])
+        self.assertFalse(packet["automatic_partition_cell_factor_selection_authorized"])
 
     def test_cli_explain_route_choice_prints_advisory_without_running(self) -> None:
         completed = subprocess.run(
@@ -72,6 +93,8 @@ class Goal4121RtDbscanExplicitRouteChoiceAdvisorTest(unittest.TestCase):
                 str(APP),
                 "--dataset",
                 "ngsim_dense",
+                "--point-count",
+                "131072",
                 "--explain-route-choice",
                 "--repeated-component-signature",
             ],
@@ -84,7 +107,8 @@ class Goal4121RtDbscanExplicitRouteChoiceAdvisorTest(unittest.TestCase):
 
         self.assertEqual("advisory_only_no_dispatch", packet["status"])
         self.assertEqual(RT_DBSCAN_DIRECT_STATUS_APP_MODE, packet["options"][0]["mode"])
-        self.assertEqual(0.5, packet["options"][0]["partition_cell_factor"])
+        self.assertEqual(0.25, packet["options"][0]["partition_cell_factor"])
+        self.assertEqual(131072, packet["options"][0]["tested_point_count"])
         self.assertFalse(packet["automatic_dispatch_authorized"])
         self.assertFalse(packet["automatic_partner_selection_authorized"])
 

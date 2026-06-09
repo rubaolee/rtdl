@@ -14,7 +14,7 @@ class Goal4115CurrentRouteDecisionAfterShapeDependentDirectStatusTest(unittest.T
     def test_rtdbscan_route_records_shape_dependent_direct_status_guidance(self) -> None:
         route = rt.explain_current_benchmark_route("rt_dbscan")
 
-        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4118.v1", route["version"])
+        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4123.v1", route["version"])
         self.assertIn("Goal4114", route["current_reader_decision"])
         self.assertIn("1.796x", route["current_reader_decision"])
         self.assertIn("1.439x", route["current_reader_decision"])
@@ -42,7 +42,7 @@ class Goal4115CurrentRouteDecisionAfterShapeDependentDirectStatusTest(unittest.T
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual((), validation["errors"])
-        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4118.v1", summary["version"])
+        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4123.v1", summary["version"])
         self.assertEqual(10, summary["row_count"])
         self.assertFalse(summary["automatic_partner_selection_authorized"])
         self.assertFalse(summary["release_authorized"])

@@ -30,10 +30,19 @@ DEFAULT_GROUPED_UNION_QUERY_BLOCK_SIZE = 8192
 RT_DBSCAN_GROUPED_STREAM_TIMING_BREAKDOWN_SCHEMA = "rt_dbscan_grouped_stream_host_overhead_breakdown_v1"
 DIRECTED_ADJACENCY_INDEX_BYTES = 4
 DIRECTED_ADJACENCY_OFFSET_BYTES = 8
-RT_DBSCAN_TESTED_DIRECT_STATUS_PARTITION_CELL_FACTORS = {
-    "clustered3d": 0.25,
-    "road3d": 0.25,
-    "ngsim_dense": 0.5,
+RT_DBSCAN_TESTED_DIRECT_STATUS_PARTITION_CELL_FACTOR_OPTIONS = {
+    "clustered3d": (
+        {"point_count": 65536, "factor": 0.25, "replay_speedup": 2.961, "evidence_refs": ("Goal4117",)},
+        {"point_count": 131072, "factor": 0.25, "replay_speedup": 3.211, "evidence_refs": ("Goal4122",)},
+    ),
+    "road3d": (
+        {"point_count": 65536, "factor": 0.25, "replay_speedup": 1.866, "evidence_refs": ("Goal4117",)},
+        {"point_count": 131072, "factor": 0.25, "replay_speedup": 1.545, "evidence_refs": ("Goal4122",)},
+    ),
+    "ngsim_dense": (
+        {"point_count": 65536, "factor": 0.5, "replay_speedup": 1.312, "evidence_refs": ("Goal4117",)},
+        {"point_count": 131072, "factor": 0.25, "replay_speedup": 1.399, "evidence_refs": ("Goal4122",)},
+    ),
 }
 RT_DBSCAN_DIRECT_STATUS_APP_MODE = "partner_cupy_prepared_direct_status_union_component_signature_3d"
 RT_DBSCAN_GROUPED_STREAM_NUMBA_APP_MODE = "optix_rt_core_grouped_stream_numba_column_signature_3d"
@@ -95,12 +104,16 @@ def explain_rt_dbscan_explicit_route_choice(
     dataset: str,
     *,
     repeated_component_signature: bool,
+    point_count: int | None = None,
 ) -> dict[str, object]:
     """Explain current explicit RT-DBSCAN route choices without dispatching."""
 
     if dataset not in DEFAULT_DATASET_CONFIG:
         raise ValueError("dataset must be tiny, clustered3d, road3d, or ngsim_dense")
     repeated = bool(repeated_component_signature)
+    resolved_point_count = None if point_count is None else int(point_count)
+    if resolved_point_count is not None and resolved_point_count < 1:
+        raise ValueError("point_count must be positive when provided")
     default_option = {
         "mode": RT_DBSCAN_GROUPED_STREAM_NUMBA_APP_MODE,
         "partner": "numba",
@@ -109,18 +122,26 @@ def explain_rt_dbscan_explicit_route_choice(
         "evidence_refs": ("Goal3859", "Goal3936", "Goal4100", "Goal4115", "Goal4118"),
     }
     options: list[dict[str, object]] = [default_option]
-    if repeated and dataset in RT_DBSCAN_TESTED_DIRECT_STATUS_PARTITION_CELL_FACTORS:
-        factor = RT_DBSCAN_TESTED_DIRECT_STATUS_PARTITION_CELL_FACTORS[dataset]
-        options.insert(
-            0,
-            {
-                "mode": RT_DBSCAN_DIRECT_STATUS_APP_MODE,
-                "partner": "cupy",
-                "partition_cell_factor": factor,
-                "when": "explicit repeated component-signature route over reused point/partition columns",
-                "evidence_refs": ("Goal4116", "Goal4117", "Goal4118"),
-            },
-        )
+    if repeated and dataset in RT_DBSCAN_TESTED_DIRECT_STATUS_PARTITION_CELL_FACTOR_OPTIONS:
+        tested_options = list(RT_DBSCAN_TESTED_DIRECT_STATUS_PARTITION_CELL_FACTOR_OPTIONS[dataset])
+        if resolved_point_count is not None:
+            tested_options.sort(key=lambda row: abs(int(row["point_count"]) - resolved_point_count))
+        else:
+            tested_options.sort(key=lambda row: int(row["point_count"]))
+        direct_options = []
+        for tested in tested_options:
+            direct_options.append(
+                {
+                    "mode": RT_DBSCAN_DIRECT_STATUS_APP_MODE,
+                    "partner": "cupy",
+                    "partition_cell_factor": float(tested["factor"]),
+                    "tested_point_count": int(tested["point_count"]),
+                    "replay_speedup_vs_current": float(tested["replay_speedup"]),
+                    "when": "explicit repeated component-signature route over reused point/partition columns",
+                    "evidence_refs": ("Goal4116", "Goal4118", *tuple(tested["evidence_refs"])),
+                }
+            )
+        options = direct_options + options
     elif repeated:
         options.append(
             {
@@ -135,6 +156,7 @@ def explain_rt_dbscan_explicit_route_choice(
         "adapter": "explain_rt_dbscan_explicit_route_choice",
         "dataset": dataset,
         "repeated_component_signature": repeated,
+        "point_count": resolved_point_count,
         "status": "advisory_only_no_dispatch",
         "user_must_select_route": True,
         "automatic_dispatch_authorized": False,
@@ -2305,6 +2327,7 @@ def main(argv: list[str] | None = None) -> int:
                 explain_rt_dbscan_explicit_route_choice(
                     args.dataset,
                     repeated_component_signature=args.repeated_component_signature,
+                    point_count=args.point_count,
                 ),
                 indent=2,
                 sort_keys=True,

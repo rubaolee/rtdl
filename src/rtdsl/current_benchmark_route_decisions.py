@@ -6,15 +6,16 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4118.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4123.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
-    "Goal4118 refreshes current benchmark route decisions after the Goal4074-4117 "
+    "Goal4123 refreshes current benchmark route decisions after the Goal4074-4122 "
     "RT-DBSCAN grouped-union bottleneck, partition-summary feasibility, host-work "
     "skip, non-skip active pair stream, device partition-key decode, and unordered "
     "non-skip stream chain, plus direct device status union and route-level direct-status "
     "comparison, prepared direct-status replay, explicit app-mode smoke, shape-dependent "
-    "repeated app-route timing, and explicit partition-cell-factor route sweeps. It is "
+    "repeated app-route timing, explicit partition-cell-factor route sweeps, a route-choice "
+    "advisor, and a 131k scale probe. It is "
     "advisory guidance only: users choose partners "
     "explicitly. It does not authorize release action, public speedup wording, "
     "whole-app acceleration wording, broad RT-core wording, paper-reproduction "
@@ -205,7 +206,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "partition-cell-factor choices make the prepared direct-status route faster than the "
             "current repeated route on all three tested profiles: clustered3d uses 0.25 for "
             "2.961x replay speedup, road3d uses 0.25 for 1.866x, and ngsim_dense uses 0.5 "
-            "for 1.312x. This is still an explicit route choice, not automatic tuning."
+            "for 1.312x. Goal4121 adds an advisory-only route explainer. Goal4122 then "
+            "checks 131k scale and shows clustered3d remains best at 0.25 for 3.211x, "
+            "road3d remains best at 0.25 for 1.545x, and ngsim_dense becomes best at "
+            "0.25 for 1.399x. This is still an explicit route choice, not automatic tuning."
         ),
         primary_route=(
             "mixed explicit RT-DBSCAN route: grouped-stream Numba for one-shot/default, "
@@ -217,8 +221,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Use Numba grouped-stream for the current one-shot default. Choose the explicit "
             "CuPy prepared direct-status app mode when the workload reuses the same "
             "point/partition columns for repeated component-signature queries, and set "
-            "`partition_cell_factor` explicitly from tested evidence: 0.25 for clustered/road-like "
-            "profiles and 0.5 for dense NGSIM-like profiles. Do not auto-select the factor."
+            "`partition_cell_factor` explicitly from tested evidence. Use 0.25 for clustered/road-like "
+            "profiles in the tested 65k and 131k packets. For dense NGSIM-like profiles, use "
+            "the route advisor or scale-specific evidence: 0.5 at 65k and 0.25 at 131k. "
+            "Do not auto-select the factor."
         ),
         rejected_or_unpromoted_candidates=(
             "blocked grouped stream candidate from Goal3936",
@@ -235,11 +241,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "automatic partition-cell-factor tuning after Goal4117 explicit factor sweep",
         ),
         next_runtime_action=(
-            "add a user-visible profile/reuse advisor that explains the explicit repeated-route "
-            "cell-factor choice without hidden dispatch, then decide whether the next performance "
-            "target is one-shot prepare-cost reduction or a larger representative-scale packet. "
+            "keep the user-visible profile/reuse advisor scale-aware and continue with either one-shot "
+            "prepare-cost reduction or a larger representative-scale packet beyond 131k. "
             "Goal4088, Goal4093, Goal4096, Goal4100, Goal4104, Goal4105, Goal4108, Goal4109, "
-            "Goal4114, Goal4116, and Goal4117 prove "
+            "Goal4114, Goal4116, Goal4117, Goal4121, and Goal4122 prove "
             "producer-side cleanup, active-pair materialization reduction, device-resident "
             "key decoding, explicit unordered set-stream contracts, and direct status "
             "consumption matter, but hidden factor selection and universal default promotion remain blocked"
@@ -276,6 +281,8 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4114",
             "Goal4116",
             "Goal4117",
+            "Goal4121",
+            "Goal4122",
         ),
         pod_needed_next=False,
     ),
