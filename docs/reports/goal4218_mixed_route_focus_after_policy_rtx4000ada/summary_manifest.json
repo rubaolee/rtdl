@@ -1,0 +1,109 @@
+{
+  "artifact_root": "/root/goal4177.dpBIx4/repo/docs/reports/goal4218_mixed_route_focus_after_policy_rtx4000ada",
+  "claim_boundary": {
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "broad_rt_core_speedup_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rt_dbscan_paper_reproduction_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "dry_run": false,
+  "elapsed_sec": 19.043411575257778,
+  "goal": "Goal3927",
+  "planned_commands": [],
+  "rayjoin": {
+    "cases": [
+      {
+        "loaded_case_reuse_enabled": null,
+        "rtdl_optix_execution_route": "prepared_optix_cupy_refined_pip",
+        "subprobe_wrapper_phase_timing_sec": null,
+        "workload": "pip"
+      },
+      {
+        "loaded_case_reuse_enabled": true,
+        "rtdl_optix_execution_route": "prepared_optix_left_id_dense_count_loaded_case_reuse",
+        "subprobe_wrapper_phase_timing_sec": {
+          "case_total_sec": 2.289779558777809,
+          "dataset_file_check_sec": 0.00010108202695846558,
+          "numba_baseline_call_sec": 1.393808737397194,
+          "numba_hot_total_sec": 1.1673627346754074,
+          "numba_load_case_sec": 0.14919057488441467,
+          "numba_prepare_sec": 0.0011697784066200256,
+          "rtdl_optix_call_sec": 0.7464971244335175,
+          "rtdl_optix_hot_total_sec": 0.004530683159828186,
+          "rtdl_optix_prepare_total_sec": 0.37338609248399734,
+          "shared_load_case_sec": 0.14919057488441467
+        },
+        "workload": "lsi"
+      },
+      {
+        "loaded_case_reuse_enabled": true,
+        "rtdl_optix_execution_route": "prepared_optix_shape_pair_active_count_loaded_case_reuse",
+        "subprobe_wrapper_phase_timing_sec": {
+          "case_total_sec": 3.7910856008529663,
+          "dataset_file_check_sec": 6.530433893203735e-05,
+          "numba_baseline_call_sec": 2.8044808208942413,
+          "numba_hot_total_sec": 1.9945225194096565,
+          "numba_load_case_sec": 0.07397209852933884,
+          "numba_prepare_sec": 0.009967975318431854,
+          "rtdl_optix_call_sec": 0.9124008566141129,
+          "rtdl_optix_hot_total_sec": 0.009426809847354889,
+          "rtdl_optix_prepare_total_sec": 0.9001454189419746,
+          "shared_load_case_sec": 0.07397209852933884
+        },
+        "workload": "overlay_seed"
+      }
+    ],
+    "gpu": "NVIDIA RTX 4000 Ada Generation, 550.127.08",
+    "path": "/root/goal4177.dpBIx4/repo/docs/reports/goal4218_mixed_route_focus_after_policy_rtx4000ada/rayjoin/summary.json",
+    "wrapper_phase_timing_sec": {
+      "data_dir_resolve_sec": 7.653236389160156e-05,
+      "lsi_overlay_probe_sec": 6.192842476069927,
+      "pip_batch_probe_sec": 0.729429580271244,
+      "pip_one_shot_probe_sec": 2.278262436389923,
+      "profile_total_sec": 9.2008246332407
+    }
+  },
+  "rtdbscan": [
+    {
+      "block_size": null,
+      "blocked": false,
+      "claim_boundary": {
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "elapsed_sec": 0.09618882834911346,
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "partner": "numba",
+      "path": "/root/goal4177.dpBIx4/repo/docs/reports/goal4218_mixed_route_focus_after_policy_rtx4000ada/rtdbscan/optix_rt_core_grouped_stream_numba_column_signature_3d.json",
+      "path_label": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "signature": "numba_direct_component_signature_counts"
+    },
+    {
+      "block_size": 4096,
+      "blocked": true,
+      "claim_boundary": {
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "elapsed_sec": 0.43625153601169586,
+      "mode": "optix_rt_core_grouped_stream_blocked_numba_column_signature_3d",
+      "partner": "numba",
+      "path": "/root/goal4177.dpBIx4/repo/docs/reports/goal4218_mixed_route_focus_after_policy_rtx4000ada/rtdbscan/optix_rt_core_grouped_stream_blocked_numba_column_signature_3d.json",
+      "path_label": "optix_rt_grouped_stream_blocked_numba_radius_graph_column_signature_3d",
+      "signature": "numba_direct_component_signature_counts"
+    }
+  ],
+  "source_commit": "63289bbc",
+  "source_commit_label": "63289bbc",
+  "source_dirty": [],
+  "status": "pass"
+}
