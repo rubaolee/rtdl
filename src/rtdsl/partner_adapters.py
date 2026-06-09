@@ -7297,8 +7297,17 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
                 same_root_culling=self.grouped_union_same_root_culling,
                 direct_side_effect=self.grouped_union_direct_side_effect,
             )
+            native_metadata = dict(native_result["metadata"])
+            native_metadata.update(
+                {
+                    "boundary_assignment_policy": self.boundary_assignment_policy,
+                    "boundary_assignment_pass_count": 1,
+                    "fallback_candidate_policy": "not_needed_all_items_satisfy_predicate",
+                    "performance_claim_authorized": False,
+                }
+            )
             return (
-                native_result,
+                {"metadata": native_metadata},
                 "optix_applies_all_items_grouped_union_without_predicate_or_fallback_workspace",
                 "not_needed_all_items_satisfy_predicate",
                 1,
