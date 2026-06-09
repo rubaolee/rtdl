@@ -1,0 +1,27 @@
+BOTTLENECK_START clustered3d_65536 recommended_unblocked optix_rt_core_grouped_stream_numba_column_signature_3d {}
+Traceback (most recent call last):
+  File "/root/goal3992_exttelemetry.nANovw/repo/scripts/goal4074_rt_dbscan_grouped_stream_bottleneck_refresh.py", line 220, in <module>
+    main()
+  File "/root/goal3992_exttelemetry.nANovw/repo/scripts/goal4074_rt_dbscan_grouped_stream_bottleneck_refresh.py", line 215, in main
+    payload = run(args.output, args.repeat, args.warmup)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/goal3992_exttelemetry.nANovw/repo/scripts/goal4074_rt_dbscan_grouped_stream_bottleneck_refresh.py", line 161, in run
+    _run_variant(
+  File "/root/goal3992_exttelemetry.nANovw/repo/scripts/goal4074_rt_dbscan_grouped_stream_bottleneck_refresh.py", line 91, in _run_variant
+    payload = run_rt_dbscan_benchmark(
+              ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/goal3992_exttelemetry.nANovw/repo/examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py", line 1662, in run_rt_dbscan_benchmark
+    with rt.prepare_v2_8_fixed_radius_graph_component_continuation_3d(
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/goal3992_exttelemetry.nANovw/repo/src/rtdsl/v2_8_fixed_radius_graph_component_front_door.py", line 466, in prepare_v2_8_fixed_radius_graph_component_continuation_3d
+    lower_prepared = prepare_optix_numba_radius_graph_grouped_stream_continuation_3d(
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/goal3992_exttelemetry.nANovw/repo/src/rtdsl/partner_adapters.py", line 7622, in prepare_optix_numba_radius_graph_grouped_stream_continuation_3d
+    return PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/goal3992_exttelemetry.nANovw/repo/src/rtdsl/partner_adapters.py", line 7067, in __init__
+    cuda, np = _numba_cuda_stack_for_radius_graph()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/goal3992_exttelemetry.nANovw/repo/src/rtdsl/partner_adapters.py", line 5730, in _numba_cuda_stack_for_radius_graph
+    raise RuntimeError("Numba radius-graph component adapter requires numba.cuda")
+RuntimeError: Numba radius-graph component adapter requires numba.cuda
