@@ -632,6 +632,10 @@ from .primitive_planner import PrimitivePartnerOption
 from .primitive_planner import PrimitivePlanStep
 from .primitive_planner import plan_continuation
 from .primitive_planner import validate_primitive_advisory_planner
+from .predicate_aware_boundary_union import PREDICATE_AWARE_BOUNDARY_UNION_POLICIES
+from .predicate_aware_boundary_union import PREDICATE_AWARE_BOUNDARY_UNION_REFERENCE_STATUS
+from .predicate_aware_boundary_union import PREDICATE_AWARE_BOUNDARY_UNION_REFERENCE_VERSION
+from .predicate_aware_boundary_union import predicate_aware_boundary_union_reference
 from .segmented_row_stream import CHUNKED_ROW_CONTINUATION_ALIAS
 from .segmented_row_stream import SEGMENTED_ROW_STREAM_CONTRACT
 from .segmented_row_stream import SEGMENTED_ROW_STREAM_CONTRACT_VERSION
@@ -2041,6 +2045,10 @@ __all__ = [
     "validate_primitive_advisory_planner",
     "validate_primitive_hierarchy",
     "validate_primitive_semantic_search",
+    "PREDICATE_AWARE_BOUNDARY_UNION_POLICIES",
+    "PREDICATE_AWARE_BOUNDARY_UNION_REFERENCE_STATUS",
+    "PREDICATE_AWARE_BOUNDARY_UNION_REFERENCE_VERSION",
+    "predicate_aware_boundary_union_reference",
     "CHUNKED_ROW_CONTINUATION_ALIAS",
     "SEGMENTED_ROW_STREAM_CONTRACT",
     "SEGMENTED_ROW_STREAM_CONTRACT_VERSION",
