@@ -62,8 +62,14 @@ The semantic-contract split is correct:
 
 - Counts-only signatures match the grouped-stream reference at every tested
   scale.
-- Policy-bound component-size signatures do not match for direct-status routes,
-  so component-size semantics still require an explicit border policy.
+- Policy-bound signatures do not match for direct-status routes because the
+  explicit border-assignment policy label differs. On this road3d profile, the
+  cluster-size distribution itself is effectively insensitive to the tie-break;
+  Goal4165/Goal4166 remain the evidence that mixed-predicate rows can have real
+  component-size divergence under different legal border policies.
+- Therefore, component-size semantics still require an explicit border policy,
+  even when a particular profile happens to have numerically identical component
+  sizes.
 
 The performance result is more cautious:
 

@@ -58,6 +58,7 @@ class Goal4190RtDbscanCountsOnlyMixedRouteProbeTest(unittest.TestCase):
         script = SCRIPT.read_text(encoding="utf-8")
         self.assertIn("does not add an engine", report)
         self.assertIn("not a major win", report)
+        self.assertIn("Goal4165/Goal4166 remain the evidence", report)
         self.assertIn("generic predicate-aware direct-status grouped-union", report)
         self.assertIn("DBSCAN policy remains in", report)
         self.assertIn("route_promotion_authorized", script)
