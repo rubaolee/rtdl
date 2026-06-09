@@ -30,6 +30,13 @@ DEFAULT_GROUPED_UNION_QUERY_BLOCK_SIZE = 8192
 RT_DBSCAN_GROUPED_STREAM_TIMING_BREAKDOWN_SCHEMA = "rt_dbscan_grouped_stream_host_overhead_breakdown_v1"
 DIRECTED_ADJACENCY_INDEX_BYTES = 4
 DIRECTED_ADJACENCY_OFFSET_BYTES = 8
+RT_DBSCAN_TESTED_DIRECT_STATUS_PARTITION_CELL_FACTORS = {
+    "clustered3d": 0.25,
+    "road3d": 0.25,
+    "ngsim_dense": 0.5,
+}
+RT_DBSCAN_DIRECT_STATUS_APP_MODE = "partner_cupy_prepared_direct_status_union_component_signature_3d"
+RT_DBSCAN_GROUPED_STREAM_NUMBA_APP_MODE = "optix_rt_core_grouped_stream_numba_column_signature_3d"
 
 
 def estimate_rt_dbscan_directed_adjacency_edges(dataset: str, point_count: int) -> int:
@@ -81,6 +88,73 @@ def plan_rt_dbscan_execution(dataset: str, point_count: int) -> dict[str, object
         "not_hidden_dispatcher": True,
         "release_claim_authorized": False,
         "paper_reproduction_claim_authorized": False,
+    }
+
+
+def explain_rt_dbscan_explicit_route_choice(
+    dataset: str,
+    *,
+    repeated_component_signature: bool,
+) -> dict[str, object]:
+    """Explain current explicit RT-DBSCAN route choices without dispatching."""
+
+    if dataset not in DEFAULT_DATASET_CONFIG:
+        raise ValueError("dataset must be tiny, clustered3d, road3d, or ngsim_dense")
+    repeated = bool(repeated_component_signature)
+    default_option = {
+        "mode": RT_DBSCAN_GROUPED_STREAM_NUMBA_APP_MODE,
+        "partner": "numba",
+        "partition_cell_factor": None,
+        "when": "conservative one-shot/default component-signature route",
+        "evidence_refs": ("Goal3859", "Goal3936", "Goal4100", "Goal4115", "Goal4118"),
+    }
+    options: list[dict[str, object]] = [default_option]
+    if repeated and dataset in RT_DBSCAN_TESTED_DIRECT_STATUS_PARTITION_CELL_FACTORS:
+        factor = RT_DBSCAN_TESTED_DIRECT_STATUS_PARTITION_CELL_FACTORS[dataset]
+        options.insert(
+            0,
+            {
+                "mode": RT_DBSCAN_DIRECT_STATUS_APP_MODE,
+                "partner": "cupy",
+                "partition_cell_factor": factor,
+                "when": "explicit repeated component-signature route over reused point/partition columns",
+                "evidence_refs": ("Goal4116", "Goal4117", "Goal4118"),
+            },
+        )
+    elif repeated:
+        options.append(
+            {
+                "mode": RT_DBSCAN_DIRECT_STATUS_APP_MODE,
+                "partner": "cupy",
+                "partition_cell_factor": None,
+                "when": "requires new same-contract factor evidence for this dataset",
+                "evidence_refs": ("Goal4118",),
+            }
+        )
+    return {
+        "adapter": "explain_rt_dbscan_explicit_route_choice",
+        "dataset": dataset,
+        "repeated_component_signature": repeated,
+        "status": "advisory_only_no_dispatch",
+        "user_must_select_route": True,
+        "automatic_dispatch_authorized": False,
+        "automatic_partner_selection_authorized": False,
+        "automatic_partition_cell_factor_selection_authorized": False,
+        "hidden_dispatch_allowed": False,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "broad_rt_core_claim_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "native_dbscan_abi_added": False,
+        "app_specific_engine_logic_allowed": False,
+        "claim_boundary": (
+            "Advisory RT-DBSCAN route explanation only. It does not execute a route, "
+            "choose a partner automatically, choose a partition cell factor automatically, "
+            "authorize release, authorize public speedup wording, authorize broad RT-core "
+            "wording, or add app-specific engine logic."
+        ),
+        "options": tuple(options),
     }
 
 
@@ -2177,6 +2251,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--min-neighbors", type=int, default=None)
     parser.add_argument("--seed", type=int, default=20260519)
     parser.add_argument("--partner", choices=("torch", "cupy", "numba"), default="cupy")
+    parser.add_argument(
+        "--explain-route-choice",
+        action="store_true",
+        help="Print explicit RT-DBSCAN route options for the selected dataset and exit without dispatching.",
+    )
+    parser.add_argument(
+        "--repeated-component-signature",
+        action="store_true",
+        help="For --explain-route-choice, describe the repeated component-signature contract.",
+    )
     parser.add_argument("--include-rows", action="store_true")
     parser.add_argument("--no-validation", action="store_true")
     parser.add_argument("--adjacency-edge-budget", type=int, default=None)
@@ -2215,6 +2299,18 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--repeat", type=int, default=1)
     parser.add_argument("--warmup", type=int, default=0)
     args = parser.parse_args(argv)
+    if args.explain_route_choice:
+        print(
+            json.dumps(
+                explain_rt_dbscan_explicit_route_choice(
+                    args.dataset,
+                    repeated_component_signature=args.repeated_component_signature,
+                ),
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0
     print(
         json.dumps(
             run_rt_dbscan_benchmark(
