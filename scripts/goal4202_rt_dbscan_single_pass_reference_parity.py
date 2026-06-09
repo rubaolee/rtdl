@@ -21,6 +21,12 @@ DEFAULT_OUTPUT = (
 )
 POLICIES = ("lowest_candidate_then_root", "lowest_component_root_two_pass")
 PRESETS: dict[str, dict[str, object]] = {
+    "adversarial_root_shadow_1d": {
+        "dataset": "adversarial_root_shadow_1d",
+        "point_count": 5,
+        "radius": 1.01,
+        "component_threshold": 3,
+    },
     "tiny": {
         "dataset": "tiny",
         "point_count": 9,
@@ -71,6 +77,19 @@ def _candidate_pairs(points, radius: float) -> list[tuple[int, int]]:
     return pairs
 
 
+def _make_points(dataset: str, *, point_count: int, seed: int):
+    if dataset == "adversarial_root_shadow_1d":
+        if point_count != 5:
+            raise ValueError("adversarial_root_shadow_1d uses exactly 5 points")
+        # Four predicate-true candidates form a chain whose final root is point 0.
+        # The fifth point is a predicate-false boundary item near the high-index
+        # end of the chain, so a one-pass traversal must rebase its observed
+        # candidate through final roots to match the reference contract.
+        coords = (0.0, 0.45, 0.90, 1.35, 2.35)
+        return tuple(rt.Point3D(id=index + 1, x=x, y=0.0, z=0.0) for index, x in enumerate(coords))
+    return app.make_rt_dbscan_points(dataset, point_count=point_count, seed=seed)
+
+
 def _run_policy(points, *, radius: float, component_threshold: int, policy: str) -> dict[str, object]:
     with rt.prepare_v2_8_fixed_radius_graph_component_continuation_3d(
         points,
@@ -113,7 +132,7 @@ def run_case(case: dict[str, object], *, seed: int) -> dict[str, object]:
     point_count = int(case["point_count"])
     radius = float(case["radius"])
     component_threshold = int(case["component_threshold"])
-    points = app.make_rt_dbscan_points(dataset, point_count=point_count, seed=seed)
+    points = _make_points(dataset, point_count=point_count, seed=seed)
     pairs = _candidate_pairs(points, radius)
     policy_results = {
         policy: _run_policy(points, radius=radius, component_threshold=component_threshold, policy=policy)

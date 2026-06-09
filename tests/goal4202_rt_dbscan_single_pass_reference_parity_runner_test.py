@@ -19,6 +19,7 @@ class Goal4202RtDbscanSinglePassReferenceParityRunnerTest(unittest.TestCase):
 
     def test_presets_are_small_enough_for_reference_pair_build(self) -> None:
         text = SCRIPT.read_text(encoding="utf-8")
+        self.assertIn('"adversarial_root_shadow_1d"', text)
         self.assertIn('"clustered3d_512"', text)
         self.assertIn('"road3d_1024"', text)
         self.assertNotIn('"clustered3d_65536"', text)
@@ -31,6 +32,7 @@ class Goal4202RtDbscanSinglePassReferenceParityRunnerTest(unittest.TestCase):
             capture_output=True,
             check=True,
         )
+        self.assertIn("adversarial_root_shadow_1d", completed.stdout)
         self.assertIn("tiny", completed.stdout)
         self.assertIn("ngsim_dense_1024", completed.stdout)
 
