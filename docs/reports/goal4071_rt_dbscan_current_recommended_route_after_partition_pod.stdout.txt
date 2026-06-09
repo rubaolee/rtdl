@@ -1,0 +1,189 @@
+ROUTE_START recommended_rt_core_grouped_stream_numba_signature optix_rt_core_grouped_stream_numba_column_signature_3d
+/root/goal3933_runtime.Phh4Zo/pydeps124/numba/cuda/dispatcher.py:536: NumbaPerformanceWarning: Grid size 1 will likely result in GPU under-utilization due to low occupancy.
+  warn(NumbaPerformanceWarning(msg))
+ROUTE_DONE {"column_signature_strategy": "numba_direct_component_signature_counts", "component_size_signature": [16384, 16384, 16384, 16384], "elapsed_sec": 0.09419076889753342, "full_dbscan_semantics": null, "graph_component_contract_only": null, "materializes_component_labels": false, "materializes_python_rows": false, "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d", "name": "recommended_rt_core_grouped_stream_numba_signature", "partition_pair_enumeration_effective": null, "partition_summary_pair_capacity_source": null, "partner": "numba", "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d", "public_speedup_claim_authorized": false, "release_authorized": false, "rt_core_accelerated": true, "rt_core_speedup_claim_authorized": false, "signature": {"cluster_sizes": {"1": 16384, "2": 16384, "3": 16384, "4": 16384}, "core_count": 65536, "noise_count": 0}, "signature_source": "partner_column_arrays_no_python_row_dicts", "true_zero_copy_claim_authorized": false, "whole_app_speedup_claim_authorized": false}
+ROUTE_START partition_count_then_emit_cupy_signature_candidate partner_cupy_prepared_partition_convergence_component_signature_3d
+ROUTE_DONE {"column_signature_strategy": null, "component_size_signature": [16384, 16384, 16384, 16384], "elapsed_sec": 0.6826155111193657, "full_dbscan_semantics": false, "graph_component_contract_only": true, "materializes_component_labels": null, "materializes_python_rows": false, "mode": "partner_cupy_prepared_partition_convergence_component_signature_3d", "name": "partition_count_then_emit_cupy_signature_candidate", "partition_pair_enumeration_effective": "device_count_then_emit", "partition_summary_pair_capacity_source": "device_exact_count", "partner": "cupy", "path": "partner_cupy_prepared_partition_convergence_component_signature_3d", "public_speedup_claim_authorized": false, "release_authorized": false, "rt_core_accelerated": false, "rt_core_speedup_claim_authorized": false, "signature": {"component_count": 4, "component_sizes": [16384, 16384, 16384, 16384], "contract": "fixed_radius_graph_component_size_signature_3d", "point_count": 65536}, "signature_source": "prepared_component_size_signature_column_no_python_row_dicts", "true_zero_copy_claim_authorized": false, "whole_app_speedup_claim_authorized": false}
+ROUTE_START partner_numba_prepared_grid_components partner_numba_prepared_grid_components_3d
+ROUTE_DONE {"column_signature_strategy": null, "component_size_signature": [16384, 16384, 16384, 16384], "elapsed_sec": 1.2083605751395226, "full_dbscan_semantics": null, "graph_component_contract_only": null, "materializes_component_labels": null, "materializes_python_rows": null, "mode": "partner_numba_prepared_grid_components_3d", "name": "partner_numba_prepared_grid_components", "partition_pair_enumeration_effective": null, "partition_summary_pair_capacity_source": null, "partner": "numba", "path": "partner_numba_prepared_grid_radius_graph_components_3d", "public_speedup_claim_authorized": false, "release_authorized": false, "rt_core_accelerated": false, "rt_core_speedup_claim_authorized": false, "signature": {"cluster_sizes": {"1": 16384, "2": 16384, "3": 16384, "4": 16384}, "core_count": 65536, "noise_count": 0}, "signature_source": null, "true_zero_copy_claim_authorized": false, "whole_app_speedup_claim_authorized": false}
+ROUTE_START partner_cupy_prepared_grid_components partner_cupy_prepared_grid_components_3d
+ROUTE_DONE {"column_signature_strategy": null, "component_size_signature": [16384, 16384, 16384, 16384], "elapsed_sec": 0.5771284699440002, "full_dbscan_semantics": null, "graph_component_contract_only": null, "materializes_component_labels": null, "materializes_python_rows": null, "mode": "partner_cupy_prepared_grid_components_3d", "name": "partner_cupy_prepared_grid_components", "partition_pair_enumeration_effective": null, "partition_summary_pair_capacity_source": null, "partner": "cupy", "path": "partner_cupy_prepared_grid_radius_graph_components_3d", "public_speedup_claim_authorized": false, "release_authorized": false, "rt_core_accelerated": false, "rt_core_speedup_claim_authorized": false, "signature": {"cluster_sizes": {"1": 16384, "2": 16384, "3": 16384, "4": 16384}, "core_count": 65536, "noise_count": 0}, "signature_source": null, "true_zero_copy_claim_authorized": false, "whole_app_speedup_claim_authorized": false}
+{
+  "claim_boundary": "Internal route-positioning timing after the partition-preview chain. It does not authorize release, paper, public speedup, broad RT-core, whole-app, hidden-dispatch, automatic partner selection, app-specific engine logic, native ABI addition, or true-zero-copy claims.",
+  "goal": "Goal4071",
+  "native_abi_added": false,
+  "paper_speedup_claim_authorized": false,
+  "point_count": 65536,
+  "profile": "clustered3d_65536",
+  "public_speedup_claim_authorized": false,
+  "recommended_route": "recommended_rt_core_grouped_stream_numba_signature",
+  "release_authorized": false,
+  "rows": [
+    {
+      "column_signature_strategy": "numba_direct_component_signature_counts",
+      "component_size_signature": [
+        16384,
+        16384,
+        16384,
+        16384
+      ],
+      "elapsed_sec": 0.09419076889753342,
+      "full_dbscan_semantics": null,
+      "graph_component_contract_only": null,
+      "materializes_component_labels": false,
+      "materializes_python_rows": false,
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "name": "recommended_rt_core_grouped_stream_numba_signature",
+      "partition_pair_enumeration_effective": null,
+      "partition_summary_pair_capacity_source": null,
+      "partner": "numba",
+      "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "rt_core_accelerated": true,
+      "rt_core_speedup_claim_authorized": false,
+      "same_component_size_signature_as_recommended": true,
+      "same_signature_as_recommended": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "signature_source": "partner_column_arrays_no_python_row_dicts",
+      "speedup_of_recommended_over_row": 1.0,
+      "true_zero_copy_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "column_signature_strategy": null,
+      "component_size_signature": [
+        16384,
+        16384,
+        16384,
+        16384
+      ],
+      "elapsed_sec": 0.6826155111193657,
+      "full_dbscan_semantics": false,
+      "graph_component_contract_only": true,
+      "materializes_component_labels": null,
+      "materializes_python_rows": false,
+      "mode": "partner_cupy_prepared_partition_convergence_component_signature_3d",
+      "name": "partition_count_then_emit_cupy_signature_candidate",
+      "partition_pair_enumeration_effective": "device_count_then_emit",
+      "partition_summary_pair_capacity_source": "device_exact_count",
+      "partner": "cupy",
+      "path": "partner_cupy_prepared_partition_convergence_component_signature_3d",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "rt_core_accelerated": false,
+      "rt_core_speedup_claim_authorized": false,
+      "same_component_size_signature_as_recommended": true,
+      "same_signature_as_recommended": false,
+      "signature": {
+        "component_count": 4,
+        "component_sizes": [
+          16384,
+          16384,
+          16384,
+          16384
+        ],
+        "contract": "fixed_radius_graph_component_size_signature_3d",
+        "point_count": 65536
+      },
+      "signature_source": "prepared_component_size_signature_column_no_python_row_dicts",
+      "speedup_of_recommended_over_row": 7.247159345964755,
+      "true_zero_copy_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "column_signature_strategy": null,
+      "component_size_signature": [
+        16384,
+        16384,
+        16384,
+        16384
+      ],
+      "elapsed_sec": 1.2083605751395226,
+      "full_dbscan_semantics": null,
+      "graph_component_contract_only": null,
+      "materializes_component_labels": null,
+      "materializes_python_rows": null,
+      "mode": "partner_numba_prepared_grid_components_3d",
+      "name": "partner_numba_prepared_grid_components",
+      "partition_pair_enumeration_effective": null,
+      "partition_summary_pair_capacity_source": null,
+      "partner": "numba",
+      "path": "partner_numba_prepared_grid_radius_graph_components_3d",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "rt_core_accelerated": false,
+      "rt_core_speedup_claim_authorized": false,
+      "same_component_size_signature_as_recommended": true,
+      "same_signature_as_recommended": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "signature_source": null,
+      "speedup_of_recommended_over_row": 12.828864115697499,
+      "true_zero_copy_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "column_signature_strategy": null,
+      "component_size_signature": [
+        16384,
+        16384,
+        16384,
+        16384
+      ],
+      "elapsed_sec": 0.5771284699440002,
+      "full_dbscan_semantics": null,
+      "graph_component_contract_only": null,
+      "materializes_component_labels": null,
+      "materializes_python_rows": null,
+      "mode": "partner_cupy_prepared_grid_components_3d",
+      "name": "partner_cupy_prepared_grid_components",
+      "partition_pair_enumeration_effective": null,
+      "partition_summary_pair_capacity_source": null,
+      "partner": "cupy",
+      "path": "partner_cupy_prepared_grid_radius_graph_components_3d",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "rt_core_accelerated": false,
+      "rt_core_speedup_claim_authorized": false,
+      "same_component_size_signature_as_recommended": true,
+      "same_signature_as_recommended": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "signature_source": null,
+      "speedup_of_recommended_over_row": 6.127229628753073,
+      "true_zero_copy_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    }
+  ],
+  "rt_core_speedup_claim_authorized": false,
+  "schema": "rtdl.goal4071.rt_dbscan.current_recommended_route_after_partition.v1",
+  "source_commit": "c0073cd6",
+  "true_zero_copy_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}
