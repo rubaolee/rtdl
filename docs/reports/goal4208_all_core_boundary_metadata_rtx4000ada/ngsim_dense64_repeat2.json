@@ -1,0 +1,85 @@
+{
+  "cases": [
+    {
+      "component_threshold": 16,
+      "dataset": "ngsim_dense",
+      "point_count": 65536,
+      "policies": {
+        "lowest_candidate_then_root": {
+          "metadata_boundary_assignment_policy": "lowest_candidate_then_root",
+          "native_boundary_assignment_pass_count": 1,
+          "native_boundary_assignment_policy": "lowest_candidate_then_root",
+          "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+          "prepare_elapsed_sec": 0.9345751404762268,
+          "public_speedup_claim_authorized": false,
+          "run_elapsed_sec": [
+            0.018430955708026886,
+            0.01867792010307312
+          ],
+          "run_max_sec": 0.01867792010307312,
+          "run_median_sec": 0.018554437905550003,
+          "run_min_sec": 0.018430955708026886,
+          "signature": {
+            "component_count": 1,
+            "flag_true_count": 65536,
+            "label_count_signature_head": [
+              65536
+            ],
+            "label_count_signature_tail": [
+              65536
+            ],
+            "largest_component_size": 65536,
+            "negative_label_count": 0
+          },
+          "true_zero_copy_claim_authorized": false
+        },
+        "lowest_component_root_two_pass": {
+          "metadata_boundary_assignment_policy": "lowest_component_root_two_pass",
+          "native_boundary_assignment_pass_count": 1,
+          "native_boundary_assignment_policy": "lowest_component_root_two_pass",
+          "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+          "prepare_elapsed_sec": 0.16934528946876526,
+          "public_speedup_claim_authorized": false,
+          "run_elapsed_sec": [
+            0.018657200038433075,
+            0.018559888005256653
+          ],
+          "run_max_sec": 0.018657200038433075,
+          "run_median_sec": 0.018608544021844864,
+          "run_min_sec": 0.018559888005256653,
+          "signature": {
+            "component_count": 1,
+            "flag_true_count": 65536,
+            "label_count_signature_head": [
+              65536
+            ],
+            "label_count_signature_tail": [
+              65536
+            ],
+            "largest_component_size": 65536,
+            "negative_label_count": 0
+          },
+          "true_zero_copy_claim_authorized": false
+        }
+      },
+      "public_speedup_claim_authorized": false,
+      "radius": 0.012,
+      "repeat": 2,
+      "route_promotion_authorized": false,
+      "same_counts_only_signature": true,
+      "seed": 20260519,
+      "true_zero_copy_claim_authorized": false,
+      "two_pass_vs_default_median_ratio": 1.0029160741257852,
+      "warmup": 1
+    }
+  ],
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "route_promotion_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "commit": "ef4b1f0f",
+  "schema": "rtdl.goal4201.rt_dbscan_boundary_policy_fair_timing.v1"
+}
