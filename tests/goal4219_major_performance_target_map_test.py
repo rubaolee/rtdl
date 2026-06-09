@@ -7,7 +7,7 @@ import rtdsl as rt
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REPORT = ROOT / "docs" / "reports" / "goal4240_major_performance_target_map_after_rayjoin_long_repeat_2026-06-09.md"
+REPORT = ROOT / "docs" / "reports" / "goal4244_major_performance_target_map_after_short_row_refresh_2026-06-09.md"
 
 
 class Goal4219MajorPerformanceTargetMapTest(unittest.TestCase):
@@ -15,7 +15,7 @@ class Goal4219MajorPerformanceTargetMapTest(unittest.TestCase):
         self.assertTrue(REPORT.is_file())
         self.assertEqual(
             rt.CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION,
-            "rtdl.v2_10.current_major_performance_targets.goal4240.v1",
+            "rtdl.v2_10.current_major_performance_targets.goal4244.v1",
         )
         self.assertTrue(callable(rt.current_major_performance_targets))
         self.assertTrue(callable(rt.summarize_current_major_performance_targets))
@@ -44,9 +44,11 @@ class Goal4219MajorPerformanceTargetMapTest(unittest.TestCase):
         )
         self.assertEqual(rows["ten_app_measurement_adequacy_closure"]["target_status"], "done_internal_evidence")
         self.assertIn("Goal4230", rows["ten_app_measurement_adequacy_closure"]["evidence_refs"])
+        self.assertIn("Goal4243", rows["ten_app_measurement_adequacy_closure"]["evidence_refs"])
         self.assertEqual(rows["rayjoin_contract_split_route_policy"]["target_status"], "done_internal_evidence")
         self.assertIn("Goal4239", rows["rayjoin_contract_split_route_policy"]["evidence_refs"])
         self.assertIn("Goal4239", rows["release_grade_long_run_packet"]["evidence_refs"])
+        self.assertIn("Goal4243", rows["release_grade_long_run_packet"]["evidence_refs"])
         self.assertEqual(rows["rtdbscan_profile_aware_boundary_policy"]["target_status"], "done_internal_evidence")
         self.assertIn("contract", rows["rayjoin_contract_split_route_policy"]["theme"])
         self.assertIn("profile-aware", rows["rtdbscan_profile_aware_boundary_policy"]["theme"])
@@ -61,6 +63,7 @@ class Goal4219MajorPerformanceTargetMapTest(unittest.TestCase):
             self.assertFalse(row["whole_app_speedup_claim_authorized"], row["target_id"])
             self.assertFalse(row["broad_rt_core_claim_authorized"], row["target_id"])
             self.assertFalse(row["paper_reproduction_claim_authorized"], row["target_id"])
+            self.assertFalse(row["rtdl_beats_rayjoin_claim_authorized"], row["target_id"])
             self.assertFalse(row["true_zero_copy_claim_authorized"], row["target_id"])
             self.assertFalse(row["automatic_partner_selection_authorized"], row["target_id"])
             self.assertFalse(row["app_specific_native_engine_logic_allowed"], row["target_id"])

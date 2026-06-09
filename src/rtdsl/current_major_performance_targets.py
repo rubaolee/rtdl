@@ -4,11 +4,11 @@ from dataclasses import dataclass
 from typing import Any
 
 
-CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION = "rtdl.v2_10.current_major_performance_targets.goal4240.v1"
+CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION = "rtdl.v2_10.current_major_performance_targets.goal4244.v1"
 CURRENT_MAJOR_PERFORMANCE_TARGET_STATUS = "internal_direction_map_not_release_authorization"
 CURRENT_MAJOR_PERFORMANCE_TARGET_CLAIM_BOUNDARY = (
-    "Goal4240 summarizes the major performance direction after Goal4215, "
-    "Goal4218, Goal4222, Goal4223, Goal4230, Goal4235, and Goal4239. It is a route/runtime planning map, not "
+    "Goal4244 summarizes the major performance direction after Goal4215, "
+    "Goal4218, Goal4222, Goal4223, Goal4230, Goal4235, Goal4239, and Goal4243. It is a route/runtime planning map, not "
     "a release packet, not "
     "a public speedup claim, not a whole-app acceleration claim, not a broad "
     "RT-core claim, not a paper-reproduction claim, not a true-zero-copy claim, "
@@ -41,6 +41,7 @@ class CurrentMajorPerformanceTarget:
     whole_app_speedup_claim_authorized: bool = False
     broad_rt_core_claim_authorized: bool = False
     paper_reproduction_claim_authorized: bool = False
+    rtdl_beats_rayjoin_claim_authorized: bool = False
     true_zero_copy_claim_authorized: bool = False
     automatic_partner_selection_authorized: bool = False
     app_specific_native_engine_logic_allowed: bool = False
@@ -60,6 +61,7 @@ class CurrentMajorPerformanceTarget:
             "whole_app_speedup_claim_authorized",
             "broad_rt_core_claim_authorized",
             "paper_reproduction_claim_authorized",
+            "rtdl_beats_rayjoin_claim_authorized",
             "true_zero_copy_claim_authorized",
             "automatic_partner_selection_authorized",
             "app_specific_native_engine_logic_allowed",
@@ -84,6 +86,7 @@ class CurrentMajorPerformanceTarget:
             "whole_app_speedup_claim_authorized": self.whole_app_speedup_claim_authorized,
             "broad_rt_core_claim_authorized": self.broad_rt_core_claim_authorized,
             "paper_reproduction_claim_authorized": self.paper_reproduction_claim_authorized,
+            "rtdl_beats_rayjoin_claim_authorized": self.rtdl_beats_rayjoin_claim_authorized,
             "true_zero_copy_claim_authorized": self.true_zero_copy_claim_authorized,
             "automatic_partner_selection_authorized": self.automatic_partner_selection_authorized,
             "app_specific_native_engine_logic_allowed": self.app_specific_native_engine_logic_allowed,
@@ -114,13 +117,15 @@ CURRENT_MAJOR_PERFORMANCE_TARGETS: tuple[CurrentMajorPerformanceTarget, ...] = (
         current_reading=(
             "Goal4230 reconciles Goal4185/4186/4189/4225/4228/4229 and shows every "
             "promoted benchmark app has at least one second-level measurement source "
-            "above the one-second hot-path or representative-profile floor."
+            "above the one-second hot-path or representative-profile floor. Goal4243 "
+            "refreshes the Hausdorff, contact-manifold, and triangle-counting short rows "
+            "with current-head dedicated long-repeat evidence."
         ),
         next_action=(
             "Use this as internal measurement-readiness evidence only. A public release "
             "still needs exact claim wording, docs audit, and multi-AI release consensus."
         ),
-        evidence_refs=("Goal4185", "Goal4186", "Goal4189", "Goal4225", "Goal4228", "Goal4229", "Goal4230"),
+        evidence_refs=("Goal4185", "Goal4186", "Goal4189", "Goal4225", "Goal4228", "Goal4229", "Goal4230", "Goal4243"),
         pod_needed_next=False,
     ),
     CurrentMajorPerformanceTarget(
@@ -182,9 +187,10 @@ CURRENT_MAJOR_PERFORMANCE_TARGETS: tuple[CurrentMajorPerformanceTarget, ...] = (
         current_reading=(
             "Goal4230 closes the basic ten-app measurement-adequacy floor on RTX 4000 Ada, "
             "Goal4235 proves the current clean head still runs all ten front doors, "
-            "and Goal4239 adds a dedicated RayJoin long-repeat profile. This is still "
-            "not a formal public release matrix across claim wording, docs, consensus, "
-            "and hardware classes."
+            "Goal4239 adds a dedicated RayJoin long-repeat profile, and Goal4243 "
+            "refreshes the former short current-head rows with dedicated long-repeat "
+            "evidence. This is still not a formal public release matrix across claim "
+            "wording, docs, consensus, and hardware classes."
         ),
         next_action=(
             "Before any formal major release, assemble an explicit release packet with "
@@ -192,7 +198,7 @@ CURRENT_MAJOR_PERFORMANCE_TARGETS: tuple[CurrentMajorPerformanceTarget, ...] = (
             "exact public claims; run additional long timing only if the release claim "
             "requires a public performance table."
         ),
-        evidence_refs=("Goal4215", "Goal4222", "Goal4223", "Goal4230", "Goal4235", "Goal4239"),
+        evidence_refs=("Goal4215", "Goal4222", "Goal4223", "Goal4230", "Goal4235", "Goal4239", "Goal4243"),
         pod_needed_next=True,
     ),
     CurrentMajorPerformanceTarget(
@@ -261,6 +267,7 @@ def summarize_current_major_performance_targets(
         "whole_app_speedup_claim_authorized": False,
         "broad_rt_core_claim_authorized": False,
         "paper_reproduction_claim_authorized": False,
+        "rtdl_beats_rayjoin_claim_authorized": False,
         "true_zero_copy_claim_authorized": False,
         "automatic_partner_selection_authorized": False,
         "app_specific_native_engine_logic_allowed": False,
@@ -299,6 +306,7 @@ def validate_current_major_performance_targets(
             "whole_app_speedup_claim_authorized",
             "broad_rt_core_claim_authorized",
             "paper_reproduction_claim_authorized",
+            "rtdl_beats_rayjoin_claim_authorized",
             "true_zero_copy_claim_authorized",
             "automatic_partner_selection_authorized",
             "app_specific_native_engine_logic_allowed",

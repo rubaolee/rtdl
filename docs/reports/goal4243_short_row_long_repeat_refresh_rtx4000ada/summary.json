@@ -1,0 +1,50 @@
+{
+  "all_rows_above_one_second": true,
+  "app_specific_native_engine_logic_allowed": false,
+  "automatic_partner_selection_authorized": false,
+  "broad_rt_core_claim_authorized": false,
+  "generated_at_unix": 1781044915.635802,
+  "gpu": "NVIDIA RTX 4000 Ada Generation, 550.127.08, 20475 MiB",
+  "paper_reproduction_claim_authorized": false,
+  "pre_artifact_git_status_short": "",
+  "pre_artifact_worktree_clean": true,
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "rows": {
+    "contact_manifold": {
+      "aggregate_sec": 10.326223134994507,
+      "app": "contact_manifold",
+      "matches_cpu_reference": true,
+      "metric": "native_collect_total_sec",
+      "overflowed": false,
+      "repeat": 50000,
+      "stdout_path": "docs/reports/goal4243_short_row_long_repeat_refresh_rtx4000ada/goal4243_contact_manifold.stdout.json",
+      "warmup": 0
+    },
+    "hausdorff_xhd": {
+      "aggregate_sec": 13.046773165464401,
+      "app": "hausdorff_xhd",
+      "matches_oracle": true,
+      "metric": "repeat_protocol.measured_query_total_sec",
+      "repeat": 1500,
+      "rt_core_accelerated": true,
+      "stdout_path": "docs/reports/goal4243_short_row_long_repeat_refresh_rtx4000ada/goal4243_hausdorff.stdout.json",
+      "warmup": 10
+    },
+    "triangle_counting": {
+      "aggregate_sec": 2.1000807359814644,
+      "app": "triangle_counting",
+      "metric": "timing_ms.run_backend / 1000",
+      "repeat": 10000,
+      "rt_core_accelerated": true,
+      "stdout_path": "docs/reports/goal4243_short_row_long_repeat_refresh_rtx4000ada/goal4243_triangle_counting.stdout.json",
+      "triangle_count_matches_oracle": true,
+      "warmup": 10
+    }
+  },
+  "schema": "rtdl.goal4243.short_row_long_repeat_refresh.v3",
+  "source_commit": "9a40f7f51bd9817e5d22b862ae4dc9675486e508",
+  "source_commit_short": "9a40f7f5",
+  "true_zero_copy_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}

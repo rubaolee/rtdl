@@ -64,7 +64,7 @@ class Goal4239RayJoinDedicatedLongRepeatProfileTest(unittest.TestCase):
         self.assertIn("NVIDIA RTX 4000 Ada Generation", payload["gpu"])
         self.assertEqual(payload["repeat"], 200)
         self.assertEqual(payload["warmup"], 20)
-        self.assertGreater(payload["wrapper_elapsed_sec"], 10.0)
+        self.assertGreater(payload["wrapper_elapsed_sec"], 20.0)
         self.assertTrue(payload["all_counts_match"])
 
         hot = payload["representative_hot_path_summary"]
