@@ -64,7 +64,9 @@ to press a release button by itself.
 | AMD/HIPRT performance or parity claim | blocked pending AMD hardware | NVIDIA evidence cannot authorize AMD wording. |
 | Broad RT-core speedup claim | blocked | Evidence is contract- and workload-scoped, not universal. |
 | Whole-application acceleration claim | blocked | Some apps include Python/partner continuation, data prep, or validation phases outside the RT-heavy primitive. |
+| RTDL-beats-RayJoin claim | blocked | RayJoin-style evidence is contract-split and cannot be collapsed into full-system superiority wording. |
 | Paper reproduction or paper superiority claims | blocked | Benchmark apps are reconstruction instruments and route studies, not full authors-code reproductions. |
+| Package-install claim | blocked | RTDL is used from the source tree in current docs; dependency installation is not an RTDL package-install promise. |
 | True zero-copy product claim | blocked | The current source has residency and prepared-session evidence, not a general zero-copy product guarantee. |
 | Automatic partner/backend selection | blocked | Partner and backend choice stays explicit and user-owned. |
 

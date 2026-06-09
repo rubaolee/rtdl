@@ -14,6 +14,8 @@ class Goal4251V210InternalReleasePrepPacketTest(unittest.TestCase):
         self.assertIn("does not authorize release", text)
         self.assertIn("Broad RT-core speedup claim | blocked", text)
         self.assertIn("Whole-application acceleration claim | blocked", text)
+        self.assertIn("RTDL-beats-RayJoin claim | blocked", text)
+        self.assertIn("Package-install claim | blocked", text)
         self.assertIn("RTDL-beats-RayJoin wording", text)
         self.assertIn("AMD/HIPRT performance wording", text)
         self.assertIn("automatic partner/backend selection", text)
