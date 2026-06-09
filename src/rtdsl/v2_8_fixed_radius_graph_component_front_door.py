@@ -1223,30 +1223,30 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
         local_y = rem // dim_z
         local_z = rem % dim_z
         key_rows.append((local_x + min_kx, local_y + min_ky, local_z + min_kz))
-    key_to_ordinal = {key: ordinal for ordinal, key in enumerate(key_rows)}
-    aabbs = [
-        {
-            "min_x": math.inf,
-            "min_y": math.inf,
-            "min_z": math.inf,
-            "max_x": -math.inf,
-            "max_y": -math.inf,
-            "max_z": -math.inf,
-        }
-        for index in range(partition_count)
-    ]
-    for ordinal, partition_id in enumerate(cupy.asnumpy(point_partition_ids).tolist()):
-        partition = aabbs[int(partition_id)]
-        px, py, pz = points[ordinal]
-        partition["min_x"] = min(partition["min_x"], px)
-        partition["min_y"] = min(partition["min_y"], py)
-        partition["min_z"] = min(partition["min_z"], pz)
-        partition["max_x"] = max(partition["max_x"], px)
-        partition["max_y"] = max(partition["max_y"], py)
-        partition["max_z"] = max(partition["max_z"], pz)
     max_offset = int(math.ceil(radius / cell_size)) + 1
     classification_tol = 1.0e-5 * max(1.0, radius_sq)
     if pair_enumeration == "host":
+        key_to_ordinal = {key: ordinal for ordinal, key in enumerate(key_rows)}
+        aabbs = [
+            {
+                "min_x": math.inf,
+                "min_y": math.inf,
+                "min_z": math.inf,
+                "max_x": -math.inf,
+                "max_y": -math.inf,
+                "max_z": -math.inf,
+            }
+            for index in range(partition_count)
+        ]
+        for ordinal, partition_id in enumerate(cupy.asnumpy(point_partition_ids).tolist()):
+            partition = aabbs[int(partition_id)]
+            px, py, pz = points[ordinal]
+            partition["min_x"] = min(partition["min_x"], px)
+            partition["min_y"] = min(partition["min_y"], py)
+            partition["min_z"] = min(partition["min_z"], pz)
+            partition["max_x"] = max(partition["max_x"], px)
+            partition["max_y"] = max(partition["max_y"], py)
+            partition["max_z"] = max(partition["max_z"], pz)
         pair_rows: list[tuple[int, int, int]] = []
         for left_ordinal, left_key in enumerate(key_rows):
             lx, ly, lz = left_key
