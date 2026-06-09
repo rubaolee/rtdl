@@ -101,6 +101,8 @@ class Goal4182CurrentBenchmarkScaleProfileRefreshTest(unittest.TestCase):
         )
         hot = rayjoin["representative_hot_path_summary"]
 
+        self.assertIn("rayjoin_public_cdb", rayjoin["pip_batch_executor"]["dataset"])
+        self.assertTrue(rayjoin["pip_batch_executor"]["dataset"].endswith("br_county_start256_count512.cdb"))
         self.assertTrue(hot["all_contract_counts_match"])
         self.assertLess(hot["pip_one_shot"]["rtdl_optix_speedup_vs_numba"], 1.0)
         self.assertGreater(hot["lsi_scalar_count"]["rtdl_optix_speedup_vs_numba"], 200.0)
@@ -112,7 +114,7 @@ class Goal4182CurrentBenchmarkScaleProfileRefreshTest(unittest.TestCase):
     def test_report_states_non_authorizing_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
 
-        self.assertIn("10/10", text.replace("ten", "10"))
+        self.assertIn("10/10", text)
         self.assertIn("internal evidence", text)
         self.assertIn("does not authorize a release", text)
         self.assertIn("automatic partner selection", text)
