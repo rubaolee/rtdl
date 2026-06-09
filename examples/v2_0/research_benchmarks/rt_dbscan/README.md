@@ -140,6 +140,17 @@ needs component sizes. It is not full DBSCAN core/border/noise semantics, does
 not use RT cores, and remains an explicit candidate preview rather than the
 recommended RT-DBSCAN route.
 
+For memory-pressure experiments, the partition preview can use the exact
+count-then-emit pair enumerator:
+
+```bash
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode partner_cupy_partition_convergence_component_signature_3d --dataset clustered3d --point-count 4096 --partition-pair-enumeration device_count_then_emit --no-validation
+```
+
+This keeps the same graph-component signature contract but uses an extra device
+count pass to allocate the typed pair stream at exact capacity. It is an
+opt-in preview for reducing memory pressure, not a default-route promotion.
+
 For repeated component-size signature probes over the same point/radius inputs,
 use the prepared partition-summary variant:
 
@@ -153,6 +164,10 @@ component-size signature continuation. The metadata separates
 clear whether a workload is benefiting from replay. It still returns only the
 graph-component size signature and still is not the recommended full DBSCAN
 route.
+
+The prepared variant accepts the same `--partition-pair-enumeration` option.
+Use `mode_default` to preserve the mode's reviewed default, or
+`device_count_then_emit` when the workload needs exact pair-stream capacity.
 
 ## Hybrid OptiX + Partner Run
 

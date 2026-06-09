@@ -958,6 +958,7 @@ def run_rt_dbscan_benchmark(
     grouped_union_query_block_size: int | None = None,
     grouped_union_same_root_culling: bool = True,
     grouped_union_direct_side_effect: bool = False,
+    partition_pair_enumeration: str = "mode_default",
     repeat: int = 1,
     warmup: int = 0,
 ) -> dict[str, object]:
@@ -979,6 +980,21 @@ def run_rt_dbscan_benchmark(
         raise ValueError("repeat must be positive")
     if warmup < 0 or warmup >= repeat:
         raise ValueError("warmup must be non-negative and smaller than repeat")
+    if partition_pair_enumeration not in {
+        "mode_default",
+        "host",
+        "device_bounded_offsets",
+        "device_count_then_emit",
+    }:
+        raise ValueError(
+            "partition_pair_enumeration must be 'mode_default', 'host', "
+            "'device_bounded_offsets', or 'device_count_then_emit'"
+        )
+    partition_pair_enumeration_kwargs = (
+        {}
+        if partition_pair_enumeration == "mode_default"
+        else {"pair_enumeration": partition_pair_enumeration}
+    )
     if mode == "planned_rt_dbscan":
         plan = plan_rt_dbscan_execution(dataset, resolved_point_count)
         selected_mode = str(plan["selected_mode"])
@@ -999,6 +1015,7 @@ def run_rt_dbscan_benchmark(
             grouped_union_query_block_size=grouped_union_query_block_size,
             grouped_union_same_root_culling=grouped_union_same_root_culling,
             grouped_union_direct_side_effect=grouped_union_direct_side_effect,
+            partition_pair_enumeration=partition_pair_enumeration,
             repeat=repeat,
             warmup=warmup,
         )
@@ -1037,6 +1054,7 @@ def run_rt_dbscan_benchmark(
             grouped_union_query_block_size=grouped_union_query_block_size,
             grouped_union_same_root_culling=grouped_union_same_root_culling,
             grouped_union_direct_side_effect=grouped_union_direct_side_effect,
+            partition_pair_enumeration=partition_pair_enumeration,
             repeat=repeat,
             warmup=warmup,
         )
@@ -1208,6 +1226,7 @@ def run_rt_dbscan_benchmark(
             radius=resolved_radius,
             validate_summary_same_contract=validate,
             validate_against_component_labels=validate,
+            **partition_pair_enumeration_kwargs,
         )
         component_signature_sec = time.perf_counter() - signature_start
         rows = ()
@@ -1227,6 +1246,10 @@ def run_rt_dbscan_benchmark(
                 "native_engine_summary_contract": "generic_fixed_radius_partition_convergence_summary_3d",
                 "native_execution_path": "partner_cupy_fixed_radius_partition_convergence_preview_3d",
                 "partner": "cupy",
+                "partition_pair_enumeration_user_selection": partition_pair_enumeration,
+                "partition_pair_enumeration_effective": metadata.get("partition_summary_pair_enumeration"),
+                "partition_pair_enumeration_explicit_override": partition_pair_enumeration != "mode_default",
+                "partition_pair_enumeration_default_route_changed": False,
                 "optix_backend_used": False,
                 "rt_core_accelerated": False,
                 "materializes_neighbor_summaries": False,
@@ -1260,6 +1283,7 @@ def run_rt_dbscan_benchmark(
                 points,
                 radius=resolved_radius,
                 validate_summary_same_contract=validate,
+                **partition_pair_enumeration_kwargs,
             )
         )
         prepared_partition_summary_sec = time.perf_counter() - prepare_start
@@ -1289,6 +1313,10 @@ def run_rt_dbscan_benchmark(
                 "native_engine_summary_contract": "generic_fixed_radius_partition_convergence_summary_3d",
                 "native_execution_path": "partner_cupy_prepared_fixed_radius_partition_convergence_preview_3d",
                 "partner": "cupy",
+                "partition_pair_enumeration_user_selection": partition_pair_enumeration,
+                "partition_pair_enumeration_effective": metadata.get("partition_summary_pair_enumeration"),
+                "partition_pair_enumeration_explicit_override": partition_pair_enumeration != "mode_default",
+                "partition_pair_enumeration_default_route_changed": False,
                 "optix_backend_used": False,
                 "rt_core_accelerated": False,
                 "materializes_neighbor_summaries": False,
@@ -2037,6 +2065,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--grouped-union-query-block-size", type=int, default=None)
     parser.add_argument("--disable-grouped-union-same-root-culling", action="store_true")
     parser.add_argument("--enable-grouped-union-direct-side-effect", action="store_true")
+    parser.add_argument(
+        "--partition-pair-enumeration",
+        choices=("mode_default", "host", "device_bounded_offsets", "device_count_then_emit"),
+        default="mode_default",
+        help=(
+            "Only for partition-convergence preview modes: keep the mode default or explicitly "
+            "select host, device bounded-offsets, or device count-then-emit pair enumeration."
+        ),
+    )
     parser.add_argument("--repeat", type=int, default=1)
     parser.add_argument("--warmup", type=int, default=0)
     args = parser.parse_args(argv)
@@ -2059,6 +2096,7 @@ def main(argv: list[str] | None = None) -> int:
                 grouped_union_query_block_size=args.grouped_union_query_block_size,
                 grouped_union_same_root_culling=not args.disable_grouped_union_same_root_culling,
                 grouped_union_direct_side_effect=args.enable_grouped_union_direct_side_effect,
+                partition_pair_enumeration=args.partition_pair_enumeration,
                 repeat=args.repeat,
                 warmup=args.warmup,
             ),
