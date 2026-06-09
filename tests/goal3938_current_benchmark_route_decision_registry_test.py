@@ -16,7 +16,7 @@ class Goal3938CurrentBenchmarkRouteDecisionRegistryTest(unittest.TestCase):
         validation = rt.validate_current_benchmark_route_decisions()
         summary = rt.summarize_current_benchmark_route_decisions()
 
-        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4091.v1", rt.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION)
+        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4094.v1", rt.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION)
         self.assertEqual("accept", validation["status"])
         self.assertEqual((), validation["errors"])
         self.assertEqual(10, summary["app_count"])
@@ -57,6 +57,8 @@ class Goal3938CurrentBenchmarkRouteDecisionRegistryTest(unittest.TestCase):
         self.assertIn("Goal4079", route["evidence_refs"])
         self.assertIn("Goal4080", route["evidence_refs"])
         self.assertIn("Goal4088", route["evidence_refs"])
+        self.assertIn("Goal4093", route["evidence_refs"])
+        self.assertIn("non-skip default promotion", route["rejected_or_unpromoted_candidates"][-1])
         self.assertFalse(route["automatic_partner_selection_authorized"])
 
     def test_barnes_hut_is_honest_about_fastest_partner_and_numba_reference(self) -> None:
