@@ -37,6 +37,7 @@ _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS = None
 _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_BORDER_CANDIDATE_LABEL_KERNEL = None
 _NUMBA_I32_PARENT_BORDER_INIT_KERNEL = None
 _NUMBA_I64_ZERO_KERNEL = None
+_NUMBA_I64_SIGNATURE_WORKSPACE_ZERO_KERNEL = None
 _NUMBA_RADIUS_GRAPH_COMPONENT_SIGNATURE_KERNEL = None
 
 _AABB_PAIR_PAYLOAD_FIELDS = (
@@ -5008,6 +5009,28 @@ def _numba_i64_zero_kernel(cuda):
     return _NUMBA_I64_ZERO_KERNEL
 
 
+def _numba_i64_signature_workspace_zero_kernel(cuda):
+    global _NUMBA_I64_SIGNATURE_WORKSPACE_ZERO_KERNEL
+    if _NUMBA_I64_SIGNATURE_WORKSPACE_ZERO_KERNEL is None:
+
+        @cuda.jit
+        def zero_signature_workspace_kernel(
+            label_counts,
+            label_count,
+            flag_true_count,
+            negative_label_count,
+        ):
+            index = cuda.grid(1)
+            if index < label_count:
+                label_counts[index] = 0
+            if index == 0:
+                flag_true_count[0] = 0
+                negative_label_count[0] = 0
+
+        _NUMBA_I64_SIGNATURE_WORKSPACE_ZERO_KERNEL = zero_signature_workspace_kernel
+    return _NUMBA_I64_SIGNATURE_WORKSPACE_ZERO_KERNEL
+
+
 def _numba_radius_graph_component_signature_kernel(cuda):
     global _NUMBA_RADIUS_GRAPH_COMPONENT_SIGNATURE_KERNEL
     if _NUMBA_RADIUS_GRAPH_COMPONENT_SIGNATURE_KERNEL is None:
@@ -7099,6 +7122,7 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
         self.parent_border_init_kernel = _numba_i32_parent_border_init_kernel(cuda)
         self.border_candidate_label_kernel = _numba_radius_graph_components_3d_border_candidate_label_kernel(cuda)
         self.i64_zero_kernel = _numba_i64_zero_kernel(cuda)
+        self.signature_workspace_zero_kernel = _numba_i64_signature_workspace_zero_kernel(cuda)
         self.component_signature_kernel = _numba_radius_graph_component_signature_kernel(cuda)
         self.signature_label_counts = cuda.device_array((self.point_count + 1,), dtype=np.int64)
         self.signature_flag_true_count = cuda.device_array((1,), dtype=np.int64)
@@ -7402,12 +7426,12 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
             )
             grouped_stream_policy = "optix_applies_predicated_union_and_border_candidate_during_traversal"
             fallback_candidate_policy = "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass"
-        self.i64_zero_kernel[self.signature_count_blocks, self.threads](
+        self.signature_workspace_zero_kernel[self.signature_count_blocks, self.threads](
             self.signature_label_counts,
             self.point_count + 1,
+            self.signature_flag_true_count,
+            self.signature_negative_label_count,
         )
-        self.i64_zero_kernel[(1,), self.threads](self.signature_flag_true_count, 1)
-        self.i64_zero_kernel[(1,), self.threads](self.signature_negative_label_count, 1)
         self.component_signature_kernel[self.label_blocks, self.threads](
             self.point_count,
             core_flags,
