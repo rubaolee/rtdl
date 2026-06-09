@@ -4836,13 +4836,18 @@ void grouped_union_telemetry_add(uint32_t index, unsigned long long value) {
 }
 
 extern "C" __device__
-int find_grouped_union_root_readonly(int* parent, int item) {
+int find_grouped_union_root_compressing(int* parent, int item) {
     grouped_union_telemetry_add(8u, 1ull);
     int root = item;
     int guard = 0;
     while (parent[root] != root && guard < 4096) {
         grouped_union_telemetry_add(9u, 1ull);
-        root = parent[root];
+        const int next = parent[root];
+        const int grand = parent[next];
+        if (grand < next) {
+            atomicMin(parent + root, grand);
+        }
+        root = next;
         ++guard;
     }
     return root;
@@ -4851,8 +4856,8 @@ int find_grouped_union_root_readonly(int* parent, int item) {
 extern "C" __device__
 void union_grouped_min_root(int* parent, int left, int right) {
     while (true) {
-        int left_root = find_grouped_union_root_readonly(parent, left);
-        int right_root = find_grouped_union_root_readonly(parent, right);
+        int left_root = find_grouped_union_root_compressing(parent, left);
+        int right_root = find_grouped_union_root_compressing(parent, right);
         if (left_root == right_root) {
             return;
         }
@@ -4872,8 +4877,8 @@ void union_grouped_min_root_with_telemetry(
         int right,
         unsigned long long* telemetry_out) {
     while (true) {
-        int left_root = find_grouped_union_root_readonly(parent, left);
-        int right_root = find_grouped_union_root_readonly(parent, right);
+        int left_root = find_grouped_union_root_compressing(parent, left);
+        int right_root = find_grouped_union_root_compressing(parent, right);
         if (left_root == right_root) {
             return;
         }
@@ -4964,8 +4969,8 @@ extern "C" __global__ void __intersection__frn3d_grouped_union_isect() {
     if (d2 <= radius_sq) {
         grouped_union_telemetry_add(4u, 1ull);
         if (parent_union_candidate && params.same_root_culling != 0u) {
-            const int source_root = find_grouped_union_root_readonly(params.parent_out, (int)source);
-            const int target_root = find_grouped_union_root_readonly(params.parent_out, (int)prim);
+            const int source_root = find_grouped_union_root_compressing(params.parent_out, (int)source);
+            const int target_root = find_grouped_union_root_compressing(params.parent_out, (int)prim);
             if (source_root == target_root) {
                 grouped_union_telemetry_add(5u, 1ull);
                 return;
