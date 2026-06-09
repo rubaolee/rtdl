@@ -392,6 +392,12 @@ from .current_benchmark_route_decisions import current_benchmark_route_decisions
 from .current_benchmark_route_decisions import explain_current_benchmark_route
 from .current_benchmark_route_decisions import summarize_current_benchmark_route_decisions
 from .current_benchmark_route_decisions import validate_current_benchmark_route_decisions
+from .current_major_performance_targets import CURRENT_MAJOR_PERFORMANCE_TARGET_CLAIM_BOUNDARY
+from .current_major_performance_targets import CURRENT_MAJOR_PERFORMANCE_TARGET_STATUS
+from .current_major_performance_targets import CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION
+from .current_major_performance_targets import current_major_performance_targets
+from .current_major_performance_targets import summarize_current_major_performance_targets
+from .current_major_performance_targets import validate_current_major_performance_targets
 from .v2_8_segmented_typed_stream_adapter import V28SegmentedTypedStreamAdapterResult
 from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_CLAIM_BOUNDARY
 from .v2_8_segmented_typed_stream_adapter import V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_MATERIALIZATION
@@ -2268,6 +2274,12 @@ __all__ = [
     "explain_current_benchmark_route",
     "summarize_current_benchmark_route_decisions",
     "validate_current_benchmark_route_decisions",
+    "CURRENT_MAJOR_PERFORMANCE_TARGET_CLAIM_BOUNDARY",
+    "CURRENT_MAJOR_PERFORMANCE_TARGET_STATUS",
+    "CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION",
+    "current_major_performance_targets",
+    "summarize_current_major_performance_targets",
+    "validate_current_major_performance_targets",
     "V28SegmentedTypedStreamAdapterResult",
     "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_CLAIM_BOUNDARY",
     "V2_8_SEGMENTED_TYPED_STREAM_ADAPTER_MATERIALIZATION",

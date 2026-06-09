@@ -1,0 +1,63 @@
+from __future__ import annotations
+
+from pathlib import Path
+import unittest
+
+import rtdsl as rt
+
+
+ROOT = Path(__file__).resolve().parents[1]
+REPORT = ROOT / "docs" / "reports" / "goal4219_major_performance_target_map_after_goal4218_2026-06-09.md"
+
+
+class Goal4219MajorPerformanceTargetMapTest(unittest.TestCase):
+    def test_report_and_exported_api_exist(self) -> None:
+        self.assertTrue(REPORT.is_file())
+        self.assertEqual(
+            rt.CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION,
+            "rtdl.v2_10.current_major_performance_targets.goal4219.v1",
+        )
+        self.assertTrue(callable(rt.current_major_performance_targets))
+        self.assertTrue(callable(rt.summarize_current_major_performance_targets))
+        self.assertTrue(callable(rt.validate_current_major_performance_targets))
+
+    def test_target_map_validates_and_covers_required_statuses(self) -> None:
+        rows = rt.current_major_performance_targets()
+        validation = rt.validate_current_major_performance_targets(rows)
+        summary = rt.summarize_current_major_performance_targets(rows)
+        self.assertEqual(validation["status"], "accept")
+        self.assertEqual(validation["errors"], ())
+        self.assertEqual(summary["target_count"], 6)
+
+        statuses = {row["target_status"] for row in rows}
+        self.assertIn("done_internal_evidence", statuses)
+        self.assertIn("available_explicit_not_default", statuses)
+        self.assertIn("needs_broader_evidence", statuses)
+        self.assertIn("blocked_pending_hardware", statuses)
+        self.assertIn("pending_user_release_decision", statuses)
+
+    def test_targets_keep_major_performance_not_app_micro_tuning_direction(self) -> None:
+        rows = {row["target_id"]: row for row in rt.current_major_performance_targets()}
+        self.assertEqual(
+            rows["ten_app_current_route_health"]["evidence_refs"],
+            ("Goal4215", "Goal4216", "Goal4217"),
+        )
+        self.assertIn("contract", rows["rayjoin_contract_split_route_policy"]["theme"])
+        self.assertIn("profile-aware", rows["rtdbscan_profile_aware_boundary_policy"]["theme"])
+        self.assertFalse(rows["prepared_session_residency_surface"]["pod_needed_next"])
+        self.assertTrue(rows["amd_hiprt_functional_parity"]["amd_hardware_needed"])
+
+    def test_no_target_authorizes_release_or_hidden_dispatch(self) -> None:
+        for row in rt.current_major_performance_targets():
+            self.assertFalse(row["release_authorized"], row["target_id"])
+            self.assertFalse(row["public_speedup_claim_authorized"], row["target_id"])
+            self.assertFalse(row["whole_app_speedup_claim_authorized"], row["target_id"])
+            self.assertFalse(row["broad_rt_core_claim_authorized"], row["target_id"])
+            self.assertFalse(row["paper_reproduction_claim_authorized"], row["target_id"])
+            self.assertFalse(row["true_zero_copy_claim_authorized"], row["target_id"])
+            self.assertFalse(row["automatic_partner_selection_authorized"], row["target_id"])
+            self.assertFalse(row["app_specific_native_engine_logic_allowed"], row["target_id"])
+
+
+if __name__ == "__main__":
+    unittest.main()

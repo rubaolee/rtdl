@@ -1,0 +1,286 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Any
+
+
+CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION = "rtdl.v2_10.current_major_performance_targets.goal4219.v1"
+CURRENT_MAJOR_PERFORMANCE_TARGET_STATUS = "internal_direction_map_not_release_authorization"
+CURRENT_MAJOR_PERFORMANCE_TARGET_CLAIM_BOUNDARY = (
+    "Goal4219 summarizes the major performance direction after Goal4215 and "
+    "Goal4218. It is a route/runtime planning map, not a release packet, not "
+    "a public speedup claim, not a whole-app acceleration claim, not a broad "
+    "RT-core claim, not a paper-reproduction claim, not a true-zero-copy claim, "
+    "not automatic partner selection, not AMD performance evidence, and not "
+    "permission for app-specific native-engine logic."
+)
+
+
+TARGET_STATUSES = (
+    "done_internal_evidence",
+    "available_explicit_not_default",
+    "needs_broader_evidence",
+    "blocked_pending_hardware",
+    "pending_user_release_decision",
+)
+
+
+@dataclass(frozen=True)
+class CurrentMajorPerformanceTarget:
+    target_id: str
+    theme: str
+    status: str
+    current_reading: str
+    next_action: str
+    evidence_refs: tuple[str, ...]
+    pod_needed_next: bool
+    amd_hardware_needed: bool = False
+    release_authorized: bool = False
+    public_speedup_claim_authorized: bool = False
+    whole_app_speedup_claim_authorized: bool = False
+    broad_rt_core_claim_authorized: bool = False
+    paper_reproduction_claim_authorized: bool = False
+    true_zero_copy_claim_authorized: bool = False
+    automatic_partner_selection_authorized: bool = False
+    app_specific_native_engine_logic_allowed: bool = False
+
+    def __post_init__(self) -> None:
+        if not self.target_id or not self.theme:
+            raise ValueError("major performance target id/theme must be explicit")
+        if self.status not in TARGET_STATUSES:
+            raise ValueError(f"{self.target_id}: unsupported status")
+        if not self.current_reading or not self.next_action:
+            raise ValueError(f"{self.target_id}: current reading and next action are required")
+        if not self.evidence_refs:
+            raise ValueError(f"{self.target_id}: evidence refs must not be empty")
+        for flag in (
+            "release_authorized",
+            "public_speedup_claim_authorized",
+            "whole_app_speedup_claim_authorized",
+            "broad_rt_core_claim_authorized",
+            "paper_reproduction_claim_authorized",
+            "true_zero_copy_claim_authorized",
+            "automatic_partner_selection_authorized",
+            "app_specific_native_engine_logic_allowed",
+        ):
+            if getattr(self, flag):
+                raise ValueError(f"{self.target_id}: {flag} must remain false")
+
+    def to_metadata(self) -> dict[str, Any]:
+        return {
+            "version": CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION,
+            "status": CURRENT_MAJOR_PERFORMANCE_TARGET_STATUS,
+            "target_id": self.target_id,
+            "theme": self.theme,
+            "target_status": self.status,
+            "current_reading": self.current_reading,
+            "next_action": self.next_action,
+            "evidence_refs": self.evidence_refs,
+            "pod_needed_next": self.pod_needed_next,
+            "amd_hardware_needed": self.amd_hardware_needed,
+            "release_authorized": self.release_authorized,
+            "public_speedup_claim_authorized": self.public_speedup_claim_authorized,
+            "whole_app_speedup_claim_authorized": self.whole_app_speedup_claim_authorized,
+            "broad_rt_core_claim_authorized": self.broad_rt_core_claim_authorized,
+            "paper_reproduction_claim_authorized": self.paper_reproduction_claim_authorized,
+            "true_zero_copy_claim_authorized": self.true_zero_copy_claim_authorized,
+            "automatic_partner_selection_authorized": self.automatic_partner_selection_authorized,
+            "app_specific_native_engine_logic_allowed": self.app_specific_native_engine_logic_allowed,
+            "claim_boundary": CURRENT_MAJOR_PERFORMANCE_TARGET_CLAIM_BOUNDARY,
+        }
+
+
+CURRENT_MAJOR_PERFORMANCE_TARGETS: tuple[CurrentMajorPerformanceTarget, ...] = (
+    CurrentMajorPerformanceTarget(
+        target_id="ten_app_current_route_health",
+        theme="broad current-route execution evidence",
+        status="done_internal_evidence",
+        current_reading=(
+            "Goal4215 proves all ten current benchmark front doors pass on RTX 4000 Ada "
+            "at source commit 63289bbc after RT-DBSCAN boundary-policy canonicalization."
+        ),
+        next_action=(
+            "Use Goal4215 as the current internal health packet; do not treat it as a final "
+            "release/performance table without a separate release packet and consensus."
+        ),
+        evidence_refs=("Goal4215", "Goal4216", "Goal4217"),
+        pod_needed_next=False,
+    ),
+    CurrentMajorPerformanceTarget(
+        target_id="rayjoin_contract_split_route_policy",
+        theme="explicit mixed-route policy for RayJoin-style contracts",
+        status="needs_broader_evidence",
+        current_reading=(
+            "Goal4218 confirms the split: bounded one-shot PIP favors Numba, repeated PIP "
+            "benefits from RTDL/OptiX batching, and LSI/overlay strongly favor fused "
+            "RTDL/OptiX primitives on the public-CDB slice."
+        ),
+        next_action=(
+            "If more NVIDIA pod time is spent here, use larger/non-dense same-contract route "
+            "evidence and keep the result contract-by-contract; do not chase app-only tricks "
+            "or claim whole RayJoin reproduction."
+        ),
+        evidence_refs=("Goal4218", "Goal4039", "Goal3936"),
+        pod_needed_next=True,
+    ),
+    CurrentMajorPerformanceTarget(
+        target_id="rtdbscan_profile_aware_boundary_policy",
+        theme="profile-aware fixed-radius component route policy",
+        status="needs_broader_evidence",
+        current_reading=(
+            "Goal4218 shows the unblocked canonical single-pass grouped stream is about "
+            "4.5x faster than the blocked stream on the current 65k clustered3d profile, "
+            "while Goals4205-4212 prove canonical policy parity."
+        ),
+        next_action=(
+            "Spend future NVIDIA pod time only on broader profile/scale evidence or advisor "
+            "logic; do not promote blocked/partitioned variants by default without shape-specific proof."
+        ),
+        evidence_refs=("Goal4205", "Goal4206", "Goal4212", "Goal4218"),
+        pod_needed_next=True,
+    ),
+    CurrentMajorPerformanceTarget(
+        target_id="prepared_session_residency_surface",
+        theme="prepare-once/query-many runtime ergonomics",
+        status="available_explicit_not_default",
+        current_reading=(
+            "Prepared-session cache keys, timing records, explicit invalidation, and "
+            "get_or_prepare_explicit_session already exist; Goal4215 again shows high "
+            "prepare-to-hot-query ratios on scene-heavy rows."
+        ),
+        next_action=(
+            "Keep reuse explicit and user-owned. Future work may improve front-door ergonomics, "
+            "but must not enable hidden global caching or automatic backend/partner selection."
+        ),
+        evidence_refs=("Goal3872", "Goal3877", "Goal3884", "Goal4215"),
+        pod_needed_next=False,
+    ),
+    CurrentMajorPerformanceTarget(
+        target_id="amd_hiprt_functional_parity",
+        theme="multi-hardware RT backend validation",
+        status="blocked_pending_hardware",
+        current_reading=(
+            "NVIDIA/OptiX current routes are healthy, but AMD/HIPRT functional and timing "
+            "evidence still requires actual AMD GPU hardware."
+        ),
+        next_action=(
+            "When an AMD pod is available, run HIPRT functional parity first, then only make "
+            "performance claims after same-contract AMD evidence exists."
+        ),
+        evidence_refs=("Goal3784", "Goal3785", "Goal4215"),
+        pod_needed_next=True,
+        amd_hardware_needed=True,
+    ),
+    CurrentMajorPerformanceTarget(
+        target_id="major_release_candidate_packet",
+        theme="release gating and multi-AI consensus",
+        status="pending_user_release_decision",
+        current_reading=(
+            "The project has current NVIDIA internal evidence and strict claim boundaries, "
+            "but this map does not authorize a release."
+        ),
+        next_action=(
+            "A formal major release needs a user-requested release packet, cleaned docs, "
+            "and the required multi-AI consensus over the exact release claims."
+        ),
+        evidence_refs=("Goal4215", "Goal4216", "Goal4217", "Goal4218"),
+        pod_needed_next=False,
+    ),
+)
+
+
+def current_major_performance_targets() -> tuple[dict[str, Any], ...]:
+    return tuple(row.to_metadata() for row in CURRENT_MAJOR_PERFORMANCE_TARGETS)
+
+
+def summarize_current_major_performance_targets(
+    rows: tuple[dict[str, Any], ...] | None = None,
+) -> dict[str, Any]:
+    matrix = rows if rows is not None else current_major_performance_targets()
+    return {
+        "version": CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION,
+        "status": CURRENT_MAJOR_PERFORMANCE_TARGET_STATUS,
+        "target_count": len(matrix),
+        "done_internal_evidence_count": sum(
+            1 for row in matrix if row["target_status"] == "done_internal_evidence"
+        ),
+        "needs_broader_evidence_count": sum(
+            1 for row in matrix if row["target_status"] == "needs_broader_evidence"
+        ),
+        "blocked_pending_hardware_count": sum(
+            1 for row in matrix if row["target_status"] == "blocked_pending_hardware"
+        ),
+        "pod_needed_next_targets": tuple(
+            row["target_id"] for row in matrix if row["pod_needed_next"]
+        ),
+        "amd_hardware_needed_targets": tuple(
+            row["target_id"] for row in matrix if row["amd_hardware_needed"]
+        ),
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "broad_rt_core_claim_authorized": False,
+        "paper_reproduction_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "automatic_partner_selection_authorized": False,
+        "app_specific_native_engine_logic_allowed": False,
+        "claim_boundary": CURRENT_MAJOR_PERFORMANCE_TARGET_CLAIM_BOUNDARY,
+    }
+
+
+def validate_current_major_performance_targets(
+    rows: tuple[dict[str, Any], ...] | None = None,
+) -> dict[str, Any]:
+    matrix = rows if rows is not None else current_major_performance_targets()
+    errors: list[str] = []
+    ids = [row.get("target_id") for row in matrix]
+    if len(ids) != len(set(ids)):
+        errors.append("major performance target ids must be unique")
+    if len(matrix) < 5:
+        errors.append("major performance target map must cover evidence, route, hardware, and release targets")
+    statuses = {row.get("target_status") for row in matrix}
+    for required in (
+        "done_internal_evidence",
+        "available_explicit_not_default",
+        "needs_broader_evidence",
+        "blocked_pending_hardware",
+        "pending_user_release_decision",
+    ):
+        if required not in statuses:
+            errors.append(f"missing target status: {required}")
+    for row in matrix:
+        if row.get("target_status") not in TARGET_STATUSES:
+            errors.append(f"{row.get('target_id')}: unsupported status")
+        if not row.get("evidence_refs"):
+            errors.append(f"{row.get('target_id')}: missing evidence refs")
+        for flag in (
+            "release_authorized",
+            "public_speedup_claim_authorized",
+            "whole_app_speedup_claim_authorized",
+            "broad_rt_core_claim_authorized",
+            "paper_reproduction_claim_authorized",
+            "true_zero_copy_claim_authorized",
+            "automatic_partner_selection_authorized",
+            "app_specific_native_engine_logic_allowed",
+        ):
+            if row.get(flag):
+                errors.append(f"{row.get('target_id')}: {flag} must remain false")
+    return {
+        "version": CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION,
+        "status": "accept" if not errors else "reject",
+        "errors": tuple(errors),
+        "target_count": len(matrix),
+        "claim_boundary": CURRENT_MAJOR_PERFORMANCE_TARGET_CLAIM_BOUNDARY,
+    }
+
+
+__all__ = [
+    "CURRENT_MAJOR_PERFORMANCE_TARGET_CLAIM_BOUNDARY",
+    "CURRENT_MAJOR_PERFORMANCE_TARGET_STATUS",
+    "CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION",
+    "CURRENT_MAJOR_PERFORMANCE_TARGETS",
+    "CurrentMajorPerformanceTarget",
+    "current_major_performance_targets",
+    "summarize_current_major_performance_targets",
+    "validate_current_major_performance_targets",
+]
