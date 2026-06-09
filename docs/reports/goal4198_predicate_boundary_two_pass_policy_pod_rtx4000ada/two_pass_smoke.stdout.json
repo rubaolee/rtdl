@@ -1,0 +1,39 @@
+{
+  "commit": "96e63e37",
+  "dataset": "road3d",
+  "point_count": 8192,
+  "policies": {
+    "lowest_candidate_then_root": {
+      "boundary_assignment_pass_count": null,
+      "boundary_assignment_policy": "lowest_candidate_then_root",
+      "component_count": 0,
+      "flag_true_count": 0,
+      "label_count_signature_head": [],
+      "largest_component_size": 0,
+      "lowest_component_root_after_two_prepared_rt_passes": null,
+      "native_symbol": null,
+      "negative_label_count": 8192,
+      "prepare_elapsed_sec": 0.8358435854315758,
+      "public_speedup_claim_authorized": false,
+      "run_elapsed_sec": 1.0251605659723282,
+      "true_zero_copy_claim_authorized": false
+    },
+    "lowest_component_root_two_pass": {
+      "boundary_assignment_pass_count": null,
+      "boundary_assignment_policy": "lowest_component_root_two_pass",
+      "component_count": 0,
+      "flag_true_count": 0,
+      "label_count_signature_head": [],
+      "largest_component_size": 0,
+      "lowest_component_root_after_two_prepared_rt_passes": null,
+      "native_symbol": null,
+      "negative_label_count": 8192,
+      "prepare_elapsed_sec": 0.017767570912837982,
+      "public_speedup_claim_authorized": false,
+      "run_elapsed_sec": 0.09499076753854752,
+      "true_zero_copy_claim_authorized": false
+    }
+  },
+  "same_counts_only_signature": true,
+  "schema": "rtdl.goal4198.predicate_boundary_two_pass_policy_smoke.v1"
+}

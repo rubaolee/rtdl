@@ -1,0 +1,53 @@
+{
+  "commit": "96e63e37",
+  "component_threshold": 16,
+  "dataset": "clustered3d",
+  "point_count": 16384,
+  "policies": {
+    "lowest_candidate_then_root": {
+      "component_count": 4,
+      "flag_true_count": 16314,
+      "label_count_signature_head": [
+        4094,
+        4096,
+        4096,
+        4096
+      ],
+      "largest_component_size": 4096,
+      "metadata_boundary_assignment_policy": "lowest_candidate_then_root",
+      "native_boundary_assignment_pass_count": 1,
+      "native_boundary_assignment_policy": "lowest_candidate_then_root",
+      "native_lowest_component_root_after_two_prepared_rt_passes": null,
+      "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+      "negative_label_count": 2,
+      "prepare_elapsed_sec": 0.8362307026982307,
+      "public_speedup_claim_authorized": false,
+      "run_elapsed_sec": 0.8949131518602371,
+      "true_zero_copy_claim_authorized": false
+    },
+    "lowest_component_root_two_pass": {
+      "component_count": 4,
+      "flag_true_count": 16314,
+      "label_count_signature_head": [
+        4094,
+        4096,
+        4096,
+        4096
+      ],
+      "largest_component_size": 4096,
+      "metadata_boundary_assignment_policy": "lowest_component_root_two_pass",
+      "native_boundary_assignment_pass_count": 2,
+      "native_boundary_assignment_policy": "lowest_component_root_two_pass",
+      "native_lowest_component_root_after_two_prepared_rt_passes": null,
+      "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+      "negative_label_count": 2,
+      "prepare_elapsed_sec": 0.034053392708301544,
+      "public_speedup_claim_authorized": false,
+      "run_elapsed_sec": 0.06178592890501022,
+      "true_zero_copy_claim_authorized": false
+    }
+  },
+  "radius": 0.035,
+  "same_counts_only_signature": true,
+  "schema": "rtdl.goal4198.predicate_boundary_two_pass_policy_clustered_smoke.v1"
+}
