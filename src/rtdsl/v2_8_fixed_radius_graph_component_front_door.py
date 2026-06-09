@@ -1221,17 +1221,17 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
     aabb_max_y = aabb_max_y64.astype(cupy.float32, copy=False)
     aabb_max_z = aabb_max_z64.astype(cupy.float32, copy=False)
 
-    unique_host = tuple(int(value) for value in cupy.asnumpy(unique_cells).tolist())
-    key_rows = []
-    for encoded in unique_host:
-        local_x = encoded // (dim_y * dim_z)
-        rem = encoded % (dim_y * dim_z)
-        local_y = rem // dim_z
-        local_z = rem % dim_z
-        key_rows.append((local_x + min_kx, local_y + min_ky, local_z + min_kz))
     max_offset = int(math.ceil(radius / cell_size)) + 1
     classification_tol = 1.0e-5 * max(1.0, radius_sq)
     if pair_enumeration == "host":
+        unique_host = tuple(int(value) for value in cupy.asnumpy(unique_cells).tolist())
+        key_rows = []
+        for encoded in unique_host:
+            local_x = encoded // (dim_y * dim_z)
+            rem = encoded % (dim_y * dim_z)
+            local_y = rem // dim_z
+            local_z = rem % dim_z
+            key_rows.append((local_x + min_kx, local_y + min_ky, local_z + min_kz))
         key_to_ordinal = {key: ordinal for ordinal, key in enumerate(key_rows)}
         aabbs = [
             {
@@ -1308,11 +1308,8 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
                 requested_capacity,
             ) = _cupy_partition_pair_status_device_count_then_emit(
                 cupy,
-                key_rows=key_rows,
+                partition_count=partition_count,
                 unique_cells=unique_cells,
-                min_kx=min_kx,
-                min_ky=min_ky,
-                min_kz=min_kz,
                 dim_y=dim_y,
                 dim_z=dim_z,
                 aabb_min_x64=aabb_min_x64,
@@ -1332,11 +1329,8 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
             left_ids, right_ids, statuses, pair_count, visible_pair_count, overflow = (
                 _cupy_partition_pair_status_device_bounded_offsets(
                     cupy,
-                    key_rows=key_rows,
+                    partition_count=partition_count,
                     unique_cells=unique_cells,
-                    min_kx=min_kx,
-                    min_ky=min_ky,
-                    min_kz=min_kz,
                     dim_y=dim_y,
                     dim_z=dim_z,
                     aabb_min_x64=aabb_min_x64,
@@ -1356,12 +1350,19 @@ def build_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d(
             "safe_full_partition_pairs": int(cupy.sum(statuses == 1).item()),
             "ambiguous_partition_pairs": int(cupy.sum(statuses == 2).item()),
         }
+    local_key_x = (unique_cells // (dim_y * dim_z)).astype(cupy.int64, copy=False)
+    local_key_rem = unique_cells % (dim_y * dim_z)
+    local_key_y = (local_key_rem // dim_z).astype(cupy.int64, copy=False)
+    local_key_z = (local_key_rem % dim_z).astype(cupy.int64, copy=False)
+    occupied_key_x = (local_key_x + min_kx).astype(cupy.int32, copy=False)
+    occupied_key_y = (local_key_y + min_ky).astype(cupy.int32, copy=False)
+    occupied_key_z = (local_key_z + min_kz).astype(cupy.int32, copy=False)
     columns = {
         "point_partition_ids": point_partition_ids,
         "partition_point_ordinals": order.astype(cupy.uint32, copy=False),
-        "occupied_partition_keys_x": cupy.asarray([key[0] for key in key_rows], dtype=cupy.int32),
-        "occupied_partition_keys_y": cupy.asarray([key[1] for key in key_rows], dtype=cupy.int32),
-        "occupied_partition_keys_z": cupy.asarray([key[2] for key in key_rows], dtype=cupy.int32),
+        "occupied_partition_keys_x": occupied_key_x,
+        "occupied_partition_keys_y": occupied_key_y,
+        "occupied_partition_keys_z": occupied_key_z,
         "partition_offsets": offsets,
         "partition_counts": counts_u32,
         "partition_aabb_min_x": aabb_min_x,
@@ -2552,11 +2553,8 @@ def _cupy_union_safe_full_partition_pairs(
 def _cupy_partition_pair_status_device_bounded_offsets(
     cupy,
     *,
-    key_rows: list[tuple[int, int, int]],
+    partition_count: int,
     unique_cells,
-    min_kx: int,
-    min_ky: int,
-    min_kz: int,
     dim_y: int,
     dim_z: int,
     aabb_min_x64,
@@ -2577,9 +2575,6 @@ def _cupy_partition_pair_status_device_bounded_offsets(
         r'''
         extern "C" __global__
         void partition_pair_status_kernel(
-            const int* key_x,
-            const int* key_y,
-            const int* key_z,
             const long long* unique_cells,
             const double* min_x,
             const double* min_y,
@@ -2588,9 +2583,6 @@ def _cupy_partition_pair_status_device_bounded_offsets(
             const double* max_y,
             const double* max_z,
             unsigned int partition_count,
-            int min_kx,
-            int min_ky,
-            int min_kz,
             int dim_y,
             int dim_z,
             int max_offset,
@@ -2621,14 +2613,17 @@ def _cupy_partition_pair_status_device_bounded_offsets(
             rem = rem % (unsigned long long)(span * span);
             const int dy = (int)(rem / (unsigned long long)span) - max_offset;
             const int dz = (int)(rem % (unsigned long long)span) - max_offset;
-            const int tx = key_x[left] + dx;
-            const int ty = key_y[left] + dy;
-            const int tz = key_z[left] + dz;
-            const long long lx = (long long)tx - (long long)min_kx;
-            const long long ly = (long long)ty - (long long)min_ky;
-            const long long lz = (long long)tz - (long long)min_kz;
-            if (lx < 0 || ly < 0 || lz < 0 || ly >= dim_y || lz >= dim_z) return;
-            const long long target = (lx * (long long)dim_y + ly) * (long long)dim_z + lz;
+            const long long encoded = unique_cells[left];
+            const long long plane = (long long)dim_y * (long long)dim_z;
+            const long long base_x = encoded / plane;
+            const long long base_rem = encoded - base_x * plane;
+            const long long base_y = base_rem / (long long)dim_z;
+            const long long base_z = base_rem - base_y * (long long)dim_z;
+            const long long tx = base_x + (long long)dx;
+            const long long ty = base_y + (long long)dy;
+            const long long tz = base_z + (long long)dz;
+            if (tx < 0 || ty < 0 || tz < 0 || ty >= dim_y || tz >= dim_z) return;
+            const long long target = (tx * (long long)dim_y + ty) * (long long)dim_z + tz;
             int lo = 0;
             int hi = (int)partition_count;
             while (lo < hi) {
@@ -2684,10 +2679,7 @@ def _cupy_partition_pair_status_device_bounded_offsets(
         ''',
         "partition_pair_status_kernel",
     )
-    partition_count = len(key_rows)
-    key_x = cupy.asarray([key[0] for key in key_rows], dtype=cupy.int32)
-    key_y = cupy.asarray([key[1] for key in key_rows], dtype=cupy.int32)
-    key_z = cupy.asarray([key[2] for key in key_rows], dtype=cupy.int32)
+    partition_count = int(partition_count)
     left_out = cupy.zeros((pair_capacity,), dtype=cupy.uint32)
     right_out = cupy.zeros((pair_capacity,), dtype=cupy.uint32)
     status_out = cupy.zeros((pair_capacity,), dtype=cupy.uint32)
@@ -2701,9 +2693,6 @@ def _cupy_partition_pair_status_device_bounded_offsets(
         blocks,
         (threads,),
         (
-            key_x,
-            key_y,
-            key_z,
             unique_cells,
             aabb_min_x64,
             aabb_min_y64,
@@ -2712,9 +2701,6 @@ def _cupy_partition_pair_status_device_bounded_offsets(
             aabb_max_y64,
             aabb_max_z64,
             cupy.uint32(partition_count),
-            int(min_kx),
-            int(min_ky),
-            int(min_kz),
             int(dim_y),
             int(dim_z),
             int(max_offset),
@@ -2747,11 +2733,8 @@ def _cupy_partition_pair_status_device_bounded_offsets(
 def _cupy_partition_pair_status_device_count_then_emit(
     cupy,
     *,
-    key_rows: list[tuple[int, int, int]],
+    partition_count: int,
     unique_cells,
-    min_kx: int,
-    min_ky: int,
-    min_kz: int,
     dim_y: int,
     dim_z: int,
     aabb_min_x64,
@@ -2768,11 +2751,8 @@ def _cupy_partition_pair_status_device_count_then_emit(
     _left, _right, _status, attempted, _visible, _overflow = (
         _cupy_partition_pair_status_device_bounded_offsets(
             cupy,
-            key_rows=key_rows,
+            partition_count=partition_count,
             unique_cells=unique_cells,
-            min_kx=min_kx,
-            min_ky=min_ky,
-            min_kz=min_kz,
             dim_y=dim_y,
             dim_z=dim_z,
             aabb_min_x64=aabb_min_x64,
@@ -2792,11 +2772,8 @@ def _cupy_partition_pair_status_device_count_then_emit(
     left, right, status, pair_count, visible, overflow = (
         _cupy_partition_pair_status_device_bounded_offsets(
             cupy,
-            key_rows=key_rows,
+            partition_count=partition_count,
             unique_cells=unique_cells,
-            min_kx=min_kx,
-            min_ky=min_ky,
-            min_kz=min_kz,
             dim_y=dim_y,
             dim_z=dim_z,
             aabb_min_x64=aabb_min_x64,
